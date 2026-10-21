@@ -12,7 +12,7 @@ export function histogram(o: number[]): ChartConfiguration {
   const n = o.length, bins = 20, lo = o[0] as number, hi = o[n - 1] as number, w = (hi - lo) / bins || 1, counts = new Array<number>(bins).fill(0);
   o.forEach((v) => { const i = Math.min(bins - 1, Math.floor((v - lo) / w)); counts[i] = (counts[i] as number) + 1; });
   return { type: 'bar', data: { labels: counts.map((_, i) => `${Math.round((lo + (i + 0.5) * w) / 1000)}k`),
-    datasets: [{ label: 'Frequency', data: counts, backgroundColor: counts.map((_, i) => (lo + (i + 1) * w < 0 ? '#8F3237' : '#1DB8F2')) }] },
+    datasets: [{ label: 'Frequency', data: counts, backgroundColor: counts.map((_, i) => (lo + (i + 1) * w < 0 ? '#8F3237' : '#0a6e9c')) }] },
   options: { plugins: { legend: { display: false }, title: { display: true, text: 'Net benefit distribution (horizon-aware, after setup)' } }, scales: { y: { title: { display: true, text: 'draws' } } } } };
 }
 

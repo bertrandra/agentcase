@@ -25,11 +25,11 @@ export default function SensitivitySection() {
           { key: 's', header: 'Sensitivity', align: 'center', render: (r) => <Badge tone={TONE[r.level]}>{r.level}</Badge> },
         ]} />
         <Panel title="Automation × Glass ceiling matrix (ROI)">
-          <div className="ac-table-wrap"><table className="ac-table">
+          <div className="ac-table-wrap" tabIndex={0}><table className="ac-table">
             <thead><tr><th>Automation %</th>{mx.ceils.map((x) => <th key={x}>Glass {x}%</th>)}</tr></thead>
             <tbody>{mx.cells.map((row, i) => (
               <tr key={mx.autos[i]}><td><strong>{mx.autos[i]}%</strong></td>
-                {row.map((cell, j) => <td key={mx.ceils[j]} style={{ background: cell.bg || undefined, textAlign: 'center', color: cell.roi == null ? '#999' : undefined }}>{cell.text}</td>)}</tr>))}
+                {row.map((cell, j) => <td key={mx.ceils[j]} style={{ background: cell.bg || undefined, textAlign: 'center', color: cell.roi == null ? '#636363' : undefined }}>{cell.text}</td>)}</tr>))}
             </tbody></table></div>
         </Panel>
       </>} />

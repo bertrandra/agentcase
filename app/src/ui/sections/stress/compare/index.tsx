@@ -13,9 +13,9 @@ const help = (
     Choose the classic annual saving rate below.</p>
 );
 const SERIES = [
-  { key: 'asis', label: 'AS-IS', bg: 'rgba(186,117,23,.7)', border: '#BE4D00' },
-  { key: 'classic', label: 'AS-IS + saving', bg: 'rgba(55,138,221,.7)', border: '#1DB8F2' },
-  { key: 'agentic', label: 'Agentic', bg: 'rgba(99,153,34,.8)', border: '#00828E' },
+  { key: 'asis', label: 'AS-IS', bg: 'rgba(186,117,23,.7)', border: '#b04600' },
+  { key: 'classic', label: 'AS-IS + saving', bg: 'rgba(55,138,221,.7)', border: '#0a6e9c' },
+  { key: 'agentic', label: 'Agentic', bg: 'rgba(99,153,34,.8)', border: '#006e79' },
 ] as const;
 
 function chartOf(d: CompareData, key: keyof Trajectory, line: boolean): ChartConfiguration {

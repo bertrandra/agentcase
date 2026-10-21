@@ -3,7 +3,7 @@ import { resetMaturityMap, setMaturityBound, setMaturityLabel } from '@/controll
 import { useDoc } from '@/store/hooks';
 import { useMemo } from 'react';
 
-const COLORS = ['#8A94A6', '#1DB8F2', '#00828E', '#0058AB'];
+const COLORS = ['#566074', '#0a6e9c', '#006e79', '#0058AB'];
 
 function BoundInput({ kind, idx, value }: { kind: 'ramp' | 'share'; idx: number; value: number }) {
   return (
@@ -19,7 +19,7 @@ export function LevelTable() {
     <div className="ac-panel">
       <h2>Level thresholds</h2>
       <p className="ac-muted">The lower bound (%) at which each level begins. L1 starts at 0.</p>
-      <div className="ac-table-wrap">
+      <div className="ac-table-wrap" tabIndex={0}>
         <table className="ac-table">
           <thead><tr><th>Level</th><th>Label</th><th>Adoption ≥ (%)</th><th>Agent vFTE share ≥ (%)</th><th>Adoption range</th></tr></thead>
           <tbody>

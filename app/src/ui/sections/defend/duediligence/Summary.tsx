@@ -5,16 +5,16 @@ import type { DdModel } from './useDd';
 
 const Card = ({ label, value, color, sub }: { label: string; value: string; color: string; sub?: string }) => (
   <div style={{ flex: 1, minWidth: 150, background: '#fff', border: '1px solid #e5e5e5', borderTop: `3px solid ${color}`, borderRadius: 8, padding: 10, textAlign: 'center' }}>
-    <div style={{ fontSize: 10, color: '#888', textTransform: 'uppercase', letterSpacing: 1 }}>{label}</div>
+    <div style={{ fontSize: 10, color: '#636363', textTransform: 'uppercase', letterSpacing: 1 }}>{label}</div>
     <div style={{ fontSize: 24, fontWeight: 700, color }}>{value}</div>
-    {sub && <div style={{ fontSize: 10, color: '#888' }}>{sub}</div>}
+    {sub && <div style={{ fontSize: 10, color: '#636363' }}>{sub}</div>}
   </div>
 );
 
 /** Intro, confirmation gauges (items, € weight, glass ceiling), the € sensitivity control and its explanation. */
 export function Summary({ m }: { m: DdModel }) {
-  const { wPct, ceilCover, sens, fresh, zeroEur } = m, wColor = wPct == null ? '#8A94A6' : wPct >= 60 ? '#00828E' : '#BE4D00';
-  const cc = ceilCover === null ? null : Math.round(ceilCover * 100), ccColor = ceilCover === null ? '' : ceilCover >= 0.85 ? '#00828E' : ceilCover >= 0.4 ? '#BE4D00' : '#8F3237';
+  const { wPct, ceilCover, sens, fresh, zeroEur } = m, wColor = wPct == null ? '#566074' : wPct >= 60 ? '#006e79' : '#b04600';
+  const cc = ceilCover === null ? null : Math.round(ceilCover * 100), ccColor = ceilCover === null ? '' : ceilCover >= 0.85 ? '#006e79' : ceilCover >= 0.4 ? '#b04600' : '#8F3237';
   return (
     <>
       <Callout>This register lists what a client must <strong>confirm</strong> for the model to be defensible — not what the model computes. It deliberately surfaces <strong>{m.invisible} coefficients that are hardcoded in the calculation path and editable nowhere in the interface</strong>.
@@ -24,7 +24,7 @@ export function Summary({ m }: { m: DdModel }) {
       <div className="ac-form-row">
         <Card label="Items to confirm" value={String(m.rows.length)} color="#0058AB" />
         <Card label="Editable nowhere (PC5)" value={String(m.invisible)} color="#8F3237" />
-        <Card label="Confirmed / waived (items)" value={`${m.pct}%`} color="#00828E" />
+        <Card label="Confirmed / waived (items)" value={`${m.pct}%`} color="#006e79" />
         <Card label="Confirmed by € weight" value={wPct == null ? '—' : `${wPct}%`} color={wColor} />
       </div>
       {cc !== null && (

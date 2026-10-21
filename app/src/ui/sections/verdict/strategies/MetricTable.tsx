@@ -18,7 +18,7 @@ function fmt(key: string, v: number | null): string {
 export function MetricTable({ R, horizon, s }: { R: StrategyRow[]; horizon: number; s: CaseState }) {
   return (
     <>
-      <div className="ac-table-wrap"><table className="ac-table">
+      <div className="ac-table-wrap" tabIndex={0}><table className="ac-table">
         <thead><tr><th>Metric</th>{R.map((r) => <th key={r.id} title={r.desc} style={{ textAlign: 'center' }}>{r.icon}<br />{r.label}</th>)}</tr></thead>
         <tbody>{METRICS.map((m) => {
           const ex = metricExtremes(R, m);

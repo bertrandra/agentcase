@@ -35,7 +35,7 @@ export default function MonthlyPlaybackSection() {
       </>}
       result={key && cfg ? (
         <>
-          <div className="ac-form-row"><h3 data-testid="mp-title">{MP_META[key].title}</h3><span className="ac-muted" data-testid="mp-pos">{Math.min(p.seq, seq.length - 1) + 1} / {seq.length}</span></div>
+          <div className="ac-form-row"><h2 data-testid="mp-title">{MP_META[key].title}</h2><span className="ac-muted" data-testid="mp-pos">{Math.min(p.seq, seq.length - 1) + 1} / {seq.length}</span></div>
           <div className="ac-form-row">{legendOf(key).map((l) => <span key={l.label}><span style={{ display: 'inline-block', width: 10, height: 10, background: l.color, marginRight: 4 }} />{l.label}</span>)}</div>
           <ChartPanel config={cfg} label={`${MP_META[key].title} — monthly trajectory, ${s.months} months`} height={320} />
         </>

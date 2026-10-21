@@ -1,6 +1,6 @@
 import { FUNNEL_EPS, type FunnelStage } from '@/domain/scope/automation';
 
-const COL = { pot: '#0058AB', ceil: '#BE4D00', mix: '#8A94A6', gap: '#1DB8F2', sup: '#8F3237', real: '#00828E' };
+const COL = { pot: '#0058AB', ceil: '#b04600', mix: '#566074', gap: '#0a6e9c', sup: '#8F3237', real: '#006e79' };
 export interface Active { ceiling: boolean; mix: boolean; ramp: boolean; sup: boolean }
 interface Band { v: number; t: string; s: string; c: string; fin?: boolean }
 
@@ -31,7 +31,7 @@ export function FunnelSvg({ S, A }: { S: FunnelStage; A: Active }) {
             <text x={CX} y={yT + 22} textAnchor="middle" style={{ fill: '#fff', fontSize: 13, fontWeight: 600 }}>{b.t}</text>
             <text x={CX} y={yT + 39} textAnchor="middle" style={{ fill: '#ffffffcc', fontSize: 10.5 }}>{b.s}</text>
             <text x={726} y={yT + 29} textAnchor="end" style={{ fill: b.c, fontSize: 15, fontWeight: 700 }}>{b.v.toFixed(1)}%</text>
-            <text x={908} y={yT + 29} textAnchor="end" style={{ fill: loss > FUNNEL_EPS ? '#BE4D00' : '#c8ccd4', fontSize: 12.5 }}>{loss > FUNNEL_EPS ? `−${loss.toFixed(1)} pts` : '—'}</text>
+            <text x={908} y={yT + 29} textAnchor="end" style={{ fill: loss > FUNNEL_EPS ? '#b04600' : '#c8ccd4', fontSize: 12.5 }}>{loss > FUNNEL_EPS ? `−${loss.toFixed(1)} pts` : '—'}</text>
           </g>
         );
       })}

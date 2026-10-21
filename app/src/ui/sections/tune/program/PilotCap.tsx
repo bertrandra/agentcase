@@ -28,7 +28,7 @@ export function PilotCard() {
 /** EV-22 internal capability build (Volet A): operational now / in training / target mass. */
 export function CapCard() {
   const k = capability(useCtx());
-  const rows = [['Operational now', 'capOps', k.ops, k.bars.ops, '#00828E'], ['In training', 'capTrain', k.training, k.bars.training, '#BE4D00'], ['Target mass', 'capTarget', k.target, k.bars.target, '#0058AB']] as const;
+  const rows = [['Operational now', 'capOps', k.ops, k.bars.ops, '#006e79'], ['In training', 'capTrain', k.training, k.bars.training, '#b04600'], ['Target mass', 'capTarget', k.target, k.bars.target, '#0058AB']] as const;
   return (
     <Panel title="Internal capability build — Volet A" aside={<Badge tone="blue">EV-22</Badge>}>
       <div className="ac-form-row">

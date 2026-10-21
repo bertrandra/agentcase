@@ -5,7 +5,7 @@ export interface GridRow { key: string; label: ReactNode; cells: ReactNode[]; bo
 /** A table whose columns are decided at run time (one per year of the horizon): header labels + rows of already formatted cells. */
 export function GridTable({ head, rows, caption }: { head: string[]; rows: GridRow[]; caption?: string }) {
   return (
-    <div className="ac-table-wrap">
+    <div className="ac-table-wrap" tabIndex={0}>
       <table className="ac-table">
         {caption && <caption>{caption}</caption>}
         <thead><tr>{head.map((h, i) => <th key={h + i} scope="col" style={{ textAlign: i ? 'right' : 'left' }}>{h}</th>)}</tr></thead>

@@ -8,7 +8,7 @@ export function Descriptions({ m }: { m: DepsModel }) {
   const rows = m.sources.map((id) => ALL_SECTIONS.find((s) => s.id === id)!);
   return (
     <div>
-      <h3>Dependency descriptions &amp; impact</h3>
+      <h2>Dependency descriptions &amp; impact</h2>
       <DataTable rows={rows} rowKey={(s) => s.id} empty="No dependency has been defined yet." columns={[
         { key: 's', header: 'Section', render: (s) => <><strong>{s.label}</strong> {s.tag && <Badge>{s.tag}</Badge>}</> },
         { key: 't', header: 'Impacts (downstream)', render: (s) => Object.entries(m.deps[s.id] ?? {}).map(([t, lv]) => <Badge key={t} tone={lv === 'S' ? 'blue' : 'amber'}>{labelOf(t)}</Badge>) },

@@ -14,8 +14,8 @@ export function locChart(rows: LocRow[]): ChartConfiguration {
 /** Headcount input -> target, stacked by pole. */
 export function headcountChart(base: number, t: TargetTeam): ChartConfiguration {
   return { type: 'bar', data: { labels: ['Input (AS-IS)', 'Target Y3'], datasets: [
-    { label: 'Dev/Prod', data: [base, t.devETP], backgroundColor: '#1DB8F2' },
-    { label: 'Supervision', data: [0, t.supETP], backgroundColor: '#BE4D00' },
-    { label: 'Agentic run', data: [0, t.runETP], backgroundColor: '#00828E' }] },
+    { label: 'Dev/Prod', data: [base, t.devETP], backgroundColor: '#0a6e9c' },
+    { label: 'Supervision', data: [0, t.supETP], backgroundColor: '#b04600' },
+    { label: 'Agentic run', data: [0, t.runETP], backgroundColor: '#006e79' }] },
   options: { plugins: { legend: { position: 'top' } }, scales: { x: { stacked: true }, y: { stacked: true, title: { display: true, text: 'FTE' }, grid } } } };
 }

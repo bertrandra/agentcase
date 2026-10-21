@@ -35,7 +35,7 @@ export function AbaquePanel() {
       </div>
       <p className="ac-muted">Net gain per phase = <strong>Abaque A</strong> (addressable) × <strong>Abaque B</strong> (maturity capture at L{d.lvl} = {pct(d.bCap)}) {pillar ? '× pillar leverage ' : ''}− verification tax.
         Reference 6.1: this is what separates addressable from the ~10% net productivity paradox.</p>
-      <div className="ac-table-wrap">
+      <div className="ac-table-wrap" tabIndex={0}>
         <table className="ac-table">
           <thead><tr><th>Phase</th><th>Abaque A</th><th>Pillar</th><th>Captured (×B)</th><th>Verif. tax</th><th>Net gain</th></tr></thead>
           <tbody>

@@ -1,6 +1,8 @@
 import { useEffect } from 'react';
 import '../theme/nav.css';
+import '../theme/a11y.css';
 import { SectionHost } from '../zones/SectionHost';
+import { sectionById } from '../zones/registry';
 import { useNavModel } from '../zones/navModel';
 import { setMenuHidden, useUi } from '../uiState';
 import { DockZone } from './DockZone';
@@ -15,7 +17,7 @@ import { useShortcuts } from './useShortcuts';
 /** The application frame: top / kpi / nav / work / dock zones (CSS grid areas). The sidebar collapses in hide-menu mode and during a guided walk. */
 export function Shell() {
   useShortcuts();
-  const toastText = useUi((s) => s.toast), hidden = useUi((s) => s.menuHidden), walking = useUi((s) => s.wiz.active);
+  const toastText = useUi((s) => s.toast), active = useUi((s) => s.activeSection), hidden = useUi((s) => s.menuHidden), walking = useUi((s) => s.wiz.active);
   const { persona, compact } = useNavModel(), collapsed = hidden || walking;
   useEffect(() => { setMenuHidden(compact); }, [persona, compact]);   // the persona's "hide menu" default, live when it is edited
   return (
@@ -31,6 +33,7 @@ export function Shell() {
       </div>
       <DockZone />
       <div className="ac-live" role="status" aria-live="polite">{toastText}</div>
+      <p className="ac-sr" aria-live="polite" aria-atomic="true" data-testid="section-announcer">{sectionById(active)?.label ?? ''}</p>
       <RestoreBanner />
     </div>
   );

@@ -37,9 +37,9 @@ export function Releases() {
   const nameOf = (it: ReleaseItem) => String(it.itemType === 'Story' ? stories.find((s) => s.id === it.itemId)?.name ?? '(deleted story)' : it.itemType === 'Feature' ? features.find((f) => f.id === it.itemId)?.name ?? '(deleted feature)' : it.label ?? '');
   return (
     <Panel title="📦 Releases" aside={<small className="ac-muted">polymorphic — includes Stories, Features, Fixes, Technical Changes</small>}>
-      <div className="ac-table-wrap">
+      <div className="ac-table-wrap" tabIndex={0}>
         <table className="ac-table">
-          <thead><tr><th>Name</th><th>Items</th><th /></tr></thead>
+          <thead><tr><th>Name</th><th>Items</th><th scope="col"><span className="ac-sr">Actions</span></th></tr></thead>
           <tbody>
             {releases.length ? releases.map((r) => {
               const mine = items.filter((x) => x.releaseId === r.id), name = String(r.name ?? r.id);

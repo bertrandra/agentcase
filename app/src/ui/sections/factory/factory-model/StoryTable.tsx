@@ -24,9 +24,9 @@ export function StoryTable() {
   };
   return (
     <Panel title="📗 Stories" aside={<small className="ac-muted">implement a Feature; link to existing artefacts (Tasks)</small>}>
-      <div className="ac-table-wrap">
+      <div className="ac-table-wrap" tabIndex={0}>
         <table className="ac-table">
-          <thead><tr><th>Name</th><th>Feature</th><th>Linked artefacts</th><th /></tr></thead>
+          <thead><tr><th>Name</th><th>Feature</th><th>Linked artefacts</th><th scope="col"><span className="ac-sr">Actions</span></th></tr></thead>
           <tbody>
             {stories.length ? stories.map((s) => {
               const linked = sdlc.filter((t) => t.storyId === s.id).length + reg.filter((t) => t.storyId === s.id).length, name = String(s.name ?? s.id);

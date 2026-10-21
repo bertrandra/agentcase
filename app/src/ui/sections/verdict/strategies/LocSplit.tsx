@@ -1,16 +1,16 @@
 import { LOCATIONS } from '@/domain';
 import type { LocSplitRow } from '@/domain/verdict';
 
-const MODE = { asis: ['AS-IS', '#8A94A6'], custom: ['Custom', '#0058AB'], inherit: ['Inherit current', '#BE4D00'] } as const;
+const MODE = { asis: ['AS-IS', '#566074'], custom: ['Custom', '#0058AB'], inherit: ['Inherit current', '#b04600'] } as const;
 const CLS = ['Local', 'Nearshore', 'Offshore'] as const;
-const CLR = { Local: '#00828E', Nearshore: '#1DB8F2', Offshore: '#BE4D00' };
+const CLR = { Local: '#006e79', Nearshore: '#0a6e9c', Offshore: '#b04600' };
 
 /** TO-BE location split per strategy and its aggregate by class (Local / Nearshore / Offshore). */
 export function LocSplit({ rows }: { rows: LocSplitRow[] }) {
   return (
     <>
       <h3>TO-BE location split per strategy</h3>
-      <div className="ac-table-wrap"><table className="ac-table">
+      <div className="ac-table-wrap" tabIndex={0}><table className="ac-table">
         <thead><tr><th>Strategy</th>{LOCATIONS.map((l) => <th key={l.name} style={{ textAlign: 'center' }}>{l.name}<br /><small>{l.cls}</small></th>)}<th style={{ textAlign: 'center' }}>Σ</th></tr></thead>
         <tbody>{rows.map((r) => (
           <tr key={r.id}><td>{r.icon} <strong>{r.label}</strong> <span className="ac-badge" style={{ background: MODE[r.mode][1], color: '#fff' }}>{MODE[r.mode][0]}</span></td>
@@ -18,7 +18,7 @@ export function LocSplit({ rows }: { rows: LocSplitRow[] }) {
             <td style={{ textAlign: 'center', fontWeight: 600, color: Math.abs(r.tot - 100) < 0.5 || r.tot === 0 ? 'var(--ac-muted)' : 'var(--ac-brick)' }}>{r.tot ? `${r.tot.toFixed(0)}%` : '—'}</td></tr>))}</tbody>
       </table></div>
       <h3>Aggregate by class</h3>
-      <div className="ac-table-wrap"><table className="ac-table">
+      <div className="ac-table-wrap" tabIndex={0}><table className="ac-table">
         <thead><tr><th>Strategy</th>{CLS.map((c) => <th key={c} style={{ textAlign: 'center' }}>{c}</th>)}<th>Visual</th></tr></thead>
         <tbody>{rows.map((r) => {
           const sum = CLS.reduce((a, c) => a + (r.byCls[c] as number), 0) || 1;

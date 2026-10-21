@@ -31,7 +31,7 @@ export function WizardActive({ seq, stops }: { seq: PersonaSeq; stops: Stop[] })
         {last ? <button type="button" className="ac-btn ac-btn-primary" onClick={wizExit}>✓ Finish</button> : <button type="button" className="ac-btn ac-btn-primary" onClick={() => go(at + 1)}>Next →</button>}
         <button type="button" className="ac-btn" title="Exit the sequence" aria-label="Exit the sequence" onClick={wizExit}>✕</button>
       </div>
-      <div className="ac-progress" role="progressbar" aria-valuemin={0} aria-valuemax={100} aria-valuenow={pct}><div style={{ width: `${pct}%` }} /></div>
+      <div className="ac-progress" role="progressbar" aria-label="Guided sequence progress" aria-valuemin={0} aria-valuemax={100} aria-valuenow={pct} aria-valuetext={`${pct}% visited`}><div style={{ width: `${pct}%` }} /></div>
       <div className="ac-muted" style={{ fontSize: 10 }}>{pct}% of the sequence visited</div>
     </div>
   );

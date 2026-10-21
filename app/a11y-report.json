@@ -1,0 +1,44 @@
+{
+ "audits": 246,
+ "fixtures": [
+  "golden",
+  "ctx-msi",
+  "industry-med"
+ ],
+ "summary": [
+  {
+   "rule": "empty-table-header",
+   "impact": "minor",
+   "nodes": 3,
+   "sections": 3,
+   "help": "Table header text should not be empty",
+   "example": ".ac-zone-input > .ac-panel > .ac-table-wrap > table > thead > tr > th:nth-child(2)"
+  }
+ ],
+ "violations": [
+  {
+   "fixture": "golden",
+   "section": "👥 TO-BE team by skill",
+   "rule": "empty-table-header",
+   "impact": "minor",
+   "nodes": 1,
+   "example": ".ac-zone-input > .ac-panel > .ac-table-wrap > table > thead > tr > th:nth-child(2)"
+  },
+  {
+   "fixture": "ctx-msi",
+   "section": "👥 TO-BE team by skill",
+   "rule": "empty-table-header",
+   "impact": "minor",
+   "nodes": 1,
+   "example": ".ac-zone-input > .ac-panel > .ac-table-wrap > table > thead > tr > th:nth-child(2)"
+  },
+  {
+   "fixture": "industry-med",
+   "section": "👥 TO-BE team by skill",
+   "rule": "empty-table-header",
+   "impact": "minor",
+   "nodes": 1,
+   "example": ".ac-zone-input > .ac-panel > .ac-table-wrap > table > thead > tr > th:nth-child(2)"
+  }
+ ]
+}

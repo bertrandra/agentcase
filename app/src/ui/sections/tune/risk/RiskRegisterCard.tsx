@@ -6,7 +6,7 @@ import { DataTable } from '@/ui/widgets/DataTable';
 import { CheckInput } from '@/ui/widgets/fields';
 
 const LEVELS = [{ v: 1, l: 'Low' }, { v: 2, l: 'Med' }, { v: 3, l: 'High' }];
-const scoreColor = (s: number) => (s >= 6 ? '#8F3237' : s >= 4 ? '#BE4D00' : '#00828E');
+const scoreColor = (s: number) => (s >= 6 ? '#8F3237' : s >= 4 ? '#b04600' : '#006e79');
 
 function Level({ id, which, value, label }: { id: string; which: 'p' | 'i'; value: number; label: string }) {
   return (

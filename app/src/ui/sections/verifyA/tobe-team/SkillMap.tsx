@@ -16,7 +16,7 @@ export function SkillMap({ live }: { live: Live }) {
         rows={allArtefactSkills(live).map((as) => {
           const cur = map[as] || as, edited = map[as] !== SKILL_MAP_DEFAULT[as], arts = act.filter((a) => a.skill === as);
           return { key: as, cells: [<code>{as}</code>, '→',
-            <select aria-label={`Team skill of ${as}`} value={cur} style={{ borderColor: edited ? 'var(--ac-amber, #BE4D00)' : undefined, fontWeight: edited ? 700 : undefined }} onChange={(e) => setSkillMap(as, e.target.value)}>
+            <select aria-label={`Team skill of ${as}`} value={cur} style={{ borderColor: edited ? 'var(--ac-amber, #b04600)' : undefined, fontWeight: edited ? 700 : undefined }} onChange={(e) => setSkillMap(as, e.target.value)}>
               {teams.map((t) => <option key={t} value={t}>{t}</option>)}</select>,
             arts.length ? <div style={{ maxHeight: 120, overflow: 'auto', fontSize: 11 }}>{arts.map((a) => <div key={a.id}><b>{phaseName(a.phase)}</b> <span>/</span> {a.name}</div>)}</div> : '—'] };
         })} />

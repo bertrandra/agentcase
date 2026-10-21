@@ -11,9 +11,9 @@ export function Matrix({ m }: { m: DepsModel }) {
   const rows = m.ordered.filter((s) => all || m.part.has(s.id));
   return (
     <div>
-      <h3>Dependency matrix <span className="ac-muted">— {all ? `all ${ALL_SECTIONS.length} sections; mostly empty by construction` : `${rows.length} participating sections`}</span></h3>
+      <h2>Dependency matrix <span className="ac-muted">— {all ? `all ${ALL_SECTIONS.length} sections; mostly empty by construction` : `${rows.length} participating sections`}</span></h2>
       <label className="ac-check"><input type="checkbox" checked={all} onChange={(e) => setAll(e.target.checked)} /> show all {ALL_SECTIONS.length} sections</label>
-      <div className="ac-table-wrap">
+      <div className="ac-table-wrap" tabIndex={0}>
         <table className="ac-matrix ac-table">
           <thead><tr><th>Row → Col</th>{rows.map((s) => <th key={s.id} title={s.label} style={{ writingMode: 'vertical-rl', transform: 'rotate(180deg)', maxHeight: 130, fontSize: 9 }}>{strip(s.label)}</th>)}</tr></thead>
           <tbody>
@@ -28,7 +28,7 @@ export function Matrix({ m }: { m: DepsModel }) {
                   {rows.map((tgt) => {
                     const lv = edges[tgt.id];
                     if (src.id === tgt.id) return <td key={tgt.id} style={{ background: '#eceff5' }} />;
-                    return <td key={tgt.id} title={lv ? `${src.label} → ${tgt.label} (${lv === 'S' ? 'strong' : 'soft'})` : undefined} style={{ color: lv === 'S' ? '#0058AB' : '#BE4D00' }}>{lv ? (lv === 'S' ? '●' : '○') : ''}</td>;
+                    return <td key={tgt.id} title={lv ? `${src.label} → ${tgt.label} (${lv === 'S' ? 'strong' : 'soft'})` : undefined} style={{ color: lv === 'S' ? '#0058AB' : '#b04600' }}>{lv ? (lv === 'S' ? '●' : '○') : ''}</td>;
                   })}
                 </tr>
               );

@@ -14,9 +14,9 @@ export function Decomp() {
   const ctx = useCtx(), b = useMemo(() => savingsBreakdown(ctx), [ctx]), cfg = useMemo(() => decompBars(b), [b]);
   const n = b.years.length, last = b.years[n - 1] as SavingsYear, cells = (f: (y: SavingsYear) => number) => b.years.map((y) => fmtSigned(f(y)));
   const rows = [
-    { key: 'g', label: <>{dot('#00828E')}Gross automation (heads removed × AS-IS rate)</>, cells: cells((y) => y.grossAuto) },
+    { key: 'g', label: <>{dot('#006e79')}Gross automation (heads removed × AS-IS rate)</>, cells: cells((y) => y.grossAuto) },
     { key: 'a', label: <>{dot('#8F3237')}− Agent operating cost (tokens + infra + run team)</>, cells: b.years.map((y) => `-${fmtSigned(y.agentCost).replace('-', '')}`) },
-    { key: 'r', label: <>{dot('#BE4D00')}Relocation (residual team × rate delta)</>, cells: cells((y) => y.relocation) },
+    { key: 'r', label: <>{dot('#b04600')}Relocation (residual team × rate delta)</>, cells: cells((y) => y.relocation) },
     { key: 'n', label: '= Net automation', cells: cells((y) => y.netAuto), bold: true, rule: true },
     { key: 't', label: '= Total savings', cells: cells((y) => y.total), bold: true, rule: true },
   ];

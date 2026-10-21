@@ -1,10 +1,10 @@
 .ac-rich { font-size: 13px; line-height: 1.55; }
-.ac-rich h3 { font-size: 1rem; color: var(--ac-blue); margin: 1rem 0 .3rem; } .ac-rich h4 { font-size: .92rem; margin: .8rem 0 .3rem; }
+.ac-rich h2 { font-size: 1rem; color: var(--ac-blue); margin: 1rem 0 .3rem; } .ac-rich h3 { font-size: .92rem; margin: .8rem 0 .3rem; }
 .ac-rich p { margin: .4rem 0; } .ac-rich ul, .ac-rich ol { margin: .3rem 0 .3rem 1.1rem; padding: 0; }
 .ac-rich code { background: #eef1f6; padding: 0 4px; border-radius: 3px; font-size: 12px; }
 .ac-rich table { border-collapse: collapse; font-size: 12.5px; width: 100%; } .ac-rich th, .ac-rich td { padding: 5px 9px; border-bottom: 1px solid var(--ac-line); text-align: left; vertical-align: top; }
 .ac-rich-card { background: var(--ac-surface); border: 1px solid var(--ac-line); border-radius: 8px; padding: 10px 14px; margin: 10px 0; }
-.ac-rich-card > h3 { margin-top: 0; }
+.ac-rich-card > h2 { margin-top: 0; }
 .ac-rich-insight-box { background: #eef5fb; border-left: 4px solid var(--ac-blue); border-radius: var(--ac-radius); padding: 10px 14px; margin: 10px 0; }
 .ac-rich-note-green { background: #eaf6ef; border-left: 4px solid var(--ac-teal); border-radius: var(--ac-radius); padding: 8px 12px; margin: 10px 0; }
 .ac-rich-worked, .ac-rich-formula { background: #f4f6fa; border: 1px solid var(--ac-line); border-radius: var(--ac-radius); padding: 8px 12px; margin: 8px 0; font-family: ui-monospace, Menlo, monospace; font-size: 12px; }

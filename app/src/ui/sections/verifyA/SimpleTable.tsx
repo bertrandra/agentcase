@@ -14,7 +14,7 @@ export function SimpleTable({ head, rows, foot, align = [], empty, caption }: { 
     );
   };
   return (
-    <div className="ac-table-wrap">
+    <div className="ac-table-wrap" tabIndex={0}>
       <table className="ac-table">
         {caption && <caption>{caption}</caption>}
         <thead><tr>{head.map((h, i) => <th key={h + i} scope="col" style={{ textAlign: align[i] ?? 'left' }}>{h}</th>)}</tr></thead>

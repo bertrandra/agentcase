@@ -13,13 +13,13 @@ export function UseCell({ r }: { r: DdRow }) {
     <>
       {u.calc && chip('#0058AB', '⚙ CALC')}
       {u.calc && u.factory && <div style={{ height: 2 }} />}
-      {u.factory && chip('#BE4D00', '🏭 FACTORY')}
-      {!u.calc && !u.factory && <span style={{ fontSize: 9, color: '#8A94A6', border: '1px solid #d5dae6', borderRadius: 3, padding: '1px 6px' }}>display</span>}
+      {u.factory && chip('#b04600', '🏭 FACTORY')}
+      {!u.calc && !u.factory && <span style={{ fontSize: 9, color: '#566074', border: '1px solid #d5dae6', borderRadius: 3, padding: '1px 6px' }}>display</span>}
     </>
   );
 }
 
-const CLS: Record<DdClass, [string, string]> = { PC1: ['#5B6B8C', 'PC1 client-provided'], PC2: ['#0058AB', 'PC2 client-observable'], PC3: ['#8A94A6', 'PC3 catalogue'], PC4: ['#BE4D00', 'PC4 unvalidated'], PC5: ['#8F3237', 'PC5 embedded'] };
+const CLS: Record<DdClass, [string, string]> = { PC1: ['#5B6B8C', 'PC1 client-provided'], PC2: ['#0058AB', 'PC2 client-observable'], PC3: ['#566074', 'PC3 catalogue'], PC4: ['#b04600', 'PC4 unvalidated'], PC5: ['#8F3237', 'PC5 embedded'] };
 export const ClassChip = ({ cls }: { cls: DdClass }) => chip(CLS[cls][0], CLS[cls][1]);
 
 const label = (id: string) => sectionById(id)?.label ?? id;
@@ -29,8 +29,8 @@ const Link = ({ id }: { id: string }) => (
 /** "Editable in": here, derived, a link to the section that owns the control, or nowhere. */
 export function EditCell({ e }: { e: DdEdit }) {
   if (e === 'here') return <span style={{ color: '#00666F', fontWeight: 600 }}>✎ here</span>;
-  if (e === 'derived') return <span style={{ color: '#8A94A6' }}>∑ derived</span>;
-  if (typeof e === 'object') return <><Link id={e.sec} />{e.also && <div style={{ marginTop: 2 }}><Link id={e.also} /></div>}{e.note && <div style={{ fontSize: 10, color: '#888', marginTop: 2 }}>{e.note}</div>}</>;
+  if (e === 'derived') return <span style={{ color: '#566074' }}>∑ derived</span>;
+  if (typeof e === 'object') return <><Link id={e.sec} />{e.also && <div style={{ marginTop: 2 }}><Link id={e.also} /></div>}{e.note && <div style={{ fontSize: 10, color: '#636363', marginTop: 2 }}>{e.note}</div>}</>;
   return <span style={{ color: '#8F3237', fontWeight: 600 }}>NOWHERE</span>;
 }
 
@@ -45,17 +45,17 @@ function Num({ r, which }: { r: DdRow; which: 'a' | 't' }) {
   return (
     <input type="number" step="any" aria-label={`${r.l}${which === 't' ? ' target' : ''}`} title={dflt !== undefined ? `default ${dflt}` : ''} value={val as number}
       onChange={(e) => write(ed.field, which, e.target.value)}
-      style={{ width: 62, textAlign: 'center', fontSize: 11.5, border: `1px solid ${edited ? '#BE4D00' : '#d5dae6'}`, borderRadius: 5, fontWeight: edited ? 700 : undefined, color: edited ? '#8F3900' : undefined }} />
+      style={{ width: 62, textAlign: 'center', fontSize: 11.5, border: `1px solid ${edited ? '#b04600' : '#d5dae6'}`, borderRadius: 5, fontWeight: edited ? 700 : undefined, color: edited ? '#8F3900' : undefined }} />
   );
 }
 /** "Value": the live value, or the editor(s) (as-is → target for the anchors). */
 export function ValueCell({ r }: { r: DdRow }) {
   if (!r.ed) return <>{r.v === null ? '—' : r.v}</>;
   if (r.ed.t === null) return <Num r={r} which="a" />;
-  return <><Num r={r} which="a" /> <span style={{ color: '#8A94A6' }}>→</span> <Num r={r} which="t" /><div style={{ fontSize: 9, color: '#888', textTransform: 'uppercase', marginTop: 2 }}>as-is → target</div></>;
+  return <><Num r={r} which="a" /> <span style={{ color: '#566074' }}>→</span> <Num r={r} which="t" /><div style={{ fontSize: 9, color: '#636363', textTransform: 'uppercase', marginTop: 2 }}>as-is → target</div></>;
 }
 
-const STATE: Record<DdStatus, [string, string]> = { open: ['#8A94A6', 'OPEN'], requested: ['#BE4D00', 'REQUESTED'], confirmed: ['#00828E', 'CONFIRMED'], disputed: ['#8F3237', 'DISPUTED'], waived: ['#5B6B8C', 'WAIVED'] };
+const STATE: Record<DdStatus, [string, string]> = { open: ['#566074', 'OPEN'], requested: ['#b04600', 'REQUESTED'], confirmed: ['#006e79', 'CONFIRMED'], disputed: ['#8F3237', 'DISPUTED'], waived: ['#5B6B8C', 'WAIVED'] };
 /** "State": chip + selector. A row validated in the assumptions register reads confirmed. */
 export function StateCell({ r, st }: { r: DdRow; st: DdStatus }) {
   const shown = r.ok ? 'confirmed' : st;
@@ -69,8 +69,8 @@ export function StateCell({ r, st }: { r: DdRow; st: DdStatus }) {
 
 /** "€ weight": measured euro impact of a +20 % change, "€0 here", n/m (not reachable) or a dash before any measurement. */
 export function WeightCell({ fresh, w }: { fresh: boolean; w: number | null }) {
-  if (!fresh) return <span style={{ color: '#bbb' }}>—</span>;
+  if (!fresh) return <span style={{ color: '#636363' }}>—</span>;
   if (w == null) return <span style={{ color: '#8F3237' }} title="Not reachable without refactoring the calculation path">n/m</span>;
-  if (w < 1) return <span style={{ color: '#8A94A6' }} title="Zero measured impact in this configuration: the element drives the display only, or the module that consumes it is switched off for this case.">€0 here</span>;
+  if (w < 1) return <span style={{ color: '#566074' }} title="Zero measured impact in this configuration: the element drives the display only, or the module that consumes it is switched off for this case.">€0 here</span>;
   return <strong>{fmtK(w)}</strong>;
 }

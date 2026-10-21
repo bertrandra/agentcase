@@ -18,7 +18,7 @@ export function PillarPanel() {
         </Field>
         <CheckInput id="pillarApply" label="Apply pillar leverage to the Abaque reconciliation" />
       </div>
-      <div className="ac-table-wrap">
+      <div className="ac-table-wrap" tabIndex={0}>
         <table className="ac-table">
           <thead><tr><th>Profile \ Phase</th>{PROFILE_PHASES.map((ph) => <th key={ph} className="ac-c" title={ph}>{ph === 'Cross-cutting' ? 'X' : ph}</th>)}</tr></thead>
           <tbody>

@@ -34,7 +34,7 @@
 .ac-table caption { text-align: left; font-weight: 600; padding: 4px 0; } .ac-chart { position: relative; width: 100%; }
 .ac-stat-row { display: flex; gap: 10px; flex-wrap: wrap; margin: 8px 0; }
 .ac-stat { min-width: 130px; padding: 8px 12px; background: var(--ac-surface); border: 1px solid var(--ac-line); border-left: 4px solid var(--ac-blue); border-radius: var(--ac-radius); display: flex; flex-direction: column; }
-.ac-stat[data-tone='teal'] { border-left-color: var(--ac-teal); } .ac-stat[data-tone='brick'] { border-left-color: var(--ac-brick); } .ac-stat[data-tone='amber'] { border-left-color: var(--ac-amber); } .ac-stat[data-tone='grey'] { border-left-color: #aaa; }
+.ac-stat[data-tone='teal'] { border-left-color: var(--ac-teal); } .ac-stat[data-tone='brick'] { border-left-color: var(--ac-brick); } .ac-stat[data-tone='amber'] { border-left-color: var(--ac-amber); } .ac-stat[data-tone='grey'] { border-left-color: #636363; }
 .ac-stat-v { font-size: 1.3rem; font-weight: 700; } .ac-stat-l { font-size: 11px; color: var(--ac-muted); }
 .ac-callout { padding: 8px 12px; border-radius: var(--ac-radius); margin: 8px 0; font-size: 12.5px; background: #eef5fb; border: 1px solid #c9dcee; }
 .ac-callout-warn { background: #fff7e0; border-color: #e6c36a; } .ac-callout-error { background: #fdecea; border-color: #e5a5a0; }

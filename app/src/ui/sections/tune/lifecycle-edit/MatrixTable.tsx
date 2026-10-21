@@ -20,7 +20,7 @@ function Cell({ label, value, def, step, width, onValid }: { label: string; valu
 export function MatrixTable() {
   const c = useCtx(), phases = phasesForScope(), table = statusTable(c.s), blend = c.s.lifecycleUse ? lifecycleBlend(c.s) : null;
   return (
-    <div className="ac-table-wrap">
+    <div className="ac-table-wrap" tabIndex={0}>
       <table className="ac-table" style={{ minWidth: 760 }}>
         <thead><tr>
           <th scope="col">Status</th>

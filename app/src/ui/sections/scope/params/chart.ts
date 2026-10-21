@@ -1,7 +1,7 @@
 /** Geometry and right-edge tags of the "Automation over time" chart (legacy renderAutomationCurve). */
 export const W = 920, H = 340;
 export const M = { l: 52, r: 120, t: 22, b: 34 };
-export const COL = { real: '#00828E', gap: '#1DB8F2', ceil: '#BE4D00', manual: '#8A94A6', pot: '#0058AB', human: '#71609E', manln: '#5a6785', vfte: '#2E9E5B' };
+export const COL = { real: '#006e79', gap: '#0a6e9c', ceil: '#b04600', manual: '#566074', pot: '#0058AB', human: '#71609E', manln: '#5a6785', vfte: '#2E9E5B' };
 const iw = W - M.l - M.r, ih = H - M.t - M.b;
 
 export const geoOf = (N: number) => ({

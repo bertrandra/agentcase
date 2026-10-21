@@ -17,7 +17,7 @@ export function GroupTable({ groups, colors }: { groups: MenuGroup[]; colors: Re
   };
   return (
     <>
-      <div className="ac-table-wrap"><table className="ac-table">
+      <div className="ac-table-wrap" tabIndex={0}><table className="ac-table">
         <thead><tr><th>Order</th><th>ID</th><th>Label</th><th>Colour</th><th>Sections</th><th>Description</th><th>Actions</th></tr></thead>
         <tbody>
           {groupsByOrder(groups).map((g) => {
@@ -28,7 +28,7 @@ export function GroupTable({ groups, colors }: { groups: MenuGroup[]; colors: Re
                 <td><code>{g.id}</code></td>
                 <td>{renaming === g.id ? <input type="text" aria-label="New group label" value={text} onChange={(e) => setText(e.target.value)} onKeyDown={(e) => { if (e.key === 'Enter') commit(g.id); if (e.key === 'Escape') setRenaming(null); }} /> : g.label}</td>
                 <td style={{ textAlign: 'center' }}><input type="color" aria-label={`Colour of ${g.id}`} value={hex(colors[g.id])} onChange={(e) => setGroupColor(g.id, e.target.value)} /></td>
-                <td style={{ textAlign: 'center', fontWeight: 700, color: n ? '#0058AB' : '#bbb' }}>{n}</td>
+                <td style={{ textAlign: 'center', fontWeight: 700, color: n ? '#0058AB' : '#636363' }}>{n}</td>
                 <td><input type="text" aria-label={`Description of ${g.id}`} placeholder="Shown on the 🏠 Welcome card" style={{ width: '100%', minWidth: 220 }} value={g.description ?? ''} onChange={(e) => setGroupDescription(g.id, e.target.value)} /></td>
                 <td>{renaming === g.id ? <><button type="button" className="ac-btn" onClick={() => commit(g.id)}>✓ Save</button><button type="button" className="ac-btn" onClick={() => setRenaming(null)}>Cancel</button></>
                   : pending === g.id ? <><span style={{ color: '#8F3237', fontSize: 11 }}>Delete “{g.label}”?</span><button type="button" className="ac-btn" onClick={() => { deleteGroup(g.id); setPending(null); }}>✓ Confirm</button><button type="button" className="ac-btn" onClick={() => setPending(null)}>Cancel</button></>

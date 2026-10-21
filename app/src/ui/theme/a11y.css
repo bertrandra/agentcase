@@ -1,0 +1,17 @@
+/* Accessibility layer: visually-hidden text, visible focus, reduced motion, forced colours. Colour contrast lives in tokens.css (every text colour >= 4.5:1). */
+.ac-sr { position: absolute; width: 1px; height: 1px; margin: -1px; padding: 0; overflow: hidden; clip: rect(0 0 0 0); clip-path: inset(50%); white-space: nowrap; border: 0; }
+:focus-visible { outline: 2px solid var(--ac-focus); outline-offset: 2px; }
+.ac-nav button:focus-visible, .ac-wchip:focus-visible { outline-offset: -2px; }
+.ac-skip:focus { outline: 2px solid var(--ac-focus); }
+.ac-table-wrap:focus-visible { outline-offset: -2px; }
+/* section headings keep one visual scale whatever level the outline needs (h1 > h2 > h3 without gaps) */
+:where(.ac-work) h2 { font-size: 1.05rem; color: var(--ac-blue); margin: .8rem 0 .3rem; }
+:where(.ac-work) h3 { font-size: .98rem; margin: .7rem 0 .3rem; }
+.ac-live { max-width: 90vw; }
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after { animation-duration: .001ms !important; animation-iteration-count: 1 !important; transition-duration: .001ms !important; scroll-behavior: auto !important; }
+}
+@media (forced-colors: active) {
+  .ac-nav button.is-active, .ac-gnav .is-active, .ac-tabs button[aria-selected='true'] { outline: 2px solid Highlight; }
+  .ac-progress div { background: Highlight; }
+}
