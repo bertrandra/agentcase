@@ -16,9 +16,10 @@ export interface GroupBar { groups: MenuGroup[]; selected: string; sections: Nav
 /**
  * The in-content navigation of the hide-menu mode (legacy renderGroupNavBar) for the open section: the groups the persona can reach (a group
  * holding only Welcome is not offered), the group shown in the selector (the section's own, else the first offered) and that group's sections.
+ * `sections` may be a filtered list (Fast Path); the open section is still looked up in `all`.
  */
-export function groupBar(persona: string, active: string, sections: NavSection[], groups: MenuGroup[], lists: PersonaLists, order: PersonaOrder): GroupBar | null {
-  const sec = sections.find((s) => s.id === active);
+export function groupBar(persona: string, active: string, sections: NavSection[], groups: MenuGroup[], lists: PersonaLists, order: PersonaOrder, all: NavSection[] = sections): GroupBar | null {
+  const sec = all.find((s) => s.id === active);
   if (!sec) return null;
   const offered = groupsByOrder(groups).filter((g) => firstOfGroup(persona, g.id, sections, lists));
   const selected = offered.some((g) => g.id === sec.group) ? sec.group : offered[0]?.id ?? '';

@@ -9,7 +9,7 @@ import { newDashboard } from '@/domain/pdc/board';
 import { appStore } from '@/store/instance';
 import { App } from '@/ui/App';
 import { NavZone } from '@/ui/shell/NavZone';
-import { uiStore } from '@/ui/uiState';
+import { openGroup, uiStore } from '@/ui/uiState';
 import { SECTIONS } from '@/ui/zones/registry';
 import { legacyNav, NAV_FIXTURES } from '../helpers/nav';
 import { loadCase } from '../helpers/pdc';
@@ -18,7 +18,7 @@ beforeEach(() => { uiStore.setState({ activeSection: 'home', toast: '', dockOpen
 afterEach(cleanup);
 const doc = () => appStore().getState().doc;
 const ids = (nav: HTMLElement) => [...nav.querySelectorAll<HTMLElement>('[data-section]')].map((b) => b.dataset.section);
-const heads = (nav: HTMLElement) => [...nav.querySelectorAll('h2')].map((h) => h.textContent);
+const heads = (nav: HTMLElement) => [...nav.querySelectorAll('h2')].map((h) => h.querySelector('span')?.textContent);
 const navEl = () => screen.getByRole('navigation', { name: 'Sections' });
 const menu = () => { const b = screen.queryByRole('button', { name: '☰ Menu' }); if (b) fireEvent.click(b); };
 
@@ -39,6 +39,7 @@ describe('the sidebar follows the document', () => {
     expect(heads(navEl())).not.toContain('Compliance');   // an empty group is absent (legacy)
     act(() => placeSections('Move risk', [{ id: 'risk', group: 'compliance', groupSeq: 10 }]));
     expect(heads(navEl()).at(-1)).toBe('Compliance');
+    act(() => openGroup('compliance'));
     expect(within(navEl().querySelector('[data-group="compliance"]')!).getByRole('button', { name: /Risk/ })).toBeTruthy();
     act(() => placeSections('Move risk back', [{ id: 'risk', group: 'tune', groupSeq: 99 }]));
     act(() => deleteGroup('compliance'));
@@ -52,7 +53,7 @@ describe('the sidebar follows the document', () => {
     render(<NavZone />);
     act(() => { renameGroup('frame', 'A · Framing'); setGroupColor('frame', '#112233'); setGroupDescription('frame', 'First things first'); });
     const h = navEl().querySelector<HTMLElement>('#g-frame')!;
-    expect(h.textContent).toBe('A · Framing');
+    expect(h.textContent).toBe('A · Framing▼');
     expect(h.title).toBe('First things first');
     expect(h.style.boxShadow).toContain('#112233');
     act(() => setGroupOrders('Move frame last', { frame: 999 }));
@@ -86,6 +87,7 @@ describe('dynamic sections', () => {
     render(<App />);
     menu();
     const d = generate();
+    act(() => openGroup('tune'));
     const btn = within(navEl().querySelector('[data-group="tune"]')!).getByRole('button', { name: d.title });
     fireEvent.click(btn);
     expect((await screen.findByRole('heading', { level: 1, name: d.title }))).toBeTruthy();

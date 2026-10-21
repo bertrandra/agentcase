@@ -106,7 +106,7 @@ describe('personas section', () => {
 });
 
 describe('the navigation honours the document’s PERSONA_SECTIONS', () => {
-  const labels = () => within(screen.getByRole('navigation', { name: 'Sections' })).queryAllByRole('button').map((b) => b.textContent);
+  const labels = () => [...screen.getByRole('navigation', { name: 'Sections' }).querySelectorAll('[data-section]')].map((b) => b.textContent);
   it('adding or removing a section of the active persona changes the menu, live', () => {
     loadCase('golden');
     act(() => setPersona('admin'));
