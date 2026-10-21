@@ -290,6 +290,13 @@ const tests = {
     const msc = sav('MSC'), msi = sav('MSI'), sta = sav('STA'); sav('MSC');
     return { ok: TIME_ACTIVE_CURVE === 'spline.default' && msi < msc - 1 && sta < msi - 1, detail: 'MSC ' + msc.toFixed(0) + ' > MSI ' + msi.toFixed(0) + ' > STA ' + sta.toFixed(0) };
   },
+  // v18.10: Scope "impact by phase" — the per-phase points add up to the scope's glass ceiling
+  async ceiling_impact_sums_to_ceiling() {
+    goTab('scope-sel'); renderCeilingImpact();
+    const pts = [...document.querySelectorAll('#ceilImpact span[style*="text-align:right"]')].map(e => parseFloat(e.textContent.replace('+', '')));
+    const sum = pts.reduce((a, b) => a + b, 0), ceil = phaseScope().avgHuman;
+    return { ok: pts.length > 0 && Math.abs(sum - ceil) <= 0.1 * pts.length, detail: pts.length + ' phases, sum ' + sum.toFixed(1) + ' vs ceiling ' + ceil };
+  },
   // v18.10: after an Excel import the automation potential must equal the fit of the FINAL scope (it was left at the fit of a provisional one)
   async import_refits_potential() {
     let captured = null; const cu = URL.createObjectURL; URL.createObjectURL = b => { if (!captured) captured = b; return cu.call(URL, b); };

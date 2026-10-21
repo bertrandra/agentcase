@@ -1519,6 +1519,9 @@ effort-weighted agentSup over the selection → <strong>potential 75%</strong> (
 <div style="font-size:11px;color:#888;margin-bottom:6px;max-width:420px">The <strong>% auto</strong> (automatable %, human supervision = 100 − this) and <strong>Effort weight</strong> columns are editable and saved in Export / restored on Import. Blue = % auto overridden, amber = effort overridden.</div></div>
 <div style="overflow-x:auto"><table id="artTable"><thead><tr><th>ID</th><th>Artifact</th><th>Deliverable</th><th>Phase</th><th>Value</th><th>Skill</th><th>AI authorization</th><th>Human sup.</th><th>% auto (agent)</th><th>Effort weight</th><th class="text-center" title="Base effort weight × the current product-status lifecycle weight for this phase">Effective (lifecycle)</th></tr></thead><tbody></tbody></table></div>
 </details>
+<details id="ceilImpactBox" open style="margin-top:1.2rem"><summary style="cursor:pointer;font-size:1.05rem;font-weight:700;color:#0058AB;margin:.4rem 0">🧊 Glass ceiling &amp; automation potential — impact by phase <span style="font-weight:400;font-size:12px;color:#888">— where human supervision holds automation back (click to collapse)</span></summary>
+<div id="ceilImpact" style="margin-top:.6rem"></div>
+</details>
 </div>
 
 <div id="token-econ" class="tab-content">
@@ -14672,6 +14675,44 @@ function renderArtefacts(){
       {label:'Automatable %',data:phaseKeys.map(p=>Math.round(byPhase[p].ag/byPhase[p].n)),backgroundColor:'#00828E'}
     ]},options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{position:'top'}},scales:{x:{stacked:true},y:{stacked:true,max:100,title:{display:true,text:'%'},grid:{color:'rgba(0,0,0,.05)'}}}}});
   renderArtTable();
+  renderCeilingImpact();
+}
+/* v18.10: Scope — glass-ceiling impact by phase. Each phase's contribution (pts) = Σ(w·humanSup) over its in-scope artefacts ÷ Σw of the whole scope,
+   so the contributions add up to the scope's glass ceiling. Colour = relative impact (top third red, middle amber, rest teal). */
+function renderCeilingImpact(){
+  const box=document.getElementById('ceilImpact'); if(!box) return;
+  const act=activeArtefacts(), totW=act.reduce((s,a)=>s+(+a.w||0),0);
+  if(!(totW>0)){ box.innerHTML='<div style="color:#888;font-size:12px">No artefact in scope.</div>'; return; }
+  const rows=phasesForScope().map(p=>{
+    const arts=act.filter(a=>a.phase===p.id); if(!arts.length) return null;
+    const W=arts.reduce((s,a)=>s+(+a.w||0),0), H=arts.reduce((s,a)=>s+(+a.w||0)*a.humanSup,0);
+    const top=arts.map(a=>({a:a,pts:(+a.w||0)*a.humanSup/totW})).sort((x,y)=>y.pts-x.pts).slice(0,3);
+    return {p:p, pts:H/totW, own:W?H/W:0, share:W/totW*100, n:arts.length, top:top};
+  }).filter(Boolean).sort((x,y)=>y.pts-x.pts);
+  const ceil=rows.reduce((s,r)=>s+r.pts,0), max=rows.length?rows[0].pts:1;
+  let pot=100-ceil, depth=null;
+  try{ const m=model(); if(m&&isFinite(m.auto)) pot=m.auto; if(m&&isFinite(m.eff)) depth=m.eff; }catch(e){}
+  const col=i=>i<Math.ceil(rows.length/3)?'#8F3237':(i<Math.ceil(rows.length*2/3)?'#BE4D00':'#00828E');
+  const f1=x=>(Math.round(x*10)/10).toFixed(1);
+  const kpi=(v,l,c,tip)=>'<div title="'+escHtml(tip)+'" style="flex:1;min-width:130px;background:#fff;border:1px solid #e3e3e3;border-left:4px solid '+c+';border-radius:6px;padding:8px 12px"><div style="font-size:22px;font-weight:700;color:'+c+'">'+v+'</div><div style="font-size:11px;color:#666">'+l+'</div></div>';
+  let h='<div style="display:flex;gap:10px;flex-wrap:wrap;margin-bottom:10px">'
+    +kpi(Math.round(pot)+'%','Automation potential','#00828E','Share of the scope effort the agents could carry')
+    +kpi(Math.round(ceil)+'%','Glass ceiling','#8F3237','Share that stays human: effort-weighted human supervision of the selected artefacts')
+    +(depth!=null?kpi(Math.round(depth)+'%','Max depth reached','#0058AB','Permitted automation depth after ceiling, lifecycle posture and other caps'):'')
+    +'</div>'
+    +'<div style="display:flex;height:14px;border-radius:7px;overflow:hidden;margin-bottom:12px" role="img" aria-label="Potential '+Math.round(pot)+'%, ceiling '+Math.round(ceil)+'%"><div style="width:'+Math.max(0,Math.min(100,100-ceil))+'%;background:#00828E"></div><div style="flex:1;background:repeating-linear-gradient(45deg,#8F3237,#8F3237 5px,#a8545a 5px,#a8545a 10px)"></div></div>'
+    +'<div style="font-size:12px;color:#555;margin-bottom:6px">Each bar = the points of glass ceiling a phase contributes (the bars add up to <strong>'+f1(ceil)+' pts</strong>). The redder the bar, the more that phase holds automation back. Click a row for its biggest blockers.</div>';
+  h+=rows.map((r,i)=>{
+    const c=col(i), w=Math.max(2,r.pts/max*100);
+    const tops=r.top.map(x=>'<li><span style="color:#222">'+escHtml(x.a.name)+'</span> <span style="color:#888">· '+escHtml(x.a.id)+' · '+x.a.humanSup+'% human · +'+f1(x.pts)+' pts</span></li>').join('');
+    return '<details style="border-bottom:1px solid #eee"><summary style="cursor:pointer;display:flex;align-items:center;gap:10px;padding:6px 2px;list-style:none">'
+      +'<span style="flex:0 0 230px;font-size:12.5px;font-weight:600;color:#333;white-space:nowrap;overflow:hidden;text-overflow:ellipsis" title="'+escHtml(r.p.name||r.p.id)+'">'+escHtml(r.p.name||r.p.id)+'</span>'
+      +'<span style="flex:1;background:#f1f1f1;border-radius:4px;height:16px"><span style="display:block;height:16px;border-radius:4px;width:'+w.toFixed(1)+'%;background:'+c+'"></span></span>'
+      +'<span style="flex:0 0 70px;text-align:right;font-weight:700;color:'+c+'">+'+f1(r.pts)+' pts</span>'
+      +'<span style="flex:0 0 150px;font-size:11px;color:#888">'+Math.round(r.own)+'% human · '+Math.round(r.share)+'% of effort</span></summary>'
+      +'<div style="padding:2px 0 8px 240px;font-size:11.5px"><div style="color:#666;margin-bottom:2px">Biggest blockers in this phase ('+r.n+' artefact'+(r.n>1?'s':'')+' in scope):</div><ul style="margin:0;padding-left:16px">'+tops+'</ul></div></details>';
+  }).join('');
+  box.innerHTML=h;
 }
 function renderArtTable(){
   const f=document.getElementById('artPhaseFilter').value;

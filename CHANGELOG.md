@@ -23,6 +23,10 @@ They now scale the spline exactly as they scale the ramp anchors of the other cu
 - **Golden case unchanged** (HRI off, context MSC: speed 1, cap 100): Y3 savings €731,774 · NPV €1,131,220 · payback 9.
 - Non-default cases change, which is the point: HRI on at index 50 → Y3 savings €635,906 (×0.80 ramp); context MSI €566,186
   and STA €504,494 instead of €731,774 for all three.
+- **Scope — new section "🧊 Glass ceiling & automation potential — impact by phase"** (end of the page, same collapsible
+  pattern as the per-artefact adjust panel). Three figures (potential, ceiling, max depth), a potential/ceiling bar, then
+  one bar per phase sorted by its contribution in points of glass ceiling (the bars add up to the ceiling), coloured by
+  impact (red = top third, amber, teal). Click a phase for its three biggest blockers. Test `ceiling_impact_sums_to_ceiling`.
 - **Excel import now re-fits the automation potential to the final scope.** The Phase Scope sheet fitted it to a provisional
   selection (all artefacts of the included phases, still with default effort / automation values) and the SDLC Artifacts sheet
   then replaced the selection and the values without a re-fit: a workbook saying potential 72 % / ceiling 28 % came back as

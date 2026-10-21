@@ -50,7 +50,7 @@ node tools/test-all.mjs --baseline <previous AgentCase_vX_Y_EN.html>   # everyth
 | `tools/smoke.mjs` | boots cleanly; the golden-case figures equal `tools/golden.json` |
 | `tools/handlers-test.mjs` | every inline-handler target exists |
 | `tools/xss-test.mjs` | hostile strings never execute (restore, live state, Excel fuzz) |
-| `tools/state-test.mjs` | 38 regression tests: persistence, autosave, calculations, import safety, accessibility |
+| `tools/state-test.mjs` | 39 regression tests: persistence, autosave, calculations, import safety, accessibility |
 | `tools/render-diff.mjs` | the visible text of all sections is identical between two builds |
 
 Golden case (default state): Y3 savings €731,774 · Y3 run cost €1,045,490 · NPV (8 %) €1,131,220 ·
