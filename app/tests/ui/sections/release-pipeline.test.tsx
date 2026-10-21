@@ -14,7 +14,7 @@ const add = (label: string) => fireEvent.click(screen.getByText(label));
 const del = (row: HTMLElement) => { fireEvent.click(within(row).getByText('🗑')); fireEvent.click(within(row).getByText('✓ Confirm')); };
 
 describe('release-pipeline section (Release → Candidate → Approval → Deployment → Environment → Monitoring → Feedback → Backlog)', () => {
-  it.each(PARITY_FIXTURES)('shows every figure the legacy section showed · %s', (fx) => {
+  it.each([...PARITY_FIXTURES, ...['fm-demo', 'fm-generated', 'fm-generated-tuned']])('shows every figure the legacy section showed · %s', (fx) => {
     loadFixture(fx);
     const { container } = render(<Section />);
     const legacy = legacySectionText(fx, 'release-pipeline');

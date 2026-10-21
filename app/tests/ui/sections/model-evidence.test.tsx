@@ -15,7 +15,7 @@ const undo = (n = 1) => act(() => { for (let i = 0; i < n; i++) appStore().undo(
 const tier = (label: string) => screen.getByLabelText(`Evidence tier of ${label}`);
 
 describe('model-evidence section (P6 evidence ledger)', () => {
-  it.each(PARITY_FIXTURES)('shows every figure the legacy section showed · %s', (fx) => {
+  it.each([...PARITY_FIXTURES, ...['me-mcs']])('shows every figure the legacy section showed · %s', (fx) => {
     loadFixture(fx);
     const { container } = render(<Section />);
     const legacy = legacySectionText(fx, 'model-evidence');

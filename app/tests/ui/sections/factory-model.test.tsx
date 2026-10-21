@@ -14,7 +14,7 @@ const undo = (n = 1) => act(() => { for (let i = 0; i < n; i++) appStore().undo(
 const confirm = (name: string) => { fireEvent.click(screen.getByText(name)); fireEvent.click(screen.getByText('✓ Confirm')); };
 
 describe('factory-model section (Business + Delivery domains and the weekly generator)', () => {
-  it.each(PARITY_FIXTURES)('shows every figure the legacy section showed · %s', (fx) => {
+  it.each([...PARITY_FIXTURES, ...['fm-demo', 'fm-generated', 'fm-generated-tuned']])('shows every figure the legacy section showed · %s', (fx) => {
     loadFixture(fx);
     const { container } = render(<Section />);
     const legacy = legacySectionText(fx, 'factory-model');

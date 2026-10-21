@@ -14,7 +14,7 @@ const flow = () => flowModel(makeCtx(doc()));
 const undo = (n = 1) => act(() => { for (let i = 0; i < n; i++) appStore().undo(); });
 
 describe('model-flow section (P5 flow and value)', () => {
-  it.each(PARITY_FIXTURES)('shows every figure the legacy section showed · %s', (fx) => {
+  it.each([...PARITY_FIXTURES, ...['me-flow', 'me-flow-capped', 'me-flow-measured']])('shows every figure the legacy section showed · %s', (fx) => {
     loadFixture(fx);
     const { container } = render(<Section />);
     const legacy = legacySectionText(fx, 'model-flow');

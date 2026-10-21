@@ -14,7 +14,7 @@ const doc = () => appStore().getState().doc;
 const calc = () => computeCase(doc());
 
 describe('model-convergence section (P1 loop convergence economics)', () => {
-  it.each(PARITY_FIXTURES)('shows every figure the legacy section showed · %s', (fx) => {
+  it.each([...PARITY_FIXTURES, ...['me-lce', 'me-sup-hard', 'me-mcs']])('shows every figure the legacy section showed · %s', (fx) => {
     loadFixture(fx);
     const { container } = render(<Section />);
     const legacy = legacySectionText(fx, 'model-convergence');

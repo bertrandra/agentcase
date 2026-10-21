@@ -1,0 +1,24 @@
+🧑‍✈️ Supervision — provisioned or constrained
+P3 · v16.7
+SUPPORTS
+?
+Prices supervision as a decision, not a wall. Provisioned (default) solves for the supervisor headcount your target agent capacity needs, prices it, and never caps throughput — this is the app's pre-existing run-team sizing policy, now named and surfaced. Constrained fixes headcount and caps achievable capacity at what that team can absorb — the "what today's team can absorb without hiring" sensitivity. Plus a DORA read-out pulled forward from P5. (AME-SPEC v0.2, P3)
+Enable P3
+MODE
+Provisioned
+Constrained
+DAY-RATE OVERRIDE (€, 0=USE BLENDED)
+Phase OFF — behaves exactly like the pre-existing run-team sizing policy (Provisioned, unlabelled).
+Agent capacity vs supervision, by year
+Year	Tagent (raw vFTE)	S·Esup (cap)	Teff (achieved)	Utilisation	Esup*	Csup
+Y1	2.29	—	2.29	—	0.94	€83K
+Y2	6.91	—	6.91	—	1.64	€137K
+Y3	10.22	—	10.22	—	2.13	€206K
+Utilisation > 85% (red) is a warning band, not an error — it means demand is close to (or over) what the fixed headcount can absorb.
+DORA read-out pulled forward from P5 — pure read-outs of P1/P3 state; valuation stays at P5
+Metric	Derived	Measured	Δ	Unit
+Deployment frequency	61714.49			agent runs / yr (Y3)
+Change failure rate	—			% escape (P1)
+Lead time for change	—			hours / accepted artefact (P1 proxy — true CT is P5-owned, not yet modelled)
+Time to restore	—			not modelled — direct input only (spec-carried for completeness)
+Enter a measured value to compare against the derived read-out — a close match is free evidence the model's assumptions hold in this environment; a gap is a calibration signal, not a failure.

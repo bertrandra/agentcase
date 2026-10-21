@@ -1,0 +1,17 @@
+🔁 Loop convergence economics
+P1 · v16.5
+SUPPORTS
+?
+Turns each agentic loop pair's fixed iteration count into E[N] — the expected attempts per accepted artifact — derived from a first-pass acceptance rate p (truncated-geometric, capped at nmax). Enabling the phase calibrates p so E[N] reproduces today's counts exactly; then edit p, a number your engineers can measure on a pilot. This surface is display-only — it never changes the euro business case. (AME-SPEC v0.2, P1)
+Enable P1
+↻ Recalibrate p
+ITERATION CAP NMAX
+FALLBACK COST / ESCAPE (€)
+Weighted E[N] 2.00 · escape 8.7% · review share 0% · calibrated ✓
+Phase OFF — the model uses the legacy fixed iteration counts. The table previews what enabling P1 would compute (p calibrated to today's counts).
+Per loop pair
+Loop pair	Legacy iter	p (accept)	E[N]	Escape	trev (h)	keff	Review share
+Code ↔ Unit tests	3	0.259	3.00	22.4%	0	3.00	0%
+Code ↔ Code review	2	0.481	2.00	3.8%	0	2.00	0%
+Validation ↔ Implementation	1	1.000	1.00	0.0%	0	1.00	0%
+E[N] = (1 − (1−p)nmax)/p · escape = (1−p)nmax · keff = cost-per-accepted ÷ token cost per attempt. Escape > 5% (red) means the fallback path is material and should be costed (CC-LC-03).

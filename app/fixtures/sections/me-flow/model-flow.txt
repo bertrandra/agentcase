@@ -1,0 +1,31 @@
+⏱️ Flow & value
+P5 · v16.9 · strategic bet
+SUPPORTS
+?
+Stops pricing agentic delivery purely as unit-cost reduction. Agents change cycle time via Little's Law - and the value of arriving earlier is usually larger than the value of costing less. Cycle-time compression is throttled by P3's own supervision cap ("a faster generator does not shorten cycle time if the queue is at the reviewer"), and an explicit cost-out/throughput-in split keeps the same freed capacity from ever being counted twice. (AME-SPEC v0.2, P5)
+Cycle time & WIP - Little's Law always visible, needs no sponsor input
+AS-IS LEAD TIME
+21.0d
+NEW LEAD TIME DERIVED
+1.0d
+COMPRESSION Θ
+95%
+WIP (LITTLE'S LAW)
+3.0
+measured: 4.0
+MEASURED LEAD TIME OVERRIDE (DAYS, 0=USE DERIVED)
+MEASURED WIP (ITEMS, OPTIONAL)
+Derived lead time comes from the app's existing DORA lead-time anchor (AS-IS 21d → target), interpolated by automation depth and throttled by P3's achieved-vs-raw agent capacity ratio - never by a number invented for this tab.
+Time-to-market value sponsor-owned
+Phase ON. Value of arriving 0.67 months earlier, 60% of which is credited here (the rest is assumed already captured as ordinary cost-out in the Financial tab - CC-FL-01's double-counting guard).
+MARGIN PER MONTH (€)
+DISCOUNT RATE (/YR)
+THROUGHPUT-IN SHARE (%)
+Reset / hide this valuation
+ΔT RAW / CREDITED
+0.67 / 0.40 mo
+FLOW NPV
+€1,521K
+COMBINED Y5 VALUE
+€2,580K
+= Financial savings + Flow NPV

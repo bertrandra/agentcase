@@ -14,7 +14,7 @@ const sav = () => computeCase(doc()).model.yearSav[2] as number;
 const undo = (n = 1) => act(() => { for (let i = 0; i < n; i++) appStore().undo(); });
 
 describe('model-verification section (P2 verification tax by criticality class)', () => {
-  it.each(PARITY_FIXTURES)('shows every figure the legacy section showed · %s', (fx) => {
+  it.each([...PARITY_FIXTURES, ...['me-lce', 'me-evt-direct']])('shows every figure the legacy section showed · %s', (fx) => {
     loadFixture(fx);
     const { container } = render(<Section />);
     const legacy = legacySectionText(fx, 'model-verification');
@@ -46,17 +46,26 @@ describe('model-verification section (P2 verification tax by criticality class)'
     undo(2);
     expect(sav()).toBeCloseTo(base, 6);
   });
-  it('net mode credits the supervision already retained; a negative net tax needs the explicit acknowledgement', () => {
+  it('net mode credits the supervision already retained', () => {
     loadFixture('evt-reg');
     render(<Section />);
     const base = sav();
     fireEvent.change(screen.getByLabelText('Tax mode'), { target: { value: 'net' } });
     expect(doc().MODEL.EVT.mode).toBe('net');
     expect(sav()).toBeGreaterThan(base);
-    fireEvent.change(screen.getByLabelText('Reliability source'), { target: { value: 'direct' } });
-    fireEvent.change(screen.getByLabelText('r (direct)'), { target: { value: '1' } });
-    const ack = screen.queryByLabelText(/I acknowledge this explicit claim/) as HTMLInputElement | null;
-    if (ack) { const before = sav(); fireEvent.click(ack); expect(doc().MODEL.EVT.ackNegativeNet).toBe(true); expect(sav()).toBeGreaterThanOrEqual(before); }
+    undo();
+    expect(sav()).toBeCloseTo(base, 6);
+  });
+  it('a negative net tax is a savings credit that needs the explicit acknowledgement (CC-VT-02)', () => {
+    loadFixture('evt-net');   // net mode with the negative tax acknowledged
+    render(<Section />);
+    const credited = sav(), box = screen.getByLabelText(/I acknowledge this explicit claim/) as HTMLInputElement;
+    expect(box.checked).toBe(true);
+    fireEvent.click(box);
+    expect(doc().MODEL.EVT.ackNegativeNet).toBe(false);
+    expect(sav()).toBeLessThan(credited);   // unacknowledged, the negative tax is clamped to 0: no credit
+    undo();
+    expect(sav()).toBeCloseTo(credited, 6);
   });
   it('the floor, intensity and stiffness of a class are editable when the phase is on and raise the ceiling gap', () => {
     loadFixture('evt-reg');

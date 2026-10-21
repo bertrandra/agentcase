@@ -14,7 +14,7 @@ const undo = (n = 1) => act(() => { for (let i = 0; i < n; i++) appStore().undo(
 const add = (label: string) => fireEvent.click(screen.getByText(label));
 
 describe('engineering section (Commit → Build → Build Artifact → Quality Gate → Integrated Product)', () => {
-  it.each(PARITY_FIXTURES)('shows every figure the legacy section showed · %s', (fx) => {
+  it.each([...PARITY_FIXTURES, ...['fm-demo']])('shows every figure the legacy section showed · %s', (fx) => {
     loadFixture(fx);
     const { container } = render(<Section />);
     const legacy = legacySectionText(fx, 'engineering');

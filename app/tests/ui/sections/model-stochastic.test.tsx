@@ -15,7 +15,7 @@ const model = () => computeCase(doc()).model;
 const undo = (n = 1) => act(() => { for (let i = 0; i < n; i++) appStore().undo(); });
 
 describe('model-stochastic section (P4 stochastic layer and baseline drift)', () => {
-  it.each(PARITY_FIXTURES)('shows every figure the legacy section showed · %s', (fx) => {
+  it.each([...PARITY_FIXTURES, ...['me-mcs', 'me-lce']])('shows every figure the legacy section showed · %s', (fx) => {
     loadFixture(fx);
     const { container } = render(<Section />);
     const legacy = legacySectionText(fx, 'model-stochastic');

@@ -1,0 +1,129 @@
+🧬 Generate factory data
+From the current case · weekly · 2026-09-01 → 2029-08-28 (157 weeks)
+3 phase(s) · 10 artefact(s) in scope
+→ 1 portfolios · 3 epics · 3 features · 5 stories · 10 tasks · ~19 releases
+Estimated records: 29,696 / 1,500 cap — will be down-sampled (commits first, time span never truncated)
+DENSITY 
+SEED 
+RELEASE EVERY  WK
+Reset parameters
+🧬 Generate data
+Generated 2026-10-21 · seed 20260701 · weekly · 157 weeks from 2026-09-01 · 3 phases · ramp 25/55/100% · eff. automation 75% · ceiling 25% · 1,500 records in 14ms
+Adoption follows a monthly progressive curve from 0 through the annual breakpoints (25/55/100% at months 12/24/36), not the annual step. Its yearly averages are 13/40/79% — lower than the model’s annual figures by construction, because the model states the year’s representative level while the curve states the path. No euro figure is affected.
+Simulated from this case’s assumptions — not measured data.
+🏭 Factory Model
+DRAFT
+SUPPORTS
+?
+Business + Delivery domain of the Software/Agentic Factory meta-model: Vision → Portfolio → Epic → Feature → Story, linked down into the existing SDLC/regulatory artefacts (Tasks). A graph, not a tree — see AgentCase_Spec_FactoryMetaModel.md. Nothing here feeds the financial model.
+🧪 Sample data
+A realistic, cross-linked sample dataset across the whole Factory Model / Release Pipeline / Engineering domain — useful for exploring the 📅 Factory Timeline. Both actions are runtime-only: they never affect the golden default state.
+📦 Load demo dataset
+🗑 Delete all Factory Model data
+🎯 Vision
+📁 Portfolio
+Name	
+	🗑
++ Add portfolio item
+🧩 Epics realize the Vision, via a Portfolio
+Name	Portfolio	
+	
+(none)
+Core delivery
+	🗑
+	
+(none)
+Core delivery
+	🗑
+	
+(none)
+Core delivery
+	🗑
++ Add epic
+⭐ Features implement an Epic; link to the SDLC phases this work runs through
+Name	Epic	SDLC phases	
+	
+(none)
+Definition & design
+Build
+Verification & integration
+	
+L0
+V1
+V2
+V3
+V4
+V5
+V6
+V7
+L8
+L9
+L10	🗑
+	
+(none)
+Definition & design
+Build
+Verification & integration
+	
+L0
+V1
+V2
+V3
+V4
+V5
+V6
+V7
+L8
+L9
+L10	🗑
+	
+(none)
+Definition & design
+Build
+Verification & integration
+	
+L0
+V1
+V2
+V3
+V4
+V5
+V6
+V7
+L8
+L9
+L10	🗑
++ Add feature
+📗 Stories implement a Feature; link to existing artefacts (Tasks)
+Name	Feature	Linked artefacts	
+	
+(none)
+Specification
+Implementation
+Verification
+	▶ 3 linked	🗑
+	
+(none)
+Specification
+Implementation
+Verification
+	▶ 1 linked	🗑
+	
+(none)
+Specification
+Implementation
+Verification
+	▶ 1 linked	🗑
+	
+(none)
+Specification
+Implementation
+Verification
+	▶ 1 linked	🗑
+	
+(none)
+Specification
+Implementation
+Verification
+	▶ 4 linked	🗑
++ Add story

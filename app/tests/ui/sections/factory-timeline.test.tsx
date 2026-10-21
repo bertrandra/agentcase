@@ -14,7 +14,7 @@ const card = (id: string, root: HTMLElement) => root.querySelector(`[data-kpi="$
 const shown = (id: string, root: HTMLElement) => card(id, root).querySelector('.ac-stat-v')!.textContent;
 
 describe('factory-timeline section (KPIs, business chain, dated events)', () => {
-  it.each(PARITY_FIXTURES)('shows every figure the legacy section showed · %s', (fx) => {
+  it.each([...PARITY_FIXTURES, ...['fm-demo', 'fm-generated', 'fm-generated-tuned']])('shows every figure the legacy section showed · %s', (fx) => {
     loadFixture(fx);
     const { container } = render(<Section />);
     const legacy = legacySectionText(fx, 'factory-timeline');
