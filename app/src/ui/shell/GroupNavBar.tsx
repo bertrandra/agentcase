@@ -9,9 +9,9 @@ import { switchPersona } from './personaSwitch';
  */
 export function GroupNavBar() {
   const m = useNavModel(), active = useUi((s) => s.activeSection), hidden = useUi((s) => s.menuHidden), walking = useUi((s) => s.wiz.active);
-  const bar = groupBar(m.persona, active, m.sections, m.groups, m.lists, m.order);
+  const bar = groupBar(m.persona, active, m.visible, m.groups, m.lists, m.order, m.sections);
   if (!hidden || walking || !bar) return null;
-  const pickGroup = (id: string) => { const target = firstOfGroup(m.persona, id, m.sections, m.lists); if (target) goSection(target); };
+  const pickGroup = (id: string) => { const target = firstOfGroup(m.persona, id, m.visible, m.lists); if (target) goSection(target); };
   return (
     <div className="ac-gnav" role="navigation" aria-label="Group navigation">
       <button type="button" className="ac-btn" onClick={toggleMenuHidden} title="Show the full sidebar menu">☰ Menu</button>

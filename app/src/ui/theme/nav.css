@@ -24,3 +24,9 @@
 .ac-ncard { background: #fff; border: 1px solid #d5dae6; border-left: 3px solid var(--ac-line); border-radius: 6px; padding: 6px 8px; margin: 5px 0; font-size: 12px; cursor: grab; }
 .ac-ncard.is-off { background: #f2f4f8; opacity: .6; } .ac-ncard.is-mvp { background: #fff7ed; }
 .ac-ncard-ops { display: flex; gap: 3px; margin-top: 4px; } .ac-ncard-ops button { padding: 0 6px; font-size: 11px; }
+
+.ac-nav-group { margin: 10px 0 4px; }
+.ac-nav .ac-nav-toggle { display: flex; justify-content: space-between; align-items: center; width: 100%; font: inherit; font-size: 11px; letter-spacing: .04em; color: var(--ac-muted); padding: 4px 6px; }
+.ac-chev { font-size: 10px; transition: transform .2s; } .ac-nav-toggle[aria-expanded='false'] .ac-chev { transform: rotate(-90deg); }
+.ac-nav ul[hidden] { display: none; }
+.ac-fastpath { display: inline-flex; align-items: center; gap: 4px; font-size: 12px; cursor: pointer; }
