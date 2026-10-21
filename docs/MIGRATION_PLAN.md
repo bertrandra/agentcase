@@ -353,7 +353,7 @@ legacy engine on 107 oracle cases, and builds to one offline file. Everything be
 | Golden-vs-AME comparison and AME reference capture (GCT-SPEC) | not ported | §14 Phase 6 |
 | Per-snapshot Excel export | not ported | §14 Phase 6 |
 | Agent Catalog capacity and loop external % in the workbook import | not imported (immutable catalogues), reported as notes | §14 Phase 6 |
-| Legacy calculation package (`inputHash`, staleness banner) | not recomputed: figures are always derived from the inputs | `grep` of `app/src` |
+| Legacy calculation package (`inputHash`, staleness banner) | ported: saved cases carry the package, a mismatch on open shows the banner; figures are still always derived from the inputs | `tests/store/calc-staleness.test.ts`, `tests/ui/calc-banner.test.tsx` |
 | `TE-10b` (legacy-mode monthly derivation canary) | fires on 2 supervision fixtures in the legacy; reproduced only in the verification section | §14 pre-7 chantiers |
 | Legacy `tools/xss-test.mjs` fuzz | not ported; the new build relies on lint rules and the import/restore tests | `app/tests` |
 | A hosted server | out of scope (non-goal, D8) | §1 |

@@ -139,7 +139,7 @@ state** (the same registry keys), so old files load.
 | Snapshot manager | `controllers/snapshots.ts`, `domain/snapshots/` | named snapshots in the document (capture, activate as one undo step, rename, delete, baseline, protected golden entries, compare) |
 
 There is no schema-migration table: legacy files are accepted as they are (missing keys take defaults), and the only version tag is
-`_schema`. The legacy calculation package (`inputHash`, staleness banner) is not recomputed: figures are always recomputed from the inputs.
+`_schema`. Every saved case (JSON, HTML snapshot, autosave record) carries the canonical calculation package `{schemaVersion, calculationVersion, inputHash, curveModelId, headline, annual}` (`domain/calcPackage.ts`, stamped by `toSnapshot`, dropped by `fromSnapshot`: it is never part of the document). On open, `controllers/calcStaleness.ts#checkLoadedCase` recomputes the package and compares it (`domain/calcStaleness.ts`: valid / stale / versionMismatch / notCalculated; figures to 1e-6). A mismatch shows the legacy banner (`ui/shell/CalcStaleBanner.tsx`, `role=status`, Dismiss). The banner state lives in the controller, outside the document and the undo history; files without a package (older fixtures) open silently. Figures are always recomputed from the inputs, the package is only compared. The Excel workbooks already read the same engine, so they equal the package figures without change.
 
 ## 6. UI: the zone shell and navigation from the document
 
@@ -241,7 +241,7 @@ elements as the input store, `innerHTML` templates), exposed to QA as `window.Ag
 | `PM` | serialize/hydrate, one no-op migration | `toSnapshot` / `fromSnapshot` | legacy files accepted by default-filling; no migration table |
 | `DEP` | dirty-node dependency graph, `refreshAll()` | memoised selectors (`useCaseResult`, `useCtx`) | React re-renders from selectors; no runtime graph |
 | `AUDIT` | ring buffer of changes + 42 invariant checks | store audit ring (500) + pure checks in `domain/pdc/verif*.ts` (16 checks, 67 convergence rows) | the log records commands; check results are shown in Logic verification |
-| `TIME` | Time Engine L0–L3, canonical payback/NPV, calculation package | `domain/time/`, `domain/canonical.ts` | no calculation package or staleness banner |
+| `TIME` | Time Engine L0–L3, canonical payback/NPV, calculation package | `domain/time/`, `domain/canonical.ts` | package + staleness banner ported (§5) |
 | `AUTOSAVE` (IndexedDB) | per-tab sessions | `persistence/autosave.ts`, `idb.ts` | stores the undo history too |
 | `saveHtmlSnapshot` | clones the rendered DOM, bakes `applySnapshotState(...)` | `html/embed.ts` | embeds JSON; `#root` emptied, no DOM state serialised |
 | `exportParams/importParams` | Excel | `excel/params/` | typed, size-limited, one undoable batch |

@@ -5,6 +5,7 @@ import { SectionHost } from '../zones/SectionHost';
 import { sectionById } from '../zones/registry';
 import { useNavModel } from '../zones/navModel';
 import { setMenuHidden, useUi } from '../uiState';
+import { CalcStaleBanner } from './CalcStaleBanner';
 import { DockZone } from './DockZone';
 import { GroupNavBar } from './GroupNavBar';
 import { KpiZone } from './KpiZone';
@@ -34,6 +35,7 @@ export function Shell() {
       <DockZone />
       <div className="ac-live" role="status" aria-live="polite">{toastText}</div>
       <p className="ac-sr" aria-live="polite" aria-atomic="true" data-testid="section-announcer">{sectionById(active)?.label ?? ''}</p>
+      <CalcStaleBanner />
       <RestoreBanner />
     </div>
   );
