@@ -30,7 +30,7 @@ export function GeneratePanel() {
       <div className="ac-form-row">
         <NumField label="Density" value={p.density} min={0.25} max={2} step={0.25} width={64} onCommit={(v) => setGeneratorParam('density', v)} />
         <NumField label="Seed" value={p.seed} step={1} width={96} onCommit={(v) => setGeneratorParam('seed', v)} />
-        <NumField label="Release every  wk" value={p.releaseEveryWeeks} min={1} step={1} width={56} onCommit={(v) => setGeneratorParam('releaseEveryWeeks', v)} />
+        <NumField label="Release every (weeks)" value={p.releaseEveryWeeks} min={1} step={1} width={56} onCommit={(v) => setGeneratorParam('releaseEveryWeeks', v)} />
         <button type="button" onClick={resetGeneratorParams}>Reset parameters</button>
       </div>
       {pending
