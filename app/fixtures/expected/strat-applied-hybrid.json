@@ -1,0 +1,215 @@
+{
+ "model": {
+  "base": {
+   "etp": 15,
+   "cost": 1768800
+  },
+  "auto": 40,
+  "ceiling": 15,
+  "eff": 40,
+  "ramps": [
+   40,
+   70,
+   95
+  ],
+  "horizon": 3,
+  "blendedTJM": 536,
+  "tgtTJM": 426.6,
+  "setupTotal": 225000,
+  "yearETP": [
+   12.6,
+   10.799999999999999,
+   9.3
+  ],
+  "yearAgentVfte": [
+   2.4,
+   4.2,
+   5.7
+  ],
+  "yearETPRaw": [
+   12.6,
+   10.8,
+   9.3
+  ],
+  "yearAgentVfteRaw": [
+   2.4,
+   4.2,
+   5.7
+  ],
+  "yearAgentCapacity": [
+   3.36,
+   5.88,
+   7.9799999999999995
+  ],
+  "PROD_FACTOR": 1.4,
+  "yearTeamCost": [
+   1283442.39375,
+   1087534.490625,
+   936181.8468750002
+  ],
+  "yearToken": [
+   5246.3125,
+   13512.46875,
+   19898.65625
+  ],
+  "yearTokenM": [
+   364.32725694444446,
+   938.3658854166666,
+   1381.8511284722222
+  ],
+  "agentRunsYear": [
+   7286.54513888889,
+   18767.317708333332,
+   27637.02256944444
+  ],
+  "infraYear": 6000,
+  "yearRun": [
+   1457820.823328125,
+   1303973.1897421875,
+   1185115.0645390626
+  ],
+  "yearSav": [
+   315778.42667187494,
+   473465.4602578124,
+   592323.5854609373
+  ],
+  "baselineRun": 1768800,
+  "baseArtMonth": 90,
+  "yearArtMonth": [
+   37.89473684210526,
+   66.3157894736842,
+   90
+  ],
+  "runAgenticETP": 1.455,
+  "runAgenticCost": 146108.56141406248,
+  "yearRunAgenticETP": [
+   0.96,
+   1.23,
+   1.455
+  ],
+  "yearRunAgenticCost": [
+   86206.11707812498,
+   120000.2303671875,
+   146108.56141406248
+  ],
+  "yearInfraEff": [
+   6000,
+   6000,
+   6000
+  ],
+  "wd": 220,
+  "tokenCost": 14.4,
+  "tokensPerArt": 50000,
+  "scope": {
+   "weight": 0.27540834845735024,
+   "count": 10,
+   "totalArt": 53,
+   "avgHuman": 25,
+   "avgAgent": 75,
+   "nPhases": 3,
+   "nPhasesTotal": 11,
+   "selW": 60.699999999999996,
+   "totW": 220.4
+  },
+  "sup": {
+   "constrained": false
+  },
+  "cbd": {
+   "on": false,
+   "delta": 0,
+   "yearBaselineDrift": [
+    1768800,
+    1768800,
+    1768800
+   ],
+   "yearSavAttributable": [
+    315778.42667187494,
+    473465.4602578124,
+    592323.5854609373
+   ],
+   "wedge": [
+    0,
+    0,
+    0
+   ]
+  },
+  "conv": {
+   "ctxKey": "MSC",
+   "ctx": {
+    "label": "Managed Service — Capgemini infrastructure",
+    "maturityCap": 4,
+    "rampSpeed": 1,
+    "glassFactor": 1,
+    "setupBillable": 1,
+    "infraOwner": "CG",
+    "riskPremium": 0,
+    "authorityCap": 4,
+    "rampCapPct": 100,
+    "mcWiden": 1,
+    "khMaxCC": 4
+   },
+   "khOn": true,
+   "khM": 1,
+   "khSetup": 90000,
+   "khRunYr": [
+    76926,
+    76926,
+    76926
+   ],
+   "ktAvoidYr": [
+    4799.25,
+    8638.65,
+    8638.65
+   ],
+   "ccYears": [
+    2,
+    3,
+    3
+   ],
+   "vTaxRate": 0,
+   "vTaxYr": [
+    0,
+    0,
+    0
+   ],
+   "loopExtRate": 0,
+   "loopExtYr": [
+    0,
+    0,
+    0
+   ],
+   "hriOn": false,
+   "hriF": 1,
+   "hri": 50,
+   "changeCost": 0,
+   "setupBase": 135000,
+   "setupBillable": 225000,
+   "setupAbsorbed": 0,
+   "effCap": 85
+  },
+  "_curveOverlay": "spline.default"
+ },
+ "payback": 10,
+ "npv": 982797.8494181487,
+ "headline": {
+  "payback": 10,
+  "npv": 982797.8494181487,
+  "roi": 5.1402998772916675,
+  "totalSavings": 1156567.4723906252
+ },
+ "phaseScope": {
+  "weight": 0.27540834845735024,
+  "count": 10,
+  "totalArt": 53,
+  "avgHuman": 25,
+  "avgAgent": 75,
+  "nPhases": 3,
+  "nPhasesTotal": 11,
+  "selW": 60.699999999999996,
+  "totW": 220.4
+ },
+ "glassCeiling": 25,
+ "audit": [],
+ "id": "strat-applied-hybrid",
+ "desc": "strategies: Skill center applied, then Hybrid applied (base is kept, factors do not compound)"
+}
