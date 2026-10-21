@@ -51,7 +51,7 @@ describe('verif section', () => {
     expect(container.textContent).toContain('Clean baseline.');
     act(() => setChecked('vtaxApply', true));
     expect(container.textContent).toContain('You are NOT on the clean baseline.');
-    expect(tables(container).ov.find((r) => r[0].startsWith('Verification tax'))![1]).toBe('ACTIVE');
+    expect(tables(container).ov.find((r) => r[0]!.startsWith('Verification tax'))![1]).toBe('ACTIVE');
     expect(tables(container).guards.find((r) => r[0] === 'Verification tax vs retained supervision')![2]).toBe('REVIEW');
   });
   it('a gap in a check is flagged (lifecycle position 100: effective automation above the potential)', () => {
