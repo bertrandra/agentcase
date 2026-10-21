@@ -14,9 +14,10 @@ export function cumAt(m: Pick<ScenarioResult, 'setup' | 'yearSav'>, mo: number):
 /** Chart axis: every 6 months over the horizon, starting at 0. */
 export const monthAxis = (horizon: number): number[] => Array.from({ length: Math.floor((horizon * 12) / 6) + 1 }, (_, i) => i * 6);
 
-export const fmtE = (v: number): string => `€${Math.round(v).toLocaleString('en-US')}`;
+/** €1,234,567; "n/a" for a figure the model cannot compute (the legacy printed €NaN, e.g. a 2-year horizon on the 3-year scenario arrays). */
+export const fmtE = (v: number): string => (isNaN(v) ? 'n/a' : `€${Math.round(v).toLocaleString('en-US')}`);
 /** Savings / cash-flow with the legacy negative-in-parentheses convention. */
-export const fmtSigned = (v: number): string => (v >= 0 ? fmtE(v) : `(${fmtE(-v)})`);
+export const fmtSigned = (v: number): string => (v >= 0 || isNaN(v) ? fmtE(v) : `(${fmtE(-v)})`);
 export const fmtPayback = (mo: number | null, hMonths: number): string => (mo == null || !isFinite(mo) ? `>${hMonths} mo` : mo <= 0 ? 'immediate' : `${mo} mo`);
 export const roiText = (m: Pick<ScenarioResult, 'setup' | 'roi' | 'totBen'>): string =>
-  m.setup > 0 ? `${Math.round(m.roi * 100)}%` : m.totBen > 0 ? '∞ (no setup)' : 'n/a';
+  m.setup > 0 ? (isNaN(m.roi) ? 'n/a' : `${Math.round(m.roi * 100)}%`) : m.totBen > 0 ? '∞ (no setup)' : 'n/a';
