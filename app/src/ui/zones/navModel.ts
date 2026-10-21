@@ -11,7 +11,7 @@ const FALLBACK: Persona[] = [{ id: 'builder', label: 'Builder', protected: false
   { id: 'admin', label: 'Admin', protected: false, order: 3 }, { id: 'advanced', label: 'Advanced', protected: true, order: 0 }];
 const NO_COLORS: Record<string, string> = {}, NO_ORDER: PersonaOrder = {};
 /** A group colour reaches inline styles: only #rgb … #rrggbbaa is accepted (legacy groupColor). */
-export const groupColor = (colors: Record<string, string>, id: string): string => (/^#[0-9a-fA-F]{3,8}$/.test(colors[id] ?? '') ? colors[id]! : '#667089');
+export { groupColor } from '@/domain/nav/layout';
 
 /** Everything the navigation shows, read from the document: the static registry stays only as the default. */
 export interface NavModel {

@@ -2,7 +2,7 @@ import { readdirSync, readFileSync } from 'node:fs';
 import { describe, expect, it } from 'vitest';
 import { makeCtx } from '@/domain';
 import type { CaseState } from '@/domain';
-import { asisTobeView, complianceView, execView, kpiView, productivityView, qualityView, velocityView } from '@/domain/verifyB';
+import { asisTobeView, complianceView, execView, kpiView, productivityView, qualityAnchorView, velocityView } from '@/domain/verifyB';
 import { diffs } from '../helpers/economics';
 
 const ids = readdirSync('fixtures/extras/vb_dom').map((f) => f.replace('.json', '')).sort();
@@ -45,7 +45,7 @@ describe('verify (second half) views reproduce the legacy renders', () => {
       expect(L.charts.vc!.sets[0]!.data).toEqual(v.velocity);
     });
     it('quality table and radar', () => {
-      const v = qualityView(c);
+      const v = qualityAnchorView(c);
       expect(v.rows.map((r) => r.name)).toEqual(body(L.qual).map((r) => r[0]));
       expect(v.rows.map((r) => [r.y1, r.y2, r.y3])).toEqual(body(L.qual).map((r) => [r[2], r[3], r[4]!.replace(' target', '')]));
       expect(v.rows.flatMap((r) => [String(r.asis), String(r.target)])).toEqual(L.qualInputs);

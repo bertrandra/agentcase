@@ -20,3 +20,8 @@ export function makeInputs(s: CaseState): Inputs {
     c: (id) => (id in checked ? !!checked[id] : false),
   };
 }
+
+/** A technical-cap number bounded to 10..100 (a non-number reads 100). */
+export const clampAutoCap = (n: number): number => (isNaN(n) ? 100 : Math.max(10, Math.min(100, n)));
+/** Technical cap on the automation potential from the raw autoCapPct input text (10..100, 100 when blank or invalid). */
+export const autoCapFrom = (raw: string | undefined): number => clampAutoCap(parseFloat(raw ?? ''));

@@ -1,5 +1,5 @@
 import type { ChartConfiguration } from 'chart.js';
-import type { complianceView, execView, kpiView, productivityView, qualityView, velocityView } from '@/domain/verifyB';
+import type { complianceView, execView, kpiView, productivityView, qualityAnchorView, velocityView } from '@/domain/verifyB';
 
 const GRID = { color: 'rgba(0,0,0,.05)' };
 const LEGEND = { legend: { position: 'top' as const } };
@@ -35,7 +35,7 @@ export function velocityChart(v: V<typeof velocityView>): ChartConfiguration {
 }
 
 /** Quality radar AS-IS vs TO-BE. */
-export function qualityRadar(v: V<typeof qualityView>): ChartConfiguration {
+export function qualityRadar(v: V<typeof qualityAnchorView>): ChartConfiguration {
   return { type: 'radar', data: { labels: ['Low bugs', 'Test cov.', 'Review speed', 'Low leakage', 'Doc up-to-date', 'Security', 'Satisfaction'], datasets: [
     { label: 'AS-IS', data: v.radarAsis, borderColor: '#b04600', backgroundColor: 'rgba(186,117,23,.15)', borderWidth: 2 },
     { label: `TO-BE ${v.endL}`, data: v.radarTobe, borderColor: '#006e79', backgroundColor: 'rgba(99,153,34,.15)', borderWidth: 2 }] },

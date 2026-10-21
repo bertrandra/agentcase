@@ -1,4 +1,5 @@
 import { makeCtx } from '@/domain';
+import { clampAutoCap } from '@/domain/inputs';
 import { computeGlassCeiling } from '@/domain/model/ceiling';
 import { addPoint, curveIdOf, ensurePts, movePoint, removePoint, sampleRamps } from '@/domain/scope/scurve';
 import { current } from 'immer';
@@ -12,7 +13,7 @@ import type { CurvePoint } from '@/domain/types/state';
 const setAutoCapCmd = defineCommand<{ pct: number }>({
   type: 'params.setAutoCap', label: (p) => `Set the technical automation cap to ${p.pct} %`, coalesceKey: () => 'params.setAutoCap',
   run(d, p) {
-    const n = Math.max(10, Math.min(100, Math.round(isNaN(p.pct) ? 100 : p.pct)));
+    const n = clampAutoCap(Math.round(p.pct));
     d.dom.values.autoCapPct = String(n);
     if (parseFloat(d.dom.values.autoPotential ?? '') > n) d.dom.values.autoPotential = String(n);   // the slider is bounded by the cap
     refitPotential(d);

@@ -5,7 +5,7 @@ import { useCtx } from '@/store/hooks';
 
 const memo = new WeakMap<Ctx, Live>();
 
-/** The live case for the verify views: context, model() and the Time Engine, computed once per document. */
+/** The live case for the verify views: context, model() and the Time Engine (both cached per context in the domain). */
 export function useLive(): Live {
   const c = useCtx();
   let l = memo.get(c);

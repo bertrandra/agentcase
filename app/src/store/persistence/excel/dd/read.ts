@@ -1,19 +1,11 @@
 import type { Workbook } from 'exceljs';
 import type { DdStatus } from '@/domain/pdc/dd';
+import { cleanText, safeId } from '../params/safe';
 
 const VALID: ReadonlySet<string> = new Set(['open', 'requested', 'confirmed', 'disputed', 'waived']);   // a Set: the legacy object lookup also accepted 'constructor' and 'toString'
 export const MAX_PACK_BYTES = 25 * 1024 * 1024;
 /** A pack has ~100 rows; anything beyond this is not read (a hostile sheet may declare millions). */
 export const MAX_PACK_ROWS = 20000;
-
-/** An imported identifier: only [A-Za-z0-9_.:-], at most 80 characters, the prototype-pollution names neutralised (legacy safeId). */
-export function safeId(s: unknown): string {
-  const r = String(s ?? '').replace(/[^A-Za-z0-9_.:-]/g, '').slice(0, 80);
-  return r === '__proto__' || r === 'constructor' || r === 'prototype' ? `x-${r}` : r;
-}
-/** Imported free text: control characters removed, whitespace collapsed, trimmed, length-capped (legacy cleanText). */
-// eslint-disable-next-line no-control-regex
-export const cleanText = (s: unknown, max = 200): string => String(s ?? '').replace(/[\u0000-\u001f\u007f]/g, ' ').replace(/\s+/g, ' ').trim().slice(0, max);
 
 /** A cell as text: dates as YYYY-MM-DD, rich text and hyperlinks flattened, formulas by their result, errors and anything else as ''. */
 export function cellStr(x: unknown, depth = 0): string {

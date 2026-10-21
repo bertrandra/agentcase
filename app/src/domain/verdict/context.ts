@@ -2,6 +2,7 @@ import type { Ctx } from '../ctx';
 import { engagementCoef, engagementKey, hriEnabled, hriIndex } from '../engagement';
 import { khEnabled, khTargetCC } from '../knowledge';
 import { lifecycleBlend } from '../lifecycle';
+import { readinessIndex as readinessIndexOf, type ReadinessAns } from '../tune/readiness';
 import type { CaseState } from '../types/state';
 import { wave2DecisionNotes } from './risk';
 
@@ -15,15 +16,9 @@ export function lifecycleStatusLabel(s: CaseState): string {
   return `${Math.round((1 - b.frac) * 100)}% ${name(b.lo).split(' / ')[0]} · ${Math.round(b.frac * 100)}% ${name(b.hi).split(' / ')[0]}`;
 }
 
-const READINESS_KEYS = ['doc', 'proc', 'devops', 'cloud', 'sec', 'data', 'gov', 'sdlc', 'arch', 'skills'];
-/** AI readiness index 0..100: mean of the dimension means over the answered questions (null when nothing is answered). */
+/** AI readiness index 0..100 of a case (null when nothing is answered): the tune/readiness owner applied to the case's answers. */
 export function readinessIndex(s: CaseState): number | null {
-  const ans = (s as unknown as { readinessAns?: Record<string, (number | null)[]> }).readinessAns ?? {};
-  const scores = READINESS_KEYS.map((k) => {
-    const a = (ans[k] ?? []).filter((v): v is number => v != null);
-    return a.length ? a.reduce((x, y) => x + y, 0) / a.length : null;
-  }).filter((v): v is number => v != null);
-  return scores.length ? scores.reduce((x, y) => x + y, 0) / scores.length : null;
+  return readinessIndexOf((s as unknown as { readinessAns?: ReadinessAns }).readinessAns ?? {});
 }
 
 const PREREQS: [string, boolean][] = [['plat', true], ['tech', true], ['spec', true], ['scope', true], ['client', false], ['res', false]];

@@ -1,10 +1,15 @@
 import type { Ctx } from './ctx';
 import { modelRaw } from './model/raw';
 import { activeCurve } from './model/overlay';
-import { timeFor } from './time';
+import { timeFor, type Engine } from './time';
 
 /** Engine on the live curve, built from the raw model (legacy teEngineNow()). */
-export const engineNow = (c: Ctx) => timeFor(c, { mode: 'full', curveModelId: activeCurve(c), model: modelRaw(c) });
+const engines = new WeakMap<Ctx, Engine>();
+export function engineNow(c: Ctx): Engine {
+  let e = engines.get(c);
+  if (!e) { e = timeFor(c, { mode: 'full', curveModelId: activeCurve(c), model: modelRaw(c) }); engines.set(c, e); }
+  return e;
+}
 
 /** Canonical payback month (1-based) or null. */
 export const paybackMonthsCanonical = (c: Ctx): number | null => engineNow(c).payback();

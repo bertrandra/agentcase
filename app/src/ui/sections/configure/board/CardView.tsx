@@ -1,10 +1,8 @@
+import { groupColor } from '@/domain/nav/layout';
 import { textColor } from '@/ui/colorText';
 import { goSection } from '@/ui/uiState';
 import { sectionById } from '@/ui/zones/registry';
 import type { CardModel } from './dynamic';
-
-/** Group colour for a card accent: only #rgb..#rrggbbaa is accepted (it reaches inline styles); grey when the group has none. */
-const groupColor = (colors: Record<string, string>, id: string | undefined): string => { const c = id ? colors[id] : undefined; return typeof c === 'string' && /^#[0-9a-fA-F]{3,8}$/.test(c) ? c : '#667089'; };
 
 /** One dashboard card: name, headline figure, up to two labelled key figures, and the section it opens (inert in a preview). */
 export function CardView({ card, colors, preview }: { card: CardModel; colors: Record<string, string>; preview?: boolean }) {
