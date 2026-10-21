@@ -13034,6 +13034,14 @@ function syncState(keys, source){
 /* Hook: mirror snapshot lifecycle onto the bus. Inert if no one subscribes. */
 BUS.on('_noop_', function(){});  /* placeholder to keep the subs table warm */
 
+/* v18.9 (H-2): STATE_REGISTRY getters/setters hand out and accept the live global objects. Without a
+ * copy at the snapshot boundary a captured snapshot (and the protected golden case) kept following
+ * every later in-place edit (RATE[loc][band]=…, QUALITY[i][1]=…), and a restore aliased the globals to
+ * the snapshot's own sub-objects. Everything crossing the boundary is deep-copied here. */
+function snapClone(v){
+  if(v===null || typeof v!=='object') return v;
+  try{ return structuredClone(v); }catch(e){ return JSON.parse(JSON.stringify(v)); }
+}
 function collectSnapshotState(opts){
   // v15.3: optional exclude list. Used by the Snapshot manager to capture a named snapshot
   // WITHOUT nesting the current snapshot library inside itself — otherwise every capture would
@@ -13043,7 +13051,7 @@ function collectSnapshotState(opts){
   const out={ savedAt:new Date().toISOString(), currentPersona };
   STATE_REGISTRY.forEach(entry=>{
     if(skip.indexOf(entry.key)>=0) return;
-    try{ out[entry.key]=entry.get(); }catch(e){ console.error('Snapshot collect failed for "'+entry.key+'":', e); }
+    try{ out[entry.key]=snapClone(entry.get()); }catch(e){ console.error('Snapshot collect failed for "'+entry.key+'":', e); }
   });
   /* v18.5 step 7 (spec v5 §8.2 / §12.1): attach the canonical calculation package so a saved
    * case CARRIES the exact figures it was computed with — inputHash + calculationVersion +
@@ -13056,6 +13064,7 @@ function collectSnapshotState(opts){
 }
 function applySnapshotState(s){
   if(!s) return;
+  if(!window.__bootSnapshotSavedAt && s.savedAt) window.__bootSnapshotSavedAt=s.savedAt;   // v18.9 (H-5): lets the autosave banner tell whether its record is really newer
   /* Session Persistence spec §6: autosave must never fire on the transient,
    * still-settling state this whole function produces (ensureConvergenceBoot,
    * applyScopeAuto, ensureGoldenSnapshot all mutate state further below) — set
@@ -13065,7 +13074,7 @@ function applySnapshotState(s){
   _regLegacyPending=false;
   STATE_REGISTRY.forEach(entry=>{
     if(s[entry.key]===undefined) return;
-    try{ entry.set(s[entry.key]); }catch(e){ console.error('Snapshot restore failed for "'+entry.key+'":', e); }
+    try{ entry.set(snapClone(s[entry.key])); }catch(e){ console.error('Snapshot restore failed for "'+entry.key+'":', e); }
   });
   // v12.43: a <=v12.42 snapshot carries phase-level REG tables / REG_OVERRIDES. Fold them onto the
   // artefacts, but ONLY if the snapshot had no artefact-level regulatory values of its own.
@@ -13201,6 +13210,7 @@ const PM = (function(){
        * schemaVersion is a deprecated mirror kept for one release. */
       snap.personaSchemaVersion = '15.0';
       snap.schemaVersion = '15.0';
+      snap.appVersion = (typeof appVerTag==='function') ? appVerTag() : '';   // v18.9 (L-21)
       BUS.emit('snapshot:collected', { snapshot: snap });
       return snap;
     },
@@ -13211,8 +13221,12 @@ const PM = (function(){
        * schemaVersion key so every snapshot written before this release still loads. */
       const incomingVersion = obj.personaSchemaVersion || obj.schemaVersion || '<12.43';
       obj.personaSchemaVersion = incomingVersion;
+      /* v18.9 (L-21): a migration only runs on data that is at its `from` version, and advances the version
+       * to its `to` — previously every migration ran on every load, whatever the data's version. */
+      let curVersion = incomingVersion;
       for(let i=0;i<MIGRATIONS.length;i++){
-        try{ obj = MIGRATIONS[i].apply(obj) || obj; }
+        if(MIGRATIONS[i].from !== curVersion) continue;
+        try{ obj = MIGRATIONS[i].apply(obj) || obj; curVersion = MIGRATIONS[i].to; }
         catch(e){ console.error('PM.migration '+MIGRATIONS[i].from+'->'+MIGRATIONS[i].to, e); }
       }
       /* Delegate to the existing snapshot restore path — same behaviour as v14.17 */
@@ -13239,8 +13253,15 @@ let autosaveTimer=null;
 const AUTOSAVE=(function(){
   const DB_NAME='agentcase-sessions', DB_VERSION=1, STORE='sessions', MAX_RECORDS=20;
   const TOGGLE_KEY='agentcase.autosave.enabled';
-  let enabled=true, available=true, dbPromise=null, cachedTabId=null, channel=null;
+  /* v18.9 (H-7): the Persona-management live previews write document.documentElement.outerHTML into a
+   * same-origin iframe, which boots a full second copy of the app — including this module, sharing the
+   * parent's sessionStorage tab id. Both documents then wrote the same IndexedDB key and the iframe's
+   * stale state could win. A framed copy never persists anything. */
+  const IS_FRAME=(function(){ try{ return window.top!==window; }catch(e){ return true; } })();
+  let enabled=!IS_FRAME, available=!IS_FRAME, dbPromise=null, cachedTabId=null, channel=null;
+  let lastStatus='';     // v18.9 (L-5): the panel re-renders right after every status change — it shows this instead of wiping it
   let bootRecord=null;   // this tab's own record at boot, if any — drives the restore banner
+  let bootPreserved=false;   // v18.9 (H-5): the offered record is copied aside before the first autosave overwrites it
   let cachedList=[];     // last-known list(), refreshed after init/save/remove — lets the
                           // scenario-bar chip read a count synchronously instead of an async
                           // IndexedDB call on every refreshAll() tick
@@ -13256,7 +13277,7 @@ const AUTOSAVE=(function(){
     }catch(e){ cachedTabId='tab-'+Date.now()+'-'+Math.random().toString(36).slice(2); }
     return cachedTabId;
   }
-  function setStatus(msg){ const el=document.getElementById('autosaveStatus'); if(el) el.textContent=msg; }
+  function setStatus(msg){ lastStatus=msg; const el=document.getElementById('autosaveStatus'); if(el) el.textContent=msg; }
 
   /* v18.8: default autosave label — "{customer name} — {date-time}", or just the date-time
      when no customer name is set. Only used the FIRST time a tab autosaves (see save()) —
@@ -13273,7 +13294,7 @@ const AUTOSAVE=(function(){
     if(dbPromise) return dbPromise;
     dbPromise=new Promise(function(resolve){
       if(!('indexedDB' in window)){ available=false; resolve(null); return; }
-      let req, opened=false;
+      let req, opened=false, gaveUp=false;
       try{ req=indexedDB.open(DB_NAME, DB_VERSION); }catch(e){ available=false; resolve(null); return; }
       req.onupgradeneeded=function(ev){
         const db=ev.target.result;
@@ -13284,11 +13305,14 @@ const AUTOSAVE=(function(){
       };
       req.onblocked=function(){
         setStatus('Waiting for another AgentCase tab to finish…');
-        setTimeout(function(){ if(!opened){ available=false; setStatus('Autosave unavailable this session (blocked by another tab)'); resolve(null); } }, 4000);
+        setTimeout(function(){ if(!opened){ gaveUp=true; available=false; setStatus('Autosave unavailable this session (blocked by another tab)'); resolve(null); } }, 4000);
       };
       req.onsuccess=function(ev){
         opened=true;
         const db=ev.target.result;
+        /* v18.9 (L-7): the open finished after we gave up on a blocked request. Close this connection so it
+         * does not hold the database open, and forget the failed attempt so the next save() retries. */
+        if(gaveUp){ try{ db.close(); }catch(e){} dbPromise=null; available=!IS_FRAME; return; }
         /* MUST (spec §10): a future version bump elsewhere closes THIS tab's stale
          * connection rather than leaving it silently writing against an old schema. */
         db.onversionchange=function(){ try{ db.close(); }catch(e){} available=false; enabled=false; setStatus('Autosave paused — reload this tab to pick up the latest version'); };
@@ -13320,14 +13344,14 @@ const AUTOSAVE=(function(){
   }
 
   function save(){
-    if(!enabled) return Promise.resolve(false);
+    if(!enabled || IS_FRAME) return Promise.resolve(false);
     return openDb().then(function(db){
       if(!db) return false;
       let state; try{ state=(typeof PM!=='undefined')?PM.serialize():null; }catch(e){ console.error('AUTOSAVE.save: PM.serialize failed', e); return false; }
       if(!state) return false;
       const tabId=getTabId();
       return new Promise(function(resolve){
-        let tx, store;
+        let tx, store, record=null;
         try{ tx=db.transaction(STORE,'readwrite'); store=tx.objectStore(STORE); }
         catch(e){ setStatus('✗ Autosave failed: '+e.message); resolve(false); return; }
         /* v18.8: preserve any label the user already set (via Rename) — read the existing
@@ -13338,23 +13362,33 @@ const AUTOSAVE=(function(){
         getReq.onsuccess=function(){
           const prior=getReq.result;
           const label=(prior && prior.label) ? prior.label : defaultLabel();
-          const record={ tabId:tabId, savedAt:new Date().toISOString(),
+          record={ tabId:tabId, savedAt:new Date().toISOString(),
             appVersion:(typeof appVerTag==='function'?appVerTag():''), label:label, state:state };
+          /* v18.9 (H-5): the record offered by the restore banner lives under this very key. Copy it aside
+           * before the first overwrite so it stays restorable from the Session manager. */
+          if(bootRecord && !bootPreserved){
+            bootPreserved=true;
+            store.put(Object.assign({}, bootRecord, { tabId:tabId+':prev', label:'↩ Before reload — '+(bootRecord.label||'') }));
+          }
           store.put(record);
         };
         tx.oncomplete=function(){
           enforceCap(db).then(function(){
             setStatus('✓ Autosaved just now');
-            if(channel){ try{ channel.postMessage({type:'saved', tabId:record.tabId}); }catch(e){} }
+            if(channel){ try{ channel.postMessage({type:'saved', tabId:tabId}); }catch(e){} }
             list().then(function(){ if(typeof renderAutosaveHeaderChip==='function') renderAutosaveHeaderChip(cachedList); if(typeof renderAutosavePanel==='function') renderAutosavePanel(); });
             resolve(true);
           });
         };
-        tx.onerror=function(){
+        /* v18.9 (M-12): a quota failure is reported at commit time as an 'abort' on the transaction, not as a
+         * request error — without this handler save() never resolved and the status kept saying "Autosaved". */
+        const fail=function(){
           const quota=tx.error && tx.error.name==='QuotaExceededError';
           setStatus('✗ Autosave failed: '+(quota?'quota exceeded':(tx.error?tx.error.name:'unknown error')));
           resolve(false);
         };
+        tx.onerror=fail;
+        tx.onabort=fail;
       });
     }).catch(function(e){ console.error('AUTOSAVE.save failed:', e); return false; });
   }
@@ -13382,6 +13416,15 @@ const AUTOSAVE=(function(){
       PM.hydrate(record.state);
       return true;
     });
+  }
+
+  /* v18.9 (H-5): the banner offers the record that was found at boot. Restore applies THAT record from
+   * memory — re-reading the key returned whatever the 2-second autosave had written since (the user's new edits). */
+  function restoreBoot(){
+    const rec=bootRecord;
+    if(!rec || !rec.state) return Promise.resolve(false);
+    PM.hydrate(snapClone(rec.state));
+    return Promise.resolve(true);
   }
 
   function remove(id){
@@ -13440,10 +13483,13 @@ const AUTOSAVE=(function(){
       if(!db) return [];
       return new Promise(function(resolve){
         const out=[];
-        let idx;
-        try{ idx=db.transaction(STORE,'readonly').objectStore(STORE).index('savedAt'); }
+        let idx, tx;
+        try{ tx=db.transaction(STORE,'readonly'); idx=tx.objectStore(STORE).index('savedAt'); }
         catch(e){ resolve([]); return; }
-        idx.openCursor(null,'prev').onsuccess=function(ev){   // 'prev' = newest first
+        tx.onabort=function(){ resolve(out); };   // v18.9 (L-6): never leave the panel waiting on a failed cursor
+        const creq=idx.openCursor(null,'prev');   // 'prev' = newest first
+        creq.onerror=function(){ resolve(out); };
+        creq.onsuccess=function(ev){
           const cursor=ev.target.result;
           if(cursor){ out.push(cursor.value); cursor.continue(); } else { resolve(out); }
         };
@@ -13459,20 +13505,50 @@ const AUTOSAVE=(function(){
     if(typeof renderAutosavePanel==='function') renderAutosavePanel();
   }
 
+  const claimNonce=Math.random().toString(36).slice(2);
+  function claimTabId(){
+    return new Promise(function(resolve){
+      if(!channel){ resolve(); return; }
+      let clash=false;
+      const h=function(ev){ const d=ev&&ev.data; if(d && d.type==='taken' && d.tabId===getTabId() && d.from!==claimNonce) clash=true; };
+      channel.addEventListener('message', h);
+      try{ channel.postMessage({type:'who', tabId:getTabId()}); }catch(e){}
+      setTimeout(function(){
+        channel.removeEventListener('message', h);
+        if(clash){
+          cachedTabId=(window.crypto&&crypto.randomUUID)?crypto.randomUUID():(Date.now()+'-'+Math.random().toString(36).slice(2));
+          try{ sessionStorage.setItem('agentcase.tabId', cachedTabId); }catch(e){}
+        }
+        resolve();
+      }, 150);
+    });
+  }
+
   function init(){
+    if(IS_FRAME) return Promise.resolve();
     getTabId();
     try{ const pref=localStorage.getItem(TOGGLE_KEY); if(pref!==null) enabled=(pref==='1'); }catch(e){}
     if('BroadcastChannel' in window){
       try{
         channel=new BroadcastChannel('agentcase-sessions');
-        channel.onmessage=function(ev){ if(ev&&ev.data&&ev.data.type==='saved' && typeof renderAutosavePanel==='function') renderAutosavePanel(); };
+        channel.onmessage=function(ev){
+          const d=ev&&ev.data; if(!d) return;
+          if(d.type==='saved' && typeof renderAutosavePanel==='function') renderAutosavePanel();
+          /* v18.9 (L-20): "Duplicate tab" copies sessionStorage, so two live tabs can hold one tab id and
+           * overwrite each other's record. A tab that sees its own id claimed by another answers 'taken'. */
+          else if(d.type==='who' && d.tabId===getTabId()){ try{ channel.postMessage({type:'taken', tabId:d.tabId, from:claimNonce}); }catch(e){} }
+        };
       }catch(e){}
     }
-    return openDb().then(function(db){
+    return claimTabId().then(openDb).then(function(db){
       available=!!db;
       enabled=enabled&&available;
       if(!available){ setStatus('Autosave paused (storage unavailable)'); if(typeof renderAutosavePanel==='function') renderAutosavePanel(); return; }
       return peek(getTabId()).then(function(myRecord){
+        /* v18.9 (H-5): only offer a record that is actually newer than the state this file just booted with
+         * (the banner says "newer" but nothing compared the timestamps). */
+        const bootAt=window.__bootSnapshotSavedAt;
+        if(myRecord && bootAt && myRecord.savedAt && myRecord.savedAt<=bootAt) myRecord=null;
         bootRecord=myRecord;
         if(myRecord && typeof renderAutosaveBanner==='function') renderAutosaveBanner(myRecord);
         return list();
@@ -13486,8 +13562,10 @@ const AUTOSAVE=(function(){
 
   function dismissBanner(){ bootRecord=null; const el=document.getElementById('autosaveBanner'); if(el) el.innerHTML=''; }
 
-  return { init:init, save:save, peek:peek, restore:restore, remove:remove, clearAll:clearAll, list:list, setLabel:setLabel, setEnabled:setEnabled, dismissBanner:dismissBanner,
+  return { init:init, save:save, peek:peek, restore:restore, restoreBoot:restoreBoot, remove:remove, clearAll:clearAll, list:list, setLabel:setLabel, setEnabled:setEnabled, dismissBanner:dismissBanner,
     get tabId(){ return getTabId(); },
+    get status(){ return lastStatus; },
+    get isFrame(){ return IS_FRAME; },
     get enabled(){ return enabled && available; },
     get available(){ return available; },
     get sessions(){ return cachedList; },   // last-known list(), synchronous — for the header chip / panel
@@ -13525,7 +13603,7 @@ function renderAutosaveBanner(record){
     + `<button class="btn btn-primary" style="padding:3px 14px" onclick="autosaveBannerRestore()">Restore</button>`
     + `<button class="btn" style="padding:3px 14px" onclick="autosaveBannerDiscard()">Discard</button></div>`;
 }
-function autosaveBannerRestore(){ AUTOSAVE.restore().then(function(){ AUTOSAVE.dismissBanner(); }); }
+function autosaveBannerRestore(){ AUTOSAVE.restoreBoot().then(function(){ AUTOSAVE.dismissBanner(); }); }
 function autosaveBannerDiscard(){ AUTOSAVE.remove(AUTOSAVE.tabId).then(function(){ AUTOSAVE.dismissBanner(); }); }
 
 let autosavePendingDelete=null;   // tabId awaiting a second-click confirmation, same pattern as snapPendingDelete
@@ -13592,7 +13670,7 @@ function renderAutosavePanel(){
     + `<label style="display:flex;align-items:center;gap:6px;font-size:12.5px;text-transform:none;letter-spacing:0"><input type="checkbox" ${AUTOSAVE.enabled?'checked':''} onchange="autosaveToggle(this)"> Autosave this session</label>`
     + `<button class="btn" onclick="autosaveClearThisTab()">Clear this tab's autosave</button>`
     + clearAllControl
-    + `<span id="autosaveStatus" style="font-size:11.5px;color:#00828E"></span></div>`
+    + `<span id="autosaveStatus" style="font-size:11.5px;color:#00828E">${escHtml(AUTOSAVE.status)}</span></div>`
     + (rows.length
       ? `<div style="overflow-x:auto"><table style="width:100%;font-size:12.5px"><thead><tr><th>Label</th><th>Saved</th><th class="text-center">Version</th><th>Actions</th></tr></thead><tbody>${rows}</tbody></table></div>`
       : `<div style="color:#888;font-size:12px">No autosaved sessions yet — AgentCase saves automatically ~2s after you make a change.</div>`);
@@ -13613,7 +13691,7 @@ function readinessSubTab(name){
 function saveHtmlSnapshot(){
   const status=document.getElementById('snapshotStatus');
   try{
-    const state=collectSnapshotState();
+    const state=(typeof PM!=='undefined' && PM.serialize) ? PM.serialize() : collectSnapshotState();   // v18.9 (L-21): carries personaSchemaVersion + appVersion
     const json=JSON.stringify(state).replace(/</g,'\\u003c'); // avoid premature closing-tag termination
     const scr=document.createElement('script');
     scr.setAttribute('data-agentcase-snapshot','1');
@@ -13623,6 +13701,15 @@ function saveHtmlSnapshot(){
     // naive string-replace approaches — cloning the real DOM and serializing once at the end sidesteps this).
     const clone=document.documentElement.cloneNode(true);
     const clonedBody=clone.querySelector('body');
+    /* v18.9 (M-13, M-14): the clone is the live DOM, so transient runtime UI was frozen into the file.
+     * 'boot-ready' on <html> disabled the boot-flicker gate in every re-saved copy, the industry <select>
+     * kept the options built at boot (boot appended a second full set on each reopen), and banners,
+     * status lines and preview iframes were baked in too. Strip all of it; boot rebuilds what it needs. */
+    clone.classList.remove('boot-ready');
+    if(!clone.getAttribute('class')) clone.removeAttribute('class');
+    ['autosaveBanner','calcStaleBanner','snapshotStatus','snapStatus','importStatus','autosaveStatus'].forEach(function(id){ const el=clone.querySelector('#'+id); if(el) el.innerHTML=''; });
+    const indClone=clone.querySelector('#industry'); if(indClone) indClone.innerHTML='';
+    clone.querySelectorAll('iframe').forEach(function(f){ f.remove(); });
     // v15.3: strip any snapshot-restore script(s) already baked into THIS file by a previous save —
     // otherwise every re-save stacks another one on top, and every stacked one re-runs on every future
     // load (found two already accumulated in this file, from 2026-07-10 and 2026-07-16, before this fix).
@@ -13640,11 +13727,11 @@ function saveHtmlSnapshot(){
     const verTag=(typeof appVerFileTag==='function' && appVerFileTag()) ? appVerFileTag()+'_' : '';
     const custTag=(typeof CUSTOMER_NAME==='string' && CUSTOMER_NAME.trim()) ? CUSTOMER_NAME.trim().replace(/[^A-Za-z0-9]+/g,'_').replace(/^_+|_+$/g,'')+'_' : '';   // v18.3: customer name in the filename when set
     const a=document.createElement('a'); a.href=url; a.download='AgentCase_'+custTag+verTag+'Snapshot_'+stamp+'.html';
-    document.body.appendChild(a); a.click(); a.remove(); URL.revokeObjectURL(url);
+    document.body.appendChild(a); a.click(); a.remove(); setTimeout(function(){ URL.revokeObjectURL(url); }, 1500);   // v18.9 (L-6): revoking at once can cancel the download
     if(status){ status.innerHTML='<span style="color:#00666F;font-weight:600">✓ Snapshot downloaded — reopen the file to resume exactly here.</span>'; }
   }catch(e){
     console.error('saveHtmlSnapshot failed:', e);
-    if(status){ status.innerHTML='<span style="color:#8F3237">✗ Snapshot failed: '+e.message+'</span>'; }
+    if(status){ status.innerHTML='<span style="color:#8F3237">✗ Snapshot failed: '+escHtml(e.message)+'</span>'; }
   }
 }
 /* ==================== end HTML Snapshot ==================== */
@@ -15642,8 +15729,14 @@ function scEnsurePts(N){
   if(!Array.isArray(SC_PTS) || SC_PTS.length<3){ scInitPts(N); return; }
   SC_PTS.forEach(function(p){ p.t=Math.max(1,Math.min(N,p.t)); p.a=Math.max(0,Math.min(100,p.a)); });
   SC_PTS.sort(function(a,b){ return a.t-b.t; });
-  for(var i=1;i<SC_PTS.length;i++){ if(SC_PTS[i].t<=SC_PTS[i-1].t) SC_PTS[i].t=Math.min(N,SC_PTS[i-1].t+1); }
-  if(SC_PTS[SC_PTS.length-1].t>N || SC_PTS[0].t>=SC_PTS[SC_PTS.length-1].t) scInitPts(N);
+  /* v18.9 (H-4): clamping to a shorter horizon can pile several points onto month N. A repeated knot
+   * makes scSplineEval divide by h=0 and every headline became NaN. Spread forward to keep the months
+   * strictly increasing, then — if that pushed the last point past N — pull the chain back from N; if
+   * it still does not fit inside [1,N], re-seed the points from the ramp anchors. */
+  var n=SC_PTS.length, i;
+  for(i=1;i<n;i++){ if(SC_PTS[i].t<=SC_PTS[i-1].t) SC_PTS[i].t=SC_PTS[i-1].t+1; }
+  if(SC_PTS[n-1].t>N){ SC_PTS[n-1].t=N; for(i=n-2;i>=0;i--){ if(SC_PTS[i].t>=SC_PTS[i+1].t) SC_PTS[i].t=SC_PTS[i+1].t-1; } }
+  if(SC_PTS[0].t<1) scInitPts(N);
 }
 /* Fit the selected family exactly through 3 points (least-squares for more). Both families reduce
  * to a line in a transformed space: logistic z=ln(C/a−1); gompertz z=ln(−ln(a/C)). We grid-search the
@@ -15669,7 +15762,8 @@ function scFitNow(){ if(SC_FAMILY==='spline'){ SC_FIT=null; return; } try{ SC_FI
  * clean monotone S). Used by BOTH the editor and the engine's spline.default adapter, so what you draw
  * is what the case computes. */
 function scSplineEval(t, userPts){
-  var P=[{t:0,a:0}]; (userPts||[]).slice().sort(function(a,b){return a.t-b.t;}).forEach(function(p){ if(p.t>0) P.push({t:p.t,a:p.a}); });
+  /* v18.9 (H-4): knots must be finite and strictly increasing (h>0), otherwise the tangents divide by zero. */
+  var P=[{t:0,a:0}]; (userPts||[]).slice().sort(function(a,b){return a.t-b.t;}).forEach(function(p){ if(isFinite(p.t) && isFinite(p.a) && p.t>P[P.length-1].t) P.push({t:p.t,a:p.a}); });
   var n=P.length; if(n<2) return n?P[n-1].a:0;
   if(t<=P[0].t) return P[0].a; if(t>=P[n-1].t) return P[n-1].a;
   var d=[],i; for(i=0;i<n-1;i++) d.push((P[i+1].a-P[i].a)/(P[i+1].t-P[i].t));
@@ -17247,6 +17341,13 @@ async function exportParams(scope){
       });
     });
     head(depsWs); frz(depsWs);
+    /* v18.9 (H-3): S-curve control points + curve family. Without this sheet an Excel round-trip kept the
+       three ramp anchors but lost the dragged points and the family, so payback/NPV changed on re-import. */
+    { const scWs=wb.addWorksheet('S-Curve');
+      scWs.columns=[{header:'Item',width:12},{header:'Month / family',width:18},{header:'Adoption %',width:12}];
+      const r0=scWs.addRow(['Family', SC_FAMILY, '']); blue(r0.getCell(2)); r0.getCell(2).dataValidation=listDV(['spline','logistic','gompertz'],'Curve family');
+      (Array.isArray(SC_PTS)?SC_PTS:[]).forEach(p=>{ const r=scWs.addRow(['Point', Math.round(p.t*100)/100, Math.round(p.a*100)/100]); blue(r.getCell(2)); blue(r.getCell(3)); });
+      head(scWs); frz(scWs); }
 
     // 14d. Shared styling for the Dynamic Section Cards sheet below (v15.5 — the Board holds no
     // cards of its own, so this only serves per-dynamic-section cards now)
@@ -17777,6 +17878,17 @@ async function importParams(input){
       let edgeN=0; Object.keys(next).forEach(k=>{ edgeN+=Object.keys(next[k]).length; });
       notes.push('Dependencies: imported '+edgeN+' edge(s) across '+Object.keys(next).length+' source section(s)'+(bad?' ('+bad+' skipped)':'')+'.');
       if(typeof pruneSectionDeps==='function') pruneSectionDeps();
+    }}
+    { const rows=aoa('S-Curve'); if(rows && rows.length>1){
+      const pts=[]; let fam=null;
+      rows.slice(1).forEach(r=>{
+        const item=String(r[0]||'').trim().toLowerCase();
+        if(item==='family'){ const f=String(r[1]||'').trim().toLowerCase(); if(f==='spline'||f==='logistic'||f==='gompertz') fam=f; else if(f) notes.push('S-Curve: unknown family "'+cleanText(f,30)+'" ignored.'); }
+        else if(item==='point'){ const tm=parseFloat(r[1]), ad=parseFloat(r[2]); if(isFinite(tm)&&isFinite(ad)&&tm>=1&&tm<=120) pts.push({t:tm,a:Math.max(0,Math.min(100,ad))}); }
+      });
+      const reg=STATE_REGISTRY.find(e=>e.key==='scurve');
+      if(reg && (fam || pts.length>=3)){ reg.set({ pts: pts.length>=3 ? pts : undefined, family: fam||undefined }); notes.push('S-Curve: imported '+(fam?('family "'+fam+'"'):'')+(pts.length>=3?((fam?' and ':'')+pts.length+' control point(s)'):'')+'.'); }
+      else if(pts.length && pts.length<3) notes.push('S-Curve: needs at least 3 points — sheet ignored.');
     }}
     // Dynamic Sections (v15.5) — edits Title/Group/Order/Visible of an EXISTING dynamic section only;
     // a brand-new section (with its own card set + rows) can't be authored from one flat row — create
@@ -25243,6 +25355,23 @@ function renderConvChecks(){
 }
 
 /* ---------- STATE & BOOT ---------- */
+/* v18.9 (H-3): the S-curve editor's control points and curve family drive the live Time Engine curve
+ * (spline.default evaluates SC_PTS) but were never saved — only the three ramp anchors were, so a reopened
+ * file, restored autosave or activated snapshot computed on different points/family and the staleness
+ * banner appeared on every reopen. */
+STATE_REGISTRY.push({key:'scurve',
+  get:function(){ return { pts:(Array.isArray(SC_PTS)?SC_PTS.map(function(p){ return {t:p.t,a:p.a}; }):null), family:SC_FAMILY, curve:TIME_ACTIVE_CURVE }; },
+  set:function(v){
+    if(!v || typeof v!=='object') return;
+    if(Array.isArray(v.pts)){
+      var pts=v.pts.filter(function(p){ return p && isFinite(p.t) && isFinite(p.a); }).map(function(p){ return {t:+p.t,a:+p.a}; });
+      SC_PTS = pts.length>=3 ? pts : null;
+    } else if(v.pts===null){ SC_PTS=null; }
+    if(v.family==='logistic' || v.family==='gompertz' || v.family==='spline'){
+      SC_FAMILY=v.family; TIME_ACTIVE_CURVE=(v.family==='spline'?'spline.default':v.family+'.default');
+    }
+    SC_FIT=null;
+  }});
 STATE_REGISTRY.push({key:'engageCoef', get:function(){return JSON.parse(JSON.stringify(ENGAGE_COEF));}, set:function(v){ if(v&&v.MSC){ Object.keys(v).forEach(function(k){ if(ENGAGE_COEF[k]) Object.assign(ENGAGE_COEF[k], v[k]); }); } }});
 
 function ensureConvergenceBoot(){
@@ -25339,6 +25468,7 @@ function ensureConvergenceBoot(){
 
 // Industry select with "None"
 const indSel=document.getElementById('industry');
+indSel.innerHTML='';   // v18.9 (M-13): never append to options baked into the markup or by an earlier boot
 getIndustries().forEach(i=>{ const o=document.createElement('option');o.value=i.code;o.textContent=i.code==='NONE'?i.name:i.code+' — '+i.name+(i.regArtifacts?' ('+i.regArtifacts+' reg. art.)':'');indSel.appendChild(o);});
 indSel.value='NONE';
 indSel.addEventListener('change',()=>{
@@ -25417,18 +25547,28 @@ setTimeout(function(){ normalizeBlankTags(); renderSectionTagBadges(); }, 0);   
  * had a chance to apply, per the spec: autosave must never override a snapshot the
  * user explicitly saved to disk and reopened — it only ever offers to layer a NEWER
  * autosave on top, via the non-blocking banner, never silently). */
-if(typeof AUTOSAVE!=='undefined'){
+if(typeof AUTOSAVE!=='undefined' && !AUTOSAVE.isFrame){
   AUTOSAVE.init();
-  BUS.on('state:changed', function(){
+  const autosaveSchedule=function(){
     if(autosaveSuspended || !AUTOSAVE.enabled) return;
     clearTimeout(autosaveTimer);
     autosaveTimer=setTimeout(function(){
       AUTOSAVE.save().catch(function(e){ console.error('AUTOSAVE.save failed:', e); });
     }, 2000);
+  };
+  BUS.on('state:changed', autosaveSchedule);
+  /* v18.9 (H-6): the main parameter fields (sliders, number inputs, selects) change state through
+   * readInputs()/refreshAll(), which never emit 'state:changed' — so ordinary edits were not autosaved
+   * until the tab was hidden. Any edit of a form control that is part of the saved DOM state schedules a save. */
+  ['input','change'].forEach(function(evName){
+    document.addEventListener(evName, function(e){
+      const el=e.target;
+      if(el && el.id && /^(INPUT|SELECT|TEXTAREA)$/.test(el.tagName) && !/^autosave/.test(el.id)) autosaveSchedule();
+    }, true);
   });
-  document.addEventListener('visibilitychange', function(){
-    if(document.hidden && AUTOSAVE.enabled) AUTOSAVE.save().catch(function(e){ console.error(e); });
-  });
+  const flush=function(){ if(AUTOSAVE.enabled) AUTOSAVE.save().catch(function(e){ console.error(e); }); };
+  document.addEventListener('visibilitychange', function(){ if(document.hidden) flush(); });
+  window.addEventListener('pagehide', flush);
 }
 /* Boot-flicker fix: the sidebar's raw HTML markup bakes in one persona's full
  * unfiltered menu (see the inline <style> in <head>). It stays visibility:hidden
