@@ -1,0 +1,1 @@
+{"provision":"constrained","constrained":true,"mode":"soft","esup":1.5,"vMax":[6,7.2,8.64],"vfteRaw":[2.8125,6.1875,11.25],"vfteEff":[1.9148936170212767,3.327731092436975,4.886877828054299],"esupNeeded":[0.8872340425531915,1.0991596638655463,1.333031674208145],"utilization":[0.46875,0.859375,1.3020833333333333],"supervisorsToUnlock":0.5,"rampMultiplier":[1,1.2,1.44]}
