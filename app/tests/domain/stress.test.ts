@@ -47,10 +47,12 @@ describe('Monte Carlo (seeded mulberry32) reproduces the legacy run to 1e-6', ()
     expect(runMonteCarlo(c, 100, 7).outcomes).toEqual(runMonteCarlo(c, 100, 7).outcomes);
     expect(runMonteCarlo(c, 100, 8).outcomes).not.toEqual(runMonteCarlo(c, 100, 7).outcomes);
   });
-  it('legacy limitation kept: beyond a 3-year horizon the net benefit is undefined', () => {
-    const c = ctx('horizon-5'), r = runMonteCarlo(c, 100, 42);
-    expect((loadExtra('mcRun', 'horizon-5') as { stats: { p10: unknown } }).stats.p10).toBeNull();
-    expect(Number.isNaN(r.stats.p10)).toBe(true);
+  it('beyond a 3-year horizon the net benefit is finite (legacy v18.12 fix; v18.11 returned NaN)', () => {
+    for (const id of ['horizon-5', 'horizon-10', 'econ-horizon-7']) {
+      const r = runMonteCarlo(ctx(id), 100, 42), exp = loadExtra('mcRun', id) as { stats: { p10: number | null } };
+      expect(Number.isFinite(r.stats.p10) && Number.isFinite(r.stats.p50) && Number.isFinite(r.stats.cvar10)).toBe(true);
+      expect(exp.stats.p10).not.toBeNull();
+    }
   });
 });
 

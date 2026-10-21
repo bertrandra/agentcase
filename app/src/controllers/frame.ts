@@ -1,5 +1,6 @@
 import { REG_ARTEFACTS } from '@/domain';
 import { CROSS_CATEGORIES, CROSS_CODES, crossOn, normArtefacts, normKey, normsOf, type TrackActual } from '@/domain/frame';
+import { refitPotential } from '@/store/derive';
 import { defineCommand } from '@/store/commands';
 import { appStore } from '@/store/instance';
 import type { Doc } from '@/store/types';
@@ -58,9 +59,10 @@ function applyIndustry(d: Doc): void {
   const code = d.dom.values.industry ?? '';
   if (d.regUse && code && code !== 'NONE' && !CROSS_CODES.includes(code)) normsOf(code).forEach((n) => setNorm(d, code, n.name, true));
 }
-/** Keep the category checkboxes in step with the ticked norms. The legacy does NOT re-fit the potential here (only scope edits do), so neither do we. */
+/** Keep the category checkboxes in step with the ticked norms and re-fit the potential to the changed scope (legacy v18.12). */
 function finish(d: Doc): void {
   CROSS_CATEGORIES.forEach((x) => { d.dom.checked[x.checkId] = crossOn(d.selectedNorms, x.code); });
+  refitPotential(d);
 }
 
 const setRegUseCmd = defineCommand<{ on: boolean }>({
@@ -81,7 +83,7 @@ const toggleCrossCmd = defineCommand<{ code: string; on: boolean }>({
 });
 const setRegIncludeCmd = defineCommand<{ on: boolean }>({
   type: 'frame.setRegInclude', label: (p) => `${p.on ? 'Include' : 'Exclude'} regulatory artefacts in effort and runs`,
-  run(d, p) { d.regInclude = p.on; d.dom.checked.regInclude = p.on; },
+  run(d, p) { d.regInclude = p.on; d.dom.checked.regInclude = p.on; refitPotential(d); },
 });
 
 export const setCustomerName = (name: string): void => appStore().dispatch(setCustomerCmd({ name }));

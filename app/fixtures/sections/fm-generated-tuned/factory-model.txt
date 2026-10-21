@@ -8,7 +8,7 @@ SEED
 RELEASE EVERY  WK
 Reset parameters
 🧬 Generate data
-Generated 2026-10-21 · seed 4242 · weekly · 261 weeks from 2026-09-01 · 3 phases · ramp 25/55/100% · eff. automation 46% · ceiling 54% · 400 records in 14ms
+Generated 2026-10-21 · seed 4242 · weekly · 261 weeks from 2026-09-01 · 3 phases · ramp 25/55/100% · eff. automation 46% · ceiling 54% · 400 records in 10ms
 Adoption follows a monthly progressive curve from 0 through the annual breakpoints (25/55/100% at months 12/24/36), not the annual step. Its yearly averages are 11/41/80% — lower than the model’s annual figures by construction, because the model states the year’s representative level while the curve states the path. No euro figure is affected.
 Simulated from this case’s assumptions — not measured data.
 🏭 Factory Model

@@ -309,6 +309,21 @@ const tests = {
     f.value = 'ALL'; f.dispatchEvent(new Event('change', { bubbles: true })); resetAgent();
     return { ok, detail: 'potential ' + before.auto + '->' + after.auto + ', ceiling ' + before.ceiling + '->' + after.ceiling + ', strip: ' + strip.replace(/\s+/g, ' ').slice(0, 90) };
   },
+  // v18.12: changing the industry / a norm / a cross-cutting category re-fits the potential to the new scope (fit-to-scope on)
+  async industry_change_refits_potential() {
+    const before = P('autoPotential');
+    setRegUse(true); document.getElementById('industry').value = 'MED'; onIndustryChangedReg(); readInputs();
+    const fit = Math.round(phaseScope().avgAgent), med = P('autoPotential');
+    toggleCross('AI', true); readInputs(); const ai = P('autoPotential'), fitAi = Math.round(phaseScope().avgAgent);
+    return { ok: med === fit && ai === fitAi && med !== before, detail: 'default ' + before + ' -> MED ' + med + ' (fit ' + fit + ') -> +AI ' + ai + ' (fit ' + fitAi + ')' };
+  },
+  // v18.12: Monte Carlo no longer returns NaN for horizons above 3 years
+  async montecarlo_horizon_above_3() {
+    const sel = document.getElementById('horizon'); const out = [];
+    for (const h of ['1', '2', '3', '5', '10']) { sel.value = h; readInputs(); const r = runMonteCarlo(60); out.push(h + ':' + Math.round(r.stats.p50)); if (!isFinite(r.stats.p10) || !isFinite(r.stats.p50) || !isFinite(r.stats.p90) || !isFinite(r.stats.cvar10)) return { ok: false, detail: 'non-finite at horizon ' + h + ' ' + out.join(' ') }; }
+    sel.value = '3'; readInputs();
+    return { ok: true, detail: 'P50 by horizon ' + out.join(' ') };
+  },
   // v18.10: after an Excel import the automation potential must equal the fit of the FINAL scope (it was left at the fit of a provisional one)
   async import_refits_potential() {
     let captured = null; const cu = URL.createObjectURL; URL.createObjectURL = b => { if (!captured) captured = b; return cu.call(URL, b); };

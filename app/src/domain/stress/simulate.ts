@@ -15,20 +15,20 @@ export const mcSeedOf = (c: Ctx): number => Math.max(1, Math.round(c.inp.p('mcSe
 export const mcDrawsOf = (c: Ctx): number => Math.max(100, Math.min(5000, Math.round(c.inp.p('mcDraws')) || 1000));
 
 /**
- * Horizon-aware net benefit of one evaluation: Σ annual savings − setup. Reads the model like the legacy `model()` overlay does
- * (yearly sums of the Time Engine) but through the thin aggregate; years beyond the model's own array are NaN, as in the legacy.
+ * Horizon-aware net benefit of one evaluation: Σ annual savings − setup. Under a real adoption curve it sums the Time Engine's
+ * year rows (one per horizon year, through the thin aggregate), so horizons above 3 years work (legacy v18.12; before, the sum
+ * read a 3-entry array and was NaN). Under the legacy flat curve only the three anchor years exist.
  */
 export function mcOutcome(c: Ctx): number {
   const raw = modelRaw(c), curve = activeCurve(c);
-  let sav = raw.yearSav;
   if (!curve.startsWith('legacy')) {
     try {
       const t = thinFor(c, { curveModelId: curve, model: raw });
-      sav = raw.yearSav.map((_, i) => (t.years[Math.min(i, t.years.length - 1)] as { savings: number }).savings);
+      return t.years.reduce((s, y) => s + (y as { savings: number }).savings, 0) - raw.setupTotal;
     } catch { /* overlay failed: the flat annual model stands, like the legacy */ }
   }
   let s = 0;
-  for (let y = 0; y < raw.horizon; y++) s += sav[y] as number;
+  for (let y = 0; y < Math.min(raw.horizon, raw.yearSav.length); y++) s += raw.yearSav[y] as number;
   return s - raw.setupTotal;
 }
 
