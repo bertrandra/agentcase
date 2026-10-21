@@ -1,6 +1,7 @@
 // @vitest-environment jsdom
 import { act, cleanup, fireEvent, render, screen, within } from '@testing-library/react';
 import { afterEach, describe, expect, it } from 'vitest';
+import { resolveSections, type NavSection, type SectionRow } from '@/domain/nav/layout';
 import { newDashboard, type DynSection } from '@/domain/pdc/board';
 import { VARIABLES } from '@/domain/pdc/variables';
 import { appStore } from '@/store/instance';
@@ -28,7 +29,7 @@ describe('board section', () => {
   });
   it.each(PDC_FIXTURES)('generates the same dashboard record and persona cascade as the legacy (%s)', (id) => {
     loadCase(id);
-    const l = pdc<Dash>('pdc_dash', id), sections = SECTIONS.map((s) => ({ id: s.id, group: s.group, label: s.label })), groups = GROUPS;
+    const l = pdc<Dash>('pdc_dash', id), sections = resolveSections(SECTIONS as NavSection[], appStore().getState().doc.sectionGroups as SectionRow[] | undefined, undefined).map((s) => ({ id: s.id, group: s.group, label: s.label })), groups = GROUPS;
     for (const [k, ids, all] of [['one', ['tune'], false], ['two', ['tune', 'verify'], false], ['all', [], true]] as const) {
       const got = newDashboard({ groupIds: [...ids], allGroups: all, existing: [], groups, sections, maxOrder: l.max })!, want = l[k];
       expect({ ...got, cards: undefined }).toEqual({ ...want, cards: undefined, nCards: undefined, slots: undefined });

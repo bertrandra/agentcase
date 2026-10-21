@@ -89,7 +89,7 @@ describe('dynamic sections', () => {
     const btn = within(navEl().querySelector('[data-group="tune"]')!).getByRole('button', { name: d.title });
     fireEvent.click(btn);
     expect((await screen.findByRole('heading', { level: 1, name: d.title }))).toBeTruthy();
-    expect(screen.getByLabelText('Cards')).toBeTruthy();
+    expect(screen.getByLabelText('Body rows')).toBeTruthy();   // the Board's live view of the stored dashboard
     act(() => removePersonaSection('builder', d.id));
     expect(ids(navEl())).not.toContain(d.id);
     act(() => setPersona('advanced'));
@@ -99,7 +99,7 @@ describe('dynamic sections', () => {
     loadCase('golden');
     uiStore.setState({ activeSection: 'nope' });
     render(<App />);
-    expect(screen.getByRole('main').textContent).toMatch(/Unknown section/);
+    expect(screen.getByRole('main').textContent).toMatch(/no longer exists/);
   });
 });
 
