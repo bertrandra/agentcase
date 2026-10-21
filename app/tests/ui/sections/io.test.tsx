@@ -18,13 +18,9 @@ describe('io section', () => {
   it('shows every figure and heading the legacy section showed (4 fixtures)', () => {
     expectParity('io', Io, { headings: ['Import / Export — all editable settings', '💾 Save HTML', '⬇️ Export / Import current settings', '🗂️ Snapshot Manager', '💾 Save HTML Snapshot', 'Download the entire application as a single standalone HTML file', '💾 Download HTML snapshot'] });
   });
-  it('the HTML snapshot is enabled; the Excel controls are disabled with an explicit later-release note', () => {
+  it('the HTML snapshot is enabled and the snapshot manager is available (the Excel settings tab is covered by io-params.test.tsx)', () => {
     render(<Io />);
     expect((screen.getByText('💾 Download HTML snapshot') as HTMLButtonElement).disabled).toBe(false);
-    fireEvent.click(screen.getByRole('tab', { name: '⬇️ Export / Import current settings' }));
-    expect(screen.getByText(/Excel import and export are available in a later release/)).toBeTruthy();
-    for (const b of screen.getAllByRole('button').filter((x) => /Export/.test(x.textContent ?? ''))) expect((b as HTMLButtonElement).disabled).toBe(true);
-    expect((screen.getByLabelText('Settings workbook (.xlsx)') as HTMLInputElement).disabled).toBe(true);
     fireEvent.click(screen.getByRole('tab', { name: '🗂️ Snapshot Manager' }));
     expect((screen.getByText('📸 Capture current configuration') as HTMLButtonElement).disabled).toBe(false);
   });
