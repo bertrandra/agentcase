@@ -2,7 +2,7 @@
 <html lang="en"><head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>AgentCase v18.12 — Agentic Transformation Business Case</title>
+<title>AgentCase v18.13 — Agentic Transformation Business Case</title>
 <style>html:not(.boot-ready) .sidebar{visibility:hidden}html:not(.boot-ready) #groupNavBar{display:none!important}html:not(.boot-ready) #home{visibility:hidden}html:not(.boot-ready) #scenarioBar{visibility:hidden}</style>
 <script>/* Chart.js 4.4.1 (inlined for offline use) */
 /*!
@@ -6458,7 +6458,7 @@ against: setup (→ ROI denominator) + curation FTE + infra, recurring
 </div>
 
 <footer>
-<p><strong>AgentCase v18.12</strong></p>
+<p><strong>AgentCase v18.13</strong></p>
 </footer><script>
 /* v18.9: shared escaping helpers. Every user-editable or imported string (labels, ids, names,
  * titles, skills, customer name…) must go through one of these before it reaches innerHTML or an
@@ -8009,6 +8009,7 @@ function scenarioModel(opts){
   const horizon=parseInt(V('horizon'));
   const ramps=[P('y1Ramp'),P('y2Ramp'),P('y3Ramp')];
   for(let _y=3;_y<horizon;_y++) ramps.push(ramps[ramps.length-1]);   // horizon-dynamic: saturate the ramp past Y3
+  if(ramps.length>horizon) ramps.length=Math.max(1,horizon);   // v18.13: horizons 1–2 — the day-rate array has `horizon` entries, so the ramp arrays must too (the third entry made every scenario figure NaN)
   const wd=P('workdays');
   const tokenCost=blendedTokenCostPer1M(), tokensPerArt=P('tokensPerArt'), infra=P('infra');
   const setupTotal=P('setupTooling')+P('setupTraining')+P('setupCoaching')+P('setupGov');
@@ -9566,6 +9567,18 @@ function scopedHumanSup(){
   arts.forEach(a=>{ const w=(+a.w||0); e+=w; s+=w*(a.humanSup||0); });   // v12.43: w, not raw effort
   return e? s/e : 0;
 }
+/* v18.13: per-horizon-year savings and run cost of the live case. model().yearSav / yearRun hold three entries whatever the
+ * horizon, so every sum over `m.horizon` read undefined above 3 years (strategies' ROI / TCO / payback and the Results ROI
+ * showed n/a or NaN). Under a real adoption curve the Time Engine already has one row per horizon year; under the legacy flat
+ * curve only the three anchor years exist. Identical to the old sums for horizons 1 to 3. */
+function horizonYears(){
+  const raw=modelRaw();
+  if(typeof TIME_ACTIVE_CURVE!=='undefined' && String(TIME_ACTIVE_CURVE).indexOf('legacy')!==0){
+    try{ const Y=teEngineNow(raw).years(); return {sav:Y.map(function(y){return y.savings;}), run:Y.map(function(y){return y.totalRunCost;})}; }catch(e){}
+  }
+  const n=Math.min(raw.horizon, raw.yearSav.length);
+  return {sav:raw.yearSav.slice(0,n), run:raw.yearRun.slice(0,n)};
+}
 function evaluateStrategies(){
   readInputs();
   const savedTLP=targetLocPct?JSON.parse(JSON.stringify(targetLocPct)):null;
@@ -9590,7 +9603,8 @@ function evaluateStrategies(){
     else { targetLocPct=savedTLP?JSON.parse(JSON.stringify(savedTLP)):null; }   // null → inherit current strategy
     const m=model();
     let net=0,run=0,cum=-m.setupTotal,payback=null;
-    for(let y=0;y<m.horizon;y++){ net+=m.yearSav[y]; run+=m.yearRun[y]; cum+=m.yearSav[y]; if(payback==null&&cum>0)payback=y+1; }
+    const hy=horizonYears();
+    for(let y=0;y<hy.sav.length;y++){ net+=hy.sav[y]; run+=hy.run[y]; cum+=hy.sav[y]; if(payback==null&&cum>0)payback=y+1; }
     net-=m.setupTotal;
     const tco=m.setupTotal+run;
     if(m.setupTotal===0) payback=null;                   // payback meaningless with no setup invested
@@ -9950,7 +9964,7 @@ function renderResults(){
   const host=document.getElementById('resultsHost'); if(!host) return;
   const m=model();
   const fmt=n=>(n<0?'−':'')+'€'+Math.round(Math.abs(n)).toLocaleString('en-US');
-  let net=0; for(let y=0;y<m.horizon;y++) net+=m.yearSav[y];
+  let net=0; horizonYears().sav.forEach(function(v){ net+=v; });   // v18.13: one entry per horizon year (was a 3-entry array)
   net-=m.setupTotal;
   const roi=roiCanonical(net,m.setupTotal);   // v18.9 (M-2): null when nothing was invested — was shown as a misleading 0 %
   // payback: first year where cumulative (savings − setup) turns positive
@@ -22651,7 +22665,7 @@ if(typeof DEP!=='undefined' && DEP.node){ DEP.node('time.engine', TIME_INPUT_PAT
  * Non-enumerable so they don't pollute for..in loops on window. */
 try {
   Object.defineProperty(window, 'AgentCaseArch', {
-    value: { VERSION: '18.12.0', BUS: BUS, APP_STATE: APP_STATE, PM: PM, DEP: DEP, AUDIT: AUDIT, TIME: TIME },
+    value: { VERSION: '18.13.0', BUS: BUS, APP_STATE: APP_STATE, PM: PM, DEP: DEP, AUDIT: AUDIT, TIME: TIME },
     writable: false, configurable: true, enumerable: false
   });
 } catch(e){ /* older browsers: fall back silently */ }

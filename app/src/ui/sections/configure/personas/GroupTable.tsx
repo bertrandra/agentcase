@@ -1,12 +1,13 @@
 import { useState } from 'react';
 import { addGroup, deleteGroup, renameGroup, setGroupColor, setGroupDescription, setGroupOrder } from '@/controllers/pdcPersonas';
 import { groupsByOrder, type MenuGroup } from '@/domain/pdc/personas';
-import { SECTIONS } from '@/ui/zones/registry';
+import { useNavModel } from '@/ui/zones/navModel';
 
 const hex = (c: string | undefined) => (c && /^#[0-9a-fA-F]{6}$/.test(c) ? c : '#667089');
 
 /** Menu groups: order, label, colour, section count, description (shown on the Welcome cards). A group still holding sections cannot be deleted. */
 export function GroupTable({ groups, colors }: { groups: MenuGroup[]; colors: Record<string, string> }) {
+  const SECTIONS = useNavModel().sections;
   const [renaming, setRenaming] = useState<string | null>(null), [text, setText] = useState(''), [pending, setPending] = useState<string | null>(null), [label, setLabel] = useState(''), [warn, setWarn] = useState('');
   const commit = (id: string) => { renameGroup(id, text); setRenaming(null); };
   const del = (g: MenuGroup) => {

@@ -14,13 +14,12 @@ const help = (
   </>
 );
 
-const NONE: DynSection[] = [], NO_COLORS: Record<string, string> = {};
+const NONE: DynSection[] = [];
 
 /** Board — generate dashboards from menu groups and bind their cards to live variables. */
 export default function BoardSection() {
   const [tab, setTab] = useState<'sections' | 'variables'>('sections');
   const sections = useDoc((d) => (d.dynamicSections as DynSection[] | undefined) ?? NONE), docGroups = useDoc((d) => d.GROUPS as GroupDef[] | undefined);
-  const colors = useDoc((d) => (d.GROUP_COLORS as Record<string, string> | undefined) ?? NO_COLORS);
   const groups = [...(docGroups?.length ? docGroups : GROUPS)].sort((a, b) => a.order - b.order);
   return (
     <SectionFrame title="📊 Board" help={help}
@@ -35,7 +34,7 @@ export default function BoardSection() {
       result={tab === 'sections'
         ? <><h2>Dynamic sections</h2><Generator groups={groups} />
           <p className="ac-muted">Each generated dashboard is a first-class section: its own tab, editable cards and rows. Its menu group is separate from the group(s) it was generated FROM; cards and body rows are configured here (⚙️ Configure) — the section’s own tab only displays results.</p>
-          <Registry sections={sections} groups={groups} colors={colors} /></>
+          <Registry sections={sections} groups={groups} /></>
         : <><h2>Variable catalog</h2><Catalog /></>} />
   );
 }

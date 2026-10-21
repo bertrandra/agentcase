@@ -24,14 +24,14 @@ export const EXTRAS = {
   pdc_ddsens: `(()=>{ const keep = DD_SENS; try { ddComputeSensitivity(); const h = document.getElementById('ddHost');
     return JSON.parse(JSON.stringify({ base: DD_SENS.base, w: DD_SENS.w, unmeasurable: DD_SENS.unmeasurable, top: h.textContent.split('Used in')[0].replace(/\\s+/g,' ').trim(),
       tr: [...h.querySelectorAll('tbody tr')].map(tr => [...tr.children].map(c => c.textContent.trim())) })); } finally { DD_SENS = keep; } })()`,
-  pdc_verif: `(()=>{ renderVerif(); renderConvChecks();
+  pdc_verif: `(()=>{ MCS_LAST = null; refreshAll(); renderVerif(); renderConvChecks(); /* hermetic: an earlier extra left a 300-draw Monte Carlo run (CC-MC-01 FAIL) and a stale TIME.current (TE-DEP FAIL) */
     const rows = id => [...document.querySelectorAll('#'+id+' tr')].map(r => [...r.children].map(c => c.textContent.trim()));
     const txt = id => document.getElementById(id).textContent.replace(/\\s+/g,' ').trim();
     return { checks: rows('verifChecks'), chain: rows('verifChain'), sensi: rows('verifSensi'), prov: rows('provenanceHost'), provText: txt('provenanceHost'), conv: rows('convChecksHost') }; })()`,
   pdc_board: `(()=>({ dyn: JSON.parse(JSON.stringify(DYNAMIC_SECTIONS)) }))()`,
   pdc_dash: `(()=>{ const out = {}; const keep = JSON.stringify(PERSONA_SECTIONS);
     for (const [k, ids, all] of [['one', ['tune'], false], ['two', ['tune', 'verify'], false], ['all', [], true]]) {
-      dynSectionGenerate(ids, all); const d = JSON.parse(JSON.stringify(DYNAMIC_SECTIONS[DYNAMIC_SECTIONS.length - 1])); d.nCards = d.cards.length; d.cards = d.cards.slice(0, 2); out[k] = d; out[k + 'Admin'] = (PERSONA_SECTIONS.admin || []).slice(-1)[0]; dynSectionRemoveCascade(d.id);
+      dynSectionGenerate(ids, all); const d = JSON.parse(JSON.stringify(DYNAMIC_SECTIONS[DYNAMIC_SECTIONS.length - 1])); d.nCards = d.cards.length; d.slots = d.cards.map(c => [c.CARD_NAME_VALUE, c.CARD_SOURCE_SECTION, c.CARD_TARGET_SECTION, c.CARD_IMPACT_VAR, c.CARD_KEY1_VAR, c.CARD_KEY2_VAR]); d.cards = d.cards.slice(0, 2); out[k] = d; out[k + 'Admin'] = (PERSONA_SECTIONS.admin || []).slice(-1)[0]; dynSectionRemoveCascade(d.id);
     }
     out.restored = JSON.stringify(PERSONA_SECTIONS) === keep; out.max = Math.max(0, ...SECTION_CATALOG.map(s => s.groupSeq || 0)); return out; })()`,
   pdc_vars: `VARIABLE_REGISTRY.map(v => { let value = null, text = '—'; try { value = v.get(); text = formatValue(value, v.canonicalFormat); } catch (e) { text = 'ERR'; }

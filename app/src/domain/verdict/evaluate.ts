@@ -1,3 +1,4 @@
+import { horizonYears } from '../model/horizonYears';
 import { LOCATIONS } from '../catalog';
 import type { Ctx } from '../ctx';
 import { locationMix } from '../location';
@@ -62,9 +63,10 @@ export function evaluateStrategies(c: Ctx, defs: StrategyDef[] = strategyDefsOf(
     const tlp = stratTargetLoc(c, S), cs = withInputs(c, ov);
     const m = model(tlp ? { ...cs, s: { ...cs.s, targetLocPct: tlp } } : cs);
     let net = 0, run = 0, cum = -m.setupTotal, payback: number | null = null;
-    for (let y = 0; y < m.horizon; y++) {
-      const sv = m.yearSav[y] as number;
-      net += sv; run += m.yearRun[y] as number; cum += sv;
+    const hy = horizonYears(tlp ? { ...cs, s: { ...cs.s, targetLocPct: tlp } } : cs);   // one entry per horizon year (legacy v18.13)
+    for (let y = 0; y < hy.sav.length; y++) {
+      const sv = hy.sav[y] as number;
+      net += sv; run += hy.run[y] as number; cum += sv;
       if (payback == null && cum > 0) payback = y + 1;
     }
     net -= m.setupTotal;

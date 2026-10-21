@@ -34,6 +34,7 @@ export function scenarioModel(c: Ctx, opts: Partial<ScenOpts>) {
   const horizon = parseInt(inp.v('horizon'), 10);
   const ramps = [inp.p('y1Ramp'), inp.p('y2Ramp'), inp.p('y3Ramp')];
   for (let y = 3; y < horizon; y++) ramps.push(ramps[ramps.length - 1] as number);
+  if (ramps.length > horizon) ramps.length = Math.max(1, horizon);   // horizons 1–2 (legacy v18.13)
   const wd = inp.p('workdays'), tokenCost = blendedTokenCostPer1M(s), tokensPerArt = inp.p('tokensPerArt'), infra = inp.p('infra');
   const setupTotal = inp.p('setupTooling') + inp.p('setupTraining') + inp.p('setupCoaching') + inp.p('setupGov');
   const asisTJM = base.cost / (base.etp * wd), tgtTJM = targetBlendedTJM(s), tgtRateTJM = scenTargetTJM(c);
