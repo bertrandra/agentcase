@@ -1,10 +1,9 @@
-import type { VarValue } from '@/domain/pdc/variables';
 import { fmtK } from '@/ui/economicsFormat';
 
 export const FORMAT_IDS = ['EUR_K', 'EUR_M', 'PCT', 'INT', 'DEC1', 'DEC2', 'RATIO', 'DAYS', 'BOOL', 'TEXT'];
 
 /** Board display formats (legacy formatValue): a null or empty value reads as a dash. */
-export function formatValue(v: VarValue, format: string | null | undefined): string {
+export function formatValue(v: unknown, format: string | null | undefined): string {
   if (format === 'BOOL') return v ? '✓ On' : '✗ Off';
   if (v == null || v === '') return '—';
   const n = Number(v);

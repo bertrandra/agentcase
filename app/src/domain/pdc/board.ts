@@ -6,7 +6,8 @@ export interface BoardCard {
   CARD_KEY1_VAR: string | null; CARD_KEY1_FMT: string | null; CARD_KEY1_LABEL: string | null;
   CARD_KEY2_VAR: string | null; CARD_KEY2_FMT: string | null; CARD_KEY2_LABEL: string | null; CARD_OVERLAY_CTRL: string | null;
 }
-export interface BoardRow { label: string; var?: string | null; format?: string | null; defaultValue?: unknown; seq?: number }
+/** A body row of a dashboard: a label and a registry variable of `source` (its default text shows while unbound). `id` is absent on rows imported from old files. */
+export interface BoardRow { id?: string; label: string; var?: string | null; source?: string | null; format?: string | null; defaultValue?: unknown; seq?: number }
 export interface DynSection { id: string; title: string; archetype: string; description: string; menuGroup: string; order: number; visible: boolean; cards: BoardCard[]; rows: BoardRow[] }
 export type CardSlot = 'CARD_IMPACT_VAR' | 'CARD_KEY1_VAR' | 'CARD_KEY2_VAR';
 export interface SectionRef { id: string; group: string; label: string }

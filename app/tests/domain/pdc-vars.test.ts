@@ -1,0 +1,46 @@
+import { readFileSync } from 'node:fs';
+import { describe, expect, it } from 'vitest';
+import { ddBase } from '@/domain/pdc/dd';
+import { NO_RUNTIME, VARIABLES, type VarRuntime } from '@/domain/pdc/variables';
+import { auditViolations } from '@/domain/pdc/vars/audit';
+import { mcSeedOf, runMonteCarlo } from '@/domain/stress';
+import defaultDoc from '@/store/defaults/defaultDoc.json';
+import { formatValue } from '@/ui/sections/configure/board/format';
+import { diffs } from '../helpers/economics';
+import { ctxOf, pdc, PDC_FIXTURES } from '../helpers/pdc';
+
+interface Legacy { id: string; label: string; fmt: string; unit: string; scope: string; value: unknown; text: string }
+const base = ddBase(defaultDoc);
+/** The legacy oracle evaluated the registry in order: diVerdict ran the 800-draw Monte Carlo that mcP10... then read. */
+const runtimeOf = (c: ReturnType<typeof ctxOf>): VarRuntime => ({ mc: runMonteCarlo(c, 800, mcSeedOf(c)), tornado: null, ddBase: base });
+/** The oracle's pdc_vars extra runs after other extras that left a 300-draw stochastic run and a stale Time Engine hash behind: CC-MC-01 and TE-DEP read as violations. */
+const HARNESS = ['CC-MC-01', 'TE-DEP'];
+/** Legacy checks with no counterpart here (the legacy flat engine mode no longer exists): see vars/audit.ts. */
+const NOT_PORTED = ['TE-10b'];
+const legacyAudit = (id: string): string[] => (JSON.parse(readFileSync(`fixtures/expected/${id}.json`, 'utf8')) as { audit: { id: string }[] }).audit.map((a) => a.id);
+
+describe('all 166 registry variables reproduce the legacy', () => {
+  it('lists the legacy variables in the legacy order', () => {
+    expect(VARIABLES.map((x) => x.id)).toEqual(pdc<Legacy[]>('pdc_vars', 'golden').map((x) => x.id));
+    expect(VARIABLES).toHaveLength(166);
+  });
+  it.each(PDC_FIXTURES)('%s: value, label, format, scope and display text of every variable', (id) => {
+    const c = ctxOf(id), rt = runtimeOf(c), skipped = legacyAudit(id).filter((x) => NOT_PORTED.includes(x)).length + HARNESS.length;
+    const want = pdc<Legacy[]>('pdc_vars', id).map((w) => {
+      const value = w.id === 'auditViolationsCount' ? (w.value as number) - skipped : w.value;
+      return { ...w, value: value ?? null, text: w.id === 'auditViolationsCount' ? String(value) : w.text };
+    });
+    const got = VARIABLES.map((x) => { const value = x.get(c, rt); return { id: x.id, label: x.label, fmt: x.format, unit: x.unit, scope: x.scope, value: typeof value === 'number' && isNaN(value) ? null : value ?? null, text: formatValue(value, x.format) }; });
+    expect(diffs(want, got)).toEqual([]);
+  });
+  it.each(PDC_FIXTURES)('%s: the logic checks flag the violations the legacy AUDIT does', (id) => {
+    const c = ctxOf(id);
+    expect(auditViolations(c).map((v) => v.id).sort()).toEqual(legacyAudit(id).filter((x) => !NOT_PORTED.includes(x)).sort());
+  });
+  it('Monte Carlo variables show a dash until a run exists, the verdict computes its own', () => {
+    const c = ctxOf('golden'), by = (id: string) => VARIABLES.find((x) => x.id === id)!;
+    expect(['mcP10', 'mcP50', 'mcP90', 'mcPNegPct', 'monteCarloP50'].map((id) => by(id).get(c, NO_RUNTIME))).toEqual([null, null, null, null, null]);
+    expect(by('diVerdict').get(c, NO_RUNTIME)).toBe('strong');
+    expect(by('dueDiligenceCoveragePct').get(c, NO_RUNTIME)).toBeNull();
+  });
+});
