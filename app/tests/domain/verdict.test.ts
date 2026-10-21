@@ -32,7 +32,7 @@ describe('decision verdict reproduces the legacy decisionEngine()', () => {
   });
   it('coherence invariant: never recommended when P(net<0) exceeds 20 %', () => {
     const c = ctx('golden'), base = runMonteCarlo(c, 100, 42);
-    const d = decide(c, { stats: { ...base.stats, pNeg: 0.25, p10: 1e9 }, sens: base.sens });
+    const d = decide(c, { stats: { ...base.stats, pNetNeg: 0.25, p10: 1e9 }, sens: base.sens });
     expect(d.verdict).not.toBe('strong');
   });
 });

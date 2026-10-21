@@ -2,7 +2,8 @@ import type { Ctx } from '../ctx';
 import { engineNow } from '../canonical';
 import { monthlySeries } from '../economics/monthlySeries';
 import { model } from '../model/overlay';
-import { anchorClamp, daGet, perfRel } from './perf';
+import { anchorClamp, daGet } from '../verifyB/anchors';
+import { perfRel } from '../verifyB/perf';
 
 export const MP_COST_SP_ASIS = 650, MP_COST_SP_TARGET = 185;
 
@@ -13,7 +14,7 @@ export interface PlaybackSeries {
 }
 
 export function playbackSeries(c: Ctx): PlaybackSeries {
-  const m = model(c), months = m.horizon * 12, eng = engineNow(c), ms = monthlySeries(eng), v = daGet(c, 'velocitySp');
+  const m = model(c), months = m.horizon * 12, eng = engineNow(c), ms = monthlySeries(eng), v = daGet(c.s, 'velocitySp');
   const out: PlaybackSeries = { humanFte: [m.base.etp], agentVfte: [0], teamCost: [m.baselineRun / 12], tokenCost: [0], totalCost: [m.baselineRun / 12],
     netMonth: [0], cumulative: [0], velocity: [v.asis], costPerSp: [MP_COST_SP_ASIS], ramp: [0], horizon: m.horizon, months };
   for (let mo = 1; mo <= months; mo++) {

@@ -1,3 +1,4 @@
+import { legacyMoney } from './deviations';
 import { readdirSync, readFileSync } from 'node:fs';
 import { makeCtx } from '@/domain';
 import { createAppStore } from '@/store/core';
@@ -14,4 +15,4 @@ export const pdc = <T = unknown>(name: string, id: string): T => json(`fixtures/
 /** Install the oracle case `id` as the application store. */
 export function loadCase(id: string) { const s = createAppStore(caseOf(id)); setAppStore(s); return s; }
 /** Whitespace-free text, to compare tabular legacy text with rendered text. */
-export const sq = (s: string): string => s.replace(/\s+/g, '');
+export const sq = (s: string): string => legacyMoney(s.replace(/\s+/g, ''));

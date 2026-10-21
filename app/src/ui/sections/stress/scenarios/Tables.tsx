@@ -28,7 +28,7 @@ export function RoiTable({ S }: { S: Scenario[] }) {
     { key: 'setup', header: 'Setup (€)', align: 'right', render: (s) => money(s.m.setup) },
     { key: 'sav', header: `${H}-yr savings (€)`, align: 'right', render: (s) => money(s.m.totBen) },
     { key: 'net', header: 'Net (€)', align: 'right', render: (s) => fmtSigned(net(s)) },
-    { key: 'roi', header: 'ROI (net)', align: 'right', render: (s) => <b style={{ color: s.m.roi >= 0 ? 'var(--ac-teal)' : 'var(--ac-brick)' }}>{roiText(s.m)}</b> },
+    { key: 'roi', header: 'ROI (net)', align: 'right', render: (s) => <b style={{ color: (s.m.roi ?? 0) >= 0 ? 'var(--ac-teal)' : 'var(--ac-brick)' }}>{roiText(s.m)}</b> },
     { key: 'pb', header: 'Payback', align: 'right', render: (s) => fmtPayback(s.m.pbMonth, s.m.horizon * 12) },
     { key: 'cum', header: `Cum. cash-flow Y${H} (€)`, align: 'right', render: (s) => fmtSigned(net(s)) },
   ];

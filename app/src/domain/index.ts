@@ -1,4 +1,4 @@
-import { engineNow } from './canonical';
+import { caseDiscountRate, engineNow } from './canonical';
 import { makeCtx, type Ctx } from './ctx';
 import { horizonYears } from './model/horizonYears';
 import { model } from './model/overlay';
@@ -14,7 +14,7 @@ export { lifecycleWeight } from './lifecycle';
 export { SDLC_ARTEFACTS, REG_ARTEFACTS, PHASES, LOCATIONS } from './catalog';
 export { model } from './model/overlay';
 export { modelRaw } from './model/raw';
-export { engineNow, paybackMonthsCanonical, npvCanonical } from './canonical';
+export { engineNow, paybackMonthsCanonical, npvCanonical, caseDiscountRate } from './canonical';
 export type { CaseState } from './types/state';
 export type { ModelResult } from './types/model';
 
@@ -24,9 +24,8 @@ export const phaseScopeOf = (c: Ctx) => phaseScope(c.a, c.s);
 /** One call that computes everything the headline needs from a case. */
 export function computeCase(s: CaseState) {
   const c = makeCtx(s);
-  const eng = engineNow(c);
-  const d = s.MODEL?.CASE?.discountRate;
+  const eng = engineNow(c), rate = caseDiscountRate(c);
   const hy = horizonYears(c), last = hy.sav.length - 1;
-  return { model: model(c), endYear: { savings: hy.sav[last] ?? 0, run: hy.run[last] ?? 0, index: last + 1 }, headline: eng.headline(), payback: eng.payback(), npv: eng.npv(typeof d === 'number' ? d : 0.08),
+  return { model: model(c), endYear: { savings: hy.sav[last] ?? 0, run: hy.run[last] ?? 0, index: last + 1 }, headline: eng.headline(rate), payback: eng.payback(), npv: eng.npv(rate),
     phaseScope: phaseScope(c.a, c.s), glassCeiling: computeGlassCeiling(c) };
 }

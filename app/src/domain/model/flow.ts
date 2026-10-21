@@ -1,37 +1,11 @@
 import { engineNow } from '../canonical';
 import type { Ctx } from '../ctx';
-import { phaseScope, totalEffort } from '../scope';
+import { anchorClamp, daGet } from '../verifyB/anchors';
+import { perfRel } from '../verifyB/perf';
 import { rampAt } from '../time/adapters';
 import type { ModelResult } from '../types/model';
 import { flowOf, numOr } from './modelState';
 import { model } from './overlay';
-
-export interface DoraAnchor { id: string; label?: string; asis: number; target: number; fmt?: string; dir?: string }
-/** Built-in lead-time anchor (the case may carry its own DORA_ANCHORS). */
-export const DORA_ANCHORS_DEFAULT: DoraAnchor[] = [
-  { id: 'deployFreq', asis: 0.75, target: 14 }, { id: 'leadTime', asis: 21, target: 1 }, { id: 'mttr', asis: 5, target: 0.75 },
-  { id: 'changeFail', asis: 17, target: 4 }, { id: 'velocitySp', asis: 35, target: 59 },
-];
-export function daGet(c: Ctx, id: string): DoraAnchor {
-  const own = (c.s as unknown as { DORA_ANCHORS?: DoraAnchor[] }).DORA_ANCHORS;
-  return (own ?? []).find((a) => a.id === id) ?? DORA_ANCHORS_DEFAULT.find((a) => a.id === id) as DoraAnchor;
-}
-/** Clamp the interpolation to the declared [as-is, target] interval, whichever way the metric improves. */
-export function anchorClamp(asis: number, target: number, r: number): number {
-  const v = asis + (target - asis) * r;
-  return target >= asis ? Math.min(v, target) : Math.max(v, target);
-}
-
-/** Effort-weighted agent-supervision share of the whole SDLC catalogue (legacy refAvgAgent()). */
-function refAvgAgent(c: Ctx): number {
-  const t = totalEffort(c.a, c.s);
-  return t ? c.a.sdlc.reduce((s, a) => s + (+a.w || 0) * a.agentSup, 0) / t : 0;
-}
-export function perfRel(c: Ctx, ramp: number): number {
-  const d = (refAvgAgent(c) / 100) * (c.s.COEF.perfUpliftFactor as number);
-  const up = (phaseScope(c.a, c.s).avgAgent / 100) * (ramp / 100);
-  return d ? Math.max(0, Math.min(c.s.COEF.perfRelCap as number, up / d)) : 0;
-}
 
 /** How much further adoption climbs past the last flat year (1 for horizons up to 3 years). */
 function flowEndScale(c: Ctx): number {
@@ -43,12 +17,12 @@ function flowEndScale(c: Ctx): number {
 
 /** F-FLOW-1: a measured override takes precedence; else the lead-time anchor by horizon-end adoption, throttled by the supervision cap. */
 export function flowCycleTime(c: Ctx, m: ModelResult = model(c)) {
-  const fl = flowOf(c.s.MODEL), asis = daGet(c, 'leadTime').asis;
+  const fl = flowOf(c.s.MODEL), asis = daGet(c.s, 'leadTime').asis;
   if (fl.cycleTime > 0) return { asis, ct: fl.cycleTime, source: 'measured' as const, throttle: 1 };
   const e = engineNow(c), n = m.yearAgentVfteRaw.length - 1;
   const raw = m.yearAgentVfteRaw[n] as number, eff = m.yearAgentVfte[n] as number;
   const throttle = raw > 1e-9 ? Math.min(1, eff / raw) : 1;
-  const a = daGet(c, 'leadTime');
+  const a = daGet(c.s, 'leadTime');
   return { asis, ct: anchorClamp(a.asis, a.target, perfRel(c, e.year(e.horizonYears).adoptionEndPct) * throttle), source: 'derived' as const, throttle };
 }
 

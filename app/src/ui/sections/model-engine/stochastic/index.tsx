@@ -1,4 +1,4 @@
-import { mcsRunStore, runSimulationAsync } from '@/controllers/modelRun';
+import { mcsRunStore, runMcsAsync } from '@/controllers/modelRun';
 import { enableMcs, setMcsDraws, setMcsRho, setMcsSeed } from '@/controllers/modelStochastic';
 import { mcsOf } from '@/domain/model/modelState';
 import { useCtx } from '@/store/hooks';
@@ -21,7 +21,7 @@ const help = (
 export default function ModelStochasticSection() {
   const c = useCtx(), mc = mcsOf(c.s.MODEL), on = !!c.s.MODEL.FLAGS.mcs, { last, running } = useMcsRun();
   const run = () => {
-    runSimulationAsync().then((ms) => {
+    runMcsAsync().then((ms) => {
       const l = mcsRunStore.getState().last;
       if (l) toast(`✓ ${l.n.toLocaleString('en-US')} draws · seed ${l.seed} · ${ms} ms — P50 ${fmtK(l.stats.savY3.p50)}`);
     }).catch((e: Error) => toast(`✕ Simulation failed — ${e.message || 'unknown error'}`));

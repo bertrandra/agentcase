@@ -1,5 +1,6 @@
 import { makeCtx, type Ctx } from '../ctx';
-import { roiCanonical } from '../economics/roi';
+import { headline } from '../economics/headline';
+import { horizonYears } from '../model/horizonYears';
 import { model } from '../model/overlay';
 import type { CaseState } from '../types/state';
 import { fx } from './verifFormat';
@@ -10,11 +11,11 @@ const sum = (a: number[]) => a.reduce((x, y) => x + y, 0);
 
 /** Directional validation: nudge one lever, the savings and the Y3 delivery FTE must move the right way (null = the variant cannot move: at its limit). */
 export function directionalSensitivity(c: Ctx): SensiRow[] {
-  const m = model(c), baseSav = sum(m.yearSav), baseRoi = roiCanonical(baseSav - m.setupTotal, m.setupTotal), baseFte = m.yearETP[2]!;
+  const m = model(c), baseSav = sum(horizonYears(c).sav), baseRoi = headline(c).roi, baseFte = m.yearETP[2]!;
   const variant = (patch: Record<string, string>, force: boolean) => {
     const s: CaseState = { ...c.s, dom: { ...c.s.dom, values: { ...c.s.dom.values, ...patch } }, forceGlassCeiling: force || c.s.forceGlassCeiling };
-    const mm = model(makeCtx(s)), sav = sum(mm.yearSav);
-    return { sav, r: roiCanonical(sav - mm.setupTotal, mm.setupTotal), f: mm.yearETP[2]! };
+    const vc = makeCtx(s);
+    return { sav: sum(horizonYears(vc).sav), r: headline(vc).roi, f: model(vc).yearETP[2]! };
   };
   const atCap = m.eff >= 100 - m.ceiling - 1e-9, dnAuto = Math.max(0, m.auto - 10), upAuto = atCap ? dnAuto : Math.min(80, m.auto + 10), upCeil = Math.min(100, m.ceiling + 10), tol = 1e-9;
   const vUp = variant({ autoPotential: String(upAuto) }, false), vCeil = variant({ glassCeiling: String(upCeil) }, true);

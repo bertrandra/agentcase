@@ -7,7 +7,9 @@ import { sddMaturity } from '../model/vtax';
 import { ASSUMPTION_DEFS, benchmarkBase, type AssumptionBase, type Validated } from './assumptions';
 import coefficients from './ddCoefficients.json';
 import { ceilingRows, DD_CEIL_TARGET } from './ddCeiling';
-import type { Anchor } from './perf';
+
+/** A DORA / throughput anchor as the due-diligence register edits it (labels and formats are optional there). */
+interface Anchor { id: string; label?: string; asis: number; target: number; fmt?: string; dir?: string }
 
 export type DdEdit = 'here' | 'derived' | 'NONE' | { sec: string; also?: string; note?: string };
 export type DdField = { kind: 'coef'; key: string } | { kind: 'dora' | 'thr'; id: string } | { kind: 'qual'; i: number } | { kind: 'fg'; key: string };

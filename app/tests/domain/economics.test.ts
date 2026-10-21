@@ -3,6 +3,7 @@ import { fromSnapshot } from '@/store/persistence/snapshot';
 import { engineNow, makeCtx } from '@/domain';
 import { economicsView, fmtPayback, fmtRoiPct, monthlySeries, roiCanonical, roiVerdict, savingsBreakdown, yLabel } from '@/domain/economics';
 import { fmtE, fmtK } from '@/ui/economicsFormat';
+import { legacyMoney } from '../helpers/deviations';
 import { diffs, extra, FIXTURES } from '../helpers/economics';
 import { readFileSync } from 'node:fs';
 
@@ -23,8 +24,8 @@ describe('economics domain reproduces the legacy', () => {
     const f = extra<{ roi: string[]; payback: string[]; fmtK: string[]; fmtE: string[]; yLabel: string[]; roiNull: (number | null)[] }>('econ_fmt', 'golden');
     expect([null, 0, 0.004, 0.3, 1.5, 6.5712, -0.4, 12.345].map(fmtRoiPct)).toEqual(f.roi);
     expect([[null, 36], [0, 36], [1, 36], [9, 36], [Infinity, 60], [undefined, 120]].map(([m, h]) => fmtPayback(m, h as number))).toEqual(f.payback);
-    expect([0, 499, 500, 1499, 1500, 1704000, -15379, -400, 1234567, 12345678].map(fmtK)).toEqual(f.fmtK);
-    expect([0, 0.5, 1.5, 22121.4, -15379.5, 1234567.89].map(fmtE)).toEqual(f.fmtE);
+    expect([0, 499, 500, 1499, 1500, 1704000, -15379, -400, 1234567, 12345678].map(fmtK)).toEqual(f.fmtK.map(legacyMoney));   // DEV-NEG-MONEY
+    expect([0, 0.5, 1.5, 22121.4, -15379.5, 1234567.89].map(fmtE)).toEqual(f.fmtE.map(legacyMoney));
     expect([1, 2, 3, 10].map(yLabel)).toEqual(f.yLabel);
     expect([roiCanonical(5, 0), roiCanonical(NaN, 10), roiCanonical(Infinity, 10), roiCanonical(50, 10)]).toEqual(f.roiNull);
   });

@@ -36,7 +36,7 @@ export const ENGINE_VARS = [
   v('mcP10', 'Monte Carlo P10 (downside)', 'EUR_K', '€', 'montecarlo', (_c, rt) => rt.mc?.stats.p10 ?? null),
   v('mcP50', 'Monte Carlo P50 (median)', 'EUR_K', '€', 'montecarlo', (_c, rt) => rt.mc?.stats.p50 ?? null),
   v('mcP90', 'Monte Carlo P90 (upside)', 'EUR_K', '€', 'montecarlo', (_c, rt) => rt.mc?.stats.p90 ?? null),
-  v('mcPNegPct', 'P(net benefit < 0)', 'PCT', '%', 'montecarlo', (_c, rt) => (rt.mc ? rt.mc.stats.pNeg * 100 : null)),
+  v('mcPNegPct', 'P(net benefit < 0)', 'PCT', '%', 'montecarlo', (_c, rt) => (rt.mc ? rt.mc.stats.pNetNeg * 100 : null)),
   v('topStrategyLabel', 'Top-ranked strategy', 'TEXT', '', 'strategies', (c) => { const t = top(c); return t ? `${t.icon} ${t.label}` : '—'; }),
   v('topStrategyScore', 'Top-ranked strategy composite score (0-100)', 'INT', '', 'strategies', (c) => top(c)?.score ?? null),
   v('aiReadinessIndex', 'AI readiness index (0-100)', 'INT', '', 'readiness', (c) => readinessIndex(c.s)),

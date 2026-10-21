@@ -1,5 +1,7 @@
 import { LOCATIONS } from '../catalog';
 import type { Ctx } from '../ctx';
+import { annualPaybackMonth } from '../economics/headline';
+import { roiCanonical } from '../economics/roi';
 import { rateFor, targetBlendedTJM, teamInCost } from '../location';
 import { computeGlassCeiling } from '../model/ceiling';
 import { blendedTokenCostPer1M } from '../tokens';
@@ -56,12 +58,7 @@ export function scenarioModel(c: Ctx, opts: Partial<ScenOpts>) {
   const setup = o.ai || o.loc === 'ramp' ? setupTotal : 0;
   const yearRun = yearTeamCost.map((tc, i) => tc + (o.ai ? (yearToken[i] as number) : 0) + (o.ai ? infraYear : 0) + (runAgenticCost[i] as number));
   const baselineRun = base.cost, yearSav = yearRun.map((r) => baselineRun - r), totBen = yearSav.reduce((a, b) => a + b, 0);
-  const roi = setup > 0 ? (totBen - setup) / setup : totBen > 0 ? Infinity : 0;
-  let cum = -setup, pbMonth: number | null = null;
-  for (let y = 0; y < horizon; y++) {
-    const prev = cum, sv = yearSav[y] as number; cum += sv;
-    if (pbMonth === null && cum >= 0 && sv > 0) pbMonth = y * 12 + Math.ceil((-prev / sv) * 12);
-  }
+  const roi = roiCanonical(totBen - setup, setup), pbMonth = annualPaybackMonth(setup, yearSav);
   return { opts: o, base, setup, dayRateByYear, yearETP, yearAgentVfte, yearTeamCost, yearToken, yearRun, yearSav, baselineRun, totBen, roi, pbMonth, horizon, tgtTJM, asisTJM, tgtRateTJM };
 }
 export type ScenarioResult = ReturnType<typeof scenarioModel>;

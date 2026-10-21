@@ -2,6 +2,7 @@ import { CC_MULT } from '../catalog';
 import { makeCtx, type Ctx } from '../ctx';
 import { engagementCoef, engagementKey } from '../engagement';
 import { khAsisCC, khAsisScore, khEnabled, khTargetCC } from '../knowledge';
+import { horizonYears } from '../model/horizonYears';
 import { model } from '../model/overlay';
 
 const sum = (a: number[]) => a.reduce((x, y) => x + y, 0);
@@ -20,7 +21,7 @@ export function hubView(c: Ctx): HubView {
   if (on) {
     const off = makeCtx({ ...c.s, dom: { ...c.s.dom, checked: { ...c.s.dom.checked, khEnabled: false } } }, { rateScale: c.rateScale, tokenScale: c.tokenScale });
     const m0 = model(off);
-    dEff = m.eff - m0.eff; dSav = sum(m.yearSav) - sum(m0.yearSav);
+    dEff = m.eff - m0.eff; dSav = sum(horizonYears(c).sav) - sum(horizonYears(off).sav);
   }
   return {
     on, locked: coef.khMaxCC <= 0, context: engagementKey(c), maxCC: coef.khMaxCC, rawTarget: raw, clamped: raw > coef.khMaxCC && coef.khMaxCC > 0,

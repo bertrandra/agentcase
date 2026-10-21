@@ -1,5 +1,6 @@
 import { existsSync, readdirSync, readFileSync } from 'node:fs';
 import type { CaseState } from '@/domain';
+import { legacyNames, withoutDeviations } from './deviations';
 
 const DIR = 'fixtures';
 /** Fixture ids that have an oracle extra of this name (fixtures/extras/<name>/<id>.json). */
@@ -25,6 +26,6 @@ export function diff(exp: unknown, got: unknown, path: string, out: string[]): v
 /** Expect `got` to match the oracle extra `name` of fixture `id`; returns the problems (an empty list is a pass). */
 export function problems(name: string, id: string, got: unknown): string[] {
   const out: string[] = [];
-  diff(loadExtra(name, id), got, name, out);
-  return out.slice(0, 10);
+  diff(loadExtra(name, id), legacyNames(got), name, out);
+  return withoutDeviations(out).slice(0, 10);   // registered deviations (docs/DEVIATIONS.md) are asserted by their own tests
 }

@@ -1,3 +1,4 @@
+import { roiCanonical } from '../economics/roi';
 import { econ, type K } from './kernel';
 import { monthRow, type MonthRow } from './rows';
 import { aggregateYear, type YearRow } from './years';
@@ -42,10 +43,10 @@ export function makeEngine(K: K) {
     for (let t = 1; t <= N; t++) v += monthAt(t).netSavings / Math.pow(1 + dr, t);
     return v;
   }
-  function roi(): number {
+  function roi(): number | null {
     let net = 0;
     for (let t = 1; t <= N; t++) net += monthAt(t).netSavings;
-    return K.setupTotal > 0 ? net / K.setupTotal : net > 0 ? Infinity : 0;
+    return roiCanonical(net, K.setupTotal);
   }
   function year(y: number): YearRow {
     if (y < 1 || y > K.horizonYears) throw new Error('TIME.year out of range');
@@ -62,10 +63,11 @@ export function makeEngine(K: K) {
     for (let t = 1; t <= N; t++) if (monthAt(t).agentVfte > 1e-4) { out.push({ month: t, family: 'workforce', label: 'First agent vFTE' }); break; }
     return out.sort((a, b) => a.month - b.month || (a.family > b.family ? 1 : -1));
   }
-  function headline() {
+  /** Payback, NPV at the caller's discount rate, ROI and total savings; the rate is an explicit argument (the case owns it: canonical `caseDiscountRate`). */
+  function headline(annualRate: number) {
     let tot = 0;
     for (let t = 1; t <= N; t++) tot += monthAt(t).netSavings;
-    return { payback: payback(), npv: npv(0.08), roi: roi(), totalSavings: tot };
+    return { payback: payback(), npv: npv(annualRate), roi: roi(), totalSavings: tot };
   }
   return { K, horizonYears: K.horizonYears, horizonMonths: N, monthAt, months, cumulativeAt, payback, npv, roi, year, years: allYears, milestones, headline };
 }

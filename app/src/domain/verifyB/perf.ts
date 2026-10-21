@@ -2,9 +2,11 @@ import type { Ctx } from '../ctx';
 import { model } from '../model/overlay';
 import { engineNow } from '../canonical';
 import { phaseScope, totalEffort } from '../scope';
+import { numOr } from '../model/modelState';
 
 const COEF_FALLBACK = { perfRelCap: 1.4, perfUpliftFactor: 0.85 };
-export const perfCoef = (c: Ctx) => ({ ...COEF_FALLBACK, ...(c.s.COEF ?? {}) });
+/** Realisation coefficients, each falling back to its default when missing, undefined or not finite (never NaN). */
+export const perfCoef = (c: Ctx) => ({ perfRelCap: numOr(c.s.COEF?.perfRelCap, COEF_FALLBACK.perfRelCap), perfUpliftFactor: numOr(c.s.COEF?.perfUpliftFactor, COEF_FALLBACK.perfUpliftFactor) });
 export const yearLabel = (y: number): string => `Y${y}`;
 
 /** Effort-weighted automatable baseline of the full SDLC scope (legacy refAvgAgent). */

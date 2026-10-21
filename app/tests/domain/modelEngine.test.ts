@@ -7,6 +7,7 @@ import { flowModel } from '@/domain/model/flow';
 import { lceModel } from '@/domain/model/lce';
 import { runMcs } from '@/domain/model/mcs';
 import { doraReadout, supModel } from '@/domain/model/supView';
+import { legacyNames } from '../helpers/deviations';
 import { diffValues, extraIds, loadCase, loadExtra, omitDeep, pick } from '../helpers/oracleDiff';
 
 type Json = Record<string, unknown> & { error?: string };
@@ -37,6 +38,6 @@ describe('Model-Engine read-outs reproduce the legacy oracle', () => {
     return { ...e, confidence: { score: e.score, grade: e.grade, hasTornado: e.hasTornado }, upgradePriority: e.upgradePriority.map((u) => ({ ...u, tier: u.effectiveTier })) };
   }, ['stage', 'expectedGrade', 'confidence', 'meetsExpectation', 'upgradePriority']));
   it.each(['golden', 'me-mcs', 'me-sup-hard', 'me-lce', 'curve-logistic', 'horizon-5', 'sup-hard', 'evt-on'])('P4 stochastic layer (seed 777, 300 draws) · %s', (id) => {
-    same('me_mcs', id, (i) => runMcs(ctxOf(i), 300, 777));
+    same('me_mcs', id, (i) => legacyNames(runMcs(ctxOf(i), 300, 777)));
   }, 60000);
 });

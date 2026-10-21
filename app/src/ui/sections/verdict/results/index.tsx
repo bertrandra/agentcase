@@ -1,3 +1,4 @@
+import { pNegTone } from '@/domain/stress';
 import { resultsCore } from '@/domain/verdict';
 import { useCtx } from '@/store/hooks';
 import { useSimulation } from '@/store/simulation';
@@ -37,7 +38,7 @@ export default function ResultsSection() {
           <Panel title={`Uncertainty (Monte Carlo, ${s.n} draws)`}>
             <StatRow>
               <Kpi label="P10 downside" value={fmtEur(s.p10)} tone={s.p10 < 0 ? 'brick' : 'teal'} /><Kpi label="P50 median" value={fmtEur(s.p50)} tone="blue" />
-              <Kpi label="P90 upside" value={fmtEur(s.p90)} tone="teal" /><Kpi label="P(net < 0)" value={`${Math.round(s.pNeg * 100)}%`} tone={s.pNeg > 0.2 ? 'brick' : 'teal'} />
+              <Kpi label="P90 upside" value={fmtEur(s.p90)} tone="teal" /><Kpi label="P(net < 0)" value={`${Math.round(s.pNetNeg * 100)}%`} tone={pNegTone(s.pNetNeg)} />
             </StatRow>
           </Panel>
         )}

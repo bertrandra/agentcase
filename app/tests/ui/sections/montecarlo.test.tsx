@@ -26,10 +26,10 @@ describe('Monte Carlo section', () => {
     const c = makeCtx(appStore().getState().doc), r = runMonteCarlo(c, 300, mcSeedOf(c));
     expect(screen.getByText('300 · 7')).toBeTruthy();
     expect(screen.getByText(fmtEur(r.stats.p50))).toBeTruthy();
-    expect(screen.getByText(`${Math.round(r.stats.pNeg * 100)}%`)).toBeTruthy();
-    // the legacy run of the same fixture with 200 draws, to 1e-6 (domain/stress.test.ts); here the cards follow the stored distribution
+    expect(screen.getByText(`${Math.round(r.stats.pNetNeg * 100)}%`)).toBeTruthy();
+    // the legacy run of the same fixture with 200 draws; DEV-MC-QUANTILE moved the percentile estimator by under one rank (exact rule: domain/stress.test.ts)
     const legacy = loadExtra('mcRun', 'mc-seed-7') as { stats: { p50: number } };
-    expect(Math.abs(runMonteCarlo(c, 200, 7).stats.p50 - legacy.stats.p50)).toBeLessThan(1e-6 * Math.abs(legacy.stats.p50));
+    expect(Math.abs(runMonteCarlo(c, 200, 7).stats.p50 - legacy.stats.p50)).toBeLessThan(1e-3 * Math.abs(legacy.stats.p50));
   });
   it('seed edit: a different seed gives a different distribution, undo returns the stored seed', () => {
     openFixture('mc-seed-7');

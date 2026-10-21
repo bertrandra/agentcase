@@ -47,7 +47,7 @@ describe('monthly section', () => {
     const { container } = render(<Monthly />), cells = (i: number) => [...container.querySelectorAll('tbody tr')[i]!.children].map((c) => c.textContent);
     expect(cells(0)[6]).toBe('€37,500');
     expect(cells(11)[6]).toBe('—');
-    expect(cells(7)[9]!.startsWith('€-')).toBe(true);    // M8 still negative
-    expect(cells(8)[9]!.startsWith('€-')).toBe(false);   // M9 = payback month
+    expect(cells(7)[9]!.startsWith('−€')).toBe(true);    // M8 still negative
+    expect(cells(8)[9]!.startsWith('−€')).toBe(false);   // M9 = payback month
   });
 });

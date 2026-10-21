@@ -1,4 +1,5 @@
 import { engineNow, npvCanonical, paybackMonthsCanonical } from '../canonical';
+import { headline } from '../economics/headline';
 import type { Ctx } from '../ctx';
 import { monthlySeries } from '../economics/monthlySeries';
 import { activeCurve, model } from '../model/overlay';
@@ -117,11 +118,14 @@ export function timeChecksA(c: Ctx): ConvCheck[] {
       for (let t = 1; t <= eng.horizonMonths; t++) if (eng.cumulativeAt(t) >= 0) { ref = t; break; }
       if (eng.payback() !== ref) return `engine.payback() ${eng.payback()} != first cum>=0 crossing ${ref}`;
       if (paybackMonthsCanonical(c) !== ref) return 'paybackMonthsCanonical() != engine crossing';
+      const h = headline(c);
+      if (h.paybackMonth !== ref || h.paybackYear !== (ref == null ? null : Math.ceil(ref / 12))) return `headline payback ${h.paybackMonth}/${h.paybackYear} != crossing ${ref}`;
       const r = reg(c, 'paybackMonths');
       return r !== undefined && r !== ref ? `registry paybackMonths ${r} != canonical ${ref}` : null;
     }),
     auditTry('TE-08', () => {
       const canon = npvCanonical(c), r = reg(c, 'npv8');
+      if (Math.abs(headline(c).npv - canon) > TOL) return `headline npv ${headline(c).npv.toFixed(4)} != canonical ${canon.toFixed(4)}`;
       return typeof r === 'number' && Math.abs(r - canon) > TOL ? `registry npv8 ${r.toFixed(4)} != canonical ${canon.toFixed(4)}` : null;
     }),
   ];

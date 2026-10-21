@@ -1,7 +1,9 @@
 import { existsSync, readFileSync } from 'node:fs';
 
 /** Numbers shown in a text: €1 704K, €1,204,000, 75%, 13.0 … (ids like Y3, A017, v18.9 and bare digits < 10 are skipped). */
-export function numberTokens(text: string): number[] {
+export function numberTokens(raw: string): number[] {
+  // DEV-NEG-MONEY: every negative amount reads as "-€x" for the comparison, whichever way it is printed ("−€x", "-€x", "€-x", "(€x)").
+  const text = raw.replace(/\u2212/g, '-').replace(/-\s?€/g, '€-').replace(/\(\s?€\s?(\d[\d.,\u00a0\u202f ]*[KkMm]?)\s?\)/g, '€-$1');
   const out: number[] = [];
   const re = /(?<![A-Za-z0-9.])(-?\d{1,3}(?:[ \u00a0\u202f,]\d{3})+(?:\.\d+)?|-?\d+(?:\.\d+)?)\s?([KkMm](?![A-Za-z]))?/g;
   for (const m of text.matchAll(re)) {
