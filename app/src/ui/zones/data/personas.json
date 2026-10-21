@@ -1,0 +1,183 @@
+[
+ {
+  "id": "advanced",
+  "label": "Advanced",
+  "protected": true,
+  "order": 0
+ },
+ {
+  "id": "builder",
+  "label": "Builder",
+  "protected": false,
+  "order": 4,
+  "compactNav": true,
+  "default": true,
+  "seq": {
+   "on": true,
+   "steps": [
+    {
+     "label": "1 · Frame",
+     "sections": [
+      "engagement-context",
+      "transform-params"
+     ]
+    },
+    {
+     "label": "2 · Baseline",
+     "sections": [
+      "team-in",
+      "ratecard",
+      "loc-strat"
+     ]
+    },
+    {
+     "label": "3 · Scope",
+     "sections": [
+      "scope-sel",
+      "scurve",
+      "params",
+      "lc-weighting"
+     ]
+    },
+    {
+     "label": "4 · Tune",
+     "sections": [
+      "maturity-map",
+      "readiness",
+      "eligibility",
+      "run-sizing",
+      "risk",
+      "token-econ",
+      "knowledge",
+      "lifecycle-edit",
+      "setup"
+     ]
+    },
+    {
+     "label": "5 · Verify",
+     "sections": [
+      "fte-vfte",
+      "phase-art",
+      "vfte-ov",
+      "team-out",
+      "tobe-team",
+      "agent-dir"
+     ]
+    },
+    {
+     "label": "6 · Economics",
+     "sections": [
+      "financial",
+      "run",
+      "annual",
+      "monthly"
+     ]
+    },
+    {
+     "label": "7 · Stress",
+     "sections": [
+      "montecarlo",
+      "scenarios",
+      "compare",
+      "sensitivity"
+     ]
+    },
+    {
+     "label": "8 · Verdict",
+     "sections": [
+      "results",
+      "decision",
+      "strategies"
+     ]
+    },
+    {
+     "label": "9 · Defend",
+     "sections": [
+      "verif",
+      "duediligence",
+      "assumptions"
+     ]
+    },
+    {
+     "label": "10 · Present",
+     "sections": [
+      "commercial",
+      "story-summary",
+      "monthly-playback"
+     ]
+    }
+   ]
+  }
+ },
+ {
+  "id": "clientcase",
+  "label": "🤝 Client case",
+  "protected": false,
+  "order": 3,
+  "compactNav": true,
+  "seq": {
+   "on": true,
+   "steps": [
+    {
+     "label": "1 · Frame the engagement",
+     "sections": [
+      "engagement-context",
+      "engage",
+      "transform-params"
+     ]
+    },
+    {
+     "label": "2 · Their baseline",
+     "sections": [
+      "team-in",
+      "ratecard",
+      "loc-strat"
+     ]
+    },
+    {
+     "label": "3 · What is in scope",
+     "sections": [
+      "scope-sel",
+      "params",
+      "scurve"
+     ]
+    },
+    {
+     "label": "4 · Reality check",
+     "sections": [
+      "readiness",
+      "risk"
+     ]
+    },
+    {
+     "label": "5 · The economics",
+     "sections": [
+      "token-econ",
+      "fte-vfte",
+      "financial"
+     ]
+    },
+    {
+     "label": "6 · Verdict & confidence",
+     "sections": [
+      "montecarlo",
+      "decision"
+     ]
+    },
+    {
+     "label": "7 · Agree & present",
+     "sections": [
+      "duediligence",
+      "story-summary"
+     ]
+    }
+   ]
+  }
+ },
+ {
+  "id": "admin",
+  "label": "Admin",
+  "protected": false,
+  "order": 5
+ }
+]

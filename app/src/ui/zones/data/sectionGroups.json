@@ -1,0 +1,488 @@
+[
+ {
+  "id": "home",
+  "group": "frame",
+  "groupSeq": 20,
+  "tag": "supports"
+ },
+ {
+  "id": "engagement-context",
+  "group": "frame",
+  "groupSeq": 24,
+  "tag": "drives",
+  "mvp": true
+ },
+ {
+  "id": "engage",
+  "group": "frame",
+  "groupSeq": 26,
+  "tag": "drives",
+  "mvp": true
+ },
+ {
+  "id": "transform-params",
+  "group": "frame",
+  "groupSeq": 28,
+  "tag": "drives",
+  "mvp": true
+ },
+ {
+  "id": "params",
+  "group": "scope",
+  "groupSeq": 12,
+  "tag": "drives",
+  "mvp": true
+ },
+ {
+  "id": "scurve",
+  "group": "scope",
+  "groupSeq": 11,
+  "tag": "drives",
+  "mvp": true
+ },
+ {
+  "id": "maturity-map",
+  "group": "tune",
+  "groupSeq": 5,
+  "tag": "drives"
+ },
+ {
+  "id": "readiness",
+  "group": "tune",
+  "groupSeq": 50,
+  "tag": "supports,shapes"
+ },
+ {
+  "id": "scope-sel",
+  "group": "scope",
+  "groupSeq": 10,
+  "tag": "drives",
+  "mvp": true
+ },
+ {
+  "id": "phase-scope",
+  "group": "scope",
+  "groupSeq": 8,
+  "tag": "drives"
+ },
+ {
+  "id": "lc-weighting",
+  "group": "scope",
+  "groupSeq": 15,
+  "tag": "drives"
+ },
+ {
+  "id": "lifecycle-edit",
+  "group": "tune",
+  "groupSeq": 140,
+  "tag": "drives"
+ },
+ {
+  "id": "team-in",
+  "group": "baseline",
+  "groupSeq": 10,
+  "tag": "drives",
+  "mvp": true
+ },
+ {
+  "id": "ratecard",
+  "group": "baseline",
+  "groupSeq": 20,
+  "tag": "drives",
+  "mvp": true
+ },
+ {
+  "id": "loc-strat",
+  "group": "baseline",
+  "groupSeq": 30,
+  "tag": "drives",
+  "mvp": true
+ },
+ {
+  "id": "token-econ",
+  "group": "tune",
+  "groupSeq": 90,
+  "tag": "drives",
+  "mvp": true
+ },
+ {
+  "id": "knowledge",
+  "group": "tune",
+  "groupSeq": 110,
+  "tag": "drives"
+ },
+ {
+  "id": "run-sizing",
+  "group": "tune",
+  "groupSeq": 70,
+  "tag": "drives"
+ },
+ {
+  "id": "assumptions",
+  "group": "defend",
+  "groupSeq": 30,
+  "tag": "supports"
+ },
+ {
+  "id": "fte-vfte",
+  "group": "verify",
+  "groupSeq": 30,
+  "tag": "reads",
+  "mvp": true
+ },
+ {
+  "id": "vfte-ov",
+  "group": "verify",
+  "groupSeq": 60,
+  "tag": "reads"
+ },
+ {
+  "id": "team-out",
+  "group": "verify",
+  "groupSeq": 80,
+  "tag": "reads"
+ },
+ {
+  "id": "opmodel",
+  "group": "tune",
+  "groupSeq": 120,
+  "tag": "supports"
+ },
+ {
+  "id": "tobe-team",
+  "group": "verify",
+  "groupSeq": 110,
+  "tag": "reads"
+ },
+ {
+  "id": "montecarlo",
+  "group": "stress",
+  "groupSeq": 10,
+  "tag": "drives"
+ },
+ {
+  "id": "model-stochastic",
+  "group": "model-engine",
+  "groupSeq": 40,
+  "tag": "supports"
+ },
+ {
+  "id": "phase-art",
+  "group": "verify",
+  "groupSeq": 40,
+  "tag": "reads"
+ },
+ {
+  "id": "agent-dir",
+  "group": "verify",
+  "groupSeq": 130,
+  "tag": "shapes"
+ },
+ {
+  "id": "agent-detail",
+  "group": "verify",
+  "groupSeq": 150,
+  "tag": "supports"
+ },
+ {
+  "id": "agent-usage",
+  "group": "verify",
+  "groupSeq": 160,
+  "tag": "supports"
+ },
+ {
+  "id": "model-convergence",
+  "group": "model-engine",
+  "groupSeq": 10,
+  "tag": "supports"
+ },
+ {
+  "id": "model-supervision",
+  "group": "model-engine",
+  "groupSeq": 30,
+  "tag": "supports"
+ },
+ {
+  "id": "setup",
+  "group": "tune",
+  "groupSeq": 170,
+  "tag": "drives"
+ },
+ {
+  "id": "run",
+  "group": "economics",
+  "groupSeq": 30,
+  "tag": "reads"
+ },
+ {
+  "id": "annual",
+  "group": "economics",
+  "groupSeq": 40,
+  "tag": "reads"
+ },
+ {
+  "id": "monthly",
+  "group": "economics",
+  "groupSeq": 50,
+  "tag": "reads"
+ },
+ {
+  "id": "monthly-playback",
+  "group": "present",
+  "groupSeq": 40,
+  "tag": "supports"
+ },
+ {
+  "id": "exec",
+  "group": "verify",
+  "groupSeq": 140,
+  "tag": "supports"
+ },
+ {
+  "id": "productivity",
+  "group": "verify",
+  "groupSeq": 50,
+  "tag": "supports"
+ },
+ {
+  "id": "velocity",
+  "group": "verify",
+  "groupSeq": 70,
+  "tag": "supports"
+ },
+ {
+  "id": "quality",
+  "group": "verify",
+  "groupSeq": 90,
+  "tag": "supports"
+ },
+ {
+  "id": "compliance",
+  "group": "verify",
+  "groupSeq": 100,
+  "tag": "supports"
+ },
+ {
+  "id": "financial",
+  "group": "economics",
+  "groupSeq": 10,
+  "tag": "drives",
+  "mvp": true
+ },
+ {
+  "id": "model-flow",
+  "group": "model-engine",
+  "groupSeq": 50,
+  "tag": "supports"
+ },
+ {
+  "id": "gantt",
+  "group": "verify",
+  "groupSeq": 10,
+  "tag": "supports"
+ },
+ {
+  "id": "board",
+  "group": "configure",
+  "groupSeq": 10,
+  "tag": "supports"
+ },
+ {
+  "id": "factory-model",
+  "group": "factory",
+  "groupSeq": 10,
+  "tag": "supports"
+ },
+ {
+  "id": "release-pipeline",
+  "group": "factory",
+  "groupSeq": 20,
+  "tag": "supports"
+ },
+ {
+  "id": "engineering",
+  "group": "factory",
+  "groupSeq": 30,
+  "tag": "supports"
+ },
+ {
+  "id": "factory-timeline",
+  "group": "factory",
+  "groupSeq": 40,
+  "tag": "supports"
+ },
+ {
+  "id": "commercial",
+  "group": "present",
+  "groupSeq": 10,
+  "tag": "supports"
+ },
+ {
+  "id": "scenarios",
+  "group": "stress",
+  "groupSeq": 20,
+  "tag": "reads"
+ },
+ {
+  "id": "kpi",
+  "group": "verify",
+  "groupSeq": 120,
+  "tag": "supports"
+ },
+ {
+  "id": "asis-tobe",
+  "group": "verify",
+  "groupSeq": 20,
+  "tag": "supports"
+ },
+ {
+  "id": "compare",
+  "group": "stress",
+  "groupSeq": 30,
+  "tag": "reads"
+ },
+ {
+  "id": "sensitivity",
+  "group": "stress",
+  "groupSeq": 40,
+  "tag": "reads"
+ },
+ {
+  "id": "sources",
+  "group": "refshare",
+  "groupSeq": 10,
+  "tag": "supports"
+ },
+ {
+  "id": "results",
+  "group": "verdict",
+  "groupSeq": 10,
+  "tag": "reads"
+ },
+ {
+  "id": "story-summary",
+  "group": "present",
+  "groupSeq": 30,
+  "tag": "supports"
+ },
+ {
+  "id": "decision",
+  "group": "verdict",
+  "groupSeq": 20,
+  "tag": "drives"
+ },
+ {
+  "id": "model-evidence",
+  "group": "model-engine",
+  "groupSeq": 60,
+  "tag": "supports"
+ },
+ {
+  "id": "strategies",
+  "group": "verdict",
+  "groupSeq": 30,
+  "tag": "reads"
+ },
+ {
+  "id": "arch-layers",
+  "group": "refshare",
+  "groupSeq": 20,
+  "tag": "supports"
+ },
+ {
+  "id": "arch-content",
+  "group": "refshare",
+  "groupSeq": 30,
+  "tag": "supports"
+ },
+ {
+  "id": "verif",
+  "group": "defend",
+  "groupSeq": 10,
+  "tag": "supports"
+ },
+ {
+  "id": "eligibility",
+  "group": "tune",
+  "groupSeq": 60,
+  "tag": "drives"
+ },
+ {
+  "id": "model-verification",
+  "group": "model-engine",
+  "groupSeq": 20,
+  "tag": "supports"
+ },
+ {
+  "id": "maturity",
+  "group": "tune",
+  "groupSeq": 100,
+  "tag": "supports"
+ },
+ {
+  "id": "program",
+  "group": "tune",
+  "groupSeq": 150,
+  "tag": "supports"
+ },
+ {
+  "id": "risk",
+  "group": "tune",
+  "groupSeq": 80,
+  "tag": "drives"
+ },
+ {
+  "id": "reference",
+  "group": "refshare",
+  "groupSeq": 40,
+  "tag": "supports"
+ },
+ {
+  "id": "deps",
+  "group": "refshare",
+  "groupSeq": 50,
+  "tag": "supports"
+ },
+ {
+  "id": "datamodel",
+  "group": "refshare",
+  "groupSeq": 55,
+  "tag": "supports"
+ },
+ {
+  "id": "calcengine",
+  "group": "refshare",
+  "groupSeq": 57,
+  "tag": "supports"
+ },
+ {
+  "id": "glossary",
+  "group": "refshare",
+  "groupSeq": 60,
+  "tag": "supports"
+ },
+ {
+  "id": "io",
+  "group": "refshare",
+  "groupSeq": 70,
+  "tag": "supports"
+ },
+ {
+  "id": "sessions",
+  "group": "refshare",
+  "groupSeq": 80,
+  "tag": "supports"
+ },
+ {
+  "id": "duediligence",
+  "group": "defend",
+  "groupSeq": 20,
+  "tag": "supports"
+ },
+ {
+  "id": "personas",
+  "group": "configure",
+  "groupSeq": 20,
+  "tag": "supports"
+ }
+]
