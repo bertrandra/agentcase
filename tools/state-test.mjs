@@ -81,6 +81,135 @@ const tests = {
     const ok = !bootReady && opts === 0 && snapScripts === 1 && optsBefore > 0 && optsBefore < 30;
     return { ok, detail: 'boot-ready=' + bootReady + ' industryOptionsInFile=' + opts + ' liveOptions=' + optsBefore + ' snapshotScripts=' + snapScripts };
   },
+  // M-1: the P4 stochastic NPV must discount at the case rate (as the headline does), and 0 % must stay 0 %
+  async p4_npv_uses_case_rate() {
+    const base = () => ({ y1Ramp: P('y1Ramp'), y2Ramp: P('y2Ramp'), y3Ramp: P('y3Ramp'), dayRate: mcsBaseValue('dayRate'), tokenPrice: mcsBaseValue('tokenPrice'), supCapacity: mcsBaseValue('supCapacity'), p: mcsBaseValue('p') });
+    MODEL.FLOW.discountRate = 0.08; MODEL.CASE.discountRate = 0.12; refreshAll();
+    const a = mcsEvaluate(base()).npv, head = npvCanonical();
+    MODEL.CASE.discountRate = 0; refreshAll();
+    const z = mcsEvaluate(base()).npv, headZ = npvCanonical();
+    const close = (x, y) => Math.abs(x - y) <= 1e-6 * Math.max(1, Math.abs(y));
+    return { ok: close(a, head) && close(z, headZ), detail: 'case 12%: P4 ' + a.toFixed(0) + ' vs headline ' + head.toFixed(0) + ' ; case 0%: P4 ' + z.toFixed(0) + ' vs headline ' + headZ.toFixed(0) };
+  },
+  async p5_zero_discount_kept() {
+    MODEL.FLOW.marginPerMonth = 1000; MODEL.FLOW.throughputInShare = 100; MODEL.FLOW.discountRate = 0; refreshAll();
+    const v = flowValue();
+    return { ok: v.discountRate === 0, detail: 'P5 discount rate used = ' + v.discountRate };
+  },
+  // H-8: P2 population = the in-scope population model() sums (regulatory artefacts counted once)
+  async p2_scope_not_double_counted() {
+    document.getElementById('industry').value = 'AERO'; document.getElementById('industry').dispatchEvent(new Event('change', { bubbles: true }));
+    regInclude = true; selectedRegArtefacts = new Set(REG_CATALOG.artifacts.filter(a => a.norm && /AERO|DO-178|ARP/i.test(a.industry || a.norm || '')).slice(0, 12).map(a => a.id));
+    if (!selectedRegArtefacts.size) selectedRegArtefacts = new Set(REG_CATALOG.artifacts.slice(0, 12).map(a => a.id));
+    refreshAll();
+    const a = activeArtefacts().length, e = evtScopeArtefacts().length, w = phaseScope().count;
+    return { ok: a === e && a > 0, detail: 'activeArtefacts=' + a + ' evtScopeArtefacts=' + e + ' (reg selected ' + selectedRegArtefacts.size + ')' };
+  },
+  // M-2 / M-3: with no setup cost nothing may print Infinity / NaN, and month-0 payback is "immediate"
+  async roi_payback_labels() {
+    ['setupTooling', 'setupTraining', 'setupCoaching', 'setupGov', 'khSetupBase', 'khSetupDays'].forEach(id => { const el = document.getElementById(id); if (el) { el.value = '0'; INPUTS.v[id] = '0'; } });
+    document.getElementById('setupETPCoef').value = '0'; INPUTS.v.setupETPCoef = '0';
+    refreshAll();
+    const bad = []; const m = model();
+    const BADRX = /Infinity%|NaN%|NaN mo|Infinity mo|€\s*NaN|NaN\s*€|NaN\s*k\b|-Infinity|\bInfinity\b/;
+    const scan = id => { goTab(id); if (TABRENDER[id]) TABRENDER[id](); const el = document.getElementById(id); const txt = el ? el.innerText : ''; const mm = txt.match(new RegExp('.{0,30}(' + BADRX.source + ').{0,20}')); if (mm) bad.push(id + ': ' + mm[0].replace(/\s+/g, ' ')); };
+    ['financial', 'annual', 'results', 'sensitivity', 'scenarios', 'verif', 'monthly', 'kpi', 'exec'].forEach(scan);
+    const labels = [fmtPayback(0, 36), fmtPayback(null, 60), fmtPayback(7, 36), fmtRoiPct(null), fmtRoiPct(roiCanonical(5, 0)), fmtRoiPct(roiCanonical(50, 100))];
+    const ok = bad.length === 0 && labels.join('|') === 'immediate|>60 mo|7 mo|n/a|n/a|50%';
+    return { ok, detail: 'setupTotal=' + Math.round(m.setupTotal) + ' bad=' + JSON.stringify(bad) + ' labels=' + labels.join('|') };
+  },
+  // M-4: applying a strategy twice must not compound, and the comparison row must match the live case
+  async strategy_apply_idempotent() {
+    const S = STRATEGY_DEFS.find(s => s.levers && s.levers.setupF > 0 && s.levers.setupF < 1);
+    if (!S) return { ok: false, detail: 'no strategy with a setup factor' };
+    const ids = ['setupTooling', 'setupGov', 'setupTraining', 'setupCoaching', 'infra'];
+    const val = () => ids.map(i => document.getElementById(i).value).join(',');
+    const orig = val();
+    applyStrategy(S.id); const once = val(); const setup1 = model().setupTotal;
+    applyStrategy(S.id); const twice = val();
+    const row = evaluateStrategies().find(r => r.id === S.id);
+    const rowMatchesLive = Math.abs(row.computed.setup - model().setupTotal) < 1;
+    // factor-1 strategy restores the base
+    const T = STRATEGY_DEFS.find(s => !s.levers || s.levers.setupF == null || s.levers.setupF === 1);
+    applyStrategy(T.id); const restored = val();
+    const ok = once === twice && rowMatchesLive && restored === orig && once !== orig;
+    return { ok, detail: 'orig=' + orig + ' once=' + once + ' twice=' + twice + ' rowMatchesLive=' + rowMatchesLive + ' afterFactor1=' + restored };
+  },
+  // M-8: a failure inside a what-if run must not leave the live inputs / location mix perturbed
+  async whatif_restores_on_error() {
+    readInputs(); const snapV = JSON.stringify(INPUTS.v), snapT = JSON.stringify(targetLocPct);
+    const realOutcome = mcOutcome; let calls = 0; window.mcOutcome = function () { if (++calls === 6) throw new Error('boom'); return realOutcome.apply(this, arguments); };
+    let threw1 = false; try { runMonteCarlo(50); } catch (e) { threw1 = true; }
+    window.mcOutcome = realOutcome;
+    const afterMc = JSON.stringify(INPUTS.v) === snapV;
+    const realModel = model; let c2 = 0; window.model = function () { if (++c2 === 3) throw new Error('boom2'); return realModel.apply(this, arguments); };
+    let threw2 = false; try { evaluateStrategies(); } catch (e) { threw2 = true; }
+    window.model = realModel;
+    const afterStrat = JSON.stringify(INPUTS.v) === snapV && JSON.stringify(targetLocPct) === snapT;
+    return { ok: threw1 && threw2 && afterMc && afterStrat, detail: 'threw=' + threw1 + '/' + threw2 + ' inputsRestoredAfterMC=' + afterMc + ' afterStrategies=' + afterStrat };
+  },
+  // M-9: rendering Results must not change the TO-BE year the user picked
+  async results_keeps_tobe_year() {
+    setTobeYear(0); const before = tobeYear; renderResults();
+    return { ok: tobeYear === before && before === 0, detail: 'tobeYear before=' + before + ' after Results render=' + tobeYear };
+  },
+  // M-10: with a clamped loop, P1 must not rebuild (and zero) the user's t_rev on every call
+  async p1_calibration_keeps_edits() {
+    MODEL.LCE.nMax = 3; MODEL.LCE.loops = []; MODEL.LCE.calibrated = false; MODEL.LCE.built = false;
+    lceModel();
+    const clamped = MODEL.LCE.loops.filter(l => l.clamped).length;
+    mcvSetTRev(0, '2'); lceModel(); lceIterFor(LOOP_PAIRS[0], 0);
+    const t0 = MODEL.LCE.loops[0].tRev;
+    return { ok: clamped > 0 && t0 === 2, detail: 'clamped loops=' + clamped + ' tRev after re-evaluation=' + t0 };
+  },
+  // M-16: the due-diligence sensitivity freshness check must notice a same-length edit
+  async dd_fingerprint_content() {
+    readInputs(); const a = ddFingerprint(); const old = INPUTS.v.autoPotential;
+    INPUTS.v.autoPotential = old === '75' ? '80' : '75';           // same length, different content
+    const b = ddFingerprint(); INPUTS.v.autoPotential = old;
+    return { ok: a !== b, detail: 'fingerprint ' + a + ' → ' + b + ' after autoPotential ' + old + ' → ' + (old === '75' ? '80' : '75') };
+  },
+  // M-7: the MC fingerprint is cheap, stable across calls, ignores navigation/snapshot-library state and reacts to model inputs
+  async mc_fingerprint_stable_and_cheap() {
+    runMonteCarlo(200);
+    const f1 = mcFingerprint(), f2 = mcFingerprint();
+    snapCreate('fp-test'); const f3 = mcFingerprint();            // capturing a snapshot is not a scenario change
+    const t0 = performance.now(); for (let i = 0; i < 20; i++) mcFingerprint(); const ms = (performance.now() - t0) / 20;
+    const el = document.getElementById('y1Ramp'); const old = el.value; el.value = String(+old + 1); readInputs(); const f4 = mcFingerprint(); el.value = old; readInputs();
+    return { ok: f1 === f2 && f2 === f3 && f4 !== f1 && ms < 25, detail: 'stable=' + (f1 === f2) + ' snapshotNeutral=' + (f2 === f3) + ' reacts=' + (f4 !== f1) + ' ms/call=' + ms.toFixed(1) };
+  },
+  // M-15: the directional-sensitivity self-check must be able to fail
+  async verif_sensitivity_can_fail() {
+    goTab('verif'); renderVerif(); const txt = () => document.querySelector('#verifSensi tbody').innerText;
+    const healthy = txt();
+    const real = model; window.model = function () { const mm = real.apply(this, arguments); return Object.assign({}, mm); };   // still healthy
+    renderVerif(); const stillHealthy = txt();
+    // a "broken" model that ignores its inputs (constant): both variants equal the base
+    const base = real(); window.model = function () { return base; };
+    renderVerif(); const broken = txt(); window.model = real;
+    const cnt = (x, rx) => (x.match(rx) || []).length;
+    const ok = cnt(healthy, /consistent/gi) === 2 && cnt(stillHealthy, /consistent/gi) === 2 && /abnormal/i.test(broken) && !/consistent/i.test(broken);
+    return { ok, detail: 'healthy=' + cnt(healthy, /consistent/gi) + '/2 consistent ; constant model → ' + broken.replace(/\s+/g, ' ').slice(-60) };
+  },
+  // M-17: an overlay failure must be reported (flag + AUDIT check), not swallowed
+  async model_overlay_error_reported() {
+    const okBefore = AgentCaseArch.AUDIT.runChecks().length;
+    const realFor = TIME.for; TIME.for = function () { throw new Error('engine down'); };
+    const m = model(); const flagged = m._overlayError; const viol = AgentCaseArch.AUDIT.runChecks().map(v => v.id || v.check || JSON.stringify(v)).join(',');
+    TIME.for = realFor;
+    const after = AgentCaseArch.AUDIT.runChecks().length;
+    return { ok: okBefore === 0 && /engine down/.test(flagged || '') && /CC-OV-01/.test(viol) && after === 0, detail: 'flag=' + flagged + ' violations while broken=' + viol + ' after repair=' + after };
+  },
+  // M-5 / M-6: redrawing the Snapshot manager must not move the user and must not recompute on every redraw
+  async snapshot_manager_redraw_quiet() {
+    setPersona('admin'); goTab('io'); await new Promise(r => setTimeout(r, 120));
+    const s = collectSnapshotState({ excludeKeys: ['namedSnapshots'] }); MODEL.FLAGS.lce = true; snapCreateAmeRef(); MODEL.FLAGS.lce = false;
+    let calls = 0; const real = applySnapshotState; window.applySnapshotState = function () { calls++; return real.apply(this, arguments); };
+    renderSnapshotManager(); const first = calls; const p1 = currentPersona, t1 = document.querySelector('.tab-content.active').id;
+    renderSnapshotManager(); renderSnapshotManager(); const total = calls;
+    window.applySnapshotState = real;
+    return { ok: p1 === 'admin' && t1 === 'io' && first <= 3 && total === first, detail: 'persona=' + p1 + ' tab=' + t1 + ' restores on 1st redraw=' + first + ' after 3 redraws=' + total };
+  },
   // H-4: shrinking the horizon must never produce NaN
   async horizon_shrink_finite() {
     const setH = v => { const el = document.getElementById('horizon'); el.value = v; INPUTS.v.horizon = String(v); el.dispatchEvent(new Event('change', { bubbles: true })); };

@@ -6465,6 +6465,19 @@ function escHtml(s){ return String(s==null?'':s).replace(/&/g,'&amp;').replace(/
 function escJs(s){ return escHtml(String(s==null?'':s).replace(/\\/g,'\\\\').replace(/'/g,"\\'").replace(/"/g,'\\"').replace(/\r?\n/g,'\\n').replace(/</g,'\\x3c')); }
 function safeId(s){ let r=String(s==null?'':s).replace(/[^A-Za-z0-9_.:-]/g,'').slice(0,80); return (r==='__proto__'||r==='constructor'||r==='prototype') ? 'x-'+r : r; }
 /*   cleanText(s,max) – imported free text: control characters removed, trimmed, length-capped */
+/*   roiCanonical(net,setup) – net ROI as a ratio, or null when nothing was invested (setup ≤ 0): the old
+ *                 `(net-setup)/setup` printed "Infinity%"/"NaN%" and a GO verdict in the Financial tab, the Excel
+ *                 export, the ROI tab, the sensitivity matrix and Verification (v18.9, M-2)
+ *   fmtRoiPct(r)  – "123%" or "n/a" for a null ratio
+ *   fmtPayback(mo,horizonMonths) – "9 mo", "immediate" (month 0: no setup to recover) or ">36 mo" (never within the
+ *                 horizon). A bare `mo ? … : '>36 mo'` read month 0 as "never", and 36 was hard-coded (M-3) */
+function roiCanonical(net,setup){ return (setup>0 && isFinite(net)) ? net/setup : null; }
+function fmtRoiPct(r){ return r==null ? 'n/a' : Math.round(r*100)+'%'; }
+function fmtPayback(mo,hMonths){ if(mo==null || !isFinite(mo)) return '>'+hMonths+' mo'; return mo<=0 ? 'immediate' : mo+' mo'; }
+/*   hashStr(s) – FNV-1a 32-bit content hash, base-36 (change detection, not security) */
+function hashStr(s){ let h=0x811c9dc5; for(let i=0;i<s.length;i++){ h^=s.charCodeAt(i); h=Math.imul(h,0x01000193)>>>0; } return h.toString(36); }
+/*   numOr(x,d) – x when it is a finite number, else d (unlike `x||d`, keeps an explicit 0) */
+function numOr(x,d){ return (typeof x==='number' && isFinite(x)) ? x : d; }
 function cleanText(s,max){ return String(s==null?'':s).replace(/[\u0000-\u001f\u007f]/g,' ').replace(/\s+/g,' ').trim().slice(0,max||200); }
 const DATA = {"artefacts": [{"id": "A001", "name": "Framing note / vision", "phase": "L0", "value": "VA", "skill": "PO/Lead", "aiAuth": "Assistance", "humanSup": 90, "agentSup": 10}, {"id": "A002", "name": "Business case / opportunity", "phase": "L0", "value": "VA", "skill": "Lead", "aiAuth": "Assistance", "humanSup": 70, "agentSup": 30}, {"id": "A003", "name": "Feasibility study", "phase": "L0", "value": "VA", "skill": "Arch", "aiAuth": "Copilot", "humanSup": 55, "agentSup": 45}, {"id": "A004", "name": "Product roadmap", "phase": "L0", "value": "VA", "skill": "PO", "aiAuth": "Copilot", "humanSup": 60, "agentSup": 40}, {"id": "A005", "name": "Requirements specification / SOW", "phase": "V1", "value": "NVA-N", "skill": "Analysis/PO", "aiAuth": "Copilot", "humanSup": 50, "agentSup": 50}, {"id": "A006", "name": "Requirements spec (SRS)", "phase": "V1", "value": "NVA-N", "skill": "Analysis/PO", "aiAuth": "Copilot", "humanSup": 45, "agentSup": 55}, {"id": "A007", "name": "Requirements / NFR", "phase": "V1", "value": "NVA-N", "skill": "Analysis/PO", "aiAuth": "Copilot", "humanSup": 45, "agentSup": 55}, {"id": "A008", "name": "User stories / backlog", "phase": "V1", "value": "NVA-N", "skill": "PO", "aiAuth": "Supervised autonomous", "humanSup": 30, "agentSup": 70}, {"id": "A009", "name": "Traceability matrix", "phase": "V1", "value": "NVA-N", "skill": "Analysis/PO", "aiAuth": "Supervised autonomous", "humanSup": 20, "agentSup": 80}, {"id": "A010", "name": "Glossary / domain model", "phase": "V1", "value": "NVA-N", "skill": "Analysis", "aiAuth": "Supervised autonomous", "humanSup": 25, "agentSup": 75}, {"id": "A011", "name": "Architecture document (TAD)", "phase": "V2", "value": "VA", "skill": "Arch", "aiAuth": "Copilot", "humanSup": 55, "agentSup": 45}, {"id": "A012", "name": "Detailed design (SDD)", "phase": "V2", "value": "NVA-N", "skill": "Arch/Dev", "aiAuth": "Copilot", "humanSup": 45, "agentSup": 55}, {"id": "A013", "name": "UML models / diagrams", "phase": "V2", "value": "NVA-N", "skill": "Dev", "aiAuth": "Supervised autonomous", "humanSup": 25, "agentSup": 75}, {"id": "A014", "name": "Interface spec (ICD/API)", "phase": "V2", "value": "NVA-N", "skill": "Arch/Dev", "aiAuth": "Supervised autonomous", "humanSup": 30, "agentSup": 70}, {"id": "A015", "name": "Architecture decisions (ADR)", "phase": "V2", "value": "VA", "skill": "Arch", "aiAuth": "Assistance", "humanSup": 70, "agentSup": 30}, {"id": "A016", "name": "Threat model / security by-design", "phase": "V2", "value": "VA", "skill": "Sec", "aiAuth": "Copilot", "humanSup": 50, "agentSup": 50}, {"id": "A017", "name": "Source code", "phase": "V3", "value": "NVA-N", "skill": "Dev", "aiAuth": "Supervised autonomous", "humanSup": 25, "agentSup": 75}, {"id": "A018", "name": "Code review", "phase": "V3", "value": "VA", "skill": "Dev", "aiAuth": "Copilot", "humanSup": 45, "agentSup": 55}, {"id": "A019", "name": "Inline documentation", "phase": "V3", "value": "NVA", "skill": "Dev", "aiAuth": "Autonomous", "humanSup": 10, "agentSup": 90}, {"id": "A020", "name": "Infra-as-Code", "phase": "V3", "value": "NVA-N", "skill": "Ops/Dev", "aiAuth": "Supervised autonomous", "humanSup": 30, "agentSup": 70}, {"id": "A021", "name": "Configuration data", "phase": "V3", "value": "NVA-N", "skill": "Ops", "aiAuth": "Copilot", "humanSup": 40, "agentSup": 60}, {"id": "A022", "name": "Unit test plan", "phase": "V4", "value": "NVA-N", "skill": "Test/QA", "aiAuth": "Copilot", "humanSup": 40, "agentSup": 60}, {"id": "A023", "name": "Unit test cases", "phase": "V4", "value": "NVA-N", "skill": "Test/QA", "aiAuth": "Supervised autonomous", "humanSup": 20, "agentSup": 80}, {"id": "A024", "name": "Test code / mocks", "phase": "V4", "value": "NVA-N", "skill": "Dev/Test", "aiAuth": "Autonomous", "humanSup": 10, "agentSup": 90}, {"id": "A025", "name": "Coverage report", "phase": "V4", "value": "NVA-N", "skill": "Test/QA", "aiAuth": "Autonomous", "humanSup": 5, "agentSup": 95}, {"id": "A026", "name": "Integration plan", "phase": "V5", "value": "NVA-N", "skill": "Test/Archi", "aiAuth": "Copilot", "humanSup": 40, "agentSup": 60}, {"id": "A027", "name": "Integration test cases", "phase": "V5", "value": "NVA-N", "skill": "Test/QA", "aiAuth": "Supervised autonomous", "humanSup": 25, "agentSup": 75}, {"id": "A028", "name": "Test datasets", "phase": "V5", "value": "NVA-N", "skill": "Data/Test", "aiAuth": "Supervised autonomous", "humanSup": 30, "agentSup": 70}, {"id": "A029", "name": "CI/CD pipelines", "phase": "V5", "value": "NVA-N", "skill": "Ops/Run", "aiAuth": "Supervised autonomous", "humanSup": 20, "agentSup": 80}, {"id": "A030", "name": "Integration reports", "phase": "V5", "value": "NVA-N", "skill": "Test/QA", "aiAuth": "Autonomous", "humanSup": 10, "agentSup": 90}, {"id": "A031", "name": "Validation / acceptance plan", "phase": "V6", "value": "NVA-N", "skill": "Test/QA", "aiAuth": "Copilot", "humanSup": 50, "agentSup": 50}, {"id": "A032", "name": "Acceptance book / system cases", "phase": "V6", "value": "NVA-N", "skill": "Test/QA", "aiAuth": "Copilot", "humanSup": 40, "agentSup": 60}, {"id": "A033", "name": "Regression tests", "phase": "V6", "value": "NVA-N", "skill": "Test/QA", "aiAuth": "Supervised autonomous", "humanSup": 15, "agentSup": 85}, {"id": "A034", "name": "Validation report", "phase": "V6", "value": "NVA-N", "skill": "QA", "aiAuth": "Supervised autonomous", "humanSup": 30, "agentSup": 70}, {"id": "A035", "name": "Acceptance sign-off report", "phase": "V6", "value": "VA", "skill": "Lead/QA", "aiAuth": "Assistance", "humanSup": 85, "agentSup": 15}, {"id": "A036", "name": "Qualification dossier", "phase": "V7", "value": "NVA-N", "skill": "Quality", "aiAuth": "Copilot", "humanSup": 50, "agentSup": 50}, {"id": "A037", "name": "Compliance report", "phase": "V7", "value": "NVA-N", "skill": "Quality", "aiAuth": "Copilot", "humanSup": 40, "agentSup": 60}, {"id": "A038", "name": "Delivery dossier (SDF)", "phase": "V7", "value": "NVA-N", "skill": "Ops/Quality", "aiAuth": "Supervised autonomous", "humanSup": 30, "agentSup": 70}, {"id": "A039", "name": "Release note", "phase": "V7", "value": "NVA-N", "skill": "Dev/PO", "aiAuth": "Supervised autonomous", "humanSup": 30, "agentSup": 70}, {"id": "A040", "name": "Compliance attestation", "phase": "V7", "value": "VA", "skill": "Lead/Quality", "aiAuth": "Assistance", "humanSup": 90, "agentSup": 10}, {"id": "A041", "name": "Deployment plan", "phase": "L8", "value": "NVA-N", "skill": "Ops/Run", "aiAuth": "Copilot", "humanSup": 50, "agentSup": 50}, {"id": "A042", "name": "Runbook / procedures", "phase": "L8", "value": "NVA-N", "skill": "Ops/Run", "aiAuth": "Supervised autonomous", "humanSup": 35, "agentSup": 65}, {"id": "A043", "name": "User documentation", "phase": "L8", "value": "NVA-N", "skill": "PO/Dev", "aiAuth": "Supervised autonomous", "humanSup": 25, "agentSup": 75}, {"id": "A044", "name": "Go-live dossier", "phase": "L8", "value": "NVA-N", "skill": "Ops/Run", "aiAuth": "Copilot", "humanSup": 45, "agentSup": 55}, {"id": "A045", "name": "Incident analysis", "phase": "L9", "value": "NVA", "skill": "Ops/Dev", "aiAuth": "Copilot", "humanSup": 40, "agentSup": 60}, {"id": "A046", "name": "Fixes / patches", "phase": "L9", "value": "NVA-N", "skill": "Dev", "aiAuth": "Supervised autonomous", "humanSup": 30, "agentSup": 70}, {"id": "A047", "name": "Maintenance documentation", "phase": "L9", "value": "NVA", "skill": "Dev", "aiAuth": "Supervised autonomous", "humanSup": 30, "agentSup": 70}, {"id": "A048", "name": "Monitoring / SLA reports", "phase": "L9", "value": "NVA", "skill": "Ops/Run", "aiAuth": "Supervised autonomous", "humanSup": 20, "agentSup": 80}, {"id": "A049", "name": "Minor changes", "phase": "L9", "value": "VA+NVA", "skill": "Dev", "aiAuth": "Copilot", "humanSup": 40, "agentSup": 60}, {"id": "A050", "name": "Decommissioning plan", "phase": "L10", "value": "NVA-N", "skill": "Archi/Ops", "aiAuth": "Copilot", "humanSup": 60, "agentSup": 40}, {"id": "A051", "name": "Migration / reversibility plan", "phase": "L10", "value": "NVA-N", "skill": "Arch/Dev", "aiAuth": "Copilot", "humanSup": 45, "agentSup": 55}, {"id": "A052", "name": "Archiving / retention", "phase": "L10", "value": "NVA-N", "skill": "Data/Ops", "aiAuth": "Supervised autonomous", "humanSup": 30, "agentSup": 70}, {"id": "A053", "name": "Closure dossier", "phase": "L10", "value": "NVA-N", "skill": "Lead", "aiAuth": "Assistance", "humanSup": 80, "agentSup": 20}], "phases": [{"id": "L0", "name": "Upstream", "sdlc": 4, "reg": 0, "role": "Strategic framing"}, {"id": "V1", "name": "Specification", "sdlc": 6, "reg": 15, "role": "Analysis / PO"}, {"id": "V2", "name": "Design", "sdlc": 6, "reg": 13, "role": "Architecture"}, {"id": "V3", "name": "Implementation", "sdlc": 5, "reg": 5, "role": "Development"}, {"id": "V4", "name": "Verification", "sdlc": 4, "reg": 1, "role": "QA / Dev"}, {"id": "V5", "name": "Integration", "sdlc": 5, "reg": 1, "role": "Integration"}, {"id": "V6", "name": "Validation", "sdlc": 5, "reg": 9, "role": "PO / Business"}, {"id": "V7", "name": "Qualification", "sdlc": 5, "reg": 21, "role": "Quality / Compliance"}, {"id": "L8", "name": "Deployment", "sdlc": 4, "reg": 0, "role": "Ops / Run"}, {"id": "L9", "name": "Run / AMS", "sdlc": 5, "reg": 10, "role": "Run / Support"}, {"id": "L10", "name": "End-of-life", "sdlc": 4, "reg": 0, "role": "Governance / Archive"}], "industries": [{"code": "AERO", "name": "Aerospace-Defense-Space", "norms": "DO-178C, DO-254, ARP4754A, DO-330, DO-326A, ECSS", "regSkill": "Functional Safety", "regArtifacts": 69}, {"code": "MED", "name": "Medical (MD / IVD)", "norms": "IEC 62304, ISO 14971, ISO 13485, MDR 2017/745, IVDR", "regSkill": "Clinical Affairs", "regArtifacts": 61}, {"code": "AUTO", "name": "Automotive", "norms": "ISO 26262, ASPICE, ISO 21434, UN R155/R156", "regSkill": "Functional Safety", "regArtifacts": 35}, {"code": "RAIL", "name": "Railway (CENELEC)", "norms": "EN 50126, EN 50128, EN 50129, EN 50159", "regSkill": "Functional Safety", "regArtifacts": 23}, {"code": "ENERGY", "name": "Energy / Industry / OT", "norms": "IEC 61508, IEC 61511, IEC 62443, IEC 60880", "regSkill": "Functional Safety", "regArtifacts": 38}, {"code": "BFI", "name": "Banking-Finance", "norms": "DORA, PCI-DSS, EBA GL/RTS, NIS2", "regSkill": "Audit / Certification", "regArtifacts": 28}, {"code": "PUBLIC", "name": "Public / Sovereign (EU)", "norms": "GDPR, SecNumCloud, NIS2, eIDAS", "regSkill": "Regulatory Affairs", "regArtifacts": 31}, {"code": "PHARMA", "name": "Pharma / Life sciences (GxP)", "norms": "GAMP 5, 21 CFR Part 11, Annex 11, ICH", "regSkill": "Software Quality Assurance (SQA)", "regArtifacts": 21}, {"code": "AI", "name": "Cross-cutting AI (all industries)", "norms": "EU AI Act, ISO/IEC 42001, NIST AI RMF", "regSkill": "Regulatory Affairs", "regArtifacts": 18}, {"code": "USABILITY", "name": "Usability / Human-centred design", "norms": "ISO 9241-11, ISO 9241-210, IEC 62366-1", "regSkill": "Analysis/PO", "regArtifacts": 22}, {"code": "SUSTAINABILITY", "name": "Sustainability / ESG", "norms": "ISO 14001, ISO 14040/14044, ISO 26000, CSRD / ESRS", "regSkill": "Regulatory Affairs", "regArtifacts": 24}], "grades": ["A1", "A2", "A3", "B1", "B2", "B3", "C1", "C2", "C3", "D1", "D2", "D3", "F"], "locations": [{"name": "France", "cls": "Local"}, {"name": "Portugal", "cls": "Nearshore"}, {"name": "Poland", "cls": "Nearshore"}, {"name": "Morocco", "cls": "Nearshore"}, {"name": "Egypt", "cls": "Nearshore"}, {"name": "China", "cls": "Offshore"}, {"name": "India", "cls": "Offshore"}]};
 let RATE = {"France": {"A": 350, "B": 500, "C": 680, "D": 850, "F": 1000}, "Portugal": {"A": 220, "B": 320, "C": 430, "D": 540, "F": 650}, "Poland": {"A": 240, "B": 340, "C": 450, "D": 560, "F": 680}, "Morocco": {"A": 180, "B": 260, "C": 350, "D": 440, "F": 520}, "Egypt": {"A": 160, "B": 230, "C": 310, "D": 390, "F": 470}, "China": {"A": 200, "B": 290, "C": 390, "D": 490, "F": 600}, "India": {"A": 150, "B": 220, "C": 300, "D": 380, "F": 460}};
@@ -6924,7 +6937,7 @@ function renderScenarios(){
   if(rtb) rtb.innerHTML=S.filter(s=>s.key!=='asis').map(s=>{
     const cum3=-s.m.setup+s.m.totBen;
     const roiStr = s.m.setup>0 ? Math.round(s.m.roi*100)+'%' : (s.m.totBen>0?'\u221e (no setup)':'n/a');
-    const pb = s.m.pbMonth ? (s.m.pbMonth<=36? s.m.pbMonth+' mo' : '>36 mo') : '>36 mo';
+    const pb = fmtPayback(s.m.pbMonth, s.m.horizon*12);
     return `<tr><td><strong style="color:${s.color}">${escHtml(s.label)}</strong></td>
       <td class="text-right">${fmtE(s.m.setup)}</td>
       <td class="text-right">${fmtE(s.m.totBen)}</td>
@@ -7051,7 +7064,7 @@ function renderFinancial(){ if(typeof renderSavingsDecomp==="function"){ try{ren
     options:{plugins:{legend:{display:false},title:{display:true,text:'Cumulative cash-flow (\u20ac thousands) \u2014 crossover = payback'}},scales:{y:{title:{display:true,text:'\u20ac thousands'}}}}});
   const totBen=sum(ys);
   { const _be=paybackMonthsCanonical(); const _hn=model().horizon*12;   /* step 3: canonical payback */
-  sbfill('plSummary',[[H+'-yr ROI (net)',Math.round((totBen-setup)/setup*100)+'%'],['Net profit '+H+'y',fmtE(totBen-setup)],['Payback',_be?_be+' mo':'>'+_hn+' mo']]); }
+  sbfill('plSummary',[[H+'-yr ROI (net)',fmtRoiPct(roiCanonical(totBen-setup,setup))],['Net profit '+H+'y',fmtE(totBen-setup)],['Payback',fmtPayback(_be,_hn)]]); }
 
   // --- Workforce shift (Human FTE -> Agent vFTE) with costs ---
   const months=m.horizon*12, hum=[], ag=[], stp=Math.max(1,Math.floor(months/20));
@@ -7289,11 +7302,11 @@ async function exportFinancialExcel(){
 
   const roiWs=wb.addWorksheet('ROI');
   roiWs.addRow(['Metric','Value']);
-  roiWs.addRow([H+'-year ROI', Math.round((totBen-setup)/setup*100)+'%']);
+  roiWs.addRow([H+'-year ROI', fmtRoiPct(roiCanonical(totBen-setup,setup))]);
   roiWs.addRow(['Total benefits ('+H+'y)', r0(totBen)]);
   roiWs.addRow(['Setup investment', r0(setup)]);
   roiWs.addRow(['Net profit ('+H+'y)', r0(totBen-setup)]);
-  { const _be=paybackMonthsCanonical(); roiWs.addRow(['Payback (months)', _be?_be:'>'+(model().horizon*12)]); }   /* step 3: canonical payback */
+  { const _be=paybackMonthsCanonical(); roiWs.addRow(['Payback (months)', (_be==null||!isFinite(_be))?'>'+(model().horizon*12):(_be<=0?'immediate':_be)]); }   /* step 3: canonical payback */
   roiWs.addRow([]); roiWs.addRow(['Year','Benefit','Net','Cumulative']);
   { let cum=-setup; for(let i=0;i<H;i++){ cum+=ys[i]; roiWs.addRow(['Y'+(i+1), r0(ys[i]), r0(ys[i]-(i===0?setup:0)), r0(cum)]); } }
   head(roiWs); addImg(roiWs,'roiChart',5,1,470,230);
@@ -8902,7 +8915,7 @@ function alignTeamToMix(){
 }
 // Decompose the aggregate model (yearETP / yearAgentVfte) by team skill.
 // Reconciles exactly: Σ human = yearETP, Σ agent = yearAgentVfte.
-function tobeComposition(){
+function tobeComposition(yearIdx){   /* v18.9 (M-9): optional year (0-based) for the totals — callers no longer have to overwrite the global tobeYear */
   const m=model();
   const act=activeArtefacts();
   const totalFTE=teamIn.reduce((s,r)=>s+(+r.etp||0),0);
@@ -8920,7 +8933,7 @@ function tobeComposition(){
   });
   totW=totW||1; const rawTot=totalRaw||1;
   const years=teYears().map(y=> (y.adoptionEndPct/100)*(m.eff/100));  // A(y) aggregate agent share — horizon-dynamic
-  const _ty=Math.min(tobeYear, years.length-1);               // clamp selected TO-BE year to horizon
+  const _ty=Math.min(yearIdx!=null ? yearIdx : tobeYear, years.length-1);   // clamp selected TO-BE year to horizon
   /* v12.45 CONSERVATION: iterate the buckets we actually built, not a pre-declared skill list.
      Filtering by teamSkillList() used to drop every bucket it did not recognise while keeping its
      weight in totW — the rows then summed to less than the team (37.1% lost with AERO norms on). */
@@ -9125,15 +9138,18 @@ function runMonteCarlo(n){
   const baseVals={}; MC_PARAMS.forEach(p=>{ baseVals[p.id]=parseFloat(INPUTS.v[p.id]); });
   const outcomes=new Array(n);
   const samples={}; MC_PARAMS.forEach(p=>samples[p.id]=new Array(n));
-  for(let i=0;i<n;i++){
-    MC_PARAMS.forEach(p=>{
-      const v=mcSample(rng, baseVals[p.id]||0, p);
-      samples[p.id][i]=v;
-      INPUTS.v[p.id]=String(v);
-    });
-    outcomes[i]=mcOutcome();
-  }
-  readInputs();  // restore INPUTS to DOM truth
+  /* v18.9 (M-8): the draw loop overwrites the live INPUTS cache. If model() threw part-way, the cache kept
+   * the last random draw and the next render showed a random scenario as the user's case. Always restore. */
+  try{
+    for(let i=0;i<n;i++){
+      MC_PARAMS.forEach(p=>{
+        const v=mcSample(rng, baseVals[p.id]||0, p);
+        samples[p.id][i]=v;
+        INPUTS.v[p.id]=String(v);
+      });
+      outcomes[i]=mcOutcome();
+    }
+  } finally { readInputs(); }  // restore INPUTS to DOM truth
   const sorted=outcomes.slice().sort((a,b)=>a-b);
   const q=f=>sorted[Math.min(n-1,Math.max(0,Math.floor(f*n)))];
   const mean=outcomes.reduce((s,v)=>s+v,0)/n;
@@ -9225,7 +9241,12 @@ let mcAutoOn=true;      // auto re-run the simulation when the scenario changes 
 let mcTimer=null;
 // Fingerprint of everything the model consumes — persona/nav state excluded.
 function mcFingerprint(){
-  const s=collectSnapshotState();
+  /* v18.9 (M-7): this runs on every refreshAll() once a Monte Carlo run exists (mcAutoHook → mcStale) and in
+   * three stale banners. It used to build a full snapshot — deep clone of every key plus a full monthly
+   * materialise() — only to delete most of it. Now: no clone, no calculation package, and the non-model keys
+   * (personas/nav, the snapshot library — capturing a snapshot must not flag the simulation stale — and the
+   * tracker) are never collected. */
+  const s=collectSnapshotState({ noClone:true, skipPackage:true, excludeKeys:['PERSONAS','PERSONA_SECTIONS','PERSONA_SECTION_ORDER','readinessAns','trackActuals','namedSnapshots','GROUPS','GROUP_COLORS','sectionGroups','SECTION_NAV_STYLE','SECTION_DEPS','SECTION_DEPS_DESC','dynamicSections'] });
   /* v18.8 FIX — 'calculationPackage' MUST be excluded, and its absence here was a live defect:
    * it is teEngineNow().materialise(), which stamps a fresh wall-clock createdAt on every call.
    * Hashing it made mcFingerprint() return a DIFFERENT value on every invocation with zero state
@@ -9266,7 +9287,7 @@ function mcAutoHook(){
   if(!mcAutoOn || !MC_LAST) return;
   if(!mcStale()) return;
   clearTimeout(mcTimer);
-  mcTimer=setTimeout(()=>{ try{ mcRerunNow(); }catch(e){} }, 500);
+  mcTimer=setTimeout(()=>{ try{ mcRerunNow(); }catch(e){ console.error('Monte Carlo auto re-run failed:', e); } }, 500);   // v18.9 (M-8): was swallowed silently
 }
 /* ==================== end scenario-aware re-run ==================== */
 
@@ -9745,7 +9766,10 @@ function evaluateStrategies(){
   readInputs();
   const savedTLP=targetLocPct?JSON.parse(JSON.stringify(targetLocPct)):null;
   const baseSup=scopedHumanSup();
-  const rows=STRATEGY_DEFS.map(S=>{
+  const B=stratBaseValues();   // v18.9 (M-4): scale the strategy-neutral base, not values a previous Apply already scaled
+  let rows;
+  try{   // v18.9 (M-8): restore the live inputs and location mix even if model() throws for one strategy
+  rows=STRATEGY_DEFS.map(S=>{
     readInputs();                                    // fresh true state per strategy
     const L=S.levers||{};
     if(L.auto!=null)    INPUTS.v.autoPotential=String(L.auto);
@@ -9754,8 +9778,8 @@ function evaluateStrategies(){
     if(L.y3!=null)      INPUTS.v.y3Ramp=String(L.y3);
     if(L.ceiling!=null) INPUTS.v.glassCeiling=String(L.ceiling);
     const sF=(L.setupF!=null?L.setupF:1), rF=(L.runF!=null?L.runF:1);
-    ['setupTooling','setupGov','setupTraining','setupCoaching'].forEach(id=>{ const b=parseFloat(INPUTS.v[id])||0; INPUTS.v[id]=String(b*sF); });
-    INPUTS.v.infra=String((parseFloat(INPUTS.v.infra)||0)*rF);   // agentic infra scales with the run factor
+    ['setupTooling','setupGov','setupTraining','setupCoaching'].forEach(id=>{ INPUTS.v[id]=String(B[id]*sF); });
+    INPUTS.v.infra=String(B.infra*rF);   // agentic infra scales with the run factor
     INPUTS.v.runTeamFactor=String(rF);
     if(S.locSplit==='ASIS'){ const mx=locationMix().pct; targetLocPct={}; DATA.locations.forEach(l=>targetLocPct[l.name]=Math.round((mx[l.name]||0)*10)/10); }
     else if(S.locSplit&&typeof S.locSplit==='object'){ targetLocPct={}; DATA.locations.forEach(l=>targetLocPct[l.name]=S.locSplit[l.name]||0); }
@@ -9773,7 +9797,7 @@ function evaluateStrategies(){
       computed:{roi,tco,payback,net,aiCoverage:eff,humanSup,tgtTJM:m.tgtTJM,setup:m.setupTotal},
       declared:{risk:(S.declared||{}).risk||3, agility:(S.declared||{}).agility||3}};
   });
-  targetLocPct=savedTLP; readInputs();                   // full restoration — the live scenario is untouched
+  } finally { targetLocPct=savedTLP; readInputs(); }   // full restoration — the live scenario is untouched
   return rows;
 }
 function renderStrategies(){
@@ -9971,16 +9995,37 @@ function stratNormalize(R){
   out.sort((a,b)=>b.score-a.score);
   return out;
 }
+/* v18.9 (M-4): strategy setupF/runF are multipliers. Applying one wrote `current × factor` into the live
+ * inputs, so clicking Apply again compounded (0.6 → 0.36), applying a factor-1 strategy left the previous
+ * strategy's scaling in place, and the comparison table then re-scaled the already-scaled live values (so a
+ * strategy's row disagreed with the live case it had just produced). The strategy-neutral base is now
+ * remembered (and persisted): factors always apply to the base, and the base is dropped as soon as the user
+ * edits one of the scaled inputs by hand. */
+let STRAT_APPLIED=null;   // {id, base:{inputId:value}, written:{inputId:value}}
+const STRAT_SCALED_IDS=['setupTooling','setupGov','setupTraining','setupCoaching','infra'];
+function stratBaseValues(){
+  const cur={}; STRAT_SCALED_IDS.forEach(iid=>{ cur[iid]=parseFloat(INPUTS.v[iid])||0; });
+  if(STRAT_APPLIED){
+    const same=STRAT_SCALED_IDS.every(iid=>Math.abs(cur[iid]-(STRAT_APPLIED.written[iid]||0))<0.5);
+    if(same) return STRAT_APPLIED.base;
+    STRAT_APPLIED=null;   // edited by hand since the strategy was applied: the current values are the new base
+  }
+  return cur;
+}
 function applyStrategy(id){
   const S=stratDef(id); if(!S) return;
+  readInputs();   // INPUTS must mirror the DOM before the base is read
   const L=S.levers||{};
   const set=(iid,v)=>{ const e=document.getElementById(iid); if(e&&v!=null) e.value=v; };
   if(L.auto!=null){ const f=document.getElementById('fitAuto'); if(f) f.checked=false; set('autoPotential',L.auto); }
   set('y1Ramp',L.y1); set('y2Ramp',L.y2); set('y3Ramp',L.y3);
   if(L.ceiling!=null){ forceGlassCeiling=true; set('glassCeiling',L.ceiling); }
   const sF=(L.setupF!=null?L.setupF:1), rF=(L.runF!=null?L.runF:1);
-  if(sF!==1) ['setupTooling','setupGov','setupTraining','setupCoaching'].forEach(iid=>{ const e=document.getElementById(iid); if(e) e.value=String(Math.round((parseFloat(e.value)||0)*sF)); });
-  const inf=document.getElementById('infra'); if(inf&&rF!==1) inf.value=String(Math.round((parseFloat(inf.value)||0)*rF));
+  { const base=stratBaseValues(), written={};
+    ['setupTooling','setupGov','setupTraining','setupCoaching'].forEach(iid=>{ const e=document.getElementById(iid); written[iid]=Math.round(base[iid]*sF); if(e) e.value=String(written[iid]); });
+    const inf=document.getElementById('infra'); written.infra=Math.round(base.infra*rF); if(inf) inf.value=String(written.infra);
+    STRAT_APPLIED={ id:S.id, base:Object.assign({},base), written:written };
+    readInputs(); }   // keep INPUTS in step with what was just written, so the equality check above sees it
   set('runTeamFactor',rF);
   if(S.locSplit==='ASIS'){ const mx=locationMix().pct; targetLocPct={}; DATA.locations.forEach(l=>targetLocPct[l.name]=Math.round((mx[l.name]||0)*10)/10); }
   else if(S.locSplit&&typeof S.locSplit==='object'){ targetLocPct={}; DATA.locations.forEach(l=>targetLocPct[l.name]=S.locSplit[l.name]||0); }
@@ -10104,13 +10149,13 @@ function renderResults(){
   const fmt=n=>(n<0?'−':'')+'€'+Math.round(Math.abs(n)).toLocaleString('en-US');
   let net=0; for(let y=0;y<m.horizon;y++) net+=m.yearSav[y];
   net-=m.setupTotal;
-  const roi=m.setupTotal>0? net/m.setupTotal : 0;
+  const roi=roiCanonical(net,m.setupTotal);   // v18.9 (M-2): null when nothing was invested — was shown as a misleading 0 %
   // payback: first year where cumulative (savings − setup) turns positive
   let cum=-m.setupTotal, payback='—';
   { const _sy=teYears(); for(let y=0;y<_sy.length;y++){ cum+=_sy[y].savings; if(cum>0){ payback='Year '+(y+1); break; } } }
   /* Horizon-Dynamic: savingsBreakdown()/tobeComposition() now span the horizon; read the end-year row. */
   const _sbY=savingsBreakdown().years; const B=_sbY[_sbY.length-1];
-  tobeYear=teEndYear()-1; const C=tobeComposition();
+  const C=tobeComposition(teEndYear()-1);   // v18.9 (M-9): horizon-end totals, without overwriting the user's TO-BE year selection
   const kpi=(l,v,c,sub)=>`<div style="background:#fff;border:1px solid #e5e5e5;border-top:3px solid ${c};border-radius:8px;padding:12px 14px;text-align:center">
     <div style="font-size:10px;color:#888;text-transform:uppercase;letter-spacing:1px">${l}</div>
     <div style="font-size:18px;font-weight:700;color:${c}">${v}</div>
@@ -10131,7 +10176,7 @@ function renderResults(){
   // 2. Deterministic KPIs
   const kpis=`<div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:10px;margin-bottom:1rem">
     ${kpi('Net benefit ('+m.horizon+'-yr)',fmt(net),net<0?'#8F3237':'#0058AB','after '+fmt(m.setupTotal)+' setup')}
-    ${kpi('ROI',Math.round(roi*100)+'%',roi<0?'#8F3237':'#00828E','on setup investment')}
+    ${kpi('ROI',fmtRoiPct(roi),(roi!=null&&roi<0)?'#8F3237':'#00828E','on setup investment')}
     ${kpi('Payback',payback,'#1DB8F2','cumulative turns positive')}
     ${kpi('Automation depth',m.eff.toFixed(1)+'%','#BE4D00','eff = auto × ceiling × posture')}
   </div>`;
@@ -11490,13 +11535,18 @@ function lceCalibrateP(kLegacy, nMax){             /* F-LCE-4: invert E[N](p)=kL
  * never overwrites a user's edited p once calibrated. */
 function lceEnsureCalibrated(){
   const nMax = MODEL.LCE.nMax || 5;
-  const need = !Array.isArray(MODEL.LCE.loops) || MODEL.LCE.loops.length !== LOOP_PAIRS.length || !MODEL.LCE.calibrated;
+  /* v18.9 (M-10): `calibrated` is false whenever ANY loop was clamped (legacy internalIter ≥ nMax), and the old
+   * condition rebuilt on `!calibrated` — so with one clamped loop every lceModel()/lceIterFor() call rebuilt the
+   * loops and zeroed the user's t_rev edits, contradicting this function's contract. `built` records that the
+   * loops were constructed; Recalibrate clears the loops, which is what forces the next rebuild. */
+  const need = !Array.isArray(MODEL.LCE.loops) || MODEL.LCE.loops.length !== LOOP_PAIRS.length || (!MODEL.LCE.calibrated && !MODEL.LCE.built);
   if(need){
     MODEL.LCE.loops = LOOP_PAIRS.map(function(lp){
       const cal = lceCalibrateP(lp.internalIter||1, nMax);
       return { id:lp.id, pAccept:cal.p, tRev:0, cGen:null, calibResidual:cal.residual, clamped:cal.clamped };
     });
     MODEL.LCE.calibrated = MODEL.LCE.loops.every(function(l){ return !l.clamped; });
+    MODEL.LCE.built = true;
   }
   return MODEL.LCE.loops;
 }
@@ -11602,7 +11652,7 @@ function mcvToggle(){ if(typeof lceEnable==='function') lceEnable(!(MODEL.FLAGS&
  * exactly how it was reported. Now it always says what it did, using the app's own toast. */
 function mcvRecalibrate(){
   var before=(MODEL.LCE.loops||[]).map(function(l){ return l.pAccept; });
-  MODEL.LCE.calibrated=false; MODEL.LCE.loops=[];
+  MODEL.LCE.calibrated=false; MODEL.LCE.built=false; MODEL.LCE.loops=[];
   if(typeof lceEnsureCalibrated==='function') lceEnsureCalibrated();
   mcvSync();
   var after=(MODEL.LCE.loops||[]).map(function(l){ return l.pAccept; });
@@ -11665,11 +11715,11 @@ function evtDefaultClassFor(a){
 function evtClassFor(a){ if(!a) return 'C0'; const o=MODEL.EVT.classMap[a.id]; return o||evtDefaultClassFor(a); }
 /* Same in-scope population model() already sums for baselineRun/effort. */
 function evtScopeArtefacts(){
-  const arts=(typeof activeArtefacts==='function')? activeArtefacts().slice() : [];
-  if(typeof regInclude!=='undefined' && regInclude && typeof selectedRegArtefacts!=='undefined' && selectedRegArtefacts.size && typeof REG_CATALOG!=='undefined'){
-    REG_CATALOG.artifacts.forEach(function(a){ if(selectedRegArtefacts.has(a.id)) arts.push(a); });
-  }
-  return arts;
+  /* v18.9 (H-8): activeArtefacts() already ends with regActive() — the selected regulatory artefacts when
+   * regInclude is on. The loop that used to follow appended them a second time, doubling the weight of the
+   * regulated classes (C1–C4), inflating the verification-tax rate and ρmax, and understating savings/ROI
+   * whenever P2 was on and any norm was selected. */
+  return (typeof activeArtefacts==='function')? activeArtefacts().slice() : [];
 }
 /* Raw driver BEFORE any γ stiffening — mean first-pass acceptance p across
  * calibrated P1 loops. Only meaningful when rSource='fromLCE'; a neutral 0.8
@@ -12222,7 +12272,10 @@ function mcsEvaluate(sample, tYear){
      * discounted monthly, matching the headline they sit beside (C5), at a fraction of the
      * allocation cost of the full engine per draw. */
     const m=modelRaw();
-    const d=Math.max(0,Math.min(1,MODEL.FLOW.discountRate||0.08));
+    /* v18.9 (M-1): discount at the CASE rate — the same one the headline NPV (npvCanonical) uses, as the
+     * comment above promises. This used the P5 time-to-market rate (MODEL.FLOW.discountRate), so the P4
+     * NPV P10/P50/P90 ignored the user's case rate; `||0.08` also turned an explicit 0 % into 8 %. */
+    const d=Math.max(0,Math.min(1,numOr(MODEL.CASE.discountRate,0.08)));
     const _agg=teThinNow(m, d);
     const _y3=_agg.years[_agg.years.length-1];   // horizon-end year (was clamped Y3)
     const savY3=_y3.savings, runY3=_y3.totalRunCost;
@@ -12505,7 +12558,7 @@ function flowValue(){
   const share = Math.max(0,Math.min(100, MODEL.FLOW.throughputInShare||0))/100;
   const deltaTEff = deltaTRaw*share;
   const margin = Math.max(0, MODEL.FLOW.marginPerMonth||0);
-  const d = Math.max(0,Math.min(1, MODEL.FLOW.discountRate||0.08));
+  const d = Math.max(0,Math.min(1, numOr(MODEL.FLOW.discountRate,0.08)));   // v18.9 (M-1): keep an explicit 0 %
   const nMonths = m.horizon*12;
   let npv=0;
   if(margin>0 && deltaTEff!==0){ for(let mo=1;mo<=nMonths;mo++){ npv += margin*deltaTEff/Math.pow(1+d, mo/12); } }
@@ -13048,22 +13101,34 @@ function collectSnapshotState(opts){
   // embed every earlier one recursively (snapshot 3 contains 1+2, snapshot 4 contains 1+2+3, ...),
   // exactly the unbounded-growth bug already found and fixed once for the HTML-save restore script.
   const skip=(opts&&opts.excludeKeys)||[];
+  /* v18.9 (M-7): opts.noClone (read-only callers that only stringify/hash the result) and opts.skipPackage
+   * (no materialise() — a full monthly engine run) make fingerprinting cheap; the default stays a full,
+   * independent copy. */
+  const cl=(opts&&opts.noClone) ? function(v){ return v; } : snapClone;
   const out={ savedAt:new Date().toISOString(), currentPersona };
   STATE_REGISTRY.forEach(entry=>{
     if(skip.indexOf(entry.key)>=0) return;
-    try{ out[entry.key]=snapClone(entry.get()); }catch(e){ console.error('Snapshot collect failed for "'+entry.key+'":', e); }
+    try{ out[entry.key]=cl(entry.get()); }catch(e){ console.error('Snapshot collect failed for "'+entry.key+'":', e); }
   });
   /* v18.5 step 7 (spec v5 §8.2 / §12.1): attach the canonical calculation package so a saved
    * case CARRIES the exact figures it was computed with — inputHash + calculationVersion +
    * fully-expanded monthly/annual/milestones/headline. This is what lets load-time staleness
    * detection (calcStalenessCheck) tell the user when a reopened case no longer matches its
    * inputs or was computed by a different engine version, instead of silently re-deriving. */
-  try{ if(typeof teEngineNow==='function'){ out.calculationPackage = teEngineNow().materialise(); } }
-  catch(e){ console.error('Snapshot: materialise() failed', e); }
+  if(!(opts&&opts.skipPackage)){
+    try{ if(typeof teEngineNow==='function'){ out.calculationPackage = teEngineNow().materialise(); } }
+    catch(e){ console.error('Snapshot: materialise() failed', e); }
+  }
   return out;
 }
-function applySnapshotState(s){
+function applySnapshotState(s, opts){
   if(!s) return;
+  /* v18.9 (M-5): opts.background — a restore used only to compute or export something (GCT comparison,
+   * per-snapshot Excel export) that puts everything back afterwards. It must not move the user: every restore
+   * used to force the flagged default persona (Builder) and land on its first section, so merely redrawing
+   * the Snapshot manager switched an Admin's navigation and scrolled to the top. */
+  const bg=!!(opts && opts.background), personaBefore=currentPersona;
+  const tabBefore=bg ? (document.querySelector('.tab-content.active')||{}).id : null;
   if(!window.__bootSnapshotSavedAt && s.savedAt) window.__bootSnapshotSavedAt=s.savedAt;   // v18.9 (H-5): lets the autosave banner tell whether its record is really newer
   /* Session Persistence spec §6: autosave must never fire on the transient,
    * still-settling state this whole function produces (ensureConvergenceBoot,
@@ -13088,7 +13153,7 @@ function applySnapshotState(s){
   if(typeof ensureConvergenceBoot==='function'){ try{ ensureConvergenceBoot(); }catch(e){ console.error('ensureConvergenceBoot after restore failed:', e); } }
   try{
     renderPersonaPills();
-    setPersona(flaggedDefaultPersonaId() || s.currentPersona || DEFAULT_PERSONA);
+    setPersona(bg ? personaBefore : (flaggedDefaultPersonaId() || s.currentPersona || DEFAULT_PERSONA));
     // Golden-case fix: when "Fit to selected scope" (fitAuto) is on, autoPotential must always
     // equal phaseScope().avgAgent for the CURRENT scope — but the restored 'dom' value above is
     // whatever was saved (which may be stale relative to the just-restored selectedArtefacts).
@@ -13102,6 +13167,11 @@ function applySnapshotState(s){
      * banner on mismatch — never silently overwrites the saved figures without telling the user. */
     if(typeof calcStalenessCheck==='function'){ try{ calcStalenessCheck(s.calculationPackage); }catch(e){ console.error('calc staleness check failed:', e); } }
   }catch(e){ console.error('Snapshot post-restore render failed:', e); }
+  if(bg && tabBefore){   // direct class toggling, NOT goTab() (which would schedule a re-render of the section it lands on)
+    document.querySelectorAll('.tab-content').forEach(function(x){ x.classList.toggle('active', x.id===tabBefore); });
+    document.querySelectorAll('.tab-button').forEach(function(x){ x.classList.toggle('active', x.dataset.tab===tabBefore); });
+    if(typeof renderGroupNavBar==='function'){ try{ renderGroupNavBar(tabBefore); }catch(e){} }
+  }
   // v15.7: register the golden case exactly once, here — this is the first fully-restored default
   // state (the boot-restore <script> calls applySnapshotState), so it captures the true €732K
   // reference. Idempotent (skips if a golden already exists), so later restores/imports don't recapture.
@@ -13778,7 +13848,7 @@ async function snapExportToExcel(id){
   const st=document.getElementById('snapStatus');
   const before=collectSnapshotState({excludeKeys:['namedSnapshots']});
   try{
-    applySnapshotState(snap.state);
+    applySnapshotState(snap.state, {background:true});
     if(st) st.innerHTML='<span style="color:#00666F">📊 Exporting "'+escHtml(snap.name)+'"…</span>';
     await exportParams();
     if(st) st.innerHTML='<span style="color:#00666F;font-weight:600">✓ Exported "'+escHtml(snap.name)+'".</span>';
@@ -13786,7 +13856,7 @@ async function snapExportToExcel(id){
     console.error('snapExportToExcel failed:', e);
     if(st) st.innerHTML='<span style="color:#8F3237">✗ Export failed: '+e.message+'</span>';
   }finally{
-    applySnapshotState(before);
+    applySnapshotState(before, {background:true});
     renderSnapshotManager();
   }
 }
@@ -13919,9 +13989,15 @@ function snapVarValue(id){
 function snapCompareMetrics(){
   return { y3:snapVarValue('netSavY3'), run3:snapVarValue('runCostY3'), npv8:snapVarValue('npv8'), payback:snapVarValue('paybackMonths') };
 }
-function snapCompareGoldenVsAme(){
+/* v18.9 (M-6): the comparison depends only on the two stored snapshots (it restores the live state when done),
+ * yet every redraw of the Snapshot manager — a delete click, a cancel, a baseline step — re-ran three full
+ * state restores with their recomputes. Cached per (golden, AME reference, build); pass force=true to recompute. */
+let GCT_CMP_CACHE={ key:null, val:null };
+function snapCompareGoldenVsAme(force){
   const g=goldenSnapshot(), a=ameRefSnapshot();
   if(!g||!a) return null;
+  const cacheKey=[g.id,g.savedAt,a.id,a.savedAt,a.ameBuiltFrom||'',(window.AgentCaseArch&&AgentCaseArch.VERSION)||''].join('|');
+  if(!force && GCT_CMP_CACHE.key===cacheKey && GCT_CMP_CACHE.val) return GCT_CMP_CACHE.val;
   /* applySnapshotState() calls setPersona(), which unconditionally goTab()s to that
    * persona's first section — so each of the three background restores below (golden,
    * AME, then back) silently drags the visible tab along with it. Everything here runs
@@ -13933,20 +14009,20 @@ function snapCompareGoldenVsAme(){
    * into an infinite re-render loop the moment the active tab is 'io'. */
   const activeTabBefore=(document.querySelector('.tab-content.active')||{}).id;
   const before=collectSnapshotState({excludeKeys:['namedSnapshots']});
-  applySnapshotState(g.state); const goldenM=snapCompareMetrics();
-  applySnapshotState(a.state); const ameM=snapCompareMetrics();
+  applySnapshotState(g.state, {background:true}); const goldenM=snapCompareMetrics();
+  applySnapshotState(a.state, {background:true}); const ameM=snapCompareMetrics();
   MODEL=JSON.parse(JSON.stringify(MODEL));   // detach from a.state.MODEL before any mutation
   const withAll=snapVarValue('netSavY3');
   MODEL.FLAGS.sup=false; const noSup=snapVarValue('netSavY3');
   MODEL.FLAGS.evt=false; const noSupEvt=snapVarValue('netSavY3');
   MODEL.FLAGS.lce=false; const noSupEvtLce=snapVarValue('netSavY3');
   const grade=(a.ameFlags&&a.ameFlags.evl&&typeof evlModel==='function')? evlModel() : null;
-  applySnapshotState(before);
+  applySnapshotState(before, {background:true});
   if(activeTabBefore){
     document.querySelectorAll('.tab-content').forEach(function(x){ x.classList.toggle('active', x.id===activeTabBefore); });
     document.querySelectorAll('.tab-button').forEach(function(x){ x.classList.toggle('active', x.dataset.tab===activeTabBefore); });
   }
-  return {
+  const result={
     golden:goldenM, ame:ameM,
     deltaY3:ameM.y3-goldenM.y3, deltaRun3:ameM.run3-goldenM.run3,
     deltaNpv8:(ameM.npv8||0)-(goldenM.npv8||0), deltaPayback:(ameM.payback||0)-(goldenM.payback||0),
@@ -13954,6 +14030,8 @@ function snapCompareGoldenVsAme(){
     grade:grade? { actualGrade:grade.confidence.grade, expectedGrade:grade.expectedGrade, score:grade.confidence.score, meets:grade.meetsExpectation, stage:MODEL.EVIDENCE.stage } : null,
     provenance:{ builtFrom:a.ameBuiltFrom, goldenNowId:g.id, stale:(a.ameBuiltFrom!==g.id), capturedAt:a.savedAt }
   };
+  GCT_CMP_CACHE={ key:cacheKey, val:result };
+  return result;
 }
 let GCT_LAST_CMP=null;   // cache of the last comparison, reused by the promotion gate below
 function renderGctCompare(){
@@ -14322,7 +14400,13 @@ function model(){
       raw.cbd.wedge               = raw.yearSav.map(function(s,i){ return s-raw.cbd.yearSavAttributable[i]; });
     }
     raw._curveOverlay = TIME_ACTIVE_CURVE;
-  }catch(e){ /* engine unavailable: fall back to the raw flat model rather than break the app */ }
+  }catch(e){
+    /* Fall back to the raw flat model rather than break the app — but not silently (v18.9, M-17): when the
+     * overlay throws, Annual/Run/Excel figures quietly diverge from Financial/Monthly, which read the engine
+     * directly. Flag the result, log once, and let CC-OV-01 (Logic verification) report it. */
+    raw._overlayError = String((e && e.message) || e);
+    if(!window.__modelOverlayWarned){ window.__modelOverlayWarned=true; console.error('model(): Time Engine overlay failed — using the raw flat model', e); }
+  }
   return raw;
 }
 
@@ -14869,7 +14953,7 @@ function renderAnnual(){
     ['Run Y1', fmtK(Y[0].totalRunCost)],['Run '+yLabel(endY), fmtK(end.totalRunCost)],
     ['Saving '+yLabel(endY), fmtK(end.savings)],
     ['Setup', fmtK(m.setupTotal)],
-    ['ROI '+endY+' year'+(endY>1?'s':'')+' (net)', Math.round((totSav-m.setupTotal)/m.setupTotal*100)+'%']
+    ['ROI '+endY+' year'+(endY>1?'s':'')+' (net)', fmtRoiPct(roiCanonical(totSav-m.setupTotal,m.setupTotal))]
   ].map(x=>`<div class="sb-item"><div class="sb-label">${x[0]}</div><div class="sb-value">${x[1]}</div></div>`).join('');
   destroyChart('anc');
   charts.anc=new Chart(document.getElementById('annualChart'),{type:'bar',
@@ -15931,12 +16015,12 @@ function renderRoi(){
   const _eng=teEngineNow(); const Yrows=_eng.years(); const endY=Yrows.length;
   const benefits=Yrows.map(y=>y.savings);
   const totalBen=benefits.reduce((a,b)=>a+b,0);
-  const net=totalBen-m.setupTotal; const roi=net/m.setupTotal; // net ROI (unified across app & Excel)
+  const net=totalBen-m.setupTotal; const roi=roiCanonical(net,m.setupTotal); // net ROI (unified across app & Excel); null when no setup
   const npvRate=(MODEL.CASE&&typeof MODEL.CASE.discountRate==='number')?MODEL.CASE.discountRate:0.08;
   const npv=npvCanonical(npvRate);                          // step 3: canonical NPV (monthly discounting); v18.7: user-set rate
   document.getElementById('roiSummary').innerHTML=[
     ['Investment',fmtK(m.setupTotal)],['Benefits '+endY+'y',fmtK(totalBen)],['Profit net',fmtK(net)],
-    ['ROI (net, '+endY+'y)',Math.round(roi*100)+'%'],['Payback',be?be+' mo':'>'+s.length+' mo'],['NPV @'+Math.round(npvRate*100)+'%',fmtK(npv)]
+    ['ROI (net, '+endY+'y)',fmtRoiPct(roi)],['Payback',fmtPayback(be,s.length)],['NPV @'+Math.round(npvRate*100)+'%',fmtK(npv)]
   ].map(x=>`<div class="sb-item"><div class="sb-label">${x[0]}</div><div class="sb-value">${x[1]}</div></div>`).join('');
   const step=s.length>40?2:1;
   destroyChart('roic');
@@ -15958,7 +16042,7 @@ function renderRoi(){
       +li('4. Σ savings over '+endY+' year'+(endY>1?'s':''), fmtK(totalBen))
       +li('5. One-time setup (tooling + training + coaching + governance)', fmtK(m.setupTotal))
       +li('ROI (net) = (Σ savings − setup) / setup', '('+fmtK(totalBen)+' − '+fmtK(m.setupTotal)+') / '+fmtK(m.setupTotal)+' = <span style="color:#00828E">'+Math.round(roi*100)+'%</span>')
-      +li('Payback = first month cumulative cash-flow ≥ 0', (be?be+' months':'>'+s.length+' months'))
+      +li('Payback = first month cumulative cash-flow ≥ 0', fmtPayback(be,s.length).replace(/ mo$/,' months'))
       +li('NPV @'+Math.round(npvRate*100)+'%/yr = Σ monthly (saving − setup spend), discounted', fmtK(npv))
       +'<div style="font-size:11px;color:#5a6785;margin-top:.5rem">Y1 savings are typically negative (ramp at '+m.ramps[0]+'% while the agentic run team and infra are paid in full) — the J-curve. Every figure updates live with your parameters.</div>';
   }
@@ -16377,9 +16461,10 @@ let DD_SENS=null;              /* {fp, base, w:{id:eurDelta}, unmeasurable:[ids]
 const ddPerturbPct=0.20;
 
 function ddFingerprint(){
-  try{ return JSON.stringify([INPUTS.v, activePhaseIds? Array.from(activePhaseIds()):null,
-        selectedArtefacts?selectedArtefacts.size:0, QUALITY, DORA_ANCHORS, THROUGHPUT_ANCHORS]).length
-        +':'+JSON.stringify(INPUTS.v).length; }catch(e){ return 'na'; }
+  /* v18.9 (M-16): this compared the LENGTHS of the serialised inputs, so a same-length edit (75 → 80, a ramp
+   * 55 → 60, a QUALITY target 30 → 35) left the sensitivity weights marked fresh. Hash the content. */
+  try{ return hashStr(JSON.stringify([INPUTS.v, activePhaseIds? Array.from(activePhaseIds()):null,
+        selectedArtefacts?Array.from(selectedArtefacts).sort():null, QUALITY, DORA_ANCHORS, THROUGHPUT_ANCHORS, COEF])); }catch(e){ return 'na'; }
 }
 function ddSavY3(){ try{ return teEndYearRow().savings; }catch(e){ return NaN; } }   // horizon-end savings
 
@@ -17097,8 +17182,9 @@ function renderSensitivity(){
   const autos=[25,35,50,65],ceils=[10,15,20,25,30];
   const head=document.querySelector('#sensMatrix thead');
   head.innerHTML='<tr><th>Automation %</th>'+ceils.map(c=>`<th>Glass ${c}%</th>`).join('')+'</tr>';
-  const baseRoi=(teYears().reduce((a,y)=>a+y.savings,0)-m.setupTotal)/m.setupTotal;   // horizon-aware ROI base
+  const baseRoi=roiCanonical(teYears().reduce((a,y)=>a+y.savings,0)-m.setupTotal, m.setupTotal);   // horizon-aware ROI base (null when no setup)
   document.querySelector('#sensMatrix tbody').innerHTML=autos.map(a=>`<tr><td><strong>${a}%</strong></td>`+ceils.map(c=>{
+    if(baseRoi==null) return `<td style="text-align:center;color:#999">n/a</td>`;
     const eff=a*(1-c/100); const factor=eff/m.eff; const roi=baseRoi*factor*(a/m.auto);
     const bg=roi>=2.5?'#E1F5EE':roi>=1.5?'#fff9c4':roi>=1?'#FFCCBC':'#ffab91';
     return `<td style="background:${bg};text-align:center">${Math.round(roi*100)}%${roi<0?' ⚠️':''}</td>`;
@@ -18348,27 +18434,39 @@ function renderVerif(){
     ['Agentic run','FTE_AI×day rate×1.15×days',m.runAgenticETP.toFixed(1)+' FTE',fmtK(m.runAgenticCost)],
     ['Total run Y3','team+tokens+infra+runAI','—',fmtK(m.yearRun[2])],
     ['Benefit Y3','baseline−run+KT−tax−ext','—',fmtK(m.yearSav[2])],
-    ['ROI 3 years (net)','(Σ benefits − Setup)/Setup','—',Math.round((m.yearSav.reduce((a,b)=>a+b,0)-m.setupTotal)/m.setupTotal*100)+'%']
+    ['ROI 3 years (net)','(Σ benefits − Setup)/Setup','—',fmtRoiPct(roiCanonical(m.yearSav.reduce((a,b)=>a+b,0)-m.setupTotal,m.setupTotal))]
   ];
   document.querySelector('#verifChain tbody').innerHTML=chain.map(r=>`<tr><td><strong>${r[0]}</strong></td><td style="font-size:11px;font-family:monospace">${r[1]}</td><td style="font-size:11px">${r[2]}</td><td class="text-right" style="font-weight:600">${r[3]}</td></tr>`).join('');
 
   // Directional sensitivity test
-  const baseRoi=(m.yearSav.reduce((a,b)=>a+b,0)-m.setupTotal)/m.setupTotal;
+  /* v18.9 (M-15): this check could never fail. It changed the on-screen field values, but model() reads the
+   * INPUTS cache — so both variants equalled the base — and the comparisons accepted equality, so it always
+   * printed "✓ Consistent". The variants now perturb the INPUTS the model really reads (restored in a finally;
+   * the ceiling is forced, otherwise it is recomputed from the scope and the input is ignored) and require a
+   * strict change in savings. A variant that cannot move (already at its cap) reports "n/a" instead. */
+  const sumSav=x=>x.yearSav.reduce((a,b)=>a+b,0);
+  const baseSav=sumSav(m), baseRoi=roiCanonical(baseSav-m.setupTotal,m.setupTotal);
   const baseFte=m.yearETP[2];
-  function variant(fn){
-    const orig={auto:document.getElementById('autoPotential').value,ceil:document.getElementById('glassCeiling').value};
-    fn();
-    const mm=model(); const r=(mm.yearSav.reduce((a,b)=>a+b,0)-mm.setupTotal)/mm.setupTotal; const f=mm.yearETP[2];
-    document.getElementById('autoPotential').value=orig.auto; document.getElementById('glassCeiling').value=orig.ceil;
-    return {r,f};
+  function variant(patch, forceCeil){
+    const keys=Object.keys(patch), saved={}; keys.forEach(k=>{ saved[k]=INPUTS.v[k]; });
+    const savedForce=forceGlassCeiling;
+    try{
+      keys.forEach(k=>{ INPUTS.v[k]=String(patch[k]); });
+      if(forceCeil) forceGlassCeiling=true;
+      const mm=model(); const sav=sumSav(mm);
+      return {sav, r:roiCanonical(sav-mm.setupTotal,mm.setupTotal), f:mm.yearETP[2]};
+    } finally { keys.forEach(k=>{ INPUTS.v[k]=saved[k]; }); forceGlassCeiling=savedForce; }
   }
-  const vUp=variant(()=>{document.getElementById('autoPotential').value=Math.min(80,m.auto+10);});
-  const vCeil=variant(()=>{document.getElementById('glassCeiling').value=Math.min(100,m.ceiling+10);});
+  const upAuto=Math.min(80,m.auto+10), upCeil=Math.min(100,m.ceiling+10), tol=1e-9;
+  const vUp=variant({autoPotential:upAuto}), vCeil=variant({glassCeiling:upCeil}, true);
+  const okUp  = upAuto>m.auto    ? (vUp.f<=baseFte+tol   && vUp.sav>baseSav+tol)    : null;
+  const okCeil= upCeil>m.ceiling ? (vCeil.f>=baseFte-tol && vCeil.sav<baseSav-tol)  : null;
+  const fx=r=>r==null?'n/a':r.toFixed(1)+'x';
   const sensi=[
-    ['Auto +10pts','FTE Y3 ↓, ROI ↑', 'FTE '+vUp.f.toFixed(1)+' (vs '+baseFte.toFixed(1)+') · ROI '+vUp.r.toFixed(1)+'x (vs '+baseRoi.toFixed(1)+'x)', vUp.f<=baseFte && vUp.r>=baseRoi],
-    ['Glass ceiling +10pts','FTE Y3 ↑, ROI ↓', 'FTE '+vCeil.f.toFixed(1)+' (vs '+baseFte.toFixed(1)+') · ROI '+vCeil.r.toFixed(1)+'x (vs '+baseRoi.toFixed(1)+'x)', vCeil.f>=baseFte && vCeil.r<=baseRoi]
+    ['Auto +10pts','FTE Y3 ↓, ROI ↑', 'FTE '+vUp.f.toFixed(1)+' (vs '+baseFte.toFixed(1)+') · ROI '+fx(vUp.r)+' (vs '+fx(baseRoi)+')', okUp],
+    ['Glass ceiling +10pts','FTE Y3 ↑, ROI ↓', 'FTE '+vCeil.f.toFixed(1)+' (vs '+baseFte.toFixed(1)+') · ROI '+fx(vCeil.r)+' (vs '+fx(baseRoi)+')', okCeil]
   ];
-  document.querySelector('#verifSensi tbody').innerHTML=sensi.map(r=>`<tr><td><strong>${r[0]}</strong></td><td>${r[1]}</td><td style="font-size:11px">${r[2]}</td><td class="text-center">${r[3]?'<span class="badge va">✓ Consistent</span>':'<span class="badge nva">✗ Abnormal</span>'}</td></tr>`).join('');
+  document.querySelector('#verifSensi tbody').innerHTML=sensi.map(r=>`<tr><td><strong>${r[0]}</strong></td><td>${r[1]}</td><td style="font-size:11px">${r[2]}</td><td class="text-center">${r[3]===null?'<span class="badge">n/a (at limit)</span>':(r[3]?'<span class="badge va">✓ Consistent</span>':'<span class="badge nva">✗ Abnormal</span>')}</td></tr>`).join('');
 }
 
 
@@ -21896,6 +21994,10 @@ AUDIT.registerCheck('TE-HZN', ['MODEL'], function(){
     return { ok:true };
   }catch(e){ return { ok:false, message:'TE-HZN threw: '+(e&&e.message||e) }; }
 }, 'TE-HZN (Horizon-Dynamic spec §10): engine.years() spans horizonYears and the end-year KPIs (netSavY3/runCostY3) equal engine.year(horizonYears) — no fixed "Y3" leaks when the horizon is not 3');
+AUDIT.registerCheck('CC-OV-01', ['MODEL'], function(){
+  try{ const m=model(); return m._overlayError ? { ok:false, message:'model() fell back to the raw flat model: '+m._overlayError } : { ok:true }; }
+  catch(e){ return { ok:false, message:'model() threw: '+(e&&e.message||e) }; }
+}, 'CC-OV-01 (v18.9): the Time Engine overlay applied to model() without error — Annual / Run / Results / Excel figures agree with Financial and Monthly, which read the engine directly');
 
 /* TE-DEP — the Time Engine is a live DEP node and TIME.current tracks the current inputs
  * (spec v5 §10.3). Proves the dependency graph drives engine invalidation: the node is
@@ -25359,6 +25461,9 @@ function renderConvChecks(){
  * (spline.default evaluates SC_PTS) but were never saved — only the three ramp anchors were, so a reopened
  * file, restored autosave or activated snapshot computed on different points/family and the staleness
  * banner appeared on every reopen. */
+STATE_REGISTRY.push({key:'stratApplied',
+  get:function(){ return STRAT_APPLIED ? JSON.parse(JSON.stringify(STRAT_APPLIED)) : null; },
+  set:function(v){ STRAT_APPLIED = (v && v.base && v.written) ? v : null; }});
 STATE_REGISTRY.push({key:'scurve',
   get:function(){ return { pts:(Array.isArray(SC_PTS)?SC_PTS.map(function(p){ return {t:p.t,a:p.a}; }):null), family:SC_FAMILY, curve:TIME_ACTIVE_CURVE }; },
   set:function(v){
