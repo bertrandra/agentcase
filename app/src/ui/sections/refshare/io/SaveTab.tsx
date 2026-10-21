@@ -4,6 +4,8 @@ import { exportSnapshotJson, importSnapshotFile } from '@/controllers/files';
 import { toast } from '@/ui/uiState';
 import { Callout, Panel } from '@/ui/widgets/cards';
 import { downloadText } from '../download';
+import { ReportPanel } from './ReportPanel';
+import { SnapshotPanel } from './SnapshotPanel';
 
 const T = content.texts;
 
@@ -22,11 +24,7 @@ export function SaveTab() {
   };
   return (
     <div>
-      <Panel title={T.saveHtmlTitle}>
-        <p>{T.saveHtml}</p>
-        <button type="button" className="ac-btn ac-btn-primary" disabled aria-describedby="io-html-later">💾 Download HTML snapshot</button>
-        <p id="io-html-later" className="ac-muted">Available in a later release (single-file HTML snapshot, Phase 6). Use the snapshot file below meanwhile.</p>
-      </Panel>
+      <SnapshotPanel />
       <Panel title={T.saveJsonTitle}>
         <p>{T.saveJson}</p>
         <div style={{ display: 'flex', gap: 8, flexWrap: 'wrap' }}>
@@ -36,6 +34,7 @@ export function SaveTab() {
         </div>
         <div role="status" aria-live="polite" style={{ marginTop: 8 }}>{status && <Callout>{status}</Callout>}</div>
       </Panel>
+      <ReportPanel />
     </div>
   );
 }
