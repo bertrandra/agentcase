@@ -38,7 +38,7 @@ describe('decision verdict reproduces the legacy decisionEngine()', () => {
 });
 
 describe('results core reproduces the legacy aggregation', () => {
-  // Known divergence: the per-skill clamp of the legacy team shift (see docs of teamShift) — checked on the fixtures where it is zero.
+  // The legacy team shift clamps per skill; teamShift() is the aggregate. They agree on all 59 fixtures (no skill automates past its own size).
   each('resultsCore')('%s', (id) => {
     const c = ctx(id), r = resultsCore(c), out: string[] = [], e = loadExtra('resultsCore', id) as { tot: Record<string, number> };
     e.tot = { asis: e.tot.asis as number, human: e.tot.human as number, agent: e.tot.agent as number };   // reconciliation fields are legacy diagnostics
