@@ -45,4 +45,4 @@ export function qualityView(c: Ctx) {
   return { anchor: a, sdd: sddMaturity(c), premium: qualPremium(c), factor: aiQualityTaxFactor(c), bar: qualBar(c), applied: c.inp.c('qualApply') };
 }
 export type RiskBand = { color: string; label: string };
-export const riskBand = (score: number): RiskBand => (score >= 0.55 ? { color: '#8F3237', label: 'High' } : score >= 0.35 ? { color: '#BE4D00', label: 'Moderate' } : { color: '#00828E', label: 'Contained' });
+export const riskBand = (score: number): RiskBand => (score >= 0.55 ? { color: '#8F3237', label: 'High' } : score >= 0.35 ? { color: '#b04600', label: 'Moderate' } : { color: '#006e79', label: 'Contained' });

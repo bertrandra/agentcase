@@ -36,7 +36,7 @@ export default function DepsSection() {
         {m.mismatches.length > 0 && (
           <Callout kind="warn">⚠ <b>CC-DEP-02 — {m.mismatches.length} section(s) whose tag disagrees with its edges:</b> {m.mismatches.map((s) => s.label).join(' · ')}. Either the tag or the edges are wrong; advisory only — nothing is auto-corrected.</Callout>
         )}
-        <p><span style={{ color: '#0058AB' }}>●</span> {notes.legend.strong} · <span style={{ color: '#BE4D00' }}>○</span> {notes.legend.soft} · <span className="ac-muted">Row impacts column · {m.edges} edges · {m.sources.length} of {ALL_SECTIONS.length} sections drive something</span></p>
+        <p><span style={{ color: '#0058AB' }}>●</span> {notes.legend.strong} · <span style={{ color: '#b04600' }}>○</span> {notes.legend.soft} · <span className="ac-muted">Row impacts column · {m.edges} edges · {m.sources.length} of {ALL_SECTIONS.length} sections drive something</span></p>
       </>}
       result={<Tabs tabs={tabs} label="Dependency views" />} />
   );

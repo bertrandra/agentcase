@@ -33,7 +33,7 @@ export function TeamCharts({ c }: { c: Ctx }) {
   }, [rows]);
   return (
     <>
-      <h3>Breakdown by location classification</h3>
+      <h2>Breakdown by location classification</h2>
       <ChartPanel config={byClass} label="FTE by location classification" height={200} />
       <h3>Breakdown by skill</h3>
       <ChartPanel config={bySkill} label="FTE by skill" height={200} />

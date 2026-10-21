@@ -11,9 +11,9 @@ export function RowsEditor({ section }: { section: DynSection }) {
     <>
       <h4>Body rows <span className="ac-muted">— {rows.length}</span></h4>
       <p className="ac-muted">Set Source first — it decides which variables the Var picker can pick from. Format “(auto)” adopts the variable’s own format.</p>
-      <div className="ac-table-wrap"><table className="ac-table">
+      <div className="ac-table-wrap" tabIndex={0}><table className="ac-table">
         <caption className="sr-only">Body rows of {section.title}</caption>
-        <thead><tr><th>Order</th><th>Label</th><th>Source</th><th>Var</th><th>Fmt</th><th>Default</th><th /></tr></thead>
+        <thead><tr><th>Order</th><th>Label</th><th>Source</th><th>Var</th><th>Fmt</th><th>Default</th><th scope="col"><span className="ac-sr">Actions</span></th></tr></thead>
         <tbody>
           {rows.length === 0 && <tr><td colSpan={7} className="ac-muted">No body rows.</td></tr>}
           {order.map((r, i) => r.id && (

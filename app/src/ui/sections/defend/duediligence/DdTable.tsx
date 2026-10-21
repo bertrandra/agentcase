@@ -8,7 +8,7 @@ const HEAD = ['Used in', 'Element / effect on the result', 'Value', 'Where', 'Ed
 export function DdTable({ m }: { m: DdModel }) {
   let group: string | null = null;
   return (
-    <div className="ac-table-wrap">
+    <div className="ac-table-wrap" tabIndex={0}>
       <table className="ac-table">
         <thead><tr>{HEAD.map((h) => <th key={h} scope="col">{h}</th>)}</tr></thead>
         <tbody>
@@ -18,7 +18,7 @@ export function DdTable({ m }: { m: DdModel }) {
             return [head, (
               <tr key={r.id}>
                 <td style={{ whiteSpace: 'nowrap', textAlign: 'center' }}><UseCell r={r} /></td>
-                <td><strong>{r.l}</strong><div style={{ fontSize: 10.5, color: '#888', marginTop: 2 }}>{r.eff}</div></td>
+                <td><strong>{r.l}</strong><div style={{ fontSize: 10.5, color: '#636363', marginTop: 2 }}>{r.eff}</div></td>
                 <td style={{ fontWeight: 600, textAlign: 'center', whiteSpace: 'nowrap' }}><ValueCell r={r} /></td>
                 <td style={{ fontSize: 10.5, textAlign: 'center' }}>{r.where}</td>
                 <td style={{ fontSize: 10.5, textAlign: 'center' }}><EditCell e={r.edit} /></td>

@@ -11,7 +11,7 @@ export function ScoreCard() {
   const config = useMemo<ChartConfiguration>(() => ({
     type: 'radar',
     data: { labels: rows.map((r) => r.label), datasets: [{ label: 'Readiness', data: rows.map((r) => Math.round(r.score ?? 0)), fill: true,
-      backgroundColor: 'rgba(55,138,221,0.18)', borderColor: '#0058AB', pointBackgroundColor: '#BE4D00', borderWidth: 2, pointRadius: 3 }] },
+      backgroundColor: 'rgba(55,138,221,0.18)', borderColor: '#0058AB', pointBackgroundColor: '#b04600', borderWidth: 2, pointRadius: 3 }] },
     options: { plugins: { legend: { display: false } }, scales: { r: { min: 0, max: 100, ticks: { stepSize: 20 } } } },
   }), [rows]);
   return (
@@ -22,7 +22,7 @@ export function ScoreCard() {
           <div style={{ fontWeight: 600, color: band.color }}>{band.label}</div>
         </div>
         <div role="meter" aria-label="AI readiness gauge" aria-valuenow={idx ?? 0} aria-valuemin={0} aria-valuemax={100}
-          style={{ height: 14, borderRadius: 8, position: 'relative', background: 'linear-gradient(90deg,#8F3237,#BE4D00,#1DB8F2,#00828E)' }}>
+          style={{ height: 14, borderRadius: 8, position: 'relative', background: 'linear-gradient(90deg,#8F3237,#b04600,#0a6e9c,#006e79)' }}>
           <div style={{ position: 'absolute', top: -4, width: 4, height: 22, background: '#0058AB', border: '1px solid #fff', borderRadius: 2, left: `${idx ?? 0}%` }} />
         </div>
         <p className="ac-muted"><span>0 Nascent</span> · <span>Leading 100</span></p>

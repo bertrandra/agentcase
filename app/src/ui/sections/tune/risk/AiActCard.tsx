@@ -7,11 +7,11 @@ const OPTIONS = [
   { value: 'none', label: 'Not classified (neutral)' }, { value: 'minimal', label: 'Minimal risk' }, { value: 'limited', label: 'Limited risk (transparency)' },
   { value: 'high', label: 'High risk (Annex III)' }, { value: 'unacceptable', label: 'Unacceptable (prohibited)' },
 ];
-const COLOR: Record<string, string> = { unacceptable: '#8F3237', high: '#BE4D00', limited: '#71609E' };
+const COLOR: Record<string, string> = { unacceptable: '#8F3237', high: '#b04600', limited: '#71609E' };
 
 /** EU AI-Act tier of the delivered product (EV-25) and its obligations. */
 export function AiActCard() {
-  const c = useCtx(), k = aiActKey(c), t = AIACT_TIERS[k] as (typeof AIACT_TIERS)[string], col = COLOR[k] ?? '#00828E';
+  const c = useCtx(), k = aiActKey(c), t = AIACT_TIERS[k] as (typeof AIACT_TIERS)[string], col = COLOR[k] ?? '#006e79';
   return (
     <Panel title="EU AI-Act tier — delivered product" aside={<Badge tone="blue">EV-25</Badge>}>
       <div className="ac-form-row">

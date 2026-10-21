@@ -9,7 +9,7 @@ function Card({ id, m }: { id: string; m: DepsModel }) {
   const sec = ALL_SECTIONS.find((s) => s.id === id)!, edges = m.deps[id] ?? {}, keys = Object.keys(edges), bad = tagMismatch(m.deps, sec);
   return (
     <div className="ac-chip" style={{ display: 'block', margin: '7px 0', padding: 9, background: bad ? '#FFFAF3' : undefined }}>
-      <div><strong>{sec.label}</strong> <span className="ac-badge">{sec.tag ?? '—'}</span> <span className="ac-muted">{keys.length} out · {m.incoming(id)} in</span> {bad && <span style={{ color: '#BE4D00' }}>⚠ {bad}</span>}</div>
+      <div><strong>{sec.label}</strong> <span className="ac-badge">{sec.tag ?? '—'}</span> <span className="ac-muted">{keys.length} out · {m.incoming(id)} in</span> {bad && <span style={{ color: '#b04600' }}>⚠ {bad}</span>}</div>
       <div style={{ margin: '5px 0' }}>
         {keys.length === 0 && <span className="ac-muted">no outgoing edges</span>}
         {keys.map((t) => (
@@ -36,7 +36,7 @@ export function Editor({ m }: { m: DepsModel }) {
   const pool = m.ordered.filter((s) => (filter === 'all' || (filter === 'sources' ? Object.keys(m.deps[s.id] ?? {}).length > 0 : (s.tag ?? '').includes('drives'))) && (!q || `${s.label} ${s.id}`.toLowerCase().includes(q.toLowerCase())));
   return (
     <div>
-      <h3>🔗 Dependencies — what each section drives</h3>
+      <h2>🔗 Dependencies — what each section drives</h2>
       <p className="ac-muted">One row per source section; add a target, then click its chip to flip ● strong (a calculation input) ↔ ○ soft (an annotation or signal), or ✕ to remove it. The other views read this live — they are never edited directly.</p>
       <div style={{ display: 'flex', gap: 12, flexWrap: 'wrap', alignItems: 'center' }}>
         <strong>{m.edges} edges · {m.sources.length} of {ALL_SECTIONS.length} sections drive something</strong>

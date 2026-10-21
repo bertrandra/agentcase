@@ -26,7 +26,7 @@ export default function AssumptionsSection() {
       result={<>
         <div className="ac-form-row"><span>🔵 <strong>{r.nDefault}</strong> at default</span><span>🟠 <strong>{r.nAdjusted}</strong> adjusted</span><span>🟢 <strong>{r.nValidated}</strong> validated with client</span>
           <span className="ac-muted"><em>Run the Monte Carlo to populate the impact column.</em></span></div>
-        <div className="ac-table-wrap"><table className="ac-table">
+        <div className="ac-table-wrap" tabIndex={0}><table className="ac-table">
           <thead><tr><th>Assumption</th><th>Current</th><th>Default</th><th>Status</th><th>Impact (r)</th><th>Client ✓</th></tr></thead>
           <tbody>
             {r.inputs.flatMap((x) => {

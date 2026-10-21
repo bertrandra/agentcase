@@ -26,7 +26,7 @@ export default function VelocitySection() {
     <SectionFrame title="Velocity & DORA"
       help={<p>DORA metrics and sprint velocity, driven by the in-scope automatable intensity × ramp — they move with the artifacts you select.</p>}
       input={<>
-        <h3>Performance realisation coefficients</h3>
+        <h2>Performance realisation coefficients</h2>
         <div style={{ display: 'flex', gap: 12, flexWrap: 'wrap' }}>
           <CoefInput id="veloPerfRelCap" coef="perfRelCap" label="Realisation cap ×" />
           <CoefInput id="veloPerfUpliftFactor" coef="perfUpliftFactor" label="Reference uplift factor" />

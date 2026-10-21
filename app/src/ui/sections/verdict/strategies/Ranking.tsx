@@ -8,7 +8,7 @@ import { Field } from '@/ui/widgets/fields';
 
 const WLBL: Record<MetricKey, string> = { roi: 'ROI', tco: 'TCO', payback: 'Payback', aiCoverage: 'AI Coverage', humanSup: 'Human Supervision', risk: 'Op. Risk', agility: 'Agility' };
 const MEDAL = ['🥇', '🥈', '🥉'];
-const COLORS = ['#0058AB', '#1DB8F2', '#BE4D00', '#00828E'];
+const COLORS = ['#0058AB', '#0a6e9c', '#b04600', '#006e79'];
 
 function radar(N: Ranked[], sel: string[]): ChartConfiguration {
   const axes = Object.keys(WLBL) as MetricKey[];
@@ -33,12 +33,12 @@ export function Ranking({ N, W }: { N: Ranked[]; W: Weights }) {
         ))}
         <button type="button" onClick={resetStratWeights}>↺ Reset weights</button>
       </div>
-      <div className="ac-table-wrap"><table className="ac-table">
+      <div className="ac-table-wrap" tabIndex={0}><table className="ac-table">
         <thead><tr><th>#</th><th>Strategy</th><th>Composite score (0-100, weighted normalised)</th><th>Score</th><th>Radar</th><th>Apply</th></tr></thead>
         <tbody>{N.map((o, i) => (
           <tr key={o.id} style={i === 0 ? { background: '#F1F8E9', fontWeight: 700 } : undefined}>
             <td>{MEDAL[i] ?? i + 1}</td><td>{o.icon} {o.label}</td>
-            <td><span className="ac-bar" style={{ display: 'block', minWidth: 120 }}><span style={{ width: `${isNaN(o.score) ? 0 : o.score}%`, background: i === 0 ? 'var(--ac-teal)' : '#1DB8F2' }} /></span></td>
+            <td><span className="ac-bar" style={{ display: 'block', minWidth: 120 }}><span style={{ width: `${isNaN(o.score) ? 0 : o.score}%`, background: i === 0 ? 'var(--ac-teal)' : '#0a6e9c' }} /></span></td>
             <td className="ac-c" style={{ fontWeight: 700 }}>{isNaN(o.score) ? 'n/a' : o.score}</td>
             <td className="ac-c"><input type="checkbox" aria-label={`Show ${o.label} on the radar`} checked={sel.includes(o.id)} onChange={(e) => setPicked(e.target.checked ? [...sel, o.id] : sel.filter((x) => x !== o.id))} /></td>
             <td className="ac-c"><button type="button" onClick={() => apply(o.id)} title="Push these levers into the live simulation">→ Apply</button></td>

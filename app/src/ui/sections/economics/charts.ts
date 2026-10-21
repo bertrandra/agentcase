@@ -25,7 +25,7 @@ export function cashflowLine(v: EconomicsView): ChartConfiguration {
   return {
     type: 'line',
     data: { labels: s.map((x) => `M${x.mo}`), datasets: [{ label: 'Cumulative cash-flow', data: s.map((x) => x.cum), borderColor: '#0058AB', borderWidth: 3, tension: 0.3, pointRadius: 1,
-      segment: { borderColor: (c: { p1: { parsed: { y: number } } }) => (c.p1.parsed.y >= 0 ? '#00828E' : '#BE4D00') } }] },
+      segment: { borderColor: (c: { p1: { parsed: { y: number } } }) => (c.p1.parsed.y >= 0 ? '#006e79' : '#b04600') } }] },
     options: { plugins: { legend: { display: false } }, scales: { y: { ticks: { callback: tickK }, grid: GRID }, x: { ticks: { maxTicksLimit: 18 } } } },
   };
 }

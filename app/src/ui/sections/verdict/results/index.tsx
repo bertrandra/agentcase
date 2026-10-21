@@ -53,7 +53,7 @@ export default function ResultsSection() {
           <Panel title={`Team shift (Y${r.horizon})`}>
             <div style={{ lineHeight: 1.9 }}>
               <strong>{r.team.asis.toFixed(1)}</strong> AS-IS human FTE →<br />
-              <b style={{ color: 'var(--ac-blue)' }}>{r.team.human.toFixed(1)}</b> residual human FTE + <b style={{ color: '#1DB8F2' }}>{r.team.agent.toFixed(1)}</b> agent vFTE<br />
+              <b style={{ color: 'var(--ac-blue)' }}>{r.team.human.toFixed(1)}</b> residual human FTE + <b style={{ color: '#0a6e9c' }}>{r.team.agent.toFixed(1)}</b> agent vFTE<br />
               <span className="ac-muted">Product status: {r.status}</span>
             </div>
           </Panel>

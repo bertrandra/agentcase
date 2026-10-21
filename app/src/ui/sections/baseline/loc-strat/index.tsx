@@ -19,7 +19,7 @@ function AsIs() {
   const mx = locationMix(useCtx().s);
   return (
     <div>
-      <h4>📍 AS-IS (computed)</h4>
+      <h2>📍 AS-IS (computed)</h2>
       {LOCATIONS.map((l) => {
         const p = mx.pct[l.name] ?? 0;
         return (
@@ -39,7 +39,7 @@ function Target() {
   const t = targetMix(useCtx().s), sum = LOCATIONS.reduce((s, l) => s + (t[l.name] || 0), 0);
   return (
     <div>
-      <h4>🎯 Target (editable)</h4>
+      <h2>🎯 Target (editable)</h2>
       <div className="ac-form-row" style={{ justifyContent: 'space-between' }}>
         <button type="button" onClick={resetTargetLoc}>↺ Copy AS-IS</button>
         <span>Target sum : <strong style={{ color: Math.abs(sum - 100) < 1 ? 'var(--ac-teal)' : 'var(--ac-brick)' }}>{sum.toFixed(0)}%</strong></span>

@@ -11,7 +11,7 @@ export function Composition({ live, year, setYear }: { live: Live; year: number;
   const comp = useMemo(() => tobeComposition(live, year), [live, year]), y = Math.min(year, comp.years.length - 1), tot = comp.tot;
   const cfg = useMemo((): ChartConfiguration => ({ type: 'bar', data: { labels: comp.rows.map((r) => r.skill), datasets: [
     { label: 'Human FTE', data: comp.rows.map((r) => +f2(r.perYear[y]!.human)), backgroundColor: '#0058AB' },
-    { label: 'Agent vFTE', data: comp.rows.map((r) => +f2(r.perYear[y]!.agent)), backgroundColor: '#1DB8F2' }] },
+    { label: 'Agent vFTE', data: comp.rows.map((r) => +f2(r.perYear[y]!.agent)), backgroundColor: '#0a6e9c' }] },
   options: { scales: { x: { stacked: true }, y: { stacked: true, title: { display: true, text: 'FTE' } } }, plugins: { legend: { position: 'bottom' }, title: { display: true, text: `TO-BE team by skill — Year ${y + 1}` } } } }), [comp, y]);
   const model = live.eng.years()[y]!;
   return (

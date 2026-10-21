@@ -4,7 +4,7 @@ import type { SetupLine } from '@/domain/tuneB/setup';
 import { ChartPanel } from '@/ui/widgets/ChartPanel';
 import { eur } from '../../tuneB/fmt';
 
-const COLORS = ['#71609E', '#1DB8F2', '#00828E', '#BE4D00'];
+const COLORS = ['#71609E', '#0a6e9c', '#006e79', '#b04600'];
 
 /** Doughnut of the four setup lines. */
 export function SetupChart({ lines }: { lines: SetupLine[] }) {

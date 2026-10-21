@@ -25,7 +25,7 @@ export default function StrategiesSection() {
     <SectionFrame title="🏆 Strategy comparison — 7 delivery strategies" help={help}
       input={<Panel title="Strategy configuration" aside={<button type="button" onClick={resetStrategies}>↺ Reset all strategies</button>}>
         <p className="ac-muted">Empty = inherit the current simulation value. Amber = edited vs default. Geo split rows must total 100%.</p>
-        <div className="ac-table-wrap"><table className="ac-table"><thead><tr>{HEAD.map((h) => <th key={h}>{h}</th>)}</tr></thead>
+        <div className="ac-table-wrap" tabIndex={0}><table className="ac-table"><thead><tr>{HEAD.map((h) => <th key={h}>{h}</th>)}</tr></thead>
           <tbody>{defs.map((S) => <EditorRow key={S.id} S={S} D={STRATEGY_DEFS_DEFAULT.find((x) => x.id === S.id)} />)}</tbody></table></div>
       </Panel>}
       result={<>

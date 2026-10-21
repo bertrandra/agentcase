@@ -1,11 +1,12 @@
 /* Design tokens carried over from the legacy app (v18.11). Colours keep their meaning across the UI. */
 :root {
   --ac-blue: #0058ab;      /* primary, headings, links */
-  --ac-teal: #00828e;      /* automation / positive */
+  --ac-teal: #006e79;      /* automation / positive */
   --ac-brick: #8f3237;     /* glass ceiling / negative */
-  --ac-amber: #be4d00;     /* human supervision / warning */
+  --ac-amber: #b04600;     /* human supervision / warning */
+  --ac-focus: #0058ab;     /* focus ring */
   --ac-ink: #222;
-  --ac-muted: #888;
+  --ac-muted: #636363;
   --ac-line: #e3e3e3;
   --ac-surface: #fff;
   --ac-bg: #f5f6f8;

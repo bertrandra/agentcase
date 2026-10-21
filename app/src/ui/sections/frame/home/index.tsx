@@ -1,5 +1,6 @@
 import { GLOSSARY_TERMS } from '@/domain/frame';
 import { useDoc } from '@/store/hooks';
+import { textColor } from '@/ui/colorText';
 import { goSection } from '@/ui/uiState';
 import { Callout } from '@/ui/widgets/cards';
 import { useNavModel } from '@/ui/zones/navModel';
@@ -38,10 +39,10 @@ export default function HomeSection() {
                   <div style={{ display: 'flex', alignItems: 'center', gap: 8, fontSize: 18, fontWeight: 700 }}>
                     <span>{group.label}</span>
                     <span title={`${sections.length} section${sections.length === 1 ? '' : 's'} active for this persona`}
-                      style={{ marginLeft: 'auto', color, border: `1px solid ${color}`, borderRadius: 11, padding: '1px 10px', fontSize: 12.5 }}>{sections.length}</span>
+                      style={{ marginLeft: 'auto', color: textColor(color), border: `1px solid ${color}`, borderRadius: 11, padding: '1px 10px', fontSize: 12.5 }}>{sections.length}</span>
                   </div>
                   <div style={{ fontSize: 12.5, margin: '6px 0' }}>{group.description || 'No description yet — add one in 👥 Persona management.'}</div>
-                  <div style={{ fontSize: 11.5, color, fontWeight: 700 }}>{group.label} →</div>
+                  <div style={{ fontSize: 11.5, color: textColor(color), fontWeight: 700 }}>{group.label} →</div>
                 </button>
               );
             })}

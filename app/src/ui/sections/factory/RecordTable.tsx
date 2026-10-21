@@ -33,9 +33,9 @@ export function RecordTable({ coll, rows, cols, noun, empty, addLabel, label, ca
   return (
     <>
       {cap && rows.length > cap && <p role="note" className="ac-callout ac-callout-warn">Showing the first {cap} of {rows.length.toLocaleString('en-US')} {noun} — editing stays available on these; all {rows.length.toLocaleString('en-US')} are counted by the KPIs.</p>}
-      <div className="ac-table-wrap">
+      <div className="ac-table-wrap" tabIndex={0}>
         <table className="ac-table">
-          <thead><tr>{cols.map((c) => <th key={c.header} scope="col">{c.header}</th>)}<th /></tr></thead>
+          <thead><tr>{cols.map((c) => <th key={c.header} scope="col">{c.header}</th>)}<th scope="col"><span className="ac-sr">Actions</span></th></tr></thead>
           <tbody>
             {shown.length ? shown.map((r) => (
               <tr key={r.id}>{cols.map((c) => <td key={c.header}>{cell(c, r)}</td>)}

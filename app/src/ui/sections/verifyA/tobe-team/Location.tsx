@@ -19,7 +19,7 @@ export function Location({ live, year }: { live: Live; year: number }) {
           <b style={{ color: Math.abs(sum - 100) < 0.5 ? 'var(--ac-teal)' : 'var(--ac-brick)' }}>{Math.round(sum)}%</b>] };
         })} />
       <p><button type="button" onClick={resetTobeLoc}>↺ Reset split to AS-IS mix</button></p>
-      <h4>Resulting TO-BE human team by location ({label})</h4>
+      <h2>Resulting TO-BE human team by location ({label})</h2>
       <SimpleTable align={['left', 'center', 'center']} head={['Location', 'Human FTE', 'Indic. annual cost']}
         rows={res.rows.map((r) => ({ key: r.loc, cells: [<><b>{r.loc}</b> <small>{r.cls}</small></>, r.fte.toFixed(2), `${fmt(r.cost)} €`] }))}
         foot={{ key: 'tot', cells: ['TOTAL', res.fte.toFixed(2), `${fmt(res.cost)} €`] }} />

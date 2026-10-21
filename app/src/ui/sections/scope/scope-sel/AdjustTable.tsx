@@ -26,7 +26,7 @@ export function AdjustTable() {
       </div>
       <AdjustLive />
       <p className="ac-muted">The <strong>% auto</strong> (automatable %, human supervision = 100 − this) and <strong>Effort weight</strong> columns are editable. Blue = % auto overridden, amber = effort overridden.</p>
-      <div className="ac-table-wrap">
+      <div className="ac-table-wrap" tabIndex={0}>
         <table className="ac-table">
           <thead><tr><th>ID</th><th>Artifact</th><th>Phase</th><th>Value</th><th>Skill</th><th>AI authorization</th><th>Human sup.</th><th>% auto (agent)</th><th>Effort weight</th><th title="Base effort weight × the current product-status lifecycle weight">Effective (lifecycle)</th></tr></thead>
           <tbody>
