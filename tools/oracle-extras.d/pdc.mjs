@@ -29,6 +29,13 @@ export const EXTRAS = {
     const txt = id => document.getElementById(id).textContent.replace(/\\s+/g,' ').trim();
     return { checks: rows('verifChecks'), chain: rows('verifChain'), sensi: rows('verifSensi'), prov: rows('provenanceHost'), provText: txt('provenanceHost'), conv: rows('convChecksHost') }; })()`,
   pdc_board: `(()=>({ dyn: JSON.parse(JSON.stringify(DYNAMIC_SECTIONS)) }))()`,
+  pdc_dash: `(()=>{ const out = {}; const keep = JSON.stringify(PERSONA_SECTIONS);
+    for (const [k, ids, all] of [['one', ['tune'], false], ['two', ['tune', 'verify'], false], ['all', [], true]]) {
+      dynSectionGenerate(ids, all); const d = JSON.parse(JSON.stringify(DYNAMIC_SECTIONS[DYNAMIC_SECTIONS.length - 1])); out[k] = d; out[k + 'Persona'] = JSON.parse(JSON.stringify(PERSONA_SECTIONS)); dynSectionRemoveCascade(d.id);
+    }
+    out.restored = JSON.stringify(PERSONA_SECTIONS) === keep; out.max = Math.max(0, ...SECTION_CATALOG.map(s => s.groupSeq || 0)); return out; })()`,
+  pdc_vars: `VARIABLE_REGISTRY.map(v => { let value = null, text = '—'; try { value = v.get(); text = formatValue(value, v.canonicalFormat); } catch (e) { text = 'ERR'; }
+    return { id: v.id, label: v.label, fmt: v.canonicalFormat, unit: v.unit, scope: v.sectionScope, value, text }; })`,
   pdc_personas: `(()=>{ renderPersonas(); return { personas: JSON.parse(JSON.stringify(PERSONAS)), sections: JSON.parse(JSON.stringify(PERSONA_SECTIONS)),
     table: [...document.querySelectorAll('#pmPersonaTable tr')].map(r => [...r.children].map(c => c.textContent.trim())) }; })()`,
 };

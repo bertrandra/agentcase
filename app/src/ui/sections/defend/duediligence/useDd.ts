@@ -7,7 +7,7 @@ import type { Ctx } from '@/domain';
 import { useCtx, useDoc } from '@/store/hooks';
 import defaultDoc from '@/store/defaults/defaultDoc.json';
 
-const base = ddBase(defaultDoc);
+const base = ddBase(defaultDoc), NONE: Validated = {};
 
 export interface DdModel {
   c: Ctx; rows: DdRow[]; sens: DdSens | null; fresh: boolean;
@@ -17,7 +17,7 @@ export interface DdModel {
 
 /** Everything the due-diligence screen reads: the register rows, the confirmation gauges and the (possibly stale) € sensitivity. */
 export function useDd(): DdModel {
-  const c = useCtx(), ok = useDoc((d) => (d.assumptValidated as Validated | undefined) ?? {}), sens = useDoc((d) => (d.DD_SENS as DdSens | null | undefined) ?? null);
+  const c = useCtx(), ok = useDoc((d) => (d.assumptValidated as Validated | undefined) ?? NONE), sens = useDoc((d) => (d.DD_SENS as DdSens | null | undefined) ?? null);
   const stateDoc = useDoc((d) => d.DD_STATE);
   return useMemo(() => {
     const rows = ddRows(c, base, ok), fresh = !!sens && sens.fp === ddFingerprint(c);

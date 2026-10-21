@@ -10,7 +10,7 @@ const help = (
   <p>The single auditable list of every assumption feeding the business case: current value vs benchmark default, adjustment status, client validation, and the measured impact of the uncertain ones on the net outcome. This is the answer to “what is this number based on?”.</p>
 );
 const TONE: Record<AssumptionStatus, 'grey' | 'amber' | 'teal'> = { def: 'grey', adj: 'amber', ok: 'teal' };
-const base = benchmarkBase(defaultDoc);
+const base = benchmarkBase(defaultDoc), NONE: Validated = {};
 const Group = ({ label }: { label: string }) => <tr style={{ background: '#EAF0FB' }}><td colSpan={6} style={{ fontWeight: 700, color: 'var(--ac-blue)', fontSize: 11 }}>{label}</td></tr>;
 const Check = ({ id, on, label }: { id: string; on: boolean; label: string }) => (
   <input type="checkbox" aria-label={label} title="Mark as validated with the client" checked={on} onChange={(e) => setAssumptValidated(id, e.target.checked)} />
@@ -18,7 +18,7 @@ const Check = ({ id, on, label }: { id: string; on: boolean; label: string }) =>
 
 /** Assumptions register — every editable input vs its default, structured-state edits and client validation. */
 export default function AssumptionsSection() {
-  const c = useCtx(), ok = useDoc((d) => (d.assumptValidated as Validated | undefined) ?? {});
+  const c = useCtx(), ok = useDoc((d) => (d.assumptValidated as Validated | undefined) ?? NONE);
   const r = useMemo(() => assumptionRegister(c, base, ok), [c, ok]);
   let group: string | null = null;
   return (
