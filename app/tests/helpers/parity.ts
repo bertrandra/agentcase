@@ -3,9 +3,9 @@ import { existsSync, readFileSync } from 'node:fs';
 /** Numbers shown in a text: €1 704K, €1,204,000, 75%, 13.0 … (ids like Y3, A017, v18.9 and bare digits < 10 are skipped). */
 export function numberTokens(text: string): number[] {
   const out: number[] = [];
-  const re = /(?<![A-Za-z0-9.])(-?\d{1,3}(?:[\s\u00a0\u202f,]\d{3})+(?:\.\d+)?|-?\d+(?:\.\d+)?)\s?([KkMm](?![A-Za-z]))?/g;
+  const re = /(?<![A-Za-z0-9.])(-?\d{1,3}(?:[ \u00a0\u202f,]\d{3})+(?:\.\d+)?|-?\d+(?:\.\d+)?)\s?([KkMm](?![A-Za-z]))?/g;
   for (const m of text.matchAll(re)) {
-    const raw = (m[1] as string).replace(/[\s\u00a0\u202f,]/g, '');
+    const raw = (m[1] as string).replace(/[ \u00a0\u202f,]/g, '');
     let v = parseFloat(raw);
     if (isNaN(v)) continue;
     if (m[2]) v *= m[2].toLowerCase() === 'k' ? 1e3 : 1e6;

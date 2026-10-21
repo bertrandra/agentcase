@@ -1,0 +1,29 @@
+{
+ "coefficients": [
+  ["aiFinOpsFte","Flat AI-FinOps FTE added to the run team once the agentic run is active.","0.5","run-sizing"],
+  ["hriFloor","Human Readiness Index ramp floor — the minimum achievable adoption ramp regardless of how low readiness scores.","0.6","readiness"],
+  ["hriSlope","Human Readiness Index ramp slope — how much a readiness-score point moves the achievable ramp.","0.4","readiness"],
+  ["perfRelCap","Realisation cap × on the productivity-uplift curve — how far towards the theoretical ceiling adoption can actually move Y3 velocity/lead-time.","1.4","velocity"],
+  ["perfUpliftFactor","Reference uplift factor feeding the same realisation curve as the cap above.","0.85","velocity"],
+  ["prodFactor","Agent capacity (indicative) factor over vFTE — the surplus throughput an agent can produce beyond the effort it replaces. Deliberately isolated from vFTE and cost.","1.4","run-sizing"],
+  ["qualBarCap","Ceiling on how many Decision-Intelligence points the quality premium can cost, regardless of how large the premium itself gets.","0.15",""],
+  ["qualBarFactor","How strongly the quality premium converts into the DI-bar penalty (before the cap above applies).","0.2","risk"],
+  ["qualPremiumCap","Cap on the AI-code quality-premium multiplier that feeds the verification tax and the DI-bar penalty.","0.75","risk"],
+  ["setupETP","Transitional setup headcount (lead + architect + coach) shown on Team-out — display only, its € is already inside the Setup total.","2","setup"],
+  ["supShareCap","Cap on the supervision-share used when sizing the AgentOps run team from agent vFTE.","0.5","run-sizing"],
+  ["supShareFactor","How strongly agent vFTE converts into supervision-share headcount, before the cap above applies.","0.5","run-sizing"],
+  ["vtaxCap","Hard cap on the verification-tax multiplier — how much extra review cost AI-authored work can add, at most.","0.6","eligibility"]
+ ],
+ "namespaces": [
+  ["MODEL.FLAGS","The master on/off switch for every optional model-engine phase. Cross-cutting — each phase turns its own flag on via its own Enable button; there is no single home tab.","cross-cutting"],
+  ["MODEL.LCE","P1 · Loop convergence — review-cycle count/cost, calibrated per artefact class.","model-convergence"],
+  ["MODEL.EVT","P2 · Verification tax — the review overhead AI-authored work adds, by class.","model-verification"],
+  ["MODEL.SUP","P3 · Supervision — Provisioned vs Constrained supervisor capacity, and the ramp/ceiling that mode applies to agent vFTE.","model-supervision"],
+  ["MODEL.MCS","P4 · Monte Carlo — the stochastic layer's draw count, correlation and distributions.","model-stochastic"],
+  ["MODEL.CBD","P4-adjacent · Counterfactual baseline drift — secular productivity improvement the case would have seen anyway, subtracted from gross savings. A secondary control inside the P4 page, not its own phase.","model-stochastic"],
+  ["MODEL.CASE","The headline case NPV discount rate — the sponsor's WACC/hurdle rate. Distinct from FLOW.discountRate below (a different cash-flow, time-to-market NPV).","engagement-context"],
+  ["MODEL.FLOW","P5 · Flow & value — work-in-progress, cycle time and the time-to-market NPV this phase prices, kept isolated from the headline savings NPV.","model-flow"],
+  ["MODEL.DORA","Client-measured DORA values placed beside each derived read-out (deployment frequency, change-failure rate, lead time). Pulled forward into the P3 page rather than P5, since it consumes P1/P3 state only.","model-supervision"],
+  ["MODEL.EVIDENCE","P6 · Evidence ledger — tier/source/as-of/owner per model driver, plus the case's current benchmarking stage (qualification / investment approval / gate review).","model-evidence"]
+ ]
+}

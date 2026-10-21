@@ -1,0 +1,11 @@
+{
+ "title": "🗂️ Session manager — autosave",
+ "intro": "A rolling autosave of this browser's work, kept entirely separate from the 📥 Import / Export tab's Snapshot library and HTML exports — invisible and automatic, a safety net between deliberate saves, never a replacement for them. One session per tab: reload this tab and a banner offers to restore where you left off; other tabs you've had open in this browser are listed below and individually restorable. Nothing here is ever written to disk — it lives in this browser only (IndexedDB), for this file's origin.",
+ "texts": {"empty": "No autosaved sessions yet — AgentCase saves automatically about 1.5 s after you make a change.", "unavailable": "This browser gives no access to IndexedDB (private mode or blocked site data): autosave is off. Use Import / Export to save the case to a file.", "restoreNote": "Restoring replaces the current case with that session and brings its undo history back with it."},
+ "help": [
+ ["h3","📖 What this section does"],
+ ["p","Debounced ~2 seconds after any change, AgentCase writes the current configuration into this browser's IndexedDB, keyed to the tab that's open. Reloading that same tab reads it back and offers to restore. Every tab gets its own record, so several cases open in several tabs never overwrite each other — a small \"🗂 N other sessions\" indicator in the top bar surfaces the others without interrupting whatever you're doing."],
+ ["h3","🔒 Where this data lives"],
+ ["p","Local to this browser and this file's origin only — never uploaded, never synced across devices. Capped at the 20 most recently-saved sessions; older ones are pruned automatically. Toggle autosave off, or clear this tab's own session, at any time from the panel above."]
+]
+}

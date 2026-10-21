@@ -1,0 +1,15 @@
+{
+ "title": "🔗 Section Dependencies",
+ "version": "v18.8",
+ "help": [
+ ["h3","📖 What this section does"],
+ ["p","A ",["strong","row → column impact matrix"]," over the sections that participate in the calculation chain. It answers the two questions that come up constantly when tuning a case: \"if I change this, what moves?\" and, running the matrix backwards, \"this number looks wrong — what feeds it?\""],
+ ["h3","🔗 Reading a cell"],
+ ["ul",["li",["strong","● strong"]," — the row section is a genuine calculation input to the column section. Change the row, the column's numbers change."],["li",["strong","○ soft"]," — an annotation or informational signal only: it may re-label, flag or contextualise the column, but it does not move its arithmetic."],["li",["strong","blank"]," — no relationship."]],
+ ["p","Leaf display views are deliberately omitted — a section that only renders and feeds nothing would add a column of blanks. Section names are clickable and open the section directly."],
+ ["h3","🎯 Why it is worth consulting before editing"],
+ ["p","AgentCase's inputs are heavily coupled: 🎯 Scope alone drives the glass ceiling, automation potential, effort weights, supervision averages, the Gantt layout and the team decomposition. Editing without knowing the fan-out is how people end up surprised by a moved headline. This matrix is the map of that coupling."],
+ ["div",{"class":"note-green"},"Nothing on this page is hardcoded. Nodes, rows, columns and graph lanes are derived from the section catalogue and its menu groups, so a section added, renamed, moved between groups or deleted is reflected here with no code change. The links themselves are ",["strong","authored"]," — a tag says a section ",["em","is"]," a driver, it cannot say ",["em","what"]," it drives — and live in one editable registry (",["code","SECTION_DEPS"],"), edited on the ✎ Edit dependencies sub-tab and persisted with the case. An edge pointing at a deleted section is pruned on load with a visible notice, so a stale link cannot survive."],
+ ["div",{"class":"note-green"},"This is a curated documentation view of the dependency structure. The live wiring that actually invalidates and recomputes is the DEP graph inside the engine — this page documents it for humans; it does not drive it."]
+]
+}

@@ -1,0 +1,18 @@
+{
+ "title": "In the TypeScript build (v19)",
+ "body": [
+ ["p","This page documents the ",["strong","legacy v18.11 single file"]," (kept below, unchanged, because it is the reference every figure is checked against). The TypeScript + React build keeps the same calculation chain but organises it differently:"],
+ ["table",["thead",["tr",["th","Legacy v18.11"],["th","TypeScript build"],["th","Where"]]],["tbody",
+  ["tr",["td","Layer 2 · UI / Presentation (DOM)"],["td","React components render selectors and call controllers; no business logic in components"],["td",["code","src/ui/"]]],
+  ["tr",["td","The seam — input bridge (",["code","readInputs()"],")"],["td","The typed ",["code","Ctx"]," built from the document by ",["code","makeCtx()"]],["td",["code","src/domain/ctx.ts"]]],
+  ["tr",["td","Layer 1 · Calculation core (",["code","model()"],")"],["td","Pure functions: ",["code","modelRaw()"]," plus the Time-Engine overlay ",["code","model()"]],["td",["code","src/domain/model/"]]],
+  ["tr",["td",["code","TIME"]," (Time Engine)"],["td","Pure engine: curve adapters, kernel, monthly rows, annual rows, canonical payback and NPV"],["td",["code","src/domain/time/"],", ",["code","canonical.ts"]]],
+  ["tr",["td",["code","BUS"]],["td","Store subscriptions (zustand) and the audit log"],["td",["code","src/store/"]]],
+  ["tr",["td",["code","APP_STATE"]," / ",["code","STATE_REGISTRY"]],["td","One immutable document (the same keys, so old snapshots still load); every change is a command"],["td",["code","src/store/"],", ",["code","src/controllers/"]]],
+  ["tr",["td",["code","PM"]," (persistence manager)"],["td","Persistence adapters: JSON snapshot, IndexedDB autosave with history, BroadcastChannel"],["td",["code","src/store/persistence/"]]],
+  ["tr",["td",["code","DEP"]," (dependency graph)"],["td","Memoised selectors; no runtime graph, so no full-refresh switch"],["td",["code","src/store/hooks.ts"]]],
+  ["tr",["td",["code","AUDIT"]],["td","Command middleware: every change is logged with its label; replay reproduces the state; undo and redo are free"],["td",["code","src/store/history.ts"]]]
+ ]],
+ ["p","Layers 3-5 (Monte Carlo, Decision, Strategy), the Board and the Factory meta-model are ported section by section in later phases; until then the descriptions below remain the specification."]
+ ]
+}
