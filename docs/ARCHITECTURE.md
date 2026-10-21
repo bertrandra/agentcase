@@ -1,6 +1,6 @@
 # AgentCase — Architecture
 
-> Applies to **AgentCase v18.9** (`AgentCase_v18_9_EN.html`, ≈25,475 lines, ≈5.0 MB).
+> Applies to **AgentCase v18.10** (`AgentCase_v18_10_EN.html`, ≈25,475 lines, ≈5.0 MB).
 > Line references (`L1234`) were taken on v18.8 and shift with every release — in v18.9 they move by roughly
 > +60 lines after the helper block at the top of the main script and by up to −1,000 further down (dead code removed).
 > Search for the quoted identifier; do not trust a number.
@@ -272,6 +272,7 @@ names and autosave records.
 | `roiCanonical`, `fmtRoiPct`, `fmtPayback`, `fmtChg` | the one ROI / payback / delta convention |
 | `parseLocalDate`, `addMonthsLocal` | calendar dates in local time (a bare `new Date('2026-09-01')` is UTC) |
 | `hashStr(s)` | content hash for change detection |
+| `scEnginePts()` | the spline's control points as the engine reads them (scaled by ramp speed × HRI, capped) |
 | `a11yEnhance(root)` | accessibility pass (names for form controls, keyboard access for click-only elements); runs through a throttled `MutationObserver` |
 
 ## 5. Boot sequence
@@ -496,7 +497,7 @@ All checks run headless (Playwright + Chromium) against the built file; `node to
 | `tools/smoke.mjs` | the file boots without console / page errors; **the golden-case figures** equal `tools/golden.json` (Y3 savings, Y3 run cost, setup, NPV, payback, 0 audit violations) |
 | `tools/handlers-test.mjs` | every inline-handler target (≈250 functions) in the markup and in the HTML generated for every section is defined |
 | `tools/xss-test.mjs` | hostile strings injected through state restore, live state, and two Excel-fuzz passes never execute and never inject attributes |
-| `tools/state-test.mjs` | 35 regression tests for persistence, autosave, calculations, dates, import safety, accessibility — each written to fail on v18.8 |
+| `tools/state-test.mjs` | 39 regression tests for persistence, autosave, calculations, dates, import safety, accessibility — each written to fail on v18.8 |
 | `tools/render-diff.mjs <before> <after>` | the visible text of all 82 sections is identical between two builds, so a refactor is provably cosmetic (differences are listed) |
 
 - In-app: `AUDIT.runChecks()` (42 invariants), Time Engine canaries (`TE-05/09/10/10b` rebuild a
@@ -532,10 +533,14 @@ All checks run headless (Playwright + Chromium) against the built file; `node to
 
 ## 11. Known limitations and open decisions
 
-- **Human Readiness drag vs the spline curve.** The default adoption curve is the free-form spline, used exactly
-  as drawn. The readiness drag (`hriRampFactor`), the engagement ramp speed and the ramp cap scale the ramp
-  *anchors*, so they act on the logistic, Gompertz, Bass and flat curves but not on the spline. The HRI screen says
-  so. Decision for the model owner: apply them to the spline, or keep "what you draw is what you get".
+- **Ramp factors and the spline.** Since v18.10 the readiness drag (`hriRampFactor`), the engagement ramp speed and
+  the ramp cap scale the spline's control points in `scEnginePts()` exactly as they scale the ramp anchors of the other
+  curves. The S-curve editor draws the *unscaled* points, so the chart shows the intended adoption and the engine uses
+  the scaled one.
+- **Potential × (1 − ceiling).** Effective automation = automation potential × (1 − glass ceiling) × posture × glass factor ×
+  KH multiplier, capped at 100 − ceiling. With fit-to-scope on, potential and ceiling both derive from the same artefact
+  split and sum to 100, so the human share is applied twice (75 % × 75 % = 56 % in the default case). Documented in the app,
+  unchanged, awaiting a decision — see CODE_REVIEW §7.4 item 6.
 - The first Monte Carlo verdict request runs one 800-draw simulation if none exists (by design — a verdict must
   come from a distribution), including when a Board card reads the verdict variables.
 - HTML snapshots restore through `applySnapshotState` directly; the Persistence Manager's migration table

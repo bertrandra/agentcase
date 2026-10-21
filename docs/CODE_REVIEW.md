@@ -336,14 +336,25 @@ Run everything with `node tools/test-all.mjs`.
 ### 7.4 Found while fixing
 
 1. **Prototype pollution through an imported `__proto__` location** — see L-13 (more serious than first rated).
-2. **The Human Readiness adoption drag changes nothing under the default spline curve.** The spline is used exactly
-   as drawn; the drag only scales curves fitted to the ramp anchors (logistic, Gompertz, Bass, flat). Model semantics
-   were **not** changed (that is the model owner's call); the HRI screen now says so. *Decision needed:* either apply
-   the drag, the engagement ramp speed and the ramp cap to the spline, or keep "what you draw is what you get".
+2. **The Human Readiness drag, the engagement ramp speed and the ramp cap changed nothing under the default spline
+   curve** (found in v18.9, where the HRI screen was made to say so). **Resolved in v18.10:** the owner decided to apply
+   them to the spline — `adoption = min(cap, drawn × speed × hriRampFactor)`; golden case unchanged, MSI / STA contexts
+   and HRI now move the savings (CHANGELOG v18.10).
 3. **The Critical & Regulated report had no entry point.** The function and its documentation survived, the button
    did not; it is back in the regulatory profile section.
 4. **Stale regulatory counts in the industry list** (AERO showed 48 reg. artefacts, the catalogue has 69): the list
    baked into the markup was shown first; it is now rebuilt from the data.
+
+5. **Excel import left the automation potential at a provisional fit** (found in v18.10 while checking a customer workbook:
+   potential 72 % in the file, 69 % in the app, glass ceiling 28 %). Fixed — see CHANGELOG v18.10.
+6. **Open modelling question — the human share is applied twice when the potential is fitted to the scope.** With "fit to
+   scope" on, `autoPotential` = weighted mean of the artefacts' agent share and the glass ceiling = weighted mean of their
+   human share, so potential + ceiling = 100 by construction (default case 75 + 25; customer case 72 + 28). The model then
+   computes effective automation = potential × (1 − ceiling) (documented in the app): 75 % × 75 % = 56 %, 72 % × 72 % = 52 %.
+   If "potential" means the agent share of the artefacts, the ceiling is already inside it and the effective depth would
+   be the potential itself; if it means a technical potential before any supervision constraint, the formula is right but the
+   fit-to-scope default (which takes it from the same artefact split as the ceiling) is not. **Not changed** (it would move
+   the golden case: Y3 savings €731,774 and everything downstream). Decision for the model owner.
 
 The golden-case discrepancy noted in ARCHITECTURE.md §11 is resolved: the reference figures live in
 `tools/golden.json` and are asserted on every run.

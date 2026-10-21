@@ -1,6 +1,6 @@
 # AgentCase — Version bump procedure
 
-> Current version: **v18.9**. Updated 2026-10-21 for the Git repository layout and the v18.9 test battery.
+> Current version: **v18.10**. Updated 2026-10-21 for the Git repository layout and the v18.9 test battery.
 > Replaces the v12.42 procedure archived in
 > [history/AgentCase_BumpProcedure_v12.42.md](history/AgentCase_BumpProcedure_v12.42.md).
 > Main changes since then:

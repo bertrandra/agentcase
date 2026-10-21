@@ -273,6 +273,45 @@ const tests = {
     const clickOnly = [...document.querySelectorAll('[onclick]:not(button):not(a):not(input):not(select):not(textarea):not(summary)')].filter(e => !e.getAttribute('role') || !e.hasAttribute('tabindex'));
     return { ok: unnamed.length <= total * 0.02 && clickOnly.length === 0, detail: 'controls without a name: ' + unnamed.length + '/' + total + ' (' + unnamed.slice(0, 4).map(c => c.id || c.tagName).join(',') + ') ; click-only elements without role/tabindex: ' + clickOnly.length };
   },
+  // v18.10: the readiness drag and the engagement ramp speed / cap act on the default spline curve too
+  async hri_and_engagement_apply_to_spline() {
+    const sav = () => { refreshAll(); return teEndYearRow().savings; };
+    const base = sav(); const el = document.getElementById('hriEnabled');
+    el.checked = true; INPUTS.c.hriEnabled = true; el.dispatchEvent(new Event('change', { bubbles: true })); readInputs();
+    const withHri = sav(); const rf = hriRampFactor();
+    COEF.hriFloor = 0.3; const harsher = sav(); COEF.hriFloor = 0.6;
+    el.checked = false; INPUTS.c.hriEnabled = false; readInputs();
+    const back = sav();
+    return { ok: TIME_ACTIVE_CURVE === 'spline.default' && rf < 1 && withHri < base - 1 && harsher < withHri - 1 && Math.abs(back - base) < 1e-6,
+      detail: 'spline: off ' + base.toFixed(0) + ' -> HRI on (x' + rf.toFixed(2) + ') ' + withHri.toFixed(0) + ' -> harsher floor ' + harsher.toFixed(0) + ' ; HRI off again ' + back.toFixed(0) };
+  },
+  async engagement_context_moves_spline() {
+    const sel = document.getElementById('engagementCtx'); const sav = v => { sel.value = v; sel.dispatchEvent(new Event('change', { bubbles: true })); readInputs(); refreshAll(); return teEndYearRow().savings; };
+    const msc = sav('MSC'), msi = sav('MSI'), sta = sav('STA'); sav('MSC');
+    return { ok: TIME_ACTIVE_CURVE === 'spline.default' && msi < msc - 1 && sta < msi - 1, detail: 'MSC ' + msc.toFixed(0) + ' > MSI ' + msi.toFixed(0) + ' > STA ' + sta.toFixed(0) };
+  },
+  // v18.10: Scope "impact by phase" — the per-phase points add up to the scope's glass ceiling
+  async ceiling_impact_sums_to_ceiling() {
+    goTab('scope-sel'); renderCeilingImpact();
+    const pts = [...document.querySelectorAll('#ceilImpact span[style*="text-align:right"]')].map(e => parseFloat(e.textContent.replace('+', '')));
+    const sum = pts.reduce((a, b) => a + b, 0), ceil = phaseScope().avgHuman;
+    return { ok: pts.length > 0 && Math.abs(sum - ceil) <= 0.1 * pts.length, detail: pts.length + ' phases, sum ' + sum.toFixed(1) + ' vs ceiling ' + ceil };
+  },
+  // v18.10: after an Excel import the automation potential must equal the fit of the FINAL scope (it was left at the fit of a provisional one)
+  async import_refits_potential() {
+    let captured = null; const cu = URL.createObjectURL; URL.createObjectURL = b => { if (!captured) captured = b; return cu.call(URL, b); };
+    await exportParams('all'); URL.createObjectURL = cu;
+    const wb = new ExcelJS.Workbook(); await wb.xlsx.load(await captured.arrayBuffer());
+    const ps = wb.getWorksheet('Phase Scope'); ps.eachRow((r, i) => { if (i > 1) r.getCell(3).value = ['V1', 'V3', 'V4', 'V6'].includes(String(r.getCell(1).value)) ? 'Yes' : 'No'; });
+    // final scope: a handful of artefacts, some of them in phases the Phase Scope sheet excludes, with distinctive automation values
+    const sd = wb.getWorksheet('SDLC Artifacts'); const keep = ['A008', 'A017', 'A018', 'A026', 'A027', 'A045'];
+    sd.eachRow((r, i) => { if (i > 1) { const id = String(r.getCell(1).value); r.getCell(5).value = keep.includes(id) ? 'Yes' : 'No'; if (keep.includes(id)) r.getCell(6).value = { A008: 20, A017: 30, A018: 40, A026: 95, A027: 90, A045: 85 }[id]; } });
+    const buf = await wb.xlsx.writeBuffer();
+    await importParams({ files: [{ name: 'refit.xlsx', arrayBuffer: async () => buf }] });
+    const pot = P('autoPotential'), fit = phaseScope().avgAgent, ceil = computeGlassCeiling();
+    const status = document.getElementById('importStatus').innerText;
+    return { ok: pot === fit && pot + ceil === 100 && selectedArtefacts.size === keep.length && /Phase Scope marks/.test(status), detail: 'potential ' + pot + ' vs scope fit ' + fit + ' ; ceiling ' + ceil + ' ; selected ' + selectedArtefacts.size + ' ; note shown=' + /Phase Scope marks/.test(status) };
+  },
   // H-4: shrinking the horizon must never produce NaN
   async horizon_shrink_finite() {
     const setH = v => { const el = document.getElementById('horizon'); el.value = v; INPUTS.v.horizon = String(v); el.dispatchEvent(new Event('change', { bubbles: true })); };

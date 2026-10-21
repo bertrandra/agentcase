@@ -2,7 +2,7 @@
 <html lang="en"><head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>AgentCase v18.9 — Agentic Transformation Business Case</title>
+<title>AgentCase v18.10 — Agentic Transformation Business Case</title>
 <style>html:not(.boot-ready) .sidebar{visibility:hidden}html:not(.boot-ready) #groupNavBar{display:none!important}html:not(.boot-ready) #home{visibility:hidden}html:not(.boot-ready) #scenarioBar{visibility:hidden}</style>
 <script>/* Chart.js 4.4.1 (inlined for offline use) */
 /*!
@@ -1518,6 +1518,9 @@ effort-weighted agentSup over the selection → <strong>potential 75%</strong> (
 <button class="btn-del" style="padding:7px 14px;margin-bottom:2px" onclick="resetEffort()" title="Restore default effort weights">↺ Reset effort weights</button>
 <div style="font-size:11px;color:#888;margin-bottom:6px;max-width:420px">The <strong>% auto</strong> (automatable %, human supervision = 100 − this) and <strong>Effort weight</strong> columns are editable and saved in Export / restored on Import. Blue = % auto overridden, amber = effort overridden.</div></div>
 <div style="overflow-x:auto"><table id="artTable"><thead><tr><th>ID</th><th>Artifact</th><th>Deliverable</th><th>Phase</th><th>Value</th><th>Skill</th><th>AI authorization</th><th>Human sup.</th><th>% auto (agent)</th><th>Effort weight</th><th class="text-center" title="Base effort weight × the current product-status lifecycle weight for this phase">Effective (lifecycle)</th></tr></thead><tbody></tbody></table></div>
+</details>
+<details id="ceilImpactBox" open style="margin-top:1.2rem"><summary style="cursor:pointer;font-size:1.05rem;font-weight:700;color:#0058AB;margin:.4rem 0">🧊 Glass ceiling &amp; automation potential — impact by phase <span style="font-weight:400;font-size:12px;color:#888">— where human supervision holds automation back (click to collapse)</span></summary>
+<div id="ceilImpact" style="margin-top:.6rem"></div>
 </details>
 </div>
 
@@ -6453,7 +6456,7 @@ against: setup (→ ROI denominator) + curation FTE + infra, recurring
 </div>
 
 <footer>
-<p><strong>AgentCase v18.9</strong></p>
+<p><strong>AgentCase v18.10</strong></p>
 </footer><script>
 /* v18.9: shared escaping helpers. Every user-editable or imported string (labels, ids, names,
  * titles, skills, customer name…) must go through one of these before it reaches innerHTML or an
@@ -14672,6 +14675,44 @@ function renderArtefacts(){
       {label:'Automatable %',data:phaseKeys.map(p=>Math.round(byPhase[p].ag/byPhase[p].n)),backgroundColor:'#00828E'}
     ]},options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{position:'top'}},scales:{x:{stacked:true},y:{stacked:true,max:100,title:{display:true,text:'%'},grid:{color:'rgba(0,0,0,.05)'}}}}});
   renderArtTable();
+  renderCeilingImpact();
+}
+/* v18.10: Scope — glass-ceiling impact by phase. Each phase's contribution (pts) = Σ(w·humanSup) over its in-scope artefacts ÷ Σw of the whole scope,
+   so the contributions add up to the scope's glass ceiling. Colour = relative impact (top third red, middle amber, rest teal). */
+function renderCeilingImpact(){
+  const box=document.getElementById('ceilImpact'); if(!box) return;
+  const act=activeArtefacts(), totW=act.reduce((s,a)=>s+(+a.w||0),0);
+  if(!(totW>0)){ box.innerHTML='<div style="color:#888;font-size:12px">No artefact in scope.</div>'; return; }
+  const rows=phasesForScope().map(p=>{
+    const arts=act.filter(a=>a.phase===p.id); if(!arts.length) return null;
+    const W=arts.reduce((s,a)=>s+(+a.w||0),0), H=arts.reduce((s,a)=>s+(+a.w||0)*a.humanSup,0);
+    const top=arts.map(a=>({a:a,pts:(+a.w||0)*a.humanSup/totW})).sort((x,y)=>y.pts-x.pts).slice(0,3);
+    return {p:p, pts:H/totW, own:W?H/W:0, share:W/totW*100, n:arts.length, top:top};
+  }).filter(Boolean).sort((x,y)=>y.pts-x.pts);
+  const ceil=rows.reduce((s,r)=>s+r.pts,0), max=rows.length?rows[0].pts:1;
+  let pot=100-ceil, depth=null;
+  try{ const m=model(); if(m&&isFinite(m.auto)) pot=m.auto; if(m&&isFinite(m.eff)) depth=m.eff; }catch(e){}
+  const col=i=>i<Math.ceil(rows.length/3)?'#8F3237':(i<Math.ceil(rows.length*2/3)?'#BE4D00':'#00828E');
+  const f1=x=>(Math.round(x*10)/10).toFixed(1);
+  const kpi=(v,l,c,tip)=>'<div title="'+escHtml(tip)+'" style="flex:1;min-width:130px;background:#fff;border:1px solid #e3e3e3;border-left:4px solid '+c+';border-radius:6px;padding:8px 12px"><div style="font-size:22px;font-weight:700;color:'+c+'">'+v+'</div><div style="font-size:11px;color:#666">'+l+'</div></div>';
+  let h='<div style="display:flex;gap:10px;flex-wrap:wrap;margin-bottom:10px">'
+    +kpi(Math.round(pot)+'%','Automation potential','#00828E','Share of the scope effort the agents could carry')
+    +kpi(Math.round(ceil)+'%','Glass ceiling','#8F3237','Share that stays human: effort-weighted human supervision of the selected artefacts')
+    +(depth!=null?kpi(Math.round(depth)+'%','Max depth reached','#0058AB','Permitted automation depth after ceiling, lifecycle posture and other caps'):'')
+    +'</div>'
+    +'<div style="display:flex;height:14px;border-radius:7px;overflow:hidden;margin-bottom:12px" role="img" aria-label="Potential '+Math.round(pot)+'%, ceiling '+Math.round(ceil)+'%"><div style="width:'+Math.max(0,Math.min(100,100-ceil))+'%;background:#00828E"></div><div style="flex:1;background:repeating-linear-gradient(45deg,#8F3237,#8F3237 5px,#a8545a 5px,#a8545a 10px)"></div></div>'
+    +'<div style="font-size:12px;color:#555;margin-bottom:6px">Each bar = the points of glass ceiling a phase contributes (the bars add up to <strong>'+f1(ceil)+' pts</strong>). The redder the bar, the more that phase holds automation back. Click a row for its biggest blockers.</div>';
+  h+=rows.map((r,i)=>{
+    const c=col(i), w=Math.max(2,r.pts/max*100);
+    const tops=r.top.map(x=>'<li><span style="color:#222">'+escHtml(x.a.name)+'</span> <span style="color:#888">· '+escHtml(x.a.id)+' · '+x.a.humanSup+'% human · +'+f1(x.pts)+' pts</span></li>').join('');
+    return '<details style="border-bottom:1px solid #eee"><summary style="cursor:pointer;display:flex;align-items:center;gap:10px;padding:6px 2px;list-style:none">'
+      +'<span style="flex:0 0 230px;font-size:12.5px;font-weight:600;color:#333;white-space:nowrap;overflow:hidden;text-overflow:ellipsis" title="'+escHtml(r.p.name||r.p.id)+'">'+escHtml(r.p.name||r.p.id)+'</span>'
+      +'<span style="flex:1;background:#f1f1f1;border-radius:4px;height:16px"><span style="display:block;height:16px;border-radius:4px;width:'+w.toFixed(1)+'%;background:'+c+'"></span></span>'
+      +'<span style="flex:0 0 70px;text-align:right;font-weight:700;color:'+c+'">+'+f1(r.pts)+' pts</span>'
+      +'<span style="flex:0 0 150px;font-size:11px;color:#888">'+Math.round(r.own)+'% human · '+Math.round(r.share)+'% of effort</span></summary>'
+      +'<div style="padding:2px 0 8px 240px;font-size:11.5px"><div style="color:#666;margin-bottom:2px">Biggest blockers in this phase ('+r.n+' artefact'+(r.n>1?'s':'')+' in scope):</div><ul style="margin:0;padding-left:16px">'+tops+'</ul></div></details>';
+  }).join('');
+  box.innerHTML=h;
 }
 function renderArtTable(){
   const f=document.getElementById('artPhaseFilter').value;
@@ -15256,7 +15297,7 @@ function renderAutomationCurve(){
     var _tx=W-mm.r+6, _gap=13;
     var _tags=[
       {y:sy(auto)+4,    col:COL.pot,  txt:'Potential '+auto.toFixed(0)+'%'},
-      {y:sy(eff)+4,     col:COL.ceil, txt:'Ceiling '+eff.toFixed(0)+'%'},
+      {y:sy(eff)+4,     col:COL.ceil, txt:'Max depth '+eff.toFixed(0)+'%'},   /* v18.10: was "Ceiling", which read as the glass-ceiling parameter (28 %) — this is the resulting permitted depth = potential × (1 − glass ceiling) */
       {y:sy(realEnd)+4, col:COL.real, txt:'Realized '+realEnd.toFixed(0)+'%'}
     ];
     if(SHOW_AC_HUMAN) _tags.push({y:sy(residEndPct)+4, col:COL.human, txt:'Human FTE '+Math.round(residEndPct)+'%'});
@@ -15647,8 +15688,16 @@ function scSplineEval(t, userPts){
   return (2*u3-3*u2+1)*P[k].a + (u3-2*u2+u)*h*m[k] + (-2*u3+3*u2)*P[k+1].a + (u3-u2)*h*m[k+1];
 }
 function scEnginePts(){    // control points the spline.default adapter reads (falls back to the anchors)
-  if(typeof SC_PTS!=='undefined' && Array.isArray(SC_PTS) && SC_PTS.length>=2) return SC_PTS.map(function(p){ return {t:p.t,a:p.a}; });
-  return [{t:12,a:P('y1Ramp')},{t:24,a:P('y2Ramp')},{t:36,a:P('y3Ramp')}];
+  /* v18.10: the drawn adoption is scaled exactly like the ramp anchors that feed the logistic / Gompertz / Bass / flat
+   * curves in modelRaw(): min(rampCapPct, a × rampSpeed × hriRampFactor()). Before, the spline bypassed all three, so the
+   * Human Readiness drag, the engagement ramp speed and the engagement ramp cap did nothing under the default curve.
+   * Neutral at the shipped defaults (HRI off, MSC context: speed 1, cap 100). The editor still draws the unscaled points. */
+  var k=1, cap=100;
+  try{ var cv=engagementCoef(); k=(cv.rampSpeed||1)*hriRampFactor(); if(cv.rampCapPct!=null) cap=cv.rampCapPct; }catch(e){}
+  var pts=(typeof SC_PTS!=='undefined' && Array.isArray(SC_PTS) && SC_PTS.length>=2)
+    ? SC_PTS.map(function(p){ return {t:p.t,a:p.a}; })
+    : [{t:12,a:P('y1Ramp')},{t:24,a:P('y2Ramp')},{t:36,a:P('y3Ramp')}];
+  return pts.map(function(p){ return {t:p.t, a:Math.min(cap, p.a*k)}; });
 }
 function scEval(t){ var v; if(SC_FAMILY==='spline'){ v=scSplineEval(t, SC_PTS); } else { if(!SC_FIT) scFitNow(); v=SC_FIT(t); } return isFinite(v)?Math.max(0,Math.min(100,v)):0; }
 function scCurveD(){ var g=SC_GEO, d='', t; for(t=1;t<=g.N;t++){ d+=(t>1?'L':'M')+g.sx(t).toFixed(1)+' '+g.sy(scEval(t)).toFixed(1); } return d; }
@@ -17527,7 +17576,7 @@ async function importParams(input){
     }}
     { const rows=aoa('Phase Scope'); if(rows){
       const sel=[]; rows.slice(1).forEach(r=>{ const id=String(r[0]).trim(); const inc=String(r[2]).trim().toLowerCase(); if(ALL_PHASES.includes(id)&&(inc==='yes'||inc==='y'||inc==='true'||inc==='1')) sel.push(id); });
-      if(sel.length){ selectedArtefacts=new Set(); DATA.artefacts.forEach(a=>{ if(sel.includes(a.phase)) selectedArtefacts.add(a.id); }); renderPhaseSelector(); applyScopeAuto(); } else { notes.push('No phase included — kept previous scope'); }
+      if(sel.length){ selectedArtefacts=new Set(); DATA.artefacts.forEach(a=>{ if(sel.includes(a.phase)) selectedArtefacts.add(a.id); }); phaseOff=new Set(ALL_PHASES.filter(id=>!sel.includes(id))); renderPhaseSelector(); applyScopeAuto(); } else { notes.push('No phase included — kept previous scope'); }
     }}
     { const rows=aoa('Location Target'); if(rows){
       ensureTargetLoc(); let any=false; rows.slice(1).forEach(r=>{ const loc=String(r[0]).trim(); const pct=parseFloat(r[2]); if(isKnownLoc(loc)&&targetLocPct[loc]!==undefined&&!isNaN(pct)){ targetLocPct[loc]=clamp(pct,0,100,'Target % '+loc); any=true; } });
@@ -17610,7 +17659,14 @@ async function importParams(input){
         if(!isNaN(efExp) && efExp>=0) a.effort=efExp;
         const seqExp=parseFloat(r[7]); if(!isNaN(seqExp)) a.seq=seqExp;   // v15.7: ramp-up sequence (guarded)
       });
-      if(restoredSel.size){ selectedArtefacts=restoredSel; }
+      if(restoredSel.size){
+        selectedArtefacts=restoredSel;
+        /* v18.10: the artefact selection is what the model computes on. A phase marked "No" on the Phase Scope sheet but
+         * holding selected artefacts is in scope in practice (phaseState() / the next export would otherwise call it
+         * excluded while its artefacts are still counted) — the selection wins, and the file's contradiction is reported. */
+        const contradict=[]; DATA.phases.forEach(ph=>{ if(DATA.artefacts.some(a=>a.phase===ph.id && restoredSel.has(a.id)) && phaseOff.has(ph.id)){ phaseOff.delete(ph.id); contradict.push(ph.id); } });
+        if(contradict.length) notes.push('Phase Scope marks '+contradict.join(', ')+' as "No", but the SDLC Artifacts sheet selects artefacts in '+(contradict.length>1?'them':'it')+' — the artefact selection was kept.');
+      }
     }}
 
     if(typeof renderRateCard==='function') renderRateCard();
@@ -17963,6 +18019,11 @@ async function importParams(input){
     if(typeof renderRegPanel==='function') renderRegPanel();
     if(typeof renderPersonaPills==='function'){ renderPersonaPills(); renderPersonaNav(currentPersona); }
     renderPhaseSelector();
+    /* v18.10: re-fit the automation potential to the FINAL scope. The Phase Scope step fits it to a provisional
+     * selection (every artefact of the included phases, still with default effort / automation values); the SDLC
+     * Artifacts sheet then replaced the selection and the values without a re-fit, leaving the potential at that
+     * provisional figure (69 % where the final scope gives 72 %) while the glass ceiling — recomputed live — said 28 %. */
+    recomputeWeights(); applyScopeAuto();
     refreshAll();
     // v15.4: every successful import is captured as a named snapshot too, same as exports — so
     // "what did this Excel file actually change" has a traceable before/after in the library.
@@ -22543,7 +22604,7 @@ if(typeof DEP!=='undefined' && DEP.node){ DEP.node('time.engine', TIME_INPUT_PAT
  * Non-enumerable so they don't pollute for..in loops on window. */
 try {
   Object.defineProperty(window, 'AgentCaseArch', {
-    value: { VERSION: '18.9.0', BUS: BUS, APP_STATE: APP_STATE, PM: PM, DEP: DEP, AUDIT: AUDIT, TIME: TIME },
+    value: { VERSION: '18.10.0', BUS: BUS, APP_STATE: APP_STATE, PM: PM, DEP: DEP, AUDIT: AUDIT, TIME: TIME },
     writable: false, configurable: true, enumerable: false
   });
 } catch(e){ /* older browsers: fall back silently */ }
@@ -23031,10 +23092,6 @@ function renderHri(){
     +'<tr><td>Adoption drag on the S-curve</td><td class="text-center" style="font-weight:700">× '+rf.toFixed(2)+'</td></tr>'
     +'<tr><td>Status in the model</td><td class="text-center" style="font-weight:700;color:'+(on?'#00828E':'#888')+'">'+(on?'APPLIED (setup + ramp)':'informative only — enable above')+'</td></tr>'
     +'</tbody></table>'
-    /* v18.9: transparency — the free-form spline uses the adoption the user drew, as drawn (the ramp drag below only scales
-       curves that are fitted to the ramp anchors), so the readiness drag changes nothing while the spline is the live curve. */
-    +((on && typeof TIME_ACTIVE_CURVE!=='undefined' && TIME_ACTIVE_CURVE==='spline.default')
-      ? '<div style="font-size:11.5px;background:#FFF5E8;border-left:3px solid #BE4D00;padding:6px 10px;margin-top:6px">⚠️ The live adoption curve is the <strong>free-form spline</strong>: it is used exactly as drawn, so the adoption drag above does not change the savings. Switch the curve shape to Logistic or Gompertz in 📊 S-curve (or draw the lower adoption yourself) to see it act. The change cost is still applied.</div>' : '')
     +'<div style="font-size:11px;color:#888;margin-top:4px">Referential mapping: leadership, fears, skills, champions/preceptorship, incentives, rituals. Raising the change intensity at low HRI is how the model shows the ROI of change itself (CC-HRI-02).</div>';
 }
 
