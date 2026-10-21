@@ -1,11 +1,14 @@
-import { useMemo } from 'react';
+import { useMemo, useSyncExternalStore } from 'react';
+import { mcsRunStore } from '@/controllers/modelRun';
+import type { DepEdges } from '@/domain/refshare/deps';
 import { calcChain } from '@/domain/pdc/verifChain';
 import { verifChecks } from '@/domain/pdc/verifChecks';
 import { convergenceChecks } from '@/domain/pdc/verifConvergence';
 import { provenance } from '@/domain/pdc/verifProvenance';
 import { directionalSensitivity } from '@/domain/pdc/verifSensi';
-import { useCtx } from '@/store/hooks';
+import { useCtx, useDoc } from '@/store/hooks';
 import { Callout } from '@/ui/widgets/cards';
+import { SECTIONS } from '@/ui/zones/registry';
 import { SectionFrame } from '@/ui/zones/SectionFrame';
 import { Convergence } from './Convergence';
 import { Provenance } from './Provenance';
@@ -20,7 +23,9 @@ const help = (
 
 /** Detailed logic verification — provenance, convergence checks, consistency checks, calculation chain and directional sensitivity. */
 export default function VerifSection() {
-  const c = useCtx(), v = useMemo(() => ({ prov: provenance(c), conv: convergenceChecks(c), checks: verifChecks(c), chain: calcChain(c), sensi: directionalSensitivity(c) }), [c]);
+  const c = useCtx(), mcsLast = useSyncExternalStore(mcsRunStore.subscribe, () => mcsRunStore.getState().last), deps = useDoc((d) => d.SECTION_DEPS as DepEdges | undefined);
+  // session state some audits read (legacy MCS_LAST, SECTION_CATALOG / SECTION_DEPS); the Monthly Playback keeps its play state in its own section, so it is idle here
+  const v = useMemo(() => ({ prov: provenance(c), conv: convergenceChecks(c, { mcsLast, deps, sections: SECTIONS }), checks: verifChecks(c), chain: calcChain(c), sensi: directionalSensitivity(c) }), [c, mcsLast, deps]);
   return (
     <SectionFrame title="🔍 Detailed logic verification" help={help}
       result={<>

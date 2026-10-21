@@ -5,13 +5,13 @@ const num = (c: Ctx, id: string, dflt: number) => { const v = parseFloat(c.inp.v
 const supOn = (c: Ctx) => !!c.s.MODEL.FLAGS?.sup;
 const constrained = (c: Ctx) => supOn(c) && c.s.MODEL.SUP.provision === 'constrained';
 
-function supSpanFor(c: Ctx, baseEtp: number) {
+export function supSpanFor(c: Ctx, baseEtp: number) {
   const rfMin = num(c, 'runFloorMin', 0.5), rfPct = num(c, 'runFloorPct', 4), rOps = num(c, 'runOpsPerAgent', 0.15);
   const hpp = c.s.MODEL.SUP.hoursPerPeriod;
   return { floor: Math.max(rfMin, (baseEtp * rfPct) / 100), rOps: hpp > 0 ? rOps * (SUP_REF_HOURS_PER_PERIOD / hpp) : rOps };
 }
 
-function supRampMultiplier(c: Ctx, yearIdx: number): number {
+export function supRampMultiplier(c: Ctx, yearIdx: number): number {
   const lambda = Math.max(0, Math.min(0.5, c.s.MODEL.SUP.rampRate || 0));
   const cap = Math.max(1, Math.min(4, c.s.MODEL.SUP.rampCap || 2.5));
   return Math.min(cap, Math.pow(1 + lambda, yearIdx || 0));
