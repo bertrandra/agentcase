@@ -14,6 +14,27 @@ All notable changes to AgentCase, newest first. Product version = the `vX.Y` in 
 
 When releasing, follow [docs/BUMP_PROCEDURE.md](docs/BUMP_PROCEDURE.md) and add the new version at the top.
 
+## [v18.11] 2026-10-21 — Human share applied once
+
+Effective automation was `potential × (1 − glass ceiling) × posture × context × hub`, capped at `100 − ceiling`. With fit-to-scope
+on, potential and ceiling come from the same artefact split and sum to 100, so the human share was subtracted twice
+(75 % × 75 % = 56 % in the default case; 72 % × 72 % = 52 % on the customer workbook). Decision taken on the open point of v18.10.
+- **Changed:** `eff = min(100 − ceiling, potential × posture × context × hub)`. The ceiling now acts once, as a cap; the potential
+  is no longer multiplied by `(1 − ceiling)`. Same change in the scenario model and in the sensitivity matrix; help text and worked
+  examples in the app updated (default case: 75 % effective depth).
+- **Golden case moves** (intended): Y3 savings €731,774 → **€891,555** · Y3 run cost €1,045,490 → **€885,709** · NPV (8 %)
+  €1,131,220 → **€1,359,010** · payback 9 months (unchanged) · 0 audit violations. `tools/golden.json` updated.
+- **Scope — Adjust % auto table:** a live result strip (potential, ceiling, max depth, Y3 savings, with the change since the
+  previous edit) and, when a phase is filtered, a "set all artefacts of this phase to N % auto" control. The cascade itself
+  was verified on every phase (potential, ceiling, effective depth and savings all move); a phase can look inert because of its
+  lifecycle weight (e.g. L10 at ×0.20 in the default status) or because a rise is capped by `100 − ceiling` / the technical
+  cap. Test `adjust_phase_cascade`.
+- Sensitivity check (Logic verification): when effective depth already sits at the ceiling cap, the "Auto +10" variant cannot
+  move, so it tests "Auto −10" instead.
+- Cases with fit-to-scope off and a manual potential above `100 − ceiling` are still limited by the cap.
+
+---
+
 ## [v18.10] 2026-10-21 — Ramp factors act on the spline curve
 
 The default adoption curve (free-form spline) used the drawn points as they were, so three documented drivers did

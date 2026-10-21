@@ -353,8 +353,7 @@ Run everything with `node tools/test-all.mjs`.
    computes effective automation = potential × (1 − ceiling) (documented in the app): 75 % × 75 % = 56 %, 72 % × 72 % = 52 %.
    If "potential" means the agent share of the artefacts, the ceiling is already inside it and the effective depth would
    be the potential itself; if it means a technical potential before any supervision constraint, the formula is right but the
-   fit-to-scope default (which takes it from the same artefact split as the ceiling) is not. **Not changed** (it would move
-   the golden case: Y3 savings €731,774 and everything downstream). Decision for the model owner.
+   fit-to-scope default (which takes it from the same artefact split as the ceiling) is not. **Resolved in v18.11** (golden case moved to Y3 savings €891,555).
 
 The golden-case discrepancy noted in ARCHITECTURE.md §11 is resolved: the reference figures live in
 `tools/golden.json` and are asserted on every run.
