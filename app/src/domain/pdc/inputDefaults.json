@@ -1,0 +1,1 @@
+{"horizon":"3","workdays":"220","autoPotential":"65","y1Ramp":"25","y2Ramp":"55","y3Ramp":"100","glassCeiling":"35","tokensPerArt":"50000","runsPerDay":"25","infra":"500","runFloorMin":"0.5","runFloorPct":"4","runOpsPerAgent":"0.15","runSizeMode":"hybrid","setupTooling":"35000","setupGov":"20000","setupTraining":"45000","setupCoaching":"35000"}
