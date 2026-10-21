@@ -8,5 +8,19 @@
  ["h3","🔢 Round-trip guarantee"],
  ["div",{"class":"worked"}," Export → edit in Excel → import reproduces the identical model output (same ROI, FTE, costs).",["br"]," On import, each value is checked: e.g. automation potential is clamped to [10, 80], ramps to their slider bounds, FTE to ≥ 0. Anything adjusted is listed in the import report. "],
  ["div",{"class":"note-green"},"The separate ",["strong","AgentCase_Parameters_Template.xlsx"]," ships with Excel data-validation (dropdowns and min/max) baked into the cells, so values are constrained at entry time. Use it as the starting point for offline configuration."]
-]
+],
+ "texts": {
+  "saveHtmlTitle": "💾 Save HTML Snapshot",
+  "saveHtml": "Download the entire application as a single standalone HTML file, frozen at its current configuration — all sliders, team, scope, regulatory selection, personas, coefficients, readiness answers and client tracker data. Opening the downloaded file lands you exactly where you left off. Fully offline, no server needed.",
+  "saveJsonTitle": "💾 Save the case as a snapshot file (.json)",
+  "saveJson": "Available now: the whole case in the legacy snapshot format (every registry key), loadable by this build. Open one with the button below — the case you had stays one Ctrl+Z away.",
+  "settingsIntro": "Export every editable parameter of this tool to an Excel workbook, edit it offline, and re-import it to restore the exact configuration. The workbook structure is round-trippable and matches the parameter template (with field constraints) provided alongside the app.",
+  "exportTitle": "⬇️ Export current settings",
+  "exportText": "Generates AgentCase_Parameters.xlsx capturing the current state of all tabs: global parameters, phase scope, location strategy, the full Rate Card matrix and the input team composition.",
+  "importTitle": "⬆️ Import settings",
+  "importText": "Load a previously exported (or template-based) .xlsx. Values are validated against the same constraints as the UI; out-of-range values are clamped and reported. All tabs refresh automatically.",
+  "later": "Excel import and export are available in a later release (Phase 6 of the migration, ExcelJS loaded on demand). Until then, use the JSON snapshot on the Save tab: it carries the same settings.",
+  "managerTitle": "🗂️ Snapshot manager",
+  "managerText": "The named snapshot library stored inside the file (capture, activate, delete, promote to baseline) and the golden-case comparison are available in a later release. Until then, save and open snapshot files; every change of the case is undoable and the autosave keeps a rolling copy (see Sessions)."
+ }
 }

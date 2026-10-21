@@ -1,10 +1,10 @@
 import { COMMAND_REGISTRY, defineCommand } from '@/store/commands';
 import { appStore } from '@/store/instance';
-import type { AuditRecord } from '@/store/types';
+import type { AuditRecord, Doc } from '@/store/types';
 
 type Edges = Record<string, Record<string, 'S' | 'I'>>;
-const edgesOf = (d: { SECTION_DEPS?: unknown }): Edges => (d.SECTION_DEPS ??= {}) as Edges;
-const descOf = (d: { SECTION_DEPS_DESC?: unknown }): Record<string, string> => (d.SECTION_DEPS_DESC ??= {}) as Record<string, string>;
+const edgesOf = (d: Doc): Edges => (d.SECTION_DEPS ??= {}) as Edges;
+const descOf = (d: Doc): Record<string, string> => (d.SECTION_DEPS_DESC ??= {}) as Record<string, string>;
 const lbl = (p: { src: string; tgt: string }) => `${p.src} → ${p.tgt}`;
 
 const addEdgeCmd = defineCommand<{ src: string; tgt: string }>({
@@ -17,7 +17,7 @@ const flipEdgeCmd = defineCommand<{ src: string; tgt: string }>({
 });
 const removeEdgeCmd = defineCommand<{ src: string; tgt: string }>({
   type: 'deps.removeEdge', label: (p) => `Remove dependency ${lbl(p)}`,
-  run(d, p) { const e = edgesOf(d); if (!e[p.src]) return; delete e[p.src][p.tgt]; if (!Object.keys(e[p.src]).length) delete e[p.src]; },
+  run(d, p) { const e = edgesOf(d), row = e[p.src]; if (!row) return; delete row[p.tgt]; if (!Object.keys(row).length) delete e[p.src]; },
 });
 const setDescCmd = defineCommand<{ src: string; text: string }>({
   type: 'deps.setDescription', label: (p) => `Describe the impact of ${p.src}`, coalesceKey: (p) => `deps.setDescription:${p.src}`,

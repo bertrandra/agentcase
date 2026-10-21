@@ -15,6 +15,9 @@ const current = (): SessionsEnv => (env ??= { storage: idbStorage(), tabId: cryp
 export interface SessionInfo { tabId: string; label: string; savedAt: string; steps: number; isThisTab: boolean }
 const info = (r: AutosaveRecord, me: string): SessionInfo => ({ tabId: r.tabId, label: r.label, savedAt: r.savedAt, steps: r.history.undo.length, isThisTab: r.tabId === me });
 
+/** The id of this tab's autosave record. */
+export const thisTabId = (): string => current().tabId;
+
 /** False when this browser gives no access to IndexedDB (private mode): the section then explains it instead of listing. */
 export const sessionsAvailable = (): boolean => current().storage !== null;
 
