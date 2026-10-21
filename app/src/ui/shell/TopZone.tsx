@@ -6,11 +6,12 @@ import { APP_VERSION } from '@/domain/version';
 import { toast } from '../uiState';
 import { runHistory } from './useShortcuts';
 
-const PERSONAS = ['builder', 'clientcase', 'admin', 'advanced'];
+const FALLBACK = [{ id: 'builder', label: 'Builder' }, { id: 'clientcase', label: 'Client case' }, { id: 'admin', label: 'Admin' }, { id: 'advanced', label: 'Advanced' }];
 
 /** Brand, customer, persona, undo/redo and file actions. */
 export function TopZone() {
   const customer = useDoc((d) => (d.customerName as string) ?? ''), persona = useDoc((d) => (d.currentPersona as string) ?? 'builder');
+  const personas = useDoc((d) => (d.PERSONAS as { id: string; label?: string }[] | undefined) ?? FALLBACK);
   const h = useHistory(), file = useRef<HTMLInputElement>(null);
   const save = () => {
     const { filename, json } = exportSnapshotJson(), url = URL.createObjectURL(new Blob([json], { type: 'application/json' }));
@@ -26,7 +27,7 @@ export function TopZone() {
       <strong className="ac-brand">AgentCase <small>v{APP_VERSION}</small></strong>
       <input aria-label="Customer name" className="ac-customer" placeholder="Customer" value={customer} onChange={(e) => setCustomerName(e.target.value)} />
       <select aria-label="Persona" value={persona} onChange={(e) => setPersona(e.target.value)}>
-        {PERSONAS.map((p) => <option key={p} value={p}>{p}</option>)}
+        {personas.map((p) => <option key={p.id} value={p.id}>{p.label ?? p.id}</option>)}
       </select>
       <span className="ac-spacer" />
       <button type="button" disabled={!h.canUndo} onClick={() => runHistory('undo')} title={h.undo.at(-1)?.label ?? 'Nothing to undo'} aria-label="Undo">↶ Undo</button>

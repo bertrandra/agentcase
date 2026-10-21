@@ -1,0 +1,566 @@
+🚀 Release Pipeline
+DRAFT
+SUPPORTS
+?
+A release pipeline selects from the current Integrated Product rather than descending from a sprint/PI boundary — Release-on-Demand. Release → Release Candidate → Approval → Deployment → Environment → Production → Monitoring → Feedback → Backlog. Nothing here feeds the financial model.
+📦 Releases polymorphic — includes Stories, Features, Fixes, Technical Changes
+Name	Items	
+	▶ 3 item(s)	🗑
+	▶ 3 item(s)	🗑
++ Add release
+🏷️ Release Candidates a cut proposed for a Release
+Name	Release	Cut at	Status	
+	
+(none)
+Release 2026.1 — Spring
+Release 2026.2 — Summer
+	2026-04-05	
+Draft
+Cut
+Superseded
+	🗑
+	
+(none)
+Release 2026.1 — Spring
+Release 2026.2 — Summer
+	2026-04-12	
+Draft
+Cut
+Superseded
+	🗑
+	
+(none)
+Release 2026.1 — Spring
+Release 2026.2 — Summer
+	2026-05-26	
+Draft
+Cut
+Superseded
+	🗑
+	
+(none)
+Release 2026.1 — Spring
+Release 2026.2 — Summer
+	2026-06-03	
+Draft
+Cut
+Superseded
+	🗑
+	
+(none)
+Release 2026.1 — Spring
+Release 2026.2 — Summer
+	2026-06-10	
+Draft
+Cut
+Superseded
+	🗑
++ Add release candidate
+✅ Approvals gate a Release Candidate before deployment
+Release candidate	Approver	Decision	Decided	
+
+(none)
+2026.1-RC1
+2026.1-RC2
+2026.2-RC1
+2026.2-RC2
+2026.2-RC3
+		
+Pending
+Approved
+Rejected
+	2026-04-07	🗑
+
+(none)
+2026.1-RC1
+2026.1-RC2
+2026.2-RC1
+2026.2-RC2
+2026.2-RC3
+		
+Pending
+Approved
+Rejected
+	2026-04-14	🗑
+
+(none)
+2026.1-RC1
+2026.1-RC2
+2026.2-RC1
+2026.2-RC2
+2026.2-RC3
+		
+Pending
+Approved
+Rejected
+	2026-05-28	🗑
+
+(none)
+2026.1-RC1
+2026.1-RC2
+2026.2-RC1
+2026.2-RC2
+2026.2-RC3
+		
+Pending
+Approved
+Rejected
+	2026-06-05	🗑
+
+(none)
+2026.1-RC1
+2026.1-RC2
+2026.2-RC1
+2026.2-RC2
+2026.2-RC3
+		
+Pending
+Approved
+Rejected
+	—	🗑
++ Add approval
+🚚 Deployments promote a Release Candidate into an Environment
+Release candidate	Environment	Date	Status	
+
+(none)
+2026.1-RC1
+2026.1-RC2
+2026.2-RC1
+2026.2-RC2
+2026.2-RC3
+	
+(none)
+Development
+Integration
+System Test
+UAT
+Pre-production
+Production
+	2026-04-14	
+Success
+Failed
+RolledBack
+	🗑
+
+(none)
+2026.1-RC1
+2026.1-RC2
+2026.2-RC1
+2026.2-RC2
+2026.2-RC3
+	
+(none)
+Development
+Integration
+System Test
+UAT
+Pre-production
+Production
+	2026-04-15	
+Success
+Failed
+RolledBack
+	🗑
+
+(none)
+2026.1-RC1
+2026.1-RC2
+2026.2-RC1
+2026.2-RC2
+2026.2-RC3
+	
+(none)
+Development
+Integration
+System Test
+UAT
+Pre-production
+Production
+	2026-04-17	
+Success
+Failed
+RolledBack
+	🗑
+
+(none)
+2026.1-RC1
+2026.1-RC2
+2026.2-RC1
+2026.2-RC2
+2026.2-RC3
+	
+(none)
+Development
+Integration
+System Test
+UAT
+Pre-production
+Production
+	2026-04-19	
+Success
+Failed
+RolledBack
+	🗑
+
+(none)
+2026.1-RC1
+2026.1-RC2
+2026.2-RC1
+2026.2-RC2
+2026.2-RC3
+	
+(none)
+Development
+Integration
+System Test
+UAT
+Pre-production
+Production
+	2026-04-21	
+Success
+Failed
+RolledBack
+	🗑
+
+(none)
+2026.1-RC1
+2026.1-RC2
+2026.2-RC1
+2026.2-RC2
+2026.2-RC3
+	
+(none)
+Development
+Integration
+System Test
+UAT
+Pre-production
+Production
+	2026-04-23	
+Success
+Failed
+RolledBack
+	🗑
+
+(none)
+2026.1-RC1
+2026.1-RC2
+2026.2-RC1
+2026.2-RC2
+2026.2-RC3
+	
+(none)
+Development
+Integration
+System Test
+UAT
+Pre-production
+Production
+	2026-04-26	
+Success
+Failed
+RolledBack
+	🗑
+
+(none)
+2026.1-RC1
+2026.1-RC2
+2026.2-RC1
+2026.2-RC2
+2026.2-RC3
+	
+(none)
+Development
+Integration
+System Test
+UAT
+Pre-production
+Production
+	2026-06-05	
+Success
+Failed
+RolledBack
+	🗑
+
+(none)
+2026.1-RC1
+2026.1-RC2
+2026.2-RC1
+2026.2-RC2
+2026.2-RC3
+	
+(none)
+Development
+Integration
+System Test
+UAT
+Pre-production
+Production
+	2026-06-06	
+Success
+Failed
+RolledBack
+	🗑
+
+(none)
+2026.1-RC1
+2026.1-RC2
+2026.2-RC1
+2026.2-RC2
+2026.2-RC3
+	
+(none)
+Development
+Integration
+System Test
+UAT
+Pre-production
+Production
+	2026-06-08	
+Success
+Failed
+RolledBack
+	🗑
+
+(none)
+2026.1-RC1
+2026.1-RC2
+2026.2-RC1
+2026.2-RC2
+2026.2-RC3
+	
+(none)
+Development
+Integration
+System Test
+UAT
+Pre-production
+Production
+	2026-06-10	
+Success
+Failed
+RolledBack
+	🗑
+
+(none)
+2026.1-RC1
+2026.1-RC2
+2026.2-RC1
+2026.2-RC2
+2026.2-RC3
+	
+(none)
+Development
+Integration
+System Test
+UAT
+Pre-production
+Production
+	2026-06-12	
+Success
+Failed
+RolledBack
+	🗑
+
+(none)
+2026.1-RC1
+2026.1-RC2
+2026.2-RC1
+2026.2-RC2
+2026.2-RC3
+	
+(none)
+Development
+Integration
+System Test
+UAT
+Pre-production
+Production
+	2026-06-15	
+Success
+Failed
+RolledBack
+	🗑
+
+(none)
+2026.1-RC1
+2026.1-RC2
+2026.2-RC1
+2026.2-RC2
+2026.2-RC3
+	
+(none)
+Development
+Integration
+System Test
+UAT
+Pre-production
+Production
+	2026-06-17	
+Success
+Failed
+RolledBack
+	🗑
++ Add deployment
+🪜 Environments the promotion pipeline — Production is the last stage
+Seq	Name	
+1		🗑
+2		🗑
+3		🗑
+4		🗑
+5		🗑
+6		🗑
++ Add environment stage
+📡 Monitoring runtime signals observed after a Deployment
+Deployment	Description	Severity	
+
+(none)
+Development · 2026-04-14
+Integration · 2026-04-15
+System Test · 2026-04-17
+UAT · 2026-04-19
+UAT · 2026-04-21
+Pre-production · 2026-04-23
+Production · 2026-04-26
+Development · 2026-06-05
+Integration · 2026-06-06
+System Test · 2026-06-08
+UAT · 2026-06-10
+Pre-production · 2026-06-12
+Production · 2026-06-15
+Production · 2026-06-17
+		
+Info
+Warning
+Critical
+	🗑
+
+(none)
+Development · 2026-04-14
+Integration · 2026-04-15
+System Test · 2026-04-17
+UAT · 2026-04-19
+UAT · 2026-04-21
+Pre-production · 2026-04-23
+Production · 2026-04-26
+Development · 2026-06-05
+Integration · 2026-06-06
+System Test · 2026-06-08
+UAT · 2026-06-10
+Pre-production · 2026-06-12
+Production · 2026-06-15
+Production · 2026-06-17
+		
+Info
+Warning
+Critical
+	🗑
+
+(none)
+Development · 2026-04-14
+Integration · 2026-04-15
+System Test · 2026-04-17
+UAT · 2026-04-19
+UAT · 2026-04-21
+Pre-production · 2026-04-23
+Production · 2026-04-26
+Development · 2026-06-05
+Integration · 2026-06-06
+System Test · 2026-06-08
+UAT · 2026-06-10
+Pre-production · 2026-06-12
+Production · 2026-06-15
+Production · 2026-06-17
+		
+Info
+Warning
+Critical
+	🗑
+
+(none)
+Development · 2026-04-14
+Integration · 2026-04-15
+System Test · 2026-04-17
+UAT · 2026-04-19
+UAT · 2026-04-21
+Pre-production · 2026-04-23
+Production · 2026-04-26
+Development · 2026-06-05
+Integration · 2026-06-06
+System Test · 2026-06-08
+UAT · 2026-06-10
+Pre-production · 2026-06-12
+Production · 2026-06-15
+Production · 2026-06-17
+		
+Info
+Warning
+Critical
+	🗑
+
+(none)
+Development · 2026-04-14
+Integration · 2026-04-15
+System Test · 2026-04-17
+UAT · 2026-04-19
+UAT · 2026-04-21
+Pre-production · 2026-04-23
+Production · 2026-04-26
+Development · 2026-06-05
+Integration · 2026-06-06
+System Test · 2026-06-08
+UAT · 2026-06-10
+Pre-production · 2026-06-12
+Production · 2026-06-15
+Production · 2026-06-17
+		
+Info
+Warning
+Critical
+	🗑
+
+(none)
+Development · 2026-04-14
+Integration · 2026-04-15
+System Test · 2026-04-17
+UAT · 2026-04-19
+UAT · 2026-04-21
+Pre-production · 2026-04-23
+Production · 2026-04-26
+Development · 2026-06-05
+Integration · 2026-06-06
+System Test · 2026-06-08
+UAT · 2026-06-10
+Pre-production · 2026-06-12
+Production · 2026-06-15
+Production · 2026-06-17
+		
+Info
+Warning
+Critical
+	🗑
++ Add monitoring event
+💬 Feedback creates a Backlog item, closing the loop
+Description	Backlog	
+	✓ backlog item created	🗑
+	✓ backlog item created	🗑
+	→ Create backlog item	🗑
++ Add feedback
+📋 Backlog
+Description	Status	Source	
+	
+New
+Planned
+Done
+	Feedback	🗑
+	
+New
+Planned
+Done
+	Feedback	🗑
+	
+New
+Planned
+Done
+	Manual	🗑
++ Add backlog item

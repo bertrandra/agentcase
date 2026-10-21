@@ -1,0 +1,185 @@
+[
+{
+"id": "cf-perfrel-cap",
+"g": "Performance realisation",
+"l": "perfRel() upper clamp",
+"where": "perfRel()",
+"eff": "Caps how far velocity/productivity may exceed the ramp-implied uplift. At 1.4 every anchor overshot its target until the v16.1 clamp (F9).",
+"edit": "here",
+"k": "perfRelCap"
+},
+{
+"id": "cf-perfuplift",
+"g": "Performance realisation",
+"l": "defaultPerfUplift() factor",
+"where": "defaultPerfUplift()",
+"eff": "Scales the reference uplift against which every ramp is measured. Moves all velocity, DORA and throughput readings.",
+"edit": "here",
+"k": "perfUpliftFactor"
+},
+{
+"id": "cf-vtax-cap",
+"g": "Verification tax",
+"l": "Verification tax hard cap",
+"where": "verificationTaxRate()",
+"eff": "Ceiling on the share of savings deducted for review effort.",
+"edit": "here",
+"k": "vtaxCap"
+},
+{
+"id": "cf-vtax-base",
+"g": "Verification tax",
+"l": "Verification tax base rate",
+"where": "vtaxEffBase()",
+"eff": "Review need before supervision credit. Multiplied by average human supervision (overlay) or netted against it.",
+"edit": {
+"sec": "eligibility"
+}
+},
+{
+"id": "cf-qual-cap",
+"g": "AI quality premium",
+"l": "Quality premium cap",
+"where": "aiQualityTaxFactor()",
+"eff": "Maximum rework multiplier applied for AI-authored code quality risk (EV-23).",
+"edit": "here",
+"k": "qualPremiumCap"
+},
+{
+"id": "cf-qualbar",
+"g": "AI quality premium",
+"l": "Decision-bar quality weight",
+"where": "qualBar()",
+"eff": "Converts the quality premium into a decision-intelligence penalty, capped at 0.15.",
+"edit": "here",
+"k": "qualBarFactor"
+},
+{
+"id": "cf-hri-floor",
+"g": "Human readiness",
+"l": "HRI ramp floor",
+"where": "hriRampFactor()",
+"eff": "Worst-case adoption drag: a zero-readiness organisation still realises 60% of the ramp.",
+"edit": "here",
+"k": "hriFloor"
+},
+{
+"id": "cf-hri-slope",
+"g": "Human readiness",
+"l": "HRI ramp slope",
+"where": "hriRampFactor()",
+"eff": "How much readiness buys back. floor + slope x HRI/100.",
+"edit": "here",
+"k": "hriSlope"
+},
+{
+"id": "cf-supshare-cap",
+"g": "Team sizing",
+"l": "Supervision share cap",
+"where": "targetTeam()",
+"eff": "Supervision FTE never exceeds half the residual team, whatever the supervision matrix says.",
+"edit": "here",
+"k": "supShareCap"
+},
+{
+"id": "cf-supshare-fac",
+"g": "Team sizing",
+"l": "Supervision share factor",
+"where": "targetTeam()",
+"eff": "supShare = min(0.5, avgHumanSup x 0.5). Sets how much of the retained team supervises rather than produces.",
+"edit": "here",
+"k": "supShareFactor"
+},
+{
+"id": "cf-glassfactor",
+"g": "Engagement context",
+"l": "Context glass factor",
+"where": "ENGAGE_COEF",
+"eff": "Multiplies effective automation for the engagement context.",
+"edit": {
+"sec": "params",
+"note": "engagement-context coefficient block"
+}
+},
+{
+"id": "cf-rampcap",
+"g": "Engagement context",
+"l": "Ramp cap (%)",
+"where": "ENGAGE_COEF",
+"eff": "Hard ceiling on every annual ramp.",
+"edit": {
+"sec": "params",
+"note": "engagement-context coefficient block"
+}
+},
+{
+"id": "cf-rampspeed",
+"g": "Engagement context",
+"l": "Ramp speed",
+"where": "ENGAGE_COEF",
+"eff": "Scales every annual ramp before the cap.",
+"edit": {
+"sec": "params",
+"note": "engagement-context coefficient block"
+}
+},
+{
+"id": "cf-khmult",
+"g": "Knowledge hub",
+"l": "CC maturity multiplier",
+"where": "CC_MULT / khMult()",
+"eff": "Multiplies effective automation by the target collective-competence tier.",
+"edit": {
+"sec": "knowledge"
+}
+},
+{
+"id": "cf-autoposture",
+"g": "Product profile",
+"l": "Lifecycle auto posture",
+"where": "lifecycleAutoPosture()",
+"eff": "Multiplies effective automation by the blended product profile.",
+"edit": {
+"sec": "lifecycle-edit"
+}
+},
+{
+"id": "cf-ceiling",
+"g": "Glass ceiling",
+"l": "Computed glass ceiling (%)",
+"where": "computeGlassCeiling()",
+"eff": "Effort-weighted irreducible human supervision. Caps effective automation at 100 - ceiling.",
+"edit": {
+"sec": "scope-sel",
+"also": "params",
+"note": "derived from artefact supervision; manual override in Parameters"
+}
+},
+{
+"id": "cf-setup-etp",
+"g": "Team sizing",
+"l": "Transitional setup headcount (FTE)",
+"where": "targetTeam()",
+"eff": "Sizes the \"Agentic Setup\" row of the Team-out table. Display only — its € is already counted inside the Setup budget, not added on top.",
+"edit": "here",
+"k": "setupETP"
+},
+{
+"id": "cf-prod-factor",
+"g": "Team sizing",
+"l": "Agent capacity factor",
+"where": "model()",
+"eff": "Scales the \"(indicative)\" agent-capacity read-out only. Deliberately isolated from vFTE/savings by design (effort-conservation invariant).",
+"edit": "here",
+"k": "prodFactor"
+},
+{
+"id": "cf-ai-finops",
+"g": "Team sizing",
+"l": "AI-FinOps flat FTE",
+"where": "teamOutRun / renderAgentDetail()",
+"eff": "One illustrative row inside the Agentic Run team breakdown. Does not independently feed the top-level run cost.",
+"edit": "here",
+"k": "aiFinOpsFte"
+}
+]

@@ -1,0 +1,27 @@
+🛡️ Verification tax
+P2 · v16.6
+SUPPORTS
+?
+Replaces the flat verification-tax dial (🎯 Eligibility & Abaques tab) with one derived from criticality class: each in-scope artefact's assurance level sets an irreducible independent-review floor φ(C) and a marginal-intensity term κ(C)·(1−r) that shrinks as agent reliability r rises. The headline: a structural ROI ceiling ρmax = 1 − φ(C) that no improvement in agent quality can breach. (AME-SPEC v0.2, P2)
+Enable P2
+TAX MODE
+Overlay (on top of supervision)
+Net (of retained supervision)
+RELIABILITY SOURCE
+From P1 (r = p^γ)
+Direct input
+φₐ (weighted) 5.0% · rate 5.0% · ρmax = 95.0%
+Phase OFF — the model uses the legacy flat rate (base × avg. human supervision). The table below previews what P2 would compute from the current scope.
+Regulatory ROI ceiling ρmax = 1 − φₐ — independent of reliability r, by construction
+ΡMAX
+95.0%
+max attainable savings ratio
+Φₐ WEIGHTED
+5.0%
+irreducible independent review
+Κ TERM
+0.0%
+marginal, shrinks as r→1
+Criticality class	Artefacts	Scope share	φ (floor)	κ (intensity)	γ (stiffness)	r
+C0 Unregulated (SDLC default)	10	100.0%	0.05	0.00	1.00	0.580
+C0 = unregulated SDLC default (φ=κ=0). C1–C4 derive from each regulatory artefact's existing human-supervision % (≥80%→C4 … <40%→C2/C1) — an override per artefact can replace this default (MODEL.EVT.classMap), not yet exposed as a UI control here.

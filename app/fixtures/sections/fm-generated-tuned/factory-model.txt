@@ -1,0 +1,145 @@
+🧬 Generate factory data
+From the current case · weekly · 2026-09-01 → 2031-08-26 (261 weeks)
+3 phase(s) · 43 artefact(s) in scope
+→ 2 portfolios · 3 epics · 3 features · 8 stories · 43 tasks · ~43 releases
+Estimated records: 25,256 / 400 cap — will be down-sampled (commits first, time span never truncated)
+DENSITY 
+SEED 
+RELEASE EVERY  WK
+Reset parameters
+🧬 Generate data
+Generated 2026-10-21 · seed 4242 · weekly · 261 weeks from 2026-09-01 · 3 phases · ramp 25/55/100% · eff. automation 46% · ceiling 54% · 400 records in 14ms
+Adoption follows a monthly progressive curve from 0 through the annual breakpoints (25/55/100% at months 12/24/36), not the annual step. Its yearly averages are 11/41/80% — lower than the model’s annual figures by construction, because the model states the year’s representative level while the curve states the path. No euro figure is affected.
+Simulated from this case’s assumptions — not measured data.
+🏭 Factory Model
+DRAFT
+SUPPORTS
+?
+Business + Delivery domain of the Software/Agentic Factory meta-model: Vision → Portfolio → Epic → Feature → Story, linked down into the existing SDLC/regulatory artefacts (Tasks). A graph, not a tree — see AgentCase_Spec_FactoryMetaModel.md. Nothing here feeds the financial model.
+🧪 Sample data
+A realistic, cross-linked sample dataset across the whole Factory Model / Release Pipeline / Engineering domain — useful for exploring the 📅 Factory Timeline. Both actions are runtime-only: they never affect the golden default state.
+📦 Load demo dataset
+🗑 Delete all Factory Model data
+🎯 Vision
+📁 Portfolio
+Name	
+	🗑
+	🗑
++ Add portfolio item
+🧩 Epics realize the Vision, via a Portfolio
+Name	Portfolio	
+	
+(none)
+Core delivery
+Regulatory assurance
+	🗑
+	
+(none)
+Core delivery
+Regulatory assurance
+	🗑
+	
+(none)
+Core delivery
+Regulatory assurance
+	🗑
++ Add epic
+⭐ Features implement an Epic; link to the SDLC phases this work runs through
+Name	Epic	SDLC phases	
+	
+(none)
+Definition & design
+Build
+Verification & integration
+	
+L0
+V1
+V2
+V3
+V4
+V5
+V6
+V7
+L8
+L9
+L10	🗑
+	
+(none)
+Definition & design
+Build
+Verification & integration
+	
+L0
+V1
+V2
+V3
+V4
+V5
+V6
+V7
+L8
+L9
+L10	🗑
+	
+(none)
+Definition & design
+Build
+Verification & integration
+	
+L0
+V1
+V2
+V3
+V4
+V5
+V6
+V7
+L8
+L9
+L10	🗑
++ Add feature
+📗 Stories implement a Feature; link to existing artefacts (Tasks)
+Name	Feature	Linked artefacts	
+	
+(none)
+Specification
+Implementation
+Verification
+	▶ 3 linked	🗑
+	
+(none)
+Specification
+Implementation
+Verification
+	▶ 8 linked	🗑
+	
+(none)
+Specification
+Implementation
+Verification
+	▶ 1 linked	🗑
+	
+(none)
+Specification
+Implementation
+Verification
+	▶ 1 linked	🗑
+	
+(none)
+Specification
+Implementation
+Verification
+	▶ 1 linked	🗑
+	
+(none)
+Specification
+Implementation
+Verification
+	▶ 5 linked	🗑
+	
+(none)
+Specification
+Implementation
+Verification
+	▶ 4 linked	🗑
++ Add story

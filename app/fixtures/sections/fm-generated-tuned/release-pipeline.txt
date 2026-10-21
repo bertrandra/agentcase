@@ -1,0 +1,1345 @@
+🚀 Release Pipeline
+DRAFT
+SUPPORTS
+?
+A release pipeline selects from the current Integrated Product rather than descending from a sprint/PI boundary — Release-on-Demand. Release → Release Candidate → Approval → Deployment → Environment → Production → Monitoring → Feedback → Backlog. Nothing here feeds the financial model.
+📦 Releases polymorphic — includes Stories, Features, Fixes, Technical Changes
+Name	Items	
+	▶ 2 item(s)	🗑
+	▶ 2 item(s)	🗑
+	▶ 2 item(s)	🗑
+	▶ 2 item(s)	🗑
+	▶ 2 item(s)	🗑
++ Add release
+🏷️ Release Candidates a cut proposed for a Release
+Name	Release	Cut at	Status	
+	
+(none)
+Release 2027-08 — R1
+Release 2027-10 — R2
+Release 2027-11 — R3
+Release 2028-01 — R4
+Release 2028-02 — R5
+	2027-08-21	
+Draft
+Cut
+Superseded
+	🗑
+	
+(none)
+Release 2027-08 — R1
+Release 2027-10 — R2
+Release 2027-11 — R3
+Release 2028-01 — R4
+Release 2028-02 — R5
+	2027-10-02	
+Draft
+Cut
+Superseded
+	🗑
+	
+(none)
+Release 2027-08 — R1
+Release 2027-10 — R2
+Release 2027-11 — R3
+Release 2028-01 — R4
+Release 2028-02 — R5
+	2027-10-03	
+Draft
+Cut
+Superseded
+	🗑
+	
+(none)
+Release 2027-08 — R1
+Release 2027-10 — R2
+Release 2027-11 — R3
+Release 2028-01 — R4
+Release 2028-02 — R5
+	2027-10-04	
+Draft
+Cut
+Superseded
+	🗑
+	
+(none)
+Release 2027-08 — R1
+Release 2027-10 — R2
+Release 2027-11 — R3
+Release 2028-01 — R4
+Release 2028-02 — R5
+	2027-11-13	
+Draft
+Cut
+Superseded
+	🗑
+	
+(none)
+Release 2027-08 — R1
+Release 2027-10 — R2
+Release 2027-11 — R3
+Release 2028-01 — R4
+Release 2028-02 — R5
+	2027-11-14	
+Draft
+Cut
+Superseded
+	🗑
+	
+(none)
+Release 2027-08 — R1
+Release 2027-10 — R2
+Release 2027-11 — R3
+Release 2028-01 — R4
+Release 2028-02 — R5
+	2027-12-25	
+Draft
+Cut
+Superseded
+	🗑
+	
+(none)
+Release 2027-08 — R1
+Release 2027-10 — R2
+Release 2027-11 — R3
+Release 2028-01 — R4
+Release 2028-02 — R5
+	2027-12-26	
+Draft
+Cut
+Superseded
+	🗑
+	
+(none)
+Release 2027-08 — R1
+Release 2027-10 — R2
+Release 2027-11 — R3
+Release 2028-01 — R4
+Release 2028-02 — R5
+	2028-02-05	
+Draft
+Cut
+Superseded
+	🗑
++ Add release candidate
+✅ Approvals gate a Release Candidate before deployment
+Release candidate	Approver	Decision	Decided	
+
+(none)
+R1-RC1
+R2-RC1
+R2-RC2
+R2-RC3
+R3-RC1
+R3-RC2
+R4-RC1
+R4-RC2
+R5-RC1
+		
+Pending
+Approved
+Rejected
+	2027-08-26	🗑
+
+(none)
+R1-RC1
+R2-RC1
+R2-RC2
+R2-RC3
+R3-RC1
+R3-RC2
+R4-RC1
+R4-RC2
+R5-RC1
+		
+Pending
+Approved
+Rejected
+	2027-10-07	🗑
+
+(none)
+R1-RC1
+R2-RC1
+R2-RC2
+R2-RC3
+R3-RC1
+R3-RC2
+R4-RC1
+R4-RC2
+R5-RC1
+		
+Pending
+Approved
+Rejected
+	2027-10-08	🗑
+
+(none)
+R1-RC1
+R2-RC1
+R2-RC2
+R2-RC3
+R3-RC1
+R3-RC2
+R4-RC1
+R4-RC2
+R5-RC1
+		
+Pending
+Approved
+Rejected
+	2027-10-09	🗑
+
+(none)
+R1-RC1
+R2-RC1
+R2-RC2
+R2-RC3
+R3-RC1
+R3-RC2
+R4-RC1
+R4-RC2
+R5-RC1
+		
+Pending
+Approved
+Rejected
+	2027-11-18	🗑
+
+(none)
+R1-RC1
+R2-RC1
+R2-RC2
+R2-RC3
+R3-RC1
+R3-RC2
+R4-RC1
+R4-RC2
+R5-RC1
+		
+Pending
+Approved
+Rejected
+	2027-11-19	🗑
+
+(none)
+R1-RC1
+R2-RC1
+R2-RC2
+R2-RC3
+R3-RC1
+R3-RC2
+R4-RC1
+R4-RC2
+R5-RC1
+		
+Pending
+Approved
+Rejected
+	2027-12-30	🗑
+
+(none)
+R1-RC1
+R2-RC1
+R2-RC2
+R2-RC3
+R3-RC1
+R3-RC2
+R4-RC1
+R4-RC2
+R5-RC1
+		
+Pending
+Approved
+Rejected
+	2027-12-31	🗑
+
+(none)
+R1-RC1
+R2-RC1
+R2-RC2
+R2-RC3
+R3-RC1
+R3-RC2
+R4-RC1
+R4-RC2
+R5-RC1
+		
+Pending
+Approved
+Rejected
+	2028-02-10	🗑
++ Add approval
+🚚 Deployments promote a Release Candidate into an Environment
+Release candidate	Environment	Date	Status	
+
+(none)
+R1-RC1
+R2-RC1
+R2-RC2
+R2-RC3
+R3-RC1
+R3-RC2
+R4-RC1
+R4-RC2
+R5-RC1
+	
+(none)
+Development
+Integration
+System Test
+UAT
+Pre-production
+Production
+	2027-08-31	
+Success
+Failed
+RolledBack
+	🗑
+
+(none)
+R1-RC1
+R2-RC1
+R2-RC2
+R2-RC3
+R3-RC1
+R3-RC2
+R4-RC1
+R4-RC2
+R5-RC1
+	
+(none)
+Development
+Integration
+System Test
+UAT
+Pre-production
+Production
+	2027-09-03	
+Success
+Failed
+RolledBack
+	🗑
+
+(none)
+R1-RC1
+R2-RC1
+R2-RC2
+R2-RC3
+R3-RC1
+R3-RC2
+R4-RC1
+R4-RC2
+R5-RC1
+	
+(none)
+Development
+Integration
+System Test
+UAT
+Pre-production
+Production
+	2027-09-06	
+Success
+Failed
+RolledBack
+	🗑
+
+(none)
+R1-RC1
+R2-RC1
+R2-RC2
+R2-RC3
+R3-RC1
+R3-RC2
+R4-RC1
+R4-RC2
+R5-RC1
+	
+(none)
+Development
+Integration
+System Test
+UAT
+Pre-production
+Production
+	2027-09-09	
+Success
+Failed
+RolledBack
+	🗑
+
+(none)
+R1-RC1
+R2-RC1
+R2-RC2
+R2-RC3
+R3-RC1
+R3-RC2
+R4-RC1
+R4-RC2
+R5-RC1
+	
+(none)
+Development
+Integration
+System Test
+UAT
+Pre-production
+Production
+	2027-09-11	
+Success
+Failed
+RolledBack
+	🗑
+
+(none)
+R1-RC1
+R2-RC1
+R2-RC2
+R2-RC3
+R3-RC1
+R3-RC2
+R4-RC1
+R4-RC2
+R5-RC1
+	
+(none)
+Development
+Integration
+System Test
+UAT
+Pre-production
+Production
+	2027-09-12	
+Success
+Failed
+RolledBack
+	🗑
+
+(none)
+R1-RC1
+R2-RC1
+R2-RC2
+R2-RC3
+R3-RC1
+R3-RC2
+R4-RC1
+R4-RC2
+R5-RC1
+	
+(none)
+Development
+Integration
+System Test
+UAT
+Pre-production
+Production
+	2027-09-15	
+Success
+Failed
+RolledBack
+	🗑
+
+(none)
+R1-RC1
+R2-RC1
+R2-RC2
+R2-RC3
+R3-RC1
+R3-RC2
+R4-RC1
+R4-RC2
+R5-RC1
+	
+(none)
+Development
+Integration
+System Test
+UAT
+Pre-production
+Production
+	2027-10-12	
+Success
+Failed
+RolledBack
+	🗑
+
+(none)
+R1-RC1
+R2-RC1
+R2-RC2
+R2-RC3
+R3-RC1
+R3-RC2
+R4-RC1
+R4-RC2
+R5-RC1
+	
+(none)
+Development
+Integration
+System Test
+UAT
+Pre-production
+Production
+	2027-10-15	
+Success
+Failed
+RolledBack
+	🗑
+
+(none)
+R1-RC1
+R2-RC1
+R2-RC2
+R2-RC3
+R3-RC1
+R3-RC2
+R4-RC1
+R4-RC2
+R5-RC1
+	
+(none)
+Development
+Integration
+System Test
+UAT
+Pre-production
+Production
+	2027-10-18	
+Success
+Failed
+RolledBack
+	🗑
+
+(none)
+R1-RC1
+R2-RC1
+R2-RC2
+R2-RC3
+R3-RC1
+R3-RC2
+R4-RC1
+R4-RC2
+R5-RC1
+	
+(none)
+Development
+Integration
+System Test
+UAT
+Pre-production
+Production
+	2027-10-21	
+Success
+Failed
+RolledBack
+	🗑
+
+(none)
+R1-RC1
+R2-RC1
+R2-RC2
+R2-RC3
+R3-RC1
+R3-RC2
+R4-RC1
+R4-RC2
+R5-RC1
+	
+(none)
+Development
+Integration
+System Test
+UAT
+Pre-production
+Production
+	2027-10-24	
+Success
+Failed
+RolledBack
+	🗑
+
+(none)
+R1-RC1
+R2-RC1
+R2-RC2
+R2-RC3
+R3-RC1
+R3-RC2
+R4-RC1
+R4-RC2
+R5-RC1
+	
+(none)
+Development
+Integration
+System Test
+UAT
+Pre-production
+Production
+	2027-10-27	
+Success
+Failed
+RolledBack
+	🗑
+
+(none)
+R1-RC1
+R2-RC1
+R2-RC2
+R2-RC3
+R3-RC1
+R3-RC2
+R4-RC1
+R4-RC2
+R5-RC1
+	
+(none)
+Development
+Integration
+System Test
+UAT
+Pre-production
+Production
+	2027-11-23	
+Success
+Failed
+RolledBack
+	🗑
+
+(none)
+R1-RC1
+R2-RC1
+R2-RC2
+R2-RC3
+R3-RC1
+R3-RC2
+R4-RC1
+R4-RC2
+R5-RC1
+	
+(none)
+Development
+Integration
+System Test
+UAT
+Pre-production
+Production
+	2027-11-26	
+Success
+Failed
+RolledBack
+	🗑
+
+(none)
+R1-RC1
+R2-RC1
+R2-RC2
+R2-RC3
+R3-RC1
+R3-RC2
+R4-RC1
+R4-RC2
+R5-RC1
+	
+(none)
+Development
+Integration
+System Test
+UAT
+Pre-production
+Production
+	2027-11-29	
+Success
+Failed
+RolledBack
+	🗑
+
+(none)
+R1-RC1
+R2-RC1
+R2-RC2
+R2-RC3
+R3-RC1
+R3-RC2
+R4-RC1
+R4-RC2
+R5-RC1
+	
+(none)
+Development
+Integration
+System Test
+UAT
+Pre-production
+Production
+	2027-12-02	
+Success
+Failed
+RolledBack
+	🗑
+
+(none)
+R1-RC1
+R2-RC1
+R2-RC2
+R2-RC3
+R3-RC1
+R3-RC2
+R4-RC1
+R4-RC2
+R5-RC1
+	
+(none)
+Development
+Integration
+System Test
+UAT
+Pre-production
+Production
+	2027-12-05	
+Success
+Failed
+RolledBack
+	🗑
+
+(none)
+R1-RC1
+R2-RC1
+R2-RC2
+R2-RC3
+R3-RC1
+R3-RC2
+R4-RC1
+R4-RC2
+R5-RC1
+	
+(none)
+Development
+Integration
+System Test
+UAT
+Pre-production
+Production
+	2027-12-08	
+Success
+Failed
+RolledBack
+	🗑
+
+(none)
+R1-RC1
+R2-RC1
+R2-RC2
+R2-RC3
+R3-RC1
+R3-RC2
+R4-RC1
+R4-RC2
+R5-RC1
+	
+(none)
+Development
+Integration
+System Test
+UAT
+Pre-production
+Production
+	2028-01-04	
+Success
+Failed
+RolledBack
+	🗑
+
+(none)
+R1-RC1
+R2-RC1
+R2-RC2
+R2-RC3
+R3-RC1
+R3-RC2
+R4-RC1
+R4-RC2
+R5-RC1
+	
+(none)
+Development
+Integration
+System Test
+UAT
+Pre-production
+Production
+	2028-01-07	
+Success
+Failed
+RolledBack
+	🗑
+
+(none)
+R1-RC1
+R2-RC1
+R2-RC2
+R2-RC3
+R3-RC1
+R3-RC2
+R4-RC1
+R4-RC2
+R5-RC1
+	
+(none)
+Development
+Integration
+System Test
+UAT
+Pre-production
+Production
+	2028-01-10	
+Success
+Failed
+RolledBack
+	🗑
+
+(none)
+R1-RC1
+R2-RC1
+R2-RC2
+R2-RC3
+R3-RC1
+R3-RC2
+R4-RC1
+R4-RC2
+R5-RC1
+	
+(none)
+Development
+Integration
+System Test
+UAT
+Pre-production
+Production
+	2028-01-13	
+Success
+Failed
+RolledBack
+	🗑
+
+(none)
+R1-RC1
+R2-RC1
+R2-RC2
+R2-RC3
+R3-RC1
+R3-RC2
+R4-RC1
+R4-RC2
+R5-RC1
+	
+(none)
+Development
+Integration
+System Test
+UAT
+Pre-production
+Production
+	2028-01-16	
+Success
+Failed
+RolledBack
+	🗑
+
+(none)
+R1-RC1
+R2-RC1
+R2-RC2
+R2-RC3
+R3-RC1
+R3-RC2
+R4-RC1
+R4-RC2
+R5-RC1
+	
+(none)
+Development
+Integration
+System Test
+UAT
+Pre-production
+Production
+	2028-01-19	
+Success
+Failed
+RolledBack
+	🗑
+
+(none)
+R1-RC1
+R2-RC1
+R2-RC2
+R2-RC3
+R3-RC1
+R3-RC2
+R4-RC1
+R4-RC2
+R5-RC1
+	
+(none)
+Development
+Integration
+System Test
+UAT
+Pre-production
+Production
+	2028-02-15	
+Success
+Failed
+RolledBack
+	🗑
+
+(none)
+R1-RC1
+R2-RC1
+R2-RC2
+R2-RC3
+R3-RC1
+R3-RC2
+R4-RC1
+R4-RC2
+R5-RC1
+	
+(none)
+Development
+Integration
+System Test
+UAT
+Pre-production
+Production
+	2028-02-18	
+Success
+Failed
+RolledBack
+	🗑
+
+(none)
+R1-RC1
+R2-RC1
+R2-RC2
+R2-RC3
+R3-RC1
+R3-RC2
+R4-RC1
+R4-RC2
+R5-RC1
+	
+(none)
+Development
+Integration
+System Test
+UAT
+Pre-production
+Production
+	2028-02-21	
+Success
+Failed
+RolledBack
+	🗑
+
+(none)
+R1-RC1
+R2-RC1
+R2-RC2
+R2-RC3
+R3-RC1
+R3-RC2
+R4-RC1
+R4-RC2
+R5-RC1
+	
+(none)
+Development
+Integration
+System Test
+UAT
+Pre-production
+Production
+	2028-02-24	
+Success
+Failed
+RolledBack
+	🗑
+
+(none)
+R1-RC1
+R2-RC1
+R2-RC2
+R2-RC3
+R3-RC1
+R3-RC2
+R4-RC1
+R4-RC2
+R5-RC1
+	
+(none)
+Development
+Integration
+System Test
+UAT
+Pre-production
+Production
+	2028-02-26	
+Success
+Failed
+RolledBack
+	🗑
+
+(none)
+R1-RC1
+R2-RC1
+R2-RC2
+R2-RC3
+R3-RC1
+R3-RC2
+R4-RC1
+R4-RC2
+R5-RC1
+	
+(none)
+Development
+Integration
+System Test
+UAT
+Pre-production
+Production
+	2028-02-27	
+Success
+Failed
+RolledBack
+	🗑
+
+(none)
+R1-RC1
+R2-RC1
+R2-RC2
+R2-RC3
+R3-RC1
+R3-RC2
+R4-RC1
+R4-RC2
+R5-RC1
+	
+(none)
+Development
+Integration
+System Test
+UAT
+Pre-production
+Production
+	2028-03-01	
+Success
+Failed
+RolledBack
+	🗑
++ Add deployment
+🪜 Environments the promotion pipeline — Production is the last stage
+Seq	Name	
+1		🗑
+2		🗑
+3		🗑
+4		🗑
+5		🗑
+6		🗑
++ Add environment stage
+📡 Monitoring runtime signals observed after a Deployment
+Deployment	Description	Severity	
+
+(none)
+Development · 2027-08-31
+Integration · 2027-09-03
+System Test · 2027-09-06
+UAT · 2027-09-09
+UAT · 2027-09-11
+Pre-production · 2027-09-12
+Production · 2027-09-15
+Development · 2027-10-12
+Integration · 2027-10-15
+System Test · 2027-10-18
+UAT · 2027-10-21
+Pre-production · 2027-10-24
+Production · 2027-10-27
+Development · 2027-11-23
+Integration · 2027-11-26
+System Test · 2027-11-29
+UAT · 2027-12-02
+Pre-production · 2027-12-05
+Production · 2027-12-08
+Development · 2028-01-04
+Integration · 2028-01-07
+System Test · 2028-01-10
+UAT · 2028-01-13
+Pre-production · 2028-01-16
+Production · 2028-01-19
+Development · 2028-02-15
+Integration · 2028-02-18
+System Test · 2028-02-21
+UAT · 2028-02-24
+UAT · 2028-02-26
+Pre-production · 2028-02-27
+Production · 2028-03-01
+		
+Info
+Warning
+Critical
+	🗑
+
+(none)
+Development · 2027-08-31
+Integration · 2027-09-03
+System Test · 2027-09-06
+UAT · 2027-09-09
+UAT · 2027-09-11
+Pre-production · 2027-09-12
+Production · 2027-09-15
+Development · 2027-10-12
+Integration · 2027-10-15
+System Test · 2027-10-18
+UAT · 2027-10-21
+Pre-production · 2027-10-24
+Production · 2027-10-27
+Development · 2027-11-23
+Integration · 2027-11-26
+System Test · 2027-11-29
+UAT · 2027-12-02
+Pre-production · 2027-12-05
+Production · 2027-12-08
+Development · 2028-01-04
+Integration · 2028-01-07
+System Test · 2028-01-10
+UAT · 2028-01-13
+Pre-production · 2028-01-16
+Production · 2028-01-19
+Development · 2028-02-15
+Integration · 2028-02-18
+System Test · 2028-02-21
+UAT · 2028-02-24
+UAT · 2028-02-26
+Pre-production · 2028-02-27
+Production · 2028-03-01
+		
+Info
+Warning
+Critical
+	🗑
+
+(none)
+Development · 2027-08-31
+Integration · 2027-09-03
+System Test · 2027-09-06
+UAT · 2027-09-09
+UAT · 2027-09-11
+Pre-production · 2027-09-12
+Production · 2027-09-15
+Development · 2027-10-12
+Integration · 2027-10-15
+System Test · 2027-10-18
+UAT · 2027-10-21
+Pre-production · 2027-10-24
+Production · 2027-10-27
+Development · 2027-11-23
+Integration · 2027-11-26
+System Test · 2027-11-29
+UAT · 2027-12-02
+Pre-production · 2027-12-05
+Production · 2027-12-08
+Development · 2028-01-04
+Integration · 2028-01-07
+System Test · 2028-01-10
+UAT · 2028-01-13
+Pre-production · 2028-01-16
+Production · 2028-01-19
+Development · 2028-02-15
+Integration · 2028-02-18
+System Test · 2028-02-21
+UAT · 2028-02-24
+UAT · 2028-02-26
+Pre-production · 2028-02-27
+Production · 2028-03-01
+		
+Info
+Warning
+Critical
+	🗑
+
+(none)
+Development · 2027-08-31
+Integration · 2027-09-03
+System Test · 2027-09-06
+UAT · 2027-09-09
+UAT · 2027-09-11
+Pre-production · 2027-09-12
+Production · 2027-09-15
+Development · 2027-10-12
+Integration · 2027-10-15
+System Test · 2027-10-18
+UAT · 2027-10-21
+Pre-production · 2027-10-24
+Production · 2027-10-27
+Development · 2027-11-23
+Integration · 2027-11-26
+System Test · 2027-11-29
+UAT · 2027-12-02
+Pre-production · 2027-12-05
+Production · 2027-12-08
+Development · 2028-01-04
+Integration · 2028-01-07
+System Test · 2028-01-10
+UAT · 2028-01-13
+Pre-production · 2028-01-16
+Production · 2028-01-19
+Development · 2028-02-15
+Integration · 2028-02-18
+System Test · 2028-02-21
+UAT · 2028-02-24
+UAT · 2028-02-26
+Pre-production · 2028-02-27
+Production · 2028-03-01
+		
+Info
+Warning
+Critical
+	🗑
+
+(none)
+Development · 2027-08-31
+Integration · 2027-09-03
+System Test · 2027-09-06
+UAT · 2027-09-09
+UAT · 2027-09-11
+Pre-production · 2027-09-12
+Production · 2027-09-15
+Development · 2027-10-12
+Integration · 2027-10-15
+System Test · 2027-10-18
+UAT · 2027-10-21
+Pre-production · 2027-10-24
+Production · 2027-10-27
+Development · 2027-11-23
+Integration · 2027-11-26
+System Test · 2027-11-29
+UAT · 2027-12-02
+Pre-production · 2027-12-05
+Production · 2027-12-08
+Development · 2028-01-04
+Integration · 2028-01-07
+System Test · 2028-01-10
+UAT · 2028-01-13
+Pre-production · 2028-01-16
+Production · 2028-01-19
+Development · 2028-02-15
+Integration · 2028-02-18
+System Test · 2028-02-21
+UAT · 2028-02-24
+UAT · 2028-02-26
+Pre-production · 2028-02-27
+Production · 2028-03-01
+		
+Info
+Warning
+Critical
+	🗑
++ Add monitoring event
+💬 Feedback creates a Backlog item, closing the loop
+Description	Backlog	
+	✓ backlog item created	🗑
+	✓ backlog item created	🗑
+	✓ backlog item created	🗑
+	✓ backlog item created	🗑
+	✓ backlog item created	🗑
+	✓ backlog item created	🗑
+	✓ backlog item created	🗑
+	✓ backlog item created	🗑
+	✓ backlog item created	🗑
+	✓ backlog item created	🗑
+	✓ backlog item created	🗑
+	✓ backlog item created	🗑
+	✓ backlog item created	🗑
+	✓ backlog item created	🗑
+	✓ backlog item created	🗑
++ Add feedback
+📋 Backlog
+Description	Status	Source	
+	
+New
+Planned
+Done
+	Feedback	🗑
+	
+New
+Planned
+Done
+	Feedback	🗑
+	
+New
+Planned
+Done
+	Feedback	🗑
+	
+New
+Planned
+Done
+	Feedback	🗑
+	
+New
+Planned
+Done
+	Feedback	🗑
+	
+New
+Planned
+Done
+	Feedback	🗑
+	
+New
+Planned
+Done
+	Feedback	🗑
+	
+New
+Planned
+Done
+	Feedback	🗑
+	
+New
+Planned
+Done
+	Feedback	🗑
+	
+New
+Planned
+Done
+	Feedback	🗑
+	
+New
+Planned
+Done
+	Feedback	🗑
+	
+New
+Planned
+Done
+	Feedback	🗑
+	
+New
+Planned
+Done
+	Feedback	🗑
+	
+New
+Planned
+Done
+	Feedback	🗑
+	
+New
+Planned
+Done
+	Feedback	🗑
++ Add backlog item

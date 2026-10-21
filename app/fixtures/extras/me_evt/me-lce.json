@@ -1,0 +1,1 @@
+{"classes":[{"id":"C0","label":"Unregulated (SDLC default)","share":1,"weight":60.699999999999996,"count":10,"phi":0.1,"kappa":0.5,"gamma":1.5,"r":0.6712895274243666}],"totalW":60.699999999999996,"phiWeighted":0.1,"kappaTerm":0.16435523628781668,"rate":0.26435523628781665,"rhoMax":0.9,"rSource":"fromLCE","baseP":0.7666666666666666}
