@@ -56,8 +56,8 @@ stays in the repository as the frozen reference. Plan and record: [docs/MIGRATIO
   - **v18.13** strategies, Results and scenarios at horizons above 3 years and below 3 (`horizonYears()`).
 - Opening a case re-fits the displayed potential when *Fit to selected scope* is on, as the legacy restore does (no figure moves: the
   engine already ignores the stored value while fit is on).
-- Not ported (see docs/MIGRATION_PLAN.md §15.2): collapsible sidebar groups, Fast Path filter, ADVANCED lock and its unlock gestures,
-  tag / MVP editing, layout-board live preview, golden-vs-AME comparison, per-snapshot Excel export, the legacy calculation package.
+- Not ported (see docs/MIGRATION_PLAN.md §15.2): ADVANCED lock and its unlock gestures and tag / MVP editing (both now out of scope),
+  golden-vs-AME comparison, per-snapshot Excel export, the legacy calculation package.
 
 ### Fixed
 - Legacy defects found while porting and left as shown (decision D7) are listed in docs/MIGRATION_PLAN.md §15.4.
