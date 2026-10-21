@@ -14,7 +14,7 @@ afterEach(cleanup);
 const FOUR = ['golden', 'ctx-msi', 'curve-logistic', 'industry-med'];
 const docSections = () => appStore().getState().doc.dynamicSections as DynSection[];
 const generate = (...groups: string[]) => { groups.forEach((g) => fireEvent.click(screen.getByLabelText(new RegExp(GROUPS.find((x) => x.id === g)!.label)))); fireEvent.click(screen.getByText('➕ Generate dashboard')); };
-type Dash = { one: DynSection; two: DynSection; all: DynSection; onePersona: Record<string, string[]>; restored: boolean; max: number };
+type Dash = { one: DynSection & { nCards: number }; two: DynSection & { nCards: number }; all: DynSection & { nCards: number }; max: number };
 
 describe('board section', () => {
   it.each(FOUR)('shows every figure the legacy section showed (%s)', (id) => {
@@ -29,7 +29,7 @@ describe('board section', () => {
     const l = pdc<Dash>('pdc_dash', id), sections = SECTIONS.map((s) => ({ id: s.id, group: s.group, label: s.label })), groups = GROUPS;
     for (const [k, ids, all] of [['one', ['tune'], false], ['two', ['tune', 'verify'], false], ['all', [], true]] as const) {
       const got = newDashboard({ groupIds: [...ids], allGroups: all, existing: [], groups, sections, maxOrder: l.max })!, want = l[k];
-      expect({ ...got, cards: undefined }).toEqual({ ...want, cards: undefined });
+      expect({ ...got, cards: undefined }).toEqual({ ...want, cards: undefined, nCards: undefined });
       expect(got.cards.slice(0, 2)).toEqual(want.cards.slice(0, 2));   // the two GLOBAL headline cards; the rest depends on the (larger) legacy variable registry
     }
   });
