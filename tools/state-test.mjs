@@ -273,6 +273,23 @@ const tests = {
     const clickOnly = [...document.querySelectorAll('[onclick]:not(button):not(a):not(input):not(select):not(textarea):not(summary)')].filter(e => !e.getAttribute('role') || !e.hasAttribute('tabindex'));
     return { ok: unnamed.length <= total * 0.02 && clickOnly.length === 0, detail: 'controls without a name: ' + unnamed.length + '/' + total + ' (' + unnamed.slice(0, 4).map(c => c.id || c.tagName).join(',') + ') ; click-only elements without role/tabindex: ' + clickOnly.length };
   },
+  // v18.10: the readiness drag and the engagement ramp speed / cap act on the default spline curve too
+  async hri_and_engagement_apply_to_spline() {
+    const sav = () => { refreshAll(); return teEndYearRow().savings; };
+    const base = sav(); const el = document.getElementById('hriEnabled');
+    el.checked = true; INPUTS.c.hriEnabled = true; el.dispatchEvent(new Event('change', { bubbles: true })); readInputs();
+    const withHri = sav(); const rf = hriRampFactor();
+    COEF.hriFloor = 0.3; const harsher = sav(); COEF.hriFloor = 0.6;
+    el.checked = false; INPUTS.c.hriEnabled = false; readInputs();
+    const back = sav();
+    return { ok: TIME_ACTIVE_CURVE === 'spline.default' && rf < 1 && withHri < base - 1 && harsher < withHri - 1 && Math.abs(back - base) < 1e-6,
+      detail: 'spline: off ' + base.toFixed(0) + ' -> HRI on (x' + rf.toFixed(2) + ') ' + withHri.toFixed(0) + ' -> harsher floor ' + harsher.toFixed(0) + ' ; HRI off again ' + back.toFixed(0) };
+  },
+  async engagement_context_moves_spline() {
+    const sel = document.getElementById('engagementCtx'); const sav = v => { sel.value = v; sel.dispatchEvent(new Event('change', { bubbles: true })); readInputs(); refreshAll(); return teEndYearRow().savings; };
+    const msc = sav('MSC'), msi = sav('MSI'), sta = sav('STA'); sav('MSC');
+    return { ok: TIME_ACTIVE_CURVE === 'spline.default' && msi < msc - 1 && sta < msi - 1, detail: 'MSC ' + msc.toFixed(0) + ' > MSI ' + msi.toFixed(0) + ' > STA ' + sta.toFixed(0) };
+  },
   // H-4: shrinking the horizon must never produce NaN
   async horizon_shrink_finite() {
     const setH = v => { const el = document.getElementById('horizon'); el.value = v; INPUTS.v.horizon = String(v); el.dispatchEvent(new Event('change', { bubbles: true })); };

@@ -336,10 +336,10 @@ Run everything with `node tools/test-all.mjs`.
 ### 7.4 Found while fixing
 
 1. **Prototype pollution through an imported `__proto__` location** — see L-13 (more serious than first rated).
-2. **The Human Readiness adoption drag changes nothing under the default spline curve.** The spline is used exactly
-   as drawn; the drag only scales curves fitted to the ramp anchors (logistic, Gompertz, Bass, flat). Model semantics
-   were **not** changed (that is the model owner's call); the HRI screen now says so. *Decision needed:* either apply
-   the drag, the engagement ramp speed and the ramp cap to the spline, or keep "what you draw is what you get".
+2. **The Human Readiness drag, the engagement ramp speed and the ramp cap changed nothing under the default spline
+   curve** (found in v18.9, where the HRI screen was made to say so). **Resolved in v18.10:** the owner decided to apply
+   them to the spline — `adoption = min(cap, drawn × speed × hriRampFactor)`; golden case unchanged, MSI / STA contexts
+   and HRI now move the savings (CHANGELOG v18.10).
 3. **The Critical & Regulated report had no entry point.** The function and its documentation survived, the button
    did not; it is back in the regulatory profile section.
 4. **Stale regulatory counts in the industry list** (AERO showed 48 reg. artefacts, the catalogue has 69): the list

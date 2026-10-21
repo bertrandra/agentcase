@@ -14,6 +14,20 @@ All notable changes to AgentCase, newest first. Product version = the `vX.Y` in 
 
 When releasing, follow [docs/BUMP_PROCEDURE.md](docs/BUMP_PROCEDURE.md) and add the new version at the top.
 
+## [v18.10] 2026-10-21 — Ramp factors act on the spline curve
+
+The default adoption curve (free-form spline) used the drawn points as they were, so three documented drivers did
+nothing under it: the **Human Readiness adoption drag**, the **engagement ramp speed** and the **engagement ramp cap**.
+They now scale the spline exactly as they scale the ramp anchors of the other curves:
+`adoption = min(rampCap, drawn × rampSpeed × hriRampFactor)`. Decision taken on the open point of v18.9.
+- **Golden case unchanged** (HRI off, context MSC: speed 1, cap 100): Y3 savings €731,774 · NPV €1,131,220 · payback 9.
+- Non-default cases change, which is the point: HRI on at index 50 → Y3 savings €635,906 (×0.80 ramp); context MSI €566,186
+  and STA €504,494 instead of €731,774 for all three.
+- The warning on the HRI screen ("the drag does not act on the spline") is removed. The S-curve editor still draws the
+  unscaled points. Two new regression tests: `hri_and_engagement_apply_to_spline`, `engagement_context_moves_spline`.
+
+---
+
 ## [v18.9] 2026-10-21 — Hardening release: security, data integrity, calculation consistency
 
 Every finding of the v18.8 code review ([docs/CODE_REVIEW.md](docs/CODE_REVIEW.md) §7) is fixed. **No result of the
