@@ -1,0 +1,102 @@
+[
+ {
+  "id": "inception",
+  "label": "Greenfield (new build)",
+  "blurb": "Greenfield: heavy upstream framing, specification and design. Novel, creative work — the least automatable stage.",
+  "autoPosture": 0.85,
+  "weights": {
+   "L0": 1.3,
+   "V1": 1.3,
+   "V2": 1.3,
+   "V3": 1.2,
+   "V4": 1,
+   "V5": 1,
+   "V6": 1,
+   "V7": 0.9,
+   "L8": 0.7,
+   "L9": 0.3,
+   "L10": 0.1,
+   "Cross-cutting": 1
+  }
+ },
+ {
+  "id": "growth",
+  "label": "Feature add (active development)",
+  "blurb": "Feature-heavy full SDLC, implementation and verification dominate. Baseline automatability.",
+  "autoPosture": 1,
+  "weights": {
+   "L0": 0.9,
+   "V1": 1.1,
+   "V2": 1.1,
+   "V3": 1.3,
+   "V4": 1.2,
+   "V5": 1.2,
+   "V6": 1.1,
+   "V7": 1,
+   "L8": 1,
+   "L9": 0.7,
+   "L10": 0.2,
+   "Cross-cutting": 1
+  }
+ },
+ {
+  "id": "maturity",
+  "label": "Maintenance (stabilised)",
+  "blurb": "Stabilised product: validation, deployment and run rise, new build falls. Repeatable work, more automatable.",
+  "autoPosture": 1.12,
+  "weights": {
+   "L0": 0.5,
+   "V1": 0.7,
+   "V2": 0.7,
+   "V3": 0.9,
+   "V4": 1,
+   "V5": 1,
+   "V6": 1,
+   "V7": 1,
+   "L8": 1.1,
+   "L9": 1.3,
+   "L10": 0.5,
+   "Cross-cutting": 1
+  }
+ },
+ {
+  "id": "decline",
+  "label": "Modernisation (legacy)",
+  "blurb": "Mostly run and support, minimal new change. Routine, highly automatable work.",
+  "autoPosture": 1.18,
+  "weights": {
+   "L0": 0.2,
+   "V1": 0.4,
+   "V2": 0.4,
+   "V3": 0.6,
+   "V4": 0.6,
+   "V5": 0.6,
+   "V6": 0.7,
+   "V7": 0.8,
+   "L8": 0.9,
+   "L9": 1.3,
+   "L10": 0.9,
+   "Cross-cutting": 1
+  }
+ },
+ {
+  "id": "eol",
+  "label": "End-of-life (→ maintenance)",
+  "blurb": "Decommissioning, migration and archiving dominate. Mechanical work, well automatable.",
+  "autoPosture": 1.08,
+  "weights": {
+   "L0": 0.1,
+   "V1": 0.2,
+   "V2": 0.2,
+   "V3": 0.3,
+   "V4": 0.3,
+   "V5": 0.3,
+   "V6": 0.4,
+   "V7": 0.5,
+   "L8": 0.6,
+   "L9": 1,
+   "L10": 1.5,
+   "Cross-cutting": 1
+  }
+ }
+]

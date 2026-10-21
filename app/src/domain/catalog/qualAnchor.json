@@ -1,0 +1,14 @@
+{
+ "security": {
+  "m": 1.57,
+  "l": "Security"
+ },
+ "maintainability": {
+  "m": 1.64,
+  "l": "Maintainability"
+ },
+ "correctness": {
+  "m": 1.75,
+  "l": "Correctness"
+ }
+}

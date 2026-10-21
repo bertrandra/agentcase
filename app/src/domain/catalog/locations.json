@@ -1,0 +1,30 @@
+[
+ {
+  "name": "France",
+  "cls": "Local"
+ },
+ {
+  "name": "Portugal",
+  "cls": "Nearshore"
+ },
+ {
+  "name": "Poland",
+  "cls": "Nearshore"
+ },
+ {
+  "name": "Morocco",
+  "cls": "Nearshore"
+ },
+ {
+  "name": "Egypt",
+  "cls": "Nearshore"
+ },
+ {
+  "name": "China",
+  "cls": "Offshore"
+ },
+ {
+  "name": "India",
+  "cls": "Offshore"
+ }
+]
