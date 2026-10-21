@@ -5,6 +5,9 @@ describe('parity helper', () => {
   it('parses euro, percent and decimal figures; skips ids and small integers', () => {
     expect(numberTokens('Y3 €1 704K and €1,204,000 · 75% · 13.0 FTE · A017 · step 2 · v18.9')).toEqual([1704000, 1204000, 75, 13]);
   });
+  it('does not fuse figures separated by tabs or newlines', () => {
+    expect(numberTokens('Year\t3\t100%\n€1 704K\t225')).toEqual([100, 1704000, 225]);
+  });
   it('matches within display rounding and reports what is missing', () => {
     expect(missingNumbers('Savings €892K, ROI 713%, 6.8 FTE', '€891,555 · 713 % · 6.8')).toEqual([]);
     expect(missingNumbers('Savings €892K, payback 12 months', '€891,555')).toEqual([12]);
