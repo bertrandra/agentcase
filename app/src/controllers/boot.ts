@@ -2,6 +2,7 @@ import { appStore } from '@/store/instance';
 import { restoreRecord, startAutosave, type AutosaveRecord, type AutosaveStorage } from '@/store/persistence/autosave';
 import { connectBroadcast, type ChannelLike } from '@/store/persistence/broadcast';
 import { readEmbeddedCase } from '@/store/persistence/html/read';
+import { checkLoadedCase } from './calcStaleness';
 import { refitOnOpen } from './openFile';
 
 export interface RestoreOffer { label: string; savedAt: string; steps: number }
@@ -13,7 +14,10 @@ let offer: RestoreOffer | null = null;   // a stable object per pending record (
 const setPending = (r: AutosaveRecord | null) => { pending = r; offer = r ? { label: r.label, savedAt: r.savedAt, steps: r.history.undo.length } : null; notify(); };
 export const getRestoreOffer = (): RestoreOffer | null => offer;
 export const onRestoreOffer = (f: () => void): (() => void) => { subs.add(f); return () => { subs.delete(f); }; };
-export function acceptRestore(): void { if (pending) restoreRecord(appStore(), pending); setPending(null); }
+export function acceptRestore(): void {
+  if (pending) { restoreRecord(appStore(), pending); checkLoadedCase(pending.snapshot, appStore().getState().doc); }
+  setPending(null);
+}
 export function dismissRestore(): void { setPending(null); }
 
 export interface BootEnv { storage: AutosaveStorage | null; channel: ChannelLike | null; tabId: string; /** when the page was saved with a case inside: autosaves older than it are not offered */ embeddedSavedAt?: string }
@@ -22,7 +26,7 @@ export interface BootEnv { storage: AutosaveStorage | null; channel: ChannelLike
 export function loadEmbeddedCase(d: Pick<Document, 'getElementById'>): { savedAt: string } | null {
   try {
     const c = readEmbeddedCase(d);
-    if (c) appStore().load(refitOnOpen(c.doc));
+    if (c) { const doc = refitOnOpen(c.doc); appStore().load(doc); checkLoadedCase(c.raw, doc); }
     return c ? { savedAt: c.savedAt } : null;
   } catch (e) { console.error('The case embedded in this file could not be opened:', e); return null; }
 }

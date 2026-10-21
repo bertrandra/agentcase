@@ -1,5 +1,6 @@
 import { PHASES } from '../catalog';
 import type { Ctx } from '../ctx';
+import { fmtK } from '../format';
 import { engineNow } from '../canonical';
 import { model } from '../model/overlay';
 import { activeArtefacts } from '../scope';
@@ -15,7 +16,6 @@ const BANDS = [
   { id: 'OPS', label: 'Deploy, run & retire', test: /^L8|^L9|^L10/, pf: 'pf-run' },
 ];
 const PF_LABEL: Record<string, string> = { 'pf-core': 'Core delivery', 'pf-assure': 'Regulatory assurance', 'pf-run': 'Run & operations', 'pf-upstream': 'Upstream & governance' };
-const fmtK = (v: number) => '€' + Math.round(v / 1000).toLocaleString('en-US') + 'K';
 
 export interface Structure {
   vision: string; portfolios: Portfolio[]; epics: Epic[]; features: Feature[]; stories: Story[];

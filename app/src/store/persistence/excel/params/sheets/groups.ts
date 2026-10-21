@@ -1,9 +1,10 @@
+import { groupColor as navGroupColor } from '@/domain/nav/layout';
 import { groupsByOrder } from '@/domain/pdc/personas';
 import { blue, frz, grey, head, listDV, sheet } from '../kit';
 import { cleanText, okKey, num, safeId, str } from '../safe';
 import type { ParamsDoc, ReadCtx, SheetFamily, WriteCtx } from '../types';
 
-export const groupColor = (d: ParamsDoc, id: string): string => { const c = d.GROUP_COLORS?.[id]; return typeof c === 'string' && /^#[0-9a-fA-F]{3,8}$/.test(c) ? c : '#667089'; };
+const groupColor = (d: ParamsDoc, id: string): string => navGroupColor(d.GROUP_COLORS, id);
 const nextOrder = (w: ParamsDoc): number => Math.max(0, ...w.GROUPS.map((x) => x.order)) + 1;
 
 function writeGroups({ wb, d }: WriteCtx): void {

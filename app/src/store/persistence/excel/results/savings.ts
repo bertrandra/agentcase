@@ -22,7 +22,6 @@ export function plSheet(wb: Workbook, { v }: ResultsData, images?: SheetImages):
   ws.addRow(['TO-BE operating cost', ...s.run.map(r0), r0(sum(s.run))]);
   ws.addRow(['Gross savings', ...s.savings.map(r0), r0(v.totalBenefit)]);
   ws.addRow(['Net (savings - setup)', ...s.savings.map((x, i) => r0(x - (i === 0 ? setup : 0))), r0(v.totalBenefit - setup)]);
-  let cum = -setup;
-  ws.addRow(['Cumulative cash-flow', ...s.savings.map((x) => r0((cum += x))), '']);
+  ws.addRow(['Cumulative cash-flow', ...v.cumulative.map(r0), '']);
   head(ws); addImage(wb, ws, 'P&L', images);
 }

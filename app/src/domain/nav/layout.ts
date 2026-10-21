@@ -1,4 +1,4 @@
-import type { MenuGroup } from '../pdc/personas';
+import { groupsByOrder, type MenuGroup } from '../pdc/personas';
 
 /** One section as the navigation sees it (catalogue entry overlaid with the document's placement). */
 export interface NavSection { id: string; label: string; description: string; group: string; groupSeq: number; tag?: string; mvp?: boolean; dynamic?: boolean }
@@ -35,7 +35,13 @@ export function resolveSections(catalogue: NavSection[], rows: SectionRow[] | un
   });
 }
 
-export const groupsByOrder = (groups: MenuGroup[]): MenuGroup[] => [...groups].sort((a, b) => a.order - b.order);
+export { groupsByOrder } from '../pdc/personas';
+
+/** A group colour reaches inline styles and exports: only #rgb … #rrggbbaa is accepted, else the neutral grey (legacy groupColor). */
+export const groupColor = (colors: Record<string, string> | undefined, id: string | undefined): string => {
+  const c = id ? colors?.[id] : undefined;
+  return typeof c === 'string' && /^#[0-9a-fA-F]{3,8}$/.test(c) ? c : '#667089';
+};
 /** The persona's own order for a section, else the section's global order (legacy effectiveGroupSeq). */
 export const effectiveSeq = (s: NavSection, persona: string, order: PersonaOrder): number => order[persona]?.[s.id] ?? (s.groupSeq || 0);
 export const bySeq = (persona: string, order: PersonaOrder) => (a: NavSection, b: NavSection): number => effectiveSeq(a, persona, order) - effectiveSeq(b, persona, order);

@@ -1,10 +1,10 @@
 import type { Ctx } from '../ctx';
+import { fmtK } from '../format';
 import { model } from '../model/overlay';
 import { anchorClamp, daFmt, daGet, daVal, qualityRows, throughputAnchors } from './anchors';
 import { INDUSTRIES } from '../frame/profile';
 import { perfFrame } from './perf';
 
-const fmtK = (v: number): string => `€${Math.round(v / 1000).toLocaleString('en-US')}K`;
 export const fmtChg = (now: number, was: number): string => (!(was > 0) || !isFinite(now) ? '—' : `${Math.round((now / was - 1) * 100) > 0 ? '+' : ''}${Math.round((now / was - 1) * 100)}%`);
 const nf = (x: number): string => (Math.abs(x) < 10 ? x.toFixed(1) : String(Math.round(x)));
 

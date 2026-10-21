@@ -3,6 +3,7 @@ import { phaseScope, activeArtefacts } from '../scope';
 import { blendedTokenCostPer1M } from '../tokens';
 import type { Live } from './fteVfte';
 import { AUTH_LEVELS } from './agents';
+import { tokenUsage as tokenUsageOf, type TokenUsage } from '../tuneB/tokens';
 import { targetTeam } from './targetTeam';
 
 const avg = (xs: number[]): number => (xs.length ? Math.round(xs.reduce((s, x) => s + x, 0) / xs.length) : 0);
@@ -39,13 +40,8 @@ export interface UsageYear { label: string; ramp: number; vfte: number; arts: nu
 export interface UsagePhase { id: string; name: string; n: number; avgAgent: number; effort: number }
 export interface UsageAuth { level: string; n: number; avgAgent: number; effort: number; share: number }
 
-/** Agent runs per horizon year (agent vFTE × workdays × runs per day) and the token volume they imply (legacy tokenUsageEstimate). */
-export function tokenUsage(l: Live) {
-  const { c, m, eng } = l, outS = c.s.TOK_OUT_SHARE / 100;
-  let rpd = c.inp.p('runsPerDay'); if (isNaN(rpd)) rpd = 25; rpd = Math.max(0, rpd);
-  const runs = eng.years().map((y) => y.agentVfteEnd * m.wd * rpd), totM = runs.map((r) => (r * m.tokensPerArt) / 1e6), end = totM.length - 1;
-  return { totM, y3: totM[end] as number, inputM: (totM[end] as number) * (1 - outS), outputM: (totM[end] as number) * outS, tpa: m.tokensPerArt, agentRuns: runs, endLabel: `Y${totM.length}` };
-}
+/** Agent runs per horizon year and the token volume they imply: the tuneB owner of `l.c` (legacy tokenUsageEstimate; model and engine are cached per context). */
+export const tokenUsage = (l: Live): TokenUsage => tokenUsageOf(l.c);
 
 /** Consumption by year, phase and authorization level, and the headline figures (legacy renderAgentUsage). */
 export function agentUsage(l: Live) {

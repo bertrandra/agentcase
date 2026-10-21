@@ -1,8 +1,8 @@
+import { fmtK } from '@/domain/format';
 import type { ReportData } from './data';
 
 /** Escape a value for HTML text and attributes. Every string that comes from the case goes through this. */
 export const esc = (v: unknown): string => String(v).replace(/[&<>"']/g, (ch) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' })[ch] as string);
-const fmtK = (v: number): string => `€${Math.round(v / 1000).toLocaleString('en-US')}K`;
 /** A table row; cells from index `centerFrom` on are centred. */
 const row = (cells: string[], centerFrom = 99): string => `<tr>${cells.map((x, i) => `<td${i >= centerFrom ? ' style="text-align:center"' : ''}>${x}</td>`).join('')}</tr>`;
 
