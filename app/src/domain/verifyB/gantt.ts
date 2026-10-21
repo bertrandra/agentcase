@@ -2,7 +2,8 @@ import type { WArtefact } from '../artefacts';
 import type { Ctx } from '../ctx';
 import { model } from '../model/overlay';
 import { CROSS_CODES } from '../frame/profile';
-import { groupLayout, seqKey, type LayoutItem, type Placed } from './ganttLayout';
+import { spanDates } from './ganttEdit';
+import { groupLayout,seqKey, type LayoutItem, type Placed } from './ganttLayout';
 import { ganttAxis, ganttNum, milestoneMarkers, programRows, type Axis, type Marker, type ProgramRow } from './ganttProgram';
 import { activePhaseIds, phasesWithSeq } from './phases';
 
@@ -17,7 +18,7 @@ export interface PhaseRow extends Span {
   key: string; name: string; count: number; last: boolean; cross: boolean; meta: string; color: string; arts: ArtRow[];
 }
 export interface GanttView {
-  axis: Axis; ticks: { left: number; label: string }[]; summary: [string, string][]; program: (ProgramRow & { left: number; w: number })[];
+  axis: Axis; ticks: { left: number; label: string }[]; summary: [string, string][]; program: (ProgramRow & { left: number; w: number; range: string })[];
   markers: Marker[]; phases: PhaseRow[]; release: number | null; overlap: number; crossSeq: number; hasCross: boolean; velocityGain: number; phaseCount: number;
 }
 
@@ -75,7 +76,7 @@ export function ganttView(c: Ctx): GanttView {
     axis: ax, phaseCount: ordered.length, velocityGain: vAt(1), overlap, crossSeq, hasCross: cross.length > 0, markers: milestoneMarkers(c, ax), phases,
     release: ids.length ? ax.left(cycleEnd) : null,
     ticks: Array.from({ length: Math.floor(totalM / 12) + 1 }, (_, k) => ({ left: ax.left(k * 12), label: ax.dateAt(k * 12) })),
-    program: prog.rows.map((r) => ({ ...r, left: ax.left(r.start), w: ax.width(r.dur) })),
+    program: prog.rows.map((r) => ({ ...r, left: ax.left(r.start), w: ax.width(r.dur), range: spanDates(ax, r.start, r.dur) })),
     summary: [['Start', ax.startOk ? ax.startDate.toLocaleDateString('en-US') : ax.startStr], ['Horizon', `${ax.horizon} yr`], ['Onboarding', `${prog.onboardWeeks} wk`],
       ['Phases in scope', String(ordered.length)], ['Velocity gain', `×${vAt(1).toFixed(2)}`]],
   };
