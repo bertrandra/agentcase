@@ -2,6 +2,9 @@
 import { act, cleanup, render } from '@testing-library/react';
 import { afterEach, describe, expect, it } from 'vitest';
 import { setChecked, setInput } from '@/controllers/inputs';
+import { makeCtx, model } from '@/domain';
+import { headline } from '@/domain/economics/headline';
+import { fmtRoiPct } from '@/domain/economics/roi';
 import { appStore } from '@/store/instance';
 import Verif from '@/ui/sections/defend/verif';
 import { tablesOf } from '../../helpers/economics';
@@ -24,8 +27,17 @@ describe('verif section', () => {
     loadCase(id);
     const { container } = render(<Verif />), e = pdc<V>('pdc_verif', id), t = tables(container);
     expect(t.checks).toEqual(e.checks);
-    expect(t.chain).toEqual(e.chain);
-    expect(t.sensi).toEqual(e.sensi.map((r, i) => (i && r[3] === 'n/a (at limit)' ? r : r.map((x) => x.replace('CONSISTENT', 'Consistent')))));
+    const legacySensi = e.sensi.map((r, i) => (i && r[3] === 'n/a (at limit)' ? r : r.map((x) => x.replace('CONSISTENT', 'Consistent'))));
+    if (model(makeCtx(appStore().getState().doc)).horizon === 3) {
+      expect(t.chain).toEqual(e.chain);
+      expect(t.sensi).toEqual(legacySensi);
+    } else {
+      // DEV-HORIZON-SUMS: the legacy ROI and savings sums read the three-entry yearSav whatever the horizon; v19 sums the horizon's years.
+      expect(t.chain.slice(0, -1)).toEqual(e.chain.slice(0, -1));
+      expect(t.chain[t.chain.length - 1]![3]).toBe(fmtRoiPct(headline(makeCtx(appStore().getState().doc)).roi));
+      expect(t.sensi.map((r) => [r[0], r[1]])).toEqual(legacySensi.map((r) => [r[0], r[1]]));
+      expect(t.sensi.slice(1).every((r) => !/Abnormal/i.test(r[3] ?? ''))).toBe(true);
+    }
     expect(t.ov).toEqual(e.prov.filter((r) => r.length === 3 || (r.length === 3 && r[0] === 'Overlay')).slice(0, 11));
     expect(t.guards).toEqual(e.prov.filter((r) => r.length === 4).slice(0, 6));
     expect(t.conv.length).toBe(68); // header + the 67 rows of the legacy table

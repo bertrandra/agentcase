@@ -1,4 +1,5 @@
-import { horizonYears } from '../model/horizonYears';
+import { engineNow } from '../canonical';
+import { headline } from '../economics/headline';
 import { LOCATIONS } from '../catalog';
 import type { Ctx } from '../ctx';
 import { locationMix } from '../location';
@@ -61,20 +62,12 @@ export function evaluateStrategies(c: Ctx, defs: StrategyDef[] = strategyDefsOf(
     ov.infra = String((B.infra as number) * rF);
     ov.runTeamFactor = String(rF);
     const tlp = stratTargetLoc(c, S), cs = withInputs(c, ov);
-    const m = model(tlp ? { ...cs, s: { ...cs.s, targetLocPct: tlp } } : cs);
-    let net = 0, run = 0, cum = -m.setupTotal, payback: number | null = null;
-    const hy = horizonYears(tlp ? { ...cs, s: { ...cs.s, targetLocPct: tlp } } : cs);   // one entry per horizon year (legacy v18.13)
-    for (let y = 0; y < hy.sav.length; y++) {
-      const sv = hy.sav[y] as number;
-      net += sv; run += hy.run[y] as number; cum += sv;
-      if (payback == null && cum > 0) payback = y + 1;
-    }
-    net -= m.setupTotal;
-    if (m.setupTotal === 0) payback = null;
+    const cc = tlp ? { ...cs, s: { ...cs.s, targetLocPct: tlp } } : cs, m = model(cc), h = headline(cc);
+    const run = engineNow(cc).years().reduce((a, y) => a + y.totalRunCost, 0), payback = m.setupTotal === 0 ? null : h.paybackYear;   // nothing invested: nothing to pay back
     const eff = m.eff;
     return {
       id: S.id, icon: S.icon, label: S.label, desc: S.desc,
-      computed: { roi: m.setupTotal > 0 ? net / m.setupTotal : null, tco: m.setupTotal + run, payback, net, aiCoverage: eff,
+      computed: { roi: h.roi, tco: m.setupTotal + run, payback, net: h.net, aiCoverage: eff,
         humanSup: 100 - eff + (eff * baseSup) / 100, tgtTJM: m.tgtTJM, setup: m.setupTotal },
       declared: { risk: S.declared?.risk || 3, agility: S.declared?.agility || 3 },
     };

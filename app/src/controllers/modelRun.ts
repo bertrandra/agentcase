@@ -11,7 +11,7 @@ import { appStore } from '@/store/instance';
 export const mcsRunStore = createStore<{ last: McsResult | null; running: boolean }>(() => ({ last: null, running: false }));
 
 /** Run the simulation on the current document (synchronous, ~1 s at the default 2 000 draws). Returns the elapsed milliseconds. */
-export function runSimulation(minDraws = 100): number {
+export function runMcsSync(minDraws = 100): number {
   const t0 = Date.now(), doc = appStore().getState().doc, mc = mcsOf(doc.MODEL);
   mcsRunStore.setState({ running: true });
   try {
@@ -25,8 +25,8 @@ export function runSimulation(minDraws = 100): number {
 }
 
 /** Same, after yielding one turn so the "running" state can paint before the synchronous loop starts (legacy mcsRunAndRender). */
-export async function runSimulationAsync(minDraws = 100): Promise<number> {
+export async function runMcsAsync(minDraws = 100): Promise<number> {
   mcsRunStore.setState({ running: true });
   await new Promise<void>((resolve) => setTimeout(resolve, 0));
-  return runSimulation(minDraws);
+  return runMcsSync(minDraws);
 }

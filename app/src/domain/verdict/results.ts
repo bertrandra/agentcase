@@ -1,5 +1,5 @@
-import { horizonYears } from '../model/horizonYears';
 import { engineNow } from '../canonical';
+import { headline } from '../economics/headline';
 import type { Ctx } from '../ctx';
 import { model } from '../model/overlay';
 import { lifecycleStatusLabel } from './context';
@@ -31,12 +31,7 @@ export interface ResultsCore {
 
 /** The deterministic part of the Results screen: net benefit, ROI, payback year, depth, savings decomposition and team shift. */
 export function resultsCore(c: Ctx): ResultsCore {
-  const m = model(c), ys = engineNow(c).years(), sb = savingsBreakdown(c);
-  let net = 0;
-  horizonYears(c).sav.forEach((v) => { net += v; });   // one entry per horizon year (legacy v18.13)
-  net -= m.setupTotal;
-  let cum = -m.setupTotal, payback = '—';
-  for (let y = 0; y < ys.length; y++) { cum += (ys[y] as { savings: number }).savings; if (cum > 0) { payback = `Year ${y + 1}`; break; } }
-  return { net, roi: m.setupTotal > 0 && isFinite(net) ? net / m.setupTotal : null, payback, horizon: m.horizon, setup: m.setupTotal, eff: m.eff,
+  const m = model(c), h = headline(c), sb = savingsBreakdown(c);
+  return { net: h.net, roi: h.roi, payback: h.paybackYear == null ? '—' : `Year ${h.paybackYear}`, horizon: m.horizon, setup: m.setupTotal, eff: m.eff,
     status: lifecycleStatusLabel(c.s), last: sb[sb.length - 1] as SavingsYear, team: teamShift(c) };
 }

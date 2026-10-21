@@ -1,5 +1,6 @@
 import { useMemo } from 'react';
 import type { ChartConfiguration } from 'chart.js';
+import { pNegTone } from '@/domain/stress';
 import type { SimRun } from '@/store/simulation';
 import { Callout, Stat, StatRow } from '@/ui/widgets/cards';
 import { ChartPanel } from '@/ui/widgets/ChartPanel';
@@ -26,7 +27,7 @@ export function RunResults({ run }: { run: SimRun }) {
       <StaleBanner />
       <StatRow>
         <Stat label="P10 (downside)" value={fmtEur(s.p10)} tone={tone(s.p10)} /><Stat label="P50 (median)" value={fmtEur(s.p50)} tone={s.p50 < 0 ? 'brick' : 'blue'} />
-        <Stat label="P90 (upside)" value={fmtEur(s.p90)} tone="teal" /><Stat label="P(net < 0)" value={`${Math.round(s.pNeg * 100)}%`} tone={s.pNeg > 0.2 ? 'brick' : 'teal'} />
+        <Stat label="P90 (upside)" value={fmtEur(s.p90)} tone="teal" /><Stat label="P(net < 0)" value={`${Math.round(s.pNetNeg * 100)}%`} tone={pNegTone(s.pNetNeg)} />
         <Stat label="CVaR 10%" value={fmtEur(s.cvar10)} tone="amber" /><Stat label="Draws · seed" value={`${s.n} · ${s.seed}`} tone="grey" />
       </StatRow>
       <ChartPanel config={cfg} label="Net benefit distribution" />

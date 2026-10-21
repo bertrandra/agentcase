@@ -3,8 +3,8 @@ import { modelOf as model } from '../../tune/memo';
 import { blendedTokenCostPer1M } from '../../tokens';
 import { tokenUsage } from '../../tuneB/tokens';
 import { AGENT_CATALOG, loopInternalTokenCost } from '../../verifyA/agents';
-import { qualityRows } from '../../verifyB/anchors';
-import { perfRel } from '../perf';
+import { daVal, qualityRows } from '../../verifyB/anchors';
+import { perfRel } from '../../verifyB/perf';
 import { end, v } from './types';
 
 /** Legacy interpolation of a quality anchor at the horizon-end realisation (no clamp, like the legacy). */
@@ -17,8 +17,8 @@ const quality = (c: Ctx, i: number): number => {
 export const TUNE_VARS = [
   v('testCoverageY3', 'Test coverage, Y3 target', 'PCT', '%', 'quality', (c) => quality(c, 1)),
   v('defectLeakagePctY3', 'Defect leakage %, Y3 target', 'PCT', '%', 'quality', (c) => quality(c, 3)),
-  v('velocitySpY3', 'Velocity Y3 (SP/sprint)', 'INT', 'SP', 'velocity', (c) => Math.round(35 + (59 - 35) * perfRel(c, end(c).adoptionEndPct))),
-  v('leadTimeY3Days', 'Lead time, Y3', 'DAYS', 'd', 'velocity', (c) => 21 + (1 - 21) * perfRel(c, end(c).adoptionEndPct)),
+  v('velocitySpY3', 'Velocity Y3 (SP/sprint)', 'INT', 'SP', 'velocity', (c) => Math.round(daVal(c.s, 'velocitySp', perfRel(c, end(c).adoptionEndPct)))),
+  v('leadTimeY3Days', 'Lead time, Y3', 'DAYS', 'd', 'velocity', (c) => daVal(c.s, 'leadTime', perfRel(c, end(c).adoptionEndPct))),
   v('perfUpliftRelY3Pct', 'Productivity uplift, relative, Y3', 'PCT', '%', 'productivity', (c) => perfRel(c, end(c).adoptionEndPct) * 100),
   v('agentCatalogCount', 'Total agents in catalog', 'INT', '', 'agent-dir', () => AGENT_CATALOG.length),
   v('loopInternalTokenCostEst', 'Agentic loop internal token cost (est.)', 'EUR_K', '€', 'agent-dir', (c) => loopInternalTokenCost(c).cost),

@@ -5,7 +5,8 @@ import { makeCtx } from '@/domain';
 import { compareData } from '@/domain/stress';
 import { appStore } from '@/store/instance';
 import Compare from '@/ui/sections/stress/compare';
-import { renderedText } from '../../helpers/parity';
+import { loadExtra } from '../../helpers/extras';
+import { numberTokens, renderedText } from '../../helpers/parity';
 import { missingFor, openFixture, PARITY_FIXTURES } from '../../helpers/stressParity';
 
 afterEach(cleanup);
@@ -14,7 +15,9 @@ const cell = (metric: string, col: number) => screen.getByText(metric).closest('
 
 describe('3-way comparison section', () => {
   it.each(PARITY_FIXTURES)('shows every figure the legacy section showed (%s)', (fx) => {
-    expect(missingFor(Compare, 'compare', fx)).toEqual([]);
+    // DEV-COMPARE-ENGINE: the Agentic cumulative saving and (off the typed ramps) velocity rows follow the engine, so the legacy figures of those rows are not expected
+    const rows = (loadExtra('compareView', fx) as { table: string[][] }).table;
+    expect(missingFor(Compare, 'compare', fx, [3, 4].flatMap((i) => numberTokens(rows[i]!.join('  '))))).toEqual([]);
   });
   it('the key-figures table is the engine output', () => {
     openFixture('golden');

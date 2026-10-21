@@ -6,11 +6,15 @@ import { auditViolations } from '@/domain/pdc/vars/audit';
 import { mcSeedOf, runMonteCarlo } from '@/domain/stress';
 import defaultDoc from '@/store/defaults/defaultDoc.json';
 import { formatValue } from '@/ui/sections/configure/board/format';
+import { quantile } from '@/domain/model/numerics';
+import { daGet } from '@/domain/verifyB/anchors';
+import { anchored } from '../helpers/deviations';
 import { diffs } from '../helpers/economics';
 import { ctxOf, pdc, PDC_FIXTURES } from '../helpers/pdc';
 
 interface Legacy { id: string; label: string; fmt: string; unit: string; scope: string; value: unknown; text: string }
 const base = ddBase(defaultDoc);
+const MC_QUANTILES = ['mcP10', 'mcP50', 'mcP90', 'monteCarloP50'];
 /** The legacy oracle evaluated the registry in order: diVerdict ran the 800-draw Monte Carlo that mcP10... then read. */
 const runtimeOf = (c: ReturnType<typeof ctxOf>): VarRuntime => ({ mc: runMonteCarlo(c, 800, mcSeedOf(c)), tornado: null, ddBase: base });
 /** The oracle's pdc_vars extra runs after other extras that left a 300-draw stochastic run and a stale Time Engine hash behind: CC-MC-01 and TE-DEP read as violations. */
@@ -26,12 +30,21 @@ describe('all 166 registry variables reproduce the legacy', () => {
   });
   it.each(PDC_FIXTURES)('%s: value, label, format, scope and display text of every variable', (id) => {
     const c = ctxOf(id), rt = runtimeOf(c), skipped = legacyAudit(id).filter((x) => NOT_PORTED.includes(x)).length + HARNESS.length;
-    const want = pdc<Legacy[]>('pdc_vars', id).map((w) => {
+    const legacy = pdc<Legacy[]>('pdc_vars', id), rel = ((legacy.find((w) => w.id === 'perfUpliftRelY3Pct')?.value as number) ?? 0) / 100;
+    const want = legacy.map((w) => {
       const value = w.id === 'auditViolationsCount' ? (w.value as number) - skipped : w.value;
+      // DEV-ANCHOR-CLAMP: velocity and lead time follow the case's anchors and stay inside [as-is, target].
+      if (w.id === 'velocitySpY3' || w.id === 'leadTimeY3Days') {
+        const a = daGet(c.s, w.id === 'velocitySpY3' ? 'velocitySp' : 'leadTime'), raw = anchored(a.asis, a.target, rel), nv = w.id === 'velocitySpY3' ? Math.round(raw) : raw;
+        return { ...w, value: nv, text: formatValue(nv, w.fmt) };
+      }
       return { ...w, value: value ?? null, text: w.id === 'auditViolationsCount' ? String(value) : w.text };
-    });
+    }).filter((w) => !MC_QUANTILES.includes(w.id));
     const got = VARIABLES.map((x) => { const value = x.get(c, rt); return { id: x.id, label: x.label, fmt: x.format, unit: x.unit, scope: x.scope, value: typeof value === 'number' && isNaN(value) ? null : value ?? null, text: formatValue(value, x.format) }; });
-    expect(diffs(want, got)).toEqual([]);
+    expect(diffs(want, got.filter((x) => !MC_QUANTILES.includes(x.id)))).toEqual([]);
+    // DEV-MC-QUANTILE: the percentile variables are the shared interpolating quantile of the same 800 draws.
+    const sorted = rt.mc!.outcomes.slice().sort((x, y) => x - y), val = (vid: string) => VARIABLES.find((x) => x.id === vid)!.get(c, rt);
+    expect([val('mcP10'), val('mcP50'), val('mcP90'), val('monteCarloP50')]).toEqual([quantile(sorted, 0.1), quantile(sorted, 0.5), quantile(sorted, 0.9), quantile(sorted, 0.5)]);
   });
   it.each(PDC_FIXTURES)('%s: the logic checks flag the violations the legacy AUDIT does', (id) => {
     const c = ctxOf(id);

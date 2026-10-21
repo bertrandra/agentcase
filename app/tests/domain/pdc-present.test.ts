@@ -4,6 +4,7 @@ import { CM_CODES, cmAvailable, cmRecommend, cmTierSplit, commercialRevenue, com
 import { playbackSeries } from '@/domain/pdc/playback';
 import { storySummary } from '@/domain/pdc/story';
 import { fmtK } from '@/ui/economicsFormat';
+import { legacyMoney, legacyVelocityRow } from '../helpers/deviations';
 import { diffs } from '../helpers/economics';
 import { ctxOf, pdc, PDC_FIXTURES } from '../helpers/pdc';
 
@@ -18,7 +19,7 @@ describe('present domain reproduces the legacy', () => {
     expect(cmRecommend(c)).toEqual(e.rec);
     expect(CM_CODES.map((k) => cmAvailable(c, k))).toEqual(e.avail);
     const rows = commercialView(c).rows.filter((r) => r.available).map((r) => [fmtK(r.revenue), fmtK(r.cost), `${fmtK(r.margin)} (${Math.round(r.marginPct)}%)`, fmtK(r.tco), `${Math.round(r.clientSaving)}%`]);
-    expect(rows).toEqual(e.out.ET!.rows.filter((r) => r.length === 6).map((r) => r.slice(1)));
+    expect(rows).toEqual(e.out.ET!.rows.filter((r) => r.length === 6).map((r) => r.slice(1).map(legacyMoney)));   // DEV-NEG-MONEY
   });
   it.each(PDC_FIXTURES)('%s: playback series', (id) => {
     const { horizon, months, ...s } = playbackSeries(ctxOf(id));
@@ -30,8 +31,8 @@ describe('present domain reproduces the legacy', () => {
     const s = storySummary(ctxOf(id)), e = pdc<{ rows: string[][] }>('pdc_story', id);
     expect([s.baseFte.toFixed(1), s.tgtFte.toFixed(1)]).toEqual([e.rows[0]![1], e.rows[0]![2]]);
     expect([fmtK(s.baselineRun), fmtK(s.endRun)]).toEqual([e.rows[1]![1], e.rows[1]![2]]);
-    expect(`+${s.velocityPct}%`).toBe(e.rows[2]![2]);
-    expect(fmtK(s.endSavings)).toBe(e.rows[3]![2]);
+    expect(`+${s.velocityPct}%`).toBe(legacyVelocityRow(e.rows[2]![2]!));
+    expect(fmtK(s.endSavings)).toBe(legacyMoney(e.rows[3]![2]!));
     expect(s.payback ? `${s.payback} mo` : `>${s.horizon * 12}m`).toBe(e.rows[4]![2]);
   });
 });

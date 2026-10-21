@@ -54,7 +54,7 @@ export function timeChecksB(c: Ctx): ConvCheck[] {
       try {
         const pkg = engineNow(c), fresh = engineNow(c);
         if (pkg.K.inputHash !== fresh.K.inputHash) return 'materialise inputHash != fresh engine inputHash';
-        const ph = pkg.headline(), h = fresh.headline();
+        const ph = pkg.headline(0.08), h = fresh.headline(0.08);
         if (ph.payback !== h.payback || Math.abs(ph.npv - h.npv) > TOL) return `materialise headline (pb ${ph.payback}, npv ${Math.round(ph.npv)}) != fresh (pb ${h.payback}, npv ${Math.round(h.npv)})`;
         return pkg.months().length !== fresh.horizonMonths ? 'materialise monthly length mismatch' : null;
       } catch (e) { return fail('TE-12', e); }

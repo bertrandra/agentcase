@@ -4,6 +4,7 @@ export { compareData, fmtK, type CompareData, type Trajectory } from './compare'
 export { sensitivityMatrix, sensitivityRows, type SensCell, type SensMatrix, type SensRow } from './sensitivity';
 export { MC_PARAMS_DEFAULT, mcParamsOf, mcSpreadScale, type McParam } from './mcParams';
 export { mcRng, mcSample } from './rng';
+export { PNEG_AMBER, PNEG_BRICK, pNegTone, type PNegTone } from './pNeg';
 export { mcDrawsOf, mcOutcome, mcSeedOf, runMonteCarlo, type McResult, type McSens, type McStats } from './simulate';
 export { mcFingerprint } from './fingerprint';
 export { autoTechCap, withInputs } from './withInputs';

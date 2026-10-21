@@ -20,7 +20,7 @@
   {"name": "year", "kind": "engine", "legacy": "teYears()[y]", "what": "One annual row, aggregated from the months (the annual view is a reduce over months, never a parallel calculation)."},
   {"name": "years", "kind": "engine", "legacy": "teYears()", "what": "Every annual row 1..horizon. The last one is the canonical end-of-horizon read (legacy teEndYearRow())."},
   {"name": "milestones", "kind": "engine", "legacy": "TIME.current.milestones()", "what": "Adoption thresholds, maturity-level crossings, first agent vFTE and payback, in month order."},
-  {"name": "headline", "kind": "engine", "legacy": "TIME.current.headline()", "what": "Payback, NPV at 8 %, ROI and total savings of the horizon."}
+  {"name": "headline", "kind": "engine", "legacy": "TIME.current.headline()", "what": "Payback, NPV at the case discount rate, ROI and total savings of the horizon."}
  ],
  "notPorted": [
   {"legacy": "TIME.thin() / teThinNow()", "why": "the allocation-free aggregate pass for Monte Carlo — ported with the Stress group"},

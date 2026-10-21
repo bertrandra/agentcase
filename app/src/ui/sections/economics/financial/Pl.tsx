@@ -1,6 +1,6 @@
 import { useMemo } from 'react';
 import { avg, fmtPayback, fmtRoiPct, sum, yearSeries, yLabel } from '@/domain/economics';
-import { fmtE, fmtParen } from '@/ui/economicsFormat';
+import { fmtE } from '@/ui/economicsFormat';
 import { ChartPanel } from '@/ui/widgets/ChartPanel';
 import { Panel } from '@/ui/widgets/cards';
 import { Band } from '../Band';
@@ -16,10 +16,10 @@ export function Pl() {
   const avgRow = (key: string, label: string, a: number[]) => ({ key, label, cells: [...a.map(fmtE), fmtE(avg(a))] });
   const net = s.savings.map((x, i) => x - (i === 0 ? v.setup : 0));
   const rows = [
-    { key: 'setup', label: 'Setup investment', cells: [`(${fmtE(v.setup)})`, ...dash, `(${fmtE(v.setup)})`], bold: true },
+    { key: 'setup', label: 'Setup investment', cells: [fmtE(-v.setup), ...dash, fmtE(-v.setup)], bold: true },
     avgRow('base', 'AS-IS baseline run', baseline), avgRow('tobe', 'TO-BE operating cost', s.run), avgRow('sav', 'Gross savings', s.savings),
-    { key: 'net', label: 'Net (savings − setup)', cells: [...net.map(fmtParen), fmtE(sum(s.savings) - v.setup)], bold: true, rule: true },
-    { key: 'cum', label: 'Cumulative cash-flow', cells: [...v.cumulative.map(fmtParen), ''] },
+    { key: 'net', label: 'Net (savings − setup)', cells: [...net.map(fmtE), fmtE(sum(s.savings) - v.setup)], bold: true, rule: true },
+    { key: 'cum', label: 'Cumulative cash-flow', cells: [...v.cumulative.map(fmtE), ''] },
   ];
   return (
     <Panel title={`${v.H}-Year P&L & Cash Flow`}>
