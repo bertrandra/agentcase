@@ -24,3 +24,5 @@
 .ac-ncard { background: #fff; border: 1px solid #d5dae6; border-left: 3px solid var(--ac-line); border-radius: 6px; padding: 6px 8px; margin: 5px 0; font-size: 12px; cursor: grab; }
 .ac-ncard.is-off { background: #f2f4f8; opacity: .6; } .ac-ncard.is-mvp { background: #fff7ed; }
 .ac-ncard-ops { display: flex; gap: 3px; margin-top: 4px; } .ac-ncard-ops button { padding: 0 6px; font-size: 11px; }
+.ac-npreview { margin-top: 14px; border: 1px solid #e5e9f2; border-radius: 8px; padding: 8px 12px; background: #fff; max-width: 320px; }
+.ac-npreview h4 { margin: 8px 0 2px; font-size: 12px; } .ac-npreview ul { margin: 0; padding-left: 28px; font-size: 12px; } .ac-npreview .is-moving { font-weight: 700; color: var(--ac-blue); }
