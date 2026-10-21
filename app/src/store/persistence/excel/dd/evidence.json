@@ -1,0 +1,18 @@
+{
+ "cf-perfrel-cap": "Confirm the maximum realistic performance uplift over baseline for this delivery organisation, and whether exceeding the published benchmark is credible here.",
+ "cf-perfuplift": "Provide the reference throughput baseline (last 2 quarters) so the uplift denominator is measured rather than assumed.",
+ "cf-vtax-cap": "Confirm the maximum share of engineering effort that can go to review before the delivery model becomes uneconomic.",
+ "cf-vtax-base": "Provide the current review effort as a share of engineering time (timesheet or Jira extract).",
+ "cf-qual-cap": "Confirm the accepted ceiling on rework attributable to AI-authored code quality.",
+ "cf-qualbar": "Confirm how quality risk should weigh in the go/no-go decision.",
+ "cf-hri-floor": "Confirm the minimum adoption a zero-readiness team would still achieve, based on a previous transformation.",
+ "cf-hri-slope": "Provide the outcome of a comparable past change programme so readiness-to-adoption can be calibrated.",
+ "cf-supshare-cap": "Confirm the maximum share of the retained team that may supervise rather than produce.",
+ "cf-supshare-fac": "Confirm how supervision effort scales with the human-supervision matrix.",
+ "cf-glassfactor": "Confirm the engagement context (fixed price / T&M / managed service) and its effect on achievable automation.",
+ "cf-rampcap": "Confirm the maximum annual adoption the organisation can absorb.",
+ "cf-rampspeed": "Confirm the realistic pace of adoption against comparable internal programmes.",
+ "cf-khmult": "Provide the current collective-competence level and the target agreed with the client.",
+ "cf-autoposture": "Confirm the product profile (new build / feature add / maintenance) and its share of the scope.",
+ "cf-ceiling": "Validate, artefact by artefact, which deliverables require an irreducible human signature - ideally with the certification authority or quality function."
+}

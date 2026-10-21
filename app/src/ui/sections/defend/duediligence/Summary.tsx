@@ -1,5 +1,6 @@
 import { computeSensitivity } from '@/controllers/pdc';
 import { Callout } from '@/ui/widgets/cards';
+import { PackButtons } from './PackButtons';
 import type { DdModel } from './useDd';
 
 const Card = ({ label, value, color, sub }: { label: string; value: string; color: string; sub?: string }) => (
@@ -34,6 +35,7 @@ export function Summary({ m }: { m: DdModel }) {
         </div>
       )}
       {wPct != null && wPct < 60 && <Callout kind="warn">Y3 savings rest on <strong>{100 - wPct}% unconfirmed input weight</strong>. Below the 60% advisory floor — this is a banner, not a gate (spec Q11).</Callout>}
+      <PackButtons />
       <div className="ac-form-row">
         <button type="button" className="ac-btn" onClick={computeSensitivity}>{fresh ? '↻ Recompute € sensitivity' : '⚖️ Compute € sensitivity'}</button>
         <span className="ac-muted">{fresh && sens

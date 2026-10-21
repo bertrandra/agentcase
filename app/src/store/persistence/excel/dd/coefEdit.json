@@ -1,0 +1,50 @@
+{
+ "cf-perfrel-cap": {
+  "sec": "velocity",
+  "note": "v18.7"
+ },
+ "cf-perfuplift": {
+  "sec": "velocity",
+  "note": "v18.7"
+ },
+ "cf-vtax-cap": {
+  "sec": "eligibility",
+  "note": "v18.7"
+ },
+ "cf-qual-cap": {
+  "sec": "risk",
+  "note": "v18.7"
+ },
+ "cf-qualbar": {
+  "sec": "risk",
+  "note": "v18.7"
+ },
+ "cf-hri-floor": {
+  "sec": "readiness",
+  "note": "v18.7"
+ },
+ "cf-hri-slope": {
+  "sec": "readiness",
+  "note": "v18.7"
+ },
+ "cf-supshare-cap": {
+  "sec": "run-sizing",
+  "note": "v18.7: also editable here (both share the same COEF value)"
+ },
+ "cf-supshare-fac": {
+  "sec": "run-sizing",
+  "note": "v18.7: also editable here (both share the same COEF value)"
+ },
+ "cf-setup-etp": {
+  "sec": "setup",
+  "note": "v18.7"
+ },
+ "cf-prod-factor": {
+  "sec": "run-sizing",
+  "note": "v18.7"
+ },
+ "cf-ai-finops": {
+  "sec": "run-sizing",
+  "note": "v18.7"
+ }
+}
