@@ -46,4 +46,14 @@ export default tseslint.config(
       }],
     },
   },
+  {
+    // G4 — the UI never writes state: it reads through `@/store/hooks` and acts through `@/controllers/*` only.
+    files: ['src/ui/**/*.{ts,tsx}'],
+    rules: {
+      'no-restricted-imports': ['error', { patterns: [
+        { group: ['@/store/core', '@/store/commands', '@/store/instance', '@/store/derive', '@/store/persistence/*'],
+          message: 'UI code must not touch the store directly: read with @/store/hooks, write through @/controllers/*.' },
+      ] }],
+    },
+  },
 );
