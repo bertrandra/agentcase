@@ -3,6 +3,7 @@ import { bootApp, loadEmbeddedCase } from '@/controllers/boot';
 import { configureSessions } from '@/controllers/sessions';
 import { idbStorage } from '@/store/persistence/idb';
 import { App } from '@/ui/App';
+import '@/ui/theme/fonts.css';
 import '@/ui/theme/tokens.css';
 import '@/ui/theme/shell.css';
 

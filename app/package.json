@@ -10,6 +10,7 @@
     "lint": "eslint src tests",
     "test": "vitest run",
     "a11y": "npm run build && node ../tools/a11y.mjs",
+    "ui-parity": "npm run build && node ../tools/ui-parity.mjs",
     "check": "npm run typecheck && npm run lint && npm run test",
     "e2e": "npm run build && node ../tools/e2e-smoke.mjs && node ../tools/perf.mjs",
     "parallel-run": "npm run build && node ../tools/parallel-run.mjs",

@@ -1,0 +1,6 @@
+{
+  "note": "Deliberate, recorded differences from the legacy v18.13 shell chrome, checked by tools/ui-parity.mjs (npm run ui-parity). `expected` pins the NEW value: drift inside an exception fails too. Only accessibility corrections belong here (keep the legacy hue, lightest adjustment that reaches WCAG AA 4.5:1).",
+  "exceptions": [
+    { "area": "kpibar:label", "prop": "opacity", "expected": "0.73", "reason": "white at 0.7 opacity on the gradient start #0058AB is 4.28:1 for the 9.5px label; 0.73 is the lightest value that reaches 4.5:1 (4.51)" }
+  ]
+}

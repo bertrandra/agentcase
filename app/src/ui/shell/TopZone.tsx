@@ -3,7 +3,7 @@ import { exportSnapshotJson, importSnapshotFile } from '@/controllers/files';
 import { setCustomerName } from '@/controllers/persona';
 import { useDoc, useHistory } from '@/store/hooks';
 import { APP_VERSION } from '@/domain/version';
-import { setFastPath, toast, toggleMenuHidden, useUi } from '../uiState';
+import { goSection, setFastPath, toast, toggleMenuHidden, useUi } from '../uiState';
 import { useNavModel } from '../zones/navModel';
 import { switchPersona } from './personaSwitch';
 import { runHistory } from './useShortcuts';
@@ -23,21 +23,25 @@ export function TopZone() {
   };
   return (
     <header className="ac-top" role="banner" style={{ gridArea: 'top' }}>
-      <button type="button" className="ac-btn" aria-label="Toggle the sidebar menu" aria-pressed={!hidden} title="Show or hide the sidebar; hidden, the group bar above the section navigates" onClick={toggleMenuHidden}>☰</button>
-      <strong className="ac-brand">AgentCase <small>v{APP_VERSION}</small></strong>
-      <input aria-label="Customer name" className="ac-customer" placeholder="Customer" value={customer} onChange={(e) => setCustomerName(e.target.value)} />
-      <select aria-label="Persona" value={persona} onChange={(e) => switchPersona(e.target.value, landing(e.target.value))}>
-        {personas.map((p) => <option key={p.id} value={p.id}>{p.label ?? p.id}</option>)}
-      </select>
-      <label className="ac-fastpath" title="Fast Path: filter the menu to the minimum-viable-path sections plus Welcome. Untick to restore the full menu.">
-        <input type="checkbox" checked={fastPath} onChange={(e) => setFastPath(e.target.checked)} /> Fast Path
-      </label>
-      <span className="ac-spacer" />
-      <button type="button" disabled={!h.canUndo} onClick={() => runHistory('undo')} title={h.undo.at(-1)?.label ?? 'Nothing to undo'} aria-label="Undo">↶ Undo</button>
-      <button type="button" disabled={!h.canRedo} onClick={() => runHistory('redo')} title={h.redo.at(-1)?.label ?? 'Nothing to redo'} aria-label="Redo">↷ Redo</button>
-      <button type="button" onClick={save}>Save</button>
-      <button type="button" onClick={() => file.current?.click()}>Open…</button>
-      <input ref={file} type="file" accept="application/json,.json" hidden onChange={(e) => { void open(e.target.files?.[0]); e.target.value = ''; }} />
+      <div className="ac-top-id">
+        <strong className="ac-brand" title="Back to Welcome" onClick={() => goSection('home')}>AgentCase <small>v{APP_VERSION}</small></strong>
+        <p className="ac-subtitle">Agentic Transformation: From Team Baseline to Confidence-Conditional Verdict</p>
+      </div>
+      <div className="ac-top-ctrls">
+        <button type="button" className="ac-icon-btn" aria-label="Toggle the sidebar menu" aria-pressed={!hidden} title="Show or hide the sidebar; hidden, the group bar above the section navigates" onClick={toggleMenuHidden}>☰</button>
+        <input aria-label="Customer name" className="ac-customer" placeholder="Customer" value={customer} onChange={(e) => setCustomerName(e.target.value)} />
+        <select aria-label="Persona" value={persona} onChange={(e) => switchPersona(e.target.value, landing(e.target.value))}>
+          {personas.map((p) => <option key={p.id} value={p.id}>{p.label ?? p.id}</option>)}
+        </select>
+        <label className="ac-fastpath" title="Fast Path: filter the menu to the minimum-viable-path sections plus Welcome. Untick to restore the full menu.">
+          <input type="checkbox" checked={fastPath} onChange={(e) => setFastPath(e.target.checked)} /> Fast Path
+        </label>
+        <button type="button" disabled={!h.canUndo} onClick={() => runHistory('undo')} title={h.undo.at(-1)?.label ?? 'Nothing to undo'} aria-label="Undo">↶ Undo</button>
+        <button type="button" disabled={!h.canRedo} onClick={() => runHistory('redo')} title={h.redo.at(-1)?.label ?? 'Nothing to redo'} aria-label="Redo">↷ Redo</button>
+        <button type="button" onClick={save}>Save</button>
+        <button type="button" onClick={() => file.current?.click()}>Open…</button>
+        <input ref={file} type="file" accept="application/json,.json" hidden onChange={(e) => { void open(e.target.files?.[0]); e.target.value = ''; }} />
+      </div>
     </header>
   );
 }

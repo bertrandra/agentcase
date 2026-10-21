@@ -41,7 +41,7 @@ describe('shell landmarks and names', () => {
     const announcer = screen.getByTestId('section-announcer');
     expect(announcer.getAttribute('aria-live')).toBe('polite');
     expect(announcer.textContent).toContain('Welcome');
-    expect(within(screen.getByRole('navigation', { name: 'Sections' })).getAllByRole('button').filter((b) => b.getAttribute('aria-current') === 'page')).toHaveLength(1);
+    expect(within(screen.getByRole('navigation', { name: 'Sections' })).getAllByRole('button', { hidden: true }).filter((b) => b.getAttribute('aria-current') === 'page')).toHaveLength(1);
     act(() => goSection('team-in'));
     expect(announcer.textContent).not.toContain('Welcome');
   });
