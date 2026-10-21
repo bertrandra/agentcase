@@ -1,0 +1,183 @@
+[
+ {
+  "id": "AG001",
+  "skill": "Analysis/PO",
+  "aiAuth": "Assistance",
+  "artifactIds": [
+   "A001"
+  ],
+  "capacity": 25
+ },
+ {
+  "id": "AG002",
+  "skill": "Analysis/PO",
+  "aiAuth": "Copilot",
+  "artifactIds": [
+   "A004",
+   "A005",
+   "A006",
+   "A007"
+  ],
+  "capacity": 25
+ },
+ {
+  "id": "AG003",
+  "skill": "Analysis/PO",
+  "aiAuth": "Supervised autonomous",
+  "artifactIds": [
+   "A008",
+   "A009",
+   "A010",
+   "A043"
+  ],
+  "capacity": 25
+ },
+ {
+  "id": "AG004",
+  "skill": "Arch/Design",
+  "aiAuth": "Assistance",
+  "artifactIds": [
+   "A015"
+  ],
+  "capacity": 25
+ },
+ {
+  "id": "AG005",
+  "skill": "Arch/Design",
+  "aiAuth": "Copilot",
+  "artifactIds": [
+   "A003",
+   "A011",
+   "A012",
+   "A050",
+   "A051"
+  ],
+  "capacity": 25
+ },
+ {
+  "id": "AG006",
+  "skill": "Arch/Design",
+  "aiAuth": "Supervised autonomous",
+  "artifactIds": [
+   "A014"
+  ],
+  "capacity": 25
+ },
+ {
+  "id": "AG007",
+  "skill": "Dev",
+  "aiAuth": "Autonomous",
+  "artifactIds": [
+   "A019",
+   "A024"
+  ],
+  "capacity": 25
+ },
+ {
+  "id": "AG008",
+  "skill": "Dev",
+  "aiAuth": "Copilot",
+  "artifactIds": [
+   "A018",
+   "A049"
+  ],
+  "capacity": 25
+ },
+ {
+  "id": "AG009",
+  "skill": "Dev",
+  "aiAuth": "Supervised autonomous",
+  "artifactIds": [
+   "A013",
+   "A017",
+   "A039",
+   "A046",
+   "A047"
+  ],
+  "capacity": 25
+ },
+ {
+  "id": "AG010",
+  "skill": "Lead",
+  "aiAuth": "Assistance",
+  "artifactIds": [
+   "A002",
+   "A035",
+   "A040",
+   "A053"
+  ],
+  "capacity": 25
+ },
+ {
+  "id": "AG011",
+  "skill": "Ops/Run",
+  "aiAuth": "Copilot",
+  "artifactIds": [
+   "A021",
+   "A041",
+   "A044",
+   "A045"
+  ],
+  "capacity": 25
+ },
+ {
+  "id": "AG012",
+  "skill": "Ops/Run",
+  "aiAuth": "Supervised autonomous",
+  "artifactIds": [
+   "A020",
+   "A029",
+   "A038",
+   "A042",
+   "A048",
+   "A052"
+  ],
+  "capacity": 25
+ },
+ {
+  "id": "AG013",
+  "skill": "Sec/Quality",
+  "aiAuth": "Copilot",
+  "artifactIds": [
+   "A016",
+   "A036",
+   "A037"
+  ],
+  "capacity": 25
+ },
+ {
+  "id": "AG014",
+  "skill": "Test/QA",
+  "aiAuth": "Autonomous",
+  "artifactIds": [
+   "A025",
+   "A030"
+  ],
+  "capacity": 25
+ },
+ {
+  "id": "AG015",
+  "skill": "Test/QA",
+  "aiAuth": "Copilot",
+  "artifactIds": [
+   "A022",
+   "A026",
+   "A031",
+   "A032"
+  ],
+  "capacity": 25
+ },
+ {
+  "id": "AG016",
+  "skill": "Test/QA",
+  "aiAuth": "Supervised autonomous",
+  "artifactIds": [
+   "A023",
+   "A027",
+   "A028",
+   "A033",
+   "A034"
+  ],
+  "capacity": 25
+ }
+]
