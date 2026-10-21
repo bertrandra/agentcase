@@ -1,10 +1,11 @@
 import type { Ctx } from '../ctx';
 import { modelRaw } from '../model/raw';
 import type { ModelResult } from '../types/model';
+import { roiCanonical } from '../economics/roi';
 import { buildK, econ, type K } from './kernel';
 
 export interface ThinYear { savings: number; totalRunCost: number; teamCost: number; tokenCost: number }
-export interface ThinResult { npv: number; payback: number | null; roi: number; totalSavings: number; years: ThinYear[]; inputHash: string }
+export interface ThinResult { npv: number; payback: number | null; roi: number | null; totalSavings: number; years: ThinYear[]; inputHash: string }
 
 /**
  * Thin mode (legacy TIME.thin, spec §16.2): one forward pass over the months, no row objects, no memo arrays — what Monte Carlo
@@ -26,7 +27,7 @@ export function thinAggregate(K: K, annualRate?: number | null): ThinResult {
   }
   const years: ThinYear[] = [];
   for (let y = 0; y < nY; y++) years.push({ savings: ySav[y] as number, totalRunCost: yRun[y] as number, teamCost: yTeam[y] as number, tokenCost: yTok[y] as number });
-  return { npv, payback, roi: K.setupTotal > 0 ? totalNet / K.setupTotal : totalNet > 0 ? Infinity : 0, totalSavings: totalNet, years, inputHash: K.inputHash };
+  return { npv, payback, roi: roiCanonical(totalNet, K.setupTotal), totalSavings: totalNet, years, inputHash: K.inputHash };
 }
 
 /** Thin aggregate of a case on the live curve; `model` must be a RAW model (never the curve overlay). */

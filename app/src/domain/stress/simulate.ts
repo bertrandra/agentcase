@@ -1,4 +1,5 @@
 import type { Ctx } from '../ctx';
+import { quantile } from '../model/numerics';
 import { activeCurve } from '../model/overlay';
 import { modelRaw } from '../model/raw';
 import { thinFor } from '../time/thin';
@@ -6,7 +7,8 @@ import { mcParamsOf, mcSpreadScale, type McParam } from './mcParams';
 import { mcRng, mcSample } from './rng';
 import { autoTechCap, withInputs } from './withInputs';
 
-export interface McStats { p10: number; p50: number; p90: number; mean: number; pNeg: number; cvar10: number; n: number; seed: number }
+/** `pNetNeg` = P(net benefit < 0) over the horizon (savings minus setup). */
+export interface McStats { p10: number; p50: number; p90: number; mean: number; pNetNeg: number; cvar10: number; n: number; seed: number }
 export interface McSens { id: string; label: string; r: number }
 export interface McResult { outcomes: number[]; stats: McStats; sens: McSens[]; n: number; seed: number }
 
@@ -53,10 +55,10 @@ export function runMonteCarlo(c: Ctx, n: number, seed: number, params: McParam[]
     outcomes[i] = mcOutcome(withInputs(c, ov));
   }
   const sorted = outcomes.slice().sort((a, b) => a - b);
-  const q = (f: number) => sorted[Math.min(n - 1, Math.max(0, Math.floor(f * n)))] as number;
+  const q = (f: number) => quantile(sorted, f);   // linear interpolation, the same estimator as the P4 layer
   const k = Math.max(1, Math.floor(n * 0.1));
   const stats: McStats = { p10: q(0.1), p50: q(0.5), p90: q(0.9), mean: outcomes.reduce((s, v) => s + v, 0) / n,
-    pNeg: outcomes.filter((v) => v < 0).length / n, cvar10: sorted.slice(0, k).reduce((s, v) => s + v, 0) / k, n, seed };
+    pNetNeg: outcomes.filter((v) => v < 0).length / n, cvar10: sorted.slice(0, k).reduce((s, v) => s + v, 0) / k, n, seed };
   const sens = params.map((p, j) => ({ id: p.id, label: p.label, r: +pearson(samples[j] as number[], outcomes).toFixed(3) }))
     .sort((a, b) => Math.abs(b.r) - Math.abs(a.r));
   return { outcomes: sorted, stats, sens, n, seed };

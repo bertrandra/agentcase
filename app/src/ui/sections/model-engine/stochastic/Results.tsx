@@ -1,5 +1,6 @@
 import { engineNow } from '@/domain/canonical';
 import type { McsResult, McsStats } from '@/domain/model/mcs';
+import { pNegTone } from '@/domain/stress';
 import { useCtx } from '@/store/hooks';
 import { DataTable, type Column } from '@/ui/widgets/DataTable';
 import { Panel } from '@/ui/widgets/cards';
@@ -24,7 +25,7 @@ export function Results({ run }: { run: McsResult }) {
       <Panel title={`Distribution — n=${run.n}, seed=${run.seed}, ρ=${run.rho}`}>
         <div className="ac-stat-row">
           {card(`${end} savings`, run.stats.savY3)}{card(`${end} run cost`, run.stats.runY3)}{card('NPV', run.stats.npv)}{card('Payback', run.stats.paybackMonths, (v) => `${Math.round(v)} mo`)}
-          <Tile label="P(savings < 0)" tone={run.stats.pNeg > 0.1 ? 'amber' : 'blue'} value={`${(run.stats.pNeg * 100).toFixed(1)}%`} />
+          <Tile label={`P(${end} savings < 0)`} tone={pNegTone(run.stats.pSavNeg)} value={`${(run.stats.pSavNeg * 100).toFixed(1)}%`} />
         </div>
         <p className="ac-muted">Deterministic point estimate: {fmtEur(det)}. P50 sitting at or slightly below it is <strong>expected</strong> under Jensen&apos;s inequality — the engine has concave transformations (P1 truncation, P2 floor, P3 min()) — not a defect.</p>
       </Panel>

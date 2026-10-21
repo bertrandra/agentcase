@@ -1,5 +1,6 @@
 import type { Ctx } from '../../ctx';
 import { engineOf as engineNow } from '../../tune/memo';
+import { headline } from '../../economics/headline';
 import type { McResult } from '../../stress';
 import type { AssumptionBase } from '../assumptions';
 import type { DdDoc } from '../dd';
@@ -24,4 +25,4 @@ export const v = (id: string, label: string, format: string, unit: string, scope
 export const end = (c: Ctx) => { const ys = engineNow(c).years(); return ys[ys.length - 1]!; };
 /** Index of the last horizon year (legacy teEndYear() - 1). */
 export const endIdx = (c: Ctx): number => engineNow(c).years().length - 1;
-export const sumSav = (c: Ctx): number => engineNow(c).years().reduce((a, y) => a + y.savings, 0);
+export const sumSav = (c: Ctx): number => headline(c).totalBenefit;

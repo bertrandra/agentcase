@@ -1,6 +1,7 @@
 import { existsSync, readdirSync, readFileSync } from 'node:fs';
 import { describe, expect, it } from 'vitest';
-import { makeCtx, type CaseState } from '@/domain';
+import { makeCtx, model, type CaseState } from '@/domain';
+import { headline } from '@/domain/economics/headline';
 import { lifecycleAutoPosture, statusTable } from '@/domain/lifecycle';
 import { hubView } from '@/domain/tuneB/hub';
 import { aiActBar, aiActKey, qualBar, qualityView, qualKey, riskBar, riskImpact, riskProb, riskScore, RISK_REGISTER, wave2RiskPremium } from '@/domain/tuneB/risk';
@@ -49,8 +50,16 @@ describe.each(ids.filter(have))('tune B domain vs legacy oracle: %s', (id) => {
       probs: RISK_REGISTER.map((r) => [riskProb(c, r), riskImpact(c, r)]) }, e)).toEqual([]);
   });
   it('knowledge hub read-out', () => {
-    const h = hubView(c), e = extra('tuneBKnowledge', id);
-    expect(near({ on: h.on, asisScore: h.asisScore, asis: h.asisCC, tgt: h.target, mult: h.on ? h.mult : 1, dEff: h.dEff, dSav: h.dSav, kt: h.kt, hub: h.hubCost, effCap: h.effCap }, e)).toEqual([]);
+    const h = hubView(c), e = extra('tuneBKnowledge', id), three = model(c).horizon === 3;
+    const got = { on: h.on, asisScore: h.asisScore, asis: h.asisCC, tgt: h.target, mult: h.on ? h.mult : 1, dEff: h.dEff, dSav: h.dSav, kt: h.kt, hub: h.hubCost, effCap: h.effCap };
+    // DEV-HORIZON-SUMS: the legacy delta summed the three-entry yearSav whatever the horizon; v19 sums the horizon's years (equal at 3 years).
+    const { dSav: legacyDSav, ...rest } = e as Record<string, unknown>;
+    expect(near(got, three ? e : rest)).toEqual([]);
+    if (!three && h.on) {
+      const off = makeCtx({ ...c.s, dom: { ...c.s.dom, checked: { ...c.s.dom.checked, khEnabled: false } } }, { rateScale: c.rateScale, tokenScale: c.tokenScale });
+      expect(h.dSav).toBeCloseTo(headline(c).totalBenefit - headline(off).totalBenefit, 4);
+      expect(Number.isFinite(legacyDSav as number)).toBe(true);
+    }
   });
   it('lifecycle table and posture', () => {
     const e = extra('tuneBLifecycle', id), t = statusTable(c.s);

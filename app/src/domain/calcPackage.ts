@@ -1,4 +1,4 @@
-import { engineNow } from './canonical';
+import { caseDiscountRate, engineNow } from './canonical';
 import { makeCtx } from './ctx';
 import type { CaseState } from './types/state';
 
@@ -13,15 +13,12 @@ export interface CalcPackage {
   headline: PackageHeadline; annual: PackageYear[];
 }
 
-/** JSON has no Infinity: a non-finite number is stored as null so a round trip compares equal. */
-const fin = (n: number): number | null => (Number.isFinite(n) ? n : null);
-
 /** Build the package of a case from the live engine (legacy `teEngineNow().materialise()`, without the bulky monthly rows). */
 export function buildCalcPackage(state: CaseState): CalcPackage {
-  const e = engineNow(makeCtx(state)), h = e.headline();
+  const c = makeCtx(state), e = engineNow(c), h = e.headline(caseDiscountRate(c));
   return {
     schemaVersion: CALC_PACKAGE_SCHEMA, calculationVersion: e.K.calculationVersion, inputHash: e.K.inputHash, curveModelId: e.K.curveModelId,
-    headline: { payback: h.payback, npv: h.npv, roi: fin(h.roi), totalSavings: h.totalSavings },
+    headline: { payback: h.payback, npv: h.npv, roi: h.roi, totalSavings: h.totalSavings },
     annual: e.years().map((y) => ({ yearIndex: y.yearIndex, savings: y.savings, totalRunCost: y.totalRunCost, netAfterSetup: y.netAfterSetup, cumulativeCashFlowEnd: y.cumulativeCashFlowEnd })),
   };
 }

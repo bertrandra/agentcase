@@ -1,4 +1,7 @@
 import { describe, expect, it } from 'vitest';
+import { model } from '@/domain';
+import { headline } from '@/domain/economics/headline';
+import { fmtRoiPct } from '@/domain/economics/roi';
 import { ceilingCoverage, ddBase, ddRows, ddUse, ceilTarget, type DdRow } from '@/domain/pdc/dd';
 import { makeDefaultDoc } from '@/store/instance';
 import { calcChain } from '@/domain/pdc/verifChain';
@@ -36,8 +39,18 @@ describe('due-diligence domain reproduces the legacy register', () => {
     it.each(PDC_FIXTURES)('%s: the 16 checks, the calculation chain and the directional sensitivity', (id) => {
       const c = ctxOf(id), e = pdc<V>('pdc_verif', id);
       expect(verifChecks(c).map((x, i) => [String(i + 1), x.name, x.exp, x.got, x.ok ? '✓ OK' : '✗ GAP'])).toEqual(e.checks.slice(1));
-      expect(calcChain(c)).toEqual(e.chain.slice(1));
-      expect(directionalSensitivity(c).map((x) => [x.variation, x.expected, x.observed, x.ok === null ? 'n/a (at limit)' : x.ok ? '✓ Consistent' : '✗ Abnormal'])).toEqual(e.sensi.slice(1));
+      const sensi = directionalSensitivity(c).map((x) => [x.variation, x.expected, x.observed, x.ok === null ? 'n/a (at limit)' : x.ok ? '✓ Consistent' : '✗ Abnormal']);
+      if (model(c).horizon === 3) {
+        expect(calcChain(c)).toEqual(e.chain.slice(1));
+        expect(sensi).toEqual(e.sensi.slice(1));
+        return;
+      }
+      // DEV-HORIZON-SUMS: the legacy ROI / savings sums read the three-entry yearSav whatever the horizon; v19 sums the horizon's years.
+      const chain = calcChain(c);
+      expect(chain.slice(0, -1)).toEqual(e.chain.slice(1, -1));
+      expect(chain[chain.length - 1]![3]).toBe(fmtRoiPct(headline(c).roi));
+      expect(sensi.map((r) => [r[0], r[1]])).toEqual(e.sensi.slice(1).map((r) => [r[0], r[1]]));
+      expect(sensi.every((r) => r[3] !== '✗ Abnormal')).toBe(true);
     });
     it.each(PDC_FIXTURES)('%s: provenance tables and the convergence checks that exist in this build', (id) => {
       const c = ctxOf(id), e = pdc<V>('pdc_verif', id), p = provenance(c);

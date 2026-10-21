@@ -1,5 +1,5 @@
 import { enableEvl, setEvlStage } from '@/controllers/modelEvidence';
-import { mcsRunStore, runSimulationAsync } from '@/controllers/modelRun';
+import { mcsRunStore, runMcsAsync } from '@/controllers/modelRun';
 import { evlModel, EVL_STAGE_LABEL, EVL_STAGES } from '@/domain/model/evidence';
 import { useCtx } from '@/store/hooks';
 import { toast } from '@/ui/uiState';
@@ -19,7 +19,7 @@ const help = (
 /** P6 — evidence ledger: tier / source / as-of / owner per driver, the confidence grade and the upgrade path. */
 export default function ModelEvidenceSection() {
   const c = useCtx(), { last } = useMcsRun(), em = evlModel(c, last?.tornado ?? null);
-  const runP4 = () => { runSimulationAsync(500).then(() => { const l = mcsRunStore.getState().last; if (l) toast(`✓ P4 run · ${l.n} draws`); }).catch(() => toast('✕ Simulation failed')); };
+  const runP4 = () => { runMcsAsync(500).then(() => { const l = mcsRunStore.getState().last; if (l) toast(`✓ P4 run · ${l.n} draws`); }).catch(() => toast('✕ Simulation failed')); };
   return (
     <SectionFrame title="📋 Evidence ledger · P6 · v16.10 · cross-cutting" help={help}
       input={<>

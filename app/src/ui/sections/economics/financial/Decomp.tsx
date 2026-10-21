@@ -15,7 +15,7 @@ export function Decomp() {
   const n = b.years.length, last = b.years[n - 1] as SavingsYear, cells = (f: (y: SavingsYear) => number) => b.years.map((y) => fmtSigned(f(y)));
   const rows = [
     { key: 'g', label: <>{dot('#006e79')}Gross automation (heads removed × AS-IS rate)</>, cells: cells((y) => y.grossAuto) },
-    { key: 'a', label: <>{dot('#8F3237')}− Agent operating cost (tokens + infra + run team)</>, cells: b.years.map((y) => `-${fmtSigned(y.agentCost).replace('-', '')}`) },
+    { key: 'a', label: <>{dot('#8F3237')}− Agent operating cost (tokens + infra + run team)</>, cells: b.years.map((y) => fmtSigned(-Math.abs(y.agentCost))) },
     { key: 'r', label: <>{dot('#b04600')}Relocation (residual team × rate delta)</>, cells: cells((y) => y.relocation) },
     { key: 'n', label: '= Net automation', cells: cells((y) => y.netAuto), bold: true, rule: true },
     { key: 't', label: '= Total savings', cells: cells((y) => y.total), bold: true, rule: true },

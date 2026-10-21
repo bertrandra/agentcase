@@ -1,11 +1,12 @@
 import type { Ctx } from '../ctx';
-import { fmtRoiPct, roiCanonical } from '../economics/roi';
+import { headline } from '../economics/headline';
+import { fmtRoiPct } from '../economics/roi';
 import { model } from '../model/overlay';
 import { fmtE, fmtK } from './verifFormat';
 
 /** The calculation chain with the live value at each stage: [step, formula, calculation, result]. */
 export function calcChain(c: Ctx): string[][] {
-  const m = model(c), sav = m.yearSav.reduce((a, b) => a + b, 0), d = m.yearETP, rn = Math.round;
+  const m = model(c), d = m.yearETP, rn = Math.round;
   return [
     ['Input team', 'Σ fte', '—', `${m.base.etp.toFixed(1)} FTE`],
     ['AS-IS cost', 'Σ fte×rate×days', '—', `${fmtK(m.base.cost)}/yr`],
@@ -21,6 +22,6 @@ export function calcChain(c: Ctx): string[][] {
     ['Agentic run', 'FTE_AI×day rate×1.15×days', `${m.runAgenticETP.toFixed(1)} FTE`, fmtK(m.runAgenticCost)],
     ['Total run Y3', 'team+tokens+infra+runAI', '—', fmtK(m.yearRun[2]!)],
     ['Benefit Y3', 'baseline−run+KT−tax−ext', '—', fmtK(m.yearSav[2]!)],
-    ['ROI 3 years (net)', '(Σ benefits − Setup)/Setup', '—', fmtRoiPct(roiCanonical(sav - m.setupTotal, m.setupTotal))],
+    ['ROI 3 years (net)', '(Σ benefits − Setup)/Setup', '—', fmtRoiPct(headline(c).roi)],
   ];
 }

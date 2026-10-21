@@ -6,6 +6,7 @@ import { appStore } from '@/store/instance';
 import Story from '@/ui/sections/present/story-summary';
 import { legacyText, tablesOf } from '../../helpers/economics';
 import { missingNumbers, renderedText } from '../../helpers/parity';
+import { legacyMoney, legacyVelocityRow } from '../../helpers/deviations';
 import { loadCase, pdc, PDC_FIXTURES, sq } from '../../helpers/pdc';
 
 afterEach(cleanup);
@@ -16,14 +17,16 @@ describe('story-summary section', () => {
     loadCase(id);
     const { container } = render(<Story />), legacy = legacyText(id, 'story-summary');
     expect(legacy).not.toBeNull();
-    // ignore: 10 is the "§10" of the SM-SPEC reference inside the collapsed help text
-    expect(missingNumbers(legacy!, renderedText(container), [10])).toEqual([]);
+    // ignore: 10 is the "§10" of the SM-SPEC reference inside the collapsed help text; the legacy velocity % is the unclamped one (DEV-ANCHOR-CLAMP)
+    const velocity = parseInt(pdc<{ rows: string[][] }>('pdc_story', id).rows[2]![2]!, 10);
+    expect(missingNumbers(legacy!, renderedText(container), [10, velocity])).toEqual([]);
   });
   it.each(PDC_FIXTURES)('reproduces the legacy sentence and table (%s)', (id) => {
     loadCase(id);
     const { container } = render(<Story />), e = pdc<{ rows: string[][]; lead: string }>('pdc_story', id);
-    expect(tablesOf(container)[0]!.slice(1)).toEqual(e.rows);
-    expect(sq(container.querySelector('p')!.textContent!)).toBe(sq(e.lead));
+    const rows = e.rows.map((r, i) => (i === 2 ? [r[0]!, r[1]!, legacyVelocityRow(r[2]!)] : r).map(legacyMoney));
+    expect(tablesOf(container)[0]!.slice(1)).toEqual(rows);
+    expect(sq(container.querySelector('p')!.textContent!)).toBe(sq(e.lead.replace(/\+(\d+)%(?= delivery velocity)/, (m) => legacyVelocityRow(m))));
   });
   it('follows the case: a higher potential moves the savings line; undo restores it', () => {
     loadCase('golden');

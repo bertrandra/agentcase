@@ -1,3 +1,4 @@
+import { caseDiscountRate } from '../canonical';
 import type { Ctx } from '../ctx';
 import { makeInputs } from '../inputs';
 import { timeFor } from '../time';
@@ -5,15 +6,16 @@ import { econ } from '../time/kernel';
 import type { CaseState } from '../types/state';
 import { lceLoops } from './lce';
 import { MCS_DRIVER_ORDER, mcsBaseValue, mcsDrawOne, mcsMarginalBand, mcsSpec, type McsSample } from './mcsDrivers';
-import { clamp, mcsOf, numOr } from './modelState';
+import { mcsOf } from './modelState';
 import { mulberry32, quantile } from './numerics';
 import { activeCurve } from './overlay';
 import { modelRaw } from './raw';
 
 export interface McsStats { p10: number; p50: number; p90: number }
+/** `pSavNeg` = P(horizon-end-year savings < 0): a different quantity from the decision engine's P(net benefit < 0). */
 export interface McsResult {
   n: number; seed: number; rho: number;
-  stats: { savY3: McsStats; runY3: McsStats; npv: McsStats; paybackMonths: McsStats; pNeg: number };
+  stats: { savY3: McsStats; runY3: McsStats; npv: McsStats; paybackMonths: McsStats; pSavNeg: number };
   tornado: { id: string; label: string; lo: number; hi: number; swing: number }[];
   convergence: { n: number; p50: number }[];
 }
@@ -37,7 +39,7 @@ function drawCtx(c: Ctx, sample: McsSample): Ctx {
 /** One evaluation of the model on a sample: horizon-end savings and run cost, NPV at the case rate, payback (row-free pass over the kernel). */
 export function mcsEvaluate(c: Ctx, sample: McsSample) {
   const dc = drawCtx(c, sample), m = modelRaw(dc);
-  const d = clamp(numOr(dc.s.MODEL.CASE.discountRate, 0.08), 0, 1) / 12;
+  const d = caseDiscountRate(dc) / 12;
   const K = timeFor(dc, { mode: 'full', curveModelId: activeCurve(dc), model: m }).K;
   const N = K.horizonMonths, nY = K.horizonYears;
   let cum = 0, payback: number | null = null, npv = 0, sav = 0, run = 0;
@@ -82,5 +84,5 @@ export function runMcs(c: Ctx, nIn?: number, seedIn?: number): McsResult {
     if (marks.includes(i + 1)) convergence.push({ n: i + 1, p50: quantiles(sav.slice(0, i + 1)).p50 });
   }
   return { n, seed, rho, convergence, tornado: mcsTornado(c, bases),
-    stats: { savY3: quantiles(sav), runY3: quantiles(run), npv: quantiles(npv), paybackMonths: quantiles(pay), pNeg: sav.filter((v) => v < 0).length / n } };
+    stats: { savY3: quantiles(sav), runY3: quantiles(run), npv: quantiles(npv), paybackMonths: quantiles(pay), pSavNeg: sav.filter((v) => v < 0).length / n } };
 }

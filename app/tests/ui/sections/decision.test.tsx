@@ -50,7 +50,7 @@ describe('decision section', () => {
     render(<Decision />);
     act(() => { runSimulation(300); });
     const d = decision();
-    if (d.stats.pNeg > 0.2) expect(d.verdict).not.toBe('strong');
+    if (d.stats.pNetNeg > 0.2) expect(d.verdict).not.toBe('strong');
     expect(renderedText(document.body).replace(/\s+/g, ' ')).toContain(`${d.confidence} % confidence`);
   });
   it('an edit after the run marks the verdict stale (and re-runs it when auto is on)', () => {

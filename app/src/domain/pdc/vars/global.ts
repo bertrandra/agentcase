@@ -1,4 +1,5 @@
 import { npvCanonical, paybackMonthsCanonical } from '../../canonical';
+import { headline } from '../../economics/headline';
 import { savingsBreakdown } from '../../economics/savings';
 import { locationMix } from '../../location';
 import { modelOf as model } from '../../tune/memo';
@@ -15,7 +16,7 @@ export const GLOBAL_VARS = [
   v('runCostY3', 'Run cost, end-year', 'EUR_K', '€', 'GLOBAL', (c) => end(c).totalRunCost),
   v('grossAutoY3', 'Automation potential (gross auto value, end-year)', 'EUR_K', '€', 'GLOBAL', (c) => { const y = savingsBreakdown(c).years; return y[y.length - 1]!.grossAuto; }),
   v('paybackMonths', 'Payback', 'INT', 'months', 'GLOBAL', paybackMonthsCanonical),
-  v('roiPct', 'ROI (net, over horizon)', 'PCT', '%', 'GLOBAL', (c) => { const m = model(c); return m.setupTotal ? ((sumSav(c) - m.setupTotal) / m.setupTotal) * 100 : 0; }),
+  v('roiPct', 'ROI (net, over horizon)', 'PCT', '%', 'GLOBAL', (c) => (headline(c).roi ?? 0) * 100),
   v('npv8', 'NPV (case rate)', 'EUR_K', '€', 'GLOBAL', (c) => npvCanonical(c)),
   v('glassCeilingPct', 'Glass ceiling', 'PCT', '%', 'GLOBAL', (c) => c.inp.p('glassCeiling')),
   v('artefactsInScope', 'Artefacts in scope', 'INT', '', 'GLOBAL', (c) => phaseScope(c.a, c.s).count),
