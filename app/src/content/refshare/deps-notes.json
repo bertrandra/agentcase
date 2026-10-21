@@ -1,0 +1,6 @@
+{
+ "outside": "navigation and reference surfaces (🏠 Welcome, 📖 Glossary, 🗺️ Reference map, 📚 Sources, 🏛️ Architecture, 🔗 this page), configuration surfaces (👥 Persona management, 📊 Board, 📥 Import/Export, 🗂️ Sessions), the 🏭 Factory meta-model (a self-contained subsystem with its own entity graph), and the six 🧠 Model Engine phases — those are opt-in overlays that are byte-neutral until engaged, so they carry no edge at their shipped defaults.",
+ "provenance": "Nodes and rows derive from the section catalogue — a deleted section cannot appear here. Edges are stored in the case (SECTION_DEPS, with their descriptions in SECTION_DEPS_DESC) and edited on the Edit dependencies sub-tab; every edit is a command, so Ctrl+Z undoes it. This page documents the structure for readers: it does not drive any recompute.",
+ "buildOrderNote": "Read-only in this build. The proposal never changes the menu: applying a new group or section order is done in Persona management (Configure group), which owns the menu structure.",
+ "legend": { "strong": "strong (calculation input)", "soft": "soft (annotation / signal)" }
+}

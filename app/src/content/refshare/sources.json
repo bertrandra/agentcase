@@ -1,0 +1,22 @@
+{
+ "title": "Sources & Data",
+ "help": [
+ ["h3","📖 What this tab does"],
+ ["p","Traceability: the reference dataset (AgentCase_Classification_V2_EN.xlsx) and the external benchmarks behind the velocity/quality figures."],
+ ["h3","💡 Consistency guarantee"],
+ ["p","The 53 artifacts, 11 phases, 9 industries, grades and locations in this app are ",["strong","identical"]," to the Excel reference — same names, same supervision values. Edit the Excel and the structure stays aligned with this tool."],
+ ["h3","📚 What the model rests on"],
+ ["ul",["li",["strong","The classification reference"]," — 53 SDLC artefacts each classified by value category, owning skill, AI authority level and irreducible human supervision; 11 V-cycle phases; 11 industry profiles with their standards (DO-178C, ISO 26262, IEC 62304, MDR, DORA, SecNumCloud…); the skills catalogue; 13 grades; 7 locations. This is the structural backbone, not an illustration."],["li",["strong","The delivery-model referential"]," — ",["em","Software Engineering Delivery Model 2026"],", which defines the engagement contexts, maturity ladder, pod topology and commercial models. 🗺️ Reference Map tracks coverage of it chapter by chapter."],["li",["strong","Public benchmarks"]," — DORA for delivery metrics, published research for AI code-quality multipliers and pilot-to-production rates."]],
+ ["h3","⚖️ Provenance, stated honestly"],
+ ["p","The three tiers are not equally solid, and the app does not pretend otherwise. The ",["strong","artefact classification"]," is a curated reference. The ",["strong","public benchmarks"]," are citable. The ",["strong","embedded coefficients"]," — supervision-share factors, performance-realisation clamp, HRI ramp floor/slope — are explicitly recorded as ",["em","engineering estimates with no cited source"],", and 🧾 Due diligence lists every one of them for exactly that reason."],
+ ["h3","🎯 What this tab is for"],
+ ["p","When someone asks \"where does your 53-artefact model come from?\", this is the answer — and it also tells you what to hand over. Sending the classification reference alongside the case lets a client verify the structure independently rather than taking the tool's word for it."],
+ ["div",{"class":"note-green"},"A number in this app is only as good as its tier. Benchmarks are defensible in a room; engineering estimates need to be replaced by the client's own measurements during 🤝 Engage before they carry weight."]
+],
+ "body": [
+ ["div",{"class":"insight-box"},"Traceability: the model relies on the AgentCase_Classification_V2 reference and public benchmarks."],
+ ["div",{"class":"card"},["h4","📦 Loaded reference (AgentCase_Classification_V2_EN.xlsx)"],["p","53 classified SDLC artifacts (value, skill, irreducible human supervision) · 11 V-cycle phases · 9 industries with standards (DO-178C, ISO 26262, IEC 62304, MDR, DORA, SecNumCloud…) · skills catalogue (existing/agentic/regulatory) · 13 grades · 7 locations (Local/Nearshore/Offshore)."]],
+ ["div",{"class":"card"},["h4","📊 External benchmarks"],["p",["strong","DORA / Accelerate"]," (deployment frequency, lead time, MTTR) · ",["strong","Capgemini projects (internal delivery)"]," (S-curve 25→55→85%, defects, eNPS) · ",["strong","Pricing Claude Sonnet"]," (€0.8/1M input, €2.4/1M output) · ",["strong","Salaries"]," Payscale/Glassdoor/Eurostat 2024."]],
+ ["div",{"class":"card"},["h4","⚠️ To validate"],["p","The Rate Card day rates and the regulatory glass ceiling are assumptions to confirm with the client's finance and compliance teams before any binding use."]]
+]
+}
