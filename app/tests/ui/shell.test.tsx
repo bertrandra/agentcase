@@ -31,12 +31,14 @@ describe('shell zones', () => {
     expect(within(nav).getAllByRole('button')).toHaveLength(SECTIONS.length);
     expect(within(nav).getAllByRole('heading').length).toBeGreaterThan(8);
   });
-  it('persona changes are not undoable; navigation opens the section placeholder', () => {
+  it('persona changes are not undoable; navigation opens the section placeholder', async () => {
     render(<App />);
     fireEvent.change(screen.getByLabelText('Persona'), { target: { value: 'clientcase' } });
     expect(appStore().getState().history.undo).toHaveLength(0);
-    fireEvent.click(screen.getByRole('button', { name: /Scope|scope/i }));
-    expect(screen.getByRole('main').querySelector('h1')!.textContent).toMatch(/.+/);
+    fireEvent.click(screen.getByRole('button', { name: /^🎯 Scope$/ }));
+    expect((await screen.findByRole('heading', { level: 1, name: 'Scope — target artifact selection' }))).toBeTruthy();   // migrated section (lazy)
+    fireEvent.click(screen.getByRole('button', { name: /Welcome/ }));
+    expect(screen.getByRole('main').querySelector('h1')!.textContent).toMatch(/Welcome/);   // placeholder for a section not migrated yet
     expect(screen.getByRole('button', { current: 'page' })).toBeTruthy();
   });
   it('the KPI bar shows the computed case and follows edits', () => {
