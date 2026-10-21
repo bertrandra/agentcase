@@ -17,13 +17,18 @@ interface Props {
   onShiftColumn?: (group: string, dir: -1 | 1) => void;
   onDouble?: (id: string) => void;
   canDrag?: (s: NavSection) => boolean;
+  /** where the dragged card would land if dropped now (null when nothing is hovered): lets a caller preview the move without committing it */
+  onPending?: (p: { id: string; group: string; index: number } | null) => void;
 }
 
 /** Group columns of section cards. Cards move by drag and drop or with the arrow buttons; the caller turns a move into a command. */
-export function Board({ label, cols, colors, cardClass, cardExtra, onDrop, onShift, onShiftGroup, onShiftColumn, onDouble, canDrag }: Props) {
+export function Board({ label, cols, colors, cardClass, cardExtra, onDrop, onShift, onShiftGroup, onShiftColumn, onDouble, canDrag, onPending }: Props) {
   const [drag, setDrag] = useState<string | null>(null), [over, setOver] = useState<string | null>(null);
+  const at = (cards: NavSection[], before: string | null) => { const rest = cards.filter((c) => c.id !== drag), i = before ? rest.findIndex((c) => c.id === before) : -1; return i < 0 ? rest.length : i; };
+  const hover = (group: string, cards: NavSection[], before: string | null) => { setOver(group); if (drag) onPending?.({ id: drag, group, index: at(cards, before) }); };
+  const clear = () => { setDrag(null); setOver(null); onPending?.(null); };
   const drop = (group: string, cards: NavSection[], before: string | null) => {
-    const id = drag; setDrag(null); setOver(null);
+    const id = drag; clear();
     if (!id) return;
     const rest = cards.filter((c) => c.id !== id), at = before ? rest.findIndex((c) => c.id === before) : -1;
     onDrop(id, group, at < 0 ? rest.length : at);
@@ -32,7 +37,7 @@ export function Board({ label, cols, colors, cardClass, cardExtra, onDrop, onShi
     <div className="ac-nboard" role="list" aria-label={label}>
       {cols.map(({ group, cards }) => (
         <div key={group.id} role="listitem" aria-label={group.label} data-group={group.id} className={`ac-ncol${over === group.id ? ' is-over' : ''}`} style={{ borderTopColor: groupColor(colors, group.id) }}
-          onDragOver={(e) => { e.preventDefault(); setOver(group.id); }} onDragLeave={() => setOver(null)} onDrop={(e) => { e.preventDefault(); drop(group.id, cards, null); }}>
+          onDragOver={(e) => { e.preventDefault(); hover(group.id, cards, null); }} onDragLeave={() => { setOver(null); onPending?.(null); }} onDrop={(e) => { e.preventDefault(); drop(group.id, cards, null); }}>
           <div style={{ display: 'flex', gap: 4, alignItems: 'center', fontWeight: 700, color: textColor(groupColor(colors, group.id), '#f7f9fc') }}>
             {onShiftColumn && <button type="button" className="ac-btn" aria-label={`Move the group ${group.label} left`} onClick={() => onShiftColumn(group.id, -1)}>◀</button>}
             <span style={{ flex: 1 }}>{group.label} <small className="ac-muted">({cards.length})</small></span>
@@ -41,7 +46,7 @@ export function Board({ label, cols, colors, cardClass, cardExtra, onDrop, onShi
           {cards.length === 0 && <p className="ac-muted" style={{ textAlign: 'center', fontStyle: 'italic' }}>drop here</p>}
           {cards.map((s) => (
             <div key={s.id} data-section={s.id} className={`ac-ncard ${cardClass?.(s) ?? ''}`} draggable={canDrag ? canDrag(s) : true} style={{ borderLeftColor: groupColor(colors, group.id) }}
-              onDragStart={(e) => { setDrag(s.id); e.dataTransfer?.setData('text/plain', s.id); }} onDragEnd={() => { setDrag(null); setOver(null); }}
+              onDragStart={(e) => { setDrag(s.id); e.dataTransfer?.setData('text/plain', s.id); }} onDragEnd={clear} onDragOver={(e) => { e.preventDefault(); e.stopPropagation(); hover(group.id, cards, s.id); }}
               onDrop={(e) => { e.preventDefault(); e.stopPropagation(); drop(group.id, cards, s.id); }} onDoubleClick={() => onDouble?.(s.id)}>
               <strong>{s.label}</strong>
               <div className="ac-muted" style={{ fontSize: 10 }}><code>{s.id}</code> · seq {s.groupSeq || 0}</div>
