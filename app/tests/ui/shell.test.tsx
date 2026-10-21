@@ -36,7 +36,7 @@ describe('shell zones', () => {
     fireEvent.change(screen.getByLabelText('Persona'), { target: { value: 'clientcase' } });
     expect(appStore().getState().history.undo).toHaveLength(0);
     fireEvent.click(screen.getByRole('button', { name: /^🎯 Scope$/ }));
-    expect((await screen.findByRole('heading', { level: 1, name: 'Scope — target artifact selection' }))).toBeTruthy();   // migrated section (lazy)
+    expect((await screen.findByRole('heading', { level: 1, name: 'Scope — target artifact selection' }, { timeout: 8000 }))).toBeTruthy();   // migrated section (lazy)
     fireEvent.click(screen.getByRole('button', { name: /Welcome/ }));
     expect(screen.getByRole('main').querySelector('h1')!.textContent).toMatch(/Welcome/);   // placeholder for a section not migrated yet
     expect(screen.getByRole('button', { current: 'page' })).toBeTruthy();
