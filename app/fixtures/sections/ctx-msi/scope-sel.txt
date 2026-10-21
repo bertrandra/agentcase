@@ -1,0 +1,56 @@
+Scope — target artifact selection
+DRIVES
+?
+🎯 Scope — target artifact selection
+Select the individual artifacts (grouped by phase) included in the scenario. By default, all are included. Tick a phase header to toggle all its artifacts, or pick a few target artifacts. The input team is treated as dedicated to the selected scope — so automation depth is driven by the selected artifacts' automatable average (the Target automation potential auto-fits to it, editable on the Parameters tab), not diluted by the scope's share of the whole lifecycle. Selection cascades across every tab — team reduction, costs, vFTE, ROI, KPI, compliance and the performance (productivity, velocity, quality).
+Select all
+Clear all
+Show selected only
+In scope : 10/53 SDLC art. · 28% effort · 3/11 ph.
+V1 Specification×1.10
+seq
+3/6
+Requirements / NFR
+55% auto · w4.4 ×1.10
+User stories / backlog
+70% auto · w4.4 ×1.10
+Traceability matrix
+80% auto · w3.3 ×1.10
+V3 Implementation×1.30
+seq
+3/5
+Source code
+75% auto · w13.0 ×1.30
+Code review
+55% auto · w6.5 ×1.30
+Inline documentation
+90% auto · w3.9 ×1.30
+V4 Verification×1.20
+seq
+4/4
+Unit test plan
+60% auto · w4.8 ×1.20
+Unit test cases
+80% auto · w8.4 ×1.20
+Test code / mocks
+90% auto · w9.6 ×1.20
+Coverage report
+95% auto · w2.4 ×1.20
+🎚️ Adjust % auto & effort weight per artifact — full catalogue, filtered by phase (click to expand)
+🧊 Glass ceiling & automation potential — impact by phase — where human supervision holds automation back (click to collapse)
+75%
+Automation potential
+25%
+Glass ceiling
+62%
+Max depth reached
+Each bar = the points of glass ceiling a phase contributes (the bars add up to 25.0 pts). The redder the bar, the more that phase holds automation back. Click a row for its biggest blockers.
+Implementation
++10.8 pts
+28% human · 39% of effort
+Verification
++7.7 pts
+19% human · 42% of effort
+Specification
++6.5 pts
+33% human · 20% of effort

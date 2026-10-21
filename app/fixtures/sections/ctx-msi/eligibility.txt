@@ -1,0 +1,120 @@
+🎯 Eligibility & Abaques
+EV-13/15/27 · v13.7
+DRIVES
+?
+Wave 1 of delivery-model convergence: the eligibility gate (six prerequisites + red-flag screening), the use-case pillar × SDLC potential matrix (where to deploy agents first), and the Abaque A / Abaque B reconciliation with an explicit verification tax — the human review effort that turns addressable gain into net gain. All defaults are neutral, so the base case is unchanged until you engage them.
+Project eligibility — go / no-go EV-15
+DELIVERY NATURE
+Standard (APPS-like)
+Embedded / firmware
+Critical / safety
+Sovereign / air-gap
+CODEBASE SIZE (KLOC)
+Prerequisite (gate)	Status
+Agent-accessible platform (API / MCP) critical	
+Met
+Partial
+Not met
+
+Mastered tech & standard architecture critical	
+Met
+Partial
+Not met
+
+Clear & stable specifications critical	
+Met
+Partial
+Not met
+
+Bounded scope (< 500k LoC) critical	
+Met
+Partial
+Not met
+
+Open & collaborative client	
+Met
+Partial
+Not met
+
+Committed qualified resources	
+Met
+Partial
+Not met
+GO — eligible
+Reference 1.2: six prerequisites + red-flag legacy screening. A large critical legacy can stay eligible per task without being eligible globally. The verdict annotates Decision Intelligence (CC-ELIG-01).
+Use-case pillar × SDLC potential = product profile × 12 phases EV-13
+PRODUCT PROFILE (shared with Product status)
+Greenfield
+Feature add
+Maintenance
+Modernisation
+Apply pillar leverage to the Abaque reconciliation
+Profile \ Phase	L0	V1	V2	V3	V4	V5	V6	V7	L8	L9	L10	X
+Greenfield	Strong
+(1.30)	Strong
+(1.30)	Strong
+(1.30)	Strong
+(1.20)	Strong
+(1.00)	Strong
+(1.00)	Strong
+(1.00)	Strong
+(0.90)	Medium
+(0.70)	Cautious
+(0.30)	Cautious
+(0.10)	Strong
+(1.00)
+Feature add ◀	Strong
+(0.90)	Strong
+(1.10)	Strong
+(1.10)	Strong
+(1.30)	Strong
+(1.20)	Strong
+(1.20)	Strong
+(1.10)	Strong
+(1.00)	Strong
+(1.00)	Medium
+(0.70)	Cautious
+(0.20)	Strong
+(1.00)
+Maintenance	Cautious
+(0.50)	Medium
+(0.70)	Medium
+(0.70)	Strong
+(0.90)	Strong
+(1.00)	Strong
+(1.00)	Strong
+(1.00)	Strong
+(1.00)	Strong
+(1.10)	Strong
+(1.30)	Cautious
+(0.50)	Strong
+(1.00)
+Modernisation	Cautious
+(0.20)	Cautious
+(0.40)	Cautious
+(0.40)	Medium
+(0.60)	Medium
+(0.60)	Medium
+(0.60)	Medium
+(0.70)	Medium
+(0.80)	Strong
+(0.90)	Strong
+(1.30)	Strong
+(0.90)	Strong
+(1.00)
+Reference 1.2 potential matrix (Strong / Medium / Cautious). It tells where to deploy agents first. Analytical only — tick the box above to apply it to the Abaque reconciliation.
+Abaque A / Abaque B — addressable → net gain EV-27
+VERIFICATION-TAX BASE (×HUMAN SUP.)
+VERIFICATION-TAX HARD CAP
+Deduct the verification tax from savings (feeds the economics)
+TAX MODE
+Case 1 — Overlay: on top of retained supervision
+Case 2 — Net of retained supervision (precise)
+Net gain per phase = Abaque A (addressable) × Abaque B (maturity capture at L3 = 63%) − verification tax. Reference 6.1: this is what separates addressable from the ~10% net productivity paradox.
+Phase	Abaque A	Pillar	Captured (×B)	Verif. tax	Net gain
+V1 Specification (Plan / Analyse)	13%	—	8%	—	8%
+V3 Implementation (Coding)	45%	—	28%	—	28%
+V4 Verification (Test)	50%	—	31%	—	31%
+Verification tax — rate 0% of gross saving · informative only — tick the box above to feed it into the economics.
+Case 1 — Overlay: on top of retained supervision (conservative). Rate = base 30% × avg human supervision 25% = 8% of the gross saving (€50K/yr at Y3), deducted in addition to the supervision effort already retained in the run — a deliberate prudence cushion that partially overlaps the retained review cost (for comparison, Case 2 would deduct 5% = €33K/yr).
+CC-ABQ-01: net gain never exceeds the Abaque A addressable ceiling. CC-ABQ-02: with the tax applied, net saving ≤ gross saving.

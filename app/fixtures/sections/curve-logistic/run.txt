@@ -1,0 +1,21 @@
+Agentic Run — Recurring costs
+RECURRING
+READS
+?
+Recurring costs: residual team + agentic run (AI Eng, FinOps, AI-QA) + tokens + infra. Contextual to the team model.
+RUN Y1
+€1,436K
+RUN Y2
+€1,189K
+RUN Y3
+€877K
+CUMULATIVE RUN
+€3,502K
+Team (dev+supervision)
+Agentic run (AI team)
+Tokens
+Infrastructure
+Year	Ramp	Team FTE	Team cost	Agentic run	Tokens	Infra	Total Run
+Y1	20%	12.7	€1,266K	€83K	€4,875	€6,000	€1,436K
+Y2	61%	8.1	€952K	€137K	€18,419	€6,000	€1,189K
+Y3	91%	4.8	€554K	€206K	€35,556	€6,000	€877K

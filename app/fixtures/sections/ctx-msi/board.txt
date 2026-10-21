@@ -1,0 +1,27 @@
+📊 Board
+SUPPORTS
+?
+Configuration surface for operator-created dynamic sections — the Board holds no cards of its own. Generate a dashboard from one or more menu groups below, then bind its cards and body rows to live variables from its ⚙️ Configure panel. Each dynamic section gets its own tab and displays its own results.
+🧩 Dynamic sections
+📚 Variable catalog
+Dynamic sections
+Pick a group, several, or all — cards generate from those sections' own bindable variables (🗄️ Data Model → 📊 Variable registry), two per section that owns any, plus two GLOBAL headline cards.
+All groups 
+1 · Frame
+2 · Baseline
+3 · Scope
+4 · Tune
+5 · Verify
+6 · Economics
+7 · Stress
+8 · Verdict
+9 · Defend
+10 · Present
+🏛️ REFERENCE & SHARE
+🔧 CONFIGURE
+🏭 FACTORY
+🧠 Model Engine
+➕ Generate dashboard
+Each generated dashboard is a first-class section: its own tab, editable cards and rows, behaves exactly like a built-in section. Its menu group (📄 Sections table in Persona management) is separate from the group(s) it was generated FROM; cards and body rows are configured here (⚙️ Configure) — the section's own tab only displays results.
+Section	Group	Cards	Rows	
+No dynamic sections yet.

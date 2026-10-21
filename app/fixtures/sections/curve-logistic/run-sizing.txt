@@ -1,0 +1,39 @@
+🤖 Agentic run-team sizing
+DRIVES
+?
+How the agentic run team (AgentOps: AI engineering, FinOps, AI-QA) is sized and costed. This team operates the agent platform — it is distinct from the human supervision of agent output, which lives inside the residual project team and already scales down with automation.
+Sizing policy
+MODE
+Hybrid — floor + per-agent (default)
+Legacy — fixed on base-team size
+PLATFORM FLOOR MIN (FTE)
+PLATFORM FLOOR (% OF BASE TEAM)
+OPS LOAD PER AGENT VFTE
+	Year 1	Year 2	Year 3
+Agent vFTE	2.29	6.91	10.22
+Run team (FTE)	0.94	1.64	2.13
+Run team cost	€82,981	€137,234	€205,883
+Agents per run FTE	2.4	4.2	4.8
+Live on the current scenario (automation 75.0%). Change the sliders in Parameters and this table follows.
+Human supervision share v18.7
+Not the AgentOps team above — this splits the residual project team (the humans this transformation leaves in place) into people who still deliver vs. people who supervise agent output. Same "Target Team" breakdown shown on the Team-out tab.
+SUPERVISION SHARE CAP
+SUPERVISION SHARE FACTOR
+→ 4.2 dev + 0.6 supervision FTE (of 4.8 residual, Y3)
+supShare = min(cap, avg. human supervision × factor). Also editable from the Due-diligence register — both controls share the same value.
+Display-only coefficients no € path
+Two more literals surfaced by the hardcoded-parameter audit. Both terminate in a display label — moving them does not change savings, run cost or NPV.
+AGENT CAPACITY FACTOR ×
+AI-FINOPS (FLAT FTE)
+Agent capacity factor scales the "(indicative)" agent-capacity read-out only (Team-out tab) — it is deliberately isolated from vFTE/savings by design. AI-FinOps is one illustrative row inside the Agentic Run team breakdown (Team-out and Agent-detail tabs).
+How it works — and why
+
+Hybrid (default): run FTE(year) = platform floor + agent vFTE(year) × ops load, where the floor = max(floor min, base team × floor %) and applies only while at least one agent is deployed.
+
+Platform floor — as soon as one agent runs, a minimal platform exists: prompt/version CI-CD, observability, guardrails, incident response. It does not depend on how many agents run.
+Per-agent ops load — each deployed agent vFTE adds monitoring, evaluation, cost tracking and maintenance. 0.15 FTE per agent ≈ one run engineer for 6–7 agents: frugal by design, which is precisely the economic argument of agentic delivery.
+At zero automation the cost is zero — no agents, no platform, no AgentOps, and (in hybrid mode) no agent infrastructure either: the infra line is charged only in years where agents exist. The ROI near 0% automation is therefore honest: only the setup remains at stake.
+
+Legacy mode keeps the pre-v12.26 behaviour — a fixed team of max(0.5, base × 10% + 0.5) FTE regardless of automation level — for comparability with earlier business cases. Its known limitation: it charges a full run team (~€244k for a 15-FTE base) even at 0% automation, which distorts the low-automation end of the curve.
+
+The run team is priced at the target-location blended day rate × 1.15 (AI-skills premium) × working days, and scaled by the strategy run-team factor where applicable. All three coefficients are consulting benchmarks — validate them against the client's platform maturity and agent portfolio.

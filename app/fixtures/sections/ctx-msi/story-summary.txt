@@ -1,0 +1,14 @@
+📖 The story so far — AS-IS → TO-BE
+SUPPORTS
+?
+The guided sequence's own close: one page, baseline vs target, across team, cost, delivery and confidence. Distinct from the detailed AS-IS vs TO-BE comparison tab — this is the narrative summary, not the row-by-row breakdown (Story Mode, SM-SPEC v0.1 §10 Q4).
+
+This case moves the team from 15.0 FTE to 9.3 FTE by Y3, at +74% delivery velocity, saving €672K in Y3 with a payback of 8 months.
+
+	AS-IS	TO-BE (Y3)
+Headcount (FTE)	15.0	9.3
+Run cost / yr	€1,769K	€1,101K
+Delivery velocity	baseline	+74%
+Y3 savings	—	€672K
+Payback	—	8 mo
+Confidence grading available once the ⚙️ Modelling Engine's P6 evidence ledger is enabled.

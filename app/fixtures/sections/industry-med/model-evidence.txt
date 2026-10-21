@@ -1,0 +1,61 @@
+📋 Evidence ledger
+P6 · v16.10 · cross-cutting
+SUPPORTS
+?
+Tags the provenance of the 7 drivers P4 already quantifies the influence of, grades the whole case's confidence (A–D) weighted by that influence, benchmarks the grade against the case's own stage, and ranks which assumption is worth instrumenting first. Converts the business case from a one-shot artifact into a living instrument re-openable at every gate. (AME-SPEC v0.2, P6)
+Enable P6
+CASE STAGE
+Qualification
+Investment approval
+Gate review
+▶ Run P4 for real weights
+Phase OFF - purely a report; nothing here feeds a euro figure.
+Case confidence
+D
+score 25%
+Expected at Qualification: grade C or better.
+Below expectation - see the upgrade path below, not a blocker.
+Using equal weighting - no P4 run yet, so this is a placeholder, not a considered grade.
+Driver evidence tiers weight = P4 tornado influence
+Driver	Weight	Tier	Source	As of	Owner
+Acceptance rate (P1)	14%	
+ASSUMPTION
+BENCHMARK
+MEASURED
+			
+Year-1 ramp	14%	
+ASSUMPTION
+BENCHMARK
+MEASURED
+			
+Year-2 ramp	14%	
+ASSUMPTION
+BENCHMARK
+MEASURED
+			
+Year-3 ramp	14%	
+ASSUMPTION
+BENCHMARK
+MEASURED
+			
+Loaded day rate (blended)	14%	
+ASSUMPTION
+BENCHMARK
+MEASURED
+			
+Supervising capacity (P3)	14%	
+ASSUMPTION
+BENCHMARK
+MEASURED
+			
+Token unit price	14%	
+ASSUMPTION
+BENCHMARK
+MEASURED
+			
+A MEASURED tier without a source, or with an as-of date older than 18 months, is used as BENCHMARK for the grade above (CC-EV-02) - it is not silently accepted.
+Upgrade path - worth instrumenting first
+Acceptance rate (P1) - weight 14%, currently ASSUMPTION
+Year-1 ramp - weight 14%, currently ASSUMPTION
+Year-2 ramp - weight 14%, currently ASSUMPTION
+Ranked by weight × gap-to-MEASURED - the natural scope of a follow-on measurement engagement, not invented for the proposal.

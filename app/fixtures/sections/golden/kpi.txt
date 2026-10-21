@@ -1,0 +1,37 @@
+KPI Scorecard — AS-IS vs end of transformation
+SUPPORTS
+?
+Consolidated dashboard: initial state (input team) vs Y3 target. Economic KPIs driven by your parameters.
+HEADCOUNT (FTE)
+15.0 → 6.0
+-60%
+RUN COST/YR
+€1,769K → €886K
+-50%
+LEAD TIME
+21d → 1.0d
+-95%
+SAVINGS Y3
+€892K
+-50% of baseline run
+💰 Economic & Capacity KPIs
+Metric	AS-IS	Y3	Change
+Headcount (FTE)	15.0	6.0	-60%
+Run cost/yr	€1,769K	€886K	-50%
+Freed capacity	0	9.0 FTE	+9.0
+Effective automation	0%	75%	+75pp
+Throughput/eng/mo	63	208	+230%
+⚡ Velocity & Quality KPIs
+Metric	AS-IS	Y3	Change
+Velocity (SP/sprint)	35	59	+69%
+Lead time	21d	1.0d	-95%
+Bugs/1000 LOC	2.0	0.4	-80%
+Test coverage	60%	90%	+30pp
+Defect leakage %	10%	3.0%	-70%
+eNPS	+27	+55	+28pp
+🔐 Compliance KPIs
+Metric	AS-IS	Y3	Change
+Glass ceiling	100% manual	25%	-75pp auto
+Reg. artifacts assisted	0/0	0/0	+75%
+Traceability	Manual	Auto 95%	+50pp
+Audit trail	Partial	Complete	Reinforced

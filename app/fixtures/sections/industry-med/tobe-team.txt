@@ -1,0 +1,114 @@
+👥 TO-BE team composition (by skill)
+READS
+?
+Derives the target team from the artefact allocation: each artefact's effective effort (base × lifecycle) is split into a residual human FTE and an agent vFTE using its automatable share, then aggregated by skill. The split honours the model's automation depth and ramp, and the totals reconcile exactly to the aggregate yearETP / yearAgentVfte.
+Residual human FTE and agent vFTE by skill, decomposed from the aggregate model. Σ reconciles to yearETP / yearAgentVfte.
+Year 1 Year 2 Year 3
+Skill	AS-IS FTE	TO-BE Human FTE	TO-BE Agent vFTE	Human Δ	Auto %
+Analysis/PO	1.25	0.40	0.85	-0.85	68%
+Clinical Affairs	8.73	6.57	2.16	-2.16	25%
+Dev	3.41	0.76	2.66	-2.66	78%
+Test/QA	1.61	0.37	1.24	-1.24	77%
+TOTAL	15.00	8.10	6.90	-6.90	46%
+Reconciliation (Year 3): Σ human = 8.10 vs model human FTE = 8.10 · Σ agent vFTE = 6.90 vs model agent vFTE = 6.90
+🌍 TO-BE target location split (per skill)
+Distribute each skill's residual human FTE across locations for the TO-BE target (Year 3). Default = current AS-IS mix; edit to model relocation. Rows should total 100%.
+Skill	France	Portugal	Poland	Morocco	Egypt	China	India	Σ
+Analysis/PO								100%
+Clinical Affairs								100%
+Dev								100%
+Test/QA								100%
+↺ Reset split to AS-IS mix
+RESULTING TO-BE HUMAN TEAM BY LOCATION (YEAR 3)
+Location	Human FTE	Indic. annual cost
+France Local	8.10	1,166,999 €
+TOTAL	8.10	1,166,999 €
+Indicative human cost = FTE × AS-IS grade mix priced at the target location × 220 workdays. Agent vFTE is costed separately (tokens + run team). Editable benchmark.
+Artefact-skill → team-skill mapping
+Artefacts carry fine-grained skill labels; the team is planned in a smaller set of skills. This editable map aligns the two. Amber = edited vs default.
+Artefact skill		Team skill	Phase / artefact
+Analysis/PO	→	
+Analysis/PO
+Arch/Design
+Audit / Certification
+Clinical Affairs
+Dev
+Functional Safety
+Lead
+Ops/Run
+Regulatory Affairs
+Sec/Quality
+Software Quality Assurance (SQA)
+Test/QA
+	
+Specification / Requirements / NFR
+Specification / Traceability matrix
+
+Dev	→	
+Analysis/PO
+Arch/Design
+Audit / Certification
+Clinical Affairs
+Dev
+Functional Safety
+Lead
+Ops/Run
+Regulatory Affairs
+Sec/Quality
+Software Quality Assurance (SQA)
+Test/QA
+	
+Implementation / Source code
+Implementation / Code review
+Implementation / Inline documentation
+
+Dev/Test	→	
+Analysis/PO
+Arch/Design
+Audit / Certification
+Clinical Affairs
+Dev
+Functional Safety
+Lead
+Ops/Run
+Regulatory Affairs
+Sec/Quality
+Software Quality Assurance (SQA)
+Test/QA
+	
+Verification / Test code / mocks
+
+PO	→	
+Analysis/PO
+Arch/Design
+Audit / Certification
+Clinical Affairs
+Dev
+Functional Safety
+Lead
+Ops/Run
+Regulatory Affairs
+Sec/Quality
+Software Quality Assurance (SQA)
+Test/QA
+	
+Specification / User stories / backlog
+
+Test/QA	→	
+Analysis/PO
+Arch/Design
+Audit / Certification
+Clinical Affairs
+Dev
+Functional Safety
+Lead
+Ops/Run
+Regulatory Affairs
+Sec/Quality
+Software Quality Assurance (SQA)
+Test/QA
+	
+Verification / Unit test plan
+Verification / Unit test cases
+Verification / Coverage report
+↺ Reset mapping to defaults

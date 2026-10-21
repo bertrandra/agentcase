@@ -1,0 +1,47 @@
+🏠 Welcome to AgentCase
+SUPPORTS
+?
+Each card below opens a group of the case — start anywhere or work through them top to bottom, and the full menu is always one click away on the left.
+1 · Frame
+4
+What kind of engagement is this? Do this first — industry decides which artefacts exist to scope.
+1 · Frame →
+2 · Baseline
+3
+What is true today. Every euro in the case is a delta from this.
+2 · Baseline →
+3 · Scope
+5
+What the transformation actually covers — the largest lever after Parameters.
+3 · Scope →
+4 · Tune
+9
+What we are assuming about the agentic system itself.
+4 · Tune →
+5 · Verify
+6
+Nothing here is editable in a way that moves the number. It exists so you catch a bad input before it reaches Financial.
+5 · Verify →
+6 · Economics
+4
+What it costs and what it returns.
+6 · Economics →
+7 · Stress
+4
+How fragile is it?
+7 · Stress →
+8 · Verdict
+3
+What the recommendation actually is.
+8 · Verdict →
+9 · Defend
+3
+The difference between a model and an argument. Skip this and the case is a number without a provenance.
+9 · Defend →
+10 · Present
+3
+How the client sees it.
+10 · Present →
+📖 Delivery-model glossary — 96 terms now inside AgentCase
+The complete vocabulary of the Software Engineering Delivery Model 2026, categorised and mapped term-by-term to this tool.
+Open the glossary →

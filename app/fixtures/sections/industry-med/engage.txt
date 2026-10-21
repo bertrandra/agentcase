@@ -1,0 +1,44 @@
+🤝 Engage — starting early with the client
+DRIVES
+?
+Engage early, commit progressively. The weeks below are the runway you spend alongside the client before scaling: frame the baseline (Discover), freeze the scope and coefficients (Calibrate), sign the assumptions (Validate), then prove the numbers on real pods (Pilot & Prove). Measurement precedes commitment — nothing scales until the pilot clears its gate.
+⏱️ Onboarding stage durations
+How long each client-facing stage runs, in weeks. They are consecutive: the transformation start date (set in 📊 S-curve) plus these four stages gives the date the scale-out decision is taken.
+DISCOVER (WK)
+CALIBRATE (WK)
+VALIDATE (WK)
+PILOT & PROVE (WK)
+DISPLAY DISCOVER/CALIBRATE/VALIDATE/PILOT & PROVE IN GANTT/TIMELINE
+RUNWAY TO DECISION
+18 wk
+≈ IN MONTHS
+4.1 mo
+PILOT & PROVE STARTS
+2026-11-24
+DECIDE & SCALE
+2027-01-05
+🗺️ Engagement roadmap & gates
+The five gated stages on the calendar, from the start date. Each card shows its window and the gate that must clear before the next stage opens — click a stage to jump to the section that produces its evidence.
+0 · Discover
+Framing, AS-IS baseline, eligibility
+2026-09-01 → 2026-09-29
+Gate: Baseline validated + eligibility
+1 · Calibrate ◀ now
+Sector coefficients, artifact scope frozen
+2026-09-29 → 2026-10-27
+Gate: Scope & coefficients frozen
+2 · Validate
+Assumptions signed, Monte Carlo run
+2026-10-27 → 2026-11-24
+Gate: Assumptions register signed · P50 > threshold
+3 · Pilot & Prove
+Pilot pods, KPI tracking
+2026-11-24 → 2027-01-05
+Gate: Pilot KPIs ≥ 80% of Y1 targets
+4 · Decide & Scale
+Scale-out per Decision Intelligence
+2027-01-05 → open
+Gate: Verdict ≥ Conditional GO
+📈 Plan vs actual — quarterly tracking
+▸ Show tracker
+Record what actually happened each quarter against what the case predicted. Hidden by default — it only earns its place once delivery is under way.

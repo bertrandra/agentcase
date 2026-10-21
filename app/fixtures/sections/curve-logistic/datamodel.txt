@@ -1,0 +1,30 @@
+🗄️ Data Model
+v18.8
+SUPPORTS
+?
+Four live tables read directly off the app's own registries: 📄 the section catalogue, 💾 what persists, 📊 what can be bound to a KPI card, and ⚙️ the tunable coefficients & model-engine namespaces. Nothing here is hardcoded — reload after any code change and the tables follow.
+79 sections
+84 persisted state keys
+166 bindable variables
+13 coefficients · 10 model namespaces
+🧭 Overview
+📄 Sections
+💾 State registry
+📊 Variable registry
+⚙️ Coefficients & namespaces
+The four layers
+Click a card to jump to its table. Together they answer four different questions: what exists (Sections), what survives a reload (State), what a dashboard can display (Variables), and what small numbers actually drive the maths (Coefficients & namespaces).
+79
+📄 Sections
+Every tab in the app — what exists, which menu group it lives in, and its build-path tag.
+84
+💾 State registry
+What actually persists — snapshot save/restore, autosave, Excel. Missing from here = lost on reload.
+166
+📊 Variable registry
+Named, formatted, bindable outputs a KPI card or Board tile can point at instead of a hand-wired getter.
+13 + 10
+⚙️ Coefficients & namespaces
+The small tunable constants embedded in the maths, and the MODEL namespaces holding everything not a per-section input.
+Sections by build-path tag: drives × 22reads × 13shapes × 1supports × 42supports,shapes × 1
+All counts on this page are computed at render time from the live registries — reload after any code change and they follow. See the ? panel above for how a value moves between these four layers.

@@ -1,0 +1,22 @@
+🏛️ Industry / regulatory profile
+DRIVES
+?
+INDUSTRY / REGULATORY PROFILE
+None (no regulatory)
+AERO — Aerospace-Defense-Space (69 reg. art.)
+MED — Medical (MD / IVD) (61 reg. art.)
+AUTO — Automotive (35 reg. art.)
+RAIL — Railway (CENELEC) (23 reg. art.)
+ENERGY — Energy / Industry / OT (38 reg. art.)
+BFI — Banking-Finance (28 reg. art.)
+PUBLIC — Public / Sovereign (EU) (31 reg. art.)
+PHARMA — Pharma / Life sciences (GxP) (21 reg. art.)
+AI — Cross-cutting AI (all industries) (18 reg. art.)
+USABILITY — Usability / Human-centred design (22 reg. art.)
+SUSTAINABILITY — Sustainability / ESG (24 reg. art.)
+🏛️ Use Regulatory catalog
+🧩 Cross-cutting concerns
+Independent of the industry — each adds its artifacts (with their own effort / automation / supervision) to the scope. Tick a category then pick the norms below.
+🤖 AI (EU AI Act, ISO/IEC 42001, NIST AI RMF)
+🌱 Sustainability
+👤 Usability / Human factors

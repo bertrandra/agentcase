@@ -1,0 +1,10 @@
+Execution Timeline
+SUPPORTS
+?
+Wallclock time savings: sprint velocity and project duration, contextual to the effective automation ramp.
+Phase	AS-IS	Y1	Y2	Y3	Lever
+L0/Spec	14j	12j	10j	6j	AI generation + review
+V1-V2 Design	21j	18j	15j	10j	AI generation + review
+V3 Code	28j	24j	19j	11j	AI generation + review
+V4-V5 Test	21j	18j	13j	7j	AI generation + review
+V6-V7 Release	10j	8j	6j	3j	AI generation + review

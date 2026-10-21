@@ -1,0 +1,62 @@
+Token economics & FinOps
+DRIVES
+?
+🔢 Token usage estimate (context-driven)
+Annual token volume is estimated per artifact — the most relevant driver, since the whole model is artifact-centric. Volume is aligned on the number of agent executions = agent workforce (agent vFTE = team × automation depth × ramp) × working days/year × agent runs/day, scaled by the in-scope scope share, × tokens per agent run, then split input / output by the share below. Defaults are indicative — calibrate runs/day and tokens per run from your real platform billing (e.g. Claude Code usage). This estimate and the model mix feed the blended €/1M used by Run, Setup, ROI and FinOps.
+TOKENS PER AGENT RUN
+50,000
+AGENT RUNS / DAY (PER AGENT-FTE)
+25
+OUTPUT TOKEN SHARE (%)
+35%
+ESTIMATION DRIVER
+AGENT RUNS Y3
+56,205
+EST. TOKENS Y3
+2,810 M
+INPUT / OUTPUT
+1827 M / 984 M
+BLENDED PRICE
+€14 /1M
+TOKEN COST Y3
+€40,468
+OUTPUT SHARE
+35%
+💸 Token economics by model
+Per model: usage mix % and input / output price (€ per 1M tokens). Volume (Y3) and cost are computed from the usage estimate above, distributed by mix, with the input/output split applied. The blended €/1M drives Run / Setup / ROI. Add or remove models freely — this list is part of the Excel export / import.
+＋ Add model
+↺ Reset
+Mix total : 100% · Annual token cost : €40,468 / yr (Y3)
+Model	Mix %	Price in (€/1M)	Price out (€/1M)	Tokens Y3 (M)	Cost Y3 (€)	
+				0.0 M	€0	✕
+				843.1 M	€2,023	✕
+				1124.1 M	€8,094	✕
+				843.1 M	€30,351	✕
+				0.0 M	€0	✕
+				0.0 M	€0	✕
+				0.0 M	€0	✕
+🤖 Agent runs & run cost by year
+Agent executions (runs) per year, split across models by the usage mix, with the resulting token volume and run cost over the 3-year horizon. Runs scale with scope, realized automation and the adoption ramp.
+Agent (model)	Mix %	Run Y1	Run Y2	Run Y3	Run total	Tokens 3y (M)	Cost 3y (€)
+Mistral Large	0%	0	0	0	0	0.0 M	€0
+Claude Haiku 4.5	30%	3,779	11,401	16,862	32,041	1602.0 M	€3,845
+Claude Sonnet 4.6	40%	5,038	15,201	22,482	42,721	2136.1 M	€15,380
+Claude Opus 4.8	30%	3,779	11,401	16,862	32,041	1602.0 M	€57,674
+Claude Fable 5	0%	0	0	0	0	0.0 M	€0
+GPT-4o	0%	0	0	0	0	0.0 M	€0
+GPT-4.1 mini	0%	0	0	0	0	0.0 M	€0
+Total	100%	12,596	38,002	56,205	106,803	5340.1 M	€76,898
+📦 Agent runs by artifact (in-scope)
+Same agent executions, allocated to each in-scope artifact in proportion to its agent-execution intensity (effort × agent supervision). Grouped by phase. Cost uses the blended €/1M; the totals match the by-model table above.
+Phase	Phase Description	Artifact	Run Y1	Run Y2	Run Y3	Run total	Tokens 3y (M)	Cost 3y (€)
+V1	Specification	Requirements / NFR	740	2,232	3,302	6,274	313.71 M	€4,517
+V1	Specification	Traceability matrix	807	2,435	3,602	6,845	342.23 M	€4,928
+V1	Specification	User stories / backlog	942	2,841	4,202	7,985	399.26 M	€5,749
+V3	Implementation	Code review	925	2,791	4,127	7,843	392.13 M	€5,647
+V3	Implementation	Inline documentation	908	2,740	4,052	7,700	385.00 M	€5,544
+V3	Implementation	Source code	2,523	7,610	11,256	21,389	1069.45 M	€15,400
+V4	Verification	Coverage report	639	1,928	2,852	5,419	270.93 M	€3,901
+V4	Verification	Test code / mocks	2,422	7,306	10,806	20,534	1026.68 M	€14,784
+V4	Verification	Unit test cases	1,883	5,683	8,405	15,971	798.53 M	€11,499
+V4	Verification	Unit test plan	807	2,435	3,602	6,845	342.23 M	€4,928
+Total (10 in-scope)	12,596	38,002	56,205	106,803	5340.1 M	€76,898

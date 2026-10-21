@@ -1,0 +1,23 @@
+🎬 Monthly Playback
+— animated month-by-month trajectory viewer for Human FTE, Agent vFTE, monthly run cost, cumulative savings, velocity and cost per story point
+SUPPORTS
+?
+Pick one or more metrics below: the player runs them one after the other, in order — designed for a live conversation with the client rather than a table to read.
+▶ Play
+Month 0 · AS-IS
+Month 0 · AS-IS
+Speed
+0.5x
+1x
+2x
+4x
+Loop
+Human FTE / agent vFTE
+Monthly run cost
+Cumulative savings
+Velocity
+Cost / point
+Human FTE / agent vFTE
+1 / 3
+Human FTE
+Agent vFTE

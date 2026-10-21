@@ -1,0 +1,21 @@
+Annual summary
+READS
+?
+AS-IS COST/YR
+€1,769K
+RUN Y1
+€1,453K
+RUN Y3
+€1,101K
+SAVING Y3
+€672K
+SETUP
+€195K
+ROI 3 YEARS (NET)
+648%
+Annual costs: team + Setup + Run (tokens/infra)
+Detailed annual table
+Year	Ramp	Human FTE	Agent vFTE	Team cost	Token cost	Infra cost	Setup	Total	Saving vs AS-IS
+Year 1	20%	13.1	1.9	€1,288K	€3,935	€6,000	€195K	€1,648K	€320K
+Year 2	44%	10.9	4.1	€1,102K	€11,929	€6,000	—	€1,308K	€466K
+Year 3	80%	7.5	7.5	€840K	€23,240	€6,000	—	€1,101K	€672K

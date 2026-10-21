@@ -1,0 +1,16 @@
+🧭 Engagement context
+DRIVES
+?
+🏷️ Customer name
+Appears in the app title bar, e.g. “AgentCase for Acme Corp” — purely cosmetic, it drives nothing in the model.
+CUSTOMER NAME
+🧭 Engagement context EV-06 · v13.0
+The contractual & infrastructure frame determines how much of the delivery system Capgemini controls — and therefore the reachable maturity, the effective glass ceiling, the adoption speed, the billable share of setup and the decision risk bar. Reference: Software Engineering Delivery Model 2026, three engagement contexts.
+ENGAGEMENT CONTEXT
+MSC — Managed Service · Capgemini infrastructure
+MSI — Managed Service · client infrastructure
+STA — Staff augmentation (technical assistance)
+Managed Service — client infrastructure
+Maturity cap L3 · ramp ×0.8 (≤80%) · glass ×0.9 · setup billable 85% · AI authority ≤ A3 · risk bar +5 pts · hub ≤ CC2
+Case discount rate (/yr) — headline NPV, sponsor's WACC / hurdle rate
+Context coefficients (editable)

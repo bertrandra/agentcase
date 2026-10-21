@@ -1,0 +1,19 @@
+🎲 Monte Carlo — uncertainty explorer
+DRIVES
+?
+Numerically explores the uncertainty around the business case. Each draw perturbs the uncertain parameters (triangular around their current value), evaluates the DOM-free calculation core through the INPUTS state seam, and collects the horizon-aware net benefit (Σ savings − setup). The distribution — not a single point — is what the Decision Intelligence layer consumes.
+DRAWS
+SEED
+▶ Run simulation
+Auto re-run on scenario change
+↺ Reset ranges
+Uncertain parameter	Current	Uncertainty (±)
+Automation potential (pts)	75	± pts
+Year-1 ramp (pts)	25	± pts
+Year-2 ramp (pts)	55	± pts
+Year-3 ramp (pts)	100	± pts
+Glass ceiling (pts)	25	± pts
+Tokens per artifact (%)	50000	± %
+Infra cost (%)	500	± %
+No run yet — click "Run simulation" to sample the distribution.
+Runs are seeded and reproducible (mulberry32). Ranges are editable benchmarks. The engine never touches the DOM during sampling — a direct payoff of the v12.16 state-management refactor.

@@ -1,0 +1,37 @@
+🏛️ Architecture — Layers
+SUPPORTS
+?
+Quick index of how AgentCase is built: the calculation chain, the Time Engine that evaluates it over time, 6 cross-cutting engines and the single-source-of-truth registries — one or two lines each. For the full technical detail — functions, code references, live-vs-scaffolding status, data flow, migration plan — see 🏛️ Architecture — Layers content →
+Layer 2 · UI / Presentation
+Reads user inputs from the DOM, invokes the calculation core, and renders tables, charts and controls. Never contains business formulas — only formatting and layout.
+▲▼
+The seam — input bridge
+Snapshots every DOM input once per refresh cycle into one state object, so the core below never touches the DOM directly — that's what makes it cheap to re-run thousands of times per Monte Carlo run or strategy comparison.
+▼
+Layer 1 · Calculation core
+All business logic, DOM-free. Given the inputs and the catalogue, it derives every number the app shows — the single auditable source of truth every layer above and beside it consumes.
+▼
+🕐 Time Engine v18.5 · TE-SPEC v5
+The core answers "what does a year cost?"; the Time Engine answers "what does month t look like?" — one horizon-dynamic producer for every time-shaped number. It fits the adoption curve through the ramp anchors, evaluates it monthly, and owns the single canonical payback and NPV definitions. Horizons of 1 / 2 / 3 / 5 / 7 / 10 years all flow from it; the annual view is a reduce over its months, never a parallel calculation.
+Why it exists: before it, 10 payback sites ran 2 different algorithms and 3 NPV conventions disagreed. Consolidating them is what made long horizons trustworthy.
+▼
+Layers 3-5 · Analytical stack
+Three layers that sit alongside the core, evaluating it repeatedly rather than replacing it: 3 · Probabilistic (Monte Carlo net-benefit distribution), 4 · Decision (confidence-conditional verdict computed from that distribution), 5 · Strategy (7 delivery strategies ranked under the same invariants).
+⬍
+Cross-cutting engines
+Sit beside everything above, fully wired into it — see the detail tab for exactly how.
+BUS — event pub/sub; every mutation and navigation action can emit an event.
+APP_STATE — one JSON facade over all app state, with a single set() choke point.
+PM — one serialize/hydrate pair behind snapshot, Excel and JSON persistence.
+DEP — declarative dependency graph for incremental recompute (full-refresh by default today).
+AUDIT — a mutation log plus a pluggable logic-check harness, surfaced in Logic Verification.
+TIME — the Time Engine's own registry: curve adapters, memoised build, thin mode for Monte Carlo.
+Single-source-of-truth registries
+Where a constant would otherwise be duplicated across consumers, it is held once and read live. Each of these replaced literals that had drifted or were at risk of drifting.
+STATE_REGISTRY — 80 keys · everything that persists through snapshot / Excel / autosave.
+VARIABLE_REGISTRY — 128 bindable outputs with canonical formats, consumed by the Board.
+SECTION_CATALOG — 77 sections with group, order, tag and MVP flag; drives the whole menu.
+MATURITY_MAP — the L1–L4 thresholds, read by 4 consumers incl. the engine (v18.6).
+COEF — 13 embedded coefficients, all editable, catalogued in Due diligence (v18.7).
+MODEL — the phase namespaces (FLAGS, LCE, EVT, SUP, MCS, CBD, CASE, FLOW, DORA, EVIDENCE).
+See full technical detail →

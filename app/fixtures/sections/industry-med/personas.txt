@@ -1,0 +1,24 @@
+👥 Persona management
+SUPPORTS
+?
+Advanced-only. Create personas, order them in the top picker, assign sections to a persona, set each section's group and its order within that group, and see who uses what. Everything persists via Export/Import.
+🗂️ Collapsed-menu section display
+Only affects collapse mode — the in-content group nav bar shown when the sidebar is hidden (☰ Menu / toggleMenuHidden()). The normal sidebar menu is unaffected either way. One global setting — applies to every group, every persona, immediately.
+☰ Buttons (current)
+🔖 Tabs (new)
+Buttons — small bordered pills in a wrapping row (today's default, .gnav-item). Tabs — an underlined tab strip for the same sections, same click targets.
+⬇️ Export persona/section config only
+👥 Personas
+🧩 Section assignment
+🗂️ Menu groups
+📄 Sections
+🗂️ Menu layout
+🧩 Assignment layout
+Personas (order in the picker)
+Order	ID	Label	Protected	Hide menu (compact group nav)	Default (opens on load)	Actions
+0	advanced	Advanced	🔒 yes			⎘ Duplicate
+	clientcase	🤝 Client case	no			⎘ Duplicate✎ Rename✕ Delete
+	builder	Builder	no			⎘ Duplicate✎ Rename✕ Delete
+	admin	Admin	no			⎘ Duplicate✎ Rename✕ Delete
+ADD PERSONA (LABEL)
+➕ Add

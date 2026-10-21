@@ -1,0 +1,127 @@
+🛡️ Risk & Compliance
+EV-17/23/25 · v13.8
+DRIVES
+?
+Wave 2 of delivery-model convergence: the agentic risk register (Part 5.2), the EU AI-Act tier classifier for the delivered product, and the AI code-quality risk premium (Part 5.1). Each can be surfaced informatively or, via a toggle, raise the Decision Intelligence bar and the verification tax. Defaults are neutral, so the base case is unchanged.
+EU AI-Act tier — delivered product EV-25
+AI-ACT RISK TIER (PER MISSION)
+Not classified (neutral)
+Minimal risk
+Limited risk (transparency)
+High risk (Annex III)
+Unacceptable (prohibited)
+Raise the Decision Intelligence bar for this tier
+Not classified
+Classify the delivered product per mission before commitment.
+Reference 5.2: EU AI Act (unacceptable / high / limited / minimal), complementary to NIST AI RMF and ISO/IEC 42001. Tiering is per mission; a critical or safety product may fall under Annex III high-risk. CC-AIACT-01.
+AI code-quality risk premium EV-23
+SEVERITY ANCHOR
+Security (×1.57)
+Maintainability (×1.64)
+Correctness (×1.75)
+SDD MATURITY (SET IN MATURITY & MEASUREMENT)
+0%
+Apply the premium (raises verification tax + DI bar)
+QUALITY PREMIUM CAP ×
+DECISION-BAR QUALITY WEIGHT
+Cap on the rework multiplier above, and how strongly it converts into the DI-bar penalty (capped at 0.15 pts). Also editable from the Due-diligence register.
+Anchor multiplier vs human code	×1.75 (Correctness)
+SDD maturity mitigation	0%
+Effective quality premium	0%
+Verification-tax factor	×1.00
+DI bar contribution	+0 pts
+Status in the model	informative only
+Reference 5.1: AI code shows correctness ×1.75, maintainability ×1.64, security ×1.57 issues vs human; ≥62% of generated programs carry a known weakness. The premium raises the verification tax and the DI bar, and is mitigated by SDD maturity (EV-16, forthcoming). CC-QUAL-01.
+Agentic risk register EV-17
+Feed the consolidated risk score into the Decision Intelligence bar
+Agentic risk	Prob.	Impact	Score	Mitigation
+Prompt / indirect injection
+~73% of deployments assessed vulnerable
+	
+Low
+Med
+High
+	
+Low
+Med
+High
+	9	Input/output guardrails, content provenance, allow-listed tools, human-in-the-lead on privileged actions
+MCP / skills supply chain
+492 MCP servers found exposed without auth; 1184 malicious skills catalogued
+	
+Low
+Med
+High
+	
+Low
+Med
+High
+	6	Pinned & signed skills, vetted MCP registry, least-privilege scopes, egress control
+Secret / credential theft
+Agents with broad tool access exfiltrate tokens
+	
+Low
+Med
+High
+	
+Low
+Med
+High
+	6	Scoped short-lived creds, no secrets in context, secret scanning in hooks
+Model / vendor dependency
+Lock-in, price & policy volatility, export controls
+	
+Low
+Med
+High
+	
+Low
+Med
+High
+	4	Abstraction layer, multi-model routing, sovereign fallback (SovBox)
+Hallucination / false success
+Agents game the green (deleted tests, disabled lint)
+	
+Low
+Med
+High
+	
+Low
+Med
+High
+	6	Anti-false-success guardrails, mutation testing, independent QA agent, C2 gate
+Knowledge debt
+Supervising without practising erodes deep understanding
+	
+Low
+Med
+High
+	
+Low
+Med
+High
+	6	Preceptorship 3:1–5:1, review-first, explain-the-code gates (see HRI)
+Pilot never reaches production
+~88% of pilots never industrialised
+	
+Low
+Med
+High
+	
+Low
+Med
+High
+	4	Pilot-as-product, distribution & governance from day one, break-in sprints
+Scale-stage cancellation
+Gartner: ~40% agentic projects cancelled by 2027
+	
+Low
+Med
+High
+	
+Low
+Med
+High
+	6	Measure-before-commit (T0/T1/T2), gated Decide & Scale, value tracking
+Consolidated risk: High (65/100) · informative only — tick the box above to feed Decision Intelligence
+Reference 5.2 agentic risk register. Probability×Impact on a 1–3 scale; the consolidated score can raise the Decide & Scale verdict bar. CC-RISK-01.

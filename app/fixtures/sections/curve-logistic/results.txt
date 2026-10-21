@@ -1,0 +1,27 @@
+📋 Results — consolidated outcome
+READS
+?
+The final output of the business case on one screen: the confidence-conditional verdict, the deterministic key figures, the uncertainty band, where the savings come from, and the human → agent team shift.
+Probabilistic verdict not yet computed — ▶ Run Monte Carlo to add the confidence-conditional recommendation. The figures below are the deterministic view.
+NET BENEFIT (3-YR)
+€1,600,558
+after €225,000 setup
+ROI
+711%
+on setup investment
+PAYBACK
+Year 1
+cumulative turns positive
+AUTOMATION DEPTH
+75.0%
+eff = auto × ceiling × posture
+SAVINGS DECOMPOSITION (Y3)
+€1,205,042 gross automation
+−€247,439 agent operating cost
++€124,111 relocation
+= €1,081,714 total savings / yr
+TEAM SHIFT (Y3)
+15.0 AS-IS human FTE →
+4.8 residual human FTE + 10.2 agent vFTE
+Product status: Feature add (active development)
+All figures recomputed live from the calculation core (deterministic) and the last Monte Carlo run (probabilistic). Estimates to validate with client teams.

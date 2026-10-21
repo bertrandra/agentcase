@@ -1,0 +1,31 @@
+Scenario comparison — 6 transformation strategies
+READS
+?
+Compare the AS-IS baseline against isolated and combined levers: AI automation alone, location arbitrage alone, a phased service-center transformation (X% relocation to France per year), and the combined plays. All scenarios share the same team, scope, ramp and token assumptions — only the levers differ. Note: if your team is currently nearshore/offshore, relocating to France raises the day-rate — the France scenarios then show a cost increase (sovereignty premium), which is the intended reality.
+TARGET LOCATION FOR RELOCATION SCENARIOS
+France (Local)
+Portugal (Nearshore)
+Poland (Nearshore)
+Morocco (Nearshore)
+Egypt (Nearshore)
+China (Offshore)
+India (Offshore)
+Destination used by "Ramp" and "AI + 100 % [target]". Default: Portugal (nearshore, location arbitrage). Switch to France for a sovereignty / reshoring scenario.
+PROGRESSIVE RELOCATION RAMP — % OF AS-IS → TARGET GAP CLOSED PER YEAR
+20%
+Share of the AS-IS → target day-rate gap closed each year (cumulative). Drives the "Ramp" scenario.
+Annual run cost by scenario
+Scenario	Baseline (AS-IS)	Year 1 (€)	Year 2 (€)	Year 3 (€)	3-yr run (€)	3-yr savings (€)
+AS-IS	€1,768,800	€1,768,800	€1,768,800	€1,768,800	€5,306,400	—
+AI only	€1,768,800	€1,592,862	€1,276,898	€802,953	€3,672,714	€1,633,686
+Location only	€1,768,800	€1,379,400	€1,379,400	€1,379,400	€4,138,200	€1,168,200
+Ramp to France (20%/yr)	€1,768,800	€1,768,800	€1,768,800	€1,768,800	€5,306,400	€0
+AI + Location	€1,768,800	€1,245,967	€1,002,505	€637,312	€2,885,785	€2,420,615
+AI + 100% France	€1,768,800	€1,592,862	€1,276,898	€802,953	€3,672,714	€1,633,686
+ROI trajectory by scenario
+Scenario	Setup (€)	3-yr savings (€)	Net (€)	ROI (net)	Payback	Cum. cash-flow Y3 (€)
+AI only	€135,000	€1,633,686	€1,498,686	1110%	10 mo	€1,498,686
+Location only	€0	€1,168,200	€1,168,200	∞ (no setup)	immediate	€1,168,200
+Ramp to France (20%/yr)	€135,000	€0	(€135,000)	-100%	>36 mo	(€135,000)
+AI + Location	€135,000	€2,420,615	€2,285,615	1693%	4 mo	€2,285,615
+AI + 100% France	€135,000	€1,633,686	€1,498,686	1110%	10 mo	€1,498,686

@@ -1,0 +1,83 @@
+📊 Product profile & phase coefficients
+DRIVES
+?
+This is the editable profile × phase coefficient matrix (v14.8): each product profile (Greenfield, Feature add, Maintenance, Modernisation — plus the End-of-life benchmark, which maps to Maintenance) carries one coefficient per phase, applied to the phase’s effort point. The same coefficients drive the Product-status weighting and the Eligibility potential matrix — one source of truth. Edit the per-phase coefficients and the automation posture for each profile. These are the benchmarks the lifecycle axis interpolates between — changes cascade live to the Scope catalogue, the cascade preview and the whole business case. Values are colour-coded: green >1 (more effort/automation), red <1 (less). Amber border = edited vs default.
+Status	
+L0
+Upstream
+	
+V1
+Specification
+	
+V2
+Design
+	
+V3
+Implementation
+	
+V4
+Verification
+	
+V5
+Integration
+	
+V6
+Validation
+	
+V7
+Qualification
+	
+L8
+Deployment
+	
+L9
+Run / AMS
+	
+L10
+End-of-life
+	
+Cross-cutting
+Cross-cutting (regulatory & AI framing)
+	Auto
+posture
+Greenfield (new build)													
+Feature add (active development)													
+Maintenance (stabilised)													
+Modernisation (legacy)													
+End-of-life (→ maintenance)													
+PHASE LEGEND
+L0
+Upstream
+· Strategic framing
+V1
+Specification
+· Analysis / PO
+V2
+Design
+· Architecture
+V3
+Implementation
+· Development
+V4
+Verification
+· QA / Dev
+V5
+Integration
+· Integration
+V6
+Validation
+· PO / Business
+V7
+Qualification
+· Quality / Compliance
+L8
+Deployment
+· Ops / Run
+L9
+Run / AMS
+· Run / Support
+L10
+End-of-life
+· Governance / Archive
+↺ Reset all to defaults
+Weight = relative intensity of effort in that phase for that status (1.0 = baseline). Automation posture = multiplier on the effective automation depth at that status (how automatable the work is). Both are editable benchmarks — validate them against the client delivery profile.

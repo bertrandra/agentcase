@@ -1,0 +1,27 @@
+⚙️ Calculation Engine
+v18.8
+SUPPORTS
+?
+The machinery behind the numbers, live-introspected: the ⏱️ Time Engine's function surface, its model() overlay contract and which sections actually call it — plus the DEP invalidation graph and the AUDIT invariant registry with its armed/dormant split.
+⏱️ Time Engine
+⚙️ Engines
+🧩 Function surface
+🔀 Overlay contract
+🎯 Which sections reach it
+Engine function surface — 14 entry points, discovered live off TIME and window
+Any function newly added to TIME, or named teXxx, appears here with no code change to this page.
+Function	What it does
+TIME.for()	Builds a FRESH engine instance for {mode, curveModelId, model} — no caching. What teEngineNow() calls, and what model()'s own curve overlay calls directly.
+TIME.thin()	The allocation-free aggregate pass (spec §16.2) — no per-month row objects. What Monte Carlo calls per draw, thousands of times a run.
+TIME.adapters()	Lists the registered curve-family ids (legacy.flatAnnual, logistic.default, gompertz.default, bass.default, spline.default — the live default).
+TIME.registerAdapter()	Registers a new curve family. Boot-time wiring for the shipped adapters — not something a section render calls.
+TIME.rebuild()	Rebuilds AND caches the shared TIME.current instance. Called from the engine's own DEP node whenever a relevant input changes — invalidation by reconstruction, the engine itself is immutable.
+TIME.reset()	Drops the TIME.current cache, forcing the next access to rebuild from scratch.
+teEndYear()	Just the horizon length (1..10) — labels columns, bounds loops.
+teEndYearRow()	The AnnualRow for the case's FINAL year — the canonical "end of horizon" read. Used wherever a section shows one Y-end figure instead of a series.
+teEngineNow()	The standard entry point — a fresh engine for the ACTIVE mode/curve right now. Most direct engine calls in the app go through this, not TIME.for.
+teSubTab()	
+teThinNow()	Thin/aggregate pass on the live curve. Must be built from a RAW (modelRaw()) model, never the curve-overlaid one — passing the overlay here would double-apply the curve.
+teYears()	Every annual row (1..horizonYears) from the live engine — what Annual/Run/Exec and other per-year tables iterate.
+npvCanonical()	THE single canonical NPV — monthly-discounted, via teEngineNow(). Every NPV shown anywhere in the app reads this; nothing recomputes its own.
+paybackMonthsCanonical()	THE single canonical payback month, via teEngineNow() — same one-source-of-truth discipline as NPV.

@@ -1,0 +1,26 @@
+⚙️ Engineering
+DRAFT
+SUPPORTS
+?
+Commit → Build → Build Artifact → Quality Gate → Integrated Product. Illustrative, user-entered counters — AgentCase has no live CI/CD integration to pull real commits/builds/gates from. Nothing here feeds the financial model.
+💾 Commits implement a Task (an existing SDLC/regulatory artefact)
+Task (implements)	Message	Author	
+No commits yet.
++ Add commit
+🏗️ Builds
+Name	Status	Built at	
+No builds yet.
++ Add build
+📦 Build Artifacts produced by a Build — renamed from the referential's plain "Artifact" to avoid colliding with AgentCase's existing SDLC/regulatory artefact vocabulary
+Name	Build	Type	Version	
+No build artifacts yet.
++ Add build artifact
+🚦 Quality Gates a pass/fail checkpoint a Build Artifact must clear
+Name	Build artifact	Result	
+No quality gates yet.
++ Add quality gate
+🧬 Integrated Product the current, continuously-updated integration baseline
+NAME
+Composed of 0 of 0 build artifact(s):
+No build artifacts to include yet.
+↻ Auto-include all Pass gates

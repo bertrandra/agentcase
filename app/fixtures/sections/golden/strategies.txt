@@ -1,0 +1,242 @@
+🏆 Strategy comparison — 7 delivery strategies
+READS
+?
+Seven delivery strategies (T&M · Skill center · Service center · Hybrid · Agentic Organization · Offshore · Nearshore) evaluated on the same calculation core and the same invariants — current product status & posture, current phase/artefact scope, team, rate card, tokens and horizon. Only the transformation levers differ (automation, ramps, glass ceiling once agentic, TO-BE geo split, setup & run-team factors). The comparison answers: for THIS product, THIS scope, THIS status — which delivery strategy?
+Metric	🧾
+T&M	🎓
+Skill center	🏭
+Service center	🔀
+Hybrid	🤖
+Agentic Organization	🌏
+Offshore	🌍
+Nearshore
+ROI computed	-100%	-136%	173%	455%	713%	728%	380%
+TCO (3-yr) computed	€5,396k	€5,566k	€4,989k	€4,305k	€3,724k	€3,982k	€4,577k
+Payback computed	—	—	Year 2	Year 1	Year 1	Year 1	Year 1
+AI Coverage computed	0.0%	15.0%	25.0%	40.0%	75.0%	20.0%	25.0%
+Human Supervision computed	100.0%	88.8%	81.3%	70.0%	43.8%	85.0%	81.3%
+Operational Risk declared	●●○○○	●●○○○	●●●○○	●●●○○	●●●●○	●●●●○	●●●○○
+Business Agility declared	●●○○○	●●●○○	●●○○○	●●●●○	●●●●●	●●●○○	●●●○○
+Target blended rate	€536/d	€536/d	€487/d	€427/d	€418/d	€374/d	€441/d
+Evaluated live on the current scenario invariants — product status Feature add (active development), current phase/artefact scope, team, rate card and horizon. Green = best per metric, red = worst. Declared metrics are editable consulting benchmarks (v12.23 editor).
+Location split
+TO-BE LOCATION SPLIT PER STRATEGY
+Strategy	France
+Local	Portugal
+Nearshore	Poland
+Nearshore	Morocco
+Nearshore	Egypt
+Nearshore	China
+Offshore	India
+Offshore	Σ
+🧾 T&M AS-IS	100%	—	—	—	—	—	—	100%
+🎓 Skill center AS-IS	100%	—	—	—	—	—	—	100%
+🏭 Service center Custom	50%	30%	20%	—	—	—	—	100%
+🔀 Hybrid Custom	35%	20%	10%	5%	5%	—	25%	100%
+🤖 Agentic Organization Inherit current	100%	—	—	—	—	—	—	100%
+🌏 Offshore Custom	20%	10%	—	—	—	15%	55%	100%
+🌍 Nearshore Custom	30%	25%	20%	15%	—	—	10%	100%
+AGGREGATE BY CLASS
+Strategy	Local	Nearshore	Offshore	Visual
+🧾 T&M	100%	0%	0%	
+
+🎓 Skill center	100%	0%	0%	
+
+🏭 Service center	50%	50%	0%	
+
+🔀 Hybrid	35%	40%	25%	
+
+🤖 Agentic Organization	100%	0%	0%	
+
+🌏 Offshore	20%	10%	70%	
+
+🌍 Nearshore	30%	60%	10%	
+Custom = the strategy carries its own explicit geo split; AS-IS = the current input-team mix; Inherit current = the strategy uses the live Location strategy of the simulation (previewed here against AS-IS for a deterministic view). Editable in the Strategy configuration table below.
+Weighted ranking & profiles
+METRIC WEIGHTS (COMPOSITE SCORE)
+ROI
+TCO
+Payback
+AI Coverage
+Human Supervision
+Op. Risk
+Agility
+↺ Reset weights
+#	Strategy	Composite score (0-100, weighted normalised)	Score	Radar	Apply
+🥇	🤖 Agentic Organization	
+	85		→ Apply
+🥈	🔀 Hybrid	
+	65		→ Apply
+🥉	🌏 Offshore	
+	55		→ Apply
+4	🌍 Nearshore	
+	51		→ Apply
+5	🏭 Service center	
+	38		→ Apply
+6	🎓 Skill center	
+	25		→ Apply
+7	🧾 T&M	
+	17		→ Apply
+Scores are min-max normalised across the 7 strategies per metric (direction-aware), then weighted. → Apply pushes the strategy levers into the live simulation — the Monte Carlo and the verdict re-run on it automatically. Weights are consulting benchmarks; adjust to the client's priorities.
+Strategy configuration
+Empty = inherit the current simulation value. Amber = edited vs default. Geo split rows must total 100%.
+↺ Reset all strategies
+Strategy	Auto %	Y1	Y2	Y3	Ceiling %	Setup ×	Run ×	Risk	Agility	TO-BE geo split
+🧾 T&M								
+1
+2
+3
+4
+5
+	
+1
+2
+3
+4
+5
+	
+Inherit current
+AS-IS mix
+Custom split
+
+🎓 Skill center								
+1
+2
+3
+4
+5
+	
+1
+2
+3
+4
+5
+	
+Inherit current
+AS-IS mix
+Custom split
+
+🏭 Service center								
+1
+2
+3
+4
+5
+	
+1
+2
+3
+4
+5
+	
+Inherit current
+AS-IS mix
+Custom split
+
+↳ Geo split (%)	
+France
+Portugal
+Poland
+Morocco
+Egypt
+China
+India
+Σ 100%
+
+🔀 Hybrid								
+1
+2
+3
+4
+5
+	
+1
+2
+3
+4
+5
+	
+Inherit current
+AS-IS mix
+Custom split
+
+↳ Geo split (%)	
+France
+Portugal
+Poland
+Morocco
+Egypt
+China
+India
+Σ 100%
+
+🤖 Agentic Organization								
+1
+2
+3
+4
+5
+	
+1
+2
+3
+4
+5
+	
+Inherit current
+AS-IS mix
+Custom split
+
+🌏 Offshore								
+1
+2
+3
+4
+5
+	
+1
+2
+3
+4
+5
+	
+Inherit current
+AS-IS mix
+Custom split
+
+↳ Geo split (%)	
+France
+Portugal
+Poland
+Morocco
+Egypt
+China
+India
+Σ 100%
+
+🌍 Nearshore								
+1
+2
+3
+4
+5
+	
+1
+2
+3
+4
+5
+	
+Inherit current
+AS-IS mix
+Custom split
+
+↳ Geo split (%)	
+France
+Portugal
+Poland
+Morocco
+Egypt
+China
+India
+Σ 100%
