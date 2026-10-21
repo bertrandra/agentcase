@@ -41,7 +41,7 @@ per-tab sessions in IndexedDB and offers them back after a reload.
 ## Run the legacy file
 
 Open `AgentCase_v18_13_EN.html` directly from disk (no build). Advanced persona: `?persona=advanced`, Ctrl/Cmd+Alt+A, or click the
-title 5 times. These Advanced-unlock gestures are legacy-only (the ADVANCED lock is not ported, see MIGRATION_PLAN §15).
+title 5 times. These Advanced-unlock gestures are legacy-only and out of scope for the new build (removed from the spec).
 
 ## Repository layout
 

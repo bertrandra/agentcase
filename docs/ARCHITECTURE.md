@@ -222,7 +222,7 @@ Rule (decision D7): no calculation change in the port. A deliberate change ships
 The authoritative list is [MIGRATION_PLAN.md §15](MIGRATION_PLAN.md). Architecture-relevant items:
 
 - Browser checks exist (`npm run e2e`, `npm run perf`, `npm run parallel-run`; CI job `e2e`); the differential run on real customer files needs files supplied by the user.
-- Collapsible sidebar groups, Fast Path filter, ADVANCED lock and unlock gestures, tag/MVP editing and layout-board live preview are not ported.
+- Out of scope (removed from the spec): the ADVANCED lock and its unlock gestures, and tag/MVP editing. Being ported: collapsible sidebar groups, Fast Path filter, layout-board live preview, calculation package and staleness banner, Gantt keyboard editing.
 - Golden-vs-AME comparison, AME reference capture and per-snapshot Excel export are not ported; Agent Catalog capacity and loop external % cannot be imported (catalogues are immutable).
 - `npm run release` produces `app/dist/AgentCase_v19_0_EN.html`; `APP_VERSION` is `19.0.0`.
 - Legacy-only engine `TE-10b` (legacy-mode monthly derivation) fires on 2 supervision fixtures in the legacy and is reproduced only in the verification section.
