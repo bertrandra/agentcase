@@ -18,9 +18,14 @@ const cat = await page.evaluate(() => {
     engageCoef: c(ENGAGE_COEF), loopPairs: c(LOOP_PAIRS), evtClassSeed: c(EVT_CLASS_SEED), evtClassOrder: c(EVT_CLASS_ORDER),
     qualAnchor: c(QUAL_ANCHOR), statusLifecycle: c(STATUS_LIFECYCLE), tokenModels: c(TOKEN_MODELS_DEFAULT), coef: c(COEF_DEFAULT),
     maturityMap: c(MATURITY_MAP), modelDefaults: c(modelDefaults()), rate: c(RATE), teamIn: c(teamIn),
+    sectionCatalog: c(SECTION_CATALOG), groups: c(GROUPS), personas: c(PERSONAS), personaSections: c(PERSONA_SECTIONS),
+    sectionGroups: c(collectSnapshotState({ skipPackage: true, noClone: true }).sectionGroups),
     scalars: { ktRed: KT_RED, ccMult: CC_MULT, supRefHours: SUP_REF_HOURS_PER_PERIOD, tokOutShare: TOK_OUT_SHARE },
   };
 });
-for (const [k, v] of Object.entries(cat)) writeFileSync(`${out}/${k}.json`, JSON.stringify(v, null, 1) + '\n');
+// navigation / persona data belongs to the UI layer, the rest to the domain
+const UI_KEYS = new Set(['sectionCatalog', 'groups', 'personas', 'personaSections', 'sectionGroups']);
+const uiOut = resolve('app/src/ui/zones/data'); mkdirSync(uiOut, { recursive: true });
+for (const [k, v] of Object.entries(cat)) writeFileSync(`${UI_KEYS.has(k) ? uiOut : out}/${k}.json`, JSON.stringify(v, null, 1) + '\n');
 console.log(Object.keys(cat).join(' '), '->', out);
 await browser.close();

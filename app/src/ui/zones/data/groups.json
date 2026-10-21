@@ -1,0 +1,86 @@
+[
+ {
+  "id": "factory",
+  "label": "🏭 FACTORY",
+  "order": 130,
+  "description": "The Software/Agentic Factory meta-model: Vision→Story graph, release pipeline, engineering, factory timeline."
+ },
+ {
+  "id": "refshare",
+  "label": "🏛️ REFERENCE & SHARE",
+  "order": 110,
+  "description": "Documentation & data exchange: architecture, logic verification, sources, reference map, glossary, import/export."
+ },
+ {
+  "id": "configure",
+  "label": "🔧 CONFIGURE",
+  "order": 120,
+  "description": "Calibrate the app itself: the Board builder and persona management."
+ },
+ {
+  "id": "frame",
+  "label": "1 · Frame",
+  "order": 10,
+  "description": "What kind of engagement is this? Do this first — industry decides which artefacts exist to scope."
+ },
+ {
+  "id": "baseline",
+  "label": "2 · Baseline",
+  "order": 20,
+  "description": "What is true today. Every euro in the case is a delta from this."
+ },
+ {
+  "id": "scope",
+  "label": "3 · Scope",
+  "order": 30,
+  "description": "What the transformation actually covers — the largest lever after Parameters."
+ },
+ {
+  "id": "tune",
+  "label": "4 · Tune",
+  "order": 40,
+  "description": "What we are assuming about the agentic system itself."
+ },
+ {
+  "id": "verify",
+  "label": "5 · Verify",
+  "order": 50,
+  "description": "Nothing here is editable in a way that moves the number. It exists so you catch a bad input before it reaches Financial."
+ },
+ {
+  "id": "economics",
+  "label": "6 · Economics",
+  "order": 60,
+  "description": "What it costs and what it returns."
+ },
+ {
+  "id": "stress",
+  "label": "7 · Stress",
+  "order": 70,
+  "description": "How fragile is it?"
+ },
+ {
+  "id": "verdict",
+  "label": "8 · Verdict",
+  "order": 80,
+  "description": "What the recommendation actually is."
+ },
+ {
+  "id": "defend",
+  "label": "9 · Defend",
+  "order": 90,
+  "description": "The difference between a model and an argument. Skip this and the case is a number without a provenance."
+ },
+ {
+  "id": "present",
+  "label": "10 · Present",
+  "order": 100,
+  "description": "How the client sees it."
+ },
+ {
+  "id": "model-engine",
+  "label": "🧠 Model Engine",
+  "order": 140,
+  "description": "Advanced-only: the Agentic Modelling Engine internals — P1 loop convergence, P2 verification tax, P3 supervision, P4 stochastic layer, P5 flow & value, P6 evidence ledger."
+ }
+]

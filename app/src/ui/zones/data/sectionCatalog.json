@@ -1,0 +1,647 @@
+[
+ {
+  "id": "home",
+  "group": "frame",
+  "groupSeq": 20,
+  "label": "🏠 Welcome",
+  "description": "Landing page and overview",
+  "tag": "supports"
+ },
+ {
+  "id": "engagement-context",
+  "group": "frame",
+  "groupSeq": 24,
+  "label": "🧭 Engagement context",
+  "description": "The contractual & infrastructure frame (MSC / MSI / STA) and customer name — sets reachable maturity, glass ceiling, ramp speed, billable setup, the decision-risk bar and the case NPV discount rate. Extracted from Parameters.",
+  "tag": "drives",
+  "mvp": true
+ },
+ {
+  "id": "engage",
+  "group": "frame",
+  "groupSeq": 26,
+  "label": "🤝 Engage",
+  "description": "Starting early with the client: the four gated onboarding stages (Discover → Calibrate → Validate → Pilot & Prove) and how long each runs, plus the engagement roadmap and its gates. Extracted from the S-curve timing card (v18.6).",
+  "tag": "drives",
+  "mvp": true
+ },
+ {
+  "id": "transform-params",
+  "group": "frame",
+  "groupSeq": 28,
+  "label": "🏛️ Industry / regulatory profile",
+  "description": "Industry / regulatory profile and cross-cutting norms (AI, sustainability, usability) that add regulated artifacts to the scope, driving the glass ceiling. Extracted from Parameters.",
+  "tag": "drives",
+  "mvp": true
+ },
+ {
+  "id": "params",
+  "group": "scope",
+  "groupSeq": 12,
+  "label": "🎯 Automation & Glass ceiling",
+  "description": "The two levers that set how deep automation can go: target automation potential and the effective regulatory glass ceiling.",
+  "tag": "drives",
+  "mvp": true
+ },
+ {
+  "id": "scurve",
+  "group": "scope",
+  "groupSeq": 11,
+  "label": "📊 S-curve — adoption ramp",
+  "description": "The three-year adoption ramp (Y1/Y2/Y3): the share of automation potential realized each year, cascading into headcount, cost and ROI. Moved out of Parameters.",
+  "tag": "drives",
+  "mvp": true
+ },
+ {
+  "id": "maturity-map",
+  "group": "tune",
+  "groupSeq": 5,
+  "label": "📐 Maturity levels (L1–L4)",
+  "description": "The single definition of the four maturity thresholds (adoption + agent-vFTE share) that drive every L1–L4 marker and maturity read-out — one source of truth. First in Tune (v18.6).",
+  "tag": "drives"
+ },
+ {
+  "id": "readiness",
+  "group": "tune",
+  "groupSeq": 50,
+  "label": "🧭 AI Readiness",
+  "description": "10-dimension questionnaire, 0-100 index with radar chart and per-dimension bars",
+  "tag": "supports,shapes"
+ },
+ {
+  "id": "scope-sel",
+  "group": "scope",
+  "groupSeq": 10,
+  "label": "🎯 Scope",
+  "description": "Select SDLC and regulatory artifacts by phase, driving glass ceiling and effort",
+  "tag": "drives",
+  "mvp": true
+ },
+ {
+  "id": "phase-scope",
+  "group": "scope",
+  "groupSeq": 8,
+  "label": "🎯 Phase scope",
+  "description": "Quick phase-level scope: toggle whole SDLC phases in/out, with live effort share, glass-ceiling contribution and human supervision per phase. Extracted from Guided Setup.",
+  "tag": "drives"
+ },
+ {
+  "id": "lc-weighting",
+  "group": "scope",
+  "groupSeq": 15,
+  "label": "📊 Product status lifecycle weighting",
+  "description": "Product-status lifecycle weighting: pick where the product sits (greenfield to legacy) to re-weight phase effort. Extracted from Scope.",
+  "tag": "drives"
+ },
+ {
+  "id": "lifecycle-edit",
+  "group": "tune",
+  "groupSeq": 140,
+  "label": "📊 Status & phase weight",
+  "description": "Editable per-phase weight matrix and automation posture for each product status",
+  "tag": "drives"
+ },
+ {
+  "id": "team-in",
+  "group": "baseline",
+  "groupSeq": 10,
+  "label": "Input team",
+  "description": "AS-IS team composition: skill × grade × location × ETP",
+  "tag": "drives",
+  "mvp": true
+ },
+ {
+  "id": "ratecard",
+  "group": "baseline",
+  "groupSeq": 20,
+  "label": "Rate Card",
+  "description": "Day rate matrix editable per skill/grade/location",
+  "tag": "drives",
+  "mvp": true
+ },
+ {
+  "id": "loc-strat",
+  "group": "baseline",
+  "groupSeq": 30,
+  "label": "🌍 Location strategy",
+  "description": "Target location mix for the residual team",
+  "tag": "drives",
+  "mvp": true
+ },
+ {
+  "id": "token-econ",
+  "group": "tune",
+  "groupSeq": 90,
+  "label": "💸 Token economics",
+  "description": "LLM pricing catalog, mix, blended cost per 1M tokens",
+  "tag": "drives",
+  "mvp": true
+ },
+ {
+  "id": "knowledge",
+  "group": "tune",
+  "groupSeq": 110,
+  "label": "🧠 Knowledge hub",
+  "description": "Living memory CC0–CC4: potential multiplier, Monte Carlo variance reducer, avoided KT cost (EV-10)",
+  "tag": "drives"
+ },
+ {
+  "id": "run-sizing",
+  "group": "tune",
+  "groupSeq": 70,
+  "label": "🤖 Run-team sizing",
+  "description": "How the agentic run team (AgentOps) is sized: hybrid floor + per-agent policy, configurable. Also hosts the residual-team supervision-share cap/factor.",
+  "tag": "drives"
+ },
+ {
+  "id": "assumptions",
+  "group": "defend",
+  "groupSeq": 30,
+  "label": "📒 Assumptions register",
+  "description": "Every model assumption: current vs default, status, client validation, measured impact",
+  "tag": "supports"
+ },
+ {
+  "id": "fte-vfte",
+  "group": "verify",
+  "groupSeq": 30,
+  "label": "FTE / vFTE",
+  "description": "Human FTE vs Agent vFTE trajectory year by year",
+  "tag": "reads",
+  "mvp": true
+ },
+ {
+  "id": "vfte-ov",
+  "group": "verify",
+  "groupSeq": 60,
+  "label": "vFTE Overview",
+  "description": "Agent vFTE composition breakdown",
+  "tag": "reads"
+ },
+ {
+  "id": "team-out",
+  "group": "verify",
+  "groupSeq": 80,
+  "label": "Target team",
+  "description": "TO-BE team composition after transformation",
+  "tag": "reads"
+ },
+ {
+  "id": "opmodel",
+  "group": "tune",
+  "groupSeq": 120,
+  "label": "🧩 Operating model",
+  "description": "Pods, transverse roles and AI Office re-projected from the TO-BE volume — V7 conservation (EV-09)",
+  "tag": "supports"
+ },
+ {
+  "id": "tobe-team",
+  "group": "verify",
+  "groupSeq": 110,
+  "label": "👥 TO-BE team by skill",
+  "description": "Residual human FTE and agent vFTE per skill, derived from artefact allocation",
+  "tag": "reads"
+ },
+ {
+  "id": "montecarlo",
+  "group": "stress",
+  "groupSeq": 10,
+  "label": "🎲 Monte Carlo",
+  "description": "Probabilistic exploration of the business case: distribution, P10/P50/P90, sensitivity",
+  "tag": "drives"
+ },
+ {
+  "id": "model-stochastic",
+  "group": "model-engine",
+  "groupSeq": 40,
+  "label": "📊 Stochastic layer (P4)",
+  "description": "P4 · seeded Monte Carlo over the P1/P3 economic drivers (Beta/Triangular/Lognormal, one-factor Gaussian copula), tornado, convergence trace, plus counterfactual baseline drift — gross vs. attributable savings (AME-SPEC P4). A separate layer alongside the existing Monte Carlo tab.",
+  "tag": "supports"
+ },
+ {
+  "id": "phase-art",
+  "group": "verify",
+  "groupSeq": 40,
+  "label": "Phase / Artifact detail",
+  "description": "Detailed breakdown by lifecycle phase and artifact",
+  "tag": "reads"
+ },
+ {
+  "id": "agent-dir",
+  "group": "verify",
+  "groupSeq": 130,
+  "label": "Agent Directory",
+  "description": "Execution agents by authorization level and operational roles, filtered by phase — plus the agentic loop pairs",
+  "tag": "shapes"
+ },
+ {
+  "id": "agent-detail",
+  "group": "verify",
+  "groupSeq": 150,
+  "label": "🤖 Agent details",
+  "description": "Individual agent role allocations and workloads",
+  "tag": "supports"
+ },
+ {
+  "id": "agent-usage",
+  "group": "verify",
+  "groupSeq": 160,
+  "label": "📊 Agent usage",
+  "description": "Runs, tokens, cost per agent role",
+  "tag": "supports"
+ },
+ {
+  "id": "model-convergence",
+  "group": "model-engine",
+  "groupSeq": 10,
+  "label": "🔁 Loop convergence",
+  "description": "P1 · acceptance-driven iteration economics: E[N], escape rate, cost-per-accepted, effective multiplier and human-review share per agentic loop pair (AME-SPEC P1). Display-only.",
+  "tag": "supports"
+ },
+ {
+  "id": "model-supervision",
+  "group": "model-engine",
+  "groupSeq": 30,
+  "label": "🧑‍✈️ Supervision (P3)",
+  "description": "P3 · supervision priced as a decision: Provisioned (solve headcount, price it, never cap) or Constrained (fix headcount, cap achievable agent capacity) — plus the DORA read-out pulled forward from P5 (AME-SPEC P3).",
+  "tag": "supports"
+ },
+ {
+  "id": "setup",
+  "group": "tune",
+  "groupSeq": 170,
+  "label": "Agentic Setup",
+  "description": "Setup costs breakdown (tooling, training, coaching, governance)",
+  "tag": "drives"
+ },
+ {
+  "id": "run",
+  "group": "economics",
+  "groupSeq": 30,
+  "label": "Agentic Run",
+  "description": "Recurring run costs (team, tokens, infra, agentic run team)",
+  "tag": "reads"
+ },
+ {
+  "id": "annual",
+  "group": "economics",
+  "groupSeq": 40,
+  "label": "Annual summary",
+  "description": "Year 1/2/3 summary table with costs and savings",
+  "tag": "reads"
+ },
+ {
+  "id": "monthly",
+  "group": "economics",
+  "groupSeq": 50,
+  "label": "Monthly detail",
+  "description": "36-month disaggregation of costs and savings",
+  "tag": "reads"
+ },
+ {
+  "id": "monthly-playback",
+  "group": "present",
+  "groupSeq": 40,
+  "label": "🎬 Monthly Playback",
+  "description": "Animated VCR-style playback of the trajectory, month by month, across FTE, cost, savings, velocity and cost per point (EV-30)",
+  "tag": "supports"
+ },
+ {
+  "id": "exec",
+  "group": "verify",
+  "groupSeq": 140,
+  "label": "Execution Timeline",
+  "description": "Timeline of the transformation programme",
+  "tag": "supports"
+ },
+ {
+  "id": "productivity",
+  "group": "verify",
+  "groupSeq": 50,
+  "label": "Productivity",
+  "description": "Productivity metrics per FTE (throughput, quality)",
+  "tag": "supports"
+ },
+ {
+  "id": "velocity",
+  "group": "verify",
+  "groupSeq": 70,
+  "label": "Velocity",
+  "description": "Delivery velocity metrics (lead time, cycle time)",
+  "tag": "supports"
+ },
+ {
+  "id": "quality",
+  "group": "verify",
+  "groupSeq": 90,
+  "label": "Quality",
+  "description": "Quality metrics (defect rate, escaped defects)",
+  "tag": "supports"
+ },
+ {
+  "id": "compliance",
+  "group": "verify",
+  "groupSeq": 100,
+  "label": "Compliance",
+  "description": "Regulatory compliance coverage view",
+  "tag": "supports"
+ },
+ {
+  "id": "financial",
+  "group": "economics",
+  "groupSeq": 10,
+  "label": "💳 Financial",
+  "description": "ROI, NPV, payback, workforce shift, cash flow, break-even",
+  "tag": "drives",
+  "mvp": true
+ },
+ {
+  "id": "model-flow",
+  "group": "model-engine",
+  "groupSeq": 50,
+  "label": "⏱️ Flow & value (P5)",
+  "description": "P5 - Little's Law cycle time (throttled by P3 supervision), and the sponsor-owned time-to-market NPV of arriving earlier - with an explicit cost-out/throughput-in split so the same freed capacity is never counted twice (AME-SPEC P5, strategic bet).",
+  "tag": "supports"
+ },
+ {
+  "id": "gantt",
+  "group": "verify",
+  "groupSeq": 10,
+  "label": "📅 Gantt / Timeline",
+  "description": "Whole-engagement timeline: transformation program (Discover→Pilot, Agentic Build, Agentic Run), SDLC phases in V-cycle order, and every artefact placed in its phase",
+  "tag": "supports"
+ },
+ {
+  "id": "board",
+  "group": "configure",
+  "groupSeq": 10,
+  "label": "📊 Board",
+  "description": "Configuration surface for operator-created dynamic sections — create from a template, bind cards and body rows to live variables. Holds no cards of its own.",
+  "tag": "supports"
+ },
+ {
+  "id": "factory-model",
+  "group": "factory",
+  "groupSeq": 10,
+  "label": "🏭 Factory Model",
+  "description": "Software/Agentic Factory meta-model — Vision, Portfolio, Epic, Feature, Story, linked to existing SDLC/regulatory artefacts (draft, see AgentCase_Spec_FactoryMetaModel.md)",
+  "tag": "supports"
+ },
+ {
+  "id": "release-pipeline",
+  "group": "factory",
+  "groupSeq": 20,
+  "label": "🚀 Release Pipeline",
+  "description": "Release, Release Candidate, Approval, Deployment, Environment promotion, Monitoring, Feedback, Backlog — a separate flow from the Business/Delivery tree (draft, see AgentCase_Spec_FactoryMetaModel.md)",
+  "tag": "supports"
+ },
+ {
+  "id": "engineering",
+  "group": "factory",
+  "groupSeq": 30,
+  "label": "⚙️ Engineering",
+  "description": "Commit, Build, Build Artifact, Quality Gate, Integrated Product — illustrative, user-entered counters (no live CI/CD integration) (draft, see AgentCase_Spec_FactoryMetaModel.md)",
+  "tag": "supports"
+ },
+ {
+  "id": "factory-timeline",
+  "group": "factory",
+  "groupSeq": 40,
+  "label": "📅 Factory Timeline",
+  "description": "Business-chain structure (Vision/Portfolio/Epic/Feature) + a real calendar timeline of Release-pipeline/Engineering events — a NEW, separate section; the 📅 Gantt / Timeline (SDLC schedule) is untouched (draft, see AgentCase_Spec_FactoryMetaModel.md)",
+  "tag": "supports"
+ },
+ {
+  "id": "commercial",
+  "group": "present",
+  "groupSeq": 10,
+  "label": "💼 Commercial model",
+  "description": "Effort & Tools, AI-Augmented Humans, Agentshore T0/T1/T2, Gain sharing — client view vs Capgemini margin (EV-07)",
+  "tag": "supports"
+ },
+ {
+  "id": "scenarios",
+  "group": "stress",
+  "groupSeq": 20,
+  "label": "🔀 Scenarios",
+  "description": "6 strategies side-by-side: AS-IS, AI only, Location only, Ramp, AI+Loc, AI+100% target",
+  "tag": "reads"
+ },
+ {
+  "id": "kpi",
+  "group": "verify",
+  "groupSeq": 120,
+  "label": "KPI Scorecard",
+  "description": "Consolidated KPIs (financial, delivery, quality)",
+  "tag": "supports"
+ },
+ {
+  "id": "asis-tobe",
+  "group": "verify",
+  "groupSeq": 20,
+  "label": "AS-IS vs TO-BE",
+  "description": "Before/after comparison",
+  "tag": "supports"
+ },
+ {
+  "id": "compare",
+  "group": "stress",
+  "groupSeq": 30,
+  "label": "3-way Comparison",
+  "description": "Compare 3 configurations",
+  "tag": "reads"
+ },
+ {
+  "id": "sensitivity",
+  "group": "stress",
+  "groupSeq": 40,
+  "label": "Sensitivity",
+  "description": "Sensitivity analysis on key parameters",
+  "tag": "reads"
+ },
+ {
+  "id": "sources",
+  "group": "refshare",
+  "groupSeq": 10,
+  "label": "Sources",
+  "description": "External benchmarks and references",
+  "tag": "supports"
+ },
+ {
+  "id": "results",
+  "group": "verdict",
+  "groupSeq": 10,
+  "label": "📋 Results",
+  "description": "Consolidated outcome: verdict, key figures, uncertainty band, savings origin, team shift",
+  "tag": "reads"
+ },
+ {
+  "id": "story-summary",
+  "group": "present",
+  "groupSeq": 30,
+  "label": "📖 The story so far",
+  "description": "One-page AS-IS → TO-BE narrative close: baseline vs target across team, cost, delivery and confidence — the guided sequence's own capstone, distinct from the detailed AS-IS vs TO-BE comparison tab (Story Mode, SM-SPEC v0.1 §10 Q4).",
+  "tag": "supports"
+ },
+ {
+  "id": "decision",
+  "group": "verdict",
+  "groupSeq": 20,
+  "label": "🧭 Decision Intelligence",
+  "description": "Confidence-conditional verdict computed from the Monte Carlo distribution",
+  "tag": "drives"
+ },
+ {
+  "id": "model-evidence",
+  "group": "model-engine",
+  "groupSeq": 60,
+  "label": "📋 Evidence ledger (P6)",
+  "description": "P6 - tags the provenance of the 7 P1/P3/P4 drivers, grades overall case confidence (A-D) weighted by P4 tornado influence, benchmarks it against the case stage, and ranks which assumption is worth instrumenting first (AME-SPEC P6, cross-cutting).",
+  "tag": "supports"
+ },
+ {
+  "id": "strategies",
+  "group": "verdict",
+  "groupSeq": 30,
+  "label": "🏆 Strategy comparison",
+  "description": "7 delivery strategies evaluated on the same core and invariants — ROI, TCO, payback, coverage, supervision, risk, agility",
+  "tag": "reads"
+ },
+ {
+  "id": "arch-layers",
+  "group": "refshare",
+  "groupSeq": 20,
+  "label": "🏛️ Architecture — Layers",
+  "description": "One-line-each index of the 5 layers plus the 5 cross-cutting engines",
+  "tag": "supports"
+ },
+ {
+  "id": "arch-content",
+  "group": "refshare",
+  "groupSeq": 30,
+  "label": "🏛️ Architecture — Layers content",
+  "description": "Full technical detail: functions, code references, wiring status, data flow",
+  "tag": "supports"
+ },
+ {
+  "id": "verif",
+  "group": "defend",
+  "groupSeq": 10,
+  "label": "🔍 Logic verification",
+  "description": "Auto-tests of the model invariants",
+  "tag": "supports"
+ },
+ {
+  "id": "eligibility",
+  "group": "tune",
+  "groupSeq": 60,
+  "label": "🎯 Eligibility & Abaques",
+  "description": "Eligibility gate, pillar × SDLC potential matrix, Abaque A/B and the verification tax (EV-13/15/27)",
+  "tag": "drives"
+ },
+ {
+  "id": "model-verification",
+  "group": "model-engine",
+  "groupSeq": 20,
+  "label": "🛡️ Verification tax (P2)",
+  "description": "P2 · endogenous verification tax derived from artefact criticality class + agent reliability — replaces the flat rate with V = Vfloor(C) + κ(C)·W·(1−r), and exposes the regulatory ROI ceiling ρmax = 1−φ(C) (AME-SPEC P2).",
+  "tag": "supports"
+ },
+ {
+  "id": "maturity",
+  "group": "tune",
+  "groupSeq": 100,
+  "label": "📐 Maturity & Measurement",
+  "description": "SDD/tooling maturity, coaching curve & autonomy weaning, DORA/SPACE/AI/human measurement socle, governance gates & AI-BOM (EV-16/19/20/24/29)",
+  "tag": "supports"
+ },
+ {
+  "id": "program",
+  "group": "tune",
+  "groupSeq": 150,
+  "label": "🧭 Program & Completeness",
+  "description": "Pilot sizing, internal capability (Volet A), multi-pod/SAFe overhead, IP/sovereignty synthesis, maturity transition criteria, token cache (EV-14/18/21/22/26/28)",
+  "tag": "supports"
+ },
+ {
+  "id": "risk",
+  "group": "tune",
+  "groupSeq": 80,
+  "label": "🛡️ Risk & Compliance",
+  "description": "Agentic risk register, EU AI-Act tier classifier and the AI code-quality risk premium (EV-17/23/25)",
+  "tag": "drives"
+ },
+ {
+  "id": "reference",
+  "group": "refshare",
+  "groupSeq": 40,
+  "label": "🗺️ Reference Map",
+  "description": "Coverage of the delivery model by reference subchapter: summary, status and a link to the AgentCase section",
+  "tag": "supports"
+ },
+ {
+  "id": "deps",
+  "group": "refshare",
+  "groupSeq": 50,
+  "label": "🔗 Section Dependencies",
+  "description": "Dependency & impact matrix over the sections that drive the calculation chain (row impacts column)",
+  "tag": "supports"
+ },
+ {
+  "id": "datamodel",
+  "group": "refshare",
+  "groupSeq": 55,
+  "label": "🗄️ Data Model",
+  "description": "What data AgentCase actually holds: the section catalogue, the persisted state registry, the bindable variable registry, and the tunable coefficients + model-engine namespaces — each table live and introspected, not hand-maintained.",
+  "tag": "supports"
+ },
+ {
+  "id": "calcengine",
+  "group": "refshare",
+  "groupSeq": 57,
+  "label": "⚙️ Calculation Engine",
+  "description": "The machinery behind the numbers: the Time Engine function surface, its model() overlay contract and which sections actually reach it, plus the DEP invalidation graph and the AUDIT invariant registry with its armed/dormant split — all live-introspected.",
+  "tag": "supports"
+ },
+ {
+  "id": "glossary",
+  "group": "refshare",
+  "groupSeq": 60,
+  "label": "📖 Delivery-model glossary",
+  "description": "Full referential vocabulary carried in AgentCase: categorised, searchable, term-by-term mapping (EV-12)",
+  "tag": "supports"
+ },
+ {
+  "id": "io",
+  "group": "refshare",
+  "groupSeq": 70,
+  "label": "📥 Import / Export",
+  "description": "Round-trip Excel export/import of the full client configuration, HTML snapshot save, and the named in-file snapshot library (capture, activate, delete, baseline, snapshot-backed Excel export)",
+  "tag": "supports"
+ },
+ {
+  "id": "sessions",
+  "group": "refshare",
+  "groupSeq": 80,
+  "label": "🗂️ Session manager",
+  "description": "Browser-native autosave and multi-tab session recovery (IndexedDB) — independent of the Snapshot library and HTML exports above; nothing here is ever written to disk",
+  "tag": "supports"
+ },
+ {
+  "id": "duediligence",
+  "group": "defend",
+  "groupSeq": 20,
+  "label": "🧾 Due diligence",
+  "description": "Every element requiring client confirmation for the model to be defensible: inputs, metric anchors and the embedded coefficients that drive the euro result",
+  "tag": "supports"
+ },
+ {
+  "id": "personas",
+  "group": "configure",
+  "groupSeq": 20,
+  "label": "👥 Persona management",
+  "description": "Advanced-only: create/edit/delete personas, assign sections to a group and order",
+  "protected": true,
+  "tag": "supports"
+ }
+]
