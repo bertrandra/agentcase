@@ -1,5 +1,6 @@
 import { SectionFrame } from '@/ui/zones/SectionFrame';
 import { useEconomics } from '../useEconomics';
+import { ResultsExcelPanel } from '../../refshare/io/ResultsExcelPanel';
 import { Decomp } from './Decomp';
 import { FteShift } from './FteShift';
 import { Invest } from './Invest';
@@ -22,6 +23,6 @@ export default function FinancialSection() {
   return (
     <SectionFrame title={`Financial Summary — ${v.H}-year case`} help={help}
       result={<><p className="ac-muted">The complete money view: verdict (ROI, payback, NPV), setup, operating costs, savings, cash-flow, the human/agent cost shift and unit economics — all from one model.</p>
-        <Verdict /><Invest /><OpCost /><Savings /><Decomp /><Pl /><FteShift /></>} />
+        <Verdict /><Invest /><OpCost /><Savings /><Decomp /><Pl /><FteShift /><ResultsExcelPanel /></>} />
   );
 }
