@@ -12,12 +12,16 @@ import { freshStore } from '../store/helpers';
 
 beforeEach(() => { freshStore(); uiStore.setState({ activeSection: 'home', toast: '', dockOpen: false }); });
 afterEach(cleanup);
+/** The default persona opens with the sidebar hidden (its "hide menu" flag): bring the full menu back, as the user does with ☰ Menu. */
+const openMenu = () => { const b = screen.queryByRole('button', { name: '☰ Menu' }); if (b) fireEvent.click(b); };
 const kpi = (label: string) => screen.getByText(label).parentElement!.querySelector('.ac-kpi-v')!.textContent;
 
 describe('shell zones', () => {
   it('renders the five zones with landmarks', () => {
     render(<App />);
     expect(screen.getByRole('banner')).toBeTruthy();
+    expect(screen.getByRole('navigation', { name: 'Group navigation' })).toBeTruthy();
+    openMenu();
     expect(screen.getByRole('navigation', { name: 'Sections' })).toBeTruthy();
     expect(screen.getByRole('main')).toBeTruthy();
     expect(screen.getByLabelText('Headline results')).toBeTruthy();
@@ -25,19 +29,21 @@ describe('shell zones', () => {
   });
   it('the nav lists exactly the sections of the persona, grouped', () => {
     render(<App />);
-    const nav = screen.getByRole('navigation', { name: 'Sections' });
-    expect(within(nav).getAllByRole('button')).toHaveLength(visibleSections('builder').length);
+    openMenu();
+    const nav = screen.getByRole('navigation', { name: 'Sections' }), items = () => nav.querySelectorAll('[data-section]');
+    expect(items()).toHaveLength(visibleSections('builder').length);
     act(() => { fireEvent.change(screen.getByLabelText('Persona'), { target: { value: 'advanced' } }); });
-    expect(within(nav).getAllByRole('button')).toHaveLength(SECTIONS.length);
+    expect(items()).toHaveLength(SECTIONS.length);
     expect(within(nav).getAllByRole('heading').length).toBeGreaterThan(8);
   });
   it('persona changes are not undoable; navigation opens the section placeholder', async () => {
     render(<App />);
     fireEvent.change(screen.getByLabelText('Persona'), { target: { value: 'clientcase' } });
     expect(appStore().getState().history.undo).toHaveLength(0);
+    openMenu();
     fireEvent.click(screen.getByRole('button', { name: /^🎯 Scope$/ }));
     expect((await screen.findByRole('heading', { level: 1, name: 'Scope — target artifact selection' }, { timeout: 8000 }))).toBeTruthy();   // migrated section (lazy)
-    fireEvent.click(screen.getByRole('button', { name: /Welcome/ }));
+    fireEvent.click(within(screen.getByRole('navigation', { name: 'Sections' })).getByRole('button', { name: /Welcome/ }));
     expect(screen.getByRole('main').querySelector('h1')!.textContent).toMatch(/Welcome/);   // placeholder for a section not migrated yet
     expect(screen.getByRole('button', { current: 'page' })).toBeTruthy();
   });

@@ -1,6 +1,7 @@
 import { Suspense, lazy, useMemo, type ComponentType } from 'react';
 import { SECTION_COMPONENTS } from '../sections';
 import { useUi } from '../uiState';
+import { DynamicSection } from './dynamic';
 import { Placeholder } from './Placeholder';
 import { sectionById } from './registry';
 
@@ -18,7 +19,7 @@ export function SectionHost() {
   const Cmp = useMemo(() => componentFor(id), [id]);
   return (
     <main className="ac-work" id="main" style={{ gridArea: 'work' }} tabIndex={-1}>
-      {Cmp ? <Suspense fallback={<p className="ac-muted">Loading…</p>}><Cmp /></Suspense> : def ? <Placeholder section={def} /> : <p>Unknown section.</p>}
+      {Cmp ? <Suspense fallback={<p className="ac-muted">Loading…</p>}><Cmp /></Suspense> : def ? <Placeholder section={def} /> : <DynamicSection id={id} />}
     </main>
   );
 }
