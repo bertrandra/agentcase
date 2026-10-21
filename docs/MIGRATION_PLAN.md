@@ -1,6 +1,6 @@
 # AgentCase — Migration plan: TypeScript + React, screen zones, full undo/redo
 
-> Status: **proposal for decision** (written against v18.11). Nothing in this plan is implemented.
+> Status: **approved — D1 to D9 accepted as recommended; Phases 0–5 in progress** (written against v18.11). Progress is tracked in §14.
 > Sources of fact: [ARCHITECTURE.md](ARCHITECTURE.md), [CODE_REVIEW.md](CODE_REVIEW.md), `tools/`.
 
 ## 1. Goals and hard constraints
@@ -244,7 +244,7 @@ dominated by Phase 5 (78 sections) and by the number of 150-line splits, and is 
 | Architecture | ESLint boundaries + `max-lines` | layers and the 150-line rule are CI errors |
 | Accessibility | axe in Playwright | no regression vs `a11yEnhance` |
 
-## 10. Decisions needed
+## 10. Decisions (all recommendations accepted on 2026-10-21)
 
 | # | Question | Recommendation |
 |---|---|---|
@@ -282,3 +282,9 @@ dominated by Phase 5 (78 sections) and by the number of 150-line splits, and is 
 
 Approve D1–D9, then run the **spike** (Phases 0–2 on Scope → Automation → Economics, plus the command/history core): ~3–4 weeks, ends with a
 measured throughput, a re-estimate of Phase 5, and a working Ctrl+Z on the Adjust table.
+
+## 14. Progress log
+
+| Phase | State | Notes |
+|---|---|---|
+| 0 Safety net | done | `tools/oracle.mjs` + `tools/oracle-recipes.mjs` → 39 fixtures in `app/fixtures/` (state snapshot + legacy `model()` output) |
