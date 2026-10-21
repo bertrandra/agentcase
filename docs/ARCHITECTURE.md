@@ -1,6 +1,6 @@
 # AgentCase — Architecture
 
-> Applies to **AgentCase v18.10** (`AgentCase_v18_10_EN.html`, ≈25,475 lines, ≈5.0 MB).
+> Applies to **AgentCase v18.11** (`AgentCase_v18_11_EN.html`, ≈25,475 lines, ≈5.0 MB).
 > Line references (`L1234`) were taken on v18.8 and shift with every release — in v18.9 they move by roughly
 > +60 lines after the helper block at the top of the main script and by up to −1,000 further down (dead code removed).
 > Search for the quoted identifier; do not trust a number.
@@ -505,8 +505,8 @@ All checks run headless (Playwright + Chromium) against the built file; `node to
   staleness check, deterministic Monte Carlo seeds.
 - Debug hooks: `BUS._debugSubs()`, `DEP._debugNodes()`, `AUDIT._debugChecks()`,
   `PM.listMigrations()`, `window.__DEP_FULL_REFRESH__`.
-- **Golden case (v18.9 reference):** Y3 savings €731,774 · Y3 run cost €1,045,490 · setup €225,000 · NPV (8 %)
-  €1,131,220 · payback 9 months. Earlier figures in comments and release notes (€732K; €770K / €1,007K; headline
+- **Golden case (v18.11 reference; v18.9–v18.10 were €731,774 / €1,045,490 / €1,131,220):** Y3 savings €891,555 · Y3 run cost €885,709 · setup €225,000 · NPV (8 %)
+  €1,359,010 · payback 9 months. Earlier figures in comments and release notes (€732K; €770K / €1,007K; headline
   €1,112,871) belong to older engine states. When a change is *meant* to move the golden case, update
   `tools/golden.json` and say so in the changelog.
 
@@ -537,10 +537,9 @@ All checks run headless (Playwright + Chromium) against the built file; `node to
   the ramp cap scale the spline's control points in `scEnginePts()` exactly as they scale the ramp anchors of the other
   curves. The S-curve editor draws the *unscaled* points, so the chart shows the intended adoption and the engine uses
   the scaled one.
-- **Potential × (1 − ceiling).** Effective automation = automation potential × (1 − glass ceiling) × posture × glass factor ×
-  KH multiplier, capped at 100 − ceiling. With fit-to-scope on, potential and ceiling both derive from the same artefact
-  split and sum to 100, so the human share is applied twice (75 % × 75 % = 56 % in the default case). Documented in the app,
-  unchanged, awaiting a decision — see CODE_REVIEW §7.4 item 6.
+- **Human share applied once (v18.11).** Effective automation = min(100 − glass ceiling, potential × posture × glass factor × KH
+  multiplier). Since v18.11 the potential is no longer multiplied by (1 − ceiling): with fit-to-scope on they sum to 100, so
+  the old form counted the human share twice (default case 56 % instead of 75 %).
 - The first Monte Carlo verdict request runs one 800-draw simulation if none exists (by design — a verdict must
   come from a distribution), including when a Board card reads the verdict variables.
 - HTML snapshots restore through `applySnapshotState` directly; the Persistence Manager's migration table
