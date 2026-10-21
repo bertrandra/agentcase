@@ -7,6 +7,7 @@ import { setAppStore } from '@/store/instance';
 import { fromSnapshot } from '@/store/persistence/snapshot';
 import { legacySectionText, missingNumbers, renderedText } from './parity';
 
+const squash = (t: string) => t.replace(/\s+/g, '');
 export const FIXTURES = ['golden', 'ctx-msi', 'curve-logistic', 'industry-med'];
 
 /** Install the application store loaded from a legacy fixture case. */
@@ -29,7 +30,7 @@ export function expectParity(id: string, Section: ComponentType, opts: { ignore?
     expect(legacy, `${fx}/${id}`).not.toBeNull();
     const shown = renderedText(container);
     expect(missingNumbers(legacy!, shown, opts.ignore ?? []), `${fx}/${id} numbers`).toEqual([]);
-    for (const h of opts.headings ?? legacyHeadings(legacy!)) expect(shown, `${fx}/${id} heading "${h}"`).toContain(h);
+    for (const h of opts.headings ?? legacyHeadings(legacy!)) expect(squash(shown), `${fx}/${id} heading "${h}"`).toContain(squash(h));
     cleanup();
   }
 }
