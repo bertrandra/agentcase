@@ -35,11 +35,11 @@ const cells = (root: Element, mask?: RegExp): string[][][] => [...root.querySele
 export function missingVerifyCells(root: Element, fixture: string, id: string, skip: number[] = [], mask?: RegExp): string[] {
   const leg = extra<Record<string, LegacyDom>>('vfa_dom', fixture)[id] as LegacyDom;
   if (leg.error) return [`legacy error ${leg.error}`];
-  const have = cells(root, mask).map((t) => JSON.stringify(t)), stats = statsOf(root).map((s) => JSON.stringify(s.map(clean))), out: string[] = [];
+  const have = cells(root, mask).map((t) => JSON.stringify(t)), stats = statsOf(root).map((s) => JSON.stringify(s.map((x) => clean(x)))), out: string[] = [];
   leg.tables.forEach((t, i) => {
     const j = JSON.stringify(t.map((r) => r.map((c) => clean(c, mask))));
     if (!skip.includes(i) && !have.includes(j)) out.push(`table ${i}: ${j.slice(0, 200)}`);
   });
-  leg.bands.forEach((b) => { if (!stats.includes(JSON.stringify(b.map(clean)))) out.push(`band ${JSON.stringify(b)}`); });
+  leg.bands.forEach((b) => { if (!stats.includes(JSON.stringify(b.map((x) => clean(x))))) out.push(`band ${JSON.stringify(b)}`); });
   return out;
 }

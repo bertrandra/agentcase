@@ -1,11 +1,18 @@
 import type { CSSProperties, ReactNode } from 'react';
 
-export interface TRow { key: string; cells: ReactNode[]; style?: CSSProperties }
+export interface TRow { key: string; cells: ReactNode[]; style?: CSSProperties; /** cell index -> number of columns the cell spans */ span?: Record<number, number> }
 type Align = 'left' | 'center' | 'right';
 
 /** A read-only table whose cells are already formatted; `align` gives the alignment of each column and `foot` an optional total row. */
 export function SimpleTable({ head, rows, foot, align = [], empty, caption }: { head: string[]; rows: TRow[]; foot?: TRow; align?: Align[]; empty?: string; caption?: string }) {
-  const line = (r: TRow) => <tr key={r.key} style={r.style}>{r.cells.map((c, i) => <td key={i} style={{ textAlign: align[i] ?? 'left' }}>{c}</td>)}</tr>;
+  const line = (r: TRow) => {
+    let col = 0;
+    return (
+      <tr key={r.key} style={r.style}>
+        {r.cells.map((c, i) => { const at = col, span = r.span?.[i] ?? 1; col += span; return <td key={i} colSpan={span > 1 ? span : undefined} style={{ textAlign: align[at] ?? 'left' }}>{c}</td>; })}
+      </tr>
+    );
+  };
   return (
     <div className="ac-table-wrap">
       <table className="ac-table">
