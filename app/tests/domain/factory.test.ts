@@ -9,6 +9,7 @@ import { fgParams } from '@/domain/factory/params';
 import { fgPreflight } from '@/domain/factory/preflight';
 import type { FactoryData } from '@/domain/factory/types';
 import { digest } from '../helpers/digest';
+import { legacyJson } from '../helpers/deviations';
 import { diffValues, extraIds, loadCase, loadExtra, pick } from '../helpers/oracleDiff';
 
 type Json = Record<string, unknown> & { error?: string; skipped?: boolean };
@@ -62,7 +63,7 @@ describe('factory domain reproduces the legacy oracle', () => {
     expect(gen).not.toBeNull();
     const got = { ...dump(gen!.data, gen!.phaseFeatures, gen!.storyOf), provenance: pick(gen!.provenance, ['seed', 'weeks', 'volScale', 'curve', 'curveMeans', 'from', 'phases', 'ramps', 'eff', 'ceiling', 'records']) };
     const strip = (o: Json) => Object.fromEntries(Object.entries(o).map(([k, v]) => [k, v && typeof v === 'object' && 'head' in v ? { n: (v as Json).n, h: (v as Json).h } : v]));
-    expect(diffValues(strip(exp), got, 'gen').slice(0, 8)).toEqual([]);
+    expect(diffValues(legacyJson(strip(exp)), got, 'gen').slice(0, 8)).toEqual([]);
   });
   it('the demo dataset is the legacy one', () => {
     const exp = loadExtra<Json>('fm_demo', 'golden');

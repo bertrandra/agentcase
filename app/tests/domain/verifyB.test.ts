@@ -4,6 +4,7 @@ import { makeCtx } from '@/domain';
 import type { CaseState } from '@/domain';
 import { asisTobeView, complianceView, execView, kpiView, productivityView, qualityAnchorView, velocityView } from '@/domain/verifyB';
 import { diffs } from '../helpers/economics';
+import { legacyJson } from '../helpers/deviations';
 
 const ids = readdirSync('fixtures/extras/vb_dom').map((f) => f.replace('.json', '')).sort();
 const json = (p: string) => JSON.parse(readFileSync(p, 'utf8'));
@@ -17,7 +18,7 @@ const body = (rows: string[][]) => rows.slice(1);
 describe('verify (second half) views reproduce the legacy renders', () => {
   it('has fixtures for the extra cases', () => expect(ids).toEqual(expect.arrayContaining(['golden', 'vb-seq', 'vb-gantt-alt', 'vb-perf-edit', 'vb-scope-l0'])));
   describe.each(ids)('%s', (id) => {
-    const c = makeCtx(json(`fixtures/cases/${id}.json`) as CaseState), L = json(`fixtures/extras/vb_dom/${id}.json`) as Dom;
+    const c = makeCtx(json(`fixtures/cases/${id}.json`) as CaseState), L = legacyJson(json(`fixtures/extras/vb_dom/${id}.json`) as Dom);
     it('kpi: cards, tables and index chart', () => {
       const v = kpiView(c);
       expect([v.cards, v.eco, v.vq, v.comp]).toEqual([L.kpiCards, body(L.kpiEco), body(L.kpiVq), body(L.kpiComp)]);

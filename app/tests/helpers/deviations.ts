@@ -53,4 +53,6 @@ export const legacyVelocityRow = (row: string): string => {
 };
 
 /** DEV-NEG-MONEY: legacy negative amounts ("€-15K", "-€15K", "(€15,379)") in the one v19 convention "−€15K" (U+2212 before the euro sign). */
+/** A legacy oracle value (any JSON) with every negative amount read in the v19 convention. */
+export const legacyJson = <T>(v: T): T => JSON.parse(legacyMoney(JSON.stringify(v))) as T;
 export const legacyMoney = (t: string): string => t.replace(/\((€[\d.,]+[KkMm]?)\)/g, '−$1').replace(/€-(?=\d)/g, '−€').replace(/-€/g, '−€').replace(/−€0(?![\d.,])/g, '€0');   // "€-0K" (a rounded-away negative) prints without a sign

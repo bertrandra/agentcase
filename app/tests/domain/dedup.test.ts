@@ -87,7 +87,7 @@ describe('collapsed duplicates return the figures of the implementations they re
     for (const raw of [undefined, '', 'x', '0', '5', '10', '55.5', '100', '250', '-3']) expect(autoCapFrom(raw)).toBe(oldCap(raw));
     expect([clampAutoCap(NaN), clampAutoCap(4), clampAutoCap(130)]).toEqual([100, 10, 100]);
     expect([groupColor({ a: '#fff', b: 'red' }, 'a'), groupColor({ b: 'red' }, 'b'), groupColor(undefined, 'a'), groupColor({}, undefined)]).toEqual(['#fff', '#667089', '#667089', '#667089']);
-    expect([fmtE(1234.5), fmtK(1704000), fmtK(-15000), fmtEur(-99190), fmtEurOrNA(NaN), fmtEurOrNA(-5), fmtSigned(-99190)]).toEqual(['€1,235', '€1,704K', '€-15K', '−€99,190', 'n/a', '−€5', '-€99,190']);
+    expect([fmtE(1234.5), fmtK(1704000), fmtK(-15000), fmtEur(-99190), fmtEurOrNA(NaN), fmtEurOrNA(-5), fmtSigned(-99190)]).toEqual(['€1,235', '€1,704K', '−€15K', '−€99,190', 'n/a', '−€5', '−€99,190']);
     expect(tuneReadiness(blankReadiness())).toBeNull();
   });
 });
