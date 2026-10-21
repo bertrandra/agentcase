@@ -1,5 +1,6 @@
 import type { GanttView } from '@/domain/verifyB';
-import { Bar, Row } from './bars';
+import { Row } from './bars';
+import { ProgramBar } from './ProgramBar';
 
 const FAMILY: Record<string, string> = { adoption: '#0058AB', maturity: '#71609E', financial: '#b04600', workforce: '#006e79' };
 const SUB = { fontSize: 11, fontWeight: 700, color: '#5a6785', textTransform: 'uppercase' as const, letterSpacing: '.04em', margin: '.7rem 0 .2rem' };
@@ -19,7 +20,7 @@ export function Program({ v }: { v: GanttView }) {
         </div>
       </div>
       <div style={SUB}>Transformation program</div>
-      {v.program.map((r) => <Row key={r.name} height={21} label={r.name} title={`${r.name} — ${r.meta}`}><Bar left={r.left} width={r.w} color={r.color} title={`${r.name} — ${r.meta}`} /></Row>)}
+      {v.program.map((r) => <Row key={r.name} height={21} label={r.name} title={`${r.name} — ${r.meta}`}><ProgramBar r={r} /></Row>)}
       <div style={SUB}>Generated milestones — derived from the adoption model, not typed</div>
       <div style={{ display: 'flex', alignItems: 'flex-start', minHeight: 46 }}>
         <div style={{ width: 260, flex: 'none', fontSize: 11, paddingTop: 2 }}>🎯 Model milestones <span style={{ color: '#636363', fontSize: 9.5 }}>(engine-derived)</span></div>

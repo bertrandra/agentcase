@@ -16,20 +16,11 @@ export function Row({ label, height, indent = 0, bg, title, children }: { label:
   );
 }
 
-/** A plain bar (program rows). */
-export function Bar({ left, width, color, title }: { left: number; width: number; color: string; title: string }) {
-  return (
-    <div style={{ position: 'relative', flex: 1, height: 14, background: '#F4F6FB', borderRadius: 3 }}>
-      <div title={title} style={{ position: 'absolute', top: 0, height: 14, borderRadius: 3, left: pct(left), width: pct(width), background: color }} />
-    </div>
-  );
-}
-
-/** Translucent activity span with the solid human-supervision subset on top. */
+/** Translucent activity span with the solid human-supervision subset on top. Derived from effort weights, so a focusable read-only group (not editable). */
 export function DualBar({ left, act, sup, color, title }: { left: number; act: number; sup: number; color: string; title: string }) {
   const base = { position: 'absolute' as const, top: 0, height: 16, left: pct(left) };
   return (
-    <div title={title} style={{ position: 'relative', flex: 1, height: 16, background: '#F4F6FB', borderRadius: 3 }}>
+    <div title={title} role="group" aria-label={title} tabIndex={0} style={{ position: 'relative', flex: 1, height: 16, background: '#F4F6FB', borderRadius: 3 }}>
       <div style={{ ...base, borderRadius: 3, width: pct(act), background: hexRgba(color, 0.4) }} />
       <div style={{ ...base, borderRadius: '3px 0 0 3px', width: pct(sup), background: color }} />
     </div>
