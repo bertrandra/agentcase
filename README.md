@@ -30,6 +30,7 @@ The app is a single, self-contained HTML file. Open `AgentCase_v18_11_EN.html` i
 | [`docs/ARCHITECTURE.md`](docs/ARCHITECTURE.md) | architecture: file layout, engines (BUS, APP_STATE, PM, DEP, AUDIT, TIME), boot sequence, subsystems, state model, shared helpers |
 | [`docs/CODE_REVIEW.md`](docs/CODE_REVIEW.md) | the v18.8 code review (52 findings) and how each was resolved in v18.9 |
 | [`docs/BUMP_PROCEDURE.md`](docs/BUMP_PROCEDURE.md) | how to release a new version |
+| [`docs/MIGRATION_PLAN.md`](docs/MIGRATION_PLAN.md) | proposal: migration to TypeScript + React, screen zones, full undo/redo |
 | `tools/` | the test battery and release checks (below) |
 | `docs/release-notes/` | original HTML release notes, v12.57 → v18.1 (frozen) |
 | `docs/history/` | archived process documents |
