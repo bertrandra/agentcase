@@ -345,6 +345,17 @@ Run everything with `node tools/test-all.mjs`.
 4. **Stale regulatory counts in the industry list** (AERO showed 48 reg. artefacts, the catalogue has 69): the list
    baked into the markup was shown first; it is now rebuilt from the data.
 
+5. **Excel import left the automation potential at a provisional fit** (found in v18.10 while checking a customer workbook:
+   potential 72 % in the file, 69 % in the app, glass ceiling 28 %). Fixed — see CHANGELOG v18.10.
+6. **Open modelling question — the human share is applied twice when the potential is fitted to the scope.** With "fit to
+   scope" on, `autoPotential` = weighted mean of the artefacts' agent share and the glass ceiling = weighted mean of their
+   human share, so potential + ceiling = 100 by construction (default case 75 + 25; customer case 72 + 28). The model then
+   computes effective automation = potential × (1 − ceiling) (documented in the app): 75 % × 75 % = 56 %, 72 % × 72 % = 52 %.
+   If "potential" means the agent share of the artefacts, the ceiling is already inside it and the effective depth would
+   be the potential itself; if it means a technical potential before any supervision constraint, the formula is right but the
+   fit-to-scope default (which takes it from the same artefact split as the ceiling) is not. **Not changed** (it would move
+   the golden case: Y3 savings €731,774 and everything downstream). Decision for the model owner.
+
 The golden-case discrepancy noted in ARCHITECTURE.md §11 is resolved: the reference figures live in
 `tools/golden.json` and are asserted on every run.
 

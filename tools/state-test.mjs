@@ -290,6 +290,21 @@ const tests = {
     const msc = sav('MSC'), msi = sav('MSI'), sta = sav('STA'); sav('MSC');
     return { ok: TIME_ACTIVE_CURVE === 'spline.default' && msi < msc - 1 && sta < msi - 1, detail: 'MSC ' + msc.toFixed(0) + ' > MSI ' + msi.toFixed(0) + ' > STA ' + sta.toFixed(0) };
   },
+  // v18.10: after an Excel import the automation potential must equal the fit of the FINAL scope (it was left at the fit of a provisional one)
+  async import_refits_potential() {
+    let captured = null; const cu = URL.createObjectURL; URL.createObjectURL = b => { if (!captured) captured = b; return cu.call(URL, b); };
+    await exportParams('all'); URL.createObjectURL = cu;
+    const wb = new ExcelJS.Workbook(); await wb.xlsx.load(await captured.arrayBuffer());
+    const ps = wb.getWorksheet('Phase Scope'); ps.eachRow((r, i) => { if (i > 1) r.getCell(3).value = ['V1', 'V3', 'V4', 'V6'].includes(String(r.getCell(1).value)) ? 'Yes' : 'No'; });
+    // final scope: a handful of artefacts, some of them in phases the Phase Scope sheet excludes, with distinctive automation values
+    const sd = wb.getWorksheet('SDLC Artifacts'); const keep = ['A008', 'A017', 'A018', 'A026', 'A027', 'A045'];
+    sd.eachRow((r, i) => { if (i > 1) { const id = String(r.getCell(1).value); r.getCell(5).value = keep.includes(id) ? 'Yes' : 'No'; if (keep.includes(id)) r.getCell(6).value = { A008: 20, A017: 30, A018: 40, A026: 95, A027: 90, A045: 85 }[id]; } });
+    const buf = await wb.xlsx.writeBuffer();
+    await importParams({ files: [{ name: 'refit.xlsx', arrayBuffer: async () => buf }] });
+    const pot = P('autoPotential'), fit = phaseScope().avgAgent, ceil = computeGlassCeiling();
+    const status = document.getElementById('importStatus').innerText;
+    return { ok: pot === fit && pot + ceil === 100 && selectedArtefacts.size === keep.length && /Phase Scope marks/.test(status), detail: 'potential ' + pot + ' vs scope fit ' + fit + ' ; ceiling ' + ceil + ' ; selected ' + selectedArtefacts.size + ' ; note shown=' + /Phase Scope marks/.test(status) };
+  },
   // H-4: shrinking the horizon must never produce NaN
   async horizon_shrink_finite() {
     const setH = v => { const el = document.getElementById('horizon'); el.value = v; INPUTS.v.horizon = String(v); el.dispatchEvent(new Event('change', { bubbles: true })); };

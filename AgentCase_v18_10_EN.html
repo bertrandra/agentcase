@@ -15256,7 +15256,7 @@ function renderAutomationCurve(){
     var _tx=W-mm.r+6, _gap=13;
     var _tags=[
       {y:sy(auto)+4,    col:COL.pot,  txt:'Potential '+auto.toFixed(0)+'%'},
-      {y:sy(eff)+4,     col:COL.ceil, txt:'Ceiling '+eff.toFixed(0)+'%'},
+      {y:sy(eff)+4,     col:COL.ceil, txt:'Max depth '+eff.toFixed(0)+'%'},   /* v18.10: was "Ceiling", which read as the glass-ceiling parameter (28 %) — this is the resulting permitted depth = potential × (1 − glass ceiling) */
       {y:sy(realEnd)+4, col:COL.real, txt:'Realized '+realEnd.toFixed(0)+'%'}
     ];
     if(SHOW_AC_HUMAN) _tags.push({y:sy(residEndPct)+4, col:COL.human, txt:'Human FTE '+Math.round(residEndPct)+'%'});
@@ -17535,7 +17535,7 @@ async function importParams(input){
     }}
     { const rows=aoa('Phase Scope'); if(rows){
       const sel=[]; rows.slice(1).forEach(r=>{ const id=String(r[0]).trim(); const inc=String(r[2]).trim().toLowerCase(); if(ALL_PHASES.includes(id)&&(inc==='yes'||inc==='y'||inc==='true'||inc==='1')) sel.push(id); });
-      if(sel.length){ selectedArtefacts=new Set(); DATA.artefacts.forEach(a=>{ if(sel.includes(a.phase)) selectedArtefacts.add(a.id); }); renderPhaseSelector(); applyScopeAuto(); } else { notes.push('No phase included — kept previous scope'); }
+      if(sel.length){ selectedArtefacts=new Set(); DATA.artefacts.forEach(a=>{ if(sel.includes(a.phase)) selectedArtefacts.add(a.id); }); phaseOff=new Set(ALL_PHASES.filter(id=>!sel.includes(id))); renderPhaseSelector(); applyScopeAuto(); } else { notes.push('No phase included — kept previous scope'); }
     }}
     { const rows=aoa('Location Target'); if(rows){
       ensureTargetLoc(); let any=false; rows.slice(1).forEach(r=>{ const loc=String(r[0]).trim(); const pct=parseFloat(r[2]); if(isKnownLoc(loc)&&targetLocPct[loc]!==undefined&&!isNaN(pct)){ targetLocPct[loc]=clamp(pct,0,100,'Target % '+loc); any=true; } });
@@ -17618,7 +17618,14 @@ async function importParams(input){
         if(!isNaN(efExp) && efExp>=0) a.effort=efExp;
         const seqExp=parseFloat(r[7]); if(!isNaN(seqExp)) a.seq=seqExp;   // v15.7: ramp-up sequence (guarded)
       });
-      if(restoredSel.size){ selectedArtefacts=restoredSel; }
+      if(restoredSel.size){
+        selectedArtefacts=restoredSel;
+        /* v18.10: the artefact selection is what the model computes on. A phase marked "No" on the Phase Scope sheet but
+         * holding selected artefacts is in scope in practice (phaseState() / the next export would otherwise call it
+         * excluded while its artefacts are still counted) — the selection wins, and the file's contradiction is reported. */
+        const contradict=[]; DATA.phases.forEach(ph=>{ if(DATA.artefacts.some(a=>a.phase===ph.id && restoredSel.has(a.id)) && phaseOff.has(ph.id)){ phaseOff.delete(ph.id); contradict.push(ph.id); } });
+        if(contradict.length) notes.push('Phase Scope marks '+contradict.join(', ')+' as "No", but the SDLC Artifacts sheet selects artefacts in '+(contradict.length>1?'them':'it')+' — the artefact selection was kept.');
+      }
     }}
 
     if(typeof renderRateCard==='function') renderRateCard();
@@ -17971,6 +17978,11 @@ async function importParams(input){
     if(typeof renderRegPanel==='function') renderRegPanel();
     if(typeof renderPersonaPills==='function'){ renderPersonaPills(); renderPersonaNav(currentPersona); }
     renderPhaseSelector();
+    /* v18.10: re-fit the automation potential to the FINAL scope. The Phase Scope step fits it to a provisional
+     * selection (every artefact of the included phases, still with default effort / automation values); the SDLC
+     * Artifacts sheet then replaced the selection and the values without a re-fit, leaving the potential at that
+     * provisional figure (69 % where the final scope gives 72 %) while the glass ceiling — recomputed live — said 28 %. */
+    recomputeWeights(); applyScopeAuto();
     refreshAll();
     // v15.4: every successful import is captured as a named snapshot too, same as exports — so
     // "what did this Excel file actually change" has a traceable before/after in the library.

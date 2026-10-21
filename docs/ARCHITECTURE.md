@@ -497,7 +497,7 @@ All checks run headless (Playwright + Chromium) against the built file; `node to
 | `tools/smoke.mjs` | the file boots without console / page errors; **the golden-case figures** equal `tools/golden.json` (Y3 savings, Y3 run cost, setup, NPV, payback, 0 audit violations) |
 | `tools/handlers-test.mjs` | every inline-handler target (≈250 functions) in the markup and in the HTML generated for every section is defined |
 | `tools/xss-test.mjs` | hostile strings injected through state restore, live state, and two Excel-fuzz passes never execute and never inject attributes |
-| `tools/state-test.mjs` | 37 regression tests for persistence, autosave, calculations, dates, import safety, accessibility — each written to fail on v18.8 |
+| `tools/state-test.mjs` | 38 regression tests for persistence, autosave, calculations, dates, import safety, accessibility — each written to fail on v18.8 |
 | `tools/render-diff.mjs <before> <after>` | the visible text of all 82 sections is identical between two builds, so a refactor is provably cosmetic (differences are listed) |
 
 - In-app: `AUDIT.runChecks()` (42 invariants), Time Engine canaries (`TE-05/09/10/10b` rebuild a
@@ -537,6 +537,10 @@ All checks run headless (Playwright + Chromium) against the built file; `node to
   the ramp cap scale the spline's control points in `scEnginePts()` exactly as they scale the ramp anchors of the other
   curves. The S-curve editor draws the *unscaled* points, so the chart shows the intended adoption and the engine uses
   the scaled one.
+- **Potential × (1 − ceiling).** Effective automation = automation potential × (1 − glass ceiling) × posture × glass factor ×
+  KH multiplier, capped at 100 − ceiling. With fit-to-scope on, potential and ceiling both derive from the same artefact
+  split and sum to 100, so the human share is applied twice (75 % × 75 % = 56 % in the default case). Documented in the app,
+  unchanged, awaiting a decision — see CODE_REVIEW §7.4 item 6.
 - The first Monte Carlo verdict request runs one 800-draw simulation if none exists (by design — a verdict must
   come from a distribution), including when a Board card reads the verdict variables.
 - HTML snapshots restore through `applySnapshotState` directly; the Persistence Manager's migration table

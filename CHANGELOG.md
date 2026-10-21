@@ -23,6 +23,13 @@ They now scale the spline exactly as they scale the ramp anchors of the other cu
 - **Golden case unchanged** (HRI off, context MSC: speed 1, cap 100): Y3 savings €731,774 · NPV €1,131,220 · payback 9.
 - Non-default cases change, which is the point: HRI on at index 50 → Y3 savings €635,906 (×0.80 ramp); context MSI €566,186
   and STA €504,494 instead of €731,774 for all three.
+- **Excel import now re-fits the automation potential to the final scope.** The Phase Scope sheet fitted it to a provisional
+  selection (all artefacts of the included phases, still with default effort / automation values) and the SDLC Artifacts sheet
+  then replaced the selection and the values without a re-fit: a workbook saying potential 72 % / ceiling 28 % came back as
+  69 % / 28 % (potential + ceiling ≠ 100). A phase marked "No" that still holds selected artefacts is un-gated and reported
+  in the import notes. Test `import_refits_potential`.
+- Automation-over-time chart: the right-edge tag "Ceiling 52 %" is renamed "Max depth 52 %" — it is the permitted depth
+  (potential × (1 − glass ceiling)), not the glass-ceiling parameter (28 %).
 - The warning on the HRI screen ("the drag does not act on the spline") is removed. The S-curve editor still draws the
   unscaled points. Two new regression tests: `hri_and_engagement_apply_to_spline`, `engagement_context_moves_spline`.
 
