@@ -1,4 +1,5 @@
 import { groupBar, firstOfGroup } from '@/domain/nav/groupBar';
+import { rescueFocus } from '../focusRescue';
 import { goSection, toggleMenuHidden, useUi } from '../uiState';
 import { useNavModel } from '../zones/navModel';
 import { switchPersona } from './personaSwitch';
@@ -14,7 +15,7 @@ export function GroupNavBar() {
   const pickGroup = (id: string) => { const target = firstOfGroup(m.persona, id, m.visible, m.lists); if (target) goSection(target); };
   return (
     <div className="ac-gnav" role="navigation" aria-label="Group navigation">
-      <button type="button" className="ac-btn" onClick={toggleMenuHidden} title="Show the full sidebar menu">☰ Menu</button>
+      <button type="button" className="ac-btn" onClick={() => { toggleMenuHidden(); rescueFocus(() => document.querySelector<HTMLElement>('.ac-nav [aria-current=page]')); }} title="Show the full sidebar menu">☰ Menu</button>
       <select aria-label="Switch persona" value={m.persona} onChange={(e) => switchPersona(e.target.value, m.landing(e.target.value))}>
         {m.personas.map((p) => <option key={p.id} value={p.id}>{p.label}</option>)}
       </select>

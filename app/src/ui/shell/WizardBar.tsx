@@ -1,6 +1,7 @@
 import { useEffect } from 'react';
 import { flatten } from '@/domain/nav/sequence';
 import { flattenFast } from '@/domain/nav/fastPath';
+import { rescueFocus } from '../focusRescue';
 import { uiStore, useUi, wizExit, wizStart } from '../uiState';
 import { useNavModel } from '../zones/navModel';
 import { WizardActive } from './WizardActive';
@@ -21,7 +22,7 @@ export function WizardBar() {
   return (
     <div className="ac-wiz ac-wiz-idle" role="region" aria-label="Guided sequence">
       <span>🧭 A guided <strong>build sequence</strong> ({steps} step{steps === 1 ? '' : 's'}{fastPath ? ` · ${stops.length} Fast-Path section${stops.length === 1 ? '' : 's'}` : ''}) is available for this persona.</span>
-      <button type="button" className="ac-btn ac-btn-primary" onClick={() => wizStart(stops.map((s) => s.sec))}>▶ Start guided sequence</button>
+      <button type="button" className="ac-btn ac-btn-primary" onClick={() => { wizStart(stops.map((s) => s.sec)); rescueFocus(() => document.querySelector<HTMLElement>('.ac-wiz-active .ac-btn-primary')); }}>▶ Start guided sequence</button>
     </div>
   );
 }

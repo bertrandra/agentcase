@@ -1,51 +1,36 @@
 #!/usr/bin/env node
 // Accessibility audit of the BUILT single-file app (app/dist/index.html) with axe-core in Chromium.
 // For each fixture it opens the case through the Open… input, switches to the Advanced persona, keeps the History dock open and visits every
-// section, then starts the guided sequence (when the persona has one) and audits that bar too. Writes app/a11y-report.json and a summary table.
+// section, then audits the other states (see a11y-states.mjs: persona menu, history dock + undo toast, guided sequence, restore banner, dark /
+// forced-colours / reduced-motion / 360px) and runs the keyboard-only checks (a11y-keys.mjs: Tab walk, skip link, dialogs, focus survival). Writes app/a11y-report.json and a summary table.
 // Exit code 1 when any serious/critical violation remains, or when the moderate/minor counts exceed app/a11y-budget.json.
 // Usage: node tools/a11y.mjs [--fixtures golden,ctx-msi,industry-med] [--sections label,label] [--update-budget]
-import { createRequire } from 'node:module';
 import { readFileSync, writeFileSync, existsSync } from 'node:fs';
-import { dirname, resolve } from 'node:path';
-import { fileURLToPath } from 'node:url';
-const here = dirname(fileURLToPath(import.meta.url)), app = resolve(here, '..', 'app');
-const pw = createRequire(import.meta.url)(process.env.PW_MODULE || '/opt/node-tools/node_modules/playwright');
-const axeSource = readFileSync(createRequire(resolve(app, 'package.json')).resolve('axe-core/axe.min.js'), 'utf8');
+import { resolve } from 'node:path';
+import { app, pw, NAV, recorder, openCase, openSection } from './a11y-lib.mjs';
+import { historyStates, keyboardStates, mediaStates, menuToggleFocus, personaMenu, restoreBanner, wizardEnd } from './a11y-states.mjs';
 const args = process.argv.slice(2), opt = (n) => (args.indexOf(n) < 0 ? '' : args[args.indexOf(n) + 1] || '').split(',').filter(Boolean);
 const fixtures = opt('--fixtures').length ? opt('--fixtures') : ['golden', 'ctx-msi', 'industry-med'], only = opt('--sections');
 const budgetFile = resolve(app, 'a11y-budget.json'), reportFile = resolve(app, 'a11y-report.json');
-const NAV = 'nav[aria-label=Sections] button, .ac-gnav button';
 const ORDER = ['critical', 'serious', 'moderate', 'minor'];
 
 const browser = await pw.chromium.launch();
-const rows = [];   // { fixture, section, rule, impact, nodes, help, targets }
-let audits = 0;
-async function audit(page, fixture, section) {
-  const res = await page.evaluate(async () => {
-    const r = await window.axe.run(document, { resultTypes: ['violations'] });
-    return r.violations.map((v) => ({ rule: v.id, impact: v.impact, help: v.help, nodes: v.nodes.length, targets: v.nodes.slice(0, 3).map((n) => n.target.join(' ')) }));
-  });
-  audits++;
-  for (const v of res) rows.push({ fixture, section, ...v });
-}
+const rec = recorder(), { rows } = rec, audit = rec.audit;
+const PERSONA = 'select[aria-label=Persona], select[aria-label="Switch persona"]';
 for (const fx of fixtures) {
   const ctx = await browser.newContext({ viewport: { width: 1360, height: 900 } });
-  const page = await ctx.newPage();
-  await page.goto('file://' + resolve(app, 'dist/index.html')); await page.waitForSelector('.ac-shell');
-  await page.setInputFiles('input[type=file]', { name: fx + '.json', mimeType: 'application/json', buffer: readFileSync(resolve(app, `fixtures/cases/${fx}.json`)) });
+  const page = await openCase(ctx, fx);
   await page.selectOption('select[aria-label=Persona]', 'advanced');
-  await page.addScriptTag({ content: axeSource });
   await page.click('.ac-dock button');   // the History dock stays open for every audit
   const labels = [...new Set(await page.evaluate((sel) => [...document.querySelectorAll(sel)].map((b) => b.textContent), NAV))];
   for (const label of labels) {
     if (only.length && !only.includes(label)) continue;
-    const btn = page.locator(NAV).filter({ hasText: label }).first();
-    if (!(await btn.count())) continue;
-    await btn.click(); await page.waitForTimeout(200);
-    await audit(page, fx, label);
+    if (await openSection(page, label)) await audit(page, fx, label);
   }
-  if (!only.length) {   // the Builder persona: hide-menu mode (group bar) and a guided sequence
-    await page.selectOption('select[aria-label=Persona], select[aria-label="Switch persona"]', 'builder'); await page.waitForTimeout(200);
+  if (!only.length) {
+    await personaMenu(page, fx, rec); await historyStates(page, fx, rec);
+    // the Builder persona: hide-menu mode (group bar) and a guided sequence
+    await page.selectOption(PERSONA, 'builder'); await page.waitForTimeout(200);
     await audit(page, fx, '(builder: group bar + guided sequence idle)');
     const start = page.locator('button:has-text("Start guided sequence")');
     if (await start.count()) {
@@ -53,9 +38,16 @@ for (const fx of fixtures) {
       await audit(page, fx, '(guided sequence active, step 1)');
       await page.locator('.ac-wiz button:has-text("Next")').click(); await page.waitForTimeout(200);
       await audit(page, fx, '(guided sequence active, step 2)');
+      await page.click('.ac-wiz button[aria-label="Exit the sequence"]');
     } else console.log(`note: no guided sequence offered for ${fx}`);
+    await wizardEnd(page, fx, rec); await menuToggleFocus(page, fx, rec); await keyboardStates(page, fx, rec);
   }
   await ctx.close();
+}
+if (!only.length) {   // once, on the first fixture: another tab's autosave offered, and the emulated media / narrow viewport
+  const ctx = await browser.newContext({ viewport: { width: 1360, height: 900 } });
+  await restoreBanner(ctx, fixtures[0], rec); await ctx.close();
+  await mediaStates(browser, fixtures[0], rec, ['Welcome', 'Decision', 'Financial case']);
 }
 await browser.close();
 
@@ -66,8 +58,8 @@ for (const r of rows) {
 }
 const summary = [...agg.values()].map((a) => ({ rule: a.rule, impact: a.impact, nodes: a.nodes, sections: a.sections.size, help: a.help, example: a.example }))
   .sort((a, b) => ORDER.indexOf(a.impact) - ORDER.indexOf(b.impact) || b.nodes - a.nodes);
-writeFileSync(reportFile, JSON.stringify({ audits, fixtures, summary, violations: rows.map((r) => ({ fixture: r.fixture, section: r.section, rule: r.rule, impact: r.impact, nodes: r.nodes, example: r.targets[0] })) }, null, 1) + '\n');
-console.log(`${audits} audits (${fixtures.join(', ')})`);
+writeFileSync(reportFile, JSON.stringify({ audits: rec.state.audits, fixtures, summary, violations: rows.map((r) => ({ fixture: r.fixture, section: r.section, rule: r.rule, impact: r.impact, nodes: r.nodes, example: r.targets[0] })) }, null, 1) + '\n');
+console.log(`${rec.state.audits} audits (${fixtures.join(', ')})`);
 console.log('impact   | rule'.padEnd(42) + '| nodes | pages');
 for (const s of summary) console.log(`${s.impact.padEnd(8)} | ${s.rule.padEnd(30)}| ${String(s.nodes).padStart(5)} | ${s.sections}`);
 if (!summary.length) console.log('no violations');

@@ -1,6 +1,6 @@
 {
  "note": "Max violating nodes per rule|impact over the audited fixtures and sections; serious/critical must stay at 0. Regenerate with `npm run a11y -- --update-budget` only to lower it.",
  "budget": {
-  "empty-table-header|minor": 3
+  "empty-table-header|minor": 0
  }
 }
