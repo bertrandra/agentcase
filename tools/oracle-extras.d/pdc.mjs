@@ -24,7 +24,7 @@ export const EXTRAS = {
   pdc_ddsens: `(()=>{ const keep = DD_SENS; try { ddComputeSensitivity(); const h = document.getElementById('ddHost');
     return JSON.parse(JSON.stringify({ base: DD_SENS.base, w: DD_SENS.w, unmeasurable: DD_SENS.unmeasurable, top: h.textContent.split('Used in')[0].replace(/\\s+/g,' ').trim(),
       tr: [...h.querySelectorAll('tbody tr')].map(tr => [...tr.children].map(c => c.textContent.trim())) })); } finally { DD_SENS = keep; } })()`,
-  pdc_verif: `(()=>{ renderVerif(); renderConvChecks();
+  pdc_verif: `(()=>{ MCS_LAST = null; refreshAll(); renderVerif(); renderConvChecks(); /* hermetic: an earlier extra left a 300-draw Monte Carlo run (CC-MC-01 FAIL) and a stale TIME.current (TE-DEP FAIL) */
     const rows = id => [...document.querySelectorAll('#'+id+' tr')].map(r => [...r.children].map(c => c.textContent.trim()));
     const txt = id => document.getElementById(id).textContent.replace(/\\s+/g,' ').trim();
     return { checks: rows('verifChecks'), chain: rows('verifChain'), sensi: rows('verifSensi'), prov: rows('provenanceHost'), provText: txt('provenanceHost'), conv: rows('convChecksHost') }; })()`,
