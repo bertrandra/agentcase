@@ -1,0 +1,64 @@
+📅 Factory Timeline
+DRAFT
+SUPPORTS
+?
+A separate visualization from the 📅 Gantt / Timeline (SDLC schedule) — that section is untouched. Here: the DORA + agentic KPIs, the Business-chain structure (no dates exist for Vision/Portfolio/Epic/Feature/Story) and a real calendar timeline of dated Release-pipeline + Engineering events.
+📊 Factory KPIs DORA + agentic metrics, computed live from the Release Pipeline / Engineering / Factory Model data — also bindable as Board variables
+🚀 Release pipeline
+0.7 /mo
+Deployment frequency
+24.8 days
+Promotion lead time
+3%
+Rollback rate
+8%
+Failed-deployment rate
+56.0 days
+Environment stability (mean days between monitoring events)
+5.0 days
+Approval duration
+🏭 Delivery — Tasks
+70%
+Autonomous completion rate (Tasks)
+30%
+Human intervention rate (Tasks)
+⚙️ Engineering
+83%
+Quality-gate pass rate
+17%
+Quality-gate rework rate
+173
+Generated change volume (commit count)
+75%
+Agent-driven test share (capability=Test Tasks)
+17.3
+Avg commits per Task
+86%
+Build success rate
+All 14 metrics compute live from 🚀 Release Pipeline / ⚙️ Engineering / 🏭 Factory Model data (0 when there is nothing to measure yet). They are also bindable as Board card variables — the source section decides which appear.
+🏢 Business chain
+🎯 Vision: Reach 75% effective automation under a 25% irreducible human-supervision floor across 3 lifecycle phase(s), for €892K of annual savings at Y3 with human sign-off preserved where certification requires it.
+📁 Core delivery (3 epics)
+🧩 Definition & design (1 feature)
+⭐ Specification (1 story)
+🧩 Build (1 feature)
+⭐ Implementation (3 stories)
+🧩 Verification & integration (1 feature)
+⭐ Verification (1 story)
+🗓️ Release & Engineering timeline Commits, Builds, Release Candidates, Approvals, Deployments, Monitoring, Feedback — by their real dates
+Calendar →
+Aug 21
+Dec 13
+Apr 5
+Jul 29
+Nov 20
+Mar 14
+Jul 7
+Commits (173)
+Builds (97)
+Release Candidates (18)
+Approvals (18)
+Deployments (80)
+Monitoring (12)
+Feedback (36)
+434 dated event(s) across 8/21/2027 – 7/7/2029. Hover a dot for details.

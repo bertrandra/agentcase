@@ -1,0 +1,1 @@
+{"provision":"provisioned","constrained":false,"mode":"hard","esup":0,"vMax":[0,0,0],"vfteRaw":[1.5750000000000004,3.4650000000000007,6.300000000000002],"vfteEff":[1.5750000000000004,3.4650000000000007,6.300000000000002],"esupNeeded":[0.83625,1.11975,1.5450000000000002],"utilization":["Infinity","Infinity","Infinity"],"supervisorsToUnlock":2,"rampMultiplier":[1,1,1]}

@@ -1,0 +1,73 @@
+📅 Factory Timeline
+DRAFT
+SUPPORTS
+?
+A separate visualization from the 📅 Gantt / Timeline (SDLC schedule) — that section is untouched. Here: the DORA + agentic KPIs, the Business-chain structure (no dates exist for Vision/Portfolio/Epic/Feature/Story) and a real calendar timeline of dated Release-pipeline + Engineering events.
+📊 Factory KPIs DORA + agentic metrics, computed live from the Release Pipeline / Engineering / Factory Model data — also bindable as Board variables
+🚀 Release pipeline
+—
+Deployment frequency
+insufficient sample (n=3)
+14.0 days
+Promotion lead time
+7%
+Rollback rate
+7%
+Failed-deployment rate
+11.2 days
+Environment stability (mean days between monitoring events)
+—
+Approval duration
+insufficient sample (n=4)
+🏭 Delivery — Tasks
+70%
+Autonomous completion rate (Tasks)
+30%
+Human intervention rate (Tasks)
+⚙️ Engineering
+83%
+Quality-gate pass rate
+17%
+Quality-gate rework rate
+18
+Generated change volume (commit count)
+75%
+Agent-driven test share (capability=Test Tasks)
+1.5
+Avg commits per Task
+71%
+Build success rate
+All 14 metrics compute live from 🚀 Release Pipeline / ⚙️ Engineering / 🏭 Factory Model data (0 when there is nothing to measure yet). They are also bindable as Board card variables — the source section decides which appear.
+🏢 Business chain
+🎯 Vision: Transform the claims-processing platform into an agent-assisted factory: cut cycle time in half while keeping human sign-off on every regulated decision.
+📁 Customer Experience Platform (2 epics)
+🧩 Self-service claims portal (2 features)
+⭐ Document upload & OCR (2 stories)
+⭐ Real-time claim status tracker (2 stories)
+🧩 Proactive notifications (2 features)
+⭐ SMS/email milestone alerts (1 story)
+⭐ Weekly digest for adjusters (1 story)
+📁 Core Claims Modernization (2 epics)
+🧩 Automated claims triage (2 features)
+⭐ Rules+LLM triage engine (2 stories)
+⭐ Smart adjuster routing (1 story)
+🧩 Fraud detection agent (2 features)
+⭐ Anomaly scoring model (1 story)
+⭐ Case flagging workflow (2 stories)
+🗓️ Release & Engineering timeline Commits, Builds, Release Candidates, Approvals, Deployments, Monitoring, Feedback — by their real dates
+Calendar →
+Apr 2
+Apr 15
+Apr 29
+May 12
+May 26
+Jun 8
+Jun 22
+Commits (18)
+Builds (7)
+Release Candidates (5)
+Approvals (4)
+Deployments (14)
+Monitoring (6)
+Feedback (3)
+57 dated event(s) across 4/2/2026 – 6/22/2026. Hover a dot for details.
