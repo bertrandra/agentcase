@@ -10,7 +10,8 @@
 > embedded fonts were not reviewed.
 > Locations are `L<line>` in that file. Findings were checked against the code; the ones marked
 > **[reproduced]** were also reproduced in Node or headless Chromium.
-> Architecture context: [ARCHITECTURE.md](ARCHITECTURE.md).
+> Architecture context: [history/ARCHITECTURE_legacy_v18.md](history/ARCHITECTURE_legacy_v18.md) (legacy file);
+> [ARCHITECTURE.md](ARCHITECTURE.md) describes the TypeScript build. How the new build relates to these findings: [§8](#8-status-after-the-migration).
 
 ## 1. Summary
 
@@ -355,6 +356,26 @@ Run everything with `node tools/test-all.mjs`.
    be the potential itself; if it means a technical potential before any supervision constraint, the formula is right but the
    fit-to-scope default (which takes it from the same artefact split as the ceiling) is not. **Resolved in v18.11** (golden case moved to Y3 savings €891,555).
 
-The golden-case discrepancy noted in ARCHITECTURE.md §11 is resolved: the reference figures live in
+The golden-case discrepancy noted in the legacy ARCHITECTURE document §11 is resolved: the reference figures live in
 `tools/golden.json` and are asserted on every run.
 
+## 8. Status after the migration
+
+The review above concerns the legacy file `AgentCase_v18_8_EN.html` and is not rewritten. The product is now the TypeScript + React
+build in `app/` ([ARCHITECTURE.md](ARCHITECTURE.md), [MIGRATION_PLAN.md](MIGRATION_PLAN.md)); the legacy file stays as the frozen
+reference. This table says how the new build addresses each category of finding. "By construction" means a lint rule or the data
+model rules the defect class out; "tested" means a named test; "open" means not addressed.
+
+| Category (findings) | Legacy cause | How the new build addresses it | Status |
+|---|---|---|---|
+| **XSS surface** (H-1, L-13) | ≈300 `innerHTML` sites and inline `on*` handlers built from strings | React renders all text and attributes; `dangerouslySetInnerHTML` is an ESLint error; no `innerHTML`, `eval` or `new Function` in `app/src` (grep); prose is JSON rendered by the `Rich` widget from a whitelist of tags. Imports: `sanitize` drops `__proto__`/`constructor`/`prototype` at every depth; the workbook importer has size, entry-count and ratio limits plus `safeId`/`cleanText`; a legacy HTML snapshot is parsed as JSON, never executed; the embedded case escapes `<` | By construction. Tested: `tests/lint-rules.test.ts`, `tests/store/excel-params-safety.test.ts`, `html-snapshot.test.ts`. The legacy fuzz `tools/xss-test.mjs` is not ported |
+| **DOM as state** (§5.1, §5.3, M-8, M-9, L-4) | form elements are the input store; what-if code mutates globals and restores them | the case is one Immer document; the engine takes it as an argument (`makeCtx(doc)`), what-if runs use `withInputs` on a copy, nothing is a global; derived values are selected, never stored | By construction. The document keeps the legacy input ids as keys (`doc.dom`) |
+| **Persistence integrity** (H-2, H-3, H-5, H-6, H-7, M-5, M-6, M-11 to M-14, L-20 to L-25) | aliasing of globals to snapshot objects, unsaved S-curve, hand-called `syncState`, DOM-clone snapshots | immutable document and `structuredClone` at the snapshot boundary (no aliasing); every field that changes a figure is in the document, so the S-curve is saved; autosave is attached to the store, not to call sites, and stores the undo history; the saved HTML embeds JSON and empties `#root` (no DOM state, no stacking, no duplicated lists); autosave offered only when newer than the file; remote tab changes arrive as patches | Largely by construction; tested in `tests/store/persistence.test.ts`, `html-snapshot.test.ts`, `legacy-snapshots.test.ts`, `snapshots.test.ts`. Open: IndexedDB transaction-level aborts (quota) are not handled specially (M-12 analogue; `idb.ts` rejects on request errors only) |
+| **Calculation consistency** (H-4, H-8, M-1 to M-4, M-10, M-15 to M-17, L-7, L-10 to L-12, L-15) | several definitions of ROI/payback, truthiness bugs, swallowed overlay errors | one canonical payback/NPV (`domain/canonical.ts`), one ROI/payback formatter (`domain/economics/roi.ts`), the Time Engine overlay is the single source of annual figures; all legacy fixes up to v18.13 are inside the oracle, so the port reproduces them to 1e-6 on 107 cases | Tested: `tests/domain/oracle.test.ts` and the section parity tests. Calculation decisions made after the review (v18.10 to v18.13) are in [CHANGELOG.md](../CHANGELOG.md) |
+| **Tests** (§5.7) | no tests in the repository | Vitest: 137 test files, 12,346 tests on the last local run (domain oracle, controllers, persistence, section parity, command registry, property-based undo/redo, lint and size rules); CI runs typecheck, ESLint, tests and build on every change to `app/` | In place. Open: no automated browser end-to-end, differential (old vs new) or axe accessibility suite |
+| **Performance** (M-6, M-7, L-3, L-16) | repeated full recompute per refresh | results memoised per document identity; the Monte Carlo run lives outside the document with a fingerprint of the model inputs; React re-renders from selectors | Design only; no performance budget is measured in CI |
+| **Accessibility** (L-27) | unlabeled controls, click-only elements | shell has a skip link, an `aria-live` region for undo/redo, labelled top-bar controls; sections use shared widgets | Partial; no automated audit |
+| **Dead code and stale text** (L-1, L-17, L-18, L-26) | ≈400 lines of dead code, French labels | not ported: the new code base contains only what the 79 sections need | Resolved by not porting |
+
+Discrepancies found in the legacy file while porting (stale help figures, fixed three-year labels, the report hard-coding 349
+artefacts against 370 in the catalogue, ...) are listed in [MIGRATION_PLAN.md §15](MIGRATION_PLAN.md).
