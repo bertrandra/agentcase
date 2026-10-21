@@ -14,7 +14,7 @@ const FOUR = ['golden', 'ctx-msi', 'curve-logistic', 'industry-med'];
 // industry-med: opening the tab in the legacy page re-fits the locked automation potential (75 -> 46); the case itself holds 75.
 const IGNORE: Record<string, number[]> = { 'industry-med': [46] };
 const body = (c: Element) => tablesOf(c)[0]!.slice(1);
-const NO_PACK = /📤 Export pack \(Excel\)|📥 Re-import annotated pack/g;   // the Excel pack buttons are not part of this build
+const NO_PACK = /📤 Export pack \(Excel\)|📥 Re-import annotated pack/g;   // the legacy text of the pack buttons (they are rendered by PackButtons, covered in excel-buttons.test.tsx)
 
 describe('duediligence section', () => {
   it.each(FOUR)('shows every figure the legacy section showed (%s)', (id) => {
