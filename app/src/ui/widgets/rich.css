@@ -1,0 +1,21 @@
+.ac-rich { font-size: 13px; line-height: 1.55; }
+.ac-rich h3 { font-size: 1rem; color: var(--ac-blue); margin: 1rem 0 .3rem; } .ac-rich h4 { font-size: .92rem; margin: .8rem 0 .3rem; }
+.ac-rich p { margin: .4rem 0; } .ac-rich ul, .ac-rich ol { margin: .3rem 0 .3rem 1.1rem; padding: 0; }
+.ac-rich code { background: #eef1f6; padding: 0 4px; border-radius: 3px; font-size: 12px; }
+.ac-rich table { border-collapse: collapse; font-size: 12.5px; width: 100%; } .ac-rich th, .ac-rich td { padding: 5px 9px; border-bottom: 1px solid var(--ac-line); text-align: left; vertical-align: top; }
+.ac-rich-card { background: var(--ac-surface); border: 1px solid var(--ac-line); border-radius: 8px; padding: 10px 14px; margin: 10px 0; }
+.ac-rich-card > h3 { margin-top: 0; }
+.ac-rich-insight-box { background: #eef5fb; border-left: 4px solid var(--ac-blue); border-radius: var(--ac-radius); padding: 10px 14px; margin: 10px 0; }
+.ac-rich-note-green { background: #eaf6ef; border-left: 4px solid var(--ac-teal); border-radius: var(--ac-radius); padding: 8px 12px; margin: 10px 0; }
+.ac-rich-worked, .ac-rich-formula { background: #f4f6fa; border: 1px solid var(--ac-line); border-radius: var(--ac-radius); padding: 8px 12px; margin: 8px 0; font-family: ui-monospace, Menlo, monospace; font-size: 12px; }
+.ac-rich-v { color: var(--ac-blue); font-weight: 600; }
+.ac-golink { background: none; border: 0; padding: 0; color: var(--ac-blue); text-decoration: underline; cursor: pointer; font: inherit; font-weight: 600; }
+.ac-tabs { display: flex; gap: 6px; flex-wrap: wrap; margin: 10px 0; }
+.ac-tabs button { padding: 5px 12px; border: 1px solid var(--ac-line); border-radius: 14px; background: var(--ac-surface); cursor: pointer; font: inherit; font-size: 12.5px; }
+.ac-tabs button[aria-selected='true'] { background: var(--ac-blue); color: #fff; border-color: var(--ac-blue); }
+.ac-search { flex: 1; min-width: 240px; padding: 8px 12px; border: 1px solid var(--ac-line); border-radius: 8px; font: inherit; }
+.ac-btn { padding: 5px 12px; border: 1px solid var(--ac-line); border-radius: var(--ac-radius); background: var(--ac-surface); cursor: pointer; font: inherit; }
+.ac-btn[disabled] { opacity: .55; cursor: not-allowed; } .ac-btn-primary { background: var(--ac-blue); color: #fff; border-color: var(--ac-blue); }
+.ac-lane { margin: 8px 0; } .ac-lane h4 { margin: 4px 0; } .ac-node { margin: 2px 4px 2px 0; padding: 3px 9px; border: 1px solid var(--ac-line); border-radius: 12px; background: #fff; cursor: pointer; font: inherit; font-size: 12px; }
+.ac-node[aria-pressed='true'] { background: var(--ac-blue); color: #fff; } .ac-node.is-link { border-color: var(--ac-teal); }
+.ac-matrix td, .ac-matrix th { text-align: center; padding: 2px 4px; font-size: 11px; } .ac-matrix th:first-child, .ac-matrix td:first-child { text-align: left; white-space: nowrap; }

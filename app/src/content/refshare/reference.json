@@ -1,0 +1,13 @@
+{
+ "title": "🗺️ Reference Map",
+ "version": "v14.2",
+ "help": [
+ ["h3","📖 What this section does"],
+ ["p","Maps AgentCase against its source document — the ",["em","Software Engineering Delivery Model 2026"]," — one row per reference subchapter. It answers \"does this tool actually implement the reference model, or just borrow its vocabulary?\", and it answers it per chapter, including where the answer is no."],
+ ["h3","📋 What each row carries"],
+ ["ul",["li",["strong","Subchapter"]," — the reference section, in the reference's own numbering."],["li",["strong","Summary"]," — what that chapter requires, in one line."],["li",["strong","Coverage status"]," — covered · partial · not covered. Partial and absent rows are shown, not hidden; the counters at the top are the honest tally."],["li",["strong","Link"]," — straight into the AgentCase section that carries it, so a claim of coverage can be checked immediately rather than taken on trust."]],
+ ["h3","🎯 Two uses"],
+ ["p",["strong","Externally"],", it is the credibility artefact for a client who knows the reference model — it shows the tool was built against a published method, not invented. ",["strong","Internally"],", the partial and uncovered rows are the product backlog: they are where the model still asserts rather than derives."],
+ ["div",{"class":"note-green"},"Coverage counts describe ",["em","this build"],". When a new phase or section lands, this map is the place that has to be updated for the claim to stay true — a stale reference map is worse than none."]
+]
+}

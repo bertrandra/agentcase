@@ -1,0 +1,13 @@
+{
+ "title": "📖 Delivery-model glossary",
+ "version": "EV-12 · v13.3",
+ "help": [
+ ["h3","📖 What this section does"],
+ ["p","The full vocabulary of the delivery-model referential, each term mapped to its AgentCase equivalent. It exists because most disagreements in an agentic business-case review turn out to be terminological — two people using \"supervision\", \"maturity\" or \"capacity\" to mean different things and arguing about the numbers instead."],
+ ["h3","🏷️ The three tags"],
+ ["ul",["li",["strong","Aligned"]," — same concept, same name in both. No translation needed."],["li",["strong","Mapped in AgentCase"]," — the referential's concept, implemented here as a concrete feature, often under a different name. This is where the translation matters."],["li",["strong","AgentCase strength"]," — a quantification the referential describes qualitatively but does not compute. These are the places where the tool goes beyond the method it implements."]],
+ ["h3","🔎 Searchable"],
+ ["p","The search filters by term, definition and category as you type. It updates only the results body, so the field keeps focus across keystrokes — you can type a whole term without the input dropping out from under you."],
+ ["div",{"class":"note-green"},"The glossary can also be displayed ",["strong","inline"]," inside each section rather than as its own tab (the setting lives in Import/Export). When inline mode is on, this tab hides itself from the menu to avoid two routes to the same content."]
+]
+}

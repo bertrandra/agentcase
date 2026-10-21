@@ -1,0 +1,12 @@
+{
+ "title": "📥 Import / Export — all editable settings",
+ "help": [
+ ["h3","📖 What this tab does"],
+ ["p","Provides a clean round-trip between the live tool and Excel so a configuration can be saved, shared, version-controlled or prepared offline by a colleague, then loaded back exactly."],
+ ["h3","🧮 What is captured"],
+ ["div",{"class":"formula"},["div",["span",{"class":"v"},"Parameters"]," = automation, glass ceiling, y1/y2/y3 ramp, horizon, setup (×4), token cost, tokens/artifact, infra, working days, classic saving, industry"],["div",["span",{"class":"v"},"Rate Card"]," = RATE[location][band] for all 7 locations × 5 bands"],["div",["span",{"class":"v"},"Input Team"]," = every {skill, grade, location, FTE} line"],["div",["span",{"class":"v"},"Phase Scope"]," = selected phases · ",["span",{"class":"v"},"Location Target"]," = target % per location"]],
+ ["h3","🔢 Round-trip guarantee"],
+ ["div",{"class":"worked"}," Export → edit in Excel → import reproduces the identical model output (same ROI, FTE, costs).",["br"]," On import, each value is checked: e.g. automation potential is clamped to [10, 80], ramps to their slider bounds, FTE to ≥ 0. Anything adjusted is listed in the import report. "],
+ ["div",{"class":"note-green"},"The separate ",["strong","AgentCase_Parameters_Template.xlsx"]," ships with Excel data-validation (dropdowns and min/max) baked into the cells, so values are constrained at entry time. Use it as the starting point for offline configuration."]
+]
+}
