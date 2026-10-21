@@ -1,0 +1,215 @@
+{
+ "model": {
+  "base": {
+   "etp": 15,
+   "cost": 1768800
+  },
+  "auto": 75,
+  "ceiling": 25,
+  "eff": 52.5,
+  "ramps": [
+   13.750000000000002,
+   30.250000000000004,
+   55
+  ],
+  "horizon": 3,
+  "blendedTJM": 536,
+  "tgtTJM": 418,
+  "setupTotal": 135000,
+  "yearETP": [
+   13.917187499999999,
+   12.6178125,
+   10.66875
+  ],
+  "yearAgentVfte": [
+   1.0828125000000002,
+   2.3821875000000006,
+   4.331250000000001
+  ],
+  "yearETPRaw": [
+   13.9171875,
+   12.6178125,
+   10.66875
+  ],
+  "yearAgentVfteRaw": [
+   1.0828125000000002,
+   2.3821875000000006,
+   4.331250000000001
+  ],
+  "yearAgentCapacity": [
+   1.5159375000000002,
+   3.3350625000000007,
+   6.063750000000001
+  ],
+  "PROD_FACTOR": 1.4,
+  "yearTeamCost": [
+   1326287.337532552,
+   1218396.6595052083,
+   1065720.0844726562
+  ],
+  "yearToken": [
+   2287.14814453125,
+   6933.158203125,
+   13507.74755859375
+  ],
+  "yearTokenM": [
+   158.8297322591146,
+   481.4693196614583,
+   938.0380249023438
+  ],
+  "agentRunsYear": [
+   3176.594645182292,
+   9629.386393229166,
+   18760.760498046875
+  ],
+  "infraYear": 6000,
+  "yearRun": [
+   1407188.819952718,
+   1322555.2939436848,
+   1202790.017459717
+  ],
+  "yearSav": [
+   361611.1800472819,
+   446244.7060563152,
+   566009.9825402834
+  ],
+  "baselineRun": 1768800,
+  "baseArtMonth": 90,
+  "yearArtMonth": [
+   22.500000000000004,
+   49.50000000000001,
+   90
+  ],
+  "runAgenticETP": 1.2496875,
+  "runAgenticCost": 117562.18542846678,
+  "yearRunAgenticETP": [
+   0.762421875,
+   0.9573281250000001,
+   1.2496875
+  ],
+  "yearRunAgenticCost": [
+   72614.33427563474,
+   91225.47623535155,
+   117562.18542846678
+  ],
+  "yearInfraEff": [
+   6000,
+   6000,
+   6000
+  ],
+  "wd": 220,
+  "tokenCost": 14.4,
+  "tokensPerArt": 50000,
+  "scope": {
+   "weight": 0.27540834845735024,
+   "count": 10,
+   "totalArt": 53,
+   "avgHuman": 25,
+   "avgAgent": 75,
+   "nPhases": 3,
+   "nPhasesTotal": 11,
+   "selW": 60.699999999999996,
+   "totW": 220.4
+  },
+  "sup": {
+   "constrained": false
+  },
+  "cbd": {
+   "on": false,
+   "delta": 0,
+   "yearBaselineDrift": [
+    1768800,
+    1768800,
+    1768800
+   ],
+   "yearSavAttributable": [
+    361611.1800472819,
+    446244.7060563152,
+    566009.9825402834
+   ],
+   "wedge": [
+    0,
+    0,
+    0
+   ]
+  },
+  "conv": {
+   "ctxKey": "STA",
+   "ctx": {
+    "label": "Staff augmentation (technical assistance)",
+    "maturityCap": 2,
+    "rampSpeed": 0.55,
+    "glassFactor": 0.7,
+    "setupBillable": 0.4,
+    "infraOwner": "CLIENT",
+    "riskPremium": 12,
+    "authorityCap": 2,
+    "rampCapPct": 55,
+    "mcWiden": 1.2,
+    "khMaxCC": 0
+   },
+   "khOn": false,
+   "khM": 1,
+   "khSetup": 0,
+   "khRunYr": [
+    0,
+    0,
+    0
+   ],
+   "ktAvoidYr": [
+    0,
+    0,
+    0
+   ],
+   "ccYears": [
+    0,
+    0,
+    0
+   ],
+   "vTaxRate": 0,
+   "vTaxYr": [
+    0,
+    0,
+    0
+   ],
+   "loopExtRate": 0,
+   "loopExtYr": [
+    0,
+    0,
+    0
+   ],
+   "hriOn": false,
+   "hriF": 1,
+   "hri": 50,
+   "changeCost": 0,
+   "setupBase": 135000,
+   "setupBillable": 54000,
+   "setupAbsorbed": 81000,
+   "effCap": 75
+  },
+  "_curveOverlay": "spline.default"
+ },
+ "payback": 1,
+ "npv": 1069733.087218983,
+ "headline": {
+  "payback": 1,
+  "npv": 1069733.087218983,
+  "roi": 9.17678421217689,
+  "totalSavings": 1238865.8686438804
+ },
+ "phaseScope": {
+  "weight": 0.27540834845735024,
+  "count": 10,
+  "totalArt": 53,
+  "avgHuman": 25,
+  "avgAgent": 75,
+  "nPhases": 3,
+  "nPhasesTotal": 11,
+  "selW": 60.699999999999996,
+  "totW": 220.4
+ },
+ "glassCeiling": 25,
+ "audit": [],
+ "id": "tuneA-program",
+ "desc": "programme parameters changed, 4-FTE pods, SDD and coaching set, STA context"
+}
