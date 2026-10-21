@@ -1,0 +1,215 @@
+{
+ "model": {
+  "base": {
+   "etp": 15,
+   "cost": 1768800
+  },
+  "auto": 75,
+  "ceiling": 25,
+  "eff": 75,
+  "ramps": [
+   23,
+   66,
+   89
+  ],
+  "horizon": 3,
+  "blendedTJM": 536,
+  "tgtTJM": 418,
+  "setupTotal": 225000,
+  "yearETP": [
+   12.42074528872004,
+   7.569593714565946,
+   4.990285806891263
+  ],
+  "yearAgentVfte": [
+   2.579254711279961,
+   7.430406285434054,
+   10.009714193108737
+  ],
+  "yearETPRaw": [
+   12.420745288720038,
+   7.569593714565946,
+   4.990285806891263
+  ],
+  "yearAgentVfteRaw": [
+   2.579254711279961,
+   7.430406285434054,
+   10.009714193108737
+  ],
+  "yearAgentCapacity": [
+   3.610956595791945,
+   10.402568799607675,
+   14.01359987035223
+  ],
+  "PROD_FACTOR": 1.4,
+  "yearTeamCost": [
+   1285201.6721280313,
+   892181.4805621743,
+   548964.6651007666
+  ],
+  "yearToken": [
+   4056.387324630228,
+   20980.70179397335,
+   35760.37327317273
+  ],
+  "yearTokenM": [
+   281.6935642104325,
+   1456.993180137038,
+   2483.3592550814396
+  ],
+  "agentRunsYear": [
+   5633.87128420865,
+   29139.86360274076,
+   49667.18510162879
+  ],
+  "infraYear": 6000,
+  "yearRun": [
+   1450939.6710105762,
+   1142639.7769591727,
+   873407.533644057
+  ],
+  "yearSav": [
+   322562.82898942387,
+   634624.7230408273,
+   903856.966355943
+  ],
+  "baselineRun": 1768800,
+  "baseArtMonth": 90,
+  "yearArtMonth": [
+   23.184312011505266,
+   66.79016885783419,
+   89.97495903917967
+  ],
+  "runAgenticETP": 2.1014571289663104,
+  "runAgenticCost": 206702.4952701177,
+  "yearRunAgenticETP": [
+   0.9868882066919942,
+   1.7145609428151078,
+   2.1014571289663104
+  ],
+  "yearRunAgenticCost": [
+   79701.61155791457,
+   147497.59460302486,
+   206702.4952701177
+  ],
+  "yearInfraEff": [
+   6000,
+   6000,
+   6000
+  ],
+  "wd": 220,
+  "tokenCost": 14.4,
+  "tokensPerArt": 50000,
+  "scope": {
+   "weight": 0.27540834845735024,
+   "count": 10,
+   "totalArt": 53,
+   "avgHuman": 25,
+   "avgAgent": 75,
+   "nPhases": 3,
+   "nPhasesTotal": 11,
+   "selW": 60.699999999999996,
+   "totW": 220.4
+  },
+  "sup": {
+   "constrained": false
+  },
+  "cbd": {
+   "on": false,
+   "delta": 0,
+   "yearBaselineDrift": [
+    1768800,
+    1768800,
+    1768800
+   ],
+   "yearSavAttributable": [
+    322562.82898942387,
+    634624.7230408273,
+    903856.966355943
+   ],
+   "wedge": [
+    0,
+    0,
+    0
+   ]
+  },
+  "conv": {
+   "ctxKey": "MSC",
+   "ctx": {
+    "label": "Managed Service — Capgemini infrastructure",
+    "maturityCap": 4,
+    "rampSpeed": 1,
+    "glassFactor": 1,
+    "setupBillable": 1,
+    "infraOwner": "CG",
+    "riskPremium": 0,
+    "authorityCap": 4,
+    "rampCapPct": 100,
+    "mcWiden": 1,
+    "khMaxCC": 4
+   },
+   "khOn": true,
+   "khM": 1,
+   "khSetup": 90000,
+   "khRunYr": [
+    75980,
+    75980,
+    75980
+   ],
+   "ktAvoidYr": [
+    4702.5,
+    8464.5,
+    8464.5
+   ],
+   "ccYears": [
+    2,
+    3,
+    3
+   ],
+   "vTaxRate": 0,
+   "vTaxYr": [
+    0,
+    0,
+    0
+   ],
+   "loopExtRate": 0,
+   "loopExtYr": [
+    0,
+    0,
+    0
+   ],
+   "hriOn": false,
+   "hriF": 1,
+   "hri": 50,
+   "changeCost": 0,
+   "setupBase": 135000,
+   "setupBillable": 225000,
+   "setupAbsorbed": 0,
+   "effCap": 75
+  },
+  "_curveOverlay": "gompertz.default"
+ },
+ "payback": 10,
+ "npv": 1384530.0028932947,
+ "headline": {
+  "payback": 10,
+  "npv": 1384530.0028932947,
+  "roi": 7.271308970605307,
+  "totalSavings": 1636044.518386194
+ },
+ "phaseScope": {
+  "weight": 0.27540834845735024,
+  "count": 10,
+  "totalArt": 53,
+  "avgHuman": 25,
+  "avgAgent": 75,
+  "nPhases": 3,
+  "nPhasesTotal": 11,
+  "selW": 60.699999999999996,
+  "totW": 220.4
+ },
+ "glassCeiling": 25,
+ "audit": [],
+ "id": "sc-gompertz-4pt",
+ "desc": "Gompertz curve fitted through four dragged points, ramps sampled"
+}
