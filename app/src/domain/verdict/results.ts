@@ -1,3 +1,4 @@
+import { horizonYears } from '../model/horizonYears';
 import { engineNow } from '../canonical';
 import type { Ctx } from '../ctx';
 import { model } from '../model/overlay';
@@ -32,7 +33,7 @@ export interface ResultsCore {
 export function resultsCore(c: Ctx): ResultsCore {
   const m = model(c), ys = engineNow(c).years(), sb = savingsBreakdown(c);
   let net = 0;
-  for (let y = 0; y < m.horizon; y++) net += m.yearSav[y] as number;
+  horizonYears(c).sav.forEach((v) => { net += v; });   // one entry per horizon year (legacy v18.13)
   net -= m.setupTotal;
   let cum = -m.setupTotal, payback = '—';
   for (let y = 0; y < ys.length; y++) { cum += (ys[y] as { savings: number }).savings; if (cum > 0) { payback = `Year ${y + 1}`; break; } }

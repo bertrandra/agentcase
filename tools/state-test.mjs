@@ -317,6 +317,30 @@ const tests = {
     toggleCross('AI', true); readInputs(); const ai = P('autoPotential'), fitAi = Math.round(phaseScope().avgAgent);
     return { ok: med === fit && ai === fitAi && med !== before, detail: 'default ' + before + ' -> MED ' + med + ' (fit ' + fit + ') -> +AI ' + ai + ' (fit ' + fitAi + ')' };
   },
+  // v18.13: strategies and Results read one entry per horizon year (they were n/a / NaN above 3 years)
+  async strategies_and_results_above_3_years() {
+    const sel = document.getElementById('horizon'); const out = [];
+    for (const h of ['1', '2', '3', '5', '10']) {
+      sel.value = h; readInputs();
+      const rows = evaluateStrategies(), bad = rows.filter(r => r.id !== 'tm' && !(isFinite(r.computed.roi) && isFinite(r.computed.tco) && isFinite(r.computed.net)));
+      renderResults(); const txt = document.getElementById('resultsHost').innerText;
+      if (bad.length || /NaN/.test(txt)) { sel.value = '3'; readInputs(); return { ok: false, detail: 'horizon ' + h + ': ' + bad.map(r => r.id).join(',') + (/NaN/.test(txt) ? ' results NaN' : '') }; }
+      out.push(h + ':' + Math.round(rows.find(r => r.id === 'hybrid').computed.net));
+    }
+    sel.value = '3'; readInputs();
+    return { ok: true, detail: 'hybrid net by horizon ' + out.join(' ') };
+  },
+  // v18.13: scenarios are finite for horizons 1 and 2 (the ramp arrays had three entries against `horizon` day rates)
+  async scenarios_short_horizons() {
+    const sel = document.getElementById('horizon');
+    for (const h of ['1', '2']) {
+      sel.value = h; readInputs(); goTab('scenarios'); renderScenarios();
+      const txt = document.getElementById('scenarios').innerText;
+      if (/NaN|undefined/.test(txt)) { sel.value = '3'; readInputs(); return { ok: false, detail: 'horizon ' + h + ' shows NaN' }; }
+    }
+    sel.value = '3'; readInputs();
+    return { ok: true, detail: 'no NaN at horizon 1 and 2' };
+  },
   // v18.12: Monte Carlo no longer returns NaN for horizons above 3 years
   async montecarlo_horizon_above_3() {
     const sel = document.getElementById('horizon'); const out = [];

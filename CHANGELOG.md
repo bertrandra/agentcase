@@ -14,6 +14,19 @@ All notable changes to AgentCase, newest first. Product version = the `vX.Y` in 
 
 When releasing, follow [docs/BUMP_PROCEDURE.md](docs/BUMP_PROCEDURE.md) and add the new version at the top.
 
+## [v18.13] 2026-10-21 — Strategies, Results and Scenarios beyond / below three years
+
+Same root cause as the v18.12 Monte Carlo fix: `model().yearSav` / `yearRun` hold three entries whatever the horizon.
+- **Fixed:** the strategies table (ROI, TCO, payback, net) and the Results ROI summed `yearSav[0..horizon-1]`, which read `undefined`
+  above 3 years (n/a / NaN at horizons 5, 7, 10). New helper `horizonYears()` returns one savings and one run-cost entry per horizon
+  year from the Time Engine (flat curve: the three anchor years). Horizons 1–3 are unchanged. The decision's strategy comparison
+  and the verdict that read the strategies follow. Test `strategies_and_results_above_3_years`.
+- **Fixed:** the six scenarios showed "€NaN" for horizons 1 and 2 (the ramp arrays kept three entries against `horizon` day rates).
+  Test `scenarios_short_horizons`.
+- **Golden case unchanged.**
+
+---
+
 ## [v18.12] 2026-10-21 — Re-fit on scope changes from the regulatory panel; Monte Carlo above 3 years
 
 Two behaviours the TypeScript migration surfaced (decision D7: calculation changes ship in the legacy file first so the oracle moves with them).
