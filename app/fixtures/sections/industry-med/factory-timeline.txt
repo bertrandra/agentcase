@@ -1,0 +1,53 @@
+📅 Factory Timeline
+DRAFT
+SUPPORTS
+?
+A separate visualization from the 📅 Gantt / Timeline (SDLC schedule) — that section is untouched. Here: the DORA + agentic KPIs, the Business-chain structure (no dates exist for Vision/Portfolio/Epic/Feature/Story) and a real calendar timeline of dated Release-pipeline + Engineering events.
+📊 Factory KPIs DORA + agentic metrics, computed live from the Release Pipeline / Engineering / Factory Model data — also bindable as Board variables
+🚀 Release pipeline
+—
+Deployment frequency
+insufficient sample (n=0)
+—
+Promotion lead time
+insufficient sample (n=0)
+—
+Rollback rate
+insufficient sample (n=0)
+—
+Failed-deployment rate
+insufficient sample (n=0)
+—
+Environment stability (mean days between monitoring events)
+insufficient sample (n=0)
+—
+Approval duration
+insufficient sample (n=0)
+🏭 Delivery — Tasks
+16%
+Autonomous completion rate (Tasks)
+84%
+Human intervention rate (Tasks)
+⚙️ Engineering
+—
+Quality-gate pass rate
+insufficient sample (n=0)
+—
+Quality-gate rework rate
+insufficient sample (n=0)
+0
+Generated change volume (commit count)
+75%
+Agent-driven test share (capability=Test Tasks)
+—
+Avg commits per Task
+insufficient sample (n=0)
+—
+Build success rate
+insufficient sample (n=0)
+All 14 metrics compute live from 🚀 Release Pipeline / ⚙️ Engineering / 🏭 Factory Model data (0 when there is nothing to measure yet). They are also bindable as Board card variables — the source section decides which appear.
+🏢 Business chain
+🎯 Vision: (not set)
+No portfolio/epic/feature structure yet — add some in 🏭 Factory Model.
+🗓️ Release & Engineering timeline Commits, Builds, Release Candidates, Approvals, Deployments, Monitoring, Feedback — by their real dates
+No dated factory events yet — add Commits/Builds in ⚙️ Engineering, or Release Candidates/Approvals/Deployments/Monitoring/Feedback in 🚀 Release Pipeline.

@@ -1,0 +1,50 @@
+🧠 Knowledge hub — living memory
+EV-10 · v13.1
+DRIVES
+?
+The referential's mémoire vivante (Knowledge Graph, KT Hub) quantified through three channels: (1) a potential multiplier via the connected-context maturity CC0–CC4 (capped by the regulatory ceiling), (2) a variance reducer on the Monte Carlo adoption spread (−8% σ per CC level), (3) avoided knowledge-transfer & onboarding cost. Availability is bounded by the engagement context (STA: locked · MSI: up to CC2 · MSC: up to CC4).
+Enable the Knowledge hub in the model
+AS-IS assessment (9 statements, 0 = absent → 4 = excellent)
+Coverage
+Key artifacts are captured
+Domain knowledge is captured
+Decisions/ADRs are captured
+Freshness
+Updated within the sprint
+Ownership & curation exist
+Stale content is retired
+Structure
+Machine-readable / indexed
+Linked (graph / traceability)
+Agent-accessible (RAG / MCP)
+TARGET CC (Y3)
+CC0
+CC1
+CC2
+CC3
+CC4
+HUB SETUP BASE (€)
+SETUP DURATION (DAYS)
+CURATION (FTE)
+HUB INFRA (€/MO)
+AS-IS LEVEL
+CC2 (50/100)
+TARGET Y3
+CC3
+POTENTIAL MULTIPLIER
+× 1.00
+MC Σ (ADOPTION)
+−24%
+Channel 1 — Δ effective automation (vs hub off)	+0.0 pts
+Channel 2 — adoption uncertainty reduction	σ × 0.76
+Channel 3 — KT / onboarding cost avoided (3y)	€22K
+Hub cost — setup + run (3y)	€318K
+Hub-attributable Δ net savings (3y)	€-206K
+CC-KH-01: the multiplier is capped by the regulatory ceiling headroom (46 pts) — CC4 can never push automation past compliance. A negative hub Δ is shown honestly (CC-KH-03), typically when the scope is small.
+Connected Context Maturity scale (CC0–CC4)
+Level	Connected Context Maturity
+CC0	No usable knowledge hub
+CC1	Basic documented knowledge
+CC2	Structured & searchable knowledge
+CC3	Connected knowledge hub, agent-ready
+CC4	Fully connected, agent-accessible ecosystem

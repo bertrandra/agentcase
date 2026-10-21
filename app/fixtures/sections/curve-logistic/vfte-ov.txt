@@ -1,0 +1,15 @@
+vFTE Overview
+READS
+?
+Total effort (FTE-eq) = combined human + agent effort (conserved). Human/agent breakdown per period, contextual to your team.
+Period	Human FTE	Agent vFTE	Total effort (FTE-eq)	Automation %	Reduction vs AS-IS
+AS-IS	15.0	0.0	15.0	0%	0.0 FTE
+Y1 Q1-Q2	13.9	1.1	15.0	10%	1.1 FTE
+Y1 Q3-Q4	12.7	2.3	15.0	20%	2.3 FTE
+Y2	8.1	6.9	15.0	61%	6.9 FTE
+Y3	4.8	10.2	15.0	91%	10.2 FTE
+Agent effort by artifact category (reference)
+Artifact value	# artifacts	Avg human sup.	Avg automatable
+NVA-N	8	24%	76%
+VA	1	45%	55%
+NVA	1	10%	90%

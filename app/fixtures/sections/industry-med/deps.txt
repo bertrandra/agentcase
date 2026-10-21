@@ -1,0 +1,81 @@
+🔗 Section Dependencies
+v18.8
+SUPPORTS
+?
+A dependency & impact matrix over the sections that participate in the calculation/data chain. Read a marked cell as row → column: the row section feeds / impacts the column section. ● = strong (a calculation input) · ○ = soft (an annotation or informational signal). Leaf display views are omitted. Click a section name to open it.
+● strong (calculation input)
+○ soft (annotation / signal)
+Row impacts column · 148 edges · 30 of 79 sections drive something
+🕸️ Dependency graph
+▦ Dependency matrix
+📝 Descriptions & impact
+🌳 Build order
+✎ Edit dependencies
+Dependency graph — lanes are menu groups, in build order; hover a node to isolate its links
+1 · FRAME
+2 · BASELINE
+3 · SCOPE
+4 · TUNE
+5 · VERIFY
+6 · ECONOMICS
+7 · STRESS
+8 · VERDICT
+9 · DEFEND
+10 · PRESENT
+🧭 Engagement cont…
+🤝 Engage
+🏛️ Industry / reg…
+Input team
+Rate Card
+🌍 Location strate…
+🎯 Phase scope
+🎯 Scope
+📊 S-curve — adopt…
+🎯 Automation & Gl…
+📊 Product status …
+📐 Maturity levels…
+🧭 AI Readiness
+🎯 Eligibility & A…
+🤖 Run-team sizing
+🛡️ Risk & Complia…
+💸 Token economics
+📐 Maturity & Meas…
+🧠 Knowledge hub
+🧩 Operating model
+📊 Status & phase …
+🧭 Program & Compl…
+Agentic Setup
+📅 Gantt / Timeline
+AS-IS vs TO-BE
+FTE / vFTE
+Phase / Artifact d…
+Productivity
+vFTE Overview
+Velocity
+Target team
+Quality
+Compliance
+👥 TO-BE team by s…
+KPI Scorecard
+Agent Directory
+Execution Timeline
+🤖 Agent details
+📊 Agent usage
+💳 Financial
+Agentic Run
+Annual summary
+Monthly detail
+🎲 Monte Carlo
+🔀 Scenarios
+3-way Comparison
+Sensitivity
+📋 Results
+🧭 Decision Intell…
+🏆 Strategy compar…
+🔍 Logic verificat…
+🧾 Due diligence
+📒 Assumptions reg…
+💼 Commercial model
+📖 The story so far
+🎬 Monthly Playback
+Deliberately outside the graph (23 sections): navigation and reference surfaces (🏠 Welcome, 📖 Glossary, 🗺️ Reference map, 📚 Sources, 🏛️ Architecture, 🔗 this page), configuration surfaces (👥 Persona management, 📊 Board, 📥 Import/Export, 🗂️ Sessions), the 🏭 Factory meta-model (a self-contained subsystem with its own entity graph), and the six 🧠 Model Engine phases — those are opt-in overlays that are byte-neutral until engaged, so they carry no edge at their shipped defaults.

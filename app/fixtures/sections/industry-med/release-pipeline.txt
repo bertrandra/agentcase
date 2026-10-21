@@ -1,0 +1,42 @@
+🚀 Release Pipeline
+DRAFT
+SUPPORTS
+?
+A release pipeline selects from the current Integrated Product rather than descending from a sprint/PI boundary — Release-on-Demand. Release → Release Candidate → Approval → Deployment → Environment → Production → Monitoring → Feedback → Backlog. Nothing here feeds the financial model.
+📦 Releases polymorphic — includes Stories, Features, Fixes, Technical Changes
+Name	Items	
+No releases yet.
++ Add release
+🏷️ Release Candidates a cut proposed for a Release
+Name	Release	Cut at	Status	
+No release candidates yet.
++ Add release candidate
+✅ Approvals gate a Release Candidate before deployment
+Release candidate	Approver	Decision	Decided	
+No approvals yet.
++ Add approval
+🚚 Deployments promote a Release Candidate into an Environment
+Release candidate	Environment	Date	Status	
+No deployments yet.
++ Add deployment
+🪜 Environments the promotion pipeline — Production is the last stage
+Seq	Name	
+1		🗑
+2		🗑
+3		🗑
+4		🗑
+5		🗑
+6		🗑
++ Add environment stage
+📡 Monitoring runtime signals observed after a Deployment
+Deployment	Description	Severity	
+No monitoring events yet.
++ Add monitoring event
+💬 Feedback creates a Backlog item, closing the loop
+Description	Backlog	
+No feedback yet.
++ Add feedback
+📋 Backlog
+Description	Status	Source	
+No backlog items yet.
++ Add backlog item

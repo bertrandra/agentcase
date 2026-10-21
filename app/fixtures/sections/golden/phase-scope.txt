@@ -1,0 +1,68 @@
+🎯 Phase scope
+DRIVES
+?
+Select all
+Clear all
+In scope : 10/53 art.
+L0 — Upstream
+📊 0.0%
+🎯 0.0 pts
+👤 0%
+(0 std · 0 reg)
+V1 — Specification
+📊 19.9%
+🎯 6.5 pts
+👤 33%
+(3 std · 0 reg)
+V2 — Design
+📊 0.0%
+🎯 0.0 pts
+👤 0%
+(0 std · 0 reg)
+V3 — Implementation
+📊 38.6%
+🎯 10.8 pts
+👤 28%
+(3 std · 0 reg)
+V4 — Verification
+📊 41.5%
+🎯 7.7 pts
+👤 19%
+(4 std · 0 reg)
+V5 — Integration
+📊 0.0%
+🎯 0.0 pts
+👤 0%
+(0 std · 0 reg)
+V6 — Validation
+📊 0.0%
+🎯 0.0 pts
+👤 0%
+(0 std · 0 reg)
+V7 — Qualification
+📊 0.0%
+🎯 0.0 pts
+👤 0%
+(0 std · 0 reg)
+L8 — Deployment
+📊 0.0%
+🎯 0.0 pts
+👤 0%
+(0 std · 0 reg)
+L9 — Run / AMS
+📊 0.0%
+🎯 0.0 pts
+👤 0%
+(0 std · 0 reg)
+L10 — End-of-life
+📊 0.0%
+🎯 0.0 pts
+👤 0%
+(0 std · 0 reg)
+Cross-cutting — Cross-cutting (regulatory & AI framing)
+📊 0.0%
+🎯 0.0 pts
+👤 0%
+(0 std · 0 reg)
+— empty
+Legend — 📊 effort share: share of the total effort×lifecycle weight carried by this phase · 🎯 contribution: points this phase adds to the Effective glass ceiling (Σ over ALL rows = GC) · 👤 human sup: average human-supervision % across the phase's artifacts · art. = active artifacts (SDLC + selected norms + cross-cutting)

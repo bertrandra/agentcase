@@ -1,0 +1,15 @@
+Phase / Artifact details
+READS
+?
+Supervision matrix — floors & postures EV-03 · v12.58
+One view for the three control languages: the floor (w-weighted irreducible human supervision of in-scope artifacts), the projected human share at Y3, and the referential posture (floor ≥ 60% → Human-in-the-lead · 30–60% → on-the-loop · < 30% → over-the-loop). A negative margin would violate the floor (CC-SUP-01).
+Phase	Supervision floor	Human share Y3	Margin	Posture
+Cross-cutting (20 art.)	85%	85%	+0 pts	Human-in-the-lead
+V1 (11 art.)	62%	62%	+0 pts	Human-in-the-lead
+V3 (3 art.)	28%	28%	+0 pts	Human-over-the-loop
+V4 (9 art.)	34%	34%	+0 pts	Human-on-the-loop
+Detail per V-cycle phase: number of SDLC & regulatory artifacts, average human supervision, vFTE by ramp. Contextual to the loaded reference.
+Phase	Name	SDLC artifacts	Avg human sup.	Avg automatable	vFTE Y3 (relative)
+V1	Specification	6	63%	37%	5.0
+V3	Implementation	5	27%	73%	3.3
+V4	Verification	4	39%	61%	2.9

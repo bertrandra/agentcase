@@ -1,0 +1,36 @@
+🧬 Generate factory data
+From the current case · weekly · 2026-09-01 → 2029-08-28 (157 weeks)
+3 phase(s) · 43 artefact(s) in scope
+→ 0 portfolios · 0 epics · 3 features · 8 stories · 43 tasks · ~19 releases
+Estimated records: 30,458 / 1,500 cap — will be down-sampled (commits first, time span never truncated)
+DENSITY 
+SEED 
+RELEASE EVERY  WK
+Reset parameters
+🧬 Generate data
+🏭 Factory Model
+DRAFT
+SUPPORTS
+?
+Business + Delivery domain of the Software/Agentic Factory meta-model: Vision → Portfolio → Epic → Feature → Story, linked down into the existing SDLC/regulatory artefacts (Tasks). A graph, not a tree — see AgentCase_Spec_FactoryMetaModel.md. Nothing here feeds the financial model.
+🧪 Sample data
+A realistic, cross-linked sample dataset across the whole Factory Model / Release Pipeline / Engineering domain — useful for exploring the 📅 Factory Timeline. Both actions are runtime-only: they never affect the golden default state.
+📦 Load demo dataset
+🗑 Delete all Factory Model data
+🎯 Vision
+📁 Portfolio
+Name	
+No portfolio items yet.
++ Add portfolio item
+🧩 Epics realize the Vision, via a Portfolio
+Name	Portfolio	
+No epics yet.
++ Add epic
+⭐ Features implement an Epic; link to the SDLC phases this work runs through
+Name	Epic	SDLC phases	
+No features yet.
++ Add feature
+📗 Stories implement a Feature; link to existing artefacts (Tasks)
+Name	Feature	Linked artefacts	
+No stories yet.
++ Add story

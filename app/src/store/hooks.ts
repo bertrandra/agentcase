@@ -1,5 +1,5 @@
 import { useMemo, useSyncExternalStore } from 'react';
-import { computeCase } from '@/domain';
+import { computeCase, makeCtx, type Ctx } from '@/domain';
 import { canRedo, canUndo } from './history';
 import { appStore } from './instance';
 import type { Doc, HistoryEntry } from './types';
@@ -24,4 +24,13 @@ export function useCaseResult(): ReturnType<typeof computeCase> {
   let r = memo.get(doc);
   if (!r) { r = computeCase(doc); memo.set(doc, r); }
   return r;
+}
+
+const ctxMemo = new WeakMap<Doc, Ctx>();
+/** The engine context (inputs + working artefacts) of the current document, memoised per document identity. */
+export function useCtx(): Ctx {
+  const doc = useDoc((d) => d);
+  let c = ctxMemo.get(doc);
+  if (!c) { c = makeCtx(doc); ctxMemo.set(doc, c); }
+  return c;
 }

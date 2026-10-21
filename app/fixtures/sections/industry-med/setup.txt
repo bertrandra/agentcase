@@ -1,0 +1,36 @@
+Agentic Setup — Initial investment
+ONE-TIME
+DRIVES
+?
+Non-recurring seed investment: tooling, training, coaching, governance. Driven by the Setup parameters.
+⚙️ Agentic Setup & Run
+SETUP DURATION (MONTHS)
+12 mo
+SETUP TOOLING & INFRA (€)
+€35K
+SETUP TRAINING & CHANGE (€)
+€45K
+SETUP COACHING (€)
+€35K
+SETUP GOVERNANCE (€)
+€20K
+MONTHLY INFRA (€)
+€500
+WORKING DAYS / YEAR
+220
+TRANSITIONAL SETUP HEADCOUNT (FTE) (LEAD + ARCHITECT + COACH, DISPLAY ONLY — € ALREADY IN SETUP TOTAL)
+TOTAL SETUP
+€135K
+TOOLING
+€35K
+TRAINING
+€45K
+COACHING
+€35K
+GOVERNANCE
+€20K
+Item	Amount	Q1-Q2	Q3-Q4	Description
+Tooling & infra	€35K	€20K	€15K	Claude API, monitoring, security, CI/CD
+Training & change	€45K	€15K	€30K	Workshops, champion certification
+Coaching	€35K	€10K	€25K	Pair programming, deliverable review
+Governance	€20K	€8K	€12K	Compliance audit, IP, agentic charter

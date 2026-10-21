@@ -1,0 +1,61 @@
+Target team (TO-BE Y3) — computed breakdown
+READS
+?
+The target team is computed from the input team, the automation potential and the irreducible human supervision of artifacts. It breaks down into 4 poles: DEV TEAM (residual production) · SUPERVISION (review/validation of AI outputs) · AGENTIC SETUP (setup) · AGENTIC RUN(AI Engineer, FinOps, AI-QA).
+INPUT (FTE)
+15.0
+TARGET DEV
+6.6
+SUPERVISION
+0.9
+AGENTIC RUN (EN PLUS)
+1.7
+TOTAL RECURRING TARGET
+9.3
+NET REDUCTION
+-38%
+🌍 Distribution by location — input vs target
+Location	Class	% AS-IS	FTE AS-IS	Target %	Target FTE (estimated)	Day rate
+France	LOCAL	100%	15.0	50%	4.6	€536
+Portugal	NEARSHORE	0%	0.0	0%	0.0	€430
+Poland	NEARSHORE	0%	0.0	0%	0.0	€450
+Morocco	NEARSHORE	0%	0.0	0%	0.0	€350
+Egypt	NEARSHORE	0%	0.0	0%	0.0	€310
+China	OFFSHORE	0%	0.0	0%	0.0	€390
+India	OFFSHORE	0%	0.0	50%	4.6	€300
+🔵 Dev team (residual production)
+Residual dev production
+4.6 FTE · €425K
+QA/Test
+1.3 FTE · €121K
+Ops/Run
+0.7 FTE · €61K
+🟠 Agentic supervision
+Agent Supervisor (output review)
+0.7 FTE · €61K
+Sec/Quality
+0.3 FTE · €26K
+🟣 Agentic Setup (Y1, transitional)
+Transformation lead
+0.7 FTE · €69K
+Agentic architect
+0.8 FTE · €79K
+Coach
+0.6 FTE · €63K
+Transitional (Y1) · Setup € : €195K
+🟢 Agentic Run (recurring)
+AI/Agent Engineer
+1.3 FTE · €132K
+Skill/Prompt Engineer
+0.8 FTE · €79K
+AI-FinOps
+0.5 FTE · €53K
+AI-QA
+0.6 FTE · €63K
+Headcount comparison input → target
+Target team poles detail
+Group	Composition	FTE	Annual cost	Type
+Dev team	Residual production (code, test, ops)	6.6	€607,350	RECURRING
+Supervision	AI output review & validation	0.9	€86,764	RECURRING
+Agentic Run	AI Eng, Prompt Eng, FinOps, AI-QA	1.7	€181,664	RECURRING
+Agentic Setup	Lead, architect, coach (transitional Y1)	2.0	€211,508	TRANSITIONAL

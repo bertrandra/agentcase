@@ -11,7 +11,7 @@ function applyEdits(base: Artefact[], edits: ArtefactEdit[] | undefined): Artefa
   return base.map((a) => {
     const e = by.get(a.id);
     if (!e) return a;
-    return { ...a, agentSup: e.agentSup ?? a.agentSup, humanSup: e.humanSup ?? a.humanSup, effort: e.effort ?? a.effort };
+    return { ...a, agentSup: e.agentSup ?? a.agentSup, humanSup: e.humanSup ?? a.humanSup, effort: e.effort ?? a.effort, seq: e.seq ?? a.seq };
   });
 }
 

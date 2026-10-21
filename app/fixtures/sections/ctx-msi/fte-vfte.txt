@@ -1,0 +1,28 @@
+FTE / vFTE Chart
+READS
+?
+Effort evolution over the horizon: Human FTE decreases, Agent vFTE grows, and the Total effort (FTE-eq) stays constant (conservation). Contextual to your input team and the automation potential.
+Human FTE
+Agent vFTE
+Total effort (FTE-eq) = AS-IS baseline
+TOTAL EFFORT (FTE-EQ) Y3
+15.0
+AGENT VFTE Y3
+7.5
+EFFORT REDUCTION
+50%
+FREED CAPACITY
+5.7 FTE
+Period	Ramp	Human FTE	Agent vFTE	Total effort (FTE-eq)	Freed capacity
+AS-IS	0%	15.0	0.0	15.0	0.0 FTE
+Y1 Q1-Q2	10%	14.1	0.9	15.0	0.9 FTE
+Y1 Q3-Q4	20%	13.1	1.9	15.0	1.9 FTE
+Y2	44%	10.9	4.1	15.0	4.1 FTE
+Y3	80%	7.5	7.5	15.0	7.5 FTE
+Maturity mapping L1–L4 EV-02 · v12.57
+Shared language with the delivery-model referential: the L-level is the lower of the ramp reading and the vFTE-share reading (prudent), capped by the engagement context (L3 max under MSI). Current: ramp Y3 = 80% → L4 · vFTE share Y3 = 50% → L4.
+Level	Adoption ramp	vFTE share	Dominant AI authorization	Typical human supervision
+L1 — Human assists	0–25%	0–10%	A0–A1 (suggestion)	≥ 90%
+L2 — AI assists at scale	25–55%	10–25%	A2 (supervised execution)	60–90%
+L3 — AI executes, human leads ◀ your case (Y3)	55–80%	25–45%	A3 (bounded autonomy)	30–60%
+L4 — AI orchestrates blocked by context	≥ 80%	≥ 45%	A4 (orchestration)	regulatory floor only

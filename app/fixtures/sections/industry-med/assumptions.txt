@@ -1,0 +1,41 @@
+📒 Assumptions register
+SUPPORTS
+?
+The single auditable list of every assumption feeding the business case: current value vs benchmark default, adjustment status, client validation, and the measured impact of the uncertain ones on the net outcome. This is the answer to "what is this number based on?".
+🔵 16 at default
+🟠 2 adjusted
+🟢 0 validated with client
+Run the Monte Carlo to populate the impact column.
+Assumption	Current	Default	Status	Impact (r)	Client ✓
+FRAME
+Horizon (years)	3	3	DEFAULT	—	
+Working days / year	220	220	DEFAULT	—	
+LEVERS
+Automation potential (%)	46	65	ADJUSTED	—	
+Year-1 ramp (%)	25	25	DEFAULT	—	
+Year-2 ramp (%)	55	55	DEFAULT	—	
+Year-3 ramp (%)	100	100	DEFAULT	—	
+Glass ceiling (%)	54	35	ADJUSTED	—	
+TOKENS
+Tokens per artifact	50000	50000	DEFAULT	—	
+Agent runs / day / vFTE	25	25	DEFAULT	—	
+RUN
+Agent infra (€/month)	500	500	DEFAULT	—	
+Run team — platform floor min (FTE)	0.5	0.5	DEFAULT	—	
+Run team — floor (% of base team)	4	4	DEFAULT	—	
+Run team — ops FTE per agent vFTE	0.15	0.15	DEFAULT	—	
+Run team — sizing mode	hybrid	hybrid	DEFAULT	—	
+SETUP
+Setup — tooling (€)	35000	35000	DEFAULT	—	
+Setup — governance (€)	20000	20000	DEFAULT	—	
+Setup — training (€)	45000	45000	DEFAULT	—	
+Setup — coaching (€)	35000	35000	DEFAULT	—	
+STRUCTURED STATE
+Product status (position & use)	default	DEFAULT	—	
+Status × phase weight matrix	default	DEFAULT	—	
+Artefact → team skill map	default	DEFAULT	—	
+TO-BE location split (per skill)	edited vs default	ADJUSTED	—	
+Target location mix (relocation lever)	edited vs default	ADJUSTED	—	
+Strategy definitions (7 strategies)	default	DEFAULT	—	
+Selected scope (phases & artefacts)	43 artefacts	DEFAULT	—	
+Every editable variable of the model in one auditable place. Status: default benchmark · adjusted in this simulation · validated with the client. Impact: Pearson correlation with the net outcome from the last Monte Carlo run (uncertain parameters only). No hidden assumptions.

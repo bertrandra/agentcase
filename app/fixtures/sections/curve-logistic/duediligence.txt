@@ -1,0 +1,987 @@
+🧾 Due diligence
+v16.1
+SUPPORTS
+?
+This register lists what a client must confirm for the model to be defensible — not what the model computes. It deliberately surfaces 0 coefficients that are hardcoded in the calculation path and editable nowhere in the interface. They materially drive the euro result, so until now the question “where does that number come from?” had no answer, even internally. Surfacing them is not a criticism of the model — every model has coefficients; the defect was that they were unseeable.
+Where these values come from. AgentCase ships with defaults for the metric anchors and for the model’s internal coefficients. These are engineering estimates: no study, dataset or delivery record is cited for them, and they are not benchmarks. That is what this register is for — each becomes a confirmed input once validated against the client’s own records. Rows marked PC4 unvalidated and PC5 embedded are the ones still awaiting that confirmation.
+ITEMS TO CONFIRM
+89
+EDITABLE NOWHERE (PC5)
+0
+CONFIRMED / WAIVED (ITEMS)
+0%
+CONFIRMED BY € WEIGHT
+—
+GLASS CEILING CONFIRMED
+0%
+of the 25% ceiling’s weight
+Two gauges, two questions. € coverage says how much of the figure rests on unverified values. Ceiling coverage says how much of the thesis does — the artefact-by-artefact claim that a human signature is irreducible. Telemetry cannot measure this and a simulation cannot validate it: only the people who sign the certification can.
+📤 Export pack (Excel)📥 RE-IMPORT ANNOTATED PACK⚖️ Compute € sensitivityNot yet measured. Runs ~50 model evaluations; cached until an input changes.
+Item count over-credits cheap confirmations. Run the sensitivity measurement to weight this by euro impact — until then, read it as progress, not as model confidence.
+Used in	Element / effect on the result	Value	Where	Editable in	€ weight	Class	State
+PERFORMANCE REALISATION
+display	perfRel() upper clamp
+Caps how far velocity/productivity may exceed the ramp-implied uplift. At 1.4 every anchor overshot its target until the v16.1 clamp (F9).
+		perfRel()	✎ here	—	PC5 embedded	OPEN 
+open
+requested
+confirmed
+disputed
+waived
+
+display	defaultPerfUplift() factor
+Scales the reference uplift against which every ramp is measured. Moves all velocity, DORA and throughput readings.
+		defaultPerfUplift()	✎ here	—	PC5 embedded	OPEN 
+open
+requested
+confirmed
+disputed
+waived
+
+VERIFICATION TAX
+⚙ CALC	Verification tax hard cap
+Ceiling on the share of savings deducted for review effort.
+		verificationTaxRate()	✎ here	—	PC5 embedded	OPEN 
+open
+requested
+confirmed
+disputed
+waived
+
+⚙ CALC	Verification tax base rate
+Review need before supervision credit. Multiplied by average human supervision (overlay) or netted against it.
+	0.3	vtaxEffBase()	🎯 Eligibility & Abaques →	—	PC5 embedded	OPEN 
+open
+requested
+confirmed
+disputed
+waived
+
+AI QUALITY PREMIUM
+⚙ CALC
+🏭 FACTORY	Quality premium cap
+Maximum rework multiplier applied for AI-authored code quality risk (EV-23).
+		aiQualityTaxFactor()	✎ here	—	PC5 embedded	OPEN 
+open
+requested
+confirmed
+disputed
+waived
+
+display	Decision-bar quality weight
+Converts the quality premium into a decision-intelligence penalty, capped at 0.15.
+		qualBar()	✎ here	—	PC5 embedded	OPEN 
+open
+requested
+confirmed
+disputed
+waived
+
+HUMAN READINESS
+⚙ CALC	HRI ramp floor
+Worst-case adoption drag: a zero-readiness organisation still realises 60% of the ramp.
+		hriRampFactor()	✎ here	—	PC5 embedded	OPEN 
+open
+requested
+confirmed
+disputed
+waived
+
+⚙ CALC	HRI ramp slope
+How much readiness buys back. floor + slope x HRI/100.
+		hriRampFactor()	✎ here	—	PC5 embedded	OPEN 
+open
+requested
+confirmed
+disputed
+waived
+
+TEAM SIZING
+display	Supervision share cap
+Supervision FTE never exceeds half the residual team, whatever the supervision matrix says.
+		targetTeam()	✎ here	—	PC5 embedded	OPEN 
+open
+requested
+confirmed
+disputed
+waived
+
+display	Supervision share factor
+supShare = min(0.5, avgHumanSup x 0.5). Sets how much of the retained team supervises rather than produces.
+		targetTeam()	✎ here	—	PC5 embedded	OPEN 
+open
+requested
+confirmed
+disputed
+waived
+
+ENGAGEMENT CONTEXT
+⚙ CALC	Context glass factor
+Multiplies effective automation for the engagement context.
+	1	ENGAGE_COEF	🎯 Automation & Glass ceiling →
+engagement-context coefficient block
+	—	PC5 embedded	OPEN 
+open
+requested
+confirmed
+disputed
+waived
+
+⚙ CALC	Ramp cap (%)
+Hard ceiling on every annual ramp.
+	100	ENGAGE_COEF	🎯 Automation & Glass ceiling →
+engagement-context coefficient block
+	—	PC5 embedded	OPEN 
+open
+requested
+confirmed
+disputed
+waived
+
+⚙ CALC	Ramp speed
+Scales every annual ramp before the cap.
+	1	ENGAGE_COEF	🎯 Automation & Glass ceiling →
+engagement-context coefficient block
+	—	PC5 embedded	OPEN 
+open
+requested
+confirmed
+disputed
+waived
+
+KNOWLEDGE HUB
+⚙ CALC	CC maturity multiplier
+Multiplies effective automation by the target collective-competence tier.
+	1	CC_MULT / khMult()	🧠 Knowledge hub →	—	PC5 embedded	OPEN 
+open
+requested
+confirmed
+disputed
+waived
+
+PRODUCT PROFILE
+⚙ CALC	Lifecycle auto posture
+Multiplies effective automation by the blended product profile.
+	1	lifecycleAutoPosture()	📊 Status & phase weight →	—	PC5 embedded	OPEN 
+open
+requested
+confirmed
+disputed
+waived
+
+GLASS CEILING
+⚙ CALC
+🏭 FACTORY	Computed glass ceiling (%)
+Effort-weighted irreducible human supervision. Caps effective automation at 100 - ceiling.
+	25	computeGlassCeiling()	🎯 Scope →
+🎯 Automation & Glass ceiling →
+derived from artefact supervision; manual override in Parameters
+	—	PC5 embedded	OPEN 
+open
+requested
+confirmed
+disputed
+waived
+
+TEAM SIZING
+display	Transitional setup headcount (FTE)
+Sizes the "Agentic Setup" row of the Team-out table. Display only — its € is already counted inside the Setup budget, not added on top.
+		targetTeam()	✎ here	—	PC5 embedded	OPEN 
+open
+requested
+confirmed
+disputed
+waived
+
+display	Agent capacity factor
+Scales the "(indicative)" agent-capacity read-out only. Deliberately isolated from vFTE/savings by design (effort-conservation invariant).
+		model()	✎ here	—	PC5 embedded	OPEN 
+open
+requested
+confirmed
+disputed
+waived
+
+display	AI-FinOps flat FTE
+One illustrative row inside the Agentic Run team breakdown. Does not independently feed the top-level run cost.
+		teamOutRun / renderAgentDetail()	✎ here	—	PC5 embedded	OPEN 
+open
+requested
+confirmed
+disputed
+waived
+
+SUPERVISION FLOOR — SDLC · V3
+⚙ CALC
+🏭 FACTORY	V3 · Source code
+21.4% of the glass ceiling · cumulative 21.4%
+	25%	DATA.artefacts	🎯 Scope →
+supervision set per artefact
+	—	PC3 catalogue	OPEN 
+open
+requested
+confirmed
+disputed
+waived
+
+⚙ CALC
+🏭 FACTORY	V3 · Code review
+19.2% of the glass ceiling · cumulative 40.6%
+	45%	DATA.artefacts	🎯 Scope →
+supervision set per artefact
+	—	PC3 catalogue	OPEN 
+open
+requested
+confirmed
+disputed
+waived
+
+SUPERVISION FLOOR — SDLC · V1
+⚙ CALC
+🏭 FACTORY	V1 · Requirements / NFR
+13.0% of the glass ceiling · cumulative 53.6%
+	45%	DATA.artefacts	🎯 Scope →
+supervision set per artefact
+	—	PC3 catalogue	OPEN 
+open
+requested
+confirmed
+disputed
+waived
+
+SUPERVISION FLOOR — SDLC · V4
+⚙ CALC
+🏭 FACTORY	V4 · Unit test plan
+12.6% of the glass ceiling · cumulative 66.3%
+	40%	DATA.artefacts	🎯 Scope →
+supervision set per artefact
+	—	PC3 catalogue	OPEN 
+open
+requested
+confirmed
+disputed
+waived
+
+⚙ CALC
+🏭 FACTORY	V4 · Unit test cases
+11.0% of the glass ceiling · cumulative 77.3%
+	20%	DATA.artefacts	🎯 Scope →
+supervision set per artefact
+	—	PC3 catalogue	OPEN 
+open
+requested
+confirmed
+disputed
+waived
+
+SUPERVISION FLOOR — SDLC · V1
+⚙ CALC
+🏭 FACTORY	V1 · User stories / backlog
+8.7% of the glass ceiling · cumulative 86.0%
+	30%	DATA.artefacts	🎯 Scope →
+supervision set per artefact
+	—	PC3 catalogue	OPEN 
+open
+requested
+confirmed
+disputed
+waived
+
+SUPERVISION FLOOR — REMAINDER
+⚙ CALC
+🏭 FACTORY	SDLC · V4 (2 artefacts)
+7.1% of the glass ceiling, grouped — below the 85% naming threshold
+	9% avg	DATA.artefacts	🎯 Scope →
+supervision set per artefact
+	—	PC3 catalogue	OPEN 
+open
+requested
+confirmed
+disputed
+waived
+
+⚙ CALC
+🏭 FACTORY	SDLC · V1 (1 artefact)
+4.3% of the glass ceiling, grouped — below the 85% naming threshold
+	20% avg	DATA.artefacts	🎯 Scope →
+supervision set per artefact
+	—	PC3 catalogue	OPEN 
+open
+requested
+confirmed
+disputed
+waived
+
+⚙ CALC
+🏭 FACTORY	SDLC · V3 (1 artefact)
+2.6% of the glass ceiling, grouped — below the 85% naming threshold
+	10% avg	DATA.artefacts	🎯 Scope →
+supervision set per artefact
+	—	PC3 catalogue	OPEN 
+open
+requested
+confirmed
+disputed
+waived
+
+METRIC ANCHORS (DORA / VELOCITY)
+display	Deploy frequency
+Seeds the velocity tab and the KPI scorecard.
+	 → 
+AS-IS → TARGET
+	DORA_ANCHORS	✎ here	—	PC4 unvalidated	OPEN 
+open
+requested
+confirmed
+disputed
+waived
+
+display	Lead time
+Seeds the velocity tab and the KPI scorecard.
+	 → 
+AS-IS → TARGET
+	DORA_ANCHORS	✎ here	—	PC4 unvalidated	OPEN 
+open
+requested
+confirmed
+disputed
+waived
+
+display	MTTR
+Seeds the velocity tab and the KPI scorecard.
+	 → 
+AS-IS → TARGET
+	DORA_ANCHORS	✎ here	—	PC4 unvalidated	OPEN 
+open
+requested
+confirmed
+disputed
+waived
+
+display	Change failure
+Seeds the velocity tab and the KPI scorecard.
+	 → 
+AS-IS → TARGET
+	DORA_ANCHORS	✎ here	—	PC4 unvalidated	OPEN 
+open
+requested
+confirmed
+disputed
+waived
+
+display	Velocity (SP/sprint)
+Seeds the velocity tab and the KPI scorecard.
+	 → 
+AS-IS → TARGET
+	DORA_ANCHORS	✎ here	—	PC4 unvalidated	OPEN 
+open
+requested
+confirmed
+disputed
+waived
+
+METRIC ANCHORS (THROUGHPUT)
+display	User stories
+Drives the productivity categories and the consolidated throughput row.
+	 → 
+AS-IS → TARGET
+	THROUGHPUT_ANCHORS	✎ here	—	PC4 unvalidated	OPEN 
+open
+requested
+confirmed
+disputed
+waived
+
+display	API specs
+Drives the productivity categories and the consolidated throughput row.
+	 → 
+AS-IS → TARGET
+	THROUGHPUT_ANCHORS	✎ here	—	PC4 unvalidated	OPEN 
+open
+requested
+confirmed
+disputed
+waived
+
+display	Test cases
+Drives the productivity categories and the consolidated throughput row.
+	 → 
+AS-IS → TARGET
+	THROUGHPUT_ANCHORS	✎ here	—	PC4 unvalidated	OPEN 
+open
+requested
+confirmed
+disputed
+waived
+
+display	Code modules
+Drives the productivity categories and the consolidated throughput row.
+	 → 
+AS-IS → TARGET
+	THROUGHPUT_ANCHORS	✎ here	—	PC4 unvalidated	OPEN 
+open
+requested
+confirmed
+disputed
+waived
+
+display	Design docs
+Drives the productivity categories and the consolidated throughput row.
+	 → 
+AS-IS → TARGET
+	THROUGHPUT_ANCHORS	✎ here	—	PC4 unvalidated	OPEN 
+open
+requested
+confirmed
+disputed
+waived
+
+display	Audit docs
+Drives the productivity categories and the consolidated throughput row.
+	 → 
+AS-IS → TARGET
+	THROUGHPUT_ANCHORS	✎ here	—	PC4 unvalidated	OPEN 
+open
+requested
+confirmed
+disputed
+waived
+
+METRIC ANCHORS (QUALITY)
+display	Bugs/1000 LOC
+Drives the quality table and the KPI scorecard.
+	 → 
+AS-IS → TARGET
+	QUALITY	Quality →
+as-is also editable in Quality — target only here
+	—	PC4 unvalidated	OPEN 
+open
+requested
+confirmed
+disputed
+waived
+
+display	Test coverage
+Drives the quality table and the KPI scorecard.
+	 → 
+AS-IS → TARGET
+	QUALITY	Quality →
+as-is also editable in Quality — target only here
+	—	PC4 unvalidated	OPEN 
+open
+requested
+confirmed
+disputed
+waived
+
+display	Review cycle (h)
+Drives the quality table and the KPI scorecard.
+	 → 
+AS-IS → TARGET
+	QUALITY	Quality →
+as-is also editable in Quality — target only here
+	—	PC4 unvalidated	OPEN 
+open
+requested
+confirmed
+disputed
+waived
+
+display	Defect leakage %
+Drives the quality table and the KPI scorecard.
+	 → 
+AS-IS → TARGET
+	QUALITY	Quality →
+as-is also editable in Quality — target only here
+	—	PC4 unvalidated	OPEN 
+open
+requested
+confirmed
+disputed
+waived
+
+display	Doc sync %
+Drives the quality table and the KPI scorecard.
+	 → 
+AS-IS → TARGET
+	QUALITY	Quality →
+as-is also editable in Quality — target only here
+	—	PC4 unvalidated	OPEN 
+open
+requested
+confirmed
+disputed
+waived
+
+display	Vuln/100 commits
+Drives the quality table and the KPI scorecard.
+	 → 
+AS-IS → TARGET
+	QUALITY	Quality →
+as-is also editable in Quality — target only here
+	—	PC4 unvalidated	OPEN 
+open
+requested
+confirmed
+disputed
+waived
+
+display	eNPS
+Drives the quality table and the KPI scorecard.
+	 → 
+AS-IS → TARGET
+	QUALITY	Quality →
+as-is also editable in Quality — target only here
+	—	PC4 unvalidated	OPEN 
+open
+requested
+confirmed
+disputed
+waived
+
+INPUTS — FRAME
+⚙ CALC	Horizon (years)
+At default
+	3	assumptions register	📒 Assumptions register →
+🎯 Automation & Glass ceiling →
+set in Parameters / Levers, tracked in the register
+	—	PC1 client-provided	OPEN 
+open
+requested
+confirmed
+disputed
+waived
+
+⚙ CALC	Working days / year
+At default
+	220	assumptions register	📒 Assumptions register →
+🎯 Automation & Glass ceiling →
+set in Parameters / Levers, tracked in the register
+	—	PC1 client-provided	OPEN 
+open
+requested
+confirmed
+disputed
+waived
+
+INPUTS — LEVERS
+⚙ CALC	Automation potential (%)
+Adjusted from default 65
+	75	assumptions register	📒 Assumptions register →
+🎯 Automation & Glass ceiling →
+set in Parameters / Levers, tracked in the register
+	—	PC1 client-provided	OPEN 
+open
+requested
+confirmed
+disputed
+waived
+
+⚙ CALC	Year-1 ramp (%)
+At default
+	25	assumptions register	📒 Assumptions register →
+🎯 Automation & Glass ceiling →
+set in Parameters / Levers, tracked in the register
+	—	PC1 client-provided	OPEN 
+open
+requested
+confirmed
+disputed
+waived
+
+⚙ CALC	Year-2 ramp (%)
+At default
+	55	assumptions register	📒 Assumptions register →
+🎯 Automation & Glass ceiling →
+set in Parameters / Levers, tracked in the register
+	—	PC1 client-provided	OPEN 
+open
+requested
+confirmed
+disputed
+waived
+
+⚙ CALC	Year-3 ramp (%)
+At default
+	100	assumptions register	📒 Assumptions register →
+🎯 Automation & Glass ceiling →
+set in Parameters / Levers, tracked in the register
+	—	PC1 client-provided	OPEN 
+open
+requested
+confirmed
+disputed
+waived
+
+⚙ CALC	Glass ceiling (%)
+Adjusted from default 35
+	25	assumptions register	📒 Assumptions register →
+🎯 Automation & Glass ceiling →
+set in Parameters / Levers, tracked in the register
+	—	PC1 client-provided	OPEN 
+open
+requested
+confirmed
+disputed
+waived
+
+INPUTS — TOKENS
+⚙ CALC	Tokens per artifact
+At default
+	50000	assumptions register	📒 Assumptions register →
+🎯 Automation & Glass ceiling →
+set in Parameters / Levers, tracked in the register
+	—	PC1 client-provided	OPEN 
+open
+requested
+confirmed
+disputed
+waived
+
+⚙ CALC	Agent runs / day / vFTE
+At default
+	25	assumptions register	📒 Assumptions register →
+🎯 Automation & Glass ceiling →
+set in Parameters / Levers, tracked in the register
+	—	PC1 client-provided	OPEN 
+open
+requested
+confirmed
+disputed
+waived
+
+INPUTS — RUN
+⚙ CALC	Agent infra (€/month)
+At default
+	500	assumptions register	📒 Assumptions register →
+🎯 Automation & Glass ceiling →
+set in Parameters / Levers, tracked in the register
+	—	PC1 client-provided	OPEN 
+open
+requested
+confirmed
+disputed
+waived
+
+⚙ CALC	Run team — platform floor min (FTE)
+At default
+	0.5	assumptions register	📒 Assumptions register →
+🎯 Automation & Glass ceiling →
+set in Parameters / Levers, tracked in the register
+	—	PC1 client-provided	OPEN 
+open
+requested
+confirmed
+disputed
+waived
+
+⚙ CALC	Run team — floor (% of base team)
+At default
+	4	assumptions register	📒 Assumptions register →
+🎯 Automation & Glass ceiling →
+set in Parameters / Levers, tracked in the register
+	—	PC1 client-provided	OPEN 
+open
+requested
+confirmed
+disputed
+waived
+
+⚙ CALC	Run team — ops FTE per agent vFTE
+At default
+	0.15	assumptions register	📒 Assumptions register →
+🎯 Automation & Glass ceiling →
+set in Parameters / Levers, tracked in the register
+	—	PC1 client-provided	OPEN 
+open
+requested
+confirmed
+disputed
+waived
+
+⚙ CALC	Run team — sizing mode
+At default
+	hybrid	assumptions register	📒 Assumptions register →
+🎯 Automation & Glass ceiling →
+set in Parameters / Levers, tracked in the register
+	—	PC1 client-provided	OPEN 
+open
+requested
+confirmed
+disputed
+waived
+
+INPUTS — SETUP
+⚙ CALC	Setup — tooling (€)
+At default
+	35000	assumptions register	📒 Assumptions register →
+🎯 Automation & Glass ceiling →
+set in Parameters / Levers, tracked in the register
+	—	PC1 client-provided	OPEN 
+open
+requested
+confirmed
+disputed
+waived
+
+⚙ CALC	Setup — governance (€)
+At default
+	20000	assumptions register	📒 Assumptions register →
+🎯 Automation & Glass ceiling →
+set in Parameters / Levers, tracked in the register
+	—	PC1 client-provided	OPEN 
+open
+requested
+confirmed
+disputed
+waived
+
+⚙ CALC	Setup — training (€)
+At default
+	45000	assumptions register	📒 Assumptions register →
+🎯 Automation & Glass ceiling →
+set in Parameters / Levers, tracked in the register
+	—	PC1 client-provided	OPEN 
+open
+requested
+confirmed
+disputed
+waived
+
+⚙ CALC	Setup — coaching (€)
+At default
+	35000	assumptions register	📒 Assumptions register →
+🎯 Automation & Glass ceiling →
+set in Parameters / Levers, tracked in the register
+	—	PC1 client-provided	OPEN 
+open
+requested
+confirmed
+disputed
+waived
+
+FACTORY GENERATION PARAMETERS
+🏭 FACTORY	Sprint length (weeks)
+Shapes the generated factory data. No euro path — illustration only.
+		FG_PARAMS	✎ here	—	PC4 unvalidated	OPEN 
+open
+requested
+confirmed
+disputed
+waived
+
+🏭 FACTORY	Program increment (weeks)
+Shapes the generated factory data. No euro path — illustration only.
+		FG_PARAMS	✎ here	—	PC4 unvalidated	OPEN 
+open
+requested
+confirmed
+disputed
+waived
+
+🏭 FACTORY	Weeks between releases
+Shapes the generated factory data. No euro path — illustration only.
+		FG_PARAMS	✎ here	—	PC4 unvalidated	OPEN 
+open
+requested
+confirmed
+disputed
+waived
+
+🏭 FACTORY	RC cut before release (days)
+Shapes the generated factory data. No euro path — illustration only.
+		FG_PARAMS	✎ here	—	PC4 unvalidated	OPEN 
+open
+requested
+confirmed
+disputed
+waived
+
+🏭 FACTORY	Release candidates rejected
+Shapes the generated factory data. No euro path — illustration only.
+		FG_PARAMS	✎ here	—	PC4 unvalidated	OPEN 
+open
+requested
+confirmed
+disputed
+waived
+
+🏭 FACTORY	Approval decision (days)
+Shapes the generated factory data. No euro path — illustration only.
+		FG_PARAMS	✎ here	—	PC4 unvalidated	OPEN 
+open
+requested
+confirmed
+disputed
+waived
+
+🏭 FACTORY	Days between environment promotions
+Shapes the generated factory data. No euro path — illustration only.
+		FG_PARAMS	✎ here	—	PC4 unvalidated	OPEN 
+open
+requested
+confirmed
+disputed
+waived
+
+🏭 FACTORY	Failed deployments
+Shapes the generated factory data. No euro path — illustration only.
+		FG_PARAMS	✎ here	—	PC4 unvalidated	OPEN 
+open
+requested
+confirmed
+disputed
+waived
+
+🏭 FACTORY	Production rollbacks
+Shapes the generated factory data. No euro path — illustration only.
+		FG_PARAMS	✎ here	—	PC4 unvalidated	OPEN 
+open
+requested
+confirmed
+disputed
+waived
+
+🏭 FACTORY	Retry delay after failure (days)
+Shapes the generated factory data. No euro path — illustration only.
+		FG_PARAMS	✎ here	—	PC4 unvalidated	OPEN 
+open
+requested
+confirmed
+disputed
+waived
+
+🏭 FACTORY	Commits per agent run
+Shapes the generated factory data. No euro path — illustration only.
+		FG_PARAMS	✎ here	—	PC4 unvalidated	OPEN 
+open
+requested
+confirmed
+disputed
+waived
+
+🏭 FACTORY	Human commits per dev-week
+Shapes the generated factory data. No euro path — illustration only.
+		FG_PARAMS	✎ here	—	PC4 unvalidated	OPEN 
+open
+requested
+confirmed
+disputed
+waived
+
+🏭 FACTORY	Builds per week
+Shapes the generated factory data. No euro path — illustration only.
+		FG_PARAMS	✎ here	—	PC4 unvalidated	OPEN 
+open
+requested
+confirmed
+disputed
+waived
+
+🏭 FACTORY	Failed builds
+Shapes the generated factory data. No euro path — illustration only.
+		FG_PARAMS	✎ here	—	PC4 unvalidated	OPEN 
+open
+requested
+confirmed
+disputed
+waived
+
+🏭 FACTORY	Artefacts per successful build
+Shapes the generated factory data. No euro path — illustration only.
+		FG_PARAMS	✎ here	—	PC4 unvalidated	OPEN 
+open
+requested
+confirmed
+disputed
+waived
+
+🏭 FACTORY	Monitoring events per production deployment
+Shapes the generated factory data. No euro path — illustration only.
+		FG_PARAMS	✎ here	—	PC4 unvalidated	OPEN 
+open
+requested
+confirmed
+disputed
+waived
+
+🏭 FACTORY	Share of events Critical
+Shapes the generated factory data. No euro path — illustration only.
+		FG_PARAMS	✎ here	—	PC4 unvalidated	OPEN 
+open
+requested
+confirmed
+disputed
+waived
+
+🏭 FACTORY	Share of events Warning
+Shapes the generated factory data. No euro path — illustration only.
+		FG_PARAMS	✎ here	—	PC4 unvalidated	OPEN 
+open
+requested
+confirmed
+disputed
+waived
+
+🏭 FACTORY	Feedback items per release
+Shapes the generated factory data. No euro path — illustration only.
+		FG_PARAMS	✎ here	—	PC4 unvalidated	OPEN 
+open
+requested
+confirmed
+disputed
+waived
+
+🏭 FACTORY	Quality-gate failure rate
+Shapes the generated factory data. No euro path — illustration only.
+		FG_PARAMS	✎ here	—	PC4 unvalidated	OPEN 
+open
+requested
+confirmed
+disputed
+waived
+
+🏭 FACTORY	Rolling window for rates (weeks)
+Shapes the generated factory data. No euro path — illustration only.
+		FG_PARAMS	✎ here	—	PC4 unvalidated	OPEN 
+open
+requested
+confirmed
+disputed
+waived
+
+🏭 FACTORY	Minimum events before a rate is reported
+Shapes the generated factory data. No euro path — illustration only.
+		FG_PARAMS	✎ here	—	PC4 unvalidated	OPEN 
+open
+requested
+confirmed
+disputed
+waived
+
+🏭 FACTORY	Volume density
+Shapes the generated factory data. No euro path — illustration only.
+		FG_PARAMS	✎ here	—	PC4 unvalidated	OPEN 
+open
+requested
+confirmed
+disputed
+waived
+
+🏭 FACTORY	Record cap
+Shapes the generated factory data. No euro path — illustration only.
+		FG_PARAMS	✎ here	—	PC4 unvalidated	OPEN 
+open
+requested
+confirmed
+disputed
+waived
+
+🏭 FACTORY	PRNG seed
+Shapes the generated factory data. No euro path — illustration only.
+		FG_PARAMS	✎ here	—	PC4 unvalidated	OPEN 
+open
+requested
+confirmed
+disputed
+waived

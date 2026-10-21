@@ -1,0 +1,80 @@
+🎯 Automation & Glass ceiling
+DRIVES
+?
+Two levers set how deep automation can go: the automation potential (how much of the in-scope work agents can take on) and the glass ceiling (the irreducible human share imposed by the regulatory & supervision profile). Effective automation = automation potential × (1 − glass ceiling).
+Target automation potential (%)
+What agents can technically take on across the selected scope — before the glass ceiling.
+75%
+🎯 Fit to selected scope
+— when on, the slider is locked to the automatable average of the chosen artifacts; uncheck to set it manually
+⚙️ Technical automation cap
+% — the most a full delivery scope can be agent-automated, before the glass ceiling. Bounds the slider and the scope-fit above (and the Monte-Carlo range). Default 100% (no technical cap); lower it to reserve an irreducible human share across the scope.
+Effective glass ceiling
+Computed from the selected scope: phases + norms + cross-cutting. The irreducible human share that caps how deep automation can go.
+25%
+Force this value (override auto-computed from regulatory selection)
+🤖 Automation over time — potential vs realized
+How much of the delivery work is actually automated, month by month, against the ceiling. The full automation potential and glass ceiling set above define the reachable depth; the realized curve is what the adoption ramp (📊 S-curve) actually delivers each month. The gap between them is split into the factors that hold it back — a per-factor spec of what is (and isn't) captured.
+0%
+25%
+50%
+75%
+100%
+Potential 75%
+Max depth 75%
+Realized 68%
+now
+M1
+M13
+M25
+M36
+ALWAYS ON THE CHART
+Realized automation
+68.1% by Y3
+Adoption gap
+−6.9 pts
+Glass-ceiling & lifecycle cap
+−0.0 pts
+Not automatable
+−25.0 pts
+TICK TO ADD
+Residual human FTE
+6.9 FTE (46%) by Y3
+delivery 4.2  ·  supervision 0.6  ·  agentic-run 2.1
+Human-handled work
+32% by Y3
+not-automatable + glass-ceiling, together
+Agent vFTE share
+10.2 vFTE by Y3
+60% of the blended human + agent team
+Maturity levels L1–L4
+crosses 25 / 55 / 80%
+🧱 Human & regulatory glass ceiling — what can never be fully automated
+The same story as the curve above, read down instead of across: where the automation potential actually goes, stage by stage. Band colours match the curve's, so this doubles as its legend.
+⏸ Pause
+↻
+Month 1 of 36 · Y1 · adoption 4.6%
+STAGE
+REMAINS
+LOST HERE
+Delivery work in scope
+everything the case covers
+100.0%
+—
+Automation potential
+what an agent could take, before any constraint
+75.0%
+−25.0 pts
+After regulatory / glass ceiling
+compliance, safety and risk that cannot be delegated
+56.3%
+−18.8 pts
+After the adoption ramp
+the depth the ramp has reached by this month
+3.4%
+−52.8 pts
+Effective, auditable automation
+the depth every number in this case is built on
+3.4%
+—
+At month 1 the case is running at 3.4% of the delivery work, against a permitted depth of 75.0% — the gap is the ramp, and it closes on its own; the gap above it does not. Realistic automation is what survives compliance, work mix, ramp and supervision; theoretical automation is what survives none of them.

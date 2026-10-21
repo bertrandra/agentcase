@@ -1,0 +1,41 @@
+🤖 Agent details — the agentic operating team
+SUPPORTS
+?
+Agentic transformation is not "agents instead of people" — it introduces a small, specialized human team that builds, operates, supervises and governs the agents. This tab details those roles, how each is sized from your team, and the AI authorization levels that decide what agents may do per artifact.
+📦 Agent runs by artifact (in-scope)
+Same agent executions as Token economics, allocated to each in-scope artifact — aligned with the "Agent runs by artifact" table there. Grouped by phase; regulated artifacts are flagged REG.
+Phase	Phase Description	Artifact	Run Y1	Run Y2	Run Y3	Run total	Tokens 3y (M)	Cost 3y (€)
+V1	Specification	Requirements / NFR	909	1,999	3,635	6,543	327.14 M	€4,711
+V1	Specification	Traceability matrix	991	2,181	3,965	7,138	356.88 M	€5,139
+V1	Specification	User stories / backlog	1,157	2,544	4,626	8,327	416.36 M	€5,996
+V3	Implementation	Code review	1,136	2,499	4,544	8,178	408.92 M	€5,888
+V3	Implementation	Inline documentation	1,115	2,454	4,461	8,030	401.49 M	€5,781
+V3	Implementation	Source code	3,098	6,815	12,392	22,305	1115.24 M	€16,059
+V4	Verification	Coverage report	785	1,727	3,139	5,651	282.53 M	€4,068
+V4	Verification	Test code / mocks	2,974	6,543	11,896	21,413	1070.63 M	€15,417
+V4	Verification	Unit test cases	2,313	5,089	9,252	16,654	832.71 M	€11,991
+V4	Verification	Unit test plan	991	2,181	3,965	7,138	356.88 M	€5,139
+Total (10 in-scope)	15,469	34,031	61,875	111,375	5568.8 M	€80,190
+The 5 agentic roles
+Role	Mission	Sizing rule	FTE (this case)	Category
+AI / Agent Engineer	Designs & operates the agents	max(0.3, FTE÷12)	1.25	AGENTIC RUN
+Skill / Prompt Engineer	Maintains the skill/prompt library	max(0.2, FTE÷20)	0.75	AGENTIC RUN
+Agent Supervisor	Reviews & validates AI outputs	Residual × supShare	0.47	SUPERVISION (RESIDUAL)
+AI-FinOps	Token cost steering & guardrails	0.50 (flat)	0.50	AGENTIC RUN
+AI-QA	Golden set, AI regression, red-team	max(0.2, FTE÷25)	0.60	AGENTIC RUN
+AI authorization levels (what an agent may do)
+Level	Meaning	Human role	Artifacts at this level	Avg human sup.
+Assistance	Agent drafts, human owns the result	Owns & decides	0	0%
+Copilot	Agent co-produces, human reviews closely	Reviews closely	3	43%
+Supervised autonomous	Agent produces, human spot-checks	Spot-checks	4	24%
+Autonomous	Agent produces & self-checks	Light oversight	3	8%
+AGENTIC RUN FTE
+3.1
+SUPERVISION POLE
+0.5
+AI SKILL PREMIUM
++15%
+RUN DAY-RATE
+€481
+AUTHORIZATION LEVELS
+4

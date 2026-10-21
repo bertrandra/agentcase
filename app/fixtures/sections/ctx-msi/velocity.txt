@@ -1,0 +1,14 @@
+Velocity & DORA
+SUPPORTS
+?
+DORA metrics and sprint velocity, driven by the in-scope automatable intensity × ramp — they move with the artifacts you select.
+Performance realisation coefficients
+REALISATION CAP ×
+REFERENCE UPLIFT FACTOR
+Shapes how the DORA/velocity chart below interpolates between AS-IS and elite target. Also editable from the Due-diligence register.
+Read year by year: Y0 → Y3, four points and three intervals. Values interpolate AS-IS → target on the adoption ramp and are clamped at the target — before v16.1 they overshot it, which produced a negative lead time at high ramps. Anchors are editable and carry no documented source (see 🧾 Due diligence).
+DORA metric	AS-IS	Y1	Y2	Y3	Elite target
+Deploy frequency	0.8/wk	4/wk	9/wk	14/wk	14/wk
+Lead time	21d	16d	9d	1.0d	1.0d
+MTTR	5.0h	3.8h	2.5h	0.75h	0.75h
+Change failure	17%	13%	9%	4%	4%

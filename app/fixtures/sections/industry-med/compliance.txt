@@ -1,0 +1,29 @@
+Regulatory compliance
+SUPPORTS
+?
+Glass ceiling and regulatory artifacts by selected industry (with a "None" option). Contextual to industry + reference.
+INDUSTRY
+MED
+IEC 62304, ISO 14971, ISO 13485, MDR 2017/745, IVDR
+GLASS CEILING
+54%
+human work required
+REG. ARTIFACTS
+61
+compliance documents
+MAX AUTOMATABLE
+46%
+potential at maturity
+Sector	Standards	Glass ceiling	Max automatable	Reg. artifacts
+None	—	0%	100%	0
+Aerospace-Defense-Space	DO-178C, DO-254, ARP4754A, DO-330, DO-326A, ECSS	40%	60%	69
+Medical (MD / IVD) ◄	IEC 62304, ISO 14971, ISO 13485, MDR 2017/745, IVDR	40%	60%	61
+Automotive	ISO 26262, ASPICE, ISO 21434, UN R155/R156	34%	66%	35
+Railway (CENELEC)	EN 50126, EN 50128, EN 50129, EN 50159	25%	75%	23
+Energy / Industry / OT	IEC 61508, IEC 61511, IEC 62443, IEC 60880	37%	63%	38
+Banking-Finance	DORA, PCI-DSS, EBA GL/RTS, NIS2	29%	71%	28
+Public / Sovereign (EU)	GDPR, SecNumCloud, NIS2, eIDAS	31%	69%	31
+Pharma / Life sciences (GxP)	GAMP 5, 21 CFR Part 11, Annex 11, ICH	24%	76%	21
+Cross-cutting AI (all industries)	EU AI Act, ISO/IEC 42001, NIST AI RMF	22%	78%	18
+Usability / Human-centred design	ISO 9241-11, ISO 9241-210, IEC 62366-1	25%	75%	22
+Sustainability / ESG	ISO 14001, ISO 14040/14044, ISO 26000, CSRD / ESRS	26%	74%	24

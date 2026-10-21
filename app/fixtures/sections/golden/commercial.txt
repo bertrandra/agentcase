@@ -1,0 +1,23 @@
+💼 Commercial model
+EV-07 · v12.63
+SUPPORTS
+?
+Connects the quantified gains to the referential's selling models: Effort & Tools, AI-Augmented Humans (uplifted day-rate), Agentshore (capacity-based mixed teams, T0/T1/T2 tiers) and Gain sharing. Availability depends on the engagement context — gain sharing needs full control (MSC); Agentshore needs a managed service. Client view and Capgemini margin view are shown side by side.
+MODEL
+ET — Effort & Tools
+AAH — AI-Augmented Humans
+AGS — Agentshore (mixed teams)
+GS — Gain sharing
+AAH UPLIFT (%)
+ET TOOLING MARKUP (%)
+AGS VFTE BILLING RATIO
+AGS €/CAPACITY PT (BLANK = AUTO)
+GS BASE DISCOUNT (%)
+GS GAIN SHARE (%)
+Model	Client revenue 3y	CG cost 3y (run + billable setup)	CG margin 3y	Client TCO 3y	Client saving vs AS-IS
+Effort & Tools ◀	€3,056K	€3,724K	€-668K (-22%)	€3,056K	42%
+AI-Augmented Humans	€3,129K	€3,724K	€-595K (-19%)	€3,129K	41%
+Agentshore — mixed teams	€3,838K	€3,724K	€114K (3%)	€3,838K	28%
+Gain sharing	€4,977K	€3,724K	€1,253K (25%)	€4,977K	6%
+Recommended for this case: Agentshore — mixed teams — MSC but confidence not yet proven — price the capacity, revisit GS after the pilot. (rule: STA→AAH · MSI→AGS if vFTE share at horizon end > 15% else ET · MSC→GS if MC confidence ≥ 70% else AGS)
+Absorbed (non-billable) setup under MSC: €0K — excluded from the margin above, carried as investment (CC-CTX-03).

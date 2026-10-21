@@ -1,0 +1,64 @@
+🧭 Program & Completeness
+EV-14/18/21/22/26/28 · v14.0
+SUPPORTS
+?
+Wave 4 completes the convergence with the reference model: pilot sizing, the internal capability build (Volet A), multi-pod / AI-Native SAFe overhead, the IP · confidentiality · sovereignty synthesis per context, the maturity transition criteria, and the token cache / total-cost logic. Analytical by default — the base case is unchanged.
+Pilot sizing — pilot as product EV-21
+PILOT POD SIZE (FTE)
+BREAK-IN SPRINTS
+PROVE WEEKS
+PILOT DURATION
+16 wk
+PILOT COST (INDICATIVE)
+€85K
+STRUCTURE
+DEC → HOW → BLD
+The pilot delivers a factory (the frozen harness + agents), not just an app: 2 break-in sprint(s) to stabilise the harness, then 12 weeks proving milestones by demonstration, on 3-day fail-fast iterations with full regeneration allowed.
+Reference 4.1: pilot-as-product; ~88% of pilots never industrialise, so distribution & governance are designed from day one (see the risk register). CC-PILOT-01.
+Internal capability build — Volet A EV-22
+OPERATIONAL NOW
+IN TRAINING
+TARGET MASS
+Operational now	
+	50
+In training	
+	200
+Target mass	
+	500
+Internal transformation (Volet A, distinct from the client engagement Volet B): 10% of the target mass is operational. The champion + preceptor network (see coaching curve) carries the ramp; time-to-mass is driven by preceptor ratio and training throughput.
+Reference 4.3: capacity milestones (illustratively 50 operational → 200 in training → 500 targeted). CC-CAP-01.
+Multi-pod & AI-Native SAFe overhead EV-18
+PODS AT Y3
+1
+COORDINATION OVERHEAD
+~0%
+SCALING STAGE
+Single pod — no scaling overhead
+As pods multiply, the bottleneck moves from coding to merge, then to specs & validation, then to program/portfolio coordination. Under AI-Native SAFe, pods become augmented stream-aligned teams and enabling teams coach the human-agent collaboration patterns.
+Reference 3.1: coordination overhead is indicative (analytical) and not applied to the core economics. CC-SAFE-01.
+IP · confidentiality · sovereignty synthesis EV-26
+Current engagement context: MSC.
+IP of deliverables & assets	Capgemini controls stack & assets; deliverable IP per contract, assets reusable
+Confidentiality	Data on Capgemini infra — strongest confidentiality control
+Sovereignty	Sovereign options available (SovBox / on-prem) if required
+Reference 5.3: purely AI-generated code has uncertain protection; never send confidential context to an unmastered model; partition by context. Exported in the Critical & Regulated report. CC-IP-01.
+Maturity transition criteria EV-14
+Current reached level: L4. Objective gates to reach the next level:
+Transition	Objective criteria
+L1 → L2	Team rules & shared prompts in place; agents used on ≥ 1 activity; basic guardrails; positive first-value signal
+L2 → L3	Agent-recommendation acceptance ≥ 90%; human override 5–15%; 0 P1 incident caused by an agent; all gates green for 90 days; Design Authority approval
+L3 → L4	Multi-agent orchestration stable; autonomous within bounded scope; measured value at scale; AI Office + Design Authority sign-off; governance & audit in place
+Reference 1.1 playbook: maturity rises on evidence, not ambition. CC-TRANS-01.
+Token cache & total-cost logic EV-28
+CACHEABLE INPUT SHARE (%)
+CACHE DISCOUNT (%)
+INPUT COST REDUCTION
+~63%
+$/DEV-DAY (NAIVE)
+$13
+$/DEV-DAY (CACHED, SAME MODEL)
+~$8
+$/DEV-DAY (CACHED, BEST MODEL)
+~$30
+The goal is the lowest total cost (tokens + human review), not the lowest token bill: a better model at 5× the token price can cut rework enough to land near ~$30/dev-day. Prompt caching removes up to ~90% of repeated input cost.
+Reference 6.2: analytical — pairs with the Token economics tab. CC-CACHE-01.

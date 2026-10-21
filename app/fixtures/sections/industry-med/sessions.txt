@@ -1,0 +1,8 @@
+🗂️ Session manager — autosave
+SUPPORTS
+?
+A rolling autosave of this browser's work, kept entirely separate from the 📥 Import / Export tab's Snapshot library and HTML exports — invisible and automatic, a safety net between deliberate saves, never a replacement for them. One session per tab: reload this tab and a banner offers to restore where you left off; other tabs you've had open in this browser are listed below and individually restorable. Nothing here is ever written to disk — it lives in this browser only (IndexedDB), for this file's origin.
+Autosave this session
+Clear this tab's autosave
+🗑 Clear all sessions
+No autosaved sessions yet — AgentCase saves automatically ~2s after you make a change.

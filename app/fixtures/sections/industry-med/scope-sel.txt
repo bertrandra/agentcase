@@ -1,0 +1,161 @@
+Scope — target artifact selection
+DRIVES
+?
+🎯 Scope — target artifact selection
+Select the individual artifacts (grouped by phase) included in the scenario. By default, all are included. Tick a phase header to toggle all its artifacts, or pick a few target artifacts. The input team is treated as dedicated to the selected scope — so automation depth is driven by the selected artifacts' automatable average (the Target automation potential auto-fits to it, editable on the Parameters tab), not diluted by the scope's share of the whole lifecycle. Selection cascades across every tab — team reduction, costs, vFTE, ROI, KPI, compliance and the performance (productivity, velocity, quality).
+Select all
+Clear all
+Show selected only
+In scope : 43/53 SDLC art. · 33 reg art. · 48% effort · 4/11 ph.
+V1 Specification · 8/8 reg×1.10
+seq
+11/14
+Requirements / NFR
+55% auto · w4.4 ×1.10
+User stories / backlog
+70% auto · w4.4 ×1.10
+Traceability matrix
+80% auto · w3.3 ×1.10
+REG
+SW Requirements Specification (§5.2) · IEC 62304
+25% auto · w3.3 ×1.10
+REG
+Risk Analysis (Hazard analysis / FMEA) · ISO 14971
+25% auto · w3.3 ×1.10
+REG
+Design Inputs / Outputs records · ISO 13485
+25% auto · w3.3 ×1.10
+REG
+Intended use and reasonably foreseeable misuse statement · ISO 14971
+25% auto · w3.3 ×1.10
+REG
+Safety characteristics checklist · ISO 14971
+25% auto · w3.3 ×1.10
+REG
+Hazard identification log · ISO 14971
+25% auto · w3.3 ×1.10
+REG
+Risk estimation records · ISO 14971
+25% auto · w3.3 ×1.10
+REG
+General Safety and Performance Requirements Checklist · MDR 2017/745 / IVDR
+25% auto · w3.3 ×1.10
+V3 Implementation×1.30
+seq
+3/5
+Source code
+75% auto · w13.0 ×1.30
+Code review
+55% auto · w6.5 ×1.30
+Inline documentation
+90% auto · w3.9 ×1.30
+V4 Verification · 5/5 reg×1.20
+seq
+9/9
+Unit test plan
+60% auto · w4.8 ×1.20
+Unit test cases
+80% auto · w8.4 ×1.20
+Test code / mocks
+90% auto · w9.6 ×1.20
+Coverage report
+95% auto · w2.4 ×1.20
+REG
+Unit Implementation & Verification records (§5.5) · IEC 62304
+45% auto · w3.6 ×1.20
+REG
+Risk control implementation verification records · ISO 14971
+45% auto · w3.6 ×1.20
+REG
+Risk control effectiveness verification records · ISO 14971
+45% auto · w3.6 ×1.20
+REG
+Risks introduced by control measures assessment · ISO 14971
+45% auto · w3.6 ×1.20
+REG
+Software Unit Verification Report · IEC 62304
+45% auto · w3.6 ×1.20
+Cross-cutting Cross-cutting (regulatory & AI framing) · 20/20 reg
+seq
+20/20
+REG
+Software Development Plan (§5.1) · IEC 62304
+15% auto · w2
+REG
+Change Request records · IEC 62304
+15% auto · w2
+REG
+Problem Resolution records (§9) · IEC 62304
+15% auto · w2
+REG
+SW Maintenance Plan (§6) · IEC 62304
+15% auto · w2
+REG
+SW Risk Management File (§7) · IEC 62304
+15% auto · w2
+REG
+SW Configuration Management Plan (§8) · IEC 62304
+15% auto · w2
+REG
+SOUP list & risk analysis (§5.3.3/§8.1.2) · IEC 62304
+15% auto · w2
+REG
+Risk Management Plan · ISO 14971
+15% auto · w2
+REG
+Risk Management File · ISO 14971
+15% auto · w2
+REG
+Design & Development Plan (Design History File) · ISO 13485
+15% auto · w2
+REG
+Design Changes records · ISO 13485
+15% auto · w2
+REG
+Risk management procedure / SOP · ISO 14971
+15% auto · w2
+REG
+State-of-the-art and standards applicability rationale · ISO 14971
+15% auto · w2
+REG
+Risk management traceability index · ISO 14971
+15% auto · w2
+REG
+Software Safety Classification Rationale · IEC 62304
+15% auto · w2
+REG
+Software Configuration Index · IEC 62304
+15% auto · w2
+REG
+Design and Development Review Records · ISO 13485
+15% auto · w2
+REG
+Supplier Evaluation and Monitoring Records · ISO 13485
+15% auto · w2
+REG
+CAPA Records · ISO 13485
+15% auto · w2
+REG
+Internal Audit Programme and Reports · ISO 13485
+15% auto · w2
+🎚️ Adjust % auto & effort weight per artifact — full catalogue, filtered by phase (click to expand)
+🧊 Glass ceiling & automation potential — impact by phase — where human supervision holds automation back (click to collapse)
+46%
+Automation potential
+54%
+Glass ceiling
+46%
+Max depth reached
+Each bar = the points of glass ceiling a phase contributes (the bars add up to 54.4 pts). The redder the bar, the more that phase holds automation back. Click a row for its biggest blockers.
+Cross-cutting (regulatory & AI framing)
++23.4 pts
+85% human · 28% of effort
+Specification
++16.4 pts
+62% human · 27% of effort
+Verification
++10.0 pts
+34% human · 30% of effort
+Implementation
++4.5 pts
+28% human · 16% of effort

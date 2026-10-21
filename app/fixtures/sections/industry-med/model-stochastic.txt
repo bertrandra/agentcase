@@ -1,0 +1,19 @@
+📊 Stochastic layer & baseline drift
+P4 · v16.8
+SUPPORTS
+?
+A separate Monte Carlo layer alongside the tab above: it samples the specific P1/P3 economic drivers named in the modelling-engine spec — acceptance rate, ramps, day rate, supervising capacity (Beta/Triangular), token price (Lognormal) — correlated within an organisational group via a one-factor Gaussian copula, with token price kept exogenous (independent). Plus counterfactual baseline drift: report gross savings and the smaller, more honest attributable figure once you subtract the improvement that would have happened anyway. (AME-SPEC v0.2, P4)
+Enable P4
+DRAWS
+SEED
+Ρ (ORGANISATIONAL)
+▶ Run simulation
+Phase OFF.
+Counterfactual baseline drift — gross vs. attributable
+Enable baseline drift
+Δ — SECULAR DRIFT (/YR)
+Phase OFF — attributable savings equal gross savings exactly (δ=0 in effect).
+Year	Gross savings	Attributable savings	Wedge (would have happened anyway)
+Y1	€315K	€315K	€0K
+Y2	€454K	€454K	€0K
+Y3	€644K	€644K	€0K

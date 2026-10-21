@@ -1,0 +1,74 @@
+🤖 Agent details — the agentic operating team
+SUPPORTS
+?
+Agentic transformation is not "agents instead of people" — it introduces a small, specialized human team that builds, operates, supervises and governs the agents. This tab details those roles, how each is sized from your team, and the AI authorization levels that decide what agents may do per artifact.
+📦 Agent runs by artifact (in-scope)
+Same agent executions as Token economics, allocated to each in-scope artifact — aligned with the "Agent runs by artifact" table there. Grouped by phase; regulated artifacts are flagged REG.
+Phase	Phase Description	Artifact	Run Y1	Run Y2	Run Y3	Run total	Tokens 3y (M)	Cost 3y (€)
+V1	Specification	REGDesign Inputs / Outputs records	127	279	506	912	45.58 M	€656
+V1	Specification	REGGeneral Safety and Performance Requirements Checklist	127	279	506	912	45.58 M	€656
+V1	Specification	REGHazard identification log	127	279	506	912	45.58 M	€656
+V1	Specification	REGIntended use and reasonably foreseeable misuse statement	127	279	506	912	45.58 M	€656
+V1	Specification	Requirements / NFR	371	817	1,486	2,674	133.70 M	€1,925
+V1	Specification	REGRisk Analysis (Hazard analysis / FMEA)	127	279	506	912	45.58 M	€656
+V1	Specification	REGRisk estimation records	127	279	506	912	45.58 M	€656
+V1	Specification	REGSafety characteristics checklist	127	279	506	912	45.58 M	€656
+V1	Specification	REGSW Requirements Specification (§5.2)	127	279	506	912	45.58 M	€656
+V1	Specification	Traceability matrix	405	891	1,621	2,917	145.86 M	€2,100
+V1	Specification	User stories / backlog	473	1,040	1,891	3,403	170.17 M	€2,450
+V3	Implementation	Code review	464	1,021	1,857	3,343	167.13 M	€2,407
+V3	Implementation	Inline documentation	456	1,003	1,823	3,282	164.09 M	€2,363
+V3	Implementation	Source code	1,266	2,785	5,065	9,116	455.81 M	€6,564
+V4	Verification	Coverage report	321	706	1,283	2,309	115.47 M	€1,663
+V4	Verification	REGRisk control effectiveness verification records	228	501	912	1,641	82.04 M	€1,181
+V4	Verification	REGRisk control implementation verification records	228	501	912	1,641	82.04 M	€1,181
+V4	Verification	REGRisks introduced by control measures assessment	228	501	912	1,641	82.04 M	€1,181
+V4	Verification	REGSoftware Unit Verification Report	228	501	912	1,641	82.04 M	€1,181
+V4	Verification	Test code / mocks	1,215	2,674	4,862	8,751	437.57 M	€6,301
+V4	Verification	REGUnit Implementation & Verification records (§5.5)	228	501	912	1,641	82.04 M	€1,181
+V4	Verification	Unit test cases	945	2,080	3,781	6,807	340.33 M	€4,901
+V4	Verification	Unit test plan	405	891	1,621	2,917	145.86 M	€2,100
+Cross-cutting	Cross-cutting (regulatory)	REGCAPA Records	51	111	203	365	18.23 M	€263
+Cross-cutting	Cross-cutting (regulatory)	REGChange Request records	51	111	203	365	18.23 M	€263
+Cross-cutting	Cross-cutting (regulatory)	REGDesign & Development Plan (Design History File)	51	111	203	365	18.23 M	€263
+Cross-cutting	Cross-cutting (regulatory)	REGDesign and Development Review Records	51	111	203	365	18.23 M	€263
+Cross-cutting	Cross-cutting (regulatory)	REGDesign Changes records	51	111	203	365	18.23 M	€263
+Cross-cutting	Cross-cutting (regulatory)	REGInternal Audit Programme and Reports	51	111	203	365	18.23 M	€263
+Cross-cutting	Cross-cutting (regulatory)	REGProblem Resolution records (§9)	51	111	203	365	18.23 M	€263
+Cross-cutting	Cross-cutting (regulatory)	REGRisk Management File	51	111	203	365	18.23 M	€263
+Cross-cutting	Cross-cutting (regulatory)	REGRisk Management Plan	51	111	203	365	18.23 M	€263
+Cross-cutting	Cross-cutting (regulatory)	REGRisk management procedure / SOP	51	111	203	365	18.23 M	€263
+Cross-cutting	Cross-cutting (regulatory)	REGRisk management traceability index	51	111	203	365	18.23 M	€263
+Cross-cutting	Cross-cutting (regulatory)	REGSoftware Configuration Index	51	111	203	365	18.23 M	€263
+Cross-cutting	Cross-cutting (regulatory)	REGSoftware Development Plan (§5.1)	51	111	203	365	18.23 M	€263
+Cross-cutting	Cross-cutting (regulatory)	REGSoftware Safety Classification Rationale	51	111	203	365	18.23 M	€263
+Cross-cutting	Cross-cutting (regulatory)	REGSOUP list & risk analysis (§5.3.3/§8.1.2)	51	111	203	365	18.23 M	€263
+Cross-cutting	Cross-cutting (regulatory)	REGState-of-the-art and standards applicability rationale	51	111	203	365	18.23 M	€263
+Cross-cutting	Cross-cutting (regulatory)	REGSupplier Evaluation and Monitoring Records	51	111	203	365	18.23 M	€263
+Cross-cutting	Cross-cutting (regulatory)	REGSW Configuration Management Plan (§8)	51	111	203	365	18.23 M	€263
+Cross-cutting	Cross-cutting (regulatory)	REGSW Maintenance Plan (§6)	51	111	203	365	18.23 M	€263
+Cross-cutting	Cross-cutting (regulatory)	REGSW Risk Management File (§7)	51	111	203	365	18.23 M	€263
+Total (43 in-scope)	9,488	20,873	37,950	68,310	3415.5 M	€49,183
+The 5 agentic roles
+Role	Mission	Sizing rule	FTE (this case)	Category
+AI / Agent Engineer	Designs & operates the agents	max(0.3, FTE÷12)	1.25	AGENTIC RUN
+Skill / Prompt Engineer	Maintains the skill/prompt library	max(0.2, FTE÷20)	0.75	AGENTIC RUN
+Agent Supervisor	Reviews & validates AI outputs	Residual × supShare	2.66	SUPERVISION (RESIDUAL)
+AI-FinOps	Token cost steering & guardrails	0.50 (flat)	0.50	AGENTIC RUN
+AI-QA	Golden set, AI regression, red-team	max(0.2, FTE÷25)	0.60	AGENTIC RUN
+AI authorization levels (what an agent may do)
+Level	Meaning	Human role	Artifacts at this level	Avg human sup.
+Assistance	Agent drafts, human owns the result	Owns & decides	0	0%
+Copilot	Agent co-produces, human reviews closely	Reviews closely	3	43%
+Supervised autonomous	Agent produces, human spot-checks	Spot-checks	4	24%
+Autonomous	Agent produces & self-checks	Light oversight	3	8%
+AGENTIC RUN FTE
+3.1
+SUPERVISION POLE
+2.7
+AI SKILL PREMIUM
++15%
+RUN DAY-RATE
+€481
+AUTHORIZATION LEVELS
+4

@@ -1,0 +1,9 @@
+📥 Import / Export — all editable settings
+SUPPORTS
+?
+💾 Save HTML
+⬇️ Export / Import current settings
+🗂️ Snapshot Manager
+💾 Save HTML Snapshot
+Download the entire application as a single standalone HTML file, frozen at its current configuration — all sliders, team, scope, regulatory selection, personas, coefficients, readiness answers and client tracker data. Opening the downloaded file lands you exactly where you left off. Fully offline, no server needed.
+💾 Download HTML snapshot

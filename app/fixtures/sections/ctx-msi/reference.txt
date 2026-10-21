@@ -1,0 +1,32 @@
+🗺️ Reference Map
+v14.2
+SUPPORTS
+?
+Coverage of the Software Engineering Delivery Model 2026 by AgentCase, one row per reference subchapter: a short summary, the coverage status, and a direct link to the AgentCase section that carries it.
+COVERED
+14
+PARTIAL
+2
+PLAYBOOK
+1
+SUBCHAPTERS
+17
+Reference subchapter	Summary	Coverage	Section
+1.1 Vision, ambition & maturity scale	Vision for an agentic software factory and the L1–L4 maturity scale (Ad-hoc Assistance → Autonomous Organization). AgentCase maps L-levels to the adoption ramp, vFTE share and AI-authorization, with objective L→L transition gates.	🟡 Partial	FTE / vFTE (maturity mapping) →
+1.2 Engagement contexts & eligibility	Three engagement contexts (Capgemini infra / client infra / staff augmentation) set the capacity to control the delivery system. Project eligibility combines a six-prerequisite gate with a pillar × SDLC potential matrix.	✅ Covered	Eligibility & Abaques →
+1.3 Contractual model & client relationship	Three TJM pricing models (Effort & Tools, AI-augmented humans, mixed teams / agentshore) and the T0/T1/T2 commitment calendar (commit gains only once measured). AgentCase prices all models client-vs-margin.	✅ Covered	Commercial model →
+2.1 Agentic tooling	Spec-Driven Development (spec as primary artifact), the six-layer agent stack, four memories / living metamodel, and the model & sovereignty socle. AgentCase turns SDD and harness readiness into levers that cut the verification tax.	✅ Covered	Maturity & Measurement (SDD) →
+2.2 Setup, configuration & distribution	The harness as the unit of configuration, secure local setup and distribution at scale (≈88% of pilots never industrialise). Largely playbook; the pilot-mortality risk is carried by AgentCase, plus the AI-BOM.	▫️ Playbook	Risk & Compliance →
+3.1 Team transformation & organisation	The merge becomes the bottleneck; teams recompose into pods of 2–4 in a diamond shape (a team of 10 → ~3 pods of ~3), with transverse roles and an AI Office, scaling under AI-Native SAFe.	✅ Covered	Operating model →
+3.2 Upskilling	The 90/10 skill shift, the knowledge-debt risk and the answer of deliberate learning: preceptorship 3:1–5:1, review-first, coaching. AgentCase models a declining coaching curve and the autonomy-weaning tiers.	✅ Covered	Maturity & Measurement (coaching) →
+3.3 Change management & the human dimension	People are the real failure factor (≈40% fear job loss). Address fear, do not over-sell (perceived vs real gain), and watch human indicators. AgentCase carries the HRI, the human early-warning indicators and the verification tax.	✅ Covered	AI Readiness (HRI) →
+4.1 Pilot teams	The pilot is the tipping point, run as a product (it delivers a factory, not an app): DEC → HOW → BLD, frozen harness, demonstration milestones, fail-fast. AgentCase sizes pilot duration and cost.	✅ Covered	Program & Completeness (pilot) →
+4.2 Autonomy strategies	Teach to fish: a progressive autonomy scale with deliberate support decay — intensive coaching → on-demand → self-service → community of practice — sustained by champions.	✅ Covered	Maturity & Measurement (autonomy) →
+4.3 Deployment roadmap	Discover → Prove → Scale, in two volets: internal Capgemini capability (A, 50→200→500) and client deployment (B). AgentCase surfaces the client roadmap and the internal capability ramp.	🟡 Partial	🤝 Engage (client deployment roadmap) →
+5.1 Governance, quality, security & code responsibility	AI code quality is not a given (×1.57–×1.75 more issues). The human answers for the system they designed; tripartite governance, non-bypassable gates, enlarged DoD and an AI-BOM. AgentCase carries the supervision matrix, quality premium and gates.	✅ Covered	Risk & Compliance →
+5.2 Risk management & responsible AI	Three complementary frameworks (EU AI Act, NIST AI RMF, ISO/IEC 42001) and an agentic risk register (prompt injection, MCP supply chain, secrets, vendor lock-in, hallucination, knowledge debt). AgentCase ships the register and an AI-Act tier classifier.	✅ Covered	Risk & Compliance →
+5.3 IP, confidentiality & sovereignty	IP of deliverables, confidentiality and sovereignty synthesised per engagement context; purely AI-generated code has uncertain protection; never send confidential context to an unmastered model. AgentCase gives a per-context synthesis.	✅ Covered	Program & Completeness (IP) →
+6.1 Gain abaques	Addressable gain ≠ net gain: Abaque A (addressable per phase) × Abaque B (captured by maturity) minus the verification tax — the ~10% net productivity paradox. AgentCase makes both abaques and the tax first-class.	✅ Covered	Eligibility & Abaques →
+6.2 Cost & delay estimation	COCOMO/KLOC breaks down; estimate from spec × capacity × supervision × tokens. FinOps GenAI: lowest total cost (tokens + review), not lowest token bill; caching removes up to ~90% of input cost.	✅ Covered	Program & Completeness (token cache) →
+6.3 Performance measurement	DORA is no longer enough: steer four families — DORA + SPACE + AI signals + human indicators — with the change-failure-rate guardrail and value beyond billable staffing. AgentCase carries the four-family socle.	✅ Covered	Maturity & Measurement (socle) →
+Coverage of the six-part reference model. Click a section to jump to the AgentCase tab that carries it. See the full gap analysis for detail.

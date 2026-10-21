@@ -1,0 +1,12 @@
+AS-IS vs TO-BE
+SUPPORTS
+?
+Comparison of the same workload run manually (AS-IS) vs agentic (TO-BE Y3). Metrics contextual to the automation potential.
+Metric	AS-IS	TO-BE Y3	Difference
+Calendar duration	14 wk	7.7 wk	-45%
+Human effort (PD)	120	30	-75%
+Generation/artifact	8h	3.5h	-56%
+Review cycles	3.2	1.5	-53%
+Defects	8-12%	2-4%	-75%
+Test coverage	55-65%	85-92%	+27pp
+Cost/SP	€650	€185	-71%

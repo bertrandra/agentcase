@@ -1,0 +1,52 @@
+📊 Product status lifecycle weighting
+DRIVES
+?
+📊 Product status lifecycle weighting = product profile (EV-13) · v14.8
+APPLY PRODUCT-STATUS LIFECYCLE WEIGHTING
+Re-weights each phase's effort by where the product sits in its lifecycle. Off = neutral (all phases weight 1.0).
+LIFECYCLE POSITION — JUMP TO A STATUS
+Greenfield (new build)
+Feature add (active development)
+Maintenance (stabilised)
+Modernisation (legacy)
+End-of-life (→ maintenance)
+Or slide gradually between statuses:
+Current status: Feature add (active development)
+Blended status Feature add (active development) re-weights each phase's effort, and applies an automation posture of ×1.00 to the effective automation depth — so the product status cascades to every in-scope artifact and the whole business case:
+Phase	Weight	Resulting effort share
+L0 Upstream	×0.90	
+0.0%
+
+V1 Specification	×1.10	
+26.5%
+
+V2 Design	×1.10	
+0.0%
+
+V3 Implementation	×1.30	
+16.1%
+
+V4 Verification	×1.20	
+29.8%
+
+V5 Integration	×1.20	
+0.0%
+
+V6 Validation	×1.10	
+0.0%
+
+V7 Qualification	×1.00	
+0.0%
+
+L8 Deployment	×1.00	
+0.0%
+
+L9 Run / AMS	×0.70	
+0.0%
+
+L10 End-of-life	×0.20	
+0.0%
+
+Cross-cutting Cross-cutting (regulatory & AI framing)	×1.00	
+27.6%
+📊 Product status lifecycle weighting metrics — reference & cascade (click to expand)

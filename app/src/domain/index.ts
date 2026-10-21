@@ -7,6 +7,9 @@ import type { CaseState } from './types/state';
 
 export { makeCtx, type Ctx } from './ctx';
 export { activeArtefacts, regActive } from './scope';
+export { phaseRows, phasesForScope, scopeSummary, regOfActiveNorms, type PhaseRow } from './scopeView';
+export { ceilingImpact, type CeilingImpact } from './ceilingImpact';
+export { lifecycleWeight } from './lifecycle';
 export { SDLC_ARTEFACTS, REG_ARTEFACTS, PHASES, LOCATIONS } from './catalog';
 export { model } from './model/overlay';
 export { modelRaw } from './model/raw';

@@ -1,0 +1,40 @@
+Location strategy
+DRIVES
+?
+🌍 Location strategy
+AS-IS distribution computed from the input team, and an editable target distribution per location. Shifting effort toward nearshore/offshore lowers the target blended day-rate and cascades into costs (Run, ROI, KPI…). Headcount reduction comes from automation; the location strategy acts on the unit cost.
+📍 AS-IS (computed)
+France LOCAL
+100% · 15.0 FTE
+Portugal NEARSHORE
+0% · 0.0 FTE
+Poland NEARSHORE
+0% · 0.0 FTE
+Morocco NEARSHORE
+0% · 0.0 FTE
+Egypt NEARSHORE
+0% · 0.0 FTE
+China OFFSHORE
+0% · 0.0 FTE
+India OFFSHORE
+0% · 0.0 FTE
+🎯 Target (editable)
+↺ Copy AS-IS
+Target sum : 100%
+France LOCAL
+Portugal NEARSHORE
+Poland NEARSHORE
+Morocco NEARSHORE
+Egypt NEARSHORE
+China OFFSHORE
+India OFFSHORE
+BLENDED RATE AS-IS
+€536
+BLENDED RATE TARGET
+€418
+RATE GAP
+-22%
+% LOCAL AS-IS→TARGET
+100% → 50%
+% OFFSHORE AS-IS→TARGET
+0% → 50%

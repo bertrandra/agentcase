@@ -1,0 +1,142 @@
+Input team (AS-IS) — breakdown by resource
+DRIVES
+?
+Build the current team row by row: skill, grade, location, number of FTE. Day rate and annual cost are computed from the Rate Card. This is the AS-IS baseline.
+TOTAL AS-IS TEAM (FTE)
+Editing this total scales every AS-IS resource pro-rata (same skill / grade / location mix, FTE rounded to 0.05). Row edits below update the total automatically.
+SKILL
+GRADE
+LOCATION
+FTE
+IMPLIED
+DAY RATE (€/D)
+COST/YR
+PIN
+Analysis/PO
+Arch/Design
+Dev
+Test/QA
+Ops/Run
+Data
+Sec/Quality
+Lead
+Functional Safety
+Clinical Affairs
+Regulatory Affairs
+Audit / Certification
+Software Quality Assurance (SQA)
+A1
+A2
+A3
+B1
+B2
+B3
+C1
+C2
+C3
+D1
+D2
+D3
+F
+France
+Portugal
+Poland
+Morocco
+Egypt
+China
+India
+3.0 +0.0
+680
+€449K
+📌
+×
+Analysis/PO
+Arch/Design
+Dev
+Test/QA
+Ops/Run
+Data
+Sec/Quality
+Lead
+Functional Safety
+Clinical Affairs
+Regulatory Affairs
+Audit / Certification
+Software Quality Assurance (SQA)
+A1
+A2
+A3
+B1
+B2
+B3
+C1
+C2
+C3
+D1
+D2
+D3
+F
+France
+Portugal
+Poland
+Morocco
+Egypt
+China
+India
+8.0 +0.0
+500
+€880K
+📌
+×
+Analysis/PO
+Arch/Design
+Dev
+Test/QA
+Ops/Run
+Data
+Sec/Quality
+Lead
+Functional Safety
+Clinical Affairs
+Regulatory Affairs
+Audit / Certification
+Software Quality Assurance (SQA)
+A1
+A2
+A3
+B1
+B2
+B3
+C1
+C2
+C3
+D1
+D2
+D3
+F
+France
+Portugal
+Poland
+Morocco
+Egypt
+China
+India
+4.0 +0.0
+500
+€440K
+📌
+×
+100% of the scope weight is assigned. Entirely auto pool (no pinning). Σw = 60.7 over 10 active artefacts.
++ Add a resource
+⚙ Build from artefacts
+⇢ Align FTE to mix
+TOTAL FTE
+15.0
+ANNUAL COST
+€1,769K
+BLENDED DAY-RATE
+€536
+# RESOURCE LINES
+3
+Breakdown by location classification
+Breakdown by skill

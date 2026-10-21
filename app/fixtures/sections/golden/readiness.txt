@@ -1,0 +1,103 @@
+AI Readiness Index
+SUPPORTS
+SHAPES
+?
+A quick online assessment of how ready your organization is to industrialize agentic AI in software delivery. Answer the statements below (No / Partial / Yes). The index (0–100) and the radar chart update live. Weak dimensions are your transformation pre-requisites.
+🧑‍🤝‍🧑 Human Readiness Index & change cost
+Assessment questionnaire
+🧑‍🤝‍🧑 Human Readiness Index & change cost
+The AI Readiness Index above measures the technical & organisational platform. This second index measures the human side of the transformation — fears, coaching, champions, preceptorship — following the referential's people chapter. When enabled, it (a) adds a change cost line to the Agentic Setup and (b) applies an adoption drag to the S-curve: ramp × (0.6 + 0.4 × HRI/100).
+Enable Human Readiness in the model (change cost + adoption drag)
+Leadership & sponsorship
+No
+Partial
+Yes
+An executive sponsor is identified and active
+No
+Partial
+Yes
+Transformation objectives are communicated to every team
+No
+Partial
+Yes
+Managers role-model the use of agentic tooling
+Fears & resistance
+No
+Partial
+Yes
+Job-security concerns are openly addressed
+No
+Partial
+Yes
+The effort-conservation narrative (FTE + vFTE = constant) is carried by management
+No
+Partial
+Yes
+Resistance signals are collected and acted upon
+Skills & training
+No
+Partial
+Yes
+A role-based agentic training path exists
+No
+Partial
+Yes
+Training budget and time are allocated
+No
+Partial
+Yes
+Prompting / supervision skills are assessed
+Champions & preceptorship
+No
+Partial
+Yes
+Champions are identified per team / pod
+No
+Partial
+Yes
+Preceptors (senior coaches) are designated
+No
+Partial
+Yes
+Champion & preceptor time is protected in the plan
+Incentives & career
+No
+Partial
+Yes
+Individual objectives are aligned with the transformation
+No
+Partial
+Yes
+New roles (Agent Supervisor, AI QA, AI FinOps) are recognised in career paths
+No
+Partial
+Yes
+Adoption is rewarded, not just measured
+Communication & rituals
+No
+Partial
+Yes
+Team rituals were adapted to human + agent delivery
+No
+Partial
+Yes
+A field feedback loop feeds the programme
+No
+Partial
+Yes
+Successes and failures are shared transparently
+HUMAN READINESS INDEX
+50/100 · Fragile
+Change intensity	standard
+Change cost (15.0 AS-IS FTE × €3,000)	€45K
+Adoption drag on the S-curve	× 0.80
+Status in the model	informative only — enable above
+Referential mapping: leadership, fears, skills, champions/preceptorship, incentives, rituals. Raising the change intensity at low HRI is how the model shows the ROI of change itself (CC-HRI-02).
+CHANGE COST PER AS-IS FTE (€)
+LIGHT (HRI ≥ 75)
+STANDARD (50–74)
+INTENSIVE (< 50)
+ADOPTION-DRAG FORMULA COEFFICIENTS
+RAMP FLOOR
+RAMP SLOPE
+Drag = floor + slope × HRI/100. A zero-readiness org still realises "floor" of the ramp; "slope" is how much readiness buys back. Also editable from the Due-diligence register.

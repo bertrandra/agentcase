@@ -1,0 +1,111 @@
+Financial Summary — 3-year case
+DRIVES
+?
+The complete money view: verdict (ROI, payback, NPV), setup, operating costs, savings, cash-flow, the human/agent cost shift and unit economics — all from one model.
+ROI & 3-year verdict
+INVESTMENT
+€225K
+BENEFITS 3Y
+€1,829K
+PROFIT NET
+€1,604K
+ROI (NET, 3Y)
+713%
+PAYBACK
+9 mo
+NPV @8%
+€1,359K
+Year	Setup	Actual run	AS-IS baseline	Benefit	Net	Cumulative
+Y1	€225K	€1,417K	€1,769K	€357K	€132K	€132K
+Y2	—	€1,197K	€1,769K	€580K	€580K	€712K
+Y3	—	€886K	€1,769K	€892K	€892K	€1,604K
+Recommendation : GO 🚀
+Net ROI 713%, payback 9 months. Reduction 11.3 FTE (by Y3).
+🧮 How ROI is computed (live values)
+1. AS-IS baseline run (payroll only)
+€1,769K / yr
+2. TO-BE run Y1 → Y3 (residual team + tokens + infra + agentic run team)
+€1,417K → €1,197K → €886K
+3. Savings = baseline − TO-BE, per year
+€357K → €580K → €892K
+4. Σ savings over 3 years
+€1,829K
+5. One-time setup (tooling + training + coaching + governance)
+€225K
+ROI (net) = (Σ savings − setup) / setup
+(€1,829K − €225K) / €225K = 713%
+Payback = first month cumulative cash-flow ≥ 0
+9 months
+NPV @8%/yr = Σ monthly (saving − setup spend), discounted
+€1,359K
+Y1 savings are typically negative (ramp at 25% while the agentic run team and infra are paid in full) — the J-curve. Every figure updates live with your parameters.
+Investment & Setup
+Category	Y1 (€)	Y2 (€)	Y3 (€)	Total 3y (€)
+Tooling & Infrastructure	€35,000	—	—	€35,000
+Training	€45,000	—	—	€45,000
+Coaching	€35,000	—	—	€35,000
+Governance	€20,000	—	—	€20,000
+Total one-time investment	€225,000	—	—	€225,000
+SETUP COST
+€225,000
+AMORTIZED OVER
+3 years
+Operating Costs Breakdown
+Cost Category	Y1 (€)	Y2 (€)	Y3 (€)	3y avg (€)
+Human workforce (target team)	€1,241,445	€961,210	€564,647	€922,434
+Agent execution (tokens)	€5,941	€18,008	€35,085	€19,678
+Infrastructure & tools	€6,000	€6,000	€6,000	€6,000
+Agentic run team (AI premium)	€87,250	€135,590	€203,997	€142,279
+Total operating cost	€1,416,615	€1,196,788	€885,709	€1,166,371
+Y3 OPERATING COST
+€885,709
+AS-IS BASELINE RUN
+€1,768,800
+RUN DELTA Y3
+€-883,091
+Benefits & Savings Realized
+Metric	Y1	Y2	Y3
+Human FTE freed	2.8	6.2	11.3
+Gross savings (vs AS-IS)	€356,887	€580,477	€891,555
+FREED FTE Y3
+11.3
+SAVINGS Y3
+€891,555
+CUMULATIVE 3Y
+€1,828,919
+Savings decomposition — automation vs relocation
+Total savings split into three transparent components: gross automation (value of the headcount removed, priced at the AS-IS rate), the agent operating cost (tokens + infra + agentic run team), and relocation (residual team priced at the target-location rate vs the AS-IS blend). They reconcile exactly to the model's savings.
+Component	Year 1	Year 2	Year 3
+Gross automation (heads removed × AS-IS rate)	€331,650	€729,630	€1,326,600
+− Agent operating cost (tokens + infra + run team)	-€99,190	-€159,598	-€245,082
+Relocation (residual team × rate delta)	€316,388	€228,773	€97,350
+= Net automation	€232,460	€570,032	€1,081,518
+= Total savings	€548,847	€798,804	€1,178,868
+Reconciliation (Y3): gross auto €1,326,600 − agent cost €245,082 + relocation €97,350 = €1,178,868 vs model yearSav €891,555.
+3-Year P&L & Cash Flow
+Line	Y1 (€)	Y2 (€)	Y3 (€)	Cumulative (€)
+Setup investment	(€225,000)	—	—	(€225,000)
+AS-IS baseline run	€1,768,800	€1,768,800	€1,768,800	€1,768,800
+TO-BE operating cost	€1,416,615	€1,196,788	€885,709	€1,166,371
+Gross savings	€356,887	€580,477	€891,555	€609,640
+Net (savings − setup)	€131,887	€580,477	€891,555	€1,603,919
+Cumulative cash-flow	€131,887	€712,364	€1,603,919	
+3-YR ROI (NET)
+713%
+NET PROFIT 3Y
+€1,603,919
+PAYBACK
+9 mo
+Workforce Shift — Human FTE to Agent vFTE (with costs)
+Human effort decreases, agent vFTE grows, total effort conserved. Costs shown: human headcount + agent execution (infrastructure & agentic run team are in Operating Costs).
+Year	Human FTE	Human Cost (€)	Agent vFTE	Agent Cost (€)	Human + agent cost (€)
+Y1	12.2	€1,241,445	2.8	€5,941	€1,247,386
+Y2	8.8	€961,210	6.2	€18,008	€979,218
+Y3	3.8	€564,647	11.3	€35,085	€599,732
+FTE FREED Y3
+11.3
+HUMAN COST Y3
+€564,647
+AGENT COST Y3
+€35,085
+⬇️ Export financial to Excel (one sheet per section)

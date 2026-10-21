@@ -1,0 +1,116 @@
+🏛️ Architecture — Layers content
+SUPPORTS
+?
+← Back to Architecture — Layers (overview)
+Two things are true at once. The original calculation core, UI layer, seam and three analytical layers (below) do 100% of the real work — nothing about them has changed. Five cross-cutting engines — BUS, APP_STATE, PM, DEP, AUDIT — sit alongside as additive scaffolding, wired into almost every live mutation site. Two further subsystems sit alongside all of this, purely additively, touching no calculation formula: the Section Board, an operator-created, first-class-section builder with its own variable registry, template library (incl. an All-in-One dashboard) and per-card display sequencing; and the Software/Agentic Factory meta-model (🏭 Factory group), a graph of Business/Delivery/Release-pipeline/Engineering entities linked into the existing SDLC/regulatory artefacts — draft/illustrative, with its own KPI formulas and Excel round-trip. This chapter documents all of it, and is explicit about which parts are actually wired in today versus intentionally left as an opt-in switch (namely: incremental recompute itself staying off by default, and nothing yet subscribing to the two navigation events). Since v18.5 a sixth engine — the Time Engine — sits between the core and the analytical stack, and unlike the five it is not scaffolding: it owns the canonical payback and NPV, drives every horizon from 1 to 10 years, and its arrival deliberately corrected the headline rather than preserving it.
+Read this first — what's live vs. scaffolding
+The five engines below are real, tested code — not vaporware, and fully wired end to end. The 7 standalone scalar toggles (regUse, regInclude, forceGlassCeiling, TOK_OUT_SHARE, lifecycleUse, lifecyclePos, mcAuto) call APP_STATE.set() directly; every other live UI handler — ~65 functions across ~20 composite-key registry entries (teamIn, selectedArtefacts, PERSONA_SECTIONS, GROUPS, TOKEN_MODELS, strategy/lifecycle/Monte-Carlo editors, and more) — calls a syncState(key(s), source) helper right where it already calls refreshAll()/render. Rather than rewriting each handler's internal add/delete/splice cascade to build a "next state" before mutating (a much larger, riskier change to entangled business logic with no test coverage beyond the golden case), syncState() re-reads the just-mutated value via the registry's own get() and feeds it back through the matching set() — entry.set(entry.get()), verified idempotent for every key. Honest trade-off: because the direct mutation already happened by the time syncState() runs, AUDIT's "before" equals "after" for these composite keys (unlike the 7 scalar toggles, where a true pre/post diff is captured). Three registry keys — REG_OVERRIDES, REG_HUMAN_SUP, REG_EFFORT — have no live handler at all (legacy import-only shims) and are left alone (the two never-called helpers toggleAllRegOfPhase and resetRegArtefacts were removed in v18.9). refreshAll() calls DEP.flushDirty() instead of calling recomputeWeights()/mcAutoHook() directly, and the window.__DEP_FULL_REFRESH__ QA hook is live — but FULL_REFRESH defaults true, so every recompute today runs unconditionally rather than incrementally. Concretely: BUS, APP_STATE.get/toJSON/set, PM.serialize/hydrate and DEP.flushDirty() are all live and exercised on every refresh; the two DEP nodes' reads arrays match the real STATE_REGISTRY keys (the incremental filter genuinely discriminates: an unrelated dirty path runs neither node, a real one does) — this only matters once incremental mode is switched on. renderConvChecks() calls AUDIT.runChecks() and merges every registered AUDIT check into the same CC-XX-NN table as a PASS/FAIL row — one check is registered as CC-AG-02 (renamed from a colliding, unrelated CC-AG-01 already used by wave5Checks(), so both stay visible and distinct). An Advanced-persona-only debug panel over AUDIT.log() sits below that table (last 25 tracked mutations), reflecting real activity across the whole app. setPersona() emits persona:changed ({persona, previous}) and goTab() emits tab:activated ({tab}) — nothing consumes them yet; they exist so a future feature can react to navigation without patching either function directly. Golden case remains bit-identical throughout. Still deliberately conservative where it matters: FULL_REFRESH stays true as the shipped default (an explicit opt-in switch exists but is never flipped by default) — behaviour is unchanged for every user regardless of how much of the registry is observed.
+Updated for v18.5–18.7. The paragraph above describes the five original engines and remains accurate. Three things have changed since it was written, and they are not scaffolding — they are load-bearing:
+v18.5 — the Time Engine is live and is now the producer for every time-shaped number. Unlike the five engines, it did change results: wiring it corrected a €67–71k/yr overstatement in the monthly path and fixed a horizon-5 NaN defect. The golden case moved deliberately and the delta was published. It is a sixth member of window.AgentCaseArch.
+v18.6 — MATURITY_MAP became a single source of truth. The L1–L4 thresholds had been duplicated as literals in four places; all four now read one editable table. The default adoption curve also switched from logistic to a free-form spline reaching 100% at Y3, which moved the golden headline from €1,112,871 to €1,131,220.
+v18.7 — the coefficient surface was audited and opened. 12 hardcoded coefficients that reached the euro result were promoted into COEF and given real UI controls across six sections; the headline NPV discount rate (previously a literal 0.08 at four call sites with no control anywhere) became MODEL.CASE.discountRate. DD_COEFFICIENTS now catalogues all of them with measured € impact.
+Layer 2 · UI / Presentation
+Reads user inputs from the DOM, invokes the calculation core, and renders tables, charts and controls. Never contains business formulas — only formatting and layout.
+Render — money
+renderFinancial · renderAnnual · renderRun · renderSavingsDecomp · renderScenarios
+Render — scope & team
+renderPhaseSelector · renderArtefacts · renderTobeTeam · renderTobeLocation · renderSkillMapEditor
+Render — lifecycle
+renderLifecycleDoc · renderLifecycleEditor · renderLifecycleCascade · mountLifecycleControls
+Render — analytics & nav
+renderMonteCarlo · renderDecision · renderResults · renderStrategies · renderStratRanking · goTab · setPersona
+Render — persistence
+renderIo · renderSnapshotManager
+Render — Factory meta-model
+renderFactoryModel · renderReleasePipeline · renderEngineering · renderFactoryTimeline
+▲ reads inputs · calls core · paints results ▼
+The seam — input bridge
+readInputs() snapshots every DOM input once per refresh cycle into the INPUTS state object; the core reads exclusively from it via P(id) (numeric), V(id) (string) and C(id) (checked). The STATE_REGISTRY serialises all stateful values for snapshots; collectSnapshotState() / applySnapshotState() and the Excel export/import round-trip the same state. APP_STATE and PM (below) are a facade over this same registry, not a replacement for it.
+Why it matters: because the core is DOM-free, the three analytical layers below evaluate it thousands of times (per Monte Carlo draw, per strategy) by mutating INPUTS only — no DOM, no re-render. The seam is what makes them cheap.
+Built directly on this seam: the 🗂️ Snapshot manager (Import / Export tab) is a named library of collectSnapshotState() captures — each entry excludes the library itself from its own payload, so capturing never nests earlier captures inside the new one. Activate and Set as baseline call applySnapshotState() on the chosen entry. Excel export/import are snapshot-backed too: every export traces back to a named snapshot — picked via a row's own action, or auto-captured first if none was — and every successful import auto-captures the just-imported state, both via the same snapCreate() helper. Separately, applySnapshotState() itself also calls ensureConvergenceBoot() after every restore — a migration/repair pass (re-derives PERSONA_SECTIONS defaults, recreates any dynamic section's DOM host, etc.) still needed by old snapshots/imports.
+▼
+Layer 1 · Calculation core DOM-free
+All business logic. Given the inputs and the catalogue, it derives every number shown. The single auditable source of truth every layer above consumes.
+Core model
+model() · scenarioModel() · phaseScope() · sumEffort() · activeArtefacts()
+Automation & ceiling
+computeGlassCeiling · computeRegGlassCeiling · refAvgAgent
+Lifecycle axis
+lifecycleWeight · lifecycleAutoPosture · lifecycleBlend
+Cost & rates
+teamInCost · targetBlendedTJM · rateFor · locBlendedTJM · runTeamFactor
+TO-BE team
+tobeComposition · mapArtSkill · targetTeam · scopedHumanSup
+Savings decomposition
+savingsBreakdown (automation · agent cost · relocation)
+▼   the core is evaluated over time by   ▼
+🕐 Time Engine v18.5 · Time Engine spec v5 DOM-free
+One horizon-dynamic producer for every time-shaped number. The flat model computes annual scalars; the engine fits the adoption curve through the ramp anchors, evaluates it monthly, and derives everything else from that — so annual is a reduce over months, never a second implementation.
+Curve
+rampAt(t) · K · curveModelId
+5 families via adapters; default spline.default
+Monthly
+monthAt(t) · months() · cumulativeAt(t)
+accessor is authoritative; array on demand
+Annual
+year(y) · years()
+a reduce over months — horizon-length
+Financial
+payback() · npv(rate) · roi() · headline()
+the canonical definitions
+Maturity & time
+maturityAt(t) · milestones()
+reads MATURITY_MAP; feeds the Gantt
+Contract
+inputHash · calculationVersion · materialise() · series(id) · status()
+13 read-only projections; snapshot package
+What it consolidated. Before v18.5 the app carried 10 payback sites running two different algorithms (a monthly cum≥0 scan and an annual interpolated scan) and three incompatible NPV conventions (monthly compounding, annual compounding, annual rate over fractional years). They disagreed with each other. Both are now single functions — paybackMonthsCanonical() and npvCanonical() — asserted equal to the engine by canary TE-08 at 1e-9.
+Two defects it fixed by construction. (1) At horizon 5 the old monthlySeries() returned 60 rows of which months 37–60 were NaN, making cumulative cash-flow and npv8 NaN — a live defect, since 5-year cases may have been shown to clients. (2) The crude monthly path omitted the Knowledge-Hub run cost and the avoided-KT credit, so Σ month.sav exceeded model().yearSav by €67–71k/yr and the headline overstated savings. The engine disaggregates the correct annual chain, so wiring it lowered the headline by the omitted amount — a published correction, not a silent one.
+Legacy adapter & byte-neutrality. legacy.flatAnnual reproduces the original annual chain exactly (TE-10: engine.years() == model() to 1e-9), so the migration could be verified step by step rather than trusted. The flat model() still exists and its year arrays are always length 3 at every horizon — only teYears() / teEndYearRow() are horizon-length. Indexing [2] on an engine array crashes at horizon 1–2; that exact bug shipped once in the grossAutoY3 KPI.
+Wiring: registered as the first live DEP node (step 10), exposed on window.AgentCaseArch.TIME, and its materialise() output is the calculation package stamped into every snapshot — which is what makes calcStalenessCheck() able to tell a user their saved case would recompute differently today.
+▼   three analytical layers consume the core   ▼
+Layers 3-5 · Analytical stack
+3 · Probabilistic
+Monte Carlo — perturbs uncertain inputs, evaluates the core per draw, yields the net-benefit distribution (P10/P50/P90, P(net<0), CVaR, sensitivity).
+runMonteCarlo · mcOutcome · MC_LAST
+4 · Decision
+Decision Intelligence — business rules over the distribution (not a point); confidence-conditional verdict with a coded coherence invariant.
+decisionEngine · DI_THRESHOLDS
+5 · Strategy
+Strategy comparison — 7 delivery strategies as lever vectors over the core under fixed invariants; weighted ranking, radar, one-click apply.
+evaluateStrategies · stratNormalize · applyStrategy
+Freshness across the stack is guarded by a scenario fingerprint (mcFingerprint): any model-relevant change flags the distribution and verdict stale and re-runs them (auto-debounced or on demand). The layers run in series — the recommendation is computed from the distribution — so a verdict can never contradict the risk it reports.
+⬍   sits alongside the core, does not replace it   ⬍
+Cross-cutting engines
+Additive scaffolding for a future incremental-recompute migration, fully wired today. Each engine carries an explicit byte-identical invariant against the golden case; none has changed a single formula.
+BUS — event bus
+Pub/sub: on(evt,fn) / emit(evt,payload). Events emitted today: state:changed, snapshot:collected, snapshot:applied, calc:done, audit:checks-done, persona:changed ({persona,previous}, from setPersona()) and tab:activated ({tab}, from goTab()). Every event in the original contract is now actually fired; nothing subscribes to the last two yet.
+APP_STATE — state facade
+JSON view over STATE_REGISTRY: get(path) / set(path,value) / toJSON() / keys(). Reads are live; set() emits state:changed and is called directly by the 7 scalar-toggle handlers, and indirectly by every other live handler via the syncState() helper (~65 functions across ~20 composite keys). Three keys (REG_OVERRIDES, REG_HUMAN_SUP, REG_EFFORT) have no live handler and are untouched.
+PM — persistence manager
+serialize() (wraps collectSnapshotState()) / hydrate(obj) (delegates to applySnapshotState()) / registerMigration(from,to,fn). One migration registered (a regulatory-table legacy shim). Converges Snapshot/Excel/JSON/autosave behind one pair without touching any of them.
+DEP — dependency engine
+node(id,reads,compute) / markDirty(path) / flushDirty(). Two nodes registered (derived.weights, derived.mcHook), reads matching the real flat STATE_REGISTRY keys. refreshAll() calls DEP.flushDirty() in place of calling recomputeWeights()/mcAutoHook() directly — verified it still emits calc:done and runs both on every refresh. FULL_REFRESH defaults true (every node runs unconditionally); the window.__DEP_FULL_REFRESH__ QA hook can force either mode. Incremental mode (FULL_REFRESH=false) stays opt-in, not the shipped default.
+AUDIT — mutation log & checks
+Capped ring buffer (500) of state:changed events + registerCheck(id,paths,fn,label) / runChecks(). One check registered (CC-AG-02: validates LOOP_PAIRS agent references against AGENT_CATALOG — named to avoid colliding with the pre-existing, unrelated wave5Checks() check CC-AG-01). renderConvChecks() calls runChecks() and renders every registered check as a PASS/FAIL row in the Logic Verification tab, alongside a read-only AUDIT.log() debug panel (Advanced persona only). Still purely observational — no mutation ever goes through it.
+TIME — Time Engine registry v18.5
+for(inputs) builds a memoised engine · thin() the allocation-light variant Monte Carlo uses per draw · current() / rebuild() / reset() manage the cached instance · registerAdapter(id,fn) / adapters hold the curve families (logistic, spline, Gompertz, Bass, legacy.flatAnnual). Immutable by contract: inputs change → rebuild, never mutate. calculationVersion = agentcase.timeengine.v1, stamped into every snapshot for staleness detection.
+window.AgentCaseArch
+
+
+Non-enumerable namespace exposing {VERSION, BUS, APP_STATE, PM, DEP, AUDIT, TIME} — lets Playwright assert on the build without scraping the <title> tag.
+Data flow (one user action, today)
+1 · User edits an input in Layer 2 → handler mutates the global directly, calls refreshAll()
+2 · readInputs() snapshots the DOM into INPUTS (the seam)
+3 · Layer 1 recomputes purely from state: scope · lifecycle · posture · rates → derived numbers
+4 · Layer 2 repaints tables + charts
+5 · If a run exists and the scenario moved, Layers 3-5 re-evaluate the core (debounced) and repaint the verdict / ranking
+6 · State is serialised by the seam for snapshot / Excel round-trip — PM.serialize() and PM.hydrate() are equivalent entry points to the same functions
+7 · APP_STATE.set() fires for the 7 scalar-toggle handlers directly, and for essentially every other live handler indirectly via syncState() (step 1, before refreshAll()/render); refreshAll() routes its recompute through DEP.flushDirty() (step 3, still full-refresh every time — FULL_REFRESH defaults true); AUDIT.runChecks() is called from Layer 2's renderConvChecks() whenever the Logic Verification tab renders; and BUS also emits persona:changed / tab:activated from setPersona() / goTab(). Nothing subscribes to either yet.
+Known limits & opt-in switches
+None of this touches a calculation formula. Two things are deliberately left as opt-in rather than the shipped default:
+Incremental recompute is available but off by default
+DEP.markDirty() genuinely fires for the whole registry today (every mutation is routed through APP_STATE.set(), directly or via syncState()), so incremental mode's precondition is met — but nobody has audited every DEP.node()'s reads array against what its compute function truly depends on (e.g. does derived.weights also need selectedArtefacts/phaseOff, not just the four artefact-edit/lifecycle keys it lists today?), and there is no automated test beyond the golden case to catch a wrong answer. Flipping FULL_REFRESH=false as the shipped default without that audit risks silent stale recomputes, so FULL_REFRESH stays true — every recompute runs unconditionally. The window.__DEP_FULL_REFRESH__ QA hook can force either mode for testing.
+Two navigation events exist but nothing subscribes to them yet
+setPersona() emits persona:changed ({persona, previous}) and goTab() emits tab:activated ({tab}, only for a tab that actually exists in the DOM) — both low-risk and additive, verified byte-identical golden case. They exist so a future feature can react to navigation without patching either function directly.
+Behaviour is unchanged for every user regardless of how much of the registry is observed.

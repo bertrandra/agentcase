@@ -1,0 +1,50 @@
+📅 Gantt / Timeline
+SUPPORTS
+?
+A planning view of the whole engagement on one timeline: the transformation program (Discover → Calibrate → Validate → Pilot, then Agentic Build ramp and Agentic Run steady state), the SDLC phases in their V-cycle sequence, and every artefact placed in its phase. In-scope items are solid; out-of-scope ones are dimmed. Durations for the program come from the AI Readiness roadmap inputs; the delivery bands are laid out across the case horizon.
+START
+9/1/2026
+HORIZON
+3 yr
+ONBOARDING
+18 wk
+PHASES IN SCOPE
+3
+VELOCITY GAIN
+×4.00
+Delivery timeline — one real calendar — transformation program + delivery rollout
+Calendar →
+Sep 26
+Sep 27
+Sep 28
+Sep 29
+TRANSFORMATION PROGRAM
+🔍 Discover
+🎯 Calibrate
+✅ Validate
+🚀 Pilot & Prove
+🧱 Agentic Build (ramp)
+⚙️ Agentic Run (steady state)
+🧠 Knowledge Hub — Build / Setup
+🧠 Knowledge Hub — Run
+GENERATED MILESTONES — DERIVED FROM THE ADOPTION MODEL, NOT TYPED
+🎯 Model milestones (engine-derived)
+First agent vFTE
+10% adoption
+Payback (break-even)
+25% adoption
+L2 maturity reached
+50% adoption
+L3 maturity reached
+70% adoption
+L4 maturity reached
+85% adoption
+95% adoption
+DELIVERY ROLLOUT — PHASES OVERLAP & STAGGER BY SEQUENCE, 🏁 MARKS THE RELEASE
+PHASE OVERLAP (PIPELINING)  %
+Bars:  activity    human supervision
+▶V1 · Specification (3)
+▶V3 · Implementation (3)
+▶V4 · Verification (4) 🏁
+🏁 full cycle complete
+One shared calendar, dates from the 🧭 AI Readiness roadmap. Program rows run in real time (incl. 🧠 Knowledge Hub build/setup + run when enabled). Delivery rollout places every in-scope participant — phases and 🔶 Cross-cutting — on the same calendar in ramp-up (seq) order, each sized by its own effort weight (w = effort × lifecycle) and compressed as automation ramps — later work is shorter for the same weight (velocity ×1 → ×4.00). Two participants sharing the same seq number start together (a synchronised wave); otherwise they overlap/pipeline by the % above. This is pipelining — different artefacts sitting in different phases at the same time, not a shortcut through the work — so a full pass (spec → … → verify, plus cross-cutting) for the in-scope backlog only actually completes at the 🏁 marker: that point is the release. Each row shows the translucent activity span and the solid human-supervision subset. ▶ expand a phase or 🔶 Cross-cutting for its SDLC (📄) and regulatory (⚖️) artefacts — the same seq-tie rule applies one level down: artefacts sharing a seq value also start together.

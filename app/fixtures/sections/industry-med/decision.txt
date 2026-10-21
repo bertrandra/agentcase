@@ -1,0 +1,28 @@
+🧭 Decision Intelligence — verdict from the distribution
+DRIVES
+?
+One verdict, computed from the Monte Carlo distribution — never from a single point estimate. The recommendation is conditional on confidence, always displays its own downside, and a coded invariant makes a contradiction between "recommended" and "worst case very risky" structurally impossible.
+Run the Monte Carlo simulation first (Analyze → 🎲 Monte Carlo) — the recommendation is computed from the distribution, never from a single point. ▶ Run now
+How this verdict is computed — method & hypotheses
+1 · PIPELINE
+
+The engine never sees a single point estimate. The Monte Carlo layer perturbs the uncertain parameters, evaluates the DOM-free calculation core for each draw, and produces a distribution of the horizon-aware net benefit (Σ annual savings over the horizon − setup investment). The Decision Intelligence layer then applies business rules to the statistics of that distribution — P(net>0), P10, CVaR — plus business context (product status, glass ceiling, readiness). One verdict comes out, carrying its own risk figures.
+
+2 · DECISION RULES (EDITABLE BENCHMARKS)
+Verdict	Trigger	Meaning
+✅ Recommended	P(net>0) ≥ 80% and P10 > −50% of setup	High confidence and the plausible downside stays within half the committed setup
+⚠️ Conditionally viable	P(net>0) ≥ 60%	Viable only if the conditions derived from the top sensitivity drivers hold
+⛔ Defer	P(net>0) < 60%	Confidence too low to commit — de-risk first (readiness, scope, ceiling)
+
+Coherence invariant (enforced in code): a Recommended verdict is impossible when P(net<0) > 20%, whatever the rules above conclude. Because the recommendation is computed from the distribution, "Recommended" and "worst case very risky" can never coexist on screen.
+
+3 · HYPOTHESES & ASSUMPTIONS
+Sampling: each uncertain parameter is drawn from a symmetric triangular-like distribution centred on its current value (mean-preserving), clamped to its valid range. Spreads are editable benchmarks, not measured variances.
+Independence: parameters are sampled independently — no correlation structure (e.g. a high ramp does not imply high token volume). Correlated risks are therefore under-represented; treat P10 as indicative, not a stress-test floor.
+Metric: the outcome is the deterministic core evaluated per draw — every model assumption (dedicated-team doctrine, posture-driven automation depth, relocation pricing, agentic run-team sizing policy (hybrid floor + per-agent ops by default; legacy base-team mode available in Build → Run-team sizing) propagates into the distribution unchanged.
+Reproducibility: the RNG is seeded (mulberry32); same seed + same scenario ⇒ same distribution. Changing the seed probes sampling noise (typically small vs the spread choices).
+Confidence ≠ probability of success: "82% confidence" means 82% of simulated draws are net-positive under the declared uncertainty ranges — not an objective success probability. Widen the ranges and confidence mechanically drops.
+Sensitivity: conditions are derived from Pearson correlations (linear, marginal). Strong non-linear or interaction effects may be under-ranked.
+Freshness: the verdict is fingerprinted against the full scenario; if anything model-relevant changes, it is flagged stale and re-run (automatically or on demand) — a verdict never silently outlives its scenario.
+
+All thresholds (80% / 60% / 20% / −50% of setup) are consulting benchmarks to validate with the client's risk appetite — like every other coefficient in AgentCase.

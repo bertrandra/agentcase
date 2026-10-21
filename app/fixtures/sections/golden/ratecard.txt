@@ -1,0 +1,19 @@
+Rate Card — Day rate by Grade × Location
+DRIVES
+?
+Define day rates (€/day) by grade and location. These feed the team cost calculations (input & target). Bands A/B/C/D map to junior / mid / senior / expert-lead. Classification: LOCAL NEARSHORE OFFSHORE
+Day-rate matrix (€/day) — editable
+Grade band	France
+LOCAL	Portugal
+NEARSHORE	Poland
+NEARSHORE	Morocco
+NEARSHORE	Egypt
+NEARSHORE	China
+OFFSHORE	India
+OFFSHORE
+A — Junior							
+B — Mid							
+C — Senior							
+D — Expert/Lead							
+F — Out-of-class							
+Skills — catalogue (loaded reference) (click to expand)

@@ -1,0 +1,17 @@
+Sensitivity
+READS
+?
+Impact of key parameters on ROI and target headcount. Recomputed for your configuration.
+Parameter	Value	Impact FTE Y3	ROI impact	Sensitivity
+Automation potential	75%	±2 FTE	±0.8x	CRITICAL
+Y3 ramp	100%	±2 FTE	±0.9x	CRITICAL
+Glass ceiling	25%	±1.8 FTE	±0.6x	HIGH
+Blended day-rate	€536	none	±0.3x	HIGH
+Total setup	€225K	none	±0.15x	MEDIUM
+Token cost	€14.4/1M	Mix-weighted	±0.05x	LOW
+Automation × Glass ceiling matrix (ROI)
+Automation %	Glass 10%	Glass 15%	Glass 20%	Glass 25%	Glass 30%
+25%	79%	79%	79%	79%	79%
+35%	155%	155%	155%	155%	155%
+50%	317%	317%	317%	317%	317%
+65%	535%	535%	535%	535%	535%

@@ -1,0 +1,95 @@
+Token economics & FinOps
+DRIVES
+?
+🔢 Token usage estimate (context-driven)
+Annual token volume is estimated per artifact — the most relevant driver, since the whole model is artifact-centric. Volume is aligned on the number of agent executions = agent workforce (agent vFTE = team × automation depth × ramp) × working days/year × agent runs/day, scaled by the in-scope scope share, × tokens per agent run, then split input / output by the share below. Defaults are indicative — calibrate runs/day and tokens per run from your real platform billing (e.g. Claude Code usage). This estimate and the model mix feed the blended €/1M used by Run, Setup, ROI and FinOps.
+TOKENS PER AGENT RUN
+50,000
+AGENT RUNS / DAY (PER AGENT-FTE)
+25
+OUTPUT TOKEN SHARE (%)
+35%
+ESTIMATION DRIVER
+AGENT RUNS Y3
+37,950
+EST. TOKENS Y3
+1,898 M
+INPUT / OUTPUT
+1233 M / 664 M
+BLENDED PRICE
+€14 /1M
+TOKEN COST Y3
+€27,324
+OUTPUT SHARE
+35%
+💸 Token economics by model
+Per model: usage mix % and input / output price (€ per 1M tokens). Volume (Y3) and cost are computed from the usage estimate above, distributed by mix, with the input/output split applied. The blended €/1M drives Run / Setup / ROI. Add or remove models freely — this list is part of the Excel export / import.
+＋ Add model
+↺ Reset
+Mix total : 100% · Annual token cost : €27,324 / yr (Y3)
+Model	Mix %	Price in (€/1M)	Price out (€/1M)	Tokens Y3 (M)	Cost Y3 (€)	
+				0.0 M	€0	✕
+				569.3 M	€1,366	✕
+				759.0 M	€5,465	✕
+				569.3 M	€20,493	✕
+				0.0 M	€0	✕
+				0.0 M	€0	✕
+				0.0 M	€0	✕
+🤖 Agent runs & run cost by year
+Agent executions (runs) per year, split across models by the usage mix, with the resulting token volume and run cost over the 3-year horizon. Runs scale with scope, realized automation and the adoption ramp.
+Agent (model)	Mix %	Run Y1	Run Y2	Run Y3	Run total	Tokens 3y (M)	Cost 3y (€)
+Mistral Large	0%	0	0	0	0	0.0 M	€0
+Claude Haiku 4.5	30%	2,846	6,262	11,385	20,493	1024.7 M	€2,459
+Claude Sonnet 4.6	40%	3,795	8,349	15,180	27,324	1366.2 M	€9,837
+Claude Opus 4.8	30%	2,846	6,262	11,385	20,493	1024.7 M	€36,887
+Claude Fable 5	0%	0	0	0	0	0.0 M	€0
+GPT-4o	0%	0	0	0	0	0.0 M	€0
+GPT-4.1 mini	0%	0	0	0	0	0.0 M	€0
+Total	100%	9,488	20,873	37,950	68,310	3415.5 M	€49,183
+📦 Agent runs by artifact (in-scope)
+Same agent executions, allocated to each in-scope artifact in proportion to its agent-execution intensity (effort × agent supervision). Grouped by phase. Cost uses the blended €/1M; the totals match the by-model table above.
+Phase	Phase Description	Artifact	Run Y1	Run Y2	Run Y3	Run total	Tokens 3y (M)	Cost 3y (€)
+V1	Specification	REGDesign Inputs / Outputs records	127	279	506	912	45.58 M	€656
+V1	Specification	REGGeneral Safety and Performance Requirements Checklist	127	279	506	912	45.58 M	€656
+V1	Specification	REGHazard identification log	127	279	506	912	45.58 M	€656
+V1	Specification	REGIntended use and reasonably foreseeable misuse statement	127	279	506	912	45.58 M	€656
+V1	Specification	Requirements / NFR	371	817	1,486	2,674	133.70 M	€1,925
+V1	Specification	REGRisk Analysis (Hazard analysis / FMEA)	127	279	506	912	45.58 M	€656
+V1	Specification	REGRisk estimation records	127	279	506	912	45.58 M	€656
+V1	Specification	REGSafety characteristics checklist	127	279	506	912	45.58 M	€656
+V1	Specification	REGSW Requirements Specification (§5.2)	127	279	506	912	45.58 M	€656
+V1	Specification	Traceability matrix	405	891	1,621	2,917	145.86 M	€2,100
+V1	Specification	User stories / backlog	473	1,040	1,891	3,403	170.17 M	€2,450
+V3	Implementation	Code review	464	1,021	1,857	3,343	167.13 M	€2,407
+V3	Implementation	Inline documentation	456	1,003	1,823	3,282	164.09 M	€2,363
+V3	Implementation	Source code	1,266	2,785	5,065	9,116	455.81 M	€6,564
+V4	Verification	Coverage report	321	706	1,283	2,309	115.47 M	€1,663
+V4	Verification	REGRisk control effectiveness verification records	228	501	912	1,641	82.04 M	€1,181
+V4	Verification	REGRisk control implementation verification records	228	501	912	1,641	82.04 M	€1,181
+V4	Verification	REGRisks introduced by control measures assessment	228	501	912	1,641	82.04 M	€1,181
+V4	Verification	REGSoftware Unit Verification Report	228	501	912	1,641	82.04 M	€1,181
+V4	Verification	Test code / mocks	1,215	2,674	4,862	8,751	437.57 M	€6,301
+V4	Verification	REGUnit Implementation & Verification records (§5.5)	228	501	912	1,641	82.04 M	€1,181
+V4	Verification	Unit test cases	945	2,080	3,781	6,807	340.33 M	€4,901
+V4	Verification	Unit test plan	405	891	1,621	2,917	145.86 M	€2,100
+Cross-cutting	Cross-cutting (regulatory)	REGCAPA Records	51	111	203	365	18.23 M	€263
+Cross-cutting	Cross-cutting (regulatory)	REGChange Request records	51	111	203	365	18.23 M	€263
+Cross-cutting	Cross-cutting (regulatory)	REGDesign & Development Plan (Design History File)	51	111	203	365	18.23 M	€263
+Cross-cutting	Cross-cutting (regulatory)	REGDesign and Development Review Records	51	111	203	365	18.23 M	€263
+Cross-cutting	Cross-cutting (regulatory)	REGDesign Changes records	51	111	203	365	18.23 M	€263
+Cross-cutting	Cross-cutting (regulatory)	REGInternal Audit Programme and Reports	51	111	203	365	18.23 M	€263
+Cross-cutting	Cross-cutting (regulatory)	REGProblem Resolution records (§9)	51	111	203	365	18.23 M	€263
+Cross-cutting	Cross-cutting (regulatory)	REGRisk Management File	51	111	203	365	18.23 M	€263
+Cross-cutting	Cross-cutting (regulatory)	REGRisk Management Plan	51	111	203	365	18.23 M	€263
+Cross-cutting	Cross-cutting (regulatory)	REGRisk management procedure / SOP	51	111	203	365	18.23 M	€263
+Cross-cutting	Cross-cutting (regulatory)	REGRisk management traceability index	51	111	203	365	18.23 M	€263
+Cross-cutting	Cross-cutting (regulatory)	REGSoftware Configuration Index	51	111	203	365	18.23 M	€263
+Cross-cutting	Cross-cutting (regulatory)	REGSoftware Development Plan (§5.1)	51	111	203	365	18.23 M	€263
+Cross-cutting	Cross-cutting (regulatory)	REGSoftware Safety Classification Rationale	51	111	203	365	18.23 M	€263
+Cross-cutting	Cross-cutting (regulatory)	REGSOUP list & risk analysis (§5.3.3/§8.1.2)	51	111	203	365	18.23 M	€263
+Cross-cutting	Cross-cutting (regulatory)	REGState-of-the-art and standards applicability rationale	51	111	203	365	18.23 M	€263
+Cross-cutting	Cross-cutting (regulatory)	REGSupplier Evaluation and Monitoring Records	51	111	203	365	18.23 M	€263
+Cross-cutting	Cross-cutting (regulatory)	REGSW Configuration Management Plan (§8)	51	111	203	365	18.23 M	€263
+Cross-cutting	Cross-cutting (regulatory)	REGSW Maintenance Plan (§6)	51	111	203	365	18.23 M	€263
+Cross-cutting	Cross-cutting (regulatory)	REGSW Risk Management File (§7)	51	111	203	365	18.23 M	€263
+Total (43 in-scope)	9,488	20,873	37,950	68,310	3415.5 M	€49,183

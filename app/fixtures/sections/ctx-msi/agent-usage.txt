@@ -1,0 +1,32 @@
+📊 Agent usage — consumption for this case
+SUPPORTS
+?
+How intensively agents are actually used in your configured scenario: token consumption, agent effort (vFTE) by phase and by authorization level, and the FinOps cost build-up. Everything below recomputes from your parameters (team, automation, ramp, scope, token price).
+AGENT VFTE Y3
+7.5
+ARTIFACTS/MONTH Y3
+90
+TOKENS Y3
+2049M
+TOKEN COST Y3
+€23,240
+IN-SCOPE ARTIFACTS
+10/53
+🔢 Token & agent-effort consumption by year
+Year	Ramp	Agent vFTE	Artifacts/month	Tokens/year	Token €/year	Infra €/year
+Y1	20%	1.9	23	14M	€3,935	€6,000
+Y2	44%	4.1	50	30M	€11,929	€6,000
+Y3	80%	7.5	90	54M	€23,240	€6,000
+🤖 Agent effort by phase (Y3, in scope)
+Phase	Artifacts	Avg automatable %	Relative agent effort
+V1 Specification	3	68%	
+
+V3 Implementation	3	73%	
+
+V4 Verification	4	81%	
+🔐 Agent effort by authorization level (Y3)
+Authorization	Artifacts	Avg automatable %	Share of agent effort
+Assistance	0	0%	0%
+Copilot	3	57%	23%
+Supervised autonomous	4	76%	40%
+Autonomous	3	92%	37%

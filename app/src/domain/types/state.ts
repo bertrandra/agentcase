@@ -35,6 +35,8 @@ export interface CaseState {
   selectedRegArtefacts: string[];
   regArtefactsEdited: ArtefactEdit[];
   phaseOff: string[];
+  selectedNorms: string[];
+  phaseSeq?: { id: string; seq: number | null }[];
   regInclude: boolean;
   forceGlassCeiling: boolean;
   lifecycleUse: boolean;

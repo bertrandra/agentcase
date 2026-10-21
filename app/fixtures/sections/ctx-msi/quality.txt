@@ -1,0 +1,28 @@
+Quality
+SUPPORTS
+?
+Quality metrics scaled by the in-scope automatable intensity × ramp — the TO-BE radar reflects only the selected artifacts.
+Metric	AS-IS	Y1	Y2	Y3	Source
+Bugs/1000 LOC		1.6	1.0	0.4
+TARGET
+	DORA
+Test coverage		68	78	90
+TARGET
+	Jest
+Review cycle (h)		27	16	3
+TARGET
+	GitHub
+Defect leakage %		8	6	3
+TARGET
+	Audits
+Doc sync %		64	78	96
+TARGET
+	Versioning
+Vuln/100 commits		0.8	0.5	0.2
+TARGET
+	Snyk
+eNPS		35	44	55
+TARGET
+	Surveys
+↺ Reset AS-IS
+The AS-IS column is editable and is saved in Export / restored on Import; Y1–Y3 are derived from it. Amber = overridden.
