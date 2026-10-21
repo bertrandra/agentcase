@@ -5,7 +5,7 @@ import { setAgentSup, setPhaseAgent } from '@/controllers/artefacts';
 import { computeCase } from '@/domain';
 import { appStore } from '@/store/instance';
 import { App } from '@/ui/App';
-import { uiStore } from '@/ui/uiState';
+import { openGroup, uiStore } from '@/ui/uiState';
 import { SECTIONS, visibleSections } from '@/ui/zones/registry';
 import { shouldHandle } from '@/ui/shell/useShortcuts';
 import { freshStore } from '../store/helpers';
@@ -41,8 +41,10 @@ describe('shell zones', () => {
     fireEvent.change(screen.getByLabelText('Persona'), { target: { value: 'clientcase' } });
     expect(appStore().getState().history.undo).toHaveLength(0);
     openMenu();
+    act(() => openGroup('scope'));
     fireEvent.click(screen.getByRole('button', { name: /^🎯 Scope$/ }));
     expect((await screen.findByRole('heading', { level: 1, name: 'Scope — target artifact selection' }, { timeout: 8000 }))).toBeTruthy();   // migrated section (lazy)
+    act(() => openGroup('frame'));
     fireEvent.click(within(screen.getByRole('navigation', { name: 'Sections' })).getByRole('button', { name: /Welcome/ }));
     expect(screen.getByRole('main').querySelector('h1')!.textContent).toMatch(/Welcome/);   // placeholder for a section not migrated yet
     expect(screen.getByRole('button', { current: 'page' })).toBeTruthy();
