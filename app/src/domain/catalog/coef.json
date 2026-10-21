@@ -1,0 +1,15 @@
+{
+ "perfRelCap": 1.4,
+ "perfUpliftFactor": 0.85,
+ "vtaxCap": 0.6,
+ "qualPremiumCap": 0.75,
+ "qualBarCap": 0.15,
+ "qualBarFactor": 0.2,
+ "hriFloor": 0.6,
+ "hriSlope": 0.4,
+ "supShareCap": 0.5,
+ "supShareFactor": 0.5,
+ "setupETP": 2,
+ "prodFactor": 1.4,
+ "aiFinOpsFte": 0.5
+}

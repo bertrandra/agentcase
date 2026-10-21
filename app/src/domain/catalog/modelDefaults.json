@@ -1,0 +1,65 @@
+{
+ "FLAGS": {
+  "lce": false,
+  "evt": false,
+  "sup": false,
+  "mcs": false,
+  "cbd": false,
+  "flow": false,
+  "evl": false
+ },
+ "LCE": {
+  "loops": [],
+  "nMax": 5,
+  "fallbackCost": 0,
+  "calibrated": false
+ },
+ "EVT": {
+  "classMap": {},
+  "phiTable": {},
+  "kappa": {},
+  "gamma": {},
+  "rSource": "fromLCE",
+  "rDirect": 0.8,
+  "mode": "overlay",
+  "ackNegativeNet": false
+ },
+ "SUP": {
+  "provision": "provisioned",
+  "supervisors": 0,
+  "supervisorCost": 0,
+  "hoursPerPeriod": 0,
+  "mode": "hard",
+  "rampRate": 0,
+  "rampCap": 2.5
+ },
+ "MCS": {
+  "enabled": false,
+  "seed": 20260728,
+  "draws": 2000,
+  "rho": 0.35,
+  "tokenDrift": 0,
+  "dists": {}
+ },
+ "CBD": {
+  "driftRate": 0,
+  "appliesTo": "baseline"
+ },
+ "CASE": {
+  "discountRate": 0.08
+ },
+ "FLOW": {
+  "wip": 0,
+  "cycleTime": 0,
+  "marginPerMonth": 0,
+  "discountRate": 0.08,
+  "throughputInShare": 0
+ },
+ "DORA": {
+  "measured": {}
+ },
+ "EVIDENCE": {
+  "drivers": {},
+  "stage": "qualification"
+ }
+}

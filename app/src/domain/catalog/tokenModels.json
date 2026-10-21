@@ -1,0 +1,44 @@
+[
+ {
+  "name": "Mistral Large",
+  "mix": 0,
+  "priceIn": 2,
+  "priceOut": 6
+ },
+ {
+  "name": "Claude Haiku 4.5",
+  "mix": 30,
+  "priceIn": 1,
+  "priceOut": 5
+ },
+ {
+  "name": "Claude Sonnet 4.6",
+  "mix": 40,
+  "priceIn": 3,
+  "priceOut": 15
+ },
+ {
+  "name": "Claude Opus 4.8",
+  "mix": 30,
+  "priceIn": 15,
+  "priceOut": 75
+ },
+ {
+  "name": "Claude Fable 5",
+  "mix": 0,
+  "priceIn": 8,
+  "priceOut": 40
+ },
+ {
+  "name": "GPT-4o",
+  "mix": 0,
+  "priceIn": 2.5,
+  "priceOut": 10
+ },
+ {
+  "name": "GPT-4.1 mini",
+  "mix": 0,
+  "priceIn": 0.4,
+  "priceOut": 1.6
+ }
+]

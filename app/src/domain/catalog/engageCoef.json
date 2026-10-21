@@ -1,0 +1,41 @@
+{
+ "MSC": {
+  "label": "Managed Service — Capgemini infrastructure",
+  "maturityCap": 4,
+  "rampSpeed": 1,
+  "glassFactor": 1,
+  "setupBillable": 1,
+  "infraOwner": "CG",
+  "riskPremium": 0,
+  "authorityCap": 4,
+  "rampCapPct": 100,
+  "mcWiden": 1,
+  "khMaxCC": 4
+ },
+ "MSI": {
+  "label": "Managed Service — client infrastructure",
+  "maturityCap": 3,
+  "rampSpeed": 0.8,
+  "glassFactor": 0.9,
+  "setupBillable": 0.85,
+  "infraOwner": "CLIENT",
+  "riskPremium": 5,
+  "authorityCap": 3,
+  "rampCapPct": 80,
+  "mcWiden": 1.1,
+  "khMaxCC": 2
+ },
+ "STA": {
+  "label": "Staff augmentation (technical assistance)",
+  "maturityCap": 2,
+  "rampSpeed": 0.55,
+  "glassFactor": 0.7,
+  "setupBillable": 0.4,
+  "infraOwner": "CLIENT",
+  "riskPremium": 12,
+  "authorityCap": 2,
+  "rampCapPct": 55,
+  "mcWiden": 1.2,
+  "khMaxCC": 0
+ }
+}

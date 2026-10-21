@@ -12,7 +12,7 @@
    35.2,
    64
   ],
-  "horizon": 3,
+  "horizon": 5,
   "blendedTJM": 536,
   "tgtTJM": 418,
   "setupTotal": 240000,
@@ -190,12 +190,12 @@
   "_curveOverlay": "logistic.default"
  },
  "payback": 11,
- "npv": 789504.6907728537,
+ "npv": 1681087.4621952225,
  "headline": {
   "payback": 11,
-  "npv": 789504.6907728537,
-  "roi": 3.8921321477309263,
-  "totalSavings": 934111.7154554223
+  "npv": 1681087.4621952225,
+  "roi": 9.022255993312056,
+  "totalSavings": 2165341.4383948934
  },
  "phaseScope": {
   "weight": 0.4760498687664038,
@@ -211,5 +211,5 @@
  "glassCeiling": 54,
  "audit": [],
  "id": "combo-stress",
- "desc": "MSI + HRI + logistic + MED + horizon 4"
+ "desc": "MSI + HRI + logistic + MED + horizon 5"
 }
