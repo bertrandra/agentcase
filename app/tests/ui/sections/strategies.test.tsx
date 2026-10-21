@@ -6,7 +6,7 @@ import { evaluateStrategies, stratNormalize, strategyDefsOf, stratWeightsOf } fr
 import { appStore } from '@/store/instance';
 import { uiStore } from '@/ui/uiState';
 import Strategies from '@/ui/sections/verdict/strategies';
-import { missingFor, openFixture, PARITY_FIXTURES } from '../../helpers/sectionParity';
+import { missingFor, openFixture, PARITY_FIXTURES } from '../../helpers/stressParity';
 
 afterEach(cleanup);
 const ctx = () => makeCtx(appStore().getState().doc);

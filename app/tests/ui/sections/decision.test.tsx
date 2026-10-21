@@ -8,7 +8,7 @@ import { appStore } from '@/store/instance';
 import { simStore } from '@/store/simulation';
 import Decision from '@/ui/sections/verdict/decision';
 import { renderedText } from '../../helpers/parity';
-import { missingFor, openFixture, PARITY_FIXTURES } from '../../helpers/sectionParity';
+import { missingFor, openFixture, PARITY_FIXTURES } from '../../helpers/stressParity';
 
 afterEach(cleanup);
 const decision = () => decide(makeCtx(appStore().getState().doc), simStore.getState().run!);

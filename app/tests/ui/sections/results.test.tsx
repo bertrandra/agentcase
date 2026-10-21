@@ -8,7 +8,7 @@ import { resultsCore } from '@/domain/verdict';
 import { appStore } from '@/store/instance';
 import { fmtEur } from '@/ui/sections/stress/fmt';
 import Results from '@/ui/sections/verdict/results';
-import { missingFor, openFixture, PARITY_FIXTURES } from '../../helpers/sectionParity';
+import { missingFor, openFixture, PARITY_FIXTURES } from '../../helpers/stressParity';
 
 afterEach(cleanup);
 const core = () => resultsCore(makeCtx(appStore().getState().doc));

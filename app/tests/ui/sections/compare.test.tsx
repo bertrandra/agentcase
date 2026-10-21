@@ -6,7 +6,7 @@ import { compareData } from '@/domain/stress';
 import { appStore } from '@/store/instance';
 import Compare from '@/ui/sections/stress/compare';
 import { renderedText } from '../../helpers/parity';
-import { missingFor, openFixture, PARITY_FIXTURES } from '../../helpers/sectionParity';
+import { missingFor, openFixture, PARITY_FIXTURES } from '../../helpers/stressParity';
 
 afterEach(cleanup);
 const data = () => compareData(makeCtx(appStore().getState().doc));

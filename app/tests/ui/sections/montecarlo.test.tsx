@@ -9,7 +9,7 @@ import { simStore } from '@/store/simulation';
 import MonteCarlo from '@/ui/sections/stress/montecarlo';
 import { fmtEur } from '@/ui/sections/stress/fmt';
 import { loadExtra } from '../../helpers/extras';
-import { missingFor, openFixture, PARITY_FIXTURES } from '../../helpers/sectionParity';
+import { missingFor, openFixture, PARITY_FIXTURES } from '../../helpers/stressParity';
 
 afterEach(() => { cleanup(); vi.useRealTimers(); });
 const run = () => fireEvent.click(screen.getByText('▶ Run simulation'));

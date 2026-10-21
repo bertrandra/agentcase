@@ -6,7 +6,7 @@ import { makeCtx } from '@/domain';
 import { sensitivityMatrix } from '@/domain/stress';
 import { appStore } from '@/store/instance';
 import Sensitivity from '@/ui/sections/stress/sensitivity';
-import { missingFor, openFixture, PARITY_FIXTURES } from '../../helpers/sectionParity';
+import { missingFor, openFixture, PARITY_FIXTURES } from '../../helpers/stressParity';
 
 afterEach(cleanup);
 

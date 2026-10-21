@@ -6,7 +6,7 @@ import { fmtE, scenarioSet } from '@/domain/stress';
 import { appStore } from '@/store/instance';
 import Scenarios from '@/ui/sections/stress/scenarios';
 import { renderedText } from '../../helpers/parity';
-import { missingFor, openFixture, PARITY_FIXTURES } from '../../helpers/sectionParity';
+import { missingFor, openFixture, PARITY_FIXTURES } from '../../helpers/stressParity';
 
 afterEach(cleanup);
 const set = () => scenarioSet(makeCtx(appStore().getState().doc));

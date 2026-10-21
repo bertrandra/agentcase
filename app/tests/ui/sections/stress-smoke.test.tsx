@@ -6,7 +6,7 @@ import { runSimulation } from '@/controllers/stress';
 import { STRESS } from '@/ui/sections/stress';
 import { VERDICT } from '@/ui/sections/verdict';
 import { renderedText } from '../../helpers/parity';
-import { openFixture } from '../../helpers/sectionParity';
+import { openFixture } from '../../helpers/stressParity';
 
 afterEach(cleanup);
 const FIXTURES = readdirSync('fixtures/cases').map((f) => f.replace('.json', '')).sort();
