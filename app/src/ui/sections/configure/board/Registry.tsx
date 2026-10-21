@@ -1,16 +1,15 @@
 import { useState } from 'react';
 import { removeDashboard, renameDashboard, setDashboardGroup } from '@/controllers/pdcBoard';
 import type { DynSection } from '@/domain/pdc/board';
-import { useCtx } from '@/store/hooks';
 import type { GroupDef } from '@/ui/zones/registry';
-import { CardView } from './CardView';
 import { Configure } from './Configure';
+import { DynamicSectionView } from './DynamicSectionView';
 
 type Mode = { id: string; kind: 'rename' | 'delete' | 'configure' | 'open' } | null;
 
 /** The generated dashboards: open (live cards), configure (bind variables), rename, move to a menu group, remove. */
-export function Registry({ sections, groups, colors }: { sections: DynSection[]; groups: GroupDef[]; colors: Record<string, string> }) {
-  const [mode, setMode] = useState<Mode>(null), [name, setName] = useState(''), c = useCtx();
+export function Registry({ sections, groups }: { sections: DynSection[]; groups: GroupDef[] }) {
+  const [mode, setMode] = useState<Mode>(null), [name, setName] = useState('');
   const is = (s: DynSection, k: NonNullable<Mode>['kind']) => mode?.id === s.id && mode.kind === k;
   const shown = sections.find((s) => mode && s.id === mode.id && (mode.kind === 'open' || mode.kind === 'configure'));
   return (
@@ -39,12 +38,7 @@ export function Registry({ sections, groups, colors }: { sections: DynSection[];
         </tbody>
       </table></div>
       {shown && mode?.kind === 'configure' && <Configure section={shown} />}
-      {shown && (
-        <section aria-label={`Preview of ${shown.title}`}>
-          <h3>🗂️ {shown.title}</h3><p className="ac-muted">{shown.description || 'No description yet — add one from the Board’s Configure panel.'}</p>
-          <div className="ac-form-row">{shown.cards.filter((x) => x.CARD_ENABLED !== false).sort((a, b) => a.CARD_SEQ - b.CARD_SEQ).map((card) => <CardView key={card.CARD_ID} c={c} card={card} colors={colors} preview />)}</div>
-        </section>
-      )}
+      {shown && <DynamicSectionView section={shown} preview />}
     </>
   );
 }

@@ -31,7 +31,7 @@ export const EXTRAS = {
   pdc_board: `(()=>({ dyn: JSON.parse(JSON.stringify(DYNAMIC_SECTIONS)) }))()`,
   pdc_dash: `(()=>{ const out = {}; const keep = JSON.stringify(PERSONA_SECTIONS);
     for (const [k, ids, all] of [['one', ['tune'], false], ['two', ['tune', 'verify'], false], ['all', [], true]]) {
-      dynSectionGenerate(ids, all); const d = JSON.parse(JSON.stringify(DYNAMIC_SECTIONS[DYNAMIC_SECTIONS.length - 1])); d.nCards = d.cards.length; d.cards = d.cards.slice(0, 2); out[k] = d; out[k + 'Admin'] = (PERSONA_SECTIONS.admin || []).slice(-1)[0]; dynSectionRemoveCascade(d.id);
+      dynSectionGenerate(ids, all); const d = JSON.parse(JSON.stringify(DYNAMIC_SECTIONS[DYNAMIC_SECTIONS.length - 1])); d.nCards = d.cards.length; d.slots = d.cards.map(c => [c.CARD_NAME_VALUE, c.CARD_SOURCE_SECTION, c.CARD_TARGET_SECTION, c.CARD_IMPACT_VAR, c.CARD_KEY1_VAR, c.CARD_KEY2_VAR]); d.cards = d.cards.slice(0, 2); out[k] = d; out[k + 'Admin'] = (PERSONA_SECTIONS.admin || []).slice(-1)[0]; dynSectionRemoveCascade(d.id);
     }
     out.restored = JSON.stringify(PERSONA_SECTIONS) === keep; out.max = Math.max(0, ...SECTION_CATALOG.map(s => s.groupSeq || 0)); return out; })()`,
   pdc_vars: `VARIABLE_REGISTRY.map(v => { let value = null, text = '—'; try { value = v.get(); text = formatValue(value, v.canonicalFormat); } catch (e) { text = 'ERR'; }

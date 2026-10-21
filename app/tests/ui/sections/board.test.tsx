@@ -14,7 +14,9 @@ afterEach(cleanup);
 const FOUR = ['golden', 'ctx-msi', 'curve-logistic', 'industry-med'];
 const docSections = () => appStore().getState().doc.dynamicSections as DynSection[];
 const generate = (...groups: string[]) => { groups.forEach((g) => fireEvent.click(screen.getByLabelText(new RegExp(GROUPS.find((x) => x.id === g)!.label)))); fireEvent.click(screen.getByText('➕ Generate dashboard')); };
-type Dash = { one: DynSection & { nCards: number }; two: DynSection & { nCards: number }; all: DynSection & { nCards: number }; max: number };
+type Slots = (string | null)[][];
+type Dash = { one: DynSection & { nCards: number; slots: Slots }; two: DynSection & { nCards: number; slots: Slots }; all: DynSection & { nCards: number; slots: Slots }; max: number };
+const slotsOf = (d: DynSection): Slots => d.cards.map((c) => [c.CARD_NAME_VALUE, c.CARD_SOURCE_SECTION, c.CARD_TARGET_SECTION, c.CARD_IMPACT_VAR, c.CARD_KEY1_VAR, c.CARD_KEY2_VAR]);
 
 describe('board section', () => {
   it.each(FOUR)('shows every figure the legacy section showed (%s)', (id) => {
@@ -29,8 +31,10 @@ describe('board section', () => {
     const l = pdc<Dash>('pdc_dash', id), sections = SECTIONS.map((s) => ({ id: s.id, group: s.group, label: s.label })), groups = GROUPS;
     for (const [k, ids, all] of [['one', ['tune'], false], ['two', ['tune', 'verify'], false], ['all', [], true]] as const) {
       const got = newDashboard({ groupIds: [...ids], allGroups: all, existing: [], groups, sections, maxOrder: l.max })!, want = l[k];
-      expect({ ...got, cards: undefined }).toEqual({ ...want, cards: undefined, nCards: undefined });
-      expect(got.cards.slice(0, 2)).toEqual(want.cards.slice(0, 2));   // the two GLOBAL headline cards; the rest depends on the (larger) legacy variable registry
+      expect({ ...got, cards: undefined }).toEqual({ ...want, cards: undefined, nCards: undefined, slots: undefined });
+      expect(got.cards.slice(0, 2)).toEqual(want.cards.slice(0, 2));
+      expect(got.cards).toHaveLength(want.nCards);
+      expect(slotsOf(got)).toEqual(want.slots);   // every card: name, source, target and the three bound variables
     }
   });
   it('generating a dashboard adds it to the document and every persona list; it can be undone', () => {
@@ -71,6 +75,7 @@ describe('board section', () => {
     fireEvent.click(screen.getByText('⚙️ Configure'));
     const headline = screen.getByLabelText('Headline of card-dyn-groups-1-1') as HTMLSelectElement;
     expect(headline.value).toBe('netSavY3');
+    fireEvent.mouseDown(headline);
     fireEvent.change(headline, { target: { value: 'artefactsInScope' } });
     expect(docSections()[0]!.cards[0]!.CARD_IMPACT_VAR).toBe('artefactsInScope');
     expect(within(screen.getByLabelText(/Preview of/)).getByText('10')).toBeTruthy();
