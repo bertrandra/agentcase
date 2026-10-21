@@ -1,18 +1,17 @@
 import { useRef } from 'react';
 import { exportSnapshotJson, importSnapshotFile } from '@/controllers/files';
-import { setCustomerName, setPersona } from '@/controllers/persona';
+import { setCustomerName } from '@/controllers/persona';
 import { useDoc, useHistory } from '@/store/hooks';
 import { APP_VERSION } from '@/domain/version';
-import { toast } from '../uiState';
+import { toast, toggleMenuHidden, useUi } from '../uiState';
+import { useNavModel } from '../zones/navModel';
+import { switchPersona } from './personaSwitch';
 import { runHistory } from './useShortcuts';
-
-const FALLBACK = [{ id: 'builder', label: 'Builder' }, { id: 'clientcase', label: 'Client case' }, { id: 'admin', label: 'Admin' }, { id: 'advanced', label: 'Advanced' }];
 
 /** Brand, customer, persona, undo/redo and file actions. */
 export function TopZone() {
-  const customer = useDoc((d) => (d.customerName as string) ?? ''), persona = useDoc((d) => (d.currentPersona as string) ?? 'builder');
-  const personas = useDoc((d) => (d.PERSONAS as { id: string; label?: string }[] | undefined) ?? FALLBACK);
-  const h = useHistory(), file = useRef<HTMLInputElement>(null);
+  const customer = useDoc((d) => (d.customerName as string) ?? ''), { persona, personas, landing } = useNavModel();
+  const hidden = useUi((s) => s.menuHidden), h = useHistory(), file = useRef<HTMLInputElement>(null);
   const save = () => {
     const { filename, json } = exportSnapshotJson(), url = URL.createObjectURL(new Blob([json], { type: 'application/json' }));
     Object.assign(document.createElement('a'), { href: url, download: filename }).click();
@@ -24,9 +23,10 @@ export function TopZone() {
   };
   return (
     <header className="ac-top" role="banner" style={{ gridArea: 'top' }}>
+      <button type="button" className="ac-btn" aria-label="Toggle the sidebar menu" aria-pressed={!hidden} title="Show or hide the sidebar; hidden, the group bar above the section navigates" onClick={toggleMenuHidden}>☰</button>
       <strong className="ac-brand">AgentCase <small>v{APP_VERSION}</small></strong>
       <input aria-label="Customer name" className="ac-customer" placeholder="Customer" value={customer} onChange={(e) => setCustomerName(e.target.value)} />
-      <select aria-label="Persona" value={persona} onChange={(e) => setPersona(e.target.value)}>
+      <select aria-label="Persona" value={persona} onChange={(e) => switchPersona(e.target.value, landing(e.target.value))}>
         {personas.map((p) => <option key={p.id} value={p.id}>{p.label ?? p.id}</option>)}
       </select>
       <span className="ac-spacer" />

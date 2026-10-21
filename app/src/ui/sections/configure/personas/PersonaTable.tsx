@@ -1,12 +1,13 @@
 import { useState } from 'react';
 import { addPersona, deletePersona, duplicatePersona, renamePersona, setDefaultPersona, setPersonaCompactNav, setPersonaOrder } from '@/controllers/pdcPersonas';
 import { personasByOrder, type Persona } from '@/domain/pdc/personas';
-import { SECTIONS } from '@/ui/zones/registry';
+import { useNavModel } from '@/ui/zones/navModel';
 
 const note = { fontWeight: 400, color: '#888', fontSize: 10 } as const;
 
 /** Personas in picker order: order, hide-menu and default flags, duplicate / rename / delete (delete asks for confirmation). */
 export function PersonaTable({ personas }: { personas: Persona[] }) {
+  const SECTIONS = useNavModel().sections;
   const [renaming, setRenaming] = useState<string | null>(null), [text, setText] = useState(''), [pending, setPending] = useState<string | null>(null), [label, setLabel] = useState('');
   const commit = (id: string) => { renamePersona(id, text); setRenaming(null); };
   return (
