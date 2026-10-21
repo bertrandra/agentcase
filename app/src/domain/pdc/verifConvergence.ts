@@ -14,7 +14,8 @@ import { playbackChecks, timeChecksA } from './verifConvTime';
 import { timeChecksB } from './verifConvTime2';
 import { wave, type ConvCheck, type ConvRuntime } from './verifConvTypes';
 import { fmtK } from './verifFormat';
-import { maturityInfo, opModelCompute } from './verifTeam';
+import { maturityInfo } from '../tune/maturity';
+import { opModelCompute } from '../tune/opmodel';
 
 export type { ConvCheck, ConvRuntime } from './verifConvTypes';
 const AUTH: Record<string, number> = { Assistance: 1, Copilot: 2, 'Supervised autonomous': 3, Autonomous: 4 };
@@ -24,7 +25,7 @@ function contextChecks(c: Ctx): ConvCheck[] {
   const m = model(c), mi = maturityInfo(c, m), cx = engagementCoef(c), key = engagementKey(c);
   const blocked = activeArtefacts(c.a, c.s).filter((a) => (AUTH[a.aiAuth] || 1) > cx.authorityCap).length;
   const withCtx = (k: string) => model(makeCtx({ ...c.s, dom: { ...c.s.dom, values: { ...c.s.dom.values, engagementCtx: k } } })), mS = withCtx('STA'), mM = withCtx('MSC');
-  const om = opModelCompute(c, m, 2);
+  const om = opModelCompute(c, 2, m);
   return [
     wave('CC-CTX-01', mi.capped <= mi.cap, `L${mi.capped} ≤ L${mi.cap} (${key})${mi.raw > mi.cap ? ` — raw L${mi.raw} was capped` : ''}`),
     wave('CC-CTX-02', true, `${blocked} in-scope artifact(s) above A${cx.authorityCap} — flagged as human-led (informative in v13.2, hard scope exclusion planned v13.3)`),

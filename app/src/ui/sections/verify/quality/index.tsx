@@ -1,5 +1,5 @@
 import { useMemo } from 'react';
-import { qualityView } from '@/domain/verifyB';
+import { qualityAnchorView } from '@/domain/verifyB';
 import { resetQuality, setQualityAsis, setQualityTarget } from '@/controllers/verifyB';
 import { ChartPanel } from '@/ui/widgets/ChartPanel';
 import { DataTable } from '@/ui/widgets/DataTable';
@@ -7,12 +7,12 @@ import { SectionFrame } from '@/ui/zones/SectionFrame';
 import { qualityRadar } from '../vbCharts';
 import { useView } from '../vbShared';
 
-type Row = ReturnType<typeof qualityView>['rows'][number];
+type Row = ReturnType<typeof qualityAnchorView>['rows'][number];
 const box = (edited: boolean, width: number) => ({ width, textAlign: 'center' as const, borderColor: edited ? 'var(--ac-brick)' : undefined, fontWeight: edited ? 700 : 400 });
 
 /** Quality metrics: editable AS-IS baseline and target per metric; Y1–Y3 interpolate between them (amber = overridden). */
 export default function QualitySection() {
-  const v = useView(qualityView), cfg = useMemo(() => qualityRadar(v), [v]);
+  const v = useView(qualityAnchorView), cfg = useMemo(() => qualityRadar(v), [v]);
   return (
     <SectionFrame title="Quality"
       help={<p>Quality metrics scaled by the in-scope automatable intensity × ramp — the TO-BE radar reflects only the selected artifacts.</p>}

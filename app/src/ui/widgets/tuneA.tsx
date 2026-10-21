@@ -4,7 +4,7 @@ import { useDoc } from '@/store/hooks';
 import { Field } from './fields';
 
 /** Legacy fmtK(): €45K (explicit en-US grouping). */
-export const fmtK = (v: number): string => `€${Math.round(v / 1000).toLocaleString('en-US')}K`;
+export { fmtK } from '@/ui/format';
 
 /** A model coefficient (COEF) shown and edited as a form input; the case's COEF is the source of truth. */
 export function CoefInput({ coef, id, label, hint, min, max, step }: { coef: CoefKey; id: string; label: string; hint?: string; min?: number; max?: number; step?: number }) {

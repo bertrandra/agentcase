@@ -2,21 +2,14 @@ import { horizonYears } from '../model/horizonYears';
 import { engineNow } from '../canonical';
 import type { Ctx } from '../ctx';
 import { model } from '../model/overlay';
+import { savingsBreakdown as economicsSavings, type SavingsYear } from '../economics/savings';
 import { lifecycleStatusLabel } from './context';
 
-export interface SavingsYear { grossAuto: number; agentCost: number; relocation: number; netAuto: number; total: number; model: number }
+export type { SavingsYear };
 export interface TeamShift { asis: number; human: number; agent: number }
 
-/** Savings split into gross automation, agent operating cost and relocation; reconciles to the model's yearly savings (legacy savingsBreakdown). */
-export function savingsBreakdown(c: Ctx): SavingsYear[] {
-  const m = model(c), wd = m.wd, asis = m.blendedTJM, tgt = m.tgtTJM, baseEtp = m.base.etp;
-  return engineNow(c).years().map((y) => {
-    const resid = y.humanFteEnd, grossAuto = (baseEtp - resid) * asis * wd;
-    const agentCost = (y.tokenCost || 0) + (y.infrastructureCost || 0) + (y.runTeamCost || 0);
-    const relocation = resid * wd * (asis - tgt);
-    return { grossAuto, agentCost, relocation, netAuto: grossAuto - agentCost, total: grossAuto - agentCost + relocation, model: y.savings };
-  });
-}
+/** Yearly savings decomposition: the economics owner's years (reconciles to the model's yearly savings, legacy savingsBreakdown). */
+export const savingsBreakdown = (c: Ctx): SavingsYear[] => economicsSavings(c).years;
 
 /** Human → agent team shift at horizon end: AS-IS FTE, residual humans and agent vFTE (aggregate, no per-skill clamping). */
 export function teamShift(c: Ctx): TeamShift {

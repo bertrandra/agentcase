@@ -61,7 +61,7 @@ const RADAR_ASIS = [40, 60, 35, 50, 52, 50, 54], RADAR_MAX = [88, 90, 92, 90, 96
 const isDecimal = (name: string) => name.includes('1000') || name.includes('100 commits');
 
 /** Quality anchors: Y1 / Y2 / horizon end per metric (formatted), editable flags against the defaults, and the TO-BE radar. */
-export function qualityView(c: Ctx) {
+export function qualityAnchorView(c: Ctx) {
   const { r1, r2, r3, endL } = perfFrame(c);
   return {
     endL, radarAsis: RADAR_ASIS, radarTobe: RADAR_ASIS.map((a, i) => Math.round(a + ((RADAR_MAX[i] as number) - a) * r3)),

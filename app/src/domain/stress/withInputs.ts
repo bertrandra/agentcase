@@ -1,5 +1,5 @@
 import type { Ctx } from '../ctx';
-import type { Inputs } from '../inputs';
+import { autoCapFrom, type Inputs } from '../inputs';
 
 /** The same case with some form inputs overridden (what the legacy engines did by writing INPUTS.v, never the DOM). */
 export function withInputs(c: Ctx, ov: Record<string, string>): Ctx {
@@ -13,6 +13,5 @@ export function withInputs(c: Ctx, ov: Record<string, string>): Ctx {
 
 /** Technical cap on the automation potential (autoCapPct input, 10..100). */
 export function autoTechCap(c: Ctx): number {
-  const v = parseFloat(c.inp.v('autoCapPct'));
-  return isNaN(v) ? 100 : Math.max(10, Math.min(100, v));
+  return autoCapFrom(c.inp.v('autoCapPct'));
 }

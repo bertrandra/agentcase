@@ -9,7 +9,7 @@ export const activeCurve = (c: Ctx): string => c.s.scurve?.curve || 'spline.defa
  * model() = modelRaw() + Time-Engine overlay: under a non-legacy curve every annual array is replaced by the engine's own
  * yearly sums/samples, so Annual, Monthly, Financial and Monte Carlo read the same figures (legacy model(), v18.5–v18.8).
  */
-export function model(c: Ctx): ModelResult {
+function buildModel(c: Ctx): ModelResult {
   const raw = modelRaw(c), curve = activeCurve(c);
   if (curve.startsWith('legacy')) return raw;
   try {
@@ -47,4 +47,12 @@ export function model(c: Ctx): ModelResult {
     raw._overlayError = String((e as Error)?.message ?? e);
   }
   return raw;
+}
+
+const cache = new WeakMap<Ctx, ModelResult>();
+/** model(), computed once per context identity (a mutated copy `{...c}` is a new identity, so it never sees a stale entry). Treat the result as read-only. */
+export function model(c: Ctx): ModelResult {
+  let m = cache.get(c);
+  if (!m) { m = buildModel(c); cache.set(c, m); }
+  return m;
 }

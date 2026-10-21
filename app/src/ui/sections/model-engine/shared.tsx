@@ -2,8 +2,7 @@ import type { ReactNode } from 'react';
 import { Callout } from '@/ui/widgets/cards';
 
 /** Shared bits of the six Model-Engine sections (P1-P6). */
-export const fmtK = (v: number): string => `€${Math.round(v / 1000).toLocaleString('en-US')}K`;
-export const fmtEur = (v: number): string => `${v < 0 ? '−' : ''}€${Math.round(Math.abs(v)).toLocaleString('en-US')}`;
+export { fmtK, fmtEur } from '@/ui/format';
 export const pct1 = (v: number): string => `${(v * 100).toFixed(1)}%`;
 
 /** Enable / disable button of a phase. */
