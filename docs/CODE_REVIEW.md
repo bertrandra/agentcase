@@ -1,5 +1,9 @@
-# AgentCase v18.8 — Code review
+# AgentCase — Code review of v18.8 and its resolution in v18.9
 
+> **Status:** every finding below was addressed in **v18.9** (`AgentCase_v18_9_EN.html`) — see
+> [§7 Resolution in v18.9](#7-resolution-in-v189), including four findings that surfaced during the fixes.
+> Sections 1–6 are kept as the original v18.8 review, with its line numbers; they do **not** match v18.9.
+>
 > Reviewed file: `AgentCase_v18_8_EN.html` (review date 2026-10-21).
 > Scope: the whole application script (L6456–25400), the boot-restore and session-persistence
 > scripts (L25401–25446), the HTML markup and CSS. Vendor bundles (Chart.js, ExcelJS) and the
@@ -254,3 +258,93 @@
    deleted-persona fallback. `modelBoot()` clamps restored drivers.
 10. **Comments record the reason behind each change** (reproduced bugs, invariants, spec
     references), which makes the code auditable.
+
+## 7. Resolution in v18.9
+
+Every fix has a regression test that **fails on v18.8 and passes on v18.9** (`tools/state-test.mjs`,
+`tools/xss-test.mjs`), except where noted. The golden case did not move: Y3 savings €731,774, Y3 run cost €1,045,490,
+NPV (8 %) €1,131,220, payback 9 months (asserted by `tools/smoke.mjs` against `tools/golden.json`).
+Run everything with `node tools/test-all.mjs`.
+
+### 7.1 High
+
+| ID | Status | What changed | Test |
+|---|---|---|---|
+| H-1 | Fixed | `escHtml` / `escJs` / `safeId` / `cleanText` helpers; every user or imported string is escaped at output (≈200 inline-handler lines plus attribute and text sinks); group colours validated; imported ids / labels / tags / locations sanitised; the weaker local `esc` copies keep working | `xss-test` (restore, live, Excel fuzz ×2) |
+| H-2 | Fixed | `snapClone()` deep-copies at `collectSnapshotState` and `applySnapshotState`; the golden case and captured snapshots no longer follow live edits | `golden_not_aliased`, `capture_not_aliased` |
+| H-3 | Fixed | new registry key `scurve` (points, family, active curve) and an Excel `S-Curve` sheet | `scurve_persisted`, `scurve_excel_roundtrip` |
+| H-4 | Fixed | `scEnsurePts` keeps knots strictly increasing when the horizon shrinks; `scSplineEval` ignores non-increasing / non-finite knots | `horizon_shrink_finite` |
+| H-5 | Fixed | Restore applies the record offered at boot (`restoreBoot`), which is copied aside (`:prev`) before the first overwrite; the banner is shown only if the autosave is newer than the file's own state | `autosave_restore_offered`, `autosave_banner_only_if_newer` |
+| H-6 | Fixed | delegated `input` / `change` listener schedules the autosave; also saved on `pagehide` | `autosave_on_param_edit` |
+| H-7 | Fixed | a framed copy of the app (live previews) never persists: `AUTOSAVE.isFrame` | `autosave_frame_inert` |
+| H-8 | Fixed | `evtScopeArtefacts()` returns `activeArtefacts()` once | `p2_scope_not_double_counted` |
+
+### 7.2 Medium
+
+| ID | Status | What changed | Test |
+|---|---|---|---|
+| M-1 | Fixed | P4 NPV uses `MODEL.CASE.discountRate`; `numOr()` keeps an explicit 0 % (also in P5) | `p4_npv_uses_case_rate`, `p5_zero_discount_kept` |
+| M-2 | Fixed | `roiCanonical` / `fmtRoiPct`: `n/a` instead of `Infinity%` / `NaN%` everywhere ROI is shown | `roi_payback_labels` |
+| M-3 | Fixed | `fmtPayback`: month 0 = "immediate"; the ">36 mo" cut-off follows the horizon | `roi_payback_labels` |
+| M-4 | Fixed | strategy factors apply to a persisted strategy-neutral base (`STRAT_APPLIED`); a factor-1 strategy restores the base | `strategy_apply_idempotent` |
+| M-5 | Fixed | `applySnapshotState(s, {background:true})` keeps the persona and the active tab | `snapshot_manager_redraw_quiet` |
+| M-6 | Fixed | GCT comparison cached per (golden, AME reference, build) | `snapshot_manager_redraw_quiet` |
+| M-7 | Fixed (one part by design) | `mcFingerprint` no longer clones the state or runs the engine, and ignores the snapshot library; **kept by design:** `decisionEngine()` still runs one 800-draw simulation the first time a verdict is requested and none exists, because a verdict must come from a distribution | `mc_fingerprint_stable_and_cheap` |
+| M-8 | Fixed | `try/finally` in `runMonteCarlo` and `evaluateStrategies`; `mcAutoHook` logs errors | `whatif_restores_on_error` |
+| M-9 | Fixed | `tobeComposition(yearIdx)`; Results no longer overwrites the selected year | `results_keeps_tobe_year` |
+| M-10 | Fixed | `MODEL.LCE.built` separates "constructed" from "fully calibrated"; Recalibrate resets it | `p1_calibration_keeps_edits` |
+| M-11 | Fixed | `record` hoisted; the cross-tab broadcast fires | covered by `autosave_*` |
+| M-12 | Fixed | `tx.onabort` handled like `tx.onerror` | not testable without a quota failure |
+| M-13 | Fixed | the industry list is rebuilt at boot and stripped from the saved file | `snapshot_file_clean`, `snapshot_reopen_round_trip` |
+| M-14 | Fixed | `boot-ready`, banners, status lines and preview iframes removed from the saved file | `snapshot_file_clean` |
+| M-15 | Fixed | the check perturbs `INPUTS` (restored in a `finally`, ceiling forced), requires strict change, reports `n/a` at a cap | `verif_sensitivity_can_fail` |
+| M-16 | Fixed | `ddFingerprint` hashes the content (`hashStr`) | `dd_fingerprint_content` |
+| M-17 | Fixed | overlay errors set `_overlayError`, log once, and fail the new audit check `CC-OV-01` | `model_overlay_error_reported` |
+
+### 7.3 Low
+
+| ID | Status | What changed |
+|---|---|---|
+| L-1 | Fixed | 30 unreachable functions and 6 constants removed (Sales build / discovery, Presales lab, Specialist, unused helpers), plus `toggleAllRegOfPhase`, `resetRegArtefacts` and the unreachable `'france'` branch. Reachability was computed from the syntax tree; `tools/handlers-test.mjs` proves every handler target still exists |
+| L-2 | Fixed | `setSkillMap` calls `refreshAll()` |
+| L-3 | Fixed | lifecycle slider: labels immediately, recompute coalesced (120 ms) |
+| L-4 | Fixed | guards in `_initQmv`, `pmAddPersona`, `pmAddGroup`, `pmRenderAssignment`, `pinAllOfPhase`; rate gap shows `—` with an empty team |
+| L-5 | Fixed | `fmtK` / `fmtE` use `en-US` |
+| L-6 | Fixed | download URLs revoked after 1.5 s |
+| L-7 | Fixed | P3 "supervisors to unlock" uses the horizon-end peak, like the seeding |
+| L-8 | Fixed | persona landing honours Fast Path |
+| L-9 | Fixed | group rename calls `syncState('GROUPS')` |
+| L-10 | Fixed | `fmtChg` for KPI deltas; zero-baseline guards |
+| L-11 | Fixed | empty team / zero ramps no longer give NaN (`blendedTJM`, `yearArtMonth`, day-rate tile, effort-reduction tile) — `degenerate_inputs_finite` |
+| L-12 | Fixed | `parseLocalDate` / `addMonthsLocal` — `dates_local_new_york` |
+| L-13 | Fixed — **upgraded:** a `__proto__` location in an imported workbook wrote onto `Object.prototype` (confirmed). `isKnownLoc()` now guards the Rate Card, Input Team and Location Target imports; a rate of 0 is honoured — `import_proto_and_zero_rate` |
+| L-14 | Fixed | DD import builds the id set once, stringifies Date / rich text / hyperlink cells correctly, sanitises ids and text |
+| L-15 | Fixed | DD sensitivity perturbs the named `COEF` values: HRI floor and slope now get different weights (79 k€ vs 29 k€ against an identical 97 k€ before) and the supervision-share pair is measured — `dd_sensitivity_distinct_coefficients` |
+| L-16 | Fixed | `mpTick` reads the horizon input instead of running `model()` |
+| L-17 | Fixed | Monthly insight note follows the live curve; Monthly Playback is fully English |
+| L-18 | Fixed | dead Home summary block, dead `ddNote` and the boot listener on discarded buttons removed — `sidebar_click_navigates` |
+| L-19 | Fixed | the Critical & Regulated report uses `appVerTag()` |
+| L-20 | Fixed | a duplicated tab detects the clash over `BroadcastChannel` and takes a new id — `autosave_duplicate_tab` |
+| L-21 | Fixed | `PM.hydrate` runs a migration only at its `from` version; HTML snapshots are written with `PM.serialize()` (schema + app version). The boot script still calls `applySnapshotState` directly, by design |
+| L-22 | By design | the baked boot snapshot stays **partial** on purpose, so code-owned defaults (groups, coefficients, engine) keep flowing into every release; its `savedAt` is refreshed on each release (see BUMP_PROCEDURE) |
+| L-23 | Fixed | the autosave status survives the panel re-render |
+| L-24 | Fixed | cursor / transaction errors resolve `list()` |
+| L-25 | Fixed | a late open after a blocked one closes its connection and lets the next save retry |
+| L-26 | Fixed | 24 unused locals removed; the token-cost tile now shows the value it computes (`cached, same model`) |
+| L-27 | Fixed | AUDIT log bounded (1.5 MB → 0.4 KB after two snapshot captures); `lang="en"`; accessible names for all 1,278 form controls and keyboard access for click-only elements (runtime pass) — `audit_log_bounded`, `a11y_labels_and_roles` |
+
+### 7.4 Found while fixing
+
+1. **Prototype pollution through an imported `__proto__` location** — see L-13 (more serious than first rated).
+2. **The Human Readiness adoption drag changes nothing under the default spline curve.** The spline is used exactly
+   as drawn; the drag only scales curves fitted to the ramp anchors (logistic, Gompertz, Bass, flat). Model semantics
+   were **not** changed (that is the model owner's call); the HRI screen now says so. *Decision needed:* either apply
+   the drag, the engagement ramp speed and the ramp cap to the spline, or keep "what you draw is what you get".
+3. **The Critical & Regulated report had no entry point.** The function and its documentation survived, the button
+   did not; it is back in the regulatory profile section.
+4. **Stale regulatory counts in the industry list** (AERO showed 48 reg. artefacts, the catalogue has 69): the list
+   baked into the markup was shown first; it is now rebuilt from the data.
+
+The golden-case discrepancy noted in ARCHITECTURE.md §11 is resolved: the reference figures live in
+`tools/golden.json` and are asserted on every run.
+

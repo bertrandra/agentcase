@@ -14,6 +14,63 @@ All notable changes to AgentCase, newest first. Product version = the `vX.Y` in 
 
 When releasing, follow [docs/BUMP_PROCEDURE.md](docs/BUMP_PROCEDURE.md) and add the new version at the top.
 
+## [v18.9] 2026-10-21 — Hardening release: security, data integrity, calculation consistency
+
+Every finding of the v18.8 code review ([docs/CODE_REVIEW.md](docs/CODE_REVIEW.md) §7) is fixed. **No result of the
+model moved** — golden case unchanged and now asserted (`tools/golden.json`): Y3 savings €731,774 · Y3 run cost
+€1,045,490 · setup €225,000 · NPV (8 %) €1,131,220 · payback 9 months · 0 audit violations.
+
+### Security
+- Stored / imported XSS closed: user and imported strings (labels, ids, names, titles, skills, customer, session
+  labels, snapshot names, Excel notes) are escaped at every sink; group colours validated; imported ids, labels and tags
+  sanitised. A hostile `.xlsx` can no longer run script in the app.
+- Prototype pollution through an imported `__proto__` location (Rate Card, Input Team, Location Target) closed.
+
+### Data integrity
+- The golden case and captured snapshots no longer follow later live edits (deep copy at the snapshot boundary).
+- S-curve control points and curve family are saved with the case (file, autosave, snapshots) and round-trip through
+  Excel (new `S-Curve` sheet); shrinking the horizon can no longer turn every figure into NaN.
+- Autosave: **Restore** restores the session it offered (kept as "Before reload" in the Session manager), the banner
+  only appears for a genuinely newer autosave, ordinary parameter edits are autosaved, live previews never write to the
+  store, quota failures are reported, a duplicated tab gets its own slot, cross-tab refresh works.
+- Saved HTML files no longer freeze `boot-ready`, banners, preview iframes or a duplicated industry list.
+
+### Calculation consistency
+- P2 verification tax counted every selected regulatory artefact twice — fixed.
+- P4 stochastic NPV discounts at the case rate; an explicit 0 % discount rate is kept (also P5).
+- One ROI / payback convention: `n/a` instead of `Infinity%`/`NaN%` with no setup cost, month 0 reads "immediate",
+  the payback horizon follows the case horizon.
+- Applying a strategy no longer compounds its factors; the comparison table matches the live case.
+- Verification's directional-sensitivity check can now fail; `model()` overlay failures are flagged and reported by
+  the new audit check `CC-OV-01`.
+- P1 calibration keeps the user's review-time edits; DD sensitivity freshness uses a content hash and perturbs the
+  named `COEF` values (HRI floor / slope now get distinct weights).
+
+### Behaviour
+- Background restores (Snapshot-manager comparison, per-snapshot Excel export) keep the persona and the tab; the
+  golden-vs-AME comparison is cached.
+- Empty team / all-zero ramps no longer produce NaN; KPI deltas carry the right sign; month labels no longer shift
+  west of UTC; locale-independent money format; Fast Path respected on persona landing.
+- The **Critical & Regulated report** export button is back (regulatory profile section).
+- Monthly Playback is fully English; its note describes the live curve.
+- HRI screen states that the readiness drag does not act while the free-form spline is the live curve.
+
+### Visible differences from v18.8 (render-diff, 8 of 82 sections — all intended)
+Industry list (current regulatory counts, e.g. AERO 69 instead of a stale 48) · Monthly detail note (describes the live
+curve) · Monthly Playback (English) · Scenarios ("Location only" payback reads "immediate" instead of ">36 mo") ·
+Architecture content (dead-function sentence) · Logic verification (+`CC-OV-01`) · Program (+ "cached, same model"
+tile) · Data Model (84 persisted keys instead of 82).
+
+### Maintenance
+- 30 unreachable functions and 6 constants removed; 24 unused locals removed; `lang="en"`.
+- Accessibility pass: accessible names for all form controls, keyboard access for click-only elements.
+- AUDIT log bounded (≈1.5 MB → <1 KB after two snapshot captures).
+- New tooling: `tools/test-all.mjs` (battery), `smoke` (golden figures), `xss-test`, `state-test` (35 regression
+  tests), `handlers-test`, `render-diff`.
+- Added: audit check `CC-OV-01`; registry keys `scurve`, `stratApplied` (84 persisted keys).
+
+---
+
 ## [v18.8]
 
 ### New

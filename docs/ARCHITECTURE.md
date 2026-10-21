@@ -1,14 +1,15 @@
 # AgentCase — Architecture
 
-> Applies to **AgentCase v18.8** (`AgentCase_v18_8_EN.html`).
-> Line references (`L1234`) point into that file and shift with every release; search for the quoted
-> identifier if a reference no longer matches.
+> Applies to **AgentCase v18.9** (`AgentCase_v18_9_EN.html`, ≈25,475 lines, ≈5.0 MB).
+> Line references (`L1234`) were taken on v18.8 and shift with every release — in v18.9 they move by roughly
+> +60 lines after the helper block at the top of the main script and by up to −1,000 further down (dead code removed).
+> Search for the quoted identifier; do not trust a number.
 > Supersedes the in-app "Architecture" chapters (`arch-layers`, `arch-content`) and the historical
 > companion `AgentCase_Architecture_v12.25.html`.
 
 ## 1. Overview
 
-AgentCase is a single, self-contained, offline HTML file (≈25,450 lines, ≈4.8 MB) that builds an
+AgentCase is a single, self-contained, offline HTML file (≈25,475 lines, ≈5.0 MB) that builds an
 *agentic transformation* business case:
 
 ```
@@ -33,7 +34,7 @@ Key properties:
 
 | Lines | Block | Size | Notes |
 |---|---|---|---|
-| L1–5 | doctype, `<html lang="fr">`, `<title>` | – | `lang="fr"` on the EN build (see §11) |
+| L1–5 | doctype, `<html lang="en">`, `<title>` | – | |
 | L6 | boot-flicker gate `<style>` | <1 KB | `html:not(.boot-ready)` hides sidebar, `#groupNavBar`, `#home`, `#scenarioBar` until boot completes |
 | L7–23 | Chart.js 4.4.1 | ≈205 KB | global `Chart` |
 | L24–70 | ExcelJS 4.4.0 | ≈948 KB | global `ExcelJS` (browserify bundle) |
@@ -123,8 +124,9 @@ flowchart LR
 
 ### 4.2 STATE_REGISTRY (L12821)
 
-A declarative list of `{key, get, set}` descriptors over the globals: 81 literal entries plus
-`engageCoef` (pushed at L25233), 82 keys in total. It is the single schema used by snapshots,
+A declarative list of `{key, get, set}` descriptors over the globals: 81 literal entries plus the keys pushed
+later in the script — `engageCoef`, and since v18.9 `scurve` (S-curve points / family / active curve) and
+`stratApplied` (the strategy-neutral base, §6.2) — 84 keys in total. It is the single schema used by snapshots,
 autosave, APP_STATE, DEP and AUDIT. Main key families:
 
 - **Case inputs:** `dom` (all DOM input values), `customerName`, `teamIn`, `RATE`, `targetLocPct`,
@@ -143,7 +145,9 @@ autosave, APP_STATE, DEP and AUDIT. Main key families:
 - **Snapshots:** `namedSnapshots`.
 
 Setters normalise their input (for example `teamIn` snaps FTE to 0.5, `MODEL` re-runs
-`modelBoot()`). Several setters assign the incoming object by reference — see the code review.
+`modelBoot()`). Getters and setters hand out and accept the live global objects, so **the snapshot boundary
+copies**: `collectSnapshotState` and `applySnapshotState` pass every value through `snapClone()` (v18.9) — never
+store a reference to a snapshot's objects in a global.
 
 ### 4.3 BUS — event bus (v14.17, L12948)
 
@@ -202,9 +206,10 @@ are not cached between renders.
 
 ### 4.8 AUDIT — audit engine and logic checks (v14.20, L21185)
 
-- Ring buffer (500 entries) of `state:changed` events.
+- Ring buffer (500 entries) of `state:changed` events; values over ≈2 KB serialised are stored as a size marker.
 - `registerCheck(id, paths, fn, label)` / `runChecks()` run invariants against
-  `APP_STATE.toJSON()`. 41 checks are registered: AME invariants (`CC-LC-*`, `CC-VT-*`, `CC-SC-*`,
+  `APP_STATE.toJSON()`. 42 checks are registered (v18.9 added `CC-OV-01`, "the Time Engine overlay applied to
+  `model()` without error"): AME invariants (`CC-LC-*`, `CC-VT-*`, `CC-SC-*`,
   `CC-MC-*`, `CC-CB-01`, `CC-FL-01`, `CC-EV-*`), Monthly playback (`CC-MP-*`), Time Engine
   (`TE-05` … `TE-14`, `TE-CURVE`, `TE-HZN`, `TE-DEP`), agents (`CC-AG-02`) and section
   dependencies (`CC-DEP-01/02`).
@@ -242,7 +247,9 @@ snapshot and compared on load (§8.3).
   hub, verification tax, loops, and AME overlays when their flags are on.
 - `model()` (L14150) calls `modelRaw()` and then, unless the active curve is `legacy.*`, overwrites
   the annual arrays with `TIME.for(...).years()`. Every consumer therefore reads the same
-  monthly-summed figures (the overlay contract is documented in the Calculation Engine section).
+  monthly-summed figures (the overlay contract is documented in the Calculation Engine section). If the
+  overlay throws, `model()` falls back to the raw flat result but sets `_overlayError` and logs once; `CC-OV-01`
+  reports it.
 - Coefficients: `COEF` (13 promoted coefficients, v18.7, catalogued in `DD_COEFFICIENTS`),
   `ENGAGE_COEF` (MSC/MSI/STA engagement contexts), `MATURITY_MAP` (L1–L4 thresholds, v18.6).
 
@@ -252,6 +259,20 @@ A read-only, non-enumerable global:
 `{VERSION: '18.8.0', BUS, APP_STATE, PM, DEP, AUDIT, TIME}`. It is the documented surface for QA
 scripts (Playwright). `appVerTag()` / `appVerFileTag()` derive `v18.8` / `v18_8` from it for file
 names and autosave records.
+
+### 4.12 Shared helpers (top of the main script, v18.9)
+
+| Helper | Use |
+|---|---|
+| `escHtml(s)` | **every** user-editable or imported string placed in `innerHTML` text or a quoted attribute |
+| `escJs(s)` | the same string placed inside a single-quoted JS string of an inline handler: `onclick="f('${escJs(id)}')"` |
+| `safeId(s)` / `cleanText(s, max)` | imported ids (`[A-Za-z0-9_.:-]`, never `__proto__`) / imported free text |
+| `snapClone(v)` | deep copy at the snapshot boundary (§4.2) |
+| `numOr(x, d)` | keep an explicit 0 (unlike `x \|\| d`) |
+| `roiCanonical`, `fmtRoiPct`, `fmtPayback`, `fmtChg` | the one ROI / payback / delta convention |
+| `parseLocalDate`, `addMonthsLocal` | calendar dates in local time (a bare `new Date('2026-09-01')` is UTC) |
+| `hashStr(s)` | content hash for change detection |
+| `a11yEnhance(root)` | accessibility pass (names for form controls, keyboard access for click-only elements); runs through a throttled `MutationObserver` |
 
 ## 5. Boot sequence
 
@@ -273,9 +294,10 @@ There is no `DOMContentLoaded` handler. Scripts sit at the end of `<body>` and r
    `TIME.rebuild`) → `calcStalenessCheck()` → `ensureGoldenSnapshot()` (captures the protected
    golden snapshot if none exists) → resume autosave.
 6. **L25402–25446** — `AUTOSAVE.init()` (opens IndexedDB, offers a Restore/Discard banner if a
-   newer autosave exists for this tab; it never auto-restores), wires the 2 s debounced autosave
-   on `state:changed` and save-on-hide, then adds `boot-ready`, which reveals the chrome. Plain
-   DOM input edits do not emit `state:changed` (see CODE_REVIEW H-6).
+   autosave newer than the file's own state exists for this tab; it never auto-restores), wires the
+   2 s debounced autosave on `state:changed` **and** on any `input` / `change` of a form control, plus
+   save-on-hide and `pagehide`, then adds `boot-ready`, which reveals the chrome. None of this runs in a framed
+   copy of the app (§6.6).
 
 ## 6. Feature subsystems
 
@@ -304,9 +326,12 @@ There is no `DOMContentLoaded` handler. Scripts sit at the end of `<body>` and r
 - **Scenarios:** six side-by-side configurations (`scenarioModel`), 3-way compare, tornado
   sensitivity.
 - **Strategies:** 7 `STRATEGY_DEFS` evaluated by overriding inputs and calling `model()`; weighted
-  ranking (`STRAT_WEIGHTS`), radar, apply.
+  ranking (`STRAT_WEIGHTS`), radar, apply. Setup / infra factors are multipliers on a **strategy-neutral base**
+  (`STRAT_APPLIED`, persisted): applying twice does not compound and a factor-1 strategy restores the base; the
+  base is dropped as soon as a scaled input is edited by hand.
 - **Monte Carlo:** 7 perturbed inputs, seeded `mulberry32` RNG (seed 42 by default) → P10/P50/P90,
-  P(net < 0), sensitivity; automatic re-run when the input fingerprint changes.
+  P(net < 0), sensitivity; automatic re-run when the input fingerprint changes (a cheap hash of the model-relevant
+  state — no clone, no engine run). The draw loops restore the live inputs in a `finally`.
 - **Decision intelligence:** `decisionEngine()` reads only the Monte Carlo distribution. Hard rule:
   no strong verdict when P(net < 0) > 20 %.
 
@@ -348,14 +373,19 @@ With every flag off, results are identical to the golden case.
 
 ### 6.6 Snapshots and persistence
 
-- **HTML snapshot** (`saveHtmlSnapshot`, L13600): `collectSnapshotState()` → JSON (with `<`
-  escaped) → new `<script data-agentcase-snapshot="1">` → clone `document.documentElement` → remove
-  previous snapshot scripts → download `AgentCase_<Customer>_<vX_Y>_Snapshot_<stamp>.html`.
+- **HTML snapshot** (`saveHtmlSnapshot`): `PM.serialize()` → JSON (with `<` escaped) → new
+  `<script data-agentcase-snapshot="1">` → clone `document.documentElement`, from which transient runtime UI is
+  stripped (`boot-ready`, banners, status lines, preview iframes, the industry list) → remove previous snapshot
+  scripts → download `AgentCase_<Customer>_<vX_Y>_Snapshot_<stamp>.html`.
 - **Snapshot library** (`SNAPSHOTS`, persisted as `namedSnapshots`): create, activate, delete,
-  set as baseline, reset to golden.
+  set as baseline, reset to golden. `applySnapshotState(s, {background:true})` is for restores that put everything
+  back afterwards (GCT comparison, per-snapshot Excel export): it keeps the persona and the active tab.
 - **Session persistence** (`AUTOSAVE`, v17.2): IndexedDB `agentcase-sessions` v1, one record per
-  browser tab (`sessionStorage` tab id), at most 20 records, `BroadcastChannel` to refresh other
-  tabs. Restore is always user-initiated (banner or 🗂️ Session manager).
+  browser tab (`sessionStorage` tab id; a duplicated tab detects the clash over `BroadcastChannel` and takes a new
+  id), at most 20 records. Restore is always user-initiated (banner or 🗂️ Session manager). The banner offers the
+  record found at boot only if it is newer than the file's own `savedAt`; **Restore applies that record from memory**
+  (`restoreBoot`), and it is copied to `<tabId>:prev` ("Before reload") before the first autosave overwrites the slot.
+  A framed copy of the app (`window.top !== window`, e.g. the Persona-management live previews) is inert.
 
 ### 6.7 Excel export / import (ExcelJS)
 
@@ -363,8 +393,9 @@ With every flag off, results are identical to the golden case.
   (parameters, rate card, team, scope, regulatory, artefacts, agents, personas, sections, groups,
   dependencies, dynamic sections, TO-BE, strategies, Factory meta-model …).
 - `persona-only` also downloads a JSON of the navigation keys (v18.4).
-- `importParams()` reads sheets by header, clamps values, re-renders and captures an "Import …"
-  snapshot. **It does not go through STATE_REGISTRY or PM.**
+- `importParams()` reads sheets by header, clamps values, sanitises ids / labels / tags / locations (`safeId`,
+  `cleanText`, `isKnownLoc`), re-renders and captures an "Import …" snapshot. **It does not go through
+  STATE_REGISTRY or PM.** The `S-Curve` sheet carries the control points and the curve family.
 - `exportFinancialExcel()` exports the Time Engine calculation package.
 - There is no JSON import UI.
 
@@ -428,14 +459,14 @@ in file names and autosave labels.
 `PM.serialize()` and `APP_STATE.toJSON()` also add `personaSchemaVersion: '15.0'` and the
 deprecated mirror `schemaVersion: '15.0'`. `dom` is `{values: {id: value}, checked: {id: bool}}`.
 
-### 8.2 The baked snapshot (L25401)
+### 8.2 The baked snapshot (`<script data-agentcase-snapshot="1">`, end of the file)
 
-The shipped file embeds a trimmed baseline: `savedAt` 2026-07-17, persona `builder`, and 35 keys
-(`dom`, `teamIn`, `RATE`, scope, regulatory settings, artefacts, `PERSONAS`, tracker, readiness,
+The shipped file embeds a deliberately **partial** baseline (`savedAt` = the release date, refreshed on every
+release; persona `builder`) of 35 keys (`dom`, `teamIn`, `RATE`, scope, regulatory settings, artefacts, `PERSONAS`, tracker, readiness,
 token models, quality, lifecycle, skill map, location split, Monte Carlo, strategies,
 `engageCoef`). It has no `calculationPackage`, `namedSnapshots`, `MODEL`, `COEF`, `GROUPS`,
-`PERSONA_SECTIONS` or Factory data; those come from source defaults. As a result, the golden
-snapshot is recaptured on every cold open of the shipped file.
+`PERSONA_SECTIONS` or Factory data; those come from source defaults — on purpose, so that code-owned defaults keep
+flowing into every release. As a result, the golden snapshot is recaptured on every cold open of the shipped file.
 
 ### 8.3 Versions and migrations
 
@@ -457,45 +488,58 @@ dynamic-section reconcile), tracker slot clean-up (v18.6), deleted-persona fallb
 
 ## 9. Quality assurance
 
-- **No automated test suite is in this repository.** Playwright is referenced in comments only.
-- `tools/check.mjs` (repository) — parses every inline script, checks version stamps and `<div>`
-  balance. Run before every commit (see [BUMP_PROCEDURE.md](BUMP_PROCEDURE.md)).
-- In-app: `AUDIT.runChecks()` (41 invariants), Time Engine canaries (`TE-05/09/10/10b` rebuild a
+All checks run headless (Playwright + Chromium) against the built file; `node tools/test-all.mjs` runs them in turn.
+
+| Tool | What it proves |
+|---|---|
+| `tools/check.mjs` | every inline script parses; the three version stamps agree with each other and the file name; `<div>` balance |
+| `tools/smoke.mjs` | the file boots without console / page errors; **the golden-case figures** equal `tools/golden.json` (Y3 savings, Y3 run cost, setup, NPV, payback, 0 audit violations) |
+| `tools/handlers-test.mjs` | every inline-handler target (≈250 functions) in the markup and in the HTML generated for every section is defined |
+| `tools/xss-test.mjs` | hostile strings injected through state restore, live state, and two Excel-fuzz passes never execute and never inject attributes |
+| `tools/state-test.mjs` | 35 regression tests for persistence, autosave, calculations, dates, import safety, accessibility — each written to fail on v18.8 |
+| `tools/render-diff.mjs <before> <after>` | the visible text of all 82 sections is identical between two builds, so a refactor is provably cosmetic (differences are listed) |
+
+- In-app: `AUDIT.runChecks()` (42 invariants), Time Engine canaries (`TE-05/09/10/10b` rebuild a
   `legacy.flatAnnual` engine and require 1e-9 agreement with `modelRaw()`), calculation-package
   staleness check, deterministic Monte Carlo seeds.
 - Debug hooks: `BUS._debugSubs()`, `DEP._debugNodes()`, `AUDIT._debugChecks()`,
   `PM.listMigrations()`, `window.__DEP_FULL_REFRESH__`.
-- The golden-case figures are verified by hand; no € value is asserted automatically (§11).
+- **Golden case (v18.9 reference):** Y3 savings €731,774 · Y3 run cost €1,045,490 · setup €225,000 · NPV (8 %)
+  €1,131,220 · payback 9 months. Earlier figures in comments and release notes (€732K; €770K / €1,007K; headline
+  €1,112,871) belong to older engine states. When a change is *meant* to move the golden case, update
+  `tools/golden.json` and say so in the changelog.
 
 ## 10. Extending the application
 
 - **New persisted state:** add a `{key, get, set}` entry to `STATE_REGISTRY`. The setter must
-  tolerate a missing or older value, and should copy the incoming object rather than keep a
-  reference to it. After mutating the global, call `syncState([key])`.
+  tolerate a missing or older value; values are deep-copied at the snapshot boundary, so keep no reference to
+  the incoming object elsewhere. After mutating the global, call `syncState([key])`. Anything that changes a
+  figure must be persisted (the S-curve points were not, until v18.9).
 - **New section:** add a `.tab-content` div with a unique id, an entry in `SECTION_CATALOG` (group,
   `groupSeq`, label, description, optional tag/MVP), a `TABRENDER[id]` render function, membership
   in `PERSONA_SECTIONS`, and a "?" help panel. Add `SECTION_DEPS` edges if the section reads or
   shapes others.
 - **New calculation input:** read it through `P()` / `V()` / `C()` only, never from the DOM inside
-  the model; make sure it is covered by `inputHash` if it changes Time Engine output.
+  the model; make sure it is covered by `inputHash` if it changes Time Engine output. What-if code that
+  overrides inputs must restore them in a `finally`.
 - **New invariant:** `AUDIT.registerCheck(id, paths, fn, label)`.
-- **User strings in HTML:** escape with the existing helper (`dmEsc`) before inserting into
-  `innerHTML` or inline handlers.
+- **User strings in HTML:** `escHtml()` for text and quoted attributes, `escJs()` inside inline-handler
+  string literals; imported ids go through `safeId()`. Re-run `node tools/xss-test.mjs`.
+- **Ratios and labels:** `roiCanonical`/`fmtRoiPct`, `fmtPayback`, `fmtChg`, `numOr` — never divide by a
+  user-editable base without a guard.
 - **Release:** follow [BUMP_PROCEDURE.md](BUMP_PROCEDURE.md) and add an entry to
   [CHANGELOG.md](../CHANGELOG.md).
 
-## 11. Known inconsistencies and technical debt
+## 11. Known limitations and open decisions
 
-- **Golden-case reference figures disagree across sources:** code comments (v15.7) say Y3 €732K;
-  release notes v16–v18.1 cite Y3 €770K (€769,788.93) / run €1,007K; in-app text says the v18.5 Time
-  Engine and v18.6 spline curve deliberately moved them (headline NPV €1,112,871 → €1,131,220). A
-  single current reference should be recorded and asserted automatically.
-- `<html lang="fr">` on the English build.
-- A generated regulated-delivery report (≈L25114) hard-codes "AgentCase v18.8" instead of using
-  `appVerTag()`.
-- The baked snapshot's `savedAt` (2026-07-17) predates v18.x content it contains.
-- Legacy code with no remaining section (Sales-build wizard, Presales lab, Client view,
-  Industry Specialist) is still present as guarded no-ops.
-- PM is bypassed by HTML snapshots, the snapshot library and Excel import, so registered migrations
-  would not apply to them.
-- Defects found in the v18.8 review are tracked in [CODE_REVIEW.md](CODE_REVIEW.md).
+- **Human Readiness drag vs the spline curve.** The default adoption curve is the free-form spline, used exactly
+  as drawn. The readiness drag (`hriRampFactor`), the engagement ramp speed and the ramp cap scale the ramp
+  *anchors*, so they act on the logistic, Gompertz, Bass and flat curves but not on the spline. The HRI screen says
+  so. Decision for the model owner: apply them to the spline, or keep "what you draw is what you get".
+- The first Monte Carlo verdict request runs one 800-draw simulation if none exists (by design — a verdict must
+  come from a distribution), including when a Board card reads the verdict variables.
+- HTML snapshots restore through `applySnapshotState` directly; the Persistence Manager's migration table
+  (`PM.hydrate`) applies to autosave only. It holds a single no-op migration today.
+- Excel import writes to the globals directly, not through `STATE_REGISTRY`.
+- The embedded boot snapshot is partial on purpose (§8.2).
+- Findings of the v18.8 review and how each was resolved: [CODE_REVIEW.md](CODE_REVIEW.md) §7.
