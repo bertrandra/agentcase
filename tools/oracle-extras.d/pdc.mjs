@@ -20,7 +20,10 @@ export const EXTRAS = {
     return { rows: all.map(r => ({ id: r.id, g: r.g, l: r.l, v: r.v, where: r.where, eff: r.eff, edit: r.edit, cls: r.cls, share: r.ceilShare, role: r.ceilRole, ok: !!r.ok,
         ed: r.ed ? [val(r.ed.a), r.ed.t ? val(r.ed.t) : null] : null, use: ddUse(r), useText: ddUseText(r), editText: ddEditText(r) })),
       cover: ddCeilingCoverage(all), ceilRows: ddCeilingRows().map(r => r.id),
-      tr: [...h.querySelectorAll('tbody tr')].map(tr => [...tr.children].map(c => c.textContent.trim())), text: h.textContent.replace(/\\s+/g,' ').trim() }; })()`,
+      tr: [...h.querySelectorAll('tbody tr')].map(tr => [...tr.children].map(c => c.textContent.trim())), top: h.textContent.split('Used in')[0].replace(/\\s+/g,' ').trim() }; })()`,
+  pdc_ddsens: `(()=>{ const keep = DD_SENS; try { ddComputeSensitivity(); const h = document.getElementById('ddHost');
+    return JSON.parse(JSON.stringify({ base: DD_SENS.base, w: DD_SENS.w, unmeasurable: DD_SENS.unmeasurable, top: h.textContent.split('Used in')[0].replace(/\\s+/g,' ').trim(),
+      tr: [...h.querySelectorAll('tbody tr')].map(tr => [...tr.children].map(c => c.textContent.trim())) })); } finally { DD_SENS = keep; } })()`,
   pdc_verif: `(()=>{ renderVerif(); renderConvChecks();
     const rows = id => [...document.querySelectorAll('#'+id+' tr')].map(r => [...r.children].map(c => c.textContent.trim()));
     const txt = id => document.getElementById(id).textContent.replace(/\\s+/g,' ').trim();
