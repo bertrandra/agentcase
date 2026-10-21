@@ -2,7 +2,7 @@ import type { AutomationCurve } from '@/domain/scope/automation';
 import { COL, H, M, W, geoOf, layoutTags, linePath } from './chart';
 
 export interface Toggles { human: boolean; manual: boolean; vfte: boolean; levels: boolean }
-const LCOL: Record<string, string> = { L1: '#8A94A6', L2: '#1DB8F2', L3: '#00828E', L4: '#0058AB' };
+const LCOL: Record<string, string> = { L1: '#566074', L2: '#0a6e9c', L3: '#006e79', L4: '#0058AB' };
 
 /** Potential vs realized automation per month: potential line, permitted depth, the realized curve and the bands that explain the gap. */
 export function CurveSvg({ a, show, start }: { a: AutomationCurve; show: Toggles; start: string }) {

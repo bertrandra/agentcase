@@ -1,4 +1,5 @@
 import { useState } from 'react';
+import { TabPanel, TabStrip, useStripBase } from '@/ui/widgets/TabStrip';
 import { SectionFrame } from '@/ui/zones/SectionFrame';
 import { Assessment } from './Assessment';
 import { HriPanel } from './HriPanel';
@@ -17,16 +18,14 @@ const help = (
 /** AI Readiness Index (assessment questionnaire, radar) and the Human Readiness Index with its change cost and adoption drag. */
 export default function ReadinessSection() {
   const [tab, setTab] = useState<'hri' | 'assess'>('hri');
+  const base = useStripBase();
   return (
     <SectionFrame title="AI Readiness Index" help={help}
       input={
         <>
           <p>A quick online assessment of how ready your organization is to industrialize agentic AI in software delivery. Answer the statements below (No / Partial / Yes). The index (0–100) and the radar chart update live. Weak dimensions are your transformation pre-requisites.</p>
-          <div role="tablist" className="ac-form-row">
-            <button type="button" role="tab" aria-selected={tab === 'hri'} onClick={() => setTab('hri')}>🧑‍🤝‍🧑 Human Readiness Index &amp; change cost</button>
-            <button type="button" role="tab" aria-selected={tab === 'assess'} onClick={() => setTab('assess')}>Assessment questionnaire</button>
-          </div>
-          {tab === 'hri' ? <HriPanel /> : <Assessment />}
+          <TabStrip base={base} label="Readiness views" value={tab} onChange={(id) => setTab(id as 'hri' | 'assess')} tabs={[{ id: 'hri', label: '🧑‍🤝‍🧑 Human Readiness Index & change cost' }, { id: 'assess', label: 'Assessment questionnaire' }]} />
+          <TabPanel base={base} current={tab}>{tab === 'hri' ? <HriPanel /> : <Assessment />}</TabPanel>
         </>
       }
       result={tab === 'assess' ? <ScoreCard /> : undefined} />

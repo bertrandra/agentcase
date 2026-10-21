@@ -15,8 +15,8 @@
 ],
  "body": [
  ["div",{"class":"insight-box"},"Traceability: the model relies on the AgentCase_Classification_V2 reference and public benchmarks."],
- ["div",{"class":"card"},["h4","📦 Loaded reference (AgentCase_Classification_V2_EN.xlsx)"],["p","53 classified SDLC artifacts (value, skill, irreducible human supervision) · 11 V-cycle phases · 9 industries with standards (DO-178C, ISO 26262, IEC 62304, MDR, DORA, SecNumCloud…) · skills catalogue (existing/agentic/regulatory) · 13 grades · 7 locations (Local/Nearshore/Offshore)."]],
- ["div",{"class":"card"},["h4","📊 External benchmarks"],["p",["strong","DORA / Accelerate"]," (deployment frequency, lead time, MTTR) · ",["strong","Capgemini projects (internal delivery)"]," (S-curve 25→55→85%, defects, eNPS) · ",["strong","Pricing Claude Sonnet"]," (€0.8/1M input, €2.4/1M output) · ",["strong","Salaries"]," Payscale/Glassdoor/Eurostat 2024."]],
- ["div",{"class":"card"},["h4","⚠️ To validate"],["p","The Rate Card day rates and the regulatory glass ceiling are assumptions to confirm with the client's finance and compliance teams before any binding use."]]
+ ["div",{"class":"card"},["h3","📦 Loaded reference (AgentCase_Classification_V2_EN.xlsx)"],["p","53 classified SDLC artifacts (value, skill, irreducible human supervision) · 11 V-cycle phases · 9 industries with standards (DO-178C, ISO 26262, IEC 62304, MDR, DORA, SecNumCloud…) · skills catalogue (existing/agentic/regulatory) · 13 grades · 7 locations (Local/Nearshore/Offshore)."]],
+ ["div",{"class":"card"},["h3","📊 External benchmarks"],["p",["strong","DORA / Accelerate"]," (deployment frequency, lead time, MTTR) · ",["strong","Capgemini projects (internal delivery)"]," (S-curve 25→55→85%, defects, eNPS) · ",["strong","Pricing Claude Sonnet"]," (€0.8/1M input, €2.4/1M output) · ",["strong","Salaries"]," Payscale/Glassdoor/Eurostat 2024."]],
+ ["div",{"class":"card"},["h3","⚠️ To validate"],["p","The Rate Card day rates and the regulatory glass ceiling are assumptions to confirm with the client's finance and compliance teams before any binding use."]]
 ]
 }

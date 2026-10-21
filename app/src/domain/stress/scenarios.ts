@@ -72,11 +72,11 @@ export interface Scenario { key: 'asis' | 'ai' | 'loc' | 'ramp' | 'ailoc' | 'aid
 export function scenarioSet(c: Ctx): Scenario[] {
   const frPer = c.inp.p('scenFrPerYear'), dst = scenTargetLocName(c);
   return [
-    { key: 'asis', label: 'AS-IS', color: '#8A94A6', m: scenarioModel(c, { ai: false, loc: 'asis' }) },
-    { key: 'ai', label: 'AI only', color: '#1DB8F2', m: scenarioModel(c, { ai: true, loc: 'asis' }) },
-    { key: 'loc', label: 'Location only', color: '#BE4D00', m: scenarioModel(c, { ai: false, loc: 'target' }) },
+    { key: 'asis', label: 'AS-IS', color: '#566074', m: scenarioModel(c, { ai: false, loc: 'asis' }) },
+    { key: 'ai', label: 'AI only', color: '#0a6e9c', m: scenarioModel(c, { ai: true, loc: 'asis' }) },
+    { key: 'loc', label: 'Location only', color: '#b04600', m: scenarioModel(c, { ai: false, loc: 'target' }) },
     { key: 'ramp', label: `Ramp to ${dst} (${frPer}%/yr)`, color: '#B5651D', m: scenarioModel(c, { ai: false, loc: 'ramp', frPerYear: frPer }) },
-    { key: 'ailoc', label: 'AI + Location', color: '#00828E', m: scenarioModel(c, { ai: true, loc: 'target' }) },
+    { key: 'ailoc', label: 'AI + Location', color: '#006e79', m: scenarioModel(c, { ai: true, loc: 'target' }) },
     { key: 'aidst', label: `AI + 100% ${dst}`, color: '#0058AB', m: scenarioModel(c, { ai: true, loc: 'destination' }) },
   ];
 }

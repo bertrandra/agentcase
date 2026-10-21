@@ -25,9 +25,9 @@ export function CardsEditor({ section }: { section: DynSection }) {
     <>
       <h4>Cards <span className="ac-muted">— {section.cards.length}</span></h4>
       <p className="ac-muted">Set Source first — it decides which variables Headline / Key figure 1 / Key figure 2 can pick from.</p>
-      <div className="ac-table-wrap"><table className="ac-table">
+      <div className="ac-table-wrap" tabIndex={0}><table className="ac-table">
         <caption className="sr-only">Cards of {section.title}</caption>
-        <thead><tr><th>Seq</th><th>On</th><th>Name</th><th>Source</th><th>{SLOTS[0]![1]}</th><th>{SLOTS[1]![1]}</th><th>{SLOTS[2]![1]}</th><th>Overlay</th><th>Target (goto)</th><th /></tr></thead>
+        <thead><tr><th>Seq</th><th>On</th><th>Name</th><th>Source</th><th>{SLOTS[0]![1]}</th><th>{SLOTS[1]![1]}</th><th>{SLOTS[2]![1]}</th><th>Overlay</th><th>Target (goto)</th><th scope="col"><span className="ac-sr">Actions</span></th></tr></thead>
         <tbody>
           {section.cards.length === 0 && <tr><td colSpan={10} className="ac-muted">No cards.</td></tr>}
           {sortedCards(section.cards).map((card) => (

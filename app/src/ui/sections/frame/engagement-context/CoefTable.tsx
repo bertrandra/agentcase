@@ -17,7 +17,7 @@ export function CoefTable() {
   return (
     <details>
       <summary>Context coefficients (editable)</summary>
-      <div className="ac-table-wrap">
+      <div className="ac-table-wrap" tabIndex={0}>
         <table className="ac-table" style={{ maxWidth: 560 }}>
           <thead><tr><th scope="col">Coefficient</th>{keys.map((k) => <th key={k} scope="col" style={{ textAlign: 'center' }}>{k}</th>)}</tr></thead>
           <tbody>
@@ -27,7 +27,7 @@ export function CoefTable() {
                   const cur = (coef[k] as Row)[f] as number, edited = Math.abs(cur - ((defaults[k] as Row | undefined)?.[f] ?? cur)) > 1e-9;
                   return (
                     <td key={k} style={{ textAlign: 'center' }}>
-                      <CommitNumber value={String(cur)} label={`${label} of ${k}`} step={0.05} style={{ width: 64, textAlign: 'center', borderColor: edited ? '#BE4D00' : undefined }}
+                      <CommitNumber value={String(cur)} label={`${label} of ${k}`} step={0.05} style={{ width: 64, textAlign: 'center', borderColor: edited ? '#b04600' : undefined }}
                         onCommit={(v) => setEngageCoef(k, f, parseFloat(v))} />
                     </td>
                   );

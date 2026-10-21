@@ -2,6 +2,7 @@ import { useState } from 'react';
 import content from '@/content/refshare/glossary.json';
 import { toast } from '@/ui/uiState';
 import { Callout } from '@/ui/widgets/cards';
+import { TabPanel, TabStrip, useStripBase } from '@/ui/widgets/TabStrip';
 import { Rich } from '@/ui/widgets/Rich';
 import { SectionFrame } from '@/ui/zones/SectionFrame';
 import { downloadText } from '../download';
@@ -11,7 +12,7 @@ import { CATS, ENTRIES, filterGlossary, glossaryMarkdown } from './model';
 /** Delivery-model glossary — searchable, filterable by dimension, exportable as Markdown. */
 export default function GlossarySection() {
   const [query, setQuery] = useState(''), [cat, setCat] = useState('all');
-  const shown = filterGlossary(cat, query);
+  const shown = filterGlossary(cat, query), base = useStripBase();
   const exportMd = () => {
     const stamp = new Date().toISOString().slice(0, 10);
     downloadText(`AgentCase_DeliveryModel_Glossary_${stamp.replace(/-/g, '')}.md`, glossaryMarkdown(stamp), 'text/markdown');
@@ -25,12 +26,8 @@ export default function GlossarySection() {
           <input type="search" className="ac-search" placeholder="🔍 Search a term or definition…" aria-label="Search a term or definition" value={query} onChange={(e) => setQuery(e.target.value)} />
           <button type="button" className="ac-btn ac-btn-primary" onClick={exportMd}>⬇️ Export glossary (.md)</button>
         </div>
-        <div className="ac-tabs" role="tablist" aria-label="Glossary dimensions">
-          {[{ id: 'all', label: 'All' }, ...CATS].map((c) => (
-            <button key={c.id} type="button" role="tab" aria-selected={cat === c.id} onClick={() => setCat(c.id)}>{c.label} ({c.id === 'all' ? ENTRIES.length : ENTRIES.filter((e) => e[0] === c.id).length})</button>
-          ))}
-        </div>
+        <TabStrip base={base} label="Glossary dimensions" value={cat} onChange={setCat} tabs={[{ id: 'all', label: 'All' }, ...CATS].map((c) => ({ id: c.id, label: `${c.label} (${c.id === 'all' ? ENTRIES.length : ENTRIES.filter((e) => e[0] === c.id).length})` }))} />
       </>}
-      result={<><p className="ac-muted" aria-live="polite">{shown.length} term(s) shown</p><GlossaryTable rows={shown} /></>} />
+      result={<TabPanel base={base} current={cat}><p className="ac-muted" aria-live="polite">{shown.length} term(s) shown</p><GlossaryTable rows={shown} /></TabPanel>} />
   );
 }

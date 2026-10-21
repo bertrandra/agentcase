@@ -4,7 +4,7 @@ export const LANES = ['Commits', 'Builds', 'Release Candidates', 'Approvals', 'D
 export interface TimelineEvent { date: string; lane: (typeof LANES)[number]; label: string; color: string; t: number }
 type Source = Pick<FactoryData, 'COMMITS' | 'BUILDS' | 'RELEASE_CANDIDATES' | 'APPROVALS' | 'DEPLOYMENTS' | 'MONITORING_EVENTS' | 'FEEDBACK_ITEMS' | 'ENVIRONMENTS'>;
 
-const BLUE = '#0058AB', TEAL = '#00828E', BRICK = '#8F3237', AMBER = '#BE4D00', PURPLE = '#71609E';
+const BLUE = '#0058AB', TEAL = '#006e79', BRICK = '#8F3237', AMBER = '#b04600', PURPLE = '#71609E';
 
 /** Every dated event of the Release-pipeline and Engineering domains, one lane per type (events without a parsable date are dropped). */
 export function timelineEvents(d: Source): TimelineEvent[] {

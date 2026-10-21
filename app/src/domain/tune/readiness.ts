@@ -32,12 +32,12 @@ export function readinessIndex(ans: ReadinessAns): number | null {
 
 export interface Band { label: string; color: string }
 export function readinessBand(idx: number | null): Band {
-  if (idx == null) return { label: 'Not assessed', color: '#8A94A6' };
+  if (idx == null) return { label: 'Not assessed', color: '#566074' };
   if (idx <= 20) return { label: 'Nascent', color: '#8F3237' };
-  if (idx <= 40) return { label: 'Emerging', color: '#BE4D00' };
-  if (idx <= 60) return { label: 'Developing', color: '#1DB8F2' };
+  if (idx <= 40) return { label: 'Emerging', color: '#b04600' };
+  if (idx <= 60) return { label: 'Developing', color: '#0a6e9c' };
   if (idx <= 80) return { label: 'Established', color: '#4e8f2e' };
-  return { label: 'Leading', color: '#00828E' };
+  return { label: 'Leading', color: '#006e79' };
 }
 
 export interface DimRow { key: string; label: string; score: number | null; band: Band }

@@ -14,8 +14,8 @@ export function Registry({ sections, groups }: { sections: DynSection[]; groups:
   const shown = sections.find((s) => mode && s.id === mode.id && (mode.kind === 'open' || mode.kind === 'configure'));
   return (
     <>
-      <div className="ac-table-wrap"><table className="ac-table">
-        <thead><tr><th>Section</th><th>Group</th><th>Cards</th><th>Rows</th><th /></tr></thead>
+      <div className="ac-table-wrap" tabIndex={0}><table className="ac-table">
+        <thead><tr><th>Section</th><th>Group</th><th>Cards</th><th>Rows</th><th scope="col"><span className="ac-sr">Actions</span></th></tr></thead>
         <tbody>
           {sections.length === 0 && <tr><td colSpan={5} className="ac-muted">No dynamic sections yet.</td></tr>}
           {sections.map((s) => (

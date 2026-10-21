@@ -12,7 +12,7 @@ export const geoOf = (N: number): Geo => ({
   invY: (py) => (1 - (py - M.t) / ih) * 100,
 });
 
-export const LEVEL_COLOR: Record<string, string> = { L1: '#8A94A6', L2: '#1DB8F2', L3: '#00828E', L4: '#0058AB' };
+export const LEVEL_COLOR: Record<string, string> = { L1: '#566074', L2: '#0a6e9c', L3: '#006e79', L4: '#0058AB' };
 /** Fixed adoption bands drawn behind the curve. */
 export const BANDS: [number, number, string][] = [[0, 25, 'L1'], [25, 55, 'L2'], [55, 80, 'L3'], [80, 100, 'L4']];
 export const GRID = [0, 25, 55, 80, 100];

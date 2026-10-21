@@ -34,7 +34,7 @@ export function decide(c: Ctx, run: Pick<McResult, 'stats' | 'sens'>): Decision 
 
 /** Display metadata of each verdict. */
 export const VERDICT_META: Record<Verdict, { color: string; bg: string; icon: string; label: string; sub: string; short: string }> = {
-  strong: { color: '#00828E', bg: '#F1F8E9', icon: '✅', label: 'RECOMMENDED', short: 'RECOMMENDED', sub: 'High confidence, contained downside' },
-  conditional: { color: '#BE4D00', bg: '#FFF5E8', icon: '⚠️', label: 'CONDITIONALLY VIABLE', short: 'CONDITIONALLY VIABLE', sub: 'Proceed only if the conditions below hold' },
+  strong: { color: '#006e79', bg: '#F1F8E9', icon: '✅', label: 'RECOMMENDED', short: 'RECOMMENDED', sub: 'High confidence, contained downside' },
+  conditional: { color: '#b04600', bg: '#FFF5E8', icon: '⚠️', label: 'CONDITIONALLY VIABLE', short: 'CONDITIONALLY VIABLE', sub: 'Proceed only if the conditions below hold' },
   defer: { color: '#8F3237', bg: '#FDECEA', icon: '⛔', label: 'DEFER — DE-RISK FIRST', short: 'DEFER — DE-RISK FIRST', sub: 'Confidence too low to commit' },
 };

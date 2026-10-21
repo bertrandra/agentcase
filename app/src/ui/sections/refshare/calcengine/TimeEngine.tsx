@@ -12,14 +12,14 @@ function Surface() {
   const n = surface.entries.length;
   return (
     <div>
-      <h3>Engine function surface <span className="ac-muted">— {n} entry points of the TypeScript engine (<code>src/domain</code>)</span></h3>
+      <h2>Engine function surface <span className="ac-muted">— {n} entry points of the TypeScript engine (<code>src/domain</code>)</span></h2>
       <p className="ac-muted">Unlike the legacy page this list is authored, not discovered at runtime; a test checks that every name exists in the module it points to, so it cannot drift silently.</p>
       <DataTable rows={surface.entries} rowKey={(e) => `${e.kind}.${e.name}`} columns={[
         { key: 'fn', header: 'Function', render: (e) => <code>{e.name}()</code> }, { key: 'kind', header: 'Where', render: (e) => <Badge>{KIND[e.kind]}</Badge> },
         { key: 'what', header: 'What it does', render: (e) => e.what }, { key: 'legacy', header: 'Legacy v18.11', render: (e) => <code>{e.legacy}</code> },
       ]} />
       <p>Registered curve families (<code>ADAPTERS</code>, legacy <code>TIME.adapters()</code>): {Object.keys(ADAPTERS).map((id) => <Badge key={id} tone="teal">{id}</Badge>)}</p>
-      <h4>Not ported</h4>
+      <h3>Not ported</h3>
       <ul>{surface.notPorted.map((x) => <li key={x.legacy}><code>{x.legacy}</code> — {x.why}</li>)}</ul>
     </div>
   );

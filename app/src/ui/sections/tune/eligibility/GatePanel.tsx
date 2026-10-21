@@ -33,7 +33,7 @@ export function GatePanel() {
         <SelectInput id="elNature" label="Delivery nature" options={NATURES} />
         <NumberInput id="elLoc" label="Codebase size (kLoC)" min={0} step={50} />
       </div>
-      <div className="ac-table-wrap">
+      <div className="ac-table-wrap" tabIndex={0}>
         <table className="ac-table">
           <thead><tr><th>Prerequisite (gate)</th><th>Status</th></tr></thead>
           <tbody>{ELIG_PREREQS.map((p) => <Prerequisite key={p.id} {...p} />)}</tbody>

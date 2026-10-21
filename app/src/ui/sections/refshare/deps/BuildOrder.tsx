@@ -15,7 +15,7 @@ export function BuildOrder({ m }: { m: DepsModel }) {
   const fb = [...new Set(t.gBroken.map((e) => e.join('>')))];
   return (
     <div>
-      <h3>Build order <span className="ac-muted">— {gMoves} group(s) and {moves} section(s) would move to read in dependency order</span></h3>
+      <h2>Build order <span className="ac-muted">— {gMoves} group(s) and {moves} section(s) would move to read in dependency order</span></h2>
       <label className="ac-check"><input type="checkbox" checked={strong} onChange={(e) => setStrong(e.target.checked)} /> strong edges only (calculation inputs)</label>
       <Callout>{notes.buildOrderNote}</Callout>
       {layers.map((L) => (
@@ -29,7 +29,7 @@ export function BuildOrder({ m }: { m: DepsModel }) {
                 <div key={g} className="ac-chip" style={{ minWidth: 210, maxWidth: 250 }}>
                   <strong>{label(g)}</strong>
                   <div className="ac-muted">order {cur}{next !== cur && <> → <b>{next}</b></>} · {secs.length} sections</div>
-                  {secs.map((s) => <div key={s.id} style={{ fontSize: 11, color: t.newSeq[s.id] !== s.groupSeq ? '#BE4D00' : '#555' }}><span className="ac-muted">d{t.depth[s.id] ?? 0}</span> {s.label}{t.newSeq[s.id] !== s.groupSeq && ' ↕'}</div>)}
+                  {secs.map((s) => <div key={s.id} style={{ fontSize: 11, color: t.newSeq[s.id] !== s.groupSeq ? '#b04600' : '#555' }}><span className="ac-muted">d{t.depth[s.id] ?? 0}</span> {s.label}{t.newSeq[s.id] !== s.groupSeq && ' ↕'}</div>)}
                 </div>
               );
             })}

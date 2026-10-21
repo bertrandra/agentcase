@@ -1,7 +1,8 @@
+import { textColor } from '@/ui/colorText';
 import { fmtE, fmtPayback, fmtSigned, roiText, type Scenario } from '@/domain/stress';
 import { DataTable, type Column } from '@/ui/widgets/DataTable';
 
-const name = (s: Scenario) => <strong style={{ color: s.color }}>{s.label}</strong>;
+const name = (s: Scenario) => <strong style={{ color: textColor(s.color, '#f5f6f8') }}>{s.label}</strong>;
 const money = (v: number) => fmtE(v);
 
 /** Annual run cost by scenario: baseline, each year of the horizon, the horizon total and the saving vs AS-IS. */

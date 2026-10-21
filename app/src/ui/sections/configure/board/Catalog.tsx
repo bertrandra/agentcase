@@ -10,7 +10,7 @@ export function Catalog() {
   return (
     <>
       <p className="ac-muted">Reference: every variable available to bind, its Source section (set a card/row’s Source to that section to unlock it), and its live value.</p>
-      <div className="ac-table-wrap"><table className="ac-table">
+      <div className="ac-table-wrap" tabIndex={0}><table className="ac-table">
         <thead><tr><th>Source</th><th>Variable</th><th>Format</th><th>Unit</th><th>Live value</th></tr></thead>
         <tbody>
           {VARIABLES.map((v) => {

@@ -17,7 +17,7 @@ function Row({ r, i, c, W, open, onPin }: RowProps) {
   const tjm = rateFor(c.s, r.loc, r.grade), wd = c.inp.p('workdays');
   const d = (+r.etp || 0) - (W.targetFTE[i] ?? 0), pinned = isPinnedRow(r);
   const live = pinsOf(r).filter((id) => activeArtefacts(c.a, c.s).some((a) => a.id === id)).length;
-  const dcol = Math.abs(d) < 1e-9 ? '#8A94A6' : d > 0 ? '#8F3237' : '#00666F';
+  const dcol = Math.abs(d) < 1e-9 ? '#566074' : d > 0 ? '#8F3237' : '#00666F';
   return (
     <tr style={pinned ? { background: '#FFF8EC' } : undefined}>
       <td><select aria-label={`Skill of line ${i + 1}`} value={r.skill} onChange={(e) => updateTeamRow(i, 'skill', e.target.value)}>{opts(SKILLS_EXIST)}</select></td>
@@ -38,12 +38,12 @@ function Row({ r, i, c, W, open, onPin }: RowProps) {
 /** The editable team table: skill / grade / location / FTE, implied FTE vs the artefact mix, day rate, cost, pin. */
 export function TeamRows({ c, W, openRow, onPin }: { c: Ctx; W: TeamWeights; openRow: number | null; onPin: (i: number) => void }) {
   return (
-    <div className="ac-table-wrap">
+    <div className="ac-table-wrap" tabIndex={0}>
       <table className="ac-table">
         <thead><tr>
           <th scope="col">Skill</th><th scope="col">Grade</th><th scope="col">Location</th><th scope="col">FTE</th>
           <th scope="col" title="FTE implied by the artefact mix (Σw of the row ÷ Σw of the scope × total FTE)">Implied</th>
-          <th scope="col">Day rate (€/d)</th><th scope="col">Cost/yr</th><th scope="col" title="Pin this row to specific artefacts">Pin</th><th scope="col" aria-label="Remove" />
+          <th scope="col">Day rate (€/d)</th><th scope="col">Cost/yr</th><th scope="col" title="Pin this row to specific artefacts">Pin</th><th scope="col"><span className="ac-sr">Remove</span></th>
         </tr></thead>
         <tbody>{c.s.teamIn.map((r, i) => <Row key={i} r={r} i={i} c={c} W={W} open={openRow === i} onPin={onPin} />)}</tbody>
       </table>

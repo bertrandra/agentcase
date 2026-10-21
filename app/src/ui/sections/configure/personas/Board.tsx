@@ -1,3 +1,4 @@
+import { textColor } from '@/ui/colorText';
 import { useState, type ReactNode } from 'react';
 import type { NavSection } from '@/domain/nav/layout';
 import type { MenuGroup } from '@/domain/pdc/personas';
@@ -32,7 +33,7 @@ export function Board({ label, cols, colors, cardClass, cardExtra, onDrop, onShi
       {cols.map(({ group, cards }) => (
         <div key={group.id} role="listitem" aria-label={group.label} data-group={group.id} className={`ac-ncol${over === group.id ? ' is-over' : ''}`} style={{ borderTopColor: groupColor(colors, group.id) }}
           onDragOver={(e) => { e.preventDefault(); setOver(group.id); }} onDragLeave={() => setOver(null)} onDrop={(e) => { e.preventDefault(); drop(group.id, cards, null); }}>
-          <div style={{ display: 'flex', gap: 4, alignItems: 'center', fontWeight: 700, color: groupColor(colors, group.id) }}>
+          <div style={{ display: 'flex', gap: 4, alignItems: 'center', fontWeight: 700, color: textColor(groupColor(colors, group.id), '#f7f9fc') }}>
             {onShiftColumn && <button type="button" className="ac-btn" aria-label={`Move the group ${group.label} left`} onClick={() => onShiftColumn(group.id, -1)}>◀</button>}
             <span style={{ flex: 1 }}>{group.label} <small className="ac-muted">({cards.length})</small></span>
             {onShiftColumn && <button type="button" className="ac-btn" aria-label={`Move the group ${group.label} right`} onClick={() => onShiftColumn(group.id, 1)}>▶</button>}

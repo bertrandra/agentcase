@@ -1,3 +1,4 @@
+import { textColor } from '@/ui/colorText';
 import { useState, type ReactNode } from 'react';
 import { automationCurve, type AutoBase, type AutomationCurve as Data } from '@/domain/scope/automation';
 import { useCtx } from '@/store/hooks';
@@ -10,7 +11,7 @@ function Row({ col, name, val, sub, on, onToggle }: { col: string; name: string;
       <span className="ac-leg-head">
         {onToggle && <input type="checkbox" checked={!!on} aria-label={name} onChange={(e) => onToggle(e.target.checked)} />}
         <span className="ac-leg-sw" style={{ background: col }} /><span className="ac-leg-name">{name}</span><span className="ac-leg-fill" />
-        <span className="ac-leg-val" style={{ color: col.includes('gradient') ? '#5a6785' : col }}>{val}</span>
+        <span className="ac-leg-val" style={{ color: col.includes('gradient') ? '#5a6785' : textColor(col, '#fcfdff') }}>{val}</span>
       </span>
       {sub && <div className="ac-leg-sub">{sub}</div>}
     </>
@@ -35,7 +36,7 @@ function Legend({ a, show, set }: { a: Data; show: Toggles; set: (k: keyof Toggl
           sub={`delivery ${a.team.devETP.toFixed(1)}  ·  supervision ${a.team.supETP.toFixed(1)}  ·  agentic-run ${a.team.runETP.toFixed(1)}`} />
         <Row col={COL.manln} name="Human-handled work" val={`${a.manualEndPct.toFixed(0)}% by ${a.endLabel}`} sub="not-automatable + glass-ceiling, together" on={show.manual} onToggle={(v) => set('manual', v)} />
         <Row col={COL.vfte} name="Agent vFTE share" val={`${a.vfteEndFte.toFixed(1)} vFTE by ${a.endLabel}`} sub={`${Math.round(a.vfteShareEnd)}% of the blended human + agent team`} on={show.vfte} onToggle={(v) => set('vfte', v)} />
-        <Row col="linear-gradient(90deg,#8A94A6 25%,#1DB8F2 25% 50%,#00828E 50% 75%,#0058AB 75%)" name="Maturity levels L1–L4" val="crosses 25 / 55 / 80%" on={show.levels} onToggle={(v) => set('levels', v)} />
+        <Row col="linear-gradient(90deg,#566074 25%,#0a6e9c 25% 50%,#006e79 50% 75%,#0058AB 75%)" name="Maturity levels L1–L4" val="crosses 25 / 55 / 80%" on={show.levels} onToggle={(v) => set('levels', v)} />
       </div>
     </div>
   );

@@ -17,7 +17,7 @@ const help = (
 function RateMatrix() {
   const rate = useDoc((d) => d.RATE);
   return (
-    <div className="ac-table-wrap">
+    <div className="ac-table-wrap" tabIndex={0}>
       <table className="ac-table" aria-label="Day-rate matrix">
         <thead><tr><th scope="col">Grade band</th>{LOCATIONS.map((l) => <th key={l.name} scope="col">{l.name}<br /><ClassBadge cls={l.cls} /></th>)}</tr></thead>
         <tbody>
@@ -45,7 +45,7 @@ export default function RateCardSection() {
         <>
           <div className="ac-callout" role="note">Define day rates (€/day) by grade and location. These feed the team cost calculations (input &amp; target).
             Bands A/B/C/D map to junior / mid / senior / expert-lead. Classification: <ClassBadge cls="Local" /> <ClassBadge cls="Nearshore" /> <ClassBadge cls="Offshore" /></div>
-          <h3>Day-rate matrix (€/day) — editable</h3>
+          <h2>Day-rate matrix (€/day) — editable</h2>
           <RateMatrix />
           <SkillsCatalogue />
         </>

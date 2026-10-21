@@ -5,7 +5,7 @@ import { CATS, STATUS, type Entry } from './model';
 export function GlossaryTable({ rows }: { rows: Entry[] }) {
   if (!rows.length) return <p className="ac-muted">No term matches.</p>;
   return (
-    <div className="ac-table-wrap">
+    <div className="ac-table-wrap" tabIndex={0}>
       <table className="ac-table">
         <thead><tr><th>Delivery-model term</th><th>AgentCase equivalent</th><th>Definition</th><th>Status</th></tr></thead>
         <tbody>

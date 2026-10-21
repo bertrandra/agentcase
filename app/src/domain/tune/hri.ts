@@ -20,7 +20,7 @@ export interface HriSummary {
 export function hriSummary(c: Ctx): HriSummary {
   const idx = Math.round(hriIndex(c)), etp = teamInCost(c.s, c.inp).etp, costPerFte = hriCostPerFTE(c);
   const { hriFloor, hriSlope } = c.s.COEF as { hriFloor: number; hriSlope: number };
-  const [color, label] = idx >= 75 ? ['#00828E', 'Ready'] : idx >= 50 ? ['#BE4D00', 'Fragile'] : ['#8F3237', 'At risk'];
+  const [color, label] = idx >= 75 ? ['#006e79', 'Ready'] : idx >= 50 ? ['#b04600', 'Fragile'] : ['#8F3237', 'At risk'];
   return {
     on: hriEnabled(c), index: idx, label: label as string, color: color as string, intensity: hriIntensity(c), etp, costPerFte,
     cost: etp * costPerFte, drag: Math.max(hriFloor, hriFloor + (hriSlope * idx) / 100),
