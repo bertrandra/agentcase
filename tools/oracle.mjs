@@ -41,7 +41,7 @@ for (const r of RECIPES) {
     exp.phaseScope = phaseScope(); exp.glassCeiling = computeGlassCeiling();
     exp.audit = AgentCaseArch.AUDIT.runChecks();
     const ex = {};
-    for (const [name, expr] of Object.entries(extras)) { try { ex[name] = JSON.parse(JSON.stringify((0, eval)(expr), (k, v) => (v === Infinity ? 'Infinity' : v))); } catch (e) { ex[name] = { error: String(e) }; } }
+    for (const [name, expr] of Object.entries(extras)) { try { if (typeof MC_LAST !== 'undefined') MC_LAST = null; /* hermetic: a Monte Carlo run by one extra must not leak into the next */ ex[name] = JSON.parse(JSON.stringify((0, eval)(expr), (k, v) => (v === Infinity ? 'Infinity' : v))); } catch (e) { ex[name] = { error: String(e) }; } }
     return { state, exp, ex };
   }, [r.code || '', EXTRAS]);
   if (errors.length) console.error(r.id, 'page errors:', errors.slice(0, 2));

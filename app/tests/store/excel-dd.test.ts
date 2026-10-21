@@ -29,9 +29,8 @@ describe('due-diligence pack reproduces the legacy export', () => {
     loadCase(id, (d) => { d.DD_STATE = JSON.parse(JSON.stringify(f.exportState)); if (sens) d.DD_SENS = sens; });
     const out = await exportDdPack(label), dump = await dumpBuffer(await buf(out));
     expect(out.filename).toMatch(/^AgentCase_v[\w-]+_DueDiligence_\d{4}-\d{2}-\d{2}-\d{2}-\d{2}-\d{2}\.xlsx$/);
-    // Known legacy quirk (same as tests/ui/sections/duediligence.test.tsx): with "Fit to selected scope" on, the legacy page re-fits the locked
-    // automation potential when it renders (75 -> 46) and the pack prints that live slider value; the case itself, and our register, hold 75.
-    const legacy = id === 'industry-med' ? f.sheets.map((sh) => ({ ...sh, rows: sh.rows.map((r) => (r[0] === 'in-autoPotential' && r[5] === '46' ? r.map((x, i) => (i === 5 ? '75' : x)) : r)) })) : f.sheets;
+    // since legacy v18.12 the regulatory scope changes re-fit the potential, so the stored case already holds the fitted value (46 on industry-med)
+    const legacy = f.sheets;
     expect(sheetDiffs(legacy, dump)).toEqual([]);
   }, 30000);
 });

@@ -27,7 +27,7 @@ describe.each(ids.filter(have))('tune B domain vs legacy oracle: %s', (id) => {
     const u = tokenUsage(c), e = extra('tuneBTokenUsage', id);
     expect(near({ totM: u.totM, y3: u.y3, inputM: u.inputM, outputM: u.outputM, tpa: u.tpa, agentRuns: u.agentRuns, runsY3: u.runsY3, blended: u.blended, mixTot: u.mixTotal, endL: u.endLabel }, e)).toEqual([]);
     const models = tokenModelRows(c).rows.map((r) => [r.name, r.mix, r.priceIn, r.priceOut, r.volM, r.cost]);
-    expect(near(models.map((r) => [r[0], r[1], r[2], r[3], Math.round((r[4] as number) * 10) / 10, Math.round(r[5] as number)]), extra('tuneBTokenModels', id).map((r: unknown[]) => r.slice(0, 6).map((v, i) => (i === 5 ? Math.round(v as number) : v))))).toEqual([]);
+    expect(near(models.map((r) => [r[0], r[1], r[2], r[3], Number((r[4] as number).toFixed(1)), Math.round(r[5] as number)]), extra('tuneBTokenModels', id).map((r: unknown[]) => r.slice(0, 6).map((v, i) => (i === 5 ? Math.round(v as number) : v))))).toEqual([]);
     const ar = agentRunTable(c), legacyAr = extra('tuneBAgentRuns', id) as number[][];
     expect([...ar.rows.map((r) => rowOf(r, [])), rowOf(ar.totals, [])].map((r) => rounded(r.slice(0, -2)))).toEqual(legacyAr.map((r) => rounded(r.slice(1, -2))));
     const rt = artifactRunTable(c), legacyRt = extra('tuneBArtifactRuns', id) as number[][];

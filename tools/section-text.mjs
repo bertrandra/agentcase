@@ -22,6 +22,7 @@ for (const fx of fixtures) {
   const dir = `app/fixtures/sections/${fx}`; mkdirSync(dir, { recursive: true });
   for (const id of ids) {
     if (wanted.length && wanted[0] !== 'all' && !wanted.includes(id)) continue;
+    await page.evaluate(s => { applySnapshotState(Object.assign({}, s, { currentPersona: 'advanced' }), { background: true }); readInputs(); refreshAll(); }, state);   // fresh state per section: rendering one section (e.g. scurve) must not change what the next one shows
     const text = await page.evaluate(async i => { try { goTab(i); } catch (e) { return 'ERR ' + e; } await new Promise(r => setTimeout(r, 250)); /* goTab renders after a 50 ms timeout */ const el = document.getElementById(i); return el ? el.innerText : ''; }, id);
     writeFileSync(`${dir}/${id}.txt`, text);
   }

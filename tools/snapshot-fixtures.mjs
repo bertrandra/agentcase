@@ -15,7 +15,7 @@ const pw = require(process.env.PW_MODULE || '/opt/node-tools/node_modules/playwr
 const RECIPES = [...BASE];
 const dir = new URL('./oracle-recipes.d/', import.meta.url);
 if (existsSync(dir)) for (const f of readdirSync(dir).filter((f) => f.endsWith('.mjs')).sort()) RECIPES.push(...(await import(new URL(f, dir))).RECIPES);
-const file = resolve(process.argv.find((a) => a.endsWith('.html')) || 'AgentCase_v18_11_EN.html');
+const file = resolve(process.argv.find((a) => a.endsWith('.html')) || readdirSync('.').filter((f) => /^AgentCase_v[\d_]+_EN\.html$/.test(f)).sort((a, b) => a.localeCompare(b, undefined, { numeric: true })).pop());
 const IDS = ['golden', 'industry-med', 'ctx-msi'];
 const out = resolve('app/fixtures/snapshots');
 mkdirSync(out, { recursive: true });

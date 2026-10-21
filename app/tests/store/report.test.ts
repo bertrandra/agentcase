@@ -18,7 +18,7 @@ const text = (html: string) => html.replace(/<style>[\s\S]*?<\/style>/g, ' ').re
 const headings = (html: string) => [...html.matchAll(/<h[12]>([\s\S]*?)<\/h[12]>/g)].map((m) => text(m[1] as string));
 const stampOf = (id: string) => { const n = readFileSync(`fixtures/reports/${id}.name.txt`, 'utf8').match(/(\d{4})(\d{2})(\d{2})\.html$/)!; return new Date(`${n[1]}-${n[2]}-${n[3]}T12:00:00Z`); };
 /** The only wording that differs on purpose: the build tag, and the legacy's hard-coded catalogue size (stale: the catalogue has 370 artifacts, not 349). */
-const unversion = (t: string) => t.replace(/v18\.11|v19\.0\.0-dev/g, 'vX').replace('349-artifact', `${REG_ARTEFACTS.length}-artifact`);
+const unversion = (t: string) => t.replace(/v18\.1[12]|v19\.0\.0-dev/g, 'vX').replace('349-artifact', `${REG_ARTEFACTS.length}-artifact`);
 
 describe('Critical & Regulated Software Delivery report vs the legacy output', () => {
   it('has at least 8 recorded legacy reports, including the edge cases', () => {

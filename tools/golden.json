@@ -1,6 +1,6 @@
 {
   "_comment": "Reference figures of the default (golden) case, asserted by tools/smoke.mjs. Update ONLY when a change is meant to move the golden case, and say so in CHANGELOG.md.",
-  "version": "18.11",
+  "version": "18.12",
   "yearSav3": 891555.1715332032,
   "yearRun3": 885709.3284667969,
   "setupTotal": 225000,

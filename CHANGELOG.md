@@ -14,6 +14,20 @@ All notable changes to AgentCase, newest first. Product version = the `vX.Y` in 
 
 When releasing, follow [docs/BUMP_PROCEDURE.md](docs/BUMP_PROCEDURE.md) and add the new version at the top.
 
+## [v18.12] 2026-10-21 — Re-fit on scope changes from the regulatory panel; Monte Carlo above 3 years
+
+Two behaviours the TypeScript migration surfaced (decision D7: calculation changes ship in the legacy file first so the oracle moves with them).
+- **Fixed:** changing the industry, ticking a norm, toggling a cross-cutting category, switching the regulatory catalogue on/off,
+  including regulatory artefacts or ticking one regulatory artefact changed the scope but left the automation potential at its old
+  value (fit-to-scope on). The potential is now re-fitted to the new scope in all of them, like for the SDLC artefact selection.
+  Example: default 75 % → medical profile 46 % → + AI norms 41 %. Test `industry_change_refits_potential`.
+- **Fixed:** Monte Carlo (and everything reading its percentiles: Results, Decision, verdict) returned NaN for horizons above
+  3 years because `model().yearSav` always holds three entries. The outcome now sums the Time Engine's year rows (one per horizon
+  year); under the legacy flat curve it sums the three anchor years. Horizons 1–3 are unchanged. Test `montecarlo_horizon_above_3`.
+- **Golden case unchanged.** Strategies / scenarios still read three-year arrays and show n/a above 3 years (not changed here).
+
+---
+
 ## [v18.11] 2026-10-21 — Human share applied once
 
 Effective automation was `potential × (1 − glass ceiling) × posture × context × hub`, capped at `100 − ceiling`. With fit-to-scope
