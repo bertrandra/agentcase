@@ -1,6 +1,6 @@
 # AgentCase — Architecture of the TypeScript build
 
-> Applies to **`app/`, version 19.0.0-dev** (`app/src/domain/version.ts`, `app/package.json`). 599 `.ts`/`.tsx` files under `app/src`,
+> Applies to **`app/`, version 19.0.0** (`app/src/domain/version.ts`, `app/package.json`). 599 `.ts`/`.tsx` files under `app/src`,
 > 137 test files under `app/tests` (counted with `find`; 12,346 tests passed on the last local run, CI is authoritative).
 > The previous document, which describes the frozen single-file app, is archived as
 > [`history/ARCHITECTURE_legacy_v18.md`](history/ARCHITECTURE_legacy_v18.md). The appendix of this file maps each legacy engine to its replacement.
@@ -221,10 +221,10 @@ Rule (decision D7): no calculation change in the port. A deliberate change ships
 
 The authoritative list is [MIGRATION_PLAN.md §15](MIGRATION_PLAN.md). Architecture-relevant items:
 
-- No automated browser end-to-end, differential (old vs new) or axe accessibility suite; the CI job runs typecheck, ESLint, Vitest and the build only.
+- Browser checks exist (`npm run e2e`, `npm run perf`, `npm run parallel-run`; CI job `e2e`); the differential run on real customer files needs files supplied by the user.
 - Collapsible sidebar groups, Fast Path filter, ADVANCED lock and unlock gestures, tag/MVP editing and layout-board live preview are not ported.
 - Golden-vs-AME comparison, AME reference capture and per-snapshot Excel export are not ported; Agent Catalog capacity and loop external % cannot be imported (catalogues are immutable).
-- The build artefact is `app/dist/index.html` (not versioned in its name) and `APP_VERSION` is still `19.0.0-dev`.
+- `npm run release` produces `app/dist/AgentCase_v19_0_EN.html`; `APP_VERSION` is `19.0.0`.
 - Legacy-only engine `TE-10b` (legacy-mode monthly derivation) fires on 2 supervision fixtures in the legacy and is reproduced only in the verification section.
 
 ## Appendix A — Legacy engine → replacement

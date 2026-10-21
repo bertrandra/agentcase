@@ -9,7 +9,7 @@ and produces a decision verdict. Personas and guided sequences tailor the walkth
 
 | | Where | Status |
 |---|---|---|
-| **TypeScript + React build (the product)** | [`app/`](app/) — version `19.0.0-dev` (`app/package.json`, `app/src/domain/version.ts`) | All 79 sections registered. Builds to one offline HTML file. Cut-over pending (see [`docs/MIGRATION_PLAN.md`](docs/MIGRATION_PLAN.md) §15) |
+| **TypeScript + React build (the product)** | [`app/`](app/) — version `19.0.0` (`app/package.json`, `app/src/domain/version.ts`) | All 79 sections registered. Builds to one offline HTML file. Cut-over done (see [`docs/MIGRATION_PLAN.md`](docs/MIGRATION_PLAN.md) §15) |
 | **Legacy single-file app (frozen reference)** | [`AgentCase_v18_13_EN.html`](AgentCase_v18_13_EN.html) | Kept in the repository until cut-over. It is the oracle the new build is proven against. Changes only for security fixes and deliberate calculation decisions (decision D7), see [`docs/BUMP_PROCEDURE.md`](docs/BUMP_PROCEDURE.md) §7 |
 
 Golden case (default state, identical in both): Y3 savings €891,555 · Y3 run cost €885,709 · setup €225,000 · NPV (8 %) €1,359,010 ·

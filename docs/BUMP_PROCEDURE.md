@@ -1,6 +1,6 @@
 # AgentCase — Release procedure
 
-> Applies to the repository after the migration: the TypeScript + React build in `app/` is the product (version `19.0.0-dev`);
+> Applies to the repository after the migration: the TypeScript + React build in `app/` is the product (version `19.0.0`);
 > the legacy single-file app `AgentCase_v18_13_EN.html` is the frozen reference (§6). The previous procedure, written for the
 > single file, is archived in [`history/BUMP_PROCEDURE_legacy_v18.md`](history/BUMP_PROCEDURE_legacy_v18.md) (and the v12.42 one in
 > [`history/AgentCase_BumpProcedure_v12.42.md`](history/AgentCase_BumpProcedure_v12.42.md)).

@@ -17,7 +17,7 @@ When releasing, follow [docs/BUMP_PROCEDURE.md](docs/BUMP_PROCEDURE.md) (§7 for
 
 ## [v19.0.0] 2026-10-21 — TypeScript + React build
 
-> **Unreleased:** `app/package.json` and `app/src/domain/version.ts` still read `19.0.0-dev` until the cut-over (docs/MIGRATION_PLAN.md §15.3).
+> Cut-over done: version 19.0.0.
 
 The product moves from the single-file app to a TypeScript (strict) + React 18 build in `app/`; the legacy `AgentCase_v18_13_EN.html`
 stays in the repository as the frozen reference. Plan and record: [docs/MIGRATION_PLAN.md](docs/MIGRATION_PLAN.md); design:

@@ -4,7 +4,7 @@
 > recommended on 2026-10-21); the **Outcome** notes under §8 and §10 say what happened; §14 is the progress log; **§15 lists what
 > remains** (gaps and follow-ups). Phases 0–6 are done; Phase 7 (cut-over) is in progress: the documentation is rewritten, the
 > parallel run, performance budget, accessibility pass, `v19.0` tag and archiving of the legacy file are not done (§15.3).
-> The product is `app/` (`19.0.0-dev`); the legacy file `AgentCase_v18_13_EN.html` is the frozen reference.
+> The product is `app/` (`19.0.0`); the legacy file `AgentCase_v18_13_EN.html` is the frozen reference.
 > Sources of fact: [ARCHITECTURE.md](ARCHITECTURE.md) (the new build), [history/ARCHITECTURE_legacy_v18.md](history/ARCHITECTURE_legacy_v18.md),
 > [CODE_REVIEW.md](CODE_REVIEW.md), `tools/`. Where §1–§13 name paths or numbers that differ from the repository, §15.1 lists the difference.
 
@@ -299,7 +299,7 @@ dominated by Phase 5 (78 sections) and by the number of 150-line splits, and is 
 - The 78 sections are available from the zone registry, persona filtering and guided sequences included.
 - One offline HTML file builds from `npm run build`; docs and the bump procedure are rewritten for the new repository.
 
-**Outcome:** met, except that the version is still `19.0.0-dev` (no `v19.0` tag) and the parallel run, performance budget and
+**Outcome:** met, except that the parallel run, performance budget and
 accessibility pass of Phase 7 are open (§15.3). Sections: 79 (not 78), all reachable from the document-driven navigation.
 
 ## 13. Proposed next step
@@ -340,7 +340,7 @@ legacy engine on 107 oracle cases, and builds to one offline file. Everything be
 | `legacy/` bridge; feature flags per wave | not built, not needed |
 | command middleware (audit, permissions); `store/persistence/migrations` | audit ring inside the store; no migration table |
 | help prose in `content/<id>.md` | JSON under `app/src/content/refshare` and `help` props in the sections |
-| Playwright differential tests (old vs new) and axe in CI | not built; CI runs typecheck, ESLint, Vitest, build |
+| Playwright differential tests (old vs new) and axe in CI | e2e smoke, performance budget and parallel run built (CI job `e2e`); axe pass tracked separately |
 | Prettier, `max-lines-per-function` | not configured |
 | Phase 5 as six waves | done in a different order, in parallel |
 
@@ -388,5 +388,5 @@ Not fixed in the port (decision D7); each is a candidate for a deliberate change
 
 - `app/fixtures/README.md` still says the fixtures come from "the legacy single-file app (v18.11)"; they were regenerated from v18.13.
 - `tools/golden.json` carries `"version": "18.13"`; the TypeScript build has no equivalent golden file (its golden figures are the `golden` oracle fixture).
-- `app/package.json`, `app/package-lock.json` and `app/src/domain/version.ts` all read `19.0.0-dev`, and `app/index.html` says `v19`; no test checks that they agree.
+- `app/package.json`, `app/src/domain/version.ts` and `app/index.html` all read 19.0.0; `app/tests/version.test.ts` checks that they agree.
 - The legacy tools (`tools/test-all.mjs` and its steps) and the oracle generators are not run by CI.
