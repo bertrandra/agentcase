@@ -210,6 +210,69 @@ const tests = {
     window.applySnapshotState = real;
     return { ok: p1 === 'admin' && t1 === 'io' && first <= 3 && total === first, detail: 'persona=' + p1 + ' tab=' + t1 + ' restores on 1st redraw=' + first + ' after 3 redraws=' + total };
   },
+  // L-13: an imported "__proto__" location must not write onto Object.prototype; a rate of 0 is a rate
+  async import_proto_and_zero_rate() {
+    const wb = new ExcelJS.Workbook();
+    const w1 = wb.addWorksheet('Rate Card'); w1.addRow(['Band', '__proto__', 'France']); w1.addRow(['A', 111, 0]);
+    const w2 = wb.addWorksheet('Input Team'); w2.addRow(['Skill', 'Grade', 'Location', 'FTE']); w2.addRow(['Dev', 'B2', '__proto__', 2]);
+    const w3 = wb.addWorksheet('Location Target'); w3.addRow(['Location', 'AS-IS', 'Target %']); w3.addRow(['__proto__', 0, 50]);
+    const buf = await wb.xlsx.writeBuffer();
+    await importParams({ files: [{ name: 'p.xlsx', arrayBuffer: async () => buf }] });
+    const polluted = ({}).A !== undefined || Object.prototype.hasOwnProperty.call(Object.prototype, 'A');
+    const zero = rateFor('France', 'A1');
+    return { ok: !polluted && zero === 0, detail: 'Object.prototype polluted=' + polluted + ' rateFor(France, A1)=' + zero };
+  },
+  // L-10 / L-11: an empty team and all-zero ramps must not produce NaN / Infinity anywhere
+  async degenerate_inputs_finite() {
+    teamIn.length = 0; ['y1Ramp', 'y2Ramp', 'y3Ramp'].forEach(id => { const el = document.getElementById(id); el.value = '0'; INPUTS.v[id] = '0'; }); refreshAll();
+    const bad = []; const BADRX = /Infinity%|NaN%|NaN mo|Infinity mo|€\s*NaN|NaN\s*€|NaN\s*k\b|-Infinity|\bInfinity\b|\bNaN\b/;
+    for (const id of ['team-in', 'ratecard', 'loc-strat', 'kpi', 'annual', 'financial', 'results', 'monthly', 'fte-vfte', 'tobe-team', 'run']) {
+      try { goTab(id); if (TABRENDER[id]) TABRENDER[id](); } catch (e) { bad.push(id + ' threw ' + e.message); continue; }
+      const txt = document.getElementById(id) ? document.getElementById(id).innerText : ''; const mm = txt.match(new RegExp('.{0,30}(' + BADRX.source + ').{0,20}')); if (mm) bad.push(id + ': ' + mm[0].replace(/\s+/g, ' '));
+    }
+    return { ok: bad.length === 0, detail: bad.length ? JSON.stringify(bad.slice(0, 6)) : 'no NaN/Infinity on 11 sections' };
+  },
+  async kpi_signs() {
+    const lbl = [fmtChg(65, 100), fmtChg(112, 100), fmtChg(100, 100), fmtChg(5, 0), fmtChg(NaN, 10)].join('|');
+    return { ok: lbl === '-35%|+12%|0%|—|—', detail: lbl };
+  },
+  // L-15: the HRI floor and slope are different coefficients and must get different sensitivity weights
+  async dd_sensitivity_distinct_coefficients() {
+    goTab('scurve'); if (TABRENDER.scurve) TABRENDER.scurve(); scSetFamily('logistic');   // the readiness drag only acts on curves fitted to the ramp anchors
+    const el = document.getElementById('hriEnabled');
+    if (!el) return { ok: false, detail: 'no HRI toggle found' };
+    el.checked = true; INPUTS.c = INPUTS.c || {}; INPUTS.c[el.id] = true; el.dispatchEvent(new Event('change', { bubbles: true })); readInputs();
+    const before = JSON.stringify(COEF);
+    ddComputeSensitivity();
+    const f = DD_SENS.w['cf-hri-floor'], s = DD_SENS.w['cf-hri-slope'];
+    const unm = DD_SENS.unmeasurable.filter(x => /supshare/.test(x));
+    return { ok: before === JSON.stringify(COEF) && f > 0 && s > 0 && Math.abs(f - s) > 1 && unm.length === 0, detail: 'floor=' + (f || 0).toFixed(0) + ' slope=' + (s || 0).toFixed(0) + ' supshare unmeasurable=' + unm.length + ' COEF restored=' + (before === JSON.stringify(COEF)) };
+  },
+  // navigation still works after removing the boot-time listener on discarded sidebar buttons
+  async sidebar_click_navigates() {
+    setPersona('advanced'); const btns = [...document.querySelectorAll('#sidebarNav button[data-tab]')];
+    const target = btns.find(b => b.dataset.tab === 'ratecard') || btns[3];
+    target.click(); await new Promise(r => setTimeout(r, 150));
+    const active = document.querySelector('.tab-content.active').id;
+    return { ok: active === target.dataset.tab, detail: 'clicked ' + target.dataset.tab + ' → active ' + active };
+  },
+  // L-27: the AUDIT log must not retain full copies of large state
+  async audit_log_bounded() {
+    AgentCaseArch.AUDIT.clear(); snapCreate('audit-size-test'); snapCreate('audit-size-test-2');
+    const bytes = JSON.stringify(AgentCaseArch.AUDIT.log()).length;
+    return { ok: bytes < 60000, detail: 'audit log after two snapshot captures = ' + bytes + ' bytes' };
+  },
+  // L-27: form controls need an accessible name; click-only elements must be keyboard-reachable
+  async a11y_labels_and_roles() {
+    setPersona('advanced');
+    for (const s of SECTION_CATALOG) { try { goTab(s.id); if (TABRENDER[s.id]) TABRENDER[s.id](); } catch (e) { } }
+    await new Promise(r => setTimeout(r, 1300));   // the pass is throttled to 250 ms; animations keep mutating the DOM
+    const unnamed = [...document.querySelectorAll('input:not([type=hidden]):not([type=submit]):not([type=button]),select,textarea')].filter(c =>
+      !c.closest('label') && !c.getAttribute('aria-label') && !c.getAttribute('aria-labelledby') && !c.getAttribute('title') && !(c.id && document.querySelector('label[for="' + c.id + '"]')));
+    const total = document.querySelectorAll('input:not([type=hidden]):not([type=submit]):not([type=button]),select,textarea').length;
+    const clickOnly = [...document.querySelectorAll('[onclick]:not(button):not(a):not(input):not(select):not(textarea):not(summary)')].filter(e => !e.getAttribute('role') || !e.hasAttribute('tabindex'));
+    return { ok: unnamed.length <= total * 0.02 && clickOnly.length === 0, detail: 'controls without a name: ' + unnamed.length + '/' + total + ' (' + unnamed.slice(0, 4).map(c => c.id || c.tagName).join(',') + ') ; click-only elements without role/tabindex: ' + clickOnly.length };
+  },
   // H-4: shrinking the horizon must never produce NaN
   async horizon_shrink_finite() {
     const setH = v => { const el = document.getElementById('horizon'); el.value = v; INPUTS.v.horizon = String(v); el.dispatchEvent(new Event('change', { bubbles: true })); };
@@ -270,6 +333,13 @@ const pageTests = {
     const r3 = await p3.evaluate(() => document.getElementById('industry').options.length);
     await ctx.close();
     return { ok: r.opts === r3 && r.opts < 30 && r.name === 'RoundTrip Co', detail: JSON.stringify(r) + ' gen2 options=' + r3 };
+  },
+  // L-12: month labels must not shift west of UTC
+  async dates_local_new_york(browser, file) {
+    const ctx = await browser.newContext({ timezoneId: 'America/New_York', locale: 'en-US' }); const page = await boot(ctx, file);
+    const r = await page.evaluate(() => { goTab('scurve'); if (TABRENDER.scurve) TABRENDER.scurve(); const el = document.getElementById('scurveMaturityHost') || document.getElementById('scurve'); const txt = el ? el.innerText : ''; return { start: V('rmStart'), has: /Sep\s*(20)?26/.test(txt), early: /Aug\s*(20)?26/.test(txt), sample: (txt.match(/(Aug|Sep|Oct)[ a-z]*26/i) || [''])[0] }; });
+    await ctx.close();
+    return { ok: r.has && !r.early, detail: JSON.stringify(r) };
   },
   // H-6: editing a parameter field (no state:changed event) must still trigger an autosave
   async autosave_on_param_edit(browser, file) {
