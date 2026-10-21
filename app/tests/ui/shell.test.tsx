@@ -106,3 +106,16 @@ describe('undo / redo in the UI', () => {
     expect((box as HTMLInputElement).value).toBe('Acme');
   });
 });
+
+describe('KPI bar at horizons above 3 years', () => {
+  it('shows the end-year figures of the Time Engine (they were €0k when read from the 3-entry model arrays)', () => {
+    const doc = structuredClone(appStore().getState().doc);
+    doc.dom.values.horizon = '5';
+    appStore().load(doc);
+    render(<App />);
+    const want = computeCase(appStore().getState().doc);
+    expect(want.endYear.index).toBe(5);
+    expect(want.endYear.savings).toBeGreaterThan(0);
+    expect(screen.getByText('Savings Y5').parentElement!.querySelector('.ac-kpi-v')!.textContent).toBe(`€${Math.round(want.endYear.savings / 1000).toLocaleString('en-US')}k`);
+  });
+});

@@ -1,0 +1,10 @@
+{
+ "sizeMB": 2.9,
+ "gzipMB": 0.9,
+ "shellMs": 3000,
+ "editMedianMs": 200,
+ "editP95Ms": 500,
+ "undoMs": 250,
+ "sectionMaxMs": 1500,
+ "heapMB": 300
+}

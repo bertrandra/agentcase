@@ -1,5 +1,6 @@
 import { engineNow } from './canonical';
 import { makeCtx, type Ctx } from './ctx';
+import { horizonYears } from './model/horizonYears';
 import { model } from './model/overlay';
 import { computeGlassCeiling } from './model/ceiling';
 import { phaseScope } from './scope';
@@ -25,6 +26,7 @@ export function computeCase(s: CaseState) {
   const c = makeCtx(s);
   const eng = engineNow(c);
   const d = s.MODEL?.CASE?.discountRate;
-  return { model: model(c), headline: eng.headline(), payback: eng.payback(), npv: eng.npv(typeof d === 'number' ? d : 0.08),
+  const hy = horizonYears(c), last = hy.sav.length - 1;
+  return { model: model(c), endYear: { savings: hy.sav[last] ?? 0, run: hy.run[last] ?? 0, index: last + 1 }, headline: eng.headline(), payback: eng.payback(), npv: eng.npv(typeof d === 'number' ? d : 0.08),
     phaseScope: phaseScope(c.a, c.s), glassCeiling: computeGlassCeiling(c) };
 }

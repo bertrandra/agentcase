@@ -1,7 +1,8 @@
 # Changelog
 
-All notable changes to AgentCase, newest first. Product version = the `vX.Y` in the app file name
-(`AgentCase_vX_Y_EN.html`) and in `window.AgentCaseArch.VERSION`.
+All notable changes to AgentCase, newest first. Product version from v19.0.0 = `APP_VERSION` in
+`app/src/domain/version.ts` (and `app/package.json`); up to v18.13 = the `vX.Y` in the app file name (`AgentCase_vX_Y_EN.html`) and in
+`window.AgentCaseArch.VERSION`.
 
 - **v18.2 → v18.8** were reconstructed on 2026-10-21 from the `v18.x` tags in the code comments, help
   text and section markup of `AgentCase_v18_8_EN.html`; no release notes existed for them. No release
@@ -10,9 +11,66 @@ All notable changes to AgentCase, newest first. Product version = the `vX.Y` in 
 - **v12.57 → v18.1** are converted from the original release notes,
   [`docs/release-notes/AgentCase_ReleaseNotes_v12_57-18_1.html`](docs/release-notes/AgentCase_ReleaseNotes_v12_57-18_1.html)
   (dates are build dates). Golden-case figures quoted there predate the v18.5 Time Engine and the
-  v18.6 spline default, which deliberately moved them (see docs/ARCHITECTURE.md §11).
+  v18.6 spline default, which deliberately moved them (see docs/history/ARCHITECTURE_legacy_v18.md §11).
 
-When releasing, follow [docs/BUMP_PROCEDURE.md](docs/BUMP_PROCEDURE.md) and add the new version at the top.
+When releasing, follow [docs/BUMP_PROCEDURE.md](docs/BUMP_PROCEDURE.md) (§7 for the legacy file) and add the new version at the top.
+
+## [v19.0.0] 2026-10-21 — TypeScript + React build
+
+> Cut-over done: version 19.0.0.
+
+The product moves from the single-file app to a TypeScript (strict) + React 18 build in `app/`; the legacy `AgentCase_v18_13_EN.html`
+stays in the repository as the frozen reference. Plan and record: [docs/MIGRATION_PLAN.md](docs/MIGRATION_PLAN.md); design:
+[docs/ARCHITECTURE.md](docs/ARCHITECTURE.md).
+
+### New
+- **Same model, same numbers.** The calculation engine is pure TypeScript (`app/src/domain`). It reproduces the legacy `model()`,
+  canonical payback / NPV, headline, glass ceiling and audit result to 1e-6 on 107 oracle cases generated from the legacy file
+  (`tools/oracle.mjs`, `app/fixtures/`).
+- **Full undo / redo.** Every business edit is a named command (202 registered); Ctrl/Cmd+Z, Ctrl/Cmd+Shift+Z / Ctrl+Y, undo / redo
+  buttons with the step label, and a History panel in the dock where a click jumps to a step. Slider and number edits coalesce
+  (800 ms); bulk actions are one step; history is kept in autosave (200 steps) and is not written to shared files.
+- **Screen zones.** Top (customer, persona, undo / redo, save / open), KPI (sticky headline), navigation, work and dock zones; the
+  navigation (sidebar, group bar, hide-menu mode, persona menus, dynamic sections, guided sequences) is built from the case document
+  and edited in Persona management (sequence editor, menu layout board, persona layout board).
+- **All 79 sections** ported, each with an oracle or parity test.
+- **One offline HTML file** from `npm run build` (`app/dist/index.html`, about 2.6 MB); ExcelJS loaded on demand.
+- **Multi-tab sync** by patches (BroadcastChannel); a change from another tab is applied but never put on this tab's undo stack.
+- **Persistence:** autosave in IndexedDB with the undo history; HTML snapshot that embeds the case as JSON (no DOM serialised) and opens
+  this build's files, legacy v18.x snapshots (parsed, never executed) and JSON; parameters workbook (export, hardened import, one
+  undoable step), results workbook and due-diligence pack; snapshot manager; the Critical & Regulated report.
+- **Architecture rules as CI errors:** layers `ui → controllers → store → domain` (`eslint-plugin-boundaries`), the UI cannot import the
+  write path, no `.ts` / `.tsx` file over 150 lines, no `any`, no `dangerouslySetInnerHTML`.
+- **Tests:** 137 Vitest files (12,346 tests at the last local run): oracle, controllers, persistence fixtures, section parity,
+  command registry, property-based undo / redo, lint and size rules. CI: `.github/workflows/app.yml`.
+
+### Changed
+- Legacy changes that came with the migration (shipped in the legacy file first, decision D7; the TypeScript build includes them):
+  - **v18.9** hardening: stored / imported XSS closed, prototype pollution closed, no aliasing of golden / captured snapshots, S-curve
+    persisted, autosave fixes, one ROI / payback convention, Time Engine overlay errors reported (all 52 review findings, docs/CODE_REVIEW.md §7).
+  - **v18.10** ramp factors (readiness drag, engagement ramp speed and cap) act on the spline curve; Scope "impact by phase" panel; Excel
+    import re-fits the potential to the final scope.
+  - **v18.11** human share applied once (`eff = min(100 − ceiling, potential × posture × context × hub)`); golden case moved to the
+    figures below.
+  - **v18.12** the potential is re-fitted on every regulatory-panel change; Monte Carlo works above 3 years.
+  - **v18.13** strategies, Results and scenarios at horizons above 3 years and below 3 (`horizonYears()`).
+- Opening a case re-fits the displayed potential when *Fit to selected scope* is on, as the legacy restore does (no figure moves: the
+  engine already ignores the stored value while fit is on).
+- Not ported (see docs/MIGRATION_PLAN.md §15.2): collapsible sidebar groups, Fast Path filter, ADVANCED lock and its unlock gestures,
+  tag / MVP editing, layout-board live preview, golden-vs-AME comparison, per-snapshot Excel export, the legacy calculation package.
+
+### Fixed
+- Legacy defects found while porting and left as shown (decision D7) are listed in docs/MIGRATION_PLAN.md §15.4.
+
+### Documentation
+- README, ARCHITECTURE (new, for the TypeScript build; the legacy one is archived in `docs/history/ARCHITECTURE_legacy_v18.md`),
+  BUMP_PROCEDURE (new release procedure; the legacy one is archived in `docs/history/BUMP_PROCEDURE_legacy_v18.md`), MIGRATION_PLAN
+  (now the record), CODE_REVIEW §8 (status after the migration).
+
+**Golden case unchanged from v18.13:** Y3 savings €891,555 · Y3 run cost €885,709 · setup €225,000 · NPV (8 %) €1,359,010 · payback
+9 months · 0 audit violations.
+
+---
 
 ## [v18.13] 2026-10-21 — Strategies, Results and Scenarios beyond / below three years
 

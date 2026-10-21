@@ -1,7 +1,7 @@
 {
   "name": "agentcase-app",
   "private": true,
-  "version": "19.0.0-dev",
+  "version": "19.0.0",
   "type": "module",
   "scripts": {
     "dev": "vite",
@@ -9,7 +9,10 @@
     "typecheck": "tsc --noEmit",
     "lint": "eslint src tests",
     "test": "vitest run",
-    "check": "npm run typecheck && npm run lint && npm run test"
+    "check": "npm run typecheck && npm run lint && npm run test",
+    "e2e": "npm run build && node ../tools/e2e-smoke.mjs && node ../tools/perf.mjs",
+    "parallel-run": "npm run build && node ../tools/parallel-run.mjs",
+    "release": "node scripts/release.mjs"
   },
   "dependencies": {
     "chart.js": "4.4.1",
@@ -32,6 +35,7 @@
     "eslint-plugin-react-hooks": "^5.0.0",
     "fast-check": "^3.22.0",
     "jsdom": "^25.0.1",
+    "playwright": "^1.56.1",
     "typescript": "^5.6.3",
     "typescript-eslint": "^8.8.1",
     "vite": "^5.4.9",

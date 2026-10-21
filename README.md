@@ -1,62 +1,77 @@
 # AgentCase
 
-**AgentCase v18.11 — Agentic Transformation Business Case.**
+**AgentCase — Agentic Transformation Business Case.** It builds the business case for moving a software delivery team to an
+agentic model: from the AS-IS team, the rate card and the SDLC/regulatory scope to automation potential, the TO-BE team (human
+FTE + agent vFTE), run cost, savings, NPV and payback. It then stress-tests the result (scenarios, Monte Carlo, strategy ranking)
+and produces a decision verdict. Personas and guided sequences tailor the walkthrough.
 
-AgentCase builds the business case for moving a software delivery team to an agentic model. It goes
-from the AS-IS team, the rate card and the SDLC/regulatory scope to automation potential, the
-TO-BE team (human FTE + agent vFTE), run cost, savings, NPV and payback. It then stress-tests the
-result with scenarios, Monte Carlo and strategy ranking, and produces a decision verdict. Personas
-(Builder, Client case, Admin, Advanced) and a guided sequence tailor the walkthrough.
+## Two deliverables
 
-## Running it
+| | Where | Status |
+|---|---|---|
+| **TypeScript + React build (the product)** | [`app/`](app/) — version `19.0.0` (`app/package.json`, `app/src/domain/version.ts`) | All 79 sections registered. Builds to one offline HTML file. Cut-over done (see [`docs/MIGRATION_PLAN.md`](docs/MIGRATION_PLAN.md) §15) |
+| **Legacy single-file app (frozen reference)** | [`AgentCase_v18_13_EN.html`](AgentCase_v18_13_EN.html) | Kept in the repository until cut-over. It is the oracle the new build is proven against. Changes only for security fixes and deliberate calculation decisions (decision D7), see [`docs/BUMP_PROCEDURE.md`](docs/BUMP_PROCEDURE.md) §7 |
 
-The app is a single, self-contained HTML file. Open `AgentCase_v18_13_EN.html` in a modern browser
-(Chrome or Edge recommended), directly from disk.
+Golden case (default state, identical in both): Y3 savings €891,555 · Y3 run cost €885,709 · setup €225,000 · NPV (8 %) €1,359,010 ·
+payback 9 months · 0 audit violations (`tools/golden.json`).
 
-- No server, build step or network is needed. Chart.js 4.4.1, ExcelJS 4.4.0 and the Ubuntu font are
-  inlined.
-- **Advanced persona:** add `?persona=advanced` to the URL, press Ctrl/Cmd+Alt+A, or click the title
-  5 times.
-- **Saving a case:** *Save HTML snapshot* downloads a copy of the file with the case embedded. Excel
-  export/import round-trips the parameters, personas, dependencies and the S-curve. Autosave keeps
-  per-tab sessions in the browser (IndexedDB) and offers them back after a reload.
+## Run, build, test the TypeScript build
+
+Needs Node.js 22 (the CI version). All commands run in `app/`.
+
+```bash
+cd app
+npm ci
+npm run dev        # Vite dev server
+npm run check      # tsc --noEmit + ESLint + Vitest (what CI runs)
+npm run build      # tsc --noEmit + vite build  ->  app/dist/index.html (one offline file, about 2.6 MB)
+npm test           # Vitest only
+node scripts/sizes.mjs   # largest source files (the 150-line rule)
+```
+
+`npm run check` last measured: 137 test files, 12,346 tests, all passing (about 4 minutes on a small machine). CI
+([`.github/workflows/app.yml`](.github/workflows/app.yml)) runs `npm ci`, `npm run check` and `npm run build` on pull requests and on
+pushes to `main` that touch `app/`.
+
+Open `app/dist/index.html` from disk in a modern browser (Chrome or Edge); no server or network is needed. In the app:
+Ctrl/Cmd+Z undoes and Ctrl/Cmd+Shift+Z or Ctrl+Y redoes any business edit; *Save HTML snapshot* downloads a copy of the page with
+the case embedded; Excel workbooks (parameters, results, due-diligence pack) round-trip with the legacy formats; autosave keeps
+per-tab sessions in IndexedDB and offers them back after a reload.
+
+## Run the legacy file
+
+Open `AgentCase_v18_13_EN.html` directly from disk (no build). Advanced persona: `?persona=advanced`, Ctrl/Cmd+Alt+A, or click the
+title 5 times. These Advanced-unlock gestures are legacy-only (the ADVANCED lock is not ported, see MIGRATION_PLAN §15).
 
 ## Repository layout
 
 | Path | Content |
 |---|---|
-| `AgentCase_v18_13_EN.html` | the application (current version) |
-| [`CHANGELOG.md`](CHANGELOG.md) | release history v12.57 → v18.11, newest first |
-| [`docs/ARCHITECTURE.md`](docs/ARCHITECTURE.md) | architecture: file layout, engines (BUS, APP_STATE, PM, DEP, AUDIT, TIME), boot sequence, subsystems, state model, shared helpers |
-| [`docs/CODE_REVIEW.md`](docs/CODE_REVIEW.md) | the v18.8 code review (52 findings) and how each was resolved in v18.9 |
-| [`docs/BUMP_PROCEDURE.md`](docs/BUMP_PROCEDURE.md) | how to release a new version |
-| [`docs/MIGRATION_PLAN.md`](docs/MIGRATION_PLAN.md) | proposal: migration to TypeScript + React, screen zones, full undo/redo |
-| `tools/` | the test battery and release checks (below) |
+| [`app/`](app/) | the TypeScript + React build: `src/{domain,store,controllers,ui,content}`, `tests/`, `fixtures/`, `scripts/` ([`app/README.md`](app/README.md)) |
+| `AgentCase_v18_13_EN.html` | the legacy application, frozen reference |
+| [`tools/`](tools/) | Node/Playwright tooling that runs against the **legacy** file: the oracle generators (`oracle.mjs`, `oracle-recipes*`, `oracle-extras.d/`, `section-text.mjs`, `snapshot-fixtures.mjs`, `report-fixtures.mjs`, `excel-*.mjs`, `extract-catalog.mjs`) and the legacy release battery (`test-all.mjs` and the tools it runs) |
+| [`CHANGELOG.md`](CHANGELOG.md) | release history v12.57 → v19.0.0, newest first |
+| [`docs/ARCHITECTURE.md`](docs/ARCHITECTURE.md) | architecture of the TypeScript build; appendix maps the legacy engines to their replacements |
+| [`docs/MIGRATION_PLAN.md`](docs/MIGRATION_PLAN.md) | the migration plan (§1–§13), its progress log (§14) and the outcome and remaining gaps (§15) |
+| [`docs/SECTION_PORTING.md`](docs/SECTION_PORTING.md) | the recipe used to port each section |
+| [`docs/BUMP_PROCEDURE.md`](docs/BUMP_PROCEDURE.md) | release procedure (new build; legacy file in §7) |
+| [`docs/CODE_REVIEW.md`](docs/CODE_REVIEW.md) | the v18.8 code review (52 findings), its v18.9 resolution, and its status after the migration |
+| `docs/history/` | archived documents: legacy architecture and bump procedure (v18.x), the v12.42 bump procedure |
 | `docs/release-notes/` | original HTML release notes, v12.57 → v18.1 (frozen) |
-| `docs/history/` | archived process documents |
 
-## Checking a change
+## The testing battery
 
-The battery needs Node.js 18+ and [Playwright](https://playwright.dev) with a Chromium
-(`PLAYWRIGHT_BROWSERS_PATH` pointing at it; set `PW_MODULE` if `playwright` is not resolvable from
-`/opt/node-tools/node_modules`).
+| Layer | What it proves | Where | Runs in CI |
+|---|---|---|---|
+| Oracle | the domain engine reproduces the legacy `model()`, payback, NPV, headline, glass ceiling and audit result to 1e-6 on every fixture case | `app/tests/domain/oracle.test.ts`; fixtures `app/fixtures/{cases,expected}` (107 cases), generated by `tools/oracle.mjs` from the legacy file | yes |
+| Oracle extras | derived read-outs (scenarios, Monte Carlo, tune, verify, factory ...) equal the legacy expressions | `app/fixtures/extras/` (97 named extras), `tools/oracle-extras.d/` | yes |
+| Fixtures: persistence | legacy HTML snapshots, parameters/results/due-diligence workbooks and the critical-delivery report load or reproduce cell by cell | `app/fixtures/{snapshots,xlsx,xlsx-results,reports}`, `app/tests/store/` | yes |
+| Parity | every figure the legacy section shows appears in the migrated section | `app/fixtures/sections/` (text dumps by `tools/section-text.mjs`), `app/tests/ui/sections/`, `app/tests/helpers/parity.ts` | yes |
+| Commands and history | every command has a label and a sample and round-trips through undo/redo; random command sequences keep `undo∘apply = id` | `app/tests/store/registry.test.ts`, `undo-property.test.ts` (fast-check) | yes |
+| Architecture | layer rules, no raw HTML, 150-line limit | ESLint, `app/tests/lint-rules.test.ts`, `app/tests/size.test.ts` | yes |
+| Legacy browser battery | the legacy file boots, shows the golden figures, resists hostile strings; 44 regression tests | `node tools/test-all.mjs` (Playwright + Chromium) | no |
+| Browser end-to-end / accessibility (new build) | no automated suite exists; the shell has a skip link, a live region and keyboard shortcuts, checked by component tests and by hand in Chromium | | no |
 
-```bash
-node tools/test-all.mjs --baseline <previous AgentCase_vX_Y_EN.html>   # everything below, in order
-```
-
-| Tool | Checks |
-|---|---|
-| `tools/check.mjs` | scripts parse, version stamps agree, markup balance (needs only Node) |
-| `tools/smoke.mjs` | boots cleanly; the golden-case figures equal `tools/golden.json` |
-| `tools/handlers-test.mjs` | every inline-handler target exists |
-| `tools/xss-test.mjs` | hostile strings never execute (restore, live state, Excel fuzz) |
-| `tools/state-test.mjs` | 44 regression tests: persistence, autosave, calculations, import safety, accessibility |
-| `tools/render-diff.mjs` | the visible text of all sections is identical between two builds |
-
-Golden case (default state): Y3 savings €891,555 · Y3 run cost €885,709 · NPV (8 %) €1,359,010 ·
-payback 9 months.
-
-## Open decisions
-
-See [ARCHITECTURE.md §11](docs/ARCHITECTURE.md).
+Legacy battery prerequisites: Node.js 18+ and [Playwright](https://playwright.dev) with a Chromium (`PLAYWRIGHT_BROWSERS_PATH`;
+`PW_MODULE` if `playwright` is not resolvable from `/opt/node-tools/node_modules`). Regenerating the oracle fixtures needs the same
+(`node tools/oracle.mjs`, see [`docs/BUMP_PROCEDURE.md`](docs/BUMP_PROCEDURE.md) §7).
