@@ -62,7 +62,7 @@ describe('automation chart and glass-ceiling funnel match the legacy figures', (
       { N: exp.N, auto: exp.auto, eff: exp.eff, rampEnd: exp.rampEnd, realEnd: exp.realEnd, humanEnd: exp.humanEnd, vfteEnd: exp.vfteEnd, team: exp.team });
     near(exp.real.map(([t]: [number, number]) => [t, a.real[t - 1]]), exp.real, 'real(t)');
     near(a.levels.map((l) => ({ lvl: l.lvl, month: l.month })), exp.levels, 'levels');
-    near([1, Math.ceil(b.N / 2), b.N].map((t) => funnelStage(b, t)), exp.stages.map(({ comp: _c, ...rest }: Record<string, number>) => rest), 'stages');
+    near([1, Math.ceil(b.N / 2), b.N].map((t) => funnelStage(b, t)), exp.stages.map((st: Record<string, number>) => Object.fromEntries(Object.entries(st).filter(([k]) => k !== 'comp'))), 'stages');
     expect(activeStages(b)).toEqual(exp.active);
   });
 });
