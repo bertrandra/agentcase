@@ -297,6 +297,18 @@ const tests = {
     const sum = pts.reduce((a, b) => a + b, 0), ceil = phaseScope().avgHuman;
     return { ok: pts.length > 0 && Math.abs(sum - ceil) <= 0.1 * pts.length, detail: pts.length + ' phases, sum ' + sum.toFixed(1) + ' vs ceiling ' + ceil };
   },
+  // v18.11: Adjust table — raising a phase's % auto cascades to potential / ceiling / savings and shows in the live strip
+  async adjust_phase_cascade() {
+    goTab('scope-sel'); resetAgent(); refreshAll();
+    const f = document.getElementById('artPhaseFilter'); f.value = 'V1'; f.dispatchEvent(new Event('change', { bubbles: true }));
+    const before = model(), vis = document.getElementById('adjBulk').style.display;
+    document.getElementById('adjBulkVal').value = '100'; setPhaseAgent('V1', '100');
+    const after = model(), strip = document.getElementById('adjLive').textContent;
+    const cells = [...document.querySelectorAll('#artTable tbody tr')].map(r => r.children[7].textContent.trim());
+    const ok = vis === 'flex' && after.auto > before.auto && after.ceiling < before.ceiling && after.yearSav[2] > before.yearSav[2] && /▲/.test(strip) && cells.length > 0 && cells.every(c => c === '0%');
+    f.value = 'ALL'; f.dispatchEvent(new Event('change', { bubbles: true })); resetAgent();
+    return { ok, detail: 'potential ' + before.auto + '->' + after.auto + ', ceiling ' + before.ceiling + '->' + after.ceiling + ', strip: ' + strip.replace(/\s+/g, ' ').slice(0, 90) };
+  },
   // v18.10: after an Excel import the automation potential must equal the fit of the FINAL scope (it was left at the fit of a provisional one)
   async import_refits_potential() {
     let captured = null; const cu = URL.createObjectURL; URL.createObjectURL = b => { if (!captured) captured = b; return cu.call(URL, b); };

@@ -1517,6 +1517,8 @@ effort-weighted agentSup over the selection → <strong>potential 75%</strong> (
 <button class="btn-del" style="padding:7px 14px;margin-bottom:2px" onclick="resetAgent()" title="Restore default % auto">↺ Reset % auto</button>
 <button class="btn-del" style="padding:7px 14px;margin-bottom:2px" onclick="resetEffort()" title="Restore default effort weights">↺ Reset effort weights</button>
 <div style="font-size:11px;color:#888;margin-bottom:6px;max-width:420px">The <strong>% auto</strong> (automatable %, human supervision = 100 − this) and <strong>Effort weight</strong> columns are editable and saved in Export / restored on Import. Blue = % auto overridden, amber = effort overridden.</div></div>
+<div id="adjLive" style="display:flex;gap:8px;flex-wrap:wrap;align-items:center;margin:4px 0 8px;font-size:12px" aria-live="polite"></div>
+<div id="adjBulk" style="display:none;align-items:center;gap:6px;margin-bottom:8px;font-size:12px"></div>
 <div style="overflow-x:auto"><table id="artTable"><thead><tr><th>ID</th><th>Artifact</th><th>Deliverable</th><th>Phase</th><th>Value</th><th>Skill</th><th>AI authorization</th><th>Human sup.</th><th>% auto (agent)</th><th>Effort weight</th><th class="text-center" title="Base effort weight × the current product-status lifecycle weight for this phase">Effective (lifecycle)</th></tr></thead><tbody></tbody></table></div>
 </details>
 <details id="ceilImpactBox" open style="margin-top:1.2rem"><summary style="cursor:pointer;font-size:1.05rem;font-weight:700;color:#0058AB;margin:.4rem 0">🧊 Glass ceiling &amp; automation potential — impact by phase <span style="font-weight:400;font-size:12px;color:#888">— where human supervision holds automation back (click to collapse)</span></summary>
@@ -14676,6 +14678,7 @@ function renderArtefacts(){
     ]},options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{position:'top'}},scales:{x:{stacked:true},y:{stacked:true,max:100,title:{display:true,text:'%'},grid:{color:'rgba(0,0,0,.05)'}}}}});
   renderArtTable();
   renderCeilingImpact();
+  renderAdjustLive();
 }
 /* v18.10: Scope — glass-ceiling impact by phase. Each phase's contribution (pts) = Σ(w·humanSup) over its in-scope artefacts ÷ Σw of the whole scope,
    so the contributions add up to the scope's glass ceiling. Colour = relative impact (top third red, middle amber, rest teal). */
@@ -14736,6 +14739,34 @@ function renderArtTable(){
     <td class="text-center"><input type="number" min="0" max="100" step="1" value="${a.agentSup}" onchange="setAgentSup('${escJs(a.id)}',this.value)" title="Automatable % (agent supervision). Human supervision = 100 − this. Default ${a._agent0}%" style="width:60px;text-align:center;padding:3px 4px;border:1px solid ${agEdited?'#1DB8F2':'#d5dae6'};border-radius:5px;${agEdited?'font-weight:700;color:#1f5f9a':''}"></td>
     <td class="text-center"><input type="number" min="0" step="0.5" value="${a.effort}" onchange="setEffort('${escJs(a.id)}',this.value)" title="Relative effort weight (default ${def})" style="width:60px;text-align:center;padding:3px 4px;border:1px solid ${edited?'#BE4D00':'#d5dae6'};border-radius:5px;${edited?'font-weight:700;color:#8F3900':''}"></td>
     ${(()=>{ const lw=lifecycleWeight(a.phase); const effW=(+a.w||0); /* v12.43: derived column */ const on=lifecycleUse&&Math.abs(lw-1)>0.001; const col=on?(lw>1?'#00828E':'#8F3237'):'#888'; return `<td class="text-center" style="color:${col};font-weight:${on?'700':'400'}" title="${on?('base '+(+a.effort||0)+' × lifecycle '+lw.toFixed(2)):'lifecycle weighting off (×1.00)'}">${effW.toFixed(1)}${on?` <span style="font-size:9px">(×${lw.toFixed(2)})</span>`:''}</td>`; })()}</tr>`;}).join('');
+}
+/* v18.11: live result strip + per-phase bulk setter for the Adjust table. Every edit already cascades through refreshAll();
+   the strip makes the effect visible where the edit happens (values after the edit, change since the previous render). */
+let _adjPrev=null;
+function renderAdjustLive(){
+  const box=document.getElementById('adjLive'); if(!box) return;
+  let m; try{ m=model(); }catch(e){ return; }
+  const cur={pot:m.auto, ceil:m.ceiling, eff:m.eff, sav:m.yearSav[2]};
+  const d=_adjPrev||cur; _adjPrev=cur;
+  const chip=(l,v,dv,fmt,c)=>'<span style="background:#fff;border:1px solid #e3e3e3;border-left:3px solid '+c+';border-radius:5px;padding:3px 9px"><span style="color:#666">'+l+'</span> <strong>'+fmt(v)+'</strong>'+(Math.abs(dv)>=0.5?' <span style="font-weight:700;color:'+(dv>0?'#00828E':'#8F3237')+'">'+(dv>0?'▲ +':'▼ ')+fmt(dv).replace('-','')+'</span>':'')+'</span>';
+  const eur=x=>(x<0?'-':'')+'€'+Math.round(Math.abs(x)/1000).toLocaleString('en-US')+'k';
+  box.innerHTML='<span style="color:#888">Live result:</span>'
+    +chip('Potential',cur.pot,cur.pot-d.pot,x=>Math.round(x)+'%','#00828E')
+    +chip('Glass ceiling',cur.ceil,cur.ceil-d.ceil,x=>Math.round(x)+'%','#8F3237')
+    +chip('Max depth',cur.eff,cur.eff-d.eff,x=>Math.round(x)+'%','#0058AB')
+    +chip('Y3 savings',cur.sav,cur.sav-d.sav,eur,'#BE4D00')
+    +'<span style="color:#aaa">▲▼ = change since the previous edit</span>';
+  const bk=document.getElementById('adjBulk'), f=document.getElementById('artPhaseFilter');
+  if(bk&&f){
+    if(f.value==='ALL'){ bk.style.display='none'; }
+    else { bk.style.display='flex'; bk.innerHTML='Set <strong>all in-scope artefacts of '+escHtml(f.value)+'</strong> to <input type="number" id="adjBulkVal" min="0" max="100" step="1" value="100" style="width:64px;text-align:center;padding:3px 4px"> % auto <button class="btn-del" style="padding:4px 12px" onclick="setPhaseAgent(document.getElementById(\'artPhaseFilter\').value,document.getElementById(\'adjBulkVal\').value)">Apply</button>'; }
+  }
+}
+function setPhaseAgent(phase,v){
+  let n=parseFloat(v); if(isNaN(n)) return; n=Math.max(0,Math.min(100,Math.round(n)));
+  activeArtefacts().filter(a=>a.phase===phase).forEach(a=>{ a.agentSup=n; a.humanSup=100-n; });
+  syncState(['artefactsEdited','regArtefactsEdited'],'ui:setPhaseAgent');
+  applyScopeAuto(); refreshAll();
 }
 function setAgentSup(id,v){
   let n=parseFloat(v); if(isNaN(n))return; n=Math.max(0,Math.min(100,Math.round(n)));
@@ -25413,7 +25444,7 @@ indSel.addEventListener('change',()=>{
   document.getElementById('glassCeiling').value=overlay;
   refreshAll();
 });
-document.getElementById('artPhaseFilter').addEventListener('change',renderArtTable);
+document.getElementById('artPhaseFilter').addEventListener('change',function(){ renderArtTable(); renderAdjustLive(); });
 
 renderPhaseSelector();
 applyScopeAuto();

@@ -24,6 +24,13 @@ on, potential and ceiling come from the same artefact split and sum to 100, so t
   examples in the app updated (default case: 75 % effective depth).
 - **Golden case moves** (intended): Y3 savings €731,774 → **€891,555** · Y3 run cost €1,045,490 → **€885,709** · NPV (8 %)
   €1,131,220 → **€1,359,010** · payback 9 months (unchanged) · 0 audit violations. `tools/golden.json` updated.
+- **Scope — Adjust % auto table:** a live result strip (potential, ceiling, max depth, Y3 savings, with the change since the
+  previous edit) and, when a phase is filtered, a "set all artefacts of this phase to N % auto" control. The cascade itself
+  was verified on every phase (potential, ceiling, effective depth and savings all move); a phase can look inert because of its
+  lifecycle weight (e.g. L10 at ×0.20 in the default status) or because a rise is capped by `100 − ceiling` / the technical
+  cap. Test `adjust_phase_cascade`.
+- Sensitivity check (Logic verification): when effective depth already sits at the ceiling cap, the "Auto +10" variant cannot
+  move, so it tests "Auto −10" instead.
 - Cases with fit-to-scope off and a manual potential above `100 − ceiling` are still limited by the cap.
 
 ---
