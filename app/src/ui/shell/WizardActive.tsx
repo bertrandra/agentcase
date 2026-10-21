@@ -1,6 +1,7 @@
 import type { PersonaSeq } from '@/domain/pdc/personas';
 import type { Stop } from '@/domain/nav/sequence';
-import { useUi, wizExit, wizGo } from '../uiState';
+import { rescueFocus } from '../focusRescue';
+import { useUi, wizExit as exitWalk, wizGo } from '../uiState';
 import { useNavModel } from '../zones/navModel';
 
 /** The step bar of a running guided sequence: current step and section, per-step section picker, step chips, Prev / Next / Finish, exit and progress. */
@@ -9,6 +10,7 @@ export function WizardActive({ seq, stops }: { seq: PersonaSeq; stops: Stop[] })
   const cur = stops[Math.min(pos, stops.length - 1)]!, at = Math.min(pos, stops.length - 1), def = (id: string) => sections.find((s) => s.id === id);
   const pct = Math.round((visited.filter((v) => v < stops.length).length / stops.length) * 100), last = at === stops.length - 1;
   const go = (i: number) => wizGo(i, ids);
+  const wizExit = () => { exitWalk(); rescueFocus(() => document.querySelector<HTMLElement>('.ac-wiz-idle button') ?? document.getElementById('main')); };   // the bar unmounts under the focused button
   return (
     <div className="ac-wiz ac-wiz-active" role="region" aria-label="Guided sequence">
       <div className="ac-wiz-title"><strong>{cur.step}</strong> <span className="ac-muted">→ {def(cur.sec)?.label ?? cur.sec} · section {at + 1}/{stops.length}</span></div>
