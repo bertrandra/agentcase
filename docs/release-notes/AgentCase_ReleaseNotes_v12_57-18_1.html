@@ -1,0 +1,790 @@
+<!DOCTYPE html>
+<html lang="en"><head><meta charset="utf-8">
+<title>AgentCase — Release Notes v12.57 → v18.1</title>
+<style>
+body{font-family:Calibri,Arial,sans-serif;color:#22262e;max-width:960px;margin:2rem auto;padding:0 1.5rem;line-height:1.55;background:#f4f6fb}
+h1,h2,h3{font-family:Georgia,serif;color:#1E2761}
+.banner{display:grid;grid-template-columns:repeat(auto-fit,minmax(140px,1fr));gap:10px;margin:1rem 0 2rem}
+.stat{background:#1E2761;color:#CADCFC;border-radius:10px;padding:12px 14px;text-align:center}
+.stat b{display:block;font-size:22px;color:#FFB84D}
+.rel{background:#fff;border:1px solid #d5dae6;border-left:5px solid #FFB84D;border-radius:10px;padding:1rem 1.4rem;margin-bottom:1.1rem}
+.rel.new{border-left-color:#1D9E75}
+.rel.major{border-left-color:#c0392b}
+.tag{display:inline-block;background:#CADCFC;color:#1E2761;border-radius:10px;padding:1px 10px;font-size:11px;font-weight:700;margin-left:6px}
+.ev{color:#7F77DD;font-weight:700}
+ul{margin:.4rem 0 .2rem 1.2rem}
+li{margin:.15rem 0}
+.note{background:#FFF5E8;border:1px solid #BA7517;border-radius:8px;padding:10px 14px;font-size:13px;margin-bottom:1.5rem}
+code{background:#eef1f8;padding:1px 5px;border-radius:4px;font-size:12px}
+table{border-collapse:collapse;width:100%;font-size:12.5px;margin:.5rem 0}
+th,td{border:1px solid #d5dae6;padding:4px 8px;text-align:left}th{background:#1E2761;color:#CADCFC}
+</style></head><body>
+
+<h1>AgentCase — Release Notes</h1>
+<p>Range <strong>v12.57 → v18.1</strong> · Delivery-Model Convergence scope (EV-01…EV-12) + Architectural Refactor (Lots 1–4, v14.17→v14.20) + Series graduation (v15.0) + Snapshot/golden-case hotfix (v15.1) + Extraction series Phases 1–4 (v15.2) + Navigation, snapshot library &amp; code-quality pass (v15.3) + Snapshot-backed Excel round-trip (v15.4) + Section Board subsystem (v15.5) + Board templates &amp; card sequencing (v15.6) + Golden-case protection, versioned exports &amp; Gantt/Timeline delivery schedule (v15.7) + Software/Agentic Factory meta-model, 11-group navigation &amp; contrast fix (v15.8) + Navigation &amp; onboarding UX: dynamic Welcome, hide-menu compact mode, Factory KPIs surfaced (v16.0) + Audit &amp; due diligence: 52-element confirmation register, embedded-coefficient inventory &amp; €-weighted coverage (v16.1) + Factory data generation from the live case: weekly time base &amp; monthly adoption curve (v16.2) + Version marker &amp; stale build-constant fix (v16.3) + Agentic Modelling Engine, AME-SPEC v0.2 P0→P6: convergence economics, endogenous verification tax, supervision provisioned/constrained, stochastic layer &amp; baseline drift, flow &amp; value model, evidence ledger, Mod. Engine persona (v17.0) + Golden Case Transition, GCT-SPEC v0.1: master engine toggle, dual-snapshot mechanism, golden-vs-AME comparison view, promotion gate (v17.1) + Story Mode guided sequence, per-persona section order &amp; duplicate persona, persona-selector visual distinction, and Session Persistence (IndexedDB autosave, multi-tab session manager) (v17.2) + Guided-sequence tag-based authoring &amp; per-step section picker, guided-sequence focus mode, per-section contextual help (75 sections), Session manager promoted to its own section, and top-chrome decluttering (v18.0) + Capgemini Engineering visual rebrand: brand colour system, embedded Ubuntu typeface, header wordmark, guided-sequence accent harmonisation (v18.1) · latest build 2026-08-04 on base v12.56 EN</p>
+
+<div class="banner">
+<div class="stat"><b>v18.1</b>current version</div>
+<div class="stat"><b>96</b>evolutions shipped</div>
+<div class="stat"><b>128</b>bindable variables</div>
+<div class="stat"><b>11</b>navigation groups</div>
+<div class="stat"><b>96</b>glossary terms</div>
+<div class="stat"><b>0</b>golden-case regressions</div>
+</div>
+
+<div class="note">🎯 <strong>v15.0 milestone</strong> — v14.x closed with the four-lot architectural foundation (BUS + APP_STATE + PM + DEP + AUDIT). v15.0 is the canonical reference: display strings and snapshot schemaVersion unified to <code>15.0</code>, public <code>window.AgentCaseArch.VERSION</code> exposed for Playwright. Every v15.x lot that follows must ship bit-identical golden case (Y3 €770K, run €1,007K) against this reference.</div>
+
+<div class="rel major">
+<h2>v18.1 <span class="tag">2026-08-04</span> <span class="tag">🎨 Capgemini Engineering rebrand</span></h2>
+<h3>The app is re-skinned to the Capgemini Engineering design system — colour, type and logo, no logic touched</h3>
+<p>A pure presentation-layer batch: no change to <code>model()</code>, <code>phaseScope()</code>, any cost/saving formula, or the persistence layer. Golden case bit-identical throughout (Y3 €769,788.9296875, run €1,007K), re-verified after the batch — including a self-inflicted parser-breaking regression caught and fixed within the same release (see Fixed).</p>
+<p><strong>New — Brand system</strong></p>
+<ul>
+<li><strong>Ubuntu typeface, embedded.</strong> Light/Regular/Bold weights embedded as base64 <code>@font-face</code> so the file stays a fully portable, offline single HTML document (no external font CDN) — the app's body copy, headings and former <code>Georgia</code> display headlines now render in Ubuntu.</li>
+<li><strong>Brand colour remap.</strong> Every colour in the app's ad hoc palette (~18 hex values, several thousand occurrences across static markup and generated HTML) mapped onto the Capgemini Engineering palette — primary navy → Capgemini Blue <code>#0058AB</code>, darker tones → Dark Blue <code>#121A38</code>, the bright accent → Light Blue <code>#1DB8F2</code>, greens/teals → Teal <code>#00828E</code>, ambers → Terracotta <code>#BE4D00</code>, purples → Purple <code>#71609E</code>, reds → Deep Red <code>#8F3237</code>. Neutral/light backgrounds (already a cool blue-tinted grey) were left as-is.</li>
+<li><strong>Header wordmark.</strong> The Capgemini Engineering logo is inlined as SVG in the top-right of the header (no external asset), sized as a discreet corner mark rather than competing with the page title.</li>
+<li><strong>Chrome polish.</strong> Card/container corner radius bumped toward the brand's 16px, shadows re-tinted navy instead of flat black, focus rings switched to the brand's 3px Light-Blue ring, and centralised <code>.badge</code> colour pairs recoloured to the new palette.</li>
+<li><strong>Guided-sequence accent harmonisation.</strong> Two step cards ("Engagement context", "Product status lifecycle") that had kept an unrelated yellow/terracotta accent border now match the rest of the sequence in Capgemini Blue; the wizard's dark metrics ribbon was lightened from near-black Dark Blue to Capgemini Blue for a less heavy top band.</li>
+</ul>
+<p><strong>Fixed</strong></p>
+<ul>
+<li><strong>Self-inflicted parse break in the headline font swap.</strong> Replacing the unquoted <code>Georgia,serif</code> font-family with a quoted <code>'Ubuntu'</code> value silently broke JavaScript in the handful of spots where that CSS text lived inside a single-quoted JS string (e.g. <code>body+='…font-family:Georgia,serif"…'</code>) — the inserted quote closed the string early, producing a <code>SyntaxError</code> that killed the entire ~14,000-line application script block. <code>applySnapshotState</code>, <code>PM</code>, <code>syncState</code> and <code>refreshAll</code> all silently became <code>undefined</code> while the page still looked populated (AgentCase bakes its last-saved state into static HTML, masking the break). Caught by extracting the script block and parsing it standalone with <code>new Function(source)</code>; fixed by dropping the unnecessary quotes around the (single-word, quote-free-by-CSS-rules) font name everywhere.</li>
+</ul>
+</div>
+
+<div class="rel major">
+<h2>v18.0 <span class="tag">2026-08-03</span> <span class="tag">🧭 Guided-sequence UX</span> <span class="tag">📖 Section help</span> <span class="tag">🗂️ Session manager</span></h2>
+<h3>The guided sequence becomes a real authoring &amp; navigation tool, every section gets an inline help toggle, and the top chrome is decluttered end to end</h3>
+<p>A UX- and workflow-focused batch: nothing here touches <code>model()</code>, <code>phaseScope()</code> or any cost/saving formula. Golden case bit-identical throughout (Y3 €769,788.9296875, run €1,007K), re-verified after every single change in the batch — including a self-inflicted regression caught and fixed within the same release (see Fixed).</p>
+<p><strong>New — Per-section contextual help</strong></p>
+<ul>
+<li><strong>"?" help toggle on every section title.</strong> All 75 static sections now carry a small "?" button at the end of their <code>&lt;h2&gt;</code>; clicking it expands a "📖 What this section does" panel directly under the title (<code>toggleSectionHelp()</code>), instead of a note buried at the bottom of the tab. 38 sections had their existing bottom-of-tab explainer content moved up as-is; the 37 that had none got a freshly drafted explainer, grounded in each section's own <code>SECTION_CATALOG</code> description.</li>
+</ul>
+<p><strong>New — Guided sequence (wizard): built to actually author and navigate, not just play back</strong></p>
+<ul>
+<li><strong>Per-step section picker.</strong> A step bundling several sections (e.g. "Levers" = 5 sections) used to force a linear Prev/Next crawl through all of them. Every multi-section step now shows one chip per section — labelled, hoverable with its description, jump-to-it directly — with the current one highlighted and visited ones checked off.</li>
+<li><strong>Sequence editor rebuilt around tags, not copy-paste.</strong> Persona management's guided-sequence editor was a raw <code>Label | sectionId,sectionId,…</code> textarea — every section typed or pasted as a bare id, with a separate Save step. It is now a per-step card: sections are removable chips added from a dropdown (grouped by menu group), steps can be added, removed and reordered, and every action commits immediately — nothing to type or paste.</li>
+<li><strong>Section tags are drag-and-drop reorderable</strong> within their step (native HTML5 drag-and-drop, no library) — drop on another tag to slot in before it, drop in the step's empty tag area to send it to the end. Scoped to the same step only; a cross-step drop is a safe no-op.</li>
+<li><strong>Guided-sequence focus mode.</strong> While the wizard is running, the sidebar (plain and collapsed menu mode alike), the persona selector, the "☰ Menu" button and the page's own title banner are all hidden — the wizard bar's step chips and section picker are the only navigation left competing for attention. Everything is restored exactly as it was on exit.</li>
+</ul>
+<p><strong>New — Session manager</strong></p>
+<ul>
+<li><strong>Promoted to its own top-level section</strong> ("🗂️ Session manager"), out of the 📥 Import/Export tab it shared with the Snapshot library — reachable from Presales, Briefing and Advanced; the "🗂 N other sessions" scenario-bar chip now opens it directly.</li>
+<li><strong>🗑 Clear all sessions</strong> — wipes every autosaved session in this browser in one action, same two-click confirm discipline as the existing per-row delete.</li>
+</ul>
+<p><strong>Changed — Top chrome &amp; navigation</strong></p>
+<ul>
+<li><strong>💾 Save HTML Snapshot is now an icon-only button</strong> in the scenario bar, next to search; the "Model: classic/modelling engine" badge moved beside it, with the Sessions badge now appearing after it.</li>
+<li><strong>Briefing's menu now opens on 🏠 Welcome</strong>, ahead of 🧭 Guided Setup (formerly "🚀 Start here", renamed) — a per-persona order override; Presales and Advanced unaffected.</li>
+<li><strong>App title is clickable</strong> — one click returns to Welcome from anywhere. The existing 5-clicks-in-2s Advanced-unlock gesture on the same title is now a genuine toggle: the same gesture re-locks Advanced once it's unlocked, instead of doing nothing.</li>
+<li><strong>Collapse-mode bar gets a 🏠 home icon</strong>, immediately left of the group dropdown, and now lays out on three explicit lines (☰ Menu + persona · 🏠 + group · section buttons) instead of an unpredictable wrap.</li>
+</ul>
+<p><strong>Fixed</strong></p>
+<ul>
+<li><strong>Boot-time menu flicker.</strong> The sidebar's raw HTML bakes in one persona's full unfiltered menu as its literal starting markup; only JS running after parse rewrites it to the real persona's filtered one. The gap between the two was visible on every load. The sidebar now stays <code>visibility:hidden</code> until a <code>boot-ready</code> class — set as the very last line of boot, after both <code>setPersona()</code> and the embedded snapshot restore have run — reveals it already correct.</li>
+<li><strong>Self-inflicted explainer corruption, caught in the same release.</strong> The first pass at the per-section help toggle used a non-greedy regex to relocate each section's explainer block; for the handful whose explainer contained its own nested <code>&lt;div&gt;</code> (Quality, Compliance, Sensitivity), it stopped at the wrong closing tag and silently swallowed the section's live chart/table/controls into the collapsed help panel. Caught by an automated sweep for functional elements (tables with an id, canvases, inputs) trapped inside a help panel; fixed with a depth-counted matcher and re-verified across all 75 sections.</li>
+<li><strong>Group dropdown stretching to full width in collapse mode</strong> — <code>.gnav-select</code> was missing the same <code>width:max-content</code> fix already applied to <code>.gnav-persona</code> in v17.1, so once the 🏠 icon forced it onto its own line it stretched to fill the row instead of sitting next to the icon. Same fix applied.</li>
+</ul>
+<p><strong>Unchanged.</strong> No calculation path, section content or persona-reachable-section list is affected by any of the above beyond the ordering/renaming noted. Golden case bit-identical throughout every change in this batch, individually and cumulatively — verified via live-browser script-compile checks, DOM structural assertions and real UI interaction (clicks, drag-and-drop, persona switches) after each one, not just at the end.</p>
+</div>
+
+<div class="rel major">
+<h2>v17.2 <span class="tag">2026-08-02</span> <span class="tag">🧭 Story Mode</span> <span class="tag">🗂️ Session Persistence</span></h2>
+<h3>A guided narrative through the whole case, per-persona navigation control, and a browser-native safety net — three independent additions landing together</h3>
+<p>No shared theme beyond "shipped in the same batch" — each piece is additive and independently useful. Golden case bit-identical throughout (Y3 €769,788.9296875, run €1,007K), verified after every piece and again at the end of the batch.</p>
+<p><strong>New — Story Mode (SM-SPEC v0.1)</strong></p>
+<ul>
+<li><strong>🧭 Guided sequence, built on the Briefing persona.</strong> Rather than inventing new wizard machinery, this reuses the app's own pre-existing, persona-data-driven <code>seq</code> mechanism (the same one <code>presales</code> already had) — Briefing's sequence now walks Input → Levers → Governance → Analyse (Team &amp; Agents / Cost &amp; Economics / Delivery Metrics, one chip each) → Decide, 38 sections across 7 steps, with the existing Start/Next/Prev bar, step chips and progress percentage.</li>
+<li><strong>📖 "The story so far"</strong> — one new section, a one-page AS-IS → TO-BE narrative close (baseline vs target across team, cost, delivery, and — if the Modelling Engine is on — the P6 confidence grade), distinct from the detailed AS-IS vs TO-BE comparison tab. Closes the Decide step.</li>
+<li>Fixed a latent gap found while building this: the embedded boot-restore blob predated Presales's own guided sequence, so <code>presales.seq</code> was being silently wiped on every load. Patched alongside Briefing's new one.</li>
+</ul>
+<p><strong>New — Per-persona navigation control</strong></p>
+<ul>
+<li><strong>Section order is now per-persona</strong> (sparse override, falling back to the existing global default) rather than one shared order for every persona. Editable directly in Persona management's "Assigned sections" table, or synced in bulk from a persona's own guided sequence via a new "🧭 Sync section order to sequence" button — scoped to that one persona only, verified to never move another persona's menu.</li>
+<li><strong>⎘ Duplicate persona</strong> — copies a persona's menu membership and guided sequence into a new persona (order and compact-nav intentionally not copied, so the duplicate starts from a clean slate on those two).</li>
+</ul>
+<p><strong>New — Session Persistence (browser-native autosave)</strong></p>
+<ul>
+<li><strong>🗂️ Autosave, IndexedDB-backed, one record per browser tab.</strong> A rolling ~2s-debounced autosave of the working session, invisible and automatic — a safety net between deliberate saves (💾 HTML Snapshot, 📸 named Snapshots), never a replacement for them. Reload a tab and a non-blocking banner offers to restore where you left off.</li>
+<li><strong>Session manager</strong> (Import/Export tab, next to the Snapshot manager) — every tab's autosaved session in this browser, listed newest-first, individually restorable, renameable and deletable; a small header chip ("🗂 N other sessions") surfaces the others without interrupting whatever you're doing.</li>
+<li><strong>Multi-tab by construction, not by patch</strong> — each tab gets its own IndexedDB record (keyed by a <code>tabId</code> stable across reloads of the same tab, distinct per tab), so two tabs never clobber each other; a <code>BroadcastChannel</code> keeps an open session manager live across tabs. Capped at 20 records, oldest pruned first.</li>
+<li>Degrades safely: private/incognito or IndexedDB-disabled browsers show the toggle disabled with an explanation and the rest of the app is unaffected; quota-exceeded, corrupted-record, and the IndexedDB-specific <code>onblocked</code>/<code>onversionchange</code> multi-connection cases are all explicit, tested failure paths, not assumed.</li>
+</ul>
+<p><strong>Changed</strong></p>
+<ul>
+<li><strong>Persona selection now reads visually distinct from section navigation.</strong> The active-persona pill (sidebar) and the collapse-mode persona control were both the identical navy used for "current section" — confusing at a glance. Both are now amber, matching the app's existing "context/mode" colour language (e.g. the engagement-context badge).</li>
+<li><strong>Collapse-mode persona control is a dropdown, not a button row</strong> — a button per persona read as more menu items, which was exactly the confusion above; sized to content instead of stretching the full row.</li>
+<li><strong>Advanced-persona unlock also triggers from the "AgentCase" title</strong> (5 clicks within 2s), in addition to the existing "PERSONA" sidebar-label gesture — the sidebar label is <code>display:none</code> whenever a persona's compact-nav is on, which made the unlock gesture unreachable in exactly the personas most likely to need it.</li>
+</ul>
+<p><strong>Unchanged.</strong> No calculation path, no existing section, no other persona touched. Golden case bit-identical throughout every piece of this batch, individually and cumulatively — verified via direct save/restore round-trips (a marker value written, mutated away, and correctly restored), real UI clicks (not just console calls) on every new control, and a dedicated cap-enforcement test (26 records correctly pruned to 20).</p>
+</div>
+
+<div class="rel major">
+<h2>v17.1 <span class="tag">2026-07-31</span> <span class="tag">🏁 Golden Case Transition</span> <span class="tag">GCT-SPEC v0.1</span></h2>
+<h3>A governed path from the parametric golden case to the AME engine — one toggle, one comparison, one gated promotion</h3>
+<p>v17.0 shipped the Agentic Modelling Engine off by default, so it had never been exercised against the number everyone actually quotes. v17.1 answers the follow-on question — what would the golden case become under the new engine, and on what basis would it ever replace the one in use today — without ever putting the existing €770K reference at risk while that question is open. No modelling formula changes; the golden case is bit-identical throughout, including through every scenario in this release's own QA pass.</p>
+<p><strong>New</strong></p>
+<ul>
+<li><strong>⚙️ Master engine toggle</strong> — a single labelled pill in the top scenario bar ("Classic model" / "Modelling Engine"), visible from every section and persona, that turns P1, P2, P3 (Provisioned), P4 and P6 on or off together for the live case. Reuses each phase's own enable/disable function rather than duplicating logic; never touches a Provisioned/Constrained choice already made in P3's own section, and never enables P5 — both require data nobody has supplied yet.</li>
+<li><strong>🧪 AME reference snapshot</strong> — captures the live configuration as a second, distinct candidate reference alongside the protected golden case, tagged with which phases were active and which golden snapshot it was built from. At most one at a time; capturing a new one demotes the previous rather than allowing two candidates in play.</li>
+<li><strong>Golden vs AME comparison view</strong> — Y3 savings, run cost, NPV and payback side by side with signed deltas, a per-phase attribution breakdown, the AME reference's P6 case-confidence grade, and a staleness warning if the golden case has moved since the reference was built.</li>
+<li><strong>🏁 Promotion gate</strong> — replaces the golden case with the AME reference only when an internal owner is recorded and a decision about any external material citing the old figure is made explicit; a two-step confirmation; the superseded golden case is kept, unprotected, never deleted, for audit trail. Supports repeated promotion cycles.</li>
+</ul>
+<p><strong>Unchanged.</strong> No function delivered under AME-SPEC v0.2 or the v16.x line is modified. Golden case bit-identical throughout: Y3 saving €769,788.9296875, run cost €1,007K — verified after every new control, across two independent promotion cycles, a regression sweep of 14 tabs including all six Mod. Engine sections, and every pre-existing snapshot-manager action (export, baseline, delete).</p>
+</div>
+
+<div class="rel major">
+<h2>v17.0 <span class="tag">2026-07-31</span> <span class="tag">🧠 Agentic Modelling Engine</span> <span class="tag">AME-SPEC v0.2</span> <span class="tag">P0→P6</span></h2>
+<h3>A phased replacement of the parametric savings model with a behavioural one — seven opt-in phases, every one bit-identical to the golden case when off</h3>
+<p>AME-SPEC v0.2 lands in full: seven phases (P0 foundations plus P1–P6 modelling layers), each gated behind its own flag in a new <code>MODEL</code> namespace, each verified byte-identical against the golden case (Y3 €770K saving, run €1,007K) with its flag off, and each built by reusing an existing calculation path rather than duplicating it. A new <strong>Mod. Engine</strong> persona surfaces the six P1–P6 sections together for anyone evaluating the engine on its own.</p>
+<p><strong>New</strong></p>
+<ul>
+<li><strong>P0 — foundations.</strong> A dedicated <code>MODEL</code> global (<code>modelDefaults()</code> / <code>modelBoot()</code> / <code>modelStage()</code>), registered in <code>STATE_REGISTRY</code> so it snapshots and restores like any other state. Seeded numerics built from scratch to support every later phase: <code>mulberry32</code> PRNG, <code>bisect()</code>, <code>quantile()</code>, <code>betaFromMeanCI()</code>.</li>
+<li><strong>P1 — loop convergence economics (🔁 Model — Convergence).</strong> Replaces the flat internal-token multiplier with an acceptance-probability-driven expected iteration count (<code>lceExpectedIter</code>/<code>lceEscapeRate</code>), calibrated to reproduce today's multiplier exactly at boot so the switch-on moment is continuous, not a jump. Feeds <code>loopInternalTokenCost()</code> directly. 3 logic checks (CC-LC-01…03).</li>
+<li><strong>P2 — endogenous verification tax (🧪 Model — Verification).</strong> Replaces the flat verification-tax dial with a rate derived from artefact criticality class, base failure probability and reliability (<code>evtEndogenousTaxRate</code>), exposing a regulatory ROI ceiling (ρmax) that a client can hit even at perfect reliability — independent of the pre-existing model's assumption that more reliability always means more saving. Feeds <code>verificationTaxRate()</code>. 5 logic checks (CC-VT-01…05).</li>
+<li><strong>P3 — supervision priced as a decision (👁️ Model — Supervision).</strong> Two named modes exposed as a toggle: <strong>Provisioned</strong> (solve for the headcount the workload needs and price it — the existing hybrid formula, never capped) or <strong>Constrained</strong> (fix headcount and let it cap achievable agentic capacity — its mathematical inverse). Includes a DORA read-out (deployment frequency, change failure rate, lead time) pulled forward from P5 so a supervision decision can be read against delivery reality in the same tab. 5 logic checks (CC-SC-01…05).</li>
+<li><strong>P4 — stochastic layer &amp; baseline drift (🎲 Model — Stochastic).</strong> A second, deliberately separate Monte Carlo layer from the pre-existing one: genuine Beta/Triangular/Lognormal draws (Lanczos log-gamma, continued-fraction incomplete beta, closed-form triangular inverse, Box-Muller normal) over the named P1/P3 economic drivers, correlated within an organisational vs. exogenous group via a one-factor Gaussian copula. Ships a tornado chart and a convergence trace. Alongside it, counterfactual baseline drift (CBD) separates gross savings from savings actually attributable to the programme once a counterfactual cost trend is assumed. 3 stochastic checks (CC-MC-01…03) + 1 CBD check (CC-CB-01).</li>
+<li><strong>P5 — flow &amp; value model (🌊 Model — Flow &amp; value).</strong> Little's Law cycle time (<code>flowCycleTime</code>/<code>flowWip</code>) throttled by P3's own supervision cap — a supervision-constrained team measurably slows delivery in the same model that priced it. A sponsor-owned time-to-market value calculation (<code>flowValue</code>) sits alongside, deliberately <em>not</em> auto-seeded: margin-per-month is revenue data no engineering default can honestly stand in for, so the panel shows "hidden, not zero" until a sponsor supplies it, guarding against double-counting against the existing cost-out savings. 1 logic check (CC-FL-01).</li>
+<li><strong>P6 — evidence ledger (📋 Model — Evidence).</strong> Every named driver from P1–P5 gets an evidence entry — tier (MEASURED/BENCHMARK/ASSUMPTION), source, as-of date, owner — weighted by P4's real tornado influence rather than an arbitrary priority list, rolling up into a stage-benchmarked case-confidence grade (A–D) and a ranked upgrade path showing which single piece of evidence would move the grade fastest. Deliberately positioned as a companion to the existing Due-diligence register, not a replacement. 3 logic checks (CC-EV-01…03).</li>
+<li><strong>🧠 Mod. Engine persona</strong> — a new persona reaching Home plus all six P1–P6 sections, for reviewing the modelling engine as a coherent whole independent of the main business-case flow.</li>
+<li><strong>22 new logic checks</strong> registered in the existing <code>AUDIT</code> framework (CC-LC/CC-VT/CC-SC/CC-MC/CC-CB/CC-FL/CC-EV), every one gated on its phase's flag so they are inert on the golden case.</li>
+</ul>
+<p><strong>Changed</strong></p>
+<ul>
+<li>The pre-existing flat verification-tax function is retained, renamed <code>legacyVerificationTaxRate()</code>, and used as P2's fallback when the flag is off — the switch is a single call-site branch, not a rewrite.</li>
+</ul>
+<p><strong>Unchanged.</strong> Every phase is additive and flag-gated: with P0–P6 off, <code>model()</code>, <code>phaseScope()</code>, <code>verificationTaxRate()</code>, <code>targetTeam()</code> and every existing cost/saving path are byte-for-byte what they were in v16.3. Golden case verified bit-identical after every phase, individually and cumulatively: Y3 saving €769,788.9296875, run cost €1,007K. Delivered phase by phase (engine, then UI, then verification) against AME-SPEC v0.2, each phase's live-browser verification run before moving to the next.</p>
+</div>
+
+<div class="rel major">
+<h2>v16.3 <span class="tag">2026-07-27</span> <span class="tag">Version marker</span> <span class="tag">Golden-case reference</span></h2>
+<h3>A marker release — version strings unified to v16.3, the stale build constant corrected, no functional change</h3>
+<p>No modelling, UI or data change. The build is byte-for-byte v16.2 with only the version identifiers advanced, so v16.3 can serve as a clean golden-case reference point. Verified on a fresh load: golden case bit-identical at Y3 €770K saving / run €1,007K, zero console errors.</p>
+<ul>
+<li><strong>Version strings unified to v16.3</strong> — the <code>&lt;title&gt;</code> and the header <code>&lt;strong&gt;AgentCase v16.3&lt;/strong&gt;</code> badge.</li>
+<li><strong>Stale build constant corrected</strong> — <code>window.AgentCaseArch.VERSION</code> was left at <code>'16.0.0'</code> through the v16.1 and v16.2 builds, so Playwright assertions and every version-tagged export (<code>appVerTag()</code>) were reporting the wrong build. Now <code>'16.3.0'</code>, matching the title.</li>
+<li><strong>Schema anchor unchanged</strong> — snapshot <code>schemaVersion</code> stays <code>'15.0'</code> by design (it marks schema compatibility, not the build number), so snapshots round-trip across every v15.x/v16.x build exactly as before.</li>
+</ul>
+</div>
+
+<div class="rel major">
+<h2>v16.2 <span class="tag">2026-07-27</span> <span class="tag">🧬 Factory generation</span> <span class="tag">Weekly time base</span> <span class="tag">Monthly adoption curve</span></h2>
+<h3>The Factory group stops shipping a fictional dataset and starts generating from the case in front of you</h3>
+<p>The Factory group now generates its whole meta-model from the current case — over its own horizon, on its own calendar, with adoption following a monthly curve through the three annual breakpoints. No euro figure moves: golden case bit-identical at Y3 €770K saving, run €1,007K.</p>
+<p><strong>New</strong></p>
+<ul>
+<li><strong>🧬 Generate data</strong> — one button in Factory Model. Builds the whole meta-model (Vision → Portfolio → Epic → Feature → Story → Task, releases, RCs, approvals, deployments, commits, builds, gates, monitoring, feedback) from the current scope, over the case horizon, anchored on the Gantt calendar. Deterministic: same case and seed give the same output.</li>
+<li><strong>Weekly time base</strong> — events carry week-resolved timestamps and follow the phase schedule: a phase opening in week 34 produces its artefacts in week 34. Nothing is emitted for a week in which no phase is open.</li>
+<li><strong>Monthly adoption curve</strong> — adoption progresses from 0 through the three annual breakpoints (months 12, 24, 36) as a monotone monthly curve rather than three annual steps. Generated agent authorship follows it: 31% → 42% → 54% → 62% by quarter on the golden case. The curve drives event generation only; the cost model keeps its annual figures.</li>
+<li><strong>Two-step confirmation</strong> — generating over existing data shows the actual record counts that will be deleted and requires a second, deliberate click. Cancel is the default.</li>
+<li><strong>Minimum-sample suppression</strong> — a rate computed over fewer than 5 events shows the sample size instead of a number. Two deployments give a change-failure rate of 0, 50 or 100%; reporting that as a measurement would manufacture precision the data cannot support. Counts and scope-derived task shares are exempt.</li>
+<li><strong>Generator parameters in the due-diligence register</strong> — all 25 appear as PC4 (unvalidated), editable in place, with the <em>Used in</em> column showing <strong>display</strong>: they shape illustration, not euros.</li>
+</ul>
+<p><strong>Fixed</strong></p>
+<ul>
+<li><strong>Engineering view was quadratic (F10)</strong> — every commit row rendered a <code>&lt;select&gt;</code> holding the full task list, so the cost grew as commits × artefacts. Invisible with the 18-record demo dataset; it exhausted a 2 GB heap at 662 commits. Rendered rows are now capped at 100 with a "showing the first 100 of N" notice, and the task option list is memoised. The underlying arrays are untouched and every KPI still reads all of them.</li>
+</ul>
+<p><strong>Unchanged.</strong> <code>model()</code>, <code>phaseScope()</code>, <code>computeGlassCeiling()</code>, <code>monthlySeries()</code> and every cost path are untouched by the generator. Golden case €770K / €1,007K to the last decimal — before generation, after generation and after clearing. Human supervision never falls below an artefact's floor in any week of the horizon, asserted in test. Delivered as five ordered patch scripts with exact match-count assertions, each validated by <code>node --check</code> and a golden-case non-regression run.</p>
+<div class="note">⚠️ <strong>Read this before showing it to a client.</strong> Generated events are simulated from the case's assumptions, not measured data, and the provenance strip says so on screen and in every export. Two figures will differ, and the difference is deliberate: reading the ramp values as breakpoints in time makes the curve's annual averages (11/41/74% on the golden case) lower than the model's annual figures (25/55/85%). The model states the year's representative level; the curve states the path.</div>
+</div>
+
+<div class="rel major">
+<h2>v16.1 <span class="tag">2026-07-26</span> <span class="tag">🧾 Due diligence</span> <span class="tag">Auditability</span></h2>
+<h3>No new modelling capability, one purpose — make the model auditable</h3>
+<p>Eight verified defects fixed, sixteen internal coefficients surfaced for the first time, and a new register of what a client must confirm for the case to be defensible. No euro figure moves — golden case bit-identical at Y3 €770K saving, run €1,007K.</p>
+<p><strong>New</strong></p>
+<ul>
+<li><strong>🧾 Due diligence</strong> — new section in the Reference &amp; Share group, present in every persona. Consolidates 52 elements requiring client confirmation: inputs (consumed from the Assumptions register, not duplicated), metric anchors, and the coefficients embedded in the calculation path.</li>
+<li><strong>Embedded-coefficient inventory</strong> — 16 coefficients that drive the euro result surfaced with their live value, location and effect. Nine of them are editable nowhere in the interface, so until now the question "where does that number come from?" had no answer, even internally.</li>
+<li><strong>€-weighted coverage</strong> — one-at-a-time +20% perturbation on Y3 savings, run on demand and cached. Function-embedded coefficients are measured by temporarily wrapping the binding, so no refactor of the calculation path is required and nothing is left changed. Answers the only question that matters: how much of the euro result rests on something nobody has checked.</li>
+<li><strong>Due-diligence pack</strong> — Excel export grouped by confirming role (DSI, delivery, quality, certification, engagement, product, HR), phrased as evidence requests in the client's terms rather than as parameter names. Annotated packs re-import; the import path writes state, owner, due date and note only and cannot change a model value.</li>
+<li><strong>Editable metric anchors</strong> — DORA and throughput anchors extracted from hardcoded literals into state, so a client-specific baseline can be set.</li>
+</ul>
+<p><strong>Fixed</strong></p>
+<ul>
+<li><strong>Anchor overshoot (F9, F9b)</strong> — <code>perfRel()</code> is clamped to 1.4, but three functions each carried their own unclamped interpolation. The build displayed a lead time of −2.1 d, a review cycle of −2 h and a doc-sync rate of 103%, plus eleven values beating the target they were measured against. Every interpolation now clamps to the declared target. 14 displayed values change across Velocity, Productivity, Quality and the KPI scorecard; Y0–Y2 are unchanged — only the overshoot is corrected.</li>
+<li><strong>Factory KPIs ignored the scope (F1)</strong> — <code>fmAllTasks()</code> returned the whole 53 + 370 catalogue, so autonomous-completion, human-intervention and agent-test-share were catalogue constants that never responded to the case. Now scope-aware: 423 → 10 tasks on the default scope.</li>
+<li><strong>Lead time stated three ways (F6)</strong> — the KPI scorecard carried "14 wk → 6.5 wk" and "2-4 wk → 2-4 d" while Velocity carried "21 d → 1 d". Single source now.</li>
+<li><strong>Quality target uneditable and invisible (F8)</strong> — the target was consumed by the interpolation but never rendered and never editable, so an operator could set a client's real baseline but not the target it was measured against. Now an editable field per row.</li>
+<li><strong>Deploy frequency divisor (F2)</strong> — a single deployment returned 0 and two close ones inflated the rate. A single point has no observable frequency and now reports as such.</li>
+<li><strong>Production environment keyed by name (F3)</strong> — renaming the environment silently zeroed three KPIs. Now keyed on an <code>isProd</code> flag with a sequence fallback.</li>
+<li><strong>Cost per story point retired (D2)</strong> — story points are a team convention, not a measurable property. Replaced by figures derived from the model.</li>
+</ul>
+<p><strong>Changed</strong></p>
+<ul>
+<li><strong>Glossary corrected (AL7)</strong> — the ramp was described as an "S-curve adoption ramp". No S-curve exists: it is three annual anchors held constant within each year. The glossary now says so.</li>
+<li><strong>Explanation surfaces</strong> — the ramp (Parameters), the four-point reading resolution (Velocity) and the month-12/24 step (Monthly) are now explained in place, as facts rather than disclaimers.</li>
+<li><strong>Provenance notice</strong> — the Due diligence tab states permanently that the shipped defaults are engineering estimates with no cited source, and that confirming them is what the register is for.</li>
+</ul>
+<p><strong>Unchanged.</strong> Calculation core byte-identical across 15 functions (<code>model</code>, <code>phaseScope</code>, <code>computeGlassCeiling</code>, <code>targetTeam</code>, <code>verificationTaxRate</code>, <code>monthlySeries</code>, <code>perfRel</code> …). Golden case Y3 €770K saving / run €1,007K, to the last decimal. KPI economics table identical row for row; payback, NPV and the financial sheets untouched. Delivered as seven ordered patch scripts with exact match-count assertions, each validated by <code>node --check</code> and a golden-case non-regression run.</p>
+</div>
+
+<div class="rel major">
+<h2>v16.0 <span class="tag">2026-07-25</span> <span class="tag">Onboarding UX</span> <span class="tag">Hide-menu mode</span> <span class="tag">📊 Factory KPIs</span></h2>
+<h3>Navigation and onboarding UX — a dynamic Welcome, a compact hide-menu mode, and the Factory KPIs surfaced as their own section</h3>
+<p>A UX-only release on top of the v15.8 Factory meta-model: nothing here is read by <code>model()</code>, <code>phaseScope()</code> or any cost/saving formula, and the golden case (Y3 €770K, run €1,007K) stayed bit-identical throughout.</p>
+<ul>
+<li><strong>Dynamic Welcome.</strong> The Home page now builds one card per navigation group from the live group list and the current persona's reachable sections (<code>renderHomeCards()</code>), each card carrying the group's own editable description and deep-linking to the first section of that group. Groups a persona can't reach produce no card, so the Welcome reshapes itself per persona instead of listing a fixed set.</li>
+<li><strong>Hide-menu compact mode.</strong> A ☰ toggle collapses the sidebar and replaces it with an in-content group nav bar above the section title (<code>toggleMenuHidden()</code> / <code>renderGroupNavBar()</code>), so an operator can move within the current group without the full sidebar. The mode is also a per-persona default (<code>compactNav</code>, editable in Persona management) — the Sales persona now starts compact.</li>
+<li><strong>📊 Factory KPIs surfaced as a section.</strong> The 14 DORA + agentic metrics introduced with the v15.8 Factory meta-model now have their own tab, computed live from the Release Pipeline / Engineering / Factory Model data and bindable as Board variables like any other metric.</li>
+</ul>
+<p>Verified: golden case bit-identical; Welcome cards regenerate on persona change; the hide-menu toggle and the per-persona compact default both behave as authored; no console errors.</p>
+</div>
+
+<div class="rel major">
+<h2>v15.8 <span class="tag">2026-07-24</span> <span class="tag">🏭 Factory meta-model</span> <span class="tag">11-group navigation</span> <span class="tag">Accessibility</span></h2>
+<h3>A canonical Software/Agentic Factory meta-model, a reorganised navigation, and an accessibility pass — all additive, golden case untouched</h3>
+<p>The largest single-session addition to date: an entire Software/Agentic Factory meta-model layered alongside the existing engine as pure metadata and display, plus a navigation reclassification and a sidebar contrast fix. Nothing here is ever read by <code>model()</code>, <code>phaseScope()</code> or any cost/saving formula — the golden case (Y3 €770K, run €1,007K) stayed bit-identical through every change, verified against a genuinely fresh cold-boot each step.</p>
+<ul>
+<li><strong>🏭 Software/Agentic Factory meta-model — a graph, not a tree, built in six verified phases.</strong> A new <strong>🏭 Factory Model</strong> section holds the Business + Delivery domain (Vision → Portfolio → Epic → Feature → Story), each Story optionally linked down to the existing 53 SDLC / 370 regulatory artefacts (a "Task") and each Feature to the SDLC phases it runs through — extending those records with optional <code>storyId</code>/<code>capability</code>/<code>agentActivityType</code> and <code>featureIds[]</code> fields only, never renaming or replacing anything the financial engine reads.
+<ul>
+<li><em>🚀 Release Pipeline</em> — a deliberately separate flow (Release-on-Demand, not a sprint/PI descendant): Release → Release Candidate → Approval → Deployment → Environment (6 seeded promotion stages) → Monitoring → Feedback → Backlog, with polymorphic Release Items (Story/Feature/Fix/Technical Change) and orphan-on-delete discipline throughout.</li>
+<li><em>⚙️ Engineering</em> — Commit → Build → Build Artifact → Quality Gate → Integrated Product (illustrative, operator-entered — AgentCase has no live CI/CD to pull from). "Build Artifact" is deliberately renamed from the referential's plain "Artifact" to avoid colliding with AgentCase's existing SDLC/regulatory "artefact" vocabulary.</li>
+<li><em>📅 Factory Timeline</em> — a brand-new, <strong>separate</strong> section (the existing 📅 Gantt/Timeline is untouched, byte-for-byte): a Business-chain structural view plus a real calendar timeline of every dated Release-pipeline/Engineering event across seven swimlanes.</li>
+<li><em>14 DORA + agentic KPIs</em> (deployment frequency, promotion lead time, rollback/failed-deploy rate, approval duration, autonomous-completion &amp; human-intervention rate, quality-gate pass/rework rate, commit volume, agent-driven test share, build success rate, …) joined into the existing Variable registry so Board cards can bind to them like any other metric.</li>
+<li><em>Full Excel round-trip</em> — 18 new sheets export and re-import with defensive FK validation, verified byte-perfect through an export → wipe → re-import cycle.</li>
+<li><em>Demo-dataset loader and delete-all control</em> — a "🧪 Sample data" card on the 🏭 Factory Model tab loads a realistic, cross-linked dataset spanning ~2.7 months (57 dated events across all seven timeline lanes) or clears every Factory array back to empty, both gated behind an arm-then-confirm step and both runtime-only, so the protected golden snapshot always reflects an empty Factory meta-model.</li>
+</ul></li>
+<li><strong>Navigation reorganised from 7 groups into 11 functional groups.</strong> The overloaded <code>LEVERS</code> (21 sections) and <code>DECIDE</code> (23 sections) catch-alls were split by purpose into 🎛️ Inputs, 🎚️ Levers, 👥 Team &amp; Agents, 💰 Cost &amp; Economics, 📈 Delivery Metrics, 🎯 Decide, 🚀 Go-to-Market, 🏭 Factory, 🛡️ Governance &amp; Compliance, 🏛️ Reference &amp; Share and 🔧 Configure — a pure <code>SECTION_CATALOG[i].group</code> reassignment, since the nav, persona tables and Excel sheets are all already data-driven off <code>GROUPS</code> × <code>SECTION_CATALOG</code>. The Sales persona now reaches every section except the Factory and Configure groups.</li>
+<li><strong>Section Dependencies extended to match the real calculation chain.</strong> The 🔗 dependency map (untouched since v14.3, covering 25 of 66 sections) gained the three genuinely missing calc-chain edges found by code trace — Location strategy (blended day-rate → setup/run/financial), Run-team sizing (AgentOps cost → run/financial) and the Agent Directory external-rework loop (→ financial) — with the ~20 other candidates confirmed as correctly-excluded display/leaf views.</li>
+<li><strong>Architecture chapter refreshed to describe the instant-t build.</strong> The 🏛️ Architecture — Layers pages dropped all version-history framing (staged "Phase N is now done" narrative, per-lot version badges) in favour of a plain present-tense description of what is wired today, plus a short "known limits &amp; opt-in switches" note; the Factory meta-model and Section Board are now both documented as current additive subsystems.</li>
+<li><strong>Accessibility — sidebar group headers fixed.</strong> The group labels (<code>#8a94b0</code> on white, ~3.0:1 — below the WCAG AA 4.5:1 floor for small text) now sit on a pale ice band with dark navy text (~9:1, passes AA + AAA), which also visually chunks the 11 groups.</li>
+</ul>
+<p>Verified throughout: golden case bit-identical after every change (checked via an isolated fresh cold-boot, since the dev browser tab does not reliably give a true reload); all 67 tabs render with zero console errors; the full Factory Excel round-trip is byte-perfect; the new group scheme survives a fresh load (confirmed neither <code>GROUPS</code> nor <code>SECTION_CATALOG</code> is captured in the embedded boot-restore snapshot before relying on it).</p>
+</div>
+
+<div class="rel major">
+<h2>v15.7 <span class="tag">2026-07-23</span> <span class="tag">📅 Gantt/Timeline</span> <span class="tag">Golden-case protection</span> <span class="tag">Agentic Setup</span></h2>
+<h3>A protected reference case, versioned exports, and a delivery-schedule visualisation rebuilt twice against real feedback</h3>
+<p>The largest single-session addition since the Section Board: a new 📅 Gantt/Timeline section modelling the whole engagement — plus golden-case protection and a consolidated Agentic Setup tab. The Gantt went through two substantial rebuilds after direct user correction ("nothing aligned with reality", "you need at least one full phase cycle for 1 release") — both are recorded here since they materially shaped the final design. No calculation formula touched anywhere; golden case (Y3 €770K, run €1,007K) re-verified after every change, dozens of times.</p>
+<ul>
+<li><strong>Golden case is now a protected, un-deletable snapshot, with a one-click reset.</strong> On first boot (or after a snapshot/Excel/HTML restore), <code>ensureGoldenSnapshot()</code> captures the fully-restored reference state — deterministically, at the end of <code>applySnapshotState()</code>, so it can never race the restore — and pins it first in the Snapshot manager as <code>protected</code>/<code>isGolden</code>, with delete blocked and a "🔄 Reset to golden case" banner button (<code>snapResetToGolden()</code>).</li>
+<li><strong>Every export now carries the app version in its filename</strong>, via new <code>appVerTag()</code>/<code>appVerFileTag()</code>/<code>withVerTag()</code> helpers reading the single <code>window.AgentCaseArch.VERSION</code> source of truth: named snapshots, the downloaded HTML snapshot (<code>AgentCase_v15_7_Snapshot_&lt;timestamp&gt;.html</code>), and both Excel exports (<code>..._v15_7_Parameters_&lt;timestamp&gt;.xlsx</code> / <code>..._Financial_...</code>).</li>
+<li><strong>📅 Gantt/Timeline — a new section modelling the whole engagement on one shared calendar.</strong> Two bands: the <strong>Transformation program</strong> (Discover→Calibrate→Validate→Pilot &amp; Prove, from the 🧭 AI Readiness roadmap, then Agentic Build/Run) and the <strong>Delivery rollout</strong> (every in-scope SDLC phase, regulatory artefact and 🔶 Cross-cutting work), both anchored to real dates.
+<ul>
+<li><em>Weighted, not static.</em> Phase/artefact/cross-cutting durations are sized by their real effort weight (<code>a.w = effort × lifecycle</code>, the same basis as every other scope aggregate) instead of the old static <code>p.sdlc</code> field, and compressed by an automation-velocity ramp (derived from the Y1→Y3 adoption ramp) — the same weight takes visibly less time later in the engagement.</li>
+<li><em>Calendar-anchored, overlapping rollout — rebuilt after user correction.</em> The first version placed phases on an abstract sprint/release axis decoupled from the calendar; told "nothing aligned with reality", it was rebuilt so every phase sits directly on the real calendar, starting in ramp-up order and <strong>overlapping</strong> (pipelining — different artefacts in different phases at once), each still sized by its own weight/velocity.</li>
+<li><em>A release is where a full cycle actually completes — not a calendar slice.</em> A follow-up correction ("il faut au moins un cycle de phase complet pour 1 release") removed the arbitrary monthly release ruler entirely; the 🏁 marker now sits at the real point every in-scope phase (and cross-cutting) has finished, labelled simply "🏁 full cycle complete".</li>
+<li><em>Editable ramp-up sequence, round-tripped.</em> Every phase and artefact (SDLC + regulated) gained a numeric <code>seq</code> (seeded from natural order), editable in 🎯 Scope, persisted via the snapshot library and new Excel <code>Seq</code> columns on the <code>SDLC Artifacts</code>/<code>Reg Artifacts</code> sheets.</li>
+<li><em>Same-seq items start together — at every level.</em> A shared <code>ganttGroupLayout()</code> helper groups participants by seq instead of staggering them as if strictly sequential: two phases (or cross-cutting) tied on seq now start at the same point, and the identical rule was extended one level down to the artefacts revealed by expanding a phase or Cross-cutting.</li>
+<li><em>Cross-cutting sized by its own weight, not full-width.</em> Gained its own weight/supervision computation and an editable "🔶 Cross-cutting seq" control, participating in the same layout as real phases instead of always spanning the entire delivery window.</li>
+<li><em>Knowledge Hub</em> lives in the program band as two rows (Build/Setup, Run) when enabled, its Build/Setup row now sized by its own new "Setup duration (days)" input (🧠 Knowledge hub section) rather than borrowed from the Agentic Build ramp.</li>
+<li><em>Client-view control over the onboarding sequence.</em> A "Display Discover/Calibrate/Validate/Pilot &amp; Prove in Gantt/timeline" toggle (🚀 Client view, on by default) hides all four onboarding rows together when off — and genuinely reshapes the downstream sequence (Agentic Build/Run start right at the roadmap's start date instead of after onboarding), not just hiding bars.</li>
+<li>Each row shows two bars — translucent <em>activity</em> span and solid <em>human-supervision</em> subset — and phases/Cross-cutting expand (▶) to their artefacts.</li>
+</ul></li>
+<li><strong>Roadmap defaults updated</strong> — Validate 6→4 weeks, Pilot &amp; Prove 12→6 weeks — which surfaced (again) a stale embedded boot-restore snapshot silently re-applying its own old values over fresh HTML defaults on every load; fixed the same surgical way as the earlier nav-config incident (patched only the two stale <code>dom.values</code> entries, byte-identical otherwise).</li>
+<li><strong>⚙️ Agentic Setup consolidated into its own tab.</strong> A new "Setup duration (months)" input now directly drives the Gantt's Agentic Build ramp (replacing an invisible auto-clamped heuristic); the existing amount inputs were relabelled to <strong>Tooling &amp; infra</strong> / <strong>Training &amp; change</strong> / <strong>Coaching</strong> / <strong>Governance</strong>; and the whole "⚙️ Agentic Setup &amp; Run" card was relocated (ids can't be duplicated) from the Params tab into the 🧱 Agentic Setup tab itself, so it can be both viewed and edited in one place.</li>
+</ul>
+<p>Verified throughout: golden case bit-identical after every one of the changes above, including both Gantt rebuilds and the embedded-snapshot patch; the velocity ramp visibly compresses later work (a heavier, later phase rendered shorter than a lighter, earlier one); equal-seq synchronisation confirmed at the phase, cross-cutting, and artefact levels; the onboarding toggle reshapes downstream timing (Agentic Build start moves from 11.5% to 0% of the calendar) while the calendar origin itself never changes; no duplicate DOM ids after the Agentic Setup relocation; no console errors at any point.</p>
+</div>
+
+<div class="rel major">
+<h2>v15.6 <span class="tag">2026-07-22</span> <span class="tag">Board templates</span> <span class="tag">Card sequencing</span></h2>
+<h3>A comprehensive All-in-One template, "template" terminology throughout, and per-card display order</h3>
+<p>A focused follow-on to the v15.5 Section Board. Three operator-driven refinements, no calculation formula touched; golden case (Y3 €770K, run €1,007K) re-verified after every change.</p>
+<ul>
+<li><strong>New "🧩 All-in-One dashboard" template</strong> (Levers group) — a comprehensive consolidated section. Rather than hand-listing cards, the template-creation path was generalised to support a <code>buildCards</code> generator, and the All-in-One one produces <strong>≥ 2 cards for every section that owns variables</strong> (54 cards across 27 sources in the shipped case: two GLOBAL headline cards plus two per real section), each sourced to and goto-targeting its own section, binding that section's own variables first and padding from GLOBAL when a section is thin. Because it's generated, it stays in sync automatically as the variable registry grows. The existing four templates (Build / Lever / Analyse / Decide) are unchanged — they still seed their single default card through the same generalised path.</li>
+<li><strong>"Archetype" terminology retired in favour of "template"</strong> across every user-facing surface — the Board intro, the section-catalog descriptions, the create-panel text, each dynamic section's own description, and the Excel <code>Dynamic Sections</code> sheet column header (Archetype → Template). The internal identifiers (<code>ARCHETYPES</code>, <code>d.archetype</code>) are unchanged — invisible to the user, and renaming them would be churn with no benefit.</li>
+<li><strong>Per-card display sequence</strong> — cards gained an editable <code>CARD_SEQ</code> (a numeric <strong>Seq</strong> column, first in the Configure card table, mirroring how body rows already work). Cards now render sorted by Seq everywhere: the section's own results tab, the Configure preview, and the editor table. New cards auto-take <code>max(seq)+1</code>; the All-in-One template numbers its cards 1, 2, 3… in generation order. Round-trips through Excel (new <code>Seq</code> column on the <code>Dynamic Section Cards</code> sheet). Backward-compatible: cards saved before this default to Seq 0 and keep their insertion order under the stable sort.</li>
+</ul>
+<p>Verified: All-in-One creates 54 cards with ≥ 2 per source section and renders in one pass with zero console errors; reordering a card's Seq (e.g. to −1) correctly moves it to the front of the results grid; no user-visible "archetype" text remains anywhere in the Board or a created section; Seq round-trips through export→import; golden case bit-identical throughout.</p>
+</div>
+
+<div class="rel major">
+<h2>v15.5 <span class="tag">2026-07-20</span> <span class="tag">Section Board</span> <span class="tag">Variable registry</span></h2>
+<h3>A new operator-configurable dashboard subsystem, built to spec then substantially refined against real use</h3>
+<p>The largest single addition since the v14.17→v14.20 architectural lots: a full "Section Board" feature (per <code>AgentCase_Spec_SectionBoard.md</code>) letting an operator create first-class, persona/group-assignable sections from an archetype, each with its own card set and body rows bound to live model variables — plus a full pass of iterative refinement once the first version was in use. No calculation formula touched anywhere; golden case (Y3 €770K, run €1,007K) re-verified after every change below, dozens of times.</p>
+<ul>
+<li><strong>Dynamic sections, built from 4 archetypes</strong> (🧱 Build, 🎚️ Lever, 📈 Analyse, 🎯 Decide, each with sensible default cards/rows) — created from the 📊 Board tab, each gets a real tab, its own <code>SECTION_CATALOG</code> mirror entry, a dynamically-created DOM host and <code>TABRENDER</code> registration, and behaves exactly like a built-in section: same group/order/persona-assignment machinery, zero special-casing. Full cascade-delete (catalog mirror, DOM node, <code>TABRENDER</code> entry, persona membership, any dangling <code>CARD_SOURCE_SECTION</code>/<code>CARD_TARGET_SECTION</code> pointers from other sections' cards).</li>
+<li><strong>"The Board holds no cards of its own" — a mid-flight architectural pivot.</strong> The first build gave the Board tab its own Card Library (one auto-seeded card per static section) and a Board composition/grid with a live aggregate. Once in use, the call was made to remove all of it: <code>CARD_LIBRARY</code>, <code>BOARD_LAYOUT</code>, the Board's own card grid, and their 2 Excel sheets are gone entirely. The Board is now purely the <strong>configuration surface for dynamic sections</strong> — every card lives inside a dynamic section's own <code>cards[]</code>, never in a shared library.</li>
+<li><strong>Configuration fully separated from results.</strong> A dynamic section's own tab now displays results only (its card grid + body-row values, read-only) with an editable <strong>description</strong> shown under the title. All editing — cards, rows, the description, and a live non-clickable <strong>preview</strong> of the section's own cards — happens in a ⚙️ Configure panel that expands inline in the Board tab's "Dynamic sections" registry, reusing the exact same card-rendering helper (<code>dynCardHtml()</code>) as the results view so the preview can never drift from reality.</li>
+<li><strong>Goto: a real bug found and fixed.</strong> A card's click-to-navigate target (<code>CARD_TARGET_SECTION</code>) defaulted to the section's own id with no field to change it — clicking a card just silently re-landed on the page you were already on. Added an editable <strong>Target</strong> picker (and a small badge in each card's top-right corner naming its target) so goto genuinely goes somewhere.</li>
+<li><strong>Variable registry grown from 22 to 114 entries, in three passes</strong>, each verified against the real computing function before being added (no guessed formulas): first broadened coverage from 6 to ~21 sections (financial, commercial, compliance, quality, velocity, productivity, risk, decision, montecarlo, agent-dir, token-econ, phase-art, opmodel, loc-strat, strategies, plus artefact/scope-selection counts); then a detailed second pass added ~34 more (params, setup, team-in/out, ratecard, financial detail, knowledge, opmodel detail, maturity, readiness); then every one of the app's <strong>19 checkboxes</strong> was exposed as a bindable variable via a new <code>BOOL</code> canonical format (renders <code>✓ On</code>/<code>✗ Off</code>). A new "Variable catalog" reference table at the bottom of the Board tab lists all 114 with their source, format and live current value.</li>
+<li><strong>Source-scoping usability fixes.</strong> Body rows were hard-locked to their owning section's (always-empty) scope, so their Var picker was permanently stuck at the 15 GLOBAL variables regardless of any card's Source — rows gained their own editable Source picker, mirroring cards. Separately, <strong>Source</strong> was the last column in both the card and row editor tables, after the variable pickers it controls — reordered to appear first, with a one-line hint, since it was easy to miss and looked like a hard 15-entry limit rather than a "change Source to unlock more" affordance. Every variable-picker option is now also prefixed with its source section, e.g. <code>[Quality] Test coverage Y3</code>.</li>
+<li><strong>Key1/Key2 custom labels.</strong> Each card's Key1/Key2 slot can now carry an optional label (defaults to the bound variable's own name) rendered as "Label: value" in the card's subtext — editable via a small input under each variable picker in the Configure panel.</li>
+<li><strong>A real pre-existing bug found and fixed along the way</strong>: the file carried an embedded <code>&lt;script data-agentcase-snapshot&gt;</code> restore block (dated 2026-07-17, from before the Section Board existed) that silently re-applied stale <code>GROUPS</code>/<code>PERSONA_SECTIONS</code>/<code>sectionGroups</code> on every single page load — masking any code-level edit to a section's group/order (a "move X to Y" request would appear to do nothing). A first attempt to strip the whole block broke the golden case outright, revealing the same embedded snapshot was <em>also</em> the sole source of the calculation-relevant defaults (team composition, rate card, selected artefacts). Fixed correctly: reconstructed the snapshot, surgically removed only the three navigation-structural keys, and re-embedded the rest — golden case restored, and section moves now take effect immediately as authored.</li>
+<li>Excel round-trip extended throughout: <code>Dynamic Sections</code>/<code>Dynamic Section Cards</code>/<code>Dynamic Section Rows</code> sheets gained Description, Source Section (for rows), and Key1/Key2 Label columns; the two Board-owned sheets (<code>Card Library</code>, <code>Board Layout</code>) were removed along with the feature they served.</li>
+</ul>
+<p>Verified throughout: every one of the 114 variable getters executes with zero errors on a fresh load (spot-checked against the app's own render functions for the trickiest — commercial model, Monte Carlo, decision engine, operating-model topology); goto correctly re-targets after editing; description and Key1/Key2 labels round-trip live and through Excel; cascade-delete leaves no dangling references; the Configure-panel preview matches the results view exactly (shared renderer); golden case bit-identical on every check, including immediately after the snapshot-masking fix. No console errors.</p>
+</div>
+
+<div class="rel major">
+<h2>v15.4 <span class="tag">2026-07-17</span> <span class="tag">Snapshot-backed export/import</span></h2>
+<h3>The Excel round-trip and the snapshot library become one system</h3>
+<p>A short, focused follow-on to v15.3: the Snapshot manager moves into Import / Export, and both directions of the Excel round-trip now leave a traceable snapshot behind. No calculation formula touched; golden case (Y3 €770K) re-verified after every change.</p>
+<ul>
+<li><strong>Snapshot manager relocated</strong>: no longer a standalone Configure tab — it's now a card inside 📥 Import / Export, between 💾 Save HTML Snapshot and ⬇️ Export current settings. Its own <code>SECTION_CATALOG</code> entry, <code>TABRENDER</code> key and sidebar button were removed; it renders as part of <code>renderIo()</code> instead.</li>
+<li><strong>Excel export is snapshot-backed, two ways</strong>: each row in the Snapshot manager table gained a <strong>📊 Export to Excel</strong> action — temporarily activates that snapshot, runs the unmodified export, then restores whatever was live before (a brief visible flicker, zero changes needed to <code>exportParams()</code> itself). The general <strong>⬇️ Export to Excel</strong> button now auto-captures the current configuration as a new snapshot first if nothing was explicitly picked, then exports that — every export now traces back to a named, timestamped entry in the library.</li>
+<li><strong>Import creates a snapshot too</strong>: a successful ⬆️ Import settings now auto-captures the just-imported state as a named snapshot (named after the uploaded file, e.g. "Import ClientX_Config.xlsx") — the same <code>snapCreate()</code> helper the export side uses. The import status message confirms it and links back to the tab.</li>
+</ul>
+<p>Verified: per-row export activates the correct snapshot's data and restores the prior live state afterward (checked with an independent field unaffected by the "Fit to selected scope" auto-lock, to get a clean signal); the general export button's auto-capture fires exactly once and leaves live state untouched; import against a minimal in-memory workbook correctly appends a named snapshot and reports it. Golden case bit-identical throughout, no console errors.</p>
+</div>
+
+<div class="rel major">
+<h2>v15.3 <span class="tag">2026-07-17</span> <span class="tag">Navigation</span> <span class="tag">Snapshot library</span> <span class="tag">Code quality</span></h2>
+<h3>Architecture chapter split in two, four real bugs found and fixed, a new in-file snapshot library, and a full dead-code sweep</h3>
+<p>A dense follow-on to v15.2 — no calculation formula touched, golden case (Y3 €770K) re-verified after every change below.</p>
+<ul>
+<li><strong>Architecture chapter split into two tabs</strong>: <code>🏛️ Architecture — Layers</code> is now a short, one-line-per-item index of the 5 layers plus the 5 cross-cutting engines; <code>🏛️ Architecture — Layers content</code> carries the full technical detail (functions, code references, live-vs-scaffolding status, data flow, migration plan) that used to be the whole chapter. Cross-linked both ways.</li>
+<li><strong>Two logic-verification checks fixed</strong> — both were check-formula bugs, not model regressions; the reported numbers were always right, only the checks disagreed with themselves: <strong>CC-AG-01</strong> required every <code>AGENT_CATALOG</code>/<code>LOOP_PAIRS</code> artefact reference to be in the <em>current scope selection</em>, when it only needs to be a <em>valid</em> artefact id — the Agent Directory is a 53-artefact reference catalogue by design, the shipped scope is 10 artefacts, so the check failed by construction in the shipped default. Narrowed to referential integrity; out-of-scope references are now informational. <strong>"Benefit Y1/Y2/Y3 = baseline−run"</strong> compared against baseline-minus-run alone, but <code>yearSav</code>'s real formula also adds KT-avoided credit and subtracts verification tax and external rework — the check failed whenever any of those was nonzero (€4.7K–8.5K/yr from KT-avoided alone in the golden case). Fixed to the full formula; the adjacent "Savings reconciliation" check had the same latent gap (missing the external-rework term, masked only because that feature defaults off) and was fixed too.</li>
+<li><strong>Duplicate Assumptions section, a real bug not just a cosmetic one</strong>: two <code>SECTION_CATALOG</code> entries shared id <code>assumptions</code>, two <code>TABRENDER</code> keys silently shadowed each other, and — the actual bug — two <code>&lt;div id="assumptions"&gt;</code> blocks existed in the HTML. Duplicate DOM ids aren't valid; <code>getElementById</code> always returned the older, simpler div, so the rich Assumptions Register (client-validation checkboxes, current-vs-default status, Monte Carlo impact) was rendering into a div that could never become visible. Removed the superseded old div and its now-dead renderer; the real register is reachable again.</li>
+<li><strong>Section placement</strong>: 🔧 Build moved from Inputs to the end of Levers; 📒 Assumptions register moved from Decide to the end of WIP Section — both the source defaults and the file's baked-in boot-restore snapshot were updated, since the snapshot wins at runtime.</li>
+<li><strong>Snapshot accumulation, found and fixed at the root</strong>: <code>saveHtmlSnapshot()</code> cloned the whole DOM — including any restore script baked in by a <em>previous</em> save — then appended a new one on top, without ever removing the old one. This file had silently accumulated <strong>five</strong> stacked restore scripts (2026-07-10 through 2026-07-17, ~137KB), all re-executing on every load. Fixed the function to strip prior restore script(s) before appending the new one — every future save is now a clean, single-script baseline. Also consolidated this file's own five accumulated scripts into one, capturing the verified-correct live state (deleting them outright was tried first and broke the golden case badly — the DOM-value portion of a snapshot is load-bearing, not just cosmetic).</li>
+<li><strong>🗂️ Snapshot manager</strong> (new, Configure group, Advanced-only): a named library of configuration snapshots stored inside the file, separate from the single-file 💾 Save HTML Snapshot download. <strong>Capture</strong> the current configuration under a name; <strong>Activate</strong> an earlier one; <strong>Delete</strong> one (single arm-then-confirm, matching the existing Persona/Group delete pattern); <strong>Set as baseline</strong> (two distinct sequential confirmations — it changes what every future opener of a saved copy of the file starts from, so a single misclick can't trigger it). Captured snapshots deliberately exclude the snapshot library itself from their own payload, so capturing never nests earlier captures inside the new one.</li>
+<li><strong>Dead-code sweep</strong> — every one of ~500 top-level functions cross-referenced against every call site in the file. Found <strong>one real functional bug</strong>: <code>renderQuality()</code> was defined twice — once for the KPI "Quality" tab (test coverage, bug counts, radar chart), once for the AI-code-quality-tax section under Risk &amp; Compliance. The second silently won everywhere, so the Quality tab's table and chart had been rendering nothing; renamed the second to <code>renderQualityTax()</code> and fixed its one call site. Removed 10 confirmed-dead functions with zero references anywhere (<code>selectedPhasesList</code>, <code>setGcScopeWeighted</code>, <code>franceBlendedTJM</code>, <code>advancedVisible</code>, <code>setNavMode</code>/<code>renderQuickBuild</code> — a fully superseded old "Quick/Advanced nav mode" toggle, <code>selectedRegOfPhase</code>, <code>rampAtMonth</code> — an exact duplicate of the still-used <code>rampAtMo</code>, <code>_glCatLabel</code>, <code>abaqueAPhase</code>). One candidate, <code>ensureConvergenceBoot()</code>, looked dead but wasn't — it's a legacy PERSONA_SECTIONS migration shim that the snapshot-accumulation fix above had accidentally orphaned by removing its only call site. Re-wired into <code>applySnapshotState()</code> instead of deleted, so it now runs on every restore (HTML snapshot, Excel/JSON import, Snapshot manager activation) rather than the one legacy boot path it used to depend on.</li>
+</ul>
+<p>Verified throughout: golden case bit-identical after every change, re-ran the full dead-code scan against the cleaned file (0 duplicates, 0 remaining candidates), smoke-tested every major tab, no console errors.</p>
+</div>
+
+<div class="rel major">
+<h2>v15.2 <span class="tag">2026-07-17</span> <span class="tag">Extraction series</span> <span class="tag">Phases 1–4 wired</span></h2>
+<h3>The v15.x scaffolding (BUS/APP_STATE/PM/DEP/AUDIT) goes from additive-only to actually wired, end to end</h3>
+<p>v15.0/v15.1 shipped the scaffolding but nothing routed through it. This release completes all four phases of the Architecture chapter's own migration plan, in order, each gated on a bit-identical golden case (Y3 €770K) before the next started. No calculation formula is touched anywhere in this release.</p>
+<ul>
+<li><strong>Phase 1 — mutations routed through <code>APP_STATE.set()</code>, in two tiers.</strong> The 7 standalone scalar toggles (<code>regUse</code>, <code>regInclude</code>, <code>forceGlassCeiling</code>, <code>TOK_OUT_SHARE</code>, <code>lifecycleUse</code>, <code>lifecyclePos</code>, <code>mcAuto</code>) call <code>APP_STATE.set(key,value,source)</code> directly, with a genuine pre-mutation snapshot for <code>AUDIT.log()</code>. The remaining ~65 handler functions across ~20 composite-key registry entries — <code>teamIn</code>, <code>selectedArtefacts</code>/<code>selectedNorms</code>/<code>selectedRegArtefacts</code>/<code>phaseOff</code>, <code>PERSONAS</code>/<code>PERSONA_SECTIONS</code>/<code>GROUPS</code>/<code>sectionGroups</code>, <code>TOKEN_MODELS</code>, and the strategy/lifecycle/Monte-Carlo/rate-card/quality/readiness/tracking editors — keep their existing add/delete/splice/cascade logic completely untouched, and instead call a new <code>syncState(key(s), source)</code> helper right where they already called <code>refreshAll()</code>/render. It re-reads the just-mutated value via the registry's own <code>get()</code> and feeds it back through <code>set()</code> (<code>entry.set(entry.get())</code>, verified idempotent per key) — far lower risk than rewriting each cascade to compute next-state before mutating, with no regression-test coverage beyond the golden case to catch a mistake there. Honest trade-off, documented in the Architecture chapter: <code>AUDIT</code>'s "before" equals "after" for these composite keys, since the direct mutation already ran by the time <code>syncState()</code> fires. Two side-effect gaps were found and closed along the way — <code>setRegUse(false)</code> and <code>applyStrategy()</code> were each mutating a second registry key (<code>selectedNorms</code>/<code>selectedRegArtefacts</code>, <code>targetLocPct</code>/<code>forceGlassCeiling</code>) without notifying it. Left alone, correctly: <code>gcScopeWeighted</code> (dead setter), <code>toggleAllRegOfPhase</code>/<code>resetRegArtefacts</code> (dead functions), and <code>REG_OVERRIDES</code>/<code>REG_HUMAN_SUP</code>/<code>REG_EFFORT</code> (legacy import-only keys with no live handler at all).</li>
+<li><strong>Phase 2 — <code>refreshAll()</code> routed through <code>DEP</code>.</strong> Its two unconditional calls (<code>recomputeWeights()</code>, <code>mcAutoHook()</code>) now go through <code>DEP.flushDirty()</code> instead, with <code>FULL_REFRESH</code> still <code>true</code> by default — verified byte-identical, <code>calc:done</code> fires exactly once per refresh. The documented <code>window.__DEP_FULL_REFRESH__</code> QA hook is now actually wired. Found and fixed a latent bug while in there: both <code>DEP.node()</code> registrations used a namespaced <code>reads</code> convention (<code>'scope.selectedArtefacts'</code>, <code>'team.teamIn'</code>) that never matched the real flat <code>STATE_REGISTRY</code> keys — harmless only because <code>FULL_REFRESH</code> defaulted <code>true</code>; corrected to real keys and verified the incremental filter now genuinely discriminates.</li>
+<li><strong>Phase 3 — <code>AUDIT</code> surfaced in the product.</strong> <code>renderConvChecks()</code> now calls <code>AUDIT.runChecks()</code> and merges every registered check into the same table as the existing <code>CC-XX-NN</code> checks, generically — any future <code>AUDIT.registerCheck()</code> call shows up automatically. Found a real ID collision while wiring this: the check registered as <code>CC-AG-01</code> (Lot 4, v14.20 — validates <code>LOOP_PAIRS</code> agent-id references against <code>AGENT_CATALOG</code>) silently shared its id with a pre-existing, unrelated <code>CC-AG-01</code> already in <code>wave5Checks()</code> (v14.14 — validates artefact references). Renamed the newer one to <code>CC-AG-02</code>; both are now visible and distinct. Added a read-only <code>AUDIT.log()</code> debug panel (last 25 mutations), gated to the Advanced persona, directly below the checks table.</li>
+<li><strong>Phase 4 — the Lot 1 event contract completed.</strong> <code>setPersona()</code> now emits <code>persona:changed</code> (<code>{persona, previous}</code>) and <code>goTab()</code> now emits <code>tab:activated</code> (<code>{tab}</code>, only for a tab that actually exists in the DOM) — the two events named in the original Lot 1 (v14.17) contract but never fired. Nothing subscribes to either yet; they exist so a future feature can react to navigation without patching either function directly.</li>
+</ul>
+<p><strong>Net effect</strong>: the five engines are no longer additive-only scaffolding — <code>BUS</code>, <code>APP_STATE</code>, <code>PM</code>, <code>DEP.flushDirty()</code> and <code>AUDIT</code> are all live and exercised on every refresh, for essentially every mutation in the app. Still deliberately conservative where it matters: <code>FULL_REFRESH</code> stays <code>true</code> as the shipped default (flipping it — Phase 2c — needs a dedicated audit of every <code>DEP</code> node's <code>reads</code> array against the now much wider mutation surface, which nothing has done yet). Behaviour is unchanged for every user regardless of how much of the registry is now observed. Golden case verified bit-identical throughout (Y3 saving €770K, run €1,007K) — after Phase 1's original 7, after Phase 2, after Phase 3, after Phase 4, and again after Phase 1's remaining ~65 handlers, plus a live spot-check of ~20 representative handlers with zero errors.</p>
+</div>
+
+<div class="rel major">
+<h2>v15.1 <span class="tag">2026-07-16</span> <span class="tag">Snapshot fix</span> <span class="tag">Golden-case hotfix</span></h2>
+<h3>Save/reopen round-trip and a real golden-case regression, both fixed</h3>
+<p>v15.0's own release note claimed a bit-identical golden case against v14.16 (Y3 €770K). Live testing against the actual file found that claim false — Y3 measured €742K on a clean load, no manual steps. All three issues below were found and fixed while investigating the "💾 Save HTML Snapshot" report that it was dropping the Persona-management Groups.</p>
+<ul>
+<li><strong>Golden-case regression (the real bug behind the €770K vs €742K gap)</strong>: <code>applySnapshotState()</code> restores <code>autoPotential</code> from whatever raw value was saved, but never re-ran <code>applyScopeAuto()</code> afterward. When "🎯 Fit to selected scope" (<code>fitAuto</code>) is on — as it is in the shipped case — <code>autoPotential</code> is supposed to be <em>locked</em> to <code>phaseScope().avgAgent</code> for the current scope (verified by hand: 75% for the 10 in-scope artifacts), not to a saved snapshot value that can go stale (71%). Fix: <code>applySnapshotState()</code> now calls <code>applyScopeAuto()</code> right after restore, before <code>refreshAll()</code>, so the <code>fitAuto</code> lock's own contract holds. Verified on a clean reload with zero manual intervention: <code>autoPotential</code> 71% → 75%, Y3 saving €742K → <strong>€770K</strong>.</li>
+<li><strong>Groups/Sections missing from the snapshot</strong> (the originally reported bug): <code>GROUPS</code> (sidebar groups — order, and any added/renamed/deleted via the Personas tab) and each section's <code>group</code>/<code>groupSeq</code> were never registered in <code>STATE_REGISTRY</code>, so a saved HTML snapshot silently reverted them to source defaults on reopen. Fixed by adding two entries (<code>GROUPS</code>, <code>sectionGroups</code>) — verified: a custom group and a section reassigned into it now survive a save/reopen cycle.</li>
+<li><strong>Snapshot restore could abort partway through</strong>: <code>pmApplyDomState()</code> set every saved DOM value in one <code>forEach</code> with no per-field recovery; the <code>importFile</code> field (a file input, which browsers refuse to set programmatically to a non-empty value) threw and silently dropped every field still queued after it. Fixed with a per-field try/catch — one bad field can no longer take the rest of the restore down with it.</li>
+</ul>
+<p>Golden case now genuinely bit-identical to v14.16 and to the v15.0 claim: Y3 saving €770K, run €1,007K — verified on a clean reload, no manual steps, no lingering console errors.</p>
+</div>
+<div class="rel major">
+<h2>v15.0 <span class="tag">2026-07-16</span> <span class="tag">Series graduation</span> <span class="tag">Milestone</span></h2>
+<h3>End of the v14.x integration series — architectural foundation now canonical</h3>
+<p>Marker release. Closes the four-lot architectural refactor delivered in v14.17→v14.20 and opens the v15.x extraction series, in which existing mutation sites will be progressively retargeted onto <code>APP_STATE.set()</code> and <code>DEP.FULL_REFRESH</code> will be flipped to <code>false</code> behind a QA toggle. No calculation code is touched in this bump — the change is intentionally minimal so v15.0 can serve as the golden-case reference point for every incremental extraction that follows.</p>
+<ul>
+<li><strong>Display strings bumped</strong>: <code>&lt;title&gt;</code> and the header <code>&lt;strong&gt;AgentCase v15.0&lt;/strong&gt;</code>. All historical version comments (<code>// v12.44:</code>, <code>// v14.16:</code>, etc.) preserved as-is — they document when each feature landed and must not be rewritten.</li>
+<li><strong>Snapshot schemaVersion unified</strong>: <code>APP_STATE.toJSON()</code> was stamping <code>'14.17'</code>, <code>PM.serialize()</code> was stamping <code>'14.18'</code> — a latent inconsistency from the staged delivery. Both now stamp <code>'15.0'</code>. Migration keys inside <code>MIGRATIONS</code> (e.g. <code>'&lt;12.43'</code>, <code>'12.43'</code>) untouched — those are semantic version anchors for schema transitions, not build versions.</li>
+<li><strong>Public version constant</strong>: <code>window.AgentCaseArch.VERSION === '15.0.0'</code>, added to the non-enumerable arch namespace object. Playwright QA can now assert on it directly instead of scraping the <code>&lt;title&gt;</code> tag.</li>
+<li><strong>Golden case invariant</strong>: no computational change. Y3 saving €770K, run cost €1,007K — same as v14.20, same as v14.16. Snapshots produced by v15.0 will hydrate on v14.17→v14.20 identically because <code>applySnapshotState</code> ignores unknown top-level keys (schemaVersion is metadata only, not consumed by the restore pass).</li>
+</ul>
+<p><strong>What v15.x will bring</strong> (planned, not shipped here): (Lot 3.b) flip <code>DEP.FULL_REFRESH</code> to <code>false</code> under a Playwright-gated toggle and validate incremental recompute produces bit-identical output; (Lot 5) retarget scope mutation sites (<code>scope.selectedArtefacts</code>, <code>scope.phaseOff</code>, <code>scope.regUse</code>) onto <code>APP_STATE.set</code> so <code>state:changed</code> starts flowing and <code>AUDIT.log()</code> begins capturing real mutation traces; (Lot 6) PM.serialize consumers replace the four ad-hoc backends; (Lot 7) Excel Audit sheet driven off <code>AUDIT.log()</code>.</p>
+</div>
+
+<div class="rel major">
+<h2>v14.20 <span class="tag">2026-07-16</span> <span class="tag">Architecture Lot 4</span> <span class="tag">Audit Engine</span></h2>
+<h3>Bus-driven audit ring buffer + declarative logic-check harness (CC-AG-01 seeded)</h3>
+<p>Fourth and final lot of the architectural refactor. Introduces an <code>AUDIT</code> namespace that subscribes to <code>state:changed</code> events on the bus (delivered by Lot 1) and maintains a capped ring buffer of 500 mutation records — each entry captures <code>{ts, path, before, after, source}</code>. The ring is the substrate for two use cases: a future Excel "Audit" sheet in the export, and traceability during presales ("why did Y3 saving move from €770K to €812K" now has an on-file answer instead of requiring memory).</p>
+<ul>
+<li><strong><code>AUDIT.registerCheck(id, paths, fn)</code></strong>: declarative logic-check harness. Each check declares the state paths it depends on and a pure function that inspects a JSON snapshot of <code>APP_STATE</code>. Non-blocking by design — checks produce warnings, never throw. <code>AUDIT.runChecks()</code> emits <code>audit:checks-done</code> with the violation list.</li>
+<li><strong>CC-AG-01 seeded</strong>: verifies that every agent id referenced in <code>LOOP_PAIRS</code> (verifier/generator/agent role) exists in <code>AGENT_CATALOG</code>. Skips silently when catalogs are absent so it cannot fire on pre-v14.14 snapshots. This is the shape-check form of the rule; the full persona-coverage variant ships once the AG-persona mapping is stable.</li>
+<li><strong>Non-enumerable window export</strong>: <code>window.AgentCaseArch = {BUS, APP_STATE, PM, DEP, AUDIT}</code> defined with <code>enumerable:false</code> so Playwright QA scripts have a single hook without polluting <code>for..in</code> loops on window.</li>
+<li><strong>Golden case invariant</strong>: purely additive, observation-only. No existing site emits <code>state:changed</code> yet (Lot 1 provided the emitter but no producer has been rewired), so <code>AUDIT.log()</code> returns <code>[]</code> at runtime — same as v14.19. Y3 saving €770K, run cost €1,007K unchanged.</li>
+</ul>
+<p>End of the initial architectural refactor. Follow-up lots (Lot 3.b incremental dirty-tracking flip, PM.serialize consumers, Excel Audit sheet, CC-AG-01 persona-coverage variant) are gated by golden-case parity runs and separate release notes.</p>
+</div>
+
+<div class="rel major">
+<h2>v14.19 <span class="tag">2026-07-16</span> <span class="tag">Architecture Lot 3</span> <span class="tag">Dependency Engine</span></h2>
+<h3>Declarative derived-value graph with FULL_REFRESH=true fallback for golden-case parity</h3>
+<p>Third architectural lot. Formalises the derived-value graph as a <code>DEP</code> namespace so downstream work can move from "call <code>refreshAll()</code> and recompute everything" to "mark path X dirty and let the engine recompute only what depends on X". Deliberately ships with the incremental path DISABLED (<code>DEP.FULL_REFRESH = true</code>) so this lot alone cannot break the golden case.</p>
+<ul>
+<li><strong>API</strong>: <code>DEP.node(id, reads, compute)</code> registers a derived node; <code>DEP.markDirty(path)</code> and <code>DEP.flushDirty()</code> drive recomputation. Path matching supports <code>foo.*</code> wildcards for read declarations.</li>
+<li><strong>Two nodes seeded</strong> as thin wrappers on existing globals: <code>derived.weights</code> (reads <code>scope.selectedArtefacts</code>, <code>scope.selectedRegArtefacts</code>, <code>catalogs.artefactsEdited</code>, <code>catalogs.regArtefactsEdited</code> → calls existing <code>recomputeWeights()</code>) and <code>derived.mcHook</code> (reads <code>inputs.*</code>, <code>team.teamIn</code>, <code>scope.*</code> → calls existing <code>mcAutoHook()</code>). Registration alone cannot alter behaviour; both compute functions delegate to the same globals <code>refreshAll()</code> already calls.</li>
+<li><strong>Bus wiring</strong>: <code>DEP</code> subscribes to <code>state:changed</code> and pushes the path into its dirty set. Since no site emits <code>state:changed</code> yet (Lot 1 is the plumbing lot), the dirty set stays empty at runtime and <code>flushDirty()</code> — even if called — is a no-op.</li>
+<li><strong>QA hook</strong>: <code>DEP.FULL_REFRESH = false</code> then triggering a normal edit is the QA path for validating incremental recompute against golden case, gated behind a Playwright toggle before Lot 3.b sign-off.</li>
+<li><strong>Golden case invariant</strong>: existing <code>refreshAll()</code> and its call sites untouched. Byte-identical output for the same input state.</li>
+</ul>
+</div>
+
+<div class="rel major">
+<h2>v14.18 <span class="tag">2026-07-16</span> <span class="tag">Architecture Lot 2</span> <span class="tag">Persistence Manager</span></h2>
+<h3>Unified serialize/hydrate façade + declarative MIGRATIONS registry</h3>
+<p>Second architectural lot. Converges four persistence backends (HTML snapshot, Excel round-trip, JSON import/export, localStorage autosave) behind one <code>PM.serialize()</code> / <code>PM.hydrate(obj)</code> pair, and turns the ad-hoc legacy shims into a declarative migration table keyed by schema version.</p>
+<ul>
+<li><strong><code>PM.serialize()</code></strong>: thin wrapper on <code>collectSnapshotState()</code> — emits <code>snapshot:collected</code> on the bus, stamps <code>schemaVersion:'14.18'</code> on the output. Byte-identical shape to the existing HTML-snapshot payload; existing <code>saveHtmlSnapshot</code> continues to work unchanged and remains the caller for the HTML backend.</li>
+<li><strong><code>PM.hydrate(obj)</code></strong>: applies registered migrations in order, then delegates to the existing <code>applySnapshotState()</code>. Emits <code>snapshot:applied</code>. The pre-v12.43 regulatory-shim path (formerly gated by the <code>_regLegacyPending</code> flag inside <code>applySnapshotState</code>) is now surfaced as the first entry in <code>MIGRATIONS</code>, documenting the transform rather than hiding it inside the restore function.</li>
+<li><strong><code>PM.registerMigration(from, to, fn)</code></strong>: declarative API for future schema evolutions. Migrations run left-to-right on the incoming JSON before the restore pass.</li>
+<li><strong>Golden case invariant</strong>: no existing persistence caller is retargeted in this lot. <code>PM</code> sits alongside <code>saveHtmlSnapshot</code> / <code>collectSnapshotState</code> / <code>applySnapshotState</code> as an additional entry point. Y3 saving €770K, run cost €1,007K unchanged.</li>
+</ul>
+</div>
+
+<div class="rel major">
+<h2>v14.17 <span class="tag">2026-07-16</span> <span class="tag">Architecture Lot 1</span> <span class="tag">Event Bus + APP_STATE</span></h2>
+<h3>Single mutation channel and JSON façade over existing globals</h3>
+<p>First lot of the architectural refactor. Introduces an event bus and an <code>APP_STATE</code> namespace that projects the existing scattered globals (already declared through <code>STATE_REGISTRY</code>) as one JSON view. Prepares the ground for Lots 2 (Persistence Manager), 3 (Dependency Engine) and 4 (Audit Engine) — none of which are possible without a single mutation choke point.</p>
+<ul>
+<li><strong><code>BUS</code></strong>: minimal pub/sub. <code>BUS.on(evt, fn)</code> returns an <code>off()</code> handle; <code>BUS.emit(evt, payload)</code> is defensive (subscriber throws are logged, not propagated). Standard events documented in the source: <code>state:changed</code>, <code>snapshot:applied</code>, <code>snapshot:collected</code>, <code>calc:done</code>, <code>persona:changed</code>, <code>tab:activated</code>.</li>
+<li><strong><code>APP_STATE.toJSON()</code></strong>: same shape as <code>collectSnapshotState()</code> minus <code>savedAt</code>, with an explicit <code>schemaVersion</code>. Reads walk <code>STATE_REGISTRY.get()</code>. Cannot drift because there is no separate storage — it's a live view.</li>
+<li><strong><code>APP_STATE.set(path, value, source)</code></strong>: the future single mutation entry point. Sets via the registry, then emits <code>state:changed {path, before, after, source}</code>. No existing site is retargeted yet, so this lot is byte-identical to v14.16. Rewiring happens progressively in follow-up lots (starting with high-signal paths like <code>scope.*</code> and <code>catalogs.*</code>).</li>
+<li><strong>Design invariant</strong>: existing globals remain the source of truth. Nothing is duplicated. <code>APP_STATE</code> is a projection, never a copy.</li>
+<li><strong>Golden case invariant</strong>: purely additive plumbing. Y3 saving €770K, run cost €1,007K unchanged.</li>
+</ul>
+</div>
+
+<div class="rel new">
+<h2>v14.16 <span class="tag">2026-07-16</span> <span class="tag">Persona management</span> <span class="tag">Groups</span></h2>
+<h3>Sidebar groups become a first-class, editable entity — full CRUD, global ordering, Excel round-trip</h3>
+<p>The Persona management tab's "Menu" concept — previously a fixed, code-only classification (Inputs/Levers/Engine/Build-up/Outputs/Decide/Configure/Share) — is now a fully editable <strong>Group</strong> entity, on top of which every section's position becomes explicit and global:</p>
+<ul>
+<li><strong>Terminology</strong>: "Menu" renamed to "Group" everywhere in the tab (headers, detail panel, dropdowns, buttons).</li>
+<li><strong>Groups are now editable data</strong> (new <code>GROUPS</code> array, replacing the hardcoded <code>NAV_GROUPS</code> constant): a new "Groups (order in the sidebar)" table supports full CRUD — <strong>add</strong> (label → auto-slugified id), <strong>rename</strong> (inline, same pattern as personas), <strong>delete</strong> (two-click confirm, <strong>blocked</strong> if any section is still assigned to that group, with a message naming the count and an example section — no silent orphaning), and <strong>reorder</strong> via a typed number instead of ▲▼ arrows.</li>
+<li><strong>Every section's group + position becomes global</strong>, not per-persona: new <code>groupSeq</code> field on each <code>SECTION_CATALOG</code> entry, seeded from declaration order so the initial sidebar is unchanged. The "Sections (group &amp; order)" table (formerly a read-only "Auto-generated summary") now has an editable <strong>Group dropdown</strong> and a typed <strong>Group Seq</strong> number per section, plus the section's display name (was missing) and compact styling on the new controls (11px, matching the rest of the table — the browser-default control size read as oversized and inconsistent).</li>
+<li><strong>Behavior change, called out explicitly</strong>: since order is now global, the per-persona "Section assignment" panel no longer reorders (▲▼ removed) — it's membership only (add/remove), shown pre-sorted in actual app order for readability. The persona landing tab (first section shown on switch) now follows this same global order instead of raw array position.</li>
+<li><strong>Excel round-trip</strong>: new <strong>Groups</strong> sheet (ID/Label/editable Order) and <strong>Sections</strong> sheet (ID/Label/editable Group with dropdown validation/editable Group Seq/Description) — <code>Persona Sections</code> simplified to pure membership (Persona ID/Section ID), its former per-row Order column removed since order no longer lives there.</li>
+</ul>
+<p>Golden case bit-identical: purely a navigation/admin feature, no calculation touched. Verified: Y3 saving unchanged (€770K); group reorder, section reassignment, groupSeq edits, delete-guard, and landing-tab logic all confirmed live in-browser.</p>
+</div>
+<div class="rel new">
+<h2>v14.15 <span class="tag">2026-07-15</span> <span class="tag">Agent Directory</span> <span class="tag">Token economics</span></h2>
+<h3>Phase descriptions, regulated-artifact flagging, and a shared runs-by-artifact table on Agent details</h3>
+<p>Three targeted refinements on top of the v14.14 Agent Directory / Loop Pairs foundation, all display-only:</p>
+<ul>
+<li><strong>Token economics — "📦 Agent runs by artifact (in-scope)"</strong>: new <strong>Phase Description</strong> column (the phase's human-readable name, e.g. V3 → "Implementation"; regulatory artifacts on the <code>Cross-cutting</code> pseudo-phase show "Cross-cutting (regulatory)"). Regulated artifacts (<code>isReg</code>) are now visually flagged — amber row background plus a <strong>REG</strong> badge in front of the artifact name — so SDLC and regulatory rows are distinguishable at a glance.</li>
+<li><strong>Agent Directory — "Execution agents by authorization level"</strong>: new <strong>Agent code</strong> column (<code>AG001</code>–<code>AG016</code>). The "Artefacts produced" column now shows each artefact's name in parentheses next to its ID, e.g. <code>A017 (Source code)</code>, instead of bare IDs.</li>
+<li><strong>Agent details tab</strong>: a new <strong>"📦 Agent runs by artifact (in-scope)"</strong> table, positioned right before the "📊 Agent usage — consumption for this case" section, mirrors the Token economics table exactly (same columns, same REG flagging). Rather than duplicating the computation, both tables share one rendering pass via a common <code>artifact-run-table</code> class — they are guaranteed to stay in sync by construction, not by convention.</li>
+</ul>
+<p>Golden case bit-identical: all three changes are additive columns/tables on top of existing computed values — no formula, weight, or toggle touched. Verified: Y3 saving unchanged (€770K) before/after.</p>
+</div>
+<div class="rel new">
+<h2>v14.14 <span class="tag">2026-07-15</span> <span class="tag">Agent Directory</span> <span class="tag">Loop Pairs</span></h2>
+<h3>New Agent Directory tab + agentic Loop Pairs (internal iteration / external rework), both opt-in</h3>
+<p>Adds a phase-indexed directory of execution agents and operational roles, plus a small model of the agentic quality loops that run underneath the SDLC — anchored on real artefacts, not new assumptions:</p>
+<ul>
+<li><strong>Agent Directory tab</strong> (Analyze group, presales menu): a Phase selector (the 12 <code>REG_PHASES</code> + "All phases") drives two tables — <strong>execution agents by authorization level</strong> (capacity, average agentSup, artefacts produced) and <strong>operational roles</strong> relevant to the phase (via the existing <code>artTeamSkill()</code> resolver — no new role taxonomy). Wired through the standard invariant: <code>SECTION_CATALOG</code>, <code>PERSONA_SECTIONS</code>, <code>TABRENDER</code>, and injected into <code>ensureConvergenceBoot()</code> so restored snapshots pick up the new tab.</li>
+<li><strong><code>AGENT_CATALOG</code></strong> — 16 execution-agent entries (<code>AG001</code>–<code>AG016</code>), derived automatically by grouping the 53 SDLC artefacts by (team skill × authorization level) — a soft reference to artefact IDs, no duplicated fields. Capacity is editable per agent (default: the existing global "runs/day" assumption); average agentSup is computed live from the referenced artefacts.</li>
+<li><strong><code>LOOP_PAIRS</code></strong> — 3 fixed pairs anchored on real artefacts: <code>LP001</code> Code ↔ Unit tests (A017↔A023), <code>LP002</code> Code ↔ Code review (A017↔A018), <code>LP003</code> Validation ↔ Implementation (A033↔A017). Each carries an <strong>internal loop</strong> (average agentic iterations, always display-only) and, for LP001/LP003, an <strong>external rework loop</strong> (editable rework %, e.g. 10% V4→V3 for LP001).</li>
+<li><strong>Two opt-in calculation branches</strong>, both OFF by default: <em>Internal</em> multiplies the existing global token-cost assumptions by the referenced artefacts' iteration count — a display-only estimate that never touches FTE, V7 conservation or the glass ceiling. <em>External</em> reuses the verification-tax mechanism exactly (a rate against realized savings, Apply-vs-informational toggle) rather than reshaping artefact weights, since that is what actually drives cost in this model.</li>
+<li><strong>Output Provenance</strong>: two new overlay rows (Internal / External loop state) and a 5th double-count guard flagging when the external rework toggle and the verification tax are both active simultaneously.</li>
+<li><strong><code>CC-AG-01</code></strong> (Logic Verification): warns if any <code>AGENT_CATALOG</code>/<code>LOOP_PAIRS</code> artefact reference falls outside the active scope.</li>
+<li><strong>Excel round-trip</strong>: two new sheets, <code>Agent Catalog</code> (capacity editable) and <code>Loop Pairs</code> (external rework % editable), following the same export/import pattern as <code>Reg Artifacts</code> — verified with a live round-trip (edited capacity + rework % → exported → re-imported → correctly restored).</li>
+</ul>
+<p>Golden case bit-identical: both loop toggles ship OFF, verified Y3 saving unchanged (€770K) with default configuration; the dependency graph and no artefact/pair data beyond the 3 pairs above were touched.</p>
+</div>
+<div class="rel new">
+<h2>v14.13 <span class="tag">2026-07-15</span> <span class="tag">Export/Import</span></h2>
+<h3>Deliverable column added to Excel export/import</h3>
+<p>Following the v14.12 UI addition, the new "Deliverable" description is now included in the round-trip Excel file:</p>
+<ul>
+<li><strong>SDLC Artifacts sheet:</strong> new read-only <code>Deliverable</code> column inserted right after <code>Artifact</code> (columns now ID · Phase · Artifact · <strong>Deliverable</strong> · Selected · % auto · Effort weight).</li>
+<li><strong>Reg Artifacts sheet:</strong> same insertion (ID · Industry · Norm · Phase · Artifact · <strong>Deliverable</strong> · Selected · % auto · Effort weight), populated via the unified <code>artDeliverable(a)</code> accessor.</li>
+<li>The column is reference-only — not read back on import (Selected/% auto/Effort weight indices were shifted accordingly in the import parser, verified with a live round-trip: edited scope + values → exported → re-imported → correctly restored).</li>
+<li>IO tab's sheet-reference table updated to mention the new column.</li>
+</ul>
+<p>Golden case bit-identical (export/import structural addition only, no calculation touched).</p>
+</div>
+<div class="rel major">
+<h2>v14.12 <span class="tag">2026-07-15</span> <span class="tag">Deliverable descriptions</span></h2>
+<h3>New "Deliverable" column in the Scope tab's Full catalogue</h3>
+<p>Every artefact — SDLC and regulatory — now carries a plain-language description of what the deliverable actually is and which requirement it satisfies:</p>
+<ul>
+<li><strong>53 new descriptions</strong> written for every SDLC artefact (<code>ART_DELIVERABLE</code>), e.g. A009 Traceability matrix: "Matrix linking each requirement to its design, code and test artefacts, evidencing nothing is missed or orphaned."</li>
+<li><strong>Regulatory artefacts</strong> (370, across DO-178C/DO-254/ARP4754A/DO-330/DO-326A/ECSS and 10 other industries) already carried a <code>purpose</code> field written as a deliverable description — reused as-is via a new unified accessor <code>artDeliverable(a)</code>, no duplication.</li>
+<li><strong>New "Deliverable" column</strong> added to the Full catalogue table (Scope tab), positioned right after Artifact as requested — shown for every row, SDLC or regulatory.</li>
+</ul>
+<p>Golden case bit-identical (documentation-only addition, no calculation touched).</p>
+</div>
+<div class="rel new">
+<h2>v14.11 <span class="tag">2026-07-15</span> <span class="tag">Dependency graph</span></h2>
+<h3>Dependency graph updated — missing product-profile node added</h3>
+<p>An audit of the interactive Section Dependency graph found it still reflected the pre-v14.8 structure: the <strong>Product profile &amp; coefficients</strong> tab (the unified EV-13 profile introduced in v14.8, driving both the effort weighting and the Eligibility potential matrix) had no node on the graph at all — a real gap after the pillar/lifecycle unification.</p>
+<ul>
+<li>New node <strong>PP — Product profile &amp; coefficients</strong> added to the Levers stage, between AI Readiness and Knowledge hub.</li>
+<li>Two edges added: <strong>PP → FTE/vFTE</strong> (phase-coefficient re-weighting) and <strong>PP → Eligibility</strong> (unified potential matrix / abaque lever) — matching the exact mechanism verified in v14.8.</li>
+<li>Graph, matrix and description panel now show <strong>25 sections</strong> (was 24); the section count in the caption is now computed dynamically rather than hardcoded.</li>
+<li><strong>Hover-to-isolate verified</strong>: hovering the new PP node dims the graph and highlights exactly its two edges and their endpoints (FTE/vFTE, Eligibility); hovering any other node still isolates correctly; mouse-leave clears all highlighting.</li>
+</ul>
+<p>Golden case bit-identical (data/documentation update only, no calculation changed).</p>
+</div>
+<div class="rel new">
+<h2>v14.10.1 <span class="tag">2026-07-14</span> <span class="tag">Export fix</span></h2>
+<h3>Removed duplicate SDLC-artefact worksheet in Excel export/import</h3>
+<p>The round-trip file had <strong>two sheets carrying the identical SDLC artefact data</strong> (same 53 artefacts, same fields): <code>Artifacts</code> and <code>SDLC Artifacts</code>. On import, <code>SDLC Artifacts</code> ran after <code>Artifacts</code> and silently overwrote it — so editing only the <code>Artifacts</code> sheet and re-importing could revert those edits without warning.</p>
+<ul>
+<li><strong>Kept:</strong> <code>SDLC Artifacts</code> (already documented in the IO tab's sheet-reference table, positioned next to <code>Reg Norms</code> / <code>Reg Artifacts</code>).</li>
+<li><strong>Removed:</strong> the <code>Artifacts</code> sheet, both its export block and its (now redundant) import block.</li>
+<li>Round-trip verified: editing scope/%auto/effort, exporting, and re-importing restores the edits correctly through <code>SDLC Artifacts</code> alone.</li>
+</ul>
+<p>Golden case bit-identical (structural export/import fix only, no default changed).</p>
+</div>
+<div class="rel new">
+<h2>v14.10 <span class="tag">2026-07-14</span> <span class="tag">Aero/defence DOx</span></h2>
+<h3>Regulatory catalogue: DOx coverage completed</h3>
+<p>Following a coverage audit, the aerospace-defence-space set went from 48 to <strong>69 artefacts</strong>. Three referenced-but-empty norms are now populated and the residual gaps in the existing norms are closed:</p>
+<ul>
+<li><strong>DO-330 (tool qualification)</strong> — 5 artefacts: TQP, Tool Operational Requirements, Tool Qualification Cases &amp; Procedures, Verification Results, Tool Accomplishment Summary.</li>
+<li><strong>DO-326A / ED-202A (airworthiness security)</strong> — 6 artefacts: PSecAC, Security Scope &amp; Perimeter, Security Risk Assessment, Security Architecture &amp; Measures, Security Verification &amp; Effectiveness Assurance, Security Accomplishment Summary.</li>
+<li><strong>ECSS (space)</strong> — 6 artefacts: Software Requirements Spec (E-ST-40C), Design Document, V&amp;V Plan, Product Assurance Plan (Q-ST-80C), Configuration Management File, Criticality &amp; Reuse Analysis.</li>
+<li><strong>DO-254</strong> — 3 missing items added: Hardware Environment Configuration Index (HECI), Hardware Acceptance Test Criteria, Hardware Problem Reports (now 18).</li>
+<li><strong>DO-178C</strong> — the Parameter Data Item File (§11.22) added (now 23).</li>
+</ul>
+<p>Each new artefact carries its phase, a phase-seeded human-supervision % (safety-critical: 75–85% on plans/cross-cutting), an effort/activity weight and a glass-ceiling contribution — verified: selecting the DO-326A norm adds its 6 artefacts to scope and moves the glass ceiling. IDs are unique (R350–R370); the artefacts are not selected by default, so the golden case (v14.9 baseline, €770K Y3) is <strong>bit-identical</strong>.</p>
+</div>
+<div class="rel major">
+<h2>v14.9 <span class="tag">2026-07-13</span> <span class="tag">UX + Knowledge hub</span></h2>
+<h3>Six targeted requests: navigation, personas, and Knowledge hub defaults</h3>
+<ul>
+<li><strong>Quick build tab removed.</strong> The compact one-page setup is gone; the guided 7-step (now 8-step) <strong>Build</strong> wizard is the single entry point. Internals needed by the wizard (e.g. the Phases control) were preserved in a hidden holder, not deleted.</li>
+<li><strong>Engagement context added as wizard step 1.</strong> The exact same control as the Parameters tab (not a copy) now opens the Build wizard — set MSC/MSI/STA first, before industry, since it frames every other lever. Verified: the wizard control drives the single <code>engagementCtx</code> source and is returned to Parameters when you leave the wizard.</li>
+<li><strong>Persona menus extended:</strong> Rate Card and 🧭 AI Readiness added to <strong>Sales</strong>; 🔧 Build added to <strong>Presales</strong>. Enforced at boot so the additions survive a restored snapshot.</li>
+<li><strong>Knowledge hub — living memory, four refinements:</strong>
+  <ul style="margin-top:.3rem">
+  <li>Target CC confirmed defaulting to <strong>CC3</strong> (Connected knowledge hub, agent-ready).</li>
+  <li>New <strong>CC0–CC4 maturity-scale reference table</strong> at the bottom of the tab.</li>
+  <li><strong>Enabled by default</strong> — the Knowledge hub now ships ON. This is a deliberate default change and it moves the headline: Y3 saving €837K → <strong>€770K</strong>, Run/yr €931K → <strong>€1,007K</strong> (hub setup/curation/infra cost, offset by the automation multiplier, KT-avoided savings and a narrower Monte-Carlo spread). Toggle it off to return to the prior baseline.</li>
+  <li>The 9 AS-IS statements (Coverage / Freshness / Structure) are now <strong>one per line</strong> instead of inline, for readability.</li>
+  </ul>
+</li>
+</ul>
+<p style="background:#FDF3E6;border:1px solid #BA7517;border-radius:8px;padding:10px 14px;font-size:13px"><strong>Note on the golden case:</strong> enabling the Knowledge hub by default is an intentional change requested in this release — the historical "bit-identical" headline no longer applies out of the box. All other invariants (V7 conservation, consistency checks, round-trip) were verified to still hold with the new default.</p>
+</div>
+<div class="rel major">
+<h2>v14.8 <span class="tag">2026-07-13</span> <span class="tag">Option A</span> <span class="tag">EV-13 unified</span></h2>
+<h3>One product profile (EV-13) — pillars and product status unified</h3>
+<p>The use-case pillar and the product-status lifecycle are now <strong>one canonical product profile</strong> with EV-13 semantics, ending the double declaration of "what kind of product is this":</p>
+<ul>
+<li><strong>Four profiles:</strong> Greenfield · Feature add · Maintenance · Modernisation (End-of-life maps to Maintenance). <strong>Critical is no longer a profile</strong> — it lives only in the eligibility delivery-nature flag (single source for criticality).</li>
+<li><strong>One coefficient per profile × phase (12 phases kept):</strong> each phase keeps its effort point; the profile applies one coefficient per phase (business values derived from the former lifecycle weights). The same matrix drives BOTH the effort weighting and the Eligibility potential view — selector on either tab moves the single axis.</li>
+<li><strong>Editable in Configure:</strong> the "Product profile &amp; phase coefficients" tab (former Status &amp; phase weight) edits the very coefficients the profile reads — verified live: editing a cell updates profileCoef() and cascades.</li>
+<li><strong>Potential matrix display kept:</strong> the "Use-case pillar × SDLC potential" card keeps the familiar Strong/Medium/Cautious notation and colours, now over 12 phases with the coefficient value in parentheses; the Abaque reconciliation stays per-phase via the (now unified) crosswalk.</li>
+<li><strong>Propagated everywhere:</strong> Product status tab, Quick build, and the Build wizard (step "Product status") all show the EV-13 profiles; all 19 hardcoded old-label occurrences replaced. New consistency check <strong>CC-PROF-01</strong> guards profile↔matrix↔weights coherence. Profile round-trips in import/export.</li>
+<li><strong>Golden case bit-identical:</strong> the default profile (Feature add) reproduces the former Growth weighting exactly.</li>
+</ul>
+</div>
+<div class="rel major">
+<h2>v14.7 <span class="tag">2026-07-12</span> <span class="tag">Navigation</span></h2>
+<h3>Top menu reorganised into the 8 dependency-flow stages</h3>
+<p>The left navigation now follows the same flow as the Section Dependency graph, for every persona:</p>
+<ul>
+<li><strong>🎛️ INPUTS</strong> — home, build wizards, parameters, scope, product status, input team, rate card, location, assumptions, coefficients.</li>
+<li><strong>🎚️ LEVERS</strong> — AI readiness, token economics, knowledge hub, eligibility & abaques, maturity & measurement, risk & compliance.</li>
+<li><strong>⚙️ ENGINE</strong> — FTE/vFTE, vFTE overview, target team, TO-BE team by skill, operating model, phase/artifact detail.</li>
+<li><strong>🧱 BUILD-UP</strong> — Monte Carlo, agent details/usage, agentic setup & run, annual/monthly, execution timeline.</li>
+<li><strong>📈 OUTPUTS</strong> — productivity, velocity, quality, compliance, financial, commercial, AS-IS vs TO-BE, results.</li>
+<li><strong>🎯 DECIDE</strong> — Decision Intelligence, scenarios, comparison, strategies, sensitivity, KPI, client view, sales/presales, architecture, sources, logic verification, program.</li>
+<li><strong>🔧 Configure</strong> — status & phase weight, run-team sizing, personas. &nbsp; <strong>📤 Share</strong> — reference map, section dependencies, glossary, import/export.</li>
+</ul>
+<p>Section placement matches the dependency-graph stages. The empty-group rule is preserved: a top-level group is hidden for any persona that has no section in it (e.g. Sales shows 7 groups, Configure hidden). The Welcome hub cards were repointed to the new flow (Inputs · Levers · Engine · Outputs · Decide · Configure). Advanced-only sections (Section Dependencies) stay Advanced-only. Golden case bit-identical.</p>
+</div>
+<div class="rel new">
+<h2>v14.6 <span class="tag">2026-07-12</span> <span class="tag">EV-27+</span></h2>
+<h3>Verification tax — two selectable modes (overlay vs net of supervision)</h3>
+<ul>
+<li>The Eligibility &amp; Abaques tab now offers a <strong>tax-mode selector</strong> under the verification-tax toggle, each mode explained in the card with the live figures of the current case:</li>
+<li><strong>Case 1 — Overlay (current behaviour, default):</strong> rate = base × average human supervision, deducted <em>on top of</em> the supervision effort already retained in the run. A deliberate prudence cushion that partially overlaps the retained review cost — the explanation now states the overlap and shows what Case 2 would deduct for comparison.</li>
+<li><strong>Case 2 — Net of retained supervision (precise):</strong> rate = max(0, review need − supervision already retained). Only the uncovered excess is deducted, so <strong>nothing is counted twice by construction</strong>; if the supervision assumptions cover the need (e.g. at high SDD maturity), the tax is zero and the saving returns exactly to baseline.</li>
+<li>The provenance panel's double-count guard is now mode-aware (Case 1 → ⚠ REVIEW with a hint to switch; Case 2 → OK, "double count structurally excluded"), a new consistency check <strong>CC-ABQ-03</strong> guards the net-mode arithmetic, and the mode round-trips through import/export. Defaults unchanged — golden case bit-identical.</li>
+</ul>
+</div>
+<div class="rel new">
+<h2>v14.5 <span class="tag">2026-07-12</span> <span class="tag">Auditability</span></h2>
+<h3>Output provenance & double-count audit panel</h3>
+<ul>
+<li>The <strong>🔍 Logic verification</strong> tab now opens with a <strong>provenance panel</strong> that answers "what am I actually looking at?": the headline (top-bar) figures, plus a banner stating whether you are on the <strong>clean baseline</strong> (all euro-affecting overlays neutral) or have deviated.</li>
+<li><strong>Optional overlays — current state:</strong> every lever (engagement context, knowledge hub, verification tax, AI code-quality premium, SDD maturity, pillar leverage, risk register → DI, AI-Act → DI) is listed ACTIVE/neutral, with a note on whether it moves the euros or only the Decision-Intelligence verdict.</li>
+<li><strong>Double-count guards:</strong> V7 effort conservation (Human + Agent = Input every year), a savings reconciliation (saving = baseline run − run + KT avoided − verification tax, no hidden term), an explicit flag that the verification tax is an opt-in conservative overlay on top of retained supervision, and confirmation that the analytical tabs (coaching, socle, gates, program, pillar) never feed the P&L.</li>
+</ul>
+</div>
+<div class="rel new">
+<h2>v14.4 <span class="tag">2026-07-12</span> <span class="tag">Advanced only</span></h2>
+<h3>Dependency graph added to Section Dependencies</h3>
+<ul>
+<li>The <strong>🔗 Section Dependencies</strong> tab now opens with a <strong>directed dependency graph</strong> above the matrix: 24 section nodes laid out by flow stage (Inputs → Levers → Engine → Build-up → Outputs → Decide), with 72 directed edges — navy solid arrows for strong (calculation) dependencies, amber dashed for soft (annotation) signals.</li>
+<li><strong>Hover a node</strong> to isolate its links: connected edges and neighbour nodes stay lit while the rest dims, so an impact chain is easy to trace. The matrix and the description table remain below. Pure display, Advanced persona only.</li>
+</ul>
+</div>
+<div class="rel new">
+<h2>v14.3 <span class="tag">2026-07-11</span> <span class="tag">Advanced only</span></h2>
+<h3>New Section Dependencies matrix</h3>
+<ul>
+<li>New <strong>🔗 Section Dependencies</strong> tab (Share group, <strong>Advanced persona only</strong>): a 24×24 matrix over the sections that drive the calculation/data chain. A marked cell reads <strong>row → column</strong> (the row section feeds/impacts the column) — ● strong (calculation input), ○ soft (annotation/signal).</li>
+<li>Below the grid, a <strong>dependency description table</strong> lists, per section, its downstream impacts and the nature of each (e.g. engagement context cascading into the master formula, SDD maturity cutting the verification tax, the risk register raising the Decision Intelligence bar). Row labels deep-link to each section. Pure display, no model impact.</li>
+</ul>
+</div>
+<div class="rel new">
+<h2>v14.2 <span class="tag">2026-07-11</span> <span class="tag">Reference Map</span></h2>
+<h3>New Reference Map tab — coverage by reference subchapter</h3>
+<ul>
+<li>New <strong>🗺️ Reference Map</strong> tab (Share group): a table with one row per subchapter of the <em>Software Engineering Delivery Model 2026</em> (17 rows across the six parts), each with a ≤5-line summary, a colour-coded <strong>coverage</strong> badge (Covered / Partial / Playbook) and a <strong>direct link</strong> that jumps to the AgentCase section carrying it.</li>
+<li>Coverage headline: 15 covered · 1 partial (1.1) · 1 playbook-only (2.2). The tab is available in the Presales, Sales and Advanced personas; pure display, no model impact.</li>
+</ul>
+</div>
+<div class="rel new">
+<h2>v14.1 <span class="tag">2026-07-11</span> <span class="tag">Persona</span></h2>
+<h3>All convergence tabs assigned to the Sales persona</h3>
+<ul>
+<li>The eight tabs created across the convergence stream — <strong>Eligibility &amp; Abaques, Knowledge hub, Operating model, Commercial model, Maturity &amp; Measurement, Program &amp; Completeness, Risk &amp; Compliance</strong> and the <strong>Delivery-model glossary</strong> — are now all available in the <strong>Sales</strong> persona menu, not only in Presales/Advanced.</li>
+<li>The assignment is enforced at boot (robust to restored HTML snapshots), so the Sales view reliably exposes the full convergence toolset regardless of prior saved state. The Presales and Advanced personas are unchanged.</li>
+</ul>
+</div>
+<div class="rel major">
+<h2>v14.0 <span class="tag">2026-07-11</span> <span class="tag">Wave 4</span> <span class="tag">Convergence complete</span></h2>
+<h3>Wave 4 — completeness: full convergence with the delivery model</h3>
+<p>New <strong>🧭 Program &amp; Completeness</strong> tab (Analyze group) closing the last structural gaps. With this release, AgentCase covers all six parts of the <em>Software Engineering Delivery Model 2026</em> — it is the executable Part 6 of the merged reference model. All Wave-4 additions are analytical, so the golden case is bit-identical.</p>
+<ul>
+<li><span class="ev">EV-21 — Pilot sizing (pilot as product).</span> Pod size, break-in sprints and prove weeks → pilot duration &amp; indicative cost, framed as DEC → HOW → BLD with a frozen harness and demonstration milestones. Closes G-4.1-01.</li>
+<li><span class="ev">EV-22 — Internal capability build (Volet A).</span> The 50 → 200 → 500 internal ramp carried by the champion/preceptor network, distinct from the client engagement (Volet B). Closes G-4.3-01.</li>
+<li><span class="ev">EV-18 — Multi-pod / AI-Native SAFe overhead.</span> Coordination overhead (~3% per extra pod) and the bottleneck migration merge → specs → program/portfolio. Closes G-3.1-02; the Operating model tab also gains the 10 → 3×3 AS-IS → TO-BE conversion view (G-3.1-01).</li>
+<li><span class="ev">EV-26 — IP · confidentiality · sovereignty synthesis.</span> Per-context (MSC/MSI/STA) IP ownership, confidentiality posture and sovereignty, exported in the Critical &amp; Regulated report. Closes G-5.3-01.</li>
+<li><span class="ev">EV-14 — Maturity transition criteria.</span> Objective L→L gates (e.g. L2→L3: acceptance ≥ 90%, override 5–15%, 0 P1, 90 days green, Design Authority approval), with the next gate highlighted. Closes G-1.1-02.</li>
+<li><span class="ev">EV-28 — Token cache &amp; total-cost.</span> Cacheable share × discount and the lowest-total-cost logic (not lowest token bill), pairing with Token economics. Closes G-6.2-02.</li>
+<li><strong>Glossary updated (now 81 terms):</strong> "Deployment roadmap", "Team topology" and "Confidentiality &amp; sovereignty" re-pointed; five terms added — "Pilot as product", "Internal capability build (Volet A)", "AI-Native SAFe scaling", "Maturity transition criteria", "Token cache &amp; total-cost".</li>
+</ul>
+<p style="background:#F1F8E9;border:1px solid #639922;border-radius:8px;padding:10px 14px;font-size:13px"><strong>Milestone:</strong> convergence complete — 26 gaps closed across four waves; 16 of 17 reference subchapters fully covered, the rest optional polish or playbook-only.</p>
+</div>
+<div class="rel major">
+<h2>v13.9 <span class="tag">2026-07-11</span> <span class="tag">Wave 3</span> <span class="tag">EV-16/19/20/24/29</span></h2>
+<h3>Wave 3 of the gap-analysis roadmap — human transformation & measurement</h3>
+<p>New <strong>📐 Maturity &amp; Measurement</strong> tab (Analyze group) closing ten gaps. SDD maturity feeds the economics; the rest is analytical. Golden case bit-identical.</p>
+<ul>
+<li><span class="ev">EV-16 — SDD &amp; tooling maturity.</span> A 0–100 SDD-maturity lever (Vibe coding → Emerging specs → Spec-first → Spec-Driven Development → SDD + living metamodel) that cuts the verification tax by up to 50% and mitigates the AI code-quality premium (now the single source for EV-23), plus a separate agent-stack / harness readiness score. Closes G-2.1-01, G-2.1-02.</li>
+<li><span class="ev">EV-19 — Coaching curve &amp; autonomy weaning.</span> Coaching modelled as a declining load (Y1 40% → cruise 20%) with indicative cost, and the four autonomy-weaning tiers (intensive → on-demand → self-service → community of practice). Closes G-3.2-01, G-4.2-01.</li>
+<li><span class="ev">EV-20 / EV-29 — Four-family measurement socle.</span> DORA + SPACE + AI signals + human early-warning indicators (time-to-judgment, bus factor, % mentoring compensated), with the change-failure-rate stability guardrail and a beyond-billable-staffing value metric. Closes G-3.3-01, G-3.3-02, G-6.3-01, G-6.3-02.</li>
+<li><span class="ev">EV-24 — Governance gates · enlarged DoD · AI-BOM.</span> Non-bypassable CI gates, C2, anti-false-success guardrails, an enlarged Definition of Done and an AI Bill of Materials — exported in the Critical &amp; Regulated report. Closes G-5.1-02, G-5.1-03.</li>
+<li><strong>Glossary updated (now 76 terms):</strong> "Spec-Driven Development", "Agent stack", "Preceptorship" and "DORA metrics" re-pointed to the new tab; five terms added — "SDD &amp; tooling maturity", "Coaching curve &amp; autonomy weaning", "Human early-warning indicators", "SPACE framework", "AI-BOM &amp; enlarged Definition of Done".</li>
+</ul>
+</div>
+<div class="rel major">
+<h2>v13.8 <span class="tag">2026-07-11</span> <span class="tag">Wave 2</span> <span class="tag">EV-17/23/25</span></h2>
+<h3>Wave 2 of the gap-analysis roadmap — risk & responsible AI</h3>
+<p>New <strong>🛡️ Risk &amp; Compliance</strong> tab (Decide group) closing four gaps (G-5.1-01, G-5.2-01, G-5.2-02, G-4.3-02). All contributions are toggle-gated and neutral by default, so the golden case is bit-identical.</p>
+<ul>
+<li><span class="ev">EV-17 — Agentic risk register.</span> Eight risks with editable probability × impact and a mitigation each: prompt/indirect injection (~73% of deployments vulnerable), MCP/skills supply chain (492 exposed servers, 1184 malicious skills), secret theft, model/vendor dependency, hallucination/false-success, knowledge debt, ~88% pilot mortality and ~40% cancellation. The consolidated score can raise the Decide &amp; Scale bar (CC-RISK-01). Closes G-5.2-02, G-4.3-02 and the economic hook of G-2.2-01.</li>
+<li><span class="ev">EV-25 — EU AI-Act tier classifier.</span> Per-mission tier (unacceptable / high / limited / minimal) with the obligations surfaced and, when applied, a Decision Intelligence bar increase — complementary to NIST AI RMF and ISO/IEC 42001 (CC-AIACT-01). Closes G-5.2-01.</li>
+<li><span class="ev">EV-23 — AI code-quality risk premium.</span> Severity anchors (correctness ×1.75, maintainability ×1.64, security ×1.57) with an SDD-maturity mitigation slider; when applied it multiplies the verification tax (Wave 1) and adds a stability term to the DI bar (CC-QUAL-01). Closes G-5.1-01.</li>
+<li><strong>Glossary updated (now 71 terms):</strong> "Responsible AI" and "Quality gates" re-pointed to the new tab; three terms added — "EU AI-Act risk tiers", "Agentic risk register", "AI code-quality risk premium".</li>
+</ul>
+</div>
+<div class="rel major">
+<h2>v13.7 <span class="tag">2026-07-11</span> <span class="tag">Wave 1</span> <span class="tag">EV-13/15/27</span></h2>
+<h3>Wave 1 of the gap-analysis roadmap — decision integrity</h3>
+<p>New <strong>🎯 Eligibility & Abaques</strong> tab (Build group) closing five gaps from the delivery-model gap analysis. All defaults are neutral, so the golden case is bit-identical.</p>
+<ul>
+<li><span class="ev">EV-15 — Eligibility gate.</span> Six prerequisites (met/partial/unmet), a codebase-size input (&gt; 500k LoC forces NO-GO), and a delivery-nature flag (standard / embedded / critical / sovereign) that hardens the gate, producing a <strong>go / conditional / no-go</strong> verdict that annotates Decision Intelligence (CC-ELIG-01). Closes G-1.2-01.</li>
+<li><span class="ev">EV-13 — Pillar × SDLC potential matrix.</span> A five-pillar selector (greenfield / feature add / modernisation / maintenance / critical) with the reference leverage matrix (Strong 1.0 / Medium 0.7 / Cautious 0.45 / n-a), showing where to deploy agents first and optionally feeding the Abaque reconciliation via an 11-phase → 7-activity crosswalk. Closes G-1.1-01 and G-1.2-02.</li>
+<li><span class="ev">EV-27 — Abaque A / B + verification tax.</span> A per-phase reconciliation: Abaque A (addressable per phase) × Abaque B (maturity capture L1 0–15 % … L4 75–100 %) × pillar leverage − <strong>verification tax</strong> = net gain. The verification tax is computed (rate = editable base × average human supervision, capped 60 %) and, via a toggle, deducted from yearly savings so the ~10 % net productivity paradox is explicit (CC-ABQ-01/02). Closes G-6.1-01 and G-6.1-02.</li>
+<li><strong>Glossary updated (now 68 terms):</strong> "Project eligibility", "Abaques A & B" and "verification tax" re-pointed to the new tab and re-tagged as implemented; a new term "Five use-case pillars (potential matrix)" added.</li>
+</ul>
+</div>
+<div class="rel new">
+<h2>v13.6 <span class="tag">2026-07-11</span> <span class="tag">EV-12</span></h2>
+<h3>Glossary definitions rewritten to align with the reference document</h3>
+<p>All 67 glossary terms now carry <strong>long, explicit definitions</strong> drawn directly from <em>Modèle de délivery software engineering 2026</em> (whose own glossary annex was still "à rédiger"). Average definition length rose from ~10 words to ~268 characters.</p>
+<ul>
+<li><strong>Canonical terminology adopted:</strong> the L1–L4 labels now use the reference names — L1 Ad-hoc Assistance (AI assists individuals), L2 Targeted Automation, L3 Augmented Delivery (AI does, human monitors), L4 Autonomous Organization (AI orchestrates, human governs) — each with its indicative gain band and AgentCase ramp/authorization mapping.</li>
+<li><strong>Faithful corrections:</strong> SDD is now defined as <em>Spec-Driven Development</em> (spec as primary executable artifact, EARS, ×3–×10 first-try, EDF −40% re-prompting), distinct from the detailed-design artifact A012; <em>T0/T1/T2</em> is now the commitment calendar (estimated → measured → engaged), disambiguated from Agentshore capacity tiers; gain sharing is tagged as emerging/out-of-v1-scope per the doctrine.</li>
+<li><strong>Reference specifics embedded</strong> throughout: capacité de maîtrise per engagement context, the six eligibility prerequisites (&lt; 500k LoC…), the verification tax and ~10% net productivity paradox, Abaque A × Abaque B, FinOps ~13→~30 $/dev-day with −90% token cache, the diamond team structure, tripartite governance (Design Authority / AI Office / Delivery Team), Human-in-the-Lead, the EU AI Act / NIST AI RMF / ISO 42001 trio, Living Memory/Metamodel 97% vs 31%, and the DORA + SPACE + AI-signals + human-indicators measurement socle.</li>
+<li>Longer text flows through every surface: the glossary tab, the inline-home view, the footer quick-search results and the Markdown export.</li>
+</ul>
+</div>
+<div class="rel new">
+<h2>v13.5 <span class="tag">2026-07-11</span> <span class="tag">UX</span></h2>
+<h3>Glossary quick-search in the page footer</h3>
+<ul>
+<li>A persistent <strong>glossary search field in the footer</strong>, available from every tab. As the user types, matching terms render in the footer — each showing the delivery-model term, its AgentCase equivalent, the definition and a status badge — capped at 8 with a "+N more → open the full glossary" link.</li>
+<li>Progressive disclosure: an <strong>empty query or a query with no match collapses the panel</strong>, leaving only the search field. Results appear only when there is something to show.</li>
+<li>Independent of the tab/home filters; the "open the full glossary" link carries the query into the glossary page (or the inline home view when that mode is on).</li>
+</ul>
+</div>
+<div class="rel new">
+<h2>v13.4 <span class="tag">2026-07-11</span> <span class="tag">UX</span></h2>
+<h3>Glossary display toggle on the Welcome page</h3>
+<ul>
+<li>New tickbox on 🏠 Welcome: <strong>"Show the delivery-model glossary on this page"</strong>. Unticked (default) keeps the glossary as its own in-app page with a compact pointer on Welcome; ticked pulls the full searchable glossary inline onto Welcome and hides the separate tab from the sidebar.</li>
+<li>Search and category filters operate on whichever surface is on screen; the glossary tab and the inline home view share one builder (no duplication).</li>
+<li>If the glossary page is open when the box is ticked, the app falls back to Welcome. The toggle is persisted in HTML snapshots and its nav visibility is restored on load.</li>
+</ul>
+</div>
+<div class="rel new">
+<h2>v13.3 <span class="tag">2026-07-11</span> <span class="tag">EV-12</span></h2>
+<h3>Full delivery-model glossary moved into AgentCase</h3>
+<p>The entire vocabulary of the <em>Software Engineering Delivery Model 2026</em> now lives inside the tool — no longer a 12-line side-note, but a first-class, searchable reference.</p>
+<ul>
+<li>New <strong>📖 Delivery-model glossary</strong> tab (Share group): <strong>67 terms</strong> across <strong>9 dimensions</strong> — Vision &amp; Engagement, Process &amp; SDLC, People &amp; Operating Model, Platform &amp; Knowledge, Economics, Commercial, Transformation &amp; Change, Governance/Safety/Compliance, KPI &amp; Performance.</li>
+<li>Each term is <strong>mapped term-by-term</strong> to its AgentCase equivalent, carries a one-line definition, and is tagged by convergence status: <span style="color:#639922;font-weight:600">Aligned</span> · <span style="color:#7F77DD;font-weight:600">Mapped in AgentCase</span> · <span style="color:#1E2761;font-weight:600">AgentCase strength</span>.</li>
+<li><strong>Live search</strong> (term + definition) and <strong>category chips</strong>; colour-coded by dimension; the Welcome tab now shows a compact pointer into the full glossary.</li>
+<li>New <strong>Export glossary (.md)</strong> button; the glossary is also appended to the Reference Model Annex as section&nbsp;I and persisted in HTML snapshots.</li>
+<li>Coverage includes the terms that were previously implicit: maturity L1–L4 labels, the three engagement contexts, pod/orchestrator/AI-reviewer/preceptor/AI-Office roles, Knowledge Hub / living memory / Knowledge Graph / KT Hub, Glass Ceiling, effort conservation, vFTE, Effort&nbsp;&amp;&nbsp;Tools / AI-Augmented&nbsp;Humans / Agentshore&nbsp;T0-T2 / gain sharing, change management &amp; preceptorship, human-in-the-lead / on-the-loop / over-the-loop, DO-178C / ISO&nbsp;26262 / IEC&nbsp;61508 / IEC&nbsp;62304, responsible AI &amp; sovereignty, and DORA / cycle-time / rework KPIs.</li>
+</ul>
+</div>
+
+<div class="rel major">
+<h2>v13.2 <span class="tag">EV-11</span></h2>
+<h3>Critical &amp; Regulated delivery report</h3>
+<ul>
+<li><span class="ev">EV-11</span> Standalone HTML export: active norms &amp; regulatory artifacts, Glass Ceiling per phase, supervision floors &amp; postures, AI-authority caps under the active engagement context, compliance economics and the gated Discover→Scale trajectory.</li>
+<li>Consolidated convergence check suite in 🔍 Logic verification: CC-CTX-01…04, CC-KH-01/02, CC-OM-01, CC-SUP-01, including the directional "STA degrades vs MSC" test.</li>
+</ul>
+</div>
+
+<div class="rel major">
+<h2>v13.1 <span class="tag">EV-10</span></h2>
+<h3>Knowledge hub — living memory (CC0–CC4)</h3>
+<ul>
+<li>New 🧠 Knowledge hub tab. Three quantified channels: potential multiplier ×[0.70…1.06] (capped by the regulatory ceiling), Monte Carlo σ ×(1−0.08·CC), and avoided KT/onboarding cost. Setup &amp; run flow into the economics; hub-attributable Δ shown honestly. Availability bounded by context (STA locked · MSI ≤ CC2 · MSC ≤ CC4).</li>
+</ul>
+</div>
+
+<div class="rel major">
+<h2>v13.0 <span class="tag">MAJOR</span> <span class="tag">EV-09</span></h2>
+<h3>Operating model — team topology &amp; pods</h3>
+<ul>
+<li>New 🧩 Operating model tab: pods of 2–4, transverse Preceptor/Agent&nbsp;Architect, AI Office. <strong>V7 conservation enforced</strong> (CC-OM-01) — roles are a re-labelling of the computed residual volume, nothing added. Human ↔ agentic role mapping; transverse ratios decrease Y1→Y3 to encode the L-trajectory.</li>
+</ul>
+</div>
+
+<div class="rel">
+<h2>v12.66 <span class="tag">EV-08</span></h2>
+<h3>Human Readiness Index + change cost</h3>
+<ul>
+<li>Second index in AI Readiness (6 human dimensions × 3 statements). When enabled: change cost added to Setup and adoption drag ramp × (0.6 + 0.4·HRI/100) applied to the S-curve. Off by default.</li>
+</ul>
+</div>
+
+<div class="rel">
+<h2>v12.63 <span class="tag">EV-07</span></h2>
+<h3>Commercial model</h3>
+<ul>
+<li>New 💼 Commercial model tab: Effort&nbsp;&amp;&nbsp;Tools, AI-Augmented Humans (live break-even uplift), Agentshore (capacity points, T0/T1/T2 mix), Gain sharing (quarterly true-up). Client TCO vs Capgemini margin; context-gated availability; automatic recommendation rule.</li>
+</ul>
+</div>
+
+<div class="rel">
+<h2>v12.60–62 <span class="tag">EV-06 · P1</span></h2>
+<h3>Engagement context — MSC / MSI / STA</h3>
+<ul>
+<li>Global selector + editable coefficient table cascaded into the master formula, S-curve, setup billable split, Decision Intelligence bars and Monte Carlo spreads. MSC defaults strictly neutral → golden case unchanged.</li>
+</ul>
+</div>
+
+<div class="rel">
+<h2>v12.57–59 <span class="tag">EV-01…05</span></h2>
+<h3>Quick wins</h3>
+<ul>
+<li><span class="ev">EV-01</span> Shared vocabulary (superseded by the full glossary in v13.3) · <span class="ev">EV-02</span> Maturity mapping L1–L4 · <span class="ev">EV-03</span> Supervision matrix &amp; postures · <span class="ev">EV-04</span> Unified Discover→Scale roadmap · <span class="ev">EV-05</span> Reference Model Annex export (.md).</li>
+</ul>
+</div>
+
+<h3>Delivery-model glossary — coverage by dimension (v13.3)</h3>
+<table>
+<tr><th>Dimension</th><th>Terms</th><th>Examples</th></tr>
+<tr><td>1 · Vision &amp; Engagement</td><td>11</td><td>Maturity L1–L4, MSC/MSI/STA, project eligibility</td></tr>
+<tr><td>2 · Process &amp; SDLC</td><td>6</td><td>SDLC, artifact, SDD, product-status lifecycle, roadmap</td></tr>
+<tr><td>3 · People &amp; Operating Model</td><td>10</td><td>Pod, orchestrator, AI reviewer, preceptor, AI Office</td></tr>
+<tr><td>4 · Platform &amp; Knowledge</td><td>6</td><td>Knowledge Hub, Knowledge Graph, KT Hub, agent stack</td></tr>
+<tr><td>5 · Economics</td><td>8</td><td>Glass Ceiling, effort conservation, vFTE, adoption ramp</td></tr>
+<tr><td>6 · Commercial</td><td>6</td><td>Effort&amp;Tools, AAH, Agentshore, T0/T1/T2, gain sharing</td></tr>
+<tr><td>7 · Transformation &amp; Change</td><td>6</td><td>Change management, upskilling, champions, preceptorship</td></tr>
+<tr><td>8 · Governance, Safety &amp; Compliance</td><td>9</td><td>Human-in-the-lead, DO-178C, responsible AI, sovereignty</td></tr>
+<tr><td>9 · KPI &amp; Performance</td><td>5</td><td>DORA, quality gates, cycle time, rework, value metrics</td></tr>
+</table>
+
+<h3>Non-regression &amp; QA (v13.3)</h3>
+<ul>
+<li>Golden case identical: Input 15.0 / Target Y3 9.5 / −37% / +80% / €931K / €837K / 34%.</li>
+<li>Playwright pass: glossary tab renders 67 terms / 9 categories, search &amp; category filters verified, Welcome pointer present, export function live, zero console errors.</li>
+</ul>
+
+</body></html>
