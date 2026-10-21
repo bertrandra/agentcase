@@ -10,8 +10,8 @@ Hybrid	🤖
 Agentic Organization	🌏
 Offshore	🌍
 Nearshore
-ROI computed	-100%	-224%	126%	435%	648%	827%	382%
-TCO (3-yr) computed	€5,366k	€5,640k	€5,111k	€4,473k	€4,057k	€4,042k	€4,680k
+ROI computed	-100%	-220%	149%	480%	648%	841%	414%
+TCO (3-yr) computed	€5,366k	€5,634k	€5,073k	€4,385k	€4,057k	€4,019k	€4,625k
 Payback computed	—	—	Year 2	Year 1	Year 1	Year 1	Year 1
 AI Coverage computed	0.0%	12.4%	20.7%	33.1%	62.1%	16.6%	20.7%
 Human Supervision computed	100.0%	90.7%	84.5%	75.2%	53.5%	87.6%	84.5%
@@ -66,13 +66,13 @@ Agility
 🥇	🤖 Agentic Organization	
 	81		→ Apply
 🥈	🔀 Hybrid	
-	64		→ Apply
+	66		→ Apply
 🥉	🌏 Offshore	
 	57		→ Apply
 4	🌍 Nearshore	
-	51		→ Apply
+	52		→ Apply
 5	🏭 Service center	
-	37		→ Apply
+	38		→ Apply
 6	🎓 Skill center	
 	25		→ Apply
 7	🧾 T&M	
