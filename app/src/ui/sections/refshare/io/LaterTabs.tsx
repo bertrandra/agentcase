@@ -1,5 +1,6 @@
 import content from '@/content/refshare/io.json';
 import { Callout, Panel } from '@/ui/widgets/cards';
+import { SnapshotManager } from './SnapshotManager';
 
 const T = content.texts;
 const EXPORTS = [
@@ -11,7 +12,7 @@ const EXPORTS = [
 /** The Excel round-trip and the snapshot library: controls are shown, disabled, with an explicit note. */
 export function LaterTabs({ which }: { which: 'settings' | 'snapshot' }) {
   if (which === 'snapshot') {
-    return <Panel title={T.managerTitle}><p>{T.managerText}</p><button type="button" className="ac-btn" disabled>Capture current configuration</button></Panel>;
+    return <SnapshotManager />;
   }
   return (
     <div>
