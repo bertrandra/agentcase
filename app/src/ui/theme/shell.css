@@ -54,3 +54,6 @@ tr.is-reg { background: #fff5e8; }
 .ac-impact-name { flex: 0 0 230px; font-weight: 600; font-size: 12.5px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
 .ac-bar { flex: 1; background: #f1f1f1; border-radius: 4px; height: 16px; } .ac-bar > span { display: block; height: 16px; border-radius: 4px; }
 .ac-impact-row b { flex: 0 0 76px; text-align: right; } .ac-impact-row small { flex: 0 0 160px; color: var(--ac-muted); }
+.ac-calc-banner { top: 56px; background: #fff5e8; border-color: #be4d00; }
+.ac-calc-saved { color: #8f3900; }
+.ac-calc-live { color: #0058ab; }

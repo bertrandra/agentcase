@@ -1,4 +1,5 @@
 import { appStore } from '@/store/instance';
+import { checkLoadedCase } from './calcStaleness';
 import { fromSnapshot, toSnapshot } from '@/store/persistence/snapshot';
 
 /** Download-ready JSON of the current case (legacy snapshot shape). */
@@ -9,6 +10,7 @@ export function exportSnapshotJson(): { filename: string; json: string } {
 
 /** Open a snapshot file. The previous case stays one Ctrl+Z away; a bad file leaves the current case untouched. */
 export async function importSnapshotFile(file: { text(): Promise<string> }): Promise<void> {
-  const doc = fromSnapshot(JSON.parse(await file.text()));
+  const raw: unknown = JSON.parse(await file.text()), doc = fromSnapshot(raw);
   appStore().load(doc, true);
+  checkLoadedCase(raw, doc);
 }
