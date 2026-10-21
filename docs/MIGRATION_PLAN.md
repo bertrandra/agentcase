@@ -288,3 +288,4 @@ measured throughput, a re-estimate of Phase 5, and a working Ctrl+Z on the Adjus
 | Phase | State | Notes |
 |---|---|---|
 | 0 Safety net | done | `tools/oracle.mjs` + `tools/oracle-recipes.mjs` → 39 fixtures in `app/fixtures/` (state snapshot + legacy `model()` output) |
+| 1 Foundations | done | `app/` (Vite + React 18 + strict TS, single-file build, ESLint `max-lines` 150 + layer rules, Vitest, CI `.github/workflows/app.yml`). The project lives in `app/`, not `src/` at the repo root |

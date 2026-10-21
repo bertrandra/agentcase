@@ -1,0 +1,16 @@
+/* Design tokens carried over from the legacy app (v18.11). Colours keep their meaning across the UI. */
+:root {
+  --ac-blue: #0058ab;      /* primary, headings, links */
+  --ac-teal: #00828e;      /* automation / positive */
+  --ac-brick: #8f3237;     /* glass ceiling / negative */
+  --ac-amber: #be4d00;     /* human supervision / warning */
+  --ac-ink: #222;
+  --ac-muted: #888;
+  --ac-line: #e3e3e3;
+  --ac-surface: #fff;
+  --ac-bg: #f5f6f8;
+  --ac-radius: 6px;
+  --ac-font: Ubuntu, 'Segoe UI', system-ui, -apple-system, Roboto, sans-serif;
+}
+html, body { margin: 0; background: var(--ac-bg); color: var(--ac-ink); font-family: var(--ac-font); }
+.ac-boot { padding: 2rem; }
