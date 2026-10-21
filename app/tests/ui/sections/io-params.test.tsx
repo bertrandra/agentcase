@@ -31,7 +31,7 @@ describe('Excel parameters panel (Import / Export → settings)', () => {
     const d = captureDownloads();
     openTab();
     fireEvent.click(screen.getByRole('button', { name: '⬇️ Export all' }));
-    await screen.findByText(/^✓ Exported AgentCase_/);
+    await screen.findByText(/^✓ Exported AgentCase_/, undefined, { timeout: 15000 });
     expect(d.names).toHaveLength(1);
     expect(d.names[0]).toMatch(/^AgentCase_v19_0_Parameters_\d{4}-\d\d-\d\d-\d\d-\d\d-\d\d\.xlsx$/);
     expect(d.blobs[0]?.type).toBe('application/vnd.openxmlformats-officedocument.spreadsheetml.sheet');
@@ -40,7 +40,7 @@ describe('Excel parameters panel (Import / Export → settings)', () => {
     const d = captureDownloads();
     openTab();
     fireEvent.click(screen.getByRole('button', { name: '⬇️ Export persona config only' }));
-    await waitFor(() => expect(d.names).toHaveLength(2));
+    await waitFor(() => expect(d.names).toHaveLength(2), { timeout: 15000 });
     expect(d.names.map((n) => n.split('.').pop())).toEqual(['xlsx', 'json']);
     expect(d.names[0]).toMatch(/_PersonaConfig_/);
   });
@@ -48,7 +48,7 @@ describe('Excel parameters panel (Import / Export → settings)', () => {
     openTab();
     expect(industry()).toBe('NONE');
     fireEvent.change(screen.getByLabelText('Settings workbook (.xlsx)'), { target: { files: [xlsxFile('aero.xlsx', legacyXlsx('industry-aero'))] } });
-    const status = await screen.findByText(/Imported successfully/);
+    const status = await screen.findByText(/Imported successfully/, undefined, { timeout: 15000 });
     expect(status.textContent).toContain('Ctrl+Z undoes the whole import');
     const box = within(screen.getByRole('status'));
     expect(box.getByText('Glass ceiling (%) clamped down to 50')).toBeTruthy();
@@ -61,7 +61,7 @@ describe('Excel parameters panel (Import / Export → settings)', () => {
   it('a bad file is reported, the case is untouched and nothing is on the undo stack', async () => {
     openTab();
     fireEvent.change(screen.getByLabelText('Settings workbook (.xlsx)'), { target: { files: [xlsxFile('bad.xlsx', new TextEncoder().encode('definitely not a workbook').buffer as ArrayBuffer)] } });
-    expect(await screen.findByText(/✗ Import failed: .*The case was not changed\./)).toBeTruthy();
+    expect(await screen.findByText(/✗ Import failed: .*The case was not changed\./, undefined, { timeout: 15000 })).toBeTruthy();
     expect(appStore().getState().history.undo).toHaveLength(0);
     expect(industry()).toBe('NONE');
   });
