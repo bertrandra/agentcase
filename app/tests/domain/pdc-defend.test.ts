@@ -1,6 +1,11 @@
 import { describe, expect, it } from 'vitest';
 import { ceilingCoverage, ddBase, ddRows, ddUse, ceilTarget, type DdRow } from '@/domain/pdc/dd';
 import { makeDefaultDoc } from '@/store/instance';
+import { calcChain } from '@/domain/pdc/verifChain';
+import { verifChecks } from '@/domain/pdc/verifChecks';
+import { convergenceChecks } from '@/domain/pdc/verifConvergence';
+import { provenance } from '@/domain/pdc/verifProvenance';
+import { directionalSensitivity } from '@/domain/pdc/verifSensi';
 import { computeDdSensitivity } from '@/domain/pdc/ddSens';
 import { diffs } from '../helpers/economics';
 import { ctxOf, pdc, PDC_FIXTURES } from '../helpers/pdc';
@@ -26,4 +31,21 @@ describe('due-diligence domain reproduces the legacy register', () => {
     expect(got.unmeasurable).toEqual(e.unmeasurable);
   });
   it('the naming threshold defaults to 85 %', () => expect(ceilTarget(ctxOf('golden'))).toBe(0.85));
+  describe('logic verification', () => {
+    interface V { checks: string[][]; chain: string[][]; sensi: string[][]; prov: string[][]; conv: string[][] }
+    it.each(PDC_FIXTURES)('%s: the 16 checks, the calculation chain and the directional sensitivity', (id) => {
+      const c = ctxOf(id), e = pdc<V>('pdc_verif', id);
+      expect(verifChecks(c).map((x, i) => [String(i + 1), x.name, x.exp, x.got, x.ok ? '✓ OK' : '✗ GAP'])).toEqual(e.checks.slice(1));
+      expect(calcChain(c)).toEqual(e.chain.slice(1));
+      expect(directionalSensitivity(c).map((x) => [x.variation, x.expected, x.observed, x.ok === null ? 'n/a (at limit)' : x.ok ? '✓ Consistent' : '✗ Abnormal'])).toEqual(e.sensi.slice(1));
+    });
+    it.each(PDC_FIXTURES)('%s: provenance tables and the convergence checks that exist in this build', (id) => {
+      const c = ctxOf(id), e = pdc<V>('pdc_verif', id), p = provenance(c);
+      const ovLegacy = e.prov.filter((r) => /^(Engagement context|Knowledge hub|Verification tax|AI code-quality|External rework|Internal loop|SDD|Pillar|Risk register|AI-Act)/.test(r[0]!) && r.length === 3 && !r[0]!.includes('vs'));
+      expect(p.overlays.map((o) => [`${o.name}${o.euro ? ' · affects €' : ' · verdict only'}`, o.active ? 'ACTIVE' : 'neutral', o.effect])).toEqual(ovLegacy);
+      expect(p.guards.map((g) => [g.name, g.what, g.ok ? 'OK' : 'REVIEW', g.detail])).toEqual(e.prov.filter((r) => r.length === 4 && ['OK', 'REVIEW'].includes(r[2]!)));
+      const legacy = new Map(e.conv.filter((r) => r.length === 4).map((r) => [r[0]!, r]));
+      for (const x of convergenceChecks(c)) expect([x.id, x.name, x.pass ? 'PASS' : 'FAIL', x.detail]).toEqual(legacy.get(x.id));
+    });
+  });
 });

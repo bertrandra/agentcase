@@ -36,7 +36,7 @@ describe('personas section', () => {
     fireEvent.click(screen.getByText('➕ Add'));
     expect(personas().at(-1)).toMatchObject({ id: 'executive', label: 'Executive', order: 6 });
     expect(lists().executive).toEqual([]);
-    fireEvent.click(within(container.querySelectorAll('tbody tr')[2]!).getByText('⎘ Duplicate'));   // builder: order 4 -> 3rd row
+    fireEvent.click(within(container.querySelectorAll('tbody tr')[2]! as HTMLElement).getByText('⎘ Duplicate'));   // builder: order 4 -> 3rd row
     expect(personas().some((p) => p.id === 'builder-copy')).toBe(true);
     expect(lists()['builder-copy']).toEqual(lists().builder);
     fireEvent.click(screen.getByLabelText('Default persona admin'));

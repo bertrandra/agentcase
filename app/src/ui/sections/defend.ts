@@ -4,4 +4,5 @@ import type { SectionMap } from './types';
 export const DEFEND: SectionMap = {
   assumptions: () => import('./defend/assumptions'),
   duediligence: () => import('./defend/duediligence'),
+  verif: () => import('./defend/verif'),
 };
