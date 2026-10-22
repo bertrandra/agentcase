@@ -1,8 +1,11 @@
-import { defineCommand } from '@/store/commands';
+import { defineCommand, definePortfolioCommand } from '@/store/commands';
 import { appStore } from '@/store/instance';
 import { applyParamsPatch } from '@/store/persistence/excel/params/apply';
-import { interpretParams, LIMITS, loadParamsSheets, paramsFileName, paramsWorkbookBytes, ParamsImportError, personaConfigJson, type ParamsEnv, type ParamsScope } from '@/store/persistence/excel/params';
-import type { Doc } from '@/store/types';
+import { interpretParams, LIMITS, loadParamsSheets, paramsFileName, paramsWorkbookBytes, ParamsImportError, personaConfigJson, workbookBytes, type ParamsEnv, type ParamsScope } from '@/store/persistence/excel/params';
+import { buildPortfolioParamsWorkbook, interpretPortfolioParams, isPortfolioWorkbook } from '@/store/persistence/excel/portfolio';
+import { hasPortfolioContent } from '@/store/persistence/portfolioSnapshot';
+import type { Portfolio } from '@/domain/portfolio';
+import type { Doc, PortfolioDoc } from '@/store/types';
 
 const XLSX = 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet';
 
@@ -14,6 +17,17 @@ const importCmd = defineCommand<{ patch: Partial<Doc> }>({
 /** Apply an already-read patch (the import's last step; also what the command sample exercises). */
 export const applyParamsImport = (patch: Partial<Doc>): void => appStore().dispatch(importCmd({ patch }));
 
+/**
+ * A portfolio workbook replaces the whole portfolio (common values, products, waves, teams, overrides, hub) as ONE undoable step. The view state that is not
+ * part of the file (edit scope) stays; the display scope is dropped (a wave of the old portfolio may not exist any more).
+ */
+const importPortfolioCmd = definePortfolioCommand<{ next: Portfolio }>({
+  type: 'excel.importPortfolio', label: () => 'Import portfolio parameters',
+  apply: (pf, p): PortfolioDoc => (pf.editScope ? { ...p.next, editScope: pf.editScope } : p.next),
+});
+/** Apply an already-read portfolio (the import's last step; also what the command sample exercises). */
+export const applyPortfolioImport = (next: Portfolio): void => appStore().dispatch(importPortfolioCmd({ next }));
+
 export interface ParamsExport { filename: string; blob: Blob; companion?: { filename: string; blob: Blob } }
 
 /**
@@ -21,7 +35,13 @@ export interface ParamsExport { filename: string; blob: Blob; companion?: { file
  * The persona-only scope also returns the persona/section configuration as JSON in the app's native snapshot shape.
  */
 export async function exportParamsWorkbook(scope: ParamsScope, env: ParamsEnv, now: Date = new Date()): Promise<ParamsExport> {
-  const doc = appStore().getState().doc;
+  const { doc, portfolio } = appStore().getState();
+  if (hasPortfolioContent(portfolio)) {
+    const bytes = await workbookBytes(await buildPortfolioParamsWorkbook(portfolio, scope, env));
+    const out: ParamsExport = { filename: paramsFileName(scope, now), blob: new Blob([bytes], { type: XLSX }) };
+    if (scope === 'persona-only') out.companion = { filename: paramsFileName(scope, now, 'json'), blob: new Blob([personaConfigJson(doc, now)], { type: 'application/json' }) };
+    return out;
+  }
   const out: ParamsExport = { filename: paramsFileName(scope, now), blob: new Blob([await paramsWorkbookBytes(doc, scope, env)], { type: XLSX }) };
   if (scope === 'persona-only') out.companion = { filename: paramsFileName(scope, now, 'json'), blob: new Blob([personaConfigJson(doc, now)], { type: 'application/json' }) };
   return out;
@@ -37,6 +57,11 @@ export interface ParamsFile { name: string; size?: number; arrayBuffer(): Promis
 export async function importParamsWorkbook(file: ParamsFile, env: ParamsEnv): Promise<ParamsImportResult> {
   if (typeof file.size === 'number' && file.size > LIMITS.fileBytes) throw new ParamsImportError(`File too large (${Math.round(file.size / 1024 / 1024)} MB, limit ${LIMITS.fileBytes / 1024 / 1024} MB)`);
   const sheets = await loadParamsSheets(await file.arrayBuffer());
+  if (isPortfolioWorkbook(sheets)) {
+    const { next, notes } = interpretPortfolioParams(sheets, appStore().getState().portfolio, env);   // validates everything; throws before any write
+    applyPortfolioImport(next);
+    return { notes, changed: ['portfolio'], fileName: file.name };
+  }
   const { patch, notes } = interpretParams(sheets, appStore().getState().doc, env);   // the document as it is NOW, after the asynchronous read
   applyParamsImport(patch);
   return { notes, changed: Object.keys(patch), fileName: file.name };

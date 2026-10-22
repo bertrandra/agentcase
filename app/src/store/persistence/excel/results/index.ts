@@ -1,3 +1,4 @@
+import type { Workbook } from 'exceljs';
 import type { ExcelJS } from '../lazy';
 import type { ResultsData, SheetImages } from './data';
 import { investmentSheet, operatingSheet } from './costs';
@@ -11,7 +12,13 @@ export { resultsData, SETUP_LINES, type ResultsData, type SheetImages, type Imag
 export function buildResultsWorkbook(xl: ExcelJS, data: ResultsData, images?: SheetImages) {
   const wb = new xl.Workbook();
   wb.creator = 'AgentCase';
-  roiSheet(wb, data, images); investmentSheet(wb, data); operatingSheet(wb, data, images);
-  savingsSheet(wb, data, images); plSheet(wb, data, images); workforceSheet(wb, data, images);
+  addCaseSheets(wb, data, images);
   return wb;
 }
+
+/** The six case sheets of a workbook; `name` maps the legacy sheet name to the one used (a portfolio prefixes them per product). */
+export function addCaseSheets(wb: Workbook, data: ResultsData, images?: SheetImages, name: (base: string) => string = (b) => b): void {
+  roiSheet(wb, data, images, name('ROI')); investmentSheet(wb, data, name('Investment')); operatingSheet(wb, data, images, name('Operating costs'));
+  savingsSheet(wb, data, images, name('Savings')); plSheet(wb, data, images, name('P&L')); workforceSheet(wb, data, images, name('Workforce shift'));
+}
+export const CASE_SHEET_NAMES = ['ROI', 'Investment', 'Operating costs', 'Savings', 'P&L', 'Workforce shift'] as const;

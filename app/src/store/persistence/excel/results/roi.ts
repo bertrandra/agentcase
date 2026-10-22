@@ -4,8 +4,8 @@ import type { ResultsData, SheetImages } from './data';
 import { addImage, head, r0 } from './style';
 
 /** ROI sheet: headline metrics, then Benefit / Net / Cumulative per year. */
-export function roiSheet(wb: Workbook, { v }: ResultsData, images?: SheetImages): void {
-  const ws = wb.addWorksheet('ROI'), H = v.H, setup = v.setup, pb = v.payback;
+export function roiSheet(wb: Workbook, { v }: ResultsData, images?: SheetImages, name = 'ROI'): void {
+  const ws = wb.addWorksheet(name), H = v.H, setup = v.setup, pb = v.payback;
   ws.addRow(['Metric', 'Value']);
   ws.addRow([`${H}-year ROI`, fmtRoiPct(roiCanonical(v.totalBenefit - setup, setup))]);
   ws.addRow([`Total benefits (${H}y)`, r0(v.totalBenefit)]);

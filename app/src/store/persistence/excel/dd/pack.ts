@@ -44,7 +44,7 @@ function evidence(wb: Workbook, d: DdPackData): void {
   head(ws);
 }
 
-function coverage(wb: Workbook, d: DdPackData): void {
+function coverage(wb: Workbook, d: DdPackData, product?: string): void {
   const ws = wb.addWorksheet('DD_Coverage'), n = d.rows.length, done = d.rows.filter(d.done).length;
   let wTot = 0, wDone = 0;
   if (d.fresh) for (const r of d.rows) { const x = d.weight(r.id); if (x == null) continue; wTot += x; if (d.done(r)) wDone += x; }
@@ -57,13 +57,15 @@ function coverage(wb: Workbook, d: DdPackData): void {
   ws.addRow(['', ' ']);
   ws.addRow(['Provenance notice', 'The metric anchors and embedded coefficients ship with NO documented source. They are engineering estimates, not benchmarks. Every PC4 and PC5 row is an open question until confirmed.']);
   ws.addRow(['Re-import', 'Annotated packs re-import through the Due diligence tab. Only State / Owner / Due date / Note are read back — no model value can be changed by this path.']);
+  if (product !== undefined) ws.addRow(['Product (effective case of this pack)', product]);
   head(ws); ws.getColumn(2).alignment = { wrapText: true, vertical: 'top' };
 }
 
-/** The due-diligence pack: DD_Register, DD_Coefficients, DD_Evidence_Requests, DD_Coverage (legacy ddExportPack). `label` names a section from its id. */
-export function buildDdPack(xl: ExcelJS, d: DdPackData, label: (id: string) => string): Workbook {
+/** The due-diligence pack: DD_Register, DD_Coefficients, DD_Evidence_Requests, DD_Coverage (legacy ddExportPack). `label` names a section from its id.
+ * `product` (portfolios only) names the product whose effective case the pack describes: a portfolio exports the ACTIVE product's pack, see docs/ARCHITECTURE.md §5. */
+export function buildDdPack(xl: ExcelJS, d: DdPackData, label: (id: string) => string, product?: string): Workbook {
   const wb = new xl.Workbook();
   wb.creator = 'AgentCase'; wb.created = new Date();
-  register(wb, d, label); coefficients(wb, d, label); evidence(wb, d); coverage(wb, d);
+  register(wb, d, label); coefficients(wb, d, label); evidence(wb, d); coverage(wb, d, product);
   return wb;
 }

@@ -2,7 +2,7 @@ import { APP_VERSION } from '@/domain/version';
 import type { Doc } from '@/store/types';
 import type { ParamsScope } from './types';
 
-export { buildParamsWorkbook, paramsWorkbookBytes } from './writer';
+export { buildParamsWorkbook, paramsWorkbookBytes, workbookBytes } from './writer';
 export { interpretParams, loadParamsSheets, ParamsImportError, readParamsWorkbook, sameJson, type ParamsPatch } from './reader';
 export { LIMITS } from './safe';
 export type { ParamsEnv, ParamsScope, SectionInfo } from './types';

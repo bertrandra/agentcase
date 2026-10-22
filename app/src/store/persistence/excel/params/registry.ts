@@ -12,6 +12,7 @@ import { inputTeam, rateCard } from './sheets/rateTeam';
 import { locationTarget, phaseScope, qualityAsIs } from './sheets/scopeSheets';
 import { strategies } from './sheets/strategies';
 import { regNorms, regSettings, tokenModels } from './sheets/tokensReg';
+import { PORTFOLIO_SHEETS } from '../portfolio/names';
 import type { SheetFamily } from './types';
 
 /** Sheet order of the workbook (legacy exportParams). */
@@ -24,6 +25,7 @@ export const READ_ORDER: SheetFamily[] = [parameters, rateCard, inputTeam, phase
   sdlcArtifacts, personas, personaSections, personaSectionOrder, personaSequence, groups, sections, dependencies, sCurve, dynamicSections, dynamicCards, dynamicRows, factoryMeta,
   statusLifecycle, skillMap, tobeSplit, strategies];
 
-export const KNOWN_SHEETS: Set<string> = new Set(WRITE_ORDER.flatMap((f) => f.sheets));
+/** The sheets the loader keeps: the 47 case sheets plus the portfolio sheets (read by `portfolio/`, ignored by the case import). */
+export const KNOWN_SHEETS: Set<string> = new Set([...WRITE_ORDER.flatMap((f) => f.sheets), ...PORTFOLIO_SHEETS]);
 /** Sheets kept by the "persona config only" export. */
 export const PERSONA_SHEETS = new Set(['Personas', 'Persona Sections', 'Persona Section Order', 'Persona Sequence', 'Groups', 'Sections', 'Dependencies']);

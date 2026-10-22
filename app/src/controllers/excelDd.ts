@@ -5,6 +5,7 @@ import { ddPackData } from '@/store/persistence/excel/dd/data';
 import { buildDdPack } from '@/store/persistence/excel/dd/pack';
 import { MAX_PACK_BYTES, readDdRegister, type PackEntry } from '@/store/persistence/excel/dd/read';
 import { loadExcelJS } from '@/store/persistence/excel/lazy';
+import { hasPortfolioContent } from '@/store/persistence/portfolioSnapshot';
 import { excelFilename, XLSX_MIME, type ExcelFile } from './excelResults';
 
 /** Merge the annotated rows into the register: a blank cell keeps what was there, an unknown status keeps the current one. */
@@ -22,9 +23,15 @@ const importCmd = defineCommand<{ entries: PackEntry[] }>({
 /** Apply already-validated pack rows as one undoable command. */
 export const applyDdPackEntries = (entries: PackEntry[]): void => { if (entries.length) appStore().dispatch(importCmd({ entries })); };
 
-/** The due-diligence pack of the current case (DD_Register, DD_Coefficients, DD_Evidence_Requests, DD_Coverage). `label` names a section from its id. */
+/**
+ * The due-diligence pack of the current case (DD_Register, DD_Coefficients, DD_Evidence_Requests, DD_Coverage). `label` names a section from its id.
+ * DECISION (P5): with a portfolio the pack is the ACTIVE product's, with its name on DD_Coverage. The annotations (state, owner, due date, note) live once in
+ * the document (`DD_STATE`, a common key shared by every product) and the re-import reads the sheet named DD_Register, so one sheet group per product would
+ * hold conflicting copies of the same ids. Switch the active product to export another one.
+ */
 export async function exportDdPack(label: (id: string) => string = (id) => id, now: Date = new Date()): Promise<ExcelFile> {
-  const xl = await loadExcelJS(), wb = buildDdPack(xl, ddPackData(appStore().getState().doc), label);
+  const { doc, portfolio } = appStore().getState(), product = hasPortfolioContent(portfolio) ? portfolio.products.find((p) => p.id === portfolio.activeProductId)?.name : undefined;
+  const xl = await loadExcelJS(), wb = buildDdPack(xl, ddPackData(doc), label, product);
   return { blob: new Blob([await wb.xlsx.writeBuffer()], { type: XLSX_MIME }), filename: excelFilename('DueDiligence', now) };
 }
 

@@ -1,8 +1,11 @@
 import { makeCtx } from '@/domain';
+import type { DisplayScope } from '@/domain/portfolio';
 import { APP_VERSION } from '@/domain/version';
 import { appStore } from '@/store/instance';
 import { loadExcelJS } from '@/store/persistence/excel/lazy';
 import { buildResultsWorkbook, resultsData, type SheetImages } from '@/store/persistence/excel/results';
+import { buildPortfolioResultsWorkbook } from '@/store/persistence/excel/results/portfolio';
+import { hasPortfolioContent } from '@/store/persistence/portfolioSnapshot';
 
 export type { SheetImages } from '@/store/persistence/excel/results';
 
@@ -19,9 +22,18 @@ export interface ExcelFile { blob: Blob; filename: string }
 /**
  * Build the results workbook (ROI, Investment, Operating costs, Savings, P&L, Workforce shift) of the current case.
  * `images` are optional chart pictures (base64 PNG) captured from mounted Chart.js canvases; sheets without one simply have no picture.
+ *
+ * A real portfolio (two products or waves, an override, a knowledge subset...) gets the portfolio workbook instead: "Portfolio", a sheet per wave,
+ * "Knowledge transfer" and, per product, its summary and its own six results sheets. `scope` (default: the store's display scope) only picks the
+ * group that leads; everything is exported. Chart pictures are not embedded in a portfolio workbook (they show one product's charts).
  */
-export async function exportResultsWorkbook(images?: SheetImages, now: Date = new Date()): Promise<ExcelFile> {
-  const xl = await loadExcelJS(), wb = buildResultsWorkbook(xl, resultsData(makeCtx(appStore().getState().doc)), images);
+export async function exportResultsWorkbook(images?: SheetImages, now: Date = new Date(), scope?: DisplayScope): Promise<ExcelFile> {
+  const xl = await loadExcelJS(), { doc, portfolio } = appStore().getState();
+  if (hasPortfolioContent(portfolio)) {
+    const wb = buildPortfolioResultsWorkbook(xl, portfolio, scope ?? portfolio.displayScope ?? { kind: 'product' });
+    return { blob: new Blob([await wb.xlsx.writeBuffer()], { type: XLSX_MIME }), filename: excelFilename('Financial_Portfolio', now) };
+  }
+  const wb = buildResultsWorkbook(xl, resultsData(makeCtx(doc)), images);
   const buf = await wb.xlsx.writeBuffer();
   return { blob: new Blob([buf], { type: XLSX_MIME }), filename: excelFilename('Financial', now) };
 }
