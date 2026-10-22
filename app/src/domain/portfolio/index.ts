@@ -27,3 +27,4 @@ export { portfolioMonteCarlo, pfStressJob, relSpreadOf } from './stress';
 export { pfStressFingerprint } from './stressFingerprint';
 export { clampRho, commonShock, idHash, productSeed } from './stressSeed';
 export type { Diversification, PfStress, PfStressJob, PfStressOpts, ProductStress, StressStats, WaveStress } from './stressTypes';
+export { pfDecision, groupDecision, type VerdictGroup } from './stressVerdict';

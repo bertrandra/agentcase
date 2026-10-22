@@ -24,6 +24,8 @@ export interface ProductStress {
   stats: StressStats;
   /** correlation of the product's draws with the portfolio draws (its share of the aggregate risk) */
   r: number;
+  /** the same inside the product's wave */
+  rWave: number;
 }
 
 export interface WaveStress { id: string; name: string; productIds: string[]; stats: StressStats }

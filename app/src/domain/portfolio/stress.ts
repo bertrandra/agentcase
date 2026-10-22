@@ -43,10 +43,13 @@ export function pfStressJob(pf: Portfolio, o: PfStressOpts): PfStressJob {
     finish() {
       const unsorted = sum(draws, n), total = statsOf(unsorted, o.seed);
       const per = plan.map((s, i) => ({ s, d: draws[i] as number[], st: statsOf(draws[i] as number[], o.seed).stats }));
-      const products: ProductStress[] = per.map(({ s, d, st }) => ({ id: s.product.id, name: s.product.name, waveId: s.wave.id, month0: s.month0, stats: st, r: +mcPearson(d, unsorted).toFixed(3) }));
+      const sums = new Map(pf.waves.map((w) => [w.id, sum(per.filter((x) => x.s.wave.id === w.id).map((x) => x.d), n)] as const));
+      const r3 = (d: number[], ref: number[]) => +mcPearson(d, ref).toFixed(3);
+      const products: ProductStress[] = per.map(({ s, d, st }) => ({ id: s.product.id, name: s.product.name, waveId: s.wave.id, month0: s.month0, stats: st,
+        r: r3(d, unsorted), rWave: r3(d, sums.get(s.wave.id) as number[]) }));
       const waves: WaveStress[] = pf.waves.flatMap((w) => {
         const mine = per.filter((x) => x.s.wave.id === w.id);
-        return mine.length ? [{ id: w.id, name: w.name, productIds: mine.map((x) => x.s.product.id), stats: statsOf(sum(mine.map((x) => x.d), n), o.seed).stats }] : [];
+        return mine.length ? [{ id: w.id, name: w.name, productIds: mine.map((x) => x.s.product.id), stats: statsOf(sums.get(w.id) as number[], o.seed).stats }] : [];
       });
       const sumP10 = products.reduce((a, p) => a + p.stats.p10, 0), diversification: Diversification = { sumP10, p10: total.stats.p10, reduction: total.stats.p10 - sumP10 };
       return { draws: n, seed: o.seed, rho, outcomes: total.sorted, stats: total.stats, products, waves, diversification, fingerprint: pfStressFingerprint(pf, rho) };

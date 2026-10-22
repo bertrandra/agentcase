@@ -112,6 +112,6 @@ describe('performance', () => {
     const ms = performance.now() - t;
     expect(r.products).toHaveLength(20);
     console.log(`20 x 1000 draws: ${Math.round(ms)} ms`);
-    expect(ms).toBeLessThan(8000);
+    expect(ms).toBeLessThan(5000);
   }, 60000);
 });
