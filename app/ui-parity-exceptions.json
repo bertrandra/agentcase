@@ -70,7 +70,7 @@
       "area": "header:title",
       "prop": "boxW",
       "expected": "190.5",
-      "reason": "product decision (user request): the title reads \"AgentCase [for <customer>] v20.2\" without the legacy subtitle line; its width follows its text"
+      "reason": "product decision (user request): the title reads \"AgentCase [for <customer>] v20.3\" without the legacy subtitle line; its width follows its text"
     }
   ]
 }

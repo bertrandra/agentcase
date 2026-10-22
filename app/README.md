@@ -1,6 +1,6 @@
 # AgentCase — TypeScript + React build (`app/`)
 
-The product (version `20.2.0`, multi-product portfolio). The legacy single-file app `../AgentCase_v18_13_EN.html` is the frozen reference it is proven
+The product (version `20.3.0`, multi-product portfolio). The legacy single-file app `../AgentCase_v18_13_EN.html` is the frozen reference it is proven
 against. Docs: [architecture](../docs/ARCHITECTURE.md) · [migration record](../docs/MIGRATION_PLAN.md) ·
 [adding a section](../docs/SECTION_PORTING.md) · [releasing](../docs/BUMP_PROCEDURE.md).
 
@@ -9,7 +9,7 @@ npm ci
 npm run dev       # Vite dev server
 npm run check     # tsc --noEmit + ESLint + Vitest (what CI runs)
 npm run build     # tsc --noEmit + vite build -> dist/index.html, one offline HTML file
-npm run release   # build + dist/AgentCase_v20_2_EN.html (name from APP_VERSION)
+npm run release   # build + dist/AgentCase_v20_3_EN.html (name from APP_VERSION)
 npm test          # Vitest only
 node scripts/sizes.mjs   # largest source files (the 150-line rule)
 ```

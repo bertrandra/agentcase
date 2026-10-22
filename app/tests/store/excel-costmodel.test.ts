@@ -25,11 +25,11 @@ describe('the cost-model workbook', () => {
   it('has exactly the three sheets, in order, with the header block and the column layout', async () => {
     const pf = fourProducts(), { wb, filename } = await read(), L = consolidate(corePortfolio(pf)).horizon;
     expect(wb.worksheets.map((w) => w.name)).toEqual(['Values', 'Rate cards', 'Other costs']);
-    expect(filename).toBe('AgentCase_v20_2_CostModel_Portfolio_2026-10-22-10-30-00.xlsx');
+    expect(filename).toBe('AgentCase_v20_3_CostModel_Portfolio_2026-10-22-10-30-00.xlsx');
     for (const ws of wb.worksheets) {
       expect(String(val(ws, 1, 1))).toContain('AgentCase cost model (monthly)');
       expect(['Scope', 'Generated (UTC)', 'App version', 'Currency', 'Convention', 'How to recompute', 'Not exported'].map((_, i) => val(ws, 2 + i, 1))).toEqual(['Scope', 'Generated (UTC)', 'App version', 'Currency', 'Convention', 'How to recompute', 'Not exported']);
-      expect(val(ws, 2, 3)).toBe('Portfolio'); expect(val(ws, 3, 3)).toBe('2026-10-22 10:30:00'); expect(val(ws, 4, 3)).toBe('v20.2.0'); expect(val(ws, 5, 3)).toBe('EUR');
+      expect(val(ws, 2, 3)).toBe('Portfolio'); expect(val(ws, 3, 3)).toBe('2026-10-22 10:30:00'); expect(val(ws, 4, 3)).toBe('v20.3.0'); expect(val(ws, 5, 3)).toBe('EUR');
       expect(String(val(ws, 6, 3))).toMatch(/M1 = first portfolio month/); expect(String(val(ws, 8, 3))).toContain('Archive (no wave)');
       const h = heads(ws);
       expect(h.slice(0, 3)).toEqual(['Portfolio', 'Wave', 'Product']);
@@ -94,7 +94,7 @@ describe('the cost-model workbook', () => {
     const names = (ws: XL.Worksheet) => new Set(table(ws).map((r) => val(ws, r, 3)).filter((x) => x !== '(all products)'));
     expect(names(wave)).toEqual(new Set(['Billing'])); expect(table(wave).length).toBeLessThan(all);
     expect(names(prod.wb.getWorksheet('Values')!)).toEqual(new Set(['Payroll']));
-    expect(prod.filename).toMatch(/^AgentCase_v20_2_CostModel_Product_Payroll_/); expect((await read({ kind: 'wave', id: w2.id })).filename).toMatch(/CostModel_Wave_Wave_2_/);
+    expect(prod.filename).toMatch(/^AgentCase_v20_3_CostModel_Product_Payroll_/); expect((await read({ kind: 'wave', id: w2.id })).filename).toMatch(/CostModel_Wave_Wave_2_/);
     expect(val(prod.wb.getWorksheet('Values')!, 8, 3)).toBe('None: every product of the scope is planned');
     freshStore();
     const single = (await read()).wb.getWorksheet('Values')!, one = table(single);
