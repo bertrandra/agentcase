@@ -76,7 +76,7 @@
    "9 · ",["strong","Hooks and React"]," — ",["code","useCtx"],", ",["code","useCaseResult"]," and the consolidation hooks recompute through the domain and the Time Engine; only subscribed components re-render. The top bar and the Results sections update in the same frame."]],
 
  ["div",{"class":"card","accent":"#00828E","bg":"#F4FBF6"},["h3","Portfolio layer: data model and consolidation flow"],
-  ["div","Since v20.0 a file is a portfolio. The decisions and phase notes are in docs/SPEC_MULTI_PRODUIT.md; the user guide is docs/GUIDE_MULTI_PRODUIT.md."],
+  ["div","Since v20.0 a file is a portfolio. The decisions and phase notes are in the multi-product specification, and the user guide, both under docs/."],
   ["ul",
    ["li",["strong","Model"]," — ",["code","domain/portfolio/types.ts"],": common values (every key of a case except the entry team), 1 to 50 products (each with its own entry team, sparse overrides and a Knowledge Hub subset), waves (start month, products, per-product offset), the hub settings and the horizon. ",["code","domain/portfolio/validate.ts"]," states the invariants."],
    ["li",["strong","Resolve"]," — ",["code","resolveProduct"]," (",["code","domain/portfolio/resolve.ts"],") builds a product's effective case in this order: common, hub, whitelisted overrides, knowledge subset, own entry team. It is memoised per product, so editing one product rebuilds no other."],
@@ -87,7 +87,7 @@
   ["div","Related sections: ",["go",{"to":"products"},"📦 Products"],", ",["go",{"to":"overrides"},"🧬 Overrides"],", ",["go",{"to":"waves"},"🌊 Waves"],", ",["go",{"to":"consolidation"},"📈 Consolidation"],", ",["go",{"to":"knowledge-transfer"},"🔁 Knowledge transfer"],", ",["go",{"to":"portfolio-stress"},"🎲 Portfolio stress"],"."]],
 
  ["div",{"class":"card","accent":"#1DB8F2"},["h3","View selector and aggregated view"],
-  ["div","The top-bar View (Portfolio / Wave / Product) applies to every section, by the kind recorded in ",["code","ui/zones/data/sectionScope.json"]," (accessor ",["code","ui/zones/sectionScope.ts"],"; full table in docs/VUE_AGREGEE.md)."],
+  ["div","The top-bar View (Portfolio / Wave / Product) applies to every section, by the kind recorded in ",["code","ui/zones/data/sectionScope.json"]," (accessor ",["code","ui/zones/sectionScope.ts"],"; the full table is in the aggregated-view document under docs/)."],
   ["ul",
    ["li",["strong","Kinds"]," — result sections follow the View; input sections stay per product and show a read-only roll-up with an \"Edit this product\" action; static and portfolio sections ignore it and show a banner only. This section and its companion are static."],
    ["li",["strong","Scope hook"]," — ",["code","store/viewScope.ts"]," gives the planned, non-archived products in view; ",["code","store/productView.ts"]," lets the usual hooks read another product's resolved case inside a subtree wrapped in ",["code","ui/widgets/ReadOnlyScope.tsx"],"."],
