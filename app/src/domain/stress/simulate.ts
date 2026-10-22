@@ -1,10 +1,10 @@
 import type { Ctx } from '../ctx';
-import { quantile } from '../model/numerics';
+import { normalCdf, quantile, stdNormal, triInv } from '../model/numerics';
 import { activeCurve } from '../model/overlay';
 import { modelRaw } from '../model/raw';
 import { thinFor } from '../time/thin';
 import { mcParamsOf, mcSpreadScale, type McParam } from './mcParams';
-import { mcRng, mcSample } from './rng';
+import { mcRng, mcSample, mcSampleT } from './rng';
 import { autoTechCap, withInputs } from './withInputs';
 
 /** `pNetNeg` = P(net benefit < 0) over the horizon (savings minus setup). */
@@ -41,24 +41,46 @@ function pearson(xs: number[], ys: number[]): number {
   return dx > 0 && dy > 0 ? num / Math.sqrt(dx * dy) : 0;
 }
 
-/** Seeded Monte Carlo over the uncertain parameters (legacy runMonteCarlo): distribution, P10/P50/P90, CVaR and sensitivity. */
-export function runMonteCarlo(c: Ctx, n: number, seed: number, params: McParam[] = mcParamsOf(c.s)): McResult {
+/** Common shocks of a portfolio run: `z(draw, param)` is the shared standard normal of that draw and driver, `rho` in (0, 1] the weight. */
+export interface McShock { rho: number; z: (draw: number, param: number) => number }
+
+/**
+ * Stats of a set of outcomes (sorted copy, linear-interpolation quantiles, CVaR of the worst decile). The one definition behind both the
+ * single-product run and the portfolio aggregate, so a pNeg or a P10 never means two things.
+ */
+export function mcStats(outcomes: number[], seed: number): { sorted: number[]; stats: McStats } {
+  const n = outcomes.length, sorted = outcomes.slice().sort((a, b) => a - b), q = (f: number) => quantile(sorted, f), k = Math.max(1, Math.floor(n * 0.1));
+  return { sorted, stats: { p10: q(0.1), p50: q(0.5), p90: q(0.9), mean: outcomes.reduce((s, v) => s + v, 0) / n,
+    pNetNeg: outcomes.filter((v) => v < 0).length / n, cvar10: sorted.slice(0, k).reduce((s, v) => s + v, 0) / k, n, seed } };
+}
+
+/**
+ * The draws of one case: per draw the sampled parameters and the net benefit they give. Without `shock` each driver is the legacy
+ * triangular draw of the case's own stream. With a shock, driver = sqrt(rho) * Z + sqrt(1 - rho) * eps (eps from the case's own stream) is a
+ * standard normal, mapped through Phi and the inverse of the same triangular marginal: the marginal law of every driver is unchanged.
+ */
+export function mcDraws(c: Ctx, n: number, seed: number, params: McParam[], shock?: McShock): { outcomes: number[]; samples: number[][] } {
   const rng = mcRng(seed), cap = autoTechCap(c);
   const base = params.map((p) => parseFloat(c.inp.v(p.id)) || 0), scale = params.map((p) => mcSpreadScale(c, p.id));
   const outcomes = new Array<number>(n), samples = params.map(() => new Array<number>(n));
   for (let i = 0; i < n; i++) {
     const ov: Record<string, string> = {};
     params.forEach((p, k) => {
-      const v = mcSample(rng, base[k] as number, p, scale[k] as number, cap);
+      let v: number;
+      if (shock) {
+        const g = Math.sqrt(shock.rho) * shock.z(i, k) + Math.sqrt(1 - shock.rho) * stdNormal(rng);
+        v = mcSampleT(triInv(normalCdf(g), -1, 0, 1), base[k] as number, p, scale[k] as number, cap);
+      } else v = mcSample(rng, base[k] as number, p, scale[k] as number, cap);
       (samples[k] as number[])[i] = v; ov[p.id] = String(v);
     });
     outcomes[i] = mcOutcome(withInputs(c, ov));
   }
-  const sorted = outcomes.slice().sort((a, b) => a - b);
-  const q = (f: number) => quantile(sorted, f);   // linear interpolation, the same estimator as the P4 layer
-  const k = Math.max(1, Math.floor(n * 0.1));
-  const stats: McStats = { p10: q(0.1), p50: q(0.5), p90: q(0.9), mean: outcomes.reduce((s, v) => s + v, 0) / n,
-    pNetNeg: outcomes.filter((v) => v < 0).length / n, cvar10: sorted.slice(0, k).reduce((s, v) => s + v, 0) / k, n, seed };
+  return { outcomes, samples };
+}
+
+/** Seeded Monte Carlo over the uncertain parameters (legacy runMonteCarlo): distribution, P10/P50/P90, CVaR and sensitivity. */
+export function runMonteCarlo(c: Ctx, n: number, seed: number, params: McParam[] = mcParamsOf(c.s)): McResult {
+  const { outcomes, samples } = mcDraws(c, n, seed, params), { sorted, stats } = mcStats(outcomes, seed);
   const sens = params.map((p, j) => ({ id: p.id, label: p.label, r: +pearson(samples[j] as number[], outcomes).toFixed(3) }))
     .sort((a, b) => Math.abs(b.r) - Math.abs(a.r));
   return { outcomes: sorted, stats, sens, n, seed };

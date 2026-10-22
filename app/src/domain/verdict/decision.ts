@@ -14,17 +14,27 @@ export interface Decision {
   verdict: Verdict; confidence: number; stats: McStats; p10Floor: number; drivers: McSens[]; conditions: string[]; ctx: CtxLine[]; setup: number; premium: number;
 }
 
+/** The premium on the bars from the engagement context and the wave-2 risk modules (points / 100) of one case. */
+export const riskPremiumOf = (c: Ctx): number => (engagementCoef(c).riskPremium || 0) / 100 + wave2RiskPremium(c);
+
+/**
+ * THE decision rule, on figures only (shared by a product and by a portfolio / wave): "strong" needs P(net>0) above the raised strong bar AND
+ * a P10 above -50 % of the setup; "conditional" from the raised conditional bar; coherence invariant: never "strong" above PNEG_BRICK.
+ */
+export function verdictRule(s: McStats, setup: number, premium: number): { verdict: Verdict; pPos: number; p10Floor: number } {
+  const pPos = 1 - s.pNetNeg, p10Floor = -DI_THRESHOLDS.p10SetupMult * setup;
+  const strongBar = Math.min(0.95, DI_THRESHOLDS.strongPPos + premium), condBar = Math.min(0.9, DI_THRESHOLDS.condPPos + premium);
+  let verdict: Verdict = pPos >= strongBar && s.p10 > p10Floor ? 'strong' : pPos >= condBar ? 'conditional' : 'defer';
+  if (s.pNetNeg > DI_THRESHOLDS.maxPNegForStrong && verdict === 'strong') verdict = 'conditional';
+  return { verdict, pPos, p10Floor };
+}
+
 /**
  * One verdict from the Monte Carlo distribution (never from a point estimate). The bars rise with the engagement-context and
  * wave-2 risk premiums. Coherence invariant: "strong" is impossible when P(net<0) exceeds 20 %.
  */
 export function decide(c: Ctx, run: Pick<McResult, 'stats' | 'sens'>): Decision {
-  const s = run.stats, setup = model(c).setupTotal, pPos = 1 - s.pNetNeg;
-  const p10Floor = -DI_THRESHOLDS.p10SetupMult * setup;
-  const premium = (engagementCoef(c).riskPremium || 0) / 100 + wave2RiskPremium(c);
-  const strongBar = Math.min(0.95, DI_THRESHOLDS.strongPPos + premium), condBar = Math.min(0.9, DI_THRESHOLDS.condPPos + premium);
-  let verdict: Verdict = pPos >= strongBar && s.p10 > p10Floor ? 'strong' : pPos >= condBar ? 'conditional' : 'defer';
-  if (s.pNetNeg > DI_THRESHOLDS.maxPNegForStrong && verdict === 'strong') verdict = 'conditional';
+  const s = run.stats, setup = model(c).setupTotal, premium = riskPremiumOf(c), { verdict, pPos, p10Floor } = verdictRule(s, setup, premium);
   const drivers = run.sens.slice(0, 2).filter((x) => Math.abs(x.r) >= 0.2);
   const conditions = drivers.map((x) => {
     const cur = parseFloat(c.inp.v(x.id)), dir = x.r > 0 ? 'holds at or above' : 'stays at or below';
