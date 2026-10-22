@@ -1,7 +1,7 @@
 # AgentCase — Architecture of the TypeScript build
 
-> Applies to **`app/`, version 19.0.0** (`app/src/domain/version.ts`, `app/package.json`). 599 `.ts`/`.tsx` files under `app/src`,
-> 137 test files under `app/tests` (counted with `find`; 12,346 tests passed on the last local run, CI is authoritative).
+> Applies to **`app/`, version 20.0.0** (`app/src/domain/version.ts`, `app/package.json`): a multi-product portfolio build. 736 `.ts`/`.tsx` files under `app/src`,
+> 202 test files under `app/tests` (counted with `find`; 15,339 tests passed on the last local run, CI is authoritative).
 > The previous document, which describes the frozen single-file app, is archived as
 > [`history/ARCHITECTURE_legacy_v18.md`](history/ARCHITECTURE_legacy_v18.md). The appendix of this file maps each legacy engine to its replacement.
 > Plan and history: [MIGRATION_PLAN.md](MIGRATION_PLAN.md). Recipe for adding a section: [SECTION_PORTING.md](SECTION_PORTING.md).
@@ -115,7 +115,7 @@ dispatch(command) ──► ONE produceWithPatches(portfolio) ──► patches 
 
 | Concept | Implementation |
 |---|---|
-| Command | `{ type, payload, label, coalesceKey?, undoable, run(draft, payload), runPortfolio? }`. Case commands use `defineCommand` (`store/commands.ts`): `run` mutates the active product's effective case. Portfolio commands use `definePortfolioCommand`: a pure `apply(portfolio, payload)`, turned into minimal Immer patches by `store/syncDraft.ts`. 225 commands are registered by the modules of `src/controllers` (222 undoable: 202 case commands, 201 undoable, plus 23 portfolio ones, 21 undoable; counted from `COMMAND_REGISTRY` after loading them); a duplicate type throws |
+| Command | `{ type, payload, label, coalesceKey?, undoable, run(draft, payload), runPortfolio? }`. Case commands use `defineCommand` (`store/commands.ts`): `run` mutates the active product's effective case. Portfolio commands use `definePortfolioCommand`: a pure `apply(portfolio, payload)`, turned into minimal Immer patches by `store/syncDraft.ts`. 229 commands are registered by the modules of `src/controllers` (225 undoable; 4 view commands - `view.setPersona`, `product.setActive`, `product.setEditScope`, `portfolio.setDisplayScope` - are applied but never on the undo stack; counted from `COMMAND_REGISTRY` after loading the controller modules; 24 of them are `product.*` / `wave.*` / `portfolio.*`, the others include `excel.importPortfolio` and `snapshots.activatePortfolio` / `baselinePortfolio`); a duplicate type throws |
 | Address layer | `store/address/` (`index.ts`, `dom.ts`, `subset.ts`). After a case command ran on the derived doc, each changed top-level key is re-addressed onto the portfolio inside the same produce: `teamIn` -> the active product's `teamIn`; a whitelisted key (spec 4.3) -> `product.overrides[key]` if the product already overrides it OR the edit scope is `'product'` (and the value differs from common), else `common[key]`; a changed form field of `dom.values` / `dom.checked` is routed per field (Knowledge Hub fields to the product's knowledge subset when it defines them, then override/common by the same rule; `horizon`, `khInfraMonthly`, `khEnabled` mirror into `horizonMonths` / `hub`); any non-overridable key (RATE, MODEL, COEF, PERSONAS, nav, snapshots, customerName, ...) -> `common`. With one product and no override the result is exactly today's behaviour |
 | View state | `activeProductId` (saved with the file, D-M6) and `editScope` (`'all'` / `'product'`, transient, never saved) change through `undoable: false` commands (`product.setActive`, `product.setEditScope`): applied, logged, never on the undo stack, filtered out of broadcast patches (`VIEW_FIELDS`). After an undo/redo/remote patch an unknown active product falls back to the first one (`normalizeActive`) |
 | Portfolio commands | `controllers/product.ts` (add, rename, duplicate, archive, remove, setNote, setOffset, setActive, setEditScope), `productOverrides.ts` (setOverride, clearOverride, applyToCommon, setKnowledge), `wave.ts` (add, rename, remove, reorder, setStart, setNote, assign), `portfolio.ts` (setHorizon, setHub, setRho), `stressPortfolio.ts` (run, not a command). `portfolioGuard.dispatchChecked` refuses (returns false, no step) any command whose result breaks `validate` (last product, weights != 100, 50-product cap, ...) |
@@ -285,17 +285,45 @@ Rule (decision D7): no calculation change in the port. A deliberate change ships
 - Patch-based history stores only changed paths (cap 200 steps, plus the autosave record).
 - Sections and ExcelJS are loaded with dynamic `import()`; the single-file build still inlines everything (the build log lists one JS and one CSS file), so this changes evaluation order, not download size.
 - Multi-product (P4): consolidation view model ~4 ms and a 20-product team edit ~25 ms end to end (all views) on a 20 x 60-month portfolio, budgets 30 ms / 150 ms in `tests/domain/portfolio/perf-p4.test.ts`.
-- Size: `dist/index.html` 2.58 MB (about 770 kB gzip) at the last local build, below the plan's 5 MB budget. No first-paint or frame-rate budget is measured in CI.
+- Size: `dist/index.html` 2.68 MB (about 830 kB gzip) at the last local build; budgets for size, shell, edit, undo and section switches (single case and the six Portefeuille sections on the shipped example) are in `app/perf-budget.json` and checked by `tools/perf.mjs` (CI job `e2e`).
 
-## 11. Known gaps
+## 11. Portfolio (multi-product) at a glance
+
+Since 20.0.0 a file is a **portfolio**: common values, 1 to 50 products (each with its own entry team, sparse overrides and a Knowledge Hub subset) and waves
+(start month, products, per-product offset). The decisions D-M1..D-M12 and the phase notes P1-P6 are in [SPEC_MULTI_PRODUIT.md](SPEC_MULTI_PRODUIT.md); the
+user guide is [GUIDE_MULTI_PRODUIT.md](GUIDE_MULTI_PRODUIT.md). How the pieces connect:
+
+| Piece | Where | Role |
+|---|---|---|
+| Model (P1) | `domain/portfolio/{types,resolve,validate,overrides,keys}.ts` | `Portfolio` / `Product` / `Wave`; `resolveProduct` = common < hub < whitelisted overrides < knowledge subset < own `teamIn`, memoised per product; `validate` (invariants, `multi-wave` ...) |
+| Calculation (P1, P3b) | `timeline`, `series`, `consolidate`, `headline`, `waves`, `knowledge`, `ktview` | one `computeCase` per planned product, shifted onto the calendar (month 0 = wave start + offset; KT setup `ktLeadMonths` earlier) and summed; NPV discounted from portfolio month 1 (D-M4); hub infrastructure allocated to the cent (`allocateCents`) |
+| Views (P4) | `consolidationView`, `waveBoard`, `portfolioGantt`, `scopeHeadline`, `corePortfolio` | pure view models memoised on `corePortfolio` (the portfolio without view state); rule A8: no financial `.reduce(` in `ui/` portfolio code (ESLint) |
+| Store (P2) | `store/` (`Portfolio` is the source of truth; `doc` = effective case of the active product) and `store/address/` | the ~200 case commands are unchanged; the address layer re-addresses their patches onto team / override / common inside ONE `produceWithPatches`, so history, coalescing and remote patches are unchanged |
+| Commands (P2-P6) | `controllers/{product,productOverrides,wave,portfolio}.ts`, `portfolioGuard.dispatchChecked` | every portfolio write is a named, undoable command; a result that breaks `validate` is refused |
+| Persistence (P2, P5) | `persistence/{snapshot,excel/portfolio,report/portfolio}`, `snapshots`, `calc package` | `agentcase.portfolio.v1` (a plain single case is still saved as `agentcase.snapshot.v1`, rule F22); seven extra parameter sheets; results sheets per portfolio / wave / product; scoped report; photos carry the portfolio; staleness at product and portfolio level |
+| Stress (P6) | `domain/portfolio/stress*.ts`, `store/portfolioSimulation.ts`, `controllers/stressPortfolio.ts` | per-product Monte Carlo (seed XOR hash(id)), global correlation `rho` (Gaussian copula on a shared factor), sum per draw, risk reduction, verdict by `verdictRule` |
+| UI (P3-P6) | `ui/shell/{ProductBar,ScopeSelect}`, `ui/sections/portfolio/{products,overrides,knowledge-transfer,waves,consolidation,stress}` | active product, edit scope (all / this product only), display scope; progressive disclosure: with one product nothing is shown |
+
+Compatibility is proven, not assumed: a one-product, one-wave portfolio built from each of the 107 fixtures gives the same numbers as the case (A1/A9, `tests/store/portfolio-a1.test.ts`),
+`ui-parity` and the legacy `parallel-run` stay at zero divergences, and `tests/store/portfolio-example.test.ts` opens the shipped example (`docs/examples/AgentCase_Portfolio_Example.json`,
+generated by `app/scripts/portfolio-example.ts`) through the real open path. Schema tags, the autosave database `agentcase-v19` and the BroadcastChannel name are deliberately unchanged in 20.0.0 so no autosave is orphaned.
+
+## 12. Known gaps
 
 The authoritative list is [MIGRATION_PLAN.md §15](MIGRATION_PLAN.md). Architecture-relevant items:
 
-- Browser checks exist (`npm run e2e`, `npm run perf`, `npm run parallel-run`; CI job `e2e`); the differential run on real customer files needs files supplied by the user.
-- Out of scope (removed from the spec): the ADVANCED lock and its unlock gestures, and tag/MVP editing. Being ported: calculation package and staleness banner, Gantt keyboard editing. The layout boards have a read-only in-page live preview (`domain/nav/preview.ts`), not the legacy iframe.
+- Browser checks exist (`npm run e2e`, `npm run perf`, `npm run a11y`, `npm run ui-parity`, `npm run parallel-run`; CI job `e2e`); the differential run on real customer files needs files supplied by the user.
+- Out of scope (removed from the spec): the ADVANCED lock and its unlock gestures, and tag/MVP editing. Being ported: Gantt keyboard editing. The layout boards have a read-only in-page live preview (`domain/nav/preview.ts`), not the legacy iframe.
 - Golden-vs-AME comparison, AME reference capture and per-snapshot Excel export are not ported; Agent Catalog capacity and loop external % cannot be imported (catalogues are immutable).
-- `npm run release` produces `app/dist/AgentCase_v19_0_EN.html`; `APP_VERSION` is `19.0.0`.
 - Legacy-only engine `TE-10b` (legacy-mode monthly derivation) fires on 2 supervision fixtures in the legacy and is reproduced only in the verification section.
+- Multi-product, left out on purpose or not yet built: a **portfolio scenarios table** (the six scenarios and the sensitivity stay per product); **dependencies and capacity between waves**
+  (product B after product A, a shared transformation team); **shared teams** across products (a person on two products); **per-draw horizon truncation** in the portfolio stress
+  (products are simulated on their own horizon; the portfolio net is the sum, not cut at the calendar horizon); **"apply to all"** for the fields of the Knowledge subset (only "back to common" exists);
+  rates, model and coefficients per product (common only, D-M3); set-up shared at portfolio level (D-M5, per product); knowledge reuse between products (`reusePct`, D-M11); a full correlation matrix (global `rho` only);
+  item-level scope overrides (whole key only, D-M2); portfolio charts as images in the results workbook.
+- Excel cross-version note: a parameters workbook exported by 20.0.0 from a real portfolio carries seven extra sheets that a 19.x build ignores (it reads only the common case); a 19.x workbook imports into 20.0.0 as a case on the active product. An import does not re-fit the automation potential (the workbook states the stored values; the next open re-fits).
+- Opening a 20.0.0 portfolio file (`agentcase.portfolio.v1`) in a 19.x build is not supported; a plain single case is still saved as `agentcase.snapshot.v1` and stays readable by 19.x.
+- `npm run release` produces `app/dist/AgentCase_v20_0_EN.html`; `APP_VERSION` is `20.0.0`.
 
 ## Appendix A — Legacy engine → replacement
 

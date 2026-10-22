@@ -1,6 +1,6 @@
 # AgentCase — Release procedure
 
-> Applies to the repository after the migration: the TypeScript + React build in `app/` is the product (version `19.0.0`);
+> Applies to the repository after the migration: the TypeScript + React build in `app/` is the product (version `20.0.0`);
 > the legacy single-file app `AgentCase_v18_13_EN.html` is the frozen reference (§6). The previous procedure, written for the
 > single file, is archived in [`history/BUMP_PROCEDURE_legacy_v18.md`](history/BUMP_PROCEDURE_legacy_v18.md) (and the v12.42 one in
 > [`history/AgentCase_BumpProcedure_v12.42.md`](history/AgentCase_BumpProcedure_v12.42.md)).
@@ -14,7 +14,7 @@ adds a changelog entry and passes CI. Commands run from the repository root unle
 |---|---|
 | `app/src/domain/version.ts` | `APP_VERSION` — the runtime source: brand in the top bar, snapshot, Excel and report file names |
 | `app/package.json` and `app/package-lock.json` | `version` (lock file: two places). Use `cd app && npm version <X.Y.Z> --no-git-tag-version`, which edits both |
-| `app/index.html` | `<title>AgentCase vN — Agentic Transformation Business Case</title>`: the major only (`v19`); change it only on a major bump |
+| `app/index.html` | `<title>AgentCase vN — Agentic Transformation Business Case</title>`: the major only (`v20`); change it only on a major bump |
 | `CHANGELOG.md` | new `## [vX.Y.Z] YYYY-MM-DD — title` section at the top: New / Changed / Fixed and a **Golden case** line |
 | `README.md` | the version in the deliverables table |
 | `docs/ARCHITECTURE.md` | only if the architecture changed; update its "Applies to" line |
@@ -32,15 +32,15 @@ grep -n "<title>" app/index.html
 ### How the version becomes a tag
 
 `appVerTag()` (`app/src/domain/snapshots/library.ts`) and `versionFileTag()` (`app/src/store/persistence/excel/params/index.ts`)
-turn `APP_VERSION` into `vX.Y` by removing one trailing `.0`, and dots into underscores for file names: `19.0.0` → `v19.0` / `v19_0`,
-`19.1.0` → `v19.1` / `v19_1`, `19.0.1` → `v19.0.1`. A pre-release suffix is kept as is (`19.0.0-dev` → `v19.0.0-dev`), so remove
+turn `APP_VERSION` into `vX.Y` by removing one trailing `.0`, and dots into underscores for file names: `20.0.0` → `v20.0` / `v20_0`,
+`20.1.0` → `v20.1` / `v20_1`, `20.0.1` → `v20.0.1`. A pre-release suffix is kept as is (`20.0.0-dev` → `v20.0.0-dev`), so remove
 `-dev` in the release that cuts over.
 
 ### Do not touch
 
 - Schema tags of stored data change only when the data shape changes, never in a routine release: the snapshot `_schema`
-  (`agentcase.snapshot.v1`, `app/src/store/persistence/snapshot.ts`), the autosave database name and version (`agentcase-v19`, version 1,
-  `idb.ts`) and the BroadcastChannel name (`agentcase-v19`). Renaming them orphans users' autosaves or splits multi-tab sync.
+  (`agentcase.snapshot.v1` and `agentcase.portfolio.v1`, `app/src/store/persistence/snapshot.ts`), the autosave database name and version (`agentcase-v19`, version 1,
+  `idb.ts`) and the BroadcastChannel name (`agentcase-v19`) keep their `v19` name in 20.x on purpose. Renaming them orphans users' autosaves or splits multi-tab sync.
 - Historical tags in comments and the `calculationVersion` string of the Time Engine (`agentcase.timeengine.v1`,
   `app/src/domain/time/kernel.ts`).
 
@@ -70,8 +70,9 @@ npm run build        # tsc --noEmit + vite build -> app/dist/index.html
 
 `npm run check` includes: the oracle test on every fixture case, controller and persistence tests, section parity tests, the command
 registry test (every command has a label, a sample and round-trips through undo/redo), the property-based undo test, the lint-rule and
-file-size tests. It is the same sequence CI runs. There is no automated browser end-to-end or accessibility test for the new build, so
-finish with a short manual pass on the built file, opened from disk in Chrome or Edge:
+file-size tests. It is the same sequence CI runs. The browser gates are not part of `npm run check`, so
+after `npm run build`, run the browser gates on the built file from `app/` (Chromium needed): `npm run e2e` (smoke of every section on 6 case fixtures and 2 portfolio
+files, then the performance budget), `node ../tools/ui-parity.mjs`, `npm run a11y`, `node ../tools/parallel-run.mjs`. Then finish with a short manual pass on the built file, opened from disk in Chrome or Edge:
 
 - console clean; the KPI bar shows the golden figures (Y3 savings €891,555, NPV €1,359,010, payback 9 months) on the default case;
 - Ctrl+Z / Ctrl+Y after an edit; Logic verification shows no failing check;
@@ -98,15 +99,10 @@ requests and on pushes to `main` that touch `app/**` or the workflow. It does no
 does not tag.
 
 **The single-file artefact.** `npm run build` writes `app/dist/index.html` (`dist/` is git-ignored): one offline HTML file with
-script and styles inlined by `vite-plugin-singlefile`, about 2.6 MB. The build does not put a version in its name. By convention
-(the legacy naming, and what the in-app file names use) the release copy is named `AgentCase_v<MAJOR>_<MINOR>_EN.html`, for
-example:
-
-```bash
-cp app/dist/index.html AgentCase_v19_0_EN.html   # attach to the release / distribute; not committed
-```
-
-This renaming is a manual step: nothing in the repository produces or checks it. Tag the merge commit `vX.Y.Z` after merging
+script and styles inlined by `vite-plugin-singlefile`, about 2.6 MB. `npm run build` does not put a version in its name; `npm run release` (`app/scripts/release.mjs`) does: it fails when `version.ts`,
+`package.json` and the `index.html` title disagree, builds, and copies the file to `app/dist/AgentCase_v<MAJOR>_<MINOR>_EN.html`
+(the legacy naming, and what the in-app file names use), for example `app/dist/AgentCase_v20_0_EN.html` (attach it to the release;
+not committed). The name is read from `APP_VERSION`, so no tool or workflow hard-codes it. Tag the merge commit `vX.Y.Z` after merging
 (no tags exist in the repository yet).
 
 ## 7. The legacy file

@@ -15,77 +15,71 @@ All notable changes to AgentCase, newest first. Product version from v19.0.0 = `
 
 When releasing, follow [docs/BUMP_PROCEDURE.md](docs/BUMP_PROCEDURE.md) (§7 for the legacy file) and add the new version at the top.
 
-## [Unreleased]
+## [v20.0.0] 2026-10-22 — Multi-product portfolio, waves and consolidation
 
-- **Multi-product, phase P6 (stress).** New Portefeuille section "Stress portefeuille" (85 sections): Monte Carlo of the planned products, one stream per product (`seed XOR hash(id)`, the
-  seed itself for a lone product, so a one-product portfolio reproduces today's Monte Carlo draw for draw), the portfolio outcome of a draw being the sum of the products' net benefits, with a
-  global correlation `rho` in [0, 1] (default 0: independent; 1: common shocks; Gaussian copula on a shared factor, every product keeps its own marginal law). Results: P10 / P50 / P90 / mean /
-  CVaR / P(net < 0) of the portfolio, per wave and per product, the risk reduction against the products taken alone, stale marker, run in chunks (one product per slice, progress). `rho` is a
-  portfolio field (command `portfolio.setRho`, undoable, saved, `PortfolioSettings` sheet, in the portfolio calculation package). Decision Intelligence shows the verdict of the Portefeuille / Vague
-  display scope (same rule, `verdictRule`; setup summed, risk-bar premium weighted by entry headcount) and a per-wave verdict table. Results workbook: "Portfolio stress" sheet; portfolio report: section 7.
-  Single product: nothing changes (same draws, same verdict). Speed-ups with identical numbers: spline slopes cached per control-point list, input overrides parsed once. See DEV-PF-STRESS. Tests:
-  `tests/domain/portfolio/{stress,stressVerdict}.test.ts`, `tests/store/{portfolio-rho,stress-portfolio}.test.ts`, `tests/ui/portfolio-stress.test.tsx`.
-- **Multi-product, phase P5 (restitution).** Parameters workbook: for a real portfolio "Export all" adds seven sheets after the 47 case sheets (which now describe the COMMON case):
-  `PortfolioSettings` (hub enabled / infrastructure / allocation, horizon, start date, active product), `Products` (id, name, wave, offset, position in wave, note, archived), `Waves`
-  (id, name, start month, note, order), `TeamIn` (one sheet, a Product column), `Overrides` (product, key, part, JSON value; chunked under 4,000 characters per cell), `KnowledgeSubsets`
-  (enabled, target CC, curation FTE, setup base, KT lead, the 9 maturity answers) and `KnowledgeDomains`. Import (any workbook with a `Products` sheet) is hardened (whitelist of override keys,
-  types, unknown / duplicate ids, weights = 100, caps of 50 products / 50 waves / row limits) and is ONE undoable step ("Import portfolio parameters"); an error names the sheet and row and leaves the case untouched.
-  "Except Factory" and "persona config only" stay as they were. Results workbook: `Portfolio`, `Wave <name>`, `Knowledge transfer`, and per product `Product <name>` plus its own six results sheets
-  (`P<n> ROI` ...), Excel-safe unique names; the display scope picks the leading group. Due-diligence pack: the ACTIVE product's (annotations are common), named on DD_Coverage. Critical report:
-  `buildScopedReport` by display scope (Produit = today's report byte for byte; Portefeuille / Vague = new portfolio report from the domain views, no script / external resource).
-  Named snapshots of a portfolio store the whole portfolio (`NamedSnapshot.portfolio`): activate / baseline restore products, waves, overrides and hub in one undo step; compare works on the active product.
-  Import / Export section: portfolio notes and a report scope selector, only with a real portfolio. Plain single cases: every export is unchanged. Tests: `tests/store/{excel-portfolio-params,excel-portfolio-hardening,excel-portfolio-results,report-portfolio,snapshots-portfolio,staleness-portfolio}.test.ts`, `tests/ui/portfolio-io.test.tsx`.
-- **Multi-product, phase P4 (waves and consolidation).** New Portefeuille sections "Vagues" (wave board: create / rename / reorder / delete waves, start month with its
-  calendar label, per-product offset, move a product by drag and drop, arrow keys or the "Déplacer vers la vague…" menu, per-wave totals; the Produits table's Vague column is
-  now editable) and "Consolidation" (headline cards, cumulative cash chart with a line per wave, tables by wave and by product whose totals row is the portfolio headline, yearly
-  flows, diagnostics). Top bar: "Périmètre d'affichage" (Portefeuille / Vague : X / Produit : Y); the KPI bar shows the figures of that scope (transient view state, not undoable,
-  not saved; default the active product, one product unchanged). Gantt: with 2+ products and scope Portefeuille / Vague, one bar per wave expandable to products with their
-  milestones on the portfolio calendar; with scope Produit a calendar-offset line. Rule A8: ESLint bans `.reduce(` in the portfolio sections, KPI hook and wave Gantt. Performance:
-  views memoised on `corePortfolio` (view state excluded), `hubView` cached per case; budgets in `tests/domain/portfolio/perf-p4.test.ts`. 84 sections. Pure helpers in
-  `domain/portfolio`: `consolidationView`, `waveBoard`, `portfolioGantt`, `scopeHeadline`, `waveHeadline`, `calendarOf`, `corePortfolio`. Tests: `tests/ui/portfolio-{waves,scope,consolidation,gantt}.test.tsx`,
-  `tests/domain/portfolio/{views,perf-p4}.test.ts`, `tests/lint-rules.test.ts`; section counts 82 -> 84 in `portfolio-single`, `datamodel` ('supports' 47), `deps` (28 outside the graph), `shell`, `portfolio-topbar`.
-  Fixture `pf-three-products` now has an offset product and an unscheduled one; `tools/a11y.mjs` audits Vagues / Consolidation / Gantt under the Portefeuille scope for `pf-*` fixtures.
+> Major release: a file describes a **portfolio** of products rolled out by waves. The case-level engine (`computeCase`, Time Engine, verification, verdict)
+> is untouched: it runs once per product on an "effective case" and a consolidation layer adds the results. Specification and decisions D-M1..D-M12:
+> [docs/SPEC_MULTI_PRODUIT.md](docs/SPEC_MULTI_PRODUIT.md); French user guide: [docs/GUIDE_MULTI_PRODUIT.md](docs/GUIDE_MULTI_PRODUIT.md); example:
+> [docs/examples/AgentCase_Portfolio_Example.json](docs/examples/AgentCase_Portfolio_Example.json). Phases P1-P7 were developed as separate merges; their notes are merged below.
 
-- **Multi-product, phase P3b (Knowledge transfer per product).** The Knowledge Hub is shared by the portfolio and each product has its own subset.
-  With 2+ products the "Knowledge hub" section edits the active product's subset (inherited / overridden chips and "Revenir au commun" on
-  activation, the nine maturity answers, target CC with the context cap, curation and setup base), a "Domaines de connaissance" editor (free
-  label + weight %, total must be 100, remaining % shown, invalid lists refused) and "Préparation du transfert (mois avant la vague)"
-  (`ktLeadMonths` >= 0, only the KT setup cost moves, clamp diagnostic), plus the shared hub card (default activation, infrastructure,
-  allocation `perProduct` / `byBaseEtp` with a live conservation check). New section "Knowledge transfer" in the Portefeuille group (82
-  sections): table F29 per product (wave filter, totals, row click activates the product, diagnostics list) and the hub effect by wave (F31).
-  New pure helpers `waveEffects`, `waveEffectsTotal`, `infraView`, `knowledgeTotals` in `domain/portfolio`. No financial formula added; one
-  product looks and behaves as before (ui-parity 0 divergences). Tests: `tests/ui/portfolio-knowledge*.test.tsx`,
-  `tests/domain/portfolio/ktview.test.ts`; section counts 81 -> 82 updated in `portfolio-single`, `datamodel` (also 'supports' 44 -> 45),
-  `deps` (25 -> 26 outside the graph), `shell` (comment) and `portfolio-topbar` (group content, Welcome pill 2 -> 3). Fixture `pf-three-products` now has the hub
-  allocated by headcount and different subsets.
+### New
+- **Products, each with its own entry team** (1 to 50). Add, rename, duplicate, archive, remove, note, per-product offset; the active product is chosen in the top bar and the 79 existing sections work on it
+  (banner "Produit : X (hérité / n surcharges)", "Équipe de : X"). The team is never inherited or shared. A single product looks and behaves exactly as before (progressive disclosure, F23).
+- **Common scope with overrides.** Scope, targets, S-curve, engagement context and Knowledge Hub choices are common by default; a product overrides a whitelisted key (whole key, sparse difference): "surchargé" chip,
+  "Revenir au commun", "Appliquer à tous les produits", edit scope "Modifier : Tous les produits / Ce produit seulement". Tariffs, model, coefficients, discount rate and horizon stay common (D-M3). Sections **Produits** and **Surcharges**.
+- **Waves.** Section **Vagues**: a column per wave (create, rename, reorder, delete, start month with its calendar month), products as cards moved by drag and drop, arrow keys or the "Déplacer vers la vague…" menu,
+  per-product offset, a column "Non planifié" (excluded from the consolidation, with a warning). A product belongs to one wave (D-M1).
+- **Knowledge transfer subsets.** One Knowledge Hub for the portfolio, one subset per product (activation, nine maturity answers, target CC capped by the context, curation, set-up base, free domains with weights summing to 100,
+  `ktLeadMonths` = preparation before the wave, which only moves the KT set-up cost). Infrastructure charged per product or by entry headcount (exact to the cent, conservation checked). Section **Knowledge transfer**
+  (table per product, totals, wave filter, hub effect per wave, diagnostics).
+- **Consolidation.** Section **Consolidation** and the calendar engine: per-product Time Engine rows shifted to the calendar and summed (savings, run cost, set-up, tokens, infrastructure, FTE, vFTE), NPV discounted from portfolio month 1
+  (the sum of the products is the portfolio NPV, D-M4), ROI by `roiCanonical`, payback of the consolidated cash, per year, per wave and per product; diagnostics (not scheduled, KT lead clamped, target capped, hub unused, truncated).
+- **Display scope** (top bar "Périmètre"): Portefeuille, Vague : X or Produit : Y. The headline bar, the Gantt (a bar per wave, products expandable, milestones on the portfolio calendar), Decision Intelligence and the report follow it.
+  Not saved with the file; not undoable.
+- **Portfolio stress.** Section **Stress portefeuille**: Monte Carlo of the planned products (one stream per product, seed XOR hash(id); a one-product portfolio reproduces the case Monte Carlo draw for draw), the portfolio draw being the sum of the
+  products' net benefits, global correlation `rho` in [0, 1] (Gaussian copula on a shared factor; marginals unchanged), P10 / P50 / P90 / mean / CVaR / P(net < 0), risk reduction (diversification) per wave and per product, stale marker,
+  chunked run with progress; verdict of the Portefeuille / Vague scope in Decision Intelligence (same rule, `verdictRule`). `rho` is a portfolio field (command `portfolio.setRho`, saved, `PortfolioSettings` sheet). See DEV-PF-STRESS.
+- **Restitution.** Parameters workbook: for a real portfolio "Export all" adds `PortfolioSettings`, `Products`, `Waves`, `TeamIn`, `Overrides`, `KnowledgeSubsets`, `KnowledgeDomains`; hardened import in one undoable step ("Import portfolio parameters").
+  Results workbook: `Portfolio`, `Wave <name>`, `Knowledge transfer`, `Portfolio stress`, then `Product <name>` with its own six sheets. Due-diligence pack: the active product. Critical-delivery report by scope (a product = today's report byte for byte;
+  Portefeuille / Vague = consolidated report). Snapshots and HTML save carry the whole portfolio; activating or baselining a photo is one undo step.
+- **Persistence.** New document format `agentcase.portfolio.v1` (JSON, HTML embed, autosave record, multi-tab patches, one calculation package per product plus a portfolio package, two-level staleness check). A plain single case is still saved as
+  `agentcase.snapshot.v1` (F22); v18.x and v19 files open as "Produit 1" in "Vague 1" at month 0 with identical figures. 27 new commands (229 registered in all, 225 undoable; 4 view commands are never on the undo stack), every undoable one covered by the
+  registry round trip and the undo property test on a 3-product portfolio.
+- **Docs and example.** README, ARCHITECTURE (new "Portfolio" overview and known gaps), SPEC (status: implemented), MIGRATION_PLAN §15, French user guide `docs/GUIDE_MULTI_PRODUIT.md`, example portfolio `docs/examples/AgentCase_Portfolio_Example.json`
+  (4 products, 2 waves, an offset product, a product not scheduled, hub by headcount, rho 0.3, overrides; generated by `app/scripts/portfolio-example.ts`, opened by `tests/store/portfolio-example.test.ts`).
+- **Tooling.** `tools/e2e-smoke.mjs` also opens `pf-three-products` and the example portfolio and visits the six Portefeuille sections; `tools/perf.mjs` measures the Portefeuille sections (budget `portfolioSectionMaxMs`); `tools/a11y.mjs` audits the example
+  portfolio by default; `tools/parallel-run.mjs` reads the NPV from the Financial section. The release file name is read from `APP_VERSION` (`npm run release` -> `app/dist/AgentCase_v20_0_EN.html`).
+- **Architecture rule A8**: ESLint bans `.reduce(` in the portfolio sections, KPI hook, wave Gantt and stress views, so no portfolio figure is computed in `ui/`.
 
-- **Multi-product, phase P3 (interface).** With 2+ products: "Produit" selector and "Modifier : tous / ce produit seulement" toggle in the top bar,
-  "Produit : X (hérité / n surcharges)" banner in sections, reusable `OverrideBadge` / `InheritedField` (hérité / surchargé chips, "Revenir au
-  commun", "Appliquer à tous les produits") wired into scope, phases, S-curve, norms, engagement context and location mix, "Équipe de : X" label,
-  new nav group "Portefeuille" with sections Produits and Surcharges (81 sections), "Ajouter un produit" on Welcome. A single product looks
-  and behaves exactly as before (ui-parity 0 divergences; the parity tool skips the Portefeuille group). No calculation change. New tests
-  `tests/ui/portfolio-*.test.tsx`; section counts updated in a few tests; `npm run a11y -- --fixtures pf-three-products` (generated with
-  `scripts/portfolio-fixture.ts`) has no violation.
+### Changed
+- Version `20.0.0` (`APP_VERSION`, `package.json`, lock file, `index.html` title v20); file names `AgentCase_v20_0_<kind>_…` and `· v20.0` tags follow. **Unchanged on purpose**: schema tags `agentcase.snapshot.v1` / `agentcase.portfolio.v1`, the autosave database
+  `agentcase-v19` (version 1) and the BroadcastChannel `agentcase-v19`, so no user's autosave is orphaned.
+- The store's source of truth is the `Portfolio`; `doc` is derived (the effective case of the active product). An address layer maps each existing command's patches onto team / override / common inside one Immer produce: the ~200 case commands, controllers, Excel and report adapters keep their signatures.
+- Top bar: total FTE before and after for the product, wave and portfolio scopes. Top bar and workbooks of a one-product file are unchanged.
+- Speed-ups with identical numbers: spline slopes cached per control-point list, input overrides parsed once, `hubView` cached per resolved case, views memoised on `corePortfolio`.
 
-- **Multi-product, phase P2 (store, commands, persistence).** The store's source of truth is now the `Portfolio`; `doc` is derived
-  (the active product's effective case), so the ~200 existing commands, the 79 sections, controllers and the Excel/report adapters are
-  unchanged. An address layer maps each case-command change to the portfolio (team -> product, whitelisted key -> override or common,
-  everything else -> common) inside ONE Immer produce, so history, undo/redo, coalescing, batch and remote patches behave as before.
-  22 new commands: `product.*` (add, rename, duplicate, archive, remove, setNote, setOffset, setOverride, clearOverride, applyToCommon,
-  setKnowledge, plus the non-undoable `setActive` and `setEditScope`), `wave.*` (add, rename, remove, reorder, setStart, setNote, assign),
-  `portfolio.setHorizon` / `setHub`. New format `agentcase.portfolio.v1` (JSON, HTML embed, autosave record, multi-tab patches) with
-  one calculation package per product plus a portfolio package and two-level staleness check; a single plain case is still saved as
-  `agentcase.snapshot.v1` (F22) and legacy files open as "Produit 1" in "Vague 1" with identical figures (A1 on the 107 fixtures, A9
-  round trip). Tests: store-level A1/A9, A5 address layer, A6 undo property on a 3-product portfolio, persistence/sync/sanitize,
-  staleness. No UI change (P3).
+### Fixed
+- `tools/e2e-smoke.mjs`, `tools/perf.mjs` and `tools/parallel-run.mjs` had drifted from the shell (collapsible sidebar groups, a headline bar that starts with FTE and no longer shows the NPV, negative amounts printed with U+2212) and stopped at the first click; they follow the current UI.
+- `tools/a11y-keys.mjs` flagged the unchecked radio of the "Modifier" group as unreachable; a radio group is one tab stop (tool fix, no change to the app).
+- Accessibility: heading order of the new sections and the stress result summary (found by the axe pass in P6).
 
-- **Multi-product, phase P1 (domain only).** New pure module `app/src/domain/portfolio/`: `Portfolio` / `Product` / `Wave` types,
-  `resolveProduct` (common values + whitelisted overrides + knowledge subset + own team, memoised per product), `validate`,
-  calendar `consolidate` (per-product Time Engine rows shifted onto the calendar and summed; waves; KT setup placed `ktLeadMonths`
-  earlier), portfolio headline (calendar NPV, `roiCanonical`, payback, cost reduction, weighted velocity), hub infrastructure
-  allocation (`perProduct` / `byBaseEtp`, exact to the cent), `envelopeCase` / `portfolioToCase`. No store, controller, UI or
-  persistence change; `computeCase` is untouched and a one-product envelope reproduces its figures on the 107 fixtures. Decisions
-  D-M1..D-M12 recorded in `docs/SPEC_MULTI_PRODUIT.md` section 15.
+### Gates (measured on this release: Chromium headless, built file)
+- **Golden case**: unchanged. All 107 single-product fixtures give the same numbers as before, as one-product portfolios (A1/A9), verified by the tests (`tests/store/portfolio-a1.test.ts`, the oracle, parity and persistence suites).
+- **`npm run check`**: typecheck and ESLint clean; Vitest 202 files, 15,339 tests passed (12,346 at v19.0.0).
+- **e2e smoke** (`tools/e2e-smoke.mjs`): 758 section visits (6 case fixtures x 93, `pf-three-products` and the example portfolio x 100, the six Portefeuille sections included), 0 failures, 0 console errors.
+- **Performance** (`tools/perf.mjs`): size 2.68 MB (0.83 MB gzip), shell 520 ms, edit-to-KPI repaint median 16 ms / p95 22 ms, undo 42 ms, slowest single-case section switch 259 ms, slowest Portefeuille section switch 137 ms (Produits 100, Surcharges 102, Knowledge transfer 101, Vagues 119, Consolidation 137, Stress portefeuille 97), heap 30 MB, 0 page errors (`npm run e2e`, exit 0). Budget `app/perf-budget.json` unchanged except the new `portfolioSectionMaxMs` (1,500 ms).
+- **Accessibility** (`npm run a11y`): 422 audits (golden, ctx-msi, industry-med and the example portfolio), 0 violations, budget `app/a11y-budget.json` unchanged. `pf-three-products` alone: 116 audits, 0 violations.
+- **UI parity** (`tools/ui-parity.mjs`): 44,871 properties compared over 3 personas and the section content, 0 divergences, 5 recorded exceptions (`app/ui-parity-exceptions.json`).
+- **Parallel run** (`tools/parallel-run.mjs`): legacy v18.13 file against the built app on the same files, comparing savings, run cost, NPV, payback, effective automation and glass ceiling: the 40 parameters workbooks (`app/fixtures/xlsx`) are all identical; of the 107 case files opened as snapshots, 104 are identical and 3 differ (`curve-bass`, `curve-legacy`, `lifecycle-pos-0`), the known limits of the legacy snapshot restore path (it does not restore the `bass` family, see docs/MIGRATION_PLAN.md §15.4), while the oracle tests, which drive the legacy engine through the recipes, pass on all 107. The tool now reads the NPV from the Financial section.
+- **Release file**: `app/dist/AgentCase_v20_0_EN.html`, 2,809,882 bytes (2.68 MiB), a copy of `app/dist/index.html` made by `npm run release`.
+
+### Known gaps
+Portfolio scenarios table; dependencies and capacity between waves; shared teams; per-draw horizon truncation in the portfolio stress; "apply to all" for Knowledge subsets; rates / model per product; knowledge reuse between products.
+See docs/ARCHITECTURE.md §12 and docs/MIGRATION_PLAN.md §15.6. A 19.x build cannot be expected to open a real portfolio file, and ignores the portfolio sheets of a parameters workbook.
+
+**Golden case unchanged from v19.0.0:** Y3 savings €891,555 · Y3 run cost €885,709 · setup €225,000 · NPV (8 %) €1,359,010 · payback 9 months · 0 audit violations.
+
+---
 
 ## [v19.0.0] 2026-10-21 — TypeScript + React build
 

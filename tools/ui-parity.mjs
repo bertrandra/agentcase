@@ -1,5 +1,5 @@
 #!/usr/bin/env node
-// UI parity of the 3 shell areas (title/header bar, KPI/scenario bar, left sidebar) and of the SECTION CONTENT (all 79 sections on golden, a sample on
+// UI parity of the 3 shell areas (title/header bar, KPI/scenario bar, left sidebar) and of the SECTION CONTENT (all 79 legacy sections on golden, a sample on
 // the other fixtures; tools/ui-parity-sections.mjs) against the frozen legacy AgentCase_v18_13_EN.html.
 // Opens the legacy file and the BUILT app (app/dist/index.html) in Chromium, loads the golden case, and compares getComputedStyle of every
 // matching element pair (plus hover / active states) for each persona. Fails on any divergence that is not a recorded exception in

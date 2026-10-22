@@ -4,13 +4,13 @@
 // section, then audits the other states (see a11y-states.mjs: persona menu, history dock + undo toast, guided sequence, restore banner, dark /
 // forced-colours / reduced-motion / 360px) and runs the keyboard-only checks (a11y-keys.mjs: Tab walk, skip link, dialogs, focus survival). Writes app/a11y-report.json and a summary table.
 // Exit code 1 when any serious/critical violation remains, or when the moderate/minor counts exceed app/a11y-budget.json.
-// Usage: node tools/a11y.mjs [--fixtures golden,ctx-msi,industry-med | pf-three-products] [--sections label,label] [--update-budget]
+// Usage: node tools/a11y.mjs [--fixtures golden,ctx-msi,industry-med | pf-three-products | pf-example] [--sections label,label] [--update-budget]
 import { readFileSync, writeFileSync, existsSync } from 'node:fs';
 import { resolve } from 'node:path';
 import { app, pw, NAV, recorder, openCase, openSection } from './a11y-lib.mjs';
 import { historyStates, keyboardStates, mediaStates, menuToggleFocus, personaMenu, restoreBanner, wizardEnd } from './a11y-states.mjs';
 const args = process.argv.slice(2), opt = (n) => (args.indexOf(n) < 0 ? '' : args[args.indexOf(n) + 1] || '').split(',').filter(Boolean);
-const fixtures = opt('--fixtures').length ? opt('--fixtures') : ['golden', 'ctx-msi', 'industry-med'], only = opt('--sections');
+const fixtures = opt('--fixtures').length ? opt('--fixtures') : ['golden', 'ctx-msi', 'industry-med', 'pf-example'], only = opt('--sections');
 const budgetFile = resolve(app, 'a11y-budget.json'), reportFile = resolve(app, 'a11y-report.json');
 const ORDER = ['critical', 'serious', 'moderate', 'minor'];
 

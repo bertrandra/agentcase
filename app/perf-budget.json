@@ -6,5 +6,6 @@
  "editP95Ms": 500,
  "undoMs": 250,
  "sectionMaxMs": 1500,
+ "portfolioSectionMaxMs": 1500,
  "heapMB": 300
 }

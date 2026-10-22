@@ -29,6 +29,6 @@ jobs:
         working-directory: app
       - run: npm run build
         working-directory: app
-      - run: node tools/e2e-smoke.mjs     # real Chromium: 79 sections × 6 fixtures, no console error, no NaN
+      - run: node tools/e2e-smoke.mjs     # real Chromium: every section × 6 case fixtures + 2 portfolio files, no console error, no NaN
       - run: node tools/perf.mjs          # size / shell / edit / undo / section budgets (app/perf-budget.json)
       - run: node tools/parallel-run.mjs  # same files in the legacy app and the TS build: identical headline figures

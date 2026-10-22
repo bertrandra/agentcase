@@ -11,7 +11,8 @@ const describeFocus = () => {
   return { key: path(el), label: (el.getAttribute('aria-label') || el.textContent || el.tagName).trim().slice(0, 40), ring, inDialog: !!el.closest('[role=dialog],[aria-modal=true],dialog[open]') };
 };
 /** Every control a keyboard user should be able to reach: visible, enabled, tabindex >= 0. */
-const reachable = (sel) => [...document.querySelectorAll(sel)].filter((e) => !e.disabled && e.tabIndex >= 0 && e.getClientRects().length && getComputedStyle(e).visibility !== 'hidden' && !e.closest('[inert],[hidden]'))
+// a radio group is ONE tab stop (the checked radio; arrow keys move inside it): an unchecked radio of a group with a checked one is not expected on the Tab walk
+const reachable = (sel) => [...document.querySelectorAll(sel)].filter((e) => !e.disabled && e.tabIndex >= 0 && !(e.type === 'radio' && !e.checked && e.name && document.querySelector(`input[type=radio][name="${CSS.escape(e.name)}"]:checked`)) && e.getClientRects().length && getComputedStyle(e).visibility !== 'hidden' && !e.closest('[inert],[hidden]'))
   .map((e) => { const p = []; for (let n = e; n && n.nodeType === 1 && n !== document.body; n = n.parentElement) p.unshift(n.tagName.toLowerCase() + (n.id ? '#' + n.id : `:${[...n.parentElement.children].indexOf(n)}`)); return p.join('>'); });
 
 const toTop = () => { document.activeElement?.blur(); window.scrollTo(0, 0); const s = document.createElement('span'); s.tabIndex = -1; document.body.prepend(s); s.focus(); s.remove(); };   // sequential focus restarts at the top
