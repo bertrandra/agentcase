@@ -2,6 +2,7 @@ import { setEngageCoef } from '@/controllers/frame';
 import { ENGAGE_COEF } from '@/domain/frame';
 import { useDoc } from '@/store/hooks';
 import { CommitNumber } from '@/ui/widgets/CommitNumber';
+import { OverrideBadge } from '@/ui/widgets/OverrideBadge';
 
 const FIELDS: [string, string][] = [
   ['rampSpeed', 'Ramp speed ×'], ['rampCapPct', 'Ramp cap %'], ['glassFactor', 'Glass factor ×'], ['setupBillable', 'Setup billable ×'], ['riskPremium', 'Risk premium pts'],
@@ -17,6 +18,7 @@ export function CoefTable() {
   return (
     <details>
       <summary>Context coefficients (editable)</summary>
+      <OverrideBadge refKey="engageCoef" label="Coefficients du contexte" />
       <div className="ac-table-wrap" tabIndex={0}>
         <table className="ac-table" style={{ maxWidth: 560 }}>
           <thead><tr><th scope="col">Coefficient</th>{keys.map((k) => <th key={k} scope="col" style={{ textAlign: 'center' }}>{k}</th>)}</tr></thead>

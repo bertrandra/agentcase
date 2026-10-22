@@ -6,6 +6,7 @@ import { SectionFrame } from '@/ui/zones/SectionFrame';
 import '../scope-tools.css';
 import { Editor } from './Editor';
 
+const OVERRIDES = ['scurve'] as const;
 const HORIZONS = [['1', '1 year — rapid pilot'], ['2', '2 years — BU transformation'], ['3', '3 years — standard'], ['5', '5 years — strategic'], ['7', '7 years — portfolio'], ['10', '10 years — operating model']];
 
 const help = (
@@ -32,5 +33,5 @@ function Timing() {
 
 /** S-curve — adoption ramp: horizon, start date and the draggable adoption curve with its maturity levels. */
 export default function ScurveSection() {
-  return <SectionFrame title="📊 S-curve — adoption ramp" help={help} input={<Timing />} result={<Editor />} />;
+  return <SectionFrame title="📊 S-curve — adoption ramp" help={help} overrides={OVERRIDES} input={<Timing />} result={<Editor />} />;
 }

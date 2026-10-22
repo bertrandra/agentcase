@@ -3,9 +3,12 @@ import { locationMix } from '@/domain/location';
 import { targetMix } from '@/domain/baseline/locStrat';
 import { resetTargetLoc, setTargetLoc } from '@/controllers/baseline';
 import { useCtx } from '@/store/hooks';
+import { OverrideBadge } from '@/ui/widgets/OverrideBadge';
 import { SectionFrame } from '@/ui/zones/SectionFrame';
 import { ClassBadge, classColor } from '../ClassBadge';
 import { LocSummaryBand } from './LocSummaryBand';
+
+const OVERRIDES = ['targetLocPct'] as const;
 
 const help = (
   <>
@@ -40,6 +43,7 @@ function Target() {
   return (
     <div>
       <h2>🎯 Target (editable)</h2>
+      <OverrideBadge refKey="targetLocPct" label="Mix cible de localisation" />
       <div className="ac-form-row" style={{ justifyContent: 'space-between' }}>
         <button type="button" onClick={resetTargetLoc}>↺ Copy AS-IS</button>
         <span>Target sum : <strong style={{ color: Math.abs(sum - 100) < 1 ? 'var(--ac-teal)' : 'var(--ac-brick)' }}>{sum.toFixed(0)}%</strong></span>
@@ -57,7 +61,7 @@ function Target() {
 /** Location strategy — AS-IS mix (derived) vs the editable target mix, and the blended day rate each implies. */
 export default function LocStratSection() {
   return (
-    <SectionFrame title="Location strategy" help={help}
+    <SectionFrame title="Location strategy" help={help} overrides={OVERRIDES}
       input={
         <>
           <div className="ac-callout" role="note"><b>AS-IS</b> distribution computed from the input team, and an editable <b>target</b> distribution per location. Shifting effort toward nearshore/offshore lowers the target blended day-rate

@@ -5,6 +5,7 @@ import { goSection } from '@/ui/uiState';
 import { Callout } from '@/ui/widgets/cards';
 import { useNavModel } from '@/ui/zones/navModel';
 import { SectionFrame } from '@/ui/zones/SectionFrame';
+import { AddProductEntry } from './AddProductEntry';
 
 const help = (
   <>
@@ -54,6 +55,7 @@ export default function HomeSection() {
             </div>
             <button type="button" onClick={() => goSection('glossary')}>Open the glossary →</button>
           </div>
+          <AddProductEntry />
         </>
       } />
   );
