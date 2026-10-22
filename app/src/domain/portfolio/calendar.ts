@@ -10,6 +10,15 @@ export interface Calendar {
 }
 
 export function calendarOf(pf: Portfolio): Calendar {
-  const start = pf.startDate || pf.common.dom?.values?.rmStart || '2026-09-01', d = parseLocalDate(start), ok = !isNaN(d.getTime());
-  return { start, dateAt: (m) => (ok ? addMonthsLocal(d, Math.round(m)).toLocaleDateString('en-US', { month: 'short', year: '2-digit' }) : `M${Math.round(m)}`) };
+  const start = pf.startDate || pf.common.dom?.values?.rmStart || '2026-09-01', d = parseLocalDate(start), ok = !isNaN(d.getTime()), labels = new Map<number, string>();
+  const label = (m: number) => (ok ? addMonthsLocal(d, m).toLocaleDateString('en-US', { month: 'short', year: '2-digit' }) : `M${m}`);
+  return {
+    start,
+    dateAt: (m) => {
+      const k = Math.round(m);
+      let s = labels.get(k);
+      if (s === undefined) { s = label(k); labels.set(k, s); }
+      return s;
+    },
+  };
 }
