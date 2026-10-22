@@ -16,7 +16,7 @@ Figures are the golden fixture unless stated. "Before" = the build at the start 
 | DEV-PNEG-NAMES | unambiguous P(loss) names, labels and tones |
 | DEV-ANCHOR-CLAMP | one anchor owner, velocity and lead time clamped |
 | DEV-COMPARE-ENGINE | 3-way comparison reads the Time Engine |
-| DEV-SCENARIO-FLAT | flat scenario model vs the main case |
+| DEV-SCENARIO-ENGINE | the six scenarios run the Time Engine |
 | DEV-NEG-MONEY | one negative-amount convention |
 
 ## DEV-HEADLINE-OWNER — one economics headline
@@ -88,14 +88,20 @@ Figures are the golden fixture unless stated. "Before" = the build at the start 
 - Tests touched: oracle fields `compareView.save[2]` and `compareView.table[3]` skipped; `fte`, `cost`, `velo` and the table compared to the oracle only when horizon ≤ 3 and the year-end adoption equals the typed ramps; a new test asserts the series equal the engine rows for every fixture; `ui/sections/compare.test.tsx` ignores the legacy figures of the two affected table rows.
 - Files: `domain/stress/compare.ts`.
 
-## DEV-SCENARIO-FLAT — the flat scenario model does not equal the main case (documented, not changed)
+## DEV-SCENARIO-ENGINE — the six scenarios run the Time Engine (replaces DEV-SCENARIO-FLAT)
 
-`scenarioModel` is the flat annual model: the year-end team size is held for the whole year, setup is paid up front, and it carries none of the overlays (knowledge hub, KT avoided, verification tax, rework, change-management and hub setup). Pinned by `tests/domain/scenarioReconcile.test.ts`:
-
-- On the legacy flat curve it reconciles to the euro: `m.yearSav[i] = scenario.yearSav[i] − khRun + ktAvoided − vTax − ext`, `m.setupTotal − scenario.setup = changeCost + khSetup` (cases curve-legacy, golden forced to flat, kh-off, baseline-pins-med), and the scenario ROI is never below the main ROI.
-- On the real adoption curve (default) the monthly ramp makes the main case later and smaller. Golden, "AI + Location": benefit +32 % (over the 107 fixtures the gap runs from +6 % to +160 %, with one outlier at +490 %; the test band is 0 to +70 % on golden / curve-logistic / ctx-msi / industry-med), setup €135,000 vs €225,000, ROI 16.9 vs 7.1, payback month 4 vs 9.
-- Decision: not rebased on the engine now (the six-scenario oracle is a flat-model oracle). The gap is recorded and bounded; a rebase would be the next step if the scenario screen must agree with the headline.
-- Payback in the scenario table uses `annualPaybackMonth` (linear inside the year, setup up front); the engine spreads the setup over six months, so the two are not comparable on the flat curve either.
+- Legacy (and v19 until now): `scenarioModel` re-implemented team cost, tokens, infra, run team, yearly savings, ROI and payback on a flat annual basis: the year-end team held all year, the setup (tooling + training + coaching + governance only) paid up front, payback interpolated inside the year, none of the overlays. On the real adoption curve the scenario screen therefore disagreed with the main-case headline.
+- v19: each scenario is the case's own Time Engine (`timeFor` on the raw model and the live curve, as `engineNow`) run with the scenario's levers (`Levers` in `time/kernel.ts`): AI off sets `eff = 0`, `aiActive = false`, no infra, no AI quality taxes and no setup (setup stays for the Ramp scenario, as before); the location lever sets the day-rate path (`asis` = ramp at 0 %, `target` = the case rate, `destination` = the `scenTargetLoc` rate, `ramp` = the engine's relocation ramp). The figures come from `headlineOf(engine, ctx)`, the one headline owner `headline(c)` also uses; savings and run cost are the engine's year rows; the cumulative chart reads the engine's cumulative series (`cumAt`). `annualPaybackMonth` is deleted.
+- Consequence: the scenario that mirrors the main case's configuration ("AI + Location") returns exactly the main-case net, ROI, payback month and year, NPV and per-year savings / run cost, on every fixture, curve and horizon. The Ramp scenario now ramps month by month (the legacy stepped by whole years).
+- Effect (golden, setup / 3-year savings / net / ROI / payback month), before then after:
+  - AS-IS: 0 / 0 / 0 / n/a / none, unchanged (no payback shown).
+  - AI only: €135,000 / €1,633,686 / €1,498,686 / 11.1 / 10, then €225,000 / €927,224 / €702,224 / 3.1 / 24.
+  - Location only: €0 / €1,168,200 / €1,168,200 / n/a / immediate, unchanged figures (payback month 1 in the engine).
+  - Ramp: €135,000 / €0 / −€135,000 / −100 % / none, then €225,000 / €0 / −€225,000 / −100 % / none (destination rate = AS-IS rate on golden).
+  - AI + Location: €135,000 / €2,420,615 / €2,285,615 / 16.9 / 4, then €225,000 / €1,828,919 / €1,603,919 / 7.1 / 9, the main case (was +32 % benefit).
+  - AI + 100 % destination: same as AI only on golden (before and after).
+- Tests touched: oracle fields `scenarioSet[].m.{setup, dayRateByYear, yearETP, yearAgentVfte, yearTeamCost, yearToken, yearRun, yearSav, totBen, pbMonth}` skipped (`roi` was already skipped by DEV-ROI-NOSETUP; `dayRateByYear` is gone); `key`, `label`, `opts`, `base`, `baselineRun`, `horizon`, `tgtTJM`, `asisTJM`, `tgtRateTJM` still compared to the oracle. `scenarioReconcile.test.ts` rewritten: exact equality with the headline on all 107 fixtures and on five fixtures × six curves × horizons 1, 2, 3, 4, 6; per-scenario invariants (AS-IS has no saving, setup placement, cumulative series ends at the net and crosses 0 at the payback month, monotonicity in the day rate, ramp). The previous legacy-flat-curve reconciliation and the "+32 % / 4 vs 9" pin are gone with the flat model.
+- Files: `domain/stress/scenarios.ts`, `domain/stress/scenarioView.ts`, `domain/time/kernel.ts` (levers), `domain/economics/headline.ts` (`headlineOf`; `annualPaybackMonth` removed). `stress/compare.ts` is untouched: its "classic" series is a separate hypothesis and its "agentic" series already reads the engine rows (DEV-COMPARE-ENGINE).
 
 ## DEV-NEG-MONEY — one negative-amount convention: "−€1,234"
 

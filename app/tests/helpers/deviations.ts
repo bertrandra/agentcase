@@ -16,7 +16,9 @@ export const DEVIATIONS: Deviation[] = [
   { id: 'DEV-HORIZON-SUMS', reason: 'Sums run over the horizon\'s years, not the three-entry yearSav (chain ROI row, sensitivity, hub delta); compared to the oracle at horizon 3 only.', skip: [] },
   { id: 'DEV-PNEG-NAMES', reason: 'pNeg is pNetNeg (decision MC) or pSavNeg (P4 MC); mapped back by legacyNames().', skip: [] },
   { id: 'DEV-ANCHOR-CLAMP', reason: 'Velocity and lead time go through the case anchors and stay in [as-is, target]; recomputed from the oracle realisation.', skip: [] },
-  { id: 'DEV-SCENARIO-FLAT', reason: 'The flat scenario model is pinned against the main case in scenarioReconcile.test.ts, not changed.', skip: [] },
+  { id: 'DEV-SCENARIO-ENGINE', reason: 'The six scenarios run the Time Engine of the case (monthly adoption, engine setup spread and overlays) with their levers, not the flat annual model; dayRateByYear is gone. Asserted in scenarioReconcile.test.ts.',
+    skip: ['scenarioSet[].m.setup', 'scenarioSet[].m.dayRateByYear', 'scenarioSet[].m.yearETP', 'scenarioSet[].m.yearAgentVfte', 'scenarioSet[].m.yearTeamCost',
+      'scenarioSet[].m.yearToken', 'scenarioSet[].m.yearRun', 'scenarioSet[].m.yearSav', 'scenarioSet[].m.totBen', 'scenarioSet[].m.pbMonth'] },
   { id: 'DEV-NEG-MONEY', reason: 'A negative amount reads "−€1,234"; legacyMoney() maps the legacy forms.', skip: [] },
 ];
 

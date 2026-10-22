@@ -1,45 +1,89 @@
-import { readFileSync } from 'node:fs';
+import { readdirSync, readFileSync } from 'node:fs';
 import { describe, expect, it } from 'vitest';
-import { makeCtx, model, type CaseState } from '@/domain';
+import { engineNow, makeCtx, type CaseState, type Ctx } from '@/domain';
 import { headline } from '@/domain/economics/headline';
-import { roiCanonical } from '@/domain/economics/roi';
-import { scenarioSet } from '@/domain/stress';
+import { cumAt, scenarioSet, withInputs, type Scenario } from '@/domain/stress';
 
+const ids = readdirSync('fixtures/cases').map((f) => f.replace('.json', '')).sort();
 const load = (id: string) => JSON.parse(readFileSync(`fixtures/cases/${id}.json`, 'utf8')) as CaseState;
-const flat = (s: CaseState): CaseState => ({ ...s, scurve: { ...s.scurve, curve: 'legacy.flatAnnual' } });
-const ailoc = (s: CaseState) => { const c = makeCtx(s); return { c, m: model(c), a: scenarioSet(c).find((x) => x.key === 'ailoc')!.m }; };
+const CURVES = ['spline.default', 'logistic.default', 'gompertz.default', 'bass.default', 'legacy.linearAnchor', 'legacy.flatAnnual'];
+const withCurve = (s: CaseState, curve: string): CaseState => ({ ...s, scurve: { ...s.scurve, curve } });
+const by = (c: Ctx, key: Scenario['key']) => scenarioSet(c).find((x) => x.key === key)!.m;
 
-describe("'AI + Location' scenario reconciles to the main case (DEV-SCENARIO-FLAT)", () => {
-  // The scenario model is the flat annual model: the year-end team size is held for the whole year. On the legacy flat curve the main case
-  // is the same maths plus the overlays the scenario does not carry, so the two reconcile to the euro.
-  it.each(['curve-legacy', 'golden', 'kh-off', 'baseline-pins-med'])('%s on the flat curve: yearSav, setup and ROI reconcile through the overlays', (id) => {
-    const { c, m, a } = ailoc(flat(load(id)));
-    m.yearSav.forEach((v, i) => {
-      const overlays = -(m.conv.khRunYr[i] as number) + (m.conv.ktAvoidYr[i] as number) - (m.conv.vTaxYr[i] as number) - (m.conv.loopExtYr[i] as number);
-      expect(v).toBeCloseTo((a.yearSav[i] as number) + overlays, 4);
+/** DEV-SCENARIO-ENGINE: the scenario that mirrors the main case's configuration returns exactly the main case figures. */
+function expectMirror(c: Ctx) {
+  const a = by(c, 'ailoc'), h = headline(c), ys = engineNow(c).years();
+  expect([a.net, a.roi, a.pbMonth, a.pbYear, a.npv, a.totBen, a.setup]).toEqual([h.net, h.roi, h.paybackMonth, h.paybackYear, h.npv, h.totalBenefit, h.setup]);
+  expect(a.horizon).toBe(engineNow(c).horizonYears);
+  expect(a.yearSav).toEqual(ys.map((y) => y.savings));
+  expect(a.yearRun).toEqual(ys.map((y) => y.totalRunCost));
+  expect(a.cum[a.horizon * 12]).toBe(engineNow(c).cumulativeAt(a.horizon * 12));
+}
+
+describe("'AI + Location' is the main case (DEV-SCENARIO-ENGINE)", () => {
+  it.each(ids)('%s: net, ROI, payback month and year, NPV and the per-year savings and run cost are the headline\'s, exactly', (id) => {
+    expectMirror(makeCtx(load(id)));
+  });
+  describe.each(['golden', 'curve-logistic', 'curve-legacy', 'horizon-5', 'industry-med'])('%s', (id) => {
+    it.each(CURVES.flatMap((curve) => [1, 2, 3, 4, 6].map((h) => [curve, h] as const)))('curve %s, horizon %i', (curve, h) => {
+      expectMirror(withInputs(makeCtx(withCurve(load(id), curve)), { horizon: String(h) }));
     });
-    expect(m.setupTotal - a.setup).toBeCloseTo(m.conv.changeCost + m.conv.khSetup, 4);
-    const net = m.yearSav.reduce((x, y) => x + y, 0) - m.setupTotal, h = headline(c);
-    expect(h.net).toBeCloseTo(net, 4);
-    expect(h.roi).toBeCloseTo(roiCanonical(net, m.setupTotal) as number, 9);
-    expect(a.roi).toBeCloseTo(roiCanonical(a.totBen - a.setup, a.setup) as number, 9);
-    // the scenario carries less setup and no knowledge-hub run cost: its ROI can only be at least as good. Payback is not comparable on this
-    // curve: the scenario pays the whole setup up front (cumulative starts at -setup) whereas the engine spreads it over six months.
-    if (a.roi != null && h.roi != null) expect(a.roi).toBeGreaterThanOrEqual(h.roi - 1e-9);
   });
-  // On the real adoption curve the engine ramps month by month, the flat scenario does not: it overstates the early years. Pinned on the
-  // golden case so a change of either model is noticed; the bands are the documented tolerance (see docs/DEVIATIONS.md).
-  it('golden on the default curve: the flat scenario overstates benefit by 32 % and pays back 5 months earlier (documented gap)', () => {
-    const { c, a } = ailoc(load('golden')), h = headline(c);
-    expect(a.totBen / h.totalBenefit - 1).toBeCloseTo(0.324, 2);
-    expect(a.roi).toBeCloseTo(16.93, 2);
-    expect(h.roi).toBeCloseTo(7.13, 2);
-    expect([a.pbMonth, h.paybackMonth]).toEqual([4, 9]);
-  });
-  it.each(['golden', 'curve-logistic', 'ctx-msi', 'industry-med'])('%s: the flat scenario stays an upper bound within 70 % of the engine benefit', (id) => {
-    const { c, a } = ailoc(load(id)), h = headline(c), gap = a.totBen / h.totalBenefit - 1;
-    expect(gap).toBeGreaterThan(0);
-    expect(gap).toBeLessThan(0.7);
-    expect(a.pbMonth).toBeLessThanOrEqual(h.paybackMonth as number);
+  it('golden, default curve: benefit, setup, ROI and payback now read the headline (before: +32 %, €135,000 vs €225,000, ROI 16.9 vs 7.1, month 4 vs 9)', () => {
+    const a = by(makeCtx(load('golden')), 'ailoc');
+    expect([a.setup, Math.round(a.net), Math.round(a.totBen)]).toEqual([225000, 1603919, 1828919]);
+    expect(a.roi).toBeCloseTo(7.13, 2);
+    expect(a.pbMonth).toBe(9);
   });
 });
+
+describe('the other scenarios run the same engine with their levers', () => {
+  const sets = ids.map((id) => [id, makeCtx(load(id))] as const);
+  it.each(sets)('%s: AS-IS is the baseline (no saving, no setup); the cumulative series ends at the net and crosses 0 at the payback month', (_id, c) => {
+    const S = scenarioSet(c), asis = S.find((s) => s.key === 'asis')!.m;
+    expect(asis.setup).toBe(0);
+    asis.yearSav.forEach((v) => expect(Math.abs(v)).toBeLessThan(1e-6 * Math.max(1, asis.baselineRun)));
+    S.forEach((s) => {
+      const m = s.m, n = m.horizon * 12;
+      expect(m.yearSav).toHaveLength(m.horizon);
+      expect(m.yearRun).toHaveLength(m.horizon);
+      expect(m.totBen - m.setup).toBeCloseTo(m.net, 6);
+      expect(cumAt(m, 0)).toBe(0);
+      expect(cumAt(m, n)).toBeCloseTo(m.net, 4);
+      expect(cumAt(m, n + 6)).toBe(cumAt(m, n));
+      if (m.pbMonth != null) {
+        expect(cumAt(m, m.pbMonth)).toBeGreaterThanOrEqual(0);
+        if (m.pbMonth > 1) expect(cumAt(m, m.pbMonth - 1)).toBeLessThan(0);
+      } else expect(cumAt(m, n)).toBeLessThan(0);
+    });
+  });
+  it.each(sets)('%s: setup only where a programme exists; AI scenarios carry the case setup; AI only and AI + 100 % destination share the engine', (_id, c) => {
+    const S = scenarioSet(c), m = (k: Scenario['key']) => S.find((s) => s.key === k)!.m, setup = headline(c).setup;
+    expect([m('asis').setup, m('loc').setup]).toEqual([0, 0]);
+    expect([m('ai').setup, m('ramp').setup, m('ailoc').setup, m('aidst').setup]).toEqual([setup, setup, setup, setup]);
+    // AI only and AI + 100 % destination differ by the day rate alone
+    if (Math.abs(m('aidst').tgtRateTJM - m('ai').asisTJM) < 1e-9) expect(m('aidst').yearSav).toEqual(m('ai').yearSav);
+  });
+  it.each(sets)('%s: the cheaper the location, the better (monotone in the day rate)', (_id, c) => {
+    const S = scenarioSet(c), m = (k: Scenario['key']) => S.find((s) => s.key === k)!.m, e = 1e-6;
+    const cheaper = m('loc').tgtTJM <= m('loc').asisTJM;
+    if (cheaper) {
+      expect(m('loc').totBen).toBeGreaterThanOrEqual(-e);
+      expect(m('ailoc').totBen).toBeGreaterThanOrEqual(m('ai').totBen - e);
+    } else {
+      expect(m('loc').totBen).toBeLessThanOrEqual(e);
+      expect(m('ailoc').totBen).toBeLessThanOrEqual(m('ai').totBen + e);
+    }
+  });
+  it('the ramp scenario moves from the AS-IS to the destination rate: more relocation per year, more (or equal) saving when the destination is cheaper', () => {
+    const c = makeCtx(load('golden')), tot = (fr: number) => scenarioSetAt(c, fr).totBen;
+    const m0 = tot(0), m1 = tot(25), m2 = tot(100);
+    expect(Math.abs(m0)).toBeLessThan(1e-6 * by(c, 'asis').baselineRun);
+    const cheaper = by(c, 'ramp').tgtRateTJM <= by(c, 'ramp').asisTJM;
+    expect(cheaper ? m1 >= m0 - 1e-6 && m2 >= m1 - 1e-6 : m1 <= m0 + 1e-6 && m2 <= m1 + 1e-6).toBe(true);
+  });
+});
+
+function scenarioSetAt(c: Ctx, fr: number) {
+  return by(withInputs(c, { scenFrPerYear: String(fr) }), 'ramp');
+}
