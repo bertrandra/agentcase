@@ -7,8 +7,13 @@ export { scheduledProducts, unscheduledIds, productMonth0, keptMonths, type Sche
 export { runOf, runStats, type ProductRun } from './run';
 export { MEASURES, productSeries, cumulative, byYear, type Measure, type Series, type ProductSeries } from './series';
 export { consolidate, type Consolidated } from './consolidate';
-export { summarize, yearTable, weightedVelocity, portfolioCostReduction, type Summary } from './headline';
-export { portfolioHeadline, type PortfolioHeadline } from './portfolioHeadline';
+export { summarize, yearTable, weightedVelocity, weightedAutomation, portfolioCostReduction, type Summary } from './headline';
+export { portfolioHeadline, waveHeadline, scopeHeadline, type PortfolioHeadline, type DisplayScope } from './portfolioHeadline';
+export { consolidationView, summaryRow, type ConsolidationView, type SummaryRow, type ChartView } from './consolidationView';
+export { portfolioGantt, type GanttWaveRow, type GanttProductRow, type PortfolioGantt, type GanttMilestone } from './portfolioGantt';
+export { corePortfolio } from './core';
+export { calendarOf, type Calendar } from './calendar';
+export { waveBoard, type BoardCard, type BoardColumn } from './waveBoard';
 export type { ProductView, WaveView } from './waves';
 export { commonSubsetValue, type SubsetField } from './subset';
 export { subsetKeys, ktLead, allocateInfra, allocateCents, knowledgeRow, knowledgeTable, knowledgeTotals, type KnowledgeRow, type KnowledgeTable, type KnowledgeTotals } from './knowledge';

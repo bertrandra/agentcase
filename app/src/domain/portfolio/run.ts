@@ -3,6 +3,7 @@ import type { Ctx } from '../ctx';
 import { costReduction } from '../economics/costReduction';
 import { headlineOf, type Headline } from '../economics/headline';
 import { khSetupCost } from '../knowledge';
+import { model } from '../model/overlay';
 import { horizonYears } from '../model/horizonYears';
 import type { Engine } from '../time';
 import type { MonthRow } from '../time/rows';
@@ -24,6 +25,8 @@ export interface ProductRun {
   profile: number;
   rate: number;
   velocityPct: () => number;
+  /** effective automation % and glass ceiling % of the product (the headline bar's two figures) */
+  automation: () => { eff: number; ceiling: number };
   /** the product's own headline: NPV discounted from its own month 0 */
   headline: () => Headline;
   /** last horizon year as `computeCase().endYear` reports it */
@@ -43,6 +46,7 @@ export function runOf(s: CaseState): ProductRun {
   r = {
     ctx, engine, rows: engine.months(), baseEtp: K.baseEtp, ktSetup: khSetupCost(ctx), profile: K.setupProfileMonths, rate: caseDiscountRate(ctx),
     velocityPct: lazy(() => velocityUpliftPct(ctx)),
+    automation: lazy(() => { const m = model(ctx); return { eff: m.eff, ceiling: m.ceiling }; }),
     headline: lazy(() => headlineOf(engine, ctx)),
     endYear: lazy(() => { const hy = horizonYears(ctx), last = hy.sav.length - 1; return { savings: hy.sav[last] ?? 0, run: hy.run[last] ?? 0, index: last + 1 }; }),
     cost: lazy(() => { const c = costReduction(ctx); return { years: c.years, base: c.base, sav: c.ok ? c.gross * c.base : 0, setup: c.setup }; }),

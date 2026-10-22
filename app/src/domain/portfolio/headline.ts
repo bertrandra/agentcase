@@ -39,6 +39,14 @@ export function weightedVelocity(runs: ProductRun[]): number {
   return w > 0 ? runs.reduce((a, r) => a + r.baseEtp * r.velocityPct(), 0) / w : 0;
 }
 
+/** Effective automation and glass ceiling (%), weighted by each product's entry headcount. */
+export function weightedAutomation(runs: ProductRun[]): { eff: number; ceiling: number } {
+  const w = runs.reduce((a, r) => a + r.baseEtp, 0);
+  if (!(w > 0)) return { eff: 0, ceiling: 0 };
+  const parts = runs.map((r) => ({ w: r.baseEtp, ...r.automation() }));
+  return { eff: parts.reduce((a, p) => a + p.w * p.eff, 0) / w, ceiling: parts.reduce((a, p) => a + p.w * p.ceiling, 0) / w };
+}
+
 /** Portfolio cost reduction over the products' horizons (the single-case `costReduction`, summed by its components): (savings - setup) / baseline cost. */
 export function portfolioCostReduction(runs: ProductRun[]) {
   let years = 0, base = 0, sav = 0, setup = 0;
