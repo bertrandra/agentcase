@@ -17,7 +17,7 @@ vi.mock('@/ui/widgets/ChartPanel', async () => import('../helpers/chartStub'));
 let ids: [string, string, string], waves: [string, string];
 beforeEach(() => { ({ ids, waves } = threeProducts()); });
 afterEach(cleanup);
-const select = () => screen.getByRole('combobox', { name: "Périmètre d'affichage" }) as HTMLSelectElement;
+const select = () => screen.getByRole('combobox', { name: 'Vue' }) as HTMLSelectElement;
 const choose = (v: string) => fireEvent.change(select(), { target: { value: v } });
 const savings = () => kpi(/^Savings Y/), run = () => kpi(/^Run cost Y/), payback = () => kpi(/^Payback$/), eff = () => kpi(/^Effective automation$/), ceil = () => kpi(/^Glass ceiling$/);
 
@@ -25,7 +25,7 @@ describe('display scope selector (F17)', () => {
   it('offers Portefeuille, each Vague and each Produit; defaults to the active product', () => {
     mountApp();
     expect([...select().options].map((o) => o.textContent)).toEqual([
-      'Portefeuille', 'Vague : Vague 1', 'Vague : Wave 2', 'Produit : Produit 1 (actif)', 'Produit : B', 'Produit : C']);
+      'Portefeuille', 'Vague : Vague 1', 'Vague : Wave 2', 'Produit : Produit 1 — Vague 1', 'Produit : B — Vague 1', 'Produit : C — Wave 2']);
     expect(select().value).toBe(`product:${ids[0]}`);
     expect(screen.getByRole('complementary', { name: 'Headline results' })).toBeTruthy();
   });
@@ -60,7 +60,7 @@ describe('display scope selector (F17)', () => {
     expect(ceil()).toBe(fmtPct(h.ceiling));
     expect(kpi(/^Velocity Y/)).toBe(`${h.velocityPct >= 0 ? '+' : ''}${Math.round(h.velocityPct)}%`);
     expect(screen.getByText(/^Savings Y/).parentElement!.title).toContain('Portefeuille');
-    expect(screen.getByRole('status').textContent).toContain('Périmètre d’affichage : Portefeuille');
+    expect(screen.getByRole('status').textContent).toContain('Vue : Portefeuille');
   });
 
   it('Vague: the figures of that wave only; the label and the tooltips name it', () => {
@@ -109,5 +109,18 @@ describe('display scope selector (F17)', () => {
     expect(savings()).toBe(fmtEurK(portfolioHeadline(consolidate(pf())).endYear.savings));
     act(() => { fireEvent.keyDown(document.body, { key: 'z', ctrlKey: true }); });
     expect(savings()).toBe(before);
+  });
+});
+
+describe('one view selector, no duplicate product selector', () => {
+  it('has no separate Produit selector; picking a product views AND edits it; a portfolio view still names the edited product', () => {
+    mountApp();
+    expect(screen.queryByRole('combobox', { name: 'Produit' })).toBeNull();
+    choose(`product:${ids[1]}`);
+    expect(pf().activeProductId).toBe(ids[1]);
+    expect(screen.queryByText(/^Édition :/)).toBeNull();
+    choose('portfolio');
+    expect(pf().activeProductId).toBe(ids[1]);
+    expect(screen.getByText(/Édition :/).textContent).toContain('B');
   });
 });

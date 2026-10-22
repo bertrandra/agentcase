@@ -237,7 +237,7 @@ reads the verdict for the Portefeuille / Vague scope (`verdict/decision/Portfoli
 - **Display scope (F17).** `Portfolio.displayScope` (`{ kind: 'product' | 'portfolio' | 'wave', id? }`, absent = the active product) is a transient view field like `editScope`: command
   `portfolio.setDisplayScope` (`controllers/displayScope.ts`, `undoable: false`), never saved, never undone, never broadcast (`VIEW_FIELDS`), dropped by `withoutView`; a deleted wave falls
   back to the product (`useDisplayScope`). Decision: not persisted, so a file always reopens on the active product (D-M6) and a shared file cannot open on a stale scope.
-  `shell/ScopeSelect.tsx` ("Périmètre d'affichage": Portefeuille / Vague : X / Produit : Y, announced by toast; choosing a product makes it active) sits in `ProductBar` (2+ products only).
+  `shell/ScopeSelect.tsx` (the single "Vue" selector: Portefeuille / Vague : X / Produit : Y — picking a product also makes it the edited product; the former separate "Produit" selector is gone; announced by toast; choosing a product makes it active) sits in `ProductBar` (2+ products only).
   `KpiZone` renders `ScopeKpis` (a "Périmètre" tile, labels and tooltips naming the scope) from `scopeHeadline` (`portfolioHeadline.ts`: `groupHeadline` over a set of planned products:
   year table, ETP-weighted velocity / effective automation / glass ceiling, cost reduction by components, payback of the consolidated cumulative cash); the product scope is the unchanged `ProductKpis`.
 - **Sections.** `portfolio/waves`: board of columns (waves, then "Non planifié") from `waveBoard`; commands `wave.add/rename/reorder/remove/setStart/setNote/assign`, `product.setOffset`;

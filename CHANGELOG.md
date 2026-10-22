@@ -15,6 +15,11 @@ All notable changes to AgentCase, newest first. Product version from v19.0.0 = `
 
 When releasing, follow [docs/BUMP_PROCEDURE.md](docs/BUMP_PROCEDURE.md) (§7 for the legacy file) and add the new version at the top.
 
+## Unreleased
+
+### Changed
+- Top bar: one **Vue** selector (Portefeuille / Vague / Produit) replaces the two overlapping selectors "Produit" and "Périmètre d'affichage". Choosing a product shows *and* edits it; with the Portefeuille or a Vague in view, "Édition : produit" names the product the sections still edit. "Modifier : tous les produits / ce produit seulement" is unchanged.
+
 ## [v20.0.0] 2026-10-22 — Multi-product portfolio, waves and consolidation
 
 > Major release: a file describes a **portfolio** of products rolled out by waves. The case-level engine (`computeCase`, Time Engine, verification, verdict)

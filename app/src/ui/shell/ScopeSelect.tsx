@@ -4,25 +4,31 @@ import { useActiveProductId, useProducts, useWaves } from '@/store/portfolioHook
 import { toast } from '../uiState';
 
 /**
- * "Périmètre d'affichage" (F17): which figures the headline bar shows. Portefeuille and Vague X read the consolidated series; a Produit is the
- * active product, exactly as before (choosing one makes it the active product). View state: not undoable, not saved. Announced in the live region.
+ * "Vue": the single selector of the top bar. It picks what the headline bar, the Gantt and the report show — the Portefeuille, a Vague, or a
+ * Produit — and choosing a Produit also makes it the product the sections edit (F17). With the Portefeuille or a Vague in view, the product
+ * still being edited stays visible next to the selector. View state: not undoable, not saved. Announced in the live region.
  */
 export function ScopeSelect() {
   const scope = useDisplayScope(), products = useProducts(), waves = useWaves(), active = useActiveProductId();
   const value = scope.kind === 'portfolio' ? 'portfolio' : scope.kind === 'wave' ? `wave:${scope.id}` : `product:${active}`;
   const pick = (v: string) => {
     const [kind, id = ''] = v.split(':');
-    if (kind === 'portfolio') { if (setDisplayScope({ kind: 'portfolio' })) toast('Périmètre d’affichage : Portefeuille'); }
-    else if (kind === 'wave') { if (setDisplayScope({ kind: 'wave', id })) toast(`Périmètre d’affichage : ${waves.find((w) => w.id === id)?.name ?? id}`); }
-    else if (showProduct(id)) toast(`Périmètre d’affichage : produit ${products.find((p) => p.id === id)?.name ?? id}`);
+    if (kind === 'portfolio') { if (setDisplayScope({ kind: 'portfolio' })) toast('Vue : Portefeuille'); }
+    else if (kind === 'wave') { if (setDisplayScope({ kind: 'wave', id })) toast(`Vue : ${waves.find((w) => w.id === id)?.name ?? id}`); }
+    else if (showProduct(id)) toast(`Vue : produit ${products.find((p) => p.id === id)?.name ?? id} (édité)`);
   };
+  const waveOf = (id: string | null) => waves.find((w) => w.id === id)?.name ?? 'non planifié';
+  const edited = products.find((p) => p.id === active);
   return (
-    <label className="ac-prodsel ac-scopesel" title="Les indicateurs de la barre haute sont ceux de ce périmètre : le portefeuille consolidé, une vague, ou le produit actif.">Périmètre{' '}
-      <select aria-label="Périmètre d'affichage" value={value} onChange={(e) => pick(e.target.value)}>
-        <option value="portfolio">Portefeuille</option>
-        <optgroup label="Vagues">{waves.map((w) => <option key={w.id} value={`wave:${w.id}`}>Vague : {w.name}</option>)}</optgroup>
-        <optgroup label="Produits">{products.map((p) => <option key={p.id} value={`product:${p.id}`}>Produit : {p.name}{p.id === active ? ' (actif)' : ''}</option>)}</optgroup>
-      </select>
-    </label>
+    <>
+      <label className="ac-prodsel ac-scopesel" title="Ce que montrent les indicateurs de la barre haute, le Gantt et le rapport : le portefeuille consolidé, une vague, ou un produit. Choisir un produit l’édite aussi dans les sections.">Vue{' '}
+        <select aria-label="Vue" value={value} onChange={(e) => pick(e.target.value)}>
+          <option value="portfolio">Portefeuille</option>
+          <optgroup label="Vagues">{waves.map((w) => <option key={w.id} value={`wave:${w.id}`}>Vague : {w.name}</option>)}</optgroup>
+          <optgroup label="Produits">{products.map((p) => <option key={p.id} value={`product:${p.id}`}>Produit : {p.name} — {waveOf(p.waveId)}{p.archived ? ' (archivé)' : ''}</option>)}</optgroup>
+        </select>
+      </label>
+      {scope.kind !== 'product' && edited && <span className="ac-muted ac-editing">Édition : <strong>{edited.name}</strong></span>}
+    </>
   );
 }
