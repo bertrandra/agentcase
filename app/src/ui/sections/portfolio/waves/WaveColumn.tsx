@@ -36,7 +36,7 @@ export function WaveColumn({ col, cols, index, waves, dragging, onDrag, onDrop }
     <section className="ac-wave-col" role="region" aria-label={col.id === null ? col.name : `Vague : ${col.name}`} data-wave={col.id ?? ''} data-dragging={dragging ? '' : undefined}
       onDragOver={over} onDrop={(e) => { e.preventDefault(); onDrop(col); }}>
       <header>
-        {col.id === null ? <h3>{col.name}</h3> : <Controls col={col} index={index} waves={waves} />}
+        {col.id === null ? <strong className="ac-wave-title">{col.name}</strong> : <Controls col={col} index={index} waves={waves} />}
         {t ? (
           <p className="ac-wave-totals" title="Chiffres consolidés de la vague (calendaires : la VAN est actualisée depuis le mois 1 du portefeuille)">
             {t.products} produit{t.products > 1 ? 's' : ''} · Économies {fmtEurK(t.savings)} · Net {fmtEurK(t.net)} · VAN {fmtEurK(t.npv)} · Retour {fmtMonths(t.paybackMonth)}

@@ -24,7 +24,7 @@
 .ac-section .ac-wave-board { display: grid; grid-auto-flow: column; grid-auto-columns: minmax(250px, 1fr); gap: 12px; margin-bottom: 1.5rem; overflow-x: auto; padding-bottom: 6px; }
 .ac-section .ac-wave-col { min-width: 0; padding: 10px; background: #f7f9fd; border: 1px solid #cadcfc; border-radius: 12px; }
 .ac-section .ac-wave-col[data-dragging] { outline: 2px dashed var(--ac-blue); outline-offset: -3px; }
-.ac-section .ac-wave-col h3 { margin: 0 0 6px; font-size: 14px; }
+.ac-section .ac-wave-title { display: block; margin: 0 0 6px; font-size: 14px; }
 .ac-section .ac-wave-ctrl { display: flex; flex-direction: column; gap: 6px; font-size: 12px; }
 .ac-section .ac-wave-ctrl input[type='text'] { width: 100%; font-weight: 700; }
 .ac-section .ac-wave-totals { margin: 6px 0; font-size: 11.5px; }

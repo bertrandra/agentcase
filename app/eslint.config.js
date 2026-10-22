@@ -47,6 +47,19 @@ export default tseslint.config(
     },
   },
   {
+    // A8 (spec 11) — no portfolio figure is computed outside `domain/portfolio`: no `.reduce(` (the way sums are written) in the portfolio sections,
+    // the portfolio KPI hooks / tiles and the wave Gantt. Presentation helpers that do not add money up (formatting, sorting, mapping) are fine.
+    files: ['src/ui/sections/portfolio/**/*.{ts,tsx}', 'src/store/consolidationHooks.ts', 'src/ui/shell/ScopeKpis.tsx', 'src/ui/shell/ScopeSelect.tsx', 'src/ui/sections/verify/gantt/Wave*.tsx'],
+    rules: {
+      'no-restricted-syntax': [
+        'error',
+        { selector: "JSXAttribute[name.name='dangerouslySetInnerHTML']", message: 'Never inject raw HTML (XSS surface of the legacy app).' },
+        { selector: "CallExpression[callee.property.name='reduce']", message: 'A8: portfolio figures are summed in domain/portfolio (consolidate, waves, headline), never in the UI or its hooks.' },
+        { selector: "CallExpression[callee.property.name='reduceRight']", message: 'A8: portfolio figures are summed in domain/portfolio (consolidate, waves, headline), never in the UI or its hooks.' },
+      ],
+    },
+  },
+  {
     // G4 — the UI never writes state: it reads through `@/store/hooks` and acts through `@/controllers/*` only.
     files: ['src/ui/**/*.{ts,tsx}'],
     rules: {

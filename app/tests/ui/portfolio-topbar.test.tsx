@@ -51,18 +51,18 @@ describe('top bar with several products', () => {
     mountApp();
     act(() => openGroup('portfolio'));
     const group = sidebar().querySelector('[data-group="portfolio"]')!;
-    expect([...group.querySelectorAll('[data-section]')].map((b) => (b as HTMLElement).dataset.section)).toEqual(['products', 'overrides', 'knowledge-transfer']);
+    expect([...group.querySelectorAll('[data-section]')].map((b) => (b as HTMLElement).dataset.section)).toEqual(['products', 'overrides', 'knowledge-transfer', 'waves', 'consolidation']);
     act(() => { removeProduct(ids[1]); });
     expect(sidebar().querySelector('[data-group="portfolio"]')).toBeTruthy();
     act(() => { removeProduct(ids[2]); });
     expect(sidebar().querySelector('[data-group="portfolio"]')).toBeNull();
     expect(screen.queryByRole('combobox', { name: 'Produit' })).toBeNull();
   });
-  it('Welcome lists a Portefeuille card with its three sections', async () => {
+  it('Welcome lists a Portefeuille card with its five sections', async () => {
     mountApp();
     act(() => goSection('home'));
     await screen.findByRole('heading', { level: 1 });
     const card = within(screen.getByRole('main')).getByRole('button', { name: /Portefeuille/ });
-    expect(card.textContent).toContain('3');   // the count pill: Produits, Surcharges and Knowledge transfer
+    expect(card.textContent).toContain('5');   // the count pill: Produits, Surcharges, Knowledge transfer, Vagues and Consolidation
   });
 });
