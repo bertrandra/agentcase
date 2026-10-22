@@ -1,0 +1,20 @@
+/* Vue agrégée (docs/VUE_AGREGEE.md): scope banner, read-only per-product renders, drill-down, aggregate tables. Every rule targets an element that only
+   exists with two or more products, so a single-product case renders exactly as before. Colours come from the legacy palette used by portfolio.css. */
+.ac-section .ac-scope-banner { margin: 0 0 1rem; padding: 6px 12px; font-size: 13px; background: #f0f4ff; border: 1px solid #cadcfc; border-left: 4px solid var(--ac-blue); border-radius: var(--ac-radius); }
+.ac-section .ac-scope-banner[data-scope-kind='S-static'], .ac-section .ac-scope-banner[data-scope-kind='P-portfolio'] { background: #f7f7f7; border-color: #ddd; border-left-color: #8a8a8a; }
+.ac-section .ac-scope-banner .ac-muted { margin-inline-start: .25em; }
+
+.ac-section .ac-readonly { margin: 0 0 1rem; }
+.ac-section .ac-ro-note { margin: 0 0 .5rem; font-size: 12px; }
+.ac-section .ac-ro-fieldset { min-width: 0; margin: 0; padding: 0; border: 0; }
+.ac-section .ac-ro-fieldset :is(input, select, textarea, button):disabled { cursor: not-allowed; }
+.ac-section-embedded .ac-embedded-title { margin: 0 0 .75rem; font-size: 13px; color: var(--ac-blue); }
+
+.ac-section .ac-drill-list { margin: 0; padding: 0; list-style: none; }
+.ac-section .ac-drill-item { margin: 0 0 .5rem; border: 1px solid #cadcfc; border-radius: var(--ac-radius); }
+.ac-section .ac-drill-head { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 8px; padding: 4px 8px; background: #f7f9fd; }
+.ac-section .ac-drill-head h3 { margin: 0; }
+.ac-section .ac-drill-head h3 button { padding: 2px 4px; font: inherit; color: inherit; text-align: left; background: none; border: 0; cursor: pointer; }
+.ac-section .ac-drill-body { padding: 8px 12px; }
+.ac-section .ac-agg-table tr.is-active th[scope='row'] { box-shadow: inset 4px 0 0 var(--ac-blue); }
+.ac-section .ac-agg-table td button { padding: 2px 8px; font-size: 11px; }
