@@ -21,6 +21,13 @@ export function isSingleCase(pf: PortfolioDoc): boolean {
   return deepEqual(rest, mine);
 }
 
+/**
+ * Does the work hold more than a plain single case? True from two products, two waves, an override or a knowledge subset on (and for an unplanned,
+ * offset, archived, renamed or dated single product), i.e. exactly when the file is saved as a portfolio. The portfolio additions of the Excel
+ * workbooks and of the report apply only then; a plain case keeps every export identical to the single-case build.
+ */
+export const hasPortfolioContent = (pf: PortfolioDoc): boolean => !isSingleCase(pf);
+
 /** The calculation packages stamped into a saved portfolio (never read back as input). */
 function packagesOf(pf: Portfolio): Record<string, unknown> {
   try { return { ...buildPortfolioPackages(pf) }; } catch (e) { console.error('Snapshot: portfolio calculation packages failed', e); return {}; }

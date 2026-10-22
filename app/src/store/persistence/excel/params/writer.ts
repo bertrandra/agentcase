@@ -33,7 +33,11 @@ export async function buildParamsWorkbook(doc: Doc, scope: ParamsScope, env: Par
 
 /** The workbook as .xlsx bytes. */
 export async function paramsWorkbookBytes(doc: Doc, scope: ParamsScope, env: ParamsEnv): Promise<ArrayBuffer> {
-  const wb = await buildParamsWorkbook(doc, scope, env);
+  return workbookBytes(await buildParamsWorkbook(doc, scope, env));
+}
+
+/** Any built workbook as .xlsx bytes. */
+export async function workbookBytes(wb: XL.Workbook): Promise<ArrayBuffer> {
   const buf = await wb.xlsx.writeBuffer();
   const u = new Uint8Array(buf as ArrayBuffer);
   return u.buffer.slice(u.byteOffset, u.byteOffset + u.byteLength) as ArrayBuffer;
