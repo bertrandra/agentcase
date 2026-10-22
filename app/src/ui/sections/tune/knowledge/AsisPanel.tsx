@@ -12,7 +12,7 @@ const CC = [0, 1, 2, 3, 4].map((n) => ({ value: String(n), label: `CC${n}` }));
 
 /**
  * AS-IS assessment (nine 0-4 statements) and the target / cost inputs of the hub. With several products the fields are those of the ACTIVE product's
- * subset (chips "hérité / surchargé"), and the hub infrastructure, a portfolio cost, is edited in the shared hub card instead.
+ * subset (chips "inherited / overridden"), and the hub infrastructure, a portfolio cost, is edited in the shared hub card instead.
  */
 export function AsisPanel() {
   const multi = useIsMulti();
@@ -27,8 +27,8 @@ export function AsisPanel() {
         </fieldset>
       ))}
       <div className="ac-form-row">
-        <SubsetFieldBox field="targetCC" label="Cible CC"><SelectInput id="khTargetCC" label="Target CC (Y3)" options={CC} /></SubsetFieldBox>
-        <SubsetFieldBox field="setupBase" label="Base de mise en place"><NumberInput id="khSetupBase" label="Hub setup base (€)" min={0} step={10000} /></SubsetFieldBox>
+        <SubsetFieldBox field="targetCC" label="Target CC"><SelectInput id="khTargetCC" label="Target CC (Y3)" options={CC} /></SubsetFieldBox>
+        <SubsetFieldBox field="setupBase" label="Setup base"><NumberInput id="khSetupBase" label="Hub setup base (€)" min={0} step={10000} /></SubsetFieldBox>
         <NumberInput id="khSetupDays" label="Setup duration (days)" hint="sizes its row in the Gantt programme band" min={1} step={5} />
         <SubsetFieldBox field="curationFTE" label="Curation"><NumberInput id="khCurationFTE" label="Curation (FTE)" min={0} max={2} step={0.25} /></SubsetFieldBox>
         {!multi && <NumberInput id="khInfraMonthly" label="Hub infra (€/mo)" min={0} step={250} />}

@@ -3,7 +3,7 @@ import { corePortfolio, resolveProduct, type Portfolio } from '@/domain/portfoli
 import type { Doc, PortfolioDoc } from './types';
 
 /**
- * The product a subtree READS (Vue agrégée). `null` (the default) = the active product, exactly as before. Inside a provider the read hooks
+ * The product a subtree READS (aggregate view). `null` (the default) = the active product, exactly as before. Inside a provider the read hooks
  * (`useDoc`, `useCtx`, `useCaseResult`, `useActiveProduct`, `useFieldState`, ...) answer for that product's resolved case, so ONE section component
  * can be rendered for any product without touching the store. Writes are not redirected: such a subtree must be read-only (`ui/widgets/ReadOnlyScope`).
  */

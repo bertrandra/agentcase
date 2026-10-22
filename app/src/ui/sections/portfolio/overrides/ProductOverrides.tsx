@@ -4,7 +4,7 @@ import { toast } from '@/ui/uiState';
 import { describeValue } from '@/ui/widgets/OverrideBadge';
 import { overrideLabel } from './labels';
 
-/** The overridden keys of one product against the common values, each with "Revenir au commun" and "Appliquer à tous les produits". */
+/** The overridden keys of one product against the common values, each with "Revert to common" and "Apply to all products". */
 export function ProductOverrides({ product, common, active }: { product: Product; common: CommonCase; active: boolean }) {
   const refs = overrideRefs(product.overrides);
   return (
@@ -24,7 +24,7 @@ export function ProductOverrides({ product, common, active }: { product: Product
                     <td title={describeValue(commonValue(common, ref))}>{describeValue(commonValue(common, ref))}</td>
                     <td>{describeValue(overrideValue(product.overrides, ref))}</td>
                     <td>
-                      <div className="ac-pf-actions" role="group" aria-label={`Actions : ${label}, ${product.name}`}>
+                      <div className="ac-pf-actions" role="group" aria-label={`Actions: ${label}, ${product.name}`}>
                         <button type="button" aria-label={`Revert to common: ${label} (${product.name})`} onClick={() => { if (clearProductOverride(product.id, ref)) toast(`${label}: reverted to common for ${product.name}`); }}>Revert to common</button>
                         <button type="button" aria-label={`Apply to all products: ${label} (${product.name})`} onClick={() => { if (applyOverrideToCommon(product.id, ref)) toast(`${label}: applied to all products`); }}>Apply to all products</button>
                       </div>

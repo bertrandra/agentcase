@@ -6,7 +6,7 @@ import personaSections from './data/personaSections.json';
 export interface SectionDef { id: string; group: string; groupSeq: number; label: string; description: string; tag?: string; mvp?: boolean }
 export interface GroupDef { id: string; label: string; order: number; description?: string }
 
-/** The Portefeuille group (multi-product, spec 6.3): in the catalogue like any group, but only shown from two products on (`ui/zones/portfolioNav.ts`). */
+/** The Portfolio group (multi-product, spec 6.3): in the catalogue like any group, but only shown from two products on (`ui/zones/portfolioNav.ts`). */
 export const PORTFOLIO_GROUP_ID = 'portfolio';
 export const SECTIONS = sectionCatalog as SectionDef[];
 export const GROUPS = [...(groups as GroupDef[])].sort((a, b) => a.order - b.order);

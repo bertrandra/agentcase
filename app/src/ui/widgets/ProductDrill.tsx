@@ -24,7 +24,7 @@ function Item({ id, name, Section }: { id: string; name: string; Section: Compon
 }
 
 /**
- * Drill-down of a Vue agrégée: one collapsible entry per product of the selection that renders the section's OWN component for that product
+ * Drill-down of a aggregate view: one collapsible entry per product of the selection that renders the section's OWN component for that product
  * (`ProductViewContext`: it reads the product's resolved case, not the edited one), read-only. Lazy: only an opened product is rendered.
  */
 export function ProductDrill({ Section, productIds, heading = 'Detail by product' }: { Section: ComponentType; productIds: string[]; heading?: string }) {

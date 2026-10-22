@@ -12,7 +12,7 @@ const cols = (first: string, withR: boolean): Column<Line>[] => [
   { key: 'p10', header: 'P10', align: 'right', render: (x) => fmtEur(x.stats.p10) },
   { key: 'p50', header: 'P50', align: 'right', render: (x) => fmtEur(x.stats.p50) },
   { key: 'p90', header: 'P90', align: 'right', render: (x) => fmtEur(x.stats.p90) },
-  { key: 'mean', header: 'Moyenne', align: 'right', render: (x) => fmtEur(x.stats.mean) },
+  { key: 'mean', header: 'Mean', align: 'right', render: (x) => fmtEur(x.stats.mean) },
   { key: 'cvar', header: 'CVaR 10 %', align: 'right', render: (x) => fmtEur(x.stats.cvar10) },
   { key: 'neg', header: 'P(net < 0)', align: 'right', render: (x) => <Badge tone={pNegTone(x.stats.pNetNeg)}>{pct(x.stats.pNetNeg)}</Badge> },
   ...(withR ? [{ key: 'r', header: 'Correlation with the group', align: 'right' as const, render: (x: Line) => (x.r === undefined ? '' : `${x.r > 0 ? '+' : ''}${x.r}`) }] : []),

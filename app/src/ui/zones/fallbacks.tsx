@@ -43,7 +43,7 @@ export function RollupFallback({ title, Section }: FallbackProps) {
 const INPUTS: AggColumn<InputSummaryRow>[] = [
   { key: 'wave', header: 'Wave', render: (r) => r.wave },
   { key: 'etp', header: 'Entry FTE', align: R, title: 'Entry team of the product', render: (r) => r.etp.toFixed(1) },
-  { key: 'art', header: 'Artefacts SDLC', align: R, render: (r) => r.artefacts },
+  { key: 'art', header: 'SDLC artefacts', align: R, render: (r) => r.artefacts },
   { key: 'reg', header: 'Regulatory artefacts', align: R, render: (r) => r.regArtefacts },
   { key: 'ovr', header: 'Overrides', align: R, title: 'Product-specific values (0 = everything is inherited)', render: (r) => r.overrides },
   { key: 'hub', header: 'Knowledge Hub', render: (r) => r.hub },
@@ -77,5 +77,5 @@ export function ConsoFallback({ title, Section }: FallbackProps) {
   );
 }
 
-/** The generic fallback of each kind that follows the Vue (the other kinds render the section as it is). */
+/** The generic fallback of each kind that follows the View (the other kinds render the section as it is). */
 export const FALLBACKS: Partial<Record<SectionKind, ComponentType<FallbackProps>>> = { 'R-rollup': RollupFallback, 'I-input': InputFallback, 'R-conso': ConsoFallback };

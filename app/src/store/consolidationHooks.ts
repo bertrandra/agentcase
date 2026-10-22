@@ -25,7 +25,7 @@ export function useConsolidation(): ConsolidationView {
   return useMemo(() => consolidationView(core, consolidate(core)), [core]);
 }
 
-/** Section "Vagues": columns = waves then the unplanned products, with the wave aggregates. */
+/** Section "Waves": columns = waves then the unplanned products, with the wave aggregates. */
 export function useWaveBoard(): BoardColumn[] {
   const core = useCorePortfolio();
   return useMemo(() => waveBoard(core, consolidate(core)), [core]);

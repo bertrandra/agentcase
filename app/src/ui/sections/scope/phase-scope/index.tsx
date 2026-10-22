@@ -27,7 +27,7 @@ export default function PhaseScopeSection() {
           <button type="button" onClick={() => selectAllPhases(false)}>Clear all</button>
           <span className="ac-muted">In scope : <strong>{selected}/{total} art.</strong></span>
           <OverrideBadge refKey="phaseOff" label="Disabled phases" />
-          <OverrideBadge refKey="selectedArtefacts" label="Artefacts SDLC retenus" />
+          <OverrideBadge refKey="selectedArtefacts" label="Selected SDLC artefacts" />
         </div>
       }
       result={

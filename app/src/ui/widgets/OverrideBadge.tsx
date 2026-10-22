@@ -13,7 +13,7 @@ export function describeValue(v: unknown): string {
 
 /**
  * Inherited / overridden state of one overridable key for the ACTIVE product (spec F7): a chip (the common value in its tooltip), and, once the
- * product overrides it, "Revenir au commun" and "Appliquer à tous les produits". Renders nothing with a single product (F23).
+ * product overrides it, "Revert to common" and "Apply to all products". Renders nothing with a single product (F23).
  */
 export function OverrideBadge({ refKey, label }: { refKey: string; label: string }) {
   const f = useFieldState(refKey);

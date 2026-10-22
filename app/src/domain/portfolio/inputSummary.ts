@@ -9,7 +9,7 @@ import type { Portfolio } from './types';
 /** How a product runs the Knowledge Hub: not at all, as the common hub, or with its own subset. */
 export type HubState = 'off' | 'common' | 'own subset';
 
-/** What a product's inputs amount to, in a few counts (the generic Vue agrégée of an input section). */
+/** What a product's inputs amount to, in a few counts (the generic aggregate view of an input section). */
 export interface InputSummaryRow {
   id: string;
   name: string;

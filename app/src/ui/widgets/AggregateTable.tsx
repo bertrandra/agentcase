@@ -7,13 +7,13 @@ export interface AggColumn<R> { key: string; header: string; title?: string; ali
 /** The total line, already computed by the domain (a headline, a `totals` line): the cells are only formatted here, never added up. Keys are column keys. */
 export interface AggTotals { label: string; cells: Record<string, ReactNode> }
 
-/** Make `id` the edited product and the Vue (one controller, view state: not undoable) and announce it, like the Vue selector does. */
+/** Make `id` the edited product and the View (one controller, view state: not undoable) and announce it, like the View selector does. */
 export function editProduct(id: string, name: string): void {
   if (showProduct(id)) toast(`View: product ${name} (edited)`);
 }
 
 /**
- * The generic table of a Vue agrégée: one row per product of the selection, columns of values the domain already computed, an optional total line the
+ * The generic table of a aggregate view: one row per product of the selection, columns of values the domain already computed, an optional total line the
  * domain supplied (rule A8: nothing is summed in `ui/`), and, on each row, the button "Edit this product" (sections then become editable for it).
  */
 export function AggregateTable<R extends { id: string; name: string }>({ caption, rows, columns, totals, first = 'Product', edit = true, empty = 'No product in the selection.' }:

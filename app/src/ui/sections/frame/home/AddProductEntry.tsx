@@ -3,8 +3,8 @@ import { useProductCount, useWaves } from '@/store/portfolioHooks';
 import { goSection, toast } from '@/ui/uiState';
 
 /**
- * The way in to the multi-product portfolio (spec F23): with one product the Portefeuille group is not in the menu, so Welcome offers "Ajouter un produit".
- * The new product inherits the common case and joins the first wave; the group then appears, and the Produits section opens.
+ * The way in to the multi-product portfolio (spec F23): with one product the Portfolio group is not in the menu, so Welcome offers "Add a product".
+ * The new product inherits the common case and joins the first wave; the group then appears, and the Products section opens.
  */
 export function AddProductEntry() {
   const count = useProductCount(), first = useWaves()[0]?.id ?? null;

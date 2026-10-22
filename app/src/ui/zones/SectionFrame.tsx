@@ -9,7 +9,7 @@ import type { FrameProps } from './frameProps';
 export function SectionFrame(props: FrameProps) {
   const { title, help, input, result, diagnostic, overrides } = props;
   const [showHelp, setShowHelp] = useState(false), pinned = useViewProductId();
-  if (pinned) return <EmbeddedFrame {...props} />;   // a per-product render inside a Vue agrégée drill-down
+  if (pinned) return <EmbeddedFrame {...props} />;   // a per-product render inside a aggregate view drill-down
   return (
     <article className="ac-section" aria-labelledby="ac-section-title">
       <div className="ac-section-head">

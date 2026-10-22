@@ -4,18 +4,18 @@ import { SECTION_AGGREGATES } from '../sections/aggregates';
 import { FALLBACKS, type FallbackProps } from './fallbacks';
 import { followsView, sectionKind } from './sectionScope';
 
-/** What the host renders for a section under the current Vue. */
+/** What the host renders for a section under the current View. */
 export type Scoped =
-  | { mode: 'section' }                                          // the section as it always was (Produit view, one product, reference / portfolio sections)
-  | { mode: 'aggregate'; Cmp: ComponentType }                    // the section's registered Vue agrégée (lazy)
-  | { mode: 'fallback'; Fallback: ComponentType<FallbackProps> };  // the generic Vue agrégée of its kind
+  | { mode: 'section' }                                          // the section as it always was (Product view, one product, reference / portfolio sections)
+  | { mode: 'aggregate'; Cmp: ComponentType }                    // the section's registered aggregate view (lazy)
+  | { mode: 'fallback'; Fallback: ComponentType<FallbackProps> };  // the generic aggregate view of its kind
 
 const SECTION: Scoped = { mode: 'section' };
 const cache = new Map<string, Scoped>();
 
 /**
- * Picks what to render for section `id` (docs/VUE_AGREGEE.md): with a single product, a Produit view, or a section that does not follow the Vue
- * (`S-static`, `P-portfolio`) the section itself, untouched; with a Vague / Portefeuille its registered `aggregate` component if any, else the generic
+ * Picks what to render for section `id` (docs/VUE_AGREGEE.md): with a single product, a Product view, or a section that does not follow the View
+ * (`S-static`, `P-portfolio`) the section itself, untouched; with a Wave / Portfolio its registered `aggregate` component if any, else the generic
  * fallback of its kind. Results are module-level constants, so the host re-renders without remounting.
  */
 export function useScopedSection(id: string): Scoped {

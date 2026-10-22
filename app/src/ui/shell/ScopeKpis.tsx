@@ -4,7 +4,7 @@ import { fmt1 } from '../economicsFormat';
 import { Kpi } from './Kpi';
 
 /**
- * The headline figures of the Portefeuille or of a Vague (F17): the same seven tiles as for a product, read from the consolidated series
+ * The headline figures of the Portfolio or of a Wave (F17): the same seven tiles as for a product, read from the consolidated series
  * through the domain headline (calendar years, products weighted by their entry headcount where a figure is an average). Every tile says its scope.
  */
 export function ScopeKpis({ label, h }: { label: string; h: PortfolioHeadline }) {

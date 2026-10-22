@@ -14,7 +14,7 @@ export interface YearRow { label: string; savings: number; run: number; setup: n
 export interface PortfolioReportData {
   version: string; stamp: string;
   kind: 'portfolio' | 'wave';
-  /** "Portefeuille" or the wave name */
+  /** "Portfolio" or the wave name */
   label: string;
   horizon: number; start: string; waves: number;
   headline: PortfolioHeadline;

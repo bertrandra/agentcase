@@ -16,7 +16,7 @@ import { PORTFOLIO_AGG } from './portfolio';
 import type { SectionMap } from '../types';
 
 /**
- * Section id → lazy loader of its Vue agrégée component (Portefeuille / Vague). A section without an entry gets the generic fallback of its kind
+ * Section id → lazy loader of its aggregate view component (Portfolio / Wave). A section without an entry gets the generic fallback of its kind
  * (`ui/zones/fallbacks.tsx`). One file per group, like the section loaders, so areas work in parallel without touching the same file.
  */
 export const SECTION_AGGREGATES: SectionMap = { ...FRAME_AGG, ...BASELINE_AGG, ...SCOPE_AGG, ...TUNE_AGG, ...ECONOMICS_AGG, ...STRESS_AGG, ...VERDICT_AGG, ...VERIFY_AGG, ...PRESENT_AGG, ...DEFEND_AGG, ...CONFIGURE_AGG, ...FACTORY_AGG, ...REFSHARE_AGG, ...MODEL_ENGINE_AGG, ...PORTFOLIO_AGG };

@@ -2,7 +2,7 @@ import { useState } from 'react';
 import { addWave } from '@/controllers/wave';
 import { toast } from '@/ui/uiState';
 
-/** "Ajouter une vague": a name and the portfolio month it starts at (0 = the portfolio start). */
+/** "Add a wave": a name and the portfolio month it starts at (0 = the portfolio start). */
 export function AddWave() {
   const [name, setName] = useState(''), [start, setStart] = useState('0');
   const add = () => {

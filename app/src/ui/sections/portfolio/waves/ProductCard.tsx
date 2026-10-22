@@ -5,7 +5,7 @@ import { NumCell } from '@/ui/widgets/CommitField';
 import { columnOf, keyOf, moveProduct } from './moves';
 
 /**
- * A product card. Draggable; focusable group: ArrowLeft / ArrowRight move it to the previous / next column, and the "Déplacer vers la vague…"
+ * A product card. Draggable; focusable group: ArrowLeft / ArrowRight move it to the previous / next column, and the "Move to wave…"
  * menu does the same without a pointer. Its offset is edited in the card (the Time Engine starts at wave start + offset).
  */
 export function ProductCard({ card, cols, onDrag }: { card: BoardCard; cols: BoardColumn[]; onDrag: (id: string | null) => void }) {

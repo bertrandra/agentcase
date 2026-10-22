@@ -17,7 +17,7 @@ export interface BoardCard {
   startLabel: string | null;
 }
 
-/** A column of the board: a wave (id set), or the "Non planifié" column (id null). */
+/** A column of the board: a wave (id set), or the "Unscheduled" column (id null). */
 export interface BoardColumn {
   id: string | null;
   name: string;

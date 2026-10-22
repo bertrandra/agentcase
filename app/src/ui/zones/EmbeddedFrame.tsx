@@ -3,7 +3,7 @@ import { useActiveProduct } from '@/store/portfolioHooks';
 import type { FrameProps } from './frameProps';
 
 /**
- * A section frame rendered INSIDE a per-product view (`ProductViewContext`, the drill-down of a Vue agrégée): the same three zones, but no page title
+ * A section frame rendered INSIDE a per-product view (`ProductViewContext`, the drill-down of a aggregate view): the same three zones, but no page title
  * (the host owns the h1), no help, no scope banner, and zone labels that name the product so landmarks stay unique when several products are open.
  */
 export function EmbeddedFrame({ title, input, result, diagnostic }: FrameProps) {

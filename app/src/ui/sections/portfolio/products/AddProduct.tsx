@@ -3,7 +3,7 @@ import { addProduct } from '@/controllers/product';
 import { useWaves } from '@/store/portfolioHooks';
 import { toast } from '@/ui/uiState';
 
-/** "Ajouter un produit": a new product inherits every common value and has its own default team; it joins the first wave when there is one. */
+/** "Add a product": a new product inherits every common value and has its own default team; it joins the first wave when there is one. */
 export function AddProduct() {
   const [name, setName] = useState(''), first = useWaves()[0]?.id ?? null;
   const add = () => {
@@ -14,7 +14,7 @@ export function AddProduct() {
   return (
     <div className="ac-form-row">
       <label className="ac-field"><span className="ac-field-l">Name of the new product</span>
-        <input type="text" value={name} placeholder="ex. Application Paie" onChange={(e) => setName(e.target.value)} onKeyDown={(e) => { if (e.key === 'Enter') add(); }} />
+        <input type="text" value={name} placeholder="e.g. Payroll application" onChange={(e) => setName(e.target.value)} onKeyDown={(e) => { if (e.key === 'Enter') add(); }} />
       </label>
       <button type="button" onClick={add}>Add a product</button>
     </div>

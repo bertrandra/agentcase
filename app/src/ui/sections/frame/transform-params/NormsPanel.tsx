@@ -28,7 +28,7 @@ export function NormsPanel() {
     <div>
       <p className="ac-muted">Norms for <strong>{none ? '—' : code}</strong> — tick to add the regulatory artifacts to the scope</p>
       {none ? <em style={{ color: 'var(--ac-brick)' }}>Pick an industry above to see its applicable norms.</em> : <NormList code={code} />}
-      <OverrideBadge refKey="selectedNorms" label="Normes retenues" />
+      <OverrideBadge refKey="selectedNorms" label="Selected norms" />
       <p>In scope: <strong>{none ? 0 : count}</strong> regulatory artifacts</p>
       {!none && count > 0 && <p style={{ color: 'var(--ac-teal)' }}>Weighted glass ceiling from selection: <strong>{Math.round(ceiling)}%</strong> (mean human sup. on {count} artifacts)</p>}
       <label className="ac-check"><input type="checkbox" checked={!!include} onChange={(e) => setRegInclude(e.target.checked)} /> Include reg. artifacts in effort &amp; runs (else glass ceiling only)</label>

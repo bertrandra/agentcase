@@ -1,4 +1,4 @@
-/* Vue agrégée (docs/VUE_AGREGEE.md): scope banner, read-only per-product renders, drill-down, aggregate tables. Every rule targets an element that only
+/* aggregate view (docs/VUE_AGREGEE.md): scope banner, read-only per-product renders, drill-down, aggregate tables. Every rule targets an element that only
    exists with two or more products, so a single-product case renders exactly as before. Colours come from the legacy palette used by portfolio.css. */
 .ac-section .ac-scope-banner { margin: 0 0 1rem; padding: 6px 12px; font-size: 13px; background: #f0f4ff; border: 1px solid #cadcfc; border-left: 4px solid var(--ac-blue); border-radius: var(--ac-radius); }
 .ac-section .ac-scope-banner[data-scope-kind='S-static'], .ac-section .ac-scope-banner[data-scope-kind='P-portfolio'] { background: #f7f7f7; border-color: #ddd; border-left-color: #8a8a8a; }
