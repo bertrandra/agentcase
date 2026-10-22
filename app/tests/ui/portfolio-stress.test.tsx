@@ -84,7 +84,7 @@ describe('Decision section at portfolio scope', () => {
     act(() => { setDisplayScope({ kind: 'portfolio' }); });
     await openDecision();
     fireEvent.click(screen.getByRole('button', { name: /Lancer maintenant/ }));
-    await screen.findByText(/confidence/, undefined, { timeout: 30000 });
+    expect((await screen.findAllByText(/confidence/, undefined, { timeout: 30000 })).length).toBeGreaterThan(0);
     expect(pfSimStore.getState().run).not.toBeNull();
   });
   it('a wave scope speaks for that wave; the product scope keeps today\'s decision screen', async () => {

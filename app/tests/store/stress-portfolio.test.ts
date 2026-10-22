@@ -8,7 +8,7 @@ import { portfolioSimParams, runPortfolioSimulation, setPortfolioSimParams } fro
 import { pfDecision, pfStressFingerprint, portfolioMonteCarlo } from '@/domain/portfolio';
 import { pfSimStore } from '@/store/portfolioSimulation';
 import { loadExcelJS } from '@/store/persistence/excel/lazy';
-import { fourProducts, pfNow } from '../helpers/portfolioFixtures';
+import { fourProducts, pfNow, regulatedPortfolio } from '../helpers/portfolioFixtures';
 
 const NOW = new Date('2026-10-22T10:00:00Z');
 beforeEach(() => { fourProducts(); pfSimStore.setState({ run: null, progress: null, params: null }); });
@@ -78,6 +78,7 @@ describe('restitution of the run', () => {
     expect(rows(await book(), 'Portfolio stress').find((r) => r[0] === 'Stale (portfolio changed since the run)')![1]).toBe('Yes');
   });
   it('the portfolio report gains a "Portfolio stress" section only when a run exists; a wave report speaks for its wave', async () => {
+    regulatedPortfolio();
     const plain = criticalReport(NOW, { kind: 'portfolio' });
     expect(plain.ok && plain.html).not.toContain('Portfolio stress');
     await runPortfolioSimulation({ draws: 150, seed: 5 });
