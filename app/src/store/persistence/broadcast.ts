@@ -1,5 +1,6 @@
 import type { Patch } from 'immer';
 import type { AppStore } from '../core';
+import { documentPatches } from '../portfolioState';
 
 /** Minimal BroadcastChannel surface (so tests can inject a fake). */
 export interface ChannelLike { postMessage(m: unknown): void; onmessage: ((e: { data: unknown }) => void) | null; close(): void }
@@ -12,11 +13,12 @@ interface Msg { tabId: string; patches: Patch[] }
 export function connectBroadcast(store: AppStore, ch: ChannelLike, tabId: string) {
   const off = store.onChange((kind, entry) => {
     if (!entry || kind === 'remote' || kind === 'load') return;
-    ch.postMessage({ tabId, patches: kind === 'undo' ? entry.inverse : entry.patches } satisfies Msg);
+    const patches = documentPatches(kind === 'undo' ? entry.inverse : entry.patches);   // view state (active product, edit scope) stays in its tab
+    if (patches.length) ch.postMessage({ tabId, patches } satisfies Msg);
   });
   ch.onmessage = (e) => {
     const m = e.data as Msg;
-    if (m && m.tabId !== tabId && Array.isArray(m.patches)) store.applyRemote(m.patches);
+    if (m && m.tabId !== tabId && Array.isArray(m.patches)) store.applyRemote(documentPatches(m.patches));
   };
   return () => { off(); ch.onmessage = null; ch.close(); };
 }

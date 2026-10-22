@@ -1,7 +1,7 @@
 import { appVerFileTag } from '@/domain/snapshots';
 import { appStore } from '@/store/instance';
 import { buildSnapshotHtml, snapshotFileName } from '@/store/persistence/html/embed';
-import { toSnapshot } from '@/store/persistence/snapshot';
+import { toPortfolioSnapshot } from '@/store/persistence/portfolioSnapshot';
 
 /**
  * The running application as a single HTML file with the current case embedded (legacy saveHtmlSnapshot). `documentElement` is the live
@@ -9,5 +9,5 @@ import { toSnapshot } from '@/store/persistence/snapshot';
  */
 export function htmlSnapshotFile(documentElement: Element, now: Date = new Date()): { filename: string; html: string } {
   const doc = appStore().getState().doc;
-  return { filename: snapshotFileName(doc.customerName, appVerFileTag(), now), html: buildSnapshotHtml(documentElement, toSnapshot(doc, () => now)) };
+  return { filename: snapshotFileName(doc.customerName, appVerFileTag(), now), html: buildSnapshotHtml(documentElement, toPortfolioSnapshot(appStore().getState().portfolio, () => now)) };
 }

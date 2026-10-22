@@ -1,6 +1,9 @@
 import { checkStaleness, needsBanner, type CalcStaleness } from '@/domain/calcStaleness';
+import { checkPortfolioStaleness, resolveProduct } from '@/domain/portfolio';
+import { isPortfolioSnapshot, packagesOfSnapshot } from '@/store/persistence/portfolioSnapshot';
 import { packageOfSnapshot } from '@/store/persistence/snapshot';
-import type { Doc } from '@/store/types';
+import { isPortfolio } from '@/store/portfolioState';
+import type { Doc, PortfolioDoc } from '@/store/types';
 
 /**
  * Load-time staleness of a saved case (legacy `calcStalenessCheck` + `renderCalcStaleBanner`).
@@ -15,10 +18,16 @@ export const getCalcBanner = (): CalcStaleness | null => banner;
 export const onCalcBanner = (f: () => void): (() => void) => { subs.add(f); return () => { subs.delete(f); }; };
 export const dismissCalcBanner = (): void => { if (banner) set(null); };
 
-/** Compare the package carried by a raw snapshot with the freshly recomputed loaded `doc`; shows or clears the banner. Never throws. */
-export function checkLoadedCase(raw: unknown, doc: Doc): CalcStaleness {
+/**
+ * Compare the packages carried by a raw snapshot with the freshly recomputed loaded work; shows or clears the banner. Never throws.
+ * A single-case file is checked on the case; a portfolio file at both levels (every product and the consolidation), same banner states.
+ */
+export function checkLoadedCase(raw: unknown, loaded: Doc | PortfolioDoc): CalcStaleness {
   let st: CalcStaleness;
-  try { st = checkStaleness(packageOfSnapshot(raw), doc); } catch (e) { console.error('Calculation staleness check failed', e); st = { state: 'notCalculated' }; }
+  try {
+    if (isPortfolioSnapshot(raw) && isPortfolio(loaded)) st = checkPortfolioStaleness(packageOfSnapshot(raw), packagesOfSnapshot(raw), loaded);
+    else st = checkStaleness(packageOfSnapshot(raw), isPortfolio(loaded) ? (resolveProduct(loaded, loaded.activeProductId) as Doc) : loaded);
+  } catch (e) { console.error('Calculation staleness check failed', e); st = { state: 'notCalculated' }; }
   set(needsBanner(st) ? st : null);
   return st;
 }

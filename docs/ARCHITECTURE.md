@@ -100,17 +100,26 @@ regulatory catalogue, import).
 
 ## 4. Store: Immer patches, commands, history
 
-`src/store/core.ts` creates one store (`zustand/vanilla`) holding `{ doc, history, audit, rev }`.
+`src/store/core.ts` creates one store (`zustand/vanilla`) holding `{ portfolio, doc, history, audit, rev }`. Since multi-product P2 the
+**source of truth is the `Portfolio`** (`domain/portfolio`: `common` = every key of a case except `teamIn`, `products`, `waves`, `activeProductId`,
+`hub`, `horizonMonths`; `docs/SPEC_MULTI_PRODUIT.md`). `doc` is **derived**: `deriveDoc(portfolio)` = `resolveProduct(portfolio, activeProductId)`,
+the active product's effective case, identity-stable while its inputs are (P1 memo). Everything written for a single case (the ~200 commands, the 79
+sections, `useDoc`/`useCtx`/`useCaseResult`, `toSnapshot(doc)`, the Excel and report adapters) reads and writes `doc` unchanged. History, audit,
+autosave and broadcast patches are on the **portfolio**.
 
 ```
-dispatch(command) ──► produceWithPatches(doc, run) ──► patches + inverse patches
+dispatch(command) ──► ONE produceWithPatches(portfolio) ──► patches + inverse patches
+                           (case command: run on a draft of the derived doc, then the ADDRESS LAYER maps each change to the portfolio)
                            └─► history.pushEntry (coalescing, cap) ──► audit log ──► listeners (autosave, broadcast)
 ```
 
 | Concept | Implementation |
 |---|---|
-| Command | `{ type, payload, label, coalesceKey?, undoable, run(draft, payload) }`. Declared with `defineCommand` (`store/commands.ts`) inside `src/controllers`, exposed as plain functions. 202 commands are registered by the modules of `src/controllers` (201 undoable; counted from `COMMAND_REGISTRY` after loading them); a duplicate type throws |
-| Registry | `COMMAND_REGISTRY` (type, undoable). `tests/store/registry.test.ts` fails if a command has no sample in `tests/store/samples/`, no label, or does not round-trip through undo/redo (view commands with `undoable: false` must leave the stack empty) |
+| Command | `{ type, payload, label, coalesceKey?, undoable, run(draft, payload), runPortfolio? }`. Case commands use `defineCommand` (`store/commands.ts`): `run` mutates the active product's effective case. Portfolio commands use `definePortfolioCommand`: a pure `apply(portfolio, payload)`, turned into minimal Immer patches by `store/syncDraft.ts`. 224 commands are registered by the modules of `src/controllers` (221 undoable: 202 case commands, 201 undoable, plus 22 portfolio ones, 20 undoable; counted from `COMMAND_REGISTRY` after loading them); a duplicate type throws |
+| Address layer | `store/address/` (`index.ts`, `dom.ts`, `subset.ts`). After a case command ran on the derived doc, each changed top-level key is re-addressed onto the portfolio inside the same produce: `teamIn` -> the active product's `teamIn`; a whitelisted key (spec 4.3) -> `product.overrides[key]` if the product already overrides it OR the edit scope is `'product'` (and the value differs from common), else `common[key]`; a changed form field of `dom.values` / `dom.checked` is routed per field (Knowledge Hub fields to the product's knowledge subset when it defines them, then override/common by the same rule; `horizon`, `khInfraMonthly`, `khEnabled` mirror into `horizonMonths` / `hub`); any non-overridable key (RATE, MODEL, COEF, PERSONAS, nav, snapshots, customerName, ...) -> `common`. With one product and no override the result is exactly today's behaviour |
+| View state | `activeProductId` (saved with the file, D-M6) and `editScope` (`'all'` / `'product'`, transient, never saved) change through `undoable: false` commands (`product.setActive`, `product.setEditScope`): applied, logged, never on the undo stack, filtered out of broadcast patches (`VIEW_FIELDS`). After an undo/redo/remote patch an unknown active product falls back to the first one (`normalizeActive`) |
+| Portfolio commands | `controllers/product.ts` (add, rename, duplicate, archive, remove, setNote, setOffset, setActive, setEditScope), `productOverrides.ts` (setOverride, clearOverride, applyToCommon, setKnowledge), `wave.ts` (add, rename, remove, reorder, setStart, setNote, assign), `portfolio.ts` (setHorizon, setHub). `portfolioGuard.dispatchChecked` refuses (returns false, no step) any command whose result breaks `validate` (last product, weights != 100, 50-product cap, ...) |
+| Registry | `COMMAND_REGISTRY` (type, undoable). `tests/store/registry.test.ts` fails if a command has no sample in `tests/store/samples/`, no label, or does not round-trip through undo/redo, both on the default case and on a 3-product, 2-wave portfolio (view commands with `undoable: false` must add no step) |
 | History | `undo` / `redo` stacks of `{ label, type, ts, coalesceKey, patches, inverse }`. Cap `HISTORY_CAP = 200`. A new step clears redo |
 | Coalescing | consecutive entries with the same `coalesceKey` inside `COALESCE_MS = 800` merge into one step (slider drags, typing in a number field) |
 | Transactions | `batch(label, commands, coalesceKey?)` is one step: bulk edits, imports, applying a strategy |
@@ -123,12 +132,17 @@ dispatch(command) ──► produceWithPatches(doc, run) ──► patches + inv
 
 Consequences of the layering: the UI cannot import `dispatch`, so Ctrl/Cmd+Z (handled in `ui/shell/useShortcuts.ts`; text fields keep
 their native undo) covers every business input by construction. `tests/store/undo-property.test.ts` (fast-check) checks random
-command sequences against `undo∘apply = id` and symmetric redo.
+command sequences against `undo∘apply = id` and symmetric redo; `tests/store/portfolio-undo.test.ts` does the same on a 3-product portfolio with case, product, wave, override and scope commands mixed (A6), checking `validate` after every step.
 
 ## 5. Persistence
 
-All adapters live in `src/store/persistence/` and `src/controllers/` (file and boot wiring). The document keeps the **legacy snapshot
-state** (the same registry keys), so old files load.
+All adapters live in `src/store/persistence/` and `src/controllers/` (file and boot wiring). The case keeps the **legacy snapshot
+state** (the same registry keys), so old files load. Two file formats coexist (`persistence/portfolioSnapshot.ts`):
+
+- `agentcase.snapshot.v1`, one case. Opening it **envelopes** it (F21): `envelopeCase` = "Produit 1" in "Vague 1" at month 0, identical numbers (A1 on the 107 fixtures through the real open path, `tests/store/portfolio-a1.test.ts`).
+- `agentcase.portfolio.v1`, a portfolio (`readPortfolio`: `sanitize`, safe ids `[A-Za-z0-9_-]{1,64}`, shapes checked, `validate` invariants enforced, common values filled from the code defaults). **Save rule (F22, `isSingleCase`)**: a portfolio is written as `snapshot.v1` exactly when that file re-opens to the very same portfolio (one product, one wave, no override, no knowledge subset, default names/ids/offset); anything else, incl. a renamed product, keeps the portfolio format so a save never loses information. Hence existing file/HTML/Excel tools and tests keep seeing v1 files for single cases, and export -> open of a single-product portfolio is identical (A9).
+
+The autosave record is the exact portfolio (`full` mode, never collapsed to v1) plus its history, because the undo patches address product and wave positions; a record without `format: 'portfolio'` (written before P2) restores its document but not its case-level history.
 
 | Adapter | Files | Behaviour |
 |---|---|---|
@@ -137,14 +151,14 @@ state** (the same registry keys), so old files load.
 | Boot | `controllers/boot.ts`, `src/main.tsx` | opens an embedded case before the first paint, then offers the newest autosave of another tab that is **newer than the file's own `savedAt`** (never auto-restores) |
 | Multi-tab | `broadcast.ts` | `BroadcastChannel('agentcase-v19')`: local changes are posted as patches (the inverse for an undo); a message from another tab is applied with `applyRemote` |
 | HTML snapshot | `html/embed.ts`, `read.ts`, `legacy.ts` | the running page is cloned, `#root` emptied, transient nodes dropped, the case embedded in `<script type="application/json" id="agentcase-snapshot">` with `<` and the JS line separators escaped; re-saving replaces the script. Opening accepts this build's files, legacy v18.x snapshots (the object after `try{ applySnapshotState(` is located by a balanced-brace scan and `JSON.parse`d, nothing is evaluated; any other shape is rejected) and plain JSON. File name `AgentCase_<customer>_<vTag>_Snapshot_<stamp>.html` |
-| Re-fit on open | `controllers/openFile.ts#refitOnOpen` | like the legacy `applySnapshotState`, a restore re-runs the scope fit; used for file open, the embedded case and snapshot activation (not in `fromSnapshot`) |
+| Re-fit on open | `controllers/openFile.ts#refitOnOpen`, `store/derive.ts#refitPortfolio` | like the legacy `applySnapshotState`, a restore re-runs the scope fit; used for file open, the embedded case and snapshot activation (not in `fromSnapshot`). For a portfolio every product's potential follows ITS effective scope (most frequent value shared as common, others as overrides); edits re-fit the active product only, as before |
 | Parameters workbook | `excel/params/` | export and hardened import, one undoable batch; sheet families in `registry.ts` (47 sheets per the migration log). ExcelJS is loaded by dynamic `import()` (`excel/lazy.ts`) |
 | Results workbook, due-diligence pack | `excel/results/`, `excel/dd/` | export (and DD import); cell-by-cell equal to the legacy on fixtures |
 | Report | `report/` | "Critical & Regulated Software Delivery" HTML report; its visible text equals the legacy report on 11 fixtures |
 | Snapshot manager | `controllers/snapshots.ts`, `domain/snapshots/` | named snapshots in the document (capture, activate as one undo step, rename, delete, baseline, protected golden entries, compare) |
 
 There is no schema-migration table: legacy files are accepted as they are (missing keys take defaults), and the only version tag is
-`_schema`. Every saved case (JSON, HTML snapshot, autosave record) carries the canonical calculation package `{schemaVersion, calculationVersion, inputHash, curveModelId, headline, annual}` (`domain/calcPackage.ts`, stamped by `toSnapshot`, dropped by `fromSnapshot`: it is never part of the document). On open, `controllers/calcStaleness.ts#checkLoadedCase` recomputes the package and compares it (`domain/calcStaleness.ts`: valid / stale / versionMismatch / notCalculated; figures to 1e-6). A mismatch shows the legacy banner (`ui/shell/CalcStaleBanner.tsx`, `role=status`, Dismiss). The banner state lives in the controller, outside the document and the undo history; files without a package (older fixtures) open silently. Figures are always recomputed from the inputs, the package is only compared. The Excel workbooks already read the same engine, so they equal the package figures without change.
+`_schema`. Every saved case (JSON, HTML snapshot, autosave record) carries the canonical calculation package `{schemaVersion, calculationVersion, inputHash, curveModelId, headline, annual}` (`domain/calcPackage.ts`, stamped by `toSnapshot`, dropped by `fromSnapshot`: it is never part of the document). On open, `controllers/calcStaleness.ts#checkLoadedCase` recomputes the package and compares it (`domain/calcStaleness.ts`: valid / stale / versionMismatch / notCalculated; figures to 1e-6). A portfolio file stamps `calculationPackages: {[productId]: package}` (each product's resolved case, exactly the single-case package) plus a portfolio-level `calculationPackage` (`inputHash` `pf1:`, consolidated headline and calendar-year table from `domain/portfolio/package.ts`); `checkPortfolioStaleness` compares both levels, worst state wins, `staleProducts` names the products that moved. A mismatch shows the legacy banner (`ui/shell/CalcStaleBanner.tsx`, `role=status`, Dismiss). The banner state lives in the controller, outside the document and the undo history; files without a package (older fixtures) open silently. Figures are always recomputed from the inputs, the package is only compared. The Excel workbooks already read the same engine, so they equal the package figures without change.
 
 ## 6. UI: the zone shell and navigation from the document
 

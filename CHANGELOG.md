@@ -17,6 +17,18 @@ When releasing, follow [docs/BUMP_PROCEDURE.md](docs/BUMP_PROCEDURE.md) (§7 for
 
 ## [Unreleased]
 
+- **Multi-product, phase P2 (store, commands, persistence).** The store's source of truth is now the `Portfolio`; `doc` is derived
+  (the active product's effective case), so the ~200 existing commands, the 79 sections, controllers and the Excel/report adapters are
+  unchanged. An address layer maps each case-command change to the portfolio (team -> product, whitelisted key -> override or common,
+  everything else -> common) inside ONE Immer produce, so history, undo/redo, coalescing, batch and remote patches behave as before.
+  22 new commands: `product.*` (add, rename, duplicate, archive, remove, setNote, setOffset, setOverride, clearOverride, applyToCommon,
+  setKnowledge, plus the non-undoable `setActive` and `setEditScope`), `wave.*` (add, rename, remove, reorder, setStart, setNote, assign),
+  `portfolio.setHorizon` / `setHub`. New format `agentcase.portfolio.v1` (JSON, HTML embed, autosave record, multi-tab patches) with
+  one calculation package per product plus a portfolio package and two-level staleness check; a single plain case is still saved as
+  `agentcase.snapshot.v1` (F22) and legacy files open as "Produit 1" in "Vague 1" with identical figures (A1 on the 107 fixtures, A9
+  round trip). Tests: store-level A1/A9, A5 address layer, A6 undo property on a 3-product portfolio, persistence/sync/sanitize,
+  staleness. No UI change (P3).
+
 - **Multi-product, phase P1 (domain only).** New pure module `app/src/domain/portfolio/`: `Portfolio` / `Product` / `Wave` types,
   `resolveProduct` (common values + whitelisted overrides + knowledge subset + own team, memoised per product), `validate`,
   calendar `consolidate` (per-product Time Engine rows shifted onto the calendar and summed; waves; KT setup placed `ktLeadMonths`

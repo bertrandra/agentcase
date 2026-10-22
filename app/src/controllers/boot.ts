@@ -3,7 +3,7 @@ import { restoreRecord, startAutosave, type AutosaveRecord, type AutosaveStorage
 import { connectBroadcast, type ChannelLike } from '@/store/persistence/broadcast';
 import { readEmbeddedCase } from '@/store/persistence/html/read';
 import { checkLoadedCase } from './calcStaleness';
-import { refitOnOpen } from './openFile';
+import { refitPortfolio } from '@/store/derive';
 
 export interface RestoreOffer { label: string; savedAt: string; steps: number }
 let pending: AutosaveRecord | null = null;
@@ -11,11 +11,11 @@ const subs = new Set<() => void>();
 const notify = () => subs.forEach((f) => f());
 
 let offer: RestoreOffer | null = null;   // a stable object per pending record (useSyncExternalStore compares snapshots by identity)
-const setPending = (r: AutosaveRecord | null) => { pending = r; offer = r ? { label: r.label, savedAt: r.savedAt, steps: r.history.undo.length } : null; notify(); };
+const setPending = (r: AutosaveRecord | null) => { pending = r; offer = r ? { label: r.label, savedAt: r.savedAt, steps: r.format === 'portfolio' ? r.history.undo.length : 0 } : null; notify(); };
 export const getRestoreOffer = (): RestoreOffer | null => offer;
 export const onRestoreOffer = (f: () => void): (() => void) => { subs.add(f); return () => { subs.delete(f); }; };
 export function acceptRestore(): void {
-  if (pending) { restoreRecord(appStore(), pending); checkLoadedCase(pending.snapshot, appStore().getState().doc); }
+  if (pending) { restoreRecord(appStore(), pending); checkLoadedCase(pending.snapshot, appStore().getState().portfolio); }
   setPending(null);
 }
 export function dismissRestore(): void { setPending(null); }
@@ -26,7 +26,7 @@ export interface BootEnv { storage: AutosaveStorage | null; channel: ChannelLike
 export function loadEmbeddedCase(d: Pick<Document, 'getElementById'>): { savedAt: string } | null {
   try {
     const c = readEmbeddedCase(d);
-    if (c) { const doc = refitOnOpen(c.doc); appStore().load(doc); checkLoadedCase(c.raw, doc); }
+    if (c) { const pf = refitPortfolio(c.portfolio); appStore().load(pf); checkLoadedCase(c.raw, pf); }
     return c ? { savedAt: c.savedAt } : null;
   } catch (e) { console.error('The case embedded in this file could not be opened:', e); return null; }
 }
