@@ -2,6 +2,7 @@ import { useState } from 'react';
 import { exportResultsWorkbook, type SheetImages } from '@/controllers/excelResults';
 import { toast } from '@/ui/uiState';
 import { Callout, Panel } from '@/ui/widgets/cards';
+import { ResultsNote } from './PortfolioNotes';
 
 /** Chart canvas (by its accessible name) that illustrates each sheet, as the legacy export did with its own charts. */
 const CHARTS: [keyof SheetImages, string][] = [
@@ -39,6 +40,7 @@ export function ResultsExcelPanel() {
   return (
     <Panel title="📊 Results workbook (Excel)">
       <p>One sheet per section of the Financial Summary — ROI, Investment, Operating costs, Savings, P&amp;L and Workforce shift — with the figures of the current case, rounded as on screen.</p>
+      <ResultsNote />
       <button type="button" className="ac-btn ac-btn-primary" disabled={busy} onClick={() => void run()}>⬇️ Export financial to Excel (one sheet per section)</button>
       <div role="status" aria-live="polite" style={{ marginTop: 8 }}>{status && <Callout>{status}</Callout>}</div>
     </Panel>

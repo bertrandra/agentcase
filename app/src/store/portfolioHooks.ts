@@ -1,5 +1,6 @@
 import { useMemo } from 'react';
 import { commonValue, corePortfolio, isOverridden, resolveProduct, type CommonCase, type Product, type Wave } from '@/domain/portfolio';
+import { hasPortfolioContent } from './persistence/portfolioSnapshot';
 import { caseResultOf, usePortfolio } from './hooks';
 import type { EditScope } from './types';
 
@@ -10,6 +11,8 @@ export const useCommon = (): CommonCase => usePortfolio((p) => p.common);
 export const useProductCount = (): number => usePortfolio((p) => p.products.length);
 /** Progressive disclosure (spec F23): the multi-product interface exists from two products on. */
 export const useIsMulti = (): boolean => usePortfolio((p) => p.products.length >= 2);
+/** True when the work is more than a plain single case (2+ products or waves, an override, a knowledge subset...): the exports then carry the portfolio additions. */
+export const useHasPortfolioContent = (): boolean => usePortfolio(hasPortfolioContent);
 export const useActiveProductId = (): string => usePortfolio((p) => p.activeProductId);
 /** "Edit: all products / this product only"; 'all' until the user chooses (transient, never saved). */
 export const useEditScope = (): EditScope => usePortfolio((p) => p.editScope ?? 'all');

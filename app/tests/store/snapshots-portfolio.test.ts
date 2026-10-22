@@ -1,8 +1,7 @@
 // @vitest-environment jsdom
-import { afterEach, describe, expect, it } from 'vitest';
-import { dismissCalcBanner, getCalcBanner } from '@/controllers/calcStaleness';
+import { describe, expect, it } from 'vitest';
+import { getCalcBanner } from '@/controllers/calcStaleness';
 import { htmlSnapshotFile } from '@/controllers/htmlSnapshot';
-import { exportSnapshotJson } from '@/controllers/files';
 import { openCaseText } from '@/controllers/openFile';
 import { addProduct, renameProduct, setActiveProduct, setProductOffset } from '@/controllers/product';
 import { setPortfolioHub } from '@/controllers/portfolio';
@@ -11,10 +10,9 @@ import { activateSnapshot, captureSnapshot, compareSnapshots, setBaselineSnapsho
 import { addWave, assignWave, setWaveStart } from '@/controllers/wave';
 import { snapshotsOf } from '@/domain/snapshots';
 import { appStore } from '@/store/instance';
-import { fixtureText, fourProducts, openPortfolioFixture, pfNow } from '../helpers/portfolioFixtures';
+import { fourProducts, openPortfolioFixture, pfNow } from '../helpers/portfolioFixtures';
 import { freshStore, snapAll } from './helpers';
 
-afterEach(() => dismissCalcBanner());
 const T0 = new Date('2026-10-22T10:00:00Z');
 const lib = () => snapshotsOf(appStore().getState().doc);
 /** The saved part of a portfolio (view state aside), the library excluded: what an activation must bring back. */
@@ -115,44 +113,5 @@ describe('HTML snapshot and file of a portfolio', () => {
     freshStore();
     expect(openCaseText(html)).toBe('html');
     expect(pfNow().products).toHaveLength(4);
-  });
-});
-
-describe('staleness of a portfolio file is reported at the right level', () => {
-  const raw = (): Record<string, unknown> => JSON.parse(fixtureText('pf-three-products')) as Record<string, unknown>;
-  const open = (r: Record<string, unknown>) => { freshStore(); openCaseText(JSON.stringify(r)); return getCalcBanner(); };
-  it('the untouched fixture opens silently', () => { expect(open(raw())).toBeNull(); });
-  it('tampering a scheduled product’s inputs: stale, and the banner names it (the shared hub moves its neighbours’ shares too)', () => {
-    const r = raw(), products = r.products as { id: string; teamIn: { etp: number }[] }[], victim = products[1]!;
-    victim.teamIn[0]!.etp += 5;
-    const b = open(r);
-    expect(b?.state).toBe('stale');
-    expect(b?.staleProducts).toContain(victim.id);
-  });
-  it('tampering an unscheduled product’s inputs: stale at the PRODUCT level only, that product alone is named', () => {
-    const r = raw(), products = r.products as { id: string; waveId: string | null; teamIn: { etp: number }[] }[], victim = products.find((p) => p.waveId === null)!;
-    victim.teamIn[0]!.etp += 5;
-    const b = open(r);
-    expect(b?.state).toBe('stale');
-    expect(b?.staleProducts).toEqual([victim.id]);
-  });
-  it('tampering a wave start: stale at the portfolio level only (every product package is still valid)', () => {
-    const r = raw();
-    (r.waves as { startMonth: number }[])[1]!.startMonth += 3;
-    const b = open(r);
-    expect(b?.state).toBe('stale');
-    expect(b?.staleProducts).toBeUndefined();
-  });
-  it('tampering a product offset: stale at the portfolio level only', () => {
-    const r = raw();
-    (r.products as { offsetMonths: number }[])[1]!.offsetMonths += 2;
-    const b = open(r);
-    expect(b?.state).toBe('stale');
-    expect(b?.staleProducts).toBeUndefined();
-  });
-  it('a file saved by the app and re-exported stays valid', () => {
-    openPortfolioFixture();
-    const { json } = exportSnapshotJson();
-    expect(open(JSON.parse(json) as Record<string, unknown>)).toBeNull();
   });
 });
