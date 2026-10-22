@@ -68,7 +68,7 @@ describe('the cost-model workbook', () => {
     for (let r = at + 1; val(ws, r, 1); r++) bands.forEach((b, i) => expect(val(ws, r, 3 + i)).toBe(rate[String(val(ws, r, 1))]![b]));
     const adj = rows.find((r) => val(ws, r, 5) === 'Blending adjustment (target location mix)')!;
     expect(ws.getCell(adj, col(ws, 'M5')).value).toMatchObject({ formula: expect.stringMatching(/^Values!.*\*\$F\$/) });
-    const dot = rows.find((r) => val(ws, r, 5).toString().startsWith('Team cost ='))!;
+    const dot = rows.find((r) => String(val(ws, r, 5)).startsWith('Team cost ='))!;
     expect((ws.getCell(dot, col(ws, 'M5')).value as { formula: string }).formula).toMatch(/^SUMPRODUCT\(Values!/);
     for (const r of rows.filter((x) => val(ws, x, 5) === 'Difference (must be 0)')) for (let c = col(ws, 't0'); c <= col(ws, 'Total'); c++) expect(Math.abs(Number(val(ws, r, c)) || 0)).toBeLessThan(1e-6);
   });
