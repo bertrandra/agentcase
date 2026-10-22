@@ -87,7 +87,7 @@ describe('verify aggregates: kpi cards, year picker, gantt', () => {
     await sectionReady(/Gantt/);
     expect(await screen.findByRole('region', { name: 'Wave Gantt' })).toBeTruthy();
     view({ kind: 'wave', id: pf().waves[1]!.id });
-    expect(within(screen.getByRole('region', { name: 'Wave Gantt' })).getByText(/Wave 2/)).toBeTruthy();
+    expect(within(screen.getByRole('region', { name: 'Wave Gantt' })).getByText(/— Wave 2/)).toBeTruthy();
     view({ kind: 'product' });
     expect(screen.queryByRole('region', { name: 'Wave Gantt' })).toBeNull();
   });
@@ -99,7 +99,7 @@ describe('verify roll-ups: the read-only drill-down and "Edit this product"', ()
     await sectionReady(/vFTE Overview/);
     fireEvent.click(screen.getByRole('button', { name: /B$/, expanded: false }));
     const region = await screen.findByRole('region', { name: 'Detail: B' }), b = independent(core(), { kind: 'portfolio' })[1]!;
-    expect(await within(region).findByRole('table', { name: '' }, { timeout: 15000 }).catch(() => region)).toBeTruthy();
+    expect(await within(region).findByRole('heading', { level: 4 })).toBeTruthy();
     expect(region.textContent).toContain(periodRows(b.live).at(-1)!.human.toFixed(1));
     expect(document.querySelectorAll('[data-readonly]')).toHaveLength(1);
     expect(pf().activeProductId).toBe(ids[0]);
@@ -111,7 +111,7 @@ describe('verify roll-ups: the read-only drill-down and "Edit this product"', ()
     fireEvent.click(screen.getByRole('button', { name: /B$/, expanded: false }));
     const region = await screen.findByRole('region', { name: 'Detail: B' });
     const inputs = await within(region).findAllByRole('spinbutton');
-    for (const i of inputs) expect((i as HTMLInputElement).disabled).toBe(true);
+    for (const i of inputs) expect(i.matches(':disabled')).toBe(true);
     fireEvent.click(screen.getByRole('button', { name: 'Edit this product: B' }));
     expect(pf().activeProductId).toBe(ids[1]);
     expect(pf().displayScope).toEqual({ kind: 'product' });
