@@ -1,5 +1,7 @@
+import { useIsMulti } from '@/store/portfolioHooks';
 import { Panel } from '@/ui/widgets/cards';
 import { NumberInput, RangeInput, SelectInput } from '@/ui/widgets/fields';
+import { SubsetBadge, SubsetFieldBox } from './SubsetBadge';
 
 const GROUPS: { title: string; items: string[] }[] = [
   { title: 'Coverage', items: ['Key artifacts are captured', 'Domain knowledge is captured', 'Decisions/ADRs are captured'] },
@@ -8,10 +10,14 @@ const GROUPS: { title: string; items: string[] }[] = [
 ];
 const CC = [0, 1, 2, 3, 4].map((n) => ({ value: String(n), label: `CC${n}` }));
 
-/** AS-IS assessment (nine 0-4 statements) and the target / cost inputs of the hub. */
+/**
+ * AS-IS assessment (nine 0-4 statements) and the target / cost inputs of the hub. With several products the fields are those of the ACTIVE product's
+ * subset (chips "hérité / surchargé"), and the hub infrastructure, a portfolio cost, is edited in the shared hub card instead.
+ */
 export function AsisPanel() {
+  const multi = useIsMulti();
   return (
-    <Panel title="AS-IS assessment (9 statements, 0 = absent → 4 = excellent)">
+    <Panel title="AS-IS assessment (9 statements, 0 = absent → 4 = excellent)" aside={<SubsetBadge field="maturityAnswers" label="Réponses de maturité" />}>
       {GROUPS.map((g, gi) => (
         <fieldset key={g.title} style={{ border: 0, padding: 0 }}>
           <legend><strong>{g.title}</strong></legend>
@@ -21,11 +27,11 @@ export function AsisPanel() {
         </fieldset>
       ))}
       <div className="ac-form-row">
-        <SelectInput id="khTargetCC" label="Target CC (Y3)" options={CC} />
-        <NumberInput id="khSetupBase" label="Hub setup base (€)" min={0} step={10000} />
+        <SubsetFieldBox field="targetCC" label="Cible CC"><SelectInput id="khTargetCC" label="Target CC (Y3)" options={CC} /></SubsetFieldBox>
+        <SubsetFieldBox field="setupBase" label="Base de mise en place"><NumberInput id="khSetupBase" label="Hub setup base (€)" min={0} step={10000} /></SubsetFieldBox>
         <NumberInput id="khSetupDays" label="Setup duration (days)" hint="sizes its row in the Gantt programme band" min={1} step={5} />
-        <NumberInput id="khCurationFTE" label="Curation (FTE)" min={0} max={2} step={0.25} />
-        <NumberInput id="khInfraMonthly" label="Hub infra (€/mo)" min={0} step={250} />
+        <SubsetFieldBox field="curationFTE" label="Curation"><NumberInput id="khCurationFTE" label="Curation (FTE)" min={0} max={2} step={0.25} /></SubsetFieldBox>
+        {!multi && <NumberInput id="khInfraMonthly" label="Hub infra (€/mo)" min={0} step={250} />}
       </div>
     </Panel>
   );
