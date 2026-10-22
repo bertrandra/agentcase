@@ -19,7 +19,7 @@ describe('one product: the interface is unchanged (spec F23)', () => {
     expect(document.querySelector('.ac-prodbar')).toBeNull();
   });
   it('the sidebar has the 14 original groups and none of the Portefeuille sections, although the catalogue holds them', () => {
-    expect(SECTIONS).toHaveLength(81);
+    expect(SECTIONS).toHaveLength(82);
     mountApp();
     expect(sidebar().querySelectorAll('section[data-group]')).toHaveLength(14);
     expect(sidebar().querySelector('[data-group="portfolio"]')).toBeNull();
