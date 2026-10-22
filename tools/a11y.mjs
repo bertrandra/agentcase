@@ -27,6 +27,18 @@ for (const fx of fixtures) {
     if (only.length && !only.includes(label)) continue;
     if (await openSection(page, label)) await audit(page, fx, label);
   }
+  if (fx.startsWith('pf-')) {   // multi-product fixture: the display scope is view state (not saved), so audit the portfolio views under the Portefeuille scope too (P4)
+    await page.selectOption('select[aria-label="Périmètre d\'affichage"]', 'portfolio');
+    for (const label of labels.filter((l) => /Vagues|Consolidation|Gantt/.test(l ?? ''))) {
+      if (only.length && !only.includes(label)) continue;
+      if (!(await openSection(page, label))) continue;
+      const expand = page.locator('button[aria-label^="Expand "]').first();   // the wave Gantt: open a wave to audit its product rows and milestones
+      if (await expand.count()) await expand.click();
+      await audit(page, fx, `${label} (scope Portefeuille)`);
+    }
+    await page.selectOption('select[aria-label="Périmètre d\'affichage"]', { index: 1 });   // back to a wave: the KPI bar of a Vague
+    await audit(page, fx, '(scope Vague: KPI bar)');
+  }
   if (!only.length) {
     await personaMenu(page, fx, rec); await historyStates(page, fx, rec);
     // the Builder persona: hide-menu mode (group bar) and a guided sequence
