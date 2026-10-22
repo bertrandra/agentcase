@@ -55,7 +55,7 @@ function declaredIn(p: Project, file: string, name: string, depth = 0): string {
 }
 
 /** Read every `.ts/.tsx` of `src` and `tests` and build the runtime import graph. Barrels of `src/domain` are flattened by symbol; `routes` redirect generic accessors. */
-export function loadProject(root: string, routes: Routes = {}): Project {
+export function loadProject(root: string, routes: Routes = {}, flatten = true): Project {
   const files = [...walk(root, 'src'), ...walk(root, 'tests')].sort();
   const known = new Set(files), text = new Map<string, string>(), parsed = new Map<string, Parsed>();
   for (const f of files) { const t = readFileSync(join(root, f), 'utf8'); text.set(f, t); parsed.set(f, parseModule(f, t)); }
@@ -66,14 +66,26 @@ export function loadProject(root: string, routes: Routes = {}): Project {
       if (i.typeOnly) continue;
       const t = resolveSpec(root, f, i.spec, known);
       if (!t) continue;
-      const hops = i.names ? i.names.map((n) => routes[t]?.[n] ?? declaredIn(p, t, n)) : [t];
+      const hops = i.names && flatten ? i.names.map((n) => routes[t]?.[n] ?? declaredIn(p, t, n)) : [t];
       (hops.length ? hops : [t]).forEach((h) => { if (h !== f) out.add(h); });
     }
+    if (!flatten) for (const spec of [...ps.stars, ...ps.reexports.map((r) => r.spec)]) { const t = resolveSpec(root, f, spec, known); if (t) out.add(t); }
+    if (f.startsWith('tests/')) for (const r of readsOf(root, f, text.get(f) ?? '')) out.add(r);
     for (const g of ps.globs) globFiles(root, f, g, files).forEach((t) => { if (t !== f) out.add(t); });
     p.edges.set(f, [...out].sort());
   }
   for (const [f, ts] of p.edges) for (const t of ts) (p.importers.get(t) ?? p.importers.set(t, []).get(t)!).push(f);
   return p;
+}
+
+const READ = /['"`]((?:\.\.?\/|docs\/|fixtures\/|src\/)[^'"`\n]*\.(?:json|md|html|csv|xlsx|tsx?|css))['"`]/g;
+/** Data files a test or helper names in a string literal (`readFileSync('../docs/x.md')`): an edge like an import, so a change to the file selects the readers. */
+function readsOf(root: string, from: string, text: string): string[] {
+  const out: string[] = [];
+  for (const m of text.matchAll(READ)) {
+    for (const c of [posix.normalize(m[1]!), posix.normalize(posix.join(dirname(from), m[1]!))]) if (!c.startsWith('src/') || /\.(json|css)$/.test(c)) { if (existsSync(join(root, c)) && statSync(join(root, c)).isFile()) { out.push(c); break; } }
+  }
+  return out;
 }
 
 /** Every file reachable from `start` through runtime imports (start included). */

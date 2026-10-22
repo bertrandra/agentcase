@@ -6,7 +6,7 @@ export type ZoneLane = 'input' | 'calc' | 'result' | 'shared';
 export interface ZoneDef { id: string; label: string; lane: ZoneLane; description: string; entry: string[] }
 export interface FigureDef { id: string; label: string; zone: string; description: string }
 
-/** The calculation zones of the code base (docs/ARCHITECTURE.md, section 12): every domain module carries exactly one `@calc-zone` tag. */
+/** The calculation zones of the code base (docs/ARCHITECTURE.md, section 13): every domain module carries exactly one `@calc-zone` tag. */
 export const ZONES = catalog.zones as ZoneDef[];
 /** The figures with exactly one owner module each (`@owner` tag): the "one source of truth" list. */
 export const FIGURES = catalog.figures as FigureDef[];
