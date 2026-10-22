@@ -1,7 +1,8 @@
 import type * as XL from 'exceljs';
 import { describe, expect, it } from 'vitest';
+import { exportDdPack } from '@/controllers/excelDd';
 import { exportResultsWorkbook } from '@/controllers/excelResults';
-import { renameProduct, addProduct } from '@/controllers/product';
+import { renameProduct, addProduct, setActiveProduct } from '@/controllers/product';
 import { makeCtx } from '@/domain';
 import { consolidate, consolidationView, corePortfolio, knowledgeTable, portfolioHeadline, resolveProduct, waveEffects, type DisplayScope } from '@/domain/portfolio';
 import { fmtRoiPct } from '@/domain/economics';
@@ -116,5 +117,26 @@ describe('Excel-safe sheet names', () => {
     expect(new Set(n.map((x) => x.toLowerCase())).size).toBe(n.length);
     expect(n.every((x) => x.length <= 31)).toBe(true);
     expect(pfNow().products.length).toBe(5);
+  });
+});
+
+describe('due-diligence pack of a portfolio', () => {
+  const pack = async () => {
+    const out = await exportDdPack((id) => id, NOW), wb = new (await loadExcelJS()).Workbook();
+    await wb.xlsx.load(await out.blob.arrayBuffer());
+    return wb;
+  };
+  it('is the ACTIVE product’s pack (annotations are common to the portfolio), named on DD_Coverage', async () => {
+    const pf = fourProducts();
+    let wb = await pack();
+    expect(names(wb)).toEqual(['DD_Register', 'DD_Coefficients', 'DD_Evidence_Requests', 'DD_Coverage']);
+    expect(line(wb, 'DD_Coverage', 'Product (effective case of this pack)')[1]).toBe(pf.products[0]!.name);
+    setActiveProduct(pf.products[1]!.id);
+    wb = await pack();
+    expect(line(wb, 'DD_Coverage', 'Product (effective case of this pack)')[1]).toBe(pf.products[1]!.name);
+  });
+  it('a plain case has no product line (the pack is unchanged)', async () => {
+    freshStore();
+    expect(line(await pack(), 'DD_Coverage', 'Product (effective case of this pack)')).toEqual([]);
   });
 });
