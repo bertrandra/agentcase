@@ -48,7 +48,7 @@ export function PortfolioVerdict({ group }: { group: VerdictGroup }) {
           <Stat label="Retour (mois)" value={fmtMonths(h.paybackMonth)} /><Stat label="VAN calendaire" value={fmtEurK(h.npv)} />
         </StatRow>
       )}
-      {d ? <VerdictBox d={d} banner={<Stale />} /> : (
+      {d ? <Panel title={`Verdict — ${kpis?.label ?? 'périmètre'}`}><VerdictBox d={d} banner={<Stale />} /></Panel> : (
         <p className="ac-muted"><em>{run ? 'Ce périmètre n’a aucun produit planifié dans la simulation.' : (
           <>Lancez d’abord la simulation de portefeuille (Portefeuille → 🎲 Stress portefeuille) : le verdict est calculé sur la distribution, jamais sur une estimation ponctuelle.{' '}
             <button type="button" onClick={() => { void runPortfolioSimulation(); }}>▶ Lancer maintenant</button></>)}</em></p>
