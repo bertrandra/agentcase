@@ -12,7 +12,7 @@ export { portfolioHeadline, type PortfolioHeadline } from './portfolioHeadline';
 export type { ProductView, WaveView } from './waves';
 export { commonSubsetValue, type SubsetField } from './subset';
 export { subsetKeys, ktLead, allocateInfra, allocateCents, knowledgeRow, knowledgeTable, knowledgeTotals, type KnowledgeRow, type KnowledgeTable, type KnowledgeTotals } from './knowledge';
-export { waveEffects, infraView, type WaveEffect, type InfraView, type InfraShare } from './ktview';
+export { waveEffects, waveEffectsTotal, infraView, type WaveEffect, type InfraView, type InfraShare } from './ktview';
 export { envelopeCase, portfolioToCase } from './envelope';
 export { MAX_PRODUCTS, addProduct, renameProduct, setProductNote, archiveProduct, setProductOffset, duplicateProduct, removeProduct, setKnowledge, setActive } from './products';
 export { addWave, renameWave, setWaveStart, setWaveNote, removeWave, reorderWave, assignWave, setHorizon, setHub } from './waveOps';

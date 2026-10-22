@@ -4,4 +4,5 @@ import type { SectionMap } from './types';
 export const PORTFOLIO: SectionMap = {
   products: () => import('./portfolio/products'),
   overrides: () => import('./portfolio/overrides'),
+  'knowledge-transfer': () => import('./portfolio/knowledge-transfer'),
 };

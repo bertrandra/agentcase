@@ -87,6 +87,6 @@
   "id": "portfolio",
   "label": "📦 Portefeuille",
   "order": 15,
-  "description": "Several products in one file: the products table (team, wave, state, key indicators) and the overrides of each product against the common values. Shown from two products on."
+  "description": "Several products in one file: the products table (team, wave, state, key indicators), the overrides of each product against the common values and the Knowledge transfer of each product (its subset of the shared Knowledge Hub). Shown from two products on."
  }
 ]

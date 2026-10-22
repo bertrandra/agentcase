@@ -660,5 +660,13 @@
   "label": "🧬 Surcharges",
   "description": "Per product, the keys that differ from the common values (common vs product value); back to common, apply to all products",
   "tag": "supports"
+ },
+ {
+  "id": "knowledge-transfer",
+  "group": "portfolio",
+  "groupSeq": 30,
+  "label": "🔁 Knowledge transfer",
+  "description": "The Knowledge Hub shared by the portfolio and its subset per product: starting and target CC, domains, KT setup and yearly cost, KT days avoided, preparation before the wave, hub effect per product and per wave; hub settings and infrastructure allocation",
+  "tag": "supports"
  }
 ]
