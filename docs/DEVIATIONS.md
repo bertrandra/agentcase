@@ -18,6 +18,7 @@ Figures are the golden fixture unless stated. "Before" = the build at the start 
 | DEV-COMPARE-ENGINE | 3-way comparison reads the Time Engine |
 | DEV-SCENARIO-ENGINE | the six scenarios run the Time Engine |
 | DEV-NEG-MONEY | one negative-amount convention |
+| DEV-ARCH-CONTENT | the two architecture sections describe the TypeScript build |
 
 ## DEV-HEADLINE-OWNER — one economics headline
 
@@ -124,3 +125,13 @@ The single-product Monte Carlo, scenarios, sensitivity, strategies and decision 
 - **Scenarios and sensitivity** stay per product (active product); no portfolio scenario table: re-running `scenarioModel` per product and summing it would need a calendar placement of six cases and a second set of headline owners, which is a new feature, not a reuse. Out of scope.
 - **Speed.** `splineEval` caches the Fritsch-Carlson slopes per control-point list and `withInputs` parses its overrides once: same arithmetic, bit-identical numbers (all oracles green), 20 products × 1,000 draws ≈ 1.4 s instead of 2.2 s.
 - Files: `domain/portfolio/{stress,stressSeed,stressFingerprint,stressTypes,stressVerdict}.ts`, `domain/stress/{simulate,rng}.ts` (`mcDraws`, `mcStats`, `mcSampleT`), `domain/verdict/decision.ts` (`verdictRule`, `riskPremiumOf`).
+
+## DEV-ARCH-CONTENT — the architecture sections describe the TypeScript build
+
+Requested change (v20.2). The sections `arch-layers` (🏛️ Architecture — Layers) and `arch-content` (🏛️ Architecture — Layers content) used to reproduce the legacy page: five layers, six engines (BUS, APP_STATE, PM, DEP, AUDIT, TIME), wiring status, migration plan and code references into the single file. Their content is rewritten for the product as it is now: the four code layers (ui, controllers, store, domain) and the ESLint rules, the Time Engine, the command bus, the Portfolio layer, persistence and file formats, the View selector and aggregated view, security, performance budgets, the proof layer, the registries, the known gaps (from docs/ARCHITECTURE.md §12) and a legacy-to-today table. Styles, titles, section ids and kinds (`S-static`, independent of the View) are unchanged; the `NewBuildNote` callout (and `content/refshare/newbuild.json`) shown above them is removed because the content now says it.
+
+- Legacy: the sections' visible text was compared with the legacy text (`expectParity('arch-layers' | 'arch-content', ...)`: every figure and heading of the legacy page had to appear).
+- New build: the legacy page is no longer the oracle for these two sections, since describing the legacy architecture is exactly what is out of date.
+- Tests replaced: in `tests/ui/sections/arch.test.tsx`, the two `expectParity` assertions and the assertion that the new-build mapping heading is shown. Added: `tests/ui/sections/arch.test.tsx` (renders without console error, one h1, heading order, no legacy status vocabulary, navigation) and `tests/ui/arch-facts.test.ts` (section / group / command / variable / key / coefficient / fixture counts equal the code, limits equal the constants, every path in a code element exists, every `go` target is a catalogue id, no hard-coded version). The English-only guard applies unchanged.
+- UI parity: `tools/ui-parity.mjs` compares computed styles per element kind, not text; styles are unchanged, so no exception is recorded.
+- Catalogue descriptions: the `description` of the two sections in `ui/zones/data/sectionCatalog.json` is updated to match. The parameters workbook exports it in the `Sections` sheet, so `tests/store/excel-params-writer.test.ts` exempts exactly those two legacy description cells (and nothing else) from the legacy comparison.

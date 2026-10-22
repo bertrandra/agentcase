@@ -15,6 +15,11 @@ All notable changes to AgentCase, newest first. Product version from v19.0.0 = `
 
 When releasing, follow [docs/BUMP_PROCEDURE.md](docs/BUMP_PROCEDURE.md) (§7 for the legacy file) and add the new version at the top.
 
+## [v20.3.0] 2026-10-22 — Architecture sections rewritten
+
+### Changed
+- **Architecture sections rewritten for the TypeScript + React build.** 🏛️ Architecture — Layers (overview) and 🏛️ Architecture — Layers content (full detail) now describe the four code layers and their ESLint rules, the Time Engine, the command bus, the Portfolio layer, persistence and file formats, the View selector and aggregated view, security, performance budgets, the proof layer, the registries and the known gaps, with a table mapping the legacy engines (BUS, APP_STATE, PM, DEP, AUDIT, TIME) to today's mechanisms. The "In the TypeScript build" note above them is removed. Intentional, recorded as DEV-ARCH-CONTENT in docs/DEVIATIONS.md; the legacy-text parity assertions of these two sections are replaced by tests of the new content (counts equal the code, paths exist, links resolve).
+
 ## [v20.2.0] 2026-10-22 — Cost model (monthly) Excel export
 
 ### New

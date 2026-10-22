@@ -20,6 +20,7 @@ export const DEVIATIONS: Deviation[] = [
     skip: ['scenarioSet[].m.setup', 'scenarioSet[].m.dayRateByYear', 'scenarioSet[].m.yearETP', 'scenarioSet[].m.yearAgentVfte', 'scenarioSet[].m.yearTeamCost',
       'scenarioSet[].m.yearToken', 'scenarioSet[].m.yearRun', 'scenarioSet[].m.yearSav', 'scenarioSet[].m.totBen', 'scenarioSet[].m.pbMonth'] },
   { id: 'DEV-NEG-MONEY', reason: 'A negative amount reads "−€1,234"; legacyMoney() maps the legacy forms.', skip: [] },
+  { id: 'DEV-ARCH-CONTENT', reason: 'The two architecture sections (arch-layers, arch-content) describe the TypeScript build; the legacy text is no longer their oracle (tests/ui/arch-facts.test.ts, tests/ui/sections/arch.test.tsx).', skip: [] },
 ];
 
 const strip = (p: string): string => p.replace(/\[\d+\]/g, '[]');
