@@ -7,8 +7,6 @@ import { aggregateTeams, consolidate, portfolioHeadline, scheduledProducts, wave
 import { appStore } from '@/store/instance';
 import { SECTION_AGGREGATES } from '@/ui/sections/aggregates';
 import { fmtEurK } from '@/ui/format';
-import { SECTION_AGGREGATES } from '@/ui/sections/aggregates';
-import { SECTION_KIND_IDS, sectionKind } from '@/ui/zones/sectionScope';
 import { threeProducts } from '../helpers/portfolioStore';
 import { mountApp, pf, sectionReady } from '../helpers/portfolioUi';
 
@@ -93,10 +91,14 @@ describe('exemplar I-input: Input team', () => {
 });
 
 describe('generic fallbacks of the kinds that follow the View', () => {
-  // a R-rollup section that has no aggregate registered yet (the groups fill them in one by one; the test skips once all have one)
-  const ROLLUP = SECTION_KIND_IDS.find((id) => sectionKind(id) === 'R-rollup' && !SECTION_AGGREGATES[id]);
-  it.skipIf(!ROLLUP)('R-rollup: key figures per product with the domain total, and a lazy read-only drill-down', async () => {
-    mountApp(ROLLUP as string); view('portfolio');
+  // every section has its own aggregate by now: take one out of the registry to keep each generic fallback covered
+  const without = async (id: string, run: () => Promise<void>) => {
+    const agg = SECTION_AGGREGATES[id];
+    delete SECTION_AGGREGATES[id];
+    try { await run(); } finally { SECTION_AGGREGATES[id] = agg!; }
+  };
+  it('R-rollup: key figures per product with the domain total, and a lazy read-only drill-down', () => without('readiness', async () => {
+    mountApp('readiness'); view('portfolio');
     await sectionReady(/./);
     const h = portfolioHeadline(consolidate(pf()));
     expect(totalRow(/Key figures by product — Portfolio/).textContent).toContain(fmtEurK(h.net));
@@ -107,15 +109,15 @@ describe('generic fallbacks of the kinds that follow the View', () => {
     expect(await within(region).findByRole('heading', { level: 4 })).toBeTruthy();
     expect(document.querySelectorAll('h1')).toHaveLength(1);
     expect(pf().activeProductId).toBe(ids[0]);
-  });
+  }));
 
-  it('I-input: the per-product synthesis with the ETP total', async () => {
+  it('I-input: the per-product synthesis with the ETP total', () => without('maturity-map', async () => {
     mountApp('maturity-map'); view('portfolio');
     await sectionReady(/Maturity levels/);
     const total = aggregateTeams(pf(), scheduledProducts(pf()).map((s) => s.product.id)).total.toFixed(1);
     expect(totalRow(/Inputs by product — Portfolio/).textContent).toContain(total);
     expect(screen.getAllByRole('button', { name: /^Edit this product/ })).toHaveLength(3);
-  });
+  }));
 
   it('R-conso without a registered aggregate: says so and offers the per-product detail', async () => {
     const agg = SECTION_AGGREGATES.run;   // every R-conso has its aggregate by now: take one out to keep the generic fallback covered

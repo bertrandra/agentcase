@@ -36,4 +36,4 @@ export * from './aggScope'; export * from './aggFrame'; export * from './aggBase
 export * from './aggVerifyAll';
 export * from './aggIndexEPV';
 export * from './aggTune';
-export * from './aggStress'; export * from './aggEngine'; export * from './aggDefend';
+export * from './aggStress'; export * from './aggEngine'; export * from './aggDefend';export type { Spread as TuneSpread } from './aggTuneCore';

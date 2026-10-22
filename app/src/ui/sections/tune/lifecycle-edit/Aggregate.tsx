@@ -1,4 +1,4 @@
-import type { LifecycleRow } from '@/domain/portfolio';
+import type { TuneLifecycleRow } from '@/domain/portfolio';
 import { useLifecycleAgg } from '@/store/selectionHooksTune';
 import { useViewScope } from '@/store/viewScope';
 import { AggregateTable, type AggColumn } from '@/ui/widgets/AggregateTable';
@@ -7,12 +7,12 @@ import { InputAggregate, SpreadTable, type SpreadItem } from '../AggregateShared
 /** Product profile & phase coefficients — Aggregate view: lifecycle axis, position, profile, automation posture per status and edited cells, per product (read-only). */
 export default function LifecycleEditAggregate() {
   const a = useLifecycleAgg(), vs = useViewScope();
-  const cols: AggColumn<LifecycleRow>[] = [
+  const cols: AggColumn<TuneLifecycleRow>[] = [
     { key: 'wave', header: 'Wave', render: (r) => r.wave },
     { key: 'used', header: 'Lifecycle axis', render: (r) => (r.used ? 'on' : 'off') },
     { key: 'pos', header: 'Position', align: 'right', title: 'Product-status slider, 0–100', render: (r) => r.pos.toFixed(0) },
     { key: 'profile', header: 'Nearest profile', render: (r) => r.profile },
-    ...a.statuses.map((s, i) => ({ key: `p${s.id}`, header: `Posture: ${s.label}`, align: 'right' as const, render: (r: LifecycleRow) => (r.postures[i] ?? 1).toFixed(2) })),
+    ...a.statuses.map((s, i) => ({ key: `p${s.id}`, header: `Posture: ${s.label}`, align: 'right' as const, render: (r: TuneLifecycleRow) => (r.postures[i] ?? 1).toFixed(2) })),
     { key: 'edited', header: 'Edited cells', align: 'right', title: 'Matrix cells (weights and postures) that differ from the shipped benchmark', render: (r) => r.edited },
   ];
   const items: SpreadItem[] = [

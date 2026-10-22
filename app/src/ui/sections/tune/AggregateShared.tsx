@@ -1,5 +1,5 @@
 import type { ComponentType, ReactNode } from 'react';
-import type { Spread } from '@/domain/portfolio';
+import type { TuneSpread as Spread } from '@/domain/portfolio';
 import { useProducts } from '@/store/portfolioHooks';
 import { useViewScope } from '@/store/viewScope';
 import { AggregateTable, type AggColumn } from '@/ui/widgets/AggregateTable';

@@ -27,12 +27,12 @@ export function aggMaturityMap(pf: Portfolio, productIds: string[]): MaturityMap
 }
 
 // ---- Status & phase weight: posture and weights per product ------------------------------------------------------------------------------------------
-export interface LifecycleRow extends Head { used: boolean; pos: number; profile: string; postures: number[]; edited: number }
-export interface LifecycleAgg { rows: LifecycleRow[]; statuses: { id: string; label: string }[]; postures: Spread[]; pos: Spread; editedProducts: number }
+export interface TuneLifecycleRow extends Head { used: boolean; pos: number; profile: string; postures: number[]; edited: number }
+export interface TuneLifecycleAgg { rows: TuneLifecycleRow[]; statuses: { id: string; label: string }[]; postures: Spread[]; pos: Spread; editedProducts: number }
 
 /** Per product: is the lifecycle axis on, its position and profile, the automation posture of each status, and how many matrix cells differ from the benchmark. */
-export function aggLifecycle(pf: Portfolio, productIds: string[]): LifecycleAgg {
-  const rows = membersOf(pf, productIds).map((m): LifecycleRow => {
+export function aggLifecycle(pf: Portfolio, productIds: string[]): TuneLifecycleAgg {
+  const rows = membersOf(pf, productIds).map((m): TuneLifecycleRow => {
     const table = statusTable(m.state);
     const edited = table.reduce((n, s, i) => {
       const def = STATUS_LIFECYCLE[i] ?? s, w = Object.keys(s.weights).filter((k) => Math.abs((s.weights[k] ?? 1) - (def.weights[k] ?? 1)) > 0.001).length;
