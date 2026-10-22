@@ -8,9 +8,9 @@ export function Stat({ label, value, tone = 'blue', hint }: { label: string; val
 }
 export const StatRow = ({ children }: { children: ReactNode }) => <div className="ac-stat-row">{children}</div>;
 
-/** A callout box: note, warning or error. */
-export function Callout({ kind = 'note', children }: { kind?: 'note' | 'warn' | 'error'; children: ReactNode }) {
-  return <div className={`ac-callout ac-callout-${kind}`} role={kind === 'note' ? 'note' : 'alert'}>{children}</div>;
+/** A callout box: note (the legacy insight box), warning or error; `green` / `blue` are the legacy reassurance and cross-reference notes. */
+export function Callout({ kind = 'note', children }: { kind?: 'note' | 'warn' | 'error' | 'green' | 'blue'; children: ReactNode }) {
+  return <div className={`ac-callout ac-callout-${kind}`} role={kind === 'warn' || kind === 'error' ? 'alert' : 'note'}>{children}</div>;
 }
 
 export const Badge = ({ children, tone = 'grey' }: { children: ReactNode; tone?: Tone }) => <span className="ac-badge" data-tone={tone}>{children}</span>;

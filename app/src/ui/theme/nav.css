@@ -28,7 +28,7 @@
 .ac-npreview h4 { margin: 8px 0 2px; font-size: 12px; } .ac-npreview ul { margin: 0; padding-left: 28px; font-size: 12px; } .ac-npreview .is-moving { font-weight: 700; color: var(--ac-blue); }
 
 .ac-nav-group { margin: 10px 0 4px; }
-.ac-nav .ac-nav-toggle { display: flex; justify-content: space-between; align-items: center; width: 100%; font: inherit; font-size: 11px; letter-spacing: .04em; color: var(--ac-muted); padding: 4px 6px; }
+.ac-nav .ac-nav-toggle { display: flex; justify-content: space-between; align-items: center; width: 100%; margin: 0; padding: 0; font: inherit; letter-spacing: inherit; text-transform: inherit; line-height: inherit; color: inherit; text-align: left; background: none; border-radius: 0; }   /* the toggle IS the legacy group label: it takes the label's typography (measured by ui-parity) */
 .ac-chev { font-size: 10px; transition: transform .2s; } .ac-nav-toggle[aria-expanded='false'] .ac-chev { transform: rotate(-90deg); }
 .ac-nav ul[hidden] { display: none; }
 .ac-fastpath { display: inline-flex; align-items: center; gap: 4px; font-size: 12px; cursor: pointer; }

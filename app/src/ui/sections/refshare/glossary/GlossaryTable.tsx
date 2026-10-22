@@ -1,4 +1,5 @@
 import { Fragment } from 'react';
+import { textColor } from '@/ui/colorText';
 import { CATS, STATUS, type Entry } from './model';
 
 /** The glossary rows, with one header row per dimension. */
@@ -17,8 +18,8 @@ export function GlossaryTable({ rows }: { rows: Entry[] }) {
                 <tr><th colSpan={4} scope="colgroup" style={{ background: c.color, color: '#fff' }}>{i + 1} · {c.label}</th></tr>
                 {sub.map((r) => (
                   <tr key={r[1]}>
-                    <td style={{ fontWeight: 600, color: c.color }}>{r[1]}</td><td>{r[2]}</td><td>{r[3]}</td>
-                    <td><span style={{ color: STATUS[r[4]]?.color }}>{STATUS[r[4]]?.label ?? r[4]}</span></td>
+                    <td style={{ fontWeight: 600, color: textColor(c.color, '#fafafa') }}>{r[1]}</td><td>{r[2]}</td><td>{r[3]}</td>
+                    <td><span style={{ color: textColor(STATUS[r[4]]?.color ?? '#333333', '#fafafa') }}>{STATUS[r[4]]?.label ?? r[4]}</span></td>
                   </tr>
                 ))}
               </Fragment>

@@ -23,7 +23,7 @@ export const AREAS = [
     scope: 'sidebar' },
   { name: 'sidebar:group', legacy: '.side-group-label', current: `${SIDE} .ac-nav-group`, skip: ['boxW'], scope: 'sidebar' },
   { name: 'sidebar:group:hover', legacy: '.side-group-label', current: `${SIDE} .ac-nav-group`, state: 'hover', skip: ['boxW'], scope: 'sidebar' },
-  { name: 'sidebar:item', legacy: '.side-item:not(.active)', current: `${SIDE} button:not(.is-active)`, skip: ['boxW', 'boxH'], scope: 'sidebar' },
-  { name: 'sidebar:item:hover', legacy: '.side-item:not(.active)', current: `${SIDE} button:not(.is-active)`, state: 'hover', skip: ['boxW', 'boxH'], scope: 'sidebar' },
-  { name: 'sidebar:item:active', legacy: '.side-item.active', current: `${SIDE} button.is-active`, skip: ['boxW', 'boxH'], scope: 'sidebar' },
+  { name: 'sidebar:item', legacy: '.side-item:not(.active)', current: `${SIDE} ul button:not(.is-active)`, skip: ['boxW', 'boxH'], scope: 'sidebar' },
+  { name: 'sidebar:item:hover', legacy: '.side-item:not(.active)', current: `${SIDE} ul button:not(.is-active)`, state: 'hover', skip: ['boxW', 'boxH'], scope: 'sidebar' },
+  { name: 'sidebar:item:active', legacy: '.side-item.active', current: `${SIDE} ul button.is-active`, skip: ['boxW', 'boxH'], scope: 'sidebar' },
 ];
