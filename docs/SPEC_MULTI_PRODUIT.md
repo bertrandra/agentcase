@@ -1,6 +1,6 @@
 # AgentCase — Spécification : portefeuille multi-produits et transformation par vagues
 
-> Statut : **décisions D-M1…D-M12 retenues** (§ 15) ; phases P1 (domaine `domain/portfolio/`) et P2 (store, commandes, persistance) réalisées, phases suivantes à venir. Périmètre : l'application TypeScript + React dans `app/` (v19.x).
+> Statut : **décisions D-M1…D-M12 retenues** (§ 15) ; phases P1 (domaine `domain/portfolio/`), P2 (store, commandes, persistance), P3 et P3b (interface, hors feuilles Excel) réalisées, phases suivantes à venir. Périmètre : l'application TypeScript + React dans `app/` (v19.x).
 > Documents liés : [ARCHITECTURE.md](ARCHITECTURE.md) (couches, commandes, persistance), [DEVIATIONS.md](DEVIATIONS.md) (écarts au legacy),
 > [BUMP_PROCEDURE.md](BUMP_PROCEDURE.md) (versions). Règles de code inchangées : fichiers ≤ 150 lignes, pas de `any`, couches
 > `ui → controllers → store → domain`, toute écriture passe par une commande annulable (Ctrl+Z).
@@ -367,7 +367,7 @@ l'état actuel), sauf `activeProductId` persisté dans le document pour qu'un fi
 | **P1 — Modèle et domaine** | `domain/portfolio/` (types, resolve, validate, timeline, consolidate, headline) ; tests de propriétés. | Invariants A2–A5 verts ; `computeCase` inchangé. |
 | **P2 — Store et persistance** ✅ réalisée | `Portfolio` à la place de `Doc` ; enveloppe de migration (F21) ; commandes produit / vague / surcharge ; adressage des commandes existantes ; autosave, multi-onglets, calcul canonique par produit. | Les 202 commandes passent le test d'annulation sur un portefeuille de 3 produits ; ouverture des 107 fixtures = A1. |
 | **P3 — Interface produit** ✅ réalisée | Sélecteur produit actif, bandeaux hérité / surchargé, sections Produits et Surcharges, mode « tous / ce produit ». | Parcours 1–3 (§ 7) ; audit axe sans violation. |
-| **P3b — Knowledge transfer par produit** | `domain/portfolio/knowledge.ts`, sous-ensemble dans `Product`, section Knowledge transfer, `ktLeadMonths`, imputation de l'infrastructure, feuilles Excel `KnowledgeSubsets` / `KnowledgeDomains`. | A11–A13 verts ; un produit avec hub par défaut = cas unique actuel (A1). |
+| **P3b — Knowledge transfer par produit** ✅ interface réalisée | `domain/portfolio/knowledge.ts`, sous-ensemble dans `Product`, section Knowledge transfer, `ktLeadMonths`, imputation de l'infrastructure, feuilles Excel `KnowledgeSubsets` / `KnowledgeDomains`. | A11–A13 verts ; un produit avec hub par défaut = cas unique actuel (A1). |
 | **P4 — Vagues et consolidation** | Section Vagues (planche + clavier), Consolidation, barre haute par périmètre, Gantt par vague. | Parcours 4–6 ; budgets de performance. |
 | **P5 — Restitution** | Excel (paramètres et résultats), rapport, HTML, photos instantanées. | Parité cellule à cellule du mode mono-produit ; nouvelles feuilles validées par test. |
 | **P6 — Stress** | Monte Carlo par produit + agrégat, corrélation `ρ`, verdict portefeuille. | Tests de reproductibilité (graine) ; documentation des écarts. |
@@ -478,3 +478,10 @@ Toutes les recommandations du § 12 ont été **acceptées** par le commanditair
 - **Règle F22 d'enregistrement** : v1 si et seulement si le fichier se rouvre au même portefeuille (un produit, une vague, ni surcharge ni sous-ensemble, noms et décalage par défaut) ; sinon `agentcase.portfolio.v1`. L'enregistrement automatique garde toujours le portefeuille exact.
 - **Sélection de la portée** : « ce produit seulement » écrit dans `overrides` sans jamais toucher le commun ; une clé déjà surchargée est modifiée en surcharge quelle que soit la portée ; les clés hors liste blanche vont toujours au commun.
 - **Tests** : A1/A9 au niveau du store (107 fixtures, chemin d'ouverture réel), A5 (couche d'adressage), A6 (registre sur 3 produits / 2 vagues + propriété `fast-check` mêlant commandes de cas, produit, vague, surcharge, portée), persistance, obsolescence à deux niveaux, nettoyage (`sanitize`).
+
+### Précisions d'implémentation de P3b
+
+- **Section « Knowledge hub » existante** : avec 2 produits ou plus, mêmes champs de formulaire (l'adressage écrit le sous-ensemble : « ce produit seulement » crée la valeur propre, « tous les produits » modifie le hub commun), puces `SubsetBadge` par champ (activation, réponses, cible, curation, mise en place, domaines, préparation) avec « Revenir au commun » (`product.setKnowledge` avec `clear`). « Appliquer à tous les produits » n'est pas proposé pour les champs du sous-ensemble (reporté). Le champ d'infrastructure passe dans la carte du hub commun (`HubSettings`).
+- **Domaines** : brouillon local (état d'interface) enregistré par « Enregistrer les domaines » ; poids ≠ 100 refusé par `dispatchChecked` avec message annoncé (`role="alert"`) ; libellé vide refusé côté interface.
+- **Préparation** : entier ≥ 0 ; une valeur invalide n'atteint pas le store ; le diagnostic `kt-lead-clamped` est repris dans la carte.
+- **Section « Knowledge transfer »** (`portfolio/knowledge-transfer`) : tableau F29 issu de `knowledgeTable` (filtre par vague, totaux des lignes affichées via `knowledgeTotals`), effet du hub par vague F31 (`waveEffects` : somme des écarts `hubView` des produits de la vague), contrôle de conservation de l'imputation (`infraView`) et diagnostics. Les feuilles Excel `KnowledgeSubsets` / `KnowledgeDomains` restent à faire (P5).
