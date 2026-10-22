@@ -11,4 +11,9 @@ export interface NamedSnapshot {
   wasGolden?: boolean;
   /** the case as a snapshot object (the library itself is left out, so captures never nest) */
   state: Record<string, unknown>;
+  /**
+   * Multi-product captures only: the whole portfolio (`agentcase.portfolio.v1` without view state and without the library). `state` is then the case of the
+   * product that was active, which keeps the compare view and older readers working. Absent for a plain single case.
+   */
+  portfolio?: Record<string, unknown>;
 }

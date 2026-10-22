@@ -45,6 +45,6 @@ const sizes = new WeakMap<object, string>();
 /** "277 KB" — serialised size of a snapshot (memoised per state object: it is immutable). */
 export function snapshotSize(s: NamedSnapshot): string {
   let v = sizes.get(s.state);
-  if (!v) { const n = JSON.stringify(s.state).length; v = n > 1024 ? `${(n / 1024).toFixed(0)} KB` : `${n} B`; sizes.set(s.state, v); }
+  if (!v) { const n = JSON.stringify(s.state).length + (s.portfolio ? JSON.stringify(s.portfolio).length : 0); v = n > 1024 ? `${(n / 1024).toFixed(0)} KB` : `${n} B`; sizes.set(s.state, v); }
   return v;
 }

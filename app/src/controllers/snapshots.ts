@@ -4,6 +4,7 @@ import { appStore } from '@/store/instance';
 import { fromSnapshot } from '@/store/persistence/snapshot';
 import type { Doc } from '@/store/types';
 import { refitOnOpen } from './openFile';
+import { activatePortfolio, capturePortfolio, compareCaseOf, readableCapture } from './snapshotPortfolio';
 
 const lib = (d: Doc): NamedSnapshot[] => d[SNAPSHOT_KEY] as NamedSnapshot[];
 const ensure = (d: Doc): NamedSnapshot[] => { if (!Array.isArray(d[SNAPSHOT_KEY])) d[SNAPSHOT_KEY] = []; return lib(d); };
@@ -34,7 +35,8 @@ function caseOf(s: NamedSnapshot, library: unknown): Doc { return refitOnOpen({ 
 
 /** Capture the current case under a name (empty: "Snapshot <date>"). The library itself is not nested inside the capture. */
 export function captureSnapshot(name: string, now = new Date(), id = `snap-${now.getTime()}-${Math.random().toString(36).slice(2, 7)}`): NamedSnapshot {
-  const snap = makeSnapshot(appStore().getState().doc, name, now, id);
+  const { doc, portfolio } = appStore().getState(), snap = makeSnapshot(doc, name, now, id), whole = capturePortfolio(portfolio);
+  if (whole) snap.portfolio = whole;   // multi-product: the whole portfolio, so activating restores products, waves, overrides and hub
   appStore().dispatch(captureCmd({ snap }));
   return snap;
 }
@@ -45,6 +47,7 @@ export function deleteSnapshot(id: string): void { const s = find(id); if (s && 
 export function activateSnapshot(id: string): boolean {
   const s = find(id), cur = appStore().getState().doc;
   if (!s) return false;
+  if (s.portfolio) { if (!readableCapture(s)) return false; appStore().dispatch(activatePortfolio(s, cur[SNAPSHOT_KEY], false)); return true; }
   appStore().dispatch(activateCmd({ name: s.name, doc: caseOf(s, cur[SNAPSHOT_KEY]) }));
   return true;
 }
@@ -54,16 +57,17 @@ export function setBaselineSnapshot(id: string): boolean {
   const s = find(id), cur = appStore().getState().doc;
   if (!s) return false;
   const flagged = snapshotsOf(cur).map((x) => ({ ...x, isBaseline: x.id === id }));
+  if (s.portfolio) { if (!readableCapture(s)) return false; appStore().dispatch(activatePortfolio(s, flagged, true)); return true; }
   appStore().dispatch(baselineCmd({ name: s.name, doc: caseOf(s, flagged) }));
   return true;
 }
 
-/** Headline figures of two snapshots side by side; 'current' stands for the case being edited. Null when an id is unknown. */
+/** Headline figures of two snapshots side by side; 'current' stands for the case being edited (the ACTIVE product). A multi-product capture is compared on that same product. Null when an id is unknown. */
 export function compareSnapshots(a: string, b: string): CompareRow[] | null {
   const pick = (id: string): Doc | null => {
     if (id === 'current') return appStore().getState().doc;
     const s = find(id);
-    return s ? fromSnapshot(s.state) : null;
+    return s ? compareCaseOf(s, appStore().getState().portfolio.activeProductId, fromSnapshot) : null;
   };
   const x = pick(a), y = pick(b);
   return x && y ? compareCases(x, y) : null;
