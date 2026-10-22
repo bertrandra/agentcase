@@ -11,11 +11,22 @@ export interface DepsData {
   zones: { id: string; modules: number; tmed: number; tmax: number }[];
   sections: DepSectionNode[];
   edges: DepEdge[];
-  figures: { id: string; owner: string; consumers: string[] }[];
+  /** `consumers`: the sections that depend on the figure, an encoded set of indexes into `sections` (see `decodeSet`) */
+  figures: { id: string; owner: string; consumers: string }[];
   ignored: { path: string; reason: string }[];
-  /** [test file, indexes into `zones`, indexes into `sections`] reached by the import closure of the test */
-  tests: [string, number[], number[]][];
+  /** [test file, zones, sections] reached by the import closure of the test: encoded sets of indexes into `zones` and `sections` */
+  tests: [string, string, string][];
 }
+
+/** Index sets are stored as ranges to keep the file small: [0,1,2,3,7] <-> "0-3,7". */
+export const encodeSet = (nums: number[]): string => {
+  const out: string[] = [], a = [...new Set(nums)].sort((x, y) => x - y);
+  for (let i = 0; i < a.length; i++) { let j = i; while (a[j + 1] === a[j]! + 1) j++; out.push(j > i ? `${a[i]}-${a[j]}` : `${a[i]}`); i = j; }
+  return out.join(',');
+};
+export const decodeSet = (s: string): number[] => s.split(',').filter(Boolean).flatMap((r) => { const [a, b] = r.split('-').map(Number) as [number, number | undefined]; return Array.from({ length: (b ?? a) - a + 1 }, (_, i) => a + i); });
+/** Section ids that depend on a figure. */
+export const consumersOf = (d: DepsData, figure: string): string[] => decodeSet(d.figures.find((f) => f.id === figure)?.consumers ?? '').map((i) => d.sections[i]!.id);
 
 const adj = (edges: DepEdge[], dir: 'out' | 'in'): Map<string, string[]> => {
   const m = new Map<string, string[]>();
@@ -69,7 +80,7 @@ export function buildLayers(zones: string[], edges: DepEdge[], lanes: Record<str
 
 /** Tests whose import closure touches one of the zones or sections. */
 export function testsTouching(d: DepsData, ids: Set<string>): string[] {
-  return d.tests.filter(([, zs, ss]) => zs.some((i) => ids.has(d.zones[i]!.id)) || ss.some((i) => ids.has(d.sections[i]!.id))).map((t) => t[0]);
+  return d.tests.filter(([, zs, ss]) => decodeSet(zs).some((i) => ids.has(d.zones[i]!.id)) || decodeSet(ss).some((i) => ids.has(d.sections[i]!.id))).map((t) => t[0]);
 }
 
 const zoneFlow = (d: DepsData): DepEdge[] => d.edges.filter((e) => e[2] === 'z');

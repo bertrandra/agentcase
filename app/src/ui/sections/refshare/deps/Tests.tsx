@@ -1,14 +1,11 @@
 import { useMemo, useState } from 'react';
-import config from '@/domain/zones/graphConfig.json';
-import { plan, type SelectionConfig } from '@/domain/zones/selection';
 import notes from '@/content/refshare/deps-notes.json';
 import { Callout } from '@/ui/widgets/cards';
-import { DATA, isZone, labelOf, LAYERS } from './model';
+import { DATA, labelOf, LAYERS, planFor, RULE } from './model';
 
-export const RULE = config.selection as SelectionConfig;
 const pct = (n: number, total: number): number => Math.round(((total - n) / total) * 100);
 const one = (z: string): string => { const m = DATA.zones.find((x) => x.id === z); return m ? `${m.tmed} · ${m.tmax} tests` : ''; };
-const run = (id: string) => (isZone(id) ? plan(DATA, RULE, [id], []) : plan(DATA, RULE, [], [id]));
+const run = planFor;
 
 /** Which tests would run for a change in a zone or a section, how many are saved, and the rule that decides it (npm run test:affected). */
 export function Tests({ initial }: { initial?: string | null }) {

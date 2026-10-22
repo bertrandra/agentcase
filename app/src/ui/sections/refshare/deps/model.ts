@@ -1,6 +1,8 @@
 import raw from '@/generated/dependencies.json';
 import { FIGURES, ZONES, type ZoneDef } from '@/domain/zones';
-import { buildLayers, cycles, impact, indirectZones, type DepEdge, type DepsData } from '@/domain/zones/graph';
+import config from '@/domain/zones/graphConfig.json';
+import { plan, type SelectionConfig } from '@/domain/zones/selection';
+import { buildLayers, consumersOf, cycles, impact, indirectZones, type DepEdge, type DepsData } from '@/domain/zones/graph';
 
 /** The generated graph (`npm run deps:gen`), typed. Everything below is derived from it and from the zone catalogue: nothing is authored here. */
 export const DATA = raw as unknown as DepsData;
@@ -48,4 +50,8 @@ export function cell(row: string, col: string): Cell {
   return indirectZones(DATA, row).includes(col) ? 'indirect' : null;
 }
 const reaches = (from: string, to: string): boolean => sweep(from, 0).has(to);
-export const figuresOf = (zone: string) => FIGURES.filter((f) => f.zone === zone).map((f) => ({ ...f, ...(DATA.figures.find((x) => x.id === f.id) ?? { owner: '', consumers: [] as string[] }) }));
+export const figuresOf = (zone: string) => FIGURES.filter((f) => f.zone === zone).map((f) => ({ ...f, owner: DATA.figures.find((x) => x.id === f.id)?.owner ?? '', consumers: consumersOf(DATA, f.id) }));
+
+/** The rule (docs/TEST_SELECTION.md) and its outcome for a change in a zone or a section. */
+export const RULE = config.selection as SelectionConfig;
+export const planFor = (id: string) => (isZone(id) ? plan(DATA, RULE, [id], []) : plan(DATA, RULE, [], [id]));

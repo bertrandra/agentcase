@@ -1,6 +1,6 @@
 import { readFileSync } from 'node:fs';
 import { join } from 'node:path';
-import type { DepEdge, DepsData } from '../../src/domain/zones/graph';
+import { encodeSet, type DepEdge, type DepsData } from '../../src/domain/zones/graph';
 import { closure, loadProject, type Project, type Routes } from './project';
 import { readSections, readTags, type SectionFiles, type Tag } from './zones';
 
@@ -40,7 +40,7 @@ export function buildDeps(root: string): DepsData {
   const edges: DepEdge[] = [...pairs].map(([k, v]) => { const [a, b] = k.split('|') as [string, string]; return [a, b, 'z', v.size] as DepEdge; });
 
   const sections = catalog.map((c) => ({ id: c.id, label: c.label, group: c.group, kind: kinds[c.id] ?? 'S-static', files: found.get(c.id)?.files.length ?? 0 }));
-  const reaches = new Map<string, Set<string>>();
+  const zIdx = new Map(zoneIds.map((z, i) => [z, i])), sIdx = new Map(sections.map((s, i) => [s.id, i])), reaches = new Map<string, Set<string>>();
   for (const c of catalog) {
     const s = found.get(c.id);
     if (!s) continue;
@@ -56,16 +56,16 @@ export function buildDeps(root: string): DepsData {
   const memo = new Map<string, Set<string>>(), clo = (m: string): Set<string> => memo.get(m) ?? memo.set(m, closure(p, m)).get(m)!;
   const figures = cat.figures.map((f) => {
     const o = owner.get(f.id) ?? '';
-    return { id: f.id, owner: o, consumers: [...reaches].filter(([, r]) => [...r].some((m) => clo(m).has(o))).map(([id]) => id).sort() };
+    return { id: f.id, owner: o, consumers: encodeSet([...reaches].filter(([, r]) => [...r].some((m) => clo(m).has(o))).map(([id]) => sIdx.get(id)!)) };
   });
 
-  const zIdx = new Map(zoneIds.map((z, i) => [z, i])), sIdx = new Map(sections.map((s, i) => [s.id, i])), secOf = new Map<string, number[]>();
+  const secOf = new Map<string, number[]>();
   for (const [id, s] of found) for (const f of s.files) (secOf.get(f) ?? secOf.set(f, []).get(f)!).push(sIdx.get(id) ?? -1);
   const hits = new Map<string, number>();
-  const tests = p.files.filter((f) => /^tests\/.*\.test\.tsx?$/.test(f)).map((f): [string, number[], number[]] => {
+  const tests = p.files.filter((f) => /^tests\/.*\.test\.tsx?$/.test(f)).map((f): [string, string, string] => {
     const zs = new Set<number>(), ss = new Set<number>();
     for (const m of closure(p, f)) { hits.set(m, (hits.get(m) ?? 0) + 1); const z = tags.get(m)?.zone; if (z) zs.add(zIdx.get(z)!); (secOf.get(m) ?? []).forEach((i) => { if (i >= 0) ss.add(i); }); }
-    return [f, [...zs].sort((a, b) => a - b), [...ss].sort((a, b) => a - b)];
+    return [f, encodeSet([...zs]), encodeSet([...ss])];
   });
   const modules = zoneIds.map((id) => {
     const own = [...tags].filter(([, t]) => t.zone === id).map(([f]) => hits.get(f) ?? 0).sort((a, b) => a - b);

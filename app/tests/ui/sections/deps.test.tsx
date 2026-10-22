@@ -5,7 +5,7 @@ import '@/controllers/refshare';
 import { COMMAND_REGISTRY } from '@/store/commands';
 import { appStore } from '@/store/instance';
 import Deps from '@/ui/sections/refshare/deps';
-import { DATA, DRAWN, isReference, LAYERS, select } from '@/ui/sections/refshare/deps/model';
+import { DATA, DRAWN, isReference, LAYERS, planFor, select } from '@/ui/sections/refshare/deps/model';
 import { uiStore } from '@/ui/uiState';
 import { freshStore } from '../../store/helpers';
 
@@ -46,8 +46,8 @@ describe('deps section (generated graph)', () => {
     expect([...hit.downstream, ...hit.upstream].filter((id) => nodes(container).some((n) => n.dataset.node === id)).every((id) => lit.has(id))).toBe(true);
     expect(lit.size).toBeLessThan(nodes(container).length);
     expect(hit.upstream.size).toBeGreaterThan(1);
-    const panel = screen.getByRole('complementary', { name: 'Selected node' });
-    const total = DATA.counts.tests, n = hit.impacted.tests.length;
+    const panel = screen.getByRole('group', { name: 'Selected node' });
+    const total = DATA.counts.tests, pl = planFor('kpi'), n = pl.tests.length;
     expect(panel.textContent).toContain(`${n} of ${total} test files`);
     expect(panel.textContent).toContain(`${hit.impacted.zones.filter((z) => z !== 'kpi').length} zones · ${hit.impacted.sections.filter((x) => x !== 'kpi').length} sections`);
     expect(within(panel).getByText(`Test files (${n})`)).toBeTruthy();
@@ -61,7 +61,7 @@ describe('deps section (generated graph)', () => {
     expect(node.getAttribute('aria-pressed')).toBe('false');
     fireEvent.keyDown(node, { key: 'Enter' });
     expect(node.getAttribute('aria-pressed')).toBe('true');
-    expect(within(screen.getByRole('complementary', { name: 'Selected node' })).getByRole('heading', { level: 3 }).textContent).toContain('Economics headline');
+    expect(within(screen.getByRole('group', { name: 'Selected node' })).getByRole('heading', { level: 3 }).textContent).toContain('Economics headline');
     fireEvent.keyDown(node, { key: 'Escape' });
     expect(node.getAttribute('aria-pressed')).toBe('false');
     expect(nodes(container).every((g) => g.dataset.lit === '1')).toBe(true);

@@ -2,7 +2,7 @@ import { mkdirSync, mkdtempSync, rmSync, writeFileSync } from 'node:fs';
 import { tmpdir } from 'node:os';
 import { dirname, join } from 'node:path';
 import { afterAll, describe, expect, it } from 'vitest';
-import { buildLayers, cycles, downstream, upstream, type DepEdge } from '@/domain/zones/graph';
+import { buildLayers, consumersOf, cycles, decodeSet, downstream, encodeSet, upstream, type DepEdge } from '@/domain/zones/graph';
 import { buildDeps, formatDeps } from '../../scripts/lib/build';
 
 /** The generator on a small synthetic project: zones x (input), y (calc), z (result), a section of each kind, a barrel, a test. */
@@ -45,11 +45,12 @@ describe('dependency generator (synthetic project)', () => {
     expect(d.edges.some((e) => e.includes('sh'))).toBe(false);
   });
   it('owners and consumers: a figure is consumed by the sections whose closure reaches its owner', () => {
-    expect(d.figures.find((f) => f.id === 'fx')).toEqual({ id: 'fx', owner: 'src/domain/x.ts', consumers: ['s-in', 's-out'] });
-    expect(d.figures.find((f) => f.id === 'fy')?.consumers).toEqual(['s-out']);
+    expect(d.figures.find((f) => f.id === 'fx')?.owner).toBe('src/domain/x.ts');
+    expect(consumersOf(d, 'fx')).toEqual(['s-in', 's-out']);
+    expect(consumersOf(d, 'fy')).toEqual(['s-out']);
   });
   it('tests map to the zones and sections of their import closure', () => {
-    const t = Object.fromEntries(d.tests.map(([f, zs, ss]) => [f, [zs.map((i) => d.zones[i]!.id), ss.map((i) => d.sections[i]!.id)]]));
+    const t = Object.fromEntries(d.tests.map(([f, zs, ss]) => [f, [decodeSet(zs).map((i) => d.zones[i]!.id), decodeSet(ss).map((i) => d.sections[i]!.id)]]));
     expect(t['tests/a.test.ts']).toEqual([['x', 'y'], []]);
     expect(t['tests/b.test.tsx']![0]).toEqual(['x', 'y', 'z']);
     expect(t['tests/b.test.tsx']![1]).toEqual(['s-out']);
@@ -58,6 +59,11 @@ describe('dependency generator (synthetic project)', () => {
 });
 
 describe('zone graph functions', () => {
+  it('index sets round-trip through the range encoding', () => {
+    expect(encodeSet([7, 0, 1, 2, 3, 3])).toBe('0-3,7');
+    expect(decodeSet('0-3,7')).toEqual([0, 1, 2, 3, 7]);
+    expect(decodeSet(encodeSet([]))).toEqual([]);
+  });
   const e: DepEdge[] = [['a', 'b', 'z', 3], ['b', 'c', 'z', 2], ['c', 'b', 'z', 1], ['c', 's', 'r', 1]];
   it('downstream and upstream follow the flow', () => {
     expect([...downstream(e, ['a'])].sort()).toEqual(['a', 'b', 'c', 's']);
