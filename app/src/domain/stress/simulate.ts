@@ -34,7 +34,7 @@ export function mcOutcome(c: Ctx): number {
   return s - raw.setupTotal;
 }
 
-function pearson(xs: number[], ys: number[]): number {
+export function pearson(xs: number[], ys: number[]): number {
   const n = xs.length, mx = xs.reduce((s, v) => s + v, 0) / n, my = ys.reduce((s, v) => s + v, 0) / n;
   let num = 0, dx = 0, dy = 0;
   for (let i = 0; i < n; i++) { const a = (xs[i] as number) - mx, b = (ys[i] as number) - my; num += a * b; dx += a * a; dy += b * b; }
