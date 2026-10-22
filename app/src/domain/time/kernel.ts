@@ -16,7 +16,9 @@ export interface K extends CurveK {
        yearRunAgenticCost: number[]; khRunYr: number[]; ktAvoidYr: number[]; vTaxYr: number[]; loopExtYr: number[] };
   inputHash: string;
 }
-export interface BuildOpts { mode?: string; curveModelId?: string; scenarioId?: string }
+/** Case-level switches a scenario overrides on the frozen constants (AI on/off, the day-rate path, the setup); the monthly arithmetic is untouched. */
+export type Levers = Partial<Pick<K, 'eff' | 'aiActive' | 'rateMode' | 'frPerYear' | 'dayRateTarget' | 'infraMonth' | 'setupTotal' | 'vTaxRate' | 'loopExtRate' | 'complianceTaxRate'>>;
+export interface BuildOpts { mode?: string; curveModelId?: string; scenarioId?: string; levers?: Levers }
 
 export function buildK(c: Ctx, m: ModelResult, opts: BuildOpts = {}): K {
   const conv = m.conv, num = (id: string, d: number) => { const v = parseFloat(c.inp.v(id)); return isNaN(v) ? d : v; };
@@ -35,12 +37,13 @@ export function buildK(c: Ctx, m: ModelResult, opts: BuildOpts = {}): K {
          ktAvoidYr: conv.ktAvoidYr.slice(), vTaxYr: conv.vTaxYr.slice(), loopExtYr: conv.loopExtYr.slice() },
     inputHash: '',
   };
+  if (opts.levers) Object.assign(K, opts.levers);
   const fam = ADAPTERS[K.curveModelId]?.family;
   if (fam === 'logistic' || fam === 'gompertz' || fam === 'bass') K[fam] = fitCurveCached(fam, K.ramps, K.rampCapPct);
   else if (fam === 'spline') K.spline = { points: enginePts(c) };
   const rnd = (x: number) => Math.round(x);
   K.inputHash = 'te1:' + [K.curveModelId, K.horizonMonths, K.baseEtp, K.eff, K.baselineRunMonth, K.dayRateTarget, K.setupTotal, K.ramps.join(','),
-    m.yearSav.map(rnd).join(','), K.spline ? 'sp:' + K.spline.points.map((p) => rnd(p.t) + ':' + rnd(p.a)).join(',') : ''].join('|');
+    m.yearSav.map(rnd).join(','), K.spline ? 'sp:' + K.spline.points.map((p) => rnd(p.t) + ':' + rnd(p.a)).join(',') : '', ...(opts.levers ? [JSON.stringify(opts.levers)] : [])].join('|');
   return K;
 }
 

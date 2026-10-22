@@ -1,10 +1,12 @@
 import { LOCATIONS } from '../catalog';
 import type { Ctx } from '../ctx';
-import { annualPaybackMonth } from '../economics/headline';
-import { roiCanonical } from '../economics/roi';
-import { rateFor, targetBlendedTJM, teamInCost } from '../location';
-import { computeGlassCeiling } from '../model/ceiling';
-import { blendedTokenCostPer1M } from '../tokens';
+import { headlineOf } from '../economics/headline';
+import { rateFor, targetBlendedTJM } from '../location';
+import { activeCurve } from '../model/overlay';
+import { modelRaw } from '../model/raw';
+import { timeFor } from '../time';
+import type { Levers } from '../time/kernel';
+import type { YearRow } from '../time/years';
 
 export type ScenLoc = 'asis' | 'target' | 'destination' | 'ramp';
 export interface ScenOpts { ai: boolean; loc: ScenLoc; frPerYear: number }
@@ -27,40 +29,32 @@ export function scenTargetTJM(c: Ctx): number {
   return isFinite(rate) && rate > 0 ? rate : targetBlendedTJM(c.s);
 }
 
-/** Generic scenario model (legacy scenarioModel): the flat annual model with the levers switched by `opts`. */
+/** The scenario's levers on the frozen engine constants: AI off removes agents, tokens, infra, run team, the AI quality taxes and the programme setup. */
+export function scenarioLevers(c: Ctx, o: ScenOpts): Levers {
+  const dst = scenTargetTJM(c);
+  return {
+    ...(o.ai ? {} : { eff: 0, aiActive: false, infraMonth: 0, vTaxRate: 0, loopExtRate: 0, complianceTaxRate: 0 }),
+    ...(o.ai || o.loc === 'ramp' ? {} : { setupTotal: 0 }),
+    ...(o.loc === 'asis' ? { rateMode: 'ramp', frPerYear: 0 } : o.loc === 'ramp' ? { rateMode: 'ramp', frPerYear: o.frPerYear, dayRateTarget: dst }
+      : o.loc === 'destination' ? { dayRateTarget: dst } : {}),
+  };
+}
+
+/** Generic scenario model: the case's own Time Engine run with the levers switched by `opts` (no second implementation of the economics). */
 export function scenarioModel(c: Ctx, opts: Partial<ScenOpts>) {
   const o: ScenOpts = { ai: true, loc: 'target', frPerYear: 0, ...opts };
-  const { inp, s } = c, base = teamInCost(s, inp), auto = inp.p('autoPotential');
-  const ceiling = s.forceGlassCeiling ? inp.p('glassCeiling') : computeGlassCeiling(c);
-  const eff = o.ai ? Math.min(100 - ceiling, auto) : 0;
-  const horizon = parseInt(inp.v('horizon'), 10);
-  const ramps = [inp.p('y1Ramp'), inp.p('y2Ramp'), inp.p('y3Ramp')];
-  for (let y = 3; y < horizon; y++) ramps.push(ramps[ramps.length - 1] as number);
-  if (ramps.length > horizon) ramps.length = Math.max(1, horizon);   // horizons 1–2 (legacy v18.13)
-  const wd = inp.p('workdays'), tokenCost = blendedTokenCostPer1M(s), tokensPerArt = inp.p('tokensPerArt'), infra = inp.p('infra');
-  const setupTotal = inp.p('setupTooling') + inp.p('setupTraining') + inp.p('setupCoaching') + inp.p('setupGov');
-  const asisTJM = base.cost / (base.etp * wd), tgtTJM = targetBlendedTJM(s), tgtRateTJM = scenTargetTJM(c);
-  const fill = (v: number) => new Array<number>(horizon).fill(v);
-  const dayRateByYear = o.loc === 'asis' ? fill(asisTJM) : o.loc === 'destination' ? fill(tgtRateTJM)
-    : o.loc === 'ramp' ? Array.from({ length: horizon }, (_, k) => asisTJM + (tgtRateTJM - asisTJM) * Math.min(1, (o.frPerYear / 100) * (k + 1)))
-      : fill(tgtTJM);
-  const yearETP = ramps.map((r) => base.etp * (1 - ((r / 100) * eff) / 100));
-  const yearAgentVfte = ramps.map((r) => base.etp * (((r / 100) * eff) / 100));
-  const yearTeamCost = yearETP.map((e, i) => e * (dayRateByYear[i] as number) * wd);
-  let runsPerDay = inp.p('runsPerDay'); if (isNaN(runsPerDay)) runsPerDay = 25; runsPerDay = Math.max(0, runsPerDay);
-  const yearToken = yearAgentVfte.map((v) => (v * wd * runsPerDay * tokensPerArt) / 1e6 * tokenCost);
-  const infraYear = infra * 12, mode = inp.v('runSizeMode') || 'hybrid';
-  const num = (id: string, d: number) => { const v = parseFloat(inp.v(id)); return isNaN(v) ? d : v; };
-  const sMin = num('runFloorMin', 0.5), sPct = num('runFloorPct', 4), sOps = num('runOpsPerAgent', 0.15);
-  const sLegacy = Math.max(0.5, base.etp * 0.06 + 0.5 + base.etp * 0.04);
-  const runAgenticETPYr = yearAgentVfte.map((v) => (!o.ai ? 0 : mode === 'legacy' ? sLegacy : (v > 1e-4 ? Math.max(sMin, (base.etp * sPct) / 100) : 0) + v * sOps));
-  const runAgenticCost = yearTeamCost.map((_, i) => (runAgenticETPYr[i] as number) * (dayRateByYear[i] as number) * 1.15 * wd);
-  const setup = o.ai || o.loc === 'ramp' ? setupTotal : 0;
-  const yearRun = yearTeamCost.map((tc, i) => tc + (o.ai ? (yearToken[i] as number) : 0) + (o.ai ? infraYear : 0) + (runAgenticCost[i] as number));
-  const baselineRun = base.cost, yearSav = yearRun.map((r) => baselineRun - r), totBen = yearSav.reduce((a, b) => a + b, 0);
-  const roi = roiCanonical(totBen - setup, setup), pbMonth = annualPaybackMonth(setup, yearSav);
-  return { opts: o, base, setup, dayRateByYear, yearETP, yearAgentVfte, yearTeamCost, yearToken, yearRun, yearSav, baselineRun, totBen, roi, pbMonth, horizon, tgtTJM, asisTJM, tgtRateTJM };
+  const raw = modelRaw(c), base = raw.base;
+  const eng = timeFor(c, { mode: 'full', curveModelId: activeCurve(c), model: raw, levers: scenarioLevers(c, o) });
+  const h = headlineOf(eng, c), Y = eng.years(), at = (f: (y: YearRow) => number) => Y.map(f);
+  const cum = [0, ...Array.from({ length: eng.horizonMonths }, (_, i) => eng.cumulativeAt(i + 1))];
+  return {
+    opts: o, base, setup: h.setup, net: h.net, npv: h.npv, roi: h.roi, pbMonth: h.paybackMonth, pbYear: h.paybackYear, totBen: h.totalBenefit, cum,
+    yearETP: at((y) => y.humanFteEnd), yearAgentVfte: at((y) => y.agentVfteEnd), yearTeamCost: at((y) => y.teamCost), yearToken: at((y) => y.tokenCost),
+    yearRun: at((y) => y.totalRunCost), yearSav: at((y) => y.savings), baselineRun: base.cost, horizon: eng.horizonYears,
+    tgtTJM: raw.tgtTJM, asisTJM: raw.blendedTJM, tgtRateTJM: scenTargetTJM(c),
+  };
 }
+
 export type ScenarioResult = ReturnType<typeof scenarioModel>;
 
 export interface Scenario { key: 'asis' | 'ai' | 'loc' | 'ramp' | 'ailoc' | 'aidst'; label: string; color: string; m: ScenarioResult }
