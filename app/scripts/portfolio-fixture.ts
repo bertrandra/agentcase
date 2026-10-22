@@ -27,7 +27,7 @@ setProductNote(c, 'Démarre au mois 6');
 setPortfolioHub({ infraMonthly: 3000, infraAllocation: 'byBaseEtp' });
 setProductKnowledge(b, { targetCC: 2, curationFTE: 1, setupBase: 90000, maturityAnswers: [1, 1, 2, 1, 2, 2, 1, 1, 2], domains: [{ label: 'Documentation', weightPct: 40 }, { label: 'Code', weightPct: 60 }] });
 setProductKnowledge(c, { ktLeadMonths: 3, targetCC: 4, domains: [{ label: 'Procédures d’exploitation', weightPct: 100 }] });
-setActiveProduct(first);
+setActiveProduct(b);   // the audit then sees a product with its own subset (chips, domains)
 mkdirSync('fixtures/portfolios', { recursive: true });
 writeFileSync('fixtures/portfolios/pf-three-products.json', exportSnapshotJson().json + '\n');
 console.log('written fixtures/portfolios/pf-three-products.json');
