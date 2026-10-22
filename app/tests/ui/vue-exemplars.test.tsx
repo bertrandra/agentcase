@@ -6,6 +6,8 @@ import { assignWave } from '@/controllers/wave';
 import { aggregateTeams, consolidate, portfolioHeadline, scheduledProducts, waveHeadline } from '@/domain/portfolio';
 import { appStore } from '@/store/instance';
 import { fmtEurK } from '@/ui/format';
+import { SECTION_AGGREGATES } from '@/ui/sections/aggregates';
+import { SECTION_KIND_IDS, sectionKind } from '@/ui/zones/sectionScope';
 import { threeProducts } from '../helpers/portfolioStore';
 import { mountApp, pf, sectionReady } from '../helpers/portfolioUi';
 
@@ -90,9 +92,11 @@ describe('exemplar I-input: Input team', () => {
 });
 
 describe('generic fallbacks of the kinds that follow the View', () => {
-  it('R-rollup: key figures per product with the domain total, and a lazy read-only drill-down', async () => {
-    mountApp('scenarios'); view('portfolio');
-    await sectionReady(/Scenarios/);
+  // a R-rollup section that has no aggregate registered yet (the groups fill them in one by one; the test skips once all have one)
+  const ROLLUP = SECTION_KIND_IDS.find((id) => sectionKind(id) === 'R-rollup' && !SECTION_AGGREGATES[id]);
+  it.skipIf(!ROLLUP)('R-rollup: key figures per product with the domain total, and a lazy read-only drill-down', async () => {
+    mountApp(ROLLUP as string); view('portfolio');
+    await sectionReady(/./);
     const h = portfolioHeadline(consolidate(pf()));
     expect(totalRow(/Key figures by product — Portfolio/).textContent).toContain(fmtEurK(h.net));
     expect(document.querySelectorAll('[data-readonly]')).toHaveLength(0);

@@ -79,20 +79,20 @@ Légende de l’état : **FAIT** (construit en V0), **NATIF** (la section suit d
 | `token-econ` | tune | 💸 Token economics | `R-rollup` | Usage et coût de tokens par produit (la série `token` se somme) ; catalogue de prix commun | `series.token` + usage par produit ; saisies communes (`TOKEN_MODELS`) | À FAIRE |
 | `knowledge` | tune | 🧠 Knowledge hub | `I-input` | Knowledge Hub (CC0-CC4) : état initial/cible, sous-ensemble propre, par produit ; renvoi vers Knowledge transfer | `inputSummary.hub`, `knowledgeRow` | À FAIRE |
 | `run-sizing` | tune | 🤖 Run-team sizing | `I-input` | Politique de dimensionnement de l’équipe run par produit | `dom.values` du cas résolu | À FAIRE |
-| `assumptions` | defend | 📒 Assumptions register | `R-rollup` | Hypothèses écartées du défaut, non validées par le client, impact mesuré, par produit ; statuts de validation communs | `domain/pdc/assumptions` par produit | À FAIRE |
+| `assumptions` | defend | 📒 Assumptions register | `R-rollup` | Hypothèses écartées du défaut, non validées par le client, impact mesuré, par produit ; statuts de validation communs | `domain/pdc/assumptions` par produit | FAIT |
 | `fte-vfte` | verify | FTE / vFTE | `R-conso` | Trajectoire ETP humains vs vFTE agents par année calendaire, une courbe par vague/produit | `series.humanFte`, `series.agentVfte` (`byYear`/dernier mois), `waves` | À FAIRE |
 | `vfte-ov` | verify | vFTE Overview | `R-rollup` | Composition du vFTE par produit | `verifyA` vfte-ov par produit | À FAIRE |
 | `team-out` | verify | Target team | `R-conso` | Équipe TO-BE agrégée par compétence, grade et localisation, tableau par produit | nouvelle fonction pure `aggregateTargetTeams` (domaine/portfolio) sur `verifyA` team-out de chaque produit planifié | À FAIRE |
 | `opmodel` | tune | 🧩 Operating model | `R-rollup` | Pods, rôles transverses et AI Office par produit + contrôle de conservation V7 (ok/ko) | `domain/tune` opmodel par produit | À FAIRE |
 | `tobe-team` | verify | 👥 TO-BE team by skill | `R-conso` | ETP humains résiduels et vFTE agents par compétence, sommés sur la sélection | idem : agrégat par compétence des `verifyA` tobe-team des produits | À FAIRE |
-| `montecarlo` | stress | 🎲 Monte Carlo | `R-rollup` | P10/P50/P90 par produit issus du stress portefeuille s’il a tourné, sinon invitation à le lancer | `ProductStress` de `portfolioMonteCarlo` (`store/portfolioSimulation`) | À FAIRE |
-| `model-stochastic` | model-engine | 📊 Stochastic layer (P4) | `R-rollup` | P50 et graine par produit ; renvoi vers Portfolio stress | `domain/model/modelState`, `portfolioMonteCarlo` | À FAIRE |
+| `montecarlo` | stress | 🎲 Monte Carlo | `R-rollup` | P10/P50/P90 par produit issus du stress portefeuille s’il a tourné, sinon invitation à le lancer | `ProductStress` de `portfolioMonteCarlo` (`store/portfolioSimulation`) | FAIT |
+| `model-stochastic` | model-engine | 📊 Stochastic layer (P4) | `R-rollup` | P50 et graine par produit ; renvoi vers Portfolio stress | `domain/model/modelState`, `portfolioMonteCarlo` | FAIT |
 | `phase-art` | verify | Phase / Artifact detail | `R-rollup` | Périmètre phases/artefacts par produit (nombre, effort) ; jamais de somme par artefact (périmètres différents) | `verifyA` phase-art par produit | À FAIRE |
 | `agent-dir` | verify | Agent Directory | `R-rollup` | Nombre d’agents par niveau d’autorisation et par produit | `verifyA` agent-dir par produit | À FAIRE |
 | `agent-detail` | verify | 🤖 Agent details | `R-rollup` | Charge par rôle d’agent, produit par produit | `verifyA` agent-detail par produit | À FAIRE |
 | `agent-usage` | verify | 📊 Agent usage | `R-conso` | Exécutions, tokens et coût par rôle d’agent, sommés sur la sélection | nouvelle fonction pure `aggregateAgentUsage` (somme par rôle des `verifyA` agent-usage) | À FAIRE |
-| `model-convergence` | model-engine | 🔁 Loop convergence | `R-rollup` | Boucles bornées/non convergées par produit | `domain/model/lce` par produit | À FAIRE |
-| `model-supervision` | model-engine | 🧑‍✈️ Supervision (P3) | `R-rollup` | Mode de supervision et coût par produit | `domain/model/supView` | À FAIRE |
+| `model-convergence` | model-engine | 🔁 Loop convergence | `R-rollup` | Boucles bornées/non convergées par produit | `domain/model/lce` par produit | FAIT |
+| `model-supervision` | model-engine | 🧑‍✈️ Supervision (P3) | `R-rollup` | Mode de supervision et coût par produit | `domain/model/supView` | FAIT |
 | `setup` | tune | Agentic Setup | `I-input` | Coûts de mise en place (outillage, formation, coaching, gouvernance) par produit ; total = somme domaine | `domain/tuneB/setup` par produit | À FAIRE |
 | `run` | economics | Agentic Run | `R-conso` | Coût de fonctionnement consolidé par année et par mois (équipe run, tokens, infrastructure, Knowledge Hub), une ligne par produit + total | `consolidate().series` (`run`, `token`, `infra`, `khCost`) et `headline.years` ; la ventilation fine équipe/agents par produit demande une vue domaine à ajouter | À FAIRE |
 | `annual` | economics | Annual summary | `R-conso` | Tableau année par année calendaire du portefeuille / de la vague : économies, coût, mise en place, net, ETP humains et vFTE fin d’année | `portfolioHeadline`/`waveHeadline` (`years`, `fte`), `series.humanFte`/`agentVfte` via `byYear` | À FAIRE |
@@ -104,7 +104,7 @@ Légende de l’état : **FAIT** (construit en V0), **NATIF** (la section suit d
 | `quality` | verify | Quality | `R-rollup` | Indicateurs qualité par produit (non additifs) | `verifyB` par produit | À FAIRE |
 | `compliance` | verify | Compliance | `R-rollup` | Couverture de conformité par produit | `verifyB` par produit | À FAIRE |
 | `financial` | economics | 💳 Financial | `R-conso` | FAIT (exemplaire) : cartes ROI/retour/VAN/net, trésorerie cumulée, tableau par produit, flux par année calendaire, produits exclus signalés | `selectionView` ← `consolidate`, `scopeHeadline`, `consolidationView` | FAIT |
-| `model-flow` | model-engine | ⏱️ Flow & value (P5) | `R-rollup` | Temps de cycle (Little) et VAN du time-to-market par produit | `domain/model/flow` par produit | À FAIRE |
+| `model-flow` | model-engine | ⏱️ Flow & value (P5) | `R-rollup` | Temps de cycle (Little) et VAN du time-to-market par produit | `domain/model/flow` par produit | FAIT |
 | `gantt` | verify | 📅 Gantt / Timeline | `R-conso` | NATIF : Gantt par vague avec produits dépliables (`Waves.tsx`) ; enregistré comme agrégat | `portfolioGantt` ← `consolidate` | NATIF |
 | `board` | configure | 📊 Board | `S-static` | Bandeau seul. Configuration des sections dynamiques : commune | — | FAIT (bandeau) |
 | `factory-model` | factory | 🏭 Factory Model | `S-static` | Bandeau seul. Méta-modèle d’usine : données communes hors liste blanche (AMBIGU, voir § Ambiguïtés) | — | FAIT (bandeau) |
@@ -112,22 +112,22 @@ Légende de l’état : **FAIT** (construit en V0), **NATIF** (la section suit d
 | `engineering` | factory | ⚙️ Engineering | `S-static` | Bandeau seul. Idem : compteurs saisis, communs | — | FAIT (bandeau) |
 | `factory-timeline` | factory | 📅 Factory Timeline | `S-static` | Bandeau seul. Idem : calendrier d’événements communs | — | FAIT (bandeau) |
 | `commercial` | present | 💼 Commercial model | `R-rollup` | Modèle commercial par produit (gain sharing non linéaire : pas de somme) | `domain/pdc/commercial` par produit | À FAIRE |
-| `scenarios` | stress | 🔀 Scenarios | `R-rollup` | Produit × 6 scénarios : ROI et retour ; pas de scénario portefeuille (limite connue) | `domain/stress` scénarios par produit | À FAIRE |
+| `scenarios` | stress | 🔀 Scenarios | `R-rollup` | Produit × 6 scénarios : ROI et retour ; pas de scénario portefeuille (limite connue) | `domain/stress` scénarios par produit | FAIT |
 | `kpi` | verify | KPI Scorecard | `R-conso` | KPI financiers consolidés (retour, VAN, ROI, économies) et vélocité pondérée ; les KPI qualité non additifs restent en tableau par produit | `portfolioHeadline` (`velocityPct` = `weightedVelocity`) ; AMBIGU, voir § Ambiguïtés | À FAIRE |
 | `asis-tobe` | verify | AS-IS vs TO-BE | `R-conso` | Avant / après consolidé : ETP, coût de référence vs to-be, mise en place, automatisation effective et plafond de verre pondérés | `headline.fte`, `headline.costReduction`, `eff`/`ceiling` (`weightedAutomation`) | À FAIRE |
-| `compare` | stress | 3-way Comparison | `R-rollup` | Écart à la photo de référence par produit | `domain/stress` compare, photos communes | À FAIRE |
-| `sensitivity` | stress | Sensitivity | `R-rollup` | Paramètre le plus sensible et amplitude par produit | `domain/stress` sensibilité par produit | À FAIRE |
+| `compare` | stress | 3-way Comparison | `R-rollup` | Écart à la photo de référence par produit | `domain/stress` compare, photos communes | FAIT |
+| `sensitivity` | stress | Sensitivity | `R-rollup` | Paramètre le plus sensible et amplitude par produit | `domain/stress` sensibilité par produit | FAIT |
 | `sources` | refshare | Sources | `S-static` | Bandeau seul. Documentation : sources et références | — | FAIT (bandeau) |
 | `results` | verdict | 📋 Results | `R-conso` | Verdict de la sélection, chiffres clés, bande d’incertitude (distribution portefeuille), décomposition des économies, glissement d’équipe | `portfolioHeadline`, `pfDecision`/`groupDecision` (stress portefeuille), `headline.fte` ; origine des économies : vue domaine à ajouter | À FAIRE |
 | `story-summary` | present | 📖 The story so far | `R-conso` | Récit AS-IS → TO-BE de la sélection : équipe, coût, livraison ; confiance en tableau par produit | `headline.fte`, `costReduction`, `velocityPct`, `eff`, `ceiling` | À FAIRE |
 | `decision` | verdict | 🧭 Decision Intelligence | `R-conso` | NATIF : verdict de la distribution du portefeuille / de la vague (`PortfolioVerdict`) ; enregistré comme agrégat | `pfDecision`, `groupDecision`, `store/portfolioSimulation` | NATIF |
-| `model-evidence` | model-engine | 📋 Evidence ledger (P6) | `R-rollup` | Grade de confiance A-D et provenance par produit | `domain/model/evidence` par produit | À FAIRE |
+| `model-evidence` | model-engine | 📋 Evidence ledger (P6) | `R-rollup` | Grade de confiance A-D et provenance par produit | `domain/model/evidence` par produit | FAIT |
 | `strategies` | verdict | 🏆 Strategy comparison | `R-rollup` | 7 stratégies : stratégie recommandée, ROI et TCO par produit | `domain/verdict` stratégies par produit | À FAIRE |
 | `arch-layers` | refshare | 🏛️ Architecture — Layers | `S-static` | Bandeau seul. Documentation d’architecture | — | FAIT (bandeau) |
 | `arch-content` | refshare | 🏛️ Architecture — Layers content | `S-static` | Bandeau seul. Documentation d’architecture | — | FAIT (bandeau) |
-| `verif` | defend | 🔍 Logic verification | `R-rollup` | Contrôles de logique : nombre d’échecs par produit (16 contrôles, 67 lignes de convergence) ; statut global = pire | `domain/pdc/verifChecks`, `verifConvergence`, `verifProvenance`, `verifSensi` | À FAIRE |
+| `verif` | defend | 🔍 Logic verification | `R-rollup` | Contrôles de logique : nombre d’échecs par produit (16 contrôles, 67 lignes de convergence) ; statut global = pire | `domain/pdc/verifChecks`, `verifConvergence`, `verifProvenance`, `verifSensi` | FAIT |
 | `eligibility` | tune | 🎯 Eligibility & Abaques | `R-rollup` | Porte d’éligibilité (franchie / bloquée) et abaques par produit | `domain/tune` eligibility par produit | À FAIRE |
-| `model-verification` | model-engine | 🛡️ Verification tax (P2) | `R-rollup` | Taxe de vérification V par produit | `domain/model/vtax`, `evt` | À FAIRE |
+| `model-verification` | model-engine | 🛡️ Verification tax (P2) | `R-rollup` | Taxe de vérification V par produit | `domain/model/vtax`, `evt` | FAIT |
 | `maturity` | tune | 📐 Maturity & Measurement | `I-input` | Maturité SDD/outillage et courbe de coaching par produit | `dom.values` du cas résolu | À FAIRE |
 | `program` | tune | 🧭 Program & Completeness | `I-input` | Pilote, capacité interne, surcharge multi-pod par produit | `dom.values` du cas résolu | À FAIRE |
 | `risk` | tune | 🛡️ Risk & Compliance | `I-input` | Registre de risques, palier AI Act et prime de risque par produit | `dom.values` du cas résolu | À FAIRE |
@@ -138,7 +138,7 @@ Légende de l’état : **FAIT** (construit en V0), **NATIF** (la section suit d
 | `glossary` | refshare | 📖 Delivery-model glossary | `S-static` | Bandeau seul. Glossaire | — | FAIT (bandeau) |
 | `io` | refshare | 📥 Import / Export | `S-static` | Bandeau seul. Import/export et bibliothèque de photos ; le choix du périmètre d’export a déjà son propre sélecteur (`ReportPanel`) | — | FAIT (bandeau) |
 | `sessions` | refshare | 🗂️ Session manager | `S-static` | Bandeau seul. Reprise d’autosauvegarde : indépendante du cas | — | FAIT (bandeau) |
-| `duediligence` | defend | 🧾 Due diligence | `R-rollup` | Éléments à confirmer et coefficients embarqués : comptes et impact par produit ; annotations communes | `domain/dd` par produit | À FAIRE |
+| `duediligence` | defend | 🧾 Due diligence | `R-rollup` | Éléments à confirmer et coefficients embarqués : comptes et impact par produit ; annotations communes | `domain/dd` par produit | FAIT |
 | `personas` | configure | 👥 Persona management | `S-static` | Bandeau seul. Gestion des personas : commune | — | FAIT (bandeau) |
 | `products` | portfolio | 📦 Products | `P-portfolio` | Bandeau seul. Tableau des produits (déjà tous les produits) | — | FAIT (bandeau) |
 | `overrides` | portfolio | 🧬 Overrides | `P-portfolio` | Bandeau seul. Surcharges par produit | — | FAIT (bandeau) |
@@ -152,7 +152,7 @@ Légende de l’état : **FAIT** (construit en V0), **NATIF** (la section suit d
 À faire par type (le repli générique s’affiche en attendant, il est déjà correct et lisible) :
 
 - `R-conso` (12), **sans vue consolidée tant qu’aucun agrégat n’est enregistré** (note “Consolidated view coming” + détail par produit) : `fte-vfte`, `team-out`, `tobe-team`, `agent-usage`, `run`, `annual`, `monthly`, `monthly-playback`, `kpi`, `asis-tobe`, `results`, `story-summary`.
-- `R-rollup` (28), tableau récapitulatif spécifique (statut, valeurs clés) à la place du repli financier générique : `readiness`, `token-econ`, `assumptions`, `vfte-ov`, `opmodel`, `montecarlo`, `model-stochastic`, `phase-art`, `agent-dir`, `agent-detail`, `model-convergence`, `model-supervision`, `exec`, `productivity`, `velocity`, `quality`, `compliance`, `model-flow`, `commercial`, `scenarios`, `compare`, `sensitivity`, `model-evidence`, `strategies`, `verif`, `eligibility`, `model-verification`, `duediligence`.
+- `R-rollup` (28), tableau récapitulatif spécifique (statut, valeurs clés) à la place du repli financier générique : `readiness`, `token-econ`, `vfte-ov`, `opmodel`, `phase-art`, `agent-dir`, `agent-detail`, `exec`, `productivity`, `velocity`, `quality`, `compliance`, `commercial`, `strategies`, `eligibility`.
 - `I-input` (17), synthèse spécifique de la saisie de la section à la place du repli générique (ETP, artefacts, surcharges, hub) : `engagement-context`, `engage`, `transform-params`, `params`, `scurve`, `maturity-map`, `scope-sel`, `phase-scope`, `lc-weighting`, `lifecycle-edit`, `loc-strat`, `knowledge`, `run-sizing`, `setup`, `maturity`, `program`, `risk`.
 
 ## 6. Ambiguïtés assumées
