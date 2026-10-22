@@ -36,7 +36,7 @@ export function aggregateRun(pf: Portfolio, c: Consolidated, scope: DisplayScope
 
 export interface AnnualYearRow { label: string; savings: number; run: number; setup: number; net: number; cum: number; etp: number; vfte: number }
 export interface AnnualProductRow { id: string; name: string; wave: string; net: number[] }
-export interface AnnualAgg { label: string; headline: PortfolioHeadline; years: AnnualYearRow[]; rows: AnnualProductRow[]; totalNet: number[]; excluded: Excluded }
+export interface AnnualAgg { label: string; headline: PortfolioHeadline; years: AnnualYearRow[]; rows: AnnualProductRow[]; totalNet: number[]; totals: { savings: number; run: number; setup: number; net: number }; excluded: Excluded }
 
 /** Annual summary of a Portfolio / Wave: one line per calendar year (12-month blocks), the net by product and year, year-end headcount. */
 export function aggregateAnnual(pf: Portfolio, c: Consolidated, scope: DisplayScope): AnnualAgg | null {
@@ -47,7 +47,7 @@ export function aggregateAnnual(pf: Portfolio, c: Consolidated, scope: DisplaySc
     label: sel.label, headline: h, excluded: excludedOf(pf, c, scope),
     years: h.years.savings.map((sv, i) => ({ label: `Year ${i + 1}`, savings: sv, run: h.years.run[i] ?? 0, setup: h.years.setup[i] ?? 0, net: h.years.net[i] ?? 0, cum: cum[i] ?? 0, etp: etp[i] ?? 0, vfte: vfte[i] ?? 0 })),
     rows: sel.items.map((v) => ({ id: v.id, name: v.name, wave: waveName(pf, v.waveId), net: byYear(v.series.net) })),
-    totalNet: byYear(s.net),
+    totalNet: byYear(s.net), totals: { savings: h.totalBenefit, run: total(s.run), setup: h.setup, net: h.net },
   };
 }
 

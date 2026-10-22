@@ -39,6 +39,7 @@ describe('economics aggregates: Portfolio and every Wave, against the products\'
       expectClose(a.years[a.years.length - 1]!.cum, a.headline.net);
       a.totalNet.forEach((t, i) => expectClose(sum(a.rows.map((r) => r.net[i] ?? 0)), t));
       expectSeriesClose(a.totalNet, a.years.map((y) => y.net));
+      for (const k of ['savings', 'run', 'setup', 'net'] as const) expectClose(a.totals[k], sum(a.years.map((y) => y[k])));
     }
   });
 
