@@ -13,6 +13,7 @@ const fixtures = opt('--fixtures').length ? opt('--fixtures') : ['golden', 'ctx-
 const fixturePath = fx => (fx === 'example-portfolio' ? 'docs/examples/AgentCase_Portfolio_Example.json' : existsSync(`app/fixtures/portfolios/${fx}.json`) ? `app/fixtures/portfolios/${fx}.json` : `app/fixtures/cases/${fx}.json`);
 const only = opt('--sections');
 // sections whose prose legitimately mentions NaN / undefined (the verification rules and the architecture history)
+const PORTFOLIO = ['Produits', 'Surcharges', 'Knowledge transfer', 'Vagues', 'Consolidation', 'Stress portefeuille'];
 const PROSE = /Logic verification|Architecture/;
 const url = 'file://' + resolve('app/dist/index.html');
 const browser = await pw.chromium.launch();
@@ -30,7 +31,8 @@ for (const fx of fixtures) {
   const ids = await page.evaluate(() => [...document.querySelectorAll('nav[aria-label=Sections] button, .ac-groupbar button')].map(b => b.textContent));
   const labels = [...new Set(ids)];
   for (const label of labels) {
-    const btn = page.locator('nav[aria-label=Sections] button, .ac-groupbar button').filter({ hasText: label }).first();
+    // exact text, visible buttons only ("Compliance" must not resolve to the hidden "Risk & Compliance" button)
+    const btn = page.locator('nav[aria-label=Sections] button:visible, .ac-groupbar button:visible').filter({ hasText: new RegExp('^\\s*' + String(label).replace(/[.*+?^${}()|[\]\\]/g, '\\$&') + '\\s*$') }).first();
     if (!(await btn.count())) continue;
     errors.length = 0;
     await btn.click(); await page.waitForTimeout(250);
@@ -42,6 +44,10 @@ for (const fx of fixtures) {
     if (errors.length) problems.push(errors.slice(0, 2).join(' | '));
     visited++;
     if (problems.length) { failures++; console.log(`FAIL ${fx} · ${label}: ${problems.join('; ')}`); }
+  }
+  if (fx === 'example-portfolio' || /^pf-/.test(fx)) {   // the 6 Portefeuille sections must be in the menu (and were visited above)
+    const missing = PORTFOLIO.filter(l => !labels.some(x => String(x).includes(l)));
+    if (missing.length) { failures++; console.log(`FAIL ${fx}: Portefeuille sections missing from the menu: ${missing.join(', ')}`); }
   }
   console.log(fx, labels.length, 'sections');
   await ctx.close();

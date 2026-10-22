@@ -1,6 +1,6 @@
 # AgentCase — Spécification : portefeuille multi-produits et transformation par vagues
 
-> Statut : **décisions D-M1…D-M12 retenues** (§ 15) ; phases P1 (domaine `domain/portfolio/`), P2 (store, commandes, persistance), P3, P3b, P4 (interface), P5 (restitution) et P6 (stress) réalisées, phase suivante à venir. Périmètre : l'application TypeScript + React dans `app/` (v19.x).
+> Statut : **implémenté (v20.0.0)**. Décisions D-M1…D-M12 retenues (§ 15) ; phases P1 (domaine `domain/portfolio/`), P2 (store, commandes, persistance), P3, P3b, P4 (interface), P5 (restitution), P6 (stress) et P7 (mise en production) réalisées. Périmètre : l'application TypeScript + React dans `app/` (v20.0.0). Guide utilisateur : [GUIDE_MULTI_PRODUIT.md](GUIDE_MULTI_PRODUIT.md) ; exemple : `examples/AgentCase_Portfolio_Example.json`.
 > Documents liés : [ARCHITECTURE.md](ARCHITECTURE.md) (couches, commandes, persistance), [DEVIATIONS.md](DEVIATIONS.md) (écarts au legacy),
 > [BUMP_PROCEDURE.md](BUMP_PROCEDURE.md) (versions). Règles de code inchangées : fichiers ≤ 150 lignes, pas de `any`, couches
 > `ui → controllers → store → domain`, toute écriture passe par une commande annulable (Ctrl+Z).
@@ -371,7 +371,7 @@ l'état actuel), sauf `activeProductId` persisté dans le document pour qu'un fi
 | **P4 — Vagues et consolidation** ✅ réalisée | Section Vagues (planche + clavier), Consolidation, barre haute par périmètre, Gantt par vague. | Parcours 4–6 ; budgets de performance. |
 | **P5 — Restitution** ✅ réalisée | Excel (paramètres et résultats), rapport, HTML, photos instantanées. | Parité cellule à cellule du mode mono-produit ; nouvelles feuilles validées par test. |
 | **P6 — Stress** ✅ réalisée | Monte Carlo par produit + agrégat, corrélation `ρ`, verdict portefeuille. | Tests de reproductibilité (graine) ; documentation des écarts. |
-| **P7 — Mise en production** | Documentation, version 20.0.0, exemples de portefeuille, `npm run ui-parity` et `a11y` étendus. | Tous les contrôles CI verts. |
+| **P7 — Mise en production** ✅ réalisée | Documentation, version 20.0.0, exemples de portefeuille, `npm run ui-parity` et `a11y` étendus. | Tous les contrôles CI verts. |
 
 Chaque phase est livrée par une demande de fusion indépendante, avec les tests de la phase et sans régression des 13 000 tests actuels.
 
@@ -516,3 +516,10 @@ Toutes les recommandations du § 12 ont été **acceptées** par le commanditair
 - **Restitution** : feuille Excel « Portfolio stress » (après « Knowledge transfer », seulement si un run existe), section 7 du rapport de portefeuille / vague.
 - **Hors périmètre** : tableau de scénarios de portefeuille (les six scénarios et la sensibilité restent par produit), troncature des tirages à l'horizon du portefeuille, rejeu automatique du run portefeuille.
 - **Tests** : `tests/domain/portfolio/{stress,stressVerdict}.test.ts` (reproduction du cas seul sur toutes les fixtures `mcRun`, sémantique de ρ, marginales, déterminisme, signe de la diversification, cas dorés du verdict, performance 20 produits × 1 000 tirages), `tests/store/{portfolio-rho,stress-portfolio}.test.ts` (commande, annulation, persistance, Excel, obsolescence, restitution), `tests/ui/portfolio-stress.test.tsx`.
+
+### Précisions d'implémentation de P7
+
+- **Version 20.0.0** (D-M8) : `APP_VERSION`, `package.json` et son verrou, titre `index.html` (v20) ; les noms de fichiers (`AgentCase_v20_0_…`) sont dérivés de la version. **Inchangés volontairement** : les étiquettes de schéma (`agentcase.snapshot.v1`, `agentcase.portfolio.v1`), le nom et la version de la base d'enregistrement automatique (`agentcase-v19`, 1) et le nom du `BroadcastChannel` (`agentcase-v19`), pour ne jamais orpheliner les sauvegardes des utilisateurs.
+- **Exemple** : `docs/examples/AgentCase_Portfolio_Example.json` (4 produits, 2 vagues dont un produit décalé, un produit non planifié, hub au prorata de l'effectif avec des sous-ensembles différents, ρ = 0,3, surcharges), généré par `app/scripts/portfolio-example.ts` ; `tests/store/portfolio-example.test.ts` l'ouvre par le chemin d'ouverture réel et vérifie `validate()` et la conservation des totaux consolidés.
+- **Contrôles de sortie** : `tools/e2e-smoke.mjs` visite toutes les sections, dont les six du groupe Portefeuille, sur deux fichiers de portefeuille ; `tools/perf.mjs` mesure aussi le changement de section du groupe Portefeuille ; résultats chiffrés dans le CHANGELOG.
+- **Reste hors périmètre** (voir ARCHITECTURE.md § 12) : tableau de scénarios de portefeuille, dépendances entre vagues, équipes partagées, troncature des tirages à l'horizon calendaire, « appliquer à tous » pour le sous-ensemble de connaissance.
