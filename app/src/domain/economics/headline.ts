@@ -1,3 +1,4 @@
+/** @calc-zone economics-headline @owner total-benefit, net, payback-month, payback-year, npv */
 import { caseDiscountRate, engineNow } from '../canonical';
 import type { Ctx } from '../ctx';
 import type { Engine } from '../time';

@@ -1,3 +1,4 @@
+/** @calc-zone exports */
 import type * as ExcelJSNS from 'exceljs';
 
 export type ExcelJS = typeof ExcelJSNS;

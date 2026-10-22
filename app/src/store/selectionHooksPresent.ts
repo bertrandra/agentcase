@@ -1,3 +1,4 @@
+/** @calc-zone aggregate-views */
 import { aggregateCommercial, aggregatePlayback, aggregateStory, type CommercialAgg, type PlaybackAgg, type StoryAgg } from '@/domain/portfolio';
 import { useAggregate } from './selectionHooksEconomics';
 

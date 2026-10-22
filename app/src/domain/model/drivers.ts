@@ -1,3 +1,4 @@
+/** @calc-zone time-engine @owner setup, effective-automation */
 import type { Ctx } from '../ctx';
 import { convChangeCost, engagementCoef, hriRampFactor } from '../engagement';
 import { khMult, khSetupCost } from '../knowledge';

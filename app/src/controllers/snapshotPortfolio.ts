@@ -1,3 +1,4 @@
+/** @calc-zone exports */
 import { resolveProduct, type Portfolio } from '@/domain/portfolio';
 import { SNAPSHOT_KEY, type NamedSnapshot } from '@/domain/snapshots';
 import { definePortfolioCommand } from '@/store/commands';

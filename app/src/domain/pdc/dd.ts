@@ -1,3 +1,4 @@
+/** @calc-zone verification-verdict */
 import type { Ctx } from '../ctx';
 import { engagementCoef } from '../engagement';
 import { khMult } from '../knowledge';

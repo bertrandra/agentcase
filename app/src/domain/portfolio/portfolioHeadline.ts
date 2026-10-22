@@ -1,3 +1,4 @@
+/** @calc-zone portfolio-consolidation @owner portfolio-headline */
 import { fteBeforeAfter, type FteBeforeAfter } from '../economics/fte';
 import type { Consolidated } from './consolidate';
 import { portfolioCostReduction, weightedAutomation, weightedVelocity, yearTable, type Summary } from './headline';

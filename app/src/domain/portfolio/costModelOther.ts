@@ -1,3 +1,4 @@
+/** @calc-zone exports */
 import { pilotSizing } from '../tune/program';
 import { lay, layWide, sumOf, type Picked } from './costModelAxis';
 import { COST, SAVE, costLines } from './costModelLines';

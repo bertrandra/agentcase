@@ -1,3 +1,4 @@
+/** @calc-zone exports */
 import { BANDS } from '../baseline/skills';
 import { targetMix } from '../baseline/locStrat';
 import { LOCATIONS } from '../catalog';

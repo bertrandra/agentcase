@@ -1,2 +1,3 @@
+/** @calc-zone foundation */
 /** Product version of the TypeScript build (the legacy single-file app is v18.x). */
-export const APP_VERSION = '20.3.0';
+export const APP_VERSION = '20.4.0';

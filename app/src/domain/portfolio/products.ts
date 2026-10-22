@@ -1,3 +1,4 @@
+/** @calc-zone product-resolution */
 import type { TeamRow } from '../types/state';
 import type { KnowledgeSubset, Portfolio, Product } from './types';
 

@@ -1,3 +1,4 @@
+/** @calc-zone portfolio-consolidation */
 import { memoChain } from './memo';
 import type { ProductRun } from './run';
 import type { Scheduled } from './timeline';

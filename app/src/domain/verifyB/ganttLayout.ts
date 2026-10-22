@@ -1,3 +1,4 @@
+/** @calc-zone delivery-views */
 export interface LayoutItem { id: string; seqKey: number; len: number }
 export interface Placed { startM: number; durM: number }
 

@@ -1,6 +1,6 @@
 # AgentCase — Architecture of the TypeScript build
 
-> Applies to **`app/`, version 20.3.0** (`app/src/domain/version.ts`, `app/package.json`): a multi-product portfolio build. 892 `.ts`/`.tsx` files under `app/src`,
+> Applies to **`app/`, version 20.4.0** (`app/src/domain/version.ts`, `app/package.json`): a multi-product portfolio build. 892 `.ts`/`.tsx` files under `app/src`,
 > 241 test files under `app/tests` (counted with `find`; 16,387 tests passed on the last local run, CI is authoritative).
 > The previous document, which describes the frozen single-file app, is archived as
 > [`history/ARCHITECTURE_legacy_v18.md`](history/ARCHITECTURE_legacy_v18.md). The appendix of this file maps each legacy engine to its replacement.
@@ -342,7 +342,42 @@ The authoritative list is [MIGRATION_PLAN.md §15](MIGRATION_PLAN.md). Architect
   item-level scope overrides (whole key only, D-M2); portfolio charts as images in the results workbook.
 - Excel cross-version note: a parameters workbook exported by 20.0.0 from a real portfolio carries seven extra sheets that a 19.x build ignores (it reads only the common case); a 19.x workbook imports into 20.0.0 as a case on the active product. An import does not re-fit the automation potential (the workbook states the stored values; the next open re-fits).
 - Opening a 20.0.0 portfolio file (`agentcase.portfolio.v1`) in a 19.x build is not supported; a plain single case is still saved as `agentcase.snapshot.v1` and stays readable by 19.x.
-- `npm run release` produces `app/dist/AgentCase_v20_3_EN.html`; `APP_VERSION` is `20.3.0`.
+- `npm run release` produces `app/dist/AgentCase_v20_4_EN.html`; `APP_VERSION` is `20.4.0`.
+
+## 13. Calculation zones, the generated dependency graph and test selection
+
+Layers say *where* code may live; **zones** say *what it computes*. They exist so that "one source of truth, no duplicated calculation" is checked by a test
+instead of remembered, and so that the tests a change needs can be found from the code. Nothing here adds a calculation: the numbers are the oracle's.
+
+**Zones.** `app/src/domain/zones/catalog.json` lists 18: 5 input zones (rate card and team, scope and automation potential, adoption curve, Knowledge Hub, run sizing /
+setup / taxes), 4 calculation zones (Time Engine and annual model, readiness and programme tuning, stress, product resolution), 7 result zones (economics headline,
+delivery views, verification and verdict, portfolio consolidation, aggregated views, exports, workspace and configuration) and 2 shared ones (foundation, presentation
+formatting), each with a lane, a description, entry modules and the figures it owns. They follow the code, not the menu: a module that *reads* the engine to print
+something (the run-sizing read-out, the glass-ceiling impact chart) belongs to *delivery views*, not to the zone whose inputs it shows, which keeps the
+zone graph close to acyclic. The 24 imports that still point backwards (an input zone reading the engine, a read-out inside an input zone) are listed in the Build order tab
+of the app, not hidden.
+
+**Tags.** The first line of every module under `src/domain`, of every controller, of the export modules (`store/persistence/{excel,report,html}`) and of the zone hooks of
+`src/store` is `/** @calc-zone <zone-id> */`, plus `@owner <figure-id>[, ...]` on the module that owns a figure. `tests/domain/zones-tags.test.ts` fails when a module has no valid tag, when
+an `@owner` names an unknown figure, when a figure has no owner or two, when the owner is in another zone than the catalogue says, or when an entry module is missing.
+A figure (net, ROI, payback month and year, NPV, total benefit, saving %, setup, baseline and run cost, savings per year, effective automation, glass ceiling, verification tax,
+FTE before / after, velocity uplift, KPI scorecard, decision verdict, Monte Carlo distribution, portfolio headline, ...) is therefore computed in one module; every other screen,
+export and report imports it. `tests/domain/figure-owners.test.ts` proves it on the fixtures: the same figure on the KPI bar, Results, Financial, the Board variables, the calculation
+package, the Excel results workbook, the report and the consolidation equals the owner's value. `npm run dup` (jscpd, threshold at the current level) catches a copy of a block.
+
+**Generated graph.** `npm run deps:gen` (`app/scripts/gen-deps.ts`, TypeScript compiler API, syntax only, about 2 s) writes `app/src/generated/dependencies.json` (committed, about 75 KB):
+zones, sections (kind from `sectionScope.json`), edges and the zone set of every test. Rules: type-only imports are not edges; a barrel of `src/domain` is followed by symbol
+(`import { x } from '@/domain/stress'` is an import of the file that declares `x`); `store/hooks.ts` is a generic accessor whose heavy symbols are routed to their domain
+owner (`graphConfig.json`); the shell, the frame and the View-selector widgets are on every screen and are on the ignore list, with a reason; the shared zones create no edge.
+A section reaches a zone when the import closure of its folder, walked through untagged ui / store modules, hits a tagged module (`r`, read: the zone feeds the section; `w`, write:
+an input section reaches a controller of the zone); a zone feeds another when one of its modules is imported by one of the other's (`z`). Weights are numbers of modules.
+`tests/domain/deps-fresh.test.ts` fails with "run `npm run deps:gen`" when the file is stale, `deps-generator.test.ts` runs the generator on a small synthetic project,
+and CI runs `npm run deps:check`. The section *Dependencies* of the app draws this graph (lanes, nodes, edges, a side panel with the impacted sections and tests), a matrix, the zones and
+figures, the build order with its cycle report and the tests impacted. The authored `SECTION_DEPS` registry is still stored with the case but is no longer shown (DEV-DEPS-ZONES).
+
+**Test selection.** `npm run test:affected` selects the tests a change can reach and prints `files -> zones -> sections -> N of M test files (saved X%)`; the rule, the
+cases that force the full suite and the validation (`npm run validate:affected`, mutation of sampled modules, recall must be 100%) are in [TEST_SELECTION.md](TEST_SELECTION.md).
+The full suite stays mandatory before a merge and a release.
 
 ## Appendix A — Legacy engine → replacement
 

@@ -1,3 +1,4 @@
+/** @calc-zone adoption-curve */
 import type { CurvePoint } from '../types/state';
 import type { Fit } from './fit';
 import { splineEval } from './spline';

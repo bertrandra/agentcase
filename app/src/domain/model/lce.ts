@@ -1,3 +1,4 @@
+/** @calc-zone run-setup-taxes */
 import { LOOP_PAIRS } from '../catalog';
 import type { Ctx } from '../ctx';
 import { targetBlendedTJM } from '../location';

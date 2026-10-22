@@ -1,3 +1,4 @@
+/** @calc-zone workspace-config */
 import type { Ctx } from '../ctx';
 import type { ArtefactTag } from './types';
 

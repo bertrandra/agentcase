@@ -1,3 +1,4 @@
+/** @calc-zone knowledge-hub */
 import { infraShares } from './resolve';
 import { knowledgeTotals, type KnowledgeRow, type KnowledgeTotals } from './knowledge';
 import type { Portfolio } from './types';

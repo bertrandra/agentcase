@@ -1,3 +1,4 @@
+/** @calc-zone workspace-config */
 import type { WArtefact } from '../artefacts';
 import { engineNow } from '../canonical';
 import type { Ctx } from '../ctx';

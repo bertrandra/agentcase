@@ -1,3 +1,4 @@
+/** @calc-zone rate-card-team */
 import type { CaseState } from '../types/state';
 import type { Artefact } from '../types/catalog';
 

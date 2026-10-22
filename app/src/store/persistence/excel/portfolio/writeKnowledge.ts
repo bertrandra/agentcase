@@ -1,3 +1,4 @@
+/** @calc-zone exports */
 import type * as XL from 'exceljs';
 import { overrideRefs, overrideValue, type Portfolio } from '@/domain/portfolio';
 import { PF_LIMITS, PF_SHEETS } from './names';

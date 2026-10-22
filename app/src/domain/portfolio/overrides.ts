@@ -1,3 +1,4 @@
+/** @calc-zone product-resolution */
 import { parseRef, type ParsedRef } from './keys';
 import type { CommonCase, Overrides, Portfolio, Product } from './types';
 

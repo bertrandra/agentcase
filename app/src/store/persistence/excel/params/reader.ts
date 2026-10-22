@@ -1,3 +1,4 @@
+/** @calc-zone exports */
 import type { Doc } from '@/store/types';
 import { loadExcelJS } from '../lazy';
 import { KNOWN_SHEETS, READ_ORDER } from './registry';

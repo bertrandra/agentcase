@@ -1,3 +1,4 @@
+/** @calc-zone stress */
 import { mulberry32, stdNormal } from '../model/numerics';
 import type { McShock } from '../stress';
 

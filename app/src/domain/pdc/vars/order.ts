@@ -1,3 +1,4 @@
+/** @calc-zone workspace-config */
 /** Registry order of the legacy VARIABLE_REGISTRY (generated dashboards and the catalogue follow it). */
 export const ORDER: string[] = `netSavY1 netSavY2 netSavY3 cumSav3yr runCostY1 runCostY3 grossAutoY3 paybackMonths roiPct npv8 glassCeilingPct artefactsInScope adoptionRateY3
 sourcingMixIndia fteShift setupTotal blendedTjmAsIs blendedTjmTgt baseFte residualFteY3 khMultiplier avgAgentSuitability runDeltaY3 netProfit3y freedFteY3 cgMargin3ySel

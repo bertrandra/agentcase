@@ -1,3 +1,4 @@
+/** @calc-zone scope-automation */
 import type { Ctx } from '../ctx';
 import { activeArtefacts } from '../scope';
 import { phasesForScope, regOfActiveNorms, type PhaseState } from '../scopeView';

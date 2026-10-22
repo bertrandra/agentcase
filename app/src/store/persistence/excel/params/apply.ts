@@ -1,3 +1,4 @@
+/** @calc-zone exports */
 import { current } from 'immer';
 import { makeCtx } from '@/domain';
 import { computeGlassCeiling } from '@/domain/model/ceiling';

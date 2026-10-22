@@ -1,3 +1,4 @@
+/** @calc-zone exports */
 import { MAX_PRODUCTS } from '@/domain/portfolio';
 
 /** The sheets a portfolio adds to the parameters workbook (the 47 existing sheets keep describing the COMMON case). */

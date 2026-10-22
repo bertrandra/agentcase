@@ -1,3 +1,4 @@
+/** @calc-zone exports */
 import { setHorizon, setHub, setOverride, setRho, validate, type Portfolio, type Product } from '@/domain/portfolio';
 import { clean } from '@/domain/portfolio/products';
 import { ParamsImportError } from '../params/safe';

@@ -1,3 +1,4 @@
+/** @calc-zone verification-verdict */
 import type { Ctx } from '../ctx';
 import { headline } from '../economics/headline';
 import { fmtRoiPct } from '../economics/roi';

@@ -1,3 +1,4 @@
+/** @calc-zone foundation */
 import { bisect } from './lce';
 
 /** Seeded PRNG (legacy mcRng / mulberry32). */

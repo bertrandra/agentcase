@@ -1,3 +1,4 @@
+/** @calc-zone scope-automation */
 import { REG_ARTEFACTS, SDLC_ARTEFACTS } from './catalog';
 import { lifecycleWeight } from './lifecycle';
 import type { Artefact } from './types/catalog';

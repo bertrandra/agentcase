@@ -1,3 +1,4 @@
+/** @calc-zone aggregate-views */
 import { STATUS_LIFECYCLE } from '../catalog';
 import type { Ctx } from '../ctx';
 import { khAsisScore } from '../knowledge';

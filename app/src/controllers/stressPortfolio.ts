@@ -1,3 +1,4 @@
+/** @calc-zone stress */
 import { makeCtx } from '@/domain';
 import { pfStressJob } from '@/domain/portfolio';
 import { mcDrawsOf, mcSeedOf } from '@/domain/stress';

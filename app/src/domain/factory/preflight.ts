@@ -1,3 +1,4 @@
+/** @calc-zone workspace-config */
 import type { Ctx } from '../ctx';
 import { model } from '../model/overlay';
 import { activeArtefacts } from '../scope';

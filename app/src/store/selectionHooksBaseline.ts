@@ -1,3 +1,4 @@
+/** @calc-zone aggregate-views */
 import { useMemo } from 'react';
 import { baselineLocStrat } from '@/domain/portfolio';
 import { useCorePortfolio } from './consolidationHooks';

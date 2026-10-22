@@ -1,3 +1,4 @@
+/** @calc-zone scope-automation */
 import { PHASES, REG_ARTEFACTS } from './catalog';
 import type { WArtefact } from './artefacts';
 import type { Ctx } from './ctx';

@@ -1,3 +1,4 @@
+/** @calc-zone exports */
 import type { Workbook } from 'exceljs';
 import { sum, yearSeries } from '@/domain/economics';
 import type { ResultsData, SheetImages } from './data';

@@ -1,46 +1,34 @@
-import { useMemo, useState } from 'react';
-import { buildOrder } from '@/domain/refshare/depTree';
 import notes from '@/content/refshare/deps-notes.json';
 import { Callout } from '@/ui/widgets/cards';
-import { ALL_GROUPS, ALL_SECTIONS, type DepsModel } from './useDeps';
+import { CYCLES, DATA, labelOf, LAYERS, zoneOf } from './model';
 
-/** The build-order proposal: groups in dependency layers, sections ranked by depth, feedback links reported. Read-only. */
-export function BuildOrder({ m }: { m: DepsModel }) {
-  const [strong, setStrong] = useState(false);
-  const t = useMemo(() => buildOrder(m.deps, ALL_SECTIONS, ALL_GROUPS, strong), [m.deps, strong]);
-  const label = (id: string) => ALL_GROUPS.find((g) => g.id === id)?.label ?? id;
-  const layers = [...new Set(Object.values(t.gLayer))].sort((a, b) => a - b);
-  const moves = ALL_SECTIONS.filter((s) => t.newSeq[s.id] !== undefined && t.newSeq[s.id] !== s.groupSeq).length;
-  const gMoves = ALL_GROUPS.filter((g) => t.newGroupOrder[g.id] !== undefined && t.newGroupOrder[g.id] !== g.order).length;
-  const fb = [...new Set(t.gBroken.map((e) => e.join('>')))];
+/** The build order of the zones: layers computed from the imports, the cycles reported, the links that point backwards listed. Read-only. */
+export function BuildOrder() {
+  const layers = [...new Set(Object.values(LAYERS.layer))].sort((a, b) => a - b);
+  const modules = (id: string) => DATA.zones.find((z) => z.id === id)?.modules ?? 0;
   return (
     <div>
-      <h2>Build order <span className="ac-muted">— {gMoves} group(s) and {moves} section(s) would move to read in dependency order</span></h2>
-      <label className="ac-check"><input type="checkbox" checked={strong} onChange={(e) => setStrong(e.target.checked)} /> strong edges only (calculation inputs)</label>
+      <h2>Build order <span className="ac-muted">— {LAYERS.order.length} zones in {layers.length} layers, {LAYERS.feedback.length} feedback links set aside</span></h2>
       <Callout>{notes.buildOrderNote}</Callout>
-      {layers.map((L) => (
-        <div key={L} style={{ display: 'flex', gap: 10, alignItems: 'flex-start', marginBottom: 10 }}>
-          <strong style={{ minWidth: 78, color: 'var(--ac-blue)' }}>Layer {L}</strong>
+      {layers.map((l) => (
+        <div key={l} data-layer={l} style={{ display: 'flex', gap: 10, alignItems: 'flex-start', marginBottom: 10 }}>
+          <strong style={{ minWidth: 78, color: 'var(--ac-blue)' }}>Layer {l}</strong>
           <div style={{ display: 'flex', gap: 10, flexWrap: 'wrap', flex: 1 }}>
-            {t.gOrder.filter((g) => t.gLayer[g] === L).map((g) => {
-              const secs = ALL_SECTIONS.filter((s) => s.group === g).sort((a, b) => (t.newSeq[a.id] ?? 0) - (t.newSeq[b.id] ?? 0));
-              const cur = ALL_GROUPS.find((x) => x.id === g)?.order, next = t.newGroupOrder[g];
-              return (
-                <div key={g} className="ac-chip" style={{ minWidth: 210, maxWidth: 250 }}>
-                  <strong>{label(g)}</strong>
-                  <div className="ac-muted">order {cur}{next !== cur && <> → <b>{next}</b></>} · {secs.length} sections</div>
-                  {secs.map((s) => <div key={s.id} style={{ fontSize: 11, color: t.newSeq[s.id] !== s.groupSeq ? '#b04600' : '#555' }}><span className="ac-muted">d{t.depth[s.id] ?? 0}</span> {s.label}{t.newSeq[s.id] !== s.groupSeq && ' ↕'}</div>)}
-                </div>
-              );
-            })}
+            {LAYERS.order.filter((z) => LAYERS.layer[z] === l).map((z) => (
+              <div key={z} className="ac-chip" style={{ minWidth: 190, maxWidth: 250 }}>
+                <strong>{zoneOf(z)!.label}</strong>
+                <div className="ac-muted">{zoneOf(z)!.lane} · {modules(z)} modules · position {LAYERS.order.indexOf(z) + 1}</div>
+              </div>
+            ))}
           </div>
         </div>
       ))}
-      {fb.length > 0 && (
-        <Callout kind="warn">🔁 <strong>{fb.length} feedback link{fb.length === 1 ? '' : 's'} had to be set aside to lay the groups out in a line.</strong> These are real dependencies pointing backwards, not errors.
-          <div>{fb.map((k) => { const [a, b] = k.split('>') as [string, string]; return <span key={k} className="ac-badge" style={{ margin: 3 }}>{label(a)} → {label(b)} ({t.gWeight[k] ?? 1})</span>; })}</div>
-        </Callout>
-      )}
+      {CYCLES.map((c) => (
+        <Callout key={c.join()} kind="warn"><span data-cycle={c.length}>🔁 <strong>Cycle of {c.length} zones</strong> (each reaches the others through imports): {c.map(labelOf).join(' · ')}.</span> {notes.cycleNote}</Callout>
+      ))}
+      <h3>Feedback links ({LAYERS.feedback.length})</h3>
+      <p className="ac-muted">Imports that point backwards in the order above; the number is the count of module pairs. They are real dependencies, documented rather than hidden.</p>
+      <ul>{LAYERS.feedback.map((e) => <li key={`${e[0]}>${e[1]}`}>{labelOf(e[0])} → {labelOf(e[1])} ({e[3]})</li>)}</ul>
     </div>
   );
 }

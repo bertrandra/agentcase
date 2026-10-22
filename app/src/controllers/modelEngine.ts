@@ -1,3 +1,4 @@
+/** @calc-zone time-engine */
 import { defineCommand } from '@/store/commands';
 import { appStore } from '@/store/instance';
 import { clampNum, ensureLceBuilt, parseInteger, parseNum } from './modelKit';

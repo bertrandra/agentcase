@@ -1,3 +1,4 @@
+/** @calc-zone run-setup-taxes */
 import { QUAL_ANCHOR } from '../catalog';
 import type { Ctx } from '../ctx';
 import { aiQualityTaxFactor, qualPremium, sddMaturity } from '../model/vtax';

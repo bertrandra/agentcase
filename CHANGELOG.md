@@ -15,6 +15,24 @@ All notable changes to AgentCase, newest first. Product version from v19.0.0 = `
 
 When releasing, follow [docs/BUMP_PROCEDURE.md](docs/BUMP_PROCEDURE.md) (§7 for the legacy file) and add the new version at the top.
 
+## [v20.4.0] 2026-10-22 — Calculation zones, generated dependency graph, affected-test selection (+ compact header)
+
+### New
+- **Calculation zones and owners.** `app/src/domain/zones/catalog.json` lists 18 zones (5 input, 4 calculation, 7 result, 2 shared) and 23 figures. Every module under `src/domain`, every controller, the export modules and the zone hooks carry `/** @calc-zone <id> */`; the module that owns a figure carries `@owner <figure>`. `tests/domain/zones-tags.test.ts` enforces valid tags and exactly one owner per figure; `tests/domain/figure-owners.test.ts` proves that net, ROI, payback, NPV, total benefit, saving %, FTE and velocity are the same on the KPI bar, Results, Financial, the Board variables, the calculation package, the Excel results workbook and the consolidation (single case, five fixtures, and multi-product portfolios). No calculation changed.
+- **Generated dependency graph.** `npm run deps:gen` (`app/scripts/gen-deps.ts`) writes `app/src/generated/dependencies.json` (about 43 KB) from the imports: zones, sections, read / write / zone edges, figure owners and the zones each test reaches. A test and CI (`npm run deps:check`) fail when it is stale.
+- **Section Dependencies shows that graph** (DEV-DEPS-ZONES): graph (staged lanes, SVG nodes and edges, selection with upstream / downstream, side panel with impacted sections and tests, reference sections collapsed), matrix, zones and figures, build order with the cycle report, and tests impacted. The authored `SECTION_DEPS` registry stays in the case and the parameters workbook unchanged but is no longer displayed or edited; the `deps.*` commands stay registered.
+- **Rule that avoids useless tests.** `npm run test:affected` maps changed files to zones and sections and runs the test files whose import closure reaches them plus the contract tests; configuration, fixtures, helpers, scripts, the foundation zone, unknown files or a selection above 60% run the full suite. `npm run validate:affected` checks recall by mutation. See `docs/TEST_SELECTION.md`. The full suite stays mandatory before a merge and a release.
+- **Duplicate-code check.** `npm run dup` (jscpd, devDependency) fails only on duplication above the current level (`app/dup-baseline.json`: 25 clones, 177 lines).
+
+### Changed
+- Performance budget `sizeMB` 2.9 -> 3.0: the build is 2.92 MiB (was 2.87) with the graph data and the new page; gzip 0.89 MiB is within its budget.
+- Architecture sections (in the app) and `docs/ARCHITECTURE.md` section 13 describe zones, tags, the generator and `test:affected`; `docs/BUMP_PROCEDURE.md` checklist updated.
+
+### Tests replaced
+- `tests/ui/sections/deps.test.tsx`: the legacy-text parity and the edge-editor assertions replaced by tests of the generated content (intentional, requested; see DEV-DEPS-ZONES).
+
+**Golden case:** unchanged.
+
 ## [v20.3.0] 2026-10-22 — Architecture sections rewritten
 
 ### Changed

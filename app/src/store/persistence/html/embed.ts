@@ -1,3 +1,4 @@
+/** @calc-zone exports */
 /** Id of the one script that carries the case inside a saved HTML copy of the application. */
 export const SNAPSHOT_SCRIPT_ID = 'agentcase-snapshot';
 

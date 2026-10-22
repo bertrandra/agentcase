@@ -1,3 +1,4 @@
+/** @calc-zone workspace-config */
 import { appStore } from '@/store/instance';
 
 /** Undo / redo — the only way the UI moves through history. Both return the label of the step they moved, or null. */

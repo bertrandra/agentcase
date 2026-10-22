@@ -1,3 +1,4 @@
+/** @calc-zone stress */
 import type { McParam } from './mcParams';
 
 /** Deterministic RNG (mulberry32) — reproducible runs for auditability. */

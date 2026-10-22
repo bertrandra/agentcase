@@ -1,3 +1,4 @@
+/** @calc-zone exports */
 import { fmtRoiPct } from '@/domain/economics';
 import { fmtK } from '@/domain/format';
 import type { SummaryRow } from '@/domain/portfolio';

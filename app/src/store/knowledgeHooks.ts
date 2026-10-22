@@ -1,3 +1,4 @@
+/** @calc-zone knowledge-hub */
 import { useMemo } from 'react';
 import {
   commonSubsetValue, corePortfolio, infraView, knowledgeTable, validate, waveEffects, type HubSettings, type InfraView, type Issue, type KnowledgeTable, type SubsetField, type WaveEffect,

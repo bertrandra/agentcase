@@ -1,3 +1,4 @@
+/** @calc-zone aggregate-views */
 import { engineNow } from '../canonical';
 import type { Ctx } from '../ctx';
 import { compareData, scenarioSet, sensitivityMatrix, sensitivityRows, type SensRow } from '../stress';

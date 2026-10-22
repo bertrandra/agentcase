@@ -1,3 +1,4 @@
+/** @calc-zone time-engine */
 import type { Ctx } from '../ctx';
 import { modelRaw } from '../model/raw';
 import type { ModelResult } from '../types/model';

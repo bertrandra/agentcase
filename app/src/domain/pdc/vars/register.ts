@@ -1,3 +1,4 @@
+/** @calc-zone workspace-config */
 import type { Ctx } from '../../ctx';
 import { ASSUMPTION_DEFS, type Validated } from '../assumptions';
 import { ddRows, isDone } from '../dd';

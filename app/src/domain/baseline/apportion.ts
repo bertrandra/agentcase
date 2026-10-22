@@ -1,3 +1,4 @@
+/** @calc-zone rate-card-team */
 export const FTE_STEP = 0.5;
 export const snapFTE = (v: unknown): number => { const n = parseFloat(String(v)); return isNaN(n) || n < 0 ? 0 : Math.round(n / FTE_STEP) * FTE_STEP; };
 

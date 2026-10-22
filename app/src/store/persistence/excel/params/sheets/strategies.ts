@@ -1,3 +1,4 @@
+/** @calc-zone exports */
 import { LOCATIONS } from '@/domain/catalog';
 import { frz, head, sheet } from '../kit';
 import { num, okKey, str } from '../safe';

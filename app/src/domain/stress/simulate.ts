@@ -1,3 +1,4 @@
+/** @calc-zone stress @owner mc-distribution */
 import type { Ctx } from '../ctx';
 import { normalCdf, quantile, stdNormal, triInv } from '../model/numerics';
 import { activeCurve } from '../model/overlay';

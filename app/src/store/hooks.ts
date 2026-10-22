@@ -1,3 +1,4 @@
+/** @calc-zone foundation */
 import { useMemo, useSyncExternalStore } from 'react';
 import { computeCase, makeCtx, type CaseState, type Ctx } from '@/domain';
 import { canRedo, canUndo } from './history';

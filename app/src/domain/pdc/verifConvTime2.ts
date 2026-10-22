@@ -1,3 +1,4 @@
+/** @calc-zone verification-verdict */
 import { engineNow } from '../canonical';
 import type { Ctx } from '../ctx';
 import { activeCurve, model } from '../model/overlay';

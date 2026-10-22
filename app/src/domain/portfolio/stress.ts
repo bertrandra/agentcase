@@ -1,3 +1,4 @@
+/** @calc-zone stress */
 import { mcDraws, mcParamsOf, mcPearson, mcStats } from '../stress';
 import { pfStressFingerprint } from './stressFingerprint';
 import { clampRho, commonShock, productSeed } from './stressSeed';

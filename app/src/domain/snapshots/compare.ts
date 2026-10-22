@@ -1,3 +1,4 @@
+/** @calc-zone exports */
 import { makeCtx } from '../ctx';
 import { VARIABLES } from '../pdc/variables';
 import type { CaseState } from '../types/state';

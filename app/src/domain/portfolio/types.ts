@@ -1,3 +1,4 @@
+/** @calc-zone foundation */
 import type { CaseState, DomState } from '../types/state';
 
 /** Everything of a case except the entry team (shared defaults of the portfolio). */

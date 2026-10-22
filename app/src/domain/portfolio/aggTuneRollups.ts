@@ -1,3 +1,4 @@
+/** @calc-zone aggregate-views */
 import type { Ctx } from '../ctx';
 import {
   ELIG_PREREQS, NATURE_LABEL, abaqueRows, blankReadiness, eligLoc, eligNature, eligState, eligVerdict, hriSummary, opModelView, pillarKey, profileById, readinessBand, readinessIndex,

@@ -1,3 +1,4 @@
+/** @calc-zone foundation */
 import { defineCommand } from '@/store/commands';
 import { refitPotential } from '@/store/derive';
 import { appStore } from '@/store/instance';

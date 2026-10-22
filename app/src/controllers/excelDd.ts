@@ -1,3 +1,4 @@
+/** @calc-zone exports */
 import type { DdState } from '@/domain/pdc/dd';
 import { defineCommand } from '@/store/commands';
 import { appStore } from '@/store/instance';

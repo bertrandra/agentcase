@@ -1,3 +1,4 @@
+/** @calc-zone exports */
 import { consolidate, type Consolidated } from './consolidate';
 import { calendarOf } from './calendar';
 import { keptMonths } from './timeline';

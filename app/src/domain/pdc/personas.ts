@@ -1,3 +1,4 @@
+/** @calc-zone workspace-config */
 export interface PersonaSeq { on: boolean; steps: { label: string; sections: string[] }[] }
 export interface Persona { id: string; label: string; protected: boolean; order: number; compactNav?: boolean; default?: boolean; seq?: PersonaSeq }
 export interface MenuGroup { id: string; label: string; order: number; description?: string }

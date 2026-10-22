@@ -1,3 +1,4 @@
+/** @calc-zone product-resolution */
 import { engagementCoef } from '../engagement';
 import { khEnabled } from '../knowledge';
 import { ctxOf } from './memo';

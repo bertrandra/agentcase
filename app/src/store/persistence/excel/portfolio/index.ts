@@ -1,3 +1,4 @@
+/** @calc-zone exports */
 import type * as XL from 'exceljs';
 import type { Portfolio } from '@/domain/portfolio';
 import type { Doc } from '@/store/types';

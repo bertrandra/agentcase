@@ -1,3 +1,4 @@
+/** @calc-zone scope-automation */
 import { REG_ARTEFACTS, REG_NORMS } from '../catalog';
 import type { Ctx } from '../ctx';
 import industries from './industries.json';

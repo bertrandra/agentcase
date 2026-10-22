@@ -1,3 +1,4 @@
+/** @calc-zone run-setup-taxes */
 import { EVT_CLASS_ORDER, EVT_CLASS_SEED } from '../catalog';
 import type { Ctx } from '../ctx';
 import type { WArtefact } from '../artefacts';

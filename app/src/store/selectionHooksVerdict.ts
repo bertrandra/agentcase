@@ -1,3 +1,4 @@
+/** @calc-zone aggregate-views */
 import { aggregateResults, aggregateStrategies, type ResultsAgg, type StrategyAgg } from '@/domain/portfolio';
 import { useAggregate } from './selectionHooksEconomics';
 

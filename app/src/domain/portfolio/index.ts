@@ -1,3 +1,4 @@
+/** @calc-zone foundation */
 export * from './types';
 export { parseRef, isOverridableRef, overrideRefs } from './keys';
 export { resolveProduct, infraShares } from './resolve';

@@ -1,3 +1,4 @@
+/** @calc-zone stress */
 import type { ScenarioResult } from './scenarios';
 
 /** Cumulative net cash-flow at month `mo`: the Time Engine's own cumulative series (setup spread as the engine spreads it), 0 at month 0. */

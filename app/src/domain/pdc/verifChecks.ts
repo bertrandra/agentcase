@@ -1,3 +1,4 @@
+/** @calc-zone verification-verdict */
 import type { Ctx } from '../ctx';
 import { engineNow } from '../canonical';
 import { monthlySeries } from '../economics/monthlySeries';

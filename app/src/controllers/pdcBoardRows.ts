@@ -1,3 +1,4 @@
+/** @calc-zone workspace-config */
 import type { BoardCard, BoardRow, DynSection } from '@/domain/pdc/board';
 import { bindable, moveRow, newCard, newRow } from '@/domain/pdc/boardRows';
 import { defineCommand } from '@/store/commands';

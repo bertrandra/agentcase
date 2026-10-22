@@ -1,3 +1,4 @@
+/** @calc-zone foundation */
 import { useMemo } from 'react';
 import { scheduledProducts, unscheduledIds, type Portfolio } from '@/domain/portfolio';
 import { useCorePortfolio, useDisplayScope } from './consolidationHooks';

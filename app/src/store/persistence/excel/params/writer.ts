@@ -1,3 +1,4 @@
+/** @calc-zone exports */
 import type * as XL from 'exceljs';
 import { makeCtx } from '@/domain';
 import { engineNow } from '@/domain/canonical';

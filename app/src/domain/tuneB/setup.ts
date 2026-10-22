@@ -1,3 +1,4 @@
+/** @calc-zone run-setup-taxes */
 import type { Ctx } from '../ctx';
 
 export interface SetupLine { id: 'tooling' | 'training' | 'coaching' | 'governance'; label: string; input: string; amount: number; h1: string; h2: string; text: string }

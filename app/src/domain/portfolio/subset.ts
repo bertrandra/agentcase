@@ -1,3 +1,4 @@
+/** @calc-zone knowledge-hub */
 import type { CommonCase, KnowledgeSubset } from './types';
 
 export interface DomPatch { values: Record<string, string>; checked: Record<string, boolean> }

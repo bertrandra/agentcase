@@ -1,3 +1,4 @@
+/** @calc-zone workspace-config */
 import { v } from './types';
 
 /** [variable id, label, checkbox id, scope]: every tick box of the app as an On/Off variable. */

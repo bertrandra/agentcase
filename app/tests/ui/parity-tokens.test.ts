@@ -19,7 +19,7 @@ describe('shell chrome keeps the legacy values', () => {
     for (const w of [300, 400, 700]) expect(fonts).toContain(`font-weight: ${w}`);
   });
   it('header banner: gradient, 30px/300 title', () => {
-    for (const v of ['linear-gradient(135deg, #0058AB 0%, #121A38 100%)', 'padding: 2rem']) expect(rule('.ac-top')).toContain(v);
+    for (const v of ['linear-gradient(135deg, #0058AB 0%, #121A38 100%)', 'padding: .75rem 2rem']) expect(rule('.ac-top')).toContain(v);
     expect(rule('.ac-brand')).toMatch(/font-size: 30px; font-weight: 300; letter-spacing: -\.01em/);
   });
   it('KPI bar: sticky blue gradient, 16px/700 values, 9.5px uppercase labels', () => {

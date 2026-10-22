@@ -1,3 +1,4 @@
+/** @calc-zone stress */
 import type { McStats } from '../stress';
 
 export interface PfStressOpts {

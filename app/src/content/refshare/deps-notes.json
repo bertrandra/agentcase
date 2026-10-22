@@ -1,6 +1,19 @@
 {
- "outside": "navigation and reference surfaces (🏠 Welcome, 📖 Glossary, 🗺️ Reference map, 📚 Sources, 🏛️ Architecture, 🔗 this page), configuration surfaces (👥 Persona management, 📊 Board, 📥 Import/Export, 🗂️ Sessions), the 🏭 Factory meta-model (a self-contained subsystem with its own entity graph), and the six 🧠 Model Engine phases — those are opt-in overlays that are byte-neutral until engaged, so they carry no edge at their shipped defaults.",
- "provenance": "Nodes and rows derive from the section catalogue — a deleted section cannot appear here. Edges are stored in the case (SECTION_DEPS, with their descriptions in SECTION_DEPS_DESC) and edited on the Edit dependencies sub-tab; every edit is a command, so Ctrl+Z undoes it. This page documents the structure for readers: it does not drive any recompute.",
- "buildOrderNote": "Read-only in this build. The proposal never changes the menu: applying a new group or section order is done in Persona management (Configure group), which owns the menu structure.",
- "legend": { "strong": "strong (calculation input)", "soft": "soft (annotation / signal)" }
+ "provenance": "Generated at build time from the imports of the code (npm run deps:gen): do not edit by hand. A stale file fails tests/domain/deps-fresh.test.ts. Sections come from the section registries, zones from the @calc-zone tags, and an edge exists only where a module really imports another.",
+ "authored": "The hand-written dependency registry of earlier versions (SECTION_DEPS and its descriptions) is still stored in the case and in the parameters workbook, unchanged, so old files and workbooks keep working. It is no longer displayed or edited here (deviation DEV-DEPS-ZONES): this page now shows what the code actually does.",
+ "buildOrderNote": "Read-only. Layers are computed from the zone imports: layer 0 feeds the others. Menu order is not affected; the build order is a reading order for the code.",
+ "cycleNote": "These zones import each other, typically a read-out module that reads the engine inside a zone the engine also reads. The cycle is reported, not hidden: the layers above are laid out by setting the weakest backward links aside.",
+ "rule": "The rule that avoids useless tests: after a change, run the tests whose import closure touches the changed zones, the zones they feed and the sections they impact, always with the contract tests. Anything outside the mapped graph, or a very wide selection, runs the full suite. The full suite stays mandatory before a merge or a release.",
+ "ruleSteps": [
+  "1. Map each changed file to its zone (the @calc-zone tag) or its section; a file the graph does not know means the full suite.",
+  "2. Add the zones fed by those zones and the sections that read or write them (the impact).",
+  "3. Select the test files whose import closure touches any of them, plus what vitest related finds for the changed files, plus the contract tests.",
+  "4. Run the full suite instead when more than 60% would run anyway, when the foundation zone changed, or when a configuration, helper, fixture or script file changed.",
+  "5. Before a merge or a release, and in CI on the main branch, always run the full suite."
+ ],
+ "legend": {
+  "read": "reads: the source zone feeds the target (imports)",
+  "write": "writes: an input section changes a zone through a controller command",
+  "back": "dashed: points backwards in the build order (feedback link)"
+ }
 }

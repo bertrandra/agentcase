@@ -1,3 +1,4 @@
+/** @calc-zone exports */
 import { appStore } from '@/store/instance';
 import { checkLoadedCase } from './calcStaleness';
 import { openSnapshot, toPortfolioSnapshot } from '@/store/persistence/portfolioSnapshot';

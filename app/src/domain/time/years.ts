@@ -1,3 +1,4 @@
+/** @calc-zone time-engine @owner savings-per-year */
 import type { MonthRow } from './rows';
 
 export interface YearRow {

@@ -1,3 +1,4 @@
+/** @calc-zone exports */
 import type * as XL from 'exceljs';
 import type { CostModel, RateCardBlock } from '@/domain/portfolio';
 import { FIRST, txt } from './layout';

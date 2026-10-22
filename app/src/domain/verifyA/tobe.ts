@@ -1,3 +1,4 @@
+/** @calc-zone delivery-views */
 import { LOCATIONS } from '../catalog';
 import { artTeamSkill, REG_TEAM_SKILLS, SKILL_MAP_DEFAULT, skillMapOf } from '../baseline/skills';
 import { pinIndex } from '../baseline/teamWeights';

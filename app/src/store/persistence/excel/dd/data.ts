@@ -1,3 +1,4 @@
+/** @calc-zone exports */
 import { makeCtx, type Ctx } from '@/domain';
 import { engineNow } from '@/domain/canonical';
 import type { Validated } from '@/domain/pdc/assumptions';

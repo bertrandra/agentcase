@@ -1,3 +1,4 @@
+/** @calc-zone product-resolution */
 import { khEnabled } from '../knowledge';
 import type { CaseState } from '../types/state';
 import { allocateCents, teamEtp } from './alloc';

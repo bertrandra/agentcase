@@ -1,3 +1,4 @@
+/** @calc-zone time-engine @owner baseline-cost, run-cost-per-year */
 import type { Ctx } from '../ctx';
 import { khRunAnnual } from '../knowledge';
 import { targetBlendedTJM, teamInCost } from '../location';

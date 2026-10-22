@@ -1,3 +1,4 @@
+/** @calc-zone workspace-config */
 import type { MenuGroup } from '../pdc/personas';
 import { bySeq, groupsByOrder, reachable, type NavSection, type PersonaLists, type PersonaOrder } from './layout';
 

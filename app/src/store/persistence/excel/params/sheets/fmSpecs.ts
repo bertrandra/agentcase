@@ -1,3 +1,4 @@
+/** @calc-zone exports */
 /** Columns of the Factory Meta-Model sheets: [header, width, field]. Program Increments / Sprints / Story Assignments have no UI and are not part of the round trip. */
 export type FmCol = [string, number, string];
 export interface FmSpec { sheet: string; key: string; cols: FmCol[] }

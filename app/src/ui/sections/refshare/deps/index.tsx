@@ -1,42 +1,41 @@
+import { useState } from 'react';
 import content from '@/content/refshare/deps.json';
 import notes from '@/content/refshare/deps-notes.json';
-import { applyPrunedDeps } from '@/controllers/refshare';
-import { pruneDeps } from '@/domain/refshare/deps';
 import { Badge, Callout } from '@/ui/widgets/cards';
 import { Rich } from '@/ui/widgets/Rich';
 import { Tabs } from '@/ui/widgets/Tabs';
 import { SectionFrame } from '@/ui/zones/SectionFrame';
 import { BuildOrder } from './BuildOrder';
-import { Descriptions } from './Descriptions';
-import { Editor } from './Editor';
 import { Graph } from './Graph';
 import { Matrix } from './Matrix';
-import { ALL_SECTIONS, useDeps } from './useDeps';
+import { DATA, DRAWN, LAYERS } from './model';
+import { Panel } from './Panel';
+import { Tests } from './Tests';
+import { Zones } from './Zones';
 
-/** Section Dependencies — which section feeds which: graph, matrix, descriptions, build order and the edge editor (undoable). */
+/** Section Dependencies: the dependency graph generated from the code (zones, sections, tests). Read-only: `npm run deps:gen` rewrites it, nothing is edited here. */
 export default function DepsSection() {
-  const m = useDeps();
-  const pruned = pruneDeps(m.deps, m.desc, ALL_SECTIONS);
+  const [sel, setSel] = useState<string | null>(null);
+  const zoneEdges = DATA.edges.filter((e) => e[2] === 'z').length;
   const tabs = [
-    { id: 'graph', label: '🕸️ Dependency graph', render: () => <Graph m={m} /> },
-    { id: 'matrix', label: '▦ Dependency matrix', render: () => <Matrix m={m} /> },
-    { id: 'desc', label: '📝 Descriptions & impact', render: () => <Descriptions m={m} /> },
-    { id: 'tree', label: '🌳 Build order', render: () => <BuildOrder m={m} /> },
-    { id: 'edit', label: '✎ Edit dependencies', render: () => <Editor m={m} /> },
+    { id: 'graph', label: '🕸️ Dependency graph', render: () => (
+      <div>
+        <h2>Dependency graph <span className="ac-muted">— lanes run from inputs to results; click a node to highlight its upstream and downstream</span></h2>
+        <p className="ac-muted"><span style={{ color: '#0058AB' }}>→</span> {notes.legend.read} · <span style={{ color: '#b04600' }}>→</span> {notes.legend.write} · {notes.legend.back}</p>
+        <Panel sel={sel} onSelect={setSel} />
+        <Graph sel={sel} onSelect={setSel} />
+      </div>
+    ) },
+    { id: 'matrix', label: '▦ Dependency matrix', render: () => <Matrix /> },
+    { id: 'zones', label: '📝 Zones & figures', render: () => <Zones /> },
+    { id: 'tree', label: '🌳 Build order', render: () => <BuildOrder /> },
+    { id: 'tests', label: '🧪 Tests impacted', render: () => <Tests initial={sel} /> },
   ];
   return (
     <SectionFrame title={content.title} help={<Rich nodes={content.help} />}
       input={<>
-        <p><Badge tone="blue">{content.version}</Badge></p>
-        <Callout>A dependency &amp; impact matrix over the sections that participate in the calculation/data chain. Read a marked cell as <b>row → column</b>: the row section <i>feeds / impacts</i> the column section. ● = strong (a calculation input) · ○ = soft (an annotation or informational signal). Leaf display views are omitted. Click a section name to open it.</Callout>
-        {pruned.dropped.length > 0 && (
-          <Callout kind="warn">🧹 <b>{pruned.dropped.length} edge reference(s) point at deleted sections:</b> {pruned.dropped.join(' · ')}{' '}
-            <button type="button" className="ac-btn" onClick={() => applyPrunedDeps(pruned.deps, pruned.desc)}>Prune them</button></Callout>
-        )}
-        {m.mismatches.length > 0 && (
-          <Callout kind="warn">⚠ <b>CC-DEP-02 — {m.mismatches.length} section(s) whose tag disagrees with its edges:</b> {m.mismatches.map((s) => s.label).join(' · ')}. Either the tag or the edges are wrong; advisory only — nothing is auto-corrected.</Callout>
-        )}
-        <p><span style={{ color: '#0058AB' }}>●</span> {notes.legend.strong} · <span style={{ color: '#b04600' }}>○</span> {notes.legend.soft} · <span className="ac-muted">Row impacts column · {m.edges} edges · {m.sources.length} of {ALL_SECTIONS.length} sections drive something</span></p>
+        <p><Badge tone="blue">{content.version}</Badge> <span className="ac-muted">do not edit by hand: <code>npm run deps:gen</code> rewrites it</span></p>
+        <Callout>Generated at build time from the code: {DRAWN.length} calculation zones, {DATA.sections.length} sections, {DATA.edges.length} edges ({zoneEdges} between zones), {DATA.figures.length} figures with one owner each, {DATA.counts.tests} test files, in {Math.max(...Object.values(LAYERS.layer)) + 1} build layers. {notes.authored}</Callout>
       </>}
       result={<Tabs tabs={tabs} label="Dependency views" />} />
   );

@@ -1,3 +1,4 @@
+/** @calc-zone exports */
 import { ParamsImportError, str } from '../params/safe';
 import type { Cell, Sheets } from '../params/types';
 import { PF_HEADERS } from './names';

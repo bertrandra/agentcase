@@ -1,3 +1,4 @@
+/** @calc-zone exports */
 import { groupColor as navGroupColor } from '@/domain/nav/layout';
 import { groupsByOrder } from '@/domain/pdc/personas';
 import { blue, frz, grey, head, listDV, sheet } from '../kit';

@@ -1,3 +1,4 @@
+/** @calc-zone workspace-config */
 import type { FgParams } from './types';
 
 /** Generator defaults (legacy FG_DEFAULT). PROVENANCE: unvalidated engineering estimates, simulated — not measured data. */

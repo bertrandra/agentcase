@@ -1,3 +1,4 @@
+/** @calc-zone tuning-programme */
 /** AI Readiness Index: 10 dimensions x 3 statements, answered No (0) / Partial (50) / Yes (100) or left blank (null). */
 export interface ReadinessDim { key: string; label: string; q: [string, string, string] }
 export type ReadinessAns = Record<string, (number | null)[]>

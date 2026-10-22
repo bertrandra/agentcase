@@ -1,3 +1,4 @@
+/** @calc-zone delivery-views @owner kpi-scorecard */
 import type { Ctx } from '../ctx';
 import { fmtK } from '../format';
 import { model } from '../model/overlay';

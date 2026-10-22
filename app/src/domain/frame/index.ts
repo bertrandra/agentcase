@@ -1,3 +1,4 @@
+/** @calc-zone scope-automation */
 export * from './profile';
 export * from './onboarding';
 export { ENGAGE_COEF } from '../catalog';

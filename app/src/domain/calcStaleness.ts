@@ -1,3 +1,4 @@
+/** @calc-zone exports */
 import { buildCalcPackage, parseCalcPackage, type CalcPackage, type PackageHeadline } from './calcPackage';
 import type { CaseState } from './types/state';
 

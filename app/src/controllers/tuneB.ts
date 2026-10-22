@@ -1,3 +1,4 @@
+/** @calc-zone run-setup-taxes */
 import { COEF_DEFAULT, STATUS_LIFECYCLE, TOKEN_MODELS_DEFAULT } from '@/domain/catalog';
 import { defineCommand } from '@/store/commands';
 import { appStore } from '@/store/instance';

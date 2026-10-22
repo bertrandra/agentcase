@@ -1,3 +1,4 @@
+/** @calc-zone exports */
 import { clean } from '@/domain/portfolio/products';
 import type { KnowledgeDomain, KnowledgeSubset } from '@/domain/portfolio';
 import { cleanText } from '../params/safe';

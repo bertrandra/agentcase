@@ -1,3 +1,4 @@
+/** @calc-zone stress */
 /** Keys that do not feed the model: personas/navigation, the snapshot library, the tracker (legacy mcFingerprint deny-list). */
 const EXCLUDED = new Set(['PERSONAS', 'PERSONA_SECTIONS', 'PERSONA_SECTION_ORDER', 'readinessAns', 'trackActuals', 'namedSnapshots', 'GROUPS', 'GROUP_COLORS',
   'sectionGroups', 'SECTION_NAV_STYLE', 'SECTION_DEPS', 'SECTION_DEPS_DESC', 'dynamicSections', 'savedAt', 'currentPersona', 'calculationPackage']);

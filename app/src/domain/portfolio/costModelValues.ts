@@ -1,3 +1,4 @@
+/** @calc-zone exports */
 import { lay, type Picked } from './costModelAxis';
 import { addRows, row } from './costModelRow';
 import type { CostRow, CostTable } from './costModelTypes';
