@@ -1,3 +1,4 @@
+import { fteBeforeAfter, type FteBeforeAfter } from '../economics/fte';
 import type { Consolidated } from './consolidate';
 import { portfolioCostReduction, weightedAutomation, weightedVelocity, yearTable, type Summary } from './headline';
 import type { Series } from './series';
@@ -10,6 +11,8 @@ export interface PortfolioHeadline extends Summary {
   eff: number;
   ceiling: number;
   costReduction: ReturnType<typeof portfolioCostReduction>;
+  /** total human FTE before / after (horizon end), summed over the planned products */
+  fte: FteBeforeAfter;
   /** calendar-year sums: savings, run cost, setup, net */
   years: Omit<ReturnType<typeof yearTable>, 'endYear'>;
   endYear: { savings: number; run: number; index: number };
@@ -20,7 +23,8 @@ export interface PortfolioHeadline extends Summary {
 /** The figures of any group of planned products (portfolio, wave): its consolidated summary plus what the top bar and the results read, from the existing owners. */
 function groupHeadline(items: ProductView[], series: Series, summary: Summary): PortfolioHeadline {
   const { endYear, ...years } = yearTable(series), runs = items.map((v) => v.run), auto = weightedAutomation(runs);
-  return { ...summary, velocityPct: weightedVelocity(runs), ...auto, costReduction: portfolioCostReduction(runs), years, endYear, products: items.length };
+  const after = runs.reduce((a, r) => a + (r.engine.years().at(-1)?.totalHumanFteEnd ?? 0), 0), before = runs.reduce((a, r) => a + r.baseEtp, 0);
+  return { ...summary, velocityPct: weightedVelocity(runs), ...auto, costReduction: portfolioCostReduction(runs), fte: fteBeforeAfter(before, after), years, endYear, products: items.length };
 }
 
 const memo = new WeakMap<object, PortfolioHeadline>();
