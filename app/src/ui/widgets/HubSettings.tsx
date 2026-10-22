@@ -1,10 +1,10 @@
-import { useState } from 'react';
+import { useId, useState } from 'react';
 import { setPortfolioHub } from '@/controllers/portfolio';
 import type { HubSettings as Hub } from '@/domain/portfolio';
 import { useHub, useKnowledgeView } from '@/store/knowledgeHooks';
 
 import { toast } from '../uiState';
-import { Callout, Panel } from './cards';
+import { Callout } from './cards';
 import { NumField } from './CommitField';
 
 /** Euro with cents: the shares are apportioned to the cent. */
@@ -41,7 +41,7 @@ function Conservation() {
 
 /** The Knowledge Hub shared by the portfolio: default activation, monthly infrastructure and how it is charged to the products (spec F24, F30). */
 export function HubSettings() {
-  const hub = useHub(), [error, setError] = useState('');
+  const hub = useHub(), [error, setError] = useState(''), tid = useId();
   const commitInfra = (raw: string) => {
     const n = parseFloat(raw);
     if (!(n >= 0) || !Number.isFinite(n)) { setError('L’infrastructure doit être un nombre supérieur ou égal à 0.'); return; }
@@ -49,7 +49,8 @@ export function HubSettings() {
     setPortfolioHub({ infraMonthly: n });
   };
   return (
-    <Panel title="Knowledge Hub du portefeuille (commun à tous les produits)">
+    <section className="ac-panel" aria-labelledby={tid}>
+      <header><h2 id={tid}>Knowledge Hub du portefeuille (commun à tous les produits)</h2></header>
       <label className="ac-check">
         <input type="checkbox" checked={hub.enabled} onChange={(e) => { if (setPortfolioHub({ enabled: e.target.checked })) toast(e.target.checked ? 'Hub activé par défaut' : 'Hub désactivé par défaut'); }} /> Hub activé par défaut (hérité par les produits)
       </label>
@@ -68,6 +69,6 @@ export function HubSettings() {
       </fieldset>
       <Conservation />
       <Callout>La curation et la mise en place restent propres à chaque produit (son sous-ensemble) ; seule l’infrastructure est commune.</Callout>
-    </Panel>
+    </section>
   );
 }
