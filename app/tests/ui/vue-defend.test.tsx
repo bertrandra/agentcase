@@ -40,7 +40,7 @@ const SPECS: Spec[] = [
   { id: 'duediligence', title: /Due diligence/, caption: /Due diligence by product/,
     row: (id) => { const r = dueDiligenceByProduct(pf(), [id], dd).rows[0]!; return s(r.items, r.confirmed, r.open, `${r.pct}%`, r.invisible, r.ceilCover === null ? 'n/a' : `${Math.round(r.ceilCover * 100)}%`); },
     total: (l) => { const t = dueDiligenceByProduct(pf(), l, dd).totals; return s(t.items, t.confirmed, t.open, `${t.pct}%`, t.invisible, ''); },
-    drill: { caption: /Due diligence/, shown: (id) => [`Items to confirm${dueDiligenceByProduct(pf(), [id], dd).rows[0]!.items}`] } },
+    drill: { caption: /Due diligence register of the product/, shown: (id) => { const r = dueDiligenceByProduct(pf(), [id], dd).rows[0]!; return [`${r.items}Items to confirm`, `${r.confirmed} (${r.pct}%)`, r.groups[0]!.group]; } } },
 ];
 
 describe.each(SPECS)('defend aggregate: $id', (sp) => {

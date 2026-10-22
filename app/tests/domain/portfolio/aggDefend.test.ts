@@ -56,6 +56,7 @@ describe('dueDiligenceByProduct', () => {
     for (const r of a.rows) {
       const c = productCtx(pf, r.id), rows = ddRows(c, dd, {});
       expect(r.items).toBe(rows.length); expect(r.confirmed).toBe(rows.filter((x) => isDone(c, x)).length); expect(r.open).toBe(r.items - r.confirmed); expect(r.ceilCover).toBe(ceilingCoverage(c, rows));
+      expect(r.groups.map((g) => g.group)).toEqual([...new Set(rows.map((x) => x.g))]); expect(r.groups.map((g) => g.items)).toEqual(r.groups.map((g) => rows.filter((x) => x.g === g.group).length));
       expect(r.invisible).toBe(rows.filter((x) => x.id.startsWith('cf-') && x.edit === 'NONE').length);
     }
     expect(a.totals.items).toBe(a.rows.reduce((s, r) => s + r.items, 0)); expect(a.totals.confirmed + a.totals.open).toBe(a.totals.items);

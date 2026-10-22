@@ -42,12 +42,15 @@ export function verifByProduct(pf: Portfolio, ids: string[], rt: ConvRuntime = {
 }
 
 /** Due diligence: items to confirm, confirmed or waived, embedded coefficients editable nowhere (PC5), glass-ceiling coverage (null when no row carries a share). */
-export type DdProductRow = AggProduct & { items: number; confirmed: number; open: number; pct: number; invisible: number; ceilCover: number | null };
+export interface DdGroup { group: string; items: number; confirmed: number }
+export type DdProductRow = AggProduct & { items: number; confirmed: number; open: number; pct: number; invisible: number; ceilCover: number | null; groups: DdGroup[] };
 export type DdTotals = { items: number; confirmed: number; open: number; pct: number; invisible: number };
 export function dueDiligenceByProduct(pf: Portfolio, ids: string[], base: DdDoc & AssumptionBase): { rows: DdProductRow[]; totals: DdTotals } {
   const rows = perProduct(pf, ids, (c, p) => {
     const list = ddRows(c, base, validatedOf(pf, p.id)), done = list.filter((r) => isDone(c, r)).length;
-    return { items: list.length, confirmed: done, open: list.length - done, pct: list.length ? Math.round((done / list.length) * 100) : 0, invisible: list.filter((r) => r.id.startsWith('cf-') && r.edit === 'NONE').length, ceilCover: ceilingCoverage(c, list) };
+    const by = new Map<string, DdGroup>();
+    for (const r of list) { const g = by.get(r.g) ?? { group: r.g, items: 0, confirmed: 0 }; g.items++; if (isDone(c, r)) g.confirmed++; by.set(r.g, g); }
+    return { items: list.length, confirmed: done, open: list.length - done, pct: list.length ? Math.round((done / list.length) * 100) : 0, invisible: list.filter((r) => r.id.startsWith('cf-') && r.edit === 'NONE').length, ceilCover: ceilingCoverage(c, list), groups: [...by.values()] };
   });
   const sum = (k: 'items' | 'confirmed' | 'open' | 'invisible'): number => rows.reduce((a, r) => a + r[k], 0), items = sum('items'), confirmed = sum('confirmed');
   return { rows, totals: { items, confirmed, open: sum('open'), pct: items ? Math.round((confirmed / items) * 100) : 0, invisible: sum('invisible') } };
