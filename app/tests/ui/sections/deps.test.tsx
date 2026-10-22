@@ -14,8 +14,8 @@ const tab = (name: string) => fireEvent.click(screen.getByRole('tab', { name }))
 
 describe('deps section', () => {
   it('shows every figure and heading the legacy section showed (4 fixtures)', () => {
-    // legacy: 79 sections, 23 outside the graph; the catalogue now also holds the 5 Portefeuille sections (84 / 28)
-    expectParity('deps', Deps, { ignore: [79, 23], headings: ['Section Dependencies', '● strong (calculation input)', '○ soft (annotation / signal)', 'Row impacts column · 148 edges · 30 of 84 sections drive something', 'Dependency graph', 'Dependency matrix', 'Descriptions & impact', 'Build order', 'Edit dependencies', '1 · FRAME', '10 · PRESENT', 'Deliberately outside the graph (28 sections)', 'Input team', 'Rate Card'] });
+    // legacy: 79 sections, 23 outside the graph; the catalogue now also holds the 6 Portefeuille sections (85 / 29)
+    expectParity('deps', Deps, { ignore: [79, 23], headings: ['Section Dependencies', '● strong (calculation input)', '○ soft (annotation / signal)', 'Row impacts column · 148 edges · 30 of 85 sections drive something', 'Dependency graph', 'Dependency matrix', 'Descriptions & impact', 'Build order', 'Edit dependencies', '1 · FRAME', '10 · PRESENT', 'Deliberately outside the graph (29 sections)', 'Input team', 'Rate Card'] });
   });
   it('the graph isolates the links of a hovered node and opens a section on click', () => {
     const { container } = render(<Deps />);
@@ -32,8 +32,8 @@ describe('deps section', () => {
     tab('▦ Dependency matrix');
     expect(screen.getByText(/30 participating sections|participating sections/)).toBeTruthy();
     expect(screen.getAllByText('●').length + screen.getAllByText('○').length).toBeGreaterThanOrEqual(148);
-    fireEvent.click(screen.getByLabelText(/show all 84 sections/));
-    expect(screen.getByText(/all 84 sections; mostly empty/)).toBeTruthy();
+    fireEvent.click(screen.getByLabelText(/show all 85 sections/));
+    expect(screen.getByText(/all 85 sections; mostly empty/)).toBeTruthy();
   });
   it('descriptions and the build order are derived from the registry', () => {
     render(<Deps />);

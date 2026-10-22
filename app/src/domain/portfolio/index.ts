@@ -20,6 +20,11 @@ export { subsetKeys, ktLead, allocateInfra, allocateCents, knowledgeRow, knowled
 export { waveEffects, waveEffectsTotal, infraView, type WaveEffect, type InfraView, type InfraShare } from './ktview';
 export { envelopeCase, portfolioToCase } from './envelope';
 export { MAX_PRODUCTS, addProduct, renameProduct, setProductNote, archiveProduct, setProductOffset, duplicateProduct, removeProduct, setKnowledge, setActive } from './products';
-export { addWave, renameWave, setWaveStart, setWaveNote, removeWave, reorderWave, assignWave, setHorizon, setHub } from './waveOps';
+export { addWave, renameWave, setWaveStart, setWaveNote, removeWave, reorderWave, assignWave, setHorizon, setHub, setRho } from './waveOps';
 export { buildPortfolioPackages, type PortfolioPackages } from './package';
 export { checkPortfolioStaleness } from './staleness';
+export { portfolioMonteCarlo, pfStressJob, relSpreadOf } from './stress';
+export { pfStressFingerprint } from './stressFingerprint';
+export { clampRho, commonShock, idHash, productSeed } from './stressSeed';
+export type { Diversification, PfStress, PfStressJob, PfStressOpts, ProductStress, StressStats, WaveStress } from './stressTypes';
+export { pfDecision, groupDecision, type VerdictGroup } from './stressVerdict';

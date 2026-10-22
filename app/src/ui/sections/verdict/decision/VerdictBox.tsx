@@ -1,14 +1,15 @@
+import type { ReactNode } from 'react';
 import { DI_THRESHOLDS, VERDICT_META, type Decision } from '@/domain/verdict';
 import { DataTable } from '@/ui/widgets/DataTable';
 import { fmtEur } from '../../stress/fmt';
 import { StaleBanner } from '../../stress/useSimulation';
 
 /** The verdict with its own risk, the conditions derived from the top risk drivers, the business context read, and the rules applied. */
-export function VerdictBox({ d }: { d: Decision }) {
+export function VerdictBox({ d, banner = <StaleBanner /> }: { d: Decision; banner?: ReactNode }) {
   const meta = VERDICT_META[d.verdict], s = d.stats, pct = (x: number) => Math.round(x * 100);
   return (
     <>
-      <StaleBanner />
+      {banner}
       <div style={{ border: `2px solid ${meta.color}`, background: meta.bg, borderRadius: 10, padding: '16px 18px', margin: '8px 0' }}>
         <div style={{ display: 'flex', justifyContent: 'space-between', flexWrap: 'wrap', gap: 8 }}>
           <div style={{ fontSize: 18, fontWeight: 700, color: meta.color }}>{meta.icon} {meta.label}</div>

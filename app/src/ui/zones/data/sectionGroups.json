@@ -515,5 +515,11 @@
   "group": "portfolio",
   "groupSeq": 50,
   "tag": "supports"
+ },
+ {
+  "id": "portfolio-stress",
+  "group": "portfolio",
+  "groupSeq": 60,
+  "tag": "supports"
  }
 ]

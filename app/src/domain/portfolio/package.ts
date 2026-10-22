@@ -33,7 +33,7 @@ export function buildPortfolioPackages(pf: Portfolio): PortfolioPackages {
   return {
     calculationPackage: {
       schemaVersion: CALC_PACKAGE_SCHEMA, calculationVersion: first.calculationVersion, curveModelId: [...new Set(all.map((x) => x.curveModelId))].sort().join('+'),
-      inputHash: 'pf1:' + djb2(JSON.stringify([pf.horizonMonths, c.rate, planned])),
+      inputHash: 'pf1:' + djb2(JSON.stringify(pf.rho ? [pf.horizonMonths, c.rate, planned, pf.rho] : [pf.horizonMonths, c.rate, planned])),
       headline: { payback: h.paybackMonth, npv: h.npv, roi: h.roi, totalSavings: h.totalBenefit }, annual,
     },
     calculationPackages: per,

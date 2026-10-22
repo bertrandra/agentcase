@@ -2,7 +2,7 @@ import type { CaseState } from '@/domain';
 import { resolveProduct, type DisplayScope, type Portfolio } from '@/domain/portfolio';
 import { hasPortfolioContent } from '../portfolioSnapshot';
 import { reportBlocker, reportData } from './data';
-import { portfolioReportData } from './portfolio/data';
+import { portfolioReportData, type StressInput } from './portfolio/data';
 import { renderPortfolioReport } from './portfolio/render';
 import { renderReport } from './render';
 
@@ -24,12 +24,12 @@ const slug = (s: string): string => s.replace(/[^A-Za-z0-9]+/g, '_').replace(/^_
 /**
  * The report for a DISPLAY SCOPE. Produit (the active product, or `productId`) and any plain single case: today's report of the product's effective
  * case, byte for byte. Portefeuille and Vague: the portfolio report (context, consolidated economics by wave and product, knowledge transfer, gated
- * trajectory) built from the domain views `consolidationView` / `portfolioHeadline` / `knowledgeTable`; its gate needs the regulatory catalogue and a norm
+ * trajectory, and the last portfolio stress when `stress` is given) built from the domain views `consolidationView` / `portfolioHeadline` / `knowledgeTable`; its gate needs the regulatory catalogue and a norm
  * for at least one product of the scope. Both variants are scriptless and load no external resource.
  */
-export function buildScopedReport(pf: Portfolio, scope: DisplayScope, now: Date = new Date(), productId?: string): ReportResult {
+export function buildScopedReport(pf: Portfolio, scope: DisplayScope, now: Date = new Date(), productId?: string, stress?: StressInput): ReportResult {
   if (scope.kind === 'product' || !hasPortfolioContent(pf)) return buildCriticalReport(resolveProduct(pf, productId ?? pf.activeProductId), now);
-  const d = portfolioReportData(pf, scope, now);
+  const d = portfolioReportData(pf, scope, now, stress);
   if (!d) return { ok: false, reason: 'That wave does not exist any more.' };
   const first = d.reg[0], reason = !first ? 'The selected scope has no planned product.' : d.reg.every((r) => !r.data) ? reportBlocker(resolveProduct(pf, first.id)) : null;
   if (reason) return { ok: false, reason };

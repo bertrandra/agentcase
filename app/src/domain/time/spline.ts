@@ -2,19 +2,17 @@ import type { CurvePoint } from '../types/state';
 import type { Ctx } from '../ctx';
 import { engagementCoef, hriRampFactor } from '../engagement';
 
-/** Monotone cubic (Fritsch–Carlson PCHIP) through the control points plus an implicit (0,0) origin; flat before/after. */
-export function splineEval(t: number, userPts: CurvePoint[] | null | undefined): number {
+interface Prepared { P: CurvePoint[]; m: number[] }
+
+/** Points (with the implicit origin) and Fritsch-Carlson slopes of a control-point list. */
+function prepare(userPts: CurvePoint[] | null | undefined): Prepared {
   const P: CurvePoint[] = [{ t: 0, a: 0 }];
   [...(userPts ?? [])].sort((a, b) => a.t - b.t).forEach((p) => {
     if (isFinite(p.t) && isFinite(p.a) && p.t > (P[P.length - 1] as CurvePoint).t) P.push({ t: p.t, a: p.a });
   });
-  const n = P.length, pt = (i: number) => P[i] as CurvePoint;
-  if (n < 2) return n ? pt(n - 1).a : 0;
-  if (t <= pt(0).t) return pt(0).a;
-  if (t >= pt(n - 1).t) return pt(n - 1).a;
-  const d: number[] = [];
+  const n = P.length, pt = (i: number) => P[i] as CurvePoint, d: number[] = [], m = new Array<number>(n);
+  if (n < 2) return { P, m };
   for (let i = 0; i < n - 1; i++) d.push((pt(i + 1).a - pt(i).a) / (pt(i + 1).t - pt(i).t));
-  const m = new Array<number>(n);
   m[0] = d[0] as number; m[n - 1] = d[n - 2] as number;
   for (let i = 1; i < n - 1; i++) { const a = d[i - 1] as number, b = d[i] as number; m[i] = a * b <= 0 ? 0 : (a + b) / 2; }
   for (let i = 0; i < n - 1; i++) {
@@ -23,6 +21,20 @@ export function splineEval(t: number, userPts: CurvePoint[] | null | undefined):
     const a1 = (m[i] as number) / di, b1 = (m[i + 1] as number) / di, s = a1 * a1 + b1 * b1;
     if (s > 9) { const tau = 3 / Math.sqrt(s); m[i] = tau * a1 * di; m[i + 1] = tau * b1 * di; }
   }
+  return { P, m };
+}
+
+/** The slopes depend on the control points only, and the kernel asks for every month of the same list: prepared once per list. */
+const prepared = new WeakMap<object, Prepared>();
+
+/** Monotone cubic (Fritsch–Carlson PCHIP) through the control points plus an implicit (0,0) origin; flat before/after. */
+export function splineEval(t: number, userPts: CurvePoint[] | null | undefined): number {
+  let prep = userPts ? prepared.get(userPts) : undefined;
+  if (!prep) { prep = prepare(userPts); if (userPts) prepared.set(userPts, prep); }
+  const { P, m } = prep, n = P.length, pt = (i: number) => P[i] as CurvePoint;
+  if (n < 2) return n ? pt(n - 1).a : 0;
+  if (t <= pt(0).t) return pt(0).a;
+  if (t >= pt(n - 1).t) return pt(n - 1).a;
   let k = 0;
   for (let i = 0; i < n - 1; i++) { if (t >= pt(i).t && t <= pt(i + 1).t) { k = i; break; } }
   const h = pt(k + 1).t - pt(k).t, u = (t - pt(k).t) / h, u2 = u * u, u3 = u2 * u;

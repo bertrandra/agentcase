@@ -684,5 +684,13 @@
   "label": "📈 Consolidation",
   "description": "The portfolio trajectory on the calendar: headline cards, cumulative cash by month (portfolio and waves), tables by wave and by product with totals equal to the portfolio headline, yearly flows and diagnostics",
   "tag": "supports"
+ },
+ {
+  "id": "portfolio-stress",
+  "group": "portfolio",
+  "groupSeq": 60,
+  "label": "🎲 Stress portefeuille",
+  "description": "Monte Carlo of the planned products with a global correlation rho (0 = independent, 1 = common shocks): portfolio distribution, P10/P50/P90, CVaR, P(net<0), risk reduction against the products taken alone, per wave and per product; the portfolio verdict reads it",
+  "tag": "supports"
  }
 ]

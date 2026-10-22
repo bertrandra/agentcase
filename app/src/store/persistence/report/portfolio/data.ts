@@ -4,7 +4,9 @@ import {
   type Consolidated, type DisplayScope, type Issue, type KnowledgeRow, type KnowledgeTotals, type Portfolio, type PortfolioHeadline, type SummaryRow, type WaveEffect,
 } from '@/domain/portfolio';
 import { reportBlocker, reportData, type ReportData } from '../data';
+import { stressReport, type StressReport } from './stress';
 
+export type StressInput = Parameters<typeof stressReport>[2];
 export interface RegRow { id: string; name: string; data: ReportData | null }
 export interface YearRow { label: string; savings: number; run: number; setup: number; net: number }
 
@@ -21,10 +23,12 @@ export interface PortfolioReportData {
   kt: { rows: KnowledgeRow[]; totals: KnowledgeTotals; effects: WaveEffect[] };
   diagnostics: Issue[];
   hub: Portfolio['hub'];
+  /** the last portfolio Monte Carlo, when one exists */
+  stress: StressReport | null;
 }
 
 /** The data of the portfolio report for a display scope other than a product ('portfolio' or one 'wave'); null for an unknown wave. */
-export function portfolioReportData(source: Portfolio, scope: DisplayScope, now: Date): PortfolioReportData | null {
+export function portfolioReportData(source: Portfolio, scope: DisplayScope, now: Date, stress?: StressInput): PortfolioReportData | null {
   const pf = corePortfolio(source), c: Consolidated = consolidate(pf), view = consolidationView(pf, c);
   const wave = scope.kind === 'wave' ? c.waves.find((w) => w.id === scope.id) : undefined;
   if (scope.kind === 'wave' && !wave) return null;
@@ -39,5 +43,6 @@ export function portfolioReportData(source: Portfolio, scope: DisplayScope, now:
     reg: ids.map((id) => ({ id, name: pf.products.find((p) => p.id === id)?.name ?? id, data: reportBlocker(resolveProduct(pf, id)) ? null : reportData(resolveProduct(pf, id), now) })),
     kt: { rows, totals: knowledgeTotals(rows), effects: waveEffects(pf, kt.rows).filter((w) => (wave ? w.waveId === wave.id : true)) },
     diagnostics: wave ? view.diagnostics.filter((d) => !d.productId || inScope.has(d.productId)) : view.diagnostics, hub: pf.hub,
+    stress: stressReport(source, wave ? { kind: 'wave', id: wave.id } : { kind: 'portfolio' }, stress),
   };
 }

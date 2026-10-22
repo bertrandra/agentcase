@@ -29,11 +29,13 @@ for (const fx of fixtures) {
   }
   if (fx.startsWith('pf-')) {   // multi-product fixture: the display scope is view state (not saved), so audit the portfolio views under the Portefeuille scope too (P4)
     await page.selectOption('select[aria-label="Périmètre d\'affichage"]', 'portfolio');
-    for (const label of labels.filter((l) => /Vagues|Consolidation|Gantt/.test(l ?? ''))) {
+    for (const label of labels.filter((l) => /Vagues|Consolidation|Gantt|Stress portefeuille|Decision/.test(l ?? ''))) {
       if (only.length && !only.includes(label)) continue;
       if (!(await openSection(page, label))) continue;
       const expand = page.locator('button[aria-label^="Expand "]').first();   // the wave Gantt: open a wave to audit its product rows and milestones
       if (await expand.count()) await expand.click();
+      const run = page.locator('button:has-text("Lancer la simulation"), button:has-text("Lancer maintenant")').first();   // P6: audit the portfolio stress / verdict WITH a result on screen
+      if (await run.count()) { await run.click(); await page.locator('table[aria-label], table caption').first().waitFor({ timeout: 60000 }).catch(() => {}); await page.waitForTimeout(500); }
       await audit(page, fx, `${label} (scope Portefeuille)`);
     }
     await page.selectOption('select[aria-label="Périmètre d\'affichage"]', { index: 1 });   // back to a wave: the KPI bar of a Vague
