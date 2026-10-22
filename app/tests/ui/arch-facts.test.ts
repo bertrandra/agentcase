@@ -17,7 +17,7 @@ import.meta.glob('/src/controllers/*.ts', { eager: true });   // registers every
 // DEV-ARCH-CONTENT: the architecture pages describe the TypeScript build, not the legacy file, so these facts replace the old legacy-text parity.
 const APP = process.cwd(), REPO = resolve(APP, '..');
 const text = textOf(PAGES['arch-content']), both = `${textOf(PAGES['arch-layers'])} ${text}`;
-const nums = (re: RegExp, s = both): number[] => [...s.matchAll(re)].map((m) => Number(m[1].replace(/,/g, '')));
+const nums = (re: RegExp, s = both): number[] => [...s.matchAll(re)].map((m) => Number((m[1] ?? '').replace(/,/g, '')));
 const count = (d: string): number => readdirSync(join(APP, d)).length;
 
 describe('architecture pages: pinned facts', () => {
