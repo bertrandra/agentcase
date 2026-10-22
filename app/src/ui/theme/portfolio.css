@@ -19,3 +19,27 @@
 .ac-section .ac-pf-table input[type='text'] { width: 100%; min-width: 9rem; }
 .ac-section .ac-pf-note { margin: 0 0 1rem; }
 .ac-section .ac-pf-ovr-head { display: flex; flex-wrap: wrap; align-items: center; gap: 8px; }
+
+/* Wave board (P4): columns = waves, cards = products (the legacy .ac-card look). */
+.ac-section .ac-wave-board { display: grid; grid-auto-flow: column; grid-auto-columns: minmax(250px, 1fr); gap: 12px; margin-bottom: 1.5rem; overflow-x: auto; padding-bottom: 6px; }
+.ac-section .ac-wave-col { min-width: 0; padding: 10px; background: #f7f9fd; border: 1px solid #cadcfc; border-radius: 12px; }
+.ac-section .ac-wave-col[data-dragging] { outline: 2px dashed var(--ac-blue); outline-offset: -3px; }
+.ac-section .ac-wave-title { display: block; margin: 0 0 6px; font-size: 14px; }
+.ac-section .ac-wave-ctrl { display: flex; flex-direction: column; gap: 6px; font-size: 12px; }
+.ac-section .ac-wave-ctrl input[type='text'] { width: 100%; font-weight: 700; }
+.ac-section .ac-wave-totals { margin: 6px 0; font-size: 11.5px; }
+.ac-section .ac-wave-cards { display: flex; flex-direction: column; gap: 8px; margin: 0; padding: 0; list-style: none; min-height: 40px; }
+.ac-section .ac-wave-card { margin: 0; padding: 10px 12px; font-size: 12.5px; border-radius: 10px; cursor: grab; border-left: 4px solid var(--ac-blue); }
+.ac-section .ac-wave-card.is-archived { opacity: .6; }
+.ac-section .ac-wave-card:focus-visible { outline: 2px solid var(--ac-blue); outline-offset: 2px; }
+.ac-section .ac-wave-card select, .ac-section .ac-wave-offset { display: block; margin-top: 6px; font-size: 11.5px; }
+.ac-section .ac-wave-empty { padding: 8px; font-size: 12px; border: 1px dashed #b9c7e6; border-radius: 8px; }
+.ac-section .ac-link { padding: 0; font: inherit; color: var(--ac-blue); text-decoration: underline; background: none; border: 0; cursor: pointer; }
+
+/* Consolidation (P4) */
+.ac-section .ac-cons-table td, .ac-section .ac-cons-table th[scope='row'] { white-space: nowrap; }
+.ac-section .ac-cons-table tfoot th, .ac-section .ac-cons-table tfoot td { font-weight: 700; border-top: 2px solid var(--ac-blue); }
+.ac-scopesel select { max-width: 16rem; }
+
+/* Portfolio Gantt (P4) */
+.ac-section .ac-gantt-wave:focus-visible, .ac-section .ac-gantt-prod:focus-visible { outline: 2px solid var(--ac-blue); outline-offset: 1px; }

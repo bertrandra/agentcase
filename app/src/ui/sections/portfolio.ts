@@ -5,4 +5,6 @@ export const PORTFOLIO: SectionMap = {
   products: () => import('./portfolio/products'),
   overrides: () => import('./portfolio/overrides'),
   'knowledge-transfer': () => import('./portfolio/knowledge-transfer'),
+  waves: () => import('./portfolio/waves'),
+  consolidation: () => import('./portfolio/consolidation'),
 };

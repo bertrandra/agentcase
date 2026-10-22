@@ -17,6 +17,17 @@ When releasing, follow [docs/BUMP_PROCEDURE.md](docs/BUMP_PROCEDURE.md) (§7 for
 
 ## [Unreleased]
 
+- **Multi-product, phase P4 (waves and consolidation).** New Portefeuille sections "Vagues" (wave board: create / rename / reorder / delete waves, start month with its
+  calendar label, per-product offset, move a product by drag and drop, arrow keys or the "Déplacer vers la vague…" menu, per-wave totals; the Produits table's Vague column is
+  now editable) and "Consolidation" (headline cards, cumulative cash chart with a line per wave, tables by wave and by product whose totals row is the portfolio headline, yearly
+  flows, diagnostics). Top bar: "Périmètre d'affichage" (Portefeuille / Vague : X / Produit : Y); the KPI bar shows the figures of that scope (transient view state, not undoable,
+  not saved; default the active product, one product unchanged). Gantt: with 2+ products and scope Portefeuille / Vague, one bar per wave expandable to products with their
+  milestones on the portfolio calendar; with scope Produit a calendar-offset line. Rule A8: ESLint bans `.reduce(` in the portfolio sections, KPI hook and wave Gantt. Performance:
+  views memoised on `corePortfolio` (view state excluded), `hubView` cached per case; budgets in `tests/domain/portfolio/perf-p4.test.ts`. 84 sections. Pure helpers in
+  `domain/portfolio`: `consolidationView`, `waveBoard`, `portfolioGantt`, `scopeHeadline`, `waveHeadline`, `calendarOf`, `corePortfolio`. Tests: `tests/ui/portfolio-{waves,scope,consolidation,gantt}.test.tsx`,
+  `tests/domain/portfolio/{views,perf-p4}.test.ts`, `tests/lint-rules.test.ts`; section counts 82 -> 84 in `portfolio-single`, `datamodel` ('supports' 47), `deps` (28 outside the graph), `shell`, `portfolio-topbar`.
+  Fixture `pf-three-products` now has an offset product and an unscheduled one; `tools/a11y.mjs` audits Vagues / Consolidation / Gantt under the Portefeuille scope for `pf-*` fixtures.
+
 - **Multi-product, phase P3b (Knowledge transfer per product).** The Knowledge Hub is shared by the portfolio and each product has its own subset.
   With 2+ products the "Knowledge hub" section edits the active product's subset (inherited / overridden chips and "Revenir au commun" on
   activation, the nine maturity answers, target CC with the context cap, curation and setup base), a "Domaines de connaissance" editor (free

@@ -1,4 +1,5 @@
 import { addWave, assignWave, removeWave, renameWave, reorderWave, setWaveNote, setWaveStart } from '@/controllers/wave';
+import { setDisplayScope } from '@/controllers/displayScope';
 import { setPortfolioHorizon, setPortfolioHub } from '@/controllers/portfolio';
 import { clearProductOverride, applyOverrideToCommon, setProductKnowledge, setProductOverride } from '@/controllers/productOverrides';
 import { addProduct, archiveProduct, duplicateProduct, removeProduct, renameProduct, setActiveProduct, setEditScope, setProductNote, setProductOffset } from '@/controllers/product';
@@ -25,6 +26,7 @@ export const samples: Record<string, Sample> = {
   'product.setOffset': () => { setProductOffset(first(), 3); },
   'product.setActive': { prep: two, run: () => { setActiveProduct(other); } },
   'product.setEditScope': () => { setEditScope('product'); },
+  'portfolio.setDisplayScope': () => { setDisplayScope({ kind: 'portfolio' }); },
   'product.setOverride': () => { overridden(); },
   'product.clearOverride': { prep: overridden, run: () => { clearProductOverride(first(), 'selectedArtefacts'); } },
   'product.applyToCommon': { prep: overridden, run: () => { applyOverrideToCommon(first(), 'selectedArtefacts'); } },

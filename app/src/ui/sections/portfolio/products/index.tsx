@@ -1,4 +1,4 @@
-import { useActiveProductId, useProductRows } from '@/store/portfolioHooks';
+import { useActiveProductId, useProductRows, useWaves } from '@/store/portfolioHooks';
 import { Callout } from '@/ui/widgets/cards';
 import { SectionFrame } from '@/ui/zones/SectionFrame';
 import { AddProduct } from './AddProduct';
@@ -13,14 +13,14 @@ const help = (
 );
 
 const COLS: [string, string][] = [
-  ['Produit', ''], ['Vague', 'Vague du produit (affectation : section Vagues, à venir)'], ['Décalage (mois)', 'Décalage propre du produit dans sa vague'], ['ETP de base', 'Équipe d’entrée du produit'],
+  ['Produit', ''], ['Vague', 'Vague du produit : modifiable ici ou dans la section Vagues (glisser-déposer, clavier)'], ['Décalage (mois)', 'Décalage propre du produit dans sa vague'], ['ETP de base', 'Équipe d’entrée du produit'],
   ['État', 'hérité, ou nombre de valeurs surchargées'], ['Économies fin d’horizon', 'Économies de la dernière année de l’horizon du produit'], ['Retour', 'Mois de retour sur investissement du produit'],
   ['Note', ''], ['Actions', ''],
 ];
 
 /** Produits — the products table: team, wave, state and key indicators, with add / rename / duplicate / archive / remove / note / offset and the active product. */
 export default function ProductsSection() {
-  const rows = useProductRows(), active = useActiveProductId();
+  const rows = useProductRows(), active = useActiveProductId(), waves = useWaves();
   return (
     <SectionFrame title="📦 Produits" help={help}
       input={<AddProduct />}
@@ -30,10 +30,10 @@ export default function ProductsSection() {
             <table className="ac-table ac-pf-table">
               <caption>Produits du portefeuille ({rows.length})</caption>
               <thead><tr>{COLS.map(([h, t]) => <th key={h} scope="col" title={t || undefined}>{h}</th>)}</tr></thead>
-              <tbody>{rows.map((r, i) => <ProductRowView key={r.product.id} row={r} index={i} active={r.product.id === active} last={rows.length === 1} />)}</tbody>
+              <tbody>{rows.map((r, i) => <ProductRowView key={r.product.id} row={r} index={i} active={r.product.id === active} last={rows.length === 1} waves={waves} />)}</tbody>
             </table>
           </div>
-          <Callout>Les économies et le retour sont ceux du produit seul (son propre moteur de calcul) ; la consolidation du portefeuille arrive avec la section Consolidation.</Callout>
+          <Callout>Les économies et le retour sont ceux du produit seul (son propre moteur de calcul) ; la trajectoire consolidée du portefeuille est dans la section Consolidation, l’affectation aux vagues dans la section Vagues.</Callout>
         </>
       } />
   );

@@ -16,7 +16,7 @@ export function threeProducts(now: () => number = () => 0): Three {
 }
 /** The portfolio without its view state (active product, edit scope), which is not part of the history. */
 export const docOnly = (s: AppStore): string => {
-  const { activeProductId: _a, editScope: _e, ...rest } = s.getState().portfolio as unknown as Record<string, unknown>;
-  void _a; void _e;
+  const { activeProductId: _a, editScope: _e, displayScope: _d, ...rest } = s.getState().portfolio as unknown as Record<string, unknown>;
+  void _a; void _e; void _d;
   return JSON.stringify(rest);
 };

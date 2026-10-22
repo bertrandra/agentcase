@@ -176,7 +176,7 @@ Also `RestoreBanner` (autosave offer), a skip link, and an `aria-live="polite"` 
 
 **Navigation comes from the document**, not from code tables: `ui/zones/navModel.ts` builds the sidebar from `doc.PERSONAS`,
 `PERSONA_SECTIONS`, `PERSONA_SECTION_ORDER`, `GROUPS`, `sectionGroups`, `dynamicSections` and the guided sequences, falling back to the
-bundled legacy catalogue (`ui/zones/data/*.json`: 82 sections in 15 groups, the 15th being the multi-product Portefeuille group). Domain logic is in `domain/nav/` (`layout`, `groupBar`,
+bundled legacy catalogue (`ui/zones/data/*.json`: 84 sections in 15 groups, the 15th being the multi-product Portefeuille group). Domain logic is in `domain/nav/` (`layout`, `groupBar`,
 `moves`, `sequence`); edits go through `controllers/nav*.ts` and the Persona-management section (sequence editor, menu layout board,
 persona layout board). The same data round-trips through the parameters workbook.
 
@@ -184,7 +184,7 @@ persona layout board). The same data round-trips through the parameters workbook
 selector, banner, badge, nav group). From two products on (`useIsMulti`, `store/portfolioHooks.ts`; selectors return stable references):
 - `shell/ProductBar.tsx` (top bar): "Produit" selector (name and wave label) and the "Modifier : tous les produits / ce produit seulement"
   radio group (`product.setActive` / `product.setEditScope`, non-undoable). Default scope: **tous les produits** (the entry team always goes
-  to the active product whatever the scope). The KPI bar shows the ACTIVE product (portfolio scope is P4).
+  to the active product whatever the scope). The KPI bar shows the ACTIVE product by default; the display scope (P4, below) switches it to the Portefeuille or a Vague.
 - `zones/SectionFrame.tsx` shows `widgets/ProductBanner.tsx` ("Produit : X (hérité / n surcharges)") for sections that declare override refs;
   `widgets/OverrideBadge.tsx` (`OverrideBadge`, `InheritedField`): chip hérité / surchargé with the common value as tooltip, "Revenir au commun",
   "Appliquer à tous les produits" (controllers `productOverrides`; state through `domain/portfolio` `isOverridden`). Wired into: Scope selection
@@ -209,7 +209,7 @@ selector, banner, badge, nav group). From two products on (`useIsMulti`, `store/
 | stress | 4 | refshare | 10 |
 | verdict | 3 | model-engine | 6 |
 
-Plus **portfolio** (3: `products`, `overrides`, `knowledge-transfer`, folders `ui/sections/portfolio/<id>/`, map `ui/sections/portfolio.ts`). Total **82** (`ui/zones/data/sectionCatalog.json`, counted per group with `node`); 82 loaders are registered in the group files. A
+Plus **portfolio** (5: `products`, `overrides`, `knowledge-transfer`, `waves`, `consolidation`, folders `ui/sections/portfolio/<id>/`, map `ui/sections/portfolio.ts`). Total **84** (`ui/zones/data/sectionCatalog.json`, counted per group with `node`); 84 loaders are registered in the group files. A
 section id with no loader renders `Placeholder`; dynamic sections created by the user render through `DynamicSection` (Board).
 Multi-product Knowledge Hub (P3b): the existing `tune/knowledge` section edits the ACTIVE product's knowledge subset through the same form fields (the address
 layer writes the subset: see §4-5) and, with 2+ products only, adds `SubsetBadge` chips (hérité / surchargé, back to common via `product.setKnowledge`), the
@@ -217,6 +217,24 @@ layer writes the subset: see §4-5) and, with 2+ products only, adds `SubsetBadg
 (`portfolio.setHub`: activation, infrastructure, allocation, live conservation check). `portfolio/knowledge-transfer` shows the F29 table (from
 `knowledgeTable`), the F31 hub effect by wave and the diagnostics, all computed in `domain/portfolio/{knowledge,ktview}.ts` and read through
 `store/knowledgeHooks.ts` (no sum in `ui/`).
+**Waves, consolidation and display scope (P4).** All figures come from `domain/portfolio` and are read through `store/consolidationHooks.ts`; the UI sums nothing
+(rule A8: ESLint `no-restricted-syntax` bans `.reduce(` / `.reduceRight(` in `ui/sections/portfolio/**`, `store/consolidationHooks.ts`, the scope tiles and the wave Gantt; `tests/lint-rules.test.ts`).
+- **Memoisation by input identity.** `corePortfolio(pf)` (`domain/portfolio/core.ts`) is the portfolio minus view state (active product, edit and display scope): its identity changes
+  only with the common values, products, waves, hub, horizon or start date. `consolidate` (WeakMap on that identity), `consolidationView`, `waveBoard`, `portfolioGantt`, `knowledgeTable`
+  (the `hubView` comparison is cached per resolved case) and `useProductRows` all key on it, so switching the product or the scope recomputes nothing, an edit rebuilds only the edited
+  product's engine, and a wave move rebuilds none (`tests/domain/portfolio/perf-p4.test.ts`: consolidation view < 30 ms, 20-product edit < 150 ms, measured 4 ms and 25 ms).
+- **Display scope (F17).** `Portfolio.displayScope` (`{ kind: 'product' | 'portfolio' | 'wave', id? }`, absent = the active product) is a transient view field like `editScope`: command
+  `portfolio.setDisplayScope` (`controllers/displayScope.ts`, `undoable: false`), never saved, never undone, never broadcast (`VIEW_FIELDS`), dropped by `withoutView`; a deleted wave falls
+  back to the product (`useDisplayScope`). Decision: not persisted, so a file always reopens on the active product (D-M6) and a shared file cannot open on a stale scope.
+  `shell/ScopeSelect.tsx` ("Périmètre d'affichage": Portefeuille / Vague : X / Produit : Y, announced by toast; choosing a product makes it active) sits in `ProductBar` (2+ products only).
+  `KpiZone` renders `ScopeKpis` (a "Périmètre" tile, labels and tooltips naming the scope) from `scopeHeadline` (`portfolioHeadline.ts`: `groupHeadline` over a set of planned products:
+  year table, ETP-weighted velocity / effective automation / glass ceiling, cost reduction by components, payback of the consolidated cumulative cash); the product scope is the unchanged `ProductKpis`.
+- **Sections.** `portfolio/waves`: board of columns (waves, then "Non planifié") from `waveBoard`; commands `wave.add/rename/reorder/remove/setStart/setNote/assign`, `product.setOffset`;
+  drag and drop (HTML5, state in the section), ArrowLeft / ArrowRight on the focused card and a "Déplacer vers la vague…" select, every move announced; the Produits table's Vague column uses the same
+  `wave.assign`. `portfolio/consolidation`: cards, cumulative cash chart (`ChartPanel`, named image + hidden data), by-wave and by-product tables with a totals row, yearly table, diagnostics, from `consolidationView`.
+- **Gantt (F18).** `verify/gantt/Waves.tsx` (2+ products, scope Portefeuille / Vague) shows `portfolioGantt`: a bar per wave (earliest product start, KT preparation included, to the latest end of setup /
+  adoption ramp) expandable to products with milestones (`engine.milestones()` shifted by wave start + offset); focusable labelled groups. With scope Produit it only adds the calendar offset of the active product.
+  One product: nothing is added (legacy Gantt parity untouched).
 Shared widgets in `ui/widgets/`: `fields`, `CommitField`, `CommitNumber`, `DataTable`, `ChartPanel`, `Rich`, `Tabs`, `cards`, ...
 Business data is never held in `useState`.
 
@@ -255,6 +273,7 @@ Rule (decision D7): no calculation change in the port. A deliberate change ships
 - Derived values are computed once per document identity (WeakMap memo) instead of per render; the Monte Carlo run is separate and marked stale by a fingerprint of the model inputs, so a re-render never re-runs it.
 - Patch-based history stores only changed paths (cap 200 steps, plus the autosave record).
 - Sections and ExcelJS are loaded with dynamic `import()`; the single-file build still inlines everything (the build log lists one JS and one CSS file), so this changes evaluation order, not download size.
+- Multi-product (P4): consolidation view model ~4 ms and a 20-product team edit ~25 ms end to end (all views) on a 20 x 60-month portfolio, budgets 30 ms / 150 ms in `tests/domain/portfolio/perf-p4.test.ts`.
 - Size: `dist/index.html` 2.58 MB (about 770 kB gzip) at the last local build, below the plan's 5 MB budget. No first-paint or frame-rate budget is measured in CI.
 
 ## 11. Known gaps

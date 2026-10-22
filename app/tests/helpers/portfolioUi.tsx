@@ -14,5 +14,5 @@ export function mountApp(section = 'home'): void {
 export const sectionReady = (title: RegExp | string) => screen.findByRole('heading', { level: 1, name: title }, { timeout: 15000 });
 export const pf = () => appStore().getState().portfolio;
 /** The figure of a KPI tile of the headline bar. */
-export const kpi = (label: RegExp): string => screen.getByText(label).parentElement!.querySelector('.ac-kpi-v')!.textContent ?? '';
+export const kpi = (label: RegExp): string => screen.getAllByText(label).find((e) => e.classList.contains('ac-kpi-l'))!.parentElement!.querySelector('.ac-kpi-v')!.textContent ?? '';
 export const sidebar = () => screen.getByRole('navigation', { name: 'Sections' });

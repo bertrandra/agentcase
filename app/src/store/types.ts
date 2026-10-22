@@ -1,6 +1,6 @@
 import type { Patch } from 'immer';
 import type { CaseState } from '@/domain';
-import type { Portfolio } from '@/domain/portfolio';
+import type { DisplayScope, Portfolio } from '@/domain/portfolio';
 
 /** The undoable document = the legacy snapshot state (all registry keys); unknown keys are carried through untouched. */
 export type Doc = CaseState & { [key: string]: unknown };
@@ -9,13 +9,13 @@ export type Doc = CaseState & { [key: string]: unknown };
 export type EditScope = 'all' | 'product';
 
 /**
- * The store's source of truth: the portfolio (common values, products, waves, hub). `editScope` is a transient view field: it is never
+ * The store's source of truth: the portfolio (common values, products, waves, hub). `editScope` and `displayScope` (Portefeuille / Vague X / Produit actif, top bar) are transient view fields: never
  * saved, never undone and never broadcast (like `activeProductId`, which IS saved but also stays out of the history).
  */
-export type PortfolioDoc = Portfolio & { editScope?: EditScope };
+export type PortfolioDoc = Portfolio & { editScope?: EditScope; displayScope?: DisplayScope };
 
 /** Fields of the portfolio that are view state: changing them is not a document change for other tabs. */
-export const VIEW_FIELDS: readonly string[] = ['activeProductId', 'editScope'];
+export const VIEW_FIELDS: readonly string[] = ['activeProductId', 'editScope', 'displayScope'];
 
 /** A reversible unit of intent. `run` mutates an Immer draft; patches (and their inverses) come for free. */
 export interface Command<P = unknown> {

@@ -1,5 +1,5 @@
 import { useMemo } from 'react';
-import { commonValue, isOverridden, resolveProduct, type CommonCase, type Product, type Wave } from '@/domain/portfolio';
+import { commonValue, corePortfolio, isOverridden, resolveProduct, type CommonCase, type Product, type Wave } from '@/domain/portfolio';
 import { caseResultOf, usePortfolio } from './hooks';
 import type { EditScope } from './types';
 
@@ -18,7 +18,7 @@ export const useActiveProduct = (): Product => usePortfolio((p) => p.products.fi
 /** A product with its wave label and the computed case of its effective case (the existing `computeCase`, memoised per resolved case). */
 export interface ProductRow { product: Product; wave: string; result: ReturnType<typeof caseResultOf> }
 export function useProductRows(): ProductRow[] {
-  const pf = usePortfolio((p) => p);
+  const pf = usePortfolio(corePortfolio);   // not the whole portfolio: switching the active product or the scope recomputes nothing
   return useMemo(() => pf.products.map((product) => ({
     product, wave: pf.waves.find((w) => w.id === product.waveId)?.name ?? '', result: caseResultOf(resolveProduct(pf, product.id)),
   })), [pf]);

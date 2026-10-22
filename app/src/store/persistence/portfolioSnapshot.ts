@@ -4,7 +4,7 @@ import type { Doc, PortfolioDoc } from '../types';
 import { readPortfolio } from './portfolioRead';
 import { fromSnapshot, sanitize, toSnapshot } from './snapshot';
 
-const withoutView = (pf: PortfolioDoc): Portfolio => { const out = { ...pf }; delete out.editScope; return out; };
+const withoutView = (pf: PortfolioDoc): Portfolio => { const out = { ...pf }; delete out.editScope; delete out.displayScope; return out; };
 
 /**
  * THE F22 RULE. A portfolio is saved as a plain single-case `agentcase.snapshot.v1` file exactly when that file re-opens (as "Produit 1" in

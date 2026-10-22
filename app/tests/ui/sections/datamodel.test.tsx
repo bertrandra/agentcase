@@ -14,13 +14,13 @@ afterEach(cleanup);
 
 describe('datamodel section', () => {
   it('shows every figure and heading the legacy overview showed (4 fixtures)', () => {
-    // 79 sections / 42 'supports' in the legacy; the catalogue now also holds the 3 Portefeuille sections (82 / 45)
-    expectParity('datamodel', DataModel, { ignore: [79, 42], headings: ['Data Model', 'The four layers', 'Sections', 'State registry', 'Variable registry', 'Coefficients & namespaces', 'Sections by build-path tag', 'drives × 22', 'reads × 13', 'supports × 45'] });
+    // 79 sections / 42 'supports' in the legacy; the catalogue now also holds the 5 Portefeuille sections (84 / 47)
+    expectParity('datamodel', DataModel, { ignore: [79, 42], headings: ['Data Model', 'The four layers', 'Sections', 'State registry', 'Variable registry', 'Coefficients & namespaces', 'Sections by build-path tag', 'drives × 22', 'reads × 13', 'supports × 47'] });
   });
   it('the overview cards jump to their table; every table is complete', () => {
     render(<DataModel />);
     fireEvent.click(screen.getByText('📄 Sections', { selector: 'div' }));
-    expect(screen.getByText(/82 rows, grouped by menu group/)).toBeTruthy();
+    expect(screen.getByText(/84 rows, grouped by menu group/)).toBeTruthy();
     expect(document.querySelectorAll('tbody tr')).toHaveLength(SECTIONS.length);
     fireEvent.click(screen.getByRole('tab', { name: '📊 Variable registry' }));
     expect(document.querySelectorAll('tbody tr')).toHaveLength(166);
