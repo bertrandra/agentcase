@@ -33,3 +33,4 @@ export { selectionView, type SelectionView, type SelectionRow } from './selectio
 export { aggregateTeams, type TeamAggregate, type TeamBucket, type TeamLine, type TeamProductRow } from './teams';
 export { inputSummary, type InputSummaryRow, type HubState } from './inputSummary';
 export * from './aggScope'; export * from './aggFrame'; export * from './aggBaseline'; export { spread, type Spread, type AggBase } from './aggScopeRows';
+export * from './aggVerifyAll';
