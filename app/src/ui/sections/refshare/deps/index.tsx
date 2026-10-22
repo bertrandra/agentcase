@@ -22,10 +22,8 @@ export default function DepsSection() {
       <div>
         <h2>Dependency graph <span className="ac-muted">— lanes run from inputs to results; click a node to highlight its upstream and downstream</span></h2>
         <p className="ac-muted"><span style={{ color: '#0058AB' }}>→</span> {notes.legend.read} · <span style={{ color: '#b04600' }}>→</span> {notes.legend.write} · {notes.legend.back}</p>
-        <div style={{ display: 'flex', gap: 14, alignItems: 'flex-start', flexWrap: 'wrap' }}>
-          <div style={{ flex: '1 1 640px', minWidth: 0 }}><Graph sel={sel} onSelect={setSel} /></div>
-          <div style={{ flex: '0 1 300px', minWidth: 240 }}><Panel sel={sel} onSelect={setSel} /></div>
-        </div>
+        <Panel sel={sel} onSelect={setSel} />
+        <Graph sel={sel} onSelect={setSel} />
       </div>
     ) },
     { id: 'matrix', label: '▦ Dependency matrix', render: () => <Matrix /> },

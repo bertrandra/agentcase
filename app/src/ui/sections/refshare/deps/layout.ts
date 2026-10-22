@@ -22,7 +22,7 @@ export function layoutGraph(): Layout {
   add('calc-zones', 'Calculation zones', zonesBy('calc'));
   add('out-zones', 'Result zones', zonesBy('result'));
   add('out-sections', 'Result sections', results.slice(0, half));
-  add('out-sections-2', 'Result sections (2)', results.slice(half));
+  add('out-sections-2', 'Result sections, cont.', results.slice(half));
   const rows = Math.max(...ids.map((l) => l.length)), pos: Record<string, Pos> = {};
   ids.forEach((list, lane) => list.forEach((id, i) => {
     pos[id] = { x: M_X + lane * COL_W + (COL_W - NODE_W) / 2, y: M_TOP + ((rows - list.length) * ROW_H) / 2 + i * ROW_H, lane };

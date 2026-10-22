@@ -17,7 +17,7 @@ export function Graph({ sel, onSelect }: { sel: string | null; onSelect: (id: st
   const lit = (id: string): boolean => !hit || hit.upstream.has(id) || hit.downstream.has(id);
   return (
     <div style={{ overflowX: 'auto' }}>
-      <svg viewBox={`0 0 ${L.width} ${L.height}`} style={{ width: '100%', minWidth: 900, maxWidth: 1400 }} role="group" onKeyDown={(ev) => { if (ev.key === 'Escape') onSelect(null); }}
+      <svg viewBox={`0 0 ${L.width} ${L.height}`} style={{ width: '100%', minWidth: 1040, maxWidth: 1500 }} role="group" onKeyDown={(ev) => { if (ev.key === 'Escape') onSelect(null); }}
         aria-label="Dependency graph generated from the code: each node is a button that highlights what feeds it and what it feeds; the same links are listed in the Matrix sub-tab">
         <defs>
           {(['r', 'w'] as const).map((k) => <marker key={k} id={`dep-arr-${k}`} markerWidth="7" markerHeight="7" refX="6" refY="3.5" orient="auto"><path d="M0,0 L7,3.5 L0,7 Z" fill={EDGE_COLOR[k]} /></marker>)}
@@ -27,7 +27,7 @@ export function Graph({ sel, onSelect }: { sel: string | null; onSelect: (id: st
           const a = L.pos[e[0]]!, b = L.pos[e[1]]!, back = b.x <= a.x, x1 = back ? a.x : a.x + L.nodeW, x2 = back ? b.x + L.nodeW : b.x;
           const y1 = a.y + L.nodeH / 2, y2 = b.y + L.nodeH / 2, c = Math.max(38, Math.abs(x2 - x1) * 0.5), f = x2 >= x1 ? 1 : -1, on = onPath(e);
           return <path key={`${e[0]}>${e[1]}>${e[2]}`} data-edge={`${e[0]}>${e[1]}`} data-kind={e[2]} d={`M${x1},${y1} C${x1 + f * c},${y1} ${x2 - f * c},${y2} ${x2},${y2}`} fill="none"
-            stroke={EDGE_COLOR[e[2]]} strokeDasharray={back ? '4 3' : undefined} strokeWidth={on ? 2.3 : 1.2} opacity={!hit ? 0.28 : on ? 1 : 0.04} markerEnd={`url(#dep-arr-${e[2] === 'w' ? 'w' : 'r'})`} />;
+            stroke={EDGE_COLOR[e[2]]} strokeDasharray={back ? '4 3' : undefined} strokeWidth={on ? 2.3 : 1.2} opacity={!hit ? 0.24 : on ? 1 : 0.04} markerEnd={`url(#dep-arr-${e[2] === 'w' ? 'w' : 'r'})`} />;
         })}
         {Object.entries(L.pos).map(([id, p]) => {
           const zone = isZone(id), color = zone ? LANE_COLOR[zoneOf(id)!.lane] : GROUP_COLOR[DATA.sections.find((s) => s.id === id)?.group ?? ''] ?? '#0058AB';
