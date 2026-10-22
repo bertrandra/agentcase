@@ -15,7 +15,7 @@ All notable changes to AgentCase, newest first. Product version from v19.0.0 = `
 
 When releasing, follow [docs/BUMP_PROCEDURE.md](docs/BUMP_PROCEDURE.md) (§7 for the legacy file) and add the new version at the top.
 
-## [Unreleased]
+## [v20.4.0] 2026-10-22 — Calculation zones, generated dependency graph, affected-test selection (+ compact header)
 
 ### New
 - **Calculation zones and owners.** `app/src/domain/zones/catalog.json` lists 18 zones (5 input, 4 calculation, 7 result, 2 shared) and 23 figures. Every module under `src/domain`, every controller, the export modules and the zone hooks carry `/** @calc-zone <id> */`; the module that owns a figure carries `@owner <figure>`. `tests/domain/zones-tags.test.ts` enforces valid tags and exactly one owner per figure; `tests/domain/figure-owners.test.ts` proves that net, ROI, payback, NPV, total benefit, saving %, FTE and velocity are the same on the KPI bar, Results, Financial, the Board variables, the calculation package, the Excel results workbook and the consolidation (single case, five fixtures, and multi-product portfolios). No calculation changed.
