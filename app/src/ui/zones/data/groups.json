@@ -82,5 +82,11 @@
   "label": "🧠 Model Engine",
   "order": 140,
   "description": "Advanced-only: the Agentic Modelling Engine internals — P1 loop convergence, P2 verification tax, P3 supervision, P4 stochastic layer, P5 flow & value, P6 evidence ledger."
+ },
+ {
+  "id": "portfolio",
+  "label": "📦 Portefeuille",
+  "order": 15,
+  "description": "Several products in one file: the products table (team, wave, state, key indicators) and the overrides of each product against the common values. Shown from two products on."
  }
 ]

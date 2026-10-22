@@ -643,5 +643,22 @@
   "description": "Advanced-only: create/edit/delete personas, assign sections to a group and order",
   "protected": true,
   "tag": "supports"
+ },
+ {
+  "id": "products",
+  "group": "portfolio",
+  "groupSeq": 10,
+  "label": "📦 Produits",
+  "description": "The products of the portfolio: name, wave, entry team, inherited / overridden state and key indicators; add, rename, duplicate, archive, remove, note and offset, and the active product",
+  "tag": "supports",
+  "mvp": true
+ },
+ {
+  "id": "overrides",
+  "group": "portfolio",
+  "groupSeq": 20,
+  "label": "🧬 Surcharges",
+  "description": "Per product, the keys that differ from the common values (common vs product value); back to common, apply to all products",
+  "tag": "supports"
  }
 ]
