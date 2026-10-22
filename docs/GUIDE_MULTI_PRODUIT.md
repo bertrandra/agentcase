@@ -98,6 +98,30 @@ Section **📥 Import / Export** :
 
 Les noms de fichiers portent la version : `AgentCase_v20_0_Parameters_….xlsx`.
 
+### Cost model workbook
+
+Dans l'onglet **📊 Results workbook**, l'option **💶 Cost model (monthly)** produit un classeur pour **recalculer le coût hors de l'application** :
+*jours x tarif appliqué + autres coûts = coût de l'application*. Choisir le périmètre (*Cost model scope* : Portfolio, Wave: … ou Product: …, par défaut la **View** de la barre du haut ;
+avec un seul produit, seulement ce produit), puis **⬇️ Export cost model (.xlsx)**. Fichier : `AgentCase_v<version>_CostModel_<périmètre>_<horodatage UTC>.xlsx`.
+
+Les colonnes sont les mois calendaires du portefeuille (M1 = premier mois du portefeuille, avec la date si une date de départ est définie), précédées d'une colonne **t0** (la référence
+AS-IS : l'équipe d'entrée avant transformation, par mois) et suivies d'un **Total** (somme de M1 à Mn). Un produit ne compte qu'à partir de son mois 1 (début de vague + décalage) :
+avant, les cellules sont **vides** (pas zéro) ; son setup de transfert de connaissance (KT) peut venir plus tôt. Les produits archivés ou sans vague sont exclus et listés en en-tête.
+
+Trois onglets exactement :
+
+1. **Values** : jours humains par mois (Portfolio, Wave, Product, Skill, Grade, Location) = FTE humain du moteur x jours ouvrés/12, répartis sur les lignes de l'équipe AS-IS au prorata de
+   leur FTE ; sous-totaux produit, vague, portefeuille (formules `SUM`) ; côté agentique à titre d'information (*Agent (vFTE)*, *Agentic run team*) et lignes *Drivers* (adoption, automatisation) hors totaux de jours.
+2. **Rate cards** : le tarif jour par lieu et grade (le `RATE` du cas), le mix de lieux cible et les TJM AS-IS / cible par produit, puis le **tarif appliqué** à chaque ligne et chaque mois.
+   Le moteur valorise l'équipe TO-BE à **un seul TJM cible** : la ligne *Blending adjustment* (jours x (TJM cible − TJM AS-IS)) fait coïncider les totaux. *Team cost* = `SUMPRODUCT(jours; tarifs)` + ajustement ;
+   la ligne *Difference* doit valoir 0.
+3. **Other costs** : une ligne par poste (AgentOps, tokens, infrastructure, curation et infrastructure du Knowledge Hub, taxes de vérification / rework / conformité, KT évité en négatif, setup en trois lignes
+   dont le KT placé `ktLeadMonths` avant le mois 0), puis **TOTAL TO-BE COST** = coût d'équipe (lien vers *Rate cards*) + lignes, comparé au total du moteur (coût AS-IS − économies nettes) avec une ligne
+   *Difference* (0). Le pilote est un mémo indicatif (hors coût moteur). Sous le tableau : le facteur d'actualisation mensuel et le bloc **Parameters** (taux d'actualisation annuel et mensuel, horizon, jours ouvrés,
+   catalogue de prix des tokens, réglages du hub, coefficients du contexte d'engagement…), chacun avec la section de l'application où il se modifie.
+
+Pour recalculer : modifier un tarif (Rate cards) ou un nombre de jours (Values) et lire le total (Other costs) ; les sous-totaux, la ligne d'équipe et les contrôles se recalculent par formules.
+
 ## 9. Limites connues
 
 Pas de tableau de scénarios de portefeuille (les six scénarios restent par produit), pas de dépendances entre vagues, pas d'équipes partagées entre produits,

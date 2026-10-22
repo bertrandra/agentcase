@@ -41,7 +41,8 @@ describe('the cost-model workbook', () => {
     expect(heads(values).slice(3, 7)).toEqual(['Group', 'Skill', 'Grade', 'Location']);
   });
   it('Values: t0 filled, months before a product starts are empty, subtotals are formulas', async () => {
-    const pf = fourProducts(), { wb } = await read(), ws = wb.getWorksheet('Values')!, rows = table(ws);
+    fourProducts();
+    const { wb } = await read(), ws = wb.getWorksheet('Values')!, rows = table(ws);
     const payroll = rows.filter((r) => val(ws, r, 3) === 'Payroll' && val(ws, r, 4) === 'Human days');
     expect(payroll.length).toBeGreaterThan(0);
     const t0 = col(ws, 't0'), m1 = col(ws, 'M1'), m3 = col(ws, 'M3');
