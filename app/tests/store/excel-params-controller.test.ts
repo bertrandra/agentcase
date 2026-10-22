@@ -13,7 +13,7 @@ const doc = () => appStore().getState().doc;
 describe('exportParamsWorkbook', () => {
   const now = new Date('2026-10-21T12:34:56Z');
   it('names the file like the legacy app: version tag, scope tag, timestamp', async () => {
-    expect(paramsFileName('all', now)).toBe('AgentCase_v20_1_Parameters_2026-10-21-12-34-56.xlsx');
+    expect(paramsFileName('all', now)).toBe('AgentCase_v20_2_Parameters_2026-10-21-12-34-56.xlsx');
     expect(paramsFileName('no-factory', now)).toMatch(/_NoFactory_/);
     expect(paramsFileName('persona-only', now, 'json')).toMatch(/_PersonaConfig_2026-10-21-12-34-56\.json$/);
     const out = await exportParamsWorkbook('all', ENV, now);

@@ -21,17 +21,17 @@ Start with the French user guide [`docs/GUIDE_MULTI_PRODUIT.md`](docs/GUIDE_MULT
 
 | | Where | Status |
 |---|---|---|
-| **TypeScript + React build (the product)** | [`app/`](app/) — version `20.1.0` (`app/package.json`, `app/src/domain/version.ts`) | 85 sections in 15 groups (the 79 single-case sections plus the 6 of the *Portfolio* group), 229 commands (225 undoable). Builds to one offline HTML file, `app/dist/AgentCase_v20_0_EN.html` with `npm run release`. Multi-product release; see [`CHANGELOG.md`](CHANGELOG.md) and [`docs/MIGRATION_PLAN.md`](docs/MIGRATION_PLAN.md) §15 |
+| **TypeScript + React build (the product)** | [`app/`](app/) — version `20.2.0` (`app/package.json`, `app/src/domain/version.ts`) | 85 sections in 15 groups (the 79 single-case sections plus the 6 of the *Portfolio* group), 229 commands (225 undoable). Builds to one offline HTML file, `app/dist/AgentCase_v20_0_EN.html` with `npm run release`. Multi-product release; see [`CHANGELOG.md`](CHANGELOG.md) and [`docs/MIGRATION_PLAN.md`](docs/MIGRATION_PLAN.md) §15 |
 | **Legacy single-file app (frozen reference)** | [`AgentCase_v18_13_EN.html`](AgentCase_v18_13_EN.html) | Kept in the repository until cut-over. It is the oracle the new build is proven against. Changes only for security fixes and deliberate calculation decisions (decision D7), see [`docs/BUMP_PROCEDURE.md`](docs/BUMP_PROCEDURE.md) §7 |
 
-### Deliverables of v20.1
+### Deliverables of v20.2
 
 | Deliverable | Where / how | Notes |
 |---|---|---|
-| Release file `AgentCase_v20_1_EN.html` | `cd app && npm run release` -> `app/dist/AgentCase_v20_1_EN.html` (one offline file, not committed) | file name derived from `APP_VERSION` |
+| Release file `AgentCase_v20_2_EN.html` | `cd app && npm run release` -> `app/dist/AgentCase_v20_2_EN.html` (one offline file, not committed) | file name derived from `APP_VERSION` |
 | Portfolio file | `agentcase.portfolio.v1` JSON / HTML snapshot; a plain single case is still saved as `agentcase.snapshot.v1` | v18.x snapshots and workbooks, v19 case files open as "Product 1" in "Wave 1" |
 | Example portfolio | [`docs/examples/AgentCase_Portfolio_Example.json`](docs/examples/AgentCase_Portfolio_Example.json) | 4 products, 2 waves, hub, rho 0.3; opened by a test |
-| Workbooks and report | parameters (`AgentCase_v20_1_Parameters_….xlsx`), results, due-diligence pack, critical-delivery report | portfolio sheets only for a real portfolio |
+| Workbooks and report | parameters (`AgentCase_v20_2_Parameters_….xlsx`), results, due-diligence pack, critical-delivery report | portfolio sheets only for a real portfolio |
 | User guide (French) | [`docs/GUIDE_MULTI_PRODUIT.md`](docs/GUIDE_MULTI_PRODUIT.md) | quick start, UI labels |
 | Specification | [`docs/SPEC_MULTI_PRODUIT.md`](docs/SPEC_MULTI_PRODUIT.md) | status: implemented (v20.0.0), decisions D-M1..D-M12 |
 
@@ -48,7 +48,7 @@ npm ci
 npm run dev        # Vite dev server
 npm run check      # tsc --noEmit + ESLint + Vitest (what CI runs)
 npm run build      # tsc --noEmit + vite build  ->  app/dist/index.html (one offline file, about 2.7 MB)
-npm run release    # build + copy to app/dist/AgentCase_v20_1_EN.html (name read from APP_VERSION; fails if the version stamps disagree)
+npm run release    # build + copy to app/dist/AgentCase_v20_2_EN.html (name read from APP_VERSION; fails if the version stamps disagree)
 npm test           # Vitest only
 npm run e2e        # real Chromium on the built file: smoke of every section (incl. the portfolio fixtures) + performance budget
 npm run a11y       # axe audit (needs Chromium); npm run ui-parity compares the shell and sections with the legacy file
@@ -78,7 +78,7 @@ title 5 times. These Advanced-unlock gestures are legacy-only and out of scope f
 | [`app/`](app/) | the TypeScript + React build: `src/{domain,store,controllers,ui,content}`, `tests/`, `fixtures/`, `scripts/` ([`app/README.md`](app/README.md)) |
 | `AgentCase_v18_13_EN.html` | the legacy application, frozen reference |
 | [`tools/`](tools/) | Node/Playwright tooling that runs against the **legacy** file: the oracle generators (`oracle.mjs`, `oracle-recipes*`, `oracle-extras.d/`, `section-text.mjs`, `snapshot-fixtures.mjs`, `report-fixtures.mjs`, `excel-*.mjs`, `extract-catalog.mjs`) and the legacy release battery (`test-all.mjs` and the tools it runs) |
-| [`CHANGELOG.md`](CHANGELOG.md) | release history v12.57 → v20.1.0, newest first |
+| [`CHANGELOG.md`](CHANGELOG.md) | release history v12.57 → v20.2.0, newest first |
 | [`docs/ARCHITECTURE.md`](docs/ARCHITECTURE.md) | architecture of the TypeScript build; appendix maps the legacy engines to their replacements |
 | [`docs/MIGRATION_PLAN.md`](docs/MIGRATION_PLAN.md) | the migration plan (§1–§13), its progress log (§14) and the outcome and remaining gaps (§15) |
 | [`docs/SECTION_PORTING.md`](docs/SECTION_PORTING.md) | the recipe used to port each section |

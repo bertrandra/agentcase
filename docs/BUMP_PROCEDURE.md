@@ -1,6 +1,6 @@
 # AgentCase — Release procedure
 
-> Applies to the repository after the migration: the TypeScript + React build in `app/` is the product (version `20.1.0`);
+> Applies to the repository after the migration: the TypeScript + React build in `app/` is the product (version `20.2.0`);
 > the legacy single-file app `AgentCase_v18_13_EN.html` is the frozen reference (§6). The previous procedure, written for the
 > single file, is archived in [`history/BUMP_PROCEDURE_legacy_v18.md`](history/BUMP_PROCEDURE_legacy_v18.md) (and the v12.42 one in
 > [`history/AgentCase_BumpProcedure_v12.42.md`](history/AgentCase_BumpProcedure_v12.42.md)).
@@ -101,7 +101,7 @@ does not tag.
 **The single-file artefact.** `npm run build` writes `app/dist/index.html` (`dist/` is git-ignored): one offline HTML file with
 script and styles inlined by `vite-plugin-singlefile`, about 2.6 MB. `npm run build` does not put a version in its name; `npm run release` (`app/scripts/release.mjs`) does: it fails when `version.ts`,
 `package.json` and the `index.html` title disagree, builds, and copies the file to `app/dist/AgentCase_v<MAJOR>_<MINOR>_EN.html`
-(the legacy naming, and what the in-app file names use), for example `app/dist/AgentCase_v20_1_EN.html` (attach it to the release;
+(the legacy naming, and what the in-app file names use), for example `app/dist/AgentCase_v20_2_EN.html` (attach it to the release;
 not committed). The name is read from `APP_VERSION`, so no tool or workflow hard-codes it. Tag the merge commit `vX.Y.Z` after merging
 (no tags exist in the repository yet).
 
