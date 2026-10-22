@@ -1,0 +1,21 @@
+/* Multi-product interface (spec P3). Every rule here targets an element that only exists with two or more products (or the new Portefeuille sections),
+   so a single-product case renders exactly as before. Colours come from tokens.css. */
+.ac-prodbar { display: inline-flex; flex-wrap: wrap; align-items: center; gap: 10px; padding-inline-end: 10px; border-inline-end: 1px solid rgba(255, 255, 255, .25); font-size: 12px; }
+.ac-prodsel { display: inline-flex; align-items: center; gap: 6px; font-weight: 700; }
+.ac-editscope { display: inline-flex; flex-wrap: wrap; align-items: center; gap: 8px; }
+.ac-editscope label { display: inline-flex; align-items: center; gap: 3px; cursor: pointer; }
+
+.ac-section .ac-prod-banner { margin: 0 0 1rem; padding: 8px 12px; font-size: 13px; background: #f0f4ff; border: 1px solid #cadcfc; border-left: 4px solid var(--ac-blue); border-radius: var(--ac-radius); }
+.ac-ovr { display: inline-flex; flex-wrap: wrap; align-items: center; gap: 6px; margin-inline-start: 8px; font-size: 11px; vertical-align: middle; }
+.ac-ovr-field { display: flex; flex-wrap: wrap; align-items: center; gap: 4px; }
+.ac-ovr-chip { padding: 1px 9px; font-weight: 700; color: #003d6b; background: #e3eef7; border: 1px solid #b9d3e8; border-radius: 12px; cursor: help; }
+.ac-ovr[data-state='overridden'] .ac-ovr-chip { color: #7a3300; background: #fbeae0; border-color: #e8c0a0; }
+.ac-section .ac-ovr-btn { padding: 1px 8px; font-size: 11px; line-height: 1.5; }
+
+.ac-section .ac-pf-actions { display: flex; flex-wrap: wrap; gap: 4px; }
+.ac-section .ac-pf-actions button { padding: 2px 8px; font-size: 11px; }
+.ac-section .ac-pf-table tr.is-active td:first-child { box-shadow: inset 4px 0 0 var(--ac-blue); }
+.ac-section .ac-pf-table tr.is-archived td { color: var(--ac-muted); }
+.ac-section .ac-pf-table input[type='text'] { width: 100%; min-width: 9rem; }
+.ac-section .ac-pf-note { margin: 0 0 1rem; }
+.ac-section .ac-pf-ovr-head { display: flex; flex-wrap: wrap; align-items: center; gap: 8px; }

@@ -5,6 +5,7 @@ import { useDoc, useHistory } from '@/store/hooks';
 import { APP_VERSION } from '@/domain/version';
 import { goSection, setFastPath, toast, toggleMenuHidden, useUi } from '../uiState';
 import { useNavModel } from '../zones/navModel';
+import { ProductBar } from './ProductBar';
 import { switchPersona } from './personaSwitch';
 import { runHistory } from './useShortcuts';
 
@@ -30,6 +31,7 @@ export function TopZone() {
       <div className="ac-top-ctrls">
         <button type="button" className="ac-icon-btn" aria-label="Toggle the sidebar menu" aria-pressed={!hidden} title="Show or hide the sidebar; hidden, the group bar above the section navigates" onClick={toggleMenuHidden}>☰</button>
         <input aria-label="Customer name" className="ac-customer" placeholder="Customer" value={customer} onChange={(e) => setCustomerName(e.target.value)} />
+        <ProductBar />
         <select aria-label="Persona" value={persona} onChange={(e) => switchPersona(e.target.value, landing(e.target.value))}>
           {personas.map((p) => <option key={p.id} value={p.id}>{p.label ?? p.id}</option>)}
         </select>

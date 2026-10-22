@@ -1,5 +1,5 @@
 import { useMemo, useSyncExternalStore } from 'react';
-import { computeCase, makeCtx, type Ctx } from '@/domain';
+import { computeCase, makeCtx, type CaseState, type Ctx } from '@/domain';
 import { canRedo, canUndo } from './history';
 import { appStore } from './instance';
 import type { Doc, HistoryEntry, PortfolioDoc } from './types';
@@ -22,13 +22,16 @@ export function usePortfolio<T>(select: (p: PortfolioDoc) => T): T {
   return useSyncExternalStore(subscribe, () => select(appStore().getState().portfolio));
 }
 
-const memo = new WeakMap<Doc, ReturnType<typeof computeCase>>();
+const memo = new WeakMap<CaseState, ReturnType<typeof computeCase>>();
+/** `computeCase` memoised per case identity (the active product's doc and a product's resolved case share it: a product is computed once). */
+export function caseResultOf(c: CaseState): ReturnType<typeof computeCase> {
+  let r = memo.get(c);
+  if (!r) { r = computeCase(c); memo.set(c, r); }
+  return r;
+}
 /** The full computed case (model, headline, payback, NPV, scope) of the current document, memoised per document identity. */
 export function useCaseResult(): ReturnType<typeof computeCase> {
-  const doc = useDoc((d) => d);
-  let r = memo.get(doc);
-  if (!r) { r = computeCase(doc); memo.set(doc, r); }
-  return r;
+  return caseResultOf(useDoc((d) => d));
 }
 
 const ctxMemo = new WeakMap<Doc, Ctx>();
