@@ -1,12 +1,16 @@
+import { useScopeKpis } from '@/store/consolidationHooks';
 import { useCaseResult } from '@/store/hooks';
 import { fmtEurK, fmtMonths, fmtPct } from '../format';
+import { Kpi } from './Kpi';
+import { ScopeKpis } from './ScopeKpis';
 
-const Kpi = ({ label, value, tone, title }: { label: string; value: string; tone: string; title?: string }) => (
-  <div className="ac-kpi" data-tone={tone} title={title}><span className="ac-kpi-v">{value}</span><span className="ac-kpi-l">{label}</span></div>
-);
-
-/** Sticky headline results, recomputed from the document on every change. */
+/** Sticky headline results: the active product's (recomputed from the document), or the Portefeuille's / a Vague's when the display scope says so (F17). */
 export function KpiZone() {
+  const scope = useScopeKpis();
+  return scope ? <ScopeKpis label={scope.label} h={scope.headline} /> : <ProductKpis />;
+}
+
+function ProductKpis() {
   const r = useCaseResult(), m = r.model, e = r.endYear, cr = r.costReduction;   // end-year figures come from the Time Engine rows (model() arrays hold three entries)
   return (
     <aside className="ac-kpis" aria-label="Headline results" style={{ gridArea: 'kpi' }}>

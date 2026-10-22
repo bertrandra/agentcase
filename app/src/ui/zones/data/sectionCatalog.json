@@ -668,5 +668,21 @@
   "label": "🔁 Knowledge transfer",
   "description": "The Knowledge Hub shared by the portfolio and its subset per product: starting and target CC, domains, KT setup and yearly cost, KT days avoided, preparation before the wave, hub effect per product and per wave; hub settings and infrastructure allocation",
   "tag": "supports"
+ },
+ {
+  "id": "waves",
+  "group": "portfolio",
+  "groupSeq": 40,
+  "label": "🌊 Vagues",
+  "description": "The wave board: waves as columns (create, rename, reorder, delete, start month), products as cards moved by drag and drop or keyboard, per-product offset, consolidated totals per wave",
+  "tag": "supports"
+ },
+ {
+  "id": "consolidation",
+  "group": "portfolio",
+  "groupSeq": 50,
+  "label": "📈 Consolidation",
+  "description": "The portfolio trajectory on the calendar: headline cards, cumulative cash by month (portfolio and waves), tables by wave and by product with totals equal to the portfolio headline, yearly flows and diagnostics",
+  "tag": "supports"
  }
 ]

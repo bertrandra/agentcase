@@ -7,6 +7,7 @@ import { SectionFrame } from '@/ui/zones/SectionFrame';
 import { useView } from '../vbShared';
 import { Delivery } from './Delivery';
 import { Program } from './Program';
+import { PortfolioGanttPart } from './Waves';
 
 const INTRO = 'A planning view of the whole engagement on one timeline: the transformation program (Discover → Calibrate → Validate → Pilot, then Agentic Build ramp and Agentic Run steady state), '
   + 'the SDLC phases in their V-cycle sequence, and every artefact placed in its phase. In-scope items are solid; out-of-scope ones are dimmed. '
@@ -36,6 +37,7 @@ export default function GanttSection() {
       </div>}
       result={<>
         <p className="ac-muted">{INTRO}</p>
+        <PortfolioGanttPart />
         <Band items={v.summary} />
         <section className="ac-panel" aria-label="Delivery timeline">
           <h2>Delivery timeline <small className="ac-muted">— one real calendar — transformation program + delivery rollout</small></h2>

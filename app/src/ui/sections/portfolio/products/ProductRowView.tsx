@@ -1,5 +1,6 @@
+import { assignWave } from '@/controllers/wave';
 import { archiveProduct, duplicateProduct, removeProduct, renameProduct, setActiveProduct, setProductNote, setProductOffset } from '@/controllers/product';
-import { overrideRefs } from '@/domain/portfolio';
+import { overrideRefs, type Wave } from '@/domain/portfolio';
 import type { ProductRow } from '@/store/portfolioHooks';
 import { fmtEurK, fmtMonths } from '@/ui/format';
 import { toast } from '@/ui/uiState';
@@ -7,7 +8,7 @@ import { NumCell } from '@/ui/widgets/CommitField';
 import { DraftText } from '@/ui/widgets/DraftText';
 
 /** One product of the table: editable name, wave, offset, base team, state, key indicators of its effective case, note and the P2 commands as buttons. */
-export function ProductRowView({ row, index, active, last }: { row: ProductRow; index: number; active: boolean; last: boolean }) {
+export function ProductRowView({ row, index, active, last, waves }: { row: ProductRow; index: number; active: boolean; last: boolean; waves: Wave[] }) {
   const p = row.product, r = row.result, n = overrideRefs(p.overrides).length, who = `produit n°${index + 1}`;
   const act = (ok: boolean, done: string, failed: string) => toast(ok ? done : failed);
   return (
@@ -16,7 +17,13 @@ export function ProductRowView({ row, index, active, last }: { row: ProductRow; 
         <DraftText label={`Nom du ${who}`} value={p.name} onCommit={(v) => act(renameProduct(p.id, v), `Produit renommé : ${v.trim()}`, 'Nom invalide')} />
         {active && <strong> (actif)</strong>}{p.archived && <em> (archivé)</em>}
       </td>
-      <td>{row.wave || 'non planifié'}</td>
+      <td>
+        <select aria-label={`Vague du ${who}`} value={p.waveId ?? ''}
+          onChange={(e) => { const to = waves.find((w) => w.id === e.target.value); act(assignWave(p.id, to?.id ?? null), `${p.name} : ${to ? to.name : 'non planifié (exclu de la consolidation)'} — Ctrl+Z pour annuler`, 'Affectation refusée'); }}>
+          <option value="">non planifié</option>
+          {waves.map((w) => <option key={w.id} value={w.id}>{w.name}</option>)}
+        </select>
+      </td>
       <td style={{ textAlign: 'right' }}><NumCell ariaLabel={`Décalage en mois du ${who}`} value={p.offsetMonths} min={0} step={1} width={64} onCommit={(v) => { setProductOffset(p.id, parseInt(v, 10) || 0); }} /></td>
       <td style={{ textAlign: 'right' }} title="Équipe d’entrée propre au produit (ETP)">{r.model.base.etp.toFixed(1)}</td>
       <td title={n ? 'Clés surchargées : voir la section Surcharges' : 'Toutes les valeurs viennent du commun'}>{n ? `${n} surcharge${n > 1 ? 's' : ''}` : 'hérité'}</td>

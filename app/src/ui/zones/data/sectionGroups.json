@@ -503,5 +503,17 @@
   "group": "portfolio",
   "groupSeq": 30,
   "tag": "supports"
+ },
+ {
+  "id": "waves",
+  "group": "portfolio",
+  "groupSeq": 40,
+  "tag": "supports"
+ },
+ {
+  "id": "consolidation",
+  "group": "portfolio",
+  "groupSeq": 50,
+  "tag": "supports"
  }
 ]
