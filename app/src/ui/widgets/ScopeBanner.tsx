@@ -11,7 +11,7 @@ export function scopeText(kind: SectionKind, v: ViewScope): { main: string; deta
   const k = v.excludedIds.length, out = k ? ` — ${plural(k, 'produit non planifié ou archivé', 'produits non planifiés ou archivés')}, exclu${k > 1 ? 's' : ''} des chiffres` : '';
   if (kind === 'S-static') return { main: 'Indépendant de la vue', detail: '' };
   if (kind === 'P-portfolio') return { main: 'Niveau portefeuille', detail: '' };
-  if (kind === 'I-input') return { main: `Édition : produit ${v.activeProductName}`, detail: v.kind === 'product' ? '' : ` — vue agrégée de la sélection ci-dessous (${sel}${out})` };
+  if (kind === 'I-input') return { main: `Édition : produit ${v.activeProductName}`, detail: v.kind === 'product' ? '' : ` — vue agrégée de la sélection ci-dessous : ${sel}${out}` };
   return { main: `Calculé sur : ${v.kind === 'product' ? `Produit ${v.label}` : `${sel}${out}`}`, detail: '' };
 }
 

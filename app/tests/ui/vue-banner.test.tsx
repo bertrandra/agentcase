@@ -52,7 +52,7 @@ describe('two or more products: the banner states the Vue for this section by ki
     await sectionReady(/Financial Summary — Portefeuille/);
     expect(text()).toBe('Calculé sur : Portefeuille (3 produits planifiés)');
     await open('team-in', /Input team/);
-    expect(text()).toBe('Édition : produit Produit 1 — vue agrégée de la sélection ci-dessous (Portefeuille (3 produits planifiés))');
+    expect(text()).toBe('Édition : produit Produit 1 — vue agrégée de la sélection ci-dessous : Portefeuille (3 produits planifiés)');
     await open('glossary', /glossary/i);
     expect(text()).toBe('Indépendant de la vue');
     await open('consolidation', /Consolidation/);

@@ -17,6 +17,9 @@ When releasing, follow [docs/BUMP_PROCEDURE.md](docs/BUMP_PROCEDURE.md) (§7 for
 
 ## Unreleased
 
+### New
+- **Vue agrégée, phase V0 (foundation)** — every section now declares how it follows the top-bar Vue (`ui/zones/data/sectionScope.json`: 15 `R-conso`, 28 `R-rollup`, 18 `I-input`, 18 `S-static`, 6 `P-portfolio`; classification and plan in [docs/VUE_AGREGEE.md](docs/VUE_AGREGEE.md)). With two or more products a `ScopeBanner` states the Vue for the section ("Calculé sur : Portefeuille (3 produits planifiés)", "Édition : produit X — vue agrégée…", "Indépendant de la vue", "Niveau portefeuille"). With a Vague or the Portefeuille in view, result and input sections are replaced by their registered aggregate (`ui/sections/aggregates/<group>.ts`) or by a generic fallback of their kind (per-product rollup table + read-only drill-down, per-product input synthesis with **Éditer ce produit**, or an explicit "Vue consolidée à venir"). `ProductViewContext` lets one section component read any product's resolved case without touching the store (`ReadOnlyScope` keeps it inert). Exemplars: Economics > Financial (consolidated cards, cash, by product, by year) and Input team (teams added up by skill, grade, location). New pure domain views: `selectionView`, `aggregateTeams`, `inputSummary`. A single product, and the Produit view, render exactly as before.
+
 ### Changed
 - Top bar: one **Vue** selector (Portefeuille / Vague / Produit) replaces the two overlapping selectors "Produit" and "Périmètre d'affichage". Choosing a product shows *and* edits it; with the Portefeuille or a Vague in view, "Édition : produit" names the product the sections still edit. "Modifier : tous les produits / ce produit seulement" is unchanged.
 
