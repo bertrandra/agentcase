@@ -13,7 +13,7 @@ export type { SheetImages } from '@/store/persistence/excel/results';
 
 export const XLSX_MIME = 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet';
 
-/** "AgentCase_v20_1_<kind>_2026-10-21-09-30-00.xlsx": version tag and local-independent UTC stamp, like the legacy files. */
+/** "AgentCase_v20_2_<kind>_2026-10-21-09-30-00.xlsx": version tag and local-independent UTC stamp, like the legacy files. */
 export function excelFilename(kind: string, now: Date = new Date()): string {
   const ver = `v${APP_VERSION.replace(/\.0+$/, '').replace(/\./g, '_')}_`;
   return `AgentCase_${ver}${kind}_${now.toISOString().slice(0, 19).replace(/[:T]/g, '-')}.xlsx`;

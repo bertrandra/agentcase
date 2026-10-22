@@ -2,6 +2,7 @@ import content from '@/content/refshare/io.json';
 import { Rich } from '@/ui/widgets/Rich';
 import { Tabs } from '@/ui/widgets/Tabs';
 import { SectionFrame } from '@/ui/zones/SectionFrame';
+import { CostModelPanel } from './CostModelPanel';
 import { LaterTabs } from './LaterTabs';
 import { ResultsExcelPanel } from './ResultsExcelPanel';
 import { SaveTab } from './SaveTab';
@@ -13,7 +14,7 @@ export default function IoSection() {
       result={<Tabs label="Import and export" tabs={[
         { id: 'savehtml', label: '💾 Save HTML', render: () => <SaveTab /> },
         { id: 'settings', label: '⬇️ Export / Import current settings', render: () => <LaterTabs which="settings" /> },
-        { id: 'results', label: '📊 Results workbook', render: () => <ResultsExcelPanel /> },
+        { id: 'results', label: '📊 Results workbook', render: () => <><ResultsExcelPanel /><CostModelPanel /></> },
         { id: 'snapshot', label: '🗂️ Snapshot Manager', render: () => <LaterTabs which="snapshot" /> },
       ]} />} />
   );

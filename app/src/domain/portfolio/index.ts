@@ -37,3 +37,4 @@ export * from './aggVerifyAll';
 export * from './aggIndexEPV';
 export * from './aggTune';
 export * from './aggStress'; export * from './aggEngine'; export * from './aggDefend';export type { Spread as TuneSpread } from './aggTuneCore';
+export { costModel, scopeSlug, type CostFmt, type CostFormula, type CostModel, type CostRole, type CostRow, type CostScope, type CostTable, type ParamRow, type RateCardBlock } from './costModel';

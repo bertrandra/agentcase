@@ -1,6 +1,6 @@
 # AgentCase — Architecture of the TypeScript build
 
-> Applies to **`app/`, version 20.1.0** (`app/src/domain/version.ts`, `app/package.json`): a multi-product portfolio build. 736 `.ts`/`.tsx` files under `app/src`,
+> Applies to **`app/`, version 20.2.0** (`app/src/domain/version.ts`, `app/package.json`): a multi-product portfolio build. 736 `.ts`/`.tsx` files under `app/src`,
 > 202 test files under `app/tests` (counted with `find`; 15,339 tests passed on the last local run, CI is authoritative).
 > The previous document, which describes the frozen single-file app, is archived as
 > [`history/ARCHITECTURE_legacy_v18.md`](history/ARCHITECTURE_legacy_v18.md). The appendix of this file maps each legacy engine to its replacement.
@@ -160,6 +160,7 @@ The autosave record is the exact portfolio (`full` mode, never collapsed to v1) 
 | Parameters workbook, portfolio part (P5) | `excel/portfolio/` | for a real portfolio (`hasPortfolioContent`) "Export all" appends `PortfolioSettings`, `Products`, `Waves`, `TeamIn`, `Overrides`, `KnowledgeSubsets`, `KnowledgeDomains`; the 47 case sheets describe the common case. A workbook with a `Products` sheet imports through `interpretPortfolioParams` (strict, caps, whitelist) and `excel.importPortfolio` (ONE undoable `definePortfolioCommand`); no refit on import |
 | Results workbook, due-diligence pack | `excel/results/`, `excel/dd/` | export (and DD import); cell-by-cell equal to the legacy on fixtures |
 | Results workbook, portfolio part (P5) | `excel/results/portfolio/` | `Portfolio`, `Wave <name>`, `Knowledge transfer`, per product `Product <name>` + the existing six sheets on the effective case (`P<n> ROI`...); numbers only from `consolidate` / `portfolioHeadline` / `consolidationView` / `knowledgeTable`; Excel-safe unique names (`sheetName`); the display scope picks the leading group. The DD pack is the ACTIVE product's (annotations are common to the portfolio) |
+| Cost model workbook (monthly) | `domain/portfolio/costModel*.ts`, `excel/costmodel/`, `controllers/excelCostModel.ts` | read-only export for a scope (Portfolio / Wave / Product): exactly three sheets `Values` (human days), `Rate cards`, `Other costs` on the portfolio calendar (M1..Mn, plus `t0` = AS-IS per month, empty cells before a product's month 1). The domain view-model `costModel(pf, scope)` returns plain tables built only from `consolidate` (series, views), the products' Time Engine rows (`runOf`), `model().conv` (setup split), `khRunAnnual`, `rateFor` / `targetMix`, `pilotSizing`; no financial formula of its own. Identity proved to 1e-6 (`tests/domain/portfolio/costModel.test.ts`): human days x applied day rate + blending adjustment = engine team cost; team + other lines = AS-IS cost less net savings (consolidated series). The writer emits subtotals, the SUMPRODUCT team-cost check, cross-sheet links, the totals and the discount factors as Excel formulas with cached results; user text is neutralised against formula injection. File `AgentCase_v<ver>_CostModel_<scope>_<stamp>.xlsx` |
 | Report | `report/` | "Critical & Regulated Software Delivery" HTML report; its visible text equals the legacy report on 11 fixtures |
 | Report by scope (P5) | `report/index.ts#buildScopedReport`, `report/portfolio/` | Product = the legacy report of the product's effective case (byte for byte); Portfolio / Wave = the portfolio report built from the domain views; the controller reads the (unsaved) `displayScope`, tests pass the scope |
 | Snapshot manager | `controllers/snapshots.ts`, `domain/snapshots/` | named snapshots in the document (capture, activate as one undo step, rename, delete, baseline, protected golden entries, compare) |
@@ -341,7 +342,7 @@ The authoritative list is [MIGRATION_PLAN.md §15](MIGRATION_PLAN.md). Architect
   item-level scope overrides (whole key only, D-M2); portfolio charts as images in the results workbook.
 - Excel cross-version note: a parameters workbook exported by 20.0.0 from a real portfolio carries seven extra sheets that a 19.x build ignores (it reads only the common case); a 19.x workbook imports into 20.0.0 as a case on the active product. An import does not re-fit the automation potential (the workbook states the stored values; the next open re-fits).
 - Opening a 20.0.0 portfolio file (`agentcase.portfolio.v1`) in a 19.x build is not supported; a plain single case is still saved as `agentcase.snapshot.v1` and stays readable by 19.x.
-- `npm run release` produces `app/dist/AgentCase_v20_1_EN.html`; `APP_VERSION` is `20.1.0`.
+- `npm run release` produces `app/dist/AgentCase_v20_2_EN.html`; `APP_VERSION` is `20.2.0`.
 
 ## Appendix A — Legacy engine → replacement
 

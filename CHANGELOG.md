@@ -15,6 +15,15 @@ All notable changes to AgentCase, newest first. Product version from v19.0.0 = `
 
 When releasing, follow [docs/BUMP_PROCEDURE.md](docs/BUMP_PROCEDURE.md) (§7 for the legacy file) and add the new version at the top.
 
+## [v20.2.0] 2026-10-22 — Cost model (monthly) Excel export
+
+### New
+- **Cost model (monthly)** workbook (Import / Export > Results workbook): exactly three tabs — **Values** (days per month by Portfolio / Wave / Product / Skill with a **t0** AS-IS column, Excel subtotals), **Rate cards** (applied day rates, blending adjustment, RATE card, blended AS-IS / target rates) and **Other costs** (setup lines, Knowledge-transfer setup placed before the wave when prepared, AgentOps, tokens, infrastructure, Knowledge Hub, verification / rework / compliance taxes, KT avoided, totals vs the engine, the annual discount rate and every parameter that changes the cost with the section where it is edited). Scope: Portfolio, a Wave or a Product (default: the current View). Reconciliation to 1e-6 with the engine on all 107 fixtures and multi-product portfolios.
+
+#### Notes recorded while building
+##### New
+- **Cost model (monthly) Excel export** (Import / Export, Results workbook tab): a workbook of exactly three tabs, **Values** (human days per month by Portfolio / Wave / Product / Skill / Grade / Location, with product, wave and portfolio subtotals), **Rate cards** (the day-rate card, the target location mix, the day rate applied to each line each month, a blending adjustment and a team-cost check) and **Other costs** (setup, Knowledge-transfer, Knowledge Hub, tokens, infrastructure, AgentOps, taxes and rework, savings, pilot memo, the monthly total against the engine total, the discount factors and every parameter that moves the cost). Monthly columns on the portfolio calendar plus a **t0** (AS-IS) column; scope = Portfolio, a Wave or a Product (default: the current View). Days x applied rate + other costs = the app cost, proved to 1e-6 on the 107 fixtures and on multi-product portfolios (`tests/domain/portfolio/costModel.test.ts`); subtotals and checks are live Excel formulas with cached results (recalculated independently with LibreOffice: 1156 formulas agree). Domain view-model `domain/portfolio/costModel*.ts`, writer `store/persistence/excel/costmodel/`, controller `controllers/excelCostModel.ts`. No existing export changes.
+
 ## [v20.1.0] 2026-10-22 — The View selector and the aggregated view of all 85 sections
 
 ### New

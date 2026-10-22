@@ -33,7 +33,7 @@ describe('Excel parameters panel (Import / Export → settings)', () => {
     fireEvent.click(screen.getByRole('button', { name: '⬇️ Export all' }));
     await screen.findByText(/^✓ Exported AgentCase_/, undefined, { timeout: 15000 });
     expect(d.names).toHaveLength(1);
-    expect(d.names[0]).toMatch(/^AgentCase_v20_1_Parameters_\d{4}-\d\d-\d\d-\d\d-\d\d-\d\d\.xlsx$/);
+    expect(d.names[0]).toMatch(/^AgentCase_v20_2_Parameters_\d{4}-\d\d-\d\d-\d\d-\d\d-\d\d\.xlsx$/);
     expect(d.blobs[0]?.type).toBe('application/vnd.openxmlformats-officedocument.spreadsheetml.sheet');
   });
   it('the persona-only export also downloads the JSON copy', async () => {
