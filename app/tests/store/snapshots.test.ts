@@ -15,12 +15,12 @@ describe('snapshot manager', () => {
     captureSnapshot('Client X', T0, 'a');
     captureSnapshot('', T1, 'b');   // empty name: dated default
     const [a, b] = lib(s);
-    expect(a!.name).toMatch(/^Client X · v19/);
-    expect(b!.name).toMatch(/^Snapshot .* · v19/);
+    expect(a!.name).toMatch(/^Client X · v20/);
+    expect(b!.name).toMatch(/^Snapshot .* · v20/);
     expect('namedSnapshots' in a!.state).toBe(false);
     expect(a!.state.savedAt).toBe(T0.toISOString());
     expect(fromSnapshot(a!.state).customerName).toBe(s.getState().doc.customerName);
-    expect(withVerTag('Already v19.0', T0)).toBe('Already v19.0');
+    expect(withVerTag('Already v20.0', T0)).toBe('Already v20.0');
   });
   it('activating restores the captured case, keeps the library, and one undo brings the edits back', () => {
     const s = freshStore();
@@ -31,7 +31,7 @@ describe('snapshot manager', () => {
     const doc = s.getState().doc;
     expect(doc.customerName).not.toBe('Edited');
     expect(lib(s)).toHaveLength(1);
-    expect(s.getState().history.undo.at(-1)!.label).toBe('Activate snapshot "Before · v19.0"');
+    expect(s.getState().history.undo.at(-1)!.label).toBe('Activate snapshot "Before · v20.0"');
     expect(s.undo()).toBe(true);
     expect(snap(s)).toBe(edited);
     expect(s.redo()).toBe(true);

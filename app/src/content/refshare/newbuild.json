@@ -1,5 +1,5 @@
 {
- "title": "In the TypeScript build (v19)",
+ "title": "In the TypeScript build (v20)",
  "body": [
  ["p","This page documents the ",["strong","legacy v18.11 single file"]," (kept below, unchanged, because it is the reference every figure is checked against). The TypeScript + React build keeps the same calculation chain but organises it differently:"],
  ["table",["thead",["tr",["th","Legacy v18.11"],["th","TypeScript build"],["th","Where"]]],["tbody",

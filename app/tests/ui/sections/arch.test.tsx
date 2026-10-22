@@ -21,7 +21,7 @@ describe('architecture sections', () => {
     const { unmount } = render(<ArchLayers />);
     fireEvent.click(screen.getByText('See full technical detail →'));
     expect(uiStore.getState().activeSection).toBe('arch-content');
-    expect(screen.getByText('In the TypeScript build (v19)')).toBeTruthy();
+    expect(screen.getByText('In the TypeScript build (v20)')).toBeTruthy();
     unmount();
     render(<ArchContent />);
     fireEvent.click(screen.getByText(/Back to Architecture/));
