@@ -3,9 +3,9 @@
 /* Chrome (header banner, KPI bar, sidebar): measured against the legacy v18.13 .header / .scenario-bar / .sidebar by tools/ui-parity.mjs. */
 .ac-top, .ac-top *, .ac-kpis, .ac-kpis *, .ac-nav, .ac-nav * { box-sizing: border-box; }
 .ac-top, .ac-kpis, .ac-nav { line-height: 1.6; }
-.ac-top { display: flex; align-items: center; justify-content: space-between; gap: 1.25rem; padding: 2rem; color: #fff; background: linear-gradient(135deg, #0058AB 0%, #121A38 100%); box-shadow: 0 4px 16px rgba(18, 26, 56, .25); }
+.ac-top { display: flex; align-items: center; justify-content: space-between; gap: 1.25rem; padding: .75rem 2rem; color: #fff; background: linear-gradient(135deg, #0058AB 0%, #121A38 100%); box-shadow: 0 4px 16px rgba(18, 26, 56, .25); }
 .ac-top-id { min-width: 0; }
-.ac-brand { display: block; font-size: 30px; font-weight: 300; letter-spacing: -.01em; margin-bottom: .5rem; cursor: pointer; } .ac-brand small { font-size: 13px; font-weight: 400; letter-spacing: 0; opacity: .75; }
+.ac-brand { display: block; font-size: 30px; font-weight: 300; letter-spacing: -.01em; cursor: pointer; } .ac-brand small { font-size: 13px; font-weight: 400; letter-spacing: 0; opacity: .75; }
 .ac-top-ctrls { display: flex; flex-wrap: wrap; align-items: center; justify-content: flex-end; gap: 10px; }
 .ac-spacer { flex: 1; }
 .ac-top button { font: inherit; font-size: 11px; line-height: 1.6; color: #fff; background: transparent; border: 1px solid rgba(255, 255, 255, .3); border-radius: 5px; padding: 4px 10px; opacity: .75; cursor: pointer; text-align: start; }
