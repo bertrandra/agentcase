@@ -176,7 +176,7 @@ Also `RestoreBanner` (autosave offer), a skip link, and an `aria-live="polite"` 
 
 **Navigation comes from the document**, not from code tables: `ui/zones/navModel.ts` builds the sidebar from `doc.PERSONAS`,
 `PERSONA_SECTIONS`, `PERSONA_SECTION_ORDER`, `GROUPS`, `sectionGroups`, `dynamicSections` and the guided sequences, falling back to the
-bundled legacy catalogue (`ui/zones/data/*.json`: 81 sections in 15 groups, the 15th being the multi-product Portefeuille group). Domain logic is in `domain/nav/` (`layout`, `groupBar`,
+bundled legacy catalogue (`ui/zones/data/*.json`: 82 sections in 15 groups, the 15th being the multi-product Portefeuille group). Domain logic is in `domain/nav/` (`layout`, `groupBar`,
 `moves`, `sequence`); edits go through `controllers/nav*.ts` and the Persona-management section (sequence editor, menu layout board,
 persona layout board). The same data round-trips through the parameters workbook.
 
@@ -209,8 +209,14 @@ selector, banner, badge, nav group). From two products on (`useIsMulti`, `store/
 | stress | 4 | refshare | 10 |
 | verdict | 3 | model-engine | 6 |
 
-Plus **portfolio** (2: `products`, `overrides`, folders `ui/sections/portfolio/<id>/`, map `ui/sections/portfolio.ts`). Total **81** (`ui/zones/data/sectionCatalog.json`, counted per group with `node`); 81 loaders are registered in the group files. A
+Plus **portfolio** (3: `products`, `overrides`, `knowledge-transfer`, folders `ui/sections/portfolio/<id>/`, map `ui/sections/portfolio.ts`). Total **82** (`ui/zones/data/sectionCatalog.json`, counted per group with `node`); 82 loaders are registered in the group files. A
 section id with no loader renders `Placeholder`; dynamic sections created by the user render through `DynamicSection` (Board).
+Multi-product Knowledge Hub (P3b): the existing `tune/knowledge` section edits the ACTIVE product's knowledge subset through the same form fields (the address
+layer writes the subset: see §4-5) and, with 2+ products only, adds `SubsetBadge` chips (hérité / surchargé, back to common via `product.setKnowledge`), the
+`DomainsEditor` (weights must total 100, refused by `portfolioGuard`), the `ktLeadMonths` field and the shared `ui/widgets/HubSettings` card
+(`portfolio.setHub`: activation, infrastructure, allocation, live conservation check). `portfolio/knowledge-transfer` shows the F29 table (from
+`knowledgeTable`), the F31 hub effect by wave and the diagnostics, all computed in `domain/portfolio/{knowledge,ktview}.ts` and read through
+`store/knowledgeHooks.ts` (no sum in `ui/`).
 Shared widgets in `ui/widgets/`: `fields`, `CommitField`, `CommitNumber`, `DataTable`, `ChartPanel`, `Rich`, `Tabs`, `cards`, ...
 Business data is never held in `useState`.
 

@@ -17,6 +17,19 @@ When releasing, follow [docs/BUMP_PROCEDURE.md](docs/BUMP_PROCEDURE.md) (§7 for
 
 ## [Unreleased]
 
+- **Multi-product, phase P3b (Knowledge transfer per product).** The Knowledge Hub is shared by the portfolio and each product has its own subset.
+  With 2+ products the "Knowledge hub" section edits the active product's subset (inherited / overridden chips and "Revenir au commun" on
+  activation, the nine maturity answers, target CC with the context cap, curation and setup base), a "Domaines de connaissance" editor (free
+  label + weight %, total must be 100, remaining % shown, invalid lists refused) and "Préparation du transfert (mois avant la vague)"
+  (`ktLeadMonths` >= 0, only the KT setup cost moves, clamp diagnostic), plus the shared hub card (default activation, infrastructure,
+  allocation `perProduct` / `byBaseEtp` with a live conservation check). New section "Knowledge transfer" in the Portefeuille group (82
+  sections): table F29 per product (wave filter, totals, row click activates the product, diagnostics list) and the hub effect by wave (F31).
+  New pure helpers `waveEffects`, `waveEffectsTotal`, `infraView`, `knowledgeTotals` in `domain/portfolio`. No financial formula added; one
+  product looks and behaves as before (ui-parity 0 divergences). Tests: `tests/ui/portfolio-knowledge*.test.tsx`,
+  `tests/domain/portfolio/ktview.test.ts`; section counts 81 -> 82 updated in `portfolio-single`, `datamodel` (also 'supports' 44 -> 45),
+  `deps` (25 -> 26 outside the graph), `shell` (comment) and `portfolio-topbar` (group content, Welcome pill 2 -> 3). Fixture `pf-three-products` now has the hub
+  allocated by headcount and different subsets.
+
 - **Multi-product, phase P3 (interface).** With 2+ products: "Produit" selector and "Modifier : tous / ce produit seulement" toggle in the top bar,
   "Produit : X (hérité / n surcharges)" banner in sections, reusable `OverrideBadge` / `InheritedField` (hérité / surchargé chips, "Revenir au
   commun", "Appliquer à tous les produits") wired into scope, phases, S-curve, norms, engagement context and location mix, "Équipe de : X" label,

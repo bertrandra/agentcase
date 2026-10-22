@@ -1,4 +1,4 @@
-import type { KnowledgeSubset } from './types';
+import type { CommonCase, KnowledgeSubset } from './types';
 
 export interface DomPatch { values: Record<string, string>; checked: Record<string, boolean> }
 
@@ -15,3 +15,17 @@ export function subsetKeys(k: KnowledgeSubset): DomPatch {
 
 /** Months the KT setup is prepared before the product's month 0 (0 when unset or invalid). */
 export const ktLead = (k: KnowledgeSubset): number => (Number.isFinite(k.ktLeadMonths) ? Math.max(0, Math.floor(k.ktLeadMonths as number)) : 0);
+
+export type SubsetField = keyof KnowledgeSubset;
+
+/** What a product inherits for a subset field: the common reading (undefined for the fields the common case does not hold: domains, preparation). */
+export function commonSubsetValue(common: CommonCase, f: SubsetField): unknown {
+  const v = common.dom.values, c = common.dom.checked;
+  if (f === 'enabled') return !!c.khEnabled;
+  if (f === 'maturityAnswers') return Array.from({ length: 9 }, (_, i) => v['khA' + i]).join(' · ');
+  if (f === 'targetCC') return 'CC' + v.khTargetCC;
+  if (f === 'curationFTE') return v.khCurationFTE;
+  if (f === 'setupBase') return v.khSetupBase;
+  if (f === 'ktLeadMonths') return 0;
+  return undefined;
+}
