@@ -19,6 +19,10 @@ Principe directeur : **un produit résolu = un cas actuel**. Le moteur de calcul
 n'est pas réécrit : il est appelé une fois par produit sur un « cas effectif », puis une couche de consolidation additionne les résultats.
 Les 79 sections continuent de travailler sur le **produit actif**.
 
+Le **Knowledge Hub** (plateforme de connaissance qui alimente les agents) est mutualisé au niveau du portefeuille, mais chaque produit en utilise un
+**sous-ensemble** et prépare un **transfert de connaissance** (*knowledge transfer*, KT) propre : ce qu'on ingère, à quel niveau de complétude de contexte
+on vise, à quel coût et à quel moment (§ 3.5).
+
 ## 2. Vocabulaire
 
 | Terme | Définition |
@@ -30,6 +34,10 @@ Les 79 sections continuent de travailler sur le **produit actif**.
 | **Cas effectif** | `fusion(valeurs communes, surcharges du produit)` : un `CaseState` identique à celui d'aujourd'hui, donné au moteur. |
 | **Vague** | Ensemble ordonné de produits qui démarrent leur transformation à la même date. Un produit appartient à **au plus une** vague. |
 | **Mois 0 du produit** | Date de démarrage de la vague + décalage éventuel du produit. Le Time Engine part de ce mois. |
+| **Knowledge Hub (commun)** | Plateforme de connaissance du portefeuille : activation, infrastructure, coûts de mise en place et de curation de base. |
+| **Sous-ensemble de connaissance** (*knowledge subset*) | La part du Knowledge Hub qui sert un produit : domaines de connaissance retenus, état initial (maturité de contexte), niveau cible, charge de curation. |
+| **Transfert de connaissance (KT)** | Travail d'ingestion et de curation du sous-ensemble d'un produit (équipe d'entrée → hub), avec un coût et une échéance ; plus tard, jours de KT évités grâce au hub. |
+| **Niveau de complétude de contexte (CC)** | Échelle 0 à 4 existante (0 = aucun contexte, 4 = contexte complet), de l'état initial (9 questions de maturité) au niveau cible. |
 | **Mois calendaire** | Axe de temps du portefeuille (mois 1 = démarrage de la première vague). |
 
 ## 3. Exigences fonctionnelles
@@ -84,7 +92,38 @@ Les 79 sections continuent de travailler sur le **produit actif**.
 - **F20** — **Stress et verdict** : scénarios et Monte Carlo s'exécutent par produit (cas effectif) ; la vue portefeuille agrège les tirages
   (§ 6.3). Le verdict (décision) existe au niveau produit et au niveau portefeuille.
 
-### 3.5 Compatibilité
+### 3.5 Knowledge transfer : un sous-ensemble du Knowledge Hub par produit
+
+Aujourd'hui le Knowledge Hub est réglé **une fois pour le cas** : activation (`khEnabled`), 9 questions de maturité initiale (`khA0`…`khA8`,
+note 0 à 4 → score → niveau CC initial), niveau CC cible (`khTargetCC`, plafonné par le contexte d'engagement), coût de mise en place
+(`khSetupBase × (0,5 + 0,25 × écart de niveaux)`), coût annuel (`khCurationFTE × TJM cible × jours ouvrés + khInfraMonthly × 12`), multiplicateur de
+potentiel d'automatisation (`CC_MULT[cible]`) et jours de transfert de connaissance évités par an (`ETP de départ × 0,2 × 15 × TJM × KT_RED[CC]`).
+En multi-produits, ces réglages deviennent **par produit**, sur un hub de portefeuille.
+
+- **F24** — **Hub commun, sous-ensemble par produit.** Le portefeuille porte le réglage commun du hub (activation par défaut, coût d'infrastructure, mode
+  d'imputation § 5.3). Chaque produit possède un **sous-ensemble de connaissance** (`product.knowledge`), indépendant de celui des autres.
+- **F25** — **Contenu d'un sous-ensemble.** (a) `enabled` : le produit utilise le hub (hérite du commun, surchargeable) ; (b) `domains` : liste libre de
+  domaines de connaissance retenus (documentation, code, tickets, procédures d'exploitation, décisions d'architecture, …) avec un **poids** (%) qui
+  répartit la charge de curation ; (c) les **9 réponses de maturité** initiale propres au produit (→ CC initial du produit) ; (d) `targetCC` cible
+  du produit (≤ plafond du contexte) ; (e) `curationFTE` et `setupBase` du produit ; (f) `ktLeadMonths` (≥ 0) : préparation du transfert avant le démarrage
+  de la vague (F28).
+- **F26** — **Valeurs par défaut identiques à aujourd'hui.** Un produit créé hérite du hub commun : mêmes réponses, même cible, mêmes coûts que le cas
+  unique actuel. Chaque champ du sous-ensemble suit la mécanique « hérité / surchargé » de F7 (puce, retour au commun, application à tous).
+- **F27** — **Effets propres au produit.** Le sous-ensemble d'un produit agit **uniquement** sur ce produit : multiplicateur de potentiel (`CC_MULT`), niveau
+  CC par année depuis le mois 0 du produit, jours de KT évités (calculés sur l'équipe d'entrée du produit), coût de mise en place et coût annuel de curation.
+  Il alimente les mêmes champs du cas effectif (aucune nouvelle formule dans le moteur).
+- **F28** — **Préparation avant la vague.** `ktLeadMonths = k` place le **coût de mise en place du KT** (ingestion, curation initiale) *k* mois **avant** le mois 0
+  du produit dans la consolidation (préparer la vague N+1 pendant la vague N). Les bénéfices restent à partir du mois 0. Valeur par défaut 0 = comportement actuel.
+- **F29** — **Tableau « Knowledge transfer » du portefeuille.** Une ligne par produit : état de départ (CC initial), cible, domaines, coût de mise en place,
+  coût annuel, jours de KT évités, vague, échéance de préparation, plus des totaux ; filtrable par vague ; signale les produits sans hub (désactivé) et ceux dont
+  la cible est plafonnée par le contexte.
+- **F30** — **Imputation de l'infrastructure commune.** Le coût d'infrastructure du hub (`khInfraMonthly`) est un coût de portefeuille imputé aux produits selon
+  l'un des modes de § 5.3 (v1 : coût complet par produit ; option : répartition au prorata de l'effectif d'entrée). La consolidation n'additionne jamais deux fois
+  la même infrastructure.
+- **F31** — **Lecture « effet de bascule ».** Le tableau et la vue Consolidation montrent, par vague, la part du bénéfice attribuable au hub (écart avec la même vague hub
+  désactivé), calculée par la fonction existante de comparaison avec/sans hub (`hubView`), appliquée produit par produit.
+
+### 3.6 Compatibilité
 
 - **F21** — Un fichier actuel (cas unique) s'ouvre comme un portefeuille d'**un produit « Produit 1 »** et d'**une vague « Vague 1 »** démarrant au
   mois 0. Tous les chiffres sont **identiques** à l'ancien affichage (critère d'acceptation A1).
@@ -106,6 +145,7 @@ interface Portfolio {
   products: Product[];                      // ordre d'affichage
   waves: Wave[];                            // ordre de déploiement
   activeProductId: string;                  // produit sur lequel travaillent les 79 sections (état UI persisté dans le document ? voir D-M6)
+  hub: { enabled: boolean; infraMonthly: number; infraAllocation: 'perProduct' | 'byBaseEtp' };   // Knowledge Hub commun (§ 3.5, § 5.3)
   horizonMonths: number;                    // horizon calendaire du portefeuille
   startDate: string;                        // ISO, mois 1 du portefeuille
 }
@@ -115,9 +155,19 @@ interface CommonCase extends Omit<CaseState, 'teamIn'> {}   // tout sauf l'équi
 interface Product {
   id: string; name: string; note?: string; archived?: boolean;
   teamIn: TeamRow[];                        // équipe d'entrée propre, jamais héritée
+  knowledge: KnowledgeSubset;               // sous-ensemble du Knowledge Hub (§ 3.5) ; champs absents = hérités du commun
   overrides: Partial<Overridable>;          // surcharges parcimonieuses (liste blanche § 4.3)
   waveId: string | null;                    // null = non planifié
   offsetMonths: number;                     // décalage dans la vague (≥ 0)
+}
+
+interface KnowledgeSubset {
+  enabled?: boolean;                        // hérité du hub commun si absent
+  domains?: { label: string; weightPct: number }[];   // domaines retenus ; poids = répartition de la curation (Σ = 100)
+  maturityAnswers?: number[];               // 9 notes 0..4 (khA0..khA8) propres au produit
+  targetCC?: number;                        // 0..4, plafonné par le contexte d'engagement
+  curationFTE?: number; setupBase?: number; // charge de curation, base du coût de mise en place
+  ktLeadMonths?: number;                    // préparation du KT avant le mois 0 (≥ 0)
 }
 
 interface Wave {
@@ -128,7 +178,7 @@ interface Wave {
 ```
 
 Invariants (vérifiés par un test de propriété) : un produit n'est dans qu'**une** vague ; `Wave.productIds` et `Product.waveId` sont
-cohérents ; `offsetMonths ≥ 0` ; `startMonth ≥ 0` ; les identifiants sont uniques ; au moins un produit.
+cohérents ; `offsetMonths ≥ 0` ; `ktLeadMonths ≥ 0` ; la somme des poids de `domains` vaut 100 ; `targetCC` ∈ [0, 4] ; `startMonth ≥ 0` ; les identifiants sont uniques ; au moins un produit.
 
 ### 4.2 Cas effectif
 
@@ -137,6 +187,8 @@ resolveProduct(p: Portfolio, productId): CaseState   // fonction pure du domaine
   = { ...p.common, ...pick(overrides, whitelist), teamIn: product.teamIn }
 ```
 
+- Les champs `knowledge` du produit sont écrits dans les clés existantes du cas effectif (`dom.checked.khEnabled`, `dom.values.khA0`…`khA8`, `khTargetCC`,
+  `khCurationFTE`, `khSetupBase`, `khInfraMonthly` imputé selon § 5.3) : le moteur (`domain/knowledge.ts`) reste inchangé.
 - Fusion **superficielle** à la clé (pas de fusion profonde), sauf `dom.values` / `dom.checked` où la surcharge est une différence par champ de
   formulaire (clés de `dom.values`).
 - Le résultat est mémorisé (`WeakMap` sur `common`, `product.overrides`, `product.teamIn`), donc modifier un produit ne recalcule pas les autres.
@@ -148,6 +200,8 @@ resolveProduct(p: Portfolio, productId): CaseState   // fonction pure du domaine
 |---|---|---|
 | Périmètre | `selectedArtefacts`, `artefactsEdited`, `selectedRegArtefacts`, `regArtefactsEdited`, `phaseOff`, `phaseSeq`, `selectedNorms`, `regInclude`, `lifecycleUse`, `lifecyclePos`, `statusLifecycle` | **oui** |
 | Cibles | `targetLocPct`, `dom.values` (horizon exclu), `forceGlassCeiling` | oui |
+| Knowledge Hub | `khEnabled`, `khA0`…`khA8`, `khTargetCC`, `khCurationFTE`, `khSetupBase` (= sous-ensemble du produit, § 3.5) | **oui** |
+| Knowledge Hub (infra) | `khInfraMonthly` | non (commun ; imputé selon § 5.3) |
 | Courbe | `scurve` (famille, points) | oui (rythme propre au produit) |
 | Contexte | `engageCoef` (contexte d'engagement), `MATURITY_MAP` | oui |
 | Tarifs | `RATE` | non en v1 (commun) — voir D-M3 |
@@ -167,7 +221,7 @@ resolveProduct(p: Portfolio, productId): CaseState   // fonction pure du domaine
 ### 4.5 Excel
 
 Feuilles ajoutées au classeur de paramètres : `Products` (id, nom, vague, décalage, note), `Waves` (id, nom, début, note), `Team_<produit>`
-(ou une feuille `TeamIn` avec colonne `Product`), `Overrides` (produit, clé, valeur JSON). Les feuilles actuelles décrivent le **commun**.
+(ou une feuille `TeamIn` avec colonne `Product`), `Overrides` (produit, clé, valeur JSON), `KnowledgeSubsets` (produit, activation, cible, curation, mise en place, préparation en mois) et `KnowledgeDomains` (produit, domaine, poids). Les feuilles actuelles décrivent le **commun**.
 L'import est durci comme aujourd'hui (taille, types, clés interdites) et reste **un seul pas annulable**.
 
 ## 5. Moteur : consolidation
@@ -182,6 +236,9 @@ pour chaque produit planifié p :
     ligne calendaire : T = mois0_p + t
 consolidation(T) = Σ_p lignes_p(T - mois0_p)       pour chaque mesure additive
 ```
+
+Exception : le coût de **mise en place du KT** d'un produit est positionné sur `mois0_p − ktLeadMonths_p` (F28) ; ses autres flux restent sur `mois0_p + t`.
+La consolidation conserve donc le coût de KT dans une série séparée (`ktSetup`) puis l'ajoute à la trésorerie.
 
 Mesures **additives** (somme directe) : économies nettes mensuelles, coût de fonctionnement, setup, jetons, infrastructure, ETP humains, vFTE,
 trésorerie. Mesures **non additives** recalculées sur la série consolidée : trésorerie cumulée, **mois de retour du portefeuille**
@@ -204,6 +261,14 @@ Certains coûts de mise en place sont communs (plateforme, hub de connaissances)
 
 *(Décision D-M5, recommandation : option 1 en v1.)*
 
+**Imputation du hub commun (F30).** `hub.infraAllocation` :
+
+- `perProduct` (v1, défaut) : chaque produit supporte `khInfraMonthly × 12` comme aujourd'hui (conservatrice, additive, identique au cas unique pour un produit) ;
+- `byBaseEtp` : l'infrastructure du portefeuille est répartie au prorata de l'effectif d'entrée des produits qui utilisent le hub ; la somme des parts vaut
+  exactement le coût du hub (test de conservation), et un hub utilisé par un seul produit lui coûte le coût complet.
+
+Coûts de curation et de mise en place : toujours propres au produit (sous-ensemble).
+
 ### 5.4 Organisation du code
 
 ```
@@ -215,6 +280,7 @@ domain/portfolio/
   consolidate.ts     // somme des lignes décalées → série consolidée
   headline.ts        // VAN / ROI / retour du portefeuille depuis la série consolidée (réutilise roiCanonical)
   waves.ts           // agrégats par vague
+  knowledge.ts       // sous-ensemble → clés du cas effectif ; imputation de l'infra du hub ; décalage de ktSetup ; vue Knowledge transfer
   index.ts
 ```
 
@@ -243,13 +309,14 @@ l'état actuel), sauf `activeProductId` persisté dans le document pour qu'un fi
 
 - Les **79 sections existantes** se branchent sur `useCtx()` qui renvoie le **cas effectif du produit actif** : aucune modification de leur
   logique, seulement un bandeau « Produit : X (hérité / surchargé) » dans `SectionFrame`.
-- **Nouveau groupe « Portefeuille »** (≈ 5 sections) :
+- **Nouveau groupe « Portefeuille »** (≈ 6 sections) :
 
 | Section | Contenu |
 |---|---|
 | Produits | Tableau des produits : équipe (ETP), vague, décalage, état (hérité / n surcharges), indicateurs clés, actions F1–F4. |
 | Surcharges | Par produit, liste des clés surchargées avec valeur commune vs valeur produit, « Revenir au commun », « Appliquer à tous ». |
 | Vagues | Planche de vagues (colonnes) avec produits (cartes), date de démarrage, glisser-déposer (F10–F12). |
+| Knowledge transfer | Tableau F29 : un sous-ensemble par produit (domaines, état initial, cible, coûts, jours de KT évités, préparation), totaux, effet du hub par vague (F31) ; édition du sous-ensemble du produit actif (réutilise la section Knowledge Hub existante avec le bandeau « hérité / surchargé »). |
 | Consolidation | Trajectoire du portefeuille : courbe cumulée, mensuel, par vague, par produit, retour, VAN, ROI (F15–F16). |
 | Stress portefeuille | Monte Carlo / scénarios agrégés (v2). |
 
@@ -300,6 +367,7 @@ l'état actuel), sauf `activeProductId` persisté dans le document pour qu'un fi
 | **P1 — Modèle et domaine** | `domain/portfolio/` (types, resolve, validate, timeline, consolidate, headline) ; tests de propriétés. | Invariants A2–A5 verts ; `computeCase` inchangé. |
 | **P2 — Store et persistance** | `Portfolio` à la place de `Doc` ; enveloppe de migration (F21) ; commandes produit / vague / surcharge ; adressage des commandes existantes ; autosave, multi-onglets, calcul canonique par produit. | Les 202 commandes passent le test d'annulation sur un portefeuille de 3 produits ; ouverture des 107 fixtures = A1. |
 | **P3 — Interface produit** | Sélecteur produit actif, bandeaux hérité / surchargé, sections Produits et Surcharges, mode « tous / ce produit ». | Parcours 1–3 (§ 7) ; audit axe sans violation. |
+| **P3b — Knowledge transfer par produit** | `domain/portfolio/knowledge.ts`, sous-ensemble dans `Product`, section Knowledge transfer, `ktLeadMonths`, imputation de l'infrastructure, feuilles Excel `KnowledgeSubsets` / `KnowledgeDomains`. | A11–A13 verts ; un produit avec hub par défaut = cas unique actuel (A1). |
 | **P4 — Vagues et consolidation** | Section Vagues (planche + clavier), Consolidation, barre haute par périmètre, Gantt par vague. | Parcours 4–6 ; budgets de performance. |
 | **P5 — Restitution** | Excel (paramètres et résultats), rapport, HTML, photos instantanées. | Parité cellule à cellule du mode mono-produit ; nouvelles feuilles validées par test. |
 | **P6 — Stress** | Monte Carlo par produit + agrégat, corrélation `ρ`, verdict portefeuille. | Tests de reproductibilité (graine) ; documentation des écarts. |
@@ -321,6 +389,9 @@ Chaque phase est livrée par une demande de fusion indépendante, avec les tests
 | **A8** | Aucun chiffre de portefeuille n'est calculé en dehors de `domain/portfolio/consolidate` ; pas de somme dans `ui/`. | Revue + règle ESLint ciblée (interdiction de `reduce` financier dans `ui/sections/portfolio`). |
 | **A9** | L'export mono-produit d'un portefeuille à un produit rouvre à l'identique (aller-retour). | Test d'aller-retour. |
 | **A10** | Performance et accessibilité conformes au § 8. | `npm run perf`, `npm run a11y`. |
+| **A11** | Un produit dont le sous-ensemble est hérité donne exactement les chiffres hub actuels (setup, coût annuel, `CC_MULT`, jours de KT évités) ; modifier le sous-ensemble d'un produit ne change **aucun** chiffre des autres produits. | Test de propriété + oracle sur les fixtures avec hub activé. |
+| **A12** | Avec `perProduct`, l'imputation redonne le coût de cas unique ; avec `byBaseEtp`, Σ des parts = coût d'infrastructure du hub (conservation, au centime). | Test de propriété. |
+| **A13** | `ktLeadMonths = k` déplace uniquement le coût de mise en place du KT de *k* mois avant le mois 0 ; trésorerie cumulée, VAN et retour consolidés se recalculent en conséquence ; avec `k = 0` rien ne change. | Test de propriété. |
 
 Les écarts volontaires au comportement actuel (s'il y en a) sont consignés dans `DEVIATIONS.md` (règle en vigueur : on modifie le nouveau
 build seulement, on enregistre l'écart).
@@ -338,6 +409,9 @@ build seulement, on enregistre l'écart).
 | **D-M7** | Corrélation entre produits dans Monte Carlo | indépendants / paramètre `ρ` | **`ρ` global**, défaut 0, en P6. |
 | **D-M8** | Versionnage | 19.x / 20.0.0 | **20.0.0** (changement de schéma de document, lecture des anciens fichiers conservée). |
 | **D-M9** | Nom d'interface : « Produit », « Application », « Service » | libre | **Produit** par défaut, libellé configurable dans les paramètres (futur). |
+| **D-M10** | Granularité du sous-ensemble | domaines libres avec poids / catalogue fermé de domaines | **Domaines libres avec poids** (information et répartition de curation, sans effet sur le multiplicateur qui reste piloté par le niveau CC). |
+| **D-M11** | Réutilisation de connaissance entre produits (un domaine déjà ingéré pour le produit A baisse le coût du produit B) | ignorée en v1 / facteur de réutilisation | **Ignorée en v1** ; facteur `reusePct` par domaine en v2. |
+| **D-M12** | Imputation de l'infrastructure du hub | par produit / au prorata de l'effectif | **Par produit** en v1 (cohérent avec D-M5), prorata en option. |
 
 ## 13. Risques
 
@@ -348,6 +422,7 @@ build seulement, on enregistre l'écart).
 | Lenteur avec beaucoup de produits | Mémoïsation par produit ; consolidation linéaire ; budget de performance en CI. |
 | Confusion entre VAN produit et VAN portefeuille | Libellés explicites + infobulles (déjà en place sur la barre haute). |
 | Taille de fichier / import Excel volumineux | Limites d'import existantes + tests de taille ; feuilles par produit paginées. |
+| Double comptage de l'infrastructure ou de la mise en place du hub | Mode d'imputation explicite, test de conservation (A12), diagnostic « hub utilisé par 0 produit ». |
 | Complexité de l'interface | Affichage progressif (F23) : rien ne change tant qu'il n'y a qu'un produit. |
 
 ## 14. Glossaire des chiffres consolidés
@@ -363,4 +438,6 @@ build seulement, on enregistre l'écart).
 | ROI | `roiCanonical(net consolidé, setup consolidé)` (même règle que pour un cas : nul sans setup). |
 | Économies en % sur N ans | `(économies cumulées − setup) / (coût de référence × années)`, sommées sur les produits planifiés. |
 | Vélocité | Hausse moyenne de vélocité, pondérée par l'effectif d'entrée de chaque produit. |
+| Knowledge transfer (coût) | Σ produits : mise en place du KT (décalée de `ktLeadMonths`), curation annuelle et part d'infrastructure du hub. |
+| Jours de KT évités | Σ produits, `ETP de départ × 0,2 × 15 × TJM × KT_RED[CC]` par année depuis le mois 0 du produit. |
 | ETP / vFTE | Somme des ETP humains et des vFTE agents des produits, par mois calendaire. |
