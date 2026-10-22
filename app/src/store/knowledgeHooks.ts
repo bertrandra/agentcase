@@ -1,6 +1,6 @@
 import { useMemo } from 'react';
 import {
-  commonSubsetValue, infraView, knowledgeTable, validate, waveEffects, type HubSettings, type InfraView, type Issue, type KnowledgeTable, type SubsetField, type WaveEffect,
+  commonSubsetValue, corePortfolio, infraView, knowledgeTable, validate, waveEffects, type HubSettings, type InfraView, type Issue, type KnowledgeTable, type SubsetField, type WaveEffect,
 } from '@/domain/portfolio';
 import { usePortfolio } from './hooks';
 import { useActiveProduct, useCommon, useIsMulti } from './portfolioHooks';
@@ -15,7 +15,7 @@ export interface KnowledgeView { table: KnowledgeTable; waves: WaveEffect[]; inf
 
 /** Everything the Knowledge transfer section shows: the F29 table, the F31 hub effect by wave, the infra allocation check and the diagnostics. */
 export function useKnowledgeView(): KnowledgeView {
-  const pf = usePortfolio((p) => p);
+  const pf = usePortfolio(corePortfolio);   // memoised on the inputs of the figures, not on view state
   return useMemo(() => {
     const table = knowledgeTable(pf);
     return { table, waves: waveEffects(pf, table.rows), infra: infraView(pf, table.rows), diagnostics: validate(pf).diagnostics.filter((d) => KT_CODES.includes(d.code)) };

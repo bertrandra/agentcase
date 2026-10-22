@@ -1,3 +1,4 @@
+import type { Ctx } from '../ctx';
 import { CC_MULT, KT_RED } from '../catalog';
 import { khRunAnnual, khSetupCost } from '../knowledge';
 import { hubView } from '../tuneB/hub';
@@ -11,6 +12,14 @@ import type { KnowledgeDomain, Portfolio } from './types';
 export { subsetKeys, ktLead } from './subset';
 export { infraShares as allocateInfra } from './resolve';
 export { allocateCents } from './alloc';
+
+const hubs = new WeakMap<Ctx, ReturnType<typeof hubView>>();
+/** The with/without-hub comparison of a resolved case, computed once per case identity (it runs a second engine). */
+function hubOf(ctx: Ctx): ReturnType<typeof hubView> {
+  let h = hubs.get(ctx);
+  if (!h) { h = hubView(ctx); hubs.set(ctx, h); }
+  return h;
+}
 
 /** One line of the "Knowledge transfer" table (spec F29): the product's slice of the hub, with the existing hub figures. */
 export interface KnowledgeRow {
@@ -51,7 +60,7 @@ export interface KnowledgeTable {
 
 export function knowledgeRow(pf: Portfolio, productId: string): KnowledgeRow {
   const prod = pf.products.find((x) => x.id === productId)!, s = scheduledProducts(pf).find((x) => x.product.id === productId);
-  const cs = resolveProduct(pf, productId), ctx = ctxOf(cs), run = runOf(cs), hv = hubView(ctx), K = run.engine.K;
+  const cs = resolveProduct(pf, productId), ctx = ctxOf(cs), run = runOf(cs), hv = hubOf(ctx), K = run.engine.K;
   return {
     productId, name: prod.name, waveId: prod.waveId, prepMonth: s ? s.month0 - (run.ktSetup > 0 ? s.lead : 0) + 1 : null,
     lead: ktLead(prod.knowledge), usesHub: hv.on, locked: hv.locked, capped: hv.clamped, asisCC: hv.asisCC, targetCC: hv.target, mult: hv.on ? (CC_MULT[hv.target] as number) : 1,
