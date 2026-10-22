@@ -16,7 +16,8 @@ export function isSingleCase(pf: PortfolioDoc): boolean {
   if (pf.products.length !== 1 || pf.waves.length !== 1) return false;
   const env = envelopeCase(portfolioToCase(pf)), a = env.common as Record<string, unknown>, b = pf.common as Record<string, unknown>;
   if (Object.keys(a).length !== Object.keys(b).length || !Object.keys(a).every((k) => Object.is(a[k], b[k]))) return false;   // the hub layer changed the case
-  const { common: _env, ...rest } = env, { common: _pf, ...mine } = withoutView(pf);
+  const rest: Record<string, unknown> = { ...env }, mine: Record<string, unknown> = { ...withoutView(pf) };
+  delete rest.common; delete mine.common;
   return deepEqual(rest, mine);
 }
 

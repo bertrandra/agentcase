@@ -39,11 +39,11 @@ describe('HTML snapshot: save', () => {
     const s = freshStore(); setCustomerName('Round trip');
     const { html } = htmlSnapshotFile(livePage().documentElement, NOW);
     const back = readEmbeddedCase(parse(html))!;
-    expect(JSON.stringify(back.doc)).toBe(snap(s));
+    expect(back.doc).toEqual(s.getState().doc);   // the derived case lists teamIn last: compare structure, not key order
     expect(back.savedAt).toBe(NOW.toISOString());
     const viaText = parseCaseFile(html);   // the file-open path reads the text without a DOM
     expect(viaText.kind).toBe('html');
-    expect(JSON.stringify(fromSnapshot(viaText.raw))).toBe(snap(s));
+    expect(fromSnapshot(viaText.raw)).toEqual(s.getState().doc);
   });
   it('re-saving replaces the script and the legacy restore script instead of stacking', () => {
     freshStore(); setCustomerName('First');

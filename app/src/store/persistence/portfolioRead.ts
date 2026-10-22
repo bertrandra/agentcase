@@ -14,7 +14,8 @@ const num = (v: unknown, what: string): number => { need(typeof v === 'number' &
 /** The common values: every key of a case except the team, filled from the code defaults like a legacy snapshot, form inputs required. */
 function readCommon(v: unknown): Portfolio['common'] {
   need(rec(v) && rec(v.dom) && rec(v.dom.values) && rec(v.dom.checked), 'common has no form inputs (dom)');
-  const dom = (v as Rec).dom as { values: Rec; checked: Rec }, { teamIn: _team, ...defaults } = makeDefaultDoc();
+  const dom = (v as Rec).dom as { values: Rec; checked: Rec }, defaults: Rec = { ...makeDefaultDoc() };
+  delete defaults.teamIn;
   const d = makeDefaultDoc().dom;
   return { ...defaults, ...(v as Rec), dom: { values: { ...d.values, ...dom.values }, checked: { ...d.checked, ...dom.checked } } } as unknown as Portfolio['common'];
 }
