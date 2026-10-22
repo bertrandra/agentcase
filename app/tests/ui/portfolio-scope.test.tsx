@@ -122,5 +122,6 @@ describe('one view selector, no duplicate product selector', () => {
     choose('portfolio');
     expect(pf().activeProductId).toBe(ids[1]);
     expect(screen.getByText(/Editing:/).textContent).toContain('B');
+    expect(screen.getByText(/Editing:/).className).not.toContain('ac-muted');   // legible on the dark header
   });
 });
