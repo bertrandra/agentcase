@@ -2,7 +2,7 @@ import { useMemo, useSyncExternalStore } from 'react';
 import { computeCase, makeCtx, type Ctx } from '@/domain';
 import { canRedo, canUndo } from './history';
 import { appStore } from './instance';
-import type { Doc, HistoryEntry } from './types';
+import type { Doc, HistoryEntry, PortfolioDoc } from './types';
 
 const subscribe = (cb: () => void) => appStore().subscribe(cb);
 
@@ -15,6 +15,11 @@ export interface HistoryView { canUndo: boolean; canRedo: boolean; undo: History
 export function useHistory(): HistoryView {
   const h = useSyncExternalStore(subscribe, () => appStore().getState().history);
   return useMemo(() => ({ canUndo: canUndo(h), canRedo: canRedo(h), undo: h.undo, redo: h.redo }), [h]);
+}
+
+/** Read a slice of the portfolio (products, waves, hub, active product, edit scope). The 79 case sections use `useDoc`/`useCtx` instead. */
+export function usePortfolio<T>(select: (p: PortfolioDoc) => T): T {
+  return useSyncExternalStore(subscribe, () => select(appStore().getState().portfolio));
 }
 
 const memo = new WeakMap<Doc, ReturnType<typeof computeCase>>();

@@ -12,3 +12,7 @@ export { portfolioHeadline, type PortfolioHeadline } from './portfolioHeadline';
 export type { ProductView, WaveView } from './waves';
 export { subsetKeys, ktLead, allocateInfra, allocateCents, knowledgeRow, knowledgeTable, type KnowledgeRow, type KnowledgeTable } from './knowledge';
 export { envelopeCase, portfolioToCase } from './envelope';
+export { MAX_PRODUCTS, addProduct, renameProduct, setProductNote, archiveProduct, setProductOffset, duplicateProduct, removeProduct, setKnowledge, setActive } from './products';
+export { addWave, renameWave, setWaveStart, setWaveNote, removeWave, reorderWave, assignWave, setHorizon, setHub } from './waveOps';
+export { buildPortfolioPackages, type PortfolioPackages } from './package';
+export { checkPortfolioStaleness } from './staleness';

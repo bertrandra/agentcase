@@ -40,6 +40,7 @@ export function packageOfSnapshot(raw: unknown): unknown {
 export function fromSnapshot(raw: unknown): Doc {
   if (!raw || typeof raw !== 'object' || Array.isArray(raw)) throw new SnapshotError('Snapshot must be a JSON object');
   const snap = sanitize(raw as Record<string, unknown>);
+  if (snap._schema === 'agentcase.portfolio.v1') throw new SnapshotError('This file holds a portfolio, not a single case: open it with openSnapshot()');
   const dom = snap.dom as { values?: unknown; checked?: unknown } | undefined;
   if (!dom || typeof dom !== 'object' || typeof dom.values !== 'object' || typeof dom.checked !== 'object') throw new SnapshotError('Snapshot has no form inputs (dom)');
   const doc = { ...makeDefaultDoc(), ...snap } as Doc;

@@ -1,8 +1,13 @@
 import type { AppStore } from '../core';
-import { sanitize, toSnapshot, fromSnapshot } from './snapshot';
+import { sanitize } from './snapshot';
+import { openSnapshot, toPortfolioSnapshot } from './portfolioSnapshot';
 import type { HistoryState } from '../types';
 
-export interface AutosaveRecord { tabId: string; savedAt: string; label: string; snapshot: Record<string, unknown>; history: HistoryState }
+/**
+ * `format: 'portfolio'` marks a record whose snapshot is the exact portfolio and whose history patches address it. Records written before the
+ * portfolio store (no `format`) carry case-level patches: their document is restored, their history is not.
+ */
+export interface AutosaveRecord { tabId: string; savedAt: string; label: string; snapshot: Record<string, unknown>; history: HistoryState; format?: 'portfolio' }
 /** Where records live: IndexedDB in the browser, a Map in tests. */
 export interface AutosaveStorage {
   put(r: AutosaveRecord): Promise<void>;
@@ -24,15 +29,15 @@ export function startAutosave(store: AppStore, storage: AutosaveStorage, tabId: 
   const save = async () => {
     handle = null;
     const s = store.getState(), name = (s.doc as { customerName?: string }).customerName;
-    await storage.put({ tabId, savedAt: (o.now ?? (() => new Date()))().toISOString(), label: name || 'Untitled case', snapshot: toSnapshot(s.doc, o.now), history: s.history });
+    await storage.put({ tabId, savedAt: (o.now ?? (() => new Date()))().toISOString(), label: name || 'Untitled case', snapshot: toPortfolioSnapshot(s.portfolio, o.now, true), history: s.history, format: 'portfolio' });
   };
   const off = store.onChange(() => { if (handle !== null) clearT(handle); handle = setT(() => { void save(); }, o.delayMs ?? 1500); });
   return { flush: save, stop: () => { off(); if (handle !== null) clearT(handle); } };
 }
 
-/** Restore a record: the document replaces the current one and the undo history comes back with it. */
+/** Restore a record: the portfolio replaces the current one and the undo history comes back with it. */
 export function restoreRecord(store: AppStore, r: AutosaveRecord): void {
-  store.load(fromSnapshot(r.snapshot));
+  store.load(openSnapshot(r.snapshot));
   const h = sanitize(r.history);
-  if (h && Array.isArray(h.undo) && Array.isArray(h.redo)) store.setHistory(h);
+  if (r.format === 'portfolio' && h && Array.isArray(h.undo) && Array.isArray(h.redo)) store.setHistory(h);
 }

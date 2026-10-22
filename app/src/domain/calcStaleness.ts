@@ -7,7 +7,7 @@ import type { CaseState } from './types/state';
  * `versionMismatch`: another engine version computed the file.
  */
 export type CalcState = 'valid' | 'stale' | 'versionMismatch' | 'notCalculated';
-export interface CalcStaleness { state: CalcState; storedHeadline?: PackageHeadline; liveHeadline?: PackageHeadline; storedVersion?: string; liveVersion?: string }
+export interface CalcStaleness { state: CalcState; storedHeadline?: PackageHeadline; liveHeadline?: PackageHeadline; storedVersion?: string; liveVersion?: string; /** portfolio files: the products whose package is stale */ staleProducts?: string[] }
 export const needsBanner = (s: CalcStaleness): boolean => s.state === 'stale' || s.state === 'versionMismatch';
 
 const REL = 1e-6;
