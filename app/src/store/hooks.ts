@@ -2,13 +2,15 @@ import { useMemo, useSyncExternalStore } from 'react';
 import { computeCase, makeCtx, type CaseState, type Ctx } from '@/domain';
 import { canRedo, canUndo } from './history';
 import { appStore } from './instance';
+import { productDocOf, useViewProductId } from './productView';
 import type { Doc, HistoryEntry, PortfolioDoc } from './types';
 
 const subscribe = (cb: () => void) => appStore().subscribe(cb);
 
-/** Read a slice of the document (re-renders only when the selected value changes by identity). */
+/** Read a slice of the document (re-renders only when the selected value changes by identity). The active product's case, or the one of the enclosing `ProductViewContext`. */
 export function useDoc<T>(select: (d: Doc) => T): T {
-  return useSyncExternalStore(subscribe, () => select(appStore().getState().doc));
+  const as = useViewProductId();   // inside a ProductViewContext: that product's resolved case instead of the active one (Vue agrégée)
+  return useSyncExternalStore(subscribe, () => { const s = appStore().getState(); return select((as && productDocOf(s.portfolio, as)) || s.doc); });
 }
 
 export interface HistoryView { canUndo: boolean; canRedo: boolean; undo: HistoryEntry[]; redo: HistoryEntry[] }
