@@ -9,12 +9,12 @@ export function ProductOverrides({ product, common, active }: { product: Product
   const refs = overrideRefs(product.overrides);
   return (
     <section className="ac-panel" aria-labelledby={`ov-${product.id}`}>
-      <header><h2 id={`ov-${product.id}`}>{product.name}{active ? ' (actif)' : ''}{product.archived ? ' (archivé)' : ''} — {refs.length ? `${refs.length} surcharge${refs.length > 1 ? 's' : ''}` : 'hérité'}</h2></header>
-      {!refs.length ? <p className="ac-muted">Aucune surcharge : ce produit suit toutes les valeurs communes.</p> : (
+      <header><h2 id={`ov-${product.id}`}>{product.name}{active ? ' (active)' : ''}{product.archived ? ' (archived)' : ''} — {refs.length ? `${refs.length} override${refs.length > 1 ? 's' : ''}` : 'inherited'}</h2></header>
+      {!refs.length ? <p className="ac-muted">No override: this product follows all the common values.</p> : (
         <div className="ac-table-wrap" tabIndex={0}>
           <table className="ac-table">
             <caption className="ac-sr">Surcharges de {product.name}</caption>
-            <thead><tr><th scope="col">Clé</th><th scope="col">Valeur commune</th><th scope="col">Valeur du produit</th><th scope="col">Actions</th></tr></thead>
+            <thead><tr><th scope="col">Key</th><th scope="col">Common value</th><th scope="col">Product value</th><th scope="col">Actions</th></tr></thead>
             <tbody>
               {refs.map((ref) => {
                 const label = overrideLabel(ref);
@@ -25,8 +25,8 @@ export function ProductOverrides({ product, common, active }: { product: Product
                     <td>{describeValue(overrideValue(product.overrides, ref))}</td>
                     <td>
                       <div className="ac-pf-actions" role="group" aria-label={`Actions : ${label}, ${product.name}`}>
-                        <button type="button" aria-label={`Revenir au commun : ${label} (${product.name})`} onClick={() => { if (clearProductOverride(product.id, ref)) toast(`${label} : retour au commun pour ${product.name}`); }}>Revenir au commun</button>
-                        <button type="button" aria-label={`Appliquer à tous les produits : ${label} (${product.name})`} onClick={() => { if (applyOverrideToCommon(product.id, ref)) toast(`${label} : appliqué à tous les produits`); }}>Appliquer à tous les produits</button>
+                        <button type="button" aria-label={`Revert to common: ${label} (${product.name})`} onClick={() => { if (clearProductOverride(product.id, ref)) toast(`${label}: reverted to common for ${product.name}`); }}>Revert to common</button>
+                        <button type="button" aria-label={`Apply to all products: ${label} (${product.name})`} onClick={() => { if (applyOverrideToCommon(product.id, ref)) toast(`${label}: applied to all products`); }}>Apply to all products</button>
                       </div>
                     </td>
                   </tr>

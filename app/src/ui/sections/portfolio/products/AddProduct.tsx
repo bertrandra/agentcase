@@ -8,15 +8,15 @@ export function AddProduct() {
   const [name, setName] = useState(''), first = useWaves()[0]?.id ?? null;
   const add = () => {
     const id = addProduct(name, first);
-    toast(id ? `Produit ajouté : ${name.trim() || 'nouveau produit'}` : 'Limite de 50 produits atteinte');
+    toast(id ? `Product added: ${name.trim() || 'new product'}` : 'Limit of 50 products reached');
     if (id) setName('');
   };
   return (
     <div className="ac-form-row">
-      <label className="ac-field"><span className="ac-field-l">Nom du nouveau produit</span>
+      <label className="ac-field"><span className="ac-field-l">Name of the new product</span>
         <input type="text" value={name} placeholder="ex. Application Paie" onChange={(e) => setName(e.target.value)} onKeyDown={(e) => { if (e.key === 'Enter') add(); }} />
       </label>
-      <button type="button" onClick={add}>Ajouter un produit</button>
+      <button type="button" onClick={add}>Add a product</button>
     </div>
   );
 }

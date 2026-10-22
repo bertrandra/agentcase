@@ -21,8 +21,8 @@ const open = async () => { mountApp('waves'); await sectionReady(/Vagues/); };
 describe('Vagues section: waves', () => {
   it('create, rename, reorder and delete a wave; each is undoable', async () => {
     await open();
-    fireEvent.change(screen.getByLabelText('Nom de la nouvelle vague'), { target: { value: 'Vague Z' } });
-    fireEvent.change(screen.getByLabelText('Démarrage de la nouvelle vague (mois)'), { target: { value: '12' } });
+    fireEvent.change(screen.getByLabelText('Name of the new wave'), { target: { value: 'Vague Z' } });
+    fireEvent.change(screen.getByLabelText('Start of the new wave (month)'), { target: { value: '12' } });
     fireEvent.click(screen.getByRole('button', { name: 'Ajouter une vague' }));
     expect(pf().waves.map((w) => [w.name, w.startMonth])).toEqual([['Vague 1', 0], ['Wave 2', 6], ['Vague Z', 12]]);
     const name = screen.getByLabelText('Nom de la vague Vague Z');

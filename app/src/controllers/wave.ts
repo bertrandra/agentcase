@@ -28,7 +28,7 @@ const ids = (): string[] => { const pf = appStore().getState().portfolio; return
 /** Add a wave starting at `startMonth` (0 = portfolio start). Returns its id. */
 export function addWave(name?: string, startMonth = 0): string | null {
   const id = newId('w', ids());
-  return dispatchChecked(addCmd({ id, name: name?.trim() || `Vague ${appStore().getState().portfolio.waves.length + 1}`, startMonth })) ? id : null;
+  return dispatchChecked(addCmd({ id, name: name?.trim() || `Wave ${appStore().getState().portfolio.waves.length + 1}`, startMonth })) ? id : null;
 }
 export const renameWave = (id: string, name: string): boolean => dispatchChecked(renameCmd({ id, name }));
 /** Remove a wave: its products become unplanned (they are kept). */

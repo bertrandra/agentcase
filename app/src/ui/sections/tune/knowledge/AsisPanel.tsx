@@ -17,7 +17,7 @@ const CC = [0, 1, 2, 3, 4].map((n) => ({ value: String(n), label: `CC${n}` }));
 export function AsisPanel() {
   const multi = useIsMulti();
   return (
-    <Panel title="AS-IS assessment (9 statements, 0 = absent → 4 = excellent)" aside={<SubsetBadge field="maturityAnswers" label="Réponses de maturité" />}>
+    <Panel title="AS-IS assessment (9 statements, 0 = absent → 4 = excellent)" aside={<SubsetBadge field="maturityAnswers" label="Maturity answers" />}>
       {GROUPS.map((g, gi) => (
         <fieldset key={g.title} style={{ border: 0, padding: 0 }}>
           <legend><strong>{g.title}</strong></legend>

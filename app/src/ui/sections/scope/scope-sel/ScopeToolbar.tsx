@@ -14,7 +14,7 @@ export function ScopeToolbar() {
       <CheckInput id="scopeSelectedOnly" label="Show selected only" />
       <strong aria-live="polite">In scope : {scopeSummary(c)}</strong>
       <OverrideBadge refKey="selectedArtefacts" label="Artefacts SDLC retenus" />
-      <OverrideBadge refKey="selectedRegArtefacts" label="Artefacts réglementaires retenus" />
+      <OverrideBadge refKey="selectedRegArtefacts" label="Selected regulatory artefacts" />
     </div>
   );
 }

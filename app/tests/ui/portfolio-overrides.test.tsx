@@ -32,7 +32,7 @@ describe('inherited / overridden fields on a section that edits overridable data
     expect(resolveProduct(pf(), ids[1]).selectedArtefacts).toEqual(pf().common.selectedArtefacts);
     expect(chip('Artefacts SDLC retenus').textContent).toContain('hérité');
   });
-  it('"Ce produit seulement" creates overrides, the chip says "surchargé", "Revenir au commun" restores, undo works', async () => {
+  it('"This product only" creates overrides, the chip says "surchargé", "Revenir au commun" restores, undo works', async () => {
     mountApp('scope-sel');
     await sectionReady(/Scope/);
     const commonBefore = pf().common.selectedArtefacts;

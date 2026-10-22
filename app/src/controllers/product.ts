@@ -39,7 +39,7 @@ const ids = (): string[] => { const pf = appStore().getState().portfolio; return
 /** Add a product that inherits the common values (new default team row). Returns its id, or null beyond 50 products. */
 export function addProduct(name?: string, waveId: string | null = null): string | null {
   const pf = appStore().getState().portfolio, id = newId('p', ids());
-  return dispatchChecked(addCmd({ id, name: name?.trim() || `Produit ${pf.products.length + 1}`, waveId })) ? id : null;
+  return dispatchChecked(addCmd({ id, name: name?.trim() || `Product ${pf.products.length + 1}`, waveId })) ? id : null;
 }
 export const renameProduct = (id: string, name: string): boolean => dispatchChecked(renameCmd({ id, name }));
 export function duplicateProduct(id: string, name?: string): string | null {

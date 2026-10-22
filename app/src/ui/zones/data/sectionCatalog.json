@@ -648,7 +648,7 @@
   "id": "products",
   "group": "portfolio",
   "groupSeq": 10,
-  "label": "📦 Produits",
+  "label": "📦 Products",
   "description": "The products of the portfolio: name, wave, entry team, inherited / overridden state and key indicators; add, rename, duplicate, archive, remove, note and offset, and the active product",
   "tag": "supports",
   "mvp": true
@@ -657,7 +657,7 @@
   "id": "overrides",
   "group": "portfolio",
   "groupSeq": 20,
-  "label": "🧬 Surcharges",
+  "label": "🧬 Overrides",
   "description": "Per product, the keys that differ from the common values (common vs product value); back to common, apply to all products",
   "tag": "supports"
  },
@@ -673,7 +673,7 @@
   "id": "waves",
   "group": "portfolio",
   "groupSeq": 40,
-  "label": "🌊 Vagues",
+  "label": "🌊 Waves",
   "description": "The wave board: waves as columns (create, rename, reorder, delete, start month), products as cards moved by drag and drop or keyboard, per-product offset, consolidated totals per wave",
   "tag": "supports"
  },
@@ -689,7 +689,7 @@
   "id": "portfolio-stress",
   "group": "portfolio",
   "groupSeq": 60,
-  "label": "🎲 Stress portefeuille",
+  "label": "🎲 Portfolio stress",
   "description": "Monte Carlo of the planned products with a global correlation rho (0 = independent, 1 = common shocks): portfolio distribution, P10/P50/P90, CVaR, P(net<0), risk reduction against the products taken alone, per wave and per product; the portfolio verdict reads it",
   "tag": "supports"
  }

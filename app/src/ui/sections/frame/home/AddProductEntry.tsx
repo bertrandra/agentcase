@@ -10,15 +10,15 @@ export function AddProductEntry() {
   const count = useProductCount(), first = useWaves()[0]?.id ?? null;
   const add = () => {
     const id = addProduct(undefined, first);
-    if (id) { toast('Produit ajouté — le portefeuille compte maintenant plusieurs produits'); goSection('products'); } else toast('Limite de 50 produits atteinte');
+    if (id) { toast('Product added — the portfolio now holds several products'); goSection('products'); } else toast('Limit of 50 products reached');
   };
   return (
     <div style={{ marginTop: 16, borderLeft: '4px solid #0058AB', paddingLeft: 12, display: 'flex', justifyContent: 'space-between', alignItems: 'center', gap: 16, flexWrap: 'wrap' }}>
       <div>
-        <strong>📦 Portefeuille — {count === 1 ? 'un seul produit' : `${count} produits`}</strong>
-        <div className="ac-muted">Plusieurs produits ? Chacun a sa propre équipe d’entrée et hérite du reste du cas, qu’il peut surcharger.</div>
+        <strong>📦 Portfolio — {count === 1 ? 'a single product' : `${count} products`}</strong>
+        <div className="ac-muted">Several products? Each has its own entry team and inherits the rest of the case, which it can override.</div>
       </div>
-      <button type="button" onClick={add}>Ajouter un produit</button>
+      <button type="button" onClick={add}>Add a product</button>
     </div>
   );
 }

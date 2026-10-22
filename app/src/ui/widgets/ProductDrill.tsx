@@ -10,10 +10,10 @@ function Item({ id, name, Section }: { id: string; name: string; Section: Compon
     <li className="ac-drill-item" data-product={id}>
       <div className="ac-drill-head">
         <h3><button type="button" aria-expanded={open} aria-controls={panel} onClick={() => setOpen(!open)}>{open ? '▾' : '▸'} {name}</button></h3>
-        <button type="button" aria-label={`Éditer ce produit : ${name}`} onClick={() => editProduct(id, name)}>Éditer ce produit</button>
+        <button type="button" aria-label={`Edit this product: ${name}`} onClick={() => editProduct(id, name)}>Edit this product</button>
       </div>
       {open && (
-        <div id={panel} role="region" aria-label={`Détail : ${name}`} className="ac-drill-body">
+        <div id={panel} role="region" aria-label={`Detail: ${name}`} className="ac-drill-body">
           <ProductViewProvider productId={id}>
             <ReadOnlyScope who={name}><Suspense fallback={<p className="ac-muted">Loading…</p>}><Section /></Suspense></ReadOnlyScope>
           </ProductViewProvider>
@@ -27,7 +27,7 @@ function Item({ id, name, Section }: { id: string; name: string; Section: Compon
  * Drill-down of a Vue agrégée: one collapsible entry per product of the selection that renders the section's OWN component for that product
  * (`ProductViewContext`: it reads the product's resolved case, not the edited one), read-only. Lazy: only an opened product is rendered.
  */
-export function ProductDrill({ Section, productIds, heading = 'Détail par produit' }: { Section: ComponentType; productIds: string[]; heading?: string }) {
+export function ProductDrill({ Section, productIds, heading = 'Detail by product' }: { Section: ComponentType; productIds: string[]; heading?: string }) {
   const products = useProducts();
   const items = productIds.flatMap((id) => { const p = products.find((x) => x.id === id); return p ? [{ id, name: p.name }] : []; });
   if (!items.length) return null;

@@ -35,7 +35,7 @@ export function pfDecision(pf: Portfolio, run: PfStress, group: VerdictGroup): D
   const mine = group.kind === 'portfolio' ? run.products : run.products.filter((p) => p.waveId === group.id);
   const wave = group.kind === 'wave' ? run.waves.find((w) => w.id === group.id) : undefined, stats = group.kind === 'portfolio' ? run.stats : wave?.stats;
   if (!stats || !mine.length) return null;
-  const label = group.kind === 'portfolio' ? 'Portefeuille' : (wave as { name: string }).name;
+  const label = group.kind === 'portfolio' ? 'Portfolio' : (wave as { name: string }).name;
   const extra: CtxLine[] = [{ k: 'Scope', v: `${label} · ${mine.length} product${mine.length > 1 ? 's' : ''}` }, { k: 'Correlation between products (rho)', v: String(run.rho) }];
   return groupDecision(stats, mine.map((p) => runOf(resolveProduct(pf, p.id))), mine, (p) => (group.kind === 'portfolio' ? p.r : p.rWave), extra);
 }

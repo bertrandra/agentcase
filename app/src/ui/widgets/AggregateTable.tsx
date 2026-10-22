@@ -9,14 +9,14 @@ export interface AggTotals { label: string; cells: Record<string, ReactNode> }
 
 /** Make `id` the edited product and the Vue (one controller, view state: not undoable) and announce it, like the Vue selector does. */
 export function editProduct(id: string, name: string): void {
-  if (showProduct(id)) toast(`Vue : produit ${name} (édité)`);
+  if (showProduct(id)) toast(`View: product ${name} (edited)`);
 }
 
 /**
  * The generic table of a Vue agrégée: one row per product of the selection, columns of values the domain already computed, an optional total line the
- * domain supplied (rule A8: nothing is summed in `ui/`), and, on each row, the button "Éditer ce produit" (sections then become editable for it).
+ * domain supplied (rule A8: nothing is summed in `ui/`), and, on each row, the button "Edit this product" (sections then become editable for it).
  */
-export function AggregateTable<R extends { id: string; name: string }>({ caption, rows, columns, totals, first = 'Produit', edit = true, empty = 'Aucun produit dans la sélection.' }:
+export function AggregateTable<R extends { id: string; name: string }>({ caption, rows, columns, totals, first = 'Product', edit = true, empty = 'No product in the selection.' }:
   { caption: string; rows: R[]; columns: AggColumn<R>[]; totals?: AggTotals; first?: string; edit?: boolean; empty?: string }) {
   const active = useActiveProductId();
   if (!rows.length) return <p className="ac-muted">{empty}</p>;
@@ -37,7 +37,7 @@ export function AggregateTable<R extends { id: string; name: string }>({ caption
             <tr key={r.id} data-row={r.id} className={r.id === active ? 'is-active' : undefined}>
               <th scope="row">{r.name}</th>
               {columns.map((c) => <td key={c.key} style={align(c)}>{c.render(r)}</td>)}
-              {edit && <td><button type="button" aria-label={`Éditer ce produit : ${r.name}`} onClick={() => editProduct(r.id, r.name)}>Éditer ce produit</button></td>}
+              {edit && <td><button type="button" aria-label={`Edit this product: ${r.name}`} onClick={() => editProduct(r.id, r.name)}>Edit this product</button></td>}
             </tr>
           ))}
         </tbody>

@@ -18,7 +18,7 @@ export function CoefTable() {
   return (
     <details>
       <summary>Context coefficients (editable)</summary>
-      <OverrideBadge refKey="engageCoef" label="Coefficients du contexte" />
+      <OverrideBadge refKey="engageCoef" label="Context coefficients" />
       <div className="ac-table-wrap" tabIndex={0}>
         <table className="ac-table" style={{ maxWidth: 560 }}>
           <thead><tr><th scope="col">Coefficient</th>{keys.map((k) => <th key={k} scope="col" style={{ textAlign: 'center' }}>{k}</th>)}</tr></thead>

@@ -57,12 +57,12 @@ describe('Knowledge transfer section', () => {
 
   it('filters by wave: the rows and the total follow', async () => {
     await open();
-    fireEvent.change(screen.getByLabelText('Filtrer par vague'), { target: { value: pf().waves[1]!.id } });
+    fireEvent.change(screen.getByLabelText('Filter by wave'), { target: { value: pf().waves[1]!.id } });
     expect(within(table()).getAllByRole('row')).toHaveLength(3);
     const t = knowledgeTable(pf()), c = t.rows.find((r) => r.productId === ids[2])!;
     expect(cells(table().querySelector('tfoot tr') as HTMLElement)[5]).toBe(fmtEurK(c.setup));
-    fireEvent.change(screen.getByLabelText('Filtrer par vague'), { target: { value: 'none' } });
-    expect(screen.getByText('Aucun produit dans ce filtre.')).toBeTruthy();
+    fireEvent.change(screen.getByLabelText('Filter by wave'), { target: { value: 'none' } });
+    expect(screen.getByText('No product in this filter.')).toBeTruthy();
   });
 
   it('clicking a row, or pressing its name button, makes the product active; the name buttons are keyboard reachable', async () => {

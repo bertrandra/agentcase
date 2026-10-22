@@ -54,9 +54,9 @@ describe('two or more products: the banner states the Vue for this section by ki
     await open('team-in', /Input team/);
     expect(text()).toBe('Édition : produit Produit 1 — vue agrégée de la sélection ci-dessous : Portefeuille (3 produits planifiés)');
     await open('glossary', /glossary/i);
-    expect(text()).toBe('Indépendant de la vue');
+    expect(text()).toBe('Independent of the view');
     await open('consolidation', /Consolidation/);
-    expect(text()).toBe('Niveau portefeuille');
+    expect(text()).toBe('Portfolio level');
   });
 
   it('Vague: names the wave; a product left without a wave is announced as excluded', async () => {

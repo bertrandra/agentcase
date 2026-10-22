@@ -8,10 +8,10 @@ import { Kpi } from './Kpi';
  * through the domain headline (calendar years, products weighted by their entry headcount where a figure is an average). Every tile says its scope.
  */
 export function ScopeKpis({ label, h }: { label: string; h: PortfolioHeadline }) {
-  const e = h.endYear, cr = h.costReduction, fte = h.fte, who = `${label} (${h.products} produit${h.products > 1 ? 's' : ''} planifié${h.products > 1 ? 's' : ''})`;
+  const e = h.endYear, cr = h.costReduction, fte = h.fte, who = `${label} (${h.products} planned product${h.products > 1 ? 's' : ''})`;
   return (
     <aside className="ac-kpis" aria-label={`Headline results — ${label}`} data-scope={label} style={{ gridArea: 'kpi' }}>
-      <Kpi label="Périmètre" value={label} tone="grey" title={`Scope of the figures: ${who}. Change it with the Vue selector in the top bar.`} />
+      <Kpi label="Scope" value={label} tone="grey" title={`Scope of the figures: ${who}. Change it with the View selector in the top bar.`} />
       <Kpi label="FTE before" value={fmt1(fte.before)} tone="blue" title={`${who}: total AS-IS headcount, summed over the products (FTE).`} />
       <Kpi label={`FTE after Y${e.index}`} value={fmt1(fte.after)} tone="teal" title={`${who}: total human FTE at each product's horizon end (delivery plus agentic run team), summed over the products. Reduction: ${fmtPct(fte.reductionPct)}.`} />
       <Kpi label={`Savings Y${e.index}`} value={fmtEurK(e.savings)} tone="teal" title={`${who}: savings of calendar year ${e.index} (the horizon end), summed over the products, each shifted to its own start.`} />

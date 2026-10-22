@@ -31,9 +31,9 @@ export function ReportPanel() {
         <p>
           <label>Report scope{' '}
             <select aria-label="Report scope" value={value} onChange={(e) => setPicked(e.target.value)}>
-              <option value="portfolio">Portefeuille</option>
-              <optgroup label="Vagues">{waves.map((w) => <option key={w.id} value={`wave:${w.id}`}>Vague : {w.name}</option>)}</optgroup>
-              <optgroup label="Produits">{products.filter((p) => !p.archived).map((p) => <option key={p.id} value={`product:${p.id}`}>Produit : {p.name}</option>)}</optgroup>
+              <option value="portfolio">Portfolio</option>
+              <optgroup label="Waves">{waves.map((w) => <option key={w.id} value={`wave:${w.id}`}>Wave: {w.name}</option>)}</optgroup>
+              <optgroup label="Products">{products.filter((p) => !p.archived).map((p) => <option key={p.id} value={`product:${p.id}`}>Product: {p.name}</option>)}</optgroup>
             </select>
           </label>
           {' '}A product gives the usual report of its effective case; the portfolio or a wave gives the consolidated report (economics by wave and product, knowledge transfer).

@@ -7,7 +7,7 @@ import { scheduledProducts } from './timeline';
 import type { Portfolio } from './types';
 
 /** How a product runs the Knowledge Hub: not at all, as the common hub, or with its own subset. */
-export type HubState = 'inactif' | 'commun' | 'sous-ensemble propre';
+export type HubState = 'off' | 'common' | 'own subset';
 
 /** What a product's inputs amount to, in a few counts (the generic Vue agrégée of an input section). */
 export interface InputSummaryRow {
@@ -36,7 +36,7 @@ export function inputSummary(pf: Portfolio, productIds: string[]): InputSummaryR
     out.push({
       id, name: p.name, wave: pf.waves.find((w) => w.id === p.waveId)?.name ?? '', planned: planned.has(id), archived: !!p.archived,
       etp: teamEtp(p.teamIn), artefacts: c.selectedArtefacts.length, regArtefacts: c.selectedRegArtefacts.length, overrides: overrideRefs(p.overrides).length,
-      hub: !khEnabled(ctxOf(c)) ? 'inactif' : own ? 'sous-ensemble propre' : 'commun',
+      hub: !khEnabled(ctxOf(c)) ? 'off' : own ? 'own subset' : 'common',
     });
   }
   return out;

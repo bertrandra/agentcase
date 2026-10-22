@@ -39,7 +39,7 @@ describe('Domaines de connaissance', () => {
     fireEvent.click(screen.getByRole('button', { name: 'Enregistrer les domaines' }));
     expect(screen.getByRole('alert').textContent).toMatch(/10 % de trop/);
     type('Poids du domaine 2 (%)', '60');
-    expect(screen.getByText('Total : 100 % — prêt à enregistrer.')).toBeTruthy();
+    expect(screen.getByText('Total: 100% — ready to save.')).toBeTruthy();
     fireEvent.click(screen.getByRole('button', { name: 'Enregistrer les domaines' }));
     expect(prod(1).knowledge.domains).toEqual([{ label: 'Documentation', weightPct: 40 }, { label: 'Code', weightPct: 60 }]);
     expect(screen.queryByRole('alert')).toBeNull();

@@ -73,7 +73,7 @@ describe('Gantt: wave rows (F18)', () => {
   it('an unplanned product is listed outside the chart', async () => {
     act(() => { setDisplayScope({ kind: 'portfolio' }); assignWave(ids[1], null); });
     await open();
-    expect(wavePanel()!.textContent).toContain('Non planifiés (absents du Gantt) : B.');
+    expect(wavePanel()!.textContent).toContain('Unscheduled (absent from the Gantt): B.');
     expect(within(wavePanel() as HTMLElement).getByRole('group', { name: /^Vague 1, 1 produit, de / })).toBeTruthy();
   });
 

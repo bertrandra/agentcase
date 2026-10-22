@@ -57,7 +57,7 @@ describe('Produits section', () => {
   it('add a product (inherits the common values, joins the first wave); remove it; Ctrl+Z restores the removed product', async () => {
     mountApp('products');
     await sectionReady(/Produits/);
-    fireEvent.change(screen.getByLabelText('Nom du nouveau produit'), { target: { value: 'Nouveau' } });
+    fireEvent.change(screen.getByLabelText('Name of the new product'), { target: { value: 'Nouveau' } });
     fireEvent.click(screen.getByRole('button', { name: 'Ajouter un produit' }));
     expect(rows()).toHaveLength(4);
     const added = pf().products[3]!;

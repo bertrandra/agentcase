@@ -26,7 +26,7 @@ export function viewScopeOf(core: Portfolio, display: { kind: string; id?: strin
   const planned = scheduledProducts(core), nameOf = (id: string) => core.products.find((p) => p.id === id)?.name ?? id;
   const base = { multi: core.products.length >= 2, activeProductId: active, activeProductName: nameOf(active) };
   if (display.kind === 'portfolio') {
-    return { ...base, kind: 'portfolio', label: 'Portefeuille', productIds: planned.map((s) => s.product.id), excludedIds: unscheduledIds(core) };
+    return { ...base, kind: 'portfolio', label: 'Portfolio', productIds: planned.map((s) => s.product.id), excludedIds: unscheduledIds(core) };
   }
   const wave = display.kind === 'wave' ? core.waves.find((w) => w.id === display.id) : undefined;
   if (wave) {

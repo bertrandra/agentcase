@@ -45,6 +45,6 @@ export function waveBoard(pf: Portfolio, c: Consolidated): BoardColumn[] {
       totals: summaryRow(w.id, w.name, view.productIds.length, view.series, view.summary),
     };
   });
-  const out: BoardColumn[] = [{ id: null, name: 'Non planifié', startMonth: 0, startLabel: null, note: '', cards: pf.products.filter((p) => p.waveId === null).map((p) => card(p.id, null)), totals: null }];
+  const out: BoardColumn[] = [{ id: null, name: 'Unscheduled', startMonth: 0, startLabel: null, note: '', cards: pf.products.filter((p) => p.waveId === null).map((p) => card(p.id, null)), totals: null }];
   return [...cols, ...out];
 }

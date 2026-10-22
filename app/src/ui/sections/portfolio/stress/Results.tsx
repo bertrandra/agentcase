@@ -12,34 +12,34 @@ import { Tables } from './Tables';
 export function Results({ run, stale, rerun }: { run: PfStress; stale: boolean; rerun: () => void }) {
   const s = run.stats, d = run.diversification;
   const config = useMemo(() => {
-    const h = histogram(run.outcomes), plugins = { ...(h.options?.plugins ?? {}), title: { display: true, text: 'Distribution du bénéfice net du portefeuille (somme des produits, après mise en place)' } };
+    const h = histogram(run.outcomes), plugins = { ...(h.options?.plugins ?? {}), title: { display: true, text: 'Distribution of the portfolio net benefit (sum of the products, after setup)' } };
     return { ...h, options: { ...h.options, plugins } };
   }, [run]);
   const tone = (v: number) => (v < 0 ? 'brick' : 'teal');
   return (
     <>
       {stale && (
-        <Callout kind="warn">⚠️ <strong>Le portefeuille a changé depuis la dernière simulation</strong> — la distribution et le verdict de portefeuille sont périmés.{' '}
-          <button type="button" onClick={rerun}>⟳ Relancer</button></Callout>
+        <Callout kind="warn">⚠️ <strong>The portfolio changed since the last simulation</strong> — the distribution and the portfolio verdict are stale.{' '}
+          <button type="button" onClick={rerun}>⟳ Run again</button></Callout>
       )}
       <StatRow>
-        <Stat label="P10 (aléa défavorable)" value={fmtEur(s.p10)} tone={tone(s.p10)} /><Stat label="P50 (médiane)" value={fmtEur(s.p50)} tone={s.p50 < 0 ? 'brick' : 'blue'} />
-        <Stat label="P90 (aléa favorable)" value={fmtEur(s.p90)} tone="teal" /><Stat label="P(net < 0)" value={`${Math.round(s.pNetNeg * 100)} %`} tone={pNegTone(s.pNetNeg)} />
-        <Stat label="CVaR 10 %" value={fmtEur(s.cvar10)} tone="amber" /><Stat label="Moyenne" value={fmtEur(s.mean)} tone="blue" />
-        <Stat label="Tirages · graine · ρ" value={`${run.draws} · ${run.seed} · ${String(run.rho).replace('.', ',')}`} tone="grey" />
+        <Stat label="P10 (adverse outcome)" value={fmtEur(s.p10)} tone={tone(s.p10)} /><Stat label="P50 (median)" value={fmtEur(s.p50)} tone={s.p50 < 0 ? 'brick' : 'blue'} />
+        <Stat label="P90 (favourable outcome)" value={fmtEur(s.p90)} tone="teal" /><Stat label="P(net < 0)" value={`${Math.round(s.pNetNeg * 100)} %`} tone={pNegTone(s.pNetNeg)} />
+        <Stat label="CVaR 10 %" value={fmtEur(s.cvar10)} tone="amber" /><Stat label="Mean" value={fmtEur(s.mean)} tone="blue" />
+        <Stat label="Draws · seed · ρ" value={`${run.draws} · ${run.seed} · ${String(run.rho)}`} tone="grey" />
       </StatRow>
-      <Panel title="Distribution du portefeuille"><ChartPanel config={config} label="Distribution du bénéfice net du portefeuille" /></Panel>
-      <Panel title="Réduction du risque (diversification)">
+      <Panel title="Portfolio distribution"><ChartPanel config={config} label="Distribution of the portfolio net benefit" /></Panel>
+      <Panel title="Risk reduction (diversification)">
         <StatRow>
-          <Stat label="Somme des P10 des produits" value={fmtEur(d.sumP10)} tone="grey" /><Stat label="P10 du portefeuille" value={fmtEur(d.p10)} tone={tone(d.p10)} />
-          <Stat label="Réduction du risque" value={fmtEur(d.reduction)} tone="teal" hint="P10 du portefeuille moins la somme des P10 autonomes" />
+          <Stat label="Sum of the products’ P10" value={fmtEur(d.sumP10)} tone="grey" /><Stat label="Portfolio P10" value={fmtEur(d.p10)} tone={tone(d.p10)} />
+          <Stat label="Risk reduction" value={fmtEur(d.reduction)} tone="teal" hint="Portfolio P10 minus the sum of the stand-alone P10s" />
         </StatRow>
-        <p className="ac-muted">Ce que le portefeuille gagne sur le scénario défavorable parce que les produits ne tombent pas tous ensemble : P10 du portefeuille − Σ P10 de chaque produit seul.
-          Nulle quand ρ = 1 (mêmes chocs), maximale quand les produits sont indépendants (ρ = 0).</p>
+        <p className="ac-muted">What the portfolio gains on the adverse scenario because products do not all fall together: portfolio P10 − Σ P10 of each product alone.
+          Zero when ρ = 1 (same shocks), maximal when the products are independent (ρ = 0).</p>
       </Panel>
-      <Panel title="Par vague et par produit"><Tables waves={run.waves} products={run.products} total={s} /></Panel>
-      <Callout kind="blue">La loi d’un produit pris seul est celle de sa propre simulation Monte Carlo (même tirage, graine propre au produit) : voir{' '}
-        <button type="button" className="ac-link" onClick={() => goSection('montecarlo')}>🎲 Monte Carlo</button> ; le verdict de portefeuille est dans{' '}
+      <Panel title="By wave and by product"><Tables waves={run.waves} products={run.products} total={s} /></Panel>
+      <Callout kind="blue">The distribution of a product on its own is that of its own Monte Carlo simulation (same draw, product-specific seed): see{' '}
+        <button type="button" className="ac-link" onClick={() => goSection('montecarlo')}>🎲 Monte Carlo</button>; the portfolio verdict is in{' '}
         <button type="button" className="ac-link" onClick={() => goSection('decision')}>🧭 Decision Intelligence</button>.</Callout>
     </>
   );
