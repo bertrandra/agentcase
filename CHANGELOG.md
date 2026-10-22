@@ -17,6 +17,16 @@ When releasing, follow [docs/BUMP_PROCEDURE.md](docs/BUMP_PROCEDURE.md) (§7 for
 
 ## [Unreleased]
 
+- **Multi-product, phase P5 (restitution).** Parameters workbook: for a real portfolio "Export all" adds seven sheets after the 47 case sheets (which now describe the COMMON case):
+  `PortfolioSettings` (hub enabled / infrastructure / allocation, horizon, start date, active product), `Products` (id, name, wave, offset, position in wave, note, archived), `Waves`
+  (id, name, start month, note, order), `TeamIn` (one sheet, a Product column), `Overrides` (product, key, part, JSON value; chunked under 4,000 characters per cell), `KnowledgeSubsets`
+  (enabled, target CC, curation FTE, setup base, KT lead, the 9 maturity answers) and `KnowledgeDomains`. Import (any workbook with a `Products` sheet) is hardened (whitelist of override keys,
+  types, unknown / duplicate ids, weights = 100, caps of 50 products / 50 waves / row limits) and is ONE undoable step ("Import portfolio parameters"); an error names the sheet and row and leaves the case untouched.
+  "Except Factory" and "persona config only" stay as they were. Results workbook: `Portfolio`, `Wave <name>`, `Knowledge transfer`, and per product `Product <name>` plus its own six results sheets
+  (`P<n> ROI` ...), Excel-safe unique names; the display scope picks the leading group. Due-diligence pack: the ACTIVE product's (annotations are common), named on DD_Coverage. Critical report:
+  `buildScopedReport` by display scope (Produit = today's report byte for byte; Portefeuille / Vague = new portfolio report from the domain views, no script / external resource).
+  Named snapshots of a portfolio store the whole portfolio (`NamedSnapshot.portfolio`): activate / baseline restore products, waves, overrides and hub in one undo step; compare works on the active product.
+  Import / Export section: portfolio notes and a report scope selector, only with a real portfolio. Plain single cases: every export is unchanged. Tests: `tests/store/{excel-portfolio-params,excel-portfolio-hardening,excel-portfolio-results,report-portfolio,snapshots-portfolio,staleness-portfolio}.test.ts`, `tests/ui/portfolio-io.test.tsx`.
 - **Multi-product, phase P4 (waves and consolidation).** New Portefeuille sections "Vagues" (wave board: create / rename / reorder / delete waves, start month with its
   calendar label, per-product offset, move a product by drag and drop, arrow keys or the "Déplacer vers la vague…" menu, per-wave totals; the Produits table's Vague column is
   now editable) and "Consolidation" (headline cards, cumulative cash chart with a line per wave, tables by wave and by product whose totals row is the portfolio headline, yearly
