@@ -1,7 +1,9 @@
 import { makeCtx } from '@/domain';
+import { pfStressFingerprint } from '@/domain/portfolio';
 import type { DisplayScope } from '@/domain/portfolio';
 import { APP_VERSION } from '@/domain/version';
 import { appStore } from '@/store/instance';
+import { pfSimStore } from '@/store/portfolioSimulation';
 import { loadExcelJS } from '@/store/persistence/excel/lazy';
 import { buildResultsWorkbook, resultsData, type SheetImages } from '@/store/persistence/excel/results';
 import { buildPortfolioResultsWorkbook } from '@/store/persistence/excel/results/portfolio';
@@ -30,7 +32,8 @@ export interface ExcelFile { blob: Blob; filename: string }
 export async function exportResultsWorkbook(images?: SheetImages, now: Date = new Date(), scope?: DisplayScope): Promise<ExcelFile> {
   const xl = await loadExcelJS(), { doc, portfolio } = appStore().getState();
   if (hasPortfolioContent(portfolio)) {
-    const wb = buildPortfolioResultsWorkbook(xl, portfolio, scope ?? portfolio.displayScope ?? { kind: 'product' });
+    const run = pfSimStore.getState().run, stress = run ? { run, stale: run.fingerprint !== pfStressFingerprint(portfolio) } : null;
+    const wb = buildPortfolioResultsWorkbook(xl, portfolio, scope ?? portfolio.displayScope ?? { kind: 'product' }, portfolio.activeProductId, stress);
     return { blob: new Blob([await wb.xlsx.writeBuffer()], { type: XLSX_MIME }), filename: excelFilename('Financial_Portfolio', now) };
   }
   const wb = buildResultsWorkbook(xl, resultsData(makeCtx(doc)), images);

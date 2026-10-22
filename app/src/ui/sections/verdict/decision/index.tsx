@@ -2,10 +2,12 @@ import { useMemo } from 'react';
 import { runSimulation } from '@/controllers/stress';
 import { decide } from '@/domain/verdict';
 import { useCtx } from '@/store/hooks';
+import { useVerdictGroup } from '@/store/portfolioSimulation';
 import { useSimulation } from '@/store/simulation';
 import { SectionFrame } from '@/ui/zones/SectionFrame';
 import { useAutoRerun } from '../../stress/useSimulation';
 import { Method } from './Method';
+import { PortfolioVerdict } from './PortfolioVerdict';
 import { VerdictBox } from './VerdictBox';
 
 const help = (
@@ -15,8 +17,11 @@ const help = (
 
 /** Decision Intelligence — verdict from the distribution. */
 export default function DecisionSection() {
-  const c = useCtx(), { run } = useSimulation(), d = useMemo(() => (run ? decide(c, run) : null), [c, run]);
+  const c = useCtx(), { run } = useSimulation(), d = useMemo(() => (run ? decide(c, run) : null), [c, run]), group = useVerdictGroup();
   useAutoRerun();
+  if (group) {   // display scope Portefeuille / Vague: the same rule on the portfolio distribution
+    return <SectionFrame title="🧭 Decision Intelligence — verdict from the distribution" help={help} result={<PortfolioVerdict group={group} />} />;
+  }
   return (
     <SectionFrame title="🧭 Decision Intelligence — verdict from the distribution" help={help}
       result={<>

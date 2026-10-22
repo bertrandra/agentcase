@@ -60,4 +60,6 @@ export interface Portfolio {
   horizonMonths: number;
   /** ISO date of portfolio month 1; '' when unset */
   startDate: string;
+  /** global correlation between products in the portfolio Monte Carlo, 0..1; absent = 0 (independent, D-M7) */
+  rho?: number;
 }

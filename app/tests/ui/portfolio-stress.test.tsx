@@ -1,0 +1,100 @@
+// @vitest-environment jsdom
+import { act, cleanup, fireEvent, screen, waitFor, within } from '@testing-library/react';
+import axe from 'axe-core';
+import { afterEach, beforeEach, describe, expect, it } from 'vitest';
+import { setDisplayScope } from '@/controllers/displayScope';
+import { setPortfolioRho } from '@/controllers/portfolio';
+import { setProductOffset } from '@/controllers/product';
+import { runPortfolioSimulation } from '@/controllers/stressPortfolio';
+import { portfolioMonteCarlo, pfDecision } from '@/domain/portfolio';
+import { pfSimStore } from '@/store/portfolioSimulation';
+import { fmtEur } from '@/domain/format';
+import { VERDICT_META } from '@/domain/verdict';
+import { mountApp, pf, sectionReady } from '../helpers/portfolioUi';
+import { threeProducts } from '../helpers/portfolioStore';
+
+beforeEach(() => { threeProducts(); pfSimStore.setState({ run: null, progress: null, params: null }); });
+afterEach(cleanup);
+const open = async () => { mountApp('portfolio-stress'); await sectionReady(/Stress portefeuille/); };
+const stat = (label: RegExp) => screen.getAllByText(label).find((e) => e.classList.contains('ac-stat-l'))!.parentElement!.querySelector('.ac-stat-v')!.textContent;
+const run = async () => { fireEvent.click(screen.getByRole('button', { name: /Lancer la simulation/ })); await screen.findByRole('table', { name: /Stress par vague/ }, { timeout: 30000 }); };
+
+describe('Stress portefeuille section', () => {
+  it('is in the Portefeuille group and invites to run before any result', async () => {
+    await open();
+    expect(screen.getByText(/Pas de simulation/)).toBeTruthy();
+    expect(screen.getByRole('slider', { name: /Corrélation entre produits/ })).toBeTruthy();
+  });
+
+  it('runs the real engine: cards, tables and chart data are the domain run; deterministic with the same seed', async () => {
+    await open();
+    await run();
+    const r = pfSimStore.getState().run!, again = portfolioMonteCarlo(pf(), { draws: r.draws, seed: r.seed, rho: 0 });
+    expect(r.outcomes).toEqual(again.outcomes);
+    expect(stat(/^P10 \(aléa/)).toBe(fmtEur(r.stats.p10));
+    expect(stat(/^P\(net < 0\)$/)).toBe(`${Math.round(r.stats.pNetNeg * 100)} %`);
+    expect(stat(/^Réduction du risque$/)).toBe(fmtEur(r.diversification.reduction));
+    const byProduct = screen.getByRole('table', { name: /Stress par produit/ });
+    expect(within(byProduct).getAllByRole('row')).toHaveLength(1 + 3);
+    expect(screen.getByRole('table', { name: /Stress par vague/ }).querySelectorAll('tbody tr')).toHaveLength(2 + 1);
+    expect(document.querySelector('[data-chart-data]')).toBeTruthy();
+    expect(screen.getByRole('img', { name: /Distribution du bénéfice net du portefeuille/ })).toBeTruthy();
+    expect(screen.queryByText(/a changé depuis la dernière simulation/)).toBeNull();
+  });
+
+  it('rho is a portfolio field set by the slider (undoable); the run uses it', async () => {
+    await open();
+    fireEvent.change(screen.getByRole('slider', { name: /Corrélation entre produits/ }), { target: { value: '0.5' } });
+    expect(pf().rho).toBe(0.5);
+    await run();
+    expect(pfSimStore.getState().run!.rho).toBe(0.5);
+    act(() => { setPortfolioRho(1); });
+    expect(await screen.findByText(/a changé depuis la dernière simulation/)).toBeTruthy();   // the stale marker
+  });
+
+  it('a change of the portfolio marks the run stale; re-running clears the marker', async () => {
+    await open();
+    await run();
+    act(() => { setProductOffset(pf().products[1]!.id, 2); });
+    expect(await screen.findByText(/a changé depuis la dernière simulation/)).toBeTruthy();
+    fireEvent.click(screen.getByRole('button', { name: /Relancer/ }));
+    await waitFor(() => expect(screen.queryByText(/a changé depuis la dernière simulation/)).toBeNull(), { timeout: 30000 });
+  });
+
+  it('has no axe violation with a result on screen', async () => {
+    await open();
+    await run();
+    const { violations } = await axe.run(document.body, { rules: { 'color-contrast': { enabled: false } } });
+    expect(violations.map((v) => v.id)).toEqual([]);
+  });
+});
+
+describe('Decision section at portfolio scope', () => {
+  const openDecision = async () => { mountApp('decision'); await sectionReady(/Decision Intelligence/); };
+  it('shows the portfolio verdict from the portfolio run, and the per-wave table', async () => {
+    act(() => { setDisplayScope({ kind: 'portfolio' }); });
+    await act(async () => { await runPortfolioSimulation({ draws: 200, seed: 42 }); });
+    await openDecision();
+    const d = pfDecision(pf(), pfSimStore.getState().run!, { kind: 'portfolio' })!;
+    expect(document.body.textContent).toContain(VERDICT_META[d.verdict].label);
+    expect(document.body.textContent).toContain(`${d.confidence}% confidence`);
+    expect(screen.getByRole('table', { name: /Verdict de chaque vague/ }).querySelectorAll('tbody tr')).toHaveLength(2);
+  });
+  it('without a portfolio run it offers to run, then shows the verdict', async () => {
+    act(() => { setDisplayScope({ kind: 'portfolio' }); });
+    await openDecision();
+    fireEvent.click(screen.getByRole('button', { name: /Lancer maintenant/ }));
+    expect((await screen.findAllByText(/confidence/, undefined, { timeout: 30000 })).length).toBeGreaterThan(0);
+    expect(pfSimStore.getState().run).not.toBeNull();
+  });
+  it('a wave scope speaks for that wave; the product scope keeps today\'s decision screen', async () => {
+    act(() => { setDisplayScope({ kind: 'wave', id: pf().waves[1]!.id }); });
+    await act(async () => { await runPortfolioSimulation({ draws: 200, seed: 42 }); });
+    await openDecision();
+    expect(document.body.textContent).toContain('Wave 2 · 1 product');
+    cleanup();
+    act(() => { setDisplayScope({ kind: 'product' }); });
+    await openDecision();
+    expect(screen.getByText(/Run the Monte Carlo simulation first/)).toBeTruthy();
+  });
+});

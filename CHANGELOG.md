@@ -17,6 +17,14 @@ When releasing, follow [docs/BUMP_PROCEDURE.md](docs/BUMP_PROCEDURE.md) (§7 for
 
 ## [Unreleased]
 
+- **Multi-product, phase P6 (stress).** New Portefeuille section "Stress portefeuille" (85 sections): Monte Carlo of the planned products, one stream per product (`seed XOR hash(id)`, the
+  seed itself for a lone product, so a one-product portfolio reproduces today's Monte Carlo draw for draw), the portfolio outcome of a draw being the sum of the products' net benefits, with a
+  global correlation `rho` in [0, 1] (default 0: independent; 1: common shocks; Gaussian copula on a shared factor, every product keeps its own marginal law). Results: P10 / P50 / P90 / mean /
+  CVaR / P(net < 0) of the portfolio, per wave and per product, the risk reduction against the products taken alone, stale marker, run in chunks (one product per slice, progress). `rho` is a
+  portfolio field (command `portfolio.setRho`, undoable, saved, `PortfolioSettings` sheet, in the portfolio calculation package). Decision Intelligence shows the verdict of the Portefeuille / Vague
+  display scope (same rule, `verdictRule`; setup summed, risk-bar premium weighted by entry headcount) and a per-wave verdict table. Results workbook: "Portfolio stress" sheet; portfolio report: section 7.
+  Single product: nothing changes (same draws, same verdict). Speed-ups with identical numbers: spline slopes cached per control-point list, input overrides parsed once. See DEV-PF-STRESS. Tests:
+  `tests/domain/portfolio/{stress,stressVerdict}.test.ts`, `tests/store/{portfolio-rho,stress-portfolio}.test.ts`, `tests/ui/portfolio-stress.test.tsx`.
 - **Multi-product, phase P5 (restitution).** Parameters workbook: for a real portfolio "Export all" adds seven sheets after the 47 case sheets (which now describe the COMMON case):
   `PortfolioSettings` (hub enabled / infrastructure / allocation, horizon, start date, active product), `Products` (id, name, wave, offset, position in wave, note, archived), `Waves`
   (id, name, start month, note, order), `TeamIn` (one sheet, a Product column), `Overrides` (product, key, part, JSON value; chunked under 4,000 characters per cell), `KnowledgeSubsets`

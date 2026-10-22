@@ -115,10 +115,10 @@ dispatch(command) ──► ONE produceWithPatches(portfolio) ──► patches 
 
 | Concept | Implementation |
 |---|---|
-| Command | `{ type, payload, label, coalesceKey?, undoable, run(draft, payload), runPortfolio? }`. Case commands use `defineCommand` (`store/commands.ts`): `run` mutates the active product's effective case. Portfolio commands use `definePortfolioCommand`: a pure `apply(portfolio, payload)`, turned into minimal Immer patches by `store/syncDraft.ts`. 224 commands are registered by the modules of `src/controllers` (221 undoable: 202 case commands, 201 undoable, plus 22 portfolio ones, 20 undoable; counted from `COMMAND_REGISTRY` after loading them); a duplicate type throws |
+| Command | `{ type, payload, label, coalesceKey?, undoable, run(draft, payload), runPortfolio? }`. Case commands use `defineCommand` (`store/commands.ts`): `run` mutates the active product's effective case. Portfolio commands use `definePortfolioCommand`: a pure `apply(portfolio, payload)`, turned into minimal Immer patches by `store/syncDraft.ts`. 225 commands are registered by the modules of `src/controllers` (222 undoable: 202 case commands, 201 undoable, plus 23 portfolio ones, 21 undoable; counted from `COMMAND_REGISTRY` after loading them); a duplicate type throws |
 | Address layer | `store/address/` (`index.ts`, `dom.ts`, `subset.ts`). After a case command ran on the derived doc, each changed top-level key is re-addressed onto the portfolio inside the same produce: `teamIn` -> the active product's `teamIn`; a whitelisted key (spec 4.3) -> `product.overrides[key]` if the product already overrides it OR the edit scope is `'product'` (and the value differs from common), else `common[key]`; a changed form field of `dom.values` / `dom.checked` is routed per field (Knowledge Hub fields to the product's knowledge subset when it defines them, then override/common by the same rule; `horizon`, `khInfraMonthly`, `khEnabled` mirror into `horizonMonths` / `hub`); any non-overridable key (RATE, MODEL, COEF, PERSONAS, nav, snapshots, customerName, ...) -> `common`. With one product and no override the result is exactly today's behaviour |
 | View state | `activeProductId` (saved with the file, D-M6) and `editScope` (`'all'` / `'product'`, transient, never saved) change through `undoable: false` commands (`product.setActive`, `product.setEditScope`): applied, logged, never on the undo stack, filtered out of broadcast patches (`VIEW_FIELDS`). After an undo/redo/remote patch an unknown active product falls back to the first one (`normalizeActive`) |
-| Portfolio commands | `controllers/product.ts` (add, rename, duplicate, archive, remove, setNote, setOffset, setActive, setEditScope), `productOverrides.ts` (setOverride, clearOverride, applyToCommon, setKnowledge), `wave.ts` (add, rename, remove, reorder, setStart, setNote, assign), `portfolio.ts` (setHorizon, setHub). `portfolioGuard.dispatchChecked` refuses (returns false, no step) any command whose result breaks `validate` (last product, weights != 100, 50-product cap, ...) |
+| Portfolio commands | `controllers/product.ts` (add, rename, duplicate, archive, remove, setNote, setOffset, setActive, setEditScope), `productOverrides.ts` (setOverride, clearOverride, applyToCommon, setKnowledge), `wave.ts` (add, rename, remove, reorder, setStart, setNote, assign), `portfolio.ts` (setHorizon, setHub, setRho), `stressPortfolio.ts` (run, not a command). `portfolioGuard.dispatchChecked` refuses (returns false, no step) any command whose result breaks `validate` (last product, weights != 100, 50-product cap, ...) |
 | Registry | `COMMAND_REGISTRY` (type, undoable). `tests/store/registry.test.ts` fails if a command has no sample in `tests/store/samples/`, no label, or does not round-trip through undo/redo, both on the default case and on a 3-product, 2-wave portfolio (view commands with `undoable: false` must add no step) |
 | History | `undo` / `redo` stacks of `{ label, type, ts, coalesceKey, patches, inverse }`. Cap `HISTORY_CAP = 200`. A new step clears redo |
 | Coalescing | consecutive entries with the same `coalesceKey` inside `COALESCE_MS = 800` merge into one step (slider drags, typing in a number field) |
@@ -180,7 +180,7 @@ Also `RestoreBanner` (autosave offer), a skip link, and an `aria-live="polite"` 
 
 **Navigation comes from the document**, not from code tables: `ui/zones/navModel.ts` builds the sidebar from `doc.PERSONAS`,
 `PERSONA_SECTIONS`, `PERSONA_SECTION_ORDER`, `GROUPS`, `sectionGroups`, `dynamicSections` and the guided sequences, falling back to the
-bundled legacy catalogue (`ui/zones/data/*.json`: 84 sections in 15 groups, the 15th being the multi-product Portefeuille group). Domain logic is in `domain/nav/` (`layout`, `groupBar`,
+bundled legacy catalogue (`ui/zones/data/*.json`: 85 sections in 15 groups, the 15th being the multi-product Portefeuille group). Domain logic is in `domain/nav/` (`layout`, `groupBar`,
 `moves`, `sequence`); edits go through `controllers/nav*.ts` and the Persona-management section (sequence editor, menu layout board,
 persona layout board). The same data round-trips through the parameters workbook.
 
@@ -213,7 +213,7 @@ selector, banner, badge, nav group). From two products on (`useIsMulti`, `store/
 | stress | 4 | refshare | 10 |
 | verdict | 3 | model-engine | 6 |
 
-Plus **portfolio** (5: `products`, `overrides`, `knowledge-transfer`, `waves`, `consolidation`, folders `ui/sections/portfolio/<id>/`, map `ui/sections/portfolio.ts`). Total **84** (`ui/zones/data/sectionCatalog.json`, counted per group with `node`); 84 loaders are registered in the group files. A
+Plus **portfolio** (6: `products`, `overrides`, `knowledge-transfer`, `waves`, `consolidation`, `portfolio-stress`, folders `ui/sections/portfolio/<id>/`, map `ui/sections/portfolio.ts`). Total **85** (`ui/zones/data/sectionCatalog.json`, counted per group with `node`); 85 loaders are registered in the group files. A
 section id with no loader renders `Placeholder`; dynamic sections created by the user render through `DynamicSection` (Board).
 Multi-product Knowledge Hub (P3b): the existing `tune/knowledge` section edits the ACTIVE product's knowledge subset through the same form fields (the address
 layer writes the subset: see §4-5) and, with 2+ products only, adds `SubsetBadge` chips (hérité / surchargé, back to common via `product.setKnowledge`), the
@@ -221,6 +221,13 @@ layer writes the subset: see §4-5) and, with 2+ products only, adds `SubsetBadg
 (`portfolio.setHub`: activation, infrastructure, allocation, live conservation check). `portfolio/knowledge-transfer` shows the F29 table (from
 `knowledgeTable`), the F31 hub effect by wave and the diagnostics, all computed in `domain/portfolio/{knowledge,ktview}.ts` and read through
 `store/knowledgeHooks.ts` (no sum in `ui/`).
+**Portfolio stress (P6).** `domain/portfolio/stress.ts` (`portfolioMonteCarlo` / `pfStressJob`): per planned product the single-case draws (`domain/stress/simulate.ts#mcDraws`, factored out of
+`runMonteCarlo`, which is unchanged in behaviour) from the stream `productSeed(seed, id, planned)`; with `rho > 0` a Gaussian copula on a shared normal (`stressSeed.ts#commonShock`, `mcSampleT`
+reads the triangular shock) keeps each marginal law; the portfolio draw is the sum of the products' net benefits, statistics from `mcStats` (one definition for product and portfolio), risk
+reduction = portfolio P10 - sum of the products' P10. `stressFingerprint.ts` marks a run stale; `stressVerdict.ts#pfDecision` feeds the single-case rule `verdictRule` (`domain/verdict/decision.ts`)
+with portfolio / wave figures. State: `store/portfolioSimulation.ts` (`pfSimStore`, hooks) and `controllers/stressPortfolio.ts` (chunked run); section `ui/sections/portfolio/stress/`; Decision
+reads the verdict for the Portefeuille / Vague scope (`verdict/decision/PortfolioVerdict.tsx`); "Portfolio stress" sheet and report section 7 when a run exists. DEV-PF-STRESS lists the differences.
+
 **Waves, consolidation and display scope (P4).** All figures come from `domain/portfolio` and are read through `store/consolidationHooks.ts`; the UI sums nothing
 (rule A8: ESLint `no-restricted-syntax` bans `.reduce(` / `.reduceRight(` in `ui/sections/portfolio/**`, `store/consolidationHooks.ts`, the scope tiles and the wave Gantt; `tests/lint-rules.test.ts`).
 - **Memoisation by input identity.** `corePortfolio(pf)` (`domain/portfolio/core.ts`) is the portfolio minus view state (active product, edit and display scope): its identity changes

@@ -1,6 +1,6 @@
 import { addWave, assignWave, removeWave, renameWave, reorderWave, setWaveNote, setWaveStart } from '@/controllers/wave';
 import { setDisplayScope } from '@/controllers/displayScope';
-import { setPortfolioHorizon, setPortfolioHub } from '@/controllers/portfolio';
+import { setPortfolioHorizon, setPortfolioHub, setPortfolioRho } from '@/controllers/portfolio';
 import { clearProductOverride, applyOverrideToCommon, setProductKnowledge, setProductOverride } from '@/controllers/productOverrides';
 import { addProduct, archiveProduct, duplicateProduct, removeProduct, renameProduct, setActiveProduct, setEditScope, setProductNote, setProductOffset } from '@/controllers/product';
 import { appStore } from '@/store/instance';
@@ -39,5 +39,6 @@ export const samples: Record<string, Sample> = {
   'wave.setNote': () => { setWaveNote(wave(), 'A note'); },
   'wave.assign': { prep: withWave, run: () => { assignWave(other, w2); } },
   'portfolio.setHorizon': () => { setPortfolioHorizon(48); },
+  'portfolio.setRho': () => { setPortfolioRho(0.5); },
   'portfolio.setHub': () => { setPortfolioHub({ enabled: true, infraMonthly: 1234 }); },
 };

@@ -1,6 +1,6 @@
 import type * as XL from 'exceljs';
 import type { Portfolio } from '@/domain/portfolio';
-import { blue, frz, geDV, head, listDV, sheet, ynDV } from '../params/kit';
+import { blue, frz, geDV, head, listDV, rangeDV, sheet, ynDV } from '../params/kit';
 import { PF_HEADERS, PF_SHEETS } from './names';
 import { writeKnowledge } from './writeKnowledge';
 
@@ -11,10 +11,11 @@ const inputs = (row: XL.Row, n: number): void => { for (let i = 1; i <= n; i++) 
 function writeSettings(wb: XL.Workbook, pf: Portfolio): void {
   const w = ws(wb, PF_SHEETS.settings, [30, 24]);
   const rows: [string, string | number][] = [['Hub enabled', pf.hub.enabled ? 'Yes' : 'No'], ['Hub infrastructure (€/month)', pf.hub.infraMonthly], ['Hub infrastructure allocation', pf.hub.infraAllocation],
-    ['Horizon (months)', pf.horizonMonths], ['Start date (ISO)', pf.startDate], ['Active product id', pf.activeProductId]];
+    ['Horizon (months)', pf.horizonMonths], ['Start date (ISO)', pf.startDate], ['Active product id', pf.activeProductId], ['Correlation rho (0-1)', pf.rho ?? 0]];
   rows.forEach(([k, v]) => inputs(w.addRow([k, v]), 2));
   w.getCell('B2').dataValidation = listDV(['Yes', 'No'], 'Hub enabled');
   w.getCell('B4').dataValidation = listDV(['perProduct', 'byBaseEtp'], 'perProduct: full cost per product; byBaseEtp: shared by entry headcount');
+  w.getCell('B7').dataValidation = rangeDV(0, 1, false, 'Correlation between products in the portfolio Monte Carlo: 0 = independent, 1 = common shocks');
   finish(w);
 }
 
