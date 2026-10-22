@@ -30,3 +30,6 @@ export function productDocOf(pf: PortfolioDoc, id: string): Doc | null {
   if (!d) { d = resolveProduct(core, id) as Doc; m.set(id, d); }
   return d;
 }
+
+/** The product a subtree shows: the enclosing `ProductViewContext`'s when it still exists, else the edited (active) product. */
+export const shownProductId = (pf: PortfolioDoc, as: string | null): string => (as !== null && pf.products.some((p) => p.id === as) ? as : pf.activeProductId);

@@ -2,7 +2,7 @@ import { useMemo } from 'react';
 import { commonValue, corePortfolio, isOverridden, resolveProduct, type CommonCase, type Product, type Wave } from '@/domain/portfolio';
 import { hasPortfolioContent } from './persistence/portfolioSnapshot';
 import { caseResultOf, usePortfolio } from './hooks';
-import { useViewProductId } from './productView';
+import { shownProductId, useViewProductId } from './productView';
 import type { EditScope } from './types';
 
 /** Products in display order (a stable reference until a product changes). */
@@ -15,12 +15,12 @@ export const useIsMulti = (): boolean => usePortfolio((p) => p.products.length >
 /** True when the work is more than a plain single case (2+ products or waves, an override, a knowledge subset...): the exports then carry the portfolio additions. */
 export const useHasPortfolioContent = (): boolean => usePortfolio(hasPortfolioContent);
 /** The edited product; inside a `ProductViewContext` (Vue agrégée) the product being shown instead. */
-export const useActiveProductId = (): string => { const as = useViewProductId(); return usePortfolio((p) => as ?? p.activeProductId); };
+export const useActiveProductId = (): string => { const as = useViewProductId(); return usePortfolio((p) => shownProductId(p, as)); };
 /** "Edit: all products / this product only"; 'all' until the user chooses (transient, never saved). */
 export const useEditScope = (): EditScope => usePortfolio((p) => p.editScope ?? 'all');
 export const useActiveProduct = (): Product => {
   const as = useViewProductId();
-  return usePortfolio((p) => p.products.find((x) => x.id === (as ?? p.activeProductId)) ?? (p.products[0] as Product));
+  return usePortfolio((p) => p.products.find((x) => x.id === shownProductId(p, as)) ?? (p.products[0] as Product));
 };
 
 /** A product with its wave label and the computed case of its effective case (the existing `computeCase`, memoised per resolved case). */
