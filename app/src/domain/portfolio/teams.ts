@@ -7,7 +7,7 @@ export interface TeamBucket { key: string; etp: number }
 export interface TeamLine { skill: string; grade: string; loc: string; etp: number }
 export interface TeamProductRow { id: string; name: string; wave: string; planned: boolean; archived: boolean; etp: number; lines: number }
 
-/** The entry teams of a set of products, added up (Vue agrégée of "Input team"). */
+/** The entry teams of a set of products, added up (aggregate view of "Input team"). */
 export interface TeamAggregate {
   /** one line per requested product (unknown ids are ignored), in the order asked */
   products: TeamProductRow[];

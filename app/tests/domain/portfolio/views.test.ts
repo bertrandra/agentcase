@@ -15,7 +15,7 @@ function four(): Portfolio {
 describe('scope headline (F17): single owners, equal to the domain headline', () => {
   it('portfolio scope is portfolioHeadline; a wave is the same function on its products', () => {
     const c = consolidate(four()), p = scopeHeadline(c, { kind: 'portfolio' })!, w = waveHeadline(c, 'w1')!;
-    expect(p.label).toBe('Portefeuille');
+    expect(p.label).toBe('Portfolio');
     expect(p.headline).toBe(portfolioHeadline(c));
     expect(w.products).toBe(2);
     expectClose(w.net, c.waves[0]!.summary.net);
@@ -51,7 +51,7 @@ describe('consolidation view (A4 at view level)', () => {
   });
   it('the chart has the portfolio line and one per wave with products, one point per calendar month', () => {
     const pf = four(), v = consolidationView(pf, consolidate(pf));
-    expect(v.chart.series.map((s) => s.label)).toEqual(['Portefeuille', 'Vague 1', 'w2']);
+    expect(v.chart.series.map((s) => s.label)).toEqual(['Portfolio', 'Wave 1', 'w2']);
     expect(v.chart.series.every((s) => s.data.length === v.chart.labels.length)).toBe(true);
     expect(v.chart.labels).toHaveLength(pf.horizonMonths);
     expectClose(v.chart.series[0]!.data.at(-1)!, v.totals.net);

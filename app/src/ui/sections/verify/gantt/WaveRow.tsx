@@ -19,7 +19,7 @@ function Bar({ left, width, color, label, cls, children }: { left: number; width
 function ProductBar({ p, color }: { p: GanttProductRow; color: string }) {
   const marks = p.milestones.map((m) => `${m.label} ${m.date}`).join(', ');
   return (
-    <Bar left={p.left} width={p.width} color={color} cls="ac-gantt-prod" label={`${p.name}, ${p.meta}. Jalons : ${marks || 'aucun dans l’horizon'}`}>
+    <Bar left={p.left} width={p.width} color={color} cls="ac-gantt-prod" label={`${p.name}, ${p.meta}. Milestones: ${marks || 'none within the horizon'}`}>
       {p.milestones.map((m) => (
         <span key={`${m.month}:${m.label}`} aria-hidden="true" title={m.title} data-milestone={m.family}
           style={{ position: 'absolute', top: 3, left: pct(m.left), width: 9, height: 9, marginLeft: -4, borderRadius: '50%', background: FAMILY[m.family] ?? '#5a6785', border: '2px solid #fff', boxShadow: '0 0 0 1px #5a6785' }} />

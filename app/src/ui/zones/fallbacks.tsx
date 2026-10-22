@@ -10,17 +10,17 @@ import { ProductDrill } from '../widgets/ProductDrill';
 import { SectionFrame } from './SectionFrame';
 import type { SectionKind } from './sectionScope';
 
-/** What a generic Vue agrégée receives: the section (id, title) and its product-view component, which the drill-down renders for each product. */
+/** What a generic aggregate view receives: the section (id, title) and its product-view component, which the drill-down renders for each product. */
 export interface FallbackProps { id: string; title: string; Section: ComponentType | null }
 
 const R = 'right' as const;
 const ROLLUP: AggColumn<SelectionRow>[] = [
-  { key: 'wave', header: 'Vague', render: (r) => r.wave },
-  { key: 'setup', header: 'Mise en place', align: R, title: 'Investissement de mise en place du produit, sur l’axe calendaire', render: (r) => fmtEurK(r.setup) },
-  { key: 'savings', header: 'Économies', align: R, title: 'Économies cumulées sur l’horizon calendaire', render: (r) => fmtEurK(r.savings) },
+  { key: 'wave', header: 'Wave', render: (r) => r.wave },
+  { key: 'setup', header: 'Setup', align: R, title: 'Setup investment of the product, on the calendar axis', render: (r) => fmtEurK(r.setup) },
+  { key: 'savings', header: 'Savings', align: R, title: 'Cumulative savings over the calendar horizon', render: (r) => fmtEurK(r.savings) },
   { key: 'net', header: 'Net', align: R, render: (r) => fmtEurK(r.net) },
-  { key: 'npv', header: 'VAN calendaire', align: R, title: 'Actualisée depuis le mois 1 du portefeuille : la somme des lignes est la VAN de la sélection', render: (r) => fmtEurK(r.npv) },
-  { key: 'payback', header: 'Retour', align: R, render: (r) => fmtMonths(r.paybackMonth) },
+  { key: 'npv', header: 'Calendar NPV', align: R, title: 'Discounted from month 1 of the portfolio: the sum of the lines is the NPV of the selection', render: (r) => fmtEurK(r.npv) },
+  { key: 'payback', header: 'Payback', align: R, render: (r) => fmtMonths(r.paybackMonth) },
 ];
 
 /** R-rollup without its own aggregate: the key figures of each product of the selection (domain lines and total), then the section itself per product. */
@@ -31,9 +31,9 @@ export function RollupFallback({ title, Section }: FallbackProps) {
   return (
     <SectionFrame title={title} result={
       <>
-        <AggregateTable caption={`Chiffres clés par produit — ${v.label}`} rows={v.rows} columns={ROLLUP} edit={false}
+        <AggregateTable caption={`Key figures by product — ${v.label}`} rows={v.rows} columns={ROLLUP} edit={false}
           totals={{ label: `Total — ${v.label}`, cells: { setup: fmtEurK(t.setup), savings: fmtEurK(t.savings), net: fmtEurK(t.net), npv: fmtEurK(t.npv), payback: fmtMonths(t.paybackMonth) } }} />
-        <Callout kind="blue">Cette section vérifie ou détaille chaque produit séparément : les chiffres ne s’additionnent pas. Ouvrez un produit ci-dessous pour voir la section telle qu’il la calcule.</Callout>
+        <Callout kind="blue">This section checks or details each product separately: the figures do not add up. Open a product below to see the section as it computes it.</Callout>
         {Section && <ProductDrill Section={Section} productIds={vs.productIds} />}
       </>
     } />
@@ -41,11 +41,11 @@ export function RollupFallback({ title, Section }: FallbackProps) {
 }
 
 const INPUTS: AggColumn<InputSummaryRow>[] = [
-  { key: 'wave', header: 'Vague', render: (r) => r.wave },
-  { key: 'etp', header: 'ETP d’entrée', align: R, title: 'Équipe d’entrée propre au produit', render: (r) => r.etp.toFixed(1) },
-  { key: 'art', header: 'Artefacts SDLC', align: R, render: (r) => r.artefacts },
-  { key: 'reg', header: 'Artefacts réglementaires', align: R, render: (r) => r.regArtefacts },
-  { key: 'ovr', header: 'Surcharges', align: R, title: 'Valeurs propres au produit (0 = tout est hérité)', render: (r) => r.overrides },
+  { key: 'wave', header: 'Wave', render: (r) => r.wave },
+  { key: 'etp', header: 'Entry FTE', align: R, title: 'Entry team of the product', render: (r) => r.etp.toFixed(1) },
+  { key: 'art', header: 'SDLC artefacts', align: R, render: (r) => r.artefacts },
+  { key: 'reg', header: 'Regulatory artefacts', align: R, render: (r) => r.regArtefacts },
+  { key: 'ovr', header: 'Overrides', align: R, title: 'Product-specific values (0 = everything is inherited)', render: (r) => r.overrides },
   { key: 'hub', header: 'Knowledge Hub', render: (r) => r.hub },
 ];
 
@@ -56,8 +56,8 @@ export function InputFallback({ title }: FallbackProps) {
   return (
     <SectionFrame title={title} input={
       <>
-        <Callout kind="blue">Lecture seule : les saisies de cette section sont propres à chaque produit. Choisissez « Éditer ce produit » pour rendre la section modifiable pour ce produit.</Callout>
-        <AggregateTable caption={`Saisies par produit — ${vs.label}`} rows={rows} columns={INPUTS}
+        <Callout kind="blue">Read-only: the inputs of this section belong to each product. Choose “Edit this product” to make the section editable for that product.</Callout>
+        <AggregateTable caption={`Inputs by product — ${vs.label}`} rows={rows} columns={INPUTS}
           totals={{ label: `Total — ${vs.label}`, cells: { etp: etp.toFixed(1) } }} />
       </>
     } />
@@ -70,12 +70,12 @@ export function ConsoFallback({ title, Section }: FallbackProps) {
   return (
     <SectionFrame title={title} result={
       <>
-        <Callout kind="blue">Vue consolidée à venir pour cette section : le détail par produit de la sélection ({vs.label}) est ci-dessous. Aucun chiffre n’est additionné ici.</Callout>
+        <Callout kind="blue">Consolidated view coming for this section: the detail by product of the selection ({vs.label}) is below. No figure is added up here.</Callout>
         {Section && <ProductDrill Section={Section} productIds={vs.productIds} />}
       </>
     } />
   );
 }
 
-/** The generic fallback of each kind that follows the Vue (the other kinds render the section as it is). */
+/** The generic fallback of each kind that follows the View (the other kinds render the section as it is). */
 export const FALLBACKS: Partial<Record<SectionKind, ComponentType<FallbackProps>>> = { 'R-rollup': RollupFallback, 'I-input': InputFallback, 'R-conso': ConsoFallback };

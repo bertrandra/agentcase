@@ -63,15 +63,15 @@ export function consolidationView(pf: Portfolio, c: Consolidated): Consolidation
   const filled = c.waves.filter((w) => w.productIds.length > 0);
   const chart: ChartView = {
     labels: Array.from({ length: c.horizon }, (_, i) => cal.dateAt(i)),
-    series: [{ label: 'Portefeuille', data: c.summary.cum }, ...filled.map((w) => ({ label: w.name, data: w.summary.cum }))],
+    series: [{ label: 'Portfolio', data: c.summary.cum }, ...filled.map((w) => ({ label: w.name, data: w.summary.cum }))],
   };
-  const labelOf = (i: number) => `Année ${i + 1}`;
+  const labelOf = (i: number) => `Year ${i + 1}`;
   const { savings, run, setup, net } = headline.years;
   return {
     headline, chart,
     waves: c.waves.map((w) => summaryRow(w.id, w.name, w.productIds.length, w.series, w.summary)),
     products: c.products.map((v) => summaryRow(v.id, v.name, 1, v.series, v.summary)),
-    totals: summaryRow('total', 'Portefeuille', c.products.length, c.series, c.summary),
+    totals: summaryRow('total', 'Portfolio', c.products.length, c.series, c.summary),
     years: savings.map((s, i) => ({ label: labelOf(i), savings: s, run: run[i] ?? 0, setup: setup[i] ?? 0, net: net[i] ?? 0 })),
     excluded: c.excluded.map((id) => ({ id, name: name(id), archived: !!pf.products.find((p) => p.id === id)?.archived })),
     diagnostics: diagnosticsOf(pf, c),

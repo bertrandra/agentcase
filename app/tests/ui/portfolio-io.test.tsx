@@ -47,7 +47,7 @@ describe('Import / Export with a portfolio', () => {
     regulatedPortfolio(); setDisplayScope({ kind: 'portfolio' });
     await open(/Save HTML/);
     const sel = screen.getByRole('combobox', { name: 'Report scope' }) as HTMLSelectElement;
-    expect([...sel.options].map((o) => o.textContent)).toEqual(['Portefeuille', 'Vague : Vague 1', 'Vague : Vague 2', 'Produit : Produit 1', 'Produit : Paie', 'Produit : Facturation', 'Produit : Archivage (hors vague)']);
+    expect([...sel.options].map((o) => o.textContent)).toEqual(['Portfolio', 'Wave: Wave 1', 'Wave: Wave 2', 'Product: Product 1', 'Product: Payroll', 'Product: Billing', 'Product: Archive (no wave)']);
     expect(sel.value).toBe('portfolio');
   });
   it('exports the report of the chosen scope', async () => {
@@ -58,8 +58,8 @@ describe('Import / Export with a portfolio', () => {
     expect(saved.at(-1)!.filename).toMatch(/Report_Portfolio_/);
     expect(saved.at(-1)!.text).toContain('Model — Portfolio');
     fireEvent.change(sel, { target: { value: 'wave:' + (document.querySelector('option[value^="wave:"]:nth-of-type(2)') as HTMLOptionElement).value.slice(5) } }); run();
-    expect(saved.at(-1)!.filename).toMatch(/Report_Wave_Vague_2_/);
-    const paie = [...(sel as HTMLSelectElement).options].find((o) => o.textContent === 'Produit : Paie')!;
+    expect(saved.at(-1)!.filename).toMatch(/Report_Wave_Wave_2_/);
+    const paie = [...(sel as HTMLSelectElement).options].find((o) => o.textContent === 'Product: Payroll')!;
     fireEvent.change(sel, { target: { value: paie.value } }); run();
     expect(saved.at(-1)!.filename).not.toMatch(/Portfolio|Wave/);
     expect(saved.at(-1)!.text).not.toContain('Model — Portfolio');

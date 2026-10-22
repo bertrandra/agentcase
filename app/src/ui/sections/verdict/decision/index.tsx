@@ -19,7 +19,7 @@ const help = (
 export default function DecisionSection() {
   const c = useCtx(), { run } = useSimulation(), d = useMemo(() => (run ? decide(c, run) : null), [c, run]), group = useVerdictGroup();
   useAutoRerun();
-  if (group) {   // display scope Portefeuille / Vague: the same rule on the portfolio distribution
+  if (group) {   // display scope Portfolio / Wave: the same rule on the portfolio distribution
     return <SectionFrame title="🧭 Decision Intelligence — verdict from the distribution" help={help} result={<PortfolioVerdict group={group} />} />;
   }
   return (

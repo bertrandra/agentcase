@@ -61,7 +61,7 @@ function productRow(v: ProductView, total: number, cal: Calendar): GanttProductR
     .map((m) => ({ ...m, date: cal.dateAt(m.month), left: (m.month / total) * 100, title: `${v.name}: ${m.label} — ${cal.dateAt(m.month)} (calendar month ${m.month})` }));
   return {
     id: v.id, name: v.name, from, to, month0: v.month0, left: (from / total) * 100, width: Math.max(0.4, ((to - from) / total) * 100), milestones,
-    meta: `démarre ${cal.dateAt(v.month0)} (mois ${v.month0 + 1}), rampe jusqu’à ${cal.dateAt(to)}`,
+    meta: `starts ${cal.dateAt(v.month0)} (month ${v.month0 + 1}), ramps up to ${cal.dateAt(to)}`,
   };
 }
 
@@ -78,7 +78,7 @@ export function portfolioGantt(pf: Portfolio, c: Consolidated): PortfolioGantt {
     const products = c.products.filter((v) => v.waveId === w.id).map((v) => productRow(v, total, cal));
     const from = Math.min(...products.map((p) => p.from)), to = Math.max(...products.map((p) => p.to));
     return { id: w.id, name: w.name, startMonth: w.startMonth, from, to, left: (from / total) * 100, width: Math.max(0.4, ((to - from) / total) * 100), products,
-      meta: `${products.length} produit${products.length > 1 ? "s" : ""}, de ${cal.dateAt(from)} à ${cal.dateAt(to)}` };
+      meta: `${products.length} product${products.length > 1 ? "s" : ""}, from ${cal.dateAt(from)} to ${cal.dateAt(to)}` };
   });
   const out = {
     totalM: total, ticks: Array.from({ length: Math.floor(total / 12) + 1 }, (_, k) => ({ left: ((k * 12) / total) * 100, label: cal.dateAt(k * 12) })),

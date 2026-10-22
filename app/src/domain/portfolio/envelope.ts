@@ -1,11 +1,12 @@
 import { makeInputs } from '../inputs';
 import type { CaseState } from '../types/state';
+import { DEFAULT_PRODUCT_NAME, DEFAULT_WAVE_NAME } from './frenchAliases';
 import { commonInfra } from './layers';
 import { resolveProduct } from './resolve';
 import type { CommonCase, Portfolio } from './types';
 
 /**
- * A single case as a portfolio of one product "Produit 1" in one wave "Vague 1" starting at month 0 (spec F21). Nothing is copied or
+ * A single case as a portfolio of one product "Product 1" in one wave "Wave 1" starting at month 0 (spec F21). Nothing is copied or
  * converted: the common values are the case itself, the hub settings are read from it, so every figure stays identical (A1).
  */
 export function envelopeCase(c: CaseState): Portfolio {
@@ -13,8 +14,8 @@ export function envelopeCase(c: CaseState): Portfolio {
   return {
     _schema: 'agentcase.portfolio.v1',
     common: common as CommonCase,
-    products: [{ id: 'p1', name: 'Produit 1', teamIn, knowledge: {}, overrides: {}, waveId: 'w1', offsetMonths: 0 }],
-    waves: [{ id: 'w1', name: 'Vague 1', startMonth: 0, productIds: ['p1'] }],
+    products: [{ id: 'p1', name: DEFAULT_PRODUCT_NAME, teamIn, knowledge: {}, overrides: {}, waveId: 'w1', offsetMonths: 0 }],
+    waves: [{ id: 'w1', name: DEFAULT_WAVE_NAME, startMonth: 0, productIds: ['p1'] }],
     activeProductId: 'p1',
     hub: { enabled: !!c.dom?.checked?.khEnabled, infraMonthly: commonInfra(common as CommonCase), infraAllocation: 'perProduct' },
     horizonMonths: months,

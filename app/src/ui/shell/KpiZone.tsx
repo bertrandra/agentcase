@@ -5,7 +5,7 @@ import { fmt1 } from '../economicsFormat';
 import { Kpi } from './Kpi';
 import { ScopeKpis } from './ScopeKpis';
 
-/** Sticky headline results: the active product's (recomputed from the document), or the Portefeuille's / a Vague's when the display scope says so (F17). */
+/** Sticky headline results: the active product's (recomputed from the document), or the Portfolio's / a Wave's when the display scope says so (F17). */
 export function KpiZone() {
   const scope = useScopeKpis();
   return scope ? <ScopeKpis label={scope.label} h={scope.headline} /> : <ProductKpis />;

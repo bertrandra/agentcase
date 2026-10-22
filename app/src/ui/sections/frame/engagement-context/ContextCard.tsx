@@ -32,7 +32,7 @@ export function ContextCard() {
       <Field label="Engagement context">
         <select value={value} onChange={(e) => setEngagementCtx(e.target.value)}>{OPTIONS.map(([v, l]) => <option key={v} value={v}>{l}</option>)}</select>
       </Field>
-      <OverrideBadge refKey="values.engagementCtx" label="Contexte d’engagement" />
+      <OverrideBadge refKey="values.engagementCtx" label="Engagement context" />
       <ContextSummary />
     </Panel>
   );

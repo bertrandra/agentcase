@@ -300,7 +300,7 @@ dominated by Phase 5 (78 sections) and by the number of 150-line splits, and is 
 - The 78 sections are available from the zone registry, persona filtering and guided sequences included.
 - One offline HTML file builds from `npm run build`; docs and the bump procedure are rewritten for the new repository.
 
-**Outcome:** met (the performance budget, accessibility pass and parallel run exist since; only real customer files and the tags are open, §15.3). Sections: 79 (not 78) at v19.0.0, 85 at v20.0.0 with the six Portefeuille ones, all reachable from the document-driven navigation.
+**Outcome:** met (the performance budget, accessibility pass and parallel run exist since; only real customer files and the tags are open, §15.3). Sections: 79 (not 78) at v19.0.0, 85 at v20.0.0 with the six Portfolio ones, all reachable from the document-driven navigation.
 
 ## 13. Proposed next step
 
@@ -326,7 +326,7 @@ measured throughput, a re-estimate of Phase 5, and a working Ctrl+Z on the Adjus
 
 ## 15. Outcome, remaining gaps and follow-ups
 
-State at the time of writing (v20.0.0): Phases 0–7 done. The TypeScript build registers 85 sections (the 79 ported plus the 6 of the multi-product *Portefeuille* group), reproduces
+State at the time of writing (v20.0.0): Phases 0–7 done. The TypeScript build registers 85 sections (the 79 ported plus the 6 of the multi-product *Portfolio* group), reproduces
 the legacy engine on 107 oracle cases (also as one-product portfolios, A1) and builds to one offline file named `AgentCase_v20_0_EN.html` by `npm run release`. Everything below is collected
 from §14 and from checking the repository.
 
@@ -364,7 +364,7 @@ from §14 and from checking the repository.
 | # | Item | State at v20.0.0 |
 |---|---|---|
 | 1 | Parallel run on real customer files (legacy vs new on the same workbooks and snapshots) | built (`tools/parallel-run.mjs`) and run on the 107-fixture set; **open for real customer files** (the user supplies them) |
-| 2 | Performance budget: first paint, edit latency, bundle size | done: `tools/perf.mjs` and `app/perf-budget.json` (CI job `e2e`), including the six Portefeuille sections |
+| 2 | Performance budget: first paint, edit latency, bundle size | done: `tools/perf.mjs` and `app/perf-budget.json` (CI job `e2e`), including the six Portfolio sections |
 | 3 | Accessibility pass (axe) and keyboard walk | done: `npm run a11y` (`tools/a11y*.mjs`), 0 violations on the case fixtures and the example portfolio; run by hand, not in CI |
 | 4 | Automated browser smoke of the built file | done: `tools/e2e-smoke.mjs` (CI job `e2e`), 6 case fixtures and 2 portfolio files |
 | 5 | Version `19.0.0`, released file name | done: `19.0.0` then `20.0.0`; `npm run release` names the file; **tags are made by the user** |

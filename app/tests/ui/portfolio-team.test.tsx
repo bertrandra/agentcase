@@ -18,9 +18,9 @@ describe('team editing targets the active product only (spec F2)', () => {
     mountApp('team-in');
     await sectionReady(/Input team/);
     const before = teams();
-    expect(screen.getByText(/Équipe de :/).textContent).toContain('Produit 1');
+    expect(screen.getByText(/Team of:/).textContent).toContain('Product 1');
     act(() => { setActiveProduct(ids[1]); });
-    expect(screen.getByText(/Équipe de :/).textContent).toContain('B');
+    expect(screen.getByText(/Team of:/).textContent).toContain('B');
     fireEvent.change(total(), { target: { value: '33' } });
     fireEvent.click(screen.getByRole('button', { name: '+ Add a resource' }));
     const after = teams();
@@ -29,10 +29,10 @@ describe('team editing targets the active product only (spec F2)', () => {
     expect(after[1]).not.toBe(before[1]);
     expect(pf().products[1]!.teamIn.length).toBe(JSON.parse(before[1]!).length + 1);
   });
-  it('the same edit in "Ce produit seulement" mode leaves the other teams alone too, and the figure shown is the active one', async () => {
+  it('the same edit in "This product only" mode leaves the other teams alone too, and the figure shown is the active one', async () => {
     mountApp('team-in');
     await sectionReady(/Input team/);
-    fireEvent.click(screen.getByLabelText('Ce produit seulement'));
+    fireEvent.click(screen.getByLabelText('This product only'));
     const a = total().value, before = teams();
     act(() => { setActiveProduct(ids[2]); });
     fireEvent.change(total(), { target: { value: '21' } });

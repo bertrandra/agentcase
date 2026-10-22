@@ -19,6 +19,7 @@ export { commonSubsetValue, type SubsetField } from './subset';
 export { subsetKeys, ktLead, allocateInfra, allocateCents, knowledgeRow, knowledgeTable, knowledgeTotals, type KnowledgeRow, type KnowledgeTable, type KnowledgeTotals } from './knowledge';
 export { waveEffects, waveEffectsTotal, infraView, type WaveEffect, type InfraView, type InfraShare } from './ktview';
 export { envelopeCase, portfolioToCase } from './envelope';
+export { FRENCH_ALIASES, DEFAULT_PRODUCT_NAME, DEFAULT_WAVE_NAME, isDefaultProductName, isDefaultWaveName } from './frenchAliases';
 export { MAX_PRODUCTS, addProduct, renameProduct, setProductNote, archiveProduct, setProductOffset, duplicateProduct, removeProduct, setKnowledge, setActive } from './products';
 export { addWave, renameWave, setWaveStart, setWaveNote, removeWave, reorderWave, assignWave, setHorizon, setHub, setRho } from './waveOps';
 export { buildPortfolioPackages, type PortfolioPackages } from './package';

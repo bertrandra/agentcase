@@ -20,12 +20,12 @@ export function headlineCards(h: ConsolidationView['headline'], horizon: number,
  */
 export function portfolioSheet(wb: Workbook, name: string, view: ConsolidationView, horizon: number): void {
   const ws = wb.addWorksheet(name), h = view.headline;
-  cardSheet(ws, headlineCards(h, horizon, 'Portefeuille'));
+  cardSheet(ws, headlineCards(h, horizon, 'Portfolio'));
   table(ws, 'By calendar year', ['Year', 'Savings', 'Run cost', 'Setup', 'Net'], view.years.map((y) => [y.label, y.savings, y.run, y.setup, y.net]), [undefined, MONEY, MONEY, MONEY, MONEY]);
   table(ws, 'By wave', HDR_LINES, view.waves.map(lineCells), FMT_LINES);
   table(ws, 'By product', HDR_LINES, [...view.products.map(lineCells), lineCells(view.totals)], FMT_LINES);
   table(ws, 'Calendar NPV (each month T discounted from portfolio month 1; the products add up to the portfolio)', ['Line', 'NPV'],
-    [['Portefeuille', h.npv], ...view.waves.map((w): [string, number] => [`Wave: ${w.name}`, w.npv]), ...view.products.map((p): [string, number] => [`Product: ${p.name}`, p.npv])], [undefined, MONEY]);
+    [['Portfolio', h.npv], ...view.waves.map((w): [string, number] => [`Wave: ${w.name}`, w.npv]), ...view.products.map((p): [string, number] => [`Product: ${p.name}`, p.npv])], [undefined, MONEY]);
   if (view.excluded.length) table(ws, 'Not in the consolidation', ['Product', 'Reason'], view.excluded.map((e) => [e.name, e.archived ? 'archived' : 'no wave']));
   if (view.diagnostics.length) table(ws, 'Diagnostics', ['Code', 'Message'], view.diagnostics.map((d) => [d.code, d.message]));
   ws.getColumn(1).width = 46;

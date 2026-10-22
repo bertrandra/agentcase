@@ -20,7 +20,7 @@ const text = (html: string) => html.replace(/<style>[\s\S]*?<\/style>/g, ' ').re
 const ok = (r: ReturnType<typeof buildCriticalReport>): string => { if (!r.ok) throw new Error(r.reason); return r.html; };
 const money = (r: SummaryRow): string[] => [fmtK(r.npv), fmtK(r.net), fmtK(r.setup), fmtK(r.savings), fmtK(r.run), r.etp.toFixed(1), r.vfte.toFixed(1)];
 
-describe('Produit scope = today’s report, text for text', () => {
+describe('Product scope = today’s report, text for text', () => {
   it.each(IDS)('%s: a one-product portfolio gives exactly the legacy-parity report', (id) => {
     const legacy = ok(buildCriticalReport(doc(id), NOW)), pf = envelopeCase(doc(id));
     expect(ok(buildScopedReport(pf, { kind: 'product' }, NOW))).toBe(legacy);
@@ -39,7 +39,7 @@ describe('Produit scope = today’s report, text for text', () => {
   });
 });
 
-describe('Portefeuille scope', () => {
+describe('Portfolio scope', () => {
   const html = (): string => ok(buildScopedReport(regulatedPortfolio(), { kind: 'portfolio' }, NOW));
   it('keeps the six sections of the report family', () => {
     const h = [...html().matchAll(/<h2>([\s\S]*?)<\/h2>/g)].map((m) => text(m[1] as string));
@@ -62,7 +62,7 @@ describe('Portefeuille scope', () => {
   it('lists each product with its own norms and context, and survives a product the gate refuses', () => {
     const pf = regulatedPortfolio(), t = text(ok(buildScopedReport(pf, { kind: 'portfolio' }, NOW)));
     pf.products.filter((p) => p.waveId !== null).forEach((p) => expect(t).toContain(p.name));
-    expect(t).toContain('Archivage (hors vague) has no wave');   // the unscheduled product is outside the consolidation tables and named in the diagnostics
+    expect(t).toContain('Archive (no wave) has no wave');   // the unscheduled product is outside the consolidation tables and named in the diagnostics
     const none = regulatedPortfolio(); setProductOverride(none.products[1]!.id, 'selectedNorms', []);
     expect(text(ok(buildScopedReport(pfNow(), { kind: 'portfolio' }, NOW)))).toContain('catalogue off or no norm selected');
   });
@@ -80,16 +80,16 @@ describe('Portefeuille scope', () => {
   });
 });
 
-describe('Vague scope', () => {
+describe('Wave scope', () => {
   it('reports only the products of the wave, with the wave’s own headline', () => {
     const pf = regulatedPortfolio(), w2 = pf.waves[1]!, c = consolidate(corePortfolio(pf)), h = waveHeadline(c, w2.id)!;
     const r = buildScopedReport(pf, { kind: 'wave', id: w2.id }, NOW);
     const t = text(ok(r));
-    expect(t).toContain('Scope: Wave: Vague 2');
+    expect(t).toContain('Scope: Wave: Wave 2');
     for (const s of [fmtK(h.npv), fmtK(h.setup), fmtK(h.net), fmtRoiPct(h.roi)]) expect(t).toContain(s);
-    expect(t).toContain('Facturation');
-    expect(t).not.toContain('Paie');
-    expect(r.ok && r.filename).toBe('AgentCase_Critical_Regulated_Report_Wave_Vague_2_20261022.html');
+    expect(t).toContain('Billing');
+    expect(t).not.toContain('Payroll');
+    expect(r.ok && r.filename).toBe('AgentCase_Critical_Regulated_Report_Wave_Wave_2_20261022.html');
     h.years.savings.forEach((s) => expect(t).toContain(fmtK(s)));
   });
   it('an unknown wave is refused with a message', () => {

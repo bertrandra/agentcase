@@ -1,4 +1,4 @@
-/* Multi-product interface (spec P3). Every rule here targets an element that only exists with two or more products (or the new Portefeuille sections),
+/* Multi-product interface (spec P3). Every rule here targets an element that only exists with two or more products (or the new Portfolio sections),
    so a single-product case renders exactly as before. Colours come from tokens.css. */
 .ac-prodbar { display: inline-flex; flex-wrap: wrap; align-items: center; gap: 10px; padding-inline-end: 10px; border-inline-end: 1px solid rgba(255, 255, 255, .25); font-size: 12px; }
 .ac-prodsel { display: inline-flex; align-items: center; gap: 6px; font-weight: 700; }

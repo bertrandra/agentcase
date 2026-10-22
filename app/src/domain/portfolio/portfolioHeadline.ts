@@ -48,7 +48,7 @@ export type DisplayScope = { kind: 'product' } | { kind: 'portfolio' } | { kind:
 
 /** Figures and label of a display scope other than the active product; null for the product scope or a wave that no longer exists. */
 export function scopeHeadline(c: Consolidated, scope: DisplayScope): { label: string; headline: PortfolioHeadline } | null {
-  if (scope.kind === 'portfolio') return { label: 'Portefeuille', headline: portfolioHeadline(c) };
+  if (scope.kind === 'portfolio') return { label: 'Portfolio', headline: portfolioHeadline(c) };
   if (scope.kind !== 'wave') return null;
   const h = waveHeadline(c, scope.id), w = c.waves.find((x) => x.id === scope.id);
   return h && w ? { label: w.name, headline: h } : null;

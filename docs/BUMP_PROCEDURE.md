@@ -163,3 +163,4 @@ file from the repository root.
 - [ ] `npm run check` and `npm run build` green; manual browser pass on `app/dist/index.html` (§4)
 - [ ] `CHANGELOG.md` entry with a Golden case line; README and docs updated if relevant
 - [ ] pull request merged with CI green; release copy named `AgentCase_vX_Y_EN.html` made from `app/dist/index.html`; tag `vX.Y.Z`
+- [ ] **All user-facing text is in English** (new labels, toasts, diagnostics, exports; vocabulary in [GLOSSARY_EN.md](GLOSSARY_EN.md)); `tests/ui/english-only.test.ts` is green

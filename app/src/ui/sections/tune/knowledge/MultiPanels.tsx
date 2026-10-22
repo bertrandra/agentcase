@@ -11,15 +11,15 @@ import { HubSettings } from '@/ui/widgets/HubSettings';
 import { DomainsEditor } from './DomainsEditor';
 import { SubsetBadge } from './SubsetBadge';
 
-/** "Produit : X (n champs propres)": which product the section edits, and how much of its subset is its own. */
+/** "Product: X (n own fields)": which product the section edits, and how much of its subset is its own. */
 export function SubsetBanner() {
   const multi = useIsMulti(), p = useActiveProduct();
   if (!multi) return null;
   const n = Object.values(p.knowledge).filter((v) => v !== undefined).length;
   return (
     <p className="ac-prod-banner" role="note" data-overrides={n}>
-      Sous-ensemble du Knowledge Hub de : <strong>{p.name}</strong> ({n ? `${n} champ${n > 1 ? 's' : ''} propre${n > 1 ? 's' : ''} au produit` : 'tout est hérité du hub commun'})
-      <span className="ac-muted"> — « Ce produit seulement » (barre haute) crée la valeur propre du produit ; « Tous les produits » modifie le hub commun, que les produits héritant suivent.</span>
+      Knowledge Hub subset of: <strong>{p.name}</strong> ({n ? `${n} own field${n > 1 ? 's' : ''} of the product` : 'everything is inherited from the common hub'})
+      <span className="ac-muted"> — “This product only” (top bar) creates the product’s own value; “All products” edits the common hub, which inheriting products follow.</span>
     </p>
   );
 }
@@ -27,27 +27,27 @@ export function SubsetBanner() {
 /** The engagement context caps the target CC: shown next to the product's target (spec F25d). */
 function CapNote() {
   const c = useCtx(), h = useMemo(() => hubView(c), [c]);
-  if (h.locked) return <Callout kind="error">Contexte d’engagement {h.context} : le hub est verrouillé pour ce produit.</Callout>;
-  return <p className="ac-muted" data-cap={h.maxCC}>Plafond du contexte {h.context} : CC{h.maxCC}. Cible demandée : CC{h.rawTarget}{h.clamped ? ` — plafonnée à CC${h.target}` : ''}.</p>;
+  if (h.locked) return <Callout kind="error">Engagement context {h.context}: the hub is locked for this product.</Callout>;
+  return <p className="ac-muted" data-cap={h.maxCC}>Context {h.context} cap: CC{h.maxCC}. Requested target: CC{h.rawTarget}{h.clamped ? ` — capped at CC${h.target}` : ''}.</p>;
 }
 
-/** "Préparation du transfert": ktLeadMonths of the active product, >= 0 (spec F28). Shifts only the KT setup cost in the consolidation. */
+/** "Knowledge transfer preparation": ktLeadMonths of the active product, >= 0 (spec F28). Shifts only the KT setup cost in the consolidation. */
 function LeadField() {
   const p = useActiveProduct(), { diagnostics } = useKnowledgeView(), [error, setError] = useState('');
   const clamp = diagnostics.find((d) => d.code === 'kt-lead-clamped' && d.productId === p.id);
   const commit = (raw: string) => {
     const n = Number(raw);
-    if (raw.trim() === '' || !Number.isInteger(n) || n < 0) { setError('La préparation est un nombre entier de mois supérieur ou égal à 0.'); return; }
+    if (raw.trim() === '' || !Number.isInteger(n) || n < 0) { setError('The preparation is a whole number of months, 0 or more.'); return; }
     setError('');
-    if (setProductKnowledge(p.id, { ktLeadMonths: n })) toast(`Préparation du transfert de ${p.name} : ${n} mois`);
+    if (setProductKnowledge(p.id, { ktLeadMonths: n })) toast(`Knowledge transfer preparation of ${p.name}: ${n} months`);
   };
   return (
-    <Panel title="Préparation du transfert (mois avant la vague)" aside={<SubsetBadge field="ktLeadMonths" label="Préparation du transfert" />}>
+    <Panel title="Knowledge transfer preparation (months before the wave)" aside={<SubsetBadge field="ktLeadMonths" label="Knowledge transfer preparation" />}>
       <div className="ac-form-row">
-        <NumField label="Préparation du transfert (mois avant la vague)" value={p.knowledge.ktLeadMonths ?? 0} min={0} step={1} onCommit={commit}
-          hint="0 = le coût de mise en place du KT tombe au démarrage du produit" />
+        <NumField label="Knowledge transfer preparation (months before the wave)" value={p.knowledge.ktLeadMonths ?? 0} min={0} step={1} onCommit={commit}
+          hint="0 = the KT setup cost falls at the start of the product" />
       </div>
-      <p className="ac-muted">Avec k mois, seul le coût de mise en place du transfert (ingestion, curation initiale) est placé k mois avant le démarrage du produit : on prépare la vague suivante pendant la vague en cours. Les bénéfices restent à partir du mois 0.</p>
+      <p className="ac-muted">With k months, only the setup cost of the transfer (ingestion, initial curation) is placed k months before the product starts: the next wave is prepared during the current one. Benefits still start from month 0.</p>
       {error && <p role="alert" style={{ color: '#8F3237' }}>{error}</p>}
       {clamp && <Callout kind="warn">{clamp.message}</Callout>}
     </Panel>

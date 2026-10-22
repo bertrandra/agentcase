@@ -23,7 +23,7 @@ describe('menu layout board', () => {
     open(/Menu layout/);
     const board = within(screen.getByRole('list', { name: 'Menu layout' }));
     expect(board.getAllByRole('listitem')).toHaveLength((doc().GROUPS as MenuGroup[]).length);
-    expect(document.querySelectorAll('[data-section]')).toHaveLength(LEGACY_SECTIONS.length);   // one product: no Portefeuille column
+    expect(document.querySelectorAll('[data-section]')).toHaveLength(LEGACY_SECTIONS.length);   // one product: no Portfolio column
   });
   it('↑ ↓ reorder a card inside its group (groupSeq 10, 20 …) and undo restores the order', () => {
     const first = inGroup('frame')[0]!, second = inGroup('frame')[1]!;

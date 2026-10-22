@@ -14,7 +14,7 @@ const tab = (name: string) => fireEvent.click(screen.getByRole('tab', { name }))
 
 describe('deps section', () => {
   it('shows every figure and heading the legacy section showed (4 fixtures)', () => {
-    // legacy: 79 sections, 23 outside the graph; the catalogue now also holds the 6 Portefeuille sections (85 / 29)
+    // legacy: 79 sections, 23 outside the graph; the catalogue now also holds the 6 Portfolio sections (85 / 29)
     expectParity('deps', Deps, { ignore: [79, 23], headings: ['Section Dependencies', '● strong (calculation input)', '○ soft (annotation / signal)', 'Row impacts column · 148 edges · 30 of 85 sections drive something', 'Dependency graph', 'Dependency matrix', 'Descriptions & impact', 'Build order', 'Edit dependencies', '1 · FRAME', '10 · PRESENT', 'Deliberately outside the graph (29 sections)', 'Input team', 'Rate Card'] });
   });
   it('the graph isolates the links of a hovered node and opens a section on click', () => {

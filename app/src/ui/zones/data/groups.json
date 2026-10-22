@@ -85,7 +85,7 @@
  },
  {
   "id": "portfolio",
-  "label": "📦 Portefeuille",
+  "label": "📦 Portfolio",
   "order": 15,
   "description": "Several products in one file: the products table (team, wave, state, key indicators), the overrides of each product against the common values, the Knowledge transfer of each product (its subset of the shared Knowledge Hub), the wave board, the consolidated portfolio trajectory and the portfolio stress (Monte Carlo with a correlation between products). Shown from two products on."
  }

@@ -29,17 +29,17 @@ export function openPortfolioFixture(name = 'pf-three-products'): Portfolio {
 export function fourProducts(): Portfolio {
   const s = freshStore();
   const a = pfNow().products[0]!.id, w1 = pfNow().waves[0]!.id;
-  const b = addProduct('Paie', w1)!, w2 = addWave('Vague 2', 6)!, c = addProduct('Facturation', w2)!, d = addProduct('Archivage (hors vague)', null)!;
+  const b = addProduct('Payroll', w1)!, w2 = addWave('Wave 2', 6)!, c = addProduct('Billing', w2)!, d = addProduct('Archive (no wave)', null)!;
   setWaveStart(w2, 6);
   setActiveProduct(b); setTeamTotal(12);
   setProductOverride(b, 'regInclude', true);
   setProductOverride(c, 'values.engagementCtx', 'STA');
   setProductOverride(c, 'selectedNorms', ['ISO 26262', 'DO-178C']);
-  setProductNote(c, 'Démarre au mois 6'); setProductNote(d, 'Non planifié');
+  setProductNote(c, 'Starts in month 6'); setProductNote(d, 'Unscheduled');
   setProductOffset(b, 2);
   setPortfolioHub({ enabled: true, infraMonthly: 3000, infraAllocation: 'byBaseEtp' });
   setProductKnowledge(b, { targetCC: 2, curationFTE: 1, setupBase: 90000, maturityAnswers: [1, 1, 2, 1, 2, 2, 1, 1, 2], domains: [{ label: 'Documentation', weightPct: 40 }, { label: 'Code', weightPct: 60 }] });
-  setProductKnowledge(c, { ktLeadMonths: 3, targetCC: 4, enabled: true, domains: [{ label: 'Procédures d’exploitation', weightPct: 100 }] });
+  setProductKnowledge(c, { ktLeadMonths: 3, targetCC: 4, enabled: true, domains: [{ label: 'Operating procedures', weightPct: 100 }] });
   setActiveProduct(a);
   s.setHistory(EMPTY_HISTORY);
   return pfNow();
@@ -51,8 +51,8 @@ export function fourProducts(): Portfolio {
  */
 export function regulatedPortfolio(fixture = 'industry-med'): Portfolio {
   const s = loadFixture(fixture), a = pfNow().products[0]!.id, w1 = pfNow().waves[0]!.id;
-  const b = addProduct('Paie', w1)!, w2 = addWave('Vague 2', 6)!, c = addProduct('Facturation', w2)!, d = addProduct('Archivage (hors vague)', null)!;
-  setWaveStart(w2, 6); setProductOffset(b, 2); setProductNote(d, 'Non planifié');
+  const b = addProduct('Payroll', w1)!, w2 = addWave('Wave 2', 6)!, c = addProduct('Billing', w2)!, d = addProduct('Archive (no wave)', null)!;
+  setWaveStart(w2, 6); setProductOffset(b, 2); setProductNote(d, 'Unscheduled');
   setProductOverride(b, 'selectedNorms', pfNow().common.selectedNorms.slice(0, 1));
   setPortfolioHub({ enabled: true, infraMonthly: 3000, infraAllocation: 'byBaseEtp' });
   setProductKnowledge(c, { ktLeadMonths: 3, targetCC: 3, domains: [{ label: 'Docs', weightPct: 100 }] });

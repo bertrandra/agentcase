@@ -38,7 +38,7 @@ describe('A1: a case wrapped as one product / one wave at month 0 gives the sing
 
   it('the envelope names the product and the wave as the spec asks', () => {
     const pf = envelopeCase(loadCase('golden'));
-    expect([pf.products[0]!.name, pf.waves[0]!.name, pf.waves[0]!.startMonth, pf.products[0]!.waveId, pf.hub.infraAllocation]).toEqual(['Produit 1', 'Vague 1', 0, 'w1', 'perProduct']);
+    expect([pf.products[0]!.name, pf.waves[0]!.name, pf.waves[0]!.startMonth, pf.products[0]!.waveId, pf.hub.infraAllocation]).toEqual(['Product 1', 'Wave 1', 0, 'w1', 'perProduct']);
     expect(pf.horizonMonths).toBe(36);
   });
 

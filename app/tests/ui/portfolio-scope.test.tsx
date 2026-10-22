@@ -17,20 +17,20 @@ vi.mock('@/ui/widgets/ChartPanel', async () => import('../helpers/chartStub'));
 let ids: [string, string, string], waves: [string, string];
 beforeEach(() => { ({ ids, waves } = threeProducts()); });
 afterEach(cleanup);
-const select = () => screen.getByRole('combobox', { name: 'Vue' }) as HTMLSelectElement;
+const select = () => screen.getByRole('combobox', { name: 'View' }) as HTMLSelectElement;
 const choose = (v: string) => fireEvent.change(select(), { target: { value: v } });
 const savings = () => kpi(/^Savings Y/), run = () => kpi(/^Run cost Y/), payback = () => kpi(/^Payback$/), eff = () => kpi(/^Effective automation$/), ceil = () => kpi(/^Glass ceiling$/);
 
 describe('display scope selector (F17)', () => {
-  it('offers Portefeuille, each Vague and each Produit; defaults to the active product', () => {
+  it('offers Portfolio, each Wave and each Product; defaults to the active product', () => {
     mountApp();
     expect([...select().options].map((o) => o.textContent)).toEqual([
-      'Portefeuille', 'Vague : Vague 1', 'Vague : Wave 2', 'Produit : Produit 1 — Vague 1', 'Produit : B — Vague 1', 'Produit : C — Wave 2']);
+      'Portfolio', 'Wave: Wave 1', 'Wave: Wave 2', 'Product: Product 1 — Wave 1', 'Product: B — Wave 1', 'Product: C — Wave 2']);
     expect(select().value).toBe(`product:${ids[0]}`);
     expect(screen.getByRole('complementary', { name: 'Headline results' })).toBeTruthy();
   });
 
-  it('Produit scope is today\'s behaviour: the figures of computeCase of the active product', () => {
+  it('Product scope is today\'s behaviour: the figures of computeCase of the active product', () => {
     mountApp();
     const r = computeCase(resolveProduct(pf(), ids[0]));
     expect(savings()).toBe(fmtEurK(r.endYear.savings));
@@ -40,12 +40,12 @@ describe('display scope selector (F17)', () => {
     expect(ceil()).toBe(fmtPct(r.model.ceiling));
   });
 
-  it('Portefeuille: the figures are the domain headline, and the sum of the products shifted to their start (1e-9)', () => {
+  it('Portfolio: the figures are the domain headline, and the sum of the products shifted to their start (1e-9)', () => {
     mountApp();
     choose('portfolio');
     const c = consolidate(pf()), h = portfolioHeadline(c), L = c.horizon, first = Math.floor((L - 1) / 12) * 12;
-    expect(screen.getByRole('complementary', { name: 'Headline results — Portefeuille' })).toBeTruthy();
-    expect(kpi(/^Périmètre$/)).toBe('Portefeuille');
+    expect(screen.getByRole('complementary', { name: 'Headline results — Portfolio' })).toBeTruthy();
+    expect(kpi(/^Scope$/)).toBe('Portfolio');
     // independent derivation: each product's own Time Engine rows shifted by wave start + offset, summed over the last calendar year
     let sav = 0, runCost = 0;
     for (const p of pf().products) {
@@ -59,18 +59,18 @@ describe('display scope selector (F17)', () => {
     expect(eff()).toBe(fmtPct(h.eff));
     expect(ceil()).toBe(fmtPct(h.ceiling));
     expect(kpi(/^Velocity Y/)).toBe(`${h.velocityPct >= 0 ? '+' : ''}${Math.round(h.velocityPct)}%`);
-    expect(screen.getByText(/^Savings Y/).parentElement!.title).toContain('Portefeuille');
-    expect(screen.getByRole('status').textContent).toContain('Vue : Portefeuille');
+    expect(screen.getByText(/^Savings Y/).parentElement!.title).toContain('Portfolio');
+    expect(screen.getByRole('status').textContent).toContain('View: Portfolio');
   });
 
-  it('Vague: the figures of that wave only; the label and the tooltips name it', () => {
+  it('Wave: the figures of that wave only; the label and the tooltips name it', () => {
     mountApp();
     choose(`wave:${waves[1]}`);
     const c = consolidate(pf()), h = waveHeadline(c, waves[1])!;
     expect(screen.getByRole('complementary', { name: 'Headline results — Wave 2' })).toBeTruthy();
     expect(savings()).toBe(fmtEurK(h.endYear.savings));
     expect(payback()).toBe(fmtMonths(h.paybackMonth));
-    expect(screen.getByText(/^Savings Y/).parentElement!.title).toContain('Wave 2 (1 produit planifié)');
+    expect(screen.getByText(/^Savings Y/).parentElement!.title).toContain('Wave 2 (1 planned product)');
     // wave 2 is product C alone, starting at month 6: its savings are C's own, later
     const own = computeCase(resolveProduct(pf(), ids[2]));
     expect(h.paybackMonth).toBe(own.payback === null ? null : own.payback + 6);
@@ -78,7 +78,7 @@ describe('display scope selector (F17)', () => {
     expect(savings()).toBe(fmtEurK(waveHeadline(c, waves[0])!.endYear.savings));
   });
 
-  it('choosing a Produit makes it the active product and shows its own figures; the scope is not an undo step and is never saved', () => {
+  it('choosing a Product makes it the active product and shows its own figures; the scope is not an undo step and is never saved', () => {
     mountApp();
     const undoDepth = appStore().getState().history.undo.length;
     choose('portfolio');
@@ -113,14 +113,14 @@ describe('display scope selector (F17)', () => {
 });
 
 describe('one view selector, no duplicate product selector', () => {
-  it('has no separate Produit selector; picking a product views AND edits it; a portfolio view still names the edited product', () => {
+  it('has no separate Product selector; picking a product views AND edits it; a portfolio view still names the edited product', () => {
     mountApp();
-    expect(screen.queryByRole('combobox', { name: 'Produit' })).toBeNull();
+    expect(screen.queryByRole('combobox', { name: 'Product' })).toBeNull();
     choose(`product:${ids[1]}`);
     expect(pf().activeProductId).toBe(ids[1]);
-    expect(screen.queryByText(/^Édition :/)).toBeNull();
+    expect(screen.queryByText(/^Editing:/)).toBeNull();
     choose('portfolio');
     expect(pf().activeProductId).toBe(ids[1]);
-    expect(screen.getByText(/Édition :/).textContent).toContain('B');
+    expect(screen.getByText(/Editing:/).textContent).toContain('B');
   });
 });

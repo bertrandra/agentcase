@@ -20,7 +20,7 @@ export async function personaMenu(page, fx, rec) {
 /** History dock with steps, the undo toast (live region filled) and the collapsed dock. */
 export async function historyStates(page, fx, rec) {
   await openSection(page, '🧭 Engagement context');
-  const name = page.locator('input[aria-label="Customer name"]');
+  const name = page.getByLabel('Customer name');
   await name.fill('Audit A'); await name.blur(); await name.fill('Audit B'); await name.blur(); await settle(page);
   await rec.audit(page, fx, '(history dock: steps listed)');
   await page.click('button[aria-label=Undo]'); await settle(page, 100);
@@ -65,7 +65,7 @@ export async function keyboardStates(page, fx, rec) {
 export async function restoreBanner(ctx, fx, rec) {
   const a = await openCase(ctx, fx);
   await openSection(a, '🧭 Engagement context');
-  await a.locator('input[aria-label="Customer name"]').fill('Other tab'); await a.waitForTimeout(2500);
+  await a.getByLabel('Customer name').fill('Other tab'); await a.waitForTimeout(2500);
   const b = await ctx.newPage();
   await b.goto(a.url()); await b.waitForSelector('.ac-shell'); await b.addScriptTag({ content: axeSource });
   if (await b.locator('.ac-banner').count()) { await rec.audit(b, fx, '(restore banner offered)'); await tabWalk(b, rec.note.bind(null, fx, '(keyboard walk, banner)')); }

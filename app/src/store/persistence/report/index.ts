@@ -22,8 +22,8 @@ export function buildCriticalReport(s: CaseState, now: Date = new Date()): Repor
 const slug = (s: string): string => s.replace(/[^A-Za-z0-9]+/g, '_').replace(/^_|_$/g, '').slice(0, 40) || 'wave';
 
 /**
- * The report for a DISPLAY SCOPE. Produit (the active product, or `productId`) and any plain single case: today's report of the product's effective
- * case, byte for byte. Portefeuille and Vague: the portfolio report (context, consolidated economics by wave and product, knowledge transfer, gated
+ * The report for a DISPLAY SCOPE. Product (the active product, or `productId`) and any plain single case: today's report of the product's effective
+ * case, byte for byte. Portfolio and Wave: the portfolio report (context, consolidated economics by wave and product, knowledge transfer, gated
  * trajectory, and the last portfolio stress when `stress` is given) built from the domain views `consolidationView` / `portfolioHeadline` / `knowledgeTable`; its gate needs the regulatory catalogue and a norm
  * for at least one product of the scope. Both variants are scriptless and load no external resource.
  */

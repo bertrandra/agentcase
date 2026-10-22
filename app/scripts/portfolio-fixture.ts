@@ -17,20 +17,20 @@ setAppStore(createAppStore(makeDefaultDoc()));
 const golden = readFileSync('fixtures/cases/golden.json', 'utf8');
 await importSnapshotFile({ text: async () => golden });
 const first = appStore().getState().portfolio.products[0]!.id, wave1 = appStore().getState().portfolio.waves[0]!.id;
-const b = addProduct('Paie', wave1)!, wave2 = addWave('Vague 2', 6)!, c = addProduct('Facturation', wave2)!;
+const b = addProduct('Payroll', wave1)!, wave2 = addWave('Wave 2', 6)!, c = addProduct('Billing', wave2)!;
 setWaveStart(wave2, 6);
 setActiveProduct(b); setTeamTotal(24);
 setProductOverride(b, 'regInclude', true);
 setProductOverride(c, 'values.engagementCtx', 'STA');
-setProductNote(c, 'Démarre au mois 6');
+setProductNote(c, 'Starts in month 6');
 // Waves (P4): a product with an offset inside its wave, and one product left out of every wave (unscheduled, flagged in the diagnostics)
 setProductOffset(b, 2);
-const d = addProduct('Archivage (hors vague)', null)!;
-setProductNote(d, 'Non planifié : exclu de la consolidation');
+const d = addProduct('Archive (no wave)', null)!;
+setProductNote(d, 'Unscheduled: excluded from the consolidation');
 // Knowledge transfer (P3b): a shared hub charged by entry headcount, and a different subset per product
 setPortfolioHub({ infraMonthly: 3000, infraAllocation: 'byBaseEtp' });
 setProductKnowledge(b, { targetCC: 2, curationFTE: 1, setupBase: 90000, maturityAnswers: [1, 1, 2, 1, 2, 2, 1, 1, 2], domains: [{ label: 'Documentation', weightPct: 40 }, { label: 'Code', weightPct: 60 }] });
-setProductKnowledge(c, { ktLeadMonths: 3, targetCC: 4, domains: [{ label: 'Procédures d’exploitation', weightPct: 100 }] });
+setProductKnowledge(c, { ktLeadMonths: 3, targetCC: 4, domains: [{ label: 'Operating procedures', weightPct: 100 }] });
 setActiveProduct(b);   // the audit then sees a product with its own subset (chips, domains)
 mkdirSync('fixtures/portfolios', { recursive: true });
 writeFileSync('fixtures/portfolios/pf-three-products.json', exportSnapshotJson().json + '\n');

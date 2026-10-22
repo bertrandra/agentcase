@@ -13,33 +13,33 @@ beforeEach(() => { ids = threeProducts().ids; });
 afterEach(cleanup);
 const panel = (name: RegExp) => within(screen.getByRole('region', { name }));
 
-describe('Surcharges section', () => {
+describe('Overrides section', () => {
   it('lists, per product, the overridden keys with the common and the product value', async () => {
     setProductOverride(ids[1], 'regInclude', true);
     setProductOverride(ids[1], 'values.engagementCtx', 'STA');
     mountApp('overrides');
-    await sectionReady(/Surcharges/);
-    expect(panel(/^Produit 1/).getByText(/Aucune surcharge/)).toBeTruthy();
+    await sectionReady(/Overrides/);
+    expect(panel(/^Product 1/).getByText(/No override/)).toBeTruthy();
     const b = panel(/^B/);
     expect(b.getAllByRole('row')).toHaveLength(3);   // header + 2 keys
-    const r = b.getByText('Inclure le réglementaire dans l’effort').closest('tr')!;
+    const r = b.getByText('Include regulatory in the effort').closest('tr')!;
     expect(r.textContent).toContain('true');
-    expect(within(b.getByText('Champ engagementCtx').closest('tr')!).getByText('STA')).toBeTruthy();
-    expect(screen.getByRole('heading', { name: /^B — 2 surcharges$/ })).toBeTruthy();
+    expect(within(b.getByText('Field engagementCtx').closest('tr')!).getByText('STA')).toBeTruthy();
+    expect(screen.getByRole('heading', { name: /^B — 2 overrides$/ })).toBeTruthy();
   });
-  it('"Revenir au commun" and "Appliquer à tous les produits" act on the row; the row leaves the list', async () => {
+  it('"Revert to common" and "Apply to all products" act on the row; the row leaves the list', async () => {
     setProductOverride(ids[1], 'regInclude', true);
     setProductOverride(ids[2], 'regInclude', true);
     setProductOverride(ids[1], 'values.engagementCtx', 'STA');
     mountApp('overrides');
-    await sectionReady(/Surcharges/);
-    fireEvent.click(screen.getByRole('button', { name: /^Revenir au commun : Champ engagementCtx \(B\)/ }));
+    await sectionReady(/Overrides/);
+    fireEvent.click(screen.getByRole('button', { name: /^Revert to common: Field engagementCtx \(B\)/ }));
     expect(isOverridden(pf().products[1]!, 'values.engagementCtx')).toBe(false);
-    expect(panel(/^B/).queryByText('Champ engagementCtx')).toBeNull();
-    fireEvent.click(screen.getByRole('button', { name: /^Appliquer à tous les produits : Inclure le réglementaire dans l’effort \(B\)/ }));
+    expect(panel(/^B/).queryByText('Field engagementCtx')).toBeNull();
+    fireEvent.click(screen.getByRole('button', { name: /^Apply to all products: Include regulatory in the effort \(B\)/ }));
     expect(pf().common.regInclude).toBe(true);
     expect(pf().products.every((p) => !isOverridden(p, 'regInclude'))).toBe(true);   // C's identical override is dropped too
-    expect(panel(/^B/).getByText(/Aucune surcharge/)).toBeTruthy();
-    expect(screen.getByRole('status').textContent).toContain('appliqué à tous');
+    expect(panel(/^B/).getByText(/No override/)).toBeTruthy();
+    expect(screen.getByRole('status').textContent).toContain('applied to all');
   });
 });

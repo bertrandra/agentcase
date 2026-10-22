@@ -32,7 +32,7 @@ describe('the results workbook of a portfolio', () => {
   it('has Portfolio, a sheet per wave, Knowledge transfer and, per product, a summary plus its six results sheets', async () => {
     const pf = fourProducts(), wb = await read({ kind: 'portfolio' });
     expect(names(wb)).toEqual([
-      'Portfolio', 'Wave Vague 1', 'Wave Vague 2', 'Knowledge transfer',
+      'Portfolio', 'Wave Wave 1', 'Wave Wave 2', 'Knowledge transfer',
       ...pf.products.flatMap((p, i) => [`Product ${p.name}`, ...['ROI', 'Investment', 'Operating costs', 'Savings', 'P&L', 'Workforce shift'].map((k) => `P${i + 1} ${k}`)]),
     ].map((n) => (n.length > 31 ? n.slice(0, 31) : n)));
   });
@@ -40,7 +40,7 @@ describe('the results workbook of a portfolio', () => {
     const pf = fourProducts(), all = names(await read({ kind: 'portfolio' })).slice().sort();
     const w2 = pf.waves[1]!.id;
     const wave = await read({ kind: 'wave', id: w2 }), prod = await read({ kind: 'product' });
-    expect(names(wave)[0]).toBe('Wave Vague 2');
+    expect(names(wave)[0]).toBe('Wave Wave 2');
     expect(names(wave).slice().sort()).toEqual(all);
     expect(names(prod)[0]).toBe(`Product ${pf.products[0]!.name}`);
     expect(names(prod).slice().sort()).toEqual(all);
@@ -58,9 +58,9 @@ describe('the results workbook of a portfolio', () => {
     view.years.forEach((y) => expect(line(wb, 'Portfolio', y.label).slice(0, 5)).toEqual([y.label, y.savings, y.run, y.setup, y.net]));
     view.waves.forEach((w) => expect(line(wb, 'Portfolio', w.name).slice(0, 9)).toEqual([w.name, w.products, w.npv, w.net, w.setup, w.savings, w.run, w.etp, w.vfte]));
     view.products.forEach((p) => expect(line(wb, 'Portfolio', p.name).slice(0, 4)).toEqual([p.name, 1, p.npv, p.net]));
-    expect(line(wb, 'Portfolio', 'Portefeuille').filter((x) => typeof x === 'number')).toContain(view.totals.npv);
+    expect(line(wb, 'Portfolio', 'Portfolio').filter((x) => typeof x === 'number')).toContain(view.totals.npv);
     expect(view.totals.npv).toBe(h.npv);
-    expect(line(wb, 'Portfolio', 'Portefeuille')).toBeTruthy();
+    expect(line(wb, 'Portfolio', 'Portfolio')).toBeTruthy();
     expect(view.excluded.length).toBeGreaterThan(0);
     view.excluded.forEach((e) => expect(line(wb, 'Portfolio', e.name)[1]).toBe('no wave'));
   });
@@ -80,7 +80,7 @@ describe('the results workbook of a portfolio', () => {
       expect(line(wb, `Product ${v.name}`, 'NPV, calendar (EUR)')[1]).toBe(v.summary.npv);
       expect(line(wb, `Product ${v.name}`, 'NPV from its own start (EUR)')[1]).toBe(v.run.headline().npv);
     }
-    expect(line(wb, 'Product Archivage (hors vague)', 'Wave')[1]).toBe('Not scheduled');
+    expect(line(wb, 'Product Archive (no wave)', 'Wave')[1]).toBe('Not scheduled');
   });
   it('a product’s own results sheets are today’s results workbook of its effective case', async () => {
     const pf = fourProducts(), wb = await read(), xl = await loadExcelJS();

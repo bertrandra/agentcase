@@ -4,14 +4,14 @@ import { useCorePortfolio, useDisplayScope } from './consolidationHooks';
 import { useViewProductId } from './productView';
 import { useActiveProductId } from './portfolioHooks';
 
-/** What the top-bar "Vue" selects, as every section reads it (Vue agrégée). */
+/** What the top-bar "View" selects, as every section reads it (aggregate view). */
 export interface ViewScope {
   kind: 'product' | 'wave' | 'portfolio';
-  /** "Portefeuille", the wave's name, or the product's name */
+  /** "Portfolio", the wave's name, or the product's name */
   label: string;
-  /** 2+ products: the multi-product interface exists; with one product nothing of the Vue agrégée is shown */
+  /** 2+ products: the multi-product interface exists; with one product nothing of the aggregate view is shown */
   multi: boolean;
-  /** the planned, non-archived products of the selection, in portfolio order (the figures' scope); a Produit view holds the edited product alone */
+  /** the planned, non-archived products of the selection, in portfolio order (the figures' scope); a Product view holds the edited product alone */
   productIds: string[];
   /** products of the selection left out of the figures: archived, or without a (known) wave */
   excludedIds: string[];
@@ -26,7 +26,7 @@ export function viewScopeOf(core: Portfolio, display: { kind: string; id?: strin
   const planned = scheduledProducts(core), nameOf = (id: string) => core.products.find((p) => p.id === id)?.name ?? id;
   const base = { multi: core.products.length >= 2, activeProductId: active, activeProductName: nameOf(active) };
   if (display.kind === 'portfolio') {
-    return { ...base, kind: 'portfolio', label: 'Portefeuille', productIds: planned.map((s) => s.product.id), excludedIds: unscheduledIds(core) };
+    return { ...base, kind: 'portfolio', label: 'Portfolio', productIds: planned.map((s) => s.product.id), excludedIds: unscheduledIds(core) };
   }
   const wave = display.kind === 'wave' ? core.waves.find((w) => w.id === display.id) : undefined;
   if (wave) {
@@ -37,8 +37,8 @@ export function viewScopeOf(core: Portfolio, display: { kind: string; id?: strin
 }
 
 /**
- * The Vue as a hook: kind, label and the products behind it. A stable reference until the portfolio's figures, the Vue or the edited product change.
- * Inside a `ProductViewContext` the Vue is that product (a per-product render never sees the selection it is drilled from).
+ * The View as a hook: kind, label and the products behind it. A stable reference until the portfolio's figures, the View or the edited product change.
+ * Inside a `ProductViewContext` the View is that product (a per-product render never sees the selection it is drilled from).
  */
 export function useViewScope(): ViewScope {
   const core = useCorePortfolio(), display = useDisplayScope(), active = useActiveProductId(), pinned = useViewProductId() !== null;

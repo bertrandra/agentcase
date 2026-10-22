@@ -9,34 +9,34 @@ import { DraftText } from '@/ui/widgets/DraftText';
 
 /** One product of the table: editable name, wave, offset, base team, state, key indicators of its effective case, note and the P2 commands as buttons. */
 export function ProductRowView({ row, index, active, last, waves }: { row: ProductRow; index: number; active: boolean; last: boolean; waves: Wave[] }) {
-  const p = row.product, r = row.result, n = overrideRefs(p.overrides).length, who = `produit n°${index + 1}`;
+  const p = row.product, r = row.result, n = overrideRefs(p.overrides).length, who = `product no. ${index + 1}`;
   const act = (ok: boolean, done: string, failed: string) => toast(ok ? done : failed);
   return (
     <tr className={`${active ? 'is-active' : ''}${p.archived ? ' is-archived' : ''}`.trim() || undefined} data-product={p.id}>
       <td>
-        <DraftText label={`Nom du ${who}`} value={p.name} onCommit={(v) => act(renameProduct(p.id, v), `Produit renommé : ${v.trim()}`, 'Nom invalide')} />
-        {active && <strong> (actif)</strong>}{p.archived && <em> (archivé)</em>}
+        <DraftText label={`Name of ${who}`} value={p.name} onCommit={(v) => act(renameProduct(p.id, v), `Product renamed: ${v.trim()}`, 'Invalid name')} />
+        {active && <strong> (active)</strong>}{p.archived && <em> (archived)</em>}
       </td>
       <td>
-        <select aria-label={`Vague du ${who}`} value={p.waveId ?? ''}
-          onChange={(e) => { const to = waves.find((w) => w.id === e.target.value); act(assignWave(p.id, to?.id ?? null), `${p.name} : ${to ? to.name : 'non planifié (exclu de la consolidation)'} — Ctrl+Z pour annuler`, 'Affectation refusée'); }}>
-          <option value="">non planifié</option>
+        <select aria-label={`Wave of ${who}`} value={p.waveId ?? ''}
+          onChange={(e) => { const to = waves.find((w) => w.id === e.target.value); act(assignWave(p.id, to?.id ?? null), `${p.name}: ${to ? to.name : 'unscheduled (excluded from the consolidation)'} — Ctrl+Z to undo`, 'Assignment refused'); }}>
+          <option value="">unscheduled</option>
           {waves.map((w) => <option key={w.id} value={w.id}>{w.name}</option>)}
         </select>
       </td>
-      <td style={{ textAlign: 'right' }}><NumCell ariaLabel={`Décalage en mois du ${who}`} value={p.offsetMonths} min={0} step={1} width={64} onCommit={(v) => { setProductOffset(p.id, parseInt(v, 10) || 0); }} /></td>
-      <td style={{ textAlign: 'right' }} title="Équipe d’entrée propre au produit (ETP)">{r.model.base.etp.toFixed(1)}</td>
-      <td title={n ? 'Clés surchargées : voir la section Surcharges' : 'Toutes les valeurs viennent du commun'}>{n ? `${n} surcharge${n > 1 ? 's' : ''}` : 'hérité'}</td>
-      <td style={{ textAlign: 'right' }} title={`Économies de l’année ${r.endYear.index} (fin d’horizon) du produit seul`}>{fmtEurK(r.endYear.savings)}</td>
-      <td style={{ textAlign: 'right' }} title="Premier mois où la trésorerie cumulée du produit devient positive">{fmtMonths(r.payback)}</td>
-      <td><DraftText label={`Note du ${who}`} value={p.note ?? ''} onCommit={(v) => { setProductNote(p.id, v); }} /></td>
+      <td style={{ textAlign: 'right' }}><NumCell ariaLabel={`Offset in months of ${who}`} value={p.offsetMonths} min={0} step={1} width={64} onCommit={(v) => { setProductOffset(p.id, parseInt(v, 10) || 0); }} /></td>
+      <td style={{ textAlign: 'right' }} title="Entry team of the product (FTE)">{r.model.base.etp.toFixed(1)}</td>
+      <td title={n ? 'Overridden keys: see the Overrides section' : 'All values come from the common case'}>{n ? `${n} override${n > 1 ? 's' : ''}` : 'inherited'}</td>
+      <td style={{ textAlign: 'right' }} title={`Savings of year ${r.endYear.index} (end of horizon) of the product alone`}>{fmtEurK(r.endYear.savings)}</td>
+      <td style={{ textAlign: 'right' }} title="First month the product’s cumulative cash turns positive">{fmtMonths(r.payback)}</td>
+      <td><DraftText label={`Note of ${who}`} value={p.note ?? ''} onCommit={(v) => { setProductNote(p.id, v); }} /></td>
       <td>
-        <div className="ac-pf-actions" role="group" aria-label={`Actions du ${who}`}>
-          <button type="button" disabled={active} aria-label={`Activer ${p.name}`} onClick={() => act(setActiveProduct(p.id), `Produit actif : ${p.name}`, 'Produit introuvable')}>Activer</button>
-          <button type="button" aria-label={`Dupliquer ${p.name}`} onClick={() => act(duplicateProduct(p.id) !== null, `${p.name} dupliqué`, 'Limite de 50 produits atteinte')}>Dupliquer</button>
-          <button type="button" aria-label={`${p.archived ? 'Restaurer' : 'Archiver'} ${p.name}`} onClick={() => act(archiveProduct(p.id, !p.archived), p.archived ? `${p.name} restauré` : `${p.name} archivé`, 'Action refusée')}>{p.archived ? 'Restaurer' : 'Archiver'}</button>
-          <button type="button" disabled={last} aria-label={`Supprimer ${p.name}`} title={last ? 'Le dernier produit ne peut pas être supprimé' : undefined}
-            onClick={() => act(removeProduct(p.id), `${p.name} supprimé — Ctrl+Z pour annuler`, 'Le dernier produit ne peut pas être supprimé')}>Supprimer</button>
+        <div className="ac-pf-actions" role="group" aria-label={`Actions of ${who}`}>
+          <button type="button" disabled={active} aria-label={`Activate ${p.name}`} onClick={() => act(setActiveProduct(p.id), `Active product: ${p.name}`, 'Product not found')}>Activate</button>
+          <button type="button" aria-label={`Duplicate ${p.name}`} onClick={() => act(duplicateProduct(p.id) !== null, `${p.name} duplicated`, 'Limit of 50 products reached')}>Duplicate</button>
+          <button type="button" aria-label={`${p.archived ? 'Restore' : 'Archive'} ${p.name}`} onClick={() => act(archiveProduct(p.id, !p.archived), p.archived ? `${p.name} restored` : `${p.name} archived`, 'Action refused')}>{p.archived ? 'Restore' : 'Archive'}</button>
+          <button type="button" disabled={last} aria-label={`Delete ${p.name}`} title={last ? 'The last product cannot be deleted' : undefined}
+            onClick={() => act(removeProduct(p.id), `${p.name} deleted — Ctrl+Z to undo`, 'The last product cannot be deleted')}>Delete</button>
         </div>
       </td>
     </tr>

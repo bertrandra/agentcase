@@ -21,9 +21,9 @@ export default function KnowledgeTransferSection() {
       input={<HubSettings />}
       result={
         <>
-          <Panel title="Sous-ensemble du hub par produit"><KtTable /></Panel>
-          <Panel title="Effet du hub par vague"><WaveEffect /></Panel>
-          <Callout>Le sous-ensemble d’un produit se modifie dans la section « Knowledge hub » (produit actif) ; la préparation du transfert (mois avant la vague) ne déplace que le coût de mise en place du transfert dans la consolidation.</Callout>
+          <Panel title="Hub subset by product"><KtTable /></Panel>
+          <Panel title="Hub effect by wave"><WaveEffect /></Panel>
+          <Callout>A product’s subset is edited in the “Knowledge hub” section (active product); the transfer preparation (months before the wave) only moves the transfer setup cost in the consolidation.</Callout>
         </>
       }
       diagnostic={<KtDiagnostics />} />
