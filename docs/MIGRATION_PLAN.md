@@ -2,9 +2,10 @@
 
 > Status: **record of the migration.** §1–§13 are the plan as approved (written against v18.11, decisions D1 to D9 accepted as
 > recommended on 2026-10-21); the **Outcome** notes under §8 and §10 say what happened; §14 is the progress log; **§15 lists what
-> remains** (gaps and follow-ups). Phases 0–6 are done; Phase 7 (cut-over) is in progress: the documentation is rewritten, the
-> parallel run, performance budget, accessibility pass, `v19.0` tag and archiving of the legacy file are not done (§15.3).
-> The product is `app/` (`19.0.0`); the legacy file `AgentCase_v18_13_EN.html` is the frozen reference.
+> remains** (gaps and follow-ups). Phases 0–7 are done: the cut-over shipped as `19.0.0`, and the multi-product release `20.0.0` (see
+> [SPEC_MULTI_PRODUIT.md](SPEC_MULTI_PRODUIT.md)) followed. The browser gates (e2e smoke, performance budget, axe pass, UI parity, parallel run)
+> exist and pass (§15.3). Still open: the `v19.0` / `v20.0.0` tags (the user tags) and archiving the legacy file.
+> The product is `app/` (`20.0.0`); the legacy file `AgentCase_v18_13_EN.html` is the frozen reference.
 > Sources of fact: [ARCHITECTURE.md](ARCHITECTURE.md) (the new build), [history/ARCHITECTURE_legacy_v18.md](history/ARCHITECTURE_legacy_v18.md),
 > [CODE_REVIEW.md](CODE_REVIEW.md), `tools/`. Where §1–§13 name paths or numbers that differ from the repository, §15.1 lists the difference.
 
@@ -250,7 +251,7 @@ switch early; it is deleted at the end.
 **Order of magnitude:** 25–35 person-weeks for one experienced full-stack developer; ~4–5 months with two developers. The estimate is
 dominated by Phase 5 (78 sections) and by the number of 150-line splits, and is uncertain by ±30 % until the Phase 0–2 spike measures real throughput.
 
-**Outcome: in progress.** Done: the v18.12/v18.13 decisions, documentation rewritten (README, ARCHITECTURE, BUMP_PROCEDURE, CODE_REVIEW status, this record, CHANGELOG v19.0.0, `app/README.md`). Not done: parallel run on real customer files, performance budget, accessibility pass, version `19.0.0`, tag, archiving of the legacy file (§15.3).
+**Outcome: done, bar the follow-ups of §15.3.** Done: the v18.12/v18.13 decisions, documentation rewritten (README, ARCHITECTURE, BUMP_PROCEDURE, CODE_REVIEW status, this record, CHANGELOG v19.0.0, `app/README.md`), versions `19.0.0` and `20.0.0`, e2e smoke, performance budget, axe pass and parallel run (on the fixture files). Not done: parallel run on real customer files, tags, archiving of the legacy file (§15.3).
 
 ## 9. Test strategy
 
@@ -299,8 +300,7 @@ dominated by Phase 5 (78 sections) and by the number of 150-line splits, and is 
 - The 78 sections are available from the zone registry, persona filtering and guided sequences included.
 - One offline HTML file builds from `npm run build`; docs and the bump procedure are rewritten for the new repository.
 
-**Outcome:** met, except that the parallel run, performance budget and
-accessibility pass of Phase 7 are open (§15.3). Sections: 79 (not 78), all reachable from the document-driven navigation.
+**Outcome:** met (the performance budget, accessibility pass and parallel run exist since; only real customer files and the tags are open, §15.3). Sections: 79 (not 78) at v19.0.0, 85 at v20.0.0 with the six Portefeuille ones, all reachable from the document-driven navigation.
 
 ## 13. Proposed next step
 
@@ -326,21 +326,22 @@ measured throughput, a re-estimate of Phase 5, and a working Ctrl+Z on the Adjus
 
 ## 15. Outcome, remaining gaps and follow-ups
 
-State at the time of writing: Phases 0–6 done, Phase 7 in progress. The TypeScript build registers all 79 sections, reproduces the
-legacy engine on 107 oracle cases, and builds to one offline file. Everything below is collected from §14 and from checking the repository.
+State at the time of writing (v20.0.0): Phases 0–7 done. The TypeScript build registers 85 sections (the 79 ported plus the 6 of the multi-product *Portefeuille* group), reproduces
+the legacy engine on 107 oracle cases (also as one-product portfolios, A1) and builds to one offline file named `AgentCase_v20_0_EN.html` by `npm run release`. Everything below is collected
+from §14 and from checking the repository.
 
 ### 15.1 Where the result differs from the plan
 
 | Plan said | Repository |
 |---|---|
 | `src/…` at the repository root | `app/src/…` |
-| 78 sections in 12 groups (measured on v18.11) | 79 sections in 14 groups (`app/src/ui/zones/data/sectionCatalog.json`) |
-| build output `dist/AgentCase_vX_Y_EN.html` | `app/dist/index.html`; no versioned name (BUMP_PROCEDURE §6) |
+| 78 sections in 12 groups (measured on v18.11) | 85 sections in 15 groups at v20.0.0 (79 in 14 at v19.0.0; `app/src/ui/zones/data/sectionCatalog.json`) |
+| build output `dist/AgentCase_vX_Y_EN.html` | `npm run build` -> `app/dist/index.html`; `npm run release` -> `app/dist/AgentCase_v20_0_EN.html` (BUMP_PROCEDURE §6) |
 | `tools/lint-size.mjs` | `app/scripts/sizes.mjs` (and the ESLint rule + `tests/size.test.ts`) |
 | `legacy/` bridge; feature flags per wave | not built, not needed |
 | command middleware (audit, permissions); `store/persistence/migrations` | audit ring inside the store; no migration table |
 | help prose in `content/<id>.md` | JSON under `app/src/content/refshare` and `help` props in the sections |
-| Playwright differential tests (old vs new) and axe in CI | e2e smoke, performance budget and parallel run built (CI job `e2e`); axe pass tracked separately |
+| Playwright differential tests (old vs new) and axe in CI | e2e smoke, performance budget and parallel run built (CI job `e2e`); axe (`npm run a11y`) and UI parity (`tools/ui-parity.mjs`) built and run by hand before a release |
 | Prettier, `max-lines-per-function` | not configured |
 | Phase 5 as six waves | done in a different order, in parallel |
 
@@ -358,15 +359,17 @@ legacy engine on 107 oracle cases, and builds to one offline file. Everything be
 | Legacy `tools/xss-test.mjs` fuzz | not ported; the new build relies on lint rules and the import/restore tests | `app/tests` |
 | A hosted server | out of scope (non-goal, D8) | §1 |
 
-### 15.3 Phase 7 follow-ups (open)
+### 15.3 Phase 7 follow-ups
 
-1. Parallel run on real customer files (legacy vs new on the same workbooks and snapshots).
-2. Performance budget: first paint, edit latency, bundle size in CI (the file is 2.58 MB, plan limit 5 MB).
-3. Accessibility pass with an automated tool (axe) and a keyboard walk of all 79 sections; the shell has a skip link and a live region only.
-4. Automated browser smoke test of `app/dist/index.html` (boot without console errors, golden KPI figures) in CI.
-5. Version `19.0.0` (remove `-dev` from `app/src/domain/version.ts`, `app/package.json`, lock file), decide the released file name and tag `v19.0.0` (BUMP_PROCEDURE §1, §6).
-6. Archive the legacy file under `docs/history/` and update the tools' default file lookup (BUMP_PROCEDURE §7.3).
-7. Decide whether to port or retire the items of §15.2.
+| # | Item | State at v20.0.0 |
+|---|---|---|
+| 1 | Parallel run on real customer files (legacy vs new on the same workbooks and snapshots) | built (`tools/parallel-run.mjs`) and run on the 107-fixture set; **open for real customer files** (the user supplies them) |
+| 2 | Performance budget: first paint, edit latency, bundle size | done: `tools/perf.mjs` and `app/perf-budget.json` (CI job `e2e`), including the six Portefeuille sections |
+| 3 | Accessibility pass (axe) and keyboard walk | done: `npm run a11y` (`tools/a11y*.mjs`), 0 violations on the case fixtures and the example portfolio; run by hand, not in CI |
+| 4 | Automated browser smoke of the built file | done: `tools/e2e-smoke.mjs` (CI job `e2e`), 6 case fixtures and 2 portfolio files |
+| 5 | Version `19.0.0`, released file name | done: `19.0.0` then `20.0.0`; `npm run release` names the file; **tags are made by the user** |
+| 6 | Archive the legacy file under `docs/history/` and update the tools' default file lookup (BUMP_PROCEDURE §7.3) | open: the legacy file is still the oracle of `tools/` and of `ui-parity` / `parallel-run` |
+| 7 | Decide whether to port or retire the items of §15.2 | open |
 
 ### 15.4 Legacy discrepancies found while porting
 
@@ -389,5 +392,20 @@ Not fixed in the port (decision D7); each is a candidate for a deliberate change
 
 - `app/fixtures/README.md` still says the fixtures come from "the legacy single-file app (v18.11)"; they were regenerated from v18.13.
 - `tools/golden.json` carries `"version": "18.13"`; the TypeScript build has no equivalent golden file (its golden figures are the `golden` oracle fixture).
-- `app/package.json`, `app/src/domain/version.ts` and `app/index.html` all read 19.0.0; `app/tests/version.test.ts` checks that they agree.
+- `app/package.json`, `app/src/domain/version.ts` and `app/index.html` all read 20.0.0; `app/tests/version.test.ts` checks that they agree. The autosave database and BroadcastChannel are still named `agentcase-v19` on purpose (never orphan autosaves).
 - The legacy tools (`tools/test-all.mjs` and its steps) and the oracle generators are not run by CI.
+
+### 15.6 Multi-product (v20.0.0): what is left
+
+Delivered: P1-P7 of [SPEC_MULTI_PRODUIT.md](SPEC_MULTI_PRODUIT.md) (decisions D-M1..D-M12). Left out on purpose or not yet built:
+
+| Gap | Note |
+|---|---|
+| Portfolio scenarios table | the six scenarios and the sensitivity stay per product (spec P6 "hors périmètre") |
+| Dependencies and capacity between waves | spec § 9; waves may overlap, no precedence constraint |
+| Shared teams across products | the team is strictly per product (spec § 9) |
+| Per-draw horizon truncation in the portfolio stress | each product is simulated on its own horizon; the portfolio draw is the sum (DEV-PF-STRESS) |
+| KnowledgeSubsets "apply to all" | only "back to common" exists for the fields of a knowledge subset |
+| Rates, model, coefficients per product; item-level scope overrides; shared set-up line; knowledge reuse; full correlation matrix | decisions D-M2, D-M3, D-M5, D-M11 and spec § 9: v2 |
+| Excel cross-version | a 20.0.0 portfolio workbook has seven extra sheets that a 19.x build ignores; a 19.x file imports as a case; the import does not re-fit the potential |
+| Real customer portfolios | not exercised: the example is generated from the golden fixture |
