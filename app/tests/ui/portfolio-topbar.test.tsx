@@ -1,12 +1,14 @@
 // @vitest-environment jsdom
 import { act, cleanup, fireEvent, screen, within } from '@testing-library/react';
-import { afterEach, beforeEach, describe, expect, it } from 'vitest';
+import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 import { removeProduct } from '@/controllers/product';
 import { setTeamTotal } from '@/controllers/baseline';
 import { exportSnapshotJson } from '@/controllers/files';
 import { goSection, openGroup } from '@/ui/uiState';
 import { kpi, mountApp, pf, sectionReady, sidebar } from '../helpers/portfolioUi';
 import { threeProducts } from '../helpers/portfolioStore';
+
+vi.mock('@/ui/widgets/ChartPanel', async () => import('../helpers/chartStub'));   // jsdom has no canvas
 
 let ids: [string, string, string];
 beforeEach(() => { ids = threeProducts().ids; });
@@ -59,7 +61,8 @@ describe('top bar with several products', () => {
   it('Welcome lists a Portefeuille card with its two sections', async () => {
     mountApp();
     act(() => goSection('home'));
-    const card = (await screen.findAllByText('📦 Portefeuille')).find((e) => e.tagName === 'SPAN')!;
-    expect(card.parentElement!.textContent).toContain('2');
+    await screen.findByRole('heading', { level: 1 });
+    const card = within(screen.getByRole('main')).getByRole('button', { name: /Portefeuille/ });
+    expect(card.textContent).toContain('2');   // the count pill: Produits and Surcharges
   });
 });

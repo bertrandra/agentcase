@@ -1,10 +1,12 @@
 // @vitest-environment jsdom
 import { act, cleanup, fireEvent, screen } from '@testing-library/react';
-import { afterEach, beforeEach, describe, expect, it } from 'vitest';
+import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 import { goSection, openGroup } from '@/ui/uiState';
 import { SECTIONS } from '@/ui/zones/registry';
 import { freshStore } from '../store/helpers';
 import { mountApp, pf, sectionReady, sidebar } from '../helpers/portfolioUi';
+
+vi.mock('@/ui/widgets/ChartPanel', async () => import('../helpers/chartStub'));   // jsdom has no canvas
 
 beforeEach(() => { freshStore(); });
 afterEach(cleanup);

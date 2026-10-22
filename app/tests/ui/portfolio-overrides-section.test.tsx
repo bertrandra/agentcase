@@ -1,10 +1,12 @@
 // @vitest-environment jsdom
 import { cleanup, fireEvent, screen, within } from '@testing-library/react';
-import { afterEach, beforeEach, describe, expect, it } from 'vitest';
+import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 import { setProductOverride } from '@/controllers/productOverrides';
 import { isOverridden } from '@/domain/portfolio';
 import { mountApp, pf, sectionReady } from '../helpers/portfolioUi';
 import { threeProducts } from '../helpers/portfolioStore';
+
+vi.mock('@/ui/widgets/ChartPanel', async () => import('../helpers/chartStub'));   // jsdom has no canvas
 
 let ids: [string, string, string];
 beforeEach(() => { ids = threeProducts().ids; });
