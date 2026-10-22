@@ -95,7 +95,8 @@ async function toastKind(lp, np) {
 
 /** Returns { cells: Map kind -> Map "prop|l|n" -> {kind, prop, l, n, sections:[fixture/id]} , compared, unpaired: Map kind -> count }. */
 export async function compareSections(browser, root, { fixtures = ['golden', 'ctx-msi', 'industry-med'], only = [], shots = '' } = {}) {
-  const catalog = JSON.parse(readFileSync(resolve(root, 'app/src/ui/zones/data/sectionCatalog.json'), 'utf8')), cells = new Map(), unpaired = new Map(), seen = new Map();
+  // the multi-product Portefeuille group has no legacy counterpart and is not in the single-product nav
+  const catalog = JSON.parse(readFileSync(resolve(root, 'app/src/ui/zones/data/sectionCatalog.json'), 'utf8')).filter((s) => s.group !== 'portfolio'), cells = new Map(), unpaired = new Map(), seen = new Map();
   let compared = 0; const cross = [];
   if (shots) mkdirSync(shots, { recursive: true });
   const first = new Map(), paired = new Map();   // first element of each kind per side (fallback for kinds that never co-occur in one section)
