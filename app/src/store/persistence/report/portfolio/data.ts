@@ -38,6 +38,6 @@ export function portfolioReportData(source: Portfolio, scope: DisplayScope, now:
     waveRows: wave ? view.waves.filter((w) => w.id === wave.id) : view.waves, productRows: view.products.filter((p) => inScope.has(p.id)), years,
     reg: ids.map((id) => ({ id, name: pf.products.find((p) => p.id === id)?.name ?? id, data: reportBlocker(resolveProduct(pf, id)) ? null : reportData(resolveProduct(pf, id), now) })),
     kt: { rows, totals: knowledgeTotals(rows), effects: waveEffects(pf, kt.rows).filter((w) => (wave ? w.waveId === wave.id : true)) },
-    diagnostics: view.diagnostics.filter((d) => !d.productId || inScope.has(d.productId)), hub: pf.hub,
+    diagnostics: wave ? view.diagnostics.filter((d) => !d.productId || inScope.has(d.productId)) : view.diagnostics, hub: pf.hub,
   };
 }
