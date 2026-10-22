@@ -15,6 +15,16 @@ All notable changes to AgentCase, newest first. Product version from v19.0.0 = `
 
 When releasing, follow [docs/BUMP_PROCEDURE.md](docs/BUMP_PROCEDURE.md) (§7 for the legacy file) and add the new version at the top.
 
+## [Unreleased]
+
+- **Multi-product, phase P1 (domain only).** New pure module `app/src/domain/portfolio/`: `Portfolio` / `Product` / `Wave` types,
+  `resolveProduct` (common values + whitelisted overrides + knowledge subset + own team, memoised per product), `validate`,
+  calendar `consolidate` (per-product Time Engine rows shifted onto the calendar and summed; waves; KT setup placed `ktLeadMonths`
+  earlier), portfolio headline (calendar NPV, `roiCanonical`, payback, cost reduction, weighted velocity), hub infrastructure
+  allocation (`perProduct` / `byBaseEtp`, exact to the cent), `envelopeCase` / `portfolioToCase`. No store, controller, UI or
+  persistence change; `computeCase` is untouched and a one-product envelope reproduces its figures on the 107 fixtures. Decisions
+  D-M1..D-M12 recorded in `docs/SPEC_MULTI_PRODUIT.md` section 15.
+
 ## [v19.0.0] 2026-10-21 — TypeScript + React build
 
 > Cut-over done: version 19.0.0.

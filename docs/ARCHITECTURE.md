@@ -57,7 +57,7 @@ Where the layers live:
 
 | Layer | Folders |
 |---|---|
-| `src/domain` | `types`, `catalog` (artefacts, regulatory catalogue), `model` (glass ceiling, `modelRaw`, overlay, LCE/EVT/supervision/verification tax), `time` (Time Engine), `economics`, `scope`, `baseline`, `frame`, `stress` (scenarios, sensitivity, Monte Carlo, RNG), `tune`/`tuneB`, `verdict`, `verifyA`/`verifyB`, `factory`, `refshare`, `pdc` (present/defend/configure, verification checks and convergence rows, Board variables), `nav` (sidebar, group bar, sequences), `snapshots`, plus `engagement`, `knowledge`, `lifecycle`, `location`, `tokens`, `canonical` |
+| `src/domain` | `types`, `catalog` (artefacts, regulatory catalogue), `model` (glass ceiling, `modelRaw`, overlay, LCE/EVT/supervision/verification tax), `time` (Time Engine), `economics`, `scope`, `baseline`, `frame`, `stress` (scenarios, sensitivity, Monte Carlo, RNG), `tune`/`tuneB`, `verdict`, `verifyA`/`verifyB`, `factory`, `refshare`, `pdc` (present/defend/configure, verification checks and convergence rows, Board variables), `nav` (sidebar, group bar, sequences), `snapshots`, `portfolio` (multi-product, P1), plus `engagement`, `knowledge`, `lifecycle`, `location`, `tokens`, `canonical` |
 | `src/store` | `core.ts` (store), `commands.ts`, `history.ts`, `types.ts`, `derive.ts` (re-fit helpers), `hooks.ts` (React selectors), `simulation.ts` (Monte Carlo run, outside the document), `instance.ts` (singleton + default case), `defaults/defaultDoc.json`, `persistence/` |
 | `src/controllers` | 41 modules, one per area (`inputs`, `artefacts`, `scope`, `team`, `lifecycle`, `history`, `files`, `openFile`, `boot`, `sessions`, `snapshots`, `report`, `excel*`, `htmlSnapshot`, `nav*`, `pdc*`, `model*`, `tune*`, `verify*`, `stress`, `factory*`, `refshare`, ...) |
 | `src/ui` | `App.tsx`, `shell/`, `zones/`, `sections/` (14 group files + one folder per section), `widgets/`, `theme/`, `uiState.ts`, `format.ts` |
@@ -84,6 +84,11 @@ financial figure is testable without a browser.
   `MODEL.CASE.discountRate`, default 8 %): the single source for payback and NPV. The engine is always built from the raw model.
 - **Horizon.** `horizonYears()` (`model/horizonYears.ts`) returns one savings and one run-cost entry per horizon year; Monte Carlo,
   strategies and Results use it, so horizons 1 to 10 work (legacy v18.12/v18.13 fixes).
+- **Portfolio** (`src/domain/portfolio/`, multi-product phase P1, spec [SPEC_MULTI_PRODUIT.md](SPEC_MULTI_PRODUIT.md)). Pure layer above `computeCase`,
+  not yet wired to the store or the UI. `resolveProduct` builds a product's effective `CaseState` (common + whitelisted overrides + knowledge subset +
+  own team; memoised on object identities), `runOf` runs the existing Time Engine once per resolved case, `consolidate` shifts each product's monthly
+  rows onto the calendar and sums them (no formula of its own; ROI via `roiCanonical`, discount via `caseDiscountRate`), `envelopeCase` /
+  `portfolioToCase` wrap and unwrap a single case.
 - **Stress** (`stress/`): scenarios, sensitivity, seeded Monte Carlo (`rng.ts`, `simulate.ts`), strategies, `fingerprint.ts` (a hash of
   the model inputs only, to decide whether a stored distribution is stale).
 - **Verification** (`pdc/verifChecks.ts` and `verifConv*.ts`): the 16 automatic checks and the 67 convergence rows of the Logic

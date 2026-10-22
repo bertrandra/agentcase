@@ -1,6 +1,6 @@
 # AgentCase — Spécification : portefeuille multi-produits et transformation par vagues
 
-> Statut : **proposition à valider** (aucun code écrit). Périmètre : l'application TypeScript + React dans `app/` (v19.x).
+> Statut : **décisions D-M1…D-M12 retenues** (§ 15) ; phase P1 (domaine `domain/portfolio/`) réalisée, phases suivantes à venir. Périmètre : l'application TypeScript + React dans `app/` (v19.x).
 > Documents liés : [ARCHITECTURE.md](ARCHITECTURE.md) (couches, commandes, persistance), [DEVIATIONS.md](DEVIATIONS.md) (écarts au legacy),
 > [BUMP_PROCEDURE.md](BUMP_PROCEDURE.md) (versions). Règles de code inchangées : fichiers ≤ 150 lignes, pas de `any`, couches
 > `ui → controllers → store → domain`, toute écriture passe par une commande annulable (Ctrl+Z).
@@ -396,22 +396,22 @@ Chaque phase est livrée par une demande de fusion indépendante, avec les tests
 Les écarts volontaires au comportement actuel (s'il y en a) sont consignés dans `DEVIATIONS.md` (règle en vigueur : on modifie le nouveau
 build seulement, on enregistre l'écart).
 
-## 12. Décisions à prendre (avec recommandation)
+## 12. Décisions (question, options, recommandation, retenu)
 
-| # | Question | Options | Recommandation |
-|---|---|---|---|
-| **D-M1** | Une vague peut-elle contenir un produit déjà dans une autre vague ? | oui (étalement) / non | **Non** : un produit = une vague ; l'étalement se fait par `offsetMonths`. |
-| **D-M2** | Granularité de la surcharge du périmètre | clé entière / élément par élément (diff d'ensemble) | **Clé entière** en v1 ; diff d'ensemble en v2 si le besoin apparaît. |
-| **D-M3** | Tarifs (`RATE`) et coefficients par produit | commun seulement / surchargeables | **Commun seulement** en v1 (un fournisseur, une grille). |
-| **D-M4** | VAN d'un produit dans le portefeuille | actualisée depuis le mois 1 du portefeuille / depuis son mois 0 | **Depuis le mois 1 du portefeuille** (somme = VAN du portefeuille) ; l'autre en infobulle. |
-| **D-M5** | Setup partagé (plateforme, hub) | par produit / ligne portefeuille | **Par produit** en v1. |
-| **D-M6** | `activeProductId` dans le document ou dans l'état d'interface | document / interface | **Document** (réouverture sur le même produit), sans étape d'annulation. |
-| **D-M7** | Corrélation entre produits dans Monte Carlo | indépendants / paramètre `ρ` | **`ρ` global**, défaut 0, en P6. |
-| **D-M8** | Versionnage | 19.x / 20.0.0 | **20.0.0** (changement de schéma de document, lecture des anciens fichiers conservée). |
-| **D-M9** | Nom d'interface : « Produit », « Application », « Service » | libre | **Produit** par défaut, libellé configurable dans les paramètres (futur). |
-| **D-M10** | Granularité du sous-ensemble | domaines libres avec poids / catalogue fermé de domaines | **Domaines libres avec poids** (information et répartition de curation, sans effet sur le multiplicateur qui reste piloté par le niveau CC). |
-| **D-M11** | Réutilisation de connaissance entre produits (un domaine déjà ingéré pour le produit A baisse le coût du produit B) | ignorée en v1 / facteur de réutilisation | **Ignorée en v1** ; facteur `reusePct` par domaine en v2. |
-| **D-M12** | Imputation de l'infrastructure du hub | par produit / au prorata de l'effectif | **Par produit** en v1 (cohérent avec D-M5), prorata en option. |
+| # | Question | Options | Recommandation | Retenu |
+|---|---|---|---|---|
+| **D-M1** | Une vague peut-elle contenir un produit déjà dans une autre vague ? | oui (étalement) / non | **Non** : un produit = une vague ; l'étalement se fait par `offsetMonths`. | Recommandation acceptée (§ 15) |
+| **D-M2** | Granularité de la surcharge du périmètre | clé entière / élément par élément (diff d'ensemble) | **Clé entière** en v1 ; diff d'ensemble en v2 si le besoin apparaît. | Recommandation acceptée (§ 15) |
+| **D-M3** | Tarifs (`RATE`) et coefficients par produit | commun seulement / surchargeables | **Commun seulement** en v1 (un fournisseur, une grille). | Recommandation acceptée (§ 15) |
+| **D-M4** | VAN d'un produit dans le portefeuille | actualisée depuis le mois 1 du portefeuille / depuis son mois 0 | **Depuis le mois 1 du portefeuille** (somme = VAN du portefeuille) ; l'autre en infobulle. | Recommandation acceptée (§ 15) |
+| **D-M5** | Setup partagé (plateforme, hub) | par produit / ligne portefeuille | **Par produit** en v1. | Recommandation acceptée (§ 15) |
+| **D-M6** | `activeProductId` dans le document ou dans l'état d'interface | document / interface | **Document** (réouverture sur le même produit), sans étape d'annulation. | Recommandation acceptée (§ 15) |
+| **D-M7** | Corrélation entre produits dans Monte Carlo | indépendants / paramètre `ρ` | **`ρ` global**, défaut 0, en P6. | Recommandation acceptée (§ 15) |
+| **D-M8** | Versionnage | 19.x / 20.0.0 | **20.0.0** (changement de schéma de document, lecture des anciens fichiers conservée). | Recommandation acceptée (§ 15) |
+| **D-M9** | Nom d'interface : « Produit », « Application », « Service » | libre | **Produit** par défaut, libellé configurable dans les paramètres (futur). | Recommandation acceptée (§ 15) |
+| **D-M10** | Granularité du sous-ensemble | domaines libres avec poids / catalogue fermé de domaines | **Domaines libres avec poids** (information et répartition de curation, sans effet sur le multiplicateur qui reste piloté par le niveau CC). | Recommandation acceptée (§ 15) |
+| **D-M11** | Réutilisation de connaissance entre produits (un domaine déjà ingéré pour le produit A baisse le coût du produit B) | ignorée en v1 / facteur de réutilisation | **Ignorée en v1** ; facteur `reusePct` par domaine en v2. | Recommandation acceptée (§ 15) |
+| **D-M12** | Imputation de l'infrastructure du hub | par produit / au prorata de l'effectif | **Par produit** en v1 (cohérent avec D-M5), prorata en option. | Recommandation acceptée (§ 15) |
 
 ## 13. Risques
 
@@ -441,3 +441,32 @@ build seulement, on enregistre l'écart).
 | Knowledge transfer (coût) | Σ produits : mise en place du KT (décalée de `ktLeadMonths`), curation annuelle et part d'infrastructure du hub. |
 | Jours de KT évités | Σ produits, `ETP de départ × 0,2 × 15 × TJM × KT_RED[CC]` par année depuis le mois 0 du produit. |
 | ETP / vFTE | Somme des ETP humains et des vFTE agents des produits, par mois calendaire. |
+
+## 15. Décisions retenues
+
+Toutes les recommandations du § 12 ont été **acceptées** par le commanditaire. Elles valent spécification ; les phases P1 à P7 s'y conforment.
+
+| # | Décision retenue | Conséquence dans le code |
+|---|---|---|
+| **D-M1** | Un produit appartient à **au plus une** vague ; l'étalement passe par `offsetMonths`. | Invariant `multi-wave` de `validate`. |
+| **D-M2** | Surcharge à la granularité de la **clé entière** ; diff d'ensemble reporté en v2. | `setOverride` remplace la valeur de la clé ; `dom.values` / `dom.checked` : une entrée par champ de formulaire. |
+| **D-M3** | `RATE`, `MODEL`, `COEF`, `TOKEN_MODELS`, `TOK_OUT_SHARE` **communs** en v1. | Hors de `OVERRIDABLE_KEYS` ; `validate` refuse la clé. |
+| **D-M4** | La VAN d'un produit dans la vue portefeuille est la **VAN calendaire**, actualisée depuis le mois 1 du portefeuille ; la VAN « depuis son démarrage » est celle de son propre `computeCase` (`ProductRun.headline().npv`). | `ProductView.summary.npv` (calendaire) ; Σ = VAN du portefeuille. |
+| **D-M5** | Mise en place **par produit** en v1 (pas de ligne de coût portefeuille). | Chaque cas effectif porte son `setupTotal`. |
+| **D-M6** | `activeProductId` est **dans le document**, sans étape d'annulation. | Champ `Portfolio.activeProductId` (le store, en P2, l'écrira hors historique). |
+| **D-M7** | Corrélation `ρ` globale, défaut 0, en P6. | Hors périmètre de P1. |
+| **D-M8** | Version **20.0.0**, livrée en P7. | `APP_VERSION` inchangée en P1. |
+| **D-M9** | Libellé d'interface **« Produit »** (configurable plus tard). | `envelopeCase` : « Produit 1 », « Vague 1 ». |
+| **D-M10** | Domaines de connaissance **libres avec poids** ; information et répartition de curation, sans effet sur `CC_MULT`. | `KnowledgeSubset.domains` : validé (Σ = 100), jamais lu par le moteur. |
+| **D-M11** | Pas de réutilisation de connaissance entre produits en v1 (`reusePct` en v2). | Aucun terme croisé dans `knowledge.ts`. |
+| **D-M12** | Infrastructure du hub **par produit** par défaut ; option `byBaseEtp`. | `hub.infraAllocation` ; `allocateCents` (conservation au centime). |
+
+### Précisions d'implémentation de P1 (ambiguïtés levées)
+
+- **Précédence des couches** : valeurs communes < hub (activation, part d'infrastructure) < surcharges de la liste blanche < sous-ensemble de connaissance du produit < `teamIn`. Une couche égale à la lecture du commun n'est pas écrite : un produit sans surcharge conserve l'objet `dom` du commun (aller-retour F22 sans perte).
+- **`khInfraMonthly` et `horizon`** ne sont jamais surchargeables, y compris par `dom.values` : `setOverride` lève une erreur, `resolveProduct` ignore l'entrée si le document la contient, `validate` la signale.
+- **Mois de retour du portefeuille** : premier mois calendaire, à partir du premier mouvement de trésorerie (mois 1 du premier produit ou premier mois de préparation du KT), où le cumul est ≥ 0. Sans cette borne, une vague démarrant au mois 7 « reviendrait » au mois 1 (cumul nul). Pour un produit au mois 0 c'est la règle du moteur (A1) ; décaler de *k* décale le retour de *k* (A3).
+- **`ktLeadMonths`** : le coût KT (`khSetupCost`, étalé comme la mise en place du moteur sur `setupProfileMonths` mois) est retiré de `mois0 + t` et placé à `mois0 − k + t` ; *k* est plafonné à `mois0` (jamais avant le mois calendaire 1, diagnostic `kt-lead-clamped`). La série `ktSetup` est un sous-ensemble de `setup`. Sans hub, rien ne bouge.
+- **Troncature** : un produit est coupé à l'horizon calendaire du portefeuille ; au-delà de son propre horizon il ne contribue plus (zéro). Le `costReduction` du portefeuille somme les composantes de chaque produit sur son propre horizon.
+- **Imputation `byBaseEtp`** : parts calculées entre les produits planifiés, non archivés, dont le cas effectif exploite réellement le hub (contexte d'engagement compris) ; effectif d'entrée = Σ ETP de `teamIn` ; parts en centimes (plus grand reste), un seul utilisateur paie le coût complet. Un produit hors du partage affiche le coût complet (sans effet s'il n'utilise pas le hub).
+- **Vitesse** : moyenne des `velocityUpliftPct` des produits planifiés pondérée par l'effectif d'entrée ; adoption mensuelle pondérée de même (produit non démarré = 0).
