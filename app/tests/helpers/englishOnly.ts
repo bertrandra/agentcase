@@ -10,7 +10,7 @@ const ACCENT = /[éèêëàâùûüçîïôœ]/;
 const WORDS = new Set(('le la les des du pour avec sans dans une aux sont chaque tous toutes cette ces mois année portefeuille portefeuilles vague vagues produit produits ' +
   'équipe ajouter supprimer renommer dupliquer archiver restaurer activer retirer enregistrer déplacer cliquer choisir filtrer lancer lancez affectez glissez ' +
   'surcharges aucun aucune seulement ci-dessous ci-dessus lecture seule hérité surchargé planifié planifiés périmètre vue agrégée tirages graine nouveau nouvelle ' +
-  'erreur refusée refusé introuvable invalide domaine domaines poids valeur valeurs commun commune communs communes tableau calendaire actif archivé supprimé retour démarrage décalage trésorerie économies').split(' '));
+  'cible courbe localisation sélection réglementaire erreur refusée refusé introuvable invalide domaine domaines poids valeur valeurs commun commune communs communes tableau calendaire actif archivé supprimé retour démarrage décalage trésorerie économies').split(' '));
 /** Words so short or so common in English that they only count next to another French word (eg "Vue", "Modifier" alone as a whole label). */
 const LABELS = new Set(['Vue', 'Modifier', 'Supprimer', 'Dupliquer', 'Archiver', 'Restaurer', 'Activer', 'Retirer', 'Enregistrer', 'Annuler', 'Fermer', 'Ouvrir', 'Valider', 'Ajouter', 'Réinitialiser']);
 

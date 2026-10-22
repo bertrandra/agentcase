@@ -33,12 +33,12 @@ describe('Portfolio stress section', () => {
     expect(r.outcomes).toEqual(again.outcomes);
     expect(stat(/^P10 \(adverse/)).toBe(fmtEur(r.stats.p10));
     expect(stat(/^P\(net < 0\)$/)).toBe(`${Math.round(r.stats.pNetNeg * 100)} %`);
-    expect(stat(/^Réduction du risque$/)).toBe(fmtEur(r.diversification.reduction));
+    expect(stat(/^Risk reduction$/)).toBe(fmtEur(r.diversification.reduction));
     const byProduct = screen.getByRole('table', { name: /Stress by product/ });
     expect(within(byProduct).getAllByRole('row')).toHaveLength(1 + 3);
     expect(screen.getByRole('table', { name: /Stress by wave/ }).querySelectorAll('tbody tr')).toHaveLength(2 + 1);
     expect(document.querySelector('[data-chart-data]')).toBeTruthy();
-    expect(screen.getByRole('img', { name: /Distribution du bénéfice net du portefeuille/ })).toBeTruthy();
+    expect(screen.getByRole('img', { name: /Distribution of the portfolio net benefit/ })).toBeTruthy();
     expect(screen.queryByText(/changed since the last simulation/)).toBeNull();
   });
 
@@ -57,7 +57,7 @@ describe('Portfolio stress section', () => {
     await run();
     act(() => { setProductOffset(pf().products[1]!.id, 2); });
     expect(await screen.findByText(/changed since the last simulation/)).toBeTruthy();
-    fireEvent.click(screen.getByRole('button', { name: /Relancer/ }));
+    fireEvent.click(screen.getByRole('button', { name: /Run again/ }));
     await waitFor(() => expect(screen.queryByText(/changed since the last simulation/)).toBeNull(), { timeout: 30000 });
   });
 

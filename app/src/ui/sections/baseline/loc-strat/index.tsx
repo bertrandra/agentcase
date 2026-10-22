@@ -43,7 +43,7 @@ function Target() {
   return (
     <div>
       <h2>🎯 Target (editable)</h2>
-      <OverrideBadge refKey="targetLocPct" label="Mix cible de localisation" />
+      <OverrideBadge refKey="targetLocPct" label="Target location mix" />
       <div className="ac-form-row" style={{ justifyContent: 'space-between' }}>
         <button type="button" onClick={resetTargetLoc}>↺ Copy AS-IS</button>
         <span>Target sum : <strong style={{ color: Math.abs(sum - 100) < 1 ? 'var(--ac-teal)' : 'var(--ac-brick)' }}>{sum.toFixed(0)}%</strong></span>

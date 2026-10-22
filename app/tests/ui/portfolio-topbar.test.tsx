@@ -15,7 +15,7 @@ beforeEach(() => { ids = threeProducts().ids; });
 afterEach(cleanup);
 
 describe('top bar with several products', () => {
-  it('shows the single View selector (Portfolio, vagues, produits with wave labels) and the Modifier toggle, default "All products"', () => {
+  it('shows the single View selector (Portfolio, waves, products with wave labels) and the Edit toggle, default "All products"', () => {
     mountApp();
     const sel = screen.getByRole('combobox', { name: 'View' }) as HTMLSelectElement;
     expect([...sel.options].map((o) => o.textContent)).toEqual(['Portfolio', 'Wave: Wave 1', 'Wave: Wave 2', 'Product: Product 1 — Wave 1', 'Product: B — Wave 1', 'Product: C — Wave 2']);

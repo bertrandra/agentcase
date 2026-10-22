@@ -12,7 +12,7 @@ vi.mock('@/ui/widgets/ChartPanel', async () => import('../helpers/chartStub')); 
 let ids: [string, string, string];
 beforeEach(() => { ids = threeProducts().ids; });
 afterEach(cleanup);
-const chip = (label: string) => screen.getByRole('group', { name: new RegExp(`^${label} : `) });
+const chip = (label: string) => screen.getByRole('group', { name: new RegExp(`^${label}: `) });
 const prod = (i: number) => pf().products[i]!;
 
 describe('inherited / overridden fields on a section that edits overridable data', () => {
@@ -21,7 +21,7 @@ describe('inherited / overridden fields on a section that edits overridable data
     await sectionReady(/Scope/);
     expect(document.querySelector('.ac-prod-banner')!.textContent).toMatch(/Product: Product 1 \(inherited\)/);
     expect(chip('Selected SDLC artefacts').textContent).toContain('inherited');
-    expect(chip('Selected SDLC artefacts').querySelector('.ac-ovr-chip')!.getAttribute('title')).toMatch(/^Valeur commune : \d+ éléments?$/);
+    expect(chip('Selected SDLC artefacts').querySelector('.ac-ovr-chip')!.getAttribute('title')).toMatch(/^Common value: \d+ items?$/);
     expect(screen.queryByRole('button', { name: /Revert to common/ })).toBeNull();
   });
   it('"All products" (default) edits the common values: every product follows, nothing is overridden', async () => {
@@ -42,7 +42,7 @@ describe('inherited / overridden fields on a section that edits overridable data
     expect(pf().common.selectedArtefacts).toBe(commonBefore);
     expect(resolveProduct(pf(), ids[1]).selectedArtefacts).toEqual(commonBefore);   // product B is untouched
     expect(chip('Selected SDLC artefacts').textContent).toContain('overridden');
-    expect(document.querySelector('.ac-prod-banner')!.textContent).toMatch(/\d+ surcharges? dans cette section/);
+    expect(document.querySelector('.ac-prod-banner')!.textContent).toMatch(/\d+ overrides? in this section/);
     fireEvent.click(screen.getByRole('button', { name: /^Revert to common: Selected SDLC artefacts/ }));
     expect(isOverridden(prod(0), 'selectedArtefacts')).toBe(false);
     expect(chip('Selected SDLC artefacts').textContent).toContain('inherited');

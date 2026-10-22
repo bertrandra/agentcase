@@ -47,7 +47,7 @@ describe('Products section', () => {
     fireEvent.click(screen.getByRole('button', { name: 'Activate C' }));
     expect(pf().activeProductId).toBe(ids[2]);
     expect(rows()[2]!.className).toContain('is-active');
-    fireEvent.click(screen.getByRole('button', { name: 'Dupliquer C' }));
+    fireEvent.click(screen.getByRole('button', { name: 'Duplicate C' }));
     expect(rows()).toHaveLength(4);
     fireEvent.click(screen.getByRole('button', { name: 'Archive Payroll' }));
     expect(pf().products[1]!.archived).toBe(true);

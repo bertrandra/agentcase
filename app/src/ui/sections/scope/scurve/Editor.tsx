@@ -21,7 +21,7 @@ export function Editor() {
           <select value={view.family} onChange={(e) => setCurveFamily(e.target.value)}>{FAMILIES.map(([v, l]) => <option key={v} value={v}>{l}</option>)}</select></label>
         <button type="button" disabled={view.pts.length >= MAX_POINTS} onClick={addCurvePoint}>＋ point</button>
         <button type="button" disabled={view.pts.length <= MIN_POINTS} onClick={removeCurvePoint}>－ point</button>
-        <OverrideBadge refKey="scurve" label="Courbe en S" />
+        <OverrideBadge refKey="scurve" label="S-curve" />
       </div>
       <p className="ac-field-h">Drag any dot anywhere — its month &amp; adoption update live and the case follows on release.</p>
       <CurveSvg view={view} />

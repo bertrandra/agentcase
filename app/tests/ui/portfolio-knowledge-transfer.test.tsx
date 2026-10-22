@@ -52,7 +52,7 @@ describe('Knowledge transfer section', () => {
     expect(cells(row('C'))[8]).toBe('2 months (from month 5)');
     expect(cells(row('B'))[8]).toBe('0 months (from month 1)');
     act(() => { setProductKnowledge(ids[1], { targetCC: 4 }); });
-    expect(within(row('B')).queryByText(/plafonnée/)).toBeNull();
+    expect(within(row('B')).queryByText(/capped/)).toBeNull();
   });
 
   it('filters by wave: the rows and the total follow', async () => {

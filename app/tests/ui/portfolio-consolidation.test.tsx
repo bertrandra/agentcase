@@ -29,7 +29,7 @@ describe('Consolidation section', () => {
     expect(stat(/^ROI$/)).toBe(fmtRoiPct(h.roi));
     expect(stat(/^Payback \(months\)$/)).toBe(fmtMonths(h.paybackMonth));
     expect(stat(/^Calendar NPV$/)).toBe(fmtEurK(h.npv));
-    expect(stat(/^Vélocité$/)).toBe(`+${Math.round(h.velocityPct)}%`);
+    expect(stat(/^Velocity$/)).toBe(`+${Math.round(h.velocityPct)}%`);
     expect(stat(/^Savings over \d+ years$/)).toMatch(/%$/);
   });
 

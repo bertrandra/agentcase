@@ -25,7 +25,7 @@ describe('Waves section: the board', () => {
     expect(card(ids[2]).closest('section')!.getAttribute('aria-label')).toBe('Wave: Wave 2');
     const c = consolidate(pf());
     expect(within(col('Wave: Wave 1')).getByText(/2 products/).textContent).toContain(`Net ${fmtEurK(c.waves[0]!.summary.net)}`);
-    expect(within(col('Wave: Wave 2')).getByText(/1 product/).textContent).toContain(`VAN ${fmtEurK(c.waves[1]!.summary.npv)}`);
+    expect(within(col('Wave: Wave 2')).getByText(/1 product/).textContent).toContain(`NPV ${fmtEurK(c.waves[1]!.summary.npv)}`);
     expect(within(col('Unscheduled')).getByText(/Excluded from the consolidation/)).toBeTruthy();
     expect(col('Wave: Wave 2').querySelector('.ac-wave-ctrl .ac-muted')!.textContent).toBe(`→ ${calendarOf(pf()).dateAt(6)}`);
   });

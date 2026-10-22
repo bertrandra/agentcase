@@ -118,7 +118,7 @@ describe('one view selector, no duplicate product selector', () => {
     expect(screen.queryByRole('combobox', { name: 'Product' })).toBeNull();
     choose(`product:${ids[1]}`);
     expect(pf().activeProductId).toBe(ids[1]);
-    expect(screen.queryByText(/^Édition :/)).toBeNull();
+    expect(screen.queryByText(/^Editing:/)).toBeNull();
     choose('portfolio');
     expect(pf().activeProductId).toBe(ids[1]);
     expect(screen.getByText(/Editing:/).textContent).toContain('B');

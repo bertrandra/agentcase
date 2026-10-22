@@ -25,7 +25,7 @@ describe('Overrides section', () => {
     const r = b.getByText('Include regulatory in the effort').closest('tr')!;
     expect(r.textContent).toContain('true');
     expect(within(b.getByText('Field engagementCtx').closest('tr')!).getByText('STA')).toBeTruthy();
-    expect(screen.getByRole('heading', { name: /^B — 2 surcharges$/ })).toBeTruthy();
+    expect(screen.getByRole('heading', { name: /^B — 2 overrides$/ })).toBeTruthy();
   });
   it('"Revert to common" and "Apply to all products" act on the row; the row leaves the list', async () => {
     setProductOverride(ids[1], 'regInclude', true);
