@@ -33,7 +33,8 @@ describe('Strategies aggregate: Portfolio and every Wave', () => {
       expect(a.rows).toHaveLength(rs.length);
       a.rows.forEach((r, i) => {
         const s = rs[i]!.ctx.s, top = stratNormalize(evaluateStrategies(rs[i]!.ctx, strategyDefsOf(s)), stratWeightsOf(s))[0]!;
-        expect(r.id).toBe(top.id);
+        expect(r.strategyId).toBe(top.id);
+        expect(r.id).toBe(idsOf(pf, scope)[i]);
         expect(r.score).toBe(top.score);
         expectClose(r.tco, top.row.computed.tco);
         expectClose(r.net, top.row.computed.net);
