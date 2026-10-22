@@ -1,3 +1,4 @@
+/** @calc-zone product-resolution */
 /**
  * Apportion `total` (euro per month) over `weights` in whole cents with the largest-remainder method: the shares add up to the
  * rounded total to the cent, exactly. One recipient gets `total` itself; equal split when every weight is zero.

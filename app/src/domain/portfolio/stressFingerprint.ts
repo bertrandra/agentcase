@@ -1,3 +1,4 @@
+/** @calc-zone stress */
 import { mcFingerprint } from '../stress';
 import { clampRho } from './stressSeed';
 import { resolveProduct } from './resolve';

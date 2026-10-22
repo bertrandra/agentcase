@@ -1,3 +1,4 @@
+/** @calc-zone exports */
 import { caseDiscountRate, engineNow } from './canonical';
 import { makeCtx } from './ctx';
 import type { CaseState } from './types/state';

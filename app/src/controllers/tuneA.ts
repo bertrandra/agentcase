@@ -1,3 +1,4 @@
+/** @calc-zone tuning-programme */
 import { MATURITY_DEFAULTS, blankReadiness, type MaturityMap, type ReadinessAns } from '@/domain/tune';
 import { defineCommand } from '@/store/commands';
 import { appStore } from '@/store/instance';

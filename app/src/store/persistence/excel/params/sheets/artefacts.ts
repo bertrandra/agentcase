@@ -1,3 +1,4 @@
+/** @calc-zone exports */
 import { REG_ARTEFACTS, SDLC_ARTEFACTS } from '@/domain/catalog';
 import { workingArtefacts } from '@/domain/artefacts';
 import type { Artefact } from '@/domain/types/catalog';

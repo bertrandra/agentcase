@@ -1,3 +1,4 @@
+/** @calc-zone delivery-views */
 import { LOOP_PAIRS } from '../catalog';
 import { artTeamSkill, skillMapOf } from '../baseline/skills';
 import type { Ctx } from '../ctx';

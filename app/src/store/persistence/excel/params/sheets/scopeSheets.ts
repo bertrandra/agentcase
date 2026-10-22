@@ -1,3 +1,4 @@
+/** @calc-zone exports */
 import { ALL_PHASE_IDS, LOCATIONS, PHASES, SDLC_ARTEFACTS } from '@/domain/catalog';
 import { locationMix } from '@/domain/location';
 import { phaseRows } from '@/domain/scopeView';

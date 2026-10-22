@@ -1,3 +1,4 @@
+/** @calc-zone time-engine */
 import type { Ctx } from '../ctx';
 import { engagementKey } from '../engagement';
 import { hriEnabled, hriIndex } from '../engagement';

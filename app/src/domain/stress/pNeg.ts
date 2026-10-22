@@ -1,3 +1,4 @@
+/** @calc-zone stress */
 /**
  * The one set of risk-tone thresholds for a probability of loss, whichever Monte Carlo produced it:
  * `pNetNeg` = P(net benefit < 0) of the decision engine (stress/simulate.ts), `pSavNeg` = P(horizon-end savings < 0) of the

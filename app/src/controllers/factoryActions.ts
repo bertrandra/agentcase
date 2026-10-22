@@ -1,3 +1,4 @@
+/** @calc-zone workspace-config */
 import demo from '@/domain/factory/demo.json';
 import { EMPTY_FACTORY } from '@/domain/factory/empty';
 import { generateFactory } from '@/domain/factory/generate';

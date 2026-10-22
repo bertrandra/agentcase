@@ -1,3 +1,4 @@
+/** @calc-zone exports */
 import { buildCalcPackage, type CalcPackage, CALC_PACKAGE_SCHEMA } from '../calcPackage';
 import { consolidate } from './consolidate';
 import { portfolioHeadline } from './portfolioHeadline';

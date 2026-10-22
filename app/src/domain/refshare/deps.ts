@@ -1,3 +1,4 @@
+/** @calc-zone workspace-config */
 /** Section dependency registry (legacy SECTION_DEPS): { source: { target: 'S' strong calculation input | 'I' soft annotation } }. */
 export type Strength = 'S' | 'I';
 export type DepEdges = Record<string, Record<string, Strength>>;

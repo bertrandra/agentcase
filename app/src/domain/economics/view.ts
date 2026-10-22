@@ -1,3 +1,4 @@
+/** @calc-zone economics-headline */
 import type { Ctx } from '../ctx';
 import { model } from '../model/overlay';
 import { engineNow } from '../canonical';

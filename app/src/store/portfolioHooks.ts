@@ -1,3 +1,4 @@
+/** @calc-zone consolidation */
 import { useMemo } from 'react';
 import { commonValue, corePortfolio, isOverridden, resolveProduct, type CommonCase, type Product, type Wave } from '@/domain/portfolio';
 import { hasPortfolioContent } from './persistence/portfolioSnapshot';

@@ -1,3 +1,4 @@
+/** @calc-zone foundation */
 import { workingArtefacts, type ArtefactSets } from './artefacts';
 import { makeInputs, type Inputs } from './inputs';
 import type { CaseState } from './types/state';

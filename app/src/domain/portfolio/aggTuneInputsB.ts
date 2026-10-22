@@ -1,3 +1,4 @@
+/** @calc-zone aggregate-views */
 import type { Ctx } from '../ctx';
 import { capability, currentLevel, pilotSizing, safeOverhead, tokenCache, coachView, sddView } from '../tune';
 import { setupBreakdown } from '../tuneB/setup';

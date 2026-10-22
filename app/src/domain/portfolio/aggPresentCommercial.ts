@@ -1,3 +1,4 @@
+/** @calc-zone aggregate-views */
 import { CM_CODES, cmRecommend, commercialView, type CmCode, type CmRow } from '../pdc/commercial';
 import { selectionOf, total } from './aggEconomicsSel';
 import type { Consolidated } from './consolidate';

@@ -1,3 +1,4 @@
+/** @calc-zone stress */
 import { useMemo, useSyncExternalStore } from 'react';
 import { createStore } from 'zustand/vanilla';
 import { mcFingerprint, type McResult } from '@/domain/stress';

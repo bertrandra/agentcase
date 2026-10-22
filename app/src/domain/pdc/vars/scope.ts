@@ -1,3 +1,4 @@
+/** @calc-zone workspace-config */
 import { PHASES, REG_ARTEFACTS, SDLC_ARTEFACTS } from '../../catalog';
 import type { Ctx } from '../../ctx';
 import { engagementKey } from '../../engagement';

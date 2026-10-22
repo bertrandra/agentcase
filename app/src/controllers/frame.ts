@@ -1,3 +1,4 @@
+/** @calc-zone scope-automation */
 import { REG_ARTEFACTS } from '@/domain';
 import { CROSS_CATEGORIES, CROSS_CODES, crossOn, normArtefacts, normKey, normsOf, type TrackActual } from '@/domain/frame';
 import { refitPotential } from '@/store/derive';

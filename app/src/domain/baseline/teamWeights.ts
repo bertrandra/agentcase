@@ -1,3 +1,4 @@
+/** @calc-zone rate-card-team */
 import type { Ctx } from '../ctx';
 import { activeArtefacts } from '../scope';
 import { SDLC_ARTEFACTS, REG_ARTEFACTS } from '../catalog';

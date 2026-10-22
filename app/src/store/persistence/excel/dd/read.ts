@@ -1,3 +1,4 @@
+/** @calc-zone exports */
 import type { Workbook } from 'exceljs';
 import type { DdStatus } from '@/domain/pdc/dd';
 import { cleanText, safeId } from '../params/safe';

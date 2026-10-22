@@ -1,3 +1,4 @@
+/** @calc-zone exports */
 import type { Workbook } from 'exceljs';
 import { pfDecision, type PfStress, type Portfolio, type StressStats } from '@/domain/portfolio';
 import { VERDICT_META } from '@/domain/verdict';

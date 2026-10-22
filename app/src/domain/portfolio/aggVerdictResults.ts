@@ -1,3 +1,4 @@
+/** @calc-zone aggregate-views */
 import { roiCanonical } from '../economics/roi';
 import { resultsCore, type SavingsYear, type TeamShift } from '../verdict';
 import { selectionOf, total } from './aggEconomicsSel';

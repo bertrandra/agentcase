@@ -1,3 +1,4 @@
+/** @calc-zone aggregate-views */
 import { useMemo } from 'react';
 import {
   aggEligibility, aggKnowledge, aggLifecycle, aggMaturity, aggMaturityMap, aggOpModel, aggProgram, aggReadiness, aggRisk, aggRunSizing, aggSetup, aggTokens,

@@ -1,3 +1,4 @@
+/** @calc-zone rate-card-team */
 import { current } from 'immer';
 import { activeArtefacts, makeCtx } from '@/domain';
 import { defaultGradeLoc } from '@/domain/baseline/skills';

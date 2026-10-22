@@ -1,3 +1,4 @@
+/** @calc-zone exports */
 import type { Worksheet } from 'exceljs';
 import type { SummaryRow } from '@/domain/portfolio';
 import { head } from '../style';

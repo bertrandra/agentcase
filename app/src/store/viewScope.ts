@@ -1,3 +1,4 @@
+/** @calc-zone product-resolution */
 import { useMemo } from 'react';
 import { scheduledProducts, unscheduledIds, type Portfolio } from '@/domain/portfolio';
 import { useCorePortfolio, useDisplayScope } from './consolidationHooks';

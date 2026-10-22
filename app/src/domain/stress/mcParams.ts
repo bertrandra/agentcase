@@ -1,3 +1,4 @@
+/** @calc-zone stress */
 import type { Ctx } from '../ctx';
 import { engagementCoef } from '../engagement';
 import { khEnabled, khTargetCC } from '../knowledge';

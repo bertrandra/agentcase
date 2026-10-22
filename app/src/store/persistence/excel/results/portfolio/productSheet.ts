@@ -1,3 +1,4 @@
+/** @calc-zone exports */
 import type { Workbook } from 'exceljs';
 import { makeCtx } from '@/domain';
 import { fmtRoiPct } from '@/domain/economics';

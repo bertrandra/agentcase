@@ -1,3 +1,4 @@
+/** @calc-zone exports */
 import type { CaseState } from '@/domain';
 import { resolveProduct, type DisplayScope, type Portfolio } from '@/domain/portfolio';
 import { hasPortfolioContent } from '../portfolioSnapshot';

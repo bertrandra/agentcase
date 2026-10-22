@@ -1,3 +1,4 @@
+/** @calc-zone aggregate-views */
 import { groupRows, locRows, targetTeam } from '../verifyA/targetTeam';
 import { tobeComposition } from '../verifyA/tobe';
 import { colOf, liveOf, productRows, sum, viewMemo, type VCol, type VTable } from './aggVerifyBase';

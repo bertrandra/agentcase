@@ -1,3 +1,4 @@
+/** @calc-zone exports */
 import { sumOf } from './costModelAxis';
 import type { CostFmt, CostFormula, CostRole, CostRow } from './costModelTypes';
 

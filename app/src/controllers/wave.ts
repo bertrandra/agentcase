@@ -1,3 +1,4 @@
+/** @calc-zone consolidation */
 import * as ops from '@/domain/portfolio';
 import { definePortfolioCommand } from '@/store/commands';
 import { appStore } from '@/store/instance';

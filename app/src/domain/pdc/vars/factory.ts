@@ -1,3 +1,4 @@
+/** @calc-zone workspace-config */
 import type { Ctx } from '../../ctx';
 import { factoryTasks, KPIS, type KpiData } from '../../factory/kpi';
 import type { FactoryData } from '../../factory/types';

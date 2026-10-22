@@ -1,3 +1,4 @@
+/** @calc-zone scope-automation */
 import type { Ctx } from './ctx';
 import type { WArtefact } from './artefacts';
 import { model } from './model/overlay';

@@ -1,3 +1,4 @@
+/** @calc-zone time-engine */
 import { createStore } from 'zustand/vanilla';
 import { makeCtx } from '@/domain';
 import { mcsOf } from '@/domain/model/modelState';

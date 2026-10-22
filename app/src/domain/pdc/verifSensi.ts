@@ -1,3 +1,4 @@
+/** @calc-zone verification-verdict */
 import { makeCtx, type Ctx } from '../ctx';
 import { headline } from '../economics/headline';
 import { horizonYears } from '../model/horizonYears';

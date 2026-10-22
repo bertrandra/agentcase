@@ -1,3 +1,4 @@
+/** @calc-zone product-resolution */
 import * as ops from '@/domain/portfolio';
 import type { KnowledgeSubset } from '@/domain/portfolio';
 import { definePortfolioCommand } from '@/store/commands';

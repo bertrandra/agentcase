@@ -1,3 +1,4 @@
+/** @calc-zone product-resolution */
 import { makeInputs } from '../inputs';
 import type { CaseState } from '../types/state';
 import { DEFAULT_PRODUCT_NAME, DEFAULT_WAVE_NAME } from './frenchAliases';

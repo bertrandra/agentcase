@@ -1,3 +1,4 @@
+/** @calc-zone product-resolution */
 import { FTE_STEP } from '@/domain/baseline/apportion';
 import * as ops from '@/domain/portfolio';
 import { definePortfolioCommand } from '@/store/commands';

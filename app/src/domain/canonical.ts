@@ -1,3 +1,4 @@
+/** @calc-zone time-engine */
 import type { Ctx } from './ctx';
 import { clamp, numOr } from './model/modelState';
 import { modelRaw } from './model/raw';

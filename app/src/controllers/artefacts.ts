@@ -1,3 +1,4 @@
+/** @calc-zone scope-automation */
 import { PHASES, REG_ARTEFACTS, SDLC_ARTEFACTS, activeArtefacts, makeCtx } from '@/domain';
 import type { Artefact } from '@/domain/types/catalog';
 import type { ArtefactEdit } from '@/domain/types/state';

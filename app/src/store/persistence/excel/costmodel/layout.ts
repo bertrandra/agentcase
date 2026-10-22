@@ -1,3 +1,4 @@
+/** @calc-zone exports */
 import type * as XL from 'exceljs';
 import type { CostFmt, CostModel, CostRow, CostTable } from '@/domain/portfolio';
 

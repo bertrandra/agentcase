@@ -1,3 +1,4 @@
+/** @calc-zone aggregate-views */
 import { periodRows, fteSummary } from '../verifyA/fteVfte';
 import { valueRows } from '../verifyA/phaseArt';
 import { colOf, productRows, sum, viewMemo, type VCol, type VTable } from './aggVerifyBase';

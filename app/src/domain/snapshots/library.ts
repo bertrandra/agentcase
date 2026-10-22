@@ -1,3 +1,4 @@
+/** @calc-zone exports */
 import { APP_VERSION } from '../version';
 import type { NamedSnapshot } from './types';
 

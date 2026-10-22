@@ -1,3 +1,4 @@
+/** @calc-zone workspace-config */
 import { groupsByOrder, type MenuGroup } from '../pdc/personas';
 
 /** One section as the navigation sees it (catalogue entry overlaid with the document's placement). */

@@ -1,3 +1,4 @@
+/** @calc-zone workspace-config */
 /** Records of the Software/Agentic Factory meta-model, exactly as the case snapshot carries them (STATE_REGISTRY keys). */
 export interface Vision { id: string; statement: string; updatedAt: string | null }
 export interface Portfolio { id: string; name: string }

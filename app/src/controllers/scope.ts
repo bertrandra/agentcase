@@ -1,3 +1,4 @@
+/** @calc-zone scope-automation */
 import { PHASES, SDLC_ARTEFACTS, makeCtx, phasesForScope, regOfActiveNorms as regOf } from '@/domain';
 import { current } from 'immer';
 import { defineCommand } from '@/store/commands';

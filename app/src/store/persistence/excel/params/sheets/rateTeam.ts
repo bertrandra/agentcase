@@ -1,3 +1,4 @@
+/** @calc-zone exports */
 import { LOCATIONS, REG_ARTEFACTS, SDLC_ARTEFACTS } from '@/domain/catalog';
 import { snapFTE } from '@/domain/baseline/apportion';
 import { GRADES, SKILLS_EXIST } from '@/domain/baseline/skills';

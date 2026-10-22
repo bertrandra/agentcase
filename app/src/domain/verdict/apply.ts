@@ -1,3 +1,4 @@
+/** @calc-zone verification-verdict */
 import type { Ctx } from '../ctx';
 import type { StratApplied, StrategyDef } from './defs';
 import { SCALED_IDS, stratBaseValues, stratTargetLoc } from './evaluate';

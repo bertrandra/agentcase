@@ -1,3 +1,4 @@
+/** @calc-zone scope-automation */
 import { makeCtx } from '@/domain';
 import { clampAutoCap } from '@/domain/inputs';
 import { computeGlassCeiling } from '@/domain/model/ceiling';

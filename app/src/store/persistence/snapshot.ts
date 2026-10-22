@@ -1,3 +1,4 @@
+/** @calc-zone exports */
 import { buildCalcPackage } from '@/domain/calcPackage';
 import { makeDefaultDoc } from '../instance';
 import type { Doc } from '../types';

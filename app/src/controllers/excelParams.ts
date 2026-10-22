@@ -1,3 +1,4 @@
+/** @calc-zone exports */
 import { defineCommand, definePortfolioCommand } from '@/store/commands';
 import { appStore } from '@/store/instance';
 import { applyParamsPatch } from '@/store/persistence/excel/params/apply';

@@ -1,3 +1,4 @@
+/** @calc-zone exports */
 import { activeArtefacts, engineNow, makeCtx, model, REG_ARTEFACTS, regActive } from '@/domain';
 import { engagementCoef, engagementKey } from '@/domain/engagement';
 import { posture } from '@/domain/verifyA/phaseArt';

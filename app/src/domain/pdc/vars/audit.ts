@@ -1,3 +1,4 @@
+/** @calc-zone workspace-config */
 import type { Ctx } from '../../ctx';
 import { EVIDENCE_CHECKS } from './auditEvidence';
 import { MODEL_CHECKS } from './auditModel';

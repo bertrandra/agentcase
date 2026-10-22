@@ -1,3 +1,4 @@
+/** @calc-zone aggregate-views */
 import { useMemo } from 'react';
 import { frameEngage, frameEngagement, frameIndustry, type Portfolio } from '@/domain/portfolio';
 import { useCorePortfolio } from './consolidationHooks';

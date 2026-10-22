@@ -1,3 +1,4 @@
+/** @calc-zone exports */
 /** One entry of the named snapshot library (`namedSnapshots` of the document); same shape as the legacy SNAPSHOTS entries. */
 export interface NamedSnapshot {
   id: string;

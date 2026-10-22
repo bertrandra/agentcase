@@ -1,3 +1,4 @@
+/** @calc-zone workspace-config */
 import type { BoardCard, BoardRow } from './board';
 import { variablesForSection } from './variables';
 

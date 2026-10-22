@@ -1,3 +1,4 @@
+/** @calc-zone time-engine */
 import { roiCanonical } from '../economics/roi';
 import { econ, type K } from './kernel';
 import { monthRow, type MonthRow } from './rows';

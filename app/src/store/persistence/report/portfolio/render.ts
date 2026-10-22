@@ -1,3 +1,4 @@
+/** @calc-zone exports */
 import { fmtK } from '@/domain/format';
 import { esc, STYLE } from '../render';
 import type { PortfolioReportData } from './data';

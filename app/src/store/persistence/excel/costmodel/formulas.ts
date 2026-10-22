@@ -1,3 +1,4 @@
+/** @calc-zone exports */
 import type { CostFormula } from '@/domain/portfolio';
 import { FIRST } from './layout';
 

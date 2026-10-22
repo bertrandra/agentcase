@@ -1,3 +1,4 @@
+/** @calc-zone consolidation */
 import { clean, placeProduct } from './products';
 import type { HubSettings, Portfolio, Wave } from './types';
 

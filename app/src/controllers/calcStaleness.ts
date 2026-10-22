@@ -1,3 +1,4 @@
+/** @calc-zone exports */
 import { checkStaleness, needsBanner, type CalcStaleness } from '@/domain/calcStaleness';
 import { checkPortfolioStaleness, resolveProduct } from '@/domain/portfolio';
 import { isPortfolioSnapshot, packagesOfSnapshot } from '@/store/persistence/portfolioSnapshot';

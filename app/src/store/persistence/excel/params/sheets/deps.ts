@@ -1,3 +1,4 @@
+/** @calc-zone exports */
 import { blue, frz, head, listDV, sheet } from '../kit';
 import { cleanText, num, str } from '../safe';
 import type { ReadCtx, SheetFamily, WriteCtx } from '../types';

@@ -1,3 +1,4 @@
+/** @calc-zone workspace-config */
 import type { Ctx } from '../ctx';
 import { REG_ARTEFACTS, SDLC_ARTEFACTS } from '../catalog';
 import { activeArtefacts } from '../scope';

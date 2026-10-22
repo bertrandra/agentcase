@@ -1,3 +1,4 @@
+/** @calc-zone exports */
 import { resolveProduct } from '@/domain/portfolio';
 import type { Portfolio } from '@/domain/portfolio';
 import type { Doc } from '../../types';

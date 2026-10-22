@@ -1,3 +1,4 @@
+/** @calc-zone exports */
 import type { DisplayScope } from '@/domain/portfolio';
 import { pfStressFingerprint } from '@/domain/portfolio';
 import { appStore } from '@/store/instance';

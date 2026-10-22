@@ -1,3 +1,4 @@
+/** @calc-zone knowledge-hub */
 import { CC_MULT, KT_RED } from './catalog';
 import type { Ctx } from './ctx';
 import { engagementCoef } from './engagement';

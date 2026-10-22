@@ -1,3 +1,4 @@
+/** @calc-zone workspace-config */
 import { evlModel, EVL_STAGE_LABEL } from '../../model/evidence';
 import { flowModel } from '../../model/flow';
 import { evidenceOf, flowOf } from '../../model/modelState';

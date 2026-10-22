@@ -1,3 +1,4 @@
+/** @calc-zone exports */
 import { agentCatalogSheet, loopPairsSheet } from './sheets/agentsLoops';
 import { regArtifacts, sdlcArtifacts } from './sheets/artefacts';
 import { dependencies, sCurve } from './sheets/deps';

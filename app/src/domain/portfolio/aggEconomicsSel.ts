@@ -1,3 +1,4 @@
+/** @calc-zone aggregate-views */
 import type { Consolidated } from './consolidate';
 import type { Summary } from './headline';
 import { scopeHeadline, type DisplayScope, type PortfolioHeadline } from './portfolioHeadline';

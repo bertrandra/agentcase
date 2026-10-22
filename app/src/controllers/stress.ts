@@ -1,3 +1,4 @@
+/** @calc-zone stress */
 import { current } from 'immer';
 import { LOCATIONS, makeCtx } from '@/domain';
 import { locationMix } from '@/domain/location';

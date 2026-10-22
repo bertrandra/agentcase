@@ -1,3 +1,4 @@
+/** @calc-zone consolidation */
 import { teamEtp } from './alloc';
 import { calendarOf } from './calendar';
 import type { Consolidated } from './consolidate';

@@ -1,3 +1,4 @@
+/** @calc-zone workspace-config */
 import type { Ctx } from '../../ctx';
 import { modelOf as model } from '../../tune/memo';
 import { blendedTokenCostPer1M } from '../../tokens';

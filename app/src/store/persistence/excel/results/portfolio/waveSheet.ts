@@ -1,3 +1,4 @@
+/** @calc-zone exports */
 import type { Workbook } from 'exceljs';
 import { waveHeadline, type Consolidated, type ConsolidationView } from '@/domain/portfolio';
 import { cardSheet, FMT_LINES, HDR_LINES, lineCells, MONEY, PCT, table } from './blocks';

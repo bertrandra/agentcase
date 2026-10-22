@@ -1,3 +1,4 @@
+/** @calc-zone scope-automation */
 import { STATUS_LIFECYCLE } from './catalog';
 import type { StatusLifecycleDef } from './types/catalog';
 import type { CaseState } from './types/state';

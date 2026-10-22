@@ -1,3 +1,4 @@
+/** @calc-zone exports */
 import { REG_ARTEFACTS, SDLC_ARTEFACTS } from '@/domain/catalog';
 import { blue, frz, head, sheet } from '../kit';
 import { cleanText, longText, num, str } from '../safe';

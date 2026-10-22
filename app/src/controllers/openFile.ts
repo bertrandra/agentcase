@@ -1,3 +1,4 @@
+/** @calc-zone workspace-config */
 import { produce } from 'immer';
 import { appStore } from '@/store/instance';
 import { parseCaseFile, type CaseFileKind } from '@/store/persistence/html/legacy';

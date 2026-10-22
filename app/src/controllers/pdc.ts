@@ -1,3 +1,4 @@
+/** @calc-zone workspace-config */
 import { makeCtx } from '@/domain';
 import type { DdState, DdStatus } from '@/domain/pdc/dd';
 import { computeDdSensitivity, type DdSens } from '@/domain/pdc/ddSens';

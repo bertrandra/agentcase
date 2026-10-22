@@ -1,3 +1,4 @@
+/** @calc-zone exports */
 import type { Workbook } from 'exceljs';
 import { fmtRoiPct } from '@/domain/economics';
 import type { ConsolidationView } from '@/domain/portfolio';

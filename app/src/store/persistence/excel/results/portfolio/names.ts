@@ -1,3 +1,4 @@
+/** @calc-zone exports */
 /* eslint-disable no-control-regex -- stripping control characters is the point */
 const BAD = /[\u0000-\u001f[\]:*?/\\]/g;
 /* eslint-enable no-control-regex */

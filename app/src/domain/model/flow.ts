@@ -1,3 +1,4 @@
+/** @calc-zone time-engine */
 import { engineNow } from '../canonical';
 import type { Ctx } from '../ctx';
 import { anchorClamp, daGet } from '../verifyB/anchors';

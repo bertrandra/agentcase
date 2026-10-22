@@ -1,3 +1,4 @@
+/** @calc-zone exports */
 import { validate, type Portfolio } from '@/domain/portfolio';
 import { clean } from '@/domain/portfolio/products';
 import { makeDefaultDoc } from '../instance';

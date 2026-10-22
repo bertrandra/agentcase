@@ -1,3 +1,4 @@
+/** @calc-zone aggregate-views */
 import { useMemo } from 'react';
 import { assumptionsByProduct, dueDiligenceByProduct, verifByProduct } from '@/domain/portfolio';
 import { benchmarkBase } from '@/domain/pdc/assumptions';

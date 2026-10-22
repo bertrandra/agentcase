@@ -1,3 +1,4 @@
+/** @calc-zone tuning-programme */
 import type { Ctx } from '../ctx';
 import { statusTable } from '../lifecycle';
 import { verificationTaxRate, sddMaturity, vtaxAvgHuman } from '../model/vtax';

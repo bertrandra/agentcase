@@ -1,3 +1,4 @@
+/** @calc-zone scope-automation */
 import { activeArtefacts } from '../scope';
 import { engineNow } from '../canonical';
 import type { Ctx } from '../ctx';

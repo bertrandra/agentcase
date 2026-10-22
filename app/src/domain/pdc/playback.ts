@@ -1,3 +1,4 @@
+/** @calc-zone delivery-views */
 import type { Ctx } from '../ctx';
 import { engineNow } from '../canonical';
 import { monthlySeries } from '../economics/monthlySeries';

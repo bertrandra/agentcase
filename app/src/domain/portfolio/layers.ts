@@ -1,3 +1,4 @@
+/** @calc-zone knowledge-hub */
 import type { CaseState } from '../types/state';
 import { FORBIDDEN_DOM_IDS, OVERRIDABLE_KEYS, type CommonCase, type Product } from './types';
 import { subsetKeys, type DomPatch } from './subset';

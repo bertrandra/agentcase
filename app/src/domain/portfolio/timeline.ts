@@ -1,3 +1,4 @@
+/** @calc-zone consolidation */
 import { ktLead } from './subset';
 import type { Portfolio, Product, Wave } from './types';
 

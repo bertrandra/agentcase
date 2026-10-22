@@ -1,3 +1,4 @@
+/** @calc-zone exports */
 import { APP_VERSION } from '@/domain/version';
 import type { Doc } from '@/store/types';
 import type { ParamsScope } from './types';

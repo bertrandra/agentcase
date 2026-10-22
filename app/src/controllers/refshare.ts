@@ -1,3 +1,4 @@
+/** @calc-zone workspace-config */
 import { COMMAND_REGISTRY, defineCommand } from '@/store/commands';
 import { appStore } from '@/store/instance';
 import type { AuditRecord, Doc } from '@/store/types';

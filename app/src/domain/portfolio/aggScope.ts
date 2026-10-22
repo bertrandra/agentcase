@@ -1,3 +1,4 @@
+/** @calc-zone aggregate-views */
 import { engineNow } from '../canonical';
 import { autoCapFrom } from '../inputs';
 import { lifecycleAutoPosture } from '../lifecycle';

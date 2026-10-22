@@ -1,3 +1,4 @@
+/** @calc-zone exports */
 import { parseRef } from '@/domain/portfolio';
 import { sanitize } from '../../snapshot';
 import { str } from '../params/safe';

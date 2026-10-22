@@ -1,3 +1,4 @@
+/** @calc-zone aggregate-views */
 import { LOCATIONS } from '../catalog';
 import { classPct, classTargetPct, locSummary, targetMix } from '../baseline/locStrat';
 import { locationMix } from '../location';

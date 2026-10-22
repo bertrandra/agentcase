@@ -1,3 +1,4 @@
+/** @calc-zone exports */
 import { personasByOrder, type Persona } from '@/domain/pdc/personas';
 import { blue, frz, grey, head, sheet, ynDV } from '../kit';
 import { cleanText, okKey, safeId, str } from '../safe';

@@ -1,3 +1,4 @@
+/** @calc-zone verification-verdict */
 import { engineNow } from '../canonical';
 import { ENGAGE_COEF } from '../catalog';
 import { makeCtx, type Ctx } from '../ctx';

@@ -1,3 +1,4 @@
+/** @calc-zone workspace-config */
 import { npvCanonical, paybackMonthsCanonical } from '../../canonical';
 import { headline } from '../../economics/headline';
 import { savingsBreakdown } from '../../economics/savings';

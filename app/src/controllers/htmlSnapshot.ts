@@ -1,3 +1,4 @@
+/** @calc-zone exports */
 import { appVerFileTag } from '@/domain/snapshots';
 import { appStore } from '@/store/instance';
 import { buildSnapshotHtml, snapshotFileName } from '@/store/persistence/html/embed';

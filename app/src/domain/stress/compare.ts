@@ -1,3 +1,4 @@
+/** @calc-zone stress */
 import { engineNow, paybackMonthsCanonical } from '../canonical';
 import type { Ctx } from '../ctx';
 import { model } from '../model/overlay';

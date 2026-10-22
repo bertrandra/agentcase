@@ -1,3 +1,4 @@
+/** @calc-zone exports */
 import type { ParamsDoc, ParamsEnv, SectionGroupEntry, SectionInfo } from './types';
 
 /**

@@ -1,3 +1,4 @@
+/** @calc-zone exports */
 import type { Workbook } from 'exceljs';
 import { consolidate, consolidationView, corePortfolio, type DisplayScope, type Portfolio } from '@/domain/portfolio';
 import type { ExcelJS } from '../../lazy';

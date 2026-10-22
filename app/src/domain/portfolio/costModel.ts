@@ -1,3 +1,4 @@
+/** @calc-zone exports */
 import { monthLabels, pickScope } from './costModelAxis';
 import { buildOther } from './costModelOther';
 import { buildParams } from './costModelParams';

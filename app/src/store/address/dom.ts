@@ -1,3 +1,4 @@
+/** @calc-zone product-resolution */
 import { deepEqual, parseRef } from '@/domain/portfolio';
 import { commonInfra } from '@/domain/portfolio/layers';
 import type { CommonCase } from '@/domain/portfolio';

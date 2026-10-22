@@ -1,3 +1,4 @@
+/** @calc-zone aggregate-views */
 import type { DisplayScope } from '@/domain/portfolio';
 import { definePortfolioCommand } from '@/store/commands';
 import { appStore } from '@/store/instance';

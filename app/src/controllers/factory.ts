@@ -1,3 +1,4 @@
+/** @calc-zone workspace-config */
 import { NEW_RECORD, nextId, ON_REMOVE, type Coll } from '@/domain/factory/collections';
 import type { ArtefactTag, IntegratedProduct, PhaseFeatures } from '@/domain/factory/types';
 import { defineCommand } from '@/store/commands';

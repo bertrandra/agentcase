@@ -1,3 +1,4 @@
+/** @calc-zone exports */
 import { INDUSTRIES } from '@/domain/frame/profile';
 import { blue, frz, head, listDV, note, rangeDV, sheet, style } from '../kit';
 import { cleanText, num, str } from '../safe';

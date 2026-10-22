@@ -1,3 +1,4 @@
+/** @calc-zone verification-verdict */
 export { STRATEGY_DEFS_DEFAULT, STRAT_WEIGHTS_DEFAULT, stratAppliedOf, strategyDefsOf, stratWeightsOf, type LeverKey, type Levers, type LocSplit, type StratApplied, type StrategyDef, type Weights } from './defs';
 export { SCALED_IDS, evaluateStrategies, scopedHumanSup, stratBaseValues, stratTargetLoc, type StrategyRow } from './evaluate';
 export { METRICS, metricExtremes, metricValue, stratNormalize, strategyLocSplits, type LocSplitRow, type MetricKey, type Ranked } from './rank';

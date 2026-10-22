@@ -1,3 +1,4 @@
+/** @calc-zone workspace-config */
 import type { Ctx } from '../../ctx';
 import { engineOf as engineNow } from '../../tune/memo';
 import { headline } from '../../economics/headline';

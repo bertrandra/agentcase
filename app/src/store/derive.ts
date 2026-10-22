@@ -1,3 +1,4 @@
+/** @calc-zone scope-automation */
 import { current } from 'immer';
 import { makeCtx, phaseScopeOf } from '@/domain';
 import { autoCapFrom } from '@/domain/inputs';

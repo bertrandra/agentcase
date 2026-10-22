@@ -1,3 +1,4 @@
+/** @calc-zone aggregate-views */
 import { model } from '../model/overlay';
 import type { Live } from '../verifyA/fteVfte';
 import { calendarOf, type Calendar } from './calendar';

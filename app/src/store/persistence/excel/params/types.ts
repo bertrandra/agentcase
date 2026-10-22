@@ -1,3 +1,4 @@
+/** @calc-zone exports */
 import type * as XL from 'exceljs';
 import type { Ctx } from '@/domain';
 import type { Persona, MenuGroup } from '@/domain/pdc/personas';

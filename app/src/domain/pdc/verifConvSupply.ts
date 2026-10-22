@@ -1,3 +1,4 @@
+/** @calc-zone verification-verdict */
 import type { Ctx } from '../ctx';
 import { model } from '../model/overlay';
 import { supRampMultiplier, supSpanFor } from '../model/supervision';

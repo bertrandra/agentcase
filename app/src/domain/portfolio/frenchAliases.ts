@@ -1,3 +1,4 @@
+/** @calc-zone foundation */
 /**
  * THE ONLY FRENCH TEXT ALLOWED IN THE SOURCE. The product is English (every user-facing string); these are the display names that files saved by
  * v20.0 (the first multi-product build, French labels) may carry, kept so such a file still opens as before and is still recognised as a plain

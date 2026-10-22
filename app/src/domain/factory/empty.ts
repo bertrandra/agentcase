@@ -1,3 +1,4 @@
+/** @calc-zone workspace-config */
 import type { FactoryData } from './types';
 
 /** The six seeded promotion stages (never fewer: "clear all" resets to these, not to zero). */
