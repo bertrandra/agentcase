@@ -19,6 +19,7 @@ export async function personaMenu(page, fx, rec) {
 
 /** History dock with steps, the undo toast (live region filled) and the collapsed dock. */
 export async function historyStates(page, fx, rec) {
+  await openSection(page, '🧭 Engagement context');
   const name = page.locator('input[aria-label="Customer name"]');
   await name.fill('Audit A'); await name.blur(); await name.fill('Audit B'); await name.blur(); await settle(page);
   await rec.audit(page, fx, '(history dock: steps listed)');
@@ -63,6 +64,7 @@ export async function keyboardStates(page, fx, rec) {
 /** A second tab autosaved a session: the restore banner (role=alert) is offered to a freshly opened page. */
 export async function restoreBanner(ctx, fx, rec) {
   const a = await openCase(ctx, fx);
+  await openSection(a, '🧭 Engagement context');
   await a.locator('input[aria-label="Customer name"]').fill('Other tab'); await a.waitForTimeout(2500);
   const b = await ctx.newPage();
   await b.goto(a.url()); await b.waitForSelector('.ac-shell'); await b.addScriptTag({ content: axeSource });

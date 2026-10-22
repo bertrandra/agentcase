@@ -1,6 +1,5 @@
 import { useRef } from 'react';
 import { exportSnapshotJson, importSnapshotFile } from '@/controllers/files';
-import { setCustomerName } from '@/controllers/persona';
 import { useDoc, useHistory } from '@/store/hooks';
 import { APP_VERSION } from '@/domain/version';
 import { goSection, setFastPath, toast, toggleMenuHidden, useUi } from '../uiState';
@@ -25,12 +24,10 @@ export function TopZone() {
   return (
     <header className="ac-top" role="banner" style={{ gridArea: 'top' }}>
       <div className="ac-top-id">
-        <strong className="ac-brand" title="Back to Welcome" onClick={() => goSection('home')}>AgentCase <small>v{APP_VERSION}</small></strong>
-        <p className="ac-subtitle">Agentic Transformation: From Team Baseline to Confidence-Conditional Verdict</p>
+        <strong className="ac-brand" title="Back to Welcome" onClick={() => goSection('home')}>AgentCase{customer ? ` for ${customer}` : ''} <small>v{APP_VERSION}</small></strong>
       </div>
       <div className="ac-top-ctrls">
         <button type="button" className="ac-icon-btn" aria-label="Toggle the sidebar menu" aria-pressed={!hidden} title="Show or hide the sidebar; hidden, the group bar above the section navigates" onClick={toggleMenuHidden}>☰</button>
-        <input aria-label="Customer name" className="ac-customer" placeholder="Customer" value={customer} onChange={(e) => setCustomerName(e.target.value)} />
         <ProductBar />
         <select aria-label="Persona" value={persona} onChange={(e) => switchPersona(e.target.value, landing(e.target.value))}>
           {personas.map((p) => <option key={p.id} value={p.id}>{p.label ?? p.id}</option>)}

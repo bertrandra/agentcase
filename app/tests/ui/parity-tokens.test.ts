@@ -18,10 +18,9 @@ describe('shell chrome keeps the legacy values', () => {
     expect(tokens).toContain("--ac-font: 'Ubuntu', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif");
     for (const w of [300, 400, 700]) expect(fonts).toContain(`font-weight: ${w}`);
   });
-  it('header banner: gradient, 30px/300 title, 16px subtitle', () => {
+  it('header banner: gradient, 30px/300 title', () => {
     for (const v of ['linear-gradient(135deg, #0058AB 0%, #121A38 100%)', 'padding: 2rem']) expect(rule('.ac-top')).toContain(v);
     expect(rule('.ac-brand')).toMatch(/font-size: 30px; font-weight: 300; letter-spacing: -\.01em/);
-    expect(rule('.ac-subtitle')).toContain('font-size: 16px');
   });
   it('KPI bar: sticky blue gradient, 16px/700 values, 9.5px uppercase labels', () => {
     for (const v of ['position: sticky', 'z-index: 40', 'linear-gradient(135deg, #0058AB, #00488C)', 'padding: .6rem 1.5rem']) expect(rule('.ac-kpis')).toContain(v);
