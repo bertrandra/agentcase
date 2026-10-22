@@ -1,4 +1,4 @@
-/** @calc-zone run-setup-taxes @owner token-volume */
+/** @calc-zone delivery-views @owner token-volume */
 import { engineNow } from '../canonical';
 import type { Ctx } from '../ctx';
 import { PHASES } from '../catalog';

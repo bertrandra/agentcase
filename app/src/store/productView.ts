@@ -1,4 +1,4 @@
-/** @calc-zone product-resolution */
+/** @calc-zone foundation */
 import { createContext, createElement, useContext, type ReactNode } from 'react';
 import { corePortfolio, resolveProduct, type Portfolio } from '@/domain/portfolio';
 import type { Doc, PortfolioDoc } from './types';

@@ -1,4 +1,4 @@
-/** @calc-zone run-setup-taxes @owner run-team */
+/** @calc-zone delivery-views @owner run-team */
 import { engineNow } from '../canonical';
 import type { Ctx } from '../ctx';
 import { model } from '../model/overlay';

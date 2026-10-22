@@ -1,4 +1,4 @@
-/** @calc-zone consolidation */
+/** @calc-zone portfolio-consolidation */
 import { calendarOf } from './calendar';
 import type { Consolidated } from './consolidate';
 import { consolidationView, summaryRow, type ChartView, type ConsolidationView, type SummaryRow } from './consolidationView';

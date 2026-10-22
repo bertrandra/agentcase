@@ -1,4 +1,4 @@
-/** @calc-zone scope-automation */
+/** @calc-zone delivery-views */
 import { engineNow } from '../canonical';
 import type { Ctx } from '../ctx';
 import { model } from '../model/overlay';

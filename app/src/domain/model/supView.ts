@@ -1,4 +1,4 @@
-/** @calc-zone run-setup-taxes */
+/** @calc-zone delivery-views */
 import type { Ctx } from '../ctx';
 import { engineNow } from '../canonical';
 import { lceModel } from './lce';

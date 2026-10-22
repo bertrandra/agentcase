@@ -1,4 +1,4 @@
-/** @calc-zone consolidation */
+/** @calc-zone portfolio-consolidation */
 import { addMonthsLocal, parseLocalDate } from '../verifyB/ganttLayout';
 import type { Portfolio } from './types';
 
