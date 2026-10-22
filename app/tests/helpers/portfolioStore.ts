@@ -1,4 +1,4 @@
-import { addWave, assignWave } from '@/controllers/wave';
+import { addWave } from '@/controllers/wave';
 import { addProduct, setActiveProduct } from '@/controllers/product';
 import { EMPTY_HISTORY } from '@/store/history';
 import type { AppStore } from '@/store/core';

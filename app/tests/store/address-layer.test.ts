@@ -10,7 +10,7 @@ import { appStore } from '@/store/instance';
 import { threeProducts } from '../helpers/portfolioStore';
 
 const pf = () => appStore().getState().portfolio;
-const eff = (id: string) => resolveProduct(pf(), id) as Record<string, unknown> & { dom: { values: Record<string, string> } };
+const eff = (id: string) => resolveProduct(pf(), id) as unknown as Record<string, unknown> & { dom: { values: Record<string, string> } };
 
 describe('address layer: where an existing command lands in the portfolio', () => {
   it('teamIn goes to the active product only', () => {
@@ -52,7 +52,7 @@ describe('address layer: where an existing command lands in the portfolio', () =
   it('non-overridable keys (customerName, MODEL, discount rate) always go to common, even with scope "product"', () => {
     const { ids } = threeProducts();
     setEditScope('product'); setActiveProduct(ids[2]); setCustomerName('ACME');
-    expect(pf().common.customerName).toBe('ACME');
+    expect((pf().common as unknown as Record<string, unknown>).customerName).toBe('ACME');
     expect(pf().products.every((p) => !('customerName' in p.overrides))).toBe(true);
   });
   it('A5: clearing an override restores the inheritance; applyToCommon drops the identical overrides', () => {
