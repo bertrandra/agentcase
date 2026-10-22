@@ -6,7 +6,7 @@ import { ChartPanel } from '@/ui/widgets/ChartPanel';
 const COLORS = ['#0058AB', '#006e79', '#b04600', '#71609E', '#0a6e9c', '#8a6d00', '#a02b5a', '#4f7d2a'];
 
 /** Cumulative cash by calendar month: the portfolio (thick) and one line per wave. The data is also offered as hidden text by ChartPanel. */
-export function CashChart({ chart }: { chart: ChartView }) {
+export function CashChart({ chart, label = 'Trésorerie cumulée par mois calendaire : portefeuille et vagues' }: { chart: ChartView; label?: string }) {
   const config = useMemo<ChartConfiguration>(() => ({
     type: 'line',
     data: {
@@ -21,5 +21,5 @@ export function CashChart({ chart }: { chart: ChartView }) {
       scales: { y: { title: { display: true, text: 'Trésorerie cumulée (€)' } } },
     },
   }), [chart]);
-  return <ChartPanel config={config} label="Trésorerie cumulée par mois calendaire : portefeuille et vagues" height={300} />;
+  return <ChartPanel config={config} label={label} height={300} />;
 }

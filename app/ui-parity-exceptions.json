@@ -1,5 +1,5 @@
 {
-  "note": "Deliberate, recorded differences from the legacy v18.13 shell chrome and section content, checked by tools/ui-parity.mjs (npm run ui-parity). `expected` pins the NEW value: drift inside an exception fails too. Only accessibility corrections belong here (keep the legacy hue, lightest adjustment that reaches WCAG AA 4.5:1).",
+  "note": "Deliberate, recorded differences from the legacy v18.13 shell chrome and section content, checked by tools/ui-parity.mjs (npm run ui-parity). `expected` pins the NEW value: drift inside an exception fails too. Accessibility corrections (keep the legacy hue, lightest adjustment that reaches WCAG AA 4.5:1) and explicit product decisions belong here.",
   "exceptions": [
     {
       "area": "kpibar:label",
@@ -59,6 +59,18 @@
       "bg": "#0058ab",
       "min": 4.5,
       "ratio": 4.51
+    },
+    {
+      "area": "header",
+      "prop": "boxH",
+      "expected": "120",
+      "reason": "product decision (user request): the header subtitle \"Agentic Transformation: From Team Baseline to Confidence-Conditional Verdict\" is removed, so the banner is shorter than the legacy 145.6px"
+    },
+    {
+      "area": "header:title",
+      "prop": "boxW",
+      "expected": "190.5",
+      "reason": "product decision (user request): the title reads \"AgentCase [for <customer>] v20.0\" without the legacy subtitle line; its width follows its text"
     }
   ]
 }
