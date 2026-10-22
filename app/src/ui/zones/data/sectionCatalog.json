@@ -512,7 +512,7 @@
   "group": "refshare",
   "groupSeq": 20,
   "label": "🏛️ Architecture — Layers",
-  "description": "One-line-each index of the 5 layers plus the 5 cross-cutting engines",
+  "description": "One-screen index of the architecture: the four code layers, the Time Engine, the command bus, the Portfolio layer, persistence, the View selector, the proof layer and the registries",
   "tag": "supports"
  },
  {
@@ -520,7 +520,7 @@
   "group": "refshare",
   "groupSeq": 30,
   "label": "🏛️ Architecture — Layers content",
-  "description": "Full technical detail: functions, code references, wiring status, data flow",
+  "description": "Full technical detail: modules and functions, data flow of one action, portfolio model, file formats, security, performance budgets, proof layer, known gaps, what changed since the legacy app",
   "tag": "supports"
  },
  {
