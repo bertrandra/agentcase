@@ -14,7 +14,7 @@ const scopeCmd = definePortfolioCommand<{ scope: DisplayScope }>({
 });
 
 /**
- * The top bar's "Périmètre d'affichage": the active product (default, today's behaviour), the whole portfolio, or one wave. A wave that does
+ * The top bar's "Vue" selector (display scope): the active product (default, today's behaviour), the whole portfolio, or one wave. A wave that does
  * not exist is refused (false).
  */
 export function setDisplayScope(scope: DisplayScope): boolean {

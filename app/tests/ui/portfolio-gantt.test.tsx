@@ -20,7 +20,7 @@ describe('Gantt: wave rows (F18)', () => {
     await open();
     expect(wavePanel()).toBeNull();
     expect(document.querySelector('[data-gantt-offset]')!.textContent).toContain('Calendrier du portefeuille : Produit 1 démarre');
-    act(() => { fireEvent.change(screen.getByRole('combobox', { name: 'Produit' }), { target: { value: ids[2] } }); });
+    act(() => { fireEvent.change(screen.getByRole('combobox', { name: 'Vue' }), { target: { value: `product:${ids[2]}` } }); });
     expect(document.querySelector('[data-gantt-offset]')!.textContent).toContain(`C démarre ${portfolioGantt(pf(), consolidate(pf())).waves[1]!.products[0]!.meta.replace(/^démarre /, '').split(' (')[0]}`);
   });
 

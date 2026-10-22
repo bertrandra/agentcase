@@ -14,7 +14,7 @@ afterEach(cleanup);
 describe('one product: the interface is unchanged (spec F23)', () => {
   it('no product selector, no edit-scope toggle in the top bar', () => {
     mountApp();
-    expect(screen.queryByRole('combobox', { name: 'Produit' })).toBeNull();
+    expect(screen.queryByRole('combobox', { name: 'Vue' })).toBeNull();
     expect(screen.queryByRole('radiogroup', { name: 'Modifier' })).toBeNull();
     expect(document.querySelector('.ac-prodbar')).toBeNull();
   });
@@ -41,6 +41,6 @@ describe('one product: the interface is unchanged (spec F23)', () => {
     await sectionReady(/Produits/);
     act(() => openGroup('portfolio'));
     expect(sidebar().querySelector('[data-group="portfolio"]')).toBeTruthy();
-    expect(screen.getByRole('combobox', { name: 'Produit' })).toBeTruthy();
+    expect(screen.getByRole('combobox', { name: 'Vue' })).toBeTruthy();
   });
 });

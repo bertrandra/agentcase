@@ -34,7 +34,7 @@ Tant qu'il n'y a qu'un produit, rien ne change à l'écran (pas de sélecteur, p
 ## 2. L'équipe d'entrée de chaque produit
 
 Les sections d'équipe affichent **Équipe de : *produit actif***. L'équipe n'est **jamais héritée ni partagée** : choisissez le produit dans le sélecteur
-**Produit**, puis saisissez son équipe (compétence, grade, localisation, ETP) comme pour un cas unique. Les autres produits ne bougent pas.
+**Vue** (entrée « Produit : … »), puis saisissez son équipe (compétence, grade, localisation, ETP) comme pour un cas unique. Les autres produits ne bougent pas.
 Une personne ne peut pas être affectée à deux produits (limite connue, § 9).
 
 ## 3. Périmètre commun et surcharges
@@ -73,8 +73,8 @@ Le **Knowledge Hub** est commun au portefeuille ; chaque produit en utilise un *
 
 - Section **📈 Consolidation** : trésorerie cumulée du portefeuille et de chaque vague, tableaux par vague et par produit, flux par année calendaire.
   Le portefeuille est **exactement la somme** des produits décalés dans le temps ; la VAN est la **VAN calendaire** (actualisée depuis le mois 1 du portefeuille).
-- Sélecteur **Périmètre** (« Périmètre d'affichage ») : **Portefeuille**, **Vague : …** ou **Produit : …**. La barre d'indicateurs, le Gantt (une barre par vague,
-  produits dépliables), Decision Intelligence et le rapport suivent ce périmètre. Il n'est pas enregistré dans le fichier.
+- Sélecteur unique **Vue** : **Portefeuille**, **Vague : …** ou **Produit : …**. Choisir un produit l'affiche *et* l'édite ; avec le portefeuille ou une vague en vue, « Édition : produit » rappelle quel produit les sections modifient. La barre d'indicateurs, le Gantt (une barre par vague,
+  produits dépliables), Decision Intelligence et le rapport suivent cette vue. Elle n'est pas enregistrée dans le fichier.
 - Ctrl+Z / Ctrl+Y annulent aussi bien une équipe, une surcharge, un déplacement de produit qu'une date de vague.
 
 ## 7. Stress du portefeuille

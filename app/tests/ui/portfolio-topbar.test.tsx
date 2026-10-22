@@ -15,26 +15,27 @@ beforeEach(() => { ids = threeProducts().ids; });
 afterEach(cleanup);
 
 describe('top bar with several products', () => {
-  it('shows the Produit selector (names and wave labels) and the Modifier toggle, default "Tous les produits"', () => {
+  it('shows the single Vue selector (Portefeuille, vagues, produits with wave labels) and the Modifier toggle, default "Tous les produits"', () => {
     mountApp();
-    const sel = screen.getByRole('combobox', { name: 'Produit' }) as HTMLSelectElement;
-    expect([...sel.options].map((o) => o.textContent)).toEqual(['Produit 1 — Vague 1', 'B — Vague 1', 'C — Wave 2']);
-    expect(sel.value).toBe(ids[0]);
+    const sel = screen.getByRole('combobox', { name: 'Vue' }) as HTMLSelectElement;
+    expect([...sel.options].map((o) => o.textContent)).toEqual(['Portefeuille', 'Vague : Vague 1', 'Vague : Wave 2', 'Produit : Produit 1 — Vague 1', 'Produit : B — Vague 1', 'Produit : C — Wave 2']);
+    expect(sel.value).toBe(`product:${ids[0]}`);
+    expect(screen.queryByRole('combobox', { name: 'Périmètre d\'affichage' })).toBeNull();
     const group = screen.getByRole('radiogroup', { name: 'Modifier' });
     expect((within(group).getByLabelText('Tous les produits') as HTMLInputElement).checked).toBe(true);
     expect((within(group).getByLabelText('Ce produit seulement') as HTMLInputElement).checked).toBe(false);
   });
   it('switching the product changes the KPI figures and the team shown; the choice is saved with the file but is no undo step', async () => {
     mountApp('team-in');
-    fireEvent.change(screen.getByRole('combobox', { name: 'Produit' }), { target: { value: ids[1] } });
+    fireEvent.change(screen.getByRole('combobox', { name: 'Vue' }), { target: { value: `product:${ids[1]}` } });
     act(() => setTeamTotal(40));
     const total = () => (screen.getByLabelText('Total AS-IS team (FTE)') as HTMLInputElement).value;
     await sectionReady(/Input team/);
     const kpiB = kpi(/^Savings Y/), teamB = total();
-    fireEvent.change(screen.getByRole('combobox', { name: 'Produit' }), { target: { value: ids[0] } });
+    fireEvent.change(screen.getByRole('combobox', { name: 'Vue' }), { target: { value: `product:${ids[0]}` } });
     expect(total()).not.toBe(teamB);
     expect(kpi(/^Savings Y/)).not.toBe(kpiB);
-    expect(screen.getByRole('status').textContent).toContain('Produit actif');
+    expect(screen.getByRole('status').textContent).toContain('Vue : produit Produit 1 (édité)');
     expect(JSON.parse(exportSnapshotJson().json).activeProductId).toBe(ids[0]);
     expect(pf().activeProductId).toBe(ids[0]);
     expect(screen.getByText(/Équipe de :/).textContent).toContain('Produit 1');
@@ -56,7 +57,7 @@ describe('top bar with several products', () => {
     expect(sidebar().querySelector('[data-group="portfolio"]')).toBeTruthy();
     act(() => { removeProduct(ids[2]); });
     expect(sidebar().querySelector('[data-group="portfolio"]')).toBeNull();
-    expect(screen.queryByRole('combobox', { name: 'Produit' })).toBeNull();
+    expect(screen.queryByRole('combobox', { name: 'Vue' })).toBeNull();
   });
   it('Welcome lists a Portefeuille card with its six sections', async () => {
     mountApp();
