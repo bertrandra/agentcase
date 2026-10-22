@@ -5,8 +5,8 @@
 .ac-skip:focus { outline: 2px solid var(--ac-focus); }
 .ac-table-wrap:focus-visible { outline-offset: -2px; }
 /* section headings keep one visual scale whatever level the outline needs (h1 > h2 > h3 without gaps) */
-:where(.ac-work) h2 { font-size: 1.05rem; color: var(--ac-blue); margin: .8rem 0 .3rem; }
-:where(.ac-work) h3 { font-size: .98rem; margin: .7rem 0 .3rem; }
+:where(.ac-work) h2 { font-size: 16px; font-weight: 600; line-height: 1.6; color: var(--ac-blue); margin: 1.5rem 0 1rem; }
+:where(.ac-work) h3 { font-size: 14px; font-weight: 600; line-height: 1.6; color: var(--ac-blue); margin: 1rem 0 .75rem; }
 .ac-live { max-width: 90vw; }
 /* reflow at 360px (WCAG 1.4.10): the top bar wraps and the grid column may shrink below its widest child, so the page itself never scrolls sideways */
 @media (max-width: 760px) {

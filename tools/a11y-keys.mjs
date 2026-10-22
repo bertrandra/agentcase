@@ -22,7 +22,7 @@ export async function tabWalk(page, note, cap = 600) {
   const seen = [], keys = new Set();
   let trap = null;
   for (let i = 0; i < cap; i++) {
-    await page.keyboard.press('Tab');
+    await page.keyboard.press('Tab'); await page.waitForTimeout(200);   // let the 150 ms `transition: all` of the nav buttons finish: the outline grows from 0 to 2px
     const f = await page.evaluate(describeFocus);
     if (!f) break;                                   // focus left the document (browser chrome) or went to the body
     if (keys.has(f.key)) { if (seen.length && f.key === seen[0].key) break; trap = f; break; }   // wrapped to the first stop = a full cycle; anything else = a trap
@@ -51,7 +51,7 @@ export async function skipLink(page, note) {
 export async function dialogCheck(page, note, opener) {
   if (!(await page.$('[role=dialog],[aria-modal=true],dialog[open]'))) return false;
   for (let i = 0; i < 40; i++) {
-    await page.keyboard.press('Tab');
+    await page.keyboard.press('Tab'); await page.waitForTimeout(200);   // let the 150 ms `transition: all` of the nav buttons finish: the outline grows from 0 to 2px
     const f = await page.evaluate(describeFocus);
     if (f && !f.inDialog) { note('kbd-dialog-focus-escapes', 'serious', 'Tab leaves the open dialog', f.key); break; }
   }

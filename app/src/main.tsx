@@ -6,6 +6,7 @@ import { App } from '@/ui/App';
 import '@/ui/theme/fonts.css';
 import '@/ui/theme/tokens.css';
 import '@/ui/theme/shell.css';
+import '@/ui/theme/content.css';
 
 const embedded = loadEmbeddedCase(document);   // a saved HTML copy opens its own case before the first paint
 createRoot(document.getElementById('root')!).render(<App />);
