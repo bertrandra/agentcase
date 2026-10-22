@@ -6,8 +6,13 @@ import personaSections from './data/personaSections.json';
 export interface SectionDef { id: string; group: string; groupSeq: number; label: string; description: string; tag?: string; mvp?: boolean }
 export interface GroupDef { id: string; label: string; order: number; description?: string }
 
+/** The Portefeuille group (multi-product, spec 6.3): in the catalogue like any group, but only shown from two products on (`ui/zones/portfolioNav.ts`). */
+export const PORTFOLIO_GROUP_ID = 'portfolio';
 export const SECTIONS = sectionCatalog as SectionDef[];
 export const GROUPS = [...(groups as GroupDef[])].sort((a, b) => a.order - b.order);
+/** The 79 case sections / 14 groups of the legacy file: what the legacy-shaped artefacts (parameters workbook, legacy oracle tests) describe. */
+export const LEGACY_SECTIONS = SECTIONS.filter((s) => s.group !== PORTFOLIO_GROUP_ID);
+export const LEGACY_GROUPS = GROUPS.filter((g) => g.id !== PORTFOLIO_GROUP_ID);
 export const DEFAULT_PERSONA_SECTIONS = personaSections as Record<string, string[]>;
 export const sectionById = (id: string): SectionDef | undefined => SECTIONS.find((s) => s.id === id);
 

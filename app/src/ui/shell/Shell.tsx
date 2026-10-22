@@ -1,6 +1,7 @@
 import { useEffect } from 'react';
 import '../theme/nav.css';
 import '../theme/a11y.css';
+import '../theme/portfolio.css';
 import { SectionHost } from '../zones/SectionHost';
 import { sectionById } from '../zones/registry';
 import { useNavModel } from '../zones/navModel';

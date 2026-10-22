@@ -484,5 +484,18 @@
   "group": "configure",
   "groupSeq": 20,
   "tag": "supports"
+ },
+ {
+  "id": "products",
+  "group": "portfolio",
+  "groupSeq": 10,
+  "tag": "supports",
+  "mvp": true
+ },
+ {
+  "id": "overrides",
+  "group": "portfolio",
+  "groupSeq": 20,
+  "tag": "supports"
  }
 ]

@@ -12,7 +12,8 @@ import { CONFIGURE } from './configure';
 import { FACTORY } from './factory';
 import { REFSHARE } from './refshare';
 import { MODEL_ENGINE } from './model-engine';
+import { PORTFOLIO } from './portfolio';
 import type { SectionMap } from './types';
 
 /** Section id → lazy component. Sections not listed render the placeholder. Each group file is edited by one area only. */
-export const SECTION_COMPONENTS: SectionMap = { ...FRAME, ...BASELINE, ...SCOPE, ...TUNE, ...ECONOMICS, ...STRESS, ...VERDICT, ...VERIFY, ...PRESENT, ...DEFEND, ...CONFIGURE, ...FACTORY, ...REFSHARE, ...MODEL_ENGINE };
+export const SECTION_COMPONENTS: SectionMap = { ...FRAME, ...BASELINE, ...SCOPE, ...TUNE, ...ECONOMICS, ...STRESS, ...VERDICT, ...VERIFY, ...PRESENT, ...DEFEND, ...CONFIGURE, ...FACTORY, ...REFSHARE, ...MODEL_ENGINE, ...PORTFOLIO };

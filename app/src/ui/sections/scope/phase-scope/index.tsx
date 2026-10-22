@@ -1,9 +1,12 @@
 import { selectAllPhases } from '@/controllers/scope';
 import { phaseTiles } from '@/domain/scope/phaseTiles';
 import { useCtx } from '@/store/hooks';
+import { OverrideBadge } from '@/ui/widgets/OverrideBadge';
 import { SectionFrame } from '@/ui/zones/SectionFrame';
 import '../scope-tools.css';
 import { Tile } from './Tile';
+
+const OVERRIDES = ['phaseOff', 'selectedArtefacts'] as const;
 
 const help = (
   <>
@@ -17,12 +20,14 @@ const help = (
 export default function PhaseScopeSection() {
   const { tiles, selected, total } = phaseTiles(useCtx());
   return (
-    <SectionFrame title="🎯 Phase scope" help={help}
+    <SectionFrame title="🎯 Phase scope" help={help} overrides={OVERRIDES}
       input={
         <div className="ac-form-row">
           <button type="button" onClick={() => selectAllPhases(true)}>Select all</button>
           <button type="button" onClick={() => selectAllPhases(false)}>Clear all</button>
           <span className="ac-muted">In scope : <strong>{selected}/{total} art.</strong></span>
+          <OverrideBadge refKey="phaseOff" label="Phases désactivées" />
+          <OverrideBadge refKey="selectedArtefacts" label="Artefacts SDLC retenus" />
         </div>
       }
       result={

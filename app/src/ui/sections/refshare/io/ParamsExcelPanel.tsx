@@ -2,12 +2,13 @@ import { useRef, useState } from 'react';
 import content from '@/content/refshare/io.json';
 import { exportParamsWorkbook, importParamsWorkbook, type ParamsFile } from '@/controllers/excelParams';
 import { toast } from '@/ui/uiState';
-import { SECTIONS } from '@/ui/zones/registry';
+import { LEGACY_SECTIONS } from '@/ui/zones/registry';
 import { Callout, Panel } from '@/ui/widgets/cards';
 
 const T = content.texts;
 /** The section catalogue travels with the workbook calls: the store layer must not import the UI's registry. */
-const ENV = { sections: SECTIONS };
+/** The workbook describes the 79 case sections (the Portefeuille sheets come with the multi-product Excel phase). */
+const ENV = { sections: LEGACY_SECTIONS };
 const EXPORTS = [
   { scope: 'all', label: '⬇️ Export all', hint: 'Full workbook — every sheet (parameters, team, scope, personas, Factory meta-model, …).' },
   { scope: 'no-factory', label: '⬇️ Export all except Factory', hint: 'Everything except the Factory meta-model (FM…) sheets.' },

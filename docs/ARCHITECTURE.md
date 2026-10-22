@@ -176,13 +176,28 @@ Also `RestoreBanner` (autosave offer), a skip link, and an `aria-live="polite"` 
 
 **Navigation comes from the document**, not from code tables: `ui/zones/navModel.ts` builds the sidebar from `doc.PERSONAS`,
 `PERSONA_SECTIONS`, `PERSONA_SECTION_ORDER`, `GROUPS`, `sectionGroups`, `dynamicSections` and the guided sequences, falling back to the
-bundled legacy catalogue (`ui/zones/data/*.json`: 79 sections in 14 groups). Domain logic is in `domain/nav/` (`layout`, `groupBar`,
+bundled legacy catalogue (`ui/zones/data/*.json`: 81 sections in 15 groups, the 15th being the multi-product Portefeuille group). Domain logic is in `domain/nav/` (`layout`, `groupBar`,
 `moves`, `sequence`); edits go through `controllers/nav*.ts` and the Persona-management section (sequence editor, menu layout board,
 persona layout board). The same data round-trips through the parameters workbook.
 
+**Multi-product interface (P3, UI only; no calculation changed).** Progressive disclosure (spec F23): with ONE product nothing is added (no
+selector, banner, badge, nav group). From two products on (`useIsMulti`, `store/portfolioHooks.ts`; selectors return stable references):
+- `shell/ProductBar.tsx` (top bar): "Produit" selector (name and wave label) and the "Modifier : tous les produits / ce produit seulement"
+  radio group (`product.setActive` / `product.setEditScope`, non-undoable). Default scope: **tous les produits** (the entry team always goes
+  to the active product whatever the scope). The KPI bar shows the ACTIVE product (portfolio scope is P4).
+- `zones/SectionFrame.tsx` shows `widgets/ProductBanner.tsx` ("Produit : X (hérité / n surcharges)") for sections that declare override refs;
+  `widgets/OverrideBadge.tsx` (`OverrideBadge`, `InheritedField`): chip hérité / surchargé with the common value as tooltip, "Revenir au commun",
+  "Appliquer à tous les produits" (controllers `productOverrides`; state through `domain/portfolio` `isOverridden`). Wired into: Scope selection
+  (SDLC and regulatory artefacts), Phase scope, S-curve, Normes / regulatory include, Engagement context (context and coefficients), Location mix;
+  team-in shows `TeamOwnerLabel` ("Équipe de : X"). Not wired (left for later): the other overridable keys have no badge; the banner still applies.
+- Navigation: `zones/portfolioNav.ts` adds the **Portefeuille** group and its sections to the persona lists only with 2+ products (document-driven
+  data in `sectionCatalog/groups/sectionGroups.json`); `frame/home/AddProductEntry.tsx` (Welcome) adds the first extra product.
+  Sections `portfolio/products` (table and P2 actions, Ctrl+Z restores a removed product; indicators from the product's own `computeCase`) and
+  `portfolio/overrides` (common vs product value per overridden key, revert, apply to all).
+
 **Sections.** One folder per section under `ui/sections/<group>/<id>/` with a default-exported `index.tsx` that composes
 `SectionFrame` (`input` / `result` / `diagnostic` zones and a `help` note). `ui/sections/<group>.ts` maps section id → lazy loader;
-`ui/sections/index.ts` merges the 14 group maps into `SECTION_COMPONENTS`.
+`ui/sections/index.ts` merges the 15 group maps into `SECTION_COMPONENTS`.
 
 | Group | Sections | Group | Sections |
 |---|---|---|---|
@@ -194,7 +209,7 @@ persona layout board). The same data round-trips through the parameters workbook
 | stress | 4 | refshare | 10 |
 | verdict | 3 | model-engine | 6 |
 
-Total **79** (`ui/zones/data/sectionCatalog.json`, counted per group with `node`); 79 loaders are registered in the group files. A
+Plus **portfolio** (2: `products`, `overrides`, folders `ui/sections/portfolio/<id>/`, map `ui/sections/portfolio.ts`). Total **81** (`ui/zones/data/sectionCatalog.json`, counted per group with `node`); 81 loaders are registered in the group files. A
 section id with no loader renders `Placeholder`; dynamic sections created by the user render through `DynamicSection` (Board).
 Shared widgets in `ui/widgets/`: `fields`, `CommitField`, `CommitNumber`, `DataTable`, `ChartPanel`, `Rich`, `Tabs`, `cards`, ...
 Business data is never held in `useState`.

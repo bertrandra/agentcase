@@ -1,13 +1,14 @@
 import { existsSync, readdirSync, readFileSync } from 'node:fs';
 import { produce } from 'immer';
-import { SECTIONS } from '@/ui/zones/registry';
+import { LEGACY_SECTIONS } from '@/ui/zones/registry';
 import { makeDefaultDoc } from '@/store/instance';
 import { applyParamsPatch } from '@/store/persistence/excel/params/apply';
 import type { ParamsEnv } from '@/store/persistence/excel/params';
 import { sameJson } from '@/store/persistence/excel/params';
 import type { Doc } from '@/store/types';
 
-export const ENV: ParamsEnv = { sections: SECTIONS };
+/** The workbook (and the legacy file it is compared with) knows the 79 case sections, not the Portefeuille ones. */
+export const ENV: ParamsEnv = { sections: LEGACY_SECTIONS };
 const DIR = 'fixtures/xlsx';
 export const xlsxIds = (): string[] => (existsSync(DIR) ? readdirSync(DIR).filter((f) => f.endsWith('.imported.json')).map((f) => f.replace('.imported.json', '')).sort() : []);
 export function legacyXlsx(id: string): ArrayBuffer {

@@ -4,6 +4,8 @@ import { CeilingImpact } from './CeilingImpact';
 import { PhaseList } from './PhaseList';
 import { ScopeToolbar } from './ScopeToolbar';
 
+const OVERRIDES = ['selectedArtefacts', 'selectedRegArtefacts', 'artefactsEdited'] as const;
+
 const help = (
   <>
     <p>Select the individual artifacts (grouped by phase) included in the scenario. Tick a phase header to toggle all its artifacts, or pick a few target artifacts.
@@ -15,7 +17,7 @@ const help = (
 /** Scope — target artifact selection: choose the scope, adjust per-artefact automation and see what holds the potential back. */
 export default function ScopeSelSection() {
   return (
-    <SectionFrame title="Scope — target artifact selection" help={help}
+    <SectionFrame title="Scope — target artifact selection" help={help} overrides={OVERRIDES}
       input={<><ScopeToolbar /><PhaseList /><AdjustTable /></>} result={<CeilingImpact />} />
   );
 }

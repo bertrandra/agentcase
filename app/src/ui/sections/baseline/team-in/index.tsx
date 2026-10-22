@@ -3,6 +3,7 @@ import { addTeamRow } from '@/controllers/team';
 import { alignTeam, buildTeam, setTeamTotal } from '@/controllers/baseline';
 import { teamWeights } from '@/domain/baseline/teamWeights';
 import { useCtx } from '@/store/hooks';
+import { TeamOwnerLabel } from '@/ui/widgets/ProductBanner';
 import { SectionFrame } from '@/ui/zones/SectionFrame';
 import { CommitNumber } from '../CommitNumber';
 import { MixBanner } from './MixBanner';
@@ -25,6 +26,7 @@ export default function TeamInSection() {
   const total = Math.round(W.totalFTE * 100) / 100;
   const input = (
     <>
+      <TeamOwnerLabel />
       <div className="ac-callout" role="note">Build the current team row by row: skill, grade, location, number of FTE. Day rate and annual cost are computed from the Rate Card. This is the AS-IS baseline.</div>
       <div className="ac-form-row">
         <label className="ac-field"><span className="ac-field-l">Total AS-IS team (FTE)</span>

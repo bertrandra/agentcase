@@ -6,6 +6,8 @@ import { SectionFrame } from '@/ui/zones/SectionFrame';
 import { CoefTable } from './CoefTable';
 import { ContextCard, DiscountCard } from './ContextCard';
 
+const OVERRIDES = ['values.engagementCtx', 'engageCoef'] as const;
+
 const help = (
   <>
     <p>The contractual &amp; infrastructure frame (MSC / MSI / STA) sets how much of the delivery system Capgemini controls — and therefore the reachable maturity, the effective
@@ -21,7 +23,7 @@ const help = (
 export default function EngagementContextSection() {
   const name = useDoc((d) => (d.customerName as string | undefined) ?? '');
   return (
-    <SectionFrame title="🧭 Engagement context" help={help}
+    <SectionFrame title="🧭 Engagement context" help={help} overrides={OVERRIDES}
       input={
         <>
           <Panel title="🏷️ Customer name">

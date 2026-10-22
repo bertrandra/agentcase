@@ -4,6 +4,7 @@ import { useCtx, useDoc } from '@/store/hooks';
 import { CommitNumber } from '@/ui/widgets/CommitNumber';
 import { Field } from '@/ui/widgets/fields';
 import { Panel } from '@/ui/widgets/cards';
+import { OverrideBadge } from '@/ui/widgets/OverrideBadge';
 
 const OPTIONS = [
   ['MSC', 'MSC — Managed Service · Capgemini infrastructure'],
@@ -31,6 +32,7 @@ export function ContextCard() {
       <Field label="Engagement context">
         <select value={value} onChange={(e) => setEngagementCtx(e.target.value)}>{OPTIONS.map(([v, l]) => <option key={v} value={v}>{l}</option>)}</select>
       </Field>
+      <OverrideBadge refKey="values.engagementCtx" label="Contexte d’engagement" />
       <ContextSummary />
     </Panel>
   );

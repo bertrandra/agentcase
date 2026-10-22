@@ -6,7 +6,7 @@ import { addPersona, addPersonaSection, removePersonaSection } from '@/controlle
 import { appStore } from '@/store/instance';
 import { NavZone } from '@/ui/shell/NavZone';
 import Personas from '@/ui/sections/configure/personas';
-import { SECTIONS } from '@/ui/zones/registry';
+import { LEGACY_SECTIONS, SECTIONS } from '@/ui/zones/registry';
 import { legacyText, tablesOf } from '../../helpers/economics';
 import { missingNumbers, renderedText } from '../../helpers/parity';
 import { loadCase, pdc, PDC_FIXTURES } from '../../helpers/pdc';
@@ -127,7 +127,7 @@ describe('the navigation honours the document’s PERSONA_SECTIONS', () => {
     render(<NavZone />);
     expect(labels()).toEqual([]);
     act(() => setPersona('advanced'));
-    expect(labels()).toHaveLength(SECTIONS.length);
+    expect(labels()).toHaveLength(LEGACY_SECTIONS.length);   // one product: Advanced sees the 79 case sections
   });
   it('a document without PERSONA_SECTIONS falls back to the shipped defaults', () => {
     const s = loadCase('golden');

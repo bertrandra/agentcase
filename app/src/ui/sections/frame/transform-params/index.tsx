@@ -7,6 +7,8 @@ import { SectionFrame } from '@/ui/zones/SectionFrame';
 import { CrossCutting } from './CrossCutting';
 import { NormsPanel } from './NormsPanel';
 
+const OVERRIDES = ['selectedNorms', 'regInclude', 'selectedRegArtefacts'] as const;
+
 const help = (
   <>
     <p>Picking an industry profile adds its <strong>regulatory artefacts</strong> to the scope: <code>glass ceiling</code> = Σ(w × humanSup) / Σw, now over the SDLC and the regulatory artefacts.
@@ -21,7 +23,7 @@ const help = (
 export default function TransformParamsSection() {
   const industry = useDoc((d) => d.dom.values.industry ?? 'NONE'), use = useDoc((d) => !!d.regUse);
   return (
-    <SectionFrame title="🏛️ Industry / regulatory profile" help={help}
+    <SectionFrame title="🏛️ Industry / regulatory profile" help={help} overrides={OVERRIDES}
       input={
         <>
           <Panel title="Industry / regulatory profile">

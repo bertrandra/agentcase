@@ -17,6 +17,14 @@ When releasing, follow [docs/BUMP_PROCEDURE.md](docs/BUMP_PROCEDURE.md) (§7 for
 
 ## [Unreleased]
 
+- **Multi-product, phase P3 (interface).** With 2+ products: "Produit" selector and "Modifier : tous / ce produit seulement" toggle in the top bar,
+  "Produit : X (hérité / n surcharges)" banner in sections, reusable `OverrideBadge` / `InheritedField` (hérité / surchargé chips, "Revenir au
+  commun", "Appliquer à tous les produits") wired into scope, phases, S-curve, norms, engagement context and location mix, "Équipe de : X" label,
+  new nav group "Portefeuille" with sections Produits and Surcharges (81 sections), "Ajouter un produit" on Welcome. A single product looks
+  and behaves exactly as before (ui-parity 0 divergences; the parity tool skips the Portefeuille group). No calculation change. New tests
+  `tests/ui/portfolio-*.test.tsx`; section counts updated in a few tests; `npm run a11y -- --fixtures pf-three-products` (generated with
+  `scripts/portfolio-fixture.ts`) has no violation.
+
 - **Multi-product, phase P2 (store, commands, persistence).** The store's source of truth is now the `Portfolio`; `doc` is derived
   (the active product's effective case), so the ~200 existing commands, the 79 sections, controllers and the Excel/report adapters are
   unchanged. An address layer maps each case-command change to the portfolio (team -> product, whitelisted key -> override or common,
