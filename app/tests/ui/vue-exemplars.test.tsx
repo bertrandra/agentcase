@@ -105,8 +105,8 @@ describe('generic fallbacks of the kinds that follow the View', () => {
   });
 
   it('I-input: the per-product synthesis with the ETP total', async () => {
-    mountApp('scope-sel'); view('portfolio');
-    await sectionReady(/Scope/);
+    mountApp('maturity-map'); view('portfolio');
+    await sectionReady(/Maturity levels/);
     const total = aggregateTeams(pf(), scheduledProducts(pf()).map((s) => s.product.id)).total.toFixed(1);
     expect(totalRow(/Inputs by product — Portfolio/).textContent).toContain(total);
     expect(screen.getAllByRole('button', { name: /^Edit this product/ })).toHaveLength(3);
