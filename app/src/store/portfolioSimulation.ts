@@ -2,8 +2,10 @@ import { useMemo, useSyncExternalStore } from 'react';
 import { createStore } from 'zustand/vanilla';
 import { pfDecision, pfStressFingerprint, type PfStress, type VerdictGroup } from '@/domain/portfolio';
 import type { Decision } from '@/domain/verdict';
+import { mcDrawsOf, mcSeedOf } from '@/domain/stress';
 import { useCorePortfolio, useDisplayScope } from './consolidationHooks';
-import { usePortfolio } from './hooks';
+import { useCtx, usePortfolio } from './hooks';
+import { useIsMulti } from './portfolioHooks';
 
 /** Draws and seed of the next portfolio run (view state: neither saved nor undoable, like the single-case inputs they mirror). */
 export interface PfSimParams { draws: number; seed: number }
@@ -38,4 +40,16 @@ export function usePortfolioDecision(group: VerdictGroup | null): Decision | nul
 export function useWaveDecisions(): { id: string; name: string; decision: Decision | null }[] {
   const core = useCorePortfolio(), { run } = usePortfolioSimulation();
   return useMemo(() => core.waves.filter((w) => run?.waves.some((x) => x.id === w.id)).map((w) => ({ id: w.id, name: w.name, decision: run ? pfDecision(core, run, { kind: 'wave', id: w.id }) : null })), [core, run]);
+}
+
+/** Draws and seed shown for the next run: those the user set here, else those of the active product's Monte Carlo inputs. */
+export function usePfSimParams(): PfSimParams {
+  const set = useSyncExternalStore(pfSimStore.subscribe, () => pfSimStore.getState().params), c = useCtx();
+  return useMemo(() => set ?? { draws: mcDrawsOf(c), seed: mcSeedOf(c) }, [set, c]);
+}
+
+/** The group the Decision section speaks for: the portfolio or a wave when the display scope says so and there are two products or more; null = the active product. */
+export function useVerdictGroup(): VerdictGroup | null {
+  const scope = useDisplayScope(), multi = useIsMulti(), key = `${scope.kind}:${scope.kind === 'wave' ? scope.id : ''}`;
+  return useMemo(() => (multi ? groupOf(scope) : null), [multi, key]);   // eslint-disable-line react-hooks/exhaustive-deps
 }

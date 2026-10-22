@@ -7,4 +7,5 @@ export const PORTFOLIO: SectionMap = {
   'knowledge-transfer': () => import('./portfolio/knowledge-transfer'),
   waves: () => import('./portfolio/waves'),
   consolidation: () => import('./portfolio/consolidation'),
+  'portfolio-stress': () => import('./portfolio/stress'),
 };
