@@ -49,7 +49,7 @@ on vise, à quel coût et à quel moment (§ 3.5).
   héritée ni fusionnée : ajouter une équipe à un produit n'affecte pas les autres.
 - **F3** — Dupliquer un produit copie l'équipe et les surcharges (point de départ pratique pour des produits voisins).
 - **F4** — Importer / exporter l'équipe d'un produit (Excel, déjà existant pour le cas actuel) ; l'import d'un fichier multi-produits indique
-  la colonne « Produit ».
+  la colonne “Product”.
 
 ### 3.2 Périmètre : commun par défaut, différent si besoin
 
@@ -59,7 +59,7 @@ on vise, à quel coût et à quel moment (§ 3.5).
   `selectedNorms`) et **pas** à la granularité de l'élément : une surcharge de `selectedArtefacts` remplace la liste entière.
   *(Raison : lisible, prévisible, sans fusion ambiguë. Voir décision D-M2.)*
 - **F7** — L'interface affiche pour chaque champ concerné un état : **hérité** (valeur commune), **surchargé** (puce + valeur du commun en infobulle)
-  et une action « Revenir au commun ». Une action « Appliquer à tous les produits » écrit la valeur au niveau commun et supprime les
+  et une action “Revert to common”. Une action “Apply to all products” écrit la valeur au niveau commun et supprime les
   surcharges identiques.
 - **F8** — Quand le périmètre commun change, les produits qui **héritent** suivent automatiquement ; les produits qui **surchargent** ne bougent
   pas (un bandeau liste les produits surchargés concernés).
@@ -87,7 +87,7 @@ on vise, à quel coût et à quel moment (§ 3.5).
   haute (économies, coût, économies sur N ans, vélocité, retour, automatisation, plafond de verre) sont ceux du périmètre choisi.
 - **F18** — **Gantt** : une ligne par vague (barre agrégée) avec produits dépliables ; les jalons d'adoption (L1 → L4), le retour et le premier vFTE
   sont ceux de chaque produit.
-- **F19** — **Rapport / Excel / HTML / photos instantanées** : le fichier de résultats contient une feuille « Portefeuille », une feuille par vague
+- **F19** — **Rapport / Excel / HTML / photos instantanées** : le fichier de résultats contient une feuille “Portfolio”, une feuille par vague
   et une feuille par produit ; le rapport critique est produit pour le périmètre d'affichage choisi.
 - **F20** — **Stress et verdict** : scénarios et Monte Carlo s'exécutent par produit (cas effectif) ; la vue portefeuille agrège les tirages
   (§ 6.3). Le verdict (décision) existe au niveau produit et au niveau portefeuille.
@@ -108,7 +108,7 @@ En multi-produits, ces réglages deviennent **par produit**, sur un hub de porte
   du produit (≤ plafond du contexte) ; (e) `curationFTE` et `setupBase` du produit ; (f) `ktLeadMonths` (≥ 0) : préparation du transfert avant le démarrage
   de la vague (F28).
 - **F26** — **Valeurs par défaut identiques à aujourd'hui.** Un produit créé hérite du hub commun : mêmes réponses, même cible, mêmes coûts que le cas
-  unique actuel. Chaque champ du sous-ensemble suit la mécanique « hérité / surchargé » de F7 (puce, retour au commun, application à tous).
+  unique actuel. Chaque champ du sous-ensemble suit la mécanique “inherited / overridden” de F7 (puce, retour au commun, application à tous).
 - **F27** — **Effets propres au produit.** Le sous-ensemble d'un produit agit **uniquement** sur ce produit : multiplicateur de potentiel (`CC_MULT`), niveau
   CC par année depuis le mois 0 du produit, jours de KT évités (calculés sur l'équipe d'entrée du produit), coût de mise en place et coût annuel de curation.
   Il alimente les mêmes champs du cas effectif (aucune nouvelle formule dans le moteur).
@@ -125,7 +125,7 @@ En multi-produits, ces réglages deviennent **par produit**, sur un hub de porte
 
 ### 3.6 Compatibilité
 
-- **F21** — Un fichier actuel (cas unique) s'ouvre comme un portefeuille d'**un produit « Produit 1 »** et d'**une vague « Vague 1 »** démarrant au
+- **F21** — Un fichier actuel (cas unique) s'ouvre comme un portefeuille d'**un produit “Product 1”** et d'**une vague “Wave 1”** démarrant au
   mois 0. Tous les chiffres sont **identiques** à l'ancien affichage (critère d'acceptation A1).
 - **F22** — Un portefeuille à un seul produit peut être **réexporté en fichier cas unique** (sans perte) pour les outils et les utilisateurs
   qui n'en sont pas au multi-produits.
@@ -216,7 +216,7 @@ resolveProduct(p: Portfolio, productId): CaseState   // fonction pure du domaine
 - Le paquet de calcul canonique (`calculationPackage`) devient : un paquet par produit + un paquet portefeuille ; la détection d'obsolescence
   compare les deux niveaux.
 - Migration : `fromSnapshot` détecte `_schema` ; un cas unique est enveloppé (F21). Aucune table de migration complexe : le contenu du cas
-  devient `common` + le produit « Produit 1 » reçoit `teamIn`.
+  devient `common` + le produit “Product 1” reçoit `teamIn`.
 
 ### 4.5 Excel
 
@@ -292,12 +292,12 @@ Le domaine n'importe rien d'autre que le domaine existant. `computeCase` reste l
 
 `product.add / rename / duplicate / archive / remove / setNote`, `product.setTeam*` (réutilise les commandes équipe existantes, adressées par
 `productId`), `product.setOverride(key, value)`, `product.clearOverride(key)`, `product.applyToCommon(key)`, `portfolio.setCommon(key, value)`
-(réutilise les commandes de paramètres existantes quand le produit actif est « hérité »), `wave.add / rename / remove / reorder / setStart`,
+(réutilise les commandes de paramètres existantes quand le produit actif est “inherited”), `wave.add / rename / remove / reorder / setStart`,
 `wave.assign(productId, waveId)`, `product.setOffset`, `portfolio.setHorizon`.
 
 Règle d'adressage : les **commandes existantes** (≈ 202) gardent leur signature ; une couche d'**adressage** décide si l'écriture va dans
-`common` (clé héritée) ou dans `products[active].overrides` (clé déjà surchargée, ou mode « modifier ce produit seulement » actif).
-Un interrupteur visible « Modifier : tous les produits / ce produit seulement » (par défaut : *ce produit seulement* pour l'équipe,
+`common` (clé héritée) ou dans `products[active].overrides` (clé déjà surchargée, ou mode “edit this product only” actif).
+Un interrupteur visible “Edit: all products / this product only” (par défaut : *ce produit seulement* pour l'équipe,
 *tous les produits* pour le périmètre tant que le produit hérite) évite les modifications involontaires.
 
 ### 6.2 État d'interface (non annulable)
@@ -308,17 +308,17 @@ l'état actuel), sauf `activeProductId` persisté dans le document pour qu'un fi
 ### 6.3 Sections
 
 - Les **79 sections existantes** se branchent sur `useCtx()` qui renvoie le **cas effectif du produit actif** : aucune modification de leur
-  logique, seulement un bandeau « Produit : X (hérité / surchargé) » dans `SectionFrame`.
-- **Nouveau groupe « Portefeuille »** (≈ 6 sections) :
+  logique, seulement un bandeau “Product: X (inherited / overridden)” dans `SectionFrame`.
+- **Nouveau groupe “Portfolio”** (≈ 6 sections) :
 
 | Section | Contenu |
 |---|---|
 | Produits | Tableau des produits : équipe (ETP), vague, décalage, état (hérité / n surcharges), indicateurs clés, actions F1–F4. |
-| Surcharges | Par produit, liste des clés surchargées avec valeur commune vs valeur produit, « Revenir au commun », « Appliquer à tous ». |
+| Overrides | Par produit, liste des clés surchargées avec valeur commune vs valeur produit, “Revert to common”, “Apply to all products”. |
 | Vagues | Planche de vagues (colonnes) avec produits (cartes), date de démarrage, glisser-déposer (F10–F12). |
-| Knowledge transfer | Tableau F29 : un sous-ensemble par produit (domaines, état initial, cible, coûts, jours de KT évités, préparation), totaux, effet du hub par vague (F31) ; édition du sous-ensemble du produit actif (réutilise la section Knowledge Hub existante avec le bandeau « hérité / surchargé »). |
+| Knowledge transfer | Tableau F29 : un sous-ensemble par produit (domaines, état initial, cible, coûts, jours de KT évités, préparation), totaux, effet du hub par vague (F31) ; édition du sous-ensemble du produit actif (réutilise la section Knowledge Hub existante avec le bandeau “inherited / overridden”). |
 | Consolidation | Trajectoire du portefeuille : courbe cumulée, mensuel, par vague, par produit, retour, VAN, ROI (F15–F16). |
-| Stress portefeuille | Monte Carlo agrégé des produits planifiés, corrélation `ρ`, réduction du risque, par vague et par produit (P6) ; les scénarios restent par produit. |
+| Portfolio stress | Monte Carlo agrégé des produits planifiés, corrélation `ρ`, réduction du risque, par vague et par produit (P6) ; les scénarios restent par produit. |
 
 - Barre haute : sélecteur de **produit actif** et de **périmètre d'affichage** (visibles dès qu'il y a ≥ 2 produits, F23).
 - Le **Gantt** (« Planning ») gagne la vue vagues (F18).
@@ -334,9 +334,9 @@ l'état actuel), sauf `activeProductId` persisté dans le document pour qu'un fi
 ## 7. Parcours utilisateur
 
 1. L'utilisateur ouvre un fichier existant : il voit le même écran qu'avant (un produit, pas de sélecteur).
-2. « Ajouter un produit » (section Produits) : la barre haute fait apparaître le sélecteur ; le nouveau produit hérite du commun.
-3. Il remplit l'équipe du produit 2 ; il modifie le périmètre pour ce produit seulement (puce « surchargé »).
-4. Dans « Vagues », il crée « Vague 1 » (mois 0) et « Vague 2 » (mois 6) et y glisse les produits.
+2. “Add a product” (section Produits) : la barre haute fait apparaître le sélecteur ; le nouveau produit hérite du commun.
+3. Il remplit l'équipe du produit 2 ; il modifie le périmètre pour ce produit seulement (puce “overridden”).
+4. Dans “Waves”, il crée “Wave 1” (mois 0) et “Wave 2” (mois 6) et y glisse les produits.
 5. « Consolidation » montre la trajectoire du portefeuille ; la barre haute passe sur *Portefeuille* ; le rapport et le Gantt suivent.
 6. Ctrl+Z annule indifféremment une équipe, une surcharge, un déplacement de produit ou une date de vague.
 
@@ -346,7 +346,7 @@ l'état actuel), sauf `activeProductId` persisté dans le document pour qu'un fi
 |---|---|
 | **Performance** | 20 produits × horizon 60 mois : rafraîchissement d'un changement de produit < 150 ms (un seul produit recalculé grâce à la mémoïsation par produit) ; consolidation < 30 ms. Budget ajouté dans `app/perf-budget.json`. |
 | **Mémoire / taille** | Fichier de 20 produits < 1 Mo ; autosave diffée comme aujourd'hui. |
-| **Accessibilité** | Planche de vagues utilisable au clavier (déplacer un produit = commandes « Déplacer vers la vague… », flèches), annonces par la zone `aria-live`. Audit axe étendu (`npm run a11y`) aux nouvelles sections. |
+| **Accessibilité** | Planche de vagues utilisable au clavier (déplacer un produit = commandes “Move to wave…”, flèches), annonces par la zone `aria-live`. Audit axe étendu (`npm run a11y`) aux nouvelles sections. |
 | **Annulation** | Toute modification (y compris glisser-déposer) = une étape ; les gestes continus se coalescent (`coalesceKey`). |
 | **Sécurité** | Mêmes protections (`sanitize`, clés interdites, pas de HTML brut) ; les identifiants de produit / vague sont des chaînes d'une liste sûre. |
 | **Interface** | Même charte que le reste (parité UI legacy), pas de nouvelle bibliothèque. |
@@ -366,7 +366,7 @@ l'état actuel), sauf `activeProductId` persisté dans le document pour qu'un fi
 | **P0 — Cadrage** | Valider les décisions D-M1…D-M8 ; maquettes (Produits, Vagues, barre haute). | Décisions notées dans ce document. |
 | **P1 — Modèle et domaine** | `domain/portfolio/` (types, resolve, validate, timeline, consolidate, headline) ; tests de propriétés. | Invariants A2–A5 verts ; `computeCase` inchangé. |
 | **P2 — Store et persistance** ✅ réalisée | `Portfolio` à la place de `Doc` ; enveloppe de migration (F21) ; commandes produit / vague / surcharge ; adressage des commandes existantes ; autosave, multi-onglets, calcul canonique par produit. | Les 202 commandes passent le test d'annulation sur un portefeuille de 3 produits ; ouverture des 107 fixtures = A1. |
-| **P3 — Interface produit** ✅ réalisée | Sélecteur produit actif, bandeaux hérité / surchargé, sections Produits et Surcharges, mode « tous / ce produit ». | Parcours 1–3 (§ 7) ; audit axe sans violation. |
+| **P3 — Interface produit** ✅ réalisée | Sélecteur produit actif, bandeaux inherited / overridden, sections Products et Overrides, mode “all / this product”. | Parcours 1–3 (§ 7) ; audit axe sans violation. |
 | **P3b — Knowledge transfer par produit** ✅ interface réalisée | `domain/portfolio/knowledge.ts`, sous-ensemble dans `Product`, section Knowledge transfer, `ktLeadMonths`, imputation de l'infrastructure, feuilles Excel `KnowledgeSubsets` / `KnowledgeDomains`. | A11–A13 verts ; un produit avec hub par défaut = cas unique actuel (A1). |
 | **P4 — Vagues et consolidation** ✅ réalisée | Section Vagues (planche + clavier), Consolidation, barre haute par périmètre, Gantt par vague. | Parcours 4–6 ; budgets de performance. |
 | **P5 — Restitution** ✅ réalisée | Excel (paramètres et résultats), rapport, HTML, photos instantanées. | Parité cellule à cellule du mode mono-produit ; nouvelles feuilles validées par test. |
@@ -383,7 +383,7 @@ Chaque phase est livrée par une demande de fusion indépendante, avec les tests
 | **A2** | N produits **identiques** dans la même vague ⇒ la série consolidée = N × la série d'un produit. | Test de propriété. |
 | **A3** | Décaler une vague de *k* mois ⇒ la série consolidée est décalée de *k* ; la VAN calendaire est multipliée par `(1+r/12)^-k` ; le retour est décalé de *k*. | Test de propriété. |
 | **A4** | Σ(VAN calendaire des produits) = VAN du portefeuille ; idem économies, coût, setup, ETP. | Test de propriété (toutes fixtures). |
-| **A5** | Un produit qui hérite d'une clé suit le commun ; un produit qui la surcharge ne bouge pas ; « Revenir au commun » restaure l'héritage ; `applyToCommon` supprime les surcharges identiques. | Tests unitaires + propriété `fast-check`. |
+| **A5** | Un produit qui hérite d'une clé suit le commun ; un produit qui la surcharge ne bouge pas ; “Revert to common” restaure l'héritage ; `applyToCommon` supprime les surcharges identiques. | Tests unitaires + propriété `fast-check`. |
 | **A6** | Toute commande de portefeuille est annulable / rétablissable ; `undo∘apply = id`. | Étendre `tests/store/undo-property.test.ts` et le registre de commandes. |
 | **A7** | Un produit sans vague n'entre pas dans la consolidation et déclenche un avertissement. | Test. |
 | **A8** | Aucun chiffre de portefeuille n'est calculé en dehors de `domain/portfolio/consolidate` ; pas de somme dans `ui/`. | Revue + règle ESLint ciblée (interdiction de `reduce` financier dans `ui/sections/portfolio`). |
@@ -408,7 +408,7 @@ build seulement, on enregistre l'écart).
 | **D-M6** | `activeProductId` dans le document ou dans l'état d'interface | document / interface | **Document** (réouverture sur le même produit), sans étape d'annulation. | Recommandation acceptée (§ 15) |
 | **D-M7** | Corrélation entre produits dans Monte Carlo | indépendants / paramètre `ρ` | **`ρ` global**, défaut 0, en P6. | Recommandation acceptée (§ 15) |
 | **D-M8** | Versionnage | 19.x / 20.0.0 | **20.0.0** (changement de schéma de document, lecture des anciens fichiers conservée). | Recommandation acceptée (§ 15) |
-| **D-M9** | Nom d'interface : « Produit », « Application », « Service » | libre | **Produit** par défaut, libellé configurable dans les paramètres (futur). | Recommandation acceptée (§ 15) |
+| **D-M9** | Nom d'interface : “Product”, « Application », « Service » | libre | **Produit** par défaut, libellé configurable dans les paramètres (futur). | Recommandation acceptée (§ 15) |
 | **D-M10** | Granularité du sous-ensemble | domaines libres avec poids / catalogue fermé de domaines | **Domaines libres avec poids** (information et répartition de curation, sans effet sur le multiplicateur qui reste piloté par le niveau CC). | Recommandation acceptée (§ 15) |
 | **D-M11** | Réutilisation de connaissance entre produits (un domaine déjà ingéré pour le produit A baisse le coût du produit B) | ignorée en v1 / facteur de réutilisation | **Ignorée en v1** ; facteur `reusePct` par domaine en v2. | Recommandation acceptée (§ 15) |
 | **D-M12** | Imputation de l'infrastructure du hub | par produit / au prorata de l'effectif | **Par produit** en v1 (cohérent avec D-M5), prorata en option. | Recommandation acceptée (§ 15) |
@@ -417,7 +417,7 @@ build seulement, on enregistre l'écart).
 
 | Risque | Parade |
 |---|---|
-| Les commandes existantes écrivent au mauvais niveau (commun vs surcharge) | Couche d'adressage unique + test d'annulation sur portefeuille ; interrupteur visible « tous / ce produit ». |
+| Les commandes existantes écrivent au mauvais niveau (commun vs surcharge) | Couche d'adressage unique + test d'annulation sur portefeuille ; interrupteur visible “all / this product”. |
 | Régression des chiffres mono-produit | A1 sur les 107 fixtures dès P2, avant toute interface. |
 | Lenteur avec beaucoup de produits | Mémoïsation par produit ; consolidation linéaire ; budget de performance en CI. |
 | Confusion entre VAN produit et VAN portefeuille | Libellés explicites + infobulles (déjà en place sur la barre haute). |
@@ -456,7 +456,7 @@ Toutes les recommandations du § 12 ont été **acceptées** par le commanditair
 | **D-M6** | `activeProductId` est **dans le document**, sans étape d'annulation. | Champ `Portfolio.activeProductId` (le store, en P2, l'écrira hors historique). |
 | **D-M7** | Corrélation `ρ` globale, défaut 0, en P6. | Hors périmètre de P1. |
 | **D-M8** | Version **20.0.0**, livrée en P7. | `APP_VERSION` inchangée en P1. |
-| **D-M9** | Libellé d'interface **« Produit »** (configurable plus tard). | `envelopeCase` : « Produit 1 », « Vague 1 ». |
+| **D-M9** | Libellé d'interface **“Product”** (configurable plus tard). | `envelopeCase` : “Product 1”, “Wave 1”. |
 | **D-M10** | Domaines de connaissance **libres avec poids** ; information et répartition de curation, sans effet sur `CC_MULT`. | `KnowledgeSubset.domains` : validé (Σ = 100), jamais lu par le moteur. |
 | **D-M11** | Pas de réutilisation de connaissance entre produits en v1 (`reusePct` en v2). | Aucun terme croisé dans `knowledge.ts`. |
 | **D-M12** | Infrastructure du hub **par produit** par défaut ; option `byBaseEtp`. | `hub.infraAllocation` ; `allocateCents` (conservation au centime). |
@@ -476,20 +476,20 @@ Toutes les recommandations du § 12 ont été **acceptées** par le commanditair
 - **Architecture** : le portefeuille est la source de vérité du store ; `doc` en est dérivé (cas effectif du produit actif). Les commandes existantes sont inchangées ; une *couche d'adressage* (`store/address/`) réécrit leurs correctifs vers le portefeuille dans un seul `produceWithPatches`. Détail dans ARCHITECTURE.md § 4-5.
 - **Noms de commandes** : `product.setActive` et `product.setEditScope` (non annulables, hors historique et hors diffusion multi-onglets) ; `activeProductId` est enregistré avec le fichier (D-M6), `editScope` ne l'est jamais.
 - **Règle F22 d'enregistrement** : v1 si et seulement si le fichier se rouvre au même portefeuille (un produit, une vague, ni surcharge ni sous-ensemble, noms et décalage par défaut) ; sinon `agentcase.portfolio.v1`. L'enregistrement automatique garde toujours le portefeuille exact.
-- **Sélection de la portée** : « ce produit seulement » écrit dans `overrides` sans jamais toucher le commun ; une clé déjà surchargée est modifiée en surcharge quelle que soit la portée ; les clés hors liste blanche vont toujours au commun.
+- **Sélection de la portée** : “This product only” écrit dans `overrides` sans jamais toucher le commun ; une clé déjà surchargée est modifiée en surcharge quelle que soit la portée ; les clés hors liste blanche vont toujours au commun.
 - **Tests** : A1/A9 au niveau du store (107 fixtures, chemin d'ouverture réel), A5 (couche d'adressage), A6 (registre sur 3 produits / 2 vagues + propriété `fast-check` mêlant commandes de cas, produit, vague, surcharge, portée), persistance, obsolescence à deux niveaux, nettoyage (`sanitize`).
 
 ### Précisions d'implémentation de P3b
 
-- **Section « Knowledge hub » existante** : avec 2 produits ou plus, mêmes champs de formulaire (l'adressage écrit le sous-ensemble : « ce produit seulement » crée la valeur propre, « tous les produits » modifie le hub commun), puces `SubsetBadge` par champ (activation, réponses, cible, curation, mise en place, domaines, préparation) avec « Revenir au commun » (`product.setKnowledge` avec `clear`). « Appliquer à tous les produits » n'est pas proposé pour les champs du sous-ensemble (reporté). Le champ d'infrastructure passe dans la carte du hub commun (`HubSettings`).
-- **Domaines** : brouillon local (état d'interface) enregistré par « Enregistrer les domaines » ; poids ≠ 100 refusé par `dispatchChecked` avec message annoncé (`role="alert"`) ; libellé vide refusé côté interface.
+- **Section « Knowledge hub » existante** : avec 2 produits ou plus, mêmes champs de formulaire (l'adressage écrit le sous-ensemble : “This product only” crée la valeur propre, “All products” modifie le hub commun), puces `SubsetBadge` par champ (activation, réponses, cible, curation, mise en place, domaines, préparation) avec “Revert to common” (`product.setKnowledge` avec `clear`). “Apply to all products” n'est pas proposé pour les champs du sous-ensemble (reporté). Le champ d'infrastructure passe dans la carte du hub commun (`HubSettings`).
+- **Domaines** : brouillon local (état d'interface) enregistré par “Save the domains” ; poids ≠ 100 refusé par `dispatchChecked` avec message annoncé (`role="alert"`) ; libellé vide refusé côté interface.
 - **Préparation** : entier ≥ 0 ; une valeur invalide n'atteint pas le store ; le diagnostic `kt-lead-clamped` est repris dans la carte.
 - **Section « Knowledge transfer »** (`portfolio/knowledge-transfer`) : tableau F29 issu de `knowledgeTable` (filtre par vague, totaux des lignes affichées via `knowledgeTotals`), effet du hub par vague F31 (`waveEffects` : somme des écarts `hubView` des produits de la vague), contrôle de conservation de l'imputation (`infraView`) et diagnostics. Les feuilles Excel `KnowledgeSubsets` / `KnowledgeDomains` sont livrées en P5.
 
 ### Précisions d'implémentation de P4
 
-- **Sections** : « Vagues » (`portfolio/waves`) et « Consolidation » (`portfolio/consolidation`), 84 sections au catalogue. Planche : une colonne par vague puis « Non planifié » ; déplacement par glisser-déposer, flèches gauche / droite sur la carte et menu « Déplacer vers la vague… », toujours `wave.assign` (annulable, annoncé) ; décalage du produit et démarrage de la vague (mois, avec le mois calendaire issu de `startDate`) ; la colonne Vague du tableau Produits est modifiable par la même commande. Les totaux d'une vague sont ceux de `WaveView` ; l'effet du hub par vague reste dans Knowledge transfer (lien).
-- **Périmètre d'affichage (F17)** : champ de vue `displayScope` du portefeuille, commande `portfolio.setDisplayScope` non annulable, **non enregistré** (comme `editScope`) : un fichier se rouvre toujours sur le produit actif. Choisir « Produit : Y » active ce produit. Portefeuille / Vague : chiffres de `scopeHeadline` (vélocité, automatisation effective et plafond de verre pondérés par l'effectif d'entrée ; économies et coût de l'**année calendaire** de fin d'horizon ; « économies sur N ans » par composants). Un produit seul : barre inchangée.
+- **Sections** : “Waves” (`portfolio/waves`) et « Consolidation » (`portfolio/consolidation`), 84 sections au catalogue. Planche : une colonne par vague puis “Unscheduled” ; déplacement par glisser-déposer, flèches gauche / droite sur la carte et menu “Move to wave…”, toujours `wave.assign` (annulable, annoncé) ; décalage du produit et démarrage de la vague (mois, avec le mois calendaire issu de `startDate`) ; la colonne Vague du tableau Produits est modifiable par la même commande. Les totaux d'une vague sont ceux de `WaveView` ; l'effet du hub par vague reste dans Knowledge transfer (lien).
+- **Périmètre d'affichage (F17)** : champ de vue `displayScope` du portefeuille, commande `portfolio.setDisplayScope` non annulable, **non enregistré** (comme `editScope`) : un fichier se rouvre toujours sur le produit actif. Choisir “Product: Y” active ce produit. Portefeuille / Vague : chiffres de `scopeHeadline` (vélocité, automatisation effective et plafond de verre pondérés par l'effectif d'entrée ; économies et coût de l'**année calendaire** de fin d'horizon ; « économies sur N ans » par composants). Un produit seul : barre inchangée.
 - **Consolidation** : `consolidationView` (cartes, trésorerie cumulée portefeuille + une courbe par vague, tableaux par vague et par produit, ligne de total = en-tête du portefeuille, flux par année, diagnostics `unscheduled`, `kt-lead-clamped`, `target-capped`, `hub-unused` et `truncated` — produit coupé par l'horizon, information).
 - **Gantt (F18)** : barre par vague de `portfolioGantt` (de la première mise en route, préparation du transfert comprise, à la fin de la rampe — max(profil de mise en place, dernier jalon d'adoption / maturité) — du produit le plus tardif), produits dépliables avec jalons du moteur décalés de `mois0`. Avec le périmètre Produit : seulement une ligne indiquant le décalage calendaire.
 - **A8** : règle ESLint `no-restricted-syntax` (`.reduce(` interdit) dans `ui/sections/portfolio`, les crochets / tuiles de périmètre et le Gantt par vague ; test dans `tests/lint-rules.test.ts`.
@@ -509,10 +509,10 @@ Toutes les recommandations du § 12 ont été **acceptées** par le commanditair
 - **Domaine** (`domain/portfolio/stress*.ts`) : `portfolioMonteCarlo(pf, { draws, seed, rho })` (ou `pfStressJob`, un pas par produit planifié, pour céder la main à l'écran). Chaque produit tire avec le moteur du cas seul (`mcDraws`, factorisé hors de `runMonteCarlo` : mêmes paramètres incertains, mêmes écarts, même métrique `mcOutcome` = bénéfice net sur l'horizon du produit), graine `seed ⊕ djb2(idProduit)` (la graine elle-même avec un seul produit planifié : un portefeuille d'un produit reproduit exactement `runMonteCarlo`, vérifié sur les 100 fixtures `mcRun`). Le résultat d'un tirage est la **somme** des bénéfices nets des produits ; les statistiques (P10 / P50 / P90 / moyenne / CVaR 10 % / `pNetNeg`) viennent de `mcStats`, la même définition que le cas seul (`numerics.quantile`, seuils `pNeg.ts`). Détail et écarts : DEV-PF-STRESS.
 - **Corrélation `ρ`** (D-M7) : champ du portefeuille `rho` (absent = 0, enregistré, commande annulable `portfolio.setRho`, validé dans [0, 1], feuille `PortfolioSettings` « Correlation rho (0-1) », import sans la ligne = 0, empreinte `pf1:` du paquet de calcul si ρ > 0). Copule gaussienne à facteur commun : par tirage et par aléa, `g = √ρ·Z + √(1−ρ)·ε`, Z partagé par les produits, ε propre au produit, passé par Φ puis par l'inverse de la loi triangulaire du moteur : les lois marginales sont celles du produit seul quel que soit ρ ; ρ = 0 est le flux historique (pas de copule), ρ = 1 donne les mêmes chocs à tous les produits.
 - **Réduction du risque** : `P10 portefeuille − Σ P10 des produits seuls` (≥ 0 si diversifié, 0 à ρ = 1), plus par vague et par produit les statistiques propres et la corrélation avec le groupe.
-- **Obsolescence** : `pfStressFingerprint` (cas effectif de chaque produit planifié via `mcFingerprint`, vague, mois de départ, préparation, horizon, ρ) ; un run affiche « le portefeuille a changé » dès que l'empreinte vivante diffère ; les feuilles / sections qui lisent le run le disent (feuille Excel « Stale », rapport).
+- **Obsolescence** : `pfStressFingerprint` (cas effectif de chaque produit planifié via `mcFingerprint`, vague, mois de départ, préparation, horizon, ρ) ; un run affiche “the portfolio changed” dès que l'empreinte vivante diffère ; les feuilles / sections qui lisent le run le disent (feuille Excel « Stale », rapport).
 - **Verdict** : `verdictRule` (extrait de `decide`, mêmes seuils `DI_THRESHOLDS`, même invariant de cohérence) appliqué à la distribution du périmètre ; `pfDecision(pf, run, groupe)` pour le portefeuille et chaque vague. Les entrées changent, pas les règles : mise en place = Σ des produits, majoration des barres = moyenne des majorations des produits pondérée par l'effectif d'entrée, conditions = produits qui portent le risque. La section Decision affiche ce verdict quand le périmètre d'affichage est Portefeuille / Vague (≥ 2 produits), avec le net / ROI / retour déterministes du périmètre et le tableau des verdicts par vague ; le produit garde l'écran d'aujourd'hui.
 - **État** : `pfSimStore` (`store/portfolioSimulation.ts`, données dérivées hors document et hors historique, comme `simStore`) ; `controllers/stressPortfolio.ts#runPortfolioSimulation` (asynchrone, un produit par tranche, progression, un nouvel appel remplace le précédent) ; tirages et graine = état de vue (défaut : ceux du Monte Carlo du produit actif).
-- **Interface** : section « Stress portefeuille » (`portfolio-stress`, groupe Portefeuille, 85 sections au catalogue) : tirages, graine, curseur ρ avec explication, bouton, progression ; cartes, histogramme (`ChartPanel` avec données masquées), réduction du risque, tableaux par vague et par produit, marqueur d'obsolescence, liens vers Monte Carlo et Decision. Aucun calcul financier dans `ui/` (A8 étendue à `store/portfolioSimulation.ts` et `verdict/decision/Portfolio*.tsx`).
+- **Interface** : section “Portfolio stress” (`portfolio-stress`, groupe Portefeuille, 85 sections au catalogue) : tirages, graine, curseur ρ avec explication, bouton, progression ; cartes, histogramme (`ChartPanel` avec données masquées), réduction du risque, tableaux par vague et par produit, marqueur d'obsolescence, liens vers Monte Carlo et Decision. Aucun calcul financier dans `ui/` (A8 étendue à `store/portfolioSimulation.ts` et `verdict/decision/Portfolio*.tsx`).
 - **Restitution** : feuille Excel « Portfolio stress » (après « Knowledge transfer », seulement si un run existe), section 7 du rapport de portefeuille / vague.
 - **Hors périmètre** : tableau de scénarios de portefeuille (les six scénarios et la sensibilité restent par produit), troncature des tirages à l'horizon du portefeuille, rejeu automatique du run portefeuille.
 - **Tests** : `tests/domain/portfolio/{stress,stressVerdict}.test.ts` (reproduction du cas seul sur toutes les fixtures `mcRun`, sémantique de ρ, marginales, déterminisme, signe de la diversification, cas dorés du verdict, performance 20 produits × 1 000 tirages), `tests/store/{portfolio-rho,stress-portfolio}.test.ts` (commande, annulation, persistance, Excel, obsolescence, restitution), `tests/ui/portfolio-stress.test.tsx`.

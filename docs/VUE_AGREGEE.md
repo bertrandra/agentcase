@@ -6,7 +6,7 @@
 ## 1. Principe
 
 1. **Sections de résultat** : elles suivent la Vue. Portefeuille / Vague = chiffres consolidés du domaine (`consolidate`, `portfolioHeadline`, `waveHeadline`, `selectionView`, `portfolioGantt`...) ; Produit = comportement d’aujourd’hui, inchangé.
-2. **Sections de saisie** : elles restent **par produit** (le produit édité). Avec Portefeuille ou Vague en vue, elles affichent une **vue agrégée en lecture seule** de la sélection : une ligne par produit et le bouton **« Éditer ce produit »** (contrôleur existant `showProduct` : la Vue devient ce produit, les sections redeviennent modifiables).
+2. **Sections de saisie** : elles restent **par produit** (le produit édité). Avec Portefeuille ou Vague en vue, elles affichent une **vue agrégée en lecture seule** de la sélection : une ligne par produit et le bouton **“Edit this product”** (contrôleur existant `showProduct` : la Vue devient ce produit, les sections redeviennent modifiables).
 3. **Les 85 sections sont classées** (§ 4). Aucune formule financière nouvelle dans `ui/` (règle A8 étendue : pas de `.reduce` dans les widgets, hooks et agrégats de la Vue agrégée) ; pas de « cas agrégé synthétique » (faux pour le plafond de verre, les surcharges, les décalages de vague).
 4. **Un seul produit : rien ne change** (ni bandeau, ni enveloppe DOM dans `SectionHost`). Le mode Produit des sections reste identique octet pour octet.
 
@@ -19,7 +19,7 @@
 | `ProductViewContext` | `store/productView.ts` (+ `ProductViewProvider`, `productDocOf`) | lecture seule d’un autre produit : `useDoc`, `useCtx`, `useCaseResult`, `useSimulation`, `useActiveProduct`, `useActiveProductId`, `useFieldState`, `useSubsetField` lisent le cas résolu de ce produit au lieu du produit actif. Les écritures ne sont pas redirigées |
 | `ReadOnlyScope` | `ui/widgets/ReadOnlyScope.tsx` | `fieldset disabled` + capture et arrêt des événements clic / clavier / change / input / submit / drop + message de lecture seule ; `inert` en option |
 | `ScopeBanner` | `ui/widgets/ScopeBanner.tsx`, rendu par `SectionFrame` | une phrase par type, région `aria-live="polite"`, rien avec un seul produit ni dans un rendu par produit |
-| `AggregateTable` | `ui/widgets/AggregateTable.tsx` | une ligne par produit, colonnes déjà calculées par le domaine, **ligne de total fournie par le domaine** (jamais sommée dans l’UI), bouton « Éditer ce produit » (`showProduct` + annonce) |
+| `AggregateTable` | `ui/widgets/AggregateTable.tsx` | une ligne par produit, colonnes déjà calculées par le domaine, **ligne de total fournie par le domaine** (jamais sommée dans l’UI), bouton “Edit this product” (`showProduct` + annonce) |
 | `ProductDrill` | `ui/widgets/ProductDrill.tsx` | rendu repliable, paresseux, en lecture seule, du composant de la section pour chaque produit (`ProductViewContext`) ; `SectionFrame` y devient `EmbeddedFrame` (pas de h1, zones nommées par produit) |
 | `useScopedSection(id)` | `ui/zones/useScopedSection.ts` | produit / un seul produit / `S-static` / `P-portfolio` : la section telle quelle ; sinon l’agrégat enregistré, sinon le **repli générique** du type (`ui/zones/fallbacks.tsx`) |
 | Registre d’agrégats | `ui/sections/aggregates/index.ts` + `aggregates/<groupe>.ts` (15 fichiers, un par groupe) | id → chargeur paresseux, comme les chargeurs de sections ; `SectionHost` les utilise pour Portefeuille / Vague |
@@ -29,8 +29,8 @@
 Replis génériques par type (Portefeuille / Vague, section sans agrégat) :
 
 - `R-rollup` : `AggregateTable` des chiffres clés par produit (`SelectionRow`, total = ligne du domaine) + `ProductDrill`.
-- `I-input` : `AggregateTable` des saisies par produit (ETP, artefacts, surcharges, état du hub ; total ETP = `aggregateTeams`) + « Éditer ce produit ».
-- `R-conso` sans agrégat enregistré : `ProductDrill` + note explicite « Vue consolidée à venir » (suivi en § 5).
+- `I-input` : `AggregateTable` des saisies par produit (ETP, artefacts, surcharges, état du hub ; total ETP = `aggregateTeams`) + “Edit this product”.
+- `R-conso` sans agrégat enregistré : `ProductDrill` + note explicite “Consolidated view coming” (suivi en § 5).
 
 ## 3. Recette : ajouter l’agrégat d’une section (10 lignes)
 
@@ -53,9 +53,9 @@ Total : **85 = 79 sections de cas + 6 du groupe Portefeuille** (le groupe compte
 |---|---|---|
 | `R-conso` | 15 | résultat à forme consolidée naturelle (sommes et séries de `domain/portfolio`) |
 | `R-rollup` | 28 | contrôle ou logique par cas, qui ne s’additionne pas : tableau récapitulatif par produit + détail du rendu propre au produit |
-| `I-input` | 18 | saisie par produit : synthèse agrégée en lecture seule, une ligne par produit, « Éditer ce produit » |
-| `S-static` | 18 | référence, documentation, réglages communs, gestion : indépendant de la vue (bandeau « Indépendant de la vue ») |
-| `P-portfolio` | 6 | section du groupe Portefeuille, déjà au niveau portefeuille (bandeau « Niveau portefeuille ») |
+| `I-input` | 18 | saisie par produit : synthèse agrégée en lecture seule, une ligne par produit, “Edit this product” |
+| `S-static` | 18 | référence, documentation, réglages communs, gestion : indépendant de la vue (bandeau “Independent of the view”) |
+| `P-portfolio` | 6 | section du groupe Portefeuille, déjà au niveau portefeuille (bandeau “Portfolio level”) |
 
 Légende de l’état : **FAIT** (construit en V0), **NATIF** (la section suit déjà la Vue ; elle est enregistrée comme son propre agrégat), **À FAIRE** (repli générique du type en attendant).
 
@@ -73,7 +73,7 @@ Légende de l’état : **FAIT** (construit en V0), **NATIF** (la section suit d
 | `phase-scope` | scope | 🎯 Phase scope | `I-input` | Phases désactivées par produit | `phaseOff` du cas résolu | À FAIRE |
 | `lc-weighting` | scope | 📊 Product status lifecycle weighting | `I-input` | Position du produit dans le cycle de vie | `lifecycleUse`, `lifecyclePos` | À FAIRE |
 | `lifecycle-edit` | tune | 📊 Status & phase weight | `I-input` | Matrice de poids et posture par statut, par produit | `statusLifecycle` | À FAIRE |
-| `team-in` | baseline | Input team | `I-input` | FAIT (exemplaire) : ETP par produit, agrégé par compétence, grade, localisation et croisé ; « Éditer ce produit » | `aggregateTeams(pf, productIds)` | FAIT |
+| `team-in` | baseline | Input team | `I-input` | FAIT (exemplaire) : ETP par produit, agrégé par compétence, grade, localisation et croisé ; “Edit this product” | `aggregateTeams(pf, productIds)` | FAIT |
 | `ratecard` | baseline | Rate Card | `S-static` | Bandeau seul. Taux journaliers : valeurs communes (D-M3, clé `RATE`), identiques pour tous les produits | — | FAIT (bandeau) |
 | `loc-strat` | baseline | 🌍 Location strategy | `I-input` | Répartition cible par localisation, par produit | `targetLocPct` du cas résolu | À FAIRE |
 | `token-econ` | tune | 💸 Token economics | `R-rollup` | Usage et coût de tokens par produit (la série `token` se somme) ; catalogue de prix commun | `series.token` + usage par produit ; saisies communes (`TOKEN_MODELS`) | À FAIRE |
@@ -86,7 +86,7 @@ Légende de l’état : **FAIT** (construit en V0), **NATIF** (la section suit d
 | `opmodel` | tune | 🧩 Operating model | `R-rollup` | Pods, rôles transverses et AI Office par produit + contrôle de conservation V7 (ok/ko) | `domain/tune` opmodel par produit | À FAIRE |
 | `tobe-team` | verify | 👥 TO-BE team by skill | `R-conso` | ETP humains résiduels et vFTE agents par compétence, sommés sur la sélection | idem : agrégat par compétence des `verifyA` tobe-team des produits | À FAIRE |
 | `montecarlo` | stress | 🎲 Monte Carlo | `R-rollup` | P10/P50/P90 par produit issus du stress portefeuille s’il a tourné, sinon invitation à le lancer | `ProductStress` de `portfolioMonteCarlo` (`store/portfolioSimulation`) | À FAIRE |
-| `model-stochastic` | model-engine | 📊 Stochastic layer (P4) | `R-rollup` | P50 et graine par produit ; renvoi vers Stress portefeuille | `domain/model/modelState`, `portfolioMonteCarlo` | À FAIRE |
+| `model-stochastic` | model-engine | 📊 Stochastic layer (P4) | `R-rollup` | P50 et graine par produit ; renvoi vers Portfolio stress | `domain/model/modelState`, `portfolioMonteCarlo` | À FAIRE |
 | `phase-art` | verify | Phase / Artifact detail | `R-rollup` | Périmètre phases/artefacts par produit (nombre, effort) ; jamais de somme par artefact (périmètres différents) | `verifyA` phase-art par produit | À FAIRE |
 | `agent-dir` | verify | Agent Directory | `R-rollup` | Nombre d’agents par niveau d’autorisation et par produit | `verifyA` agent-dir par produit | À FAIRE |
 | `agent-detail` | verify | 🤖 Agent details | `R-rollup` | Charge par rôle d’agent, produit par produit | `verifyA` agent-detail par produit | À FAIRE |
@@ -140,18 +140,18 @@ Légende de l’état : **FAIT** (construit en V0), **NATIF** (la section suit d
 | `sessions` | refshare | 🗂️ Session manager | `S-static` | Bandeau seul. Reprise d’autosauvegarde : indépendante du cas | — | FAIT (bandeau) |
 | `duediligence` | defend | 🧾 Due diligence | `R-rollup` | Éléments à confirmer et coefficients embarqués : comptes et impact par produit ; annotations communes | `domain/dd` par produit | À FAIRE |
 | `personas` | configure | 👥 Persona management | `S-static` | Bandeau seul. Gestion des personas : commune | — | FAIT (bandeau) |
-| `products` | portfolio | 📦 Produits | `P-portfolio` | Bandeau seul. Tableau des produits (déjà tous les produits) | — | FAIT (bandeau) |
-| `overrides` | portfolio | 🧬 Surcharges | `P-portfolio` | Bandeau seul. Surcharges par produit | — | FAIT (bandeau) |
+| `products` | portfolio | 📦 Products | `P-portfolio` | Bandeau seul. Tableau des produits (déjà tous les produits) | — | FAIT (bandeau) |
+| `overrides` | portfolio | 🧬 Overrides | `P-portfolio` | Bandeau seul. Surcharges par produit | — | FAIT (bandeau) |
 | `knowledge-transfer` | portfolio | 🔁 Knowledge transfer | `P-portfolio` | Bandeau seul. Tableau F29 et effet du hub par vague | — | FAIT (bandeau) |
-| `waves` | portfolio | 🌊 Vagues | `P-portfolio` | Bandeau seul. Planche des vagues | — | FAIT (bandeau) |
+| `waves` | portfolio | 🌊 Waves | `P-portfolio` | Bandeau seul. Planche des vagues | — | FAIT (bandeau) |
 | `consolidation` | portfolio | 📈 Consolidation | `P-portfolio` | Bandeau seul. Trajectoire consolidée (source de `selectionView`) | — | FAIT (bandeau) |
-| `portfolio-stress` | portfolio | 🎲 Stress portefeuille | `P-portfolio` | Bandeau seul. Monte Carlo agrégé des produits planifiés | — | FAIT (bandeau) |
+| `portfolio-stress` | portfolio | 🎲 Portfolio stress | `P-portfolio` | Bandeau seul. Monte Carlo agrégé des produits planifiés | — | FAIT (bandeau) |
 
 ## 5. Suivi des phases suivantes
 
 À faire par type (le repli générique s’affiche en attendant, il est déjà correct et lisible) :
 
-- `R-conso` (12), **sans vue consolidée tant qu’aucun agrégat n’est enregistré** (note « Vue consolidée à venir » + détail par produit) : `fte-vfte`, `team-out`, `tobe-team`, `agent-usage`, `run`, `annual`, `monthly`, `monthly-playback`, `kpi`, `asis-tobe`, `results`, `story-summary`.
+- `R-conso` (12), **sans vue consolidée tant qu’aucun agrégat n’est enregistré** (note “Consolidated view coming” + détail par produit) : `fte-vfte`, `team-out`, `tobe-team`, `agent-usage`, `run`, `annual`, `monthly`, `monthly-playback`, `kpi`, `asis-tobe`, `results`, `story-summary`.
 - `R-rollup` (28), tableau récapitulatif spécifique (statut, valeurs clés) à la place du repli financier générique : `readiness`, `token-econ`, `assumptions`, `vfte-ov`, `opmodel`, `montecarlo`, `model-stochastic`, `phase-art`, `agent-dir`, `agent-detail`, `model-convergence`, `model-supervision`, `exec`, `productivity`, `velocity`, `quality`, `compliance`, `model-flow`, `commercial`, `scenarios`, `compare`, `sensitivity`, `model-evidence`, `strategies`, `verif`, `eligibility`, `model-verification`, `duediligence`.
 - `I-input` (17), synthèse spécifique de la saisie de la section à la place du repli générique (ETP, artefacts, surcharges, hub) : `engagement-context`, `engage`, `transform-params`, `params`, `scurve`, `maturity-map`, `scope-sel`, `phase-scope`, `lc-weighting`, `lifecycle-edit`, `loc-strat`, `knowledge`, `run-sizing`, `setup`, `maturity`, `program`, `risk`.
 

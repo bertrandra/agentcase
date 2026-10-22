@@ -21,7 +21,7 @@ Start with the French user guide [`docs/GUIDE_MULTI_PRODUIT.md`](docs/GUIDE_MULT
 
 | | Where | Status |
 |---|---|---|
-| **TypeScript + React build (the product)** | [`app/`](app/) — version `20.0.0` (`app/package.json`, `app/src/domain/version.ts`) | 85 sections in 15 groups (the 79 single-case sections plus the 6 of the *Portefeuille* group), 229 commands (225 undoable). Builds to one offline HTML file, `app/dist/AgentCase_v20_0_EN.html` with `npm run release`. Multi-product release; see [`CHANGELOG.md`](CHANGELOG.md) and [`docs/MIGRATION_PLAN.md`](docs/MIGRATION_PLAN.md) §15 |
+| **TypeScript + React build (the product)** | [`app/`](app/) — version `20.0.0` (`app/package.json`, `app/src/domain/version.ts`) | 85 sections in 15 groups (the 79 single-case sections plus the 6 of the *Portfolio* group), 229 commands (225 undoable). Builds to one offline HTML file, `app/dist/AgentCase_v20_0_EN.html` with `npm run release`. Multi-product release; see [`CHANGELOG.md`](CHANGELOG.md) and [`docs/MIGRATION_PLAN.md`](docs/MIGRATION_PLAN.md) §15 |
 | **Legacy single-file app (frozen reference)** | [`AgentCase_v18_13_EN.html`](AgentCase_v18_13_EN.html) | Kept in the repository until cut-over. It is the oracle the new build is proven against. Changes only for security fixes and deliberate calculation decisions (decision D7), see [`docs/BUMP_PROCEDURE.md`](docs/BUMP_PROCEDURE.md) §7 |
 
 ### Deliverables of v20.0
@@ -29,7 +29,7 @@ Start with the French user guide [`docs/GUIDE_MULTI_PRODUIT.md`](docs/GUIDE_MULT
 | Deliverable | Where / how | Notes |
 |---|---|---|
 | Release file `AgentCase_v20_0_EN.html` | `cd app && npm run release` -> `app/dist/AgentCase_v20_0_EN.html` (one offline file, not committed) | file name derived from `APP_VERSION` |
-| Portfolio file | `agentcase.portfolio.v1` JSON / HTML snapshot; a plain single case is still saved as `agentcase.snapshot.v1` | v18.x snapshots and workbooks, v19 case files open as "Produit 1" in "Vague 1" |
+| Portfolio file | `agentcase.portfolio.v1` JSON / HTML snapshot; a plain single case is still saved as `agentcase.snapshot.v1` | v18.x snapshots and workbooks, v19 case files open as "Product 1" in "Wave 1" |
 | Example portfolio | [`docs/examples/AgentCase_Portfolio_Example.json`](docs/examples/AgentCase_Portfolio_Example.json) | 4 products, 2 waves, hub, rho 0.3; opened by a test |
 | Workbooks and report | parameters (`AgentCase_v20_0_Parameters_….xlsx`), results, due-diligence pack, critical-delivery report | portfolio sheets only for a real portfolio |
 | User guide (French) | [`docs/GUIDE_MULTI_PRODUIT.md`](docs/GUIDE_MULTI_PRODUIT.md) | quick start, UI labels |
@@ -100,8 +100,8 @@ title 5 times. These Advanced-unlock gestures are legacy-only and out of scope f
 | Architecture | layer rules, no raw HTML, 150-line limit | ESLint, `app/tests/lint-rules.test.ts`, `app/tests/size.test.ts` | yes |
 | Legacy browser battery | the legacy file boots, shows the golden figures, resists hostile strings; 44 regression tests | `node tools/test-all.mjs` (Playwright + Chromium) | no |
 | Portfolio | one-product portfolios equal the single case on the 107 fixtures (A1/A9); consolidation = sum of the products (A2-A4); override semantics (A5); undo of every command on a 3-product portfolio (A6); the shipped example opens | `app/tests/store/portfolio-*.test.ts`, `app/tests/domain/portfolio/` | yes |
-| Browser end-to-end (new build) | boot, every section on 6 case fixtures and 2 portfolio files (incl. the 6 Portefeuille sections), no console error, no NaN | `npm run e2e` (`tools/e2e-smoke.mjs`) | yes (job `e2e`) |
-| Performance | size, shell time, edit and undo latency, section switches (incl. the Portefeuille group) against `app/perf-budget.json` | `tools/perf.mjs` | yes (job `e2e`) |
+| Browser end-to-end (new build) | boot, every section on 6 case fixtures and 2 portfolio files (incl. the 6 Portfolio sections), no console error, no NaN | `npm run e2e` (`tools/e2e-smoke.mjs`) | yes (job `e2e`) |
+| Performance | size, shell time, edit and undo latency, section switches (incl. the Portfolio group) against `app/perf-budget.json` | `tools/perf.mjs` | yes (job `e2e`) |
 | Accessibility | axe-core on every section, keyboard and state audits; budget `app/a11y-budget.json` | `npm run a11y` (`tools/a11y.mjs`) | no |
 | UI parity / parallel run | shell areas and section content vs the legacy file; same headline figures on the same files | `tools/ui-parity.mjs`, `tools/parallel-run.mjs` | parallel run only |
 

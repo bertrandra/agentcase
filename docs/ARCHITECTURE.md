@@ -50,6 +50,10 @@ Config: `app/eslint.config.js`. Path alias `@` → `app/src`.
 | `@typescript-eslint/no-explicit-any` | all | error |
 | `consistent-type-imports`, `react-hooks/*` | all | error / recommended |
 
+**Convention: All user-facing text is in English.** Labels, tooltips, ARIA names, toasts, command labels, diagnostics, Excel headers, report sentences and chart names are English;
+the vocabulary is fixed in [GLOSSARY_EN.md](GLOSSARY_EN.md). `tests/ui/english-only.test.ts` scans every string literal, JSX text and JSON value of `app/src` and fails on French
+(the only exceptions are the compatibility aliases of `domain/portfolio/frenchAliases.ts`, i.e. the French default names of files saved by v20.0, and a few legacy-oracle strings).
+
 `tests/lint-rules.test.ts` runs ESLint on synthetic files and asserts that each rule fires (UI importing the write path, domain
 importing the store, a 151-line file, raw HTML). TypeScript is `strict` (`app/tsconfig.json`).
 
@@ -139,7 +143,7 @@ command sequences against `undo∘apply = id` and symmetric redo; `tests/store/p
 All adapters live in `src/store/persistence/` and `src/controllers/` (file and boot wiring). The case keeps the **legacy snapshot
 state** (the same registry keys), so old files load. Two file formats coexist (`persistence/portfolioSnapshot.ts`):
 
-- `agentcase.snapshot.v1`, one case. Opening it **envelopes** it (F21): `envelopeCase` = "Produit 1" in "Vague 1" at month 0, identical numbers (A1 on the 107 fixtures through the real open path, `tests/store/portfolio-a1.test.ts`).
+- `agentcase.snapshot.v1`, one case. Opening it **envelopes** it (F21): `envelopeCase` = "Product 1" in "Wave 1" at month 0, identical numbers (A1 on the 107 fixtures through the real open path, `tests/store/portfolio-a1.test.ts`).
 - `agentcase.portfolio.v1`, a portfolio (`readPortfolio`: `sanitize`, safe ids `[A-Za-z0-9_-]{1,64}`, shapes checked, `validate` invariants enforced, common values filled from the code defaults). **Save rule (F22, `isSingleCase`)**: a portfolio is written as `snapshot.v1` exactly when that file re-opens to the very same portfolio (one product, one wave, no override, no knowledge subset, default names/ids/offset); anything else, incl. a renamed product, keeps the portfolio format so a save never loses information. Hence existing file/HTML/Excel tools and tests keep seeing v1 files for single cases, and export -> open of a single-product portfolio is identical (A9).
 
 The autosave record is the exact portfolio (`full` mode, never collapsed to v1) plus its history, because the undo patches address product and wave positions; a record without `format: 'portfolio'` (written before P2) restores its document but not its case-level history.
@@ -157,7 +161,7 @@ The autosave record is the exact portfolio (`full` mode, never collapsed to v1) 
 | Results workbook, due-diligence pack | `excel/results/`, `excel/dd/` | export (and DD import); cell-by-cell equal to the legacy on fixtures |
 | Results workbook, portfolio part (P5) | `excel/results/portfolio/` | `Portfolio`, `Wave <name>`, `Knowledge transfer`, per product `Product <name>` + the existing six sheets on the effective case (`P<n> ROI`...); numbers only from `consolidate` / `portfolioHeadline` / `consolidationView` / `knowledgeTable`; Excel-safe unique names (`sheetName`); the display scope picks the leading group. The DD pack is the ACTIVE product's (annotations are common to the portfolio) |
 | Report | `report/` | "Critical & Regulated Software Delivery" HTML report; its visible text equals the legacy report on 11 fixtures |
-| Report by scope (P5) | `report/index.ts#buildScopedReport`, `report/portfolio/` | Produit = the legacy report of the product's effective case (byte for byte); Portefeuille / Vague = the portfolio report built from the domain views; the controller reads the (unsaved) `displayScope`, tests pass the scope |
+| Report by scope (P5) | `report/index.ts#buildScopedReport`, `report/portfolio/` | Product = the legacy report of the product's effective case (byte for byte); Portfolio / Wave = the portfolio report built from the domain views; the controller reads the (unsaved) `displayScope`, tests pass the scope |
 | Snapshot manager | `controllers/snapshots.ts`, `domain/snapshots/` | named snapshots in the document (capture, activate as one undo step, rename, delete, baseline, protected golden entries, compare) |
 | Snapshots of a portfolio (P5) | `controllers/snapshotPortfolio.ts` | a capture of a real portfolio also stores the whole portfolio (`NamedSnapshot.portfolio`, no view state, no nested library); activate / baseline are portfolio commands (one undo step, current library kept, active product kept); compare reads the active product |
 
@@ -180,21 +184,21 @@ Also `RestoreBanner` (autosave offer), a skip link, and an `aria-live="polite"` 
 
 **Navigation comes from the document**, not from code tables: `ui/zones/navModel.ts` builds the sidebar from `doc.PERSONAS`,
 `PERSONA_SECTIONS`, `PERSONA_SECTION_ORDER`, `GROUPS`, `sectionGroups`, `dynamicSections` and the guided sequences, falling back to the
-bundled legacy catalogue (`ui/zones/data/*.json`: 85 sections in 15 groups, the 15th being the multi-product Portefeuille group). Domain logic is in `domain/nav/` (`layout`, `groupBar`,
+bundled legacy catalogue (`ui/zones/data/*.json`: 85 sections in 15 groups, the 15th being the multi-product Portfolio group). Domain logic is in `domain/nav/` (`layout`, `groupBar`,
 `moves`, `sequence`); edits go through `controllers/nav*.ts` and the Persona-management section (sequence editor, menu layout board,
 persona layout board). The same data round-trips through the parameters workbook.
 
 **Multi-product interface (P3, UI only; no calculation changed).** Progressive disclosure (spec F23): with ONE product nothing is added (no
 selector, banner, badge, nav group). From two products on (`useIsMulti`, `store/portfolioHooks.ts`; selectors return stable references):
-- `shell/ProductBar.tsx` (top bar): "Produit" selector (name and wave label) and the "Modifier : tous les produits / ce produit seulement"
-  radio group (`product.setActive` / `product.setEditScope`, non-undoable). Default scope: **tous les produits** (the entry team always goes
-  to the active product whatever the scope). The KPI bar shows the ACTIVE product by default; the display scope (P4, below) switches it to the Portefeuille or a Vague.
-- `zones/SectionFrame.tsx` shows `widgets/ProductBanner.tsx` ("Produit : X (hérité / n surcharges)") for sections that declare override refs;
-  `widgets/OverrideBadge.tsx` (`OverrideBadge`, `InheritedField`): chip hérité / surchargé with the common value as tooltip, "Revenir au commun",
-  "Appliquer à tous les produits" (controllers `productOverrides`; state through `domain/portfolio` `isOverridden`). Wired into: Scope selection
-  (SDLC and regulatory artefacts), Phase scope, S-curve, Normes / regulatory include, Engagement context (context and coefficients), Location mix;
-  team-in shows `TeamOwnerLabel` ("Équipe de : X"). Not wired (left for later): the other overridable keys have no badge; the banner still applies.
-- Navigation: `zones/portfolioNav.ts` adds the **Portefeuille** group and its sections to the persona lists only with 2+ products (document-driven
+- `shell/ProductBar.tsx` (top bar): the "View" selector (Portfolio / Wave / Product with wave labels; V0 merged the former "Product" and "Display scope" selectors) and the "Edit: All products / This product only"
+  radio group (`product.setActive` / `product.setEditScope`, non-undoable). Default scope: **All products** (the entry team always goes
+  to the active product whatever the scope). The KPI bar shows the ACTIVE product by default; the display scope (P4, below) switches it to the Portfolio or a Wave.
+- `zones/SectionFrame.tsx` shows `widgets/ProductBanner.tsx` ("Product: X (inherited / n overrides)") for sections that declare override refs;
+  `widgets/OverrideBadge.tsx` (`OverrideBadge`, `InheritedField`): chip inherited / overridden with the common value as tooltip, "Revert to common",
+  "Apply to all products" (controllers `productOverrides`; state through `domain/portfolio` `isOverridden`). Wired into: Scope selection
+  (SDLC and regulatory artefacts), Phase scope, S-curve, Selected norms / regulatory include, Engagement context (context and coefficients), Location mix;
+  team-in shows `TeamOwnerLabel` ("Team of: X"). Not wired (left for later): the other overridable keys have no badge; the banner still applies.
+- Navigation: `zones/portfolioNav.ts` adds the **Portfolio** group and its sections to the persona lists only with 2+ products (document-driven
   data in `sectionCatalog/groups/sectionGroups.json`); `frame/home/AddProductEntry.tsx` (Welcome) adds the first extra product.
   Sections `portfolio/products` (table and P2 actions, Ctrl+Z restores a removed product; indicators from the product's own `computeCase`) and
   `portfolio/overrides` (common vs product value per overridden key, revert, apply to all).
@@ -216,7 +220,7 @@ selector, banner, badge, nav group). From two products on (`useIsMulti`, `store/
 Plus **portfolio** (6: `products`, `overrides`, `knowledge-transfer`, `waves`, `consolidation`, `portfolio-stress`, folders `ui/sections/portfolio/<id>/`, map `ui/sections/portfolio.ts`). Total **85** (`ui/zones/data/sectionCatalog.json`, counted per group with `node`); 85 loaders are registered in the group files. A
 section id with no loader renders `Placeholder`; dynamic sections created by the user render through `DynamicSection` (Board).
 Multi-product Knowledge Hub (P3b): the existing `tune/knowledge` section edits the ACTIVE product's knowledge subset through the same form fields (the address
-layer writes the subset: see §4-5) and, with 2+ products only, adds `SubsetBadge` chips (hérité / surchargé, back to common via `product.setKnowledge`), the
+layer writes the subset: see §4-5) and, with 2+ products only, adds `SubsetBadge` chips (inherited / overridden, back to common via `product.setKnowledge`), the
 `DomainsEditor` (weights must total 100, refused by `portfolioGuard`), the `ktLeadMonths` field and the shared `ui/widgets/HubSettings` card
 (`portfolio.setHub`: activation, infrastructure, allocation, live conservation check). `portfolio/knowledge-transfer` shows the F29 table (from
 `knowledgeTable`), the F31 hub effect by wave and the diagnostics, all computed in `domain/portfolio/{knowledge,ktview}.ts` and read through
@@ -226,7 +230,7 @@ layer writes the subset: see §4-5) and, with 2+ products only, adds `SubsetBadg
 reads the triangular shock) keeps each marginal law; the portfolio draw is the sum of the products' net benefits, statistics from `mcStats` (one definition for product and portfolio), risk
 reduction = portfolio P10 - sum of the products' P10. `stressFingerprint.ts` marks a run stale; `stressVerdict.ts#pfDecision` feeds the single-case rule `verdictRule` (`domain/verdict/decision.ts`)
 with portfolio / wave figures. State: `store/portfolioSimulation.ts` (`pfSimStore`, hooks) and `controllers/stressPortfolio.ts` (chunked run); section `ui/sections/portfolio/stress/`; Decision
-reads the verdict for the Portefeuille / Vague scope (`verdict/decision/PortfolioVerdict.tsx`); "Portfolio stress" sheet and report section 7 when a run exists. DEV-PF-STRESS lists the differences.
+reads the verdict for the Portfolio / Wave scope (`verdict/decision/PortfolioVerdict.tsx`); "Portfolio stress" sheet and report section 7 when a run exists. DEV-PF-STRESS lists the differences.
 
 **Waves, consolidation and display scope (P4).** All figures come from `domain/portfolio` and are read through `store/consolidationHooks.ts`; the UI sums nothing
 (rule A8: ESLint `no-restricted-syntax` bans `.reduce(` / `.reduceRight(` in `ui/sections/portfolio/**`, `store/consolidationHooks.ts`, the scope tiles and the wave Gantt; `tests/lint-rules.test.ts`).
@@ -237,14 +241,14 @@ reads the verdict for the Portefeuille / Vague scope (`verdict/decision/Portfoli
 - **Display scope (F17).** `Portfolio.displayScope` (`{ kind: 'product' | 'portfolio' | 'wave', id? }`, absent = the active product) is a transient view field like `editScope`: command
   `portfolio.setDisplayScope` (`controllers/displayScope.ts`, `undoable: false`), never saved, never undone, never broadcast (`VIEW_FIELDS`), dropped by `withoutView`; a deleted wave falls
   back to the product (`useDisplayScope`). Decision: not persisted, so a file always reopens on the active product (D-M6) and a shared file cannot open on a stale scope.
-  `shell/ScopeSelect.tsx` (the single "Vue" selector: Portefeuille / Vague : X / Produit : Y — picking a product also makes it the edited product; the former separate "Produit" selector is gone; announced by toast; choosing a product makes it active) sits in `ProductBar` (2+ products only).
-  `KpiZone` renders `ScopeKpis` (a "Périmètre" tile, labels and tooltips naming the scope) from `scopeHeadline` (`portfolioHeadline.ts`: `groupHeadline` over a set of planned products:
+  `shell/ScopeSelect.tsx` (the single "View" selector: Portfolio / Wave: X / Product: Y — picking a product also makes it the edited product; the former separate "Product" selector is gone; announced by toast; choosing a product makes it active) sits in `ProductBar` (2+ products only).
+  `KpiZone` renders `ScopeKpis` (a "Scope" tile, labels and tooltips naming the scope) from `scopeHeadline` (`portfolioHeadline.ts`: `groupHeadline` over a set of planned products:
   year table, ETP-weighted velocity / effective automation / glass ceiling, cost reduction by components, payback of the consolidated cumulative cash); the product scope is the unchanged `ProductKpis`.
-- **Sections.** `portfolio/waves`: board of columns (waves, then "Non planifié") from `waveBoard`; commands `wave.add/rename/reorder/remove/setStart/setNote/assign`, `product.setOffset`;
-  drag and drop (HTML5, state in the section), ArrowLeft / ArrowRight on the focused card and a "Déplacer vers la vague…" select, every move announced; the Produits table's Vague column uses the same
+- **Sections.** `portfolio/waves`: board of columns (waves, then "Unscheduled") from `waveBoard`; commands `wave.add/rename/reorder/remove/setStart/setNote/assign`, `product.setOffset`;
+  drag and drop (HTML5, state in the section), ArrowLeft / ArrowRight on the focused card and a "Move to wave…" select, every move announced; the Products table's Wave column uses the same
   `wave.assign`. `portfolio/consolidation`: cards, cumulative cash chart (`ChartPanel`, named image + hidden data), by-wave and by-product tables with a totals row, yearly table, diagnostics, from `consolidationView`.
-- **Gantt (F18).** `verify/gantt/Waves.tsx` (2+ products, scope Portefeuille / Vague) shows `portfolioGantt`: a bar per wave (earliest product start, KT preparation included, to the latest end of setup /
-  adoption ramp) expandable to products with milestones (`engine.milestones()` shifted by wave start + offset); focusable labelled groups. With scope Produit it only adds the calendar offset of the active product.
+- **Gantt (F18).** `verify/gantt/Waves.tsx` (2+ products, scope Portfolio / Wave) shows `portfolioGantt`: a bar per wave (earliest product start, KT preparation included, to the latest end of setup /
+  adoption ramp) expandable to products with milestones (`engine.milestones()` shifted by wave start + offset); focusable labelled groups. With scope Product it only adds the calendar offset of the active product.
   One product: nothing is added (legacy Gantt parity untouched).
 Shared widgets in `ui/widgets/`: `fields`, `CommitField`, `CommitNumber`, `DataTable`, `ChartPanel`, `Rich`, `Tabs`, `cards`, ...
 Business data is never held in `useState`.
@@ -285,7 +289,7 @@ Rule (decision D7): no calculation change in the port. A deliberate change ships
 - Patch-based history stores only changed paths (cap 200 steps, plus the autosave record).
 - Sections and ExcelJS are loaded with dynamic `import()`; the single-file build still inlines everything (the build log lists one JS and one CSS file), so this changes evaluation order, not download size.
 - Multi-product (P4): consolidation view model ~4 ms and a 20-product team edit ~25 ms end to end (all views) on a 20 x 60-month portfolio, budgets 30 ms / 150 ms in `tests/domain/portfolio/perf-p4.test.ts`.
-- Size: `dist/index.html` 2.68 MB (about 830 kB gzip) at the last local build; budgets for size, shell, edit, undo and section switches (single case and the six Portefeuille sections on the shipped example) are in `app/perf-budget.json` and checked by `tools/perf.mjs` (CI job `e2e`).
+- Size: `dist/index.html` 2.68 MB (about 830 kB gzip) at the last local build; budgets for size, shell, edit, undo and section switches (single case and the six Portfolio sections on the shipped example) are in `app/perf-budget.json` and checked by `tools/perf.mjs` (CI job `e2e`).
 
 ## 11. Portfolio (multi-product) at a glance
 
@@ -304,19 +308,19 @@ user guide is [GUIDE_MULTI_PRODUIT.md](GUIDE_MULTI_PRODUIT.md). How the pieces c
 | Stress (P6) | `domain/portfolio/stress*.ts`, `store/portfolioSimulation.ts`, `controllers/stressPortfolio.ts` | per-product Monte Carlo (seed XOR hash(id)), global correlation `rho` (Gaussian copula on a shared factor), sum per draw, risk reduction, verdict by `verdictRule` |
 | UI (P3-P6) | `ui/shell/{ProductBar,ScopeSelect}`, `ui/sections/portfolio/{products,overrides,knowledge-transfer,waves,consolidation,stress}` | active product, edit scope (all / this product only), display scope; progressive disclosure: with one product nothing is shown |
 
-### Vue agrégée (toutes les sections suivent la Vue)
+### Aggregate view (every section follows the View)
 
-The top-bar **Vue** (Portefeuille / Vague / Produit) applies to every section, by kind (`ui/zones/data/sectionScope.json`, accessor `ui/zones/sectionScope.ts`; full table in [VUE_AGREGEE.md](VUE_AGREGEE.md)):
-`R-conso` and `R-rollup` results follow the Vue, `I-input` sections stay per product but show a read-only aggregated view with "Éditer ce produit", `S-static` and `P-portfolio` ignore it (banner only).
+The top-bar **View** (Portfolio / Wave / Product) applies to every section, by kind (`ui/zones/data/sectionScope.json`, accessor `ui/zones/sectionScope.ts`; full table in [VUE_AGREGEE.md](VUE_AGREGEE.md)):
+`R-conso` and `R-rollup` results follow the View, `I-input` sections stay per product but show a read-only aggregated view with "Edit this product", `S-static` and `P-portfolio` ignore it (banner only).
 
 | Piece | Where | Role |
 |---|---|---|
 | `useViewScope()` | `store/viewScope.ts` | `{ kind, label, multi, productIds (planned, non-archived), excludedIds, waveId?, activeProductId }`, stable reference |
 | `ProductViewContext` | `store/productView.ts`, read hooks in `store/hooks.ts` / `portfolioHooks.ts` | inside it `useDoc` / `useCtx` / `useCaseResult` / `useActiveProduct` ... read THAT product's resolved case (`resolveProduct`, memoised) instead of the active one; writes are not redirected, so such a subtree is wrapped in `ui/widgets/ReadOnlyScope` (fieldset disabled + events stopped) |
-| `SectionHost` + `useScopedSection(id)` | `ui/zones/` | Produit view or one product: the section untouched (no wrapper, no banner). Vague / Portefeuille on a section that follows the Vue: its registered aggregate (`ui/sections/aggregates/<group>.ts`, lazy), else `fallbacks.tsx` for its kind |
+| `SectionHost` + `useScopedSection(id)` | `ui/zones/` | Product view or one product: the section untouched (no wrapper, no banner). Wave / Portfolio on a section that follows the View: its registered aggregate (`ui/sections/aggregates/<group>.ts`, lazy), else `fallbacks.tsx` for its kind |
 | `ScopeBanner` | `ui/widgets/ScopeBanner.tsx`, rendered by `SectionFrame` | one polite live sentence per kind; `SectionFrame` turns into `EmbeddedFrame` (no h1, zones named by product) inside a `ProductViewContext` |
-| `AggregateTable`, `ProductDrill` | `ui/widgets/` | per-product rows with domain-supplied totals and "Éditer ce produit" (`showProduct`, view state, not undoable); lazy collapsible per-product render of the section |
-| Domain views | `domain/portfolio/{selectionView,teams,inputSummary}.ts` | `selectionView(pf, consolidate(pf), scope)` = headline, product lines, total line, years, cash chart, exclusions of a Portefeuille / Vague; `aggregateTeams`; `inputSummary`. Same rule A8: no `.reduce` in the Vue agrégée UI files (ESLint, `Aggregate*.tsx` and `aggregate/` folders included) |
+| `AggregateTable`, `ProductDrill` | `ui/widgets/` | per-product rows with domain-supplied totals and "Edit this product" (`showProduct`, view state, not undoable); lazy collapsible per-product render of the section |
+| Domain views | `domain/portfolio/{selectionView,teams,inputSummary}.ts` | `selectionView(pf, consolidate(pf), scope)` = headline, product lines, total line, years, cash chart, exclusions of a Portfolio / Wave; `aggregateTeams`; `inputSummary`. Same rule A8: no `.reduce` in the aggregate-view UI files (ESLint, `Aggregate*.tsx` and `aggregate/` folders included) |
 
 Compatibility is proven, not assumed: a one-product, one-wave portfolio built from each of the 107 fixtures gives the same numbers as the case (A1/A9, `tests/store/portfolio-a1.test.ts`),
 `ui-parity` and the legacy `parallel-run` stay at zero divergences, and `tests/store/portfolio-example.test.ts` opens the shipped example (`docs/examples/AgentCase_Portfolio_Example.json`,
