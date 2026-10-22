@@ -19,6 +19,7 @@ Figures are the golden fixture unless stated. "Before" = the build at the start 
 | DEV-SCENARIO-ENGINE | the six scenarios run the Time Engine |
 | DEV-NEG-MONEY | one negative-amount convention |
 | DEV-ARCH-CONTENT | the two architecture sections describe the TypeScript build |
+| DEV-DEPS-ZONES | the Section Dependencies page shows the graph generated from the code, not the authored registry |
 
 ## DEV-HEADLINE-OWNER — one economics headline
 
@@ -135,3 +136,14 @@ Requested change (v20.2). The sections `arch-layers` (🏛️ Architecture — L
 - Tests replaced: in `tests/ui/sections/arch.test.tsx`, the two `expectParity` assertions and the assertion that the new-build mapping heading is shown. Added: `tests/ui/sections/arch.test.tsx` (renders without console error, one h1, heading order, no legacy status vocabulary, navigation) and `tests/ui/arch-facts.test.ts` (section / group / command / variable / key / coefficient / fixture counts equal the code, limits equal the constants, every path in a code element exists, every `go` target is a catalogue id, no hard-coded version). The English-only guard applies unchanged.
 - UI parity: `tools/ui-parity.mjs` compares computed styles per element kind, not text; styles are unchanged, so no exception is recorded.
 - Catalogue descriptions: the `description` of the two sections in `ui/zones/data/sectionCatalog.json` is updated to match. The parameters workbook exports it in the `Sections` sheet, so `tests/store/excel-params-writer.test.ts` exempts exactly those two legacy description cells (and nothing else) from the legacy comparison.
+
+## DEV-DEPS-ZONES — the Section Dependencies page shows the graph generated from the code
+
+Requested change (unreleased). The section `deps` (🔗 Section Dependencies) used to display and edit an authored registry: `SECTION_DEPS` (148 edges between 30 of the sections, strong or soft) and `SECTION_DEPS_DESC`, stored in the case, as a graph, a matrix, a description table, a build order and an edge editor. It now shows a graph **generated from the code** (`npm run deps:gen` writes `app/src/generated/dependencies.json`): calculation zones (the `@calc-zone` tags), the sections, the edges found in the imports, the figures with one owner each, the tests that reach each zone, and the rule that selects tests from it ([TEST_SELECTION.md](TEST_SELECTION.md)).
+
+- Legacy: authored edges, edited by hand, "documents the DEP graph for humans; does not drive it".
+- New build: generated edges, never edited; the page and the selection of tests cannot disagree with the code (a test fails when the file is stale).
+- Compatibility, unchanged: `SECTION_DEPS` and `SECTION_DEPS_DESC` stay in the case and in the parameters workbook exactly as before (sheet `Deps`, `tests/store/excel-params-*` untouched), the five `deps.*` commands stay registered, the logic-verification checks that read the registry (`CC-DEP-*`) still run. Only the screen no longer shows or edits them; the page says so.
+- Tests replaced in `tests/ui/sections/deps.test.tsx`: the legacy-text parity (`expectParity('deps', ...)`: "148 edges", "30 of 85 sections drive something", the lane names), the hover test, the matrix / descriptions / build-order tests over the authored data and the three edge-editor tests (add, flip, remove, describe, undo, prune a ghost edge). Added: tests of the generated content (tabs, one node per zone and calculating section, selection and impact, keyboard, section links, matrix, zones and figures, build order, tests tab) and a test that the authored registry is untouched and its commands registered. Reason: the displayed content is intentionally different, by request.
+- UI parity: `tools/ui-parity.mjs` compares computed styles per element kind, not text; the page uses the shared widgets, so no exception is recorded.
+- Files: `ui/sections/refshare/deps/*`, `content/refshare/deps*.json`, `domain/zones/*`, `generated/dependencies.json`, `scripts/{gen-deps,affected-tests,validate-affected}.ts`, `scripts/lib/*`.

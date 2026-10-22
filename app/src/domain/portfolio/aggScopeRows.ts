@@ -1,3 +1,4 @@
+/** @calc-zone aggregate-views */
 import type { Ctx } from '../ctx';
 import type { CaseState } from '../types/state';
 import { ctxOf } from './memo';

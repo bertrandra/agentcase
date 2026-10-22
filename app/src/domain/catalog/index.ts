@@ -1,3 +1,4 @@
+/** @calc-zone foundation */
 import type { Artefact, EvtClassSeed, LoopPair, Location, Phase, StatusLifecycleDef } from '../types/catalog';
 import type { Coef, EngageCoefRow, ModelState, TeamRow, TokenModel } from '../types/state';
 import artefacts from './artefacts.json';

@@ -1,3 +1,4 @@
+/** @calc-zone time-engine */
 import type { Ctx } from '../ctx';
 import { supCeilVfte } from '../model/supervision';
 import type { ModelResult } from '../types/model';

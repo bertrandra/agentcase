@@ -1,3 +1,4 @@
+/** @calc-zone tuning-programme */
 import type { Ctx } from '../ctx';
 import { hriIndex } from '../engagement';
 import { teamInCost } from '../location';

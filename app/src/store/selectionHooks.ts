@@ -1,3 +1,4 @@
+/** @calc-zone aggregate-views */
 import { useMemo } from 'react';
 import { aggregateTeams, consolidate, inputSummary, selectionView, type InputSummaryRow, type SelectionView, type TeamAggregate } from '@/domain/portfolio';
 import { useCorePortfolio } from './consolidationHooks';

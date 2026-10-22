@@ -1,3 +1,4 @@
+/** @calc-zone product-resolution */
 import { validate } from '@/domain/portfolio';
 import { appStore } from '@/store/instance';
 import { runCommands } from '@/store/portfolioState';

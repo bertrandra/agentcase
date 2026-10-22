@@ -1,3 +1,4 @@
+/** @calc-zone exports */
 import { buildPortfolioPackages, DEFAULT_PRODUCT_NAME, DEFAULT_WAVE_NAME, deepEqual, envelopeCase, isDefaultProductName, isDefaultWaveName, portfolioToCase, type Portfolio } from '@/domain/portfolio';
 import { PORTFOLIO_SCHEMA } from '../portfolioState';
 import type { Doc, PortfolioDoc } from '../types';

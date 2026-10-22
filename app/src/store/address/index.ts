@@ -1,3 +1,4 @@
+/** @calc-zone product-resolution */
 import type { Patch } from 'immer';
 import { OVERRIDABLE_KEYS, deepEqual } from '@/domain/portfolio';
 import type { Doc, EditScope, PortfolioDoc } from '../types';

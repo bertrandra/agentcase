@@ -1,3 +1,4 @@
+/** @calc-zone aggregate-views */
 import { qualityAnchorView } from '../verifyB/breakdowns';
 import { daFmt, daGet, daVal } from '../verifyB/anchors';
 import { perfFrame } from '../verifyB/perf';

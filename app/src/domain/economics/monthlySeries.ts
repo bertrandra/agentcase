@@ -1,3 +1,4 @@
+/** @calc-zone economics-headline */
 import type { Engine } from '../time';
 
 /** One month of the trajectory in the legacy `monthlySeries()` row shape. */

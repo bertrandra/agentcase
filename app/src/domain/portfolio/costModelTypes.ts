@@ -1,3 +1,4 @@
+/** @calc-zone exports */
 /** What the cost-model workbook exports: a portfolio, one wave or one product. */
 export type CostScope = { kind: 'portfolio' } | { kind: 'wave'; id: string } | { kind: 'product'; id: string };
 

@@ -1,3 +1,4 @@
+/** @calc-zone delivery-views */
 import type { Ctx } from '../ctx';
 import { activePhaseIds } from './phases';
 import { phaseScope } from '../scope';

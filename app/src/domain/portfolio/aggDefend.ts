@@ -1,3 +1,4 @@
+/** @calc-zone aggregate-views */
 import { assumptionRegister, type AssumptionBase, type Validated } from '../pdc/assumptions';
 import { ceilingCoverage, ddRows, isDone, type DdDoc } from '../pdc/dd';
 import { calcChain } from '../pdc/verifChain';

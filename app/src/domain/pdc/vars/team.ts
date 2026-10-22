@@ -1,3 +1,4 @@
+/** @calc-zone workspace-config */
 import { classTargetPct } from '../../baseline/locStrat';
 import { locationMix, targetBlendedTJM, teamInCost } from '../../location';
 import { modelOf as model } from '../../tune/memo';

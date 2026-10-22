@@ -1,3 +1,4 @@
+/** @calc-zone exports */
 import type * as XL from 'exceljs';
 
 /** Cell styling and data validation of the legacy workbook (navy header, blue = editable input, grey = reference). */

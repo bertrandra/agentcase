@@ -1,3 +1,4 @@
+/** @calc-zone exports */
 import { clean } from '@/domain/portfolio/products';
 import type { HubSettings, Product, Wave } from '@/domain/portfolio';
 import { cleanText, str } from '../params/safe';

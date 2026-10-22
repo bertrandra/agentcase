@@ -1,3 +1,4 @@
+/** @calc-zone product-resolution */
 import { caseDiscountRate, engineNow } from '../canonical';
 import type { Ctx } from '../ctx';
 import { costReduction } from '../economics/costReduction';

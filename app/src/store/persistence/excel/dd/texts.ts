@@ -1,3 +1,4 @@
+/** @calc-zone exports */
 import { ddUse, type DdEdit, type DdRow } from '@/domain/pdc/dd';
 import coefEdit from './coefEdit.json';
 import evidence from './evidence.json';

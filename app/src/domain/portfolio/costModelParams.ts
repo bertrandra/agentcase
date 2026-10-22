@@ -1,3 +1,4 @@
+/** @calc-zone exports */
 import { engagementCoef, engagementKey } from '../engagement';
 import { khAsisCC, khEnabled, khRunAnnual, khTargetCC } from '../knowledge';
 import { model } from '../model/overlay';

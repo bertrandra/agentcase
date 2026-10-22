@@ -1,3 +1,4 @@
+/** @calc-zone verification-verdict @owner decision-verdict */
 import type { Ctx } from '../ctx';
 import { engagementCoef } from '../engagement';
 import { model } from '../model/overlay';

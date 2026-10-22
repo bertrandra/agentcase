@@ -1,3 +1,4 @@
+/** @calc-zone foundation */
 import { makeCtx, type Ctx } from '../ctx';
 import type { CaseState } from '../types/state';
 

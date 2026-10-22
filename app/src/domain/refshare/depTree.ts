@@ -1,3 +1,4 @@
+/** @calc-zone workspace-config */
 import type { DepEdges, DepGroup, DepSection } from './deps';
 
 type Edge = [string, string];

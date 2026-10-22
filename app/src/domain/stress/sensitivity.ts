@@ -1,3 +1,4 @@
+/** @calc-zone stress */
 import { engineNow } from '../canonical';
 import type { Ctx } from '../ctx';
 import { engagementCoef } from '../engagement';

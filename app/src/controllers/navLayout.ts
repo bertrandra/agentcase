@@ -1,3 +1,4 @@
+/** @calc-zone workspace-config */
 import type { DynRow, PersonaOrder, SectionRow } from '@/domain/nav/layout';
 import type { Placement } from '@/domain/nav/moves';
 import type { MenuGroup } from '@/domain/pdc/personas';

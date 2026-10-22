@@ -1,3 +1,4 @@
+/** @calc-zone run-setup-taxes */
 import type { CaseState } from './types/state';
 
 export const tokMixTotal = (s: CaseState): number => s.TOKEN_MODELS.reduce((t, m) => t + (m.mix || 0), 0);

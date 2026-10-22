@@ -1,3 +1,4 @@
+/** @calc-zone verification-verdict */
 import type { WArtefact } from '../artefacts';
 import type { Ctx } from '../ctx';
 import { activeArtefacts } from '../scope';

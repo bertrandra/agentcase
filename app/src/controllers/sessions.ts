@@ -1,3 +1,4 @@
+/** @calc-zone workspace-config */
 import { appStore } from '@/store/instance';
 import { restoreRecord, startAutosave, type AutosaveRecord, type AutosaveStorage } from '@/store/persistence/autosave';
 import { idbStorage } from '@/store/persistence/idb';

@@ -1,3 +1,4 @@
+/** @calc-zone presentation */
 /** Euro formatting family: the single owner of the money text shared by the UI, the exports and the domain read-outs (en-US grouping). */
 
 /** "€1,234" (whole euros); a negative reads "−€1,234" (U+2212 before the symbol: the one convention, DEV-NEG-MONEY). */

@@ -1,3 +1,4 @@
+/** @calc-zone exports */
 import type { Workbook } from 'exceljs';
 import type { CostModel } from '@/domain/portfolio';
 import type { ExcelJS } from '../lazy';

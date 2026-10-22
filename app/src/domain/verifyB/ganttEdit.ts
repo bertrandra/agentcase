@@ -1,3 +1,4 @@
+/** @calc-zone delivery-views */
 import type { Axis } from './ganttProgram';
 
 /** How one Gantt program bar is driven: the case input behind it, its unit and its step sizes (normal / with Shift). */

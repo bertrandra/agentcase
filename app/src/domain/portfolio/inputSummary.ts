@@ -1,3 +1,4 @@
+/** @calc-zone knowledge-hub */
 import { khEnabled } from '../knowledge';
 import { teamEtp } from './alloc';
 import { overrideRefs } from './keys';

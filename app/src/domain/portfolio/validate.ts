@@ -1,3 +1,4 @@
+/** @calc-zone product-resolution */
 import { diagnose } from './diagnostics';
 import { FORBIDDEN_DOM_IDS, OVERRIDABLE_KEYS, type Portfolio } from './types';
 

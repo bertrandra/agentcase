@@ -1,3 +1,4 @@
+/** @calc-zone product-resolution */
 type Bag = Record<string, unknown>;
 const plain = (x: unknown): x is Bag => !!x && typeof x === 'object' && !Array.isArray(x);
 

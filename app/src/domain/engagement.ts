@@ -1,3 +1,4 @@
+/** @calc-zone scope-automation */
 import { ENGAGE_COEF } from './catalog';
 import type { Ctx } from './ctx';
 import { teamInCost } from './location';

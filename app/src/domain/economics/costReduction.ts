@@ -1,3 +1,4 @@
+/** @calc-zone economics-headline @owner saving-pct */
 import type { Ctx } from '../ctx';
 import { horizonYears } from '../model/horizonYears';
 import { model } from '../model/overlay';

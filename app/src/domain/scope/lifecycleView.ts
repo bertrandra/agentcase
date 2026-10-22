@@ -1,3 +1,4 @@
+/** @calc-zone scope-automation */
 import type { Ctx } from '../ctx';
 import { lifecycleAutoPosture, lifecycleBlend, lifecycleWeight, statusTable } from '../lifecycle';
 import { activeArtefacts } from '../scope';

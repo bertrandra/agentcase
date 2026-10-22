@@ -1,3 +1,4 @@
+/** @calc-zone exports */
 import { fmtK } from '@/domain/format';
 import type { ReportData } from './data';
 

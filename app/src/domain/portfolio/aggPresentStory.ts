@@ -1,3 +1,4 @@
+/** @calc-zone aggregate-views */
 import { model } from '../model/overlay';
 import { storySummary, type Story } from '../pdc/story';
 import { selectionOf, total } from './aggEconomicsSel';

@@ -1,3 +1,4 @@
+/** @calc-zone time-engine */
 import type { Ctx } from '../ctx';
 import { timeFor } from '../time';
 import { activeCurve } from './overlay';

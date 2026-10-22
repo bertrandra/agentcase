@@ -1,3 +1,4 @@
+/** @calc-zone aggregate-views */
 import { evlModel } from '../model/evidence';
 import { evtModel } from '../model/evt';
 import { flowModel } from '../model/flow';

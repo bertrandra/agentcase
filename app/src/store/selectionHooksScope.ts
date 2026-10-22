@@ -1,3 +1,4 @@
+/** @calc-zone aggregate-views */
 import { useMemo } from 'react';
 import { scopeLifecycle, scopeParams, scopePhases, scopeScurve, scopeSelection, type Portfolio } from '@/domain/portfolio';
 import { useCorePortfolio } from './consolidationHooks';

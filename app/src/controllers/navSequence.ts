@@ -1,3 +1,4 @@
+/** @calc-zone workspace-config */
 import type { Persona, PersonaSeq } from '@/domain/pdc/personas';
 import { defineCommand } from '@/store/commands';
 import { appStore } from '@/store/instance';

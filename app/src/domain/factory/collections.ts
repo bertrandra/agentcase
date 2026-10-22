@@ -1,3 +1,4 @@
+/** @calc-zone workspace-config */
 import type { FactoryData } from './types';
 
 /** The record collections the generic add / set / remove commands work on (state keys of the case). */

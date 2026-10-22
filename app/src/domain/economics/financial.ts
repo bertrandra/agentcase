@@ -1,3 +1,4 @@
+/** @calc-zone economics-headline */
 import type { YearRow } from '../time/years';
 import type { EconomicsView } from './view';
 

@@ -1,3 +1,4 @@
+/** @calc-zone aggregate-views */
 import { useMemo } from 'react';
 import { convergenceByProduct, evidenceByProduct, flowByProduct, stochasticByProduct, supervisionByProduct, verificationByProduct } from '@/domain/portfolio';
 import { useCorePortfolio } from './consolidationHooks';

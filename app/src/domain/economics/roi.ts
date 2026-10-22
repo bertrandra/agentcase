@@ -1,3 +1,4 @@
+/** @calc-zone economics-headline @owner roi */
 /**
  * ROI / payback rules shared by every economics view (legacy v18.9 M-2/M-3). Pure, no formatting of money.
  */

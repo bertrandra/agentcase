@@ -1,3 +1,4 @@
+/** @calc-zone aggregate-views */
 export { aggregateRun, aggregateAnnual, aggregateMonthly, type RunAgg, type RunParts, type AnnualAgg, type MonthlyAgg } from './aggEconomics';
 export { aggregatePlayback, type PlaybackAgg } from './aggPresentPlayback';
 export { aggregateStory, type StoryAgg } from './aggPresentStory';

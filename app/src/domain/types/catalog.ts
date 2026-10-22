@@ -1,3 +1,4 @@
+/** @calc-zone foundation */
 export interface Phase { id: string; name: string; sdlc: number; reg: number; role: string; seq: number }
 export interface Location { name: string; cls: string }
 export interface Artefact {

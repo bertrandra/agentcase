@@ -1,3 +1,4 @@
+/** @calc-zone time-engine */
 import { ensureNs } from '@/domain/model/modelState';
 import { defineCommand } from '@/store/commands';
 import { appStore } from '@/store/instance';

@@ -1,3 +1,4 @@
+/** @calc-zone workspace-config */
 import { duplicateOf, uniqueId, type MenuGroup, type Persona } from '@/domain/pdc/personas';
 import { defineCommand } from '@/store/commands';
 import { appStore } from '@/store/instance';

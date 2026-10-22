@@ -1,3 +1,4 @@
+/** @calc-zone time-engine */
 import type { Econ, K } from './kernel';
 
 export interface MonthRow {

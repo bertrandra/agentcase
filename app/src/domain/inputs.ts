@@ -1,3 +1,4 @@
+/** @calc-zone foundation */
 import type { CaseState } from './types/state';
 
 /** Typed replacement of the legacy P()/V()/C() seam: reads the captured DOM inputs of a case. Same semantics. */

@@ -1,3 +1,4 @@
+/** @calc-zone exports */
 import type { Workbook, Worksheet } from 'exceljs';
 import type { ImageKey, SheetImages } from './data';
 

@@ -1,3 +1,4 @@
+/** @calc-zone exports */
 import type { Workbook } from 'exceljs';
 import { infraView, knowledgeTable, waveEffects, waveEffectsTotal, type Portfolio } from '@/domain/portfolio';
 import { cardSheet, MONEY, PCT, table } from './blocks';

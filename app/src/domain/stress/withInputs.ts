@@ -1,3 +1,4 @@
+/** @calc-zone stress */
 import type { Ctx } from '../ctx';
 import { autoCapFrom, type Inputs } from '../inputs';
 

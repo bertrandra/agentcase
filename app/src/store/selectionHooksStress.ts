@@ -1,3 +1,4 @@
+/** @calc-zone aggregate-views */
 import { useMemo } from 'react';
 import { compareByProduct, scenarioByProduct, selectionStress, sensitivityByProduct, type SelectionStress } from '@/domain/portfolio';
 import { useCorePortfolio } from './consolidationHooks';

@@ -1,3 +1,4 @@
+/** @calc-zone verification-verdict */
 import type { Ctx } from '../ctx';
 import { evtModel } from '../model/evt';
 import { lceLoops, lceModel } from '../model/lce';

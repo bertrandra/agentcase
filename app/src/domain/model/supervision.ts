@@ -1,3 +1,4 @@
+/** @calc-zone run-setup-taxes */
 import { SUP_REF_HOURS_PER_PERIOD } from '../catalog';
 import type { Ctx } from '../ctx';
 

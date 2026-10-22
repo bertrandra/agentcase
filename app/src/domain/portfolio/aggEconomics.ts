@@ -1,3 +1,4 @@
+/** @calc-zone aggregate-views */
 import { calendarOf } from './calendar';
 import type { Consolidated } from './consolidate';
 import type { ChartView } from './consolidationView';

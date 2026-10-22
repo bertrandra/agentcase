@@ -1,3 +1,4 @@
+/** @calc-zone verification-verdict */
 import type { Ctx } from '../ctx';
 import { EVL_STAGE_LABEL, evlModel } from '../model/evidence';
 import { flowModel } from '../model/flow';

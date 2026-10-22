@@ -1,3 +1,4 @@
+/** @calc-zone exports */
 import type { Ctx } from '@/domain';
 import { economicsView, type EconomicsView } from '@/domain/economics';
 

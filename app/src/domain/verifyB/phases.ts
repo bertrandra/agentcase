@@ -1,3 +1,4 @@
+/** @calc-zone delivery-views */
 import { PHASES } from '../catalog';
 import type { Ctx } from '../ctx';
 import { activeArtefacts } from '../scope';

@@ -1,3 +1,4 @@
+/** @calc-zone exports */
 import { LOCATIONS, PHASES } from '@/domain/catalog';
 import { lifecycleAutoPosture, lifecycleBlend, lifecycleWeight, statusTable } from '@/domain/lifecycle';
 import { lifecycleStatusLabel } from '@/domain/verdict/context';

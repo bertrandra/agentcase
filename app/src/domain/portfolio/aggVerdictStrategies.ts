@@ -1,3 +1,4 @@
+/** @calc-zone aggregate-views */
 import { roiCanonical } from '../economics/roi';
 import { evaluateStrategies, stratNormalize, strategyDefsOf, stratWeightsOf } from '../verdict';
 import { selectionOf, total } from './aggEconomicsSel';

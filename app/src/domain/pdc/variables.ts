@@ -1,3 +1,4 @@
+/** @calc-zone workspace-config */
 import { ENGINE_VARS } from './vars/engine';
 import { FACTORY_VARS } from './vars/factory';
 import { FINANCE_VARS } from './vars/finance';

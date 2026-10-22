@@ -1,3 +1,4 @@
+/** @calc-zone workspace-config */
 import type { Ctx } from '../../ctx';
 import { npvCanonical, paybackMonthsCanonical } from '../../canonical';
 import { engineOf as engineNow, modelOf as model } from '../../tune/memo';

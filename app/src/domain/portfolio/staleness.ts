@@ -1,3 +1,4 @@
+/** @calc-zone exports */
 import { parseCalcPackage, type CalcPackage } from '../calcPackage';
 import type { CalcStaleness, CalcState } from '../calcStaleness';
 import { samePackage } from '../calcStaleness';

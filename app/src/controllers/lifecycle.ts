@@ -1,3 +1,4 @@
+/** @calc-zone scope-automation */
 import { defineCommand } from '@/store/commands';
 import { appStore } from '@/store/instance';
 

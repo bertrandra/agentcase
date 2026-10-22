@@ -1,3 +1,4 @@
+/** @calc-zone scope-automation */
 import { ALL_PHASE_IDS } from './catalog';
 import type { ArtefactSets, WArtefact } from './artefacts';
 import type { CaseState } from './types/state';

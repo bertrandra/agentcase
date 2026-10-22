@@ -1,3 +1,4 @@
+/** @calc-zone workspace-config */
 import { PHASES } from '../catalog';
 import type { Ctx } from '../ctx';
 import { fmtK } from '../format';

@@ -49,7 +49,7 @@ turn `APP_VERSION` into `vX.Y` by removing one trailing `.0`, and dots into unde
 ```bash
 git switch -c release/vX.Y.Z
 cd app && npm ci
-npm run check        # tsc --noEmit + ESLint + Vitest: must be green before you start
+npm run check        # tsc --noEmit + ESLint + generated-graph check + Vitest: must be green before you start
 ```
 
 If it is red before your change, fix that first and say so in the changelog.
@@ -68,7 +68,7 @@ npm run check        # typecheck, lint (150-line rule, layer rules, no raw HTML)
 npm run build        # tsc --noEmit + vite build -> app/dist/index.html
 ```
 
-`npm run check` includes: the oracle test on every fixture case, controller and persistence tests, section parity tests, the command
+`npm run check` includes: the generated dependency graph check (`npm run deps:check`: when the code's imports or `@calc-zone` tags changed, run `npm run deps:gen` and commit `app/src/generated/dependencies.json`), the oracle test on every fixture case, controller and persistence tests, section parity tests, the command
 registry test (every command has a label, a sample and round-trips through undo/redo), the property-based undo test, the lint-rule and
 file-size tests. It is the same sequence CI runs. The browser gates are not part of `npm run check`, so
 after `npm run build`, run the browser gates on the built file from `app/` (Chromium needed): `npm run e2e` (smoke of every section on 6 case fixtures and 2 portfolio
@@ -80,6 +80,13 @@ files, then the performance budget), `node ../tools/ui-parity.mjs`, `npm run a11
 - after a calculation or persistence change, also open one legacy v18.x snapshot and one legacy workbook.
 
 If a change is meant to move the golden case, see §6 (it starts in the legacy file) and state old → new figures in the changelog.
+
+### 4.1 Duplication and test selection
+
+* `npm run dup` (`app/scripts/dup.mjs`) fails when the share of duplicated code grows beyond the recorded baseline (`app/dup-baseline.json`): a new copy of an existing
+  block is a second source of a number. It lowers its own threshold when the code gets better: after removing duplicates, run `npm run dup -- --update` and commit.
+* `npm run test:affected` runs only the tests a change can reach ([TEST_SELECTION.md](TEST_SELECTION.md)). It is for the inner loop and optional PR feedback; **the
+  release always runs the full suite** (`npm run check`), as CI does on `main`. After changing the generator, the tags or the rule, run `npm run validate:affected` (recall must be 100%).
 
 ## 5. Changelog and commit
 
@@ -94,7 +101,7 @@ git push -u origin release/vX.Y.Z   # then open a pull request
 
 ## 6. Continuous integration and the artefact
 
-`.github/workflows/app.yml` (job `check`, working directory `app`, Node 22) runs `npm ci`, `npm run check` and `npm run build` on pull
+`.github/workflows/app.yml` (job `check`, working directory `app`, Node 22) runs `npm ci`, `npm run deps:check`, `npm run dup`, `npm run check` and `npm run build` on pull
 requests and on pushes to `main` that touch `app/**` or the workflow. It does not run the legacy tools, does not upload the build and
 does not tag.
 
@@ -158,6 +165,8 @@ file from the repository root.
 ## 8. Checklist
 
 - [ ] `npm ci && npm run check` green on the branch before the change
+- [ ] `npm run deps:check` green (else `npm run deps:gen` and commit `app/src/generated/dependencies.json`); `npm run dup` green; new domain modules carry `@calc-zone` (and `@owner` for a figure they own)
+- [ ] the **full** suite ran before the merge (`test:affected` is a development aid, never the release gate); `npm run validate:affected` after a change of the generator, tags or rule
 - [ ] stamps: `version.ts`, `package.json`, `package-lock.json` (and the `index.html` title on a major bump)
 - [ ] calculation change? shipped in the legacy file first and the oracle regenerated (§7), golden line in the changelog
 - [ ] `npm run check` and `npm run build` green; manual browser pass on `app/dist/index.html` (§4)

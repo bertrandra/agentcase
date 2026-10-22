@@ -1,3 +1,4 @@
+/** @calc-zone product-resolution */
 import { scheduledProducts } from './timeline';
 import type { Portfolio } from './types';
 

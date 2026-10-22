@@ -1,3 +1,4 @@
+/** @calc-zone workspace-config */
 import type { NavSection } from './layout';
 import { flatten, type Stop } from './sequence';
 import type { PersonaSeq } from '../pdc/personas';

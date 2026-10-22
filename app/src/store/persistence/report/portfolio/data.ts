@@ -1,3 +1,4 @@
+/** @calc-zone exports */
 import { appVerTag } from '@/domain/snapshots';
 import {
   calendarOf, consolidate, consolidationView, corePortfolio, knowledgeTable, knowledgeTotals, portfolioHeadline, resolveProduct, waveEffects, waveHeadline,

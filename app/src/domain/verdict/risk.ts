@@ -1,3 +1,4 @@
+/** @calc-zone verification-verdict */
 import type { Ctx } from '../ctx';
 import { aiQualityTaxFactor } from '../model/vtax';
 import { AIACT_TIERS, aiActKey, aiActBar, qualBar, riskBar, riskScore, wave2RiskPremium } from '../tuneB/risk';

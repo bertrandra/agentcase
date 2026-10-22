@@ -1,3 +1,4 @@
+/** @calc-zone delivery-views */
 import { LOCATIONS, COEF_DEFAULT } from '../catalog';
 import { targetMix } from '../baseline/locStrat';
 import { locationMix, rateFor } from '../location';

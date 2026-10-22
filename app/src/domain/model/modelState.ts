@@ -1,3 +1,4 @@
+/** @calc-zone time-engine */
 import { MODEL_DEFAULTS } from '../catalog';
 import type { ModelState } from '../types/state';
 

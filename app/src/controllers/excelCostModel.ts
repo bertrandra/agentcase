@@ -1,3 +1,4 @@
+/** @calc-zone exports */
 import { corePortfolio, costModel, scopeSlug, type CostScope } from '@/domain/portfolio';
 import { APP_VERSION } from '@/domain/version';
 import { appStore } from '@/store/instance';

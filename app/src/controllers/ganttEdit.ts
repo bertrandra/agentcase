@@ -1,3 +1,4 @@
+/** @calc-zone delivery-views */
 import { moveStart, resizeBar } from '@/domain/verifyB';
 import { appStore } from '@/store/instance';
 import { setInput } from './inputs';

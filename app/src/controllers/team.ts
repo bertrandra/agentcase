@@ -1,3 +1,4 @@
+/** @calc-zone rate-card-team */
 import { defineCommand } from '@/store/commands';
 import { appStore } from '@/store/instance';
 import { FTE_STEP, snapFTE } from '@/domain/baseline/apportion';

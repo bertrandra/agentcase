@@ -1,3 +1,4 @@
+/** @calc-zone delivery-views */
 import type { WArtefact } from '../artefacts';
 import type { Ctx } from '../ctx';
 import { model } from '../model/overlay';

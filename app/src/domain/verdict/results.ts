@@ -1,3 +1,4 @@
+/** @calc-zone verification-verdict */
 import { engineNow } from '../canonical';
 import { headline } from '../economics/headline';
 import type { Ctx } from '../ctx';

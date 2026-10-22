@@ -1,3 +1,4 @@
+/** @calc-zone exports */
 import type { Cell } from './types';
 
 /** A file that cannot be imported (malformed, oversize, foreign): the case is left untouched. */

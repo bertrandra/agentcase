@@ -1,3 +1,4 @@
+/** @calc-zone workspace-config */
 import { VARIABLES } from './variables';
 
 export interface BoardCard {

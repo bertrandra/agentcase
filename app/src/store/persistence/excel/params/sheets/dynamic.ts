@@ -1,3 +1,4 @@
+/** @calc-zone exports */
 import type { BoardCard, BoardRow, DynSection } from '@/domain/pdc/board';
 import { VARIABLES } from '@/domain/pdc/variables';
 import { blue, frz, grey, head, listDV, sheet, ynDV } from '../kit';

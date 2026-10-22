@@ -1,3 +1,4 @@
+/** @calc-zone run-setup-taxes */
 import { supSeedHeadcount } from '@/domain/model/supView';
 import { ensureNs } from '@/domain/model/modelState';
 import { defineCommand } from '@/store/commands';

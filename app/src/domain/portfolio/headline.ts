@@ -1,3 +1,4 @@
+/** @calc-zone portfolio-consolidation */
 import { paybackYearOf, type Headline } from '../economics/headline';
 import { roiCanonical } from '../economics/roi';
 import type { ProductRun } from './run';

@@ -1,3 +1,4 @@
+/** @calc-zone stress */
 import { caseDiscountRate } from '../canonical';
 import type { Ctx } from '../ctx';
 import { makeInputs } from '../inputs';

@@ -1,3 +1,4 @@
+/** @calc-zone exports */
 import { SnapshotError } from '../snapshot';
 
 /** The restore script a v18.x "Save HTML snapshot" bakes at the end of the file: <script …>try{ applySnapshotState({…}); }catch(e){…}</script>. */

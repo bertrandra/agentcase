@@ -1,3 +1,4 @@
+/** @calc-zone workspace-config */
 import type { Ctx } from '../../ctx';
 import { hriIndex } from '../../engagement';
 import { evlModel } from '../../model/evidence';

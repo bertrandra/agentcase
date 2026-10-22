@@ -1,3 +1,4 @@
+/** @calc-zone exports */
 import { makeCtx } from '@/domain';
 import { pfStressFingerprint } from '@/domain/portfolio';
 import type { DisplayScope } from '@/domain/portfolio';

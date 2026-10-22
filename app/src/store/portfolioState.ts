@@ -1,3 +1,4 @@
+/** @calc-zone product-resolution */
 import { applyPatches, current, isDraft, produceWithPatches, type Patch } from 'immer';
 import { envelopeCase, resolveProduct } from '@/domain/portfolio';
 import { addressPatches } from './address';

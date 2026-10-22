@@ -1,3 +1,4 @@
+/** @calc-zone workspace-config */
 import type { Gen } from './generate';
 
 /** A release cut on the cadence: items, release candidates (rejected ones superseded), approvals, promotion through the environments, incidents, feedback. */

@@ -1,3 +1,4 @@
+/** @calc-zone workspace-config */
 import type { FactoryData } from './types';
 
 export const LANES = ['Commits', 'Builds', 'Release Candidates', 'Approvals', 'Deployments', 'Monitoring', 'Feedback'] as const;

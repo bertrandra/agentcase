@@ -1,3 +1,4 @@
+/** @calc-zone adoption-curve */
 /** Coarse-to-fine least-squares fits of three sigmoid families to the year-end anchors (months 12/24/36). */
 export interface Fit { floor: number; ceiling: number; anchors: number[]; residuals: number[]; fitErrorPct: number; fitQuality: string; [k: string]: unknown }
 type Rate = (t: number, a: number, b: number) => number;

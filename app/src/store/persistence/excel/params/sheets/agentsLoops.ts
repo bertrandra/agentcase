@@ -1,3 +1,4 @@
+/** @calc-zone exports */
 import agentCatalog from '@/domain/verifyA/agentCatalog.json';
 import { LOOP_PAIRS } from '@/domain/catalog';
 import { blue, frz, geDV, grey, head, rangeDV, sheet } from '../kit';

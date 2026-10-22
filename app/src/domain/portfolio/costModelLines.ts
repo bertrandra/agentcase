@@ -1,3 +1,4 @@
+/** @calc-zone exports */
 import { khRunAnnual } from '../knowledge';
 import { model } from '../model/overlay';
 import { lay, layWide } from './costModelAxis';

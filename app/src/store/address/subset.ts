@@ -1,3 +1,4 @@
+/** @calc-zone product-resolution */
 import { add, productPath, type AddressCtx, type Path } from './types';
 
 type Kind = 'values' | 'checked';

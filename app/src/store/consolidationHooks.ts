@@ -1,3 +1,4 @@
+/** @calc-zone portfolio-consolidation */
 import { useMemo } from 'react';
 import {
   consolidate, consolidationView, corePortfolio, portfolioGantt, scopeHeadline, waveBoard,

@@ -1,3 +1,4 @@
+/** @calc-zone aggregate-views */
 import { complianceView } from '../verifyB/compliance';
 import { execView, productivityView, qualityAnchorView, velocityView } from '../verifyB/breakdowns';
 import { colOf, productRows, sum, viewMemo, type VCol, type VTable } from './aggVerifyBase';

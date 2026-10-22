@@ -1,3 +1,4 @@
+/** @calc-zone product-resolution */
 import { memoChain } from './memo';
 import type { Portfolio } from './types';
 

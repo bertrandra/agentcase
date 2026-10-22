@@ -1,3 +1,4 @@
+/** @calc-zone delivery-views */
 import { defineCommand } from '@/store/commands';
 import { appStore } from '@/store/instance';
 import type { Doc } from '@/store/types';

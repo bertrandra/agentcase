@@ -1,3 +1,4 @@
+/** @calc-zone aggregate-views */
 import { MP_COST_SP_ASIS, playbackSeries, type PlaybackSeries } from '../pdc/playback';
 import { model } from '../model/overlay';
 import { selectionOf, lastOf, total } from './aggEconomicsSel';

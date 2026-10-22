@@ -1,3 +1,4 @@
+/** @calc-zone portfolio-consolidation */
 import { summarize, type Summary } from './headline';
 import type { ProductRun } from './run';
 import { addInto, emptySeries, type ProductSeries, type Series } from './series';

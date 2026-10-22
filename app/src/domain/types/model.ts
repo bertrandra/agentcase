@@ -1,3 +1,4 @@
+/** @calc-zone foundation */
 import type { EngageCoefRow } from './state';
 import type { PhaseScope } from '../scope';
 

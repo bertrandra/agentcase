@@ -1,3 +1,4 @@
+/** @calc-zone delivery-views */
 import type { Ctx } from '../ctx';
 import { INDUSTRIES } from '../frame/profile';
 import { model } from '../model/overlay';

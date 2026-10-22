@@ -1,3 +1,4 @@
+/** @calc-zone time-engine */
 import { current } from 'immer';
 import { makeCtx, type Ctx } from '@/domain';
 import { LOOP_PAIRS } from '@/domain/catalog';

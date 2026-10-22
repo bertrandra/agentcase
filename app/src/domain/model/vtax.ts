@@ -1,3 +1,4 @@
+/** @calc-zone run-setup-taxes @owner verification-tax */
 import { QUAL_ANCHOR } from '../catalog';
 import type { Ctx } from '../ctx';
 import { activeArtefacts } from '../scope';

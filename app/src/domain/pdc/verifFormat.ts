@@ -1,3 +1,4 @@
+/** @calc-zone presentation */
 /** Display helpers of the verification section (identical to the legacy globals). Kept here so the check results carry their legacy text. */
 export { fmtK, fmtE } from '../format';
 export const fmtRoi = (r: number | null): string => (r == null ? 'n/a' : `${Math.round(r * 100)}%`);

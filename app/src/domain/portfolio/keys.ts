@@ -1,3 +1,4 @@
+/** @calc-zone foundation */
 import { FORBIDDEN_DOM_IDS, OVERRIDABLE_KEYS, type OverridableKey, type OverrideRef, type Overrides } from './types';
 
 const TOP = new Set<string>(OVERRIDABLE_KEYS);

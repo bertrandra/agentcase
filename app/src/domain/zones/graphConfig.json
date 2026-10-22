@@ -1,0 +1,21 @@
+{
+ "ignore": [
+  { "path": "src/ui/zones/", "reason": "Chrome around every section (frame, fallbacks, navigation model): shared by all sections, a dependency of none in particular." },
+  { "path": "src/ui/shell/", "reason": "The shell (top bar, KPI bar, product bar, View selector) is on every screen; its reads are not a dependency of the section being shown." },
+  { "path": "src/ui/widgets/AggregateTable.tsx", "reason": "View-selector widget: every section follows the View, so every section would depend on the consolidation." },
+  { "path": "src/ui/widgets/ProductDrill.tsx", "reason": "View-selector widget." },
+  { "path": "src/ui/widgets/ProductBanner.tsx", "reason": "View-selector widget." },
+  { "path": "src/ui/widgets/ScopeBanner.tsx", "reason": "View-selector widget." },
+  { "path": "src/ui/widgets/OverrideBadge.tsx", "reason": "View-selector widget." },
+  { "path": "src/ui/widgets/ReadOnlyScope.tsx", "reason": "View-selector widget." }
+ ],
+ "routes": {
+  "src/store/hooks.ts": { "useCaseResult": "src/domain/index.ts", "caseResultOf": "src/domain/index.ts", "useCtx": "src/domain/ctx.ts" }
+ },
+ "selection": {
+  "maxShare": 0.6,
+  "contractTests": ["tests/size.test.ts", "tests/lint-rules.test.ts", "tests/ui/english-only.test.ts", "tests/ui/section-scope.test.ts", "tests/ui/arch-facts.test.ts", "tests/domain/deps-fresh.test.ts", "tests/domain/deps-generator.test.ts", "tests/domain/zones-tags.test.ts", "tests/domain/figure-owners.test.ts"],
+  "fullZones": ["foundation"],
+  "fullSuite": ["package.json", "package-lock.json", "tsconfig.json", "eslint.config.js", "vite.config.ts", "index.html", "perf-budget.json", "tests/helpers/", "fixtures/", "scripts/", "src/generated/", "src/domain/zones/catalog.json", "src/domain/zones/graphConfig.json", "src/main.tsx"]
+ }
+}

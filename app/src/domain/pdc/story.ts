@@ -1,3 +1,4 @@
+/** @calc-zone delivery-views */
 import type { Ctx } from '../ctx';
 import { engineNow, paybackMonthsCanonical } from '../canonical';
 import { model } from '../model/overlay';

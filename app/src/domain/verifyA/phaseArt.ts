@@ -1,3 +1,4 @@
+/** @calc-zone delivery-views */
 import { PHASES } from '../catalog';
 import { activeArtefacts } from '../scope';
 import type { Live } from './fteVfte';

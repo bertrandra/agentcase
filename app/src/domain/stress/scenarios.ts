@@ -1,3 +1,4 @@
+/** @calc-zone stress */
 import { LOCATIONS } from '../catalog';
 import type { Ctx } from '../ctx';
 import { headlineOf } from '../economics/headline';

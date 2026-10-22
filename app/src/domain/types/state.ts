@@ -1,3 +1,4 @@
+/** @calc-zone foundation */
 /** Shape of a case = the legacy snapshot state (what collectSnapshotState() returns). Only the keys the engine reads are typed. */
 export interface DomState { values: Record<string, string>; checked: Record<string, boolean> }
 export interface TeamRow { skill: string; grade: string; loc: string; etp: number; pins?: unknown[] }

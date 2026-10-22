@@ -1,3 +1,4 @@
+/** @calc-zone stress */
 export { scenarioModel, scenarioSet, scenTargetLocName, scenTargetTJM, SCENARIO_DESTINATIONS, type Scenario, type ScenarioResult, type ScenOpts } from './scenarios';
 export { cumAt, fmtE, fmtPayback, fmtSigned, monthAxis, paybackShown, roiText } from './scenarioView';
 export { compareData, fmtK, type CompareData, type Trajectory } from './compare';

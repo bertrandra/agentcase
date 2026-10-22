@@ -1,3 +1,4 @@
+/** @calc-zone exports */
 import { compareCases, makeSnapshot, snapshotsOf, SNAPSHOT_KEY, type CompareRow, type NamedSnapshot } from '@/domain/snapshots';
 import { defineCommand } from '@/store/commands';
 import { appStore } from '@/store/instance';

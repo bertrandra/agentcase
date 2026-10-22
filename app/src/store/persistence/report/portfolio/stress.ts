@@ -1,3 +1,4 @@
+/** @calc-zone exports */
 import { fmtK } from '@/domain/format';
 import { pfDecision, type PfStress, type Portfolio, type ProductStress, type StressStats, type VerdictGroup, type WaveStress } from '@/domain/portfolio';
 import { VERDICT_META, type Verdict } from '@/domain/verdict';

@@ -1,3 +1,4 @@
+/** @calc-zone aggregate-views */
 import { caseDiscountRate } from '../canonical';
 import { engagementCoef, engagementKey } from '../engagement';
 import { CROSS_CATEGORIES, INDUSTRIES, industryLabel, regGlassCeiling, crossOn } from '../frame/profile';
