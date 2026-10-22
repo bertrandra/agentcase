@@ -117,6 +117,19 @@ describe('portfolio Gantt (F18)', () => {
   });
 });
 
+describe('portfolio Gantt: payback milestone', () => {
+  it('a product that pays back inside the horizon shows the payback at month0 + its own payback', () => {
+    const c5 = loadCase('horizon-5');
+    let pf = withProduct(withWave(envelopeCase(c5), 'w2', 4), { id: 'B', waveId: 'w2', offset: 2 });
+    pf = { ...pf, horizonMonths: 72 };
+    const c = consolidate(pf), v = c.products[1]!, own = v.run.engine.payback() as number;
+    expect(own).toBeGreaterThan(0);
+    const m = portfolioGantt(pf, c).waves[1]!.products[0]!.milestones.find((x) => x.family === 'financial')!;
+    expect(m.month).toBe(6 + own);
+    expect(m.label).toBe('Payback (break-even)');
+  });
+});
+
 describe('corePortfolio', () => {
   it('keeps its identity when only view state changes and changes when a figure input does', () => {
     const pf = four(), a = corePortfolio(pf);
