@@ -62,20 +62,20 @@ Légende de l’état : **FAIT** (construit en V0), **NATIF** (la section suit d
 | id | Groupe | Libellé | Type | Contenu agrégé prévu / raison | Source domaine | État |
 |---|---|---|---|---|---|---|
 | `home` | frame | 🏠 Welcome | `S-static` | Bandeau seul. Page d’accueil : navigation seulement, ne calcule rien | — | FAIT (bandeau) |
-| `engagement-context` | frame | 🧭 Engagement context | `I-input` | Cadre contractuel MSC/MSI/STA par produit (hérité/surchargé) | `inputSummary` + `values.engagementCtx` du cas résolu | À FAIRE |
-| `engage` | frame | 🤝 Engage | `I-input` | Durées des 4 étapes d’onboarding et fin d’onboarding par produit | cas résolu de chaque produit (`dom.values`) | À FAIRE |
-| `transform-params` | frame | 🏛️ Industry / regulatory profile | `I-input` | Profil sectoriel/réglementaire et normes cochées par produit | `selectedNorms`, `values.*` du cas résolu | À FAIRE |
-| `params` | scope | 🎯 Automation & Glass ceiling | `I-input` | Potentiel cible et plafond de verre (forcé ou calculé) par produit | `model.eff`, `model.ceiling`, `forceGlassCeiling` | À FAIRE |
-| `scurve` | scope | 📊 S-curve — adoption ramp | `I-input` | Rampe d’adoption Y1/Y2/Y3 par produit | `scurve` du cas résolu | À FAIRE |
+| `engagement-context` | frame | 🧭 Engagement context | `I-input` | Cadre contractuel MSC/MSI/STA par produit (hérité/surchargé) | `inputSummary` + `values.engagementCtx` du cas résolu | FAIT |
+| `engage` | frame | 🤝 Engage | `I-input` | Durées des 4 étapes d’onboarding et fin d’onboarding par produit | cas résolu de chaque produit (`dom.values`) | FAIT |
+| `transform-params` | frame | 🏛️ Industry / regulatory profile | `I-input` | Profil sectoriel/réglementaire et normes cochées par produit | `selectedNorms`, `values.*` du cas résolu | FAIT |
+| `params` | scope | 🎯 Automation & Glass ceiling | `I-input` | Potentiel cible et plafond de verre (forcé ou calculé) par produit | `model.eff`, `model.ceiling`, `forceGlassCeiling` | FAIT |
+| `scurve` | scope | 📊 S-curve — adoption ramp | `I-input` | Rampe d’adoption Y1/Y2/Y3 par produit | `scurve` du cas résolu | FAIT |
 | `maturity-map` | tune | 📐 Maturity levels (L1–L4) | `I-input` | Seuils de maturité L1-L4 par produit | `MATURITY_MAP` | À FAIRE |
 | `readiness` | tune | 🧭 AI Readiness | `R-rollup` | Indice 0-100 par produit et dimension la plus faible ; pas de total | `tune` readiness du cas résolu de chaque produit (drill) | À FAIRE |
-| `scope-sel` | scope | 🎯 Scope | `I-input` | Nombre d’artefacts SDLC / réglementaires retenus par produit | `inputSummary` (`artefacts`, `regArtefacts`) | À FAIRE |
-| `phase-scope` | scope | 🎯 Phase scope | `I-input` | Phases désactivées par produit | `phaseOff` du cas résolu | À FAIRE |
-| `lc-weighting` | scope | 📊 Product status lifecycle weighting | `I-input` | Position du produit dans le cycle de vie | `lifecycleUse`, `lifecyclePos` | À FAIRE |
+| `scope-sel` | scope | 🎯 Scope | `I-input` | Nombre d’artefacts SDLC / réglementaires retenus par produit | `inputSummary` (`artefacts`, `regArtefacts`) | FAIT |
+| `phase-scope` | scope | 🎯 Phase scope | `I-input` | Phases désactivées par produit | `phaseOff` du cas résolu | FAIT |
+| `lc-weighting` | scope | 📊 Product status lifecycle weighting | `I-input` | Position du produit dans le cycle de vie | `lifecycleUse`, `lifecyclePos` | FAIT |
 | `lifecycle-edit` | tune | 📊 Status & phase weight | `I-input` | Matrice de poids et posture par statut, par produit | `statusLifecycle` | À FAIRE |
 | `team-in` | baseline | Input team | `I-input` | FAIT (exemplaire) : ETP par produit, agrégé par compétence, grade, localisation et croisé ; “Edit this product” | `aggregateTeams(pf, productIds)` | FAIT |
 | `ratecard` | baseline | Rate Card | `S-static` | Bandeau seul. Taux journaliers : valeurs communes (D-M3, clé `RATE`), identiques pour tous les produits | — | FAIT (bandeau) |
-| `loc-strat` | baseline | 🌍 Location strategy | `I-input` | Répartition cible par localisation, par produit | `targetLocPct` du cas résolu | À FAIRE |
+| `loc-strat` | baseline | 🌍 Location strategy | `I-input` | Répartition cible par localisation, par produit | `targetLocPct` du cas résolu | FAIT |
 | `token-econ` | tune | 💸 Token economics | `R-rollup` | Usage et coût de tokens par produit (la série `token` se somme) ; catalogue de prix commun | `series.token` + usage par produit ; saisies communes (`TOKEN_MODELS`) | À FAIRE |
 | `knowledge` | tune | 🧠 Knowledge hub | `I-input` | Knowledge Hub (CC0-CC4) : état initial/cible, sous-ensemble propre, par produit ; renvoi vers Knowledge transfer | `inputSummary.hub`, `knowledgeRow` | À FAIRE |
 | `run-sizing` | tune | 🤖 Run-team sizing | `I-input` | Politique de dimensionnement de l’équipe run par produit | `dom.values` du cas résolu | À FAIRE |
@@ -153,7 +153,7 @@ Légende de l’état : **FAIT** (construit en V0), **NATIF** (la section suit d
 
 - `R-conso` (12), **sans vue consolidée tant qu’aucun agrégat n’est enregistré** (note “Consolidated view coming” + détail par produit) : `fte-vfte`, `team-out`, `tobe-team`, `agent-usage`, `run`, `annual`, `monthly`, `monthly-playback`, `kpi`, `asis-tobe`, `results`, `story-summary`.
 - `R-rollup` (28), tableau récapitulatif spécifique (statut, valeurs clés) à la place du repli financier générique : `readiness`, `token-econ`, `assumptions`, `vfte-ov`, `opmodel`, `montecarlo`, `model-stochastic`, `phase-art`, `agent-dir`, `agent-detail`, `model-convergence`, `model-supervision`, `exec`, `productivity`, `velocity`, `quality`, `compliance`, `model-flow`, `commercial`, `scenarios`, `compare`, `sensitivity`, `model-evidence`, `strategies`, `verif`, `eligibility`, `model-verification`, `duediligence`.
-- `I-input` (17), synthèse spécifique de la saisie de la section à la place du repli générique (ETP, artefacts, surcharges, hub) : `engagement-context`, `engage`, `transform-params`, `params`, `scurve`, `maturity-map`, `scope-sel`, `phase-scope`, `lc-weighting`, `lifecycle-edit`, `loc-strat`, `knowledge`, `run-sizing`, `setup`, `maturity`, `program`, `risk`.
+- `I-input` (8), synthèse spécifique de la saisie de la section à la place du repli générique (ETP, artefacts, surcharges, hub) : `maturity-map`, `lifecycle-edit`, `knowledge`, `run-sizing`, `setup`, `maturity`, `program`, `risk`.
 
 ## 6. Ambiguïtés assumées
 
