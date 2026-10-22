@@ -7,7 +7,7 @@ import { Callout } from '@/ui/widgets/cards';
 import { ProductDrill } from '@/ui/widgets/ProductDrill';
 import { SectionFrame } from '@/ui/zones/SectionFrame';
 import { ExcludedNote } from '../../economics/AggParts';
-import StrategiesSection from './index';
+import StrategiesDetail from './Detail';
 
 const help = (
   <p>The seven delivery strategies are evaluated for each planned product of the <strong>selection</strong> on that product&apos;s own case, then ranked with its own weights. This table shows the strategy each product
@@ -33,7 +33,7 @@ export default function StrategiesAggregate() {
           totals={{ label: `Roll-up — ${a.label}`, cells: { tco: fmtEurK(t.tco), net: fmtEurK(t.net), roi: fmtRoiPct(t.roi) } }} />
         <Callout kind="blue"><strong>Recommendations:</strong> {a.mix.map((m) => `${m.label} for ${m.count} product${m.count > 1 ? 's' : ''}`).join(' · ') || 'none'}. Each product is evaluated on its own case
           and horizon; the roll-up line adds up the recommended strategies, with the ROI of the summed net and setup.</Callout>
-        <ProductDrill Section={StrategiesSection} productIds={vs.productIds} />
+        <ProductDrill Section={StrategiesDetail} productIds={vs.productIds} />
         <ExcludedNote excluded={a.excluded} />
       </>} />
   );

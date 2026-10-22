@@ -77,6 +77,7 @@ describe('Verdict > Strategy comparison: roll-up view', () => {
     fireEvent.click(screen.getByRole('button', { name: /B$/, expanded: false }));
     const region = await screen.findByRole('region', { name: 'Detail: B' });
     expect((await within(region).findAllByRole('table')).length).toBeGreaterThan(0);
+    expect(within(region).queryByText('Strategy configuration')).toBeNull();
     expect(document.querySelectorAll('[data-readonly]')).toHaveLength(1);
     fireEvent.click(within(region.closest('li')!).getByRole('button', { name: 'Edit this product: B' }));
     expect(pf().activeProductId).toBe(ids[1]);
