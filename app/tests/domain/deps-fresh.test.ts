@@ -1,7 +1,10 @@
 import { readFileSync } from 'node:fs';
 import { describe, expect, it } from 'vitest';
-import deps from '@/generated/dependencies.json';
+import raw from '@/generated/dependencies.json';
+import type { DepsData } from '@/domain/zones/graph';
 import { buildDeps, DEPS_FILE, formatDeps, STALE_MESSAGE } from '../../scripts/lib/build';
+
+const deps = raw as unknown as DepsData;
 
 describe('generated dependency graph', () => {
   it('is up to date with the code (the message tells what to run)', () => {

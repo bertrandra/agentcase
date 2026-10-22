@@ -9,8 +9,13 @@
   { "path": "src/ui/widgets/OverrideBadge.tsx", "reason": "View-selector widget (docs/VUE_AGREGEE.md)." },
   { "path": "src/ui/widgets/ReadOnlyScope.tsx", "reason": "View-selector widget (docs/VUE_AGREGEE.md)." }
  ],
- "sharedNote": "Modules of the shared lane (zones foundation and presentation: types, context, inputs seam, formatting, document accessors) never create an edge: they are plumbing, listed in the Zones tab.",
  "routes": {
   "src/store/hooks.ts": { "useCaseResult": "src/domain/index.ts", "caseResultOf": "src/domain/index.ts", "useCtx": "src/domain/ctx.ts" }
+ },
+ "selection": {
+  "maxShare": 0.6,
+  "contractTests": ["tests/size.test.ts", "tests/lint-rules.test.ts", "tests/ui/english-only.test.ts", "tests/ui/section-scope.test.ts", "tests/ui/arch-facts.test.ts", "tests/domain/deps-fresh.test.ts", "tests/domain/deps-generator.test.ts", "tests/domain/zones-tags.test.ts", "tests/domain/figure-owners.test.ts"],
+  "fullZones": ["foundation"],
+  "fullSuite": ["package.json", "package-lock.json", "tsconfig.json", "eslint.config.js", "vite.config.ts", "index.html", "perf-budget.json", "tests/helpers/", "fixtures/", "scripts/", "src/generated/", "src/domain/zones/catalog.json", "src/domain/zones/graphConfig.json", "src/main.tsx"]
  }
 }

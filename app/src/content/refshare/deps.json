@@ -1,15 +1,15 @@
 {
  "title": "🔗 Section Dependencies",
- "version": "v18.8",
+ "version": "generated from the code",
  "help": [
- ["h3","📖 What this section does"],
- ["p","A ",["strong","row → column impact matrix"]," over the sections that participate in the calculation chain. It answers the two questions that come up constantly when tuning a case: \"if I change this, what moves?\" and, running the matrix backwards, \"this number looks wrong — what feeds it?\""],
- ["h3","🔗 Reading a cell"],
- ["ul",["li",["strong","● strong"]," — the row section is a genuine calculation input to the column section. Change the row, the column's numbers change."],["li",["strong","○ soft"]," — an annotation or informational signal only: it may re-label, flag or contextualise the column, but it does not move its arithmetic."],["li",["strong","blank"]," — no relationship."]],
- ["p","Leaf display views are deliberately omitted — a section that only renders and feeds nothing would add a column of blanks. Section names are clickable and open the section directly."],
- ["h3","🎯 Why it is worth consulting before editing"],
- ["p","AgentCase's inputs are heavily coupled: 🎯 Scope alone drives the glass ceiling, automation potential, effort weights, supervision averages, the Gantt layout and the team decomposition. Editing without knowing the fan-out is how people end up surprised by a moved headline. This matrix is the map of that coupling."],
- ["div",{"class":"note-green"},"Nothing on this page is hardcoded. Nodes, rows, columns and graph lanes are derived from the section catalogue and its menu groups, so a section added, renamed, moved between groups or deleted is reflected here with no code change. The links themselves are ",["strong","authored"]," — a tag says a section ",["em","is"]," a driver, it cannot say ",["em","what"]," it drives — and live in one editable registry (",["code","SECTION_DEPS"],"), edited on the ✎ Edit dependencies sub-tab and persisted with the case. An edge pointing at a deleted section is pruned on load with a visible notice, so a stale link cannot survive."],
- ["div",{"class":"note-green"},"This is a curated documentation view of the dependency structure. The live wiring that actually invalidates and recomputes is the DEP graph inside the engine — this page documents it for humans; it does not drive it."]
-]
+  ["h3","📖 What this section does"],
+  ["p","It shows what depends on what in the code itself: ",["strong","calculation zones"]," (groups of modules that compute one thing), the ",["strong","sections"]," that read or write them, and the ",["strong","tests"]," that cover them. It answers \"if I change this module, what moves and what must I re-test?\" and, read backwards, \"this number looks wrong: what feeds it?\""],
+  ["h3","🔗 Reading the graph"],
+  ["ul",["li",["strong","Lanes"]," run left to right: input sections, input zones, calculation zones, result zones, result sections. Reference sections with no calculation are collapsed into one counted lane."],["li",["strong","Blue arrows"]," – the source zone feeds the target: a module of the target imports a module of the source. ",["strong","Orange arrows"]," – an input section changes a zone through a controller command. ",["strong","Dashed"]," – the link points backwards in the build order."],["li","Click a node, or press Enter on it, to highlight what feeds it and what it feeds; the side panel lists the sections and the test files a change to it would impact."]],
+  ["h3","🏷️ Zones and owners"],
+  ["p","Every domain module carries a ",["code","@calc-zone"]," tag, and the module that owns a figure (net, ROI, payback, NPV...) an ",["code","@owner"]," tag. A figure has exactly one owner, so a number has one source and no second copy of its formula. The ",["strong","Zones & figures"]," tab lists them."],
+  ["h3","🧪 Avoiding useless tests"],
+  ["p","The ",["strong","Tests impacted"]," tab shows the tests that ",["code","npm run test:affected"]," would run for a change in any zone or section, how many are saved, and the rule. The full suite stays mandatory before a merge or a release."],
+  ["div",{"class":"note-green"},"Nothing on this page is written by hand: it is generated from the code by ",["code","npm run deps:gen"]," and checked by a test, so it cannot go stale. The authored dependency registry of earlier versions is still stored with the case but is no longer shown here."]
+ ]
 }

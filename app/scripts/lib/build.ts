@@ -61,12 +61,16 @@ export function buildDeps(root: string): DepsData {
 
   const zIdx = new Map(zoneIds.map((z, i) => [z, i])), sIdx = new Map(sections.map((s, i) => [s.id, i])), secOf = new Map<string, number[]>();
   for (const [id, s] of found) for (const f of s.files) (secOf.get(f) ?? secOf.set(f, []).get(f)!).push(sIdx.get(id) ?? -1);
+  const hits = new Map<string, number>();
   const tests = p.files.filter((f) => /^tests\/.*\.test\.tsx?$/.test(f)).map((f): [string, number[], number[]] => {
     const zs = new Set<number>(), ss = new Set<number>();
-    for (const m of closure(p, f)) { const z = tags.get(m)?.zone; if (z) zs.add(zIdx.get(z)!); (secOf.get(m) ?? []).forEach((i) => { if (i >= 0) ss.add(i); }); }
+    for (const m of closure(p, f)) { hits.set(m, (hits.get(m) ?? 0) + 1); const z = tags.get(m)?.zone; if (z) zs.add(zIdx.get(z)!); (secOf.get(m) ?? []).forEach((i) => { if (i >= 0) ss.add(i); }); }
     return [f, [...zs].sort((a, b) => a - b), [...ss].sort((a, b) => a - b)];
   });
-  const modules = zoneIds.map((id) => ({ id, modules: [...tags.values()].filter((t) => t.zone === id).length }));
+  const modules = zoneIds.map((id) => {
+    const own = [...tags].filter(([, t]) => t.zone === id).map(([f]) => hits.get(f) ?? 0).sort((a, b) => a - b);
+    return { id, modules: own.length, tmed: own[own.length >> 1] ?? 0, tmax: own[own.length - 1] ?? 0 };
+  });
   return { schema: 1, counts: { files: p.files.filter((f) => f.startsWith('src/')).length, tagged: tags.size, tests: tests.length }, zones: modules, sections, edges, figures, ignored: cfg.ignore, tests };
 }
 
