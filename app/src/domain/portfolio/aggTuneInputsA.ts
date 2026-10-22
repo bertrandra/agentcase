@@ -48,7 +48,7 @@ export function aggLifecycle(pf: Portfolio, productIds: string[]): LifecycleAgg 
 }
 
 // ---- Knowledge hub: per-product subset (reuses the Knowledge-transfer table lines) --------------------------------------------------------------------
-export interface KnowledgeAggRow extends KnowledgeRow { wave: string; asisScore: number; curationFTE: number; setupBase: number; ownFields: number }
+export interface KnowledgeAggRow extends KnowledgeRow { id: string; wave: string; asisScore: number; curationFTE: number; setupBase: number; ownFields: number }
 export interface KnowledgeAgg { rows: KnowledgeAggRow[]; totals: KnowledgeTotals; target: Spread; asis: Spread; users: number }
 
 /** The hub subset of each product (enabled, AS-IS score and CC, target, curation, setup base, domains, KT lead) with the domain's own totals (`knowledgeTotals`). */
@@ -56,7 +56,7 @@ export function aggKnowledge(pf: Portfolio, productIds: string[]): KnowledgeAgg 
   const rows = membersOf(pf, productIds).map((m): KnowledgeAggRow => {
     const p = pf.products.find((x) => x.id === m.id)!;
     return {
-      ...knowledgeRow(pf, m.id), wave: m.wave, asisScore: khAsisScore(m.ctx), curationFTE: num(m.ctx, 'khCurationFTE'), setupBase: num(m.ctx, 'khSetupBase'),
+      ...knowledgeRow(pf, m.id), id: m.id, wave: m.wave, asisScore: khAsisScore(m.ctx), curationFTE: num(m.ctx, 'khCurationFTE'), setupBase: num(m.ctx, 'khSetupBase'),
       ownFields: Object.values(p.knowledge).filter((v) => v !== undefined).length,
     };
   });
