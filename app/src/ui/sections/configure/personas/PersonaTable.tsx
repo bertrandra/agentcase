@@ -3,7 +3,7 @@ import { addPersona, deletePersona, duplicatePersona, renamePersona, setDefaultP
 import { personasByOrder, type Persona } from '@/domain/pdc/personas';
 import { useNavModel } from '@/ui/zones/navModel';
 
-const note = { fontWeight: 400, color: '#636363', fontSize: 10 } as const;
+const note = { fontWeight: 400, color: '#cadcfc', fontSize: 10 } as const;   // inside the blue table header band (5.08:1)
 
 /** Personas in picker order: order, hide-menu and default flags, duplicate / rename / delete (delete asks for confirmation). */
 export function PersonaTable({ personas }: { personas: Persona[] }) {

@@ -1,6 +1,64 @@
 {
-  "note": "Deliberate, recorded differences from the legacy v18.13 shell chrome, checked by tools/ui-parity.mjs (npm run ui-parity). `expected` pins the NEW value: drift inside an exception fails too. Only accessibility corrections belong here (keep the legacy hue, lightest adjustment that reaches WCAG AA 4.5:1).",
+  "note": "Deliberate, recorded differences from the legacy v18.13 shell chrome and section content, checked by tools/ui-parity.mjs (npm run ui-parity). `expected` pins the NEW value: drift inside an exception fails too. Only accessibility corrections belong here (keep the legacy hue, lightest adjustment that reaches WCAG AA 4.5:1).",
   "exceptions": [
-    { "area": "kpibar:label", "prop": "opacity", "expected": "0.73", "reason": "white at 0.7 opacity on the gradient start #0058AB is 4.28:1 for the 9.5px label; 0.73 is the lightest value that reaches 4.5:1 (4.51)" }
+    {
+      "area": "kpibar:label",
+      "prop": "opacity",
+      "expected": "0.73",
+      "reason": "white at 0.7 opacity on the gradient start #0058AB is 4.28:1 for the 9.5px label; 0.73 is the lightest value that reaches 4.5:1 (4.51)"
+    },
+    {
+      "area": "sections:form:input:focus",
+      "prop": "outlineStyle",
+      "expected": "solid",
+      "reason": "focus ring (accessibility pass, :focus-visible 2px #0058AB): the legacy focus look (border #0058AB + 3px glow rgba(29,184,242,.3), which blends to #BBEAFB = 1.2:1 on white, below the 3:1 of WCAG 1.4.11) is kept AND the ring is retained",
+      "fg": "#0058ab",
+      "bg": "#ffffff",
+      "min": 3,
+      "ratio": 7.04
+    },
+    {
+      "area": "sections:form:input:focus",
+      "prop": "outlineWidth",
+      "expected": "2px",
+      "reason": "focus ring width of the accessibility pass (see outlineStyle): 2px #0058AB offset 2px, 7.04:1 on white",
+      "fg": "#0058ab",
+      "bg": "#ffffff",
+      "min": 3,
+      "ratio": 7.04
+    },
+    {
+      "area": "sections:help:formula:span-a",
+      "prop": "color",
+      "expected": "#ffc39a",
+      "tokenOnly": true,
+      "reason": "formula band span .a on #0058AB: legacy #BE4D00 is 1.42:1; same hue and saturation lightened to the lightest value that reaches 4.5:1 (4.53)",
+      "fg": "#ffc39a",
+      "bg": "#0058ab",
+      "min": 4.5,
+      "ratio": 4.53
+    },
+    {
+      "area": "sections:help:formula:span-g",
+      "prop": "color",
+      "expected": "#00e4f9",
+      "tokenOnly": true,
+      "reason": "formula band span .g on #0058AB: legacy #00828E is 1.54:1; same hue and saturation lightened to the lightest value that reaches 4.5:1 (4.51)",
+      "fg": "#00e4f9",
+      "bg": "#0058ab",
+      "min": 4.5,
+      "ratio": 4.51
+    },
+    {
+      "area": "sections:help:formula:span-b",
+      "prop": "color",
+      "expected": "#8adaf8",
+      "tokenOnly": true,
+      "reason": "formula band span .b on #0058AB: legacy #1DB8F2 is 3.08:1; same hue and saturation lightened to the lightest value that reaches 4.5:1 (4.51)",
+      "fg": "#8adaf8",
+      "bg": "#0058ab",
+      "min": 4.5,
+      "ratio": 4.51
+    }
   ]
 }

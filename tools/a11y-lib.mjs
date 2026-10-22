@@ -35,8 +35,9 @@ export async function openCase(ctx, fx) {
 
 /** Click a navigation entry by its label (sidebar or group bar) and let the section render. */
 export async function openSection(page, label) {
-  const btn = page.locator(NAV).filter({ hasText: label }).first();
+  const btn = page.locator(NAV).filter({ hasText: new RegExp(`^\\s*${label.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')}\\s*$`) }).first();   // the exact label ("Compliance" is not "Risk & Compliance")
   if (!(await btn.count())) return false;
+  if (!(await btn.isVisible())) { const toggle = btn.locator('xpath=ancestor::section').locator('.ac-nav-toggle'); if (await toggle.count()) await toggle.click(); }   // the sidebar groups are an accordion
   await btn.click(); await page.waitForTimeout(200);
   return true;
 }

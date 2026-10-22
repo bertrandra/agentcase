@@ -1,5 +1,4 @@
 /* Styles of the scope tools sections (params, scurve, phase-scope, lc-weighting). Colours come from the shared tokens. */
-.ac-card { border: 1px solid var(--ac-line); border-radius: 8px; background: #fafbfd; padding: 12px 14px; margin: 10px 0; }
 .ac-card[data-rail='teal'] { border-left: 4px solid var(--ac-teal); } .ac-card[data-rail='brick'] { border-left: 4px solid var(--ac-amber); }
 .ac-cards { display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 16px; }
 .ac-card-t { font-weight: 700; font-size: 13px; color: var(--ac-blue); } .ac-card-d { font-size: 11px; color: var(--ac-muted); margin: 2px 0 9px; }
@@ -8,9 +7,9 @@
 .ac-svg { width: 100%; height: auto; font-family: inherit; overflow: visible; } .ac-svg text { font-size: 11px; fill: #636363; }
 .ac-svg-drag { touch-action: none; } .ac-dot { cursor: grab; outline: none; } .ac-dot:focus circle:nth-of-type(2) { stroke-width: 4; }
 .ac-dot text { font-weight: 700; fill: var(--ac-blue); paint-order: stroke; stroke: #fff; stroke-width: 3px; stroke-linejoin: round; }
-.ac-legend { display: grid; grid-template-columns: repeat(auto-fit, minmax(420px, 1fr)); gap: 14px 22px; margin-top: 14px; }
+.ac-legend { display: grid; grid-template-columns: repeat(auto-fit, minmax(420px, 1fr)); gap: 14px 22px; }
 .ac-legend h3 { font-size: 12.5px; text-transform: uppercase; letter-spacing: .07em; color: #5a6785; margin: 0 0 6px; }
-.ac-leg-row { display: block; border: 1px solid #e7ebf0; border-radius: 6px; background: #fcfdff; padding: 7px 10px; margin-bottom: 6px; font-size: 12.5px; }
+.ac-leg-row { display: block; border: 1px solid #e7ebf0; border-radius: 6px; background: #fcfdff; padding: 7px 10px; margin-bottom: 6px; font-size: 12px; }
 .ac-leg-head { display: flex; align-items: center; gap: 7px; } .ac-leg-sw { width: 14px; height: 14px; border-radius: 3px; flex: none; }
 .ac-leg-name { font-weight: 600; } .ac-leg-fill { flex: 1; border-bottom: 1px dotted #dfe4ea; min-width: 10px; } .ac-leg-val { font-weight: 700; white-space: nowrap; }
 .ac-leg-sub { color: #6b7688; margin: 3px 0 0 21px; }
