@@ -15,6 +15,7 @@ export function validate(pf: Portfolio): Validation {
   for (const id of dupes(pf.waves.map((w) => w.id))) err('dup-wave-id', `duplicate wave id ${id}`, { waveId: id });
   if (!pf.products.some((p) => p.id === pf.activeProductId)) err('active-unknown', `active product ${pf.activeProductId} does not exist`);
   if (!Number.isInteger(pf.horizonMonths) || pf.horizonMonths < 1) err('horizon', 'horizonMonths must be a positive integer');
+  if (pf.rho !== undefined && !(typeof pf.rho === 'number' && pf.rho >= 0 && pf.rho <= 1)) err('rho', 'the correlation rho must be a number in [0, 1]');
   if (!nonNeg(pf.hub.infraMonthly)) err('hub-infra', 'hub infrastructure must be a number >= 0');
   const listed = new Map<string, string[]>();
   for (const w of pf.waves) {

@@ -49,6 +49,7 @@ export function readPortfolio(raw: unknown): Portfolio {
     activeProductId: safe(s.activeProductId, 'activeProductId'),
     hub: { enabled: hub.enabled as boolean, infraMonthly: num((hub as Rec).infraMonthly, 'hub.infraMonthly'), infraAllocation: hub.infraAllocation as 'perProduct' | 'byBaseEtp' },
     horizonMonths: num(s.horizonMonths, 'horizonMonths'), startDate: typeof s.startDate === 'string' ? s.startDate : '',
+    ...(s.rho === undefined || s.rho === 0 ? {} : { rho: num(s.rho, 'rho') }),
   };
   const errors = validate(pf).errors;
   if (errors.length) throw new SnapshotError(`Portfolio snapshot: ${errors[0]!.message}`);

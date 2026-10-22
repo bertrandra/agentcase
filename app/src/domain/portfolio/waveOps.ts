@@ -46,3 +46,10 @@ export function setHub<T extends Portfolio>(pf: T, patch: Partial<HubSettings>):
   const { dom } = pf.common;
   return { ...pf, hub, common: { ...pf.common, dom: { values: { ...dom.values, khInfraMonthly: String(hub.infraMonthly) }, checked: { ...dom.checked, khEnabled: hub.enabled } } } };
 }
+
+/** Global correlation between products for the portfolio Monte Carlo (D-M7): 0..1; 0 is the default and is stored as "absent". Out of range is refused. */
+export function setRho<T extends Portfolio>(pf: T, rho: number): T {
+  if (!Number.isFinite(rho) || rho < 0 || rho > 1) return pf;
+  const { rho: _old, ...rest } = pf;
+  return (rho > 0 ? { ...rest, rho } : rest) as T;
+}

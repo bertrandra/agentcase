@@ -54,7 +54,7 @@ export function assemble(rows: ProductRow[], waves: WaveRow[], build: (r: Produc
 }
 
 /** PortfolioSettings sheet (all keys optional): hub, horizon, start date, active product. Values are checked, never clamped. */
-export function readSettings(sheets: Sheets, base: { hub: HubSettings; horizonMonths: number; startDate: string; activeProductId: string }, ids: ReadonlySet<string>) {
+export function readSettings(sheets: Sheets, base: { hub: HubSettings; horizonMonths: number; startDate: string; activeProductId: string; rho: number }, ids: ReadonlySet<string>) {
   const t = tab(sheets, PF_SHEETS.settings), out = { ...base };
   if (!t) return out;
   for (const l of t.lines) {
@@ -63,6 +63,7 @@ export function readSettings(sheets: Sheets, base: { hub: HubSettings; horizonMo
     else if (key.startsWith('hub infrastructure (')) out.hub = { ...out.hub, infraMonthly: numberCell(t, l, 1, 'hub infrastructure', { min: 0, max: 1e9 }) as number };
     else if (key === 'hub infrastructure allocation') out.hub = { ...out.hub, infraAllocation: allocation(t, l.n, str(l.c[1])) };
     else if (key === 'horizon (months)') out.horizonMonths = numberCell(t, l, 1, 'horizon', { min: 1, max: 120, int: true }) as number;
+    else if (key.startsWith('correlation rho')) out.rho = numberCell(t, l, 1, 'correlation rho', { min: 0, max: 1 }) as number;
     else if (key === 'start date (iso)') out.startDate = isoDate(t, l.n, str(l.c[1]));
     else if (key === 'active product id') { const id = str(l.c[1]); if (id && !ids.has(id)) fail(t.name, l.n, `unknown active product "${id.slice(0, 40)}"`); if (id) out.activeProductId = id; }
   }
