@@ -4,6 +4,7 @@ import { useViewScope } from '@/store/viewScope';
 import { AggregateTable, type AggColumn } from '@/ui/widgets/AggregateTable';
 import { Callout, Panel } from '@/ui/widgets/cards';
 import { SectionFrame } from '@/ui/zones/SectionFrame';
+import { ExcludedNote } from '../../aggregates/AggregateParts';
 
 const help = (
   <>
@@ -33,6 +34,7 @@ export default function TeamInAggregate() {
         <>
           <Callout kind="blue">Read-only: the entry team belongs to each product. “Edit this product” opens the editable section for that product.</Callout>
           <AggregateTable caption={`Entry teams by product — ${vs.label}`} rows={t.products} columns={PRODUCTS} totals={{ ...sum, cells: { etp: total } }} />
+          <ExcludedNote />
         </>
       }
       result={
