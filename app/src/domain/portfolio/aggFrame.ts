@@ -9,7 +9,7 @@ import type { Portfolio } from './types';
 export interface EngagementRow extends AggBase {
   key: string; label: string; own: boolean; maturityCap: number; rampSpeed: number; glassFactor: number; setupBillable: number; riskPremium: number; authorityCap: number; khMaxCC: number; discountRate: number;
 }
-export interface EngagementAgg { rows: EngagementRow[]; contexts: { key: string; count: number }[]; discountRate: Spread | null }
+export interface EngagementAgg { rows: EngagementRow[]; contexts: { key: string; count: number }[]; discountRate: Spread | null; discountPct: Spread | null }
 
 export function frameEngagement(pf: Portfolio, ids: string[]): EngagementAgg {
   const count = new Map<string, number>();
@@ -19,7 +19,7 @@ export function frameEngagement(pf: Portfolio, ids: string[]): EngagementAgg {
     return { ...base(p), key: k, label: c.label, own: p.overridden('values.engagementCtx'), maturityCap: c.maturityCap, rampSpeed: c.rampSpeed, glassFactor: c.glassFactor, setupBillable: c.setupBillable,
       riskPremium: c.riskPremium, authorityCap: c.authorityCap, khMaxCC: c.khMaxCC, discountRate: caseDiscountRate(p.ctx) };
   });
-  return { rows, contexts: [...count].map(([key, n]) => ({ key, count: n })), discountRate: spread(rows.map((r) => r.discountRate)) };
+  return { rows, contexts: [...count].map(([key, n]) => ({ key, count: n })), discountRate: spread(rows.map((r) => r.discountRate)), discountPct: spread(rows.map((r) => r.discountRate * 100)) };
 }
 
 /** Section "Engage": the four onboarding stages of each product and the date the scale-out decision is taken. */
