@@ -1,9 +1,9 @@
 import type { NavSection, PersonaLists } from '@/domain/nav/layout';
 import type { MenuGroup } from '@/domain/pdc/personas';
-import { GROUPS, SECTIONS } from './registry';
+import { GROUPS, PORTFOLIO_GROUP_ID, SECTIONS } from './registry';
 
 /** The "Portefeuille" group (spec 6.3): registered in the bundled catalogue, shown to every persona, but only from two products on. */
-export const PORTFOLIO_GROUP = 'portfolio';
+export const PORTFOLIO_GROUP = PORTFOLIO_GROUP_ID;
 const IDS = new Set(SECTIONS.filter((s) => s.group === PORTFOLIO_GROUP).map((s) => s.id));
 export const isPortfolioSection = (id: string): boolean => IDS.has(id);
 

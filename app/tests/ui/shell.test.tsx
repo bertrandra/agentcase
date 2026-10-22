@@ -6,7 +6,7 @@ import { computeCase } from '@/domain';
 import { appStore } from '@/store/instance';
 import { App } from '@/ui/App';
 import { openGroup, uiStore } from '@/ui/uiState';
-import { SECTIONS, visibleSections } from '@/ui/zones/registry';
+import { LEGACY_SECTIONS, visibleSections } from '@/ui/zones/registry';
 import { shouldHandle } from '@/ui/shell/useShortcuts';
 import { freshStore } from '../store/helpers';
 
@@ -33,7 +33,7 @@ describe('shell zones', () => {
     const nav = screen.getByRole('navigation', { name: 'Sections' }), items = () => nav.querySelectorAll('[data-section]');
     expect(items()).toHaveLength(visibleSections('builder').length);
     act(() => { fireEvent.change(screen.getByLabelText('Persona'), { target: { value: 'advanced' } }); });
-    expect(items()).toHaveLength(SECTIONS.length);
+    expect(items()).toHaveLength(LEGACY_SECTIONS.length);   // one product: the 2 Portefeuille sections are not in the menu (81 in the catalogue)
     expect(within(nav).getAllByRole('heading').length).toBeGreaterThan(8);
   });
   it('persona changes are not undoable; navigation opens the section placeholder', async () => {
