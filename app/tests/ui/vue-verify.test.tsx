@@ -17,7 +17,7 @@ let ids: [string, string, string];
 beforeEach(() => { ({ ids } = threeProducts()); });
 afterEach(cleanup);
 const core = () => D.corePortfolio(pf());
-const view = (s: D.VScope) => act(() => { setDisplayScope(s); });
+const view = (s: D.VScope | { kind: 'product' }) => act(() => { setDisplayScope(s); });
 const N = (x: D.Cell | undefined): number => +(x ?? 0);
 const pct = (x: D.Cell | undefined) => `${Math.round(N(x))}%`;
 const scopes = (): [string, D.VScope, string][] => [['Portfolio', { kind: 'portfolio' }, 'Portfolio'], ['Wave 1', { kind: 'wave', id: pf().waves[0]!.id }, pf().waves[0]!.name]];
