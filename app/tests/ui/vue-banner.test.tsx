@@ -16,7 +16,7 @@ const banner = () => document.querySelector('.ac-scope-banner');
 const text = () => banner()?.textContent ?? '';
 const open = async (id: string, title: RegExp) => { act(() => goSection(id)); await sectionReady(title); };
 
-describe('one product: the Vue agrégée adds nothing', () => {
+describe('one product: the aggregate view adds nothing', () => {
   beforeEach(() => { freshStore(); });
   it('no banner, no replacement of the section, whatever its kind', async () => {
     mountApp('team-in');
@@ -33,44 +33,44 @@ describe('one product: the Vue agrégée adds nothing', () => {
   });
 });
 
-describe('two or more products: the banner states the Vue for this section by kind', () => {
+describe('two or more products: the banner states the View for this section by kind', () => {
   let ids: [string, string, string], waves: [string, string];
   beforeEach(() => { ({ ids, waves } = threeProducts()); });
 
-  it('Produit view: results say which product, inputs say which product is edited; sections render as today', async () => {
+  it('Product view: results say which product, inputs say which product is edited; sections render as today', async () => {
     mountApp('financial');
     await sectionReady(/Financial Summary — \d+-year case/);
-    expect(text()).toBe('Calculé sur : Produit Produit 1');
+    expect(text()).toBe('Calculated on: Product: Product 1');
     await open('team-in', /Input team/);
-    expect(text()).toBe('Édition : produit Produit 1');
+    expect(text()).toBe('Editing: product Product 1');
     expect(document.querySelector('.ac-agg-table, .ac-drill')).toBeNull();
   });
 
-  it('Portefeuille: counts planned products; reference and portfolio sections say so', async () => {
+  it('Portfolio: counts planned products; reference and portfolio sections say so', async () => {
     mountApp('financial');
     act(() => { setDisplayScope({ kind: 'portfolio' }); });
-    await sectionReady(/Financial Summary — Portefeuille/);
-    expect(text()).toBe('Calculé sur : Portefeuille (3 produits planifiés)');
+    await sectionReady(/Financial Summary — Portfolio/);
+    expect(text()).toBe('Calculated on: Portfolio (3 planned products)');
     await open('team-in', /Input team/);
-    expect(text()).toBe('Édition : produit Produit 1 — vue agrégée de la sélection ci-dessous : Portefeuille (3 produits planifiés)');
+    expect(text()).toBe('Editing: product Product 1 — aggregate view of the selection below: Portfolio (3 planned products)');
     await open('glossary', /glossary/i);
     expect(text()).toBe('Independent of the view');
     await open('consolidation', /Consolidation/);
     expect(text()).toBe('Portfolio level');
   });
 
-  it('Vague: names the wave; a product left without a wave is announced as excluded', async () => {
+  it('Wave: names the wave; a product left without a wave is announced as excluded', async () => {
     mountApp('financial');
     act(() => { setDisplayScope({ kind: 'wave', id: waves[0] }); });
-    await sectionReady(/Financial Summary — Vague 1/);
-    expect(text()).toBe('Calculé sur : Vague Vague 1 (2 produits planifiés)');
+    await sectionReady(/Financial Summary — Wave 1/);
+    expect(text()).toBe('Calculated on: Wave: Wave 1 (2 planned products)');
     act(() => { archiveProduct(ids[1]); });
-    expect(text()).toBe('Calculé sur : Vague Vague 1 (1 produit planifié) — 1 produit non planifié ou archivé, exclu des chiffres');
+    expect(text()).toBe('Calculated on: Wave: Wave 1 (1 planned product) — 1 unscheduled or archived product excluded from the figures');
     act(() => { setDisplayScope({ kind: 'portfolio' }); });
-    await sectionReady(/Financial Summary — Portefeuille/);
-    expect(text()).toBe('Calculé sur : Portefeuille (2 produits planifiés) — 1 produit non planifié ou archivé, exclu des chiffres');
+    await sectionReady(/Financial Summary — Portfolio/);
+    expect(text()).toBe('Calculated on: Portfolio (2 planned products) — 1 unscheduled or archived product excluded from the figures');
     act(() => { assignWave(ids[2], null); });
-    expect(text()).toContain('Portefeuille (1 produit planifié) — 2 produits non planifiés ou archivés, exclus des chiffres');
+    expect(text()).toContain('Portfolio (1 planned product) — 2 unscheduled or archived products excluded from the figures');
   });
 
   it('is a polite live region and is present once', async () => {

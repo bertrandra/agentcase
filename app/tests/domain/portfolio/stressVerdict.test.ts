@@ -53,6 +53,6 @@ describe('portfolio verdict = the single-case rule on the portfolio outcome', ()
   it('the conditions name the products that carry the risk', () => {
     const d = pfDecision(pf2, portfolioMonteCarlo(pf2, { draws: 200, seed: 42, rho: 1 }), { kind: 'portfolio' })!;
     expect(d.conditions.length).toBeGreaterThan(0);
-    expect(d.conditions[0]).toMatch(/Produit 1|p2/);
+    expect(d.conditions[0]).toMatch(/Product 1|p2/);
   });
 });

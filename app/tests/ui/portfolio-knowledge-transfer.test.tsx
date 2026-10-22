@@ -16,7 +16,7 @@ vi.mock('@/ui/widgets/ChartPanel', async () => import('../helpers/chartStub')); 
 let ids: [string, string, string];
 beforeEach(() => { ids = threeProducts().ids; });
 afterEach(cleanup);
-const table = () => screen.getByRole('table', { name: /^Knowledge transfer par produit/ });
+const table = () => screen.getByRole('table', { name: /^Knowledge transfer by product/ });
 const row = (name: string) => within(table()).getByRole('button', { name: new RegExp(name) }).closest('tr')!;
 const cells = (tr: HTMLElement) => [...tr.querySelectorAll('th, td')].map((c) => c.textContent ?? '');
 async function open() { mountApp('knowledge-transfer'); await sectionReady(/Knowledge transfer/); }
@@ -30,7 +30,7 @@ describe('Knowledge transfer section', () => {
     t.rows.forEach((r) => {
       const c = cells(row(r.name));
       expect(c[1]).toBe(pf().waves.find((w) => w.id === r.waveId)!.name);
-      expect(c[2]).toBe('actif');
+      expect(c[2]).toBe('on');
       expect(c[3]).toContain(`CC${r.asisCC} → CC${r.targetCC}`);
       expect(c[5]).toBe(fmtEurK(r.setup));
       expect(c[6]).toBe(fmtEurK(r.annual));
@@ -49,8 +49,8 @@ describe('Knowledge transfer section', () => {
   it('shows the preparation (lead and calendar month) and flags a capped target', async () => {
     setProductKnowledge(ids[2], { ktLeadMonths: 2 });
     await open();
-    expect(cells(row('C'))[8]).toBe('2 mois (dès le mois 5)');
-    expect(cells(row('B'))[8]).toBe('0 mois (dès le mois 1)');
+    expect(cells(row('C'))[8]).toBe('2 months (from month 5)');
+    expect(cells(row('B'))[8]).toBe('0 months (from month 1)');
     act(() => { setProductKnowledge(ids[1], { targetCC: 4 }); });
     expect(within(row('B')).queryByText(/plafonnée/)).toBeNull();
   });
@@ -69,8 +69,8 @@ describe('Knowledge transfer section', () => {
     await open();
     fireEvent.click(row('B'));
     expect(pf().activeProductId).toBe(ids[1]);
-    expect(within(table()).getByRole('button', { name: 'B (produit actif)' }).getAttribute('aria-current')).toBe('true');
-    const btn = within(table()).getByRole('button', { name: /^Activer C/ });
+    expect(within(table()).getByRole('button', { name: 'B (active product)' }).getAttribute('aria-current')).toBe('true');
+    const btn = within(table()).getByRole('button', { name: /^Activate C/ });
     btn.focus();
     expect(document.activeElement).toBe(btn);
     fireEvent.click(btn);
@@ -79,29 +79,29 @@ describe('Knowledge transfer section', () => {
 
   it('the hub effect by wave sums the product deltas; the diagnostics list unplanned products, capped preparation and an unused hub', async () => {
     await open();
-    const t = knowledgeTable(pf()), waves = screen.getByRole('table', { name: /Somme, par vague/ });
+    const t = knowledgeTable(pf()), waves = screen.getByRole('table', { name: /Sum, by wave/ });
     const w1 = [...waves.querySelectorAll('tbody tr')].map((r) => cells(r as HTMLElement))[0]!;
     expect(w1[4]).toBe(fmtEurK(t.byWave[pf().waves[0]!.id] as number));
-    expect(screen.getByText(/Aucun diagnostic/)).toBeTruthy();
+    expect(screen.getByText(/No diagnostic/)).toBeTruthy();
     act(() => { assignWave(ids[1], null); setProductKnowledge(ids[2], { ktLeadMonths: 9 }); });
-    const list = screen.getByRole('list', { name: 'Diagnostics du knowledge transfer' });
+    const list = screen.getByRole('list', { name: 'Knowledge transfer diagnostics' });
     expect(within(list).getByText(/B has no wave/)).toBeTruthy();
     expect(within(list).getByText(/lead capped at 6/)).toBeTruthy();
     act(() => { for (const id of ids) setProductKnowledge(id, { enabled: false }); });
-    expect(within(screen.getByRole('list', { name: 'Diagnostics du knowledge transfer' })).getByText(/no planned product uses it/)).toBeTruthy();
+    expect(within(screen.getByRole('list', { name: 'Knowledge transfer diagnostics' })).getByText(/no planned product uses it/)).toBeTruthy();
   });
 
   it('the infra allocation modes show their conservation in the section too', async () => {
     await open();
     act(() => { setPortfolioHub({ infraMonthly: 1000, infraAllocation: 'byBaseEtp' }); });
-    expect(document.querySelector('[data-conserved]')!.textContent).toMatch(/les parts totalisent le coût du hub \(€1,000\.00\/mois\)/);
+    expect(document.querySelector('[data-conserved]')!.textContent).toMatch(/the shares add up to the hub cost \(€1,000\.00\/month\)/);
     act(() => { setPortfolioHub({ infraAllocation: 'perProduct' }); });
-    expect(document.querySelector('[data-conserved]')!.textContent).toMatch(/3 utilisateur\(s\) × €1,000\.00\/mois = €3,000\.00/);
+    expect(document.querySelector('[data-conserved]')!.textContent).toMatch(/3 user\(s\) × €1,000\.00\/month = €3,000\.00/);
   });
 });
 
 describe('navigation', () => {
-  it('the section is in the Portefeuille group from two products on, for every persona, and leaves with the second-to-last product', () => {
+  it('the section is in the Portfolio group from two products on, for every persona, and leaves with the second-to-last product', () => {
     mountApp();
     act(() => openGroup('portfolio'));
     const group = sidebar().querySelector('[data-group="portfolio"]')!;

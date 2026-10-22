@@ -27,27 +27,27 @@ for (const fx of fixtures) {
     if (only.length && !only.includes(label)) continue;
     if (await openSection(page, label)) await audit(page, fx, label);
   }
-  if (fx.startsWith('pf-')) {   // multi-product fixture: the display scope is view state (not saved), so audit the portfolio views under the Portefeuille scope too (P4)
-    await page.selectOption('select[aria-label="Vue"]', 'portfolio');
-    for (const label of labels.filter((l) => /Vagues|Consolidation|Gantt|Stress portefeuille|Decision/.test(l ?? '') || only.includes(l))) {   // --sections: the listed ones are audited under the Portefeuille Vue too (Vue agrégée)
+  if (fx.startsWith('pf-')) {   // multi-product fixture: the display scope is view state (not saved), so audit the portfolio views under the Portfolio scope too (P4)
+    await page.selectOption('select[aria-label="View"]', 'portfolio');
+    for (const label of labels.filter((l) => /Waves|Consolidation|Gantt|Portfolio stress|Decision/.test(l ?? '') || only.includes(l))) {   // --sections: the listed ones are audited under the Portfolio View too (aggregate view)
       if (only.length && !only.includes(label)) continue;
       if (!(await openSection(page, label))) continue;
       const expand = page.locator('button[aria-label^="Expand "]').first();   // the wave Gantt: open a wave to audit its product rows and milestones
       if (await expand.count()) await expand.click();
-      const drill = page.locator('.ac-drill-head h3 button[aria-expanded=false]').first();   // Vue agrégée: open one product's read-only drill-down too
+      const drill = page.locator('.ac-drill-head h3 button[aria-expanded=false]').first();   // aggregate view: open one product's read-only drill-down too
       if (await drill.count()) { await drill.click(); await page.waitForTimeout(500); }
-      const run = page.locator('button:has-text("Lancer la simulation"), button:has-text("Lancer maintenant")').first();   // P6: audit the portfolio stress / verdict WITH a result on screen
+      const run = page.locator('button:has-text("Run the simulation"), button:has-text("Run now")').first();   // P6: audit the portfolio stress / verdict WITH a result on screen
       if (await run.count()) { await run.click(); await page.locator('table[aria-label], table caption').first().waitFor({ timeout: 60000 }).catch(() => {}); await page.waitForTimeout(500); }
-      await audit(page, fx, `${label} (scope Portefeuille)`);
+      await audit(page, fx, `${label} (scope Portfolio)`);
     }
-    await page.selectOption('select[aria-label="Vue"]', { index: 1 });   // back to a wave: the KPI bar of a Vague
-    for (const label of only.filter((l) => labels.includes(l))) {   // --sections: and under a Vague (with a drill-down opened, if the section has one)
+    await page.selectOption('select[aria-label="View"]', { index: 1 });   // back to a wave: the KPI bar of a Wave
+    for (const label of only.filter((l) => labels.includes(l))) {   // --sections: and under a Wave (with a drill-down opened, if the section has one)
       if (!(await openSection(page, label))) continue;
       const drill = page.locator('.ac-drill-head h3 button[aria-expanded=false]').first();
       if (await drill.count()) { await drill.click(); await page.waitForTimeout(500); }
-      await audit(page, fx, `${label} (scope Vague)`);
+      await audit(page, fx, `${label} (scope Wave)`);
     }
-    await audit(page, fx, '(scope Vague: KPI bar)');
+    await audit(page, fx, '(scope Wave: KPI bar)');
   }
   if (!only.length) {
     await personaMenu(page, fx, rec); await historyStates(page, fx, rec);

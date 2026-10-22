@@ -8,15 +8,15 @@ beforeAll(() => { pf = fourProducts(); });
 const sum = (xs: number[]): number => xs.reduce((a, b) => a + b, 0);
 const ids = (): string[] => scheduledProducts(pf).map((s) => s.product.id);
 
-describe('selectionView: the figures of a Portefeuille / Vague selection (Vue agrégée)', () => {
-  it('Portefeuille: the headline IS the portfolio headline; the product lines add up to the total line (1e-9)', () => {
+describe('selectionView: the figures of a Portfolio / Wave selection (aggregate view)', () => {
+  it('Portfolio: the headline IS the portfolio headline; the product lines add up to the total line (1e-9)', () => {
     const c = consolidate(pf), v = selectionView(pf, c, { kind: 'portfolio' })!;
     expect(v.headline).toBe(portfolioHeadline(c));
     expect(v.rows.map((r) => r.id)).toEqual(ids());
     for (const k of ['net', 'setup', 'savings', 'run', 'npv'] as const) expectClose(sum(v.rows.map((r) => r[k])), v.totals[k]);
     expectClose(v.totals.net, v.headline.net);
     expectClose(sum(v.years.map((y) => y.net)), v.headline.net);
-    expect(v.excluded.map((e) => e.name)).toEqual(['Archivage (hors vague)']);
+    expect(v.excluded.map((e) => e.name)).toEqual(['Archive (no wave)']);
     expect(v.chart.series).toHaveLength(1 + v.rows.length);
   });
 
@@ -30,7 +30,7 @@ describe('selectionView: the figures of a Portefeuille / Vague selection (Vue ag
     }
   });
 
-  it('Vague: only that wave\'s planned products, with the wave headline and the wave line as total', () => {
+  it('Wave: only that wave\'s planned products, with the wave headline and the wave line as total', () => {
     const c = consolidate(pf);
     for (const w of pf.waves) {
       const v = selectionView(pf, c, { kind: 'wave', id: w.id })!, own = c.waves.find((x) => x.id === w.id)!;
@@ -42,7 +42,7 @@ describe('selectionView: the figures of a Portefeuille / Vague selection (Vue ag
     }
   });
 
-  it('a Produit view or an unknown wave has no selection view; the view is memoised', () => {
+  it('a Product view or an unknown wave has no selection view; the view is memoised', () => {
     const c = consolidate(pf);
     expect(selectionView(pf, c, { kind: 'product' })).toBeNull();
     expect(selectionView(pf, c, { kind: 'wave', id: 'nope' })).toBeNull();
@@ -63,7 +63,7 @@ describe('aggregateTeams / inputSummary', () => {
   it('keeps the order asked, ignores unknown ids and flags an unplanned product', () => {
     const all = pf.products.map((p) => p.id), t = aggregateTeams(pf, ['ghost', ...all.slice().reverse()]);
     expect(t.products.map((p) => p.id)).toEqual(all.slice().reverse());
-    expect(t.products.filter((p) => !p.planned).map((p) => p.name)).toEqual(['Archivage (hors vague)']);
+    expect(t.products.filter((p) => !p.planned).map((p) => p.name)).toEqual(['Archive (no wave)']);
     expect(aggregateTeams(pf, [])).toEqual({ products: [], total: 0, bySkill: [], byGrade: [], byLoc: [], lines: [] });
   });
 
@@ -77,6 +77,6 @@ describe('aggregateTeams / inputSummary', () => {
       expect(r.wave).toBe(pf.waves.find((w) => w.id === p.waveId)?.name ?? '');
     }
     expect(rows.some((r) => r.overrides > 0)).toBe(true);
-    expect(rows.filter((r) => !r.planned).map((r) => r.name)).toEqual(['Archivage (hors vague)']);
+    expect(rows.filter((r) => !r.planned).map((r) => r.name)).toEqual(['Archive (no wave)']);
   });
 });

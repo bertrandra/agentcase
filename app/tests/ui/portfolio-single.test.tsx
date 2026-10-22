@@ -14,11 +14,11 @@ afterEach(cleanup);
 describe('one product: the interface is unchanged (spec F23)', () => {
   it('no product selector, no edit-scope toggle in the top bar', () => {
     mountApp();
-    expect(screen.queryByRole('combobox', { name: 'Vue' })).toBeNull();
-    expect(screen.queryByRole('radiogroup', { name: 'Modifier' })).toBeNull();
+    expect(screen.queryByRole('combobox', { name: 'View' })).toBeNull();
+    expect(screen.queryByRole('radiogroup', { name: 'Edit' })).toBeNull();
     expect(document.querySelector('.ac-prodbar')).toBeNull();
   });
-  it('the sidebar has the 14 original groups and none of the Portefeuille sections, although the catalogue holds them', () => {
+  it('the sidebar has the 14 original groups and none of the Portfolio sections, although the catalogue holds them', () => {
     expect(SECTIONS).toHaveLength(85);
     mountApp();
     expect(sidebar().querySelectorAll('section[data-group]')).toHaveLength(14);
@@ -34,13 +34,13 @@ describe('one product: the interface is unchanged (spec F23)', () => {
       expect(document.querySelector('.ac-prod-banner, .ac-ovr'), id).toBeNull();
     }
   });
-  it('Welcome offers "Ajouter un produit"; it adds the second product, shows the group and opens Produits', async () => {
+  it('Welcome offers "Add a product"; it adds the second product, shows the group and opens Products', async () => {
     mountApp();
-    fireEvent.click(screen.getByRole('button', { name: 'Ajouter un produit' }));
+    fireEvent.click(screen.getByRole('button', { name: 'Add a product' }));
     expect(pf().products).toHaveLength(2);
-    await sectionReady(/Produits/);
+    await sectionReady(/Products/);
     act(() => openGroup('portfolio'));
     expect(sidebar().querySelector('[data-group="portfolio"]')).toBeTruthy();
-    expect(screen.getByRole('combobox', { name: 'Vue' })).toBeTruthy();
+    expect(screen.getByRole('combobox', { name: 'View' })).toBeTruthy();
   });
 });

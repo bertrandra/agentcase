@@ -42,7 +42,7 @@ describe('named snapshots of a portfolio', () => {
     const captured = content();
     captureSnapshot('Plan A', T0, 'a');
     const [p1, p2] = pfNow().products;
-    renameProduct(p1!.id, 'Renamed'); addProduct('Fifth'); addWave('Vague 3', 9); setWaveStart(pfNow().waves[1]!.id, 12); assignWave(p2!.id, null);
+    renameProduct(p1!.id, 'Renamed'); addProduct('Fifth'); addWave('Wave 3', 9); setWaveStart(pfNow().waves[1]!.id, 12); assignWave(p2!.id, null);
     setProductOverride(p2!.id, 'values.y1Ramp', '33'); setProductOffset(p2!.id, 5); setPortfolioHub({ infraMonthly: 999, enabled: false });
     expect(content()).not.toEqual(captured);
     const edited = snapAll(appStore()), steps = appStore().getState().history.undo.length;
@@ -68,7 +68,7 @@ describe('named snapshots of a portfolio', () => {
     const steps = appStore().getState().history.undo.length;
     expect(setBaselineSnapshot('b')).toBe(true);
     expect(lib().map((x) => x.isBaseline)).toEqual([false, true]);
-    expect(pfNow().products[0]!.name).toBe('Produit 1');
+    expect(pfNow().products[0]!.name).toBe('Product 1');
     expect(appStore().getState().history.undo).toHaveLength(steps + 1);
     appStore().undo();
     expect(pfNow().products[0]!.name).toBe('Changed');

@@ -7,7 +7,7 @@ import type { ParamsEnv } from '@/store/persistence/excel/params';
 import { sameJson } from '@/store/persistence/excel/params';
 import type { Doc } from '@/store/types';
 
-/** The workbook (and the legacy file it is compared with) knows the 79 case sections, not the Portefeuille ones. */
+/** The workbook (and the legacy file it is compared with) knows the 79 case sections, not the Portfolio ones. */
 export const ENV: ParamsEnv = { sections: LEGACY_SECTIONS };
 const DIR = 'fixtures/xlsx';
 export const xlsxIds = (): string[] => (existsSync(DIR) ? readdirSync(DIR).filter((f) => f.endsWith('.imported.json')).map((f) => f.replace('.imported.json', '')).sort() : []);

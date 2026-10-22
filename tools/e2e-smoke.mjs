@@ -1,6 +1,6 @@
 #!/usr/bin/env node
 // Real-browser smoke of the BUILT single-file app (app/dist/index.html): opens fixture cases through the Open… file input,
-// visits all sections (the 6 Portefeuille ones included, on the portfolio files) as the Advanced persona and fails on console errors, page errors, "NaN"/"undefined" text or an empty section.
+// visits all sections (the 6 Portfolio ones included, on the portfolio files) as the Advanced persona and fails on console errors, page errors, "NaN"/"undefined" text or an empty section.
 // Usage: node tools/e2e-smoke.mjs [--fixtures golden,ctx-msi,...] [--sections id,id]
 import { createRequire } from 'node:module';
 import { existsSync, readFileSync } from 'node:fs';
@@ -14,7 +14,7 @@ const fixtures = opt('--fixtures').length ? opt('--fixtures') : ['golden', 'ctx-
 const fixturePath = fx => (fx === 'example-portfolio' ? 'docs/examples/AgentCase_Portfolio_Example.json' : existsSync(`app/fixtures/portfolios/${fx}.json`) ? `app/fixtures/portfolios/${fx}.json` : `app/fixtures/cases/${fx}.json`);
 const only = opt('--sections');
 // sections whose prose legitimately mentions NaN / undefined (the verification rules and the architecture history)
-const PORTFOLIO = ['Produits', 'Surcharges', 'Knowledge transfer', 'Vagues', 'Consolidation', 'Stress portefeuille'];
+const PORTFOLIO = ['Products', 'Overrides', 'Knowledge transfer', 'Waves', 'Consolidation', 'Portfolio stress'];
 const PROSE = /Logic verification|Architecture/;
 const url = 'file://' + resolve('app/dist/index.html');
 const browser = await pw.chromium.launch();
@@ -46,9 +46,9 @@ for (const fx of fixtures) {
     visited++;
     if (problems.length) { failures++; console.log(`FAIL ${fx} · ${label}: ${problems.join('; ')}`); }
   }
-  if (fx === 'example-portfolio' || /^pf-/.test(fx)) {   // the 6 Portefeuille sections must be in the menu (and were visited above)
+  if (fx === 'example-portfolio' || /^pf-/.test(fx)) {   // the 6 Portfolio sections must be in the menu (and were visited above)
     const missing = PORTFOLIO.filter(l => !labels.some(x => String(x).includes(l)));
-    if (missing.length) { failures++; console.log(`FAIL ${fx}: Portefeuille sections missing from the menu: ${missing.join(', ')}`); }
+    if (missing.length) { failures++; console.log(`FAIL ${fx}: Portfolio sections missing from the menu: ${missing.join(', ')}`); }
   }
   console.log(fx, labels.length, 'sections');
   await ctx.close();

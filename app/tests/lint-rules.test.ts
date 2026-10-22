@@ -28,7 +28,7 @@ describe('architecture lint rules (G2, G4)', () => {
     expect(await lint("export const names = (xs: { name: string }[]) => xs.map((x) => x.name).filter(Boolean).join(', ');\n", 'src/ui/sections/portfolio/waves/Ok.ts')).not.toContain('no-restricted-syntax');
     expect(await lint("export const X = () => <div dangerouslySetInnerHTML={{ __html: 'x' }} />;\n", 'src/ui/sections/portfolio/waves/Raw.tsx')).toContain('no-restricted-syntax');
   });
-  it('A8 also covers the Vue agrégée: widgets, fallbacks, Vue hooks and any section Aggregate*.tsx / aggregate/ folder cannot sum in the UI', async () => {
+  it('A8 also covers the aggregate view: widgets, fallbacks, View hooks and any section Aggregate*.tsx / aggregate/ folder cannot sum in the UI', async () => {
     const sum = "export const total = (xs: { net: number }[]) => xs.reduce((a, x) => a + x.net, 0);\n";
     for (const f of ['src/ui/widgets/AggregateTable.tsx', 'src/ui/widgets/ProductDrill.tsx', 'src/ui/zones/fallbacks.tsx', 'src/store/viewScope.ts', 'src/store/selectionHooks.ts',
       'src/ui/sections/economics/financial/Aggregate.tsx', 'src/ui/sections/tune/knowledge/AggregateRows.ts', 'src/ui/sections/verify/agent-usage/aggregate/Table.tsx']) {

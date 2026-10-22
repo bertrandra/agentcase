@@ -75,7 +75,7 @@ describe('ReadOnlyScope: nothing inside can reach a controller', () => {
     fireEvent.click(screen.getByText('native')); fireEvent.click(screen.getByText('custom'));
     fireEvent.keyDown(screen.getByText('custom'), { key: 'Enter' }); fireEvent.change(screen.getByLabelText('n'), { target: { value: '3' } });
     expect(hits).toEqual([]);
-    expect(screen.getByText(/Lecture seule/).textContent).toContain('B');
+    expect(screen.getByText(/Read-only/).textContent).toContain('B');
     expect(document.querySelector('fieldset')!.hasAttribute('inert')).toBe(false);
   });
 

@@ -15,15 +15,15 @@ import { threeProducts } from '../helpers/portfolioStore';
 
 beforeEach(() => { threeProducts(); pfSimStore.setState({ run: null, progress: null, params: null }); });
 afterEach(cleanup);
-const open = async () => { mountApp('portfolio-stress'); await sectionReady(/Stress portefeuille/); };
+const open = async () => { mountApp('portfolio-stress'); await sectionReady(/Portfolio stress/); };
 const stat = (label: RegExp) => screen.getAllByText(label).find((e) => e.classList.contains('ac-stat-l'))!.parentElement!.querySelector('.ac-stat-v')!.textContent;
-const run = async () => { fireEvent.click(screen.getByRole('button', { name: /Lancer la simulation/ })); await screen.findByRole('table', { name: /Stress par vague/ }, { timeout: 30000 }); };
+const run = async () => { fireEvent.click(screen.getByRole('button', { name: /Run the simulation/ })); await screen.findByRole('table', { name: /Stress by wave/ }, { timeout: 30000 }); };
 
-describe('Stress portefeuille section', () => {
-  it('is in the Portefeuille group and invites to run before any result', async () => {
+describe('Portfolio stress section', () => {
+  it('is in the Portfolio group and invites to run before any result', async () => {
     await open();
-    expect(screen.getByText(/Pas de simulation/)).toBeTruthy();
-    expect(screen.getByRole('slider', { name: /Corrélation entre produits/ })).toBeTruthy();
+    expect(screen.getByText(/No simulation/)).toBeTruthy();
+    expect(screen.getByRole('slider', { name: /Correlation between products/ })).toBeTruthy();
   });
 
   it('runs the real engine: cards, tables and chart data are the domain run; deterministic with the same seed', async () => {
@@ -31,34 +31,34 @@ describe('Stress portefeuille section', () => {
     await run();
     const r = pfSimStore.getState().run!, again = portfolioMonteCarlo(pf(), { draws: r.draws, seed: r.seed, rho: 0 });
     expect(r.outcomes).toEqual(again.outcomes);
-    expect(stat(/^P10 \(aléa/)).toBe(fmtEur(r.stats.p10));
+    expect(stat(/^P10 \(adverse/)).toBe(fmtEur(r.stats.p10));
     expect(stat(/^P\(net < 0\)$/)).toBe(`${Math.round(r.stats.pNetNeg * 100)} %`);
     expect(stat(/^Réduction du risque$/)).toBe(fmtEur(r.diversification.reduction));
-    const byProduct = screen.getByRole('table', { name: /Stress par produit/ });
+    const byProduct = screen.getByRole('table', { name: /Stress by product/ });
     expect(within(byProduct).getAllByRole('row')).toHaveLength(1 + 3);
-    expect(screen.getByRole('table', { name: /Stress par vague/ }).querySelectorAll('tbody tr')).toHaveLength(2 + 1);
+    expect(screen.getByRole('table', { name: /Stress by wave/ }).querySelectorAll('tbody tr')).toHaveLength(2 + 1);
     expect(document.querySelector('[data-chart-data]')).toBeTruthy();
     expect(screen.getByRole('img', { name: /Distribution du bénéfice net du portefeuille/ })).toBeTruthy();
-    expect(screen.queryByText(/a changé depuis la dernière simulation/)).toBeNull();
+    expect(screen.queryByText(/changed since the last simulation/)).toBeNull();
   });
 
   it('rho is a portfolio field set by the slider (undoable); the run uses it', async () => {
     await open();
-    fireEvent.change(screen.getByRole('slider', { name: /Corrélation entre produits/ }), { target: { value: '0.5' } });
+    fireEvent.change(screen.getByRole('slider', { name: /Correlation between products/ }), { target: { value: '0.5' } });
     expect(pf().rho).toBe(0.5);
     await run();
     expect(pfSimStore.getState().run!.rho).toBe(0.5);
     act(() => { setPortfolioRho(1); });
-    expect(await screen.findByText(/a changé depuis la dernière simulation/)).toBeTruthy();   // the stale marker
+    expect(await screen.findByText(/changed since the last simulation/)).toBeTruthy();   // the stale marker
   });
 
   it('a change of the portfolio marks the run stale; re-running clears the marker', async () => {
     await open();
     await run();
     act(() => { setProductOffset(pf().products[1]!.id, 2); });
-    expect(await screen.findByText(/a changé depuis la dernière simulation/)).toBeTruthy();
+    expect(await screen.findByText(/changed since the last simulation/)).toBeTruthy();
     fireEvent.click(screen.getByRole('button', { name: /Relancer/ }));
-    await waitFor(() => expect(screen.queryByText(/a changé depuis la dernière simulation/)).toBeNull(), { timeout: 30000 });
+    await waitFor(() => expect(screen.queryByText(/changed since the last simulation/)).toBeNull(), { timeout: 30000 });
   });
 
   it('has no axe violation with a result on screen', async () => {
@@ -78,12 +78,12 @@ describe('Decision section at portfolio scope', () => {
     const d = pfDecision(pf(), pfSimStore.getState().run!, { kind: 'portfolio' })!;
     expect(document.body.textContent).toContain(VERDICT_META[d.verdict].label);
     expect(document.body.textContent).toContain(`${d.confidence}% confidence`);
-    expect(screen.getByRole('table', { name: /Verdict de chaque vague/ }).querySelectorAll('tbody tr')).toHaveLength(2);
+    expect(screen.getByRole('table', { name: /Verdict of each wave/ }).querySelectorAll('tbody tr')).toHaveLength(2);
   });
   it('without a portfolio run it offers to run, then shows the verdict', async () => {
     act(() => { setDisplayScope({ kind: 'portfolio' }); });
     await openDecision();
-    fireEvent.click(screen.getByRole('button', { name: /Lancer maintenant/ }));
+    fireEvent.click(screen.getByRole('button', { name: /Run now/ }));
     expect((await screen.findAllByText(/confidence/, undefined, { timeout: 30000 })).length).toBeGreaterThan(0);
     expect(pfSimStore.getState().run).not.toBeNull();
   });

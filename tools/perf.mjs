@@ -1,6 +1,6 @@
 #!/usr/bin/env node
 // Performance budget of the BUILT single-file app (app/dist/index.html) in headless Chromium.
-// Measures: file size, time to the shell, edit → KPI repaint (median/p95 over 25 edits), section switch times (single-case and the 6 Portefeuille sections on docs/examples), undo time.
+// Measures: file size, time to the shell, edit → KPI repaint (median/p95 over 25 edits), section switch times (single-case and the 6 Portfolio sections on docs/examples), undo time.
 // Fails when a measure exceeds app/perf-budget.json. Usage: node tools/perf.mjs [--write-budget]
 import { createRequire } from 'node:module';
 import { readFileSync, statSync, writeFileSync, existsSync } from 'node:fs';
@@ -40,12 +40,12 @@ const t1 = Date.now(); await page.keyboard.press('Control+z'); await page.waitFo
 m.sectionMs = {};
 for (const l of ['Financial', 'Monte Carlo', 'Logic verification', 'Board', 'Gantt', 'Persona management', 'Data Model']) m.sectionMs[l] = await go(l);
 m.sectionMaxMs = Math.max(...Object.values(m.sectionMs));
-// Portefeuille group on the shipped example (3 planned products, 2 waves, hub, rho): the six portfolio sections
+// Portfolio group on the shipped example (3 planned products, 2 waves, hub, rho): the six portfolio sections
 await page.setInputFiles('input[type=file]', { name: 'p.json', mimeType: 'application/json', buffer: readFileSync('docs/examples/AgentCase_Portfolio_Example.json') });
 await page.selectOption('select[aria-label=Persona]', 'advanced');   // opening a file resets the persona
 await page.waitForTimeout(500);
 m.portfolioSectionMs = {};
-for (const l of ['Produits', 'Surcharges', 'Knowledge transfer', 'Vagues', 'Consolidation', 'Stress portefeuille']) m.portfolioSectionMs[l] = await go(l);
+for (const l of ['Products', 'Overrides', 'Knowledge transfer', 'Waves', 'Consolidation', 'Portfolio stress']) m.portfolioSectionMs[l] = await go(l);
 m.portfolioSectionMaxMs = Math.max(...Object.values(m.portfolioSectionMs));
 m.heapMB = +((await page.evaluate(() => performance.memory ? performance.memory.usedJSHeapSize / 1048576 : 0))).toFixed(1);
 m.errors = errors.length;

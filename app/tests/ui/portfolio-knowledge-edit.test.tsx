@@ -20,59 +20,59 @@ function openFor(i: number): void {
 }
 const type = (label: string | RegExp, value: string) => fireEvent.change(screen.getByLabelText(label), { target: { value } });
 
-describe('Domaines de connaissance', () => {
+describe('Knowledge domains', () => {
   it('free label + weight rows; the weights must add up to 100 (the remaining % is shown), an invalid list is refused and announced', () => {
     openFor(1);
-    const add = () => fireEvent.click(screen.getByRole('button', { name: 'Ajouter un domaine' }));
+    const add = () => fireEvent.click(screen.getByRole('button', { name: 'Add a domain' }));
     add();
-    type('Libellé du domaine 1', 'Documentation'); type('Poids du domaine 1 (%)', '40');
-    expect(screen.getByText('Reste 60 % à répartir.')).toBeTruthy();
+    type('Domain label 1', 'Documentation'); type('Domain weight 1 (%)', '40');
+    expect(screen.getByText('60% left to allocate.')).toBeTruthy();
     add();
-    expect((screen.getByLabelText('Poids du domaine 2 (%)') as HTMLInputElement).value).toBe('60');
-    type('Libellé du domaine 2', 'Code'); type('Poids du domaine 2 (%)', '50');
-    expect(screen.getByText('Reste 10 % à répartir.')).toBeTruthy();
-    fireEvent.click(screen.getByRole('button', { name: 'Enregistrer les domaines' }));
-    expect(screen.getByRole('alert').textContent).toMatch(/totaliser 100 % \(il reste 10 %\)/);
+    expect((screen.getByLabelText('Domain weight 2 (%)') as HTMLInputElement).value).toBe('60');
+    type('Domain label 2', 'Code'); type('Domain weight 2 (%)', '50');
+    expect(screen.getByText('10% left to allocate.')).toBeTruthy();
+    fireEvent.click(screen.getByRole('button', { name: 'Save the domains' }));
+    expect(screen.getByRole('alert').textContent).toMatch(/add up to 100% \(10% left\)/);
     expect(prod(1).knowledge.domains).toBeUndefined();
-    type('Poids du domaine 2 (%)', '70');
-    expect(screen.getByText('10 % de trop.')).toBeTruthy();
-    fireEvent.click(screen.getByRole('button', { name: 'Enregistrer les domaines' }));
-    expect(screen.getByRole('alert').textContent).toMatch(/10 % de trop/);
-    type('Poids du domaine 2 (%)', '60');
+    type('Domain weight 2 (%)', '70');
+    expect(screen.getByText('10% too much.')).toBeTruthy();
+    fireEvent.click(screen.getByRole('button', { name: 'Save the domains' }));
+    expect(screen.getByRole('alert').textContent).toMatch(/10% too much/);
+    type('Domain weight 2 (%)', '60');
     expect(screen.getByText('Total: 100% — ready to save.')).toBeTruthy();
-    fireEvent.click(screen.getByRole('button', { name: 'Enregistrer les domaines' }));
+    fireEvent.click(screen.getByRole('button', { name: 'Save the domains' }));
     expect(prod(1).knowledge.domains).toEqual([{ label: 'Documentation', weightPct: 40 }, { label: 'Code', weightPct: 60 }]);
     expect(screen.queryByRole('alert')).toBeNull();
-    expect(screen.getByRole('group', { name: 'Domaines de connaissance : surchargé' })).toBeTruthy();
+    expect(screen.getByRole('group', { name: 'Knowledge domains: overridden' })).toBeTruthy();
     expect(prod(0).knowledge.domains).toBeUndefined();
   });
 
-  it('an empty label is refused; a row can be removed; "Retirer tous" and Ctrl+Z', () => {
+  it('an empty label is refused; a row can be removed; "Remove all" and Ctrl+Z', () => {
     openFor(1);
-    fireEvent.click(screen.getByRole('button', { name: 'Ajouter un domaine' }));
-    fireEvent.click(screen.getByRole('button', { name: 'Enregistrer les domaines' }));
-    expect(screen.getByRole('alert').textContent).toMatch(/libellé/);
-    type('Libellé du domaine 1', 'Tickets');
-    fireEvent.click(screen.getByRole('button', { name: 'Enregistrer les domaines' }));
+    fireEvent.click(screen.getByRole('button', { name: 'Add a domain' }));
+    fireEvent.click(screen.getByRole('button', { name: 'Save the domains' }));
+    expect(screen.getByRole('alert').textContent).toMatch(/label/);
+    type('Domain label 1', 'Tickets');
+    fireEvent.click(screen.getByRole('button', { name: 'Save the domains' }));
     expect(prod(1).knowledge.domains).toEqual([{ label: 'Tickets', weightPct: 100 }]);
-    fireEvent.click(screen.getByRole('button', { name: 'Retirer tous les domaines' }));
+    fireEvent.click(screen.getByRole('button', { name: 'Remove all domains' }));
     expect(prod(1).knowledge.domains).toBeUndefined();
     act(() => { appStore().undo(); });
     expect(prod(1).knowledge.domains).toHaveLength(1);
-    expect((screen.getByLabelText('Libellé du domaine 1') as HTMLInputElement).value).toBe('Tickets');
-    fireEvent.click(screen.getByRole('button', { name: 'Retirer le domaine Tickets' }));
-    expect(screen.queryByLabelText('Libellé du domaine 1')).toBeNull();
+    expect((screen.getByLabelText('Domain label 1') as HTMLInputElement).value).toBe('Tickets');
+    fireEvent.click(screen.getByRole('button', { name: 'Remove domain Tickets' }));
+    expect(screen.queryByLabelText('Domain label 1')).toBeNull();
   });
 });
 
-describe('Préparation du transfert (mois avant la vague)', () => {
-  const FIELD = 'Préparation du transfert (mois avant la vague)';
+describe('Knowledge transfer preparation (months before the wave)', () => {
+  const FIELD = 'Knowledge transfer preparation (months before the wave)';
 
   it('refuses a negative or fractional number, announces it, and keeps the document unchanged', () => {
     openFor(2);
     type(FIELD, '-1');
     fireEvent.blur(screen.getByLabelText(FIELD));
-    expect(screen.getByRole('alert').textContent).toMatch(/entier de mois supérieur ou égal à 0/);
+    expect(screen.getByRole('alert').textContent).toMatch(/whole number of months, 0 or more/);
     expect(prod(2).knowledge.ktLeadMonths).toBeUndefined();
     type(FIELD, '1.5');
     fireEvent.blur(screen.getByLabelText(FIELD));
@@ -84,7 +84,7 @@ describe('Préparation du transfert (mois avant la vague)', () => {
     openFor(2);
     type(FIELD, '3');
     expect(prod(2).knowledge.ktLeadMonths).toBe(3);
-    expect(screen.getByRole('group', { name: 'Préparation du transfert : surchargé' })).toBeTruthy();
+    expect(screen.getByRole('group', { name: 'Knowledge transfer preparation: overridden' })).toBeTruthy();
     const after = consolidate(pf());
     for (const m of ['savings', 'run', 'token', 'infra', 'humanFte', 'agentVfte', 'ktAvoided', 'khCost'] as const) expect(after.series[m]).toEqual(before.series[m]);
     expect(after.series.ktSetup).not.toEqual(before.series.ktSetup);
