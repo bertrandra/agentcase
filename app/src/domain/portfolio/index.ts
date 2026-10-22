@@ -34,3 +34,4 @@ export { aggregateTeams, type TeamAggregate, type TeamBucket, type TeamLine, typ
 export { inputSummary, type InputSummaryRow, type HubState } from './inputSummary';
 export * from './aggScope'; export * from './aggFrame'; export * from './aggBaseline'; export { spread, type Spread, type AggBase } from './aggScopeRows';
 export * from './aggVerifyAll';
+export * from './aggIndexEPV';

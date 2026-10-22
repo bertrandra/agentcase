@@ -5,6 +5,7 @@ import { setDisplayScope } from '@/controllers/displayScope';
 import { assignWave } from '@/controllers/wave';
 import { aggregateTeams, consolidate, portfolioHeadline, scheduledProducts, waveHeadline } from '@/domain/portfolio';
 import { appStore } from '@/store/instance';
+import { SECTION_AGGREGATES } from '@/ui/sections/aggregates';
 import { fmtEurK } from '@/ui/format';
 import { threeProducts } from '../helpers/portfolioStore';
 import { mountApp, pf, sectionReady } from '../helpers/portfolioUi';
@@ -112,11 +113,15 @@ describe('generic fallbacks of the kinds that follow the View', () => {
     expect(screen.getAllByRole('button', { name: /^Edit this product/ })).toHaveLength(3);
   });
 
-  it('R-conso without an aggregate yet: says so and offers the per-product detail', async () => {
-    mountApp('run'); view('portfolio');
-    await sectionReady(/Agentic Run/);
-    expect(screen.getByText(/Consolidated view coming/)).toBeTruthy();
-    expect(screen.getByRole('region', { name: 'Detail by product' })).toBeTruthy();
+  it('R-conso without a registered aggregate: says so and offers the per-product detail', async () => {
+    const agg = SECTION_AGGREGATES.run;   // every R-conso has its aggregate by now: take one out to keep the generic fallback covered
+    delete SECTION_AGGREGATES.run;
+    try {
+      mountApp('run'); view('portfolio');
+      await sectionReady(/Agentic Run/);
+      expect(screen.getByText(/Consolidated view coming/)).toBeTruthy();
+      expect(screen.getByRole('region', { name: 'Detail by product' })).toBeTruthy();
+    } finally { SECTION_AGGREGATES.run = agg!; }
   });
 
   it('sections that already follow the View are rendered as they are', async () => {
