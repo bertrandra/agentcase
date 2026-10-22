@@ -58,11 +58,11 @@ describe('top bar with several products', () => {
     expect(sidebar().querySelector('[data-group="portfolio"]')).toBeNull();
     expect(screen.queryByRole('combobox', { name: 'Produit' })).toBeNull();
   });
-  it('Welcome lists a Portefeuille card with its two sections', async () => {
+  it('Welcome lists a Portefeuille card with its three sections', async () => {
     mountApp();
     act(() => goSection('home'));
     await screen.findByRole('heading', { level: 1 });
     const card = within(screen.getByRole('main')).getByRole('button', { name: /Portefeuille/ });
-    expect(card.textContent).toContain('2');   // the count pill: Produits and Surcharges
+    expect(card.textContent).toContain('3');   // the count pill: Produits, Surcharges and Knowledge transfer
   });
 });

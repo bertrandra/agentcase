@@ -27,7 +27,7 @@ When releasing, follow [docs/BUMP_PROCEDURE.md](docs/BUMP_PROCEDURE.md) (§7 for
   New pure helpers `waveEffects`, `waveEffectsTotal`, `infraView`, `knowledgeTotals` in `domain/portfolio`. No financial formula added; one
   product looks and behaves as before (ui-parity 0 divergences). Tests: `tests/ui/portfolio-knowledge*.test.tsx`,
   `tests/domain/portfolio/ktview.test.ts`; section counts 81 -> 82 updated in `portfolio-single`, `datamodel` (also 'supports' 44 -> 45),
-  `deps` (25 -> 26 outside the graph), `shell` (comment) and `portfolio-topbar` (group content). Fixture `pf-three-products` now has the hub
+  `deps` (25 -> 26 outside the graph), `shell` (comment) and `portfolio-topbar` (group content, Welcome pill 2 -> 3). Fixture `pf-three-products` now has the hub
   allocated by headcount and different subsets.
 
 - **Multi-product, phase P3 (interface).** With 2+ products: "Produit" selector and "Modifier : tous / ce produit seulement" toggle in the top bar,
