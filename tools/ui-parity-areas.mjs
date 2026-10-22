@@ -8,10 +8,8 @@ export const AREAS = [
   // title / header bar
   { name: 'header', legacy: '.header', current: 'header.ac-top' },
   { name: 'header:title', legacy: '#appTitle', current: '.ac-brand' },
-  { name: 'header:subtitle', legacy: '.header p', current: '.ac-subtitle' },
   { name: 'header:control', legacy: '.scenario-bar .sc-hint', current: '.ac-top button:not([aria-label*=sidebar])', skip: ['display', 'cursor', 'boxW'] },
   { name: 'header:menu', legacy: '.scenario-bar .sc-icon-btn', current: 'button[aria-label*=sidebar]', skip: ['display', 'cursor', 'boxW', 'boxH', 'textAlign'] },
-  { name: 'header:customer', legacy: '.side-search input', current: 'input.ac-customer', skip: ['boxW', 'boxH', 'display'] },
   { name: 'header:persona', legacy: '.persona-select', current: 'select[aria-label=Persona]', skip: ['boxW', 'boxH', 'display'] },   // display: a flex item is blockified, the legacy select sits in a block,
   // KPI / scenario bar
   { name: 'kpibar', legacy: '#scenarioBar', current: 'aside.ac-kpis', skip: ['boxH'] },

@@ -2,6 +2,7 @@
 import { act, cleanup, fireEvent, render, screen, within } from '@testing-library/react';
 import { afterEach, beforeEach, describe, expect, it } from 'vitest';
 import { setAgentSup, setPhaseAgent } from '@/controllers/artefacts';
+import { setCustomerName } from '@/controllers/frame';
 import { computeCase } from '@/domain';
 import { appStore } from '@/store/instance';
 import { App } from '@/ui/App';
@@ -100,12 +101,14 @@ describe('undo / redo in the UI', () => {
     fireEvent.click(within(screen.getByRole('list', { name: 'History' })).getByText(/Set A017/));
     expect(appStore().getState().history.undo).toHaveLength(1);
   });
-  it('typing the customer name is one coalesced step', () => {
+  it('the customer name is shown in the title (AgentCase for Acme), no longer editable in the header, and the subtitle is gone', () => {
     render(<App />);
-    const box = screen.getByLabelText('Customer name');
-    ['A', 'Ac', 'Acm', 'Acme'].forEach((v) => fireEvent.change(box, { target: { value: v } }));
-    expect(appStore().getState().history.undo).toHaveLength(1);
-    expect((box as HTMLInputElement).value).toBe('Acme');
+    const top = screen.getByRole('banner');
+    expect(within(top).queryByLabelText('Customer name')).toBeNull();
+    expect(top.textContent).not.toMatch(/Confidence-Conditional Verdict/);
+    expect(within(top).getByText(/^AgentCase/).textContent).not.toMatch(/ for /);
+    act(() => setCustomerName('Acme'));
+    expect(within(top).getByText(/^AgentCase for Acme/)).toBeTruthy();
   });
 });
 

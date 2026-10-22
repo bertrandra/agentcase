@@ -12,7 +12,6 @@
 @media (max-width: 760px) {
   .ac-shell { grid-template-columns: minmax(0, 1fr); }
   .ac-top { flex-wrap: wrap; }
-  .ac-customer { flex: 1 1 140px; min-width: 0; }
   .ac-spacer { display: none; }
 }
 @media (prefers-reduced-motion: reduce) {

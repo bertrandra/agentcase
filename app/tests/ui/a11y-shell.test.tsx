@@ -32,7 +32,7 @@ describe('shell landmarks and names', () => {
   it('every top-bar control is named: customer, persona, undo / redo, menu toggle', () => {
     render(<App />);
     const top = within(screen.getByRole('banner'));
-    for (const n of ['Toggle the sidebar menu', 'Customer name', 'Persona', 'Undo', 'Redo']) expect(top.getByLabelText(n)).toBeTruthy();
+    for (const n of ['Toggle the sidebar menu', 'Persona', 'Undo', 'Redo']) expect(top.getByLabelText(n)).toBeTruthy();
     expect(top.getByRole('button', { name: 'Toggle the sidebar menu' }).hasAttribute('aria-pressed')).toBe(true);
   });
   it('the active section is marked aria-current and announced politely when it changes', () => {
