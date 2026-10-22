@@ -65,13 +65,13 @@ When releasing, follow [docs/BUMP_PROCEDURE.md](docs/BUMP_PROCEDURE.md) (§7 for
 
 ### Gates (measured on this release: Chromium headless, built file)
 - **Golden case**: unchanged. All 107 single-product fixtures give the same numbers as before, as one-product portfolios (A1/A9), verified by the tests (`tests/store/portfolio-a1.test.ts`, the oracle, parity and persistence suites).
-- **`npm run check`**: CHECK_PLACEHOLDER
+- **`npm run check`**: typecheck and ESLint clean; Vitest 202 files, 15,339 tests passed (12,346 at v19.0.0).
 - **e2e smoke** (`tools/e2e-smoke.mjs`): 758 section visits (6 case fixtures x 93, `pf-three-products` and the example portfolio x 100, the six Portefeuille sections included), 0 failures, 0 console errors.
-- **Performance** (`tools/perf.mjs`): PERF_PLACEHOLDER Budget `app/perf-budget.json` unchanged except the new `portfolioSectionMaxMs` (1,500 ms).
+- **Performance** (`tools/perf.mjs`): size 2.68 MB (0.83 MB gzip), shell 520 ms, edit-to-KPI repaint median 16 ms / p95 22 ms, undo 42 ms, slowest single-case section switch 259 ms, slowest Portefeuille section switch 137 ms (Produits 100, Surcharges 102, Knowledge transfer 101, Vagues 119, Consolidation 137, Stress portefeuille 97), heap 30 MB, 0 page errors (`npm run e2e`, exit 0). Budget `app/perf-budget.json` unchanged except the new `portfolioSectionMaxMs` (1,500 ms).
 - **Accessibility** (`npm run a11y`): 422 audits (golden, ctx-msi, industry-med and the example portfolio), 0 violations, budget `app/a11y-budget.json` unchanged. `pf-three-products` alone: 116 audits, 0 violations.
 - **UI parity** (`tools/ui-parity.mjs`): 44,871 properties compared over 3 personas and the section content, 0 divergences, 5 recorded exceptions (`app/ui-parity-exceptions.json`).
-- **Parallel run** (`tools/parallel-run.mjs`): PARALLEL_PLACEHOLDER
-- **Release file**: `app/dist/AgentCase_v20_0_EN.html`, RELEASE_PLACEHOLDER
+- **Parallel run** (`tools/parallel-run.mjs`): legacy v18.13 file against the built app on the same files, comparing savings, run cost, NPV, payback, effective automation and glass ceiling: the 40 parameters workbooks (`app/fixtures/xlsx`) are all identical; of the 107 case files opened as snapshots, 104 are identical and 3 differ (`curve-bass`, `curve-legacy`, `lifecycle-pos-0`), the known limits of the legacy snapshot restore path (it does not restore the `bass` family, see docs/MIGRATION_PLAN.md §15.4), while the oracle tests, which drive the legacy engine through the recipes, pass on all 107. The tool now reads the NPV from the Financial section.
+- **Release file**: `app/dist/AgentCase_v20_0_EN.html`, 2,809,882 bytes (2.68 MiB), a copy of `app/dist/index.html` made by `npm run release`.
 
 ### Known gaps
 Portfolio scenarios table; dependencies and capacity between waves; shared teams; per-draw horizon truncation in the portfolio stress; "apply to all" for Knowledge subsets; rates / model per product; knowledge reuse between products.

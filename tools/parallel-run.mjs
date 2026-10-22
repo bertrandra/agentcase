@@ -5,11 +5,13 @@
 import { createRequire } from 'node:module';
 import { existsSync, readFileSync, readdirSync } from 'node:fs';
 import { basename, extname, resolve } from 'node:path';
+const ARGS = process.argv.slice(2).map(f => resolve(f));   // resolved against the caller's directory, before the chdir
+process.chdir(new URL('..', import.meta.url).pathname);   // paths below are relative to the repository root, whatever the caller's directory (npm run parallel-run runs from app/)
 const require = createRequire(import.meta.url);
 const pw = require(process.env.PW_MODULE || (existsSync('/opt/node-tools/node_modules/playwright') ? '/opt/node-tools/node_modules/playwright' : resolve('app/node_modules/playwright')));
 const legacyFile = resolve(readdirSync('.').filter(f => /^AgentCase_v[\d_]+_EN\.html$/.test(f)).sort((a, b) => a.localeCompare(b, undefined, { numeric: true })).pop());
 const built = resolve('app/dist/index.html');
-let files = process.argv.slice(2);
+let files = ARGS;
 if (!files.length) files = readdirSync('app/fixtures/xlsx').filter(f => f.endsWith('.xlsx')).map(f => resolve('app/fixtures/xlsx', f));
 const browser = await pw.chromium.launch();
 
@@ -39,6 +41,8 @@ async function newFigures(file) {
   await page.waitForTimeout(700);
   const kpi = await page.locator('.ac-kpi').evaluateAll(els => els.map(e => [e.querySelector('.ac-kpi-l').textContent, e.querySelector('.ac-kpi-v').textContent]));
   // the NPV left the top bar (v19): read it from the Financial section's verdict tile ("€1,074K" above "NPV @8%")
+  await page.selectOption('select[aria-label=Persona]', 'advanced');   // opening a file resets the persona; Advanced shows every section
+  await page.waitForTimeout(300);
   const fin = page.locator('nav[aria-label=Sections] button:visible, .ac-groupbar button:visible').filter({ hasText: /Financial/ }).first(), heads2 = page.locator('nav[aria-label=Sections] button').filter({ hasText: /▼$/ });
   for (let i = 0, n = await heads2.count(); i < n && !(await fin.count()); i++) await heads2.nth(i).click();
   await fin.click(); await page.waitForTimeout(400);

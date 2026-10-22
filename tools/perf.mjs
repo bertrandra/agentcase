@@ -6,6 +6,7 @@ import { createRequire } from 'node:module';
 import { readFileSync, statSync, writeFileSync, existsSync } from 'node:fs';
 import { gzipSync } from 'node:zlib';
 import { resolve } from 'node:path';
+process.chdir(new URL('..', import.meta.url).pathname);   // paths below are relative to the repository root, whatever the caller's directory (npm run e2e runs from app/)
 const require = createRequire(import.meta.url);
 const pw = require(process.env.PW_MODULE || (existsSync('/opt/node-tools/node_modules/playwright') ? '/opt/node-tools/node_modules/playwright' : resolve('app/node_modules/playwright')));
 const file = resolve('app/dist/index.html'), budgetFile = resolve('app/perf-budget.json');

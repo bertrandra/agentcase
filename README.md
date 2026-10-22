@@ -47,7 +47,7 @@ cd app
 npm ci
 npm run dev        # Vite dev server
 npm run check      # tsc --noEmit + ESLint + Vitest (what CI runs)
-npm run build      # tsc --noEmit + vite build  ->  app/dist/index.html (one offline file, SIZE_PLACEHOLDER)
+npm run build      # tsc --noEmit + vite build  ->  app/dist/index.html (one offline file, about 2.7 MB)
 npm run release    # build + copy to app/dist/AgentCase_v20_0_EN.html (name read from APP_VERSION; fails if the version stamps disagree)
 npm test           # Vitest only
 npm run e2e        # real Chromium on the built file: smoke of every section (incl. the portfolio fixtures) + performance budget
@@ -56,7 +56,7 @@ npm run parallel-run   # same files in the legacy app and this build: identical 
 node scripts/sizes.mjs   # largest source files (the 150-line rule)
 ```
 
-`npm run check` last measured: 202 test files, TESTS_PLACEHOLDER tests, all passing (about 5 minutes on a small machine). The browser tools need Chromium
+`npm run check` last measured: 202 test files, 15,339 tests, all passing (about 5 minutes on a small machine). The browser tools need Chromium
 (`PW_MODULE` / `PLAYWRIGHT_BROWSERS_PATH` if Playwright is not resolvable; run them from `app/` as `node ../tools/<tool>.mjs` if an npm script fails). CI
 ([`.github/workflows/app.yml`](.github/workflows/app.yml)) runs `npm ci`, `npm run check` and `npm run build` on pull requests and on
 pushes to `main` that touch `app/`.

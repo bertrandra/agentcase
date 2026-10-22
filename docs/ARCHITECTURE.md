@@ -1,7 +1,7 @@
 # AgentCase — Architecture of the TypeScript build
 
 > Applies to **`app/`, version 20.0.0** (`app/src/domain/version.ts`, `app/package.json`): a multi-product portfolio build. 736 `.ts`/`.tsx` files under `app/src`,
-> 202 test files under `app/tests` (counted with `find`; TESTS_PLACEHOLDER tests passed on the last local run, CI is authoritative).
+> 202 test files under `app/tests` (counted with `find`; 15,339 tests passed on the last local run, CI is authoritative).
 > The previous document, which describes the frozen single-file app, is archived as
 > [`history/ARCHITECTURE_legacy_v18.md`](history/ARCHITECTURE_legacy_v18.md). The appendix of this file maps each legacy engine to its replacement.
 > Plan and history: [MIGRATION_PLAN.md](MIGRATION_PLAN.md). Recipe for adding a section: [SECTION_PORTING.md](SECTION_PORTING.md).
@@ -285,7 +285,7 @@ Rule (decision D7): no calculation change in the port. A deliberate change ships
 - Patch-based history stores only changed paths (cap 200 steps, plus the autosave record).
 - Sections and ExcelJS are loaded with dynamic `import()`; the single-file build still inlines everything (the build log lists one JS and one CSS file), so this changes evaluation order, not download size.
 - Multi-product (P4): consolidation view model ~4 ms and a 20-product team edit ~25 ms end to end (all views) on a 20 x 60-month portfolio, budgets 30 ms / 150 ms in `tests/domain/portfolio/perf-p4.test.ts`.
-- Size: `dist/index.html` SIZE_PLACEHOLDER; budgets for size, shell, edit, undo and section switches (single case and the six Portefeuille sections on the shipped example) are in `app/perf-budget.json` and checked by `tools/perf.mjs` (CI job `e2e`).
+- Size: `dist/index.html` 2.68 MB (about 830 kB gzip) at the last local build; budgets for size, shell, edit, undo and section switches (single case and the six Portefeuille sections on the shipped example) are in `app/perf-budget.json` and checked by `tools/perf.mjs` (CI job `e2e`).
 
 ## 11. Portfolio (multi-product) at a glance
 
