@@ -7,7 +7,7 @@ import type { CostModel, CostScope } from './costModelTypes';
 import { buildValues } from './costModelValues';
 import type { Portfolio } from './types';
 
-export type { CostModel, CostRow, CostScope, CostTable, ParamRow } from './costModelTypes';
+export type { CostFmt, CostFormula, CostModel, CostRole, CostRow, CostScope, CostTable, ParamRow, RateCardBlock } from './costModelTypes';
 
 /** "Wave_1"-style slug of a scope for file names. */
 export const scopeSlug = (label: string): string => label.replace(/[^\w-]+/g, '_').replace(/^_+|_+$/g, '') || 'Portfolio';
