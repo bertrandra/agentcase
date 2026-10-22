@@ -29,20 +29,28 @@ async function newFigures(file) {
   const ext = extname(file).toLowerCase(), data = readFileSync(file);
   if (ext === '.xlsx') {
     await page.selectOption('select[aria-label=Persona]', 'advanced');
-    await page.locator('nav[aria-label=Sections] button, .ac-groupbar button').filter({ hasText: /Import \/ Export/ }).first().click();
+    // the sidebar groups are collapsible: open the group headers (▼) one by one until the section button is visible
+    const io = page.locator('nav[aria-label=Sections] button:visible, .ac-groupbar button:visible').filter({ hasText: /Import \/ Export/ }).first(), heads = page.locator('nav[aria-label=Sections] button').filter({ hasText: /▼$/ });
+    for (let i = 0, n = await heads.count(); i < n && !(await io.count()); i++) await heads.nth(i).click();
+    await io.click();
     await page.locator('[role=tab]', { hasText: /Export \/ Import current settings/ }).click();
     await page.setInputFiles('input[aria-label="Settings workbook (.xlsx)"]', { name: basename(file), mimeType: 'application/octet-stream', buffer: data });
   } else await page.setInputFiles('input[type=file][accept*="json"]', { name: basename(file), mimeType: ext === '.html' ? 'text/html' : 'application/json', buffer: data });
   await page.waitForTimeout(700);
   const kpi = await page.locator('.ac-kpi').evaluateAll(els => els.map(e => [e.querySelector('.ac-kpi-l').textContent, e.querySelector('.ac-kpi-v').textContent]));
-  await page.context().close(); return Object.fromEntries(kpi);
+  // the NPV left the top bar (v19): read it from the Financial section's verdict tile ("€1,074K" above "NPV @8%")
+  const fin = page.locator('nav[aria-label=Sections] button:visible, .ac-groupbar button:visible').filter({ hasText: /Financial/ }).first(), heads2 = page.locator('nav[aria-label=Sections] button').filter({ hasText: /▼$/ });
+  for (let i = 0, n = await heads2.count(); i < n && !(await fin.count()); i++) await heads2.nth(i).click();
+  await fin.click(); await page.waitForTimeout(400);
+  const npv = /([-−]?€[\d,]+K)\s*\nNPV @/.exec(await page.locator('main').innerText())?.[1];
+  await page.context().close(); return { ...Object.fromEntries(kpi), NPV: npv && npv.replace('−', '-').replace('K', 'k') };
 }
 const k = v => (v < 0 ? '-' : '') + '€' + Math.round(Math.abs(v) / 1000).toLocaleString('en-US') + 'k', pct = v => Math.round(v) + '%';
 let bad = 0;
 for (const f of files) {
   let L, N;
   try { L = await legacyFigures(f); N = await newFigures(f); } catch (e) { bad++; console.log('ERROR', basename(f), String(e.message).split('\n')[0]); continue; }
-  const get = pre => Object.entries(N).find(([l]) => l.startsWith(pre))?.[1];
+  const get = pre => Object.entries(N).find(([l]) => l.startsWith(pre))?.[1]?.replace('−', '-');   // DEV-NEG-MONEY: the new build prints negatives with U+2212
   const checks = [['savings', k(L.sav), get('Savings')], ['run cost', k(L.run), get('Run cost')], ['NPV', k(L.npv), get('NPV')], ['payback', L.payback == null ? 'beyond horizon' : L.payback + ' mo', get('Payback')], ['effective', pct(L.eff), get('Effective')], ['ceiling', pct(L.ceiling), get('Glass')]];
   const diff = checks.filter(([, a, b]) => a !== b);
   if (diff.length) { bad++; console.log('DIFF ', basename(f).padEnd(34), diff.map(([n, a, b]) => `${n}: legacy ${a} vs new ${b}`).join(' | ')); }
