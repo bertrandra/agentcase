@@ -7,7 +7,7 @@ export const esc = (v: unknown): string => String(v).replace(/[&<>"']/g, (ch) =>
 const row = (cells: string[], centerFrom = 99): string => `<tr>${cells.map((x, i) => `<td${i >= centerFrom ? ' style="text-align:center"' : ''}>${x}</td>`).join('')}</tr>`;
 
 /** Printable by itself: no script, no external resource. */
-const STYLE = 'body{font-family:Calibri,Arial,sans-serif;color:#22262e;max-width:900px;margin:2rem auto;padding:0 1.5rem;line-height:1.55}'
+export const STYLE = 'body{font-family:Calibri,Arial,sans-serif;color:#22262e;max-width:900px;margin:2rem auto;padding:0 1.5rem;line-height:1.55}'
   + 'h1,h2,h3{font-family:Ubuntu,sans-serif;font-weight:300;color:#0058AB}h1{border-bottom:3px solid #FEB100;padding-bottom:.4rem}'
   + 'table{border-collapse:collapse;width:100%;font-size:13px;margin:.6rem 0}th,td{border:1px solid #d5dae6;padding:5px 8px;text-align:left}th{background:#0058AB;color:#CADCFC}'
   + '.tag{display:inline-block;background:#CADCFC;color:#0058AB;border-radius:10px;padding:1px 10px;font-size:11px;font-weight:700}@media print{body{margin:0}}';
