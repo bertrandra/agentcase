@@ -1,5 +1,7 @@
 import type { DisplayScope } from '@/domain/portfolio';
+import { pfStressFingerprint } from '@/domain/portfolio';
 import { appStore } from '@/store/instance';
+import { pfSimStore } from '@/store/portfolioSimulation';
 import { buildScopedReport, type ReportResult } from '@/store/persistence/report';
 
 /**
@@ -8,5 +10,6 @@ import { buildScopedReport, type ReportResult } from '@/store/persistence/report
  */
 export const criticalReport = (now: Date = new Date(), scope?: DisplayScope, productId?: string): ReportResult => {
   const { portfolio } = appStore().getState();
-  return buildScopedReport(portfolio, scope ?? portfolio.displayScope ?? { kind: 'product' }, now, productId);
+  const run = pfSimStore.getState().run, stress = run ? { run, stale: run.fingerprint !== pfStressFingerprint(portfolio) } : null;
+  return buildScopedReport(portfolio, scope ?? portfolio.displayScope ?? { kind: 'product' }, now, productId, stress);
 };
