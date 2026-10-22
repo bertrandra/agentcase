@@ -1,5 +1,6 @@
 import { caseDiscountRate, engineNow } from '../canonical';
 import type { Ctx } from '../ctx';
+import type { Engine } from '../time';
 import { roiCanonical } from './roi';
 
 /** The case's money headline, derived once from the Time Engine rows: every screen that prints net, ROI, payback or NPV reads this. */
@@ -24,23 +25,12 @@ export interface Headline {
 /** Horizon year (1-based) that contains a payback month. */
 export const paybackYearOf = (month: number | null): number | null => (month == null ? null : Math.max(1, Math.ceil(month / 12)));
 
-/** Headline of the live case. Net = engine savings over the horizon minus setup; payback is the engine's monthly crossing. */
-export function headline(c: Ctx): Headline {
-  const eng = engineNow(c), setup = eng.K.setupTotal, npvRate = caseDiscountRate(c);
+/** Headline of an engine (the live case's, or a scenario's). Net = engine savings over the horizon minus setup; payback is the engine's monthly crossing. */
+export function headlineOf(eng: Engine, c: Ctx): Headline {
+  const setup = eng.K.setupTotal, npvRate = caseDiscountRate(c);
   const totalBenefit = eng.years().reduce((a, y) => a + y.savings, 0), net = totalBenefit - setup, paybackMonth = eng.payback();
   return { totalBenefit, setup, net, roi: roiCanonical(net, setup), paybackMonth, paybackYear: paybackYearOf(paybackMonth), npv: eng.npv(npvRate), npvRate };
 }
 
-/**
- * Payback month from a plain annual savings series (the flat scenario model has no monthly rows): the cumulative cash-flow, starting at
- * -setup, is interpolated linearly inside the year it turns >= 0. Null when never reached. Same "cumulative >= 0" rule as the engine.
- */
-export function annualPaybackMonth(setup: number, yearSav: number[]): number | null {
-  let cum = -setup;
-  for (let y = 0; y < yearSav.length; y++) {
-    const prev = cum, sv = yearSav[y] as number;
-    cum += sv;
-    if (cum >= 0 && sv > 0) return y * 12 + Math.ceil((-prev / sv) * 12);
-  }
-  return null;
-}
+/** Headline of the live case. */
+export const headline = (c: Ctx): Headline => headlineOf(engineNow(c), c);
