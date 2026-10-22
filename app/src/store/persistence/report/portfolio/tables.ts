@@ -11,7 +11,7 @@ export const payback = (m: number | null, horizon: number): string => (m === nul
 
 /** By-wave / by-product lines of the consolidation view (calendar NPV: the lines add up to the portfolio). */
 export function lines(title: string, rows: SummaryRow[], horizon: number): string {
-  return table([title, 'Products', 'NPV', 'Net', 'Setup', 'Savings', 'Run cost', 'ETP', 'vFTE', 'Payback'],
+  return table([title, 'Products', 'NPV', 'Net', 'Setup', 'Savings', 'Run cost', 'FTE', 'vFTE', 'Payback'],
     rows.map((r) => [esc(r.name), String(r.products), fmtK(r.npv), fmtK(r.net), fmtK(r.setup), fmtK(r.savings), fmtK(r.run), r.etp.toFixed(1), r.vfte.toFixed(1), payback(r.paybackMonth, horizon)]));
 }
 

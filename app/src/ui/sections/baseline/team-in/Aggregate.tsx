@@ -17,10 +17,10 @@ const PRODUCTS: AggColumn<TeamProductRow>[] = [
   { key: 'lines', header: 'Lines', align: 'right', render: (r) => r.lines },
   { key: 'etp', header: 'Entry FTE', align: 'right', title: 'AS-IS total of the product’s team (FTE)', render: (r) => r.etp.toFixed(2) },
 ];
-const BUCKET: AggColumn<TeamBucket & { id: string; name: string }>[] = [{ key: 'etp', header: 'ETP', align: 'right', render: (r) => r.etp.toFixed(2) }];
+const BUCKET: AggColumn<TeamBucket & { id: string; name: string }>[] = [{ key: 'etp', header: 'FTE', align: 'right', render: (r) => r.etp.toFixed(2) }];
 const asRows = (b: TeamBucket[]) => b.map((x) => ({ ...x, id: x.key, name: x.key }));
 const LINES: AggColumn<TeamLine & { id: string; name: string }>[] = [
-  { key: 'grade', header: 'Grade', render: (r) => r.grade }, { key: 'loc', header: 'Location', render: (r) => r.loc }, { key: 'etp', header: 'ETP', align: 'right', render: (r) => r.etp.toFixed(2) },
+  { key: 'grade', header: 'Grade', render: (r) => r.grade }, { key: 'loc', header: 'Location', render: (r) => r.loc }, { key: 'etp', header: 'FTE', align: 'right', render: (r) => r.etp.toFixed(2) },
 ];
 
 /** Input team (AS-IS) — Aggregate view: the teams of the selection by product and, added up, by skill, grade and location (read-only; edit a product to change its team). */

@@ -10,7 +10,7 @@ const ACCENT = /[éèêëàâùûüçîïôœ]/;
 const WORDS = new Set(('le la les des du pour avec sans dans une aux sont chaque tous toutes cette ces mois année portefeuille portefeuilles vague vagues produit produits ' +
   'équipe ajouter supprimer renommer dupliquer archiver restaurer activer retirer enregistrer déplacer cliquer choisir filtrer lancer lancez affectez glissez ' +
   'surcharges aucun aucune seulement ci-dessous ci-dessus lecture seule hérité surchargé planifié planifiés périmètre vue agrégée tirages graine nouveau nouvelle ' +
-  'erreur refusée refusé introuvable invalide').split(' '));
+  'erreur refusée refusé introuvable invalide domaine domaines poids valeur valeurs commun commune communs communes tableau calendaire actif archivé supprimé retour démarrage décalage trésorerie économies').split(' '));
 /** Words so short or so common in English that they only count next to another French word (eg "Vue", "Modifier" alone as a whole label). */
 const LABELS = new Set(['Vue', 'Modifier', 'Supprimer', 'Dupliquer', 'Archiver', 'Restaurer', 'Activer', 'Retirer', 'Enregistrer', 'Annuler', 'Fermer', 'Ouvrir', 'Valider', 'Ajouter', 'Réinitialiser']);
 
@@ -27,8 +27,9 @@ export function frenchHit(text: string): string | null {
 }
 
 /** The compatibility aliases (legacy French names a v20.0 file may carry) are the only French text allowed in the source. */
-const ALIASES = new Set<string>(Object.values(FRENCH_ALIASES).flat());
-export const isAlias = (s: string): boolean => ALIASES.has(s.trim());
+const ALIASES = new Set<string>([...FRENCH_ALIASES.defaultProductNames, ...FRENCH_ALIASES.defaultWaveNames]);
+/** `file` is the path under src/: the legacy-oracle strings are only allowed in the file that mirrors the oracle. */
+export const isAlias = (s: string, file = ''): boolean => ALIASES.has(s.trim()) || Object.entries(FRENCH_ALIASES.legacyOracle).some(([f, ss]) => file.endsWith(f) && ss.includes(s.trim()));
 
 const SKIP_PARENTS = new Set([ts.SyntaxKind.ImportDeclaration, ts.SyntaxKind.ExportDeclaration, ts.SyntaxKind.LiteralType, ts.SyntaxKind.ExternalModuleReference]);
 

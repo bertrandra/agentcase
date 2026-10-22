@@ -24,7 +24,7 @@ export function table(ws: Worksheet, title: string, header: string[], rows: V[][
   }
 }
 
-export const HDR_LINES = ['Name', 'Products', 'NPV (calendar)', 'Net', 'Setup', 'Savings', 'Run cost', 'ETP (last month)', 'vFTE (last month)', 'Payback month'];
+export const HDR_LINES = ['Name', 'Products', 'NPV (calendar)', 'Net', 'Setup', 'Savings', 'Run cost', 'FTE (last month)', 'vFTE (last month)', 'Payback month'];
 export const FMT_LINES = [undefined, undefined, MONEY, MONEY, MONEY, MONEY, MONEY, PCT, PCT, undefined];
 /** One by-wave / by-product line of the consolidation view, cell by cell. */
 export const lineCells = (r: SummaryRow): V[] => [r.name, r.products, r.npv, r.net, r.setup, r.savings, r.run, r.etp, r.vfte, r.paybackMonth ?? 'not reached'];

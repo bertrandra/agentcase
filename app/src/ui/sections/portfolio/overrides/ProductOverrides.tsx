@@ -13,7 +13,7 @@ export function ProductOverrides({ product, common, active }: { product: Product
       {!refs.length ? <p className="ac-muted">No override: this product follows all the common values.</p> : (
         <div className="ac-table-wrap" tabIndex={0}>
           <table className="ac-table">
-            <caption className="ac-sr">Surcharges de {product.name}</caption>
+            <caption className="ac-sr">Overrides of {product.name}</caption>
             <thead><tr><th scope="col">Key</th><th scope="col">Common value</th><th scope="col">Product value</th><th scope="col">Actions</th></tr></thead>
             <tbody>
               {refs.map((ref) => {

@@ -15,7 +15,7 @@ function Controls({ col, index, waves }: Pick<Props, 'col' | 'index' | 'waves'>)
   return (
     <div className="ac-wave-ctrl">
       <DraftText label={`Name of wave ${n}`} value={n} onCommit={(v) => toast(renameWave(id, v) ? `Wave renamed: ${v.trim()}` : 'Invalid name')} />
-      <label>Démarrage (mois){' '}
+      <label>Start (month){' '}
         <NumCell ariaLabel={`Start of ${n} (month)`} value={col.startMonth} min={0} step={1} width={64} onCommit={(v) => { setWaveStart(id, parseInt(v, 10) || 0); }} />
       </label>
       <span className="ac-muted" title="Calendar month of the start (portfolio start date + month)">→ {col.startLabel}</span>
@@ -39,7 +39,7 @@ export function WaveColumn({ col, cols, index, waves, dragging, onDrag, onDrop }
         {col.id === null ? <strong className="ac-wave-title">{col.name}</strong> : <Controls col={col} index={index} waves={waves} />}
         {t ? (
           <p className="ac-wave-totals" title="Consolidated figures of the wave (calendar: the NPV is discounted from month 1 of the portfolio)">
-            {t.products} produit{t.products > 1 ? 's' : ''} · Économies {fmtEurK(t.savings)} · Net {fmtEurK(t.net)} · VAN {fmtEurK(t.npv)} · Retour {fmtMonths(t.paybackMonth)}
+            {t.products} product{t.products > 1 ? 's' : ''} · Savings {fmtEurK(t.savings)} · Net {fmtEurK(t.net)} · NPV {fmtEurK(t.npv)} · Payback {fmtMonths(t.paybackMonth)}
           </p>
         ) : <p className="ac-wave-totals ac-muted">Excluded from the consolidation (a warning is shown).</p>}
       </header>

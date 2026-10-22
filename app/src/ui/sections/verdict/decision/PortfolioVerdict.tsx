@@ -50,7 +50,7 @@ export function PortfolioVerdict({ group }: { group: VerdictGroup }) {
       )}
       {d ? <Panel title={`Verdict — ${kpis?.label ?? 'scope'}`}><VerdictBox d={d} banner={<Stale />} /></Panel> : (
         <p className="ac-muted"><em>{run ? 'This scope has no scheduled product in the simulation.' : (
-          <>Lancez d’abord la simulation de portefeuille (Portefeuille → 🎲 Portfolio stress) : le verdict est calculé sur la distribution, jamais sur une estimation ponctuelle.{' '}
+          <>Run the portfolio simulation first (Portfolio → 🎲 Portfolio stress): the verdict is computed on the distribution, never on a point estimate.{' '}
             <button type="button" onClick={() => { void runPortfolioSimulation(); }}>▶ Run now</button></>)}</em></p>
       )}
       {run && <WaveVerdicts />}

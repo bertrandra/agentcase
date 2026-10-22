@@ -14,7 +14,7 @@ describe('English only (user-facing text of app/src)', () => {
       if (f.endsWith('frenchAliases.ts')) continue;
       for (const [text, line] of userStrings(f, readFileSync(f, 'utf8'))) {
         const why = frenchHit(text);
-        if (why && !isAlias(text)) found.push(`${f.slice(ROOT.length + 1)}:${line} [${why}] ${text.trim().slice(0, 90)}`);
+        if (why && !isAlias(text, f)) found.push(`${f.slice(ROOT.length + 1)}:${line} [${why}] ${text.trim().slice(0, 90)}`);
       }
     }
     expect(found).toEqual([]);
