@@ -28,7 +28,7 @@ export function ScopeSelect() {
           <optgroup label="Products">{products.map((p) => <option key={p.id} value={`product:${p.id}`}>Product: {p.name} — {waveOf(p.waveId)}{p.archived ? ' (archived)' : ''}</option>)}</optgroup>
         </select>
       </label>
-      {scope.kind !== 'product' && edited && <span className="ac-muted ac-editing">Editing: <strong>{edited.name}</strong></span>}
+      {scope.kind !== 'product' && edited && <span className="ac-editing">Editing: <strong>{edited.name}</strong></span>}
     </>
   );
 }
