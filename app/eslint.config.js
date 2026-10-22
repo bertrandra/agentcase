@@ -49,7 +49,9 @@ export default tseslint.config(
   {
     // A8 (spec 11) — no portfolio figure is computed outside `domain/portfolio`: no `.reduce(` (the way sums are written) in the portfolio sections,
     // the portfolio KPI hooks / tiles and the wave Gantt. Presentation helpers that do not add money up (formatting, sorting, mapping) are fine.
-    files: ['src/ui/sections/portfolio/**/*.{ts,tsx}', 'src/store/consolidationHooks.ts', 'src/store/portfolioSimulation.ts', 'src/ui/sections/verdict/decision/Portfolio*.tsx', 'src/ui/shell/ScopeKpis.tsx', 'src/ui/shell/ScopeSelect.tsx', 'src/ui/sections/verify/gantt/Wave*.tsx'],
+    files: ['src/ui/sections/portfolio/**/*.{ts,tsx}', 'src/store/consolidationHooks.ts', 'src/store/portfolioSimulation.ts', 'src/ui/sections/verdict/decision/Portfolio*.tsx', 'src/ui/shell/ScopeKpis.tsx', 'src/ui/shell/ScopeSelect.tsx', 'src/ui/sections/verify/gantt/Wave*.tsx',
+      // Vue agrégée: the generic tables / fallbacks, the Vue hooks and every section aggregate (`Aggregate*.tsx` or an `aggregate/` folder beside the section) show domain totals, never their own sums
+      'src/ui/widgets/{AggregateTable,ProductDrill,ScopeBanner}.tsx', 'src/ui/zones/{fallbacks.tsx,useScopedSection.ts}', 'src/store/{viewScope,selectionHooks}.ts', 'src/ui/sections/**/Aggregate*.{ts,tsx}', 'src/ui/sections/**/aggregate/**/*.{ts,tsx}'],
     rules: {
       'no-restricted-syntax': [
         'error',
