@@ -49,6 +49,10 @@ for (const fx of fixtures) {
     }
     await audit(page, fx, '(scope Wave: KPI bar)');
   }
+  if (fx.startsWith('pf-')) {   // the editing states below (Customer name) need the Product view: back to the first product
+    const first = await page.locator('select[aria-label="View"] option[value^="product:"]').first().getAttribute('value');
+    await page.selectOption('select[aria-label="View"]', first);
+  }
   if (!only.length) {
     await personaMenu(page, fx, rec); await historyStates(page, fx, rec);
     // the Builder persona: hide-menu mode (group bar) and a guided sequence

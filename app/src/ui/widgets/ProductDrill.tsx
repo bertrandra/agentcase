@@ -13,7 +13,7 @@ function Item({ id, name, Section }: { id: string; name: string; Section: Compon
         <button type="button" aria-label={`Edit this product: ${name}`} onClick={() => editProduct(id, name)}>Edit this product</button>
       </div>
       {open && (
-        <div id={panel} role="region" aria-label={`Detail: ${name}`} className="ac-drill-body">
+        <div id={panel} role="region" aria-label={`Detail: ${name}`} className="ac-drill-body" tabIndex={0}>
           <ProductViewProvider productId={id}>
             <ReadOnlyScope who={name}><Suspense fallback={<p className="ac-muted">Loading…</p>}><Section /></Suspense></ReadOnlyScope>
           </ProductViewProvider>

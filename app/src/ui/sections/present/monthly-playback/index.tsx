@@ -1,9 +1,10 @@
 import { useMemo } from 'react';
-import { MP_META, MP_ORDER, mpReadout, playbackSeries } from '@/domain/pdc/playback';
+import { MP_META, playbackSeries } from '@/domain/pdc/playback';
 import { useCtx } from '@/store/hooks';
 import { ChartPanel } from '@/ui/widgets/ChartPanel';
 import { SectionFrame } from '@/ui/zones/SectionFrame';
 import { legendOf, playbackChart } from './chart';
+import { Transport } from './Transport';
 import { sequence, usePlayer } from './usePlayer';
 
 const help = (
@@ -20,19 +21,7 @@ export default function MonthlyPlaybackSection() {
   const seq = sequence(p.metrics), key = seq[Math.min(p.seq, seq.length - 1)], cfg = useMemo(() => (key ? playbackChart(s, key, p.month) : null), [s, key, p.month]);
   return (
     <SectionFrame title="Monthly Playback" help={help}
-      input={<>
-        <div className="ac-form-row" role="group" aria-label="Transport">
-          <button type="button" className="ac-btn" onClick={() => dispatch({ t: p.playing ? 'pause' : 'play' })}>{p.playing ? '⏸ Pause' : '▶ Play'}</button>
-          <input type="range" min={0} max={s.months} step={1} value={p.month} aria-label="Position in the trajectory (months)" onChange={(e) => seek(parseInt(e.target.value, 10) || 0)} />
-          <strong aria-live="polite">{mpReadout(p.month)}</strong>
-          <label>Speed <select value={p.speed} onChange={(e) => dispatch({ t: 'speed', speed: e.target.value })}>
-            {['0.5', '1', '2', '4'].map((x) => <option key={x} value={x}>{x}x</option>)}</select></label>
-          <label className="ac-check"><input type="checkbox" checked={p.loop} onChange={(e) => dispatch({ t: 'loop', loop: e.target.checked })} /> Loop</label>
-        </div>
-        <div className="ac-form-row" role="group" aria-label="Metrics">
-          {MP_ORDER.map((k) => <label key={k} className="ac-check"><input type="checkbox" checked={p.metrics[k]} onChange={(e) => dispatch({ t: 'metric', key: k, on: e.target.checked })} /> {MP_META[k].checkbox}</label>)}
-        </div>
-      </>}
+      input={<Transport p={p} months={s.months} dispatch={dispatch} seek={seek} />}
       result={key && cfg ? (
         <>
           <div className="ac-form-row"><h2 data-testid="mp-title">{MP_META[key].title}</h2><span className="ac-muted" data-testid="mp-pos">{Math.min(p.seq, seq.length - 1) + 1} / {seq.length}</span></div>

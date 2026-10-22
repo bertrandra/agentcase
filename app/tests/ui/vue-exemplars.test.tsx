@@ -5,6 +5,7 @@ import { setDisplayScope } from '@/controllers/displayScope';
 import { assignWave } from '@/controllers/wave';
 import { aggregateTeams, consolidate, portfolioHeadline, scheduledProducts, waveHeadline } from '@/domain/portfolio';
 import { appStore } from '@/store/instance';
+import { SECTION_AGGREGATES } from '@/ui/sections/aggregates';
 import { fmtEurK } from '@/ui/format';
 import { threeProducts } from '../helpers/portfolioStore';
 import { mountApp, pf, sectionReady } from '../helpers/portfolioUi';
@@ -90,9 +91,15 @@ describe('exemplar I-input: Input team', () => {
 });
 
 describe('generic fallbacks of the kinds that follow the View', () => {
-  it('R-rollup: key figures per product with the domain total, and a lazy read-only drill-down', async () => {
-    mountApp('scenarios'); view('portfolio');
-    await sectionReady(/Scenarios/);
+  // every section has its own aggregate by now: take one out of the registry to keep each generic fallback covered
+  const without = async (id: string, run: () => Promise<void>) => {
+    const agg = SECTION_AGGREGATES[id];
+    delete SECTION_AGGREGATES[id];
+    try { await run(); } finally { SECTION_AGGREGATES[id] = agg!; }
+  };
+  it('R-rollup: key figures per product with the domain total, and a lazy read-only drill-down', () => without('readiness', async () => {
+    mountApp('readiness'); view('portfolio');
+    await sectionReady(/./);
     const h = portfolioHeadline(consolidate(pf()));
     expect(totalRow(/Key figures by product — Portfolio/).textContent).toContain(fmtEurK(h.net));
     expect(document.querySelectorAll('[data-readonly]')).toHaveLength(0);
@@ -102,21 +109,25 @@ describe('generic fallbacks of the kinds that follow the View', () => {
     expect(await within(region).findByRole('heading', { level: 4 })).toBeTruthy();
     expect(document.querySelectorAll('h1')).toHaveLength(1);
     expect(pf().activeProductId).toBe(ids[0]);
-  });
+  }));
 
-  it('I-input: the per-product synthesis with the ETP total', async () => {
-    mountApp('scope-sel'); view('portfolio');
-    await sectionReady(/Scope/);
+  it('I-input: the per-product synthesis with the ETP total', () => without('maturity-map', async () => {
+    mountApp('maturity-map'); view('portfolio');
+    await sectionReady(/Maturity levels/);
     const total = aggregateTeams(pf(), scheduledProducts(pf()).map((s) => s.product.id)).total.toFixed(1);
     expect(totalRow(/Inputs by product — Portfolio/).textContent).toContain(total);
     expect(screen.getAllByRole('button', { name: /^Edit this product/ })).toHaveLength(3);
-  });
+  }));
 
-  it('R-conso without an aggregate yet: says so and offers the per-product detail', async () => {
-    mountApp('run'); view('portfolio');
-    await sectionReady(/Agentic Run/);
-    expect(screen.getByText(/Consolidated view coming/)).toBeTruthy();
-    expect(screen.getByRole('region', { name: 'Detail by product' })).toBeTruthy();
+  it('R-conso without a registered aggregate: says so and offers the per-product detail', async () => {
+    const agg = SECTION_AGGREGATES.run;   // every R-conso has its aggregate by now: take one out to keep the generic fallback covered
+    delete SECTION_AGGREGATES.run;
+    try {
+      mountApp('run'); view('portfolio');
+      await sectionReady(/Agentic Run/);
+      expect(screen.getByText(/Consolidated view coming/)).toBeTruthy();
+      expect(screen.getByRole('region', { name: 'Detail by product' })).toBeTruthy();
+    } finally { SECTION_AGGREGATES.run = agg!; }
   });
 
   it('sections that already follow the View are rendered as they are', async () => {

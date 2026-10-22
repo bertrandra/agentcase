@@ -4,7 +4,7 @@ import { MP_ORDER, mpAdvance, type MetricKey } from '@/domain/pdc/playback';
 const TICK_MS: Record<string, number> = { '0.5': 400, '1': 200, '2': 100, '4': 50 };
 
 export interface PlayerState { playing: boolean; month: number; seq: number; speed: string; loop: boolean; metrics: Record<MetricKey, boolean> }
-type Act =
+export type Act =
   | { t: 'play' } | { t: 'pause' } | { t: 'seek'; month: number } | { t: 'speed'; speed: string } | { t: 'loop'; loop: boolean }
   | { t: 'metric'; key: MetricKey; on: boolean } | { t: 'tick'; months: number } | { t: 'reset' };
 

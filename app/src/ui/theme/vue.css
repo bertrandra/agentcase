@@ -15,6 +15,8 @@
 .ac-section .ac-drill-head { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 8px; padding: 4px 8px; background: #f7f9fd; }
 .ac-section .ac-drill-head h3 { margin: 0; }
 .ac-section .ac-drill-head h3 button { padding: 2px 4px; font: inherit; color: inherit; text-align: left; background: none; border: 0; cursor: pointer; }
-.ac-section .ac-drill-body { padding: 8px 12px; }
+.ac-section .ac-drill-body { padding: 8px 12px; overflow-x: auto; }
+/* a disabled fieldset makes the scrollers inside unfocusable for assistive tech: the (focusable) drill body scrolls instead */
+.ac-section .ac-drill-body .ac-table-wrap { overflow: visible; }
 .ac-section .ac-agg-table tr.is-active th[scope='row'] { box-shadow: inset 4px 0 0 var(--ac-blue); }
 .ac-section .ac-agg-table td button { padding: 2px 8px; font-size: 11px; }
