@@ -9,7 +9,7 @@ export const ROLES = {
   ink: '{neutral-900}', muted: '{neutral-700}', 'text-strong': '{neutral-950}', 'text-soft': '{neutral-750}', 'text-label': '{neutral-650}',
   'text-inverse': '{neutral-0}', 'text-on-primary': '{neutral-0}', 'text-link': '{primary-700}', 'text-heading': '{primary-700}',
   line: '{neutral-130}', 'line-strong': '{neutral-175}', 'line-subtle': '{neutral-125}', 'line-tint': '{primary-200}',
-  focus: '{primary-700}', hover: '{primary-60}', 'hover-text': '{primary-700}', selected: '{primary-700}', 'selected-text': '{neutral-0}',
+  focus: '{primary-700}', 'focus-header': '{focus}', hover: '{primary-60}', 'hover-text': '{primary-700}', selected: '{primary-700}', 'selected-text': '{neutral-0}',
   // header banner, KPI bar, sidebar
   'header-start': '{primary-700}', 'header-end': '{primary-975}', 'header-text': '{neutral-0}',
   'kpibar-start': '{primary-700}', 'kpibar-end': '{primary-850}', 'kpibar-text': '{neutral-0}',

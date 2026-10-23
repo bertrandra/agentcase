@@ -21,9 +21,13 @@ export const THEME_DEFAULT: Readonly<ThemeValues> = Object.freeze({
 } as ThemeValues);
 export const TOKEN_NAMES = Object.keys(THEME_DEFAULT) as TokenName[];
 
-let active: Readonly<ThemeValues> = THEME_DEFAULT;
-/** Switch the values `tok()` returns (theme presets, dark mode); the CSS side is switched by writing the same values as custom properties. */
-export function setActiveTheme(values: Partial<ThemeValues>): void { active = Object.freeze({ ...THEME_DEFAULT, ...values }); }
+let base: Readonly<ThemeValues> = THEME_DEFAULT, display: Partial<ThemeValues> = {}, active: Readonly<ThemeValues> = THEME_DEFAULT;
+/** Switch the base theme (the case's theme, T4 presets); the display overrides of the viewer stay on top. The CSS side is the same values as custom properties. */
+export function setActiveTheme(values: Partial<ThemeValues>): void { base = Object.freeze({ ...THEME_DEFAULT, ...values }); active = Object.freeze({ ...base, ...display }); }
+/** Switch the display overrides (dark mode, contrast level, colour-blind palette, reduced motion: domain/theme/modes `displayTheme()`). */
+export function setDisplayTheme(values: Partial<ThemeValues>): void { display = values; active = Object.freeze({ ...base, ...display }); }
+/** The base theme in effect (without the viewer's display overrides). */
+export const baseTheme = (): Readonly<ThemeValues> => base;
 
 /** `{name}` references replaced by their values, recursively. */
 export function resolveTokens(value: string, table: Readonly<ThemeValues> = active, depth = 0): string {
@@ -36,6 +40,8 @@ export function resolveTokens(value: string, table: Readonly<ThemeValues> = acti
 }
 /** The resolved value of a token in the active theme (default: the legacy look). */
 export const tok = (name: TokenName): string => resolveTokens(active[name], active);
+/** The resolved value of a token in the base theme, ignoring the display mode: the printed exports (Excel, HTML report) stay light. */
+export const printTok = (name: TokenName): string => resolveTokens(base[name], base);
 
 /** Token names whose items resolve against the active theme when read, so a module-level palette follows a theme switch. */
 export function themedList(names: readonly TokenName[]): readonly string[] {
@@ -49,9 +55,9 @@ export function alpha(color: TokenName | string, a: number | string): string {
   const n = parseInt(h, 16);
   return `rgba(${(n >> 16) & 255},${(n >> 8) & 255},${n & 255},${a})`;
 }
-/** Excel ARGB (`FFRRGGBB`) of a solid colour token. */
+/** Excel ARGB (`FFRRGGBB`) of a solid colour token, in the base theme (a workbook is printed: never dark). */
 export function argb(name: TokenName): string {
-  const hex = tok(name).slice(1);
+  const hex = printTok(name).slice(1);
   return 'FF' + (hex.length === 3 ? hex.replace(/./g, (c) => c + c) : hex).toUpperCase();
 }
 
