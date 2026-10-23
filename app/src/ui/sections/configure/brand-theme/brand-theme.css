@@ -38,5 +38,7 @@
 .ac-bt-pv-item { padding: 3px 6px; border-radius: var(--ac-radius-md); } .ac-bt-pv-item.is-active { color: var(--ac-selected-text); background: var(--ac-selected); }
 .ac-section .ac-bt-pv-section { min-width: 0; padding: var(--ac-pad-card); background: var(--ac-surface-raised); border-radius: var(--ac-radius-card); box-shadow: var(--ac-shadow-card); }
 .ac-section .ac-bt-pv-section h3 { margin: 0 0 6px; font-family: var(--ac-font-heading); font-size: var(--ac-font-size-lg); color: var(--ac-text-heading); }
+.ac-section .ac-bt-pv-section { overflow-x: auto; } .ac-section .ac-bt-pv-section .ac-table { font-size: var(--ac-font-size-xs); }
+.ac-section .ac-bt-grid > section > p { font-size: var(--ac-font-size-sm); line-height: var(--ac-leading-base); }
 .ac-bt-pv-chart { display: block; width: 100%; max-width: 320px; height: auto; margin: 6px 0; }
 .ac-bt-pv-controls { display: grid; gap: 4px; }
