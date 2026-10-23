@@ -76,8 +76,9 @@ describe('customer logo in the exports', () => {
     const page = new DOMParser().parseFromString('<!doctype html><html><head></head><body><div id="root"></div></body></html>', 'text/html');
     const { html } = htmlSnapshotFile(page.documentElement, new Date(0));
     const embedded = readEmbeddedCase(new DOMParser().parseFromString(html, 'text/html'))!;
-    expect(embedded.portfolio.common.CUSTOMER_LOGO).toMatchObject({ src: PNG });
-    expect(embedded.portfolio.common.ACTIVE_THEME).toBe(6);
+    const common = embedded.portfolio.common as Record<string, unknown>;
+    expect(common.CUSTOMER_LOGO).toMatchObject({ src: PNG });
+    expect(common.ACTIVE_THEME).toBe(6);
   });
   it('the results workbook places it on the ROI sheet at its aspect ratio', async () => {
     const xl = await loadExcelJS(), wb = buildResultsWorkbook(xl, resultsData(makeCtx(golden())), undefined, PNG);

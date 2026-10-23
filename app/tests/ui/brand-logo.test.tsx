@@ -11,7 +11,7 @@ import { PNG } from '../store/samples/themes';
 vi.mock('@/ui/widgets/ChartPanel', async () => import('../helpers/chartStub'));
 
 /** The customer logo upload (docs/THEME.md §8.6): type and size checks, PNG / JPEG stored as a data URL, options, undo. */
-const bytes = (): Uint8Array => Uint8Array.from(atob(PNG.split(',')[1]!), (c) => c.charCodeAt(0));
+const bytes = (): Uint8Array<ArrayBuffer> => Uint8Array.from(atob(PNG.split(',')[1]!), (c) => c.charCodeAt(0));
 const png = (size?: number) => new File([size ? new Uint8Array(size) : bytes()], 'logo.png', { type: 'image/png' });
 beforeEach(() => { freshStore(); });
 afterEach(cleanup);
