@@ -1,5 +1,5 @@
 /** @calc-zone exports */
-import { BUILTIN_STRUCTURES, findStructure, placeIn, STANDARD_STRUCTURE, structureOf, type MenuStructure } from '@/domain/nav/structures';
+import { BUILTIN_STRUCTURES, findStructure, placeIn, STANDARD_STRUCTURE, type MenuStructure } from '@/domain/nav/structures';
 import { groupsByOrder } from '@/domain/pdc/personas';
 import { sameJson } from '../compare';
 import { blue, frz, head, sheet } from '../kit';
@@ -8,17 +8,14 @@ import type { ParamsDoc, ReadCtx, SheetFamily, WriteCtx } from '../types';
 
 /**
  * Menu structures (DEV-MENU-STRUCTURES, no legacy equivalent): the standard structure stays on the Groups / Sections sheets; every other structure the
- * case stores or a persona navigates with gets its groups on "Menu Structures" and the group + order of every section on "Menu Structure Sections".
- * Both sheets are written only when there is such a structure, so a case without one exports the legacy workbook unchanged.
+ * case stores (created, or a built-in once edited) gets its groups on "Menu Structures" and the group + order of every section on "Menu Structure
+ * Sections". Both sheets are written only when the case stores such a structure, so a case without one exports the legacy sheet list unchanged.
  */
 const stored = (d: ParamsDoc): MenuStructure[] => (d.MENU_STRUCTURES ?? []) as MenuStructure[];
 const hex = /^#([0-9a-f]{3}|[0-9a-f]{6})$/i;
 
-/** The structures the workbook carries: the case's own ones, then the built-ins a persona uses. */
-export function structuresToWrite(d: ParamsDoc): MenuStructure[] {
-  const ids = [...stored(d).map((s) => s.id), ...d.PERSONAS.map((p) => structureOf(p))].filter((id, i, a) => id !== STANDARD_STRUCTURE && a.indexOf(id) === i);
-  return ids.map((id) => findStructure(id, stored(d))).filter((s): s is MenuStructure => !!s);
-}
+/** The structures the workbook carries: the ones the case stores (an unedited built-in comes with the app, a persona names it by id). */
+export const structuresToWrite = (d: ParamsDoc): MenuStructure[] => stored(d).filter((s) => s.id !== STANDARD_STRUCTURE);
 
 function write({ wb, d, secs }: WriteCtx): void {
   const list = structuresToWrite(d);

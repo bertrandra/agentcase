@@ -3,7 +3,7 @@ import { addBuiltinPersona } from '@/controllers/menuStructures';
 import { BUILTIN_PERSONAS } from '@/domain/nav/structures';
 import type { Persona } from '@/domain/pdc/personas';
 import { useDoc } from '@/store/hooks';
-import { SECTIONS } from '@/ui/zones/registry';
+import { LEGACY_SECTIONS } from '@/ui/zones/registry';
 import { useNavModel } from '@/ui/zones/navModel';
 import { SectionFrame } from '@/ui/zones/SectionFrame';
 import { TabPanel, TabStrip, useStripBase } from '@/ui/widgets/TabStrip';
@@ -40,7 +40,7 @@ export default function PersonasSection() {
       input={<TabStrip base={base} label="Persona management views" value={tab} onChange={(id) => setTab(id as typeof tab)} tabs={TABS.map(([id, l]) => ({ id, label: l }))} />}
       result={<TabPanel base={base} current={tab}>{tab === 'personas' ? <><h2>Personas (order in the picker)</h2><PersonaTable personas={personas} />
         {missing.map((b) => <p key={b.id} className="ac-muted">Built-in persona not in this case yet: <strong>{b.label}</strong>{' '}
-          <button type="button" className="ac-btn" onClick={() => addBuiltinPersona(b.id, SECTIONS.map((s) => s.id))}>➕ Add the built-in persona {b.label}</button></p>)}</>
+          <button type="button" className="ac-btn" onClick={() => addBuiltinPersona(b.id, LEGACY_SECTIONS.map((s) => s.id))}>➕ Add the built-in persona {b.label}</button></p>)}</>
         : tab === 'assign' ? <><h2>Section assignment</h2><AssignTab personas={personas} lists={lists} /></>
           : tab === 'seq' ? <><h2>Guided sequence</h2><SeqEditor personas={personas} lists={lists} /></>
             : tab === 'layout' ? <><h2>Menu layout</h2>{bar}<MenuLayout structure={structure} /></>

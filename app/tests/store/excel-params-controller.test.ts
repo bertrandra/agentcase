@@ -27,8 +27,7 @@ describe('exportParamsWorkbook', () => {
     const all = await names('all');
     expect(all.filter((n) => /^FM /.test(n)).length).toBeGreaterThan(10);
     expect((await names('no-factory')).some((n) => /^FM /.test(n))).toBe(false);
-    // the default case ships the Business journey persona on its own menu structure (DEV-MENU-STRUCTURES): its two sheets join the seven legacy ones
-    expect(await names('persona-only')).toEqual(['Personas', 'Persona Sections', 'Groups', 'Sections', 'Menu Structures', 'Menu Structure Sections', 'Dependencies', 'Persona Section Order', 'Persona Sequence']);
+    expect(await names('persona-only')).toEqual(['Personas', 'Persona Sections', 'Groups', 'Sections', 'Dependencies', 'Persona Section Order', 'Persona Sequence']);
     const p = await exportParamsWorkbook('persona-only', ENV, now);
     const cfg = JSON.parse(await p.companion!.blob.text()) as Record<string, unknown>;
     expect(cfg.scope).toBe('persona-only');

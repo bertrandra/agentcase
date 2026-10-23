@@ -199,8 +199,8 @@ the active persona's structure, so the sidebar, group bar, Welcome cards, compac
 in their Menu structure bar (the group and placement commands take an optional `structure`; without it they act on Standard exactly as before).
 Structures are created by duplicating one (`menu.duplicateStructure`), renamed, and deleted only when no persona uses them; built-ins are
 protected. Tag and MVP stay properties of the section (`sectionGroups`, `nav.setSectionTag` / `nav.setSectionMvp`), shared by all structures.
-The parameters workbook carries other structures on "Menu Structures" / "Menu Structure Sections" and a "Menu structure" column on
-Personas, written only when a persona or the case uses one (a standard-only case exports the legacy workbook unchanged).
+The parameters workbook carries the structures the case stores on "Menu Structures" / "Menu Structure Sections" and a "Menu structure"
+column on Personas when a persona uses one (a standard-only case exports the legacy workbook unchanged).
 `tests/domain/business-journey.test.ts` checks the coverage of the Business journey structure against the generated dependency graph.
 
 **Multi-product interface (P3, UI only; no calculation changed).** Progressive disclosure (spec F23): with ONE product nothing is added (no

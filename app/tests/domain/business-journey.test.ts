@@ -7,7 +7,7 @@ import type { Persona } from '@/domain/pdc/personas';
 import defaultDoc from '@/store/defaults/defaultDoc.json';
 import groupsJson from '@/ui/zones/data/groups.json';
 import sectionGroups from '@/ui/zones/data/sectionGroups.json';
-import { DEFAULT_PERSONA_SECTIONS, SECTIONS } from '@/ui/zones/registry';
+import { DEFAULT_PERSONA_SECTIONS, LEGACY_SECTIONS, SECTIONS } from '@/ui/zones/registry';
 import { isPortfolioSection } from '@/ui/zones/portfolioNav';
 
 /** The "nothing is missed" guarantee of the Business journey menu structure (DEV-MENU-STRUCTURES), checked against the generated dependency graph. */
@@ -59,12 +59,12 @@ describe('menu structures: coverage', () => {
 
 describe('the Business journey persona', () => {
   const docPersonas = defaultDoc.PERSONAS as Persona[], lists = defaultDoc.PERSONA_SECTIONS as Record<string, string[]>;
-  it('ships in the default case exactly as the built-in definition, seeing every section, compact nav, not the default persona', () => {
+  it('ships in the default case exactly as the built-in definition, seeing every section (the Portfolio ones join from two products on), compact nav, not the default persona', () => {
     expect(docPersonas.find((p) => p.id === 'business-journey')).toEqual(PERSONA);
     expect(PERSONA).toMatchObject({ label: 'Business journey', protected: false, compactNav: true, menuStructure: 'business-journey' });
     expect(PERSONA.default).toBeUndefined();
     expect(docPersonas.filter((p) => p.default).map((p) => p.id)).toEqual(['builder']);
-    expect([...lists['business-journey']!].sort()).toEqual([...IDS].sort());
+    expect([...lists['business-journey']!].sort()).toEqual(LEGACY_SECTIONS.map((x) => x.id).sort());
     expect(DEFAULT_PERSONA_SECTIONS['business-journey']).toEqual(lists['business-journey']);
   });
   it('the other shipped personas keep the standard structure (no field)', () => {

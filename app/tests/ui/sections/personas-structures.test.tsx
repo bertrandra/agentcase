@@ -10,7 +10,7 @@ import Home from '@/ui/sections/frame/home';
 import Personas from '@/ui/sections/configure/personas';
 import { NavZone } from '@/ui/shell/NavZone';
 import { WizardBar } from '@/ui/shell/WizardBar';
-import { SECTIONS } from '@/ui/zones/registry';
+import { LEGACY_SECTIONS, SECTIONS } from '@/ui/zones/registry';
 import { loadCase } from '../../helpers/pdc';
 
 beforeEach(() => { loadCase('golden'); });
@@ -22,7 +22,7 @@ const stored = () => (doc().MENU_STRUCTURES ?? []) as MenuStructure[];
 const open = (tab: RegExp) => { render(<Personas />); fireEvent.click(within(screen.getByRole('tablist', { name: 'Persona management views' })).getByRole('tab', { name: tab })); };
 const pick = (label: string | RegExp, value: string) => fireEvent.change(screen.getByRole('combobox', { name: label }), { target: { value } });
 const undo = () => act(() => { appStore().undo(); });
-const all = () => SECTIONS.map((s) => s.id);
+const all = () => LEGACY_SECTIONS.map((s) => s.id);
 
 describe('🧩 Section assignment, as in the legacy tab', () => {
   it('one persona picker on top, then two pill sub-tabs: its sections and its guided sequence', () => {
