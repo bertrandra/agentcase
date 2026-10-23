@@ -4,14 +4,14 @@ Every visual value of the app (colour, font, size, weight, line height, radius, 
 **design token**. The default theme is the legacy v18.13 look, value for value: switching to the token set changed no pixel
 (`tools/ui-parity.mjs`, the legacy-value guards and a screenshot comparison of every section).
 
-This page covers steps T1 (the tokens) and T2 (display modes, §6) of the configurable-theme programme:
+This page covers the configurable-theme programme: T1 (the tokens), T3 (axes, §6), T2 (display modes, §7), T4 + T5 (the theme library and the Brand & theme screen, §8):
 
 | Step | Scope | What it changes |
 |---|---|---|
 | **T1** (done) | the token set; no literal outside the token files | nothing visible |
 | **T3** (done, §6) | shapes, density, typography, box style; `Field*` controls with variants | token values, plus the new controls |
 | **T2** (done) | dark mode, contrast levels, chart palettes, colour-blind option, reduced motion, per-user preference (§7) | token **values** only, plus the Display control of the top bar |
-| T4 | "Brand & theme" screen: presets, live preview, logo, palette from logo, import / export; theme stored in the case and applied to the HTML snapshot, the report and the Excel workbooks | token values |
+| **T4 + T5** (done, §8) | theme library in the case (7 built-ins, own themes), "Brand & theme" screen with live preview, `?theme=<n>` links, customer logo; the theme reaches the HTML snapshot, the report and the Excel workbooks (palette from logo: not done) | token values, inline on `<html>` |
 
 ## 1. Where the tokens live
 
@@ -317,3 +317,131 @@ viewer's system. The report and the Excel workbooks are always light.
   `displayTheme(spec, base)`; the CSS side needs the same: a preset must also emit its dark / contrast blocks (run `modesCss()` on the
   preset, or write the computed `displayTheme()` values as inline custom properties on `<html>`). A preset's brand colours must be
   re-checked by the contrast test (run it on the preset table). The exports already read the base theme (`printTok()` / `argb()`).
+
+## 8. Theme library and brand (T4 + T5)
+
+A case carries a **theme library**: seven built-in themes shipped with the app and the themes the user creates. The active theme paints the
+app, the HTML snapshot, the HTML report and the Excel workbooks for everyone who opens the case; the display (light / dark, contrast,
+colour-blind charts, motion) stays each viewer's own choice (§7.5). The default theme, **1 · Capgemini**, is the look of §1-§7 token for token:
+it has no override at all, writes nothing on `<html>`, and ui-parity is unchanged.
+
+### 8.1 The model (`domain/theme/themeDef.ts`, `derive.ts`)
+
+`ThemeDef = { seq, id, name, builtin, diagnostic?, description?, colours, axes }`:
+
+| Field | Content |
+|---|---|
+| `seq` | stable sequence id, unique in the case and never reused: built-ins 1-7, user themes from 100 up (`THEME_SEQ` keeps the last one issued) |
+| `colours` | partial: a **scale anchor** (`primary`, `secondary`, `info`, `teal`, `success`, `warning`, `danger`, `neutral`, `slate`) or a **role** (`ROLE_GROUPS`: surfaces `bg` / `surface` / `surface-raised` / `line-strong`, header gradient and text, KPI bar, sidebar, `selected`, table head / stripe, `ink` / `text-heading` / `text-link` / `focus`, the business colours `automation` / `glass-ceiling` / `human-supervision`, `chart-cat-1..8`) |
+| `axes` | partial `ThemeAxes` (§6); fonts are the typography axes (no separate font field) |
+
+**Scale derivation** (`familyFrom(family, anchor)`): the family is re-derived from its **default steps**, so the legacy near-duplicates keep their
+relationships. Each step's OKLab lightness goes through a monotone map that puts the anchor step on the anchor's lightness (steps lighter than
+the anchor step are spread over [L(anchor), 1], darker ones over [0, L(anchor)]); its hue turns by the anchor's hue shift and its chroma scales
+by the anchor's chroma ratio (an achromatic family such as `neutral` takes the anchor's chroma and hue); the result is gamut-mapped
+(`fromOklch`). The anchor step is the anchor colour exactly; white and black stay white and black; the steps stay ordered by lightness
+(`tests/domain/theme-library.test.ts`). The translucent steps of a re-derived family are re-made on their new base. A theme with any colour also
+points `focus-header` at `{header-text}` (the legacy brand-blue ring on the blue header is 1:1; §7.4).
+
+`themeOverrides(def)` = the changed tokens only (empty for Capgemini); `themeBase(def)` = THEME_DEFAULT + overrides + `axisTokens(axes)` (the
+very `THEME_DEFAULT` object for Capgemini).
+
+### 8.2 Display modes of a theme and the run-time mechanism
+
+`themedDisplay(spec, def)` (`themedDisplay.ts`) = `displayTheme(spec, themeBase(def))` (§7: the theme's own scales re-ranked for dark and the
+contrast levels), then: the dedicated role values of dark / enhanced, chosen for the default blue, **turn to the theme's hue** (brand-tinted
+roles by the primary anchor's hue shift, surfaces and lines by the slate anchor's); a chrome background the theme sets (header, KPI bar,
+table head, selected) is deepened to L ≤ .40 in dark and darkened by a fifth at light enhanced; business colours, links, focus and chart
+series it sets are lifted to L ≥ .78 / .72 in dark standard. **High contrast stays black and white** for every theme; the colour-blind series
+are not touched.
+
+**Applying a theme (chosen mechanism: inline custom properties).** `ui/brand/ThemeRuntime.tsx` (in the shell) resolves the theme in effect
+(the `?theme=` link's, else the case's active one) and, on every theme or display change, `applyAppTheme()`:
+1. `setActiveThemeDef(def)` (`domain/theme/active.ts`): `setActiveTheme(overrides + axis tokens)` for `tok()`, the charts and the exports
+   (`printTok()` / `argb()`: the Excel workbooks and the HTML report follow the theme, still light), and `setDisplayTheme(displayFor(spec))`;
+   the display store calls `displayFor()` too, so a display change is computed over the theme in effect;
+2. writes the 286 colour tokens (`COLOUR_TOKENS`) of base + display as **inline custom properties on `<html>`** (`themeProps()`): inline beats
+   the generated display blocks of tokens.css, so the set already carries the display; the default theme (and a theme with axes only) removes
+   them all and the `style` attribute, so the generated CSS paints the app exactly as before;
+3. `applyThemeAxes(def.axes)` on `<html>` (the `data-ac-*` attributes of §6);
+4. bumps the display version, so the section host re-mounts and chart.js canvases are rebuilt with the new `tok()` values (not while the
+   Brand & theme screen is shown: its controls must not re-mount under the pointer, and its preview uses no canvas).
+
+The alternative (a generated per-theme `<style>` with one block per display) was not chosen: it duplicates the `modesCss()` generation at run
+time for every theme, and the inline set is recomputed in well under a frame.
+
+**Preview container** (`applyPreviewTheme()`): **every** token of base + display inline on the container (`allTokenProps()`), so the preview is
+independent of the app's own theme and axes; `color-scheme` follows its Light / Dark toggle; the `Field*` controls inside follow the previewed
+axes through `ThemeAxesContext` (`useThemeAxis()` reads the context first, `<html>` otherwise).
+
+### 8.3 The built-in catalogue (`catalogue.ts`)
+
+Protected: they can be activated, duplicated and exported, never edited or deleted. Generic colour themes: no company logo, typeface or
+trademark styling.
+
+| seq | Name | Key colours |
+|---|---|---|
+| 1 | Capgemini | the default look (brand blue #0058AB, navy header / KPI bar); no override |
+| 2 | Orange | primary #B84A00, charcoal header #2B2B2B → #111111, orange KPI bar #B84A00 → #8A3600, charcoal table head, grey slate #52555B, white surfaces |
+| 3 | Sprint | green primary / header / KPI bar #16693A → #0B3D20 |
+| 4 | Rainbow | **diagnostic**: header red, KPI bar orange (black text), sidebar yellow, group bar lime, selected teal, page cyan, section card lavender, primary violet (callouts, buttons, links, key figures), table head blue, stripes pink, input / card borders green, focus magenta, chart series red → pink; a legend card (zone → token → colour) on the screen |
+| 5 | Sepia | brown primary #7A4A24, brown ink #3B2E22, warm slate #5E5040, paper page #F3EAD7 / surfaces #FBF6EA / #FFFAF0, brown header, low-saturation chart series |
+| 6 | Dark red | burgundy primary / header / KPI bar #8B1A2B → #3D0A12 |
+| 7 | Purple | violet primary / header / KPI bar #5B2A9E → #25104A |
+
+`tests/ui/theme-catalogue.test.ts` runs the §7.4 pairs on every built-in except Rainbow in light / dark x standard / enhanced / high (all
+pass); Rainbow is checked for readable text (4.5:1) on each zone it paints and for one distinct colour per zone. The business colours keep
+their meaning in every built-in (the Dark red primary sits close to the glass-ceiling brick by design of the brief; the two never share a
+role). A real-browser axe run (colour contrast included) over every section of the golden case under Orange, Sprint, Sepia, Dark red and
+Purple, light and dark: see the T4/T5 changelog entry.
+
+### 8.4 The library in the case (`library.ts`, `controllers/themes.ts`)
+
+Document keys (common to all products of a portfolio): `THEMES` (user themes `{ seq, name, description?, colours, axes }`), `ACTIVE_THEME`
+(absent = 1), `THEME_SEQ` (last id issued). A default case has none of them, so older files and the default case are unchanged. Everything
+read from a document, a file or a sheet goes through `parseTheme()`: only known colour keys with `#rgb` / `#rrggbb` values, only `AXES`
+values (`isAxisValue`), other keys dropped with a note; a built-in or duplicate `seq` is dropped.
+
+Undoable commands: `theme.add` (from the default look), `theme.duplicate` (any theme, "<name> copy"), `theme.import`, `theme.rename`,
+`theme.update` (a colour / axis value sets the override, `null` or the axis default removes it; successive edits of one control coalesce into
+one step, a reset is a step of its own), `theme.delete` (not a built-in; deleting the active theme falls back to 1), `theme.activate`
+(activating 1 removes the key). Names are made unique ("Purple 2").
+
+### 8.5 Files and workbooks
+
+- **Case JSON / HTML snapshot**: the keys travel with the case; the snapshot opens in the case's theme (and honours `?theme=`).
+- **Theme files** (`themeFile.ts`): `{ "_schema": "agentcase.themes.v1", "themes": [ { seq, name, description?, colours, axes } ] }`, one theme
+  (Export) or the user themes (Export library); importing validates every value, ignores unknown keys with a note, caps the file at 256 KB and
+  50 themes, and gives each theme a fresh sequence id.
+- **Parameters workbook**: sheet **Themes** (`Theme Seq`, `Theme Name`, `Setting`, `Value`; settings `name`, `description`, `colour:<key>`,
+  `axis:<axis>`, plus the rows "Active theme" and "Last sequence id"), written only when the case has a user theme or another active theme
+  than 1: a default case exports the legacy workbook unchanged. A workbook without the sheet leaves the case's library as it is.
+
+### 8.6 Customer logo (client presentations)
+
+Set in **Engagement context**, next to the customer name: PNG, JPEG or SVG up to 200 KB. Only a PNG / JPEG base64 data URL is stored
+(`CUSTOMER_LOGO = { src, backdrop: none | pill, hidden }`); an SVG is drawn into a canvas and stored as PNG (an `<img>` runs no SVG script and
+only the pixels reach the case). Commands `case.setLogo`, `case.clearLogo`, `case.setLogoOptions` (undoable). Shown next to
+"AgentCase for <customer>" in the header (≈ the title's cap height, alt "<customer> logo"), optionally on a white pill (for dark headers and
+dark mode), hidden for a presentation without losing it; above the title of the HTML report (single case and portfolio); in the HTML snapshot
+(with the case); on the ROI sheet of the results workbook (48 px high, its own aspect ratio). Not in the parameters workbook (an image does not
+fit a cell).
+
+### 8.7 `?theme=<seq>` links
+
+At boot (`initThemeLink()`, main.tsx) a `?theme=<n>` query is a **view override**: the page shows that theme without changing the case (no
+command, no history step, nothing saved). A notice "Viewing theme N · name from the link." offers **Make it the case theme** (an undoable
+`theme.activate`) and **Clear** (drops the override and the query). An unknown or malformed number shows a message and is ignored. The
+Brand & theme screen shows the `?theme=<seq>` of the selected theme with a Copy button. While the override is on, the exports use the viewed
+theme.
+
+### 8.8 The 🎨 Brand & theme screen (`ui/sections/configure/brand-theme/`)
+
+An app section (no legacy equivalent: outside the legacy catalogue and the legacy-shaped workbook sheets, `app: true` in sectionCatalog.json),
+in CONFIGURE (Business journey: Reference), shown to Admin, Builder, Business journey and Advanced. Left: the library (number, name, Built-in /
+Diagnostic / Active badges; Activate, Duplicate, Export, Delete, Rename; the share link; New theme, Import…, Export library). Centre: the
+editor of the selected theme, read-only for a built-in ("Duplicate to edit"): colours by group with a picker, the value, a **live contrast
+badge** (AAA / AA / AA large / Fail with the ratio of the pair the colour paints, `themeChecks.ts`) and a warning line per failing pair (a
+warning, not a block), a summary of failing pairs, then the axes built from `AXES`. Right: the live preview (header with logo and title, KPI
+bar, navigation, section card with a callout, key figures, a table, an SVG chart of the 8 series, a slider, a choice, a toggle, a text field and
+buttons) with its own Light / Dark toggle.

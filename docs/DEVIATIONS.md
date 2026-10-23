@@ -21,6 +21,7 @@ Figures are the golden fixture unless stated. "Before" = the build at the start 
 | DEV-ARCH-CONTENT | the two architecture sections describe the TypeScript build |
 | DEV-DEPS-ZONES | the Section Dependencies page shows the graph generated from the code, not the authored registry |
 | DEV-MENU-STRUCTURES | several menu structures; each persona picks one; Business journey persona |
+| DEV-BRAND-THEME | theme library, Brand & theme screen (an app section), `?theme=` links, customer logo |
 
 ## DEV-HEADLINE-OWNER — one economics headline
 
@@ -161,3 +162,24 @@ Requested change (unreleased). The legacy file has ONE global menu structure: `G
 - Parameters workbook: sheets "Menu Structures" and "Menu Structure Sections", written only when the case stores a structure (created, or a built-in once edited; an unedited built-in comes with the app), and a "Menu structure" column on Personas, written only when a persona uses another structure than Standard. A case on Standard only exports the legacy workbook unchanged; older workbooks import as before (the case keeps its structures and each persona its structure).
 - Test changed on purpose: `tests/helpers/excelParams.ts` `freshDoc()` (the document the legacy imports are replayed against) drops the shipped Business journey persona, which the legacy pristine state never had (a legacy "Persona Sections" sheet replaces every menu, so the persona would otherwise show up as a touched key).
 - Files: `domain/nav/structures.ts`, `domain/nav/businessJourney.json`, `controllers/menuStructures.ts`, `controllers/menuTarget.ts`, `controllers/{pdcPersonas,navLayout}.ts`, `ui/zones/navModel.ts`, `ui/sections/configure/personas/*`, `store/persistence/excel/params/sheets/{menuStructures,personas}.ts`.
+
+## DEV-BRAND-THEME — theme library, Brand & theme screen, customer logo
+
+Requested change (unreleased, T4 + T5 of the configurable theme). The legacy file has one look. The new build stores a **theme library** in the case
+(`THEMES`, `ACTIVE_THEME`, `THEME_SEQ`) and a **customer logo** (`CUSTOMER_LOGO`); none of these keys exists in a default case, so older files and the
+default case load, display and save exactly as before (the default theme writes nothing on the page: ui-parity unchanged). Details: docs/THEME.md §8.
+
+- New section **🎨 Brand & theme** (CONFIGURE, groupSeq 30; Business journey: Reference). It has no legacy equivalent, so it is an **app section**
+  (`"app": true` in `ui/zones/data/sectionCatalog.json`): like the Portfolio sections it is not in `LEGACY_SECTIONS`, hence not on the "Sections"
+  sheet of the parameters workbook and not in the case's `PERSONA_SECTIONS` (the default case is unchanged); the navigation adds it to the personas
+  its `personas` field names (Admin, Builder, Business journey; Advanced sees every section). It cannot be removed from those personas in Persona
+  management in this version. Tests that compare the navigation with the legacy page leave app sections out (`tests/domain/nav.test.ts`,
+  `tests/ui/nav.test.tsx`); the catalogue counts are 86 sections (79 + 6 Portfolio + 1 app section), 19 `S-static`.
+- Parameters workbook: sheet **Themes**, written only when the case has a user theme or another active theme than 1; the logo is not carried.
+- Engagement context: a "Customer logo" card (upload, backdrop, hide, remove). The header shows the logo next to "AgentCase for <customer>" only when
+  one is set; the HTML report shows it above the title only when one is set (otherwise byte-identical).
+- `?theme=<n>` in the address shows a theme without changing the case (a notice offers to adopt or clear it).
+- Files: `domain/theme/{themeDef,derive,themedDisplay,catalogue,library,themeFile,themeProps,themeChecks,active,logo}.ts`, `controllers/{themes,brand}.ts`,
+  `ui/brand/*`, `ui/sections/configure/brand-theme/*`, `ui/sections/frame/engagement-context/LogoPanel.tsx`, `store/persistence/excel/params/sheets/themes.ts`,
+  `store/persistence/excel/results/logo.ts`, `store/persistence/report/{data,render}.ts`.
+

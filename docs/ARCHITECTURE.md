@@ -200,6 +200,15 @@ attributes on `<html>` (tokens.css) and given to `tok()` through `setDisplayThem
 (localStorage `agentcase.display`, never in the case, never undoable; "auto" follows `prefers-color-scheme` / `prefers-contrast`); a change
 re-mounts the section host so chart.js canvases are rebuilt. The printed exports (Excel, HTML report) read the base theme (`printTok()`,
 `argb()`): always light. `tests/ui/theme-contrast.test.ts` checks every text / background role pair in each mode x level (docs/THEME.md §7).
+**Theme library and brand (T4 + T5).** A case carries a theme library (`domain/theme/library.ts`: seven protected built-ins in
+`catalogue.ts`, the user themes in `THEMES`, the active one in `ACTIVE_THEME`, sequence ids that are never reused; commands in
+`controllers/themes.ts`) and a customer logo (`CUSTOMER_LOGO`, `controllers/brand.ts`). A theme is scale anchors, roles and axes;
+`derive.ts` re-derives a whole scale from an anchor in OKLab, `themedDisplay.ts` gives it its dark and contrast variants. At run time
+`ui/brand/ThemeRuntime.tsx` writes the derived colour tokens (display included) as inline custom properties on `<html>` (none for the
+default theme: the generated CSS paints the app as before), calls `setActiveThemeDef()` for `tok()` and the exports, and applies the axes.
+A `?theme=<seq>` link is a view override (`ui/brand/themeView.ts`), never a change to the case. The 🎨 Brand & theme screen
+(`ui/sections/configure/brand-theme/`) is an *app section*: no legacy equivalent, kept out of the legacy-shaped catalogue and workbook sheets
+(`APP_SECTIONS` in `ui/zones/registry.ts`, added to the personas it names by the navigation). Details: docs/THEME.md §8.
 
 **Navigation comes from the document**, not from code tables: `ui/zones/navModel.ts` builds the sidebar from `doc.PERSONAS`,
 `PERSONA_SECTIONS`, `PERSONA_SECTION_ORDER`, `GROUPS`, `sectionGroups`, `dynamicSections` and the guided sequences, falling back to the

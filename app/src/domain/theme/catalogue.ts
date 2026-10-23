@@ -12,8 +12,8 @@ const def = (seq: number, id: string, name: string, description: string, colours
 export const BUILTIN_THEMES: readonly ThemeDef[] = Object.freeze([
   def(1, 'capgemini', 'Capgemini', 'The default look: brand blue, navy header and KPI bar.', {}),
   def(2, 'orange', 'Orange', 'Orange accents on a charcoal header, white surfaces.', {
-    primary: '#b84a00', slate: '#5f6166', 'header-start': '#2b2b2b', 'header-end': '#111111', 'kpibar-start': '#b84a00', 'kpibar-end': '#8a3600',
-    'sidebar-group-text': '#1f1f1f', 'table-head-bg': '#2b2b2b', 'chart-cat-1': '#b84a00', 'chart-cat-6': '#5f6166',
+    primary: '#b84a00', slate: '#52555b', 'header-start': '#2b2b2b', 'header-end': '#111111', 'kpibar-start': '#b84a00', 'kpibar-end': '#8a3600',
+    'sidebar-group-text': '#1f1f1f', 'table-head-bg': '#2b2b2b', 'chart-cat-1': '#b84a00', 'chart-cat-6': '#52555b',
   }),
   def(3, 'sprint', 'Sprint', 'Green brand colour on the header, the KPI bar and the table heads.', {
     primary: '#16693a', 'header-start': '#16693a', 'header-end': '#0b3d20', 'kpibar-start': '#16693a', 'kpibar-end': '#0f5129', 'sidebar-group-text': '#0b3d20',

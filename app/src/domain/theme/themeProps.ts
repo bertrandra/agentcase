@@ -21,12 +21,9 @@ export const COLOUR_TOKENS: readonly TokenName[] = [
 
 const css = (v: string): string => v.replace(/\{([a-z0-9-]+)\}/g, 'var(--ac-$1)');
 
-/**
- * `--ac-<name>` → value of every colour token of `def` under `spec`; null when the theme sets no colour, unless `always` (a preview container
- * must not inherit the colours of the theme the app is in).
- */
-export function themeProps(def: Pick<ThemeDef, 'colours' | 'axes'>, spec: DisplaySpec, always = false): Record<string, string> | null {
-  if (!always && !Object.keys(def.colours).length) return null;
+/** `--ac-<name>` → value of every colour token of `def` under `spec`; null when the theme sets no colour (the generated CSS applies). */
+export function themeProps(def: Pick<ThemeDef, 'colours' | 'axes'>, spec: DisplaySpec): Record<string, string> | null {
+  if (!Object.keys(def.colours).length) return null;
   const base = themeBase(def), t = { ...base, ...themedDisplay(spec, def, base) } as ThemeValues;
   return Object.fromEntries(COLOUR_TOKENS.map((n) => [`--ac-${n}`, css(t[n])]));
 }
