@@ -1,6 +1,7 @@
 import { existsSync, readdirSync, readFileSync } from 'node:fs';
 import { produce } from 'immer';
 import { LEGACY_SECTIONS } from '@/ui/zones/registry';
+import { BUILTIN_PERSONAS } from '@/domain/nav/structures';
 import { makeDefaultDoc } from '@/store/instance';
 import { applyParamsPatch } from '@/store/persistence/excel/params/apply';
 import type { ParamsEnv } from '@/store/persistence/excel/params';
@@ -21,7 +22,16 @@ export const PRISTINE = (): { state: Record<string, unknown>; exp: Record<string
 
 /** The document after an import: the patch applied the way the command does (replace keys, re-fit, glass-ceiling slider). */
 export const applyTo = (base: Doc, patch: Partial<Doc>): Doc => produce(base, (d) => applyParamsPatch(d as Doc, patch));
-export const freshDoc = (): Doc => makeDefaultDoc();
+/**
+ * The default case as the legacy app shipped it (its pristine state is what the legacy imports ran against): without the built-in personas added
+ * since — Business journey (DEV-MENU-STRUCTURES) — whose menu a legacy "Persona Sections" sheet would otherwise drop, a difference of the base, not of the import.
+ */
+export const freshDoc = (): Doc => {
+  const d = makeDefaultDoc(), ids = new Set(BUILTIN_PERSONAS.map((p) => p.id));
+  d.PERSONAS = (d.PERSONAS as { id: string }[]).filter((p) => !ids.has(p.id));
+  d.PERSONA_SECTIONS = Object.fromEntries(Object.entries(d.PERSONA_SECTIONS as Record<string, string[]>).filter(([k]) => !ids.has(k)));
+  return d;
+};
 /** The document the legacy import ran against: the pristine case, or (recipes) the recipe's base state laid over it. */
 export const importTarget = (leg: LegacyImport): Doc => ({ ...freshDoc(), ...structuredClone(leg.base ?? {}) }) as Doc;
 

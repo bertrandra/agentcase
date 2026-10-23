@@ -74,13 +74,13 @@ describe('menu structures in Persona management', () => {
   it('Duplicate creates a structure and selects it; a built-in or used structure cannot be deleted', () => {
     open(/Menu groups/);
     const bar = () => within(screen.getByRole('group', { name: 'Menu structure' }));
-    expect(bar().getByRole('button', { name: '✕ Delete' }).hasAttribute('disabled')).toBe(true);   // Standard
-    fireEvent.click(bar().getByRole('button', { name: '⎘ Duplicate' }));
+    expect(bar().getByRole('button', { name: '✕ Delete structure' }).hasAttribute('disabled')).toBe(true);   // Standard
+    fireEvent.click(bar().getByRole('button', { name: '⎘ Duplicate structure' }));
     fireEvent.change(bar().getByLabelText('Menu structure name'), { target: { value: 'Lean' } });
     fireEvent.click(bar().getByRole('button', { name: '✓ Create' }));
     expect(stored().map((s) => s.id)).toEqual(['lean']);
     expect((screen.getByRole('combobox', { name: 'Menu structure' }) as HTMLSelectElement).value).toBe('lean');
-    fireEvent.click(bar().getByRole('button', { name: '✕ Delete' }));
+    fireEvent.click(bar().getByRole('button', { name: '✕ Delete structure' }));
     fireEvent.click(bar().getByRole('button', { name: '✓ Confirm' }));
     expect(stored()).toEqual([]);
   });

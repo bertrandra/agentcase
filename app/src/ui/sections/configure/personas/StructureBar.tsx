@@ -33,9 +33,9 @@ export function StructureBar({ value, onChange }: { value: string; onChange: (id
             : mode === 'delete' ? <><span style={{ color: '#8F3237' }}>Delete “{cur.label}”?</span><button type="button" className="ac-btn" onClick={() => { deleteStructure(cur.id); setMode(null); onChange(STANDARD_STRUCTURE); }}>✓ Confirm</button>
               <button type="button" className="ac-btn" onClick={() => setMode(null)}>Cancel</button></>
               : <>
-                <button type="button" className="ac-btn" title="Create a new structure that starts as a copy of this one" onClick={() => open('new')}>⎘ Duplicate</button>
-                <button type="button" className="ac-btn" disabled={cur.id === STANDARD_STRUCTURE} title={cur.id === STANDARD_STRUCTURE ? 'The standard structure keeps its name' : undefined} onClick={() => open('rename')}>✎ Rename</button>
-                <button type="button" className="ac-btn" disabled={!!blocked} title={blocked || undefined} onClick={() => open('delete')}>✕ Delete</button>
+                <button type="button" className="ac-btn" title="Create a new structure that starts as a copy of this one" onClick={() => open('new')}>⎘ Duplicate structure</button>
+                <button type="button" className="ac-btn" disabled={cur.id === STANDARD_STRUCTURE} title={cur.id === STANDARD_STRUCTURE ? 'The standard structure keeps its name' : undefined} onClick={() => open('rename')}>✎ Rename structure</button>
+                <button type="button" className="ac-btn" disabled={!!blocked} title={blocked || undefined} onClick={() => open('delete')}>✕ Delete structure</button>
               </>}
       </div>
       <p style={{ margin: '.4rem 0 0' }}>Edits on this tab change the <strong>{cur.label}</strong> structure only. Used by: {users.length ? users.map((p) => p.label).join(', ') : 'no persona yet (pick it for a persona in 🧩 Section assignment)'}.</p>
