@@ -189,6 +189,11 @@ and report exports can read it); `ui/theme/tokens.css` is generated from it (`np
 CSS, inline styles and SVG attributes use `var(--ac-*)`; chart.js, colour arithmetic and the domain read-outs use `tok()`; Excel uses
 `argb()`. `setActiveTheme()` plus the custom properties on `:root` is the single switch a theme (dark mode, presets, a theme stored in the
 case) needs; `tests/ui/no-hardcoded-style.test.ts` keeps literals out.
+**Theme axes (T3)** — shape, box style, density, typography and control variants — are closed value lists in `domain/theme/axes.ts`
+(token sets in `variants.ts`, `typography.ts`; the new defaults in `layout.ts`). Each value is a `data-ac-<axis>` attribute on `:root` (or on
+a preview container) selecting a block of the generated `ui/theme/axes.css`; `axisTokens()` gives the same values to `setActiveTheme()`.
+`ui/themeAxes.ts` writes and reads the attributes (`applyThemeAxes`, `useThemeAxis`); the shared `ui/widgets/field/Field*` controls read the
+three control axes and render a slider, stepper, segmented / radio group or switch that dispatches the same command as the native control.
 
 **Navigation comes from the document**, not from code tables: `ui/zones/navModel.ts` builds the sidebar from `doc.PERSONAS`,
 `PERSONA_SECTIONS`, `PERSONA_SECTION_ORDER`, `GROUPS`, `sectionGroups`, `dynamicSections` and the guided sequences, falling back to the
