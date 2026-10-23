@@ -385,10 +385,11 @@
   --ac-space-field: 1.25rem;
   --ac-space-row: 12px;
   --ac-box-border: var(--ac-border-thin);
-  --ac-box-shadow: var(--ac-shadow-none);
+  --ac-shadow-box: var(--ac-shadow-none);
   --ac-box-bg: var(--ac-surface-raised);
   --ac-callout-rail: var(--ac-border-rail);
   --ac-radius-button: var(--ac-radius-md);
+  --ac-radius-pill: 999px;
   --ac-border-control: var(--ac-border-thin);
   --ac-font-size-figure: var(--ac-font-size-4xl);
   --ac-font-size-kpi: var(--ac-font-size-2xl);

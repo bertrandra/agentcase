@@ -37,7 +37,7 @@ export const SHADOW = {
 export const BOX = {
   flat: { 'box-border': '0px', 'box-bg': '{surface-muted}' },
   outline: {},
-  elevated: { 'box-border': '0px', 'box-shadow': '{shadow-card}' },
+  elevated: { 'box-border': '0px', 'shadow-box': '{shadow-card}' },
 } satisfies Record<string, TokenSet>;
 
 /** Callouts: the legacy coloured left bar, or the tinted fill alone (the bar becomes the thin border). */
