@@ -15,7 +15,7 @@ All notable changes to AgentCase, newest first. Product version from v19.0.0 = `
 
 When releasing, follow [docs/BUMP_PROCEDURE.md](docs/BUMP_PROCEDURE.md) (§7 for the legacy file) and add the new version at the top.
 
-## [Unreleased] — Theme axes and control variants (T3 of the configurable theme)
+## [v20.7.0] 2026-10-23 — Theme axes and control variants (T3 of the configurable theme)
 
 ### New
 - **Theme axes** (`app/src/domain/theme/axes.ts`, docs/THEME.md §6): corner radius (square / soft / round), buttons (follow the radius / pill), border width (none / thin / strong), shadows (none / light / floating), box style of cards, KPI tiles and charts (flat / outline / elevated), callouts (left accent bar / tinted fill), density (compact / comfortable / spacious, with bigger key figures), body font, heading font (Ubuntu or system stacks: System UI, Serif), numbers (body / tabular figures / monospace numbers), size scale (compact / normal / large), display weight (light / bold). Each value is a `data-ac-<axis>` attribute on `:root` selecting a block of the generated `app/src/ui/theme/axes.css` (`npm run theme:gen` / `theme:check`); `axisTokens()` feeds `setActiveTheme()`. The defaults are today's look; a theme (T4) only sets values on a `ThemeAxes` object and calls `applyThemeAxes()`.
