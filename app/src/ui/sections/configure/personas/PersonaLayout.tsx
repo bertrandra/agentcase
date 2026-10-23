@@ -9,10 +9,11 @@ import { useNavModel } from '@/ui/zones/navModel';
 import { Board } from './Board';
 import { LivePreview } from './LivePreview';
 
-/** The per-persona board: every group's sections, the persona's ones highlighted. Double-click assigns / removes; drag or arrows reorder for this persona only. */
+/** The per-persona board (in the persona's menu structure): every group's sections, the persona's ones highlighted. Double-click assigns / removes; drag or arrows reorder for this persona only. */
 export function PersonaLayout({ personas, lists }: { personas: Persona[]; lists: Record<string, string[]> }) {
-  const { sections, groups, colors, order } = useNavModel(), editable = personasByOrder(personas).filter((p) => !p.protected), [sel, setSel] = useState(''), [pending, setPending] = useState<Pending | null>(null);
+  const { order, view, structureOfPersona } = useNavModel(), editable = personasByOrder(personas).filter((p) => !p.protected), [sel, setSel] = useState(''), [pending, setPending] = useState<Pending | null>(null);
   const pid = editable.some((p) => p.id === sel) ? sel : editable[0]?.id ?? '', assigned = lists[pid] ?? [], on = (id: string) => assigned.includes(id);
+  const { sections, groups, colors } = view(structureOfPersona(pid));   // the board follows the persona's own menu structure
   const label = (id: string) => sections.find((s) => s.id === id)?.label ?? id;
   const cols = groupsByOrder(groups).map((group) => ({ group, cards: sections.filter((s) => s.group === group.id).sort(bySeq(pid, order)) }));
   const valid = pending && on(pending.id) && sections.find((s) => s.id === pending.id)?.group === pending.group ? pending : null;

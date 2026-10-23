@@ -1,18 +1,21 @@
 import { useEffect } from 'react';
 import { flatten } from '@/domain/nav/sequence';
 import { flattenFast } from '@/domain/nav/fastPath';
+import { useIsMulti } from '@/store/portfolioHooks';
 import { rescueFocus } from '../focusRescue';
 import { uiStore, useUi, wizExit, wizStart } from '../uiState';
 import { useNavModel } from '../zones/navModel';
+import { isPortfolioSection } from '../zones/portfolioNav';
 import { WizardActive } from './WizardActive';
 
 /**
  * The guided sequence of the active persona (legacy wizBar): while idle a banner offers to start it, once started the step bar walks it.
- * The walk ends when the persona changes or the sequence is switched off / emptied (also by an undo).
+ * The walk ends when the persona changes or the sequence is switched off / emptied (also by an undo). With one product the Portfolio sections are
+ * not walked (a sequence may hold a multi-product step: it only appears from two products on).
  */
 export function WizardBar() {
-  const { persona, seq, sections, fastPath } = useNavModel(), walking = useUi((s) => s.wiz.active);
-  const stops = seq ? flattenFast(seq, sections, fastPath) : [];
+  const { persona, seq, sections, fastPath } = useNavModel(), walking = useUi((s) => s.wiz.active), multi = useIsMulti();
+  const stops = seq ? flattenFast(seq, sections, fastPath).filter((st) => multi || !isPortfolioSection(st.sec)) : [];
   useEffect(() => { wizExit(); }, [persona]);
   useEffect(() => { if (!stops.length && uiStore.getState().wiz.active) wizExit(); }, [stops.length]);
   if (seq && !stops.length && fastPath && flatten(seq).length) return <div className="ac-wiz ac-wiz-idle" role="status">🧭 Fast Path is on and this sequence has no minimum-viable-path sections — turn Fast Path off to run it.</div>;

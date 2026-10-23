@@ -9,13 +9,14 @@ export function usePreviewPersona(personas: Persona[], current: string): [string
   return [personas.some((p) => p.id === sel) ? sel : current, setSel];
 }
 
-interface Props { persona: Persona | undefined; preview: MenuPreview; colors: Record<string, string>; pending: boolean }
+/** `mark`: a section to point out (the Sections tab's selected row) without any move pending. */
+interface Props { persona: Persona | undefined; preview: MenuPreview; colors: Record<string, string>; pending: boolean; mark?: string }
 
 /**
  * Live preview of the persona's sidebar, from the board's current (and, while a card is dragged, would-be) state.
  * Read only and non-interactive: plain headings and list items, no buttons or links, no write path imported.
  */
-export function LivePreview({ persona, preview, colors, pending }: Props) {
+export function LivePreview({ persona, preview, colors, pending, mark }: Props) {
   const name = persona?.label ?? 'persona', count = preview.nav.reduce((n, g) => n + g.sections.length, 0);
   return (
     <section className="ac-npreview" aria-label={`Live preview of the ${name} menu`}>
@@ -25,7 +26,7 @@ export function LivePreview({ persona, preview, colors, pending }: Props) {
       {preview.nav.map(({ group, sections }) => (
         <div key={group.id} data-pgroup={group.id}>
           <h4 style={{ boxShadow: `inset 4px 0 0 ${groupColor(colors, group.id)}`, paddingLeft: 10 }}>{group.label}</h4>
-          <ul>{sections.map((s) => <li key={s.id} data-psection={s.id} className={s.id === preview.moved ? 'is-moving' : ''}>{s.label}{s.id === preview.moved ? ' (moving)' : ''}</li>)}</ul>
+          <ul>{sections.map((s) => <li key={s.id} data-psection={s.id} className={s.id === preview.moved || s.id === mark ? 'is-moving' : ''}>{s.label}{s.id === preview.moved ? ' (moving)' : s.id === mark ? ' (selected)' : ''}</li>)}</ul>
         </div>
       ))}
     </section>

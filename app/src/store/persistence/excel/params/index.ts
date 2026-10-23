@@ -17,7 +17,7 @@ export function paramsFileName(scope: ParamsScope, now: Date = new Date(), ext: 
   return `AgentCase_${versionFileTag()}_${SCOPE_TAG[scope]}${now.toISOString().slice(0, 19).replace(/[:T]/g, '-')}.${ext}`;
 }
 
-const KEEP = ['PERSONAS', 'PERSONA_SECTIONS', 'PERSONA_SECTION_ORDER', 'GROUPS', 'GROUP_COLORS', 'sectionGroups', 'SECTION_DEPS', 'SECTION_DEPS_DESC'];
+const KEEP = ['PERSONAS', 'PERSONA_SECTIONS', 'PERSONA_SECTION_ORDER', 'GROUPS', 'GROUP_COLORS', 'sectionGroups', 'MENU_STRUCTURES', 'SECTION_DEPS', 'SECTION_DEPS_DESC'];
 /** The persona / section configuration in the app's native snapshot shape (companion file of the persona-only export). */
 export function personaConfigJson(doc: Doc, now: Date = new Date()): string {
   const cfg: Record<string, unknown> = { savedAt: now.toISOString(), currentPersona: doc.currentPersona, scope: 'persona-only' };

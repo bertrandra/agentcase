@@ -5,11 +5,11 @@ import { useNavModel } from '@/ui/zones/navModel';
 
 const hex = (c: string | undefined) => (c && /^#[0-9a-fA-F]{6}$/.test(c) ? c : '#667089');
 
-/** Menu groups: order, label, colour, section count, description (shown on the Welcome cards). A group still holding sections cannot be deleted. */
-export function GroupTable({ groups, colors }: { groups: MenuGroup[]; colors: Record<string, string> }) {
-  const SECTIONS = useNavModel().sections;
+/** Menu groups of one menu structure: order, label, colour, section count, description (shown on the Welcome cards). A group still holding sections cannot be deleted. */
+export function GroupTable({ structure }: { structure: string }) {
+  const { own: groups, colors, sections: SECTIONS } = useNavModel().view(structure), st = structure;
   const [renaming, setRenaming] = useState<string | null>(null), [text, setText] = useState(''), [pending, setPending] = useState<string | null>(null), [label, setLabel] = useState(''), [warn, setWarn] = useState('');
-  const commit = (id: string) => { renameGroup(id, text); setRenaming(null); };
+  const commit = (id: string) => { renameGroup(id, text, st); setRenaming(null); };
   const del = (g: MenuGroup) => {
     const inUse = SECTIONS.filter((s) => s.group === g.id);
     if (inUse.length) { setWarn(`Cannot delete “${g.label}” — ${inUse.length} section(s) still assigned to it (e.g. ${inUse[0]!.id}). Reassign them to another group first.`); return; }
@@ -24,14 +24,14 @@ export function GroupTable({ groups, colors }: { groups: MenuGroup[]; colors: Re
             const n = SECTIONS.filter((s) => s.group === g.id).length;
             return (
               <tr key={g.id}>
-                <td style={{ textAlign: 'center' }}><input type="number" aria-label={`Order of ${g.id}`} style={{ width: 60, textAlign: 'center' }} value={g.order} onChange={(e) => setGroupOrder(g.id, parseFloat(e.target.value))} /></td>
+                <td style={{ textAlign: 'center' }}><input type="number" aria-label={`Order of ${g.id}`} style={{ width: 60, textAlign: 'center' }} value={g.order} onChange={(e) => setGroupOrder(g.id, parseFloat(e.target.value), st)} /></td>
                 <td><code>{g.id}</code></td>
                 <td>{renaming === g.id ? <input type="text" aria-label="New group label" value={text} onChange={(e) => setText(e.target.value)} onKeyDown={(e) => { if (e.key === 'Enter') commit(g.id); if (e.key === 'Escape') setRenaming(null); }} /> : g.label}</td>
-                <td style={{ textAlign: 'center' }}><input type="color" aria-label={`Colour of ${g.id}`} value={hex(colors[g.id])} onChange={(e) => setGroupColor(g.id, e.target.value)} /></td>
+                <td style={{ textAlign: 'center' }}><input type="color" aria-label={`Colour of ${g.id}`} value={hex(colors[g.id])} onChange={(e) => setGroupColor(g.id, e.target.value, st)} /></td>
                 <td style={{ textAlign: 'center', fontWeight: 700, color: n ? '#0058AB' : '#636363' }}>{n}</td>
-                <td><input type="text" aria-label={`Description of ${g.id}`} placeholder="Shown on the 🏠 Welcome card" style={{ width: '100%', minWidth: 220 }} value={g.description ?? ''} onChange={(e) => setGroupDescription(g.id, e.target.value)} /></td>
+                <td><input type="text" aria-label={`Description of ${g.id}`} placeholder="Shown on the 🏠 Welcome card" style={{ width: '100%', minWidth: 220 }} value={g.description ?? ''} onChange={(e) => setGroupDescription(g.id, e.target.value, st)} /></td>
                 <td>{renaming === g.id ? <><button type="button" className="ac-btn" onClick={() => commit(g.id)}>✓ Save</button><button type="button" className="ac-btn" onClick={() => setRenaming(null)}>Cancel</button></>
-                  : pending === g.id ? <><span style={{ color: '#8F3237', fontSize: 11 }}>Delete “{g.label}”?</span><button type="button" className="ac-btn" onClick={() => { deleteGroup(g.id); setPending(null); }}>✓ Confirm</button><button type="button" className="ac-btn" onClick={() => setPending(null)}>Cancel</button></>
+                  : pending === g.id ? <><span style={{ color: '#8F3237', fontSize: 11 }}>Delete “{g.label}”?</span><button type="button" className="ac-btn" onClick={() => { deleteGroup(g.id, st); setPending(null); }}>✓ Confirm</button><button type="button" className="ac-btn" onClick={() => setPending(null)}>Cancel</button></>
                     : <><button type="button" className="ac-btn" onClick={() => { setText(g.label); setRenaming(g.id); }}>✎ Rename</button><button type="button" className="ac-btn" onClick={() => del(g)}>✕ Delete</button></>}</td>
               </tr>
             );
@@ -41,7 +41,7 @@ export function GroupTable({ groups, colors }: { groups: MenuGroup[]; colors: Re
       {warn && <p role="alert" style={{ color: '#8F3237' }}>{warn}</p>}
       <div className="ac-form-row">
         <label className="ac-field"><span className="ac-field-l">Add group (label)</span><input type="text" placeholder="e.g. Compliance" value={label} onChange={(e) => setLabel(e.target.value)} /></label>
-        <button type="button" className="ac-btn" onClick={() => { if (label.trim()) { addGroup(label); setLabel(''); } }}>➕ Add</button>
+        <button type="button" className="ac-btn" onClick={() => { if (label.trim()) { addGroup(label, st); setLabel(''); } }}>➕ Add</button>
       </div>
     </>
   );

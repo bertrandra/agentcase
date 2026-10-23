@@ -1,6 +1,7 @@
 /** @calc-zone workspace-config */
 export interface PersonaSeq { on: boolean; steps: { label: string; sections: string[] }[] }
-export interface Persona { id: string; label: string; protected: boolean; order: number; compactNav?: boolean; default?: boolean; seq?: PersonaSeq }
+/** `menuStructure`: the menu structure the persona navigates with (absent = the standard one, see domain/nav/structures). */
+export interface Persona { id: string; label: string; protected: boolean; order: number; compactNav?: boolean; default?: boolean; seq?: PersonaSeq; menuStructure?: string }
 export interface MenuGroup { id: string; label: string; order: number; description?: string }
 
 export const slugify = (s: string): string => String(s).toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-|-$/g, '');
@@ -25,5 +26,6 @@ export function duplicateOf(src: Persona, taken: string[], maxOrder: number): Pe
   while (taken.includes(id)) id = `${slugify(src.label)}-copy-${n++}`;
   const copy: Persona = { id, label, protected: false, order: maxOrder + 1 };
   if (src.seq && Array.isArray(src.seq.steps)) copy.seq = JSON.parse(JSON.stringify(src.seq)) as PersonaSeq;
+  if (src.menuStructure) copy.menuStructure = src.menuStructure;   // the sequence is written against the structure's groups
   return copy;
 }

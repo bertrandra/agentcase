@@ -1,0 +1,489 @@
+{
+ "structure": {
+  "id": "business-journey",
+  "label": "Business journey",
+  "groups": [
+   {
+    "id": "frame",
+    "label": "1 · Frame",
+    "order": 10,
+    "description": "Which deal is this? The engagement frame, the onboarding stages and the industry profile decide what can be scoped."
+   },
+   {
+    "id": "today",
+    "label": "2 · Today",
+    "order": 20,
+    "description": "Where do we start? The team, its rates and its locations: the cost baseline every saving is measured against."
+   },
+   {
+    "id": "choose-scope",
+    "label": "3 · Choose the scope",
+    "order": 30,
+    "description": "What do we automate, and how fast? The artefacts and phases in scope, the automation potential, the adoption ramp and the eligibility gate."
+   },
+   {
+    "id": "size",
+    "label": "4 · Size the system",
+    "order": 40,
+    "description": "What does the agentic system cost? The run team, the token economics, the setup, the risk premium, the readiness and the knowledge hub."
+   },
+   {
+    "id": "result",
+    "label": "5 · Read the result",
+    "order": 50,
+    "description": "What does it return? The financial headline, the run cost, the yearly view, the results and the decision, with every read-out one click deeper."
+   },
+   {
+    "id": "defend-present",
+    "label": "6 · Defend & present",
+    "order": 60,
+    "description": "Is it solid, and how do we show it? The Monte Carlo, the sensitivity, the logic verification, the commercial model and the story."
+   },
+   {
+    "id": "portfolio",
+    "label": "📦 Portfolio",
+    "order": 70,
+    "description": "How do the products add up? Products, waves, overrides, the consolidated trajectory and the portfolio stress. Shown from two products on."
+   },
+   {
+    "id": "reference",
+    "label": "🏛️ Reference",
+    "order": 80,
+    "description": "Where does it come from? Architecture, glossary, dependencies, sources, the model engine and factory internals, the case files and the app configuration."
+   }
+  ],
+  "colors": {
+   "frame": "#1D6FB8",
+   "today": "#0E8F8F",
+   "choose-scope": "#3B9E4F",
+   "size": "#9A8A1E",
+   "result": "#C25E00",
+   "defend-present": "#8F2D5F",
+   "portfolio": "#2E9E6B",
+   "reference": "#557A95"
+  },
+  "placement": {
+   "home": {
+    "group": "frame",
+    "groupSeq": 10
+   },
+   "engagement-context": {
+    "group": "frame",
+    "groupSeq": 20
+   },
+   "engage": {
+    "group": "frame",
+    "groupSeq": 30
+   },
+   "transform-params": {
+    "group": "frame",
+    "groupSeq": 40
+   },
+   "params": {
+    "group": "choose-scope",
+    "groupSeq": 20
+   },
+   "scurve": {
+    "group": "choose-scope",
+    "groupSeq": 30
+   },
+   "maturity-map": {
+    "group": "choose-scope",
+    "groupSeq": 80
+   },
+   "readiness": {
+    "group": "size",
+    "groupSeq": 50
+   },
+   "scope-sel": {
+    "group": "choose-scope",
+    "groupSeq": 10
+   },
+   "phase-scope": {
+    "group": "choose-scope",
+    "groupSeq": 50
+   },
+   "lc-weighting": {
+    "group": "choose-scope",
+    "groupSeq": 40
+   },
+   "lifecycle-edit": {
+    "group": "choose-scope",
+    "groupSeq": 70
+   },
+   "team-in": {
+    "group": "today",
+    "groupSeq": 10
+   },
+   "ratecard": {
+    "group": "today",
+    "groupSeq": 20
+   },
+   "loc-strat": {
+    "group": "today",
+    "groupSeq": 30
+   },
+   "token-econ": {
+    "group": "size",
+    "groupSeq": 20
+   },
+   "knowledge": {
+    "group": "size",
+    "groupSeq": 60
+   },
+   "run-sizing": {
+    "group": "size",
+    "groupSeq": 10
+   },
+   "assumptions": {
+    "group": "defend-present",
+    "groupSeq": 100
+   },
+   "fte-vfte": {
+    "group": "result",
+    "groupSeq": 60
+   },
+   "vfte-ov": {
+    "group": "result",
+    "groupSeq": 140
+   },
+   "team-out": {
+    "group": "result",
+    "groupSeq": 130
+   },
+   "opmodel": {
+    "group": "result",
+    "groupSeq": 230
+   },
+   "tobe-team": {
+    "group": "result",
+    "groupSeq": 120
+   },
+   "montecarlo": {
+    "group": "defend-present",
+    "groupSeq": 10
+   },
+   "model-stochastic": {
+    "group": "reference",
+    "groupSeq": 150
+   },
+   "phase-art": {
+    "group": "result",
+    "groupSeq": 180
+   },
+   "agent-dir": {
+    "group": "result",
+    "groupSeq": 150
+   },
+   "agent-detail": {
+    "group": "result",
+    "groupSeq": 160
+   },
+   "agent-usage": {
+    "group": "result",
+    "groupSeq": 170
+   },
+   "model-convergence": {
+    "group": "reference",
+    "groupSeq": 120
+   },
+   "model-supervision": {
+    "group": "reference",
+    "groupSeq": 140
+   },
+   "setup": {
+    "group": "size",
+    "groupSeq": 30
+   },
+   "run": {
+    "group": "result",
+    "groupSeq": 20
+   },
+   "annual": {
+    "group": "result",
+    "groupSeq": 30
+   },
+   "monthly": {
+    "group": "result",
+    "groupSeq": 220
+   },
+   "monthly-playback": {
+    "group": "defend-present",
+    "groupSeq": 110
+   },
+   "exec": {
+    "group": "result",
+    "groupSeq": 200
+   },
+   "productivity": {
+    "group": "result",
+    "groupSeq": 90
+   },
+   "velocity": {
+    "group": "result",
+    "groupSeq": 80
+   },
+   "quality": {
+    "group": "result",
+    "groupSeq": 100
+   },
+   "compliance": {
+    "group": "result",
+    "groupSeq": 190
+   },
+   "financial": {
+    "group": "result",
+    "groupSeq": 10
+   },
+   "model-flow": {
+    "group": "reference",
+    "groupSeq": 160
+   },
+   "gantt": {
+    "group": "result",
+    "groupSeq": 210
+   },
+   "board": {
+    "group": "reference",
+    "groupSeq": 20
+   },
+   "factory-model": {
+    "group": "reference",
+    "groupSeq": 180
+   },
+   "release-pipeline": {
+    "group": "reference",
+    "groupSeq": 190
+   },
+   "engineering": {
+    "group": "reference",
+    "groupSeq": 200
+   },
+   "factory-timeline": {
+    "group": "reference",
+    "groupSeq": 210
+   },
+   "commercial": {
+    "group": "defend-present",
+    "groupSeq": 40
+   },
+   "scenarios": {
+    "group": "defend-present",
+    "groupSeq": 60
+   },
+   "kpi": {
+    "group": "result",
+    "groupSeq": 70
+   },
+   "asis-tobe": {
+    "group": "result",
+    "groupSeq": 110
+   },
+   "compare": {
+    "group": "defend-present",
+    "groupSeq": 70
+   },
+   "sensitivity": {
+    "group": "defend-present",
+    "groupSeq": 20
+   },
+   "sources": {
+    "group": "reference",
+    "groupSeq": 40
+   },
+   "results": {
+    "group": "result",
+    "groupSeq": 40
+   },
+   "story-summary": {
+    "group": "defend-present",
+    "groupSeq": 50
+   },
+   "decision": {
+    "group": "result",
+    "groupSeq": 50
+   },
+   "model-evidence": {
+    "group": "reference",
+    "groupSeq": 170
+   },
+   "strategies": {
+    "group": "defend-present",
+    "groupSeq": 80
+   },
+   "arch-layers": {
+    "group": "reference",
+    "groupSeq": 50
+   },
+   "arch-content": {
+    "group": "reference",
+    "groupSeq": 60
+   },
+   "verif": {
+    "group": "defend-present",
+    "groupSeq": 30
+   },
+   "eligibility": {
+    "group": "choose-scope",
+    "groupSeq": 60
+   },
+   "model-verification": {
+    "group": "reference",
+    "groupSeq": 130
+   },
+   "maturity": {
+    "group": "size",
+    "groupSeq": 70
+   },
+   "program": {
+    "group": "size",
+    "groupSeq": 80
+   },
+   "risk": {
+    "group": "size",
+    "groupSeq": 40
+   },
+   "reference": {
+    "group": "reference",
+    "groupSeq": 70
+   },
+   "deps": {
+    "group": "reference",
+    "groupSeq": 80
+   },
+   "datamodel": {
+    "group": "reference",
+    "groupSeq": 90
+   },
+   "calcengine": {
+    "group": "reference",
+    "groupSeq": 100
+   },
+   "glossary": {
+    "group": "reference",
+    "groupSeq": 110
+   },
+   "io": {
+    "group": "defend-present",
+    "groupSeq": 120
+   },
+   "sessions": {
+    "group": "reference",
+    "groupSeq": 10
+   },
+   "duediligence": {
+    "group": "defend-present",
+    "groupSeq": 90
+   },
+   "personas": {
+    "group": "reference",
+    "groupSeq": 30
+   },
+   "products": {
+    "group": "portfolio",
+    "groupSeq": 10
+   },
+   "overrides": {
+    "group": "portfolio",
+    "groupSeq": 30
+   },
+   "knowledge-transfer": {
+    "group": "result",
+    "groupSeq": 240
+   },
+   "waves": {
+    "group": "portfolio",
+    "groupSeq": 20
+   },
+   "consolidation": {
+    "group": "portfolio",
+    "groupSeq": 40
+   },
+   "portfolio-stress": {
+    "group": "portfolio",
+    "groupSeq": 50
+   }
+  }
+ },
+ "persona": {
+  "id": "business-journey",
+  "label": "Business journey",
+  "protected": false,
+  "order": 2,
+  "compactNav": true,
+  "menuStructure": "business-journey",
+  "seq": {
+   "on": true,
+   "steps": [
+    {
+     "label": "1 · Frame",
+     "sections": [
+      "engagement-context",
+      "engage",
+      "transform-params"
+     ]
+    },
+    {
+     "label": "2 · Today",
+     "sections": [
+      "team-in",
+      "ratecard",
+      "loc-strat"
+     ]
+    },
+    {
+     "label": "3 · Choose the scope",
+     "sections": [
+      "scope-sel",
+      "params",
+      "scurve",
+      "lc-weighting",
+      "phase-scope",
+      "eligibility"
+     ]
+    },
+    {
+     "label": "4 · Size the system",
+     "sections": [
+      "run-sizing",
+      "token-econ",
+      "setup",
+      "risk",
+      "readiness",
+      "knowledge"
+     ]
+    },
+    {
+     "label": "5 · Read the result",
+     "sections": [
+      "financial",
+      "run",
+      "annual",
+      "results",
+      "decision"
+     ]
+    },
+    {
+     "label": "6 · Defend & present",
+     "sections": [
+      "montecarlo",
+      "sensitivity",
+      "verif",
+      "commercial",
+      "story-summary"
+     ]
+    },
+    {
+     "label": "📦 Portfolio",
+     "sections": [
+      "products",
+      "waves",
+      "overrides",
+      "consolidation",
+      "portfolio-stress"
+     ]
+    }
+   ]
+  }
+ }
+}

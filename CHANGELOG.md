@@ -15,6 +15,16 @@ All notable changes to AgentCase, newest first. Product version from v19.0.0 = `
 
 When releasing, follow [docs/BUMP_PROCEDURE.md](docs/BUMP_PROCEDURE.md) (§7 for the legacy file) and add the new version at the top.
 
+## [v20.5.0] 2026-10-23 — Menu structures, legacy Section assignment tab, Business journey persona
+
+### New
+- **Menu structures** (DEV-MENU-STRUCTURES). Several named sets of menu groups can coexist; the existing groups and section placement are the built-in **Standard** structure, unchanged for every existing persona and case file. Each persona navigates with one structure (picked in 👥 Persona management → 🧩 Section assignment); its sidebar, group bar, Welcome cards, compact nav, Fast Path, landing and guided walk follow it. A **Menu structure** bar on 🗂️ Menu groups, 📄 Sections and 🗺️ Menu layout picks the structure those tabs edit, and duplicates, renames or deletes structures (built-ins protected, a structure in use cannot be deleted). Every edit is an undoable command (`menu.duplicateStructure`, `menu.renameStructure`, `menu.deleteStructure`, `persona.setMenuStructure`, `persona.addBuiltin`, plus an optional `structure` on the group and placement commands). Saved with the case (`MENU_STRUCTURES`, `Persona.menuStructure`) and in the parameters workbook ("Menu Structures", "Menu Structure Sections" when the case stores a structure, a "Menu structure" column on Personas when a persona uses one; a Standard-only case exports the legacy workbook unchanged).
+- **Business journey persona** on the new built-in **Business journey** structure, built from the dependency graph: 1 · Frame, 2 · Today, 3 · Choose the scope, 4 · Size the system, 5 · Read the result, 6 · Defend & present (each described by its business question), Portfolio and Reference. It sees every section with the compact nav; its guided sequence walks the 28 core sections (33 with the Portfolio step, shown only from two products on), every other section is placed in a stage as "go deeper". Coverage tests: every section placed once in every structure, every written input zone has a core writer, every catalogue figure is shown in stage 5 or 6, at most 35 stops. Older cases can add it from 👥 Personas.
+- **🧩 Section assignment as in the legacy tab**: one persona picker, then the pill sub-tabs "🧩 Section assignment" and "🧭 Guided sequence (wizard)". The legacy **📄 Sections (group & order)** tab is back: group, Group Seq, tag, MVP (Fast Path), description, personas using it, ↔ Respace ×10 Group Seq and a detail card with a live preview of the menu (`nav.setSectionTag`, `nav.setSectionMvp`).
+
+### Tests changed
+- `tests/helpers/excelParams.ts`: the legacy import target leaves out the new built-in persona (the legacy pristine state never had it); see DEV-MENU-STRUCTURES.
+
 ## [v20.4.0] 2026-10-22 — Calculation zones, generated dependency graph, affected-test selection (+ compact header)
 
 ### New

@@ -6,12 +6,17 @@ import { personasByOrder, type Persona } from '@/domain/pdc/personas';
 import { useNavModel } from '@/ui/zones/navModel';
 import { SeqStep } from './SeqStep';
 
-/** The guided-sequence editor (legacy "Guided sequence (wizard)"): enable, steps with a label and sections, generate from groups, sync order / menu. */
-export function SeqEditor({ personas, lists }: { personas: Persona[]; lists: Record<string, string[]> }) {
-  const { sections, groups, order } = useNavModel(), editable = personasByOrder(personas).filter((p) => !p.protected);
+/**
+ * The guided-sequence editor (legacy "Guided sequence (wizard)"): enable, steps with a label and sections, generate from groups, sync order / menu.
+ * It works on the persona's menu structure: the section picker is grouped by that structure's groups and "Generate from groups" follows them.
+ * `persona` fixes the persona (the Section assignment tab owns the picker); without it the editor shows its own picker.
+ */
+export function SeqEditor({ personas, lists, persona }: { personas: Persona[]; lists: Record<string, string[]>; persona?: string }) {
+  const { order, view, structureOfPersona } = useNavModel(), editable = personasByOrder(personas).filter((p) => !p.protected);
   const [sel, setSel] = useState(''), [status, setStatus] = useState(''), [ask, setAsk] = useState<'generate' | 'menu' | null>(null);
-  const p = editable.find((x) => x.id === sel) ?? editable[0], seq = p?.seq ?? { on: false, steps: [] }, name = (id: string) => sections.find((s) => s.id === id)?.label ?? id;
-  if (!p) return <p className="ac-muted">No assignable persona.</p>;
+  const p = editable.find((x) => x.id === (persona ?? sel)) ?? (persona ? undefined : editable[0]), seq = p?.seq ?? { on: false, steps: [] };
+  const { sections, groups, label: structureLabel } = view(structureOfPersona(p?.id ?? '')), name = (id: string) => sections.find((s) => s.id === id)?.label ?? id;
+  if (!p) return <p className="ac-muted">{persona ? 'This persona has no guided sequence of its own (protected).' : 'No assignable persona.'}</p>;
   const diff = membershipDiff(seq, lists[p.id] ?? [], sections), say = (t: string) => { setAsk(null); setStatus(t); };
   const generate = () => {
     const next = generateSeq(p.id, sections, groups, lists, order);
@@ -24,8 +29,9 @@ export function SeqEditor({ personas, lists }: { personas: Persona[]; lists: Rec
   };
   return (
     <>
-      <label className="ac-field"><span className="ac-field-l">Persona</span>
-        <select value={p.id} onChange={(e) => { setSel(e.target.value); setAsk(null); setStatus(''); }}>{editable.map((x) => <option key={x.id} value={x.id}>{x.label}</option>)}</select></label>
+      {!persona && <label className="ac-field"><span className="ac-field-l">Persona</span>
+        <select value={p.id} onChange={(e) => { setSel(e.target.value); setAsk(null); setStatus(''); }}>{editable.map((x) => <option key={x.id} value={x.id}>{x.label}</option>)}</select></label>}
+      <p className="ac-muted">Menu structure: <strong>{structureLabel}</strong> — the section picker and “Generate from groups” follow its groups.</p>
       <label><input type="checkbox" checked={seq.on} onChange={(e) => setSeqEnabled(p.id, e.target.checked)} /> Sequence enabled for this persona</label>
       <div className="ac-form-row">
         <button type="button" className="ac-btn" onClick={() => addSeqStep(p.id)}>+ Add step</button>

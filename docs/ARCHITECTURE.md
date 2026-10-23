@@ -1,6 +1,6 @@
 # AgentCase — Architecture of the TypeScript build
 
-> Applies to **`app/`, version 20.4.0** (`app/src/domain/version.ts`, `app/package.json`): a multi-product portfolio build. 892 `.ts`/`.tsx` files under `app/src`,
+> Applies to **`app/`, version 20.5.0** (`app/src/domain/version.ts`, `app/package.json`): a multi-product portfolio build. 892 `.ts`/`.tsx` files under `app/src`,
 > 241 test files under `app/tests` (counted with `find`; 16,387 tests passed on the last local run, CI is authoritative).
 > The previous document, which describes the frozen single-file app, is archived as
 > [`history/ARCHITECTURE_legacy_v18.md`](history/ARCHITECTURE_legacy_v18.md). The appendix of this file maps each legacy engine to its replacement.
@@ -119,7 +119,7 @@ dispatch(command) ──► ONE produceWithPatches(portfolio) ──► patches 
 
 | Concept | Implementation |
 |---|---|
-| Command | `{ type, payload, label, coalesceKey?, undoable, run(draft, payload), runPortfolio? }`. Case commands use `defineCommand` (`store/commands.ts`): `run` mutates the active product's effective case. Portfolio commands use `definePortfolioCommand`: a pure `apply(portfolio, payload)`, turned into minimal Immer patches by `store/syncDraft.ts`. 229 commands are registered by the modules of `src/controllers` (225 undoable; 4 view commands - `view.setPersona`, `product.setActive`, `product.setEditScope`, `portfolio.setDisplayScope` - are applied but never on the undo stack; counted from `COMMAND_REGISTRY` after loading the controller modules; 24 of them are `product.*` / `wave.*` / `portfolio.*`, the others include `excel.importPortfolio` and `snapshots.activatePortfolio` / `baselinePortfolio`); a duplicate type throws |
+| Command | `{ type, payload, label, coalesceKey?, undoable, run(draft, payload), runPortfolio? }`. Case commands use `defineCommand` (`store/commands.ts`): `run` mutates the active product's effective case. Portfolio commands use `definePortfolioCommand`: a pure `apply(portfolio, payload)`, turned into minimal Immer patches by `store/syncDraft.ts`. 236 commands are registered by the modules of `src/controllers` (232 undoable; 4 view commands - `view.setPersona`, `product.setActive`, `product.setEditScope`, `portfolio.setDisplayScope` - are applied but never on the undo stack; counted from `COMMAND_REGISTRY` after loading the controller modules; 24 of them are `product.*` / `wave.*` / `portfolio.*`, the others include `excel.importPortfolio` and `snapshots.activatePortfolio` / `baselinePortfolio`); a duplicate type throws |
 | Address layer | `store/address/` (`index.ts`, `dom.ts`, `subset.ts`). After a case command ran on the derived doc, each changed top-level key is re-addressed onto the portfolio inside the same produce: `teamIn` -> the active product's `teamIn`; a whitelisted key (spec 4.3) -> `product.overrides[key]` if the product already overrides it OR the edit scope is `'product'` (and the value differs from common), else `common[key]`; a changed form field of `dom.values` / `dom.checked` is routed per field (Knowledge Hub fields to the product's knowledge subset when it defines them, then override/common by the same rule; `horizon`, `khInfraMonthly`, `khEnabled` mirror into `horizonMonths` / `hub`); any non-overridable key (RATE, MODEL, COEF, PERSONAS, nav, snapshots, customerName, ...) -> `common`. With one product and no override the result is exactly today's behaviour |
 | View state | `activeProductId` (saved with the file, D-M6) and `editScope` (`'all'` / `'product'`, transient, never saved) change through `undoable: false` commands (`product.setActive`, `product.setEditScope`): applied, logged, never on the undo stack, filtered out of broadcast patches (`VIEW_FIELDS`). After an undo/redo/remote patch an unknown active product falls back to the first one (`normalizeActive`) |
 | Portfolio commands | `controllers/product.ts` (add, rename, duplicate, archive, remove, setNote, setOffset, setActive, setEditScope), `productOverrides.ts` (setOverride, clearOverride, applyToCommon, setKnowledge), `wave.ts` (add, rename, remove, reorder, setStart, setNote, assign), `portfolio.ts` (setHorizon, setHub, setRho), `stressPortfolio.ts` (run, not a command). `portfolioGuard.dispatchChecked` refuses (returns false, no step) any command whose result breaks `validate` (last product, weights != 100, 50-product cap, ...) |
@@ -188,6 +188,20 @@ Also `RestoreBanner` (autosave offer), a skip link, and an `aria-live="polite"` 
 bundled legacy catalogue (`ui/zones/data/*.json`: 85 sections in 15 groups, the 15th being the multi-product Portfolio group). Domain logic is in `domain/nav/` (`layout`, `groupBar`,
 `moves`, `sequence`); edits go through `controllers/nav*.ts` and the Persona-management section (sequence editor, menu layout board,
 persona layout board). The same data round-trips through the parameters workbook.
+
+**Menu structures** (DEV-MENU-STRUCTURES; `domain/nav/structures.ts`). A menu structure is a named set of menu groups (id, label, order,
+colour, description) plus the group and group order of every section. The built-in **Standard** structure is the document's `GROUPS` /
+`GROUP_COLORS` / `sectionGroups` (unchanged, legacy keys); every other structure lives in `doc.MENU_STRUCTURES` (absent in older files) or is
+shipped with the app (`BUILTIN_STRUCTURES`: Business journey, `domain/nav/businessJourney.json`; a built-in is copied into the document on its
+first edit, by `controllers/menuTarget.ts`). A persona navigates with `Persona.menuStructure` (absent = standard). `useNavModel()` resolves
+the active persona's structure, so the sidebar, group bar, Welcome cards, compact nav, Fast Path, landing and the guided walk follow it;
+`view(id)` resolves any structure for Persona management, whose 🗂️ Menu groups, 📄 Sections and 🗺️ Menu layout tabs edit the structure picked
+in their Menu structure bar (the group and placement commands take an optional `structure`; without it they act on Standard exactly as before).
+Structures are created by duplicating one (`menu.duplicateStructure`), renamed, and deleted only when no persona uses them; built-ins are
+protected. Tag and MVP stay properties of the section (`sectionGroups`, `nav.setSectionTag` / `nav.setSectionMvp`), shared by all structures.
+The parameters workbook carries the structures the case stores on "Menu Structures" / "Menu Structure Sections" and a "Menu structure"
+column on Personas when a persona uses one (a standard-only case exports the legacy workbook unchanged).
+`tests/domain/business-journey.test.ts` checks the coverage of the Business journey structure against the generated dependency graph.
 
 **Multi-product interface (P3, UI only; no calculation changed).** Progressive disclosure (spec F23): with ONE product nothing is added (no
 selector, banner, badge, nav group). From two products on (`useIsMulti`, `store/portfolioHooks.ts`; selectors return stable references):
@@ -332,7 +346,7 @@ generated by `app/scripts/portfolio-example.ts`) through the real open path. Sch
 The authoritative list is [MIGRATION_PLAN.md §15](MIGRATION_PLAN.md). Architecture-relevant items:
 
 - Browser checks exist (`npm run e2e`, `npm run perf`, `npm run a11y`, `npm run ui-parity`, `npm run parallel-run`; CI job `e2e`); the differential run on real customer files needs files supplied by the user.
-- Out of scope (removed from the spec): the ADVANCED lock and its unlock gestures, and tag/MVP editing. Being ported: Gantt keyboard editing. The layout boards have a read-only in-page live preview (`domain/nav/preview.ts`), not the legacy iframe.
+- Out of scope (removed from the spec): the ADVANCED lock and its unlock gestures. Being ported: Gantt keyboard editing. The layout boards and the 📄 Sections tab have a read-only in-page live preview of the menu (`domain/nav/preview.ts`) plus a link to the section, not the legacy iframe.
 - Golden-vs-AME comparison, AME reference capture and per-snapshot Excel export are not ported; Agent Catalog capacity and loop external % cannot be imported (catalogues are immutable).
 - Legacy-only engine `TE-10b` (legacy-mode monthly derivation) fires on 2 supervision fixtures in the legacy and is reproduced only in the verification section.
 - Multi-product, left out on purpose or not yet built: a **portfolio scenarios table** (the six scenarios and the sensitivity stay per product); **dependencies and capacity between waves**
@@ -342,7 +356,7 @@ The authoritative list is [MIGRATION_PLAN.md §15](MIGRATION_PLAN.md). Architect
   item-level scope overrides (whole key only, D-M2); portfolio charts as images in the results workbook.
 - Excel cross-version note: a parameters workbook exported by 20.0.0 from a real portfolio carries seven extra sheets that a 19.x build ignores (it reads only the common case); a 19.x workbook imports into 20.0.0 as a case on the active product. An import does not re-fit the automation potential (the workbook states the stored values; the next open re-fits).
 - Opening a 20.0.0 portfolio file (`agentcase.portfolio.v1`) in a 19.x build is not supported; a plain single case is still saved as `agentcase.snapshot.v1` and stays readable by 19.x.
-- `npm run release` produces `app/dist/AgentCase_v20_4_EN.html`; `APP_VERSION` is `20.4.0`.
+- `npm run release` produces `app/dist/AgentCase_v20_5_EN.html`; `APP_VERSION` is `20.5.0`.
 
 ## 13. Calculation zones, the generated dependency graph and test selection
 
