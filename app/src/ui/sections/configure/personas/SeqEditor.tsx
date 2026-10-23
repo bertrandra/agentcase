@@ -40,7 +40,7 @@ export function SeqEditor({ personas, lists, persona }: { personas: Persona[]; l
           : <button type="button" className="ac-btn" onClick={() => (seq.steps.length ? setAsk('generate') : generate())}>⚙️ Generate from groups</button>}
         <button type="button" className="ac-btn" disabled={!seq.steps.length} onClick={syncOrder}>🧭 Sync section order to sequence</button>
         <button type="button" className="ac-btn" disabled={!seq.steps.length} onClick={() => setAsk('menu')}>🗂️ Sync menu to sequence</button>
-        <span role="status" style={{ color: '#006e79', fontSize: 11 }}>{status}</span>
+        <span role="status" style={{ color: 'var(--ac-teal-700)', fontSize: 'var(--ac-font-size-sm)' }}>{status}</span>
       </div>
       {ask === 'menu' && (
         <div role="alertdialog" aria-label="Sync menu to sequence" className="ac-callout">

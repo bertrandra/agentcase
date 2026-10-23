@@ -11,7 +11,7 @@ export function NormList({ code, dense }: { code: string; dense?: boolean }) {
   return (
     <div style={{ display: 'grid', gridTemplateColumns: `repeat(auto-fit,minmax(${dense ? 160 : 190}px,1fr))`, gap: dense ? 3 : 6 }}>
       {norms.map((n) => (
-        <label key={n.name} className="ac-check" style={{ border: '1px solid var(--ac-line)', borderRadius: 5, padding: dense ? '4px 8px' : '6px 9px' }}>
+        <label key={n.name} className="ac-check" style={{ border: '1px solid var(--ac-line)', borderRadius: 'var(--ac-radius-sm-plus)', padding: dense ? '4px 8px' : '6px 9px' }}>
           <input type="checkbox" checked={ticked.includes(normKey(code, n.name))} onChange={(e) => toggleNorm(code, n.name, e.target.checked)} />
           {' '}<strong>{n.name}</strong> <span className="ac-muted">({n.count})</span>
         </label>

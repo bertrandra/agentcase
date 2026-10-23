@@ -1,4 +1,5 @@
 /** @calc-zone tuning-programme */
+import { tok } from '../theme';
 /** AI Readiness Index: 10 dimensions x 3 statements, answered No (0) / Partial (50) / Yes (100) or left blank (null). */
 export interface ReadinessDim { key: string; label: string; q: [string, string, string] }
 export type ReadinessAns = Record<string, (number | null)[]>
@@ -33,12 +34,12 @@ export function readinessIndex(ans: ReadinessAns): number | null {
 
 export interface Band { label: string; color: string }
 export function readinessBand(idx: number | null): Band {
-  if (idx == null) return { label: 'Not assessed', color: '#566074' };
-  if (idx <= 20) return { label: 'Nascent', color: '#8F3237' };
-  if (idx <= 40) return { label: 'Emerging', color: '#b04600' };
-  if (idx <= 60) return { label: 'Developing', color: '#0a6e9c' };
-  if (idx <= 80) return { label: 'Established', color: '#4e8f2e' };
-  return { label: 'Leading', color: '#006e79' };
+  if (idx == null) return { label: 'Not assessed', color: tok('slate-700') };
+  if (idx <= 20) return { label: 'Nascent', color: tok('danger-800') };
+  if (idx <= 40) return { label: 'Emerging', color: tok('warning-600') };
+  if (idx <= 60) return { label: 'Developing', color: tok('info-700') };
+  if (idx <= 80) return { label: 'Established', color: tok('success-550') };
+  return { label: 'Leading', color: tok('teal-700') };
 }
 
 export interface DimRow { key: string; label: string; score: number | null; band: Band }

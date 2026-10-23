@@ -3,12 +3,13 @@ import type { Workbook, Worksheet } from 'exceljs';
 import type { ExcelJS } from '../lazy';
 import type { DdPackData } from './data';
 import { coefSheetEdit, ddEditText, ddEvidence, ddRole, ddUseText } from './texts';
+import { argb } from '@/domain/theme';
 
 const ORDER: Record<string, number> = { open: 0, requested: 1, disputed: 2, confirmed: 3, waived: 4 };
 const kEuro = (v: number): string => `€${Math.round(v / 1000).toLocaleString('en-US')}K`;
 const cols = (ws: Worksheet, spec: [string, number][]) => { ws.columns = spec.map(([header, width]) => ({ header, width })); };
 const head = (ws: Worksheet): void => {
-  ws.getRow(1).eachCell((c) => { c.font = { bold: true, color: { argb: 'FFFFFFFF' } }; c.fill = { type: 'pattern', pattern: 'solid', fgColor: { argb: 'FF1E2761' } }; c.alignment = { horizontal: 'left', wrapText: true }; });
+  ws.getRow(1).eachCell((c) => { c.font = { bold: true, color: { argb: argb('excel-head-text') } }; c.fill = { type: 'pattern', pattern: 'solid', fgColor: { argb: argb('excel-head-bg') } }; c.alignment = { horizontal: 'left', wrapText: true }; });
   ws.getRow(1).height = 22;
 };
 

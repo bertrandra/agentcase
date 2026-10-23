@@ -5,7 +5,7 @@ import { Panel } from '@/ui/widgets/cards';
 function PoleCard({ title, items, note }: { title: string; items: Pole[]; note?: string }) {
   return (
     <Panel title={title}>
-      {items.map((p) => <div key={p.name} className="ac-form-row" style={{ justifyContent: 'space-between', fontSize: 12, margin: 0 }}><span>{p.name}</span><b>{fmt1(p.fte)} FTE · {fmtK(p.cost)}</b></div>)}
+      {items.map((p) => <div key={p.name} className="ac-form-row" style={{ justifyContent: 'space-between', fontSize: 'var(--ac-font-size-md)', margin: 0 }}><span>{p.name}</span><b>{fmt1(p.fte)} FTE · {fmtK(p.cost)}</b></div>)}
       {note && <p className="ac-muted">{note}</p>}
     </Panel>
   );

@@ -4,6 +4,7 @@ import { dimRows, readinessBand, readinessIndex, weakestDims } from '@/domain/tu
 import { Callout, Panel } from '@/ui/widgets/cards';
 import { ChartPanel } from '@/ui/widgets/ChartPanel';
 import { useAnswers } from './Assessment';
+import { tok } from '@/domain/theme';
 
 /** Index (0–100) with its band and gauge, the radar chart, and the dimension bars with the weakest areas. */
 export function ScoreCard() {
@@ -11,19 +12,19 @@ export function ScoreCard() {
   const config = useMemo<ChartConfiguration>(() => ({
     type: 'radar',
     data: { labels: rows.map((r) => r.label), datasets: [{ label: 'Readiness', data: rows.map((r) => Math.round(r.score ?? 0)), fill: true,
-      backgroundColor: 'rgba(55,138,221,0.18)', borderColor: '#0058AB', pointBackgroundColor: '#b04600', borderWidth: 2, pointRadius: 3 }] },
+      backgroundColor: tok('primary-500-a18'), borderColor: tok('primary-700'), pointBackgroundColor: tok('warning-600'), borderWidth: 2, pointRadius: 3 }] },
     options: { plugins: { legend: { display: false } }, scales: { r: { min: 0, max: 100, ticks: { stepSize: 20 } } } },
   }), [rows]);
   return (
     <>
       <Panel title="AI Readiness Index">
         <div style={{ textAlign: 'center' }} aria-live="polite">
-          <div style={{ fontSize: 60, fontWeight: 300, color: band.color }}>{idx == null ? '—' : Math.round(idx)}</div>
-          <div style={{ fontWeight: 600, color: band.color }}>{band.label}</div>
+          <div style={{ fontSize: 'var(--ac-font-size-9xl)', fontWeight: 'var(--ac-font-weight-light)', color: band.color }}>{idx == null ? '—' : Math.round(idx)}</div>
+          <div style={{ fontWeight: 'var(--ac-font-weight-semibold)', color: band.color }}>{band.label}</div>
         </div>
         <div role="meter" aria-label="AI readiness gauge" aria-valuenow={idx ?? 0} aria-valuemin={0} aria-valuemax={100}
-          style={{ height: 14, borderRadius: 8, position: 'relative', background: 'linear-gradient(90deg,#8F3237,#b04600,#0a6e9c,#006e79)' }}>
-          <div style={{ position: 'absolute', top: -4, width: 4, height: 22, background: '#0058AB', border: '1px solid #fff', borderRadius: 2, left: `${idx ?? 0}%` }} />
+          style={{ height: 14, borderRadius: 'var(--ac-radius-lg)', position: 'relative', background: 'linear-gradient(90deg,var(--ac-danger-800),var(--ac-warning-600),var(--ac-info-700),var(--ac-teal-700))' }}>
+          <div style={{ position: 'absolute', top: -4, width: 4, height: 22, background: 'var(--ac-primary-700)', border: '1px solid var(--ac-neutral-0)', borderRadius: 'var(--ac-radius-2xs)', left: `${idx ?? 0}%` }} />
         </div>
         <p className="ac-muted"><span>0 Nascent</span> · <span>Leading 100</span></p>
       </Panel>

@@ -1,6 +1,6 @@
-.ac-golink { background: none; border: 0; padding: 0; color: var(--ac-blue); text-decoration: underline; cursor: pointer; font: inherit; font-weight: 600; }
-.ac-search { flex: 1; min-width: 240px; padding: 8px 12px; border: 1px solid var(--ac-line); border-radius: 8px; font: inherit; }
-.ac-btn { padding: 5px 12px; border: 1px solid var(--ac-line); border-radius: var(--ac-radius); background: var(--ac-surface); cursor: pointer; font: inherit; }
-.ac-btn[disabled] { opacity: .55; cursor: not-allowed; } .ac-btn-primary { background: var(--ac-blue); color: #fff; border-color: var(--ac-blue); }
-.ac-lane { margin: 8px 0; } .ac-lane h4 { margin: 4px 0; } .ac-node { margin: 2px 4px 2px 0; padding: 3px 9px; border: 1px solid var(--ac-line); border-radius: 12px; background: #fff; cursor: pointer; font: inherit; font-size: 12px; }
-.ac-node[aria-pressed='true'] { background: var(--ac-blue); color: #fff; } .ac-node.is-link { border-color: var(--ac-teal); }
+.ac-golink { background: none; border: 0; padding: 0; color: var(--ac-blue); text-decoration: underline; cursor: pointer; font: inherit; font-weight: var(--ac-font-weight-semibold); }
+.ac-search { flex: 1; min-width: 240px; padding: 8px 12px; border: var(--ac-border-thin) solid var(--ac-line); border-radius: var(--ac-radius-lg); font: inherit; }
+.ac-btn { padding: 5px 12px; border: var(--ac-border-thin) solid var(--ac-line); border-radius: var(--ac-radius); background: var(--ac-surface); cursor: pointer; font: inherit; }
+.ac-btn[disabled] { opacity: .55; cursor: not-allowed; } .ac-btn-primary { background: var(--ac-blue); color: var(--ac-neutral-0); border-color: var(--ac-blue); }
+.ac-lane { margin: 8px 0; } .ac-lane h4 { margin: 4px 0; } .ac-node { margin: 2px 4px 2px 0; padding: 3px 9px; border: var(--ac-border-thin) solid var(--ac-line); border-radius: var(--ac-radius-2xl); background: var(--ac-neutral-0); cursor: pointer; font: inherit; font-size: var(--ac-font-size-md); }
+.ac-node[aria-pressed='true'] { background: var(--ac-blue); color: var(--ac-neutral-0); } .ac-node.is-link { border-color: var(--ac-teal); }

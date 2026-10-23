@@ -2,19 +2,20 @@ import { computeSensitivity } from '@/controllers/pdc';
 import { Callout } from '@/ui/widgets/cards';
 import { PackButtons } from './PackButtons';
 import type { DdModel } from './useDd';
+import { tok } from '@/domain/theme';
 
 const Card = ({ label, value, color, sub }: { label: string; value: string; color: string; sub?: string }) => (
-  <div style={{ flex: 1, minWidth: 150, background: '#fff', border: '1px solid #e5e5e5', borderTop: `3px solid ${color}`, borderRadius: 8, padding: 10, textAlign: 'center' }}>
-    <div style={{ fontSize: 10, color: '#636363', textTransform: 'uppercase', letterSpacing: 1 }}>{label}</div>
-    <div style={{ fontSize: 24, fontWeight: 700, color }}>{value}</div>
-    {sub && <div style={{ fontSize: 10, color: '#636363' }}>{sub}</div>}
+  <div style={{ flex: 1, minWidth: 150, background: 'var(--ac-neutral-0)', border: '1px solid var(--ac-neutral-125)', borderTop: `3px solid ${color}`, borderRadius: 'var(--ac-radius-lg)', padding: 10, textAlign: 'center' }}>
+    <div style={{ fontSize: 'var(--ac-font-size-xs)', color: 'var(--ac-neutral-700)', textTransform: 'uppercase', letterSpacing: 1 }}>{label}</div>
+    <div style={{ fontSize: 'var(--ac-font-size-6xl)', fontWeight: 'var(--ac-font-weight-bold)', color }}>{value}</div>
+    {sub && <div style={{ fontSize: 'var(--ac-font-size-xs)', color: 'var(--ac-neutral-700)' }}>{sub}</div>}
   </div>
 );
 
 /** Intro, confirmation gauges (items, € weight, glass ceiling), the € sensitivity control and its explanation. */
 export function Summary({ m }: { m: DdModel }) {
-  const { wPct, ceilCover, sens, fresh, zeroEur } = m, wColor = wPct == null ? '#566074' : wPct >= 60 ? '#006e79' : '#b04600';
-  const cc = ceilCover === null ? null : Math.round(ceilCover * 100), ccColor = ceilCover === null ? '' : ceilCover >= 0.85 ? '#006e79' : ceilCover >= 0.4 ? '#b04600' : '#8F3237';
+  const { wPct, ceilCover, sens, fresh, zeroEur } = m, wColor = wPct == null ? tok('slate-700') : wPct >= 60 ? tok('teal-700') : tok('warning-600');
+  const cc = ceilCover === null ? null : Math.round(ceilCover * 100), ccColor = ceilCover === null ? '' : ceilCover >= 0.85 ? tok('teal-700') : ceilCover >= 0.4 ? tok('warning-600') : tok('danger-800');
   return (
     <>
       <Callout>This register lists what a client must <strong>confirm</strong> for the model to be defensible — not what the model computes. It deliberately surfaces <strong>{m.invisible} coefficients that are hardcoded in the calculation path and editable nowhere in the interface</strong>.
@@ -22,15 +23,15 @@ export function Summary({ m }: { m: DdModel }) {
       <Callout kind="warn"><strong>Where these values come from.</strong> AgentCase ships with defaults for the metric anchors and for the model’s internal coefficients. These are engineering estimates: no study, dataset or delivery record is cited for them, and they are not benchmarks.
         That is what this register is for — each becomes a confirmed input once validated against the client’s own records. Rows marked <b>PC4 unvalidated</b> and <b>PC5 embedded</b> are the ones still awaiting that confirmation.</Callout>
       <div className="ac-form-row">
-        <Card label="Items to confirm" value={String(m.rows.length)} color="#0058AB" />
-        <Card label="Editable nowhere (PC5)" value={String(m.invisible)} color="#8F3237" />
-        <Card label="Confirmed / waived (items)" value={`${m.pct}%`} color="#006e79" />
+        <Card label="Items to confirm" value={String(m.rows.length)} color="var(--ac-primary-700)" />
+        <Card label="Editable nowhere (PC5)" value={String(m.invisible)} color="var(--ac-danger-800)" />
+        <Card label="Confirmed / waived (items)" value={`${m.pct}%`} color="var(--ac-teal-700)" />
         <Card label="Confirmed by € weight" value={wPct == null ? '—' : `${wPct}%`} color={wColor} />
       </div>
       {cc !== null && (
         <div className="ac-form-row">
           <Card label="Glass ceiling confirmed" value={`${cc}%`} color={ccColor} sub={`of the ${m.ceiling}% ceiling’s weight`} />
-          <p style={{ flex: 2, minWidth: 260, fontSize: 11.5 }}><strong>Two gauges, two questions.</strong> € coverage says how much of the <em>figure</em> rests on unverified values. Ceiling coverage says how much of the <em>thesis</em> does — the artefact-by-artefact claim that a human signature is irreducible.
+          <p style={{ flex: 2, minWidth: 260, fontSize: 'var(--ac-font-size-sm-plus)' }}><strong>Two gauges, two questions.</strong> € coverage says how much of the <em>figure</em> rests on unverified values. Ceiling coverage says how much of the <em>thesis</em> does — the artefact-by-artefact claim that a human signature is irreducible.
             Telemetry cannot measure this and a simulation cannot validate it: only the people who sign the certification can.</p>
         </div>
       )}

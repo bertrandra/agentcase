@@ -8,6 +8,7 @@ import type { Ctx } from '@/domain';
 import type { TeamRow } from '@/domain/types/state';
 import { CommitNumber } from '../CommitNumber';
 import { fmtK } from '../fmtK';
+import { tok } from '@/domain/theme';
 
 const opts = (list: string[]) => list.map((o) => <option key={o} value={o}>{o}</option>);
 
@@ -17,9 +18,9 @@ function Row({ r, i, c, W, open, onPin }: RowProps) {
   const tjm = rateFor(c.s, r.loc, r.grade), wd = c.inp.p('workdays');
   const d = (+r.etp || 0) - (W.targetFTE[i] ?? 0), pinned = isPinnedRow(r);
   const live = pinsOf(r).filter((id) => activeArtefacts(c.a, c.s).some((a) => a.id === id)).length;
-  const dcol = Math.abs(d) < 1e-9 ? '#566074' : d > 0 ? '#8F3237' : '#00666F';
+  const dcol = Math.abs(d) < 1e-9 ? tok('slate-700') : d > 0 ? tok('danger-800') : tok('teal-725');
   return (
-    <tr style={pinned ? { background: '#FFF8EC' } : undefined}>
+    <tr style={pinned ? { background: tok('warning-40') } : undefined}>
       <td><select aria-label={`Skill of line ${i + 1}`} value={r.skill} onChange={(e) => updateTeamRow(i, 'skill', e.target.value)}>{opts(SKILLS_EXIST)}</select></td>
       <td><select aria-label={`Grade of line ${i + 1}`} value={r.grade} onChange={(e) => updateTeamRow(i, 'grade', e.target.value)}>{opts(GRADES)}</select></td>
       <td><select aria-label={`Location of line ${i + 1}`} value={r.loc} onChange={(e) => updateTeamRow(i, 'loc', e.target.value)}>{opts(LOCATIONS.map((l) => l.name))}</select></td>
@@ -27,7 +28,7 @@ function Row({ r, i, c, W, open, onPin }: RowProps) {
       <td style={{ textAlign: 'right' }} title={`Implied by the artefact mix — exact ${(W.impliedETP[i] ?? 0).toFixed(2)}`}>
         {(W.targetFTE[i] ?? 0).toFixed(1)} <b style={{ color: dcol }}>{d >= 0 ? '+' : ''}{d.toFixed(1)}</b></td>
       <td style={{ textAlign: 'right' }}>{tjm}</td>
-      <td style={{ textAlign: 'right', fontWeight: 600 }}>{fmtK(r.etp * tjm * wd)}</td>
+      <td style={{ textAlign: 'right', fontWeight: 'var(--ac-font-weight-semibold)' }}>{fmtK(r.etp * tjm * wd)}</td>
       <td><button type="button" aria-pressed={open} aria-label={`Pin line ${i + 1}`} title={pinned ? `${live} of ${pinsOf(r).length} pinned artefacts are in scope` : `Auto: takes a share of the ${r.skill} pool`}
         onClick={() => onPin(i)}>📌{pinned ? ` ${live}` : ''}</button></td>
       <td><button type="button" aria-label={`Remove line ${i + 1}`} onClick={() => removeTeamRow(i)}>×</button></td>

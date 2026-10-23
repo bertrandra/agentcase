@@ -21,8 +21,8 @@ export function VerdictBanner({ run }: { run: SimRun | null }) {
   return (
     <>
       <StaleBanner />
-      <div style={{ border: `2px solid ${meta.color}`, background: meta.bg, borderRadius: 10, padding: '12px 16px', margin: '8px 0', display: 'flex', justifyContent: 'space-between', flexWrap: 'wrap', gap: 8 }}>
-        <div style={{ fontSize: 16, fontWeight: 700, color: meta.color }}>{meta.icon} {meta.label}</div>
+      <div style={{ border: `2px solid ${meta.color}`, background: meta.bg, borderRadius: 'var(--ac-radius-xl)', padding: '12px 16px', margin: '8px 0', display: 'flex', justifyContent: 'space-between', flexWrap: 'wrap', gap: 8 }}>
+        <div style={{ fontSize: 'var(--ac-font-size-2xl)', fontWeight: 'var(--ac-font-weight-bold)', color: meta.color }}>{meta.icon} {meta.label}</div>
         <div><strong style={{ color: meta.color }}>{d.confidence}%</strong> confidence · downside P10 <strong>{fmtEur(d.stats.p10)}</strong> · median P50 <strong>{fmtEur(d.stats.p50)}</strong></div>
       </div>
     </>

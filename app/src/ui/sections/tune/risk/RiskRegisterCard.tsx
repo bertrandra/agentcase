@@ -4,9 +4,10 @@ import { useCtx } from '@/store/hooks';
 import { Badge, Panel } from '@/ui/widgets/cards';
 import { DataTable } from '@/ui/widgets/DataTable';
 import { CheckInput } from '@/ui/widgets/fields';
+import { tok } from '@/domain/theme';
 
 const LEVELS = [{ v: 1, l: 'Low' }, { v: 2, l: 'Med' }, { v: 3, l: 'High' }];
-const scoreColor = (s: number) => (s >= 6 ? '#8F3237' : s >= 4 ? '#b04600' : '#006e79');
+const scoreColor = (s: number) => (s >= 6 ? tok('danger-800') : s >= 4 ? tok('warning-600') : tok('teal-700'));
 
 function Level({ id, which, value, label }: { id: string; which: 'p' | 'i'; value: number; label: string }) {
   return (
@@ -29,7 +30,7 @@ export function RiskRegisterCard() {
         { key: 's', header: 'Score', align: 'center', render: (r) => { const s = riskProb(c, r) * riskImpact(c, r); return <strong style={{ color: scoreColor(s) }}>{s}</strong>; } },
         { key: 'm', header: 'Mitigation', render: (r) => r.mitigation },
       ]} />
-      <div style={{ marginTop: 10, padding: '10px 12px', borderRadius: 8, background: `${band.color}18`, border: `1px solid ${band.color}` }}>
+      <div style={{ marginTop: 10, padding: '10px 12px', borderRadius: 'var(--ac-radius-lg)', background: `${band.color}18`, border: `1px solid ${band.color}` }}>
         <strong style={{ color: band.color }}>Consolidated risk: {band.label} ({Math.round(score * 100)}/100)</strong>
         {applied ? ` · +${Math.round(riskBar(c) * 100)} pts on the DI bar` : ' · informative only — tick the box above to feed Decision Intelligence'}
       </div>

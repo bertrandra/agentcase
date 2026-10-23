@@ -17,7 +17,7 @@ export function NavZone() {
         const expanded = open === group.id;
         return (
           <section key={group.id} aria-labelledby={`g-${group.id}`} data-group={group.id}>
-            <h2 id={`g-${group.id}`} className="ac-nav-group" title={group.description} style={{ boxShadow: `inset 4px 0 0 ${groupColor(colors, group.id)}`, paddingLeft: 10 }}>
+            <h2 id={`g-${group.id}`} className="ac-nav-group" title={group.description} style={{ boxShadow: `var(--ac-shadow-rail-offset) ${groupColor(colors, group.id)}`, paddingLeft: 10 }}>
               <button type="button" id={`gb-${group.id}`} className="ac-nav-toggle" aria-expanded={expanded} aria-controls={`gl-${group.id}`} onClick={() => toggleGroup(group.id)}>
                 <span>{group.label}</span><span className="ac-chev" aria-hidden="true">▼</span>
               </button>

@@ -6,17 +6,18 @@ import { ChartPanel } from '@/ui/widgets/ChartPanel';
 import { Callout, Panel } from '@/ui/widgets/cards';
 import { GridTable } from '../GridTable';
 import { decompBars } from './charts';
+import { tok } from '@/domain/theme';
 
-const dot = (c: string) => <span style={{ display: 'inline-block', width: 10, height: 10, borderRadius: 2, background: c, marginRight: 6 }} />;
+const dot = (c: string) => <span style={{ display: 'inline-block', width: 10, height: 10, borderRadius: 'var(--ac-radius-2xs)', background: c, marginRight: 6 }} />;
 
 /** Savings split into gross automation, agent operating cost and relocation (legacy savingsBreakdown), with the reconciliation line. */
 export function Decomp() {
   const ctx = useCtx(), b = useMemo(() => savingsBreakdown(ctx), [ctx]), cfg = useMemo(() => decompBars(b), [b]);
   const n = b.years.length, last = b.years[n - 1] as SavingsYear, cells = (f: (y: SavingsYear) => number) => b.years.map((y) => fmtSigned(f(y)));
   const rows = [
-    { key: 'g', label: <>{dot('#006e79')}Gross automation (heads removed × AS-IS rate)</>, cells: cells((y) => y.grossAuto) },
-    { key: 'a', label: <>{dot('#8F3237')}− Agent operating cost (tokens + infra + run team)</>, cells: b.years.map((y) => fmtSigned(-Math.abs(y.agentCost))) },
-    { key: 'r', label: <>{dot('#b04600')}Relocation (residual team × rate delta)</>, cells: cells((y) => y.relocation) },
+    { key: 'g', label: <>{dot(tok('teal-700'))}Gross automation (heads removed × AS-IS rate)</>, cells: cells((y) => y.grossAuto) },
+    { key: 'a', label: <>{dot(tok('danger-800'))}− Agent operating cost (tokens + infra + run team)</>, cells: b.years.map((y) => fmtSigned(-Math.abs(y.agentCost))) },
+    { key: 'r', label: <>{dot(tok('warning-600'))}Relocation (residual team × rate delta)</>, cells: cells((y) => y.relocation) },
     { key: 'n', label: '= Net automation', cells: cells((y) => y.netAuto), bold: true, rule: true },
     { key: 't', label: '= Total savings', cells: cells((y) => y.total), bold: true, rule: true },
   ];

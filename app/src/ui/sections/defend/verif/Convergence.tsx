@@ -8,8 +8,8 @@ export function Convergence({ checks }: { checks: ConvCheck[] }) {
       <div className="ac-table-wrap" tabIndex={0}><table className="ac-table">
         <thead><tr><th>Check</th><th>Invariant</th><th>Status</th><th>Detail</th></tr></thead>
         <tbody>{checks.map((x) => (
-          <tr key={x.id}><td style={{ fontWeight: 600, color: 'var(--ac-blue)' }}>{x.id}</td><td>{x.name}</td>
-            <td style={{ textAlign: 'center', fontWeight: 700, color: x.pass ? '#006e79' : '#8F3237' }}>{x.pass ? 'PASS' : 'FAIL'}</td><td style={{ fontSize: 11, color: '#555' }}>{x.detail}</td></tr>
+          <tr key={x.id}><td style={{ fontWeight: 'var(--ac-font-weight-semibold)', color: 'var(--ac-blue)' }}>{x.id}</td><td>{x.name}</td>
+            <td style={{ textAlign: 'center', fontWeight: 'var(--ac-font-weight-bold)', color: x.pass ? 'var(--ac-teal-700)' : 'var(--ac-danger-800)' }}>{x.pass ? 'PASS' : 'FAIL'}</td><td style={{ fontSize: 'var(--ac-font-size-sm)', color: 'var(--ac-neutral-750)' }}>{x.detail}</td></tr>
         ))}</tbody>
       </table></div>
       <p className="ac-muted">{checks.filter((x) => !x.pass).length} failing of {checks.length} invariants.</p>

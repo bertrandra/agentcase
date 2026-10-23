@@ -3,14 +3,15 @@ import type { ChartConfiguration } from 'chart.js';
 import type { SetupLine } from '@/domain/tuneB/setup';
 import { ChartPanel } from '@/ui/widgets/ChartPanel';
 import { eur } from '../../tuneB/fmt';
+import { tok, themedList } from '@/domain/theme';
 
-const COLORS = ['#71609E', '#0a6e9c', '#006e79', '#b04600'];
+const COLORS = themedList(['secondary-600', 'info-700', 'teal-700', 'warning-600']);
 
 /** Doughnut of the four setup lines. */
 export function SetupChart({ lines }: { lines: SetupLine[] }) {
   const config = useMemo<ChartConfiguration>(() => ({
     type: 'doughnut',
-    data: { labels: ['Tooling', 'Training', 'Coaching', 'Governance'], datasets: [{ data: lines.map((l) => l.amount), backgroundColor: COLORS, borderColor: '#fff', borderWidth: 2 }] },
+    data: { labels: ['Tooling', 'Training', 'Coaching', 'Governance'], datasets: [{ data: lines.map((l) => l.amount), backgroundColor: COLORS, borderColor: tok('neutral-0'), borderWidth: 2 }] },
     options: { plugins: { legend: { position: 'right' }, tooltip: { callbacks: { label: (x) => `${x.label}: ${eur(x.parsed)}` } } } },
   }), [lines]);
   return <ChartPanel config={config} label="Setup cost split" height={220} />;

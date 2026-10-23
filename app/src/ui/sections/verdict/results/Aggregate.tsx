@@ -53,7 +53,7 @@ export default function ResultsAggregate() {
         )}
         <div className="ac-form-row" style={{ alignItems: 'stretch' }}>
           <Panel title="Savings decomposition (last year of each product)">
-            <div style={{ lineHeight: 1.9 }}>
+            <div style={{ lineHeight: 'var(--ac-leading-code)' }}>
               <b style={{ color: 'var(--ac-teal)' }}>{fmtEur(L.grossAuto)}</b> gross automation<br />
               <b style={{ color: 'var(--ac-brick)' }}>−{fmtEur(L.agentCost)}</b> agent operating cost<br />
               <b style={{ color: 'var(--ac-amber)' }}>{L.relocation >= 0 ? '+' : ''}{fmtEur(L.relocation)}</b> relocation<br />
@@ -61,9 +61,9 @@ export default function ResultsAggregate() {
             </div>
           </Panel>
           <Panel title="Team shift (horizon end of each product)">
-            <div style={{ lineHeight: 1.9 }}>
+            <div style={{ lineHeight: 'var(--ac-leading-code)' }}>
               <strong>{T.asis.toFixed(1)}</strong> AS-IS human FTE →<br />
-              <b style={{ color: 'var(--ac-blue)' }}>{T.human.toFixed(1)}</b> residual human FTE + <b style={{ color: '#0a6e9c' }}>{T.agent.toFixed(1)}</b> agent vFTE
+              <b style={{ color: 'var(--ac-blue)' }}>{T.human.toFixed(1)}</b> residual human FTE + <b style={{ color: 'var(--ac-info-700)' }}>{T.agent.toFixed(1)}</b> agent vFTE
             </div>
           </Panel>
         </div>

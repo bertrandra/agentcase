@@ -29,7 +29,7 @@ export function CoefTable() {
                   const cur = (coef[k] as Row)[f] as number, edited = Math.abs(cur - ((defaults[k] as Row | undefined)?.[f] ?? cur)) > 1e-9;
                   return (
                     <td key={k} style={{ textAlign: 'center' }}>
-                      <CommitNumber value={String(cur)} label={`${label} of ${k}`} step={0.05} style={{ width: 64, textAlign: 'center', borderColor: edited ? '#b04600' : undefined }}
+                      <CommitNumber value={String(cur)} label={`${label} of ${k}`} step={0.05} style={{ width: 64, textAlign: 'center', borderColor: edited ? 'var(--ac-warning-600)' : undefined }}
                         onCommit={(v) => setEngageCoef(k, f, parseFloat(v))} />
                     </td>
                   );

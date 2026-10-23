@@ -11,13 +11,13 @@ export function Grade({ em }: { em: ReturnType<typeof evlModel> }) {
   return (
     <Panel title="Case confidence">
       <div className="ac-form-row" style={{ alignItems: 'center' }}>
-        <div style={{ border: `2px solid ${color}`, borderRadius: 12, padding: '14px 24px', textAlign: 'center', minWidth: 100 }}>
-          <div style={{ fontSize: 36, fontWeight: 800, color }}>{em.grade}</div><div className="ac-muted">score {(em.score * 100).toFixed(0)}%</div>
+        <div style={{ border: `2px solid ${color}`, borderRadius: 'var(--ac-radius-2xl)', padding: '14px 24px', textAlign: 'center', minWidth: 100 }}>
+          <div style={{ fontSize: 'var(--ac-font-size-8xl)', fontWeight: 'var(--ac-font-weight-extrabold)', color }}>{em.grade}</div><div className="ac-muted">score {(em.score * 100).toFixed(0)}%</div>
         </div>
         <div>
           Expected at <strong>{EVL_STAGE_LABEL[em.stage]}</strong>: grade <strong>{em.expectedGrade}</strong> or better.
-          {em.meetsExpectation === false && <div style={{ color: 'var(--ac-brick)', fontWeight: 600 }}>Below expectation - see the upgrade path below, not a blocker.</div>}
-          {em.meetsExpectation === true && <div style={{ color: 'var(--ac-teal)', fontWeight: 600 }}>Meets or exceeds expectation for this stage.</div>}
+          {em.meetsExpectation === false && <div style={{ color: 'var(--ac-brick)', fontWeight: 'var(--ac-font-weight-semibold)' }}>Below expectation - see the upgrade path below, not a blocker.</div>}
+          {em.meetsExpectation === true && <div style={{ color: 'var(--ac-teal)', fontWeight: 'var(--ac-font-weight-semibold)' }}>Meets or exceeds expectation for this stage.</div>}
         </div>
         {!em.hasTornado && <div style={{ color: 'var(--ac-amber)' }}>Using equal weighting - no P4 run yet, so this is a placeholder, not a considered grade.</div>}
       </div>

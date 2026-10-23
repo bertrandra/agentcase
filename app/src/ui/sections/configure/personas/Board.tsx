@@ -3,6 +3,7 @@ import { useState, type ReactNode } from 'react';
 import type { NavSection } from '@/domain/nav/layout';
 import type { MenuGroup } from '@/domain/pdc/personas';
 import { groupColor } from '@/ui/zones/navModel';
+import { tok } from '@/domain/theme';
 
 export interface Col { group: MenuGroup; cards: NavSection[] }
 interface Props {
@@ -38,7 +39,7 @@ export function Board({ label, cols, colors, cardClass, cardExtra, onDrop, onShi
       {cols.map(({ group, cards }) => (
         <div key={group.id} role="listitem" aria-label={group.label} data-group={group.id} className={`ac-ncol${over === group.id ? ' is-over' : ''}`} style={{ borderTopColor: groupColor(colors, group.id) }}
           onDragOver={(e) => { e.preventDefault(); hover(group.id, cards, null); }} onDragLeave={() => { setOver(null); onPending?.(null); }} onDrop={(e) => { e.preventDefault(); drop(group.id, cards, null); }}>
-          <div style={{ display: 'flex', gap: 4, alignItems: 'center', fontWeight: 700, color: textColor(groupColor(colors, group.id), '#f7f9fc') }}>
+          <div style={{ display: 'flex', gap: 4, alignItems: 'center', fontWeight: 'var(--ac-font-weight-bold)', color: textColor(groupColor(colors, group.id), tok('slate-45')) }}>
             {onShiftColumn && <button type="button" className="ac-btn" aria-label={`Move the group ${group.label} left`} onClick={() => onShiftColumn(group.id, -1)}>◀</button>}
             <span style={{ flex: 1 }}>{group.label} <small className="ac-muted">({cards.length})</small></span>
             {onShiftColumn && <button type="button" className="ac-btn" aria-label={`Move the group ${group.label} right`} onClick={() => onShiftColumn(group.id, 1)}>▶</button>}
@@ -49,7 +50,7 @@ export function Board({ label, cols, colors, cardClass, cardExtra, onDrop, onShi
               onDragStart={(e) => { setDrag(s.id); e.dataTransfer?.setData('text/plain', s.id); }} onDragEnd={clear} onDragOver={(e) => { e.preventDefault(); e.stopPropagation(); hover(group.id, cards, s.id); }}
               onDrop={(e) => { e.preventDefault(); e.stopPropagation(); drop(group.id, cards, s.id); }} onDoubleClick={() => onDouble?.(s.id)}>
               <strong>{s.label}</strong>
-              <div className="ac-muted" style={{ fontSize: 10 }}><code>{s.id}</code> · seq {s.groupSeq || 0}</div>
+              <div className="ac-muted" style={{ fontSize: 'var(--ac-font-size-xs)' }}><code>{s.id}</code> · seq {s.groupSeq || 0}</div>
               {cardExtra?.(s)}
               <div className="ac-ncard-ops">
                 <button type="button" className="ac-btn" aria-label={`Move ${s.label} up`} onClick={() => onShift(s.id, -1)}>↑</button>

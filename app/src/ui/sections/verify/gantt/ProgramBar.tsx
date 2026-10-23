@@ -21,11 +21,11 @@ export function ProgramBar({ r }: { r: Row }) {
     const msg = nudgeBar({ name: r.name, input: r.input, current: r.value ?? 0, mode: e.altKey ? 'move' : 'resize', dir, big: e.shiftKey });
     if (msg) toast(msg);
   };
-  const base = { position: 'absolute' as const, top: 0, height: 14, borderRadius: 3, left: pct(r.left), width: pct(r.w), background: r.color };
+  const base = { position: 'absolute' as const, top: 0, height: 14, borderRadius: 'var(--ac-radius-xs)', left: pct(r.left), width: pct(r.w), background: r.color };
   const aria = spec ? { role: 'slider', 'aria-valuemin': spec.min, 'aria-valuemax': spec.max, 'aria-valuenow': r.value, 'aria-valuetext': text, 'aria-label': `${r.name} duration in ${spec.unit}`,
     'aria-keyshortcuts': 'ArrowLeft ArrowRight Alt+ArrowLeft Alt+ArrowRight', 'aria-description': HINT } : { role: 'group', 'aria-label': text };
   return (
-    <div style={{ position: 'relative', flex: 1, height: 14, background: '#F4F6FB', borderRadius: 3 }}>
+    <div style={{ position: 'relative', flex: 1, height: 14, background: 'var(--ac-slate-55)', borderRadius: 'var(--ac-radius-xs)' }}>
       <div title={`${r.name} — ${r.meta}`}tabIndex={0} onKeyDown={onKey} style={base} {...aria} />
     </div>
   );

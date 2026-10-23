@@ -26,7 +26,7 @@ export function MetricTable({ R, horizon, s }: { R: StrategyRow[]; horizon: numb
             <tr key={m.k}><td style={{ whiteSpace: 'nowrap' }}>{m.k === 'tco' ? `TCO (${horizon}-yr)` : m.label} <Badge tone={m.declared ? 'amber' : 'blue'}>{m.declared ? 'declared' : 'computed'}</Badge></td>
               {R.map((r, i) => {
                 const v = ex.vals[i] as number, best = v === ex.best, worst = v === ex.worst && ex.best !== ex.worst;
-                return <td key={r.id} data-rank={best ? 'best' : worst ? 'worst' : undefined} style={{ textAlign: 'center', background: best ? '#F1F8E9' : undefined, fontWeight: best ? 700 : undefined,
+                return <td key={r.id} data-rank={best ? 'best' : worst ? 'worst' : undefined} style={{ textAlign: 'center', background: best ? 'var(--ac-success-50)' : undefined, fontWeight: best ? 'var(--ac-font-weight-bold)' : undefined,
                   color: best ? 'var(--ac-teal)' : worst ? 'var(--ac-brick)' : undefined }}>{fmt(m.k, metricValue(r, m.k))}</td>;
               })}</tr>
           );

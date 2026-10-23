@@ -57,7 +57,7 @@ export function HubSettings() {
       <div className="ac-form-row">
         <NumField label="Hub infrastructure (€/month)" value={hub.infraMonthly} min={0} step={250} onCommit={commitInfra} />
       </div>
-      {error && <p role="alert" style={{ color: '#8F3237' }}>{error}</p>}
+      {error && <p role="alert" style={{ color: 'var(--ac-danger-800)' }}>{error}</p>}
       <fieldset style={{ border: 0, padding: 0 }}>
         <legend><strong>Infrastructure allocation</strong></legend>
         {MODES.map((m) => (

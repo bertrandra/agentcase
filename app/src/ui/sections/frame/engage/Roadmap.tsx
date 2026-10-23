@@ -12,11 +12,11 @@ export function Roadmap() {
       <div style={{ display: 'flex', gap: 8, flexWrap: 'wrap' }}>
         {stages.map((s) => (
           <button key={s.name} type="button" onClick={() => goSection(s.section)} aria-current={s.current ? 'step' : undefined}
-            style={{ flex: 1, minWidth: 150, textAlign: 'left', cursor: 'pointer', border: `2px solid ${s.current ? '#FEB100' : 'var(--ac-line)'}`, borderRadius: 8, padding: '8px 10px', background: 'var(--ac-surface)' }}>
-            <div style={{ fontSize: 12, fontWeight: 700 }}>{s.name}{s.current ? ' ◀ now' : ''}</div>
-            <div style={{ fontSize: 11 }}>{s.label}</div>
-            <div style={{ fontSize: 10 }}>{s.from}{s.to ? ` → ${s.to}` : ' → open'}</div>
-            <div style={{ fontSize: 10, color: 'var(--ac-teal)' }}>Gate: {s.gate}</div>
+            style={{ flex: 1, minWidth: 150, textAlign: 'left', cursor: 'pointer', border: `2px solid ${s.current ? 'var(--ac-warning-300)' : 'var(--ac-line)'}`, borderRadius: 'var(--ac-radius-lg)', padding: '8px 10px', background: 'var(--ac-surface)' }}>
+            <div style={{ fontSize: 'var(--ac-font-size-md)', fontWeight: 'var(--ac-font-weight-bold)' }}>{s.name}{s.current ? ' ◀ now' : ''}</div>
+            <div style={{ fontSize: 'var(--ac-font-size-sm)' }}>{s.label}</div>
+            <div style={{ fontSize: 'var(--ac-font-size-xs)' }}>{s.from}{s.to ? ` → ${s.to}` : ' → open'}</div>
+            <div style={{ fontSize: 'var(--ac-font-size-xs)', color: 'var(--ac-teal)' }}>Gate: {s.gate}</div>
           </button>
         ))}
       </div>

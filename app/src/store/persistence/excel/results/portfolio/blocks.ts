@@ -2,6 +2,7 @@
 import type { Worksheet } from 'exceljs';
 import type { SummaryRow } from '@/domain/portfolio';
 import { head } from '../style';
+import { argb } from '@/domain/theme';
 
 export type V = string | number | null;
 export const MONEY = '#,##0', PCT = '0.0', RATIO = '0.0000';
@@ -18,7 +19,7 @@ export function table(ws: Worksheet, title: string, header: string[], rows: V[][
   ws.addRow([]);
   ws.addRow([title]).getCell(1).font = { bold: true, size: 12 };
   const h = ws.addRow(header);
-  h.eachCell((c) => { c.font = { bold: true }; c.fill = { type: 'pattern', pattern: 'solid', fgColor: { argb: 'FFD9E2F3' } }; });
+  h.eachCell((c) => { c.font = { bold: true }; c.fill = { type: 'pattern', pattern: 'solid', fgColor: { argb: argb('excel-band-bg') } }; });
   for (const cells of rows) {
     const r = ws.addRow(cells);
     cells.forEach((v, i) => { const f = fmts[i]; if (f && typeof v === 'number') r.getCell(i + 1).numFmt = f; });

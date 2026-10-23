@@ -25,7 +25,7 @@ function Topologies() {
     ['AI Office — Design Authority', (t) => t.da], ['AI Office — Lead', (t) => t.lead],
   ];
   const line = (l: string, f: (t: Topology) => number, note?: string, strong = false) => (
-    <tr key={l} style={strong ? { fontWeight: 700 } : undefined}><td>{l}{note && <small className="ac-muted"> {note}</small>}</td><td className="ac-c">{f(y1).toFixed(2)}</td><td className="ac-c">{f(yN).toFixed(2)}</td></tr>
+    <tr key={l} style={strong ? { fontWeight: 'var(--ac-font-weight-bold)' } : undefined}><td>{l}{note && <small className="ac-muted"> {note}</small>}</td><td className="ac-c">{f(y1).toFixed(2)}</td><td className="ac-c">{f(yN).toFixed(2)}</td></tr>
   );
   return (
     <>

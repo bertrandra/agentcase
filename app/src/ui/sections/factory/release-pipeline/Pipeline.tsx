@@ -14,7 +14,7 @@ export function Pipeline() {
   const releases = useRecs('RELEASES'), rcs = useRecs('RELEASE_CANDIDATES'), envs = useRecs('ENVIRONMENTS') as unknown as (Rec & Environment)[], deps = useRecs('DEPLOYMENTS');
   const envName = (id: unknown) => envs.find((e) => e.id === id)?.name ?? '(none)';
   const decision = (r: Rec) => (
-    <select aria-label={`Decision of ${r.id}`} value={text(r.decision)} style={{ width: '100%', fontWeight: 700, color: r.decision === 'Approved' ? 'var(--ac-teal)' : r.decision === 'Rejected' ? 'var(--ac-brick)' : 'var(--ac-amber)' }} onChange={(e) => setApprovalDecision(r.id, e.target.value)}>
+    <select aria-label={`Decision of ${r.id}`} value={text(r.decision)} style={{ width: '100%', fontWeight: 'var(--ac-font-weight-bold)', color: r.decision === 'Approved' ? 'var(--ac-teal)' : r.decision === 'Rejected' ? 'var(--ac-brick)' : 'var(--ac-amber)' }} onChange={(e) => setApprovalDecision(r.id, e.target.value)}>
       {['Pending', 'Approved', 'Rejected'].map((o) => <option key={o} value={o}>{o}</option>)}
     </select>
   );

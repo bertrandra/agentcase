@@ -16,7 +16,7 @@ export function StoryTable() {
   const row = (id: string, name: string, isReg: boolean, sid: string) => {
     const other = storyOf(isReg ? reg : sdlc, id);
     return (
-      <label key={id} className="ac-check" style={{ display: 'flex', gap: 6, fontSize: 11 }}>
+      <label key={id} className="ac-check" style={{ display: 'flex', gap: 6, fontSize: 'var(--ac-font-size-sm)' }}>
         <input type="checkbox" aria-label={`${id} in story ${sid}`} checked={other === sid} onChange={(e) => toggleStoryArtefact(sid, id, isReg, e.target.checked)} />
         {isReg ? '⚖️' : '📄'} {id} · {name}{other && other !== sid && <span style={{ color: 'var(--ac-amber)' }}> (linked to another story)</span>}
       </label>

@@ -7,6 +7,7 @@ import { DataTable } from '@/ui/widgets/DataTable';
 import { SectionFrame } from '@/ui/zones/SectionFrame';
 import { monthlyMix } from '../charts';
 import { useEconomics } from '../useEconomics';
+import { tok } from '@/domain/theme';
 
 const help = (
   <>
@@ -14,7 +15,7 @@ const help = (
     <p>Net(m) = (Baseline/12 − run costs) − setup spread(m); Cumulative(m) = Σ Net up to month m. Months with setup spend carry it in the Setup column, so early cumulative is negative.</p>
   </>
 );
-const sign = (x: number) => ({ color: x >= 0 ? '#00666F' : '#9c5d0a' });
+const sign = (x: number) => ({ color: x >= 0 ? tok('teal-725') : tok('warning-595') });
 
 /** Monthly detail — one row per month of the horizon, chart decimated for long horizons. */
 export default function MonthlySection() {

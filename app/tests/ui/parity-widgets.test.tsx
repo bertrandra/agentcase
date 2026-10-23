@@ -6,8 +6,9 @@ import { contrast } from '../../src/ui/colorText';
 import { Badge, Callout, Stat, StatRow } from '../../src/ui/widgets/cards';
 import { Rich } from '../../src/ui/widgets/Rich';
 import { DataTable } from '../../src/ui/widgets/DataTable';
+import { resolveCss } from '../helpers/themeCss';
 
-const css = readFileSync(new URL('../../src/ui/theme/content.css', import.meta.url), 'utf8');
+const css = resolveCss(readFileSync(new URL('../../src/ui/theme/content.css', import.meta.url), 'utf8'));   // tokens resolved to their default-theme values
 
 describe('shared widgets carry the classes the legacy-matching styles hang on', () => {
   it('Callout: note (insight box), warn, error, and the legacy green / blue notes', () => {

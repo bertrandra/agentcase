@@ -15,6 +15,14 @@ All notable changes to AgentCase, newest first. Product version from v19.0.0 = `
 
 When releasing, follow [docs/BUMP_PROCEDURE.md](docs/BUMP_PROCEDURE.md) (§7 for the legacy file) and add the new version at the top.
 
+## [v20.6.0] 2026-10-23 — Theme tokens (T1 of the configurable theme)
+
+- **Theme tokens (T1 of the configurable theme).** Every visual value is a design token: 374 tokens in `app/src/domain/theme` (9 colour scales with 154 steps, 35 translucent steps, 51 semantic roles: surfaces, text, lines, states, header / KPI bar / sidebar chrome, tables and the business colours automation / glass ceiling / human supervision / agentic; 24 chart tokens: categorical 1–8, sequential 1–10, diverging, grid, axis; 18 export tokens for the Excel workbooks and the report; typography, radius, border widths, shadows, control paddings, motion). `app/src/ui/theme/tokens.css` is generated from that table (`npm run theme:gen` / `theme:check`) and a test fails on any drift. See `docs/THEME.md`.
+- **No hard-coded visual value.** The CSS, the inline styles, the SVG charts and the chart.js configs of `src/ui` read `var(--ac-*)` or `tok()`; the domain read-outs (status bands, scenario and Gantt colours), the Excel fills (`argb()`) and the HTML report (`reportStyle()`) read the same table. Module-level palettes are lazy (`themedList`, getters) so a later theme switch reaches them. `tests/ui/no-hardcoded-style.test.ts` fails on any colour, font family or raw box-shadow outside the token files (explained allow-list: `transparent`, `currentColor`, `inherit`, `revert`, `none`, system colours).
+### Changed
+- No visible change: the default theme is the legacy look value for value (ui-parity: same 12 recorded header divergences as before, no new one; screenshot comparison of every section identical; Excel colours and report values unchanged). The legacy-value guards (`parity-tokens`, `parity-sections`, `parity-widgets`) now read the stylesheets with the tokens resolved.
+- Three inline styles referred to undefined custom properties with a fallback (`--ac-amber-bg`, `--ac-surface-alt`); they now use the fallback's token directly (same colour).
+
 ## [v20.5.0] 2026-10-23 — Menu structures, legacy Section assignment tab, Business journey persona
 
 ### New
@@ -24,7 +32,6 @@ When releasing, follow [docs/BUMP_PROCEDURE.md](docs/BUMP_PROCEDURE.md) (§7 for
 
 ### Tests changed
 - `tests/helpers/excelParams.ts`: the legacy import target leaves out the new built-in persona (the legacy pristine state never had it); see DEV-MENU-STRUCTURES.
-
 ## [v20.4.0] 2026-10-22 — Calculation zones, generated dependency graph, affected-test selection (+ compact header)
 
 ### New

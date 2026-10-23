@@ -11,7 +11,7 @@ export function GridTable({ head, rows, caption }: { head: string[]; rows: GridR
         <thead><tr>{head.map((h, i) => <th key={h + i} scope="col" style={{ textAlign: i ? 'right' : 'left' }}>{h}</th>)}</tr></thead>
         <tbody>
           {rows.map((r) => (
-            <tr key={r.key} style={{ fontWeight: r.bold ? 700 : undefined, borderTop: r.rule ? '2px solid var(--ac-blue)' : undefined, color: r.color }}>
+            <tr key={r.key} style={{ fontWeight: r.bold ? 'var(--ac-font-weight-bold)' : undefined, borderTop: r.rule ? '2px solid var(--ac-blue)' : undefined, color: r.color }}>
               <td>{r.label}</td>{r.cells.map((c, i) => <td key={i} style={{ textAlign: 'right' }}>{c}</td>)}
             </tr>
           ))}
