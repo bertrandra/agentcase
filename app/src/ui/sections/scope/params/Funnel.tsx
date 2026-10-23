@@ -1,9 +1,10 @@
 import { useEffect, useMemo, useState } from 'react';
 import { activeStages, funnelStage, FUNNEL_EPS, type AutoBase } from '@/domain/scope/automation';
 import { FunnelSvg } from './FunnelSvg';
+import { displaySpec } from '@/ui/display/store';
 
 let autoplayed = false;   // the replay starts by itself once per session, like the legacy funnel
-const reducedMotion = (): boolean => { try { return !!window.matchMedia?.('(prefers-reduced-motion: reduce)').matches; } catch { return false; } };
+const reducedMotion = (): boolean => displaySpec().reduceMotion;   // the system setting or the viewer's "Reduce motion" option (ui/display)
 
 /** 🧱 Human & regulatory glass ceiling — the stage chain evaluated at one month, with play / scrub through the horizon (view state only). */
 export function Funnel({ base }: { base: AutoBase }) {

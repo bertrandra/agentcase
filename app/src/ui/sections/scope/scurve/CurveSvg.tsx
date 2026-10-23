@@ -35,7 +35,7 @@ export function CurveSvg({ view }: { view: ScurveView }) {
       {GRID.map((v) => <g key={v}><line x1={M.l} y1={g.sy(v)} x2={W - M.r} y2={g.sy(v)} stroke="var(--ac-slate-105)" /><text x={M.l - 8} y={g.sy(v) + 4} textAnchor="end">{v}%</text></g>)}
       <path d={pathOf(g, curve)} fill="none" stroke="var(--ac-primary-700)" strokeWidth={2.6} strokeLinejoin="round" strokeLinecap="round" />
       {view.levels.filter((l) => l.month != null).map((l) => {
-        const x = g.sx(l.month as number), col = LEVEL_COLOR[l.lvl] ?? tok('primary-700');
+        const x = g.sx(l.month as number), col = LEVEL_COLOR[l.lvl] ?? tok('chart-cat-1');
         return <g key={l.lvl}><line x1={x} y1={M.t} x2={x} y2={H - M.b} stroke={col} strokeWidth={1.5} strokeDasharray="4 3" /><text x={x} y={M.t - 8} textAnchor="middle" style={{ fill: col, fontSize: 'var(--ac-font-size-md-plus)', fontWeight: 'var(--ac-font-weight-bold)' }}>{l.lvl}</text></g>;
       })}
       {pts.map((p, i) => {

@@ -5,9 +5,9 @@ import { layoutGraph } from './layout';
 import { tok } from '@/domain/theme';
 
 const short = (s: string) => { const t = s.replace(/^[^A-Za-z0-9]+/, '').trim(); return t.length > 22 ? `${t.slice(0, 21)}…` : t; };
-const GROUP_COLOR: Record<string, string> = { get frame() { return tok('primary-700'); }, get baseline() { return tok('teal-700'); }, get scope() { return tok('secondary-600'); }, get tune() { return tok('warning-600'); }, get verify() { return tok('success-625'); }, get economics() { return tok('danger-800'); } };
-const LANE_COLOR: Record<string, string> = { get input() { return tok('primary-700'); }, get calc() { return tok('secondary-600'); }, get result() { return tok('success-625'); } };
-const EDGE_COLOR = { get r() { return tok('primary-700'); }, get w() { return tok('warning-600'); }, get z() { return tok('primary-700'); } };
+const GROUP_COLOR: Record<string, string> = { get frame() { return tok('chart-cat-1'); }, get baseline() { return tok('chart-cat-2'); }, get scope() { return tok('chart-cat-4'); }, get tune() { return tok('chart-cat-3'); }, get verify() { return tok('success-625'); }, get economics() { return tok('danger-800'); } };
+const LANE_COLOR: Record<string, string> = { get input() { return tok('chart-cat-1'); }, get calc() { return tok('chart-cat-4'); }, get result() { return tok('success-625'); } };
+const EDGE_COLOR = { get r() { return tok('chart-cat-1'); }, get w() { return tok('chart-cat-3'); }, get z() { return tok('chart-cat-1'); } };
 
 /** Staged-flow graph of the generated dependencies: lanes left to right, SVG nodes and edges. Click or press Enter on a node to highlight its upstream and downstream. */
 export function Graph({ sel, onSelect }: { sel: string | null; onSelect: (id: string | null) => void }) {
@@ -31,7 +31,7 @@ export function Graph({ sel, onSelect }: { sel: string | null; onSelect: (id: st
             stroke={EDGE_COLOR[e[2]]} strokeDasharray={back ? '4 3' : undefined} strokeWidth={on ? 2.3 : 1.2} opacity={!hit ? 0.24 : on ? 1 : 0.04} markerEnd={`url(#dep-arr-${e[2] === 'w' ? 'w' : 'r'})`} />;
         })}
         {Object.entries(L.pos).map(([id, p]) => {
-          const zone = isZone(id), color = zone ? LANE_COLOR[zoneOf(id)!.lane] : GROUP_COLOR[DATA.sections.find((s) => s.id === id)?.group ?? ''] ?? tok('primary-700');
+          const zone = isZone(id), color = zone ? LANE_COLOR[zoneOf(id)!.lane] : GROUP_COLOR[DATA.sections.find((s) => s.id === id)?.group ?? ''] ?? tok('chart-cat-1');
           const act = () => onSelect(sel === id ? null : id);
           return (
             <g key={id} data-node={id} data-lit={lit(id) ? '1' : '0'} transform={`translate(${p.x},${p.y})`} style={{ cursor: 'pointer' }} opacity={lit(id) ? 1 : 0.3} tabIndex={0} role="button" aria-pressed={sel === id}

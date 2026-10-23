@@ -25,8 +25,8 @@ export function cashflowLine(v: EconomicsView): ChartConfiguration {
   const s = decimate(v.months, v.months.length > 40 ? 2 : 1);
   return {
     type: 'line',
-    data: { labels: s.map((x) => `M${x.mo}`), datasets: [{ label: 'Cumulative cash-flow', data: s.map((x) => x.cum), borderColor: tok('primary-700'), borderWidth: 3, tension: 0.3, pointRadius: 1,
-      segment: { borderColor: (c: { p1: { parsed: { y: number } } }) => (c.p1.parsed.y >= 0 ? tok('teal-700') : tok('warning-600')) } }] },
+    data: { labels: s.map((x) => `M${x.mo}`), datasets: [{ label: 'Cumulative cash-flow', data: s.map((x) => x.cum), borderColor: tok('chart-cat-1'), borderWidth: 3, tension: 0.3, pointRadius: 1,
+      segment: { borderColor: (c: { p1: { parsed: { y: number } } }) => (c.p1.parsed.y >= 0 ? tok('chart-cat-2') : tok('chart-cat-3')) } }] },
     options: { plugins: { legend: { display: false } }, scales: { y: { ticks: { callback: tickK }, grid: GRID }, x: { ticks: { maxTicksLimit: 18 } } } },
   };
 }
@@ -39,7 +39,7 @@ export function monthlyMix(v: EconomicsView): ChartConfiguration {
     data: { labels: s.map((x) => `M${x.mo}`), datasets: [
       { type: 'bar', label: 'Total cost', data: s.map((x) => x.total), backgroundColor: tok('warning-500-a50'), yAxisID: 'y' },
       { type: 'bar', label: 'Saving', data: s.map((x) => x.sav), backgroundColor: tok('success-500-a50'), yAxisID: 'y' },
-      { type: 'line', label: 'Cumulative cash-flow', data: s.map((x) => x.cum), borderColor: tok('primary-700'), borderWidth: 3, tension: 0.3, yAxisID: 'y2', pointRadius: 1 },
+      { type: 'line', label: 'Cumulative cash-flow', data: s.map((x) => x.cum), borderColor: tok('chart-cat-1'), borderWidth: 3, tension: 0.3, yAxisID: 'y2', pointRadius: 1 },
     ] },
     options: { plugins: { legend: { position: 'top' } }, scales: {
       y: { position: 'left', title: { display: true, text: '€/month' }, ticks: { callback: tickK }, grid: GRID },

@@ -1,0 +1,10 @@
+/* The Display control of the top bar (ui/display/DisplayMenu.tsx): a disclosure panel under the icon button. */
+.ac-display { position: relative; }
+.ac-display-panel { position: absolute; right: 0; top: calc(100% + 6px); z-index: 60; width: 240px; padding: .6rem .8rem; color: var(--ac-ink); background: var(--ac-surface-raised);
+  border: var(--ac-border-thin) solid var(--ac-line-strong); border-radius: var(--ac-radius-lg); box-shadow: var(--ac-shadow-toast); font-size: var(--ac-font-size-md); text-align: start; }
+.ac-display-panel fieldset { margin: 0 0 .5rem; padding: 0; border: 0; }
+.ac-display-panel legend { padding: 0; margin-bottom: 2px; font-weight: var(--ac-font-weight-bold); color: var(--ac-text-heading); }
+.ac-display-panel label { display: flex; align-items: center; gap: 6px; padding: 2px 0; cursor: pointer; }
+.ac-top .ac-display-panel :focus-visible { outline-color: var(--ac-focus); }
+.ac-display-note { margin: .4rem 0 0; font-size: var(--ac-font-size-sm); color: var(--ac-muted); }
+.ac-top .ac-display-panel input { accent-color: var(--ac-focus); }

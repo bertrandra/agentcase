@@ -16,7 +16,7 @@ export function GlossaryTable({ rows }: { rows: Entry[] }) {
             if (!sub.length) return null;
             return (
               <Fragment key={c.id}>
-                <tr><th colSpan={4} scope="colgroup" style={{ background: c.color, color: 'var(--ac-neutral-0)' }}>{i + 1} · {c.label}</th></tr>
+                <tr><th colSpan={4} scope="colgroup" style={{ background: c.color, color: 'var(--ac-text-on-data)' }}>{i + 1} · {c.label}</th></tr>
                 {sub.map((r) => (
                   <tr key={r[1]}>
                     <td style={{ fontWeight: 'var(--ac-font-weight-semibold)', color: textColor(c.color, tok('neutral-25')) }}>{r[1]}</td><td>{r[2]}</td><td>{r[3]}</td>

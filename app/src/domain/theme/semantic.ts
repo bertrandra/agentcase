@@ -7,16 +7,16 @@ export const ROLES = {
   // page, surfaces, lines and text
   bg: '{slate-50}', surface: '{neutral-0}', 'surface-raised': '{neutral-0}', 'surface-muted': '{neutral-25}', 'surface-tint': '{primary-60}',
   ink: '{neutral-900}', muted: '{neutral-700}', 'text-strong': '{neutral-950}', 'text-soft': '{neutral-750}', 'text-label': '{neutral-650}',
-  'text-inverse': '{neutral-0}', 'text-on-primary': '{neutral-0}', 'text-link': '{primary-700}', 'text-heading': '{primary-700}',
+  'text-inverse': '{neutral-0}', 'text-on-primary': '{neutral-0}', 'text-on-data': '{neutral-0}', 'text-link': '{primary-700}', 'text-heading': '{primary-700}',
   line: '{neutral-130}', 'line-strong': '{neutral-175}', 'line-subtle': '{neutral-125}', 'line-tint': '{primary-200}',
-  focus: '{primary-700}', hover: '{primary-60}', 'hover-text': '{primary-700}', selected: '{primary-700}', 'selected-text': '{neutral-0}',
+  focus: '{primary-700}', 'focus-header': '{focus}', hover: '{primary-60}', 'hover-text': '{primary-700}', selected: '{primary-700}', 'selected-text': '{neutral-0}',
   // header banner, KPI bar, sidebar
   'header-start': '{primary-700}', 'header-end': '{primary-975}', 'header-text': '{neutral-0}',
   'kpibar-start': '{primary-700}', 'kpibar-end': '{primary-850}', 'kpibar-text': '{neutral-0}',
   'sidebar-bg': '{neutral-0}', 'sidebar-text': '{neutral-900}', 'sidebar-item-text': '{neutral-750}', 'sidebar-group-bg': '{slate-80}',
   'sidebar-group-text': '{primary-975}', 'sidebar-group-hover-bg': '{primary-115}',
   // data tables
-  'table-head-bg': '{primary-700}', 'table-head-text': '{neutral-0}', 'table-head-line': '{neutral-175}', 'table-line': '{neutral-125}',
+  'table-head-bg': '{primary-700}', 'table-head-text': '{neutral-0}', 'table-head-note': '{primary-200}', 'table-head-line': '{neutral-175}', 'table-line': '{neutral-125}',
   'table-stripe': '{neutral-25}', 'table-hover': '{primary-60}',
   // business meaning, kept across themes
   automation: '{teal-700}', 'glass-ceiling': '{danger-800}', 'human-supervision': '{warning-600}', agentic: '{secondary-600}', ai: '{info-700}', vfte: '{success-510}',

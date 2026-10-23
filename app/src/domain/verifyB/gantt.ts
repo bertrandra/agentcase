@@ -72,7 +72,7 @@ export function ganttView(c: Ctx): GanttView {
     color: PAL[i % PAL.length]!, arts: artRows(ax, x.arts, lam, win[x.id]!),
   }));
   if (cross.length) phases.push({ ...spanOf(ax, win['Cross-cutting']!, cw.sf), key: '__cross__', name: '🔶 Cross-cutting', count: cross.length, last: lastId === 'Cross-cutting', cross: true,
-    meta: meta('Cross-cutting', cw.sf, 'AI · Sustainability · Usability · '), color: tok('warning-600'), arts: artRows(ax, cross, lam, win['Cross-cutting']!) });
+    meta: meta('Cross-cutting', cw.sf, 'AI · Sustainability · Usability · '), color: tok('chart-cat-3'), arts: artRows(ax, cross, lam, win['Cross-cutting']!) });
 
   return {
     axis: ax, phaseCount: ordered.length, velocityGain: vAt(1), overlap, crossSeq, hasCross: cross.length > 0, markers: milestoneMarkers(c, ax), phases,
