@@ -3,6 +3,7 @@ import { BANDS } from '@/domain/baseline/skills';
 import { setRate } from '@/controllers/baseline';
 import { useDoc } from '@/store/hooks';
 import { SectionFrame } from '@/ui/zones/SectionFrame';
+import { FieldNumber } from '@/ui/widgets/field/FieldNumber';
 import { ClassBadge } from '../ClassBadge';
 import { SkillsCatalogue } from './SkillsCatalogue';
 
@@ -26,7 +27,9 @@ function RateMatrix() {
               <td><strong>{label}</strong></td>
               {LOCATIONS.map((l) => (
                 <td key={l.name}>
-                  <input type="number" style={{ width: 80 }} aria-label={`${l.name} band ${band} day rate`} value={rate[l.name]?.[band] ?? 0} onChange={(e) => setRate(l.name, band, e.target.value)} />
+                  <FieldNumber bare native="number" label={`${l.name} band ${band} day rate`} min={0} step={10} value={rate[l.name]?.[band] ?? 0} onCommit={(v) => setRate(l.name, band, v)}>
+                    <input type="number" style={{ width: 80 }} aria-label={`${l.name} band ${band} day rate`} value={rate[l.name]?.[band] ?? 0} onChange={(e) => setRate(l.name, band, e.target.value)} />
+                  </FieldNumber>
                 </td>
               ))}
             </tr>

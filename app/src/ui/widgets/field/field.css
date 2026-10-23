@@ -1,0 +1,28 @@
+/* Field* control variants (src/ui/widgets/field, docs/THEME.md §6): rendered only when a controls axis asks for them, so these rules never
+   touch the default look. Slider + field, stepper (− value +), segmented buttons, radio group, switch. Tokens only. */
+.ac-fv-bare { display: inline-block; }
+.ac-section .ac-fv-row { display: flex; align-items: center; gap: 8px; }
+.ac-section .ac-fv-row input[type='range'] { flex: 1; min-width: 100px; padding: 0; }
+.ac-section .ac-fv-row input[type='number'] { flex: none; width: 92px; text-align: center; }
+.ac-section .ac-fv-stepper input[type='number'] { width: 80px; }
+.ac-section .ac-fv-step { min-width: 2.2em; padding: var(--ac-pad-button-compact); font: inherit; font-size: var(--ac-font-size-lg); font-weight: var(--ac-font-weight-bold); line-height: var(--ac-leading-none); color: var(--ac-text-link); background: var(--ac-surface); border: var(--ac-border-control) solid var(--ac-line-strong); border-radius: var(--ac-radius-button); cursor: pointer; }
+.ac-section .ac-fv-step:hover:not(:disabled) { background: var(--ac-hover); border-color: var(--ac-focus); }
+.ac-section .ac-fv-step:disabled { color: var(--ac-muted); cursor: not-allowed; opacity: .6; }
+/* radio group and segmented buttons: native radios (arrow keys); the segmented look hides the dot, keeps the focus ring on the label */
+.ac-section .ac-fv-opts { display: flex; flex-wrap: wrap; gap: 6px 16px; }
+.ac-section .ac-fv-opt { display: inline-flex; align-items: center; gap: 6px; font-size: var(--ac-font-size-lg); cursor: pointer; }
+.ac-section .ac-fv-segmented { gap: 0; }
+.ac-section .ac-fv-segmented .ac-fv-opt { position: relative; padding: var(--ac-pad-control); margin-left: calc(-1 * var(--ac-border-control)); font-size: var(--ac-font-size-md-plus); font-weight: var(--ac-font-weight-semibold); color: var(--ac-slate-705); background: var(--ac-surface); border: var(--ac-border-control) solid var(--ac-line-strong); }
+.ac-section .ac-fv-segmented .ac-fv-opt:first-child { margin-left: 0; border-radius: var(--ac-radius-button) 0 0 var(--ac-radius-button); }
+.ac-section .ac-fv-segmented .ac-fv-opt:last-child { border-radius: 0 var(--ac-radius-button) var(--ac-radius-button) 0; }
+.ac-section .ac-fv-segmented .ac-fv-opt input { position: absolute; width: 1px; height: 1px; margin: 0; opacity: 0; }
+.ac-section .ac-fv-segmented .ac-fv-opt:hover { color: var(--ac-hover-text); background: var(--ac-hover); }
+.ac-section .ac-fv-segmented .ac-fv-opt:has(input:checked) { z-index: 1; color: var(--ac-selected-text); background: var(--ac-selected); border-color: var(--ac-selected); }
+.ac-section .ac-fv-segmented .ac-fv-opt:has(input:focus-visible) { z-index: 2; outline: var(--ac-focus-width) solid var(--ac-focus); outline-offset: 2px; }
+.ac-section .ac-fv-segmented .ac-fv-opt:has(input:disabled) { cursor: not-allowed; opacity: .6; }
+/* switch: the native checkbox with role="switch", drawn as a track and a knob */
+.ac-section .ac-fv-switch { display: flex; align-items: center; gap: 8px; }
+.ac-section .ac-fv-switch input[role='switch'] { flex: none; width: 34px; height: 20px; margin: 0; appearance: none; border-radius: var(--ac-radius-pill); background: radial-gradient(circle at 10px 50%, var(--ac-neutral-0) 6px, transparent 6.5px), var(--ac-slate-700); cursor: pointer; transition: background-color var(--ac-duration-fast) var(--ac-easing-standard); }
+.ac-section .ac-fv-switch input[role='switch']:checked { background: radial-gradient(circle at 24px 50%, var(--ac-neutral-0) 6px, transparent 6.5px), var(--ac-primary-700); }
+.ac-section .ac-fv-switch input[role='switch']:disabled { cursor: not-allowed; opacity: .5; }
+@media (forced-colors: active) { .ac-section .ac-fv-switch input[role='switch'] { appearance: auto; } .ac-section .ac-fv-segmented .ac-fv-opt:has(input:checked) { outline: var(--ac-border-thick) solid Highlight; } }

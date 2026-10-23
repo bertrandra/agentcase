@@ -10,7 +10,7 @@ This page is step T1 of the configurable-theme programme:
 |---|---|---|
 | **T1** (done) | the token set; no literal outside the token files | nothing visible |
 | T2 | dark mode, contrast levels, chart palettes, per-user preference | token **values** only |
-| T3 | shapes, density, typography, box style; `Field*` controls with variants | token values, plus the new controls |
+| **T3** (done, §6) | shapes, density, typography, box style; `Field*` controls with variants | token values, plus the new controls |
 | T4 | "Brand & theme" screen: presets, live preview, logo, palette from logo, import / export; theme stored in the case and applied to the HTML snapshot, the report and the Excel workbooks | token values |
 
 ## 1. Where the tokens live
@@ -22,6 +22,10 @@ This page is step T1 of the configurable-theme programme:
 | `app/src/domain/theme/shape.ts` | typography, shape (radius, borders, shadows), density (paddings), motion |
 | `app/src/domain/theme/index.ts` | `THEME_DEFAULT`, `TokenName`, `tok()`, `alpha()`, `argb()`, `themedList()`, `setActiveTheme()`, `themeCss()` |
 | `app/src/ui/theme/tokens.css` | the same table as CSS custom properties `--ac-<name>`, **generated** (`npm run theme:gen`) |
+| `app/src/domain/theme/layout.ts` | the T3 tokens the axes switch (block spacing, box style, button / control shape, key figures, numeric figures), pre-T3 values |
+| `app/src/domain/theme/axes.ts`, `variants.ts`, `typography.ts`, `axesCss.ts` | the theme axes (§6): values, defaults, labels, token sets, the generator of `axes.css` |
+| `app/src/ui/theme/axes.css` | one block per non-default axis value, **generated** in full (`npm run theme:gen`) |
+| `app/src/ui/themeAxes.ts`, `app/src/ui/widgets/field/` | applying / reading the axes at run time; the `Field*` controls and their variants |
 
 The table sits in `domain` (zone `presentation`) because the store's exports (Excel, report) may not import `ui`. It is the single
 source: `tokens.css` is generated from it, and `tests/ui/theme-tokens.test.ts` fails when the two differ.
@@ -151,3 +155,83 @@ not theme).
   arithmetic (`${color}22`) needs `tok()`, which is why those palettes are TS values.
 - **Exports (T4):** `argb()` / `reportStyle()` read the active theme at export time; the HTML snapshot embeds the built app, so it
   carries the CSS tokens.
+
+## 6. Theme axes (T3)
+
+A theme axis is a closed list of values with a default (today's look). The **default of every axis changes nothing**: with no axis set,
+the app is pixel-identical to T1 (ui-parity unchanged; screenshot comparison of 18 input and result sections identical). T3 adds 15
+tokens (`layout.ts`) holding the values the rules held before, so `tokens.css` now declares 392 custom properties.
+
+### 6.1 Mechanism
+
+| Side | How |
+|---|---|
+| source | `domain/theme/axes.ts`: `AXES` = per axis `{ group, label, default, values: { value: TokenSet }, labels }` (English labels for T4) |
+| CSS | `data-ac-<axis>` on `:root` (kebab case: `fontBody` → `data-ac-font-body`). `axes.css` (generated) has, per non-default value, `[data-ac-x='v'] { the tokens it sets }` and `:where([data-ac-x='v']) { the tokens built on them, re-declared }`. The second rule (specificity 0) makes the attribute also work on a sub-tree, e.g. a T4 live-preview container; an explicit value of another axis always wins over it. The file loads after `tokens.css`. |
+| run time | `ui/themeAxes.ts`: `applyThemeAxes(axes, el = <html>)` writes the attributes (default / missing value = no attribute), `readThemeAxes()`, `useThemeAxis(k)` (re-renders on an attribute change, MutationObserver). The attributes are the single source: the CSS reads them, the `Field*` controls subscribe to them. |
+| `tok()` | `axisTokens(axes)` = the merged token set; a theme calls `setActiveTheme({ ...colourValues, ...axisTokens(axes) })` (charts, exports). |
+
+Compatible with T2's `data-ac-mode` / `data-ac-contrast`: different attributes; T2's colour blocks and these blocks change disjoint tokens
+(the shadow axis re-points the role tokens `shadow-card`, `shadow-kpibar`, `shadow-header`, never the elevation steps or their colours).
+
+### 6.2 Axes and values (default in bold)
+
+| Group | Axis (`ThemeAxes` key) | Values | Tokens changed |
+|---|---|---|---|
+| Shape | `radius` | square, **soft**, round | `radius-2xs` … `radius-card` (0 / legacy / ×≈2, card 22 px); circles stay 50% |
+| | `buttons` | **shape**, pill | `radius-button` → `radius-pill` (999 px) |
+| | `border` | none, **thin**, strong | `border-thin`, `border-medium` (0 / 2 px), `border-thick` (3 px); inputs keep 1 px (`border-control`) when none |
+| | `shadow` | none, **light**, floating | `shadow-card`, `shadow-kpibar`, `shadow-header` |
+| Box style | `box` | flat, **outline**, elevated | `box-border`, `box-bg`, `shadow-box` of `.ac-card`, `.ac-rich-card`, `.ac-stat-row` (KPI tiles), `.ac-chart` |
+| | `callout` | **bar**, tint | `callout-rail` (4 px accent bar → the thin border) |
+| Density | `density` | compact, **comfortable**, spacious | the 11 `pad-*` (section, card, callout, table head / cell = row height, matrix, control, button, tab, badge), `space-block`, `space-heading`, `space-field`, `space-row`; spacious also `font-size-figure` (20 → 30 px) and `font-size-kpi` (16 → 22 px) |
+| Typography | `fontBody` | **ubuntu**, system, serif | `font-body` (and `font`, `font-heading`, `font-numeric` that follow it) |
+| | `fontHeading` | **body**, ubuntu, system, serif | `font-heading` (section h1, h2 / h3, brand title) |
+| | `fontNumeric` | **body**, tabular, mono | `numeric-figures` (`tabular-nums` on tables, stats, KPI bar), `font-numeric` (right-aligned table cells, stat and KPI figures) |
+| | `typeScale` | compact, **normal**, large | every `font-size-*` ×0.92 / ×1.12 (half-pixel rounding) |
+| | `headingWeight` | **light**, bold | `font-weight-display` (brand title, the big readiness score) |
+| Controls | `controlsNumeric` | **auto**, number, slider, slider-field, stepper | none (Field* components) |
+| | `controlsChoice` | **auto**, dropdown, segmented, radio | none |
+| | `controlsBoolean` | **auto**, checkbox, switch | none |
+
+**Fonts.** The app is offline and the gzip budget had 0.6 kB of headroom, so no second family is embedded (a latin-subset variable Inter is
+≈ 30–45 kB of base64 woff2, which gzip does not compress). Ubuntu stays the only embedded family (`fonts.css`); "System UI", "Serif" and
+"Monospace numbers" are system stacks resolved from the operating system (`FONT_STACKS` in `typography.ts`).
+
+### 6.3 Control variants (`ui/widgets/field`)
+
+| Component | Variants | Accessibility | Falls back to the native rendering when |
+|---|---|---|---|
+| `FieldNumber` | number (`NumCell`), slider, slider + field, stepper (− value +) | `spinbutton`, `slider` with `aria-valuetext` (value + unit), a `group` named by the label; stepper buttons "Decrease / Increase <label>", disabled at a bound | `auto`, the variant is the native kind, or a slider is asked for a field without min and max |
+| `FieldChoice` | dropdown, segmented buttons, radio group | a `radiogroup` named by the label, native radios sharing one name (arrow keys move and select); segmented hides the dot, keeps the focus ring | `auto` / dropdown, or fewer than 2 / more than 5 options |
+| `FieldToggle` | checkbox, switch | the native checkbox with `role="switch"` and `aria-checked` (Space toggles) | `auto` / checkbox |
+
+Each takes the props of the value (`label`, `value`, `min` / `max` / `step` / `unit`, `options`, `checked`), the commit callback, the
+`native` kind and, as `children`, **the control exactly as it rendered before T3**, which is what `auto` renders. `bare` is for table
+cells (no visible label, no field margins). Every variant calls the same callback as the native control, so the command, its label, the
+undo step and the coalescing are unchanged (`tests/ui/field-variants.test.tsx` compares the document and the audit entry).
+
+**Use sites.** The shared widgets render through them: `NumberInput`, `RangeInput`, `SelectInput`, `CheckInput` (`widgets/fields.tsx`),
+`NumField`, `ChoiceField` (`CommitField.tsx`), `CoefInput` (both). Hence every section built on them, and the raw controls migrated in:
+params (glass ceiling slider, force, technical cap), scurve (curve shape), team-in (total FTE; skill / grade / location / FTE cells),
+ratecard (day-rate cells), loc-strat (target shares), token-econ (output share slider, model cells), risk (probability / impact),
+readiness (questionnaire), engagement-context (context, discount rate), transform-params (industry, catalogue, inclusion, cross-cutting),
+lc-weighting (switch, status, position slider), eligibility (prerequisite status, product profile). run-sizing, setup, knowledge and
+scope-sel use the shared widgets only.
+
+**Not migrated** (kept native on purpose or left for later): view-state controls (legend toggles of params, the funnel and monthly-playback
+scrubbers, filters, search boxes, phase filter of scope-sel), pick lists of many checkboxes (scope-sel phase / artefact cards, norm lists,
+team-in pins, persona / section tables), cells that carry an override colour (scope-sel adjust table, engagement-context coefficient
+table), local drafts (knowledge domains editor), and the raw inputs of the other sections: strategies, monthly-playback, model-engine
+verification / evidence, deps, defend (assumptions, due diligence), stress Monte Carlo, configure (board, personas), factory (model,
+engineering, release pipeline), verifyA skill map, portfolio (products, waves, knowledge transfer), refshare io, shell top bar.
+
+### 6.4 For T4 (Brand & theme screen)
+
+- Keep a `ThemeAxes` object (all 15 keys, `AXIS_DEFAULTS` for a new case) next to the colour values in the case; validate an imported
+  one with `isAxisValue()`.
+- Apply it with `applyThemeAxes(axes)` and `setActiveTheme({ ...colours, ...axisTokens(axes) })`; for a live preview, `applyThemeAxes(axes,
+  previewElement)` (CSS axes; set every axis on the container). The control variants follow `<html>` only: a preview of them needs a
+  React context in `useThemeAxis`.
+- Build the screen from `AXES` (`group`, `label`, `labels`, `axisValues()`); presets are partial `ThemeAxes`.
+- The HTML snapshot embeds `axes.css`; to open with the case's look, apply the case's axes at boot.

@@ -19,7 +19,7 @@ export function ScoreCard() {
     <>
       <Panel title="AI Readiness Index">
         <div style={{ textAlign: 'center' }} aria-live="polite">
-          <div style={{ fontSize: 'var(--ac-font-size-9xl)', fontWeight: 'var(--ac-font-weight-light)', color: band.color }}>{idx == null ? '—' : Math.round(idx)}</div>
+          <div style={{ fontSize: 'var(--ac-font-size-9xl)', fontWeight: 'var(--ac-font-weight-display)', color: band.color }}>{idx == null ? '—' : Math.round(idx)}</div>
           <div style={{ fontWeight: 'var(--ac-font-weight-semibold)', color: band.color }}>{band.label}</div>
         </div>
         <div role="meter" aria-label="AI readiness gauge" aria-valuenow={idx ?? 0} aria-valuemin={0} aria-valuemax={100}

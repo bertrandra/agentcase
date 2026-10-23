@@ -2,6 +2,7 @@ import { setRegInclude, toggleNorm } from '@/controllers/frame';
 import { normKey, normsOf, regGlassCeiling } from '@/domain/frame';
 import { useCtx, useDoc } from '@/store/hooks';
 import { OverrideBadge } from '@/ui/widgets/OverrideBadge';
+import { FieldToggle } from '@/ui/widgets/field/FieldToggle';
 
 /** Norm checkboxes of one industry (or cross-cutting category). */
 export function NormList({ code, dense }: { code: string; dense?: boolean }) {
@@ -31,7 +32,9 @@ export function NormsPanel() {
       <OverrideBadge refKey="selectedNorms" label="Selected norms" />
       <p>In scope: <strong>{none ? 0 : count}</strong> regulatory artifacts</p>
       {!none && count > 0 && <p style={{ color: 'var(--ac-teal)' }}>Weighted glass ceiling from selection: <strong>{Math.round(ceiling)}%</strong> (mean human sup. on {count} artifacts)</p>}
-      <label className="ac-check"><input type="checkbox" checked={!!include} onChange={(e) => setRegInclude(e.target.checked)} /> Include reg. artifacts in effort &amp; runs (else glass ceiling only)</label>
+      <FieldToggle label="Include reg. artifacts in effort & runs (else glass ceiling only)" checked={!!include} onChange={setRegInclude}>
+        <label className="ac-check"><input type="checkbox" checked={!!include} onChange={(e) => setRegInclude(e.target.checked)} /> Include reg. artifacts in effort &amp; runs (else glass ceiling only)</label>
+      </FieldToggle>
       <OverrideBadge refKey="regInclude" label="Regulatory inclusion" />
       <p><button type="button" disabled title="The standalone report export is not migrated yet (Phase 6) — use the legacy app">📄 Export Critical &amp; Regulated report</button></p>
     </div>

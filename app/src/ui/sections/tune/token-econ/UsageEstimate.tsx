@@ -4,6 +4,7 @@ import { setTokenOutShare } from '@/controllers/tuneB';
 import { useCtx, useDoc } from '@/store/hooks';
 import { Panel, Stat, StatRow } from '@/ui/widgets/cards';
 import { Field, NumberInput } from '@/ui/widgets/fields';
+import { FieldNumber } from '@/ui/widgets/field/FieldNumber';
 import { eur, int } from '../../tuneB/fmt';
 
 /** Token usage estimate: volume drivers (tokens per run, runs per day, output share) and the horizon-end figures. */
@@ -17,9 +18,11 @@ export function UsageEstimate() {
       <div className="ac-form-row">
         <NumberInput id="tokensPerArt" label="Tokens per agent run" step={5000} />
         <NumberInput id="runsPerDay" label="Agent runs / day (per agent-FTE)" step={1} />
-        <Field label={`Output token share (%): ${Math.round(share)}%`}>
-          <input type="range" aria-label="Output token share" min={0} max={100} value={share} onChange={(e) => setTokenOutShare(e.target.value)} />
-        </Field>
+        <FieldNumber native="slider" label="Output token share" unit="%" min={0} max={100} value={share} onCommit={setTokenOutShare}>
+          <Field label={`Output token share (%): ${Math.round(share)}%`}>
+            <input type="range" aria-label="Output token share" min={0} max={100} value={share} onChange={(e) => setTokenOutShare(e.target.value)} />
+          </Field>
+        </FieldNumber>
         <Field label="Estimation driver"><input type="text" value="Per artifact (scope-aware)" disabled readOnly /></Field>
       </div>
       <StatRow>

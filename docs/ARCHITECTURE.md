@@ -1,6 +1,6 @@
 # AgentCase — Architecture of the TypeScript build
 
-> Applies to **`app/`, version 20.6.0** (`app/src/domain/version.ts`, `app/package.json`): a multi-product portfolio build. 892 `.ts`/`.tsx` files under `app/src`,
+> Applies to **`app/`, version 20.7.0** (`app/src/domain/version.ts`, `app/package.json`): a multi-product portfolio build. 892 `.ts`/`.tsx` files under `app/src`,
 > 241 test files under `app/tests` (counted with `find`; 16,387 tests passed on the last local run, CI is authoritative).
 > The previous document, which describes the frozen single-file app, is archived as
 > [`history/ARCHITECTURE_legacy_v18.md`](history/ARCHITECTURE_legacy_v18.md). The appendix of this file maps each legacy engine to its replacement.
@@ -189,6 +189,11 @@ and report exports can read it); `ui/theme/tokens.css` is generated from it (`np
 CSS, inline styles and SVG attributes use `var(--ac-*)`; chart.js, colour arithmetic and the domain read-outs use `tok()`; Excel uses
 `argb()`. `setActiveTheme()` plus the custom properties on `:root` is the single switch a theme (dark mode, presets, a theme stored in the
 case) needs; `tests/ui/no-hardcoded-style.test.ts` keeps literals out.
+**Theme axes (T3)** — shape, box style, density, typography and control variants — are closed value lists in `domain/theme/axes.ts`
+(token sets in `variants.ts`, `typography.ts`; the new defaults in `layout.ts`). Each value is a `data-ac-<axis>` attribute on `:root` (or on
+a preview container) selecting a block of the generated `ui/theme/axes.css`; `axisTokens()` gives the same values to `setActiveTheme()`.
+`ui/themeAxes.ts` writes and reads the attributes (`applyThemeAxes`, `useThemeAxis`); the shared `ui/widgets/field/Field*` controls read the
+three control axes and render a slider, stepper, segmented / radio group or switch that dispatches the same command as the native control.
 
 **Navigation comes from the document**, not from code tables: `ui/zones/navModel.ts` builds the sidebar from `doc.PERSONAS`,
 `PERSONA_SECTIONS`, `PERSONA_SECTION_ORDER`, `GROUPS`, `sectionGroups`, `dynamicSections` and the guided sequences, falling back to the
@@ -363,7 +368,7 @@ The authoritative list is [MIGRATION_PLAN.md §15](MIGRATION_PLAN.md). Architect
   item-level scope overrides (whole key only, D-M2); portfolio charts as images in the results workbook.
 - Excel cross-version note: a parameters workbook exported by 20.0.0 from a real portfolio carries seven extra sheets that a 19.x build ignores (it reads only the common case); a 19.x workbook imports into 20.0.0 as a case on the active product. An import does not re-fit the automation potential (the workbook states the stored values; the next open re-fits).
 - Opening a 20.0.0 portfolio file (`agentcase.portfolio.v1`) in a 19.x build is not supported; a plain single case is still saved as `agentcase.snapshot.v1` and stays readable by 19.x.
-- `npm run release` produces `app/dist/AgentCase_v20_6_EN.html`; `APP_VERSION` is `20.6.0`.
+- `npm run release` produces `app/dist/AgentCase_v20_7_EN.html`; `APP_VERSION` is `20.7.0`.
 
 ## 13. Calculation zones, the generated dependency graph and test selection
 

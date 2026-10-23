@@ -3,12 +3,14 @@ import { MAX_POINTS, MIN_POINTS } from '@/domain/scope/scurve';
 import { scurveView } from '@/domain/scope/scurveView';
 import { useCtx } from '@/store/hooks';
 import { Panel } from '@/ui/widgets/cards';
+import { FieldChoice } from '@/ui/widgets/field/FieldChoice';
 import { OverrideBadge } from '@/ui/widgets/OverrideBadge';
 import { CurveSvg } from './CurveSvg';
 import { LEVEL_COLOR } from './geometry';
 
 const EXPLAIN: Record<string, string> = { L1: 'Assisted — first agents in the loop', L2: 'Accelerating — agents across the team', L3: 'Scaling — agentic delivery is the norm', L4: 'Cruise — near-full agentic factory' };
 const FAMILIES = [['logistic', 'Logistic — symmetric'], ['gompertz', 'Gompertz — late inflection'], ['spline', 'Free-form spline — through every point']];
+const FAMILY_OPTIONS = FAMILIES.map(([value, label]) => ({ value: value!, label: label! }));
 
 /** Adoption curve & maturity levels: family, add/remove point, the draggable curve, horizon-end readout and the L1–L4 crossings. */
 export function Editor() {
@@ -17,8 +19,10 @@ export function Editor() {
     <Panel title="📈 Adoption curve & maturity levels">
       <p className="ac-muted">The live adoption S-curve, with the four maturity levels marked where the curve crosses each threshold. Maturity is defined by the adoption reached: L1 0–25%, L2 25–55%, L3 55–80%, L4 80–100%.</p>
       <div className="ac-form-row">
-        <label className="ac-field"><span className="ac-field-l">Curve shape</span>
-          <select value={view.family} onChange={(e) => setCurveFamily(e.target.value)}>{FAMILIES.map(([v, l]) => <option key={v} value={v}>{l}</option>)}</select></label>
+        <FieldChoice label="Curve shape" value={view.family} options={FAMILY_OPTIONS} onChange={setCurveFamily}>
+          <label className="ac-field"><span className="ac-field-l">Curve shape</span>
+            <select value={view.family} onChange={(e) => setCurveFamily(e.target.value)}>{FAMILIES.map(([v, l]) => <option key={v} value={v}>{l}</option>)}</select></label>
+        </FieldChoice>
         <button type="button" disabled={view.pts.length >= MAX_POINTS} onClick={addCurvePoint}>＋ point</button>
         <button type="button" disabled={view.pts.length <= MIN_POINTS} onClick={removeCurvePoint}>－ point</button>
         <OverrideBadge refKey="scurve" label="S-curve" />

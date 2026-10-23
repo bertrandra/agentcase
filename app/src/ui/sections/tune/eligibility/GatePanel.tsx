@@ -4,11 +4,14 @@ import { useCtx, useDoc } from '@/store/hooks';
 import { Badge, Panel } from '@/ui/widgets/cards';
 import { NumberInput, SelectInput } from '@/ui/widgets/fields';
 import { Note } from '@/ui/widgets/tuneA';
+import { FieldChoice } from '@/ui/widgets/field/FieldChoice';
 
 const NATURES = [
   { value: 'standard', label: 'Standard (APPS-like)' }, { value: 'embedded', label: 'Embedded / firmware' },
   { value: 'critical', label: 'Critical / safety' }, { value: 'sovereign', label: 'Sovereign / air-gap' },
 ];
+
+const STATUSES = [{ value: 'met', label: 'Met' }, { value: 'partial', label: 'Partial' }, { value: 'unmet', label: 'Not met' }];
 
 function Prerequisite({ id, label, critical }: { id: string; label: string; critical: boolean }) {
   const st = useDoc((d) => d.dom.values['elPre_' + id]) || 'met';
@@ -16,9 +19,11 @@ function Prerequisite({ id, label, critical }: { id: string; label: string; crit
     <tr>
       <td>{label}{critical && <small style={{ color: 'var(--ac-brick)' }}> critical</small>}</td>
       <td className="ac-c">
-        <select aria-label={label} value={st} onChange={(e) => setInput('elPre_' + id, e.target.value)}>
-          <option value="met">Met</option><option value="partial">Partial</option><option value="unmet">Not met</option>
-        </select>
+        <FieldChoice bare label={label} value={st} options={STATUSES} onChange={(v) => setInput('elPre_' + id, v)}>
+          <select aria-label={label} value={st} onChange={(e) => setInput('elPre_' + id, e.target.value)}>
+            <option value="met">Met</option><option value="partial">Partial</option><option value="unmet">Not met</option>
+          </select>
+        </FieldChoice>
       </td>
     </tr>
   );

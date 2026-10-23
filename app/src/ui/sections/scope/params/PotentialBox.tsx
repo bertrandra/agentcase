@@ -2,12 +2,15 @@ import { useState } from 'react';
 import { setAutoCap } from '@/controllers/scopeTools';
 import { useDoc } from '@/store/hooks';
 import { CheckInput, RangeInput } from '@/ui/widgets/fields';
+import { FieldNumber } from '@/ui/widgets/field/FieldNumber';
 
 /** Technical cap: committed on blur / Enter (like the legacy onchange), so typing "6" on the way to "60" is not clamped to 10 mid-way. */
 function CapInput() {
   const cap = useDoc((d) => d.dom.values.autoCapPct ?? '100'), [draft, setDraft] = useState<string | null>(null);
   const commit = () => { if (draft != null) setAutoCap(parseFloat(draft)); setDraft(null); };
   return (
+    <FieldNumber native="number" label="⚙️ Technical automation cap" unit="%" value={cap} min={10} max={100} step={5} onCommit={(v) => setAutoCap(parseFloat(v))}
+      hint="The most a full delivery scope can be agent-automated, before the glass ceiling. Default 100% (no technical cap).">
     <div className="ac-cap-row">
       <strong>⚙️ Technical automation cap</strong>
       <input type="number" min={10} max={100} step={5} aria-label="Technical automation cap" value={draft ?? cap}
@@ -15,6 +18,7 @@ function CapInput() {
       <span className="ac-field-h">% — the most a full delivery scope can be agent-automated, <em>before</em> the glass ceiling. Bounds the slider and the scope-fit above (and the Monte-Carlo range).
         Default 100% (no technical cap); lower it to reserve an irreducible human share across the scope.</span>
     </div>
+    </FieldNumber>
   );
 }
 

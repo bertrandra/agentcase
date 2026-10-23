@@ -1,7 +1,8 @@
 import type { ReactNode } from 'react';
 import { setCoef, type CoefKey } from '@/controllers/tuneA';
 import { useDoc } from '@/store/hooks';
-import { Field } from './fields';
+import { Field } from './field/Field';
+import { FieldNumber } from './field/FieldNumber';
 
 /** Legacy fmtK(): €45K (explicit en-US grouping). */
 export { fmtK } from '@/ui/format';
@@ -9,7 +10,11 @@ export { fmtK } from '@/ui/format';
 /** A model coefficient (COEF) shown and edited as a form input; the case's COEF is the source of truth. */
 export function CoefInput({ coef, id, label, hint, min, max, step }: { coef: CoefKey; id: string; label: string; hint?: string; min?: number; max?: number; step?: number }) {
   const value = useDoc((d) => d.COEF[coef] ?? '');
-  return <Field label={label} hint={hint}><input type="number" value={value} min={min} max={max} step={step} onChange={(e) => setCoef(coef, id, e.target.value)} /></Field>;
+  return (
+    <FieldNumber native="number" label={label} hint={hint} value={value} min={min} max={max} step={step} onCommit={(v) => setCoef(coef, id, v)}>
+      <Field label={label} hint={hint}><input type="number" value={value} min={min} max={max} step={step} onChange={(e) => setCoef(coef, id, e.target.value)} /></Field>
+    </FieldNumber>
+  );
 }
 
 /** Horizontal bar, `pct` of the track (0–100). */

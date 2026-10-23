@@ -2,8 +2,10 @@ import { READINESS_DIMS, blankReadiness, dimScore, type ReadinessAns } from '@/d
 import { setAllReadiness, setReadiness } from '@/controllers/tuneA';
 import { useDoc } from '@/store/hooks';
 import { Panel } from '@/ui/widgets/cards';
+import { FieldChoice } from '@/ui/widgets/field/FieldChoice';
 
 const EMPTY = blankReadiness();
+const ANSWERS = [{ value: '', label: '—' }, { value: '0', label: 'No' }, { value: '50', label: 'Partial' }, { value: '100', label: 'Yes' }];
 /** Read the stored answers; a case without the key behaves as a blank questionnaire. */
 export const useAnswers = (): ReadinessAns => useDoc((d) => (d as { readinessAns?: ReadinessAns }).readinessAns) ?? EMPTY;
 
@@ -24,10 +26,12 @@ export function Assessment() {
           <fieldset key={d.key} className="ac-panel">
             <legend><strong>{d.label}</strong> <span className="ac-muted">{s == null ? '—' : `${Math.round(s)} / 100`}</span></legend>
             {d.q.map((q, i) => (
-              <label key={q} className="ac-field"><span className="ac-field-l">{q}</span>
-                <select value={ans[d.key]?.[i] ?? ''} onChange={(e) => setReadiness(d.key, i, e.target.value)}>
-                  <option value="">—</option><option value="0">No</option><option value="50">Partial</option><option value="100">Yes</option>
-                </select></label>
+              <FieldChoice key={q} label={q} value={String(ans[d.key]?.[i] ?? '')} options={ANSWERS} onChange={(v) => setReadiness(d.key, i, v)}>
+                <label className="ac-field"><span className="ac-field-l">{q}</span>
+                  <select value={ans[d.key]?.[i] ?? ''} onChange={(e) => setReadiness(d.key, i, e.target.value)}>
+                    <option value="">—</option><option value="0">No</option><option value="50">Partial</option><option value="100">Yes</option>
+                  </select></label>
+              </FieldChoice>
             ))}
           </fieldset>
         );

@@ -7,7 +7,7 @@
 .ac-section { padding: var(--ac-pad-section); background: var(--ac-surface-raised); border-radius: var(--ac-radius-card); box-shadow: var(--ac-shadow-card); }
 /* title and help button (legacy h2 + .sec-help-btn); the button sits at the right edge as the legacy tag/help cluster does */
 .ac-section-head { display: flex; align-items: flex-start; gap: 10px; }
-.ac-section h1 { margin: 0 0 1.5rem; font-size: var(--ac-font-size-4xl); font-weight: var(--ac-font-weight-bold); line-height: var(--ac-leading-base); color: var(--ac-text-heading); }
+.ac-section h1 { margin: 0 0 var(--ac-space-heading); font-family: var(--ac-font-heading); font-size: var(--ac-font-size-4xl); font-weight: var(--ac-font-weight-bold); line-height: var(--ac-leading-base); color: var(--ac-text-heading); }
 .ac-section .ac-help-btn { display: inline-flex; align-items: center; justify-content: center; flex: none; width: 21px; height: 21px; margin: 5.5px 0 0 auto; border: var(--ac-border-medium) solid var(--ac-primary-200); border-radius: var(--ac-radius-round); background: var(--ac-neutral-0); color: var(--ac-primary-700); font-size: var(--ac-font-size-md); font-weight: var(--ac-font-weight-bold); line-height: var(--ac-leading-none); cursor: pointer; transition: var(--ac-duration-fast); }
 .ac-section .ac-help-btn:hover { background: var(--ac-primary-60); border-color: var(--ac-info-375); }
 .ac-section .ac-help-btn[aria-expanded='true'] { background: var(--ac-primary-700); border-color: var(--ac-primary-700); color: var(--ac-neutral-0); }
@@ -19,18 +19,18 @@
 .ac-rich code { font-family: var(--ac-font-code); }
 .ac-section .ac-muted:is(p, div) { color: var(--ac-muted); }
 /* intro note and callouts (legacy .insight-box and its amber / red variants); .note-green / .note-blue for cross-references and reassurance */
-.ac-section :is(.ac-zone > p.ac-muted:first-child, .ac-callout, .ac-rich-insight-box) { padding: var(--ac-pad-callout); margin: 0 0 1.5rem; font-size: var(--ac-font-size-base); line-height: var(--ac-leading-relaxed); color: var(--ac-neutral-750); background: linear-gradient(135deg, var(--ac-primary-60) 0%, var(--ac-primary-40) 100%); border: var(--ac-border-thin) solid var(--ac-primary-200); border-left: var(--ac-border-rail) solid var(--ac-primary-700); border-radius: var(--ac-radius-md); }
+.ac-section :is(.ac-zone > p.ac-muted:first-child, .ac-callout, .ac-rich-insight-box) { padding: var(--ac-pad-callout); margin: 0 0 var(--ac-space-block); font-size: var(--ac-font-size-base); line-height: var(--ac-leading-relaxed); color: var(--ac-neutral-750); background: linear-gradient(135deg, var(--ac-primary-60) 0%, var(--ac-primary-40) 100%); border: var(--ac-border-thin) solid var(--ac-primary-200); border-left: var(--ac-callout-rail) solid var(--ac-primary-700); border-radius: var(--ac-radius-md); }
 .ac-section .ac-callout-warn { background: linear-gradient(135deg, var(--ac-warning-55), var(--ac-warning-30)); border-color: var(--ac-warning-200); border-left-color: var(--ac-warning-575); color: var(--ac-warning-850); }
 .ac-section .ac-callout-error { background: linear-gradient(135deg, var(--ac-danger-100), var(--ac-danger-55)); border-color: var(--ac-danger-275); border-left-color: var(--ac-danger-800); color: var(--ac-danger-925); }
-.ac-section :is(.ac-callout-green, .ac-rich-note-green) { padding: var(--ac-pad-callout); margin: 1rem 0; font-size: var(--ac-font-size-base); line-height: var(--ac-leading-relaxed); color: var(--ac-success-800); background: linear-gradient(135deg, var(--ac-success-30), var(--ac-success-25)); border: var(--ac-border-thin) solid var(--ac-success-175); border-left: var(--ac-border-rail) solid var(--ac-teal-600); border-radius: var(--ac-radius-md); }
-.ac-section :is(.ac-callout-blue, .ac-rich-note-blue) { padding: var(--ac-pad-callout); margin: 1rem 0; font-size: var(--ac-font-size-base); line-height: var(--ac-leading-relaxed); color: var(--ac-slate-900); background: linear-gradient(135deg, var(--ac-primary-50), var(--ac-primary-25)); border: var(--ac-border-thin) solid var(--ac-primary-200); border-left: var(--ac-border-rail) solid var(--ac-primary-700); border-radius: var(--ac-radius-md); }
+.ac-section :is(.ac-callout-green, .ac-rich-note-green) { padding: var(--ac-pad-callout); margin: 1rem 0; font-size: var(--ac-font-size-base); line-height: var(--ac-leading-relaxed); color: var(--ac-success-800); background: linear-gradient(135deg, var(--ac-success-30), var(--ac-success-25)); border: var(--ac-border-thin) solid var(--ac-success-175); border-left: var(--ac-callout-rail) solid var(--ac-teal-600); border-radius: var(--ac-radius-md); }
+.ac-section :is(.ac-callout-blue, .ac-rich-note-blue) { padding: var(--ac-pad-callout); margin: 1rem 0; font-size: var(--ac-font-size-base); line-height: var(--ac-leading-relaxed); color: var(--ac-slate-900); background: linear-gradient(135deg, var(--ac-primary-50), var(--ac-primary-25)); border: var(--ac-border-thin) solid var(--ac-primary-200); border-left: var(--ac-callout-rail) solid var(--ac-primary-700); border-radius: var(--ac-radius-md); }
 .ac-section :is(.ac-callout-blue, .ac-rich-note-blue) a { color: var(--ac-text-link); font-weight: var(--ac-font-weight-semibold); text-decoration: underline; }
 .ac-section .ac-callout :is(p, div) { margin: 0; }
 .ac-rich-formula { padding: 1rem 1.25rem; margin: .75rem 0; font: var(--ac-font-size-md) / var(--ac-leading-formula) var(--ac-font-mono); color: var(--ac-text-on-primary); background: var(--ac-primary-700); border-radius: var(--ac-radius-lg); }
 .ac-rich-worked { padding: 1rem; margin: .5rem 0; font: var(--ac-font-size-md) / var(--ac-leading-code) var(--ac-font-mono); color: var(--ac-ink); background: var(--ac-primary-30); border: var(--ac-border-thin) solid var(--ac-primary-200); border-radius: var(--ac-radius-md); }
 .ac-rich-v { color: var(--ac-primary-200); } .ac-rich-a { color: var(--ac-warning-225); } .ac-rich-g { color: var(--ac-info-260); } .ac-rich-b { color: var(--ac-info-250); }   /* on the #0058AB formula band: legacy #BE4D00 / #00828E / #1DB8F2 are 1.42 / 1.54 / 3.08:1; same hue and saturation, lightened to 4.5:1 (exceptions) */
 .ac-rich-sep { margin: 6px 0; padding-top: 6px; border-top: var(--ac-border-thin) solid var(--ac-primary-830); }
-.ac-section .ac-rich-card { padding: var(--ac-pad-card); margin: 0 0 1.5rem; background: var(--ac-surface-raised); border: var(--ac-border-thin) solid var(--ac-line-strong); border-radius: var(--ac-radius-card); }
+.ac-section .ac-rich-card { padding: var(--ac-pad-card); margin: 0 0 var(--ac-space-block); background: var(--ac-box-bg); border: var(--ac-box-border) solid var(--ac-line-strong); box-shadow: var(--ac-shadow-box); border-radius: var(--ac-radius-card); }
 /* sub-tabs (legacy .pm-subtabs) */
 .ac-section .ac-tabs { display: flex; flex-wrap: wrap; gap: 6px; margin: .4rem 0 1.2rem; border-bottom: var(--ac-border-thick) solid var(--ac-slate-125); }
 .ac-section .ac-tabs button { margin-bottom: -2px; padding: var(--ac-pad-tab); font: inherit; font-size: var(--ac-font-size-base); font-weight: var(--ac-font-weight-semibold); line-height: normal; color: var(--ac-slate-600); background: none; border: 0; border-bottom: var(--ac-border-heavy) solid transparent; border-radius: var(--ac-radius-md) var(--ac-radius-md) 0 0; cursor: pointer; }
@@ -41,16 +41,17 @@
 .ac-section .ac-pills button:hover { color: var(--ac-primary-700); border-color: var(--ac-primary-700); }
 .ac-section .ac-pills button[aria-selected='true'] { color: var(--ac-neutral-0); background: var(--ac-primary-700); border-color: var(--ac-primary-700); }
 /* cards, metric tiles and the summary band (legacy .card, .summary-band > .sb-item) */
-.ac-section .ac-card { padding: var(--ac-pad-card); margin-bottom: 1.5rem; background: var(--ac-surface-raised); border: var(--ac-border-thin) solid var(--ac-line-strong); border-radius: var(--ac-radius-card); }
-.ac-section .ac-stat-row { display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap: 12px; margin: 1.5rem 0; padding: var(--ac-pad-card); background: linear-gradient(135deg, var(--ac-primary-60) 0%, var(--ac-primary-40) 100%); border: var(--ac-border-thin) solid var(--ac-primary-200); border-radius: var(--ac-radius-lg); }
+.ac-section .ac-card { padding: var(--ac-pad-card); margin-bottom: var(--ac-space-block); background: var(--ac-box-bg); border: var(--ac-box-border) solid var(--ac-line-strong); box-shadow: var(--ac-shadow-box); border-radius: var(--ac-radius-card); }
+.ac-section .ac-stat-row { display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap: var(--ac-space-row); margin: var(--ac-space-block) 0; padding: var(--ac-pad-card); background: linear-gradient(135deg, var(--ac-primary-60) 0%, var(--ac-primary-40) 100%); border: var(--ac-box-border) solid var(--ac-primary-200); box-shadow: var(--ac-shadow-box); border-radius: var(--ac-radius-lg); }
 .ac-section .ac-stat { display: flex; flex-direction: column-reverse; justify-content: flex-end; min-width: 0; text-align: center; }   /* the figure reads above its label, as in the legacy band */
-.ac-section .ac-stat-v { font-size: var(--ac-font-size-4xl); font-weight: var(--ac-font-weight-bold); color: var(--ac-primary-700); }
+.ac-section .ac-stat-v { font-family: var(--ac-font-numeric); font-variant-numeric: var(--ac-numeric-figures); font-size: var(--ac-font-size-figure); font-weight: var(--ac-font-weight-bold); color: var(--ac-primary-700); }
 .ac-section .ac-stat-l { margin-bottom: 4px; font-size: var(--ac-font-size-sm); font-weight: var(--ac-font-weight-semibold); text-transform: uppercase; letter-spacing: .5px; color: var(--ac-text-label); }
 .ac-stat[data-tone='teal'] .ac-stat-v { color: var(--ac-teal); } .ac-stat[data-tone='brick'] .ac-stat-v { color: var(--ac-brick); } .ac-stat[data-tone='amber'] .ac-stat-v { color: var(--ac-amber); } .ac-stat[data-tone='grey'] .ac-stat-v { color: var(--ac-muted); }
 /* tables (legacy global table / th / td, zebra, hover); the alignment of a numeric column is the inline text-align of its cells */
-.ac-section :is(.ac-table, .ac-rich table) { width: 100%; margin-bottom: 1.5rem; font-size: var(--ac-font-size-md); border-collapse: collapse; }
+.ac-section :is(.ac-table, .ac-rich table) { width: 100%; margin-bottom: var(--ac-space-block); font-variant-numeric: var(--ac-numeric-figures); font-size: var(--ac-font-size-md); border-collapse: collapse; }
 .ac-section :is(.ac-table, .ac-rich table) th { padding: var(--ac-pad-table-head); font-weight: var(--ac-font-weight-semibold); text-align: left; color: var(--ac-table-head-text); background: var(--ac-table-head-bg); border: var(--ac-border-thin) solid var(--ac-table-head-line); }
 .ac-section :is(.ac-table, .ac-rich table) td { padding: var(--ac-pad-table-cell); border: var(--ac-border-thin) solid var(--ac-table-line); vertical-align: baseline; }
+.ac-section :is(.ac-table, .ac-rich table) td[style*='text-align: right'] { font-family: var(--ac-font-numeric); }   /* numeric columns (the numbers axis) */
 .ac-section :is(.ac-table, .ac-rich table) tbody tr:nth-child(even) { background: var(--ac-table-stripe); }
 .ac-section :is(.ac-table, .ac-rich table) tbody tr:hover { background: var(--ac-table-hover); }
 .ac-section :is(.ac-table, .ac-rich table) th :is(small, .ac-muted) { color: inherit; }   /* the muted token (#636363) is 1.17:1 on the blue header band; the legacy header text is white */
@@ -62,22 +63,22 @@
 .ac-section .ac-matrix :is(th, td):first-child { text-align: left; white-space: nowrap; }
 .ac-section .ac-c { text-align: center; }
 /* form controls (legacy label, input, select, range, checkbox; the form-group margin) */
-.ac-section .ac-field { display: flex; flex-direction: column; min-width: 140px; margin-bottom: 1.25rem; font-size: var(--ac-font-size-2xl); cursor: auto; }
+.ac-section .ac-field { display: flex; flex-direction: column; min-width: 140px; margin-bottom: var(--ac-space-field); font-size: var(--ac-font-size-2xl); cursor: auto; }
 .ac-section .ac-field-l { display: block; cursor: default; margin-bottom: 6px; font-size: var(--ac-font-size-md); font-weight: var(--ac-font-weight-semibold); text-transform: uppercase; letter-spacing: .5px; color: var(--ac-text-label); }
 .ac-section .ac-field-h { font-size: var(--ac-font-size-sm); color: var(--ac-muted); }
-.ac-section :is(input[type='number'], input[type='text'], input[type='range'], input:not([type]), select, textarea) { padding: var(--ac-pad-control); font: revert; font-size: var(--ac-font-size-lg); color: revert; background: var(--ac-surface); border: var(--ac-border-thin) solid var(--ac-line-strong); border-radius: var(--ac-radius-md); }
+.ac-section :is(input[type='number'], input[type='text'], input[type='range'], input:not([type]), select, textarea) { padding: var(--ac-pad-control); font: revert; font-size: var(--ac-font-size-lg); color: revert; background: var(--ac-surface); border: var(--ac-border-control) solid var(--ac-line-strong); border-radius: var(--ac-radius-md); }
 .ac-section :is(.ac-field input, .ac-field select) { width: 100%; }
 .ac-section input[type='range'] { padding: 0; }
 .ac-section :is(input[type='number'], input[type='text'], input:not([type]), select, textarea):focus { border-color: var(--ac-focus); box-shadow: var(--ac-shadow-focus); }
 .ac-section .ac-check { display: block; margin: 0 0 6px; font-size: var(--ac-font-size-md); font-weight: var(--ac-font-weight-semibold); color: var(--ac-text-label); cursor: pointer; }
-.ac-section .ac-form-row { display: flex; flex-wrap: wrap; align-items: flex-end; gap: 12px; margin: 8px 0; }
+.ac-section .ac-form-row { display: flex; flex-wrap: wrap; align-items: flex-end; gap: var(--ac-space-row); margin: 8px 0; }
 .ac-section .ac-search { flex: 1; min-width: 240px; font-size: var(--ac-font-size-lg); }
 /* buttons (legacy .btn, .btn-primary, .btn-del): secondary keeps the browser default face, primary is the brand blue with the navy hover. A bare <button> of a section (no class, not in a table cell or tab strip) is a legacy .btn */
-.ac-section :is(.ac-btn, button:not([class], [style], [role], [data-tone]):not(td button)) { padding: var(--ac-pad-button); font: revert; font-size: var(--ac-font-size-base); font-weight: var(--ac-font-weight-semibold); color: buttontext; background: buttonface; border: 0; border-radius: var(--ac-radius-md); cursor: pointer; }
+.ac-section :is(.ac-btn, button:not([class], [style], [role], [data-tone]):not(td button)) { padding: var(--ac-pad-button); font: revert; font-size: var(--ac-font-size-base); font-weight: var(--ac-font-weight-semibold); color: buttontext; background: buttonface; border: 0; border-radius: var(--ac-radius-button); cursor: pointer; }
 .ac-section :is(.ac-btn, button:not([class], [style], [role], [data-tone]):not(td button)):disabled { color: var(--ac-neutral-975-a30); background: var(--ac-neutral-80-a30); }
-.ac-section :is(.ac-btn.ac-btn-primary, button[data-tone='primary']) { padding: var(--ac-pad-button); font: revert; font-size: var(--ac-font-size-base); font-weight: var(--ac-font-weight-semibold); color: var(--ac-text-on-primary); background: var(--ac-primary-700); border: 0; border-radius: var(--ac-radius-md); cursor: pointer; }
+.ac-section :is(.ac-btn.ac-btn-primary, button[data-tone='primary']) { padding: var(--ac-pad-button); font: revert; font-size: var(--ac-font-size-base); font-weight: var(--ac-font-weight-semibold); color: var(--ac-text-on-primary); background: var(--ac-primary-700); border: 0; border-radius: var(--ac-radius-button); cursor: pointer; }
 .ac-section :is(.ac-btn.ac-btn-primary, button[data-tone='primary']):hover:not(:disabled) { background: var(--ac-primary-975); }
-.ac-section button[data-tone='danger'] { padding: var(--ac-pad-button-compact); font: revert; font-weight: var(--ac-font-weight-bold); color: var(--ac-warning-575); background: var(--ac-neutral-0); border: var(--ac-border-thin) solid var(--ac-warning-200); border-radius: var(--ac-radius-md); cursor: pointer; }
+.ac-section button[data-tone='danger'] { padding: var(--ac-pad-button-compact); font: revert; font-weight: var(--ac-font-weight-bold); color: var(--ac-warning-575); background: var(--ac-neutral-0); border: var(--ac-border-thin) solid var(--ac-warning-200); border-radius: var(--ac-radius-button); cursor: pointer; }
 .ac-section button[data-tone='danger']:hover { background: var(--ac-warning-60); }
 .ac-check .ac-field-h { font-weight: var(--ac-font-weight-regular); }
 /* badges (legacy .badge + its tone classes) and the neutral chip */
@@ -85,7 +86,7 @@
 .ac-badge[data-tone='teal'] { color: var(--ac-teal-800); background: var(--ac-teal-100); } .ac-badge[data-tone='brick'] { color: var(--ac-danger-925); background: var(--ac-danger-100); } .ac-badge[data-tone='amber'] { color: var(--ac-warning-825); background: var(--ac-warning-75); }
 .ac-badge[data-tone='blue'] { color: var(--ac-primary-925); background: var(--ac-primary-100); } .ac-badge[data-tone='grey'] { color: var(--ac-secondary-850); background: var(--ac-secondary-75); }
 /* charts (legacy .chart-wrapper); the height is the widget's own */
-.ac-section .ac-chart { padding: 12px; margin-bottom: 1.5rem; background: var(--ac-surface-muted); border: var(--ac-border-thin) solid var(--ac-line-subtle); border-radius: var(--ac-radius-lg); }
+.ac-section .ac-chart { padding: 12px; margin-bottom: var(--ac-space-block); background: var(--ac-surface-muted); border: var(--ac-box-border) solid var(--ac-line-subtle); box-shadow: var(--ac-shadow-box); border-radius: var(--ac-radius-lg); }
 /* panel titles: the h2 scale of a11y.css; the panel itself adds no box */
 .ac-section .ac-panel { margin: 0; } .ac-section .ac-panel > header { display: flex; align-items: center; gap: 10px; }
 .ac-section .ac-zone { margin: 0; }
