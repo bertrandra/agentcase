@@ -3,11 +3,14 @@ import { INDUSTRIES, industryLabel } from '@/domain/frame';
 import { useDoc } from '@/store/hooks';
 import { Panel } from '@/ui/widgets/cards';
 import { Field } from '@/ui/widgets/fields';
+import { FieldChoice } from '@/ui/widgets/field/FieldChoice';
+import { FieldToggle } from '@/ui/widgets/field/FieldToggle';
 import { SectionFrame } from '@/ui/zones/SectionFrame';
 import { CrossCutting } from './CrossCutting';
 import { NormsPanel } from './NormsPanel';
 
 const OVERRIDES = ['selectedNorms', 'regInclude', 'selectedRegArtefacts'] as const;
+const INDUSTRY_OPTIONS = INDUSTRIES.map((i) => ({ value: i.code, label: industryLabel(i) }));
 
 const help = (
   <>
@@ -27,10 +30,14 @@ export default function TransformParamsSection() {
       input={
         <>
           <Panel title="Industry / regulatory profile">
-            <Field label="Industry / regulatory profile">
-              <select value={industry} onChange={(e) => setIndustry(e.target.value)}>{INDUSTRIES.map((i) => <option key={i.code} value={i.code}>{industryLabel(i)}</option>)}</select>
-            </Field>
-            <label className="ac-check"><input type="checkbox" checked={use} onChange={(e) => setRegUse(e.target.checked)} /> 🏛️ Use Regulatory catalog</label>
+            <FieldChoice label="Industry / regulatory profile" value={industry} options={INDUSTRY_OPTIONS} onChange={setIndustry}>
+              <Field label="Industry / regulatory profile">
+                <select value={industry} onChange={(e) => setIndustry(e.target.value)}>{INDUSTRIES.map((i) => <option key={i.code} value={i.code}>{industryLabel(i)}</option>)}</select>
+              </Field>
+            </FieldChoice>
+            <FieldToggle label="🏛️ Use Regulatory catalog" checked={use} onChange={setRegUse}>
+              <label className="ac-check"><input type="checkbox" checked={use} onChange={(e) => setRegUse(e.target.checked)} /> 🏛️ Use Regulatory catalog</label>
+            </FieldToggle>
             {use && <NormsPanel />}
           </Panel>
           <CrossCutting />

@@ -4,16 +4,21 @@ import { useCtx } from '@/store/hooks';
 import { Badge, Panel } from '@/ui/widgets/cards';
 import { DataTable } from '@/ui/widgets/DataTable';
 import { CheckInput } from '@/ui/widgets/fields';
+import { FieldChoice } from '@/ui/widgets/field/FieldChoice';
 import { tok } from '@/domain/theme';
 
 const LEVELS = [{ v: 1, l: 'Low' }, { v: 2, l: 'Med' }, { v: 3, l: 'High' }];
+const LEVEL_OPTIONS = LEVELS.map((o) => ({ value: String(o.v), label: o.l }));
 const scoreColor = (s: number) => (s >= 6 ? tok('danger-800') : s >= 4 ? tok('warning-600') : tok('teal-700'));
 
 function Level({ id, which, value, label }: { id: string; which: 'p' | 'i'; value: number; label: string }) {
+  const set = (v: string) => setInput(`risk_${which}_${id}`, v);
   return (
-    <select aria-label={label} value={value} onChange={(e) => setInput(`risk_${which}_${id}`, e.target.value)}>
-      {LEVELS.map((o) => <option key={o.v} value={o.v}>{o.l}</option>)}
-    </select>
+    <FieldChoice bare label={label} value={String(value)} options={LEVEL_OPTIONS} onChange={set}>
+      <select aria-label={label} value={value} onChange={(e) => set(e.target.value)}>
+        {LEVELS.map((o) => <option key={o.v} value={o.v}>{o.l}</option>)}
+      </select>
+    </FieldChoice>
   );
 }
 

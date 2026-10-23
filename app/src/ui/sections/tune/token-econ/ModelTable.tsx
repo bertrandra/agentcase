@@ -4,6 +4,7 @@ import { tokenModelRows, tokenUsage, type ModelRow } from '@/domain/tuneB/tokens
 import { useCtx } from '@/store/hooks';
 import { DataTable, type Column } from '@/ui/widgets/DataTable';
 import { Panel } from '@/ui/widgets/cards';
+import { FieldNumber } from '@/ui/widgets/field/FieldNumber';
 import { eur } from '../../tuneB/fmt';
 
 type Field = 'name' | 'mix' | 'priceIn' | 'priceOut';
@@ -20,7 +21,10 @@ export function ModelTable() {
     { key: 'name', header: 'Model', render: (r) => <input type="text" aria-label={`Model ${r.index + 1} name`} defaultValue={r.name} key={r.name} onBlur={(e) => setTokenField(r.index, 'name', e.target.value)} /> },
     ...NUM.map((n): Column<ModelRow> => ({
       key: n.field, header: n.header, align: 'center',
-      render: (r) => <input type="number" aria-label={`${r.name} ${n.header}`} value={r[n.field]} min={0} max={n.max} step={n.step} onChange={(e) => setTokenField(r.index, n.field, e.target.value)} />,
+      render: (r) => (
+        <FieldNumber bare native="number" label={`${r.name} ${n.header}`} value={r[n.field]} min={0} max={n.max} step={n.step} onCommit={(v) => setTokenField(r.index, n.field, v)}>
+          <input type="number" aria-label={`${r.name} ${n.header}`} value={r[n.field]} min={0} max={n.max} step={n.step} onChange={(e) => setTokenField(r.index, n.field, e.target.value)} />
+        </FieldNumber>),
     })),
     { key: 'vol', header: `Tokens ${L} (M)`, align: 'right', render: (r) => `${r.volM.toFixed(1)} M` },
     { key: 'cost', header: `Cost ${L} (€)`, align: 'right', render: (r) => eur(r.cost) },

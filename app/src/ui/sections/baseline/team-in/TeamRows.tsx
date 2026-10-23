@@ -7,10 +7,20 @@ import { removeTeamRow, updateTeamRow } from '@/controllers/team';
 import type { Ctx } from '@/domain';
 import type { TeamRow } from '@/domain/types/state';
 import { CommitNumber } from '../CommitNumber';
+import { FieldChoice } from '@/ui/widgets/field/FieldChoice';
+import { FieldNumber } from '@/ui/widgets/field/FieldNumber';
 import { fmtK } from '../fmtK';
 import { tok } from '@/domain/theme';
 
 const opts = (list: string[]) => list.map((o) => <option key={o} value={o}>{o}</option>);
+const choices = (list: string[]) => list.map((o) => ({ value: o, label: o }));
+const LOC_NAMES = LOCATIONS.map((l) => l.name);
+
+/** One select of a team line, switchable to segmented buttons / radios by the choice controls axis (short lists only). */
+function Pick({ i, field, list, name, value }: { i: number; field: 'skill' | 'grade' | 'loc'; list: string[]; name: string; value: string }) {
+  const label = `${name} of line ${i + 1}`, set = (v: string) => updateTeamRow(i, field, v);
+  return <FieldChoice bare label={label} value={value} options={choices(list)} onChange={set}><select aria-label={label} value={value} onChange={(e) => set(e.target.value)}>{opts(list)}</select></FieldChoice>;
+}
 
 interface RowProps { r: TeamRow; i: number; c: Ctx; W: TeamWeights; open: boolean; onPin: (i: number) => void }
 
@@ -21,10 +31,11 @@ function Row({ r, i, c, W, open, onPin }: RowProps) {
   const dcol = Math.abs(d) < 1e-9 ? tok('slate-700') : d > 0 ? tok('danger-800') : tok('teal-725');
   return (
     <tr style={pinned ? { background: tok('warning-40') } : undefined}>
-      <td><select aria-label={`Skill of line ${i + 1}`} value={r.skill} onChange={(e) => updateTeamRow(i, 'skill', e.target.value)}>{opts(SKILLS_EXIST)}</select></td>
-      <td><select aria-label={`Grade of line ${i + 1}`} value={r.grade} onChange={(e) => updateTeamRow(i, 'grade', e.target.value)}>{opts(GRADES)}</select></td>
-      <td><select aria-label={`Location of line ${i + 1}`} value={r.loc} onChange={(e) => updateTeamRow(i, 'loc', e.target.value)}>{opts(LOCATIONS.map((l) => l.name))}</select></td>
-      <td><CommitNumber label={`FTE of line ${i + 1}`} step={0.5} min={0} width={70} value={r.etp} onCommit={(v) => updateTeamRow(i, 'etp', v)} /></td>
+      <td><Pick i={i} field="skill" list={SKILLS_EXIST} name="Skill" value={r.skill} /></td>
+      <td><Pick i={i} field="grade" list={GRADES} name="Grade" value={r.grade} /></td>
+      <td><Pick i={i} field="loc" list={LOC_NAMES} name="Location" value={r.loc} /></td>
+      <td><FieldNumber bare native="number" label={`FTE of line ${i + 1}`} step={0.5} min={0} value={r.etp} onCommit={(v) => updateTeamRow(i, 'etp', v)}>
+        <CommitNumber label={`FTE of line ${i + 1}`} step={0.5} min={0} width={70} value={r.etp} onCommit={(v) => updateTeamRow(i, 'etp', v)} /></FieldNumber></td>
       <td style={{ textAlign: 'right' }} title={`Implied by the artefact mix — exact ${(W.impliedETP[i] ?? 0).toFixed(2)}`}>
         {(W.targetFTE[i] ?? 0).toFixed(1)} <b style={{ color: dcol }}>{d >= 0 ? '+' : ''}{d.toFixed(1)}</b></td>
       <td style={{ textAlign: 'right' }}>{tjm}</td>

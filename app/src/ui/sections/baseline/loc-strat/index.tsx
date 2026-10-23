@@ -5,6 +5,7 @@ import { resetTargetLoc, setTargetLoc } from '@/controllers/baseline';
 import { useCtx } from '@/store/hooks';
 import { OverrideBadge } from '@/ui/widgets/OverrideBadge';
 import { SectionFrame } from '@/ui/zones/SectionFrame';
+import { FieldNumber } from '@/ui/widgets/field/FieldNumber';
 import { ClassBadge, classColor } from '../ClassBadge';
 import { LocSummaryBand } from './LocSummaryBand';
 
@@ -51,7 +52,9 @@ function Target() {
       {LOCATIONS.map((l) => (
         <div key={l.name} className="ac-form-row" style={{ justifyContent: 'space-between', margin: '0 0 6px' }}>
           <span style={{ fontSize: 'var(--ac-font-size-sm)' }}>{l.name} <ClassBadge cls={l.cls} /></span>
-          <input type="number" min={0} max={100} step={1} style={{ width: 70 }} aria-label={`Target share of ${l.name}`} value={(t[l.name] || 0).toFixed(0)} onChange={(e) => setTargetLoc(l.name, e.target.value)} />
+          <FieldNumber bare native="number" label={`Target share of ${l.name}`} unit="%" min={0} max={100} step={1} value={(t[l.name] || 0).toFixed(0)} onCommit={(v) => setTargetLoc(l.name, v)}>
+            <input type="number" min={0} max={100} step={1} style={{ width: 70 }} aria-label={`Target share of ${l.name}`} value={(t[l.name] || 0).toFixed(0)} onChange={(e) => setTargetLoc(l.name, e.target.value)} />
+          </FieldNumber>
         </div>
       ))}
     </div>

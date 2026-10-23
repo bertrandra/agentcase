@@ -6,6 +6,7 @@ import { useCtx } from '@/store/hooks';
 import { TeamOwnerLabel } from '@/ui/widgets/ProductBanner';
 import { SectionFrame } from '@/ui/zones/SectionFrame';
 import { CommitNumber } from '../CommitNumber';
+import { FieldNumber } from '@/ui/widgets/field/FieldNumber';
 import { MixBanner } from './MixBanner';
 import { PinEditor } from './PinEditor';
 import { TeamRows } from './TeamRows';
@@ -29,8 +30,10 @@ export default function TeamInSection() {
       <TeamOwnerLabel />
       <div className="ac-callout" role="note">Build the current team row by row: skill, grade, location, number of FTE. Day rate and annual cost are computed from the Rate Card. This is the AS-IS baseline.</div>
       <div className="ac-form-row">
-        <label className="ac-field"><span className="ac-field-l">Total AS-IS team (FTE)</span>
-          <CommitNumber label="Total AS-IS team (FTE)" step={0.5} min={0.5} width={110} value={total} onCommit={setTeamTotal} /></label>
+        <FieldNumber native="number" label="Total AS-IS team (FTE)" step={0.5} min={0.5} value={total} onCommit={setTeamTotal}>
+          <label className="ac-field"><span className="ac-field-l">Total AS-IS team (FTE)</span>
+            <CommitNumber label="Total AS-IS team (FTE)" step={0.5} min={0.5} width={110} value={total} onCommit={setTeamTotal} /></label>
+        </FieldNumber>
         <small className="ac-muted">Editing this total scales <b>every AS-IS resource pro-rata</b> (same skill / grade / location mix, FTE rounded to 0.5). Row edits below update the total automatically.</small>
       </div>
       <TeamRows c={c} W={W} openRow={open} onPin={(i) => setOpen(open === i ? null : i)} />

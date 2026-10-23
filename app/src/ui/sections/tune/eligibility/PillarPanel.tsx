@@ -4,6 +4,9 @@ import { useCtx } from '@/store/hooks';
 import { Badge, Panel } from '@/ui/widgets/cards';
 import { CheckInput, Field } from '@/ui/widgets/fields';
 import { Note } from '@/ui/widgets/tuneA';
+import { FieldChoice } from '@/ui/widgets/field/FieldChoice';
+
+const PROFILES = PRODUCT_PROFILES.map((p) => ({ value: p.id, label: p.label }));
 
 /** EV-13 use-case pillar x SDLC potential: the product profile (shared with the product-status axis) against the 12 phases. */
 export function PillarPanel() {
@@ -11,11 +14,13 @@ export function PillarPanel() {
   return (
     <Panel title="Use-case pillar × SDLC potential" aside={<><Badge>= product profile × 12 phases</Badge> <Badge tone="blue">EV-13</Badge></>}>
       <div className="ac-form-row">
-        <Field label="Product profile" hint="(shared with Product status)">
-          <select value={cur} onChange={(e) => setLifecyclePos(profileById(e.target.value).pos)}>
-            {PRODUCT_PROFILES.map((p) => <option key={p.id} value={p.id}>{p.label}</option>)}
-          </select>
-        </Field>
+        <FieldChoice label="Product profile" hint="(shared with Product status)" value={cur} options={PROFILES} onChange={(v) => setLifecyclePos(profileById(v).pos)}>
+          <Field label="Product profile" hint="(shared with Product status)">
+            <select value={cur} onChange={(e) => setLifecyclePos(profileById(e.target.value).pos)}>
+              {PRODUCT_PROFILES.map((p) => <option key={p.id} value={p.id}>{p.label}</option>)}
+            </select>
+          </Field>
+        </FieldChoice>
         <CheckInput id="pillarApply" label="Apply pillar leverage to the Abaque reconciliation" />
       </div>
       <div className="ac-table-wrap" tabIndex={0}>
