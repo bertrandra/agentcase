@@ -152,8 +152,8 @@
     "groupSeq": 130
    },
    "opmodel": {
-    "group": "size",
-    "groupSeq": 70
+    "group": "result",
+    "groupSeq": 230
    },
    "tobe-team": {
     "group": "result",
@@ -333,11 +333,11 @@
    },
    "maturity": {
     "group": "size",
-    "groupSeq": 80
+    "groupSeq": 70
    },
    "program": {
     "group": "size",
-    "groupSeq": 90
+    "groupSeq": 80
    },
    "risk": {
     "group": "size",
@@ -389,7 +389,7 @@
    },
    "knowledge-transfer": {
     "group": "result",
-    "groupSeq": 230
+    "groupSeq": 240
    },
    "waves": {
     "group": "portfolio",
