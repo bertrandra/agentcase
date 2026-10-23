@@ -23,7 +23,8 @@ un portefeuille d'un produit « Product 1 » dans une « Wave 1 » au mois 0, av
 
 ## 1. Ajouter un produit
 
-Tant qu'il n'y a qu'un produit, rien ne change à l'écran (pas de sélecteur, pas de groupe de menu). Pour passer en multi-produits :
+Tant qu'il n'y a qu'un produit, rien ne change à l'écran (pas de sélecteur, pas de groupe de menu). Avec la persona **Business journey**,
+le groupe 📦 Portfolio et l'étape « Portfolio » de sa séquence guidée n'apparaissent eux aussi qu'à partir de deux produits. Pour passer en multi-produits :
 
 1. **🏠 Welcome** → encadré « Portfolio » → bouton **Add a product** (ou, plus tard, section **📦 Products** → champ *Name of the new product* →
    **Add a product**).
