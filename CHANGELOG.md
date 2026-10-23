@@ -43,6 +43,10 @@ When releasing, follow [docs/BUMP_PROCEDURE.md](docs/BUMP_PROCEDURE.md) (§7 for
   personas it names (DEV-BRAND-THEME). Catalogue: 86 sections; 246 commands.
 - Contrast test extended to the catalogue (`tests/ui/theme-catalogue.test.ts`): every built-in but Rainbow passes in light / dark x
   standard / enhanced / high.
+- Verification: ui-parity (full run) shows the same 12 recorded header divergences as before (default theme); axe on the golden fixture
+  (104 audits) 0 violations in light and dark; a real-browser axe run with colour contrast over every section of the golden case under
+  Orange, Sprint, Sepia, Dark red and Purple, light and dark: 0 serious / critical after tuning the Orange and Sepia anchors; e2e smoke
+  766 section visits, 0 failures; build 3.09 MB / 0.93 MiB gzip (budget 3.1 / 0.95 unchanged).
 
 ## [v20.8.0] 2026-10-23 — Display modes: dark, contrast levels, colour-blind charts, reduced motion (T2 of the configurable theme)
 
