@@ -1,6 +1,6 @@
 {
  "schema": 1,
- "counts": {"files":910,"tagged":426,"tests":255},
+ "counts": {"files":918,"tagged":430,"tests":257},
  "zones": [
   {"id":"rate-card-team","modules":8,"tmed":105,"tmax":234},
   {"id":"scope-automation","modules":15,"tmed":89,"tmax":234},
@@ -19,7 +19,7 @@
   {"id":"exports","modules":100,"tmed":62,"tmax":200},
   {"id":"workspace-config","modules":58,"tmed":57,"tmax":116},
   {"id":"foundation","modules":20,"tmed":153,"tmax":234},
-  {"id":"presentation","modules":6,"tmed":186,"tmax":186}
+  {"id":"presentation","modules":10,"tmed":142,"tmax":188}
  ],
  "sections": [
   {"id":"home","label":"🏠 Welcome","group":"frame","kind":"S-static","files":2},
@@ -614,6 +614,7 @@
   ["tests/ui/arch-facts.test.ts","0-17",""],
   ["tests/ui/calc-banner.test.tsx","0-17","0-84"],
   ["tests/ui/cost-model-panel.test.tsx","0-17","0-84"],
+  ["tests/ui/display.test.tsx","14,17",""],
   ["tests/ui/english-only.test.ts","16",""],
   ["tests/ui/files-boot.test.tsx","0-17","0-84"],
   ["tests/ui/focus-return.test.tsx","0-17","0-84"],
@@ -737,6 +738,7 @@
   ["tests/ui/sections/vfte-ov.test.tsx","0-6,8-10,12,14,16-17","20"],
   ["tests/ui/shell.test.tsx","0-17","0-84"],
   ["tests/ui/simple-table-header.test.tsx","",""],
+  ["tests/ui/theme-contrast.test.ts","17",""],
   ["tests/ui/theme-tokens.test.ts","17",""],
   ["tests/ui/vue-banner.test.tsx","0-17","0-84"],
   ["tests/ui/vue-baseline.test.tsx","0-17","0-84"],
