@@ -187,8 +187,13 @@ Also `RestoreBanner` (autosave offer), a skip link, and an `aria-live="polite"` 
 control paddings and durations are tokens (`docs/THEME.md`). The table lives in `domain/theme` (zone `presentation`, so the store's Excel
 and report exports can read it); `ui/theme/tokens.css` is generated from it (`npm run theme:gen`, checked by `tests/ui/theme-tokens.test.ts`).
 CSS, inline styles and SVG attributes use `var(--ac-*)`; chart.js, colour arithmetic and the domain read-outs use `tok()`; Excel uses
-`argb()`. `setActiveTheme()` plus the custom properties on `:root` is the single switch a theme (dark mode, presets, a theme stored in the
-case) needs; `tests/ui/no-hardcoded-style.test.ts` keeps literals out.
+`argb()`. `setActiveTheme()` plus the custom properties on `:root` is the single switch a theme (presets, a theme stored in the case) needs;
+`tests/ui/no-hardcoded-style.test.ts` keeps literals out. **Display modes** (dark, contrast standard / enhanced / high, colour-blind safe
+charts, reduced motion) are value sets over the base theme in `domain/theme/modes.ts`: generated as CSS blocks keyed by `data-ac-*`
+attributes on `<html>` (tokens.css) and given to `tok()` through `setDisplayTheme()`. The viewer's preference is view state in `ui/display`
+(localStorage `agentcase.display`, never in the case, never undoable; "auto" follows `prefers-color-scheme` / `prefers-contrast`); a change
+re-mounts the section host so chart.js canvases are rebuilt. The printed exports (Excel, HTML report) read the base theme (`printTok()`,
+`argb()`): always light. `tests/ui/theme-contrast.test.ts` checks every text / background role pair in each mode x level (docs/THEME.md §6).
 
 **Navigation comes from the document**, not from code tables: `ui/zones/navModel.ts` builds the sidebar from `doc.PERSONAS`,
 `PERSONA_SECTIONS`, `PERSONA_SECTION_ORDER`, `GROUPS`, `sectionGroups`, `dynamicSections` and the guided sequences, falling back to the

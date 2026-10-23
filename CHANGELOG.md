@@ -15,6 +15,18 @@ All notable changes to AgentCase, newest first. Product version from v19.0.0 = `
 
 When releasing, follow [docs/BUMP_PROCEDURE.md](docs/BUMP_PROCEDURE.md) (§7 for the legacy file) and add the new version at the top.
 
+## [Unreleased]
+
+### New
+- **Display modes (T2 of the configurable theme).** Light, dark and auto (follows the system `prefers-color-scheme`; `prefers-contrast: more` lifts standard to enhanced), three contrast levels (standard = the current AA look, enhanced = AAA body text, visible lines, a thicker focus ring, high = black and white like the Windows high-contrast themes) in both modes, a **colour-blind safe charts** option (Okabe-Ito series, plus line dash and point style per line series and a hatch per bar series on every chart.js canvas) and **Reduce motion** (motion tokens to 0, no chart animation, no funnel autoplay). The dark mode is a dedicated value set (surfaces, text, lines, focus, header / KPI bar / sidebar / tables, business colours, chart palette, translucent steps); the raw scale steps components still read are re-ranked by an OKLab lightness curve. Docs: docs/THEME.md §6.
+- **Display control** in the top bar (◐, "Display settings"): a small disclosure panel of native radios and checkboxes (Theme: Light / Dark / Auto (system); Contrast: Standard / Enhanced / High; Reduce motion; Colour-blind safe charts), keyboard and screen-reader accessible, Escape returns focus to the button. A **per-viewer** preference: localStorage `agentcase.display`, never in the case, never undoable; an unreadable entry gives the defaults (light, standard).
+- **Contrast test** (`tests/ui/theme-contrast.test.ts`): WCAG ratio of every text / background role pair in each mode x level (AA 4.5:1 text and 3:1 UI; enhanced 7:1; high 15:1 text), listing the pairs below threshold. `tools/a11y.mjs --mode dark --contrast high` audits a display.
+
+### Changed
+- `tokens.css` carries one generated block per display (`data-ac-mode`, `data-ac-contrast`, `data-ac-cvd`, `data-ac-motion` on `<html>`); `npm run theme:gen` / `theme:check` cover them. `tok()` reads the base theme plus the display overrides (`setDisplayTheme()`); the Excel workbooks and the HTML report read the base theme (`printTok()`, `argb()`) and stay light. The HTML snapshot does not carry the author's display: it opens in its viewer's preference (light by default).
+- `textColor()` lightens a data colour on a dark background (it darkened only).
+- New roles `focus-header` and `table-head-note`; chart and graph series (financial, economics, verify, scope, team-out, tracker charts, Gantt, dependency graph, funnel and curve SVGs) read `chart-cat-*` instead of the raw brand steps they equal. The default look is unchanged (ui-parity: same 12 recorded divergences as before).
+
 ## [v20.6.0] 2026-10-23 — Theme tokens (T1 of the configurable theme)
 
 - **Theme tokens (T1 of the configurable theme).** Every visual value is a design token: 374 tokens in `app/src/domain/theme` (9 colour scales with 154 steps, 35 translucent steps, 51 semantic roles: surfaces, text, lines, states, header / KPI bar / sidebar chrome, tables and the business colours automation / glass ceiling / human supervision / agentic; 24 chart tokens: categorical 1–8, sequential 1–10, diverging, grid, axis; 18 export tokens for the Excel workbooks and the report; typography, radius, border widths, shadows, control paddings, motion). `app/src/ui/theme/tokens.css` is generated from that table (`npm run theme:gen` / `theme:check`) and a test fails on any drift. See `docs/THEME.md`.

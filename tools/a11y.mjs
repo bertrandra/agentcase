@@ -5,9 +5,10 @@
 // forced-colours / reduced-motion / 360px) and runs the keyboard-only checks (a11y-keys.mjs: Tab walk, skip link, dialogs, focus survival). Writes app/a11y-report.json and a summary table.
 // Exit code 1 when any serious/critical violation remains, or when the moderate/minor counts exceed app/a11y-budget.json.
 // Usage: node tools/a11y.mjs [--fixtures golden,ctx-msi,industry-med | pf-three-products | pf-example] [--sections label,label] [--update-budget]
+//        [--mode light|dark|auto] [--contrast standard|enhanced|high]   (the viewer's display preference, set in localStorage before each page loads)
 import { readFileSync, writeFileSync, existsSync } from 'node:fs';
 import { resolve } from 'node:path';
-import { app, pw, NAV, recorder, openCase, openSection } from './a11y-lib.mjs';
+import { app, pw, NAV, DISPLAY, recorder, openCase, openSection } from './a11y-lib.mjs';
 import { historyStates, keyboardStates, mediaStates, menuToggleFocus, personaMenu, restoreBanner, wizardEnd } from './a11y-states.mjs';
 const args = process.argv.slice(2), opt = (n) => (args.indexOf(n) < 0 ? '' : args[args.indexOf(n) + 1] || '').split(',').filter(Boolean);
 const fixtures = opt('--fixtures').length ? opt('--fixtures') : ['golden', 'ctx-msi', 'industry-med', 'pf-example'], only = opt('--sections');
@@ -85,7 +86,7 @@ for (const r of rows) {
 const summary = [...agg.values()].map((a) => ({ rule: a.rule, impact: a.impact, nodes: a.nodes, sections: a.sections.size, help: a.help, example: a.example }))
   .sort((a, b) => ORDER.indexOf(a.impact) - ORDER.indexOf(b.impact) || b.nodes - a.nodes);
 writeFileSync(reportFile, JSON.stringify({ audits: rec.state.audits, fixtures, summary, violations: rows.map((r) => ({ fixture: r.fixture, section: r.section, rule: r.rule, impact: r.impact, nodes: r.nodes, example: r.targets[0] })) }, null, 1) + '\n');
-console.log(`${rec.state.audits} audits (${fixtures.join(', ')})`);
+console.log(`${rec.state.audits} audits (${fixtures.join(', ')})${DISPLAY ? ` display ${DISPLAY}` : ''}`);
 console.log('impact   | rule'.padEnd(42) + '| nodes | pages');
 for (const s of summary) console.log(`${s.impact.padEnd(8)} | ${s.rule.padEnd(30)}| ${String(s.nodes).padStart(5)} | ${s.sections}`);
 if (!summary.length) console.log('no violations');
