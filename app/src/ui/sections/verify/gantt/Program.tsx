@@ -3,7 +3,7 @@ import { Row } from './bars';
 import { ProgramBar } from './ProgramBar';
 import { tok } from '@/domain/theme';
 
-const FAMILY: Record<string, string> = { get adoption() { return tok('primary-700'); }, get maturity() { return tok('secondary-600'); }, get financial() { return tok('warning-600'); }, get workforce() { return tok('teal-700'); } };
+const FAMILY: Record<string, string> = { get adoption() { return tok('chart-cat-1'); }, get maturity() { return tok('chart-cat-4'); }, get financial() { return tok('chart-cat-3'); }, get workforce() { return tok('chart-cat-2'); } };
 const SUB = { fontSize: 'var(--ac-font-size-sm)', fontWeight: 'var(--ac-font-weight-bold)', get color() { return tok('slate-650'); }, textTransform: 'uppercase' as const, letterSpacing: '.04em', margin: '.7rem 0 .2rem' };
 
 /** Calendar header, the transformation program rows and the engine-derived milestone markers. */

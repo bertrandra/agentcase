@@ -28,7 +28,7 @@ describe('Save HTML tab', () => {
     act(() => { setCustomerName('Acme'); });
     render(<Io />);
     fireEvent.click(screen.getByText('💾 Download HTML snapshot'));
-    expect(d.names[0]).toMatch(/^AgentCase_Acme_v20_7_Snapshot_\d{4}-\d{2}-\d{2}-\d{2}-\d{2}-\d{2}\.html$/);
+    expect(d.names[0]).toMatch(/^AgentCase_Acme_v20_8_Snapshot_\d{4}-\d{2}-\d{2}-\d{2}-\d{2}-\d{2}\.html$/);
     expect(d.blobs[0]!.type).toBe('text/html');
     const html = await readBlob(d.blobs[0]!);
     expect(html).toContain('id="agentcase-snapshot"');

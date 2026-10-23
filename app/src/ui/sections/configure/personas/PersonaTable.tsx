@@ -4,7 +4,7 @@ import { personasByOrder, type Persona } from '@/domain/pdc/personas';
 import { useNavModel } from '@/ui/zones/navModel';
 import { tok } from '@/domain/theme';
 
-const note = { fontWeight: 'var(--ac-font-weight-regular)', get color() { return tok('primary-200'); }, fontSize: 'var(--ac-font-size-xs)' } as const;   // inside the blue table header band (5.08:1)
+const note = { fontWeight: 'var(--ac-font-weight-regular)', get color() { return tok('table-head-note'); }, fontSize: 'var(--ac-font-size-xs)' } as const;   // inside the blue table header band (5.08:1)
 
 /** Personas in picker order: order, hide-menu and default flags, duplicate / rename / delete (delete asks for confirmation). */
 export function PersonaTable({ personas }: { personas: Persona[] }) {

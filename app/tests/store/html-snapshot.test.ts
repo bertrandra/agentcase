@@ -27,7 +27,7 @@ describe('HTML snapshot: save', () => {
   it('embeds the case, empties #root, drops transient UI and keeps the application script', () => {
     freshStore(); setCustomerName('Acme SA');
     const { filename, html } = htmlSnapshotFile(livePage().documentElement, NOW);
-    expect(filename).toBe('AgentCase_Acme_SA_v20_7_Snapshot_2026-10-21-15-55-00.html');
+    expect(filename).toBe('AgentCase_Acme_SA_v20_8_Snapshot_2026-10-21-15-55-00.html');
     const d = parse(html);
     expect(d.getElementById('root')!.childNodes).toHaveLength(0);
     expect(d.querySelector('iframe, [data-transient]')).toBeNull();

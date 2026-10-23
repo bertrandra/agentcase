@@ -2,6 +2,7 @@
 .ac-sr { position: absolute; width: 1px; height: 1px; margin: -1px; padding: 0; overflow: hidden; clip: rect(0 0 0 0); clip-path: inset(50%); white-space: nowrap; border: 0; }
 :focus-visible { outline: var(--ac-focus-width) solid var(--ac-focus); outline-offset: 2px; }
 .ac-nav button:focus-visible, .ac-wchip:focus-visible { outline-offset: -2px; }
+.ac-top :focus-visible, .ac-kpis :focus-visible { outline-color: var(--ac-focus-header); }   /* = focus in the default look; white / yellow on the dark header at the other levels */
 .ac-skip:focus { outline: var(--ac-focus-width) solid var(--ac-focus); }
 .ac-table-wrap:focus-visible { outline-offset: -2px; }
 /* section headings keep one visual scale whatever level the outline needs (h1 > h2 > h3 without gaps) */
@@ -14,6 +15,8 @@
   .ac-top { flex-wrap: wrap; }
   .ac-spacer { display: none; }
 }
+/* the viewer's "Reduce motion" option (ui/display) does what the system setting does */
+:root[data-ac-motion='reduce'] *, :root[data-ac-motion='reduce'] *::before, :root[data-ac-motion='reduce'] *::after { animation-duration: .001ms !important; animation-iteration-count: 1 !important; transition-duration: .001ms !important; scroll-behavior: auto !important; }
 @media (prefers-reduced-motion: reduce) {
   *, *::before, *::after { animation-duration: .001ms !important; animation-iteration-count: 1 !important; transition-duration: .001ms !important; scroll-behavior: auto !important; }
 }

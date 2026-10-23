@@ -1,4 +1,5 @@
 import type { CSSProperties, ReactNode } from 'react';
+import { dataSurface } from '../display/dataColor';
 import { goSection } from '../uiState';
 import './rich.css';
 
@@ -12,7 +13,7 @@ const isAttrs = (x: unknown): x is RichAttrs => typeof x === 'object' && x !== n
 function style(a: RichAttrs): CSSProperties | undefined {
   const s: CSSProperties = {};
   if (a.accent && COLOR.test(a.accent)) s.borderLeft = `4px solid ${a.accent}`;
-  if (a.bg && COLOR.test(a.bg)) s.background = a.bg;
+  if (a.bg && COLOR.test(a.bg)) s.background = dataSurface(a.bg);
   return s.borderLeft || s.background ? s : undefined;
 }
 

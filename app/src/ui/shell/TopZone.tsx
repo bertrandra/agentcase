@@ -2,6 +2,7 @@ import { useRef } from 'react';
 import { exportSnapshotJson, importSnapshotFile } from '@/controllers/files';
 import { useDoc, useHistory } from '@/store/hooks';
 import { APP_VERSION } from '@/domain/version';
+import { DisplayMenu } from '../display/DisplayMenu';
 import { goSection, setFastPath, toast, toggleMenuHidden, useUi } from '../uiState';
 import { useNavModel } from '../zones/navModel';
 import { ProductBar } from './ProductBar';
@@ -40,6 +41,7 @@ export function TopZone() {
         <button type="button" onClick={save}>Save</button>
         <button type="button" onClick={() => file.current?.click()}>Open…</button>
         <input ref={file} type="file" accept="application/json,.json" hidden onChange={(e) => { void open(e.target.files?.[0]); e.target.value = ''; }} />
+        <DisplayMenu />
       </div>
     </header>
   );

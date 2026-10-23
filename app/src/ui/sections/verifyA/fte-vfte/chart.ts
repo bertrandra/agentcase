@@ -2,7 +2,7 @@ import type { ChartConfiguration, Chart } from 'chart.js';
 import type { FteSeries } from '@/domain/verifyA/fteVfte';
 import { tok } from '@/domain/theme';
 
-const COL: Record<string, string> = { get L1() { return tok('slate-700'); }, get L2() { return tok('info-700'); }, get L3() { return tok('teal-700'); }, get L4() { return tok('primary-700'); } };
+const COL: Record<string, string> = { get L1() { return tok('slate-700'); }, get L2() { return tok('chart-cat-5'); }, get L3() { return tok('chart-cat-2'); }, get L4() { return tok('chart-cat-1'); } };
 
 /** Human FTE falling, agent vFTE growing, the flat total, and a dashed vertical marker where the adoption curve crosses each L-threshold. */
 export function fteChart(s: FteSeries): ChartConfiguration {
@@ -25,8 +25,8 @@ export function fteChart(s: FteSeries): ChartConfiguration {
     type: 'line',
     data: { labels: s.labels, datasets: [
       { label: 'Total effort (FTE-eq) = baseline', data: s.base, borderColor: tok('neutral-700'), borderWidth: 1.5, borderDash: [6, 4], pointRadius: 0, fill: false },
-      { label: 'Human FTE', data: s.human, borderColor: tok('warning-600'), backgroundColor: tok('warning-500-a15'), borderWidth: 3, tension: 0.4, fill: true, pointRadius: 2 },
-      { label: 'Agent vFTE', data: s.agent, borderColor: tok('teal-700'), backgroundColor: tok('success-500-a15'), borderWidth: 3, tension: 0.4, fill: true, pointRadius: 2 },
+      { label: 'Human FTE', data: s.human, borderColor: tok('chart-cat-3'), backgroundColor: tok('warning-500-a15'), borderWidth: 3, tension: 0.4, fill: true, pointRadius: 2 },
+      { label: 'Agent vFTE', data: s.agent, borderColor: tok('chart-cat-2'), backgroundColor: tok('success-500-a15'), borderWidth: 3, tension: 0.4, fill: true, pointRadius: 2 },
     ] },
     options: { plugins: { legend: { position: 'top' } }, scales: { y: { min: 0, max: s.max, title: { display: true, text: 'FTE/vFTE' }, grid: { color: tok('chart-grid') } }, x: { title: { display: true, text: 'Month' } } } },
     plugins: [levels],

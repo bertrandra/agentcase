@@ -1,7 +1,7 @@
 import { FUNNEL_EPS, type FunnelStage } from '@/domain/scope/automation';
 import { tok } from '@/domain/theme';
 
-const COL = { get pot() { return tok('primary-700'); }, get ceil() { return tok('warning-600'); }, get mix() { return tok('slate-700'); }, get gap() { return tok('info-700'); }, get sup() { return tok('danger-800'); }, get real() { return tok('teal-700'); } };
+const COL = { get pot() { return tok('chart-cat-1'); }, get ceil() { return tok('chart-cat-3'); }, get mix() { return tok('slate-700'); }, get gap() { return tok('chart-cat-5'); }, get sup() { return tok('danger-800'); }, get real() { return tok('chart-cat-2'); } };
 export interface Active { ceiling: boolean; mix: boolean; ramp: boolean; sup: boolean }
 interface Band { v: number; t: string; s: string; c: string; fin?: boolean }
 

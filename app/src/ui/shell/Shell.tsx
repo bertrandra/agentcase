@@ -3,6 +3,7 @@ import '../theme/nav.css';
 import '../theme/a11y.css';
 import '../theme/portfolio.css';
 import '../theme/vue.css';
+import { useDisplay } from '../display/store';
 import { SectionHost } from '../zones/SectionHost';
 import { sectionById } from '../zones/registry';
 import { useNavModel } from '../zones/navModel';
@@ -21,7 +22,7 @@ import { useShortcuts } from './useShortcuts';
 export function Shell() {
   useShortcuts();
   const toastText = useUi((s) => s.toast), active = useUi((s) => s.activeSection), hidden = useUi((s) => s.menuHidden), walking = useUi((s) => s.wiz.active);
-  const { persona, compact } = useNavModel(), collapsed = hidden || walking;
+  const { persona, compact } = useNavModel(), collapsed = hidden || walking, display = useDisplay((s) => s.version);
   useEffect(() => { setMenuHidden(compact); }, [persona, compact]);   // the persona's "hide menu" default, live when it is edited
   return (
     <div className={`ac-shell${collapsed ? ' is-compact' : ''}`}>
@@ -32,7 +33,7 @@ export function Shell() {
       <div className="ac-workcol" style={{ gridArea: 'work' }}>
         <GroupNavBar />
         <WizardBar />
-        <SectionHost />
+        <SectionHost key={display} />{/* a display change (dark, contrast, colour-blind charts) re-mounts the section: canvases and tok() read-outs are rebuilt */}
       </div>
       <DockZone />
       <div className="ac-live" role="status" aria-live="polite">{toastText}</div>

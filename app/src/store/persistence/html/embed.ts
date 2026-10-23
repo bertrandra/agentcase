@@ -12,12 +12,14 @@ const isSnapshotScript = (s: Element): boolean =>
 
 /**
  * A copy of the running application with the case embedded. The React tree is not serialised: `#root` is emptied (the app
- * rebuilds it on load), transient nodes are dropped, and any snapshot script of an earlier save is replaced — never stacked.
+ * rebuilds it on load), transient nodes are dropped, and any snapshot script of an earlier save is replaced — never stacked. The author's display
+ * (the `data-ac-*` attributes of <html>: dark, contrast…) is not carried: the copy opens in its viewer's preference, light by default (docs/THEME.md §6.5).
  */
 export function buildSnapshotHtml(documentElement: Element, snapshot: unknown): string {
   const clone = documentElement.cloneNode(true) as Element, doc = documentElement.ownerDocument;
   clone.querySelectorAll('script').forEach((s) => { if (isSnapshotScript(s)) s.remove(); });
   clone.querySelectorAll('iframe, [data-transient]').forEach((n) => n.remove());
+  for (const a of [...clone.attributes]) if (a.name.startsWith('data-ac-')) clone.removeAttribute(a.name);
   const root = clone.querySelector('#root');
   while (root?.firstChild) root.removeChild(root.firstChild);
   const script = doc.createElement('script');
