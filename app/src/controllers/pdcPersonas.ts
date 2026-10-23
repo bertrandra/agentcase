@@ -1,13 +1,13 @@
 /** @calc-zone workspace-config */
-import { duplicateOf, uniqueId, type MenuGroup, type Persona } from '@/domain/pdc/personas';
+import { duplicateOf, uniqueId, type Persona } from '@/domain/pdc/personas';
 import { defineCommand } from '@/store/commands';
 import { appStore } from '@/store/instance';
 import type { Doc } from '@/store/types';
+import { groupsIn, inStructure, setColorIn, setGroupsIn } from './menuTarget';
 
 type Lists = Record<string, string[]>;
 const personas = (d: Doc): Persona[] => ((d.PERSONAS ??= []) as Persona[]);
 const sections = (d: Doc): Lists => ((d.PERSONA_SECTIONS ??= {}) as Lists);
-const groups = (d: Doc): MenuGroup[] => ((d.GROUPS ??= []) as MenuGroup[]);
 const omit = <T extends object>(o: T, key: string): T => Object.fromEntries(Object.entries(o).filter(([k]) => k !== key)) as T;
 const maxOrder = (l: { order: number }[]): number => Math.max(0, ...l.map((x) => x.order));
 
@@ -66,30 +66,40 @@ const removeSectionCmd = defineCommand<{ persona: string; section: string }>({
   run(d, p) { sections(d)[p.persona] = (sections(d)[p.persona] ?? []).filter((x) => x !== p.section); },
 });
 
-// ---- Menu groups --------------------------------------------------------------------------------------------------------
-const addGroupCmd = defineCommand<{ label: string }>({
-  type: 'persona.addGroup', label: (p) => `Add the menu group ${p.label}`,
-  run(d, p) { const id = uniqueId(p.label, groups(d).map((x) => x.id)), label = p.label.trim().slice(0, 120); if (id && label) groups(d).push({ id, label, order: maxOrder(groups(d)) + 1, description: '' }); },
+// ---- Menu groups (of the standard structure, or of the menu structure named in the payload) --------------------------------
+type In = { structure?: string };
+const addGroupCmd = defineCommand<{ label: string } & In>({
+  type: 'persona.addGroup', label: (p) => `Add the menu group ${p.label}${inStructure(p.structure)}`,
+  run(d, p) {
+    const l = groupsIn(d, p.structure);
+    const id = l && uniqueId(p.label, l.map((x) => x.id)), label = p.label.trim().slice(0, 120);
+    if (l && id && label) l.push({ id, label, order: maxOrder(l) + 1, description: '' });
+  },
 });
-const renameGroupCmd = defineCommand<{ id: string; label: string }>({
-  type: 'persona.renameGroup', label: (p) => `Rename the menu group ${p.id} to ${p.label}`,
-  run(d, p) { const g = groups(d).find((x) => x.id === p.id), v = p.label.trim().slice(0, 120); if (g && v) g.label = v; },
+const renameGroupCmd = defineCommand<{ id: string; label: string } & In>({
+  type: 'persona.renameGroup', label: (p) => `Rename the menu group ${p.id} to ${p.label}${inStructure(p.structure)}`,
+  run(d, p) { const g = groupsIn(d, p.structure)?.find((x) => x.id === p.id), v = p.label.trim().slice(0, 120); if (g && v) g.label = v; },
 });
-const deleteGroupCmd = defineCommand<{ id: string }>({ type: 'persona.deleteGroup', label: (p) => `Delete the menu group ${p.id}`, run(d, p) { d.GROUPS = groups(d).filter((x) => x.id !== p.id); } });
-const groupOrderCmd = defineCommand<{ id: string; order: number }>({
-  type: 'persona.setGroupOrder', label: (p) => `Set the order of the menu group ${p.id} to ${p.order}`, coalesceKey: (p) => `persona.setGroupOrder:${p.id}`,
-  run(d, p) { const g = groups(d).find((x) => x.id === p.id); if (g && !isNaN(p.order)) g.order = p.order; },
+const deleteGroupCmd = defineCommand<{ id: string } & In>({
+  type: 'persona.deleteGroup', label: (p) => `Delete the menu group ${p.id}${inStructure(p.structure)}`,
+  run(d, p) { const l = groupsIn(d, p.structure); if (l) setGroupsIn(d, p.structure, l.filter((x) => x.id !== p.id)); },
 });
-const groupDescCmd = defineCommand<{ id: string; description: string }>({
-  type: 'persona.setGroupDescription', label: (p) => `Describe the menu group ${p.id}`, coalesceKey: (p) => `persona.setGroupDescription:${p.id}`,
-  run(d, p) { const g = groups(d).find((x) => x.id === p.id); if (g) g.description = p.description; },
+const groupOrderCmd = defineCommand<{ id: string; order: number } & In>({
+  type: 'persona.setGroupOrder', label: (p) => `Set the order of the menu group ${p.id} to ${p.order}${inStructure(p.structure)}`, coalesceKey: (p) => `persona.setGroupOrder:${p.structure ? `${p.structure}:` : ''}${p.id}`,
+  run(d, p) { const g = groupsIn(d, p.structure)?.find((x) => x.id === p.id); if (g && !isNaN(p.order)) g.order = p.order; },
 });
-const groupColorCmd = defineCommand<{ id: string; color: string }>({
-  type: 'persona.setGroupColor', label: (p) => `Set the colour of the menu group ${p.id}`, coalesceKey: (p) => `persona.setGroupColor:${p.id}`,
-  run(d, p) { if (/^#[0-9a-fA-F]{3,8}$/.test(p.color)) d.GROUP_COLORS = { ...((d.GROUP_COLORS ?? {}) as Record<string, string>), [p.id]: p.color }; },
+const groupDescCmd = defineCommand<{ id: string; description: string } & In>({
+  type: 'persona.setGroupDescription', label: (p) => `Describe the menu group ${p.id}${inStructure(p.structure)}`, coalesceKey: (p) => `persona.setGroupDescription:${p.structure ? `${p.structure}:` : ''}${p.id}`,
+  run(d, p) { const g = groupsIn(d, p.structure)?.find((x) => x.id === p.id); if (g) g.description = p.description; },
+});
+const groupColorCmd = defineCommand<{ id: string; color: string } & In>({
+  type: 'persona.setGroupColor', label: (p) => `Set the colour of the menu group ${p.id}${inStructure(p.structure)}`, coalesceKey: (p) => `persona.setGroupColor:${p.structure ? `${p.structure}:` : ''}${p.id}`,
+  run(d, p) { if (/^#[0-9a-fA-F]{3,8}$/.test(p.color)) setColorIn(d, p.structure, p.id, p.color); },
 });
 
 const go = <P>(c: ReturnType<typeof defineCommand<P>>, p: P): void => appStore().dispatch(c(p));
+/** The payload, with the structure only when it is not the standard one (a standard edit stays byte-identical to before). */
+const at = <P extends object>(p: P, structure: string | undefined): P & In => (structure && structure !== 'standard' ? { ...p, structure } : p);
 export const addPersona = (label: string): void => go(addPersonaCmd, { label });
 export const duplicatePersona = (id: string, catalogue: string[]): void => go(duplicateCmd, { id, catalogue });
 export const deletePersona = (id: string): void => go(deleteCmd, { id });
@@ -99,9 +109,10 @@ export const setPersonaCompactNav = (id: string, on: boolean): void => go(compac
 export const setDefaultPersona = (id: string): void => go(defaultCmd, { id });
 export const addPersonaSection = (persona: string, section: string): void => go(addSectionCmd, { persona, section });
 export const removePersonaSection = (persona: string, section: string): void => go(removeSectionCmd, { persona, section });
-export const addGroup = (label: string): void => go(addGroupCmd, { label });
-export const renameGroup = (id: string, label: string): void => go(renameGroupCmd, { id, label });
-export const deleteGroup = (id: string): void => go(deleteGroupCmd, { id });
-export const setGroupOrder = (id: string, order: number): void => go(groupOrderCmd, { id, order });
-export const setGroupDescription = (id: string, description: string): void => go(groupDescCmd, { id, description });
-export const setGroupColor = (id: string, color: string): void => go(groupColorCmd, { id, color });
+/** Group edits target the standard structure unless a menu structure id is given. */
+export const addGroup = (label: string, structure?: string): void => go(addGroupCmd, at({ label }, structure));
+export const renameGroup = (id: string, label: string, structure?: string): void => go(renameGroupCmd, at({ id, label }, structure));
+export const deleteGroup = (id: string, structure?: string): void => go(deleteGroupCmd, at({ id }, structure));
+export const setGroupOrder = (id: string, order: number, structure?: string): void => go(groupOrderCmd, at({ id, order }, structure));
+export const setGroupDescription = (id: string, description: string, structure?: string): void => go(groupDescCmd, at({ id, description }, structure));
+export const setGroupColor = (id: string, color: string, structure?: string): void => go(groupColorCmd, at({ id, color }, structure));

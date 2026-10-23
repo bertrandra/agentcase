@@ -1,5 +1,4 @@
 import { GLOSSARY_TERMS } from '@/domain/frame';
-import { useDoc } from '@/store/hooks';
 import { textColor } from '@/ui/colorText';
 import { goSection } from '@/ui/uiState';
 import { Callout } from '@/ui/widgets/cards';
@@ -24,8 +23,7 @@ const colorOf = (colors: Record<string, string> | undefined, id: string): string
 
 /** Home — one card per menu group of the current persona. */
 export default function HomeSection() {
-  const colors = useDoc((d) => d.GROUP_COLORS as Record<string, string> | undefined);
-  const groups = useNavModel().nav;   // the document's groups, descriptions and order, like the sidebar
+  const { nav: groups, colors } = useNavModel();   // the groups, descriptions, colours and order of the persona's menu structure, like the sidebar
   return (
     <SectionFrame title="🏠 Welcome to AgentCase" help={help}
       input={<p className="ac-muted">Each card below opens a group of the case — start anywhere or work through them top to bottom, and the full menu is always one click away on the left.</p>}
