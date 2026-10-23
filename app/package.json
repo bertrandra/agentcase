@@ -13,6 +13,8 @@
     "ui-parity": "npm run build && node ../tools/ui-parity.mjs",
     "deps:gen": "vite-node scripts/gen-deps.ts",
     "deps:check": "vite-node scripts/gen-deps.ts --check",
+    "theme:gen": "vite-node scripts/gen-theme.ts",
+    "theme:check": "vite-node scripts/gen-theme.ts --check",
     "dup": "node scripts/dup.mjs",
     "test:affected": "vite-node scripts/affected-tests.ts",
     "validate:affected": "vite-node scripts/validate-affected.ts",
