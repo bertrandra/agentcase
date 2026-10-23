@@ -7,7 +7,7 @@ export const ROLES = {
   // page, surfaces, lines and text
   bg: '{slate-50}', surface: '{neutral-0}', 'surface-raised': '{neutral-0}', 'surface-muted': '{neutral-25}', 'surface-tint': '{primary-60}',
   ink: '{neutral-900}', muted: '{neutral-700}', 'text-strong': '{neutral-950}', 'text-soft': '{neutral-750}', 'text-label': '{neutral-650}',
-  'text-inverse': '{neutral-0}', 'text-on-primary': '{neutral-0}', 'text-link': '{primary-700}', 'text-heading': '{primary-700}',
+  'text-inverse': '{neutral-0}', 'text-on-primary': '{neutral-0}', 'text-on-data': '{neutral-0}', 'text-link': '{primary-700}', 'text-heading': '{primary-700}',
   line: '{neutral-130}', 'line-strong': '{neutral-175}', 'line-subtle': '{neutral-125}', 'line-tint': '{primary-200}',
   focus: '{primary-700}', 'focus-header': '{focus}', hover: '{primary-60}', 'hover-text': '{primary-700}', selected: '{primary-700}', 'selected-text': '{neutral-0}',
   // header banner, KPI bar, sidebar

@@ -37,7 +37,7 @@ export function darkAlphas(scales: Record<string, string>): Record<string, strin
 /** Semantic roles in dark mode: a dedicated set (surfaces lighten with elevation, text is off-white, business colours are lifted for dark grounds). */
 export const DARK_ROLES = {
   bg: '#0f131a', surface: '#171c24', 'surface-raised': '#1e242e', 'surface-muted': '#1a1f28', 'surface-tint': '#1a2436',
-  ink: '#e6e8ec', muted: '#a9b1bd', 'text-strong': '#f3f4f6', 'text-soft': '#c5cad2', 'text-label': '#b4bac4', 'text-link': '#8cbcff', 'text-heading': '#8cbcff',
+  'text-on-data': '#ffffff', ink: '#e6e8ec', muted: '#a9b1bd', 'text-strong': '#f3f4f6', 'text-soft': '#c5cad2', 'text-label': '#b4bac4', 'text-link': '#8cbcff', 'text-heading': '#8cbcff',
   line: '#2e3542', 'line-strong': '#3b4352', 'line-subtle': '#272d38', 'line-tint': '#2c3f60',
   focus: '#8cbcff', hover: '#222d40', 'hover-text': '#a6ccff', selected: '#2f6fc0', 'selected-text': '#ffffff',
   'header-start': '#163a6b', 'header-end': '#0b0f19', 'header-text': '#f3f4f6',
