@@ -1,6 +1,6 @@
 import type { ChartConfiguration } from 'chart.js';
 import { metricSeries, mpRange, MP_META, type MetricKey, type PlaybackSeries } from '@/domain/pdc/playback';
-import { tok, themedList } from '@/domain/theme';
+import { themedList } from '@/domain/theme';
 
 const STYLE: Record<MetricKey, { colors: readonly string[]; fills: readonly string[]; labels: string[]; fill: boolean }> = {
   fte: { colors: themedList(['warning-600', 'teal-700']), fills: themedList(['warning-575-a12', 'teal-600-a12']), labels: ['Human FTE', 'Agent vFTE'], fill: true },

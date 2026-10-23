@@ -2,7 +2,6 @@ import { useMemo, useState } from 'react';
 import notes from '@/content/refshare/deps-notes.json';
 import { goSection } from '@/ui/uiState';
 import { cell, DATA, isReference, LAYERS, zoneOf } from './model';
-import { tok } from '@/domain/theme';
 
 const strip = (s: string) => s.replace(/^[^A-Za-z0-9]+/, '').trim().slice(0, 22);
 const MARK = { direct: ['●', 'var(--ac-primary-700)', 'direct import'], write: ['✎', 'var(--ac-warning-600)', 'writes through a controller'], indirect: ['○', 'var(--ac-slate-675)', 'only through other zones'] } as const;

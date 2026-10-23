@@ -3,7 +3,7 @@ import { decimate, yLabel, type EconomicsView } from '@/domain/economics';
 import { tickK } from '@/ui/economicsFormat';
 import { tok } from '@/domain/theme';
 
-const GRID = { get color() { return tok('neutral-1000-a5'); } };
+const GRID = { get color() { return tok('chart-grid'); } };
 const kTick = (v: number | string) => `€${Number(v) / 1000}K`;
 
 /** Stacked annual run-cost bars (team / agentic run / tokens / infra) shared by the Run and Annual sections. */

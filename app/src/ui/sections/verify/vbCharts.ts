@@ -2,7 +2,7 @@ import type { ChartConfiguration } from 'chart.js';
 import type { complianceView, execView, kpiView, productivityView, qualityAnchorView, velocityView } from '@/domain/verifyB';
 import { alpha, tok, type TokenName } from '@/domain/theme';
 
-const GRID = { get color() { return tok('neutral-1000-a5'); } };
+const GRID = { get color() { return tok('chart-grid'); } };
 const LEGEND = { legend: { position: 'top' as const } };
 type V<F extends (...a: never[]) => unknown> = ReturnType<F>;
 

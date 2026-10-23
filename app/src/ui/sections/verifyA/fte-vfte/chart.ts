@@ -28,7 +28,7 @@ export function fteChart(s: FteSeries): ChartConfiguration {
       { label: 'Human FTE', data: s.human, borderColor: tok('warning-600'), backgroundColor: tok('warning-500-a15'), borderWidth: 3, tension: 0.4, fill: true, pointRadius: 2 },
       { label: 'Agent vFTE', data: s.agent, borderColor: tok('teal-700'), backgroundColor: tok('success-500-a15'), borderWidth: 3, tension: 0.4, fill: true, pointRadius: 2 },
     ] },
-    options: { plugins: { legend: { position: 'top' } }, scales: { y: { min: 0, max: s.max, title: { display: true, text: 'FTE/vFTE' }, grid: { color: tok('neutral-1000-a5') } }, x: { title: { display: true, text: 'Month' } } } },
+    options: { plugins: { legend: { position: 'top' } }, scales: { y: { min: 0, max: s.max, title: { display: true, text: 'FTE/vFTE' }, grid: { color: tok('chart-grid') } }, x: { title: { display: true, text: 'Month' } } } },
     plugins: [levels],
   };
 }

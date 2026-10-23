@@ -1,16 +1,17 @@
 import { describe, expect, it } from 'vitest';
 import { readFileSync } from 'node:fs';
+import { resolveCss } from '../helpers/themeCss';
 
 /**
  * Token-level guard of the SECTION CONTENT styles against the frozen legacy file: each pair names a legacy rule and the rule of content.css / a11y.css
  * that must carry the same declarations. The computed-style comparison of all 79 sections is `npm run ui-parity`; this catches a drifting token in milliseconds.
  */
 const read = (u: string): string => readFileSync(new URL(u, import.meta.url), 'utf8');
-const theme = (f: string): string => read(`../../src/ui/theme/${f}`);
+const theme = (f: string): string => resolveCss(read(`../../src/ui/theme/${f}`));   // tokens resolved to their default-theme values
 const legacy = [...read('../../../AgentCase_v18_13_EN.html').matchAll(/<style[^>]*>([\s\S]*?)<\/style>/g)].map((m) => m[1]).join('\n');
 const content = theme('content.css'), a11y = theme('a11y.css'), tokens = theme('tokens.css'), shell = theme('shell.css');
 
-const flat = (v: string): string => v.replace(/var\(--ac-blue\)/g, '#0058AB').replace(/var\(--ac-teal\)/g, '#006e79').replace(/\s+/g, '').replace(/\.(\d)/g, '0.$1').replace(/(\d)0+(?=px|rem|em|%|s\b)/g, '$1').toLowerCase().replace(/0\.(\d)/g, '.$1');
+const flat = (v: string): string => v.replace(/\s+/g, '').replace(/\.(\d)/g, '0.$1').replace(/(\d)0+(?=px|rem|em|%|s\b)/g, '$1').toLowerCase().replace(/0\.(\d)/g, '.$1');
 /** The declarations of the first rule whose selector is exactly `selector` (whitespace-insensitive). */
 function decls(css: string, selector: string): Map<string, string> {
   const want = flat(selector);
@@ -30,8 +31,8 @@ function same(legacySel: string, current: string, props: string[], css = content
 
 describe('section content keeps the legacy values', () => {
   it('base: ink, background, line-height; the section is the legacy white 16px card', () => {
-    expect(tokens).toMatch(/--ac-ink: #333;/); expect(tokens).toMatch(/--ac-bg: #f5f6fa;/);
-    expect(tokens).toMatch(/font-family: var\(--ac-font\); line-height: 1\.6;/);
+    expect(resolveCss('var(--ac-ink)')).toBe('#333'); expect(resolveCss('var(--ac-bg)')).toBe('#f5f6fa');
+    expect(tokens).toContain("font-family: 'Ubuntu', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; line-height: 1.6;");
     same('.tab-content', '.ac-section', ['padding', 'background', 'border-radius', 'box-shadow']);
     expect(content).toContain(':where(.ac-section, .ac-section *) { margin: 0; padding: 0; box-sizing: border-box; }');
   });
@@ -78,7 +79,7 @@ describe('section content keeps the legacy values', () => {
     same('label', '.ac-section .ac-field-l', ['font-size', 'color', 'font-weight', 'text-transform', 'letter-spacing']);
     same('input[type=number],input[type=range],select', ".ac-section :is(input[type='number'], input[type='text'], input[type='range'], input:not([type]), select, textarea)", ['padding', 'border', 'border-radius', 'background']);
     same('input:focus,select:focus', ".ac-section :is(input[type='number'], input[type='text'], input:not([type]), select, textarea):focus", ['box-shadow']);
-    expect(content).toMatch(/:focus \{ border-color: #0058AB; box-shadow: 0 0 0 3px rgba\(29, 184, 242, \.3\); \}/);
+    expect(content).toMatch(/:focus \{ border-color: #0058ab; box-shadow: 0 0 0 3px rgba\(29, 184, 242, \.3\); \}/);
     expect(content).not.toMatch(/outline: none/);   // the focus ring of the accessibility pass is never removed
   });
   it('buttons and badges', () => {
@@ -91,8 +92,8 @@ describe('section content keeps the legacy values', () => {
       same(legacyTone, `.ac-badge[data-tone='${tone}']`, ['color', 'background']);
   });
   it('toast: the legacy sbToast look', () => {
-    const live = shell.match(/^\.ac-live \{[^}]*\}/m)?.[0] ?? '';
-    for (const v of ['bottom: 26px', 'background: #0058AB', 'border-radius: 8px', 'font: 600 13px Calibri, sans-serif', 'box-shadow: 0 6px 22px rgba(20, 30, 70, .28)']) expect(live).toContain(v);
+    const live = shell.toLowerCase().match(/^\.ac-live \{[^}]*\}/m)?.[0] ?? '';
+    for (const v of ['bottom: 26px', 'background: #0058ab', 'border-radius: 8px', 'font: 600 13px calibri, sans-serif', 'box-shadow: 0 6px 22px rgba(20, 30, 70, .28)']) expect(live).toContain(v);
     expect(shell).toMatch(/\.ac-live:not\(:empty\) \{ padding: 9px 18px; \}/);
   });
 });

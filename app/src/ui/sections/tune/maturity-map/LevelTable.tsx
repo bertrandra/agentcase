@@ -2,7 +2,7 @@ import { maturityMapFrom, rampRanges } from '@/domain/tune';
 import { resetMaturityMap, setMaturityBound, setMaturityLabel } from '@/controllers/tuneA';
 import { useDoc } from '@/store/hooks';
 import { useMemo } from 'react';
-import { tok, themedList } from '@/domain/theme';
+import { themedList } from '@/domain/theme';
 
 const COLORS = themedList(['slate-700', 'info-700', 'teal-700', 'primary-700']);
 

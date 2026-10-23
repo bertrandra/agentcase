@@ -1,7 +1,6 @@
 import type { ReactNode } from 'react';
 import { fmtPayback, roiVerdict, yLabel, type EconomicsView, type Verdict } from '@/domain/economics';
 import { fmtK } from '@/ui/economicsFormat';
-import { tok } from '@/domain/theme';
 
 const BOX: Record<Verdict, { bg: string; border: string }> = {
   go: { bg: 'linear-gradient(135deg,var(--ac-success-30),var(--ac-success-25))', border: 'var(--ac-success-175)' },

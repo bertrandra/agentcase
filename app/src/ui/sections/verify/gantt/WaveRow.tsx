@@ -3,7 +3,7 @@ import type { GanttProductRow, GanttWaveRow } from '@/domain/portfolio';
 import { Row } from './bars';
 import { tok, themedList } from '@/domain/theme';
 
-const COLORS = themedList(['primary-700', 'teal-700', 'warning-600', 'secondary-600', 'info-700']);
+const COLORS = themedList(['chart-cat-1', 'chart-cat-2', 'chart-cat-3', 'chart-cat-4', 'chart-cat-5']);
 const FAMILY: Record<string, string> = { get adoption() { return tok('primary-700'); }, get maturity() { return tok('secondary-600'); }, get financial() { return tok('warning-600'); }, get workforce() { return tok('teal-700'); } };
 const pct = (v: number) => `${v.toFixed(2)}%`;
 

@@ -25,7 +25,7 @@ export function sensitivityRows(c: Ctx): SensRow[] {
   ];
 }
 
-const bgOf = (roi: number) => (roi >= 2.5 ? tok('success-75') : roi >= 1.5 ? tok('warning-65') : roi >= 1 ? tok('danger-200') : tok('danger-300'));
+const bgOf = (roi: number) => (roi >= 2.5 ? tok('chart-div-pos') : roi >= 1.5 ? tok('chart-div-mid') : roi >= 1 ? tok('chart-div-neg') : tok('chart-div-neg-strong'));
 
 /** Automation × glass-ceiling matrix: ROI scaled from the horizon-aware base ROI (legacy renderSensitivity). */
 export function sensitivityMatrix(c: Ctx): SensMatrix {

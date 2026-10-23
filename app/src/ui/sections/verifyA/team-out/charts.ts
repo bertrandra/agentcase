@@ -2,7 +2,7 @@ import type { ChartConfiguration } from 'chart.js';
 import type { LocRow, TargetTeam } from '@/domain/verifyA';
 import { tok } from '@/domain/theme';
 
-const grid = { get color() { return tok('neutral-1000-a5'); } };
+const grid = { get color() { return tok('chart-grid'); } };
 
 /** AS-IS vs target share of effort by location. */
 export function locChart(rows: LocRow[]): ChartConfiguration {

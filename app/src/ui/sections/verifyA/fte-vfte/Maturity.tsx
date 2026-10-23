@@ -1,7 +1,6 @@
 import { maturityRows, type Live } from '@/domain/verifyA';
 import { Badge, Callout, Panel } from '@/ui/widgets/cards';
 import { SimpleTable } from '../SimpleTable';
-import { tok } from '@/domain/theme';
 
 /** Maturity mapping L1-L4: the case's level is the lower of the adoption reading and the vFTE-share reading, capped by the engagement context. */
 export function Maturity({ live }: { live: Live }) {
@@ -14,7 +13,7 @@ export function Maturity({ live }: { live: Live }) {
       </p>
       <SimpleTable align={['left', 'center', 'center', 'center', 'center']} head={['Level', 'Adoption ramp', 'vFTE share', 'Dominant AI authorization', 'Typical human supervision']}
         rows={rows.map((r) => ({
-          key: r.label, style: { background: r.current ? `var(--ac-amber-bg, ${tok('warning-55')})` : undefined, fontWeight: r.current ? 'var(--ac-font-weight-bold)' : undefined, color: r.blocked ? 'var(--ac-muted)' : undefined },
+          key: r.label, style: { background: r.current ? 'var(--ac-warning-55)' : undefined, fontWeight: r.current ? 'var(--ac-font-weight-bold)' : undefined, color: r.blocked ? 'var(--ac-muted)' : undefined },
           cells: [<>{r.label}{r.blocked && <> <small>blocked by context</small></>}{r.current && ` ◀ your case (Y${live.m.horizon})`}</>, r.ramp, r.share, r.auth, r.sup],
         }))} />
       {info.diverge && <Callout kind="warn">⚠ CC-L4-01 — maturity signals diverge by more than one level (ramp vs vFTE share): review the ramp or the automation depth.</Callout>}

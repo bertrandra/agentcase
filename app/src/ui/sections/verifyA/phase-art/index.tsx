@@ -23,7 +23,7 @@ export default function PhaseArtSection() {
   const cfg = useMemo((): ChartConfiguration => ({ type: 'bar', data: { labels: chart.map((c) => [c.phase, PHASES.find((p) => p.id === c.phase)?.name ?? c.phase]), datasets: [
     { label: 'Human sup. %', data: chart.map((c) => c.human), get backgroundColor() { return tok('warning-600'); } },
     { label: 'Automatable %', data: chart.map((c) => c.agent), get backgroundColor() { return tok('teal-700'); } }] },
-  options: { plugins: { legend: { position: 'top' } }, scales: { x: { stacked: true }, y: { stacked: true, max: 100, grid: { get color() { return tok('neutral-1000-a5'); } } } } } }), [chart]);
+  options: { plugins: { legend: { position: 'top' } }, scales: { x: { stacked: true }, y: { stacked: true, max: 100, grid: { get color() { return tok('chart-grid'); } } } } } }), [chart]);
   return (
     <SectionFrame title="Phase / Artifact details" help={help}
       result={<>
