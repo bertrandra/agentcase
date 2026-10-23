@@ -52,7 +52,10 @@ const renameCmd = defineCommand<{ seq: number; name: string }>({
 export interface ThemePatch { colours?: Partial<Record<ColourKey, string | null>>; axes?: Partial<Record<AxisName, string | null>> }
 const updateCmd = defineCommand<{ seq: number; patch: ThemePatch }>({
   type: 'theme.update', label: (p) => `Edit the theme ${p.seq}: ${[...Object.keys(p.patch.colours ?? {}), ...Object.keys(p.patch.axes ?? {})].join(', ')}`,
-  coalesceKey: (p) => `theme.update:${p.seq}:${[...Object.keys(p.patch.colours ?? {}), ...Object.keys(p.patch.axes ?? {})].join(',')}`,
+  coalesceKey: (p) => {   // a picker drag is one step; a reset (null) is a step of its own
+    const reset = [...Object.values(p.patch.colours ?? {}), ...Object.values(p.patch.axes ?? {})].includes(null);
+    return `theme.update:${p.seq}:${[...Object.keys(p.patch.colours ?? {}), ...Object.keys(p.patch.axes ?? {})].join(',')}${reset ? ':reset' : ''}`;
+  },
   run(d, p) {
     edit(d, p.seq, (t) => {
       for (const [k, v] of Object.entries(p.patch.colours ?? {})) {
