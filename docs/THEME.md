@@ -385,7 +385,7 @@ trademark styling.
 | 2 | Orange | primary #B84A00, charcoal header #2B2B2B → #111111, orange KPI bar #B84A00 → #8A3600, charcoal table head, grey slate #52555B, white surfaces |
 | 3 | Sprint | green primary / header / KPI bar #16693A → #0B3D20 |
 | 4 | Rainbow | **diagnostic**: header red, KPI bar orange (black text), sidebar yellow, group bar lime, selected teal, page cyan, section card lavender, primary violet (callouts, buttons, links, key figures), table head blue, stripes pink, input / card borders green, focus magenta, chart series red → pink; a legend card (zone → token → colour) on the screen |
-| 5 | Sepia | brown primary #7A4A24, brown ink #3B2E22, warm slate #5E5040, paper page #F3EAD7 / near-white warm surfaces #FFFCF5 / #FFFDF8 (data colours of the content stay readable), brown header, low-saturation chart series |
+| 5 | Sepia | brown primary #7A4A24, brown ink #3B2E22, warm slate #5E5040, paper page #F3EAD7 / white cards and a warm section card #FFFDF8 (the content's data colours are tuned for white), warm sidebar #FFFCF5, brown header, low-saturation chart series |
 | 6 | Dark red | burgundy primary / header / KPI bar #8B1A2B → #3D0A12 |
 | 7 | Purple | violet primary / header / KPI bar #5B2A9E → #25104A |
 
