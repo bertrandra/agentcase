@@ -1,8 +1,9 @@
 import { useMemo } from 'react';
 import type { ChartConfiguration } from 'chart.js';
 import { ChartPanel } from '@/ui/widgets/ChartPanel';
+import { tok, themedList } from '@/domain/theme';
 
-const COLORS = ['#b04600', '#006e79', '#0058AB', '#71609E', '#0a6e9c', '#8a6d00', '#a02b5a', '#4f7d2a'];
+const COLORS = themedList(['warning-600', 'teal-700', 'primary-700', 'secondary-600', 'info-700', 'warning-590', 'danger-710', 'success-600']);
 export interface Line { label: string; data: number[]; thick?: boolean }
 
 /** A line chart of calendar-month series (selection lines thick, products dashed); the data is also offered as hidden text by ChartPanel. */

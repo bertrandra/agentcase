@@ -39,7 +39,7 @@ export function GatePanel() {
           <tbody>{ELIG_PREREQS.map((p) => <Prerequisite key={p.id} {...p} />)}</tbody>
         </table>
       </div>
-      <div role="status" style={{ marginTop: 8, padding: '10px 12px', borderRadius: 8, border: `1px solid ${view.color}` }}>
+      <div role="status" style={{ marginTop: 8, padding: '10px 12px', borderRadius: 'var(--ac-radius-lg)', border: `1px solid ${view.color}` }}>
         <strong style={{ color: view.color }}>{view.text}</strong>
         {v.notes.length > 0 && <ul>{v.notes.map((n) => <li key={n}>{n}</li>)}</ul>}
       </div>

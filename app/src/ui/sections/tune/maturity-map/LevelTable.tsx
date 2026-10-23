@@ -2,8 +2,9 @@ import { maturityMapFrom, rampRanges } from '@/domain/tune';
 import { resetMaturityMap, setMaturityBound, setMaturityLabel } from '@/controllers/tuneA';
 import { useDoc } from '@/store/hooks';
 import { useMemo } from 'react';
+import { tok, themedList } from '@/domain/theme';
 
-const COLORS = ['#566074', '#0a6e9c', '#006e79', '#0058AB'];
+const COLORS = themedList(['slate-700', 'info-700', 'teal-700', 'primary-700']);
 
 function BoundInput({ kind, idx, value }: { kind: 'ramp' | 'share'; idx: number; value: number }) {
   return (

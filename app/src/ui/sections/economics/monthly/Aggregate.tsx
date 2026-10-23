@@ -8,6 +8,7 @@ import { SectionFrame } from '@/ui/zones/SectionFrame';
 import { CashChart } from '../../portfolio/consolidation/CashChart';
 import { Band } from '../Band';
 import { Bars, ExcludedNote } from '../AggParts';
+import { tok } from '@/domain/theme';
 
 const help = (
   <>
@@ -16,7 +17,7 @@ const help = (
     <p>Products without a wave, or archived, are left out (the banner above says how many). Choose a Product in the View selector for the single-product Monthly detail.</p>
   </>
 );
-const sign = (x: number) => ({ color: x >= 0 ? '#00666F' : '#9c5d0a' });
+const sign = (x: number) => ({ color: x >= 0 ? tok('teal-725') : tok('warning-595') });
 const R = 'right' as const;
 
 /** Monthly detail — aggregate view (R-conso): one line per calendar month of the Portfolio / Wave and the cumulative cash by product. */

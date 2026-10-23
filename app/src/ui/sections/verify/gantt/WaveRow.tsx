@@ -1,16 +1,17 @@
 import type { ReactNode } from 'react';
 import type { GanttProductRow, GanttWaveRow } from '@/domain/portfolio';
 import { Row } from './bars';
+import { tok, themedList } from '@/domain/theme';
 
-const COLORS = ['#0058AB', '#006e79', '#b04600', '#71609E', '#0a6e9c'];
-const FAMILY: Record<string, string> = { adoption: '#0058AB', maturity: '#71609E', financial: '#b04600', workforce: '#006e79' };
+const COLORS = themedList(['primary-700', 'teal-700', 'warning-600', 'secondary-600', 'info-700']);
+const FAMILY: Record<string, string> = { get adoption() { return tok('primary-700'); }, get maturity() { return tok('secondary-600'); }, get financial() { return tok('warning-600'); }, get workforce() { return tok('teal-700'); } };
 const pct = (v: number) => `${v.toFixed(2)}%`;
 
 /** A bar on the calendar track: a focusable, labelled, read-only group. */
 function Bar({ left, width, color, label, cls, children }: { left: number; width: number; color: string; label: string; cls: string; children?: ReactNode }) {
   return (
-    <div style={{ position: 'relative', flex: 1, height: 16, background: '#F4F6FB', borderRadius: 3 }}>
-      <div className={cls} role="group" aria-label={label} title={label} tabIndex={0} style={{ position: 'absolute', top: 0, height: 16, left: pct(left), width: pct(width), background: color, borderRadius: 3 }} />
+    <div style={{ position: 'relative', flex: 1, height: 16, background: 'var(--ac-slate-55)', borderRadius: 'var(--ac-radius-xs)' }}>
+      <div className={cls} role="group" aria-label={label} title={label} tabIndex={0} style={{ position: 'absolute', top: 0, height: 16, left: pct(left), width: pct(width), background: color, borderRadius: 'var(--ac-radius-xs)' }} />
       {children}
     </div>
   );
@@ -22,7 +23,7 @@ function ProductBar({ p, color }: { p: GanttProductRow; color: string }) {
     <Bar left={p.left} width={p.width} color={color} cls="ac-gantt-prod" label={`${p.name}, ${p.meta}. Milestones: ${marks || 'none within the horizon'}`}>
       {p.milestones.map((m) => (
         <span key={`${m.month}:${m.label}`} aria-hidden="true" title={m.title} data-milestone={m.family}
-          style={{ position: 'absolute', top: 3, left: pct(m.left), width: 9, height: 9, marginLeft: -4, borderRadius: '50%', background: FAMILY[m.family] ?? '#5a6785', border: '2px solid #fff', boxShadow: '0 0 0 1px #5a6785' }} />
+          style={{ position: 'absolute', top: 3, left: pct(m.left), width: 9, height: 9, marginLeft: -4, borderRadius: 'var(--ac-radius-round)', background: FAMILY[m.family] ?? 'var(--ac-slate-650)', border: '2px solid var(--ac-neutral-0)', boxShadow: 'var(--ac-shadow-ring-offset) var(--ac-slate-650)' }} />
       ))}
     </Bar>
   );
@@ -33,10 +34,10 @@ export function WaveRow({ w, index, open, onToggle }: { w: GanttWaveRow; index: 
   const color = COLORS[index % COLORS.length] as string;
   return (
     <div data-gantt-wave={w.id}>
-      <Row height={22} bg="#FAFBFE" title={`${w.name} — ${w.meta}`} label={
+      <Row height={22} bg="var(--ac-slate-30)" title={`${w.name} — ${w.meta}`} label={
         <>
           <button type="button" onClick={onToggle} aria-expanded={open} aria-label={`${open ? 'Collapse' : 'Expand'} ${w.name}`} style={{ border: 0, background: 'none', cursor: 'pointer', padding: 0, width: 14, color }}>{open ? '▼' : '▶'}</button>
-          <strong style={{ fontWeight: 600 }}>{w.name}</strong> <span style={{ color: '#636363', fontSize: 10 }}>({w.products.length})</span>
+          <strong style={{ fontWeight: 'var(--ac-font-weight-semibold)' }}>{w.name}</strong> <span style={{ color: 'var(--ac-neutral-700)', fontSize: 'var(--ac-font-size-xs)' }}>({w.products.length})</span>
         </>
       }>
         <Bar left={w.left} width={w.width} color={color} cls="ac-gantt-wave" label={`${w.name}, ${w.meta}`} />

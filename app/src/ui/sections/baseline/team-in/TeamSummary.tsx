@@ -7,6 +7,7 @@ import { Stat, StatRow } from '@/ui/widgets/cards';
 import { ChartPanel } from '@/ui/widgets/ChartPanel';
 import { CLASS_COLOR } from '../ClassBadge';
 import { fmtK } from '../fmtK';
+import { tok } from '@/domain/theme';
 
 /** Total FTE, annual cost, blended day rate and number of lines. */
 export function TeamSummary({ c }: { c: Ctx }) {
@@ -28,7 +29,7 @@ export function TeamCharts({ c }: { c: Ctx }) {
     const cls: Record<string, number> = { Local: 0, Nearshore: 0, Offshore: 0 }, sk: Record<string, number> = {};
     rows.forEach((r) => { const k = LOCATIONS.some((l) => l.name === r.loc) ? locClass(r.loc) : 'Local'; cls[k] = (cls[k] ?? 0) + r.etp; sk[r.skill] = (sk[r.skill] || 0) + r.etp; });
     const a: ChartConfiguration = { type: 'doughnut', data: { labels: Object.keys(cls), datasets: [{ data: Object.values(cls), backgroundColor: Object.values(CLASS_COLOR) }] }, options: { plugins: { legend: { position: 'right' } } } };
-    const b: ChartConfiguration = { type: 'bar', data: { labels: Object.keys(sk), datasets: [{ label: 'FTE', data: Object.values(sk), backgroundColor: '#0058AB' }] }, options: { plugins: { legend: { display: false } } } };
+    const b: ChartConfiguration = { type: 'bar', data: { labels: Object.keys(sk), datasets: [{ label: 'FTE', data: Object.values(sk), backgroundColor: tok('primary-700') }] }, options: { plugins: { legend: { display: false } } } };
     return [a, b];
   }, [rows]);
   return (

@@ -1,6 +1,7 @@
 import { Fragment } from 'react';
 import { textColor } from '@/ui/colorText';
 import { CATS, STATUS, type Entry } from './model';
+import { tok } from '@/domain/theme';
 
 /** The glossary rows, with one header row per dimension. */
 export function GlossaryTable({ rows }: { rows: Entry[] }) {
@@ -15,11 +16,11 @@ export function GlossaryTable({ rows }: { rows: Entry[] }) {
             if (!sub.length) return null;
             return (
               <Fragment key={c.id}>
-                <tr><th colSpan={4} scope="colgroup" style={{ background: c.color, color: '#fff' }}>{i + 1} · {c.label}</th></tr>
+                <tr><th colSpan={4} scope="colgroup" style={{ background: c.color, color: 'var(--ac-neutral-0)' }}>{i + 1} · {c.label}</th></tr>
                 {sub.map((r) => (
                   <tr key={r[1]}>
-                    <td style={{ fontWeight: 600, color: textColor(c.color, '#fafafa') }}>{r[1]}</td><td>{r[2]}</td><td>{r[3]}</td>
-                    <td><span style={{ color: textColor(STATUS[r[4]]?.color ?? '#333333', '#fafafa') }}>{STATUS[r[4]]?.label ?? r[4]}</span></td>
+                    <td style={{ fontWeight: 'var(--ac-font-weight-semibold)', color: textColor(c.color, tok('neutral-25')) }}>{r[1]}</td><td>{r[2]}</td><td>{r[3]}</td>
+                    <td><span style={{ color: textColor(STATUS[r[4]]?.color ?? tok('neutral-900'), tok('neutral-25')) }}>{STATUS[r[4]]?.label ?? r[4]}</span></td>
                   </tr>
                 ))}
               </Fragment>

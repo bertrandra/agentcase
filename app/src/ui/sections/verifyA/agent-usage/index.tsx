@@ -8,6 +8,7 @@ import { SectionFrame } from '@/ui/zones/SectionFrame';
 import { Band } from '../../economics/Band';
 import { SimpleTable } from '../SimpleTable';
 import { useLive } from '../useLive';
+import { tok } from '@/domain/theme';
 
 const help = (
   <>
@@ -19,7 +20,7 @@ const help = (
 /** Agent usage — consumption for this case, by year, by phase and by authorization level. */
 export default function AgentUsageSection() {
   const live = useLive(), u = agentUsage(live), s = u.summary;
-  const cfg = useMemo((): ChartConfiguration => ({ type: 'bar', data: { labels: u.phases.map((p) => p.id), datasets: [{ label: 'Relative agent effort', data: u.phases.map((p) => p.effort), backgroundColor: '#0058AB' }] },
+  const cfg = useMemo((): ChartConfiguration => ({ type: 'bar', data: { labels: u.phases.map((p) => p.id), datasets: [{ label: 'Relative agent effort', data: u.phases.map((p) => p.effort), backgroundColor: tok('primary-700') }] },
     options: { plugins: { legend: { display: false } }, scales: { y: { beginAtZero: true, title: { display: true, text: 'artifacts × automatable %' } } } } }), [u.phases]);
   return (
     <SectionFrame title="📊 Agent usage — consumption for this case" help={help}

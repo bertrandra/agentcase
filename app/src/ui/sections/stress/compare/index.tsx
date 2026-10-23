@@ -7,15 +7,16 @@ import { ChartPanel } from '@/ui/widgets/ChartPanel';
 import { DataTable } from '@/ui/widgets/DataTable';
 import { RangeInput } from '@/ui/widgets/fields';
 import { SectionFrame } from '@/ui/zones/SectionFrame';
+import { tok } from '@/domain/theme';
 
 const help = (
   <p>Three trajectories compared: AS-IS (status quo) · AS-IS + saving (classic continuous improvement at x%/yr, adjustable) · Agentic (this transformation).
     Choose the classic annual saving rate below.</p>
 );
 const SERIES = [
-  { key: 'asis', label: 'AS-IS', bg: 'rgba(186,117,23,.7)', border: '#b04600' },
-  { key: 'classic', label: 'AS-IS + saving', bg: 'rgba(55,138,221,.7)', border: '#0a6e9c' },
-  { key: 'agentic', label: 'Agentic', bg: 'rgba(99,153,34,.8)', border: '#006e79' },
+  { key: 'asis', label: 'AS-IS', get bg() { return tok('warning-500-a70'); }, get border() { return tok('warning-600'); } },
+  { key: 'classic', label: 'AS-IS + saving', get bg() { return tok('primary-500-a70'); }, get border() { return tok('info-700'); } },
+  { key: 'agentic', label: 'Agentic', get bg() { return tok('success-500-a80'); }, get border() { return tok('teal-700'); } },
 ] as const;
 
 function chartOf(d: CompareData, key: keyof Trajectory, line: boolean): ChartConfiguration {

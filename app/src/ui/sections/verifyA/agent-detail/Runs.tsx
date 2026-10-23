@@ -1,6 +1,7 @@
 import { artifactRuns, type Live } from '@/domain/verifyA';
 import { Panel } from '@/ui/widgets/cards';
 import { SimpleTable, type TRow } from '../SimpleTable';
+import { tok } from '@/domain/theme';
 
 const n0 = (v: number) => Math.round(v).toLocaleString('en-US');
 const eur = (v: number) => `€${n0(v)}`;
@@ -9,10 +10,10 @@ const eur = (v: number) => `€${n0(v)}`;
 export function Runs({ live }: { live: Live }) {
   const r = artifactRuns(live), ys = Array.from({ length: r.years }, (_, i) => i);
   const rows: TRow[] = r.rows.map((x, i) => ({
-    key: `${i}:${x.name}`, style: x.reg ? { background: 'var(--ac-amber-bg, #FFF5E8)' } : undefined,
-    cells: [x.phase, x.phaseName, <>{x.reg && <b style={{ marginRight: 5, fontSize: 10 }}>REG</b>}{x.name}</>, ...x.runs.map(n0), <b>{n0(x.total)}</b>, `${x.tokM.toFixed(2)} M`, eur(x.cost)],
+    key: `${i}:${x.name}`, style: x.reg ? { background: `var(--ac-amber-bg, ${tok('warning-55')})` } : undefined,
+    cells: [x.phase, x.phaseName, <>{x.reg && <b style={{ marginRight: 5, fontSize: 'var(--ac-font-size-xs)' }}>REG</b>}{x.name}</>, ...x.runs.map(n0), <b>{n0(x.total)}</b>, `${x.tokM.toFixed(2)} M`, eur(x.cost)],
   }));
-  rows.push({ key: 'total', style: { fontWeight: 700 }, span: { 0: 3 }, cells: [`Total (${r.count} in-scope)`, ...r.totals.runs.map(n0), n0(r.totals.total), `${r.totals.tokM.toFixed(1)} M`, eur(r.totals.cost)] });
+  rows.push({ key: 'total', style: { fontWeight: 'var(--ac-font-weight-bold)' }, span: { 0: 3 }, cells: [`Total (${r.count} in-scope)`, ...r.totals.runs.map(n0), n0(r.totals.total), `${r.totals.tokM.toFixed(1)} M`, eur(r.totals.cost)] });
   const align = ['left', 'left', 'left', ...ys.map(() => 'right' as const), 'right', 'right', 'right'] as ('left' | 'right')[];
   return (
     <Panel title="📦 Agent runs by artifact (in-scope)">

@@ -24,7 +24,7 @@ export function MetricCards({ cards }: { cards: readonly (readonly [string, stri
 export function CompareTable({ rows, head, caption }: { rows: readonly (readonly string[])[]; head: readonly string[]; caption?: string }) {
   return (
     <DataTable caption={caption} rows={rows as string[][]} rowKey={(r) => r[0] as string} columns={head.map((h, i) => ({
-      key: h, header: h, align: i === 0 ? 'left' : 'center', render: (r: string[]) => (i === 0 ? <strong>{r[0]}</strong> : i === 2 ? <span style={{ fontWeight: 600, color: 'var(--ac-blue)' }}>{r[2]}</span> : r[i]),
+      key: h, header: h, align: i === 0 ? 'left' : 'center', render: (r: string[]) => (i === 0 ? <strong>{r[0]}</strong> : i === 2 ? <span style={{ fontWeight: 'var(--ac-font-weight-semibold)', color: 'var(--ac-blue)' }}>{r[2]}</span> : r[i]),
     }))} />
   );
 }

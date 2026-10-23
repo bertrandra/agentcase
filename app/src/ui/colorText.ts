@@ -1,3 +1,4 @@
+import { tok } from '@/domain/theme';
 /** WCAG 2.x relative luminance of an #rgb / #rrggbb colour (null when it is not one). */
 function luminance(hex: string): number | null {
   const m = /^#([0-9a-f]{3}|[0-9a-f]{6})([0-9a-f]{2})?$/i.exec(hex);
@@ -15,7 +16,7 @@ export const contrast = (a: string, b: string): number => {
  * A data colour (a group's accent, a scenario hue) used as TEXT: darkened in small steps, hue kept, until it reads at 4.5:1 on `bg` (white by default).
  * Borders and fills keep the original colour; only glyphs are corrected. A value that is not a plain hex colour is returned unchanged.
  */
-export function textColor(hex: string, bg = '#ffffff', min = 4.5): string {
+export function textColor(hex: string, bg = tok('neutral-0'), min = 4.5): string {
   const m = /^#([0-9a-f]{3}|[0-9a-f]{6})$/i.exec(hex);
   if (!m || contrast(hex, bg) >= min) return hex;
   const h = m[1]!.length === 3 ? m[1]!.replace(/./g, (c) => c + c) : m[1]!, rgb = [0, 2, 4].map((i) => parseInt(h.slice(i, i + 2), 16));
@@ -23,5 +24,5 @@ export function textColor(hex: string, bg = '#ffffff', min = 4.5): string {
     const out = '#' + rgb.map((v) => Math.round(v * (1 - k * 0.05)).toString(16).padStart(2, '0')).join('');
     if (contrast(out, bg) >= min) return out;
   }
-  return '#000000';
+  return tok('neutral-1000');
 }

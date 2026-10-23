@@ -24,7 +24,7 @@ export function PersonaLayout({ personas, lists }: { personas: Persona[]; lists:
         <select value={pid} onChange={(e) => setSel(e.target.value)}>{editable.map((p) => <option key={p.id} value={p.id}>{p.label}</option>)}</select></label>
       <p className="ac-muted">{assigned.length} section(s) assigned. Double-click a card to assign or remove it; drag (or ↑ ↓) to order it inside its group for this persona only.</p>
       <Board label="Persona layout" cols={cols} colors={colors} canDrag={(s) => on(s.id)} onPending={setPending}
-        cardClass={(s) => (on(s.id) ? '' : 'is-off')} cardExtra={(s) => on(s.id) && <small style={{ color: '#006e79' }}>✓ assigned</small>}
+        cardClass={(s) => (on(s.id) ? '' : 'is-off')} cardExtra={(s) => on(s.id) && <small style={{ color: 'var(--ac-teal-700)' }}>✓ assigned</small>}
         onDouble={(id) => (on(id) ? removePersonaSection(pid, id) : addPersonaSection(pid, id))}
         onDrop={(id, group, index) => { if (on(id) && sections.find((s) => s.id === id)?.group === group) setPersonaSectionOrder(`Reorder ${label(id)} for ${pid}`, pid, placeForPersona(sections, pid, order, id, index)); }}
         onShift={(id, dir) => setPersonaSectionOrder(`Move ${label(id)} ${dir < 0 ? 'up' : 'down'} for ${pid}`, pid, shiftForPersona(sections, pid, order, id, dir))} />

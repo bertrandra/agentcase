@@ -2,8 +2,9 @@ import { useState } from 'react';
 import { addPersona, deletePersona, duplicatePersona, renamePersona, setDefaultPersona, setPersonaCompactNav, setPersonaOrder } from '@/controllers/pdcPersonas';
 import { personasByOrder, type Persona } from '@/domain/pdc/personas';
 import { useNavModel } from '@/ui/zones/navModel';
+import { tok } from '@/domain/theme';
 
-const note = { fontWeight: 400, color: '#cadcfc', fontSize: 10 } as const;   // inside the blue table header band (5.08:1)
+const note = { fontWeight: 'var(--ac-font-weight-regular)', get color() { return tok('primary-200'); }, fontSize: 'var(--ac-font-size-xs)' } as const;   // inside the blue table header band (5.08:1)
 
 /** Personas in picker order: order, hide-menu and default flags, duplicate / rename / delete (delete asks for confirmation). */
 export function PersonaTable({ personas }: { personas: Persona[] }) {
@@ -22,13 +23,13 @@ export function PersonaTable({ personas }: { personas: Persona[] }) {
               <td>{renaming === p.id
                 ? <input type="text" aria-label="New label" value={text} onChange={(e) => setText(e.target.value)} onKeyDown={(e) => { if (e.key === 'Enter') commit(p.id); if (e.key === 'Escape') setRenaming(null); }} />
                 : <strong>{p.label}</strong>}</td>
-              <td style={{ textAlign: 'center' }}>{p.protected ? <span style={{ color: '#b04600' }}>🔒 yes</span> : 'no'}</td>
+              <td style={{ textAlign: 'center' }}>{p.protected ? <span style={{ color: 'var(--ac-warning-600)' }}>🔒 yes</span> : 'no'}</td>
               <td style={{ textAlign: 'center' }}><input type="checkbox" aria-label={`Hide menu for ${p.id}`} checked={!!p.compactNav} onChange={(e) => setPersonaCompactNav(p.id, e.target.checked)} /></td>
               <td style={{ textAlign: 'center' }}><input type="radio" name="defaultPersona" aria-label={`Default persona ${p.id}`} checked={!!p.default} onChange={() => setDefaultPersona(p.id)} /></td>
               <td>{renaming === p.id
                 ? <><button type="button" className="ac-btn" onClick={() => commit(p.id)}>✓ Save</button><button type="button" className="ac-btn" onClick={() => setRenaming(null)}>Cancel</button></>
                 : pending === p.id
-                  ? <><span style={{ color: '#8F3237', fontSize: 11 }}>Delete “{p.label}”?</span><button type="button" className="ac-btn" onClick={() => { deletePersona(p.id); setPending(null); }}>✓ Confirm</button><button type="button" className="ac-btn" onClick={() => setPending(null)}>Cancel</button></>
+                  ? <><span style={{ color: 'var(--ac-danger-800)', fontSize: 'var(--ac-font-size-sm)' }}>Delete “{p.label}”?</span><button type="button" className="ac-btn" onClick={() => { deletePersona(p.id); setPending(null); }}>✓ Confirm</button><button type="button" className="ac-btn" onClick={() => setPending(null)}>Cancel</button></>
                   : <><button type="button" className="ac-btn" title="Create a new persona with a copy of this one’s menu membership and guided sequence (order and compact-nav are not copied)" onClick={() => duplicatePersona(p.id, SECTIONS.map((s) => s.id))}>⎘ Duplicate</button>
                     {!p.protected && <><button type="button" className="ac-btn" onClick={() => { setText(p.label); setRenaming(p.id); }}>✎ Rename</button><button type="button" className="ac-btn" onClick={() => setPending(p.id)}>✕ Delete</button></>}</>}</td>
             </tr>

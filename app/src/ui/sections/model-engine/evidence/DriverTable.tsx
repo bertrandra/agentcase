@@ -13,8 +13,8 @@ export function DriverTable({ em }: { em: Em }) {
     { key: 'd', header: 'Driver', render: (d) => <strong>{d.label}</strong> },
     { key: 'w', header: 'Weight', align: 'center', render: (d) => `${(d.weight * 100).toFixed(0)}%` },
     { key: 't', header: 'Tier', align: 'center', render: (d) => (
-      <><select aria-label={`Evidence tier of ${d.label}`} value={d.tier} style={{ color: TONE[d.tier], fontWeight: 600 }} onChange={(e) => setEvlTier(d.id, e.target.value)}>{TIERS.map((t) => <option key={t} value={t}>{t}</option>)}</select>
-        {d.tier === 'MEASURED' && d.effectiveTier === 'BENCHMARK' && <div style={{ fontSize: 10, color: 'var(--ac-brick)' }}>used as BENCHMARK - see note</div>}</>
+      <><select aria-label={`Evidence tier of ${d.label}`} value={d.tier} style={{ color: TONE[d.tier], fontWeight: 'var(--ac-font-weight-semibold)' }} onChange={(e) => setEvlTier(d.id, e.target.value)}>{TIERS.map((t) => <option key={t} value={t}>{t}</option>)}</select>
+        {d.tier === 'MEASURED' && d.effectiveTier === 'BENCHMARK' && <div style={{ fontSize: 'var(--ac-font-size-xs)', color: 'var(--ac-brick)' }}>used as BENCHMARK - see note</div>}</>
     ) },
     { key: 's', header: 'Source', render: (d) => <input type="text" aria-label={`Source of ${d.label}`} placeholder="source" style={{ width: 120 }} value={d.source} onChange={(e) => setEvlSource(d.id, e.target.value)} /> },
     { key: 'a', header: 'As of', render: (d) => <input type="date" aria-label={`As of date of ${d.label}`} style={{ width: 130 }} value={d.asOf} onChange={(e) => setEvlAsOf(d.id, e.target.value)} /> },

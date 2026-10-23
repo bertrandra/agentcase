@@ -30,11 +30,11 @@ function Waves() {
     <section className="ac-panel" aria-label="Wave Gantt">
       <h2>Wave Gantt <small className="ac-muted">— {scope.kind === 'wave' ? shown[0]?.name ?? 'wave' : 'portfolio'}, portfolio calendar</small></h2>
       <div style={{ display: 'flex', alignItems: 'center', height: 18, marginBottom: 2 }}>
-        <div style={{ width: 260, flex: 'none', fontSize: 10, color: '#636363' }}>Calendar →</div>
+        <div style={{ width: 260, flex: 'none', fontSize: 'var(--ac-font-size-xs)', color: 'var(--ac-neutral-700)' }}>Calendar →</div>
         <div style={{ position: 'relative', flex: 1, height: 18 }}>
           {g.ticks.map((t) => (
-            <div key={t.left} style={{ position: 'absolute', left: `${t.left.toFixed(2)}%`, top: 0, bottom: 0, borderLeft: '1px solid #d5dae6' }}>
-              <span style={{ position: 'absolute', top: -16, left: 2, fontSize: 10, color: '#636363', whiteSpace: 'nowrap' }}>{t.label}</span>
+            <div key={t.left} style={{ position: 'absolute', left: `${t.left.toFixed(2)}%`, top: 0, bottom: 0, borderLeft: '1px solid var(--ac-slate-200)' }}>
+              <span style={{ position: 'absolute', top: -16, left: 2, fontSize: 'var(--ac-font-size-xs)', color: 'var(--ac-neutral-700)', whiteSpace: 'nowrap' }}>{t.label}</span>
             </div>
           ))}
         </div>

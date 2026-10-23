@@ -24,7 +24,7 @@ export function LivePreview({ persona, preview, colors, pending }: Props) {
       {preview.nav.length === 0 && <p className="ac-muted">This persona has an empty menu.</p>}
       {preview.nav.map(({ group, sections }) => (
         <div key={group.id} data-pgroup={group.id}>
-          <h4 style={{ boxShadow: `inset 4px 0 0 ${groupColor(colors, group.id)}`, paddingLeft: 10 }}>{group.label}</h4>
+          <h4 style={{ boxShadow: `var(--ac-shadow-rail-offset) ${groupColor(colors, group.id)}`, paddingLeft: 10 }}>{group.label}</h4>
           <ul>{sections.map((s) => <li key={s.id} data-psection={s.id} className={s.id === preview.moved ? 'is-moving' : ''}>{s.label}{s.id === preview.moved ? ' (moving)' : ''}</li>)}</ul>
         </div>
       ))}

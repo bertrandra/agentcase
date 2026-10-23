@@ -17,7 +17,7 @@ export function SeqStep({ persona, si, count, step, sections, groups }: Props) {
   return (
     <fieldset className="ac-seq-step" aria-label={`Step ${si + 1}`}>
       <div className="ac-form-row">
-        <input type="text" aria-label={`Label of step ${si + 1}`} placeholder="Step label" style={{ flex: 1, fontWeight: 700 }} value={step.label} onChange={(e) => setSeqStepLabel(persona, si, e.target.value)} />
+        <input type="text" aria-label={`Label of step ${si + 1}`} placeholder="Step label" style={{ flex: 1, fontWeight: 'var(--ac-font-weight-bold)' }} value={step.label} onChange={(e) => setSeqStepLabel(persona, si, e.target.value)} />
         <button type="button" className="ac-btn" disabled={si === 0} aria-label={`Move step ${si + 1} up`} onClick={() => moveSeqStep(persona, si, -1)}>↑</button>
         <button type="button" className="ac-btn" disabled={si === count - 1} aria-label={`Move step ${si + 1} down`} onClick={() => moveSeqStep(persona, si, 1)}>↓</button>
         <button type="button" className="ac-btn" aria-label={`Remove step ${si + 1}`} onClick={() => removeSeqStep(persona, si)}>✕ Step</button>
@@ -25,7 +25,7 @@ export function SeqStep({ persona, si, count, step, sections, groups }: Props) {
       <ul aria-label={`Sections of step ${si + 1}`} style={{ listStyle: 'none', padding: 0, minHeight: 26 }} onDragOver={(e) => e.preventDefault()} onDrop={(e) => { e.preventDefault(); drop(null); }}>
         {step.sections.length === 0 && <li className="ac-muted">No sections yet — add one below</li>}
         {step.sections.map((id, i) => (
-          <li key={id} draggable style={{ display: 'inline-flex', gap: 4, alignItems: 'center', margin: '2px 6px 2px 0', padding: '2px 6px', border: '1px solid #cadcfc', borderRadius: 12, background: '#eaf0fb' }}
+          <li key={id} draggable style={{ display: 'inline-flex', gap: 4, alignItems: 'center', margin: '2px 6px 2px 0', padding: '2px 6px', border: '1px solid var(--ac-primary-200)', borderRadius: 'var(--ac-radius-2xl)', background: 'var(--ac-primary-80)' }}
             onDragStart={(e) => { setDrag(id); e.dataTransfer?.setData('text/plain', id); }} onDragOver={(e) => e.preventDefault()} onDrop={(e) => { e.preventDefault(); e.stopPropagation(); drop(id); }}>
             ⠿ {name(id)}
             <button type="button" className="ac-btn" disabled={i === 0} aria-label={`Move ${name(id)} earlier in step ${si + 1}`} onClick={() => moveSeqSection(persona, si, id, i - 1)}>←</button>

@@ -1,12 +1,13 @@
 import type { ChartConfiguration } from 'chart.js';
 import { metricSeries, mpRange, MP_META, type MetricKey, type PlaybackSeries } from '@/domain/pdc/playback';
+import { tok, themedList } from '@/domain/theme';
 
-const STYLE: Record<MetricKey, { colors: string[]; fills: string[]; labels: string[]; fill: boolean }> = {
-  fte: { colors: ['#b04600', '#006e79'], fills: ['rgba(190,77,0,.12)', 'rgba(0,130,142,.12)'], labels: ['Human FTE', 'Agent vFTE'], fill: true },
-  cost: { colors: ['#0058AB'], fills: ['rgba(0,88,171,.1)'], labels: ['Monthly run cost'], fill: true },
-  savings: { colors: ['#006e79'], fills: ['rgba(0,130,142,.1)'], labels: ['Cumulative savings'], fill: true },
-  velocity: { colors: ['#0a6e9c'], fills: ['rgba(29,184,242,.1)'], labels: ['Velocity (SP/sprint)'], fill: false },
-  costsp: { colors: ['#71609E'], fills: ['rgba(113,96,158,.1)'], labels: ['Cost / point'], fill: false },
+const STYLE: Record<MetricKey, { colors: readonly string[]; fills: readonly string[]; labels: string[]; fill: boolean }> = {
+  fte: { colors: themedList(['warning-600', 'teal-700']), fills: themedList(['warning-575-a12', 'teal-600-a12']), labels: ['Human FTE', 'Agent vFTE'], fill: true },
+  cost: { colors: themedList(['primary-700']), fills: themedList(['primary-700-a10']), labels: ['Monthly run cost'], fill: true },
+  savings: { colors: themedList(['teal-700']), fills: themedList(['teal-600-a10']), labels: ['Cumulative savings'], fill: true },
+  velocity: { colors: themedList(['info-700']), fills: themedList(['info-375-a10']), labels: ['Velocity (SP/sprint)'], fill: false },
+  costsp: { colors: themedList(['secondary-600']), fills: themedList(['secondary-600-a10']), labels: ['Cost / point'], fill: false },
 };
 export const legendOf = (k: MetricKey) => STYLE[k].labels.map((label, i) => ({ label, color: STYLE[k].colors[i]! }));
 

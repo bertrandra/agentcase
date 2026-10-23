@@ -8,6 +8,7 @@ import { Badge, Panel } from '@/ui/widgets/cards';
 import { SectionFrame } from '@/ui/zones/SectionFrame';
 import { SimpleTable } from '../SimpleTable';
 import { useLive } from '../useLive';
+import { tok } from '@/domain/theme';
 
 const help = (
   <>
@@ -20,9 +21,9 @@ const help = (
 export default function PhaseArtSection() {
   const live = useLive(), { rows, chart } = phaseArtRows(live), sup = supMatrix(live), h = live.m.horizon;
   const cfg = useMemo((): ChartConfiguration => ({ type: 'bar', data: { labels: chart.map((c) => [c.phase, PHASES.find((p) => p.id === c.phase)?.name ?? c.phase]), datasets: [
-    { label: 'Human sup. %', data: chart.map((c) => c.human), backgroundColor: '#b04600' },
-    { label: 'Automatable %', data: chart.map((c) => c.agent), backgroundColor: '#006e79' }] },
-  options: { plugins: { legend: { position: 'top' } }, scales: { x: { stacked: true }, y: { stacked: true, max: 100, grid: { color: 'rgba(0,0,0,.05)' } } } } }), [chart]);
+    { label: 'Human sup. %', data: chart.map((c) => c.human), get backgroundColor() { return tok('warning-600'); } },
+    { label: 'Automatable %', data: chart.map((c) => c.agent), get backgroundColor() { return tok('teal-700'); } }] },
+  options: { plugins: { legend: { position: 'top' } }, scales: { x: { stacked: true }, y: { stacked: true, max: 100, grid: { get color() { return tok('neutral-1000-a5'); } } } } } }), [chart]);
   return (
     <SectionFrame title="Phase / Artifact details" help={help}
       result={<>
@@ -31,7 +32,7 @@ export default function PhaseArtSection() {
             and the referential <b>posture</b> (floor ≥ 60% → Human-in-the-lead · 30–60% → on-the-loop · &lt; 30% → over-the-loop). A negative margin would violate the floor (CC-SUP-01).</p>
           <SimpleTable align={['left', 'center', 'center', 'center', 'center']} head={['Phase', 'Supervision floor', `Human share Y${h}`, 'Margin', 'Posture']}
             rows={sup.map((r) => ({ key: r.phase, cells: [<>{r.phase} <small>({r.n} art.)</small></>, `${Math.round(r.floor)}%`, `${Math.round(r.human)}%`,
-              <b style={{ color: r.gap >= 10 ? 'var(--ac-teal)' : r.gap >= 0 ? 'var(--ac-amber, #b04600)' : 'var(--ac-brick)' }}>{`${r.gap >= 0 ? '+' : ''}${Math.round(r.gap)} pts`}</b>, r.posture] }))} />
+              <b style={{ color: r.gap >= 10 ? 'var(--ac-teal)' : r.gap >= 0 ? 'var(--ac-amber, var(--ac-warning-600))' : 'var(--ac-brick)' }}>{`${r.gap >= 0 ? '+' : ''}${Math.round(r.gap)} pts`}</b>, r.posture] }))} />
         </Panel>
         <p className="ac-muted">Detail per V-cycle phase: number of SDLC &amp; regulatory artifacts, average human supervision, vFTE by ramp. Contextual to the loaded reference.</p>
         <ChartPanel config={cfg} label="Human supervision and automatable share by phase" height={260} />

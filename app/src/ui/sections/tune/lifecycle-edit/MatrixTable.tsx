@@ -4,14 +4,15 @@ import { lifecycleBlend, statusTable } from '@/domain/lifecycle';
 import { setStatusPosture } from '@/controllers/tuneB';
 import { setLifecycleWeight } from '@/controllers/lifecycle';
 import { useCtx } from '@/store/hooks';
+import { tok } from '@/domain/theme';
 
-const tone = (v: number) => (v > 1.001 ? 'var(--ac-teal)' : v < 0.999 ? 'var(--ac-brick)' : '#555');
+const tone = (v: number) => (v > 1.001 ? 'var(--ac-teal)' : v < 0.999 ? 'var(--ac-brick)' : tok('neutral-750'));
 
 function Cell({ label, value, def, step, width, onValid }: { label: string; value: number; def: number; step: number; width: number; onValid: (n: number) => void }) {
   const edited = Math.abs(value - def) > 0.001;
   return (
     <input type="number" aria-label={label} min={0} step={step} value={value} data-edited={edited || undefined}
-      style={{ width, textAlign: 'center', color: tone(value), fontWeight: edited ? 700 : 400, border: `1px solid ${edited ? 'var(--ac-amber)' : '#d5dae6'}`, borderRadius: 4 }}
+      style={{ width, textAlign: 'center', color: tone(value), fontWeight: edited ? 'var(--ac-font-weight-bold)' : 'var(--ac-font-weight-regular)', border: `1px solid ${edited ? 'var(--ac-amber)' : 'var(--ac-slate-200)'}`, borderRadius: 'var(--ac-radius-sm)' }}
       onChange={(e) => { const n = parseFloat(e.target.value); if (!isNaN(n) && n >= 0) onValid(n); }} />
   );
 }
@@ -31,7 +32,7 @@ export function MatrixTable() {
           {table.map((s, i) => {
             const def = STATUS_LIFECYCLE[i] ?? s, active = blend && (i === blend.loIdx || i === blend.hiIdx);
             return (
-              <tr key={s.id} style={active ? { background: '#EAF0FB' } : undefined}>
+              <tr key={s.id} style={active ? { background: tok('primary-80') } : undefined}>
                 <td><strong>{s.label}</strong></td>
                 {phases.map((p) => (
                   <td key={p.id} style={{ textAlign: 'center' }}>

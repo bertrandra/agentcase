@@ -37,6 +37,11 @@ export function resolveTokens(value: string, table: Readonly<ThemeValues> = acti
 /** The resolved value of a token in the active theme (default: the legacy look). */
 export const tok = (name: TokenName): string => resolveTokens(active[name], active);
 
+/** Token names whose items resolve against the active theme when read, so a module-level palette follows a theme switch. */
+export function themedList(names: readonly TokenName[]): readonly string[] {
+  return new Proxy(names as unknown as string[], { get: (t, k, r) => (typeof k === 'string' && /^\d+$/.test(k) && Number(k) < names.length ? tok(names[Number(k)]!) : Reflect.get(t, k, r)) });
+}
+
 /** `#rgb` / `#rrggbb` (a token name or a literal hex) as an `rgba(r,g,b,a)` string. */
 export function alpha(color: TokenName | string, a: number | string): string {
   const hex = color.startsWith('#') ? color : tok(color as TokenName);

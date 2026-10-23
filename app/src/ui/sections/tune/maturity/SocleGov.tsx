@@ -11,7 +11,7 @@ export function SoclePanel() {
       <p>Reference 3.3/6.3: DORA alone is no longer enough at L{s.level}. Steer four families together; measure before committing (T0/T1/T2), and move beyond billable-staffing rate as the sole performance metric.</p>
       {s.families.map((f) => (
         <section key={f.title}>
-          <h3 style={{ color: `var(--ac-${f.tone})`, textTransform: 'uppercase', fontSize: 12 }}>{f.title}</h3>
+          <h3 style={{ color: `var(--ac-${f.tone})`, textTransform: 'uppercase', fontSize: 'var(--ac-font-size-md)' }}>{f.title}</h3>
           <table className="ac-table">
             <tbody>{f.rows.map(([name, kind, text]) => <tr key={name}><td>{name}</td><td className="ac-c ac-muted">{kind}</td><td className="ac-muted">{text}</td></tr>)}</tbody>
           </table>

@@ -4,6 +4,7 @@ import { curveOf, movePoint } from '@/domain/scope/scurve';
 import type { ScurveView } from '@/domain/scope/scurveView';
 import type { CurvePoint } from '@/domain/types/state';
 import { BANDS, GRID, H, LEVEL_COLOR, M, W, axisMonths, geoOf, pathOf } from './geometry';
+import { tok } from '@/domain/theme';
 
 const KEYS: Record<string, [number, number]> = { ArrowLeft: [-1, 0], ArrowRight: [1, 0], ArrowUp: [0, 1], ArrowDown: [0, -1] };
 
@@ -31,11 +32,11 @@ export function CurveSvg({ view }: { view: ScurveView }) {
     <svg ref={svg} viewBox={`0 0 ${W} ${H}`} className="ac-svg ac-svg-drag" role="group" aria-label="Editable adoption curve with maturity levels"
       onPointerDown={down} onPointerMove={move} onPointerUp={up} onPointerCancel={() => setDrag(null)}>
       {BANDS.map(([lo, hi, l]) => <rect key={l} x={M.l} y={g.sy(hi)} width={W - M.l - M.r} height={g.sy(lo) - g.sy(hi)} fill={`${LEVEL_COLOR[l]}11`} />)}
-      {GRID.map((v) => <g key={v}><line x1={M.l} y1={g.sy(v)} x2={W - M.r} y2={g.sy(v)} stroke="#e7ebf0" /><text x={M.l - 8} y={g.sy(v) + 4} textAnchor="end">{v}%</text></g>)}
-      <path d={pathOf(g, curve)} fill="none" stroke="#0058AB" strokeWidth={2.6} strokeLinejoin="round" strokeLinecap="round" />
+      {GRID.map((v) => <g key={v}><line x1={M.l} y1={g.sy(v)} x2={W - M.r} y2={g.sy(v)} stroke="var(--ac-slate-105)" /><text x={M.l - 8} y={g.sy(v) + 4} textAnchor="end">{v}%</text></g>)}
+      <path d={pathOf(g, curve)} fill="none" stroke="var(--ac-primary-700)" strokeWidth={2.6} strokeLinejoin="round" strokeLinecap="round" />
       {view.levels.filter((l) => l.month != null).map((l) => {
-        const x = g.sx(l.month as number), col = LEVEL_COLOR[l.lvl] ?? '#0058AB';
-        return <g key={l.lvl}><line x1={x} y1={M.t} x2={x} y2={H - M.b} stroke={col} strokeWidth={1.5} strokeDasharray="4 3" /><text x={x} y={M.t - 8} textAnchor="middle" style={{ fill: col, fontSize: 12.5, fontWeight: 700 }}>{l.lvl}</text></g>;
+        const x = g.sx(l.month as number), col = LEVEL_COLOR[l.lvl] ?? tok('primary-700');
+        return <g key={l.lvl}><line x1={x} y1={M.t} x2={x} y2={H - M.b} stroke={col} strokeWidth={1.5} strokeDasharray="4 3" /><text x={x} y={M.t - 8} textAnchor="middle" style={{ fill: col, fontSize: 'var(--ac-font-size-md-plus)', fontWeight: 'var(--ac-font-weight-bold)' }}>{l.lvl}</text></g>;
       })}
       {pts.map((p, i) => {
         const cx = g.sx(p.t), cy = g.sy(p.a);
@@ -43,7 +44,7 @@ export function CurveSvg({ view }: { view: ScurveView }) {
           <g key={i} className="ac-dot" data-idx={i} tabIndex={0} role="slider" aria-label={`Adoption point ${i + 1}`} aria-valuemin={0} aria-valuemax={100} aria-valuenow={Math.round(p.a)}
             aria-valuetext={`month ${Math.round(p.t)}, ${Math.round(p.a)} percent`} onKeyDown={(e) => key(i, e)}>
             <text x={cx} y={cy > M.t + 24 ? cy - 14 : cy + 22} textAnchor="middle">M{Math.round(p.t)} · {Math.round(p.a)}%</text>
-            <circle cx={cx} cy={cy} r={17} fill="transparent" /><circle cx={cx} cy={cy} r={7.5} fill="#fff" stroke="#0058AB" strokeWidth={2.5} /><circle cx={cx} cy={cy} r={3.2} fill="#0058AB" />
+            <circle cx={cx} cy={cy} r={17} fill="transparent" /><circle cx={cx} cy={cy} r={7.5} fill="var(--ac-neutral-0)" stroke="var(--ac-primary-700)" strokeWidth={2.5} /><circle cx={cx} cy={cy} r={3.2} fill="var(--ac-primary-700)" />
           </g>
         );
       })}

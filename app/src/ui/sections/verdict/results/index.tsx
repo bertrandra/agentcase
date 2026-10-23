@@ -44,7 +44,7 @@ export default function ResultsSection() {
         )}
         <div className="ac-form-row" style={{ alignItems: 'stretch' }}>
           <Panel title={`Savings decomposition (Y${r.horizon})`}>
-            <div style={{ lineHeight: 1.9 }}>
+            <div style={{ lineHeight: 'var(--ac-leading-code)' }}>
               <b style={{ color: 'var(--ac-teal)' }}>{fmtEur(B.grossAuto)}</b> gross automation<br />
               <b style={{ color: 'var(--ac-brick)' }}>−{fmtEur(B.agentCost)}</b> agent operating cost<br />
               <b style={{ color: 'var(--ac-amber)' }}>{B.relocation >= 0 ? '+' : ''}{fmtEur(B.relocation)}</b> relocation<br />
@@ -52,9 +52,9 @@ export default function ResultsSection() {
             </div>
           </Panel>
           <Panel title={`Team shift (Y${r.horizon})`}>
-            <div style={{ lineHeight: 1.9 }}>
+            <div style={{ lineHeight: 'var(--ac-leading-code)' }}>
               <strong>{r.team.asis.toFixed(1)}</strong> AS-IS human FTE →<br />
-              <b style={{ color: 'var(--ac-blue)' }}>{r.team.human.toFixed(1)}</b> residual human FTE + <b style={{ color: '#0a6e9c' }}>{r.team.agent.toFixed(1)}</b> agent vFTE<br />
+              <b style={{ color: 'var(--ac-blue)' }}>{r.team.human.toFixed(1)}</b> residual human FTE + <b style={{ color: 'var(--ac-info-700)' }}>{r.team.agent.toFixed(1)}</b> agent vFTE<br />
               <span className="ac-muted">Product status: {r.status}</span>
             </div>
           </Panel>

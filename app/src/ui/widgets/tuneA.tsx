@@ -15,11 +15,11 @@ export function CoefInput({ coef, id, label, hint, min, max, step }: { coef: Coe
 /** Horizontal bar, `pct` of the track (0–100). */
 export function Meter({ pct, color, label }: { pct: number; color: string; label: string }) {
   return (
-    <div role="meter" aria-label={label} aria-valuenow={pct} aria-valuemin={0} aria-valuemax={100} style={{ background: 'var(--ac-line)', borderRadius: 6, overflow: 'hidden', height: 16 }}>
+    <div role="meter" aria-label={label} aria-valuenow={pct} aria-valuemin={0} aria-valuemax={100} style={{ background: 'var(--ac-line)', borderRadius: 'var(--ac-radius-md)', overflow: 'hidden', height: 16 }}>
       <div style={{ width: `${Math.max(0, Math.min(100, pct))}%`, height: '100%', background: color }} />
     </div>
   );
 }
 
 /** Small note under a block (legacy grey 11px reference line). */
-export const Note = ({ children }: { children: ReactNode }) => <p className="ac-muted" style={{ fontSize: 12 }}>{children}</p>;
+export const Note = ({ children }: { children: ReactNode }) => <p className="ac-muted" style={{ fontSize: 'var(--ac-font-size-md)' }}>{children}</p>;

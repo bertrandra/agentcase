@@ -22,7 +22,7 @@ export function SimpleTable({ head, rows, foot, align = [], empty, caption }: { 
         {caption && <caption>{caption}</caption>}
         <thead><tr>{head.map((h, i) => <th key={h + i} scope="col" role={h ? undefined : 'presentation'} style={{ textAlign: align[i] ?? 'left' }}>{h}</th>)}</tr></thead>
         <tbody>{rows.length ? rows.map(line) : <tr><td colSpan={head.length} style={{ textAlign: 'center' }} className="ac-muted">{empty ?? 'No data.'}</td></tr>}</tbody>
-        {foot && <tfoot>{line({ ...foot, style: { fontWeight: 700, borderTop: '2px solid var(--ac-blue)', ...foot.style } })}</tfoot>}
+        {foot && <tfoot>{line({ ...foot, style: { fontWeight: 'var(--ac-font-weight-bold)', borderTop: '2px solid var(--ac-blue)', ...foot.style } })}</tfoot>}
       </table>
     </div>
   );
