@@ -2,6 +2,7 @@ import { useRef } from 'react';
 import { exportSnapshotJson, importSnapshotFile } from '@/controllers/files';
 import { useDoc, useHistory } from '@/store/hooks';
 import { APP_VERSION } from '@/domain/version';
+import { BrandLogo, useHasLogo } from '../brand/BrandLogo';
 import { DisplayMenu } from '../display/DisplayMenu';
 import { goSection, setFastPath, toast, toggleMenuHidden, useUi } from '../uiState';
 import { useNavModel } from '../zones/navModel';
@@ -12,7 +13,7 @@ import { runHistory } from './useShortcuts';
 /** Brand, customer, persona, undo/redo and file actions. */
 export function TopZone() {
   const customer = useDoc((d) => (d.customerName as string) ?? ''), { persona, personas, landing } = useNavModel();
-  const hidden = useUi((s) => s.menuHidden), fastPath = useUi((s) => s.fastPath), h = useHistory(), file = useRef<HTMLInputElement>(null);
+  const logo = useHasLogo(), hidden = useUi((s) => s.menuHidden), fastPath = useUi((s) => s.fastPath), h = useHistory(), file = useRef<HTMLInputElement>(null);
   const save = () => {
     const { filename, json } = exportSnapshotJson(), url = URL.createObjectURL(new Blob([json], { type: 'application/json' }));
     Object.assign(document.createElement('a'), { href: url, download: filename }).click();
@@ -24,8 +25,9 @@ export function TopZone() {
   };
   return (
     <header className="ac-top" role="banner" style={{ gridArea: 'top' }}>
-      <div className="ac-top-id">
+      <div className={logo ? 'ac-top-id has-logo' : 'ac-top-id'}>
         <strong className="ac-brand" title="Back to Welcome" onClick={() => goSection('home')}>AgentCase{customer ? ` for ${customer}` : ''} <small>v{APP_VERSION}</small></strong>
+        <BrandLogo />
       </div>
       <div className="ac-top-ctrls">
         <button type="button" className="ac-icon-btn" aria-label="Toggle the sidebar menu" aria-pressed={!hidden} title="Show or hide the sidebar; hidden, the group bar above the section navigates" onClick={toggleMenuHidden}>☰</button>

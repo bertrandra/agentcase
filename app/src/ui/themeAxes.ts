@@ -1,4 +1,4 @@
-import { useSyncExternalStore } from 'react';
+import { createContext, useContext, useSyncExternalStore } from 'react';
 import { AXES, AXIS_DEFAULTS, AXIS_NAMES, axisAttr, axisAttributes, isAxisValue, type AxisName, type ThemeAxes } from '@/domain/theme/axes';
 
 /**
@@ -38,7 +38,14 @@ function subscribe(cb: () => void): () => void {
   return () => { listeners.delete(cb); if (!listeners.size) { observer?.disconnect(); observer = null; } };
 }
 
-/** The value of one axis, re-rendering when the attribute changes. */
+/** The axes of a sub-tree that shows another theme (the Brand & theme live preview): the Field* controls inside follow it, not `<html>`. */
+export const ThemeAxesContext = createContext<Partial<ThemeAxes> | null>(null);
+
+/** The value of one axis, re-rendering when the attribute changes (inside a ThemeAxesContext: that theme's value). */
 export function useThemeAxis<K extends AxisName>(k: K): ThemeAxes[K] {
-  return useSyncExternalStore(subscribe, () => { const v = rootEl()?.getAttribute(axisAttr(k)); return isAxisValue(k, v) ? v : AXES[k].default; }, () => AXES[k].default) as ThemeAxes[K];
+  const scoped = useContext(ThemeAxesContext);
+  const root = useSyncExternalStore(subscribe, () => { const v = rootEl()?.getAttribute(axisAttr(k)); return isAxisValue(k, v) ? v : AXES[k].default; }, () => AXES[k].default) as ThemeAxes[K];
+  if (!scoped) return root;
+  const v = scoped[k];
+  return (isAxisValue(k, v) ? v : AXES[k].default) as ThemeAxes[K];
 }

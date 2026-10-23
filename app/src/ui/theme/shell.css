@@ -50,3 +50,9 @@
 .ac-calc-banner { top: 56px; background: var(--ac-warning-55); border-color: var(--ac-warning-575); }
 .ac-calc-saved { color: var(--ac-warning-750); }
 .ac-calc-live { color: var(--ac-primary-700); }
+/* T4/T5 (docs/THEME.md §8): the customer logo beside the title (about the cap height), on an optional white pill for dark headers; the ?theme= link notice */
+.ac-top-id.has-logo { display: flex; align-items: center; gap: 14px; }
+.ac-brand-logo { display: block; height: calc(var(--ac-font-size-7xl) * .85); max-width: 180px; object-fit: contain; }
+.ac-brand-logo[data-backdrop='pill'] { box-sizing: content-box; padding: 4px 12px; background: var(--ac-neutral-0); border-radius: var(--ac-radius-pill); }
+.ac-theme-notice { display: flex; flex-wrap: wrap; align-items: center; gap: 8px; margin: 12px 24px 0; padding: 6px 12px; font-size: var(--ac-font-size-sm); color: var(--ac-ink); background: var(--ac-surface); border: var(--ac-border-thin) solid var(--ac-line-strong); border-left: var(--ac-border-heavy) solid var(--ac-primary-700); border-radius: var(--ac-radius-md); }
+.ac-theme-notice button { padding: 3px 10px; font: inherit; color: var(--ac-ink); background: var(--ac-surface); border: var(--ac-border-thin) solid var(--ac-line-strong); border-radius: var(--ac-radius); cursor: pointer; }
