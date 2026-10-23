@@ -14,7 +14,7 @@ const BODY: Pair[] = [
   ['text-link', 'surface'], ['text-link', 'bg'], ['text-heading', 'surface'], ['text-heading', 'bg'], ['chart-axis', 'surface'],
   ['header-text', 'header-start'], ['header-text', 'header-end'], ['kpibar-text', 'kpibar-start'], ['kpibar-text', 'kpibar-end'],
   ['sidebar-text', 'sidebar-bg'], ['sidebar-item-text', 'sidebar-bg'], ['sidebar-group-text', 'sidebar-group-bg'], ['hover-text', 'hover'], ['selected-text', 'selected'],
-  ['table-head-text', 'table-head-bg'], ['text-on-primary', 'primary-700'], ['text-inverse', 'ink'],
+  ['table-head-text', 'table-head-bg'], ['table-head-note', 'table-head-bg'], ['text-on-primary', 'primary-700'], ['text-inverse', 'ink'],
   ['ink', 'chart-div-neg-strong'], ['ink', 'chart-div-neg'], ['ink', 'chart-div-mid'], ['ink', 'chart-div-pos'],
 ];
 /** Business colours written as text (teal "automation" figures, brick "glass ceiling"…). vFTE green is a graphic colour in the legacy look (3.4:1). */

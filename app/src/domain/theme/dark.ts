@@ -43,7 +43,7 @@ export const DARK_ROLES = {
   'header-start': '#163a6b', 'header-end': '#0b0f19', 'header-text': '#f3f4f6',
   'kpibar-start': '#163a6b', 'kpibar-end': '#10294b', 'kpibar-text': '#f3f4f6',
   'sidebar-bg': '#151a22', 'sidebar-text': '#e6e8ec', 'sidebar-item-text': '#c5cad2', 'sidebar-group-bg': '#1d2431', 'sidebar-group-text': '#c9dcff', 'sidebar-group-hover-bg': '#26324a',
-  'table-head-bg': '#1c3a66', 'table-head-text': '#f3f4f6', 'table-head-line': '#3b4352', 'table-line': '#2e3542', 'table-stripe': '#1a1f28', 'table-hover': '#222d40',
+  'table-head-bg': '#1c3a66', 'table-head-text': '#f3f4f6', 'table-head-note': '#b9cdee', 'table-head-line': '#3b4352', 'table-line': '#2e3542', 'table-stripe': '#1a1f28', 'table-hover': '#222d40',
   automation: '#4fc6cc', 'glass-ceiling': '#f08f94', 'human-supervision': '#f5a865', agentic: '#b9a8ec', ai: '#62c6f2', vfte: '#63d391',
 } as const;
 

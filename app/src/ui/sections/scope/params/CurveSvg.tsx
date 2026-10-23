@@ -3,7 +3,7 @@ import { COL, H, M, W, geoOf, layoutTags, linePath } from './chart';
 import { tok } from '@/domain/theme';
 
 export interface Toggles { human: boolean; manual: boolean; vfte: boolean; levels: boolean }
-const LCOL: Record<string, string> = { get L1() { return tok('slate-700'); }, get L2() { return tok('info-700'); }, get L3() { return tok('teal-700'); }, get L4() { return tok('primary-700'); } };
+const LCOL: Record<string, string> = { get L1() { return tok('slate-700'); }, get L2() { return tok('chart-cat-5'); }, get L3() { return tok('chart-cat-2'); }, get L4() { return tok('chart-cat-1'); } };
 
 /** Potential vs realized automation per month: potential line, permitted depth, the realized curve and the bands that explain the gap. */
 export function CurveSvg({ a, show, start }: { a: AutomationCurve; show: Toggles; start: string }) {

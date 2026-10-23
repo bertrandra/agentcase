@@ -13,7 +13,7 @@ export const geoOf = (N: number): Geo => ({
   invY: (py) => (1 - (py - M.t) / ih) * 100,
 });
 
-export const LEVEL_COLOR: Record<string, string> = { get L1() { return tok('slate-700'); }, get L2() { return tok('info-700'); }, get L3() { return tok('teal-700'); }, get L4() { return tok('primary-700'); } };
+export const LEVEL_COLOR: Record<string, string> = { get L1() { return tok('slate-700'); }, get L2() { return tok('chart-cat-5'); }, get L3() { return tok('chart-cat-2'); }, get L4() { return tok('chart-cat-1'); } };
 /** Fixed adoption bands drawn behind the curve. */
 export const BANDS: [number, number, string][] = [[0, 25, 'L1'], [25, 55, 'L2'], [55, 80, 'L3'], [80, 100, 'L4']];
 export const GRID = [0, 25, 55, 80, 100];

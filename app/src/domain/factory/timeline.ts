@@ -6,7 +6,7 @@ export const LANES = ['Commits', 'Builds', 'Release Candidates', 'Approvals', 'D
 export interface TimelineEvent { date: string; lane: (typeof LANES)[number]; label: string; color: string; t: number }
 type Source = Pick<FactoryData, 'COMMITS' | 'BUILDS' | 'RELEASE_CANDIDATES' | 'APPROVALS' | 'DEPLOYMENTS' | 'MONITORING_EVENTS' | 'FEEDBACK_ITEMS' | 'ENVIRONMENTS'>;
 
-const C = { get BLUE() { return tok('primary-700'); }, get TEAL() { return tok('teal-700'); }, get BRICK() { return tok('danger-800'); }, get AMBER() { return tok('warning-600'); }, get PURPLE() { return tok('secondary-600'); } };
+const C = { get BLUE() { return tok('chart-cat-1'); }, get TEAL() { return tok('chart-cat-2'); }, get BRICK() { return tok('danger-800'); }, get AMBER() { return tok('chart-cat-3'); }, get PURPLE() { return tok('chart-cat-4'); } };
 
 /** Every dated event of the Release-pipeline and Engineering domains, one lane per type (events without a parsable date are dropped). */
 export function timelineEvents(d: Source): TimelineEvent[] {

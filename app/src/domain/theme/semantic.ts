@@ -16,7 +16,7 @@ export const ROLES = {
   'sidebar-bg': '{neutral-0}', 'sidebar-text': '{neutral-900}', 'sidebar-item-text': '{neutral-750}', 'sidebar-group-bg': '{slate-80}',
   'sidebar-group-text': '{primary-975}', 'sidebar-group-hover-bg': '{primary-115}',
   // data tables
-  'table-head-bg': '{primary-700}', 'table-head-text': '{neutral-0}', 'table-head-line': '{neutral-175}', 'table-line': '{neutral-125}',
+  'table-head-bg': '{primary-700}', 'table-head-text': '{neutral-0}', 'table-head-note': '{primary-200}', 'table-head-line': '{neutral-175}', 'table-line': '{neutral-125}',
   'table-stripe': '{neutral-25}', 'table-hover': '{primary-60}',
   // business meaning, kept across themes
   automation: '{teal-700}', 'glass-ceiling': '{danger-800}', 'human-supervision': '{warning-600}', agentic: '{secondary-600}', ai: '{info-700}', vfte: '{success-510}',

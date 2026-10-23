@@ -7,7 +7,7 @@ import { tok } from '@/domain/theme';
 const CROSS_BG = 'var(--ac-warning-35)', PHASE_BG = 'var(--ac-slate-30)';
 
 function PhaseLabel({ p, open, onToggle }: { p: PhaseRow; open: boolean; onToggle: () => void }) {
-  const colour = p.cross ? tok('warning-600') : tok('primary-700');
+  const colour = p.cross ? tok('chart-cat-3') : tok('chart-cat-1');
   return (
     <>
       {p.arts.length ? <button type="button" onClick={onToggle} aria-expanded={open} aria-label={`${open ? 'Collapse' : 'Expand'} ${p.name}`} style={{ border: 0, background: 'none', cursor: 'pointer', padding: 0, width: 14, color: colour }}>{open ? '▼' : '▶'}</button> : <span style={{ display: 'inline-block', width: 14, color: 'var(--ac-neutral-250)' }}>·</span>}
@@ -35,7 +35,7 @@ export function Delivery({ v }: { v: GanttView }) {
     <>
       <div style={SUB}>Delivery rollout — phases overlap &amp; stagger by sequence, 🏁 marks the release</div>
       <div style={{ fontSize: 'var(--ac-font-size-sm-plus)', color: 'var(--ac-neutral-700)', margin: '.2rem 0 .5rem' }}>
-        Bars: <span style={{ display: 'inline-block', width: 22, height: 9, borderRadius: 'var(--ac-radius-2xs)', background: hexRgba(tok('primary-700'), 0.4), verticalAlign: 'middle' }} /> activity &nbsp;
+        Bars: <span style={{ display: 'inline-block', width: 22, height: 9, borderRadius: 'var(--ac-radius-2xs)', background: hexRgba(tok('chart-cat-1'), 0.4), verticalAlign: 'middle' }} /> activity &nbsp;
         <span style={{ display: 'inline-block', width: 12, height: 9, borderRadius: 'var(--ac-radius-2xs)', background: 'var(--ac-primary-700)', verticalAlign: 'middle' }} /> human supervision
       </div>
       {sdlc.length ? sdlc.map(rows) : <div style={{ fontSize: 'var(--ac-font-size-sm-plus)', color: 'var(--ac-neutral-700)', padding: '2px 0' }}>No phase in scope — select artefacts in 🎯 Scope.</div>}
