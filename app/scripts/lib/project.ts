@@ -69,7 +69,8 @@ export function loadProject(root: string, routes: Routes = {}, flatten = true): 
       const hops = i.names && flatten ? i.names.map((n) => routes[t]?.[n] ?? declaredIn(p, t, n)) : [t];
       (hops.length ? hops : [t]).forEach((h) => { if (h !== f) out.add(h); });
     }
-    if (!flatten) for (const spec of [...ps.stars, ...ps.reexports.map((r) => r.spec)]) { const t = resolveSpec(root, f, spec, known); if (t) out.add(t); }
+    // A barrel keeps edges to what it re-exports: named imports skip it (flattened above), so only whole-module uses (namespace, default, dynamic) reach it.
+    for (const spec of [...ps.stars, ...ps.reexports.map((r) => r.spec)]) { const t = resolveSpec(root, f, spec, known); if (t) out.add(t); }
     if (f.startsWith('tests/')) for (const r of readsOf(root, f, text.get(f) ?? '')) out.add(r);
     for (const g of ps.globs) globFiles(root, f, g, files).forEach((t) => { if (t !== f) out.add(t); });
     p.edges.set(f, [...out].sort());

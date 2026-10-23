@@ -68,6 +68,15 @@ or output, restored afterwards, even on error), runs the full suite, and checks 
 file (recall must be 100%). It prints the recall and the average saving per mode. It takes tens of minutes and is not part of CI; run it after changing the
 generator, the tags or the rule. Results of the last run are in the changelog entry of the release that introduced the rule.
 
+**Last run (2026-10-23, 15 mutations, 10 checked, 5 select the full suite anyway):** precise 89.5% recall (17/19 failing files), zone 94.7% (18/19),
+average saving 47% / 29%. Both misses were `tests/store/portfolio-controllers.test.ts`:
+* `domain/portfolio/waveOps.ts`: a real miss. `controllers/wave.ts` imports the `domain/portfolio` barrel as a namespace (`import * as ops`), and the
+  generator dropped the barrel's re-export edges, so the closure stopped at the barrel. Fixed: a barrel now keeps edges to what it re-exports (named
+  imports still skip the barrel). The test is now selected at both levels.
+* `domain/portfolio/aggVerifyKpi.ts`: not a miss. The test passes alone with that mutation; it failed in the run under load (flaky timing).
+
+Do not use `test:affected` instead of the full suite before a merge or a release; it is a development aid.
+
 ## 6. Limits
 
 * Coupling that is not an import and not a string-literal path (a test that builds a path, or reads a directory) is invisible to the closure. The directory
