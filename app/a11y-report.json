@@ -1,10 +1,7 @@
 {
- "audits": 422,
+ "audits": 104,
  "fixtures": [
-  "golden",
-  "ctx-msi",
-  "industry-med",
-  "pf-example"
+  "golden"
  ],
  "summary": [],
  "violations": []
