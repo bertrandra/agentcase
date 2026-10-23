@@ -15,7 +15,7 @@ All notable changes to AgentCase, newest first. Product version from v19.0.0 = `
 
 When releasing, follow [docs/BUMP_PROCEDURE.md](docs/BUMP_PROCEDURE.md) (§7 for the legacy file) and add the new version at the top.
 
-## [Unreleased]
+## [v20.5.0] 2026-10-23 — Menu structures, legacy Section assignment tab, Business journey persona
 
 ### New
 - **Menu structures** (DEV-MENU-STRUCTURES). Several named sets of menu groups can coexist; the existing groups and section placement are the built-in **Standard** structure, unchanged for every existing persona and case file. Each persona navigates with one structure (picked in 👥 Persona management → 🧩 Section assignment); its sidebar, group bar, Welcome cards, compact nav, Fast Path, landing and guided walk follow it. A **Menu structure** bar on 🗂️ Menu groups, 📄 Sections and 🗺️ Menu layout picks the structure those tabs edit, and duplicates, renames or deletes structures (built-ins protected, a structure in use cannot be deleted). Every edit is an undoable command (`menu.duplicateStructure`, `menu.renameStructure`, `menu.deleteStructure`, `persona.setMenuStructure`, `persona.addBuiltin`, plus an optional `structure` on the group and placement commands). Saved with the case (`MENU_STRUCTURES`, `Persona.menuStructure`) and in the parameters workbook ("Menu Structures", "Menu Structure Sections" when the case stores a structure, a "Menu structure" column on Personas when a persona uses one; a Standard-only case exports the legacy workbook unchanged).
