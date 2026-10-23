@@ -26,8 +26,8 @@ export const BUILTIN_THEMES: readonly ThemeDef[] = Object.freeze([
     'chart-cat-7': '#5e35b1', 'chart-cat-8': '#d81b60',
   }, { diagnostic: true }),
   def(5, 'sepia', 'Sepia', 'Warm paper tones, brown ink and low-saturation charts: easy on the eyes for long reading.', {
-    primary: '#7a4a24', neutral: '#3b2e22', slate: '#5e5040', bg: '#f3ead7', surface: '#fbf6ea', 'surface-raised': '#fffaf0', 'header-start': '#6b4423', 'header-end': '#3a2412',
-    'kpibar-start': '#6b4423', 'kpibar-end': '#4e3019', 'sidebar-bg': '#fbf6ea', 'sidebar-group-bg': '#efe3cb', 'sidebar-group-text': '#3a2412', 'table-stripe': '#f6efe0',
+    primary: '#7a4a24', neutral: '#3b2e22', slate: '#5e5040', bg: '#f3ead7', surface: '#fffcf5', 'surface-raised': '#fffdf8', 'header-start': '#6b4423', 'header-end': '#3a2412',
+    'kpibar-start': '#6b4423', 'kpibar-end': '#4e3019', 'sidebar-bg': '#fffcf5', 'sidebar-group-bg': '#efe3cb', 'sidebar-group-text': '#3a2412', 'table-stripe': '#fcf8ef',
     'chart-cat-1': '#7a4a24', 'chart-cat-2': '#4f7068', 'chart-cat-3': '#a0632b', 'chart-cat-4': '#6e5a80', 'chart-cat-5': '#4d6a85', 'chart-cat-6': '#8a7a3a',
     'chart-cat-7': '#94505a', 'chart-cat-8': '#5f7a45',
   }),
