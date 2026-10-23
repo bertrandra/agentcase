@@ -15,7 +15,7 @@ All notable changes to AgentCase, newest first. Product version from v19.0.0 = `
 
 When releasing, follow [docs/BUMP_PROCEDURE.md](docs/BUMP_PROCEDURE.md) (§7 for the legacy file) and add the new version at the top.
 
-## [Unreleased] — Theme library, Brand & theme screen, customer logo (T4 + T5 of the configurable theme)
+## [v20.9.0] 2026-10-23 — Brand & theme screen, theme library (?theme=N), client logo (T4 + T5)
 
 ### New
 - **Theme library in the case** (docs/THEME.md §8): seven protected built-in themes with a sequence id — 1 Capgemini (the default look,

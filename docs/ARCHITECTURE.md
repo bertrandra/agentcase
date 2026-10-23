@@ -1,6 +1,6 @@
 # AgentCase — Architecture of the TypeScript build
 
-> Applies to **`app/`, version 20.8.0** (`app/src/domain/version.ts`, `app/package.json`): a multi-product portfolio build. 892 `.ts`/`.tsx` files under `app/src`,
+> Applies to **`app/`, version 20.9.0** (`app/src/domain/version.ts`, `app/package.json`): a multi-product portfolio build. 892 `.ts`/`.tsx` files under `app/src`,
 > 241 test files under `app/tests` (counted with `find`; 16,387 tests passed on the last local run, CI is authoritative).
 > The previous document, which describes the frozen single-file app, is archived as
 > [`history/ARCHITECTURE_legacy_v18.md`](history/ARCHITECTURE_legacy_v18.md). The appendix of this file maps each legacy engine to its replacement.
@@ -383,7 +383,7 @@ The authoritative list is [MIGRATION_PLAN.md §15](MIGRATION_PLAN.md). Architect
   item-level scope overrides (whole key only, D-M2); portfolio charts as images in the results workbook.
 - Excel cross-version note: a parameters workbook exported by 20.0.0 from a real portfolio carries seven extra sheets that a 19.x build ignores (it reads only the common case); a 19.x workbook imports into 20.0.0 as a case on the active product. An import does not re-fit the automation potential (the workbook states the stored values; the next open re-fits).
 - Opening a 20.0.0 portfolio file (`agentcase.portfolio.v1`) in a 19.x build is not supported; a plain single case is still saved as `agentcase.snapshot.v1` and stays readable by 19.x.
-- `npm run release` produces `app/dist/AgentCase_v20_8_EN.html`; `APP_VERSION` is `20.8.0`.
+- `npm run release` produces `app/dist/AgentCase_v20_9_EN.html`; `APP_VERSION` is `20.9.0`.
 
 ## 13. Calculation zones, the generated dependency graph and test selection
 

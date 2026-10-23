@@ -50,7 +50,7 @@ describe('named snapshots of a portfolio', () => {
     expect(content()).toEqual(captured);
     expect(lib()).toHaveLength(1);
     expect(appStore().getState().history.undo).toHaveLength(steps + 1);
-    expect(appStore().getState().history.undo.at(-1)!.label).toBe('Activate snapshot "Plan A · v20.8"');
+    expect(appStore().getState().history.undo.at(-1)!.label).toBe('Activate snapshot "Plan A · v20.9"');
     expect(appStore().undo()).toBe(true);
     expect(snapAll(appStore())).toBe(edited);
     expect(appStore().redo()).toBe(true);
