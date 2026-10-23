@@ -183,6 +183,13 @@ There is no schema-migration table: legacy files are accepted as they are (missi
 
 Also `RestoreBanner` (autosave offer), a skip link, and an `aria-live="polite"` region that announces "Undone: ..." toasts.
 
+**Theme tokens.** No component holds a visual literal: colours, fonts, sizes, weights, line heights, radii, border widths, shadows,
+control paddings and durations are tokens (`docs/THEME.md`). The table lives in `domain/theme` (zone `presentation`, so the store's Excel
+and report exports can read it); `ui/theme/tokens.css` is generated from it (`npm run theme:gen`, checked by `tests/ui/theme-tokens.test.ts`).
+CSS, inline styles and SVG attributes use `var(--ac-*)`; chart.js, colour arithmetic and the domain read-outs use `tok()`; Excel uses
+`argb()`. `setActiveTheme()` plus the custom properties on `:root` is the single switch a theme (dark mode, presets, a theme stored in the
+case) needs; `tests/ui/no-hardcoded-style.test.ts` keeps literals out.
+
 **Navigation comes from the document**, not from code tables: `ui/zones/navModel.ts` builds the sidebar from `doc.PERSONAS`,
 `PERSONA_SECTIONS`, `PERSONA_SECTION_ORDER`, `GROUPS`, `sectionGroups`, `dynamicSections` and the guided sequences, falling back to the
 bundled legacy catalogue (`ui/zones/data/*.json`: 85 sections in 15 groups, the 15th being the multi-product Portfolio group). Domain logic is in `domain/nav/` (`layout`, `groupBar`,
