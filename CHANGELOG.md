@@ -15,6 +15,35 @@ All notable changes to AgentCase, newest first. Product version from v19.0.0 = `
 
 When releasing, follow [docs/BUMP_PROCEDURE.md](docs/BUMP_PROCEDURE.md) (§7 for the legacy file) and add the new version at the top.
 
+## [Unreleased] — Theme library, Brand & theme screen, customer logo (T4 + T5 of the configurable theme)
+
+### New
+- **Theme library in the case** (docs/THEME.md §8): seven protected built-in themes with a sequence id — 1 Capgemini (the default look,
+  unchanged), 2 Orange, 3 Sprint (green), 4 Rainbow (diagnostic: every screen zone a distinct colour, with a zone → token legend), 5 Sepia,
+  6 Dark red, 7 Purple — and the user's own themes (ids from 100, never reused). A theme is scale anchors (a whole 9-step family re-derived
+  in OKLab from one colour), roles (header gradient, KPI bar, sidebar, table head, surfaces, text, focus, business colours, chart series 1-8)
+  and the T3 axes. Dark and contrast variants follow the theme's hue; high contrast stays black and white. Undoable commands: new,
+  duplicate, import, rename, edit (a picker drag is one step), delete (the active one falls back to Capgemini), activate.
+- **🎨 Brand & theme** (CONFIGURE; Admin, Builder, Business journey, Advanced): library with badges and actions, editor (read-only for
+  built-ins, "Duplicate to edit") with live WCAG contrast badges and warnings per colour pair, the axes from `AXES`, and a live preview
+  (header, KPI bar, navigation, card, callout, key figures, table, chart, one control of each kind) with its own Light / Dark toggle;
+  the `?theme=<n>` link with a Copy button; import / export of a theme or the library as JSON (validated, unknown keys ignored).
+- **`?theme=<n>` links**: open the app (or an HTML snapshot) in a theme without changing the case; a notice offers "Make it the case theme" or
+  "Clear"; an unknown number is ignored with a message.
+- **Customer logo** for client presentations (Engagement context): PNG, JPEG or SVG (rasterised to PNG) up to 200 KB, shown next to
+  "AgentCase for <customer>" (alt "<customer> logo"), optional white pill backdrop, hide toggle; also in the HTML report, the HTML snapshot and on
+  the ROI sheet of the results workbook.
+
+### Changed
+- The active theme reaches `tok()`, the charts, the Excel workbooks and the HTML report (still light); the page gets the theme's colour tokens
+  as inline custom properties on `<html>` (none for the default theme: ui-parity unchanged).
+- Parameters workbook: optional sheet **Themes** (only when the case has its own theme or another active theme; a default case exports the
+  legacy workbook unchanged; older workbooks import as before).
+- Brand & theme is an *app section* (no legacy equivalent): outside the legacy catalogue and workbook sheets, added by the navigation to the
+  personas it names (DEV-BRAND-THEME). Catalogue: 86 sections; 246 commands.
+- Contrast test extended to the catalogue (`tests/ui/theme-catalogue.test.ts`): every built-in but Rainbow passes in light / dark x
+  standard / enhanced / high.
+
 ## [v20.8.0] 2026-10-23 — Display modes: dark, contrast levels, colour-blind charts, reduced motion (T2 of the configurable theme)
 
 ### New
