@@ -6,6 +6,7 @@ import { FieldToggle } from '@/ui/widgets/field/FieldToggle';
 
 const OPTS = [{ value: 'msc', label: 'MSC' }, { value: 'msi', label: 'MSI' }, { value: 'sta', label: 'STA' }];
 const BARS = [62, 48, 75, 40, 55, 68, 35, 50];
+const FILLS = ['var(--ac-chart-cat-1)', 'var(--ac-chart-cat-2)', 'var(--ac-chart-cat-3)', 'var(--ac-chart-cat-4)', 'var(--ac-chart-cat-5)', 'var(--ac-chart-cat-6)', 'var(--ac-chart-cat-7)', 'var(--ac-chart-cat-8)'];
 
 /** One control of each kind, rendered with the previewed theme's control variants (ThemeAxesContext). Preview values only: nothing reaches the case. */
 export function PreviewControls() {
@@ -32,7 +33,7 @@ export function PreviewChart() {
   return (
     <svg className="ac-bt-pv-chart" viewBox="0 0 168 80" role="img" aria-label="Chart series 1 to 8">
       <line x1="4" y1="76" x2="164" y2="76" stroke="var(--ac-chart-axis)" strokeWidth="1" />
-      {BARS.map((h, i) => <rect key={i} x={8 + i * 20} y={76 - h} width="14" height={h} rx="2" fill={`var(--ac-chart-cat-${i + 1})`} />)}
+      {BARS.map((h, i) => <rect key={i} x={8 + i * 20} y={76 - h} width="14" height={h} rx="2" fill={FILLS[i]} />)}
     </svg>
   );
 }

@@ -19,7 +19,7 @@ describe('one product: the interface is unchanged (spec F23)', () => {
     expect(document.querySelector('.ac-prodbar')).toBeNull();
   });
   it('the sidebar has the 14 original groups and none of the Portfolio sections, although the catalogue holds them', () => {
-    expect(SECTIONS).toHaveLength(85);
+    expect(SECTIONS).toHaveLength(86);   // 79 legacy + 6 Portfolio + 🎨 Brand & theme (an app section, shown to Admin, Builder, Business journey, Advanced)
     mountApp();
     expect(sidebar().querySelectorAll('section[data-group]')).toHaveLength(14);
     expect(sidebar().querySelector('[data-group="portfolio"]')).toBeNull();

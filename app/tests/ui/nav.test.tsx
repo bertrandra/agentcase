@@ -10,14 +10,16 @@ import { appStore } from '@/store/instance';
 import { App } from '@/ui/App';
 import { NavZone } from '@/ui/shell/NavZone';
 import { openGroup, uiStore } from '@/ui/uiState';
-import { SECTIONS } from '@/ui/zones/registry';
+import { APP_SECTIONS, SECTIONS } from '@/ui/zones/registry';
 import { legacyNav, NAV_FIXTURES } from '../helpers/nav';
 import { loadCase } from '../helpers/pdc';
 
 beforeEach(() => { uiStore.setState({ activeSection: 'home', toast: '', dockOpen: false, menuHidden: false, wiz: { active: false, pos: 0, visited: [] } }); });
 afterEach(cleanup);
 const doc = () => appStore().getState().doc;
-const ids = (nav: HTMLElement) => [...nav.querySelectorAll<HTMLElement>('[data-section]')].map((b) => b.dataset.section);
+/** The sections shown, minus the app sections (🎨 Brand & theme), which the legacy page compared against does not have. */
+const APP = new Set(APP_SECTIONS.map((s) => s.id));
+const ids = (nav: HTMLElement) => [...nav.querySelectorAll<HTMLElement>('[data-section]')].map((b) => b.dataset.section).filter((id) => !APP.has(id!));
 const heads = (nav: HTMLElement) => [...nav.querySelectorAll('h2')].map((h) => h.querySelector('span')?.textContent);
 const navEl = () => screen.getByRole('navigation', { name: 'Sections' });
 const menu = () => { const b = screen.queryByRole('button', { name: '☰ Menu' }); if (b) fireEvent.click(b); };
@@ -28,7 +30,7 @@ describe('the sidebar follows the document', () => {
     render(<NavZone />);
     for (const [persona, want] of Object.entries(legacyNav(id).personas)) {
       act(() => setPersona(persona));
-      const groups = [...navEl().querySelectorAll<HTMLElement>('section[data-group]')].map((g) => ({ group: g.dataset.group, sections: ids(g) }));
+      const groups = [...navEl().querySelectorAll<HTMLElement>('section[data-group]')].map((g) => ({ group: g.dataset.group, sections: ids(g) })).filter((g) => g.sections.length);
       expect(groups, `${id} / ${persona}`).toEqual(want.groups);
     }
   });

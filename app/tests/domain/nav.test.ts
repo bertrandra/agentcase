@@ -33,7 +33,8 @@ describe('navigation parity with the legacy sidebar (oracle)', () => {
 describe('dynamic sections in the sidebar (oracle: a Board dashboard added to the legacy page)', () => {
   it.each(NAV_FIXTURES)('every persona sees it where the legacy shows it (%s)', (id) => {
     const doc = caseOf(id), { groups, lists, order } = navInputs(doc), legacy = legacyNavDyn(id);
-    const sections = resolveSections(SECTIONS, doc.sectionGroups as never, [{ id: 'dyn-groups-1', title: 'Dashboard — Tune', archetype: 'GROUPS:tune', menuGroup: 'tune', order: 15 }]);
+    // the legacy page has no app section (🎨 Brand & theme): compared on the legacy catalogue
+    const sections = resolveSections(SECTIONS.filter((s) => !s.app), doc.sectionGroups as never, [{ id: 'dyn-groups-1', title: 'Dashboard — Tune', archetype: 'GROUPS:tune', menuGroup: 'tune', order: 15 }]);
     const withIt = Object.fromEntries(Object.entries(lists).map(([k, v]) => [k, [...v, 'dyn-groups-1']]));
     for (const p of doc.PERSONAS as Persona[]) {
       const got = navGroups(p.id, sections, groups, withIt, order).map((g) => ({ group: g.group.id, sections: g.sections.map((s) => s.id) }));

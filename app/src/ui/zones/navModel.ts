@@ -7,7 +7,7 @@ import { personasByOrder, type MenuGroup, type Persona, type PersonaSeq } from '
 import { useDoc } from '@/store/hooks';
 import { useIsMulti } from '@/store/portfolioHooks';
 import { useUi } from '../uiState';
-import { withPortfolio } from './portfolioNav';
+import { withAppSections, withPortfolio } from './portfolioNav';
 import { DEFAULT_PERSONA_SECTIONS, GROUPS, SECTIONS } from './registry';
 
 const FALLBACK: Persona[] = [{ id: 'builder', label: 'Builder', protected: false, order: 1 }, { id: 'clientcase', label: 'Client case', protected: false, order: 2 },
@@ -37,7 +37,7 @@ export function useNavModel(): NavModel {
   const style = useDoc((d) => (d.SECTION_NAV_STYLE === 'tabs' ? 'tabs' : 'buttons'));
   const fastPath = useUi((s) => s.fastPath), multi = useIsMulti();
   return useMemo(() => {
-    const base = resolveSections(SECTIONS, rows, dyn), stdGroups = docGroups?.length ? docGroups : (GROUPS as MenuGroup[]), allLists = docLists ?? DEFAULT_PERSONA_SECTIONS;
+    const base = resolveSections(SECTIONS, rows, dyn), stdGroups = docGroups?.length ? docGroups : (GROUPS as MenuGroup[]), allLists = withAppSections(docLists ?? DEFAULT_PERSONA_SECTIONS);
     const personas = personasByOrder(docPersonas?.length ? docPersonas : FALLBACK), lists = withPortfolio(multi, base, stdGroups, allLists).lists, cache = new Map<string, StructureView>();
     const view = (id: string): StructureView => {
       const st = findStructure(id, stored), key = st?.id ?? STANDARD_STRUCTURE, hit = cache.get(key);

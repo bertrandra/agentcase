@@ -13,7 +13,7 @@ export const colourLabel = (k: ColourKey): string => SCALE_LABELS[k] ?? k.replac
 
 /** One settable colour: picker, hex, reset to the default look, and the contrast of the pair it paints. */
 export function ColourRow({ k, def, table, check }: { k: ColourKey; def: ThemeDef; table: ThemeValues; check?: CheckResult }) {
-  const value = normHex(resolveTokens(table[shownToken(k)], table)) ?? '#000000', set = def.colours[k] !== undefined, label = colourLabel(k);
+  const value = normHex(resolveTokens(table[shownToken(k)], table)) ?? '', set = def.colours[k] !== undefined, label = colourLabel(k);
   return (
     <div className="ac-bt-colour">
       <input type="color" value={value} aria-label={label} onChange={(e) => updateTheme(def.seq, { colours: { [k]: e.target.value } })} />

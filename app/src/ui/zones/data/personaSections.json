@@ -4,8 +4,7 @@
   "io",
   "sessions",
   "personas",
-  "board",
-  "brand-theme"
+  "board"
  ],
  "clientcase": [
   "home",
@@ -72,8 +71,7 @@
   "duediligence",
   "monthly-playback",
   "story-summary",
-  "commercial",
-  "brand-theme"
+  "commercial"
  ],
  "business-journey": [
   "home",
@@ -154,7 +152,6 @@
   "io",
   "sessions",
   "duediligence",
-  "personas",
-  "brand-theme"
+  "personas"
  ]
 }
