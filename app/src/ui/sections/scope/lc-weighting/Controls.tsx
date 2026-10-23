@@ -13,7 +13,7 @@ export function Controls() {
   return (
     <div style={{ maxWidth: 520 }}>
       <FieldToggle label={USE} checked={s.lifecycleUse} onChange={setLifecycleUse}>
-        <label className="ac-check"><input type="checkbox" checked={s.lifecycleUse} onChange={(e) => setLifecycleUse(e.target.checked)} /> {USE}</label>
+        <label className="ac-check"><input type="checkbox" checked={s.lifecycleUse} onChange={(e) => setLifecycleUse(e.target.checked)} />{` ${USE}`}</label>
       </FieldToggle>
       <p className="ac-muted">Re-weights each phase&apos;s effort by where the product sits in its lifecycle. Off = neutral (all phases weight 1.0).</p>
       <FieldChoice label="Lifecycle position — jump to a status" value={String(nearestStatusPos(s))} options={opts} onChange={(v) => setLifecyclePos(+v)}>

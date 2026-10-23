@@ -20,7 +20,7 @@ export function CeilingBox() {
         </Field>
       </FieldNumber>
       <FieldToggle label={FORCE} checked={forced} onChange={setForceGC}>
-        <label className="ac-check"><input type="checkbox" checked={forced} onChange={(e) => setForceGC(e.target.checked)} /> {FORCE}</label>
+        <label className="ac-check"><input type="checkbox" checked={forced} onChange={(e) => setForceGC(e.target.checked)} />{` ${FORCE}`}</label>
       </FieldToggle>
     </div>
   );
