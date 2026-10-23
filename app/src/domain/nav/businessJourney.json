@@ -402,6 +402,10 @@
    "portfolio-stress": {
     "group": "portfolio",
     "groupSeq": 50
+   },
+   "brand-theme": {
+    "group": "reference",
+    "groupSeq": 35
    }
   }
  },

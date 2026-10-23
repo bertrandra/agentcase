@@ -15,7 +15,7 @@
   "id": "configure",
   "label": "🔧 CONFIGURE",
   "order": 120,
-  "description": "Calibrate the app itself: the Board builder and persona management."
+  "description": "Calibrate the app itself: the Board builder, persona management and the brand & theme."
  },
  {
   "id": "frame",
