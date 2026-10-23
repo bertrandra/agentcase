@@ -26,7 +26,7 @@ export function Panel({ sel, onSelect }: { sel: string | null; onSelect: (id: st
       <p><strong>Fed by</strong> ({up.length}): <Chips ids={up.filter(isZone)} onSelect={onSelect} /><br /><Chips ids={up.filter((i) => !isZone(i))} onSelect={onSelect} /></p>
       <p><strong>Impacted if it changes:</strong> {hit.impacted.zones.filter((z) => z !== sel).length} zones · {hit.impacted.sections.filter((s) => s !== sel).length} sections · <strong>{p.full ? `Full suite: ${total} of ${total} test files` : `${n} of ${total} test files`}</strong> would run (saved {p.full ? 0 : Math.round(((total - n) / total) * 100)}%)</p>
       </div>
-      <details><summary>Test files ({n})</summary><ul style={{ fontSize: 11, paddingLeft: 16 }}>{p.tests.map((t) => <li key={t}>{t}</li>)}</ul></details>
+      <details><summary>Test files ({n})</summary><ul style={{ fontSize: 'var(--ac-font-size-sm)', paddingLeft: 16 }}>{p.tests.map((t) => <li key={t}>{t}</li>)}</ul></details>
       <button type="button" className="ac-btn" onClick={() => onSelect(null)}>Clear selection</button>
     </div>
   );

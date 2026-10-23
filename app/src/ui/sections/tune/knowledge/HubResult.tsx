@@ -25,7 +25,7 @@ export function HubResult() {
         <Stat label="MC Σ (adoption)" value={`−${Math.round(h.mcSigma)}%`} tone="teal" />
       </StatRow>
       <table className="ac-table"><tbody>
-        {rows.map(([l, v, col]) => <tr key={l}><td>{l}</td><td style={{ textAlign: 'center', fontWeight: 700, color: col }}>{v}</td></tr>)}
+        {rows.map(([l, v, col]) => <tr key={l}><td>{l}</td><td style={{ textAlign: 'center', fontWeight: 'var(--ac-font-weight-bold)', color: col }}>{v}</td></tr>)}
       </tbody></table>
       <p className="ac-muted">CC-KH-01: the multiplier is capped by the regulatory ceiling headroom ({Math.round(h.effCap)} pts) — CC4 can never push automation past compliance. A negative hub Δ is shown honestly (CC-KH-03), typically when the scope is small.</p>
     </>

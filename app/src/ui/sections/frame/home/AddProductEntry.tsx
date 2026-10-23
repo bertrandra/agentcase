@@ -13,7 +13,7 @@ export function AddProductEntry() {
     if (id) { toast('Product added — the portfolio now holds several products'); goSection('products'); } else toast('Limit of 50 products reached');
   };
   return (
-    <div style={{ marginTop: 16, borderLeft: '4px solid #0058AB', paddingLeft: 12, display: 'flex', justifyContent: 'space-between', alignItems: 'center', gap: 16, flexWrap: 'wrap' }}>
+    <div style={{ marginTop: 16, borderLeft: '4px solid var(--ac-primary-700)', paddingLeft: 12, display: 'flex', justifyContent: 'space-between', alignItems: 'center', gap: 16, flexWrap: 'wrap' }}>
       <div>
         <strong>📦 Portfolio — {count === 1 ? 'a single product' : `${count} products`}</strong>
         <div className="ac-muted">Several products? Each has its own entry team and inherits the rest of the case, which it can override.</div>

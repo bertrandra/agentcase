@@ -1,7 +1,8 @@
 import type { ChartConfiguration } from 'chart.js';
 import { cumAt, fmtE, monthAxis, type Scenario } from '@/domain/stress';
+import { themedList } from '@/domain/theme';
 
-const YEAR_COLORS = ['#CADCFC', '#8FB0E8', '#0a6e9c', '#0058AB', '#003D7A', '#6FA8DC', '#2E75B6', '#1F4E79', '#12385A', '#0A2540'];
+const YEAR_COLORS = themedList(['chart-seq-1', 'chart-seq-2', 'chart-seq-3', 'chart-seq-4', 'chart-seq-5', 'chart-seq-6', 'chart-seq-7', 'chart-seq-8', 'chart-seq-9', 'chart-seq-10']);
 
 /** Grouped bars: annual run cost of every scenario, one series per year of the horizon. */
 export function costChart(S: Scenario[]): ChartConfiguration {

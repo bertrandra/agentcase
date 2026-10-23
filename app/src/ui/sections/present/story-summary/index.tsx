@@ -23,7 +23,7 @@ export default function StorySummarySection() {
   return (
     <SectionFrame title="📖 The story so far — AS-IS → TO-BE" help={help}
       result={<>
-        <p style={{ fontSize: 15, color: 'var(--ac-blue)' }}>This case moves the team from <strong>{s.baseFte.toFixed(1)} FTE</strong> to <strong>{s.tgtFte.toFixed(1)} FTE</strong> by {s.endLabel},
+        <p style={{ fontSize: 'var(--ac-font-size-xl)', color: 'var(--ac-blue)' }}>This case moves the team from <strong>{s.baseFte.toFixed(1)} FTE</strong> to <strong>{s.tgtFte.toFixed(1)} FTE</strong> by {s.endLabel},
           at <strong>+{s.velocityPct}%</strong> delivery velocity, saving <strong>{fmtK(s.endSavings)}</strong> in {s.endLabel} with a payback of <strong>{payTxt}</strong>.</p>
         <DataTable rows={rows} rowKey={(r) => r[0]} columns={[
           { key: 'k', header: '', render: (r) => r[0] }, { key: 'a', header: 'AS-IS', align: 'center', render: (r) => r[1] },

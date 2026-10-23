@@ -17,15 +17,15 @@ export function Timeline() {
     <Panel title="🗓️ Release & Engineering timeline" aside={ASIDE}>
       <div style={{ display: 'flex', height: 16, marginBottom: 4 }}>
         <div style={{ width: 150, flex: 'none' }} className="ac-muted">Calendar →</div>
-        <div style={{ position: 'relative', flex: 1 }}>{ax.ticks.map((k) => <span key={k.at} style={{ position: 'absolute', left: `${k.at.toFixed(2)}%`, fontSize: 9.5, color: 'var(--ac-muted)', whiteSpace: 'nowrap' }}>{short(k.t)}</span>)}</div>
+        <div style={{ position: 'relative', flex: 1 }}>{ax.ticks.map((k) => <span key={k.at} style={{ position: 'absolute', left: `${k.at.toFixed(2)}%`, fontSize: 'var(--ac-font-size-2xs-plus)', color: 'var(--ac-muted)', whiteSpace: 'nowrap' }}>{short(k.t)}</span>)}</div>
       </div>
       {LANES.map((lane) => {
         const mine = events.filter((e) => e.lane === lane);
         return (
           <div key={lane} role="group" aria-label={lane} style={{ display: 'flex', alignItems: 'center', height: 24, borderBottom: '1px solid var(--ac-line)' }}>
-            <div style={{ width: 150, flex: 'none', fontSize: 11 }}>{lane} <span className="ac-muted">({mine.length})</span></div>
+            <div style={{ width: 150, flex: 'none', fontSize: 'var(--ac-font-size-sm)' }}>{lane} <span className="ac-muted">({mine.length})</span></div>
             <div style={{ position: 'relative', flex: 1, height: 16 }}>
-              {mine.map((e, i) => <span key={i} title={`${e.label} — ${e.date}`} style={{ position: 'absolute', left: `${ax.pct(e.t).toFixed(2)}%`, top: 3, width: 9, height: 9, borderRadius: '50%', background: e.color, transform: 'translateX(-50%)' }} />)}
+              {mine.map((e, i) => <span key={i} title={`${e.label} — ${e.date}`} style={{ position: 'absolute', left: `${ax.pct(e.t).toFixed(2)}%`, top: 3, width: 9, height: 9, borderRadius: 'var(--ac-radius-round)', background: e.color, transform: 'translateX(-50%)' }} />)}
             </div>
           </div>
         );

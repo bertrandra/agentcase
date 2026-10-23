@@ -1,7 +1,8 @@
 import { lifecycleCascade } from '@/domain/scope/lifecycleView';
 import { useCtx } from '@/store/hooks';
+import { tok } from '@/domain/theme';
 
-const tone = (v: number, up: number, down: number) => (v > up ? 'var(--ac-teal)' : v < down ? 'var(--ac-brick)' : '#566074');
+const tone = (v: number, up: number, down: number) => (v > up ? 'var(--ac-teal)' : v < down ? 'var(--ac-brick)' : tok('slate-700'));
 
 /** Per-phase weight and the resulting effort share of the in-scope artefacts (legacy renderLifecycleCascade). */
 export function Cascade() {
@@ -18,7 +19,7 @@ export function Cascade() {
           {rows.map((r) => (
             <tr key={r.id}>
               <td><strong>{r.id}</strong> <small className="ac-muted">{r.name}</small></td>
-              <td className="ac-c" style={{ color: tone(r.weight, 1.05, 0.95), fontWeight: 700 }}>×{r.weight.toFixed(2)}</td>
+              <td className="ac-c" style={{ color: tone(r.weight, 1.05, 0.95), fontWeight: 'var(--ac-font-weight-bold)' }}>×{r.weight.toFixed(2)}</td>
               <td><div className="ac-bar-cell"><span style={{ width: `${Math.round(r.share)}%` }} /><small>{r.share.toFixed(1)}%</small></div></td>
             </tr>
           ))}

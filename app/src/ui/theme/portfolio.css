@@ -1,20 +1,20 @@
 /* Multi-product interface (spec P3). Every rule here targets an element that only exists with two or more products (or the new Portfolio sections),
    so a single-product case renders exactly as before. Colours come from tokens.css. */
-.ac-prodbar { display: inline-flex; flex-wrap: wrap; align-items: center; gap: 10px; padding-inline-end: 10px; border-inline-end: 1px solid rgba(255, 255, 255, .25); font-size: 12px; }
-.ac-prodsel { display: inline-flex; align-items: center; gap: 6px; font-weight: 700; }
+.ac-prodbar { display: inline-flex; flex-wrap: wrap; align-items: center; gap: 10px; padding-inline-end: 10px; border-inline-end: var(--ac-border-thin) solid var(--ac-neutral-0-a25); font-size: var(--ac-font-size-md); }
+.ac-prodsel { display: inline-flex; align-items: center; gap: 6px; font-weight: var(--ac-font-weight-bold); }
 .ac-editscope { display: inline-flex; flex-wrap: wrap; align-items: center; gap: 8px; }
 .ac-editscope label { display: inline-flex; align-items: center; gap: 3px; cursor: pointer; }
 
-.ac-section .ac-prod-banner { margin: 0 0 1rem; padding: 8px 12px; font-size: 13px; background: #f0f4ff; border: 1px solid #cadcfc; border-left: 4px solid var(--ac-blue); border-radius: var(--ac-radius); }
-.ac-ovr { display: inline-flex; flex-wrap: wrap; align-items: center; gap: 6px; margin-inline-start: 8px; font-size: 11px; vertical-align: middle; }
+.ac-section .ac-prod-banner { margin: 0 0 1rem; padding: 8px 12px; font-size: var(--ac-font-size-base); background: var(--ac-primary-60); border: var(--ac-border-thin) solid var(--ac-primary-200); border-left: var(--ac-border-rail) solid var(--ac-blue); border-radius: var(--ac-radius); }
+.ac-ovr { display: inline-flex; flex-wrap: wrap; align-items: center; gap: 6px; margin-inline-start: 8px; font-size: var(--ac-font-size-sm); vertical-align: middle; }
 .ac-ovr-field { display: flex; flex-wrap: wrap; align-items: center; gap: 4px; }
-.ac-ovr-chip { padding: 1px 9px; font-weight: 700; color: #003d6b; background: #e3eef7; border: 1px solid #b9d3e8; border-radius: 12px; cursor: help; }
-.ac-ovr[data-state='overridden'] .ac-ovr-chip { color: #7a3300; background: #fbeae0; border-color: #e8c0a0; }
-.ac-section .ac-ovr-btn { padding: 1px 8px; font-size: 11px; line-height: 1.5; }
+.ac-ovr-chip { padding: 1px 9px; font-weight: var(--ac-font-weight-bold); color: var(--ac-primary-925); background: var(--ac-primary-100); border: var(--ac-border-thin) solid var(--ac-primary-250); border-radius: var(--ac-radius-2xl); cursor: help; }
+.ac-ovr[data-state='overridden'] .ac-ovr-chip { color: var(--ac-warning-825); background: var(--ac-warning-75); border-color: var(--ac-warning-275); }
+.ac-section .ac-ovr-btn { padding: 1px 8px; font-size: var(--ac-font-size-sm); line-height: var(--ac-leading-cozy); }
 
 .ac-section .ac-pf-actions { display: flex; flex-wrap: wrap; gap: 4px; }
-.ac-section .ac-pf-actions button { padding: 2px 8px; font-size: 11px; }
-.ac-section .ac-pf-table tr.is-active td:first-child { box-shadow: inset 4px 0 0 var(--ac-blue); }
+.ac-section .ac-pf-actions button { padding: 2px 8px; font-size: var(--ac-font-size-sm); }
+.ac-section .ac-pf-table tr.is-active td:first-child { box-shadow: var(--ac-shadow-rail); }
 .ac-section .ac-pf-table tr.is-archived td { color: var(--ac-muted); }
 .ac-section .ac-pf-table input[type='text'] { width: 100%; min-width: 9rem; }
 .ac-section .ac-pf-note { margin: 0 0 1rem; }
@@ -22,27 +22,27 @@
 
 /* Wave board (P4): columns = waves, cards = products (the legacy .ac-card look). */
 .ac-section .ac-wave-board { display: grid; grid-auto-flow: column; grid-auto-columns: minmax(250px, 1fr); gap: 12px; margin-bottom: 1.5rem; overflow-x: auto; padding-bottom: 6px; }
-.ac-section .ac-wave-col { min-width: 0; padding: 10px; background: #f7f9fd; border: 1px solid #cadcfc; border-radius: 12px; }
-.ac-section .ac-wave-col[data-dragging] { outline: 2px dashed var(--ac-blue); outline-offset: -3px; }
-.ac-section .ac-wave-title { display: block; margin: 0 0 6px; font-size: 14px; }
-.ac-section .ac-wave-ctrl { display: flex; flex-direction: column; gap: 6px; font-size: 12px; }
-.ac-section .ac-wave-ctrl input[type='text'] { width: 100%; font-weight: 700; }
-.ac-section .ac-wave-totals { margin: 6px 0; font-size: 11.5px; }
+.ac-section .ac-wave-col { min-width: 0; padding: 10px; background: var(--ac-slate-40); border: var(--ac-border-thin) solid var(--ac-primary-200); border-radius: var(--ac-radius-2xl); }
+.ac-section .ac-wave-col[data-dragging] { outline: var(--ac-border-thick) dashed var(--ac-blue); outline-offset: -3px; }
+.ac-section .ac-wave-title { display: block; margin: 0 0 6px; font-size: var(--ac-font-size-lg); }
+.ac-section .ac-wave-ctrl { display: flex; flex-direction: column; gap: 6px; font-size: var(--ac-font-size-md); }
+.ac-section .ac-wave-ctrl input[type='text'] { width: 100%; font-weight: var(--ac-font-weight-bold); }
+.ac-section .ac-wave-totals { margin: 6px 0; font-size: var(--ac-font-size-sm-plus); }
 .ac-section .ac-wave-cards { display: flex; flex-direction: column; gap: 8px; margin: 0; padding: 0; list-style: none; min-height: 40px; }
-.ac-section .ac-wave-card { margin: 0; padding: 10px 12px; font-size: 12.5px; border-radius: 10px; cursor: grab; border-left: 4px solid var(--ac-blue); }
+.ac-section .ac-wave-card { margin: 0; padding: 10px 12px; font-size: var(--ac-font-size-md-plus); border-radius: var(--ac-radius-xl); cursor: grab; border-left: var(--ac-border-rail) solid var(--ac-blue); }
 .ac-section .ac-wave-card.is-archived { opacity: .6; }
-.ac-section .ac-wave-card:focus-visible { outline: 2px solid var(--ac-blue); outline-offset: 2px; }
-.ac-section .ac-wave-card select, .ac-section .ac-wave-offset { display: block; margin-top: 6px; font-size: 11.5px; }
-.ac-section .ac-wave-empty { padding: 8px; font-size: 12px; border: 1px dashed #b9c7e6; border-radius: 8px; }
+.ac-section .ac-wave-card:focus-visible { outline: var(--ac-border-thick) solid var(--ac-blue); outline-offset: 2px; }
+.ac-section .ac-wave-card select, .ac-section .ac-wave-offset { display: block; margin-top: 6px; font-size: var(--ac-font-size-sm-plus); }
+.ac-section .ac-wave-empty { padding: 8px; font-size: var(--ac-font-size-md); border: var(--ac-border-thin) dashed var(--ac-primary-275); border-radius: var(--ac-radius-lg); }
 .ac-section .ac-link { padding: 0; font: inherit; color: var(--ac-blue); text-decoration: underline; background: none; border: 0; cursor: pointer; }
 
 /* Consolidation (P4) */
 .ac-section .ac-cons-table td, .ac-section .ac-cons-table th[scope='row'] { white-space: nowrap; }
-.ac-section .ac-cons-table tfoot th, .ac-section .ac-cons-table tfoot td { font-weight: 700; border-top: 2px solid var(--ac-blue); }
+.ac-section .ac-cons-table tfoot th, .ac-section .ac-cons-table tfoot td { font-weight: var(--ac-font-weight-bold); border-top: var(--ac-border-thick) solid var(--ac-blue); }
 .ac-scopesel select { max-width: 16rem; }
 
 /* Portfolio Gantt (P4) */
-.ac-section .ac-gantt-wave:focus-visible, .ac-section .ac-gantt-prod:focus-visible { outline: 2px solid var(--ac-blue); outline-offset: 1px; }
+.ac-section .ac-gantt-wave:focus-visible, .ac-section .ac-gantt-prod:focus-visible { outline: var(--ac-border-thick) solid var(--ac-blue); outline-offset: 1px; }
 /* "Editing: <product>" next to the View selector sits on the dark header gradient: white, as legible as the selector itself (the muted token is unreadable there). */
-.ac-top .ac-editing { color: #fff; font-size: 12px; font-weight: 400; opacity: 1; white-space: nowrap; padding: 2px 8px; border: 1px solid rgba(255, 255, 255, .45); border-radius: 5px; background: rgba(255, 255, 255, .12); }
-.ac-top .ac-editing strong { font-weight: 700; }
+.ac-top .ac-editing { color: var(--ac-neutral-0); font-size: var(--ac-font-size-md); font-weight: var(--ac-font-weight-regular); opacity: 1; white-space: nowrap; padding: 2px 8px; border: var(--ac-border-thin) solid var(--ac-neutral-0-a45); border-radius: var(--ac-radius-sm-plus); background: var(--ac-neutral-0-a12); }
+.ac-top .ac-editing strong { font-weight: var(--ac-font-weight-bold); }

@@ -5,6 +5,7 @@ import { verificationTaxRate, sddMaturity, vtaxAvgHuman } from '../model/vtax';
 import { activeArtefacts } from '../scope';
 import { maturityInfo } from './maturity';
 import { endYear, endYearRow, modelOf } from './memo';
+import { tok } from '../theme';
 
 /** EV-15 eligibility gate: six prerequisites, the first four critical. */
 export const ELIG_PREREQS: { id: string; label: string; critical: boolean }[] = [
@@ -36,9 +37,9 @@ export function eligVerdict(c: Ctx): EligVerdict {
   return { verdict: unmetCrit > 0 ? 'no-go' : partial > 0 ? 'conditional' : 'go', unmetCrit, partial, notes };
 }
 export const VERDICT_VIEW = {
-  go: { color: '#006e79', text: 'GO — eligible' },
-  conditional: { color: '#b04600', text: 'CONDITIONAL — eligible per task, close the gaps' },
-  'no-go': { color: '#8F3237', text: 'NO-GO — not globally eligible' },
+  go: { get color() { return tok('teal-700'); }, text: 'GO — eligible' },
+  conditional: { get color() { return tok('warning-600'); }, text: 'CONDITIONAL — eligible per task, close the gaps' },
+  'no-go': { get color() { return tok('danger-800'); }, text: 'NO-GO — not globally eligible' },
 };
 
 /** EV-13 product profiles (one source of truth: the lifecycle position anchor) and the 12 phases of the potential matrix. */
@@ -62,7 +63,7 @@ export function profileCoef(c: Ctx, profile: string, phase: string): number {
   return st?.weights?.[phase] ?? 1.0;
 }
 export const leverWord = (x: number): string => (x >= 0.85 ? 'Strong' : x >= 0.6 ? 'Medium' : x > 0 ? 'Cautious' : 'n/a');
-export const leverColor = (x: number): string => (x >= 0.85 ? '#006e79' : x >= 0.6 ? '#b04600' : x > 0 ? '#8F3237' : '#636363');
+export const leverColor = (x: number): string => (x >= 0.85 ? tok('teal-700') : x >= 0.6 ? tok('warning-600') : x > 0 ? tok('danger-800') : tok('neutral-700'));
 
 /** EV-27 Abaque A (addressable effort reduction per activity, [min,max] %) and Abaque B (share captured per maturity level). */
 const ABAQUE_A: Record<string, [number, number]> = { plan: [5, 20], design: [20, 40], coding: [30, 60], buildint: [20, 40], test: [30, 70], deploy: [10, 30], operate: [20, 40], xcut: [10, 30] };

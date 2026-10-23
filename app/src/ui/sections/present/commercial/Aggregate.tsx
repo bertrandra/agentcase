@@ -8,13 +8,14 @@ import { ProductDrill } from '@/ui/widgets/ProductDrill';
 import { SectionFrame } from '@/ui/zones/SectionFrame';
 import { ExcludedNote } from '../../economics/AggParts';
 import CommercialSection from './index';
+import { tok } from '@/domain/theme';
 
 const help = (
   <p>How the value created is sold, product by product: the commercial model each planned product of the <strong>selection</strong> has selected, its revenue, margin and client saving over its own horizon, and the model the
     engagement context recommends. The gain share is not linear, so nothing is derived from a summed input: the total line adds up the contracts of the products.</p>
 );
 const R = 'right' as const;
-const tone = (x: number) => ({ color: x >= 0 ? '#006e79' : '#8F3237' });
+const tone = (x: number) => ({ color: x >= 0 ? tok('teal-700') : tok('danger-800') });
 
 /** Commercial model — aggregate view (R-rollup): the selected model, revenue, margin and client saving of each product, the roll-up of the contracts, and the full section per product. */
 export default function CommercialAggregate() {

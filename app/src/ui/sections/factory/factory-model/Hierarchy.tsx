@@ -32,7 +32,7 @@ export function Hierarchy() {
           cols={[{ kind: 'text', header: 'Name', field: 'name' }, { kind: 'link', header: 'Epic', field: 'epicId', options: nameOptions(epics) },
             { kind: 'custom', header: 'SDLC phases', render: (f) => (
               <span>{PHASES.map((p) => (
-                <label key={p.id} className="ac-check" style={{ display: 'inline-flex', gap: 2, marginRight: 6, fontSize: 10.5 }}>
+                <label key={p.id} className="ac-check" style={{ display: 'inline-flex', gap: 2, marginRight: 6, fontSize: 'var(--ac-font-size-xs-plus)' }}>
                   <input type="checkbox" aria-label={`Link ${label(f)} to phase ${p.id}`} checked={(phases.find((x) => x.id === p.id)?.featureIds ?? []).includes(f.id)} onChange={(e) => togglePhaseFeature(f.id, p.id, e.target.checked)} />{p.id}
                 </label>))}</span>) }]} />
       </Panel>

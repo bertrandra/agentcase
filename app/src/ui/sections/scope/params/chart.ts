@@ -1,7 +1,8 @@
+import { tok } from '@/domain/theme';
 /** Geometry and right-edge tags of the "Automation over time" chart (legacy renderAutomationCurve). */
 export const W = 920, H = 340;
 export const M = { l: 52, r: 120, t: 22, b: 34 };
-export const COL = { real: '#006e79', gap: '#0a6e9c', ceil: '#b04600', manual: '#566074', pot: '#0058AB', human: '#71609E', manln: '#5a6785', vfte: '#2E9E5B' };
+export const COL = { get real() { return tok('teal-700'); }, get gap() { return tok('info-700'); }, get ceil() { return tok('warning-600'); }, get manual() { return tok('slate-700'); }, get pot() { return tok('primary-700'); }, get human() { return tok('secondary-600'); }, get manln() { return tok('slate-650'); }, get vfte() { return tok('success-510'); } };
 const iw = W - M.l - M.r, ih = H - M.t - M.b;
 
 export const geoOf = (N: number) => ({

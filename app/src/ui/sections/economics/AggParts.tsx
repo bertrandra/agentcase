@@ -3,8 +3,9 @@ import type { ChartConfiguration } from 'chart.js';
 import { tickK } from '@/ui/economicsFormat';
 import { Callout } from '@/ui/widgets/cards';
 import { ChartPanel } from '@/ui/widgets/ChartPanel';
+import { tok, themedList } from '@/domain/theme';
 
-const COLORS = ['rgba(30,39,97,.8)', 'rgba(99,153,34,.8)', 'rgba(186,117,23,.8)', 'rgba(108,92,231,.7)', 'rgba(0,110,121,.7)'];
+const COLORS = themedList(['primary-950-a80', 'success-500-a80', 'warning-500-a80', 'secondary-575-a70', 'teal-700-a70']);
 
 /** What the figures of an aggregate view leave out (products with no wave, or archived): the same note on every result section. */
 export function ExcludedNote({ excluded }: { excluded: { name: string; archived: boolean }[] }) {
@@ -19,7 +20,7 @@ export function Bars({ labels, series, label, stacked = true, line, yTitle = 'â‚
     type: 'bar',
     data: { labels, datasets: [
       ...series.map((s, i) => ({ type: 'bar' as const, label: s.label, data: s.data, backgroundColor: COLORS[i % COLORS.length], yAxisID: 'y' })),
-      ...(line ? [{ type: 'line' as const, label: line.label, data: line.data, borderColor: '#0058AB', borderWidth: 3, pointRadius: 0, tension: 0.2, yAxisID: 'y' }] : []),
+      ...(line ? [{ type: 'line' as const, label: line.label, data: line.data, borderColor: tok('primary-700'), borderWidth: 3, pointRadius: 0, tension: 0.2, yAxisID: 'y' }] : []),
     ] },
     options: { plugins: { legend: { position: 'top' } }, scales: { x: { stacked, ticks: { maxTicksLimit: 20 } }, y: { stacked, title: { display: true, text: yTitle }, ticks: { callback: tickK } } } },
   }), [labels, series, line, stacked, yTitle]);

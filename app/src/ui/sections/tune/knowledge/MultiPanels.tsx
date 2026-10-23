@@ -48,7 +48,7 @@ function LeadField() {
           hint="0 = the KT setup cost falls at the start of the product" />
       </div>
       <p className="ac-muted">With k months, only the setup cost of the transfer (ingestion, initial curation) is placed k months before the product starts: the next wave is prepared during the current one. Benefits still start from month 0.</p>
-      {error && <p role="alert" style={{ color: '#8F3237' }}>{error}</p>}
+      {error && <p role="alert" style={{ color: 'var(--ac-danger-800)' }}>{error}</p>}
       {clamp && <Callout kind="warn">{clamp.message}</Callout>}
     </Panel>
   );

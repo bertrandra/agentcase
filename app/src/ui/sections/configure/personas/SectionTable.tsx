@@ -7,7 +7,7 @@ import { groupColor, useNavModel } from '@/ui/zones/navModel';
 import { SectionDetail, usersOf } from './SectionDetail';
 
 const TAGS = ['drives', 'shapes', 'reads', 'supports'];
-const TAG_COLOR: Record<string, string> = { drives: '#8F3237', shapes: '#A84400', reads: '#0058AB', supports: '#71609E' };
+const TAG_COLOR: Record<string, string> = { drives: 'var(--ac-danger-800)', shapes: 'var(--ac-warning-610)', reads: 'var(--ac-primary-700)', supports: 'var(--ac-secondary-600)' };
 
 /**
  * Legacy "📄 Sections (group & order)" table, for one menu structure: every section in app order with its group and group order (of that structure),
@@ -30,7 +30,7 @@ export function SectionTable({ structure }: { structure: string }) {
         <thead><tr><th>Section ref</th><th>Group</th><th>Group Seq</th><th>Tag</th><th>MVP</th><th>Description</th><th>Personas using it</th></tr></thead>
         <tbody>
           {rows.map((s) => {
-            const gc = groupColor(colors, s.group), tc = s.tag ? TAG_COLOR[s.tag] ?? '#555555' : '#636363';
+            const gc = groupColor(colors, s.group), tc = s.tag ? TAG_COLOR[s.tag] ?? 'var(--ac-neutral-750)' : 'var(--ac-neutral-700)';
             return (
               <tr key={s.id} className={sel === s.id ? 'is-selected' : undefined}>
                 <td><button type="button" className="ac-link" aria-pressed={sel === s.id} title="Show this section's details and live preview" onClick={() => setSel(s.id)}><strong>{s.label}</strong></button> <code style={{ fontSize: 10 }}>{s.id}</code></td>

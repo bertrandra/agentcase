@@ -1,8 +1,9 @@
 import { textColor } from '@/ui/colorText';
 import { fmtE, fmtPayback, fmtSigned, paybackShown, roiText, type Scenario } from '@/domain/stress';
 import { DataTable, type Column } from '@/ui/widgets/DataTable';
+import { tok } from '@/domain/theme';
 
-const name = (s: Scenario) => <strong style={{ color: textColor(s.color, '#f5f6f8') }}>{s.label}</strong>;
+const name = (s: Scenario) => <strong style={{ color: textColor(s.color, tok('slate-60')) }}>{s.label}</strong>;
 const money = (v: number) => fmtE(v);
 
 /** Annual run cost by scenario: baseline, each year of the horizon, the horizon total and the saving vs AS-IS. */
@@ -14,7 +15,7 @@ export function CostTable({ S }: { S: Scenario[] }) {
     ...Array.from({ length: H }, (_, i): Column<Scenario> => ({ key: `y${i}`, header: `Year ${i + 1} (€)`, align: 'right', render: (s) => money(s.m.yearRun[i] as number) })),
     { key: 'run', header: `${H}-yr run (€)`, align: 'right', render: (s) => money(s.m.yearRun.reduce((a, b) => a + b, 0)) },
     { key: 'sav', header: `${H}-yr savings (€)`, align: 'right',
-      render: (s) => (s.key === 'asis' ? <span className="ac-muted">—</span> : <span style={{ color: s.m.totBen >= 0 ? 'var(--ac-teal)' : 'var(--ac-brick)', fontWeight: 600 }}>{fmtSigned(s.m.totBen)}</span>) },
+      render: (s) => (s.key === 'asis' ? <span className="ac-muted">—</span> : <span style={{ color: s.m.totBen >= 0 ? 'var(--ac-teal)' : 'var(--ac-brick)', fontWeight: 'var(--ac-font-weight-semibold)' }}>{fmtSigned(s.m.totBen)}</span>) },
   ];
   return <DataTable columns={cols} rows={S} rowKey={(s) => s.key} caption="Annual run cost by scenario" />;
 }

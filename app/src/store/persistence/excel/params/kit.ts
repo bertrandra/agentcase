@@ -1,21 +1,22 @@
 /** @calc-zone exports */
 import type * as XL from 'exceljs';
+import { argb } from '@/domain/theme';
 
 /** Cell styling and data validation of the legacy workbook (navy header, blue = editable input, grey = reference). */
-const NAVY = 'FF1E2761';
-const T = { style: 'thin' as const, color: { argb: 'FFD9D9D9' } };
+const NAVY = (): string => argb('excel-head-bg');
+const T = { style: 'thin' as const, color: { get argb() { return argb('excel-border'); } } };
 const BD = { top: T, left: T, bottom: T, right: T };
 
 export const head = (ws: XL.Worksheet): void => {
   ws.getRow(1).eachCell((c) => {
-    c.fill = { type: 'pattern', pattern: 'solid', fgColor: { argb: NAVY } };
-    c.font = { bold: true, color: { argb: 'FFFFFFFF' }, size: 11 };
+    c.fill = { type: 'pattern', pattern: 'solid', fgColor: { argb: NAVY() } };
+    c.font = { bold: true, color: { argb: argb('excel-head-text') }, size: 11 };
     c.alignment = { horizontal: 'center' }; c.border = BD;
   });
 };
-export const blue = (c: XL.Cell): void => { c.font = { color: { argb: 'FF1F5F9A' }, size: 11 }; c.alignment = { horizontal: 'center' }; c.border = BD; };
-export const grey = (c: XL.Cell): void => { c.font = { color: { argb: 'FF808080' }, size: 11 }; c.alignment = { horizontal: 'center' }; };
-export const note = (c: XL.Cell): void => { c.font = { color: { argb: 'FF808080' }, size: 11 }; };
+export const blue = (c: XL.Cell): void => { c.font = { color: { argb: argb('excel-input') }, size: 11 }; c.alignment = { horizontal: 'center' }; c.border = BD; };
+export const grey = (c: XL.Cell): void => { c.font = { color: { argb: argb('excel-note') }, size: 11 }; c.alignment = { horizontal: 'center' }; };
+export const note = (c: XL.Cell): void => { c.font = { color: { argb: argb('excel-note') }, size: 11 }; };
 export const frz = (ws: XL.Worksheet): void => { ws.views = [{ state: 'frozen', ySplit: 1 }]; };
 
 const base = { allowBlank: true, showErrorMessage: true, errorStyle: 'error', showInputMessage: true } as const;

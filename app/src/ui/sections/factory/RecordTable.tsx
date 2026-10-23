@@ -22,7 +22,7 @@ export function RecordTable({ coll, rows, cols, noun, empty, addLabel, label, ca
     const aria = `${c.header} of ${label(r)}`;
     if (c.kind === 'text') return <input type="text" aria-label={aria} placeholder={c.placeholder} style={{ width: '100%' }} value={String(r[c.field] ?? '')} onChange={(e) => setField(coll, r.id, c.field, e.target.value)} />;
     if (c.kind === 'choice') return (
-      <select aria-label={aria} value={String(r[c.field] ?? '')} style={{ width: '100%', color: c.tone?.[String(r[c.field])], fontWeight: c.tone ? 700 : undefined }} onChange={(e) => setField(coll, r.id, c.field, e.target.value)}>
+      <select aria-label={aria} value={String(r[c.field] ?? '')} style={{ width: '100%', color: c.tone?.[String(r[c.field])], fontWeight: c.tone ? 'var(--ac-font-weight-bold)' : undefined }} onChange={(e) => setField(coll, r.id, c.field, e.target.value)}>
         {c.options.map((o) => <option key={o} value={o}>{o}</option>)}
       </select>
     );

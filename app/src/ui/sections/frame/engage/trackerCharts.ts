@@ -1,12 +1,13 @@
 import type { ChartConfiguration } from 'chart.js';
 import type { PlannedQuarter, TrackActual } from '@/domain/frame';
+import { tok } from '@/domain/theme';
 
 type Actuals = Record<string, TrackActual | undefined>;
 const line = (labels: string[], plan: number[], actual: (number | null)[], planLabel: string, actualLabel: string, yTitle: string, max?: number): ChartConfiguration => ({
   type: 'line',
   data: { labels, datasets: [
-    { label: planLabel, data: plan, borderColor: '#0a6e9c', backgroundColor: 'rgba(55,138,221,.12)', fill: true, tension: 0.25, pointRadius: 3 },
-    { label: actualLabel, data: actual, borderColor: '#006e79', backgroundColor: 'transparent', borderWidth: 2, spanGaps: true, pointRadius: 4 },
+    { label: planLabel, data: plan, get borderColor() { return tok('info-700'); }, get backgroundColor() { return tok('primary-500-a12'); }, fill: true, tension: 0.25, pointRadius: 3 },
+    { label: actualLabel, data: actual, get borderColor() { return tok('teal-700'); }, backgroundColor: 'transparent', borderWidth: 2, spanGaps: true, pointRadius: 4 },
   ] },
   options: { plugins: { legend: { position: 'bottom' } }, scales: { y: { min: max === undefined ? undefined : 0, max, title: { display: true, text: yTitle } } } },
 });

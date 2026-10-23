@@ -7,8 +7,9 @@ import { spanDates } from './ganttEdit';
 import { groupLayout,seqKey, type LayoutItem, type Placed } from './ganttLayout';
 import { ganttAxis, ganttNum, milestoneMarkers, programRows, type Axis, type Marker, type ProgramRow } from './ganttProgram';
 import { activePhaseIds, phasesWithSeq } from './phases';
+import { tok, themedList } from '../theme';
 
-const PAL = ['#0058AB', '#006e79', '#0a6e9c', '#71609E', '#b04600', '#8F3237', '#006e79', '#006e79', '#b04600', '#71609E', '#5a6785'];
+const PAL = themedList(['primary-700', 'teal-700', 'info-700', 'secondary-600', 'warning-600', 'danger-800', 'teal-700', 'teal-700', 'warning-600', 'secondary-600', 'slate-650']);
 const isCross = (a: WArtefact) => CROSS_CODES.includes(a.industry ?? '') || a.phase === 'Cross-cutting';
 const monLabel = (n: number): string => `${n >= 10 ? Math.round(n) : n.toFixed(1)} mo`;
 
@@ -71,7 +72,7 @@ export function ganttView(c: Ctx): GanttView {
     color: PAL[i % PAL.length]!, arts: artRows(ax, x.arts, lam, win[x.id]!),
   }));
   if (cross.length) phases.push({ ...spanOf(ax, win['Cross-cutting']!, cw.sf), key: '__cross__', name: '🔶 Cross-cutting', count: cross.length, last: lastId === 'Cross-cutting', cross: true,
-    meta: meta('Cross-cutting', cw.sf, 'AI · Sustainability · Usability · '), color: '#b04600', arts: artRows(ax, cross, lam, win['Cross-cutting']!) });
+    meta: meta('Cross-cutting', cw.sf, 'AI · Sustainability · Usability · '), color: tok('warning-600'), arts: artRows(ax, cross, lam, win['Cross-cutting']!) });
 
   return {
     axis: ax, phaseCount: ordered.length, velocityGain: vAt(1), overlap, crossSeq, hasCross: cross.length > 0, markers: milestoneMarkers(c, ax), phases,

@@ -1,3 +1,4 @@
+import { tok } from '@/domain/theme';
 /** SVG geometry of the adoption-curve editor (legacy renderScurveMaturity): month 1..N on x, adoption 0..100 % on y. */
 export const W = 920, H = 340;
 export const M = { l: 52, r: 16, t: 24, b: 34 };
@@ -12,7 +13,7 @@ export const geoOf = (N: number): Geo => ({
   invY: (py) => (1 - (py - M.t) / ih) * 100,
 });
 
-export const LEVEL_COLOR: Record<string, string> = { L1: '#566074', L2: '#0a6e9c', L3: '#006e79', L4: '#0058AB' };
+export const LEVEL_COLOR: Record<string, string> = { get L1() { return tok('slate-700'); }, get L2() { return tok('info-700'); }, get L3() { return tok('teal-700'); }, get L4() { return tok('primary-700'); } };
 /** Fixed adoption bands drawn behind the curve. */
 export const BANDS: [number, number, string][] = [[0, 25, 'L1'], [25, 55, 'L2'], [55, 80, 'L3'], [80, 100, 'L4']];
 export const GRID = [0, 25, 55, 80, 100];

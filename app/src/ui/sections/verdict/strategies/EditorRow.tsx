@@ -29,7 +29,7 @@ export function EditorRow({ S, D }: { S: StrategyDef; D: StrategyDef | undefined
           <option value="inherit">Inherit current</option><option value="asis">AS-IS mix</option><option value="custom">Custom split</option></select></td>
       </tr>
       {split && (
-        <tr style={{ background: '#fbfcfe' }}><td className="ac-muted">↳ Geo split (%)</td>
+        <tr style={{ background: 'var(--ac-slate-25)' }}><td className="ac-muted">↳ Geo split (%)</td>
           <td colSpan={10}><div className="ac-form-row">
             {LOCATIONS.map((l) => (
               <label key={l.name} className="ac-check">{l.name} <input type="number" min={0} max={100} step={5} aria-label={`${l.name} share of ${S.label}`} value={split[l.name] || 0}

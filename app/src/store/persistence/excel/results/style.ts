@@ -1,6 +1,7 @@
 /** @calc-zone exports */
 import type { Workbook, Worksheet } from 'exceljs';
 import type { ImageKey, SheetImages } from './data';
+import { argb } from '@/domain/theme';
 
 /** Legacy rounding of every money figure. */
 export const r0 = (x: number): number => Math.round(x);
@@ -10,8 +11,8 @@ export const f1 = (x: number): number => +x.toFixed(1);
 /** Navy bold-white header row, 22-wide columns (legacy head()). */
 export function head(ws: Worksheet): void {
   ws.getRow(1).eachCell((c) => {
-    c.font = { bold: true, color: { argb: 'FFFFFFFF' } };
-    c.fill = { type: 'pattern', pattern: 'solid', fgColor: { argb: 'FF1E2761' } };
+    c.font = { bold: true, color: { argb: argb('excel-head-text') } };
+    c.fill = { type: 'pattern', pattern: 'solid', fgColor: { argb: argb('excel-head-bg') } };
     c.alignment = { horizontal: 'left' };
   });
   ws.columns.forEach((col) => { col.width = 22; });

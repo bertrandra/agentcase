@@ -2,9 +2,10 @@ import type { Epic, Feature, Portfolio, Story, Vision } from '@/domain/factory/t
 import { useDoc } from '@/store/hooks';
 import { Panel } from '@/ui/widgets/cards';
 import { useList } from '../data';
+import { tok } from '@/domain/theme';
 
 const plural = (n: number, one: string, many: string) => `${n} ${n === 1 ? one : many}`;
-const box = (color: string, left: number) => ({ marginLeft: left, padding: '3px 8px', borderLeft: `${left ? 2 : 3}px solid ${color}`, fontSize: 12 });
+const box = (color: string, left: number) => ({ marginLeft: left, padding: '3px 8px', borderLeft: `${left ? 2 : 3}px solid ${color}`, fontSize: 'var(--ac-font-size-md)' });
 
 /** Vision → Portfolio → Epic → Feature → Story as a structure (these records carry no dates, so this is a hierarchy, not a calendar). */
 export function BusinessChain() {
@@ -22,7 +23,7 @@ export function BusinessChain() {
               return (
                 <div key={e.id} style={box('var(--ac-teal)', 12)}>🧩 <strong>{e.name}</strong> <span className="ac-muted">({plural(fs.length, 'feature', 'features')})</span>
                   {fs.map((f) => (
-                    <div key={f.id} style={box('#71609E', 24)}>⭐ <strong>{f.name}</strong> <span className="ac-muted">({plural(stories.filter((s) => s.featureId === f.id).length, 'story', 'stories')})</span></div>
+                    <div key={f.id} style={box(tok('secondary-600'), 24)}>⭐ <strong>{f.name}</strong> <span className="ac-muted">({plural(stories.filter((s) => s.featureId === f.id).length, 'story', 'stories')})</span></div>
                   ))}
                 </div>
               );

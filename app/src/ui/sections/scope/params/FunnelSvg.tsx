@@ -1,6 +1,7 @@
 import { FUNNEL_EPS, type FunnelStage } from '@/domain/scope/automation';
+import { tok } from '@/domain/theme';
 
-const COL = { pot: '#0058AB', ceil: '#b04600', mix: '#566074', gap: '#0a6e9c', sup: '#8F3237', real: '#006e79' };
+const COL = { get pot() { return tok('primary-700'); }, get ceil() { return tok('warning-600'); }, get mix() { return tok('slate-700'); }, get gap() { return tok('info-700'); }, get sup() { return tok('danger-800'); }, get real() { return tok('teal-700'); } };
 export interface Active { ceiling: boolean; mix: boolean; ramp: boolean; sup: boolean }
 interface Band { v: number; t: string; s: string; c: string; fin?: boolean }
 
@@ -28,10 +29,10 @@ export function FunnelSvg({ S, A }: { S: FunnelStage; A: Active }) {
         return (
           <g key={b.t}>
             <path d={`M${CX - wT} ${yT} L${CX + wT} ${yT} L${CX + wB} ${yB} L${CX - wB} ${yB} Z`} fill={b.c} opacity={b.fin ? 1 : 0.92} />
-            <text x={CX} y={yT + 22} textAnchor="middle" style={{ fill: '#fff', fontSize: 13, fontWeight: 600 }}>{b.t}</text>
-            <text x={CX} y={yT + 39} textAnchor="middle" style={{ fill: '#ffffffcc', fontSize: 10.5 }}>{b.s}</text>
-            <text x={726} y={yT + 29} textAnchor="end" style={{ fill: b.c, fontSize: 15, fontWeight: 700 }}>{b.v.toFixed(1)}%</text>
-            <text x={908} y={yT + 29} textAnchor="end" style={{ fill: loss > FUNNEL_EPS ? '#b04600' : '#c8ccd4', fontSize: 12.5 }}>{loss > FUNNEL_EPS ? `−${loss.toFixed(1)} pts` : '—'}</text>
+            <text x={CX} y={yT + 22} textAnchor="middle" style={{ fill: 'var(--ac-neutral-0)', fontSize: 'var(--ac-font-size-base)', fontWeight: 'var(--ac-font-weight-semibold)' }}>{b.t}</text>
+            <text x={CX} y={yT + 39} textAnchor="middle" style={{ fill: 'var(--ac-neutral-0-a80)', fontSize: 'var(--ac-font-size-xs-plus)' }}>{b.s}</text>
+            <text x={726} y={yT + 29} textAnchor="end" style={{ fill: b.c, fontSize: 'var(--ac-font-size-xl)', fontWeight: 'var(--ac-font-weight-bold)' }}>{b.v.toFixed(1)}%</text>
+            <text x={908} y={yT + 29} textAnchor="end" style={{ fill: loss > FUNNEL_EPS ? 'var(--ac-warning-600)' : 'var(--ac-slate-250)', fontSize: 'var(--ac-font-size-md-plus)' }}>{loss > FUNNEL_EPS ? `−${loss.toFixed(1)} pts` : '—'}</text>
           </g>
         );
       })}

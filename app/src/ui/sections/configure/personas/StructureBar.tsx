@@ -30,7 +30,7 @@ export function StructureBar({ value, onChange }: { value: string; onChange: (id
           <select value={cur.id} onChange={(e) => { onChange(e.target.value); setMode(null); }}>{m.structures.map((s) => <option key={s.id} value={s.id}>{s.label}{s.builtin ? ' (built-in)' : ''}</option>)}</select></label>
         {mode === 'new' ? <>{field(create)}<button type="button" className="ac-btn" onClick={create}>✓ Create</button><button type="button" className="ac-btn" onClick={() => setMode(null)}>Cancel</button></>
           : mode === 'rename' ? <>{field(rename)}<button type="button" className="ac-btn" onClick={rename}>✓ Save</button><button type="button" className="ac-btn" onClick={() => setMode(null)}>Cancel</button></>
-            : mode === 'delete' ? <><span style={{ color: '#8F3237' }}>Delete “{cur.label}”?</span><button type="button" className="ac-btn" onClick={() => { deleteStructure(cur.id); setMode(null); onChange(STANDARD_STRUCTURE); }}>✓ Confirm</button>
+            : mode === 'delete' ? <><span style={{ color: 'var(--ac-danger-800)' }}>Delete “{cur.label}”?</span><button type="button" className="ac-btn" onClick={() => { deleteStructure(cur.id); setMode(null); onChange(STANDARD_STRUCTURE); }}>✓ Confirm</button>
               <button type="button" className="ac-btn" onClick={() => setMode(null)}>Cancel</button></>
               : <>
                 <button type="button" className="ac-btn" title="Create a new structure that starts as a copy of this one" onClick={() => open('new')}>⎘ Duplicate structure</button>

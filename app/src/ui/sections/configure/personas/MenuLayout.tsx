@@ -20,7 +20,7 @@ export function MenuLayout({ structure }: { structure: string }) {
       <p className="ac-muted">Drag cards across groups, or use the arrows: ↑ ↓ reorder inside the group, ← → move to the previous / next group; ◀ ▶ move a group. Applies to every persona that navigates with this structure.</p>
       <Board label="Menu layout" cols={cols} colors={colors}
         onPending={setPending} cardClass={(s) => (s.mvp ? 'is-mvp' : '')}
-        cardExtra={(s) => (s.mvp || s.tag) && <small style={{ color: '#b04600' }}>{s.mvp ? 'MVP ' : ''}{s.tag ?? ''}</small>}
+        cardExtra={(s) => (s.mvp || s.tag) && <small style={{ color: 'var(--ac-warning-600)' }}>{s.mvp ? 'MVP ' : ''}{s.tag ?? ''}</small>}
         onDrop={(id, group, index) => placeSections(`Move ${label(id)} to ${groupLabel(group)}`, placeSection(sections, id, group, index), structure)}
         onShift={(id, dir) => placeSections(`Move ${label(id)} ${dir < 0 ? 'up' : 'down'}`, shiftSection(sections, id, dir), structure)}
         onShiftGroup={(id, dir) => placeSections(`Move ${label(id)} to the ${dir < 0 ? 'previous' : 'next'} group`, shiftToGroup(sections, groups, id, dir), structure)}

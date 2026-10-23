@@ -14,7 +14,7 @@ export function CapacityTable({ constrained }: { constrained: boolean }) {
     { key: 'raw', header: 'Tagent (raw vFTE)', align: 'center', render: (i) => (m.yearAgentVfteRaw[i] as number).toFixed(2) },
     { key: 'cap', header: 'S·Esup (cap)', align: 'center', render: (i) => (constrained ? ((sm.vMax[i] as number) === Infinity ? '∞' : (sm.vMax[i] as number).toFixed(2)) : '—') },
     { key: 'eff', header: 'Teff (achieved)', align: 'center', render: (i) => <strong>{(m.yearAgentVfte[i] as number).toFixed(2)}</strong> },
-    { key: 'u', header: 'Utilisation', align: 'center', render: (i) => { const u = util(i); return u == null ? '—' : <span style={u > 85 ? { color: 'var(--ac-brick)', fontWeight: 600 } : undefined}>{u.toFixed(0)}%</span>; } },
+    { key: 'u', header: 'Utilisation', align: 'center', render: (i) => { const u = util(i); return u == null ? '—' : <span style={u > 85 ? { color: 'var(--ac-brick)', fontWeight: 'var(--ac-font-weight-semibold)' } : undefined}>{u.toFixed(0)}%</span>; } },
     { key: 'e', header: 'Esup*', align: 'center', render: (i) => (m.yearRunAgenticETP[i] as number).toFixed(2) },
     { key: 'cs', header: 'Csup', align: 'center', render: (i) => fmtK(m.yearRunAgenticCost[i] as number) },
   ];

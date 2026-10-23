@@ -22,7 +22,7 @@ export function PhaseCard({ row, lifecycleOn, selected, selectedReg }: { row: Ph
         <input ref={box} type="checkbox" checked={row.state === 'all'} aria-label={`Phase ${row.phase.id}`} onChange={(e) => togglePhase(row.phase.id, e.target.checked)} />
         <span className="ac-grow"><strong>{row.phase.id}</strong> {row.phase.name}
           {row.reg.length > 0 && <small className="ac-reg"> · {row.regOn}/{row.reg.length} reg</small>}
-          {showLw && <small style={{ color: lw > 1 ? 'var(--ac-teal)' : 'var(--ac-brick)', fontWeight: 700 }} title="Product-status lifecycle weight"> ×{lw.toFixed(2)}</small>}</span>
+          {showLw && <small style={{ color: lw > 1 ? 'var(--ac-teal)' : 'var(--ac-brick)', fontWeight: 'var(--ac-font-weight-bold)' }} title="Product-status lifecycle weight"> ×{lw.toFixed(2)}</small>}</span>
         <small>seq</small><SeqInput value={row.phase.seq} label={`Ramp-up sequence of ${row.phase.id}`} onChange={(v) => setSeq('phase', row.phase.id, v)} />
         <small>{row.onCount}/{row.total}</small>
       </label>

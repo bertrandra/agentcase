@@ -6,6 +6,7 @@ import { PNEG_BRICK } from '../stress/pNeg';
 import type { McResult, McSens, McStats } from '../stress/simulate';
 import { decisionContext, type CtxLine } from './context';
 import { wave2RiskPremium } from './risk';
+import { tok } from '../theme';
 
 /** Decision thresholds (editable consulting benchmarks). */
 export const DI_THRESHOLDS = { strongPPos: 0.8, condPPos: 0.6, maxPNegForStrong: PNEG_BRICK, p10SetupMult: 0.5 };
@@ -46,7 +47,7 @@ export function decide(c: Ctx, run: Pick<McResult, 'stats' | 'sens'>): Decision 
 
 /** Display metadata of each verdict. */
 export const VERDICT_META: Record<Verdict, { color: string; bg: string; icon: string; label: string; sub: string; short: string }> = {
-  strong: { color: '#006e79', bg: '#F1F8E9', icon: '✅', label: 'RECOMMENDED', short: 'RECOMMENDED', sub: 'High confidence, contained downside' },
-  conditional: { color: '#b04600', bg: '#FFF5E8', icon: '⚠️', label: 'CONDITIONALLY VIABLE', short: 'CONDITIONALLY VIABLE', sub: 'Proceed only if the conditions below hold' },
-  defer: { color: '#8F3237', bg: '#FDECEA', icon: '⛔', label: 'DEFER — DE-RISK FIRST', short: 'DEFER — DE-RISK FIRST', sub: 'Confidence too low to commit' },
+  strong: { get color() { return tok('teal-700'); }, get bg() { return tok('success-50'); }, icon: '✅', label: 'RECOMMENDED', short: 'RECOMMENDED', sub: 'High confidence, contained downside' },
+  conditional: { get color() { return tok('warning-600'); }, get bg() { return tok('warning-55'); }, icon: '⚠️', label: 'CONDITIONALLY VIABLE', short: 'CONDITIONALLY VIABLE', sub: 'Proceed only if the conditions below hold' },
+  defer: { get color() { return tok('danger-800'); }, get bg() { return tok('danger-75'); }, icon: '⛔', label: 'DEFER — DE-RISK FIRST', short: 'DEFER — DE-RISK FIRST', sub: 'Confidence too low to commit' },
 };
