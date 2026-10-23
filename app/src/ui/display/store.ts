@@ -1,7 +1,8 @@
 import { useSyncExternalStore } from 'react';
 import { createStore } from 'zustand/vanilla';
 import { setDisplayTheme } from '@/domain/theme';
-import { DISPLAY_DEFAULT, displayTheme, type DisplaySpec } from '@/domain/theme/modes';
+import { displayFor } from '@/domain/theme/active';
+import { DISPLAY_DEFAULT, type DisplaySpec } from '@/domain/theme/modes';
 import { loadPrefs, resolveDisplay, savePrefs, type DisplayPrefs, type SystemPrefs } from './prefs';
 
 /**
@@ -23,7 +24,7 @@ export function displayAttributes(spec: DisplaySpec): Record<string, string | nu
   };
 }
 function apply(spec: DisplaySpec): void {
-  setDisplayTheme(displayTheme(spec));
+  setDisplayTheme(displayFor(spec));   // over the library theme in effect (T4/T5: domain/theme/active)
   const root = globalThis.document?.documentElement;
   if (root) for (const [k, v] of Object.entries(displayAttributes(spec))) { if (v == null) root.removeAttribute(k); else root.setAttribute(k, v); }
 }
@@ -48,3 +49,5 @@ export function initDisplay(win: Window | undefined = globalThis.window): void {
   for (const l of Object.values(lists)) l?.addEventListener?.('change', () => update(displayStore.getState().prefs, read()));
   update(loadPrefs(), read());
 }
+/** A theme switch (docs/THEME.md §8.2) re-mounts the section like a display change: canvases and `tok()` read-outs are rebuilt with the new values. */
+export function bumpDisplayVersion(): void { displayStore.setState({ version: displayStore.getState().version + 1 }); }
