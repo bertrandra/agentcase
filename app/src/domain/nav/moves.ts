@@ -64,3 +64,11 @@ export function shiftGroup(groups: MenuGroup[], id: string, dir: -1 | 1): Record
   const next = Object.fromEntries(ids.map((g, i) => [g, strict ? values[i]! : (i + 1) * STEP]));
   return Object.fromEntries(Object.entries(next).filter(([g, v]) => groups.find((x) => x.id === g)?.order !== v));
 }
+
+/** Respace ×10 Group Seq (legacy pmRespaceGroupSeq): in every group the sections get 10, 20, 30 … in their current order. Only changed ones. */
+export function respaceGroupSeq(sections: NavSection[], step = STEP): Placement[] {
+  const byGroup = new Map<string, NavSection[]>(), out: Placement[] = [];
+  sections.forEach((s) => byGroup.set(s.group, [...(byGroup.get(s.group) ?? []), s]));
+  byGroup.forEach((list, group) => [...list].sort(byGlobal).forEach((s, i) => { if ((s.groupSeq || 0) !== (i + 1) * step) out.push({ id: s.id, group, groupSeq: (i + 1) * step }); }));
+  return out;
+}

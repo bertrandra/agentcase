@@ -18,6 +18,6 @@
   *, *::before, *::after { animation-duration: .001ms !important; animation-iteration-count: 1 !important; transition-duration: .001ms !important; scroll-behavior: auto !important; }
 }
 @media (forced-colors: active) {
-  .ac-nav button.is-active, .ac-gnav .is-active, .ac-tabs button[aria-selected='true'] { outline: 2px solid Highlight; }
+  .ac-nav button.is-active, .ac-gnav .is-active, .ac-tabs button[aria-selected='true'], .ac-pills button[aria-selected='true'] { outline: 2px solid Highlight; }
   .ac-progress div { background: Highlight; }
 }

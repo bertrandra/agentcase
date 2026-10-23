@@ -36,6 +36,10 @@
 .ac-section .ac-tabs button { margin-bottom: -2px; padding: 9px 18px; font: inherit; font-size: 13px; font-weight: 600; line-height: normal; color: #667089; background: none; border: 0; border-bottom: 3px solid transparent; border-radius: 6px 6px 0 0; cursor: pointer; }
 .ac-section .ac-tabs button:hover { color: #0058AB; background: #f2f6fd; }
 .ac-section .ac-tabs button[aria-selected='true'] { color: #0058AB; background: none; border-bottom-color: #0058AB; }
+.ac-section .ac-pills { display: flex; flex-wrap: wrap; gap: 6px; margin: 1rem 0; }
+.ac-section .ac-pills button { padding: 6px 14px; font: inherit; font-size: 12.5px; font-weight: 600; line-height: normal; color: #556074; background: #f2f4f8; border: 1px solid #d7dced; border-radius: 16px; cursor: pointer; }
+.ac-section .ac-pills button:hover { color: #0058AB; border-color: #0058AB; }
+.ac-section .ac-pills button[aria-selected='true'] { color: #fff; background: #0058AB; border-color: #0058AB; }
 /* cards, metric tiles and the summary band (legacy .card, .summary-band > .sb-item) */
 .ac-section .ac-card { padding: 1.25rem; margin-bottom: 1.5rem; background: #fff; border: 1px solid #ddd; border-radius: 16px; }
 .ac-section .ac-stat-row { display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap: 12px; margin: 1.5rem 0; padding: 1.25rem; background: linear-gradient(135deg, #f0f4ff 0%, #f5f9ff 100%); border: 1px solid #cadcfc; border-radius: 8px; }

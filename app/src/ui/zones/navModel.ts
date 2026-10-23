@@ -16,8 +16,9 @@ const NO_COLORS: Record<string, string> = {}, NO_ORDER: PersonaOrder = {};
 /** A group colour reaches inline styles: only #rgb … #rrggbbaa is accepted (legacy groupColor). */
 export { groupColor } from '@/domain/nav/layout';
 
-/** One menu structure as the navigation shows it: its groups and colours, the sections it places (`all` keeps the Portfolio ones of a single case). */
-export interface StructureView { id: string; label: string; groups: MenuGroup[]; colors: Record<string, string>; sections: NavSection[]; all: NavSection[] }
+/** One menu structure as the navigation shows it: its groups and colours, the sections it places (`all` keeps the Portfolio ones of a single case).
+ *  `own` = the groups the structure itself stores (the navigation may add the Portfolio group to `groups`): what the group editor lists. */
+export interface StructureView { id: string; label: string; groups: MenuGroup[]; own: MenuGroup[]; colors: Record<string, string>; sections: NavSection[]; all: NavSection[] }
 
 /** Everything the navigation shows, read from the document: the static registry stays only as the default. Groups, colours and sections follow the
  *  active persona's menu structure; `view(id)` resolves any structure (Persona management edits the one it selects). */
@@ -42,7 +43,7 @@ export function useNavModel(): NavModel {
       const st = findStructure(id, stored), key = st?.id ?? STANDARD_STRUCTURE, hit = cache.get(key);
       if (hit) return hit;
       const all = st ? placeIn(base, st) : base, pf = withPortfolio(multi, all, st ? st.groups : stdGroups, allLists);
-      const v = { id: key, label: st?.label ?? STANDARD_LABEL, groups: pf.groups, colors: st ? st.colors : docColors, sections: pf.sections, all };
+      const v = { id: key, label: st?.label ?? STANDARD_LABEL, groups: pf.groups, own: st ? st.groups : stdGroups, colors: st ? st.colors : docColors, sections: pf.sections, all };
       cache.set(key, v);
       return v;
     };
