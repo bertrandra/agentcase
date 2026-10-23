@@ -17,7 +17,7 @@ export const RADIUS = {
 } satisfies Record<string, TokenSet>;
 
 /** Buttons follow the corner radius, or are pills. */
-export const BUTTONS = { shape: {}, pill: { 'radius-button': '999px' } } satisfies Record<string, TokenSet>;
+export const BUTTONS = { shape: {}, pill: { 'radius-button': '{radius-pill}' } } satisfies Record<string, TokenSet>;
 
 /** Border width of boxes, tables and rules; inputs keep a 1 px border when the boxes have none, so a field stays visible. */
 export const BORDER = {

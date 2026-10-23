@@ -1,38 +1,53 @@
-import type { ReactNode } from 'react';
 import { setChecked, setInput } from '@/controllers/inputs';
 import { useDoc } from '@/store/hooks';
+import { Field } from './field/Field';
+import { FieldChoice } from './field/FieldChoice';
+import { FieldNumber } from './field/FieldNumber';
+import { FieldToggle } from './field/FieldToggle';
 
-/** Labelled wrapper used by every form widget. */
-export function Field({ label, hint, children }: { label: string; hint?: string; children: ReactNode }) {
-  return <label className="ac-field"><span className="ac-field-l">{label}</span>{children}{hint && <span className="ac-field-h">{hint}</span>}</label>;
-}
+/**
+ * Form inputs of the case (legacy DOM input ids): read the document, write through the inputs controller (undoable, coalesced). Each renders as
+ * it always did; the controls axes of the theme (Field*, docs/THEME.md §6) may switch it to a variant that dispatches the same command.
+ */
+export { Field };
 
-/** A form input of the case (legacy DOM input id). Reads the document, writes through the inputs controller (undoable, coalesced). */
 export function NumberInput({ id, label, hint, min, max, step }: { id: string; label: string; hint?: string; min?: number; max?: number; step?: number }) {
   const value = useDoc((d) => d.dom.values[id] ?? '');
-  return <Field label={label} hint={hint}><input type="number" value={value} min={min} max={max} step={step} onChange={(e) => setInput(id, e.target.value)} /></Field>;
+  return (
+    <FieldNumber native="number" label={label} hint={hint} value={value} min={min} max={max} step={step} onCommit={(v) => setInput(id, v)}>
+      <Field label={label} hint={hint}><input type="number" value={value} min={min} max={max} step={step} onChange={(e) => setInput(id, e.target.value)} /></Field>
+    </FieldNumber>
+  );
 }
 
 export function RangeInput({ id, label, hint, min = 0, max = 100, step = 1, unit = '%' }: { id: string; label: string; hint?: string; min?: number; max?: number; step?: number; unit?: string }) {
   const value = useDoc((d) => d.dom.values[id] ?? '');
   const locked = useDoc((d) => id === 'autoPotential' && !!d.dom.checked.fitAuto);
   return (
-    <Field label={`${label}: ${value}${unit}`} hint={hint}>
-      <input type="range" value={value} min={min} max={max} step={step} disabled={locked} onChange={(e) => setInput(id, e.target.value)} />
-    </Field>
+    <FieldNumber native="slider" label={label} hint={hint} value={value} min={min} max={max} step={step} unit={unit} disabled={locked} onCommit={(v) => setInput(id, v)}>
+      <Field label={`${label}: ${value}${unit}`} hint={hint}>
+        <input type="range" value={value} min={min} max={max} step={step} disabled={locked} onChange={(e) => setInput(id, e.target.value)} />
+      </Field>
+    </FieldNumber>
   );
 }
 
 export function SelectInput({ id, label, options, hint }: { id: string; label: string; options: { value: string; label: string }[]; hint?: string }) {
   const value = useDoc((d) => d.dom.values[id] ?? '');
   return (
-    <Field label={label} hint={hint}>
-      <select value={value} onChange={(e) => setInput(id, e.target.value)}>{options.map((o) => <option key={o.value} value={o.value}>{o.label}</option>)}</select>
-    </Field>
+    <FieldChoice label={label} hint={hint} value={value} options={options} onChange={(v) => setInput(id, v)}>
+      <Field label={label} hint={hint}>
+        <select value={value} onChange={(e) => setInput(id, e.target.value)}>{options.map((o) => <option key={o.value} value={o.value}>{o.label}</option>)}</select>
+      </Field>
+    </FieldChoice>
   );
 }
 
 export function CheckInput({ id, label, hint }: { id: string; label: string; hint?: string }) {
   const on = useDoc((d) => !!d.dom.checked[id]);
-  return <label className="ac-check"><input type="checkbox" checked={on} onChange={(e) => setChecked(id, e.target.checked)} /> {label}{hint && <span className="ac-field-h"> — {hint}</span>}</label>;
+  return (
+    <FieldToggle label={label} hint={hint} checked={on} onChange={(v) => setChecked(id, v)}>
+      <label className="ac-check"><input type="checkbox" checked={on} onChange={(e) => setChecked(id, e.target.checked)} /> {label}{hint && <span className="ac-field-h"> — {hint}</span>}</label>
+    </FieldToggle>
+  );
 }
