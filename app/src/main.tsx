@@ -3,11 +3,13 @@ import { bootApp, loadEmbeddedCase } from '@/controllers/boot';
 import { configureSessions } from '@/controllers/sessions';
 import { idbStorage } from '@/store/persistence/idb';
 import { App } from '@/ui/App';
+import { initDisplay } from '@/ui/display/store';
 import '@/ui/theme/fonts.css';
 import '@/ui/theme/tokens.css';
 import '@/ui/theme/shell.css';
 import '@/ui/theme/content.css';
 
+initDisplay();   // the viewer's display preference (light / dark / auto, contrast…) before the first paint; a saved HTML copy honours its viewer's choice
 const embedded = loadEmbeddedCase(document);   // a saved HTML copy opens its own case before the first paint
 createRoot(document.getElementById('root')!).render(<App />);
 
