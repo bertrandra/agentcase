@@ -47,7 +47,7 @@ writing the same values as custom properties on `:root`. Module-level palettes a
 
 ## 3. Token families
 
-Counts are for the default theme (379 tokens).
+Counts are for the default theme (380 tokens).
 
 ### 3.1 Colour scales (154 steps)
 
@@ -74,12 +74,12 @@ border), `success-500-a80` / `warning-500-a80` (chart bars), `info-375-a30` (inp
 another one without `color-mix()`, so each keeps its literal; a test checks that its RGB is its base step and its alpha the name.
 Code that needs a computed alpha uses `alpha(token, a)`.
 
-### 3.3 Semantic roles (53)
+### 3.3 Semantic roles (54)
 
 | Group | Tokens | Default |
 |---|---|---|
 | page and surfaces | `bg`, `surface`, `surface-raised`, `surface-muted`, `surface-tint` | slate-50, white, white, neutral-25, primary-60 |
-| text | `ink`, `muted`, `text-strong`, `text-soft`, `text-label`, `text-inverse`, `text-on-primary`, `text-link`, `text-heading` | #333, #636363, #222, #555, #666, white, white, primary-700, primary-700 |
+| text | `ink`, `muted`, `text-strong`, `text-soft`, `text-label`, `text-inverse`, `text-on-primary`, `text-on-data` (T2), `text-link`, `text-heading` | #333, #636363, #222, #555, #666, white, white, white, primary-700, primary-700 |
 | lines | `line`, `line-strong`, `line-subtle`, `line-tint` | #E3E3E3, #DDD, #E5E5E5, #CADCFC |
 | states | `focus`, `focus-header` (T2: the ring on the header / KPI bar), `hover`, `hover-text`, `selected`, `selected-text` | primary-700, `{focus}`, primary-60, primary-700, primary-700, white |
 | header banner | `header-start`, `header-end`, `header-text` | #0058AB → #121A38, white |
@@ -161,7 +161,7 @@ is the T1 look unchanged (no attribute on `<html>`, `tok()` returns `THEME_DEFAU
 
 | Display | How it is built |
 |---|---|
-| **dark** | dedicated values for the 53 semantic roles (page `#0f131a` < surface `#171c24` < raised `#1e242e`: elevation lightens; off-white ink `#e6e8ec`, muted `#a9b1bd`; lines `#2e3542`…; header / KPI gradient `#163a6b` → navy; table head `#1c3a66`; business colours lifted for dark grounds: automation `#4fc6cc`, glass ceiling `#f08f94`, human supervision `#f5a865`, agentic `#b9a8ec`, ai `#62c6f2`, vFTE `#63d391`), the chart series (`chart-cat-1..8`), grid and axis, and the 35 translucent steps (tints on their dark base, shadows black and deeper, header overlays still white). The 154 raw scale steps are re-ranked by an OKLab lightness curve (`DARK_L`: white → L .235, page tints → .25-.31, text steps → .78-.91; hue kept, light chroma × .82, gamut-mapped), so a component still reading `primary-60` gets a dark blue tint and one reading `neutral-700` a light grey: a pair that read in light reads in dark. `color-scheme: dark` makes native controls dark. |
+| **dark** | dedicated values for the semantic roles (page `#0f131a` < surface `#171c24` < raised `#1e242e`: elevation lightens; off-white ink `#e6e8ec`, muted `#a9b1bd`; lines `#2e3542`…; header / KPI gradient `#163a6b` → navy; table head `#1c3a66`; business colours lifted for dark grounds: automation `#4fc6cc`, glass ceiling `#f08f94`, human supervision `#f5a865`, agentic `#b9a8ec`, ai `#62c6f2`, vFTE `#63d391`), the chart series (`chart-cat-1..8`), grid and axis, and the 35 translucent steps (tints on their dark base, shadows black and deeper, header overlays still white). The 154 raw scale steps are re-ranked by an OKLab lightness curve (`DARK_L`: white → L .235, page tints → .25-.31, text steps → .78-.91; hue kept, light chroma × .82, gamut-mapped), so a component still reading `primary-60` gets a dark blue tint and one reading `neutral-700` a light grey: a pair that read in light reads in dark. `color-scheme: dark` makes native controls dark. |
 | **enhanced** | light: the text steps (OKLab L < .72) darkened by a fifth, ink `#1a1a1a`, muted `#404040`, lines `#8c8c8c` / `#6e6e6e` (>= 3:1), focus `#003d7a` 3px, white ring on the header. Dark: light steps lifted halfway to white, ink `#f5f6f8`, muted `#d2d7de`, lines `#6b7483`, deeper page. |
 | **high** | black and white, like the Windows high-contrast themes: every scale step to the page or the ink (light: L >= .8 → white, the rest → a near-black of the same hue; dark: the reverse), all text roles black / white, lines in the text colour, header and table head black, hover light grey (light) / near black (dark), selected black / yellow, focus black / yellow 3px, shadows become 1px rings. Charts keep the standard sequential ramp, take paler / deeper diverging cells and a strong categorical series (`HIGH_CHART`). |
 | **colour-blind safe charts** | `chart-cat-1..8` = Okabe & Ito (2008) order (blue, vermillion, bluish green, reddish purple, orange, sky, black, grey in light; lifted variants in dark and high). |
@@ -192,7 +192,8 @@ Every chart.js canvas goes through `ChartPanel`, so with the option on: the cate
 (series 1 solid, then diagonal, reverse diagonal, horizontal, vertical, grid, dots, cross; per-bar colour arrays get one per bar).
 Not covered: series coloured by a business role (automation teal, glass-ceiling brick… keep their meaning, distinguishable by lightness and
 the hatches / dashes), the SVG charts (funnel, S-curves, Gantt, dependency graph: their series follow the palette but get no pattern), and
-data colours the user picks (persona groups, products).
+data colours the user picks (persona groups, products). Content tints (`bg` of a rich-content card) are re-ranked like the dark
+scale steps in dark mode (`ui/display/dataColor.ts`).
 
 ### 6.4 Contrast validation
 
@@ -221,7 +222,7 @@ viewer's system. The report and the Excel workbooks are always light.
 
 ### 6.6 What still reads raw scale steps, and notes for T3 / T4
 
-- Moved to roles in T2: the chart.js series and SVG chart / Gantt / dependency-graph colours that equalled a `chart-cat-*` value (82
+- Moved to roles in T2: the glossary category bands (`text-on-data`: white on a data colour in every mode), the chart.js series and SVG chart / Gantt / dependency-graph colours that equalled a `chart-cat-*` value (82
   reads in 18 files), the persona table header note (`table-head-note`), the header / KPI focus ring (`focus-header`).
 - Still on raw steps (about 450 `var(--ac-<scale>-<step>)` in CSS / inline styles and ~180 `tok('<scale>-<step>')`): status tints of
   callouts and badges (`warning-55`, `danger-75`…), the coloured left rails, the scope / tune card accents, the domain read-outs (status

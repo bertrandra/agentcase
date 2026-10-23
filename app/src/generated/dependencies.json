@@ -1,6 +1,6 @@
 {
  "schema": 1,
- "counts": {"files":918,"tagged":430,"tests":257},
+ "counts": {"files":919,"tagged":430,"tests":257},
  "zones": [
   {"id":"rate-card-team","modules":8,"tmed":105,"tmax":234},
   {"id":"scope-automation","modules":15,"tmed":89,"tmax":234},
@@ -19,7 +19,7 @@
   {"id":"exports","modules":100,"tmed":62,"tmax":200},
   {"id":"workspace-config","modules":58,"tmed":57,"tmax":116},
   {"id":"foundation","modules":20,"tmed":153,"tmax":234},
-  {"id":"presentation","modules":10,"tmed":142,"tmax":188}
+  {"id":"presentation","modules":10,"tmed":142,"tmax":193}
  ],
  "sections": [
   {"id":"home","label":"🏠 Welcome","group":"frame","kind":"S-static","files":2},
@@ -648,12 +648,12 @@
   ["tests/ui/sections/agent-dir.test.tsx","0-5,8-10,12,14,16","27"],
   ["tests/ui/sections/agent-usage.test.tsx","0-5,8-10,12,14,16-17","29"],
   ["tests/ui/sections/annual.test.tsx","0-5,8-10,12,14,16-17","34"],
-  ["tests/ui/sections/arch.test.tsx","0-5,8-10,12,14,16","62-63"],
+  ["tests/ui/sections/arch.test.tsx","0-5,8-10,12,14,16-17","62-63"],
   ["tests/ui/sections/asis-tobe.test.tsx","0-5,8-10,12,14,16","53"],
   ["tests/ui/sections/assumptions.test.tsx","0-5,8-12,14-16","18"],
   ["tests/ui/sections/board-rows.test.tsx","0-12,14-17","45"],
   ["tests/ui/sections/board.test.tsx","0-12,14-17","45"],
-  ["tests/ui/sections/calcengine.test.tsx","0-5,8-10,12,14-16","73"],
+  ["tests/ui/sections/calcengine.test.tsx","0-5,8-10,12,14-17","73"],
   ["tests/ui/sections/commercial.test.tsx","0-5,8-10,12,14,16-17","50"],
   ["tests/ui/sections/compare.test.tsx","0-5,7-10,12,14,16-17","54"],
   ["tests/ui/sections/compliance.test.tsx","0-5,8-10,12,14,16-17","41"],
@@ -709,7 +709,7 @@
   ["tests/ui/sections/quality.test.tsx","0-5,8-10,12,14,16-17","40"],
   ["tests/ui/sections/ratecard.test.tsx","0-5,8-10,12,14,16-17","13"],
   ["tests/ui/sections/readiness.test.tsx","0-6,8-10,12,14,16-17","7"],
-  ["tests/ui/sections/reference.test.tsx","0-5,8-10,12,14,16","70"],
+  ["tests/ui/sections/reference.test.tsx","0-5,8-10,12,14,16-17","70"],
   ["tests/ui/sections/registration.test.ts","0-17","0-84"],
   ["tests/ui/sections/release-pipeline.test.tsx","0-5,8-10,12,14-17","47"],
   ["tests/ui/sections/results.test.tsx","0-12,14,16-17","57"],
@@ -720,10 +720,10 @@
   ["tests/ui/sections/scope-sel.test.tsx","0-17","8"],
   ["tests/ui/sections/scurve.test.tsx","0-17","5"],
   ["tests/ui/sections/sensitivity.test.tsx","0-5,7-10,12,14,16-17","55"],
-  ["tests/ui/sections/sessions.test.tsx","0-5,8-10,12,14-16","76"],
+  ["tests/ui/sections/sessions.test.tsx","0-5,8-10,12,14-17","76"],
   ["tests/ui/sections/setup.test.tsx","0-5,8-10,12,14,16-17","32"],
   ["tests/ui/sections/snapshot-io.test.tsx","0-12,14-17","75"],
-  ["tests/ui/sections/sources.test.tsx","0-5,8-10,12,14,16","56"],
+  ["tests/ui/sections/sources.test.tsx","0-5,8-10,12,14,16-17","56"],
   ["tests/ui/sections/story-summary.test.tsx","0-5,8-10,12,14,16-17","58"],
   ["tests/ui/sections/strategies.test.tsx","0-12,14,16-17","61"],
   ["tests/ui/sections/stress-smoke.test.tsx","0-12,14,16-17","24,51,54-55,57,59,61"],
