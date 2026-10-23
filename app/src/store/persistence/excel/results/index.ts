@@ -6,14 +6,20 @@ import { investmentSheet, operatingSheet } from './costs';
 import { roiSheet } from './roi';
 import { plSheet, savingsSheet } from './savings';
 import { workforceSheet } from './workforce';
+import { addLogo } from './logo';
 
 export { resultsData, SETUP_LINES, type ResultsData, type SheetImages, type ImageKey } from './data';
 
-/** The results workbook of the Financial tab: ROI, Investment, Operating costs, Savings, P&L, Workforce shift (legacy exportFinancialExcel). */
-export function buildResultsWorkbook(xl: ExcelJS, data: ResultsData, images?: SheetImages) {
+/**
+ * The results workbook of the Financial tab: ROI, Investment, Operating costs, Savings, P&L, Workforce shift (legacy exportFinancialExcel).
+ * `logo`: the customer logo of a client presentation (a PNG / JPEG data URL), placed on the ROI sheet (docs/THEME.md §8.6).
+ */
+export function buildResultsWorkbook(xl: ExcelJS, data: ResultsData, images?: SheetImages, logo?: string) {
   const wb = new xl.Workbook();
   wb.creator = 'AgentCase';
   addCaseSheets(wb, data, images);
+  const roi = wb.getWorksheet('ROI');
+  if (roi) addLogo(wb, roi, logo);
   return wb;
 }
 

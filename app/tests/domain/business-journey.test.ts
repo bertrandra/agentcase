@@ -19,12 +19,12 @@ const range = (spec: string): number[] => spec.split(',').filter(Boolean).flatMa
 
 describe('menu structures: coverage', () => {
   it.each([STANDARD, ...BUILTIN_STRUCTURES])('$id places every one of the $placement.length sections in exactly one of its own groups', (st) => {
-    expect(IDS).toHaveLength(85);
+    expect(IDS).toHaveLength(86);
     expect(unplaced(st, IDS)).toEqual([]);
     expect(Object.keys(st.placement).filter((id) => !IDS.includes(id))).toEqual([]);   // and nothing that is not a section
     expect(new Set(st.groups.map((g) => g.id)).size).toBe(st.groups.length);
   });
-  it('the dependency graph knows the same 85 sections', () => expect([...graphSections].sort()).toEqual([...IDS].sort()));
+  it('the dependency graph knows the same 86 sections', () => expect([...graphSections].sort()).toEqual([...IDS].sort()));
   it('every input zone that a section writes has at least one writer in the guided sequence', () => {
     const inputs = catalog.zones.filter((z) => z.lane === 'input').map((z) => z.id), gaps: string[] = [];
     for (const z of inputs) {

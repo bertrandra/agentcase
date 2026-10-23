@@ -4,6 +4,7 @@ import { afterEach, beforeEach, describe, expect, it } from 'vitest';
 import type { SectionRow } from '@/domain/nav/layout';
 import { appStore } from '@/store/instance';
 import Personas from '@/ui/sections/configure/personas';
+import { APP_SECTIONS } from '@/ui/zones/registry';
 import { navInputs } from '../../helpers/nav';
 import { loadCase } from '../../helpers/pdc';
 
@@ -21,7 +22,7 @@ describe('layout board live preview', () => {
     expect(region().querySelector('button, a, input, select, textarea, [tabindex]')).toBeNull();
     fireEvent.change(screen.getByLabelText('Preview as'), { target: { value: 'advanced' } });
     expect(region().getAttribute('aria-label')).toBe('Live preview of the Advanced menu');
-    expect(previewIds().length).toBe(navInputs(state().doc).sections.length);
+    expect(previewIds().length).toBe(navInputs(state().doc).sections.length + APP_SECTIONS.length);   // + 🎨 Brand & theme (an app section)
   });
   it('shows the would-be order while a card hovers, with no write, and returns to the real order on drag end', () => {
     open(/Menu layout/);

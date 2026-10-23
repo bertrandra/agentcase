@@ -1,6 +1,6 @@
 /** @calc-zone exports */
 import { fmtK } from '@/domain/format';
-import { esc, reportStyle } from '../render';
+import { esc, logoHtml, reportStyle } from '../render';
 import type { PortfolioReportData } from './data';
 import { renderStress } from './stress';
 import { glassTable, headlineText, lines, payback, regTable, supervisionTable, yearsTable } from './tables';
@@ -27,7 +27,7 @@ export function renderPortfolioReport(d: PortfolioReportData): string {
   const notes = d.diagnostics.length ? `<h3>Diagnostics</h3><ul>${d.diagnostics.map((i) => `<li>${esc(i.message)}</li>`).join('')}</ul>` : '';
   return '<!DOCTYPE html><html><head><meta charset="utf-8">'
     + `<title>Critical &amp; Regulated Software Delivery — ${esc(what)} — AgentCase ${esc(d.version)}</title><style>${reportStyle()}</style></head><body>`
-    + '<h1>Critical &amp; Regulated Software Delivery Model — Portfolio</h1>'
+    + logoHtml(d.logo) + '<h1>Critical &amp; Regulated Software Delivery Model — Portfolio</h1>'
     + `<p><span class="tag">AgentCase ${esc(d.version)}</span> <span class="tag">${esc(d.stamp)}</span> <span class="tag">Scope: ${esc(what)}</span> <span class="tag">${d.productRows.length} planned product(s)</span></p>`
     + `<h2>1 · Portfolio and regulatory context</h2><p>${esc(what)}: ${d.productRows.length} planned product(s)${d.kind === 'portfolio' ? ` in ${d.waves} wave(s)` : ''}, calendar horizon ${d.horizon} months from ${esc(d.start)}.`
     + ` Active norms: <strong>${norms.map(esc).join(', ') || '—'}</strong>.</p>${regTable(d)}`

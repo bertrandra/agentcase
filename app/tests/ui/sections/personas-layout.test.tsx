@@ -5,7 +5,7 @@ import type { PersonaOrder, SectionRow } from '@/domain/nav/layout';
 import type { MenuGroup } from '@/domain/pdc/personas';
 import { appStore } from '@/store/instance';
 import Personas from '@/ui/sections/configure/personas';
-import { LEGACY_SECTIONS, SECTIONS } from '@/ui/zones/registry';
+import { APP_SECTIONS, LEGACY_SECTIONS, SECTIONS } from '@/ui/zones/registry';
 import { navInputs } from '../../helpers/nav';
 import { loadCase } from '../../helpers/pdc';
 
@@ -23,7 +23,7 @@ describe('menu layout board', () => {
     open(/Menu layout/);
     const board = within(screen.getByRole('list', { name: 'Menu layout' }));
     expect(board.getAllByRole('listitem')).toHaveLength((doc().GROUPS as MenuGroup[]).length);
-    expect(document.querySelectorAll('[data-section]')).toHaveLength(LEGACY_SECTIONS.length);   // one product: no Portfolio column
+    expect(document.querySelectorAll('[data-section]')).toHaveLength(LEGACY_SECTIONS.length + APP_SECTIONS.length);   // one product: no Portfolio column
   });
   it('↑ ↓ reorder a card inside its group (groupSeq 10, 20 …) and undo restores the order', () => {
     const first = inGroup('frame')[0]!, second = inGroup('frame')[1]!;

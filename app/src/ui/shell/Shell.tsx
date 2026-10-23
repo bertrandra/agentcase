@@ -3,6 +3,8 @@ import '../theme/nav.css';
 import '../theme/a11y.css';
 import '../theme/portfolio.css';
 import '../theme/vue.css';
+import { ThemeLinkNotice } from '../brand/BrandLogo';
+import { ThemeRuntime } from '../brand/ThemeRuntime';
 import { useDisplay } from '../display/store';
 import { SectionHost } from '../zones/SectionHost';
 import { sectionById } from '../zones/registry';
@@ -31,6 +33,7 @@ export function Shell() {
       <KpiZone />
       {!collapsed && <NavZone />}
       <div className="ac-workcol" style={{ gridArea: 'work' }}>
+        <ThemeLinkNotice />
         <GroupNavBar />
         <WizardBar />
         <SectionHost key={display} />{/* a display change (dark, contrast, colour-blind charts) re-mounts the section: canvases and tok() read-outs are rebuilt */}
@@ -40,6 +43,7 @@ export function Shell() {
       <p className="ac-sr" aria-live="polite" aria-atomic="true" data-testid="section-announcer">{sectionById(active)?.label ?? ''}</p>
       <CalcStaleBanner />
       <RestoreBanner />
+      <ThemeRuntime />
     </div>
   );
 }

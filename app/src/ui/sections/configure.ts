@@ -4,4 +4,5 @@ import type { SectionMap } from './types';
 export const CONFIGURE: SectionMap = {
   board: () => import('./configure/board'),
   personas: () => import('./configure/personas'),
+  'brand-theme': () => import('./configure/brand-theme'),
 };

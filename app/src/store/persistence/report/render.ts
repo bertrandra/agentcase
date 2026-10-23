@@ -14,6 +14,9 @@ export const reportStyle = (): string => `body{font-family:${printTok('report-fo
   + `table{border-collapse:collapse;width:100%;font-size:13px;margin:.6rem 0}th,td{border:1px solid ${printTok('report-line')};padding:5px 8px;text-align:left}th{background:${printTok('report-head-bg')};color:${printTok('report-head-text')}}`
   + `.tag{display:inline-block;background:${printTok('report-tag-bg')};color:${printTok('report-tag-text')};border-radius:10px;padding:1px 10px;font-size:11px;font-weight:700}@media print{body{margin:0}}`;
 
+/** The customer logo above the title (a validated PNG / JPEG data URL; nothing when the case has none). */
+export const logoHtml = (l?: { src: string; alt: string }): string => (l ? `<p><img src="${esc(l.src)}" alt="${esc(l.alt)}" style="height:48px;max-width:240px;object-fit:contain"></p>` : '');
+
 /** The standalone report page (six sections, same figures and wording as the legacy report). */
 export function renderReport(d: ReportData): string {
   const k = esc(d.context), cap = d.authorityCap, n = d.blocked.length;
@@ -24,7 +27,7 @@ export function renderReport(d: ReportData): string {
     : '';
   return '<!DOCTYPE html><html><head><meta charset="utf-8">'
     + `<title>Critical &amp; Regulated Software Delivery — AgentCase ${esc(d.version)}</title><style>${reportStyle()}</style></head><body>`
-    + '<h1>Critical &amp; Regulated Software Delivery Model</h1>'
+    + logoHtml(d.logo) + '<h1>Critical &amp; Regulated Software Delivery Model</h1>'
     + `<p><span class="tag">AgentCase ${esc(d.version)}</span> <span class="tag">${esc(d.stamp)}</span> <span class="tag">Context: ${k}</span></p>`
     + `<h2>1 · Regulatory context</h2><p>Active norms: <strong>${d.norms.map(esc).join(', ')}</strong> — ${d.artefactsInScope} regulatory artifacts in scope out of the ${d.catalogueSize}-artifact certification catalogue.</p>`
     + `<h2>2 · Glass Ceiling Model</h2><p><code>Effective Automation = Potential × (1 − Ceiling) × Posture × Context factor × Hub multiplier</code>: potential ${Math.round(d.potential)}% × ceiling ${Math.round(d.ceiling)}% → <strong>${d.effective.toFixed(1)}% effective</strong>, never above the compliance headroom (${Math.round(d.headroom)} pts).</p>`

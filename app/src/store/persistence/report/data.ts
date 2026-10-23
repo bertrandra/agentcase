@@ -4,6 +4,7 @@ import { engagementCoef, engagementKey } from '@/domain/engagement';
 import { posture } from '@/domain/verifyA/phaseArt';
 import { appVerTag } from '@/domain/snapshots';
 import type { CaseState } from '@/domain';
+import { logoAlt, shownLogo } from '@/domain/theme/logo';
 
 const AUTH_ORDER: Record<string, number> = { Assistance: 1, Copilot: 2, 'Supervised autonomous': 3, Autonomous: 4 };
 
@@ -14,6 +15,13 @@ export interface ReportData {
   supervision: { phase: string; floor: number; posture: string }[];
   authorityCap: number; blocked: { name: string; phase: string; aiAuth: string }[];
   setup: number; billablePct: number; endLabel: string; endRun: number; endSaving: number; baselineRun: number; riskPremium: number;
+  /** the customer logo of a client presentation (docs/THEME.md §8.6); absent: the report is the legacy one, byte for byte */
+  logo?: { src: string; alt: string };
+}
+/** The logo block of a case (none when it has no logo or hides it). */
+export function reportLogo(s: object): { logo?: { src: string; alt: string } } {
+  const d = s as Record<string, unknown>, l = shownLogo(d);
+  return l ? { logo: { src: l.src, alt: logoAlt(String(d.customerName ?? '')) } } : {};
 }
 
 /** The report needs the regulatory catalogue switched on and at least one norm selected (the legacy gate). */
@@ -35,6 +43,6 @@ export function reportData(s: CaseState, now: Date): ReportData {
     supervision, authorityCap: cx.authorityCap,
     blocked: act.filter((a) => (AUTH_ORDER[a.aiAuth] ?? 1) > cx.authorityCap).map((a) => ({ name: a.name, phase: a.phase, aiAuth: a.aiAuth })),
     setup: m.setupTotal, billablePct: cx.setupBillable * 100, endLabel: `Y${eng.horizonYears}`, endRun: end.totalRunCost, endSaving: end.savings,
-    baselineRun: m.baselineRun, riskPremium: cx.riskPremium,
+    baselineRun: m.baselineRun, riskPremium: cx.riskPremium, ...reportLogo(s),
   };
 }

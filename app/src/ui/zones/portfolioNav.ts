@@ -1,6 +1,6 @@
 import type { NavSection, PersonaLists } from '@/domain/nav/layout';
 import type { MenuGroup } from '@/domain/pdc/personas';
-import { GROUPS, PORTFOLIO_GROUP_ID, SECTIONS } from './registry';
+import { APP_SECTIONS, GROUPS, PORTFOLIO_GROUP_ID, SECTIONS } from './registry';
 
 /** The "Portfolio" group (spec 6.3): registered in the bundled catalogue, shown to every persona, but only from two products on. */
 export const PORTFOLIO_GROUP = PORTFOLIO_GROUP_ID;
@@ -18,4 +18,11 @@ export function withPortfolio(multi: boolean, sections: NavSection[], groups: Me
   const ids = [...IDS], out: PersonaLists = {};
   for (const [persona, list] of Object.entries(lists)) out[persona] = ids.every((id) => list.includes(id)) ? list : [...list, ...ids.filter((id) => !list.includes(id))];
   return { sections, groups: own, lists: out };
+}
+
+/** The app sections (registry `APP_SECTIONS`) join the lists of the personas they name, after the case's own sections; Advanced sees every section anyway. */
+export function withAppSections(lists: PersonaLists): PersonaLists {
+  const out: PersonaLists = { ...lists };
+  for (const s of APP_SECTIONS) for (const p of s.personas ?? []) if (out[p] && !out[p]!.includes(s.id)) out[p] = [...out[p]!, s.id];
+  return out;
 }

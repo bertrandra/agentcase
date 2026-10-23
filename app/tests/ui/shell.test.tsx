@@ -7,7 +7,7 @@ import { computeCase } from '@/domain';
 import { appStore } from '@/store/instance';
 import { App } from '@/ui/App';
 import { openGroup, uiStore } from '@/ui/uiState';
-import { LEGACY_SECTIONS, visibleSections } from '@/ui/zones/registry';
+import { APP_SECTIONS, LEGACY_SECTIONS, visibleSections } from '@/ui/zones/registry';
 import { shouldHandle } from '@/ui/shell/useShortcuts';
 import { freshStore } from '../store/helpers';
 
@@ -32,9 +32,9 @@ describe('shell zones', () => {
     render(<App />);
     openMenu();
     const nav = screen.getByRole('navigation', { name: 'Sections' }), items = () => nav.querySelectorAll('[data-section]');
-    expect(items()).toHaveLength(visibleSections('builder').length);
+    expect(items()).toHaveLength(visibleSections('builder').length + 1);   // + 🎨 Brand & theme, an app section the navigation adds to Builder
     act(() => { fireEvent.change(screen.getByLabelText('Persona'), { target: { value: 'advanced' } }); });
-    expect(items()).toHaveLength(LEGACY_SECTIONS.length);   // one product: the 5 Portfolio sections are not in the menu (84 in the catalogue)
+    expect(items()).toHaveLength(LEGACY_SECTIONS.length + APP_SECTIONS.length);   // one product: the 5 Portfolio sections are not in the menu (84 in the catalogue)
     expect(within(nav).getAllByRole('heading').length).toBeGreaterThan(8);
   });
   it('persona changes are not undoable; navigation opens the section placeholder', async () => {

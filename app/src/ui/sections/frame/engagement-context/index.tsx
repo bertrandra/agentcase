@@ -5,6 +5,7 @@ import { TextField } from '@/ui/widgets/CommitNumber';
 import { SectionFrame } from '@/ui/zones/SectionFrame';
 import { CoefTable } from './CoefTable';
 import { ContextCard, DiscountCard } from './ContextCard';
+import { LogoPanel } from './LogoPanel';
 
 const OVERRIDES = ['values.engagementCtx', 'engageCoef'] as const;
 
@@ -30,6 +31,7 @@ export default function EngagementContextSection() {
             <p className="ac-muted">Appears in the app title bar, e.g. <em>“AgentCase for Acme Corp”</em> — purely cosmetic, it drives nothing in the model.</p>
             <TextField label="Customer name" value={name} placeholder="e.g. Acme Corp" onChange={setCustomerName} />
           </Panel>
+          <LogoPanel />
           <ContextCard />
           <DiscountCard />
           <CoefTable />

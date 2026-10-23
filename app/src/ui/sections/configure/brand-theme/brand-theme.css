@@ -1,0 +1,44 @@
+/* 🎨 Brand & theme (docs/THEME.md §8): library | editor | live preview. Colours are tokens only; the preview container carries its theme inline. */
+.ac-bt-grid { display: grid; grid-template-columns: minmax(220px, 1fr) minmax(300px, 1.5fr) minmax(320px, 1.5fr); gap: 16px; align-items: start; }
+@media (max-width: 1280px) { .ac-bt-grid { grid-template-columns: minmax(220px, 1fr) minmax(300px, 2fr); } .ac-bt-preview-card { grid-column: 1 / -1; } }
+.ac-section .ac-bt-grid h2 { margin: 0 0 8px; font-size: var(--ac-font-size-lg); color: var(--ac-text-heading); }
+.ac-bt-list { list-style: none; margin: 0 0 10px; padding: 0 !important; }
+.ac-section .ac-bt-item { display: flex; flex-wrap: wrap; align-items: center; gap: 6px; width: 100%; margin: 1px 0; padding: 6px 8px; font: inherit; text-align: left; color: var(--ac-ink); background: transparent; border: var(--ac-border-thin) solid transparent; border-radius: var(--ac-radius-md); cursor: pointer; }
+.ac-section .ac-bt-item:hover { background: var(--ac-hover); color: var(--ac-hover-text); }
+.ac-section .ac-bt-item[aria-pressed='true'] { border-color: var(--ac-primary-700); background: var(--ac-surface-tint); }
+.ac-bt-seq { min-width: 2.2em; font-variant-numeric: tabular-nums; color: var(--ac-muted); }
+.ac-bt-name { font-weight: var(--ac-font-weight-semibold); }
+.ac-bt-badge { padding: 0 6px; font-size: var(--ac-font-size-2xs); color: var(--ac-text-soft); border: var(--ac-border-thin) solid var(--ac-line-strong); border-radius: var(--ac-radius-pill); }
+.ac-bt-badge.is-active { color: var(--ac-selected-text); background: var(--ac-selected); border-color: var(--ac-selected); }
+.ac-bt-actions { display: flex; flex-wrap: wrap; gap: 6px; margin: 8px 0; }
+.ac-section .ac-bt-actions button[aria-pressed='true'] { color: var(--ac-selected-text); background: var(--ac-selected); }
+.ac-bt-share { display: flex; flex-wrap: wrap; align-items: center; gap: 6px; margin: 10px 0; }
+.ac-bt-share code { padding: 2px 6px; background: var(--ac-surface-muted); border-radius: var(--ac-radius-sm); }
+.ac-bt-fields { margin: 0; padding: 0; border: 0; min-width: 0; }
+.ac-bt-fields details { margin: 6px 0; padding: 4px 0; border-top: var(--ac-border-thin) solid var(--ac-line); }
+.ac-bt-fields summary { cursor: pointer; font-weight: var(--ac-font-weight-semibold); color: var(--ac-text-heading); }
+.ac-bt-colour { display: grid; grid-template-columns: 34px 1fr auto auto auto; align-items: center; gap: 6px; margin: 4px 0; font-size: var(--ac-font-size-sm); }
+.ac-section .ac-bt-colour input[type='color'] { width: 32px; height: 24px; padding: 0; border: var(--ac-border-thin) solid var(--ac-line-strong); border-radius: var(--ac-radius-sm); background: var(--ac-surface); }
+.ac-bt-colour code { font-size: var(--ac-font-size-xs); color: var(--ac-muted); }
+.ac-bt-check { padding: 0 6px; font-size: var(--ac-font-size-2xs); font-weight: var(--ac-font-weight-bold); color: var(--ac-success-800); background: var(--ac-success-50); border-radius: var(--ac-radius-sm); white-space: nowrap; }
+.ac-bt-check[data-ok='false'] { color: var(--ac-danger-925); background: var(--ac-danger-75); }
+.ac-section .ac-bt-warn { grid-column: 2 / -1; margin: 0; font-size: var(--ac-font-size-xs); color: var(--ac-danger-925); }
+.ac-bt-axes { display: grid; grid-template-columns: repeat(auto-fill, minmax(180px, 1fr)); gap: 4px 12px; }
+.ac-bt-legend ul { list-style: none; padding: 0 !important; margin: 6px 0; } .ac-bt-legend li { display: flex; align-items: center; gap: 6px; margin: 2px 0; font-size: var(--ac-font-size-sm); }
+.ac-bt-swatch { display: inline-block; width: 16px; height: 16px; border: var(--ac-border-thin) solid var(--ac-line-strong); border-radius: var(--ac-radius-sm); }
+/* the live preview: a mini page painted by the tokens set on the container */
+.ac-bt-preview { overflow: hidden; color: var(--ac-ink); background: var(--ac-bg); border: var(--ac-border-thin) solid var(--ac-line-strong); border-radius: var(--ac-radius-lg); font-family: var(--ac-font-body); }
+.ac-bt-pv-head { display: flex; align-items: center; gap: 10px; padding: 8px 12px; color: var(--ac-header-text); background: linear-gradient(135deg, var(--ac-header-start), var(--ac-header-end)); font-family: var(--ac-font-heading); font-size: var(--ac-font-size-xl); font-weight: var(--ac-font-weight-display); }
+.ac-bt-pv-head .ac-brand-logo { height: var(--ac-font-size-xl); }
+.ac-bt-pv-kpis { display: flex; flex-wrap: wrap; gap: 4px 16px; padding: 6px 12px; font-size: var(--ac-font-size-xs); color: var(--ac-kpibar-text); background: linear-gradient(135deg, var(--ac-kpibar-start), var(--ac-kpibar-end)); }
+.ac-bt-pv-kpis b { font-size: var(--ac-font-size-md); font-family: var(--ac-font-numeric); }
+.ac-bt-pv-body { display: grid; grid-template-columns: 110px 1fr; gap: 8px; padding: 8px; }
+.ac-bt-pv-nav { display: flex; flex-direction: column; gap: 2px; padding: 6px; font-size: var(--ac-font-size-xs); color: var(--ac-sidebar-item-text); background: var(--ac-sidebar-bg); border-radius: var(--ac-radius-lg); align-self: start; }
+.ac-bt-pv-group { padding: 3px 6px; font-weight: var(--ac-font-weight-extrabold); text-transform: uppercase; color: var(--ac-sidebar-group-text); background: var(--ac-sidebar-group-bg); border-radius: var(--ac-radius-md); }
+.ac-bt-pv-item { padding: 3px 6px; border-radius: var(--ac-radius-md); } .ac-bt-pv-item.is-active { color: var(--ac-selected-text); background: var(--ac-selected); }
+.ac-section .ac-bt-pv-section { min-width: 0; padding: var(--ac-pad-card); background: var(--ac-surface-raised); border-radius: var(--ac-radius-card); box-shadow: var(--ac-shadow-card); }
+.ac-section .ac-bt-pv-section h3 { margin: 0 0 6px; font-family: var(--ac-font-heading); font-size: var(--ac-font-size-lg); color: var(--ac-text-heading); }
+.ac-section .ac-bt-pv-section { overflow-x: auto; } .ac-section .ac-bt-pv-section .ac-table { font-size: var(--ac-font-size-xs); }
+.ac-section .ac-bt-grid > section > p { font-size: var(--ac-font-size-sm); line-height: var(--ac-leading-base); }
+.ac-bt-pv-chart { display: block; width: 100%; max-width: 320px; height: auto; margin: 6px 0; }
+.ac-bt-pv-controls { display: grid; gap: 4px; }

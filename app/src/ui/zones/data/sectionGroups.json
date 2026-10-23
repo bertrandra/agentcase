@@ -486,6 +486,12 @@
   "tag": "supports"
  },
  {
+  "id": "brand-theme",
+  "group": "configure",
+  "groupSeq": 30,
+  "tag": "supports"
+ },
+ {
   "id": "products",
   "group": "portfolio",
   "groupSeq": 10,

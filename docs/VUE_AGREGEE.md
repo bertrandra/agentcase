@@ -47,14 +47,14 @@ Replis génériques par type (Portefeuille / Vague, section sans agrégat) :
 
 ## 4. Classification des 85 sections
 
-Total : **85 = 79 sections de cas + 6 du groupe Portefeuille** (le groupe compte 6 sections au catalogue, pas 7 : produits, surcharges, knowledge transfer, vagues, consolidation, stress portefeuille).
+Total : **86 = 79 sections de cas + 6 du groupe Portefeuille + 🎨 Brand & theme** (section de l’app, sans équivalent legacy) (le groupe compte 6 sections au catalogue, pas 7 : produits, surcharges, knowledge transfer, vagues, consolidation, stress portefeuille).
 
 | Type | Nombre | Sens |
 |---|---|---|
 | `R-conso` | 15 | résultat à forme consolidée naturelle (sommes et séries de `domain/portfolio`) |
 | `R-rollup` | 28 | contrôle ou logique par cas, qui ne s’additionne pas : tableau récapitulatif par produit + détail du rendu propre au produit |
 | `I-input` | 18 | saisie par produit : synthèse agrégée en lecture seule, une ligne par produit, “Edit this product” |
-| `S-static` | 18 | référence, documentation, réglages communs, gestion : indépendant de la vue (bandeau “Independent of the view”) |
+| `S-static` | 19 | référence, documentation, réglages communs, gestion : indépendant de la vue (bandeau “Independent of the view”) |
 | `P-portfolio` | 6 | section du groupe Portefeuille, déjà au niveau portefeuille (bandeau “Portfolio level”) |
 
 Légende de l’état : **FAIT** (construit en V0), **NATIF** (la section suit déjà la Vue ; elle est enregistrée comme son propre agrégat), **À FAIRE** (repli générique du type en attendant).
@@ -138,6 +138,7 @@ Légende de l’état : **FAIT** (construit en V0), **NATIF** (la section suit d
 | `sessions` | refshare | 🗂️ Session manager | `S-static` | Bandeau seul. Reprise d’autosauvegarde : indépendante du cas | — | FAIT (bandeau) |
 | `duediligence` | defend | 🧾 Due diligence | `R-rollup` | Éléments à confirmer et coefficients embarqués : comptes et impact par produit ; annotations communes | `domain/dd` par produit | FAIT |
 | `personas` | configure | 👥 Persona management | `S-static` | Bandeau seul. Gestion des personas : commune | — | FAIT (bandeau) |
+| `brand-theme` | configure | 🎨 Brand & theme | `S-static` | Bandeau seul. Bibliothèque de thèmes et logo client : communs au fichier (clés `THEMES`, `ACTIVE_THEME`, `CUSTOMER_LOGO`) | — | FAIT (bandeau) |
 | `products` | portfolio | 📦 Products | `P-portfolio` | Bandeau seul. Tableau des produits (déjà tous les produits) | — | FAIT (bandeau) |
 | `overrides` | portfolio | 🧬 Overrides | `P-portfolio` | Bandeau seul. Surcharges par produit | — | FAIT (bandeau) |
 | `knowledge-transfer` | portfolio | 🔁 Knowledge transfer | `P-portfolio` | Bandeau seul. Tableau F29 et effet du hub par vague | — | FAIT (bandeau) |

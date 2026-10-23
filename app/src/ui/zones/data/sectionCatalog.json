@@ -645,6 +645,20 @@
   "tag": "supports"
  },
  {
+  "id": "brand-theme",
+  "group": "configure",
+  "groupSeq": 30,
+  "label": "🎨 Brand & theme",
+  "description": "The theme library of the case: built-in and own themes (colours, shape, density, typography, controls), live preview with contrast checks, the active theme and the ?theme= link",
+  "tag": "supports",
+  "app": true,
+  "personas": [
+   "admin",
+   "builder",
+   "business-journey"
+  ]
+ },
+ {
   "id": "products",
   "group": "portfolio",
   "groupSeq": 10,

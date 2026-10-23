@@ -6,7 +6,7 @@ import { addPersona, addPersonaSection, removePersonaSection } from '@/controlle
 import { appStore } from '@/store/instance';
 import { NavZone } from '@/ui/shell/NavZone';
 import Personas from '@/ui/sections/configure/personas';
-import { LEGACY_SECTIONS, SECTIONS } from '@/ui/zones/registry';
+import { APP_SECTIONS, LEGACY_SECTIONS, SECTIONS } from '@/ui/zones/registry';
 import { legacyText, tablesOf } from '../../helpers/economics';
 import { missingNumbers, renderedText } from '../../helpers/parity';
 import { loadCase, pdc, PDC_FIXTURES } from '../../helpers/pdc';
@@ -112,7 +112,7 @@ describe('the navigation honours the document’s PERSONA_SECTIONS', () => {
     act(() => setPersona('admin'));
     render(<NavZone />);
     const before = labels();
-    expect(before).toHaveLength(lists().admin!.length);
+    expect(before).toHaveLength(lists().admin!.length + 1);   // + 🎨 Brand & theme, an app section the navigation adds to Admin
     const extra = SECTIONS.find((s) => !lists().admin!.includes(s.id))!;
     act(() => addPersonaSection('admin', extra.id));
     expect(labels()).toContain(extra.label);
@@ -127,7 +127,7 @@ describe('the navigation honours the document’s PERSONA_SECTIONS', () => {
     render(<NavZone />);
     expect(labels()).toEqual([]);
     act(() => setPersona('advanced'));
-    expect(labels()).toHaveLength(LEGACY_SECTIONS.length);   // one product: Advanced sees the 79 case sections
+    expect(labels()).toHaveLength(LEGACY_SECTIONS.length + APP_SECTIONS.length);   // one product: Advanced sees the 79 case sections and the app section
   });
   it('a document without PERSONA_SECTIONS falls back to the shipped defaults', () => {
     const s = loadCase('golden');

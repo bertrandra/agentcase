@@ -78,6 +78,7 @@
  "sessions": "S-static",
  "duediligence": "R-rollup",
  "personas": "S-static",
+ "brand-theme": "S-static",
  "products": "P-portfolio",
  "overrides": "P-portfolio",
  "knowledge-transfer": "P-portfolio",
