@@ -25,6 +25,8 @@ When releasing, follow [docs/BUMP_PROCEDURE.md](docs/BUMP_PROCEDURE.md) (§7 for
 ### Changed
 - `tokens.css` carries one generated block per display (`data-ac-mode`, `data-ac-contrast`, `data-ac-cvd`, `data-ac-motion` on `<html>`); `npm run theme:gen` / `theme:check` cover them. `tok()` reads the base theme plus the display overrides (`setDisplayTheme()`); the Excel workbooks and the HTML report read the base theme (`printTok()`, `argb()`) and stay light. The HTML snapshot does not carry the author's display: it opens in its viewer's preference (light by default).
 - `textColor()` lightens a data colour on a dark background (it darkened only).
+- Perf budget raised to 3.1 MB / 0.94 MB gzip (`app/perf-budget.json`): the display blocks add about 40 KB to `tokens.css` (measured 3.03 MB / 0.92 MB).
+- axe (golden fixture, 103 audits each): 0 violations in light, dark, dark + enhanced, dark + high and light + high.
 - New roles `focus-header` and `table-head-note`; chart and graph series (financial, economics, verify, scope, team-out, tracker charts, Gantt, dependency graph, funnel and curve SVGs) read `chart-cat-*` instead of the raw brand steps they equal. The default look is unchanged (ui-parity: same 12 recorded divergences as before).
 
 ## [v20.6.0] 2026-10-23 — Theme tokens (T1 of the configurable theme)
