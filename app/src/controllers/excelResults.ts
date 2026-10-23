@@ -6,6 +6,7 @@ import { APP_VERSION } from '@/domain/version';
 import { appStore } from '@/store/instance';
 import { pfSimStore } from '@/store/portfolioSimulation';
 import { loadExcelJS } from '@/store/persistence/excel/lazy';
+import { shownLogo } from '@/domain/theme/logo';
 import { buildResultsWorkbook, resultsData, type SheetImages } from '@/store/persistence/excel/results';
 import { buildPortfolioResultsWorkbook } from '@/store/persistence/excel/results/portfolio';
 import { hasPortfolioContent } from '@/store/persistence/portfolioSnapshot';
@@ -37,7 +38,7 @@ export async function exportResultsWorkbook(images?: SheetImages, now: Date = ne
     const wb = buildPortfolioResultsWorkbook(xl, portfolio, scope ?? portfolio.displayScope ?? { kind: 'product' }, portfolio.activeProductId, stress);
     return { blob: new Blob([await wb.xlsx.writeBuffer()], { type: XLSX_MIME }), filename: excelFilename('Financial_Portfolio', now) };
   }
-  const wb = buildResultsWorkbook(xl, resultsData(makeCtx(doc)), images);
+  const wb = buildResultsWorkbook(xl, resultsData(makeCtx(doc)), images, shownLogo(doc)?.src);
   const buf = await wb.xlsx.writeBuffer();
   return { blob: new Blob([buf], { type: XLSX_MIME }), filename: excelFilename('Financial', now) };
 }

@@ -23,7 +23,7 @@ describe('one product: the interface is unchanged (spec F23)', () => {
     mountApp();
     expect(sidebar().querySelectorAll('section[data-group]')).toHaveLength(14);
     expect(sidebar().querySelector('[data-group="portfolio"]')).toBeNull();
-    expect(sidebar().querySelectorAll('[data-section]')).toHaveLength(79);
+    expect(sidebar().querySelectorAll('[data-section]')).toHaveLength(80);   // the 79 case sections + 🎨 Brand & theme (an app section)
   });
   it('sections edit as before: no banner, no inherited / overridden chip', async () => {
     mountApp('scope-sel');

@@ -4,7 +4,7 @@ import {
   calendarOf, consolidate, consolidationView, corePortfolio, knowledgeTable, knowledgeTotals, portfolioHeadline, resolveProduct, waveEffects, waveHeadline,
   type Consolidated, type DisplayScope, type Issue, type KnowledgeRow, type KnowledgeTotals, type Portfolio, type PortfolioHeadline, type SummaryRow, type WaveEffect,
 } from '@/domain/portfolio';
-import { reportBlocker, reportData, type ReportData } from '../data';
+import { reportBlocker, reportData, reportLogo, type ReportData } from '../data';
 import { stressReport, type StressReport } from './stress';
 
 export type StressInput = Parameters<typeof stressReport>[2];
@@ -26,6 +26,7 @@ export interface PortfolioReportData {
   hub: Portfolio['hub'];
   /** the last portfolio Monte Carlo, when one exists */
   stress: StressReport | null;
+  logo?: { src: string; alt: string };
 }
 
 /** The data of the portfolio report for a display scope other than a product ('portfolio' or one 'wave'); null for an unknown wave. */
@@ -44,6 +45,6 @@ export function portfolioReportData(source: Portfolio, scope: DisplayScope, now:
     reg: ids.map((id) => ({ id, name: pf.products.find((p) => p.id === id)?.name ?? id, data: reportBlocker(resolveProduct(pf, id)) ? null : reportData(resolveProduct(pf, id), now) })),
     kt: { rows, totals: knowledgeTotals(rows), effects: waveEffects(pf, kt.rows).filter((w) => (wave ? w.waveId === wave.id : true)) },
     diagnostics: wave ? view.diagnostics.filter((d) => !d.productId || inScope.has(d.productId)) : view.diagnostics, hub: pf.hub,
-    stress: stressReport(source, wave ? { kind: 'wave', id: wave.id } : { kind: 'portfolio' }, stress),
+    stress: stressReport(source, wave ? { kind: 'wave', id: wave.id } : { kind: 'portfolio' }, stress), ...reportLogo(pf.common),
   };
 }
