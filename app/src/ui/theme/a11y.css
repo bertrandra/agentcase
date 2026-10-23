@@ -5,8 +5,8 @@
 .ac-skip:focus { outline: var(--ac-focus-width) solid var(--ac-focus); }
 .ac-table-wrap:focus-visible { outline-offset: -2px; }
 /* section headings keep one visual scale whatever level the outline needs (h1 > h2 > h3 without gaps) */
-:where(.ac-work) h2 { font-size: var(--ac-font-size-2xl); font-weight: var(--ac-font-weight-semibold); line-height: var(--ac-leading-base); color: var(--ac-blue); margin: 1.5rem 0 1rem; }
-:where(.ac-work) h3 { font-size: var(--ac-font-size-lg); font-weight: var(--ac-font-weight-semibold); line-height: var(--ac-leading-base); color: var(--ac-blue); margin: 1rem 0 .75rem; }
+:where(.ac-work) h2 { font-family: var(--ac-font-heading); font-size: var(--ac-font-size-2xl); font-weight: var(--ac-font-weight-semibold); line-height: var(--ac-leading-base); color: var(--ac-blue); margin: 1.5rem 0 1rem; }
+:where(.ac-work) h3 { font-family: var(--ac-font-heading); font-size: var(--ac-font-size-lg); font-weight: var(--ac-font-weight-semibold); line-height: var(--ac-leading-base); color: var(--ac-blue); margin: 1rem 0 .75rem; }
 .ac-live { max-width: 90vw; }
 /* reflow at 360px (WCAG 1.4.10): the top bar wraps and the grid column may shrink below its widest child, so the page itself never scrolls sideways */
 @media (max-width: 760px) {

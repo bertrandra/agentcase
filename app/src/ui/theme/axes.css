@@ -1,0 +1,54 @@
+/* @generated — npm run theme:gen (source: src/domain/theme/axes.ts, variants.ts, typography.ts). Do not edit.
+   Theme axes (docs/THEME.md §6): a data-ac-<axis> attribute on :root (or on a preview container) selects a block; no attribute = the default look. */
+/* Shape · Corner radius: square */
+[data-ac-radius='square'] { --ac-radius-2xs: 0px; --ac-radius-xs: 0px; --ac-radius-sm: 0px; --ac-radius-sm-plus: 0px; --ac-radius-md: 0px; --ac-radius-md-plus: 0px; --ac-radius-lg: 0px; --ac-radius-lg-plus: 0px; --ac-radius-xl: 0px; --ac-radius-xl-plus: 0px; --ac-radius-2xl: 0px; --ac-radius-card: 0px; }
+:where([data-ac-radius='square']) { --ac-radius: var(--ac-radius-md); --ac-radius-button: var(--ac-radius-md); }
+/* Shape · Corner radius: round */
+[data-ac-radius='round'] { --ac-radius-2xs: 4px; --ac-radius-xs: 6px; --ac-radius-sm: 8px; --ac-radius-sm-plus: 9px; --ac-radius-md: 12px; --ac-radius-md-plus: 13px; --ac-radius-lg: 14px; --ac-radius-lg-plus: 15px; --ac-radius-xl: 16px; --ac-radius-xl-plus: 17px; --ac-radius-2xl: 20px; --ac-radius-card: 22px; }
+:where([data-ac-radius='round']) { --ac-radius: var(--ac-radius-md); --ac-radius-button: var(--ac-radius-md); }
+/* Shape · Buttons: pill */
+[data-ac-buttons='pill'] { --ac-radius-button: 999px; }
+/* Shape · Border width: none */
+[data-ac-border='none'] { --ac-border-thin: 0px; --ac-border-medium: 0px; --ac-border-control: 1px; }
+:where([data-ac-border='none']) { --ac-box-border: var(--ac-border-thin); }
+/* Shape · Border width: strong */
+[data-ac-border='strong'] { --ac-border-thin: 2px; --ac-border-medium: 2px; --ac-border-thick: 3px; }
+:where([data-ac-border='strong']) { --ac-box-border: var(--ac-border-thin); --ac-border-control: var(--ac-border-thin); }
+/* Shape · Shadows: none */
+[data-ac-shadow='none'] { --ac-shadow-card: var(--ac-shadow-none); --ac-shadow-kpibar: var(--ac-shadow-none); --ac-shadow-header: var(--ac-shadow-none); }
+/* Shape · Shadows: floating */
+[data-ac-shadow='floating'] { --ac-shadow-card: var(--ac-shadow-lg); --ac-shadow-kpibar: var(--ac-shadow-lg); --ac-shadow-header: var(--ac-shadow-xl); }
+/* Box style · Cards, tiles and charts: flat */
+[data-ac-box='flat'] { --ac-box-border: 0px; --ac-box-bg: var(--ac-surface-muted); }
+/* Box style · Cards, tiles and charts: elevated */
+[data-ac-box='elevated'] { --ac-box-border: 0px; --ac-box-shadow: var(--ac-shadow-card); }
+/* Box style · Callouts: tint */
+[data-ac-callout='tint'] { --ac-callout-rail: var(--ac-border-thin); }
+/* Density · Density: compact */
+[data-ac-density='compact'] { --ac-pad-section: 1.25rem; --ac-pad-card: .85rem; --ac-pad-callout: .75rem; --ac-pad-table-head: 6px 8px; --ac-pad-table-cell: 4px 8px; --ac-pad-matrix-cell: 1px 3px; --ac-pad-control: 5px 8px; --ac-pad-button: 6px 12px; --ac-pad-button-compact: 4px 8px; --ac-pad-tab: 6px 12px; --ac-pad-badge: 2px 7px; --ac-space-block: 1rem; --ac-space-heading: 1rem; --ac-space-field: .8rem; --ac-space-row: 8px; }
+/* Density · Density: spacious */
+[data-ac-density='spacious'] { --ac-pad-section: 2.75rem; --ac-pad-card: 1.75rem; --ac-pad-callout: 1.4rem; --ac-pad-table-head: 12px 14px; --ac-pad-table-cell: 11px 14px; --ac-pad-matrix-cell: 4px 6px; --ac-pad-control: 11px 14px; --ac-pad-button: 12px 22px; --ac-pad-button-compact: 8px 12px; --ac-pad-tab: 12px 22px; --ac-pad-badge: 4px 11px; --ac-space-block: 2rem; --ac-space-heading: 2rem; --ac-space-field: 1.6rem; --ac-space-row: 16px; --ac-font-size-figure: var(--ac-font-size-7xl); --ac-font-size-kpi: var(--ac-font-size-5xl); }
+/* Typography · Body font: system */
+[data-ac-font-body='system'] { --ac-font-body: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif; }
+:where([data-ac-font-body='system']) { --ac-font-heading: var(--ac-font-body); --ac-font-numeric: var(--ac-font-body); --ac-font: var(--ac-font-body); }
+/* Typography · Body font: serif */
+[data-ac-font-body='serif'] { --ac-font-body: Georgia, Cambria, 'Times New Roman', Times, serif; }
+:where([data-ac-font-body='serif']) { --ac-font-heading: var(--ac-font-body); --ac-font-numeric: var(--ac-font-body); --ac-font: var(--ac-font-body); }
+/* Typography · Heading font: ubuntu */
+[data-ac-font-heading='ubuntu'] { --ac-font-heading: 'Ubuntu', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; }
+/* Typography · Heading font: system */
+[data-ac-font-heading='system'] { --ac-font-heading: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif; }
+/* Typography · Heading font: serif */
+[data-ac-font-heading='serif'] { --ac-font-heading: Georgia, Cambria, 'Times New Roman', Times, serif; }
+/* Typography · Numbers: tabular */
+[data-ac-font-numeric='tabular'] { --ac-numeric-figures: tabular-nums; }
+/* Typography · Numbers: mono */
+[data-ac-font-numeric='mono'] { --ac-font-numeric: ui-monospace, 'SFMono-Regular', Menlo, Consolas, 'Liberation Mono', monospace; --ac-numeric-figures: tabular-nums; }
+/* Typography · Size scale: compact */
+[data-ac-type-scale='compact'] { --ac-font-size-3xs: 7.5px; --ac-font-size-3xs-plus: 8px; --ac-font-size-2xs: 8.5px; --ac-font-size-2xs-plus: 8.5px; --ac-font-size-xs: 9px; --ac-font-size-xs-plus: 9.5px; --ac-font-size-sm: 10px; --ac-font-size-sm-plus: 10.5px; --ac-font-size-md: 11px; --ac-font-size-md-plus: 11.5px; --ac-font-size-base: 12px; --ac-font-size-lg: 13px; --ac-font-size-xl: 14px; --ac-font-size-2xl: 14.5px; --ac-font-size-3xl: 16.5px; --ac-font-size-4xl: 18.5px; --ac-font-size-5xl: 20px; --ac-font-size-6xl: 22px; --ac-font-size-7xl: 27.5px; --ac-font-size-8xl: 33px; --ac-font-size-9xl: 55px; --ac-font-size-lead: 0.97rem; }
+:where([data-ac-type-scale='compact']) { --ac-font-size-figure: var(--ac-font-size-4xl); --ac-font-size-kpi: var(--ac-font-size-2xl); }
+/* Typography · Size scale: large */
+[data-ac-type-scale='large'] { --ac-font-size-3xs: 9px; --ac-font-size-3xs-plus: 9.5px; --ac-font-size-2xs: 10px; --ac-font-size-2xs-plus: 10.5px; --ac-font-size-xs: 11px; --ac-font-size-xs-plus: 12px; --ac-font-size-sm: 12.5px; --ac-font-size-sm-plus: 13px; --ac-font-size-md: 13.5px; --ac-font-size-md-plus: 14px; --ac-font-size-base: 14.5px; --ac-font-size-lg: 15.5px; --ac-font-size-xl: 17px; --ac-font-size-2xl: 18px; --ac-font-size-3xl: 20px; --ac-font-size-4xl: 22.5px; --ac-font-size-5xl: 24.5px; --ac-font-size-6xl: 27px; --ac-font-size-7xl: 33.5px; --ac-font-size-8xl: 40.5px; --ac-font-size-9xl: 67px; --ac-font-size-lead: 1.18rem; }
+:where([data-ac-type-scale='large']) { --ac-font-size-figure: var(--ac-font-size-4xl); --ac-font-size-kpi: var(--ac-font-size-2xl); }
+/* Typography · Display weight: bold */
+[data-ac-heading-weight='bold'] { --ac-font-weight-display: var(--ac-font-weight-bold); }

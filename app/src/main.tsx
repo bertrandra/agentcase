@@ -5,6 +5,7 @@ import { idbStorage } from '@/store/persistence/idb';
 import { App } from '@/ui/App';
 import '@/ui/theme/fonts.css';
 import '@/ui/theme/tokens.css';
+import '@/ui/theme/axes.css';
 import '@/ui/theme/shell.css';
 import '@/ui/theme/content.css';
 

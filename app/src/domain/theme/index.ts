@@ -7,17 +7,18 @@
 import { ALPHAS, SCALES } from './scales';
 import { CHART, EXPORT, ROLES } from './semantic';
 import { DENSITY, MOTION, SHAPE, TYPE } from './shape';
+import { LAYOUT } from './layout';
 
 type Scales = typeof SCALES;
 type ScaleToken = { [F in keyof Scales]: `${F}-${keyof Scales[F] & number}` }[keyof Scales];
 export type TokenName = ScaleToken | keyof typeof ALPHAS | keyof typeof ROLES | keyof typeof CHART | keyof typeof EXPORT
-  | keyof typeof TYPE | keyof typeof SHAPE | keyof typeof DENSITY | keyof typeof MOTION;
+  | keyof typeof TYPE | keyof typeof SHAPE | keyof typeof DENSITY | keyof typeof MOTION | keyof typeof LAYOUT;
 export type ThemeValues = Record<TokenName, string>;
 
 const scaleEntries = Object.entries(SCALES).flatMap(([family, steps]) => Object.entries(steps).map(([step, hex]) => [`${family}-${step}`, hex] as const));
 /** The default theme: the legacy v18.13 look, value for value. Values may refer to other tokens as `{name}`. */
 export const THEME_DEFAULT: Readonly<ThemeValues> = Object.freeze({
-  ...Object.fromEntries(scaleEntries), ...ALPHAS, ...ROLES, ...CHART, ...EXPORT, ...TYPE, ...SHAPE, ...DENSITY, ...MOTION,
+  ...Object.fromEntries(scaleEntries), ...ALPHAS, ...ROLES, ...CHART, ...EXPORT, ...TYPE, ...SHAPE, ...DENSITY, ...MOTION, ...LAYOUT,
 } as ThemeValues);
 export const TOKEN_NAMES = Object.keys(THEME_DEFAULT) as TokenName[];
 

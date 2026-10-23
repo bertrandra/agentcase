@@ -380,6 +380,20 @@
   --ac-duration-fast: .15s;
   --ac-duration-base: .2s;
   --ac-easing-standard: ease;
+  --ac-space-block: 1.5rem;
+  --ac-space-heading: 1.5rem;
+  --ac-space-field: 1.25rem;
+  --ac-space-row: 12px;
+  --ac-box-border: var(--ac-border-thin);
+  --ac-box-shadow: var(--ac-shadow-none);
+  --ac-box-bg: var(--ac-surface-raised);
+  --ac-callout-rail: var(--ac-border-rail);
+  --ac-radius-button: var(--ac-radius-md);
+  --ac-border-control: var(--ac-border-thin);
+  --ac-font-size-figure: var(--ac-font-size-4xl);
+  --ac-font-size-kpi: var(--ac-font-size-2xl);
+  --ac-font-weight-display: var(--ac-font-weight-light);
+  --ac-numeric-figures: normal;
   /* @generated tokens:end */
 }
 html, body { margin: 0; background: var(--ac-bg); color: var(--ac-ink); font-family: var(--ac-font); line-height: var(--ac-leading-base); }
