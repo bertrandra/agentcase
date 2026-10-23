@@ -2,6 +2,7 @@
 import type * as XL from 'exceljs';
 import type { Ctx } from '@/domain';
 import type { Persona, MenuGroup } from '@/domain/pdc/personas';
+import type { MenuStructure } from '@/domain/nav/structures';
 import type { DynSection } from '@/domain/pdc/board';
 import type { LocSplit } from '@/domain/verifyA';
 import type { Live } from '@/domain/verifyA/fteVfte';
@@ -34,7 +35,7 @@ export interface ParamsDoc {
   artefactsEdited: ArtefactEdit[]; regArtefactsEdited: ArtefactEdit[]; regUse: boolean; regInclude: boolean; forceGlassCeiling: boolean;
   QUALITY: [string, number, number, string][]; TOKEN_MODELS: TokenModel[]; TOK_OUT_SHARE: number;
   PERSONAS: Persona[]; PERSONA_SECTIONS: Record<string, string[]>; PERSONA_SECTION_ORDER: Record<string, Record<string, number>>;
-  GROUPS: MenuGroup[]; GROUP_COLORS: Record<string, string>; sectionGroups: SectionGroupEntry[];
+  GROUPS: MenuGroup[]; GROUP_COLORS: Record<string, string>; sectionGroups: SectionGroupEntry[]; MENU_STRUCTURES?: MenuStructure[];
   SECTION_DEPS: Record<string, Record<string, 'S' | 'I'>>; SECTION_DEPS_DESC: Record<string, string>;
   scurve: ScurveState; dynamicSections: DynSection[]; lifecycleUse: boolean; lifecyclePos: number; statusLifecycle: StatusLifecycleState[];
   skillMap: Record<string, string>; tobeLocSplit: LocSplit | null; strategyDefs: StrategyDef[];

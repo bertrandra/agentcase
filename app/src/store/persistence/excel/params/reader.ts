@@ -3,10 +3,11 @@ import type { Doc } from '@/store/types';
 import { loadExcelJS } from '../lazy';
 import { KNOWN_SHEETS, READ_ORDER } from './registry';
 import { asArrayBuffer, guardZip, flatten, LIMITS, ParamsImportError } from './safe';
+import { sameJson } from './compare';
 import { effectiveSections, toSectionGroups } from './sections';
 import type { Cell, ParamsDoc, ParamsEnv, ReadCtx, Rows, Sheets } from './types';
 
-export { ParamsImportError };
+export { ParamsImportError, sameJson };
 
 /** Parse the workbook into plain rows (known sheets only, formulas flattened to their value, size-capped). Throws on anything that is not a parameters workbook. */
 export async function loadParamsSheets(input: ArrayBuffer | ArrayBufferView): Promise<Sheets> {
@@ -28,17 +29,6 @@ export async function loadParamsSheets(input: ArrayBuffer | ArrayBufferView): Pr
   }
   if (!out.size) throw new ParamsImportError('No AgentCase parameter sheet found (expected e.g. "Parameters", "Input Team", "SDLC Artifacts")');
   return out;
-}
-
-/** Order-insensitive deep equality of JSON-like values (undefined properties count as absent). */
-export function sameJson(a: unknown, b: unknown): boolean {
-  if (a === b) return true;
-  if (Array.isArray(a)) return Array.isArray(b) && a.length === b.length && a.every((x, i) => sameJson(x, b[i]));
-  if (a && b && typeof a === 'object' && typeof b === 'object' && !Array.isArray(b)) {
-    const ka = Object.keys(a).filter((k) => (a as Record<string, unknown>)[k] !== undefined), kb = Object.keys(b).filter((k) => (b as Record<string, unknown>)[k] !== undefined);
-    return ka.length === kb.length && ka.every((k) => sameJson((a as Record<string, unknown>)[k], (b as Record<string, unknown>)[k]));
-  }
-  return false;
 }
 
 export interface ParamsPatch { patch: Partial<Doc>; notes: string[] }
