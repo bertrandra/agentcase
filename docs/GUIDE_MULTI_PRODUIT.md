@@ -28,7 +28,8 @@ le groupe 📦 Portfolio et l'étape « Portfolio » de sa séquence guidée n'a
 
 1. **🏠 Welcome** → encadré « Portfolio » → bouton **Add a product** (ou, plus tard, section **📦 Products** → champ *Name of the new product* →
    **Add a product**).
-2. La barre haute affiche alors le sélecteur **View** (portefeuille, vague ou produit) et la liste déroulante **Edit:** (**All products**, ou un produit : « *nom* only »).
+2. La barre haute affiche alors deux listes : **👁 Show** (ce que vous regardez : **Portfolio**, une vague ou un produit) et **✏️ Change** (où vont vos
+   modifications : **All products**, ou un produit).
 3. Le nouveau produit **hérite de toutes les valeurs communes** ; seule son **équipe d'entrée** lui est propre.
 4. Dans **📦 Products** : *Duplicate* (copie équipe et surcharges), *Archive / Restore*, *Delete*, note, **décalage** en mois (*Offset (months)*), bouton *Activate*.
    Un portefeuille compte de 1 à 50 produits ; le dernier produit ne peut pas être supprimé.
@@ -36,43 +37,45 @@ le groupe 📦 Portfolio et l'étape « Portfolio » de sa séquence guidée n'a
 ## 2. L'équipe d'entrée de chaque produit
 
 Les sections d'équipe affichent **Team of: *produit actif***. L'équipe n'est **jamais héritée ni partagée** : choisissez le produit dans le sélecteur
-**View** (entrée « Product: … ») ou dans la liste **Edit:** (« *nom* only »), puis saisissez son équipe (compétence, grade, localisation, ETP) comme pour un cas unique. Les autres produits ne bougent pas.
+**Show** (entrée « *nom* (*vague*) ») ou dans la liste **Change** (« *nom* »), puis saisissez son équipe (compétence, grade, localisation, ETP) comme pour un cas unique. Les autres produits ne bougent pas.
 Une personne ne peut pas être affectée à deux produits (limite connue, § 9).
 
 ## 3. Périmètre commun et surcharges
 
 - Le **périmètre** (artefacts SDLC et réglementaires, normes, phases) et les paramètres cibles sont des **valeurs communes**. Quand vous les modifiez
-  avec **Edit: All products**, tous les produits qui **héritent** suivent.
-- Pour qu'un produit diffère : choisissez ce produit dans **Edit:** (« *nom* only » ; il devient le produit édité), ouvrez la section concernée et modifiez-la. Une puce **overridden** apparaît (**inherited** tant que le produit suit le commun)
+  avec **Change: All products**, tous les produits qui **héritent** suivent.
+- Pour qu'un produit diffère : choisissez ce produit dans **Change** (il devient le produit édité), ouvrez la section concernée et modifiez-la. Une puce **overridden** apparaît (**inherited** tant que le produit suit le commun)
   (la valeur commune est dans l'infobulle). La surcharge porte sur la **clé entière** (une liste d'artefacts est remplacée en bloc).
 - **Revert to common** supprime la surcharge ; **Apply to all products** écrit la valeur du produit au niveau commun et retire les surcharges identiques.
 - La section **🧬 Overrides** liste, par produit, les clés surchargées (*Common value* / *Product value*) avec ces deux actions.
 - Restent communs, par décision : tarifs, modèle et coefficients, taux d'actualisation, horizon.
 
-### 3.1 La liste « Edit: » et l'édition sur place
+### 3.1 Les listes « Show » et « Change », et l'édition sur place
 
-La liste **Edit:** de la barre haute (dès deux produits, dans toutes les vues) dit **où vont vos modifications** :
+La barre haute (dès deux produits) porte deux listes, lisibles d'un coup d'œil :
 
-| Choix | Effet |
-|---|---|
-| **All products** (défaut) | Les données partagées vont aux **valeurs communes** ; l'équipe d'entrée reste celle du produit actif. |
-| « *nom* only » | Ce produit devient le produit édité ; vos modifications créent des **surcharges** pour lui seul. |
+| Liste | Question | Choix |
+|---|---|---|
+| **👁 Show** | *Ce que vous regardez* | **Portfolio**, une vague (« Wave 1 ») ou un produit (« Payroll (Wave 1) », « Billing (unscheduled) », « … (archived) ») |
+| **✏️ Change** | *Où vont vos modifications* | **All products** (les **valeurs partagées** ; l'équipe d'entrée reste celle du produit actif) ou un produit (il devient le produit édité ; vos modifications créent des **surcharges** pour lui seul) |
 
-La puce **Editing:** à côté de **View** suit ce choix (« Editing: All products » ou « Editing: *nom* »). Le choix n'est ni annulable ni enregistré.
+**Règle « Change suit Show »** : choisir un **produit** dans **Show** l'affiche *et* le met dans **Change** (vous modifiez ce produit) ; choisir
+**Portfolio** ou une **vague** dans **Show** remet **Change** sur **All products**. Vous pouvez ensuite choisir un produit dans **Change** sans
+quitter la vue Portfolio / Wave. Les deux choix sont annoncés (« Showing Payroll », « Changing all products »), ni annulables ni enregistrés.
 
 **Vue Portfolio ou Wave.** Une section de saisie garde en haut sa **synthèse agrégée** (lecture seule, une ligne par produit, bouton
-**Edit this product** qui bascule la vue) et devient **modifiable sur place** juste en dessous (cadre **Edit in place: …**) :
+**Edit this product** qui bascule la vue) et devient **modifiable sur place** juste en dessous (cadre **Changing …**) :
 
-- **Edit = un produit** : la vraie section de ce produit, comme dans sa vue Product, avec le bandeau « Editing *nom* only — results above and
-  elsewhere still show the Portfolio view » ; les résultats restent ceux de la vue choisie.
-- **Edit = All products** : la section affiche les **valeurs communes** (ce dont tout produit hérite) et chaque modification va au commun, en une
-  étape annulable, même pour une clé que le produit actif surcharge. À côté de chaque champ qu'un ou plusieurs produits surchargent :
-  « *N* products override this: A, B — they keep their value » et un bouton **Reset to common: *produit*** par produit. Les chiffres de cet
-  éditeur sont calculés avec l'équipe du produit actif.
-- Données propres à un produit : l'équipe d'entrée (« The team is per product — pick a product in Edit to change it ») et, dans **🧠 Knowledge hub**,
+- **Change = un produit** : la vraie section de ce produit, comme dans sa vue Product, sous le titre « Changing *nom* only » et le bandeau
+  « Changing *nom* only — the results above and elsewhere still show the Portfolio » ; les résultats restent ceux de la vue choisie.
+- **Change = All products** : titre « Changing all products (shared values) » ; la section affiche les **valeurs partagées** (ce dont tout produit
+  hérite) et chaque modification va au commun, en une étape annulable, même pour une clé que le produit actif surcharge. À côté de chaque champ
+  qu'un ou plusieurs produits surchargent : « *N* products override this: A, B — they keep their value » et un bouton **Back to shared: *produit***
+  par produit. Les chiffres de cet éditeur sont calculés avec l'équipe du produit actif.
+- Données propres à un produit : l'équipe d'entrée (« The team is per product — pick a product in Change to change it ») et, dans **🧠 Knowledge hub**,
   les domaines et la préparation du transfert ne s'éditent pas pour **All products**.
 
-**Vue Product.** La liste fonctionne aussi : choisir un autre produit l'affiche (la vue suit le produit édité). Avec **All products**, une clé que
+**Vue Product.** La liste **Change** fonctionne aussi : choisir un autre produit l'affiche (la vue suit le produit édité). Avec **All products**, une clé que
 ce produit surcharge déjà reste modifiée **sur sa surcharge** (les autres vont au commun) ; pour changer le commun quel que soit le produit,
 passez par la vue Portfolio.
 
@@ -102,7 +105,7 @@ Le **Knowledge Hub** est commun au portefeuille ; chaque produit en utilise un *
 
 - Section **📈 Consolidation** : trésorerie cumulée du portefeuille et de chaque vague, tableaux par vague et par produit, flux par année calendaire.
   Le portefeuille est **exactement la somme** des produits décalés dans le temps ; la VAN est la **Calendar NPV** (actualisée depuis le mois 1 du portefeuille).
-- Sélecteur unique **View** : **Portfolio**, **Wave: …** ou **Product: …**. Choisir un produit l'affiche *et* l'édite ; avec le portefeuille ou une vague en vue, « Editing: … » rappelle ce que modifient les sections (« All products » ou un produit, § 3.1). La barre d'indicateurs, le Gantt (une barre par vague,
+- Liste unique **👁 Show** : **Portfolio**, une vague ou un produit. Choisir un produit l'affiche *et* l'édite (**Change** passe sur lui) ; choisir le portefeuille ou une vague remet **Change** sur **All products** (§ 3.1). La barre d'indicateurs, le Gantt (une barre par vague,
   produits dépliables), Decision Intelligence et le rapport suivent cette vue. Elle n'est pas enregistrée dans le fichier.
 - Ctrl+Z / Ctrl+Y annulent aussi bien une équipe, une surcharge, un déplacement de produit qu'une date de vague.
 
@@ -129,7 +132,7 @@ Les noms de fichiers portent la version : `AgentCase_v20_0_Parameters_….xlsx`.
 ### Cost model workbook
 
 Dans l'onglet **📊 Results workbook**, l'option **💶 Cost model (monthly)** produit un classeur pour **recalculer le coût hors de l'application** :
-*jours x tarif appliqué + autres coûts = coût de l'application*. Choisir le périmètre (*Cost model scope* : Portfolio, Wave: … ou Product: …, par défaut la **View** de la barre du haut ;
+*jours x tarif appliqué + autres coûts = coût de l'application*. Choisir le périmètre (*Cost model scope* : Portfolio, Wave: … ou Product: …, par défaut la vue **Show** de la barre du haut ;
 avec un seul produit, seulement ce produit), puis **⬇️ Export cost model (.xlsx)**. Fichier : `AgentCase_v<version>_CostModel_<périmètre>_<horodatage UTC>.xlsx`.
 
 Les colonnes sont les mois calendaires du portefeuille (M1 = premier mois du portefeuille, avec la date si une date de départ est définie), précédées d'une colonne **t0** (la référence

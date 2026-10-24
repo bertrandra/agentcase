@@ -83,8 +83,11 @@ on vise, à quel coût et à quel moment (§ 3.5).
   **mois de retour**, **ETP humains / vFTE**, vitesse, par mois calendaire, par année, **par vague** et **par produit**.
 - **F16** — Les chiffres du portefeuille sont **exactement la somme** des chiffres produits, décalés dans le temps. Aucune formule parallèle
   (principe : un calcul, plusieurs affichages).
-- **F17** — Le **sélecteur de périmètre d'affichage** (barre haute) choisit : *Portefeuille*, *Vague X*, ou *Produit Y*. Les indicateurs de la barre
-  haute (économies, coût, économies sur N ans, vélocité, retour, automatisation, plafond de verre) sont ceux du périmètre choisi.
+- **F17** — Le **sélecteur de périmètre d'affichage** (barre haute, liste **“Show”**) choisit : *Portefeuille*, *Vague X*, ou *Produit Y*. Les indicateurs de la barre
+  haute (économies, coût, économies sur N ans, vélocité, retour, automatisation, plafond de verre) sont ceux du périmètre choisi. **Révisé (v20.11+)**,
+  règle « Change suit Show » : choisir un produit l'affiche, l'active **et** en fait la cible de la liste **“Change”** (portée `product`) ; choisir le
+  Portefeuille ou une Vague remet “Change” sur **All products** (portée `all`). L'utilisateur peut ensuite choisir un produit dans “Change” sans changer
+  la vue (voir « Précisions : listes Show / Change et édition sur place »).
 - **F18** — **Gantt** : une ligne par vague (barre agrégée) avec produits dépliables ; les jalons d'adoption (L1 → L4), le retour et le premier vFTE
   sont ceux de chaque produit.
 - **F19** — **Rapport / Excel / HTML / photos instantanées** : le fichier de résultats contient une feuille “Portfolio”, une feuille par vague
@@ -299,7 +302,7 @@ Règle d'adressage : les **commandes existantes** (≈ 202) gardent leur signatu
 `common` (clé héritée) ou dans `products[active].overrides` (clé déjà surchargée, ou mode “edit this product only” actif).
 Un interrupteur visible “Edit: all products / this product only” (par défaut : *ce produit seulement* pour l'équipe,
 *tous les produits* pour le périmètre tant que le produit hérite) évite les modifications involontaires. **Révisé (après v20.10, voir « Précisions :
-liste Edit et édition sur place »)** : l'interrupteur devient une liste “Edit:” (All products / « *nom* only » par produit) et, en vue Portefeuille
+listes Show / Change et édition sur place »)** : l'interrupteur devient une liste “Change” (All products / « *nom* » par produit) et, en vue Portefeuille
 ou Vague, “All products” écrit toujours le commun.
 
 ### 6.2 État d'interface (non annulable)
@@ -491,7 +494,7 @@ Toutes les recommandations du § 12 ont été **acceptées** par le commanditair
 ### Précisions d'implémentation de P4
 
 - **Sections** : “Waves” (`portfolio/waves`) et « Consolidation » (`portfolio/consolidation`), 84 sections au catalogue. Planche : une colonne par vague puis “Unscheduled” ; déplacement par glisser-déposer, flèches gauche / droite sur la carte et menu “Move to wave…”, toujours `wave.assign` (annulable, annoncé) ; décalage du produit et démarrage de la vague (mois, avec le mois calendaire issu de `startDate`) ; la colonne Vague du tableau Produits est modifiable par la même commande. Les totaux d'une vague sont ceux de `WaveView` ; l'effet du hub par vague reste dans Knowledge transfer (lien).
-- **Périmètre d'affichage (F17)** : champ de vue `displayScope` du portefeuille, commande `portfolio.setDisplayScope` non annulable, **non enregistré** (comme `editScope`) : un fichier se rouvre toujours sur le produit actif. Choisir “Product: Y” active ce produit. Portefeuille / Vague : chiffres de `scopeHeadline` (vélocité, automatisation effective et plafond de verre pondérés par l'effectif d'entrée ; économies et coût de l'**année calendaire** de fin d'horizon ; « économies sur N ans » par composants). Un produit seul : barre inchangée.
+- **Périmètre d'affichage (F17)** : champ de vue `displayScope` du portefeuille, commande `portfolio.setDisplayScope` non annulable, **non enregistré** (comme `editScope`) : un fichier se rouvre toujours sur le produit actif. Choisir un produit dans “Show” active ce produit et le met dans “Change” ; Portefeuille / Vague remettent “Change” sur All products (règle « Change suit Show »). Portefeuille / Vague : chiffres de `scopeHeadline` (vélocité, automatisation effective et plafond de verre pondérés par l'effectif d'entrée ; économies et coût de l'**année calendaire** de fin d'horizon ; « économies sur N ans » par composants). Un produit seul : barre inchangée.
 - **Consolidation** : `consolidationView` (cartes, trésorerie cumulée portefeuille + une courbe par vague, tableaux par vague et par produit, ligne de total = en-tête du portefeuille, flux par année, diagnostics `unscheduled`, `kt-lead-clamped`, `target-capped`, `hub-unused` et `truncated` — produit coupé par l'horizon, information).
 - **Gantt (F18)** : barre par vague de `portfolioGantt` (de la première mise en route, préparation du transfert comprise, à la fin de la rampe — max(profil de mise en place, dernier jalon d'adoption / maturité) — du produit le plus tardif), produits dépliables avec jalons du moteur décalés de `mois0`. Avec le périmètre Produit : seulement une ligne indiquant le décalage calendaire.
 - **A8** : règle ESLint `no-restricted-syntax` (`.reduce(` interdit) dans `ui/sections/portfolio`, les crochets / tuiles de périmètre et le Gantt par vague ; test dans `tests/lint-rules.test.ts`.
@@ -526,20 +529,28 @@ Toutes les recommandations du § 12 ont été **acceptées** par le commanditair
 - **Contrôles de sortie** : `tools/e2e-smoke.mjs` visite toutes les sections, dont les six du groupe Portefeuille, sur deux fichiers de portefeuille ; `tools/perf.mjs` mesure aussi le changement de section du groupe Portefeuille ; résultats chiffrés dans le CHANGELOG.
 - **Reste hors périmètre** (voir ARCHITECTURE.md § 12) : tableau de scénarios de portefeuille, dépendances entre vagues, équipes partagées, troncature des tirages à l'horizon calendaire, « appliquer à tous » pour le sous-ensemble de connaissance.
 
-### Précisions : liste “Edit:” et édition sur place (après v20.10)
+### Précisions : listes “Show” / “Change” et édition sur place (après v20.10)
 
-- **Barre haute** : la paire de boutons radio “Edit: All products / This product only” est remplacée par **une liste native “Edit:”** (≥ 2 produits,
-  toutes les vues) : **All products**, puis « *nom* only » par produit (en vue Vague, les produits de la vague d'abord, puis “Other products”).
+- **Barre haute** : la paire de boutons radio “Edit: All products / This product only” est remplacée par **une liste native “Change”** (≥ 2 produits,
+  toutes les vues) : **All products**, puis « *nom* » par produit (en vue Vague, les produits de la vague d'abord, puis “Other products”).
   Choisir un produit = produit actif + portée `product` ; All products = portée `all`. État de vue : non annulable, non enregistré (`editScope`
   inchangé, aucun nouveau champ). La Vue ne change pas ; en vue Product, choisir un autre produit l'affiche (le produit affiché est le produit édité).
-  La puce “Editing:” dit « All products » ou le nom du produit.
+- **Libellés “pour un enfant” (v20.11+)** : le sélecteur de vue s'appelle **“👁 Show”** (ce que vous regardez : « Portfolio », « Wave 1 »,
+  « Payroll (Wave 1) », « Billing (unscheduled) », suffixe « (archived) ») et la liste d'édition **“✏️ Change”** (où vont vos modifications :
+  « All products », « Payroll »). Icônes `aria-hidden`, noms accessibles `Show` / `Change`, infobulles d'une ligne. La puce “Editing:” est supprimée :
+  la valeur de “Change” suffit. Annonces : « Showing Portfolio / Wave 1 / Payroll », « Changing all products / Payroll ».
+- **Règle « Change suit Show » (F17 révisé)** : Show = un produit (ou “Edit this product”) → ce produit devient actif **et** cible de Change (portée
+  `product`) ; Show = Portefeuille ou Vague → Change revient sur All products (portée `all`). Un choix explicite dans Change ne touche pas Show.
+- **Bandeaux de l'édition sur place** : « Changing all products (shared values) » / « Changing X only » (h2) ; « Shared values: every product that
+  inherits a value follows; a product with its own value keeps it. » / « Changing X only — the results above and elsewhere still show the Portfolio » ;
+  bouton « Back to shared: X » (ex-“Reset to common”) ; bandeau de section « Changing: all products (shared values) » / « Changing: product X ».
 - **Règle d'adressage révisée** : avec **All products** et une Vue **Portefeuille ou Vague** (`editsCommon`), une commande de cas s'exécute sur
   le **cas commun** (`resolveCommon` : valeurs communes + couche hub, sans surcharge ni sous-ensemble, équipe du produit actif) et chaque
   changement va au **commun**, y compris pour une clé que le produit actif surcharge et pour les champs du Knowledge Hub (pas de sous-ensemble) ;
   `teamIn` reste au produit actif. Une seule étape annulable ; annuler / rétablir restaurent exactement. En vue Product, la règle de P2 est
   inchangée (clé déjà surchargée → surcharge).
 - **Sections de saisie en Portefeuille / Vague** : la synthèse agrégée reste en haut ; la section est **modifiable sur place** dessous, pour le
-  produit choisi (ses surcharges) ou pour All products (le commun, avec, par champ, les produits qui gardent leur valeur et “Reset to common”,
+  produit choisi (ses surcharges) ou pour All products (le commun, avec, par champ, les produits qui gardent leur valeur et “Back to shared”,
   qui retire la surcharge ou le champ de sous-ensemble). Données propres au produit (équipe d'entrée ; domaines et préparation du KT) : non
   modifiables pour All products (indication). Les sections de résultat suivent toujours la Vue.
 - **Un seul produit** : rien ne change (ni liste, ni éditeur sur place).
