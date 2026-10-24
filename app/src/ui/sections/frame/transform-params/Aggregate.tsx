@@ -17,7 +17,8 @@ const COLS: AggColumn<IndustryRow>[] = [
   { key: 'src', header: 'Source', render: (r) => (r.own ? 'own profile' : 'inherited from common') },
 ];
 
-const help = <p>Aggregate view of the industry / regulatory profile of each product: the profile, whether the regulatory catalog is on, the norms and cross-cutting concerns ticked and the regulatory artefacts they add to the scope.</p>;
+const help = <p>Aggregate view of the industry / regulatory profile of each product: the profile, whether the regulatory catalog is on, the norms and
+  cross-cutting concerns ticked and the regulatory artefacts they add to the scope.</p>;
 
 /** Industry / regulatory profile — Aggregate view: the profile, norms and cross-cutting concerns of each product and the number of regulated products. */
 export default function TransformParamsAggregate() {

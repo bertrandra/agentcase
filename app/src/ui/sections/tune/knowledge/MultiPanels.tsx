@@ -16,12 +16,15 @@ import { SubsetBadge } from './SubsetBadge';
 export function SubsetBanner() {
   const multi = useIsMulti(), p = useActiveProduct(), common = useInCommonView();
   if (!multi) return null;
-  if (common) return <p className="ac-prod-banner" role="note">Common Knowledge Hub: <strong>All products</strong><span className="ac-muted"> — the products that inherit a field follow; a product’s own subset field keeps its value.</span></p>;
+  if (common) return <p className="ac-prod-banner" role="note">Common Knowledge Hub: <strong>All products</strong><span className="ac-muted"> — the products
+    that inherit a field follow; a product’s own subset field keeps its value.</span></p>;
   const n = Object.values(p.knowledge).filter((v) => v !== undefined).length;
   return (
     <p className="ac-prod-banner" role="note" data-overrides={n}>
-      Knowledge Hub subset of: <strong>{p.name}</strong> ({n ? `${n} own field${n > 1 ? 's' : ''} of the product` : 'everything is inherited from the common hub'})
-      <span className="ac-muted"> — “This product only” (top bar) creates the product’s own value; “All products” edits the common hub, which inheriting products follow.</span>
+      Knowledge Hub subset
+        of: <strong>{p.name}</strong> ({n ? `${n} own field${n > 1 ? 's' : ''} of the product` : 'everything is inherited from the common hub'})
+      <span className="ac-muted"> — “This product only” (top bar) creates the product’s own value; “All products” edits the common hub, which inheriting
+        products follow.</span>
     </p>
   );
 }
@@ -30,7 +33,8 @@ export function SubsetBanner() {
 function CapNote() {
   const c = useCtx(), h = useMemo(() => hubView(c), [c]);
   if (h.locked) return <Callout kind="error">Engagement context {h.context}: the hub is locked for this product.</Callout>;
-  return <p className="ac-muted" data-cap={h.maxCC}>Context {h.context} cap: CC{h.maxCC}. Requested target: CC{h.rawTarget}{h.clamped ? ` — capped at CC${h.target}` : ''}.</p>;
+  return <p className="ac-muted" data-cap={h.maxCC}>Context {h.context} cap: CC{h.maxCC}. Requested target:
+    CC{h.rawTarget}{h.clamped ? ` — capped at CC${h.target}` : ''}.</p>;
 }
 
 /** "Knowledge transfer preparation": ktLeadMonths of the active product, >= 0 (spec F28). Shifts only the KT setup cost in the consolidation. */
@@ -49,7 +53,8 @@ function LeadField() {
         <NumField label="Knowledge transfer preparation (months before the wave)" value={p.knowledge.ktLeadMonths ?? 0} min={0} step={1} onCommit={commit}
           hint="0 = the KT setup cost falls at the start of the product" />
       </div>
-      <p className="ac-muted">With k months, only the setup cost of the transfer (ingestion, initial curation) is placed k months before the product starts: the next wave is prepared during the current one. Benefits still start from month 0.</p>
+      <p className="ac-muted">With k months, only the setup cost of the transfer (ingestion, initial curation) is placed k months before the product starts: the
+        next wave is prepared during the current one. Benefits still start from month 0.</p>
       {error && <p role="alert" style={{ color: 'var(--ac-danger-800)' }}>{error}</p>}
       {clamp && <Callout kind="warn">{clamp.message}</Callout>}
     </Panel>
@@ -66,7 +71,8 @@ export function MultiPanels() {
   return (
     <>
       <CapNote />
-      {common ? <Callout kind="blue">The knowledge domains and the knowledge transfer preparation are per product — pick a product in Change to change them.</Callout>
+      {common ? <Callout kind="blue">The knowledge domains and the knowledge transfer preparation are per product — pick a product in Change to change
+        them.</Callout>
         : <><DomainsEditor /><LeadField /></>}
       <HubSettings />
     </>

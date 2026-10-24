@@ -10,7 +10,8 @@ export function Cascade() {
   const { rows, posture, label } = lifecycleCascade(c);
   return (
     <div>
-      <p>Blended status <strong>{label}</strong> re-weights each phase&apos;s effort, and applies an <strong>automation posture of <span style={{ color: tone(posture, 1.02, 0.98) }}>×{posture.toFixed(2)}</span></strong> to
+      <p>Blended status <strong>{label}</strong> re-weights each phase&apos;s effort, and applies an <strong>automation posture
+        of <span style={{ color: tone(posture, 1.02, 0.98) }}>×{posture.toFixed(2)}</span></strong> to
         the effective automation depth — so the product status cascades to every in-scope artifact and the whole business case:</p>
       <table className="ac-table">
         <thead><tr><th>Phase</th><th className="ac-c">Weight</th><th>Resulting effort share</th></tr></thead>

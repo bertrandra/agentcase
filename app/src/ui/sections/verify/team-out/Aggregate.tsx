@@ -8,7 +8,8 @@ import { ExcludedNote, VerifyTable } from '../aggregate/Rollup';
 
 const help = (
   <>
-    <p>The target team of the <strong>selection</strong>: each planned product&apos;s own target team (residual dev, supervision, agentic run, setup), added up. FTE and annual costs are additive; percentages are recomputed from the sums.</p>
+    <p>The target team of the <strong>selection</strong>: each planned product&apos;s own target team (residual dev, supervision, agentic run, setup), added up.
+      FTE and annual costs are additive; percentages are recomputed from the sums.</p>
     <p>Choose a product in “Show” for the single-product breakdown.</p>
   </>
 );

@@ -25,7 +25,8 @@ export function PillarPanel() {
       </div>
       <div className="ac-table-wrap" tabIndex={0}>
         <table className="ac-table">
-          <thead><tr><th>Profile \ Phase</th>{PROFILE_PHASES.map((ph) => <th key={ph} className="ac-c" title={ph}>{ph === 'Cross-cutting' ? 'X' : ph}</th>)}</tr></thead>
+          <thead><tr><th>Profile \
+            Phase</th>{PROFILE_PHASES.map((ph) => <th key={ph} className="ac-c" title={ph}>{ph === 'Cross-cutting' ? 'X' : ph}</th>)}</tr></thead>
           <tbody>
             {PRODUCT_PROFILES.map((pr) => (
               <tr key={pr.id} style={pr.id === cur ? { background: 'var(--ac-bg)' } : undefined}>
@@ -40,7 +41,8 @@ export function PillarPanel() {
         </table>
       </div>
       <Note>Reference 1.2 potential matrix (Strong / Medium / Cautious). It tells <em>where</em> to deploy agents first. {pillarApplyOn(c)
-        ? <>Leverage is <strong>applied</strong> to the Abaque reconciliation below.</> : 'Analytical only — tick the box above to apply it to the Abaque reconciliation.'}</Note>
+        ? <>Leverage is <strong>applied</strong> to the Abaque reconciliation
+          below.</> : 'Analytical only — tick the box above to apply it to the Abaque reconciliation.'}</Note>
     </Panel>
   );
 }

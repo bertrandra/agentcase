@@ -35,8 +35,9 @@ function Waves() {
       {shown.map((w, i) => <WaveRow key={w.id} w={w} index={i} open={open.has(w.id) || scope.kind === 'wave'} onToggle={() => toggle(w.id)} />)}
       {!shown.length && <p className="ac-muted">No scheduled wave.</p>}
       {g.unplanned.length > 0 && <p className="ac-muted">Unscheduled (absent from the Gantt): {g.unplanned.join(', ')}.</p>}
-      <p className="ac-muted">A wave bar runs from the start of its earliest product (transfer preparation included) to the end of the setup / adoption ramp of its latest product.
-        Expand a wave for its products: the dots are their milestones (adoption levels, payback, first vFTE) placed on the portfolio calendar.</p>
+      <p className="ac-muted">A wave bar runs from the start of its earliest product (transfer preparation included) to the end of the setup / adoption ramp of
+        its latest product. Expand a wave for its products: the dots are their milestones (adoption levels, payback, first vFTE) placed on the portfolio
+        calendar.</p>
     </section>
   );
 }

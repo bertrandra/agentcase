@@ -15,8 +15,8 @@ function CapInput() {
       <strong>⚙️ Technical automation cap</strong>
       <input type="number" min={10} max={100} step={5} aria-label="Technical automation cap" value={draft ?? cap}
         onChange={(e) => setDraft(e.target.value)} onBlur={commit} onKeyDown={(e) => { if (e.key === 'Enter') commit(); }} />
-      <span className="ac-field-h">% — the most a full delivery scope can be agent-automated, <em>before</em> the glass ceiling. Bounds the slider and the scope-fit above (and the Monte-Carlo range).
-        Default 100% (no technical cap); lower it to reserve an irreducible human share across the scope.</span>
+      <span className="ac-field-h">% — the most a full delivery scope can be agent-automated, <em>before</em> the glass ceiling. Bounds the slider and the
+        scope-fit above (and the Monte-Carlo range). Default 100% (no technical cap); lower it to reserve an irreducible human share across the scope.</span>
     </div>
     </FieldNumber>
   );

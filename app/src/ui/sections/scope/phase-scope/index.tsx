@@ -10,9 +10,10 @@ const OVERRIDES = ['phaseOff', 'selectedArtefacts'] as const;
 
 const help = (
   <>
-    <p>The coarse scope control: whole SDLC phases in or out, in one click each. It writes to exactly the same artefact selection that Scope edits one artefact at a time — same state, two resolutions.</p>
-    <p>Each tile shows the phase&apos;s effort share (after lifecycle weighting), its contribution to the glass ceiling and the effort-weighted human supervision of its artefacts.
-      A phase shows as indeterminate when only some of its artefacts are selected.</p>
+    <p>The coarse scope control: whole SDLC phases in or out, in one click each. It writes to exactly the same artefact selection that Scope edits one artefact
+      at a time — same state, two resolutions.</p>
+    <p>Each tile shows the phase&apos;s effort share (after lifecycle weighting), its contribution to the glass ceiling and the effort-weighted human
+      supervision of its artefacts. A phase shows as indeterminate when only some of its artefacts are selected.</p>
   </>
 );
 
@@ -34,8 +35,10 @@ export default function PhaseScopeSection() {
         <>
           <div className="ac-tiles">{tiles.map((t) => <Tile key={t.id} t={t} />)}</div>
           <p className="ac-callout">
-            <strong>Legend</strong> — 📊 <strong>effort share</strong>: share of the total effort×lifecycle weight carried by this phase · 🎯 <strong>contribution</strong>: points this phase adds to
-            the Effective glass ceiling (Σ over ALL rows = GC) · 👤 <strong>human sup</strong>: average human-supervision % across the phase&apos;s artifacts · art. = active artifacts (SDLC + selected norms + cross-cutting)
+            <strong>Legend</strong> — 📊 <strong>effort share</strong>: share of the total effort×lifecycle weight carried by this phase ·
+              🎯 <strong>contribution</strong>: points this phase adds to
+            the Effective glass ceiling (Σ over ALL rows = GC) · 👤 <strong>human sup</strong>: average human-supervision % across the phase&apos;s artifacts ·
+              art. = active artifacts (SDLC + selected norms + cross-cutting)
           </p>
         </>
       } />

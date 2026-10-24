@@ -48,7 +48,8 @@ export function GatePanel() {
         <strong style={{ color: `var(--ac-${view.tone})` }}>{view.text}</strong>
         {v.notes.length > 0 && <ul>{v.notes.map((n) => <li key={n}>{n}</li>)}</ul>}
       </div>
-      <Note>Reference 1.2: six prerequisites + red-flag legacy screening. A large critical legacy can stay eligible per task without being eligible globally. The verdict annotates Decision Intelligence (CC-ELIG-01).</Note>
+      <Note>Reference 1.2: six prerequisites + red-flag legacy screening. A large critical legacy can stay eligible per task without being eligible globally.
+        The verdict annotates Decision Intelligence (CC-ELIG-01).</Note>
     </Panel>
   );
 }
