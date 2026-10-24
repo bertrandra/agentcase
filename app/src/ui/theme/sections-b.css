@@ -28,3 +28,49 @@
 .ac-section :is(table, .ac-table) :is(th, td).ac-num { text-align: right; }
 .ac-section :is(table, .ac-table) :is(th, td).ac-center { text-align: center; }
 .ac-section :is(.ac-table, .ac-rich table) td.ac-num { font-family: var(--ac-font-numeric); }
+
+/* ---- shared section blocks: a live status line under a panel's buttons, a wrapping row of buttons */
+.ac-section .ac-status { margin-top: 8px; }
+.ac-section .ac-actions { display: flex; flex-wrap: wrap; gap: 8px; }
+.ac-section .ac-actions-block { margin: 8px 0; }
+
+/* ---- Reference & share: files and snapshots, sessions, glossary, data model */
+.ac-section .ac-snap-capture { display: flex; flex-wrap: wrap; align-items: flex-end; gap: 8px; }
+.ac-section .ac-snap-pick { display: flex; flex-wrap: wrap; align-items: center; gap: 8px; }
+.ac-section .ac-gloss-bar { display: flex; flex-wrap: wrap; gap: 12px; margin: 8px 0; }
+.ac-section .ac-table th.ac-gloss-dim { color: var(--ac-text-on-data); background: var(--ac-gloss-dim); }
+.ac-section .ac-gloss-term { font-weight: var(--ac-font-weight-semibold); color: var(--ac-gloss-ink); }
+.ac-section .ac-gloss-status { color: var(--ac-gloss-ink); }
+.ac-section .ac-dm-cards { display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 10px; }
+.ac-section .ac-dm-card { padding: 10px; text-align: left; cursor: pointer; border-left-color: var(--ac-dm-tone); }
+.ac-dm-card[data-layer='sections'] { --ac-dm-tone: var(--ac-primary-700); } .ac-dm-card[data-layer='state'] { --ac-dm-tone: var(--ac-teal-700); }
+.ac-dm-card[data-layer='variables'] { --ac-dm-tone: var(--ac-secondary-600); } .ac-dm-card[data-layer='model'] { --ac-dm-tone: var(--ac-warning-600); }
+.ac-section .ac-dm-card-n { font-size: var(--ac-font-size-6xl); font-weight: var(--ac-font-weight-bold); color: var(--ac-dm-tone); }
+.ac-section .ac-dm-card-t { font-weight: var(--ac-font-weight-semibold); }
+.ac-section .ac-dm-tags { margin-top: 12px; }
+
+/* ---- Reference & share: section dependencies (graph, side panel, matrix, zones, build order, tests) */
+.ac-section .ac-dep-graph { overflow-x: auto; }
+.ac-section .ac-dep-svg { width: 100%; min-width: 1040px; max-width: 1500px; }
+.ac-section .ac-dep-node { cursor: pointer; }
+.ac-section .ac-dep-ref { margin-right: 10px; }
+.ac-section .ac-dep-card { display: block; padding: 10px; margin: 8px 0; }
+.ac-section .ac-dep-card-head { margin-top: 0; }
+.ac-section .ac-dep-card-title, .ac-section .ac-dep-empty { margin: 0; }
+.ac-section .ac-dep-rels { display: grid; grid-template-columns: repeat(auto-fit, minmax(260px, 1fr)); gap: 12px; }
+.ac-section .ac-dep-chip { margin: 0 8px 2px 0; }
+.ac-section .ac-dep-more, .ac-section .ac-dep-more > summary { display: inline; }
+.ac-section .ac-dep-tests { padding-left: 16px; font-size: var(--ac-font-size-sm); }
+.ac-section .ac-dep-tests-2col { columns: 2; }
+.ac-section .ac-dep-selection { font-size: var(--ac-font-size-xl); }
+.ac-section .ac-dep-entry, .ac-section .ac-dep-link { margin-right: 8px; }
+.ac-section .ac-dep-consumers { max-width: 420px; }
+.ac-section .ac-dep-layer { display: flex; align-items: flex-start; gap: 10px; margin-bottom: 10px; }
+.ac-section .ac-dep-layer-n { min-width: 78px; color: var(--ac-blue); }
+.ac-section .ac-dep-layer-zones { display: flex; flex: 1; flex-wrap: wrap; gap: 10px; }
+.ac-section .ac-dep-layer-zone { min-width: 190px; max-width: 250px; }
+.ac-section .ac-matrix thead th.ac-dep-col { max-height: 150px; font-size: var(--ac-font-size-2xs); writing-mode: vertical-rl; transform: rotate(180deg); }
+.ac-section .ac-matrix td.is-self { background: var(--ac-slate-85); }
+.ac-section td[data-cell='direct'], .ac-section [data-mark='direct'] { color: var(--ac-primary-700); }
+.ac-section td[data-cell='write'], .ac-section [data-mark='write'] { color: var(--ac-warning-600); }
+.ac-section td[data-cell='indirect'], .ac-section [data-mark='indirect'] { color: var(--ac-slate-675); }

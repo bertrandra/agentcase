@@ -50,7 +50,7 @@ export function ParamsExcelPanel() {
       <ParamsNote />
       <Panel title={T.exportTitle}>
         <p>{T.exportText}</p>
-        <div style={{ display: 'flex', gap: 8, flexWrap: 'wrap' }}>
+        <div className="ac-actions">
           {EXPORTS.map((x) => <button key={x.scope} type="button" className="ac-btn" disabled={busy} title={x.hint} onClick={() => void run(x.scope)}>{x.label}</button>)}
         </div>
       </Panel>
@@ -59,7 +59,7 @@ export function ParamsExcelPanel() {
         <button type="button" className="ac-btn" disabled={busy} onClick={() => file.current?.click()}>⬆️ Import parameters…</button>
         <input ref={file} type="file" accept=".xlsx" aria-label="Settings workbook (.xlsx)" hidden onChange={(e) => { void load(e.target.files?.[0]); e.target.value = ''; }} />
       </Panel>
-      <div role="status" aria-live="polite" style={{ marginTop: 8 }}>
+      <div role="status" aria-live="polite" className="ac-status">
         {status && <Callout kind={status.kind}>{status.text}{status.notes && status.notes.length > 0 && <ul>{status.notes.map((n, i) => <li key={i}>{n}</li>)}</ul>}</Callout>}
       </div>
     </div>

@@ -32,7 +32,7 @@ export function SnapshotPanel() {
       <SaveOpenButtons save="💾 Download HTML snapshot" open="⬆️ Open an HTML or JSON snapshot…" accept=".html,.htm,.json,text/html,application/json" fileLabel="Snapshot file to open"
         onSave={save} onOpen={open} />
       <p className="ac-muted">Opening reads the case out of the file; nothing in it is executed. HTML snapshots saved by v18.x open too.</p>
-      <div role="status" aria-live="polite" style={{ marginTop: 8 }}>{status && <Callout kind={failed ? 'error' : 'note'}>{status}</Callout>}</div>
+      <div role="status" aria-live="polite" className="ac-status">{status && <Callout kind={failed ? 'error' : 'note'}>{status}</Callout>}</div>
     </Panel>
   );
 }

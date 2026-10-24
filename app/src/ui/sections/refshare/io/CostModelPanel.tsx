@@ -50,7 +50,7 @@ export function CostModelPanel() {
         </label>
       </p>
       <button type="button" className="ac-btn ac-btn-primary" disabled={busy} onClick={() => void run()}>⬇️ Export cost model (.xlsx)</button>
-      <div role="status" aria-live="polite" style={{ marginTop: 8 }}>{status && <Callout kind={failed ? 'warn' : 'note'}>{status}</Callout>}</div>
+      <div role="status" aria-live="polite" className="ac-status">{status && <Callout kind={failed ? 'warn' : 'note'}>{status}</Callout>}</div>
     </Panel>
   );
 }

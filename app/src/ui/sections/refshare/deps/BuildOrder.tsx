@@ -11,11 +11,11 @@ export function BuildOrder() {
       <h2>Build order <span className="ac-muted">— {LAYERS.order.length} zones in {layers.length} layers, {LAYERS.feedback.length} feedback links set aside</span></h2>
       <Callout>{notes.buildOrderNote}</Callout>
       {layers.map((l) => (
-        <div key={l} data-layer={l} style={{ display: 'flex', gap: 10, alignItems: 'flex-start', marginBottom: 10 }}>
-          <strong style={{ minWidth: 78, color: 'var(--ac-blue)' }}>Layer {l}</strong>
-          <div style={{ display: 'flex', gap: 10, flexWrap: 'wrap', flex: 1 }}>
+        <div key={l} data-layer={l} className="ac-dep-layer">
+          <strong className="ac-dep-layer-n">Layer {l}</strong>
+          <div className="ac-dep-layer-zones">
             {LAYERS.order.filter((z) => LAYERS.layer[z] === l).map((z) => (
-              <div key={z} className="ac-chip" style={{ minWidth: 190, maxWidth: 250 }}>
+              <div key={z} className="ac-chip ac-dep-layer-zone">
                 <strong>{zoneOf(z)!.label}</strong>
                 <div className="ac-muted">{zoneOf(z)!.lane} · {modules(z)} modules · position {LAYERS.order.indexOf(z) + 1}</div>
               </div>

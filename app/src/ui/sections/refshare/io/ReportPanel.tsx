@@ -43,7 +43,7 @@ export function ReportPanel() {
         </p>
       )}
       <button type="button" className="ac-btn" onClick={run}>📄 Export critical-delivery report</button>
-      <div role="status" aria-live="polite" style={{ marginTop: 8 }}>{status && <Callout kind={failed ? 'warn' : 'note'}>{status}</Callout>}</div>
+      <div role="status" aria-live="polite" className="ac-status">{status && <Callout kind={failed ? 'warn' : 'note'}>{status}</Callout>}</div>
     </Panel>
   );
 }

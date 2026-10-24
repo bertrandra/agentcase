@@ -22,8 +22,8 @@ export function Graph({ sel, onSelect }: { sel: string | null; onSelect: (id: st
   const onPath = (e: (typeof edges)[number]): boolean => !!hit && ((hit.upstream.has(e[0]) && hit.upstream.has(e[1])) || (hit.downstream.has(e[0]) && hit.downstream.has(e[1])));
   const lit = (id: string): boolean => !hit || hit.upstream.has(id) || hit.downstream.has(id);
   return (
-    <div style={{ overflowX: 'auto' }}>
-      <svg viewBox={`0 0 ${L.width} ${L.height}`} style={{ width: '100%', minWidth: 1040, maxWidth: 1500 }} role="group" onKeyDown={(ev) => { if (ev.key === 'Escape') onSelect(null); }}
+    <div className="ac-dep-graph">
+      <svg viewBox={`0 0 ${L.width} ${L.height}`} className="ac-dep-svg" role="group" onKeyDown={(ev) => { if (ev.key === 'Escape') onSelect(null); }}
         aria-label="Dependency graph generated from the code: each node is a button that highlights what feeds it and what it feeds; the same links are listed in the Matrix sub-tab">
         <defs>
           {(['r', 'w'] as const).map((k) => <marker key={k} id={`dep-arr-${k}`} markerWidth="7" markerHeight="7" refX="6" refY="3.5" orient="auto"><path d="M0,0 L7,3.5 L0,7 Z" fill={EDGE_COLOR[k]} /></marker>)}
@@ -39,7 +39,7 @@ export function Graph({ sel, onSelect }: { sel: string | null; onSelect: (id: st
           const zone = isZone(id), color = zone ? LANE_COLOR[zoneOf(id)!.lane] : GROUP_COLOR[DATA.sections.find((s) => s.id === id)?.group ?? ''] ?? 'var(--ac-chart-cat-1)';
           const act = () => onSelect(sel === id ? null : id);
           return (
-            <g key={id} data-node={id} data-lit={lit(id) ? '1' : '0'} transform={`translate(${p.x},${p.y})`} style={{ cursor: 'pointer' }} opacity={lit(id) ? 1 : 0.3} tabIndex={0} role="button" aria-pressed={sel === id}
+            <g key={id} data-node={id} data-lit={lit(id) ? '1' : '0'} transform={`translate(${p.x},${p.y})`} className="ac-dep-node" opacity={lit(id) ? 1 : 0.3} tabIndex={0} role="button" aria-pressed={sel === id}
               aria-label={`${labelOf(id)}, ${zone ? 'calculation zone' : 'section'}`} onClick={act} onKeyDown={(ev) => { if (ev.key === 'Enter' || ev.key === ' ') { ev.preventDefault(); act(); } }}>
               <rect width={L.nodeW} height={L.nodeH} rx="6" fill={sel === id ? 'var(--ac-primary-75)' : 'var(--ac-neutral-0)'} stroke={color} strokeWidth={zone ? 2 : 1.3} strokeDasharray={undefined} />
               <text x="8" y={L.nodeH / 2 + 4} fontSize="var(--ac-font-size-xs)" fill="var(--ac-neutral-900)">{short(labelOf(id))}</text>
@@ -55,7 +55,7 @@ export function Graph({ sel, onSelect }: { sel: string | null; onSelect: (id: st
       </svg>
       <details>
         <summary>{L.reference.length} reference sections have no calculation (collapsed lane)</summary>
-        <p>{L.reference.map((id) => <button key={id} type="button" className="ac-golink" style={{ marginRight: 10 }} onClick={() => goSection(id)}>{labelOf(id)}</button>)}</p>
+        <p>{L.reference.map((id) => <button key={id} type="button" className="ac-golink ac-dep-ref" onClick={() => goSection(id)}>{labelOf(id)}</button>)}</p>
       </details>
     </div>
   );
