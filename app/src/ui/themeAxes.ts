@@ -4,7 +4,7 @@ import { AXES, AXIS_DEFAULTS, AXIS_NAMES, axisAttr, axisAttributes, isAxisValue,
 /**
  * The theme axes at run time (docs/THEME.md §6). The single source is the set of `data-ac-*` attributes on `<html>`: the CSS blocks of axes.css
  * read them, and the Field* controls subscribe to them here. A theme (T4: from the case, the Brand & theme screen, a preset) applies with
- * `applyThemeAxes()`; for the values `tok()` returns, combine `axisTokens(axes)` with the colour values in `setActiveTheme()`.
+ * `applyThemeAxes()`; the values `tok()` returns come from `axisTokens(axes)` in the theme's base table (`resolveAppTheme()`).
  */
 const rootEl = (): HTMLElement | null => (typeof document === 'undefined' ? null : document.documentElement);
 

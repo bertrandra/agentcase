@@ -1,12 +1,13 @@
 import { lifecycleAutoPosture } from '@/domain/lifecycle';
 import { statusDoc, statusLabel } from '@/domain/scope/lifecycleView';
 import { useCtx } from '@/store/hooks';
-import { alpha, tok } from '@/domain/theme';
+import { useTheme } from '@/ui/themeContext';
 
-const tone = (v: number) => (v > 1.02 ? 'var(--ac-teal)' : v < 0.98 ? 'var(--ac-brick)' : tok('slate-700'));
+const tone = (v: number) => (v > 1.02 ? 'var(--ac-teal)' : v < 0.98 ? 'var(--ac-brick)' : 'var(--ac-slate-700)');
 
 /** Reference table of the product profiles (EV-13): character, automation posture, and the live blended position. */
 export function StatusTable() {
+  const { alpha } = useTheme();   // a computed alpha of a theme colour: resolved in the theme in effect
   const { s } = useCtx(), posture = lifecycleAutoPosture(s);
   return (
     <details className="ac-panel">

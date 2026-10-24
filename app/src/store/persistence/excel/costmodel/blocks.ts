@@ -2,17 +2,17 @@
 import type * as XL from 'exceljs';
 import type { CostModel, RateCardBlock } from '@/domain/portfolio';
 import { FIRST, txt } from './layout';
-import { argb } from '@/domain/theme';
+import { xlArgb } from '../print';
 
-const NAVY = (): string => argb('excel-head-bg');
+const NAVY = (ws: XL.Worksheet): string => xlArgb(ws.workbook, 'excel-head-bg');
 
 /** A titled block of rows under a monthly table: title row, header row, then the data from `row + 2` (the first data row). `cols` gives the sheet column of each field. */
 export function writeBlock(ws: XL.Worksheet, row: number, title: string, heads: string[], rows: (string | number)[][], cols?: number[]): number {
   const at = (i: number) => cols?.[i] ?? i + 1;
-  ws.getCell(row, 1).value = txt(title); ws.getCell(row, 1).font = { bold: true, size: 12, color: { argb: NAVY() } };
+  ws.getCell(row, 1).value = txt(title); ws.getCell(row, 1).font = { bold: true, size: 12, color: { argb: NAVY(ws) } };
   heads.forEach((h, i) => {
     const c = ws.getCell(row + 1, at(i));
-    c.value = txt(h); c.font = { bold: true, color: { argb: argb('excel-head-text') } }; c.fill = { type: 'pattern', pattern: 'solid', fgColor: { argb: NAVY() } }; c.alignment = { wrapText: true };
+    c.value = txt(h); c.font = { bold: true, color: { argb: xlArgb(ws.workbook, 'excel-head-text') } }; c.fill = { type: 'pattern', pattern: 'solid', fgColor: { argb: NAVY(ws) } }; c.alignment = { wrapText: true };
   });
   rows.forEach((r, k) => r.forEach((v, i) => {
     const c = ws.getCell(row + 2 + k, at(i));

@@ -2,7 +2,7 @@
 /**
  * The theme axes (docs/THEME.md §6): shape, box style, density, typography and control variants. Each axis has a closed list of values, a default
  * (the legacy look) and, per value, the tokens it changes. The CSS side is a `data-ac-<axis>` attribute on `:root` (or on any element, for a
- * scoped preview) selecting a generated block of `axes.css`; the TS side (`tok()`) gets the same values from `axisTokens()` via `setActiveTheme()`.
+ * scoped preview) selecting a generated block of `axes.css`; the TS side (`tok()`) gets the same values from `axisTokens()` in the base table (`themeBase`).
  * A theme screen (T4) only sets values on a `ThemeAxes` object.
  */
 import { BORDER, BOX, BUTTONS, CALLOUT, DENSITY_SETS, RADIUS, SHADOW, type TokenSet } from './variants';
@@ -49,7 +49,7 @@ export const axisValues = <K extends AxisName>(k: K): ThemeAxes[K][] => Object.k
 /** Whether `v` is a value of axis `k` (an attribute or an imported theme may hold anything). */
 export const isAxisValue = <K extends AxisName>(k: K, v: unknown): v is ThemeAxes[K] => typeof v === 'string' && Object.hasOwn(AXES[k].values, v);
 
-/** The token values a set of axes changes, for `setActiveTheme()` (chart.js, exports): later axes win on a shared token (none today). */
+/** The token values a set of axes changes, for the base table of a theme (chart.js, exports): later axes win on a shared token (none today). */
 export function axisTokens(axes: Partial<ThemeAxes>): TokenSet {
   const out: TokenSet = {};
   for (const k of AXIS_NAMES) {

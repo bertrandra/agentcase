@@ -2,17 +2,18 @@ import { AIACT_TIERS, aiActKey } from '@/domain/tuneB/risk';
 import { useCtx } from '@/store/hooks';
 import { Badge, Panel } from '@/ui/widgets/cards';
 import { CheckInput, SelectInput } from '@/ui/widgets/fields';
-import { tok } from '@/domain/theme';
+import { useTheme } from '@/ui/themeContext';
+import type { TokenName } from '@/domain/theme';
 
 const OPTIONS = [
   { value: 'none', label: 'Not classified (neutral)' }, { value: 'minimal', label: 'Minimal risk' }, { value: 'limited', label: 'Limited risk (transparency)' },
   { value: 'high', label: 'High risk (Annex III)' }, { value: 'unacceptable', label: 'Unacceptable (prohibited)' },
 ];
-const COLOR: Record<string, string> = { get unacceptable() { return tok('danger-800'); }, get high() { return tok('warning-600'); }, get limited() { return tok('secondary-600'); } };
+const TONE: Record<string, TokenName> = { unacceptable: 'danger-800', high: 'warning-600', limited: 'secondary-600' };
 
 /** EU AI-Act tier of the delivered product (EV-25) and its obligations. */
 export function AiActCard() {
-  const c = useCtx(), k = aiActKey(c), t = AIACT_TIERS[k] as (typeof AIACT_TIERS)[string], col = COLOR[k] ?? tok('teal-700');
+  const c = useCtx(), { tok } = useTheme(), k = aiActKey(c), t = AIACT_TIERS[k] as (typeof AIACT_TIERS)[string], col = tok(TONE[k] ?? 'teal-700');   // a resolved hex: tinted with an alpha suffix
   return (
     <Panel title="EU AI-Act tier — delivered product" aside={<Badge tone="blue">EV-25</Badge>}>
       <div className="ac-form-row">

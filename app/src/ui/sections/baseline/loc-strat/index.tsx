@@ -6,7 +6,7 @@ import { useCtx } from '@/store/hooks';
 import { OverrideBadge } from '@/ui/widgets/OverrideBadge';
 import { SectionFrame } from '@/ui/zones/SectionFrame';
 import { FieldNumber } from '@/ui/widgets/field/FieldNumber';
-import { ClassBadge, classColor } from '../ClassBadge';
+import { ClassBadge, classTone } from '../ClassBadge';
 import { LocSummaryBand } from './LocSummaryBand';
 
 const OVERRIDES = ['targetLocPct'] as const;
@@ -31,7 +31,7 @@ function AsIs() {
             <div className="ac-form-row" style={{ justifyContent: 'space-between', margin: 0, fontSize: 'var(--ac-font-size-sm)' }}>
               <span>{l.name} <ClassBadge cls={l.cls} /></span><b>{p.toFixed(0)}% · {(mx.byLoc[l.name] ?? 0).toFixed(1)} FTE</b>
             </div>
-            <div className="ac-bar" style={{ height: 8 }}><span style={{ width: `${p}%`, height: 8, background: classColor(l.cls) }} /></div>
+            <div className="ac-bar" style={{ height: 8 }}><span style={{ width: `${p}%`, height: 8, background: `var(--ac-${classTone(l.cls)})` }} /></div>
           </div>
         );
       })}

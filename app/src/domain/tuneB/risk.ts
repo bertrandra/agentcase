@@ -2,7 +2,7 @@
 import { QUAL_ANCHOR } from '../catalog';
 import type { Ctx } from '../ctx';
 import { aiQualityTaxFactor, qualPremium, sddMaturity } from '../model/vtax';
-import { tok } from '../theme';
+import type { ColourRole } from '../theme';
 
 /** EU AI-Act tiers: DI-bar contribution (fraction) and obligations text (legacy AIACT_TIERS). */
 export const AIACT_TIERS: Record<string, { label: string; bar: number; obligations: string[] }> = {
@@ -46,5 +46,6 @@ export function qualityView(c: Ctx) {
   const a = QUAL_ANCHOR[qualKey(c)] as { m: number; l: string };
   return { anchor: a, sdd: sddMaturity(c), premium: qualPremium(c), factor: aiQualityTaxFactor(c), bar: qualBar(c), applied: c.inp.c('qualApply') };
 }
-export type RiskBand = { color: string; label: string };
-export const riskBand = (score: number): RiskBand => (score >= 0.55 ? { color: tok('danger-800'), label: 'High' } : score >= 0.35 ? { color: tok('warning-600'), label: 'Moderate' } : { color: tok('teal-700'), label: 'Contained' });
+/** `tone`: the colour role of the band (the UI resolves it in the theme in effect). */
+export type RiskBand = { tone: ColourRole; label: string };
+export const riskBand = (score: number): RiskBand => (score >= 0.55 ? { tone: 'danger-800', label: 'High' } : score >= 0.35 ? { tone: 'warning-600', label: 'Moderate' } : { tone: 'teal-700', label: 'Contained' });

@@ -1,4 +1,4 @@
-import { tok } from '@/domain/theme';
+import type { TokenName } from '@/domain/theme';
 /** SVG geometry of the adoption-curve editor (legacy renderScurveMaturity): month 1..N on x, adoption 0..100 % on y. */
 export const W = 920, H = 340;
 export const M = { l: 52, r: 16, t: 24, b: 34 };
@@ -13,7 +13,8 @@ export const geoOf = (N: number): Geo => ({
   invY: (py) => (1 - (py - M.t) / ih) * 100,
 });
 
-export const LEVEL_COLOR: Record<string, string> = { get L1() { return tok('slate-700'); }, get L2() { return tok('chart-cat-5'); }, get L3() { return tok('chart-cat-2'); }, get L4() { return tok('chart-cat-1'); } };
+/** The colour role of each maturity level (resolve with `useRoles`). */
+export const LEVEL_ROLES: Record<string, TokenName> = { L1: 'slate-700', L2: 'chart-cat-5', L3: 'chart-cat-2', L4: 'chart-cat-1' };
 /** Fixed adoption bands drawn behind the curve. */
 export const BANDS: [number, number, string][] = [[0, 25, 'L1'], [25, 55, 'L2'], [55, 80, 'L3'], [80, 100, 'L4']];
 export const GRID = [0, 25, 55, 80, 100];

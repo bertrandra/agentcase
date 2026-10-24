@@ -1,5 +1,5 @@
 import { lazy, type ComponentType } from 'react';
-import { useViewScope } from '@/store/viewScope';
+import { useViewKind } from '@/store/viewScope';
 import { SECTION_AGGREGATES } from '../sections/aggregates';
 import { FALLBACKS, type FallbackProps } from './fallbacks';
 import { followsView, sectionKind } from './sectionScope';
@@ -19,7 +19,7 @@ const cache = new Map<string, Scoped>();
  * fallback of its kind. Results are module-level constants, so the host re-renders without remounting.
  */
 export function useScopedSection(id: string): Scoped {
-  const vs = useViewScope(), kind = sectionKind(id);
+  const vs = useViewKind(), kind = sectionKind(id);   // the kind of View only: the host must not re-render (and re-render the section) on every edit
   if (!vs.multi || vs.kind === 'product' || !followsView(kind)) return SECTION;
   let hit = cache.get(id);
   if (!hit) {

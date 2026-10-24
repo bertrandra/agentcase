@@ -1,5 +1,7 @@
 import type { CSSProperties, ReactNode } from 'react';
+import type { DisplaySpec } from '@/domain/theme/modes';
 import { dataSurface } from '../display/dataColor';
+import { useTheme } from '../themeContext';
 import { goSection } from '../uiState';
 import './rich.css';
 
@@ -10,14 +12,14 @@ const TAGS = new Set(['h2', 'h3', 'h4', 'p', 'ul', 'ol', 'li', 'strong', 'em', '
 const COLOR = /^#[0-9a-f]{3,8}$/i;
 const isAttrs = (x: unknown): x is RichAttrs => typeof x === 'object' && x !== null && !Array.isArray(x);
 
-function style(a: RichAttrs): CSSProperties | undefined {
+function style(a: RichAttrs, spec: DisplaySpec): CSSProperties | undefined {
   const s: CSSProperties = {};
   if (a.accent && COLOR.test(a.accent)) s.borderLeft = `4px solid ${a.accent}`;
-  if (a.bg && COLOR.test(a.bg)) s.background = dataSurface(a.bg);
+  if (a.bg && COLOR.test(a.bg)) s.background = dataSurface(a.bg, spec);
   return s.borderLeft || s.background ? s : undefined;
 }
 
-function render(n: unknown, key: number): ReactNode {
+const renderIn = (spec: DisplaySpec) => function render(n: unknown, key: number): ReactNode {
   if (typeof n === 'string') return n;
   if (!Array.isArray(n)) return null;
   const [tag, ...rest] = n as [string, ...unknown[]];
@@ -29,10 +31,11 @@ function render(n: unknown, key: number): ReactNode {
   if (!TAGS.has(tag)) return <span key={key}>{kids}</span>;
   const Tag = (tag === 'h3' ? 'h2' : tag === 'h4' ? 'h3' : tag) as 'div';   // content headings sit one level up: the section title is the h1, there is no h2 above them
   const cls = attrs.class ? attrs.class.split(' ').map((c) => `ac-rich-${c}`).join(' ') : undefined;
-  return <Tag key={key} className={cls} style={style(attrs)} title={attrs.title}>{kids}</Tag>;
-}
+  return <Tag key={key} className={cls} style={style(attrs, spec)} title={attrs.title}>{kids}</Tag>;
+};
 
 /** Renders a content tree (strings and [tag, attrs?, ...children] arrays). Used for help text, reference prose and architecture chapters. */
 export function Rich({ nodes }: { nodes: readonly unknown[] }) {
-  return <div className="ac-rich">{nodes.map(render)}</div>;
+  const spec = useTheme().spec;   // a content tint is re-ranked in dark mode: follow the display in effect
+  return <div className="ac-rich">{nodes.map(renderIn(spec))}</div>;
 }

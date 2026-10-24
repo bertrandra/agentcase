@@ -15,7 +15,7 @@ All notable changes to AgentCase, newest first. Product version from v19.0.0 = t
 
 When releasing, follow [docs/BUMP_PROCEDURE.md](docs/BUMP_PROCEDURE.md) (§7 for the legacy file) and add the new version at the top.
 
-## [Unreleased]
+## [v20.15.0] 2026-10-24 — Architecture lots 5a and 6: theme state out of the domain, no remount, selector hooks, compressed Excel library; every quality gate in CI, nightly workflow
 
 - ui-parity: the header title width is no longer compared (it follows the title text and the fonts of the machine: 197.8 px locally, 195 px on the GitHub runner); its pinned exception is removed.
 
@@ -41,6 +41,33 @@ When releasing, follow [docs/BUMP_PROCEDURE.md](docs/BUMP_PROCEDURE.md) (§7 for
   `/opt/node-tools` or `PW_MODULE`, so it could not run on a CI runner). `tools/ui-parity.mjs --shots` also writes `divergences.json`.
 - Docs: [BUMP_PROCEDURE.md](docs/BUMP_PROCEDURE.md) §4.2 (reproduce CI with `npm run gates`), §6 (the three jobs and the nightly), checklist;
   [TEST_SELECTION.md](docs/TEST_SELECTION.md) §1 and §5 (`validate:affected` runs nightly, sampling with `--only`); README; DEVIATIONS.md DEV-SNAPSHOT-RESTORE.
+### Lot 5a — theme out of the domain, no remount on a display change, selector hooks, ExcelJS stored compressed
+
+### Changed
+- **No theme state in domain or store.** `domain/theme` no longer holds a "current theme" (`setActiveTheme` / `setDisplayTheme` / `setActiveThemeDef`,
+  read by `tok()` in 16 domain and 2 store modules, so a read-out or an export depended on whatever theme had been set last). A pure resolver
+  (`domain/theme/resolve.ts`: `resolveAppTheme(def, spec)` → `tok()`, `list()`, `alpha()`, `values`, `base`) feeds the only runtime theme state, in the
+  UI: a React context (`ThemeProvider` around the shell, `useTheme()`, `useRoles()`) and the custom properties on `<html>`. Domain read-outs that only
+  choose a colour meaning return a **role** (`tone: 'danger-800'`: risk, verdict, readiness, HRI, eligibility, scenarios, sensitivity cells, Gantt,
+  pipeline timeline) that the UI resolves; chart builders take `tok`. The exports take their print theme from the controller
+  (`controllers/exportTheme.ts`: the case's theme, or the `?theme=` link's, always light): `argb(print, …)`, `reportStyle(print)`, and every workbook
+  builder receives it. Guard: `tests/domain/no-module-state.test.ts` (no module-level `let` in `src/domain`; module-level caches allowlisted with a
+  reason; no import of the UI theme runtime from domain / store). The `?theme=` override state moved to `store/themeView.ts` (the exports read it).
+- **A display or theme change no longer re-mounts the open section.** The section host is not keyed by a display version any more: dark, contrast,
+  colour-blind, reduced motion and theme presets keep the selected tab, drafts and the scroll position; components that compute a colour re-render,
+  CSS follows the custom properties, and chart.js charts are updated in place (`chart.update('none')`). `tests/ui/no-remount.test.tsx`.
+- **Fewer re-renders on an edit.** Selector hooks with structural equality (`useDocSelector`, `useCtxSelector`, `usePortfolioSelector`,
+  `store/equal.ts`) for the KPI bar (memoised tiles), the section host (`useViewKind`), the top bar (undo / redo isolated), the scope banner, the money
+  views (`useEconomics`), the verify views, the scenarios and the aggregate result views. Components rendered by one edit, 12 measured cases: 706 → 415
+  (an edit that changes no figure, on Financial: 108 → 8), kept by budgets in `tests/ui/render-cost.test.tsx`. `tools/perf.mjs`: edit → KPI repaint
+  median 21-22 → 16-18 ms, p95 32-35 → 25-31 ms.
+- **ExcelJS stored compressed in the single file (decision D5).** ExcelJS's browser bundle is embedded gzip-compressed (base64, 342 kB instead of 940 kB
+  of code) and started on the first Excel import or export (`DecompressionStream`, then an inline script removed at once, allowed by the existing
+  `script-src 'unsafe-inline'`: no `blob:` source added). `dist/index.html` 3,279,804 → 2,682,700 bytes, gzip 992,033 → 979,213 bytes, time to the
+  shell 586-620 → 317-345 ms. Checked on the built app by `tools/e2e-flows.mjs` (nothing of ExcelJS in the page before or after an export) and
+  `tools/parallel-run.mjs` (40 workbooks identical).
+
+**Golden case:** unchanged (ui-parity 0 divergences, parallel run 40 / 40 identical).
 
 ## [v20.14.0] 2026-10-24 — Architecture lots 1 and 4: robustness (error boundaries, CSP, audit, lint), one cash-flow kernel, acyclic zone graph, pilot in cost-model totals
 

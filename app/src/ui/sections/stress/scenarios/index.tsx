@@ -1,6 +1,7 @@
 import { useMemo } from 'react';
+import { useTheme } from '@/ui/themeContext';
 import { SCENARIO_DESTINATIONS, scenarioSet } from '@/domain/stress';
-import { useCtx } from '@/store/hooks';
+import { useCtxSelector } from '@/store/hooks';
 import { Panel } from '@/ui/widgets/cards';
 import { ChartPanel } from '@/ui/widgets/ChartPanel';
 import { RangeInput, SelectInput } from '@/ui/widgets/fields';
@@ -18,8 +19,8 @@ const help = (
 
 /** Scenarios — six transformation strategies priced side by side (AS-IS, AI only, Location only, Ramp, AI + Location, AI + destination). */
 export default function ScenariosSection() {
-  const c = useCtx(), S = useMemo(() => scenarioSet(c), [c]), H = (S[0] as (typeof S)[number]).m.horizon;
-  const cost = useMemo(() => costChart(S), [S]), roi = useMemo(() => roiChart(S), [S]);
+  const S = useCtxSelector(scenarioSet), H = (S[0] as (typeof S)[number]).m.horizon;
+  const { tok } = useTheme(), cost = useMemo(() => costChart(S, tok), [S, tok]), roi = useMemo(() => roiChart(S, tok), [S, tok]);
   const options = SCENARIO_DESTINATIONS.map((l) => ({ value: l.name, label: `${l.name} (${l.cls})` }));
   return (
     <SectionFrame title={`Scenario comparison — ${S.length} transformation strategies`} help={help}

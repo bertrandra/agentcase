@@ -7,27 +7,30 @@ import { ChartPanel } from '@/ui/widgets/ChartPanel';
 import { DataTable } from '@/ui/widgets/DataTable';
 import { RangeInput } from '@/ui/widgets/fields';
 import { SectionFrame } from '@/ui/zones/SectionFrame';
-import { tok } from '@/domain/theme';
+import { useTheme } from '@/ui/themeContext';
+import type { Tok } from '@/domain/theme/resolve';
+import type { TokenName } from '@/domain/theme';
 
 const help = (
   <p>Three trajectories compared: AS-IS (status quo) · AS-IS + saving (classic continuous improvement at x%/yr, adjustable) · Agentic (this transformation).
     Choose the classic annual saving rate below.</p>
 );
-const SERIES = [
-  { key: 'asis', label: 'AS-IS', get bg() { return tok('warning-500-a70'); }, get border() { return tok('warning-600'); } },
-  { key: 'classic', label: 'AS-IS + saving', get bg() { return tok('primary-500-a70'); }, get border() { return tok('info-700'); } },
-  { key: 'agentic', label: 'Agentic', get bg() { return tok('success-500-a80'); }, get border() { return tok('teal-700'); } },
+const SERIES: { key: 'asis' | 'classic' | 'agentic'; label: string; bg: TokenName; border: TokenName }[] = [
+  { key: 'asis', label: 'AS-IS', bg: 'warning-500-a70', border: 'warning-600' },
+  { key: 'classic', label: 'AS-IS + saving', bg: 'primary-500-a70', border: 'info-700' },
+  { key: 'agentic', label: 'Agentic', bg: 'success-500-a80', border: 'teal-700' },
 ] as const;
 
-function chartOf(d: CompareData, key: keyof Trajectory, line: boolean): ChartConfiguration {
-  return { type: line ? 'line' : 'bar', data: { labels: d.labels, datasets: SERIES.map((s) => ({ label: s.label, data: d[s.key][key], backgroundColor: s.bg, borderColor: s.border, borderWidth: 2, fill: false })) },
+function chartOf(d: CompareData, key: keyof Trajectory, line: boolean, tok: Tok): ChartConfiguration {
+  return { type: line ? 'line' : 'bar', data: { labels: d.labels, datasets: SERIES.map((s) => ({ label: s.label, data: d[s.key][key], backgroundColor: tok(s.bg), borderColor: tok(s.border), borderWidth: 2, fill: false })) },
     options: { plugins: { legend: { position: 'top' } } } };
 }
 
 /** 3-way comparison — AS-IS / AS-IS + classic saving / Agentic: four side-by-side charts and the key-figures table. */
 export default function CompareSection() {
   const c = useCtx(), d = useMemo(() => compareData(c), [c]);
-  const cfg = useMemo(() => ({ fte: chartOf(d, 'fte', false), cost: chartOf(d, 'cost', false), save: chartOf(d, 'save', true), velo: chartOf(d, 'velo', false) }), [d]);
+  const { tok } = useTheme();
+  const cfg = useMemo(() => ({ fte: chartOf(d, 'fte', false, tok), cost: chartOf(d, 'cost', false, tok), save: chartOf(d, 'save', true, tok), velo: chartOf(d, 'velo', false, tok) }), [d, tok]);
   return (
     <SectionFrame title="3-way Comparison — AS-IS / AS-IS + saving / Agentic" help={help}
       input={<RangeInput id="classicSaving" label="Classic annual saving — optimized AS-IS scenario" min={0} max={15} unit="%/yr" />}

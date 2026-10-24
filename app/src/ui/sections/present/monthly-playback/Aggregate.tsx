@@ -5,6 +5,7 @@ import { AggregateTable, type AggColumn } from '@/ui/widgets/AggregateTable';
 import { SectionFrame } from '@/ui/zones/SectionFrame';
 import { ExcludedNote } from '../../economics/AggParts';
 import { playbackChart } from './chart';
+import { useTheme } from '@/ui/themeContext';
 import { PlaybackStage } from './Stage';
 import { Transport } from './Transport';
 import { sequence, usePlayer } from './usePlayer';
@@ -22,7 +23,7 @@ const pct = (x: number) => `${x >= 0 ? '+' : ''}${Math.round(x)}%`;
 /** Monthly Playback — aggregate view (R-conso): the VCR over the consolidated trajectory of the Portfolio / Wave, and the end state of each product. */
 export default function MonthlyPlaybackAggregate() {
   const a = usePlaybackAggregate(), months = a?.series.months ?? 0, { s: p, dispatch, seek } = usePlayer(months);
-  const seq = sequence(p.metrics), key = seq[Math.min(p.seq, seq.length - 1)], cfg = useMemo(() => (a && key ? playbackChart(a.series, key, p.month) : null), [a, key, p.month]);
+  const seq = sequence(p.metrics), key = seq[Math.min(p.seq, seq.length - 1)], { tok } = useTheme(), cfg = useMemo(() => (a && key ? playbackChart(a.series, key, p.month, tok) : null), [a, key, p.month, tok]);
   if (!a) return null;
   const cols: AggColumn<(typeof a.rows)[number]>[] = [
     { key: 'base', header: 'AS-IS FTE', align: R, render: (r) => fmt1(r.baseEtp) }, { key: 'etp', header: 'Human FTE (end)', align: R, render: (r) => fmt1(r.etp) },

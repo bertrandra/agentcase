@@ -1,4 +1,4 @@
-import { PRODUCT_PROFILES, PROFILE_PHASES, currentProfileId, leverColor, leverWord, pillarApplyOn, profileById, profileCoef } from '@/domain/tune';
+import { PRODUCT_PROFILES, PROFILE_PHASES, currentProfileId, leverTone, leverWord, pillarApplyOn, profileById, profileCoef } from '@/domain/tune';
 import { setLifecyclePos } from '@/controllers/lifecycle';
 import { useCtx } from '@/store/hooks';
 import { Badge, Panel } from '@/ui/widgets/cards';
@@ -32,7 +32,7 @@ export function PillarPanel() {
                 <td style={{ fontWeight: pr.id === cur ? 'var(--ac-font-weight-bold)' : 'var(--ac-font-weight-semibold)' }}>{pr.label}{pr.id === cur ? ' ◀' : ''}</td>
                 {PROFILE_PHASES.map((ph) => {
                   const x = profileCoef(c, pr.id, ph);
-                  return <td key={ph} className="ac-c" style={{ color: leverColor(x), fontWeight: pr.id === cur ? 'var(--ac-font-weight-bold)' : 'var(--ac-font-weight-regular)' }}>{leverWord(x)}<br /><small className="ac-muted">({x.toFixed(2)})</small></td>;
+                  return <td key={ph} className="ac-c" style={{ color: `var(--ac-${leverTone(x)})`, fontWeight: pr.id === cur ? 'var(--ac-font-weight-bold)' : 'var(--ac-font-weight-regular)' }}>{leverWord(x)}<br /><small className="ac-muted">({x.toFixed(2)})</small></td>;
                 })}
               </tr>
             ))}

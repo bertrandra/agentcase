@@ -11,6 +11,7 @@ import { shownLogo } from '@/domain/theme/logo';
 import { buildResultsWorkbook, resultsData, type SheetImages } from '@/store/persistence/excel/results';
 import { buildPortfolioResultsWorkbook } from '@/store/persistence/excel/results/portfolio';
 import { hasPortfolioContent } from '@/store/persistence/portfolioSnapshot';
+import { exportTheme } from './exportTheme';
 
 export type { SheetImages } from '@/store/persistence/excel/results';
 
@@ -32,13 +33,13 @@ export interface ExcelFile { blob: Blob; filename: string }
  * group that leads; everything is exported. Chart pictures are not embedded in a portfolio workbook (they show one product's charts).
  */
 export async function exportResultsWorkbook(images?: SheetImages, now: Date = new Date(), scope?: DisplayScope): Promise<ExcelFile> {
-  const xl = await loadExcelJS(), portfolio = appStore().getState().portfolio, doc = activeDoc();
+  const xl = await loadExcelJS(), portfolio = appStore().getState().portfolio, doc = activeDoc(), print = exportTheme();
   if (hasPortfolioContent(portfolio)) {
     const run = pfSimStore.getState().run, stress = run ? { run, stale: run.fingerprint !== pfStressFingerprint(portfolio) } : null;
-    const wb = buildPortfolioResultsWorkbook(xl, portfolio, scope ?? portfolio.displayScope ?? { kind: 'product' }, portfolio.activeProductId, stress);
+    const wb = buildPortfolioResultsWorkbook(xl, portfolio, print, scope ?? portfolio.displayScope ?? { kind: 'product' }, portfolio.activeProductId, stress);
     return { blob: new Blob([await wb.xlsx.writeBuffer()], { type: XLSX_MIME }), filename: excelFilename('Financial_Portfolio', now) };
   }
-  const wb = buildResultsWorkbook(xl, resultsData(makeCtx(doc)), images, shownLogo(doc)?.src);
+  const wb = buildResultsWorkbook(xl, resultsData(makeCtx(doc)), print, images, shownLogo(doc)?.src);
   const buf = await wb.xlsx.writeBuffer();
   return { blob: new Blob([buf], { type: XLSX_MIME }), filename: excelFilename('Financial', now) };
 }

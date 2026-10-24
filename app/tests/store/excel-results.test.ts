@@ -4,6 +4,7 @@ import { loadExcelJS } from '@/store/persistence/excel/lazy';
 import { buildResultsWorkbook, resultsData } from '@/store/persistence/excel/results';
 import { makeCtx } from '@/domain';
 import { dumpBuffer, loadCase, readJson, sheetDiffs, type SheetDump } from '../helpers/xlsxDump';
+import { THEME_DEFAULT } from '@/domain/theme';
 
 // Fixtures recorded by tools/excel-results-oracle.mjs: the LEGACY "Export financial to Excel" of each case, dumped cell by cell.
 const IDS = ['golden', 'ctx-msi', 'curve-logistic', 'curve-gompertz', 'curve-bass', 'industry-med', 'horizon-1', 'horizon-5', 'econ-horizon-7', 'horizon-10', 'scope-reduced', 'hri-on', 'vtax-on', 'kh-high', 'econ-no-setup', 'econ-roi-low', 'econ-roi-mid'];
@@ -23,7 +24,7 @@ describe('results workbook reproduces the legacy export', () => {
     const png = 'iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVR42mP8z8BQDwAEhQGAhKmMIQAAAABJRU5ErkJggg==';
     loadCase('golden');
     const X = await loadExcelJS(), data = resultsData(makeCtx((await import('@/store/instance')).appStore().getState().doc));
-    const wb = buildResultsWorkbook(X, data, { ROI: png, 'P&L': '@@not-base64@@' });
+    const wb = buildResultsWorkbook(X, data, THEME_DEFAULT, { ROI: png, 'P&L': '@@not-base64@@' });
     expect(wb.getWorksheet('ROI')!.getImages().length).toBe(1);
     expect(wb.getWorksheet('Savings')!.getImages().length).toBe(0);
     await expect(wb.xlsx.writeBuffer()).resolves.toBeDefined();

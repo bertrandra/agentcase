@@ -2,6 +2,8 @@
 import type { Workbook } from 'exceljs';
 import type { CostModel } from '@/domain/portfolio';
 import type { ExcelJS } from '../lazy';
+import { withPrint } from '../print';
+import type { ThemeValues } from '@/domain/theme';
 import { writeParams, writeRateBlocks } from './blocks';
 import { formulaText } from './formulas';
 import { writeHeader, writeTable, type Meta } from './layout';
@@ -20,10 +22,10 @@ const NOTES = {
 /**
  * The cost-model workbook: exactly three sheets, in order, "Values" (days), "Rate cards" (applied day rates and the team-cost check) and "Other costs"
  * (every other cost line, the total and the parameters). Subtotals, checks, links between the sheets and the discount factors are live Excel formulas
- * with their cached results; no external link, no macro.
+ * with their cached results; no external link, no macro. `print`: the base theme of the export (controllers/exportTheme.ts).
  */
-export function buildCostModelWorkbook(xl: ExcelJS, m: CostModel, meta: Meta): Workbook {
-  const wb = new xl.Workbook();
+export function buildCostModelWorkbook(xl: ExcelJS, m: CostModel, meta: Meta, print: Readonly<ThemeValues>): Workbook {
+  const wb = withPrint(new xl.Workbook(), print);
   wb.creator = 'AgentCase'; wb.created = meta.generated;
   const values = wb.addWorksheet(SHEETS[0]), rates = wb.addWorksheet(SHEETS[1]), other = wb.addWorksheet(SHEETS[2]);
   const anchors = { mixStart: 0, rateRow: 0 };

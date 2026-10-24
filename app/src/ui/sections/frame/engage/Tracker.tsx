@@ -5,12 +5,13 @@ import { ChartPanel } from '@/ui/widgets/ChartPanel';
 import { Panel, Stat, StatRow } from '@/ui/widgets/cards';
 import { TrackerTable } from './TrackerTable';
 import { trackerCharts } from './trackerCharts';
+import { useTheme } from '@/ui/themeContext';
 import { toggleTracker, useTrackerOpen } from './trackerOpen';
 
 function TrackerBody() {
   const ctx = useCtx(), actuals = useDoc((d) => (d.trackActuals ?? {}) as Record<string, TrackActual | undefined>);
   const plan = useMemo(() => plannedQuarters(ctx), [ctx]);
-  const st = trackStatus(plan, actuals), charts = useMemo(() => trackerCharts(plan, actuals), [plan, actuals]);
+  const { tok } = useTheme(), st = trackStatus(plan, actuals), charts = useMemo(() => trackerCharts(plan, actuals, tok), [plan, actuals, tok]);
   return (
     <>
       <p className="ac-muted">The plan columns are derived from the adoption curve, so they always match the current horizon — one row per quarter, for every year of the case. Leave a cell blank until you have the real number.</p>

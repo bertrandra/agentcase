@@ -1,15 +1,16 @@
 /** @calc-zone exports */
 import type { Workbook, Worksheet } from 'exceljs';
 import type { ExcelJS } from '../lazy';
+import type { ThemeValues } from '@/domain/theme';
 import type { DdPackData } from './data';
 import { coefSheetEdit, ddEditText, ddEvidence, ddRole, ddUseText } from './texts';
-import { argb } from '@/domain/theme';
+import { withPrint, xlArgb } from '../print';
 
 const ORDER: Record<string, number> = { open: 0, requested: 1, disputed: 2, confirmed: 3, waived: 4 };
 const kEuro = (v: number): string => `€${Math.round(v / 1000).toLocaleString('en-US')}K`;
 const cols = (ws: Worksheet, spec: [string, number][]) => { ws.columns = spec.map(([header, width]) => ({ header, width })); };
 const head = (ws: Worksheet): void => {
-  ws.getRow(1).eachCell((c) => { c.font = { bold: true, color: { argb: argb('excel-head-text') } }; c.fill = { type: 'pattern', pattern: 'solid', fgColor: { argb: argb('excel-head-bg') } }; c.alignment = { horizontal: 'left', wrapText: true }; });
+  ws.getRow(1).eachCell((c) => { c.font = { bold: true, color: { argb: xlArgb(ws.workbook, 'excel-head-text') } }; c.fill = { type: 'pattern', pattern: 'solid', fgColor: { argb: xlArgb(ws.workbook, 'excel-head-bg') } }; c.alignment = { horizontal: 'left', wrapText: true }; });
   ws.getRow(1).height = 22;
 };
 
@@ -65,8 +66,8 @@ function coverage(wb: Workbook, d: DdPackData, product?: string): void {
 
 /** The due-diligence pack: DD_Register, DD_Coefficients, DD_Evidence_Requests, DD_Coverage (legacy ddExportPack). `label` names a section from its id.
  * `product` (portfolios only) names the product whose effective case the pack describes: a portfolio exports the ACTIVE product's pack, see docs/ARCHITECTURE.md §5. */
-export function buildDdPack(xl: ExcelJS, d: DdPackData, label: (id: string) => string, product?: string): Workbook {
-  const wb = new xl.Workbook();
+export function buildDdPack(xl: ExcelJS, d: DdPackData, label: (id: string) => string, print: Readonly<ThemeValues>, product?: string): Workbook {
+  const wb = withPrint(new xl.Workbook(), print);
   wb.creator = 'AgentCase'; wb.created = new Date();
   register(wb, d, label); coefficients(wb, d, label); evidence(wb, d); coverage(wb, d, product);
   return wb;

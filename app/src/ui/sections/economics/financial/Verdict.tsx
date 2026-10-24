@@ -1,4 +1,5 @@
 import { useMemo } from 'react';
+import { useTheme } from '@/ui/themeContext';
 import { fmtPayback, fmtRoiPct, yLabel } from '@/domain/economics';
 import { fmtK } from '@/ui/economicsFormat';
 import { ChartPanel } from '@/ui/widgets/ChartPanel';
@@ -11,7 +12,7 @@ import { Reco } from './Reco';
 
 /** ROI & verdict strip: headline band, cumulative cash-flow (J-curve), year table, recommendation and the ROI walk-through. */
 export function Verdict() {
-  const v = useEconomics(), cfg = useMemo(() => cashflowLine(v), [v]);
+  const { tok } = useTheme(), v = useEconomics(), cfg = useMemo(() => cashflowLine(v, tok), [v, tok]);
   const items: [string, string][] = [
     ['Investment', fmtK(v.setup)], [`Benefits ${v.H}y`, fmtK(v.totalBenefit)], ['Profit net', fmtK(v.net)], [`ROI (net, ${v.H}y)`, fmtRoiPct(v.roi)],
     ['Payback', fmtPayback(v.payback, v.months.length)], [`NPV @${Math.round(v.npvRate * 100)}%`, fmtK(v.npv)],

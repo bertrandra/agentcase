@@ -3,7 +3,6 @@ import { setAnchor, setCoef, setDdState, setFgParam, setQualityAnchor } from '@/
 import { fmtK } from '@/ui/economicsFormat';
 import { goSection } from '@/ui/uiState';
 import { sectionById } from '@/ui/zones/registry';
-import { tok } from '@/domain/theme';
 import type { CSSProperties } from 'react';
 
 const chip = (bg: string, children: string, extra?: object) => <span style={{ fontSize: 'var(--ac-font-size-2xs)', background: bg, color: 'var(--ac-neutral-0)', borderRadius: 'var(--ac-radius-xs)', padding: '1px 6px', whiteSpace: 'nowrap', ...extra }}>{children}</span>;
@@ -13,9 +12,9 @@ export function UseCell({ r }: { r: DdRow }) {
   const u = ddUse(r);
   return (
     <>
-      {u.calc && chip(tok('primary-700'), '⚙ CALC')}
+      {u.calc && chip('var(--ac-primary-700)', '⚙ CALC')}
       {u.calc && u.factory && <div style={{ height: 2 }} />}
-      {u.factory && chip(tok('warning-600'), '🏭 FACTORY')}
+      {u.factory && chip('var(--ac-warning-600)', '🏭 FACTORY')}
       {!u.calc && !u.factory && <span style={{ fontSize: 'var(--ac-font-size-2xs)', color: 'var(--ac-slate-700)', border: '1px solid var(--ac-slate-200)', borderRadius: 'var(--ac-radius-xs)', padding: '1px 6px' }}>display</span>}
     </>
   );

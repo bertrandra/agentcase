@@ -1,22 +1,22 @@
 /** @calc-zone exports */
 import type * as XL from 'exceljs';
-import { argb } from '@/domain/theme';
+import { xlArgb } from '../print';
 
 /** Cell styling and data validation of the legacy workbook (navy header, blue = editable input, grey = reference). */
-const NAVY = (): string => argb('excel-head-bg');
-const T = { style: 'thin' as const, color: { get argb() { return argb('excel-border'); } } };
-const BD = { top: T, left: T, bottom: T, right: T };
+const NAVY = (wb: XL.Workbook): string => xlArgb(wb, 'excel-head-bg');
+/** The thin border of a styled cell, in the print theme of its workbook. */
+const bd = (c: XL.Cell): Partial<XL.Borders> => { const T = { style: 'thin' as const, color: { argb: xlArgb(c.workbook, 'excel-border') } }; return { top: T, left: T, bottom: T, right: T }; };
 
 export const head = (ws: XL.Worksheet): void => {
   ws.getRow(1).eachCell((c) => {
-    c.fill = { type: 'pattern', pattern: 'solid', fgColor: { argb: NAVY() } };
-    c.font = { bold: true, color: { argb: argb('excel-head-text') }, size: 11 };
-    c.alignment = { horizontal: 'center' }; c.border = BD;
+    c.fill = { type: 'pattern', pattern: 'solid', fgColor: { argb: NAVY(ws.workbook) } };
+    c.font = { bold: true, color: { argb: xlArgb(ws.workbook, 'excel-head-text') }, size: 11 };
+    c.alignment = { horizontal: 'center' }; c.border = bd(c);
   });
 };
-export const blue = (c: XL.Cell): void => { c.font = { color: { argb: argb('excel-input') }, size: 11 }; c.alignment = { horizontal: 'center' }; c.border = BD; };
-export const grey = (c: XL.Cell): void => { c.font = { color: { argb: argb('excel-note') }, size: 11 }; c.alignment = { horizontal: 'center' }; };
-export const note = (c: XL.Cell): void => { c.font = { color: { argb: argb('excel-note') }, size: 11 }; };
+export const blue = (c: XL.Cell): void => { c.font = { color: { argb: xlArgb(c.workbook, 'excel-input') }, size: 11 }; c.alignment = { horizontal: 'center' }; c.border = bd(c); };
+export const grey = (c: XL.Cell): void => { c.font = { color: { argb: xlArgb(c.workbook, 'excel-note') }, size: 11 }; c.alignment = { horizontal: 'center' }; };
+export const note = (c: XL.Cell): void => { c.font = { color: { argb: xlArgb(c.workbook, 'excel-note') }, size: 11 }; };
 export const frz = (ws: XL.Worksheet): void => { ws.views = [{ state: 'frozen', ySplit: 1 }]; };
 
 const base = { allowBlank: true, showErrorMessage: true, errorStyle: 'error', showInputMessage: true } as const;

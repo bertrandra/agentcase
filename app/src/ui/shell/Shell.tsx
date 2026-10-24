@@ -4,8 +4,7 @@ import '../theme/a11y.css';
 import '../theme/portfolio.css';
 import '../theme/vue.css';
 import { ThemeLinkNotice } from '../brand/BrandLogo';
-import { ThemeRuntime } from '../brand/ThemeRuntime';
-import { useDisplay } from '../display/store';
+import { ThemeProvider } from '../brand/ThemeRuntime';
 import { SectionHost } from '../zones/SectionHost';
 import { sectionById } from '../zones/registry';
 import { useNavModel } from '../zones/navModel';
@@ -21,11 +20,19 @@ import { TopZone } from './TopZone';
 import { WizardBar } from './WizardBar';
 import { useShortcuts } from './useShortcuts';
 
-/** The application frame: top / kpi / nav / work / dock zones (CSS grid areas). The sidebar collapses in hide-menu mode and during a guided walk. */
+/**
+ * The application frame under the theme in effect (`ThemeProvider`: the case's theme under the viewer's display). A theme or display change
+ * re-renders what reads the theme; the open section is never re-mounted (its tabs, drafts and scroll position stay).
+ */
 export function Shell() {
+  return <ThemeProvider><Frame /></ThemeProvider>;
+}
+
+/** Top / kpi / nav / work / dock zones (CSS grid areas). The sidebar collapses in hide-menu mode and during a guided walk. */
+function Frame() {
   useShortcuts();
   const toastText = useUi((s) => s.toast), active = useUi((s) => s.activeSection), hidden = useUi((s) => s.menuHidden), walking = useUi((s) => s.wiz.active);
-  const { persona, compact } = useNavModel(), collapsed = hidden || walking, display = useDisplay((s) => s.version);
+  const { persona, compact } = useNavModel(), collapsed = hidden || walking;
   useEffect(() => { setMenuHidden(compact); }, [persona, compact]);   // the persona's "hide menu" default, live when it is edited
   return (
     <div className={`ac-shell${collapsed ? ' is-compact' : ''}`}>
@@ -37,7 +44,7 @@ export function Shell() {
         <ThemeLinkNotice />
         <GroupNavBar />
         <WizardBar />
-        <SectionHost key={display} />{/* a display change (dark, contrast, colour-blind charts) re-mounts the section: canvases and tok() read-outs are rebuilt */}
+        <SectionHost />
       </div>
       <DockZone />
       <div className="ac-live" role="status" aria-live="polite">{toastText}</div>
@@ -45,7 +52,6 @@ export function Shell() {
       <CalcStaleBanner />
       <OpenNotesBanner />
       <RestoreBanner />
-      <ThemeRuntime />
     </div>
   );
 }

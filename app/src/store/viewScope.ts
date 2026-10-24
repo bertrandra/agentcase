@@ -2,6 +2,7 @@
 import { useMemo } from 'react';
 import { scheduledProducts, unscheduledIds, type Portfolio } from '@/domain/portfolio';
 import { useCorePortfolio, useDisplayScope } from './consolidationHooks';
+import { usePortfolio } from './hooks';
 import { useViewProductId } from './productView';
 import { useActiveProductId } from './portfolioHooks';
 
@@ -35,6 +36,16 @@ export function viewScopeOf(core: Portfolio, display: { kind: string; id?: strin
     return { ...base, kind: 'wave', label: wave.name, waveId: wave.id, productIds: ids, excludedIds: wave.productIds.filter((id) => !ids.includes(id)) };
   }
   return { ...base, kind: 'product', label: base.activeProductName, productIds: [active], excludedIds: [] };
+}
+
+/**
+ * The kind of the View and whether the multi-product interface exists, without the portfolio's figures: a component that only picks WHAT to render
+ * (the section host) re-renders when these change, not on every edit of the case.
+ */
+export function useViewKind(): { kind: ViewScope['kind']; multi: boolean } {
+  const multi = usePortfolio((p) => p.products.length >= 2), display = useDisplayScope(), pinned = useViewProductId() !== null;
+  const kind = pinned ? 'product' : display.kind;
+  return useMemo(() => ({ kind, multi }), [kind, multi]);
 }
 
 /**

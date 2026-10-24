@@ -3,17 +3,18 @@ import type { ChartConfiguration } from 'chart.js';
 import { tobeComposition, type Live } from '@/domain/verifyA';
 import { ChartPanel } from '@/ui/widgets/ChartPanel';
 import { SimpleTable } from '../SimpleTable';
-import { tok } from '@/domain/theme';
+import { useTheme } from '@/ui/themeContext';
 
 const f2 = (v: number) => v.toFixed(2);
 
 /** Residual human FTE and agent vFTE per team skill for the chosen year, with the reconciliation against the aggregate model. */
 export function Composition({ live, year, setYear }: { live: Live; year: number; setYear: (y: number) => void }) {
   const comp = useMemo(() => tobeComposition(live, year), [live, year]), y = Math.min(year, comp.years.length - 1), tot = comp.tot;
+  const { tok } = useTheme();
   const cfg = useMemo((): ChartConfiguration => ({ type: 'bar', data: { labels: comp.rows.map((r) => r.skill), datasets: [
     { label: 'Human FTE', data: comp.rows.map((r) => +f2(r.perYear[y]!.human)), backgroundColor: tok('primary-700') },
     { label: 'Agent vFTE', data: comp.rows.map((r) => +f2(r.perYear[y]!.agent)), backgroundColor: tok('info-700') }] },
-  options: { scales: { x: { stacked: true }, y: { stacked: true, title: { display: true, text: 'FTE' } } }, plugins: { legend: { position: 'bottom' }, title: { display: true, text: `TO-BE team by skill — Year ${y + 1}` } } } }), [comp, y]);
+  options: { scales: { x: { stacked: true }, y: { stacked: true, title: { display: true, text: 'FTE' } } }, plugins: { legend: { position: 'bottom' }, title: { display: true, text: `TO-BE team by skill — Year ${y + 1}` } } } }), [comp, y, tok]);
   const model = live.eng.years()[y]!;
   return (
     <>

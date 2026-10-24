@@ -1,4 +1,5 @@
 import { useMemo } from 'react';
+import { useTheme } from '@/ui/themeContext';
 import { yearSeries, yLabel } from '@/domain/economics';
 import { fmt1, fmtE } from '@/ui/economicsFormat';
 import { ChartPanel } from '@/ui/widgets/ChartPanel';
@@ -10,7 +11,7 @@ import { fteShift } from './charts';
 
 /** Workforce shift: human FTE down, agent vFTE up, with the human and agent (token) cost per year. */
 export function FteShift() {
-  const v = useEconomics(), s = yearSeries(v.years), e = v.H - 1, cfg = useMemo(() => fteShift(v), [v]);
+  const { tok } = useTheme(), v = useEconomics(), s = yearSeries(v.years), e = v.H - 1, cfg = useMemo(() => fteShift(v, tok), [v, tok]);
   const rows = v.years.map((y, i) => ({
     key: String(i), label: <strong>{yLabel(i + 1)}</strong>,
     cells: [fmt1(y.humanFteEnd), fmtE(s.team[i] as number), fmt1(y.agentVfteEnd), fmtE(s.token[i] as number), fmtE((s.team[i] as number) + (s.token[i] as number))],

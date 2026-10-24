@@ -3,6 +3,7 @@ import { cleanup, fireEvent, render, screen, within } from '@testing-library/rea
 import { afterEach, beforeEach, describe, expect, it } from 'vitest';
 import type { ChartConfiguration } from 'chart.js';
 import { contrast, textColor } from '@/ui/colorText';
+import { DEFAULT_THEME } from '@/domain/theme/resolve';
 import { ChartPanel } from '@/ui/widgets/ChartPanel';
 import { chartText } from '@/ui/widgets/chartData';
 import { NumField, TextField, ChoiceField, ConfirmButton } from '@/ui/widgets/CommitField';
@@ -95,13 +96,13 @@ describe('ChartPanel', () => {
 
 describe('textColor — data colours used as text reach 4.5:1', () => {
   it('keeps a dark enough colour, darkens a pale one while keeping its hue family, ignores non-hex', () => {
-    expect(textColor('#0058ab')).toBe('#0058ab');
+    expect(textColor('#0058ab', DEFAULT_THEME.tok)).toBe('#0058ab');
     for (const c of ['#0e8f8f', '#3b9e4f', '#9a8a1e', '#c08a00', '#c25e00', '#7a7a70', '#2e9e5b', '#b5651d']) {
-      const out = textColor(c);
+      const out = textColor(c, DEFAULT_THEME.tok);
       expect(out).not.toBe(c);
       expect(contrast(out, '#ffffff')).toBeGreaterThanOrEqual(4.5);
     }
-    expect(textColor('rgb(1,2,3)')).toBe('rgb(1,2,3)');
+    expect(textColor('rgb(1,2,3)', DEFAULT_THEME.tok)).toBe('rgb(1,2,3)');
     expect(contrast('#000', '#fff')).toBeCloseTo(21, 0);
   });
 });

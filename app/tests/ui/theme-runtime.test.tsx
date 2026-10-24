@@ -4,9 +4,10 @@ import { afterEach, beforeEach, describe, expect, it } from 'vitest';
 import { setCustomerLogo, setLogoOptions } from '@/controllers/brand';
 import { setCustomerName } from '@/controllers/persona';
 import { activateTheme } from '@/controllers/themes';
-import { tok } from '@/domain/theme';
 import { appStore } from '@/store/instance';
 import { App } from '@/ui/App';
+import { ThemeProvider } from '@/ui/brand/ThemeRuntime';
+import { useTheme } from '@/ui/themeContext';
 import { setThemeOverride, themeParam, themeViewStore } from '@/ui/brand/themeView';
 import { setDisplayPrefs } from '@/ui/display/store';
 import { uiStore } from '@/ui/uiState';
@@ -15,23 +16,26 @@ import { PNG } from '../store/samples/themes';
 
 /** The theme at run time (docs/THEME.md §8.2, §8.6, §8.7): inline colours on <html>, the ?theme= link, the header logo. */
 const html = () => document.documentElement, prop = (n: string) => html().style.getPropertyValue(`--ac-${n}`);
+/** What `useTheme().tok` returns to the components (a probe under its own provider: the same stores, the same theme). */
+function Probe() { return <i data-testid="tok" data-header={useTheme().tok('header-start')} />; }
+const tok = () => screen.getByTestId('tok').dataset.header;
 beforeEach(() => { freshStore(); uiStore.setState({ activeSection: 'home', toast: '' }); setThemeOverride(null); });
 afterEach(() => { cleanup(); setThemeOverride(null); setDisplayPrefs({ mode: 'light' }); act(() => activateTheme(1)); });
 
 describe('applying the case theme', () => {
   it('the default theme writes nothing on <html> (pixel parity); another theme writes its colours and tok() follows', () => {
-    render(<App />);
+    render(<><App /><ThemeProvider><Probe /></ThemeProvider></>);
     expect(html().getAttribute('style')).toBeNull();
     act(() => activateTheme(7));
     expect(prop('header-start')).toBe('#5b2a9e');
-    expect(tok('header-start')).toBe('#5b2a9e');
+    expect(tok()).toBe('#5b2a9e');
     act(() => setDisplayPrefs({ mode: 'dark' }));
     expect(prop('bg')).not.toBe('');
     expect(prop('header-start')).not.toBe('#5b2a9e');   // the dark header of the theme
     act(() => setDisplayPrefs({ mode: 'light' }));
     act(() => activateTheme(1));
     expect(html().getAttribute('style')).toBeNull();
-    expect(tok('header-start')).toBe('#0058ab');
+    expect(tok()).toBe('#0058ab');
   });
 });
 
