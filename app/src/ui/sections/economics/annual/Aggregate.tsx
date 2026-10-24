@@ -12,7 +12,7 @@ const help = (
   <>
     <p>The year-by-year view of the <strong>selection</strong> (Portfolio or one Wave) on the calendar axis: each planned product&apos;s own Time Engine months, shifted to its start and added up, then summed by blocks of
       12 calendar months. Headcount is the year-end figure. The net by product and year adds up to the net of the selection.</p>
-    <p>Products without a wave, or archived, are left out (the banner above says how many). Choose a Product in the View selector for the single-product Annual summary.</p>
+    <p>Products without a wave, or archived, are left out (the banner above says how many). Choose a product in “Show” for the single-product Annual summary.</p>
   </>
 );
 const R = 'right' as const;

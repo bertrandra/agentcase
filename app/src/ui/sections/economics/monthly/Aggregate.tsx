@@ -14,7 +14,7 @@ const help = (
   <>
     <p>The month-by-month trajectory of the <strong>selection</strong> (Portfolio or one Wave) on the calendar axis: each planned product&apos;s own Time Engine month, shifted to its start (wave start + offset) and added up.
       The cumulative cash is that of the consolidated flows, so payback and NPV read straight off this table.</p>
-    <p>Products without a wave, or archived, are left out (the banner above says how many). Choose a Product in the View selector for the single-product Monthly detail.</p>
+    <p>Products without a wave, or archived, are left out (the banner above says how many). Choose a product in “Show” for the single-product Monthly detail.</p>
   </>
 );
 const sign = (x: number) => ({ color: x >= 0 ? tok('teal-725') : tok('warning-595') });

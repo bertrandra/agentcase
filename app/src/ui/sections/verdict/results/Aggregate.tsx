@@ -16,7 +16,7 @@ const help = (
   <>
     <p>The business case of the <strong>selection</strong> (Portfolio or one Wave) on one screen: the confidence-conditional verdict of its Monte Carlo distribution, the consolidated key figures, the uncertainty band,
       where the savings come from and the human to agent team shift.</p>
-    <p>Money figures are the consolidated calendar flows; the decomposition and the team shift add up the products&apos; own last-year figures. Choose a Product in the View selector for the single-product Results.</p>
+    <p>Money figures are the consolidated calendar flows; the decomposition and the team shift add up the products&apos; own last-year figures. Choose a product in “Show” for the single-product Results.</p>
   </>
 );
 const R = 'right' as const;

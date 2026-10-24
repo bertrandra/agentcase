@@ -11,7 +11,7 @@ import { LineChart } from '../aggregate/LineChart';
 const help = (
   <>
     <p>Human FTE going down and agent vFTE coming up, for the <strong>selection</strong> (Portfolio or one Wave) on the portfolio calendar: each planned product&apos;s own Time Engine months, shifted to its start and added up.</p>
-    <p>A product counts from its start month; before it, and after its own horizon, it contributes nothing. Choose a Product in the View selector for the single-product chart with the maturity levels.</p>
+    <p>A product counts from its start month; before it, and after its own horizon, it contributes nothing. Choose a product in “Show” for the single-product chart with the maturity levels.</p>
   </>
 );
 

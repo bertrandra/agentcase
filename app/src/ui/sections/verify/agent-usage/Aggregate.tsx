@@ -9,7 +9,7 @@ import { ExcludedNote, VerifyTable } from '../aggregate/Rollup';
 const help = (
   <>
     <p>How intensively agents are used across the <strong>selection</strong>: runs, tokens and cost per product, and the agent effort by phase and authorization level, added up over the planned products.</p>
-    <p>Token and infrastructure costs by year are the consolidated calendar series. Choose a Product in the View selector for the single-product page.</p>
+    <p>Token and infrastructure costs by year are the consolidated calendar series. Choose a product in “Show” for the single-product page.</p>
   </>
 );
 

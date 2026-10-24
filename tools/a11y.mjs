@@ -29,7 +29,7 @@ for (const fx of fixtures) {
     if (await openSection(page, label)) await audit(page, fx, label);
   }
   if (fx.startsWith('pf-')) {   // multi-product fixture: the display scope is view state (not saved), so audit the portfolio views under the Portfolio scope too (P4)
-    await page.selectOption('select[aria-label="View"]', 'portfolio');
+    await page.selectOption('select[aria-label="Show"]', 'portfolio');
     for (const label of labels.filter((l) => /Waves|Consolidation|Gantt|Portfolio stress|Decision/.test(l ?? '') || only.includes(l))) {   // --sections: the listed ones are audited under the Portfolio View too (aggregate view)
       if (only.length && !only.includes(label)) continue;
       if (!(await openSection(page, label))) continue;
@@ -41,7 +41,7 @@ for (const fx of fixtures) {
       if (await run.count()) { await run.click(); await page.locator('table[aria-label], table caption').first().waitFor({ timeout: 60000 }).catch(() => {}); await page.waitForTimeout(500); }
       await audit(page, fx, `${label} (scope Portfolio)`);
     }
-    await page.selectOption('select[aria-label="View"]', { index: 1 });   // back to a wave: the KPI bar of a Wave
+    await page.selectOption('select[aria-label="Show"]', { index: 1 });   // back to a wave: the KPI bar of a Wave
     for (const label of only.filter((l) => labels.includes(l))) {   // --sections: and under a Wave (with a drill-down opened, if the section has one)
       if (!(await openSection(page, label))) continue;
       const drill = page.locator('.ac-drill-head h3 button[aria-expanded=false]').first();
@@ -51,8 +51,8 @@ for (const fx of fixtures) {
     await audit(page, fx, '(scope Wave: KPI bar)');
   }
   if (fx.startsWith('pf-')) {   // the editing states below (Customer name) need the Product view: back to the first product
-    const first = await page.locator('select[aria-label="View"] option[value^="product:"]').first().getAttribute('value');
-    await page.selectOption('select[aria-label="View"]', first);
+    const first = await page.locator('select[aria-label="Show"] option[value^="product:"]').first().getAttribute('value');
+    await page.selectOption('select[aria-label="Show"]', first);
   }
   if (!only.length) {
     await personaMenu(page, fx, rec); await historyStates(page, fx, rec);

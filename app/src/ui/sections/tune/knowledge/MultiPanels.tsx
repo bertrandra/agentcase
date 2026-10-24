@@ -63,7 +63,7 @@ export function MultiPanels() {
   return (
     <>
       <CapNote />
-      {common ? <Callout kind="blue">The knowledge domains and the knowledge transfer preparation are per product — pick a product in Edit to change them.</Callout>
+      {common ? <Callout kind="blue">The knowledge domains and the knowledge transfer preparation are per product — pick a product in Change to change them.</Callout>
         : <><DomainsEditor /><LeadField /></>}
       <HubSettings />
     </>
