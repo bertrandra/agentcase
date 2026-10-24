@@ -31,6 +31,10 @@ When releasing, follow [docs/BUMP_PROCEDURE.md](docs/BUMP_PROCEDURE.md) (§7 for
   helper `tests/helpers/axe.ts` asks axe for the violations only (`resultTypes`), chains the runs so one slow audit can no longer fail the next ones, and
   serves all 14 axe tests. The file runs one audit per test (graph alone, with a section selected, with a zone selected, each tab): the slowest test went
   from 6.2 – 7.5 s (3 failures in 5 runs alone) to ≤ 2 s alone and ≤ 4.2 s under a parallel full suite (20 / 20 green); `{ timeout: 15 000 }` is a margin.
+- **`vue-exemplars` "Edit this product …" failed once in three full runs**: after the click, the product's section is a `React.lazy` module transformed on
+  first import, and the test waited for it with the 1 s default of `findBy*`. Every wait for lazy content (the section, the read-only drill-downs of the
+  vue-* tests) now uses `LAZY` from `tests/helpers/portfolioUi.tsx`, the budget `sectionReady` already used; the test timeout still bounds it.
+- `theme-palette.test.ts` computes its 240-palette sweep once per file instead of three times (15.6 s → 5.7 s for the file).
 
 ### Changed
 - **Duplicated code removed (src: 25 clones → 4, all four are import lists).** One owner each for: the Results verdict box, uncertainty band, savings /
