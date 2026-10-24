@@ -51,13 +51,14 @@ describe('focus does not fall to the page body when the focused control unmounts
     finish.focus(); fireEvent.click(finish);
     await waitFor(() => expect(focused()).toBe(screen.getByRole('button', { name: /Start guided sequence/ })));
   });
-  it('the group bar ☰ Menu hands focus to the current sidebar entry', async () => {
+  it('the top-bar ☰ toggle shows the sidebar and keeps focus on the toggle', async () => {
     act(() => uiStore.setState({ menuHidden: true }));
     render(<App />);
-    const menu = within(screen.getByRole('navigation', { name: 'Group navigation' })).getByRole('button', { name: /Menu/ });
-    menu.focus(); fireEvent.click(menu);
-    await waitFor(() => expect(focused().getAttribute('aria-current')).toBe('page'));
-    expect(screen.getByRole('navigation', { name: 'Sections' }).contains(focused())).toBe(true);
+    expect(within(screen.getByRole('navigation', { name: 'Group navigation' })).queryByRole('button', { name: /Menu/ })).toBeNull();
+    const toggle = screen.getByRole('button', { name: 'Toggle the sidebar menu' });
+    toggle.focus(); fireEvent.click(toggle);
+    await waitFor(() => expect(screen.getByRole('navigation', { name: 'Sections' })).toBeTruthy());
+    expect(focused()).toBe(toggle);
   });
   it.each(['Restore', 'Dismiss'])('the restore banner %s hands focus to the main region', async (name) => {
     const storage = memoryStorage(), old = createAppStore(makeDefaultDoc(), { now: () => 0 });

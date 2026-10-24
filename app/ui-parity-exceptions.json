@@ -63,14 +63,32 @@
     {
       "area": "header",
       "prop": "boxH",
-      "expected": "120",
-      "reason": "product decision (user request): the header subtitle \"Agentic Transformation: From Team Baseline to Confidence-Conditional Verdict\" is removed, so the banner is shorter than the legacy 145.6px"
+      "expected": "72",
+      "reason": "product decision (user request): the header subtitle \"Agentic Transformation: From Team Baseline to Confidence-Conditional Verdict\" is removed, so the banner is shorter than the legacy 145.6px; then made compact (padding 12px, v20.4.0)"
     },
     {
       "area": "header:title",
       "prop": "boxW",
-      "expected": "190.5",
-      "reason": "product decision (user request): the title reads \"AgentCase [for <customer>] v20.3\" without the legacy subtitle line; its width follows its text"
+      "expected": "197.8",
+      "reason": "product decision (user request): the title reads \"AgentCase [for <customer>] vX.Y\" without the legacy subtitle line; its width follows its text"
+    },
+    {
+      "area": "header",
+      "prop": "paddingTop",
+      "expected": "12px",
+      "reason": "product decision (user request \"make the header compact\", v20.4.0): the blank band left by the removed subtitle is gone"
+    },
+    {
+      "area": "header",
+      "prop": "paddingBottom",
+      "expected": "12px",
+      "reason": "product decision (user request \"make the header compact\", v20.4.0): the blank band left by the removed subtitle is gone"
+    },
+    {
+      "area": "header:title",
+      "prop": "marginBottom",
+      "expected": "0px",
+      "reason": "product decision (user request \"make the header compact\", v20.4.0): the blank band left by the removed subtitle is gone"
     }
   ]
 }

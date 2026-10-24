@@ -15,6 +15,12 @@ All notable changes to AgentCase, newest first. Product version from v19.0.0 = `
 
 When releasing, follow [docs/BUMP_PROCEDURE.md](docs/BUMP_PROCEDURE.md) (§7 for the legacy file) and add the new version at the top.
 
+## [Unreleased]
+
+### Changed
+- Top bar: 💾 Save and 📂 Open… carry an icon; Undo / Redo are icon-only (↶ ↷, names and tooltips unchanged).
+- Hide-menu group bar: the ☰ Menu button and the persona picker are removed (they duplicated the top bar's ☰ toggle and Persona picker).
+
 ## [v20.10.0] 2026-10-24 — One-colour palette generator with a contrast slider (+ size budget 5 MB)
 
 ### New
