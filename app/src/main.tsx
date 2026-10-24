@@ -10,6 +10,7 @@ import '@/ui/theme/tokens.css';
 import '@/ui/theme/axes.css';
 import '@/ui/theme/shell.css';
 import '@/ui/theme/content.css';
+import '@/ui/theme/sections-b.css';
 
 initThemeLink();   // a ?theme=<seq> link shows that theme without touching the case (docs/THEME.md §8.7)
 initDisplay();   // the viewer's display preference (light / dark / auto, contrast…) before the first paint; a saved HTML copy honours its viewer's choice

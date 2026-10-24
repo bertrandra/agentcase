@@ -18,7 +18,7 @@ export function KpiZone() {
 const ProductKpis = memo(function ProductKpis() {
   const { f, titles } = useDocSelector((d) => headlineOf(caseResultOf(d)));
   return (
-    <aside className="ac-kpis" aria-label="Headline results" style={{ gridArea: 'kpi' }}>
+    <aside className="ac-kpis" aria-label="Headline results">
       <HeadlineTiles f={f} titles={titles} />
     </aside>
   );

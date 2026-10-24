@@ -32,7 +32,7 @@ export function SectionHost() {
   const retry = () => { cache.delete(id); setAttempt((a) => a + 1); };
   const Cmp = componentFor(id), scoped = useScopedSection(id), inPlace = scoped.mode !== 'section' && sectionKind(id) === 'I-input';
   return (
-    <main className="ac-work" id="main" style={{ gridArea: 'work' }} tabIndex={-1}>
+    <main className="ac-work" id="main" tabIndex={-1}>
       {/* keyed by section: opening another section resets a failed boundary; the menu, KPI bar and dock stay outside it */}
       <ErrorBoundary key={`${id}#${attempt}`} scope="section" where={id} fallback={(e) => <SectionFallback error={e} retry={retry} />}>
         {scoped.mode === 'aggregate' ? <Suspense fallback={loading}><scoped.Cmp /></Suspense>

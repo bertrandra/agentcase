@@ -1,0 +1,30 @@
+/* D5 (architecture lot 5b, part B): the looks that used to be inline `style={{…}}` in the shell, the widgets and the sections of Economics, Stress,
+   Verdict, Defend, Present, Reference & share, Configure, Factory, Model engine, Portfolio and the Verify bodies (verifyA). Theme tokens only
+   (tests/ui/no-hardcoded-style.test.ts). A rule that replaces an inline style is written specific enough to win where the inline value won; a
+   value that is data (a share, a size the caller picks, a colour of the case) stays on the element as a custom property read here. */
+
+/* ---- shell: grid areas, the sidebar group rail (its colour is case data), the guided sequence bar */
+.ac-top { grid-area: top; }
+.ac-kpis { grid-area: kpi; }
+.ac-nav { grid-area: nav; }
+.ac-workcol, .ac-work { grid-area: work; }
+.ac-dock { grid-area: dock; }
+.ac-nav-group { box-shadow: var(--ac-shadow-rail-offset) var(--ac-group-color); }
+.ac-progress div { width: var(--ac-progress-pct); }
+.ac-wiz-pct { font-size: var(--ac-font-size-xs); }
+
+/* ---- widgets */
+.ac-chart { height: var(--ac-chart-h, auto); }
+.ac-sized, .ac-section .ac-sized, .ac-section .ac-field .ac-sized { width: var(--ac-w); }
+.ac-meter { height: 16px; overflow: hidden; background: var(--ac-line); border-radius: var(--ac-radius-md); }
+.ac-meter > div { width: var(--ac-meter-pct); height: 100%; background: var(--ac-meter-color); }
+.ac-section p.ac-note-sm, .ac-note-sm { font-size: var(--ac-font-size-md); }
+.ac-hub-error { color: var(--ac-danger-800); }
+.ac-hub-modes, .ac-section .ac-hub-modes { padding: 0; border: 0; }
+
+/* ---- table cells: the column's alignment (`widgets/align.ts`); a numeric column reads in the figures font like the legacy `td.text-right`
+   (`.ac-c` keeps its own weaker rule: a header cell carrying it stays left-aligned, as it always rendered) */
+.ac-num { text-align: right; } .ac-center { text-align: center; }
+.ac-section :is(table, .ac-table) :is(th, td).ac-num { text-align: right; }
+.ac-section :is(table, .ac-table) :is(th, td).ac-center { text-align: center; }
+.ac-section :is(.ac-table, .ac-rich table) td.ac-num { font-family: var(--ac-font-numeric); }

@@ -11,7 +11,7 @@ export function ScopeKpis({ label, h }: { label: string; h: PortfolioHeadline })
   const e = h.endYear, cr = h.costReduction, fte = h.fte, who = `${label} (${h.products} planned product${h.products > 1 ? 's' : ''})`;
   const f: HeadlineFigures = { fte, year: e.index, savings: e.savings, run: e.run, cr, velocity: { raw: h.velocityPct, shown: Math.round(h.velocityPct) }, payback: h.paybackMonth, eff: h.eff, ceiling: h.ceiling };
   return (
-    <aside className="ac-kpis" aria-label={`Headline results — ${label}`} data-scope={label} style={{ gridArea: 'kpi' }}>
+    <aside className="ac-kpis" aria-label={`Headline results — ${label}`} data-scope={label}>
       <Kpi label="Scope" value={label} tone="grey" title={`Scope of the figures: ${who}. Change it with “Show” in the top bar.`} />
       <HeadlineTiles f={f} titles={{
         fteBefore: `${who}: total AS-IS headcount, summed over the products (FTE).`,
