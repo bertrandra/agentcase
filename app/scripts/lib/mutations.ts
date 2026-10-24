@@ -17,4 +17,8 @@ export const MUTATIONS: Mutation[] = [
   { file: 'src/store/history.ts', find: 'COALESCE_MS = 800', replace: 'COALESCE_MS = 801', why: 'store (untagged): undo coalescing window' },
   { file: 'src/domain/baseline/apportion.ts', find: 'FTE_STEP = 0.5', replace: 'FTE_STEP = 0.25', why: 'rate-card-team: FTE rounding step' },
   { file: 'src/domain/time/years.ts', find: 'savings: sum.sav,', replace: 'savings: sum.sav * 1.001,', why: 'time-engine: yearly savings' },
+  { file: 'src/domain/economics/cashflow.ts', find: 'if ((cum[t - 1] as number) >= 0) return t;', replace: 'if ((cum[t - 1] as number) > 0) return t;', why: 'time-engine: payback rule of the cash-flow kernel (lot 4)' },
+  { file: 'src/domain/tune/program.ts', find: '(p.cost * Math.min(1, D - k)) / D', replace: '(p.cost * Math.min(1, D - k)) / D / 2', why: 'tuning-programme: pilot months in the cost model (lot 4)' },
+  { file: 'src/domain/model/flow.ts', find: 'const deltaTRaw = (ct.asis - ct.ct) / 30;', replace: 'const deltaTRaw = (ct.asis - ct.ct) / 31;', why: 'delivery-views: time-to-market value, retagged (lot 4)' },
+  { file: 'src/domain/pdc/verifTeam.ts', find: '(m.yearETP[y] || 0) + (m.yearRunAgenticETP?.[y] || 0)', replace: '(m.yearETP[y] || 0) + (m.yearRunAgenticETP?.[y] || 0) + 1', why: 'delivery-views: human FTE read by the checks and the Board, retagged (lot 4)' },
 ];
