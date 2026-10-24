@@ -18,7 +18,7 @@ import { view } from '../helpers/vueAgg';
  * (docs/ARCHITECTURE.md §6 has the before / after table).
  */
 type Edit = 'figure' | 'name';
-/** `before`: the count measured on v20.14.0 (before the selector hooks), for the record; `budget`: the ceiling enforced now. */
+/** `before`: the count measured before lot 5a (no selector hooks), for the record; `budget`: the ceiling enforced now. */
 interface Run { key: string; section: string; title: RegExp; portfolio?: boolean; edit: Edit; budget: number; before: number }
 const figure = (section: string) => (section === 'scope-sel' ? () => setAgentSup('A017', 47) : () => setInput('workdays', 211));
 const RUNS: Run[] = [
