@@ -14,6 +14,7 @@
 .ac-section .ac-table th.ac-th-c { text-align: center; }
 .ac-section .ac-table td.ac-td-num { text-align: right; font-family: var(--ac-font-numeric); }
 .ac-section .ac-table tbody tr.ac-row-hl:nth-child(n)[data-tone='warning-40'] { background: var(--ac-warning-40); }
+.ac-section .ac-table tbody tr.ac-row-hl:nth-child(n)[data-tone='blue'] { background: var(--ac-blue); color: var(--ac-neutral-0); }
 /* a form row whose items spread to both ends */
 .ac-section .ac-form-row.is-spread { justify-content: space-between; }
 
@@ -80,3 +81,47 @@
 /* Rate card */
 .ac-section input.ac-rate-input { width: 80px; }
 .ac-section .ac-skills-catalogue { margin-top: 1.2rem; }
+
+/* ── scope ───────────────────────────────────────────────────────────────────────────────────────────────────────────────────────── */
+/* a section title inside a <summary> (collapsible panel / card) stays on the disclosure line */
+.ac-section summary .ac-summary-title { display: inline; }
+/* Automation & glass ceiling: the funnel player, the funnel labels and the curve tags (series colours are inline: theme roles resolved at render) */
+.ac-section .ac-funnel-play { min-width: 104px; }
+.ac-section .ac-svg .ac-funnel-stage { fill: var(--ac-neutral-0); font-size: var(--ac-font-size-base); font-weight: var(--ac-font-weight-semibold); }
+.ac-section .ac-svg .ac-funnel-sub { fill: var(--ac-neutral-0-a80); font-size: var(--ac-font-size-xs-plus); }
+.ac-section .ac-svg .ac-funnel-remains { font-size: var(--ac-font-size-xl); font-weight: var(--ac-font-weight-bold); }
+.ac-section .ac-svg .ac-funnel-loss { fill: var(--ac-slate-250); font-size: var(--ac-font-size-md-plus); }
+.ac-section .ac-svg .ac-funnel-loss.is-lost { fill: var(--ac-warning-600); }
+.ac-section .ac-svg .ac-curve-tag { font-weight: var(--ac-font-weight-bold); }
+.ac-section .ac-svg .ac-curve-now { fill: var(--ac-neutral-900); font-size: var(--ac-font-size-xs); }
+/* S-curve: the level markers, the readout note, the L1–L4 cards (data-tone = the level's colour role) */
+.ac-section .ac-svg .ac-scurve-level { font-size: var(--ac-font-size-md-plus); font-weight: var(--ac-font-weight-bold); }
+.ac-section .ac-readout-note { max-width: 420px; }
+.ac-section .ac-level[data-tone='slate-700'] { border-left-color: var(--ac-slate-700); }
+.ac-section .ac-level[data-tone='chart-cat-5'] { border-left-color: var(--ac-chart-cat-5); }
+.ac-section .ac-level[data-tone='chart-cat-2'] { border-left-color: var(--ac-chart-cat-2); }
+.ac-section .ac-level[data-tone='chart-cat-1'] { border-left-color: var(--ac-chart-cat-1); }
+.ac-section .ac-level[data-tone='slate-700'] strong { color: var(--ac-slate-700); }
+.ac-section .ac-level[data-tone='chart-cat-5'] strong { color: var(--ac-chart-cat-5); }
+.ac-section .ac-level[data-tone='chart-cat-2'] strong { color: var(--ac-chart-cat-2); }
+.ac-section .ac-level[data-tone='chart-cat-1'] strong { color: var(--ac-chart-cat-1); }
+/* Phase scope tiles */
+.ac-section .ac-tile-head { display: flex; align-items: center; gap: 8px; }
+/* Target artifact selection: lifecycle weight, impact bars by tier, live chips, the adjust table's overridden cells */
+.ac-section .ac-phase-lw { font-weight: var(--ac-font-weight-bold); }
+.ac-section .ac-impact-bar > [data-tone='brick'] { background: var(--ac-brick); }
+.ac-section .ac-impact-bar > [data-tone='amber'] { background: var(--ac-amber); }
+.ac-section .ac-impact-bar > [data-tone='teal'] { background: var(--ac-teal); }
+.ac-section .ac-chip[data-tone='teal'] { border-left-color: var(--ac-teal); }
+.ac-section .ac-chip[data-tone='brick'] { border-left-color: var(--ac-brick); }
+.ac-section .ac-chip[data-tone='blue'] { border-left-color: var(--ac-blue); }
+.ac-section .ac-chip[data-tone='amber'] { border-left-color: var(--ac-amber); }
+.ac-section input.ac-adjust-bulk { width: 64px; }
+.ac-section .ac-table input.ac-adjust-input { width: 60px; }
+.ac-section .ac-table input.ac-adjust-input[data-tone='blue'] { border-color: var(--ac-blue); }
+.ac-section .ac-table input.ac-adjust-input[data-tone='amber'] { border-color: var(--ac-amber); }
+/* Lifecycle weighting */
+.ac-section .ac-lc-controls { max-width: 520px; }
+.ac-section .ac-lc-status { font-size: var(--ac-font-size-md); color: var(--ac-blue); font-weight: var(--ac-font-weight-semibold); }
+.ac-section .ac-lc-factor { font-weight: var(--ac-font-weight-bold); }
+.ac-section .ac-lc-marker { color: var(--ac-amber); font-size: var(--ac-font-size-sm); }

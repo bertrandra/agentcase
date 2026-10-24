@@ -7,7 +7,10 @@ import '../scope-tools.css';
 import { Editor } from './Editor';
 
 const OVERRIDES = ['scurve'] as const;
-const HORIZONS = [['1', '1 year — rapid pilot'], ['2', '2 years — BU transformation'], ['3', '3 years — standard'], ['5', '5 years — strategic'], ['7', '7 years — portfolio'], ['10', '10 years — operating model']];
+const HORIZONS = [
+  ['1', '1 year — rapid pilot'], ['2', '2 years — BU transformation'], ['3', '3 years — standard'], ['5', '5 years — strategic'], ['7', '7 years — portfolio'],
+  ['10', '10 years — operating model'],
+];
 
 const help = (
   <>

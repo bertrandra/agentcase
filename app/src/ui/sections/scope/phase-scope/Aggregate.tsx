@@ -20,13 +20,14 @@ export default function PhaseScopeAggregate() {
       render: (r: PhaseScopeRow) => { const c = r.cells[p.id]; return c ? `${MARK[c.state]} · ${c.share.toFixed(0)}% · ${c.active} art.` : '—'; },
     })),
   ];
+  const cells = Object.fromEntries(a.phases.map((p) => [p.id, `${a.productsIn[p.id] ?? 0}/${n} products`]));
   return (
     <InputAggregate title="🎯 Phase scope" help={help} intro="the phases in scope belong to each product.">
       <StatRow>
         <Stat label="Products with a disabled phase" value={`${a.disabled}/${n}`} tone={a.disabled ? 'amber' : 'teal'} />
       </StatRow>
       <AggregateTable caption={`Phase scope by product — ${vs.label}`} rows={a.rows} columns={cols}
-        totals={{ label: `Products keeping the phase — ${vs.label}`, cells: Object.fromEntries(a.phases.map((p) => [p.id, `${a.productsIn[p.id] ?? 0}/${n} products`])) }} />
+        totals={{ label: `Products keeping the phase — ${vs.label}`, cells }} />
     </InputAggregate>
   );
 }

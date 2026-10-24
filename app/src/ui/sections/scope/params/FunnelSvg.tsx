@@ -42,7 +42,9 @@ export function FunnelSvg({ S, A }: { S: FunnelStage; A: Active }) {
             <text x={CX} y={yT + 39} textAnchor="middle" className="ac-funnel-sub">{b.s}</text>
             {/* dynamic: the band's series colour (theme role resolved at render) */}
             <text x={726} y={yT + 29} textAnchor="end" className="ac-funnel-remains" style={{ fill: b.c }}>{b.v.toFixed(1)}%</text>
-            <text x={908} y={yT + 29} textAnchor="end" className={lost ? 'ac-funnel-loss is-lost' : 'ac-funnel-loss'}>{lost ? `−${loss.toFixed(1)} pts` : '—'}</text>
+            <text x={908} y={yT + 29} textAnchor="end" className={lost ? 'ac-funnel-loss is-lost' : 'ac-funnel-loss'}>
+              {lost ? `−${loss.toFixed(1)} pts` : '—'}
+            </text>
           </g>
         );
       })}
