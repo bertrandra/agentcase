@@ -5,6 +5,42 @@
 > Les intitulés en gras sont ceux de l'interface. Spécification complète : [SPEC_MULTI_PRODUIT.md](SPEC_MULTI_PRODUIT.md) ;
 > architecture : [ARCHITECTURE.md](ARCHITECTURE.md) § « Portfolio ».
 
+## Summary (English)
+
+*This guide is written in French (user decision D2); this summary gives the same headings in English. Labels in bold are the exact
+interface labels. Full specification in English: [SPEC_MULTI_PRODUIT.md](SPEC_MULTI_PRODUIT.md); aggregated view: [VUE_AGREGEE.md](VUE_AGREGEE.md).*
+
+- **0. Try it now** — open [`examples/AgentCase_Portfolio_Example.json`](examples/AgentCase_Portfolio_Example.json) (four products in two waves, one
+  unscheduled, a shared Knowledge Hub allocated by headcount, ρ = 0.3). A single-case file of an earlier version still opens, as "Product 1" in
+  "Wave 1" at month 0, with exactly the same figures.
+- **1. Add a product** — with one product nothing changes on screen. **🏠 Welcome** → **Add a product** (or **📦 Products**). The top bar then shows
+  **👁 Show** (what you look at) and **✏️ Change** (where your changes go). A new product inherits every common value except its entry team;
+  1 to 50 products, *Duplicate*, *Archive / Restore*, *Delete*, *Offset (months)*.
+- **2. Each product's entry team** — never inherited nor shared: pick the product in **Show** or **Change**, then enter its team as for a single case.
+- **3. Common scope and overrides** — scope and targets are common values; with **Change: All products** every inheriting product follows. Pick a
+  product in **Change** to override it (chip **overridden** / **inherited**; whole-key overrides); **Revert to common**, **Apply to all products**,
+  section **🧬 Overrides**. Rates, model, coefficients, discount rate and horizon stay common.
+  - **3.1 Show / Change and in-place editing** — rule "Change follows Show"; in a Portfolio or Wave view an input section keeps its read-only
+    aggregate on top and is editable in place below (**Changing …**): one product (its overrides) or **All products** (the shared values, with
+    "*N* products override this" and **Back to shared**). The entry team, the knowledge domains and the KT preparation are per product only.
+- **4. Waves** — **🌊 Waves**: one column per wave then **Unscheduled**; drag and drop, ← / →, **Move to wave…**; a product's month 0 = wave start +
+  offset; an unscheduled product is left out of the consolidation.
+- **5. Knowledge transfer** — the hub is common, each product uses a subset (**🧠 Knowledge hub**: maturity answers, target, curation, setup,
+  **Knowledge domains**, **Knowledge transfer preparation**); infrastructure allocation per product or by headcount; **🔁 Knowledge transfer** table
+  with the **Hub effect** per wave.
+- **6. Consolidation and display scope** — **📈 Consolidation**: the portfolio is exactly the sum of the shifted products; NPV is the **Calendar NPV**.
+  **Show** drives the KPI bar, the Gantt, Decision Intelligence and the report; it is not saved. Ctrl+Z / Ctrl+Y cover every portfolio edit.
+- **7. Portfolio stress** — **🎲 Portfolio stress**: draws, seed, **Correlation between products ρ**, **▶ Run the simulation**; P10 / P50 / P90, CVaR,
+  P(net < 0), **Risk reduction**; a stale marker when the portfolio changes. Scenarios and sensitivity stay per product.
+- **8. Export** — parameters workbook with the portfolio sheets (one undoable import), results workbook (Portfolio, waves, Knowledge transfer,
+  Portfolio stress, per product), scoped critical-delivery report, HTML save and snapshots. **Cost model workbook** (monthly): three tabs
+  **Values** (human days), **Rate cards** (applied rates, blending adjustment), **Other costs** (other cost lines, total vs the engine with a
+  *Difference* row of 0; the pilot is a memo outside the totals, DEV-COSTMODEL-PILOT).
+- **9. Known limits** — no portfolio scenarios table, no dependencies between waves, no shared teams, no knowledge reuse between products, common
+  rates and coefficients, no *Apply to all products* for the knowledge-subset fields (DEVIATIONS.md DEV-PF-GAPS).
+
+---
+
 ## 0. Pour essayer tout de suite
 
 Ouvrez le fichier d'exemple [`examples/AgentCase_Portfolio_Example.json`](examples/AgentCase_Portfolio_Example.json) avec le bouton d'ouverture
@@ -127,7 +163,7 @@ Section **📥 Import / Export** :
 - **💾 Save HTML**, **🗂️ Snapshot Manager** : le fichier ou la photo contient tout le portefeuille. Un portefeuille qui revient à un cas simple est enregistré comme avant
   (`agentcase.snapshot.v1`).
 
-Les noms de fichiers portent la version : `AgentCase_v20_0_Parameters_….xlsx`.
+Les noms de fichiers portent la version : `AgentCase_vX_Y_Parameters_….xlsx` (par exemple `v20_12` pour la 20.12.0).
 
 ### Cost model workbook
 
