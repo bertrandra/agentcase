@@ -11,9 +11,13 @@ const COLS: AggColumn<MaturityMapRow>[] = [
   { key: 'ramp', header: 'Adoption thresholds L1–L4 (%)', align: 'right', render: (r) => slash(r.ramp) },
   { key: 'share', header: 'Agent-share thresholds L1–L4 (%)', align: 'right', render: (r) => slash(r.share) },
   { key: 'labels', header: 'Labels', render: (r) => r.labels.join(' / ') },
-  { key: 'reached', header: 'Level reached', align: 'right', title: 'Lower of the adoption and agent-share levels, capped by the engagement context', render: (r) => `L${r.reached} (adoption L${r.adoptionLevel}, share L${r.shareLevel}, cap L${r.cap})` },
+  { key: 'reached', header: 'Level reached', align: 'right', title: 'Lower of the adoption and agent-share levels, capped by the engagement context',
+    render: (r) => `L${r.reached} (adoption L${r.adoptionLevel}, share L${r.shareLevel}, cap L${r.cap})` },
 ];
 const pct = (v: number): string => `${v.toFixed(0)}%`;
+
+const SAME = 'Every product of the selection uses the same thresholds.';
+const DIFFER = 'The thresholds differ between products of the selection (see the spread below).';
 
 /**
  * Maturity levels (L1–L4) — Aggregate view: the thresholds each product carries, the
@@ -29,7 +33,7 @@ export default function MaturityMapAggregate() {
   return (
     <InputAggregate title="📐 Maturity levels (L1–L4)" intro="the L1–L4 thresholds belong to each product (inherited from the common values unless overridden).">
       <AggregateTable caption={`Maturity thresholds by product — ${vs.label}`} rows={a.rows} columns={COLS} />
-      <Callout kind={a.uniform ? 'green' : 'note'}>{a.uniform ? 'Every product of the selection uses the same thresholds.' : 'The thresholds differ between products of the selection (see the spread below).'}</Callout>
+      <Callout kind={a.uniform ? 'green' : 'note'}>{a.uniform ? SAME : DIFFER}</Callout>
       <SpreadTable caption={`Spread of the thresholds — ${vs.label}`} items={items} />
     </InputAggregate>
   );

@@ -15,7 +15,9 @@ export function SoclePanel() {
           <h3 className="ac-tone ac-socle-family" data-tone={f.tone}>{f.title}</h3>
           <table className="ac-table">
             <tbody>
-              {f.rows.map(([name, kind, text]) => <tr key={name}><td>{name}</td><td className="ac-c ac-muted">{kind}</td><td className="ac-muted">{text}</td></tr>)}
+              {f.rows.map(([name, kind, text]) => (
+                <tr key={name}><td>{name}</td><td className="ac-c ac-muted">{kind}</td><td className="ac-muted">{text}</td></tr>
+              ))}
             </tbody>
           </table>
         </section>

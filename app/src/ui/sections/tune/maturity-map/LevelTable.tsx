@@ -29,8 +29,12 @@ export function LevelTable() {
                 <td><strong className="ac-tone" data-tone={TONES[i]}>L{i + 1}</strong></td>
                 <td><input type="text" className="ac-mm-label" aria-label={`Label of L${i + 1}`} value={mm.labels[i] ?? ''}
                   onChange={(e) => setMaturityLabel(i, e.target.value)} /></td>
-                <td className="ac-c">{i === 0 ? <span className="ac-muted">0 · start</span> : <BoundInput kind="ramp" idx={i} value={mm.rampBounds[i] as number} />}</td>
-                <td className="ac-c">{i === 0 ? <span className="ac-muted">0</span> : <BoundInput kind="share" idx={i} value={mm.shareBounds[i] as number} />}</td>
+                <td className="ac-c">
+                  {i === 0 ? <span className="ac-muted">0 · start</span> : <BoundInput kind="ramp" idx={i} value={mm.rampBounds[i] as number} />}
+                </td>
+                <td className="ac-c">
+                  {i === 0 ? <span className="ac-muted">0</span> : <BoundInput kind="share" idx={i} value={mm.shareBounds[i] as number} />}
+                </td>
                 <td className="ac-c ac-muted">{ranges[i]}</td>
               </tr>
             ))}

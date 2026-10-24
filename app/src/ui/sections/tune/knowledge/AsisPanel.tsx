@@ -30,7 +30,9 @@ export function AsisPanel() {
         <SubsetFieldBox field="targetCC" label="Target CC"><SelectInput id="khTargetCC" label="Target CC (Y3)" options={CC} /></SubsetFieldBox>
         <SubsetFieldBox field="setupBase" label="Setup base"><NumberInput id="khSetupBase" label="Hub setup base (€)" min={0} step={10000} /></SubsetFieldBox>
         <NumberInput id="khSetupDays" label="Setup duration (days)" hint="sizes its row in the Gantt programme band" min={1} step={5} />
-        <SubsetFieldBox field="curationFTE" label="Curation"><NumberInput id="khCurationFTE" label="Curation (FTE)" min={0} max={2} step={0.25} /></SubsetFieldBox>
+        <SubsetFieldBox field="curationFTE" label="Curation">
+          <NumberInput id="khCurationFTE" label="Curation (FTE)" min={0} max={2} step={0.25} />
+        </SubsetFieldBox>
         {!multi && <NumberInput id="khInfraMonthly" label="Hub infra (€/mo)" min={0} step={250} />}
       </div>
     </Panel>

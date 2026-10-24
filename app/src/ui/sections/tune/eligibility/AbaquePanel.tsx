@@ -59,7 +59,8 @@ export function AbaquePanel() {
       <div role="status" className={t.applied ? 'ac-callout ac-vtax is-applied' : 'ac-callout ac-vtax'}>
         <strong>Verification tax</strong> — rate {pct(d.vTaxRate)} of gross saving
         {t.applied ? <> · <strong className="ac-tone" data-tone="amber">APPLIED</strong>: deducted from savings
-          ({fmtK(t.yearly[0] ?? 0)} / {fmtK(t.yearly[1] ?? 0)} / {fmtK(t.yearly[2] ?? 0)} over Y1–Y3)</> : ' · informative only — tick the box above to feed it into the economics'}.
+          ({fmtK(t.yearly[0] ?? 0)} / {fmtK(t.yearly[1] ?? 0)} / {fmtK(t.yearly[2] ?? 0)} over Y1–Y3)</>
+          : ' · informative only — tick the box above to feed it into the economics'}.
         <Explain />
       </div>
       <Note>CC-ABQ-01: net gain never exceeds the Abaque A addressable ceiling. CC-ABQ-02: with the tax applied, net saving ≤ gross saving.</Note>

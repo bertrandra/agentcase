@@ -15,8 +15,11 @@ export default function LifecycleEditAggregate() {
     { key: 'used', header: 'Lifecycle axis', render: (r) => (r.used ? 'on' : 'off') },
     { key: 'pos', header: 'Position', align: 'right', title: 'Product-status slider, 0–100', render: (r) => r.pos.toFixed(0) },
     { key: 'profile', header: 'Nearest profile', render: (r) => r.profile },
-    ...a.statuses.map((s, i) => ({ key: `p${s.id}`, header: `Posture: ${s.label}`, align: 'right' as const, render: (r: TuneLifecycleRow) => (r.postures[i] ?? 1).toFixed(2) })),
-    { key: 'edited', header: 'Edited cells', align: 'right', title: 'Matrix cells (weights and postures) that differ from the shipped benchmark', render: (r) => r.edited },
+    ...a.statuses.map((s, i) => ({
+      key: `p${s.id}`, header: `Posture: ${s.label}`, align: 'right' as const, render: (r: TuneLifecycleRow) => (r.postures[i] ?? 1).toFixed(2),
+    })),
+    { key: 'edited', header: 'Edited cells', align: 'right', render: (r) => r.edited,
+      title: 'Matrix cells (weights and postures) that differ from the shipped benchmark' },
   ];
   const items: SpreadItem[] = [
     { id: 'pos', name: 'Lifecycle position', s: a.pos, f: (v) => v.toFixed(0) },

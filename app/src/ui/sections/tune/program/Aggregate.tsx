@@ -28,10 +28,11 @@ export default function ProgramAggregate() {
     { id: 'pilot', name: 'Pilot cost', s: a.pilotCost, f: eurK },
     { id: 'over', name: 'Multi-pod overhead (%)', s: a.overhead, f: (v) => v.toFixed(1) },
   ];
+  const cells = { fte: t.pilotFte.toFixed(1), pcost: eurK(t.pilotCost), ops: t.capOps, target: t.capTarget, pct: `${t.capPct}%` };
   return (
     <InputAggregate title="🧭 Program & Completeness" intro="the pilot, the internal capability and the multi-pod overhead belong to each product.">
       <AggregateTable caption={`Programme inputs by product — ${vs.label}`} rows={a.rows} columns={COLS}
-        totals={{ label: `Total — ${vs.label}`, cells: { fte: t.pilotFte.toFixed(1), pcost: eurK(t.pilotCost), ops: t.capOps, target: t.capTarget, pct: `${t.capPct}%` } }} />
+        totals={{ label: `Total — ${vs.label}`, cells }} />
       <SpreadTable caption={`Spread of the programme inputs — ${vs.label}`} items={items} />
     </InputAggregate>
   );

@@ -5,7 +5,8 @@ import { CoefInput } from '@/ui/widgets/CoefInput';
 import { CheckInput, Field, SelectInput } from '@/ui/widgets/fields';
 
 const SEVERITY = [
-  { value: 'security', label: 'Security (×1.57)' }, { value: 'maintainability', label: 'Maintainability (×1.64)' }, { value: 'correctness', label: 'Correctness (×1.75)' },
+  { value: 'security', label: 'Security (×1.57)' }, { value: 'maintainability', label: 'Maintainability (×1.64)' },
+  { value: 'correctness', label: 'Correctness (×1.75)' },
 ];
 
 /** AI code-quality risk premium (EV-23): severity anchor, SDD mitigation, caps and the resulting verification-tax factor. */

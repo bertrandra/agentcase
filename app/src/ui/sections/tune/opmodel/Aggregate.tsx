@@ -20,6 +20,9 @@ const COLS: AggColumn<OpModelRow>[] = [
   { key: 'ok', header: 'V7 conservation (CC-OM-01)', render: (r) => (r.ok ? '✓ holds' : '✗ fails') },
 ];
 
+const NOTE = 'Each product re-projects its own TO-BE team into pods, transverse roles and the AI Office; the total '
+  + 'line adds the products’ teams. The V7 check is per product: open one below for its topology.';
+
 /**
  * Operating model — Aggregate view: pods, residual and run teams of each product at
  * Y1 and at the end of its horizon, the V7 conservation check, and the summed teams.
@@ -28,10 +31,11 @@ export default function OpModelAggregate() {
   const a = useOpModelAgg(), vs = useViewScope(), t = a.totals;
   return (
     <RollupAggregate title="🧩 Operating model — team topology & pods" Section={OpModelSection}
-      note="Each product re-projects its own TO-BE team into pods, transverse roles and the AI Office; the total line adds the products’ teams. The V7 check is per product: open one below for its topology.">
+      note={NOTE}>
       <AggregateTable caption={`Team topology by product — ${vs.label}`} rows={a.rows} columns={COLS} edit={false}
         totals={{ label: `Total — ${vs.label}`, cells: {
-          pods1: t.y1.pods, res1: fix(t.y1.residual, 1), ops1: fix(t.y1.ops, 1), tot1: fix(t.y1.total, 1), podsN: t.yN.pods, resN: fix(t.yN.residual, 1), totN: fix(t.yN.total, 1),
+          pods1: t.y1.pods, res1: fix(t.y1.residual, 1), ops1: fix(t.y1.ops, 1), tot1: fix(t.y1.total, 1),
+          podsN: t.yN.pods, resN: fix(t.yN.residual, 1), totN: fix(t.yN.total, 1),
           ok: `${t.ok} of ${a.rows.length} hold`,
         } }} />
     </RollupAggregate>

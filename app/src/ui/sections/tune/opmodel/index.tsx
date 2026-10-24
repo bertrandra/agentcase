@@ -7,8 +7,8 @@ import { Note } from '@/ui/widgets/tuneA';
 import { SectionFrame } from '@/ui/zones/SectionFrame';
 
 const MAPPING = [
-  ['Pod Orchestrator', 'Agent Supervisor'], ['AI Reviewer', 'AI QA'], ['Token FinOps Officer', 'AI FinOps'], ['Agent Architect', 'AI Engineer / Prompt Engineer'],
-  ['Preceptor', '— (human-to-human coaching)'],
+  ['Pod Orchestrator', 'Agent Supervisor'], ['AI Reviewer', 'AI QA'], ['Token FinOps Officer', 'AI FinOps'],
+  ['Agent Architect', 'AI Engineer / Prompt Engineer'], ['Preceptor', '— (human-to-human coaching)'],
 ];
 const help = (
   <>

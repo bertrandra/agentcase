@@ -8,7 +8,9 @@ import { eur, int } from '../../tuneB/fmt';
 /** The year columns and the totals shared by both run tables. */
 export function runColumns(H: number): Column<RunRow>[] {
   return [
-    ...Array.from({ length: H }, (_, i): Column<RunRow> => ({ key: `y${i}`, header: `Run Y${i + 1}`, align: 'right', render: (r) => int(r.runs[i] as number) })),
+    ...Array.from({ length: H }, (_, i): Column<RunRow> => ({
+      key: `y${i}`, header: `Run Y${i + 1}`, align: 'right', render: (r) => int(r.runs[i] as number),
+    })),
     { key: 'tot', header: 'Run total', align: 'right', render: (r) => <strong>{int(r.total)}</strong> },
     { key: 'tok', header: `Tokens ${H}y (M)`, align: 'right', render: (r) => `${r.tokM.toFixed(r.phase ? 2 : 1)} M` },
     { key: 'cost', header: `Cost ${H}y (€)`, align: 'right', render: (r) => eur(r.cost) },

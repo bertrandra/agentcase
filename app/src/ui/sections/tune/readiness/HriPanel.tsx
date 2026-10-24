@@ -23,7 +23,9 @@ function Outcome() {
   const h = hriSummary(useCtx());
   return (
     <div aria-live="polite">
-      <StatRow><Stat label="Human readiness index" value={`${h.index}/100 · ${h.label}`} tone={h.index >= 75 ? 'teal' : h.index >= 50 ? 'amber' : 'brick'} /></StatRow>
+      <StatRow>
+        <Stat label="Human readiness index" value={`${h.index}/100 · ${h.label}`} tone={h.index >= 75 ? 'teal' : h.index >= 50 ? 'amber' : 'brick'} />
+      </StatRow>
       <table className="ac-table">
         <tbody>
           <tr><td>Change intensity</td><td className="ac-c"><strong>{h.intensity}</strong></td></tr>
