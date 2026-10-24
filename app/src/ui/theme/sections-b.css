@@ -90,7 +90,7 @@
 .ac-section .ac-dyn-card-v.is-empty { color: var(--ac-neutral-700); }
 .ac-section .ac-dyn-card-key { font-size: var(--ac-font-size-md); }
 .ac-section .ac-dyn-card-go { margin-top: 6px; font-size: var(--ac-font-size-sm); color: var(--ac-dyn-ink); }
-.ac-section .ac-catalog-value { font-weight: var(--ac-font-weight-semibold); }
+.ac-section .ac-value { font-weight: var(--ac-font-weight-semibold); }
 .ac-section .ac-seq-input { width: 56px; }
 
 /* ---- Configure: personas, groups and menu structures */
@@ -126,3 +126,61 @@
 .ac-section .ac-seq-step-chip { display: inline-flex; align-items: center; gap: 4px; margin: 2px 6px 2px 0; padding: 2px 6px; background: var(--ac-primary-80);
   border: 1px solid var(--ac-primary-200); border-radius: var(--ac-radius-2xl); }
 .ac-bt-swatch { background: var(--ac-swatch); }
+.ac-section .ac-italic { font-style: italic; }
+.ac-section .ac-nowrap { white-space: nowrap; }
+.ac-section .ac-value { font-weight: var(--ac-font-weight-semibold); }
+/* a group heading row inside a table body: it keeps its band over the zebra and hover rows (`:nth-child(n)` lifts it above them) */
+.ac-section .ac-table tbody tr.ac-group-row:nth-child(n) { background: var(--ac-primary-80); }
+.ac-section .ac-group-row > td { font-size: var(--ac-font-size-sm); font-weight: var(--ac-font-weight-bold); color: var(--ac-blue); }
+/* a pass / review / fail cell */
+.ac-section .ac-verdict-cell { font-weight: var(--ac-font-weight-bold); }
+.ac-verdict-cell[data-tone='teal'] { color: var(--ac-teal-700); } .ac-verdict-cell[data-tone='amber'] { color: var(--ac-warning-600); }
+.ac-verdict-cell[data-tone='brick'] { color: var(--ac-danger-800); }
+
+/* ---- Defend: due diligence register */
+.ac-section .ac-dd-chip { padding: 1px 6px; font-size: var(--ac-font-size-2xs); white-space: nowrap; color: var(--ac-neutral-0); background: var(--ac-dd-chip); border-radius: var(--ac-radius-xs); }
+.ac-dd-chip[data-kind='use:calc'], .ac-dd-chip[data-kind='cls:PC2'] { --ac-dd-chip: var(--ac-primary-700); }
+.ac-dd-chip:is([data-kind='use:factory'], [data-kind='cls:PC4'], [data-kind='state:requested']) { --ac-dd-chip: var(--ac-warning-600); }
+.ac-dd-chip:is([data-kind='cls:PC1'], [data-kind='state:waived']) { --ac-dd-chip: var(--ac-slate-625); }
+.ac-dd-chip:is([data-kind='cls:PC3'], [data-kind='state:open']) { --ac-dd-chip: var(--ac-slate-700); }
+.ac-dd-chip:is([data-kind='cls:PC5'], [data-kind='state:disputed']) { --ac-dd-chip: var(--ac-danger-800); }
+.ac-dd-chip[data-kind='state:confirmed'] { --ac-dd-chip: var(--ac-teal-700); }
+.ac-section .ac-dd-gap { height: 2px; }
+.ac-section .ac-dd-display { padding: 1px 6px; font-size: var(--ac-font-size-2xs); color: var(--ac-slate-700); border: 1px solid var(--ac-slate-200); border-radius: var(--ac-radius-xs); }
+.ac-section .ac-link.ac-dd-link { padding: 0; font-weight: var(--ac-font-weight-semibold); color: var(--ac-blue); background: none; border: 0; border-bottom: 1px dotted var(--ac-blue); cursor: pointer; }
+.ac-section .ac-dd-also { margin-top: 2px; }
+.ac-section .ac-dd-note { margin-top: 2px; font-size: var(--ac-font-size-xs); color: var(--ac-neutral-700); }
+.ac-section .ac-dd-here { font-weight: var(--ac-font-weight-semibold); color: var(--ac-teal-725); }
+.ac-section .ac-dd-soft { color: var(--ac-slate-700); }
+.ac-section .ac-dd-none { color: var(--ac-neutral-700); }
+.ac-section .ac-dd-nowhere { font-weight: var(--ac-font-weight-semibold); color: var(--ac-danger-800); }
+.ac-section .ac-table td input.ac-dd-num { width: 62px; text-align: center; font-size: var(--ac-font-size-sm-plus); border: 1px solid var(--ac-slate-200); border-radius: var(--ac-radius-sm-plus); }
+.ac-section .ac-table td input.ac-dd-num.is-edited { font-weight: var(--ac-font-weight-bold); color: var(--ac-warning-750); border-color: var(--ac-warning-600); }
+.ac-section .ac-dd-caption { margin-top: 2px; font-size: var(--ac-font-size-2xs); text-transform: uppercase; color: var(--ac-neutral-700); }
+.ac-section .ac-table td select.ac-dd-state { width: auto; font-size: var(--ac-font-size-xs); }
+.ac-section .ac-dd-effect { margin-top: 2px; font-size: var(--ac-font-size-xs-plus); color: var(--ac-neutral-700); }
+.ac-section .ac-dd-value { font-weight: var(--ac-font-weight-semibold); }
+.ac-section .ac-dd-xs { font-size: var(--ac-font-size-xs-plus); }
+.ac-section .ac-dd-gauge { flex: 1; min-width: 150px; padding: 10px; text-align: center; background: var(--ac-neutral-0); border: 1px solid var(--ac-neutral-125);
+  border-top: 3px solid var(--ac-dd-tone); border-radius: var(--ac-radius-lg); }
+.ac-dd-gauge[data-tone='blue'] { --ac-dd-tone: var(--ac-primary-700); } .ac-dd-gauge[data-tone='brick'] { --ac-dd-tone: var(--ac-danger-800); }
+.ac-dd-gauge[data-tone='teal'] { --ac-dd-tone: var(--ac-teal-700); } .ac-dd-gauge[data-tone='amber'] { --ac-dd-tone: var(--ac-warning-600); }
+.ac-dd-gauge[data-tone='grey'] { --ac-dd-tone: var(--ac-slate-700); }
+.ac-section .ac-dd-gauge-l { font-size: var(--ac-font-size-xs); text-transform: uppercase; letter-spacing: 1px; color: var(--ac-neutral-700); }
+.ac-section .ac-dd-gauge-v { font-size: var(--ac-font-size-6xl); font-weight: var(--ac-font-weight-bold); color: var(--ac-dd-tone); }
+.ac-section .ac-dd-gauge-sub { font-size: var(--ac-font-size-xs); color: var(--ac-neutral-700); }
+.ac-section .ac-dd-gauges-note { flex: 2; min-width: 260px; font-size: var(--ac-font-size-sm-plus); }
+
+/* ---- Defend: provenance, convergence checks, assumptions */
+.ac-section .ac-prov-chip { padding: 1px 9px; font-size: var(--ac-font-size-sm); font-weight: var(--ac-font-weight-bold); color: var(--ac-prov-col); background: var(--ac-prov-tint);
+  border: 1px solid var(--ac-prov-col); border-radius: var(--ac-radius-lg-plus); }
+.ac-section .ac-card.ac-prov-tile { padding: 7px 12px; text-align: center; }
+.ac-section .ac-prov-tile-l { font-size: var(--ac-font-size-2xs); text-transform: uppercase; color: var(--ac-neutral-700); }
+.ac-section .ac-prov-tile-v { font-size: var(--ac-font-size-xl); font-weight: var(--ac-font-weight-bold); }
+.ac-section .ac-prov-name { font-weight: var(--ac-font-weight-semibold); }
+.ac-section .ac-prov-scope { font-size: var(--ac-font-size-2xs); }
+.ac-section .ac-prov-text { font-size: var(--ac-font-size-sm-plus); }
+.ac-section .ac-conv-id { font-weight: var(--ac-font-weight-semibold); color: var(--ac-blue); }
+.ac-section .ac-conv-detail { font-size: var(--ac-font-size-sm); color: var(--ac-neutral-750); }
+.ac-section .ac-impact { font-weight: var(--ac-font-weight-regular); }
+.ac-section .ac-impact.is-hot { font-weight: var(--ac-font-weight-bold); color: var(--ac-blue); }

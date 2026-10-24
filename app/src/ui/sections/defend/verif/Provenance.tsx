@@ -1,14 +1,18 @@
 import type { Provenance as Prov } from '@/domain/pdc/verifProvenance';
 import { Callout } from '@/ui/widgets/cards';
 import { useTheme } from '@/ui/themeContext';
+import { cssVars } from '@/ui/cssVars';
 
-const chip = (col: string, text: string) => <span style={{ background: `${col}18`, color: col, border: `1px solid ${col}`, borderRadius: 'var(--ac-radius-lg-plus)', padding: '1px 9px', fontSize: 'var(--ac-font-size-sm)', fontWeight: 'var(--ac-font-weight-bold)' }}>{text}</span>;
+/** An overlay's state chip, tinted with its colour (`${col}18`: a resolved hex of the theme, so set as a value). */
+const chip = (col: string, text: string) => (
+  <span className="ac-prov-chip" style={cssVars({ '--ac-prov-col': col, '--ac-prov-tint': `${col}18` })}>{text}</span>   // dynamic: a theme colour and its tint
+);
 
 /** One top-bar figure: its label above its value. */
 const HeadTile = ({ label, value }: { label: string; value: string }) => (
-  <div className="ac-card" style={{ textAlign: 'center', padding: '7px 12px' }}>
-    <div style={{ fontSize: 'var(--ac-font-size-2xs)', color: 'var(--ac-neutral-700)', textTransform: 'uppercase' }}>{label}</div>
-    <div style={{ fontSize: 'var(--ac-font-size-xl)', fontWeight: 'var(--ac-font-weight-bold)' }}>{value}</div>
+  <div className="ac-card ac-prov-tile">
+    <div className="ac-prov-tile-l">{label}</div>
+    <div className="ac-prov-tile-v">{value}</div>
   </div>
 );
 
@@ -29,16 +33,23 @@ export function Provenance({ p }: { p: Prov }) {
       <div className="ac-table-wrap" tabIndex={0}><table className="ac-table">
         <thead><tr><th>Overlay</th><th>State</th><th>Effect</th></tr></thead>
         <tbody>{p.overlays.map((o) => (
-          <tr key={o.name}><td style={{ fontWeight: 'var(--ac-font-weight-semibold)' }}>{o.name}<span className="ac-muted" style={{ fontSize: 'var(--ac-font-size-2xs)' }}>{o.euro ? ' · affects €' : ' · verdict only'}</span></td>
-            <td style={{ textAlign: 'center' }}>{chip(o.active ? tok('warning-600') : tok('slate-680'), o.active ? 'ACTIVE' : 'neutral')}</td><td style={{ fontSize: 'var(--ac-font-size-sm-plus)' }}>{o.effect}</td></tr>
+          <tr key={o.name}>
+            <td className="ac-prov-name">{o.name}<span className="ac-muted ac-prov-scope">{o.euro ? ' · affects €' : ' · verdict only'}</span></td>
+            <td className="ac-c">{chip(o.active ? tok('warning-600') : tok('slate-680'), o.active ? 'ACTIVE' : 'neutral')}</td>
+            <td className="ac-prov-text">{o.effect}</td>
+          </tr>
         ))}</tbody>
       </table></div>
       <h3>Double-count guards</h3>
       <div className="ac-table-wrap" tabIndex={0}><table className="ac-table">
         <thead><tr><th>Guard</th><th>What it protects</th><th>Status</th><th>Detail</th></tr></thead>
         <tbody>{p.guards.map((g) => (
-          <tr key={g.name}><td style={{ fontWeight: 'var(--ac-font-weight-semibold)' }}>{g.name}</td><td style={{ fontSize: 'var(--ac-font-size-sm-plus)' }}>{g.what}</td>
-            <td style={{ textAlign: 'center', fontWeight: 'var(--ac-font-weight-bold)', color: g.ok ? 'var(--ac-teal-700)' : 'var(--ac-warning-600)' }}>{g.ok ? 'OK' : 'REVIEW'}</td><td style={{ fontSize: 'var(--ac-font-size-sm)' }}>{g.detail}</td></tr>
+          <tr key={g.name}>
+            <td className="ac-prov-name">{g.name}</td>
+            <td className="ac-prov-text">{g.what}</td>
+            <td className="ac-c ac-verdict-cell" data-tone={g.ok ? 'teal' : 'amber'}>{g.ok ? 'OK' : 'REVIEW'}</td>
+            <td className="ac-small">{g.detail}</td>
+          </tr>
         ))}</tbody>
       </table></div>
     </section>
