@@ -5,7 +5,7 @@ import { activeSeq } from '@/domain/nav/sequence';
 import { findStructure, placeIn, STANDARD_LABEL, STANDARD_STRUCTURE, structureList, structureOf, type MenuStructure, type StructureRef } from '@/domain/nav/structures';
 import { personasByOrder, type MenuGroup, type Persona, type PersonaSeq } from '@/domain/pdc/personas';
 import { useDoc } from '@/store/hooks';
-import { useIsMulti } from '@/store/portfolioHooks';
+import { useIsMulti, usePersona } from '@/store/portfolioHooks';
 import { useUi } from '../uiState';
 import { withAppSections, withPortfolio } from './portfolioNav';
 import { DEFAULT_PERSONA_SECTIONS, GROUPS, SECTIONS } from './registry';
@@ -29,7 +29,7 @@ export interface NavModel {
 }
 
 export function useNavModel(): NavModel {
-  const persona = useDoc((d) => (d.currentPersona as string) ?? 'builder'), docPersonas = useDoc((d) => d.PERSONAS as Persona[] | undefined);
+  const wanted = usePersona(), docPersonas = useDoc((d) => d.PERSONAS as Persona[] | undefined);
   const docGroups = useDoc((d) => d.GROUPS as MenuGroup[] | undefined), docColors = useDoc((d) => (d.GROUP_COLORS as Record<string, string> | undefined) ?? NO_COLORS);
   const rows = useDoc((d) => d.sectionGroups as SectionRow[] | undefined), dyn = useDoc((d) => d.dynamicSections as DynRow[] | undefined);
   const docLists = useDoc((d) => d.PERSONA_SECTIONS as PersonaLists | undefined), order = useDoc((d) => (d.PERSONA_SECTION_ORDER as PersonaOrder | undefined) ?? NO_ORDER);
@@ -47,10 +47,11 @@ export function useNavModel(): NavModel {
       cache.set(key, v);
       return v;
     };
+    const known = (id: string) => personas.some((p) => p.id === id), persona = known(wanted) || !known('advanced') ? wanted : 'advanced';   // deleted in another tab: Advanced
     const structureOfPersona = (id: string): string => view(structureOf(personas.find((p) => p.id === id))).id;
     const current = personas.find((p) => p.id === persona), mine = view(structureOfPersona(persona)), { groups, sections, colors } = mine, visible = fastPathSections(sections, fastPath);
     return { persona, personas, groups, colors, sections, visible, fastPath, lists, order, style, nav: navGroups(persona, visible, groups, lists, order), compact: !!current?.compactNav,
       seq: activeSeq(current?.seq), structure: mine.id, structures: structureList(stored), view, structureOfPersona,
       landing: (id: string) => { const v = view(structureOfPersona(id)); return landingSection(id, v.sections, v.groups, lists, order); } };
-  }, [persona, docPersonas, docGroups, docColors, rows, dyn, docLists, order, stored, style, fastPath, multi]);
+  }, [wanted, docPersonas, docGroups, docColors, rows, dyn, docLists, order, stored, style, fastPath, multi]);
 }

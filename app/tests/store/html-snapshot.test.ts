@@ -71,13 +71,13 @@ describe('HTML snapshot: save', () => {
     expect(html).not.toContain('</script><img');
     expect(html).toContain('\\u003c/script>');
     expect(readEmbeddedCase(d)!.doc.customerName).toBe(evil);
-    expect(JSON.stringify(parseCaseFile(html).raw)).toBe(JSON.stringify(JSON.parse(JSON.stringify(toSnapshot(s.getState().doc, () => NOW)))));
+    expect(JSON.stringify(parseCaseFile(html).raw)).toBe(JSON.stringify(JSON.parse(JSON.stringify(toSnapshot({ currentPersona: 'builder', ...s.getState().doc }, () => NOW)))));
     expect(snapshotFileName(evil, 'v20', NOW)).toMatch(/^AgentCase_script_img_src_x_onerror_alert_1_script_alert_2_script_end_v20_Snapshot_/);
   });
-  it('a plain page has no embedded case; a malformed one is reported, not executed', () => {
+  it('a plain page has no embedded case; a foreign one (no AgentCase case) is reported, not executed', () => {
     expect(readEmbeddedCase(livePage())).toBeNull();
     expect(loadEmbeddedCase(livePage())).toBeNull();
-    const bad = parse(buildSnapshotHtml(livePage().documentElement, { dom: 'nope' }));
+    const bad = parse(buildSnapshotHtml(livePage().documentElement, { nope: 1 }));
     expect(() => readEmbeddedCase(bad)).toThrow();
     const log = vi.spyOn(console, 'error').mockImplementation(() => undefined);
     expect(loadEmbeddedCase(bad)).toBeNull();   // boot logs and carries on with the default case

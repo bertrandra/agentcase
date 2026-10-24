@@ -1,7 +1,8 @@
 /** @calc-zone workspace-config */
 /**
  * The theme library of the case (docs/THEME.md §8.4): undoable commands on `THEMES` (the user themes), `ACTIVE_THEME` and `THEME_SEQ`. Built-in
- * themes are protected (activate and duplicate only). A sequence id is issued once per case and never reused, even after a delete.
+ * themes are protected (activate and duplicate only). A sequence id is issued once per case and never reused, even after a delete or an undo:
+ * `THEME_SEQ` is a store high-water mark (`HIGH_WATER_KEYS`, store/portfolioState.ts) that undo, redo and remote patches never lower.
  */
 import { AXES, AXIS_NAMES, isAxisValue, type AxisName } from '@/domain/theme/axes';
 import { activeSeq, findTheme, isBuiltinSeq, nextSeq, uniqueName, userThemes, type ThemeContent } from '@/domain/theme/library';
@@ -9,6 +10,7 @@ import { parseGenerator, type GeneratorSettings } from '@/domain/theme/generator
 import { paletteFromSeed } from '@/domain/theme/palette';
 import { cleanName, isColourKey, MAX_USER_THEMES, normHex, type ColourKey, type ThemeDef } from '@/domain/theme/themeDef';
 import { defineCommand } from '@/store/commands';
+import { editBase } from '@/store/editBase';
 import { appStore } from '@/store/instance';
 import type { Doc } from '@/store/types';
 
@@ -106,4 +108,4 @@ export const generatePalette = (seq: number, settings: GeneratorSettings): void 
 export const deleteTheme = (seq: number): void => go(deleteCmd, { seq });
 export const activateTheme = (seq: number): void => go(activateCmd, { seq });
 /** The sequence id the last add / duplicate / import issued (the screen selects it). */
-export const lastIssuedSeq = (): number => Number(appStore().getState().doc.THEME_SEQ) || 0;
+export const lastIssuedSeq = (): number => Number(editBase().THEME_SEQ) || 0;

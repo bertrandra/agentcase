@@ -1,6 +1,7 @@
 /** @calc-zone exports */
 import type { DdState } from '@/domain/pdc/dd';
 import { defineCommand } from '@/store/commands';
+import { activeDoc, editBase } from '@/store/editBase';
 import { appStore } from '@/store/instance';
 import { ddPackData } from '@/store/persistence/excel/dd/data';
 import { buildDdPack } from '@/store/persistence/excel/dd/pack';
@@ -31,7 +32,7 @@ export const applyDdPackEntries = (entries: PackEntry[]): void => { if (entries.
  * hold conflicting copies of the same ids. Switch the active product to export another one.
  */
 export async function exportDdPack(label: (id: string) => string = (id) => id, now: Date = new Date()): Promise<ExcelFile> {
-  const { doc, portfolio } = appStore().getState(), product = hasPortfolioContent(portfolio) ? portfolio.products.find((p) => p.id === portfolio.activeProductId)?.name : undefined;
+  const doc = activeDoc(), portfolio = appStore().getState().portfolio, product = hasPortfolioContent(portfolio) ? portfolio.products.find((p) => p.id === portfolio.activeProductId)?.name : undefined;
   const xl = await loadExcelJS(), wb = buildDdPack(xl, ddPackData(doc), label, product);
   return { blob: new Blob([await wb.xlsx.writeBuffer()], { type: XLSX_MIME }), filename: excelFilename('DueDiligence', now) };
 }
@@ -47,7 +48,7 @@ export async function importDdPack(file: { size?: number; arrayBuffer(): Promise
     if ((file.size ?? 0) > MAX_PACK_BYTES) return { ok: false, message: 'Import failed: the file is too large for a due-diligence pack.' };
     const xl = await loadExcelJS(), wb = new xl.Workbook();
     await wb.xlsx.load(await file.arrayBuffer());
-    const known = new Set(ddPackData(appStore().getState().doc).rows.map((r) => r.id)), read = readDdRegister(wb, known);
+    const known = new Set(ddPackData(editBase()).rows.map((r) => r.id)), read = readDdRegister(wb, known);
     if (!read) return { ok: false, message: 'No DD_Register sheet found in that file.' };
     applyDdPackEntries(read.entries);
     const unknown = read.unknown ? ` · ${read.unknown} unknown id(s) ignored` : '';

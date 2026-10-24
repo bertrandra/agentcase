@@ -1,9 +1,11 @@
 /** @calc-zone workspace-config */
+import { current } from 'immer';
 import { makeCtx } from '@/domain';
 import type { DdState, DdStatus } from '@/domain/pdc/dd';
-import { computeDdSensitivity, type DdSens } from '@/domain/pdc/ddSens';
+import { computeDdSensitivity } from '@/domain/pdc/ddSens';
 import { defineCommand } from '@/store/commands';
 import { appStore } from '@/store/instance';
+import type { Doc } from '@/store/types';
 
 // ---- Assumptions register -----------------------------------------------------------------------------------------------
 const assumptOkCmd = defineCommand<{ id: string; on: boolean }>({
@@ -39,8 +41,9 @@ const fgCmd = defineCommand<{ key: string; value: number }>({
   type: 'pdc.setFgParam', label: (p) => `Set the factory parameter ${p.key} to ${p.value}`, coalesceKey: (p) => `pdc.setFgParam:${p.key}`,
   run(d, p) { const f = d.FG_PARAMS as Record<string, number> | undefined; if (f && p.key in f && !isNaN(p.value)) f[p.key] = p.value; },
 });
-const sensCmd = defineCommand<{ sens: DdSens }>({
-  type: 'pdc.setDdSensitivity', label: () => 'Measure the € sensitivity of the due-diligence register', run(d, p) { d.DD_SENS = p.sens; },
+/** Measured on the case the command runs on (the draft): the common case when the common values are edited, never another product's. */
+const sensCmd = defineCommand<Record<string, never>>({
+  type: 'pdc.setDdSensitivity', label: () => 'Measure the € sensitivity of the due-diligence register', run(d) { d.DD_SENS = computeDdSensitivity(makeCtx(current(d) as Doc)); },
 });
 export const setDdState = (id: string, st: DdStatus): void => appStore().dispatch(ddStateCmd({ id, st }));
 export const setCoef = (key: string, value: string | number): void => appStore().dispatch(coefCmd({ key, value: num(value) }));
@@ -48,4 +51,4 @@ export const setAnchor = (list: 'DORA_ANCHORS' | 'THROUGHPUT_ANCHORS', id: strin
 export const setQualityAnchor = (index: number, col: 1 | 2, value: string | number): void => appStore().dispatch(qualityCmd({ index, col, value: num(value) }));
 export const setFgParam = (key: string, value: string | number): void => appStore().dispatch(fgCmd({ key, value: num(value) }));
 /** Run the ~50 one-at-a-time model evaluations on the current case and store the result (cached until an input changes). */
-export const computeSensitivity = (): void => appStore().dispatch(sensCmd({ sens: computeDdSensitivity(makeCtx(appStore().getState().doc)) }));
+export const computeSensitivity = (): void => appStore().dispatch(sensCmd({}));

@@ -50,6 +50,8 @@
 .ac-bar { flex: 1; background: var(--ac-neutral-75); border-radius: var(--ac-radius-sm); height: 16px; } .ac-bar > span { display: block; height: 16px; border-radius: var(--ac-radius-sm); }
 .ac-impact-row b { flex: 0 0 76px; text-align: right; } .ac-impact-row small { flex: 0 0 160px; color: var(--ac-muted); }
 .ac-calc-banner { top: 56px; background: var(--ac-warning-55); border-color: var(--ac-warning-575); }
+.ac-open-notes { top: 104px; }
+.ac-open-notes ul { max-height: 40vh; overflow: auto; margin: 4px 0 0; padding-left: 18px; }
 .ac-calc-saved { color: var(--ac-warning-750); }
 .ac-calc-live { color: var(--ac-primary-700); }
 /* T4/T5 (docs/THEME.md §8): the customer logo beside the title (about the cap height), on an optional white pill for dark headers; the ?theme= link notice */

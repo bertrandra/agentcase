@@ -3,6 +3,7 @@ import { makeCtx } from '@/domain';
 import { pfStressFingerprint } from '@/domain/portfolio';
 import type { DisplayScope } from '@/domain/portfolio';
 import { appVerFileTag } from '@/domain/snapshots';
+import { activeDoc } from '@/store/editBase';
 import { appStore } from '@/store/instance';
 import { pfSimStore } from '@/store/portfolioSimulation';
 import { loadExcelJS } from '@/store/persistence/excel/lazy';
@@ -31,7 +32,7 @@ export interface ExcelFile { blob: Blob; filename: string }
  * group that leads; everything is exported. Chart pictures are not embedded in a portfolio workbook (they show one product's charts).
  */
 export async function exportResultsWorkbook(images?: SheetImages, now: Date = new Date(), scope?: DisplayScope): Promise<ExcelFile> {
-  const xl = await loadExcelJS(), { doc, portfolio } = appStore().getState();
+  const xl = await loadExcelJS(), portfolio = appStore().getState().portfolio, doc = activeDoc();
   if (hasPortfolioContent(portfolio)) {
     const run = pfSimStore.getState().run, stress = run ? { run, stale: run.fingerprint !== pfStressFingerprint(portfolio) } : null;
     const wb = buildPortfolioResultsWorkbook(xl, portfolio, scope ?? portfolio.displayScope ?? { kind: 'product' }, portfolio.activeProductId, stress);

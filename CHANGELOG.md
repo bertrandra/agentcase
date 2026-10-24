@@ -86,6 +86,32 @@ When releasing, follow [docs/BUMP_PROCEDURE.md](docs/BUMP_PROCEDURE.md) (§7 for
 
 **Golden case:** unchanged (no calculation change).
 
+### Fixed
+- **"Change: All products" in a Portfolio / Wave view no longer leaks the active product's values into the shared values.** Controllers used to read the
+  active product's case to build some payloads; with one product overriding the field, its value reached the common values. Now: the due-diligence
+  € sensitivity is measured inside the command on the case it is written to; the Gantt roadmap-start nudge, LCE recalibration, snapshot library,
+  parameters-workbook import (a row missing from the workbook keeps the common value, not the active product's) and DD-pack import read
+  `editBase()` (the case the command runs on). Exports, file names and the results' Monte Carlo runs keep reading the active product (`activeDoc()`).
+  An ESLint rule forbids `getState().doc` in `src/controllers`.
+- **Theme sequence ids are never reused** (closes DEV-THEME-SEQ-UNDO): create a theme, undo, create again now gives 101, not 100 again. `THEME_SEQ`
+  is a high-water mark that undo, redo, another tab and a snapshot activation never lower; it is saved, so it survives a reload, and an imported
+  library gets ids above it.
+
+### Changed
+- **The current persona is view state of each tab** (decision D3): switching persona in one tab no longer switches the other tabs, is never an
+  undo step, and an undo never moves it. Files keep the legacy `currentPersona` as the persona the file opens on (the saving tab's; old files open on
+  theirs, files without one on Builder); the case itself no longer holds it. Undoing "Open case" keeps the persona. A portfolio import or a snapshot
+  activation keeps the tab's persona. A tab whose persona was deleted in another tab shows Advanced.
+- **Versioned file schema**: every file written (JSON, HTML snapshot, autosave record) carries `_schemaVersion: 2`; files without it are v1 and go
+  through the migration chain (v1 -> v2 is a no-op for every existing file: the 115 committed fixtures open unchanged, with no correction).
+
+### Added
+- **"Opened with N corrections"**: a damaged file (wrong types, a negative FTE, a broken rate card, model block or menu list, damaged products,
+  waves, overrides or hub) now opens with the damaged values replaced by the defaults, a toast, and a notice listing every correction (Dismiss).
+  Before, a damaged portfolio file was refused and damaged case values were taken as they were. Still refused: a file that is not JSON or not an
+  AgentCase file, and a file made by a newer AgentCase ("This file was made with a newer AgentCase (file format vN; this version reads up to v2)…").
+- Multi-tab: a change from a tab of a newer version is ignored instead of being applied to a document shape it may not match.
+
 ## [v20.12.0] 2026-10-24 — "Show" / "Change" top bar, file menu, two-zone header, Welcome cards fix
 
 ### Fixed

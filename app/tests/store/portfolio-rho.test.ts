@@ -4,6 +4,7 @@ import { setPortfolioRho } from '@/controllers/portfolio';
 import { buildPortfolioPackages, checkPortfolioStaleness, validate } from '@/domain/portfolio';
 import { appStore } from '@/store/instance';
 import { openSnapshot, toPortfolioSnapshot } from '@/store/persistence/portfolioSnapshot';
+import { openChecked } from '@/store/persistence/schema';
 import { ENV } from '../helpers/excelParams';
 import { fourProducts, openPortfolioFixture, pfNow } from '../helpers/portfolioFixtures';
 import { asFile, editXlsx } from '../helpers/xlsxEdit';
@@ -45,12 +46,15 @@ describe('persistence of rho', () => {
     expect(snap._schema).toBe('agentcase.portfolio.v1');
     expect(openSnapshot(snap).rho).toBe(0.2);
   });
-  it('a snapshot without rho opens at 0 (absent), and a hostile value is refused', () => {
+  it('a snapshot without rho opens at 0 (absent), and a hostile value is corrected to 0 with a note', () => {
     openPortfolioFixture();
     const snap = toPortfolioSnapshot(pfNow());
     expect('rho' in openSnapshot(snap)).toBe(false);
-    expect(() => openSnapshot({ ...snap, rho: 7 })).toThrow(/rho/);
-    expect(() => openSnapshot({ ...snap, rho: 'x' })).toThrow(/rho/);
+    for (const rho of [7, 'x']) {
+      const { portfolio, notes } = openChecked({ ...snap, rho });
+      expect('rho' in portfolio).toBe(false);
+      expect(notes).toEqual([expect.stringMatching(/correlation rho .* not in \[0, 1\]/)]);
+    }
   });
   it('the PortfolioSettings sheet round trips it; a workbook without the row means 0', async () => {
     fourProducts(); setPortfolioRho(0.6);

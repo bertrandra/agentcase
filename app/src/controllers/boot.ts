@@ -4,6 +4,7 @@ import { restoreRecord, startAutosave, type AutosaveRecord, type AutosaveStorage
 import { connectBroadcast, type ChannelLike } from '@/store/persistence/broadcast';
 import { readEmbeddedCase } from '@/store/persistence/html/read';
 import { checkLoadedCase } from './calcStaleness';
+import { setOpenNotes } from './openNotes';
 import { refitPortfolio } from '@/store/derive';
 
 export interface RestoreOffer { label: string; savedAt: string; steps: number }
@@ -16,7 +17,7 @@ const setPending = (r: AutosaveRecord | null) => { pending = r; offer = r ? { la
 export const getRestoreOffer = (): RestoreOffer | null => offer;
 export const onRestoreOffer = (f: () => void): (() => void) => { subs.add(f); return () => { subs.delete(f); }; };
 export function acceptRestore(): void {
-  if (pending) { restoreRecord(appStore(), pending); checkLoadedCase(pending.snapshot, appStore().getState().portfolio); }
+  if (pending) { setOpenNotes(restoreRecord(appStore(), pending)); checkLoadedCase(pending.snapshot, appStore().getState().portfolio); }
   setPending(null);
 }
 export function dismissRestore(): void { setPending(null); }
@@ -27,7 +28,7 @@ export interface BootEnv { storage: AutosaveStorage | null; channel: ChannelLike
 export function loadEmbeddedCase(d: Pick<Document, 'getElementById'>): { savedAt: string } | null {
   try {
     const c = readEmbeddedCase(d);
-    if (c) { const pf = refitPortfolio(c.portfolio); appStore().load(pf); checkLoadedCase(c.raw, pf); }
+    if (c) { const pf = refitPortfolio(c.portfolio); appStore().load(pf); checkLoadedCase(c.raw, pf); setOpenNotes(c.notes); }
     return c ? { savedAt: c.savedAt } : null;
   } catch (e) { console.error('The case embedded in this file could not be opened:', e); return null; }
 }

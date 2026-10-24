@@ -1,11 +1,12 @@
 /** @calc-zone exports */
 import { buildPortfolioPackages, DEFAULT_PRODUCT_NAME, DEFAULT_WAVE_NAME, deepEqual, envelopeCase, isDefaultProductName, isDefaultWaveName, portfolioToCase, type Portfolio } from '@/domain/portfolio';
+import { withSavedPersona } from '../persona';
+import { openChecked, versionStamp } from './schema';
 import { PORTFOLIO_SCHEMA } from '../portfolioState';
 import type { Doc, PortfolioDoc } from '../types';
-import { readPortfolio } from './portfolioRead';
-import { fromSnapshot, sanitize, toSnapshot } from './snapshot';
+import { sanitize, toSnapshot } from './snapshot';
 
-const withoutView = (pf: PortfolioDoc): Portfolio => { const out = { ...pf }; delete out.editScope; delete out.displayScope; return out; };
+const withoutView = (pf: PortfolioDoc): Portfolio => { const out = { ...pf }; delete out.editScope; delete out.displayScope; delete out.persona; return out; };
 /** The same portfolio with the legacy French default names ("Produit 1", "Vague 1" of a v20.0 file) read as the English defaults: both are "default names". */
 const withDefaultNames = (pf: Portfolio): Portfolio => ({
   ...pf,
@@ -42,20 +43,22 @@ function packagesOf(pf: Portfolio): Record<string, unknown> {
 
 /**
  * Portfolio -> snapshot JSON. A single-case portfolio is written as `agentcase.snapshot.v1` (see `isSingleCase`) unless `full` is set (the
- * autosave record needs the exact portfolio: its undo patches address product and wave positions).
+ * autosave record needs the exact portfolio: its undo patches address product and wave positions). The tab's persona is written as the legacy
+ * `currentPersona` (first key of the case / of `common`): the persona the file opens on, nothing more (`store/persona.ts`).
  */
 export function toPortfolioSnapshot(pf: PortfolioDoc, now: () => Date = () => new Date(), full = false): Record<string, unknown> {
-  if (!full && isSingleCase(pf)) return toSnapshot(portfolioToCase(pf) as Doc, now);
-  const plain = withoutView(pf);
-  return { ...structuredClone(plain), savedAt: now().toISOString(), _schema: PORTFOLIO_SCHEMA, ...packagesOf(plain) };
+  if (!full && isSingleCase(pf)) return toSnapshot(withSavedPersona(portfolioToCase(pf) as Doc, pf.persona), now);
+  const plain = withoutView(pf), saved = { ...plain, common: withSavedPersona(plain.common, pf.persona) };
+  return { ...structuredClone(saved), savedAt: now().toISOString(), _schema: PORTFOLIO_SCHEMA, ...versionStamp(), ...packagesOf(plain) };
 }
 
 export const isPortfolioSnapshot = (raw: unknown): boolean => !!raw && typeof raw === 'object' && (raw as { _schema?: unknown })._schema === PORTFOLIO_SCHEMA;
 
-/** Any saved case, old or new, as a portfolio: `agentcase.portfolio.v1` as is, a single case (v1 or legacy) enveloped as "Product 1" / "Wave 1" (F21). */
-export function openSnapshot(raw: unknown): Portfolio {
-  return isPortfolioSnapshot(raw) ? readPortfolio(raw) : envelopeCase(fromSnapshot(raw));
-}
+/**
+ * Any saved case, old or new, as a portfolio: `agentcase.portfolio.v1` as is, a single case (v1 or legacy) enveloped as "Product 1" / "Wave 1" (F21).
+ * Migrated to the current file schema and corrected where damaged (`schema/index.ts#openChecked`, which also returns the correction notes).
+ */
+export const openSnapshot = (raw: unknown): PortfolioDoc => openChecked(raw).portfolio;
 
 /** The per-product packages a portfolio snapshot carries (`calculationPackages`), or undefined. */
 export function packagesOfSnapshot(raw: unknown): unknown {

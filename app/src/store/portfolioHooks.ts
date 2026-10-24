@@ -2,9 +2,10 @@
 import { useMemo } from 'react';
 import { commonValue, corePortfolio, isOverridden, resolveProduct, type CommonCase, type Product, type Wave } from '@/domain/portfolio';
 import { hasPortfolioContent } from './persistence/portfolioSnapshot';
-import { caseResultOf, usePortfolio } from './hooks';
+import { caseResultOf, useDoc, usePortfolio } from './hooks';
 import { shownProductId, useViewProductId } from './productView';
-import type { EditScope } from './types';
+import { DEFAULT_PERSONA, withSavedPersona } from './persona';
+import type { Doc, EditScope } from './types';
 
 /** Products in display order (a stable reference until a product changes). */
 export const useProducts = (): Product[] => usePortfolio((p) => p.products);
@@ -19,6 +20,10 @@ export const useHasPortfolioContent = (): boolean => usePortfolio(hasPortfolioCo
 export const useActiveProductId = (): string => { const as = useViewProductId(); return usePortfolio((p) => shownProductId(p, as)); };
 /** "Edit: all products / this product only"; 'all' until the user chooses (transient, never saved). */
 export const useEditScope = (): EditScope => usePortfolio((p) => p.editScope ?? 'all');
+/** This tab's persona (view state, D3; `store/persona.ts`). */
+export const usePersona = (): string => usePortfolio((p) => p.persona ?? DEFAULT_PERSONA);
+/** The case as a file stores it: the case plus the persona it opens on (`currentPersona`), e.g. for the Data Model's state registry. */
+export function useSavedCase(): Doc { const doc = useDoc((d) => d), persona = usePersona(); return useMemo(() => withSavedPersona(doc, persona), [doc, persona]); }
 export const useActiveProduct = (): Product => {
   const as = useViewProductId();
   return usePortfolio((p) => p.products.find((x) => x.id === shownProductId(p, as)) ?? (p.products[0] as Product));
