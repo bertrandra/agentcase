@@ -23,6 +23,7 @@
     "check": "npm run typecheck && npm run lint && npm run deps:check && npm run docs:check && npm run test",
     "e2e": "npm run build && node ../tools/e2e-smoke.mjs && node ../tools/e2e-flows.mjs && node ../tools/perf.mjs",
     "parallel-run": "npm run build && node ../tools/parallel-run.mjs",
+    "gates": "node ../tools/gates.mjs",
     "release": "node scripts/release.mjs"
   },
   "dependencies": {

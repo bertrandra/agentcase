@@ -1,10 +1,14 @@
 name: app
+# The tools/ scripts and the frozen legacy file are inputs of the browser gates, so a change to them runs the workflow too.
+# Every run: line below is mirrored, in the same order, by tools/gates.mjs (`cd app && npm run gates` runs them locally; it fails when the two differ).
 on:
   pull_request:
-    paths: ['app/**', '.github/workflows/app.yml']
+    paths: ['app/**', 'tools/**', 'AgentCase_v*_EN.html', '.github/workflows/app.yml']
   push:
     branches: [main]
-    paths: ['app/**']
+    paths: ['app/**', 'tools/**', 'AgentCase_v*_EN.html', '.github/workflows/app.yml']
+permissions:
+  contents: read
 # A newer push to the same branch or pull request supersedes the run in progress: it is cancelled, the newer commit is checked in full.
 concurrency:
   group: app-${{ github.workflow }}-${{ github.ref }}
@@ -49,4 +53,53 @@ jobs:
       - run: node tools/e2e-smoke.mjs     # real Chromium: every section × 6 case fixtures + 2 portfolio files, no console error, no NaN, no CSP violation
       - run: node tools/e2e-flows.mjs     # under the CSP: JSON / HTML snapshot / report / workbooks round trips, Monte Carlo, themes, logo, ?theme= link
       - run: node tools/perf.mjs          # size / shell / edit / undo / section budgets (app/perf-budget.json)
-      - run: node tools/parallel-run.mjs  # same files in the legacy app and the TS build: identical headline figures
+      - run: node tools/parallel-run.mjs  # same files in the legacy app and the TS build: identical headline figures (the 40 workbooks; the 107 case files run nightly)
+  # The style and accessibility gates, in parallel with e2e (same start after check) to keep the wall time down. Each tool exits 1 on any unexpected finding.
+  browser:
+    runs-on: ubuntu-latest
+    timeout-minutes: 45
+    needs: check
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with: { node-version: 22, cache: npm, cache-dependency-path: app/package-lock.json }
+      - run: npm ci
+        working-directory: app
+      - run: npx playwright install --with-deps chromium
+        working-directory: app
+      - run: npm run build
+        working-directory: app
+      # Computed styles of the shell (3 personas) and of the section content against the frozen legacy file: fails on any divergence that is not a
+      # recorded exception of app/ui-parity-exceptions.json (or an exception whose pinned value drifted).
+      - run: node tools/ui-parity.mjs --shots test-results/ui-parity
+        timeout-minutes: 15
+      # axe-core on every section and state: fails on any serious / critical violation or a moderate / minor count above app/a11y-budget.json.
+      # The committed app/a11y-report.json is never rewritten in CI: each run writes its report under test-results/a11y/ (uploaded below).
+      - run: node tools/a11y.mjs --fixtures golden --report test-results/a11y/golden.json --shots test-results/a11y/golden
+        if: success() || failure()
+        timeout-minutes: 10
+      - run: node tools/a11y.mjs --fixtures pf-three-products --report test-results/a11y/pf-three-products.json --shots test-results/a11y/pf-three-products
+        if: success() || failure()
+        timeout-minutes: 15
+      - run: node tools/a11y.mjs --fixtures golden --mode dark --report test-results/a11y/golden-dark.json --shots test-results/a11y/golden-dark
+        if: success() || failure()
+        timeout-minutes: 10
+      - run: node tools/a11y.mjs --fixtures golden --mode dark --contrast high --report test-results/a11y/golden-dark-high.json --shots test-results/a11y/golden-dark-high
+        if: success() || failure()
+        timeout-minutes: 10
+      - if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: a11y-reports
+          path: test-results/a11y/*.json
+          if-no-files-found: ignore
+          retention-days: 14
+      - if: failure()
+        uses: actions/upload-artifact@v4
+        with:
+          name: browser-gate-screenshots   # ui-parity: persona and sample section screenshots + divergences.json; a11y: every state with a violation
+          path: |
+            test-results/ui-parity/
+            test-results/a11y/
+          if-no-files-found: ignore
+          retention-days: 14

@@ -303,6 +303,9 @@ tests are not concerned: they drive the legacy *engine* through recipes, and the
 
 - After lot 4: **105 of 107 identical**, the 2 remaining differences are the two legacy defects above (they are not computed differently: the legacy simply
   reopens another curve). The 40 parameters workbooks stay 40 / 40 identical.
+- Pinned in CI (lot 6): the nightly workflow runs `node tools/parallel-run.mjs --corpus full` (40 workbooks + 107 case files). The two differences are
+  recorded line for line in `tools/parallel-run-known.json` and reported as `KNOWN`; any other difference fails, and so does a change of either recorded line
+  (a fix on one side, or another figure moving): update the file and this section together.
 - Evidence of the legacy figures: measured in the legacy file with Playwright (`applySnapshotState(case)`, then `model()`, `npvCanonical()`,
   `paybackMonthsCanonical()`): lifecycle-pos-0 gives potential 74, effective 62.9, NPV 1,212,009.6152358602, payback 9.
 - Tests: `tests/store/snapshot-restore-parity.test.ts` (File > Open… = snapshot panel on all 107 files; lifecycle-pos-0 re-fitted to 74 % with the legacy

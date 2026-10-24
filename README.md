@@ -54,13 +54,18 @@ npm test           # Vitest only
 npm run e2e        # real Chromium on the built file: smoke of every section (incl. the portfolio fixtures) + performance budget
 npm run a11y       # axe audit (needs Chromium); npm run ui-parity compares the shell and sections with the legacy file
 npm run parallel-run   # same files in the legacy app and this build: identical headline figures
+npm run gates      # every CI gate in the CI order (check, e2e, browser jobs) with a summary table; -- --nightly for the nightly ones
 node scripts/sizes.mjs   # largest source files (the 150-line rule)
 ```
 
 `npm run check` last measured: 202 test files, 15,339 tests, all passing (about 5 minutes on a small machine). The browser tools need Chromium
 (`PW_MODULE` / `PLAYWRIGHT_BROWSERS_PATH` if Playwright is not resolvable; run them from `app/` as `node ../tools/<tool>.mjs` if an npm script fails). CI
-([`.github/workflows/app.yml`](.github/workflows/app.yml)) runs `npm ci`, `npm run check` and `npm run build` on pull requests and on
-pushes to `main` that touch `app/`.
+([`.github/workflows/app.yml`](.github/workflows/app.yml)) runs on pull requests and on pushes to `main` that touch `app/`, `tools/` or the legacy file: job
+`check` (audit, graph, duplication, `npm run check`, build), then in parallel job `e2e` (smoke, flows, performance, parallel run) and job `browser` (UI parity,
+accessibility on golden, the portfolio fixture, dark and dark + high contrast). [`.github/workflows/nightly.yml`](.github/workflows/nightly.yml) runs
+every night at 02:17 UTC: `npm run check` three times (flake detection), the parallel run on all 147 files, `npm run validate:affected`, the documented test
+count and `npm audit --omit=dev`. **`npm run gates`** runs the same steps locally, in the same order (`-- --list` prints them, `-- --nightly` the nightly
+ones); it fails when its step list and the workflows differ.
 
 Open `app/dist/index.html` from disk in a modern browser (Chrome or Edge); no server or network is needed. In the app:
 Ctrl/Cmd+Z undoes and Ctrl/Cmd+Shift+Z or Ctrl+Y redoes any business edit; *Save HTML snapshot* downloads a copy of the page with
@@ -103,8 +108,9 @@ title 5 times. These Advanced-unlock gestures are legacy-only and out of scope f
 | Portfolio | one-product portfolios equal the single case on the 107 fixtures (A1/A9); consolidation = sum of the products (A2-A4); override semantics (A5); undo of every command on a 3-product portfolio (A6); the shipped example opens | `app/tests/store/portfolio-*.test.ts`, `app/tests/domain/portfolio/` | yes |
 | Browser end-to-end (new build) | boot, every section on 6 case fixtures and 2 portfolio files (incl. the 6 Portfolio sections), no console error, no NaN | `npm run e2e` (`tools/e2e-smoke.mjs`) | yes (job `e2e`) |
 | Performance | size, shell time, edit and undo latency, section switches (incl. the Portfolio group) against `app/perf-budget.json` | `tools/perf.mjs` | yes (job `e2e`) |
-| Accessibility | axe-core on every section, keyboard and state audits; budget `app/a11y-budget.json` | `npm run a11y` (`tools/a11y.mjs`) | no |
-| UI parity / parallel run | shell areas and section content vs the legacy file; same headline figures on the same files | `tools/ui-parity.mjs`, `tools/parallel-run.mjs` | parallel run only |
+| Accessibility | axe-core on every section, keyboard and state audits; budget `app/a11y-budget.json` | `npm run a11y` (`tools/a11y.mjs`) | yes (job `browser`: golden, pf-three-products, golden dark, golden dark + high contrast) |
+| UI parity / parallel run | shell areas and section content vs the legacy file; same headline figures on the same files | `tools/ui-parity.mjs`, `tools/parallel-run.mjs` | yes (UI parity: job `browser`; parallel run: job `e2e` on the 40 workbooks, nightly on the 107 case files too) |
+| Flakes and test selection | `npm run check` three times in a row; the mutation check of `test:affected` (recall 100 %) | `tools/check-repeat.mjs`, `npm run validate:affected` | nightly |
 
 Legacy battery prerequisites: Node.js 18+ and [Playwright](https://playwright.dev) with a Chromium (`PLAYWRIGHT_BROWSERS_PATH`;
 `PW_MODULE` if `playwright` is not resolvable from `/opt/node-tools/node_modules`). Regenerating the oracle fixtures needs the same

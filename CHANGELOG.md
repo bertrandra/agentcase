@@ -15,6 +15,31 @@ All notable changes to AgentCase, newest first. Product version from v19.0.0 = t
 
 When releasing, follow [docs/BUMP_PROCEDURE.md](docs/BUMP_PROCEDURE.md) (§7 for the legacy file) and add the new version at the top.
 
+## [Unreleased]
+
+### Architecture lot 6 — CI covers every quality gate
+- **New CI job `browser`** (`.github/workflows/app.yml`, after `check`, in parallel with `e2e`): `tools/ui-parity.mjs` (shell of 3 personas and section
+  content against the legacy file; fails on any divergence that is not a recorded exception, or an exception whose pinned value drifted) and `tools/a11y.mjs`
+  on `golden`, `pf-three-products`, `golden --mode dark` and `golden --mode dark --contrast high` (fails on any serious / critical violation or a count above
+  `app/a11y-budget.json`). The four reports are uploaded (`a11y-reports`); on failure, the screenshots of the violating states, the UI-parity screenshots and
+  `divergences.json` too (`browser-gate-screenshots`). Each gate writes a short summary to the run page. The workflow now also runs when `tools/**` or the legacy
+  file change, and reads the repository only (`permissions: contents: read`).
+- **New nightly workflow** (`.github/workflows/nightly.yml`, 02:17 UTC and *Run workflow*): `npm run check` three times in a row with the default timeouts
+  (`tools/check-repeat.mjs`: which test failed in which run, *flaky* or *failing*, JUnit reports attached), the documented test count against the suite
+  (fails beyond 2 %, with the hint `npm run docs:facts -- --count-tests`), the parallel run on the full corpus (40 workbooks + 107 case files), `npm audit
+  --omit=dev`, and in a parallel job `npm run validate:affected` (fails if recall < 100 %; limit 3 h 45 min). Every gate runs even after an earlier failure;
+  the results are in the job summaries. No issue is opened.
+- **`npm run gates`** (`tools/gates.mjs`): every step of the pull-request workflow, in the CI order, with a table of results and times (`-- --nightly` for the
+  nightly ones, `--keep-going`, `--only`, `--from`, `--install`, `--list`, `--affected-only` to sample `validate:affected`). Its first row, `workflow-sync`,
+  fails when its step list and the `run:` lines of the workflows differ, so the two cannot drift apart.
+- `tools/parallel-run.mjs --corpus full` adds the 107 case files; the two DEV-SNAPSHOT-RESTORE differences (`curve-bass`, `curve-legacy`) are pinned line for
+  line in `tools/parallel-run-known.json` and reported as `KNOWN`; any other difference, or a change of a pinned one, fails.
+- `tools/a11y.mjs`: `--report <path>` / `--no-write` (the committed `app/a11y-report.json` is never rewritten when `CI` is set), `--shots <dir>`, failing
+  rules name the pages they occur on, and the report records the display mode. `tools/a11y-lib.mjs` falls back to the app's own Playwright (it required
+  `/opt/node-tools` or `PW_MODULE`, so it could not run on a CI runner). `tools/ui-parity.mjs --shots` also writes `divergences.json`.
+- Docs: [BUMP_PROCEDURE.md](docs/BUMP_PROCEDURE.md) §4.2 (reproduce CI with `npm run gates`), §6 (the three jobs and the nightly), checklist;
+  [TEST_SELECTION.md](docs/TEST_SELECTION.md) §1 and §5 (`validate:affected` runs nightly, sampling with `--only`); README; DEVIATIONS.md DEV-SNAPSHOT-RESTORE.
+
 ## [v20.14.0] 2026-10-24 — Architecture lots 1 and 4: robustness (error boundaries, CSP, audit, lint), one cash-flow kernel, acyclic zone graph, pilot in cost-model totals
 
 ### Tests

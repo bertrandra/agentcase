@@ -1,18 +1,24 @@
 #!/usr/bin/env node
 // Parallel run: opens the same customer files (.xlsx parameter workbooks, .html / .json snapshots) in the LEGACY single-file app
 // and in the BUILT TypeScript app, and compares the headline figures (savings and run cost of the last year, NPV, payback,
-// effective automation, glass ceiling). Usage: node tools/parallel-run.mjs [files...]   (default: the committed workbook corpus)
+// effective automation, glass ceiling). Usage: node tools/parallel-run.mjs [--corpus full] [files...]
+//   default: the 40 committed parameter workbooks (app/fixtures/xlsx/*.xlsx); --corpus full adds the 107 case files (app/fixtures/cases/*.json).
+// A difference recorded in tools/parallel-run-known.json (its deviation id, e.g. DEV-SNAPSHOT-RESTORE, and the exact difference line) is reported as KNOWN
+// and does not fail; any other difference fails, and so does a recorded difference that changed or disappeared (update the file and docs/DEVIATIONS.md then).
 import { createRequire } from 'node:module';
-import { existsSync, readFileSync, readdirSync } from 'node:fs';
+import { appendFileSync, existsSync, readFileSync, readdirSync } from 'node:fs';
 import { basename, extname, resolve } from 'node:path';
-const ARGS = process.argv.slice(2).map(f => resolve(f));   // resolved against the caller's directory, before the chdir
+const argv = process.argv.slice(2), full = argv.includes('--corpus') && argv[argv.indexOf('--corpus') + 1] === 'full';
+const ARGS = argv.filter((a, i) => a !== '--corpus' && argv[i - 1] !== '--corpus').map(f => resolve(f));   // resolved against the caller's directory, before the chdir
 process.chdir(new URL('..', import.meta.url).pathname);   // paths below are relative to the repository root, whatever the caller's directory (npm run parallel-run runs from app/)
 const require = createRequire(import.meta.url);
 const pw = require(process.env.PW_MODULE || (existsSync('/opt/node-tools/node_modules/playwright') ? '/opt/node-tools/node_modules/playwright' : resolve('app/node_modules/playwright')));
 const legacyFile = resolve(readdirSync('.').filter(f => /^AgentCase_v[\d_]+_EN\.html$/.test(f)).sort((a, b) => a.localeCompare(b, undefined, { numeric: true })).pop());
 const built = resolve('app/dist/index.html');
 let files = ARGS;
-if (!files.length) files = readdirSync('app/fixtures/xlsx').filter(f => f.endsWith('.xlsx')).map(f => resolve('app/fixtures/xlsx', f));
+if (!files.length) files = readdirSync('app/fixtures/xlsx').filter(f => f.endsWith('.xlsx')).sort().map(f => resolve('app/fixtures/xlsx', f));
+if (full) files.push(...readdirSync('app/fixtures/cases').filter(f => f.endsWith('.json')).sort().map(f => resolve('app/fixtures/cases', f)));
+const known = JSON.parse(readFileSync('tools/parallel-run-known.json', 'utf8')).known;   // [{ file, deviation, diff }]
 const browser = await pw.chromium.launch();
 
 async function legacyFigures(file) {
@@ -50,16 +56,23 @@ async function newFigures(file) {
   await page.context().close(); return { ...Object.fromEntries(kpi), NPV: npv && npv.replace('−', '-').replace('K', 'k') };
 }
 const k = v => (v < 0 ? '-' : '') + '€' + Math.round(Math.abs(v) / 1000).toLocaleString('en-US') + 'k', pct = v => Math.round(v) + '%';
-let bad = 0;
+let bad = 0, knownSeen = 0;
+const seen = new Set();
 for (const f of files) {
   let L, N;
   try { L = await legacyFigures(f); N = await newFigures(f); } catch (e) { bad++; console.log('ERROR', basename(f), String(e.message).split('\n')[0]); continue; }
   const get = pre => Object.entries(N).find(([l]) => l.startsWith(pre))?.[1]?.replace('−', '-');   // DEV-NEG-MONEY: the new build prints negatives with U+2212
   const checks = [['savings', k(L.sav), get('Savings')], ['run cost', k(L.run), get('Run cost')], ['NPV', k(L.npv), get('NPV')], ['payback', L.payback == null ? 'beyond horizon' : L.payback + ' mo', get('Payback')], ['effective', pct(L.eff), get('Effective')], ['ceiling', pct(L.ceiling), get('Glass')]];
   const diff = checks.filter(([, a, b]) => a !== b);
-  if (diff.length) { bad++; console.log('DIFF ', basename(f).padEnd(34), diff.map(([n, a, b]) => `${n}: legacy ${a} vs new ${b}`).join(' | ')); }
+  const line = diff.map(([n, a, b]) => `${n}: legacy ${a} vs new ${b}`).join(' | '), kn = known.find(x => x.file === basename(f));
+  if (kn) seen.add(kn.file);
+  if (kn && kn.diff === line) { knownSeen++; console.log('KNOWN', basename(f).padEnd(34), `${kn.deviation}: ${line}`); }
+  else if (kn) { bad++; console.log('FAIL ', basename(f).padEnd(34), `recorded ${kn.deviation} difference changed: expected "${kn.diff}", got "${line || 'no difference'}"`); }
+  else if (diff.length) { bad++; console.log('DIFF ', basename(f).padEnd(34), line); }
   else console.log('same ', basename(f).padEnd(34), checks.map(c => c[1]).join(' · '));
 }
 await browser.close();
-console.log(files.length, 'files,', bad, 'with differences');
+const verdict = `${files.length} files: ${files.length - bad - knownSeen} identical, ${knownSeen} known (${[...new Set(known.filter(k => seen.has(k.file)).map(k => k.deviation))].join(', ') || 'none'}), ${bad} unexpected`;
+console.log(verdict);
+if (process.env.GITHUB_STEP_SUMMARY) appendFileSync(process.env.GITHUB_STEP_SUMMARY, `### Parallel run${full ? ' (full corpus)' : ''}\n\n${bad ? '**FAIL**' : 'OK'}: ${verdict}\n`);
 process.exit(bad ? 1 : 0);
