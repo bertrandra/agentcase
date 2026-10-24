@@ -15,6 +15,43 @@ All notable changes to AgentCase, newest first. Product version from v19.0.0 = t
 
 When releasing, follow [docs/BUMP_PROCEDURE.md](docs/BUMP_PROCEDURE.md) (§7 for the legacy file) and add the new version at the top.
 
+## [Unreleased] — Architecture lot 4: one cash-flow kernel, acyclic zone graph, case-file parity explained, pilot in the cost-model totals
+
+### Changed
+- **One discounted-cash-flow kernel** (`app/src/domain/economics/cashflow.ts`, zone *time-engine*): `cumulativeOf`, `paybackMonthOf` (first month >= `firstMonth`
+  whose cumulative is >= 0), `npvOf` (monthly (1 + r/12)^t, or annual (1 + r)^(t/12) compounding), `discountFactor`, `roiCanonical` and `cashflowSummary`, plus
+  the single `DEFAULT_DISCOUNT_RATE` (0.08). It replaces the six inline loops of `time/engine.ts`, `time/thin.ts` (Monte Carlo through `model/mcs.ts`),
+  `portfolio/headline.ts` (with its "not before the first movement" rule as `firstMonth`), `pdc/verifConvTime.ts` (legacy audit at 8 %), `model/flow.ts`
+  (time-to-market value, annual compounding kept as a documented variant) and the cost-model discount factors; the 0.08 literals of `canonical.ts`,
+  `verifConvTime2.ts`, `flow.ts`, `controllers/frame.ts`, `controllers/modelFlow.ts` and the engagement-context card now read the constant. The kernel owns
+  the payback-month, NPV and ROI figures (catalogue and `figure-owners` updated; `economics/roi.ts` re-exports the rule). **No number changed**: a property test
+  compares the kernel bit for bit with verbatim copies of the old loops on random cash flows (`tests/domain/cashflow.test.ts`), and a full-precision dump of
+  payback, NPV (5 rates), cumulative, ROI, thin pass, Monte Carlo (200 draws), time-to-market value, convergence rows, calculation package and portfolio
+  headlines of the 107 fixtures and two portfolios is byte-identical before and after.
+- **Zone graph per layer, acyclic in the domain.** `npm run deps:gen` builds the zone links from what a module's own code imports in `src/domain` only;
+  re-exports and pure barrels (re-export-only modules) are not uses (their edges stay in the import closure for test selection); the controllers' and store
+  exports' zone links are reported apart (`outer`, 40 links). Modules retagged by role (no code moved except one function): the kernel (*time-engine*),
+  `model/flow.ts`, `scope/scurveView.ts`, `pdc/verifTeam.ts`, `domain/index.ts` (*delivery-views*), `tune/maturity.ts` (*tuning-programme*), the portfolio
+  knowledge views, diagnostics, teams and validation (*portfolio-consolidation*); `convChangeCost` moved from `engagement.ts` to its owner `model/drivers.ts`
+  (the setup figure). The zone *verification-verdict* is split into **verdict** (decision verdict, strategies, results, evidence ladder, due-diligence
+  register, portfolio verdict) and **verification** (logic checks and convergence rows), which removes the Board-registry cycle. Before: 112 zone links,
+  one cycle of 15 zones, 25 feedback links. After: 91 domain links, **no cycle**, 13 layers, 0 feedback links (19 zones, 17 drawn). The Build order tab is a
+  topological order and says so; `deps.test.tsx` fails if a cycle comes back.
+- **Cost model (monthly) workbook: the pilot is included in the totals** (decision D4, DEV-COSTMODEL-PILOT rewritten). Each product has a dated line
+  "Pilot (included in totals)": the Program & Completeness pilot sizing spread evenly over its weeks from the product's month 1 (`tune/program.ts`
+  `pilotMonths`). Product, wave and portfolio totals include it; the app headline does not count the pilot (unchanged), so the check row is "Engine total +
+  pilot" and the Difference rows stay 0; the sheet note and the Parameters row say so.
+
+### Fixed
+- **File > Open… (and Save / open > Open snapshot file) did not re-fit the automation potential** to the scope, unlike the snapshot panel and the legacy
+  restore. Every open path now goes through `openParsed`. This was 1 of the 3 differences of the parallel run on the 107 case files (`lifecycle-pos-0`: 74 %
+  after the re-fit, as the legacy); the other 2 (`curve-bass`, `curve-legacy`) are a legacy restore defect (its `scurve` setter drops the bass and legacy
+  families) and are recorded in **DEV-SNAPSHOT-RESTORE** with the field-by-field evidence. Parallel run: 105 of 107 case files identical (was 104), 40 / 40
+  parameter workbooks identical. Pinned by `tests/store/snapshot-restore-parity.test.ts`.
+
+### Tests and validation
+- Test selection re-validated after the generator change (`npm run validate:affected`, 19 mutations, 13 run, 6 trivially full: recall 100% at the precise and zone levels, 20 / 20 failing files, average saving 44% / 24%). See docs/TEST_SELECTION.md §5.
+
 ## [v20.13.0] 2026-10-24 — Architecture lots 0, 2, 3: CI green and stable, single version source and doc facts, state model hardening
 
 ### Fixed
