@@ -1,12 +1,15 @@
 import { describe, expect, it } from 'vitest';
 import { caseDiscountRate } from '@/domain/canonical';
 import { makeCtx } from '@/domain';
+import { headline } from '@/domain/economics/headline';
+import { pilotMonths, pilotSizing } from '@/domain/tune/program';
 import { consolidate, costModel, envelopeCase, scheduledProducts, type CostModel, type Portfolio } from '@/domain/portfolio';
 import { byLine, byProduct, cells, expectChecksZero, expectFormulasConsistent, nz, TOL } from '../../helpers/costModel';
 import { fourProducts, openPortfolioFixture, regulatedPortfolio } from '../../helpers/portfolioFixtures';
 import { FIXTURE_IDS, identical, loadCase, withProduct, withWave } from '../../helpers/portfolio';
 
 const close = (a: number, b: number): void => { expect(Math.abs(a - b)).toBeLessThanOrEqual(TOL); };
+const PILOT = 'Pilot (included in totals)';
 const lineSum = (m: CostModel, name: string, i: number): number => m.other.rows.filter((r) => r.keys[4] === name && r.role === 'line').reduce((s, r) => s + nz(r.months[i]), 0);
 
 /** Everything a model must satisfy against the consolidation it comes from. */
@@ -15,14 +18,14 @@ function reconcile(pf: Portfolio, m: CostModel): void {
   expect(m.horizon).toBe(L);
   expect(expectChecksZero(m)).toBeGreaterThan(0);
   expectFormulasConsistent(m.values); expectFormulasConsistent(m.rates); expectFormulasConsistent(m.other);
-  const total = m.other.rows.filter((r) => r.role === 'total' && r.keys[4] === 'PORTFOLIO TOTAL TO-BE COST')[0]!;
+  const total = m.other.rows.filter((r) => r.role === 'total' && r.keys[4] === 'PORTFOLIO TOTAL TO-BE COST (pilot included)')[0]!;
   const team = m.rates.rows.filter((r) => r.role === 'teamcost');
   const base = c.products.reduce((s, v) => s + v.run.engine.K.baselineRunMonth, 0);
   close(nz(total.t0), base);
   expect(m.other.rows.filter((r) => r.role === 'team').reduce((s, r) => s + nz(r.t0), 0)).toBeCloseTo(base, 6);
   for (let i = 0; i < L; i++) {
     const act = c.products.reduce((s, v) => s + (i >= v.month0 && i < v.month0 + v.run.rows.length ? v.run.engine.K.baselineRunMonth : 0), 0);
-    close(nz(total.months[i]), act - S.net[i]!);
+    close(nz(total.months[i]), act - S.net[i]! + lineSum(m, PILOT, i));   // the engine cost plus the pilot (decision D4)
     const teamI = team.reduce((s, r) => s + nz(r.months[i]), 0);
     close(teamI + lineSum(m, 'Agentic run team (AgentOps)', i) + lineSum(m, 'Tokens', i) + lineSum(m, 'Infrastructure', i) + lineSum(m, 'Knowledge Hub curation', i) + lineSum(m, 'Knowledge Hub infrastructure (allocated)', i), S.run[i]!);
     close(lineSum(m, 'Tokens', i), S.token[i]!); close(lineSum(m, 'Infrastructure', i), S.infra[i]!);
@@ -93,11 +96,32 @@ describe('cost model: days x rate + other costs = the app cost', () => {
     expect(() => costModel(pf, { kind: 'product', id: pf.products[3]!.id })).toThrow(/not planned/);
     expect(() => costModel(pf, { kind: 'wave', id: 'nope' })).toThrow(/does not exist/);
   });
-  it('pilot and parameters are listed, pilot outside the total', () => {
-    const pf = fourProducts(), m = costModel(pf, { kind: 'portfolio' }), pilot = byLine(m.other, pf.products[0]!.name, 'Pilot (indicative sizing, not in the engine cost)');
-    expect(pilot.total).toBeGreaterThan(0); expect(pilot.months.every((x) => x === null)).toBe(true);
+  it('the pilot is a dated line included in the totals (D4): its months follow the pilot sizing from the product month 1', () => {
+    const pf = fourProducts(), c = consolidate(pf), m = costModel(pf, { kind: 'portfolio' });
+    for (const v of c.products) {
+      const pilot = byLine(m.other, v.name, PILOT), size = pilotSizing(v.run.ctx), pm = pilotMonths(size);
+      expect(pm.length).toBe(Math.ceil((size.totalWeeks * 12) / 52 - 1e-9));
+      pilot.months.forEach((x, i) => expect(x, `${v.name} M${i + 1}`).toBe(i >= v.month0 && i < v.month0 + pm.length ? pm[i - v.month0] : null));
+      expect(pilot.total!).toBeCloseTo(size.cost, 6);
+      const total = byProduct(m.other, v.name).find((r) => r.role === 'total')!, lines = byProduct(m.other, v.name).filter((r) => r.role === 'line' || r.role === 'team');
+      for (let i = 0; i < m.horizon; i++) close(nz(total.months[i]), lines.reduce((s, r) => s + nz(r.months[i]), 0));   // total = sum of the rows, the pilot included
+      expect(lines.some((r) => r.keys[4] === PILOT)).toBe(true);
+    }
+    const all = m.other.rows.find((r) => r.keys[4] === 'PORTFOLIO TOTAL TO-BE COST (pilot included)')!;
+    close(all.total!, m.other.rows.filter((r) => r.role === 'total' && r.keys[2] !== '(all products)').reduce((s, r) => s + r.total!, 0));
+    expect(m.params.find((p) => p.name.startsWith('Pilot cost'))!.name).toBe('Pilot cost (included in the cost-model totals, not in the engine cost)');
     for (const n of ['Annual discount rate', 'Monthly discount rate (annual rate / 12)', 'Knowledge-transfer lead', 'Knowledge Hub curation', 'Output share of tokens (TOK_OUT_SHARE)', 'Working days per year']) expect(m.params.some((p) => p.name === n)).toBe(true);
     expect(m.params.every((p) => p.where.length > 0)).toBe(true);
     expect(cells(byLine(m.other, pf.products[0]!.name, 'Tokens')).length).toBe(m.horizon + 1);
+  });
+});
+
+describe('cost model: reconciliation with the app figures (pilot included in the export only)', () => {
+  it.each(['golden', 'horizon-5', 'econ-no-setup', 'ctx-msi'])('%s: AS-IS cost - TOTAL TO-BE COST over the horizon = the app net benefit - the pilot', (id) => {
+    const state = loadCase(id), pf = envelopeCase(state), m = costModel(pf, { kind: 'portfolio' }), h = headline(makeCtx(state)), v = consolidate(pf).products[0]!;
+    const total = m.other.rows.find((r) => r.keys[4] === 'PORTFOLIO TOTAL TO-BE COST (pilot included)')!, asis = byLine(m.other, v.name, 'AS-IS cost of the same months');
+    const pilot = pilotMonths(pilotSizing(v.run.ctx)).slice(0, m.horizon).reduce((a, x) => a + x, 0);
+    expect(pilot).toBeGreaterThan(0);
+    expect(Math.abs(asis.months.reduce<number>((a, x) => a + nz(x), 0) - total.total! - (h.net - pilot))).toBeLessThan(1e-4);   // the app headline (net) does not count the pilot; the export does
   });
 });

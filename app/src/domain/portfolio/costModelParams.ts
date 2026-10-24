@@ -47,7 +47,7 @@ function productParams(v: ProductView): ParamRow[] {
     p('Run-team factor', K.runTeamFactor, 'x', IN.run), p('Verification tax rate', K.vTaxRate, 'of raw savings', IN.elig), p('External rework rate', K.loopExtRate, 'of raw savings', IN.elig),
     p('Compliance tax rate', K.complianceTaxRate, 'of raw savings', IN.elig), p('Engagement context', engagementKey(ctx), '', IN.ctx), p('Ramp speed coefficient', cv.rampSpeed, 'x', IN.ctx),
     p('Ramp cap', cv.rampCapPct, '%', IN.ctx), p('Glass-ceiling factor', cv.glassFactor, 'x', IN.ctx), p('Risk premium (decision-risk bar, not a cost line)', cv.riskPremium, '', IN.ctx),
-    p('Pilot team', pilot.fte, 'FTE', IN.prog), p('Pilot duration', pilot.totalWeeks, 'weeks', IN.prog), p('Pilot cost (indicative, not in the engine cost)', pilot.cost, 'EUR', IN.prog),
+    p('Pilot team', pilot.fte, 'FTE', IN.prog), p('Pilot duration', pilot.totalWeeks, 'weeks', IN.prog), p('Pilot cost (included in the cost-model totals, not in the engine cost)', pilot.cost, 'EUR', IN.prog),
   ];
 }
 
