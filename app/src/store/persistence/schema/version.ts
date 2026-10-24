@@ -3,7 +3,7 @@ import { SnapshotError } from '../errors';
 
 /**
  * THE FILE SCHEMA VERSION. Every file this build writes (JSON, HTML snapshot, autosave record) carries `_schemaVersion`; a file without it is v1
- * (everything written up to v20.12). Opening runs the migration chain from the file's version up to the current one, so a reader only ever sees
+ * (every file written before files were stamped). Opening runs the migration chain from the file's version up to the current one, so a reader only ever sees
  * the current shape. A file from a newer build is refused with a clear message (its shape is unknown, guessing could lose data).
  *
  * Adding a version: bump `SNAPSHOT_SCHEMA_VERSION`, add `MIGRATIONS[n]` (vn -> vn+1, a pure function on the raw JSON) and a test that an old file
@@ -23,7 +23,7 @@ type Raw = Record<string, unknown>;
 const KNOWN_PORTFOLIO = 'agentcase.portfolio.v1';
 
 /**
- * v1 -> v2. v2 is the shape written since v20.13: identical to v1 but stamped. Normalised legacy spellings: a portfolio `_schema` written with
+ * v1 -> v2. v2 is the shape written since files carry `_schemaVersion`: identical to v1 but stamped. Normalised legacy spellings: a portfolio `_schema` written with
  * other letter case or spaces (hand-edited files) is read as the portfolio tag. A no-op for every file this app or the legacy app wrote.
  */
 function v1ToV2(s: Raw): Raw {
@@ -34,7 +34,7 @@ function v1ToV2(s: Raw): Raw {
 /** `MIGRATIONS[n]` turns a version-n file into a version n+1 file. */
 export const MIGRATIONS: Record<number, (s: Raw) => Raw> = { 1: v1ToV2 };
 
-/** The version a raw file declares: absent (every file before v20.13) = 1; anything that is not a whole number >= 1 is read as 1 too. */
+/** The version a raw file declares: absent (every file written before the stamp) = 1; anything that is not a whole number >= 1 is read as 1 too. */
 export function fileVersion(raw: Raw): number {
   const v = raw[VERSION_KEY];
   return Number.isInteger(v) && (v as number) >= 1 ? (v as number) : 1;
