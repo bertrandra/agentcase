@@ -36,7 +36,7 @@ describe('inherited / overridden fields on a section that edits overridable data
     mountApp('scope-sel');
     await sectionReady(/Scope/);
     const commonBefore = pf().common.selectedArtefacts;
-    fireEvent.click(screen.getByLabelText('This product only'));
+    fireEvent.change(screen.getByRole('combobox', { name: 'Edit' }), { target: { value: ids[0] } });   // Edit: "Product 1 only"
     fireEvent.click(screen.getByRole('button', { name: 'Clear all' }));
     expect(isOverridden(prod(0), 'selectedArtefacts')).toBe(true);
     expect(pf().common.selectedArtefacts).toBe(commonBefore);
@@ -53,7 +53,7 @@ describe('inherited / overridden fields on a section that edits overridable data
   it('"Apply to all products" makes the product value the common one and drops identical overrides', async () => {
     mountApp('scope-sel');
     await sectionReady(/Scope/);
-    fireEvent.click(screen.getByLabelText('This product only'));
+    fireEvent.change(screen.getByRole('combobox', { name: 'Edit' }), { target: { value: ids[0] } });   // Edit: "Product 1 only"
     fireEvent.click(screen.getByRole('button', { name: 'Clear all' }));
     const mine = prod(0).overrides.selectedArtefacts;
     fireEvent.click(screen.getByRole('button', { name: /^Apply to all products: Selected SDLC artefacts/ }));

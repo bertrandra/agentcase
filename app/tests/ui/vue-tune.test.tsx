@@ -83,7 +83,7 @@ describe.each(CASES)('$id: Portfolio and each Wave show the domain figures', (k)
     mountApp(k.id); show(v);
     await sectionReady(k.title);
     const p = corePortfolio(pf()), sel = idsOf(v), t = table(k.caption, v);
-    expect(banner()).toContain(k.input ? `Editing: product ${active.name} — aggregate view` : 'Calculated on:');
+    expect(banner()).toContain(k.input ? 'Editing: All products (common values) — aggregate view' : 'Calculated on:');   // "Edit: All products" (default)
     expect(t.querySelectorAll('tbody tr')).toHaveLength(sel.length);
     for (const r of k.rows(p, sel)) for (const x of r.texts) expect(t.querySelector(`tbody tr[data-row="${r.id}"]`)!.textContent, `${k.id} ${r.id}`).toContain(x);
     for (const x of k.total?.(p, sel) ?? []) expect(t.querySelector('tfoot tr')!.textContent, `${k.id} total`).toContain(x);

@@ -20,3 +20,11 @@
 .ac-section .ac-drill-body .ac-table-wrap { overflow: visible; }
 .ac-section .ac-agg-table tr.is-active th[scope='row'] { box-shadow: var(--ac-shadow-rail); }
 .ac-section .ac-agg-table td button { padding: 2px 8px; font-size: var(--ac-font-size-sm); }
+
+/* In-place editing of an input section under a Portfolio / Wave view (docs/VUE_AGREGEE.md § 2): the section bound to the top-bar "Edit" choice,
+   below its summary; KeepersNotice names the products that keep their own value while the common values are edited. Multi-product only. */
+.ac-inplace { margin-top: 1rem; padding: var(--ac-pad-section); background: var(--ac-surface-raised); border-radius: var(--ac-radius-card); box-shadow: var(--ac-shadow-card); border-left: var(--ac-border-rail) solid var(--ac-blue); }
+.ac-inplace > h2 { margin: 0 0 .5rem; font-size: var(--ac-font-size-xl); color: var(--ac-blue); }
+.ac-inplace .ac-inplace-banner { margin: 0 0 1rem; padding: 6px 12px; font-size: var(--ac-font-size-base); background: var(--ac-primary-60); border: var(--ac-border-thin) solid var(--ac-primary-200); border-radius: var(--ac-radius); }
+.ac-inplace .ac-section-embedded { box-shadow: none; padding: 0; }
+.ac-section .ac-keepers-text { padding: 1px 9px; font-weight: var(--ac-font-weight-bold); color: var(--ac-warning-825); background: var(--ac-warning-75); border: var(--ac-border-thin) solid var(--ac-warning-275); border-radius: var(--ac-radius-2xl); }

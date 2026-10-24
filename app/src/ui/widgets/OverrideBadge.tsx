@@ -1,7 +1,9 @@
 import type { ReactNode } from 'react';
 import { applyOverrideToCommon, clearProductOverride } from '@/controllers/productOverrides';
+import { useInCommonView } from '@/store/commonEditHooks';
 import { useFieldState, useIsMulti } from '@/store/portfolioHooks';
 import { toast } from '../uiState';
+import { KeepersNotice } from './KeepersNotice';
 
 /** A short, safe text for a common value (tooltip): lists count their items, objects and long texts are cut. */
 export function describeValue(v: unknown): string {
@@ -13,11 +15,13 @@ export function describeValue(v: unknown): string {
 
 /**
  * Inherited / overridden state of one overridable key for the ACTIVE product (spec F7): a chip (the common value in its tooltip), and, once the
- * product overrides it, "Revert to common" and "Apply to all products". Renders nothing with a single product (F23).
+ * product overrides it, "Revert to common" and "Apply to all products". Renders nothing with a single product (F23). In the in-place editor of the
+ * common values: the products that keep their own value instead (`KeepersNotice`).
  */
 export function OverrideBadge({ refKey, label }: { refKey: string; label: string }) {
-  const f = useFieldState(refKey);
+  const f = useFieldState(refKey), common = useInCommonView();
   if (!f.multi) return null;
+  if (common) return <KeepersNotice refKey={refKey} label={label} />;
   const state = f.overridden ? 'overridden' : 'inherited', tip = `Common value: ${describeValue(f.common)}`;
   const back = () => { if (clearProductOverride(f.productId, refKey)) toast(`${label}: reverted to common for ${f.productName}`); };
   const all = () => { if (applyOverrideToCommon(f.productId, refKey)) toast(`${label}: applied to all products`); };

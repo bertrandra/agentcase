@@ -32,7 +32,7 @@ export default function TeamInAggregate() {
     <SectionFrame title="Input team (AS-IS) — breakdown by resource" help={help}
       input={
         <>
-          <Callout kind="blue">Read-only: the entry team belongs to each product. “Edit this product” opens the editable section for that product.</Callout>
+          <Callout kind="blue">Summary, read-only: the entry team belongs to each product. Pick a product in “Edit” of the top bar to change its team in place below, or “Edit this product” to view that product.</Callout>
           <AggregateTable caption={`Entry teams by product — ${vs.label}`} rows={t.products} columns={PRODUCTS} totals={{ ...sum, cells: { etp: total } }} />
           <ExcludedNote />
         </>
