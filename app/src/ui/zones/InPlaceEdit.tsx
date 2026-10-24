@@ -27,8 +27,7 @@ export function InPlaceEdit({ id, Section }: { id: string; Section: ComponentTyp
     body = (
       <>
         <p className="ac-inplace-banner" role="note">
-          {all ? <>Editing the <strong>common values</strong>: every product that inherits a value follows; products with their own value keep it.
-            Figures in this editor use the team of {prod.name}.</>
+          {all ? <>Editing the <strong>common values</strong>: every product that inherits a value follows; products with their own value keep it.</>
             : <>Editing <strong>{prod.name}</strong> only — results above and elsewhere still show the {where} view.</>}
         </p>
         <EmbedLevel.Provider value={3}>

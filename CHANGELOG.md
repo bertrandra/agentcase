@@ -15,6 +15,11 @@ All notable changes to AgentCase, newest first. Product version from v19.0.0 = `
 
 When releasing, follow [docs/BUMP_PROCEDURE.md](docs/BUMP_PROCEDURE.md) (§7 for the legacy file) and add the new version at the top.
 
+## [Unreleased]
+
+### Changed
+- "Edit in place: All products" banner: the sentence naming whose team the figures use is removed (the context is already shown above).
+
 ## [v20.11.0] 2026-10-24 — Portfolio "Edit:" dropdown with in-place editing; top-bar icons
 
 ### Changed
