@@ -3,6 +3,12 @@ import { isPinnedRow, type TeamWeights } from '@/domain/baseline/teamWeights';
 import { addTeamRowFor } from '@/controllers/baseline';
 import { Callout } from '@/ui/widgets/cards';
 
+/** Why a skill's scope weight has nobody on it: its lines are all pinned elsewhere, or it has no line at all. */
+function unstaffedWhy(ts: string, n: number): string {
+  if (n === 0) return `there is no ${ts} resource line at all`;
+  return `the ${n} ${ts} line${n === 1 ? ' is' : 's are'} pinned to specific artefacts, so ${n === 1 ? 'it does' : 'they do'} not staff the rest of this skill`;
+}
+
 /** Coverage of the scope weight by the team: the unstaffed skills (with a one-click fix), or "100 % assigned" and the pinned share. */
 export function MixBanner({ c, W }: { c: Ctx; W: TeamWeights }) {
   const rows = c.s.teamIn, covered = W.totW ? (1 - W.unassignedW / W.totW) * 100 : 100;
@@ -18,7 +24,7 @@ export function MixBanner({ c, W }: { c: Ctx; W: TeamWeights }) {
             const n = rows.filter((r) => r.skill === ts && isPinnedRow(r)).length;
             return (
               <li key={ts}><strong>{ts}</strong> — {((W.unassigned[ts]! / W.totW) * 100).toFixed(1)}% of the scope weight unstaffed:{' '}
-                {n > 0 ? `the ${n} ${ts} line${n === 1 ? ' is' : 's are'} pinned to specific artefacts, so ${n === 1 ? 'it does' : 'they do'} not staff the rest of this skill` : `there is no ${ts} resource line at all`}.{' '}
+                {unstaffedWhy(ts, n)}.{' '}
                 <button type="button" onClick={() => addTeamRowFor(ts)}>+ add an auto line</button></li>
             );
           })}
@@ -29,9 +35,10 @@ export function MixBanner({ c, W }: { c: Ctx; W: TeamWeights }) {
   const pinnedW = rows.reduce((s, r, i) => s + (isPinnedRow(r) ? W.rowW[i]! : 0), 0), pct = W.totW ? (pinnedW / W.totW) * 100 : 0;
   return (
     <Callout>
-      <strong style={{ color: 'var(--ac-teal)' }}>100% of the scope weight is assigned.</strong>
-      {pct > 0.05 ? <> <b style={{ color: 'var(--ac-brick)' }}>{pct.toFixed(1)}% pinned</b> · {(100 - pct).toFixed(1)}% auto
-        pool.</> : ' Entirely auto pool (no pinning).'}{' '}
+      <strong className="ac-tone" data-tone="teal">100% of the scope weight is assigned.</strong>
+      {pct > 0.05
+        ? <> <b className="ac-tone" data-tone="brick">{pct.toFixed(1)}% pinned</b> · {(100 - pct).toFixed(1)}% auto pool.</>
+        : ' Entirely auto pool (no pinning).'}{' '}
       Σw = {W.totW.toFixed(1)} over {activeArtefacts(c.a, c.s).length} active artefacts.
     </Callout>
   );

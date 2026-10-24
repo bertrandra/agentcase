@@ -7,6 +7,16 @@ import { FieldNumber } from '@/ui/widgets/field/FieldNumber';
 import { ClassBadge } from '../ClassBadge';
 import { SkillsCatalogue } from './SkillsCatalogue';
 
+/** One day rate of the matrix (location × grade band). */
+function RateCell({ loc, band, value }: { loc: string; band: string; value: number }) {
+  const label = `${loc} band ${band} day rate`;
+  return (
+    <FieldNumber bare native="number" label={label} min={0} step={10} value={value} onCommit={(v) => setRate(loc, band, v)}>
+      <input type="number" className="ac-rate-input" aria-label={label} value={value} onChange={(e) => setRate(loc, band, e.target.value)} />
+    </FieldNumber>
+  );
+}
+
 const help = (
   <>
     <p>Defines the price of one person-day (day rate) for every grade band × location. These rates are the unit prices the whole cost model multiplies by effort
@@ -21,19 +31,14 @@ function RateMatrix() {
   return (
     <div className="ac-table-wrap" tabIndex={0}>
       <table className="ac-table" aria-label="Day-rate matrix">
-        <thead><tr><th scope="col">Grade
-          band</th>{LOCATIONS.map((l) => <th key={l.name} scope="col">{l.name}<br /><ClassBadge cls={l.cls} /></th>)}</tr></thead>
+        <thead>
+          <tr><th scope="col">Grade band</th>{LOCATIONS.map((l) => <th key={l.name} scope="col">{l.name}<br /><ClassBadge cls={l.cls} /></th>)}</tr>
+        </thead>
         <tbody>
           {BANDS.map(([band, label]) => (
             <tr key={band}>
               <td><strong>{label}</strong></td>
-              {LOCATIONS.map((l) => (
-                <td key={l.name}>
-                  <FieldNumber bare native="number" label={`${l.name} band ${band} day rate`} min={0} step={10} value={rate[l.name]?.[band] ?? 0} onCommit={(v) => setRate(l.name, band, v)}>
-                    <input type="number" style={{ width: 80 }} aria-label={`${l.name} band ${band} day rate`} value={rate[l.name]?.[band] ?? 0} onChange={(e) => setRate(l.name, band, e.target.value)} />
-                  </FieldNumber>
-                </td>
-              ))}
+              {LOCATIONS.map((l) => <td key={l.name}><RateCell loc={l.name} band={band} value={rate[l.name]?.[band] ?? 0} /></td>)}
             </tr>
           ))}
         </tbody>

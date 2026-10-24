@@ -1,10 +1,10 @@
 import { GLOSSARY_TERMS } from '@/domain/frame';
-import { textColor } from '@/ui/colorText';
 import { goSection } from '@/ui/uiState';
 import { Callout } from '@/ui/widgets/cards';
 import { useNavModel } from '@/ui/zones/navModel';
 import { SectionFrame } from '@/ui/zones/SectionFrame';
 import { AddProductEntry } from './AddProductEntry';
+import { GroupCard } from './GroupCard';
 import { useTheme } from '@/ui/themeContext';
 import type { Tok } from '@/domain/theme/resolve';
 
@@ -32,28 +32,14 @@ export default function HomeSection() {
         one click away on the left.</p>}
       result={
         <>
-          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit,minmax(280px,1fr))', gap: 16 }}>
-            {groups.map(({ group, sections }) => {
-              const color = colorOf(colors, group.id, tok);
-              return (
-                <button key={group.id} type="button" title={`Opens ${group.label}`} onClick={() => goSection(sections[0]!.id)}
-                  style={{ textAlign: 'left', cursor: 'pointer', font: 'inherit', color: 'var(--ac-ink)', background: 'var(--ac-surface)', border: '1px solid var(--ac-line)', borderTop: `5px solid ${color}`, borderRadius: 'var(--ac-radius-xl)', padding: '18px 20px' }}>
-                  <div style={{ display: 'flex', alignItems: 'center', gap: 8, color: 'var(--ac-text-heading)', fontSize: 'var(--ac-font-size-3xl)', fontWeight: 'var(--ac-font-weight-bold)' }}>
-                    <span>{group.label}</span>
-                    <span title={`${sections.length} section${sections.length === 1 ? '' : 's'} active for this persona`}
-                      style={{ marginLeft: 'auto', color: textColor(color, tok), border: `1px solid ${color}`, borderRadius: 'var(--ac-radius-xl-plus)', padding: '1px 10px', fontSize: 'var(--ac-font-size-md-plus)' }}>{sections.length}</span>
-                  </div>
-                  <div style={{ color: 'var(--ac-muted)', fontSize: 'var(--ac-font-size-md-plus)', margin: '6px 0' }}>{group.description || 'No description yet — add one in 👥 Persona management.'}</div>
-                  <div style={{ fontSize: 'var(--ac-font-size-sm-plus)', color: textColor(color, tok), fontWeight: 'var(--ac-font-weight-bold)' }}>{group.label} →</div>
-                </button>
-              );
-            })}
+          <div className="ac-home-cards">
+            {groups.map(({ group, sections }) => <GroupCard key={group.id} group={group} sections={sections} color={colorOf(colors, group.id, tok)} />)}
           </div>
-          <div style={{ marginTop: 16, borderLeft: '4px solid var(--ac-warning-300)', paddingLeft: 12, display: 'flex', justifyContent: 'space-between', alignItems: 'center', gap: 16, flexWrap: 'wrap' }}>
+          <div className="ac-home-entry is-glossary">
             <div>
               <strong>📖 Delivery-model glossary — {GLOSSARY_TERMS} terms now inside AgentCase</strong>
-              <div className="ac-muted">The complete vocabulary of the Software Engineering Delivery Model 2026, categorised and mapped term-by-term to this
-                tool.</div>
+              <div className="ac-muted">The complete vocabulary of the Software Engineering Delivery Model 2026, categorised and mapped term-by-term to
+                this tool.</div>
             </div>
             <button type="button" onClick={() => goSection('glossary')}>Open the glossary →</button>
           </div>

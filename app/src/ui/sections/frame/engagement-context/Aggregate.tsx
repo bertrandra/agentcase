@@ -8,7 +8,8 @@ import { fmtRange, InputAggregate } from '../../aggregates/AggregateParts';
 const R = 'right' as const;
 const COLS: AggColumn<EngagementRow>[] = [
   { key: 'wave', header: 'Wave', render: (r) => r.wave },
-  { key: 'ctx', header: 'Engagement context', title: 'MSC: managed service on Capgemini infrastructure; MSI: client infrastructure; STA: staff augmentation', render: (r) => r.label },
+  { key: 'ctx', header: 'Engagement context', render: (r) => r.label,
+    title: 'MSC: managed service on Capgemini infrastructure; MSI: client infrastructure; STA: staff augmentation' },
   { key: 'src', header: 'Source', render: (r) => (r.own ? 'own context' : 'inherited from common') },
   { key: 'mat', header: 'Maturity cap', align: R, render: (r) => `L${r.maturityCap}` },
   { key: 'ramp', header: 'Ramp speed', align: R, render: (r) => `×${r.rampSpeed}` },

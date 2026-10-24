@@ -29,14 +29,29 @@ function AsIs() {
       {LOCATIONS.map((l) => {
         const p = mx.pct[l.name] ?? 0;
         return (
-          <div key={l.name} style={{ marginBottom: 8 }}>
-            <div className="ac-form-row" style={{ justifyContent: 'space-between', margin: 0, fontSize: 'var(--ac-font-size-sm)' }}>
+          <div key={l.name} className="ac-loc-asis">
+            <div className="ac-form-row is-spread ac-loc-head">
               <span>{l.name} <ClassBadge cls={l.cls} /></span><b>{p.toFixed(0)}% · {(mx.byLoc[l.name] ?? 0).toFixed(1)} FTE</b>
             </div>
-            <div className="ac-bar" style={{ height: 8 }}><span style={{ width: `${p}%`, height: 8, background: `var(--ac-${classTone(l.cls)})` }} /></div>
+            {/* dynamic: the bar width is the location's share of the AS-IS FTE */}
+            <div className="ac-bar ac-loc-bar"><span data-tone={classTone(l.cls)} style={{ width: `${p}%` }} /></div>
           </div>
         );
       })}
+    </div>
+  );
+}
+
+/** The target share of one location: a number field (or the variant the numeric controls axis asks for). */
+function TargetRow({ name, cls, share }: { name: string; cls: string; share: string }) {
+  const label = `Target share of ${name}`;
+  return (
+    <div className="ac-form-row is-spread ac-loc-target">
+      <span className="ac-loc-name">{name} <ClassBadge cls={cls} /></span>
+      <FieldNumber bare native="number" label={label} unit="%" min={0} max={100} step={1} value={share} onCommit={(v) => setTargetLoc(name, v)}>
+        <input type="number" min={0} max={100} step={1} className="ac-loc-share" aria-label={label} value={share}
+          onChange={(e) => setTargetLoc(name, e.target.value)} />
+      </FieldNumber>
     </div>
   );
 }
@@ -47,18 +62,11 @@ function Target() {
     <div>
       <h2>🎯 Target (editable)</h2>
       <OverrideBadge refKey="targetLocPct" label="Target location mix" />
-      <div className="ac-form-row" style={{ justifyContent: 'space-between' }}>
+      <div className="ac-form-row is-spread">
         <button type="button" onClick={resetTargetLoc}>↺ Copy AS-IS</button>
-        <span>Target sum : <strong style={{ color: Math.abs(sum - 100) < 1 ? 'var(--ac-teal)' : 'var(--ac-brick)' }}>{sum.toFixed(0)}%</strong></span>
+        <span>Target sum : <strong className="ac-tone" data-tone={Math.abs(sum - 100) < 1 ? 'teal' : 'brick'}>{sum.toFixed(0)}%</strong></span>
       </div>
-      {LOCATIONS.map((l) => (
-        <div key={l.name} className="ac-form-row" style={{ justifyContent: 'space-between', margin: '0 0 6px' }}>
-          <span style={{ fontSize: 'var(--ac-font-size-sm)' }}>{l.name} <ClassBadge cls={l.cls} /></span>
-          <FieldNumber bare native="number" label={`Target share of ${l.name}`} unit="%" min={0} max={100} step={1} value={(t[l.name] || 0).toFixed(0)} onCommit={(v) => setTargetLoc(l.name, v)}>
-            <input type="number" min={0} max={100} step={1} style={{ width: 70 }} aria-label={`Target share of ${l.name}`} value={(t[l.name] || 0).toFixed(0)} onChange={(e) => setTargetLoc(l.name, e.target.value)} />
-          </FieldNumber>
-        </div>
-      ))}
+      {LOCATIONS.map((l) => <TargetRow key={l.name} name={l.name} cls={l.cls} share={(t[l.name] || 0).toFixed(0)} />)}
     </div>
   );
 }

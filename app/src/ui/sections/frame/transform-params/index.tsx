@@ -32,12 +32,15 @@ export default function TransformParamsSection() {
           <Panel title="Industry / regulatory profile">
             <FieldChoice label="Industry / regulatory profile" value={industry} options={INDUSTRY_OPTIONS} onChange={setIndustry}>
               <Field label="Industry / regulatory profile">
-                <select value={industry} onChange={(e) => setIndustry(e.target.value)}>{INDUSTRIES.map((i) => <option key={i.code} value={i.code}>{industryLabel(i)}</option>)}</select>
+                <select value={industry} onChange={(e) => setIndustry(e.target.value)}>
+                  {INDUSTRIES.map((i) => <option key={i.code} value={i.code}>{industryLabel(i)}</option>)}
+                </select>
               </Field>
             </FieldChoice>
             <FieldToggle label="🏛️ Use Regulatory catalog" checked={use} onChange={setRegUse}>
-              <label className="ac-check"><input type="checkbox" checked={use} onChange={(e) => setRegUse(e.target.checked)} /> 🏛️ Use Regulatory
-                catalog</label>
+              <label className="ac-check">
+                <input type="checkbox" checked={use} onChange={(e) => setRegUse(e.target.checked)} /> 🏛️ Use Regulatory catalog
+              </label>
             </FieldToggle>
             {use && <NormsPanel />}
           </Panel>

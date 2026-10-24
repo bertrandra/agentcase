@@ -22,11 +22,15 @@ function TrackerBody() {
         <Stat label="Latest planned adoption" value={`${st.latest}%`} tone="teal" />
       </StatRow>
       <TrackerTable plan={plan} actuals={actuals} />
-      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit,minmax(320px,1fr))', gap: 14, marginTop: 16 }}>
-        <div><h3 className="ac-muted">Adoption — planned vs
-          actual</h3><ChartPanel config={charts.adoption} label="Adoption, planned versus actual, per quarter" height={260} /></div>
-        <div><h3 className="ac-muted">Cumulative savings — planned vs
-          actual</h3><ChartPanel config={charts.savings} label="Cumulative savings, planned versus actual, per quarter" height={260} /></div>
+      <div className="ac-tracker-charts">
+        <div>
+          <h3 className="ac-muted">Adoption — planned vs actual</h3>
+          <ChartPanel config={charts.adoption} label="Adoption, planned versus actual, per quarter" height={260} />
+        </div>
+        <div>
+          <h3 className="ac-muted">Cumulative savings — planned vs actual</h3>
+          <ChartPanel config={charts.savings} label="Cumulative savings, planned versus actual, per quarter" height={260} />
+        </div>
       </div>
     </>
   );
@@ -35,8 +39,9 @@ function TrackerBody() {
 /** Quarterly plan-vs-actual tracker, collapsed by default: it only earns its place once delivery is under way. */
 export function Tracker() {
   const open = useTrackerOpen();
+  const toggle = <button type="button" aria-expanded={open} onClick={toggleTracker}>{open ? '▾ Hide tracker' : '▸ Show tracker'}</button>;
   return (
-    <Panel title="📈 Plan vs actual — quarterly tracking" aside={<button type="button" aria-expanded={open} onClick={toggleTracker}>{open ? '▾ Hide tracker' : '▸ Show tracker'}</button>}>
+    <Panel title="📈 Plan vs actual — quarterly tracking" aside={toggle}>
       <p className="ac-muted">Record what actually happened each quarter against what the case predicted. Hidden by default — it only earns its place once
         delivery is under way.</p>
       {open && <TrackerBody />}

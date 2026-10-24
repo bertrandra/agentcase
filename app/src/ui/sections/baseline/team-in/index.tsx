@@ -35,7 +35,7 @@ export default function TeamInSection() {
       <div className="ac-form-row">
         <FieldNumber native="number" label="Total AS-IS team (FTE)" step={0.5} min={0.5} value={total} onCommit={setTeamTotal}>
           <label className="ac-field"><span className="ac-field-l">Total AS-IS team (FTE)</span>
-            <CommitNumber label="Total AS-IS team (FTE)" step={0.5} min={0.5} width={110} value={total} onCommit={setTeamTotal} /></label>
+            <CommitNumber label="Total AS-IS team (FTE)" step={0.5} min={0.5} className="ac-team-total" value={total} onCommit={setTeamTotal} /></label>
         </FieldNumber>
         <small className="ac-muted">Editing this total scales <b>every AS-IS resource pro-rata</b> (same skill / grade / location mix, FTE rounded to 0.5). Row
           edits below update the total automatically.</small>
@@ -44,12 +44,14 @@ export default function TeamInSection() {
       <MixBanner c={c} W={W} />
       <div className="ac-form-row">
         <button type="button" onClick={() => addTeamRow()}>+ Add a resource</button>
-        <button type="button" title="Rebuild the auto rows from the artefact skill mix. Pinned rows are preserved." onClick={buildTeam}>⚙ Build from
-          artefacts</button>
+        <button type="button" title="Rebuild the auto rows from the artefact skill mix. Pinned rows are preserved." onClick={buildTeam}>
+          ⚙ Build from artefacts
+        </button>
         <button type="button" title="Set every row's FTE to its artefact-implied value." onClick={alignTeam}>⇢ Align FTE to mix</button>
       </div>
       {open != null && <PinEditor c={c} W={W} row={open} onClose={() => setOpen(null)} />}
     </>
   );
-  return <SectionFrame title="Input team (AS-IS) — breakdown by resource" help={help} input={input} result={<><TeamSummary c={c} /><TeamCharts c={c} /></>} />;
+  const result = <><TeamSummary c={c} /><TeamCharts c={c} /></>;
+  return <SectionFrame title="Input team (AS-IS) — breakdown by resource" help={help} input={input} result={result} />;
 }

@@ -13,7 +13,8 @@ const COLS: AggColumn<IndustryRow>[] = [
   { key: 'norms', header: 'Norms', align: R, title: 'Ticked norms (industry and cross-cutting)', render: (r) => r.norms },
   { key: 'art', header: 'Regulatory artefacts', align: R, render: (r) => r.regArtefacts },
   { key: 'cross', header: 'Cross-cutting', render: (r) => (r.cross.length ? r.cross.join(', ') : 'none') },
-  { key: 'ceil', header: 'Regulatory ceiling', align: R, title: 'Weight-averaged human supervision of the selected regulatory artefacts', render: (r) => `${r.regCeiling.toFixed(0)}%` },
+  { key: 'ceil', header: 'Regulatory ceiling', align: R, render: (r) => `${r.regCeiling.toFixed(0)}%`,
+    title: 'Weight-averaged human supervision of the selected regulatory artefacts' },
   { key: 'src', header: 'Source', render: (r) => (r.own ? 'own profile' : 'inherited from common') },
 ];
 

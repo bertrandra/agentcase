@@ -20,6 +20,8 @@ const help = <p>Aggregate view of the client onboarding runway: the four consecu
 /** Engage — Aggregate view: the onboarding stage durations and decision date of each product, with the range across the selection. */
 export default function EngageAggregate() {
   const a = useFrameEngage(), vs = useViewScope();
+  const cells = { total: fmtRange(a.totalWeeks, 0, ' wk'), decide: `${a.earliestDecide} → ${a.latestDecide}` };
+  const totals = { label: `Range (min – max) — ${vs.label}`, cells };
   return (
     <InputAggregate title="🤝 Engage — starting early with the client" help={help} intro="the onboarding durations belong to each product.">
       <StatRow>
@@ -27,8 +29,7 @@ export default function EngageAggregate() {
         <Stat label="Earliest decision" value={a.earliestDecide || '—'} tone="amber" />
         <Stat label="Latest decision" value={a.latestDecide || '—'} tone="brick" />
       </StatRow>
-      <AggregateTable caption={`Onboarding runway by product — ${vs.label}`} rows={a.rows} columns={COLS}
-        totals={{ label: `Range (min – max) — ${vs.label}`, cells: { total: fmtRange(a.totalWeeks, 0, ' wk'), decide: `${a.earliestDecide} → ${a.latestDecide}` } }} />
+      <AggregateTable caption={`Onboarding runway by product — ${vs.label}`} rows={a.rows} columns={COLS} totals={totals} />
     </InputAggregate>
   );
 }
