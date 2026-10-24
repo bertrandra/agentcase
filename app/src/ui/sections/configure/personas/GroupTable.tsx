@@ -8,7 +8,10 @@ import type { Tok } from '@/domain/theme/resolve';
 
 const hex = (c: string | undefined, tok: Tok) => (c && /^#[0-9a-fA-F]{6}$/.test(c) ? c : tok('slate-600'));
 
-/** Menu groups of one menu structure: order, label, colour, section count, description (shown on the Welcome cards). A group still holding sections cannot be deleted. */
+/**
+ * Menu groups of one menu structure: order, label, colour, section count, description (shown on the Welcome cards). A group still holding sections
+ * cannot be deleted.
+ */
 export function GroupTable({ structure }: { structure: string }) {
   const { own: groups, colors, sections: SECTIONS } = useNavModel().view(structure), st = structure, { tok } = useTheme();
   const [renaming, setRenaming] = useState<string | null>(null), [text, setText] = useState(''), [pending, setPending] = useState<string | null>(null), [label, setLabel] = useState(''), [warn, setWarn] = useState('');

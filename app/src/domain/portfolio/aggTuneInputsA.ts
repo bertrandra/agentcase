@@ -16,7 +16,10 @@ const last = (a: number[]): number => a[a.length - 1] ?? 0;
 export interface MaturityMapRow extends Head { ramp: number[]; share: number[]; labels: string[]; reached: number; adoptionLevel: number; shareLevel: number; adoptionY3: number; cap: number }
 export interface MaturityMapAgg { rows: MaturityMapRow[]; ramp: Spread[]; share: Spread[]; reached: Spread; uniform: boolean }
 
-/** The L1-L4 thresholds each product of the selection carries (its effective MATURITY_MAP), the level it reaches, and min / max / average of every threshold. */
+/**
+ * The L1-L4 thresholds each product of the selection carries (its effective MATURITY_MAP), the level it reaches, and min / max / average of every
+ * threshold.
+ */
 export function aggMaturityMap(pf: Portfolio, productIds: string[]): MaturityMapAgg {
   const rows = membersOf(pf, productIds).map((m): MaturityMapRow => {
     const mm = maturityMapOf(m.state), mi = maturityInfo(m.ctx);
@@ -31,7 +34,10 @@ export function aggMaturityMap(pf: Portfolio, productIds: string[]): MaturityMap
 export interface TuneLifecycleRow extends Head { used: boolean; pos: number; profile: string; postures: number[]; edited: number }
 export interface TuneLifecycleAgg { rows: TuneLifecycleRow[]; statuses: { id: string; label: string }[]; postures: Spread[]; pos: Spread; editedProducts: number }
 
-/** Per product: is the lifecycle axis on, its position and profile, the automation posture of each status, and how many matrix cells differ from the benchmark. */
+/**
+ * Per product: is the lifecycle axis on, its position and profile, the automation posture of each status, and how many matrix cells differ from the
+ * benchmark.
+ */
 export function aggLifecycle(pf: Portfolio, productIds: string[]): TuneLifecycleAgg {
   const rows = membersOf(pf, productIds).map((m): TuneLifecycleRow => {
     const table = statusTable(m.state);
@@ -52,7 +58,10 @@ export function aggLifecycle(pf: Portfolio, productIds: string[]): TuneLifecycle
 export interface KnowledgeAggRow extends KnowledgeRow { id: string; wave: string; asisScore: number; curationFTE: number; setupBase: number; ownFields: number }
 export interface KnowledgeAgg { rows: KnowledgeAggRow[]; totals: KnowledgeTotals; target: Spread; asis: Spread; users: number }
 
-/** The hub subset of each product (enabled, AS-IS score and CC, target, curation, setup base, domains, KT lead) with the domain's own totals (`knowledgeTotals`). */
+/**
+ * The hub subset of each product (enabled, AS-IS score and CC, target, curation, setup base, domains, KT lead) with the domain's own totals
+ * (`knowledgeTotals`).
+ */
 export function aggKnowledge(pf: Portfolio, productIds: string[]): KnowledgeAgg {
   const rows = membersOf(pf, productIds).map((m): KnowledgeAggRow => {
     const p = pf.products.find((x) => x.id === m.id)!;

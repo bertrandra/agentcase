@@ -11,7 +11,10 @@ import { activeDoc } from '@/store/editBase';
  */
 export const mcsRunStore = createStore<{ last: McsResult | null; running: boolean }>(() => ({ last: null, running: false }));
 
-/** Run the simulation on the active product's case (`activeDoc`, like every result) (synchronous, ~1 s at the default 2 000 draws). Returns the elapsed milliseconds. */
+/**
+ * Run the simulation on the active product's case (`activeDoc`, like every result) (synchronous, ~1 s at the default 2 000 draws). Returns the
+ * elapsed milliseconds.
+ */
 export function runMcsSync(minDraws = 100): number {
   const t0 = Date.now(), doc = activeDoc(), mc = mcsOf(doc.MODEL);
   mcsRunStore.setState({ running: true });

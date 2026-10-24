@@ -17,7 +17,10 @@ const base = ddBase(defaultDoc);
 const MC_QUANTILES = ['mcP10', 'mcP50', 'mcP90', 'monteCarloP50'];
 /** The legacy oracle evaluated the registry in order: diVerdict ran the 800-draw Monte Carlo that mcP10... then read. */
 const runtimeOf = (c: ReturnType<typeof ctxOf>): VarRuntime => ({ mc: runMonteCarlo(c, 800, mcSeedOf(c)), tornado: null, ddBase: base });
-/** The oracle's pdc_vars extra runs after other extras that left a 300-draw stochastic run and a stale Time Engine hash behind: CC-MC-01 and TE-DEP read as violations. */
+/**
+ * The oracle's pdc_vars extra runs after other extras that left a 300-draw stochastic run and a stale Time Engine hash behind: CC-MC-01 and TE-DEP
+ * read as violations.
+ */
 const HARNESS: string[] = [];   // the oracle extras are hermetic now (MC_LAST/MCS_LAST reset), so no harness artefacts are counted
 /** Legacy checks with no counterpart here (the legacy flat engine mode no longer exists): see vars/audit.ts. */
 const NOT_PORTED = ['TE-10b'];

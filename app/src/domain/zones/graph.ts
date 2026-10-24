@@ -1,5 +1,8 @@
 /** @calc-zone workspace-config */
-/** `r` a section reads a zone (zone feeds section), `w` an input section writes a zone through a controller (section feeds zone), `z` a zone imports another (source feeds importer). */
+/**
+ * `r` a section reads a zone (zone feeds section), `w` an input section writes a zone through a controller (section feeds zone), `z` a zone imports
+ * another (source feeds importer).
+ */
 export type EdgeKind = 'r' | 'w' | 'z';
 /** [source, target, kind, number of modules involved]: the data flows from the source to the target. */
 export type DepEdge = [string, string, EdgeKind, number];
@@ -92,7 +95,8 @@ export interface Impact { zones: string[]; sections: string[]; tests: string[] }
 
 /**
  * What must be re-checked when these zones or sections change. `zones` and `sections` report the impact (the zones they feed through imports, every section
- * that reads or writes one of them). `tests` are the test files whose import closure touches the changed zones or sections: the closure is transitive, so a test
+ * that reads or writes one of them). `tests` are the test files whose import closure touches the changed zones or sections: the closure is
+ * transitive, so a test
  * that reaches anything downstream already reaches the changed zone and the downstream expansion adds nothing.
  */
 export function impact(d: DepsData, zoneIds: string[], sectionIds: string[]): Impact {

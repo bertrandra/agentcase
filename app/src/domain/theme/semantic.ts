@@ -1,6 +1,7 @@
 /** @calc-zone presentation */
 /**
- * Default theme, semantic colour roles (docs/THEME.md). `{name}` refers to another token: the CSS becomes a `var()` of that custom property and `tok()` resolves it,
+ * Default theme, semantic colour roles (docs/THEME.md). `{name}` refers to another token: the CSS becomes a `var()` of that custom property and
+ * `tok()` resolves it,
  * so a theme that changes a scale step changes every role built on it. Components use these roles where the meaning is known, the scale steps otherwise.
  */
 export const ROLES = {

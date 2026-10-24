@@ -38,7 +38,10 @@ const TOBE: VCol[] = [
 export interface SkillAgg { skill: string; asis: number; human: number; agent: number; autoPct: number }
 export interface TobeTeamAgg { label: string; /** 0-based year shown (clamped to the longest horizon of the selection) */ year: number; years: number; skills: SkillAgg[]; total: { asis: number; human: number; agent: number }; table: VTable }
 
-/** TO-BE team of a selection by skill for year index `year`: the products' residual human FTE and agent vFTE per skill, added up (a product is read at its last year when shorter). */
+/**
+ * TO-BE team of a selection by skill for year index `year`: the products' residual human FTE and agent vFTE per skill, added up (a product is read at
+ * its last year when shorter).
+ */
 export const tobeTeamAgg = viewMemo((sel, _pf, year: number): TobeTeamAgg => {
   const comps = sel.items.map((v) => tobeComposition(liveOf(v), year)), years = Math.max(1, ...comps.map((c) => c.years.length)), y = Math.min(year, years - 1);
   const at = (c: (typeof comps)[number]) => Math.min(y, c.years.length - 1);

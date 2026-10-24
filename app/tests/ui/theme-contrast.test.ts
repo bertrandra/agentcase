@@ -3,7 +3,10 @@ import { resolveTokens, THEME_DEFAULT, type ThemeValues, type TokenName } from '
 import { displayTheme, type ContrastLevel, type DisplayMode } from '../../src/domain/theme/modes';
 import { failures } from '../helpers/contrastPairs';
 
-/** WCAG contrast of every text / background role pair in each display mode x contrast level (docs/THEME.md §7.4; pairs and thresholds: helpers/contrastPairs). */
+/**
+ * WCAG contrast of every text / background role pair in each display mode x contrast level (docs/THEME.md §7.4; pairs and thresholds:
+ * helpers/contrastPairs).
+ */
 
 /**
  * Known legacy shortfalls of the default look, which must stay pixel-identical (docs/THEME.md §6.4): the focus ring of the header buttons is the brand

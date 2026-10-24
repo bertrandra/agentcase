@@ -14,7 +14,10 @@ export const useCommon = (): CommonCase => usePortfolio((p) => p.common);
 export const useProductCount = (): number => usePortfolio((p) => p.products.length);
 /** Progressive disclosure (spec F23): the multi-product interface exists from two products on. */
 export const useIsMulti = (): boolean => usePortfolio((p) => p.products.length >= 2);
-/** True when the work is more than a plain single case (2+ products or waves, an override, a knowledge subset...): the exports then carry the portfolio additions. */
+/**
+ * True when the work is more than a plain single case (2+ products or waves, an override, a knowledge subset...): the exports then carry the
+ * portfolio additions.
+ */
 export const useHasPortfolioContent = (): boolean => usePortfolio(hasPortfolioContent);
 /** The edited product; inside a `ProductViewContext` (aggregate view) the product being shown instead. */
 export const useActiveProductId = (): string => { const as = useViewProductId(); return usePortfolio((p) => shownProductId(p, as)); };

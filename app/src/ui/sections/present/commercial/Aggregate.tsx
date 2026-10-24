@@ -16,7 +16,10 @@ const help = (
 const R = 'right' as const;
 const tone = (x: number) => ({ color: x >= 0 ? 'var(--ac-teal-700)' : 'var(--ac-danger-800)' });
 
-/** Commercial model — aggregate view (R-rollup): the selected model, revenue, margin and client saving of each product, the roll-up of the contracts, and the full section per product. */
+/**
+ * Commercial model — aggregate view (R-rollup): the selected model, revenue, margin and client saving of each product, the roll-up of the contracts,
+ * and the full section per product.
+ */
 export default function CommercialAggregate() {
   const a = useCommercialAggregate(), vs = useViewScope();
   if (!a) return null;

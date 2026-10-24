@@ -1,6 +1,9 @@
 import { useRef } from 'react';
 
-/** The Save / Open button pair of a file panel: the primary button saves, the second opens the hidden file input (the value is reset so the same file can be reopened). */
+/**
+ * The Save / Open button pair of a file panel: the primary button saves, the second opens the hidden file input (the value is reset so the same file
+ * can be reopened).
+ */
 export function SaveOpenButtons({ save, open, accept, fileLabel, onSave, onOpen }: {
   save: string; open: string; accept: string; fileLabel: string; onSave: () => void; onOpen: (f: File | undefined) => Promise<void>;
 }) {

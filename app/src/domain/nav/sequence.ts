@@ -11,7 +11,10 @@ export const activeSeq = (seq: PersonaSeq | undefined): PersonaSeq | null => (se
 /** Every section of every step in walking order (legacy wizFlatten). */
 export const flatten = (seq: PersonaSeq): Stop[] => seq.steps.flatMap((st, si) => (st.sections ?? []).map((sec) => ({ si, step: st.label, sec })));
 
-/** One step per group the persona can reach (group order, then its section order); Welcome is left out (legacy pmGenSeqFromGroups). Null when nothing is reachable. */
+/**
+ * One step per group the persona can reach (group order, then its section order); Welcome is left out (legacy pmGenSeqFromGroups). Null when nothing
+ * is reachable.
+ */
 export function generateSeq(persona: string, sections: NavSection[], groups: MenuGroup[], lists: PersonaLists, order: PersonaOrder): PersonaSeq | null {
   const pool = reachable(persona, sections, lists).filter((s) => s.id !== 'home');
   const steps = groupsByOrder(groups)

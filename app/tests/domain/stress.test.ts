@@ -23,7 +23,8 @@ describe('3-way comparison reproduces the legacy tables and charts', () => {
     const d = compareData(ctx(id)), pick = (t: typeof d.asis, k: 'fte' | 'cost' | 'save' | 'velo') => t[k];
     const got = { table: d.rows };
     (['fte', 'cost', 'save', 'velo'] as const).forEach((k) => Object.assign(got, { [k]: [['AS-IS', d.asis], ['AS-IS + saving', d.classic], ['Agentic', d.agentic]].map(([l, t]) => ({ l, d: pick(t as typeof d.asis, k) })) }));
-    // DEV-COMPARE-ENGINE: beyond 3 years or when the live curve's year-end adoption is not the typed ramp, the Agentic series follow the engine's own year rows (checked below).
+    // DEV-COMPARE-ENGINE: beyond 3 years or when the live curve's year-end adoption is not the typed ramp, the Agentic series follow the engine's own
+    // year rows (checked below).
     const c = ctx(id), m = model(c), engineRule = m.horizon > 3 || engineNow(c).years().some((y, i) => Math.abs(y.adoptionEndPct - (m.ramps[i] as number)) > 1e-9);
     if (engineRule) Object.assign(got, only(loadExtra('compareView', id) as Record<string, unknown>, ['fte', 'cost', 'velo', 'table']));
     expect(problems('compareView', id, got)).toEqual([]);

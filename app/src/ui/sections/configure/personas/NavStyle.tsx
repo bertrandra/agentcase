@@ -1,7 +1,10 @@
 import { setSectionNavStyle } from '@/controllers/navLayout';
 import { useNavModel } from '@/ui/zones/navModel';
 
-/** Sidebar section display (legacy "Sidebar section display"): how the open group's sections appear in the hide-menu bar — buttons or an underlined tab strip. */
+/**
+ * Sidebar section display (legacy "Sidebar section display"): how the open group's sections appear in the hide-menu bar — buttons or an underlined
+ * tab strip.
+ */
 export function NavStyle() {
   const { style } = useNavModel();
   return (

@@ -37,7 +37,10 @@ function drawCtx(c: Ctx, sample: McsSample): Ctx {
   return { s, inp: makeInputs(s), a: c.a, rateScale: baseRate > 0 ? (sample.dayRate as number) / baseRate : 1, tokenScale: baseTok > 0 ? (sample.tokenPrice as number) / baseTok : 1 };
 }
 
-/** One evaluation of the model on a sample: horizon-end savings and run cost, NPV at the case rate, payback (the thin pass of the Time Engine over the kernel). */
+/**
+ * One evaluation of the model on a sample: horizon-end savings and run cost, NPV at the case rate, payback (the thin pass of the Time Engine over the
+ * kernel).
+ */
 export function mcsEvaluate(c: Ctx, sample: McsSample) {
   const dc = drawCtx(c, sample), m = modelRaw(dc);
   const T = thinAggregate(timeFor(dc, { mode: 'full', curveModelId: activeCurve(dc), model: m }).K, caseDiscountRate(dc)), last = T.years[T.years.length - 1];

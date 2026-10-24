@@ -5,9 +5,11 @@ import axe from 'axe-core';
  *
  * Two things make it cheap and robust under a loaded test run:
  * - `resultTypes: ['violations']`: axe builds a unique CSS selector for every node it reports. On a large container (the dependency graph: ~500 SVG siblings,
- *   the matrix: ~2,900 cells) the `:nth-child` part walks the siblings through jsdom's slow `HTMLCollection` proxy for every passing node, which was ~80% of the
+ * the matrix: ~2,900 cells) the `:nth-child` part walks the siblings through jsdom's slow `HTMLCollection` proxy for every passing node, which was
+ * ~80% of the
  *   run (1.8 s of 2.1 s on the graph tab). Passes, incomplete and inapplicable are not read by any test, so only the violations get their full node details.
- * - Runs are chained: axe refuses to start while a previous run is going, so one slow audit used to fail every later audit of the file ("Axe is already running").
+ * - Runs are chained: axe refuses to start while a previous run is going, so one slow audit used to fail every later audit of the file ("Axe is
+ * already running").
  */
 let last: Promise<unknown> = Promise.resolve();
 

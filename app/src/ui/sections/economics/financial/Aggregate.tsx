@@ -14,7 +14,10 @@ const help = (
   </>
 );
 
-/** Financial Summary — aggregate view (R-conso exemplar): cards, cumulative cash, by-product table and calendar years of the Portfolio / Wave, all from the domain view. */
+/**
+ * Financial Summary — aggregate view (R-conso exemplar): cards, cumulative cash, by-product table and calendar years of the Portfolio / Wave, all
+ * from the domain view.
+ */
 export default function FinancialAggregate() {
   const v = useSelectionView();
   if (!v) return null;

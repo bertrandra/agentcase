@@ -12,7 +12,10 @@ const parse = (v: string): { scope: DisplayScope; productId?: string } => {
   return kind === 'portfolio' ? { scope: { kind: 'portfolio' } } : kind === 'wave' ? { scope: { kind: 'wave', id } } : { scope: { kind: 'product' }, productId: id };
 };
 
-/** Critical & Regulated Software Delivery report: a standalone HTML report (norms, supervision postures, authority cap, economics). With a portfolio, for the chosen scope. */
+/**
+ * Critical & Regulated Software Delivery report: a standalone HTML report (norms, supervision postures, authority cap, economics). With a portfolio,
+ * for the chosen scope.
+ */
 export function ReportPanel() {
   const [status, setStatus] = useState(''), [failed, setFailed] = useState(false), portfolio = useHasPortfolioContent();
   const display = useDisplayScope(), active = useActiveProductId(), products = useProducts(), waves = useWaves();

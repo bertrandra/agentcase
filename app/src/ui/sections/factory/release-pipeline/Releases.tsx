@@ -30,7 +30,10 @@ function NewItem({ releaseId }: { releaseId: string }) {
   );
 }
 
-/** Releases — polymorphic: a release ships any mix of Stories, Features, Fixes and Technical Changes. Deleting a release deletes its join rows, orphans its candidates. */
+/**
+ * Releases — polymorphic: a release ships any mix of Stories, Features, Fixes and Technical Changes. Deleting a release deletes its join rows,
+ * orphans its candidates.
+ */
 export function Releases() {
   const releases = useRecs('RELEASES'), items = useList<ReleaseItem>('RELEASE_ITEMS'), stories = useRecs('STORIES'), features = useRecs('FEATURES');
   const [open, setOpen] = useState<Record<string, boolean>>({});

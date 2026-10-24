@@ -13,7 +13,10 @@ type Excluded = { id: string; name: string; archived: boolean }[];
 const waveName = (pf: Portfolio, id: string): string => pf.waves.find((w) => w.id === id)?.name ?? '';
 const excludedOf = (pf: Portfolio, c: Consolidated, scope: DisplayScope): Excluded => selectionView(pf, c, scope)?.excluded ?? [];
 
-/** The run cost of a range of months split in its parts: the team and the agentic run team are what is left once tokens, infrastructure and the Knowledge Hub are taken out. */
+/**
+ * The run cost of a range of months split in its parts: the team and the agentic run team are what is left once tokens, infrastructure and the
+ * Knowledge Hub are taken out.
+ */
 export interface RunParts { run: number; team: number; token: number; infra: number; kh: number }
 const partsOf = (s: Series, from = 0, to = s.run.length): RunParts => {
   const f = (a: number[]) => total(a.slice(from, to)), run = f(s.run), token = f(s.token), infra = f(s.infra), kh = f(s.khCost);
@@ -56,7 +59,10 @@ export function aggregateAnnual(pf: Portfolio, c: Consolidated, scope: DisplaySc
 export interface MonthlyRow { month: number; label: string; savings: number; run: number; setup: number; net: number; cum: number; etp: number; vfte: number }
 export interface MonthlyAgg { label: string; headline: PortfolioHeadline; months: MonthlyRow[]; chart: ChartView; excluded: Excluded }
 
-/** Monthly detail of a Portfolio / Wave on the calendar axis: one line per month of the horizon, and the cumulative cash of the selection and of each product. */
+/**
+ * Monthly detail of a Portfolio / Wave on the calendar axis: one line per month of the horizon, and the cumulative cash of the selection and of each
+ * product.
+ */
 export function aggregateMonthly(pf: Portfolio, c: Consolidated, scope: DisplayScope): MonthlyAgg | null {
   const sel = selectionOf(c, scope), view = selectionView(pf, c, scope);
   if (!sel || !view) return null;

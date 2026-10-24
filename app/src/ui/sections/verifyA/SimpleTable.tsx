@@ -5,7 +5,8 @@ type Align = 'left' | 'center' | 'right';
 
 /**
  * A read-only table whose cells are already formatted; `align` gives the alignment of each column and `foot` an optional total row.
- * A blank head text (a decorative column such as an arrow) stays blank for legacy parity and its cell is presentational: axe's empty-table-header ignores aria-label.
+ * A blank head text (a decorative column such as an arrow) stays blank for legacy parity and its cell is presentational: axe's empty-table-header
+ * ignores aria-label.
  */
 export function SimpleTable({ head, rows, foot, align = [], empty, caption }: { head: string[]; rows: TRow[]; foot?: TRow; align?: Align[]; empty?: string; caption?: string }) {
   const line = (r: TRow) => {

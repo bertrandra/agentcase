@@ -13,7 +13,10 @@ import { Panel } from './Panel';
 import { Tests } from './Tests';
 import { Zones } from './Zones';
 
-/** Section Dependencies: the dependency graph generated from the code (zones, sections, tests). Read-only: `npm run deps:gen` rewrites it, nothing is edited here. */
+/**
+ * Section Dependencies: the dependency graph generated from the code (zones, sections, tests). Read-only: `npm run deps:gen` rewrites it, nothing is
+ * edited here.
+ */
 export default function DepsSection() {
   const [sel, setSel] = useState<string | null>(null);
   const zoneEdges = DATA.edges.filter((e) => e[2] === 'z').length;

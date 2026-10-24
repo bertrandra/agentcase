@@ -9,7 +9,10 @@ import type { Cell, ParamsDoc, ParamsEnv, ReadCtx, Rows, Sheets } from './types'
 
 export { ParamsImportError, sameJson };
 
-/** Parse the workbook into plain rows (known sheets only, formulas flattened to their value, size-capped). Throws on anything that is not a parameters workbook. */
+/**
+ * Parse the workbook into plain rows (known sheets only, formulas flattened to their value, size-capped). Throws on anything that is not a parameters
+ * workbook.
+ */
 export async function loadParamsSheets(input: ArrayBuffer | ArrayBufferView): Promise<Sheets> {
   const buf = asArrayBuffer(input);
   guardZip(buf);

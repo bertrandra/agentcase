@@ -13,7 +13,10 @@ const total = <T>(rows: T[], f: (r: T) => number): number => rows.reduce((a, r) 
 export interface SetupRow extends Head { tooling: number; training: number; coaching: number; governance: number; total: number; duration: number; infraMonthly: number }
 export interface SetupAgg { rows: SetupRow[]; totals: Omit<SetupRow, keyof Head | 'duration' | 'infraMonthly'>; spread: Spread; duration: Spread }
 
-/** The four one-off setup lines of each product and their sum (`setupBreakdown`); the total line adds the products' lines, the spread describes the product totals. */
+/**
+ * The four one-off setup lines of each product and their sum (`setupBreakdown`); the total line adds the products' lines, the spread describes the
+ * product totals.
+ */
 export function aggSetup(pf: Portfolio, productIds: string[]): SetupAgg {
   const rows = membersOf(pf, productIds).map((m): SetupRow => {
     const b = setupBreakdown(m.ctx), amount = (id: string) => b.lines.find((l) => l.id === id)?.amount ?? 0;
@@ -44,7 +47,10 @@ export interface ProgramRow extends Head {
 }
 export interface ProgramAgg { rows: ProgramRow[]; pilotCost: Spread; overhead: Spread; totals: { pilotFte: number; pilotCost: number; capOps: number; capTarget: number; capPct: number } }
 
-/** Pilot sizing, internal capability and multi-pod overhead of each product; the total line sums pilot staff / cost and capability, the percentage is recomputed from those sums. */
+/**
+ * Pilot sizing, internal capability and multi-pod overhead of each product; the total line sums pilot staff / cost and capability, the percentage is
+ * recomputed from those sums.
+ */
 export function aggProgram(pf: Portfolio, productIds: string[]): ProgramAgg {
   const rows = membersOf(pf, productIds).map((m): ProgramRow => {
     const p = pilotSizing(m.ctx), c = capability(m.ctx), o = safeOverhead(m.ctx);

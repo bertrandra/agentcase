@@ -41,7 +41,10 @@ export interface UsageYear { label: string; ramp: number; vfte: number; arts: nu
 export interface UsagePhase { id: string; name: string; n: number; avgAgent: number; effort: number }
 export interface UsageAuth { level: string; n: number; avgAgent: number; effort: number; share: number }
 
-/** Agent runs per horizon year and the token volume they imply: the tuneB owner of `l.c` (legacy tokenUsageEstimate; model and engine are cached per context). */
+/**
+ * Agent runs per horizon year and the token volume they imply: the tuneB owner of `l.c` (legacy tokenUsageEstimate; model and engine are cached per
+ * context).
+ */
 export const tokenUsage = (l: Live): TokenUsage => tokenUsageOf(l.c);
 
 /** Consumption by year, phase and authorization level, and the headline figures (legacy renderAgentUsage). */

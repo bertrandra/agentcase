@@ -9,7 +9,8 @@ export type Doc = CaseState & { [key: string]: unknown };
 export type EditScope = 'all' | 'product';
 
 /**
- * The store's source of truth: the portfolio (common values, products, waves, hub). `editScope` and `displayScope` (Portfolio / Wave X / Product actif, top bar) are transient view fields: never
+ * The store's source of truth: the portfolio (common values, products, waves, hub). `editScope` and `displayScope` (Portfolio / Wave X / Product
+ * actif, top bar) are transient view fields: never
  * saved, never undone and never broadcast (like `activeProductId`, which IS saved but also stays out of the history). `persona`, the tab's current
  * persona (D3), is view state too: never undone nor broadcast; a file stores it only as the persona it opens on (`store/persona.ts`).
  */

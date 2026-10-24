@@ -11,7 +11,8 @@ export interface Varied extends Three { d: string }
 
 /**
  * Three scheduled products (A, B in wave 1, C in wave 2) that differ on every input of the scope / frame / baseline groups, plus an unscheduled product D.
- * B: own artefact selection, a disabled phase, lifecycle weighting, MSI context, slow onboarding, own S-curve, own location mix, forced glass ceiling, a bigger team.
+ * B: own artefact selection, a disabled phase, lifecycle weighting, MSI context, slow onboarding, own S-curve, own location mix, forced glass
+ * ceiling, a bigger team.
  * C: regulated (MED norms), STA context. A inherits everything.
  */
 export function variedProducts(): Varied {

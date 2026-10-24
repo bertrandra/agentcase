@@ -37,7 +37,10 @@ export function select(id: string): Selection {
   return { upstream: sweep(id, 1), downstream: sweep(id, 0), impacted: impact(DATA, zone ? [id] : [], zone ? [] : [id]) };
 }
 
-/** Matrix cell between a row node and a zone column: `direct` (imported), `write` (input section through a controller), `indirect` (only through other zones). */
+/**
+ * Matrix cell between a row node and a zone column: `direct` (imported), `write` (input section through a controller), `indirect` (only through other
+ * zones).
+ */
 export type Cell = 'direct' | 'write' | 'indirect' | null;
 export function cell(row: string, col: string): Cell {
   if (row === col) return null;

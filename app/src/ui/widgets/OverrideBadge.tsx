@@ -27,7 +27,10 @@ export function OverrideBadge({ refKey, label }: { refKey: string; label: string
   return <OverrideChip label={label} own={f.overridden} common={f.common} onRevert={back} onApplyAll={all} />;
 }
 
-/** The chip of an inherited / overridden value (the common value in its tooltip) and, once the product has its own, its "Revert to common" (and "Apply to all products"). */
+/**
+ * The chip of an inherited / overridden value (the common value in its tooltip) and, once the product has its own, its "Revert to common" (and "Apply
+ * to all products").
+ */
 export function OverrideChip({ label, own, common, onRevert, onApplyAll }: { label: string; own: boolean; common: unknown; onRevert: () => void; onApplyAll?: () => void }) {
   const state = own ? 'overridden' : 'inherited', tip = `Common value: ${describeValue(common)}`;
   return (

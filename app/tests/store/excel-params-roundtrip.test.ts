@@ -20,7 +20,10 @@ const clamped = (doc: Doc): Doc => produce(doc, (d) => {
     d.dom.values[id] = String(Math.max(mn, Math.min(mx, v)));
   });
 });
-/** Keys a round trip may rewrite without changing the case: derived or re-normalised (order of sets, the legacy-faithful scope/persona rebuilds, slider mirrors). */
+/**
+ * Keys a round trip may rewrite without changing the case: derived or re-normalised (order of sets, the legacy-faithful scope/persona rebuilds,
+ * slider mirrors).
+ */
 const NORMALISED = ['dom', 'PERSONAS', 'SECTION_DEPS', 'SECTION_DEPS_DESC', 'sectionGroups', 'phaseOff', 'regArtefactsEdited', 'artefactsEdited', 'selectedNorms', 'selectedRegArtefacts', 'selectedArtefacts',
   'STORIES' /* the FM Story sheet has no derived columns: the legacy import drops derivedWeight/phaseId/… too */];
 const sameSet = (a: unknown, b: unknown) => JSON.stringify([...(a as string[])].sort()) === JSON.stringify([...(b as string[])].sort());
@@ -34,7 +37,8 @@ describe('our writer → our reader round-trips every fixture', () => {
     const back = applyTo(doc, patch), problems: string[] = [];
     diffValues(figures(clamped(doc)), figures(back), 'case', problems);
     expect(problems.slice(0, 8)).toEqual([]);
-    // only the messages the legacy import shows for the same file (range clamps, the scope contradiction of a case that holds artefacts in a switched-off phase)
+    // only the messages the legacy import shows for the same file (range clamps, the scope contradiction of a case that holds artefacts in a
+    // switched-off phase)
     expect(notes.filter((n) => !/^(Dependencies|S-Curve): imported|clamped (up|down) to|^S-Curve: unknown family|^Phase Scope marks|^No phase included/.test(n))).toEqual([]);
     expect(Object.keys(patch).filter((k) => !NORMALISED.includes(k))).toEqual([]);
     // (phaseOff is exempt: a phase with nothing selected is exported "No", so it joins the switched-off list — legacy behaviour, no effect on the figures)

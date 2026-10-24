@@ -18,7 +18,10 @@ const endOf = (v: ProductView) => v.run.engine.year(v.run.engine.horizonYears);
 
 export interface KpiAgg { label: string; headline: PortfolioHeadline; consolidated: BeforeAfter[]; table: VTable }
 
-/** KPI scorecard of a selection: the consolidated financial headline, the capacity KPIs before / after (weighted where they are ratios) and the non-additive KPIs product by product. */
+/**
+ * KPI scorecard of a selection: the consolidated financial headline, the capacity KPIs before / after (weighted where they are ratios) and the
+ * non-additive KPIs product by product.
+ */
 export const kpiAgg = viewMemo((sel): KpiAgg => {
   const h = head(sel), run0 = sum(sel.items.map((v) => liveOf(v).m.baselineRun)), runEnd = sum(sel.items.map((v) => endOf(v).totalRunCost));
   const consolidated: BeforeAfter[] = [
@@ -43,7 +46,10 @@ export const kpiAgg = viewMemo((sel): KpiAgg => {
 
 export interface AsisTobeAgg { label: string; years: number; rows: BeforeAfter[]; table: VTable }
 
-/** AS-IS vs TO-BE of a selection: headcount, reference cost vs to-be cost, setup, automation and glass ceiling consolidated; per product, the same before / after figures. */
+/**
+ * AS-IS vs TO-BE of a selection: headcount, reference cost vs to-be cost, setup, automation and glass ceiling consolidated; per product, the same
+ * before / after figures.
+ */
 export const asisTobeAgg = viewMemo((sel): AsisTobeAgg => {
   const h = head(sel), cr = h.costReduction;
   const rows: BeforeAfter[] = [

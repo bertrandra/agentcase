@@ -10,7 +10,10 @@ function scopeOf(vs: ReturnType<typeof useViewScope>): DisplayScope | null {
   return vs.kind === 'product' || !vs.multi ? null : vs.kind === 'wave' ? { kind: 'wave', id: vs.waveId as string } : { kind: 'portfolio' };
 }
 
-/** A pure aggregate of the domain over the View (Portfolio or Wave), recomputed only when the portfolio's figures or the View change; null for a Product view. */
+/**
+ * A pure aggregate of the domain over the View (Portfolio or Wave), recomputed only when the portfolio's figures or the View change; null for a
+ * Product view.
+ */
 export function useAggregate<T>(build: (pf: Portfolio, c: Consolidated, scope: DisplayScope) => T | null): T | null {
   const core = useCorePortfolio(), vs = useViewScope();
   return useMemo(() => { const s = scopeOf(vs); return s ? build(core, consolidate(core), s) : null; }, [core, vs, build]);

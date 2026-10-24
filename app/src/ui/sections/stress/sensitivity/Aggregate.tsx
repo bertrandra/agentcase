@@ -20,7 +20,10 @@ const MOST: AggColumn<SensProductRow>[] = [
   { key: 'neg', header: 'Negative cells', align: R, render: (r) => `${r.negative} of ${r.cells}` },
 ];
 
-/** Sensitivity — Aggregate view: the key parameters of each product in view, its most sensitive parameter and the span of its automation × glass-ceiling ROI matrix. */
+/**
+ * Sensitivity — Aggregate view: the key parameters of each product in view, its most sensitive parameter and the span of its automation ×
+ * glass-ceiling ROI matrix.
+ */
 export default function SensitivityAggregate() {
   const rows = useSensitivityRows(), vs = useViewScope();
   return (

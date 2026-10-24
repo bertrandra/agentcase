@@ -9,7 +9,8 @@ import { keepTabView } from '@/store/persona';
 import type { Doc, PortfolioDoc } from '@/store/types';
 
 /**
- * The whole portfolio as a capture stores it: structured clone without the view state (edit and display scope) and without the library (so captures never nest).
+ * The whole portfolio as a capture stores it: structured clone without the view state (edit and display scope) and without the library (so captures
+ * never nest).
  * Only for real portfolios (`hasPortfolioContent`); a plain single case keeps the single-case capture, byte for byte.
  */
 export function capturePortfolio(pf: PortfolioDoc): Record<string, unknown> | undefined {
@@ -21,7 +22,10 @@ export function capturePortfolio(pf: PortfolioDoc): Record<string, unknown> | un
   return { ...rest, common };
 }
 
-/** The portfolio of a snapshot, validated like a file (hostile keys dropped, invariants enforced), with the CURRENT library put back and every product's potential re-fitted. */
+/**
+ * The portfolio of a snapshot, validated like a file (hostile keys dropped, invariants enforced), with the CURRENT library put back and every
+ * product's potential re-fitted.
+ */
 function restored(s: NamedSnapshot, library: unknown, current: PortfolioDoc): PortfolioDoc {
   const pf = refitPortfolio(readPortfolio(s.portfolio));
   const next: PortfolioDoc = { ...pf, common: { ...pf.common, [SNAPSHOT_KEY]: library } as Portfolio['common'] };

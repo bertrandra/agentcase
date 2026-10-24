@@ -26,7 +26,10 @@ const knowledgeCmd = definePortfolioCommand<{ id: string; patch: KnowledgeSubset
   apply: (pf, p) => setKnowledge(pf, p.id, p.patch, p.clear),
 });
 
-/** The product takes its own value for an overridable key (`selectedArtefacts`, `phaseOff`, ..., or one form field `values.<id>` / `checked.<id>`). Throws for a key off the whitelist. */
+/**
+ * The product takes its own value for an overridable key (`selectedArtefacts`, `phaseOff`, ..., or one form field `values.<id>` / `checked.<id>`).
+ * Throws for a key off the whitelist.
+ */
 export const setProductOverride = (id: string, ref: string, value: unknown): boolean => dispatchChecked(setCmd({ id, ref, value }));
 /** "Back to common": the product inherits the key again. */
 export const clearProductOverride = (id: string, ref: string): boolean => dispatchChecked(clearCmd({ id, ref }));

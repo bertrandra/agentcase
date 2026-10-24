@@ -11,7 +11,10 @@ export const byLine = (t: CostTable, product: string, line: string): CostRow => 
   return r;
 };
 
-/** Every "difference" row of the Rate cards and Other costs tabs is 0 (t0 and every month), and every formula's cached value equals its recomputation from the rows it names. */
+/**
+ * Every "difference" row of the Rate cards and Other costs tabs is 0 (t0 and every month), and every formula's cached value equals its recomputation
+ * from the rows it names.
+ */
 export function expectChecksZero(m: CostModel): number {
   let n = 0;
   for (const t of [m.rates, m.other]) for (const r of t.rows.filter((x) => x.role === 'diff')) { n++; for (const x of cells(r)) expect(Math.abs(nz(x))).toBeLessThanOrEqual(TOL); }

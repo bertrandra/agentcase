@@ -18,7 +18,10 @@ const COLS: [string, string][] = [
   ['Note', ''], ['Actions', ''],
 ];
 
-/** Products — the products table: team, wave, state and key indicators, with add / rename / duplicate / archive / remove / note / offset and the active product. */
+/**
+ * Products — the products table: team, wave, state and key indicators, with add / rename / duplicate / archive / remove / note / offset and the
+ * active product.
+ */
 export default function ProductsSection() {
   const rows = useProductRows(), active = useActiveProductId(), waves = useWaves();
   return (

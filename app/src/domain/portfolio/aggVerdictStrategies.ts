@@ -22,7 +22,10 @@ export interface StrategyAgg {
 }
 
 const cache = new WeakMap<ProductRun, StrategyPick | null>();
-/** The recommended strategy of a product: `evaluateStrategies` then `stratNormalize` with the product's own strategy definitions and weights (the section's ranking). */
+/**
+ * The recommended strategy of a product: `evaluateStrategies` then `stratNormalize` with the product's own strategy definitions and weights (the
+ * section's ranking).
+ */
 export function pickStrategy(r: ProductRun): StrategyPick | null {
   if (cache.has(r)) return cache.get(r) ?? null;
   const s = r.ctx.s, top = stratNormalize(evaluateStrategies(r.ctx, strategyDefsOf(s)), stratWeightsOf(s))[0];

@@ -17,7 +17,8 @@ const rowOf = (pf: Portfolio, v: ProductView): StoryRow => ({ id: v.id, name: v.
 
 /**
  * The story so far of a Portfolio / Wave: team, run cost and delivery from AS-IS to TO-BE, read from the selection's headline (headcount, velocity weighted by
- * entry headcount, last calendar year savings and run, payback of the consolidated cash) and the sum of the products' yearly baseline cost; one story per product below.
+ * entry headcount, last calendar year savings and run, payback of the consolidated cash) and the sum of the products' yearly baseline cost; one story
+ * per product below.
  */
 export function aggregateStory(pf: Portfolio, c: Consolidated, scope: DisplayScope): StoryAgg | null {
   const sel = selectionOf(c, scope);

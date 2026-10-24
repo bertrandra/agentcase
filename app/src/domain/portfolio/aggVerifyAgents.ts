@@ -20,7 +20,10 @@ export interface UsageAgg {
   table: VTable;
 }
 
-/** Agent usage of a selection: runs, tokens and cost per product, and the agent effort by phase and authorization level, added up (calendar years from the consolidation). */
+/**
+ * Agent usage of a selection: runs, tokens and cost per product, and the agent effort by phase and authorization level, added up (calendar years from
+ * the consolidation).
+ */
 export const usageAgg = viewMemo((sel): UsageAgg => {
   const us = sel.items.map((v) => agentUsage(liveOf(v))), L = sel.series.net.length, tokens = byYear(sel.series.token), infra = byYear(sel.series.infra);
   const years = tokens.map((t, k) => ({ label: `Year ${k + 1}`, vfte: sel.series.agentVfte[Math.min(12 * k + 11, L - 1)] ?? 0, tokenCost: t, infra: infra[k] ?? 0 }));
@@ -41,7 +44,10 @@ export const usageAgg = viewMemo((sel): UsageAgg => {
 const DIR: VCol[] = [num('agents', 'Agents', 'int'), ...AUTH_LEVELS.map((a, i) => num(`l${i}`, a, 'int')), num('roles', 'Active roles', 'int'), num('avgSup', 'Avg. agentSup', 'pct'),
   { key: 'loop', header: 'Internal loop', kind: 'text' }, num('loopTok', 'Loop tokens (M, est.)', 'n2'), { key: 'ext', header: 'External rework', kind: 'text' }];
 
-/** Agent directory of a selection: the agents by authorization level, the roles and the loop settings of each product; the line is the union (an agent counted once). */
+/**
+ * Agent directory of a selection: the agents by authorization level, the roles and the loop settings of each product; the line is the union (an agent
+ * counted once).
+ */
 export const agentDirTable = viewMemo((sel): VTable => {
   const dirs = sel.items.map((v) => agentDirectory(liveOf(v).c, 'ALL')), roles = sel.items.map((v) => rolesForPhase(liveOf(v).c, 'ALL'));
   const lvl = (d: (typeof dirs)[number], i: number) => d.filter((a) => a.agent.aiAuth === AUTH_LEVELS[i]).length;
@@ -57,7 +63,10 @@ export const agentDirTable = viewMemo((sel): VTable => {
 
 const DETAIL: VCol[] = [num('run', 'Agentic run FTE'), num('sup', 'Supervision pole (FTE)'), num('rate', 'Run day rate', 'eur'), ...AUTH_LEVELS.map((a, i) => num(`l${i}`, `${a} (artifacts)`, 'int'))];
 
-/** Agent details of a selection: the agentic run team and supervision pole of each product, and its artifacts per authorization level; FTE and counts are added up. */
+/**
+ * Agent details of a selection: the agentic run team and supervision pole of each product, and its artifacts per authorization level; FTE and counts
+ * are added up.
+ */
 export const agentDetailTable = viewMemo((sel): VTable => {
   const rows = productRows(sel, (_v, l) => {
     const d = agentDetail(l);
@@ -69,7 +78,10 @@ export const agentDetailTable = viewMemo((sel): VTable => {
 const PHASE: VCol[] = [num('phases', 'Phases in scope', 'int'), num('arts', 'In-scope artifacts', 'int'), { key: 'tight', header: 'Tightest phase', kind: 'text' },
   num('margin', 'Tightest margin (pts)', 'int', 'Projected human share minus the supervision floor; negative = floor violated (CC-SUP-01)'), num('viol', 'Floor violations', 'int'), num('vfte', 'vFTE at horizon end (relative)')];
 
-/** Phase / artifact scope of a selection: phases and artifacts in scope, the tightest supervision margin and the floor violations of each product (violations and artifact counts add up). */
+/**
+ * Phase / artifact scope of a selection: phases and artifacts in scope, the tightest supervision margin and the floor violations of each product
+ * (violations and artifact counts add up).
+ */
 export const phaseArtTable = viewMemo((sel): VTable => {
   const rows = productRows(sel, (_v, l) => {
     const sup = supMatrix(l), tight = sup.reduce<(typeof sup)[number] | null>((m, r) => (m === null || r.gap < m.gap ? r : m), null), pa = phaseArtRows(l);

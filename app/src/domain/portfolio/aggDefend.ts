@@ -42,7 +42,10 @@ export function verifByProduct(pf: Portfolio, ids: string[], rt: ConvRuntime = {
   return { rows, totals: { checks: sum('checks'), checksFail: sum('checksFail'), conv: sum('conv'), convFail: sum('convFail'), sensiAbnormal: sum('sensiAbnormal'), failingProducts, status: failingProducts ? 'FAIL' : 'PASS' } };
 }
 
-/** Due diligence: items to confirm, confirmed or waived, embedded coefficients editable nowhere (PC5), glass-ceiling coverage (null when no row carries a share). */
+/**
+ * Due diligence: items to confirm, confirmed or waived, embedded coefficients editable nowhere (PC5), glass-ceiling coverage (null when no row
+ * carries a share).
+ */
 export interface DdGroup { group: string; items: number; confirmed: number }
 export type DdProductRow = AggProduct & { items: number; confirmed: number; open: number; pct: number; invisible: number; ceilCover: number | null; groups: DdGroup[] };
 export type DdTotals = { items: number; confirmed: number; open: number; pct: number; invisible: number };

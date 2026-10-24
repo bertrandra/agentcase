@@ -15,7 +15,10 @@ const help = (
     Draws, seed and correlation ρ are set below; the same run feeds Portfolio stress and the portfolio verdict. A product on its own keeps its single-product Monte Carlo: choose “Edit this product”.</p>
 );
 
-/** Monte Carlo — Aggregate view: the portfolio Monte Carlo restricted to the Portfolio or the Wave (distribution, P10/P50/P90, P(net < 0), diversification), with the run button. */
+/**
+ * Monte Carlo — Aggregate view: the portfolio Monte Carlo restricted to the Portfolio or the Wave (distribution, P10/P50/P90, P(net < 0),
+ * diversification), with the run button.
+ */
 export default function MonteCarloAggregate() {
   const vs = useViewScope(), { run, stale, progress } = usePortfolioSimulation(), sel = useSelectionStress();
   return (

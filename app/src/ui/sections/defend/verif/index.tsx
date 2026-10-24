@@ -26,7 +26,8 @@ const help = (
 /** Detailed logic verification — provenance, convergence checks, consistency checks, calculation chain and directional sensitivity. */
 export default function VerifSection() {
   const c = useCtx(), mcsLast = useSyncExternalStore(mcsRunStore.subscribe, () => mcsRunStore.getState().last), deps = useDoc((d) => d.SECTION_DEPS as DepEdges | undefined);
-  // session state some audits read (legacy MCS_LAST, SECTION_CATALOG / SECTION_DEPS); the Monthly Playback keeps its play state in its own section, so it is idle here
+  // session state some audits read (legacy MCS_LAST, SECTION_CATALOG / SECTION_DEPS); the Monthly Playback keeps its play state in its own section,
+  // so it is idle here
   const v = useMemo(() => ({ prov: provenance(c), conv: convergenceChecks(c, { mcsLast, deps, sections: SECTIONS }), checks: verifChecks(c), chain: calcChain(c), sensi: directionalSensitivity(c) }), [c, mcsLast, deps]);
   return (
     <SectionFrame title="🔍 Detailed logic verification" help={help}

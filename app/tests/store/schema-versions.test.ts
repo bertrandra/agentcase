@@ -7,7 +7,10 @@ import { isPortfolioSnapshot, openSnapshot, toPortfolioSnapshot } from '@/store/
 import { MIGRATIONS, NewerFileError, openChecked, SNAPSHOT_SCHEMA_VERSION, VERSION_KEY } from '@/store/persistence/schema';
 import { fromSnapshot, sanitize } from '@/store/persistence/snapshot';
 
-/** Every committed case file: legacy cases, JSON / HTML snapshots (this build's and v18.x), portfolios, a v20.0 French portfolio (open-fit.json is a table of expected values, not a case). */
+/**
+ * Every committed case file: legacy cases, JSON / HTML snapshots (this build's and v18.x), portfolios, a v20.0 French portfolio (open-fit.json is a
+ * table of expected values, not a case).
+ */
 const files = (dir: string, ext: RegExp) => readdirSync(dir).filter((f) => ext.test(f)).map((f) => `${dir}/${f}`);
 const ALL = [...files('fixtures/cases', /\.json$/), ...files('fixtures/snapshots', /\.(json|html)$/).filter((f) => !f.endsWith('open-fit.json')), ...files('fixtures/portfolios', /\.json$/), 'tests/store/data/pf-v20-french.json'];
 const rawOf = (f: string): unknown => parseCaseFile(readFileSync(f, 'utf8')).raw;

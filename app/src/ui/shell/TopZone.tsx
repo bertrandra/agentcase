@@ -20,7 +20,10 @@ function UndoRedo() {
   );
 }
 
-/** Two zones: left = brand (and client logo), the sidebar toggle, the persona and Fast Path; right = Show / Change, undo / redo, the file menu and the display menu. */
+/**
+ * Two zones: left = brand (and client logo), the sidebar toggle, the persona and Fast Path; right = Show / Change, undo / redo, the file menu and the
+ * display menu.
+ */
 export function TopZone() {
   const customer = useDoc((d) => (d.customerName as string) ?? ''), { persona, personas, landing } = useNavModel();
   const logo = useHasLogo(), hidden = useUi((s) => s.menuHidden), fastPath = useUi((s) => s.fastPath);

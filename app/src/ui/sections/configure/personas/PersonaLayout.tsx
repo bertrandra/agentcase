@@ -9,7 +9,10 @@ import { useNavModel } from '@/ui/zones/navModel';
 import { Board } from './Board';
 import { LivePreview } from './LivePreview';
 
-/** The per-persona board (in the persona's menu structure): every group's sections, the persona's ones highlighted. Double-click assigns / removes; drag or arrows reorder for this persona only. */
+/**
+ * The per-persona board (in the persona's menu structure): every group's sections, the persona's ones highlighted. Double-click assigns / removes;
+ * drag or arrows reorder for this persona only.
+ */
 export function PersonaLayout({ personas, lists }: { personas: Persona[]; lists: Record<string, string[]> }) {
   const { order, view, structureOfPersona } = useNavModel(), editable = personasByOrder(personas).filter((p) => !p.protected), [sel, setSel] = useState(''), [pending, setPending] = useState<Pending | null>(null);
   const pid = editable.some((p) => p.id === sel) ? sel : editable[0]?.id ?? '', assigned = lists[pid] ?? [], on = (id: string) => assigned.includes(id);

@@ -2,7 +2,10 @@ import { useMemo } from 'react';
 import { isOverridden } from '@/domain/portfolio';
 import { useActiveProduct, useIsMulti } from '@/store/portfolioHooks';
 
-/** "Product: X (inherited / n overrides)" above a section that edits overridable data. `refs` are the override addresses the section writes. Nothing with one product. */
+/**
+ * "Product: X (inherited / n overrides)" above a section that edits overridable data. `refs` are the override addresses the section writes. Nothing
+ * with one product.
+ */
 export function ProductBanner({ refs }: { refs: readonly string[] }) {
   const multi = useIsMulti(), prod = useActiveProduct();
   const n = useMemo(() => refs.filter((r) => isOverridden(prod, r)).length, [refs, prod]);

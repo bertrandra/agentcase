@@ -20,7 +20,10 @@ const help = (
 );
 const R = 'right' as const;
 
-/** Results — aggregate view (R-conso): verdict, key figures, uncertainty band, savings decomposition and team shift of the Portfolio / Wave, and the figures of each product. */
+/**
+ * Results — aggregate view (R-conso): verdict, key figures, uncertainty band, savings decomposition and team shift of the Portfolio / Wave, and the
+ * figures of each product.
+ */
 export default function ResultsAggregate() {
   const a = useResultsAggregate(), group = useVerdictGroup(), d = usePortfolioDecision(group);
   if (!a) return null;

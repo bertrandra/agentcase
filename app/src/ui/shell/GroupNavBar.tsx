@@ -4,7 +4,8 @@ import { useNavModel } from '../zones/navModel';
 
 /**
  * Hide-menu mode (legacy renderGroupNavBar): with the sidebar collapsed, this bar above the section offers Welcome, the
- * groups the persona can reach and the open group's sections — as buttons or as tabs (SECTION_NAV_STYLE). Hidden during a guided walk. The ☰ menu toggle and the persona picker live in the top bar only (no duplicate here).
+ * groups the persona can reach and the open group's sections — as buttons or as tabs (SECTION_NAV_STYLE). Hidden during a guided walk. The ☰ menu
+ * toggle and the persona picker live in the top bar only (no duplicate here).
  */
 export function GroupNavBar() {
   const m = useNavModel(), active = useUi((s) => s.activeSection), hidden = useUi((s) => s.menuHidden), walking = useUi((s) => s.wiz.active);

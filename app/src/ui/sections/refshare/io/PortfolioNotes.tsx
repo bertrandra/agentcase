@@ -1,7 +1,10 @@
 import { useHasPortfolioContent } from '@/store/portfolioHooks';
 import { Callout } from '@/ui/widgets/cards';
 
-/** What a portfolio adds to each export. Shown only when the work is a real portfolio (2+ products or waves, an override or a knowledge subset): a plain case sees nothing new. */
+/**
+ * What a portfolio adds to each export. Shown only when the work is a real portfolio (2+ products or waves, an override or a knowledge subset): a
+ * plain case sees nothing new.
+ */
 function Note({ title, items }: { title: string; items: string[] }) {
   return (
     <Callout kind="blue">

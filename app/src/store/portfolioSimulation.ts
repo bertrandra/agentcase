@@ -49,7 +49,10 @@ export function usePfSimParams(): PfSimParams {
   return useMemo(() => set ?? { draws: mcDrawsOf(c), seed: mcSeedOf(c) }, [set, c]);
 }
 
-/** The group the Decision section speaks for: the portfolio or a wave when the display scope says so and there are two products or more; null = the active product. */
+/**
+ * The group the Decision section speaks for: the portfolio or a wave when the display scope says so and there are two products or more; null = the
+ * active product.
+ */
 export function useVerdictGroup(): VerdictGroup | null {
   const scope = useDisplayScope(), multi = useIsMulti(), key = `${scope.kind}:${scope.kind === 'wave' ? scope.id : ''}`;
   return useMemo(() => (multi ? groupOf(scope) : null), [multi, key]);   // eslint-disable-line react-hooks/exhaustive-deps

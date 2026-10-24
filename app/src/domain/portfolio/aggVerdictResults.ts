@@ -24,7 +24,10 @@ export interface ResultsAgg {
 
 const sumBy = <T,>(xs: T[], f: (x: T) => number): number => total(xs.map(f));
 
-/** Results of a Portfolio / Wave: consolidated key figures, savings decomposition and team shift (sums of the products' own `resultsCore`), one line per product. */
+/**
+ * Results of a Portfolio / Wave: consolidated key figures, savings decomposition and team shift (sums of the products' own `resultsCore`), one line
+ * per product.
+ */
 export function aggregateResults(pf: Portfolio, c: Consolidated, scope: DisplayScope): ResultsAgg | null {
   const sel = selectionOf(c, scope);
   if (!sel) return null;

@@ -43,7 +43,10 @@ export interface PortfolioGantt {
 }
 
 const ramps = new WeakMap<ProductRun, { end: number; marks: { label: string; family: string; month: number }[] }>();
-/** The product's own milestones (adoption levels, payback, first agent vFTE) and the month its ramp ends: the later of the setup profile and its last adoption / maturity milestone. */
+/**
+ * The product's own milestones (adoption levels, payback, first agent vFTE) and the month its ramp ends: the later of the setup profile and its last
+ * adoption / maturity milestone.
+ */
 function ownMarks(run: ProductRun) {
   let r = ramps.get(run);
   if (!r) {

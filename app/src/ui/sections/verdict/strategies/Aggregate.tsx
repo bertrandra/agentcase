@@ -15,7 +15,10 @@ const help = (
 );
 const R = 'right' as const;
 
-/** Strategy comparison — aggregate view (R-rollup): the recommended strategy of each product of the Portfolio / Wave with its ROI and TCO, the roll-up, and the full section per product. */
+/**
+ * Strategy comparison — aggregate view (R-rollup): the recommended strategy of each product of the Portfolio / Wave with its ROI and TCO, the
+ * roll-up, and the full section per product.
+ */
 export default function StrategiesAggregate() {
   const a = useStrategiesAggregate(), vs = useViewScope();
   if (!a) return null;

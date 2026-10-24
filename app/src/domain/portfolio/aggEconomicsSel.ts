@@ -5,7 +5,10 @@ import { scopeHeadline, type DisplayScope, type PortfolioHeadline } from './port
 import type { Series } from './series';
 import type { ProductView } from './waves';
 
-/** What the aggregate views of a Portfolio / Wave read: the planned products of the selection and their summed series, exactly the consolidation's own objects. */
+/**
+ * What the aggregate views of a Portfolio / Wave read: the planned products of the selection and their summed series, exactly the consolidation's own
+ * objects.
+ */
 export interface Sel { kind: 'portfolio' | 'wave'; label: string; waveId?: string; items: ProductView[]; series: Series; summary: Summary; headline: PortfolioHeadline }
 
 /** The selection of a Portfolio / Wave View; null for a Product view or an unknown wave. */

@@ -21,7 +21,10 @@ export function setByLabel(wb: XL.Workbook, sheet: string, label: string, value:
 }
 export const asFile = (name: string, bytes: ArrayBuffer) => ({ name, size: bytes.byteLength, arrayBuffer: async () => bytes });
 
-/** A syntactically valid zip directory that declares `declared` bytes inflating from `packed` (no real data: the guard must refuse it before inflating anything). */
+/**
+ * A syntactically valid zip directory that declares `declared` bytes inflating from `packed` (no real data: the guard must refuse it before inflating
+ * anything).
+ */
 export function fakeZip(declared: number, packed: number, entries = 1): ArrayBuffer {
   const name = new TextEncoder().encode('xl/x.xml'), cd = 46 + name.length, buf = new ArrayBuffer(30 + entries * cd + 22), v = new DataView(buf);
   v.setUint32(0, 0x04034b50, true);

@@ -19,7 +19,8 @@ interface Part { key: string; add: () => void }
 /**
  * The results workbook of a portfolio: "Portfolio", one "Wave <name>" per wave, "Knowledge transfer", then per kept product "Product <name>" followed by
  * that product's own six results sheets (prefixed "P<n> "). All of them are always exported; the display scope only decides which group LEADS the
- * workbook (the portfolio, one wave, or one product). When a portfolio Monte Carlo has been run, "Portfolio stress" follows "Knowledge transfer". Names obey Excel's rules (31 characters, no []:*?/\, unique). Numbers come from `consolidate`,
+ * workbook (the portfolio, one wave, or one product). When a portfolio Monte Carlo has been run, "Portfolio stress" follows "Knowledge transfer".
+ * Names obey Excel's rules (31 characters, no []:*?/\, unique). Numbers come from `consolidate`,
  * `portfolioHeadline`, `consolidationView` and `knowledgeTable` only; the product sheets are the single-case results writer on the effective case.
  */
 export function buildPortfolioResultsWorkbook(xl: ExcelJS, source: Portfolio, print: Readonly<ThemeValues>, scope: DisplayScope = { kind: 'portfolio' }, productId: string = source.activeProductId, stress: StressExtra | null = null): Workbook {

@@ -11,7 +11,8 @@ const option = (p: Product) => <option key={p.id} value={p.id}>{p.name}{p.archiv
  * "✏️ Change" — ONE dropdown of the top bar (2+ products, every Show): "All products" (the shared values; the entry team stays the active product's)
  * or "<name>" (that product becomes the edited one; its edits create overrides). With a Wave shown, the wave's products come first, then the
  * others (the edited product may be outside the wave). Show does not change: in a Product view, choosing another product shows it instead.
- * "Change follows Show": the Show selector resets this choice (`controllers/displayScope.ts`). View state: no undo step, never saved. Announced in the live region.
+ * "Change follows Show": the Show selector resets this choice (`controllers/displayScope.ts`). View state: no undo step, never saved. Announced in
+ * the live region.
  */
 export function EditSelect() {
   const value = useEditTarget(), products = useProducts(), waves = useWaves(), scope = useDisplayScope();

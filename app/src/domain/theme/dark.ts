@@ -47,7 +47,10 @@ export const DARK_ROLES = {
   automation: '#4fc6cc', 'glass-ceiling': '#f08f94', 'human-supervision': '#f5a865', agentic: '#b9a8ec', ai: '#62c6f2', vfte: '#63d391',
 } as const;
 
-/** Charts in dark mode: series lifted for a dark plot area, white gridlines at low alpha, the axis text of `muted`. Sequential / diverging ramps follow the dark scales. */
+/**
+ * Charts in dark mode: series lifted for a dark plot area, white gridlines at low alpha, the axis text of `muted`. Sequential / diverging ramps
+ * follow the dark scales.
+ */
 export const DARK_CHART = {
   'chart-cat-1': '#6ea8fe', 'chart-cat-2': '#3fc1c9', 'chart-cat-3': '#f39c4a', 'chart-cat-4': '#a993e6', 'chart-cat-5': '#4cc3f0', 'chart-cat-6': '#d9b74a',
   'chart-cat-7': '#ec7fa9', 'chart-cat-8': '#8cc96b', 'chart-grid': 'rgba(255,255,255,.08)', 'chart-axis': '#a9b1bd',

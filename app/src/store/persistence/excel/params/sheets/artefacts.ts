@@ -65,7 +65,10 @@ function readSdlc({ rows, w, notes }: ReadCtx): void {
   w.artefactsEdited = editsWith(SDLC_ARTEFACTS, workingArtefacts(w as unknown as CaseState).sdlc, t);
   if (sel.size) keepSelection(w, sel, notes);
 }
-/** The artefact selection is what the model computes on: a phase marked "No" that still holds selected artefacts is back in scope (v18.10), and the contradiction is reported. */
+/**
+ * The artefact selection is what the model computes on: a phase marked "No" that still holds selected artefacts is back in scope (v18.10), and the
+ * contradiction is reported.
+ */
 function keepSelection(w: ParamsDoc, sel: Set<string>, notes: string[]): void {
   w.selectedArtefacts = [...sel];
   const off = new Set(w.phaseOff), contradict: string[] = [];

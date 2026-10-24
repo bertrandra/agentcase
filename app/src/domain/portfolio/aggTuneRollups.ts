@@ -15,7 +15,10 @@ const total = <T>(rows: T[], f: (r: T) => number): number => rows.reduce((a, r) 
 export interface ReadinessRow extends Head { index: number | null; band: string; answered: number; weakest: string | null; hri: number; hriLabel: string; hriOn: boolean }
 export interface ReadinessAgg { rows: ReadinessRow[]; assessed: number; index: Spread; hri: Spread; band: string }
 
-/** Readiness index (0-100), band, weakest dimension and Human Readiness of each product. The roll-up line is the mean over the assessed products (the index is not additive). */
+/**
+ * Readiness index (0-100), band, weakest dimension and Human Readiness of each product. The roll-up line is the mean over the assessed products (the
+ * index is not additive).
+ */
 export function aggReadiness(pf: Portfolio, productIds: string[]): ReadinessAgg {
   const rows = membersOf(pf, productIds).map((m): ReadinessRow => {
     const ans: ReadinessAns = (m.state as { readinessAns?: ReadinessAns }).readinessAns ?? blankReadiness(), idx = readinessIndex(ans), h = hriSummary(m.ctx);
@@ -32,7 +35,10 @@ export function aggReadiness(pf: Portfolio, productIds: string[]): ReadinessAgg 
 export interface TokenRow extends Head { endLabel: string; runs: number; tokensM: number; blended: number; costEnd: number; horizonCost: number }
 export interface TokenAgg { rows: TokenRow[]; models: { name: string; mix: number; priceIn: number; priceOut: number }[]; totals: { horizonCost: number }; cost: Spread }
 
-/** Agent runs, tokens and token cost of each product (end of its horizon, plus its whole horizon on the calendar axis); the total is the consolidation's `token` series of the selection. */
+/**
+ * Agent runs, tokens and token cost of each product (end of its horizon, plus its whole horizon on the calendar axis); the total is the
+ * consolidation's `token` series of the selection.
+ */
 export function aggTokens(pf: Portfolio, productIds: string[]): TokenAgg {
   const c = consolidate(pf), ms = membersOf(pf, productIds);
   const horizonOf = (id: string): number => c.products.find((v) => v.id === id)?.series.token.reduce((a, x) => a + x, 0) ?? 0;
@@ -51,7 +57,10 @@ export interface OpModelRow extends Head {
 }
 export interface OpModelAgg { rows: OpModelRow[]; totals: { y1: OpModelRow['y1']; yN: OpModelRow['yN']; ok: number; ko: number } }
 
-/** Pods, residual team, run team and V7 conservation check of each product, at Y1 and at the end of its own horizon; the total line adds the products' figures. */
+/**
+ * Pods, residual team, run team and V7 conservation check of each product, at Y1 and at the end of its own horizon; the total line adds the products'
+ * figures.
+ */
 export function aggOpModel(pf: Portfolio, productIds: string[]): OpModelAgg {
   const rows = membersOf(pf, productIds).map((m): OpModelRow => {
     const v = opModelView(m.ctx), pick = (t: typeof v.y1) => ({ pods: t.pods, residual: t.residual, ops: t.ops, total: t.total });
@@ -69,7 +78,10 @@ export interface EligibilityAgg { rows: EligibilityRow[]; totals: { go: number; 
 
 const prereqMet = (c: Ctx): number => ELIG_PREREQS.filter((p) => eligState(c, p.id) === 'met').length;
 
-/** The go / conditional / no-go gate of each product with its prerequisites, codebase size, nature, profile and verification tax; the total line counts the verdicts. */
+/**
+ * The go / conditional / no-go gate of each product with its prerequisites, codebase size, nature, profile and verification tax; the total line
+ * counts the verdicts.
+ */
 export function aggEligibility(pf: Portfolio, productIds: string[]): EligibilityAgg {
   const rows = membersOf(pf, productIds).map((m): EligibilityRow => {
     const v = eligVerdict(m.ctx), a = abaqueRows(m.ctx), nature = eligNature(m.ctx);

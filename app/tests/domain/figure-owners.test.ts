@@ -17,9 +17,12 @@ import { dumpBuffer, loadCase as loadIntoStore } from '../helpers/xlsxDump';
 import { close, identical, loadCase, withProduct } from '../helpers/portfolio';
 
 /**
- * "One source, N screens" (docs/ARCHITECTURE.md section 13): a figure is computed by its @owner module and every screen or export that shows it prints that value.
- * Owners: net, total-benefit, payback-year (economics/headline.ts); payback-month, npv, roi (the cash-flow kernel economics/cashflow.ts); saving-pct (costReduction.ts); fte-before-after (fte.ts); velocity-uplift (velocityUplift.ts).
- * Screens compared: the KPI bar (computeCase), Results, Financial (economicsView), the Board variables, the calculation package, the Excel results workbook and the consolidation.
+ * "One source, N screens" (docs/ARCHITECTURE.md section 13): a figure is computed by its @owner module and every screen or export that shows it
+ * prints that value.
+ * Owners: net, total-benefit, payback-year (economics/headline.ts); payback-month, npv, roi (the cash-flow kernel economics/cashflow.ts); saving-pct
+ * (costReduction.ts); fte-before-after (fte.ts); velocity-uplift (velocityUplift.ts).
+ * Screens compared: the KPI bar (computeCase), Results, Financial (economicsView), the Board variables, the calculation package, the Excel results
+ * workbook and the consolidation.
  */
 const CASES = ['golden', 'horizon-5', 'ctx-msi', 'econ-no-setup', 'vtax-on'];
 const same = (a: number | null | undefined, b: number | null | undefined, what: string, abs = 0): void => {

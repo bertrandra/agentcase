@@ -15,7 +15,8 @@ const cell = (metric: string, col: number) => screen.getByText(metric).closest('
 
 describe('3-way comparison section', () => {
   it.each(PARITY_FIXTURES)('shows every figure the legacy section showed (%s)', (fx) => {
-    // DEV-COMPARE-ENGINE: the Agentic cumulative saving and (off the typed ramps) velocity rows follow the engine, so the legacy figures of those rows are not expected
+    // DEV-COMPARE-ENGINE: the Agentic cumulative saving and (off the typed ramps) velocity rows follow the engine, so the legacy figures of those
+    // rows are not expected
     const rows = (loadExtra('compareView', fx) as { table: string[][] }).table;
     expect(missingFor(Compare, 'compare', fx, [3, 4].flatMap((i) => numberTokens(rows[i]!.join('  '))))).toEqual([]);
   });

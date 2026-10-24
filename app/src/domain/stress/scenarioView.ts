@@ -7,7 +7,10 @@ export const cumAt = (m: Pick<ScenarioResult, 'cum'>, mo: number): number => m.c
 /** Chart axis: every 6 months over the horizon, starting at 0. */
 export const monthAxis = (horizon: number): number[] => Array.from({ length: Math.floor((horizon * 12) / 6) + 1 }, (_, i) => i * 6);
 
-/** €1,234,567, negative "−€1,234" (DEV-NEG-MONEY); "n/a" for a figure the model cannot compute (the legacy printed €NaN, e.g. a 2-year horizon on the 3-year scenario arrays). */
+/**
+ * €1,234,567, negative "−€1,234" (DEV-NEG-MONEY); "n/a" for a figure the model cannot compute (the legacy printed €NaN, e.g. a 2-year horizon on the
+ * 3-year scenario arrays).
+ */
 export const fmtE = (v: number): string => (isNaN(v) ? 'n/a' : `${v < 0 && Math.round(v) !== 0 ? '−' : ''}€${Math.abs(Math.round(v)).toLocaleString('en-US')}`);
 /** Savings / cash-flow: the same signed form (the legacy printed a negative in parentheses). */
 export const fmtSigned = fmtE;

@@ -17,7 +17,10 @@ const help = (
 );
 const R = 'right' as const;
 
-/** Annual summary — aggregate view (R-conso): the Portfolio / Wave by calendar year (savings, run, setup, net, cumulative cash, year-end headcount) and the net by product. */
+/**
+ * Annual summary — aggregate view (R-conso): the Portfolio / Wave by calendar year (savings, run, setup, net, cumulative cash, year-end headcount)
+ * and the net by product.
+ */
 export default function AnnualAggregate() {
   const a = useAnnualAggregate();
   const years = useMemo(() => (a ? a.years.map((y) => ({ ...y, id: y.label, name: y.label })) : []), [a]);

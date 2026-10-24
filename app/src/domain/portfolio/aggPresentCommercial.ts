@@ -11,7 +11,10 @@ export interface CommercialRow { id: string; name: string; wave: string; horizon
 export interface CommercialAgg {
   label: string;
   rows: CommercialRow[];
-  /** the roll-up line: the contracts of the products (each under its own selected model, over its own horizon) added up; the margin % is from the sums. The gain share is not linear: no figure is derived from a summed input */
+  /**
+   * the roll-up line: the contracts of the products (each under its own selected model, over its own horizon) added up; the margin % is from the
+   * sums. The gain share is not linear: no figure is derived from a summed input
+   */
   totals: { revenue: number; cost: number; margin: number; marginPct: number; tco: number; unavailable: number };
   excluded: { id: string; name: string; archived: boolean }[];
 }

@@ -17,7 +17,8 @@ const tab = (name: string) => fireEvent.click(screen.getByRole('tab', { name }))
 
 describe('calcengine section', () => {
   it('shows the legacy headings; figures that described the legacy engine are ignored on purpose (4 fixtures)', () => {
-    // 14 = legacy "14 entry points" (the TypeScript engine lists its own count, 21); 16.2 = the legacy spec section (§16.2) of TIME.thin(), which is not ported yet
+    // 14 = legacy "14 entry points" (the TypeScript engine lists its own count, 21); 16.2 = the legacy spec section (§16.2) of TIME.thin(), which is
+    // not ported yet
     expectParity('calcengine', CalcEngine, { ignore: [14, 16.2], headings: ['Calculation Engine', 'Time Engine', 'Engines', 'Function surface', 'Overlay contract', 'Which sections reach it', 'Engine function surface'] });
   });
   it('every entry point listed exists in the engine it points to', () => {

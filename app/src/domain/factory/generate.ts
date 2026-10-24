@@ -73,7 +73,10 @@ function weekBuilds(g: Gen, c: Ctx, w: number, year: number, open: string[]) {
 }
 
 export interface Generated { data: FactoryData; phaseFeatures: Record<string, string[]>; storyOf: Record<string, string>; provenance: FgProvenance }
-/** The weekly factory dataset of a case (spec FactoryWeeklyGeneration): schedule-driven, seeded, down-sampled to the record cap. Null when nothing is in scope. */
+/**
+ * The weekly factory dataset of a case (spec FactoryWeeklyGeneration): schedule-driven, seeded, down-sampled to the record cap. Null when nothing is
+ * in scope.
+ */
 export function generateFactory(c: Ctx, p: FgParams, nowIso: string): Generated | null {
   const grid = fgGrid(c), win = fgPhaseWindows(c, grid);
   if (!Object.keys(win).length) return null;

@@ -11,7 +11,10 @@ const GROUP_COLOR: Record<string, string> = {
 const LANE_COLOR: Record<string, string> = { input: 'var(--ac-chart-cat-1)', calc: 'var(--ac-chart-cat-4)', result: 'var(--ac-success-625)' };
 const EDGE_COLOR = { r: 'var(--ac-chart-cat-1)', w: 'var(--ac-chart-cat-3)', z: 'var(--ac-chart-cat-1)' };
 
-/** Staged-flow graph of the generated dependencies: lanes left to right, SVG nodes and edges. Click or press Enter on a node to highlight its upstream and downstream. */
+/**
+ * Staged-flow graph of the generated dependencies: lanes left to right, SVG nodes and edges. Click or press Enter on a node to highlight its upstream
+ * and downstream.
+ */
 export function Graph({ sel, onSelect }: { sel: string | null; onSelect: (id: string | null) => void }) {
   const L = useMemo(layoutGraph, []);
   const hit: Selection | null = useMemo(() => (sel ? select(sel) : null), [sel]);

@@ -2,7 +2,10 @@ import type { Dispatch } from 'react';
 import { MP_META, MP_ORDER, mpReadout } from '@/domain/pdc/playback';
 import type { Act, PlayerState } from './usePlayer';
 
-/** The VCR controls of the playback (transport, position, speed, loop and the metrics to play): view state only, shared by the product and the aggregate views. */
+/**
+ * The VCR controls of the playback (transport, position, speed, loop and the metrics to play): view state only, shared by the product and the
+ * aggregate views.
+ */
 export function Transport({ p, months, dispatch, seek }: { p: PlayerState; months: number; dispatch: Dispatch<Act>; seek: (m: number) => void }) {
   return (
     <>

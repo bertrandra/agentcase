@@ -27,7 +27,8 @@ const loading = <p className="ac-muted">Loading…</p>;
  */
 export function SectionHost() {
   const id = useUi((s) => s.activeSection), def = sectionById(id), [attempt, setAttempt] = useState(0);
-  // "Try again" drops the cached lazy component (React.lazy never retries a failed import) and remounts the boundary with a new key; the cache keeps it stable otherwise
+  // "Try again" drops the cached lazy component (React.lazy never retries a failed import) and remounts the boundary with a new key; the cache keeps
+  // it stable otherwise
   const retry = () => { cache.delete(id); setAttempt((a) => a + 1); };
   const Cmp = componentFor(id), scoped = useScopedSection(id), inPlace = scoped.mode !== 'section' && sectionKind(id) === 'I-input';
   return (

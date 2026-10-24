@@ -7,7 +7,10 @@ import { expectClose } from './portfolio';
 export const sum = (xs: number[]): number => xs.reduce((a, b) => a + b, 0);
 export interface Ind { id: string; name: string; month0: number; live: Live }
 
-/** Independent derivation: the planned products of a selection, each with a live case built from its resolved case by a FRESH context (not the consolidation's). */
+/**
+ * Independent derivation: the planned products of a selection, each with a live case built from its resolved case by a FRESH context (not the
+ * consolidation's).
+ */
 export function independent(pf: Portfolio, scope: VScope): Ind[] {
   return scheduledProducts(pf).filter((s) => scope.kind === 'portfolio' || s.wave.id === scope.id).map((s) => {
     const c = makeCtx(resolveProduct(pf, s.product.id));

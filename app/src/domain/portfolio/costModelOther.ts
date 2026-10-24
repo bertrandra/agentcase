@@ -15,7 +15,10 @@ const running = (v: ProductView, L: number, i: number): boolean => i >= v.month0
 
 const memo = (keys: string[], unit: string, t0: number | null, months: (number | null)[], total: number | null): CostRow => ({ ...row('memo', keys, unit, 'eur', t0, months), total });
 
-/** total / engine / difference rows of a set of products, the engine total read independently from the consolidated series (AS-IS cost less net savings) plus the pilot. */
+/**
+ * total / engine / difference rows of a set of products, the engine total read independently from the consolidated series (AS-IS cost less net
+ * savings) plus the pilot.
+ */
 function totals(out: CostRow[], w: string, label: string, subs: number[], views: ProductView[], L: number, rate: number): number {
   const key = (n: string) => ['Portfolio', w, '(all products)', 'Total', `${label} ${n}`, '', ''], tot = addRows(subs.map((i) => out[i] as CostRow)), net = aggregate(views, L, rate).series.net;
   const base = addRows(views.map((v) => ({ t0: 0, months: layWide(v, L, (i) => (running(v, L, i) ? v.run.engine.K.baselineRunMonth : 0)) })));
