@@ -1,7 +1,8 @@
 /** @calc-zone workspace-config */
 /**
  * The theme library of the case (docs/THEME.md §8.4): undoable commands on `THEMES` (the user themes), `ACTIVE_THEME` and `THEME_SEQ`. Built-in
- * themes are protected (activate and duplicate only). A sequence id is issued once per case and never reused, even after a delete.
+ * themes are protected (activate and duplicate only). A sequence id is issued once per case and never reused, even after a delete or an undo:
+ * `THEME_SEQ` is a store high-water mark (`HIGH_WATER_KEYS`, store/portfolioState.ts) that undo, redo and remote patches never lower.
  */
 import { AXES, AXIS_NAMES, isAxisValue, type AxisName } from '@/domain/theme/axes';
 import { activeSeq, findTheme, isBuiltinSeq, nextSeq, uniqueName, userThemes, type ThemeContent } from '@/domain/theme/library';

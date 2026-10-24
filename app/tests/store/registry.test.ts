@@ -2,12 +2,12 @@ import { describe, expect, it } from 'vitest';
 import.meta.glob('/src/controllers/*.ts', { eager: true });   // registers every command, so a new one cannot be forgotten
 import { COMMAND_REGISTRY } from '@/store/commands';
 import { threeProducts } from '../helpers/portfolioStore';
-import { freshStore, snapAll as snap } from './helpers';
+import { freshStore, snapUndoable as snap } from './helpers';
 
 import type { Sample } from './samples/types';
 
 // Each controller area owns tests/store/samples/<area>.ts exporting `samples`: one call per command type.
-// Adding a command without a sample fails the completeness test below.
+// Adding a command without a sample fails the completeness test below. Undo is exact, high-water marks aside (THEME_SEQ never goes back).
 const mods = import.meta.glob('./samples/*.ts', { eager: true }) as Record<string, { samples?: Record<string, Sample> }>;
 const SAMPLES: Record<string, Sample> = Object.assign({}, ...Object.values(mods).map((m) => m.samples ?? {}));
 

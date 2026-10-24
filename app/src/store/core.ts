@@ -1,7 +1,7 @@
 import { applyPatches, enablePatches, type Patch } from 'immer';
 import { createStore } from 'zustand/vanilla';
 import { EMPTY_HISTORY, popRedo, popUndo, pushEntry } from './history';
-import { asPortfolio, deriveDoc, normalizeActive, runCommands } from './portfolioState';
+import { asPortfolio, deriveDoc, keepHighWater, normalizeActive, runCommands } from './portfolioState';
 import type { AuditRecord, Command, Doc, HistoryEntry, HistoryState, PortfolioDoc } from './types';
 
 enablePatches();
@@ -24,9 +24,9 @@ export function createAppStore(initial: Doc | PortfolioDoc, opts: StoreOptions =
   const log = (s: AppStoreState, kind: AuditRecord['kind'], type: string, label: string): AuditRecord[] =>
     [...s.audit, { ts: now(), type, label, kind }].slice(-auditCap);
   const emit = (kind: AuditRecord['kind'], e?: HistoryEntry) => listeners.forEach((l) => l(kind, e));
-  /** Commit a new portfolio: the derived case follows. */
-  const commit = (s: AppStoreState, portfolio: PortfolioDoc, rest: Partial<AppStoreState>) => {
-    const pf = normalizeActive(portfolio);
+  /** Commit a new portfolio: the derived case follows; the high-water marks never go back (except when a document is opened). */
+  const commit = (s: AppStoreState, portfolio: PortfolioDoc, rest: Partial<AppStoreState>, fresh = false) => {
+    const pf = normalizeActive(fresh ? portfolio : keepHighWater(s.portfolio, portfolio));
     store.setState({ portfolio: pf, doc: deriveDoc(pf), rev: s.rev + 1, ...rest });
   };
 
@@ -36,7 +36,7 @@ export function createAppStore(initial: Doc | PortfolioDoc, opts: StoreOptions =
     if (!patches.length) return;
     const undoable = cmds.some((c) => c.undoable);
     const entry: HistoryEntry = { label, type: cmds.length === 1 ? (cmds[0] as Command).type : 'batch', ts: now(), coalesceKey, patches, inverse };
-    commit(s, pf, { history: undoable ? pushEntry(s.history, entry, opts.coalesceMs, opts.cap) : s.history, audit: log(s, 'do', entry.type, label) });
+    commit(s, pf, { history: undoable ? pushEntry(s.history, entry, opts.coalesceMs, opts.cap) : s.history, audit: log(s, 'do', entry.type, label) }, entry.type === 'doc.load');
     emit('do', entry);
   }
   const dispatch = <P>(cmd: Command<P>): void => batch(cmd.label, [cmd as Command], cmd.coalesceKey);
@@ -56,7 +56,7 @@ export function createAppStore(initial: Doc | PortfolioDoc, opts: StoreOptions =
   /** Replace the whole document (open a case or a portfolio). `keepHistory` makes it an undoable step instead of a fresh start. */
   function load(input: Doc | PortfolioDoc, keepHistory = false): void {
     const s = get(), next = asPortfolio(input);
-    if (!keepHistory) { commit(s, next, { history: EMPTY_HISTORY, audit: log(s, 'load', 'doc.load', 'Open case') }); emit('load'); return; }
+    if (!keepHistory) { commit(s, next, { history: EMPTY_HISTORY, audit: log(s, 'load', 'doc.load', 'Open case') }, true); emit('load'); return; }
     const replace = (d: PortfolioDoc) => { Object.keys(d).forEach((k) => delete (d as unknown as Record<string, unknown>)[k]); Object.assign(d, next); };
     batch('Open case', [{ type: 'doc.load', payload: next, label: 'Open case', undoable: true, run: () => undefined, runPortfolio: replace }]);
   }

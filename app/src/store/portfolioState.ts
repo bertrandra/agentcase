@@ -30,6 +30,23 @@ export function normalizeActive(pf: PortfolioDoc): PortfolioDoc {
   return { ...pf, activeProductId: (pf.products[0] as { id: string }).id };
 }
 
+/**
+ * HIGH-WATER MARKS: case counters that never go back, whatever undo, redo, a remote patch or a snapshot activation does (`THEME_SEQ`, the last
+ * theme sequence id issued: an id is never issued twice, DEV-THEME-SEQ-UNDO closed). The store re-raises such a counter after every change, outside
+ * the history; it is a common key, so it is saved with the file and survives a reload.
+ */
+export const HIGH_WATER_KEYS: readonly string[] = ['THEME_SEQ'];
+const int = (v: unknown): number | null => (Number.isInteger(v) ? (v as number) : null);
+export function keepHighWater(prev: PortfolioDoc, next: PortfolioDoc): PortfolioDoc {
+  const was = prev.common as unknown as Record<string, unknown>;
+  let common = next.common as unknown as Record<string, unknown>;
+  for (const k of HIGH_WATER_KEYS) {
+    const a = int(was[k]), b = int(common[k]);
+    if (a !== null && (b === null || b < a)) { if (common === (next.common as unknown)) common = { ...common }; common[k] = a; }
+  }
+  return common === (next.common as unknown) ? next : { ...next, common: common as unknown as PortfolioDoc['common'] };
+}
+
 /** Patches that only move view state (active product, edit scope) are not document changes for another tab. */
 export const documentPatches = (ps: Patch[]): Patch[] => ps.filter((p) => !VIEW_FIELDS.includes(p.path[0] as string));
 
