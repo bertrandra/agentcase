@@ -1,16 +1,25 @@
 // Shared plumbing of the accessibility audit: paths, axe injection, the audit recorder and the case-opening helper.
 import { createRequire } from 'node:module';
-import { readFileSync } from 'node:fs';
+import { existsSync, mkdirSync, readFileSync } from 'node:fs';
 import { dirname, resolve } from 'node:path';
 import { fileURLToPath } from 'node:url';
 
 export const app = resolve(dirname(fileURLToPath(import.meta.url)), '..', 'app');
-export const pw = createRequire(import.meta.url)(process.env.PW_MODULE || '/opt/node-tools/node_modules/playwright');
+export const pw = createRequire(import.meta.url)(process.env.PW_MODULE || (existsSync('/opt/node-tools/node_modules/playwright') ? '/opt/node-tools/node_modules/playwright' : resolve(app, 'node_modules/playwright')));   // CI: the app's own devDependency
 export const axeSource = readFileSync(createRequire(resolve(app, 'package.json')).resolve('axe-core/axe.min.js'), 'utf8');
 export const NAV = 'nav[aria-label=Sections] button, .ac-gnav button';
 /** `--mode light|dark|auto` and `--contrast standard|enhanced|high`: the viewer's display preference (localStorage `agentcase.display`, docs/THEME.md §6.5), set before the app loads. */
 const argv = process.argv.slice(2), arg = (n) => (argv.indexOf(n) < 0 ? '' : argv[argv.indexOf(n) + 1] || '');
 export const DISPLAY = arg('--mode') || arg('--contrast') ? JSON.stringify({ mode: arg('--mode') || 'light', contrast: arg('--contrast') || 'standard' }) : '';
+/** `--shots <dir>`: a full-page screenshot of every audited state that has a violation (CI uploads the folder as an artifact). At most 60 files. */
+const SHOTS = arg('--shots');
+if (SHOTS) mkdirSync(SHOTS, { recursive: true });
+let shotCount = 0;
+const shot = async (page, fixture, section) => {
+  if (!SHOTS || shotCount >= 60) return;
+  const name = `${String(++shotCount).padStart(2, '0')}-${fixture}-${section}`.replace(/[^\w.-]+/g, '_').slice(0, 120);
+  await page.screenshot({ path: resolve(SHOTS, name + '.png'), fullPage: true }).catch(() => {});
+};
 
 /** The recorder: `rows` collects { fixture, section, rule, impact, nodes, help, targets }; `audit` runs axe on the page as it is; `note` records a non-axe finding. */
 export function recorder() {
@@ -22,6 +31,7 @@ export function recorder() {
     });
     state.audits++;
     for (const v of res) rows.push({ fixture, section, ...v });
+    if (res.length) await shot(page, fixture, section);
   };
   const note = (fixture, section, rule, impact, help, target) => rows.push({ fixture, section, rule, impact, nodes: 1, help, targets: [target] });
   return { rows, state, audit, note };

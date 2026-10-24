@@ -1,0 +1,7 @@
+{
+ "note": "Differences of tools/parallel-run.mjs that are explained and accepted: the legacy file restores these case files wrongly (its scurve setter drops the bass and legacy families), see docs/DEVIATIONS.md DEV-SNAPSHOT-RESTORE. Each diff line is pinned exactly: a change on either side fails the run.",
+ "known": [
+  { "file": "curve-bass.json", "deviation": "DEV-SNAPSHOT-RESTORE", "diff": "savings: legacy €892k vs new €902k | run cost: legacy €886k vs new €876k | NPV: legacy €1,359k vs new €1,339k | payback: legacy 9 mo vs new 10 mo" },
+  { "file": "curve-legacy.json", "deviation": "DEV-SNAPSHOT-RESTORE", "diff": "savings: legacy €892k vs new €1,064k | run cost: legacy €886k vs new €713k | NPV: legacy €1,359k vs new €1,700k | payback: legacy 9 mo vs new 1 mo" }
+ ]
+}
