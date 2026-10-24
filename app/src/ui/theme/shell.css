@@ -6,6 +6,8 @@
 .ac-top { display: flex; align-items: center; justify-content: space-between; gap: 1.25rem; padding: .75rem 2rem; color: var(--ac-header-text); background: linear-gradient(135deg, var(--ac-header-start) 0%, var(--ac-header-end) 100%); box-shadow: var(--ac-shadow-header); }
 .ac-top-id { min-width: 0; }
 .ac-brand { display: block; font-family: var(--ac-font-heading); font-size: var(--ac-font-size-7xl); font-weight: var(--ac-font-weight-display); letter-spacing: -.01em; cursor: pointer; } .ac-brand small { font-size: var(--ac-font-size-base); font-weight: var(--ac-font-weight-regular); letter-spacing: 0; opacity: .75; }
+.ac-top-left { display: flex; flex-wrap: wrap; align-items: center; gap: 10px 18px; min-width: 0; }
+.ac-top-ctrls-left { justify-content: flex-start; }
 .ac-top-ctrls { display: flex; flex-wrap: wrap; align-items: center; justify-content: flex-end; gap: 10px; }
 .ac-spacer { flex: 1; }
 .ac-top button { font: inherit; font-size: var(--ac-font-size-sm); line-height: var(--ac-leading-base); color: var(--ac-header-text); background: transparent; border: var(--ac-border-thin) solid var(--ac-neutral-0-a30); border-radius: var(--ac-radius-sm-plus); padding: 4px 10px; opacity: .75; cursor: pointer; text-align: start; }

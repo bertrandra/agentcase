@@ -18,6 +18,7 @@ When releasing, follow [docs/BUMP_PROCEDURE.md](docs/BUMP_PROCEDURE.md) (§7 for
 ## [Unreleased]
 
 ### Changed
+- Header in two zones: left = AgentCase title (and client logo), ☰ sidebar toggle, Persona and Fast Path; right = View / Edit (several products), undo / redo, 📁 file menu, ◐ display.
 - Top bar: Save and Open… move into a file menu opened by an icon-only 📁 button (menu button pattern: arrows, Home / End, Escape, click outside).
 - "Edit in place: All products" banner: the sentence naming whose team the figures use is removed (the context is already shown above).
 
