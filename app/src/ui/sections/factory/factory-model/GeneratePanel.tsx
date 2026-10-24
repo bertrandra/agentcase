@@ -39,7 +39,10 @@ export function GeneratePanel() {
         : <button type="button" data-tone="primary" onClick={() => (total > 0 ? setPending(true) : go())}>🧬 Generate data</button>}
       {pv && (
         <p className="ac-muted">Generated {String(pv.at).slice(0, 10)} · seed {pv.seed} · weekly · {pv.weeks} weeks from {pv.from} · {pv.phases} phases · ramp {pv.ramps.join('/')}% · eff. automation {pv.eff}% · ceiling {pv.ceiling}% · {n(pv.records)} records in {pv.ms}ms<br />
-          {pv.curveMeans && <>Adoption follows a <strong>monthly progressive curve</strong> from 0 through the annual breakpoints ({pv.ramps.join('/')}% at months 12/24/36), not the annual step. Its yearly averages are {pv.curveMeans.join('/')}% — lower than the model&apos;s annual figures by construction, because the model states the year&apos;s representative level while the curve states the path. No euro figure is affected.<br /></>}
+          {pv.curveMeans && <>Adoption follows a <strong>monthly progressive curve</strong> from 0 through the annual breakpoints
+            ({pv.ramps.join('/')}% at months 12/24/36), not the annual step. Its yearly averages are {pv.curveMeans.join('/')}% — lower than the
+            model&apos;s annual figures by construction, because the model states the year&apos;s representative level while the curve states the
+            path. No euro figure is affected.<br /></>}
           <strong style={{ color: 'var(--ac-amber)' }}>Simulated from this case&apos;s assumptions — not measured data.</strong></p>
       )}
     </Panel>

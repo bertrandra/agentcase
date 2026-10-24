@@ -23,11 +23,15 @@ export function Decomp() {
   ];
   return (
     <Panel title="Savings decomposition — automation vs relocation">
-      <p className="ac-muted">Total savings split into three transparent components: <strong>gross automation</strong> (value of the headcount removed, priced at the AS-IS rate), the <strong>agent operating cost</strong> (tokens + infra + agentic run team), and <strong>relocation</strong> (residual team priced at the target-location rate vs the AS-IS blend).</p>
+      <p className="ac-muted">Total savings split into three transparent components: <strong>gross automation</strong> (value of the headcount
+        removed, priced at the AS-IS rate), the <strong>agent operating cost</strong> (tokens + infra + agentic run team),
+        and <strong>relocation</strong> (residual team priced at the target-location rate vs the AS-IS blend).</p>
       <GridTable head={['Component', ...b.years.map((_, i) => `Year ${i + 1}`)]} rows={rows} />
       {Math.abs(b.asis - b.tgt) <= 0.5 && <p className="ac-muted">Relocation is currently near-neutral (target location ≈ AS-IS blend, {Math.round(b.asis)} €/day) — savings are essentially all automation-driven. Change the location strategy to introduce a relocation component.</p>}
       <p className="ac-muted">Reconciliation (Y{n}): gross auto {fmtSigned(last.grossAuto)} − agent cost {fmtSigned(last.agentCost)} + relocation {fmtSigned(last.relocation)} = {fmtSigned(last.total)} vs model yearSav {fmtSigned(last.model)}.</p>
-      {Math.abs(last.total - last.model) > 1 && <Callout kind="warn">These components are priced on the flat annual model, so they do not add up to the Time-Engine savings used everywhere else (the legacy screen says "reconcile exactly"; it does not). Use the Financial summary figures for decisions.</Callout>}
+      {Math.abs(last.total - last.model) > 1 && <Callout kind="warn">These components are priced on the flat annual model, so they do not add up to
+        the Time-Engine savings used everywhere else (the legacy screen says "reconcile exactly"; it does not). Use the Financial summary figures for
+        decisions.</Callout>}
       <ChartPanel config={cfg} label="Savings decomposition by year" height={300} />
     </Panel>
   );

@@ -12,7 +12,9 @@ export default function CalcEngineSection() {
     <SectionFrame title={content.title} help={<Rich nodes={content.help} />}
       input={<>
         <p><Badge tone="blue">{content.version}</Badge></p>
-        <Callout>The machinery behind the numbers, introspected: the ⏱️ Time Engine's function surface, its <code>model()</code> overlay contract and which sections actually call it — plus what replaced the DEP invalidation graph and the AUDIT invariant registry. This page describes the new TypeScript engine (<code>src/domain</code>); the help text keeps the legacy explanations that remain true.</Callout>
+        <Callout>The machinery behind the numbers, introspected: the ⏱️ Time Engine's function surface, its <code>model()</code> overlay contract and
+          which sections actually call it — plus what replaced the DEP invalidation graph and the AUDIT invariant registry. This page describes the
+          new TypeScript engine (<code>src/domain</code>); the help text keeps the legacy explanations that remain true.</Callout>
       </>}
       result={<Tabs label="Calculation engine" tabs={[
         { id: 'time', label: '⏱️ Time Engine', render: () => <TimeEngine /> },

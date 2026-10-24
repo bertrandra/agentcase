@@ -31,7 +31,9 @@ export default function ModelVerificationSection() {
           <span>φₐ (weighted) <strong>{pct1(e.phiWeighted)}</strong> · rate <strong>{pct1(e.rate)}</strong> · <strong style={{ color: 'var(--ac-blue)' }}>ρ<sub>max</sub> = {pct1(e.rhoMax)}</strong></span>
         </div>
         {net && rawNet < -1e-9 && (
-          <label className="ac-check" style={{ color: 'var(--ac-brick)' }}><input type="checkbox" checked={!!evt.ackNegativeNet} onChange={(ev) => setEvtAck(ev.target.checked)} /> Net tax would be <strong>{(rawNet * 100).toFixed(1)}%</strong> (negative = a savings credit) — I acknowledge this explicit claim (CC-VT-02)</label>
+          <label className="ac-check" style={{ color: 'var(--ac-brick)' }}><input type="checkbox" checked={!!evt.ackNegativeNet} onChange={(ev) => setEvtAck(ev.target.checked)} /> Net
+            tax would be <strong>{(rawNet * 100).toFixed(1)}%</strong> (negative = a savings credit) — I acknowledge this explicit claim
+            (CC-VT-02)</label>
         )}
         <PhaseBanner on={on} off=" — the model uses the legacy flat rate (base × avg. human supervision). The table below previews what P2 would compute from the current scope.">
           The verification-tax rate is now derived from each in-scope artefact&apos;s criticality class, not a flat dial.

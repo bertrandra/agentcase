@@ -25,7 +25,10 @@ export default function KnowledgeSection() {
       input={
         <>
           <Badge tone="blue">EV-10 · v13.1</Badge>
-          <Callout>The referential's <em>mémoire vivante</em> (Knowledge Graph, KT Hub) quantified through three channels: <strong>(1)</strong> a potential multiplier via the connected-context maturity CC0–CC4 (capped by the regulatory ceiling), <strong>(2)</strong> a variance reducer on the Monte Carlo adoption spread (−8% σ per CC level), <strong>(3)</strong> avoided knowledge-transfer &amp; onboarding cost. Availability is bounded by the engagement context (STA: locked · MSI: up to CC2 · MSC: up to CC4).</Callout>
+          <Callout>The referential's <em>mémoire vivante</em> (Knowledge Graph, KT Hub) quantified through three channels: <strong>(1)</strong> a
+            potential multiplier via the connected-context maturity CC0–CC4 (capped by the regulatory ceiling), <strong>(2)</strong> a variance
+            reducer on the Monte Carlo adoption spread (−8% σ per CC level), <strong>(3)</strong> avoided knowledge-transfer &amp; onboarding cost.
+            Availability is bounded by the engagement context (STA: locked · MSI: up to CC2 · MSC: up to CC4).</Callout>
           <SubsetBanner />
           <SubsetFieldBox field="enabled" label="Hub use"><CheckInput id="khEnabled" label="Enable the Knowledge hub in the model" /></SubsetFieldBox>
           <AsisPanel />

@@ -9,8 +9,12 @@ interface Actions { onActivate: (id: string) => void; onDelete: (id: string) => 
 function BaselineButton({ onConfirm }: { onConfirm: () => void }) {
   const [stage, setStage] = useState(0);
   if (stage === 0) return <button type="button" onClick={() => setStage(1)}>🏁 Set as baseline</button>;
-  if (stage === 1) return <span role="group" aria-label="Baseline step 1"><span className="ac-muted">⚠ This becomes the default state of the file you save next. Continue? </span><button type="button" onClick={() => setStage(2)}>Continue →</button> <button type="button" onClick={() => setStage(0)}>Cancel</button></span>;
-  return <span role="group" aria-label="Baseline final confirmation"><strong>⚠ FINAL CONFIRMATION — replace the current baseline and activate it now? </strong><button type="button" data-tone="danger" onClick={() => { setStage(0); onConfirm(); }}>✓ Yes, set as baseline</button> <button type="button" onClick={() => setStage(0)}>Cancel</button></span>;
+  if (stage === 1) return <span role="group" aria-label="Baseline step 1"><span className="ac-muted">⚠ This becomes the default state of the file you
+    save next. Continue? </span><button type="button" onClick={() => setStage(2)}>Continue
+    →</button> <button type="button" onClick={() => setStage(0)}>Cancel</button></span>;
+  return <span role="group" aria-label="Baseline final confirmation"><strong>⚠ FINAL CONFIRMATION — replace the current baseline and activate it
+    now? </strong><button type="button" data-tone="danger" onClick={() => { setStage(0); onConfirm(); }}>✓ Yes, set as
+    baseline</button> <button type="button" onClick={() => setStage(0)}>Cancel</button></span>;
 }
 
 function RenameField({ name, onSave, onCancel }: { name: string; onSave: (n: string) => void; onCancel: () => void }) {

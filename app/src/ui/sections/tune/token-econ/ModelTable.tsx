@@ -33,7 +33,9 @@ export function ModelTable() {
   const ok = Math.abs(t.mixSum - 100) <= 0.5;
   return (
     <Panel title="💸 Token economics by model">
-      <p className="ac-muted">Per model: usage <strong>mix %</strong> and <strong>input / output price</strong> (€ per 1M tokens). Volume ({L}) and cost are computed from the usage estimate above, distributed by mix, with the input/output split applied. The <strong>blended €/1M</strong> drives Run / Setup / ROI. Add or remove models freely — this list is part of the Excel export / import.</p>
+      <p className="ac-muted">Per model: usage <strong>mix %</strong> and <strong>input / output price</strong> (€ per 1M tokens). Volume ({L}) and
+        cost are computed from the usage estimate above, distributed by mix, with the input/output split applied. The <strong>blended
+        €/1M</strong> drives Run / Setup / ROI. Add or remove models freely — this list is part of the Excel export / import.</p>
       <div className="ac-form-row">
         <button type="button" onClick={addTokenModel}>＋ Add model</button>
         <button type="button" onClick={resetTokenModels}>↺ Reset</button>

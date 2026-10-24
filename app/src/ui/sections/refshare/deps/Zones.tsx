@@ -35,7 +35,9 @@ export function Zones() {
   return (
     <div>
       <h2>Zones &amp; figures <span className="ac-muted">— {DRAWN.length} calculation zones, {SHARED.length} shared, {owned} figures with exactly one owner each</span></h2>
-      <p className="ac-muted">Every module under <code>src/domain</code> carries a <code>@calc-zone</code> tag and the module that owns a figure an <code>@owner</code> tag; <code>tests/domain/zones-tags.test.ts</code> enforces both, so a number has one source and no second copy of its formula. A section depends on a figure when the import closure of what it touches reaches the owner module.</p>
+      <p className="ac-muted">Every module under <code>src/domain</code> carries a <code>@calc-zone</code> tag and the module that owns a figure
+        an <code>@owner</code> tag; <code>tests/domain/zones-tags.test.ts</code> enforces both, so a number has one source and no second copy of its
+        formula. A section depends on a figure when the import closure of what it touches reaches the owner module.</p>
       {LAYERS.order.map((id) => <Card key={id} z={DRAWN.find((z) => z.id === id)!} />)}
       <h3>Shared zones (plumbing, never drawn as a dependency)</h3>
       {SHARED.map((z) => <Card key={z.id} z={z} />)}

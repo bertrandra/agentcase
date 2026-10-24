@@ -31,7 +31,9 @@ export function CostModelPanel() {
   };
   return (
     <Panel title="💶 Cost model (monthly)">
-      <p>A workbook to recompute the cost outside the app: <strong>days x applied day rate + other costs = the cost shown in the app</strong>. Each month of the portfolio calendar is a column (M1 = first portfolio month), with a <strong>t0</strong> column for the AS-IS reference (the entry team before transformation, per month).</p>
+      <p>A workbook to recompute the cost outside the app: <strong>days x applied day rate + other costs = the cost shown in the app</strong>. Each
+        month of the portfolio calendar is a column (M1 = first portfolio month), with a <strong>t0</strong> column for the AS-IS reference (the entry
+        team before transformation, per month).</p>
       <ul>
         <li><strong>Values</strong>: human days per month by Portfolio / Wave / Product / Skill / Grade / Location, the agentic side as information, the drivers, and subtotals per product, wave and portfolio.</li>
         <li><strong>Rate cards</strong>: the day-rate card, the target location mix, the day rate applied to each line each month and a team-cost check (difference = 0).</li>

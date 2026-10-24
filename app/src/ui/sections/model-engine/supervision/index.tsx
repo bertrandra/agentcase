@@ -11,7 +11,9 @@ import { DoraTable } from './DoraTable';
 const help = (
   <>
     <p>Supervision capacity is a decision variable with a cost, not a free assumption or a hard wall. <strong>Provisioned</strong> solves for the supervisors the target agent capacity needs and prices them (the app&apos;s existing hybrid run-team formula, named and surfaced);
-      the optional day-rate override replaces the blended rate. <strong>Constrained</strong> fixes the headcount and caps achievable agent vFTE at what that team can absorb (the inverse of the same formula; hard = min(), soft = smooth saturation); what supervision cannot absorb stays with the human team.</p>
+      the optional day-rate override replaces the blended rate. <strong>Constrained</strong> fixes the headcount and caps achievable agent vFTE at
+        what that team can absorb (the inverse of the same formula; hard = min(), soft = smooth saturation); what supervision cannot absorb stays with
+        the human team.</p>
     <p>S(t) = S0·(1+λ)^t, capped at a ceiling multiple (default 2.5×). The DORA read-out is a pure read-out of P1/P3 state: enter a measured value beside a derived one — a gap is a calibration signal, not a failure.</p>
   </>
 );
@@ -22,7 +24,9 @@ export default function ModelSupervisionSection() {
   return (
     <SectionFrame title="🧑‍✈️ Supervision — provisioned or constrained · P3 · v16.7" help={help}
       input={<>
-        <Callout>Prices supervision as a <strong>decision, not a wall</strong>. <strong>Provisioned</strong> (default) solves for the supervisor headcount your target agent capacity needs, prices it, and never caps throughput — this is the app&apos;s pre-existing run-team sizing policy, now named and surfaced.
+        <Callout>Prices supervision as a <strong>decision, not a wall</strong>. <strong>Provisioned</strong> (default) solves for the supervisor
+          headcount your target agent capacity needs, prices it, and never caps throughput — this is the app&apos;s pre-existing run-team sizing
+          policy, now named and surfaced.
           <strong> Constrained</strong> fixes headcount and caps achievable capacity at what that team can absorb — the &quot;what today&apos;s team can absorb without hiring&quot; sensitivity. Plus a DORA read-out pulled forward from P5. (AME-SPEC v0.2, P3)</Callout>
         <div className="ac-form-row">
           <PhaseSwitch on={on} phase="P3" onToggle={() => enableSup(!on)} />

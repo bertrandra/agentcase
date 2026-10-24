@@ -41,7 +41,10 @@ function Outcome() {
 export function HriPanel() {
   return (
     <Panel title="🧑‍🤝‍🧑 Human Readiness Index & change cost">
-      <p>The AI Readiness Index above measures the <em>technical &amp; organisational</em> platform. This second index measures the <em>human</em> side of the transformation — fears, coaching, champions, preceptorship — following the referential&apos;s people chapter. When enabled, it (a) adds a <strong>change cost</strong> line to the Agentic Setup and (b) applies an <strong>adoption drag</strong> to the S-curve: ramp × (0.6 + 0.4 × HRI/100).</p>
+      <p>The AI Readiness Index above measures the <em>technical &amp; organisational</em> platform. This second index measures
+        the <em>human</em> side of the transformation — fears, coaching, champions, preceptorship — following the referential&apos;s people chapter.
+        When enabled, it (a) adds a <strong>change cost</strong> line to the Agentic Setup and (b) applies an <strong>adoption drag</strong> to the
+        S-curve: ramp × (0.6 + 0.4 × HRI/100).</p>
       <CheckInput id="hriEnabled" label="Enable Human Readiness in the model (change cost + adoption drag)" />
       <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit,minmax(320px,1fr))', gap: 16 }}>
         <Questions />

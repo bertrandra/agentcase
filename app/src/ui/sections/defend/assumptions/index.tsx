@@ -45,7 +45,9 @@ export default function AssumptionsSection() {
             ))}
           </tbody>
         </table></div>
-        <p className="ac-muted">Every editable variable of the model in one auditable place. <strong>Status</strong>: default benchmark · adjusted in this simulation · validated with the client. <strong>Impact</strong>: Pearson correlation with the net outcome from the last Monte Carlo run (uncertain parameters only). No hidden assumptions.</p>
+        <p className="ac-muted">Every editable variable of the model in one auditable place. <strong>Status</strong>: default benchmark · adjusted in
+          this simulation · validated with the client. <strong>Impact</strong>: Pearson correlation with the net outcome from the last Monte Carlo run
+          (uncertain parameters only). No hidden assumptions.</p>
       </>} />
   );
 }

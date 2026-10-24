@@ -16,7 +16,9 @@ import { Chain, Checks, Conventions, Sensi } from './Tables';
 
 const help = (
   <>
-    <p>Runs automatic consistency checks on the current configuration and exposes the full calculation chain — the model auditing itself in real time. The checks prove the maths is internally coherent (no double counting, effort conserved, benefits = baseline − run + KT avoided − verification tax − external rework). They do not say the automation potential is realistic.</p>
+    <p>Runs automatic consistency checks on the current configuration and exposes the full calculation chain — the model auditing itself in real time.
+      The checks prove the maths is internally coherent (no double counting, effort conserved, benefits = baseline − run + KT avoided − verification
+      tax − external rework). They do not say the automation potential is realistic.</p>
     <p>If a check fails, the case is structurally wrong — do not present it. A green board is necessary, not sufficient: due diligence is the other half.</p>
   </>
 );

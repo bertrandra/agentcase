@@ -36,7 +36,9 @@ export default function VelocitySection() {
       result={<>
         <p className="ac-muted">DORA metrics and sprint velocity, driven by the in-scope automatable intensity × ramp — they move with the artifacts you select.</p>
         <ChartPanel config={cfg} label="Velocity in story points per sprint, Y0 to the horizon end" height={240} />
-        <Callout>Read year by year: Y0 → Y3, four points and three intervals. Values interpolate AS-IS → target on the adoption ramp and are <strong>clamped at the target</strong> — before v16.1 they overshot it, which produced a negative lead time at high ramps. Anchors are editable and carry no documented source (see 🧾 Due diligence).</Callout>
+        <Callout>Read year by year: Y0 → Y3, four points and three intervals. Values interpolate AS-IS → target on the adoption ramp and
+          are <strong>clamped at the target</strong> — before v16.1 they overshot it, which produced a negative lead time at high ramps. Anchors are
+          editable and carry no documented source (see 🧾 Due diligence).</Callout>
         <DataTable rows={v.rows} rowKey={(r) => r.label} columns={[
           { key: 'm', header: 'DORA metric', render: (r) => <strong>{r.label}</strong> }, cell(0, 'AS-IS'), cell(1, 'Y1'), cell(2, 'Y2'), cell(3, v.endL),
           { key: 'e', header: 'Elite target', align: 'center', render: (r) => <span style={{ color: 'var(--ac-teal)' }}>{r.cells[4]}</span> },

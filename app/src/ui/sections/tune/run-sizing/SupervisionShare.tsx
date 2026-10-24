@@ -10,7 +10,9 @@ export function SupervisionShare() {
   const c = useCtx(), t = useMemo(() => supervisionSplit(c), [c]);
   return (
     <Panel title="Human supervision share" aside={<Badge tone="amber">v18.7</Badge>}>
-      <p className="ac-muted">Not the AgentOps team above — this splits the <strong>residual project team</strong> (the humans this transformation leaves in place) into people who still <em>deliver</em> vs. people who <em>supervise agent output</em>. Same "Target Team" breakdown shown on the Team-out tab.</p>
+      <p className="ac-muted">Not the AgentOps team above — this splits the <strong>residual project team</strong> (the humans this transformation
+        leaves in place) into people who still <em>deliver</em> vs. people who <em>supervise agent output</em>. Same "Target Team" breakdown shown on
+        the Team-out tab.</p>
       <div className="ac-form-row">
         <CoefInput coef="supShareCap" domId="runSupShareCap" label="Supervision share cap" max={1} step={0.05} />
         <CoefInput coef="supShareFactor" domId="runSupShareFactor" label="Supervision share factor" max={2} step={0.05} />

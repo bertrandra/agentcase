@@ -21,7 +21,9 @@ export default function GlossarySection() {
   return (
     <SectionFrame title={content.title} help={<Rich nodes={content.help} />}
       input={<>
-        <Callout>Every term of the delivery-model referential lives here, mapped to its AgentCase equivalent and tagged: <b>Aligned</b> (same concept), <b>Mapped in AgentCase</b> (implemented as a feature), <b>AgentCase strength</b> (quantification the referential lacks). Use it as the shared language between COMEX and delivery conversations.</Callout>
+        <Callout>Every term of the delivery-model referential lives here, mapped to its AgentCase equivalent and tagged: <b>Aligned</b> (same
+          concept), <b>Mapped in AgentCase</b> (implemented as a feature), <b>AgentCase strength</b> (quantification the referential lacks). Use it as
+          the shared language between COMEX and delivery conversations.</Callout>
         <div style={{ display: 'flex', gap: 12, flexWrap: 'wrap', margin: '8px 0' }}>
           <input type="search" className="ac-search" placeholder="🔍 Search a term or definition…" aria-label="Search a term or definition" value={query} onChange={(e) => setQuery(e.target.value)} />
           <button type="button" className="ac-btn ac-btn-primary" onClick={exportMd}>⬇️ Export glossary (.md)</button>
