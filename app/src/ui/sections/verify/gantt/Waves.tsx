@@ -2,7 +2,6 @@ import { useState } from 'react';
 import { useDisplayScope, usePortfolioGantt } from '@/store/consolidationHooks';
 import { useActiveProductId, useIsMulti } from '@/store/portfolioHooks';
 import { CalendarHeader } from './bars';
-import { SUB } from './Program';
 import { WaveRow } from './WaveRow';
 
 /** Product scope with 2+ products: the Gantt below is the product's own, from its own month 0; this line says where that sits on the portfolio calendar. */
@@ -31,7 +30,7 @@ function Waves() {
     <section className="ac-panel" aria-label="Wave Gantt">
       <h2>Wave Gantt <small className="ac-muted">— {scope.kind === 'wave' ? shown[0]?.name ?? 'wave' : 'portfolio'}, portfolio calendar</small></h2>
       <CalendarHeader ticks={g.ticks} />
-      <div style={SUB}>Waves — from the first start to the end of their products’ ramp</div>
+      <div className="ac-gantt-sub">Waves — from the first start to the end of their products’ ramp</div>
       {shown.map((w, i) => <WaveRow key={w.id} w={w} index={i} open={open.has(w.id) || scope.kind === 'wave'} onToggle={() => toggle(w.id)} />)}
       {!shown.length && <p className="ac-muted">No scheduled wave.</p>}
       {g.unplanned.length > 0 && <p className="ac-muted">Unscheduled (absent from the Gantt): {g.unplanned.join(', ')}.</p>}

@@ -2,38 +2,39 @@ import type { GanttView } from '@/domain/verifyB';
 import { CalendarHeader, Row } from './bars';
 import { ProgramBar } from './ProgramBar';
 
-const FAMILY: Record<string, string> = { adoption: 'var(--ac-chart-cat-1)', maturity: 'var(--ac-chart-cat-4)', financial: 'var(--ac-chart-cat-3)', workforce: 'var(--ac-chart-cat-2)' };
-const SUB = { fontSize: 'var(--ac-font-size-sm)', fontWeight: 'var(--ac-font-weight-bold)', color: 'var(--ac-slate-650)', textTransform: 'uppercase' as const, letterSpacing: '.04em', margin: '.7rem 0 .2rem' };
+const FAMILY: Record<string, string> = {
+  adoption: 'var(--ac-chart-cat-1)', maturity: 'var(--ac-chart-cat-4)', financial: 'var(--ac-chart-cat-3)', workforce: 'var(--ac-chart-cat-2)',
+};
+
+/** One engine milestone: a dot and its label, placed at its month (lifted when it would overprint its neighbour). */
+function Marker({ m }: { m: GanttView['markers'][number] }) {
+  const col = FAMILY[m.family] ?? 'var(--ac-slate-650)';
+  return (
+    // dynamic: the marker's place on the calendar and its family colour (dot, ring and label)
+    <div title={m.title} className={m.lift ? 'ac-gantt-marker is-lifted' : 'ac-gantt-marker'} style={{ left: `${m.left.toFixed(2)}%` }}>
+      <div className="ac-gantt-marker-dot" style={{ background: col, boxShadow: `var(--ac-shadow-ring-offset) ${col}` }} />
+      <div className="ac-gantt-marker-l" style={{ color: col }}>{m.label}</div>
+      <div className="ac-gantt-marker-d">{m.date}</div>
+    </div>
+  );
+}
 
 /** Calendar header, the transformation program rows and the engine-derived milestone markers. */
 export function Program({ v }: { v: GanttView }) {
   return (
     <>
       <CalendarHeader ticks={v.ticks} />
-      <div style={SUB}>Transformation program</div>
-      {v.program.map((r) => <Row key={r.name} height={21} label={r.name} title={`${r.name} — ${r.meta}`}><ProgramBar r={r} /></Row>)}
-      <div style={SUB}>Generated milestones — derived from the adoption model, not typed</div>
-      <div style={{ display: 'flex', alignItems: 'flex-start', minHeight: 46 }}>
-        <div style={{ width: 260, flex: 'none', fontSize: 'var(--ac-font-size-sm)', paddingTop: 2 }}>🎯 Model
-          milestones <span style={{ color: 'var(--ac-neutral-700)', fontSize: 'var(--ac-font-size-2xs-plus)' }}>(engine-derived)</span></div>
-        <div style={{ position: 'relative', flex: 1, minHeight: 46 }}>
-          <div style={{ position: 'absolute', left: 0, right: 0, top: 4, borderTop: '1px dashed var(--ac-slate-200)' }} />
-          {v.markers.length === 0 && <div style={{ fontSize: 'var(--ac-font-size-xs)', color: 'var(--ac-neutral-700)', paddingTop: 4 }}>no crossings in
-            horizon</div>}
-          {v.markers.map((m) => {
-            const col = FAMILY[m.family] ?? 'var(--ac-slate-650)';
-            return (
-              <div key={`${m.month}:${m.label}`} title={m.title}
-                style={{ position: 'absolute', left: `${m.left.toFixed(2)}%`, top: m.lift ? 0 : 16, transform: 'translateX(-50%)', display: 'flex', flexDirection: 'column', alignItems: 'center', zIndex: 2 }}>
-                <div style={{ width: 9, height: 9, borderRadius: 'var(--ac-radius-round)', background: col, border: '2px solid var(--ac-neutral-0)', boxShadow: `var(--ac-shadow-ring-offset) ${col}` }} />
-                <div style={{ fontSize: 'var(--ac-font-size-3xs-plus)', lineHeight: 'var(--ac-leading-tight)', color: col, whiteSpace: 'nowrap', marginTop: 1, maxWidth: 78, overflow: 'hidden', textOverflow: 'ellipsis' }}>{m.label}</div>
-                <div style={{ fontSize: 'var(--ac-font-size-3xs)', color: 'var(--ac-neutral-700)' }}>{m.date}</div>
-              </div>
-            );
-          })}
+      <div className="ac-gantt-sub">Transformation program</div>
+      {v.program.map((r) => <Row key={r.name} kind="program" label={r.name} title={`${r.name} — ${r.meta}`}><ProgramBar r={r} /></Row>)}
+      <div className="ac-gantt-sub">Generated milestones — derived from the adoption model, not typed</div>
+      <div className="ac-gantt-markers">
+        <div className="ac-gantt-markers-l">🎯 Model milestones <span className="ac-gantt-markers-note">(engine-derived)</span></div>
+        <div className="ac-gantt-markers-track">
+          <div className="ac-gantt-markers-axis" />
+          {v.markers.length === 0 && <div className="ac-gantt-markers-none">no crossings in horizon</div>}
+          {v.markers.map((m) => <Marker key={`${m.month}:${m.label}`} m={m} />)}
         </div>
       </div>
     </>
   );
 }
-export { SUB };

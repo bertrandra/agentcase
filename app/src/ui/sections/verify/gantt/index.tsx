@@ -9,12 +9,14 @@ import { Delivery } from './Delivery';
 import { Program } from './Program';
 import { PortfolioGanttPart } from './Waves';
 
+const STAGES = ['Discover', 'Calibrate', 'Validate', 'Pilot & Prove'];
 const INTRO = 'A planning view of the whole engagement on one timeline: the transformation program (Discover → Calibrate → Validate → Pilot, then Agentic Build ramp and Agentic Run steady state), '
   + 'the SDLC phases in their V-cycle sequence, and every artefact placed in its phase. In-scope items are solid; out-of-scope ones are dimmed. '
   + 'Durations for the program come from the AI Readiness roadmap inputs; the delivery bands are laid out across the case horizon.';
 
 /** A number field of the case with a legacy default for when the document does not carry it yet (the legacy Gantt creates these inputs itself). */
-function DomNumber({ id, label, fallback, hint, ...rest }: { id: string; label: string; fallback: string; min?: number; max?: number; step?: number; hint?: string }) {
+interface DomNumberProps { id: string; label: string; fallback: string; min?: number; max?: number; step?: number; hint?: string }
+function DomNumber({ id, label, fallback, hint, ...rest }: DomNumberProps) {
   const value = useDoc((d) => d.dom.values[id] ?? fallback);
   return <Field label={label} hint={hint}><input type="number" value={value} {...rest} onChange={(e) => setInput(id, e.target.value)} /></Field>;
 }
@@ -28,10 +30,9 @@ export default function GanttSection() {
   const v = useView(ganttView), gain = v.velocityGain.toFixed(2);
   return (
     <SectionFrame title="📅 Gantt / Timeline" help={<p>{INTRO}</p>}
-      input={<div style={{ display: 'flex', gap: 12, flexWrap: 'wrap', alignItems: 'flex-end' }}>
+      input={<div className="ac-gantt-inputs">
         <StartDate />
-        {[1, 2, 3, 4].map((i) => <NumberInput key={i} id={`rmD${i}`} label={`${['Discover', 'Calibrate', 'Validate', 'Pilot & Prove'][i - 1]} (weeks)`}
-          min={0} />)}
+        {STAGES.map((stage, i) => <NumberInput key={i + 1} id={`rmD${i + 1}`} label={`${stage} (weeks)`} min={0} />)}
         <CheckInput id="ganttShowOnboarding" label="Show Discover → Pilot in the timeline" />
         <DomNumber id="ganttOverlap" fallback="50" label="Phase overlap (pipelining) %" min={0} max={90} step={5} />
         {v.hasCross && <DomNumber id="ganttCrossSeq" fallback="0" label="🔶 Cross-cutting seq" step={1} hint="Same number as a phase's seq = same start" />}
