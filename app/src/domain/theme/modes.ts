@@ -2,7 +2,8 @@
 /**
  * Display modes (docs/THEME.md §6): light / dark, three contrast levels, colour-blind safe charts and reduced motion, as value sets over a base
  * theme. The same sets reach the CSS (generated blocks keyed by `data-ac-*` attributes on :root, `modesCss()`) and the TS readers
- * (`resolveAppTheme()` in resolve.ts, read by `tok()` of the resulting theme). The exports (Excel, report) keep the base theme: they are printed, so always light.
+ * (`resolveAppTheme()` in resolve.ts, read by `tok()` of the resulting theme). The exports (Excel, report) keep the base theme: they are
+ * printed, so always light.
  */
 import { contrastDelta, CVD_CHART, HIGH_CHART } from './contrast';
 import { DARK_CHART, DARK_ROLES, darkAlphas, darkScales } from './dark';
