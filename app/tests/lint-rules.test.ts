@@ -11,6 +11,22 @@ describe('architecture lint rules (G2, G4, edit base)', () => {
     expect(await lint("import { appStore } from '@/store/instance';\nexport const x = appStore;\n", 'src/ui/Bad.tsx')).toContain('no-restricted-imports');
     expect(await lint("import { createAppStore } from '@/store/core';\nexport const x = createAppStore;\n", 'src/ui/Bad.tsx')).toContain('no-restricted-imports');
   });
+  it('UI code cannot reach the store write path through a relative path either', async () => {
+    const bad = [['../store/core', 'src/ui/Bad.tsx'], ['../../store/core', 'src/ui/shell/Bad.tsx'], ['../../store/commands', 'src/ui/shell/Bad.tsx'],
+      ['../../../store/instance', 'src/ui/sections/x/Bad.tsx'], ['../store/derive', 'src/ui/Bad.tsx'], ['../store/history', 'src/ui/Bad.tsx'],
+      ['../../store/persistence/html/export', 'src/ui/shell/Bad.tsx'], ['../store/persistence', 'src/ui/Bad.tsx'], ['../../store/address/dom', 'src/ui/shell/Bad.tsx'],
+      ['@/store/address', 'src/ui/Bad.tsx'], ['@/store/persistence/excel/params/writer', 'src/ui/Bad.tsx']];
+    for (const [from, file] of bad) expect(await lint(`import { x } from '${from}';\nexport const y = x;\n`, file!), from).toContain('no-restricted-imports');
+    // a UI-local module that happens to be called `store` stays allowed, and so do the read hooks by a relative path
+    for (const from of ['../display/store', '../../store/hooks', '../store/viewScope']) {
+      expect(await lint(`import { x } from '${from}';\nexport const y = x;\n`, 'src/ui/shell/Ok.tsx'), from).not.toContain('no-restricted-imports');
+    }
+  });
+  it('controllers cannot import the React hooks or deriveDoc through a relative path', async () => {
+    expect(await lint("import { useDoc } from '../store/hooks';\nexport const x = useDoc;\n", 'src/controllers/Bad.ts')).toContain('no-restricted-imports');
+    expect(await lint("import { deriveDoc } from '../../store/portfolioState';\nexport const x = deriveDoc;\n", 'src/controllers/x/Bad.ts')).toContain('no-restricted-imports');
+    expect(await lint("import { emptyPortfolio } from '../store/portfolioState';\nexport const x = emptyPortfolio;\n", 'src/controllers/Ok.ts')).not.toContain('no-restricted-imports');
+  });
   it('UI code may read through hooks and act through controllers', async () => {
     expect(await lint("import { useDoc } from '@/store/hooks';\nimport { setInput } from '@/controllers/inputs';\nexport const x = [useDoc, setInput];\n", 'src/ui/Ok.tsx')).not.toContain('no-restricted-imports');
   });

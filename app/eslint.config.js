@@ -12,6 +12,8 @@ const layers = [
   { type: 'entry', pattern: 'src/main.tsx', mode: 'file' },
 ];
 const allow = (from, to) => ({ from, allow: to });
+// Store modules the UI may not import (write path, internals); each is restricted by alias and by any relative path.
+const UI_FORBIDDEN_STORE = ['core', 'commands', 'instance', 'derive', 'history', 'syncDraft', 'persistence', 'persistence/**', 'address', 'address/**'];
 const EDIT_BASE = 'Controllers never read getState().doc (the active product\'s case): compute in the command\'s run(draft), or use editBase() / activeDoc() from @/store/editBase.';
 
 export default tseslint.config(
@@ -74,18 +76,20 @@ export default tseslint.config(
         { selector: "MemberExpression[property.name='doc'][object.type='CallExpression'][object.callee.property.name='getState']", message: EDIT_BASE },
         { selector: "VariableDeclarator[init.callee.property.name='getState'] > ObjectPattern > Property[key.name='doc']", message: EDIT_BASE },
       ],
-      'no-restricted-imports': ['error', { paths: [
-        { name: '@/store/hooks', message: 'Controllers are not React: read the case with editBase() / activeDoc() from @/store/editBase.' },
-        { name: '@/store/portfolioState', importNames: ['deriveDoc'], message: EDIT_BASE },
+      // Each rule names the alias and its relative spellings (`../store/hooks`, `../../store/portfolioState`), so a relative path cannot bypass it.
+      'no-restricted-imports': ['error', { patterns: [
+        { group: ['@/store/hooks', '**/store/hooks'], message: 'Controllers are not React: read the case with editBase() / activeDoc() from @/store/editBase.' },
+        { group: ['@/store/portfolioState', '**/store/portfolioState'], importNames: ['deriveDoc'], message: EDIT_BASE },
       ] }],
     },
   },
   {
-    // G4 — the UI never writes state: it reads through `@/store/hooks` and acts through `@/controllers/*` only.
+    // G4 — the UI never writes state: it reads through `@/store/hooks` and acts through `@/controllers/*` only. The relative spellings
+    // (`../store/core`, `../../store/persistence/html/...`) are restricted too, so a relative path cannot bypass the layering.
     files: ['src/ui/**/*.{ts,tsx}'],
     rules: {
       'no-restricted-imports': ['error', { patterns: [
-        { group: ['@/store/core', '@/store/commands', '@/store/instance', '@/store/derive', '@/store/persistence/*'],
+        { group: UI_FORBIDDEN_STORE.flatMap((m) => [`@/store/${m}`, `**/store/${m}`]),
           message: 'UI code must not touch the store directly: read with @/store/hooks, write through @/controllers/*.' },
       ] }],
     },
