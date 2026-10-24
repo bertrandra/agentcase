@@ -6,6 +6,7 @@ import { loadParamsSheets, paramsFileName } from '@/store/persistence/excel/para
 import { ENV, legacyImported, legacyXlsx, stateMismatches, PRISTINE } from '../helpers/excelParams';
 import { asFile, editXlsx, ourXlsx, setByLabel } from '../helpers/xlsxEdit';
 import { freshStore, snap } from './helpers';
+import { appVerFileTag } from '@/domain/snapshots';
 
 beforeEach(() => { freshStore(); });
 const doc = () => appStore().getState().doc;
@@ -13,7 +14,7 @@ const doc = () => appStore().getState().doc;
 describe('exportParamsWorkbook', () => {
   const now = new Date('2026-10-21T12:34:56Z');
   it('names the file like the legacy app: version tag, scope tag, timestamp', async () => {
-    expect(paramsFileName('all', now)).toBe('AgentCase_v20_12_Parameters_2026-10-21-12-34-56.xlsx');
+    expect(paramsFileName('all', now)).toBe(`AgentCase_${appVerFileTag()}_Parameters_2026-10-21-12-34-56.xlsx`);
     expect(paramsFileName('no-factory', now)).toMatch(/_NoFactory_/);
     expect(paramsFileName('persona-only', now, 'json')).toMatch(/_PersonaConfig_2026-10-21-12-34-56\.json$/);
     const out = await exportParamsWorkbook('all', ENV, now);

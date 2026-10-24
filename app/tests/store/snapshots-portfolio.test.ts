@@ -8,7 +8,7 @@ import { setPortfolioHub } from '@/controllers/portfolio';
 import { setProductOverride } from '@/controllers/productOverrides';
 import { activateSnapshot, captureSnapshot, compareSnapshots, setBaselineSnapshot } from '@/controllers/snapshots';
 import { addWave, assignWave, setWaveStart } from '@/controllers/wave';
-import { snapshotsOf } from '@/domain/snapshots';
+import { appVerTag, snapshotsOf } from '@/domain/snapshots';
 import { appStore } from '@/store/instance';
 import { fourProducts, openPortfolioFixture, pfNow } from '../helpers/portfolioFixtures';
 import { freshStore, snapAll } from './helpers';
@@ -50,7 +50,7 @@ describe('named snapshots of a portfolio', () => {
     expect(content()).toEqual(captured);
     expect(lib()).toHaveLength(1);
     expect(appStore().getState().history.undo).toHaveLength(steps + 1);
-    expect(appStore().getState().history.undo.at(-1)!.label).toBe('Activate snapshot "Plan A · v20.12"');
+    expect(appStore().getState().history.undo.at(-1)!.label).toBe(`Activate snapshot "Plan A · ${appVerTag()}"`);
     expect(appStore().undo()).toBe(true);
     expect(snapAll(appStore())).toBe(edited);
     expect(appStore().redo()).toBe(true);

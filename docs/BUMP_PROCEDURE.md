@@ -1,39 +1,37 @@
 # AgentCase — Release procedure
 
-> Applies to the repository after the migration: the TypeScript + React build in `app/` is the product (version `20.3.0`);
+> Applies to the repository after the migration: the TypeScript + React build in `app/` is the product (its version is the `version` of `app/package.json`);
 > the legacy single-file app `AgentCase_v18_13_EN.html` is the frozen reference (§6). The previous procedure, written for the
 > single file, is archived in [`history/BUMP_PROCEDURE_legacy_v18.md`](history/BUMP_PROCEDURE_legacy_v18.md) (and the v12.42 one in
 > [`history/AgentCase_BumpProcedure_v12.42.md`](history/AgentCase_BumpProcedure_v12.42.md)).
 
-**Rule:** every functional change of the product bumps the version. A release is one pull request that changes the version stamps,
-adds a changelog entry and passes CI. Commands run from the repository root unless a `cd app` is shown.
+**Rule:** every functional change of the product bumps the version. A release is one pull request that changes the version (one command,
+§3), adds a changelog entry, regenerates the documentation facts and passes CI. Commands run from the repository root unless a `cd app` is shown.
 
 ## 1. What a release touches
 
 | Artifact | Action |
 |---|---|
-| `app/src/domain/version.ts` | `APP_VERSION` — the runtime source: brand in the top bar, snapshot, Excel and report file names |
-| `app/package.json` and `app/package-lock.json` | `version` (lock file: two places). Use `cd app && npm version <X.Y.Z> --no-git-tag-version`, which edits both |
-| `app/index.html` | `<title>AgentCase vN — Agentic Transformation Business Case</title>`: the major only (`v20`); change it only on a major bump |
+| `app/package.json` and `app/package-lock.json` | `version`: **the single version source**. `cd app && npm version X.Y.Z --no-git-tag-version` edits both (lock file: two places) |
 | `CHANGELOG.md` | new `## [vX.Y.Z] YYYY-MM-DD — title` section at the top: New / Changed / Fixed and a **Golden case** line |
-| `README.md` | the version in the deliverables table |
-| `docs/ARCHITECTURE.md` | only if the architecture changed; update its "Applies to" line |
+| `docs/ARCHITECTURE.md`, `README.md`, `app/README.md` | the version, the release file name and the counts between `<!-- fact:… -->` markers are **generated**: `cd app && npm run docs:facts` |
+| `docs/ARCHITECTURE.md` (prose) | only if the architecture changed |
 | `docs/MIGRATION_PLAN.md` §15 | tick off or add remaining gaps when a release closes one |
+| `docs/RELEASE_TAGS.md` | add the row of the release (merge commit) after the merge, with its tag command |
 
-There are four stamps and no test that compares them: `version.ts`, `package.json`, `package-lock.json`, and the title in
-`index.html` (major only). Check by hand:
-
-```bash
-grep -n "APP_VERSION =" app/src/domain/version.ts
-grep -n '"version"' app/package.json
-grep -n "<title>" app/index.html
-```
+Nothing else carries the version. It reaches the code at build and test time: `app/vite.config.ts` reads `package.json` and injects it as
+`__APP_VERSION__` (Vite `define`, also used by Vitest and vite-node), which `app/src/domain/version.ts` exports as `APP_VERSION` (brand in the
+top bar, snapshot, Excel and report file names); the page title of `app/index.html` is the placeholder `%APP_VER_TAG%`, filled by the same
+config (`AgentCase v20.12 — …`). `app/tests/version.test.ts` fails if a version literal or its tags (`v20.12`, `v20_12`) appear anywhere under
+`app/src`, `app/tests` or in `app/index.html`, and `app/tests/docs-facts.test.ts` (and `npm run docs:check`, part of `npm run check`) fails with
+"run `npm run docs:facts`" when a generated fact in the docs is stale.
 
 ### How the version becomes a tag
 
-`appVerTag()` (`app/src/domain/snapshots/library.ts`) and `versionFileTag()` (`app/src/store/persistence/excel/params/index.ts`)
-turn `APP_VERSION` into `vX.Y` by removing one trailing `.0`, and dots into underscores for file names: `20.0.0` → `v20.0` / `v20_0`,
-`20.1.0` → `v20.1` / `v20_1`, `20.0.1` → `v20.0.1`. A pre-release suffix is kept as is (`20.0.0-dev` → `v20.0.0-dev`), so remove
+`versionTag()` / `versionFileTag()` (`app/src/domain/versionTag.ts`, used by `appVerTag()` / `appVerFileTag()`, the page title and
+`npm run release`) turn the version into `vX.Y` by removing one trailing `.0` (legacy `appVerTag()` semantics), and dots into underscores for
+file names: `20.0.0` → `v20.0` / `v20_0`, `20.12.0` → `v20.12` / `v20_12`, and a **patch release** keeps its patch: `20.12.1` → `v20.12.1` /
+`v20_12_1` (release file `AgentCase_v20_12_1_EN.html`). A pre-release suffix is kept as is (`20.0.0-dev` → `v20.0.0-dev`), so remove
 `-dev` in the release that cuts over.
 
 ### Do not touch
@@ -57,8 +55,8 @@ If it is red before your change, fix that first and say so in the changelog.
 ## 3. Apply the change and the stamps
 
 1. Make the functional change. Calculation changes follow decision D7: they are **not** made in `app/` alone, see §6.
-2. `cd app && npm version X.Y.Z --no-git-tag-version`, then edit `APP_VERSION` in `src/domain/version.ts`.
-3. Add the changelog entry (§5) and update the docs of §1.
+2. `cd app && npm version X.Y.Z --no-git-tag-version` (the only version edit), then `npm run docs:facts` (version and counts in the docs).
+3. Add the changelog entry (§5) and update the prose of the docs of §1 if needed.
 
 ## 4. Checks
 
@@ -113,11 +111,11 @@ to the run (artifact `vitest-report`). It does not upload the build and does not
 timeout is only a margin, never the fix), or the pull request waits. `main` must stay green: if it turns red, the next change is the fix.
 
 **The single-file artefact.** `npm run build` writes `app/dist/index.html` (`dist/` is git-ignored): one offline HTML file with
-script and styles inlined by `vite-plugin-singlefile`, about 2.6 MB. `npm run build` does not put a version in its name; `npm run release` (`app/scripts/release.mjs`) does: it fails when `version.ts`,
-`package.json` and the `index.html` title disagree, builds, and copies the file to `app/dist/AgentCase_v<MAJOR>_<MINOR>_EN.html`
-(the legacy naming, and what the in-app file names use), for example `app/dist/AgentCase_v20_3_EN.html` (attach it to the release;
-not committed). The name is read from `APP_VERSION`, so no tool or workflow hard-codes it. Tag the merge commit `vX.Y.Z` after merging
-(no tags exist in the repository yet).
+script and styles inlined by `vite-plugin-singlefile`, about 2.6 MB. `npm run build` does not put a version in its name; `npm run release` (`app/scripts/release.mjs`) does: it builds, reads the version
+tag from the built page title (itself derived from `package.json`), fails if it is missing or does not match `package.json`, and copies the file to
+`app/dist/AgentCase_<tag>_EN.html` (the legacy naming, and what the in-app file names use), for example `app/dist/AgentCase_v20_12_EN.html`, or
+`AgentCase_v20_12_1_EN.html` for a patch release (attach it to the release; not committed). No tool or workflow hard-codes the name. Tag the
+merge commit `vX.Y.Z` after merging; the commands for the releases before this rule are in [RELEASE_TAGS.md](RELEASE_TAGS.md).
 
 ## 7. The legacy file
 
@@ -174,9 +172,9 @@ file from the repository root.
 - [ ] `npm ci && npm run check` green on the branch before the change
 - [ ] `npm run deps:check` green (else `npm run deps:gen` and commit `app/src/generated/dependencies.json`); `npm run dup` green; new domain modules carry `@calc-zone` (and `@owner` for a figure they own)
 - [ ] the **full** suite ran before the merge (`test:affected` is a development aid, never the release gate); `npm run validate:affected` after a change of the generator, tags or rule
-- [ ] stamps: `version.ts`, `package.json`, `package-lock.json` (and the `index.html` title on a major bump)
+- [ ] version: `npm version X.Y.Z --no-git-tag-version` (package.json and lock only), then `npm run docs:facts`
 - [ ] calculation change? shipped in the legacy file first and the oracle regenerated (§7), golden line in the changelog
 - [ ] `npm run check` and `npm run build` green; manual browser pass on `app/dist/index.html` (§4)
 - [ ] `CHANGELOG.md` entry with a Golden case line; README and docs updated if relevant
-- [ ] pull request merged only with **both CI jobs green on its last run** (§6); release copy named `AgentCase_vX_Y_EN.html` made from `app/dist/index.html`; tag `vX.Y.Z`
+- [ ] pull request merged only with **both CI jobs green on its last run** (§6); release copy made by `npm run release` (`AgentCase_vX_Y_EN.html`, or `AgentCase_vX_Y_Z_EN.html` for a patch); tag `vX.Y.Z` (and a row in RELEASE_TAGS.md)
 - [ ] **All user-facing text is in English** (new labels, toasts, diagnostics, exports; vocabulary in [GLOSSARY_EN.md](GLOSSARY_EN.md)); `tests/ui/english-only.test.ts` is green

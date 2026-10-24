@@ -1,7 +1,7 @@
 # Changelog
 
-All notable changes to AgentCase, newest first. Product version from v19.0.0 = `APP_VERSION` in
-`app/src/domain/version.ts` (and `app/package.json`); up to v18.13 = the `vX.Y` in the app file name (`AgentCase_vX_Y_EN.html`) and in
+All notable changes to AgentCase, newest first. Product version from v19.0.0 = the `version` of
+`app/package.json` (the single source, exposed as `APP_VERSION`); up to v18.13 = the `vX.Y` in the app file name (`AgentCase_vX_Y_EN.html`) and in
 `window.AgentCaseArch.VERSION`.
 
 - **v18.2 → v18.8** were reconstructed on 2026-10-21 from the `v18.x` tags in the code comments, help
@@ -51,6 +51,40 @@ When releasing, follow [docs/BUMP_PROCEDURE.md](docs/BUMP_PROCEDURE.md) (§7 for
 - Docs: BUMP_PROCEDURE "Before merge: CI green on the pull request"; TEST_SELECTION §7 on the deterministic duplicate check.
 
 **Golden case:** unchanged.
+— Versioning and documentation governance (architecture lot 2)
+
+### Changed
+- **One version source: `app/package.json`.** `app/vite.config.ts` injects it as `__APP_VERSION__` (Vite `define`, also for Vitest and vite-node);
+  `src/domain/version.ts` exports it as `APP_VERSION` and no longer holds a literal. The `index.html` title is the placeholder `%APP_VER_TAG%`,
+  filled at build time; `npm run release` names the artefact from the built title (`AgentCase_v20_12_EN.html` for 20.12.0, unchanged). A bump is
+  now `npm version X.Y.Z --no-git-tag-version` + changelog + `npm run docs:facts` (docs/BUMP_PROCEDURE.md rewritten accordingly).
+- **Patch versions.** One tag rule, `domain/versionTag.ts` (legacy `appVerTag()` semantics: one trailing `.0` dropped): `20.12.0` → `v20.12` /
+  `v20_12`, `20.12.1` → `v20.12.1` / `v20_12_1` (`AgentCase_v20_12_1_EN.html`). The results and parameters workbook names use it too (their
+  copies of the rule are gone).
+- **Generated documentation facts.** `npm run docs:facts` (`app/scripts/doc-facts.ts`) writes the version, release file name and counts (source and
+  test files, commands, undoable / view / portfolio commands, sections, groups, loaders, zones by lane, figures, controllers, the per-group section
+  table) between `<!-- fact:… -->` markers in docs/ARCHITECTURE.md, README.md and app/README.md, and the counts of the two in-app architecture pages.
+  Stale facts fail `tests/docs-facts.test.ts` and `npm run docs:check` (now part of `npm run check`, about 2.5 s) with "run npm run docs:facts".
+  The number of tests is volatile: it is shown as "about N tests" with its date and refreshed only by `npm run docs:facts -- --count-tests`.
+  Corrected on the way: ARCHITECTURE.md quoted 236 commands (247), 85 sections (86), 41 controllers (56), 14 group files (15), 892 / 241 files.
+- **Deviations register complete** (docs/DEVIATIONS.md): DEV-HEADER-MENU (title without subtitle, compact two-zone header, file menu, Show /
+  Change, group bar without ☰ / persona), DEV-KPI-BAR, DEV-UI-PARITY (cross-reference of `app/ui-parity-exceptions.json`), DEV-COSTMODEL-PILOT
+  (pilot as a memo outside the cost-model totals; lot 4 will include it), DEV-APP-SECTION-PERSONAS (Brand & theme not removable from its personas;
+  lot 7), DEV-THEME-SEQ-UNDO (known defect, a theme id reissued after undo; lot 3), DEV-PF-GAPS (portfolio scenarios table, wave dependencies,
+  shared teams, Wave-view histogram, per-draw truncation); DEV-PF-STRESS added to the index. `tests/docs-deviations.test.ts` checks that every
+  DEV-* id cited by the changelog, docs, code, tests or ui-parity exceptions has a section and an index row.
+- **Docs in English** (decision D2): docs/SPEC_MULTI_PRODUIT.md and docs/VUE_AGREGEE.md translated in full (structure, tables, identifiers and file
+  names kept); docs/GUIDE_MULTI_PRODUIT.md stays French with a "Summary (English)" at the top; README and GLOSSARY_EN cross-references updated.
+- **Release tags**: docs/RELEASE_TAGS.md lists the merge commit of every release v19.0.0 → v20.12.0 and the tag commands for the owner
+  (no tag is created by the tooling).
+
+### Tests
+- `tests/version.test.ts` (one source; "bumping the version touches only package.json": no literal version or tag under `app/src`, `app/tests` or in
+  `index.html`; the tag format pinned on fixed fake versions, patch included), `tests/docs-facts.test.ts`, `tests/docs-deviations.test.ts`;
+  `tests/ui/arch-facts.test.ts` also checks the zone count. Eight test files that hard-coded `v20_12` / `v20.12` / `20.12.0` (or `v20`) now read
+  `APP_VERSION` / `appVerTag()` / `appVerFileTag()`.
+
+**Golden case:** unchanged (no calculation change).
 
 ## [v20.12.0] 2026-10-24 — "Show" / "Change" top bar, file menu, two-zone header, Welcome cards fix
 

@@ -3,7 +3,7 @@ import { act, cleanup, fireEvent, render, screen, waitFor, within } from '@testi
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 import { setAgentSup } from '@/controllers/artefacts';
 import { setCustomerName } from '@/controllers/persona';
-import { snapshotsOf } from '@/domain/snapshots';
+import { appVerFileTag, appVerTag, snapshotsOf } from '@/domain/snapshots';
 import { appStore } from '@/store/instance';
 import Io from '@/ui/sections/refshare/io';
 import { loadFixture } from '../../helpers/fixtures';
@@ -28,7 +28,7 @@ describe('Save HTML tab', () => {
     act(() => { setCustomerName('Acme'); });
     render(<Io />);
     fireEvent.click(screen.getByText('💾 Download HTML snapshot'));
-    expect(d.names[0]).toMatch(/^AgentCase_Acme_v20_12_Snapshot_\d{4}-\d{2}-\d{2}-\d{2}-\d{2}-\d{2}\.html$/);
+    expect(d.names[0]).toMatch(new RegExp(String.raw`^AgentCase_Acme_${appVerFileTag()}_Snapshot_\d{4}-\d{2}-\d{2}-\d{2}-\d{2}-\d{2}\.html$`));
     expect(d.blobs[0]!.type).toBe('text/html');
     const html = await readBlob(d.blobs[0]!);
     expect(html).toContain('id="agentcase-snapshot"');
@@ -68,7 +68,7 @@ describe('Snapshot Manager tab', () => {
     expect(screen.getByText(/No snapshots captured yet/)).toBeTruthy();
     fireEvent.change(screen.getByPlaceholderText(/Client X/), { target: { value: 'Baseline case' } });
     fireEvent.click(screen.getByText('📸 Capture current configuration'));
-    expect(screen.getByRole('cell', { name: /Baseline case · v20/ })).toBeTruthy();
+    expect(screen.getByRole('cell', { name: `Baseline case · ${appVerTag()}` })).toBeTruthy();
     expect(lib()).toHaveLength(1);
 
     act(() => { setAgentSup('A017', 100); setCustomerName('Edited'); });

@@ -2,7 +2,7 @@ import { describe, expect, it } from 'vitest';
 import { setAgentSup } from '@/controllers/artefacts';
 import { setCustomerName } from '@/controllers/persona';
 import { activateSnapshot, captureSnapshot, compareSnapshots, deleteSnapshot, renameSnapshot, setBaselineSnapshot } from '@/controllers/snapshots';
-import { snapshotsOf, sortSnapshots, withVerTag } from '@/domain/snapshots';
+import { appVerTag, snapshotsOf, sortSnapshots, withVerTag } from '@/domain/snapshots';
 import { fromSnapshot } from '@/store/persistence/snapshot';
 import { freshStore, snap } from './helpers';
 
@@ -15,12 +15,13 @@ describe('snapshot manager', () => {
     captureSnapshot('Client X', T0, 'a');
     captureSnapshot('', T1, 'b');   // empty name: dated default
     const [a, b] = lib(s);
-    expect(a!.name).toMatch(/^Client X · v20/);
-    expect(b!.name).toMatch(/^Snapshot .* · v20/);
+    expect(a!.name).toBe(`Client X · ${appVerTag()}`);
+    expect(b!.name).toMatch(/^Snapshot /);
+    expect(b!.name.endsWith(` · ${appVerTag()}`)).toBe(true);
     expect('namedSnapshots' in a!.state).toBe(false);
     expect(a!.state.savedAt).toBe(T0.toISOString());
     expect(fromSnapshot(a!.state).customerName).toBe(s.getState().doc.customerName);
-    expect(withVerTag('Already v20.12', T0)).toBe('Already v20.12');
+    expect(withVerTag(`Already ${appVerTag()}`, T0)).toBe(`Already ${appVerTag()}`);
   });
   it('activating restores the captured case, keeps the library, and one undo brings the edits back', () => {
     const s = freshStore();
@@ -31,7 +32,7 @@ describe('snapshot manager', () => {
     const doc = s.getState().doc;
     expect(doc.customerName).not.toBe('Edited');
     expect(lib(s)).toHaveLength(1);
-    expect(s.getState().history.undo.at(-1)!.label).toBe('Activate snapshot "Before · v20.12"');
+    expect(s.getState().history.undo.at(-1)!.label).toBe(`Activate snapshot "Before · ${appVerTag()}"`);
     expect(s.undo()).toBe(true);
     expect(snap(s)).toBe(edited);
     expect(s.redo()).toBe(true);

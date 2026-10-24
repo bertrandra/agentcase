@@ -1,186 +1,189 @@
-# Vue agrégée : toutes les sections suivent la vue de la barre haute
+# Aggregated view: every section follows the view of the top bar
 
-> Statut : **phase V0 réalisée** (fondation + classification + 2 exemplaires). Les phases suivantes remplissent les agrégats groupe par groupe.
-> Décision utilisateur : « *TOUTES les sections sont calculées sur la sélection du sélecteur Vue de la barre haute : Portefeuille, une Vague ou un Produit* ».
+> Status: **phase V0 delivered** (foundation + classification + 2 exemplars). The following phases fill in the aggregates group by group.
+> User decision: "*ALL sections are calculated on the selection of the View selector of the top bar: Portfolio, one Wave or one Product*".
+>
+> (File name kept for links: *vue agrégée* = aggregated view. Translated from the French original, which stays in the git history.)
 
-## 1. Principe
+## 1. Principle
 
-1. **Sections de résultat** : elles suivent la Vue. Portefeuille / Vague = chiffres consolidés du domaine (`consolidate`, `portfolioHeadline`, `waveHeadline`, `selectionView`, `portfolioGantt`...) ; Produit = comportement d’aujourd’hui, inchangé.
-2. **Sections de saisie** : avec Portefeuille ou Vague en vue, elles affichent en haut une **vue agrégée en lecture seule** de la sélection (une ligne par produit, bouton **“Edit this product”** : contrôleur `showProduct`, la Vue (**Show**) devient ce produit et **Change** aussi), puis **la section elle-même, modifiable sur place** (`InPlaceEdit`), liée au choix **“Change”** de la barre haute : un produit (la section de ce produit, ses modifications sont des surcharges) ou **All products** (la section sur les **valeurs partagées**, ses modifications vont au commun ; les produits qui gardent leur propre valeur sont nommés champ par champ avec “Back to shared”). L'équipe d'entrée (et, dans Knowledge hub, domaines et préparation) reste par produit : avec All products, une simple indication. Voir § 2.1.
-3. **Les 85 sections sont classées** (§ 4). Aucune formule financière nouvelle dans `ui/` (règle A8 étendue : pas de `.reduce` dans les widgets, hooks et agrégats de la Vue agrégée) ; pas de « cas agrégé synthétique » (faux pour le plafond de verre, les surcharges, les décalages de vague).
-4. **Un seul produit : rien ne change** (ni bandeau, ni enveloppe DOM dans `SectionHost`). Le mode Produit des sections reste identique octet pour octet.
+1. **Result sections**: they follow the View. Portfolio / Wave = consolidated figures from the domain (`consolidate`, `portfolioHeadline`, `waveHeadline`, `selectionView`, `portfolioGantt`...); Product = today's behaviour, unchanged.
+2. **Input sections**: with the Portfolio or a Wave in view, they show at the top a **read-only aggregated view** of the selection (one row per product, button **"Edit this product"**: controller `showProduct`, the View (**Show**) becomes that product and so does **Change**), then **the section itself, editable in place** (`InPlaceEdit`), bound to the **"Change"** choice of the top bar: one product (that product's section; its edits are overrides) or **All products** (the section on the **shared values**; its edits go to the common values; the products that keep their own value are named field by field with "Back to shared"). The entry team (and, in Knowledge hub, the domains and the preparation) stays per product: with All products, a hint only. See § 2.1.
+3. **The 86 sections are classified** (§ 4). No new financial formula in `ui/` (rule A8 extended: no `.reduce` in the widgets, hooks and aggregates of the aggregated view); no "synthetic aggregated case" (wrong for the glass ceiling, the overrides, the wave offsets).
+4. **A single product: nothing changes** (no banner, no DOM wrapper in `SectionHost`). The Product mode of the sections stays byte-for-byte identical.
 
-## 2. Mécanisme tel que construit
+## 2. Mechanism as built
 
-| Pièce | Où | Rôle |
+| Piece | Where | Role |
 |---|---|---|
-| Type de chaque section | `ui/zones/data/sectionScope.json` + `ui/zones/sectionScope.ts` (`sectionKind`, `followsView`) | une donnée par id (85) ; le test `tests/ui/section-scope.test.ts` exige exactement les 85 ids du catalogue |
-| `useViewScope()` | `store/viewScope.ts` | `{ kind: 'product'|'wave'|'portfolio', label, multi, productIds[] (planifiés, non archivés), excludedIds[], waveId?, activeProductId, activeProductName }`, référence stable ; dans un `ProductViewContext` la Vue est ce produit |
-| `ProductViewContext` | `store/productView.ts` (+ `ProductViewProvider`, `productDocOf`) | lecture seule d’un autre produit : `useDoc`, `useCtx`, `useCaseResult`, `useSimulation`, `useActiveProduct`, `useActiveProductId`, `useFieldState`, `useSubsetField` lisent le cas résolu de ce produit au lieu du produit actif. Les écritures ne sont pas redirigées |
-| `ReadOnlyScope` | `ui/widgets/ReadOnlyScope.tsx` | `fieldset disabled` + capture et arrêt des événements clic / clavier / change / input / submit / drop + message de lecture seule ; `inert` en option |
-| `ScopeBanner` | `ui/widgets/ScopeBanner.tsx`, rendu par `SectionFrame` | une phrase par type, région `aria-live="polite"`, rien avec un seul produit ni dans un rendu par produit |
-| `AggregateTable` | `ui/widgets/AggregateTable.tsx` | une ligne par produit, colonnes déjà calculées par le domaine, **ligne de total fournie par le domaine** (jamais sommée dans l’UI), bouton “Edit this product” (`showProduct` + annonce) |
-| `ProductDrill` | `ui/widgets/ProductDrill.tsx` | rendu repliable, paresseux, en lecture seule, du composant de la section pour chaque produit (`ProductViewContext`) ; `SectionFrame` y devient `EmbeddedFrame` (pas de h1, zones nommées par produit) |
-| `InPlaceEdit` | `ui/zones/InPlaceEdit.tsx`, rendu par `SectionHost` sous l'agrégat d'une section `I-input` (Portefeuille / Vague) | région **“Changing …”** (h2 : « Changing all products (shared values) » ou « Changing X only ») : bandeau, puis le composant de la section sous `ProductViewContext` = produit actif (Change = un produit) ou `COMMON_VIEW` (All products) ; `EmbeddedFrame` en h3 (`EmbedLevel`) ; `team-in` avec All products : indication seule |
-| `COMMON_VIEW` / `commonEditDoc` | `store/productView.ts`, `store/commonEdit.ts`, `domain/portfolio/resolve.ts#resolveCommon` | pseudo-produit des **valeurs communes** : `useDoc` / `useCtx` / `useCaseResult` lisent le cas commun (commun + couche hub, sans surcharge ni sous-ensemble, équipe du produit actif), mémoïsé |
-| `editsCommon(pf)` | `store/commonEdit.ts`, appelé par `runCommands` | vrai avec ≥ 2 produits, Edit = All products et une Vue Portefeuille / Vague : une commande de cas s'exécute sur le cas commun et la couche d'adressage écrit **tout** au commun (portée interne `'common'`), l'équipe au produit actif ; une étape annulable |
-| `KeepersNotice` / `FieldKeepers` | `ui/widgets/KeepersNotice.tsx` (+ `OverrideBadge`, `SubsetBadge`, champs de `fields.tsx`) | dans l'éditeur commun seulement : « N products override this: A, B — they keep their value » et “Back to shared: X” (`resetToCommon` : surcharge ou champ du sous-ensemble) ; rien ailleurs |
-| `useScopedSection(id)` | `ui/zones/useScopedSection.ts` | produit / un seul produit / `S-static` / `P-portfolio` : la section telle quelle ; sinon l’agrégat enregistré, sinon le **repli générique** du type (`ui/zones/fallbacks.tsx`) |
-| Registre d’agrégats | `ui/sections/aggregates/index.ts` + `aggregates/<groupe>.ts` (15 fichiers, un par groupe) | id → chargeur paresseux, comme les chargeurs de sections ; `SectionHost` les utilise pour Portefeuille / Vague |
-| Vues domaine | `domain/portfolio/{selectionView,teams,inputSummary}.ts` | `selectionView` (chiffres consolidés d’une sélection), `aggregateTeams` (équipes sommées), `inputSummary` (comptes par produit) |
+| Kind of each section | `ui/zones/data/sectionScope.json` + `ui/zones/sectionScope.ts` (`sectionKind`, `followsView`) | one entry per id (86); the test `tests/ui/section-scope.test.ts` requires exactly the catalogue ids |
+| `useViewScope()` | `store/viewScope.ts` | `{ kind: 'product'|'wave'|'portfolio', label, multi, productIds[] (planned, not archived), excludedIds[], waveId?, activeProductId, activeProductName }`, stable reference; inside a `ProductViewContext` the View is that product |
+| `ProductViewContext` | `store/productView.ts` (+ `ProductViewProvider`, `productDocOf`) | read-only view of another product: `useDoc`, `useCtx`, `useCaseResult`, `useSimulation`, `useActiveProduct`, `useActiveProductId`, `useFieldState`, `useSubsetField` read that product's resolved case instead of the active product's. Writes are not redirected |
+| `ReadOnlyScope` | `ui/widgets/ReadOnlyScope.tsx` | `fieldset disabled` + capture and stop of click / keyboard / change / input / submit / drop events + read-only message; `inert` as an option |
+| `ScopeBanner` | `ui/widgets/ScopeBanner.tsx`, rendered by `SectionFrame` | one sentence per kind, `aria-live="polite"` region, nothing with a single product nor in a per-product render |
+| `AggregateTable` | `ui/widgets/AggregateTable.tsx` | one row per product, columns already computed by the domain, **total row supplied by the domain** (never summed in the UI), "Edit this product" button (`showProduct` + announcement) |
+| `ProductDrill` | `ui/widgets/ProductDrill.tsx` | collapsible, lazy, read-only render of the section's component for each product (`ProductViewContext`); `SectionFrame` becomes `EmbeddedFrame` there (no h1, zones named by product) |
+| `InPlaceEdit` | `ui/zones/InPlaceEdit.tsx`, rendered by `SectionHost` below the aggregate of an `I-input` section (Portfolio / Wave) | region **"Changing …"** (h2: "Changing all products (shared values)" or "Changing X only"): banner, then the section's component under `ProductViewContext` = active product (Change = one product) or `COMMON_VIEW` (All products); `EmbeddedFrame` at h3 (`EmbedLevel`); `team-in` with All products: hint only |
+| `COMMON_VIEW` / `commonEditDoc` | `store/productView.ts`, `store/commonEdit.ts`, `domain/portfolio/resolve.ts#resolveCommon` | pseudo-product of the **common values**: `useDoc` / `useCtx` / `useCaseResult` read the common case (common + hub layer, no override nor subset, team of the active product), memoised |
+| `editsCommon(pf)` | `store/commonEdit.ts`, called by `runCommands` | true with ≥ 2 products, Edit = All products and a Portfolio / Wave View: a case command runs on the common case and the address layer writes **everything** to the common values (internal scope `'common'`), the team to the active product; one undoable step |
+| `KeepersNotice` / `FieldKeepers` | `ui/widgets/KeepersNotice.tsx` (+ `OverrideBadge`, `SubsetBadge`, fields of `fields.tsx`) | in the common editor only: "N products override this: A, B — they keep their value" and "Back to shared: X" (`resetToCommon`: override or subset field); nothing elsewhere |
+| `useScopedSection(id)` | `ui/zones/useScopedSection.ts` | product / single product / `S-static` / `P-portfolio`: the section as is; otherwise the registered aggregate, otherwise the kind's **generic fallback** (`ui/zones/fallbacks.tsx`) |
+| Aggregate registry | `ui/sections/aggregates/index.ts` + `aggregates/<group>.ts` (15 files, one per group) | id → lazy loader, like the section loaders; `SectionHost` uses them for Portfolio / Wave |
+| Domain views | `domain/portfolio/{selectionView,teams,inputSummary}.ts` | `selectionView` (consolidated figures of a selection), `aggregateTeams` (summed teams), `inputSummary` (counts per product) |
 | Hooks | `store/selectionHooks.ts` | `useSelectionView`, `useInputSummary`, `useTeamAggregate` |
 
-Replis génériques par type (Portefeuille / Vague, section sans agrégat) :
+Generic fallbacks per kind (Portfolio / Wave, section without an aggregate):
 
-- `R-rollup` : `AggregateTable` des chiffres clés par produit (`SelectionRow`, total = ligne du domaine) + `ProductDrill`.
-- `I-input` : `AggregateTable` des saisies par produit (ETP, artefacts, surcharges, état du hub ; total ETP = `aggregateTeams`) + “Edit this product” ; l'édition sur place s'ajoute dessous comme pour un agrégat enregistré.
+- `R-rollup`: `AggregateTable` of the key figures per product (`SelectionRow`, total = the domain's row) + `ProductDrill`.
+- `I-input`: `AggregateTable` of the inputs per product (FTE, artefacts, overrides, hub state; FTE total = `aggregateTeams`) + "Edit this product"; in-place editing is added below, as for a registered aggregate.
 
-### 2.1 Édition sur place (listes “Show” et “Change”)
+### 2.1 In-place editing ("Show" and "Change" lists)
 
-- Barre haute : deux listes natives, **👁 Show** (`aria-label="Show"` : **Portfolio**, groupe “Waves” = « *nom de vague* », groupe “Products” = « *nom* (*vague*) », « *nom* (unscheduled) », suffixe « (archived) ») et **✏️ Change** (`aria-label="Change"` : **All products** puis « *nom* » par produit ; avec une Vague en vue, les produits de la vague d'abord (groupe “Wave: X”), puis “Other products” — le produit édité peut être hors de la vague). Icônes `aria-hidden`, infobulles d'une ligne (« What you look at: … », « Where your changes go: … »). Pas de puce “Editing:”.
-- **Règle « Change suit Show »** (`controllers/displayScope.ts`) : `showProduct` (Show = un produit, ou “Edit this product”) = `setActiveProduct` + vue `product` + portée `product` ; `setDisplayScope` Portefeuille / Vague remet la portée `all`. Choisir un produit dans **Change** = `setActiveProduct` + portée `product` (`chooseEditTarget`, non annulable) ; Show ne change pas (en vue Product, le produit affiché suit le produit édité). Annonces : « Showing X », « Changing X » / « Changing all products ».
-- Le bandeau des sections de saisie dit « Changing: all products (shared values) » en Portefeuille / Vague avec All products, sinon « Changing: product X ».
-- Vue Product + All products : comportement historique (une clé déjà surchargée par le produit reste écrite dans sa surcharge). Seules les vues Portefeuille / Vague écrivent directement le commun.
-- Les sections de résultat (R-*) et P-* ne changent pas.
-- `R-conso` sans agrégat enregistré : `ProductDrill` + note explicite “Consolidated view coming” (suivi en § 5).
+- Top bar: two native lists, **👁 Show** (`aria-label="Show"`: **Portfolio**, group "Waves" = "*wave name*", group "Products" = "*name* (*wave*)", "*name* (unscheduled)", suffix "(archived)") and **✏️ Change** (`aria-label="Change"`: **All products** then "*name*" per product; with a Wave in view, the wave's products first (group "Wave: X"), then "Other products" — the edited product may be outside the wave). Icons `aria-hidden`, one-line tooltips ("What you look at: …", "Where your changes go: …"). No "Editing:" chip.
+- **Rule "Change follows Show"** (`controllers/displayScope.ts`): `showProduct` (Show = one product, or "Edit this product") = `setActiveProduct` + view `product` + scope `product`; `setDisplayScope` Portfolio / Wave sets the scope back to `all`. Choosing a product in **Change** = `setActiveProduct` + scope `product` (`chooseEditTarget`, not undoable); Show does not change (in a Product view, the shown product follows the edited product). Announcements: "Showing X", "Changing X" / "Changing all products".
+- The banner of the input sections says "Changing: all products (shared values)" in Portfolio / Wave with All products, otherwise "Changing: product X".
+- Product view + All products: historical behaviour (a key already overridden by the product stays written in its override). Only the Portfolio / Wave views write the common values directly.
+- The result sections (R-*) and P-* do not change.
+- `R-conso` without a registered aggregate: `ProductDrill` + explicit note "Consolidated view coming" (tracked in § 5).
 
-## 3. Recette : ajouter l’agrégat d’une section (10 lignes)
+## 3. Recipe: adding the aggregate of a section (10 lines)
 
-1. Repérer l’id et son type dans `sectionScope.json` (ne le changer que si la classification est fausse, et alors mettre à jour ce document).
-2. Écrire la fonction **pure** manquante dans `domain/portfolio/` (jamais de somme dans l’UI) avec son test (1e-9 contre `consolidate` / `computeCase`) ; l’exporter par `domain/portfolio/index.ts`.
-3. Ajouter, si besoin, un hook dans `store/selectionHooks.ts` (`useViewScope()` donne `productIds`, `kind`, `label`).
-4. Créer `ui/sections/<groupe>/<section>/Aggregate.tsx` (export `default`), ≤ 150 lignes : `<SectionFrame title=… result=…/>` avec `AggregateTable` (totaux du domaine) ; la règle A8 s’y applique d’office (`Aggregate*.tsx` ou dossier `aggregate/`).
-5. Pour un rendu par produit : `<ProductDrill Section={…} productIds={vs.productIds} />` (le composant s’exécute sous `ProductViewContext`, en lecture seule).
-6. Enregistrer **une ligne** dans `ui/sections/aggregates/<groupe>.ts` : `'id': () => import('../<groupe>/<section>/Aggregate'),`.
-7. Pour une section déjà sensible à la vue, enregistrer son propre composant (exemples : `decision`, `gantt`).
-8. Test RTL (store réel, `threeProducts`) : Portefeuille, Vague et Produit égaux au domaine à 1e-9 ; produit non planifié exclu avec l’avertissement ; un seul produit inchangé.
-9. Audit : `node ../tools/a11y.mjs --fixtures pf-three-products --sections "<libellé>"` (Portefeuille et Vague sont audités), puis restaurer `app/a11y-report.json`.
-10. Passer l’état de la section à FAIT dans le tableau du § 4 et retirer-la du suivi du § 5.
+1. Find the id and its kind in `sectionScope.json` (change it only if the classification is wrong, and then update this document).
+2. Write the missing **pure** function in `domain/portfolio/` (never a sum in the UI) with its test (1e-9 against `consolidate` / `computeCase`); export it through `domain/portfolio/index.ts`.
+3. Add, if needed, a hook in `store/selectionHooks.ts` (`useViewScope()` gives `productIds`, `kind`, `label`).
+4. Create `ui/sections/<group>/<section>/Aggregate.tsx` (`default` export), ≤ 150 lines: `<SectionFrame title=… result=…/>` with `AggregateTable` (domain totals); rule A8 applies to it automatically (`Aggregate*.tsx` or `aggregate/` folder).
+5. For a per-product render: `<ProductDrill Section={…} productIds={vs.productIds} />` (the component runs under `ProductViewContext`, read-only).
+6. Register **one line** in `ui/sections/aggregates/<group>.ts`: `'id': () => import('../<group>/<section>/Aggregate'),`.
+7. For a section that is already view-aware, register its own component (examples: `decision`, `gantt`).
+8. RTL test (real store, `threeProducts`): Portfolio, Wave and Product equal to the domain within 1e-9; unplanned product excluded with the warning; single product unchanged.
+9. Audit: `node ../tools/a11y.mjs --fixtures pf-three-products --sections "<label>"` (Portfolio and Wave are audited), then restore `app/a11y-report.json`.
+10. Set the section's state to DONE in the table of § 4 and remove it from the tracking of § 5.
 
-## 4. Classification des 85 sections
+## 4. Classification of the 86 sections
 
-Total : **86 = 79 sections de cas + 6 du groupe Portefeuille + 🎨 Brand & theme** (section de l’app, sans équivalent legacy) (le groupe compte 6 sections au catalogue, pas 7 : produits, surcharges, knowledge transfer, vagues, consolidation, stress portefeuille).
+Total: **86 = 79 case sections + 6 of the Portfolio group + 🎨 Brand & theme** (an app section, with no legacy equivalent) (the group has 6 sections in the catalogue, not 7: products, overrides, knowledge transfer, waves, consolidation, portfolio stress).
 
-| Type | Nombre | Sens |
+| Kind | Count | Meaning |
 |---|---|---|
-| `R-conso` | 15 | résultat à forme consolidée naturelle (sommes et séries de `domain/portfolio`) |
-| `R-rollup` | 28 | contrôle ou logique par cas, qui ne s’additionne pas : tableau récapitulatif par produit + détail du rendu propre au produit |
-| `I-input` | 18 | saisie par produit : synthèse agrégée en lecture seule, une ligne par produit, “Edit this product”, puis la section modifiable sur place selon “Change” (§ 2.1) |
-| `S-static` | 19 | référence, documentation, réglages communs, gestion : indépendant de la vue (bandeau “Independent of the view”) |
-| `P-portfolio` | 6 | section du groupe Portefeuille, déjà au niveau portefeuille (bandeau “Portfolio level”) |
+| `R-conso` | 15 | result with a natural consolidated form (sums and series of `domain/portfolio`) |
+| `R-rollup` | 28 | control or per-case logic that does not add up: summary table per product + detail of the product's own render |
+| `I-input` | 18 | per-product input: read-only aggregated synthesis, one row per product, "Edit this product", then the section editable in place according to "Change" (§ 2.1) |
+| `S-static` | 19 | reference, documentation, common settings, management: independent of the view (banner "Independent of the view") |
+| `P-portfolio` | 6 | section of the Portfolio group, already at portfolio level (banner "Portfolio level") |
 
-Légende de l’état : **FAIT** (construit en V0), **NATIF** (la section suit déjà la Vue ; elle est enregistrée comme son propre agrégat), **À FAIRE** (repli générique du type en attendant).
+State legend: **DONE** (built in V0), **NATIVE** (the section already follows the View; it is registered as its own aggregate), **TO DO** (the kind's generic fallback in the meantime).
 
-| id | Groupe | Libellé | Type | Contenu agrégé prévu / raison | Source domaine | État |
+| id | Group | Label | Kind | Planned aggregated content / reason | Domain source | State |
 |---|---|---|---|---|---|---|
-| `home` | frame | 🏠 Welcome | `S-static` | Bandeau seul. Page d’accueil : navigation seulement, ne calcule rien | — | FAIT (bandeau) |
-| `engagement-context` | frame | 🧭 Engagement context | `I-input` | Cadre contractuel MSC/MSI/STA par produit (hérité/surchargé) | `inputSummary` + `values.engagementCtx` du cas résolu | FAIT |
-| `engage` | frame | 🤝 Engage | `I-input` | Durées des 4 étapes d’onboarding et fin d’onboarding par produit | cas résolu de chaque produit (`dom.values`) | FAIT |
-| `transform-params` | frame | 🏛️ Industry / regulatory profile | `I-input` | Profil sectoriel/réglementaire et normes cochées par produit | `selectedNorms`, `values.*` du cas résolu | FAIT |
-| `params` | scope | 🎯 Automation & Glass ceiling | `I-input` | Potentiel cible et plafond de verre (forcé ou calculé) par produit | `model.eff`, `model.ceiling`, `forceGlassCeiling` | FAIT |
-| `scurve` | scope | 📊 S-curve — adoption ramp | `I-input` | Rampe d’adoption Y1/Y2/Y3 par produit | `scurve` du cas résolu | FAIT |
-| `scope-sel` | scope | 🎯 Scope | `I-input` | Nombre d’artefacts SDLC / réglementaires retenus par produit | `inputSummary` (`artefacts`, `regArtefacts`) | FAIT |
-| `phase-scope` | scope | 🎯 Phase scope | `I-input` | Phases désactivées par produit | `phaseOff` du cas résolu | FAIT |
-| `lc-weighting` | scope | 📊 Product status lifecycle weighting | `I-input` | Position du produit dans le cycle de vie | `lifecycleUse`, `lifecyclePos` | FAIT |
-| `team-in` | baseline | Input team | `I-input` | FAIT (exemplaire) : ETP par produit, agrégé par compétence, grade, localisation et croisé ; “Edit this product” | `aggregateTeams(pf, productIds)` | FAIT |
-| `ratecard` | baseline | Rate Card | `S-static` | Bandeau seul. Taux journaliers : valeurs communes (D-M3, clé `RATE`), identiques pour tous les produits | — | FAIT (bandeau) |
-| `loc-strat` | baseline | 🌍 Location strategy | `I-input` | Répartition cible par localisation, par produit | `targetLocPct` du cas résolu | FAIT |
-| `fte-vfte` | verify | FTE / vFTE | `R-conso` | Trajectoire ETP humains / vFTE agents par mois et par année calendaire (courbes de la sélection + une courbe agent par produit), tableau par produit (ETP d’entrée, humain, agent, effort total, réduction, capacité libérée) et ligne de sélection | `series.humanFte` / `series.agentVfte` de `consolidate` (sélection) ; `fteSummary` par produit ; `domain/portfolio/aggVerifyFte.ts` (`fteVfteAgg`) | FAIT (Portefeuille et Vague testés) |
-| `vfte-ov` | verify | vFTE Overview | `R-rollup` | Composition fin d’horizon par produit (humain, agent, effort total conservé, automatisation, ETP libérés) et comptes d’artefacts (périmètre, VA) ; ligne de sélection = sommes du domaine ; ProductDrill | `periodRows`, `valueRows` par produit ; `aggVerifyFte.ts` (`vfteOvTable`) | FAIT (Portefeuille et Vague testés) |
-| `team-out` | verify | Target team | `R-conso` | Équipe cible agrégée : pôles (dev, supervision, run, setup) et coûts annuels sommés, répartition par localisation, tableau par produit (réduction nette recalculée sur les sommes) | `targetTeam`, `groupRows`, `locRows` par produit ; `aggVerifyTeam.ts` (`targetTeamAgg`) | FAIT (Portefeuille et Vague testés) |
-| `tobe-team` | verify | 👥 TO-BE team by skill | `R-conso` | ETP humains résiduels et vFTE agents par compétence sommés sur la sélection pour l’année choisie, tableau par produit réconcilié avec le modèle agrégé | `tobeComposition` par produit ; `aggVerifyTeam.ts` (`tobeTeamAgg`) | FAIT (Portefeuille et Vague testés) |
-| `maturity-map` | tune | 📐 Maturity levels (L1–L4) | `I-input` | FAIT : seuils L1-L4 (adoption et part d’agents) par produit, niveau atteint, min/moy/max de chaque seuil (`aggMaturityMap`) | `MATURITY_MAP` | FAIT |
-| `readiness` | tune | 🧭 AI Readiness | `R-rollup` | FAIT : indice, niveau, dimension la plus faible et Human Readiness par produit ; ligne de synthèse = moyenne des produits évalués ; détail par produit (`aggReadiness`) | `tune` readiness du cas résolu de chaque produit (drill) | FAIT |
-| `lifecycle-edit` | tune | 📊 Status & phase weight | `I-input` | FAIT : axe de cycle de vie, position, profil, posture d’automatisation par statut, cellules modifiées par produit ; min/moy/max (`aggLifecycle`) | `statusLifecycle` | FAIT |
-| `token-econ` | tune | 💸 Token economics | `R-rollup` | FAIT : runs d’agents, tokens et coût par produit (fin d’horizon et horizon entier) ; total = série `token` consolidée de la sélection ; catalogue de prix commun ; détail par produit (`aggTokens`) | `series.token` + usage par produit ; saisies communes (`TOKEN_MODELS`) | FAIT |
-| `knowledge` | tune | 🧠 Knowledge hub | `I-input` | FAIT : sous-ensemble du hub par produit (activation, score des réponses, CC initial→cible, curation, base de mise en place, domaines, délai KT), totaux `knowledgeTotals` (`aggKnowledge`) | `inputSummary.hub`, `knowledgeRow` | FAIT |
-| `run-sizing` | tune | 🤖 Run-team sizing | `I-input` | FAIT : politique de dimensionnement (mode, plancher, charge ops, plafond/facteur de supervision) et équipe run en fin d’horizon par produit ; min/moy/max (`aggRunSizing`) | `dom.values` du cas résolu | FAIT |
-| `opmodel` | tune | 🧩 Operating model | `R-rollup` | FAIT : pods, équipe résiduelle, équipe run et contrôle de conservation V7 par produit à Y1 et en fin d’horizon ; total = somme des équipes ; détail par produit (`aggOpModel`) | `domain/tune` opmodel par produit | FAIT |
-| `phase-art` | verify | Phase / Artifact detail | `R-rollup` | Phases et artefacts retenus par produit, marge de supervision la plus serrée, violations du plancher (CC-SUP-01) ; totaux = comptes seulement ; ProductDrill | `phaseArtRows`, `supMatrix` par produit ; `aggVerifyAgents.ts` (`phaseArtTable`) | FAIT (Portefeuille et Vague testés) |
-| `agent-dir` | verify | Agent Directory | `R-rollup` | Agents par niveau d’autorisation, rôles actifs, réglages des boucles par produit ; ligne = union (chaque agent compté une fois) ; ProductDrill | `agentDirectory`, `rolesForPhase`, `loopInternalTokenCost` par produit ; `aggVerifyAgents.ts` (`agentDirTable`) | FAIT (Portefeuille et Vague testés) |
-| `agent-detail` | verify | 🤖 Agent details | `R-rollup` | Équipe agentique : ETP run, pôle supervision, taux, artefacts par niveau d’autorisation par produit ; ETP et comptes sommés ; ProductDrill | `agentDetail` par produit ; `aggVerifyAgents.ts` (`agentDetailTable`) | FAIT (Portefeuille et Vague testés) |
-| `agent-usage` | verify | 📊 Agent usage | `R-conso` | Exécutions, tokens, coût par produit ; coût tokens / infra par année calendaire (séries consolidées) ; effort agent par phase et par niveau d’autorisation, sommé | `series.token`, `series.infra`, `agentUsage`, `artifactRuns` ; `aggVerifyAgents.ts` (`usageAgg`) | FAIT (Portefeuille et Vague testés) |
-| `setup` | tune | Agentic Setup | `I-input` | FAIT : quatre lignes de mise en place, total et durée par produit ; total = somme domaine ; min/moy/max (`aggSetup`) | `domain/tuneB/setup` par produit | FAIT |
-| `assumptions` | defend | 📒 Assumptions register | `R-rollup` | Hypothèses écartées du défaut, non validées par le client, impact mesuré, par produit ; statuts de validation communs | `domain/pdc/assumptions` par produit | FAIT |
-| `montecarlo` | stress | 🎲 Monte Carlo | `R-rollup` | P10/P50/P90 par produit issus du stress portefeuille s’il a tourné, sinon invitation à le lancer | `ProductStress` de `portfolioMonteCarlo` (`store/portfolioSimulation`) | FAIT |
-| `model-stochastic` | model-engine | 📊 Stochastic layer (P4) | `R-rollup` | P50 et graine par produit ; renvoi vers Portfolio stress | `domain/model/modelState`, `portfolioMonteCarlo` | FAIT |
-| `model-convergence` | model-engine | 🔁 Loop convergence | `R-rollup` | Boucles bornées/non convergées par produit | `domain/model/lce` par produit | FAIT |
-| `model-supervision` | model-engine | 🧑‍✈️ Supervision (P3) | `R-rollup` | Mode de supervision et coût par produit | `domain/model/supView` | FAIT |
-| `exec` | verify | Execution Timeline | `R-rollup` | Début, fin de montée en charge, premier vFTE agent de chaque produit sur le calendrier du portefeuille et vélocité de sprint ; ligne = empan du programme ; ProductDrill | `portfolioGantt` (jalons), `execView` ; `aggVerifyPerf.ts` (`execTable`) | FAIT (Portefeuille et Vague testés) |
-| `productivity` | verify | Productivity | `R-rollup` | Débit par ingénieur et par mois (AS-IS, fin d’horizon, facteur) par produit ; ligne = moyenne pondérée par l’équipe d’entrée fournie par le domaine ; ProductDrill | `productivityView` ; `aggVerifyPerf.ts` (`productivityTable`) | FAIT (Portefeuille et Vague testés) |
-| `velocity` | verify | Velocity | `R-rollup` | Vélocité de sprint (AS-IS, Y1, Y2, fin), délai de livraison par produit ; ligne = `weightedVelocity` ; ProductDrill | `velocityView`, `weightedVelocity` ; `aggVerifyPerf.ts` (`velocityTable`) | FAIT (Portefeuille et Vague testés) |
-| `quality` | verify | Quality | `R-rollup` | Indicateurs qualité AS-IS → fin d’horizon par produit (non additifs), ancres surchargées ; ProductDrill (saisies désactivées) | `qualityAnchorView` ; `aggVerifyPerf.ts` (`qualityTable`) | FAIT (Portefeuille et Vague testés) |
-| `run` | economics | Agentic Run | `R-conso` | Coût de fonctionnement consolidé par année et par mois (équipe run, tokens, infrastructure, Knowledge Hub), une ligne par produit + total | `consolidate().series` (`run`, `token`, `infra`, `khCost`) et `headline.years` ; la ventilation fine équipe/agents par produit demande une vue domaine à ajouter | FAIT |
-| `annual` | economics | Annual summary | `R-conso` | Tableau année par année calendaire du portefeuille / de la vague : économies, coût, mise en place, net, ETP humains et vFTE fin d’année | `portfolioHeadline`/`waveHeadline` (`years`, `fte`), `series.humanFte`/`agentVfte` via `byYear` | FAIT |
-| `monthly` | economics | Monthly detail | `R-conso` | Détail mensuel calendaire : économies, coût, mise en place, net, trésorerie cumulée, ETP/vFTE, en option par produit | `consolidate().series` + `summary.cum` (`selectionView.chart`) | FAIT |
-| `monthly-playback` | present | 🎬 Monthly Playback | `R-conso` | Lecture mensuelle de la trajectoire consolidée (ETP, coût, économies) ; vélocité et coût par point en pondéré | `consolidate().series`, `weightedVelocity` ; coût par point : vue domaine à ajouter | FAIT |
-| `compliance` | verify | Compliance | `R-rollup` | Couverture de conformité par produit | `verifyB` par produit | À FAIRE || `financial` | economics | 💳 Financial | `R-conso` | FAIT (exemplaire) : cartes ROI/retour/VAN/net, trésorerie cumulée, tableau par produit, flux par année calendaire, produits exclus signalés | `selectionView` ← `consolidate`, `scopeHeadline`, `consolidationView` | FAIT |
-| `financial` | economics | 💳 Financial | `R-conso` | FAIT (exemplaire) : cartes ROI/retour/VAN/net, trésorerie cumulée, tableau par produit, flux par année calendaire, produits exclus signalés | `selectionView` ← `consolidate`, `scopeHeadline`, `consolidationView` | FAIT |
-| `model-flow` | model-engine | ⏱️ Flow & value (P5) | `R-rollup` | Temps de cycle (Little) et VAN du time-to-market par produit | `domain/model/flow` par produit | FAIT |
-| `gantt` | verify | 📅 Gantt / Timeline | `R-conso` | NATIF : Gantt par vague avec produits dépliables (`Waves.tsx`) ; enregistré comme agrégat | `portfolioGantt` ← `consolidate` | NATIF || `board` | configure | 📊 Board | `S-static` | Bandeau seul. Configuration des sections dynamiques : commune | — | FAIT (bandeau) |
-| `factory-model` | factory | 🏭 Factory Model | `S-static` | Bandeau seul. Méta-modèle d’usine : données communes hors liste blanche (AMBIGU, voir § Ambiguïtés) | — | FAIT (bandeau) |
-| `release-pipeline` | factory | 🚀 Release Pipeline | `S-static` | Bandeau seul. Idem : données communes, brouillon | — | FAIT (bandeau) |
-| `engineering` | factory | ⚙️ Engineering | `S-static` | Bandeau seul. Idem : compteurs saisis, communs | — | FAIT (bandeau) |
-| `factory-timeline` | factory | 📅 Factory Timeline | `S-static` | Bandeau seul. Idem : calendrier d’événements communs | — | FAIT (bandeau) |
-| `commercial` | present | 💼 Commercial model | `R-rollup` | Modèle commercial par produit (gain sharing non linéaire : pas de somme) | `domain/pdc/commercial` par produit | FAIT |
-| `kpi` | verify | KPI Scorecard | `R-conso` | KPI financiers consolidés (cartes de `portfolioHeadline`), KPI de capacité avant / après pondérés, tableau par produit (ETP, coût de run, automatisation, plafond, vélocité, couverture de tests, délai) | `scopeHeadline`, `weightedAutomation`, `weightedVelocity` ; `aggVerifyKpi.ts` (`kpiAgg`) | FAIT (Portefeuille et Vague testés) |
-| `asis-tobe` | verify | AS-IS vs TO-BE | `R-conso` | Avant / après consolidé : ETP, coût de référence vs coût TO-BE, mise en place, automatisation et plafond pondérés ; tableau par produit | `headline.fte`, `costReduction` (`portfolioCostReduction`) ; `aggVerifyKpi.ts` (`asisTobeAgg`) | FAIT (Portefeuille et Vague testés) |
-| `sources` | refshare | Sources | `S-static` | Bandeau seul. Documentation : sources et références | — | FAIT (bandeau) |
-| `results` | verdict | 📋 Results | `R-conso` | Verdict de la sélection, chiffres clés, bande d’incertitude (distribution portefeuille), décomposition des économies, glissement d’équipe | `portfolioHeadline`, `pfDecision`/`groupDecision` (stress portefeuille), `headline.fte` ; origine des économies : vue domaine à ajouter | FAIT |
-| `story-summary` | present | 📖 The story so far | `R-conso` | Récit AS-IS → TO-BE de la sélection : équipe, coût, livraison ; confiance en tableau par produit | `headline.fte`, `costReduction`, `velocityPct`, `eff`, `ceiling` | FAIT |
-| `strategies` | verdict | 🏆 Strategy comparison | `R-rollup` | 7 stratégies : stratégie recommandée, ROI et TCO par produit | `domain/verdict` stratégies par produit | FAIT |
-| `arch-layers` | refshare | 🏛️ Architecture — Layers | `S-static` | Bandeau seul. Documentation d’architecture, contenu réécrit pour la version TypeScript + React (DEV-ARCH-CONTENT) ; indépendante de la vue | — | FAIT (bandeau) |
-| `arch-content` | refshare | 🏛️ Architecture — Layers content | `S-static` | Bandeau seul. Documentation d’architecture, contenu réécrit pour la version TypeScript + React (DEV-ARCH-CONTENT) ; indépendante de la vue | — | FAIT (bandeau) |
-| `eligibility` | tune | 🎯 Eligibility & Abaques | `R-rollup` | FAIT : porte go / conditionnel / no-go, prérequis, taille de code, nature, profil, taxe de vérification par produit ; ligne = comptage des verdicts ; détail par produit (`aggEligibility`) | `domain/tune` eligibility par produit | FAIT |
-| `maturity` | tune | 📐 Maturity & Measurement | `I-input` | FAIT : maturité SDD/outillage, courbe de coaching et coût Y1 par produit ; total coaching Y1 ; min/moy/max (`aggMaturity`) | `dom.values` du cas résolu | FAIT |
-| `program` | tune | 🧭 Program & Completeness | `I-input` | FAIT : pilote, capacité interne, surcharge multi-pod par produit ; totaux pilote et capacité ; min/moy/max (`aggProgram`) | `dom.values` du cas résolu | FAIT |
-| `scenarios` | stress | 🔀 Scenarios | `R-rollup` | Produit × 6 scénarios : ROI et retour ; pas de scénario portefeuille (limite connue) | `domain/stress` scénarios par produit | FAIT |
-| `compare` | stress | 3-way Comparison | `R-rollup` | Écart à la photo de référence par produit | `domain/stress` compare, photos communes | FAIT |
-| `sensitivity` | stress | Sensitivity | `R-rollup` | Paramètre le plus sensible et amplitude par produit | `domain/stress` sensibilité par produit | FAIT |
-| `decision` | verdict | 🧭 Decision Intelligence | `R-conso` | NATIF : verdict de la distribution du portefeuille / de la vague (`PortfolioVerdict`) ; enregistré comme agrégat | `pfDecision`, `groupDecision`, `store/portfolioSimulation` | NATIF |
-| `model-evidence` | model-engine | 📋 Evidence ledger (P6) | `R-rollup` | Grade de confiance A-D et provenance par produit | `domain/model/evidence` par produit | FAIT |
-| `verif` | defend | 🔍 Logic verification | `R-rollup` | Contrôles de logique : nombre d’échecs par produit (16 contrôles, 67 lignes de convergence) ; statut global = pire | `domain/pdc/verifChecks`, `verifConvergence`, `verifProvenance`, `verifSensi` | FAIT |
-| `model-verification` | model-engine | 🛡️ Verification tax (P2) | `R-rollup` | Taxe de vérification V par produit | `domain/model/vtax`, `evt` | FAIT |
-| `risk` | tune | 🛡️ Risk & Compliance | `I-input` | Registre de risques, palier AI Act et prime de risque par produit | `dom.values` du cas résolu | À FAIRE || `reference` | refshare | 🗺️ Reference Map | `S-static` | Bandeau seul. Carte de référence du modèle de livraison | — | FAIT (bandeau) |
-| `deps` | refshare | 🔗 Section Dependencies | `S-static` | Bandeau seul. Matrice de dépendances entre sections (statique) | — | FAIT (bandeau) |
-| `datamodel` | refshare | 🗄️ Data Model | `S-static` | Bandeau seul. Modèle de données de l’application (catalogue, registre d’état) | — | FAIT (bandeau) |
-| `calcengine` | refshare | ⚙️ Calculation Engine | `S-static` | Bandeau seul. Documentation du moteur de calcul | — | FAIT (bandeau) |
-| `glossary` | refshare | 📖 Delivery-model glossary | `S-static` | Bandeau seul. Glossaire | — | FAIT (bandeau) |
-| `io` | refshare | 📥 Import / Export | `S-static` | Bandeau seul. Import/export et bibliothèque de photos ; le choix du périmètre d’export a déjà son propre sélecteur (`ReportPanel`) | — | FAIT (bandeau) |
-| `sessions` | refshare | 🗂️ Session manager | `S-static` | Bandeau seul. Reprise d’autosauvegarde : indépendante du cas | — | FAIT (bandeau) |
-| `duediligence` | defend | 🧾 Due diligence | `R-rollup` | Éléments à confirmer et coefficients embarqués : comptes et impact par produit ; annotations communes | `domain/dd` par produit | FAIT |
-| `personas` | configure | 👥 Persona management | `S-static` | Bandeau seul. Gestion des personas : commune | — | FAIT (bandeau) |
-| `brand-theme` | configure | 🎨 Brand & theme | `S-static` | Bandeau seul. Bibliothèque de thèmes et logo client : communs au fichier (clés `THEMES`, `ACTIVE_THEME`, `CUSTOMER_LOGO`) | — | FAIT (bandeau) |
-| `products` | portfolio | 📦 Products | `P-portfolio` | Bandeau seul. Tableau des produits (déjà tous les produits) | — | FAIT (bandeau) |
-| `overrides` | portfolio | 🧬 Overrides | `P-portfolio` | Bandeau seul. Surcharges par produit | — | FAIT (bandeau) |
-| `knowledge-transfer` | portfolio | 🔁 Knowledge transfer | `P-portfolio` | Bandeau seul. Tableau F29 et effet du hub par vague | — | FAIT (bandeau) |
-| `waves` | portfolio | 🌊 Waves | `P-portfolio` | Bandeau seul. Planche des vagues | — | FAIT (bandeau) |
-| `consolidation` | portfolio | 📈 Consolidation | `P-portfolio` | Bandeau seul. Trajectoire consolidée (source de `selectionView`) | — | FAIT (bandeau) |
-| `portfolio-stress` | portfolio | 🎲 Portfolio stress | `P-portfolio` | Bandeau seul. Monte Carlo agrégé des produits planifiés | — | FAIT (bandeau) |
+| `home` | frame | 🏠 Welcome | `S-static` | Banner only. Home page: navigation only, computes nothing | — | DONE (banner) |
+| `engagement-context` | frame | 🧭 Engagement context | `I-input` | MSC/MSI/STA contractual frame per product (inherited/overridden) | `inputSummary` + `values.engagementCtx` of the resolved case | DONE |
+| `engage` | frame | 🤝 Engage | `I-input` | Durations of the 4 onboarding steps and end of onboarding per product | resolved case of each product (`dom.values`) | DONE |
+| `transform-params` | frame | 🏛️ Industry / regulatory profile | `I-input` | Industry/regulatory profile and ticked standards per product | `selectedNorms`, `values.*` of the resolved case | DONE |
+| `params` | scope | 🎯 Automation & Glass ceiling | `I-input` | Target potential and glass ceiling (forced or computed) per product | `model.eff`, `model.ceiling`, `forceGlassCeiling` | DONE |
+| `scurve` | scope | 📊 S-curve — adoption ramp | `I-input` | Y1/Y2/Y3 adoption ramp per product | `scurve` of the resolved case | DONE |
+| `scope-sel` | scope | 🎯 Scope | `I-input` | Number of SDLC / regulatory artefacts selected per product | `inputSummary` (`artefacts`, `regArtefacts`) | DONE |
+| `phase-scope` | scope | 🎯 Phase scope | `I-input` | Phases switched off per product | `phaseOff` of the resolved case | DONE |
+| `lc-weighting` | scope | 📊 Product status lifecycle weighting | `I-input` | Position of the product in the lifecycle | `lifecycleUse`, `lifecyclePos` | DONE |
+| `team-in` | baseline | Input team | `I-input` | DONE (exemplar): FTE per product, aggregated by skill, grade, location and crossed; "Edit this product" | `aggregateTeams(pf, productIds)` | DONE |
+| `ratecard` | baseline | Rate Card | `S-static` | Banner only. Day rates: common values (D-M3, key `RATE`), identical for all products | — | DONE (banner) |
+| `loc-strat` | baseline | 🌍 Location strategy | `I-input` | Target split by location, per product | `targetLocPct` of the resolved case | DONE |
+| `fte-vfte` | verify | FTE / vFTE | `R-conso` | Human FTE / agent vFTE trajectory by month and by calendar year (curves of the selection + one agent curve per product), table per product (entry FTE, human, agent, total effort, reduction, freed capacity) and selection row | `series.humanFte` / `series.agentVfte` of `consolidate` (selection); `fteSummary` per product; `domain/portfolio/aggVerifyFte.ts` (`fteVfteAgg`) | DONE (Portfolio and Wave tested) |
+| `vfte-ov` | verify | vFTE Overview | `R-rollup` | End-of-horizon composition per product (human, agent, total effort kept, automation, FTE freed) and artefact counts (scope, VA); selection row = domain sums; ProductDrill | `periodRows`, `valueRows` per product; `aggVerifyFte.ts` (`vfteOvTable`) | DONE (Portfolio and Wave tested) |
+| `team-out` | verify | Target team | `R-conso` | Aggregated target team: pools (dev, supervision, run, setup) and summed annual costs, split by location, table per product (net reduction recomputed on the sums) | `targetTeam`, `groupRows`, `locRows` per product; `aggVerifyTeam.ts` (`targetTeamAgg`) | DONE (Portfolio and Wave tested) |
+| `tobe-team` | verify | 👥 TO-BE team by skill | `R-conso` | Residual human FTE and agent vFTE by skill summed over the selection for the chosen year, table per product reconciled with the aggregated model | `tobeComposition` per product; `aggVerifyTeam.ts` (`tobeTeamAgg`) | DONE (Portfolio and Wave tested) |
+| `maturity-map` | tune | 📐 Maturity levels (L1–L4) | `I-input` | DONE: L1-L4 thresholds (adoption and agent share) per product, level reached, min/mean/max of each threshold (`aggMaturityMap`) | `MATURITY_MAP` | DONE |
+| `readiness` | tune | 🧭 AI Readiness | `R-rollup` | DONE: index, level, weakest dimension and Human Readiness per product; summary row = mean of the assessed products; detail per product (`aggReadiness`) | `tune` readiness of each product's resolved case (drill) | DONE |
+| `lifecycle-edit` | tune | 📊 Status & phase weight | `I-input` | DONE: lifecycle axis, position, profile, automation posture per status, modified cells per product; min/mean/max (`aggLifecycle`) | `statusLifecycle` | DONE |
+| `token-econ` | tune | 💸 Token economics | `R-rollup` | DONE: agent runs, tokens and cost per product (end of horizon and whole horizon); total = consolidated `token` series of the selection; common price catalogue; detail per product (`aggTokens`) | `series.token` + usage per product; common inputs (`TOKEN_MODELS`) | DONE |
+| `knowledge` | tune | 🧠 Knowledge hub | `I-input` | DONE: hub subset per product (activation, answer score, initial→target CC, curation, setup base, domains, KT lead time), totals `knowledgeTotals` (`aggKnowledge`) | `inputSummary.hub`, `knowledgeRow` | DONE |
+| `run-sizing` | tune | 🤖 Run-team sizing | `I-input` | DONE: sizing policy (mode, floor, ops load, supervision ceiling/factor) and run team at the end of the horizon per product; min/mean/max (`aggRunSizing`) | `dom.values` of the resolved case | DONE |
+| `opmodel` | tune | 🧩 Operating model | `R-rollup` | DONE: pods, residual team, run team and V7 conservation check per product at Y1 and at the end of the horizon; total = sum of the teams; detail per product (`aggOpModel`) | `domain/tune` opmodel per product | DONE |
+| `phase-art` | verify | Phase / Artifact detail | `R-rollup` | Phases and artefacts selected per product, tightest supervision margin, floor violations (CC-SUP-01); totals = counts only; ProductDrill | `phaseArtRows`, `supMatrix` per product; `aggVerifyAgents.ts` (`phaseArtTable`) | DONE (Portfolio and Wave tested) |
+| `agent-dir` | verify | Agent Directory | `R-rollup` | Agents by authorisation level, active roles, loop settings per product; row = union (each agent counted once); ProductDrill | `agentDirectory`, `rolesForPhase`, `loopInternalTokenCost` per product; `aggVerifyAgents.ts` (`agentDirTable`) | DONE (Portfolio and Wave tested) |
+| `agent-detail` | verify | 🤖 Agent details | `R-rollup` | Agentic team: run FTE, supervision pool, rates, artefacts by authorisation level per product; FTE and counts summed; ProductDrill | `agentDetail` per product; `aggVerifyAgents.ts` (`agentDetailTable`) | DONE (Portfolio and Wave tested) |
+| `agent-usage` | verify | 📊 Agent usage | `R-conso` | Runs, tokens, cost per product; token / infra cost by calendar year (consolidated series); agent effort by phase and by authorisation level, summed | `series.token`, `series.infra`, `agentUsage`, `artifactRuns`; `aggVerifyAgents.ts` (`usageAgg`) | DONE (Portfolio and Wave tested) |
+| `setup` | tune | Agentic Setup | `I-input` | DONE: four setup lines, total and duration per product; total = domain sum; min/mean/max (`aggSetup`) | `domain/tuneB/setup` per product | DONE |
+| `assumptions` | defend | 📒 Assumptions register | `R-rollup` | Assumptions moved away from the default, not validated by the client, measured impact, per product; common validation statuses | `domain/pdc/assumptions` per product | DONE |
+| `montecarlo` | stress | 🎲 Monte Carlo | `R-rollup` | P10/P50/P90 per product from the portfolio stress if it has run, otherwise an invitation to run it | `ProductStress` of `portfolioMonteCarlo` (`store/portfolioSimulation`) | DONE |
+| `model-stochastic` | model-engine | 📊 Stochastic layer (P4) | `R-rollup` | P50 and seed per product; link to Portfolio stress | `domain/model/modelState`, `portfolioMonteCarlo` | DONE |
+| `model-convergence` | model-engine | 🔁 Loop convergence | `R-rollup` | Bounded/non-converged loops per product | `domain/model/lce` per product | DONE |
+| `model-supervision` | model-engine | 🧑‍✈️ Supervision (P3) | `R-rollup` | Supervision mode and cost per product | `domain/model/supView` | DONE |
+| `exec` | verify | Execution Timeline | `R-rollup` | Start, end of ramp-up, first agent vFTE of each product on the portfolio calendar and sprint velocity; row = span of the programme; ProductDrill | `portfolioGantt` (milestones), `execView`; `aggVerifyPerf.ts` (`execTable`) | DONE (Portfolio and Wave tested) |
+| `productivity` | verify | Productivity | `R-rollup` | Throughput per engineer and per month (AS-IS, end of horizon, factor) per product; row = mean weighted by the entry team, supplied by the domain; ProductDrill | `productivityView`; `aggVerifyPerf.ts` (`productivityTable`) | DONE (Portfolio and Wave tested) |
+| `velocity` | verify | Velocity | `R-rollup` | Sprint velocity (AS-IS, Y1, Y2, end), delivery lead time per product; row = `weightedVelocity`; ProductDrill | `velocityView`, `weightedVelocity`; `aggVerifyPerf.ts` (`velocityTable`) | DONE (Portfolio and Wave tested) |
+| `quality` | verify | Quality | `R-rollup` | Quality indicators AS-IS → end of horizon per product (not additive), overridden anchors; ProductDrill (inputs disabled) | `qualityAnchorView`; `aggVerifyPerf.ts` (`qualityTable`) | DONE (Portfolio and Wave tested) |
+| `run` | economics | Agentic Run | `R-conso` | Consolidated running cost by year and by month (run team, tokens, infrastructure, Knowledge Hub), one row per product + total | `consolidate().series` (`run`, `token`, `infra`, `khCost`) and `headline.years`; the fine team/agents split per product needs a domain view to be added | DONE |
+| `annual` | economics | Annual summary | `R-conso` | Year-by-year table by calendar year of the portfolio / wave: savings, cost, setup, net, human FTE and vFTE at year end | `portfolioHeadline`/`waveHeadline` (`years`, `fte`), `series.humanFte`/`agentVfte` via `byYear` | DONE |
+| `monthly` | economics | Monthly detail | `R-conso` | Calendar monthly detail: savings, cost, setup, net, cumulative cash, FTE/vFTE, optionally per product | `consolidate().series` + `summary.cum` (`selectionView.chart`) | DONE |
+| `monthly-playback` | present | 🎬 Monthly Playback | `R-conso` | Monthly playback of the consolidated trajectory (FTE, cost, savings); velocity and cost per point weighted | `consolidate().series`, `weightedVelocity`; cost per point: domain view to be added | DONE |
+| `compliance` | verify | Compliance | `R-rollup` | Compliance coverage per product | `verifyB` per product | TO DO |
+| `financial` | economics | 💳 Financial | `R-conso` | DONE (exemplar): ROI/payback/NPV/net cards, cumulative cash, table per product, flows by calendar year, excluded products flagged | `selectionView` ← `consolidate`, `scopeHeadline`, `consolidationView` | DONE |
+| `model-flow` | model-engine | ⏱️ Flow & value (P5) | `R-rollup` | Cycle time (Little) and time-to-market NPV per product | `domain/model/flow` per product | DONE |
+| `gantt` | verify | 📅 Gantt / Timeline | `R-conso` | NATIVE: Gantt by wave with expandable products (`Waves.tsx`); registered as an aggregate | `portfolioGantt` ← `consolidate` | NATIVE |
+| `board` | configure | 📊 Board | `S-static` | Banner only. Configuration of the dynamic sections: common | — | DONE (banner) |
+| `factory-model` | factory | 🏭 Factory Model | `S-static` | Banner only. Factory meta-model: common data outside the whitelist (AMBIGUOUS, see § Ambiguities) | — | DONE (banner) |
+| `release-pipeline` | factory | 🚀 Release Pipeline | `S-static` | Banner only. Same: common data, draft | — | DONE (banner) |
+| `engineering` | factory | ⚙️ Engineering | `S-static` | Banner only. Same: counters entered, common | — | DONE (banner) |
+| `factory-timeline` | factory | 📅 Factory Timeline | `S-static` | Banner only. Same: calendar of common events | — | DONE (banner) |
+| `commercial` | present | 💼 Commercial model | `R-rollup` | Commercial model per product (non-linear gain sharing: no sum) | `domain/pdc/commercial` per product | DONE |
+| `kpi` | verify | KPI Scorecard | `R-conso` | Consolidated financial KPIs (cards from `portfolioHeadline`), weighted before / after capability KPIs, table per product (FTE, run cost, automation, ceiling, velocity, test coverage, lead time) | `scopeHeadline`, `weightedAutomation`, `weightedVelocity`; `aggVerifyKpi.ts` (`kpiAgg`) | DONE (Portfolio and Wave tested) |
+| `asis-tobe` | verify | AS-IS vs TO-BE | `R-conso` | Consolidated before / after: FTE, baseline cost vs TO-BE cost, setup, weighted automation and ceiling; table per product | `headline.fte`, `costReduction` (`portfolioCostReduction`); `aggVerifyKpi.ts` (`asisTobeAgg`) | DONE (Portfolio and Wave tested) |
+| `sources` | refshare | Sources | `S-static` | Banner only. Documentation: sources and references | — | DONE (banner) |
+| `results` | verdict | 📋 Results | `R-conso` | Verdict of the selection, key figures, uncertainty band (portfolio distribution), breakdown of the savings, team shift | `portfolioHeadline`, `pfDecision`/`groupDecision` (portfolio stress), `headline.fte`; origin of the savings: domain view to be added | DONE |
+| `story-summary` | present | 📖 The story so far | `R-conso` | AS-IS → TO-BE story of the selection: team, cost, delivery; confidence as a table per product | `headline.fte`, `costReduction`, `velocityPct`, `eff`, `ceiling` | DONE |
+| `strategies` | verdict | 🏆 Strategy comparison | `R-rollup` | 7 strategies: recommended strategy, ROI and TCO per product | `domain/verdict` strategies per product | DONE |
+| `arch-layers` | refshare | 🏛️ Architecture — Layers | `S-static` | Banner only. Architecture documentation, content rewritten for the TypeScript + React build (DEV-ARCH-CONTENT); independent of the view | — | DONE (banner) |
+| `arch-content` | refshare | 🏛️ Architecture — Layers content | `S-static` | Banner only. Architecture documentation, content rewritten for the TypeScript + React build (DEV-ARCH-CONTENT); independent of the view | — | DONE (banner) |
+| `eligibility` | tune | 🎯 Eligibility & Abaques | `R-rollup` | DONE: go / conditional / no-go gate, prerequisites, code size, nature, profile, verification tax per product; row = count of the verdicts; detail per product (`aggEligibility`) | `domain/tune` eligibility per product | DONE |
+| `maturity` | tune | 📐 Maturity & Measurement | `I-input` | DONE: SDD/tooling maturity, coaching curve and Y1 cost per product; Y1 coaching total; min/mean/max (`aggMaturity`) | `dom.values` of the resolved case | DONE |
+| `program` | tune | 🧭 Program & Completeness | `I-input` | DONE: pilot, internal capacity, multi-pod overhead per product; pilot and capacity totals; min/mean/max (`aggProgram`) | `dom.values` of the resolved case | DONE |
+| `scenarios` | stress | 🔀 Scenarios | `R-rollup` | Product × 6 scenarios: ROI and payback; no portfolio scenario (known limit, DEV-PF-GAPS) | `domain/stress` scenarios per product | DONE |
+| `compare` | stress | 3-way Comparison | `R-rollup` | Gap to the reference snapshot per product | `domain/stress` compare, common snapshots | DONE |
+| `sensitivity` | stress | Sensitivity | `R-rollup` | Most sensitive parameter and amplitude per product | `domain/stress` sensitivity per product | DONE |
+| `decision` | verdict | 🧭 Decision Intelligence | `R-conso` | NATIVE: verdict of the distribution of the portfolio / the wave (`PortfolioVerdict`); registered as an aggregate | `pfDecision`, `groupDecision`, `store/portfolioSimulation` | NATIVE |
+| `model-evidence` | model-engine | 📋 Evidence ledger (P6) | `R-rollup` | Confidence grade A-D and provenance per product | `domain/model/evidence` per product | DONE |
+| `verif` | defend | 🔍 Logic verification | `R-rollup` | Logic checks: number of failures per product (16 checks, 67 convergence rows); overall status = worst | `domain/pdc/verifChecks`, `verifConvergence`, `verifProvenance`, `verifSensi` | DONE |
+| `model-verification` | model-engine | 🛡️ Verification tax (P2) | `R-rollup` | Verification tax V per product | `domain/model/vtax`, `evt` | DONE |
+| `risk` | tune | 🛡️ Risk & Compliance | `I-input` | Risk register, AI Act tier and risk premium per product | `dom.values` of the resolved case | TO DO |
+| `reference` | refshare | 🗺️ Reference Map | `S-static` | Banner only. Reference map of the delivery model | — | DONE (banner) |
+| `deps` | refshare | 🔗 Section Dependencies | `S-static` | Banner only. Dependency matrix between sections (static) | — | DONE (banner) |
+| `datamodel` | refshare | 🗄️ Data Model | `S-static` | Banner only. Data model of the application (catalogue, state registry) | — | DONE (banner) |
+| `calcengine` | refshare | ⚙️ Calculation Engine | `S-static` | Banner only. Documentation of the calculation engine | — | DONE (banner) |
+| `glossary` | refshare | 📖 Delivery-model glossary | `S-static` | Banner only. Glossary | — | DONE (banner) |
+| `io` | refshare | 📥 Import / Export | `S-static` | Banner only. Import/export and snapshot library; the choice of the export scope already has its own selector (`ReportPanel`) | — | DONE (banner) |
+| `sessions` | refshare | 🗂️ Session manager | `S-static` | Banner only. Autosave recovery: independent of the case | — | DONE (banner) |
+| `duediligence` | defend | 🧾 Due diligence | `R-rollup` | Items to confirm and embedded coefficients: counts and impact per product; common annotations | `domain/dd` per product | DONE |
+| `personas` | configure | 👥 Persona management | `S-static` | Banner only. Persona management: common | — | DONE (banner) |
+| `brand-theme` | configure | 🎨 Brand & theme | `S-static` | Banner only. Theme library and client logo: common to the file (keys `THEMES`, `ACTIVE_THEME`, `CUSTOMER_LOGO`) | — | DONE (banner) |
+| `products` | portfolio | 📦 Products | `P-portfolio` | Banner only. Table of the products (already all products) | — | DONE (banner) |
+| `overrides` | portfolio | 🧬 Overrides | `P-portfolio` | Banner only. Overrides per product | — | DONE (banner) |
+| `knowledge-transfer` | portfolio | 🔁 Knowledge transfer | `P-portfolio` | Banner only. F29 table and effect of the hub per wave | — | DONE (banner) |
+| `waves` | portfolio | 🌊 Waves | `P-portfolio` | Banner only. Wave board | — | DONE (banner) |
+| `consolidation` | portfolio | 📈 Consolidation | `P-portfolio` | Banner only. Consolidated trajectory (source of `selectionView`) | — | DONE (banner) |
+| `portfolio-stress` | portfolio | 🎲 Portfolio stress | `P-portfolio` | Banner only. Aggregated Monte Carlo of the planned products | — | DONE (banner) |
 
-## 5. Suivi des phases suivantes
+## 5. Tracking of the following phases
 
-Terminé : les 85 sections ont leur comportement pour les vues Portfolio, Wave et Product (V0 : fondation et deux sections témoins ; V1 : agrégats des 12 groupes ; les sections S-static et P-portfolio n'affichent que le bandeau). Plus aucune section n'utilise le repli générique ; les replis restent dans le code pour toute nouvelle section (testés en retirant temporairement un agrégat du registre).
+Finished: the 86 sections have their behaviour for the Portfolio, Wave and Product views (V0: foundation and two pilot sections; V1: aggregates of the 12 groups; the S-static and P-portfolio sections show the banner only). No section uses the generic fallback any more; the fallbacks stay in the code for any new section (tested by temporarily removing an aggregate from the registry).
 
-## 6. Ambiguïtés assumées
-- `R-rollup` (28), tableau récapitulatif spécifique (statut, valeurs clés) à la place du repli financier générique : `readiness`, `token-econ`, `vfte-ov`, `opmodel`, `phase-art`, `agent-dir`, `agent-detail`, `exec`, `productivity`, `velocity`, `quality`, `compliance`, `commercial`, `strategies`, `eligibility`.
-- `I-input` (17), synthèse spécifique de la saisie de la section à la place du repli générique (ETP, artefacts, surcharges, hub) : `engagement-context`, `engage`, `transform-params`, `params`, `scurve`, `maturity-map`, `scope-sel`, `phase-scope`, `lc-weighting`, `lifecycle-edit`, `loc-strat`, `knowledge`, `run-sizing`, `setup`, `maturity`, `program`, `risk`.
-## 6. Ambiguïtés assumées
-- **Sections de saisie dont la clé est commune** (écrites hors liste blanche : `RATE`, `MODEL`, `COEF`, `TOKEN_MODELS`, `DD_STATE`, `assumptValidated`, données de l’usine) : la vue ne les change pas. Choix : `ratecard` et les quatre sections d’usine sont `S-static` (valeurs identiques pour tous les produits, une ligne par produit n’apporterait rien) ; `token-econ`, les six sections `model-engine`, `assumptions` et `duediligence` sont `R-rollup` (leur résultat est propre au produit, leurs réglages sont communs).
-- **`factory-*`** : les données sont communes mais le générateur lit le produit actif. Choisi `S-static` (« brouillon, ne nourrit pas le modèle financier »). À revoir si l’usine devient par produit.
-- **`readiness`** : questionnaire (saisie) mais surtout un indice : `R-rollup`, comme demandé. **`eligibility`**, **`opmodel`** : paramètres + diagnostics, classés `R-rollup` car l’intérêt est la porte / le contrôle par produit.
-- **`kpi`**, **`monthly-playback`**, **`story-summary`** : mélange de grandeurs additives et de ratios. Classés `R-conso` ; les ratios non additifs doivent rester des lignes par produit ou des moyennes pondérées fournies par le domaine (`weightedVelocity`, `weightedAutomation`).
-- **`productivity`, `quality`, `compliance`, `vfte-ov`, `phase-art`, `agent-dir`, `agent-detail`** : ratios, couvertures ou périmètres différents par produit : `R-rollup`. Une somme par phase ou par rôle (comme `agent-usage`) pourrait devenir `R-conso` plus tard.
-- **`commercial`** : le partage de gain est non linéaire : `R-rollup`, sans total.
-- **`compare`**, **`io`** : travaillent sur les photos (communes) ; `compare` en `R-rollup` (écart par produit), `io` en `S-static` (les exports ont déjà leur sélecteur de périmètre).
-- **`decision`** et **`gantt`** suivent déjà la Vue : enregistrés comme leur propre agrégat.
-- **`home`** : `S-static` (navigation).
-- Les sections du **groupe Portefeuille** sont déjà à ce niveau ; `consolidation` est la source de `selectionView`.
+## 6. Assumed ambiguities
 
-## 7. Risques
+- `R-rollup` (28), specific summary table (status, key values) instead of the generic financial fallback: `readiness`, `token-econ`, `vfte-ov`, `opmodel`, `phase-art`, `agent-dir`, `agent-detail`, `exec`, `productivity`, `velocity`, `quality`, `compliance`, `commercial`, `strategies`, `eligibility`.
+- `I-input` (17), specific synthesis of the section's input instead of the generic fallback (FTE, artefacts, overrides, hub): `engagement-context`, `engage`, `transform-params`, `params`, `scurve`, `maturity-map`, `scope-sel`, `phase-scope`, `lc-weighting`, `lifecycle-edit`, `loc-strat`, `knowledge`, `run-sizing`, `setup`, `maturity`, `program`, `risk`.
+- **Input sections whose key is common** (written outside the whitelist: `RATE`, `MODEL`, `COEF`, `TOKEN_MODELS`, `DD_STATE`, `assumptValidated`, factory data): the view does not change them. Choice: `ratecard` and the four factory sections are `S-static` (identical values for all products, one row per product would add nothing); `token-econ`, the six `model-engine` sections, `assumptions` and `duediligence` are `R-rollup` (their result is specific to the product, their settings are common).
+- **`factory-*`**: the data are common but the generator reads the active product. Chosen `S-static` ("draft, does not feed the financial model"). To be revisited if the factory becomes per product.
+- **`readiness`**: a questionnaire (input) but above all an index: `R-rollup`, as requested. **`eligibility`**, **`opmodel`**: parameters + diagnostics, classified `R-rollup` because the point is the gate / the check per product.
+- **`kpi`**, **`monthly-playback`**, **`story-summary`**: a mix of additive quantities and ratios. Classified `R-conso`; non-additive ratios must stay per-product rows or weighted means supplied by the domain (`weightedVelocity`, `weightedAutomation`).
+- **`productivity`, `quality`, `compliance`, `vfte-ov`, `phase-art`, `agent-dir`, `agent-detail`**: ratios, coverages or scopes that differ per product: `R-rollup`. A sum by phase or by role (like `agent-usage`) could become `R-conso` later.
+- **`commercial`**: gain sharing is non-linear: `R-rollup`, no total.
+- **`compare`**, **`io`**: work on the (common) snapshots; `compare` as `R-rollup` (gap per product), `io` as `S-static` (the exports already have their scope selector).
+- **`decision`** and **`gantt`** already follow the View: registered as their own aggregate.
+- **`home`**: `S-static` (navigation).
+- The sections of the **Portfolio group** are already at that level; `consolidation` is the source of `selectionView`.
 
-- Édition commune (All products en Portefeuille / Vague) : `editsCommon` vaut pour **toutes** les commandes de cas tant que cette vue est active, pas seulement pour l'éditeur sur place. Un contrôleur qui calcule sa charge utile depuis `getState().doc` (le produit actif) au lieu du brouillon écrirait au commun une valeur lue sur le produit actif (contrôleurs de résultats surtout : sensibilité, Monte Carlo, photos ; aucun n'est déclenché depuis une section de saisie).
+## 7. Risks
 
-- Un composant de section qui lit le store autrement que par `useDoc` / `useCtx` / `useCaseResult` échapperait au `ProductViewContext` (la règle ESLint G4 l’interdit côté `ui/`). `useSimulation` lit la dernière simulation du **produit actif** (affichée périmée pour un autre produit) : à traiter par la phase « stress ».
-- Le détail par produit exécute la section entière pour chaque produit ouvert (coût proportionnel au nombre de produits ouverts, un par un par défaut).
-- Un contrôle personnalisé qui écrirait sans passer par un événement React (ex. écouteur natif) ne serait pas arrêté par `ReadOnlyScope` : à vérifier section par section lors du drill.
+- Common editing (All products in Portfolio / Wave): `editsCommon` applies to **all** case commands while that view is active, not only to the in-place editor. A controller that computes its payload from `getState().doc` (the active product) instead of the draft would write to the common values a value read on the active product (mostly result controllers: sensitivity, Monte Carlo, snapshots; none is triggered from an input section).
+- A section component that reads the store other than through `useDoc` / `useCtx` / `useCaseResult` would escape the `ProductViewContext` (ESLint rule G4 forbids it on the `ui/` side). `useSimulation` reads the latest simulation of the **active product** (shown as stale for another product): to be handled by the "stress" phase.
+- The per-product detail runs the whole section for each open product (cost proportional to the number of open products, one at a time by default).
+- A custom control that would write without going through a React event (e.g. a native listener) would not be stopped by `ReadOnlyScope`: to be checked section by section during the drill.

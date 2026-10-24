@@ -2,7 +2,7 @@
 import { makeCtx } from '@/domain';
 import { pfStressFingerprint } from '@/domain/portfolio';
 import type { DisplayScope } from '@/domain/portfolio';
-import { APP_VERSION } from '@/domain/version';
+import { appVerFileTag } from '@/domain/snapshots';
 import { appStore } from '@/store/instance';
 import { pfSimStore } from '@/store/portfolioSimulation';
 import { loadExcelJS } from '@/store/persistence/excel/lazy';
@@ -15,10 +15,9 @@ export type { SheetImages } from '@/store/persistence/excel/results';
 
 export const XLSX_MIME = 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet';
 
-/** "AgentCase_v20_3_<kind>_2026-10-21-09-30-00.xlsx": version tag and local-independent UTC stamp, like the legacy files. */
+/** "AgentCase_v<MAJOR>_<MINOR>_<kind>_2026-10-21-09-30-00.xlsx" (appVerFileTag): version tag and local-independent UTC stamp, like the legacy files. */
 export function excelFilename(kind: string, now: Date = new Date()): string {
-  const ver = `v${APP_VERSION.replace(/\.0+$/, '').replace(/\./g, '_')}_`;
-  return `AgentCase_${ver}${kind}_${now.toISOString().slice(0, 19).replace(/[:T]/g, '-')}.xlsx`;
+  return `AgentCase_${appVerFileTag()}_${kind}_${now.toISOString().slice(0, 19).replace(/[:T]/g, '-')}.xlsx`;
 }
 
 export interface ExcelFile { blob: Blob; filename: string }
