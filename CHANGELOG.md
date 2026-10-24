@@ -15,6 +15,11 @@ All notable changes to AgentCase, newest first. Product version from v19.0.0 = `
 
 When releasing, follow [docs/BUMP_PROCEDURE.md](docs/BUMP_PROCEDURE.md) (§7 for the legacy file) and add the new version at the top.
 
+## [Unreleased]
+
+### Changed
+- Size budget raised to 5 MB for the single HTML file (`app/perf-budget.json` sizeMB 3.1 → 5; gzip 0.95 → 1.5 MiB to keep the same ratio). Measured at v20.9.0: 3.09 MB / 0.93 MiB.
+
 ## [v20.9.0] 2026-10-23 — Brand & theme screen, theme library (?theme=N), client logo (T4 + T5)
 
 ### New

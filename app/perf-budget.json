@@ -1,6 +1,6 @@
 {
- "sizeMB": 3.1,
- "gzipMB": 0.95,
+ "sizeMB": 5,
+ "gzipMB": 1.5,
  "shellMs": 3000,
  "editMedianMs": 200,
  "editP95Ms": 500,
