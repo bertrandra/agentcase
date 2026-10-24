@@ -35,13 +35,13 @@ export default function HomeSection() {
               const color = colorOf(colors, group.id);
               return (
                 <button key={group.id} type="button" title={`Opens ${group.label}`} onClick={() => goSection(sections[0]!.id)}
-                  style={{ textAlign: 'left', cursor: 'pointer', background: 'var(--ac-surface)', border: '1px solid var(--ac-line)', borderTop: `5px solid ${color}`, borderRadius: 'var(--ac-radius-xl)', padding: '18px 20px' }}>
-                  <div style={{ display: 'flex', alignItems: 'center', gap: 8, fontSize: 'var(--ac-font-size-3xl)', fontWeight: 'var(--ac-font-weight-bold)' }}>
+                  style={{ textAlign: 'left', cursor: 'pointer', font: 'inherit', color: 'var(--ac-ink)', background: 'var(--ac-surface)', border: '1px solid var(--ac-line)', borderTop: `5px solid ${color}`, borderRadius: 'var(--ac-radius-xl)', padding: '18px 20px' }}>
+                  <div style={{ display: 'flex', alignItems: 'center', gap: 8, color: 'var(--ac-text-heading)', fontSize: 'var(--ac-font-size-3xl)', fontWeight: 'var(--ac-font-weight-bold)' }}>
                     <span>{group.label}</span>
                     <span title={`${sections.length} section${sections.length === 1 ? '' : 's'} active for this persona`}
                       style={{ marginLeft: 'auto', color: textColor(color), border: `1px solid ${color}`, borderRadius: 'var(--ac-radius-xl-plus)', padding: '1px 10px', fontSize: 'var(--ac-font-size-md-plus)' }}>{sections.length}</span>
                   </div>
-                  <div style={{ fontSize: 'var(--ac-font-size-md-plus)', margin: '6px 0' }}>{group.description || 'No description yet — add one in 👥 Persona management.'}</div>
+                  <div style={{ color: 'var(--ac-muted)', fontSize: 'var(--ac-font-size-md-plus)', margin: '6px 0' }}>{group.description || 'No description yet — add one in 👥 Persona management.'}</div>
                   <div style={{ fontSize: 'var(--ac-font-size-sm-plus)', color: textColor(color), fontWeight: 'var(--ac-font-weight-bold)' }}>{group.label} →</div>
                 </button>
               );

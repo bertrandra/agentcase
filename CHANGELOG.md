@@ -17,6 +17,9 @@ When releasing, follow [docs/BUMP_PROCEDURE.md](docs/BUMP_PROCEDURE.md) (§7 for
 
 ## [Unreleased]
 
+### Fixed
+- Welcome cards: the card buttons inherit the app font and colours (title in the heading colour, description muted, as in the legacy page); before, the browser default applied (system font, and blue text on Safari / iOS).
+
 ### Changed
 - Header in two zones: left = AgentCase title (and client logo), ☰ sidebar toggle, Persona and Fast Path; right = View / Edit (several products), undo / redo, 📁 file menu, ◐ display.
 - Top bar: Save and Open… move into a file menu opened by an icon-only 📁 button (menu button pattern: arrows, Home / End, Escape, click outside).
