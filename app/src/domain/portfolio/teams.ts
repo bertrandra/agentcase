@@ -1,4 +1,4 @@
-/** @calc-zone product-resolution */
+/** @calc-zone portfolio-consolidation */
 import { scheduledProducts } from './timeline';
 import type { Portfolio } from './types';
 

@@ -32,12 +32,16 @@ export function buildDeps(root: string): DepsData {
   const lane = new Map(cat.zones.map((z) => [z.id, z.lane])), drawn = (z?: string): z is string => !!z && lane.has(z) && lane.get(z) !== 'shared';
   const ignore = cfg.ignore.map((i) => i.path), zoneIds = cat.zones.map((z) => z.id);
 
-  const pairs = new Map<string, Set<string>>();
-  for (const [f, tag] of tags) for (const t of p.edges.get(f) ?? []) {
+  // Zone edges, per layer: what a module's own code imports (re-exports, pure barrels and type-only imports are not uses). The domain zone graph
+  // (`edges`, kind z) is built from src/domain alone; the zone links of the controllers and the store exports are reported apart (`outer`).
+  const pairs = new Map<string, Set<string>>(), outerPairs = new Map<string, Set<string>>();
+  for (const [f, tag] of tags) for (const t of p.uses.get(f) ?? []) {
     const zt = tags.get(t)?.zone;
-    if (drawn(zt) && drawn(tag.zone) && zt !== tag.zone) push(pairs, `${zt}|${tag.zone}`, `${t}>${f}`);
+    if (p.pure.has(t) || p.pure.has(f) || !drawn(zt) || !drawn(tag.zone) || zt === tag.zone) continue;
+    push(f.startsWith('src/domain/') ? pairs : outerPairs, `${zt}|${tag.zone}`, `${t}>${f}`);
   }
-  const edges: DepEdge[] = [...pairs].map(([k, v]) => { const [a, b] = k.split('|') as [string, string]; return [a, b, 'z', v.size] as DepEdge; });
+  const zoneEdges = (m: Map<string, Set<string>>): DepEdge[] => [...m].map(([k, v]) => { const [a, b] = k.split('|') as [string, string]; return [a, b, 'z', v.size] as DepEdge; });
+  const edges = zoneEdges(pairs), outer = zoneEdges(outerPairs).sort((a, b) => a[0].localeCompare(b[0]) || a[1].localeCompare(b[1]));
 
   const sections = catalog.map((c) => ({ id: c.id, label: c.label, group: c.group, kind: kinds[c.id] ?? 'S-static', files: found.get(c.id)?.files.length ?? 0 }));
   const zIdx = new Map(zoneIds.map((z, i) => [z, i])), sIdx = new Map(sections.map((s, i) => [s.id, i])), reaches = new Map<string, Set<string>>();
@@ -71,11 +75,11 @@ export function buildDeps(root: string): DepsData {
     const own = [...tags].filter(([, t]) => t.zone === id).map(([f]) => hits.get(f) ?? 0).sort((a, b) => a - b);
     return { id, modules: own.length, tmed: own[own.length >> 1] ?? 0, tmax: own[own.length - 1] ?? 0 };
   });
-  return { schema: 1, counts: { files: p.files.filter((f) => f.startsWith('src/')).length, tagged: tags.size, tests: tests.length }, zones: modules, sections, edges, figures, ignored: cfg.ignore, tests };
+  return { schema: 1, counts: { files: p.files.filter((f) => f.startsWith('src/')).length, tagged: tags.size, tests: tests.length }, zones: modules, sections, edges, outer, figures, ignored: cfg.ignore, tests };
 }
 
 /** One line per array element: small diffs, compact file. */
 export function formatDeps(d: DepsData): string {
   const arr = (a: unknown[]): string => `[\n  ${a.map((x) => JSON.stringify(x)).join(',\n  ')}\n ]`;
-  return `{\n "schema": ${d.schema},\n "counts": ${JSON.stringify(d.counts)},\n "zones": ${arr(d.zones)},\n "sections": ${arr(d.sections)},\n "edges": ${arr(d.edges)},\n "figures": ${arr(d.figures)},\n "ignored": ${arr(d.ignored)},\n "tests": ${arr(d.tests)}\n}\n`;
+  return `{\n "schema": ${d.schema},\n "counts": ${JSON.stringify(d.counts)},\n "zones": ${arr(d.zones)},\n "sections": ${arr(d.sections)},\n "edges": ${arr(d.edges)},\n "outer": ${arr(d.outer)},\n "figures": ${arr(d.figures)},\n "ignored": ${arr(d.ignored)},\n "tests": ${arr(d.tests)}\n}\n`;
 }

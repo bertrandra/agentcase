@@ -1,4 +1,4 @@
-/** @calc-zone knowledge-hub */
+/** @calc-zone portfolio-consolidation */
 import type { Ctx } from '../ctx';
 import { CC_MULT, KT_RED } from '../catalog';
 import { khRunAnnual, khSetupCost } from '../knowledge';

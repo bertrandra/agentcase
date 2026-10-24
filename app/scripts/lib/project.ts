@@ -10,7 +10,12 @@ export interface Project {
   known: Set<string>;
   text: Map<string, string>;
   parsed: Map<string, Parsed>;
+  /** every runtime edge: imports, re-exports, data files a test reads, globs (the closure of a test: test selection) */
   edges: Map<string, string[]>;
+  /** the imports a module's own code uses (no re-export, no read, no glob): the zone edges */
+  uses: Map<string, string[]>;
+  /** pure barrels: modules made only of re-exports (no import, no declaration); they create no zone edge */
+  pure: Set<string>;
   importers: Map<string, string[]>;
 }
 /** Imports of a generic accessor module that count as imports of the module that really holds the symbol: { file: { symbol: target } }. */
@@ -59,7 +64,7 @@ export function loadProject(root: string, routes: Routes = {}, flatten = true): 
   const files = [...walk(root, 'src'), ...walk(root, 'tests')].sort();
   const known = new Set(files), text = new Map<string, string>(), parsed = new Map<string, Parsed>();
   for (const f of files) { const t = readFileSync(join(root, f), 'utf8'); text.set(f, t); parsed.set(f, parseModule(f, t)); }
-  const p: Project = { root, files, known, text, parsed, edges: new Map(), importers: new Map() };
+  const p: Project = { root, files, known, text, parsed, edges: new Map(), uses: new Map(), pure: new Set(), importers: new Map() };
   for (const f of files) {
     const out = new Set<string>(), ps = parsed.get(f)!;
     for (const i of ps.imports) {
@@ -69,6 +74,8 @@ export function loadProject(root: string, routes: Routes = {}, flatten = true): 
       const hops = i.names && flatten ? i.names.map((n) => routes[t]?.[n] ?? declaredIn(p, t, n)) : [t];
       (hops.length ? hops : [t]).forEach((h) => { if (h !== f) out.add(h); });
     }
+    p.uses.set(f, [...out].sort());
+    if (!ps.imports.length && !ps.locals.size && ps.stars.length + ps.reexports.length > 0) p.pure.add(f);
     // A barrel keeps edges to what it re-exports: named imports skip it (flattened above), so only whole-module uses (namespace, default, dynamic) reach it.
     for (const spec of [...ps.stars, ...ps.reexports.map((r) => r.spec)]) { const t = resolveSpec(root, f, spec, known); if (t) out.add(t); }
     if (f.startsWith('tests/')) for (const r of readsOf(root, f, text.get(f) ?? '')) out.add(r);

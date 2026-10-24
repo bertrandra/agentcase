@@ -3,7 +3,7 @@ export interface Mutation { file: string; find: string; replace: string; why: st
 
 export const MUTATIONS: Mutation[] = [
   { file: 'src/domain/stress/sensitivity.ts', find: "impactFte: '±2 FTE', roiImpact: '±0.8x'", replace: "impactFte: '±2 FTE', roiImpact: '±0.7x'", why: 'stress: a sensitivity label' },
-  { file: 'src/domain/verdict/rank.ts', find: 'o.score = sw ? Math.round(acc / sw) : 0;', replace: 'o.score = sw ? Math.floor(acc / sw) : 0;', why: 'verification-verdict: strategy score rounding' },
+  { file: 'src/domain/verdict/rank.ts', find: 'o.score = sw ? Math.round(acc / sw) : 0;', replace: 'o.score = sw ? Math.floor(acc / sw) : 0;', why: 'verdict: strategy score rounding' },
   { file: 'src/domain/nav/fastPath.ts', find: "s.id === 'home'", replace: "s.id === 'homeX'", why: 'workspace-config: Fast Path keeps Welcome' },
   { file: 'src/domain/tune/readiness.ts', find: "label: 'Documentation'", replace: "label: 'Documentations'", why: 'tuning-programme: a readiness dimension label' },
   { file: 'src/domain/verifyB/velocityUplift.ts', find: '/ v0 * 100) : 0', replace: '/ v0 * 100) + 1 : 0', why: 'delivery-views: velocity uplift' },

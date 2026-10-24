@@ -1,4 +1,4 @@
-/** @calc-zone verification-verdict */
+/** @calc-zone verdict */
 import type { Ctx } from '../ctx';
 import { MCS_DRIVER_ORDER, mcsSpec } from './mcsDrivers';
 import { evidenceOf, type EvidenceTier } from './modelState';

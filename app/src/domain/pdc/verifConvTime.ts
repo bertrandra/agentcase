@@ -1,4 +1,4 @@
-/** @calc-zone verification-verdict */
+/** @calc-zone verification */
 import { engineNow, npvCanonical, paybackMonthsCanonical } from '../canonical';
 import { cashflowSummary, DEFAULT_DISCOUNT_RATE } from '../economics/cashflow';
 import { headline } from '../economics/headline';

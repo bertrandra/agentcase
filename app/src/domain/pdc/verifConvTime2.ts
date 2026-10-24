@@ -1,4 +1,4 @@
-/** @calc-zone verification-verdict */
+/** @calc-zone verification */
 import { engineNow } from '../canonical';
 import type { Ctx } from '../ctx';
 import { DEFAULT_DISCOUNT_RATE } from '../economics/cashflow';

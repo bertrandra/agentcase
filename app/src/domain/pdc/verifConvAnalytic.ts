@@ -1,4 +1,4 @@
-/** @calc-zone verification-verdict */
+/** @calc-zone verification */
 import type { Ctx } from '../ctx';
 import { model } from '../model/overlay';
 import { aiQualityTaxFactor, vtaxAvgHuman } from '../model/vtax';

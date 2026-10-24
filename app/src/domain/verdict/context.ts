@@ -1,4 +1,4 @@
-/** @calc-zone verification-verdict */
+/** @calc-zone verdict */
 import type { Ctx } from '../ctx';
 import { engagementCoef, engagementKey, hriEnabled, hriIndex } from '../engagement';
 import { khEnabled, khTargetCC } from '../knowledge';

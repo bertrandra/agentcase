@@ -1,4 +1,4 @@
-/** @calc-zone product-resolution */
+/** @calc-zone portfolio-consolidation */
 import { engagementCoef } from '../engagement';
 import { khEnabled } from '../knowledge';
 import { ctxOf } from './memo';

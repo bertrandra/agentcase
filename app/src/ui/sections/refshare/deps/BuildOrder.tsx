@@ -23,6 +23,7 @@ export function BuildOrder() {
           </div>
         </div>
       ))}
+      {!CYCLES.length && <Callout kind="green"><span data-acyclic>✅ <strong>No cycle</strong>: {DATA.edges.filter((e) => e[2] === 'z').length} zone links.</span> {notes.acyclicNote} {DATA.outer.length} {notes.outerNote}</Callout>}
       {CYCLES.map((c) => (
         <Callout key={c.join()} kind="warn"><span data-cycle={c.length}>🔁 <strong>Cycle of {c.length} zones</strong> (each reaches the others through imports): {c.map(labelOf).join(' · ')}.</span> {notes.cycleNote}</Callout>
       ))}

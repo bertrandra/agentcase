@@ -5,7 +5,7 @@ import '@/controllers/refshare';
 import { COMMAND_REGISTRY } from '@/store/commands';
 import { appStore } from '@/store/instance';
 import Deps from '@/ui/sections/refshare/deps';
-import { DATA, DRAWN, isReference, LAYERS, planFor, select } from '@/ui/sections/refshare/deps/model';
+import { CYCLES, DATA, DRAWN, isReference, LAYERS, planFor, select } from '@/ui/sections/refshare/deps/model';
 import { uiStore } from '@/ui/uiState';
 import { freshStore } from '../../store/helpers';
 
@@ -102,13 +102,18 @@ describe('deps section (generated graph)', () => {
     expect(container.querySelectorAll('[data-layer]').length).toBe(new Set(Object.values(LAYERS.layer)).size);
     expect(screen.getByText(/feedback links set aside/)).toBeTruthy();
     expect(container.querySelectorAll('li').length).toBe(LAYERS.feedback.length);
-    expect(container.querySelector('[data-cycle]')).not.toBeNull();
+    // lot 4: the domain zone graph is acyclic (zone links per layer, pure barrels and re-exports are not uses, misplaced modules retagged)
+    expect(CYCLES).toEqual([]);
+    expect(LAYERS.feedback).toEqual([]);
+    expect(container.querySelector('[data-cycle]')).toBeNull();
+    expect(container.querySelector('[data-acyclic]')).not.toBeNull();
+    expect(screen.getByText(new RegExp(`${DATA.outer.length} zone links made by the controllers`))).toBeTruthy();
   });
   it('tests tab: the selection, the saved count and the rule for a chosen zone or section', () => {
     render(<Deps />);
     tab('🧪 Tests impacted');
     const sel = screen.getByLabelText('Changed zone or section');
-    fireEvent.change(sel, { target: { value: 'verification-verdict' } });
+    fireEvent.change(sel, { target: { value: 'verification' } });
     const line = screen.getByTestId('deps-selection').textContent!;
     const m = /(\d+) of (\d+) test files would run \(saved (\d+)%\)/.exec(line);
     expect(m).not.toBeNull();

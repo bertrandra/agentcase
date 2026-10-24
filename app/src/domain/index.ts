@@ -1,4 +1,4 @@
-/** @calc-zone economics-headline */
+/** @calc-zone delivery-views */
 import { caseDiscountRate, engineNow } from './canonical';
 import { makeCtx, type Ctx } from './ctx';
 import { costReduction } from './economics/costReduction';
