@@ -17,6 +17,8 @@ When releasing, follow [docs/BUMP_PROCEDURE.md](docs/BUMP_PROCEDURE.md) (§7 for
 
 ## [Unreleased]
 
+- ui-parity: the header title width is no longer compared (it follows the title text and the fonts of the machine: 197.8 px locally, 195 px on the GitHub runner); its pinned exception is removed.
+
 ### Architecture lot 6 — CI covers every quality gate
 - **New CI job `browser`** (`.github/workflows/app.yml`, after `check`, in parallel with `e2e`): `tools/ui-parity.mjs` (shell of 3 personas and section
   content against the legacy file; fails on any divergence that is not a recorded exception, or an exception whose pinned value drifted) and `tools/a11y.mjs`
