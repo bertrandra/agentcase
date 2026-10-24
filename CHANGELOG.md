@@ -17,7 +17,20 @@ When releasing, follow [docs/BUMP_PROCEDURE.md](docs/BUMP_PROCEDURE.md) (§7 for
 
 ## [Unreleased]
 
+### New
+- **Generate a theme from one colour** (docs/THEME.md §8.9): in the Brand & theme editor of a user theme, pick a seed colour, a **palette
+  contrast** (0 Soft … 50 Balanced … 100 Strong) and a harmony (Monochrome / Analogous / Complementary / Triadic): every colour of the
+  theme (9 scale anchors, surfaces, header and KPI gradients, navigation, tables, text, focus, the business colours, chart series 1-8) is
+  derived in OKLCH, previewed live, and written by **Apply to theme** as one undoable step (`theme.generate`). The brand colour is the seed
+  (darkened only when white text would not read on it); success / warning / danger / teal keep their meaning and only lean toward the seed.
+  Every generated palette passes the contrast pairs in light and dark at the standard, enhanced and high levels (guarded; tested on 30 seeds
+  × 5 slider steps × 4 harmonies plus random seeds). The settings are stored on the theme (`generator`) and travel in the case JSON, theme
+  files and the Themes sheet; older files load unchanged.
+
 ### Changed
+- Light enhanced contrast: a text colour a theme sets (business colours, link, heading, focus) is darkened by a fifth like the chrome
+  backgrounds, so it reaches the 7:1 of that level (no built-in sets one; the default look is unchanged).
+- The contrast pairs of the tests moved to `domain/theme/contrastPairs.ts` (the generator checks them); `tests/helpers/contrastPairs.ts` re-exports them.
 - Size budget raised to 5 MB for the single HTML file (`app/perf-budget.json` sizeMB 3.1 → 5; gzip 0.95 → 1.5 MiB to keep the same ratio). Measured at v20.9.0: 3.09 MB / 0.93 MiB.
 
 ## [v20.9.0] 2026-10-23 — Brand & theme screen, theme library (?theme=N), client logo (T4 + T5)

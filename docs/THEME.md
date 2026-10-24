@@ -351,7 +351,8 @@ very `THEME_DEFAULT` object for Capgemini).
 `themedDisplay(spec, def)` (`themedDisplay.ts`) = `displayTheme(spec, themeBase(def))` (§7: the theme's own scales re-ranked for dark and the
 contrast levels), then: the dedicated role values of dark / enhanced, chosen for the default blue, **turn to the theme's hue** (brand-tinted
 roles by the primary anchor's hue shift, surfaces and lines by the slate anchor's); a chrome background the theme sets (header, KPI bar,
-table head, selected) is deepened to L ≤ .40 in dark and darkened by a fifth at light enhanced; business colours, links, focus and chart
+table head, selected) is deepened to L ≤ .40 in dark and darkened by a fifth at light enhanced, like a text colour it sets (business colours,
+link, heading, focus: darkened by a fifth at light enhanced, so a 4.5:1 colour reaches the 7:1 of that level); business colours, links, focus and chart
 series it sets are lifted to L ≥ .78 / .72 in dark standard. **High contrast stays black and white** for every theme; the colour-blind series
 are not touched.
 
@@ -403,18 +404,18 @@ read from a document, a file or a sheet goes through `parseTheme()`: only known 
 values (`isAxisValue`), other keys dropped with a note; a built-in or duplicate `seq` is dropped.
 
 Undoable commands: `theme.add` (from the default look), `theme.duplicate` (any theme, "<name> copy"), `theme.import`, `theme.rename`,
-`theme.update` (a colour / axis value sets the override, `null` or the axis default removes it; successive edits of one control coalesce into
+`theme.generate` (the one-colour palette generator, §8.9: every colour replaced and the settings kept, one step), `theme.update` (a colour / axis value sets the override, `null` or the axis default removes it; successive edits of one control coalesce into
 one step, a reset is a step of its own), `theme.delete` (not a built-in; deleting the active theme falls back to 1), `theme.activate`
 (activating 1 removes the key). Names are made unique ("Purple 2").
 
 ### 8.5 Files and workbooks
 
 - **Case JSON / HTML snapshot**: the keys travel with the case; the snapshot opens in the case's theme (and honours `?theme=`).
-- **Theme files** (`themeFile.ts`): `{ "_schema": "agentcase.themes.v1", "themes": [ { seq, name, description?, colours, axes } ] }`, one theme
+- **Theme files** (`themeFile.ts`): `{ "_schema": "agentcase.themes.v1", "themes": [ { seq, name, description?, colours, axes, generator? } ] }`, one theme
   (Export) or the user themes (Export library); importing validates every value, ignores unknown keys with a note, caps the file at 256 KB and
   50 themes, and gives each theme a fresh sequence id.
 - **Parameters workbook**: sheet **Themes** (`Theme Seq`, `Theme Name`, `Setting`, `Value`; settings `name`, `description`, `colour:<key>`,
-  `axis:<axis>`, plus the rows "Active theme" and "Last sequence id"), written only when the case has a user theme or another active theme
+  `axis:<axis>`, `generator:seed` / `generator:contrast` / `generator:harmony`, plus the rows "Active theme" and "Last sequence id"), written only when the case has a user theme or another active theme
   than 1: a default case exports the legacy workbook unchanged. A workbook without the sheet leaves the case's library as it is.
 
 ### 8.6 Customer logo (client presentations)
@@ -440,8 +441,58 @@ theme.
 An app section (no legacy equivalent: outside the legacy catalogue and the legacy-shaped workbook sheets, `app: true` in sectionCatalog.json),
 in CONFIGURE (Business journey: Reference), shown to Admin, Builder, Business journey and Advanced. Left: the library (number, name, Built-in /
 Diagnostic / Active badges; Activate, Duplicate, Export, Delete, Rename; the share link; New theme, Import…, Export library). Centre: the
-editor of the selected theme, read-only for a built-in ("Duplicate to edit"): colours by group with a picker, the value, a **live contrast
+editor of the selected theme, read-only for a built-in ("Duplicate to edit"): for a user theme the **Generate from one colour** panel first (§8.9), then colours by group with a picker, the value, a **live contrast
 badge** (AAA / AA / AA large / Fail with the ratio of the pair the colour paints, `themeChecks.ts`) and a warning line per failing pair (a
 warning, not a block), a summary of failing pairs, then the axes built from `AXES`. Right: the live preview (header with logo and title, KPI
 bar, navigation, section card with a callout, key figures, a table, an SVG chart of the 8 series, a slider, a choice, a toggle, a text field and
 buttons) with its own Light / Dark toggle.
+
+### 8.9 Generate a palette from one colour (`domain/theme/palette.ts`, `paletteParts.ts`, `generatorSettings.ts`)
+
+`paletteFromSeed(seed, { contrast: 0..100, harmony?: 'mono' | 'analogous' | 'complementary' | 'triadic' })` returns **every** colour key a
+theme can set (`COLOUR_KEYS`: the 9 scale anchors and all the roles of `ROLE_GROUPS`). Pure and deterministic; computed in OKLCH (`color.ts`),
+gamut-mapped by `fromOklch` (lightness and hue kept, chroma reduced).
+
+| Output | How it is derived (h = seed hue, C = seed chroma; "fit" = darkened in .005 L steps until it reaches the ratio on its backgrounds) |
+|---|---|
+| `primary` | the seed itself when white text reads on it at >= 5:1 (so `text-on-primary` and `hover-text` on the `primary-60` hover tint pass, and the enhanced level reaches 7:1); otherwise the seed fitted to 5:1 (hue and chroma kept, only darker): `#ffff66` → `#73730d` |
+| `secondary`, `info` | the accents (agentic build, AI): h turned by the harmony (mono ±14°, analogous ±40°, complementary +180° / +150°, triadic +120° / +240°), chroma halfway between the default accents' and the seed's, fitted to 4.6:1 as text |
+| `teal`, `success`, `warning`, `danger` | the default anchor (teal 207°, green 134°, orange 44°, brick 21°), its hue pulled a fifth of the way toward h but capped (±14°, ±12°, ±7°, ±7°: they stay teal, green, amber / orange, red), chroma a quarter of the way toward C, fitted to 4.6:1. A grey seed (C < .03) leaves them on their default hue and chroma |
+| `automation`, `glass-ceiling`, `human-supervision` | = `teal`, `danger`, `warning` (the business meaning is the family's) |
+| `neutral`, `ink`, `sidebar-text` | greys tinted by h at a very low chroma (min(.012, C × .12)); `neutral` (ink step 900) and `ink` darken with the slider |
+| `slate` | h at a low chroma (.012 + C × .15, ≤ .045), fitted to 4.6:1 |
+| surfaces | `bg`, `surface`, `surface-raised`, `sidebar-bg`, `sidebar-group-bg`, `table-stripe`, `line-strong`: near-white tints of h (chroma scaled by min(1, C / .08): none for a grey seed) |
+| chrome | `header-start` / `-end`, `kpibar-start` / `-end`, `selected`, `table-head-bg`: h at the seed chroma, fitted to 4.6:1 under white text (the table head also to 5.2:1 under its note, `primary-200`); `header-text`, `kpibar-text`, `table-head-text` white; `sidebar-group-text` fitted to 7:1 on the group bar |
+| `text-heading`, `text-link`, `focus` | h, fitted to 4.6:1 (focus 3.2:1) on the page, the surface and white |
+| `chart-cat-1..8` | 8 hue offsets from h per harmony (mono: h ±25° / ±50° on a light and a deep tier; analogous: 0, ±35, ±70, ±105, 180; complementary and triadic around their poles), one even lightness and chroma per slider position, each fitted to 3:1 (graphics) on the page |
+
+**The contrast slider** moves every profile through three points — **0 Soft** (pastel tinted page L .955, soft-white surfaces, lighter header
+L .56 → .40, ink L .33, gentle chart chroma .085 at L .66), **50 Balanced** (the profile of the default Capgemini look: white surfaces, page
+L .97, header L .46 → .24 like `primary-700` → `primary-975`, ink L .29, chart chroma .13 at L .57), **100 Strong** (white surfaces, header L .34
+→ .16, ink L .18, saturated accents (chroma × 1.15), visible lines (`line-strong` L .70), chart chroma .17 at L .50). Text is fitted to at least AA
+at every position (the fit thresholds above). Measured minimum over 32 seeds, light standard — Soft: ink on surface 11.9:1, muted on page
+4.6:1, header text 4.6:1, links 5.5:1; Balanced: 14.0, 5.5, 6.7, 7.0 (the default look: 12.6, 5.5, 7.0, 7.0); Strong: 18.7, 7.4, 11.2, 9.6 (AAA). The ratios of ink on
+the surface and of the header text on the header never decrease along the slider (tested). The screen words the value Soft (0-33),
+Balanced (34-66), Strong (67-100).
+
+**Guarantee.** `paletteFailures(p)` runs the §7.4 pairs (`domain/theme/contrastPairs.ts`, also used by the contrast tests) on the palette's
+tables in light and dark × standard / enhanced / high, built by `themeBase` + `themedDisplay` (§8.2). `paletteFromSeed` returns the first
+palette that passes, trying the asked contrast and then +10 steps up to 100. On 30 seeds (very light `#ffff66`, `#ffffff`, `#f0f0f0`, very dark
+`#101010`, `#000000`, grey `#808080`, `#c0c0c0`, saturated `#ff00ff`, `#00ff00`…) × 0 / 25 / 50 / 75 / 100 × 4 harmonies, and 60 random
+seeds and slider values (fast-check), every palette passes, already before the guard (`tests/domain/theme-palette-contrast.test.ts`).
+One check costs ≈ 20 ms, so a slider drag stays live.
+
+**Model and persistence.** A user theme carries the last applied settings, `generator: { seed, contrast, harmony }` (optional,
+`parseGenerator`: a seed that is not a colour drops the block with a note, a bad contrast is clamped to 0..100, a bad harmony falls back to
+analogous). It travels in the case JSON, the theme files and the Themes sheet (`generator:<field>` rows); older files, without it, load
+unchanged. `theme.generate` (label "Generate palette from #rrggbb (contrast N)") replaces **all** the theme's colours with the palette and
+stores the settings: one undo step restores the previous colours; built-ins are refused (no step).
+
+**Screen.** For a user theme, the editor opens with **Generate from one colour**: a seed colour picker (default: the theme's last applied seed,
+else its primary colour), the **Palette contrast** range 0-100 (step 5, `aria-valuetext` "60, Balanced", value shown beside it), a **Harmony**
+radio group shown as a segmented choice (Monochrome / Analogous / Complementary / Triadic, default Analogous), a strip of the generated
+anchors, page, ink and the 8 series (each swatch with its name and hex), **Apply to theme** and, while trying, **Discard preview**. Changing a
+setting is a **draft** of the screen's view state (never in the case): the live preview shows the generated palette at once ("generated
+palette, not applied"); Apply writes it. The colour pickers below stay editable after applying (fine-tuning; the settings stay on the theme).
+Built-in themes keep "Duplicate to edit" and show no panel.
+
