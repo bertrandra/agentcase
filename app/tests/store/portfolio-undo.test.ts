@@ -82,6 +82,13 @@ describe('A6: undo/redo properties on a 3-product, 2-wave portfolio', () => {
       }
       for (let i = states.length - 1; i >= 0; i--) { t.s.jumpTo(i); expect(docOnly(t.s)).toBe(states[i]); }
     }), { numRuns: 30 });
+    // regression: this seed reached a state whose override keys came back in another order (same content)
+    fc.assert(fc.property(fc.array(ops, { minLength: 2, maxLength: 12 }), (seq) => {
+      let clock = 0;
+      const t = (cur.t = threeProducts(() => (clock += 10_000))), states = [docOnly(t.s)];
+      for (const op of seq) { const before = t.s.getState().history.undo.length; op(); if (t.s.getState().history.undo.length > before) states.push(docOnly(t.s)); }
+      for (let i = states.length - 1; i >= 0; i--) { t.s.jumpTo(i); expect(docOnly(t.s)).toBe(states[i]); }
+    }), { numRuns: 1, seed: -912658740, path: '17:6:5:6:9:6:6' });
   });
   it('with scope "this product only" a case edit never writes to the common values', () => {
     fc.assert(fc.property(fc.nat(2), fc.integer({ min: 1, max: 60 }), fc.boolean(), (k, v, on) => {

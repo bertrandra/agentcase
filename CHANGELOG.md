@@ -17,6 +17,9 @@ When releasing, follow [docs/BUMP_PROCEDURE.md](docs/BUMP_PROCEDURE.md) (§7 for
 
 ## [v20.14.0] 2026-10-24 — Architecture lots 1 and 4: robustness (error boundaries, CSP, audit, lint), one cash-flow kernel, acyclic zone graph, pilot in cost-model totals
 
+### Tests
+- `tests/store/portfolio-undo.test.ts` "jumpTo reaches every intermediate state" failed for one random seed (found by fast-check): after undo / redo, an override object's keys came back in another order (Immer re-adds a removed key at the end). The content was identical. The portfolio comparison helper `docOnly` now serialises with sorted keys, and the failing seed is pinned as a regression case.
+
 ### Lot 1 — robustness
 
 ### New
