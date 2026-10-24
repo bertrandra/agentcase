@@ -9,6 +9,7 @@ import { fromSnapshot } from '@/store/persistence/snapshot';
 import type { Doc } from '@/store/types';
 import { diffValues } from '../helpers/oracleDiff';
 import { applyTo, ENV } from '../helpers/excelParams';
+import { THEME_DEFAULT } from '@/domain/theme';
 
 const ids = readdirSync('fixtures/cases').map((f) => f.replace('.json', '')).sort();
 const figures = (d: Doc) => { const c = computeCase(d); return JSON.parse(JSON.stringify({ model: c.model, payback: c.payback, npv: c.npv, phaseScope: c.phaseScope, glassCeiling: c.glassCeiling }, (_k, v) => (v === Infinity ? 'Infinity' : v))); };
@@ -29,7 +30,7 @@ describe('our writer → our reader round-trips every fixture', () => {
   it.each(ids)('%s', async (id) => {
     // a case as opened in the app: the potential fitted to the scope (the import re-fits it too)
     const doc = produce(fromSnapshot(JSON.parse(readFileSync(`fixtures/cases/${id}.json`, 'utf8'))), (d) => { refitPotential(d as Doc); });
-    const { patch, notes } = await readParamsWorkbook(await paramsWorkbookBytes(doc, 'all', ENV), doc, ENV);
+    const { patch, notes } = await readParamsWorkbook(await paramsWorkbookBytes(doc, 'all', ENV, THEME_DEFAULT), doc, ENV);
     const back = applyTo(doc, patch), problems: string[] = [];
     diffValues(figures(clamped(doc)), figures(back), 'case', problems);
     expect(problems.slice(0, 8)).toEqual([]);

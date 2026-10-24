@@ -1,13 +1,13 @@
 import type { ChartConfiguration } from 'chart.js';
 import { decimate, yLabel, type EconomicsView } from '@/domain/economics';
 import { tickK } from '@/ui/economicsFormat';
-import { tok } from '@/domain/theme';
+import type { Tok } from '@/domain/theme/resolve';
 
-const GRID = { get color() { return tok('chart-grid'); } };
+const grid = (tok: Tok) => ({ color: tok('chart-grid') });
 const kTick = (v: number | string) => `€${Number(v) / 1000}K`;
 
 /** Stacked annual run-cost bars (team / agentic run / tokens / infra) shared by the Run and Annual sections. */
-export function runBars(v: EconomicsView, o: { label: (i: number) => string; names: [string, string]; yTitle?: boolean }): ChartConfiguration {
+export function runBars(v: EconomicsView, o: { label: (i: number) => string; names: [string, string]; yTitle?: boolean }, tok: Tok): ChartConfiguration {
   const ys = v.years, ds = (label: string, data: number[], backgroundColor: string) => ({ label, data, backgroundColor });
   return {
     type: 'bar',
@@ -16,23 +16,23 @@ export function runBars(v: EconomicsView, o: { label: (i: number) => string; nam
       ds('Tokens', ys.map((y) => y.tokenCost), tok('success-500-a80')), ds('Infra', ys.map((y) => y.infrastructureCost), tok('warning-500-a80')),
     ] },
     options: { plugins: { legend: { position: 'top' } }, scales: { x: { stacked: true },
-      y: { stacked: true, ...(o.yTitle ? { title: { display: true, text: '€/year' } } : {}), ticks: { callback: kTick }, grid: GRID } } },
+      y: { stacked: true, ...(o.yTitle ? { title: { display: true, text: '€/year' } } : {}), ticks: { callback: kTick }, grid: grid(tok) } } },
   };
 }
 
 /** Cumulative cash-flow line; the segment colour flips at break-even (the J-curve crossing). */
-export function cashflowLine(v: EconomicsView): ChartConfiguration {
+export function cashflowLine(v: EconomicsView, tok: Tok): ChartConfiguration {
   const s = decimate(v.months, v.months.length > 40 ? 2 : 1);
   return {
     type: 'line',
     data: { labels: s.map((x) => `M${x.mo}`), datasets: [{ label: 'Cumulative cash-flow', data: s.map((x) => x.cum), borderColor: tok('chart-cat-1'), borderWidth: 3, tension: 0.3, pointRadius: 1,
       segment: { borderColor: (c: { p1: { parsed: { y: number } } }) => (c.p1.parsed.y >= 0 ? tok('chart-cat-2') : tok('chart-cat-3')) } }] },
-    options: { plugins: { legend: { display: false } }, scales: { y: { ticks: { callback: tickK }, grid: GRID }, x: { ticks: { maxTicksLimit: 18 } } } },
+    options: { plugins: { legend: { display: false } }, scales: { y: { ticks: { callback: tickK }, grid: grid(tok) }, x: { ticks: { maxTicksLimit: 18 } } } },
   };
 }
 
 /** Monthly total cost and saving bars with the cumulative cash-flow line on a second axis. */
-export function monthlyMix(v: EconomicsView): ChartConfiguration {
+export function monthlyMix(v: EconomicsView, tok: Tok): ChartConfiguration {
   const s = decimate(v.months, v.months.length > 40 ? 3 : 1);
   return {
     type: 'bar',
@@ -42,7 +42,7 @@ export function monthlyMix(v: EconomicsView): ChartConfiguration {
       { type: 'line', label: 'Cumulative cash-flow', data: s.map((x) => x.cum), borderColor: tok('chart-cat-1'), borderWidth: 3, tension: 0.3, yAxisID: 'y2', pointRadius: 1 },
     ] },
     options: { plugins: { legend: { position: 'top' } }, scales: {
-      y: { position: 'left', title: { display: true, text: '€/month' }, ticks: { callback: tickK }, grid: GRID },
+      y: { position: 'left', title: { display: true, text: '€/month' }, ticks: { callback: tickK }, grid: grid(tok) },
       y2: { position: 'right', title: { display: true, text: 'Cumulative €' }, ticks: { callback: tickK }, grid: { drawOnChartArea: false } },
       x: { ticks: { maxTicksLimit: 20 } } } },
   };

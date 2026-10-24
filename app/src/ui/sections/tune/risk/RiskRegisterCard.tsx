@@ -5,11 +5,11 @@ import { Badge, Panel } from '@/ui/widgets/cards';
 import { DataTable } from '@/ui/widgets/DataTable';
 import { CheckInput } from '@/ui/widgets/fields';
 import { FieldChoice } from '@/ui/widgets/field/FieldChoice';
-import { tok } from '@/domain/theme';
+import { useTheme } from '@/ui/themeContext';
 
 const LEVELS = [{ v: 1, l: 'Low' }, { v: 2, l: 'Med' }, { v: 3, l: 'High' }];
 const LEVEL_OPTIONS = LEVELS.map((o) => ({ value: String(o.v), label: o.l }));
-const scoreColor = (s: number) => (s >= 6 ? tok('danger-800') : s >= 4 ? tok('warning-600') : tok('teal-700'));
+const scoreColor = (s: number) => (s >= 6 ? 'var(--ac-danger-800)' : s >= 4 ? 'var(--ac-warning-600)' : 'var(--ac-teal-700)');
 
 function Level({ id, which, value, label }: { id: string; which: 'p' | 'i'; value: number; label: string }) {
   const set = (v: string) => setInput(`risk_${which}_${id}`, v);
@@ -24,7 +24,7 @@ function Level({ id, which, value, label }: { id: string; which: 'p' | 'i'; valu
 
 /** Agentic risk register (EV-17): probability × impact per risk, consolidated score and its optional effect on the DI bar. */
 export function RiskRegisterCard() {
-  const c = useCtx(), score = riskScore(c), band = riskBand(score), applied = c.inp.c('riskApply');
+  const c = useCtx(), { tok } = useTheme(), score = riskScore(c), band = riskBand(score), applied = c.inp.c('riskApply');
   return (
     <Panel title="Agentic risk register" aside={<Badge tone="blue">EV-17</Badge>}>
       <CheckInput id="riskApply" label="Feed the consolidated risk score into the Decision Intelligence bar" />
@@ -35,8 +35,8 @@ export function RiskRegisterCard() {
         { key: 's', header: 'Score', align: 'center', render: (r) => { const s = riskProb(c, r) * riskImpact(c, r); return <strong style={{ color: scoreColor(s) }}>{s}</strong>; } },
         { key: 'm', header: 'Mitigation', render: (r) => r.mitigation },
       ]} />
-      <div style={{ marginTop: 10, padding: '10px 12px', borderRadius: 'var(--ac-radius-lg)', background: `${band.color}18`, border: `1px solid ${band.color}` }}>
-        <strong style={{ color: band.color }}>Consolidated risk: {band.label} ({Math.round(score * 100)}/100)</strong>
+      <div style={{ marginTop: 10, padding: '10px 12px', borderRadius: 'var(--ac-radius-lg)', background: `${tok(band.tone)}18`, border: `1px solid ${tok(band.tone)}` }}>
+        <strong style={{ color: tok(band.tone) }}>Consolidated risk: {band.label} ({Math.round(score * 100)}/100)</strong>
         {applied ? ` · +${Math.round(riskBar(c) * 100)} pts on the DI bar` : ' · informative only — tick the box above to feed Decision Intelligence'}
       </div>
       <p className="ac-muted">Reference 5.2 agentic risk register. Probability×Impact on a 1–3 scale; the consolidated score can raise the Decide & Scale verdict bar. CC-RISK-01.</p>

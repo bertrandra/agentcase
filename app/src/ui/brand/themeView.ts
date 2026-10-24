@@ -1,13 +1,12 @@
 import { useSyncExternalStore } from 'react';
-import { createStore } from 'zustand/vanilla';
+import { setThemeOverride, themeViewStore, type ThemeViewState } from '@/store/themeView';
+
+export { setThemeOverride, themeViewStore, type ThemeViewState };
 
 /**
  * The `?theme=<seq>` link (docs/THEME.md §8.7): a view override, never in the case and never undoable. The page shows that theme until the viewer
- * clears it or makes it the case theme; the case and its history are untouched. `override` is the sequence id the link asks for (validated against
- * the case's library by the theme runtime, which drops an unknown one with a message).
+ * clears it or makes it the case theme; the case and its history are untouched. The state itself is `@/store/themeView` (the exports read it too).
  */
-export interface ThemeViewState { override: number | null }
-export const themeViewStore = createStore<ThemeViewState>(() => ({ override: null }));
 export const useThemeView = <T,>(select: (s: ThemeViewState) => T): T => useSyncExternalStore(themeViewStore.subscribe, () => select(themeViewStore.getState()));
 
 /** The sequence id of a `?theme=` query (null without one, NaN for a value that is not a positive whole number). */
@@ -21,7 +20,6 @@ export function initThemeLink(loc: Pick<Location, 'search'> | undefined = global
   const n = loc ? themeParam(loc.search) : null;
   themeViewStore.setState({ override: n });
 }
-export const setThemeOverride = (seq: number | null): void => themeViewStore.setState({ override: seq });
 /** Drop the override and the query parameter (the address bar no longer asks for it on reload). */
 export function clearThemeOverride(): void {
   themeViewStore.setState({ override: null });

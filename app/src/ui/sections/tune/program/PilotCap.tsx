@@ -3,7 +3,6 @@ import { useCtx } from '@/store/hooks';
 import { Badge, Panel, Stat, StatRow } from '@/ui/widgets/cards';
 import { NumberInput } from '@/ui/widgets/fields';
 import { Meter, Note, fmtK } from '@/ui/widgets/tuneA';
-import { tok } from '@/domain/theme';
 
 /** EV-21 pilot sizing: pod size, break-in sprints and prove weeks give the duration and an indicative cost. */
 export function PilotCard() {
@@ -29,7 +28,7 @@ export function PilotCard() {
 /** EV-22 internal capability build (Volet A): operational now / in training / target mass. */
 export function CapCard() {
   const k = capability(useCtx());
-  const rows = [['Operational now', 'capOps', k.ops, k.bars.ops, tok('teal-700')], ['In training', 'capTrain', k.training, k.bars.training, tok('warning-600')], ['Target mass', 'capTarget', k.target, k.bars.target, tok('primary-700')]] as const;
+  const rows = [['Operational now', 'capOps', k.ops, k.bars.ops, 'var(--ac-teal-700)'], ['In training', 'capTrain', k.training, k.bars.training, 'var(--ac-warning-600)'], ['Target mass', 'capTarget', k.target, k.bars.target, 'var(--ac-primary-700)']] as const;
   return (
     <Panel title="Internal capability build — Volet A" aside={<Badge tone="blue">EV-22</Badge>}>
       <div className="ac-form-row">

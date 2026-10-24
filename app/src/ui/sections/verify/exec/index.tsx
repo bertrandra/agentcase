@@ -1,4 +1,5 @@
 import { useMemo } from 'react';
+import { useTheme } from '@/ui/themeContext';
 import { execView } from '@/domain/verifyB';
 import { ChartPanel } from '@/ui/widgets/ChartPanel';
 import { DataTable } from '@/ui/widgets/DataTable';
@@ -10,7 +11,7 @@ type Row = ReturnType<typeof execView>['rows'][number];
 
 /** Execution timeline: sprint velocity and phase durations (days) AS-IS → Y1 → Y2 → horizon end. */
 export default function ExecSection() {
-  const v = useView(execView), cfg = useMemo(() => execChart(v), [v]);
+  const v = useView(execView), { tok } = useTheme(), cfg = useMemo(() => execChart(v, tok), [v, tok]);
   const cell = (k: number) => ({ key: `c${k}`, header: ['AS-IS', 'Y1', 'Y2', v.endL][k] as string, align: 'right' as const, render: (r: Row) => r.cells[k] });
   return (
     <SectionFrame title="Execution Timeline"

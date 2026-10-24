@@ -9,6 +9,7 @@ import { pfDecision, pfStressFingerprint, portfolioMonteCarlo } from '@/domain/p
 import { pfSimStore } from '@/store/portfolioSimulation';
 import { loadExcelJS } from '@/store/persistence/excel/lazy';
 import { fourProducts, pfNow, regulatedPortfolio } from '../helpers/portfolioFixtures';
+import { rows } from '../helpers/xlsxRows';
 
 const NOW = new Date('2026-10-22T10:00:00Z');
 beforeEach(() => { fourProducts(); pfSimStore.setState({ run: null, progress: null, params: null }); });
@@ -16,11 +17,6 @@ const book = async (): Promise<XL.Workbook> => {
   const out = await exportResultsWorkbook(undefined, NOW, { kind: 'portfolio' }), wb = new (await loadExcelJS()).Workbook();
   await wb.xlsx.load(await out.blob.arrayBuffer());
   return wb;
-};
-const rows = (wb: XL.Workbook, name: string): unknown[][] => {
-  const out: unknown[][] = [];
-  wb.getWorksheet(name)!.eachRow({ includeEmpty: true }, (r) => { out.push((r.values as unknown[]).slice(1)); });
-  return out;
 };
 
 describe('runPortfolioSimulation', () => {

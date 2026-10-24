@@ -1,6 +1,6 @@
-import { afterEach, describe, expect, it } from 'vitest';
-import { argb, printTok, setActiveTheme, setDisplayTheme, THEME_DEFAULT, tok, type TokenName } from '@/domain/theme';
-import { displayFor, setActiveThemeDef } from '@/domain/theme/active';
+import { describe, expect, it } from 'vitest';
+import { argb, THEME_DEFAULT, tokIn, type TokenName } from '@/domain/theme';
+import { printTheme, resolveAppTheme } from '@/domain/theme/resolve';
 import { BUILTIN_THEMES } from '@/domain/theme/catalogue';
 import { hexToRgb, toOklch } from '@/domain/theme/color';
 import { familyFrom, themeBase, themeOverrides } from '@/domain/theme/derive';
@@ -13,7 +13,6 @@ import { DISPLAY_DEFAULT } from '@/domain/theme/modes';
 
 const L = (hex: string) => toOklch(hexToRgb(hex)!)[0];
 const PURPLE = BUILTIN_THEMES[6]!;
-afterEach(() => { setActiveThemeDef(BUILTIN_THEMES[0]!); setActiveTheme({}); setDisplayTheme({}); });
 
 describe('theme derivation (docs/THEME.md §8.1)', () => {
   it('the default theme derives exactly the current tokens: no override, no inline property', () => {
@@ -42,18 +41,20 @@ describe('theme derivation (docs/THEME.md §8.1)', () => {
     expect(o['focus-header']).toBe('{header-text}');
     expect(o['teal-700']).toBeUndefined();   // business families untouched
   });
-  it('activating a theme reaches tok(), the exports (printTok / argb) and the display over it', () => {
-    setActiveThemeDef(PURPLE);
-    expect(tok('header-start')).toBe('#5b2a9e');
-    expect(printTok('report-heading')).toBe('#5b2a9e');
-    expect(argb('excel-head-bg')).not.toBe('FF1E2761');
-    setDisplayTheme(displayFor({ ...DISPLAY_DEFAULT, mode: 'dark' }));
-    expect(tok('header-start')).not.toBe('#163a6b');   // the dark header turns to the theme's hue
-    expect(printTok('header-start')).toBe('#5b2a9e');   // the printed exports stay light
+  it('a resolved theme reaches tok(), the print theme of the exports (report tokens / argb) and the display over it', () => {
+    const t = resolveAppTheme(PURPLE, DISPLAY_DEFAULT), print = printTheme(PURPLE);
+    expect(t.tok('header-start')).toBe('#5b2a9e');
+    expect(tokIn(print, 'report-heading')).toBe('#5b2a9e');
+    expect(argb(print, 'excel-head-bg')).not.toBe('FF1E2761');
+    expect(argb(THEME_DEFAULT, 'excel-head-bg')).toBe('FF1E2761');
+    const dark = resolveAppTheme(PURPLE, { ...DISPLAY_DEFAULT, mode: 'dark' });
+    expect(dark.tok('header-start')).not.toBe('#163a6b');   // the dark header turns to the theme's hue
+    expect(dark.tok('header-start')).not.toBe('#5b2a9e');
+    expect(tokIn(dark.base, 'header-start')).toBe('#5b2a9e');   // the printed exports stay light
+    expect(t.tok('header-start')).toBe('#5b2a9e');   // resolving another display changed nothing else: no shared state
   });
   it('axes of a theme reach tok() too', () => {
-    setActiveThemeDef({ ...PURPLE, axes: { radius: 'square' } });
-    expect(tok('radius-card' as TokenName)).toBe('0px');
+    expect(resolveAppTheme({ ...PURPLE, axes: { radius: 'square' } }, DISPLAY_DEFAULT).tok('radius-card' as TokenName)).toBe('0px');
   });
 });
 

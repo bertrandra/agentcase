@@ -1,6 +1,8 @@
 /** @calc-zone exports */
 import type { Workbook } from 'exceljs';
 import type { ExcelJS } from '../lazy';
+import { withPrint } from '../print';
+import type { ThemeValues } from '@/domain/theme';
 import type { ResultsData, SheetImages } from './data';
 import { investmentSheet, operatingSheet } from './costs';
 import { roiSheet } from './roi';
@@ -12,10 +14,11 @@ export { resultsData, SETUP_LINES, type ResultsData, type SheetImages, type Imag
 
 /**
  * The results workbook of the Financial tab: ROI, Investment, Operating costs, Savings, P&L, Workforce shift (legacy exportFinancialExcel).
+ * `print`: the base theme of the export (controllers/exportTheme.ts).
  * `logo`: the customer logo of a client presentation (a PNG / JPEG data URL), placed on the ROI sheet (docs/THEME.md §8.6).
  */
-export function buildResultsWorkbook(xl: ExcelJS, data: ResultsData, images?: SheetImages, logo?: string) {
-  const wb = new xl.Workbook();
+export function buildResultsWorkbook(xl: ExcelJS, data: ResultsData, print: Readonly<ThemeValues>, images?: SheetImages, logo?: string) {
+  const wb = withPrint(new xl.Workbook(), print);
   wb.creator = 'AgentCase';
   addCaseSheets(wb, data, images);
   const roi = wb.getWorksheet('ROI');

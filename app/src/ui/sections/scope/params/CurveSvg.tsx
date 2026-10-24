@@ -1,12 +1,14 @@
 import type { AutomationCurve } from '@/domain/scope/automation';
-import { COL, H, M, W, geoOf, layoutTags, linePath } from './chart';
-import { tok } from '@/domain/theme';
+import type { TokenName } from '@/domain/theme';
+import { useRoles } from '@/ui/themeContext';
+import { COL_ROLES, H, M, W, geoOf, layoutTags, linePath } from './chart';
 
 export interface Toggles { human: boolean; manual: boolean; vfte: boolean; levels: boolean }
-const LCOL: Record<string, string> = { get L1() { return tok('slate-700'); }, get L2() { return tok('chart-cat-5'); }, get L3() { return tok('chart-cat-2'); }, get L4() { return tok('chart-cat-1'); } };
+const LEVELS: Record<string, TokenName> = { L1: 'slate-700', L2: 'chart-cat-5', L3: 'chart-cat-2', L4: 'chart-cat-1' };
 
 /** Potential vs realized automation per month: potential line, permitted depth, the realized curve and the bands that explain the gap. */
 export function CurveSvg({ a, show, start }: { a: AutomationCurve; show: Toggles; start: string }) {
+  const COL = useRoles(COL_ROLES), LCOL = useRoles(LEVELS);
   const { N, auto, eff } = a, g = geoOf(N), sx = g.sx, sy = g.sy, x1 = sx(1), xN = sx(N);
   const band = (lo: number, hi: number, fill: string) => <path d={`M${x1} ${sy(hi)} L${xN} ${sy(hi)} L${xN} ${sy(lo)} L${x1} ${sy(lo)} Z`} fill={fill} />;
   const real = (t: number) => a.real[t - 1] as number;

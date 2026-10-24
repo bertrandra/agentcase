@@ -9,10 +9,21 @@ import { ProductBar } from './ProductBar';
 import { switchPersona } from './personaSwitch';
 import { runHistory } from './useShortcuts';
 
+/** Undo / redo: the only part of the top bar that changes on every edit (the history), so the rest of the bar does not re-render with it. */
+function UndoRedo() {
+  const h = useHistory();
+  return (
+    <>
+      <button type="button" disabled={!h.canUndo} onClick={() => runHistory('undo')} title={h.undo.at(-1)?.label ?? 'Nothing to undo'} aria-label="Undo">↶</button>
+      <button type="button" disabled={!h.canRedo} onClick={() => runHistory('redo')} title={h.redo.at(-1)?.label ?? 'Nothing to redo'} aria-label="Redo">↷</button>
+    </>
+  );
+}
+
 /** Two zones: left = brand (and client logo), the sidebar toggle, the persona and Fast Path; right = Show / Change, undo / redo, the file menu and the display menu. */
 export function TopZone() {
   const customer = useDoc((d) => (d.customerName as string) ?? ''), { persona, personas, landing } = useNavModel();
-  const logo = useHasLogo(), hidden = useUi((s) => s.menuHidden), fastPath = useUi((s) => s.fastPath), h = useHistory();
+  const logo = useHasLogo(), hidden = useUi((s) => s.menuHidden), fastPath = useUi((s) => s.fastPath);
   return (
     <header className="ac-top" role="banner" style={{ gridArea: 'top' }}>
       <div className="ac-top-left">
@@ -32,8 +43,7 @@ export function TopZone() {
       </div>
       <div className="ac-top-ctrls">
         <ProductBar />
-        <button type="button" disabled={!h.canUndo} onClick={() => runHistory('undo')} title={h.undo.at(-1)?.label ?? 'Nothing to undo'} aria-label="Undo">↶</button>
-        <button type="button" disabled={!h.canRedo} onClick={() => runHistory('redo')} title={h.redo.at(-1)?.label ?? 'Nothing to redo'} aria-label="Redo">↷</button>
+        <UndoRedo />
         <FileMenu />
         <DisplayMenu />
       </div>

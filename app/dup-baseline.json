@@ -1,7 +1,7 @@
 {
- "clones": 70,
- "duplicatedLines": 515,
- "files": 1324,
+ "clones": 69,
+ "duplicatedLines": 510,
+ "files": 1365,
  "jscpd": "4.0.5",
  "minTokens": 50,
  "minLines": 5,

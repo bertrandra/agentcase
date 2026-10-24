@@ -2,7 +2,6 @@ import { computeSensitivity } from '@/controllers/pdc';
 import { Callout } from '@/ui/widgets/cards';
 import { PackButtons } from './PackButtons';
 import type { DdModel } from './useDd';
-import { tok } from '@/domain/theme';
 
 const Card = ({ label, value, color, sub }: { label: string; value: string; color: string; sub?: string }) => (
   <div style={{ flex: 1, minWidth: 150, background: 'var(--ac-neutral-0)', border: '1px solid var(--ac-neutral-125)', borderTop: `3px solid ${color}`, borderRadius: 'var(--ac-radius-lg)', padding: 10, textAlign: 'center' }}>
@@ -14,8 +13,8 @@ const Card = ({ label, value, color, sub }: { label: string; value: string; colo
 
 /** Intro, confirmation gauges (items, € weight, glass ceiling), the € sensitivity control and its explanation. */
 export function Summary({ m }: { m: DdModel }) {
-  const { wPct, ceilCover, sens, fresh, zeroEur } = m, wColor = wPct == null ? tok('slate-700') : wPct >= 60 ? tok('teal-700') : tok('warning-600');
-  const cc = ceilCover === null ? null : Math.round(ceilCover * 100), ccColor = ceilCover === null ? '' : ceilCover >= 0.85 ? tok('teal-700') : ceilCover >= 0.4 ? tok('warning-600') : tok('danger-800');
+  const { wPct, ceilCover, sens, fresh, zeroEur } = m, wColor = wPct == null ? 'var(--ac-slate-700)' : wPct >= 60 ? 'var(--ac-teal-700)' : 'var(--ac-warning-600)';
+  const cc = ceilCover === null ? null : Math.round(ceilCover * 100), ccColor = ceilCover === null ? '' : ceilCover >= 0.85 ? 'var(--ac-teal-700)' : ceilCover >= 0.4 ? 'var(--ac-warning-600)' : 'var(--ac-danger-800)';
   return (
     <>
       <Callout>This register lists what a client must <strong>confirm</strong> for the model to be defensible — not what the model computes. It deliberately surfaces <strong>{m.invisible} coefficients that are hardcoded in the calculation path and editable nowhere in the interface</strong>.

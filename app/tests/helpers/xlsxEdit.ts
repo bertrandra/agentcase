@@ -3,6 +3,7 @@ import { loadExcelJS } from '@/store/persistence/excel/lazy';
 import { paramsWorkbookBytes } from '@/store/persistence/excel/params';
 import type { Doc } from '@/store/types';
 import { ENV, freshDoc } from './excelParams';
+import { THEME_DEFAULT } from '@/domain/theme';
 
 /** Open a workbook, let the test change it, return the new bytes (how the tests play the customer editing the file in Excel). */
 export async function editXlsx(bytes: ArrayBuffer, fn: (wb: XL.Workbook) => void): Promise<ArrayBuffer> {
@@ -13,7 +14,7 @@ export async function editXlsx(bytes: ArrayBuffer, fn: (wb: XL.Workbook) => void
   return out.buffer.slice(out.byteOffset, out.byteOffset + out.byteLength) as ArrayBuffer;
 }
 /** The workbook our writer produces for a case (default case unless given). */
-export const ourXlsx = (doc: Doc = freshDoc()): Promise<ArrayBuffer> => paramsWorkbookBytes(doc, 'all', ENV);
+export const ourXlsx = (doc: Doc = freshDoc()): Promise<ArrayBuffer> => paramsWorkbookBytes(doc, 'all', ENV, THEME_DEFAULT);
 /** Set a cell by the text of column A (label) — the Parameters / Reg Settings sheets are label → value. */
 export function setByLabel(wb: XL.Workbook, sheet: string, label: string, value: XL.CellValue, col = 2): void {
   wb.getWorksheet(sheet)?.eachRow((r) => { if (String(r.getCell(1).value) === label) r.getCell(col).value = value; });

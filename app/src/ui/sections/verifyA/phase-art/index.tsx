@@ -8,7 +8,7 @@ import { Badge, Panel } from '@/ui/widgets/cards';
 import { SectionFrame } from '@/ui/zones/SectionFrame';
 import { SimpleTable } from '../SimpleTable';
 import { useLive } from '../useLive';
-import { tok } from '@/domain/theme';
+import { useTheme } from '@/ui/themeContext';
 
 const help = (
   <>
@@ -19,11 +19,11 @@ const help = (
 
 /** Phase / artefact details — supervision floors and postures, and the per-phase supervision and automation averages. */
 export default function PhaseArtSection() {
-  const live = useLive(), { rows, chart } = phaseArtRows(live), sup = supMatrix(live), h = live.m.horizon;
+  const { tok } = useTheme(), live = useLive(), { rows, chart } = phaseArtRows(live), sup = supMatrix(live), h = live.m.horizon;
   const cfg = useMemo((): ChartConfiguration => ({ type: 'bar', data: { labels: chart.map((c) => [c.phase, PHASES.find((p) => p.id === c.phase)?.name ?? c.phase]), datasets: [
-    { label: 'Human sup. %', data: chart.map((c) => c.human), get backgroundColor() { return tok('warning-600'); } },
-    { label: 'Automatable %', data: chart.map((c) => c.agent), get backgroundColor() { return tok('teal-700'); } }] },
-  options: { plugins: { legend: { position: 'top' } }, scales: { x: { stacked: true }, y: { stacked: true, max: 100, grid: { get color() { return tok('chart-grid'); } } } } } }), [chart]);
+    { label: 'Human sup. %', data: chart.map((c) => c.human), backgroundColor: tok('warning-600') },
+    { label: 'Automatable %', data: chart.map((c) => c.agent), backgroundColor: tok('teal-700') }] },
+  options: { plugins: { legend: { position: 'top' } }, scales: { x: { stacked: true }, y: { stacked: true, max: 100, grid: { color: tok('chart-grid') } } } } }), [chart, tok]);
   return (
     <SectionFrame title="Phase / Artifact details" help={help}
       result={<>

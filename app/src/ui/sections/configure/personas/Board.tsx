@@ -3,7 +3,7 @@ import { useState, type ReactNode } from 'react';
 import type { NavSection } from '@/domain/nav/layout';
 import type { MenuGroup } from '@/domain/pdc/personas';
 import { groupColor } from '@/ui/zones/navModel';
-import { tok } from '@/domain/theme';
+import { useTheme } from '@/ui/themeContext';
 
 export interface Col { group: MenuGroup; cards: NavSection[] }
 interface Props {
@@ -24,7 +24,7 @@ interface Props {
 
 /** Group columns of section cards. Cards move by drag and drop or with the arrow buttons; the caller turns a move into a command. */
 export function Board({ label, cols, colors, cardClass, cardExtra, onDrop, onShift, onShiftGroup, onShiftColumn, onDouble, canDrag, onPending }: Props) {
-  const [drag, setDrag] = useState<string | null>(null), [over, setOver] = useState<string | null>(null);
+  const [drag, setDrag] = useState<string | null>(null), [over, setOver] = useState<string | null>(null), { tok } = useTheme();
   const at = (cards: NavSection[], before: string | null) => { const rest = cards.filter((c) => c.id !== drag), i = before ? rest.findIndex((c) => c.id === before) : -1; return i < 0 ? rest.length : i; };
   const hover = (group: string, cards: NavSection[], before: string | null) => { setOver(group); if (drag) onPending?.({ id: drag, group, index: at(cards, before) }); };
   const clear = () => { setDrag(null); setOver(null); onPending?.(null); };
@@ -37,16 +37,16 @@ export function Board({ label, cols, colors, cardClass, cardExtra, onDrop, onShi
   return (
     <div className="ac-nboard" role="list" aria-label={label}>
       {cols.map(({ group, cards }) => (
-        <div key={group.id} role="listitem" aria-label={group.label} data-group={group.id} className={`ac-ncol${over === group.id ? ' is-over' : ''}`} style={{ borderTopColor: groupColor(colors, group.id) }}
+        <div key={group.id} role="listitem" aria-label={group.label} data-group={group.id} className={`ac-ncol${over === group.id ? ' is-over' : ''}`} style={{ borderTopColor: groupColor(colors, group.id, 'var(--ac-slate-600)') }}
           onDragOver={(e) => { e.preventDefault(); hover(group.id, cards, null); }} onDragLeave={() => { setOver(null); onPending?.(null); }} onDrop={(e) => { e.preventDefault(); drop(group.id, cards, null); }}>
-          <div style={{ display: 'flex', gap: 4, alignItems: 'center', fontWeight: 'var(--ac-font-weight-bold)', color: textColor(groupColor(colors, group.id), tok('slate-45')) }}>
+          <div style={{ display: 'flex', gap: 4, alignItems: 'center', fontWeight: 'var(--ac-font-weight-bold)', color: textColor(groupColor(colors, group.id, tok('slate-600')), tok, tok('slate-45')) }}>
             {onShiftColumn && <button type="button" className="ac-btn" aria-label={`Move the group ${group.label} left`} onClick={() => onShiftColumn(group.id, -1)}>◀</button>}
             <span style={{ flex: 1 }}>{group.label} <small className="ac-muted">({cards.length})</small></span>
             {onShiftColumn && <button type="button" className="ac-btn" aria-label={`Move the group ${group.label} right`} onClick={() => onShiftColumn(group.id, 1)}>▶</button>}
           </div>
           {cards.length === 0 && <p className="ac-muted" style={{ textAlign: 'center', fontStyle: 'italic' }}>drop here</p>}
           {cards.map((s) => (
-            <div key={s.id} data-section={s.id} className={`ac-ncard ${cardClass?.(s) ?? ''}`} draggable={canDrag ? canDrag(s) : true} style={{ borderLeftColor: groupColor(colors, group.id) }}
+            <div key={s.id} data-section={s.id} className={`ac-ncard ${cardClass?.(s) ?? ''}`} draggable={canDrag ? canDrag(s) : true} style={{ borderLeftColor: groupColor(colors, group.id, 'var(--ac-slate-600)') }}
               onDragStart={(e) => { setDrag(s.id); e.dataTransfer?.setData('text/plain', s.id); }} onDragEnd={clear} onDragOver={(e) => { e.preventDefault(); e.stopPropagation(); hover(group.id, cards, s.id); }}
               onDrop={(e) => { e.preventDefault(); e.stopPropagation(); drop(group.id, cards, s.id); }} onDoubleClick={() => onDouble?.(s.id)}>
               <strong>{s.label}</strong>

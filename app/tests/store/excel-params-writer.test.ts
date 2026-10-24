@@ -7,6 +7,7 @@ import { loadExcelJS } from '@/store/persistence/excel/lazy';
 import { loadParamsSheets, paramsWorkbookBytes } from '@/store/persistence/excel/params';
 import { fromSnapshot } from '@/store/persistence/snapshot';
 import { ENV, legacyXlsx, xlsxIds } from '../helpers/excelParams';
+import { THEME_DEFAULT } from '@/domain/theme';
 
 const ids = xlsxIds().filter((id) => !id.startsWith('xl-'));
 /** Cells whose text differs from the legacy file on purpose: none today (reference columns are reproduced too). */
@@ -33,7 +34,7 @@ describe('our writer reproduces the legacy workbook layout and values', () => {
   it.each(ids)('%s', async (id) => {
     // the legacy page re-fits the potential to the scope when it opens a case; ours keeps the stored value (a known legacy difference), so fit it first
     const doc = produce(fromSnapshot(JSON.parse(readFileSync(`fixtures/cases/${id}.json`, 'utf8'))), (d) => { refitPotential(d as Doc); });
-    const mine = await loadParamsSheets(await paramsWorkbookBytes(doc, 'all', ENV)), theirs = await loadParamsSheets(legacyXlsx(id));
+    const mine = await loadParamsSheets(await paramsWorkbookBytes(doc, 'all', ENV, THEME_DEFAULT)), theirs = await loadParamsSheets(legacyXlsx(id));
     expect([...mine.keys()]).toEqual([...theirs.keys()]);   // same sheets, same order
     const diffs: string[] = [];
     theirs.forEach((rows, name) => {
@@ -42,6 +43,6 @@ describe('our writer reproduces the legacy workbook layout and values', () => {
       rows.forEach((r, i) => r.forEach((v, j) => { if (!SKIP.has(name) && !archDescription(name, v) && !same(v, m[i]?.[j], name)) diffs.push(`${name}!${i + 1}:${j + 1} legacy=${JSON.stringify(v)} ours=${JSON.stringify(m[i]?.[j])}`); }));
     });
     expect(diffs.slice(0, 8)).toEqual([]);
-    expect(await look(await paramsWorkbookBytes(doc, 'all', ENV))).toEqual(await look(legacyXlsx(id)));
+    expect(await look(await paramsWorkbookBytes(doc, 'all', ENV, THEME_DEFAULT))).toEqual(await look(legacyXlsx(id)));
   });
 });

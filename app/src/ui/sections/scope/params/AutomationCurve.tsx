@@ -2,17 +2,18 @@ import { textColor } from '@/ui/colorText';
 import { useState, type ReactNode } from 'react';
 import { automationCurve, type AutoBase, type AutomationCurve as Data } from '@/domain/scope/automation';
 import { useCtx } from '@/store/hooks';
-import { COL } from './chart';
+import { COL_ROLES } from './chart';
 import { CurveSvg, type Toggles } from './CurveSvg';
-import { tok } from '@/domain/theme';
+import { useRoles, useTheme } from '@/ui/themeContext';
 
 function Row({ col, name, val, sub, on, onToggle }: { col: string; name: string; val: string; sub?: ReactNode; on?: boolean; onToggle?: (v: boolean) => void }) {
+  const { tok } = useTheme();
   const head = (
     <>
       <span className="ac-leg-head">
         {onToggle && <input type="checkbox" checked={!!on} aria-label={name} onChange={(e) => onToggle(e.target.checked)} />}
         <span className="ac-leg-sw" style={{ background: col }} /><span className="ac-leg-name">{name}</span><span className="ac-leg-fill" />
-        <span className="ac-leg-val" style={{ color: col.includes('gradient') ? 'var(--ac-slate-650)' : textColor(col, tok('slate-10')) }}>{val}</span>
+        <span className="ac-leg-val" style={{ color: col.includes('gradient') ? 'var(--ac-slate-650)' : textColor(col, tok, tok('slate-10')) }}>{val}</span>
       </span>
       {sub && <div className="ac-leg-sub">{sub}</div>}
     </>
@@ -21,7 +22,7 @@ function Row({ col, name, val, sub, on, onToggle }: { col: string; name: string;
 }
 
 function Legend({ a, show, set }: { a: Data; show: Toggles; set: (k: keyof Toggles, v: boolean) => void }) {
-  const closed = a.adoptGapEnd <= 0.05;
+  const closed = a.adoptGapEnd <= 0.05, COL = useRoles(COL_ROLES);
   return (
     <div className="ac-legend">
       <div>

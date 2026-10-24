@@ -1,4 +1,5 @@
 import { useMemo } from 'react';
+import { useTheme } from '@/ui/themeContext';
 import { velocityView } from '@/domain/verifyB';
 import { setPerfCoef, type PerfCoefKey } from '@/controllers/verifyB';
 import { useDoc } from '@/store/hooks';
@@ -20,7 +21,7 @@ function CoefInput({ id, coef, label }: { id: string; coef: PerfCoefKey; label: 
 
 /** Velocity & DORA: sprint velocity and the four DORA metrics from AS-IS to the elite target on the adoption ramp. */
 export default function VelocitySection() {
-  const v = useView(velocityView), cfg = useMemo(() => velocityChart(v), [v]);
+  const v = useView(velocityView), { tok } = useTheme(), cfg = useMemo(() => velocityChart(v, tok), [v, tok]);
   const cell = (k: number, header: string) => ({ key: `c${k}`, header, align: 'center' as const, render: (r: Row) => (k === 3 ? <strong>{r.cells[k]}</strong> : r.cells[k]) });
   return (
     <SectionFrame title="Velocity & DORA"

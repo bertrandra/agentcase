@@ -1,5 +1,5 @@
 /** @calc-zone tuning-programme */
-import { tok } from '../theme';
+import type { ColourRole } from '../theme';
 /** AI Readiness Index: 10 dimensions x 3 statements, answered No (0) / Partial (50) / Yes (100) or left blank (null). */
 export interface ReadinessDim { key: string; label: string; q: [string, string, string] }
 export type ReadinessAns = Record<string, (number | null)[]>
@@ -32,14 +32,15 @@ export function readinessIndex(ans: ReadinessAns): number | null {
   return scores.length ? scores.reduce((s, v) => s + v, 0) / scores.length : null;
 }
 
-export interface Band { label: string; color: string }
+/** `tone`: the colour role of the band (resolved by the UI). */
+export interface Band { label: string; tone: ColourRole }
 export function readinessBand(idx: number | null): Band {
-  if (idx == null) return { label: 'Not assessed', color: tok('slate-700') };
-  if (idx <= 20) return { label: 'Nascent', color: tok('danger-800') };
-  if (idx <= 40) return { label: 'Emerging', color: tok('warning-600') };
-  if (idx <= 60) return { label: 'Developing', color: tok('info-700') };
-  if (idx <= 80) return { label: 'Established', color: tok('success-550') };
-  return { label: 'Leading', color: tok('teal-700') };
+  if (idx == null) return { label: 'Not assessed', tone: 'slate-700' };
+  if (idx <= 20) return { label: 'Nascent', tone: 'danger-800' };
+  if (idx <= 40) return { label: 'Emerging', tone: 'warning-600' };
+  if (idx <= 60) return { label: 'Developing', tone: 'info-700' };
+  if (idx <= 80) return { label: 'Established', tone: 'success-550' };
+  return { label: 'Leading', tone: 'teal-700' };
 }
 
 export interface DimRow { key: string; label: string; score: number | null; band: Band }

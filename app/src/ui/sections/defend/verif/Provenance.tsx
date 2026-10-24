@@ -1,6 +1,6 @@
 import type { Provenance as Prov } from '@/domain/pdc/verifProvenance';
 import { Callout } from '@/ui/widgets/cards';
-import { tok } from '@/domain/theme';
+import { useTheme } from '@/ui/themeContext';
 
 const chip = (col: string, text: string) => <span style={{ background: `${col}18`, color: col, border: `1px solid ${col}`, borderRadius: 'var(--ac-radius-lg-plus)', padding: '1px 9px', fontSize: 'var(--ac-font-size-sm)', fontWeight: 'var(--ac-font-weight-bold)' }}>{text}</span>;
 
@@ -14,6 +14,7 @@ const HeadTile = ({ label, value }: { label: string; value: string }) => (
 
 /** What the headline reflects: top-bar figures, optional overlays and their state, and the double-count guards. */
 export function Provenance({ p }: { p: Prov }) {
+  const { tok } = useTheme();   // the chip tints its colour (`${col}18`): a resolved hex
   return (
     <section className="ac-panel" aria-label="Provenance of the headline">
       <h2>🧾 What the headline reflects <small className="ac-muted">provenance &amp; double-count audit</small></h2>

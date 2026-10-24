@@ -3,6 +3,7 @@ import { playbackSeries } from '@/domain/pdc/playback';
 import { useCtx } from '@/store/hooks';
 import { SectionFrame } from '@/ui/zones/SectionFrame';
 import { playbackChart } from './chart';
+import { useTheme } from '@/ui/themeContext';
 import { PlaybackStage } from './Stage';
 import { Transport } from './Transport';
 import { sequence, usePlayer } from './usePlayer';
@@ -18,7 +19,7 @@ const help = (
 export default function MonthlyPlaybackSection() {
   const c = useCtx();
   const s = useMemo(() => playbackSeries(c), [c]), { s: p, dispatch, seek } = usePlayer(s.months);
-  const seq = sequence(p.metrics), key = seq[Math.min(p.seq, seq.length - 1)], cfg = useMemo(() => (key ? playbackChart(s, key, p.month) : null), [s, key, p.month]);
+  const seq = sequence(p.metrics), key = seq[Math.min(p.seq, seq.length - 1)], { tok } = useTheme(), cfg = useMemo(() => (key ? playbackChart(s, key, p.month, tok) : null), [s, key, p.month, tok]);
   return (
     <SectionFrame title="Monthly Playback" help={help}
       input={<Transport p={p} months={s.months} dispatch={dispatch} seek={seek} />}

@@ -2,7 +2,7 @@
 import type { Ctx } from '../ctx';
 import { hriCostPerFTE, hriEnabled, hriIndex, hriIntensity } from '../engagement';
 import { teamInCost } from '../location';
-import { tok } from '../theme';
+import type { ColourRole } from '../theme';
 
 /** Human Readiness Index questionnaire: 18 questions (No 0 / Partial 2 / Yes 4) in 6 themes of 3, ids hriQ0..hriQ17. */
 export const HRI_GROUPS: { title: string; q: string[] }[] = [
@@ -15,16 +15,16 @@ export const HRI_GROUPS: { title: string; q: string[] }[] = [
 ];
 
 export interface HriSummary {
-  on: boolean; index: number; label: string; color: string; intensity: string; etp: number; costPerFte: number; cost: number; drag: number;
+  on: boolean; index: number; label: string; tone: ColourRole; intensity: string; etp: number; costPerFte: number; cost: number; drag: number;
 }
 
 /** What the Human Readiness card shows (legacy renderHri). The drag uses the rounded index, like the legacy read-out. */
 export function hriSummary(c: Ctx): HriSummary {
   const idx = Math.round(hriIndex(c)), etp = teamInCost(c.s, c.inp).etp, costPerFte = hriCostPerFTE(c);
   const { hriFloor, hriSlope } = c.s.COEF as { hriFloor: number; hriSlope: number };
-  const [color, label] = idx >= 75 ? [tok('teal-700'), 'Ready'] : idx >= 50 ? [tok('warning-600'), 'Fragile'] : [tok('danger-800'), 'At risk'];
+  const [tone, label]: [ColourRole, string] = idx >= 75 ? ['teal-700', 'Ready'] : idx >= 50 ? ['warning-600', 'Fragile'] : ['danger-800', 'At risk'];
   return {
-    on: hriEnabled(c), index: idx, label: label as string, color: color as string, intensity: hriIntensity(c), etp, costPerFte,
+    on: hriEnabled(c), index: idx, label, tone, intensity: hriIntensity(c), etp, costPerFte,
     cost: etp * costPerFte, drag: Math.max(hriFloor, hriFloor + (hriSlope * idx) / 100),
   };
 }

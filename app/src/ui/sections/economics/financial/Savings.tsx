@@ -1,4 +1,5 @@
 import { useMemo } from 'react';
+import { useTheme } from '@/ui/themeContext';
 import { sum, yearSeries, yLabel } from '@/domain/economics';
 import { fmt1, fmtE } from '@/ui/economicsFormat';
 import { ChartPanel } from '@/ui/widgets/ChartPanel';
@@ -10,7 +11,7 @@ import { savingsRamp } from './charts';
 
 /** Human FTE freed and gross savings per year, with the savings ramp. */
 export function Savings() {
-  const v = useEconomics(), s = yearSeries(v.years), e = v.H - 1, cfg = useMemo(() => savingsRamp(v), [v]);
+  const { tok } = useTheme(), v = useEconomics(), s = yearSeries(v.years), e = v.H - 1, cfg = useMemo(() => savingsRamp(v, tok), [v, tok]);
   const rows = [
     { key: 'freed', label: 'Human FTE freed', cells: v.freed.map(fmt1) },
     { key: 'sav', label: 'Gross savings (vs AS-IS)', cells: s.savings.map(fmtE), bold: true },

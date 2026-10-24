@@ -1,10 +1,9 @@
 import type { CSSProperties, ReactNode } from 'react';
 import type { GanttProductRow, GanttWaveRow } from '@/domain/portfolio';
 import { Row } from './bars';
-import { tok, themedList } from '@/domain/theme';
 
-const COLORS = themedList(['chart-cat-1', 'chart-cat-2', 'chart-cat-3', 'chart-cat-4', 'chart-cat-5']);
-const FAMILY: Record<string, string> = { get adoption() { return tok('chart-cat-1'); }, get maturity() { return tok('chart-cat-4'); }, get financial() { return tok('chart-cat-3'); }, get workforce() { return tok('chart-cat-2'); } };
+const COLORS = ['chart-cat-1', 'chart-cat-2', 'chart-cat-3', 'chart-cat-4', 'chart-cat-5'].map((n) => `var(--ac-${n})`);
+const FAMILY: Record<string, string> = { adoption: 'var(--ac-chart-cat-1)', maturity: 'var(--ac-chart-cat-4)', financial: 'var(--ac-chart-cat-3)', workforce: 'var(--ac-chart-cat-2)' };
 const pct = (v: number) => `${v.toFixed(2)}%`;
 
 /** A bar on the calendar track: a focusable, labelled, read-only group. */

@@ -6,6 +6,8 @@ import { model } from '@/domain/model/overlay';
 import type { Live } from '@/domain/verifyA/fteVfte';
 import type { Doc } from '@/store/types';
 import { loadExcelJS } from '../lazy';
+import { withPrint } from '../print';
+import type { ThemeValues } from '@/domain/theme';
 import { PERSONA_SHEETS, WRITE_ORDER } from './registry';
 import { effectiveSections } from './sections';
 import type { ParamsDoc, ParamsEnv, ParamsScope, SheetFamily, WriteCtx } from './types';
@@ -15,11 +17,12 @@ const SOFT = new Set(['TO-BE Team', 'Skill Map', 'TO-BE Location Split', 'Strate
 
 /**
  * The parameters workbook of a case (legacy exportParams). Pure: reads the document, returns the ExcelJS workbook, touches no global state.
+ * `print`: the base theme of the export (controllers/exportTheme.ts).
  * `scope` 'no-factory' drops the FM* Factory sheets, 'persona-only' keeps just the persona / section / dependency configuration sheets.
  */
-export async function buildParamsWorkbook(doc: Doc, scope: ParamsScope, env: ParamsEnv): Promise<XL.Workbook> {
+export async function buildParamsWorkbook(doc: Doc, scope: ParamsScope, env: ParamsEnv, print: Readonly<ThemeValues>): Promise<XL.Workbook> {
   const X = await loadExcelJS();
-  const wb = new X.Workbook(); wb.creator = 'AgentCase'; wb.created = new Date();
+  const wb = withPrint(new X.Workbook(), print); wb.creator = 'AgentCase'; wb.created = new Date();
   const d = doc as unknown as ParamsDoc, c = makeCtx(doc);
   let live: Live | undefined;
   const x: WriteCtx = { wb, d, c, env, secs: effectiveSections(env, d), live: () => (live ??= { c, m: model(c), eng: engineNow(c) }) };
@@ -33,8 +36,8 @@ export async function buildParamsWorkbook(doc: Doc, scope: ParamsScope, env: Par
 }
 
 /** The workbook as .xlsx bytes. */
-export async function paramsWorkbookBytes(doc: Doc, scope: ParamsScope, env: ParamsEnv): Promise<ArrayBuffer> {
-  return workbookBytes(await buildParamsWorkbook(doc, scope, env));
+export async function paramsWorkbookBytes(doc: Doc, scope: ParamsScope, env: ParamsEnv, print: Readonly<ThemeValues>): Promise<ArrayBuffer> {
+  return workbookBytes(await buildParamsWorkbook(doc, scope, env, print));
 }
 
 /** Any built workbook as .xlsx bytes. */

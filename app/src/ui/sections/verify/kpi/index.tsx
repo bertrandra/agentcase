@@ -1,4 +1,5 @@
 import { useMemo } from 'react';
+import { useTheme } from '@/ui/themeContext';
 import { kpiView } from '@/domain/verifyB';
 import { ChartPanel } from '@/ui/widgets/ChartPanel';
 import { SectionFrame } from '@/ui/zones/SectionFrame';
@@ -9,7 +10,7 @@ const HEAD = ['Metric', 'AS-IS'];
 
 /** KPI scorecard: the initial state (input team) against the horizon end, with every figure the case drives. */
 export default function KpiSection() {
-  const v = useView(kpiView), cfg = useMemo(() => kpiChart(v), [v]), head = [...HEAD, v.endL, 'Change'];
+  const v = useView(kpiView), { tok } = useTheme(), cfg = useMemo(() => kpiChart(v, tok), [v, tok]), head = [...HEAD, v.endL, 'Change'];
   return (
     <SectionFrame title="KPI Scorecard — AS-IS vs end of transformation"
       help={<p>Consolidated dashboard: initial state (input team) vs the horizon end. Economic KPIs are driven by your parameters; quality and velocity KPIs by the anchors and the in-scope automatable intensity.</p>}

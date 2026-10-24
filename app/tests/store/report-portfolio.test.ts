@@ -11,6 +11,7 @@ import { buildCriticalReport, buildScopedReport } from '@/store/persistence/repo
 import { fromSnapshot } from '@/store/persistence/snapshot';
 import { fourProducts, pfNow, regulatedPortfolio } from '../helpers/portfolioFixtures';
 import { loadFixture } from '../helpers/fixtures';
+import { THEME_DEFAULT } from '@/domain/theme';
 
 const IDS = readdirSync('fixtures/reports').filter((f) => f.endsWith('.html')).map((f) => f.replace('.html', ''));
 const doc = (id: string) => fromSnapshot(JSON.parse(readFileSync(`fixtures/cases/${id}.json`, 'utf8')));
@@ -22,17 +23,17 @@ const money = (r: SummaryRow): string[] => [fmtK(r.npv), fmtK(r.net), fmtK(r.set
 
 describe('Product scope = today’s report, text for text', () => {
   it.each(IDS)('%s: a one-product portfolio gives exactly the legacy-parity report', (id) => {
-    const legacy = ok(buildCriticalReport(doc(id), NOW)), pf = envelopeCase(doc(id));
-    expect(ok(buildScopedReport(pf, { kind: 'product' }, NOW))).toBe(legacy);
+    const legacy = ok(buildCriticalReport(doc(id), THEME_DEFAULT, NOW)), pf = envelopeCase(doc(id));
+    expect(ok(buildScopedReport(pf, { kind: 'product' }, THEME_DEFAULT, NOW))).toBe(legacy);
     // a plain case ignores the portfolio scopes: there is no portfolio to report on
-    expect(ok(buildScopedReport(pf, { kind: 'portfolio' }, NOW))).toBe(legacy);
+    expect(ok(buildScopedReport(pf, { kind: 'portfolio' }, THEME_DEFAULT, NOW))).toBe(legacy);
   });
   it('the controller follows the display scope of the store (product by default), with an explicit scope for tests', () => {
     loadFixture('industry-med');
-    expect(ok(criticalReport(NOW))).toBe(ok(buildCriticalReport(doc('industry-med'), NOW)));
+    expect(ok(criticalReport(NOW))).toBe(ok(buildCriticalReport(doc('industry-med'), THEME_DEFAULT, NOW)));
     const pf = regulatedPortfolio(), other = pf.products[1]!;
-    expect(ok(criticalReport(NOW))).toBe(ok(buildCriticalReport(resolveProduct(pf, pf.activeProductId), NOW)));
-    expect(ok(buildScopedReport(pf, { kind: 'product' }, NOW, other.id))).toBe(ok(buildCriticalReport(resolveProduct(pf, other.id), NOW)));
+    expect(ok(criticalReport(NOW))).toBe(ok(buildCriticalReport(resolveProduct(pf, pf.activeProductId), THEME_DEFAULT, NOW)));
+    expect(ok(buildScopedReport(pf, { kind: 'product' }, THEME_DEFAULT, NOW, other.id))).toBe(ok(buildCriticalReport(resolveProduct(pf, other.id), THEME_DEFAULT, NOW)));
     setDisplayScope({ kind: 'portfolio' });
     expect(ok(criticalReport(NOW))).toContain('Model — Portfolio');
     expect(ok(criticalReport(NOW, { kind: 'product' }))).not.toContain('Model — Portfolio');
@@ -40,7 +41,7 @@ describe('Product scope = today’s report, text for text', () => {
 });
 
 describe('Portfolio scope', () => {
-  const html = (): string => ok(buildScopedReport(regulatedPortfolio(), { kind: 'portfolio' }, NOW));
+  const html = (): string => ok(buildScopedReport(regulatedPortfolio(), { kind: 'portfolio' }, THEME_DEFAULT, NOW));
   it('keeps the six sections of the report family', () => {
     const h = [...html().matchAll(/<h2>([\s\S]*?)<\/h2>/g)].map((m) => text(m[1] as string));
     expect(h.map((x) => x.replace(/^\d · /, ''))).toEqual(['Portfolio and regulatory context', 'Glass Ceiling Model', 'Supervision floors & AI authorization', 'Consolidated economics', 'Knowledge transfer', 'Gated trajectory']);
@@ -60,30 +61,30 @@ describe('Portfolio scope', () => {
     expect(t).toContain('Docs 100%');
   });
   it('lists each product with its own norms and context, and survives a product the gate refuses', () => {
-    const pf = regulatedPortfolio(), t = text(ok(buildScopedReport(pf, { kind: 'portfolio' }, NOW)));
+    const pf = regulatedPortfolio(), t = text(ok(buildScopedReport(pf, { kind: 'portfolio' }, THEME_DEFAULT, NOW)));
     pf.products.filter((p) => p.waveId !== null).forEach((p) => expect(t).toContain(p.name));
     expect(t).toContain('Archive (no wave) has no wave');   // the unscheduled product is outside the consolidation tables and named in the diagnostics
     const none = regulatedPortfolio(); setProductOverride(none.products[1]!.id, 'selectedNorms', []);
-    expect(text(ok(buildScopedReport(pfNow(), { kind: 'portfolio' }, NOW)))).toContain('catalogue off or no norm selected');
+    expect(text(ok(buildScopedReport(pfNow(), { kind: 'portfolio' }, THEME_DEFAULT, NOW)))).toContain('catalogue off or no norm selected');
   });
   it('is a standalone page: no script, no external resource, everything escaped', () => {
     regulatedPortfolio();
     const id = addProduct('<script>alert(1)</script><img src=x onerror=alert(2)>', pfNow().waves[0]!.id)!;
     expect(id).toBeTruthy();
-    const out = ok(buildScopedReport(pfNow(), { kind: 'portfolio' }, NOW));
+    const out = ok(buildScopedReport(pfNow(), { kind: 'portfolio' }, THEME_DEFAULT, NOW));
     expect(out).not.toMatch(/<(script|link|img|iframe|a)\b|\s(src|href)=["']|@import|url\(/i);
     expect(out).toContain('&lt;script&gt;');
   });
   it('is refused when no product of the scope has the catalogue and a norm (the legacy gate)', () => {
     fourProducts();
-    expect(buildScopedReport(pfNow(), { kind: 'portfolio' }, NOW)).toEqual({ ok: false, reason: 'Enable the Regulatory catalog and select at least one norm first (Parameters).' });
+    expect(buildScopedReport(pfNow(), { kind: 'portfolio' }, THEME_DEFAULT, NOW)).toEqual({ ok: false, reason: 'Enable the Regulatory catalog and select at least one norm first (Parameters).' });
   });
 });
 
 describe('Wave scope', () => {
   it('reports only the products of the wave, with the wave’s own headline', () => {
     const pf = regulatedPortfolio(), w2 = pf.waves[1]!, c = consolidate(corePortfolio(pf)), h = waveHeadline(c, w2.id)!;
-    const r = buildScopedReport(pf, { kind: 'wave', id: w2.id }, NOW);
+    const r = buildScopedReport(pf, { kind: 'wave', id: w2.id }, THEME_DEFAULT, NOW);
     const t = text(ok(r));
     expect(t).toContain('Scope: Wave: Wave 2');
     for (const s of [fmtK(h.npv), fmtK(h.setup), fmtK(h.net), fmtRoiPct(h.roi)]) expect(t).toContain(s);
@@ -94,11 +95,11 @@ describe('Wave scope', () => {
   });
   it('an unknown wave is refused with a message', () => {
     const pf = regulatedPortfolio();
-    expect(buildScopedReport(pf, { kind: 'wave', id: 'nope' }, NOW)).toEqual({ ok: false, reason: 'That wave does not exist any more.' });
+    expect(buildScopedReport(pf, { kind: 'wave', id: 'nope' }, THEME_DEFAULT, NOW)).toEqual({ ok: false, reason: 'That wave does not exist any more.' });
   });
   it('an empty wave has no planned product to report', () => {
     const pf = regulatedPortfolio(), empty = pf.waves[1]!;
     setProductOverride(pf.products[2]!.id, 'selectedNorms', []);
-    expect(buildScopedReport(pfNow(), { kind: 'wave', id: empty.id }, NOW)).toEqual({ ok: false, reason: 'Enable the Regulatory catalog and select at least one norm first (Parameters).' });
+    expect(buildScopedReport(pfNow(), { kind: 'wave', id: empty.id }, THEME_DEFAULT, NOW)).toEqual({ ok: false, reason: 'Enable the Regulatory catalog and select at least one norm first (Parameters).' });
   });
 });

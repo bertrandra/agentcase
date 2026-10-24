@@ -18,6 +18,7 @@ import type { Doc } from '@/store/types';
 import { applyTo, ENV } from '../helpers/excelParams';
 import { freshStore } from './helpers';
 import { PNG } from './samples/themes';
+import { THEME_DEFAULT } from '@/domain/theme';
 
 const golden = (): Doc => fromSnapshot(JSON.parse(readFileSync('fixtures/cases/golden.json', 'utf8')));
 /** A case with two own themes (one edited), the second active. */
@@ -37,11 +38,11 @@ describe('theme library persistence', () => {
     expect(back.THEME_SEQ).toBe(101);
   });
   it('a default case exports the legacy parameters workbook: no Themes sheet', async () => {
-    const sheets = await loadParamsSheets(await paramsWorkbookBytes(golden(), 'all', ENV));
+    const sheets = await loadParamsSheets(await paramsWorkbookBytes(golden(), 'all', ENV, THEME_DEFAULT));
     expect(sheets.has('Themes')).toBe(false);
   });
   it('the Themes sheet round-trips the library and the active theme into a case that has none', async () => {
-    const src = themed(), bytes = await paramsWorkbookBytes(src, 'all', ENV), sheets = await loadParamsSheets(bytes);
+    const src = themed(), bytes = await paramsWorkbookBytes(src, 'all', ENV, THEME_DEFAULT), sheets = await loadParamsSheets(bytes);
     expect(sheets.get('Themes')![0]).toEqual(['Theme Seq', 'Theme Name', 'Setting', 'Value']);
     const { patch, notes } = await readParamsWorkbook(bytes, golden(), ENV);
     expect(notes.filter((n) => n.startsWith('Themes'))).toEqual([]);
@@ -49,12 +50,12 @@ describe('theme library persistence', () => {
   });
   it('a workbook that only switches to a built-in theme carries just that', async () => {
     freshStore().load(golden()); activateTheme(3);
-    const { patch } = await readParamsWorkbook(await paramsWorkbookBytes((await import('@/store/instance')).appStore().getState().doc, 'all', ENV), golden(), ENV);
+    const { patch } = await readParamsWorkbook(await paramsWorkbookBytes((await import('@/store/instance')).appStore().getState().doc, 'all', ENV, THEME_DEFAULT), golden(), ENV);
     expect(patch.ACTIVE_THEME).toBe(3);
     expect(patch.THEMES).toBeUndefined();
   });
   it('an older workbook (no Themes sheet) keeps the case library', async () => {
-    const src = themed(), { patch } = await readParamsWorkbook(await paramsWorkbookBytes(golden(), 'all', ENV), src, ENV);
+    const src = themed(), { patch } = await readParamsWorkbook(await paramsWorkbookBytes(golden(), 'all', ENV, THEME_DEFAULT), src, ENV);
     expect(lib(applyTo(src, patch))).toEqual(lib(src));
   });
 });
@@ -62,13 +63,13 @@ describe('theme library persistence', () => {
 describe('customer logo in the exports', () => {
   it('the HTML report shows it above the title with its alt text; hidden or absent, the report is unchanged', () => {
     const s = freshStore(); s.load(fromSnapshot(JSON.parse(readFileSync('fixtures/cases/combo-stress.json', 'utf8'))));   // a case with the regulatory catalogue on
-    const plain = buildCriticalReport(s.getState().doc, new Date(0));
+    const plain = buildCriticalReport(s.getState().doc, THEME_DEFAULT, new Date(0));
     expect(plain.ok).toBe(true);
     setCustomerName('Acme'); setCustomerLogo(PNG);
-    const r = buildCriticalReport(s.getState().doc, new Date(0));
+    const r = buildCriticalReport(s.getState().doc, THEME_DEFAULT, new Date(0));
     expect(r.ok && r.html).toContain(`<img src="${PNG}" alt="Acme logo"`);
     setLogoOptions({ hidden: true });
-    const hidden = buildCriticalReport(s.getState().doc, new Date(0));
+    const hidden = buildCriticalReport(s.getState().doc, THEME_DEFAULT, new Date(0));
     expect(hidden.ok && hidden.html).toBe(plain.ok && plain.html);
   });
   it('the HTML snapshot embeds it with the case', () => {
@@ -81,10 +82,10 @@ describe('customer logo in the exports', () => {
     expect(common.ACTIVE_THEME).toBe(6);
   });
   it('the results workbook places it on the ROI sheet at its aspect ratio', async () => {
-    const xl = await loadExcelJS(), wb = buildResultsWorkbook(xl, resultsData(makeCtx(golden())), undefined, PNG);
+    const xl = await loadExcelJS(), wb = buildResultsWorkbook(xl, resultsData(makeCtx(golden())), THEME_DEFAULT, undefined, PNG);
     expect(wb.getWorksheet('ROI')!.getImages()).toHaveLength(1);
     expect(imageSize(PNG.split(',')[1]!, 'png')).toEqual({ w: 1, h: 1 });
     expect((await workbookBytes(wb)).byteLength).toBeGreaterThan(1000);
-    expect(buildResultsWorkbook(xl, resultsData(makeCtx(golden()))).getWorksheet('ROI')!.getImages()).toHaveLength(0);
+    expect(buildResultsWorkbook(xl, resultsData(makeCtx(golden())), THEME_DEFAULT).getWorksheet('ROI')!.getImages()).toHaveLength(0);
   });
 });

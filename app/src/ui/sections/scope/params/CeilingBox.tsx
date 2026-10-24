@@ -1,6 +1,6 @@
 import { setInput } from '@/controllers/inputs';
 import { setForceGC } from '@/controllers/scopeTools';
-import { useCaseResult, useDoc } from '@/store/hooks';
+import { caseResultOf, useDoc, useDocSelector } from '@/store/hooks';
 import { Field } from '@/ui/widgets/fields';
 import { FieldNumber } from '@/ui/widgets/field/FieldNumber';
 import { FieldToggle } from '@/ui/widgets/field/FieldToggle';
@@ -9,7 +9,7 @@ const FORCE = 'Force this value (override auto-computed from regulatory selectio
 
 /** Effective glass ceiling: computed from the scope (slider shows it, locked) unless the override is ticked. */
 export function CeilingBox() {
-  const forced = useDoc((d) => !!d.forceGlassCeiling), ceiling = Math.round(useCaseResult().model.ceiling);
+  const forced = useDoc((d) => !!d.forceGlassCeiling), ceiling = useDocSelector((d) => Math.round(caseResultOf(d).model.ceiling));
   return (
     <div className="ac-card">
       <div className="ac-card-t">Effective glass ceiling</div>

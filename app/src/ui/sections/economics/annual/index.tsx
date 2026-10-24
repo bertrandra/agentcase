@@ -1,4 +1,5 @@
 import { useMemo } from 'react';
+import { useTheme } from '@/ui/themeContext';
 import { fmtRoiPct, yLabel } from '@/domain/economics';
 import { fmt1, fmtE, fmtK, pct0 } from '@/ui/economicsFormat';
 import { ChartPanel } from '@/ui/widgets/ChartPanel';
@@ -17,8 +18,8 @@ const help = (
 
 /** Annual summary — the Time Engine aggregated per year of the horizon. */
 export default function AnnualSection() {
-  const v = useEconomics(), end = v.years[v.H - 1], first = v.years[0];
-  const cfg = useMemo(() => runBars(v, { label: (i) => `Year ${i + 1}`, names: ['Team cost', 'Agentic run (team)'], yTitle: true }), [v]);
+  const { tok } = useTheme(), v = useEconomics(), end = v.years[v.H - 1], first = v.years[0];
+  const cfg = useMemo(() => runBars(v, { label: (i) => `Year ${i + 1}`, names: ['Team cost', 'Agentic run (team)'], yTitle: true }, tok), [v, tok]);
   if (!end || !first) return null;
   const items: [string, string][] = [['AS-IS cost/yr', fmtK(v.baselineRun)], ['Run Y1', fmtK(first.totalRunCost)], [`Run ${yLabel(v.H)}`, fmtK(end.totalRunCost)],
     [`Saving ${yLabel(v.H)}`, fmtK(end.savings)], ['Setup', fmtK(v.setup)], [`ROI ${v.H} year${v.H > 1 ? 's' : ''} (net)`, fmtRoiPct(v.roi)]];

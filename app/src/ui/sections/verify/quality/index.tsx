@@ -1,4 +1,5 @@
 import { useMemo } from 'react';
+import { useTheme } from '@/ui/themeContext';
 import { qualityAnchorView } from '@/domain/verifyB';
 import { resetQuality, setQualityAsis, setQualityTarget } from '@/controllers/verifyB';
 import { ChartPanel } from '@/ui/widgets/ChartPanel';
@@ -12,7 +13,7 @@ const box = (edited: boolean, width: number) => ({ width, textAlign: 'center' as
 
 /** Quality metrics: editable AS-IS baseline and target per metric; Y1–Y3 interpolate between them (amber = overridden). */
 export default function QualitySection() {
-  const v = useView(qualityAnchorView), cfg = useMemo(() => qualityRadar(v), [v]);
+  const v = useView(qualityAnchorView), { tok } = useTheme(), cfg = useMemo(() => qualityRadar(v, tok), [v, tok]);
   return (
     <SectionFrame title="Quality"
       help={<p>Quality metrics scaled by the in-scope automatable intensity × ramp — the TO-BE radar reflects only the selected artifacts.</p>}

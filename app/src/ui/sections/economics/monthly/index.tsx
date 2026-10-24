@@ -1,4 +1,5 @@
 import { useMemo } from 'react';
+import { useTheme } from '@/ui/themeContext';
 import { activeCurveOf } from '@/domain/economics';
 import { useCtx } from '@/store/hooks';
 import { fmt1, fmtE, pct0 } from '@/ui/economicsFormat';
@@ -7,7 +8,6 @@ import { DataTable } from '@/ui/widgets/DataTable';
 import { SectionFrame } from '@/ui/zones/SectionFrame';
 import { monthlyMix } from '../charts';
 import { useEconomics } from '../useEconomics';
-import { tok } from '@/domain/theme';
 
 const help = (
   <>
@@ -15,11 +15,11 @@ const help = (
     <p>Net(m) = (Baseline/12 − run costs) − setup spread(m); Cumulative(m) = Σ Net up to month m. Months with setup spend carry it in the Setup column, so early cumulative is negative.</p>
   </>
 );
-const sign = (x: number) => ({ color: x >= 0 ? tok('teal-725') : tok('warning-595') });
+const sign = (x: number) => ({ color: x >= 0 ? 'var(--ac-teal-725)' : 'var(--ac-warning-595)' });
 
 /** Monthly detail — one row per month of the horizon, chart decimated for long horizons. */
 export default function MonthlySection() {
-  const v = useEconomics(), curve = activeCurveOf(useCtx()), cfg = useMemo(() => monthlyMix(v), [v]);
+  const { tok } = useTheme(), v = useEconomics(), curve = activeCurveOf(useCtx()), cfg = useMemo(() => monthlyMix(v, tok), [v, tok]);
   const note = /^legacy/.test(curve)
     ? 'The ramp steps at months 12 and 24: this is the exact annual disaggregation, not a smoothing artefact. The twelve months of each year sum to that year’s modelled value, which is why payback and NPV read straight off this table.'
     : `The ramp follows the active adoption curve (${curve.replace(/\.default$/, '')}) month by month. The twelve months of each year sum to that year’s modelled value, which is why payback and NPV read straight off this table.`;

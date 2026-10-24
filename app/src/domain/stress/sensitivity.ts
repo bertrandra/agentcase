@@ -6,10 +6,11 @@ import { khMult } from '../knowledge';
 import { lifecycleAutoPosture } from '../lifecycle';
 import { model } from '../model/overlay';
 import { fmtK } from './compare';
-import { tok } from '../theme';
+import type { ColourRole } from '../theme';
 
 export interface SensRow { parameter: string; value: string; impactFte: string; roiImpact: string; level: 'CRITICAL' | 'HIGH' | 'MEDIUM' | 'LOW' }
-export interface SensCell { roi: number | null; text: string; bg: string; warn: boolean }
+/** `bgTone`: the colour role of the cell's heat-map background (null: no background). */
+export interface SensCell { roi: number | null; text: string; bgTone: ColourRole | null; warn: boolean }
 export interface SensMatrix { autos: number[]; ceils: number[]; cells: SensCell[][] }
 
 /** The six key parameters and their (editorial) impact on target headcount and ROI. */
@@ -25,7 +26,7 @@ export function sensitivityRows(c: Ctx): SensRow[] {
   ];
 }
 
-const bgOf = (roi: number) => (roi >= 2.5 ? tok('chart-div-pos') : roi >= 1.5 ? tok('chart-div-mid') : roi >= 1 ? tok('chart-div-neg') : tok('chart-div-neg-strong'));
+const bgOf = (roi: number): ColourRole => (roi >= 2.5 ? 'chart-div-pos' : roi >= 1.5 ? 'chart-div-mid' : roi >= 1 ? 'chart-div-neg' : 'chart-div-neg-strong');
 
 /** Automation × glass-ceiling matrix: ROI scaled from the horizon-aware base ROI (legacy renderSensitivity). */
 export function sensitivityMatrix(c: Ctx): SensMatrix {
@@ -34,9 +35,9 @@ export function sensitivityMatrix(c: Ctx): SensMatrix {
   const baseRoi = m.setupTotal > 0 && isFinite(net) ? net / m.setupTotal : null;
   const effK = lifecycleAutoPosture(c.s) * engagementCoef(c).glassFactor * khMult(c);
   const cells = autos.map((a) => ceils.map((ce): SensCell => {
-    if (baseRoi == null) return { roi: null, text: 'n/a', bg: '', warn: false };
+    if (baseRoi == null) return { roi: null, text: 'n/a', bgTone: null, warn: false };
     const eff = Math.min(100 - ce, a * effK), roi = baseRoi * (eff / m.eff) * (a / m.auto);
-    return { roi, text: `${Math.round(roi * 100)}%${roi < 0 ? ' ⚠️' : ''}`, bg: bgOf(roi), warn: roi < 0 };
+    return { roi, text: `${Math.round(roi * 100)}%${roi < 0 ? ' ⚠️' : ''}`, bgTone: bgOf(roi), warn: roi < 0 };
   }));
   return { autos, ceils, cells };
 }

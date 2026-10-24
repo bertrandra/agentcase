@@ -1,8 +1,7 @@
 import { lifecycleCascade } from '@/domain/scope/lifecycleView';
 import { useCtx } from '@/store/hooks';
-import { tok } from '@/domain/theme';
 
-const tone = (v: number, up: number, down: number) => (v > up ? 'var(--ac-teal)' : v < down ? 'var(--ac-brick)' : tok('slate-700'));
+const tone = (v: number, up: number, down: number) => (v > up ? 'var(--ac-teal)' : v < down ? 'var(--ac-brick)' : 'var(--ac-slate-700)');
 
 /** Per-phase weight and the resulting effort share of the in-scope artefacts (legacy renderLifecycleCascade). */
 export function Cascade() {

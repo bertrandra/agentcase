@@ -1,5 +1,5 @@
 import { useEditScope } from '@/store/portfolioHooks';
-import { useViewScope, type ViewScope } from '@/store/viewScope';
+import { useViewKind, useViewScope, type ViewScope } from '@/store/viewScope';
 import { useUi } from '../uiState';
 import { sectionKind, type SectionKind } from '../zones/sectionScope';
 
@@ -23,8 +23,10 @@ export function scopeText(kind: SectionKind, v: ViewScope, editAll = false): { m
  * A polite live region, so a change of View is read once the section re-renders. Nothing at all with one product.
  */
 export function ScopeBanner() {
+  return useViewKind().multi ? <ScopeBannerText /> : null;   // one product: nothing, and no re-render on every edit of the case
+}
+function ScopeBannerText() {
   const v = useViewScope(), id = useUi((s) => s.activeSection), editAll = useEditScope() === 'all';
-  if (!v.multi) return null;
   const kind = sectionKind(id), t = scopeText(kind, v, editAll);
   return (
     <p className="ac-scope-banner" aria-live="polite" data-scope-kind={kind} data-view={v.kind}>

@@ -1,12 +1,14 @@
 import { FUNNEL_EPS, type FunnelStage } from '@/domain/scope/automation';
-import { tok } from '@/domain/theme';
+import type { TokenName } from '@/domain/theme';
+import { useRoles } from '@/ui/themeContext';
 
-const COL = { get pot() { return tok('chart-cat-1'); }, get ceil() { return tok('chart-cat-3'); }, get mix() { return tok('slate-700'); }, get gap() { return tok('chart-cat-5'); }, get sup() { return tok('danger-800'); }, get real() { return tok('chart-cat-2'); } };
+const COL_ROLES = { pot: 'chart-cat-1', ceil: 'chart-cat-3', mix: 'slate-700', gap: 'chart-cat-5', sup: 'danger-800', real: 'chart-cat-2' } as const satisfies Record<string, TokenName>;
+type Cols = Record<keyof typeof COL_ROLES, string>;
 export interface Active { ceiling: boolean; mix: boolean; ramp: boolean; sup: boolean }
 interface Band { v: number; t: string; s: string; c: string; fin?: boolean }
 
 /** The stage chain of the funnel: only the stages that cost something at some point of the horizon get a band. */
-export function bandsOf(S: FunnelStage, A: Active): Band[] {
+export function bandsOf(S: FunnelStage, A: Active, COL: Cols): Band[] {
   const b: Band[] = [{ v: S.v0, t: 'Delivery work in scope', s: 'everything the case covers', c: COL.mix }, { v: S.v1, t: 'Automation potential', s: 'what an agent could take, before any constraint', c: COL.pot }];
   if (A.ceiling) b.push({ v: S.v2, t: 'After regulatory / glass ceiling', s: 'compliance, safety and risk that cannot be delegated', c: COL.ceil });
   if (A.mix) b.push({ v: S.v3, t: 'After posture · context · knowledge', s: 'how automatable this work mix actually is', c: COL.mix });
@@ -20,7 +22,7 @@ const W = 920, BH = 54, TOP = 34, CX = 330, MAXH = 270, half = (v: number) => Ma
 
 /** The funnel at one month: width = what remains, right columns = remaining share and the points lost at each stage. */
 export function FunnelSvg({ S, A }: { S: FunnelStage; A: Active }) {
-  const bands = bandsOf(S, A), H = TOP + bands.length * BH + 16;
+  const bands = bandsOf(S, A, useRoles(COL_ROLES)), H = TOP + bands.length * BH + 16;
   return (
     <svg viewBox={`0 0 ${W} ${H}`} className="ac-svg" role="img" aria-label={`Glass-ceiling funnel at month ${S.t} of ${S.N}: ${bands.map((b) => `${b.t} ${b.v.toFixed(1)} percent`).join(', ')}`}>
       <text x={CX - MAXH} y={18}>STAGE</text><text x={726} y={18} textAnchor="end">REMAINS</text><text x={908} y={18} textAnchor="end">LOST HERE</text>

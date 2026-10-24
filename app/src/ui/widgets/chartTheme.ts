@@ -1,14 +1,17 @@
 import { Chart, type ChartConfiguration } from 'chart.js';
-import { tok } from '@/domain/theme';
-import type { DisplaySpec } from '@/domain/theme/modes';
+import type { Theme, Tok } from '@/domain/theme/resolve';
 
 /**
  * The display options applied to every chart.js canvas (docs/THEME.md §6.3-6.4): axis text and gridlines of the mode, no animation under
  * reduced motion and, with the colour-blind option, a second channel besides colour: line dash + point style per line series, a hatch per bar series.
+ * Everything reads the theme in effect it is given (`useTheme()` in ChartPanel): no theme state here.
  */
 const LEGACY = { color: Chart.defaults.color, borderColor: Chart.defaults.borderColor };
-/** chart.js global text and line colours: the legacy defaults in the default look (pixel-identical), the mode's axis / grid tokens otherwise. */
-export function applyChartDefaults(spec: DisplaySpec): void {
+/**
+ * chart.js text and line colours: the legacy defaults in the default look (pixel-identical), the mode's axis / grid tokens otherwise. They are chart.js
+ * library defaults (scales and legends route to them), set from the theme in effect right before a chart is created or updated.
+ */
+export function applyChartDefaults({ spec, tok }: Pick<Theme, 'spec' | 'tok'>): void {
   const plain = spec.mode === 'light' && spec.contrast === 'standard';
   Chart.defaults.color = plain ? LEGACY.color : tok('chart-axis');
   Chart.defaults.borderColor = plain ? LEGACY.borderColor : tok('chart-grid');
@@ -24,7 +27,7 @@ const HATCHES: (Hatch | null)[] = [
   (g, s) => { g.moveTo(s / 2 + 1.5, s / 2); g.arc(s / 2, s / 2, 1.5, 0, Math.PI * 2); }, (g, s) => { line(g, 0, s, s, 0); line(g, 0, 0, s, s); },
 ];
 /** A colour with the hatch of series `i` drawn over it (null where the canvas has no 2D context, e.g. jsdom: the plain colour stays). */
-function hatch(color: string, i: number): CanvasPattern | null {
+function hatch(color: string, i: number, tok: Tok): CanvasPattern | null {
   const draw = HATCHES[i % HATCHES.length];
   if (!draw || typeof document === 'undefined') return null;
   try {
@@ -39,8 +42,8 @@ function hatch(color: string, i: number): CanvasPattern | null {
 
 type Ds = Record<string, unknown>;
 const typeOf = (config: ChartConfiguration, d: Ds): string => (typeof d.type === 'string' ? d.type : config.type);
-/** The config with the display options applied (a new object; the caller's config is not touched). */
-export function themedConfig(config: ChartConfiguration, spec: DisplaySpec): ChartConfiguration {
+/** The config with the display options of `theme` applied (a new object; the caller's config is not touched). */
+export function themedConfig(config: ChartConfiguration, { spec, tok }: Pick<Theme, 'spec' | 'tok'>): ChartConfiguration {
   if (!spec.cvd && !spec.reduceMotion) return config;
   const datasets = (config.data?.datasets ?? []).map((raw, i) => {
     const d = { ...(raw as unknown as Ds) };
@@ -51,8 +54,8 @@ export function themedConfig(config: ChartConfiguration, spec: DisplaySpec): Cha
       if (!d.pointRadius) d.pointRadius = 2.5;
     } else if (t === 'bar') {
       const bg = d.backgroundColor;
-      if (typeof bg === 'string') d.backgroundColor = hatch(bg, i) ?? bg;
-      else if (Array.isArray(bg)) d.backgroundColor = bg.map((c: unknown, k) => (typeof c === 'string' ? hatch(c, k) ?? c : c));
+      if (typeof bg === 'string') d.backgroundColor = hatch(bg, i, tok) ?? bg;
+      else if (Array.isArray(bg)) d.backgroundColor = bg.map((c: unknown, k) => (typeof c === 'string' ? hatch(c, k, tok) ?? c : c));
     }
     return d;
   });

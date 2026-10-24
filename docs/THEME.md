@@ -24,7 +24,9 @@ This page covers the configurable-theme programme: T1 (the tokens), T3 (axes, §
 | `app/src/domain/theme/axes.ts`, `variants.ts`, `typography.ts`, `axesCss.ts` | the theme axes (§6): values, defaults, labels, token sets, the generator of `axes.css` |
 | `app/src/ui/theme/axes.css` | one block per non-default axis value, **generated** in full (`npm run theme:gen`) |
 | `app/src/ui/themeAxes.ts`, `app/src/ui/widgets/field/` | applying / reading the axes at run time; the `Field*` controls and their variants |
-| `app/src/domain/theme/index.ts` | `THEME_DEFAULT`, `TokenName`, `tok()`, `printTok()`, `alpha()`, `argb()`, `themedList()`, `setActiveTheme()`, `setDisplayTheme()`, `themeCss()` |
+| `app/src/domain/theme/index.ts` | `THEME_DEFAULT`, `TokenName`, `ColourRole`, `resolveTokens(value, table)`, `tokIn(table, name)`, `alpha()`, `argb(print, name)`, `themeCss()`: pure, no state |
+| `app/src/domain/theme/resolve.ts` | the pure resolver (lot 5a, §2.1): `makeTheme()`, `resolveAppTheme(def, spec)` → `Theme` (`values`, `base`, `spec`, `tok`, `list`, `alpha`), `DEFAULT_THEME`, `printTheme(def)` |
+| `app/src/ui/themeContext.ts`, `app/src/ui/brand/ThemeRuntime.tsx` | the runtime theme: `useTheme()`, `useRoles()`, the `ThemeProvider` of the shell (§2.1) |
 | `app/src/domain/theme/color.ts` | OKLab / OKLCH conversions, gamut mapping, WCAG luminance and contrast ratio |
 | `app/src/domain/theme/dark.ts`, `contrast.ts`, `modes.ts` | the display modes (§7): dark value set, contrast-level deltas, colour-blind palettes, `displayTheme()`, `modesCss()` |
 | `app/src/ui/theme/tokens.css` | the same table as CSS custom properties `--ac-<name>`, then one block per display mode, all **generated** (`npm run theme:gen`) |
@@ -40,14 +42,27 @@ A value may refer to another token as `{name}`. In CSS that becomes `var(--ac-na
 | Where | How | Example |
 |---|---|---|
 | CSS | `var(--ac-<name>)` | `color: var(--ac-text-heading);` |
-| inline style, SVG presentation attribute | the `var()` string | `style={{ color: 'var(--ac-danger-800)' }}`, `fill="var(--ac-neutral-0)"` |
-| chart.js (canvas), colour arithmetic (`textColor`, `${hex}22` alpha suffix, `alpha()`), domain read-outs | `tok('<name>')` | `borderColor: tok('teal-700')` |
-| a module-level palette | `themedList([...])` or an object getter (`get color() { return tok('…'); }`) | `const COLORS = themedList(['chart-cat-1', 'chart-cat-2'])` |
-| Excel workbooks | `argb('<name>')` → `FFRRGGBB` | `fgColor: { argb: argb('excel-head-bg') }` |
-| HTML report | `reportStyle()` reads the `report-*` tokens when the report is rendered | |
+| inline style, SVG presentation attribute | the `var()` string | `style={{ color: 'var(--ac-danger-800)' }}`, `fill="var(--ac-neutral-0)"`, `` `var(--ac-${band.tone})` `` |
+| chart.js (canvas), colour arithmetic (`textColor`, `${hex}22` alpha suffix, `alpha()`) | `tok('<name>')` of the theme in effect: `const { tok } = useTheme()` in a component, a `tok: Tok` argument in a chart builder | `borderColor: tok('teal-700')` |
+| a palette or a role map | token names (`readonly TokenName[]`, `{ real: 'chart-cat-2', … }`), resolved where they are drawn: `tok(name)`, `list(names)`, `useRoles(map)` | `const COL = useRoles(COL_ROLES)` |
+| domain read-outs (a status band, a scenario hue) | a colour **role**: the token name (`ColourRole`), never a resolved value | `riskBand(score).tone === 'danger-800'` |
+| Excel workbooks | `argb(print, '<name>')` → `FFRRGGBB`; the sheet writers call `xlArgb(cell.workbook, name)` | `fgColor: { argb: xlArgb(ws.workbook, 'excel-head-bg') }` |
+| HTML report | `reportStyle(print)` reads the `report-*` tokens of the print theme | |
 
-`tok()` and `themedList()` read the **active** theme (`setActiveTheme(values)`, default: `THEME_DEFAULT`); the CSS side is switched by
-writing the same values as custom properties on `:root`. Module-level palettes are lazy, so they follow a switch without a reload.
+### 2.1 The runtime model (lot 5a)
+
+There is **no theme state in domain or store**. `domain/theme/resolve.ts` is a pure resolver: `resolveAppTheme(def, spec)` turns a library theme and
+a display into a `Theme` — `values` (base + display: what the screen paints), `base` (the theme without the display), `spec`, and `tok()` / `list()` /
+`alpha()` over `values` (resolved values are cached per `Theme` object). The theme in effect lives in the UI layer only:
+
+1. **a React context** (`ui/themeContext.ts`): `ThemeProvider` (`ui/brand/ThemeRuntime.tsx`, wrapped around the shell) resolves the case's active theme, or
+   the `?theme=` link's, under the viewer's display, and provides it; `useTheme()` reads it (outside a provider: `DEFAULT_THEME`, the default look);
+2. **the custom properties on `<html>`**: the same provider writes the theme's colour tokens (display included) and its axes there (§8.2).
+
+A theme or display change gives a new `Theme` object; the components that read it re-render, everything else follows the CSS. Nothing re-mounts: the
+open section keeps its tabs, drafts and scroll; a chart.js chart is updated in place (`chart.update('none')`). The exports never read the screen's
+theme: the controller hands them the **print theme** (`controllers/exportTheme.ts`: `printTheme()` of the theme in effect, so always light).
+`tests/domain/no-module-state.test.ts` forbids module-level `let` in `src/domain` and any import of the UI theme runtime from domain or store.
 
 ## 3. Token families
 
@@ -153,8 +168,8 @@ not theme).
   them as text: it darkens on a light background and lightens on a dark one (T2).
 - **SVG:** presentation attributes take `var()` in Chromium and Firefox (`fill`, `stroke`, `font-size`, `font-weight`); hex suffix
   arithmetic (`${color}22`) needs `tok()`, which is why those palettes are TS values.
-- **Exports (T4):** `argb()` / `reportStyle()` read the active theme at export time; the HTML snapshot embeds the built app, so it
-  carries the CSS tokens.
+- **Exports (T4):** `argb(print, …)` / `reportStyle(print)` read the print theme the controller passes at export time; the HTML snapshot embeds the
+  built app, so it carries the CSS tokens.
 
 ## 6. Theme axes (T3)
 
@@ -169,7 +184,7 @@ tokens (`layout.ts`) holding the values the rules held before, so `tokens.css` n
 | source | `domain/theme/axes.ts`: `AXES` = per axis `{ group, label, default, values: { value: TokenSet }, labels }` (English labels for T4) |
 | CSS | `data-ac-<axis>` on `:root` (kebab case: `fontBody` → `data-ac-font-body`). `axes.css` (generated) has, per non-default value, `[data-ac-x='v'] { the tokens it sets }` and `:where([data-ac-x='v']) { the tokens built on them, re-declared }`. The second rule (specificity 0) makes the attribute also work on a sub-tree, e.g. a T4 live-preview container; an explicit value of another axis always wins over it. The file loads after `tokens.css`. |
 | run time | `ui/themeAxes.ts`: `applyThemeAxes(axes, el = <html>)` writes the attributes (default / missing value = no attribute), `readThemeAxes()`, `useThemeAxis(k)` (re-renders on an attribute change, MutationObserver). The attributes are the single source: the CSS reads them, the `Field*` controls subscribe to them. |
-| `tok()` | `axisTokens(axes)` = the merged token set; a theme calls `setActiveTheme({ ...colourValues, ...axisTokens(axes) })` (charts, exports). |
+| `tok()` | `axisTokens(axes)` = the merged token set; `themeBase(def)` = default + colour overrides + axis tokens, the base of `resolveAppTheme()` (charts, exports). |
 
 Compatible with T2's `data-ac-mode` / `data-ac-contrast`: different attributes; T2's colour blocks and these blocks change disjoint tokens
 (the shadow axis re-points the role tokens `shadow-card`, `shadow-kpibar`, `shadow-header`, never the elevation steps or their colours).
@@ -230,7 +245,7 @@ engineering, release pipeline), verifyA skill map, portfolio (products, waves, k
 
 - Keep a `ThemeAxes` object (all 15 keys, `AXIS_DEFAULTS` for a new case) next to the colour values in the case; validate an imported
   one with `isAxisValue()`.
-- Apply it with `applyThemeAxes(axes)` and `setActiveTheme({ ...colours, ...axisTokens(axes) })`; for a live preview, `applyThemeAxes(axes,
+- Apply it with `applyThemeAxes(axes)` and the base table `themeBase(def)` (since lot 5a, through `resolveAppTheme()`); for a live preview, `applyThemeAxes(axes,
   previewElement)` (CSS axes; set every axis on the container). The control variants follow `<html>` only: a preview of them needs a
   React context in `useThemeAxis`.
 - Build the screen from `AXES` (`group`, `label`, `labels`, `axisValues()`); presets are partial `ThemeAxes`.
@@ -238,7 +253,7 @@ engineering, release pipeline), verifyA skill map, portfolio (products, waves, k
 ## 7. Display modes (T2)
 
 A display is a value set **over** the base theme: it never changes the case, and the default display (light, standard contrast, no option)
-is the T1 look unchanged (no attribute on `<html>`, `tok()` returns `THEME_DEFAULT`; ui-parity shows no new divergence).
+is the T1 look unchanged (no attribute on `<html>`, `tok()` of the default `Theme` returns `THEME_DEFAULT`; ui-parity shows no new divergence).
 
 ### 7.1 The value sets (`domain/theme/dark.ts`, `contrast.ts`, `modes.ts`)
 
@@ -259,13 +274,13 @@ the dark scales are derived from the base theme's scales, so a T4 preset gets a 
   `:root[data-ac-mode="dark"]`, `:root:not([data-ac-mode="dark"])[data-ac-contrast="enhanced|high"]`,
   `:root[data-ac-mode="dark"][data-ac-contrast="enhanced|high"]`, the four `[data-ac-cvd="on"]` blocks, `[data-ac-motion="reduce"]`.
   A role declared as `var(--ac-step)` in the default block follows the overridden step. `theme:check` and `theme-tokens.test.ts` cover them.
-- **TS**: `setDisplayTheme(displayTheme(spec))`: `tok()` / `themedList()` read base + display. `printTok()` and `argb()` read the base
-  theme only: **the Excel workbooks and the HTML report stay light** (they are printed). `setActiveTheme()` (T4) changes the base and keeps
-  the display on top.
-- **Re-render**: `ui/display/store.ts` holds the preference, the system media queries and the resolved display, and a `version`; the shell
-  keys the section host on it, so every chart.js config and `tok()` read-out is rebuilt (the top bar, KPI bar and sidebar are pure CSS).
-  `ChartPanel` applies `chartTheme.ts`: chart.js default text / line colours from `chart-axis` / `chart-grid` (the legacy defaults in the
-  default display), no animation under reduced motion, and the colour-blind second channel.
+- **TS**: `resolveAppTheme(def, spec)` (§2.1): `tok()` of the resulting `Theme` reads base + display; its `base` (and `printTheme(def)`) is the
+  theme without the display: **the Excel workbooks and the HTML report stay light** (they are printed).
+- **Re-render** (lot 5a): `ui/display/store.ts` holds the preference, the system media queries and the resolved display; the theme provider resolves
+  the theme under it, and a change re-renders what reads `useTheme()`. Nothing re-mounts (until lot 5a the shell keyed the section host on a display
+  version, which threw away the section's local state). `ChartPanel` applies `chartTheme.ts` from the theme in effect: chart.js default text / line
+  colours from `chart-axis` / `chart-grid` (the legacy defaults in the default display), no animation under reduced motion, and the colour-blind
+  second channel, and updates the same chart instance (`chart.options = …; chart.update('none')`) when only the theme changed.
 - `textColor(hex, bg)` darkens a data colour on a light background and lightens it on a dark one (to 4.5:1).
 
 ### 7.3 Colour-blind coverage
@@ -313,10 +328,10 @@ viewer's system. The report and the Excel workbooks are always light.
   design), so colour-only distinctions in those places (Gantt bars that read business steps, status tints) disappear there.
 - T3 (shapes, density, typography) only touches non-colour tokens: no interaction with the display sets, except `focus-width` (3px at
   enhanced / high) and the shadows (rings at high).
-- T4 (presets, brand colours, logo palette): apply the preset with `setActiveTheme()` and recompute the display with
-  `displayTheme(spec, base)`; the CSS side needs the same: a preset must also emit its dark / contrast blocks (run `modesCss()` on the
+- T4 (presets, brand colours, logo palette): the preset is the base of `resolveAppTheme()`, which recomputes the display with
+  `themedDisplay(spec, def, base)`; the CSS side needs the same: a preset must also emit its dark / contrast blocks (run `modesCss()` on the
   preset, or write the computed `displayTheme()` values as inline custom properties on `<html>`). A preset's brand colours must be
-  re-checked by the contrast test (run it on the preset table). The exports already read the base theme (`printTok()` / `argb()`).
+  re-checked by the contrast test (run it on the preset table). The exports read the base theme (`printTheme()`, `argb(print, …)`).
 
 ## 8. Theme library and brand (T4 + T5)
 
@@ -356,17 +371,16 @@ link, heading, focus: darkened by a fifth at light enhanced, so a 4.5:1 colour r
 series it sets are lifted to L ≥ .78 / .72 in dark standard. **High contrast stays black and white** for every theme; the colour-blind series
 are not touched.
 
-**Applying a theme (chosen mechanism: inline custom properties).** `ui/brand/ThemeRuntime.tsx` (in the shell) resolves the theme in effect
-(the `?theme=` link's, else the case's active one) and, on every theme or display change, `applyAppTheme()`:
-1. `setActiveThemeDef(def)` (`domain/theme/active.ts`): `setActiveTheme(overrides + axis tokens)` for `tok()`, the charts and the exports
-   (`printTok()` / `argb()`: the Excel workbooks and the HTML report follow the theme, still light), and `setDisplayTheme(displayFor(spec))`;
-   the display store calls `displayFor()` too, so a display change is computed over the theme in effect;
-2. writes the 286 colour tokens (`COLOUR_TOKENS`) of base + display as **inline custom properties on `<html>`** (`themeProps()`): inline beats
+**Applying a theme (chosen mechanism: inline custom properties).** `ui/brand/ThemeRuntime.tsx` (`ThemeProvider`, around the shell) resolves the theme
+in effect (the `?theme=` link's, else the case's active one) and, on every theme or display change:
+1. resolves it with the pure `resolveAppTheme(def, spec)` (§2.1) and provides the result to the tree (`useTheme()`: charts and colour arithmetic);
+   the exports get the print theme of the same library theme from their controller (`controllers/exportTheme.ts`: the Excel workbooks and the HTML
+   report follow the theme, still light);
+2. writes the 286 colour tokens (`COLOUR_TOKENS`) of base + display as **inline custom properties on `<html>`** (`colourProps()`): inline beats
    the generated display blocks of tokens.css, so the set already carries the display; the default theme (and a theme with axes only) removes
    them all and the `style` attribute, so the generated CSS paints the app exactly as before;
-3. `applyThemeAxes(def.axes)` on `<html>` (the `data-ac-*` attributes of §6);
-4. bumps the display version, so the section host re-mounts and chart.js canvases are rebuilt with the new `tok()` values (not while the
-   Brand & theme screen is shown: its controls must not re-mount under the pointer, and its preview uses no canvas).
+3. `applyThemeAxes(def.axes)` on `<html>` (the `data-ac-*` attributes of §6).
+Nothing is re-mounted (lot 5a): the components that read the theme re-render, chart.js canvases are updated in place.
 
 The alternative (a generated per-theme `<style>` with one block per display) was not chosen: it duplicates the `modesCss()` generation at run
 time for every theme, and the inline set is recomputed in well under a frame.

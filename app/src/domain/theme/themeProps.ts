@@ -24,9 +24,11 @@ const css = (v: string): string => v.replace(/\{([a-z0-9-]+)\}/g, 'var(--ac-$1)'
 /** `--ac-<name>` → value of every colour token of `def` under `spec`; null when the theme sets no colour (the generated CSS applies). */
 export function themeProps(def: Pick<ThemeDef, 'colours' | 'axes'>, spec: DisplaySpec): Record<string, string> | null {
   if (!Object.keys(def.colours).length) return null;
-  const base = themeBase(def), t = { ...base, ...themedDisplay(spec, def, base) } as ThemeValues;
-  return Object.fromEntries(COLOUR_TOKENS.map((n) => [`--ac-${n}`, css(t[n])]));
+  const base = themeBase(def);
+  return colourProps({ ...base, ...themedDisplay(spec, def, base) } as ThemeValues);
 }
+/** `--ac-<name>` → value of every colour token of an already resolved table (base + display). */
+export const colourProps = (t: Readonly<ThemeValues>): Record<string, string> => Object.fromEntries(COLOUR_TOKENS.map((n) => [`--ac-${n}`, css(t[n])]));
 /** Every token of `def` under `spec` (colours, type, shape, density, axes): a preview container is then independent of the app's theme and axes. */
 export function allTokenProps(def: Pick<ThemeDef, 'colours' | 'axes'>, spec: DisplaySpec): Record<string, string> {
   const base = themeBase(def), t = { ...base, ...themedDisplay(spec, def, base) } as ThemeValues;

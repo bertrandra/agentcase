@@ -25,7 +25,7 @@ export function Timeline() {
           <div key={lane} role="group" aria-label={lane} style={{ display: 'flex', alignItems: 'center', height: 24, borderBottom: '1px solid var(--ac-line)' }}>
             <div style={{ width: 150, flex: 'none', fontSize: 'var(--ac-font-size-sm)' }}>{lane} <span className="ac-muted">({mine.length})</span></div>
             <div style={{ position: 'relative', flex: 1, height: 16 }}>
-              {mine.map((e, i) => <span key={i} title={`${e.label} — ${e.date}`} style={{ position: 'absolute', left: `${ax.pct(e.t).toFixed(2)}%`, top: 3, width: 9, height: 9, borderRadius: 'var(--ac-radius-round)', background: e.color, transform: 'translateX(-50%)' }} />)}
+              {mine.map((e, i) => <span key={i} title={`${e.label} — ${e.date}`} style={{ position: 'absolute', left: `${ax.pct(e.t).toFixed(2)}%`, top: 3, width: 9, height: 9, borderRadius: 'var(--ac-radius-round)', background: `var(--ac-${e.tone})`, transform: 'translateX(-50%)' }} />)}
             </div>
           </div>
         );

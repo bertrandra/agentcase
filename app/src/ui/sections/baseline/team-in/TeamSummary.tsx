@@ -5,9 +5,9 @@ import { teamInCost } from '@/domain/location';
 import { locClass } from '@/domain/baseline/locStrat';
 import { Stat, StatRow } from '@/ui/widgets/cards';
 import { ChartPanel } from '@/ui/widgets/ChartPanel';
-import { CLASS_COLOR } from '../ClassBadge';
+import { CLASS_TONE } from '../ClassBadge';
 import { fmtK } from '../fmtK';
-import { tok } from '@/domain/theme';
+import { useTheme } from '@/ui/themeContext';
 
 /** Total FTE, annual cost, blended day rate and number of lines. */
 export function TeamSummary({ c }: { c: Ctx }) {
@@ -24,14 +24,14 @@ export function TeamSummary({ c }: { c: Ctx }) {
 
 /** FTE by location classification (doughnut) and by skill (bars). */
 export function TeamCharts({ c }: { c: Ctx }) {
-  const rows = c.s.teamIn;
+  const rows = c.s.teamIn, { tok } = useTheme();
   const [byClass, bySkill] = useMemo(() => {
     const cls: Record<string, number> = { Local: 0, Nearshore: 0, Offshore: 0 }, sk: Record<string, number> = {};
     rows.forEach((r) => { const k = LOCATIONS.some((l) => l.name === r.loc) ? locClass(r.loc) : 'Local'; cls[k] = (cls[k] ?? 0) + r.etp; sk[r.skill] = (sk[r.skill] || 0) + r.etp; });
-    const a: ChartConfiguration = { type: 'doughnut', data: { labels: Object.keys(cls), datasets: [{ data: Object.values(cls), backgroundColor: Object.values(CLASS_COLOR) }] }, options: { plugins: { legend: { position: 'right' } } } };
+    const a: ChartConfiguration = { type: 'doughnut', data: { labels: Object.keys(cls), datasets: [{ data: Object.values(cls), backgroundColor: Object.values(CLASS_TONE).map(tok) }] }, options: { plugins: { legend: { position: 'right' } } } };
     const b: ChartConfiguration = { type: 'bar', data: { labels: Object.keys(sk), datasets: [{ label: 'FTE', data: Object.values(sk), backgroundColor: tok('primary-700') }] }, options: { plugins: { legend: { display: false } } } };
     return [a, b];
-  }, [rows]);
+  }, [rows, tok]);
   return (
     <>
       <h2>Breakdown by location classification</h2>

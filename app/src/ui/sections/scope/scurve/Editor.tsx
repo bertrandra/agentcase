@@ -6,7 +6,7 @@ import { Panel } from '@/ui/widgets/cards';
 import { FieldChoice } from '@/ui/widgets/field/FieldChoice';
 import { OverrideBadge } from '@/ui/widgets/OverrideBadge';
 import { CurveSvg } from './CurveSvg';
-import { LEVEL_COLOR } from './geometry';
+import { LEVEL_ROLES } from './geometry';
 
 const EXPLAIN: Record<string, string> = { L1: 'Assisted — first agents in the loop', L2: 'Accelerating — agents across the team', L3: 'Scaling — agentic delivery is the norm', L4: 'Cruise — near-full agentic factory' };
 const FAMILIES = [['logistic', 'Logistic — symmetric'], ['gompertz', 'Gompertz — late inflection'], ['spline', 'Free-form spline — through every point']];
@@ -36,8 +36,8 @@ export function Editor() {
       </div>
       <div className="ac-levels">
         {view.levels.map((l) => (
-          <div key={l.lvl} className="ac-level" style={{ borderLeftColor: LEVEL_COLOR[l.lvl] }}>
-            <strong style={{ color: LEVEL_COLOR[l.lvl] }}>{l.lvl} · adoption {l.range}</strong>
+          <div key={l.lvl} className="ac-level" style={{ borderLeftColor: `var(--ac-${LEVEL_ROLES[l.lvl]})` }}>
+            <strong style={{ color: `var(--ac-${LEVEL_ROLES[l.lvl]})` }}>{l.lvl} · adoption {l.range}</strong>
             <div>{EXPLAIN[l.lvl]}</div><small>Reached: {l.when}</small>
           </div>
         ))}

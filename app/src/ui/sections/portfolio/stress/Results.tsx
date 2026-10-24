@@ -1,4 +1,5 @@
 import { useMemo } from 'react';
+import { useTheme } from '@/ui/themeContext';
 import type { PfStress } from '@/domain/portfolio';
 import { Callout, Panel, Stat, StatRow } from '@/ui/widgets/cards';
 import { ChartPanel } from '@/ui/widgets/ChartPanel';
@@ -10,11 +11,11 @@ import { Tables } from './Tables';
 
 /** Cards, distribution, diversification and the by-wave / by-product tables of the last portfolio run. */
 export function Results({ run, stale, rerun }: { run: PfStress; stale: boolean; rerun: () => void }) {
-  const s = run.stats, d = run.diversification;
+  const s = run.stats, d = run.diversification, { tok } = useTheme();
   const config = useMemo(() => {
-    const h = histogram(run.outcomes), plugins = { ...(h.options?.plugins ?? {}), title: { display: true, text: 'Distribution of the portfolio net benefit (sum of the products, after setup)' } };
+    const h = histogram(run.outcomes, tok), plugins = { ...(h.options?.plugins ?? {}), title: { display: true, text: 'Distribution of the portfolio net benefit (sum of the products, after setup)' } };
     return { ...h, options: { ...h.options, plugins } };
-  }, [run]);
+  }, [run, tok]);
   const tone = (v: number) => (v < 0 ? 'brick' : 'teal');
   return (
     <>

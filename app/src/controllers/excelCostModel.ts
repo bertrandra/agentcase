@@ -5,6 +5,7 @@ import { appStore } from '@/store/instance';
 import { buildCostModelWorkbook } from '@/store/persistence/excel/costmodel';
 import { loadExcelJS } from '@/store/persistence/excel/lazy';
 import { excelFilename, XLSX_MIME, type ExcelFile } from './excelResults';
+import { exportTheme } from './exportTheme';
 
 /**
  * The "Cost model (monthly)" workbook of the current portfolio for a scope (Portfolio, one wave or one product): Values (days), Rate cards, Other costs,
@@ -13,6 +14,6 @@ import { excelFilename, XLSX_MIME, type ExcelFile } from './excelResults';
  */
 export async function exportCostModel(scope: CostScope, now: Date = new Date()): Promise<ExcelFile> {
   const model = costModel(corePortfolio(appStore().getState().portfolio), scope), xl = await loadExcelJS();
-  const wb = buildCostModelWorkbook(xl, model, { version: APP_VERSION, generated: now });
+  const wb = buildCostModelWorkbook(xl, model, { version: APP_VERSION, generated: now }, exportTheme());
   return { blob: new Blob([await wb.xlsx.writeBuffer()], { type: XLSX_MIME }), filename: excelFilename(`CostModel_${scopeSlug(model.scopeLabel)}`, now) };
 }
