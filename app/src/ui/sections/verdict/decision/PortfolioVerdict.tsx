@@ -1,13 +1,12 @@
-import { fmtRoiPct } from '@/domain/economics/roi';
 import { runPortfolioSimulation } from '@/controllers/stressPortfolio';
 import type { VerdictGroup } from '@/domain/portfolio';
 import { VERDICT_META } from '@/domain/verdict';
 import { useScopeKpis } from '@/store/consolidationHooks';
 import { usePortfolioDecision, usePortfolioSimulation, useWaveDecisions } from '@/store/portfolioSimulation';
-import { fmtEurK, fmtMonths } from '@/ui/format';
-import { Callout, Panel, Stat, StatRow } from '@/ui/widgets/cards';
+import { Callout, Panel, StatRow } from '@/ui/widgets/cards';
 import { DataTable } from '@/ui/widgets/DataTable';
 import { goSection } from '@/ui/uiState';
+import { CoreStats } from '../../portfolio/consolidation/CoreStats';
 import { fmtEur } from '../../stress/fmt';
 import { VerdictBox } from './VerdictBox';
 
@@ -43,10 +42,7 @@ export function PortfolioVerdict({ group }: { group: VerdictGroup }) {
   return (
     <>
       {h && (
-        <StatRow>
-          <Stat label={`Net · ${kpis.label}`} value={fmtEurK(h.net)} tone={h.net < 0 ? 'brick' : 'teal'} /><Stat label="ROI" value={fmtRoiPct(h.roi)} />
-          <Stat label="Payback (months)" value={fmtMonths(h.paybackMonth)} /><Stat label="Calendar NPV" value={fmtEurK(h.npv)} />
-        </StatRow>
+        <StatRow><CoreStats h={h} netLabel={`Net · ${kpis.label}`} /></StatRow>
       )}
       {d ? <Panel title={`Verdict — ${kpis?.label ?? 'scope'}`}><VerdictBox d={d} banner={<Stale />} /></Panel> : (
         <p className="ac-muted"><em>{run ? 'This scope has no scheduled product in the simulation.' : (
