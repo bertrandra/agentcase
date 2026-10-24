@@ -15,7 +15,7 @@ All notable changes to AgentCase, newest first. Product version from v19.0.0 = `
 
 When releasing, follow [docs/BUMP_PROCEDURE.md](docs/BUMP_PROCEDURE.md) (§7 for the legacy file) and add the new version at the top.
 
-## [Unreleased]
+## [v20.12.0] 2026-10-24 — "Show" / "Change" top bar, file menu, two-zone header, Welcome cards fix
 
 ### Fixed
 - Welcome cards: the card buttons inherit the app font and colours (title in the heading colour, description muted, as in the legacy page); before, the browser default applied (system font, and blue text on Safari / iOS).
