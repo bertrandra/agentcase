@@ -1,4 +1,5 @@
 import { useMemo } from 'react';
+import { useTheme } from '@/ui/themeContext';
 import { productivityView } from '@/domain/verifyB';
 import { ChartPanel } from '@/ui/widgets/ChartPanel';
 import { DataTable } from '@/ui/widgets/DataTable';
@@ -12,7 +13,7 @@ const fmt = (n: number) => String(n);
 
 /** Productivity & throughput: artefacts per engineer per month for the categories in scope. */
 export default function ProductivitySection() {
-  const v = useView(productivityView), cfg = useMemo(() => productivityChart(v), [v]);
+  const v = useView(productivityView), { tok } = useTheme(), cfg = useMemo(() => productivityChart(v, tok), [v, tok]);
   const col = (key: 'asis' | 'y1' | 'y2' | 'y3', header: string) => ({ key, header, align: 'center' as const, render: (r: Row) => fmt(r[key]) });
   const note = v.fallback ? `Selected scope maps to no standard throughput category — showing all, scaled to scope intensity (${v.intensity}% auto).`
     : `Showing ${v.count} categor${v.count > 1 ? 'ies' : 'y'} in scope · scope intensity ${v.intensity}% auto (${v.scopeCount}/${v.totalArt} artifacts).`;

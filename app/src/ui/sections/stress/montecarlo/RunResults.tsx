@@ -7,10 +7,11 @@ import { ChartPanel } from '@/ui/widgets/ChartPanel';
 import { DataTable } from '@/ui/widgets/DataTable';
 import { fmtEur } from '../fmt';
 import { StaleBanner } from '../useSimulation';
-import { tok } from '@/domain/theme';
+import { useTheme } from '@/ui/themeContext';
+import type { Tok } from '@/domain/theme/resolve';
 
 /** 20-bin histogram of the net-benefit distribution; bins entirely below zero are red. */
-export function histogram(o: number[]): ChartConfiguration {
+export function histogram(o: number[], tok: Tok): ChartConfiguration {
   const n = o.length, bins = 20, lo = o[0] as number, hi = o[n - 1] as number, w = (hi - lo) / bins || 1, counts = new Array<number>(bins).fill(0);
   o.forEach((v) => { const i = Math.min(bins - 1, Math.floor((v - lo) / w)); counts[i] = (counts[i] as number) + 1; });
   return { type: 'bar', data: { labels: counts.map((_, i) => `${Math.round((lo + (i + 0.5) * w) / 1000)}k`),
@@ -20,7 +21,7 @@ export function histogram(o: number[]): ChartConfiguration {
 
 /** P10 / P50 / P90 / P(net<0) / CVaR cards, the distribution and the sensitivity (correlation) table of the last run. */
 export function RunResults({ run }: { run: SimRun }) {
-  const s = run.stats, cfg = useMemo(() => histogram(run.outcomes), [run]);
+  const { tok } = useTheme(), s = run.stats, cfg = useMemo(() => histogram(run.outcomes, tok), [run, tok]);
   if (!isFinite(s.p10)) return <Callout kind="warn">The net benefit is not defined for a horizon beyond 3 years (legacy limitation): the distribution cannot be computed.</Callout>;
   const tone = (v: number) => (v < 0 ? 'brick' : 'teal');
   return (

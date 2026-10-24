@@ -1,11 +1,13 @@
 import type { ChartConfiguration, Chart } from 'chart.js';
 import type { FteSeries } from '@/domain/verifyA/fteVfte';
-import { tok } from '@/domain/theme';
+import type { TokenName } from '@/domain/theme';
+import type { Tok } from '@/domain/theme/resolve';
 
-const COL: Record<string, string> = { get L1() { return tok('slate-700'); }, get L2() { return tok('chart-cat-5'); }, get L3() { return tok('chart-cat-2'); }, get L4() { return tok('chart-cat-1'); } };
+const LEVELS: Record<string, TokenName> = { L1: 'slate-700', L2: 'chart-cat-5', L3: 'chart-cat-2', L4: 'chart-cat-1' };
 
 /** Human FTE falling, agent vFTE growing, the flat total, and a dashed vertical marker where the adoption curve crosses each L-threshold. */
-export function fteChart(s: FteSeries): ChartConfiguration {
+export function fteChart(s: FteSeries, tok: Tok): ChartConfiguration {
+  const COL = (lvl: string): string => tok(LEVELS[lvl] ?? 'neutral-700');
   const levels = {
     id: 'fvLevels',
     afterDatasetsDraw(chart: Chart) {
@@ -13,9 +15,9 @@ export function fteChart(s: FteSeries): ChartConfiguration {
         const xs = chart.scales.x, a = chart.chartArea, cx = chart.ctx, n = s.labels.length, px = (i: number) => (xs as { getPixelForValue(v: number): number }).getPixelForValue(i);
         for (const b of s.marks) {
           const lo = Math.min(n - 1, Math.floor(b.at)), hi = Math.min(n - 1, Math.ceil(b.at)), x = px(lo) + (b.at - Math.floor(b.at)) * (px(hi) - px(lo));
-          cx.save(); cx.strokeStyle = COL[b.lvl] ?? tok('neutral-700'); cx.lineWidth = 1.3; cx.setLineDash([4, 3]); cx.globalAlpha = 0.6;
+          cx.save(); cx.strokeStyle = COL(b.lvl); cx.lineWidth = 1.3; cx.setLineDash([4, 3]); cx.globalAlpha = 0.6;
           cx.beginPath(); cx.moveTo(x, a.top); cx.lineTo(x, a.bottom); cx.stroke();
-          cx.globalAlpha = 1; cx.setLineDash([]); cx.fillStyle = COL[b.lvl] ?? tok('neutral-700'); cx.font = '700 11px sans-serif'; cx.textAlign = 'center'; cx.textBaseline = 'top';
+          cx.globalAlpha = 1; cx.setLineDash([]); cx.fillStyle = COL(b.lvl); cx.font = '700 11px sans-serif'; cx.textAlign = 'center'; cx.textBaseline = 'top';
           cx.fillText(b.lvl, x, a.top + 2); cx.restore();
         }
       } catch { /* no canvas */ }

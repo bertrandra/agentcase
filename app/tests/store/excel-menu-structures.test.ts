@@ -8,6 +8,7 @@ import { fromSnapshot } from '@/store/persistence/snapshot';
 import type { Doc } from '@/store/types';
 import { makeDefaultDoc } from '@/store/instance';
 import { applyTo, ENV } from '../helpers/excelParams';
+import { THEME_DEFAULT } from '@/domain/theme';
 
 const golden = (): Doc => fromSnapshot(JSON.parse(readFileSync('fixtures/cases/golden.json', 'utf8')));
 const lean: MenuStructure = { ...JSON.parse(JSON.stringify(BUILTIN_STRUCTURES[0])) as MenuStructure, id: 'lean', label: 'Lean' };
@@ -30,32 +31,32 @@ const structureOf = (d: Doc) => (d.PERSONAS as Persona[]).map((p) => `${p.id}:${
 
 describe('menu structures in the parameters workbook', () => {
   it('a case without another structure exports the legacy workbook: no structure sheet, no Menu structure column', async () => {
-    const sheets = await loadParamsSheets(await paramsWorkbookBytes(golden(), 'all', ENV));
+    const sheets = await loadParamsSheets(await paramsWorkbookBytes(golden(), 'all', ENV, THEME_DEFAULT));
     expect(sheets.has('Menu Structures')).toBe(false);
     expect(sheets.has('Menu Structure Sections')).toBe(false);
     expect(sheets.get('Personas')![0]).toEqual(['ID', 'Label', 'Protected', 'Order', 'Compact nav', 'Default']);
   });
   it('the structures, their groups and every section’s place, and each persona’s structure, round-trip into a case that has none', async () => {
-    const src = withStructures(), sheets = await loadParamsSheets(await paramsWorkbookBytes(src, 'all', ENV));
+    const src = withStructures(), sheets = await loadParamsSheets(await paramsWorkbookBytes(src, 'all', ENV, THEME_DEFAULT));
     expect(sheets.get('Personas')![0]!.at(-1)).toBe('Menu structure');
     expect(sheets.get('Menu Structure Sections')!.length - 1).toBe(2 * ENV.sections.length);
-    const { patch } = await readParamsWorkbook(await paramsWorkbookBytes(src, 'all', ENV), golden(), ENV);
+    const { patch } = await readParamsWorkbook(await paramsWorkbookBytes(src, 'all', ENV, THEME_DEFAULT), golden(), ENV);
     const back = applyTo(golden(), patch);
     expect(structures(back)).toEqual(structures(src));
     expect(structureOf(back)).toEqual(structureOf(src));
     expect(back.GROUPS).toEqual(src.GROUPS);   // the standard structure is not touched
   });
   it('an unedited built-in structure used by a persona is not stored back (it stays the shipped one)', async () => {
-    const def = makeDefaultDoc(), { patch } = await readParamsWorkbook(await paramsWorkbookBytes(def, 'all', ENV), def, ENV);
+    const def = makeDefaultDoc(), { patch } = await readParamsWorkbook(await paramsWorkbookBytes(def, 'all', ENV, THEME_DEFAULT), def, ENV);
     expect(patch.MENU_STRUCTURES).toBeUndefined();
     expect(structureOf(applyTo(def, patch))).toEqual(structureOf(def));
   });
   it('the persona-only export carries the structure sheets', async () => {
-    const names = [...(await loadParamsSheets(await paramsWorkbookBytes(withStructures(), 'persona-only', ENV))).keys()];
+    const names = [...(await loadParamsSheets(await paramsWorkbookBytes(withStructures(), 'persona-only', ENV, THEME_DEFAULT))).keys()];
     expect(names).toEqual(expect.arrayContaining(['Menu Structures', 'Menu Structure Sections', 'Personas', 'Groups', 'Sections']));
   });
   it('an older workbook (no structure sheet, no column) keeps the structures and the personas’ structures of the case', async () => {
-    const src = withStructures(), { patch } = await readParamsWorkbook(await paramsWorkbookBytes(golden(), 'all', ENV), src, ENV);
+    const src = withStructures(), { patch } = await readParamsWorkbook(await paramsWorkbookBytes(golden(), 'all', ENV, THEME_DEFAULT), src, ENV);
     const back = applyTo(src, patch);
     expect(back.MENU_STRUCTURES).toEqual(src.MENU_STRUCTURES);
     expect(structureOf(back)).toEqual(structureOf(src));

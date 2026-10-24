@@ -1,4 +1,5 @@
 import { useMemo } from 'react';
+import { useTheme } from '@/ui/themeContext';
 import { complianceView } from '@/domain/verifyB';
 import { ChartPanel } from '@/ui/widgets/ChartPanel';
 import { DataTable } from '@/ui/widgets/DataTable';
@@ -10,7 +11,7 @@ type Sector = ReturnType<typeof complianceView>['sectors'][number];
 
 /** Regulatory compliance: glass ceiling and regulatory artefacts of the selected industry, against every sector. */
 export default function ComplianceSection() {
-  const v = useView(complianceView), cfg = useMemo(() => complianceChart(v), [v]);
+  const v = useView(complianceView), { tok } = useTheme(), cfg = useMemo(() => complianceChart(v, tok), [v, tok]);
   const hl = (s: Sector) => (s.selected ? { fontWeight: 'var(--ac-font-weight-semibold)', background: 'var(--ac-primary-60)' } : undefined);
   return (
     <SectionFrame title="Regulatory compliance"

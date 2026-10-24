@@ -1,4 +1,5 @@
 import { useMemo } from 'react';
+import { useTheme } from '@/ui/themeContext';
 import { fteSeries, fteSummary, periodRows } from '@/domain/verifyA';
 import { fmt1 } from '@/ui/economicsFormat';
 import { ChartPanel } from '@/ui/widgets/ChartPanel';
@@ -19,7 +20,7 @@ const help = (
 
 /** FTE / vFTE chart — human FTE decreasing, agent vFTE growing, total effort constant, plus the maturity mapping. */
 export default function FteVfteSection() {
-  const live = useLive(), rows = periodRows(live), s = fteSummary(live), cfg = useMemo(() => fteChart(fteSeries(live)), [live]);
+  const live = useLive(), rows = periodRows(live), s = fteSummary(live), { tok } = useTheme(), cfg = useMemo(() => fteChart(fteSeries(live), tok), [live, tok]);
   return (
     <SectionFrame title="FTE / vFTE Chart" help={help}
       result={<>

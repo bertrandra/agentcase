@@ -1,10 +1,9 @@
 import { LOCATIONS } from '@/domain';
 import type { LocSplitRow } from '@/domain/verdict';
-import { tok } from '@/domain/theme';
 
 const MODE = { asis: ['AS-IS', 'var(--ac-slate-700)'], custom: ['Custom', 'var(--ac-primary-700)'], inherit: ['Inherit current', 'var(--ac-warning-600)'] } as const;
 const CLS = ['Local', 'Nearshore', 'Offshore'] as const;
-const CLR = { get Local() { return tok('teal-700'); }, get Nearshore() { return tok('info-700'); }, get Offshore() { return tok('warning-600'); } };
+const CLR = { Local: 'var(--ac-teal-700)', Nearshore: 'var(--ac-info-700)', Offshore: 'var(--ac-warning-600)' };
 
 /** TO-BE location split per strategy and its aggregate by class (Local / Nearshore / Offshore). */
 export function LocSplit({ rows }: { rows: LocSplitRow[] }) {

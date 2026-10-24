@@ -1,7 +1,8 @@
 import { readdirSync, readFileSync, statSync } from 'node:fs';
 import { join } from 'node:path';
-import { afterEach, describe, expect, it } from 'vitest';
-import { alpha, argb, resolveTokens, setActiveTheme, themedList, THEME_DEFAULT, tok, TOKEN_NAMES, type TokenName } from '../../src/domain/theme';
+import { describe, expect, it } from 'vitest';
+import { alpha, argb, resolveTokens, THEME_DEFAULT, tokIn, TOKEN_NAMES, type TokenName } from '../../src/domain/theme';
+import { DEFAULT_THEME, makeTheme } from '../../src/domain/theme/resolve';
 import { SCALES } from '../../src/domain/theme/scales';
 import { TOKENS_FILE, withTokens } from '../../scripts/lib/theme';
 
@@ -16,8 +17,9 @@ function okL(hex: string): number {
   return 0.2104542553 * l + 0.793617785 * m - 0.0040720468 * s;
 }
 
+const tok = DEFAULT_THEME.tok;
+
 describe('theme tokens: one source of truth', () => {
-  afterEach(() => setActiveTheme({}));
   it('tokens.css carries exactly the generated default theme (run npm run theme:gen after editing src/domain/theme)', () => {
     const css = readFileSync(join(process.cwd(), TOKENS_FILE), 'utf8');
     expect(css).toBe(withTokens(css));
@@ -48,16 +50,14 @@ describe('theme tokens: one source of truth', () => {
     const v: Partial<Record<TokenName, string>> = { blue: '#0058ab', teal: '#006e79', brick: '#8f3237', amber: '#b04600', focus: '#0058ab', ink: '#333', muted: '#636363', line: '#e3e3e3',
       surface: '#fff', bg: '#f5f6fa', radius: '6px', 'header-end': '#121a38', 'kpibar-end': '#00488c', 'shadow-card': '0 2px 10px rgba(18, 26, 56, .08)' };
     for (const [n, want] of Object.entries(v)) expect(tok(n as TokenName), n).toBe(want);
-    expect(['excel-head-bg', 'excel-head-text', 'excel-subtotal-bg', 'excel-band-bg', 'excel-note', 'excel-input', 'excel-border'].map((n) => argb(n as TokenName)))
+    expect(['excel-head-bg', 'excel-head-text', 'excel-subtotal-bg', 'excel-band-bg', 'excel-note', 'excel-input', 'excel-border'].map((n) => argb(THEME_DEFAULT, n as TokenName)))
       .toEqual(['FF1E2761', 'FFFFFFFF', 'FFE8ECF7', 'FFD9E2F3', 'FF808080', 'FF1F5F9A', 'FFD9D9D9']);
   });
-  it('a theme switch reaches tok(), the lazy palettes and the references built on a step', () => {
-    const pal = themedList(['chart-cat-1', 'chart-cat-2']);
-    expect([...pal]).toEqual(['#0058ab', '#006e79']);
-    setActiveTheme({ 'primary-700': '#123456' });
-    expect([tok('blue'), tok('header-start'), pal[0], tok('shadow-rail')]).toEqual(['#123456', '#123456', '#123456', 'inset 4px 0 0 #123456']);
-    expect(pal.map((c) => c)).toEqual(['#123456', '#006e79']);
-    setActiveTheme({});
-    expect(tok('blue')).toBe('#0058ab');
+  it('another base theme reaches tok(), the palettes and the references built on a step; the tables stay independent', () => {
+    expect(DEFAULT_THEME.list(['chart-cat-1', 'chart-cat-2'])).toEqual(['#0058ab', '#006e79']);
+    const t = makeTheme({ ...THEME_DEFAULT, 'primary-700': '#123456' });
+    expect([t.tok('blue'), t.tok('header-start'), t.list(['chart-cat-1'])[0], t.tok('shadow-rail')]).toEqual(['#123456', '#123456', '#123456', 'inset 4px 0 0 #123456']);
+    expect(t.list(['chart-cat-1', 'chart-cat-2'])).toEqual(['#123456', '#006e79']);
+    expect([tok('blue'), tokIn(THEME_DEFAULT, 'blue')]).toEqual(['#0058ab', '#0058ab']);   // no shared state: the default theme is untouched
   });
 });

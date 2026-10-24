@@ -9,6 +9,7 @@ import { fromSnapshot, toSnapshot } from '@/store/persistence/snapshot';
 import type { Doc } from '@/store/types';
 import { applyTo, ENV } from '../helpers/excelParams';
 import { freshStore, snap } from './helpers';
+import { THEME_DEFAULT } from '@/domain/theme';
 
 /** `theme.generate` (docs/THEME.md §8.9): the whole palette and its settings in one undoable step; built-ins refused; the settings persist. */
 const doc = (s: ReturnType<typeof freshStore>) => s.getState().doc;
@@ -68,7 +69,7 @@ describe('generator settings persistence', () => {
     expect(n).toEqual(['theme: palette generator settings ignored (no valid seed colour).']);
   });
   it('the Themes sheet of the parameters workbook round-trips them', async () => {
-    const src = themed(), { patch, notes } = await readParamsWorkbook(await paramsWorkbookBytes(src, 'all', ENV), golden(), ENV);
+    const src = themed(), { patch, notes } = await readParamsWorkbook(await paramsWorkbookBytes(src, 'all', ENV, THEME_DEFAULT), golden(), ENV);
     expect(notes.filter((x) => x.startsWith('Themes'))).toEqual([]);
     expect(userThemes(applyTo(golden(), patch))[0]!).toMatchObject({ generator: G, colours: userThemes(src)[0]!.colours });
   });

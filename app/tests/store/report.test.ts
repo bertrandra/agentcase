@@ -9,6 +9,7 @@ import { fromSnapshot } from '@/store/persistence/snapshot';
 import { loadFixture } from '../helpers/fixtures';
 import { missingNumbers } from '../helpers/parity';
 import { legacyMoney } from '../helpers/deviations';
+import { THEME_DEFAULT } from '@/domain/theme';
 
 const IDS = readdirSync('fixtures/reports').filter((f) => f.endsWith('.html')).map((f) => f.replace('.html', ''));
 const doc = (id: string) => fromSnapshot(JSON.parse(readFileSync(`fixtures/cases/${id}.json`, 'utf8')));
@@ -28,7 +29,7 @@ describe('Critical & Regulated Software Delivery report vs the legacy output', (
   });
   it.each(IDS)('%s: same sections, same figures, same wording', (id) => {
     const legacy = readFileSync(`fixtures/reports/${id}.html`, 'utf8');
-    const r = buildCriticalReport(doc(id), stampOf(id));
+    const r = buildCriticalReport(doc(id), THEME_DEFAULT, stampOf(id));
     if (!r.ok) throw new Error(r.reason);
     expect(r.filename).toBe(readFileSync(`fixtures/reports/${id}.name.txt`, 'utf8'));
     expect(headings(r.html)).toEqual(headings(legacy));
@@ -37,15 +38,15 @@ describe('Critical & Regulated Software Delivery report vs the legacy output', (
     expect(unversion(text(r.html))).toBe(unversion(text(legacy)));    // the whole visible text, not just the numbers
   });
   it('is a standalone page: no script, no external resource', () => {
-    const r = buildCriticalReport(doc('industry-aero'), new Date(0));
+    const r = buildCriticalReport(doc('industry-aero'), THEME_DEFAULT, new Date(0));
     if (!r.ok) throw new Error(r.reason);
     expect(r.html).not.toMatch(/<script|<link|<img|<iframe|src=|href=|@import|url\(/i);
   });
   it('refuses a case without the regulatory catalog or without a norm (the legacy gate)', () => {
     const d = makeDefaultDoc();
-    expect(buildCriticalReport(d)).toEqual({ ok: false, reason: 'Enable the Regulatory catalog and select at least one norm first (Parameters).' });
-    expect(buildCriticalReport({ ...doc('industry-med'), selectedNorms: [] }).ok).toBe(false);
-    expect(buildCriticalReport({ ...doc('industry-med'), regUse: false } as ReturnType<typeof doc>).ok).toBe(false);
+    expect(buildCriticalReport(d, THEME_DEFAULT)).toEqual({ ok: false, reason: 'Enable the Regulatory catalog and select at least one norm first (Parameters).' });
+    expect(buildCriticalReport({ ...doc('industry-med'), selectedNorms: [] }, THEME_DEFAULT).ok).toBe(false);
+    expect(buildCriticalReport({ ...doc('industry-med'), regUse: false } as ReturnType<typeof doc>, THEME_DEFAULT).ok).toBe(false);
   });
   it('the controller reads the current case', () => {
     loadFixture('industry-med');
@@ -59,7 +60,7 @@ describe('report: escaping', () => {
   it('escapes everything that comes from the case', () => {
     const evil = '<script>alert(1)</script><img src=x onerror=alert(2)>';
     const d = { ...doc('industry-med'), selectedNorms: [evil, '"quoted" & \'single\''] };
-    const r = buildCriticalReport(d, new Date(0));
+    const r = buildCriticalReport(d, THEME_DEFAULT, new Date(0));
     if (!r.ok) throw new Error(r.reason);
     expect(r.html).not.toContain('<script');
     expect(r.html).not.toContain('<img');

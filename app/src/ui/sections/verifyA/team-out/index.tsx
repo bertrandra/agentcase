@@ -1,4 +1,5 @@
 import { useMemo } from 'react';
+import { useTheme } from '@/ui/themeContext';
 import { groupRows, locRows, targetTeam, teamPoles } from '@/domain/verifyA';
 import { fmt1, fmtE } from '@/ui/economicsFormat';
 import { ChartPanel } from '@/ui/widgets/ChartPanel';
@@ -23,7 +24,7 @@ const TONE = { dev: 'blue', sup: 'amber', run: 'teal', setup: 'grey' } as const;
 /** Target team (TO-BE, horizon end) — computed breakdown into poles, by location and as a headcount comparison. */
 export default function TeamOutSection() {
   const live = useLive(), t = targetTeam(live), poles = teamPoles(live, t), locs = locRows(live, t), groups = groupRows(live, t), base = live.m.base.etp;
-  const locCfg = useMemo(() => locChart(locs), [locs]), headCfg = useMemo(() => headcountChart(base, t), [base, t]);
+  const { tok } = useTheme(), locCfg = useMemo(() => locChart(locs, tok), [locs, tok]), headCfg = useMemo(() => headcountChart(base, t, tok), [base, t, tok]);
   return (
     <SectionFrame title="Target team (TO-BE Y3) — computed breakdown" help={help}
       result={<>

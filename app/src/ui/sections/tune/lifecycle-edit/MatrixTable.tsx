@@ -4,9 +4,8 @@ import { lifecycleBlend, statusTable } from '@/domain/lifecycle';
 import { setStatusPosture } from '@/controllers/tuneB';
 import { setLifecycleWeight } from '@/controllers/lifecycle';
 import { useCtx } from '@/store/hooks';
-import { tok } from '@/domain/theme';
 
-const tone = (v: number) => (v > 1.001 ? 'var(--ac-teal)' : v < 0.999 ? 'var(--ac-brick)' : tok('neutral-750'));
+const tone = (v: number) => (v > 1.001 ? 'var(--ac-teal)' : v < 0.999 ? 'var(--ac-brick)' : 'var(--ac-neutral-750)');
 
 function Cell({ label, value, def, step, width, onValid }: { label: string; value: number; def: number; step: number; width: number; onValid: (n: number) => void }) {
   const edited = Math.abs(value - def) > 0.001;
@@ -32,7 +31,7 @@ export function MatrixTable() {
           {table.map((s, i) => {
             const def = STATUS_LIFECYCLE[i] ?? s, active = blend && (i === blend.loIdx || i === blend.hiIdx);
             return (
-              <tr key={s.id} style={active ? { background: tok('primary-80') } : undefined}>
+              <tr key={s.id} style={active ? { background: 'var(--ac-primary-80)' } : undefined}>
                 <td><strong>{s.label}</strong></td>
                 {phases.map((p) => (
                   <td key={p.id} style={{ textAlign: 'center' }}>
