@@ -12,6 +12,8 @@ import { memoryStorage, restoreRecord, startAutosave } from '@/store/persistence
 import { connectBroadcast, type ChannelLike } from '@/store/persistence/broadcast';
 import { openSnapshot, toPortfolioSnapshot } from '@/store/persistence/portfolioSnapshot';
 import { readEmbeddedCase } from '@/store/persistence/html/read';
+import { openChecked } from '@/store/persistence/schema';
+import { validate } from '@/domain/portfolio';
 import { threeProducts } from '../helpers/portfolioStore';
 import { freshStore } from './helpers';
 
@@ -84,8 +86,11 @@ describe('sanitize on portfolios', () => {
     ['no products', (r: Record<string, any>) => { r.products = []; r.waves = []; }],   // eslint-disable-line @typescript-eslint/no-explicit-any
     ['an override off the whitelist', (r: Record<string, any>) => { r.products[0].overrides = { RATE: {} }; }],   // eslint-disable-line @typescript-eslint/no-explicit-any
     ['common without inputs', (r: Record<string, any>) => { delete r.common.dom; }],   // eslint-disable-line @typescript-eslint/no-explicit-any
-  ])('rejects %s', (_n, mut) => {
+  ])('repairs %s: the file opens valid, with the correction listed (never half-read, never refused)', (_n, mut) => {
     const raw = good(); mut(raw);
-    expect(() => openSnapshot(raw)).toThrow();
+    const { portfolio, notes } = openChecked(raw);
+    expect(notes.length).toBeGreaterThan(0);
+    expect(validate(portfolio).errors).toEqual([]);
+    expect(portfolio.products.every((p) => /^[A-Za-z0-9_-]{1,64}$/.test(p.id))).toBe(true);
   });
 });

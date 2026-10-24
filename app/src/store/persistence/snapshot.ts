@@ -2,10 +2,12 @@
 import { buildCalcPackage } from '@/domain/calcPackage';
 import { makeDefaultDoc } from '../instance';
 import { PERSONA_KEY } from '../persona';
+import { SnapshotError } from './errors';
+import { VERSION_KEY, versionStamp } from './schema/version';
 import type { Doc } from '../types';
 
 export const SNAPSHOT_SCHEMA = 'agentcase.snapshot.v1';
-export class SnapshotError extends Error {}
+export { SnapshotError };
 
 const FORBIDDEN = new Set(['__proto__', 'constructor', 'prototype']);
 
@@ -20,9 +22,9 @@ export function sanitize<T>(v: T): T {
   return v;
 }
 
-/** Document → snapshot JSON (same shape as the legacy collectSnapshotState(), plus a schema tag). */
+/** Document → snapshot JSON (same shape as the legacy collectSnapshotState(), plus a schema tag and the file schema version). */
 export function toSnapshot(doc: Doc, now: () => Date = () => new Date()): Record<string, unknown> {
-  return { ...structuredClone(doc), savedAt: now().toISOString(), _schema: SNAPSHOT_SCHEMA, ...packageOf(doc) };
+  return { ...structuredClone(doc), savedAt: now().toISOString(), _schema: SNAPSHOT_SCHEMA, ...versionStamp(), ...packageOf(doc) };
 }
 
 /** The canonical calculation package (legacy v18.5 `calculationPackage`) stamped into every saved case; never read back as input. */
@@ -46,7 +48,7 @@ export function fromSnapshot(raw: unknown): Doc {
   const dom = snap.dom as { values?: unknown; checked?: unknown } | undefined;
   if (!dom || typeof dom !== 'object' || typeof dom.values !== 'object' || typeof dom.checked !== 'object') throw new SnapshotError('Snapshot has no form inputs (dom)');
   const doc = { ...makeDefaultDoc(), ...snap } as Doc;
-  delete doc.savedAt; delete doc._schema; delete doc.calculationPackage; delete doc[PERSONA_KEY];   // the persona the file opens on: `openSnapshot`
+  delete doc.savedAt; delete doc._schema; delete doc[VERSION_KEY]; delete doc.calculationPackage; delete doc[PERSONA_KEY];   // the persona the file opens on: `openSnapshot`
   doc.dom = { values: { ...makeDefaultDoc().dom.values, ...(dom.values as object) }, checked: { ...makeDefaultDoc().dom.checked, ...(dom.checked as object) } } as Doc['dom'];
   return doc;
 }

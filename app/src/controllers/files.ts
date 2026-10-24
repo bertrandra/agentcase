@@ -2,7 +2,9 @@
 import { activeDoc } from '@/store/editBase';
 import { appStore } from '@/store/instance';
 import { checkLoadedCase } from './calcStaleness';
-import { openSnapshot, toPortfolioSnapshot } from '@/store/persistence/portfolioSnapshot';
+import { toPortfolioSnapshot } from '@/store/persistence/portfolioSnapshot';
+import { openChecked } from '@/store/persistence/schema';
+import { setOpenNotes } from './openNotes';
 
 /** Download-ready JSON of the current work: the legacy single-case shape when the portfolio is one plain case (F22), else `agentcase.portfolio.v1`. */
 export function exportSnapshotJson(): { filename: string; json: string } {
@@ -10,9 +12,10 @@ export function exportSnapshotJson(): { filename: string; json: string } {
   return { filename: `AgentCase_${name.replace(/[^\w-]+/g, '_')}_${new Date().toISOString().slice(0, 10)}.json`, json: JSON.stringify(toPortfolioSnapshot(appStore().getState().portfolio)) };
 }
 
-/** Open a snapshot file (single case or portfolio). The previous work stays one Ctrl+Z away; a bad file leaves it untouched. */
+/** Open a snapshot file (single case or portfolio). The previous work stays one Ctrl+Z away; a file that cannot be opened leaves it untouched. */
 export async function importSnapshotFile(file: { text(): Promise<string> }): Promise<void> {
-  const raw: unknown = JSON.parse(await file.text()), pf = openSnapshot(raw);
+  const raw: unknown = JSON.parse(await file.text()), { portfolio: pf, notes } = openChecked(raw);
   appStore().load(pf, true);
   checkLoadedCase(raw, pf);
+  setOpenNotes(notes);
 }
