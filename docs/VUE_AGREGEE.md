@@ -6,7 +6,7 @@
 ## 1. Principe
 
 1. **Sections de résultat** : elles suivent la Vue. Portefeuille / Vague = chiffres consolidés du domaine (`consolidate`, `portfolioHeadline`, `waveHeadline`, `selectionView`, `portfolioGantt`...) ; Produit = comportement d’aujourd’hui, inchangé.
-2. **Sections de saisie** : elles restent **par produit** (le produit édité). Avec Portefeuille ou Vague en vue, elles affichent une **vue agrégée en lecture seule** de la sélection : une ligne par produit et le bouton **“Edit this product”** (contrôleur existant `showProduct` : la Vue devient ce produit, les sections redeviennent modifiables).
+2. **Sections de saisie** : avec Portefeuille ou Vague en vue, elles affichent en haut une **vue agrégée en lecture seule** de la sélection (une ligne par produit, bouton **“Edit this product”** : contrôleur `showProduct`, la Vue devient ce produit), puis **la section elle-même, modifiable sur place** (`InPlaceEdit`), liée au choix **“Edit:”** de la barre haute : un produit (« *nom* only » : la section de ce produit, ses modifications sont des surcharges) ou **All products** (la section sur les **valeurs communes**, ses modifications vont au commun ; les produits qui gardent leur propre valeur sont nommés champ par champ avec “Reset to common”). L'équipe d'entrée (et, dans Knowledge hub, domaines et préparation) reste par produit : avec All products, une simple indication. Voir § 2.1.
 3. **Les 85 sections sont classées** (§ 4). Aucune formule financière nouvelle dans `ui/` (règle A8 étendue : pas de `.reduce` dans les widgets, hooks et agrégats de la Vue agrégée) ; pas de « cas agrégé synthétique » (faux pour le plafond de verre, les surcharges, les décalages de vague).
 4. **Un seul produit : rien ne change** (ni bandeau, ni enveloppe DOM dans `SectionHost`). Le mode Produit des sections reste identique octet pour octet.
 
@@ -21,6 +21,10 @@
 | `ScopeBanner` | `ui/widgets/ScopeBanner.tsx`, rendu par `SectionFrame` | une phrase par type, région `aria-live="polite"`, rien avec un seul produit ni dans un rendu par produit |
 | `AggregateTable` | `ui/widgets/AggregateTable.tsx` | une ligne par produit, colonnes déjà calculées par le domaine, **ligne de total fournie par le domaine** (jamais sommée dans l’UI), bouton “Edit this product” (`showProduct` + annonce) |
 | `ProductDrill` | `ui/widgets/ProductDrill.tsx` | rendu repliable, paresseux, en lecture seule, du composant de la section pour chaque produit (`ProductViewContext`) ; `SectionFrame` y devient `EmbeddedFrame` (pas de h1, zones nommées par produit) |
+| `InPlaceEdit` | `ui/zones/InPlaceEdit.tsx`, rendu par `SectionHost` sous l'agrégat d'une section `I-input` (Portefeuille / Vague) | région **“Edit in place: …”** (h2) : bandeau, puis le composant de la section sous `ProductViewContext` = produit actif (Edit = un produit) ou `COMMON_VIEW` (All products) ; `EmbeddedFrame` en h3 (`EmbedLevel`) ; `team-in` avec All products : indication seule |
+| `COMMON_VIEW` / `commonEditDoc` | `store/productView.ts`, `store/commonEdit.ts`, `domain/portfolio/resolve.ts#resolveCommon` | pseudo-produit des **valeurs communes** : `useDoc` / `useCtx` / `useCaseResult` lisent le cas commun (commun + couche hub, sans surcharge ni sous-ensemble, équipe du produit actif), mémoïsé |
+| `editsCommon(pf)` | `store/commonEdit.ts`, appelé par `runCommands` | vrai avec ≥ 2 produits, Edit = All products et une Vue Portefeuille / Vague : une commande de cas s'exécute sur le cas commun et la couche d'adressage écrit **tout** au commun (portée interne `'common'`), l'équipe au produit actif ; une étape annulable |
+| `KeepersNotice` / `FieldKeepers` | `ui/widgets/KeepersNotice.tsx` (+ `OverrideBadge`, `SubsetBadge`, champs de `fields.tsx`) | dans l'éditeur commun seulement : « N products override this: A, B — they keep their value » et “Reset to common: X” (`resetToCommon` : surcharge ou champ du sous-ensemble) ; rien ailleurs |
 | `useScopedSection(id)` | `ui/zones/useScopedSection.ts` | produit / un seul produit / `S-static` / `P-portfolio` : la section telle quelle ; sinon l’agrégat enregistré, sinon le **repli générique** du type (`ui/zones/fallbacks.tsx`) |
 | Registre d’agrégats | `ui/sections/aggregates/index.ts` + `aggregates/<groupe>.ts` (15 fichiers, un par groupe) | id → chargeur paresseux, comme les chargeurs de sections ; `SectionHost` les utilise pour Portefeuille / Vague |
 | Vues domaine | `domain/portfolio/{selectionView,teams,inputSummary}.ts` | `selectionView` (chiffres consolidés d’une sélection), `aggregateTeams` (équipes sommées), `inputSummary` (comptes par produit) |
@@ -29,7 +33,14 @@
 Replis génériques par type (Portefeuille / Vague, section sans agrégat) :
 
 - `R-rollup` : `AggregateTable` des chiffres clés par produit (`SelectionRow`, total = ligne du domaine) + `ProductDrill`.
-- `I-input` : `AggregateTable` des saisies par produit (ETP, artefacts, surcharges, état du hub ; total ETP = `aggregateTeams`) + “Edit this product”.
+- `I-input` : `AggregateTable` des saisies par produit (ETP, artefacts, surcharges, état du hub ; total ETP = `aggregateTeams`) + “Edit this product” ; l'édition sur place s'ajoute dessous comme pour un agrégat enregistré.
+
+### 2.1 Édition sur place (liste “Edit:”)
+
+- Barre haute : une liste native **Edit:** (`aria-label="Edit"`) avec **All products** puis « *nom* only » par produit ; avec une Vague en vue, les produits de la vague d'abord (groupe “Wave: X”), puis “Other products” (le produit édité peut être hors de la vague). Choisir un produit = `setActiveProduct` + portée `product` (`chooseEditTarget`, non annulable) ; la Vue ne change pas (en vue Product, le produit affiché suit le produit édité). La puce **Editing:** dit « All products » ou le nom.
+- Le bandeau des sections de saisie dit « Editing: All products (common values) » en Portefeuille / Vague avec All products, sinon « Editing: product X ».
+- Vue Product + All products : comportement historique (une clé déjà surchargée par le produit reste écrite dans sa surcharge). Seules les vues Portefeuille / Vague écrivent directement le commun.
+- Les sections de résultat (R-*) et P-* ne changent pas.
 - `R-conso` sans agrégat enregistré : `ProductDrill` + note explicite “Consolidated view coming” (suivi en § 5).
 
 ## 3. Recette : ajouter l’agrégat d’une section (10 lignes)
@@ -53,7 +64,7 @@ Total : **86 = 79 sections de cas + 6 du groupe Portefeuille + 🎨 Brand & them
 |---|---|---|
 | `R-conso` | 15 | résultat à forme consolidée naturelle (sommes et séries de `domain/portfolio`) |
 | `R-rollup` | 28 | contrôle ou logique par cas, qui ne s’additionne pas : tableau récapitulatif par produit + détail du rendu propre au produit |
-| `I-input` | 18 | saisie par produit : synthèse agrégée en lecture seule, une ligne par produit, “Edit this product” |
+| `I-input` | 18 | saisie par produit : synthèse agrégée en lecture seule, une ligne par produit, “Edit this product”, puis la section modifiable sur place selon “Edit:” (§ 2.1) |
 | `S-static` | 19 | référence, documentation, réglages communs, gestion : indépendant de la vue (bandeau “Independent of the view”) |
 | `P-portfolio` | 6 | section du groupe Portefeuille, déjà au niveau portefeuille (bandeau “Portfolio level”) |
 
@@ -166,6 +177,8 @@ Terminé : les 85 sections ont leur comportement pour les vues Portfolio, Wave e
 - Les sections du **groupe Portefeuille** sont déjà à ce niveau ; `consolidation` est la source de `selectionView`.
 
 ## 7. Risques
+
+- Édition commune (All products en Portefeuille / Vague) : `editsCommon` vaut pour **toutes** les commandes de cas tant que cette vue est active, pas seulement pour l'éditeur sur place. Un contrôleur qui calcule sa charge utile depuis `getState().doc` (le produit actif) au lieu du brouillon écrirait au commun une valeur lue sur le produit actif (contrôleurs de résultats surtout : sensibilité, Monte Carlo, photos ; aucun n'est déclenché depuis une section de saisie).
 
 - Un composant de section qui lit le store autrement que par `useDoc` / `useCtx` / `useCaseResult` échapperait au `ProductViewContext` (la règle ESLint G4 l’interdit côté `ui/`). `useSimulation` lit la dernière simulation du **produit actif** (affichée périmée pour un autre produit) : à traiter par la phase « stress ».
 - Le détail par produit exécute la section entière pour chaque produit ouvert (coût proportionnel au nombre de produits ouverts, un par un par défaut).
