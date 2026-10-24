@@ -5,6 +5,7 @@ import { ROLE_GROUPS, SCALE_KEYS, type ColourKey, type ThemeDef } from '@/domain
 import { Callout } from '@/ui/widgets/cards';
 import { AxesEditor } from './AxesEditor';
 import { ColourRow } from './ColourRow';
+import { GeneratorPanel } from './GeneratorPanel';
 import { RainbowLegend } from './RainbowLegend';
 import { selectTheme, useBrandThemeView } from './selection';
 
@@ -26,6 +27,7 @@ export function Editor({ def }: { def: ThemeDef }) {
         </Callout>
       )}
       {def.diagnostic && <RainbowLegend table={table} />}
+      {!def.builtin && <GeneratorPanel key={def.seq} def={def} />}
       <p className={failing ? 'ac-bt-warn' : 'ac-muted'} role="status">
         {failing ? `⚠ ${failing} colour pair${failing === 1 ? '' : 's'} below the WCAG minimum in ${mode} mode.` : `Every checked colour pair reaches the WCAG minimum in ${mode} mode.`}
       </p>

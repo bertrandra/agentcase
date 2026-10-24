@@ -42,3 +42,23 @@
 .ac-section .ac-bt-grid > section > p { font-size: var(--ac-font-size-sm); line-height: var(--ac-leading-base); }
 .ac-bt-pv-chart { display: block; width: 100%; max-width: 320px; height: auto; margin: 6px 0; }
 .ac-bt-pv-controls { display: grid; gap: 4px; }
+/* the one-colour palette generator (docs/THEME.md §8.9) */
+.ac-section .ac-bt-gen { margin: 8px 0 12px; padding: 10px 12px; background: var(--ac-surface-tint); border: var(--ac-border-thin) solid var(--ac-line-strong); border-radius: var(--ac-radius-lg); }
+.ac-section .ac-bt-gen h3 { margin: 0 0 4px; font-size: var(--ac-font-size-md); color: var(--ac-text-heading); }
+.ac-section .ac-bt-gen > p { margin: 4px 0; font-size: var(--ac-font-size-sm); }
+.ac-bt-gen-row { display: flex; flex-wrap: wrap; align-items: end; gap: 8px 18px; margin: 6px 0; }
+.ac-bt-gen-seed, .ac-bt-gen-range { display: flex; flex-wrap: wrap; align-items: center; gap: 6px; }
+.ac-bt-gen-seed .ac-field-l, .ac-bt-gen-range .ac-field-l { flex-basis: 100%; }
+.ac-section .ac-bt-gen-seed input[type='color'] { width: 40px; height: 28px; padding: 0; border: var(--ac-border-thin) solid var(--ac-line-strong); border-radius: var(--ac-radius-sm); background: var(--ac-surface); }
+.ac-bt-gen-range input[type='range'] { width: 180px; accent-color: var(--ac-primary-700); }
+.ac-bt-gen-range output { min-width: 7.5em; font-size: var(--ac-font-size-sm); font-variant-numeric: tabular-nums; color: var(--ac-ink); }
+.ac-bt-gen-harmony { display: flex; flex-wrap: wrap; margin: 6px 0; padding: 0; border: 0; }
+.ac-bt-gen-harmony legend { width: 100%; margin-bottom: 2px; padding: 0; }
+.ac-section .ac-bt-gen-harmony label { display: inline-flex; align-items: center; gap: 4px; margin: 0 0 0 calc(-1 * var(--ac-border-thin)); padding: 3px 10px; font-size: var(--ac-font-size-sm); color: var(--ac-ink); background: var(--ac-surface); border: var(--ac-border-thin) solid var(--ac-line-strong); cursor: pointer; }
+.ac-section .ac-bt-gen-harmony label:first-of-type { margin-left: 0; border-radius: var(--ac-radius-md) 0 0 var(--ac-radius-md); }
+.ac-section .ac-bt-gen-harmony label:last-of-type { border-radius: 0 var(--ac-radius-md) var(--ac-radius-md) 0; }
+.ac-section .ac-bt-gen-harmony label[data-on='true'] { color: var(--ac-selected-text); background: var(--ac-selected); border-color: var(--ac-selected); }
+.ac-section .ac-bt-gen-harmony label:focus-within { outline: var(--ac-focus-width) solid var(--ac-focus); outline-offset: 1px; }
+.ac-bt-gen-swatches { display: grid; grid-template-columns: repeat(auto-fill, minmax(118px, 1fr)); gap: 2px 8px; list-style: none; margin: 6px 0; padding: 0 !important; }
+.ac-bt-gen-swatches li { display: flex; align-items: center; gap: 4px; font-size: var(--ac-font-size-2xs); color: var(--ac-ink); }
+.ac-bt-gen-swatches code { color: var(--ac-muted); }
