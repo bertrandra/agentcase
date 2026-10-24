@@ -4,6 +4,8 @@ import { useActiveProductId } from '@/store/portfolioHooks';
 import { toast } from '../uiState';
 
 export interface AggColumn<R> { key: string; header: string; title?: string; align?: 'left' | 'right'; render: (row: R) => ReactNode }
+/** The Wave column most aggregate tables start with. */
+export const waveColumn = <R extends { wave: string }>(): AggColumn<R> => ({ key: 'wave', header: 'Wave', render: (r) => r.wave });
 /** The total line, already computed by the domain (a headline, a `totals` line): the cells are only formatted here, never added up. Keys are column keys. */
 export interface AggTotals { label: string; cells: Record<string, ReactNode> }
 

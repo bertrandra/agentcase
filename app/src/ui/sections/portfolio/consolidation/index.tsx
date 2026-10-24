@@ -1,10 +1,10 @@
 import { useConsolidation } from '@/store/consolidationHooks';
-import { fmtEurK } from '@/ui/format';
 import { Callout, Panel } from '@/ui/widgets/cards';
 import { SectionFrame } from '@/ui/zones/SectionFrame';
 import { Cards } from './Cards';
 import { CashChart } from './CashChart';
 import { SummaryTable } from './SummaryTable';
+import { YearTable } from './YearTable';
 
 const help = (
   <>
@@ -29,15 +29,7 @@ export default function ConsolidationSection() {
           <Panel title="Cumulative cash by calendar month"><CashChart chart={v.chart} /></Panel>
           <Panel title="By wave"><SummaryTable caption="Consolidation by wave" first="Wave" rows={v.waves} totals={v.totals} withCount /></Panel>
           <Panel title="By product"><SummaryTable caption="Consolidation by product" first="Product" rows={v.products} totals={v.totals} /></Panel>
-          <Panel title="By calendar year">
-            <div className="ac-table-wrap" tabIndex={0}>
-              <table className="ac-table ac-cons-table">
-                <caption>Portfolio flows by calendar year</caption>
-                <thead><tr><th scope="col">Year</th><th scope="col">Savings</th><th scope="col">Run cost</th><th scope="col">Setup</th><th scope="col">Net</th></tr></thead>
-                <tbody>{v.years.map((y) => <tr key={y.label}><th scope="row">{y.label}</th><td>{fmtEurK(y.savings)}</td><td>{fmtEurK(y.run)}</td><td>{fmtEurK(y.setup)}</td><td>{fmtEurK(y.net)}</td></tr>)}</tbody>
-              </table>
-            </div>
-          </Panel>
+          <YearTable caption="Portfolio flows by calendar year" years={v.years} />
           <Callout>A product’s NPV is calendar-based here (discounted from month 1 of the portfolio); its NPV from its own start is in the Products section.</Callout>
         </>
       }

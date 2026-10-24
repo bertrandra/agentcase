@@ -5,12 +5,12 @@ import { useEvidenceRows } from '@/store/selectionHooksModelEngine';
 import { Callout } from '@/ui/widgets/cards';
 import type { AggColumn } from '@/ui/widgets/AggregateTable';
 import { SectionFrame } from '@/ui/zones/SectionFrame';
-import { countOf, onOff, R, RollupFrame } from '../../stress/AggParts';
+import { countOf, phaseColumn, R, RollupFrame } from '../../stress/AggParts';
 import { DriverTable } from './DriverTable';
 import { Grade } from './Grade';
 
 const COLS: AggColumn<EvidenceRow>[] = [
-  { key: 'on', header: 'Phase P6', render: (r) => onOff(r.on) }, { key: 'stage', header: 'Stage', render: (r) => EVL_STAGE_LABEL[r.stage] ?? r.stage },
+  phaseColumn('P6'), { key: 'stage', header: 'Stage', render: (r) => EVL_STAGE_LABEL[r.stage] ?? r.stage },
   { key: 'grade', header: 'Confidence grade', render: (r) => r.grade ?? 'n/a' }, { key: 'score', header: 'Score', align: R, render: (r) => (r.score === null ? 'n/a' : `${(r.score * 100).toFixed(0)}%`) },
   { key: 'meets', header: 'Meets the stage', render: (r) => (r.meets === null ? 'n/a' : r.meets ? 'yes' : 'no') },
   { key: 'm', header: 'Measured drivers', align: R, render: (r) => r.measured }, { key: 'b', header: 'Benchmark drivers', align: R, render: (r) => r.benchmark }, { key: 'a', header: 'Assumed drivers', align: R, render: (r) => r.assumed },

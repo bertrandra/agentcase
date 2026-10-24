@@ -3,7 +3,7 @@ import { caseDiscountRate } from '../canonical';
 import type { Ctx } from '../ctx';
 import { makeInputs } from '../inputs';
 import { timeFor } from '../time';
-import { econ } from '../time/kernel';
+import { thinAggregate } from '../time/thin';
 import type { CaseState } from '../types/state';
 import { lceLoops } from './lce';
 import { MCS_DRIVER_ORDER, mcsBaseValue, mcsDrawOne, mcsMarginalBand, mcsSpec, type McsSample } from './mcsDrivers';
@@ -37,21 +37,11 @@ function drawCtx(c: Ctx, sample: McsSample): Ctx {
   return { s, inp: makeInputs(s), a: c.a, rateScale: baseRate > 0 ? (sample.dayRate as number) / baseRate : 1, tokenScale: baseTok > 0 ? (sample.tokenPrice as number) / baseTok : 1 };
 }
 
-/** One evaluation of the model on a sample: horizon-end savings and run cost, NPV at the case rate, payback (row-free pass over the kernel). */
+/** One evaluation of the model on a sample: horizon-end savings and run cost, NPV at the case rate, payback (the thin pass of the Time Engine over the kernel). */
 export function mcsEvaluate(c: Ctx, sample: McsSample) {
   const dc = drawCtx(c, sample), m = modelRaw(dc);
-  const d = caseDiscountRate(dc) / 12;
-  const K = timeFor(dc, { mode: 'full', curveModelId: activeCurve(dc), model: m }).K;
-  const N = K.horizonMonths, nY = K.horizonYears;
-  let cum = 0, payback: number | null = null, npv = 0, sav = 0, run = 0;
-  for (let t = 1; t <= N; t++) {
-    const e = econ(t, K);
-    cum += e.netSav;
-    if (payback === null && cum >= 0) payback = t;
-    npv += e.netSav / Math.pow(1 + d, t);
-    if (Math.min(nY - 1, Math.floor((t - 1) / 12)) === nY - 1) { sav += e.grossSav; run += e.totalRun; }
-  }
-  return { savY3: sav, runY3: run, npv, paybackMonths: payback === null ? m.horizon * 12 : payback };
+  const T = thinAggregate(timeFor(dc, { mode: 'full', curveModelId: activeCurve(dc), model: m }).K, caseDiscountRate(dc)), last = T.years[T.years.length - 1];
+  return { savY3: last?.savings ?? 0, runY3: last?.totalRunCost ?? 0, npv: T.npv, paybackMonths: T.payback === null ? m.horizon * 12 : T.payback };
 }
 
 const quantiles = (arr: number[]): McsStats => {

@@ -1,13 +1,13 @@
 import type { ProgramRow } from '@/domain/portfolio';
 import { useProgramAgg } from '@/store/selectionHooksTune';
 import { useViewScope } from '@/store/viewScope';
-import { AggregateTable, type AggColumn } from '@/ui/widgets/AggregateTable';
+import { AggregateTable, type AggColumn, waveColumn } from '@/ui/widgets/AggregateTable';
 import { eurK } from '../../tuneB/fmt';
 import { InputAggregate, SpreadTable, type SpreadItem } from '../AggregateShared';
 
 const R = 'right' as const;
 const COLS: AggColumn<ProgramRow>[] = [
-  { key: 'wave', header: 'Wave', render: (r) => r.wave },
+  waveColumn(),
   { key: 'fte', header: 'Pilot FTE', align: R, render: (r) => r.pilotFte.toFixed(1) },
   { key: 'weeks', header: 'Pilot weeks', align: R, title: 'Prove weeks + break-in sprints', render: (r) => r.pilotWeeks },
   { key: 'pcost', header: 'Pilot cost', align: R, render: (r) => eurK(r.pilotCost) },

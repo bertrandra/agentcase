@@ -37,13 +37,8 @@ export interface ParamsExport { filename: string; blob: Blob; companion?: { file
  */
 export async function exportParamsWorkbook(scope: ParamsScope, env: ParamsEnv, now: Date = new Date()): Promise<ParamsExport> {
   const { doc, portfolio } = appStore().getState();
-  if (hasPortfolioContent(portfolio)) {
-    const bytes = await workbookBytes(await buildPortfolioParamsWorkbook(portfolio, scope, env));
-    const out: ParamsExport = { filename: paramsFileName(scope, now), blob: new Blob([bytes], { type: XLSX }) };
-    if (scope === 'persona-only') out.companion = { filename: paramsFileName(scope, now, 'json'), blob: new Blob([personaConfigJson(doc, now)], { type: 'application/json' }) };
-    return out;
-  }
-  const out: ParamsExport = { filename: paramsFileName(scope, now), blob: new Blob([await paramsWorkbookBytes(doc, scope, env)], { type: XLSX }) };
+  const bytes = hasPortfolioContent(portfolio) ? await workbookBytes(await buildPortfolioParamsWorkbook(portfolio, scope, env)) : await paramsWorkbookBytes(doc, scope, env);
+  const out: ParamsExport = { filename: paramsFileName(scope, now), blob: new Blob([bytes], { type: XLSX }) };
   if (scope === 'persona-only') out.companion = { filename: paramsFileName(scope, now, 'json'), blob: new Blob([personaConfigJson(doc, now)], { type: 'application/json' }) };
   return out;
 }
