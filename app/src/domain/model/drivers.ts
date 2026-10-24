@@ -1,11 +1,15 @@
 /** @calc-zone time-engine @owner setup, effective-automation */
 import type { Ctx } from '../ctx';
-import { convChangeCost, engagementCoef, hriRampFactor } from '../engagement';
+import { engagementCoef, hriCostPerFTE, hriEnabled, hriRampFactor } from '../engagement';
 import { khMult, khSetupCost } from '../knowledge';
 import { lifecycleAutoPosture } from '../lifecycle';
+import { teamInCost } from '../location';
 import { phaseScope } from '../scope';
 import { blendedTokenCostPer1M } from '../tokens';
 import { computeGlassCeiling } from './ceiling';
+
+/** Engagement change cost (HRI): entry headcount x cost per FTE of the readiness intensity, 0 when the HRI module is off. Part of the setup. */
+export const convChangeCost = (c: Ctx): number => (hriEnabled(c) ? teamInCost(c.s, c.inp).etp * hriCostPerFTE(c) : 0);
 
 /** Scalar drivers of the annual model: automation depth, ramps, tokens, setup. */
 export function modelDrivers(c: Ctx) {

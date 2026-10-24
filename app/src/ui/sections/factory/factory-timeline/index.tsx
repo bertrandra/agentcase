@@ -16,7 +16,9 @@ const help = (
 export default function FactoryTimelineSection() {
   return (
     <SectionFrame title="📅 Factory Timeline · DRAFT" help={help}
-      input={<Callout>A separate visualization from the 📅 Gantt / Timeline (SDLC schedule) — that section is untouched. Here: the DORA + agentic KPIs, the Business-chain structure (no dates exist for Vision/Portfolio/Epic/Feature/Story) and a real calendar timeline of dated Release-pipeline + Engineering events.</Callout>}
+      input={<Callout>A separate visualization from the 📅 Gantt / Timeline (SDLC schedule) — that section is untouched. Here: the DORA + agentic
+        KPIs, the Business-chain structure (no dates exist for Vision/Portfolio/Epic/Feature/Story) and a real calendar timeline of dated
+        Release-pipeline + Engineering events.</Callout>}
       result={<><Kpis /><BusinessChain /><Timeline /></>} />
   );
 }

@@ -9,12 +9,15 @@ const nm = (r: Rec) => String(r.name ?? r.id);
 const TONE = { Success: 'var(--ac-teal)', Failed: 'var(--ac-brick)', RolledBack: 'var(--ac-amber)', Info: 'var(--ac-blue)', Warning: 'var(--ac-amber)', Critical: 'var(--ac-brick)' };
 const text = (v: unknown) => String(v ?? '');
 
+const decisionColour = (d: unknown) => (d === 'Approved' ? 'var(--ac-teal)' : d === 'Rejected' ? 'var(--ac-brick)' : 'var(--ac-amber)');
+
 /** Candidates, approvals, deployments, environments, monitoring, feedback and backlog: the rest of the release flow. */
 export function Pipeline() {
   const releases = useRecs('RELEASES'), rcs = useRecs('RELEASE_CANDIDATES'), envs = useRecs('ENVIRONMENTS') as unknown as (Rec & Environment)[], deps = useRecs('DEPLOYMENTS');
   const envName = (id: unknown) => envs.find((e) => e.id === id)?.name ?? '(none)';
   const decision = (r: Rec) => (
-    <select aria-label={`Decision of ${r.id}`} value={text(r.decision)} style={{ width: '100%', fontWeight: 'var(--ac-font-weight-bold)', color: r.decision === 'Approved' ? 'var(--ac-teal)' : r.decision === 'Rejected' ? 'var(--ac-brick)' : 'var(--ac-amber)' }} onChange={(e) => setApprovalDecision(r.id, e.target.value)}>
+    <select aria-label={`Decision of ${r.id}`} value={text(r.decision)} style={{ width: '100%', fontWeight: 'var(--ac-font-weight-bold)', color: decisionColour(r.decision) }}
+      onChange={(e) => setApprovalDecision(r.id, e.target.value)}>
       {['Pending', 'Approved', 'Rejected'].map((o) => <option key={o} value={o}>{o}</option>)}
     </select>
   );

@@ -16,6 +16,16 @@ export function pilotSizing(c: Ctx) {
   return { fte, breakIn, weeks, totalWeeks, cost: fte * (totalWeeks / 52) * (m.wd || 220) * (m.tgtTJM || 600) };
 }
 
+/**
+ * When the pilot is spent (decision D4, cost-model workbook): from the product's month 1, the cost spread evenly over its weeks (a month = 52 / 12
+ * weeks), the last month pro rata. Index 0 = product month 1; the entries sum to the cost. Empty when the pilot has no duration or no cost.
+ */
+export function pilotMonths(p: { totalWeeks: number; cost: number }): number[] {
+  const D = (p.totalWeeks * 12) / 52;
+  if (!(D > 0) || !(p.cost > 0)) return [];
+  return Array.from({ length: Math.ceil(D - 1e-9) }, (_, k) => (p.cost * Math.min(1, D - k)) / D);
+}
+
 /** EV-22 internal capability (Volet A): operational / in training / target mass. */
 export function capability(c: Ctx) {
   const ops = c.inp.p('capOps') || 0, training = c.inp.p('capTrain') || 0, target = c.inp.p('capTarget') || 0;

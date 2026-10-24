@@ -78,7 +78,9 @@ describe('the cost-model workbook', () => {
   it('Other costs: setup, KT, Knowledge Hub, pilot, tokens, infrastructure, totals and the parameters block', async () => {
     fourProducts();
     const { wb } = await read(), ws = wb.getWorksheet('Other costs')!, rows = table(ws), lines = new Set(rows.map((r) => String(val(ws, r, 5))));
-    for (const l of ['Tokens', 'Infrastructure', 'Knowledge Hub curation', 'Knowledge Hub infrastructure (allocated)', 'Setup: Knowledge Hub and knowledge transfer (KT)', 'Setup: tooling, training, coaching, governance', 'Agentic run team (AgentOps)', 'Knowledge transfer avoided', 'Verification tax', 'Pilot (indicative sizing, not in the engine cost)', 'TOTAL TO-BE COST (days x rate + other costs)', 'PORTFOLIO TOTAL TO-BE COST']) expect(lines.has(l), l).toBe(true);
+    for (const l of ['Tokens', 'Infrastructure', 'Knowledge Hub curation', 'Knowledge Hub infrastructure (allocated)', 'Setup: Knowledge Hub and knowledge transfer (KT)',
+      'Setup: tooling, training, coaching, governance', 'Agentic run team (AgentOps)', 'Knowledge transfer avoided', 'Verification tax',
+      'Pilot (included in totals)', 'TOTAL TO-BE COST (days x rate + other costs + pilot)', 'PORTFOLIO TOTAL TO-BE COST (pilot included)']) expect(lines.has(l), l).toBe(true);
     const team = rows.find((r) => val(ws, r, 5) === 'Team cost (human days x applied rate)')!;
     expect((ws.getCell(team, col(ws, 'M3')).value as { formula: string }).formula).toMatch(/^'Rate cards'!/);
     let p = 0;
@@ -87,7 +89,7 @@ describe('the cost-model workbook', () => {
     const factor = rows.find((r) => val(ws, r, 5) === 'Monthly discount factor')!;
     expect((ws.getCell(factor, col(ws, 'M3')).value as { formula: string }).formula).toBe(`1/(1+$F$${p}/12)^3`);
     expect(val(ws, factor, col(ws, 'M3'))).toBeCloseTo(1 / Math.pow(1 + 0.08 / 12, 3), 12);
-    const total = rows.find((r) => val(ws, r, 5) === 'PORTFOLIO TOTAL TO-BE COST')!, eng = total + 1, diff = total + 2;
+    const total = rows.find((r) => val(ws, r, 5) === 'PORTFOLIO TOTAL TO-BE COST (pilot included)')!, eng = total + 1, diff = total + 2;
     expect(String(val(ws, eng, 5))).toContain('engine total'); expect(Math.abs(Number(val(ws, diff, col(ws, 'M7'))))).toBeLessThan(1e-6);
   });
   it('scopes: portfolio, wave and product cover only their products; a single case carries the default names', async () => {

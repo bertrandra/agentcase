@@ -15,6 +15,78 @@ All notable changes to AgentCase, newest first. Product version from v19.0.0 = t
 
 When releasing, follow [docs/BUMP_PROCEDURE.md](docs/BUMP_PROCEDURE.md) (§7 for the legacy file) and add the new version at the top.
 
+## [v20.14.0] 2026-10-24 — Architecture lots 1 and 4: robustness (error boundaries, CSP, audit, lint), one cash-flow kernel, acyclic zone graph, pilot in cost-model totals
+
+### Tests
+- `tests/store/portfolio-undo.test.ts` "jumpTo reaches every intermediate state" failed for one random seed (found by fast-check): after undo / redo, an override object's keys came back in another order (Immer re-adds a removed key at the end). The content was identical. The portfolio comparison helper `docOnly` now serialises with sorted keys, and the failing seed is pinned as a regression case.
+
+### Lot 1 — robustness
+
+### New
+- **Error boundaries.** A display error no longer blanks the page. Around the whole shell: a minimal page "AgentCase hit an unexpected error" with
+  **Reload** and **Copy details**, which writes the autosave at once (the reload offers to restore it). Around the section in the work area: "This
+  section failed to display" with **Try again** (remounts the section, retrying its lazy module) and **Copy details** (app version, section id,
+  message, stack, component stack); the menu, KPI bar and other sections keep working, and opening another section resets it. Around every chart:
+  a note in the chart's place, the rest of the section renders. Errors go to the console and to a session list in the dock ("History (n) · 1 display
+  error"). `tests/ui/error-boundaries.test.tsx` (axe included).
+- **Content-Security-Policy.** The single HTML file declares `default-src 'none'` with inline script and style, `data:` / `blob:` images, `data:` fonts,
+  `connect-src 'none'`, `base-uri 'none'`, `form-action 'none'`: the page can load nothing from the network. HTML snapshots carry it; the reports carry
+  a stricter one (no script). `tools/e2e-smoke.mjs` fails on any CSP violation; the new `tools/e2e-flows.mjs` (CI job `e2e`, `npm run e2e`) drives
+  JSON / HTML snapshot round trips, the report, the three workbooks and the import, Monte Carlo, display and case themes, PNG / SVG logo and a
+  `?theme=` link under the policy, after a probe that proves a network image and a `fetch` are blocked. `frame-ancestors` cannot be set by a meta tag
+  (docs/ARCHITECTURE.md §9).
+- **Lint.** `local/hard-max-len`: a source line over 300 characters is an error; `max-len` 160 is a warning (long literals and URLs excepted;
+  979 warnings remain). The UI and controller import restrictions also match relative paths (`../store/core`, `../../store/persistence/…`, `../store/hooks`),
+  with probes in `tests/lint-rules.test.ts`.
+
+### Changed
+- **Readability (decision D1):** the 78 source lines over 300 characters (longest 796, `tune/lifecycle-edit`) are gone: JSX prose is wrapped (the
+  compiled output of those files is token-for-token identical), long code is split into constants, helpers and small components (due-diligence cells,
+  provenance tiles, Gantt milestones, the default card read from the "Dynamic Section Cards" sheet, the Glass Ceiling formula shared by both reports).
+- CI job `check` runs `npm audit --omit=dev --audit-level=moderate`.
+
+### Fixed
+- **`npm audit --omit=dev`: 2 moderate advisories → 0.** ExcelJS 4.4 pulls `uuid` 8 (GHSA-w5hq-g745-h8pq); `overrides` pins `uuid` `^11.1.1`, which
+  ExcelJS's Node build accepts (every Excel test and the parallel run pass). The browser bundle uses ExcelJS's pre-built copy, which calls only `v4()`.
+
+**Golden case:** unchanged.
+### Lot 4 — one cash-flow kernel, acyclic zone graph, case-file parity explained, pilot in the cost-model totals
+
+### Changed
+- **One discounted-cash-flow kernel** (`app/src/domain/economics/cashflow.ts`, zone *time-engine*): `cumulativeOf`, `paybackMonthOf` (first month >= `firstMonth`
+  whose cumulative is >= 0), `npvOf` (monthly (1 + r/12)^t, or annual (1 + r)^(t/12) compounding), `discountFactor`, `roiCanonical` and `cashflowSummary`, plus
+  the single `DEFAULT_DISCOUNT_RATE` (0.08). It replaces the six inline loops of `time/engine.ts`, `time/thin.ts` (Monte Carlo through `model/mcs.ts`),
+  `portfolio/headline.ts` (with its "not before the first movement" rule as `firstMonth`), `pdc/verifConvTime.ts` (legacy audit at 8 %), `model/flow.ts`
+  (time-to-market value, annual compounding kept as a documented variant) and the cost-model discount factors; the 0.08 literals of `canonical.ts`,
+  `verifConvTime2.ts`, `flow.ts`, `controllers/frame.ts`, `controllers/modelFlow.ts` and the engagement-context card now read the constant. The kernel owns
+  the payback-month, NPV and ROI figures (catalogue and `figure-owners` updated; `economics/roi.ts` re-exports the rule). **No number changed**: a property test
+  compares the kernel bit for bit with verbatim copies of the old loops on random cash flows (`tests/domain/cashflow.test.ts`), and a full-precision dump of
+  payback, NPV (5 rates), cumulative, ROI, thin pass, Monte Carlo (200 draws), time-to-market value, convergence rows, calculation package and portfolio
+  headlines of the 107 fixtures and two portfolios is byte-identical before and after.
+- **Zone graph per layer, acyclic in the domain.** `npm run deps:gen` builds the zone links from what a module's own code imports in `src/domain` only;
+  re-exports and pure barrels (re-export-only modules) are not uses (their edges stay in the import closure for test selection); the controllers' and store
+  exports' zone links are reported apart (`outer`, 40 links). Modules retagged by role (no code moved except one function): the kernel (*time-engine*),
+  `model/flow.ts`, `scope/scurveView.ts`, `pdc/verifTeam.ts`, `domain/index.ts` (*delivery-views*), `tune/maturity.ts` (*tuning-programme*), the portfolio
+  knowledge views, diagnostics, teams and validation (*portfolio-consolidation*); `convChangeCost` moved from `engagement.ts` to its owner `model/drivers.ts`
+  (the setup figure). The zone *verification-verdict* is split into **verdict** (decision verdict, strategies, results, evidence ladder, due-diligence
+  register, portfolio verdict) and **verification** (logic checks and convergence rows), which removes the Board-registry cycle. Before: 112 zone links,
+  one cycle of 15 zones, 25 feedback links. After: 91 domain links, **no cycle**, 13 layers, 0 feedback links (19 zones, 17 drawn). The Build order tab is a
+  topological order and says so; `deps.test.tsx` fails if a cycle comes back.
+- **Cost model (monthly) workbook: the pilot is included in the totals** (decision D4, DEV-COSTMODEL-PILOT rewritten). Each product has a dated line
+  "Pilot (included in totals)": the Program & Completeness pilot sizing spread evenly over its weeks from the product's month 1 (`tune/program.ts`
+  `pilotMonths`). Product, wave and portfolio totals include it; the app headline does not count the pilot (unchanged), so the check row is "Engine total +
+  pilot" and the Difference rows stay 0; the sheet note and the Parameters row say so.
+
+### Fixed
+- **File > Open… (and Save / open > Open snapshot file) did not re-fit the automation potential** to the scope, unlike the snapshot panel and the legacy
+  restore. Every open path now goes through `openParsed`. This was 1 of the 3 differences of the parallel run on the 107 case files (`lifecycle-pos-0`: 74 %
+  after the re-fit, as the legacy); the other 2 (`curve-bass`, `curve-legacy`) are a legacy restore defect (its `scurve` setter drops the bass and legacy
+  families) and are recorded in **DEV-SNAPSHOT-RESTORE** with the field-by-field evidence. Parallel run: 105 of 107 case files identical (was 104), 40 / 40
+  parameter workbooks identical. Pinned by `tests/store/snapshot-restore-parity.test.ts`.
+
+### Tests and validation
+- Test selection re-validated after the generator change (`npm run validate:affected`, 19 mutations, 13 run, 6 trivially full: recall 100% at the precise and zone levels, 20 / 20 failing files, average saving 44% / 24%). See docs/TEST_SELECTION.md §5.
+
 ## [v20.13.0] 2026-10-24 — Architecture lots 0, 2, 3: CI green and stable, single version source and doc facts, state model hardening
 
 ### Fixed

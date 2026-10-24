@@ -27,7 +27,9 @@ export default function TeamOutSection() {
   return (
     <SectionFrame title="Target team (TO-BE Y3) — computed breakdown" help={help}
       result={<>
-        <p className="ac-muted">The target team is computed from the input team, the automation potential and the irreducible human supervision of artifacts. It breaks down into 4 poles: DEV TEAM (residual production) · SUPERVISION (review/validation of AI outputs) · AGENTIC SETUP (setup) · AGENTIC RUN(AI Engineer, FinOps, AI-QA).</p>
+        <p className="ac-muted">The target team is computed from the input team, the automation potential and the irreducible human supervision of
+          artifacts. It breaks down into 4 poles: DEV TEAM (residual production) · SUPERVISION (review/validation of AI outputs) · AGENTIC SETUP
+          (setup) · AGENTIC RUN(AI Engineer, FinOps, AI-QA).</p>
         <Band items={[['Input (FTE)', fmt1(base)], ['Target Dev', fmt1(t.devETP)], ['Supervision', fmt1(t.supETP)], ['Agentic run (en plus)', fmt1(t.runETP)],
           ['Total recurring target', fmt1(t.totalRecurrent)], ['Net reduction', `-${Math.round((1 - t.totalRecurrent / base) * 100)}%`]]} />
         <Panel title="🌍 Distribution by location — input vs target">

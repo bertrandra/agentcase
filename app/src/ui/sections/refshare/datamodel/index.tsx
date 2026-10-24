@@ -25,7 +25,9 @@ export default function DataModelSection() {
     <SectionFrame title={content.title} help={<Rich nodes={content.help} />}
       input={<>
         <p><Badge tone="blue">{content.version}</Badge></p>
-        <Callout>In this build the tables read the <code>zone registry</code> (sections), the keys of the document in the store (state), the variable listing in <code>content/refshare/variables.json</code> and the model defaults (<code>COEF</code>, <code>MODEL</code>). The help text below describes the legacy registries they replace.</Callout>
+        <Callout>In this build the tables read the <code>zone registry</code> (sections), the keys of the document in the store (state), the variable
+          listing in <code>content/refshare/variables.json</code> and the model defaults (<code>COEF</code>, <code>MODEL</code>). The help text below
+          describes the legacy registries they replace.</Callout>
       </>}
       result={<>
         <p><b>{counts.sections}</b> sections · <b>{counts.state}</b> persisted state keys · <b>{counts.variables}</b> bindable variables · <b>{counts.coefs}</b> coefficients · <b>{counts.namespaces}</b> model namespaces</p>

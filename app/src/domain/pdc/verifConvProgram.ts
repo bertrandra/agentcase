@@ -1,4 +1,4 @@
-/** @calc-zone verification-verdict */
+/** @calc-zone verification */
 import type { Ctx } from '../ctx';
 import { engagementKey } from '../engagement';
 import { sddMaturity } from '../model/vtax';

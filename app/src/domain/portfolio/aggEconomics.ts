@@ -4,7 +4,8 @@ import type { Consolidated } from './consolidate';
 import type { ChartView } from './consolidationView';
 import { selectionOf, total, yearEnds, lastOf } from './aggEconomicsSel';
 import type { DisplayScope, PortfolioHeadline } from './portfolioHeadline';
-import { byYear, cumulative, type Series } from './series';
+import { cumulativeOf as cumulative } from '../economics/cashflow';
+import { byYear, type Series } from './series';
 import { selectionView } from './selectionView';
 import type { Portfolio } from './types';
 

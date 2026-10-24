@@ -19,7 +19,9 @@ export function SddPanel() {
         <Stat label="Harness readiness" value={`${s.harness}/100`} tone="blue" />
       </StatRow>
       <p>{s.text}</p>
-      <Note>Reference 2.1: Spec-Driven Development makes the spec the primary executable artifact. Higher SDD maturity cuts the verification tax (up to −50% at 100) and mitigates the AI code-quality premium (EV-23). Harness readiness (AGENTS.md, GUARDRAILS.md, skills, hooks, MCP) is the tooling foundation. CC-SDD-01.</Note>
+      <Note>Reference 2.1: Spec-Driven Development makes the spec the primary executable artifact. Higher SDD maturity cuts the verification tax (up
+        to −50% at 100) and mitigates the AI code-quality premium (EV-23). Harness readiness (AGENTS.md, GUARDRAILS.md, skills, hooks, MCP) is the
+        tooling foundation. CC-SDD-01.</Note>
     </Panel>
   );
 }

@@ -62,7 +62,9 @@ describe('record ids and the timeline', () => {
     expect(ax.ticks).toHaveLength(7);
   });
   it('a single day is widened by a day on each side', () => {
-    const ev = timelineEvents({ ...(demo as unknown as FactoryData), ENVIRONMENTS: DEFAULT_ENVIRONMENTS, COMMITS: [{ id: 'c', taskId: null, message: 'x', author: '', committedAt: '2026-05-01' }], BUILDS: [], RELEASE_CANDIDATES: [], APPROVALS: [], DEPLOYMENTS: [], MONITORING_EVENTS: [], FEEDBACK_ITEMS: [] });
+    const commit = { id: 'c', taskId: null, message: 'x', author: '', committedAt: '2026-05-01' };
+    const ev = timelineEvents({ ...(demo as unknown as FactoryData), ENVIRONMENTS: DEFAULT_ENVIRONMENTS, COMMITS: [commit], BUILDS: [], RELEASE_CANDIDATES: [],
+      APPROVALS: [], DEPLOYMENTS: [], MONITORING_EVENTS: [], FEEDBACK_ITEMS: [] });
     const ax = timelineAxis(ev);
     expect(ax.max - ax.min).toBe(2 * 86400000);
     expect(ax.pct(ev[0]!.t)).toBe(50);

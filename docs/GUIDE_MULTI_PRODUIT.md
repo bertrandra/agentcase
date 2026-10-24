@@ -35,7 +35,7 @@ interface labels. Full specification in English: [SPEC_MULTI_PRODUIT.md](SPEC_MU
 - **8. Export** — parameters workbook with the portfolio sheets (one undoable import), results workbook (Portfolio, waves, Knowledge transfer,
   Portfolio stress, per product), scoped critical-delivery report, HTML save and snapshots. **Cost model workbook** (monthly): three tabs
   **Values** (human days), **Rate cards** (applied rates, blending adjustment), **Other costs** (other cost lines, total vs the engine with a
-  *Difference* row of 0; the pilot is a memo outside the totals, DEV-COSTMODEL-PILOT).
+  *Difference* row of 0; the pilot is a dated line included in the totals, the check row adds it to the engine total, DEV-COSTMODEL-PILOT).
 - **9. Known limits** — no portfolio scenarios table, no dependencies between waves, no shared teams, no knowledge reuse between products, common
   rates and coefficients, no *Apply to all products* for the knowledge-subset fields (DEVIATIONS.md DEV-PF-GAPS).
 

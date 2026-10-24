@@ -1,4 +1,4 @@
-import type { ReactNode } from 'react';
+import type { CSSProperties, ReactNode } from 'react';
 import type { GanttProductRow, GanttWaveRow } from '@/domain/portfolio';
 import { Row } from './bars';
 import { tok, themedList } from '@/domain/theme';
@@ -17,13 +17,18 @@ function Bar({ left, width, color, label, cls, children }: { left: number; width
   );
 }
 
+/** A milestone dot on a product bar (its place and family colour are set per milestone). */
+const MILESTONE: CSSProperties = {
+  position: 'absolute', top: 3, width: 9, height: 9, marginLeft: -4, borderRadius: 'var(--ac-radius-round)', border: '2px solid var(--ac-neutral-0)',
+  boxShadow: 'var(--ac-shadow-ring-offset) var(--ac-slate-650)',
+};
 function ProductBar({ p, color }: { p: GanttProductRow; color: string }) {
   const marks = p.milestones.map((m) => `${m.label} ${m.date}`).join(', ');
   return (
     <Bar left={p.left} width={p.width} color={color} cls="ac-gantt-prod" label={`${p.name}, ${p.meta}. Milestones: ${marks || 'none within the horizon'}`}>
       {p.milestones.map((m) => (
         <span key={`${m.month}:${m.label}`} aria-hidden="true" title={m.title} data-milestone={m.family}
-          style={{ position: 'absolute', top: 3, left: pct(m.left), width: 9, height: 9, marginLeft: -4, borderRadius: 'var(--ac-radius-round)', background: FAMILY[m.family] ?? 'var(--ac-slate-650)', border: '2px solid var(--ac-neutral-0)', boxShadow: 'var(--ac-shadow-ring-offset) var(--ac-slate-650)' }} />
+          style={{ ...MILESTONE, left: pct(m.left), background: FAMILY[m.family] ?? 'var(--ac-slate-650)' }} />
       ))}
     </Bar>
   );

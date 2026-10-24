@@ -13,7 +13,9 @@ function Chips({ ids, onSelect }: { ids: string[]; onSelect: (id: string) => voi
 /** The side panel of the graph: what the selected node feeds, what feeds it, and the sections and tests impacted if it changes. */
 export function Panel({ sel, onSelect }: { sel: string | null; onSelect: (id: string | null) => void }) {
   const hit = useMemo(() => (sel ? select(sel) : null), [sel]);
-  if (!sel || !hit) return <div role="group" aria-label="Selected node" className="ac-chip" style={{ display: 'block', padding: 10, margin: '8px 0' }}><p className="ac-muted" style={{ margin: 0 }}>Select a node (click, or Enter on the keyboard) to highlight what feeds it and what it feeds, and to list the sections and the tests that a change to it would impact.</p></div>;
+  if (!sel || !hit) return <div role="group" aria-label="Selected node" className="ac-chip" style={{ display: 'block', padding: 10, margin: '8px 0' }}><p className="ac-muted" style={{ margin: 0 }}>Select
+    a node (click, or Enter on the keyboard) to highlight what feeds it and what it feeds, and to list the sections and the tests that a change to it
+    would impact.</p></div>;
   const zone = zoneOf(sel), sec = sectionOf(sel), others = (set: Set<string>) => [...set].filter((i) => i !== sel).sort();
   const up = others(hit.upstream), down = others(hit.downstream), p = planFor(sel), n = p.tests.length, total = DATA.counts.tests;
   return (
@@ -24,7 +26,10 @@ export function Panel({ sel, onSelect }: { sel: string | null; onSelect: (id: st
       <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(260px, 1fr))', gap: 12 }}>
       <p><strong>Feeds</strong> ({down.length}): <Chips ids={down.filter(isZone)} onSelect={onSelect} /><br /><Chips ids={down.filter((i) => !isZone(i))} onSelect={onSelect} /></p>
       <p><strong>Fed by</strong> ({up.length}): <Chips ids={up.filter(isZone)} onSelect={onSelect} /><br /><Chips ids={up.filter((i) => !isZone(i))} onSelect={onSelect} /></p>
-      <p><strong>Impacted if it changes:</strong> {hit.impacted.zones.filter((z) => z !== sel).length} zones · {hit.impacted.sections.filter((s) => s !== sel).length} sections · <strong>{p.full ? `Full suite: ${total} of ${total} test files` : `${n} of ${total} test files`}</strong> would run (saved {p.full ? 0 : Math.round(((total - n) / total) * 100)}%)</p>
+      <p><strong>Impacted if it changes:</strong> {hit.impacted.zones.filter((z) => z !== sel).length} zones
+        · {hit.impacted.sections.filter((s) => s !== sel).length} sections
+        · <strong>{p.full ? `Full suite: ${total} of ${total} test files` : `${n} of ${total} test files`}</strong> would run
+        (saved {p.full ? 0 : Math.round(((total - n) / total) * 100)}%)</p>
       </div>
       <details><summary>Test files ({n})</summary><ul style={{ fontSize: 'var(--ac-font-size-sm)', paddingLeft: 16 }}>{p.tests.map((t) => <li key={t}>{t}</li>)}</ul></details>
       <button type="button" className="ac-btn" onClick={() => onSelect(null)}>Clear selection</button>

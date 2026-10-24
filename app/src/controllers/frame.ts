@@ -1,5 +1,6 @@
 /** @calc-zone scope-automation */
 import { REG_ARTEFACTS } from '@/domain';
+import { DEFAULT_DISCOUNT_RATE } from '@/domain/economics/cashflow';
 import { CROSS_CATEGORIES, CROSS_CODES, crossOn, normArtefacts, normKey, normsOf, type TrackActual } from '@/domain/frame';
 import { refitPotential } from '@/store/derive';
 import { defineCommand } from '@/store/commands';
@@ -18,7 +19,7 @@ const setContextCmd = defineCommand<{ ctx: string }>({
 const setDiscountCmd = defineCommand<{ value: string }>({
   type: 'frame.setCaseDiscountRate', label: (p) => `Set the case discount rate to ${p.value}`, coalesceKey: () => 'frame.setCaseDiscountRate',
   run(d, p) {
-    let x = parseFloat(p.value); if (isNaN(x)) x = 0.08;
+    let x = parseFloat(p.value); if (isNaN(x)) x = DEFAULT_DISCOUNT_RATE;
     d.MODEL.CASE = { ...(d.MODEL.CASE ?? {}), discountRate: Math.min(1, Math.max(0, x)) };
     d.dom.values.caseDiscountRate = p.value;
   },

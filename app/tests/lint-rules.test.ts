@@ -11,6 +11,22 @@ describe('architecture lint rules (G2, G4, edit base)', () => {
     expect(await lint("import { appStore } from '@/store/instance';\nexport const x = appStore;\n", 'src/ui/Bad.tsx')).toContain('no-restricted-imports');
     expect(await lint("import { createAppStore } from '@/store/core';\nexport const x = createAppStore;\n", 'src/ui/Bad.tsx')).toContain('no-restricted-imports');
   });
+  it('UI code cannot reach the store write path through a relative path either', async () => {
+    const bad = [['../store/core', 'src/ui/Bad.tsx'], ['../../store/core', 'src/ui/shell/Bad.tsx'], ['../../store/commands', 'src/ui/shell/Bad.tsx'],
+      ['../../../store/instance', 'src/ui/sections/x/Bad.tsx'], ['../store/derive', 'src/ui/Bad.tsx'], ['../store/history', 'src/ui/Bad.tsx'],
+      ['../../store/persistence/html/export', 'src/ui/shell/Bad.tsx'], ['../store/persistence', 'src/ui/Bad.tsx'], ['../../store/address/dom', 'src/ui/shell/Bad.tsx'],
+      ['@/store/address', 'src/ui/Bad.tsx'], ['@/store/persistence/excel/params/writer', 'src/ui/Bad.tsx']];
+    for (const [from, file] of bad) expect(await lint(`import { x } from '${from}';\nexport const y = x;\n`, file!), from).toContain('no-restricted-imports');
+    // a UI-local module that happens to be called `store` stays allowed, and so do the read hooks by a relative path
+    for (const from of ['../display/store', '../../store/hooks', '../store/viewScope']) {
+      expect(await lint(`import { x } from '${from}';\nexport const y = x;\n`, 'src/ui/shell/Ok.tsx'), from).not.toContain('no-restricted-imports');
+    }
+  });
+  it('controllers cannot import the React hooks or deriveDoc through a relative path', async () => {
+    expect(await lint("import { useDoc } from '../store/hooks';\nexport const x = useDoc;\n", 'src/controllers/Bad.ts')).toContain('no-restricted-imports');
+    expect(await lint("import { deriveDoc } from '../../store/portfolioState';\nexport const x = deriveDoc;\n", 'src/controllers/x/Bad.ts')).toContain('no-restricted-imports');
+    expect(await lint("import { emptyPortfolio } from '../store/portfolioState';\nexport const x = emptyPortfolio;\n", 'src/controllers/Ok.ts')).not.toContain('no-restricted-imports');
+  });
   it('UI code may read through hooks and act through controllers', async () => {
     expect(await lint("import { useDoc } from '@/store/hooks';\nimport { setInput } from '@/controllers/inputs';\nexport const x = [useDoc, setInput];\n", 'src/ui/Ok.tsx')).not.toContain('no-restricted-imports');
   });
@@ -19,7 +35,9 @@ describe('architecture lint rules (G2, G4, edit base)', () => {
   });
   it('A8: no .reduce( in the portfolio sections, the portfolio KPI hooks and tiles, the wave Gantt; other code and non-summing helpers are fine', async () => {
     const sum = "export const total = (xs: { net: number }[]) => xs.reduce((a, x) => a + x.net, 0);\n";
-    for (const f of ['src/ui/sections/portfolio/consolidation/Bad.ts', 'src/ui/sections/portfolio/waves/Bad.ts', 'src/ui/sections/portfolio/stress/Bad.ts', 'src/store/portfolioSimulation.ts', 'src/ui/sections/verdict/decision/PortfolioBad.tsx', 'src/store/consolidationHooks.ts', 'src/ui/shell/ScopeKpis.tsx', 'src/ui/sections/verify/gantt/WaveRow.tsx']) {
+    for (const f of ['src/ui/sections/portfolio/consolidation/Bad.ts', 'src/ui/sections/portfolio/waves/Bad.ts', 'src/ui/sections/portfolio/stress/Bad.ts',
+      'src/store/portfolioSimulation.ts', 'src/ui/sections/verdict/decision/PortfolioBad.tsx', 'src/store/consolidationHooks.ts', 'src/ui/shell/ScopeKpis.tsx',
+      'src/ui/sections/verify/gantt/WaveRow.tsx']) {
       expect(await lint(sum, f), f).toContain('no-restricted-syntax');
     }
     expect(await lint("export const t = (xs: number[]) => xs.reduceRight((a, x) => a + x, 0);\n", 'src/ui/sections/portfolio/waves/Bad.ts')).toContain('no-restricted-syntax');
@@ -45,6 +63,16 @@ describe('architecture lint rules (G2, G4, edit base)', () => {
     const ok = "import { activeDoc, editBase } from '@/store/editBase';\nimport { appStore } from '@/store/instance';\nexport const x = () => [editBase(), activeDoc(), appStore().getState().portfolio];\n";
     expect(await lint(ok, 'src/controllers/Ok.ts')).toEqual([]);
     expect(await lint(`${head}export const x = () => appStore().getState().doc;\n`, 'src/store/Ok.ts')).not.toContain('no-restricted-syntax');
+  });
+  it('D1: a line over 300 characters is an error whatever it holds; over 160 is a warning, long literals and URLs excepted', async () => {
+    const ids = (n: number) => `export const x = [${Array.from({ length: n }, (_, i) => `a${i}`).join(', ')}];\n`;   // code, no literal
+    expect(ids(60).length).toBeGreaterThan(300);
+    expect(await lint(ids(60), 'src/domain/Long.ts')).toContain('local/hard-max-len');
+    expect(await lint(ids(40), 'src/domain/Long.ts')).toEqual(expect.arrayContaining(['max-len']));
+    expect(await lint(ids(40), 'src/domain/Long.ts')).not.toContain('local/hard-max-len');
+    expect(await lint(`export const s = '${'word '.repeat(50)}';\n`, 'src/domain/Str.ts')).not.toContain('max-len');   // a long string: only the hard limit applies
+    expect(await lint(`export const s = '${'word '.repeat(70)}';\n`, 'src/domain/Str.ts')).toContain('local/hard-max-len');
+    expect(await lint(`// ${'x'.repeat(320)}\nexport const a = 1;\n`, 'src/domain/Comment.ts')).toContain('local/hard-max-len');   // comments count
   });
   it('a 151-line file is rejected, raw HTML injection is rejected', async () => {
     expect(await lint(Array.from({ length: 151 }, (_, i) => `export const a${i} = ${i};`).join('\n') + '\n', 'src/domain/Big.ts')).toContain('max-lines');

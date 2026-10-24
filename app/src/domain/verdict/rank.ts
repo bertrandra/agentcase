@@ -1,4 +1,4 @@
-/** @calc-zone verification-verdict */
+/** @calc-zone verdict */
 import { LOCATIONS } from '../catalog';
 import type { Ctx } from '../ctx';
 import { locationMix } from '../location';

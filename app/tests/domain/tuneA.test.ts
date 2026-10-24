@@ -1,6 +1,7 @@
 import { describe, expect, it } from 'vitest';
 import { makeCtx } from '@/domain';
-import { convChangeCost, hriCostPerFTE, hriEnabled, hriIndex, hriIntensity, hriRampFactor } from '@/domain/engagement';
+import { hriCostPerFTE, hriEnabled, hriIndex, hriIntensity, hriRampFactor } from '@/domain/engagement';
+import { convChangeCost } from '@/domain/model/drivers';
 import {
   PRODUCT_PROFILES, PROFILE_PHASES, endYear, READINESS_DIMS, abaqueRows, currentProfileId, dimScore, eligVerdict, maturityInfo, maturityMapOf, opModelCompute,
   profileCoef, rampRanges, readinessBand, readinessIndex, vtaxEffBase, vtaxModeOf,

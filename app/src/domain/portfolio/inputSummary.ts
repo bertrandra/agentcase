@@ -1,4 +1,4 @@
-/** @calc-zone knowledge-hub */
+/** @calc-zone portfolio-consolidation */
 import { khEnabled } from '../knowledge';
 import { teamEtp } from './alloc';
 import { overrideRefs } from './keys';

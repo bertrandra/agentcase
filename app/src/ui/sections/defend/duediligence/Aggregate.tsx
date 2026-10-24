@@ -18,6 +18,8 @@ export default function DueDiligenceAggregate() {
   return (
     <RollupFrame title="🧾 Due diligence" caption="Due diligence by product" rows={rows} columns={COLS} Section={DueDiligenceDetail}
       totals={{ items: t.items, done: t.confirmed, open: t.open, pct: `${t.pct}%`, pc5: t.invisible, ceil: '' }}
-      notes={<Callout kind="blue">The due-diligence pack (export) covers the <strong>edited product only</strong>: choose “Edit this product” to export another one. Confirmations and annotations are common to all products; the coverage is read on each product’s own values. The € weighting needs the sensitivity measurement of the edited product.</Callout>} />
+      notes={<Callout kind="blue">The due-diligence pack (export) covers the <strong>edited product only</strong>: choose “Edit this product” to
+        export another one. Confirmations and annotations are common to all products; the coverage is read on each product’s own values. The €
+        weighting needs the sensitivity measurement of the edited product.</Callout>} />
   );
 }

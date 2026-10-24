@@ -12,6 +12,23 @@ const layers = [
   { type: 'entry', pattern: 'src/main.tsx', mode: 'file' },
 ];
 const allow = (from, to) => ({ from, allow: to });
+
+// D1 (readability) — a source line is at most 300 characters, whatever it holds (an error); over 160 is a warning (`max-len` below). A local rule because
+// ESLint's `max-len` takes one limit per configuration. Characters are counted as code points (an emoji is one).
+const HARD_MAX_LEN = 300;
+const local = { rules: { 'hard-max-len': {
+  meta: { type: 'layout', schema: [], messages: { long: 'This line has {{n}} characters; the hard limit is ' + HARD_MAX_LEN + ' (decision D1): extract a constant, a helper or a component.' } },
+  create(context) {
+    return { Program() {
+      context.sourceCode.lines.forEach((line, i) => {
+        const n = [...line].length;
+        if (n > HARD_MAX_LEN) context.report({ loc: { start: { line: i + 1, column: 0 }, end: { line: i + 1, column: line.length } }, messageId: 'long', data: { n } });
+      });
+    } };
+  },
+} } };
+// Store modules the UI may not import (write path, internals); each is restricted by alias and by any relative path.
+const UI_FORBIDDEN_STORE = ['core', 'commands', 'instance', 'derive', 'history', 'syncDraft', 'persistence', 'persistence/**', 'address', 'address/**'];
 const EDIT_BASE = 'Controllers never read getState().doc (the active product\'s case): compute in the command\'s run(draft), or use editBase() / activeDoc() from @/store/editBase.';
 
 export default tseslint.config(
@@ -20,7 +37,7 @@ export default tseslint.config(
   ...tseslint.configs.recommended,
   {
     files: ['src/**/*.{ts,tsx}', 'tests/**/*.{ts,tsx}'],
-    plugins: { 'react-hooks': reactHooks, boundaries },
+    plugins: { 'react-hooks': reactHooks, boundaries, local },
     settings: {
       'boundaries/elements': layers,
       'import/resolver': { typescript: { alwaysTryTypes: true } },
@@ -29,6 +46,9 @@ export default tseslint.config(
       ...reactHooks.configs.recommended.rules,
       // G2 — no code file over 150 lines (blank lines and comments count).
       'max-lines': ['error', { max: 150, skipBlankLines: false, skipComments: false }],
+      // D1 — lines over 160 characters are a warning (long string, template or regex literals and URLs excepted); over 300 is an error for every line.
+      'max-len': ['warn', { code: 160, ignoreUrls: true, ignoreStrings: true, ignoreTemplateLiterals: true, ignoreRegExpLiterals: true }],
+      'local/hard-max-len': 'error',
       '@typescript-eslint/no-explicit-any': 'error',
       '@typescript-eslint/consistent-type-imports': 'error',
       'no-restricted-syntax': [
@@ -74,18 +94,20 @@ export default tseslint.config(
         { selector: "MemberExpression[property.name='doc'][object.type='CallExpression'][object.callee.property.name='getState']", message: EDIT_BASE },
         { selector: "VariableDeclarator[init.callee.property.name='getState'] > ObjectPattern > Property[key.name='doc']", message: EDIT_BASE },
       ],
-      'no-restricted-imports': ['error', { paths: [
-        { name: '@/store/hooks', message: 'Controllers are not React: read the case with editBase() / activeDoc() from @/store/editBase.' },
-        { name: '@/store/portfolioState', importNames: ['deriveDoc'], message: EDIT_BASE },
+      // Each rule names the alias and its relative spellings (`../store/hooks`, `../../store/portfolioState`), so a relative path cannot bypass it.
+      'no-restricted-imports': ['error', { patterns: [
+        { group: ['@/store/hooks', '**/store/hooks'], message: 'Controllers are not React: read the case with editBase() / activeDoc() from @/store/editBase.' },
+        { group: ['@/store/portfolioState', '**/store/portfolioState'], importNames: ['deriveDoc'], message: EDIT_BASE },
       ] }],
     },
   },
   {
-    // G4 — the UI never writes state: it reads through `@/store/hooks` and acts through `@/controllers/*` only.
+    // G4 — the UI never writes state: it reads through `@/store/hooks` and acts through `@/controllers/*` only. The relative spellings
+    // (`../store/core`, `../../store/persistence/html/...`) are restricted too, so a relative path cannot bypass the layering.
     files: ['src/ui/**/*.{ts,tsx}'],
     rules: {
       'no-restricted-imports': ['error', { patterns: [
-        { group: ['@/store/core', '@/store/commands', '@/store/instance', '@/store/derive', '@/store/persistence/*'],
+        { group: UI_FORBIDDEN_STORE.flatMap((m) => [`@/store/${m}`, `**/store/${m}`]),
           message: 'UI code must not touch the store directly: read with @/store/hooks, write through @/controllers/*.' },
       ] }],
     },

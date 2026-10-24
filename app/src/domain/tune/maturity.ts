@@ -1,4 +1,4 @@
-/** @calc-zone adoption-curve */
+/** @calc-zone tuning-programme */
 import { MATURITY_DEFAULT } from '../catalog';
 import type { Ctx } from '../ctx';
 import { engagementCoef } from '../engagement';

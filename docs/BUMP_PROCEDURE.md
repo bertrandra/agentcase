@@ -70,7 +70,7 @@ npm run build        # tsc --noEmit + vite build -> app/dist/index.html
 registry test (every command has a label, a sample and round-trips through undo/redo), the property-based undo test, the lint-rule and
 file-size tests. It is the same sequence CI runs. The browser gates are not part of `npm run check`, so
 after `npm run build`, run the browser gates on the built file from `app/` (Chromium needed): `npm run e2e` (smoke of every section on 6 case fixtures and 2 portfolio
-files, then the performance budget), `node ../tools/ui-parity.mjs`, `npm run a11y`, `node ../tools/parallel-run.mjs`. Then finish with a short manual pass on the built file, opened from disk in Chrome or Edge:
+files, failing on any Content-Security-Policy violation; the file and canvas flows under the policy, `tools/e2e-flows.mjs`; then the performance budget), `node ../tools/ui-parity.mjs`, `npm run a11y`, `node ../tools/parallel-run.mjs`. Then finish with a short manual pass on the built file, opened from disk in Chrome or Edge:
 
 - console clean; the KPI bar shows the golden figures (Y3 savings €891,555, NPV €1,359,010, payback 9 months) on the default case;
 - Ctrl+Z / Ctrl+Y after an edit; Logic verification shows no failing check;
@@ -101,9 +101,10 @@ git push -u origin release/vX.Y.Z   # then open a pull request
 
 ## 6. Continuous integration and the artefact
 
-`.github/workflows/app.yml` (job `check`, working directory `app`, Node 22) runs `npm ci`, `npm run deps:check`, `npm run dup`, `npm run check` and `npm run build` on pull
-requests and on pushes to `main` that touch `app/**` or the workflow; job `e2e` then builds and runs the Chromium smoke, the performance budgets and the
-parallel run. A newer push to the same branch or pull request cancels the run in progress. When `check` fails, the JUnit report of the suite is attached
+`.github/workflows/app.yml` (job `check`, working directory `app`, Node 22) runs `npm ci`, `npm audit --omit=dev --audit-level=moderate` (no known advisory in
+the shipped dependencies), `npm run deps:check`, `npm run dup`, `npm run check` and `npm run build` on pull requests and on pushes to `main` that touch `app/**` or
+the workflow; job `e2e` then builds and runs the Chromium smoke (no CSP violation), the file / canvas flows under the CSP (`tools/e2e-flows.mjs`), the
+performance budgets and the parallel run. A newer push to the same branch or pull request cancels the run in progress. When `check` fails, the JUnit report of the suite is attached
 to the run (artifact `vitest-report`). It does not upload the build and does not tag.
 
 **Before merge: CI green on the pull request.** A pull request is merged only when both jobs of its last run are green — not "green locally", not

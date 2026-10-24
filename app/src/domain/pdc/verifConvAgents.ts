@@ -1,4 +1,4 @@
-/** @calc-zone verification-verdict */
+/** @calc-zone verification */
 import type { Ctx } from '../ctx';
 import { activeArtefacts } from '../scope';
 import { AGENT_CATALOG, type LoopPairFull } from '../verifyA/agents';

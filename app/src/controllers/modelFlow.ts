@@ -1,4 +1,5 @@
 /** @calc-zone time-engine */
+import { DEFAULT_DISCOUNT_RATE } from '@/domain/economics/cashflow';
 import { ensureNs } from '@/domain/model/modelState';
 import { defineCommand } from '@/store/commands';
 import { appStore } from '@/store/instance';
@@ -15,7 +16,7 @@ const cmd = (type: string, name: string, key: Key, dflt: number, lo: number, hi:
   },
 });
 const marginCmd = cmd('model.flow.setMargin', 'margin per month', 'marginPerMonth', 0, 0, Infinity, true);
-const discountCmd = cmd('model.flow.setDiscount', 'time-to-market discount rate', 'discountRate', 0.08, 0, 1);
+const discountCmd = cmd('model.flow.setDiscount', 'time-to-market discount rate', 'discountRate', DEFAULT_DISCOUNT_RATE, 0, 1);
 const shareCmd = cmd('model.flow.setShare', 'throughput-in share', 'throughputInShare', 0, 0, 100);
 const ctCmd = cmd('model.flow.setCycleTime', 'measured lead time', 'cycleTime', 0, 0, Infinity);
 const wipCmd = cmd('model.flow.setWip', 'measured WIP', 'wip', 0, 0, Infinity);

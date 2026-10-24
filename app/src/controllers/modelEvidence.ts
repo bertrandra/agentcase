@@ -1,4 +1,4 @@
-/** @calc-zone verification-verdict */
+/** @calc-zone verdict */
 import { EVIDENCE_TIERS, EVL_STAGES } from '@/domain/model/evidence';
 import { ensureNs, type EvidenceEntry, type EvidenceTier } from '@/domain/model/modelState';
 import { defineCommand } from '@/store/commands';

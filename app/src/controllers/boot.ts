@@ -33,13 +33,21 @@ export function loadEmbeddedCase(d: Pick<Document, 'getElementById'>): { savedAt
   } catch (e) { console.error('The case embedded in this file could not be opened:', e); return null; }
 }
 
+let flushNow: (() => Promise<void>) | null = null;
+/** Write the autosave now instead of after its delay (the app-level error fallback calls it); a no-op without storage. */
+export async function flushAutosave(): Promise<void> {
+  try { await flushNow?.(); } catch (e) { console.error('AgentCase: the autosave could not be written:', e); }
+}
+
 /** Wire autosave and multi-tab sync; offer the newest session of another tab for restore. Returns a cleanup. */
 export async function bootApp(env: BootEnv): Promise<() => void> {
   const stops: (() => void)[] = [];
   if (env.storage) {
     const others = (await env.storage.list()).filter((r) => r.tabId !== env.tabId && r.savedAt > (env.embeddedSavedAt ?? '')).sort((a, b) => b.savedAt.localeCompare(a.savedAt));
     setPending(others[0] ?? null);
-    stops.push(startAutosave(appStore(), env.storage, env.tabId).stop);
+    const autosave = startAutosave(appStore(), env.storage, env.tabId);
+    flushNow = autosave.flush;
+    stops.push(() => { autosave.stop(); flushNow = null; });
   }
   if (env.channel) stops.push(connectBroadcast(appStore(), env.channel, env.tabId));
   return () => stops.forEach((s) => s());

@@ -1,4 +1,4 @@
-/** @calc-zone verification-verdict */
+/** @calc-zone verdict */
 import { engineNow } from '../canonical';
 import { headline } from '../economics/headline';
 import { LOCATIONS } from '../catalog';

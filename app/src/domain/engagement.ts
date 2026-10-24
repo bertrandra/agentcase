@@ -1,7 +1,6 @@
 /** @calc-zone scope-automation */
 import { ENGAGE_COEF } from './catalog';
 import type { Ctx } from './ctx';
-import { teamInCost } from './location';
 import type { EngageCoefRow } from './types/state';
 
 export function engagementKey(c: Ctx): string {
@@ -33,7 +32,6 @@ export function hriCostPerFTE(c: Ctx): number {
   return isNaN(v) ? (it === 'light' ? 1200 : it === 'standard' ? 3000 : 5500) : v;
 }
 
-export const convChangeCost = (c: Ctx): number => (hriEnabled(c) ? teamInCost(c.s, c.inp).etp * hriCostPerFTE(c) : 0);
 
 /** Adoption drag from low readiness (1 when the HRI module is off). */
 export function hriRampFactor(c: Ctx): number {

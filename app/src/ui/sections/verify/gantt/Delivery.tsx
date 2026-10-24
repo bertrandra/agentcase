@@ -10,7 +10,10 @@ function PhaseLabel({ p, open, onToggle }: { p: PhaseRow; open: boolean; onToggl
   const colour = p.cross ? tok('chart-cat-3') : tok('chart-cat-1');
   return (
     <>
-      {p.arts.length ? <button type="button" onClick={onToggle} aria-expanded={open} aria-label={`${open ? 'Collapse' : 'Expand'} ${p.name}`} style={{ border: 0, background: 'none', cursor: 'pointer', padding: 0, width: 14, color: colour }}>{open ? '▼' : '▶'}</button> : <span style={{ display: 'inline-block', width: 14, color: 'var(--ac-neutral-250)' }}>·</span>}
+      {p.arts.length
+        ? <button type="button" onClick={onToggle} aria-expanded={open} aria-label={`${open ? 'Collapse' : 'Expand'} ${p.name}`}
+          style={{ border: 0, background: 'none', cursor: 'pointer', padding: 0, width: 14, color: colour }}>{open ? '▼' : '▶'}</button>
+        : <span style={{ display: 'inline-block', width: 14, color: 'var(--ac-neutral-250)' }}>·</span>}
       <strong style={{ fontWeight: 'var(--ac-font-weight-semibold)', color: p.cross ? colour : undefined }}>{p.name}</strong> <span style={{ color: 'var(--ac-neutral-700)', fontSize: 'var(--ac-font-size-xs)' }}>({p.count})</span>
       {p.last && <span style={{ color: 'var(--ac-primary-700)', fontSize: 'var(--ac-font-size-xs)' }}> 🏁</span>}
     </>

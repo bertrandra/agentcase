@@ -1,7 +1,9 @@
 {
  "provenance": "Generated at build time from the imports of the code (npm run deps:gen): do not edit by hand. A stale file fails tests/domain/deps-fresh.test.ts. Sections come from the section registries, zones from the @calc-zone tags, and an edge exists only where a module really imports another.",
  "authored": "The hand-written dependency registry of earlier versions (SECTION_DEPS and its descriptions) is still stored in the case and in the parameters workbook, unchanged, so old files and workbooks keep working. It is no longer displayed or edited here (deviation DEV-DEPS-ZONES): this page now shows what the code actually does.",
- "buildOrderNote": "Read-only. Layers are computed from the zone imports: layer 0 feeds the others. Menu order is not affected; the build order is a reading order for the code.",
+ "buildOrderNote": "Read-only. Layers are computed from the zone imports of the domain modules: layer 0 feeds the others. Menu order is not affected; the build order is a reading order for the code.",
+ "acyclicNote": "The domain zone graph has no cycle: every zone comes after the zones it imports. Only the imports of src/domain count; re-exports and pure barrels are not uses.",
+ "outerNote": "zone links made by the controllers and the store exports are reported apart: they wire the screens to the zones and are not part of the build order.",
  "cycleNote": "These zones import each other, typically a read-out module that reads the engine inside a zone the engine also reads. The cycle is reported, not hidden: the layers above are laid out by setting the weakest backward links aside.",
  "rule": "The rule that avoids useless tests: after a change, run the tests whose import closure touches the changed zones, the zones they feed and the sections they impact, always with the contract tests. Anything outside the mapped graph, or a very wide selection, runs the full suite. The full suite stays mandatory before a merge or a release.",
  "ruleSteps": [

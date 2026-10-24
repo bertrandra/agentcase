@@ -1,4 +1,5 @@
 import { setCaseDiscountRate, setEngagementCtx } from '@/controllers/frame';
+import { DEFAULT_DISCOUNT_RATE } from '@/domain/economics/cashflow';
 import { engagementCoef } from '@/domain/frame';
 import { useCtx, useDoc } from '@/store/hooks';
 import { CommitNumber } from '@/ui/widgets/CommitNumber';
@@ -45,7 +46,7 @@ export function ContextCard() {
 }
 
 export function DiscountCard() {
-  const value = useDoc((d) => d.dom.values.caseDiscountRate ?? String(d.MODEL?.CASE?.discountRate ?? 0.08));
+  const value = useDoc((d) => d.dom.values.caseDiscountRate ?? String(d.MODEL?.CASE?.discountRate ?? DEFAULT_DISCOUNT_RATE));
   return (
     <details>
       <summary>Case discount rate (/yr) <span className="ac-muted">— headline NPV, sponsor&apos;s WACC / hurdle rate</span></summary>

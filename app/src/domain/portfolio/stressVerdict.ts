@@ -1,4 +1,4 @@
-/** @calc-zone stress */
+/** @calc-zone verdict */
 import { model } from '../model/overlay';
 import type { McSens, McStats } from '../stress';
 import { DI_THRESHOLDS, riskPremiumOf, verdictRule, type CtxLine, type Decision } from '../verdict';

@@ -1,5 +1,6 @@
 import { jumpToStep } from '@/controllers/history';
 import { useHistory } from '@/store/hooks';
+import { useCaughtErrors } from '../errors/errorLog';
 import { toggleDock, useUi } from '../uiState';
 
 /** History steps (click to jump) — the audit trail of what changed the case. */
@@ -15,12 +16,24 @@ function HistoryPanel() {
   );
 }
 
+/** Display errors caught by the error boundaries in this session (newest first; never saved with the case). Absent while there is none. */
+function ErrorsPanel() {
+  const errors = useCaughtErrors();
+  if (!errors.length) return null;
+  return (
+    <ol className="ac-dock-errors" aria-label="Display errors in this session">
+      {errors.map((e, i) => <li key={`${e.at}${i}`}>{e.scope === 'chart' ? 'Chart' : e.scope === 'app' ? 'App' : 'Section'} “{e.where}”: {e.message}</li>)}
+    </ol>
+  );
+}
+
 export function DockZone() {
-  const open = useUi((s) => s.dockOpen), h = useHistory();
+  const open = useUi((s) => s.dockOpen), h = useHistory(), errors = useCaughtErrors().length;
   return (
     <footer className="ac-dock" style={{ gridArea: 'dock' }}>
-      <button type="button" aria-expanded={open} onClick={toggleDock}>{open ? '▾' : '▸'} History ({h.undo.length})</button>
+      <button type="button" aria-expanded={open} onClick={toggleDock}>{open ? '▾' : '▸'} History ({h.undo.length}){errors ? ` · ${errors} display error${errors > 1 ? 's' : ''}` : ''}</button>
       {open && <HistoryPanel />}
+      {open && <ErrorsPanel />}
     </footer>
   );
 }

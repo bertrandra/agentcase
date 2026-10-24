@@ -1,5 +1,6 @@
 /** @calc-zone time-engine */
 import type { Ctx } from './ctx';
+import { DEFAULT_DISCOUNT_RATE } from './economics/cashflow';
 import { clamp, numOr } from './model/modelState';
 import { modelRaw } from './model/raw';
 import { activeCurve } from './model/overlay';
@@ -13,8 +14,8 @@ export function engineNow(c: Ctx): Engine {
   return e;
 }
 
-/** The case's annual discount rate (MODEL.CASE.discountRate clamped to [0, 1]; 8 % when unset or not finite). The single owner of that default. */
-export const caseDiscountRate = (c: Ctx): number => clamp(numOr(c.s.MODEL?.CASE?.discountRate, 0.08), 0, 1);
+/** The case's annual discount rate (MODEL.CASE.discountRate clamped to [0, 1]; `DEFAULT_DISCOUNT_RATE` when unset or not finite). */
+export const caseDiscountRate = (c: Ctx): number => clamp(numOr(c.s.MODEL?.CASE?.discountRate, DEFAULT_DISCOUNT_RATE), 0, 1);
 
 /** Canonical payback month (1-based) or null. */
 export const paybackMonthsCanonical = (c: Ctx): number | null => engineNow(c).payback();

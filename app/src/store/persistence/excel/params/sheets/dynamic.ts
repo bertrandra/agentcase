@@ -19,7 +19,10 @@ function writeSections({ wb, d }: WriteCtx): void {
   });
   head(ws); frz(ws);
 }
-const CARD_COLS: [string, number][] = [['Section ID', 18], ['Card ID', 22], ['Enabled', 9], ['Name', 20], ['Impact Var', 16], ['Impact Fmt', 11], ['Key1 Var', 16], ['Key1 Fmt', 11], ['Key2 Var', 16], ['Key2 Fmt', 11], ['Overlay', 16], ['Source Section', 16], ['Target Section', 16], ['Key1 Label', 20], ['Key2 Label', 20], ['Seq', 7]];
+const CARD_COLS: [string, number][] = [
+  ['Section ID', 18], ['Card ID', 22], ['Enabled', 9], ['Name', 20], ['Impact Var', 16], ['Impact Fmt', 11], ['Key1 Var', 16], ['Key1 Fmt', 11],
+  ['Key2 Var', 16], ['Key2 Fmt', 11], ['Overlay', 16], ['Source Section', 16], ['Target Section', 16], ['Key1 Label', 20], ['Key2 Label', 20], ['Seq', 7],
+];
 function writeCards({ wb, d, secs }: WriteCtx): void {
   const ws = sheet(wb, 'Dynamic Section Cards', CARD_COLS), vars = VARIABLES.map((v) => v.id), sids = secs.map((s) => s.id);
   d.dynamicSections.forEach((s) => (s.cards || []).forEach((c) => {
@@ -57,6 +60,12 @@ function readSections({ rows, w, notes, secs }: ReadCtx): void {
     d.description = cleanText(x[6], 500);
   });
 }
+/** A card the workbook names and the case does not have yet: disabled, its id as its name, nothing bound. */
+const newCard = (cid: string, sid: string): BoardCard => ({
+  CARD_ID: cid, CARD_SEQ: 0, CARD_ENABLED: false, CARD_SOURCE_SECTION: sid, CARD_TARGET_SECTION: sid, CARD_NAME_SRC: 'static', CARD_NAME_VALUE: cid,
+  CARD_IMPACT_VAR: null, CARD_IMPACT_FMT: null, CARD_KEY1_VAR: null, CARD_KEY1_FMT: null, CARD_KEY1_LABEL: null,
+  CARD_KEY2_VAR: null, CARD_KEY2_FMT: null, CARD_KEY2_LABEL: null, CARD_OVERLAY_CTRL: null,
+});
 function readCards({ rows, w, notes, hasSection }: ReadCtx): void {
   const r = rows('Dynamic Section Cards'); if (!r) return;
   const known = new Set(VARIABLES.map((v) => v.id));
@@ -67,7 +76,7 @@ function readCards({ rows, w, notes, hasSection }: ReadCtx): void {
     d.cards ??= [];
     let c = d.cards.find((e) => e.CARD_ID === cid);
     if (!c) {
-      c = { CARD_ID: cid, CARD_SEQ: 0, CARD_ENABLED: false, CARD_SOURCE_SECTION: sid, CARD_TARGET_SECTION: sid, CARD_NAME_SRC: 'static', CARD_NAME_VALUE: cid, CARD_IMPACT_VAR: null, CARD_IMPACT_FMT: null, CARD_KEY1_VAR: null, CARD_KEY1_FMT: null, CARD_KEY1_LABEL: null, CARD_KEY2_VAR: null, CARD_KEY2_FMT: null, CARD_KEY2_LABEL: null, CARD_OVERLAY_CTRL: null };
+      c = newCard(cid, sid);
       d.cards.push(c);
     }
     const card = c as BoardCard & Record<string, unknown>;

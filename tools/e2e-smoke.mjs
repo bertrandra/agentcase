@@ -1,6 +1,7 @@
 #!/usr/bin/env node
 // Real-browser smoke of the BUILT single-file app (app/dist/index.html): opens fixture cases through the Open… file input,
-// visits all sections (the 6 Portfolio ones included, on the portfolio files) as the Advanced persona and fails on console errors, page errors, "NaN"/"undefined" text or an empty section.
+// visits all sections (the 6 Portfolio ones included, on the portfolio files) as the Advanced persona and fails on console errors, page errors, "NaN"/"undefined" text, an empty section,
+// a section that shows its error fallback, or any Content-Security-Policy violation (the page's `securitypolicyviolation` events, collected from the first script on).
 // Usage: node tools/e2e-smoke.mjs [--fixtures golden,ctx-msi,...] [--sections id,id]
 import { createRequire } from 'node:module';
 import { existsSync, readFileSync } from 'node:fs';
@@ -18,9 +19,13 @@ const PORTFOLIO = ['Products', 'Overrides', 'Knowledge transfer', 'Waves', 'Cons
 const PROSE = /Logic verification|Architecture/;
 const url = 'file://' + resolve('app/dist/index.html');
 const browser = await pw.chromium.launch();
-let failures = 0, visited = 0;
+let failures = 0, visited = 0, cspViolations = 0;
 for (const fx of fixtures) {
   const ctx = await browser.newContext({ viewport: { width: 1360, height: 900 } });
+  await ctx.addInitScript(() => {   // runs before the app's own script: every CSP violation of the page is kept
+    window.__cspViolations = [];
+    document.addEventListener('securitypolicyviolation', (e) => window.__cspViolations.push(`${e.effectiveDirective} blocked ${e.blockedURI || '(inline)'} at ${e.sourceFile || '?'}:${e.lineNumber}`));
+  });
   const page = await ctx.newPage();
   const errors = [];
   page.on('pageerror', e => errors.push('pageerror: ' + e.message));
@@ -43,6 +48,7 @@ for (const fx of fixtures) {
     if (!h1) problems.push('no heading');
     if (!PROSE.test(label) && /\bNaN\b|\bundefined\b|\[object Object\]/.test(text)) problems.push('NaN/undefined/[object Object] in text');
     if (errors.length) problems.push(errors.slice(0, 2).join(' | '));
+    if (/This section failed to display/.test(text)) problems.push('error fallback shown');
     visited++;
     if (problems.length) { failures++; console.log(`FAIL ${fx} · ${label}: ${problems.join('; ')}`); }
   }
@@ -50,9 +56,11 @@ for (const fx of fixtures) {
     const missing = PORTFOLIO.filter(l => !labels.some(x => String(x).includes(l)));
     if (missing.length) { failures++; console.log(`FAIL ${fx}: Portfolio sections missing from the menu: ${missing.join(', ')}`); }
   }
+  const csp = await page.evaluate(() => window.__cspViolations);
+  if (csp.length) { failures++; cspViolations += csp.length; console.log(`FAIL ${fx}: ${csp.length} CSP violation(s): ${[...new Set(csp)].slice(0, 5).join(' | ')}`); }
   console.log(fx, labels.length, 'sections');
   await ctx.close();
 }
 await browser.close();
-console.log(visited, 'section visits,', failures, 'failure(s)');
+console.log(visited, 'section visits,', failures, 'failure(s),', cspViolations, 'CSP violation(s)');
 process.exit(failures ? 1 : 0);

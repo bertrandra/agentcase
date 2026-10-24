@@ -18,7 +18,12 @@ export default function LifecycleEditSection() {
     <SectionFrame title="📊 Product profile & phase coefficients" help={help}
       input={
         <>
-          <Callout>This is the editable <strong>profile × phase coefficient matrix</strong> (v14.8): each product profile (Greenfield, Feature add, Maintenance, Modernisation — plus the End-of-life benchmark, which maps to Maintenance) carries one coefficient per phase, applied to the phase’s effort point. The same coefficients drive the Product-status weighting <em>and</em> the Eligibility potential matrix — one source of truth. Edit the per-phase coefficients and the automation posture for each profile. These are the benchmarks the lifecycle axis interpolates between — changes cascade live to the Scope catalogue, the cascade preview and the whole business case. Values are colour-coded: green &gt;1 (more effort/automation), red &lt;1 (less). Amber border = edited vs default.</Callout>
+          <Callout>This is the editable <strong>profile × phase coefficient matrix</strong> (v14.8): each product profile (Greenfield, Feature add,
+            Maintenance, Modernisation — plus the End-of-life benchmark, which maps to Maintenance) carries one coefficient per phase, applied to the
+            phase’s effort point. The same coefficients drive the Product-status weighting <em>and</em> the Eligibility potential matrix — one source
+            of truth. Edit the per-phase coefficients and the automation posture for each profile. These are the benchmarks the lifecycle axis
+            interpolates between — changes cascade live to the Scope catalogue, the cascade preview and the whole business case. Values are
+            colour-coded: green &gt;1 (more effort/automation), red &lt;1 (less). Amber border = edited vs default.</Callout>
           <Panel title="Status × phase matrix">
             <MatrixTable />
             <div className="ac-form-row"><button type="button" onClick={resetLifecycleCoefficients}>↺ Reset all to defaults</button></div>
@@ -32,7 +37,9 @@ export default function LifecycleEditSection() {
               {PHASES.map((p) => <div key={p.id}><strong>{p.id}</strong> {p.name} <span className="ac-muted">· {p.role}</span></div>)}
             </div>
           </Panel>
-          <Callout>Weight = relative intensity of effort in that phase for that status (1.0 = baseline). Automation posture = multiplier on the effective automation depth at that status (how automatable the work is). Both are editable benchmarks — validate them against the client delivery profile.</Callout>
+          <Callout>Weight = relative intensity of effort in that phase for that status (1.0 = baseline). Automation posture = multiplier on the
+            effective automation depth at that status (how automatable the work is). Both are editable benchmarks — validate them against the client
+            delivery profile.</Callout>
         </>
       } />
   );
