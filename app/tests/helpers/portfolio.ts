@@ -37,3 +37,20 @@ export function identical(c: CaseState, n: number, start = 0): Portfolio {
 
 /** Same case, scaled team so that each product has its own engine run (perf and isolation tests). */
 export const scaledTeam = (c: CaseState, f: number): Product['teamIn'] => c.teamIn.map((r) => ({ ...r, etp: r.etp * f }));
+
+/** The performance portfolio of spec 8: 20 distinct products (own team each) over 60 months in 4 waves. */
+export function bigPortfolio(): Portfolio {
+  const c = loadCase('horizon-5');
+  let pf = envelopeCase(c);
+  for (const [i, s] of [[2, 6], [3, 12], [4, 18]] as const) pf = withWave(pf, 'w' + i, s);
+  pf = { ...pf, products: [{ ...pf.products[0]!, teamIn: scaledTeam(c, 0.5) }] };
+  for (let i = 2; i <= 20; i++) pf = withProduct(pf, { id: 'p' + i, waveId: 'w' + (1 + (i % 4)), offset: i % 3, teamIn: scaledTeam(c, 0.5 + i / 10) });
+  return { ...pf, waves: pf.waves.map((w) => ({ ...w, productIds: pf.products.filter((p) => p.waveId === w.id).map((p) => p.id) })) };
+}
+
+/** Best of `n` timings of `f` (ms): a budget on the best run does not fail on a loaded machine. */
+export const bestOf = (n: number, f: () => void): number => {
+  let m = Infinity;
+  for (let i = 0; i < n; i++) { const t = performance.now(); f(); m = Math.min(m, performance.now() - t); }
+  return m;
+};
