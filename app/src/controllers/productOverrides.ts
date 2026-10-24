@@ -1,6 +1,5 @@
 /** @calc-zone product-resolution */
-import * as ops from '@/domain/portfolio';
-import type { KnowledgeSubset } from '@/domain/portfolio';
+import { applyToCommon, clearOverride, setKnowledge, setOverride, type KnowledgeSubset } from '@/domain/portfolio';
 import { definePortfolioCommand } from '@/store/commands';
 import { subsetFieldOfRef } from '@/store/commonEdit';
 import { appStore } from '@/store/instance';
@@ -14,17 +13,17 @@ const mirrorHub = (pf: PortfolioDoc): PortfolioDoc => {
 };
 
 const setCmd = definePortfolioCommand<{ id: string; ref: string; value: unknown }>({
-  type: 'product.setOverride', label: (p) => `Override ${p.ref} for this product`, apply: (pf, p) => ops.setOverride(pf, p.id, p.ref, p.value),
+  type: 'product.setOverride', label: (p) => `Override ${p.ref} for this product`, apply: (pf, p) => setOverride(pf, p.id, p.ref, p.value),
 });
 const clearCmd = definePortfolioCommand<{ id: string; ref: string }>({
-  type: 'product.clearOverride', label: (p) => `Back to common: ${p.ref}`, apply: (pf, p) => ops.clearOverride(pf, p.id, p.ref),
+  type: 'product.clearOverride', label: (p) => `Back to common: ${p.ref}`, apply: (pf, p) => clearOverride(pf, p.id, p.ref),
 });
 const toCommonCmd = definePortfolioCommand<{ id: string; ref: string }>({
-  type: 'product.applyToCommon', label: (p) => `Apply ${p.ref} to all products`, apply: (pf, p) => mirrorHub(ops.applyToCommon(pf, p.id, p.ref)),
+  type: 'product.applyToCommon', label: (p) => `Apply ${p.ref} to all products`, apply: (pf, p) => mirrorHub(applyToCommon(pf, p.id, p.ref)),
 });
 const knowledgeCmd = definePortfolioCommand<{ id: string; patch: KnowledgeSubset; clear: (keyof KnowledgeSubset)[] }>({
   type: 'product.setKnowledge', label: () => 'Edit product knowledge subset', coalesceKey: (p) => `product.setKnowledge:${p.id}:${Object.keys(p.patch).join(',')}`,
-  apply: (pf, p) => ops.setKnowledge(pf, p.id, p.patch, p.clear),
+  apply: (pf, p) => setKnowledge(pf, p.id, p.patch, p.clear),
 });
 
 /** The product takes its own value for an overridable key (`selectedArtefacts`, `phaseOff`, ..., or one form field `values.<id>` / `checked.<id>`). Throws for a key off the whitelist. */
