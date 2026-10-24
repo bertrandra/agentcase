@@ -22,7 +22,7 @@ export function InputAggregate({ title, help, intro, children, result }: { title
     <SectionFrame title={title} help={help}
       input={
         <>
-          <Callout kind="blue">Read-only: {intro} Choose “Edit this product” to make the section editable for that product.</Callout>
+          <Callout kind="blue">Summary, read-only: {intro} Edit it in place below (the choice of “Edit” in the top bar), or “Edit this product” to view that product.</Callout>
           {children}
           <ExcludedNote />
         </>

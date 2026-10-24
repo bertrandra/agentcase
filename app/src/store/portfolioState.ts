@@ -2,6 +2,7 @@
 import { applyPatches, current, isDraft, produceWithPatches, type Patch } from 'immer';
 import { envelopeCase, resolveProduct } from '@/domain/portfolio';
 import { addressPatches } from './address';
+import { commonEditDoc, editsCommon } from './commonEdit';
 import type { Command, Doc, PortfolioDoc } from './types';
 import { VIEW_FIELDS } from './types';
 
@@ -29,14 +30,15 @@ export const documentPatches = (ps: Patch[]): Patch[] => ps.filter((p) => !VIEW_
 /**
  * Run commands on the portfolio draft. A portfolio command mutates it directly; a case command runs on a draft of the active product's
  * effective case and its patches are re-addressed (common / override / team) onto the portfolio, so the whole batch is ONE Immer produce.
+ * With "Edit: All products" in a Portfolio / Wave view (`editsCommon`) a case command runs on the common case instead and writes the common values.
  */
 export function runCommands(pf: PortfolioDoc, cmds: Command[]): [PortfolioDoc, Patch[], Patch[]] {
   return produceWithPatches(pf, (d) => {
     for (const c of cmds) {
       if (c.runPortfolio) { c.runPortfolio(d as PortfolioDoc, c.payload); continue; }
-      const cur = (isDraft(d) ? current(d) : d) as PortfolioDoc, base = deriveDoc(cur);
+      const cur = (isDraft(d) ? current(d) : d) as PortfolioDoc, common = editsCommon(cur), base = common ? commonEditDoc(cur) : deriveDoc(cur);
       const [next, patches] = produceWithPatches(base, (x) => { c.run(x as Doc, c.payload); });
-      if (patches.length) applyPatches(d, addressPatches(cur, base, next, patches, cur.editScope ?? 'all'));
+      if (patches.length) applyPatches(d, addressPatches(cur, base, next, patches, common ? 'common' : cur.editScope ?? 'all'));
     }
   }) as [PortfolioDoc, Patch[], Patch[]];
 }

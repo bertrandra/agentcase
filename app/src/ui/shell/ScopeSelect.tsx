@@ -1,15 +1,15 @@
 import { setDisplayScope, showProduct } from '@/controllers/displayScope';
 import { useDisplayScope } from '@/store/consolidationHooks';
-import { useActiveProductId, useProducts, useWaves } from '@/store/portfolioHooks';
+import { useActiveProductId, useEditScope, useProducts, useWaves } from '@/store/portfolioHooks';
 import { toast } from '../uiState';
 
 /**
  * "View": the single selector of the top bar. It picks what the headline bar, the Gantt and the report show — the Portfolio, a Wave, or a
  * Product — and choosing a Product also makes it the product the sections edit (F17). With the Portfolio or a Wave in view, the product
- * still being edited stays visible next to the selector. View state: not undoable, not saved. Announced in the live region.
+ * still being edited stays visible next to the selector ("Editing: All products" or "Editing: <name>", as the Edit dropdown says). View state: not undoable, not saved. Announced in the live region.
  */
 export function ScopeSelect() {
-  const scope = useDisplayScope(), products = useProducts(), waves = useWaves(), active = useActiveProductId();
+  const scope = useDisplayScope(), products = useProducts(), waves = useWaves(), active = useActiveProductId(), all = useEditScope() === 'all';
   const value = scope.kind === 'portfolio' ? 'portfolio' : scope.kind === 'wave' ? `wave:${scope.id}` : `product:${active}`;
   const pick = (v: string) => {
     const [kind, id = ''] = v.split(':');
@@ -28,7 +28,7 @@ export function ScopeSelect() {
           <optgroup label="Products">{products.map((p) => <option key={p.id} value={`product:${p.id}`}>Product: {p.name} — {waveOf(p.waveId)}{p.archived ? ' (archived)' : ''}</option>)}</optgroup>
         </select>
       </label>
-      {scope.kind !== 'product' && edited && <span className="ac-editing">Editing: <strong>{edited.name}</strong></span>}
+      {scope.kind !== 'product' && edited && <span className="ac-editing">Editing: <strong>{all ? 'All products' : edited.name}</strong></span>}
     </>
   );
 }

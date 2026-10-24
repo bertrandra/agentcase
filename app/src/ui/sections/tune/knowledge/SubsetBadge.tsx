@@ -1,17 +1,21 @@
 import type { ReactNode } from 'react';
 import { setProductKnowledge } from '@/controllers/productOverrides';
 import type { SubsetField } from '@/domain/portfolio';
+import { useInCommonView } from '@/store/commonEditHooks';
 import { useSubsetField } from '@/store/knowledgeHooks';
 import { toast } from '@/ui/uiState';
+import { KeepersNotice } from '@/ui/widgets/KeepersNotice';
 import { describeValue } from '@/ui/widgets/OverrideBadge';
 
 /**
  * Inherited / own state of one field of the ACTIVE product's knowledge subset (spec F26): the chip says "inherited" (the common reading in its tooltip) or
- * "overridden", and a product's own value can go back to the common one. Renders nothing with a single product (F23).
+ * "overridden", and a product's own value can go back to the common one. Renders nothing with a single product (F23). In the in-place editor of the
+ * common values: the products whose subset keeps their own value (`KeepersNotice`).
  */
 export function SubsetBadge({ field, label }: { field: SubsetField; label: string }) {
-  const f = useSubsetField(field);
+  const f = useSubsetField(field), common = useInCommonView();
   if (!f.multi) return null;
+  if (common) return <KeepersNotice refKey={`knowledge.${field}`} label={label} />;
   const state = f.own ? 'overridden' : 'inherited', tip = `Common value: ${describeValue(f.common)}`;
   const back = () => { if (setProductKnowledge(f.productId, {}, [field])) toast(`${label}: reverted to common for ${f.productName}`); };
   return (

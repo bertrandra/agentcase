@@ -298,7 +298,9 @@ Le domaine n'importe rien d'autre que le domaine existant. `computeCase` reste l
 Règle d'adressage : les **commandes existantes** (≈ 202) gardent leur signature ; une couche d'**adressage** décide si l'écriture va dans
 `common` (clé héritée) ou dans `products[active].overrides` (clé déjà surchargée, ou mode “edit this product only” actif).
 Un interrupteur visible “Edit: all products / this product only” (par défaut : *ce produit seulement* pour l'équipe,
-*tous les produits* pour le périmètre tant que le produit hérite) évite les modifications involontaires.
+*tous les produits* pour le périmètre tant que le produit hérite) évite les modifications involontaires. **Révisé (après v20.10, voir « Précisions :
+liste Edit et édition sur place »)** : l'interrupteur devient une liste “Edit:” (All products / « *nom* only » par produit) et, en vue Portefeuille
+ou Vague, “All products” écrit toujours le commun.
 
 ### 6.2 État d'interface (non annulable)
 
@@ -523,3 +525,21 @@ Toutes les recommandations du § 12 ont été **acceptées** par le commanditair
 - **Exemple** : `docs/examples/AgentCase_Portfolio_Example.json` (4 produits, 2 vagues dont un produit décalé, un produit non planifié, hub au prorata de l'effectif avec des sous-ensembles différents, ρ = 0,3, surcharges), généré par `app/scripts/portfolio-example.ts` ; `tests/store/portfolio-example.test.ts` l'ouvre par le chemin d'ouverture réel et vérifie `validate()` et la conservation des totaux consolidés.
 - **Contrôles de sortie** : `tools/e2e-smoke.mjs` visite toutes les sections, dont les six du groupe Portefeuille, sur deux fichiers de portefeuille ; `tools/perf.mjs` mesure aussi le changement de section du groupe Portefeuille ; résultats chiffrés dans le CHANGELOG.
 - **Reste hors périmètre** (voir ARCHITECTURE.md § 12) : tableau de scénarios de portefeuille, dépendances entre vagues, équipes partagées, troncature des tirages à l'horizon calendaire, « appliquer à tous » pour le sous-ensemble de connaissance.
+
+### Précisions : liste “Edit:” et édition sur place (après v20.10)
+
+- **Barre haute** : la paire de boutons radio “Edit: All products / This product only” est remplacée par **une liste native “Edit:”** (≥ 2 produits,
+  toutes les vues) : **All products**, puis « *nom* only » par produit (en vue Vague, les produits de la vague d'abord, puis “Other products”).
+  Choisir un produit = produit actif + portée `product` ; All products = portée `all`. État de vue : non annulable, non enregistré (`editScope`
+  inchangé, aucun nouveau champ). La Vue ne change pas ; en vue Product, choisir un autre produit l'affiche (le produit affiché est le produit édité).
+  La puce “Editing:” dit « All products » ou le nom du produit.
+- **Règle d'adressage révisée** : avec **All products** et une Vue **Portefeuille ou Vague** (`editsCommon`), une commande de cas s'exécute sur
+  le **cas commun** (`resolveCommon` : valeurs communes + couche hub, sans surcharge ni sous-ensemble, équipe du produit actif) et chaque
+  changement va au **commun**, y compris pour une clé que le produit actif surcharge et pour les champs du Knowledge Hub (pas de sous-ensemble) ;
+  `teamIn` reste au produit actif. Une seule étape annulable ; annuler / rétablir restaurent exactement. En vue Product, la règle de P2 est
+  inchangée (clé déjà surchargée → surcharge).
+- **Sections de saisie en Portefeuille / Vague** : la synthèse agrégée reste en haut ; la section est **modifiable sur place** dessous, pour le
+  produit choisi (ses surcharges) ou pour All products (le commun, avec, par champ, les produits qui gardent leur valeur et “Reset to common”,
+  qui retire la surcharge ou le champ de sous-ensemble). Données propres au produit (équipe d'entrée ; domaines et préparation du KT) : non
+  modifiables pour All products (indication). Les sections de résultat suivent toujours la Vue.
+- **Un seul produit** : rien ne change (ni liste, ni éditeur sur place).

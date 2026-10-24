@@ -16,6 +16,7 @@ describe('one product: the interface is unchanged (spec F23)', () => {
     mountApp();
     expect(screen.queryByRole('combobox', { name: 'View' })).toBeNull();
     expect(screen.queryByRole('radiogroup', { name: 'Edit' })).toBeNull();
+    expect(screen.queryByRole('combobox', { name: 'Edit' })).toBeNull();
     expect(document.querySelector('.ac-prodbar')).toBeNull();
   });
   it('the sidebar has the 14 original groups and none of the Portfolio sections, although the catalogue holds them', () => {
