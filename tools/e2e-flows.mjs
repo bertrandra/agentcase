@@ -94,9 +94,13 @@ await step('critical-delivery report (opened under its own policy)', async () =>
   const v = await violations(r); await r.close();
   if (v.length) throw new Error(`report: ${v.join(' | ')}`);
 });
+// D5: ExcelJS is embedded gzip-compressed and started on the first Excel use, as an inline script removed at once (no code of it at boot, none left after)
+const excelInDom = (p) => p.evaluate(() => [...document.scripts].some((s) => (s.textContent ?? '').includes('ExcelJS 19-10-2023')) || 'ExcelJS' in window);
 await step('parameters workbook export + import', async () => {
+  if (await excelInDom(page)) throw new Error('ExcelJS is present before the first Excel use');
   await page.getByRole('tab', { name: /Export \/ Import current settings/ }).click();
   const f = await download(() => page.getByRole('button', { name: '⬇️ Export all', exact: true }).click());
+  if (await excelInDom(page)) throw new Error('the decompressed ExcelJS script or its global was left in the page');
   await page.setInputFiles('input[aria-label="Settings workbook (.xlsx)"]', f);
   await page.waitForTimeout(1500);
   if ((await kpis(page)) !== before) throw new Error('the re-imported workbook changed the headline figures');
