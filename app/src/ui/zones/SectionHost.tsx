@@ -21,7 +21,7 @@ const loading = <p className="ac-muted">Loading…</p>;
 /**
  * Renders the active section: its migrated component, or the placeholder. With 2+ products and a Wave / Portfolio in view, a section that follows
  * the View (docs/VUE_AGREGEE.md) is replaced by its aggregate or the generic fallback of its kind — an input section keeps its summary on top and is
- * editable in place below it, for the product or the common values the top-bar "Edit" names; in every other case the output is the section alone.
+ * editable in place below it, for the product or the common values the top-bar "Change" names; in every other case the output is the section alone.
  */
 export function SectionHost() {
   const id = useUi((s) => s.activeSection), def = sectionById(id);

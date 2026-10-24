@@ -30,7 +30,7 @@ const offsetCmd = definePortfolioCommand<{ id: string; months: number }>({
 const activeCmd = definePortfolioCommand<{ id: string }>({
   type: 'product.setActive', label: () => 'Switch active product', undoable: false, apply: (pf, p) => ops.setActive(pf, p.id),
 });
-/** "Edit: all products / this product only". Transient: never saved, never undone. */
+/** The top-bar "Change" choice: all products (shared values) or one product. Transient: never saved, never undone. */
 const scopeCmd = definePortfolioCommand<{ scope: EditScope }>({
   type: 'product.setEditScope', label: () => 'Set edit scope', undoable: false, apply: (pf, p) => (pf.editScope === p.scope ? pf : { ...pf, editScope: p.scope }),
 });
@@ -56,9 +56,9 @@ export const setActiveProduct = (id: string): boolean => dispatchChecked(activeC
 export const setEditScope = (scope: EditScope): boolean => dispatchChecked(scopeCmd({ scope }));
 
 /**
- * The top-bar "Edit" dropdown: 'all' = All products (shared data goes to the common values; the entry team stays the active product's), or a product
- * id = that product becomes the active one and its edits create overrides ("<name> only"). View state: no undo step; the View is left as it is.
- * True when something changed; false for an unknown product or the current choice.
+ * The top-bar "Change" dropdown: 'all' = All products (shared data goes to the common values; the entry team stays the active product's), or a
+ * product id = that product becomes the active one and its edits create overrides. View state: no undo step; the Show selection is left as it is
+ * (in a Product view the shown product is the edited one, so it switches). True when something changed; false for an unknown product or the current choice.
  */
 export function chooseEditTarget(target: string): boolean {
   if (target === 'all') return setEditScope('all');

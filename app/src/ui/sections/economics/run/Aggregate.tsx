@@ -12,7 +12,7 @@ const help = (
   <>
     <p>The recurring cost after transformation of the <strong>selection</strong> (Portfolio or one Wave): the planned products&apos; own run costs (residual team, agentic run team, tokens, infrastructure, Knowledge Hub),
       each shifted to its start and added up month by month, then summed by calendar year.</p>
-    <p>Products without a wave, or archived, are left out (the banner above says how many). Choose a Product in the View selector for the single-product Agentic Run.</p>
+    <p>Products without a wave, or archived, are left out (the banner above says how many). Choose a product in “Show” for the single-product Agentic Run.</p>
   </>
 );
 const R = 'right' as const;

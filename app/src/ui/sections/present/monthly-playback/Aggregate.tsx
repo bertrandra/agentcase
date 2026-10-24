@@ -14,7 +14,7 @@ const help = (
   <>
     <p>The playback of the <strong>selection</strong> (Portfolio or one Wave) on the calendar axis. FTE, monthly cost and cumulative cash are the consolidated series: each planned product&apos;s own Time Engine
       months, shifted to its start and added up. Velocity and cost per point are the products&apos; own ramps weighted by entry headcount (a product that has not started yet is still AS-IS).</p>
-    <p>Products without a wave, or archived, are left out (the banner above says how many). Choose a Product in the View selector for the single-product playback.</p>
+    <p>Products without a wave, or archived, are left out (the banner above says how many). Choose a product in “Show” for the single-product playback.</p>
   </>
 );
 const R = 'right' as const;

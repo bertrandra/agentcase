@@ -2,6 +2,7 @@
    so a single-product case renders exactly as before. Colours come from tokens.css. */
 .ac-prodbar { display: inline-flex; flex-wrap: wrap; align-items: center; gap: 10px; padding-inline-end: 10px; border-inline-end: var(--ac-border-thin) solid var(--ac-neutral-0-a25); font-size: var(--ac-font-size-md); }
 .ac-prodsel { display: inline-flex; align-items: center; gap: 6px; font-weight: var(--ac-font-weight-bold); }
+.ac-prodsel-icon { line-height: 1; }
 .ac-editscope { display: inline-flex; flex-wrap: wrap; align-items: center; gap: 8px; }
 .ac-editscope label { display: inline-flex; align-items: center; gap: 3px; cursor: pointer; }
 
@@ -43,6 +44,3 @@
 
 /* Portfolio Gantt (P4) */
 .ac-section .ac-gantt-wave:focus-visible, .ac-section .ac-gantt-prod:focus-visible { outline: var(--ac-border-thick) solid var(--ac-blue); outline-offset: 1px; }
-/* "Editing: <product>" next to the View selector sits on the dark header gradient: white, as legible as the selector itself (the muted token is unreadable there). */
-.ac-top .ac-editing { color: var(--ac-neutral-0); font-size: var(--ac-font-size-md); font-weight: var(--ac-font-weight-regular); opacity: 1; white-space: nowrap; padding: 2px 8px; border: var(--ac-border-thin) solid var(--ac-neutral-0-a45); border-radius: var(--ac-radius-sm-plus); background: var(--ac-neutral-0-a12); }
-.ac-top .ac-editing strong { font-weight: var(--ac-font-weight-bold); }

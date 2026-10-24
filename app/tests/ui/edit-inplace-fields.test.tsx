@@ -12,10 +12,10 @@ vi.mock('@/ui/widgets/ChartPanel', async () => import('../helpers/chartStub')); 
 let ids: [string, string, string];
 beforeEach(() => { ids = threeProducts().ids; });
 afterEach(cleanup);
-const region = () => screen.getByRole('region', { name: /^Edit in place: All products/ });
+const region = () => screen.getByRole('region', { name: /^Changing all products/ });
 const vals = (i: number) => (resolveProduct(pf(), ids[i]!) as unknown as { dom: { values: Record<string, string> } }).dom.values;
 
-describe('"Edit: All products" in place: form fields', () => {
+describe('"Change: All products" in place: form fields', () => {
   it('a number field edits the common value: inheriting products follow; the overriding product is named, keeps its value, and can be reset', async () => {
     setProductOverride(ids[2], 'values.pilotFte', '5');
     mountApp('program'); act(() => { setDisplayScope({ kind: 'portfolio' }); });
@@ -26,9 +26,9 @@ describe('"Edit: All products" in place: form fields', () => {
     expect(pf().common.dom.values.pilotFte).toBe('3');
     expect([vals(0).pilotFte, vals(1).pilotFte, vals(2).pilotFte]).toEqual(['3', '3', '5']);
     expect(within(r).getByLabelText('Pilot pod size (FTE)')).toHaveProperty('value', '3');   // the editor shows the common value
-    fireEvent.click(within(r).getByRole('button', { name: 'Reset to common: Pilot pod size (FTE) for C' }));
+    fireEvent.click(within(r).getByRole('button', { name: 'Back to shared: Pilot pod size (FTE) for C' }));
     expect(vals(2).pilotFte).toBe('3');
-    expect(screen.getByRole('status').textContent).toContain('C reset to common');
+    expect(screen.getByRole('status').textContent).toContain('C back to shared');
   });
   it('Knowledge hub: the common hub with the products that keep their own subset field; domains and preparation are per product', async () => {
     setProductKnowledge(ids[1], { targetCC: 3 });

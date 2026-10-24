@@ -10,7 +10,7 @@ const help = (
   <>
     <p>The money view of the <strong>selection</strong> (Portfolio or one Wave) instead of one product. It is the consolidation of <code>domain/portfolio</code>: each planned product&apos;s own Time Engine
       months, shifted to its start (wave start + offset) and added up. ROI, payback and NPV are those of the consolidated cash-flow, not an average of the products&apos;.</p>
-    <p>Products without a wave, or archived, are left out (the banner above says how many). Choose a Product in the View selector for the full single-product Financial Summary.</p>
+    <p>Products without a wave, or archived, are left out (the banner above says how many). Choose a product in “Show” for the full single-product Financial Summary.</p>
   </>
 );
 

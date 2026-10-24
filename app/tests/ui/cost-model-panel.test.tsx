@@ -32,7 +32,7 @@ describe('Import / Export: Cost model (monthly)', () => {
     expect([...scope().options].map((o) => o.textContent)).toEqual(['Product: Product 1']);
     fireEvent.click(exportBtn());
     await waitFor(() => expect(saved.length).toBe(1));
-    expect(saved[0]!.filename).toMatch(/^AgentCase_v20_11_CostModel_Product_Product_1_\d{4}-\d{2}-\d{2}-\d{2}-\d{2}-\d{2}\.xlsx$/);
+    expect(saved[0]!.filename).toMatch(/^AgentCase_v20_12_CostModel_Product_Product_1_\d{4}-\d{2}-\d{2}-\d{2}-\d{2}-\d{2}\.xlsx$/);
     expect(saved[0]!.blob.size).toBeGreaterThan(5000);
   });
   it('with a portfolio: Portfolio, each wave and each product, starting on the current View', async () => {
@@ -51,7 +51,7 @@ describe('Import / Export: Cost model (monthly)', () => {
     fireEvent.click(exportBtn());
     await waitFor(() => expect(saved.length).toBe(1));
     expect(saved[0]!.filename).toMatch(/CostModel_Wave_Wave_2_/);
-    expect(uiStore.getState().toast).toMatch(/^Exported AgentCase_v20_11_CostModel_Wave_Wave_2_/);
+    expect(uiStore.getState().toast).toMatch(/^Exported AgentCase_v20_12_CostModel_Wave_Wave_2_/);
     expect(screen.getAllByRole('status').some((s) => /^Exported /.test(s.textContent ?? ''))).toBe(true);
     cleanup(); setDisplayScope({ kind: 'product' }); setActiveProduct(billing);
     await open();

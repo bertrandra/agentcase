@@ -7,9 +7,9 @@ export interface AggColumn<R> { key: string; header: string; title?: string; ali
 /** The total line, already computed by the domain (a headline, a `totals` line): the cells are only formatted here, never added up. Keys are column keys. */
 export interface AggTotals { label: string; cells: Record<string, ReactNode> }
 
-/** Make `id` the edited product and the View (one controller, view state: not undoable) and announce it, like the View selector does. */
+/** Make `id` the shown and edited product (one controller, view state: not undoable) and announce it, like the top-bar "Show" does. */
 export function editProduct(id: string, name: string): void {
-  if (showProduct(id)) toast(`View: product ${name} (edited)`);
+  if (showProduct(id)) toast(`Showing ${name}`);
 }
 
 /**

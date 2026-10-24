@@ -1,11 +1,26 @@
 {
- "audits": 422,
+ "audits": 117,
  "fixtures": [
-  "golden",
-  "ctx-msi",
-  "industry-med",
-  "pf-example"
+  "pf-three-products"
  ],
- "summary": [],
- "violations": []
+ "summary": [
+  {
+   "rule": "color-contrast",
+   "impact": "serious",
+   "nodes": 2,
+   "sections": 1,
+   "help": "Elements must meet minimum color contrast ratio thresholds",
+   "example": "button[data-section=\"scenarios\"]"
+  }
+ ],
+ "violations": [
+  {
+   "fixture": "pf-three-products",
+   "section": "3-way Comparison",
+   "rule": "color-contrast",
+   "impact": "serious",
+   "nodes": 2,
+   "example": "button[data-section=\"scenarios\"]"
+  }
+ ]
 }

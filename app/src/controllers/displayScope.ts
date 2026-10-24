@@ -2,7 +2,7 @@
 import type { DisplayScope } from '@/domain/portfolio';
 import { definePortfolioCommand } from '@/store/commands';
 import { appStore } from '@/store/instance';
-import { setActiveProduct } from './product';
+import { setActiveProduct, setEditScope } from './product';
 import { dispatchChecked } from './portfolioGuard';
 
 const idOf = (s: DisplayScope | undefined): string | undefined => (s?.kind === 'wave' ? s.id : undefined);
@@ -15,18 +15,25 @@ const scopeCmd = definePortfolioCommand<{ scope: DisplayScope }>({
 });
 
 /**
- * The top bar's "View" selector (display scope): the active product (default, today's behaviour), the whole portfolio, or one wave. A wave that does
- * not exist is refused (false).
+ * The top bar's "Show" selector (display scope, F17): the active product (default, today's behaviour), the whole portfolio, or one wave. A wave that
+ * does not exist is refused (false). Rule "Change follows Show": showing the Portfolio or a Wave sets the edit target back to All products
+ * (`editScope` 'all'); the user may then pick one product in "Change". The product kind leaves the edit target alone (`showProduct` sets it).
  */
 export function setDisplayScope(scope: DisplayScope): boolean {
   if (scope.kind === 'wave' && !appStore().getState().portfolio.waves.some((w) => w.id === scope.id)) return false;
-  return dispatchChecked(scopeCmd({ scope }));
+  const changed = dispatchChecked(scopeCmd({ scope }));
+  if (scope.kind !== 'product') setEditScope('all');
+  return changed;
 }
 
-/** Show one product: it becomes the active product and the scope goes back to "product". False for an unknown product. */
+/**
+ * Show one product: it becomes the active product, the scope goes back to "product" and, "Change follows Show", it is the edit target
+ * (`editScope` 'product': its edits create overrides). False for an unknown product.
+ */
 export function showProduct(id: string): boolean {
   if (!appStore().getState().portfolio.products.some((p) => p.id === id)) return false;
   setActiveProduct(id);
   setDisplayScope({ kind: 'product' });
+  setEditScope('product');
   return true;
 }

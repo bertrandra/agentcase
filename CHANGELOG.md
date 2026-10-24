@@ -15,13 +15,25 @@ All notable changes to AgentCase, newest first. Product version from v19.0.0 = `
 
 When releasing, follow [docs/BUMP_PROCEDURE.md](docs/BUMP_PROCEDURE.md) (§7 for the legacy file) and add the new version at the top.
 
-## [Unreleased]
+## [v20.12.0] 2026-10-24 — "Show" / "Change" top bar, file menu, two-zone header, Welcome cards fix
 
 ### Fixed
 - Welcome cards: the card buttons inherit the app font and colours (title in the heading colour, description muted, as in the legacy page); before, the browser default applied (system font, and blue text on Safari / iOS).
 
 ### Changed
-- Header in two zones: left = AgentCase title (and client logo), ☰ sidebar toggle, Persona and Fast Path; right = View / Edit (several products), undo / redo, 📁 file menu, ◐ display.
+- **Top bar, several products: "👁 Show" and "✏️ Change"** replace "View" and "Edit:" (accessible names `Show` / `Change`, icons hidden from
+  assistive technology, one-line tooltips: "What you look at: the portfolio, a wave or one product" / "Where your changes go: all products (shared
+  values) or one product"). Shorter options: "Portfolio", "Wave 1", "Payroll (Wave 1)", "Billing (unscheduled)", " (archived)" kept; "All products",
+  then "Payroll" (no " only"). The "Editing: <name>" chip is removed: the Change value says it. Toasts: "Showing Portfolio / Wave 1 / Payroll",
+  "Changing all products / Payroll".
+- **Rule "Change follows Show" (F17 revised)**: showing a product makes it the edited product AND the Change target (its edits create overrides);
+  showing the Portfolio or a Wave sets Change back to "All products" (shared values). An explicit choice in Change still edits one product in place
+  under a Portfolio / Wave view; in a Product view it switches the shown product (unchanged).
+- In-place editing wording: "Changing all products (shared values)" / "Changing X only" (was "Edit in place: …"); "Shared values: every product that
+  inherits a value follows; a product with its own value keeps it."; "Changing X only — the results above and elsewhere still show the Portfolio";
+  "Back to shared: X" (was "Reset to common"); section banner "Changing: all products (shared values)" / "Changing: product X"; hints say "pick a
+  product in Change". Single product: nothing changes.
+- Header in two zones: left = AgentCase title (and client logo), ☰ sidebar toggle, Persona and Fast Path; right = Show / Change (several products), undo / redo, 📁 file menu, ◐ display.
 - Top bar: Save and Open… move into a file menu opened by an icon-only 📁 button (menu button pattern: arrows, Home / End, Escape, click outside).
 - "Edit in place: All products" banner: the sentence naming whose team the figures use is removed (the context is already shown above).
 

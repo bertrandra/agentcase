@@ -14,9 +14,9 @@ afterEach(cleanup);
 describe('one product: the interface is unchanged (spec F23)', () => {
   it('no product selector, no edit-scope toggle in the top bar', () => {
     mountApp();
-    expect(screen.queryByRole('combobox', { name: 'View' })).toBeNull();
-    expect(screen.queryByRole('radiogroup', { name: 'Edit' })).toBeNull();
-    expect(screen.queryByRole('combobox', { name: 'Edit' })).toBeNull();
+    expect(screen.queryByRole('combobox', { name: 'Show' })).toBeNull();
+    expect(screen.queryByRole('radiogroup', { name: 'Change' })).toBeNull();
+    expect(screen.queryByRole('combobox', { name: 'Change' })).toBeNull();
     expect(document.querySelector('.ac-prodbar')).toBeNull();
   });
   it('the sidebar has the 14 original groups and none of the Portfolio sections, although the catalogue holds them', () => {
@@ -42,6 +42,6 @@ describe('one product: the interface is unchanged (spec F23)', () => {
     await sectionReady(/Products/);
     act(() => openGroup('portfolio'));
     expect(sidebar().querySelector('[data-group="portfolio"]')).toBeTruthy();
-    expect(screen.getByRole('combobox', { name: 'View' })).toBeTruthy();
+    expect(screen.getByRole('combobox', { name: 'Show' })).toBeTruthy();
   });
 });

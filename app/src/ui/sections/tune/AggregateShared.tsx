@@ -20,7 +20,7 @@ export function InputAggregate({ title, intro, children }: { title: string; intr
   return (
     <SectionFrame title={title} input={
       <>
-        <Callout kind="blue">Summary, read-only: {intro} Edit it in place below (the choice of “Edit” in the top bar), or “Edit this product” to view that product.</Callout>
+        <Callout kind="blue">Summary, read-only: {intro} Edit it in place below (the choice of “Change” in the top bar), or “Edit this product” to view that product.</Callout>
         <ExcludedNote />
         {children}
       </>

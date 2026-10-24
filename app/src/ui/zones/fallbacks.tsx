@@ -56,7 +56,7 @@ export function InputFallback({ title }: FallbackProps) {
   return (
     <SectionFrame title={title} input={
       <>
-        <Callout kind="blue">Summary, read-only: the inputs of this section belong to each product. Edit them in place below (the choice of “Edit” in the top bar), or “Edit this product” to view that product.</Callout>
+        <Callout kind="blue">Summary, read-only: the inputs of this section belong to each product. Edit them in place below (the choice of “Change” in the top bar), or “Edit this product” to view that product.</Callout>
         <AggregateTable caption={`Inputs by product — ${vs.label}`} rows={rows} columns={INPUTS}
           totals={{ label: `Total — ${vs.label}`, cells: { etp: etp.toFixed(1) } }} />
       </>
