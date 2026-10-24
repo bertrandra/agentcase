@@ -42,7 +42,7 @@ describe('top bar: the "Edit" dropdown', () => {
     pick('all');
     expect([pf().activeProductId, pf().editScope]).toEqual([ids[1], 'all']);
     expect(chip()).toBe('Editing: All products');
-    expect(pf()).toBeTruthy(); expect(screen.getByRole('button', { name: /^Undo/ }).hasAttribute('disabled')).toBe(true);
+    expect(screen.getByRole('button', { name: /^Undo/ }).hasAttribute('disabled')).toBe(true);   // view state: no undo step
   });
   it('a Wave view lists the wave\'s products first, then the others', () => {
     mountApp(); act(() => { setDisplayScope({ kind: 'wave', id: waves[1] }); });
