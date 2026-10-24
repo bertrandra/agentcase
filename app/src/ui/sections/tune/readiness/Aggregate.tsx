@@ -15,7 +15,10 @@ const COLS: AggColumn<ReadinessRow>[] = [
   { key: 'hri', header: 'Human Readiness', align: R, render: (r) => (r.hriOn ? `${r.hri} (${r.hriLabel})` : 'off') },
 ];
 
-/** AI Readiness Index — Aggregate view: index, level, weakest dimension and Human Readiness of each product, and the mean over the assessed products; the questionnaire per product below. */
+/**
+ * AI Readiness Index — Aggregate view: index, level, weakest dimension and Human Readiness of
+ * each product, and the mean over the assessed products; the questionnaire per product below.
+ */
 export default function ReadinessAggregate() {
   const a = useReadinessAgg(), vs = useViewScope();
   const items: SpreadItem[] = [

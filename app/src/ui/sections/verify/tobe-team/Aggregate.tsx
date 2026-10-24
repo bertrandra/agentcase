@@ -15,7 +15,10 @@ const help = (
 );
 const f2 = (v: number) => v.toFixed(2);
 
-/** TO-BE team composition — aggregate view (R-conso): human FTE and agent vFTE by skill summed over the selection, for the year picked, and a reconciliation table per product. */
+/**
+ * TO-BE team composition — aggregate view (R-conso): human FTE and agent vFTE by skill
+ * summed over the selection, for the year picked, and a reconciliation table per product.
+ */
 export default function TobeTeamAggregate() {
   const [year, setYear] = useState(2), a = useVerifyView(tobeTeamAgg, year);
   if (!a) return null;

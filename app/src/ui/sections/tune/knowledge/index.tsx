@@ -22,7 +22,10 @@ const help = (
   </>
 );
 
-/** Knowledge hub — enable, AS-IS assessment, target maturity and cost inputs; the three-channel read-out. With 2+ products it edits the ACTIVE product's subset of the shared hub. */
+/**
+ * Knowledge hub — enable, AS-IS assessment, target maturity and cost inputs; the three-channel
+ * read-out. With 2+ products it edits the ACTIVE product's subset of the shared hub.
+ */
 export default function KnowledgeSection() {
   return (
     <SectionFrame title="🧠 Knowledge hub — living memory" help={help}

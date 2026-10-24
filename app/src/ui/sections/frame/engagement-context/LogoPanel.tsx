@@ -6,7 +6,10 @@ import { readLogoFile } from '@/ui/brand/logoFile';
 import { toast } from '@/ui/uiState';
 import { Panel } from '@/ui/widgets/cards';
 
-/** The customer logo for client presentations (docs/THEME.md §8.6): shown next to "AgentCase for <customer>", in the HTML report and snapshot, the results workbook. */
+/**
+ * The customer logo for client presentations (docs/THEME.md §8.6): shown next to
+ * "AgentCase for <customer>", in the HTML report and snapshot, the results workbook.
+ */
 export function LogoPanel() {
   const raw = useDoc((d) => d.CUSTOMER_LOGO), customer = useDoc((d) => (d.customerName as string | undefined) ?? '');
   const logo = useMemo(() => logoOf({ CUSTOMER_LOGO: raw }), [raw]), file = useRef<HTMLInputElement>(null);

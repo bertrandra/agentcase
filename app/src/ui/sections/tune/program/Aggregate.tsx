@@ -18,7 +18,10 @@ const COLS: AggColumn<ProgramRow>[] = [
   { key: 'over', header: 'Multi-pod overhead', align: R, render: (r) => `${r.overheadPct}%` },
 ];
 
-/** Program & Completeness — Aggregate view: pilot sizing, internal capability and multi-pod overhead of each product (read-only), with the spread over the selection. */
+/**
+ * Program & Completeness — Aggregate view: pilot sizing, internal capability and
+ * multi-pod overhead of each product (read-only), with the spread over the selection.
+ */
 export default function ProgramAggregate() {
   const a = useProgramAgg(), vs = useViewScope(), t = a.totals;
   const items: SpreadItem[] = [

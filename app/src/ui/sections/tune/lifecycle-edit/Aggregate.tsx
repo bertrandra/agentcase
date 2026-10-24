@@ -4,7 +4,10 @@ import { useViewScope } from '@/store/viewScope';
 import { AggregateTable, type AggColumn } from '@/ui/widgets/AggregateTable';
 import { InputAggregate, SpreadTable, type SpreadItem } from '../AggregateShared';
 
-/** Product profile & phase coefficients — Aggregate view: lifecycle axis, position, profile, automation posture per status and edited cells, per product (read-only). */
+/**
+ * Product profile & phase coefficients — Aggregate view: lifecycle axis, position,
+ * profile, automation posture per status and edited cells, per product (read-only).
+ */
 export default function LifecycleEditAggregate() {
   const a = useLifecycleAgg(), vs = useViewScope();
   const cols: AggColumn<TuneLifecycleRow>[] = [

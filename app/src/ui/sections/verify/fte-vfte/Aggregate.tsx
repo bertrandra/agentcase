@@ -17,7 +17,10 @@ const help = (
   </>
 );
 
-/** FTE / vFTE Chart — aggregate view (R-conso): the consolidated human / agent trajectory by calendar month and year, and the end-of-horizon split of each product. */
+/**
+ * FTE / vFTE Chart — aggregate view (R-conso): the consolidated human / agent
+ * trajectory by calendar month and year, and the end-of-horizon split of each product.
+ */
 export default function FteVfteAggregate() {
   const a = useVerifyView(fteVfteAgg);
   const lines = useMemo(() => (a ? [{ label: `${a.label} — Human FTE`, data: a.chart.human, thick: true }, { label: `${a.label} — Agent vFTE`, data: a.chart.agent, thick: true },

@@ -26,7 +26,10 @@ const LINES: AggColumn<TeamLine & { id: string; name: string }>[] = [
   { key: 'grade', header: 'Grade', render: (r) => r.grade }, { key: 'loc', header: 'Location', render: (r) => r.loc }, { key: 'etp', header: 'FTE', align: 'right', render: (r) => r.etp.toFixed(2) },
 ];
 
-/** Input team (AS-IS) — Aggregate view: the teams of the selection by product and, added up, by skill, grade and location (read-only; edit a product to change its team). */
+/**
+ * Input team (AS-IS) — Aggregate view: the teams of the selection by product and, added
+ * up, by skill, grade and location (read-only; edit a product to change its team).
+ */
 export default function TeamInAggregate() {
   const t = useTeamAggregate(), vs = useViewScope(), total = t.total.toFixed(2);
   const sum = { label: `Total — ${vs.label}` };

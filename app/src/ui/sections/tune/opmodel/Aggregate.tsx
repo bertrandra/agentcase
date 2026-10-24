@@ -20,7 +20,10 @@ const COLS: AggColumn<OpModelRow>[] = [
   { key: 'ok', header: 'V7 conservation (CC-OM-01)', render: (r) => (r.ok ? '✓ holds' : '✗ fails') },
 ];
 
-/** Operating model — Aggregate view: pods, residual and run teams of each product at Y1 and at the end of its horizon, the V7 conservation check, and the summed teams. */
+/**
+ * Operating model — Aggregate view: pods, residual and run teams of each product at
+ * Y1 and at the end of its horizon, the V7 conservation check, and the summed teams.
+ */
 export default function OpModelAggregate() {
   const a = useOpModelAgg(), vs = useViewScope(), t = a.totals;
   return (

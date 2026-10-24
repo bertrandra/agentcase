@@ -61,7 +61,10 @@ function LeadField() {
   );
 }
 
-/** What the Knowledge Hub section adds with 2+ products: the target cap, the domains, the preparation (per product: not in the common editor) and the shared hub settings. */
+/**
+ * What the Knowledge Hub section adds with 2+ products: the target cap, the domains,
+ * the preparation (per product: not in the common editor) and the shared hub settings.
+ */
 export function MultiPanels() {
   const multi = useIsMulti(), common = useInCommonView();
   if (!multi) return null;

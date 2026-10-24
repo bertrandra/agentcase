@@ -20,7 +20,10 @@ const COLS: AggColumn<EligibilityRow>[] = [
   { key: 'tax', header: 'Verification tax', align: R, render: (r) => `${(r.vTaxRate * 100).toFixed(1)}%` },
 ];
 
-/** Eligibility & Abaques — Aggregate view: the go / conditional / no-go gate of each product with its prerequisites, profile and verification tax, and the verdict count. */
+/**
+ * Eligibility & Abaques — Aggregate view: the go / conditional / no-go gate of each
+ * product with its prerequisites, profile and verification tax, and the verdict count.
+ */
 export default function EligibilityAggregate() {
   const a = useEligibilityAgg(), vs = useViewScope(), t = a.totals;
   return (

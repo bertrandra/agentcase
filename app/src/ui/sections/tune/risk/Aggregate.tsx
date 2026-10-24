@@ -17,7 +17,10 @@ const COLS: AggColumn<RiskRow>[] = [
   { key: 'bar', header: 'DI bar premium (pts)', align: R, render: (r) => (r.diBar * 100).toFixed(1) },
 ];
 
-/** Risk & Compliance — Aggregate view: AI-Act tier, risk-register score and quality premium of each product, with the Decision-Intelligence bar they add (read-only). */
+/**
+ * Risk & Compliance — Aggregate view: AI-Act tier, risk-register score and quality
+ * premium of each product, with the Decision-Intelligence bar they add (read-only).
+ */
 export default function RiskAggregate() {
   const a = useRiskAgg(), vs = useViewScope();
   const items: SpreadItem[] = [

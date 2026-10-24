@@ -18,7 +18,10 @@ const COLS: AggColumn<TokenRow>[] = [
   { key: 'horizon', header: 'Token cost, whole horizon', align: R, title: 'Sum of the product’s monthly token cost on the portfolio calendar', render: (r) => eur(r.horizonCost) },
 ];
 
-/** Token economics & FinOps — Aggregate view: usage and token cost of each product, the consolidated token cost of the selection (`token` series) and the common price catalogue. */
+/**
+ * Token economics & FinOps — Aggregate view: usage and token cost of each product, the
+ * consolidated token cost of the selection (`token` series) and the common price catalogue.
+ */
 export default function TokenEconAggregate() {
   const a = useTokenAgg(), vs = useViewScope();
   const items: SpreadItem[] = [{ id: 'cost', name: 'Token cost over the horizon', s: a.cost, f: eur }];

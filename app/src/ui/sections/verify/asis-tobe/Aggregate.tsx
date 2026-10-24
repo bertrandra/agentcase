@@ -5,7 +5,10 @@ import { SectionFrame } from '@/ui/zones/SectionFrame';
 import { BeforeAfterTable } from '../aggregate/BeforeAfter';
 import { ExcludedNote, VerifyTable } from '../aggregate/Rollup';
 
-/** AS-IS vs TO-BE — aggregate view (R-conso): the selection before and after (headcount, reference cost vs TO-BE cost, setup, weighted automation and ceiling) and the same per product. */
+/**
+ * AS-IS vs TO-BE — aggregate view (R-conso): the selection before and after (headcount, reference
+ * cost vs TO-BE cost, setup, weighted automation and ceiling) and the same per product.
+ */
 export default function AsisTobeAggregate() {
   const a = useVerifyView(asisTobeAgg);
   if (!a) return null;

@@ -15,7 +15,10 @@ const COLS: AggColumn<MaturityMapRow>[] = [
 ];
 const pct = (v: number): string => `${v.toFixed(0)}%`;
 
-/** Maturity levels (L1–L4) — Aggregate view: the thresholds each product carries, the level it reaches, and the spread of every threshold over the selection (read-only). */
+/**
+ * Maturity levels (L1–L4) — Aggregate view: the thresholds each product carries, the
+ * level it reaches, and the spread of every threshold over the selection (read-only).
+ */
 export default function MaturityMapAggregate() {
   const a = useMaturityMapAgg(), vs = useViewScope();
   const items: SpreadItem[] = [

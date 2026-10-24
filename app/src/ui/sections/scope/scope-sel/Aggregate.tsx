@@ -9,7 +9,10 @@ const R = 'right' as const, SHOWN = 15;
 const help = <p>Aggregate view of the artefact selection: how many SDLC and regulatory artefacts each product keeps, how it differs from the common selection,
   and a coverage matrix by phase. Artefacts the products disagree on are listed at the bottom.</p>;
 
-/** Scope — target artifact selection — Aggregate view: coverage of the artefact selection by product and phase, differences from the common selection and contested artefacts. */
+/**
+ * Scope — target artifact selection — Aggregate view: coverage of the artefact selection
+ * by product and phase, differences from the common selection and contested artefacts.
+ */
 export default function ScopeSelAggregate() {
   const a = useScopeSelection(), vs = useViewScope(), n = a.rows.length;
   const diff = (r: ScopeSelRow) => (r.added || r.removed ? `+${r.added} / −${r.removed}` : 'same as common');

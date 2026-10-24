@@ -20,8 +20,8 @@ export function PortfolioGanttPart() {
 }
 
 /**
- * Portfolio Gantt (F18), shown with 2+ products when the display scope is the Portfolio or a Wave: one aggregated bar per wave on the portfolio
- * calendar, expandable to its products with their milestones (adoption levels, payback, first agent vFTE) placed at wave start + offset + the product's own month.
+ * Portfolio Gantt (F18), shown with 2+ products when the display scope is the Portfolio or a Wave: one aggregated bar per wave on the portfolio calendar,
+ * expandable to its products with their milestones (adoption levels, payback, first agent vFTE) placed at wave start + offset + the product's own month.
  */
 function Waves() {
   const g = usePortfolioGantt(), scope = useDisplayScope(), [open, setOpen] = useState<Set<string>>(new Set());
