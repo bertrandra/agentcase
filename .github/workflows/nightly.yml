@@ -1,0 +1,79 @@
+name: nightly
+# The long gates, once a day on main and on demand: flake detection (the full check three times), the parallel run on the full corpus, the mutation check
+# of the test selection, the documented test count and the audit of all advisories. Every run: line is mirrored, in the same order, by tools/gates.mjs
+# (`cd app && npm run gates -- --nightly`). The results are in the job summaries; no issue is opened (the workflow only reads the repository).
+on:
+  schedule:
+    - cron: '17 2 * * *'   # 02:17 UTC, off the top of the hour
+  workflow_dispatch:
+permissions:
+  contents: read
+concurrency:
+  group: nightly-${{ github.ref }}
+  cancel-in-progress: false
+jobs:
+  suite:
+    runs-on: ubuntu-latest
+    timeout-minutes: 120
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with: { node-version: 22, cache: npm, cache-dependency-path: app/package-lock.json }
+      - run: npm ci
+        working-directory: app
+      - run: npx playwright install --with-deps chromium
+        working-directory: app
+      - run: npm run build
+        working-directory: app
+      # Each gate below runs even when an earlier one failed (if: success() || failure()), so one night reports every failure; the job fails if any did.
+      # npm run check three times in a row with the default timeouts; the summary says which test failed in which run (flaky = some runs only).
+      - id: check3
+        run: node tools/check-repeat.mjs --runs 3
+        if: success() || failure()
+        timeout-minutes: 75
+      # The "about N tests" fact of the docs, against the count of the last run (tolerance 2 %); the hint says to run npm run docs:facts -- --count-tests.
+      - id: count
+        run: node tools/check-repeat.mjs --count-tests --tolerance 2
+        if: success() || failure()
+        timeout-minutes: 15
+      # 40 workbooks + 107 case files in the legacy file and the build: only the 2 DEV-SNAPSHOT-RESTORE differences of tools/parallel-run-known.json.
+      - id: parallel
+        run: node tools/parallel-run.mjs --corpus full
+        if: success() || failure()
+        timeout-minutes: 30
+      - id: audit
+        run: npm audit --omit=dev
+        if: success() || failure()
+        working-directory: app
+      - if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: nightly-check-runs   # the JUnit report of each check run
+          path: app/test-results/check-runs/
+          if-no-files-found: ignore
+          retention-days: 14
+      - if: always()
+        run: |
+          {
+            echo "### Nightly gates (suite)"
+            echo ""
+            echo "| Gate | Result |"
+            echo "|---|---|"
+            echo "| npm run check x3 | ${{ steps.check3.outcome }} |"
+            echo "| documented test count | ${{ steps.count.outcome }} |"
+            echo "| parallel run, full corpus | ${{ steps.parallel.outcome }} |"
+            echo "| npm audit --omit=dev | ${{ steps.audit.outcome }} |"
+          } >> "$GITHUB_STEP_SUMMARY"
+  affected:
+    runs-on: ubuntu-latest
+    timeout-minutes: 240
+    defaults: { run: { working-directory: app } }
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with: { node-version: 22, cache: npm, cache-dependency-path: app/package-lock.json }
+      - run: npm ci
+      # One mutation per sampled module, the full suite after each: fails when a failing test file is outside the selection (recall < 100 %).
+      # About 2 h 10 min with 3 workers (docs/TEST_SELECTION.md section 5); the script writes its recall lines to the job summary.
+      - run: npm run validate:affected
+        timeout-minutes: 225

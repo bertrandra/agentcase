@@ -14,7 +14,8 @@ npm run test:affected -- --files src/domain/stress/sensitivity.ts,../docs/VUE_AG
 npm run test:affected -- --dry                  # print the selection, run nothing (--list prints the test files)
 npm run test:affected -- --level precise        # only the tests whose import closure holds a changed file
 npm run test:affected -- --level related        # also what `vitest related` would pick (barrels followed whole)
-npm run validate:affected                       # mutation check of the rule (not part of CI), see section 5
+npm run validate:affected                       # mutation check of the rule (nightly CI job `affected`), see section 5
+npm run validate:affected -- --only stress,rank # a sample: only the mutations of the modules whose path contains one of the words
 ```
 
 The output is one reading line per step: `changed files (N) -> zones [...] -> sections [...]`, the downstream zones and sections, the reasons for a full run
@@ -66,8 +67,10 @@ selection per zone and section (tab *Tests impacted*).
 
 `npm run validate:affected` (`app/scripts/validate-affected.ts`) mutates one module at a time in the working tree (a one-token change that moves numbers
 or output, restored afterwards, even on error), runs the full suite, and checks that **every failing test file is in the selection** the rule computes for that
-file (recall must be 100%). It prints the recall and the average saving per mode. It takes tens of minutes and is not part of CI; run it after changing the
-generator, the tags or the rule. Results of the last run are in the changelog entry of the release that introduced the rule.
+file (recall must be 100%). It prints the recall and the average saving per mode, and exits 1 on any miss (and 2 on a stale mutation, whose `find` text no
+longer occurs once). It takes about 2 hours, so it is not a pull-request gate: the **nightly** workflow runs it in full (`.github/workflows/nightly.yml`, job
+`affected`, time limit 3 h 45 min, recall lines in the job summary), and so does `npm run gates -- --nightly` locally (`--affected-only stress,rank` passes
+`--only` for a sample). Run it yourself after changing the generator, the tags or the rule. Results of the last run are in the changelog entry of the release that introduced the rule.
 
 **Last run (2026-10-24, lot 4, after the per-layer generator, the retagging and the split of verification / verdict): 19 mutations, 13 run, 6 select the full
 suite anyway** (`velocityUplift.ts`, `costReduction.ts`, `knowledge.ts`, `store/history.ts`, `time/years.ts`, `economics/cashflow.ts`, so their recall is trivial):

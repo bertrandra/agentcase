@@ -2,17 +2,20 @@
 // Accessibility audit of the BUILT single-file app (app/dist/index.html) with axe-core in Chromium.
 // For each fixture it opens the case through the Open… input, switches to the Advanced persona, keeps the History dock open and visits every
 // section, then audits the other states (see a11y-states.mjs: persona menu, history dock + undo toast, guided sequence, restore banner, dark /
-// forced-colours / reduced-motion / 360px) and runs the keyboard-only checks (a11y-keys.mjs: Tab walk, skip link, dialogs, focus survival). Writes app/a11y-report.json and a summary table.
+// forced-colours / reduced-motion / 360px) and runs the keyboard-only checks (a11y-keys.mjs: Tab walk, skip link, dialogs, focus survival). Writes a report and a summary table.
 // Exit code 1 when any serious/critical violation remains, or when the moderate/minor counts exceed app/a11y-budget.json.
 // Usage: node tools/a11y.mjs [--fixtures golden,ctx-msi,industry-med | pf-three-products | pf-example] [--sections label,label] [--update-budget]
 //        [--mode light|dark|auto] [--contrast standard|enhanced|high]   (the viewer's display preference, set in localStorage before each page loads)
-import { readFileSync, writeFileSync, existsSync } from 'node:fs';
-import { resolve } from 'node:path';
+//        [--report <path> | --no-write] [--shots <dir>]   (report: default app/a11y-report.json, the committed one, which is never written when CI is set:
+//        CI passes --report and uploads it; --shots: a screenshot of every state with a violation)
+import { appendFileSync, readFileSync, writeFileSync, existsSync, mkdirSync } from 'node:fs';
+import { dirname, resolve } from 'node:path';
 import { app, pw, NAV, DISPLAY, recorder, openCase, openSection } from './a11y-lib.mjs';
 import { historyStates, keyboardStates, mediaStates, menuToggleFocus, personaMenu, restoreBanner, wizardEnd } from './a11y-states.mjs';
 const args = process.argv.slice(2), opt = (n) => (args.indexOf(n) < 0 ? '' : args[args.indexOf(n) + 1] || '').split(',').filter(Boolean);
 const fixtures = opt('--fixtures').length ? opt('--fixtures') : ['golden', 'ctx-msi', 'industry-med', 'pf-example'], only = opt('--sections');
-const budgetFile = resolve(app, 'a11y-budget.json'), reportFile = resolve(app, 'a11y-report.json');
+const budgetFile = resolve(app, 'a11y-budget.json'), reportArg = args.indexOf('--report') < 0 ? '' : args[args.indexOf('--report') + 1] || '';
+const reportFile = args.includes('--no-write') || (!reportArg && process.env.CI) ? '' : resolve(reportArg || resolve(app, 'a11y-report.json'));   // never rewrite the committed report in CI
 const ORDER = ['critical', 'serious', 'moderate', 'minor'];
 
 const browser = await pw.chromium.launch();
@@ -85,8 +88,9 @@ for (const r of rows) {
 }
 const summary = [...agg.values()].map((a) => ({ rule: a.rule, impact: a.impact, nodes: a.nodes, sections: a.sections.size, help: a.help, example: a.example }))
   .sort((a, b) => ORDER.indexOf(a.impact) - ORDER.indexOf(b.impact) || b.nodes - a.nodes);
-writeFileSync(reportFile, JSON.stringify({ audits: rec.state.audits, fixtures, summary, violations: rows.map((r) => ({ fixture: r.fixture, section: r.section, rule: r.rule, impact: r.impact, nodes: r.nodes, example: r.targets[0] })) }, null, 1) + '\n');
-console.log(`${rec.state.audits} audits (${fixtures.join(', ')})${DISPLAY ? ` display ${DISPLAY}` : ''}`);
+if (reportFile) mkdirSync(dirname(reportFile), { recursive: true });
+if (reportFile) writeFileSync(reportFile, JSON.stringify({ audits: rec.state.audits, fixtures, ...(DISPLAY ? { display: JSON.parse(DISPLAY) } : {}), summary, violations: rows.map((r) => ({ fixture: r.fixture, section: r.section, rule: r.rule, impact: r.impact, nodes: r.nodes, example: r.targets[0] })) }, null, 1) + '\n');
+console.log(`${rec.state.audits} audits (${fixtures.join(', ')})${DISPLAY ? ` display ${DISPLAY}` : ''}; report ${reportFile || 'not written'}`);
 console.log('impact   | rule'.padEnd(42) + '| nodes | pages');
 for (const s of summary) console.log(`${s.impact.padEnd(8)} | ${s.rule.padEnd(30)}| ${String(s.nodes).padStart(5)} | ${s.sections}`);
 if (!summary.length) console.log('no violations');
@@ -101,8 +105,11 @@ const budget = existsSync(budgetFile) ? JSON.parse(readFileSync(budgetFile, 'utf
 let fail = 0;
 for (const s of summary) {
   const k = `${s.rule}|${s.impact}`;
-  if (s.impact === 'serious' || s.impact === 'critical') { fail++; console.log(`FAIL ${k}: ${s.nodes} node(s), e.g. ${s.example}`); }
-  else if (!update && s.nodes > (budget[k] ?? 0)) { fail++; console.log(`FAIL ${k}: ${s.nodes} > budget ${budget[k] ?? 0}`); }
+  const pages = [...new Set(rows.filter((r) => `${r.rule}|${r.impact}` === k).map((r) => `${r.fixture}/${r.section}`))], on = pages.slice(0, 3).join('; ') + (pages.length > 3 ? ` (+${pages.length - 3})` : '');
+  if (s.impact === 'serious' || s.impact === 'critical') { fail++; console.log(`FAIL ${k}: ${s.nodes} node(s) on ${on}, e.g. ${s.example}`); }
+  else if (!update && s.nodes > (budget[k] ?? 0)) { fail++; console.log(`FAIL ${k}: ${s.nodes} > budget ${budget[k] ?? 0} on ${on}`); }
 }
 console.log(fail ? `${fail} failing rule(s)` : 'a11y OK');
+if (process.env.GITHUB_STEP_SUMMARY) appendFileSync(process.env.GITHUB_STEP_SUMMARY, `### Accessibility: ${fixtures.join(', ')}${DISPLAY ? ` (${DISPLAY})` : ''}\n\n${rec.state.audits} audits, ${fail ? `**${fail} failing rule(s)**` : 'OK'}\n\n` +
+  (summary.length ? ['| Impact | Rule | Nodes | Pages | Example |', '|---|---|---|---|---|', ...summary.map((x) => `| ${x.impact} | ${x.rule} | ${x.nodes} | ${x.sections} | \`${x.example}\` |`)].join('\n') + '\n' : ''));
 process.exit(fail ? 1 : 0);

@@ -5,7 +5,7 @@
  *   npm run validate:affected [-- --only stress,rank --force]     --force also runs the mutations whose selection is the full suite (recall is trivial)
  */
 import { spawnSync } from 'node:child_process';
-import { readFileSync, writeFileSync } from 'node:fs';
+import { appendFileSync, readFileSync, writeFileSync } from 'node:fs';
 import { join, relative } from 'node:path';
 import { MUTATIONS } from './lib/mutations';
 import { affected, type Level } from './lib/select';
@@ -46,7 +46,9 @@ const ran = rows.filter((r) => r.ran), total = rows[0] ? affected(root, [], 'zon
 for (const l of LEVELS) {
   const fail = ran.reduce((n, r) => n + r.failing, 0), miss = ran.reduce((n, r) => n + r.missed[l].length, 0);
   const saving = rows.reduce((n, r) => n + (total - r.sel[l]) / total, 0) / Math.max(1, rows.length);
-  console.log(`level ${l}: recall ${fail ? Math.round(((fail - miss) / fail) * 1000) / 10 : 100}% (${fail - miss}/${fail} failing files selected, ${ran.length} mutations run), average saving ${Math.round(saving * 100)}% over ${rows.length} modules`);
+  const line = `level ${l}: recall ${fail ? Math.round(((fail - miss) / fail) * 1000) / 10 : 100}% (${fail - miss}/${fail} failing files selected, ${ran.length} mutations run), average saving ${Math.round(saving * 100)}% over ${rows.length} modules`;
+  console.log(line);
   ran.forEach((r) => r.missed[l].forEach((f) => console.log(`  MISSED ${f} (mutation of ${r.file})`)));
+  if (process.env.GITHUB_STEP_SUMMARY) appendFileSync(process.env.GITHUB_STEP_SUMMARY, `- validate:affected ${line}${ran.flatMap((r) => r.missed[l].map((f) => `\n  - MISSED ${f} (mutation of ${r.file})`)).join('')}\n`);   // the nightly job summary
 }
 process.exit(ran.some((r) => LEVELS.some((l) => r.missed[l].length)) ? 1 : 0);

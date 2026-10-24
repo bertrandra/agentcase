@@ -6,8 +6,10 @@
 // app/ui-parity-exceptions.json (each exception pins the NEW value, so drift inside an exception fails too).
 // Usage: node tools/ui-parity.mjs [--personas builder,admin] [--shots <dir>] [--all] [--areas-only | --sections-only] [--fixtures golden,ctx-msi,industry-med] [--sections id,id]
 //   (--all also lists the excepted rows). Section exceptions are recorded with area "sections:<kind>".
+//   --shots <dir> also writes <dir>/divergences.json (every failing row) when there is one; CI uploads the folder on failure. A Markdown summary goes to
+//   $GITHUB_STEP_SUMMARY when it is set.
 import { createRequire } from 'node:module';
-import { existsSync, readFileSync, mkdirSync } from 'node:fs';
+import { appendFileSync, existsSync, readFileSync, mkdirSync, writeFileSync } from 'node:fs';
 import { dirname, resolve } from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { AREAS, PROPS } from './ui-parity-areas.mjs';
@@ -95,5 +97,10 @@ if (!args.includes('--areas-only')) {   // section content: one row per (element
 await browser.close();
 const cut = (s, k) => (s.length > k ? s.slice(0, k - 1) + '…' : s);
 for (const r of rows) console.log(`${r.status.padEnd(8)} ${r.persona.padEnd(10)} ${r.area.padEnd(22)} ${r.prop.padEnd(18)} legacy=${cut(r.l, 60)} | new=${cut(r.n, 60)}`);
-console.log(`${compared} properties compared over ${personas.length} persona(s) + section content: ${unexpected} divergence(s), ${excepted} recorded exception(s)`);
+const verdict = `${compared} properties compared over ${personas.length} persona(s) + section content: ${unexpected} divergence(s), ${excepted} recorded exception(s)`;
+console.log(verdict);
+const failing = rows.filter((r) => r.status !== 'EXCEPTED');
+if (shots && failing.length) writeFileSync(resolve(shots, 'divergences.json'), JSON.stringify(failing, null, 1) + '\n');
+if (process.env.GITHUB_STEP_SUMMARY) appendFileSync(process.env.GITHUB_STEP_SUMMARY, `### UI parity\n\n${verdict}\n\n` + (failing.length ? ['| Status | Persona / sections | Area | Property | Legacy | New |', '|---|---|---|---|---|---|',
+  ...failing.slice(0, 50).map((r) => `| ${r.status} | ${r.persona} | ${r.area} | ${r.prop} | ${cut(r.l, 50)} | ${cut(r.n, 50)} |`.replace(/\n/g, ' '))].join('\n') + '\n' : ''));
 process.exit(unexpected ? 1 : 0);
