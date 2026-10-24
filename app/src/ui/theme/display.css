@@ -8,3 +8,7 @@
 .ac-top .ac-display-panel :focus-visible { outline-color: var(--ac-focus); }
 .ac-display-note { margin: .4rem 0 0; font-size: var(--ac-font-size-sm); color: var(--ac-muted); }
 .ac-top .ac-display-panel input { accent-color: var(--ac-focus); }
+/* File menu (top bar): menu items in the shared panel */
+.ac-top .ac-file-panel { width: 180px; padding: 4px; }
+.ac-top .ac-file-panel button { display: flex; align-items: center; gap: 8px; width: 100%; padding: 6px 10px; font-size: var(--ac-font-size-base); color: var(--ac-ink); background: none; border: 0; border-radius: var(--ac-radius-sm); opacity: 1; }
+.ac-top .ac-file-panel button:hover, .ac-top .ac-file-panel button:focus-visible { color: var(--ac-hover-text); background: var(--ac-hover); }
