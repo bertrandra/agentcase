@@ -1,6 +1,6 @@
 {
  "schema": 1,
- "counts": {"files":972,"tagged":456,"tests":277},
+ "counts": {"files":972,"tagged":456,"tests":278},
  "zones": [
   {"id":"rate-card-team","modules":8,"tmed":108,"tmax":247},
   {"id":"scope-automation","modules":15,"tmed":89,"tmax":247},
@@ -552,6 +552,7 @@
   {"path":"src/ui/widgets/ReadOnlyScope.tsx","reason":"View-selector widget."}
  ],
  "tests": [
+  ["tests/docs-deviations.test.ts","",""],
   ["tests/docs-facts.test.ts","16",""],
   ["tests/domain/affected-tests.test.ts","15",""],
   ["tests/domain/baseline.test.ts","0-1,16",""],
