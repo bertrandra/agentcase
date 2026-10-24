@@ -15,7 +15,9 @@ All notable changes to AgentCase, newest first. Product version from v19.0.0 = t
 
 When releasing, follow [docs/BUMP_PROCEDURE.md](docs/BUMP_PROCEDURE.md) (§7 for the legacy file) and add the new version at the top.
 
-## [Unreleased] — Architecture lot 1: robustness
+## [v20.14.0] 2026-10-24 — Architecture lots 1 and 4: robustness (error boundaries, CSP, audit, lint), one cash-flow kernel, acyclic zone graph, pilot in cost-model totals
+
+### Lot 1 — robustness
 
 ### New
 - **Error boundaries.** A display error no longer blanks the page. Around the whole shell: a minimal page "AgentCase hit an unexpected error" with
@@ -45,7 +47,7 @@ When releasing, follow [docs/BUMP_PROCEDURE.md](docs/BUMP_PROCEDURE.md) (§7 for
   ExcelJS's Node build accepts (every Excel test and the parallel run pass). The browser bundle uses ExcelJS's pre-built copy, which calls only `v4()`.
 
 **Golden case:** unchanged.
-## [Unreleased] — Architecture lot 4: one cash-flow kernel, acyclic zone graph, case-file parity explained, pilot in the cost-model totals
+### Lot 4 — one cash-flow kernel, acyclic zone graph, case-file parity explained, pilot in the cost-model totals
 
 ### Changed
 - **One discounted-cash-flow kernel** (`app/src/domain/economics/cashflow.ts`, zone *time-engine*): `cumulativeOf`, `paybackMonthOf` (first month >= `firstMonth`
