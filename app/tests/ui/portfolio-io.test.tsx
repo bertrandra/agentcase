@@ -1,6 +1,6 @@
 // @vitest-environment jsdom
 import { cleanup, fireEvent, screen, within } from '@testing-library/react';
-import axe from 'axe-core';
+import { axeViolations } from '../helpers/axe';
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 import { addProduct } from '@/controllers/product';
 import { setDisplayScope } from '@/controllers/displayScope';
@@ -75,7 +75,6 @@ describe('Import / Export with a portfolio', () => {
   it('has no accessibility violation', async () => {
     freshStore(); addProduct('Second');
     await open(/Export \/ Import current settings/);
-    const r = await axe.run(document.body, { rules: { 'color-contrast': { enabled: false }, region: { enabled: false } } });
-    expect(r.violations.map((v) => v.id)).toEqual([]);
+    expect(await axeViolations(document.body, { region: false })).toEqual([]);
   });
 });

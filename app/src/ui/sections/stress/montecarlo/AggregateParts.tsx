@@ -1,4 +1,4 @@
-import { useMemo } from 'react';
+import { useMemo, type ReactNode } from 'react';
 import { runPortfolioSimulation } from '@/controllers/stressPortfolio';
 import type { ProductStress, SelectionStress } from '@/domain/portfolio';
 import { pNegTone } from '@/domain/stress';
@@ -23,13 +23,14 @@ export function StaleRun() {
   );
 }
 
-/** P10 / P50 / P90 / P(net < 0) / CVaR / mean cards of a stats block. */
-export function StatsCards({ s }: { s: SelectionStress['stats'] }) {
+/** P10 / P50 / P90 / P(net < 0) / CVaR / mean cards of a stats block (`children`: more cards at the end of the row). */
+export function StatsCards({ s, children }: { s: SelectionStress['stats']; children?: ReactNode }) {
   return (
     <StatRow>
       <Stat label="P10 (adverse outcome)" value={fmtEur(s.p10)} tone={tone(s.p10)} /><Stat label="P50 (median)" value={fmtEur(s.p50)} tone={s.p50 < 0 ? 'brick' : 'blue'} />
       <Stat label="P90 (favourable outcome)" value={fmtEur(s.p90)} tone="teal" /><Stat label="P(net < 0)" value={`${Math.round(s.pNetNeg * 100)} %`} tone={pNegTone(s.pNetNeg)} />
       <Stat label="CVaR 10 %" value={fmtEur(s.cvar10)} tone="amber" /><Stat label="Mean" value={fmtEur(s.mean)} tone="blue" />
+      {children}
     </StatRow>
   );
 }

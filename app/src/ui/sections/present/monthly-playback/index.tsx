@@ -1,9 +1,9 @@
 import { useMemo } from 'react';
-import { MP_META, playbackSeries } from '@/domain/pdc/playback';
+import { playbackSeries } from '@/domain/pdc/playback';
 import { useCtx } from '@/store/hooks';
-import { ChartPanel } from '@/ui/widgets/ChartPanel';
 import { SectionFrame } from '@/ui/zones/SectionFrame';
-import { legendOf, playbackChart } from './chart';
+import { playbackChart } from './chart';
+import { PlaybackStage } from './Stage';
 import { Transport } from './Transport';
 import { sequence, usePlayer } from './usePlayer';
 
@@ -22,12 +22,6 @@ export default function MonthlyPlaybackSection() {
   return (
     <SectionFrame title="Monthly Playback" help={help}
       input={<Transport p={p} months={s.months} dispatch={dispatch} seek={seek} />}
-      result={key && cfg ? (
-        <>
-          <div className="ac-form-row"><h2 data-testid="mp-title">{MP_META[key].title}</h2><span className="ac-muted" data-testid="mp-pos">{Math.min(p.seq, seq.length - 1) + 1} / {seq.length}</span></div>
-          <div className="ac-form-row">{legendOf(key).map((l) => <span key={l.label}><span style={{ display: 'inline-block', width: 10, height: 10, background: l.color, marginRight: 4 }} />{l.label}</span>)}</div>
-          <ChartPanel config={cfg} label={`${MP_META[key].title} — monthly trajectory, ${s.months} months`} height={320} />
-        </>
-      ) : <p className="ac-muted">Select at least one metric</p>} />
+      result={<PlaybackStage metric={key} cfg={cfg} pos={Math.min(p.seq, seq.length - 1)} count={seq.length} months={s.months} />} />
   );
 }

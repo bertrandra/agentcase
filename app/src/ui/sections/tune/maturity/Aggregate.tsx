@@ -1,13 +1,13 @@
 import type { MaturityRow } from '@/domain/portfolio';
 import { useMaturityAgg } from '@/store/selectionHooksTune';
 import { useViewScope } from '@/store/viewScope';
-import { AggregateTable, type AggColumn } from '@/ui/widgets/AggregateTable';
+import { AggregateTable, type AggColumn, waveColumn } from '@/ui/widgets/AggregateTable';
 import { eurK } from '../../tuneB/fmt';
 import { InputAggregate, SpreadTable, type SpreadItem } from '../AggregateShared';
 
 const R = 'right' as const;
 const COLS: AggColumn<MaturityRow>[] = [
-  { key: 'wave', header: 'Wave', render: (r) => r.wave },
+  waveColumn(),
   { key: 'sdd', header: 'SDD maturity', align: R, title: '0–100', render: (r) => `${r.sdd.toFixed(0)} — ${r.sddName}` },
   { key: 'cut', header: 'Tax cut', align: R, title: 'Share of the verification tax removed by SDD maturity', render: (r) => `−${r.taxCut}%` },
   { key: 'harness', header: 'Harness maturity', align: R, render: (r) => r.harness.toFixed(0) },

@@ -1,9 +1,9 @@
 import { useMemo } from 'react';
 import type { PfStress } from '@/domain/portfolio';
-import { pNegTone } from '@/domain/stress';
 import { Callout, Panel, Stat, StatRow } from '@/ui/widgets/cards';
 import { ChartPanel } from '@/ui/widgets/ChartPanel';
 import { goSection } from '@/ui/uiState';
+import { StatsCards } from '../../stress/montecarlo/AggregateParts';
 import { histogram } from '../../stress/montecarlo/RunResults';
 import { fmtEur } from '../../stress/fmt';
 import { Tables } from './Tables';
@@ -22,12 +22,7 @@ export function Results({ run, stale, rerun }: { run: PfStress; stale: boolean; 
         <Callout kind="warn">⚠️ <strong>The portfolio changed since the last simulation</strong> — the distribution and the portfolio verdict are stale.{' '}
           <button type="button" onClick={rerun}>⟳ Run again</button></Callout>
       )}
-      <StatRow>
-        <Stat label="P10 (adverse outcome)" value={fmtEur(s.p10)} tone={tone(s.p10)} /><Stat label="P50 (median)" value={fmtEur(s.p50)} tone={s.p50 < 0 ? 'brick' : 'blue'} />
-        <Stat label="P90 (favourable outcome)" value={fmtEur(s.p90)} tone="teal" /><Stat label="P(net < 0)" value={`${Math.round(s.pNetNeg * 100)} %`} tone={pNegTone(s.pNetNeg)} />
-        <Stat label="CVaR 10 %" value={fmtEur(s.cvar10)} tone="amber" /><Stat label="Mean" value={fmtEur(s.mean)} tone="blue" />
-        <Stat label="Draws · seed · ρ" value={`${run.draws} · ${run.seed} · ${String(run.rho)}`} tone="grey" />
-      </StatRow>
+      <StatsCards s={s}><Stat label="Draws · seed · ρ" value={`${run.draws} · ${run.seed} · ${String(run.rho)}`} tone="grey" /></StatsCards>
       <Panel title="Portfolio distribution"><ChartPanel config={config} label="Distribution of the portfolio net benefit" /></Panel>
       <Panel title="Risk reduction (diversification)">
         <StatRow>

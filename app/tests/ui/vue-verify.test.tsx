@@ -7,7 +7,7 @@ import * as D from '@/domain/portfolio';
 import { periodRows } from '@/domain/verifyA';
 import { fmtE, fmtEurK } from '@/ui/format';
 import { threeProducts } from '../helpers/portfolioStore';
-import { mountApp, pf, sectionReady } from '../helpers/portfolioUi';
+import { LAZY, mountApp, pf, sectionReady } from '../helpers/portfolioUi';
 import { independent } from '../helpers/aggVerify';
 import { VERIFY_IDS } from '../helpers/verifyIds';
 
@@ -99,7 +99,7 @@ describe('verify roll-ups: the read-only drill-down and "Edit this product"', ()
     await sectionReady(/vFTE Overview/);
     fireEvent.click(screen.getByRole('button', { name: /B$/, expanded: false }));
     const region = await screen.findByRole('region', { name: 'Detail: B' }), b = independent(core(), { kind: 'portfolio' })[1]!;
-    expect(await within(region).findByRole('heading', { level: 4 })).toBeTruthy();
+    expect(await within(region).findByRole('heading', { level: 4 }, LAZY)).toBeTruthy();
     expect(region.textContent).toContain(periodRows(b.live).at(-1)!.human.toFixed(1));
     expect(document.querySelectorAll('[data-readonly]')).toHaveLength(1);
     expect(pf().activeProductId).toBe(ids[0]);
@@ -110,7 +110,7 @@ describe('verify roll-ups: the read-only drill-down and "Edit this product"', ()
     await sectionReady(/^Quality$/);
     fireEvent.click(screen.getByRole('button', { name: /B$/, expanded: false }));
     const region = await screen.findByRole('region', { name: 'Detail: B' });
-    const inputs = await within(region).findAllByRole('spinbutton');
+    const inputs = await within(region).findAllByRole('spinbutton', undefined, LAZY);
     for (const i of inputs) expect(i.matches(':disabled')).toBe(true);
     fireEvent.click(screen.getByRole('button', { name: 'Edit this product: B' }));
     expect(pf().activeProductId).toBe(ids[1]);

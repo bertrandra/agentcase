@@ -3,6 +3,7 @@ import { addCard, removeCard, setCardField, setCardSource } from '@/controllers/
 import type { BoardCard, CardSlot, DynSection } from '@/domain/pdc/board';
 import { sortedCards } from '@/domain/pdc/boardRows';
 import { variableById } from '@/domain/pdc/variables';
+import { EditorTable, RemoveCell } from './EditorTable';
 import { OverlayPicker, SectionPicker, VarPicker } from './pickers';
 
 const SLOTS: [CardSlot, string][] = [['CARD_IMPACT_VAR', 'Headline'], ['CARD_KEY1_VAR', 'Key figure 1'], ['CARD_KEY2_VAR', 'Key figure 2']];
@@ -22,31 +23,23 @@ function KeySlot({ id, card, slot, title }: { id: string; card: BoardCard; slot:
 export function CardsEditor({ section }: { section: DynSection }) {
   const id = section.id;
   return (
-    <>
-      <h4>Cards <span className="ac-muted">— {section.cards.length}</span></h4>
-      <p className="ac-muted">Set Source first — it decides which variables Headline / Key figure 1 / Key figure 2 can pick from.</p>
-      <div className="ac-table-wrap" tabIndex={0}><table className="ac-table">
-        <caption className="sr-only">Cards of {section.title}</caption>
-        <thead><tr><th>Seq</th><th>On</th><th>Name</th><th>Source</th><th>{SLOTS[0]![1]}</th><th>{SLOTS[1]![1]}</th><th>{SLOTS[2]![1]}</th><th>Overlay</th><th>Target (goto)</th><th scope="col"><span className="ac-sr">Actions</span></th></tr></thead>
-        <tbody>
-          {section.cards.length === 0 && <tr><td colSpan={10} className="ac-muted">No cards.</td></tr>}
-          {sortedCards(section.cards).map((card) => (
-            <tr key={card.CARD_ID}>
-              <td><input type="number" aria-label={`Order of ${card.CARD_ID}`} style={{ width: 56 }} value={card.CARD_SEQ || 0} onChange={(e) => setCardField(id, card.CARD_ID, 'CARD_SEQ', e.target.value)} /></td>
-              <td><input type="checkbox" aria-label={`On ${card.CARD_ID}`} checked={!!card.CARD_ENABLED} onChange={(e) => setCardField(id, card.CARD_ID, 'CARD_ENABLED', e.target.checked)} /></td>
-              <td><input type="text" aria-label={`Name of ${card.CARD_ID}`} value={card.CARD_NAME_VALUE} onChange={(e) => renameCard(id, card.CARD_ID, e.target.value)} /></td>
-              <td><SectionPicker value={card.CARD_SOURCE_SECTION} label={`Source of ${card.CARD_ID}`} onChange={(v) => v && setCardSource(id, card.CARD_ID, v)} /></td>
-              <td><VarPicker source={card.CARD_SOURCE_SECTION} value={card.CARD_IMPACT_VAR} label={`Headline of ${card.CARD_ID}`} onChange={(v) => bindCardVariable(id, card.CARD_ID, 'CARD_IMPACT_VAR', v)} /></td>
-              <td><KeySlot id={id} card={card} slot="CARD_KEY1_VAR" title="Key figure 1" /></td>
-              <td><KeySlot id={id} card={card} slot="CARD_KEY2_VAR" title="Key figure 2" /></td>
-              <td><OverlayPicker value={card.CARD_OVERLAY_CTRL} label={`Overlay of ${card.CARD_ID}`} onChange={(v) => setCardField(id, card.CARD_ID, 'CARD_OVERLAY_CTRL', v ?? '')} /></td>
-              <td><SectionPicker value={card.CARD_TARGET_SECTION} label={`Target of ${card.CARD_ID}`} onChange={(v) => setCardField(id, card.CARD_ID, 'CARD_TARGET_SECTION', v)} /></td>
-              <td><button type="button" className="ac-btn" aria-label={`Remove ${card.CARD_ID}`} onClick={() => removeCard(id, card.CARD_ID, card.CARD_NAME_VALUE)}>✕</button></td>
-            </tr>
-          ))}
-        </tbody>
-      </table></div>
-      <button type="button" className="ac-btn" onClick={() => addCard(id)}>➕ Add card</button>
-    </>
+    <EditorTable title="Cards" count={section.cards.length} hint="Set Source first — it decides which variables Headline / Key figure 1 / Key figure 2 can pick from."
+      caption={`Cards of ${section.title}`} cols={10} empty="No cards." add="➕ Add card" onAdd={() => addCard(id)}
+      head={<><th>Seq</th><th>On</th><th>Name</th><th>Source</th><th>{SLOTS[0]![1]}</th><th>{SLOTS[1]![1]}</th><th>{SLOTS[2]![1]}</th><th>Overlay</th><th>Target (goto)</th></>}>
+      {sortedCards(section.cards).map((card) => (
+        <tr key={card.CARD_ID}>
+          <td><input type="number" aria-label={`Order of ${card.CARD_ID}`} style={{ width: 56 }} value={card.CARD_SEQ || 0} onChange={(e) => setCardField(id, card.CARD_ID, 'CARD_SEQ', e.target.value)} /></td>
+          <td><input type="checkbox" aria-label={`On ${card.CARD_ID}`} checked={!!card.CARD_ENABLED} onChange={(e) => setCardField(id, card.CARD_ID, 'CARD_ENABLED', e.target.checked)} /></td>
+          <td><input type="text" aria-label={`Name of ${card.CARD_ID}`} value={card.CARD_NAME_VALUE} onChange={(e) => renameCard(id, card.CARD_ID, e.target.value)} /></td>
+          <td><SectionPicker value={card.CARD_SOURCE_SECTION} label={`Source of ${card.CARD_ID}`} onChange={(v) => v && setCardSource(id, card.CARD_ID, v)} /></td>
+          <td><VarPicker source={card.CARD_SOURCE_SECTION} value={card.CARD_IMPACT_VAR} label={`Headline of ${card.CARD_ID}`} onChange={(v) => bindCardVariable(id, card.CARD_ID, 'CARD_IMPACT_VAR', v)} /></td>
+          <td><KeySlot id={id} card={card} slot="CARD_KEY1_VAR" title="Key figure 1" /></td>
+          <td><KeySlot id={id} card={card} slot="CARD_KEY2_VAR" title="Key figure 2" /></td>
+          <td><OverlayPicker value={card.CARD_OVERLAY_CTRL} label={`Overlay of ${card.CARD_ID}`} onChange={(v) => setCardField(id, card.CARD_ID, 'CARD_OVERLAY_CTRL', v ?? '')} /></td>
+          <td><SectionPicker value={card.CARD_TARGET_SECTION} label={`Target of ${card.CARD_ID}`} onChange={(v) => setCardField(id, card.CARD_ID, 'CARD_TARGET_SECTION', v)} /></td>
+          <RemoveCell name={card.CARD_ID} onRemove={() => removeCard(id, card.CARD_ID, card.CARD_NAME_VALUE)} />
+        </tr>
+      ))}
+    </EditorTable>
   );
 }

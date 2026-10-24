@@ -2,7 +2,7 @@
 import * as ops from '@/domain/portfolio';
 import { definePortfolioCommand } from '@/store/commands';
 import { appStore } from '@/store/instance';
-import { dispatchChecked, newId } from './portfolioGuard';
+import { dispatchChecked, newPortfolioId } from './portfolioGuard';
 
 const addCmd = definePortfolioCommand<{ id: string; name: string; startMonth: number }>({
   type: 'wave.add', label: (p) => `Add wave "${p.name}"`, apply: (pf, p) => ops.addWave(pf, p),
@@ -24,11 +24,9 @@ const assignCmd = definePortfolioCommand<{ productId: string; waveId: string | n
   type: 'wave.assign', label: (p) => (p.waveId === null ? 'Unassign product from its wave' : 'Assign product to a wave'), apply: (pf, p) => ops.assignWave(pf, p.productId, p.waveId),
 });
 
-const ids = (): string[] => { const pf = appStore().getState().portfolio; return [...pf.products.map((p) => p.id), ...pf.waves.map((w) => w.id)]; };
-
 /** Add a wave starting at `startMonth` (0 = portfolio start). Returns its id. */
 export function addWave(name?: string, startMonth = 0): string | null {
-  const id = newId('w', ids());
+  const id = newPortfolioId('w');
   return dispatchChecked(addCmd({ id, name: name?.trim() || `Wave ${appStore().getState().portfolio.waves.length + 1}`, startMonth })) ? id : null;
 }
 export const renameWave = (id: string, name: string): boolean => dispatchChecked(renameCmd({ id, name }));

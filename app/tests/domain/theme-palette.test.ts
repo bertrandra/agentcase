@@ -9,8 +9,15 @@ import { COLOUR_KEYS } from '../../src/domain/theme/themeDef';
 const lch = (hex: string) => toOklch(hexToRgb(hex)!);
 const SEEDS = ['#0b7a75', '#0058ab', '#ffff66', '#101010', '#808080', '#ff00ff', '#ff0000', '#16693a', '#ffa500', '#5b2a9e', '#00ffff', '#f0f0f0'];
 const STEPS = [0, 25, 50, 75, 100];
+/** The 240 palettes of the sweep, computed once for the file (the generator is deterministic, checked below) instead of once per test. */
+const SWEEP = new Map<string, Palette>();
+const pal = (seed: string, c: number, h: Harmony): Palette => {
+  const k = `${seed} ${c} ${h}`;
+  if (!SWEEP.has(k)) SWEEP.set(k, paletteFromSeed(seed, { contrast: c, harmony: h }));
+  return SWEEP.get(k)!;
+};
 const all = (f: (seed: string, c: number, h: Harmony, p: Palette) => void) => {
-  for (const seed of SEEDS) for (const c of STEPS) for (const h of HARMONIES) f(seed, c, h, paletteFromSeed(seed, { contrast: c, harmony: h }));
+  for (const seed of SEEDS) for (const c of STEPS) for (const h of HARMONIES) f(seed, c, h, pal(seed, c, h));
 };
 
 describe('paletteFromSeed', () => {
@@ -47,7 +54,7 @@ describe('paletteFromSeed', () => {
   });
   it('more contrast: ink on surface and the header text on the header never decrease along the slider, and grow from soft to strong', () => {
     for (const seed of SEEDS) for (const h of HARMONIES) {
-      const r = STEPS.map((c) => paletteTable(paletteFromSeed(seed, { contrast: c, harmony: h }), 'light', 'standard'));
+      const r = STEPS.map((c) => paletteTable(pal(seed, c, h), 'light', 'standard'));
       const ink = r.map((t) => contrastRatio(t.ink, t.surface)), head = r.map((t) => contrastRatio(t['header-text'], t['header-start']));
       for (let i = 1; i < r.length; i++) {
         expect(ink[i]! + 1e-9, `${seed} ${h} ink ${ink}`).toBeGreaterThanOrEqual(ink[i - 1]!);

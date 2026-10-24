@@ -1,13 +1,13 @@
 import type { SetupRow } from '@/domain/portfolio';
 import { useSetupAgg } from '@/store/selectionHooksTune';
 import { useViewScope } from '@/store/viewScope';
-import { AggregateTable, type AggColumn } from '@/ui/widgets/AggregateTable';
+import { AggregateTable, type AggColumn, waveColumn } from '@/ui/widgets/AggregateTable';
 import { eurK } from '../../tuneB/fmt';
 import { InputAggregate, SpreadTable, type SpreadItem } from '../AggregateShared';
 
 const R = 'right' as const;
 const COLS: AggColumn<SetupRow>[] = [
-  { key: 'wave', header: 'Wave', render: (r) => r.wave },
+  waveColumn(),
   { key: 'tooling', header: 'Tooling & infra', align: R, render: (r) => eurK(r.tooling) },
   { key: 'training', header: 'Training & change', align: R, render: (r) => eurK(r.training) },
   { key: 'coaching', header: 'Coaching', align: R, render: (r) => eurK(r.coaching) },

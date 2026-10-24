@@ -1,10 +1,10 @@
 import { useSelectionView } from '@/store/selectionHooks';
-import { fmtEurK } from '@/ui/format';
 import { Callout, Panel } from '@/ui/widgets/cards';
 import { SectionFrame } from '@/ui/zones/SectionFrame';
 import { Cards } from '../../portfolio/consolidation/Cards';
 import { CashChart } from '../../portfolio/consolidation/CashChart';
 import { SummaryTable } from '../../portfolio/consolidation/SummaryTable';
+import { YearTable } from '../../portfolio/consolidation/YearTable';
 
 const help = (
   <>
@@ -26,15 +26,7 @@ export default function FinancialAggregate() {
           <Cards h={v.headline} />
           <Panel title="Cumulative cash by calendar month"><CashChart chart={v.chart} label={`Cumulative cash by calendar month: ${v.label} and its products`} /></Panel>
           <Panel title="By product"><SummaryTable caption={`Figures by product — ${v.label}`} first="Product" rows={v.rows} totals={v.totals} totalLabel={`Total — ${v.label}`} /></Panel>
-          <Panel title="By calendar year">
-            <div className="ac-table-wrap" tabIndex={0}>
-              <table className="ac-table ac-cons-table">
-                <caption>Flows of the selection by calendar year — {v.label}</caption>
-                <thead><tr><th scope="col">Year</th><th scope="col">Savings</th><th scope="col">Run cost</th><th scope="col">Setup</th><th scope="col">Net</th></tr></thead>
-                <tbody>{v.years.map((y) => <tr key={y.label}><th scope="row">{y.label}</th><td>{fmtEurK(y.savings)}</td><td>{fmtEurK(y.run)}</td><td>{fmtEurK(y.setup)}</td><td>{fmtEurK(y.net)}</td></tr>)}</tbody>
-              </table>
-            </div>
-          </Panel>
+          <YearTable caption={`Flows of the selection by calendar year — ${v.label}`} years={v.years} />
           {v.excluded.length > 0 && <Callout kind="blue">Excluded from the figures (no wave, or archived): {v.excluded.map((e) => `${e.name}${e.archived ? ' (archived)' : ''}`).join(', ')}.</Callout>}
         </>
       } />

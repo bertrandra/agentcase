@@ -3,11 +3,11 @@ import type { ConvergenceRow } from '@/domain/portfolio';
 import { useConvergenceRows } from '@/store/selectionHooksModelEngine';
 import { Callout } from '@/ui/widgets/cards';
 import type { AggColumn } from '@/ui/widgets/AggregateTable';
-import { countOf, onOff, R, RollupFrame } from '../../stress/AggParts';
+import { countOf, phaseColumn, R, RollupFrame } from '../../stress/AggParts';
 
 const Detail = lazy(() => import('./index'));
 const COLS: AggColumn<ConvergenceRow>[] = [
-  { key: 'on', header: 'Phase P1', render: (r) => onOff(r.on) }, { key: 'cal', header: 'Calibration', render: (r) => (r.calibrated ? 'calibrated' : 'uncalibrated') },
+  phaseColumn('P1'), { key: 'cal', header: 'Calibration', render: (r) => (r.calibrated ? 'calibrated' : 'uncalibrated') },
   { key: 'loops', header: 'Loop pairs', align: R, render: (r) => r.loops }, { key: 'en', header: 'Weighted E[N]', align: R, render: (r) => r.weightedEN.toFixed(2) },
   { key: 'esc', header: 'Escape rate', align: R, render: (r) => `${r.escapePct.toFixed(1)}%` }, { key: 'rev', header: 'Review share', align: R, render: (r) => `${(r.reviewShare * 100).toFixed(0)}%` },
   { key: 'above', header: 'Loops above 5% escape', align: R, title: 'Loops whose escape rate exceeds 5%: they need a costed fallback (CC-LC-03)', render: (r) => r.above },

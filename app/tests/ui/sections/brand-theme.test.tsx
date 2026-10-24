@@ -1,6 +1,6 @@
 // @vitest-environment jsdom
 import { act, cleanup, fireEvent, render, screen, within } from '@testing-library/react';
-import axe from 'axe-core';
+import { axeViolations } from '../../helpers/axe';
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 import { userThemes } from '@/domain/theme/library';
 import { appStore } from '@/store/instance';
@@ -91,7 +91,6 @@ describe('Brand & theme section', () => {
     brandThemeView.setState({ previewDark: dark });
     const { container } = render(<BrandTheme />);
     pick(/7 Purple/);
-    const r = await axe.run(container, { rules: { 'color-contrast': { enabled: false }, region: { enabled: false } } });
-    expect(r.violations.map((v) => `${v.id}: ${v.nodes[0]?.html.slice(0, 120)}`)).toEqual([]);
+    expect(await axeViolations(container, { region: false })).toEqual([]);
   });
 });

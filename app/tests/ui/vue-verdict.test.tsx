@@ -8,7 +8,7 @@ import { VERDICT_META } from '@/domain/verdict';
 import { pfSimStore } from '@/store/portfolioSimulation';
 import { fmtEurK, fmtMonths } from '@/ui/format';
 import { threeProducts } from '../helpers/portfolioStore';
-import { mountApp, pf, sectionReady } from '../helpers/portfolioUi';
+import { LAZY, mountApp, pf, sectionReady } from '../helpers/portfolioUi';
 import { bodyRows, totalRow, view } from '../helpers/vueEPV';
 
 vi.mock('@/ui/widgets/ChartPanel', async () => import('../helpers/chartStub'));
@@ -76,7 +76,7 @@ describe('Verdict > Strategy comparison: roll-up view', () => {
     expect(screen.getByText(/Excluded from the figures/).textContent).toContain('C');
     fireEvent.click(screen.getByRole('button', { name: /B$/, expanded: false }));
     const region = await screen.findByRole('region', { name: 'Detail: B' });
-    expect((await within(region).findAllByRole('table')).length).toBeGreaterThan(0);
+    expect((await within(region).findAllByRole('table', undefined, LAZY)).length).toBeGreaterThan(0);
     expect(within(region).queryByText('Strategy configuration')).toBeNull();
     expect(document.querySelectorAll('[data-readonly]')).toHaveLength(1);
     fireEvent.click(within(region.closest('li')!).getByRole('button', { name: 'Edit this product: B' }));

@@ -1,17 +1,18 @@
-import { useRef, useState } from 'react';
+import { useState } from 'react';
 import content from '@/content/refshare/io.json';
 import { exportSnapshotJson, importSnapshotFile } from '@/controllers/files';
 import { toast } from '@/ui/uiState';
 import { Callout, Panel } from '@/ui/widgets/cards';
 import { downloadText } from '../download';
 import { ReportPanel } from './ReportPanel';
+import { SaveOpenButtons } from './SaveOpenButtons';
 import { SnapshotPanel } from './SnapshotPanel';
 
 const T = content.texts;
 
 /** Save tab: the HTML snapshot (later release, disabled) and the JSON snapshot save / open, wired to the files controller. */
 export function SaveTab() {
-  const [status, setStatus] = useState(''), file = useRef<HTMLInputElement>(null);
+  const [status, setStatus] = useState('');
   const save = () => {
     const { filename, json } = exportSnapshotJson();
     downloadText(filename, json, 'application/json');
@@ -27,11 +28,7 @@ export function SaveTab() {
       <SnapshotPanel />
       <Panel title={T.saveJsonTitle}>
         <p>{T.saveJson}</p>
-        <div style={{ display: 'flex', gap: 8, flexWrap: 'wrap' }}>
-          <button type="button" className="ac-btn ac-btn-primary" onClick={save}>⬇️ Save snapshot file</button>
-          <button type="button" className="ac-btn" onClick={() => file.current?.click()}>⬆️ Open snapshot file…</button>
-          <input ref={file} type="file" accept="application/json,.json" aria-label="Snapshot file" hidden onChange={(e) => { void open(e.target.files?.[0]); e.target.value = ''; }} />
-        </div>
+        <SaveOpenButtons save="⬇️ Save snapshot file" open="⬆️ Open snapshot file…" accept="application/json,.json" fileLabel="Snapshot file" onSave={save} onOpen={open} />
         <div role="status" aria-live="polite" style={{ marginTop: 8 }}>{status && <Callout>{status}</Callout>}</div>
       </Panel>
       <ReportPanel />

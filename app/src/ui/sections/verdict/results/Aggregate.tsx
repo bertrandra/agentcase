@@ -1,16 +1,15 @@
 import { fmtRoiPct } from '@/domain/economics/roi';
-import { pNegTone } from '@/domain/stress';
 import { usePortfolioDecision } from '@/store/portfolioSimulation';
 import { useResultsAggregate } from '@/store/selectionHooksVerdict';
 import { useVerdictGroup } from '@/store/portfolioSimulation';
 import { fmtEurK, fmtMonths } from '@/ui/format';
 import { AggregateTable, type AggColumn } from '@/ui/widgets/AggregateTable';
-import { Panel, StatRow } from '@/ui/widgets/cards';
+import { StatRow } from '@/ui/widgets/cards';
 import { SectionFrame } from '@/ui/zones/SectionFrame';
 import { ExcludedNote } from '../../economics/AggParts';
-import { fmtEur } from '../../stress/fmt';
 import { AggBanner } from './AggBanner';
 import { Kpi } from './Kpi';
+import { SavingsAndTeam, UncertaintyPanel } from './Parts';
 
 const help = (
   <>
@@ -43,30 +42,8 @@ export default function ResultsAggregate() {
           <Kpi label="Payback" value={fmtMonths(t.paybackMonth)} tone="blue" sub="consolidated cumulative turns positive" />
           <Kpi label="Automation depth" value={`${t.eff.toFixed(1)}%`} tone="amber" sub="weighted by entry headcount" />
         </StatRow>
-        {d && s && fin && (
-          <Panel title={`Uncertainty (portfolio Monte Carlo, ${s.n} draws)`}>
-            <StatRow>
-              <Kpi label="P10 downside" value={fmtEur(s.p10)} tone={s.p10 < 0 ? 'brick' : 'teal'} /><Kpi label="P50 median" value={fmtEur(s.p50)} tone="blue" />
-              <Kpi label="P90 upside" value={fmtEur(s.p90)} tone="teal" /><Kpi label="P(net < 0)" value={`${Math.round(s.pNetNeg * 100)}%`} tone={pNegTone(s.pNetNeg)} />
-            </StatRow>
-          </Panel>
-        )}
-        <div className="ac-form-row" style={{ alignItems: 'stretch' }}>
-          <Panel title="Savings decomposition (last year of each product)">
-            <div style={{ lineHeight: 'var(--ac-leading-code)' }}>
-              <b style={{ color: 'var(--ac-teal)' }}>{fmtEur(L.grossAuto)}</b> gross automation<br />
-              <b style={{ color: 'var(--ac-brick)' }}>−{fmtEur(L.agentCost)}</b> agent operating cost<br />
-              <b style={{ color: 'var(--ac-amber)' }}>{L.relocation >= 0 ? '+' : ''}{fmtEur(L.relocation)}</b> relocation<br />
-              <b style={{ color: 'var(--ac-blue)' }}>= {fmtEur(L.total)} total savings / yr</b>
-            </div>
-          </Panel>
-          <Panel title="Team shift (horizon end of each product)">
-            <div style={{ lineHeight: 'var(--ac-leading-code)' }}>
-              <strong>{T.asis.toFixed(1)}</strong> AS-IS human FTE →<br />
-              <b style={{ color: 'var(--ac-blue)' }}>{T.human.toFixed(1)}</b> residual human FTE + <b style={{ color: 'var(--ac-info-700)' }}>{T.agent.toFixed(1)}</b> agent vFTE
-            </div>
-          </Panel>
-        </div>
+        {d && s && fin && <UncertaintyPanel title={`Uncertainty (portfolio Monte Carlo, ${s.n} draws)`} s={s} />}
+        <SavingsAndTeam savingsTitle="Savings decomposition (last year of each product)" teamTitle="Team shift (horizon end of each product)" b={L} team={T} />
         <AggregateTable caption={`Results by product — ${a.label}`} rows={a.rows} columns={cols} edit={false}
           totals={{ label: `Total — ${a.label}`, cells: { setup: fmtEurK(t.setup), net: fmtEurK(t.net), roi: fmtRoiPct(t.roi), pay: fmtMonths(t.paybackMonth), eff: `${t.eff.toFixed(1)}%` } }} />
         <ExcludedNote excluded={a.excluded} />

@@ -1,6 +1,6 @@
 // @vitest-environment jsdom
 import { cleanup, fireEvent, screen, waitFor, within } from '@testing-library/react';
-import axe from 'axe-core';
+import { axeViolations } from '../helpers/axe';
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 import { setDisplayScope } from '@/controllers/displayScope';
 import { setActiveProduct } from '@/controllers/product';
@@ -64,8 +64,7 @@ describe('Import / Export: Cost model (monthly)', () => {
   it('is accessible and shows an error toast when nothing can be exported', async () => {
     fourProducts();
     await open();
-    const r = await axe.run(document.body, { rules: { 'color-contrast': { enabled: false } } });
-    expect(r.violations.map((v) => v.id)).toEqual([]);
+    expect(await axeViolations(document.body)).toEqual([]);
     fireEvent.change(scope(), { target: { value: 'wave:missing' } });
     fireEvent.click(exportBtn());
     await waitFor(() => expect(uiStore.getState().toast).toMatch(/^Export failed: /));

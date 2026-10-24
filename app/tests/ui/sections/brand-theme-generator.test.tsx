@@ -1,6 +1,6 @@
 // @vitest-environment jsdom
 import { act, cleanup, fireEvent, render, screen, within } from '@testing-library/react';
-import axe from 'axe-core';
+import { axeViolations } from '../../helpers/axe';
 import { afterEach, beforeEach, describe, expect, it } from 'vitest';
 import { userThemes } from '@/domain/theme/library';
 import { paletteFromSeed } from '@/domain/theme/palette';
@@ -75,7 +75,6 @@ describe('palette generator panel', () => {
     brandThemeView.setState({ previewDark: dark });
     newTheme();
     fireEvent.change(panel().getByLabelText('Seed colour'), { target: { value: '#0b7a75' } });
-    const r = await axe.run(document.body, { rules: { 'color-contrast': { enabled: false }, region: { enabled: false } } });
-    expect(r.violations.map((v) => `${v.id}: ${v.nodes[0]?.html.slice(0, 120)}`)).toEqual([]);
+    expect(await axeViolations(document.body, { region: false })).toEqual([]);
   });
 });

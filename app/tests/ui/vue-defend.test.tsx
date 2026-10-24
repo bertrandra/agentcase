@@ -9,7 +9,7 @@ import defaultDoc from '@/store/defaults/defaultDoc.json';
 import { SECTIONS } from '@/ui/zones/registry';
 import { freshStore } from '../store/helpers';
 import { threeProducts } from '../helpers/portfolioStore';
-import { mountApp, pf, sectionReady } from '../helpers/portfolioUi';
+import { LAZY, mountApp, pf, sectionReady } from '../helpers/portfolioUi';
 import { banner, bodyRows, expectShown, openDrill, planned, rowOf, table, text, totalOf, view } from '../helpers/vueAgg';
 
 vi.mock('@/ui/widgets/ChartPanel', async () => import('../helpers/chartStub'));
@@ -89,7 +89,7 @@ describe.each(SPECS)('defend aggregate: $id', (sp) => {
     mountApp(sp.id); view('portfolio');
     await sectionReady(sp.title);
     const region = await openDrill(name(ids[1]));
-    expect((await within(region).findAllByText(sp.drill.caption)).length).toBeGreaterThan(0);
+    expect((await within(region).findAllByText(sp.drill.caption, undefined, LAZY)).length).toBeGreaterThan(0);
     expectShown(region, sp.drill.shown(ids[1]));
     expect(document.querySelectorAll('[data-readonly]')).toHaveLength(1);
     expect(pf().activeProductId).toBe(ids[0]);

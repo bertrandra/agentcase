@@ -23,3 +23,9 @@ export function newId(prefix: string, taken: string[]): string {
     if (!taken.includes(id)) return id;
   }
 }
+
+/** A new product or wave id (`p…` / `w…`), unique among the products and the waves of the portfolio. */
+export function newPortfolioId(prefix: string): string {
+  const pf = appStore().getState().portfolio;
+  return newId(prefix, [...pf.products.map((p) => p.id), ...pf.waves.map((w) => w.id)]);
+}

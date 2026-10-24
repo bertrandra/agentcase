@@ -1,6 +1,6 @@
 // @vitest-environment jsdom
 import { cleanup, fireEvent, render, screen, within } from '@testing-library/react';
-import axe from 'axe-core';
+import { axeViolations } from '../../helpers/axe';
 import { afterEach, beforeEach, describe, expect, it } from 'vitest';
 import Personas from '@/ui/sections/configure/personas';
 import { freshStore } from '../../store/helpers';
@@ -8,10 +8,7 @@ import { freshStore } from '../../store/helpers';
 /** axe-core on the Persona management tabs touched by the menu structures (colour contrast needs a browser: tools/a11y.mjs covers the default tab). */
 beforeEach(() => { freshStore(); });
 afterEach(cleanup);
-const audit = async (c: HTMLElement): Promise<string[]> => {
-  const r = await axe.run(c, { rules: { 'color-contrast': { enabled: false }, region: { enabled: false } } });
-  return r.violations.map((v) => `${v.id}: ${v.nodes.length} node(s), e.g. ${v.nodes[0]?.html.slice(0, 120)}`);
-};
+const audit = (c: HTMLElement): Promise<string[]> => axeViolations(c, { region: false });
 const tab = (name: RegExp) => fireEvent.click(within(screen.getByRole('tablist', { name: 'Persona management views' })).getByRole('tab', { name }));
 
 describe('persona management accessibility', () => {

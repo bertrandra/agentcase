@@ -10,10 +10,10 @@ import { fmtEur } from '@/ui/format';
 import { Callout, Stat, StatRow } from '@/ui/widgets/cards';
 import type { AggColumn } from '@/ui/widgets/AggregateTable';
 import { SectionFrame } from '@/ui/zones/SectionFrame';
-import { countOf, onOff, R, RollupFrame } from '../../stress/AggParts';
+import { countOf, onOff, phaseColumn, R, RollupFrame } from '../../stress/AggParts';
 
 const COLS: AggColumn<StochasticRow>[] = [
-  { key: 'on', header: 'Phase P4', render: (r) => onOff(r.on) }, { key: 'draws', header: 'Draws', align: R, render: (r) => r.draws.toLocaleString('en-US') },
+  phaseColumn('P4'), { key: 'draws', header: 'Draws', align: R, render: (r) => r.draws.toLocaleString('en-US') },
   { key: 'seed', header: 'Seed', align: R, render: (r) => r.seed }, { key: 'rho', header: 'ρ (organisational)', align: R, render: (r) => r.rho },
   { key: 'p50', header: 'P50 net benefit (portfolio run)', align: R, title: 'Median of the product’s own distribution in the last portfolio simulation', render: (r) => (r.p50 === null ? '—' : fmtEur(r.p50)) },
 ];

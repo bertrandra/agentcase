@@ -1,6 +1,6 @@
 // @vitest-environment jsdom
 import { cleanup, render } from '@testing-library/react';
-import axe from 'axe-core';
+import { axeViolations } from '../helpers/axe';
 import { afterEach, describe, expect, it, vi } from 'vitest';
 import type { ThemeAxes } from '@/domain/theme/axes';
 import { applyThemeAxes } from '@/ui/themeAxes';
@@ -25,10 +25,7 @@ const THEMES: Record<string, Partial<ThemeAxes>> = {
   'slider-field + dropdown + checkbox, compact': { controlsNumeric: 'slider-field', controlsChoice: 'dropdown', controlsBoolean: 'checkbox', density: 'compact', radius: 'square', box: 'flat' },
   'number fields everywhere': { controlsNumeric: 'number' },
 };
-const audit = async (c: HTMLElement): Promise<string[]> => {
-  const r = await axe.run(c, { rules: { 'color-contrast': { enabled: false }, region: { enabled: false } } });
-  return r.violations.map((v) => `${v.id}: ${v.nodes.length} node(s), e.g. ${v.nodes[0]?.html.slice(0, 140)}`);
-};
+const audit = (c: HTMLElement): Promise<string[]> => axeViolations(c, { region: false });
 
 describe('Field* variants: no axe violation on the input sections', () => {
   for (const [theme, axes] of Object.entries(THEMES)) {

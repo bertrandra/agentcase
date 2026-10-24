@@ -4,7 +4,7 @@ import * as ops from '@/domain/portfolio';
 import { definePortfolioCommand } from '@/store/commands';
 import { appStore } from '@/store/instance';
 import type { EditScope } from '@/store/types';
-import { dispatchChecked, newId } from './portfolioGuard';
+import { dispatchChecked, newPortfolioId } from './portfolioGuard';
 
 const addCmd = definePortfolioCommand<{ id: string; name: string; waveId: string | null }>({
   type: 'product.add', label: (p) => `Add product "${p.name}"`,
@@ -35,16 +35,14 @@ const scopeCmd = definePortfolioCommand<{ scope: EditScope }>({
   type: 'product.setEditScope', label: () => 'Set edit scope', undoable: false, apply: (pf, p) => (pf.editScope === p.scope ? pf : { ...pf, editScope: p.scope }),
 });
 
-const ids = (): string[] => { const pf = appStore().getState().portfolio; return [...pf.products.map((p) => p.id), ...pf.waves.map((w) => w.id)]; };
-
 /** Add a product that inherits the common values (new default team row). Returns its id, or null beyond 50 products. */
 export function addProduct(name?: string, waveId: string | null = null): string | null {
-  const pf = appStore().getState().portfolio, id = newId('p', ids());
+  const pf = appStore().getState().portfolio, id = newPortfolioId('p');
   return dispatchChecked(addCmd({ id, name: name?.trim() || `Product ${pf.products.length + 1}`, waveId })) ? id : null;
 }
 export const renameProduct = (id: string, name: string): boolean => dispatchChecked(renameCmd({ id, name }));
 export function duplicateProduct(id: string, name?: string): string | null {
-  const copyId = newId('p', ids());
+  const copyId = newPortfolioId('p');
   return dispatchChecked(duplicateCmd({ id, copyId, name })) ? copyId : null;
 }
 export const archiveProduct = (id: string, archived = true): boolean => dispatchChecked(archiveCmd({ id, archived }));

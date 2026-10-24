@@ -1,6 +1,16 @@
 {
- "clones": 25,
- "duplicatedLines": 177,
+ "clones": 70,
+ "duplicatedLines": 515,
+ "files": 1324,
+ "jscpd": "4.0.5",
  "minTokens": 50,
- "minLines": 5
+ "minLines": 5,
+ "maxLines": 10000,
+ "maxSize": "1mb",
+ "mode": "mild",
+ "format": "typescript,tsx",
+ "roots": [
+  "src",
+  "tests"
+ ]
 }

@@ -1,6 +1,6 @@
 // @vitest-environment jsdom
 import { act, cleanup, fireEvent, screen, waitFor, within } from '@testing-library/react';
-import axe from 'axe-core';
+import { axeViolations } from '../helpers/axe';
 import { afterEach, beforeEach, describe, expect, it } from 'vitest';
 import { setDisplayScope } from '@/controllers/displayScope';
 import { setPortfolioRho } from '@/controllers/portfolio';
@@ -64,8 +64,7 @@ describe('Portfolio stress section', () => {
   it('has no axe violation with a result on screen', async () => {
     await open();
     await run();
-    const { violations } = await axe.run(document.body, { rules: { 'color-contrast': { enabled: false } } });
-    expect(violations.map((v) => v.id)).toEqual([]);
+    expect(await axeViolations(document.body)).toEqual([]);
   });
 });
 

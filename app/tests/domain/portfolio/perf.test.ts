@@ -1,21 +1,8 @@
 import { describe, expect, it } from 'vitest';
-import { consolidate, envelopeCase, portfolioHeadline, runStats, type Portfolio } from '@/domain/portfolio';
-import { loadCase, scaledTeam, withProduct, withWave } from '../../helpers/portfolio';
+import { consolidate, portfolioHeadline, runStats, type Portfolio } from '@/domain/portfolio';
+import { bestOf, bigPortfolio, loadCase, scaledTeam } from '../../helpers/portfolio';
 
-/** 20 distinct products (own team each) over 60 months in 4 waves. */
-function big(): Portfolio {
-  const c = loadCase('horizon-5');
-  let pf = envelopeCase(c);
-  for (const [i, s] of [[2, 6], [3, 12], [4, 18]] as const) pf = withWave(pf, 'w' + i, s);
-  pf = { ...pf, products: [{ ...pf.products[0]!, teamIn: scaledTeam(c, 0.5) }] };
-  for (let i = 2; i <= 20; i++) pf = withProduct(pf, { id: 'p' + i, waveId: 'w' + (1 + (i % 4)), offset: i % 3, teamIn: scaledTeam(c, 0.5 + i / 10) });
-  return { ...pf, waves: pf.waves.map((w) => ({ ...w, productIds: pf.products.filter((p) => p.waveId === w.id).map((p) => p.id) })) };
-}
-const best = (n: number, f: () => void): number => {
-  let m = Infinity;
-  for (let i = 0; i < n; i++) { const t = performance.now(); f(); m = Math.min(m, performance.now() - t); }
-  return m;
-};
+const big = bigPortfolio, best = bestOf;
 
 describe('multi-product budgets (spec 8): best of several runs, so a loaded machine does not fail the test', () => {
   const pf = big();

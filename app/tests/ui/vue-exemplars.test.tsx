@@ -8,7 +8,7 @@ import { appStore } from '@/store/instance';
 import { SECTION_AGGREGATES } from '@/ui/sections/aggregates';
 import { fmtEurK } from '@/ui/format';
 import { threeProducts } from '../helpers/portfolioStore';
-import { mountApp, pf, sectionReady } from '../helpers/portfolioUi';
+import { LAZY, mountApp, pf, sectionReady } from '../helpers/portfolioUi';
 
 vi.mock('@/ui/widgets/ChartPanel', async () => import('../helpers/chartStub'));
 
@@ -84,7 +84,7 @@ describe('exemplar I-input: Input team', () => {
     expect(pf().activeProductId).toBe(ids[1]);
     expect(pf().displayScope).toEqual({ kind: 'product' });
     expect(appStore().getState().history.undo).toHaveLength(undo);
-    expect(await screen.findByRole('button', { name: /Add a resource/ })).toBeTruthy();
+    expect(await screen.findByRole('button', { name: /Add a resource/ }, LAZY)).toBeTruthy();
     expect(document.querySelector('.ac-agg-table')).toBeNull();
     expect(screen.getByRole('status').textContent).toContain('Showing B');
   });
@@ -106,7 +106,7 @@ describe('generic fallbacks of the kinds that follow the View', () => {
     fireEvent.click(screen.getByRole('button', { name: /B$/, expanded: false }));
     const region = await screen.findByRole('region', { name: 'Detail: B' });
     expect(document.querySelectorAll('[data-readonly]')).toHaveLength(1);
-    expect(await within(region).findByRole('heading', { level: 4 })).toBeTruthy();
+    expect(await within(region).findByRole('heading', { level: 4 }, LAZY)).toBeTruthy();
     expect(document.querySelectorAll('h1')).toHaveLength(1);
     expect(pf().activeProductId).toBe(ids[0]);
   }));

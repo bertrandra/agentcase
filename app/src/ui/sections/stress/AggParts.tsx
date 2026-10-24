@@ -50,3 +50,5 @@ export const R = 'right' as const;
 /** "3 of 5" for a count of products, the form the roll-up lines use. */
 export const countOf = (n: number, of: number): string => `${n} of ${of}`;
 export const onOff = (on: boolean): string => (on ? 'ON' : 'OFF');
+/** The ON / OFF column of a model-engine phase (P1 to P6). */
+export const phaseColumn = <T extends { on: boolean }>(phase: string): AggColumn<T> => ({ key: 'on', header: `Phase ${phase}`, render: (r) => onOff(r.on) });

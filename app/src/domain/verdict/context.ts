@@ -2,20 +2,15 @@
 import type { Ctx } from '../ctx';
 import { engagementCoef, engagementKey, hriEnabled, hriIndex } from '../engagement';
 import { khEnabled, khTargetCC } from '../knowledge';
-import { lifecycleBlend } from '../lifecycle';
+import { statusLabel as lifecycleStatusLabel } from '../scope/lifecycleView';
 import { readinessIndex as readinessIndexOf, type ReadinessAns } from '../tune/readiness';
 import type { CaseState } from '../types/state';
 import { wave2DecisionNotes } from './risk';
 
 export interface CtxLine { k: string; v: string }
 
-/** Where the product sits on the status axis, e.g. "Feature add (active development)" or "40% Greenfield · 60% Feature add". */
-export function lifecycleStatusLabel(s: CaseState): string {
-  if (!s.lifecycleUse) return 'Off (neutral)';
-  const b = lifecycleBlend(s), name = (d: { id: string; label?: string }) => d.label ?? d.id;
-  if (b.loIdx === b.hiIdx || b.frac < 0.001) return name(b.lo);
-  return `${Math.round((1 - b.frac) * 100)}% ${name(b.lo).split(' / ')[0]} · ${Math.round(b.frac * 100)}% ${name(b.hi).split(' / ')[0]}`;
-}
+/** Where the product sits on the status axis, e.g. "Feature add (active development)" or "40% Greenfield · 60% Feature add" (one owner: scope/lifecycleView). */
+export { statusLabel as lifecycleStatusLabel } from '../scope/lifecycleView';
 
 /** AI readiness index 0..100 of a case (null when nothing is answered): the tune/readiness owner applied to the case's answers. */
 export function readinessIndex(s: CaseState): number | null {

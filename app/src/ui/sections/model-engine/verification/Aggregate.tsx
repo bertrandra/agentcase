@@ -3,12 +3,12 @@ import type { VerificationRow } from '@/domain/portfolio';
 import { useVerificationRows } from '@/store/selectionHooksModelEngine';
 import { Callout } from '@/ui/widgets/cards';
 import type { AggColumn } from '@/ui/widgets/AggregateTable';
-import { countOf, onOff, R, RollupFrame } from '../../stress/AggParts';
+import { countOf, phaseColumn, R, RollupFrame } from '../../stress/AggParts';
 import { pct1 } from '../shared';
 
 const Detail = lazy(() => import('./index'));
 const COLS: AggColumn<VerificationRow>[] = [
-  { key: 'on', header: 'Phase P2', render: (r) => onOff(r.on) }, { key: 'mode', header: 'Tax mode', render: (r) => (r.net ? 'Net' : 'Overlay') },
+  phaseColumn('P2'), { key: 'mode', header: 'Tax mode', render: (r) => (r.net ? 'Net' : 'Overlay') },
   { key: 'classes', header: 'Criticality classes', align: R, render: (r) => r.classes }, { key: 'phi', header: 'φ (weighted floor)', align: R, render: (r) => pct1(r.phi) },
   { key: 'rate', header: 'Verification-tax rate', align: R, render: (r) => pct1(r.rate) }, { key: 'rho', header: 'ρmax (ROI ceiling)', align: R, render: (r) => pct1(r.rhoMax) },
 ];
