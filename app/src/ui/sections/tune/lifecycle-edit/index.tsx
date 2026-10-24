@@ -6,9 +6,12 @@ import { MatrixTable } from './MatrixTable';
 
 const help = (
   <>
-    <p>The editable benchmark table behind the product-status axis: five product profiles × twelve phases, one coefficient per cell, plus one automation posture per profile.
-      Position 0–100 on the status slider is interpolated across the five profiles; the same coefficients drive the Product-status weighting and the Eligibility potential matrix.</p>
-    <p>artefact weight = raw effort × coefficient[profile][phase]; effective automation = … × autoPosture[profile]. These are benchmarks shared by every case: change them from measured data, not to flatter one case — per-case adjustments belong to the artefact effort values in Scope.</p>
+    <p>The editable benchmark table behind the product-status axis: five product profiles × twelve phases, one coefficient per cell, plus one automation
+      posture per profile.
+      Position 0–100 on the status slider is interpolated across the five profiles; the same coefficients drive the Product-status weighting and the
+        Eligibility potential matrix.</p>
+    <p>artefact weight = raw effort × coefficient[profile][phase]; effective automation = … × autoPosture[profile]. These are benchmarks shared by every case:
+      change them from measured data, not to flatter one case — per-case adjustments belong to the artefact effort values in Scope.</p>
   </>
 );
 

@@ -39,7 +39,8 @@ export function RiskRegisterCard() {
         <strong style={{ color: tok(band.tone) }}>Consolidated risk: {band.label} ({Math.round(score * 100)}/100)</strong>
         {applied ? ` · +${Math.round(riskBar(c) * 100)} pts on the DI bar` : ' · informative only — tick the box above to feed Decision Intelligence'}
       </div>
-      <p className="ac-muted">Reference 5.2 agentic risk register. Probability×Impact on a 1–3 scale; the consolidated score can raise the Decide & Scale verdict bar. CC-RISK-01.</p>
+      <p className="ac-muted">Reference 5.2 agentic risk register. Probability×Impact on a 1–3 scale; the consolidated score can raise the Decide & Scale
+        verdict bar. CC-RISK-01.</p>
     </Panel>
   );
 }

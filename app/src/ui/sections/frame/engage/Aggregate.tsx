@@ -14,7 +14,8 @@ const COLS: AggColumn<EngageRow>[] = [
   { key: 'decide', header: 'Decide & Scale', render: (r) => r.decide },
 ];
 
-const help = <p>Aggregate view of the client onboarding runway: the four consecutive stages (Discover, Calibrate, Validate, Pilot &amp; Prove) of each product and the date the scale-out decision is taken. The start date is common to all products.</p>;
+const help = <p>Aggregate view of the client onboarding runway: the four consecutive stages (Discover, Calibrate, Validate, Pilot &amp; Prove) of each product
+  and the date the scale-out decision is taken. The start date is common to all products.</p>;
 
 /** Engage — Aggregate view: the onboarding stage durations and decision date of each product, with the range across the selection. */
 export default function EngageAggregate() {

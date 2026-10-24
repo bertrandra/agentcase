@@ -8,8 +8,10 @@ const OVERRIDES = ['selectedArtefacts', 'selectedRegArtefacts', 'artefactsEdited
 
 const help = (
   <>
-    <p>Select the individual artifacts (grouped by phase) included in the scenario. Tick a phase header to toggle all its artifacts, or pick a few target artifacts.
-      The input team is treated as dedicated to the selected scope, so automation depth is driven by the selected artifacts’ automatable average (the target automation potential auto-fits to it).</p>
+    <p>Select the individual artifacts (grouped by phase) included in the scenario. Tick a phase header to toggle all its artifacts, or pick a few target
+      artifacts.
+      The input team is treated as dedicated to the selected scope, so automation depth is driven by the selected artifacts’ automatable average (the target
+        automation potential auto-fits to it).</p>
     <p>Selection cascades across every tab — team reduction, costs, vFTE, ROI, KPI, compliance and performance.</p>
   </>
 );

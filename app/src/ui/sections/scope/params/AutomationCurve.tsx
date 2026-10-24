@@ -50,8 +50,10 @@ export function AutomationCurve({ base }: { base: AutoBase }) {
   return (
     <details open className="ac-card" data-rail="teal">
       <summary><h2 style={{ display: 'inline' }}>🤖 Automation over time — potential vs realized</h2></summary>
-      <p className="ac-muted">How much of the delivery work is actually automated, month by month, against the ceiling. The <strong>full automation potential</strong> and <strong>glass ceiling</strong> set above define the reachable depth;
-        the <strong>realized</strong> curve is what the adoption ramp (📊 S-curve) actually delivers each month. The gap between them is split into the factors that hold it back — a per-factor spec of what is (and isn&apos;t) captured.</p>
+      <p className="ac-muted">How much of the delivery work is actually automated, month by month, against the ceiling. The <strong>full automation
+        potential</strong> and <strong>glass ceiling</strong> set above define the reachable depth;
+        the <strong>realized</strong> curve is what the adoption ramp (📊 S-curve) actually delivers each month. The gap between them is split into the factors
+          that hold it back — a per-factor spec of what is (and isn&apos;t) captured.</p>
       <CurveSvg a={a} show={show} start={c.inp.v('rmStart')} />
       <Legend a={a} show={show} set={(k, v) => setShow({ ...show, [k]: v })} />
     </details>

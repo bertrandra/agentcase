@@ -32,10 +32,12 @@ export default function VelocitySection() {
           <CoefInput id="veloPerfRelCap" coef="perfRelCap" label="Realisation cap ×" />
           <CoefInput id="veloPerfUpliftFactor" coef="perfUpliftFactor" label="Reference uplift factor" />
         </div>
-        <p className="ac-muted">Shapes how the DORA/velocity chart below interpolates between AS-IS and elite target. Also editable from the Due-diligence register.</p>
+        <p className="ac-muted">Shapes how the DORA/velocity chart below interpolates between AS-IS and elite target. Also editable from the Due-diligence
+          register.</p>
       </>}
       result={<>
-        <p className="ac-muted">DORA metrics and sprint velocity, driven by the in-scope automatable intensity × ramp — they move with the artifacts you select.</p>
+        <p className="ac-muted">DORA metrics and sprint velocity, driven by the in-scope automatable intensity × ramp — they move with the artifacts you
+          select.</p>
         <ChartPanel config={cfg} label="Velocity in story points per sprint, Y0 to the horizon end" height={240} />
         <Callout>Read year by year: Y0 → Y3, four points and three intervals. Values interpolate AS-IS → target on the adoption ramp and
           are <strong>clamped at the target</strong> — before v16.1 they overshot it, which produced a negative lead time at high ramps. Anchors are

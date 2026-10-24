@@ -21,7 +21,8 @@ export function Funnel({ base }: { base: AutoBase }) {
   return (
     <details open className="ac-card" data-rail="brick">
       <summary><h2 style={{ display: 'inline' }}>🧱 Human &amp; regulatory glass ceiling — what can never be fully automated</h2></summary>
-      <p className="ac-muted">The same story as the curve above, read <strong>down</strong> instead of across: where the automation potential actually goes, stage by stage. Band colours match the curve&apos;s, so this doubles as its legend.</p>
+      <p className="ac-muted">The same story as the curve above, read <strong>down</strong> instead of across: where the automation potential actually goes,
+        stage by stage. Band colours match the curve&apos;s, so this doubles as its legend.</p>
       <div className="ac-player">
         <button type="button" style={{ minWidth: 104 }} onClick={() => (st.playing ? setSt({ ...st, playing: false }) : play(false))}>{st.playing ? '⏸ Pause' : atEnd ? '▶ Replay' : '▶ Play'}</button>
         <button type="button" title="Replay from month 1" onClick={() => play(true)}>↻</button>
@@ -34,7 +35,8 @@ export function Funnel({ base }: { base: AutoBase }) {
           ? <>At {end} the case is built on <strong style={{ color: 'var(--ac-teal)' }}>{S.v5.toFixed(1)}%</strong>, not the {S.v1.toFixed(1)}%
             potential{S.v1 - S.v5 > FUNNEL_EPS ? <> — <strong>{(S.v1 - S.v5).toFixed(1)} points</strong> of theoretical automation are given back to
             the constraints above before a single euro is claimed.</> : '.'}</>
-          : <>At month {S.t} the case is running at <strong style={{ color: 'var(--ac-teal)' }}>{S.v5.toFixed(1)}%</strong> of the delivery work, against a permitted depth of {S.v3.toFixed(1)}% — the gap is the ramp, and it closes on its own; the gap above it does not.</>}
+          : <>At month {S.t} the case is running at <strong style={{ color: 'var(--ac-teal)' }}>{S.v5.toFixed(1)}%</strong> of the delivery work, against a
+            permitted depth of {S.v3.toFixed(1)}% — the gap is the ramp, and it closes on its own; the gap above it does not.</>}
         {' '}Realistic automation is what survives compliance, work mix, ramp and supervision; theoretical automation is what survives none of them.
       </div>
     </details>

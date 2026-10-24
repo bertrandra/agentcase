@@ -27,7 +27,8 @@ export default function RiskAggregate() {
   return (
     <InputAggregate title="🛡️ Risk & Compliance" intro="the AI-Act tier, the risk register and the quality premium belong to each product.">
       <AggregateTable caption={`Risk inputs by product — ${vs.label}`} rows={a.rows} columns={COLS} />
-      <p className="ac-muted">{a.counts.highTier} product(s) in a high-risk or prohibited AI-Act tier · {a.counts.highRisk} with a high register score · {a.counts.applied} raising the Decision Intelligence bar.</p>
+      <p className="ac-muted">{a.counts.highTier} product(s) in a high-risk or prohibited AI-Act tier · {a.counts.highRisk} with a high register score
+        · {a.counts.applied} raising the Decision Intelligence bar.</p>
       <SpreadTable caption={`Spread of the risk inputs — ${vs.label}`} items={items} />
     </InputAggregate>
   );

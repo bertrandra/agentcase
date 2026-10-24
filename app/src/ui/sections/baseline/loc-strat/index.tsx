@@ -13,8 +13,10 @@ const OVERRIDES = ['targetLocPct'] as const;
 
 const help = (
   <>
-    <p>Automation decides <b>how many people</b> remain; this section decides <b>what each of them costs</b>. Headcount reduction comes from the agents, unit-cost reduction from where the residual team sits.</p>
-    <p><b>target blended TJM</b> = Σ<sub>locations</sub> mix% × rate(location, grade). The AS-IS mix is derived from the input team and read-only; the target mix is an editable intention that applies to the residual TO-BE team.
+    <p>Automation decides <b>how many people</b> remain; this section decides <b>what each of them costs</b>. Headcount reduction comes from the agents,
+      unit-cost reduction from where the residual team sits.</p>
+    <p><b>target blended TJM</b> = Σ<sub>locations</sub> mix% × rate(location, grade). The AS-IS mix is derived from the input team and read-only; the target
+      mix is an editable intention that applies to the residual TO-BE team.
       The agentic run team is priced separately at the target blended rate × 1.15. Relocation is not free and this model does not price the transition.</p>
   </>
 );
@@ -67,7 +69,8 @@ export default function LocStratSection() {
     <SectionFrame title="Location strategy" help={help} overrides={OVERRIDES}
       input={
         <>
-          <div className="ac-callout" role="note"><b>AS-IS</b> distribution computed from the input team, and an editable <b>target</b> distribution per location. Shifting effort toward nearshore/offshore lowers the target blended day-rate
+          <div className="ac-callout" role="note"><b>AS-IS</b> distribution computed from the input team, and an editable <b>target</b> distribution per
+            location. Shifting effort toward nearshore/offshore lowers the target blended day-rate
             and <b>cascades into costs</b> (Run, ROI, KPI…). Headcount reduction comes from automation; the location strategy acts on the unit cost.</div>
           <div className="ac-phases"><AsIs /><Target /></div>
         </>

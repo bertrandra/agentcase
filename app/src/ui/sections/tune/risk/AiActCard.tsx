@@ -24,7 +24,8 @@ export function AiActCard() {
         <div style={{ fontWeight: 'var(--ac-font-weight-bold)', color: col }}>{t.label}{c.inp.c('aiActApply') && t.bar > 0 ? ` · +${Math.round(t.bar * 100)} pts on the DI bar` : ''}</div>
         <ul>{t.obligations.map((o) => <li key={o}>{o}</li>)}</ul>
       </div>
-      <p className="ac-muted">Reference 5.2: EU AI Act (unacceptable / high / limited / minimal), complementary to NIST AI RMF and ISO/IEC 42001. Tiering is per mission; a critical or safety product may fall under Annex III high-risk. CC-AIACT-01.</p>
+      <p className="ac-muted">Reference 5.2: EU AI Act (unacceptable / high / limited / minimal), complementary to NIST AI RMF and ISO/IEC 42001. Tiering is
+        per mission; a critical or safety product may fall under Annex III high-risk. CC-AIACT-01.</p>
     </Panel>
   );
 }

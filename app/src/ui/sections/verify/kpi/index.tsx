@@ -13,7 +13,8 @@ export default function KpiSection() {
   const v = useView(kpiView), { tok } = useTheme(), cfg = useMemo(() => kpiChart(v, tok), [v, tok]), head = [...HEAD, v.endL, 'Change'];
   return (
     <SectionFrame title="KPI Scorecard — AS-IS vs end of transformation"
-      help={<p>Consolidated dashboard: initial state (input team) vs the horizon end. Economic KPIs are driven by your parameters; quality and velocity KPIs by the anchors and the in-scope automatable intensity.</p>}
+      help={<p>Consolidated dashboard: initial state (input team) vs the horizon end. Economic KPIs are driven by your parameters; quality and velocity KPIs by
+        the anchors and the in-scope automatable intensity.</p>}
       result={<>
         <p className="ac-muted">Consolidated dashboard: initial state (input team) vs Y3 target. Economic KPIs driven by your parameters.</p>
         <MetricCards cards={v.cards} />

@@ -16,7 +16,8 @@ export function UsageEstimate() {
       <p className="ac-muted">Annual token volume is estimated <strong>per artifact</strong> — the most relevant driver, since the whole model is
         artifact-centric. Volume is aligned on the number of agent executions = agent workforce (agent vFTE = team × automation depth × ramp) ×
         working days/year × agent runs/day, scaled by the in-scope scope share, × tokens per agent run, then split input / output by the share below.
-        Defaults are indicative — calibrate runs/day and tokens per run from your real platform billing (e.g. Claude Code usage). This estimate and the model mix feed the blended €/1M used by Run, Setup, ROI and FinOps.</p>
+        Defaults are indicative — calibrate runs/day and tokens per run from your real platform billing (e.g. Claude Code usage). This estimate and the model
+          mix feed the blended €/1M used by Run, Setup, ROI and FinOps.</p>
       <div className="ac-form-row">
         <NumberInput id="tokensPerArt" label="Tokens per agent run" step={5000} />
         <NumberInput id="runsPerDay" label="Agent runs / day (per agent-FTE)" step={1} />

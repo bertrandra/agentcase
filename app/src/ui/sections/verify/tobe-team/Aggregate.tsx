@@ -8,7 +8,8 @@ import { ExcludedNote, VerifyTable } from '../aggregate/Rollup';
 
 const help = (
   <>
-    <p>The TO-BE team of the <strong>selection</strong> by skill: each planned product&apos;s residual human FTE and agent vFTE per skill, added up. Pick the year to read; a product shorter than the year is read at its last year.</p>
+    <p>The TO-BE team of the <strong>selection</strong> by skill: each planned product&apos;s residual human FTE and agent vFTE per skill, added up. Pick the
+      year to read; a product shorter than the year is read at its last year.</p>
     <p>The per-product table reconciles each product to its aggregate model. Choose a product in “Show” for the skill map and the location split.</p>
   </>
 );

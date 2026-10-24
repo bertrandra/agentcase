@@ -41,7 +41,8 @@ export function Delivery({ v }: { v: GanttView }) {
         Bars: <span style={{ display: 'inline-block', width: 22, height: 9, borderRadius: 'var(--ac-radius-2xs)', background: alpha('chart-cat-1', 0.4), verticalAlign: 'middle' }} /> activity &nbsp;
         <span style={{ display: 'inline-block', width: 12, height: 9, borderRadius: 'var(--ac-radius-2xs)', background: 'var(--ac-primary-700)', verticalAlign: 'middle' }} /> human supervision
       </div>
-      {sdlc.length ? sdlc.map(rows) : <div style={{ fontSize: 'var(--ac-font-size-sm-plus)', color: 'var(--ac-neutral-700)', padding: '2px 0' }}>No phase in scope — select artefacts in 🎯 Scope.</div>}
+      {sdlc.length ? sdlc.map(rows) : <div style={{ fontSize: 'var(--ac-font-size-sm-plus)', color: 'var(--ac-neutral-700)', padding: '2px 0' }}>No phase in
+        scope — select artefacts in 🎯 Scope.</div>}
       {v.release != null && (
         <div style={{ display: 'flex', height: 16, margin: '1px 0 3px' }}>
           <div style={{ width: 260, flex: 'none' }} />

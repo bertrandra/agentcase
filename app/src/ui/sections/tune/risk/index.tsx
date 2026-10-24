@@ -6,9 +6,11 @@ import { RiskRegisterCard } from './RiskRegisterCard';
 
 const help = (
   <>
-    <p>Wave 2 of delivery-model convergence: the agentic risk register (EV-17), the EU AI-Act tier of the delivered product (EV-25) and the AI code-quality risk premium (EV-23).
+    <p>Wave 2 of delivery-model convergence: the agentic risk register (EV-17), the EU AI-Act tier of the delivered product (EV-25) and the AI code-quality
+      risk premium (EV-23).
       Each is informative by default; its toggle makes it raise the Decision Intelligence bar (and, for the quality premium, the verification tax).</p>
-    <p>quality premium = (anchor multiplier − 1) × (1 − SDD mitigation), capped at qualPremiumCap; verification-tax factor = 1 + premium; DI-bar contribution = premium × qualBarFactor, capped at 0.15 pts.
+    <p>quality premium = (anchor multiplier − 1) × (1 − SDD mitigation), capped at qualPremiumCap; verification-tax factor = 1 + premium; DI-bar contribution =
+      premium × qualBarFactor, capped at 0.15 pts.
       Register: probability × impact on a 1–3 scale, consolidated as the mean score / 9, contributing at most 0.15 pts to the bar.</p>
   </>
 );

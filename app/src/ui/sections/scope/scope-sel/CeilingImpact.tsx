@@ -19,7 +19,8 @@ export function CeilingImpact() {
       <div className="ac-split" role="img" aria-label={`Potential ${Math.round(potential)}%, ceiling ${Math.round(ceiling)}%`}>
         <span style={{ width: `${Math.max(0, Math.min(100, 100 - ceiling))}%` }} /><span className="is-ceiling" />
       </div>
-      <p className="ac-muted">Each bar = the points of glass ceiling a phase contributes (the bars add up to <strong>{f1(ceiling)} pts</strong>). The redder the bar, the more that phase holds automation back. Click a row for its biggest blockers.</p>
+      <p className="ac-muted">Each bar = the points of glass ceiling a phase contributes (the bars add up to <strong>{f1(ceiling)} pts</strong>). The redder
+        the bar, the more that phase holds automation back. Click a row for its biggest blockers.</p>
       {rows.map((r, i) => (
         <details key={r.phaseId} className="ac-impact-row">
           <summary>

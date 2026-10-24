@@ -24,7 +24,8 @@ const MIX: AggColumn<LocMixLine & { id: string }>[] = [
   { key: 'tgt', header: 'Target share', align: R, title: 'Each product’s target mix weighted by its entry FTE', render: (r) => `${r.targetPct.toFixed(0)}%` },
 ];
 
-const help = <p>Aggregate view of the location strategy: the AS-IS and target mix and blended day rates of each product, and the location mix of the whole selection weighted by entry FTE. The target mix of a product is its own intention; it prices its residual team.</p>;
+const help = <p>Aggregate view of the location strategy: the AS-IS and target mix and blended day rates of each product, and the location mix of the whole
+  selection weighted by entry FTE. The target mix of a product is its own intention; it prices its residual team.</p>;
 
 /** Location strategy — Aggregate view: the location mix and blended rates of each product, and the location mix of the selection by FTE. */
 export default function LocStratAggregate() {

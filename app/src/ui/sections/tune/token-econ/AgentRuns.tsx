@@ -25,7 +25,8 @@ export function AgentRuns() {
   ];
   return (
     <Panel title="🤖 Agent runs & run cost by year">
-      <p className="ac-muted">Agent executions (runs) per year, split across models by the usage mix, with the resulting token volume and run cost over the {H}-year horizon. Runs scale with scope, realized automation and the adoption ramp.</p>
+      <p className="ac-muted">Agent executions (runs) per year, split across models by the usage mix, with the resulting token volume and run cost over
+        the {H}-year horizon. Runs scale with scope, realized automation and the adoption ramp.</p>
       <DataTable columns={columns} rows={[...t.rows, t.totals]} rowKey={(r) => r.key} />
     </Panel>
   );

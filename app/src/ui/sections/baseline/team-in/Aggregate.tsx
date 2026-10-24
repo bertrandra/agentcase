@@ -8,8 +8,10 @@ import { ExcludedNote } from '../../aggregates/AggregateParts';
 
 const help = (
   <>
-    <p>Aggregate view of the entry teams of the products in view. Each product keeps its <b>own</b> AS-IS team (never shared): this page only adds them up by skill, grade and location, and lists them product by product.</p>
-    <p>The sums are computed in the domain (<code>aggregateTeams</code>); nothing is typed here. To change a team, open the product with <b>Edit this product</b>.</p>
+    <p>Aggregate view of the entry teams of the products in view. Each product keeps its <b>own</b> AS-IS team (never shared): this page only adds them up by
+      skill, grade and location, and lists them product by product.</p>
+    <p>The sums are computed in the domain (<code>aggregateTeams</code>); nothing is typed here. To change a team, open the product with <b>Edit this
+      product</b>.</p>
   </>
 );
 
@@ -32,7 +34,8 @@ export default function TeamInAggregate() {
     <SectionFrame title="Input team (AS-IS) — breakdown by resource" help={help}
       input={
         <>
-          <Callout kind="blue">Summary, read-only: the entry team belongs to each product. Pick a product in “Change” of the top bar to change its team in place below, or “Edit this product” to view that product.</Callout>
+          <Callout kind="blue">Summary, read-only: the entry team belongs to each product. Pick a product in “Change” of the top bar to change its team in
+            place below, or “Edit this product” to view that product.</Callout>
           <AggregateTable caption={`Entry teams by product — ${vs.label}`} rows={t.products} columns={PRODUCTS} totals={{ ...sum, cells: { etp: total } }} />
           <ExcludedNote />
         </>

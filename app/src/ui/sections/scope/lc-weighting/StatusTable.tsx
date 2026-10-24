@@ -11,8 +11,10 @@ export function StatusTable() {
   const { s } = useCtx(), posture = lifecycleAutoPosture(s);
   return (
     <details className="ac-panel">
-      <summary><h2 style={{ display: 'inline' }}>📊 Product status lifecycle weighting metrics</h2> <small className="ac-muted">— reference &amp; cascade (click to expand)</small></summary>
-      <p className="ac-muted">A fourth weighting axis alongside scope, regulatory and location: where the product sits in its lifecycle re-distributes effort — and therefore the automation opportunity and cost — across the development phases.</p>
+      <summary><h2 style={{ display: 'inline' }}>📊 Product status lifecycle weighting metrics</h2> <small className="ac-muted">— reference &amp; cascade
+        (click to expand)</small></summary>
+      <p className="ac-muted">A fourth weighting axis alongside scope, regulatory and location: where the product sits in its lifecycle re-distributes effort —
+        and therefore the automation opportunity and cost — across the development phases.</p>
       <table className="ac-table">
         <thead><tr><th>Status</th><th>Character</th><th className="ac-c">Automation posture</th></tr></thead>
         <tbody>
@@ -23,11 +25,13 @@ export function StatusTable() {
             </tr>
           ))}
           {s.lifecycleUse
-            ? <tr style={{ background: 'var(--ac-blue)', color: 'var(--ac-neutral-0)' }}><td><strong>▶ Current position ({Math.round(s.lifecyclePos)}/100)</strong></td><td>{statusLabel(s)}</td><td className="ac-c"><b>×{posture.toFixed(2)}</b></td></tr>
+            ? <tr style={{ background: 'var(--ac-blue)', color: 'var(--ac-neutral-0)' }}><td><strong>▶ Current position
+              ({Math.round(s.lifecyclePos)}/100)</strong></td><td>{statusLabel(s)}</td><td className="ac-c"><b>×{posture.toFixed(2)}</b></td></tr>
             : <tr><td colSpan={3} className="ac-c ac-muted"><em>Lifecycle weighting is off — enable it above to see the live position.</em></td></tr>}
         </tbody>
       </table>
-      <p className="ac-muted">Each status carries a relative-intensity weight per phase (1.0 = baseline). The weights are editable benchmarks — validate them against the client&apos;s actual delivery profile.</p>
+      <p className="ac-muted">Each status carries a relative-intensity weight per phase (1.0 = baseline). The weights are editable benchmarks — validate them
+        against the client&apos;s actual delivery profile.</p>
     </details>
   );
 }

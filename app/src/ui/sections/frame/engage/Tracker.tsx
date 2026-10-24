@@ -14,7 +14,8 @@ function TrackerBody() {
   const { tok } = useTheme(), st = trackStatus(plan, actuals), charts = useMemo(() => trackerCharts(plan, actuals, tok), [plan, actuals, tok]);
   return (
     <>
-      <p className="ac-muted">The plan columns are derived from the adoption curve, so they always match the current horizon — one row per quarter, for every year of the case. Leave a cell blank until you have the real number.</p>
+      <p className="ac-muted">The plan columns are derived from the adoption curve, so they always match the current horizon — one row per quarter, for every
+        year of the case. Leave a cell blank until you have the real number.</p>
       <StatRow>
         <Stat label="Overall status" value={st.head} tone={st.tone as 'grey'} />
         <Stat label="Quarters reported" value={`${st.filled} / ${st.total}`} />
@@ -22,8 +23,10 @@ function TrackerBody() {
       </StatRow>
       <TrackerTable plan={plan} actuals={actuals} />
       <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit,minmax(320px,1fr))', gap: 14, marginTop: 16 }}>
-        <div><h3 className="ac-muted">Adoption — planned vs actual</h3><ChartPanel config={charts.adoption} label="Adoption, planned versus actual, per quarter" height={260} /></div>
-        <div><h3 className="ac-muted">Cumulative savings — planned vs actual</h3><ChartPanel config={charts.savings} label="Cumulative savings, planned versus actual, per quarter" height={260} /></div>
+        <div><h3 className="ac-muted">Adoption — planned vs
+          actual</h3><ChartPanel config={charts.adoption} label="Adoption, planned versus actual, per quarter" height={260} /></div>
+        <div><h3 className="ac-muted">Cumulative savings — planned vs
+          actual</h3><ChartPanel config={charts.savings} label="Cumulative savings, planned versus actual, per quarter" height={260} /></div>
       </div>
     </>
   );
@@ -34,7 +37,8 @@ export function Tracker() {
   const open = useTrackerOpen();
   return (
     <Panel title="📈 Plan vs actual — quarterly tracking" aside={<button type="button" aria-expanded={open} onClick={toggleTracker}>{open ? '▾ Hide tracker' : '▸ Show tracker'}</button>}>
-      <p className="ac-muted">Record what actually happened each quarter against what the case predicted. Hidden by default — it only earns its place once delivery is under way.</p>
+      <p className="ac-muted">Record what actually happened each quarter against what the case predicted. Hidden by default — it only earns its place once
+        delivery is under way.</p>
       {open && <TrackerBody />}
     </Panel>
   );
