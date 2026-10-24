@@ -24,6 +24,7 @@ const vite = await createServer({ root: resolve('app'), server: { middlewareMode
 const load = (p) => vite.ssrLoadModule(p);
 const P = await load('/src/store/persistence/excel/params/index.ts'), A = await load('/src/store/persistence/excel/params/apply.ts');
 const { SECTIONS } = await load('/src/ui/zones/registry.ts'), { fromSnapshot } = await load('/src/store/persistence/snapshot.ts');
+const { THEME_DEFAULT } = await load('/src/domain/theme/index.ts');   // the print theme of the exports (the default look)
 const { makeDefaultDoc } = await load('/src/store/instance.ts'), { refitPotential } = await load('/src/store/derive.ts'), { computeCase } = await load('/src/domain/index.ts');
 const { produce } = appReq('immer'), ExcelJS = appReq('exceljs');
 const ENV = { sections: SECTIONS };
@@ -92,7 +93,7 @@ const tally = (r) => { if (r) ok++; else { bad++; process.exitCode = 1; } };
 let golden;
 for (const id of ids) {
   const opened = produce(fromSnapshot(JSON.parse(readFileSync(`app/fixtures/cases/${id}.json`, 'utf8'))), (d) => { refitPotential(d); });   // as the app opens a case
-  const bytes = await P.paramsWorkbookBytes(opened, 'all', ENV);
+  const bytes = await P.paramsWorkbookBytes(opened, 'all', ENV, THEME_DEFAULT);
   if (id === 'golden') golden = bytes;
   const leg = await legacyImport(bytes);
   if (leg.failed) { console.log(`FAIL ${id.padEnd(34)}legacy refused our workbook: ${leg.status}`); tally(false); continue; }
@@ -100,7 +101,7 @@ for (const id of ids) {
 }
 // ---- group 2: hand-damaged variants of our workbook, read by both
 if (!args.includes('--no-mutations')) {
-  golden ??= await P.paramsWorkbookBytes(makeDefaultDoc(), 'all', ENV);
+  golden ??= await P.paramsWorkbookBytes(makeDefaultDoc(), 'all', ENV, THEME_DEFAULT);
   for (const [name, edit] of Object.entries(MUTATIONS)) {
     const wb = new ExcelJS.Workbook(); await wb.xlsx.load(golden); edit(wb);
     const bytes = new Uint8Array(await wb.xlsx.writeBuffer()), leg = await legacyImport(bytes);

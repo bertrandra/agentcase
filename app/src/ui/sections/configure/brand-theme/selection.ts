@@ -7,7 +7,7 @@ import type { ThemeDef } from '@/domain/theme/themeDef';
 /**
  * View state of the Brand & theme screen (never in the case): the theme selected in the library (null: the case's active one), the mode of the
  * live preview, and the palette generator's settings while the user tries them (`draft`: shown in the preview only, until Apply).
- * Kept outside the component so a theme switch, which re-mounts the sections, does not lose the selection.
+ * Kept outside the component so the selection survives leaving the section and coming back (a theme switch no longer re-mounts it, lot 5a).
  */
 export interface GeneratorDraft { seq: number; settings: GeneratorSettings }
 export interface BrandThemeView { selected: number | null; previewDark: boolean; draft: GeneratorDraft | null }

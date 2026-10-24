@@ -2,7 +2,7 @@
 /**
  * The theme token table: the single source of every visual value (docs/THEME.md). tokens.css carries the same table as CSS custom properties
  * (`--ac-<name>`, checked by tests/ui/theme-tokens.test.ts); code that cannot use `var()` (chart.js canvases, colour arithmetic, the Excel and
- * HTML exports) reads the values here with `tok()`.
+ * HTML exports) reads the values with `tokIn(table, name)` or the `tok()` of a resolved theme (resolve.ts). Pure: the module holds no theme in effect.
  */
 import { ALPHAS, SCALES } from './scales';
 import { CHART, EXPORT, ROLES } from './semantic';
