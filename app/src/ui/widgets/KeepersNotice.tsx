@@ -1,4 +1,5 @@
 import { resetToCommon } from '@/controllers/productOverrides';
+import { subsetFieldOfRef } from '@/store/commonEdit';
 import { useKeepers } from '@/store/commonEditHooks';
 import { toast } from '../uiState';
 
@@ -13,7 +14,7 @@ export function KeepersNotice({ refKey, label }: { refKey: string; label: string
   const n = keepers.length, names = keepers.map((k) => k.name).join(', ');
   const reset = (id: string, name: string) => { if (resetToCommon(id, refKey)) toast(`${label}: ${name} reset to common`); };
   return (
-    <span className="ac-ovr ac-keepers" data-keepers={n} role="note" aria-label={`${label}: ${n} product${n > 1 ? 's' : ''} override this`}>
+    <span className="ac-ovr ac-keepers" data-keepers={n} role="note" aria-label={`${label}: ${n} product${n > 1 ? 's override' : ' overrides'} this`}>
       <span className="ac-keepers-text">{n} product{n > 1 ? 's' : ''} override{n > 1 ? '' : 's'} this: {names} — {n > 1 ? 'they keep their' : 'it keeps its'} value</span>
       {keepers.map((k) => (
         <button key={k.id} type="button" className="ac-ovr-btn" aria-label={`Reset to common: ${label} for ${k.name}`} onClick={() => reset(k.id, k.name)}>Reset to common: {k.name}</button>
@@ -22,5 +23,11 @@ export function KeepersNotice({ refKey, label }: { refKey: string; label: string
   );
 }
 
-/** `values.<id>` / `checked.<id>` of a form field, the address `KeepersNotice` reads (an address off the whitelist simply shows nothing). */
-export const fieldRef = (kind: 'values' | 'checked', id: string): string => `${kind}.${id}`;
+/**
+ * `KeepersNotice` of a form field (`values.<id>` / `checked.<id>`). A Knowledge Hub field that belongs to the knowledge subset is left to the badge of
+ * its box (`SubsetBadge`), which names the same products; an address off the whitelist shows nothing.
+ */
+export function FieldKeepers({ kind, id, label }: { kind: 'values' | 'checked'; id: string; label: string }) {
+  const ref = `${kind}.${id}`;
+  return subsetFieldOfRef(ref) ? null : <KeepersNotice refKey={ref} label={label} />;
+}
