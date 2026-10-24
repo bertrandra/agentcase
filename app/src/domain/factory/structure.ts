@@ -29,7 +29,9 @@ export const capabilityOf = (tags: Map<string, ArtefactTag>, id: string): string
 export function fgStructure(c: Ctx, win: Record<string, PhaseWindow>, tags: Map<string, ArtefactTag>): Structure {
   const m = model(c), e = engineNow(c), phaseIds = Object.keys(win);
   const hasReg = activeArtefacts(c.a, c.s).some((a) => a.isReg);
-  const vision = `Reach ${Math.round(m.eff)}% effective automation under a ${Math.round(m.ceiling)}% irreducible human-supervision floor across ${phaseIds.length} lifecycle phase(s), for ${fmtK(e.year(e.horizonYears).savings)} of annual savings at Y${e.horizonYears} with human sign-off preserved where certification requires it.`;
+  const vision = `Reach ${Math.round(m.eff)}% effective automation under a ${Math.round(m.ceiling)}% irreducible human-supervision floor`
+    + ` across ${phaseIds.length} lifecycle phase(s), for ${fmtK(e.year(e.horizonYears).savings)} of annual savings at Y${e.horizonYears}`
+    + ' with human sign-off preserved where certification requires it.';
   const pfNeed: Record<string, boolean> = {};
   phaseIds.forEach((p) => BANDS.forEach((b) => { if (b.test.test(p)) pfNeed[b.pf] = true; }));
   if (hasReg) pfNeed['pf-assure'] = true;

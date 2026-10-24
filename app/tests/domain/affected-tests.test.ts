@@ -59,7 +59,9 @@ describe('affected tests: selection on the real graph', () => {
 });
 
 describe('affected tests: the decision function', () => {
-  const d = { tests: [['a', '0', ''], ['b', '1', ''], ['c', '0-1', ''], ['k', '', '']], zones: [{ id: 'x', modules: 1, tmed: 0, tmax: 0 }, { id: 'y', modules: 1, tmed: 0, tmax: 0 }], sections: [], edges: [['x', 'y', 'z', 1]], figures: [], ignored: [], schema: 1, counts: { files: 0, tagged: 0, tests: 4 } } as unknown as DepsData;
+  const zones = [{ id: 'x', modules: 1, tmed: 0, tmax: 0 }, { id: 'y', modules: 1, tmed: 0, tmax: 0 }];
+  const d = { tests: [['a', '0', ''], ['b', '1', ''], ['c', '0-1', ''], ['k', '', '']], zones, sections: [], edges: [['x', 'y', 'z', 1]], figures: [], ignored: [], schema: 1,
+    counts: { files: 0, tagged: 0, tests: 4 } } as unknown as DepsData;
   const cfg: SelectionConfig = { maxShare: 0.8, contractTests: ['k', 'missing'], fullZones: ['wide'], fullSuite: ['package.json', 'fixtures/'] };
   it('selects the tests touching the zone, the contract tests that exist, and extras', () => {
     expect(plan(d, cfg, ['y'], []).tests).toEqual(['b', 'c', 'k']);

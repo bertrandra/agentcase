@@ -35,7 +35,9 @@ describe('architecture lint rules (G2, G4, edit base)', () => {
   });
   it('A8: no .reduce( in the portfolio sections, the portfolio KPI hooks and tiles, the wave Gantt; other code and non-summing helpers are fine', async () => {
     const sum = "export const total = (xs: { net: number }[]) => xs.reduce((a, x) => a + x.net, 0);\n";
-    for (const f of ['src/ui/sections/portfolio/consolidation/Bad.ts', 'src/ui/sections/portfolio/waves/Bad.ts', 'src/ui/sections/portfolio/stress/Bad.ts', 'src/store/portfolioSimulation.ts', 'src/ui/sections/verdict/decision/PortfolioBad.tsx', 'src/store/consolidationHooks.ts', 'src/ui/shell/ScopeKpis.tsx', 'src/ui/sections/verify/gantt/WaveRow.tsx']) {
+    for (const f of ['src/ui/sections/portfolio/consolidation/Bad.ts', 'src/ui/sections/portfolio/waves/Bad.ts', 'src/ui/sections/portfolio/stress/Bad.ts',
+      'src/store/portfolioSimulation.ts', 'src/ui/sections/verdict/decision/PortfolioBad.tsx', 'src/store/consolidationHooks.ts', 'src/ui/shell/ScopeKpis.tsx',
+      'src/ui/sections/verify/gantt/WaveRow.tsx']) {
       expect(await lint(sum, f), f).toContain('no-restricted-syntax');
     }
     expect(await lint("export const t = (xs: number[]) => xs.reduceRight((a, x) => a + x, 0);\n", 'src/ui/sections/portfolio/waves/Bad.ts')).toContain('no-restricted-syntax');

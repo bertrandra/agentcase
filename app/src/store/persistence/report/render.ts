@@ -23,6 +23,9 @@ export const REPORT_POLICY = "default-src 'none'; style-src 'unsafe-inline'; img
 const cspMeta = (policy: string): string => `<meta http-equiv="Content-Security-Policy" content="${policy}">`;
 export const REPORT_CSP = cspMeta(REPORT_POLICY);
 
+/** The Glass Ceiling formula, as both reports print it. */
+export const GLASS_FORMULA = '<code>Effective Automation = Potential × (1 − Ceiling) × Posture × Context factor × Hub multiplier</code>';
+
 /** The standalone report page (six sections, same figures and wording as the legacy report). */
 export function renderReport(d: ReportData): string {
   const k = esc(d.context), cap = d.authorityCap, n = d.blocked.length;
@@ -36,7 +39,8 @@ export function renderReport(d: ReportData): string {
     + logoHtml(d.logo) + '<h1>Critical &amp; Regulated Software Delivery Model</h1>'
     + `<p><span class="tag">AgentCase ${esc(d.version)}</span> <span class="tag">${esc(d.stamp)}</span> <span class="tag">Context: ${k}</span></p>`
     + `<h2>1 · Regulatory context</h2><p>Active norms: <strong>${d.norms.map(esc).join(', ')}</strong> — ${d.artefactsInScope} regulatory artifacts in scope out of the ${d.catalogueSize}-artifact certification catalogue.</p>`
-    + `<h2>2 · Glass Ceiling Model</h2><p><code>Effective Automation = Potential × (1 − Ceiling) × Posture × Context factor × Hub multiplier</code>: potential ${Math.round(d.potential)}% × ceiling ${Math.round(d.ceiling)}% → <strong>${d.effective.toFixed(1)}% effective</strong>, never above the compliance headroom (${Math.round(d.headroom)} pts).</p>`
+    + `<h2>2 · Glass Ceiling Model</h2><p>${GLASS_FORMULA}: potential ${Math.round(d.potential)}% × ceiling ${Math.round(d.ceiling)}%`
+    + ` → <strong>${d.effective.toFixed(1)}% effective</strong>, never above the compliance headroom (${Math.round(d.headroom)} pts).</p>`
     + `<h2>3 · Supervision floors &amp; postures</h2><table><tr><th>Phase</th><th>Floor</th><th>Posture</th></tr>${sup}</table>`
     + `<h2>4 · AI authorization under the ${k} context</h2><p>Agent authority is capped at <strong>A${cap}</strong>. ${n ? `${n} in-scope artifact(s) require a higher level and remain fully human-led:` : 'No in-scope artifact exceeds the cap.'}</p>${blocked}`
     + `<h2>5 · Economic impact of compliance</h2><p>Setup ${fmtK(d.setup)} (billable share ${Math.round(d.billablePct)}% under ${k}) · Run ${d.endLabel} ${fmtK(d.endRun)} · Saving ${d.endLabel} ${fmtK(d.endSaving)} vs baseline ${fmtK(d.baselineRun)}/yr.</p>`

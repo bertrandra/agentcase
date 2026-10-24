@@ -16,6 +16,12 @@ export const txt = (s: string): string => (/^[=+\-@\t\r]/.test(s) ? `'${s}` : s)
 
 export interface Meta { version: string; generated: Date }
 
+/** The "Convention" line of every tab's header block. */
+const CONVENTION = 'Calendar months of the portfolio: M1 = first portfolio month (month labels also show the date when the portfolio start date is set).'
+  + ' t0 = AS-IS reference (entry team before transformation, per month).'
+  + ' A product contributes only from its own month 1 (wave start + offset): earlier cells are EMPTY, not zero (its Knowledge-transfer setup may come before).'
+  + ' Total = sum of M1..Mn (t0 excluded).';
+
 /** Title, scope, generated date, app version, currency, convention and the tab's own notes (rows 1-8); row 9 is blank. */
 export function writeHeader(ws: XL.Worksheet, m: CostModel, meta: Meta, tab: string, note: string): void {
   const put = (r: number, label: string, value: string, bold = false) => {
@@ -23,8 +29,9 @@ export function writeHeader(ws: XL.Worksheet, m: CostModel, meta: Meta, tab: str
     ws.getCell(r, 3).value = txt(value); ws.getCell(r, 3).font = { bold };
   };
   ws.getCell(1, 1).value = txt(`${m.title} — ${tab}`); ws.getCell(1, 1).font = { bold: true, size: 14, color: { argb: NAVY() } };
-  put(2, 'Scope', m.scopeLabel, true); put(3, 'Generated (UTC)', meta.generated.toISOString().slice(0, 19).replace('T', ' ')); put(4, 'App version', `v${meta.version}`); put(5, 'Currency', m.currency);
-  put(6, 'Convention', 'Calendar months of the portfolio: M1 = first portfolio month (month labels also show the date when the portfolio start date is set). t0 = AS-IS reference (entry team before transformation, per month). A product contributes only from its own month 1 (wave start + offset): earlier cells are EMPTY, not zero (its Knowledge-transfer setup may come before). Total = sum of M1..Mn (t0 excluded).');
+  put(2, 'Scope', m.scopeLabel, true); put(3, 'Generated (UTC)', meta.generated.toISOString().slice(0, 19).replace('T', ' '));
+  put(4, 'App version', `v${meta.version}`); put(5, 'Currency', m.currency);
+  put(6, 'Convention', CONVENTION);
   put(7, 'How to recompute', note);
   put(8, 'Not exported', m.excluded.length ? `${m.excluded.join(', ')} (archived or without a wave)` : 'None: every product of the scope is planned');
 }
