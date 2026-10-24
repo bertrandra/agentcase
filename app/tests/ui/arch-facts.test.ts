@@ -5,6 +5,7 @@ import catalog from '@/ui/zones/data/sectionCatalog.json';
 import scope from '@/ui/zones/data/sectionScope.json';
 import defaultDoc from '@/store/defaults/defaultDoc.json';
 import coef from '@/domain/catalog/coef.json';
+import zoneCatalog from '@/domain/zones/catalog.json';
 import { MAX_PRODUCTS } from '@/domain/portfolio';
 import { VARIABLES } from '@/domain/pdc/variables';
 import { LIMITS } from '@/store/persistence/excel/params/safe';
@@ -15,6 +16,7 @@ import { codeStrings, goTargets, PAGES, textOf } from '../helpers/archContent';
 import.meta.glob('/src/controllers/*.ts', { eager: true });   // registers every command, as tests/store/registry.test.ts does
 
 // DEV-ARCH-CONTENT: the architecture pages describe the TypeScript build, not the legacy file, so these facts replace the old legacy-text parity.
+// Their section / group / command / zone counts are rewritten by `npm run docs:facts` (scripts/lib/docFacts.ts); tests/docs-facts.test.ts checks they are fresh.
 const APP = process.cwd(), REPO = resolve(APP, '..');
 const text = textOf(PAGES['arch-content']), both = `${textOf(PAGES['arch-layers'])} ${text}`;
 const nums = (re: RegExp, s = both): number[] => [...s.matchAll(re)].map((m) => Number((m[1] ?? '').replace(/,/g, '')));
@@ -34,6 +36,7 @@ describe('architecture pages: pinned facts', () => {
     expect(new Set(nums(/(\d+) top-level keys/g))).toEqual(new Set([Object.keys(defaultDoc).length]));
     expect(new Set(nums(/(\d+) embedded coefficients/g))).toEqual(new Set([Object.keys(coef).length]));
     expect(nums(/(\d+) of them undoable/g)).toEqual([[...COMMAND_REGISTRY.values()].filter((c) => c.undoable).length]);
+    expect(new Set(nums(/(\d+) zones\b/g))).toEqual(new Set([zoneCatalog.zones.length]));
   });
   it('fixture counts equal the files on disk', () => {
     const cases = count('fixtures/cases');

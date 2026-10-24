@@ -1,6 +1,6 @@
 {
  "schema": 1,
- "counts": {"files":971,"tagged":455,"tests":276},
+ "counts": {"files":972,"tagged":456,"tests":277},
  "zones": [
   {"id":"rate-card-team","modules":8,"tmed":108,"tmax":247},
   {"id":"scope-automation","modules":15,"tmed":89,"tmax":247},
@@ -18,7 +18,7 @@
   {"id":"aggregate-views","modules":39,"tmed":86,"tmax":89},
   {"id":"exports","modules":102,"tmed":66,"tmax":211},
   {"id":"workspace-config","modules":60,"tmed":60,"tmax":117},
-  {"id":"foundation","modules":21,"tmed":162,"tmax":247},
+  {"id":"foundation","modules":22,"tmed":162,"tmax":247},
   {"id":"presentation","modules":29,"tmed":108,"tmax":223}
  ],
  "sections": [
@@ -552,6 +552,7 @@
   {"path":"src/ui/widgets/ReadOnlyScope.tsx","reason":"View-selector widget."}
  ],
  "tests": [
+  ["tests/docs-facts.test.ts","16",""],
   ["tests/domain/affected-tests.test.ts","15",""],
   ["tests/domain/baseline.test.ts","0-1,16",""],
   ["tests/domain/business-journey.test.ts","15,17",""],
@@ -827,6 +828,6 @@
   ["tests/ui/vue-verify-smoke.test.tsx","0-17","0-85"],
   ["tests/ui/vue-verify.test.tsx","0-17","0-85"],
   ["tests/ui/wizard.test.tsx","0-17","0-85"],
-  ["tests/version.test.ts","16",""]
+  ["tests/version.test.ts","14,16",""]
  ]
 }
