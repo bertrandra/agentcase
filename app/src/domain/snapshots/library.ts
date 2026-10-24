@@ -1,5 +1,5 @@
 /** @calc-zone exports */
-import { APP_VERSION } from '../version';
+import { APP_VERSION, versionFileTag, versionTag } from '../version';
 import type { NamedSnapshot } from './types';
 
 export const SNAPSHOT_KEY = 'namedSnapshots';
@@ -12,9 +12,10 @@ export function snapshotsOf(doc: Record<string, unknown>): NamedSnapshot[] {
     && typeof (s as NamedSnapshot).state === 'object' && (s as NamedSnapshot).state !== null);
 }
 
-/** Display tag of the build, legacy appVerTag(): "v20.12" (a trailing ".0" is dropped as in "v18.11"). */
-export const appVerTag = (): string => 'v' + APP_VERSION.replace(/\.0+$/, '');
-export const appVerFileTag = (): string => appVerTag().replace(/\./g, '_');
+/** Display tag of the build, legacy appVerTag(): "vX.Y" for X.Y.0 (one trailing ".0" dropped, as in "v18.11"), "vX.Y.Z" for a patch release. */
+export const appVerTag = (): string => versionTag(APP_VERSION);
+/** File-name tag, legacy appVerFileTag(): "vX_Y", "vX_Y_Z". */
+export const appVerFileTag = (): string => versionFileTag(APP_VERSION);
 
 /** Legacy withVerTag(): the name gets " · v20…" appended unless it already carries it. */
 export function withVerTag(name: string | null, now: Date): string {
