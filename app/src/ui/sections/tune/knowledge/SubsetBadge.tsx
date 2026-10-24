@@ -5,7 +5,7 @@ import { useInCommonView } from '@/store/commonEditHooks';
 import { useSubsetField } from '@/store/knowledgeHooks';
 import { toast } from '@/ui/uiState';
 import { KeepersNotice } from '@/ui/widgets/KeepersNotice';
-import { describeValue } from '@/ui/widgets/OverrideBadge';
+import { OverrideChip } from '@/ui/widgets/OverrideBadge';
 
 /**
  * Inherited / own state of one field of the ACTIVE product's knowledge subset (spec F26): the chip says "inherited" (the common reading in its tooltip) or
@@ -16,14 +16,8 @@ export function SubsetBadge({ field, label }: { field: SubsetField; label: strin
   const f = useSubsetField(field), common = useInCommonView();
   if (!f.multi) return null;
   if (common) return <KeepersNotice refKey={`knowledge.${field}`} label={label} />;
-  const state = f.own ? 'overridden' : 'inherited', tip = `Common value: ${describeValue(f.common)}`;
   const back = () => { if (setProductKnowledge(f.productId, {}, [field])) toast(`${label}: reverted to common for ${f.productName}`); };
-  return (
-    <span className="ac-ovr" data-state={f.own ? 'overridden' : 'inherited'} role="group" aria-label={`${label}: ${state}`}>
-      <span className="ac-ovr-chip" title={tip}>{state}<span className="ac-sr"> — {tip}</span></span>
-      {f.own && <button type="button" className="ac-ovr-btn" aria-label={`Revert to common: ${label}`} title={`Back to the common value (${describeValue(f.common)})`} onClick={back}>Revert to common</button>}
-    </span>
-  );
+  return <OverrideChip label={label} own={f.own} common={f.common} onRevert={back} />;
 }
 
 /** A form control with the badge of its subset field next to it (nothing is added with a single product). */

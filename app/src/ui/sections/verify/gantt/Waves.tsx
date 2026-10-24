@@ -1,6 +1,7 @@
 import { useState } from 'react';
 import { useDisplayScope, usePortfolioGantt } from '@/store/consolidationHooks';
 import { useActiveProductId, useIsMulti } from '@/store/portfolioHooks';
+import { CalendarHeader } from './bars';
 import { SUB } from './Program';
 import { WaveRow } from './WaveRow';
 
@@ -29,16 +30,7 @@ function Waves() {
   return (
     <section className="ac-panel" aria-label="Wave Gantt">
       <h2>Wave Gantt <small className="ac-muted">— {scope.kind === 'wave' ? shown[0]?.name ?? 'wave' : 'portfolio'}, portfolio calendar</small></h2>
-      <div style={{ display: 'flex', alignItems: 'center', height: 18, marginBottom: 2 }}>
-        <div style={{ width: 260, flex: 'none', fontSize: 'var(--ac-font-size-xs)', color: 'var(--ac-neutral-700)' }}>Calendar →</div>
-        <div style={{ position: 'relative', flex: 1, height: 18 }}>
-          {g.ticks.map((t) => (
-            <div key={t.left} style={{ position: 'absolute', left: `${t.left.toFixed(2)}%`, top: 0, bottom: 0, borderLeft: '1px solid var(--ac-slate-200)' }}>
-              <span style={{ position: 'absolute', top: -16, left: 2, fontSize: 'var(--ac-font-size-xs)', color: 'var(--ac-neutral-700)', whiteSpace: 'nowrap' }}>{t.label}</span>
-            </div>
-          ))}
-        </div>
-      </div>
+      <CalendarHeader ticks={g.ticks} />
       <div style={SUB}>Waves — from the first start to the end of their products’ ramp</div>
       {shown.map((w, i) => <WaveRow key={w.id} w={w} index={i} open={open.has(w.id) || scope.kind === 'wave'} onToggle={() => toggle(w.id)} />)}
       {!shown.length && <p className="ac-muted">No scheduled wave.</p>}

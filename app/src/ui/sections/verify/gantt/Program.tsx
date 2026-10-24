@@ -1,5 +1,5 @@
 import type { GanttView } from '@/domain/verifyB';
-import { Row } from './bars';
+import { CalendarHeader, Row } from './bars';
 import { ProgramBar } from './ProgramBar';
 import { tok } from '@/domain/theme';
 
@@ -10,16 +10,7 @@ const SUB = { fontSize: 'var(--ac-font-size-sm)', fontWeight: 'var(--ac-font-wei
 export function Program({ v }: { v: GanttView }) {
   return (
     <>
-      <div style={{ display: 'flex', alignItems: 'center', height: 18, marginBottom: 2 }}>
-        <div style={{ width: 260, flex: 'none', fontSize: 'var(--ac-font-size-xs)', color: 'var(--ac-neutral-700)' }}>Calendar →</div>
-        <div style={{ position: 'relative', flex: 1, height: 18 }}>
-          {v.ticks.map((t) => (
-            <div key={t.left} style={{ position: 'absolute', left: `${t.left.toFixed(2)}%`, top: 0, bottom: 0, borderLeft: '1px solid var(--ac-slate-200)' }}>
-              <span style={{ position: 'absolute', top: -16, left: 2, fontSize: 'var(--ac-font-size-xs)', color: 'var(--ac-neutral-700)', whiteSpace: 'nowrap' }}>{t.label}</span>
-            </div>
-          ))}
-        </div>
-      </div>
+      <CalendarHeader ticks={v.ticks} />
       <div style={SUB}>Transformation program</div>
       {v.program.map((r) => <Row key={r.name} height={21} label={r.name} title={`${r.name} — ${r.meta}`}><ProgramBar r={r} /></Row>)}
       <div style={SUB}>Generated milestones — derived from the adoption model, not typed</div>
