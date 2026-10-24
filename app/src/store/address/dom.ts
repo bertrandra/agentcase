@@ -28,6 +28,7 @@ function ensureOverrideBag(c: AddressCtx, kind: Kind): void {
 
 /** One changed form field -> its destination: knowledge subset, the product's override, or the common values (rules in docs/ARCHITECTURE.md §4). */
 function writeField(c: AddressCtx, kind: Kind, id: string, value: unknown): void {
+  if (c.scope === 'common') { writeCommon(c, kind, id, value); return; }
   const own = bag(c.prod.overrides.dom, kind), commonBag = bag(c.pf.common.dom, kind);
   const overridden = own[id] !== undefined, shareable = parseRef(`${kind}.${id}`) !== null;
   const toSubset = subsetDefines(c, kind, id) || (shareable && !overridden && c.scope === 'product' && subsetField(kind, id) !== null);
@@ -39,7 +40,12 @@ function writeField(c: AddressCtx, kind: Kind, id: string, value: unknown): void
     return;
   }
   if (shareable && c.scope === 'product') return;   // same as the common value: nothing to override
-  if (value === undefined) { if (id in commonBag) remove(c, ['common', 'dom', kind, id]); return; }
+  writeCommon(c, kind, id, value);
+}
+
+/** The common value of a form field (and its portfolio-level mirror). */
+function writeCommon(c: AddressCtx, kind: Kind, id: string, value: unknown): void {
+  if (value === undefined) { if (id in bag(c.pf.common.dom, kind)) remove(c, ['common', 'dom', kind, id]); return; }
   add(c, ['common', 'dom', kind, id], value);
   syncMirrors(c, kind, id, value);
 }

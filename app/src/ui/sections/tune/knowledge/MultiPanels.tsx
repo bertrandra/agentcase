@@ -2,6 +2,7 @@ import { useMemo, useState } from 'react';
 import { setProductKnowledge } from '@/controllers/productOverrides';
 import { hubView } from '@/domain/tuneB/hub';
 import { useCtx } from '@/store/hooks';
+import { useInCommonView } from '@/store/commonEditHooks';
 import { useKnowledgeView } from '@/store/knowledgeHooks';
 import { useActiveProduct, useIsMulti } from '@/store/portfolioHooks';
 import { toast } from '@/ui/uiState';
@@ -13,8 +14,9 @@ import { SubsetBadge } from './SubsetBadge';
 
 /** "Product: X (n own fields)": which product the section edits, and how much of its subset is its own. */
 export function SubsetBanner() {
-  const multi = useIsMulti(), p = useActiveProduct();
+  const multi = useIsMulti(), p = useActiveProduct(), common = useInCommonView();
   if (!multi) return null;
+  if (common) return <p className="ac-prod-banner" role="note">Common Knowledge Hub: <strong>All products</strong><span className="ac-muted"> — the products that inherit a field follow; a product’s own subset field keeps its value.</span></p>;
   const n = Object.values(p.knowledge).filter((v) => v !== undefined).length;
   return (
     <p className="ac-prod-banner" role="note" data-overrides={n}>
@@ -54,15 +56,15 @@ function LeadField() {
   );
 }
 
-/** What the Knowledge Hub section adds with 2+ products: the target cap, the domains, the preparation and the shared hub settings. */
+/** What the Knowledge Hub section adds with 2+ products: the target cap, the domains, the preparation (per product: not in the common editor) and the shared hub settings. */
 export function MultiPanels() {
-  const multi = useIsMulti();
+  const multi = useIsMulti(), common = useInCommonView();
   if (!multi) return null;
   return (
     <>
       <CapNote />
-      <DomainsEditor />
-      <LeadField />
+      {common ? <Callout kind="blue">The knowledge domains and the knowledge transfer preparation are per product — pick a product in Edit to change them.</Callout>
+        : <><DomainsEditor /><LeadField /></>}
       <HubSettings />
     </>
   );

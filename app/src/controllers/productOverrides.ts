@@ -1,7 +1,8 @@
 /** @calc-zone product-resolution */
-import * as ops from '@/domain/portfolio';
-import type { KnowledgeSubset } from '@/domain/portfolio';
+import { applyToCommon, clearOverride, setKnowledge, setOverride, type KnowledgeSubset } from '@/domain/portfolio';
 import { definePortfolioCommand } from '@/store/commands';
+import { subsetFieldOfRef } from '@/store/commonEdit';
+import { appStore } from '@/store/instance';
 import type { PortfolioDoc } from '@/store/types';
 import { dispatchChecked } from './portfolioGuard';
 
@@ -12,17 +13,17 @@ const mirrorHub = (pf: PortfolioDoc): PortfolioDoc => {
 };
 
 const setCmd = definePortfolioCommand<{ id: string; ref: string; value: unknown }>({
-  type: 'product.setOverride', label: (p) => `Override ${p.ref} for this product`, apply: (pf, p) => ops.setOverride(pf, p.id, p.ref, p.value),
+  type: 'product.setOverride', label: (p) => `Override ${p.ref} for this product`, apply: (pf, p) => setOverride(pf, p.id, p.ref, p.value),
 });
 const clearCmd = definePortfolioCommand<{ id: string; ref: string }>({
-  type: 'product.clearOverride', label: (p) => `Back to common: ${p.ref}`, apply: (pf, p) => ops.clearOverride(pf, p.id, p.ref),
+  type: 'product.clearOverride', label: (p) => `Back to common: ${p.ref}`, apply: (pf, p) => clearOverride(pf, p.id, p.ref),
 });
 const toCommonCmd = definePortfolioCommand<{ id: string; ref: string }>({
-  type: 'product.applyToCommon', label: (p) => `Apply ${p.ref} to all products`, apply: (pf, p) => mirrorHub(ops.applyToCommon(pf, p.id, p.ref)),
+  type: 'product.applyToCommon', label: (p) => `Apply ${p.ref} to all products`, apply: (pf, p) => mirrorHub(applyToCommon(pf, p.id, p.ref)),
 });
 const knowledgeCmd = definePortfolioCommand<{ id: string; patch: KnowledgeSubset; clear: (keyof KnowledgeSubset)[] }>({
   type: 'product.setKnowledge', label: () => 'Edit product knowledge subset', coalesceKey: (p) => `product.setKnowledge:${p.id}:${Object.keys(p.patch).join(',')}`,
-  apply: (pf, p) => ops.setKnowledge(pf, p.id, p.patch, p.clear),
+  apply: (pf, p) => setKnowledge(pf, p.id, p.patch, p.clear),
 });
 
 /** The product takes its own value for an overridable key (`selectedArtefacts`, `phaseOff`, ..., or one form field `values.<id>` / `checked.<id>`). Throws for a key off the whitelist. */
@@ -36,3 +37,10 @@ export const applyOverrideToCommon = (id: string, ref: string): boolean => dispa
  * to 100, `targetCC` in [0, 4], `ktLeadMonths` >= 0, nine maturity answers in [0, 4]: otherwise nothing changes and false is returned.
  */
 export const setProductKnowledge = (id: string, patch: KnowledgeSubset, clear: (keyof KnowledgeSubset)[] = []): boolean => dispatchChecked(knowledgeCmd({ id, patch, clear }));
+
+/** "Reset to common" from the common editor: the product drops its own value at `ref` (an override, or the matching knowledge-subset field). Undoable. */
+export function resetToCommon(id: string, ref: string): boolean {
+  const f = subsetFieldOfRef(ref), prod = appStore().getState().portfolio.products.find((p) => p.id === id);
+  if (f && prod?.knowledge[f] !== undefined) return setProductKnowledge(id, {}, [f]);
+  return clearProductOverride(id, ref);
+}

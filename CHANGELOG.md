@@ -15,11 +15,34 @@ All notable changes to AgentCase, newest first. Product version from v19.0.0 = `
 
 When releasing, follow [docs/BUMP_PROCEDURE.md](docs/BUMP_PROCEDURE.md) (§7 for the legacy file) and add the new version at the top.
 
-## [Unreleased]
+## [v20.11.0] 2026-10-24 — Portfolio "Edit:" dropdown with in-place editing; top-bar icons
 
 ### Changed
 - Top bar: 💾 Save and 📂 Open… carry an icon; Undo / Redo are icon-only (↶ ↷, names and tooltips unchanged).
 - Hide-menu group bar: the ☰ Menu button and the persona picker are removed (they duplicated the top bar's ☰ toggle and Persona picker).
+- **Top bar "Edit:" is one dropdown** (2+ products, every View): **All products**, then "*name* only" for each product (in a Wave view the
+  wave's products come first, then "Other products"). Choosing a product makes it the edited product with the edit scope "product"
+  (its edits create overrides); "All products" sends shared data to the common values. View state, not undoable, not saved; the View does
+  not change (in a Product view the shown product follows). The "Editing:" chip says "All products" or the product's name. Replaces the
+  "All products / This product only" radio pair.
+- **Input sections are editable in place in Portfolio and Wave views** (docs/VUE_AGREGEE.md § 2.1): the aggregate summary stays on top and
+  the section itself is rendered below, under "Edit in place: …": for the chosen product (banner "Editing X only — results above and
+  elsewhere still show the Portfolio view"), or, with **All products**, bound to the **common values** every product inherits. Each field
+  that some products override names them ("2 products override this: A, B — they keep their value") with "Reset to common: X". The
+  entry team (and the knowledge domains / KT preparation) stay per product: a hint replaces them for All products. The input-section
+  banner says "Editing: All products (common values)" in that case. Results sections are unchanged.
+- **Store**: with "All products" and a Portfolio / Wave view (`editsCommon`), a case command runs on the common case (`resolveCommon`) and
+  the address layer writes every change to the common values (scope `'common'`), the entry team still to the active product; one undo step,
+  exact undo / redo. A Product view keeps the previous rule (an already-overridden key is edited on the override). Spec recorded in
+  docs/SPEC_MULTI_PRODUIT.md ("Précisions : liste Edit: et édition sur place"). One product: nothing changes.
+- `controllers/productOverrides.ts` imports the portfolio domain by name (narrower test-selection graph); new `resetToCommon`,
+  `chooseEditTarget`.
+
+### Tests
+- `tests/store/edit-common.test.ts`, `tests/ui/edit-inplace.test.tsx`, `tests/ui/edit-inplace-fields.test.tsx` (dropdown, chip, wave order,
+  in-place editing for a product and for All products, override notices and reset, knowledge hub, team hint, axe on the top bar and the
+  Scope section in Portfolio view). Updated for the dropdown: `portfolio-topbar`, `portfolio-overrides`, `portfolio-team`, `portfolio-scope`
+  (Editing chip), `portfolio-single`; for the new banner text: `vue-banner`, `vue-tune`.
 
 ## [v20.10.0] 2026-10-24 — One-colour palette generator with a contrast slider (+ size budget 5 MB)
 

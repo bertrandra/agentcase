@@ -1,7 +1,7 @@
 /** @calc-zone foundation */
 export * from './types';
 export { parseRef, isOverridableRef, overrideRefs } from './keys';
-export { resolveProduct, infraShares } from './resolve';
+export { resolveProduct, resolveCommon, infraShares } from './resolve';
 export { commonValue, overrideValue, isOverridden, setOverride, clearOverride, setCommon, applyToCommon, deepEqual } from './overrides';
 export { validate, type Issue, type Validation } from './validate';
 export { scheduledProducts, unscheduledIds, productMonth0, keptMonths, type Scheduled } from './timeline';

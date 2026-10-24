@@ -12,7 +12,7 @@ export function snapshotsOf(doc: Record<string, unknown>): NamedSnapshot[] {
     && typeof (s as NamedSnapshot).state === 'object' && (s as NamedSnapshot).state !== null);
 }
 
-/** Display tag of the build, legacy appVerTag(): "v20.10" (a trailing ".0" is dropped as in "v18.11"). */
+/** Display tag of the build, legacy appVerTag(): "v20.11" (a trailing ".0" is dropped as in "v18.11"). */
 export const appVerTag = (): string => 'v' + APP_VERSION.replace(/\.0+$/, '');
 export const appVerFileTag = (): string => appVerTag().replace(/\./g, '_');
 

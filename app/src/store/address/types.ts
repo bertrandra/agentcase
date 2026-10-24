@@ -3,6 +3,9 @@ import type { Patch } from 'immer';
 import type { Product } from '@/domain/portfolio';
 import type { Doc, EditScope, PortfolioDoc } from '../types';
 
+/** Where shareable data goes: the edit scope, or 'common' ("All products" in a Portfolio / Wave view: always the common values, never an override). */
+export type AddressScope = EditScope | 'common';
+
 /** Everything the address layer knows while it maps ONE command's changes onto the portfolio. */
 export interface AddressCtx {
   pf: PortfolioDoc;
@@ -12,7 +15,7 @@ export interface AddressCtx {
   /** index and current state of the active product */
   ai: number;
   prod: Product;
-  scope: EditScope;
+  scope: AddressScope;
   out: Patch[];
   /** containers this command has already created (so two writes do not both add them) */
   made: Set<string>;

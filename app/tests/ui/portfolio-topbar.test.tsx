@@ -15,15 +15,16 @@ beforeEach(() => { ids = threeProducts().ids; });
 afterEach(cleanup);
 
 describe('top bar with several products', () => {
-  it('shows the single View selector (Portfolio, waves, products with wave labels) and the Edit toggle, default "All products"', () => {
+  it('shows the single View selector (Portfolio, waves, products with wave labels) and the Edit dropdown, default "All products"', () => {
     mountApp();
     const sel = screen.getByRole('combobox', { name: 'View' }) as HTMLSelectElement;
     expect([...sel.options].map((o) => o.textContent)).toEqual(['Portfolio', 'Wave: Wave 1', 'Wave: Wave 2', 'Product: Product 1 — Wave 1', 'Product: B — Wave 1', 'Product: C — Wave 2']);
     expect(sel.value).toBe(`product:${ids[0]}`);
     expect(screen.queryByRole('combobox', { name: 'Display scope' })).toBeNull();
-    const group = screen.getByRole('radiogroup', { name: 'Edit' });
-    expect((within(group).getByLabelText('All products') as HTMLInputElement).checked).toBe(true);
-    expect((within(group).getByLabelText('This product only') as HTMLInputElement).checked).toBe(false);
+    const edit = screen.getByRole('combobox', { name: 'Edit' }) as HTMLSelectElement;
+    expect([...edit.options].map((o) => o.textContent)).toEqual(['All products', 'Product 1 only', 'B only', 'C only']);
+    expect(edit.value).toBe('all');
+    expect(screen.queryByRole('radiogroup', { name: 'Edit' })).toBeNull();
   });
   it('switching the product changes the KPI figures and the team shown; the choice is saved with the file but is no undo step', async () => {
     mountApp('team-in');
@@ -40,12 +41,12 @@ describe('top bar with several products', () => {
     expect(pf().activeProductId).toBe(ids[0]);
     expect(screen.getByText(/Team of:/).textContent).toContain('Product 1');
   });
-  it('the edit scope toggle sets the transient edit scope', () => {
+  it('the Edit dropdown sets the transient edit scope (and the edited product)', () => {
     mountApp();
-    fireEvent.click(screen.getByLabelText('This product only'));
+    fireEvent.change(screen.getByRole('combobox', { name: 'Edit' }), { target: { value: ids[0] } });
     expect(pf().editScope).toBe('product');
     expect(JSON.parse(exportSnapshotJson().json).editScope).toBeUndefined();
-    fireEvent.click(screen.getByLabelText('All products'));
+    fireEvent.change(screen.getByRole('combobox', { name: 'Edit' }), { target: { value: 'all' } });
     expect(pf().editScope).toBe('all');
   });
   it('the Portfolio group is in the sidebar of every persona with 2+ products and leaves with the second-to-last product', () => {

@@ -121,7 +121,9 @@ describe('one view selector, no duplicate product selector', () => {
     expect(screen.queryByText(/^Editing:/)).toBeNull();
     choose('portfolio');
     expect(pf().activeProductId).toBe(ids[1]);
-    expect(screen.getByText(/Editing:/).textContent).toContain('B');
+    expect(screen.getByText(/Editing:/).textContent).toBe('Editing: All products');   // the Edit dropdown says "All products" (default)
+    fireEvent.change(screen.getByRole('combobox', { name: 'Edit' }), { target: { value: ids[1] } });
+    expect(screen.getByText(/Editing:/).textContent).toBe('Editing: B');
     expect(screen.getByText(/Editing:/).className).not.toContain('ac-muted');   // legible on the dark header
   });
 });
