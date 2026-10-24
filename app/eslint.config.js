@@ -12,6 +12,21 @@ const layers = [
   { type: 'entry', pattern: 'src/main.tsx', mode: 'file' },
 ];
 const allow = (from, to) => ({ from, allow: to });
+
+// D1 (readability) — a source line is at most 300 characters, whatever it holds (an error); over 160 is a warning (`max-len` below). A local rule because
+// ESLint's `max-len` takes one limit per configuration. Characters are counted as code points (an emoji is one).
+const HARD_MAX_LEN = 300;
+const local = { rules: { 'hard-max-len': {
+  meta: { type: 'layout', schema: [], messages: { long: 'This line has {{n}} characters; the hard limit is ' + HARD_MAX_LEN + ' (decision D1): extract a constant, a helper or a component.' } },
+  create(context) {
+    return { Program() {
+      context.sourceCode.lines.forEach((line, i) => {
+        const n = [...line].length;
+        if (n > HARD_MAX_LEN) context.report({ loc: { start: { line: i + 1, column: 0 }, end: { line: i + 1, column: line.length } }, messageId: 'long', data: { n } });
+      });
+    } };
+  },
+} } };
 // Store modules the UI may not import (write path, internals); each is restricted by alias and by any relative path.
 const UI_FORBIDDEN_STORE = ['core', 'commands', 'instance', 'derive', 'history', 'syncDraft', 'persistence', 'persistence/**', 'address', 'address/**'];
 const EDIT_BASE = 'Controllers never read getState().doc (the active product\'s case): compute in the command\'s run(draft), or use editBase() / activeDoc() from @/store/editBase.';
@@ -22,7 +37,7 @@ export default tseslint.config(
   ...tseslint.configs.recommended,
   {
     files: ['src/**/*.{ts,tsx}', 'tests/**/*.{ts,tsx}'],
-    plugins: { 'react-hooks': reactHooks, boundaries },
+    plugins: { 'react-hooks': reactHooks, boundaries, local },
     settings: {
       'boundaries/elements': layers,
       'import/resolver': { typescript: { alwaysTryTypes: true } },
@@ -31,6 +46,9 @@ export default tseslint.config(
       ...reactHooks.configs.recommended.rules,
       // G2 — no code file over 150 lines (blank lines and comments count).
       'max-lines': ['error', { max: 150, skipBlankLines: false, skipComments: false }],
+      // D1 — lines over 160 characters are a warning (long string, template or regex literals and URLs excepted); over 300 is an error for every line.
+      'max-len': ['warn', { code: 160, ignoreUrls: true, ignoreStrings: true, ignoreTemplateLiterals: true, ignoreRegExpLiterals: true }],
+      'local/hard-max-len': 'error',
       '@typescript-eslint/no-explicit-any': 'error',
       '@typescript-eslint/consistent-type-imports': 'error',
       'no-restricted-syntax': [
