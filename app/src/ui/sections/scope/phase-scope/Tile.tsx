@@ -9,7 +9,8 @@ export function Tile({ t }: { t: PhaseTile }) {
   return (
     <label className={`ac-tile${t.state === 'none' ? ' is-off' : ''}`}>
       <span style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
-        <input ref={box} type="checkbox" aria-label={`Phase ${t.id}`} checked={t.state === 'all'} disabled={t.empty} onChange={(e) => togglePhase(t.id, e.target.checked)} />
+        <input ref={box} type="checkbox" aria-label={`Phase ${t.id}`} checked={t.state === 'all'} disabled={t.empty}
+          onChange={(e) => togglePhase(t.id, e.target.checked)} />
         <span><strong>{t.id}</strong> — {t.name}</span>
       </span>
       <span className="ac-tile-m">

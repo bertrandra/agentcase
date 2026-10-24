@@ -28,7 +28,8 @@ export default function ReadinessSection() {
         <>
           <p>A quick online assessment of how ready your organization is to industrialize agentic AI in software delivery. Answer the statements below (No /
             Partial / Yes). The index (0–100) and the radar chart update live. Weak dimensions are your transformation pre-requisites.</p>
-          <TabStrip base={base} label="Readiness views" value={tab} onChange={(id) => setTab(id as 'hri' | 'assess')} tabs={[{ id: 'hri', label: '🧑‍🤝‍🧑 Human Readiness Index & change cost' }, { id: 'assess', label: 'Assessment questionnaire' }]} />
+          <TabStrip base={base} label="Readiness views" value={tab} onChange={(id) => setTab(id as 'hri' | 'assess')}
+            tabs={[{ id: 'hri', label: '🧑‍🤝‍🧑 Human Readiness Index & change cost' }, { id: 'assess', label: 'Assessment questionnaire' }]} />
           <TabPanel base={base} current={tab}>{tab === 'hri' ? <HriPanel /> : <Assessment />}</TabPanel>
         </>
       }

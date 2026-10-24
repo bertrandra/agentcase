@@ -31,7 +31,8 @@ export function CurveSvg({ a, show, start }: { a: AutomationCurve; show: Toggles
     <g key={v}><line x1={M.l} y1={sy(v)} x2={W - M.r} y2={sy(v)} stroke="var(--ac-slate-105)" /><text x={M.l - 8} y={sy(v) + 4} textAnchor="end">{v}%</text></g>
   );
   return (
-    <svg viewBox={`0 0 ${W} ${H}`} className="ac-svg" role="img" aria-label="Automation over time: full potential vs realized, with the impacting factors split by band">
+    <svg viewBox={`0 0 ${W} ${H}`} className="ac-svg" role="img"
+      aria-label="Automation over time: full potential vs realized, with the impacting factors split by band">
       {[0, 25, 50, 75, 100].map(grid)}
       {a.manual > 0 && band(auto, 100, `${COL.manual}22`)}{a.ceilLoss > 0.05 && band(eff, auto, `${COL.ceil}2E`)}
       <path d={gap} fill={`${COL.gap}2E`} /><path d={under} fill={`${COL.real}8C`} />

@@ -41,11 +41,14 @@ export function AdjustTable() {
                 <td><strong>{a.id}</strong></td><td>{a.name}{a.isReg && <small> · {a.norm}</small>}</td><td>{a.phase}</td>
                 <td>{a.isReg ? <Badge tone="amber">REG</Badge> : <Badge>{a.value}</Badge>}</td><td>{a.skill}</td><td>{a.aiAuth}</td>
                 <td className="ac-c ac-muted">{a.humanSup}%</td>
-                <td className="ac-c"><input type="number" min={0} max={100} aria-label={`% auto of ${a.id}`} value={a.agentSup} onChange={(e) => setAgentSup(a.id, e.target.value)}
+                <td className="ac-c"><input type="number" min={0} max={100} aria-label={`% auto of ${a.id}`} value={a.agentSup}
+                  onChange={(e) => setAgentSup(a.id, e.target.value)}
                   style={{ width: 60, borderColor: a.agentSup !== a.defaultAuto ? 'var(--ac-blue)' : undefined }} title={`Default ${a.defaultAuto}%`} /></td>
-                <td className="ac-c"><input type="number" min={0} step={0.5} aria-label={`Effort of ${a.id}`} value={a.effort} onChange={(e) => setEffort(a.id, e.target.value)}
+                <td className="ac-c"><input type="number" min={0} step={0.5} aria-label={`Effort of ${a.id}`} value={a.effort}
+                  onChange={(e) => setEffort(a.id, e.target.value)}
                   style={{ width: 60, borderColor: a.effort !== a.defaultEffort ? 'var(--ac-amber)' : undefined }} title={`Default ${a.defaultEffort}`} /></td>
-                <td className="ac-c" style={{ color: c.s.lifecycleUse && Math.abs(a.lifecycle - 1) > 0.001 ? (a.lifecycle > 1 ? 'var(--ac-teal)' : 'var(--ac-brick)') : 'var(--ac-muted)' }}>{a.w.toFixed(1)}</td>
+                <td className="ac-c"
+                  style={{ color: c.s.lifecycleUse && Math.abs(a.lifecycle - 1) > 0.001 ? (a.lifecycle > 1 ? 'var(--ac-teal)' : 'var(--ac-brick)') : 'var(--ac-muted)' }}>{a.w.toFixed(1)}</td>
               </tr>
             ))}
           </tbody>

@@ -23,7 +23,8 @@ export default function KpiAggregate() {
       <>
         <p className="ac-muted">Consolidated dashboard of {a.label}: initial state (entry teams) vs the end of each product&apos;s horizon.</p>
         <Cards h={a.headline} />
-        <Panel title="💰 Economic & Capacity KPIs"><BeforeAfterTable rows={a.consolidated} caption={`Economic and capacity KPIs — ${a.label}`} asis="AS-IS" tobe="Horizon end" /></Panel>
+        <Panel title="💰 Economic & Capacity KPIs"><BeforeAfterTable rows={a.consolidated} caption={`Economic and capacity KPIs — ${a.label}`} asis="AS-IS"
+          tobe="Horizon end" /></Panel>
         <Panel title="By product"><VerifyTable table={a.table} caption="KPIs by product" totalLabel="Consolidated" /></Panel>
         <ExcludedNote />
       </>

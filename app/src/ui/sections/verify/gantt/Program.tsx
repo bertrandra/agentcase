@@ -23,7 +23,8 @@ export function Program({ v }: { v: GanttView }) {
           {v.markers.map((m) => {
             const col = FAMILY[m.family] ?? 'var(--ac-slate-650)';
             return (
-              <div key={`${m.month}:${m.label}`} title={m.title} style={{ position: 'absolute', left: `${m.left.toFixed(2)}%`, top: m.lift ? 0 : 16, transform: 'translateX(-50%)', display: 'flex', flexDirection: 'column', alignItems: 'center', zIndex: 2 }}>
+              <div key={`${m.month}:${m.label}`} title={m.title}
+                style={{ position: 'absolute', left: `${m.left.toFixed(2)}%`, top: m.lift ? 0 : 16, transform: 'translateX(-50%)', display: 'flex', flexDirection: 'column', alignItems: 'center', zIndex: 2 }}>
                 <div style={{ width: 9, height: 9, borderRadius: 'var(--ac-radius-round)', background: col, border: '2px solid var(--ac-neutral-0)', boxShadow: `var(--ac-shadow-ring-offset) ${col}` }} />
                 <div style={{ fontSize: 'var(--ac-font-size-3xs-plus)', lineHeight: 'var(--ac-leading-tight)', color: col, whiteSpace: 'nowrap', marginTop: 1, maxWidth: 78, overflow: 'hidden', textOverflow: 'ellipsis' }}>{m.label}</div>
                 <div style={{ fontSize: 'var(--ac-font-size-3xs)', color: 'var(--ac-neutral-700)' }}>{m.date}</div>

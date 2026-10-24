@@ -35,7 +35,8 @@ export default function SetupSection() {
             <NumberInput id="setupGov" label="Setup governance (€)" step={5000} />
             <NumberInput id="infra" label="Monthly infra (€)" step={50} />
             <NumberInput id="workdays" label="Working days / year" step={5} />
-            <CoefInput coef="setupETP" domId="setupETPCoef" label="Transitional setup headcount (FTE)" hint="lead + architect + coach, display only — € already in Setup total" step={0.1} />
+            <CoefInput coef="setupETP" domId="setupETPCoef" label="Transitional setup headcount (FTE)"
+              hint="lead + architect + coach, display only — € already in Setup total" step={0.1} />
           </div>
         </Panel>
       }

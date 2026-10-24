@@ -30,7 +30,8 @@ export default function GanttSection() {
     <SectionFrame title="📅 Gantt / Timeline" help={<p>{INTRO}</p>}
       input={<div style={{ display: 'flex', gap: 12, flexWrap: 'wrap', alignItems: 'flex-end' }}>
         <StartDate />
-        {[1, 2, 3, 4].map((i) => <NumberInput key={i} id={`rmD${i}`} label={`${['Discover', 'Calibrate', 'Validate', 'Pilot & Prove'][i - 1]} (weeks)`} min={0} />)}
+        {[1, 2, 3, 4].map((i) => <NumberInput key={i} id={`rmD${i}`} label={`${['Discover', 'Calibrate', 'Validate', 'Pilot & Prove'][i - 1]} (weeks)`}
+          min={0} />)}
         <CheckInput id="ganttShowOnboarding" label="Show Discover → Pilot in the timeline" />
         <DomNumber id="ganttOverlap" fallback="50" label="Phase overlap (pipelining) %" min={0} max={90} step={5} />
         {v.hasCross && <DomNumber id="ganttCrossSeq" fallback="0" label="🔶 Cross-cutting seq" step={1} hint="Same number as a phase's seq = same start" />}

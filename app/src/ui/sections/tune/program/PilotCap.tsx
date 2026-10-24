@@ -40,7 +40,8 @@ export function CapCard() {
       </div>
       <table className="ac-table">
         <tbody>
-          {rows.map(([label, id, v, w, color]) => <tr key={id}><td>{label}</td><td style={{ width: '60%' }}><Meter pct={w} color={color} label={`${label} (share of target mass)`} /></td><td className="ac-c"><strong>{v}</strong></td></tr>)}
+          {rows.map(([label, id, v, w, color]) => <tr key={id}><td>{label}</td><td style={{ width: '60%' }}><Meter pct={w} color={color}
+            label={`${label} (share of target mass)`} /></td><td className="ac-c"><strong>{v}</strong></td></tr>)}
         </tbody>
       </table>
       <p>Internal transformation (Volet A, distinct from the client engagement Volet B): <strong>{k.pct}%</strong> of the target mass is operational. The

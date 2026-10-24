@@ -21,7 +21,8 @@ export function VerifyTable({ table, caption, totalLabel = 'Total', first, edit 
   const columns: AggColumn<VRow>[] = [{ key: 'wave', header: 'Wave', render: (r) => r.wave },
     ...table.columns.map((c) => ({ key: c.key, header: c.header, title: c.title, align: c.kind === 'text' ? ('left' as const) : ('right' as const), render: (r: VRow) => fmtCell(r.cells[c.key], c.kind) }))];
   const cells = Object.fromEntries(table.columns.map((c) => [c.key, fmtCell(table.total[c.key], c.kind)]));
-  return <AggregateTable caption={`${caption} — ${vs.label}`} rows={table.rows} columns={columns} first={first} edit={edit} totals={{ label: `${totalLabel} — ${vs.label}`, cells }} />;
+  return <AggregateTable caption={`${caption} — ${vs.label}`} rows={table.rows} columns={columns} first={first} edit={edit}
+    totals={{ label: `${totalLabel} — ${vs.label}`, cells }} />;
 }
 
 /**

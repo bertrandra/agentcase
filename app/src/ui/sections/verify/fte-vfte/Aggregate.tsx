@@ -33,7 +33,8 @@ export default function FteVfteAggregate() {
           read from the domain consolidation.</p>
         <LineChart labels={a.chart.labels} lines={lines} yTitle="FTE / vFTE" label={`Human FTE and agent vFTE by calendar month: ${a.label} and its products`} />
         <Panel title="By calendar year (year end)">
-          <SimpleTable caption={`Headcount at calendar year end — ${a.label}`} align={['left', 'right', 'right', 'right']} head={['Year', 'Human FTE', 'Agent vFTE', 'Total effort (FTE-eq)']}
+          <SimpleTable caption={`Headcount at calendar year end — ${a.label}`} align={['left', 'right', 'right', 'right']}
+            head={['Year', 'Human FTE', 'Agent vFTE', 'Total effort (FTE-eq)']}
             rows={a.years.map((y) => ({ key: y.label, cells: [y.label, fmt1(y.human), fmt1(y.agent), fmt1(y.total)] }))} />
         </Panel>
         <Panel title="By product (end of each product's horizon)"><VerifyTable table={a.table} caption="FTE and vFTE by product" /></Panel>

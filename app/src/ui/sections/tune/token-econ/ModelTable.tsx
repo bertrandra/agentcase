@@ -18,17 +18,21 @@ const NUM: { field: Exclude<Field, 'name'>; header: string; step: number; max?: 
 export function ModelTable() {
   const c = useCtx(), t = useMemo(() => tokenModelRows(c), [c]), L = tokenUsage(c).endLabel;
   const columns: Column<ModelRow>[] = [
-    { key: 'name', header: 'Model', render: (r) => <input type="text" aria-label={`Model ${r.index + 1} name`} defaultValue={r.name} key={r.name} onBlur={(e) => setTokenField(r.index, 'name', e.target.value)} /> },
+    { key: 'name', header: 'Model', render: (r) => <input type="text" aria-label={`Model ${r.index + 1} name`} defaultValue={r.name} key={r.name}
+      onBlur={(e) => setTokenField(r.index, 'name', e.target.value)} /> },
     ...NUM.map((n): Column<ModelRow> => ({
       key: n.field, header: n.header, align: 'center',
       render: (r) => (
-        <FieldNumber bare native="number" label={`${r.name} ${n.header}`} value={r[n.field]} min={0} max={n.max} step={n.step} onCommit={(v) => setTokenField(r.index, n.field, v)}>
-          <input type="number" aria-label={`${r.name} ${n.header}`} value={r[n.field]} min={0} max={n.max} step={n.step} onChange={(e) => setTokenField(r.index, n.field, e.target.value)} />
+        <FieldNumber bare native="number" label={`${r.name} ${n.header}`} value={r[n.field]} min={0} max={n.max} step={n.step}
+          onCommit={(v) => setTokenField(r.index, n.field, v)}>
+          <input type="number" aria-label={`${r.name} ${n.header}`} value={r[n.field]} min={0} max={n.max} step={n.step}
+            onChange={(e) => setTokenField(r.index, n.field, e.target.value)} />
         </FieldNumber>),
     })),
     { key: 'vol', header: `Tokens ${L} (M)`, align: 'right', render: (r) => `${r.volM.toFixed(1)} M` },
     { key: 'cost', header: `Cost ${L} (€)`, align: 'right', render: (r) => eur(r.cost) },
-    { key: 'rm', header: '', align: 'center', render: (r) => <button type="button" title="Remove model" aria-label={`Remove ${r.name}`} onClick={() => removeTokenModel(r.index)}>✕</button> },
+    { key: 'rm', header: '', align: 'center', render: (r) => <button type="button" title="Remove model" aria-label={`Remove ${r.name}`}
+      onClick={() => removeTokenModel(r.index)}>✕</button> },
   ];
   const ok = Math.abs(t.mixSum - 100) <= 0.5;
   return (

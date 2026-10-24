@@ -14,7 +14,8 @@ export function PillarPanel() {
   return (
     <Panel title="Use-case pillar × SDLC potential" aside={<><Badge>= product profile × 12 phases</Badge> <Badge tone="blue">EV-13</Badge></>}>
       <div className="ac-form-row">
-        <FieldChoice label="Product profile" hint="(shared with Product status)" value={cur} options={PROFILES} onChange={(v) => setLifecyclePos(profileById(v).pos)}>
+        <FieldChoice label="Product profile" hint="(shared with Product status)" value={cur} options={PROFILES}
+          onChange={(v) => setLifecyclePos(profileById(v).pos)}>
           <Field label="Product profile" hint="(shared with Product status)">
             <select value={cur} onChange={(e) => setLifecyclePos(profileById(e.target.value).pos)}>
               {PRODUCT_PROFILES.map((p) => <option key={p.id} value={p.id}>{p.label}</option>)}
@@ -33,7 +34,8 @@ export function PillarPanel() {
                 <td style={{ fontWeight: pr.id === cur ? 'var(--ac-font-weight-bold)' : 'var(--ac-font-weight-semibold)' }}>{pr.label}{pr.id === cur ? ' ◀' : ''}</td>
                 {PROFILE_PHASES.map((ph) => {
                   const x = profileCoef(c, pr.id, ph);
-                  return <td key={ph} className="ac-c" style={{ color: `var(--ac-${leverTone(x)})`, fontWeight: pr.id === cur ? 'var(--ac-font-weight-bold)' : 'var(--ac-font-weight-regular)' }}>{leverWord(x)}<br /><small className="ac-muted">({x.toFixed(2)})</small></td>;
+                  return <td key={ph} className="ac-c"
+                    style={{ color: `var(--ac-${leverTone(x)})`, fontWeight: pr.id === cur ? 'var(--ac-font-weight-bold)' : 'var(--ac-font-weight-regular)' }}>{leverWord(x)}<br /><small className="ac-muted">({x.toFixed(2)})</small></td>;
                 })}
               </tr>
             ))}

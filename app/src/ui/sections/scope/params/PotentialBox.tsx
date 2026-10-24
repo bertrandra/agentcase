@@ -9,7 +9,8 @@ function CapInput() {
   const cap = useDoc((d) => d.dom.values.autoCapPct ?? '100'), [draft, setDraft] = useState<string | null>(null);
   const commit = () => { if (draft != null) setAutoCap(parseFloat(draft)); setDraft(null); };
   return (
-    <FieldNumber native="number" label="⚙️ Technical automation cap" unit="%" value={cap} min={10} max={100} step={5} onCommit={(v) => setAutoCap(parseFloat(v))}
+    <FieldNumber native="number" label="⚙️ Technical automation cap" unit="%" value={cap} min={10} max={100} step={5}
+      onCommit={(v) => setAutoCap(parseFloat(v))}
       hint="The most a full delivery scope can be agent-automated, before the glass ceiling. Default 100% (no technical cap).">
     <div className="ac-cap-row">
       <strong>⚙️ Technical automation cap</strong>
@@ -30,7 +31,8 @@ export function PotentialBox() {
       <div className="ac-card-t">Target automation potential (%)</div>
       <div className="ac-card-d">What agents can technically take on across the selected scope — before the glass ceiling.</div>
       <RangeInput id="autoPotential" label="Potential" max={cap} />
-      <CheckInput id="fitAuto" label="🎯 Fit to selected scope" hint="when on, the slider is locked to the automatable average of the chosen artifacts; uncheck to set it manually" />
+      <CheckInput id="fitAuto" label="🎯 Fit to selected scope"
+        hint="when on, the slider is locked to the automatable average of the chosen artifacts; uncheck to set it manually" />
       <CapInput />
     </div>
   );

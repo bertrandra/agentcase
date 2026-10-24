@@ -36,8 +36,10 @@ function Editor({ id, name, saved }: { id: string; name: string; saved: Knowledg
             {rows.map((r, i) => (
               <tr key={r.key}>
                 <td><input type="text" aria-label={`Domain label ${i + 1}`} value={r.label} onChange={(e) => edit(r.key, { label: e.target.value })} /></td>
-                <td><input type="number" min={0} max={100} step={5} aria-label={`Domain weight ${i + 1} (%)`} value={r.weight} onChange={(e) => edit(r.key, { weight: e.target.value })} /></td>
-                <td><button type="button" aria-label={`Remove domain ${r.label || i + 1}`} onClick={() => { setError(''); setRows((rs) => rs.filter((x) => x.key !== r.key)); }}>Remove</button></td>
+                <td><input type="number" min={0} max={100} step={5} aria-label={`Domain weight ${i + 1} (%)`} value={r.weight}
+                  onChange={(e) => edit(r.key, { weight: e.target.value })} /></td>
+                <td><button type="button" aria-label={`Remove domain ${r.label || i + 1}`}
+                  onClick={() => { setError(''); setRows((rs) => rs.filter((x) => x.key !== r.key)); }}>Remove</button></td>
               </tr>
             ))}
           </tbody>
@@ -46,7 +48,8 @@ function Editor({ id, name, saved }: { id: string; name: string; saved: Knowledg
       <p role="status" aria-live="polite" data-remaining={left}>{rows.length ? (left === 0 ? 'Total: 100% — ready to save.' : left > 0 ? `${fmt(left)}% left to allocate.` : `${fmt(-left)}% too much.`) : 'No domain: the curation effort is not split.'}</p>
       {error && <p role="alert" style={{ color: 'var(--ac-danger-800)' }}>{error}</p>}
       <div className="ac-pf-actions" role="group" aria-label="Domain actions">
-        <button type="button" onClick={() => { setError(''); setRows((rs) => [...rs, { key: next.current++, label: '', weight: String(Math.max(0, left)) }]); }}>Add a domain</button>
+        <button type="button"
+          onClick={() => { setError(''); setRows((rs) => [...rs, { key: next.current++, label: '', weight: String(Math.max(0, left)) }]); }}>Add a domain</button>
         <button type="button" disabled={!rows.length} onClick={apply}>Save the domains</button>
         <button type="button" disabled={!saved.length} onClick={() => { if (setProductKnowledge(id, {}, ['domains'])) toast(`Domains removed for ${name}`); }}>Remove all domains</button>
       </div>

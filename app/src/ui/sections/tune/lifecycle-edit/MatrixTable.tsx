@@ -35,11 +35,13 @@ export function MatrixTable() {
                 <td><strong>{s.label}</strong></td>
                 {phases.map((p) => (
                   <td key={p.id} style={{ textAlign: 'center' }}>
-                    <Cell label={`${s.label} · ${p.id} weight`} value={s.weights[p.id] ?? 1} def={def.weights[p.id] ?? 1} step={0.1} width={52} onValid={(n) => setLifecycleWeight(s.id, p.id, n)} />
+                    <Cell label={`${s.label} · ${p.id} weight`} value={s.weights[p.id] ?? 1} def={def.weights[p.id] ?? 1} step={0.1} width={52}
+                      onValid={(n) => setLifecycleWeight(s.id, p.id, n)} />
                   </td>
                 ))}
                 <td style={{ textAlign: 'center', borderLeft: '2px solid var(--ac-blue)' }}>
-                  <Cell label={`${s.label} · automation posture`} value={s.autoPosture} def={def.autoPosture} step={0.01} width={56} onValid={(n) => setStatusPosture(s.id, n)} />
+                  <Cell label={`${s.label} · automation posture`} value={s.autoPosture} def={def.autoPosture} step={0.01} width={56}
+                    onValid={(n) => setStatusPosture(s.id, n)} />
                 </td>
               </tr>
             );

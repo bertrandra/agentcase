@@ -23,7 +23,8 @@ export default function LifecycleEditAggregate() {
     ...a.statuses.map((s, i) => ({ id: `p${s.id}`, name: `Automation posture: ${s.label}`, s: a.postures[i]!, f: (v: number) => v.toFixed(2) })),
   ];
   return (
-    <InputAggregate title="📊 Product profile & phase coefficients" intro="the status × phase weights and automation postures belong to each product (benchmarks, overridable per product).">
+    <InputAggregate title="📊 Product profile & phase coefficients"
+      intro="the status × phase weights and automation postures belong to each product (benchmarks, overridable per product).">
       <AggregateTable caption={`Profile and postures by product — ${vs.label}`} rows={a.rows} columns={cols} />
       <p className="ac-muted">{a.editedProducts} of {a.rows.length} product(s) carry coefficients edited against the benchmark.</p>
       <SpreadTable caption={`Spread of the lifecycle inputs — ${vs.label}`} items={items} />

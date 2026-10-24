@@ -24,7 +24,8 @@ export default function SetupAggregate() {
     { id: 'dur', name: 'Setup duration (months)', s: a.duration, f: (v) => v.toFixed(1) },
   ];
   return (
-    <InputAggregate title="Agentic Setup — Initial investment" intro="the one-off setup lines belong to each product (the HRI change cost and the hub setup are added by the model).">
+    <InputAggregate title="Agentic Setup — Initial investment"
+      intro="the one-off setup lines belong to each product (the HRI change cost and the hub setup are added by the model).">
       <AggregateTable caption={`Setup lines by product — ${vs.label}`} rows={a.rows} columns={COLS}
         totals={{ label: `Total — ${vs.label}`, cells: { tooling: eurK(t.tooling), training: eurK(t.training), coaching: eurK(t.coaching), governance: eurK(t.governance), total: eurK(t.total) } }} />
       <SpreadTable caption={`Spread of the setup inputs — ${vs.label}`} items={items} />

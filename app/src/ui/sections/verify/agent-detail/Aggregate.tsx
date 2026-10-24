@@ -10,6 +10,7 @@ const Section = lazy(() => import('../../verifyA/agent-detail'));
  * and authorization-level artifact counts of each product, added up for the selection.
  */
 export default function AgentDetailAggregate() {
-  return <RollupFrame title="🤖 Agent details — the agentic operating team" caption="Agentic operating team by product" Section={Section} table={useVerifyView(agentDetailTable)}
+  return <RollupFrame title="🤖 Agent details — the agentic operating team" caption="Agentic operating team by product" Section={Section}
+    table={useVerifyView(agentDetailTable)}
     note="Agentic run FTE, supervision pole and the artifacts at each AI authorization level, product by product. The day rate is the product's own and is not added up." />;
 }

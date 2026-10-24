@@ -36,7 +36,8 @@ export function CoachPanel() {
         <NumberInput id="coachCruise" label="Cruise coaching load (%)" min={0} max={60} step={5} />
       </div>
       <StatRow>
-        {k.loads.map((p, i) => <Stat key={i} label={`Y${i + 1} coaching load`} value={`${Math.round(p)}%`} hint={`≈ ${fmtK(k.costs[i] as number)}/yr`} tone="blue" />)}
+        {k.loads.map((p, i) => <Stat key={i} label={`Y${i + 1} coaching load`} value={`${Math.round(p)}%`} hint={`≈ ${fmtK(k.costs[i] as number)}/yr`}
+          tone="blue" />)}
       </StatRow>
       <p className="ac-muted">{k.costs.map((x, i) => `Y${i + 1} ≈ ${fmtK(x)}/yr`).join(' · ')}</p>
       <table className="ac-table">

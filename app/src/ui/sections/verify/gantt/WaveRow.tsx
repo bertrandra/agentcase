@@ -10,7 +10,8 @@ const pct = (v: number) => `${v.toFixed(2)}%`;
 function Bar({ left, width, color, label, cls, children }: { left: number; width: number; color: string; label: string; cls: string; children?: ReactNode }) {
   return (
     <div style={{ position: 'relative', flex: 1, height: 16, background: 'var(--ac-slate-55)', borderRadius: 'var(--ac-radius-xs)' }}>
-      <div className={cls} role="group" aria-label={label} title={label} tabIndex={0} style={{ position: 'absolute', top: 0, height: 16, left: pct(left), width: pct(width), background: color, borderRadius: 'var(--ac-radius-xs)' }} />
+      <div className={cls} role="group" aria-label={label} title={label} tabIndex={0}
+        style={{ position: 'absolute', top: 0, height: 16, left: pct(left), width: pct(width), background: color, borderRadius: 'var(--ac-radius-xs)' }} />
       {children}
     </div>
   );
@@ -40,7 +41,8 @@ export function WaveRow({ w, index, open, onToggle }: { w: GanttWaveRow; index: 
     <div data-gantt-wave={w.id}>
       <Row height={22} bg="var(--ac-slate-30)" title={`${w.name} — ${w.meta}`} label={
         <>
-          <button type="button" onClick={onToggle} aria-expanded={open} aria-label={`${open ? 'Collapse' : 'Expand'} ${w.name}`} style={{ border: 0, background: 'none', cursor: 'pointer', padding: 0, width: 14, color }}>{open ? '▼' : '▶'}</button>
+          <button type="button" onClick={onToggle} aria-expanded={open} aria-label={`${open ? 'Collapse' : 'Expand'} ${w.name}`}
+            style={{ border: 0, background: 'none', cursor: 'pointer', padding: 0, width: 14, color }}>{open ? '▼' : '▶'}</button>
           <strong style={{ fontWeight: 'var(--ac-font-weight-semibold)' }}>{w.name}</strong> <span style={{ color: 'var(--ac-neutral-700)', fontSize: 'var(--ac-font-size-xs)' }}>({w.products.length})</span>
         </>
       }>

@@ -26,10 +26,12 @@ export function Delivery({ v }: { v: GanttView }) {
   const toggle = (k: string) => setOpen((s) => { const n = new Set(s); if (!n.delete(k)) n.add(k); return n; });
   const rows = (p: PhaseRow) => (
     <div key={p.key}>
-      <Row height={22} bg={p.cross ? CROSS_BG : PHASE_BG} title={`${p.name} — ${p.meta}`} label={<PhaseLabel p={p} open={open.has(p.key)} onToggle={() => toggle(p.key)} />}>
+      <Row height={22} bg={p.cross ? CROSS_BG : PHASE_BG} title={`${p.name} — ${p.meta}`}
+        label={<PhaseLabel p={p} open={open.has(p.key)} onToggle={() => toggle(p.key)} />}>
         <DualBar left={p.start} act={p.act} sup={p.sup} tone={p.tone} title={`${p.name} — ${p.meta}`} />
       </Row>
-      {open.has(p.key) && p.arts.map((a) => <Row key={a.label} height={22} indent={24} label={a.label} title={`${a.label} — ${a.meta}`}><DualBar left={a.start} act={a.act} sup={a.sup} tone={p.tone} title={`${a.label} — ${a.meta}`} /></Row>)}
+      {open.has(p.key) && p.arts.map((a) => <Row key={a.label} height={22} indent={24} label={a.label} title={`${a.label} — ${a.meta}`}><DualBar left={a.start}
+        act={a.act} sup={a.sup} tone={p.tone} title={`${a.label} — ${a.meta}`} /></Row>)}
       <div style={{ paddingLeft: 260, fontSize: 'var(--ac-font-size-xs)', color: 'var(--ac-neutral-700)' }}>{p.meta}</div>
     </div>
   );

@@ -16,7 +16,8 @@ type Row = ReturnType<typeof velocityView>['rows'][number];
 /** One performance-realisation coefficient: the field keeps what was typed, the number reaches COEF (legacy coefSet). */
 function CoefInput({ id, coef, label }: { id: string; coef: PerfCoefKey; label: string }) {
   const value = useDoc((d) => { const text = d.dom.values[id], n = d.COEF[coef]; return text !== undefined && parseFloat(text) === n ? text : String(n ?? ''); });   // COEF wins (the DD register edits it too)
-  return <Field label={label}><input type="number" id={id} min={0} step={0.05} value={value} onChange={(e) => setPerfCoef(coef, e.target.value)} style={{ width: 90 }} /></Field>;
+  return <Field label={label}><input type="number" id={id} min={0} step={0.05} value={value} onChange={(e) => setPerfCoef(coef, e.target.value)}
+    style={{ width: 90 }} /></Field>;
 }
 
 /** Velocity & DORA: sprint velocity and the four DORA metrics from AS-IS to the elite target on the adoption ramp. */
