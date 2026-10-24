@@ -32,7 +32,7 @@ describe('team editing targets the active product only (spec F2)', () => {
   it('the same edit in "This product only" mode leaves the other teams alone too, and the figure shown is the active one', async () => {
     mountApp('team-in');
     await sectionReady(/Input team/);
-    fireEvent.change(screen.getByRole('combobox', { name: 'Edit' }), { target: { value: ids[0] } });   // Edit: "Product 1 only"
+    fireEvent.change(screen.getByRole('combobox', { name: 'Change' }), { target: { value: ids[0] } });   // Change: Product 1
     const a = total().value, before = teams();
     act(() => { setActiveProduct(ids[2]); });
     fireEvent.change(total(), { target: { value: '21' } });

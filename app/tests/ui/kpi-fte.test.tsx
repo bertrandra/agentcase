@@ -22,7 +22,7 @@ describe('top bar: total FTE before and after', () => {
   });
   it('portfolio scope: sums over the planned products and equals the domain headline', () => {
     mountApp();
-    fireEvent.change(screen.getByRole('combobox', { name: 'View' }), { target: { value: 'portfolio' } });
+    fireEvent.change(screen.getByRole('combobox', { name: 'Show' }), { target: { value: 'portfolio' } });
     const pf = appStore().getState().portfolio, h = portfolioHeadline(consolidate(pf));
     expect(kpi(/^FTE before$/)).toBe(h.fte.before.toFixed(1));
     expect(kpi(/^FTE after Y\d+$/)).toBe(h.fte.after.toFixed(1));

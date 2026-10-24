@@ -17,7 +17,7 @@ vi.mock('@/ui/widgets/ChartPanel', async () => import('../helpers/chartStub'));
 let ids: [string, string, string], waves: [string, string];
 beforeEach(() => { ({ ids, waves } = threeProducts()); });
 afterEach(cleanup);
-const select = () => screen.getByRole('combobox', { name: 'View' }) as HTMLSelectElement;
+const select = () => screen.getByRole('combobox', { name: 'Show' }) as HTMLSelectElement;
 const choose = (v: string) => fireEvent.change(select(), { target: { value: v } });
 const savings = () => kpi(/^Savings Y/), run = () => kpi(/^Run cost Y/), payback = () => kpi(/^Payback$/), eff = () => kpi(/^Effective automation$/), ceil = () => kpi(/^Glass ceiling$/);
 
@@ -25,7 +25,7 @@ describe('display scope selector (F17)', () => {
   it('offers Portfolio, each Wave and each Product; defaults to the active product', () => {
     mountApp();
     expect([...select().options].map((o) => o.textContent)).toEqual([
-      'Portfolio', 'Wave: Wave 1', 'Wave: Wave 2', 'Product: Product 1 — Wave 1', 'Product: B — Wave 1', 'Product: C — Wave 2']);
+      'Portfolio', 'Wave 1', 'Wave 2', 'Product 1 (Wave 1)', 'B (Wave 1)', 'C (Wave 2)']);
     expect(select().value).toBe(`product:${ids[0]}`);
     expect(screen.getByRole('complementary', { name: 'Headline results' })).toBeTruthy();
   });
@@ -60,7 +60,7 @@ describe('display scope selector (F17)', () => {
     expect(ceil()).toBe(fmtPct(h.ceiling));
     expect(kpi(/^Velocity Y/)).toBe(`${h.velocityPct >= 0 ? '+' : ''}${Math.round(h.velocityPct)}%`);
     expect(screen.getByText(/^Savings Y/).parentElement!.title).toContain('Portfolio');
-    expect(screen.getByRole('status').textContent).toContain('View: Portfolio');
+    expect(screen.getByRole('status').textContent).toContain('Showing Portfolio');
   });
 
   it('Wave: the figures of that wave only; the label and the tooltips name it', () => {
@@ -112,18 +112,18 @@ describe('display scope selector (F17)', () => {
   });
 });
 
-describe('one view selector, no duplicate product selector', () => {
-  it('has no separate Product selector; picking a product views AND edits it; a portfolio view still names the edited product', () => {
+describe('one Show selector, no duplicate product selector, no "Editing:" chip', () => {
+  it('has no separate Product selector; picking a product shows AND edits it; the Change dropdown (not a chip) names the edited product', () => {
     mountApp();
+    const change = () => (screen.getByRole('combobox', { name: 'Change' }) as HTMLSelectElement).value;
     expect(screen.queryByRole('combobox', { name: 'Product' })).toBeNull();
     choose(`product:${ids[1]}`);
-    expect(pf().activeProductId).toBe(ids[1]);
-    expect(screen.queryByText(/^Editing:/)).toBeNull();
+    expect([pf().activeProductId, change()]).toEqual([ids[1], ids[1]]);
     choose('portfolio');
-    expect(pf().activeProductId).toBe(ids[1]);
-    expect(screen.getByText(/Editing:/).textContent).toBe('Editing: All products');   // the Edit dropdown says "All products" (default)
-    fireEvent.change(screen.getByRole('combobox', { name: 'Edit' }), { target: { value: ids[1] } });
-    expect(screen.getByText(/Editing:/).textContent).toBe('Editing: B');
-    expect(screen.getByText(/Editing:/).className).not.toContain('ac-muted');   // legible on the dark header
+    expect([pf().activeProductId, change()]).toEqual([ids[1], 'all']);   // Change follows Show: back to All products
+    fireEvent.change(screen.getByRole('combobox', { name: 'Change' }), { target: { value: ids[1] } });
+    expect(change()).toBe(ids[1]);
+    expect(document.querySelector('.ac-top .ac-editing')).toBeNull();
+    expect(screen.queryByText(/Editing:/)).toBeNull();
   });
 });

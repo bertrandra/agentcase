@@ -86,7 +86,7 @@ describe('exemplar I-input: Input team', () => {
     expect(appStore().getState().history.undo).toHaveLength(undo);
     expect(await screen.findByRole('button', { name: /Add a resource/ })).toBeTruthy();
     expect(document.querySelector('.ac-agg-table')).toBeNull();
-    expect(screen.getByRole('status').textContent).toContain('View: product B (edited)');
+    expect(screen.getByRole('status').textContent).toContain('Showing B');
   });
 });
 

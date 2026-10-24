@@ -83,7 +83,7 @@ describe.each(CASES)('$id: Portfolio and each Wave show the domain figures', (k)
     mountApp(k.id); show(v);
     await sectionReady(k.title);
     const p = corePortfolio(pf()), sel = idsOf(v), t = table(k.caption, v);
-    expect(banner()).toContain(k.input ? 'Editing: All products (common values) — aggregate view' : 'Calculated on:');   // "Edit: All products" (default)
+    expect(banner()).toContain(k.input ? 'Changing: all products (shared values) — aggregate view' : 'Calculated on:');   // "Change: All products" (default)
     expect(t.querySelectorAll('tbody tr')).toHaveLength(sel.length);
     for (const r of k.rows(p, sel)) for (const x of r.texts) expect(t.querySelector(`tbody tr[data-row="${r.id}"]`)!.textContent, `${k.id} ${r.id}`).toContain(x);
     for (const x of k.total?.(p, sel) ?? []) expect(t.querySelector('tfoot tr')!.textContent, `${k.id} total`).toContain(x);
@@ -97,7 +97,7 @@ describe.each(CASES)('$id: Portfolio and each Wave show the domain figures', (k)
     mountApp(k.id); show({ kind: 'portfolio' }); act(() => { setDisplayScope({ kind: 'product' }); });
     await sectionReady(k.title);
     expect(document.querySelector('.ac-agg-table, .ac-drill, [data-readonly]')).toBeNull();
-    expect(banner()).toBe(k.input ? `Editing: product ${active.name}` : `Calculated on: Product: ${active.name}`);
+    expect(banner()).toBe(k.input ? `Changing: product ${active.name}` : `Calculated on: Product: ${active.name}`);
   });
 
   if (k.input) {
@@ -110,7 +110,7 @@ describe.each(CASES)('$id: Portfolio and each Wave show the domain figures', (k)
       expect(pf().displayScope).toEqual({ kind: 'product' });
       expect(appStore().getState().history.undo).toHaveLength(undo);
       await waitFor(() => expect(document.querySelector('.ac-agg-table')).toBeNull());
-      expect(banner()).toBe('Editing: product Billing');
+      expect(banner()).toBe('Changing: product Billing');
     });
   } else {
     it.each(VIEWS.slice(0, 2).map((v) => [v.kind === 'portfolio' ? 'Portfolio' : 'Wave 1', v] as const))('%s: the product detail opens read-only and shows that product’s figures', async (_n, v) => {

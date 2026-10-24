@@ -49,7 +49,7 @@ export function describeAggregates(group: string, cases: AggCase[], statics: { i
           mountApp(c.id); view('portfolio'); view('product');
           await sectionReady(c.title);
           expect(document.querySelector('.ac-agg-table, .ac-drill')).toBeNull();
-          expect(document.querySelector('.ac-scope-banner')!.textContent).toContain('Editing: product');
+          expect(document.querySelector('.ac-scope-banner')!.textContent).toContain('Changing: product');
         });
         if (c.edit !== false) {
           it('"Edit this product" makes the View that product', async () => {
