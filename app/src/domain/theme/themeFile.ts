@@ -12,7 +12,9 @@ export class ThemeFileError extends Error {}
 
 /** The JSON of one or several themes (built-ins included: their content is copied, they import as user themes). */
 export function themeFileJson(themes: readonly ThemeDef[]): string {
-  const list = themes.map((t) => ({ seq: t.seq, name: t.name, ...(t.description ? { description: t.description } : {}), colours: { ...t.colours }, axes: { ...t.axes } }));
+  const list = themes.map((t) => ({
+    seq: t.seq, name: t.name, ...(t.description ? { description: t.description } : {}), colours: { ...t.colours }, axes: { ...t.axes }, ...(t.generator ? { generator: { ...t.generator } } : {}),
+  }));
   return JSON.stringify({ _schema: THEME_FILE_SCHEMA, themes: list }, null, 2);
 }
 

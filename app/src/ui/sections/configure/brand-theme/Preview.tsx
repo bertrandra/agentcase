@@ -1,4 +1,4 @@
-import { useLayoutEffect, useRef } from 'react';
+import { useLayoutEffect, useMemo, useRef } from 'react';
 import type { ThemeDef } from '@/domain/theme/themeDef';
 import { useDoc } from '@/store/hooks';
 import { applyPreviewTheme } from '@/ui/brand/applyTheme';
@@ -6,18 +6,20 @@ import { BrandLogo } from '@/ui/brand/BrandLogo';
 import { ThemeAxesContext } from '@/ui/themeAxes';
 import { Callout, Stat, StatRow } from '@/ui/widgets/cards';
 import { PreviewChart, PreviewControls } from './PreviewControls';
-import { setPreviewDark, useBrandThemeView } from './selection';
+import { setPreviewDark, useBrandThemeView, useDraft, withDraft } from './selection';
 
 /**
  * A mini page in the selected theme: header with logo and title, KPI bar, navigation, a section card with a callout, key figures, a table, a chart
  * and one control of each kind. The theme is applied to the container only (every token inline, docs/THEME.md §8.2): the app keeps its own.
+ * While the palette generator is tried (§8.9), the preview shows the generated palette before it is applied.
  */
-export function Preview({ def }: { def: ThemeDef }) {
+export function Preview({ def: theme }: { def: ThemeDef }) {
+  const draft = useDraft(theme.seq), def = useMemo(() => withDraft(theme, draft), [theme, draft]);
   const ref = useRef<HTMLDivElement>(null), dark = useBrandThemeView((s) => s.previewDark), customer = useDoc((d) => (d.customerName as string | undefined) ?? '');
   useLayoutEffect(() => { if (ref.current) applyPreviewTheme(def, { mode: dark ? 'dark' : 'light', contrast: 'standard', cvd: false, reduceMotion: false }, ref.current); }, [def, dark]);
   return (
     <section className="ac-card ac-bt-preview-card" aria-label="Live preview">
-      <h2>Live preview</h2>
+      <h2>Live preview{draft ? ' (generated palette, not applied)' : ''}</h2>
       <div className="ac-bt-actions" role="group" aria-label="Preview mode">
         <button type="button" className="ac-btn" aria-pressed={!dark} onClick={() => setPreviewDark(false)}>Light</button>
         <button type="button" className="ac-btn" aria-pressed={dark} onClick={() => setPreviewDark(true)}>Dark</button>

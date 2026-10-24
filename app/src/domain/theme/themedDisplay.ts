@@ -44,8 +44,8 @@ export function themedDisplay(spec: DisplaySpec, def: Pick<ThemeDef, 'colours' |
   const brand = shiftOf('primary', o.primary), surf = shiftOf('slate', o.slate);
   if (brand) for (const k of BRAND) if (d[k] && !(spec.cvd && CHART.includes(k))) d[k] = turn(d[k]!, brand);
   if (surf) for (const k of SURFACES) if (d[k]) d[k] = turn(d[k]!, surf);
-  if (!dark) {   // enhanced: a chrome background the theme sets darkens like the text steps (by a fifth), so its white text reaches 7:1
-    for (const k of CHROME) if (normHex(o[k])) d[k] = withL(normHex(o[k])!, (L) => (L < 0.72 ? L * 0.8 : L));
+  if (!dark) {   // enhanced: a chrome background or a text colour the theme sets darkens like the text steps (by a fifth): white text on it / it as text reach 7:1
+    for (const k of [...CHROME, ...LIFT]) if (normHex(o[k])) d[k] = withL(normHex(o[k])!, (L) => (L < 0.72 ? L * 0.8 : L));
     return d as Partial<ThemeValues>;
   }
   for (const k of CHROME) if (normHex(o[k])) d[k] = withL(normHex(o[k])!, (L) => Math.min(L, 0.4), 0.85);

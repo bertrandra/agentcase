@@ -6,11 +6,12 @@
  */
 import { AXIS_NAMES, isAxisValue, type ThemeAxes } from './axes';
 import { BUILTIN_THEMES } from './catalogue';
+import { parseGenerator, type GeneratorSettings } from './generatorSettings';
 import { cleanName, DEFAULT_SEQ, FIRST_USER_SEQ, isColourKey, MAX_USER_THEMES, normHex, type ThemeColours, type ThemeDef } from './themeDef';
 
 export interface LibraryDoc { THEMES?: unknown; ACTIVE_THEME?: unknown; THEME_SEQ?: unknown; [key: string]: unknown }
 /** The editable content of a theme (what a file or a sheet carries). */
-export interface ThemeContent { name: string; description?: string; colours: ThemeColours; axes: Partial<ThemeAxes> }
+export interface ThemeContent { name: string; description?: string; colours: ThemeColours; axes: Partial<ThemeAxes>; generator?: GeneratorSettings }
 
 const isObj = (v: unknown): v is Record<string, unknown> => !!v && typeof v === 'object' && !Array.isArray(v);
 
@@ -26,9 +27,11 @@ export function parseTheme(raw: unknown, notes: string[] = [], where = 'theme'):
     if ((AXIS_NAMES as string[]).includes(k) && isAxisValue(k as (typeof AXIS_NAMES)[number], v)) axes[k] = v as string;
     else notes.push(`${where}: axis "${cleanName(k)}" ignored (unknown axis or value).`);
   }
-  for (const k of Object.keys(raw)) if (!['name', 'description', 'colours', 'axes', 'seq', 'id', 'builtin'].includes(k)) notes.push(`${where}: key "${cleanName(k)}" ignored.`);
+  for (const k of Object.keys(raw)) if (!['name', 'description', 'colours', 'axes', 'generator', 'seq', 'id', 'builtin'].includes(k)) notes.push(`${where}: key "${cleanName(k)}" ignored.`);
+  const generator = raw.generator === undefined ? null : parseGenerator(raw.generator);
+  if (raw.generator !== undefined && !generator) notes.push(`${where}: palette generator settings ignored (no valid seed colour).`);
   const name = cleanName(raw.name) || 'Untitled theme', description = cleanName(raw.description);
-  return { name, ...(description ? { description } : {}), colours, axes: axes as Partial<ThemeAxes> };
+  return { name, ...(description ? { description } : {}), colours, axes: axes as Partial<ThemeAxes>, ...(generator ? { generator } : {}) };
 }
 
 const isUserSeq = (n: unknown): n is number => Number.isInteger(n) && (n as number) > BUILTIN_THEMES.length && (n as number) < 1e6;

@@ -5,6 +5,7 @@
  * business colours, chart series). An empty theme is the default look, token for token.
  */
 import type { ThemeAxes } from './axes';
+import type { GeneratorSettings } from './generatorSettings';
 import type { TokenName } from './index';
 
 /** The scale step each family's anchor colour sits on (the brand colour of the default look). */
@@ -39,6 +40,8 @@ export interface ThemeDef {
   description?: string;
   colours: ThemeColours;
   axes: Partial<ThemeAxes>;
+  /** the last settings of the one-colour palette generator applied to this theme (§8.9), so the editor reopens on them */
+  generator?: GeneratorSettings;
 }
 
 export const DEFAULT_SEQ = 1;

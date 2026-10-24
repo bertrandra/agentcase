@@ -1,5 +1,5 @@
 import { clearCustomerLogo, setCustomerLogo, setLogoOptions } from '@/controllers/brand';
-import { activateTheme, addTheme, deleteTheme, duplicateTheme, importThemes, renameTheme, updateTheme } from '@/controllers/themes';
+import { activateTheme, addTheme, deleteTheme, duplicateTheme, generatePalette, importThemes, renameTheme, updateTheme } from '@/controllers/themes';
 import type { Sample } from './types';
 
 /** A 1x1 PNG. */
@@ -12,6 +12,7 @@ export const samples: Record<string, Sample> = {
   'theme.import': () => importThemes([{ name: 'Imported', colours: { primary: '#336699' }, axes: { radius: 'round' } }]),
   'theme.rename': { prep: own, run: () => renameTheme(100, 'Renamed') },
   'theme.update': { prep: own, run: () => updateTheme(100, { colours: { primary: '#aa3300' }, axes: { density: 'compact' } }) },
+  'theme.generate': { prep: own, run: () => generatePalette(100, { seed: '#0b7a75', contrast: 60, harmony: 'triadic' }) },
   'theme.delete': { prep: own, run: () => deleteTheme(100) },
   'theme.activate': () => activateTheme(7),
   'case.setLogo': () => setCustomerLogo(PNG),
