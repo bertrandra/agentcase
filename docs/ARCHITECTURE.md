@@ -89,6 +89,15 @@ financial figure is testable without a browser.
   accumulator (`engine.ts`: cumulative, payback), aggregation (`years.ts`, `rows.ts`), plus `thin.ts` (row-free aggregate for Monte
   Carlo draws) and `fit.ts`. `canonical.ts` exposes `engineNow`, `paybackMonthsCanonical` and `npvCanonical` (discount rate from
   `MODEL.CASE.discountRate`, default 8 %): the single source for payback and NPV. The engine is always built from the raw model.
+- **Discounted-cash-flow kernel** (`domain/economics/cashflow.ts`, zone *time-engine*, owner of the payback-month, NPV and ROI figures). The one place
+  where a monthly cash-flow becomes a cumulative (`cumulativeOf`), a payback month (`paybackMonthOf`: first month >= `firstMonth` whose cumulative is
+  >= 0), an NPV (`npvOf`: month t discounted by (1 + r/12)^t, or by (1 + r)^(t/12) with `compounding: 'annual'`), a discount factor and an ROI
+  (`roiCanonical`); `cashflowSummary(net, { annualRate, firstMonth, compounding })` returns all of them. `DEFAULT_DISCOUNT_RATE` (0.08) is the only
+  literal of the default rate. Callers: the Time Engine (`engine.ts`: path, `npv`, `roi`, `headline`), the Monte Carlo thin pass (`thin.ts`, used by
+  `model/mcs.ts`), the portfolio summary (`portfolio/headline.ts`, payback not before the first movement), the legacy-mode audit (`pdc/verifConvTime.ts`,
+  8 % as the legacy), the time-to-market value (`model/flow.ts`, annual compounding, the legacy P5 rule) and the cost-model discount factors. Lot 4
+  replaced six inline loops by it; `tests/domain/cashflow.test.ts` compares it bit for bit (`Object.is`) with verbatim copies of those loops on random
+  cash flows (fast-check), and every figure of the 107 fixtures and the portfolios was dumped before and after at full precision: identical.
 - **Horizon.** `horizonYears()` (`model/horizonYears.ts`) returns one savings and one run-cost entry per horizon year; Monte Carlo,
   strategies and Results use it, so horizons 1 to 10 work (legacy v18.12/v18.13 fixes).
 - **Portfolio** (`src/domain/portfolio/`, multi-product phase P1, spec [SPEC_MULTI_PRODUIT.md](SPEC_MULTI_PRODUIT.md)). Pure layer above `computeCase`,
@@ -416,11 +425,13 @@ instead of remembered, and so that the tests a change needs can be found from th
 
 **Zones.** `app/src/domain/zones/catalog.json` lists <!-- fact:zones -->19<!-- /fact -->: <!-- fact:inputZones -->5<!-- /fact --> input zones (rate card and team, scope and automation potential, adoption curve, Knowledge Hub, run sizing /
 setup / taxes), <!-- fact:calcZones -->4<!-- /fact --> calculation zones (Time Engine and annual model, readiness and programme tuning, stress, product resolution), <!-- fact:resultZones -->8<!-- /fact --> result zones (economics headline,
-delivery views, verification and verdict, portfolio consolidation, aggregated views, exports, workspace and configuration) and <!-- fact:sharedZones -->2<!-- /fact --> shared ones (foundation, presentation
+delivery views, verdict, evidence and due diligence, logic verification, portfolio consolidation, aggregated views, exports, workspace and configuration) and <!-- fact:sharedZones -->2<!-- /fact --> shared ones (foundation, presentation
 formatting), each with a lane, a description, entry modules and the figures it owns. They follow the code, not the menu: a module that *reads* the engine to print
 something (the run-sizing read-out, the glass-ceiling impact chart) belongs to *delivery views*, not to the zone whose inputs it shows, which keeps the
-zone graph close to acyclic. The 24 imports that still point backwards (an input zone reading the engine, a read-out inside an input zone) are listed in the Build order tab
-of the app, not hidden.
+domain zone graph **acyclic** (lot 4; it had one cycle of 15 zones before). A module is tagged by its role, not its folder: the cash-flow kernel lives in
+`economics/` but computes for the engine (*time-engine*); `model/flow.ts`, `scope/scurveView.ts`, `pdc/verifTeam.ts` and `domain/index.ts` (`computeCase`, the KPI bar)
+are read-outs (*delivery-views*); `tune/maturity.ts` is programme tuning; the portfolio knowledge views and diagnostics are consolidation; the verdict, the
+evidence ladder and the due-diligence register (*verdict*) are read by the Board registry, which the logic checks (*verification*) audit in turn.
 
 **Tags.** The first line of every module under `src/domain`, of every controller, of the export modules (`store/persistence/{excel,report,html}`) and of the zone hooks of
 `src/store` is `/** @calc-zone <zone-id> */`, plus `@owner <figure-id>[, ...]` on the module that owns a figure. `tests/domain/zones-tags.test.ts` fails when a module has no valid tag, when
@@ -432,10 +443,14 @@ package, the Excel results workbook, the report and the consolidation equals the
 
 **Generated graph.** `npm run deps:gen` (`app/scripts/gen-deps.ts`, TypeScript compiler API, syntax only, about 2 s) writes `app/src/generated/dependencies.json` (committed, about 75 KB):
 zones, sections (kind from `sectionScope.json`), edges and the zone set of every test. Rules: type-only imports are not edges; a barrel of `src/domain` is followed by symbol
-(`import { x } from '@/domain/stress'` is an import of the file that declares `x`); `store/hooks.ts` is a generic accessor whose heavy symbols are routed to their domain
+(`import { x } from '@/domain/stress'` is an import of the file that declares `x`); **zone edges are per layer and count uses only**: the domain zone graph (`edges`, kind `z`)
+is built from the imports of `src/domain` modules, re-exports (`export … from`) and pure barrels (modules made only of re-exports) create no zone edge, and the zone links of
+the controllers and the store exports are reported apart (`outer`, never part of the build order); the re-export edges stay in the import closure, so test selection still
+follows a namespace import through a barrel; `store/hooks.ts` is a generic accessor whose heavy symbols are routed to their domain
 owner (`graphConfig.json`); the shell, the frame and the View-selector widgets are on every screen and are on the ignore list, with a reason; the shared zones create no edge.
 A section reaches a zone when the import closure of its folder, walked through untagged ui / store modules, hits a tagged module (`r`, read: the zone feeds the section; `w`, write:
-an input section reaches a controller of the zone); a zone feeds another when one of its modules is imported by one of the other's (`z`). Weights are numbers of modules.
+an input section reaches a controller of the zone); a zone feeds another when the code of one of its domain modules imports one of the other's (`z`). The Build order tab
+is a topological order of the `z` links (lanes, then names break ties): 17 drawn zones in 13 layers, no cycle, no feedback link; a test (`deps.test.tsx`) fails if a cycle comes back. Weights are numbers of modules.
 `tests/domain/deps-fresh.test.ts` fails with "run `npm run deps:gen`" when the file is stale, `deps-generator.test.ts` runs the generator on a small synthetic project,
 and CI runs `npm run deps:check`. The section *Dependencies* of the app draws this graph (lanes, nodes, edges, a side panel with the impacted sections and tests), a matrix, the zones and
 figures, the build order with its cycle report and the tests impacted. The authored `SECTION_DEPS` registry is still stored with the case but is no longer shown (DEV-DEPS-ZONES).
