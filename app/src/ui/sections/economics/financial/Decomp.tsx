@@ -8,16 +8,17 @@ import { GridTable } from '../GridTable';
 import { decompBars } from './charts';
 import { useTheme } from '@/ui/themeContext';
 
-const dot = (c: string) => <span style={{ display: 'inline-block', width: 10, height: 10, borderRadius: 'var(--ac-radius-2xs)', background: c, marginRight: 6 }} />;
+/** The legend dot of a component, in the colour of its bar (`data-part` of `.ac-decomp-dot`). */
+const dot = (part: 'gross' | 'agent' | 'reloc') => <span className="ac-decomp-dot" data-part={part} />;
 
 /** Savings split into gross automation, agent operating cost and relocation (legacy savingsBreakdown), with the reconciliation line. */
 export function Decomp() {
   const { tok } = useTheme(), b = useCtxSelector(savingsBreakdown), cfg = useMemo(() => decompBars(b, tok), [b, tok]);
   const n = b.years.length, last = b.years[n - 1] as SavingsYear, cells = (f: (y: SavingsYear) => number) => b.years.map((y) => fmtSigned(f(y)));
   const rows = [
-    { key: 'g', label: <>{dot('var(--ac-teal-700)')}Gross automation (heads removed × AS-IS rate)</>, cells: cells((y) => y.grossAuto) },
-    { key: 'a', label: <>{dot('var(--ac-danger-800)')}− Agent operating cost (tokens + infra + run team)</>, cells: b.years.map((y) => fmtSigned(-Math.abs(y.agentCost))) },
-    { key: 'r', label: <>{dot('var(--ac-warning-600)')}Relocation (residual team × rate delta)</>, cells: cells((y) => y.relocation) },
+    { key: 'g', label: <>{dot('gross')}Gross automation (heads removed × AS-IS rate)</>, cells: cells((y) => y.grossAuto) },
+    { key: 'a', label: <>{dot('agent')}− Agent operating cost (tokens + infra + run team)</>, cells: b.years.map((y) => fmtSigned(-Math.abs(y.agentCost))) },
+    { key: 'r', label: <>{dot('reloc')}Relocation (residual team × rate delta)</>, cells: cells((y) => y.relocation) },
     { key: 'n', label: '= Net automation', cells: cells((y) => y.netAuto), bold: true, rule: true },
     { key: 't', label: '= Total savings', cells: cells((y) => y.total), bold: true, rule: true },
   ];

@@ -184,3 +184,90 @@
 .ac-section .ac-conv-detail { font-size: var(--ac-font-size-sm); color: var(--ac-neutral-750); }
 .ac-section .ac-impact { font-weight: var(--ac-font-weight-regular); }
 .ac-section .ac-impact.is-hot { font-weight: var(--ac-font-weight-bold); color: var(--ac-blue); }
+
+/* ---- colour roles of the domain (`tone` / `bgTone`: a token name) carried as `data-tone` / `data-bg-tone`; an element reads them as
+   `var(--ac-tone)` / `var(--ac-tone-bg)`. Only the roles these sections receive are listed. */
+[data-tone='teal-700'] { --ac-tone: var(--ac-teal-700); } [data-tone='warning-600'] { --ac-tone: var(--ac-warning-600); }
+[data-tone='danger-800'] { --ac-tone: var(--ac-danger-800); } [data-tone='primary-700'] { --ac-tone: var(--ac-primary-700); }
+[data-tone='info-700'] { --ac-tone: var(--ac-info-700); } [data-tone='secondary-600'] { --ac-tone: var(--ac-secondary-600); }
+[data-bg-tone='success-50'] { --ac-tone-bg: var(--ac-success-50); } [data-bg-tone='warning-55'] { --ac-tone-bg: var(--ac-warning-55); }
+[data-bg-tone='danger-75'] { --ac-tone-bg: var(--ac-danger-75); }
+[data-bg-tone='chart-div-pos'] { --ac-tone-bg: var(--ac-chart-div-pos); } [data-bg-tone='chart-div-mid'] { --ac-tone-bg: var(--ac-chart-div-mid); }
+[data-bg-tone='chart-div-neg'] { --ac-tone-bg: var(--ac-chart-div-neg); } [data-bg-tone='chart-div-neg-strong'] { --ac-tone-bg: var(--ac-chart-div-neg-strong); }
+/* a figure's ink by name, and the sign of a money figure */
+[data-ink='teal'] { color: var(--ac-teal); } [data-ink='brick'] { color: var(--ac-brick); } [data-ink='amber'] { color: var(--ac-amber); }
+[data-ink='blue'] { color: var(--ac-blue); } [data-ink='info'] { color: var(--ac-info-700); }
+.ac-gain[data-sign='pos'] { color: var(--ac-teal); } .ac-gain[data-sign='neg'] { color: var(--ac-brick); }
+.ac-cash[data-sign='pos'] { color: var(--ac-teal-725); } .ac-cash[data-sign='neg'] { color: var(--ac-warning-595); }
+.ac-margin[data-sign='pos'] { color: var(--ac-teal-700); } .ac-margin[data-sign='neg'] { color: var(--ac-danger-800); }
+.ac-section .ac-loss { color: var(--ac-brick); }
+.ac-section .ac-regular { font-weight: var(--ac-font-weight-regular); }
+.ac-section .ac-inline { display: inline; }
+.ac-section .ac-stretch { align-items: stretch; }
+.ac-section .ac-lines { line-height: var(--ac-leading-code); }
+/* an edited control (it differs from its default) */
+.ac-section :is(.ac-table, .ac-field, .ac-form-row) :is(input, select).is-edited { border-color: var(--ac-amber); }
+
+/* ---- Economics */
+.ac-section .ac-table tr.is-bold { font-weight: var(--ac-font-weight-bold); }
+.ac-section .ac-table tr.is-rule { border-top: 2px solid var(--ac-blue); }
+.ac-section .ac-decomp-dot { display: inline-block; width: 10px; height: 10px; margin-right: 6px; background: var(--ac-decomp); border-radius: var(--ac-radius-2xs); }
+.ac-decomp-dot[data-part='gross'] { --ac-decomp: var(--ac-teal-700); } .ac-decomp-dot[data-part='agent'] { --ac-decomp: var(--ac-danger-800); }
+.ac-decomp-dot[data-part='reloc'] { --ac-decomp: var(--ac-warning-600); }
+.ac-section .ac-reco { margin-top: .75rem; padding: 1.25rem; text-align: center; border-radius: var(--ac-radius-lg); }
+.ac-reco[data-verdict='go'] { background: linear-gradient(135deg,var(--ac-success-30),var(--ac-success-25)); border: 1px solid var(--ac-success-175); }
+.ac-reco[data-verdict='conditional'] { background: linear-gradient(135deg,var(--ac-warning-25),var(--ac-warning-10)); border: 1px solid var(--ac-warning-150); }
+.ac-reco[data-verdict='reconsider'] { background: linear-gradient(135deg,var(--ac-danger-50),var(--ac-danger-25)); border: 1px solid var(--ac-danger-225); }
+.ac-section .ac-reco-head { margin-bottom: .5rem; font-size: var(--ac-font-size-3xl); font-weight: var(--ac-font-weight-bold); color: var(--ac-blue); }
+.ac-section .ac-reco-body { font-size: var(--ac-font-size-base); color: var(--ac-neutral-650); }
+.ac-section .ac-reco-how { margin-top: .9rem; padding: 1rem 1.15rem; background: var(--ac-primary-80); border: 1px solid var(--ac-primary-200); border-left: 4px solid var(--ac-blue);
+  border-radius: var(--ac-radius-lg); }
+.ac-section .ac-reco-how-title { margin-bottom: .5rem; font-weight: var(--ac-font-weight-bold); color: var(--ac-blue); }
+.ac-section .ac-reco-line { display: flex; justify-content: space-between; gap: 12px; padding: 3px 0; border-bottom: 1px dashed var(--ac-primary-200); }
+.ac-section .ac-reco-line-v { font-weight: var(--ac-font-weight-semibold); color: var(--ac-blue); }
+.ac-section .ac-reco-roi { color: var(--ac-teal); }
+.ac-section .ac-reco-note { margin-top: .5rem; font-size: var(--ac-font-size-sm); color: var(--ac-slate-650); }
+
+/* ---- Stress */
+.ac-section .ac-corr { color: var(--ac-muted); } .ac-section .ac-corr.is-strong { color: var(--ac-blue); }
+.ac-section .ac-field input.ac-mc-input { width: 90px; }
+.ac-section .ac-heat { background: var(--ac-tone-bg); } .ac-section .ac-heat.is-na { color: var(--ac-neutral-700); }
+.ac-section .ac-scen-name { color: var(--ac-scen-ink); }
+
+/* ---- Verdict: strategies (location split, ranking, metrics, editor), decision and results verdict boxes */
+.ac-section .ac-split-mode { color: var(--ac-neutral-0); background: var(--ac-split-mode); }
+.ac-split-mode[data-mode='asis'] { --ac-split-mode: var(--ac-slate-700); } .ac-split-mode[data-mode='custom'] { --ac-split-mode: var(--ac-primary-700); }
+.ac-split-mode[data-mode='inherit'] { --ac-split-mode: var(--ac-warning-600); }
+[data-cls='Local'] { --ac-cls: var(--ac-teal-700); } [data-cls='Nearshore'] { --ac-cls: var(--ac-info-700); } [data-cls='Offshore'] { --ac-cls: var(--ac-warning-600); }
+.ac-section .ac-split-cls { font-weight: var(--ac-font-weight-semibold); color: var(--ac-cls); }
+.ac-section .ac-split-tot { font-weight: var(--ac-font-weight-semibold); color: var(--ac-muted); } .ac-section .ac-split-tot.is-off { color: var(--ac-brick); }
+.ac-section .ac-split-bar { display: flex; min-width: 150px; height: 14px; overflow: hidden; border-radius: var(--ac-radius-sm); }
+.ac-section .ac-split-bar > div { width: var(--ac-split-pct); background: var(--ac-cls); }
+.ac-section .ac-field input.ac-weight-input { width: 60px; }
+.ac-section .ac-table tbody tr.is-best:nth-child(n) { font-weight: var(--ac-font-weight-bold); background: var(--ac-success-50); }
+.ac-section .ac-bar.ac-score-bar { display: block; min-width: 120px; }
+.ac-section .ac-score-bar > span { width: var(--ac-bar-pct); background: var(--ac-info-700); } .ac-section .ac-score-bar > span.is-top { background: var(--ac-teal); }
+.ac-section .ac-score { font-weight: var(--ac-font-weight-bold); }
+.ac-section .ac-radar { max-width: 560px; margin: 12px auto; }
+.ac-section .ac-rank[data-rank='best'] { font-weight: var(--ac-font-weight-bold); color: var(--ac-teal); background: var(--ac-success-50); }
+.ac-section .ac-rank[data-rank='worst'] { color: var(--ac-brick); }
+.ac-section .ac-table td input.ac-lever-input { width: 58px; text-align: center; }
+.ac-section .ac-table tbody tr.ac-geo-row:nth-child(n) { background: var(--ac-slate-25); }
+.ac-section .ac-table input.ac-geo-input { width: 52px; text-align: center; }
+.ac-section .ac-verdict { margin: 8px 0; background: var(--ac-tone-bg); border: 2px solid var(--ac-tone); border-radius: var(--ac-radius-xl); }
+.ac-section .ac-verdict-full { padding: 16px 18px; }
+.ac-section .ac-verdict-compact { display: flex; flex-wrap: wrap; justify-content: space-between; gap: 8px; padding: 12px 16px; }
+.ac-section .ac-verdict-head { display: flex; flex-wrap: wrap; justify-content: space-between; gap: 8px; }
+.ac-section .ac-verdict-label { font-size: var(--ac-font-size-3xl); font-weight: var(--ac-font-weight-bold); color: var(--ac-tone); }
+.ac-section .ac-verdict-compact .ac-verdict-label { font-size: var(--ac-font-size-2xl); }
+.ac-section .ac-verdict-conf { font-size: var(--ac-font-size-lg); font-weight: var(--ac-font-weight-bold); color: var(--ac-tone); }
+.ac-section .ac-verdict-pct { color: var(--ac-tone); }
+.ac-section .ac-verdict-sub { margin-top: 4px; }
+/* the "not yet computed" note: a callout drawn dashed (the callout rule weighs (0,4,1); the shell chain lifts this one above it) */
+.ac-shell .ac-work .ac-section .ac-callout.ac-callout-pending { border-style: dashed; }
+
+/* ---- Present */
+.ac-section .ac-story-lead { font-size: var(--ac-font-size-xl); color: var(--ac-blue); }
+.ac-section .ac-table tr.ac-cm-off { color: var(--ac-muted); }
+.ac-section .ac-table tbody tr.is-selected-model:nth-child(n) { font-weight: var(--ac-font-weight-bold); background: var(--ac-warning-55); }
+.ac-section .ac-mp-swatch { display: inline-block; width: 10px; height: 10px; margin-right: 4px; background: var(--ac-tone); }

@@ -35,7 +35,7 @@ export function RunResults({ run }: { run: SimRun }) {
       <ChartPanel config={cfg} label="Net benefit distribution" />
       <DataTable caption="Sensitivity (correlation with net outcome)" rows={run.sens} rowKey={(x) => x.id} columns={[
         { key: 'p', header: 'Parameter', render: (x) => x.label },
-        { key: 'r', header: 'r', align: 'center', render: (x) => <b style={{ color: Math.abs(x.r) > 0.4 ? 'var(--ac-blue)' : 'var(--ac-muted)' }}>{x.r > 0 ? '+' : ''}{x.r}</b> },
+        { key: 'r', header: 'r', align: 'center', render: (x) => <b className={Math.abs(x.r) > 0.4 ? 'ac-corr is-strong' : 'ac-corr'}>{x.r > 0 ? '+' : ''}{x.r}</b> },
       ]} />
     </>
   );

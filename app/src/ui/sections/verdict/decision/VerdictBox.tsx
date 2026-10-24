@@ -10,12 +10,13 @@ export function VerdictBox({ d, banner = <StaleBanner /> }: { d: Decision; banne
   return (
     <>
       {banner}
-      <div style={{ border: `2px solid var(--ac-${meta.tone})`, background: `var(--ac-${meta.bgTone})`, borderRadius: 'var(--ac-radius-xl)', padding: '16px 18px', margin: '8px 0' }}>
-        <div style={{ display: 'flex', justifyContent: 'space-between', flexWrap: 'wrap', gap: 8 }}>
-          <div style={{ fontSize: 'var(--ac-font-size-3xl)', fontWeight: 'var(--ac-font-weight-bold)', color: `var(--ac-${meta.tone})` }}>{meta.icon} {meta.label}</div>
-          <div style={{ fontSize: 'var(--ac-font-size-lg)', fontWeight: 'var(--ac-font-weight-bold)', color: `var(--ac-${meta.tone})` }}>{d.confidence}% confidence <span style={{ fontWeight: 'var(--ac-font-weight-regular)' }}>= P(net benefit &gt; 0)</span></div>
+      <div className="ac-verdict ac-verdict-full" data-tone={meta.tone} data-bg-tone={meta.bgTone}>
+        <div className="ac-verdict-head">
+          <div className="ac-verdict-label">{meta.icon} {meta.label}</div>
+          <div className="ac-verdict-conf">{d.confidence}% confidence <span className="ac-regular">= P(net benefit &gt; 0)</span></div>
         </div>
-        <div style={{ marginTop: 4 }}>{meta.sub} · The verdict always carries its risk: downside P10 = <strong style={{ color: s.p10 < 0 ? 'var(--ac-brick)' : undefined }}>{fmtEur(s.p10)}</strong>,
+        <div className="ac-verdict-sub">
+          {meta.sub} · The verdict always carries its risk: downside P10 = <strong className={s.p10 < 0 ? 'ac-loss' : undefined}>{fmtEur(s.p10)}</strong>,
           {' '}median P50 = <strong>{fmtEur(s.p50)}</strong>, CVaR&nbsp;10% = <strong>{fmtEur(s.cvar10)}</strong>.</div>
       </div>
       {d.conditions.length > 0 && (<><h3>Conditions (top risk drivers)</h3><ul>{d.conditions.map((x) => <li key={x}>{x}</li>)}</ul></>)}

@@ -16,7 +16,8 @@ const help = (
     <p>Products without a wave, or archived, are left out (the banner above says how many). Choose a product in “Show” for the single-product Monthly detail.</p>
   </>
 );
-const sign = (x: number) => ({ color: x >= 0 ? 'var(--ac-teal-725)' : 'var(--ac-warning-595)' });
+/** The sign of a cash figure (`data-sign` of `.ac-cash`: teal when positive, amber when negative). */
+const sign = (x: number): 'pos' | 'neg' => (x >= 0 ? 'pos' : 'neg');
 const R = 'right' as const;
 
 /** Monthly detail — aggregate view (R-conso): one line per calendar month of the Portfolio / Wave and the cumulative cash by product. */
@@ -41,8 +42,8 @@ export default function MonthlyAggregate() {
           { key: 'r', header: 'Run cost', align: R, render: (m) => fmtE(m.run) },
           { key: 's', header: 'Setup', align: R, render: (m) => (m.setup !== 0 ? fmtE(m.setup) : '—') },
           { key: 'sv', header: 'Saving', align: R, render: (m) => fmtE(m.savings) },
-          { key: 'n', header: 'Net', align: R, render: (m) => <span style={sign(m.net)}>{fmtE(m.net)}</span> },
-          { key: 'c', header: 'Cumulative', align: R, render: (m) => <b style={sign(m.cum)}>{fmtE(m.cum)}</b> },
+          { key: 'n', header: 'Net', align: R, render: (m) => <span className="ac-cash" data-sign={sign(m.net)}>{fmtE(m.net)}</span> },
+          { key: 'c', header: 'Cumulative', align: R, render: (m) => <b className="ac-cash" data-sign={sign(m.cum)}>{fmtE(m.cum)}</b> },
         ]} />
         <ExcludedNote excluded={a.excluded} />
       </>} />

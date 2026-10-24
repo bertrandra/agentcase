@@ -1,4 +1,5 @@
 import { textColor } from '@/ui/colorText';
+import { cssVars } from '@/ui/cssVars';
 import { fmtE, fmtPayback, fmtSigned, paybackShown, roiText, type Scenario } from '@/domain/stress';
 import { DataTable, type Column } from '@/ui/widgets/DataTable';
 import { useTheme } from '@/ui/themeContext';
@@ -6,7 +7,8 @@ import { useTheme } from '@/ui/themeContext';
 /** The scenario's name in its colour, corrected as text on the table background (a resolved hex: `textColor`). */
 function Name({ s }: { s: Scenario }) {
   const { tok } = useTheme();
-  return <strong style={{ color: textColor(tok(s.tone), tok, tok('slate-60')) }}>{s.label}</strong>;
+  // dynamic: the scenario's colour, made readable as text against the table (computed against the theme)
+  return <strong className="ac-scen-name" style={cssVars({ '--ac-scen-ink': textColor(tok(s.tone), tok, tok('slate-60')) })}>{s.label}</strong>;
 }
 const money = (v: number) => fmtE(v);
 
@@ -19,7 +21,7 @@ export function CostTable({ S }: { S: Scenario[] }) {
     ...Array.from({ length: H }, (_, i): Column<Scenario> => ({ key: `y${i}`, header: `Year ${i + 1} (€)`, align: 'right', render: (s) => money(s.m.yearRun[i] as number) })),
     { key: 'run', header: `${H}-yr run (€)`, align: 'right', render: (s) => money(s.m.yearRun.reduce((a, b) => a + b, 0)) },
     { key: 'sav', header: `${H}-yr savings (€)`, align: 'right',
-      render: (s) => (s.key === 'asis' ? <span className="ac-muted">—</span> : <span style={{ color: s.m.totBen >= 0 ? 'var(--ac-teal)' : 'var(--ac-brick)', fontWeight: 'var(--ac-font-weight-semibold)' }}>{fmtSigned(s.m.totBen)}</span>) },
+      render: (s) => (s.key === 'asis' ? <span className="ac-muted">—</span> : <span className="ac-gain ac-value" data-sign={s.m.totBen >= 0 ? 'pos' : 'neg'}>{fmtSigned(s.m.totBen)}</span>) },
   ];
   return <DataTable columns={cols} rows={S} rowKey={(s) => s.key} caption="Annual run cost by scenario" />;
 }
@@ -33,7 +35,7 @@ export function RoiTable({ S }: { S: Scenario[] }) {
     { key: 'setup', header: 'Setup (€)', align: 'right', render: (s) => money(s.m.setup) },
     { key: 'sav', header: `${H}-yr savings (€)`, align: 'right', render: (s) => money(s.m.totBen) },
     { key: 'net', header: 'Net (€)', align: 'right', render: (s) => fmtSigned(net(s)) },
-    { key: 'roi', header: 'ROI (net)', align: 'right', render: (s) => <b style={{ color: (s.m.roi ?? 0) >= 0 ? 'var(--ac-teal)' : 'var(--ac-brick)' }}>{roiText(s.m)}</b> },
+    { key: 'roi', header: 'ROI (net)', align: 'right', render: (s) => <b className="ac-gain" data-sign={(s.m.roi ?? 0) >= 0 ? 'pos' : 'neg'}>{roiText(s.m)}</b> },
     { key: 'pb', header: 'Payback', align: 'right', render: (s) => fmtPayback(paybackShown(s.m), s.m.horizon * 12) },
     { key: 'cum', header: `Cum. cash-flow Y${H} (€)`, align: 'right', render: (s) => fmtSigned(net(s)) },
   ];

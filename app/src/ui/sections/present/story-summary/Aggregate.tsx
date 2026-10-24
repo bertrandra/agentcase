@@ -29,7 +29,7 @@ export default function StoryAggregate() {
   return (
     <SectionFrame title={`📖 The story so far — AS-IS → TO-BE — ${a.label}`} help={help}
       result={<>
-        <p style={{ fontSize: 'var(--ac-font-size-xl)', color: 'var(--ac-blue)' }}>{a.label} moves the team from <strong>{s.baseFte.toFixed(1)} FTE</strong> to <strong>{s.tgtFte.toFixed(1)} FTE</strong> by {s.endLabel},
+        <p className="ac-story-lead">{a.label} moves the team from <strong>{s.baseFte.toFixed(1)} FTE</strong> to <strong>{s.tgtFte.toFixed(1)} FTE</strong> by {s.endLabel},
           at <strong>+{Math.round(s.velocityPct)}%</strong> delivery velocity, saving <strong>{fmtK(s.endSavings)}</strong> in {s.endLabel} with a payback of <strong>{fmtMonths(s.paybackMonth)}</strong>.</p>
         <DataTable caption={`AS-IS vs TO-BE — ${a.label}`} rows={rows} rowKey={(r) => r[0]} columns={[
           { key: 'k', header: '', title: 'Measure', render: (r) => r[0] }, { key: 'a', header: 'AS-IS', align: 'center', render: (r) => r[1] },

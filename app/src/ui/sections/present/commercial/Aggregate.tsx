@@ -14,7 +14,8 @@ const help = (
     engagement context recommends. The gain share is not linear, so nothing is derived from a summed input: the total line adds up the contracts of the products.</p>
 );
 const R = 'right' as const;
-const tone = (x: number) => ({ color: x >= 0 ? 'var(--ac-teal-700)' : 'var(--ac-danger-800)' });
+/** The sign of a margin or a saving (`data-sign` of `.ac-margin`: teal when positive, brick when negative). */
+const tone = (x: number): 'pos' | 'neg' => (x >= 0 ? 'pos' : 'neg');
 
 /**
  * Commercial model — aggregate view (R-rollup): the selected model, revenue, margin and client saving of each product, the roll-up of the contracts,
@@ -29,8 +30,8 @@ export default function CommercialAggregate() {
     { key: 'model', header: 'Selected model', render: (r) => CM_DEFS[r.selected].label }, { key: 'rec', header: 'Recommended', render: (r) => CM_DEFS[r.recommended].label },
     { key: 'rev', header: 'Client revenue', align: R, render: (r) => (r.row.available ? fmtK(r.row.revenue) : off) },
     { key: 'cost', header: 'Supplier cost', align: R, render: (r) => (r.row.available ? fmtK(r.row.cost) : off) },
-    { key: 'margin', header: 'Supplier margin', align: R, render: (r) => (r.row.available ? <span style={tone(r.row.margin)}>{fmtK(r.row.margin)} ({Math.round(r.row.marginPct)}%)</span> : off) },
-    { key: 'save', header: 'Client saving vs AS-IS', align: R, render: (r) => (r.row.available ? <span style={tone(r.row.clientSaving)}>{Math.round(r.row.clientSaving)}%</span> : off) },
+    { key: 'margin', header: 'Supplier margin', align: R, render: (r) => (r.row.available ? <span className="ac-margin" data-sign={tone(r.row.margin)}>{fmtK(r.row.margin)} ({Math.round(r.row.marginPct)}%)</span> : off) },
+    { key: 'save', header: 'Client saving vs AS-IS', align: R, render: (r) => (r.row.available ? <span className="ac-margin" data-sign={tone(r.row.clientSaving)}>{Math.round(r.row.clientSaving)}%</span> : off) },
   ];
   const t = a.totals;
   return (

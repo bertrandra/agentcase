@@ -8,7 +8,7 @@ const RULES = [
 export function Method() {
   return (
     <details className="ac-panel">
-      <summary><h2 style={{ display: 'inline' }}>How this verdict is computed — method &amp; hypotheses</h2></summary>
+      <summary><h2 className="ac-inline">How this verdict is computed — method &amp; hypotheses</h2></summary>
       <h3>1 · Pipeline</h3>
       <p>The engine never sees a single point estimate. The Monte Carlo layer perturbs the uncertain parameters, evaluates the DOM-free calculation core for each draw, and produces a distribution of the
         horizon-aware net benefit (Σ annual savings over the horizon − setup investment). The Decision Intelligence layer then applies business rules to the statistics of that distribution — P(net&gt;0), P10, CVaR —
