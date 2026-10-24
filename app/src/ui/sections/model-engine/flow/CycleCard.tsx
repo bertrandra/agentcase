@@ -17,7 +17,9 @@ export function CycleCard({ fm }: { fm: ReturnType<typeof flowModel> }) {
         <Tile label="Compression Θ" tone="purple" value={`${(fm.theta * 100).toFixed(0)}%`} />
         <Tile label="WIP (Little's Law)" tone="amber" value={fm.wip.toFixed(1)} note={fm.wipMeasured != null ? `measured: ${fm.wipMeasured.toFixed(1)}` : undefined} />
       </div>
-      {fm.throttle < 0.999 && <p style={{ color: 'var(--ac-amber)' }}>⚠ Throttled to {(fm.throttle * 100).toFixed(0)}% of the unconstrained compression - P3&apos;s supervision cap is binding, so cycle time cannot compress as far as automation depth alone would suggest (&quot;a faster generator does not shorten cycle time if the queue is at the reviewer&quot;).</p>}
+      {fm.throttle < 0.999 && <p style={{ color: 'var(--ac-amber)' }}>⚠ Throttled to {(fm.throttle * 100).toFixed(0)}% of the unconstrained
+        compression - P3&apos;s supervision cap is binding, so cycle time cannot compress as far as automation depth alone would suggest (&quot;a
+        faster generator does not shorten cycle time if the queue is at the reviewer&quot;).</p>}
       <div className="ac-form-row">
         <NumField label="Measured lead time override (days, 0=use derived)" value={flow.cycleTime} min={0} step={0.5} width={110} onCommit={setFlowCycleTime} />
         <NumField label="Measured WIP (items, optional)" value={flow.wip} min={0} step={1} width={100} onCommit={setFlowWip} />

@@ -19,7 +19,10 @@ export default function RiskSection() {
     <SectionFrame title="🛡️ Risk & Compliance" help={help}
       input={
         <>
-          <Callout>Wave 2 of delivery-model convergence: the <strong>agentic risk register</strong> (Part 5.2), the <strong>EU AI-Act tier classifier</strong> for the delivered product, and the <strong>AI code-quality risk premium</strong> (Part 5.1). Each can be surfaced informatively or, via a toggle, raise the Decision Intelligence bar and the verification tax. Defaults are neutral, so the base case is unchanged.</Callout>
+          <Callout>Wave 2 of delivery-model convergence: the <strong>agentic risk register</strong> (Part 5.2), the <strong>EU AI-Act tier
+            classifier</strong> for the delivered product, and the <strong>AI code-quality risk premium</strong> (Part 5.1). Each can be surfaced
+            informatively or, via a toggle, raise the Decision Intelligence bar and the verification tax. Defaults are neutral, so the base case is
+            unchanged.</Callout>
           <AiActCard />
           <QualityCard />
           <RiskRegisterCard />

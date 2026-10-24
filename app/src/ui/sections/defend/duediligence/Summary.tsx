@@ -31,7 +31,9 @@ export function Summary({ m }: { m: DdModel }) {
       {cc !== null && (
         <div className="ac-form-row">
           <Card label="Glass ceiling confirmed" value={`${cc}%`} color={ccColor} sub={`of the ${m.ceiling}% ceiling’s weight`} />
-          <p style={{ flex: 2, minWidth: 260, fontSize: 'var(--ac-font-size-sm-plus)' }}><strong>Two gauges, two questions.</strong> € coverage says how much of the <em>figure</em> rests on unverified values. Ceiling coverage says how much of the <em>thesis</em> does — the artefact-by-artefact claim that a human signature is irreducible.
+          <p style={{ flex: 2, minWidth: 260, fontSize: 'var(--ac-font-size-sm-plus)' }}><strong>Two gauges, two questions.</strong> € coverage says
+            how much of the <em>figure</em> rests on unverified values. Ceiling coverage says how much of the <em>thesis</em> does — the
+            artefact-by-artefact claim that a human signature is irreducible.
             Telemetry cannot measure this and a simulation cannot validate it: only the people who sign the certification can.</p>
         </div>
       )}
@@ -40,11 +42,15 @@ export function Summary({ m }: { m: DdModel }) {
       <div className="ac-form-row">
         <button type="button" className="ac-btn" onClick={computeSensitivity}>{fresh ? '↻ Recompute € sensitivity' : '⚖️ Compute € sensitivity'}</button>
         <span className="ac-muted">{fresh && sens
-          ? <>Measured {sens.at.slice(0, 10)} by +20% one-at-a-time perturbation on Y3 savings.{zeroEur ? <> <strong>{zeroEur}</strong> element(s) measured €0 <em>in this configuration</em> — either display-only, or their module is switched off for this case.</> : null}{sens.unmeasurable.length ? ` ${sens.unmeasurable.length} not reachable without a refactor.` : ''}</>
+          ? <>Measured {sens.at.slice(0, 10)} by +20% one-at-a-time perturbation on Y3 savings.{zeroEur ? <> <strong>{zeroEur}</strong> element(s)
+            measured €0 <em>in this configuration</em> — either display-only, or their module is switched off for this
+            case.</> : null}{sens.unmeasurable.length ? ` ${sens.unmeasurable.length} not reachable without a refactor.` : ''}</>
           : 'Not yet measured. Runs ~50 model evaluations; cached until an input changes.'}</span>
       </div>
       <p className="ac-muted" style={{ fontStyle: 'italic' }}>{fresh
-        ? <>Weighted coverage answers the only question that matters: <strong>how much of the euro result rests on something nobody has checked.</strong> Item count is shown alongside because a high item percentage with low weighted coverage means the easy things were confirmed and the load-bearing ones were not.</>
+        ? <>Weighted coverage answers the only question that matters: <strong>how much of the euro result rests on something nobody has
+          checked.</strong> Item count is shown alongside because a high item percentage with low weighted coverage means the easy things were
+          confirmed and the load-bearing ones were not.</>
         : 'Item count over-credits cheap confirmations. Run the sensitivity measurement to weight this by euro impact — until then, read it as progress, not as model confidence.'}</p>
     </>
   );

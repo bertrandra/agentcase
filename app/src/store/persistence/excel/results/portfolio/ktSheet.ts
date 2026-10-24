@@ -21,6 +21,7 @@ export function ktSheet(wb: Workbook, name: string, pf: Portfolio): void {
   table(ws, 'Hub effect by wave', ['Wave', 'Products', 'Hub users', 'KT setup', 'Annual cost', 'KT value avoided', 'Extra savings (hub vs none)'],
     [...effects.map((w) => [w.name, w.products, w.users, w.setup, w.annual, w.ktAvoided, w.hubDeltaSav]), ['Total', tot.products, tot.users, '', '', '', tot.hubDeltaSav]], [undefined, undefined, undefined, MONEY, MONEY, MONEY, MONEY]);
   const infra = infraView(pf, kt.rows);
-  table(ws, `Infrastructure allocation (${infra.mode})`, ['Product', 'Per month', 'Per year'], [...infra.shares.map((s) => [s.name, s.monthly, s.annual]), ['Sum of the shares', infra.sum, ''], ['Expected', infra.expected, ''], ['Conserved', infra.conserved ? 'Yes' : 'No', '']], [undefined, '#,##0.00', MONEY]);
+  const infraRows = [...infra.shares.map((s) => [s.name, s.monthly, s.annual]), ['Sum of the shares', infra.sum, ''], ['Expected', infra.expected, ''], ['Conserved', infra.conserved ? 'Yes' : 'No', '']];
+  table(ws, `Infrastructure allocation (${infra.mode})`, ['Product', 'Per month', 'Per year'], infraRows, [undefined, '#,##0.00', MONEY]);
   ws.getColumn(1).width = 46;
 }

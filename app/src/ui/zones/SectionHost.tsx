@@ -1,4 +1,6 @@
-import { Suspense, lazy, useMemo, type ComponentType } from 'react';
+import { Suspense, lazy, useState, type ComponentType } from 'react';
+import { ErrorBoundary } from '../errors/ErrorBoundary';
+import { SectionFallback } from '../errors/fallbacks';
 import { SECTION_COMPONENTS } from '../sections';
 import { useUi } from '../uiState';
 import { DynamicSection } from './dynamic';
@@ -24,14 +26,19 @@ const loading = <p className="ac-muted">Loading…</p>;
  * editable in place below it, for the product or the common values the top-bar "Change" names; in every other case the output is the section alone.
  */
 export function SectionHost() {
-  const id = useUi((s) => s.activeSection), def = sectionById(id);
-  const Cmp = useMemo(() => componentFor(id), [id]), scoped = useScopedSection(id), inPlace = scoped.mode !== 'section' && sectionKind(id) === 'I-input';
+  const id = useUi((s) => s.activeSection), def = sectionById(id), [attempt, setAttempt] = useState(0);
+  // "Try again" drops the cached lazy component (React.lazy never retries a failed import) and remounts the boundary with a new key; the cache keeps it stable otherwise
+  const retry = () => { cache.delete(id); setAttempt((a) => a + 1); };
+  const Cmp = componentFor(id), scoped = useScopedSection(id), inPlace = scoped.mode !== 'section' && sectionKind(id) === 'I-input';
   return (
     <main className="ac-work" id="main" style={{ gridArea: 'work' }} tabIndex={-1}>
-      {scoped.mode === 'aggregate' ? <Suspense fallback={loading}><scoped.Cmp /></Suspense>
-        : scoped.mode === 'fallback' ? <Suspense fallback={loading}><scoped.Fallback id={id} title={def?.label ?? id} Section={Cmp} /></Suspense>
-        : Cmp ? <Suspense fallback={<p className="ac-muted">Loading…</p>}><Cmp /></Suspense> : def ? <Placeholder section={def} /> : <DynamicSection id={id} />}
-      {inPlace && Cmp && <InPlaceEdit id={id} Section={Cmp} />}
+      {/* keyed by section: opening another section resets a failed boundary; the menu, KPI bar and dock stay outside it */}
+      <ErrorBoundary key={`${id}#${attempt}`} scope="section" where={id} fallback={(e) => <SectionFallback error={e} retry={retry} />}>
+        {scoped.mode === 'aggregate' ? <Suspense fallback={loading}><scoped.Cmp /></Suspense>
+          : scoped.mode === 'fallback' ? <Suspense fallback={loading}><scoped.Fallback id={id} title={def?.label ?? id} Section={Cmp} /></Suspense>
+          : Cmp ? <Suspense fallback={loading}><Cmp /></Suspense> : def ? <Placeholder section={def} /> : <DynamicSection id={id} />}
+        {inPlace && Cmp && <InPlaceEdit id={id} Section={Cmp} />}
+      </ErrorBoundary>
     </main>
   );
 }

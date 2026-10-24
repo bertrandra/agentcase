@@ -19,6 +19,7 @@ jobs:
       - uses: actions/setup-node@v4
         with: { node-version: 22, cache: npm, cache-dependency-path: app/package-lock.json }
       - run: npm ci
+      - run: npm audit --omit=dev --audit-level=moderate   # the shipped dependencies have no known advisory (uuid is overridden in package.json; GitHub runners have network)
       # Cheap and informative first (seconds each), then the full gate.
       - run: npm run deps:check   # app/src/generated/dependencies.json matches the imports and @calc-zone tags (else: npm run deps:gen)
       - run: npm run dup          # jscpd over the sorted git-tracked sources of src/ and tests/: fails only on NEW duplicated code (baseline app/dup-baseline.json, same numbers locally)
@@ -45,6 +46,7 @@ jobs:
         working-directory: app
       - run: npm run build
         working-directory: app
-      - run: node tools/e2e-smoke.mjs     # real Chromium: every section × 6 case fixtures + 2 portfolio files, no console error, no NaN
+      - run: node tools/e2e-smoke.mjs     # real Chromium: every section × 6 case fixtures + 2 portfolio files, no console error, no NaN, no CSP violation
+      - run: node tools/e2e-flows.mjs     # under the CSP: JSON / HTML snapshot / report / workbooks round trips, Monte Carlo, themes, logo, ?theme= link
       - run: node tools/perf.mjs          # size / shell / edit / undo / section budgets (app/perf-budget.json)
       - run: node tools/parallel-run.mjs  # same files in the legacy app and the TS build: identical headline figures

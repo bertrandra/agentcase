@@ -17,7 +17,9 @@ export default function ReleasePipelineSection() {
   return (
     <SectionFrame title="🚀 Release Pipeline · DRAFT" help={help}
       input={<>
-        <Callout>A release pipeline <em>selects</em> from the current Integrated Product rather than descending from a sprint/PI boundary — Release-on-Demand. Release → Release Candidate → Approval → Deployment → Environment → Production → Monitoring → Feedback → Backlog. Nothing here feeds the financial model.</Callout>
+        <Callout>A release pipeline <em>selects</em> from the current Integrated Product rather than descending from a sprint/PI boundary —
+          Release-on-Demand. Release → Release Candidate → Approval → Deployment → Environment → Production → Monitoring → Feedback → Backlog. Nothing
+          here feeds the financial model.</Callout>
         <Releases />
         <Pipeline />
       </>} />

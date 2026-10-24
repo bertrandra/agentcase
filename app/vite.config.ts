@@ -10,10 +10,13 @@ const src = fileURLToPath(new URL('./src', import.meta.url));
 // `__APP_VERSION__` (src/domain/version.ts) and the page title through the `%APP_VER_TAG%` placeholder of index.html.
 const version = (JSON.parse(readFileSync(new URL('./package.json', import.meta.url), 'utf8')) as { version: string }).version;
 const versionTitle = { name: 'agentcase-version-title', transformIndexHtml: (html: string) => html.replace(/%APP_VER_TAG%/g, versionTag(version)) };
+// The Content-Security-Policy meta of index.html blocks every network load; the dev server needs its module scripts and HMR websocket, so `vite`
+// (serve only) drops it. Builds keep it (docs/ARCHITECTURE.md §9).
+const devCsp = { name: 'agentcase-dev-csp', apply: 'serve' as const, transformIndexHtml: (html: string) => html.replace(/\s*<meta http-equiv="Content-Security-Policy"[^>]*>/, '') };
 
 // One offline HTML file: scripts and styles are inlined by vite-plugin-singlefile.
 export default defineConfig({
-  plugins: [react(), viteSingleFile(), versionTitle],
+  plugins: [react(), viteSingleFile(), versionTitle, devCsp],
   define: { __APP_VERSION__: JSON.stringify(version) },
   resolve: { alias: { '@': src } },
   build: { target: 'es2022', chunkSizeWarningLimit: 6000 },

@@ -31,7 +31,9 @@ export function Results({ run }: { run: McsResult }) {
       </Panel>
       <Panel title={`Tornado — driver P10→P90 swing on ${end} savings`}>
         <DataTable columns={tCols} rows={run.tornado} rowKey={(t) => t.id} />
-        <p className="ac-muted">A driver reading zero swing has no active lever in the current scenario (acceptance rate needs P1 enabled; supervising capacity needs a binding Constrained-mode cap; a ramp stops mattering once supervision, not automation depth, is the binding constraint) — not a bug.</p>
+        <p className="ac-muted">A driver reading zero swing has no active lever in the current scenario (acceptance rate needs P1 enabled; supervising
+          capacity needs a binding Constrained-mode cap; a ramp stops mattering once supervision, not automation depth, is the binding constraint) —
+          not a bug.</p>
       </Panel>
       <Panel title="Convergence — running P50 by draw count"><DataTable columns={cCols} rows={run.convergence} rowKey={(c) => String(c.n)} /></Panel>
     </>

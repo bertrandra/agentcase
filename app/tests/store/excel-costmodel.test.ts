@@ -78,7 +78,9 @@ describe('the cost-model workbook', () => {
   it('Other costs: setup, KT, Knowledge Hub, pilot, tokens, infrastructure, totals and the parameters block', async () => {
     fourProducts();
     const { wb } = await read(), ws = wb.getWorksheet('Other costs')!, rows = table(ws), lines = new Set(rows.map((r) => String(val(ws, r, 5))));
-    for (const l of ['Tokens', 'Infrastructure', 'Knowledge Hub curation', 'Knowledge Hub infrastructure (allocated)', 'Setup: Knowledge Hub and knowledge transfer (KT)', 'Setup: tooling, training, coaching, governance', 'Agentic run team (AgentOps)', 'Knowledge transfer avoided', 'Verification tax', 'Pilot (indicative sizing, not in the engine cost)', 'TOTAL TO-BE COST (days x rate + other costs)', 'PORTFOLIO TOTAL TO-BE COST']) expect(lines.has(l), l).toBe(true);
+    for (const l of ['Tokens', 'Infrastructure', 'Knowledge Hub curation', 'Knowledge Hub infrastructure (allocated)', 'Setup: Knowledge Hub and knowledge transfer (KT)',
+      'Setup: tooling, training, coaching, governance', 'Agentic run team (AgentOps)', 'Knowledge transfer avoided', 'Verification tax',
+      'Pilot (indicative sizing, not in the engine cost)', 'TOTAL TO-BE COST (days x rate + other costs)', 'PORTFOLIO TOTAL TO-BE COST']) expect(lines.has(l), l).toBe(true);
     const team = rows.find((r) => val(ws, r, 5) === 'Team cost (human days x applied rate)')!;
     expect((ws.getCell(team, col(ws, 'M3')).value as { formula: string }).formula).toMatch(/^'Rate cards'!/);
     let p = 0;

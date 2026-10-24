@@ -19,7 +19,9 @@ export default function RunSizingSection() {
     <SectionFrame title="🤖 Agentic run-team sizing" help={help}
       input={
         <>
-          <Callout>How the <strong>agentic run team</strong> (AgentOps: AI engineering, FinOps, AI-QA) is sized and costed. This team <em>operates the agent platform</em> — it is distinct from the <strong>human supervision</strong> of agent output, which lives inside the residual project team and already scales down with automation.</Callout>
+          <Callout>How the <strong>agentic run team</strong> (AgentOps: AI engineering, FinOps, AI-QA) is sized and costed. This team <em>operates the
+            agent platform</em> — it is distinct from the <strong>human supervision</strong> of agent output, which lives inside the residual project
+            team and already scales down with automation.</Callout>
           <SizingPolicy />
           <SupervisionShare />
           <DisplayCoefs />

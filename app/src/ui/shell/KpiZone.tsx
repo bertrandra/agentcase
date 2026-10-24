@@ -20,7 +20,10 @@ function ProductKpis() {
         fteAfter: `Total human FTE at the horizon end (year ${e.index}): delivery team plus the agentic run team (AgentOps), so the reduction is not overstated. Reduction: ${fmtPct(fte.reductionPct)}.`,
         savings: `Saving in year ${e.index} (the horizon end) against the AS-IS baseline: baseline cost minus the to-be run cost, from the Time Engine.`,
         run: `Total to-be run cost in year ${e.index}: remaining team, agentic run team, tokens, infrastructure and taxes.`,
-        saving: cr.ok ? `Net cost reduction over the ${cr.years}-year project: baseline ${fmtEurK(cr.base)} vs ${fmtEurK(cr.tobe)} to-be (run + tokens + infra + run team + ${fmtEurK(cr.setup)} setup). Excluding setup: ${fmtPct(cr.gross * 100)}.` : 'No baseline cost: set the AS-IS team and rate card.',
+        saving: cr.ok
+          ? `Net cost reduction over the ${cr.years}-year project: baseline ${fmtEurK(cr.base)} vs ${fmtEurK(cr.tobe)} to-be`
+            + ` (run + tokens + infra + run team + ${fmtEurK(cr.setup)} setup). Excluding setup: ${fmtPct(cr.gross * 100)}.`
+          : 'No baseline cost: set the AS-IS team and rate card.',
         velocity: `Delivery velocity uplift in year ${e.index} (the horizon end) versus the AS-IS velocity: story points per sprint reached at the adoption of that year, kept within the case anchors.`,
         payback: 'First month in which the cumulative net cash flow, setup included, turns positive.',
         eff: 'Share of the work effectively automated: potential, capped by the glass ceiling, adjusted for posture, context and hub multiplier.',

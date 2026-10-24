@@ -20,7 +20,9 @@ export default function FactoryModelSection() {
     <SectionFrame title="🏭 Factory Model · DRAFT" help={help}
       input={<>
         <GeneratePanel />
-        <Callout>Business + Delivery domain of the Software/Agentic Factory meta-model: Vision → Portfolio → Epic → Feature → Story, linked down into the existing SDLC/regulatory artefacts (Tasks). A graph, not a tree — see <code>AgentCase_Spec_FactoryMetaModel.md</code>. Nothing here feeds the financial model.</Callout>
+        <Callout>Business + Delivery domain of the Software/Agentic Factory meta-model: Vision → Portfolio → Epic → Feature → Story, linked down into
+          the existing SDLC/regulatory artefacts (Tasks). A graph, not a tree — see <code>AgentCase_Spec_FactoryMetaModel.md</code>. Nothing here
+          feeds the financial model.</Callout>
         <SampleData />
         <Hierarchy />
         <StoryTable />

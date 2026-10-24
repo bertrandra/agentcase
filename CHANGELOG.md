@@ -15,6 +15,37 @@ All notable changes to AgentCase, newest first. Product version from v19.0.0 = t
 
 When releasing, follow [docs/BUMP_PROCEDURE.md](docs/BUMP_PROCEDURE.md) (§7 for the legacy file) and add the new version at the top.
 
+## [Unreleased] — Architecture lot 1: robustness
+
+### New
+- **Error boundaries.** A display error no longer blanks the page. Around the whole shell: a minimal page "AgentCase hit an unexpected error" with
+  **Reload** and **Copy details**, which writes the autosave at once (the reload offers to restore it). Around the section in the work area: "This
+  section failed to display" with **Try again** (remounts the section, retrying its lazy module) and **Copy details** (app version, section id,
+  message, stack, component stack); the menu, KPI bar and other sections keep working, and opening another section resets it. Around every chart:
+  a note in the chart's place, the rest of the section renders. Errors go to the console and to a session list in the dock ("History (n) · 1 display
+  error"). `tests/ui/error-boundaries.test.tsx` (axe included).
+- **Content-Security-Policy.** The single HTML file declares `default-src 'none'` with inline script and style, `data:` / `blob:` images, `data:` fonts,
+  `connect-src 'none'`, `base-uri 'none'`, `form-action 'none'`: the page can load nothing from the network. HTML snapshots carry it; the reports carry
+  a stricter one (no script). `tools/e2e-smoke.mjs` fails on any CSP violation; the new `tools/e2e-flows.mjs` (CI job `e2e`, `npm run e2e`) drives
+  JSON / HTML snapshot round trips, the report, the three workbooks and the import, Monte Carlo, display and case themes, PNG / SVG logo and a
+  `?theme=` link under the policy, after a probe that proves a network image and a `fetch` are blocked. `frame-ancestors` cannot be set by a meta tag
+  (docs/ARCHITECTURE.md §9).
+- **Lint.** `local/hard-max-len`: a source line over 300 characters is an error; `max-len` 160 is a warning (long literals and URLs excepted;
+  979 warnings remain). The UI and controller import restrictions also match relative paths (`../store/core`, `../../store/persistence/…`, `../store/hooks`),
+  with probes in `tests/lint-rules.test.ts`.
+
+### Changed
+- **Readability (decision D1):** the 78 source lines over 300 characters (longest 796, `tune/lifecycle-edit`) are gone: JSX prose is wrapped (the
+  compiled output of those files is token-for-token identical), long code is split into constants, helpers and small components (due-diligence cells,
+  provenance tiles, Gantt milestones, the default card read from the "Dynamic Section Cards" sheet, the Glass Ceiling formula shared by both reports).
+- CI job `check` runs `npm audit --omit=dev --audit-level=moderate`.
+
+### Fixed
+- **`npm audit --omit=dev`: 2 moderate advisories → 0.** ExcelJS 4.4 pulls `uuid` 8 (GHSA-w5hq-g745-h8pq); `overrides` pins `uuid` `^11.1.1`, which
+  ExcelJS's Node build accepts (every Excel test and the parallel run pass). The browser bundle uses ExcelJS's pre-built copy, which calls only `v4()`.
+
+**Golden case:** unchanged.
+
 ## [v20.13.0] 2026-10-24 — Architecture lots 0, 2, 3: CI green and stable, single version source and doc facts, state model hardening
 
 ### Fixed

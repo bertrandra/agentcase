@@ -5,7 +5,10 @@ import { layoutGraph } from './layout';
 import { tok } from '@/domain/theme';
 
 const short = (s: string) => { const t = s.replace(/^[^A-Za-z0-9]+/, '').trim(); return t.length > 22 ? `${t.slice(0, 21)}…` : t; };
-const GROUP_COLOR: Record<string, string> = { get frame() { return tok('chart-cat-1'); }, get baseline() { return tok('chart-cat-2'); }, get scope() { return tok('chart-cat-4'); }, get tune() { return tok('chart-cat-3'); }, get verify() { return tok('success-625'); }, get economics() { return tok('danger-800'); } };
+const GROUP_COLOR: Record<string, string> = {
+  get frame() { return tok('chart-cat-1'); }, get baseline() { return tok('chart-cat-2'); }, get scope() { return tok('chart-cat-4'); },
+  get tune() { return tok('chart-cat-3'); }, get verify() { return tok('success-625'); }, get economics() { return tok('danger-800'); },
+};
 const LANE_COLOR: Record<string, string> = { get input() { return tok('chart-cat-1'); }, get calc() { return tok('chart-cat-4'); }, get result() { return tok('success-625'); } };
 const EDGE_COLOR = { get r() { return tok('chart-cat-1'); }, get w() { return tok('chart-cat-3'); }, get z() { return tok('chart-cat-1'); } };
 

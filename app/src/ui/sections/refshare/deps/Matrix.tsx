@@ -19,7 +19,10 @@ export function Matrix() {
   return (
     <div>
       <h2>Dependency matrix <span className="ac-muted">— {cols.length} zones and {sections.length} sections, in build order</span></h2>
-      <p className="ac-muted">Read a marked cell as <b>row depends on column</b>: the column zone feeds the row. <span style={{ color: MARK.direct[1] }}>● direct</span> = the row imports modules of the zone · <span style={{ color: MARK.write[1] }}>✎ write</span> = an input section changes the zone through a controller command · <span style={{ color: MARK.indirect[1] }}>○ indirect</span> = only through other zones. {shown('direct')} direct, {shown('write')} write and {shown('indirect')} indirect marks.</p>
+      <p className="ac-muted">Read a marked cell as <b>row depends on column</b>: the column zone feeds the
+        row. <span style={{ color: MARK.direct[1] }}>● direct</span> = the row imports modules of the zone · <span style={{ color: MARK.write[1] }}>✎
+        write</span> = an input section changes the zone through a controller command · <span style={{ color: MARK.indirect[1] }}>○ indirect</span> =
+        only through other zones. {shown('direct')} direct, {shown('write')} write and {shown('indirect')} indirect marks.</p>
       <label className="ac-check"><input type="checkbox" checked={all} onChange={(e) => setAll(e.target.checked)} /> show the {DATA.sections.filter((s) => isReference(s.id)).length} reference sections (no calculation)</label>
       <div className="ac-table-wrap" tabIndex={0} role="region" aria-label="Dependency matrix">
         <table className="ac-matrix ac-table">

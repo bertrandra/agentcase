@@ -14,7 +14,9 @@ export function SafeCard() {
         <Stat label="Coordination overhead" value={`~${s.overheadPct}%`} tone="blue" />
         <Stat label="Scaling stage" value={s.stage} tone="blue" />
       </StatRow>
-      <p>As pods multiply, the bottleneck moves from coding to <strong>merge</strong>, then to <strong>specs &amp; validation</strong>, then to <strong>program/portfolio coordination</strong>. Under AI-Native SAFe, pods become augmented stream-aligned teams and enabling teams coach the human-agent collaboration patterns.</p>
+      <p>As pods multiply, the bottleneck moves from coding to <strong>merge</strong>, then to <strong>specs &amp; validation</strong>, then
+        to <strong>program/portfolio coordination</strong>. Under AI-Native SAFe, pods become augmented stream-aligned teams and enabling teams coach
+        the human-agent collaboration patterns.</p>
       <Note>Reference 3.1: coordination overhead is indicative (analytical) and not applied to the core economics. CC-SAFE-01.</Note>
     </Panel>
   );
