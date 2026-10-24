@@ -15,7 +15,7 @@ All notable changes to AgentCase, newest first. Product version from v19.0.0 = t
 
 When releasing, follow [docs/BUMP_PROCEDURE.md](docs/BUMP_PROCEDURE.md) (§7 for the legacy file) and add the new version at the top.
 
-## [Unreleased] — CI green and stable (architecture lot 0)
+## [v20.13.0] 2026-10-24 — Architecture lots 0, 2, 3: CI green and stable, single version source and doc facts, state model hardening
 
 ### Fixed
 - **`npm run dup` gave different numbers on a laptop and in CI.** jscpd's detection is incremental (the first file that holds a block owns it), so its result
