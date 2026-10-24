@@ -83,3 +83,19 @@ Do not use `test:affected` instead of the full suite before a merge or a release
   walkers (`size`, `english-only`) are contract tests; a test that reads a new kind of data file should name it in a literal.
 * A mutation that throws while a module loads would fail every test that imports the barrel; the rule follows barrels by symbol, so use `--level related`
   when you change the module-level code of a file that a folder barrel re-exports.
+
+## 7. Duplication check: same numbers everywhere
+
+`npm run dup` (`app/scripts/dup.mjs`, jscpd) is a gate of CI, so it must not depend on the machine. jscpd's detection is incremental — the first file that
+holds a block owns it, the later ones are reported against it — so the clone count and the duplicated lines depend on the order in which files are read. Left to
+its own glob, that order is the directory order of the file system: on the same tree, reading the files in other orders gave 25 to 27 clones and 174 to 211
+lines, which is how a check could pass on a laptop and fail on a CI runner. The script therefore:
+
+* lists the files itself — `git ls-files --cached --others --exclude-standard -- src tests`, `.ts` / `.tsx` only, never `generated/`, `dist/` or
+  `node_modules/` — and sorts them by bytes; without git (an exported tree) it walks the same roots and sorts the same way;
+* passes them to the installed jscpd (pinned to 4.0.5 in `package.json`) with every option explicit, including `maxLines` / `maxSize` large enough that no file
+  is skipped silently;
+* records the settings and the jscpd version in `app/dup-baseline.json` and refuses to compare against a baseline measured with other ones.
+
+Untracked, non-ignored files are scanned too, so a new file is checked before it is committed; the CI checkout is a clean clone, where the two lists are the
+same. A fresh clone + `npm ci` reports exactly the numbers of the working tree (checked when the script changed: 70 clones / 515 lines in 1,324 files).

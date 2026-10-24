@@ -15,6 +15,39 @@ All notable changes to AgentCase, newest first. Product version from v19.0.0 = `
 
 When releasing, follow [docs/BUMP_PROCEDURE.md](docs/BUMP_PROCEDURE.md) (§7 for the legacy file) and add the new version at the top.
 
+## [Unreleased] — CI green and stable (architecture lot 0)
+
+### Fixed
+- **`npm run dup` gave different numbers on a laptop and in CI.** jscpd's detection is incremental (the first file that holds a block owns it), so its result
+  depends on the order it reads the files, and left to its own glob that order is the file system's directory order. Measured on the same tree: 25 to 27
+  clones and 174 to 211 duplicated lines depending on the order. `app/scripts/dup.mjs` now hands jscpd an explicit, byte-sorted list of the git-tracked
+  (and untracked, non-ignored) `.ts` / `.tsx` files of `src/` and `tests/`, never generated code, with every option pinned (`maxLines` / `maxSize` raised so
+  no file is skipped silently), runs the installed binary (jscpd pinned to 4.0.5), records the jscpd version and settings in `app/dup-baseline.json`, and
+  refuses to compare against a baseline measured with other settings. A fresh clone + `npm ci` reports the same numbers as the working tree. The CI
+  failures of v20.7.0 → 20.10.0 were not noise: `fields.tsx` / `tuneA.tsx` held a real new clone (T3 control variants) that 20.11.0 removed by chance.
+- **`deps-a11y.test.tsx` timed out (5 s) in CI and under load**, then failed its four other tests with "Axe is already running". Root cause, profiled:
+  axe builds a unique CSS selector for every node it reports, passes included; on the dependency graph (~500 SVG siblings) and the matrix (~2,900 cells)
+  the `:nth-child` part walks the siblings through jsdom's slow `HTMLCollection` proxy, ~80% of the run (1.8 s of 2.1 s on the graph tab). The shared
+  helper `tests/helpers/axe.ts` asks axe for the violations only (`resultTypes`), chains the runs so one slow audit can no longer fail the next ones, and
+  serves all 14 axe tests. The file runs one audit per test (graph alone, with a section selected, with a zone selected, each tab): the slowest test went
+  from 6.2 – 7.5 s (3 failures in 5 runs alone) to ≤ 2 s alone and ≤ 4.2 s under a parallel full suite (20 / 20 green); `{ timeout: 15 000 }` is a margin.
+
+### Changed
+- **Duplicated code removed (src: 25 clones → 4, all four are import lists).** One owner each for: the Results verdict box, uncertainty band, savings /
+  team-shift panels (`verdict/results/Parts.tsx`); the playback stage (`monthly-playback/Stage.tsx`); the Save / Open file buttons
+  (`refshare/io/SaveOpenButtons.tsx`); the Monte Carlo stats cards (`StatsCards` with extra cards); Net / ROI / payback / NPV of a headline
+  (`consolidation/CoreStats.tsx`); the calendar-year table (`consolidation/YearTable.tsx`); the nine headline tiles (`shell/HeadlineTiles.tsx`); the
+  override chip (`OverrideChip`); the board editor table; the persona list cells; the strategy comparison; the Gantt calendar header; the Wave and phase
+  columns. Domain: `mcRng` is `mulberry32` (one seeded PRNG), the product status label has one owner (`scope/lifecycleView`), the MCS evaluation uses the
+  Time Engine thin pass, portfolio ids come from `newPortfolioId`, the parameters export builds the companion JSON once. Rendering and figures unchanged
+  (golden, oracle, parity and UI parity suites).
+- `npm run dup` scans `tests/` too; baseline **70 clones / 515 lines in 1,324 files** (src 4, tests 66: mostly mock / setup preambles).
+- CI (`.github/workflows/app.yml`): a newer push to the same branch or pull request cancels the run in progress (`concurrency`); jobs time out after 45
+  minutes; when the check job fails, the JUnit report of the suite (`app/test-results/`, written when `CI` is set) is uploaded as an artifact. Gates unchanged.
+- Docs: BUMP_PROCEDURE "Before merge: CI green on the pull request"; TEST_SELECTION §7 on the deterministic duplicate check.
+
+**Golden case:** unchanged.
+
 ## [v20.12.0] 2026-10-24 — "Show" / "Change" top bar, file menu, two-zone header, Welcome cards fix
 
 ### Fixed

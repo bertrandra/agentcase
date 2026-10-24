@@ -85,6 +85,8 @@ If a change is meant to move the golden case, see §6 (it starts in the legacy f
 
 * `npm run dup` (`app/scripts/dup.mjs`) fails when the share of duplicated code grows beyond the recorded baseline (`app/dup-baseline.json`): a new copy of an existing
   block is a second source of a number. It lowers its own threshold when the code gets better: after removing duplicates, run `npm run dup -- --update` and commit.
+  It scans the sorted git file list of `src/` and `tests/`, so it reports the same numbers on your machine and in CI ([TEST_SELECTION.md §7](TEST_SELECTION.md));
+  `npm run dup -- --list` prints every clone. Never raise the baseline to make a red check green: reuse the owner of the block.
 * `npm run test:affected` runs only the tests a change can reach ([TEST_SELECTION.md](TEST_SELECTION.md)). It is for the inner loop and optional PR feedback; **the
   release always runs the full suite** (`npm run check`), as CI does on `main`. After changing the generator, the tags or the rule, run `npm run validate:affected` (recall must be 100%).
 
@@ -102,8 +104,13 @@ git push -u origin release/vX.Y.Z   # then open a pull request
 ## 6. Continuous integration and the artefact
 
 `.github/workflows/app.yml` (job `check`, working directory `app`, Node 22) runs `npm ci`, `npm run deps:check`, `npm run dup`, `npm run check` and `npm run build` on pull
-requests and on pushes to `main` that touch `app/**` or the workflow. It does not run the legacy tools, does not upload the build and
-does not tag.
+requests and on pushes to `main` that touch `app/**` or the workflow; job `e2e` then builds and runs the Chromium smoke, the performance budgets and the
+parallel run. A newer push to the same branch or pull request cancels the run in progress. When `check` fails, the JUnit report of the suite is attached
+to the run (artifact `vitest-report`). It does not upload the build and does not tag.
+
+**Before merge: CI green on the pull request.** A pull request is merged only when both jobs of its last run are green — not "green locally", not
+"red but unrelated". A red run is fixed at its root in the same pull request (a flaky test is a bug: find why it is slow or order-dependent; a longer
+timeout is only a margin, never the fix), or the pull request waits. `main` must stay green: if it turns red, the next change is the fix.
 
 **The single-file artefact.** `npm run build` writes `app/dist/index.html` (`dist/` is git-ignored): one offline HTML file with
 script and styles inlined by `vite-plugin-singlefile`, about 2.6 MB. `npm run build` does not put a version in its name; `npm run release` (`app/scripts/release.mjs`) does: it fails when `version.ts`,
@@ -171,5 +178,5 @@ file from the repository root.
 - [ ] calculation change? shipped in the legacy file first and the oracle regenerated (§7), golden line in the changelog
 - [ ] `npm run check` and `npm run build` green; manual browser pass on `app/dist/index.html` (§4)
 - [ ] `CHANGELOG.md` entry with a Golden case line; README and docs updated if relevant
-- [ ] pull request merged with CI green; release copy named `AgentCase_vX_Y_EN.html` made from `app/dist/index.html`; tag `vX.Y.Z`
+- [ ] pull request merged only with **both CI jobs green on its last run** (§6); release copy named `AgentCase_vX_Y_EN.html` made from `app/dist/index.html`; tag `vX.Y.Z`
 - [ ] **All user-facing text is in English** (new labels, toasts, diagnostics, exports; vocabulary in [GLOSSARY_EN.md](GLOSSARY_EN.md)); `tests/ui/english-only.test.ts` is green
