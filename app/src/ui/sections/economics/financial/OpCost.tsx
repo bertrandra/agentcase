@@ -1,4 +1,5 @@
 import { useMemo } from 'react';
+import { useTheme } from '@/ui/themeContext';
 import { avg, yearSeries, yLabel } from '@/domain/economics';
 import { fmtE } from '@/ui/economicsFormat';
 import { ChartPanel } from '@/ui/widgets/ChartPanel';
@@ -10,7 +11,7 @@ import { costMix } from './charts';
 
 /** Operating costs by category and year (their sum is the run cost, no double count), with the end-year cost mix. */
 export function OpCost() {
-  const v = useEconomics(), s = yearSeries(v.years), e = v.H - 1, cfg = useMemo(() => costMix(v), [v]);
+  const { tok } = useTheme(), v = useEconomics(), s = yearSeries(v.years), e = v.H - 1, cfg = useMemo(() => costMix(v, tok), [v, tok]);
   const row = (key: string, label: string, a: number[], bold = false): GridRow => ({ key, label, cells: [...a.map(fmtE), fmtE(avg(a))], bold, rule: bold });
   const rows = [row('team', 'Human workforce (target team)', s.team), row('tok', 'Agent execution (tokens)', s.token), row('infra', 'Infrastructure & tools', s.infra),
     row('run', 'Agentic run team (AI premium)', s.agentRun), row('tot', 'Total operating cost', s.run, true)];

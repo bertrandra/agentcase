@@ -1,4 +1,5 @@
 import { useMemo } from 'react';
+import { useTheme } from '@/ui/themeContext';
 import { sum, yLabel } from '@/domain/economics';
 import { fmt1, fmtE, fmtK, pct0 } from '@/ui/economicsFormat';
 import { ChartPanel } from '@/ui/widgets/ChartPanel';
@@ -18,7 +19,7 @@ const help = (
 
 /** Agentic run — recurring costs per year (team, agentic run team, tokens, infrastructure). */
 export default function RunSection() {
-  const v = useEconomics(), cfg = useMemo(() => runBars(v, { label: (i) => yLabel(i + 1), names: ['Team', 'Agentic run'] }), [v]);
+  const { tok } = useTheme(), v = useEconomics(), cfg = useMemo(() => runBars(v, { label: (i) => yLabel(i + 1), names: ['Team', 'Agentic run'] }, tok), [v, tok]);
   const items: [string, string][] = [...v.years.slice(0, 3).map((y, i): [string, string] => [`Run ${yLabel(i + 1)}`, fmtK(y.totalRunCost)]), ['Cumulative run', fmtK(sum(v.years.map((y) => y.totalRunCost)))]];
   return (
     <SectionFrame title="Agentic Run — Recurring costs" help={help}

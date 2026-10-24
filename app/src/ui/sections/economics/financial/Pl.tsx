@@ -1,4 +1,5 @@
 import { useMemo } from 'react';
+import { useTheme } from '@/ui/themeContext';
 import { avg, fmtPayback, fmtRoiPct, sum, yearSeries, yLabel } from '@/domain/economics';
 import { fmtE } from '@/ui/economicsFormat';
 import { ChartPanel } from '@/ui/widgets/ChartPanel';
@@ -10,7 +11,7 @@ import { plBars } from './charts';
 
 /** P&L and cash flow: setup, baseline, to-be cost, savings, net and cumulative per year. */
 export function Pl() {
-  const v = useEconomics(), s = yearSeries(v.years), cfg = useMemo(() => plBars(v), [v]);
+  const { tok } = useTheme(), v = useEconomics(), s = yearSeries(v.years), cfg = useMemo(() => plBars(v, tok), [v, tok]);
   const dash = v.years.slice(1).map(() => '—'), baseline = v.years.map(() => v.baselineRun);
   // The legacy "Cumulative" column of the baseline / to-be / savings rows holds the per-year average (kept as is); Net and the last row are true cumulatives.
   const avgRow = (key: string, label: string, a: number[]) => ({ key, label, cells: [...a.map(fmtE), fmtE(avg(a))] });

@@ -1,7 +1,7 @@
 /** @calc-zone exports */
 import type * as XL from 'exceljs';
 import type { CostFmt, CostModel, CostRow, CostTable } from '@/domain/portfolio';
-import { argb } from '@/domain/theme';
+import { xlArgb } from '../print';
 
 /** Layout shared by the three tabs: 7 key columns, Unit, t0, M1..Mn, Total; header block above, table header on row HDR, data from FIRST. */
 export const KEYS = 7, HDR = 10, FIRST = 11;
@@ -9,7 +9,8 @@ export const T0 = KEYS + 2;
 export const colLetter = (n: number): string => { let s = ''; for (let k = n; k > 0; k = Math.floor((k - 1) / 26)) s = String.fromCharCode(65 + ((k - 1) % 26)) + s; return s; };
 export const lastMonthCol = (m: CostModel): number => T0 + m.horizon;
 
-const NAVY = (): string => argb('excel-head-bg'), GREY = (): string => argb('excel-note'), SUB = (): string => argb('excel-subtotal-bg'), FORMATS: Record<CostFmt, string> = { days: '#,##0.00', pct: '0.0', eur: '#,##0', rate: '#,##0.00', fte: '0.000', factor: '0.000000' };
+const NAVY = (ws: XL.Worksheet): string => xlArgb(ws.workbook, 'excel-head-bg'), GREY = (ws: XL.Worksheet): string => xlArgb(ws.workbook, 'excel-note');
+const SUB = (ws: XL.Worksheet): string => xlArgb(ws.workbook, 'excel-subtotal-bg'), FORMATS: Record<CostFmt, string> = { days: '#,##0.00', pct: '0.0', eur: '#,##0', rate: '#,##0.00', fte: '0.000', factor: '0.000000' };
 
 /** Text cells never start a formula: a leading = + - @ (or tab / CR) is neutralised with an apostrophe, like the other writers do for names typed by users. */
 export const txt = (s: string): string => (/^[=+\-@\t\r]/.test(s) ? `'${s}` : s);
@@ -28,7 +29,7 @@ export function writeHeader(ws: XL.Worksheet, m: CostModel, meta: Meta, tab: str
     ws.getCell(r, 1).value = txt(label); ws.getCell(r, 1).font = { bold: true };
     ws.getCell(r, 3).value = txt(value); ws.getCell(r, 3).font = { bold };
   };
-  ws.getCell(1, 1).value = txt(`${m.title} — ${tab}`); ws.getCell(1, 1).font = { bold: true, size: 14, color: { argb: NAVY() } };
+  ws.getCell(1, 1).value = txt(`${m.title} — ${tab}`); ws.getCell(1, 1).font = { bold: true, size: 14, color: { argb: NAVY(ws) } };
   put(2, 'Scope', m.scopeLabel, true); put(3, 'Generated (UTC)', meta.generated.toISOString().slice(0, 19).replace('T', ' '));
   put(4, 'App version', `v${meta.version}`); put(5, 'Currency', m.currency);
   put(6, 'Convention', CONVENTION);
@@ -41,7 +42,7 @@ export function writeTable(ws: XL.Worksheet, m: CostModel, t: CostTable, widths:
   const last = lastMonthCol(m), total = last + 1, heads = [...t.keyHeads, 'Unit', 't0', ...m.monthLabels, 'Total'];
   heads.forEach((h, i) => {
     const c = ws.getCell(HDR, i + 1);
-    c.value = txt(h); c.font = { bold: true, color: { argb: argb('excel-head-text') } }; c.fill = { type: 'pattern', pattern: 'solid', fgColor: { argb: NAVY() } }; c.alignment = { horizontal: i < KEYS + 1 ? 'left' : 'center', wrapText: true };
+    c.value = txt(h); c.font = { bold: true, color: { argb: xlArgb(ws.workbook, 'excel-head-text') } }; c.fill = { type: 'pattern', pattern: 'solid', fgColor: { argb: NAVY(ws) } }; c.alignment = { horizontal: i < KEYS + 1 ? 'left' : 'center', wrapText: true };
   });
   t.rows.forEach((r, k) => {
     const n = FIRST + k, cell = (col: number, v: number | null, num: number) => {
@@ -56,11 +57,11 @@ export function writeTable(ws: XL.Worksheet, m: CostModel, t: CostTable, widths:
       const c = ws.getCell(n, total), any = r.months.some((x) => x !== null);
       c.value = any ? { formula: `SUM(${colLetter(T0 + 1)}${n}:${colLetter(last)}${n})`, result: r.total } : r.total; c.numFmt = FORMATS[r.fmt];
     }
-    const style = r.bold ? { bold: true } : r.role === 'driver' || r.role === 'info' || r.role === 'memo' ? { italic: true, color: { argb: GREY() } } : {};
+    const style = r.bold ? { bold: true } : r.role === 'driver' || r.role === 'info' || r.role === 'memo' ? { italic: true, color: { argb: GREY(ws) } } : {};
     for (let col = 1; col <= total; col++) {
       const c = ws.getCell(n, col);
       c.font = style;
-      if (r.bold) c.fill = { type: 'pattern', pattern: 'solid', fgColor: { argb: SUB() } };
+      if (r.bold) c.fill = { type: 'pattern', pattern: 'solid', fgColor: { argb: SUB(ws) } };
     }
   });
   widths.forEach((w, i) => { ws.getColumn(i + 1).width = w; });

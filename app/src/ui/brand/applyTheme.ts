@@ -1,7 +1,7 @@
-import { setActiveThemeDef } from '@/domain/theme/active';
 import type { DisplaySpec } from '@/domain/theme/modes';
 import { AXIS_DEFAULTS } from '@/domain/theme/axes';
-import { allTokenProps, COLOUR_TOKENS, themeProps } from '@/domain/theme/themeProps';
+import { allTokenProps, colourProps, COLOUR_TOKENS } from '@/domain/theme/themeProps';
+import type { Theme } from '@/domain/theme/resolve';
 import type { ThemeDef } from '@/domain/theme/themeDef';
 import { applyThemeAxes } from '../themeAxes';
 
@@ -19,11 +19,10 @@ export function writeThemeProps(el: HTMLElement, props: Record<string, string> |
   for (const [k, v] of Object.entries(props)) if (el.style.getPropertyValue(k) !== v) el.style.setProperty(k, v);
 }
 
-/** The app's theme: `tok()` and the exports (domain), the inline colours and the axes of `<html>`. */
-export function applyAppTheme(def: ThemeDef, spec: DisplaySpec, el: HTMLElement | null = globalThis.document?.documentElement ?? null): void {
-  setActiveThemeDef(def);
+/** The CSS side of the app's theme: the inline colours of `theme` (resolved from `def` and the display) and the axes of `def`, on `<html>`. */
+export function applyAppTheme(def: ThemeDef, theme: Theme, el: HTMLElement | null = globalThis.document?.documentElement ?? null): void {
   if (!el) return;
-  writeThemeProps(el, themeProps(def, spec));
+  writeThemeProps(el, Object.keys(def.colours).length ? colourProps(theme.values) : null);
   applyThemeAxes(def.axes, el);
 }
 

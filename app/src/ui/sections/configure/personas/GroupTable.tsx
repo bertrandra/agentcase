@@ -3,13 +3,14 @@ import { addGroup, deleteGroup, renameGroup, setGroupColor, setGroupDescription,
 import { groupsByOrder, type MenuGroup } from '@/domain/pdc/personas';
 import { useNavModel } from '@/ui/zones/navModel';
 import { ConfirmDelete, ListTable, OrderInput, RenameInput } from './cells';
-import { tok } from '@/domain/theme';
+import { useTheme } from '@/ui/themeContext';
+import type { Tok } from '@/domain/theme/resolve';
 
-const hex = (c: string | undefined) => (c && /^#[0-9a-fA-F]{6}$/.test(c) ? c : tok('slate-600'));
+const hex = (c: string | undefined, tok: Tok) => (c && /^#[0-9a-fA-F]{6}$/.test(c) ? c : tok('slate-600'));
 
 /** Menu groups of one menu structure: order, label, colour, section count, description (shown on the Welcome cards). A group still holding sections cannot be deleted. */
 export function GroupTable({ structure }: { structure: string }) {
-  const { own: groups, colors, sections: SECTIONS } = useNavModel().view(structure), st = structure;
+  const { own: groups, colors, sections: SECTIONS } = useNavModel().view(structure), st = structure, { tok } = useTheme();
   const [renaming, setRenaming] = useState<string | null>(null), [text, setText] = useState(''), [pending, setPending] = useState<string | null>(null), [label, setLabel] = useState(''), [warn, setWarn] = useState('');
   const commit = (id: string) => { renameGroup(id, text, st); setRenaming(null); };
   const del = (g: MenuGroup) => {
@@ -27,7 +28,7 @@ export function GroupTable({ structure }: { structure: string }) {
               <td style={{ textAlign: 'center' }}><OrderInput id={g.id} value={g.order} onChange={(o) => setGroupOrder(g.id, o, st)} /></td>
               <td><code>{g.id}</code></td>
               <td>{renaming === g.id ? <RenameInput label="New group label" value={text} onChange={setText} onCommit={() => commit(g.id)} onCancel={() => setRenaming(null)} /> : g.label}</td>
-              <td style={{ textAlign: 'center' }}><input type="color" aria-label={`Colour of ${g.id}`} value={hex(colors[g.id])} onChange={(e) => setGroupColor(g.id, e.target.value, st)} /></td>
+              <td style={{ textAlign: 'center' }}><input type="color" aria-label={`Colour of ${g.id}`} value={hex(colors[g.id], tok)} onChange={(e) => setGroupColor(g.id, e.target.value, st)} /></td>
               <td style={{ textAlign: 'center', fontWeight: 'var(--ac-font-weight-bold)', color: n ? 'var(--ac-primary-700)' : 'var(--ac-neutral-700)' }}>{n}</td>
               <td><input type="text" aria-label={`Description of ${g.id}`} placeholder="Shown on the 🏠 Welcome card" style={{ width: '100%', minWidth: 220 }} value={g.description ?? ''} onChange={(e) => setGroupDescription(g.id, e.target.value, st)} /></td>
               <td>{renaming === g.id ? <><button type="button" className="ac-btn" onClick={() => commit(g.id)}>✓ Save</button><button type="button" className="ac-btn" onClick={() => setRenaming(null)}>Cancel</button></>

@@ -9,6 +9,7 @@ import { keepTabView, withSavedPersona } from '@/store/persona';
 import { hasPortfolioContent } from '@/store/persistence/portfolioSnapshot';
 import type { Portfolio } from '@/domain/portfolio';
 import type { Doc, PortfolioDoc } from '@/store/types';
+import { exportTheme } from './exportTheme';
 
 const XLSX = 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet';
 
@@ -38,8 +39,8 @@ export interface ParamsExport { filename: string; blob: Blob; companion?: { file
  * The persona-only scope also returns the persona/section configuration as JSON in the app's native snapshot shape.
  */
 export async function exportParamsWorkbook(scope: ParamsScope, env: ParamsEnv, now: Date = new Date()): Promise<ParamsExport> {
-  const portfolio = appStore().getState().portfolio, doc = activeDoc();
-  const bytes = hasPortfolioContent(portfolio) ? await workbookBytes(await buildPortfolioParamsWorkbook(portfolio, scope, env)) : await paramsWorkbookBytes(doc, scope, env);
+  const portfolio = appStore().getState().portfolio, doc = activeDoc(), print = exportTheme();
+  const bytes = hasPortfolioContent(portfolio) ? await workbookBytes(await buildPortfolioParamsWorkbook(portfolio, scope, env, print)) : await paramsWorkbookBytes(doc, scope, env, print);
   const out: ParamsExport = { filename: paramsFileName(scope, now), blob: new Blob([bytes], { type: XLSX }) };
   // the JSON copy names this tab's persona (`currentPersona`), like the legacy
   if (scope === 'persona-only') out.companion = { filename: paramsFileName(scope, now, 'json'), blob: new Blob([personaConfigJson(withSavedPersona(doc, portfolio.persona), now)], { type: 'application/json' }) };

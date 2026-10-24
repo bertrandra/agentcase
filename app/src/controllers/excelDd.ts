@@ -9,6 +9,7 @@ import { MAX_PACK_BYTES, readDdRegister, type PackEntry } from '@/store/persiste
 import { loadExcelJS } from '@/store/persistence/excel/lazy';
 import { hasPortfolioContent } from '@/store/persistence/portfolioSnapshot';
 import { excelFilename, XLSX_MIME, type ExcelFile } from './excelResults';
+import { exportTheme } from './exportTheme';
 
 /** Merge the annotated rows into the register: a blank cell keeps what was there, an unknown status keeps the current one. */
 const importCmd = defineCommand<{ entries: PackEntry[] }>({
@@ -33,7 +34,7 @@ export const applyDdPackEntries = (entries: PackEntry[]): void => { if (entries.
  */
 export async function exportDdPack(label: (id: string) => string = (id) => id, now: Date = new Date()): Promise<ExcelFile> {
   const doc = activeDoc(), portfolio = appStore().getState().portfolio, product = hasPortfolioContent(portfolio) ? portfolio.products.find((p) => p.id === portfolio.activeProductId)?.name : undefined;
-  const xl = await loadExcelJS(), wb = buildDdPack(xl, ddPackData(doc), label, product);
+  const xl = await loadExcelJS(), wb = buildDdPack(xl, ddPackData(doc), label, exportTheme(), product);
   return { blob: new Blob([await wb.xlsx.writeBuffer()], { type: XLSX_MIME }), filename: excelFilename('DueDiligence', now) };
 }
 

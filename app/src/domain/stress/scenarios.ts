@@ -8,7 +8,7 @@ import { modelRaw } from '../model/raw';
 import { timeFor } from '../time';
 import type { Levers } from '../time/kernel';
 import type { YearRow } from '../time/years';
-import { tok } from '../theme';
+import type { ColourRole } from '../theme';
 
 export type ScenLoc = 'asis' | 'target' | 'destination' | 'ramp';
 export interface ScenOpts { ai: boolean; loc: ScenLoc; frPerYear: number }
@@ -59,18 +59,18 @@ export function scenarioModel(c: Ctx, opts: Partial<ScenOpts>) {
 
 export type ScenarioResult = ReturnType<typeof scenarioModel>;
 
-export interface Scenario { key: 'asis' | 'ai' | 'loc' | 'ramp' | 'ailoc' | 'aidst'; label: string; color: string; m: ScenarioResult }
+export interface Scenario { key: 'asis' | 'ai' | 'loc' | 'ramp' | 'ailoc' | 'aidst'; label: string; tone: ColourRole; m: ScenarioResult }
 
 /** The six scenarios, in display order. */
 export function scenarioSet(c: Ctx): Scenario[] {
   const frPer = c.inp.p('scenFrPerYear'), dst = scenTargetLocName(c);
   return [
-    { key: 'asis', label: 'AS-IS', color: tok('slate-700'), m: scenarioModel(c, { ai: false, loc: 'asis' }) },
-    { key: 'ai', label: 'AI only', color: tok('info-700'), m: scenarioModel(c, { ai: true, loc: 'asis' }) },
-    { key: 'loc', label: 'Location only', color: tok('warning-600'), m: scenarioModel(c, { ai: false, loc: 'target' }) },
-    { key: 'ramp', label: `Ramp to ${dst} (${frPer}%/yr)`, color: tok('warning-550'), m: scenarioModel(c, { ai: false, loc: 'ramp', frPerYear: frPer }) },
-    { key: 'ailoc', label: 'AI + Location', color: tok('teal-700'), m: scenarioModel(c, { ai: true, loc: 'target' }) },
-    { key: 'aidst', label: `AI + 100% ${dst}`, color: tok('primary-700'), m: scenarioModel(c, { ai: true, loc: 'destination' }) },
+    { key: 'asis', label: 'AS-IS', tone: 'slate-700', m: scenarioModel(c, { ai: false, loc: 'asis' }) },
+    { key: 'ai', label: 'AI only', tone: 'info-700', m: scenarioModel(c, { ai: true, loc: 'asis' }) },
+    { key: 'loc', label: 'Location only', tone: 'warning-600', m: scenarioModel(c, { ai: false, loc: 'target' }) },
+    { key: 'ramp', label: `Ramp to ${dst} (${frPer}%/yr)`, tone: 'warning-550', m: scenarioModel(c, { ai: false, loc: 'ramp', frPerYear: frPer }) },
+    { key: 'ailoc', label: 'AI + Location', tone: 'teal-700', m: scenarioModel(c, { ai: true, loc: 'target' }) },
+    { key: 'aidst', label: `AI + 100% ${dst}`, tone: 'primary-700', m: scenarioModel(c, { ai: true, loc: 'destination' }) },
   ];
 }
 export const SCENARIO_DESTINATIONS = LOCATIONS.map((l) => ({ name: l.name, cls: l.cls }));

@@ -6,7 +6,7 @@ import { PNEG_BRICK } from '../stress/pNeg';
 import type { McResult, McSens, McStats } from '../stress/simulate';
 import { decisionContext, type CtxLine } from './context';
 import { wave2RiskPremium } from './risk';
-import { tok } from '../theme';
+import type { ColourRole } from '../theme';
 
 /** Decision thresholds (editable consulting benchmarks). */
 export const DI_THRESHOLDS = { strongPPos: 0.8, condPPos: 0.6, maxPNegForStrong: PNEG_BRICK, p10SetupMult: 0.5 };
@@ -45,9 +45,9 @@ export function decide(c: Ctx, run: Pick<McResult, 'stats' | 'sens'>): Decision 
   return { verdict, confidence: Math.round(pPos * 100), stats: s, p10Floor, drivers, conditions, ctx: decisionContext(c), setup, premium };
 }
 
-/** Display metadata of each verdict. */
-export const VERDICT_META: Record<Verdict, { color: string; bg: string; icon: string; label: string; sub: string; short: string }> = {
-  strong: { get color() { return tok('teal-700'); }, get bg() { return tok('success-50'); }, icon: '✅', label: 'RECOMMENDED', short: 'RECOMMENDED', sub: 'High confidence, contained downside' },
-  conditional: { get color() { return tok('warning-600'); }, get bg() { return tok('warning-55'); }, icon: '⚠️', label: 'CONDITIONALLY VIABLE', short: 'CONDITIONALLY VIABLE', sub: 'Proceed only if the conditions below hold' },
-  defer: { get color() { return tok('danger-800'); }, get bg() { return tok('danger-75'); }, icon: '⛔', label: 'DEFER — DE-RISK FIRST', short: 'DEFER — DE-RISK FIRST', sub: 'Confidence too low to commit' },
+/** Display metadata of each verdict (`tone` / `bgTone`: colour roles, resolved by the UI in the theme in effect). */
+export const VERDICT_META: Record<Verdict, { tone: ColourRole; bgTone: ColourRole; icon: string; label: string; sub: string; short: string }> = {
+  strong: { tone: 'teal-700', bgTone: 'success-50', icon: '✅', label: 'RECOMMENDED', short: 'RECOMMENDED', sub: 'High confidence, contained downside' },
+  conditional: { tone: 'warning-600', bgTone: 'warning-55', icon: '⚠️', label: 'CONDITIONALLY VIABLE', short: 'CONDITIONALLY VIABLE', sub: 'Proceed only if the conditions below hold' },
+  defer: { tone: 'danger-800', bgTone: 'danger-75', icon: '⛔', label: 'DEFER — DE-RISK FIRST', short: 'DEFER — DE-RISK FIRST', sub: 'Confidence too low to commit' },
 };

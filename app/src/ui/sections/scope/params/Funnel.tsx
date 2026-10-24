@@ -1,15 +1,15 @@
 import { useEffect, useMemo, useState } from 'react';
 import { activeStages, funnelStage, FUNNEL_EPS, type AutoBase } from '@/domain/scope/automation';
 import { FunnelSvg } from './FunnelSvg';
-import { displaySpec } from '@/ui/display/store';
+import { useTheme } from '@/ui/themeContext';
 
 let autoplayed = false;   // the replay starts by itself once per session, like the legacy funnel
-const reducedMotion = (): boolean => displaySpec().reduceMotion;   // the system setting or the viewer's "Reduce motion" option (ui/display)
 
 /** 🧱 Human & regulatory glass ceiling — the stage chain evaluated at one month, with play / scrub through the horizon (view state only). */
 export function Funnel({ base }: { base: AutoBase }) {
+  const reducedMotion = useTheme().spec.reduceMotion;   // the system setting or the viewer's "Reduce motion" option (ui/display)
   const N = base.N, [st, setSt] = useState<{ month: number | null; playing: boolean }>({ month: null, playing: false });
-  useEffect(() => { if (!autoplayed && N > 1 && !reducedMotion()) { autoplayed = true; setSt({ month: 1, playing: true }); } }, [N]);
+  useEffect(() => { if (!autoplayed && N > 1 && !reducedMotion) { autoplayed = true; setSt({ month: 1, playing: true }); } }, [N]);
   useEffect(() => {
     if (!st.playing) return;
     const id = setInterval(() => setSt((s) => { const m = (s.month ?? 1) + 1; return m >= N ? { month: N, playing: false } : { month: m, playing: true }; }), Math.max(70, Math.round(7000 / N)));

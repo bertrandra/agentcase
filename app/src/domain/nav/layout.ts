@@ -1,6 +1,6 @@
 /** @calc-zone workspace-config */
 import { groupsByOrder, type MenuGroup } from '../pdc/personas';
-import { tok } from '../theme';
+import { THEME_DEFAULT, tokIn } from '../theme';
 
 /** One section as the navigation sees it (catalogue entry overlaid with the document's placement). */
 export interface NavSection { id: string; label: string; description: string; group: string; groupSeq: number; tag?: string; mvp?: boolean; dynamic?: boolean }
@@ -39,10 +39,15 @@ export function resolveSections(catalogue: NavSection[], rows: SectionRow[] | un
 
 export { groupsByOrder } from '../pdc/personas';
 
-/** A group colour reaches inline styles and exports: only #rgb … #rrggbbaa is accepted, else the neutral grey (legacy groupColor). */
-export const groupColor = (colors: Record<string, string> | undefined, id: string | undefined): string => {
+/** The neutral grey of a group without a colour, as data (the parameters workbook): the default theme's `slate-600` (legacy #667089). */
+export const GROUP_COLOR_DEFAULT = tokIn(THEME_DEFAULT, 'slate-600');
+/**
+ * A group colour reaches inline styles and exports: only #rgb … #rrggbbaa is accepted, else `fallback` (legacy groupColor). The UI passes the
+ * theme's `slate-600`; an export keeps the default (the colour is data there, not paint).
+ */
+export const groupColor = (colors: Record<string, string> | undefined, id: string | undefined, fallback: string = GROUP_COLOR_DEFAULT): string => {
   const c = id ? colors?.[id] : undefined;
-  return typeof c === 'string' && /^#[0-9a-fA-F]{3,8}$/.test(c) ? c : tok('slate-600');
+  return typeof c === 'string' && /^#[0-9a-fA-F]{3,8}$/.test(c) ? c : fallback;
 };
 /** The persona's own order for a section, else the section's global order (legacy effectiveGroupSeq). */
 export const effectiveSeq = (s: NavSection, persona: string, order: PersonaOrder): number => order[persona]?.[s.id] ?? (s.groupSeq || 0);

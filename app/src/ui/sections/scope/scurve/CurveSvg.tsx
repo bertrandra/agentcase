@@ -3,13 +3,14 @@ import { moveCurvePoint } from '@/controllers/scopeTools';
 import { curveOf, movePoint } from '@/domain/scope/scurve';
 import type { ScurveView } from '@/domain/scope/scurveView';
 import type { CurvePoint } from '@/domain/types/state';
-import { BANDS, GRID, H, LEVEL_COLOR, M, W, axisMonths, geoOf, pathOf } from './geometry';
-import { tok } from '@/domain/theme';
+import { BANDS, GRID, H, LEVEL_ROLES, M, W, axisMonths, geoOf, pathOf } from './geometry';
+import { useRoles, useTheme } from '@/ui/themeContext';
 
 const KEYS: Record<string, [number, number]> = { ArrowLeft: [-1, 0], ArrowRight: [1, 0], ArrowUp: [0, 1], ArrowDown: [0, -1] };
 
 /** The editable adoption curve with its maturity markers. Drag a dot (or use the arrow keys on a focused dot); the case follows on release. */
 export function CurveSvg({ view }: { view: ScurveView }) {
+  const LEVEL_COLOR = useRoles(LEVEL_ROLES), { tok } = useTheme();
   const svg = useRef<SVGSVGElement>(null), [drag, setDrag] = useState<{ i: number; pts: CurvePoint[] } | null>(null);
   const g = geoOf(view.N), pts = drag?.pts ?? view.pts, curve = drag ? curveOf(view.family, pts) : view.curve;
   const at = (e: PointerEvent): { t: number; a: number } | null => {

@@ -7,9 +7,9 @@ import { spanDates } from './ganttEdit';
 import { groupLayout,seqKey, type LayoutItem, type Placed } from './ganttLayout';
 import { ganttAxis, ganttNum, milestoneMarkers, programRows, type Axis, type Marker, type ProgramRow } from './ganttProgram';
 import { activePhaseIds, phasesWithSeq } from './phases';
-import { tok, themedList } from '../theme';
+import type { ColourRole } from '../theme';
 
-const PAL = themedList(['primary-700', 'teal-700', 'info-700', 'secondary-600', 'warning-600', 'danger-800', 'teal-700', 'teal-700', 'warning-600', 'secondary-600', 'slate-650']);
+const PAL: readonly ColourRole[] = ['primary-700', 'teal-700', 'info-700', 'secondary-600', 'warning-600', 'danger-800', 'teal-700', 'teal-700', 'warning-600', 'secondary-600', 'slate-650'];
 const isCross = (a: WArtefact) => CROSS_CODES.includes(a.industry ?? '') || a.phase === 'Cross-cutting';
 const monLabel = (n: number): string => `${n >= 10 ? Math.round(n) : n.toFixed(1)} mo`;
 
@@ -17,7 +17,7 @@ const monLabel = (n: number): string => `${n >= 10 ? Math.round(n) : n.toFixed(1
 export interface Span { start: number; act: number; sup: number }
 export interface ArtRow extends Span { label: string; meta: string }
 export interface PhaseRow extends Span {
-  key: string; name: string; count: number; last: boolean; cross: boolean; meta: string; color: string; arts: ArtRow[];
+  key: string; name: string; count: number; last: boolean; cross: boolean; meta: string; tone: ColourRole; arts: ArtRow[];
 }
 export interface GanttView {
   axis: Axis; ticks: { left: number; label: string }[]; summary: [string, string][]; program: (ProgramRow & { left: number; w: number; range: string })[];
@@ -69,10 +69,10 @@ export function ganttView(c: Ctx): GanttView {
 
   const phases: PhaseRow[] = per.map((x, i) => ({
     ...spanOf(ax, win[x.id]!, x.sf), key: x.id, name: `${x.id} · ${x.p.name}`, count: x.arts.length, last: x.id === lastId, cross: false, meta: meta(x.id, x.sf),
-    color: PAL[i % PAL.length]!, arts: artRows(ax, x.arts, lam, win[x.id]!),
+    tone: PAL[i % PAL.length]!, arts: artRows(ax, x.arts, lam, win[x.id]!),
   }));
   if (cross.length) phases.push({ ...spanOf(ax, win['Cross-cutting']!, cw.sf), key: '__cross__', name: '🔶 Cross-cutting', count: cross.length, last: lastId === 'Cross-cutting', cross: true,
-    meta: meta('Cross-cutting', cw.sf, 'AI · Sustainability · Usability · '), color: tok('chart-cat-3'), arts: artRows(ax, cross, lam, win['Cross-cutting']!) });
+    meta: meta('Cross-cutting', cw.sf, 'AI · Sustainability · Usability · '), tone: 'chart-cat-3', arts: artRows(ax, cross, lam, win['Cross-cutting']!) });
 
   return {
     axis: ax, phaseCount: ordered.length, velocityGain: vAt(1), overlap, crossSeq, hasCross: cross.length > 0, markers: milestoneMarkers(c, ax), phases,

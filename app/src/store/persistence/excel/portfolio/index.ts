@@ -2,6 +2,7 @@
 import type * as XL from 'exceljs';
 import type { Portfolio } from '@/domain/portfolio';
 import type { Doc } from '@/store/types';
+import type { ThemeValues } from '@/domain/theme';
 import { interpretParams } from '../params/reader';
 import type { ParamsEnv, ParamsScope, Sheets } from '../params/types';
 import { buildParamsWorkbook } from '../params/writer';
@@ -22,8 +23,8 @@ export const commonDocOf = (pf: Portfolio): Doc => ({ ...pf.common, teamIn: (pf.
  * The parameters workbook of a portfolio: the 47 existing sheets describe the common case; "Export all" adds Products, Waves, TeamIn, Overrides,
  * KnowledgeSubsets, KnowledgeDomains and PortfolioSettings. The other scopes ('except Factory', 'persona config only') are the existing exports.
  */
-export async function buildPortfolioParamsWorkbook(pf: Portfolio, scope: ParamsScope, env: ParamsEnv): Promise<XL.Workbook> {
-  const wb = await buildParamsWorkbook(commonDocOf(pf), scope, env);
+export async function buildPortfolioParamsWorkbook(pf: Portfolio, scope: ParamsScope, env: ParamsEnv, print: Readonly<ThemeValues>): Promise<XL.Workbook> {
+  const wb = await buildParamsWorkbook(commonDocOf(pf), scope, env, print);
   if (scope === 'all') writePortfolioSheets(wb, pf);
   return wb;
 }

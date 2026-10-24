@@ -2,6 +2,8 @@
 import type { Workbook } from 'exceljs';
 import { consolidate, consolidationView, corePortfolio, type DisplayScope, type Portfolio } from '@/domain/portfolio';
 import type { ExcelJS } from '../../lazy';
+import { withPrint } from '../../print';
+import type { ThemeValues } from '@/domain/theme';
 import { CASE_KEYS, productSheets, type ProductNames } from './productSheet';
 import { ktSheet } from './ktSheet';
 import { sheetName } from './names';
@@ -20,9 +22,9 @@ interface Part { key: string; add: () => void }
  * workbook (the portfolio, one wave, or one product). When a portfolio Monte Carlo has been run, "Portfolio stress" follows "Knowledge transfer". Names obey Excel's rules (31 characters, no []:*?/\, unique). Numbers come from `consolidate`,
  * `portfolioHeadline`, `consolidationView` and `knowledgeTable` only; the product sheets are the single-case results writer on the effective case.
  */
-export function buildPortfolioResultsWorkbook(xl: ExcelJS, source: Portfolio, scope: DisplayScope = { kind: 'portfolio' }, productId: string = source.activeProductId, stress: StressExtra | null = null): Workbook {
+export function buildPortfolioResultsWorkbook(xl: ExcelJS, source: Portfolio, print: Readonly<ThemeValues>, scope: DisplayScope = { kind: 'portfolio' }, productId: string = source.activeProductId, stress: StressExtra | null = null): Workbook {
   const pf = corePortfolio(source), c = consolidate(pf), view = consolidationView(pf, c), used = new Set<string>();
-  const wb = new xl.Workbook();
+  const wb = withPrint(new xl.Workbook(), print);
   wb.creator = 'AgentCase'; wb.created = new Date();
   const names = { pf: sheetName('Portfolio', used), kt: '' };
   const waveNames = new Map(pf.waves.map((w) => [w.id, sheetName(`Wave ${w.name}`, used)]));

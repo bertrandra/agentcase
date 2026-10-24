@@ -10,7 +10,6 @@ import { CommitNumber } from '../CommitNumber';
 import { FieldChoice } from '@/ui/widgets/field/FieldChoice';
 import { FieldNumber } from '@/ui/widgets/field/FieldNumber';
 import { fmtK } from '../fmtK';
-import { tok } from '@/domain/theme';
 
 const opts = (list: string[]) => list.map((o) => <option key={o} value={o}>{o}</option>);
 const choices = (list: string[]) => list.map((o) => ({ value: o, label: o }));
@@ -28,9 +27,9 @@ function Row({ r, i, c, W, open, onPin }: RowProps) {
   const tjm = rateFor(c.s, r.loc, r.grade), wd = c.inp.p('workdays');
   const d = (+r.etp || 0) - (W.targetFTE[i] ?? 0), pinned = isPinnedRow(r);
   const live = pinsOf(r).filter((id) => activeArtefacts(c.a, c.s).some((a) => a.id === id)).length;
-  const dcol = Math.abs(d) < 1e-9 ? tok('slate-700') : d > 0 ? tok('danger-800') : tok('teal-725');
+  const dcol = Math.abs(d) < 1e-9 ? 'var(--ac-slate-700)' : d > 0 ? 'var(--ac-danger-800)' : 'var(--ac-teal-725)';
   return (
-    <tr style={pinned ? { background: tok('warning-40') } : undefined}>
+    <tr style={pinned ? { background: 'var(--ac-warning-40)' } : undefined}>
       <td><Pick i={i} field="skill" list={SKILLS_EXIST} name="Skill" value={r.skill} /></td>
       <td><Pick i={i} field="grade" list={GRADES} name="Grade" value={r.grade} /></td>
       <td><Pick i={i} field="loc" list={LOC_NAMES} name="Location" value={r.loc} /></td>
