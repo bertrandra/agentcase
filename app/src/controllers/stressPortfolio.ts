@@ -2,6 +2,7 @@
 import { makeCtx } from '@/domain';
 import { pfStressJob } from '@/domain/portfolio';
 import { mcDrawsOf, mcSeedOf } from '@/domain/stress';
+import { activeDoc } from '@/store/editBase';
 import { appStore } from '@/store/instance';
 import { pfSimStore, type PfSimParams } from '@/store/portfolioSimulation';
 
@@ -9,7 +10,7 @@ import { pfSimStore, type PfSimParams } from '@/store/portfolioSimulation';
 export function portfolioSimParams(): PfSimParams {
   const set = pfSimStore.getState().params;
   if (set) return set;
-  const c = makeCtx(appStore().getState().doc);
+  const c = makeCtx(activeDoc());
   return { draws: mcDrawsOf(c), seed: mcSeedOf(c) };
 }
 

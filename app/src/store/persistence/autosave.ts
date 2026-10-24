@@ -1,6 +1,7 @@
 import type { AppStore } from '../core';
 import { sanitize } from './snapshot';
-import { openSnapshot, toPortfolioSnapshot } from './portfolioSnapshot';
+import { toPortfolioSnapshot } from './portfolioSnapshot';
+import { openChecked } from './schema';
 import type { HistoryState } from '../types';
 
 /**
@@ -35,9 +36,13 @@ export function startAutosave(store: AppStore, storage: AutosaveStorage, tabId: 
   return { flush: save, stop: () => { off(); if (handle !== null) clearT(handle); } };
 }
 
-/** Restore a record: the portfolio replaces the current one and the undo history comes back with it. */
-export function restoreRecord(store: AppStore, r: AutosaveRecord): void {
-  store.load(openSnapshot(r.snapshot));
-  const h = sanitize(r.history);
-  if (r.format === 'portfolio' && h && Array.isArray(h.undo) && Array.isArray(h.redo)) store.setHistory(h);
+/**
+ * Restore a record: the portfolio replaces the current one and the undo history comes back with it. Returns the corrections made to damaged values;
+ * a corrected record does not get its history back (its patches address the uncorrected document).
+ */
+export function restoreRecord(store: AppStore, r: AutosaveRecord): string[] {
+  const { portfolio, notes } = openChecked(r.snapshot), h = sanitize(r.history);
+  store.load(portfolio);
+  if (!notes.length && r.format === 'portfolio' && h && Array.isArray(h.undo) && Array.isArray(h.redo)) store.setHistory(h);
+  return notes;
 }

@@ -6,7 +6,8 @@ import { computeCase } from '@/domain';
 import { createAppStore } from '@/store/core';
 import { makeDefaultDoc } from '@/store/instance';
 import { memoryStorage, restoreRecord, startAutosave } from '@/store/persistence/autosave';
-import { connectBroadcast, type ChannelLike } from '@/store/persistence/broadcast';
+import { connectBroadcast } from '@/store/persistence/broadcast';
+import { channelPair } from '../helpers/channels';
 import { fromSnapshot, sanitize, SnapshotError, toSnapshot } from '@/store/persistence/snapshot';
 import { freshStore, snap } from './helpers';
 
@@ -67,13 +68,7 @@ describe('autosave', () => {
   });
 });
 
-function pair(): [ChannelLike, ChannelLike] {
-  const a: ChannelLike = { postMessage: () => undefined, onmessage: null, close: () => undefined };
-  const b: ChannelLike = { postMessage: () => undefined, onmessage: null, close: () => undefined };
-  a.postMessage = (m) => b.onmessage?.({ data: structuredClone(m) });
-  b.postMessage = (m) => a.onmessage?.({ data: structuredClone(m) });
-  return [a, b];
-}
+const pair = channelPair;
 describe('multi-tab', () => {
   it('remote changes move the document but never the local undo stack', () => {
     const A = createAppStore(makeDefaultDoc(), { now: () => 0 }), B = createAppStore(makeDefaultDoc(), { now: () => 0 });

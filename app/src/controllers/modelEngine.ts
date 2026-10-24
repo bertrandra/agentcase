@@ -1,5 +1,6 @@
 /** @calc-zone time-engine */
 import { defineCommand } from '@/store/commands';
+import { editBase } from '@/store/editBase';
 import { appStore } from '@/store/instance';
 import { clampNum, ensureLceBuilt, parseInteger, parseNum } from './modelKit';
 
@@ -38,9 +39,9 @@ const lceSetFallbackCmd = defineCommand<{ value: string | number }>({
 export const enableLce = (on: boolean): void => appStore().dispatch(lceEnableCmd({ on }));
 /** Re-solve p from the legacy counts; returns whether any p moved (the UI announces it). */
 export function recalibrateLce(): boolean {
-  const before = appStore().getState().doc.MODEL.LCE.loops.map((l) => l.pAccept);
+  const before = editBase().MODEL.LCE.loops.map((l) => l.pAccept);
   appStore().dispatch(lceRecalibrateCmd({}));
-  const after = appStore().getState().doc.MODEL.LCE.loops.map((l) => l.pAccept);
+  const after = editBase().MODEL.LCE.loops.map((l) => l.pAccept);
   return before.length !== after.length || after.some((v, i) => before[i] == null || Math.abs(v - (before[i] as number)) > 1e-9);
 }
 export const setLceP = (i: number, value: string | number): void => appStore().dispatch(lceSetPCmd({ i, value }));

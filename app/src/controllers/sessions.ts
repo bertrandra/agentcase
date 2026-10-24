@@ -2,6 +2,7 @@
 import { appStore } from '@/store/instance';
 import { restoreRecord, startAutosave, type AutosaveRecord, type AutosaveStorage } from '@/store/persistence/autosave';
 import { idbStorage } from '@/store/persistence/idb';
+import { setOpenNotes } from './openNotes';
 
 /** The sessions list shows at most this many records (the legacy autosave keeps the 20 most recent). */
 export const SESSION_CAP = 20;
@@ -33,7 +34,7 @@ export async function listSessions(): Promise<SessionInfo[]> {
 export async function restoreSession(tabId: string): Promise<boolean> {
   const rec = (await current().storage?.list())?.find((r) => r.tabId === tabId);
   if (!rec) return false;
-  restoreRecord(appStore(), rec);
+  setOpenNotes(restoreRecord(appStore(), rec));
   return true;
 }
 

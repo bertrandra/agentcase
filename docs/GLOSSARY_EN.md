@@ -2,8 +2,8 @@
 
 **All user-facing text is in English.** The multi-product build (v20.0, phases P1–P7 and V0) first shipped French labels; since v20.1 every label, tooltip,
 ARIA name, toast, diagnostic, command label, Excel header and report sentence is English. This page fixes the words so they stay consistent.
-(The prose of [GUIDE_MULTI_PRODUIT.md](GUIDE_MULTI_PRODUIT.md) and [SPEC_MULTI_PRODUIT.md](SPEC_MULTI_PRODUIT.md) stays French because the specification was written
-in French; every UI label they quote is the English one.) The guard `app/tests/ui/english-only.test.ts` fails on any French string in `app/src`.
+(The specification [SPEC_MULTI_PRODUIT.md](SPEC_MULTI_PRODUIT.md) and the aggregated-view document [VUE_AGREGEE.md](VUE_AGREGEE.md) are in English;
+the user guide [GUIDE_MULTI_PRODUIT.md](GUIDE_MULTI_PRODUIT.md) stays in French with an English summary at the top (user decision D2); every UI label it quotes is the English one.) The guard `app/tests/ui/english-only.test.ts` fails on any French string in `app/src`.
 
 | Former French label (v20.0) | English label | Where |
 |---|---|---|

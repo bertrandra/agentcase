@@ -1,5 +1,5 @@
 /** @calc-zone exports */
-import { APP_VERSION } from '@/domain/version';
+import { APP_VERSION, versionFileTag as tagOf } from '@/domain/version';
 import type { Doc } from '@/store/types';
 import type { ParamsScope } from './types';
 
@@ -8,8 +8,8 @@ export { interpretParams, loadParamsSheets, ParamsImportError, readParamsWorkboo
 export { LIMITS } from './safe';
 export type { ParamsEnv, ParamsScope, SectionInfo } from './types';
 
-/** "v18_11" style tag of a version (legacy appVerFileTag: a trailing ".0" is dropped, dots become underscores). */
-export const versionFileTag = (v: string = APP_VERSION): string => `v${v.replace(/\.0+$/, '')}`.replace(/\./g, '_');
+/** "v18_11" style tag of a version (legacy appVerFileTag, `domain/versionTag.ts`); the build's own version by default. */
+export const versionFileTag = (v: string = APP_VERSION): string => tagOf(v);
 
 const SCOPE_TAG: Record<ParamsScope, string> = { all: 'Parameters_', 'no-factory': 'NoFactory_', 'persona-only': 'PersonaConfig_' };
 /** `AgentCase_<version>_<Parameters|NoFactory|PersonaConfig>_<yyyy-mm-dd-hh-mm-ss>.<ext>` — the legacy file name. */

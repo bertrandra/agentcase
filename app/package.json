@@ -1,7 +1,7 @@
 {
   "name": "agentcase-app",
   "private": true,
-  "version": "20.12.0",
+  "version": "20.13.0",
   "type": "module",
   "scripts": {
     "dev": "vite",
@@ -15,10 +15,12 @@
     "deps:check": "vite-node scripts/gen-deps.ts --check",
     "theme:gen": "vite-node scripts/gen-theme.ts",
     "theme:check": "vite-node scripts/gen-theme.ts --check",
+    "docs:facts": "vite-node scripts/doc-facts.ts",
+    "docs:check": "vite-node scripts/doc-facts.ts --check",
     "dup": "node scripts/dup.mjs",
     "test:affected": "vite-node scripts/affected-tests.ts",
     "validate:affected": "vite-node scripts/validate-affected.ts",
-    "check": "npm run typecheck && npm run lint && npm run deps:check && npm run test",
+    "check": "npm run typecheck && npm run lint && npm run deps:check && npm run docs:check && npm run test",
     "e2e": "npm run build && node ../tools/e2e-smoke.mjs && node ../tools/perf.mjs",
     "parallel-run": "npm run build && node ../tools/parallel-run.mjs",
     "release": "node scripts/release.mjs"

@@ -5,6 +5,7 @@ import { definePortfolioCommand } from '@/store/commands';
 import { refitPortfolio } from '@/store/derive';
 import { readPortfolio } from '@/store/persistence/portfolioRead';
 import { hasPortfolioContent } from '@/store/persistence/portfolioSnapshot';
+import { keepTabView } from '@/store/persona';
 import type { Doc, PortfolioDoc } from '@/store/types';
 
 /**
@@ -13,8 +14,8 @@ import type { Doc, PortfolioDoc } from '@/store/types';
  */
 export function capturePortfolio(pf: PortfolioDoc): Record<string, unknown> | undefined {
   if (!hasPortfolioContent(pf)) return undefined;
-  const { editScope: _e, displayScope: _d, ...rest } = structuredClone(pf);
-  void _e; void _d;
+  const { editScope: _e, displayScope: _d, persona: _p, ...rest } = structuredClone(pf);
+  void _e; void _d; void _p;
   const common = { ...rest.common } as Record<string, unknown>;
   delete common[SNAPSHOT_KEY];
   return { ...rest, common };
@@ -25,7 +26,7 @@ function restored(s: NamedSnapshot, library: unknown, current: PortfolioDoc): Po
   const pf = refitPortfolio(readPortfolio(s.portfolio));
   const next: PortfolioDoc = { ...pf, common: { ...pf.common, [SNAPSHOT_KEY]: library } as Portfolio['common'] };
   const keep = next.products.some((p) => p.id === current.activeProductId) ? current.activeProductId : next.activeProductId;   // the user stays on the product they were on
-  return current.editScope ? { ...next, activeProductId: keep, editScope: current.editScope } : { ...next, activeProductId: keep };
+  return keepTabView(current, { ...next, activeProductId: keep });
 }
 
 interface Payload { name: string; snap: NamedSnapshot; library: unknown }

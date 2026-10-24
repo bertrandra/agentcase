@@ -12,6 +12,7 @@ import { memoryStorage, startAutosave } from '@/store/persistence/autosave';
 import { createAppStore } from '@/store/core';
 import { makeDefaultDoc, setAppStore } from '@/store/instance';
 import { freshStore, snap } from './helpers';
+import { appVerFileTag } from '@/domain/snapshots';
 
 /** A stand-in for the running page: the app shell, a mounted React tree and some transient nodes. */
 function livePage(extra = ''): Document {
@@ -27,7 +28,7 @@ describe('HTML snapshot: save', () => {
   it('embeds the case, empties #root, drops transient UI and keeps the application script', () => {
     freshStore(); setCustomerName('Acme SA');
     const { filename, html } = htmlSnapshotFile(livePage().documentElement, NOW);
-    expect(filename).toBe('AgentCase_Acme_SA_v20_12_Snapshot_2026-10-21-15-55-00.html');
+    expect(filename).toBe(`AgentCase_Acme_SA_${appVerFileTag()}_Snapshot_2026-10-21-15-55-00.html`);
     const d = parse(html);
     expect(d.getElementById('root')!.childNodes).toHaveLength(0);
     expect(d.querySelector('iframe, [data-transient]')).toBeNull();
@@ -70,13 +71,13 @@ describe('HTML snapshot: save', () => {
     expect(html).not.toContain('</script><img');
     expect(html).toContain('\\u003c/script>');
     expect(readEmbeddedCase(d)!.doc.customerName).toBe(evil);
-    expect(JSON.stringify(parseCaseFile(html).raw)).toBe(JSON.stringify(JSON.parse(JSON.stringify(toSnapshot(s.getState().doc, () => NOW)))));
+    expect(JSON.stringify(parseCaseFile(html).raw)).toBe(JSON.stringify(JSON.parse(JSON.stringify(toSnapshot({ currentPersona: 'builder', ...s.getState().doc }, () => NOW)))));
     expect(snapshotFileName(evil, 'v20', NOW)).toMatch(/^AgentCase_script_img_src_x_onerror_alert_1_script_alert_2_script_end_v20_Snapshot_/);
   });
-  it('a plain page has no embedded case; a malformed one is reported, not executed', () => {
+  it('a plain page has no embedded case; a foreign one (no AgentCase case) is reported, not executed', () => {
     expect(readEmbeddedCase(livePage())).toBeNull();
     expect(loadEmbeddedCase(livePage())).toBeNull();
-    const bad = parse(buildSnapshotHtml(livePage().documentElement, { dom: 'nope' }));
+    const bad = parse(buildSnapshotHtml(livePage().documentElement, { nope: 1 }));
     expect(() => readEmbeddedCase(bad)).toThrow();
     const log = vi.spyOn(console, 'error').mockImplementation(() => undefined);
     expect(loadEmbeddedCase(bad)).toBeNull();   // boot logs and carries on with the default case

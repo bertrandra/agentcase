@@ -3,8 +3,9 @@ import { current } from 'immer';
 import { LOCATIONS, makeCtx } from '@/domain';
 import { locationMix } from '@/domain/location';
 import { MC_PARAMS_DEFAULT, mcDrawsOf, mcSeedOf, mcFingerprint, runMonteCarlo, type McParam } from '@/domain/stress';
-import { STRATEGY_DEFS_DEFAULT, STRAT_WEIGHTS_DEFAULT, strategyDefsOf, strategyPatch, stratWeightsOf, type LeverKey, type StrategyDef, type Weights } from '@/domain/verdict';
+import { STRATEGY_DEFS_DEFAULT, STRAT_WEIGHTS_DEFAULT, strategyDefsOf, strategyPatch, type LeverKey, type StrategyDef, type Weights } from '@/domain/verdict';
 import { defineCommand } from '@/store/commands';
+import { activeDoc } from '@/store/editBase';
 import { appStore } from '@/store/instance';
 import { simStore } from '@/store/simulation';
 import type { Command, Doc } from '@/store/types';
@@ -88,14 +89,13 @@ export const resetStrategies = (): void => go(resetStratCmd, {});
 export const setStratWeight = (key: keyof Weights, value: string): void => go(setWeightCmd, { key, value });
 export const resetStratWeights = (): void => go(resetWeightsCmd, {});
 export const applyStrategy = (id: string): void => go(applyCmd, { id });
-export const currentWeights = (): Weights => stratWeightsOf(appStore().getState().doc);
 
 /**
- * Run the seeded Monte Carlo on the current case and keep the distribution (derived data: never in the document or the history).
+ * Run the seeded Monte Carlo on the active product's case (the results' case, `activeDoc`) and keep the distribution (derived data: never in the document or the history).
  * `draws` defaults to the mcDraws input; the verdict screens ask for 1000 like the legacy "Run now" buttons.
  */
 export function runSimulation(draws?: number): void {
-  const doc = appStore().getState().doc, c = makeCtx(doc);
+  const doc = activeDoc(), c = makeCtx(doc);
   const r = runMonteCarlo(c, draws ?? mcDrawsOf(c), mcSeedOf(c));
   simStore.setState({ run: { ...r, fingerprint: mcFingerprint(doc) } });
 }

@@ -18,10 +18,18 @@ Figures are the golden fixture unless stated. "Before" = the build at the start 
 | DEV-COMPARE-ENGINE | 3-way comparison reads the Time Engine |
 | DEV-SCENARIO-ENGINE | the six scenarios run the Time Engine |
 | DEV-NEG-MONEY | one negative-amount convention |
+| DEV-PF-STRESS | the portfolio Monte Carlo and verdict (multi-product P6) |
 | DEV-ARCH-CONTENT | the two architecture sections describe the TypeScript build |
 | DEV-DEPS-ZONES | the Section Dependencies page shows the graph generated from the code, not the authored registry |
 | DEV-MENU-STRUCTURES | several menu structures; each persona picks one; Business journey persona |
 | DEV-BRAND-THEME | theme library, Brand & theme screen (an app section), `?theme=` links, customer logo |
+| DEV-HEADER-MENU | header and top bar: title without subtitle, compact two-zone header, file menu, Show / Change, group bar without ☰ / persona |
+| DEV-KPI-BAR | KPI bar shows FTE before / after, saving over the horizon, velocity; NPV moved to Results / Financial |
+| DEV-UI-PARITY | cross-reference of `app/ui-parity-exceptions.json` (accessibility corrections, header decisions) |
+| DEV-COSTMODEL-PILOT | pilot cost is a memo outside the cost-model totals (current; lot 4 will include it) |
+| DEV-APP-SECTION-PERSONAS | Brand & theme cannot be removed from its personas (current; lot 7 will change it) |
+| DEV-THEME-SEQ-UNDO | known defect: a theme `seq` can be reissued after an undo (lot 3 fixes it) |
+| DEV-PF-GAPS | portfolio features not built: scenarios table, wave dependencies, shared teams, Wave-view histogram, per-draw truncation |
 
 ## DEV-HEADLINE-OWNER — one economics headline
 
@@ -182,4 +190,93 @@ default case load, display and save exactly as before (the default theme writes 
 - Files: `domain/theme/{themeDef,derive,themedDisplay,catalogue,library,themeFile,themeProps,themeChecks,active,logo}.ts`, `controllers/{themes,brand}.ts`,
   `ui/brand/*`, `ui/sections/configure/brand-theme/*`, `ui/sections/frame/engagement-context/LogoPanel.tsx`, `store/persistence/excel/params/sheets/themes.ts`,
   `store/persistence/excel/results/logo.ts`, `store/persistence/report/{data,render}.ts`.
+
+## DEV-HEADER-MENU — the header and the top bar differ from the legacy chrome
+
+Product decisions (user requests, v20.1.0 → v20.12.0). The legacy header is a tall banner: title "AgentCase vX.Y", a subtitle line, the Capgemini
+wordmark, and the right-side controls (persona, Fast Path, Save / Open, Undo / Redo) in one wrapping group; the group bar of the hide-menu mode
+carries its own ☰ Menu button and persona picker. The new build:
+
+- **Title and subtitle** (v20.1.0): the title reads "AgentCase [for <customer>] vX.Y" (the customer name is edited in Engagement context); the subtitle
+  line "Agentic Transformation: From Team Baseline to Confidence-Conditional Verdict" is removed.
+- **Compact header** (v20.4.0): the blank band left by the subtitle is removed (padding 12px, title margin 0).
+- **Two zones** (v20.12.0): left = title (and the customer logo, DEV-BRAND-THEME), ☰ sidebar toggle, Persona and Fast Path; right = Show / Change (several
+  products only), undo / redo, 📁 file menu, ◐ display menu.
+- **File menu** (v20.12.0): Save and Open… move into a menu opened by an icon-only 📁 button (WAI-ARIA menu button: arrows, Home / End, Escape, click
+  outside). Undo / Redo are icon-only (↶ ↷, v20.11.0); their accessible names and tooltips are unchanged.
+- **Show / Change** (v20.12.0, replacing View and Edit: of v20.1.0 / v20.11.0): multi-product selectors with no legacy equivalent, absent with a
+  single product (spec F23), so a single case shows the legacy set of controls.
+- **Group bar without ☰ / persona** (v20.11.0): in the hide-menu mode the group bar no longer repeats the ☰ Menu button and the persona picker (they
+  duplicated the top bar's ☰ toggle and Persona picker).
+- Unchanged: every keyboard shortcut, the persona list, Fast Path, the session chip, the KPI bar position (its content: DEV-KPI-BAR).
+- UI parity: the measured differences are recorded, with their reason, in `app/ui-parity-exceptions.json` (`header` box height and paddings,
+  `header:title` width and margin; see DEV-UI-PARITY); `tools/ui-parity.mjs` fails on any other header divergence and on drift inside an exception.
+- Files: `ui/shell/{TopZone,ProductBar,ScopeSelect,EditSelect,FileMenu,GroupNavBar}.tsx`, `ui/theme/*.css`.
+
+## DEV-KPI-BAR — the KPI bar shows FTE, saving over the horizon and velocity; NPV moved out
+
+Requested change (v20.1.0). The legacy KPI bar shows Y3 savings, run cost, setup, NPV and payback. The new bar adds **FTE before / FTE after**,
+**Saving over N yr** (net cost reduction over the horizon) and **Velocity Yn**, with a tooltip on every value; **NPV is no longer on the bar** (it stays in
+Results and Financial, same owner, DEV-HEADLINE-OWNER). With several products a **Scope** tile names what the figures cover (`ui/shell/ScopeKpis.tsx`).
+
+- Figures are unchanged (same owners, `tests/domain/figure-owners.test.ts`); only the selection shown on the bar differs.
+- Files: `ui/shell/{KpiZone,Kpi,ScopeKpis}.tsx`.
+
+## DEV-UI-PARITY — the recorded ui-parity exceptions
+
+`app/ui-parity-exceptions.json` is the machine-readable register of the computed-style differences from the legacy page that are deliberate; each entry pins
+the NEW value (`expected`) and gives the reason, and `tools/ui-parity.mjs` (`npm run ui-parity`) fails on any unrecorded difference and on drift inside an
+exception. Two kinds of entries, both cross-referenced here so that this file stays the one list of deviations:
+
+- **Accessibility corrections** (accessibility pass, v19): `kpibar:label` opacity 0.7 → 0.73 (4.51:1); the form focus ring `sections:form:input:focus`
+  (2px solid `#0058AB`, 7.04:1, the legacy glow kept); the formula band spans `sections:help:formula:span-a|b|g` lightened in the same hue to reach 4.5:1.
+- **Product decisions**: the header entries of DEV-HEADER-MENU (`header` height and paddings, `header:title` width and margin).
+
+A new deliberate visual difference is added to the JSON file AND described here (or in the entry of the feature that causes it).
+
+## DEV-COSTMODEL-PILOT — the pilot cost is a memo line outside the totals of the cost-model workbook
+
+Current state (v20.2.0). The Cost model (monthly) workbook (`domain/portfolio/costModel*.ts`) shows the pilot sizing of 🧭 Program & Completeness
+(`tune/program` `pilotSizing`: team, duration, cost) as a **memo**: the line "Pilot (indicative sizing, not in the engine cost)" on **Other costs** carries the
+amount with no month values, and **Parameters** lists "Pilot cost (indicative, not in the engine cost)". It is **not** added to the monthly total, which must
+equal the engine total (the "Difference" row is 0), because the engine (and the legacy file) do not count the pilot in the setup or the run cost.
+
+- Legacy: no cost-model workbook; the pilot is an indicative figure of the Program section only.
+- **Planned change (lot 4)**: include the pilot in the cost model as a dated cost (and state how it reconciles with the engine total). This entry will be
+  rewritten when it ships.
+- Files: `domain/portfolio/{costModelOther,costModelParams}.ts`; tests `tests/store/excel-costmodel.test.ts`.
+
+## DEV-APP-SECTION-PERSONAS — Brand & theme cannot be removed from the personas that show it
+
+Current state (v20.9.0). 🎨 Brand & theme is an *app section* (DEV-BRAND-THEME): it is not in the case's `PERSONA_SECTIONS` (so the default case and the
+parameters workbook stay legacy-shaped), and the navigation adds it to the personas its catalogue entry names (Admin, Builder, Business journey; Advanced
+sees every section). Consequence: **Persona management cannot remove it** from those personas (the Section assignment tab lists it as assigned but the
+removal has no effect on an app section), unlike any legacy section.
+
+- Legacy: no such section; every section is assignable.
+- **Planned change (lot 7)**: app sections become assignable like the others (stored without breaking the legacy shape of `PERSONA_SECTIONS`).
+- Files: `ui/zones/registry.ts` (`APP_SECTIONS`), `ui/zones/navModel.ts`, `ui/zones/data/sectionCatalog.json`.
+
+## DEV-THEME-SEQ-UNDO — known defect: a theme sequence id can be issued twice after an undo
+
+Known defect, not an intended behaviour (recorded so that it is not mistaken for one). `THEME_SEQ` (the last theme id issued, docs/THEME.md §8.4) is a
+key of the document, so **undoing** the creation of a theme also rolls `THEME_SEQ` back; the next theme created then receives the **same** `seq`. A
+`?theme=<seq>` link copied before the undo now opens a different theme, which breaks the rule "a sequence id is never reused".
+
+- Legacy: no theme library.
+- **Fix planned (lot 3)**: keep the high-water mark outside the undoable state (or make it monotonic across undo / redo) and add a regression test.
+- Files: `controllers/themes.ts` (`append`, `lastIssuedSeq`), `domain/theme/library.ts`.
+
+## DEV-PF-GAPS — portfolio features not built (left out on purpose or not yet)
+
+The multi-product build has no legacy counterpart; these are the gaps against the specification and the user's expectations, recorded so that a
+missing feature is not read as a bug. The authoritative list of known gaps is docs/ARCHITECTURE.md §12 and docs/MIGRATION_PLAN.md §15.
+
+| Gap | State | Where it is discussed |
+|---|---|---|
+| **Portfolio scenarios table** (the six scenarios summed over products) | not built: scenarios and sensitivity stay per product (active product) | DEV-PF-STRESS, SPEC_MULTI_PRODUIT.md §9 |
+| **Dependencies between waves** (product B after product A) and transformation-team capacity between waves | not built: waves may overlap freely (F13) | SPEC_MULTI_PRODUIT.md F13, §9 |
+| **Shared teams** across products (a person on two products) | not built: each product has its own entry team | SPEC_MULTI_PRODUIT.md §9 |
+| **Monte Carlo histogram in the Wave view** | the histogram is drawn for the Portfolio only; a Wave shows the statistics (P10 / P50 / P90, P(net<0), CVaR, diversification) without it | VUE_AGREGEE.md (stress group) |
+| **Per-draw horizon truncation** in the portfolio stress | not modelled: a product cut by the portfolio horizon is simulated on its own horizon; the deterministic consolidation does cut it (diagnostic `truncated`) | DEV-PF-STRESS (outcome of a draw) |
 

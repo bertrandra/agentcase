@@ -6,7 +6,7 @@ async function lint(code: string, filePath: string) {
   const [r] = await eslint.lintText(code, { filePath });
   return r!.messages.map((m) => m.ruleId);
 }
-describe('architecture lint rules (G2, G4)', () => {
+describe('architecture lint rules (G2, G4, edit base)', () => {
   it('UI code cannot import the store write path', async () => {
     expect(await lint("import { appStore } from '@/store/instance';\nexport const x = appStore;\n", 'src/ui/Bad.tsx')).toContain('no-restricted-imports');
     expect(await lint("import { createAppStore } from '@/store/core';\nexport const x = createAppStore;\n", 'src/ui/Bad.tsx')).toContain('no-restricted-imports');
@@ -35,6 +35,16 @@ describe('architecture lint rules (G2, G4)', () => {
       expect(await lint(sum, f), f).toContain('no-restricted-syntax');
     }
     expect(await lint(sum, 'src/ui/sections/economics/financial/Verdict.tsx')).not.toContain('no-restricted-syntax');
+  });
+  it('EDIT BASE: a controller cannot read getState().doc (property or destructuring), nor import the React hooks; editBase() / activeDoc() are fine', async () => {
+    const head = "import { appStore } from '@/store/instance';\n";
+    expect(await lint(`${head}export const x = () => appStore().getState().doc.MODEL;\n`, 'src/controllers/Bad.ts')).toContain('no-restricted-syntax');
+    expect(await lint(`${head}export const x = () => { const { doc, portfolio } = appStore().getState(); return [doc, portfolio]; };\n`, 'src/controllers/Bad.ts')).toContain('no-restricted-syntax');
+    expect(await lint("import { useDoc } from '@/store/hooks';\nexport const x = useDoc;\n", 'src/controllers/Bad.ts')).toContain('no-restricted-imports');
+    expect(await lint("import { deriveDoc } from '@/store/portfolioState';\nexport const x = deriveDoc;\n", 'src/controllers/Bad.ts')).toContain('no-restricted-imports');
+    const ok = "import { activeDoc, editBase } from '@/store/editBase';\nimport { appStore } from '@/store/instance';\nexport const x = () => [editBase(), activeDoc(), appStore().getState().portfolio];\n";
+    expect(await lint(ok, 'src/controllers/Ok.ts')).toEqual([]);
+    expect(await lint(`${head}export const x = () => appStore().getState().doc;\n`, 'src/store/Ok.ts')).not.toContain('no-restricted-syntax');
   });
   it('a 151-line file is rejected, raw HTML injection is rejected', async () => {
     expect(await lint(Array.from({ length: 151 }, (_, i) => `export const a${i} = ${i};`).join('\n') + '\n', 'src/domain/Big.ts')).toContain('max-lines');

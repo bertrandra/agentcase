@@ -331,7 +331,7 @@ it has no override at all, writes nothing on `<html>`, and ui-parity is unchange
 
 | Field | Content |
 |---|---|
-| `seq` | stable sequence id, unique in the case and never reused: built-ins 1-7, user themes from 100 up (`THEME_SEQ` keeps the last one issued) |
+| `seq` | stable sequence id, unique in the case and never reused: built-ins 1-7, user themes from 100 up (`THEME_SEQ` keeps the last one issued; a high-water mark that undo, redo and remote changes never lower) |
 | `colours` | partial: a **scale anchor** (`primary`, `secondary`, `info`, `teal`, `success`, `warning`, `danger`, `neutral`, `slate`) or a **role** (`ROLE_GROUPS`: surfaces `bg` / `surface` / `surface-raised` / `line-strong`, header gradient and text, KPI bar, sidebar, `selected`, table head / stripe, `ink` / `text-heading` / `text-link` / `focus`, the business colours `automation` / `glass-ceiling` / `human-supervision`, `chart-cat-1..8`) |
 | `axes` | partial `ThemeAxes` (§6); fonts are the typography axes (no separate font field) |
 
