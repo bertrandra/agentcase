@@ -1,6 +1,6 @@
 // @vitest-environment jsdom
 import { act, cleanup, fireEvent, screen, within } from '@testing-library/react';
-import axe from 'axe-core';
+import { axeViolations } from '../helpers/axe';
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 import { setPortfolioHorizon } from '@/controllers/portfolio';
 import { assignWave } from '@/controllers/wave';
@@ -83,7 +83,6 @@ describe('Products table: the Wave column is editable with the same command', ()
 describe('accessibility', () => {
   it('axe finds no violation on the board (names, roles, no nested interactive)', async () => {
     await open();
-    const r = await axe.run(document.querySelector('main') as HTMLElement, { rules: { 'color-contrast': { enabled: false } } });
-    expect(r.violations.map((v) => `${v.id}: ${v.nodes.map((n) => n.html.slice(0, 80)).join(' | ')}`)).toEqual([]);
+    expect(await axeViolations(document.querySelector('main'))).toEqual([]);
   });
 });

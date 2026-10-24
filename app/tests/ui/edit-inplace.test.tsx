@@ -1,6 +1,6 @@
 // @vitest-environment jsdom
 import { act, cleanup, fireEvent, screen, within } from '@testing-library/react';
-import axe from 'axe-core';
+import { axeViolations } from '../helpers/axe';
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 import { setDisplayScope } from '@/controllers/displayScope';
 import { undo } from '@/controllers/history';
@@ -20,8 +20,7 @@ const pick = (v: string) => fireEvent.change(edit(), { target: { value: v } });
 const region = (name: RegExp) => screen.getByRole('region', { name });
 const portfolio = () => act(() => { setDisplayScope({ kind: 'portfolio' }); });
 const noViolation = async (el: Element) => {
-  const r = await axe.run(el as HTMLElement, { rules: { 'color-contrast': { enabled: false } } });
-  expect(r.violations.map((v) => `${v.id}: ${v.nodes.map((n) => n.html.slice(0, 80)).join(' | ')}`)).toEqual([]);
+  expect(await axeViolations(el)).toEqual([]);
 };
 
 describe('top bar: the "Change" dropdown', () => {

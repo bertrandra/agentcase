@@ -1,6 +1,6 @@
 // @vitest-environment jsdom
 import { act, cleanup, fireEvent, screen, within } from '@testing-library/react';
-import axe from 'axe-core';
+import { axeViolations } from '../helpers/axe';
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 import { archiveProduct, removeProduct } from '@/controllers/product';
 import { setTeamTotal } from '@/controllers/baseline';
@@ -66,8 +66,7 @@ describe('top bar with several products', () => {
     expect(label('Change').title).toBe('Where your changes go: all products (shared values) or one product');
     expect(document.querySelector('.ac-editing')).toBeNull();
     expect(screen.queryByText(/Editing:/)).toBeNull();
-    const r = await axe.run(screen.getByRole('banner'), { rules: { 'color-contrast': { enabled: false } } });
-    expect(r.violations.map((v) => v.id)).toEqual([]);
+    expect(await axeViolations(screen.getByRole('banner'))).toEqual([]);
   });
   it('Show names an unscheduled product "(unscheduled)" and keeps " (archived)"', () => {
     act(() => { assignWave(ids[2], null); archiveProduct(ids[1]); });

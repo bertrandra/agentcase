@@ -1,6 +1,6 @@
 // @vitest-environment jsdom
 import { act, cleanup, fireEvent, screen, within } from '@testing-library/react';
-import axe from 'axe-core';
+import { axeViolations } from '../helpers/axe';
 import { afterEach, beforeEach, describe, expect, it } from 'vitest';
 import { setDisplayScope } from '@/controllers/displayScope';
 import { assignWave, setWaveStart } from '@/controllers/wave';
@@ -81,8 +81,7 @@ describe('Gantt: wave rows (F18)', () => {
     act(() => { setDisplayScope({ kind: 'portfolio' }); });
     await open();
     fireEvent.click(within(wavePanel()!).getByRole('button', { name: 'Expand Wave 1' }));
-    const r = await axe.run(wavePanel() as HTMLElement, { rules: { 'color-contrast': { enabled: false } } });
-    expect(r.violations.map((v) => `${v.id}: ${v.nodes.map((n) => n.html.slice(0, 80)).join(' | ')}`)).toEqual([]);
+    expect(await axeViolations(wavePanel())).toEqual([]);
   });
 });
 

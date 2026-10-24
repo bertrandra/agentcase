@@ -1,6 +1,6 @@
 // @vitest-environment jsdom
 import { cleanup, fireEvent, render, screen, waitFor } from '@testing-library/react';
-import axe from 'axe-core';
+import { axeViolations } from '../helpers/axe';
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 import { TopZone } from '@/ui/shell/TopZone';
 import { uiStore } from '@/ui/uiState';
@@ -53,8 +53,7 @@ describe('top bar file menu', () => {
   it('a click outside closes it; the open menu has no axe violation', async () => {
     render(<TopZone />);
     fireEvent.click(fileBtn());
-    const r = await axe.run(document.body, { rules: { 'color-contrast': { enabled: false } } });
-    expect(r.violations.map((v) => v.id)).toEqual([]);
+    expect(await axeViolations(document.body)).toEqual([]);
     fireEvent.mouseDown(document.body);
     expect(screen.queryByRole('menu')).toBeNull();
   });
