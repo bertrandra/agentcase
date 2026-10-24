@@ -12,7 +12,7 @@ import { freshStore } from './helpers';
 
 /** DEV-THEME-SEQ-UNDO closed: a theme sequence id is never issued twice, across undo / redo, other tabs, snapshot activation and reload. */
 const seqs = () => userThemes(appStore().getState().doc).map((t) => t.seq);
-const mark = () => appStore().getState().portfolio.common.THEME_SEQ;
+const mark = () => (appStore().getState().portfolio.common as Record<string, unknown>).THEME_SEQ;
 
 describe('theme sequence ids are monotonic (high-water mark)', () => {
   it('create -> undo -> create issues 101, not 100 again; redo never lowers the mark', () => {
@@ -49,9 +49,9 @@ describe('theme sequence ids are monotonic (high-water mark)', () => {
   it('another tab\'s undo does not lower this tab\'s mark', () => {
     const A = freshStore(), B = createAppStore(makeDefaultDoc());
     const [ca, cb] = channelPair(); connectBroadcast(A, ca, 'A'); connectBroadcast(B, cb, 'B');
-    addTheme('A'); expect(B.getState().portfolio.common.THEME_SEQ).toBe(100);
+    addTheme('A'); expect((B.getState().portfolio.common as Record<string, unknown>).THEME_SEQ).toBe(100);
     A.undo();
     expect(userThemes(B.getState().doc)).toEqual([]);
-    expect(B.getState().portfolio.common.THEME_SEQ).toBe(100);
+    expect((B.getState().portfolio.common as Record<string, unknown>).THEME_SEQ).toBe(100);
   });
 });

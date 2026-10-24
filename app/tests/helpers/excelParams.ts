@@ -6,6 +6,7 @@ import { makeDefaultDoc } from '@/store/instance';
 import { applyParamsPatch } from '@/store/persistence/excel/params/apply';
 import type { ParamsEnv } from '@/store/persistence/excel/params';
 import { sameJson } from '@/store/persistence/excel/params';
+import { PERSONA_KEY } from '@/store/persona';
 import type { Doc } from '@/store/types';
 
 /** The workbook (and the legacy file it is compared with) knows the 79 case sections, not the Portfolio ones. */
@@ -35,10 +36,10 @@ export const freshDoc = (): Doc => {
 /** The document the legacy import ran against: the pristine case, or (recipes) the recipe's base state laid over it. */
 export const importTarget = (leg: LegacyImport): Doc => ({ ...freshDoc(), ...structuredClone(leg.base ?? {}) }) as Doc;
 
-/** Top-level keys of `ours` whose value differs from the legacy state (the pristine value where the legacy left a key alone). */
+/** Top-level keys of `ours` whose value differs from the legacy state (the pristine value where the legacy left a key alone). The persona is view state of the tab, not a key of our case (D3). */
 export function stateMismatches(ours: Doc, legacy: Record<string, unknown>, pristine: Record<string, unknown>, ignore: string[] = []): string[] {
   const keys = new Set([...Object.keys(legacy), ...Object.keys(pristine)]);
-  return [...keys].filter((k) => !ignore.includes(k) && !sameJson(norm(k, (ours as Record<string, unknown>)[k]), norm(k, k in legacy ? legacy[k] : pristine[k])));
+  return [...keys].filter((k) => k !== PERSONA_KEY && !ignore.includes(k) && !sameJson(norm(k, (ours as Record<string, unknown>)[k]), norm(k, k in legacy ? legacy[k] : pristine[k])));
 }
 /**
  * The one deliberate difference from the legacy import: its "FM Environments" sheet drops the `isProd` flag of the production environment

@@ -72,7 +72,7 @@ describe('personas section', () => {
     render(<Personas />);
     fireEvent.click(screen.getAllByText('✕ Delete')[2]!);   // clientcase, builder, admin
     fireEvent.click(screen.getByText('✓ Confirm'));
-    expect(doc().currentPersona).toBe('advanced');
+    expect(appStore().getState().portfolio.persona).toBe('advanced');   // the tab's persona (view state, D3)
   });
   it('section assignment adds and removes sections of a persona', () => {
     loadCase('golden');

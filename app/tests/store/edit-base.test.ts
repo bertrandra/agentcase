@@ -51,12 +51,12 @@ describe('controllers write the common value computed from the common case, neve
   it('pdc.computeSensitivity: measured on the common case (not A); undo exact; Product view measures A as before', () => {
     const { s, ids } = setup('values.y1Ramp', '30', '14', 'portfolio'), before = docOnly(s);
     computeSensitivity();
-    const sens = pf().common.DD_SENS as { fp: string; base: number };
+    const sens = (pf().common as Record<string, unknown>).DD_SENS as { fp: string; base: number };
     expect(sens.fp).toBe(computeDdSensitivity(makeCtx(commonEditDoc(pf()))).fp);
     expect(sens.fp).not.toBe(computeDdSensitivity(makeCtx(docOf(ids[0]))).fp);
     exactUndo(s, before);
     setDisplayScope({ kind: 'product' }); computeSensitivity();
-    expect((pf().common.DD_SENS as { fp: string }).fp).toBe(computeDdSensitivity(makeCtx(docOf(ids[0]))).fp);
+    expect(((pf().common as Record<string, unknown>).DD_SENS as { fp: string }).fp).toBe(computeDdSensitivity(makeCtx(docOf(ids[0]))).fp);
   });
   it('ganttEdit.nudgeBar (move): the common roadmap start moves from the COMMON date; A keeps its own; undo exact; Product view moves A', () => {
     const { s, ids } = setup('values.rmStart', '2026-06-01', '2026-01-05', 'portfolio'), before = docOnly(s);
@@ -96,6 +96,6 @@ describe('controllers write the common value computed from the common case, neve
     setup('values.y1Ramp', '30', '14', 'portfolio');
     addTheme('Mine');
     expect(lastIssuedSeq()).toBe(100);
-    expect(pf().common.THEME_SEQ).toBe(100);
+    expect((pf().common as Record<string, unknown>).THEME_SEQ).toBe(100);
   });
 });

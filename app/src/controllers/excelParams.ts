@@ -5,6 +5,7 @@ import { appStore } from '@/store/instance';
 import { applyParamsPatch } from '@/store/persistence/excel/params/apply';
 import { interpretParams, LIMITS, loadParamsSheets, paramsFileName, paramsWorkbookBytes, ParamsImportError, personaConfigJson, workbookBytes, type ParamsEnv, type ParamsScope } from '@/store/persistence/excel/params';
 import { buildPortfolioParamsWorkbook, interpretPortfolioParams, isPortfolioWorkbook } from '@/store/persistence/excel/portfolio';
+import { keepTabView, withSavedPersona } from '@/store/persona';
 import { hasPortfolioContent } from '@/store/persistence/portfolioSnapshot';
 import type { Portfolio } from '@/domain/portfolio';
 import type { Doc, PortfolioDoc } from '@/store/types';
@@ -21,11 +22,11 @@ export const applyParamsImport = (patch: Partial<Doc>): void => appStore().dispa
 
 /**
  * A portfolio workbook replaces the whole portfolio (common values, products, waves, teams, overrides, hub) as ONE undoable step. The view state that is not
- * part of the file (edit scope) stays; the display scope is dropped (a wave of the old portfolio may not exist any more).
+ * part of the file (edit scope, persona) stays; the display scope is dropped (a wave of the old portfolio may not exist any more).
  */
 const importPortfolioCmd = definePortfolioCommand<{ next: Portfolio }>({
   type: 'excel.importPortfolio', label: () => 'Import portfolio parameters',
-  apply: (pf, p): PortfolioDoc => (pf.editScope ? { ...p.next, editScope: pf.editScope } : p.next),
+  apply: (pf, p): PortfolioDoc => keepTabView(pf, p.next),
 });
 /** Apply an already-read portfolio (the import's last step; also what the command sample exercises). */
 export const applyPortfolioImport = (next: Portfolio): void => appStore().dispatch(importPortfolioCmd({ next }));
@@ -37,15 +38,11 @@ export interface ParamsExport { filename: string; blob: Blob; companion?: { file
  * The persona-only scope also returns the persona/section configuration as JSON in the app's native snapshot shape.
  */
 export async function exportParamsWorkbook(scope: ParamsScope, env: ParamsEnv, now: Date = new Date()): Promise<ParamsExport> {
-  const doc = activeDoc(), portfolio = appStore().getState().portfolio;
-  if (hasPortfolioContent(portfolio)) {
-    const bytes = await workbookBytes(await buildPortfolioParamsWorkbook(portfolio, scope, env));
-    const out: ParamsExport = { filename: paramsFileName(scope, now), blob: new Blob([bytes], { type: XLSX }) };
-    if (scope === 'persona-only') out.companion = { filename: paramsFileName(scope, now, 'json'), blob: new Blob([personaConfigJson(doc, now)], { type: 'application/json' }) };
-    return out;
-  }
-  const out: ParamsExport = { filename: paramsFileName(scope, now), blob: new Blob([await paramsWorkbookBytes(doc, scope, env)], { type: XLSX }) };
-  if (scope === 'persona-only') out.companion = { filename: paramsFileName(scope, now, 'json'), blob: new Blob([personaConfigJson(doc, now)], { type: 'application/json' }) };
+  const portfolio = appStore().getState().portfolio, doc = activeDoc();
+  const bytes = hasPortfolioContent(portfolio) ? await workbookBytes(await buildPortfolioParamsWorkbook(portfolio, scope, env)) : await paramsWorkbookBytes(doc, scope, env);
+  const out: ParamsExport = { filename: paramsFileName(scope, now), blob: new Blob([bytes], { type: XLSX }) };
+  // the JSON copy names this tab's persona (`currentPersona`), like the legacy
+  if (scope === 'persona-only') out.companion = { filename: paramsFileName(scope, now, 'json'), blob: new Blob([personaConfigJson(withSavedPersona(doc, portfolio.persona), now)], { type: 'application/json' }) };
   return out;
 }
 

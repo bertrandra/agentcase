@@ -1,6 +1,7 @@
 /** @calc-zone exports */
 import { buildCalcPackage } from '@/domain/calcPackage';
 import { makeDefaultDoc } from '../instance';
+import { PERSONA_KEY } from '../persona';
 import type { Doc } from '../types';
 
 export const SNAPSHOT_SCHEMA = 'agentcase.snapshot.v1';
@@ -45,7 +46,7 @@ export function fromSnapshot(raw: unknown): Doc {
   const dom = snap.dom as { values?: unknown; checked?: unknown } | undefined;
   if (!dom || typeof dom !== 'object' || typeof dom.values !== 'object' || typeof dom.checked !== 'object') throw new SnapshotError('Snapshot has no form inputs (dom)');
   const doc = { ...makeDefaultDoc(), ...snap } as Doc;
-  delete doc.savedAt; delete doc._schema; delete doc.calculationPackage;
+  delete doc.savedAt; delete doc._schema; delete doc.calculationPackage; delete doc[PERSONA_KEY];   // the persona the file opens on: `openSnapshot`
   doc.dom = { values: { ...makeDefaultDoc().dom.values, ...(dom.values as object) }, checked: { ...makeDefaultDoc().dom.checked, ...(dom.checked as object) } } as Doc['dom'];
   return doc;
 }

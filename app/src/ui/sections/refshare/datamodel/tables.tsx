@@ -1,4 +1,5 @@
 import { useDoc } from '@/store/hooks';
+import { useSavedCase } from '@/store/portfolioHooks';
 import { Badge } from '@/ui/widgets/cards';
 import { DataTable } from '@/ui/widgets/DataTable';
 import { goSection } from '@/ui/uiState';
@@ -37,7 +38,7 @@ export function SectionsTab() {
 
 /** The keys of the live document: type, size and a preview of the value. */
 export function StateTab() {
-  const doc = useDoc((d) => d), rows = stateRows(doc);
+  const rows = stateRows(useSavedCase());
   return (
     <div>
       <h3>State registry <span className="ac-muted">— {rows.length} keys, what survives snapshot save/restore, autosave and the Excel round-trip</span></h3>

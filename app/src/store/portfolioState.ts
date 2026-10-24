@@ -3,6 +3,7 @@ import { applyPatches, current, isDraft, produceWithPatches, type Patch } from '
 import { envelopeCase, resolveProduct } from '@/domain/portfolio';
 import { addressPatches } from './address';
 import { commonEditDoc, editsCommon } from './commonEdit';
+import { DEFAULT_PERSONA, liftPersona } from './persona';
 import type { Command, Doc, PortfolioDoc } from './types';
 import { VIEW_FIELDS } from './types';
 
@@ -12,8 +13,8 @@ export const PORTFOLIO_SCHEMA = 'agentcase.portfolio.v1';
 export const isPortfolio = (x: unknown): x is PortfolioDoc =>
   !!x && typeof x === 'object' && (x as { _schema?: unknown })._schema === PORTFOLIO_SCHEMA && Array.isArray((x as { products?: unknown }).products);
 
-/** Whatever is opened — a case or a portfolio — as a portfolio. A single case becomes "Product 1" in "Wave 1" (F21). */
-export const asPortfolio = (x: Doc | PortfolioDoc): PortfolioDoc => (isPortfolio(x) ? x : envelopeCase(x));
+/** Whatever is opened — a case or a portfolio — as a portfolio. A single case becomes "Product 1" in "Wave 1" (F21). Its `currentPersona` (else its persona, else the default) is the persona. */
+export const asPortfolio = (x: Doc | PortfolioDoc): PortfolioDoc => liftPersona(isPortfolio(x) ? x : envelopeCase(x), true, DEFAULT_PERSONA);
 
 /** The derived `doc` of the store: the active product's effective case (identity-stable while its inputs are, via the resolve memo). */
 export const deriveDoc = (pf: PortfolioDoc): Doc => resolveProduct(pf, pf.activeProductId) as Doc;

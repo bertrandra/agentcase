@@ -57,7 +57,7 @@ describe('file imports follow the edit base', () => {
     const pack = await editPack(await (await exportDdPack()).blob.arrayBuffer(), { rows: [{ id, st: 'confirmed', owner: 'Ann' }], append: [] });
     const r = await importDdPack({ arrayBuffer: async () => pack });
     expect(r.ok).toBe(true);
-    const st = pf().common.DD_STATE as Record<string, { st: string; owner: string }>;
+    const st = (pf().common as Record<string, unknown>).DD_STATE as Record<string, { st: string; owner: string }>;
     expect(st[id]).toMatchObject({ st: 'confirmed', owner: 'Ann' });
     s.undo(); expect(docOnly(s)).toBe(before);
   });

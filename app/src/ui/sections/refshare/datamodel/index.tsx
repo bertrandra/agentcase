@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import content from '@/content/refshare/datamodel.json';
-import { useDoc } from '@/store/hooks';
+import { useSavedCase } from '@/store/portfolioHooks';
 import { Badge, Callout } from '@/ui/widgets/cards';
 import { Rich } from '@/ui/widgets/Rich';
 import { Tabs } from '@/ui/widgets/Tabs';
@@ -12,7 +12,7 @@ import { ModelTab, SectionsTab, StateTab, VariablesTab } from './tables';
 
 /** Data Model — four tables read off the registries of this build: sections, persisted state, bindable variables, coefficients and namespaces. */
 export default function DataModelSection() {
-  const keys = useDoc((d) => Object.keys(d).length), [tab, setTab] = useState('overview');
+  const keys = Object.keys(useSavedCase()).length, [tab, setTab] = useState('overview');
   const counts = { sections: SECTIONS.length, state: keys, variables: VARIABLES.length, coefs: COEF_ROWS.length, namespaces: NS_ROWS.length };
   const tabs = [
     { id: 'overview', label: '🧭 Overview', render: () => <Overview counts={counts} jump={setTab} /> },

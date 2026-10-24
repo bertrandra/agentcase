@@ -1,7 +1,9 @@
 /** @calc-zone workspace-config */
 import { duplicateOf, uniqueId, type Persona } from '@/domain/pdc/personas';
 import { defineCommand } from '@/store/commands';
+import { editBase } from '@/store/editBase';
 import { appStore } from '@/store/instance';
+import { currentPersona, setPersona } from './persona';
 import type { Doc } from '@/store/types';
 import { groupsIn, inStructure, setColorIn, setGroupsIn } from './menuTarget';
 
@@ -38,7 +40,6 @@ const deleteCmd = defineCommand<{ id: string }>({
     d.PERSONAS = personas(d).filter((x) => x.id !== p.id);
     d.PERSONA_SECTIONS = omit(sections(d), p.id);   // rebuilt (not `delete`d), so undo restores the key in its place
     d.PERSONA_SECTION_ORDER = omit((d.PERSONA_SECTION_ORDER ?? {}) as Record<string, unknown>, p.id);
-    if (d.currentPersona === p.id) d.currentPersona = 'advanced';
   },
 });
 const renameCmd = defineCommand<{ id: string; label: string }>({
@@ -102,7 +103,11 @@ const go = <P>(c: ReturnType<typeof defineCommand<P>>, p: P): void => appStore()
 const at = <P extends object>(p: P, structure: string | undefined): P & In => (structure && structure !== 'standard' ? { ...p, structure } : p);
 export const addPersona = (label: string): void => go(addPersonaCmd, { label });
 export const duplicatePersona = (id: string, catalogue: string[]): void => go(duplicateCmd, { id, catalogue });
-export const deletePersona = (id: string): void => go(deleteCmd, { id });
+/** Delete a persona; a tab showing it moves to Advanced (its persona is view state: the switch is not part of the undo step). */
+export function deletePersona(id: string): void {
+  go(deleteCmd, { id });
+  if (currentPersona() === id && !personas(editBase()).some((x) => x.id === id)) setPersona('advanced');
+}
 export const renamePersona = (id: string, label: string): void => go(renameCmd, { id, label });
 export const setPersonaOrder = (id: string, order: number): void => go(orderCmd, { id, order });
 export const setPersonaCompactNav = (id: string, on: boolean): void => go(compactCmd, { id, on });

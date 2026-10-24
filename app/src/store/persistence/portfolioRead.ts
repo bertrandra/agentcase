@@ -2,6 +2,7 @@
 import { validate, type Portfolio } from '@/domain/portfolio';
 import { clean } from '@/domain/portfolio/products';
 import { makeDefaultDoc } from '../instance';
+import { PERSONA_KEY } from '../persona';
 import { sanitize, SnapshotError } from './snapshot';
 
 type Rec = Record<string, unknown>;
@@ -17,8 +18,9 @@ function readCommon(v: unknown): Portfolio['common'] {
   need(rec(v) && rec(v.dom) && rec(v.dom.values) && rec(v.dom.checked), 'common has no form inputs (dom)');
   const dom = (v as Rec).dom as { values: Rec; checked: Rec }, defaults: Rec = { ...makeDefaultDoc() };
   delete defaults.teamIn;
-  const d = makeDefaultDoc().dom;
-  return { ...defaults, ...(v as Rec), dom: { values: { ...d.values, ...dom.values }, checked: { ...d.checked, ...dom.checked } } } as unknown as Portfolio['common'];
+  const d = makeDefaultDoc().dom, out: Rec = { ...defaults, ...(v as Rec), dom: { values: { ...d.values, ...dom.values }, checked: { ...d.checked, ...dom.checked } } };
+  delete out[PERSONA_KEY];   // the persona the file opens on: `openSnapshot`
+  return out as unknown as Portfolio['common'];
 }
 
 function readProduct(v: unknown): Portfolio['products'][number] {
