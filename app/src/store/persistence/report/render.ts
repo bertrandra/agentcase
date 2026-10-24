@@ -17,6 +17,12 @@ export const reportStyle = (): string => `body{font-family:${printTok('report-fo
 /** The customer logo above the title (a validated PNG / JPEG data URL; nothing when the case has none). */
 export const logoHtml = (l?: { src: string; alt: string }): string => (l ? `<p><img src="${esc(l.src)}" alt="${esc(l.alt)}" style="height:48px;max-width:240px;object-fit:contain"></p>` : '');
 
+/** The report is scriptless and loads nothing: its policy allows only its inline style and a data: logo (defence in depth, docs/ARCHITECTURE.md §9). */
+export const REPORT_POLICY = "default-src 'none'; style-src 'unsafe-inline'; img-src data:; base-uri 'none'; form-action 'none'";
+// built by a function so the bundled code holds no literal CSP meta (the single-file build would read it as a policy of the app page)
+const cspMeta = (policy: string): string => `<meta http-equiv="Content-Security-Policy" content="${policy}">`;
+export const REPORT_CSP = cspMeta(REPORT_POLICY);
+
 /** The standalone report page (six sections, same figures and wording as the legacy report). */
 export function renderReport(d: ReportData): string {
   const k = esc(d.context), cap = d.authorityCap, n = d.blocked.length;
@@ -25,7 +31,7 @@ export function renderReport(d: ReportData): string {
     ? `<table><tr><th>Artifact</th><th>Phase</th><th>Requires</th></tr>${d.blocked.slice(0, 40).map((a) => row([esc(a.name), esc(a.phase), esc(a.aiAuth)])).join('')}</table>`
       + (n > 40 ? `<p style="font-size:11px;color:${printTok('report-note')}">First 40 of ${n} artifacts shown.</p>` : '')
     : '';
-  return '<!DOCTYPE html><html><head><meta charset="utf-8">'
+  return '<!DOCTYPE html><html><head><meta charset="utf-8">' + REPORT_CSP
     + `<title>Critical &amp; Regulated Software Delivery — AgentCase ${esc(d.version)}</title><style>${reportStyle()}</style></head><body>`
     + logoHtml(d.logo) + '<h1>Critical &amp; Regulated Software Delivery Model</h1>'
     + `<p><span class="tag">AgentCase ${esc(d.version)}</span> <span class="tag">${esc(d.stamp)}</span> <span class="tag">Context: ${k}</span></p>`

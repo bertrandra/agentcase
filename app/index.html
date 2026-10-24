@@ -2,6 +2,9 @@
 <html lang="en">
   <head>
     <meta charset="utf-8" />
+    <!-- Content Security Policy: the single file loads nothing from the network (scripts, styles, fonts and images are inline or data:/blob:).
+         Kept first in <head>, before the inlined script. frame-ancestors cannot be set by a meta tag (docs/ARCHITECTURE.md §9). -->
+    <meta http-equiv="Content-Security-Policy" content="default-src 'none'; script-src 'unsafe-inline'; style-src 'unsafe-inline'; img-src data: blob:; font-src data:; connect-src 'none'; media-src data: blob:; base-uri 'none'; form-action 'none'" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <title>AgentCase %APP_VER_TAG% — Agentic Transformation Business Case</title>
   </head>
