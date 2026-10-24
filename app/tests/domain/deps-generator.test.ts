@@ -20,6 +20,7 @@ put('src/domain/y/index.ts', "/** @calc-zone y */\nexport { y } from './impl';\n
 put('src/domain/z.ts', "/** @calc-zone z */\nimport { y } from './y';\nexport type T = number;\nexport const z = y;\n");
 put('src/domain/shared.ts', '/** @calc-zone sh */\nexport const s = 0;\n');
 put('src/controllers/c.ts', "/** @calc-zone x */\nimport { b } from '@/domain/x';\nexport const set = b;\n");
+put('src/controllers/d.ts', "/** @calc-zone z */\nimport { y } from '@/domain/y/impl';\nexport const get = y;\n");
 put('src/ui/chrome/Frame.tsx', "import { z } from '@/domain/z';\nexport const F = z;\n");
 put('src/ui/sections/g.ts', "export const G = {\n  's-in': () => import('./g/in'),\n  's-out': () => import('./g/out'),\n  's-ref': () => import('./g/ref'),\n};\n");
 put('src/ui/sections/g/in/index.tsx', "import { set } from '@/controllers/c';\nimport { s } from '@/domain/shared';\nexport default () => set + s;\n");
@@ -33,10 +34,14 @@ const has = (a: string, b: string, k: string): number | undefined => d.edges.fin
 
 describe('dependency generator (synthetic project)', () => {
   it('flattens a barrel by symbol: y reads x through the barrel, z reads y; type-only imports are not edges', () => {
-    // impl.ts imports x, and the barrel y/index.ts re-exports x: a barrel keeps its re-export edges for whole-module (namespace) imports.
-    expect(has('x', 'y', 'z')).toBe(2);
+    // impl.ts imports x (1 pair); the pure barrel y/index.ts re-exports x but uses nothing: no zone edge (lot 4), its re-export edges stay for the tests' closure
+    expect(has('x', 'y', 'z')).toBe(1);
     expect(has('y', 'z', 'z')).toBe(1);
     expect(has('z', 'y', 'z')).toBeUndefined();
+  });
+  it('zone edges per layer: the domain graph holds only src/domain modules; a controller zone link is reported apart (outer)', () => {
+    expect(d.edges.filter((e) => e[2] === 'z')).toEqual([['x', 'y', 'z', 1], ['y', 'z', 'z', 1]]);
+    expect(d.outer).toEqual([['y', 'z', 'z', 1]]);
   });
   it('input sections write through controllers, result sections read; the ignore list and shared zones create no edge', () => {
     expect(has('s-in', 'x', 'w')).toBe(1);
@@ -55,6 +60,10 @@ describe('dependency generator (synthetic project)', () => {
     expect(t['tests/a.test.ts']).toEqual([['x', 'y'], []]);
     expect(t['tests/b.test.tsx']![0]).toEqual(['x', 'y', 'z']);
     expect(t['tests/b.test.tsx']![1]).toEqual(['s-out']);
+  });
+  it('a pure barrel still carries its re-exports for test selection', () => {
+    const t = Object.fromEntries(d.tests.map(([f, zs]) => [f, decodeSet(zs).map((i) => d.zones[i]!.id)]));
+    expect(t['tests/a.test.ts']).toEqual(['x', 'y']);
   });
   it('is deterministic', () => { expect(formatDeps(buildDeps(root))).toBe(formatDeps(d)); });
 });
@@ -77,5 +86,13 @@ describe('zone graph functions', () => {
     expect(l.order).toEqual(['a', 'b', 'c']);
     expect(l.feedback).toEqual([['c', 'b', 'z', 1]]);
     expect(l.layer).toEqual({ a: 0, b: 1, c: 2 });
+  });
+  it('an acyclic graph has a topological order with no feedback link, even when a result zone feeds a calc zone; lanes break the ties', () => {
+    const g: DepEdge[] = [['i', 'r', 'z', 1], ['r', 'k', 'z', 2], ['i', 'k', 'z', 1]], lanes = { i: 'input', k: 'calc', r: 'result', q: 'input' };
+    const l = buildLayers(['k', 'r', 'i', 'q'], g, lanes);
+    expect(l.order).toEqual(['i', 'q', 'r', 'k']);
+    expect(l.feedback).toEqual([]);
+    expect(l.layer).toEqual({ i: 0, q: 0, r: 1, k: 2 });
+    expect(cycles(['k', 'r', 'i', 'q'], g)).toEqual([]);
   });
 });

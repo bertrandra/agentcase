@@ -1,4 +1,4 @@
-/** @calc-zone adoption-curve */
+/** @calc-zone delivery-views */
 import type { Ctx } from '../ctx';
 import type { CurvePoint } from '../types/state';
 import { maturityBounds } from './automation';

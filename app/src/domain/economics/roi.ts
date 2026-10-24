@@ -1,10 +1,9 @@
-/** @calc-zone economics-headline @owner roi */
+/** @calc-zone economics-headline */
 /**
- * ROI / payback rules shared by every economics view (legacy v18.9 M-2/M-3). Pure, no formatting of money.
+ * ROI / payback presentation rules shared by every economics view (legacy v18.9 M-2/M-3). The ROI rule itself is the cash-flow kernel's
+ * `roiCanonical` (economics/cashflow.ts), re-exported here for the views. Pure, no formatting of money.
  */
-
-/** Net ROI as a ratio, or null when nothing was invested (setup <= 0) or the net is not finite. */
-export const roiCanonical = (net: number, setup: number): number | null => (setup > 0 && isFinite(net) ? net / setup : null);
+export { roiCanonical } from './cashflow';
 
 /** "123%" or "n/a" for a null ratio. */
 export const fmtRoiPct = (r: number | null): string => (r == null ? 'n/a' : `${Math.round(r * 100)}%`);

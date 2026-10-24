@@ -1,10 +1,10 @@
-/** @calc-zone economics-headline @owner total-benefit, net, payback-month, payback-year, npv */
+/** @calc-zone economics-headline @owner total-benefit, net, payback-year */
 import { caseDiscountRate, engineNow } from '../canonical';
 import type { Ctx } from '../ctx';
 import type { Engine } from '../time';
-import { roiCanonical } from './roi';
+import { roiCanonical } from './cashflow';
 
-/** The case's money headline, derived once from the Time Engine rows: every screen that prints net, ROI, payback or NPV reads this. */
+/** The case's money headline, derived once from the Time Engine rows (payback, NPV and ROI by the cash-flow kernel): every screen that prints net, ROI, payback or NPV reads this. */
 export interface Headline {
   /** sum of savings over the horizon */
   totalBenefit: number;

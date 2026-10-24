@@ -1,4 +1,4 @@
-/** @calc-zone verification-verdict */
+/** @calc-zone verification */
 import { tagMismatch } from '../refshare/deps';
 import { auditTry, type ConvCheck, type ConvRuntime } from './verifConvTypes';
 

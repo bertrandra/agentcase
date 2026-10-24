@@ -1,4 +1,4 @@
-/** @calc-zone workspace-config */
+/** @calc-zone verdict */
 import type { Ctx } from '../ctx';
 import { activeArtefacts } from '../scope';
 import inputDefaults from './inputDefaults.json';

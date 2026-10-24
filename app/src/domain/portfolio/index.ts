@@ -6,7 +6,7 @@ export { commonValue, overrideValue, isOverridden, setOverride, clearOverride, s
 export { validate, type Issue, type Validation } from './validate';
 export { scheduledProducts, unscheduledIds, productMonth0, keptMonths, type Scheduled } from './timeline';
 export { runOf, runStats, type ProductRun } from './run';
-export { MEASURES, productSeries, cumulative, byYear, type Measure, type Series, type ProductSeries } from './series';
+export { MEASURES, productSeries, byYear, type Measure, type Series, type ProductSeries } from './series';
 export { consolidate, type Consolidated } from './consolidate';
 export { summarize, yearTable, weightedVelocity, weightedAutomation, portfolioCostReduction, type Summary } from './headline';
 export { portfolioHeadline, waveHeadline, scopeHeadline, type PortfolioHeadline, type DisplayScope } from './portfolioHeadline';

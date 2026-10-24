@@ -1,4 +1,4 @@
-/** @calc-zone workspace-config */
+/** @calc-zone verdict */
 import { current } from 'immer';
 import { makeCtx } from '@/domain';
 import type { DdState, DdStatus } from '@/domain/pdc/dd';

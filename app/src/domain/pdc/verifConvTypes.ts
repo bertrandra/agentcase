@@ -1,4 +1,4 @@
-/** @calc-zone verification-verdict */
+/** @calc-zone verification */
 import type { Ctx } from '../ctx';
 import type { McsResult } from '../model/mcs';
 import type { DepEdges, DepSection } from '../refshare/deps';

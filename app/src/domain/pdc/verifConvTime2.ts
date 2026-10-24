@@ -1,6 +1,7 @@
-/** @calc-zone verification-verdict */
+/** @calc-zone verification */
 import { engineNow } from '../canonical';
 import type { Ctx } from '../ctx';
+import { DEFAULT_DISCOUNT_RATE } from '../economics/cashflow';
 import { activeCurve, model } from '../model/overlay';
 import { modelRaw } from '../model/raw';
 import { timeFor } from '../time';
@@ -40,8 +41,8 @@ export function timeChecksB(c: Ctx): ConvCheck[] {
     }),
     auditTry('TE-06b', () => {
       try {
-        const raw = modelRaw(c), full = engineNow(c), thin = thinFor(c, { curveModelId: activeCurve(c), model: raw }, 0.08);
-        if (Math.abs(thin.npv - full.npv(0.08)) > TOL) return `thin.npv ${thin.npv.toFixed(4)} != full.npv ${full.npv(0.08).toFixed(4)}`;
+        const raw = modelRaw(c), full = engineNow(c), thin = thinFor(c, { curveModelId: activeCurve(c), model: raw }, DEFAULT_DISCOUNT_RATE);
+        if (Math.abs(thin.npv - full.npv(DEFAULT_DISCOUNT_RATE)) > TOL) return `thin.npv ${thin.npv.toFixed(4)} != full.npv ${full.npv(DEFAULT_DISCOUNT_RATE).toFixed(4)}`;
         if (thin.payback !== full.payback()) return `thin.payback ${thin.payback} != full.payback ${full.payback()}`;
         for (let y = 1; y <= full.horizonYears; y++) {
           const t = thin.years[y - 1], f = full.year(y);
@@ -55,7 +56,7 @@ export function timeChecksB(c: Ctx): ConvCheck[] {
       try {
         const pkg = engineNow(c), fresh = engineNow(c);
         if (pkg.K.inputHash !== fresh.K.inputHash) return 'materialise inputHash != fresh engine inputHash';
-        const ph = pkg.headline(0.08), h = fresh.headline(0.08);
+        const ph = pkg.headline(DEFAULT_DISCOUNT_RATE), h = fresh.headline(DEFAULT_DISCOUNT_RATE);
         if (ph.payback !== h.payback || Math.abs(ph.npv - h.npv) > TOL) return `materialise headline (pb ${ph.payback}, npv ${Math.round(ph.npv)}) != fresh (pb ${h.payback}, npv ${Math.round(h.npv)})`;
         return pkg.months().length !== fresh.horizonMonths ? 'materialise monthly length mismatch' : null;
       } catch (e) { return fail('TE-12', e); }

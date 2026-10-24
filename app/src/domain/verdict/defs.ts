@@ -1,4 +1,4 @@
-/** @calc-zone verification-verdict */
+/** @calc-zone verdict */
 import type { CaseState } from '../types/state';
 
 export type Levers = { auto: number | null; y1: number | null; y2: number | null; y3: number | null; ceiling: number | null; setupF: number | null; runF: number | null };

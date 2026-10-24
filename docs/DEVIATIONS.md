@@ -26,10 +26,11 @@ Figures are the golden fixture unless stated. "Before" = the build at the start 
 | DEV-HEADER-MENU | header and top bar: title without subtitle, compact two-zone header, file menu, Show / Change, group bar without ☰ / persona |
 | DEV-KPI-BAR | KPI bar shows FTE before / after, saving over the horizon, velocity; NPV moved to Results / Financial |
 | DEV-UI-PARITY | cross-reference of `app/ui-parity-exceptions.json` (accessibility corrections, header decisions) |
-| DEV-COSTMODEL-PILOT | pilot cost is a memo outside the cost-model totals (current; lot 4 will include it) |
+| DEV-COSTMODEL-PILOT | the pilot cost is a dated line included in the cost-model totals (decision D4, lot 4); the app headline does not count it |
 | DEV-APP-SECTION-PERSONAS | Brand & theme cannot be removed from its personas (current; lot 7 will change it) |
 | DEV-THEME-SEQ-UNDO | known defect: a theme `seq` can be reissued after an undo (lot 3 fixes it) |
 | DEV-PF-GAPS | portfolio features not built: scenarios table, wave dependencies, shared teams, Wave-view histogram, per-draw truncation |
+| DEV-SNAPSHOT-RESTORE | the parallel run of the 107 case files: 2 legacy restore defects (bass / legacy curve), 1 fixed in the new build (File > Open… re-fit) |
 
 ## DEV-HEADLINE-OWNER — one economics headline
 
@@ -234,17 +235,25 @@ exception. Two kinds of entries, both cross-referenced here so that this file st
 
 A new deliberate visual difference is added to the JSON file AND described here (or in the entry of the feature that causes it).
 
-## DEV-COSTMODEL-PILOT — the pilot cost is a memo line outside the totals of the cost-model workbook
+## DEV-COSTMODEL-PILOT — the pilot cost is included in the totals of the cost-model workbook
 
-Current state (v20.2.0). The Cost model (monthly) workbook (`domain/portfolio/costModel*.ts`) shows the pilot sizing of 🧭 Program & Completeness
-(`tune/program` `pilotSizing`: team, duration, cost) as a **memo**: the line "Pilot (indicative sizing, not in the engine cost)" on **Other costs** carries the
-amount with no month values, and **Parameters** lists "Pilot cost (indicative, not in the engine cost)". It is **not** added to the monthly total, which must
-equal the engine total (the "Difference" row is 0), because the engine (and the legacy file) do not count the pilot in the setup or the run cost.
+Changed in lot 4 (user decision D4). The Cost model (monthly) workbook (`domain/portfolio/costModel*.ts`) now carries the pilot of 🧭 Program & Completeness
+(`tune/program` `pilotSizing`: team, duration = prove weeks + 2 weeks per break-in sprint, cost) as a **dated cost line** of each product,
+"**Pilot (included in totals)**" (group *Pilot* on **Other costs**): `pilotMonths` spreads the cost evenly over its weeks from the product's month 1
+(a month = 52 / 12 weeks, the last month pro rata; e.g. 3 FTE, 12 + 2 x 2 weeks = 16 weeks = 3.69 months: three full months and 69 % of a fourth).
 
+- **Totals**: the product TOTAL TO-BE COST (days x rate + other costs + pilot), the WAVE and PORTFOLIO totals ("... TOTAL TO-BE COST (pilot included)") are
+  the sums of their rows, the pilot included (live Excel SUM formulas).
+- **Reconciliation with the app**: the app's own headline (setup, run cost, net, ROI, payback, NPV) does **not** count the pilot (nor does the legacy file);
+  it is unchanged. So the check row is "Engine total + pilot" (AS-IS cost less net savings, plus the pilot months) and the "Difference (must be 0)" rows stay
+  0; over the horizon, AS-IS cost - TOTAL TO-BE COST = the app net benefit - the pilot. The note of the Other costs sheet says so, and **Parameters** lists
+  "Pilot cost (included in the cost-model totals, not in the engine cost)".
+- Before (v20.2.0 to v20.13.0): a memo line "Pilot (indicative sizing, not in the engine cost)" with the amount and no months, outside the totals.
 - Legacy: no cost-model workbook; the pilot is an indicative figure of the Program section only.
-- **Planned change (lot 4)**: include the pilot in the cost model as a dated cost (and state how it reconciles with the engine total). This entry will be
-  rewritten when it ships.
-- Files: `domain/portfolio/{costModelOther,costModelParams}.ts`; tests `tests/store/excel-costmodel.test.ts`.
+- A pilot longer than the calendar is cut at the horizon like every other line.
+- Files: `domain/tune/program.ts` (`pilotMonths`), `domain/portfolio/{costModelLines,costModelOther,costModelParams}.ts`, `store/persistence/excel/costmodel/index.ts`;
+  tests `tests/domain/portfolio/costModel.test.ts` (pilot months = the sizing, totals = sum of the rows including the pilot, reconciliation with the app net on
+  four fixtures, the 107 fixtures and the multi-product portfolios), `tests/store/excel-costmodel.test.ts`.
 
 ## DEV-APP-SECTION-PERSONAS — Brand & theme cannot be removed from the personas that show it
 
@@ -280,3 +289,22 @@ missing feature is not read as a bug. The authoritative list of known gaps is do
 | **Monte Carlo histogram in the Wave view** | the histogram is drawn for the Portfolio only; a Wave shows the statistics (P10 / P50 / P90, P(net<0), CVaR, diversification) without it | VUE_AGREGEE.md (stress group) |
 | **Per-draw horizon truncation** in the portfolio stress | not modelled: a product cut by the portfolio horizon is simulated on its own horizon; the deterministic consolidation does cut it (diagnostic `truncated`) | DEV-PF-STRESS (outcome of a draw) |
 
+## DEV-SNAPSHOT-RESTORE — opening the 107 case files: the legacy restore against the new build
+
+`tools/parallel-run.mjs` opens files in the legacy file (`applySnapshotState`) and in the built app (File > Open…) and compares six figures. On the 107 case
+files (`app/fixtures/cases/*.json`), 104 agreed and 3 differed until lot 4 (`node ../tools/parallel-run.mjs fixtures/cases/*.json` from `app/`). The oracle
+tests are not concerned: they drive the legacy *engine* through recipes, and the new engine equals them on all 107. Each difference, field by field:
+
+| Case | Fields of the case file that differ from `golden` | Legacy restore | New build | Who is right |
+|---|---|---|---|---|
+| `lifecycle-pos-0` | `lifecyclePos` 25 → 0, `dom.values.lcScopeSelect` / `lcScopePos` 25 → 0, `glassCeiling` 25 → 26 | re-fits the potential (`applyScopeAuto`): the scope at position 0 gives **74 %** (stored: 75 %); effective 62.9 % → 63 %, savings €788k, run €989k, NPV €1,212k | before lot 4, File > Open… (`controllers/files.ts`) did **not** re-fit (the snapshot panel did): 75 %, effective 63.75 % → 64 %, savings €796k, run €982k, NPV €1,222k | the legacy: **fixed** — every open path now goes through `openParsed` (re-fit). Now identical |
+| `curve-bass` | `scurve.family` spline → **bass**, `scurve.curve` → `bass.default` | the `scurve` setter of `STATE_REGISTRY` accepts only `logistic`, `gompertz`, `spline` (`if(v.family==='logistic' \|\| v.family==='gompertz' \|\| v.family==='spline')`): the bass family is dropped, the case reopens on the default spline = the golden figures (€892k / €886k / NPV €1,359k / 9 mo) | the bass curve is kept: €902k / €876k / NPV €1,339k / 10 mo = the oracle figures of the fixture | the new build (a legacy restore defect, MIGRATION_PLAN §15.4: "`bass` curve family not restored"); not restorable without changing the frozen legacy file |
+| `curve-legacy` | `scurve.family` → **legacy**, `scurve.curve` → `legacy.flatAnnual` | same setter: `legacy` is dropped too, golden figures | the legacy flat-annual curve is kept: €1,064k / €713k / NPV €1,700k / payback 1 mo = the oracle figures | the new build (same defect) |
+
+- After lot 4: **105 of 107 identical**, the 2 remaining differences are the two legacy defects above (they are not computed differently: the legacy simply
+  reopens another curve). The 40 parameters workbooks stay 40 / 40 identical.
+- Evidence of the legacy figures: measured in the legacy file with Playwright (`applySnapshotState(case)`, then `model()`, `npvCanonical()`,
+  `paybackMonthsCanonical()`): lifecycle-pos-0 gives potential 74, effective 62.9, NPV 1,212,009.6152358602, payback 9.
+- Tests: `tests/store/snapshot-restore-parity.test.ts` (File > Open… = snapshot panel on all 107 files; lifecycle-pos-0 re-fitted to 74 % with the legacy
+  restore figures, the stored case keeps the oracle figures; curve-bass / curve-legacy keep their family and the oracle figures, and the legacy setter
+  line is asserted verbatim in the legacy file, so a change on either side fails the test).

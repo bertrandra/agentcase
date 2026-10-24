@@ -23,12 +23,17 @@ export function refitOnOpen(doc: Doc): Doc {
  * The previous case stays one Ctrl+Z away. A damaged file opens corrected; the corrections are listed (`openNotes`).
  */
 export function openCaseText(text: string): CaseFileKind {
-  const { kind, raw } = parseCaseFile(text), opened = openChecked(raw);
-  const pf = refitPortfolio(opened.portfolio);
+  const { kind, raw } = parseCaseFile(text);
+  openParsed(raw);
+  return kind;
+}
+
+/** Open a parsed case or portfolio (every open path: snapshot panel, File menu, Save / open tab): checked, re-fitted, loaded as one undoable step. */
+export function openParsed(raw: unknown): void {
+  const opened = openChecked(raw), pf = refitPortfolio(opened.portfolio);
   appStore().load(pf, true);
   checkLoadedCase(raw, pf);
   setOpenNotes(opened.notes);
-  return kind;
 }
 
 export async function openCaseFile(file: { text(): Promise<string> }): Promise<CaseFileKind> { return openCaseText(await file.text()); }

@@ -10,7 +10,10 @@ export interface DepsData {
   /** per zone: tagged modules, and how many test files reach a module of the zone (median and worst module) */
   zones: { id: string; modules: number; tmed: number; tmax: number }[];
   sections: DepSectionNode[];
+  /** z: the domain zone graph (src/domain modules only); r / w: sections */
   edges: DepEdge[];
+  /** zone links made by the outer layers (controllers, store exports and hooks): reported apart, never part of the domain build order */
+  outer: DepEdge[];
   /** `consumers`: the sections that depend on the figure, an encoded set of indexes into `sections` (see `decodeSet`) */
   figures: { id: string; owner: string; consumers: string }[];
   ignored: { path: string; reason: string }[];
@@ -59,20 +62,21 @@ export function cycles(zones: string[], edges: DepEdge[]): string[][] {
 }
 
 /**
- * Build order of the zones. Cycles are real (a view module that reads the engine and is read back by an input zone), so the order is found with the
- * Eades-Lin-Smyth heuristic (sources first, sinks last, else the node with the largest out-minus-in weight); the links that point backwards in that
- * order are the `feedback` set. Layers are longest paths over the forward links. Ties are alphabetical: the result is stable.
+ * Build order of the zones: a topological order of the zone links (a zone comes after every zone it imports), the lane (input, calc, result) and then the
+ * name breaking ties, so the result is stable. The domain zone graph is acyclic (docs/ARCHITECTURE.md section 13); should a cycle come back, the order
+ * goes on with the zone of the largest out-minus-in weight (Eades-Lin-Smyth) and the links that then point backwards are the `feedback` set.
+ * Layers are longest paths over the forward links.
  */
 export function buildLayers(zones: string[], edges: DepEdge[], lanes: Record<string, string> = {}): { layer: Record<string, number>; order: string[]; feedback: DepEdge[] } {
-  const rank = (z: string): number => ['input', 'calc', 'result'].indexOf(lanes[z] ?? 'calc'), ze = edges.filter((e) => e[2] === 'z'), left = new Set(zones), head: string[] = [], tail: string[] = [];
-  const w = (z: string, dir: 0 | 1): number => ze.filter((e) => e[dir] === z && left.has(dir === 0 ? e[1] : e[0]) && e[0] !== e[1]).reduce((a, e) => a + e[3], 0);
+  const rank = (z: string): number => ['input', 'calc', 'result'].indexOf(lanes[z] ?? 'calc'), ze = edges.filter((e) => e[2] === 'z' && e[0] !== e[1]), left = new Set(zones), order: string[] = [];
+  const w = (z: string, dir: 0 | 1): number => ze.filter((e) => e[dir] === z && left.has(dir === 0 ? e[1] : e[0])).reduce((a, e) => a + e[3], 0);
+  const byLane = (a: string, b: string): number => rank(a) - rank(b) || a.localeCompare(b);
   while (left.size) {
-    const rest = [...left].sort(), sink = rest.find((z) => w(z, 0) === 0), src = rest.find((z) => w(z, 1) === 0);
-    const pick = sink ?? src ?? rest.reduce((b, z) => (w(z, 0) - w(z, 1) > w(b, 0) - w(b, 1) ? z : b));
-    left.delete(pick);
-    if (sink) tail.unshift(pick); else head.push(pick);
+    const rest = [...left].sort(byLane), ready = rest.find((z) => w(z, 1) === 0);
+    const pick = ready ?? rest.reduce((b, z) => (w(z, 0) - w(z, 1) > w(b, 0) - w(b, 1) ? z : b));
+    left.delete(pick); order.push(pick);
   }
-  const order = [...head, ...tail].sort((a, b) => rank(a) - rank(b)), pos = new Map(order.map((z, i) => [z, i])), feedback = ze.filter((e) => pos.get(e[0])! > pos.get(e[1])!);
+  const pos = new Map(order.map((z, i) => [z, i])), feedback = ze.filter((e) => pos.get(e[0])! > pos.get(e[1])!);
   const layer: Record<string, number> = {};
   for (const z of order) layer[z] = Math.max(-1, ...ze.filter((e) => e[1] === z && pos.get(e[0])! < pos.get(z)!).map((e) => layer[e[0]]!)) + 1;
   return { layer, order, feedback };

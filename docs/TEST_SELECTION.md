@@ -40,7 +40,8 @@ if any, and `M of T test files selected (saved X%)` with the share contributed b
 5. **Never skip the full suite** before a merge or a release, in CI on `main`, or after touching anything in step 2.
 
 Why the downstream zones and sections are printed but do not add tests: the import closure of a test is transitive, so a test that reaches a downstream module
-already reaches the changed one. On the real graph the zones form one cycle (see the Build order tab), so "downstream of any zone" would be every test.
+already reaches the changed one. Since lot 4 the domain zone graph is acyclic (zone links per layer, re-exports and pure barrels are not uses), but a zone low in
+the build order still feeds most of the others, so "downstream of the zone" would be most of the suite.
 The downstream list is the reading aid ("what do I touch"), the closure is the guarantee.
 
 `--level related` adds the tests `vitest related` selects. It follows every barrel file whole, so on this code base it selects about 90% of the files for any change
@@ -68,7 +69,13 @@ or output, restored afterwards, even on error), runs the full suite, and checks 
 file (recall must be 100%). It prints the recall and the average saving per mode. It takes tens of minutes and is not part of CI; run it after changing the
 generator, the tags or the rule. Results of the last run are in the changelog entry of the release that introduced the rule.
 
-**Last run (2026-10-23, 15 mutations, 10 checked, 5 select the full suite anyway):** precise 89.5% recall (17/19 failing files), zone 94.7% (18/19),
+**Last run (2026-10-24, lot 4, after the per-layer generator, the retagging and the split of verification / verdict): 19 mutations, 13 run, 6 select the full
+suite anyway** (`velocityUplift.ts`, `costReduction.ts`, `knowledge.ts`, `store/history.ts`, `time/years.ts`, `economics/cashflow.ts`, so their recall is trivial):
+**precise 100% recall (20/20 failing files), zone 100% (20/20)**, average saving 44% / 24% over the 19 modules. Four mutations were added for lot 4: the payback
+rule of the cash-flow kernel, the pilot months of the cost model (`tune/program.ts`), the retagged `model/flow.ts` and `pdc/verifTeam.ts`; all were caught by
+the selection. Run on a copy of the committed tree (`git archive`), `--maxWorkers=3`, about 2 h 10 min. No miss, so the selector is unchanged.
+
+**Previous run (2026-10-23, 15 mutations, 10 checked, 5 select the full suite anyway):** precise 89.5% recall (17/19 failing files), zone 94.7% (18/19),
 average saving 47% / 29%. Both misses were `tests/store/portfolio-controllers.test.ts`:
 * `domain/portfolio/waveOps.ts`: a real miss. `controllers/wave.ts` imports the `domain/portfolio` barrel as a namespace (`import * as ops`), and the
   generator dropped the barrel's re-export edges, so the closure stopped at the barrel. Fixed: a barrel now keeps edges to what it re-exports (named

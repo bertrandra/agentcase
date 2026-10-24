@@ -1,4 +1,4 @@
-/** @calc-zone verification-verdict */
+/** @calc-zone verification */
 import { makeCtx, type Ctx } from '../ctx';
 import { engagementCoef, engagementKey } from '../engagement';
 import { khTargetCC } from '../knowledge';
