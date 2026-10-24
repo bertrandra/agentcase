@@ -1,6 +1,6 @@
 import { useMemo } from 'react';
 import { savingsBreakdown, type SavingsYear } from '@/domain/economics';
-import { useCtx } from '@/store/hooks';
+import { useCtxSelector } from '@/store/hooks';
 import { fmtSigned } from '@/ui/economicsFormat';
 import { ChartPanel } from '@/ui/widgets/ChartPanel';
 import { Callout, Panel } from '@/ui/widgets/cards';
@@ -12,7 +12,7 @@ const dot = (c: string) => <span style={{ display: 'inline-block', width: 10, he
 
 /** Savings split into gross automation, agent operating cost and relocation (legacy savingsBreakdown), with the reconciliation line. */
 export function Decomp() {
-  const { tok } = useTheme(), ctx = useCtx(), b = useMemo(() => savingsBreakdown(ctx), [ctx]), cfg = useMemo(() => decompBars(b, tok), [b, tok]);
+  const { tok } = useTheme(), b = useCtxSelector(savingsBreakdown), cfg = useMemo(() => decompBars(b, tok), [b, tok]);
   const n = b.years.length, last = b.years[n - 1] as SavingsYear, cells = (f: (y: SavingsYear) => number) => b.years.map((y) => fmtSigned(f(y)));
   const rows = [
     { key: 'g', label: <>{dot('var(--ac-teal-700)')}Gross automation (heads removed × AS-IS rate)</>, cells: cells((y) => y.grossAuto) },

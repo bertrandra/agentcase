@@ -1,12 +1,10 @@
-import { useMemo } from 'react';
 import type { Ctx } from '@/domain';
-import { useCtx } from '@/store/hooks';
+import { useCtxSelector } from '@/store/hooks';
 import { DataTable } from '@/ui/widgets/DataTable';
 
-/** A view of the current case, recomputed only when the document changes. */
+/** A view of the current case, recomputed when the document changes; the component re-renders only when the view's content changes (a selector). */
 export function useView<T>(build: (c: Ctx) => T): T {
-  const c = useCtx();
-  return useMemo(() => build(c), [c, build]);
+  return useCtxSelector(build);
 }
 
 /** Legacy `.card.metric` tiles: label, value, sub-text. */
