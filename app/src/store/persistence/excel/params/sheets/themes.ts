@@ -7,12 +7,12 @@ import type { ParamsDoc, ReadCtx, SheetFamily, WriteCtx } from '../types';
 
 /**
  * Theme library (docs/THEME.md §8.5, no legacy equivalent): one row per setting of each user theme (name, description, `colour:<role>`,
- * `axis:<axis>`), plus the active theme and the last sequence id issued. Written only when the case has a user theme or uses another theme than the
+ * `axis:<axis>`, `generator:seed|contrast|harmony`), plus the active theme and the last sequence id issued. Written only when the case has a user theme or uses another theme than the
  * default one, so a default case exports the legacy sheet list unchanged; a workbook without the sheet leaves the case's library as it is.
  * The customer logo is not carried (an image does not fit a cell; it travels with the case JSON and the HTML snapshot).
  */
 const ACTIVE = 'Active theme', LAST = 'Last sequence id';
-type Raw = { name?: string; description?: string; colours: Record<string, string>; axes: Record<string, string> };
+type Raw = { name?: string; description?: string; colours: Record<string, string>; axes: Record<string, string>; generator?: Record<string, string> };
 
 export const themesToWrite = (d: ParamsDoc): boolean => userThemes(d).length > 0 || activeSeq(d) !== DEFAULT_SEQ;
 
@@ -27,6 +27,7 @@ function write({ wb, d }: WriteCtx): void {
     if (t.description) add([t.seq, t.name, 'description', t.description]);
     for (const [k, v] of Object.entries(t.colours)) add([t.seq, t.name, `colour:${k}`, v]);
     for (const [k, v] of Object.entries(t.axes)) add([t.seq, t.name, `axis:${k}`, String(v)]);
+    for (const [k, v] of Object.entries(t.generator ?? {})) add([t.seq, t.name, `generator:${k}`, typeof v === 'number' ? v : String(v)]);
   }
   head(ws); frz(ws);
 }
@@ -48,6 +49,7 @@ function read({ rows, w, notes }: ReadCtx): void {
     else if (setting === 'description') t.description = cleanText(value, 200);
     else if (kind === 'colour' && key) t.colours[key] = value;
     else if (kind === 'axis' && key) t.axes[key] = value;
+    else if (kind === 'generator' && key) (t.generator ??= {})[key] = value;
     else notes.push(`Themes: unknown setting "${cleanText(setting, 40)}" skipped.`);
   }
   const list = [...by.entries()].flatMap(([seq, raw]) => { const c = parseTheme(raw, notes, `Themes: theme ${seq}`); return c ? [{ seq, ...c }] : []; });

@@ -5,21 +5,24 @@
  */
 import { AXES, AXIS_NAMES, isAxisValue, type AxisName } from '@/domain/theme/axes';
 import { activeSeq, findTheme, isBuiltinSeq, nextSeq, uniqueName, userThemes, type ThemeContent } from '@/domain/theme/library';
+import { parseGenerator, type GeneratorSettings } from '@/domain/theme/generatorSettings';
+import { paletteFromSeed } from '@/domain/theme/palette';
 import { cleanName, isColourKey, MAX_USER_THEMES, normHex, type ColourKey, type ThemeDef } from '@/domain/theme/themeDef';
 import { defineCommand } from '@/store/commands';
 import { appStore } from '@/store/instance';
 import type { Doc } from '@/store/types';
 
 /** A stored user theme (what `doc.THEMES` holds). */
-type Stored = Pick<ThemeDef, 'seq' | 'name' | 'colours' | 'axes'> & { description?: string };
-const stored = (d: Doc): Stored[] => userThemes(d).map((t) => ({ seq: t.seq, name: t.name, ...(t.description ? { description: t.description } : {}), colours: { ...t.colours }, axes: { ...t.axes } }));
+type Stored = Pick<ThemeDef, 'seq' | 'name' | 'colours' | 'axes' | 'generator'> & { description?: string };
+const copy = (c: Omit<ThemeContent, 'name'>) => ({ ...(c.description ? { description: c.description } : {}), colours: { ...c.colours }, axes: { ...c.axes }, ...(c.generator ? { generator: { ...c.generator } } : {}) });
+const stored = (d: Doc): Stored[] => userThemes(d).map((t) => ({ seq: t.seq, name: t.name, ...copy(t) }));
 /** Add themes with fresh sequence ids (returns nothing when the library is full). */
 function append(d: Doc, items: ThemeContent[]): void {
   const list = stored(d);
   for (const c of items) {
     if (list.length >= MAX_USER_THEMES) break;
     const seq = nextSeq({ ...d, THEMES: list });
-    list.push({ seq, name: uniqueName({ THEMES: list }, c.name), ...(c.description ? { description: c.description } : {}), colours: { ...c.colours }, axes: { ...c.axes } });
+    list.push({ seq, name: uniqueName({ THEMES: list }, c.name), ...copy(c) });
     d.THEME_SEQ = seq;
   }
   d.THEMES = list;
@@ -38,7 +41,7 @@ const addCmd = defineCommand<{ name: string }>({
 });
 const duplicateCmd = defineCommand<{ seq: number }>({
   type: 'theme.duplicate', label: (p) => `Duplicate the theme ${p.seq}`,
-  run(d, p) { const src = findTheme(d, p.seq); if (src) append(d, [{ name: `${src.name} copy`, description: src.description, colours: src.colours, axes: src.axes }]); },
+  run(d, p) { const src = findTheme(d, p.seq); if (src) append(d, [{ ...src, name: `${src.name} copy` }]); },
 });
 const importCmd = defineCommand<{ themes: ThemeContent[] }>({
   type: 'theme.import', label: (p) => `Import ${p.themes.length} theme${p.themes.length === 1 ? '' : 's'}`,
@@ -72,6 +75,14 @@ const updateCmd = defineCommand<{ seq: number; patch: ThemePatch }>({
     });
   },
 });
+/** The one-colour palette generator (docs/THEME.md §8.9): every colour of the theme replaced by the generated palette, its settings kept; one step. */
+const generateCmd = defineCommand<{ seq: number; settings: GeneratorSettings }>({
+  type: 'theme.generate', label: (p) => `Generate palette from ${p.settings.seed} (contrast ${p.settings.contrast})`,
+  run(d, p) {
+    const g = parseGenerator(p.settings);
+    if (g) edit(d, p.seq, (t) => { t.colours = paletteFromSeed(g.seed, g); t.generator = g; });
+  },
+});
 const deleteCmd = defineCommand<{ seq: number }>({
   type: 'theme.delete', label: (p) => `Delete the theme ${p.seq}`,
   run(d, p) {
@@ -91,6 +102,7 @@ export const duplicateTheme = (seq: number): void => go(duplicateCmd, { seq });
 export const importThemes = (themes: ThemeContent[]): void => go(importCmd, { themes });
 export const renameTheme = (seq: number, name: string): void => go(renameCmd, { seq, name });
 export const updateTheme = (seq: number, patch: ThemePatch): void => go(updateCmd, { seq, patch });
+export const generatePalette = (seq: number, settings: GeneratorSettings): void => go(generateCmd, { seq, settings });
 export const deleteTheme = (seq: number): void => go(deleteCmd, { seq });
 export const activateTheme = (seq: number): void => go(activateCmd, { seq });
 /** The sequence id the last add / duplicate / import issued (the screen selects it). */
