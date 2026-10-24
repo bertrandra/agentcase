@@ -18,6 +18,12 @@ export const asPortfolio = (x: Doc | PortfolioDoc): PortfolioDoc => (isPortfolio
 /** The derived `doc` of the store: the active product's effective case (identity-stable while its inputs are, via the resolve memo). */
 export const deriveDoc = (pf: PortfolioDoc): Doc => resolveProduct(pf, pf.activeProductId) as Doc;
 
+/**
+ * THE CASE THE NEXT CASE COMMAND RUNS ON: the common case with "Change: All products" in a Portfolio / Wave view (`editsCommon`), else the active
+ * product's effective case. `runCommands` uses it, and so must any controller that reads the case to validate or label a command (`editBase()`).
+ */
+export const editBaseOf = (pf: PortfolioDoc): Doc => (editsCommon(pf) ? commonEditDoc(pf) : deriveDoc(pf));
+
 /** After an undo, redo or remote patch the active product may no longer exist: fall back to the first one (view state, no history). */
 export function normalizeActive(pf: PortfolioDoc): PortfolioDoc {
   if (pf.products.some((p) => p.id === pf.activeProductId)) return pf;
@@ -36,7 +42,7 @@ export function runCommands(pf: PortfolioDoc, cmds: Command[]): [PortfolioDoc, P
   return produceWithPatches(pf, (d) => {
     for (const c of cmds) {
       if (c.runPortfolio) { c.runPortfolio(d as PortfolioDoc, c.payload); continue; }
-      const cur = (isDraft(d) ? current(d) : d) as PortfolioDoc, common = editsCommon(cur), base = common ? commonEditDoc(cur) : deriveDoc(cur);
+      const cur = (isDraft(d) ? current(d) : d) as PortfolioDoc, common = editsCommon(cur), base = editBaseOf(cur);
       const [next, patches] = produceWithPatches(base, (x) => { c.run(x as Doc, c.payload); });
       if (patches.length) applyPatches(d, addressPatches(cur, base, next, patches, common ? 'common' : cur.editScope ?? 'all'));
     }

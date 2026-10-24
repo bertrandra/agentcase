@@ -12,6 +12,7 @@ const layers = [
   { type: 'entry', pattern: 'src/main.tsx', mode: 'file' },
 ];
 const allow = (from, to) => ({ from, allow: to });
+const EDIT_BASE = 'Controllers never read getState().doc (the active product\'s case): compute in the command\'s run(draft), or use editBase() / activeDoc() from @/store/editBase.';
 
 export default tseslint.config(
   { ignores: ['dist', 'node_modules', 'fixtures'] },
@@ -59,6 +60,24 @@ export default tseslint.config(
         { selector: "CallExpression[callee.property.name='reduce']", message: 'A8: portfolio figures are summed in domain/portfolio (consolidate, waves, headline), never in the UI or its hooks.' },
         { selector: "CallExpression[callee.property.name='reduceRight']", message: 'A8: portfolio figures are summed in domain/portfolio (consolidate, waves, headline), never in the UI or its hooks.' },
       ],
+    },
+  },
+  {
+    // EDIT BASE — a controller never reads the store's derived `doc` (the ACTIVE product's case): with "Change: All products" in a Portfolio / Wave view
+    // the commands run on the COMMON case, and a payload computed from the active product would leak its values into the common ones. Compute inside
+    // the command's `run(draft)`, or read `editBase()` (the case the command runs on) / `activeDoc()` (exports) from `@/store/editBase`.
+    files: ['src/controllers/**/*.{ts,tsx}'],
+    rules: {
+      'no-restricted-syntax': [
+        'error',
+        { selector: "JSXAttribute[name.name='dangerouslySetInnerHTML']", message: 'Never inject raw HTML (XSS surface of the legacy app).' },
+        { selector: "MemberExpression[property.name='doc'][object.type='CallExpression'][object.callee.property.name='getState']", message: EDIT_BASE },
+        { selector: "VariableDeclarator[init.callee.property.name='getState'] > ObjectPattern > Property[key.name='doc']", message: EDIT_BASE },
+      ],
+      'no-restricted-imports': ['error', { paths: [
+        { name: '@/store/hooks', message: 'Controllers are not React: read the case with editBase() / activeDoc() from @/store/editBase.' },
+        { name: '@/store/portfolioState', importNames: ['deriveDoc'], message: EDIT_BASE },
+      ] }],
     },
   },
   {

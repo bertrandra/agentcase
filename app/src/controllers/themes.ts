@@ -9,6 +9,7 @@ import { parseGenerator, type GeneratorSettings } from '@/domain/theme/generator
 import { paletteFromSeed } from '@/domain/theme/palette';
 import { cleanName, isColourKey, MAX_USER_THEMES, normHex, type ColourKey, type ThemeDef } from '@/domain/theme/themeDef';
 import { defineCommand } from '@/store/commands';
+import { editBase } from '@/store/editBase';
 import { appStore } from '@/store/instance';
 import type { Doc } from '@/store/types';
 
@@ -106,4 +107,4 @@ export const generatePalette = (seq: number, settings: GeneratorSettings): void 
 export const deleteTheme = (seq: number): void => go(deleteCmd, { seq });
 export const activateTheme = (seq: number): void => go(activateCmd, { seq });
 /** The sequence id the last add / duplicate / import issued (the screen selects it). */
-export const lastIssuedSeq = (): number => Number(appStore().getState().doc.THEME_SEQ) || 0;
+export const lastIssuedSeq = (): number => Number(editBase().THEME_SEQ) || 0;

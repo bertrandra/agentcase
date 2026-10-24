@@ -1,6 +1,7 @@
 /** @calc-zone exports */
 import { compareCases, makeSnapshot, snapshotsOf, SNAPSHOT_KEY, type CompareRow, type NamedSnapshot } from '@/domain/snapshots';
 import { defineCommand } from '@/store/commands';
+import { activeDoc, editBase } from '@/store/editBase';
 import { appStore } from '@/store/instance';
 import { fromSnapshot } from '@/store/persistence/snapshot';
 import type { Doc } from '@/store/types';
@@ -30,13 +31,14 @@ const baselineCmd = defineCommand<{ name: string; doc: Doc }>({
   type: 'snapshots.baseline', label: (p) => `Set snapshot "${p.name}" as baseline`, run: (d, p) => replaceDoc(d, p.doc),
 });
 
-const find = (id: string): NamedSnapshot | undefined => snapshotsOf(appStore().getState().doc).find((s) => s.id === id);
+/** The library the snapshot commands act on: the one of the case they run on (`editBase`). */
+const find = (id: string): NamedSnapshot | undefined => snapshotsOf(editBase()).find((s) => s.id === id);
 /** The stored case of a snapshot, opened like any case (fit-to-scope re-fit) but keeping the CURRENT library. */
 function caseOf(s: NamedSnapshot, library: unknown): Doc { return refitOnOpen({ ...fromSnapshot(s.state), [SNAPSHOT_KEY]: library } as Doc); }
 
 /** Capture the current case under a name (empty: "Snapshot <date>"). The library itself is not nested inside the capture. */
 export function captureSnapshot(name: string, now = new Date(), id = `snap-${now.getTime()}-${Math.random().toString(36).slice(2, 7)}`): NamedSnapshot {
-  const { doc, portfolio } = appStore().getState(), snap = makeSnapshot(doc, name, now, id), whole = capturePortfolio(portfolio);
+  const snap = makeSnapshot(activeDoc(), name, now, id), whole = capturePortfolio(appStore().getState().portfolio);   // a record of the active product's case
   if (whole) snap.portfolio = whole;   // multi-product: the whole portfolio, so activating restores products, waves, overrides and hub
   appStore().dispatch(captureCmd({ snap }));
   return snap;
@@ -46,7 +48,7 @@ export function deleteSnapshot(id: string): void { const s = find(id); if (s && 
 
 /** Make a snapshot the working case. One Ctrl+Z brings the previous case (and the library as it was) back. */
 export function activateSnapshot(id: string): boolean {
-  const s = find(id), cur = appStore().getState().doc;
+  const s = find(id), cur = editBase();
   if (!s) return false;
   if (s.portfolio) { if (!readableCapture(s)) return false; appStore().dispatch(activatePortfolio(s, cur[SNAPSHOT_KEY], false)); return true; }
   appStore().dispatch(activateCmd({ name: s.name, doc: caseOf(s, cur[SNAPSHOT_KEY]) }));
@@ -55,7 +57,7 @@ export function activateSnapshot(id: string): boolean {
 
 /** Flag a snapshot as the (single) baseline and activate it. The file on disk only changes when the HTML snapshot is saved afterwards. */
 export function setBaselineSnapshot(id: string): boolean {
-  const s = find(id), cur = appStore().getState().doc;
+  const s = find(id), cur = editBase();
   if (!s) return false;
   const flagged = snapshotsOf(cur).map((x) => ({ ...x, isBaseline: x.id === id }));
   if (s.portfolio) { if (!readableCapture(s)) return false; appStore().dispatch(activatePortfolio(s, flagged, true)); return true; }
@@ -66,7 +68,7 @@ export function setBaselineSnapshot(id: string): boolean {
 /** Headline figures of two snapshots side by side; 'current' stands for the case being edited (the ACTIVE product). A multi-product capture is compared on that same product. Null when an id is unknown. */
 export function compareSnapshots(a: string, b: string): CompareRow[] | null {
   const pick = (id: string): Doc | null => {
-    if (id === 'current') return appStore().getState().doc;
+    if (id === 'current') return activeDoc();
     const s = find(id);
     return s ? compareCaseOf(s, appStore().getState().portfolio.activeProductId, fromSnapshot) : null;
   };

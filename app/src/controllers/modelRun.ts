@@ -3,7 +3,7 @@ import { createStore } from 'zustand/vanilla';
 import { makeCtx } from '@/domain';
 import { mcsOf } from '@/domain/model/modelState';
 import { runMcs, type McsResult } from '@/domain/model/mcs';
-import { appStore } from '@/store/instance';
+import { activeDoc } from '@/store/editBase';
 
 /**
  * The last stochastic run (legacy MCS_LAST): session-only, never part of the case and never undoable, so it lives beside the
@@ -11,9 +11,9 @@ import { appStore } from '@/store/instance';
  */
 export const mcsRunStore = createStore<{ last: McsResult | null; running: boolean }>(() => ({ last: null, running: false }));
 
-/** Run the simulation on the current document (synchronous, ~1 s at the default 2 000 draws). Returns the elapsed milliseconds. */
+/** Run the simulation on the active product's case (`activeDoc`, like every result) (synchronous, ~1 s at the default 2 000 draws). Returns the elapsed milliseconds. */
 export function runMcsSync(minDraws = 100): number {
-  const t0 = Date.now(), doc = appStore().getState().doc, mc = mcsOf(doc.MODEL);
+  const t0 = Date.now(), doc = activeDoc(), mc = mcsOf(doc.MODEL);
   mcsRunStore.setState({ running: true });
   try {
     const last = runMcs(makeCtx(doc), Math.max(minDraws, mc.draws || 2000), mc.seed);
