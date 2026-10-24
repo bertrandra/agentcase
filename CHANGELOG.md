@@ -18,6 +18,7 @@ When releasing, follow [docs/BUMP_PROCEDURE.md](docs/BUMP_PROCEDURE.md) (§7 for
 ## [Unreleased]
 
 ### Changed
+- Top bar: Save and Open… move into a file menu opened by an icon-only 📁 button (menu button pattern: arrows, Home / End, Escape, click outside).
 - "Edit in place: All products" banner: the sentence naming whose team the figures use is removed (the context is already shown above).
 
 ## [v20.11.0] 2026-10-24 — Portfolio "Edit:" dropdown with in-place editing; top-bar icons
