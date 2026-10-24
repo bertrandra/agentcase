@@ -64,6 +64,16 @@ describe('architecture lint rules (G2, G4, edit base)', () => {
     expect(await lint(ok, 'src/controllers/Ok.ts')).toEqual([]);
     expect(await lint(`${head}export const x = () => appStore().getState().doc;\n`, 'src/store/Ok.ts')).not.toContain('no-restricted-syntax');
   });
+  it('D1: a line over 300 characters is an error whatever it holds; over 160 is a warning, long literals and URLs excepted', async () => {
+    const ids = (n: number) => `export const x = [${Array.from({ length: n }, (_, i) => `a${i}`).join(', ')}];\n`;   // code, no literal
+    expect(ids(60).length).toBeGreaterThan(300);
+    expect(await lint(ids(60), 'src/domain/Long.ts')).toContain('local/hard-max-len');
+    expect(await lint(ids(40), 'src/domain/Long.ts')).toEqual(expect.arrayContaining(['max-len']));
+    expect(await lint(ids(40), 'src/domain/Long.ts')).not.toContain('local/hard-max-len');
+    expect(await lint(`export const s = '${'word '.repeat(50)}';\n`, 'src/domain/Str.ts')).not.toContain('max-len');   // a long string: only the hard limit applies
+    expect(await lint(`export const s = '${'word '.repeat(70)}';\n`, 'src/domain/Str.ts')).toContain('local/hard-max-len');
+    expect(await lint(`// ${'x'.repeat(320)}\nexport const a = 1;\n`, 'src/domain/Comment.ts')).toContain('local/hard-max-len');   // comments count
+  });
   it('a 151-line file is rejected, raw HTML injection is rejected', async () => {
     expect(await lint(Array.from({ length: 151 }, (_, i) => `export const a${i} = ${i};`).join('\n') + '\n', 'src/domain/Big.ts')).toContain('max-lines');
     expect(await lint("export const X = () => <div dangerouslySetInnerHTML={{ __html: 'x' }} />;\n", 'src/ui/Raw.tsx')).toContain('no-restricted-syntax');
