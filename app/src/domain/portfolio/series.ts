@@ -22,13 +22,6 @@ export function addInto(acc: Series, s: Series): void {
   for (const m of MEASURES) { const a = acc[m], b = s[m]; for (let i = 0; i < a.length; i++) a[i]! += b[i]!; }
 }
 
-export function cumulative(a: number[]): number[] {
-  const out = new Array<number>(a.length);
-  let c = 0;
-  for (let i = 0; i < a.length; i++) { c += a[i]!; out[i] = c; }
-  return out;
-}
-
 /** Sum by blocks of 12 calendar months (the last block may be partial). */
 export function byYear(a: number[]): number[] {
   const out: number[] = [];

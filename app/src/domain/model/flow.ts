@@ -1,6 +1,7 @@
 /** @calc-zone time-engine */
 import { engineNow } from '../canonical';
 import type { Ctx } from '../ctx';
+import { DEFAULT_DISCOUNT_RATE, npvOf } from '../economics/cashflow';
 import { anchorClamp, daGet } from '../verifyB/anchors';
 import { perfRel } from '../verifyB/perf';
 import { rampAt } from '../time/adapters';
@@ -34,9 +35,9 @@ export function flowModel(c: Ctx) {
   const theta = ct.asis > 0 ? Math.max(0, (ct.asis - ct.ct) / ct.asis) : 0;
   const deltaTRaw = (ct.asis - ct.ct) / 30;
   const share = Math.max(0, Math.min(100, fl.throughputInShare || 0)) / 100, deltaTEff = deltaTRaw * share;
-  const margin = Math.max(0, fl.marginPerMonth || 0), d = Math.max(0, Math.min(1, numOr(fl.discountRate, 0.08)));
-  let npv = 0;
-  if (margin > 0 && deltaTEff !== 0) for (let mo = 1; mo <= m.horizon * 12; mo++) npv += (margin * deltaTEff) / Math.pow(1 + d, mo / 12);
+  const margin = Math.max(0, fl.marginPerMonth || 0), d = Math.max(0, Math.min(1, numOr(fl.discountRate, DEFAULT_DISCOUNT_RATE)));
+  // the time-to-market value: a constant monthly margin over the horizon, discounted with ANNUAL compounding (1 + d)^(month / 12) (legacy P5 rule)
+  const npv = margin > 0 && deltaTEff !== 0 ? npvOf(new Array<number>(m.horizon * 12).fill(margin * deltaTEff), d, 'annual') : 0;
   return {
     on: !!c.s.MODEL.FLAGS.flow, hasMargin: fl.marginPerMonth > 0, ctAsis: ct.asis, ctNew: ct.ct, ctSource: ct.source, throttle: ct.throttle, theta, wip,
     wipMeasured: fl.wip > 0 ? fl.wip : null, deltaTRaw, deltaTEff, share, margin, discountRate: d, flowNpv: npv,

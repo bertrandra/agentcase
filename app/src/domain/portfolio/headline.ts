@@ -1,8 +1,8 @@
 /** @calc-zone portfolio-consolidation */
 import { paybackYearOf, type Headline } from '../economics/headline';
-import { roiCanonical } from '../economics/roi';
+import { cashflowSummary, roiCanonical } from '../economics/cashflow';
 import type { ProductRun } from './run';
-import { byYear, cumulative, type Series } from './series';
+import { byYear, type Series } from './series';
 
 /** The money headline of any set of products (portfolio, wave, product) on the calendar axis, shaped like the single-case `Headline`. */
 export interface Summary extends Headline {
@@ -13,18 +13,13 @@ export interface Summary extends Headline {
 }
 
 /**
- * Same owners as a single case: ROI is `roiCanonical`, payback is the first month the cumulative cash is >= 0 (not before the first
- * movement, so a wave starting at month 7 does not "pay back" in month 1), NPV discounts each calendar month T by (1 + r/12)^T.
+ * Same owners as a single case, the cash-flow kernel (`economics/cashflow.ts`): ROI is `roiCanonical`, payback is the first month the cumulative cash
+ * is >= 0 (not before the first movement, so a wave starting at month 7 does not "pay back" in month 1), NPV discounts each calendar month T by (1 + r/12)^T.
  */
 export function summarize(s: Series, first: number, rate: number): Summary {
-  const sum = (a: number[]) => a.reduce((x, y) => x + y, 0), cum = cumulative(s.net), dr = rate / 12;
-  let paybackMonth: number | null = null, npv = 0;
-  for (let T = 1; T <= s.net.length; T++) {
-    if (paybackMonth === null && T >= first && (cum[T - 1] as number) >= 0) paybackMonth = T;
-    npv += (s.net[T - 1] as number) / Math.pow(1 + dr, T);
-  }
+  const sum = (a: number[]) => a.reduce((x, y) => x + y, 0), cf = cashflowSummary(s.net, { annualRate: rate, firstMonth: first });
   const setup = sum(s.setup), net = sum(s.net);
-  return { totalBenefit: sum(s.savings), setup, net, roi: roiCanonical(net, setup), paybackMonth, paybackYear: paybackYearOf(paybackMonth), npv, npvRate: rate, cum, first };
+  return { totalBenefit: sum(s.savings), setup, net, roi: roiCanonical(net, setup), paybackMonth: cf.paybackMonth, paybackYear: paybackYearOf(cf.paybackMonth), npv: cf.npv, npvRate: rate, cum: cf.cumulative, first };
 }
 
 /** Calendar-year sums of the consolidated flows; the last entry is the last horizon year. */

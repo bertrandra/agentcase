@@ -1,5 +1,6 @@
 /** @calc-zone verification-verdict */
 import { engineNow, npvCanonical, paybackMonthsCanonical } from '../canonical';
+import { cashflowSummary, DEFAULT_DISCOUNT_RATE } from '../economics/cashflow';
 import { headline } from '../economics/headline';
 import type { Ctx } from '../ctx';
 import { monthlySeries } from '../economics/monthlySeries';
@@ -30,10 +31,10 @@ function legacyYear(K: K, y: number) {
   return acc;
 }
 const legacyK = (c: Ctx) => buildK(c, modelRaw(c), { mode: 'legacy', curveModelId: 'legacy.flatAnnual' });
+/** Legacy-mode headline at the default 8 % (the legacy audit never read the case rate): the cash-flow kernel over the legacy months. */
 function legacyHeadline(K: K) {
-  let cum = 0, payback: number | null = null, npv = 0;
-  for (let t = 1; t <= K.horizonMonths; t++) { const n = legacyMonth(t, K).net; cum += n; if (payback === null && cum >= 0) payback = t; npv += n / Math.pow(1 + 0.08 / 12, t); }
-  return { payback, npv, y1: legacyYear(K, 1).savings };
+  const cf = cashflowSummary(Array.from({ length: K.horizonMonths }, (_, i) => legacyMonth(i + 1, K).net), { annualRate: DEFAULT_DISCOUNT_RATE });
+  return { payback: cf.paybackMonth, npv: cf.npv, y1: legacyYear(K, 1).savings };
 }
 
 /** Monthly Playback audits CC-MP-01..03 (playback series = the live engine's months; MP-03 reads `rt.playbackHorizon`, null while idle). */

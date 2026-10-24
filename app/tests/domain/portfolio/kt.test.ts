@@ -1,7 +1,7 @@
 import fc from 'fast-check';
 import { describe, expect, it } from 'vitest';
 import { MEASURES, consolidate, envelopeCase, validate, type Portfolio } from '@/domain/portfolio';
-import { cumulative } from '@/domain/portfolio/series';
+import { cumulativeOf as cumulative } from '@/domain/economics/cashflow';
 import { expectClose, expectSeriesClose, loadCase, shiftWaves } from '../../helpers/portfolio';
 
 /** golden (hub on) with its wave starting at `start`, the product preparing its KT `lead` months ahead. */
