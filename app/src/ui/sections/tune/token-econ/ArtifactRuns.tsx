@@ -17,8 +17,7 @@ export function ArtifactRuns() {
   ];
   return (
     <Panel title="📦 Agent runs by artifact (in-scope)">
-      <p className="ac-muted">Same agent executions, allocated to each in-scope artifact in proportion to its agent-execution intensity (effort × agent
-        supervision). Grouped by phase. Cost uses the blended €/1M; the totals match the by-model table above.</p>
+      <p className="ac-muted">Same agent executions, allocated to each in-scope artifact in proportion to its agent-execution intensity (effort × agent supervision). Grouped by phase. Cost uses the blended €/1M; the totals match the by-model table above.</p>
       <DataTable columns={columns} rows={[...t.rows, t.totals]} rowKey={(r) => r.key} empty="No artifact in scope." />
     </Panel>
   );

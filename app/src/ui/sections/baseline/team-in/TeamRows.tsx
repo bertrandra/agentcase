@@ -54,8 +54,7 @@ export function TeamRows({ c, W, openRow, onPin }: { c: Ctx; W: TeamWeights; ope
         <thead><tr>
           <th scope="col">Skill</th><th scope="col">Grade</th><th scope="col">Location</th><th scope="col">FTE</th>
           <th scope="col" title="FTE implied by the artefact mix (Σw of the row ÷ Σw of the scope × total FTE)">Implied</th>
-          <th scope="col">Day rate
-            (€/d)</th><th scope="col">Cost/yr</th><th scope="col" title="Pin this row to specific artefacts">Pin</th><th scope="col"><span className="ac-sr">Remove</span></th>
+          <th scope="col">Day rate (€/d)</th><th scope="col">Cost/yr</th><th scope="col" title="Pin this row to specific artefacts">Pin</th><th scope="col"><span className="ac-sr">Remove</span></th>
         </tr></thead>
         <tbody>{c.s.teamIn.map((r, i) => <Row key={i} r={r} i={i} c={c} W={W} open={openRow === i} onPin={onPin} />)}</tbody>
       </table>

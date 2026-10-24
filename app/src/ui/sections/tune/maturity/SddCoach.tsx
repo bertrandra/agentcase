@@ -43,8 +43,7 @@ export function CoachPanel() {
         <thead><tr><th>Autonomy tier</th><th className="ac-c">Phase</th><th>Mechanism</th></tr></thead>
         <tbody>{AUTONOMY_TIERS.map(([t, ph, m]) => <tr key={t}><td><strong>{t}</strong></td><td className="ac-c">{ph}</td><td>{m}</td></tr>)}</tbody>
       </table>
-      <Note>Reference 3.2/4.2: coaching starts at ~{k.y1}% of capacity and decays to ~{k.cruise}% at cruise as support is weaned (intensive → on-demand →
-        self-service → community). Costs are indicative (analytical) and overlap the HRI change model. CC-COACH-01.</Note>
+      <Note>Reference 3.2/4.2: coaching starts at ~{k.y1}% of capacity and decays to ~{k.cruise}% at cruise as support is weaned (intensive → on-demand → self-service → community). Costs are indicative (analytical) and overlap the HRI change model. CC-COACH-01.</Note>
     </Panel>
   );
 }

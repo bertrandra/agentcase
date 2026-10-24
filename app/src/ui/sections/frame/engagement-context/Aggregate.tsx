@@ -20,8 +20,7 @@ const COLS: AggColumn<EngagementRow>[] = [
   { key: 'rate', header: 'Discount rate', align: R, render: (r) => `${(r.discountRate * 100).toFixed(1)}%` },
 ];
 
-const help = <p>Aggregate view of the contractual frame (MSC / MSI / STA) of each product and the coefficients it implies. The last line counts the products
-  under each context and gives the range of the case discount rate.</p>;
+const help = <p>Aggregate view of the contractual frame (MSC / MSI / STA) of each product and the coefficients it implies. The last line counts the products under each context and gives the range of the case discount rate.</p>;
 
 /** Engagement context — Aggregate view: the contractual frame and coefficients of each product, the products per context and the discount-rate range. */
 export default function EngagementContextAggregate() {

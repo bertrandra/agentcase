@@ -8,8 +8,7 @@ import { ExcludedNote, VerifyTable } from '../aggregate/Rollup';
 
 const help = (
   <>
-    <p>The KPI scorecard of the <strong>selection</strong> (Portfolio or one Wave): the financial KPIs of the consolidated cash-flow, the capacity KPIs before
-      and after, and the ratios that do not add up (automation, ceiling, velocity) weighted by the entry team of each product.</p>
+    <p>The KPI scorecard of the <strong>selection</strong> (Portfolio or one Wave): the financial KPIs of the consolidated cash-flow, the capacity KPIs before and after, and the ratios that do not add up (automation, ceiling, velocity) weighted by the entry team of each product.</p>
     <p>Quality KPIs (test coverage, lead time) stay product by product. Choose a product in “Show” for the single-product scorecard.</p>
   </>
 );

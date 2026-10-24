@@ -26,8 +26,7 @@ export function QualityCard() {
       <div className="ac-form-row">
         <CoefInput coef="qualPremiumCap" domId="riskQualCap" label="Quality premium cap ×" step={0.05} />
         <CoefInput coef="qualBarFactor" domId="riskQualBarFactor" label="Decision-bar quality weight" step={0.05} />
-        <p className="ac-muted">Cap on the rework multiplier above, and how strongly it converts into the DI-bar penalty (capped at 0.15 pts). Also editable
-          from the Due-diligence register.</p>
+        <p className="ac-muted">Cap on the rework multiplier above, and how strongly it converts into the DI-bar penalty (capped at 0.15 pts). Also editable from the Due-diligence register.</p>
       </div>
       <table className="ac-table" style={{ maxWidth: 560 }}><tbody>
         {rows.map(([l, v, b]) => <tr key={l}><td>{l}</td><td style={{ textAlign: 'center' }}>{b ? <strong>{v}</strong> : v}</td></tr>)}

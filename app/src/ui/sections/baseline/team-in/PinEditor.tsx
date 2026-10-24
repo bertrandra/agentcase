@@ -17,8 +17,7 @@ export function PinEditor({ c, W, row, onClose }: { c: Ctx; W: TeamWeights; row:
   const blocks = phasesForScope().map((p) => ({ p, arts: act.filter((a) => a.phase === p.id && match(a)) })).filter((b) => b.arts.length);
   return (
     <Panel title={`📌 Pin line ${row + 1} — ${r.skill} (${r.grade}, ${r.loc})`}
-      aside={<span className="ac-muted">{live} artefact{live === 1 ? '' : 's'} pinned · Σw {(W.rowW[row] ?? 0).toFixed(1)} = {pct.toFixed(1)}% of scope →
-        implied {(W.impliedETP[row] ?? 0).toFixed(2)} FTE
+      aside={<span className="ac-muted">{live} artefact{live === 1 ? '' : 's'} pinned · Σw {(W.rowW[row] ?? 0).toFixed(1)} = {pct.toFixed(1)}% of scope → implied {(W.impliedETP[row] ?? 0).toFixed(2)} FTE
         {dead > 0 && ` · ${dead} pinned artefact${dead === 1 ? '' : 's'} currently out of scope (kept, inert)`}</span>}>
       <div className="ac-form-row">
         <button type="button" onClick={() => clearPins(row)}>Clear pins</button><button type="button" onClick={onClose}>Close</button>
@@ -40,8 +39,7 @@ export function PinEditor({ c, W, row, onClose }: { c: Ctx; W: TeamWeights; row:
                     <Badge tone={a.isReg ? 'amber' : 'blue'}>{a.isReg ? 'REG' : 'STD'}</Badge><code>{a.id}</code>
                     <span className="ac-grow">{a.name}{a.isReg && <small> · {a.norm}</small>}</span>
                     <small>w{(+a.w || 0).toFixed(1)} · {artTeamSkill(a, map)}</small>
-                    {owner != null && owner !== row && <small style={{ color: 'var(--ac-brick)' }}>pinned on
-                      line {owner + 1} ({c.s.teamIn[owner]?.skill})</small>}
+                    {owner != null && owner !== row && <small style={{ color: 'var(--ac-brick)' }}>pinned on line {owner + 1} ({c.s.teamIn[owner]?.skill})</small>}
                   </label>
                 );
               })}

@@ -23,8 +23,7 @@ export function TrackerTable({ plan, actuals }: { plan: PlannedQuarter[]; actual
     { key: 'sa', header: 'Savings actual (cum. €)', render: input('sav', 'Savings', 100, 1000) },
     { key: 'st', header: 'Status', render: (r, i) => {
       const a = act(i)?.ad;
-      return a == null ? '—' : a >= r.ad ? <span style={{ color: 'var(--ac-teal)' }}>▲ On/Ahead</span> : <span style={{ color: 'var(--ac-brick)' }}>▼
-        Behind</span>;
+      return a == null ? '—' : a >= r.ad ? <span style={{ color: 'var(--ac-teal)' }}>▲ On/Ahead</span> : <span style={{ color: 'var(--ac-brick)' }}>▼ Behind</span>;
     } },
   ];
   return <DataTable columns={columns} rows={plan} rowKey={(r) => r.label} />;

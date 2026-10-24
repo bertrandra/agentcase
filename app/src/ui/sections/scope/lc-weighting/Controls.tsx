@@ -26,8 +26,7 @@ export function Controls() {
         <label className="ac-field"><span className="ac-field-h">Or slide gradually between statuses:</span>
           <input type="range" min={0} max={100} value={s.lifecyclePos} aria-label="Lifecycle position" onChange={(e) => setLifecyclePos(+e.target.value)} /></label>
       </FieldNumber>
-      <p style={{ fontSize: 'var(--ac-font-size-md)', color: 'var(--ac-blue)', fontWeight: 'var(--ac-font-weight-semibold)' }}>Current
-        status: <span>{statusLabel(s)}</span></p>
+      <p style={{ fontSize: 'var(--ac-font-size-md)', color: 'var(--ac-blue)', fontWeight: 'var(--ac-font-weight-semibold)' }}>Current status: <span>{statusLabel(s)}</span></p>
     </div>
   );
 }

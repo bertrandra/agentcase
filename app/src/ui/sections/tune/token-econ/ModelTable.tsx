@@ -39,8 +39,7 @@ export function ModelTable() {
       <div className="ac-form-row">
         <button type="button" onClick={addTokenModel}>＋ Add model</button>
         <button type="button" onClick={resetTokenModels}>↺ Reset</button>
-        <span>Mix total : <strong style={{ color: ok ? 'var(--ac-teal-725)' : 'var(--ac-danger-700)' }}>{Math.round(t.mixSum)}%</strong> · Annual token cost
-          : <strong>{eur(t.costTot)} / yr ({L})</strong></span>
+        <span>Mix total : <strong style={{ color: ok ? 'var(--ac-teal-725)' : 'var(--ac-danger-700)' }}>{Math.round(t.mixSum)}%</strong> · Annual token cost : <strong>{eur(t.costTot)} / yr ({L})</strong></span>
       </div>
       <DataTable columns={columns} rows={t.rows} rowKey={(r) => String(r.index)} empty="No model: add one." />
     </Panel>

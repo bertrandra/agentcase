@@ -19,8 +19,7 @@ export function LogoPanel() {
   };
   return (
     <Panel title="🖼️ Customer logo">
-      <p className="ac-muted">For a presentation in the client&apos;s context: the logo appears in the title bar next to “AgentCase
-        for {customer || '<customer>'}”, in the HTML
+      <p className="ac-muted">For a presentation in the client&apos;s context: the logo appears in the title bar next to “AgentCase for {customer || '<customer>'}”, in the HTML
         report, the HTML snapshot and the results workbook. PNG, JPEG or SVG up to {LOGO_MAX_BYTES / 1024} KB (an SVG is converted to PNG).</p>
       <div className="ac-logo-actions">
         <button type="button" className="ac-btn" onClick={() => file.current?.click()}>{logo ? 'Replace the logo…' : 'Upload a logo…'}</button>
@@ -35,8 +34,7 @@ export function LogoPanel() {
               <option value="none">None</option><option value="pill">White pill (for dark headers and dark mode)</option>
             </select>
           </label>
-          <label className="ac-check"><input type="checkbox" checked={logo.hidden} onChange={(e) => setLogoOptions({ hidden: e.target.checked })} /> Hide the
-            logo (keep it in the case)</label>
+          <label className="ac-check"><input type="checkbox" checked={logo.hidden} onChange={(e) => setLogoOptions({ hidden: e.target.checked })} /> Hide the logo (keep it in the case)</label>
         </>
       )}
     </Panel>

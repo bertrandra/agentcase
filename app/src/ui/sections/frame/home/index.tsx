@@ -10,8 +10,7 @@ import type { Tok } from '@/domain/theme/resolve';
 
 const help = (
   <>
-    <p>The landing page: one card per <strong>menu group</strong> of the current persona, in the order the build sequence expects. It is a pure navigation
-      surface —
+    <p>The landing page: one card per <strong>menu group</strong> of the current persona, in the order the build sequence expects. It is a pure navigation surface —
       it reads the section catalogue and the persona’s assignments, and computes nothing.</p>
     <p>The count pill is the number of sections of that group active for the current persona. Clicking a card opens the first section of the group; a group with
       nothing assigned to the persona renders no card.</p>
@@ -29,8 +28,7 @@ export default function HomeSection() {
   const { tok } = useTheme();
   return (
     <SectionFrame title="🏠 Welcome to AgentCase" help={help}
-      input={<p className="ac-muted">Each card below opens a group of the case — start anywhere or work through them top to bottom, and the full menu is always
-        one click away on the left.</p>}
+      input={<p className="ac-muted">Each card below opens a group of the case — start anywhere or work through them top to bottom, and the full menu is always one click away on the left.</p>}
       result={
         <>
           <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit,minmax(280px,1fr))', gap: 16 }}>
@@ -53,8 +51,7 @@ export default function HomeSection() {
           <div style={{ marginTop: 16, borderLeft: '4px solid var(--ac-warning-300)', paddingLeft: 12, display: 'flex', justifyContent: 'space-between', alignItems: 'center', gap: 16, flexWrap: 'wrap' }}>
             <div>
               <strong>📖 Delivery-model glossary — {GLOSSARY_TERMS} terms now inside AgentCase</strong>
-              <div className="ac-muted">The complete vocabulary of the Software Engineering Delivery Model 2026, categorised and mapped term-by-term to this
-                tool.</div>
+              <div className="ac-muted">The complete vocabulary of the Software Engineering Delivery Model 2026, categorised and mapped term-by-term to this tool.</div>
             </div>
             <button type="button" onClick={() => goSection('glossary')}>Open the glossary →</button>
           </div>

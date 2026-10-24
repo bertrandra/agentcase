@@ -8,8 +8,7 @@ export function Durations() {
   const b = onboardingBand(useCtx());
   return (
     <Panel title="⏱️ Onboarding stage durations">
-      <p className="ac-muted">How long each client-facing stage runs, in weeks. They are consecutive: the transformation start date (set in 📊 S-curve) plus
-        these four stages gives the date the scale-out decision is taken.</p>
+      <p className="ac-muted">How long each client-facing stage runs, in weeks. They are consecutive: the transformation start date (set in 📊 S-curve) plus these four stages gives the date the scale-out decision is taken.</p>
       <div style={{ display: 'flex', gap: 14, flexWrap: 'wrap', alignItems: 'end' }}>
         <NumberInput id="rmD1" label="Discover (wk)" min={1} max={26} />
         <NumberInput id="rmD2" label="Calibrate (wk)" min={1} max={26} />

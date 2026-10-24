@@ -14,12 +14,10 @@ export function Program({ v }: { v: GanttView }) {
       {v.program.map((r) => <Row key={r.name} height={21} label={r.name} title={`${r.name} — ${r.meta}`}><ProgramBar r={r} /></Row>)}
       <div style={SUB}>Generated milestones — derived from the adoption model, not typed</div>
       <div style={{ display: 'flex', alignItems: 'flex-start', minHeight: 46 }}>
-        <div style={{ width: 260, flex: 'none', fontSize: 'var(--ac-font-size-sm)', paddingTop: 2 }}>🎯 Model
-          milestones <span style={{ color: 'var(--ac-neutral-700)', fontSize: 'var(--ac-font-size-2xs-plus)' }}>(engine-derived)</span></div>
+        <div style={{ width: 260, flex: 'none', fontSize: 'var(--ac-font-size-sm)', paddingTop: 2 }}>🎯 Model milestones <span style={{ color: 'var(--ac-neutral-700)', fontSize: 'var(--ac-font-size-2xs-plus)' }}>(engine-derived)</span></div>
         <div style={{ position: 'relative', flex: 1, minHeight: 46 }}>
           <div style={{ position: 'absolute', left: 0, right: 0, top: 4, borderTop: '1px dashed var(--ac-slate-200)' }} />
-          {v.markers.length === 0 && <div style={{ fontSize: 'var(--ac-font-size-xs)', color: 'var(--ac-neutral-700)', paddingTop: 4 }}>no crossings in
-            horizon</div>}
+          {v.markers.length === 0 && <div style={{ fontSize: 'var(--ac-font-size-xs)', color: 'var(--ac-neutral-700)', paddingTop: 4 }}>no crossings in horizon</div>}
           {v.markers.map((m) => {
             const col = FAMILY[m.family] ?? 'var(--ac-slate-650)';
             return (

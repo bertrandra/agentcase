@@ -43,18 +43,12 @@ export default function GanttSection() {
           <h2>Delivery timeline <small className="ac-muted">— one real calendar — transformation program + delivery rollout</small></h2>
           <Program v={v} />
           <Delivery v={v} />
-          <p className="ac-muted">One shared calendar, dates from the 🧭 AI Readiness roadmap. <strong>Program</strong> rows run in real time (incl. 🧠
-            Knowledge Hub build/setup + run when enabled).
-            <strong> Delivery rollout</strong> places every in-scope participant — phases <em>and</em> 🔶 Cross-cutting — on the same calendar in ramp-up (seq)
-              order, each sized by its own effort weight (w = effort × lifecycle)
-            and compressed as automation ramps — later work is shorter for the same weight (velocity ×1 → ×{gain}). <strong>Two participants sharing the same
-              seq number start together</strong> (a synchronised wave);
-            otherwise they overlap/pipeline by the % above. This is pipelining — different artefacts sitting in different phases at the same time, not a
-              shortcut through the work — so a full pass
-            (spec → … → verify, plus cross-cutting) for the in-scope backlog only actually completes at the 🏁 marker: <strong>that point is the
-              release</strong>.
-            Each row shows the translucent <em>activity</em> span and the solid <em>human-supervision</em> subset. ▶ expand a phase or 🔶 Cross-cutting for its
-              SDLC (📄) and regulatory (⚖️) artefacts —
+          <p className="ac-muted">One shared calendar, dates from the 🧭 AI Readiness roadmap. <strong>Program</strong> rows run in real time (incl. 🧠 Knowledge Hub build/setup + run when enabled).
+            <strong> Delivery rollout</strong> places every in-scope participant — phases <em>and</em> 🔶 Cross-cutting — on the same calendar in ramp-up (seq) order, each sized by its own effort weight (w = effort × lifecycle)
+            and compressed as automation ramps — later work is shorter for the same weight (velocity ×1 → ×{gain}). <strong>Two participants sharing the same seq number start together</strong> (a synchronised wave);
+            otherwise they overlap/pipeline by the % above. This is pipelining — different artefacts sitting in different phases at the same time, not a shortcut through the work — so a full pass
+            (spec → … → verify, plus cross-cutting) for the in-scope backlog only actually completes at the 🏁 marker: <strong>that point is the release</strong>.
+            Each row shows the translucent <em>activity</em> span and the solid <em>human-supervision</em> subset. ▶ expand a phase or 🔶 Cross-cutting for its SDLC (📄) and regulatory (⚖️) artefacts —
             the same seq-tie rule applies one level down: artefacts sharing a seq value also start together.</p>
         </section>
       </>} />

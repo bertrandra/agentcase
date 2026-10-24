@@ -16,8 +16,7 @@ export function HubResult() {
   ];
   return (
     <>
-      {h.locked && <Callout kind="error">🔒 Locked by the engagement context ({h.context}): a knowledge hub requires a managed service. Switch context in
-        Parameters to enable it.</Callout>}
+      {h.locked && <Callout kind="error">🔒 Locked by the engagement context ({h.context}): a knowledge hub requires a managed service. Switch context in Parameters to enable it.</Callout>}
       {h.clamped && <Callout kind="warn">⚠ Target clamped to CC{h.maxCC} by the {h.context} context (CC-KH-02).</Callout>}
       <StatRow>
         <Stat label="AS-IS level" value={`CC${h.asisCC} (${Math.round(h.asisScore)}/100)`} />
@@ -28,8 +27,7 @@ export function HubResult() {
       <table className="ac-table"><tbody>
         {rows.map(([l, v, col]) => <tr key={l}><td>{l}</td><td style={{ textAlign: 'center', fontWeight: 'var(--ac-font-weight-bold)', color: col }}>{v}</td></tr>)}
       </tbody></table>
-      <p className="ac-muted">CC-KH-01: the multiplier is capped by the regulatory ceiling headroom ({Math.round(h.effCap)} pts) — CC4 can never push
-        automation past compliance. A negative hub Δ is shown honestly (CC-KH-03), typically when the scope is small.</p>
+      <p className="ac-muted">CC-KH-01: the multiplier is capped by the regulatory ceiling headroom ({Math.round(h.effCap)} pts) — CC4 can never push automation past compliance. A negative hub Δ is shown honestly (CC-KH-03), typically when the scope is small.</p>
     </>
   );
 }

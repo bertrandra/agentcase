@@ -10,8 +10,7 @@ export function CrossCutting() {
   return (
     <div>
       <h3>🧩 Cross-cutting concerns</h3>
-      <p className="ac-muted">Independent of the industry — each adds its artifacts (with their own effort / automation / supervision) to the scope. Tick a
-        category then pick the norms below.</p>
+      <p className="ac-muted">Independent of the industry — each adds its artifacts (with their own effort / automation / supervision) to the scope. Tick a category then pick the norms below.</p>
       {CROSS_CATEGORIES.map((x) => {
         const on = crossOn(norms, x.code);
         return (

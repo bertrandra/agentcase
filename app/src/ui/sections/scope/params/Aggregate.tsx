@@ -17,8 +17,7 @@ const COLS: AggColumn<ScopeParamsRow>[] = [
   { key: 'eff', header: 'Effective automation', align: R, title: 'Potential × posture × context × hub, capped by the headroom 100 × (1 − ceiling)', render: (r) => pct(r.effective) },
 ];
 
-const help = <p>Aggregate view of the two levers that set how deep automation can go, product by product: the <strong>automation potential</strong> and
-  the <strong>glass ceiling</strong>. Nothing is typed here; the last line gives the lowest and highest value across the selection.</p>;
+const help = <p>Aggregate view of the two levers that set how deep automation can go, product by product: the <strong>automation potential</strong> and the <strong>glass ceiling</strong>. Nothing is typed here; the last line gives the lowest and highest value across the selection.</p>;
 
 /** Automation & Glass ceiling — Aggregate view: potential, ceiling and effective automation of each product, with the range across the selection. */
 export default function ParamsAggregate() {

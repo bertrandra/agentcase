@@ -26,8 +26,7 @@ function Editor({ id, name, saved }: { id: string; name: string; saved: Knowledg
   };
   return (
     <>
-      <p className="ac-muted">Domains kept for {name} (documentation, code, tickets, operating procedures, architecture decisions…). The weight spreads the
-        curation effort; it does not act on the multiplier, which is driven by the CC level. Weights must add up to 100%.</p>
+      <p className="ac-muted">Domains kept for {name} (documentation, code, tickets, operating procedures, architecture decisions…). The weight spreads the curation effort; it does not act on the multiplier, which is driven by the CC level. Weights must add up to 100%.</p>
       {rows.length > 0 && (
         <table className="ac-table">
           <caption className="ac-sr">Knowledge domains of {name}</caption>

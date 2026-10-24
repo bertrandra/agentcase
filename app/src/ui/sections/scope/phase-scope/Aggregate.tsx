@@ -6,8 +6,7 @@ import { Stat, StatRow } from '@/ui/widgets/cards';
 import { InputAggregate } from '../../aggregates/AggregateParts';
 
 const MARK = { all: 'in', some: 'partly', none: 'out' } as const;
-const help = <p>Aggregate view of the phase scope: for each product and each SDLC phase, whether the phase is in scope (in / partly / out), its share of the
-  effort after lifecycle weighting and its active artefacts. The last line counts the products that keep each phase.</p>;
+const help = <p>Aggregate view of the phase scope: for each product and each SDLC phase, whether the phase is in scope (in / partly / out), its share of the effort after lifecycle weighting and its active artefacts. The last line counts the products that keep each phase.</p>;
 
 /** Phase scope — Aggregate view: the phases each product keeps in or out of its scope, and how many products keep each phase. */
 export default function PhaseScopeAggregate() {

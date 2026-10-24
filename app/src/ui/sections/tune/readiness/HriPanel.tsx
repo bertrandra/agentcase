@@ -27,15 +27,12 @@ function Outcome() {
       <table className="ac-table">
         <tbody>
           <tr><td>Change intensity</td><td className="ac-c"><strong>{h.intensity}</strong></td></tr>
-          <tr><td>Change cost ({h.etp.toFixed(1)} AS-IS FTE ×
-            €{Math.round(h.costPerFte).toLocaleString('en-US')})</td><td className="ac-c"><strong>{fmtK(h.cost)}</strong></td></tr>
+          <tr><td>Change cost ({h.etp.toFixed(1)} AS-IS FTE × €{Math.round(h.costPerFte).toLocaleString('en-US')})</td><td className="ac-c"><strong>{fmtK(h.cost)}</strong></td></tr>
           <tr><td>Adoption drag on the S-curve</td><td className="ac-c"><strong>× {h.drag.toFixed(2)}</strong></td></tr>
-          <tr><td>Status in the
-            model</td><td className="ac-c"><strong style={{ color: h.on ? 'var(--ac-teal)' : 'var(--ac-muted)' }}>{h.on ? 'APPLIED (setup + ramp)' : 'informative only — enable above'}</strong></td></tr>
+          <tr><td>Status in the model</td><td className="ac-c"><strong style={{ color: h.on ? 'var(--ac-teal)' : 'var(--ac-muted)' }}>{h.on ? 'APPLIED (setup + ramp)' : 'informative only — enable above'}</strong></td></tr>
         </tbody>
       </table>
-      <Note>Referential mapping: leadership, fears, skills, champions/preceptorship, incentives, rituals. Raising the change intensity at low HRI is how the
-        model shows the ROI of change itself (CC-HRI-02).</Note>
+      <Note>Referential mapping: leadership, fears, skills, champions/preceptorship, incentives, rituals. Raising the change intensity at low HRI is how the model shows the ROI of change itself (CC-HRI-02).</Note>
     </div>
   );
 }
@@ -64,8 +61,7 @@ export function HriPanel() {
             <CoefInput coef="hriFloor" id="hriFloorCoef" label="Ramp floor" min={0} max={1} step={0.05} />
             <CoefInput coef="hriSlope" id="hriSlopeCoef" label="Ramp slope" min={0} step={0.05} />
           </div>
-          <Note>Drag = floor + slope × HRI/100. A zero-readiness org still realises &quot;floor&quot; of the ramp; &quot;slope&quot; is how much readiness buys
-            back. Also editable from the Due-diligence register.</Note>
+          <Note>Drag = floor + slope × HRI/100. A zero-readiness org still realises &quot;floor&quot; of the ramp; &quot;slope&quot; is how much readiness buys back. Also editable from the Due-diligence register.</Note>
         </div>
       </div>
     </Panel>

@@ -7,11 +7,9 @@ import { StatusTable } from './StatusTable';
 
 const help = (
   <>
-    <p>A greenfield build and a legacy system in maintenance do not spend their effort in the same places. The lifecycle position (0–100) re-weights the effort
-      of every SDLC phase
+    <p>A greenfield build and a legacy system in maintenance do not spend their effort in the same places. The lifecycle position (0–100) re-weights the effort of every SDLC phase
       (artefact weight = raw effort × lifecycle weight) and sets how automatable the resulting mix is (a global automation posture on the effective depth).</p>
-    <p>The position interpolates linearly between the two nearest statuses, so 37/100 is a genuine blend. Untick the switch and every weight and the posture
-      return to ×1.00.</p>
+    <p>The position interpolates linearly between the two nearest statuses, so 37/100 is a genuine blend. Untick the switch and every weight and the posture return to ×1.00.</p>
   </>
 );
 

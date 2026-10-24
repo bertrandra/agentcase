@@ -11,8 +11,7 @@ const help = (
     <p><strong>Adoption level</strong> = highest L whose adoption threshold the case’s adoption % has cleared; <strong>share level</strong> = highest L whose
       agent-vFTE-share threshold the agent share has cleared. <strong>Maturity level</strong> = min(adoption level, share level), then capped by the engagement
       context (MSC allows L4, MSI L3, STA L2).</p>
-    <p>Values are kept non-decreasing automatically; the label is free text and appears on maturity read-outs. Reset restores adoption 0/25/55/80 and agent
-      share 0/10/25/45.</p>
+    <p>Values are kept non-decreasing automatically; the label is free text and appears on maturity read-outs. Reset restores adoption 0/25/55/80 and agent share 0/10/25/45.</p>
   </>
 );
 
@@ -31,8 +30,7 @@ function ReachedLevel() {
 export default function MaturityMapSection() {
   return (
     <SectionFrame title="📐 Maturity levels (L1–L4)" help={help}
-      input={<><p>Edit the thresholds below and every L1–L4 marker and maturity read-out across the app follows — one source of truth. A level is the lower of
-        the two axes (adoption and agent share); the engagement context can still cap the reachable level.</p><LevelTable /></>}
+      input={<><p>Edit the thresholds below and every L1–L4 marker and maturity read-out across the app follows — one source of truth. A level is the lower of the two axes (adoption and agent share); the engagement context can still cap the reachable level.</p><LevelTable /></>}
       result={<ReachedLevel />} />
   );
 }

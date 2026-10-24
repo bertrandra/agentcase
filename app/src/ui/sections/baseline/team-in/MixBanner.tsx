@@ -10,8 +10,7 @@ export function MixBanner({ c, W }: { c: Ctx; W: TeamWeights }) {
     return (
       <Callout kind="error">
         <strong>Unstaffed scope weight — {(100 - covered).toFixed(1)}%</strong>
-        <p>This effort is <em>not</em> redistributed over the other lines and it does not shrink them: it simply has nobody on it. At the team’s current
-          intensity, staffing it would take about <strong>+{W.fteToFullScope.toFixed(1)} FTE</strong>.
+        <p>This effort is <em>not</em> redistributed over the other lines and it does not shrink them: it simply has nobody on it. At the team’s current intensity, staffing it would take about <strong>+{W.fteToFullScope.toFixed(1)} FTE</strong>.
           Pinning a line makes it <strong>dedicated</strong> — it stops drawing from its skill’s auto pool.</p>
         <ul>
           {Object.keys(W.unassigned).sort().map((ts) => {
@@ -30,8 +29,7 @@ export function MixBanner({ c, W }: { c: Ctx; W: TeamWeights }) {
   return (
     <Callout>
       <strong style={{ color: 'var(--ac-teal)' }}>100% of the scope weight is assigned.</strong>
-      {pct > 0.05 ? <> <b style={{ color: 'var(--ac-brick)' }}>{pct.toFixed(1)}% pinned</b> · {(100 - pct).toFixed(1)}% auto
-        pool.</> : ' Entirely auto pool (no pinning).'}{' '}
+      {pct > 0.05 ? <> <b style={{ color: 'var(--ac-brick)' }}>{pct.toFixed(1)}% pinned</b> · {(100 - pct).toFixed(1)}% auto pool.</> : ' Entirely auto pool (no pinning).'}{' '}
       Σw = {W.totW.toFixed(1)} over {activeArtefacts(c.a, c.s).length} active artefacts.
     </Callout>
   );

@@ -30,8 +30,7 @@ export function IpCard() {
     <Panel title="IP · confidentiality · sovereignty synthesis" aside={<Badge tone="blue">EV-26</Badge>}>
       <p>Current engagement context: <strong>{key}</strong>.</p>
       <table className="ac-table"><tbody>{labels.map((l, i) => <tr key={l}><th scope="row">{l}</th><td>{rows[i]}</td></tr>)}</tbody></table>
-      <Note>Reference 5.3: purely AI-generated code has uncertain protection; never send confidential context to an unmastered model; partition by context.
-        Exported in the Critical &amp; Regulated report. CC-IP-01.</Note>
+      <Note>Reference 5.3: purely AI-generated code has uncertain protection; never send confidential context to an unmastered model; partition by context. Exported in the Critical &amp; Regulated report. CC-IP-01.</Note>
     </Panel>
   );
 }
@@ -72,8 +71,7 @@ export function CacheCard() {
         <Stat label="$/dev-day (cached, same model)" value={`~$${k.cached}`} tone="blue" />
         <Stat label="$/dev-day (cached, best model)" value={`~$${k.best}`} tone="blue" />
       </StatRow>
-      <p>The goal is the lowest <strong>total</strong> cost (tokens + human review), not the lowest token bill: a better model at 5× the token price can cut
-        rework enough to land near ~$30/dev-day. Prompt caching removes up to ~90% of repeated input cost.</p>
+      <p>The goal is the lowest <strong>total</strong> cost (tokens + human review), not the lowest token bill: a better model at 5× the token price can cut rework enough to land near ~$30/dev-day. Prompt caching removes up to ~90% of repeated input cost.</p>
       <Note>Reference 6.2: analytical — pairs with the Token economics tab. CC-CACHE-01.</Note>
     </Panel>
   );

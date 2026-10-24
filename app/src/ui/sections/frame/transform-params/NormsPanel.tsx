@@ -31,15 +31,12 @@ export function NormsPanel() {
       {none ? <em style={{ color: 'var(--ac-brick)' }}>Pick an industry above to see its applicable norms.</em> : <NormList code={code} />}
       <OverrideBadge refKey="selectedNorms" label="Selected norms" />
       <p>In scope: <strong>{none ? 0 : count}</strong> regulatory artifacts</p>
-      {!none && count > 0 && <p style={{ color: 'var(--ac-teal)' }}>Weighted glass ceiling from selection: <strong>{Math.round(ceiling)}%</strong> (mean human
-        sup. on {count} artifacts)</p>}
+      {!none && count > 0 && <p style={{ color: 'var(--ac-teal)' }}>Weighted glass ceiling from selection: <strong>{Math.round(ceiling)}%</strong> (mean human sup. on {count} artifacts)</p>}
       <FieldToggle label="Include reg. artifacts in effort & runs (else glass ceiling only)" checked={!!include} onChange={setRegInclude}>
-        <label className="ac-check"><input type="checkbox" checked={!!include} onChange={(e) => setRegInclude(e.target.checked)} /> Include reg. artifacts in
-          effort &amp; runs (else glass ceiling only)</label>
+        <label className="ac-check"><input type="checkbox" checked={!!include} onChange={(e) => setRegInclude(e.target.checked)} /> Include reg. artifacts in effort &amp; runs (else glass ceiling only)</label>
       </FieldToggle>
       <OverrideBadge refKey="regInclude" label="Regulatory inclusion" />
-      <p><button type="button" disabled title="The standalone report export is not migrated yet (Phase 6) — use the legacy app">📄 Export Critical &amp;
-        Regulated report</button></p>
+      <p><button type="button" disabled title="The standalone report export is not migrated yet (Phase 6) — use the legacy app">📄 Export Critical &amp; Regulated report</button></p>
     </div>
   );
 }

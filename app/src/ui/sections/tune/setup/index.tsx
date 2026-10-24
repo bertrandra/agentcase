@@ -12,10 +12,8 @@ import { SetupChart } from './SetupChart';
 const help = (
   <>
     <p>The one-off seed investment to stand up the agentic capability: tooling, training, coaching, governance. It is the denominator of the ROI.</p>
-    <p>Setup total = tooling + training + coaching + governance (+ the HRI change cost and the Knowledge hub setup when those modules are on), spread linearly
-      over the first 6 months of the cash flow.
-      The setup duration shapes the Gantt bar only, not the cash profile. Recurring costs (tokens, infrastructure, run team, hub curation) never belong
-        here.</p>
+    <p>Setup total = tooling + training + coaching + governance (+ the HRI change cost and the Knowledge hub setup when those modules are on), spread linearly over the first 6 months of the cash flow.
+      The setup duration shapes the Gantt bar only, not the cash profile. Recurring costs (tokens, infrastructure, run team, hub curation) never belong here.</p>
   </>
 );
 

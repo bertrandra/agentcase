@@ -8,8 +8,7 @@ export function Roadmap() {
   const stages = roadmapStages(useCtx(), new Date());
   return (
     <Panel title="🗺️ Engagement roadmap & gates">
-      <p className="ac-muted">The five gated stages on the calendar, from the start date. Each card shows its window and the gate that must clear before the
-        next stage opens — click a stage to jump to the section that produces its evidence.</p>
+      <p className="ac-muted">The five gated stages on the calendar, from the start date. Each card shows its window and the gate that must clear before the next stage opens — click a stage to jump to the section that produces its evidence.</p>
       <div style={{ display: 'flex', gap: 8, flexWrap: 'wrap' }}>
         {stages.map((s) => (
           <button key={s.name} type="button" onClick={() => goSection(s.section)} aria-current={s.current ? 'step' : undefined}
