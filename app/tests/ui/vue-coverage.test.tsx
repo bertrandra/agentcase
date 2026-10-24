@@ -11,7 +11,7 @@ vi.mock('@/ui/widgets/ChartPanel', async () => import('../helpers/chartStub'));
 
 /** What each kind says in its banner (the View selector decides the rest of the sentence). */
 const BANNER: Record<SectionKind, RegExp> = {
-  'R-conso': /Calculated on/, 'R-rollup': /Calculated on/, 'I-input': /Editing/, 'S-static': /Independent of the view/, 'P-portfolio': /Portfolio level/,
+  'R-conso': /Calculated on/, 'R-rollup': /Calculated on/, 'I-input': /Changing/, 'S-static': /Independent of the view/, 'P-portfolio': /Portfolio level/,
 };
 let waves: [string, string];
 beforeEach(() => { ({ waves } = threeProducts()); });
