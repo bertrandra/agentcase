@@ -36,3 +36,14 @@ export function resolveProduct(p: Portfolio, productId: string): CaseState {
   const prod = p.products[i] as Product;
   return resolveWith(p, prod, p.hub.infraAllocation === 'byBaseEtp' ? (infraShares(p)[i] as number) : p.hub.infraMonthly);
 }
+
+const commons = new WeakMap<object, unknown>();
+const NO_LAYER = { overrides: {}, knowledge: {} };
+/**
+ * The case every product inherits (what "Edit: All products" shows in a Portfolio / Wave view): the common values with the hub layer (activation,
+ * full infrastructure) and no override nor knowledge subset. A case needs an entry team, never common: `teamIn` is the given product's. Memoised.
+ */
+export function resolveCommon(p: Portfolio, teamIn: Product['teamIn']): CaseState {
+  return memoChain(commons, [p.common, teamIn], `${p.hub.enabled}|${p.hub.infraMonthly}`,
+    () => mergeCase(p.common, { id: '', name: '', waveId: null, offsetMonths: 0, teamIn, ...NO_LAYER }, p.hub.enabled, p.hub.infraMonthly));
+}

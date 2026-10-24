@@ -54,3 +54,15 @@ export const setProductNote = (id: string, note: string): boolean => dispatchChe
 export const setProductOffset = (id: string, months: number): boolean => dispatchChecked(offsetCmd({ id, months }));
 export const setActiveProduct = (id: string): boolean => dispatchChecked(activeCmd({ id }));
 export const setEditScope = (scope: EditScope): boolean => dispatchChecked(scopeCmd({ scope }));
+
+/**
+ * The top-bar "Edit" dropdown: 'all' = All products (shared data goes to the common values; the entry team stays the active product's), or a product
+ * id = that product becomes the active one and its edits create overrides ("<name> only"). View state: no undo step; the View is left as it is.
+ * True when something changed; false for an unknown product or the current choice.
+ */
+export function chooseEditTarget(target: string): boolean {
+  if (target === 'all') return setEditScope('all');
+  if (!appStore().getState().portfolio.products.some((p) => p.id === target)) return false;
+  const moved = setActiveProduct(target);
+  return setEditScope('product') || moved;
+}

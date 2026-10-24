@@ -2,6 +2,8 @@
 import * as ops from '@/domain/portfolio';
 import type { KnowledgeSubset } from '@/domain/portfolio';
 import { definePortfolioCommand } from '@/store/commands';
+import { subsetFieldOfRef } from '@/store/commonEdit';
+import { appStore } from '@/store/instance';
 import type { PortfolioDoc } from '@/store/types';
 import { dispatchChecked } from './portfolioGuard';
 
@@ -36,3 +38,10 @@ export const applyOverrideToCommon = (id: string, ref: string): boolean => dispa
  * to 100, `targetCC` in [0, 4], `ktLeadMonths` >= 0, nine maturity answers in [0, 4]: otherwise nothing changes and false is returned.
  */
 export const setProductKnowledge = (id: string, patch: KnowledgeSubset, clear: (keyof KnowledgeSubset)[] = []): boolean => dispatchChecked(knowledgeCmd({ id, patch, clear }));
+
+/** "Reset to common" from the common editor: the product drops its own value at `ref` (an override, or the matching knowledge-subset field). Undoable. */
+export function resetToCommon(id: string, ref: string): boolean {
+  const f = subsetFieldOfRef(ref), prod = appStore().getState().portfolio.products.find((p) => p.id === id);
+  if (f && prod?.knowledge[f] !== undefined) return setProductKnowledge(id, {}, [f]);
+  return clearProductOverride(id, ref);
+}
