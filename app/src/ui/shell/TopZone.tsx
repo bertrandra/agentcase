@@ -38,10 +38,10 @@ export function TopZone() {
         <label className="ac-fastpath" title="Fast Path: filter the menu to the minimum-viable-path sections plus Welcome. Untick to restore the full menu.">
           <input type="checkbox" checked={fastPath} onChange={(e) => setFastPath(e.target.checked)} /> Fast Path
         </label>
-        <button type="button" disabled={!h.canUndo} onClick={() => runHistory('undo')} title={h.undo.at(-1)?.label ?? 'Nothing to undo'} aria-label="Undo">↶ Undo</button>
-        <button type="button" disabled={!h.canRedo} onClick={() => runHistory('redo')} title={h.redo.at(-1)?.label ?? 'Nothing to redo'} aria-label="Redo">↷ Redo</button>
-        <button type="button" onClick={save}>Save</button>
-        <button type="button" onClick={() => file.current?.click()}>Open…</button>
+        <button type="button" disabled={!h.canUndo} onClick={() => runHistory('undo')} title={h.undo.at(-1)?.label ?? 'Nothing to undo'} aria-label="Undo">↶</button>
+        <button type="button" disabled={!h.canRedo} onClick={() => runHistory('redo')} title={h.redo.at(-1)?.label ?? 'Nothing to redo'} aria-label="Redo">↷</button>
+        <button type="button" title="Save the case as a JSON file" onClick={save}><span aria-hidden="true">💾</span> <span>Save</span></button>
+        <button type="button" title="Open a case JSON file" onClick={() => file.current?.click()}><span aria-hidden="true">📂</span> <span>Open…</span></button>
         <input ref={file} type="file" accept="application/json,.json" hidden onChange={(e) => { void open(e.target.files?.[0]); e.target.value = ''; }} />
         <DisplayMenu />
       </div>

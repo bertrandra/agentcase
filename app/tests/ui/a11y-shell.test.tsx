@@ -71,10 +71,10 @@ describe('guided sequence and group bar', () => {
     expect(bar.getByRole('button', { name: 'Exit the sequence' })).toBeTruthy();
     expect(bar.getAllByRole('button').filter((b) => b.getAttribute('aria-current') === 'step').length).toBeGreaterThan(0);
   });
-  it('the hide-menu group bar is a named navigation with named selects and a named welcome button', () => {
+  it('the hide-menu group bar is a named navigation with a named group select and a named welcome button (menu toggle and persona stay in the top bar)', () => {
     render(<App />);
     const nav = within(screen.getByRole('navigation', { name: 'Group navigation' }));
-    expect(nav.getByLabelText('Switch persona')).toBeTruthy();
+    expect(nav.queryByLabelText('Switch persona')).toBeNull();
     expect(nav.getByLabelText('Group')).toBeTruthy();
     expect(nav.getByRole('button', { name: 'Welcome' })).toBeTruthy();
   });

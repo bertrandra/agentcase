@@ -13,8 +13,8 @@ import { freshStore } from '../store/helpers';
 
 beforeEach(() => { freshStore(); uiStore.setState({ activeSection: 'home', toast: '', dockOpen: false }); });
 afterEach(cleanup);
-/** The default persona opens with the sidebar hidden (its "hide menu" flag): bring the full menu back, as the user does with ☰ Menu. */
-const openMenu = () => { const b = screen.queryByRole('button', { name: '☰ Menu' }); if (b) fireEvent.click(b); };
+/** The default persona opens with the sidebar hidden (its "hide menu" flag): bring the full menu back, as the user does with the ☰ toggle of the top bar. */
+const openMenu = () => { const b = screen.queryByRole('button', { name: 'Toggle the sidebar menu' }); if (b?.getAttribute('aria-pressed') === 'false') fireEvent.click(b); };
 const kpi = (label: string) => screen.getByText(label).parentElement!.querySelector('.ac-kpi-v')!.textContent;
 
 describe('shell zones', () => {

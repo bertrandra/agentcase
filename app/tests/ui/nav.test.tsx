@@ -22,7 +22,7 @@ const APP = new Set(APP_SECTIONS.map((s) => s.id));
 const ids = (nav: HTMLElement) => [...nav.querySelectorAll<HTMLElement>('[data-section]')].map((b) => b.dataset.section).filter((id) => !APP.has(id!));
 const heads = (nav: HTMLElement) => [...nav.querySelectorAll('h2')].map((h) => h.querySelector('span')?.textContent);
 const navEl = () => screen.getByRole('navigation', { name: 'Sections' });
-const menu = () => { const b = screen.queryByRole('button', { name: '☰ Menu' }); if (b) fireEvent.click(b); };
+const menu = () => { const b = screen.queryByRole('button', { name: 'Toggle the sidebar menu' }); if (b?.getAttribute('aria-pressed') === 'false') fireEvent.click(b); };
 
 describe('the sidebar follows the document', () => {
   it.each(NAV_FIXTURES)('renders the legacy groups and sections, in order, for every persona (%s)', (id) => {
@@ -108,13 +108,15 @@ describe('dynamic sections', () => {
 });
 
 describe('hide menu (per persona) and the group bar', () => {
-  it('the persona flag collapses the sidebar into the group bar; ☰ Menu / Hide menu toggle; the flag is live', () => {
+  it('the persona flag collapses the sidebar into the group bar; the top-bar ☰ toggles it; the flag is live', () => {
     loadCase('golden');
     render(<App />);
     expect(screen.queryByRole('navigation', { name: 'Sections' })).toBeNull();
     const bar = within(screen.getByRole('navigation', { name: 'Group navigation' }));
     expect(bar.getByLabelText('Group')).toBeTruthy();
-    fireEvent.click(bar.getByRole('button', { name: '☰ Menu' }));
+    expect(bar.queryByRole('button', { name: /Menu/ })).toBeNull();
+    expect(bar.queryByLabelText('Switch persona')).toBeNull();
+    fireEvent.click(screen.getByRole('button', { name: 'Toggle the sidebar menu' }));
     expect(navEl()).toBeTruthy();
     fireEvent.click(screen.getByRole('button', { name: 'Toggle the sidebar menu' }));
     expect(screen.queryByRole('navigation', { name: 'Sections' })).toBeNull();

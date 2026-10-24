@@ -1,12 +1,10 @@
 import { groupBar, firstOfGroup } from '@/domain/nav/groupBar';
-import { rescueFocus } from '../focusRescue';
-import { goSection, toggleMenuHidden, useUi } from '../uiState';
+import { goSection, useUi } from '../uiState';
 import { useNavModel } from '../zones/navModel';
-import { switchPersona } from './personaSwitch';
 
 /**
- * Hide-menu mode (legacy renderGroupNavBar): with the sidebar collapsed, this bar above the section offers ☰ Menu, the persona, Welcome, the
- * groups the persona can reach and the open group's sections — as buttons or as tabs (SECTION_NAV_STYLE). Hidden during a guided walk.
+ * Hide-menu mode (legacy renderGroupNavBar): with the sidebar collapsed, this bar above the section offers Welcome, the
+ * groups the persona can reach and the open group's sections — as buttons or as tabs (SECTION_NAV_STYLE). Hidden during a guided walk. The ☰ menu toggle and the persona picker live in the top bar only (no duplicate here).
  */
 export function GroupNavBar() {
   const m = useNavModel(), active = useUi((s) => s.activeSection), hidden = useUi((s) => s.menuHidden), walking = useUi((s) => s.wiz.active);
@@ -15,11 +13,6 @@ export function GroupNavBar() {
   const pickGroup = (id: string) => { const target = firstOfGroup(m.persona, id, m.visible, m.lists); if (target) goSection(target); };
   return (
     <div className="ac-gnav" role="navigation" aria-label="Group navigation">
-      <button type="button" className="ac-btn" onClick={() => { toggleMenuHidden(); rescueFocus(() => document.querySelector<HTMLElement>('.ac-nav [aria-current=page]')); }} title="Show the full sidebar menu">☰ Menu</button>
-      <select aria-label="Switch persona" value={m.persona} onChange={(e) => switchPersona(e.target.value, m.landing(e.target.value))}>
-        {m.personas.map((p) => <option key={p.id} value={p.id}>{p.label}</option>)}
-      </select>
-      <div className="ac-gnav-break" />
       <button type="button" className={`ac-btn${active === 'home' ? ' is-active' : ''}`} aria-label="Welcome" title="Welcome" onClick={() => goSection('home')}>🏠</button>
       <select aria-label="Group" value={bar.selected} onChange={(e) => pickGroup(e.target.value)}>
         {bar.groups.map((g) => <option key={g.id} value={g.id}>{g.label}</option>)}
