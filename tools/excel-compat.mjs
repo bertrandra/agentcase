@@ -15,7 +15,7 @@ const require = createRequire(import.meta.url), appReq = createRequire(resolve('
 const pw = require(process.env.PW_MODULE || '/opt/node-tools/node_modules/playwright');
 const args = process.argv.slice(2);
 const file = resolve(args.find((a) => a.endsWith('.html')) || readdirSync('.').filter((f) => /^AgentCase_v[\d_]+_EN\.html$/.test(f)).sort((a, b) => a.localeCompare(b, undefined, { numeric: true })).pop());
-const only = (args[args.indexOf('--only') + 1] || '').split(',').filter(Boolean);
+const only = args.includes('--only') ? (args[args.indexOf('--only') + 1] || '').split(',').filter(Boolean) : [];
 const ids = only.length ? only : EXCEL_FIXTURES;
 
 // ---- our modules, loaded as TypeScript through vite's SSR loader
@@ -23,11 +23,12 @@ const { createServer } = await import(pathToFileURL(resolve('app/node_modules/vi
 const vite = await createServer({ root: resolve('app'), server: { middlewareMode: true }, appType: 'custom', logLevel: 'error', optimizeDeps: { noDiscovery: true, include: [] } });
 const load = (p) => vite.ssrLoadModule(p);
 const P = await load('/src/store/persistence/excel/params/index.ts'), A = await load('/src/store/persistence/excel/params/apply.ts');
-const { SECTIONS } = await load('/src/ui/zones/registry.ts'), { fromSnapshot } = await load('/src/store/persistence/snapshot.ts');
+const { LEGACY_SECTIONS } = await load('/src/ui/zones/registry.ts'), { fromSnapshot } = await load('/src/store/persistence/snapshot.ts');
 const { THEME_DEFAULT } = await load('/src/domain/theme/index.ts');   // the print theme of the exports (the default look)
+const { BUILTIN_PERSONAS } = await load('/src/domain/nav/structures.ts');
 const { makeDefaultDoc } = await load('/src/store/instance.ts'), { refitPotential } = await load('/src/store/derive.ts'), { computeCase } = await load('/src/domain/index.ts');
 const { produce } = appReq('immer'), ExcelJS = appReq('exceljs');
-const ENV = { sections: SECTIONS };
+const ENV = { sections: LEGACY_SECTIONS };   // the 79 case sections, as the app's own export (ParamsExcelPanel): the legacy file knows no other
 
 const canon = (v) => JSON.stringify(v, (_k, x) => (x && typeof x === 'object' && !Array.isArray(x) ? Object.fromEntries(Object.entries(x).filter(([, y]) => y !== undefined).sort(([a], [b]) => (a < b ? -1 : 1))) : x));
 /** Legacy drops the production flag of the environments on import; ours keeps it (documented difference). */
@@ -68,14 +69,30 @@ async function legacyImport(bytes) {
   await page.close();
   return res;
 }
+/**
+ * The default case as the legacy app shipped it (the pristine page the legacy import runs on), as `tests/helpers/excelParams.ts` freshDoc:
+ * without the built-in personas added since (Business journey, DEV-MENU-STRUCTURES), which a workbook without the persona sheets
+ * would otherwise show as a difference of the base, not of the import.
+ */
+function legacyPristineDoc() {
+  const d = makeDefaultDoc(), ids = new Set(BUILTIN_PERSONAS.map((p) => p.id));
+  d.PERSONAS = d.PERSONAS.filter((p) => !ids.has(p.id));
+  d.PERSONA_SECTIONS = Object.fromEntries(Object.entries(d.PERSONA_SECTIONS).filter(([k]) => !ids.has(k)));
+  return d;
+}
 /** Our reader on the pristine case, applied the way the import command does. */
 async function ourImport(bytes) {
-  const base = makeDefaultDoc(), { patch, notes } = await P.readParamsWorkbook(bytes, base, ENV);
+  const base = legacyPristineDoc(), { patch, notes } = await P.readParamsWorkbook(bytes, base, ENV);
   return { notes, doc: produce(base, (d) => { A.applyParamsPatch(d, patch); }) };
 }
+/**
+ * Keys outside the comparison: the save time, our schema stamp, and `currentPersona` — the persona is view state of the tab here (D3,
+ * `store/persona.ts`), never a key of the case; the legacy snapshot carries the pristine page's persona, which no import touches.
+ */
+const SKIP_KEYS = new Set(['savedAt', '_schema', 'currentPersona']);
 function compare(label, leg, ours) {
   const problems = [], keys = new Set([...Object.keys(leg.state), ...Object.keys(ours.doc)]);
-  for (const k of keys) if (k !== 'savedAt' && k !== '_schema' && canon(norm(k, leg.state[k])) !== canon(norm(k, ours.doc[k]))) problems.push(`state key ${k}`);
+  for (const k of keys) if (!SKIP_KEYS.has(k) && canon(norm(k, leg.state[k])) !== canon(norm(k, ours.doc[k]))) problems.push(`state key ${k}`);
   // the two notes below are ours alone: the legacy page applied those columns to constants it never saved, here they are reported as reference-only
   ours.notes = ours.notes.filter((n) => !/^(Agent Catalog|Loop Pairs): /.test(n));
   if (canon(leg.notes) !== canon(ours.notes)) problems.push(`notes: legacy ${JSON.stringify(leg.notes)} vs ours ${JSON.stringify(ours.notes)}`);
