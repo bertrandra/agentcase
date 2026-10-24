@@ -6,7 +6,7 @@ import { compareByProduct, productCtx, scenarioByProduct, sensitivityByProduct }
 import { compareData, fmtK, fmtPayback, fmtSigned, roiText, scenarioSet } from '@/domain/stress';
 import { freshStore } from '../store/helpers';
 import { threeProducts } from '../helpers/portfolioStore';
-import { mountApp, pf, sectionReady } from '../helpers/portfolioUi';
+import { LAZY, mountApp, pf, sectionReady } from '../helpers/portfolioUi';
 import { banner, bodyRows, expectShown, openDrill, planned, rowOf, totalOf, view } from '../helpers/vueAgg';
 
 vi.mock('@/ui/widgets/ChartPanel', async () => import('../helpers/chartStub'));
@@ -88,7 +88,7 @@ describe.each(SPECS)('stress aggregate: $id', (s) => {
     await sectionReady(s.title);
     expect(document.querySelectorAll('[data-readonly]')).toHaveLength(0);
     const region = await openDrill(name(ids[1])), d = s.drill(ids[1]);
-    expect((await within(region).findAllByText(d.caption)).length).toBeGreaterThan(0);
+    expect((await within(region).findAllByText(d.caption, undefined, LAZY)).length).toBeGreaterThan(0);
     expectShown(region, d.shown);
     expect(document.querySelectorAll('[data-readonly]')).toHaveLength(1);
     expect(pf().activeProductId).toBe(ids[0]);

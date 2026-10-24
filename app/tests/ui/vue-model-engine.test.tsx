@@ -14,7 +14,7 @@ import { fmtEurOrNA as fmtEur, fmtEurK } from '@/ui/format';
 import { pfSimStore } from '@/store/portfolioSimulation';
 import { freshStore } from '../store/helpers';
 import { threeProducts } from '../helpers/portfolioStore';
-import { mountApp, pf, sectionReady } from '../helpers/portfolioUi';
+import { LAZY, mountApp, pf, sectionReady } from '../helpers/portfolioUi';
 import { banner, bodyRows, expectShown, openDrill, planned, rowOf, text, totalOf, view } from '../helpers/vueAgg';
 
 vi.mock('@/ui/widgets/ChartPanel', async () => import('../helpers/chartStub'));
@@ -105,7 +105,7 @@ describe.each(SPECS)('model-engine aggregate: $id', (s) => {
     mountApp(s.id); view('portfolio');
     await sectionReady(s.title);
     const region = await openDrill(name(ids[1]));
-    expect((await within(region).findAllByText(s.drill.caption)).length).toBeGreaterThan(0);
+    expect((await within(region).findAllByText(s.drill.caption, undefined, LAZY)).length).toBeGreaterThan(0);
     expectShown(region, s.drill.shown(ids[1]));
     expect(document.querySelectorAll('[data-readonly]')).toHaveLength(1);
     expect(pf().activeProductId).toBe(ids[0]);

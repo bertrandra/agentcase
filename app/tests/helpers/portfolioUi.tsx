@@ -10,8 +10,13 @@ export function mountApp(section = 'home'): void {
   render(<App />);
   act(() => setPersona('advanced'));
 }
+/**
+ * Wait budget for content behind `React.lazy` (a section, a drill-down): its module is transformed on first import, which on a loaded run (CI, the full
+ * suite in parallel) takes longer than the 1 s default of `findBy*`. The test's own timeout still bounds the wait; a missing element still fails.
+ */
+export const LAZY = { timeout: 15000 } as const;
 /** Wait for the lazy section (its single h1) to render. */
-export const sectionReady = (title: RegExp | string) => screen.findByRole('heading', { level: 1, name: title }, { timeout: 15000 });
+export const sectionReady = (title: RegExp | string) => screen.findByRole('heading', { level: 1, name: title }, LAZY);
 export const pf = () => appStore().getState().portfolio;
 /** The figure of a KPI tile of the headline bar. */
 export const kpi = (label: RegExp): string => screen.getAllByText(label).find((e) => e.classList.contains('ac-kpi-l'))!.parentElement!.querySelector('.ac-kpi-v')!.textContent ?? '';

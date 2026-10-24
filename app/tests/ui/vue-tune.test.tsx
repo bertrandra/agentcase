@@ -11,7 +11,7 @@ import { fmtEurK } from '@/ui/format';
 import { eur, eurK, fix } from '@/ui/sections/tuneB/fmt';
 import { freshStore } from '../store/helpers';
 import { openPortfolioFixture } from '../helpers/portfolioFixtures';
-import { mountApp, pf, sectionReady } from '../helpers/portfolioUi';
+import { LAZY, mountApp, pf, sectionReady } from '../helpers/portfolioUi';
 
 vi.mock('@/ui/widgets/ChartPanel', async () => import('../helpers/chartStub'));
 
@@ -120,7 +120,7 @@ describe.each(CASES)('$id: Portfolio and each Wave show the domain figures', (k)
       fireEvent.click(screen.getByRole('button', { name: /Product 1$/, expanded: false }));
       const region = await screen.findByRole('region', { name: 'Detail: Product 1' });
       expect(document.querySelectorAll('[data-readonly]')).toHaveLength(1);
-      await waitFor(() => expect(region.textContent).toContain(k.drill!(ids[0]!, corePortfolio(pf()))));
+      await waitFor(() => expect(region.textContent).toContain(k.drill!(ids[0]!, corePortfolio(pf()))), LAZY);
       expect(document.querySelectorAll('h1')).toHaveLength(1);
       expect(pf().activeProductId).toBe(active.id);
     });

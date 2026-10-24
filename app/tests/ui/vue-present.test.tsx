@@ -7,7 +7,7 @@ import { CM_DEFS } from '@/domain/pdc/commercial';
 import { fmt1, fmtK } from '@/ui/economicsFormat';
 import { fmtMonths } from '@/ui/format';
 import { threeProducts } from '../helpers/portfolioStore';
-import { mountApp, pf, sectionReady } from '../helpers/portfolioUi';
+import { LAZY, mountApp, pf, sectionReady } from '../helpers/portfolioUi';
 import { bodyRows, table, totalRow, view } from '../helpers/vueEPV';
 
 vi.mock('@/ui/widgets/ChartPanel', async () => import('../helpers/chartStub'));
@@ -89,7 +89,7 @@ describe('Present > Commercial model: roll-up view', () => {
     fireEvent.click(screen.getByRole('button', { name: /B$/, expanded: false }));
     const region = await screen.findByRole('region', { name: 'Detail: B' });
     const b = aggregateCommercial(pf(), consolidate(pf()), { kind: 'portfolio' })!.rows.find((r) => r.id === ids[1])!;
-    expect((await within(region).findByRole('table')).textContent).toContain(fmtK(b.row.revenue));
+    expect((await within(region).findByRole('table', undefined, LAZY)).textContent).toContain(fmtK(b.row.revenue));
     expect(document.querySelectorAll('[data-readonly]')).toHaveLength(1);
     expect(document.querySelectorAll('h1')).toHaveLength(1);
     fireEvent.click(within(region.closest('li')!).getByRole('button', { name: 'Edit this product: B' }));
