@@ -27,7 +27,8 @@ export function ChartPanel(p: ChartProps) {
 }
 
 interface ChartProps { config: ChartConfiguration; label: string; height?: number }
-const full = (c: ChartConfiguration): ChartConfiguration => ({ ...c, options: { responsive: true, maintainAspectRatio: false, ...c.options } }) as ChartConfiguration;
+const full = (c: ChartConfiguration): ChartConfiguration =>
+  ({ ...c, options: { responsive: true, maintainAspectRatio: false, ...c.options } }) as ChartConfiguration;
 
 /** Bring `chart` to `config` under `theme`: in place when only the theme moved (same chart type), else a new chart. Returns the chart in effect. */
 export function syncChart(canvas: HTMLCanvasElement, chart: Chart | null, config: ChartConfiguration, theme: Theme, themeOnly: boolean): Chart | null {
@@ -45,7 +46,8 @@ export function syncChart(canvas: HTMLCanvasElement, chart: Chart | null, config
 
 function ChartCanvas({ config, label, height = 280 }: ChartProps) {
   const canvas = useRef<HTMLCanvasElement>(null), theme = useTheme();
-  const chart = useRef<Chart | null>(null), last = useRef<{ config: ChartConfiguration; theme: Theme } | null>(null), lines = useMemo(() => chartText(config), [config]);
+  const chart = useRef<Chart | null>(null), last = useRef<{ config: ChartConfiguration; theme: Theme } | null>(null);
+  const lines = useMemo(() => chartText(config), [config]);
   useEffect(() => {
     if (!canvas.current) return;
     // a new config from an edit rebuilds the chart (as before); a theme / display change alone updates it in place

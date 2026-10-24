@@ -24,7 +24,8 @@ const colorOf = (colors: Record<string, string> | undefined, id: string, tok: To
 
 /** Home — one card per menu group of the current persona. */
 export default function HomeSection() {
-  const { nav: groups, colors } = useNavModel(), { tok } = useTheme();   // the groups, descriptions, colours and order of the persona's menu structure, like the sidebar
+  const { nav: groups, colors } = useNavModel();   // the groups, descriptions, colours and order of the persona's menu structure, like the sidebar
+  const { tok } = useTheme();
   return (
     <SectionFrame title="🏠 Welcome to AgentCase" help={help}
       input={<p className="ac-muted">Each card below opens a group of the case — start anywhere or work through them top to bottom, and the full menu is always one click away on the left.</p>}

@@ -16,7 +16,8 @@ export function structuralEqual(a: unknown, b: unknown): boolean {
   if (Array.isArray(b) || !plain(a) || !plain(b)) return false;
   const ka = Object.keys(a), kb = Object.keys(b);
   if (ka.length !== kb.length) return false;
-  for (const k of ka) if (!Object.prototype.hasOwnProperty.call(b, k) || !structuralEqual((a as Record<string, unknown>)[k], (b as Record<string, unknown>)[k])) return false;
+  const ra = a as Record<string, unknown>, rb = b as Record<string, unknown>;
+  for (const k of ka) if (!Object.prototype.hasOwnProperty.call(rb, k) || !structuralEqual(ra[k], rb[k])) return false;
   return true;
 }
 /** Shallow equality: the same keys holding identical values (`Object.is`). */

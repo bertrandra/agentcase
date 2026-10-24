@@ -1,6 +1,7 @@
 import { existsSync, readdirSync, readFileSync } from 'node:fs';
 import { describe, expect, it } from 'vitest';
 import { criticalReport } from '@/controllers/report';
+import { THEME_DEFAULT } from '@/domain/theme';
 import { createAppStore } from '@/store/core';
 import { makeDefaultDoc, setAppStore } from '@/store/instance';
 import { buildCriticalReport, esc } from '@/store/persistence/report';
@@ -9,7 +10,6 @@ import { fromSnapshot } from '@/store/persistence/snapshot';
 import { loadFixture } from '../helpers/fixtures';
 import { missingNumbers } from '../helpers/parity';
 import { legacyMoney } from '../helpers/deviations';
-import { THEME_DEFAULT } from '@/domain/theme';
 
 const IDS = readdirSync('fixtures/reports').filter((f) => f.endsWith('.html')).map((f) => f.replace('.html', ''));
 const doc = (id: string) => fromSnapshot(JSON.parse(readFileSync(`fixtures/cases/${id}.json`, 'utf8')));

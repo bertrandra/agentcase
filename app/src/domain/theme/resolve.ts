@@ -33,7 +33,8 @@ export function makeTheme(base: Readonly<ThemeValues>, display: Partial<ThemeVal
     if (v === undefined) { v = tokIn(values, n); seen.set(n, v); }
     return v;
   };
-  return Object.freeze({ values, base, spec, tok, list: (names: readonly TokenName[]) => names.map(tok), alpha: (c: TokenName | string, a: number | string) => alpha(c, a, values) });
+  const list = (names: readonly TokenName[]): string[] => names.map(tok);
+  return Object.freeze({ values, base, spec, tok, list, alpha: (c: TokenName | string, a: number | string) => alpha(c, a, values) });
 }
 /** The default look in the default display (the context value outside a theme provider, and of tests). */
 export const DEFAULT_THEME: Theme = makeTheme(THEME_DEFAULT);

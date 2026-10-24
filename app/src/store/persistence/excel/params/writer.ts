@@ -17,7 +17,8 @@ const SOFT = new Set(['TO-BE Team', 'Skill Map', 'TO-BE Location Split', 'Strate
 
 /**
  * The parameters workbook of a case (legacy exportParams). Pure: reads the document, returns the ExcelJS workbook, touches no global state.
- * `print`: the base theme of the export (controllers/exportTheme.ts). `scope` 'no-factory' drops the FM* Factory sheets, 'persona-only' keeps just the persona / section / dependency configuration sheets.
+ * `print`: the base theme of the export (controllers/exportTheme.ts).
+ * `scope` 'no-factory' drops the FM* Factory sheets, 'persona-only' keeps just the persona / section / dependency configuration sheets.
  */
 export async function buildParamsWorkbook(doc: Doc, scope: ParamsScope, env: ParamsEnv, print: Readonly<ThemeValues>): Promise<XL.Workbook> {
   const X = await loadExcelJS();

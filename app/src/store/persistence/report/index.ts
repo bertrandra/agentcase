@@ -27,9 +27,12 @@ const slug = (s: string): string => s.replace(/[^A-Za-z0-9]+/g, '_').replace(/^_
  * The report for a DISPLAY SCOPE. Product (the active product, or `productId`) and any plain single case: today's report of the product's effective
  * case, byte for byte. Portfolio and Wave: the portfolio report (context, consolidated economics by wave and product, knowledge transfer, gated
  * trajectory, and the last portfolio stress when `stress` is given) built from the domain views `consolidationView` / `portfolioHeadline` / `knowledgeTable`; its gate needs the regulatory catalogue and a norm
- * for at least one product of the scope. `print`: the base theme of the export (controllers/exportTheme.ts). Both variants are scriptless and load no external resource.
+ * for at least one product of the scope. Both variants are scriptless and load no external resource. `print`: the base theme of the export
+ * (controllers/exportTheme.ts).
  */
-export function buildScopedReport(pf: Portfolio, scope: DisplayScope, print: Readonly<ThemeValues>, now: Date = new Date(), productId?: string, stress?: StressInput): ReportResult {
+export function buildScopedReport(
+  pf: Portfolio, scope: DisplayScope, print: Readonly<ThemeValues>, now: Date = new Date(), productId?: string, stress?: StressInput,
+): ReportResult {
   if (scope.kind === 'product' || !hasPortfolioContent(pf)) return buildCriticalReport(resolveProduct(pf, productId ?? pf.activeProductId), print, now);
   const d = portfolioReportData(pf, scope, now, stress);
   if (!d) return { ok: false, reason: 'That wave does not exist any more.' };

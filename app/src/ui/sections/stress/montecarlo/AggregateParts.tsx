@@ -46,7 +46,8 @@ const cols = (rLabel: string, r: (p: ProductStress) => number): AggColumn<Produc
 
 /** The selection’s distribution (cards, histogram for the portfolio, diversification) and its product table with the selection’s stats as the roll-up line. */
 export function SelectionResults({ sel, scope }: { sel: SelectionStress; scope: 'portfolio' | 'wave' }) {
-  const d = sel.diversification, s = sel.stats, { tok } = useTheme(), config = useMemo(() => (sel.outcomes ? histogram(sel.outcomes, tok) : null), [sel.outcomes, tok]);
+  const d = sel.diversification, s = sel.stats, { tok } = useTheme();
+  const config = useMemo(() => (sel.outcomes ? histogram(sel.outcomes, tok) : null), [sel.outcomes, tok]);
   const columns = cols(scope === 'portfolio' ? 'Correlation with the portfolio' : 'Correlation with the wave', (p) => (scope === 'portfolio' ? p.r : p.rWave));
   const t = (v: number) => fmtEur(v);
   return (

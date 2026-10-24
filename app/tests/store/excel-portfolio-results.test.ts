@@ -12,6 +12,7 @@ import { sheetName } from '@/store/persistence/excel/results/portfolio';
 import { fourProducts, pfNow } from '../helpers/portfolioFixtures';
 import { freshStore } from './helpers';
 import { THEME_DEFAULT } from '@/domain/theme';
+import { rows } from '../helpers/xlsxRows';
 
 const NOW = new Date('2026-10-22T10:00:00Z');
 async function read(scope?: DisplayScope): Promise<XL.Workbook> {
@@ -19,12 +20,6 @@ async function read(scope?: DisplayScope): Promise<XL.Workbook> {
   await wb.xlsx.load(await out.blob.arrayBuffer());
   return wb;
 }
-/** The rows of a sheet as plain values (row 1 included), blank rows kept. */
-const rows = (wb: XL.Workbook, name: string): unknown[][] => {
-  const out: unknown[][] = [];
-  wb.getWorksheet(name)!.eachRow({ includeEmpty: true }, (r) => { out.push((r.values as unknown[]).slice(1)); });
-  return out;
-};
 const names = (wb: XL.Workbook): string[] => wb.worksheets.map((w) => w.name);
 /** The cells of the line that starts with `label` in column A. */
 const line = (wb: XL.Workbook, sheet: string, label: string): unknown[] => rows(wb, sheet).find((r) => r[0] === label) ?? [];

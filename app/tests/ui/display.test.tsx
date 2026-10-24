@@ -98,7 +98,8 @@ describe('charts under the display options', () => {
   it('colour-blind: dash + point style per line series; reduced motion: no animation; default: the config untouched', () => {
     HTMLCanvasElement.prototype.getContext = (() => null) as unknown as HTMLCanvasElement['getContext'];   // jsdom: no 2D canvas
     expect(themedConfig(cfg, DEFAULT_THEME)).toBe(cfg);
-    const out = themedConfig(cfg, { tok, spec: { ...DISPLAY_DEFAULT, cvd: true, reduceMotion: true } }), ds = out.data.datasets as unknown as Record<string, unknown>[];
+    const out = themedConfig(cfg, { tok, spec: { ...DISPLAY_DEFAULT, cvd: true, reduceMotion: true } });
+    const ds = out.data.datasets as unknown as Record<string, unknown>[];
     expect(ds.map((d) => d.pointStyle)).toEqual(['circle', 'rect', undefined]);
     expect(ds[1]!.borderDash).toEqual([6, 3]);
     expect(ds[2]!.backgroundColor).toBe('#123456');   // jsdom has no 2D canvas: the hatch falls back to the plain colour

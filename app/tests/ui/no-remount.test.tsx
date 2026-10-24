@@ -24,7 +24,9 @@ vi.mock('chart.js', () => {
     static defaults = { color: '#666', borderColor: 'rgba(0,0,0,0.1)' };
     static register(): void { /* nothing to register in the recorder */ }
     config: ChartConfiguration; data: unknown; options: unknown; updates: string[] = []; destroyed = false;
-    constructor(_canvas: unknown, config: ChartConfiguration) { this.config = config; this.data = config.data; this.options = config.options; charts.made.push(this); }
+    constructor(_canvas: unknown, config: ChartConfiguration) {
+      this.config = config; this.data = config.data; this.options = config.options; charts.made.push(this);
+    }
     update(mode: string): void { this.updates.push(mode); }
     destroy(): void { this.destroyed = true; }
   }
