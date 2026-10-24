@@ -28,17 +28,17 @@ export function GeneratorPanel({ def }: { def: ThemeDef }) {
       <p className="ac-muted">Pick one colour: every colour of the theme (scales, surfaces, header, navigation, tables, text, business colours, chart series) is
         derived from it, readable in every display mode. Then fine-tune any colour below.</p>
       <div className="ac-bt-gen-row">
-        <label className="ac-bt-gen-seed">
-          <span className="ac-field-l">Seed colour</span>
-          <input type="color" value={s.seed} onChange={(e) => set({ seed: normHex(e.target.value) ?? s.seed })} />
+        <div className="ac-bt-gen-seed">
+          <label className="ac-field-l" htmlFor={`${id}-seed`}>Seed colour</label>
+          <input id={`${id}-seed`} type="color" value={s.seed} onChange={(e) => set({ seed: normHex(e.target.value) ?? s.seed })} />
           <code>{s.seed}</code>
-        </label>
-        <label className="ac-bt-gen-range">
-          <span className="ac-field-l">Palette contrast</span>
-          <input type="range" min={0} max={100} step={5} value={s.contrast} aria-valuetext={`${s.contrast}, ${word}`}
+        </div>
+        <div className="ac-bt-gen-range">
+          <label className="ac-field-l" htmlFor={`${id}-contrast`}>Palette contrast</label>
+          <input id={`${id}-contrast`} type="range" min={0} max={100} step={5} value={s.contrast} aria-valuetext={`${s.contrast}, ${word}`}
             onChange={(e) => set({ contrast: Number(e.target.value) })} />
-          <output aria-hidden="true">{s.contrast} · {word}</output>
-        </label>
+          <output htmlFor={`${id}-contrast`}>{s.contrast} · {word}</output>
+        </div>
       </div>
       <fieldset className="ac-bt-gen-harmony">
         <legend className="ac-field-l">Harmony</legend>
