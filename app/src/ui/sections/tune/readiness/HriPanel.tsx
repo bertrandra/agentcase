@@ -27,11 +27,17 @@ function Outcome() {
       <table className="ac-table">
         <tbody>
           <tr><td>Change intensity</td><td className="ac-c"><strong>{h.intensity}</strong></td></tr>
-          <tr><td>Change cost ({h.etp.toFixed(1)} AS-IS FTE ×
-            €{Math.round(h.costPerFte).toLocaleString('en-US')})</td><td className="ac-c"><strong>{fmtK(h.cost)}</strong></td></tr>
+          <tr>
+            <td>Change cost ({h.etp.toFixed(1)} AS-IS FTE × €{Math.round(h.costPerFte).toLocaleString('en-US')})</td>
+            <td className="ac-c"><strong>{fmtK(h.cost)}</strong></td>
+          </tr>
           <tr><td>Adoption drag on the S-curve</td><td className="ac-c"><strong>× {h.drag.toFixed(2)}</strong></td></tr>
-          <tr><td>Status in the
-            model</td><td className="ac-c"><strong style={{ color: h.on ? 'var(--ac-teal)' : 'var(--ac-muted)' }}>{h.on ? 'APPLIED (setup + ramp)' : 'informative only — enable above'}</strong></td></tr>
+          <tr>
+            <td>Status in the model</td>
+            <td className="ac-c">
+              <strong className="ac-tone" data-tone={h.on ? 'teal' : 'muted'}>{h.on ? 'APPLIED (setup + ramp)' : 'informative only — enable above'}</strong>
+            </td>
+          </tr>
         </tbody>
       </table>
       <Note>Referential mapping: leadership, fears, skills, champions/preceptorship, incentives, rituals. Raising the change intensity at low HRI is how the
@@ -49,7 +55,7 @@ export function HriPanel() {
         When enabled, it (a) adds a <strong>change cost</strong> line to the Agentic Setup and (b) applies an <strong>adoption drag</strong> to the
         S-curve: ramp × (0.6 + 0.4 × HRI/100).</p>
       <CheckInput id="hriEnabled" label="Enable Human Readiness in the model (change cost + adoption drag)" />
-      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit,minmax(320px,1fr))', gap: 16 }}>
+      <div className="ac-hri-grid">
         <Questions />
         <div>
           <Outcome />

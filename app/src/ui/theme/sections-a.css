@@ -1,20 +1,26 @@
 /* Section styles of the frame, baseline, scope, tune and verify groups (lot 5b part A): the former inline styles of these sections, as named
    classes on the theme tokens. Values that come from the case at render time stay inline, as data-tone attributes or --dyn-* custom properties. */
 
-/* tone text: a figure or a word coloured by its role (data-tone names the role) */
-.ac-section .ac-tone[data-tone='teal'] { color: var(--ac-teal); }
-.ac-section .ac-tone[data-tone='brick'] { color: var(--ac-brick); }
-.ac-section .ac-tone[data-tone='amber'] { color: var(--ac-amber); }
-.ac-section .ac-tone[data-tone='blue'] { color: var(--ac-blue); }
-.ac-section .ac-tone[data-tone='muted'] { color: var(--ac-muted); }
-.ac-section .ac-tone[data-tone='slate-700'] { color: var(--ac-slate-700); }
-.ac-section .ac-tone[data-tone='danger-800'] { color: var(--ac-danger-800); }
-.ac-section .ac-tone[data-tone='teal-725'] { color: var(--ac-teal-725); }
+/* tones: data-tone names the colour role (a theme token) of a figure, a bar, a border; --tone carries it to the rules below */
+.ac-section [data-tone='amber'] { --tone: var(--ac-amber); } .ac-section [data-tone='bg'] { --tone: var(--ac-bg); }
+.ac-section [data-tone='blue'] { --tone: var(--ac-blue); } .ac-section [data-tone='brick'] { --tone: var(--ac-brick); }
+.ac-section [data-tone='chart-cat-1'] { --tone: var(--ac-chart-cat-1); } .ac-section [data-tone='chart-cat-2'] { --tone: var(--ac-chart-cat-2); }
+.ac-section [data-tone='chart-cat-5'] { --tone: var(--ac-chart-cat-5); } .ac-section [data-tone='danger-700'] { --tone: var(--ac-danger-700); }
+.ac-section [data-tone='danger-800'] { --tone: var(--ac-danger-800); } .ac-section [data-tone='info-700'] { --tone: var(--ac-info-700); }
+.ac-section [data-tone='muted'] { --tone: var(--ac-muted); } .ac-section [data-tone='neutral-700'] { --tone: var(--ac-neutral-700); }
+.ac-section [data-tone='neutral-750'] { --tone: var(--ac-neutral-750); } .ac-section [data-tone='primary-80'] { --tone: var(--ac-primary-80); }
+.ac-section [data-tone='primary-700'] { --tone: var(--ac-primary-700); } .ac-section [data-tone='secondary-600'] { --tone: var(--ac-secondary-600); }
+.ac-section [data-tone='slate-700'] { --tone: var(--ac-slate-700); } .ac-section [data-tone='success-550'] { --tone: var(--ac-success-550); }
+.ac-section [data-tone='teal'] { --tone: var(--ac-teal); } .ac-section [data-tone='teal-700'] { --tone: var(--ac-teal-700); }
+.ac-section [data-tone='teal-725'] { --tone: var(--ac-teal-725); } .ac-section [data-tone='warning-40'] { --tone: var(--ac-warning-40); }
+.ac-section [data-tone='warning-600'] { --tone: var(--ac-warning-600); }
+/* tone text: a figure or a word coloured by its role */
+.ac-section .ac-tone[data-tone] { color: var(--tone); }
 /* table helpers: a centred header cell, a right-aligned numeric cell (the numbers axis applies), a highlighted row (over the zebra and hover) */
 .ac-section .ac-table th.ac-th-c { text-align: center; }
 .ac-section .ac-table td.ac-td-num { text-align: right; font-family: var(--ac-font-numeric); }
-.ac-section .ac-table tbody tr.ac-row-hl:nth-child(n)[data-tone='warning-40'] { background: var(--ac-warning-40); }
-.ac-section .ac-table tbody tr.ac-row-hl:nth-child(n)[data-tone='blue'] { background: var(--ac-blue); color: var(--ac-neutral-0); }
+.ac-section .ac-table tbody tr.ac-row-hl:nth-child(n)[data-tone] { background: var(--tone); }
+.ac-section .ac-table tbody tr.ac-row-hl:nth-child(n)[data-tone='blue'] { color: var(--ac-neutral-0); }
 /* a form row whose items spread to both ends */
 .ac-section .ac-form-row.is-spread { justify-content: space-between; }
 
@@ -72,9 +78,7 @@
 .ac-section .ac-loc-asis { margin-bottom: 8px; }
 .ac-section .ac-form-row.ac-loc-head { margin: 0; font-size: var(--ac-font-size-sm); }
 .ac-section .ac-bar.ac-loc-bar, .ac-section .ac-loc-bar > span { height: 8px; }
-.ac-section .ac-loc-bar > [data-tone='info-700'] { background: var(--ac-info-700); }
-.ac-section .ac-loc-bar > [data-tone='teal-700'] { background: var(--ac-teal-700); }
-.ac-section .ac-loc-bar > [data-tone='warning-600'] { background: var(--ac-warning-600); }
+.ac-section .ac-loc-bar > [data-tone] { background: var(--tone); }
 .ac-section .ac-form-row.ac-loc-target { margin: 0 0 6px; }
 .ac-section .ac-loc-name { font-size: var(--ac-font-size-sm); }
 .ac-section input.ac-loc-share { width: 70px; }
@@ -97,31 +101,69 @@
 /* S-curve: the level markers, the readout note, the L1–L4 cards (data-tone = the level's colour role) */
 .ac-section .ac-svg .ac-scurve-level { font-size: var(--ac-font-size-md-plus); font-weight: var(--ac-font-weight-bold); }
 .ac-section .ac-readout-note { max-width: 420px; }
-.ac-section .ac-level[data-tone='slate-700'] { border-left-color: var(--ac-slate-700); }
-.ac-section .ac-level[data-tone='chart-cat-5'] { border-left-color: var(--ac-chart-cat-5); }
-.ac-section .ac-level[data-tone='chart-cat-2'] { border-left-color: var(--ac-chart-cat-2); }
-.ac-section .ac-level[data-tone='chart-cat-1'] { border-left-color: var(--ac-chart-cat-1); }
-.ac-section .ac-level[data-tone='slate-700'] strong { color: var(--ac-slate-700); }
-.ac-section .ac-level[data-tone='chart-cat-5'] strong { color: var(--ac-chart-cat-5); }
-.ac-section .ac-level[data-tone='chart-cat-2'] strong { color: var(--ac-chart-cat-2); }
-.ac-section .ac-level[data-tone='chart-cat-1'] strong { color: var(--ac-chart-cat-1); }
+.ac-section .ac-level[data-tone] { border-left-color: var(--tone); }
+.ac-section .ac-level[data-tone] strong { color: var(--tone); }
 /* Phase scope tiles */
 .ac-section .ac-tile-head { display: flex; align-items: center; gap: 8px; }
 /* Target artifact selection: lifecycle weight, impact bars by tier, live chips, the adjust table's overridden cells */
 .ac-section .ac-phase-lw { font-weight: var(--ac-font-weight-bold); }
-.ac-section .ac-impact-bar > [data-tone='brick'] { background: var(--ac-brick); }
-.ac-section .ac-impact-bar > [data-tone='amber'] { background: var(--ac-amber); }
-.ac-section .ac-impact-bar > [data-tone='teal'] { background: var(--ac-teal); }
-.ac-section .ac-chip[data-tone='teal'] { border-left-color: var(--ac-teal); }
-.ac-section .ac-chip[data-tone='brick'] { border-left-color: var(--ac-brick); }
-.ac-section .ac-chip[data-tone='blue'] { border-left-color: var(--ac-blue); }
-.ac-section .ac-chip[data-tone='amber'] { border-left-color: var(--ac-amber); }
+.ac-section .ac-impact-bar > [data-tone] { background: var(--tone); }
+.ac-section .ac-chip[data-tone] { border-left-color: var(--tone); }
 .ac-section input.ac-adjust-bulk { width: 64px; }
 .ac-section .ac-table input.ac-adjust-input { width: 60px; }
-.ac-section .ac-table input.ac-adjust-input[data-tone='blue'] { border-color: var(--ac-blue); }
-.ac-section .ac-table input.ac-adjust-input[data-tone='amber'] { border-color: var(--ac-amber); }
+.ac-section .ac-table input.ac-adjust-input[data-tone] { border-color: var(--tone); }
 /* Lifecycle weighting */
 .ac-section .ac-lc-controls { max-width: 520px; }
 .ac-section .ac-lc-status { font-size: var(--ac-font-size-md); color: var(--ac-blue); font-weight: var(--ac-font-weight-semibold); }
 .ac-section .ac-lc-factor { font-weight: var(--ac-font-weight-bold); }
 .ac-section .ac-lc-marker { color: var(--ac-amber); font-size: var(--ac-font-size-sm); }
+
+/* ── tune ────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────── */
+/* Operating model: the totals of the topology */
+.ac-section .ac-om-total { font-weight: var(--ac-font-weight-bold); }
+/* Eligibility: the verdict box (data-tone = the verdict's role), the verification-tax callout once applied, the pillar × phase matrix */
+.ac-section .ac-verdict { margin-top: 8px; padding: 10px 12px; border-radius: var(--ac-radius-lg); border: var(--ac-border-thin) solid var(--tone); }
+.ac-section .ac-verdict > strong { color: var(--tone); }
+.ac-section div.ac-callout.ac-vtax.is-applied { border-color: var(--ac-amber); }
+.ac-section .ac-table .ac-pillar-name { font-weight: var(--ac-font-weight-semibold); }
+.ac-section .ac-table .ac-pillar-lever { font-weight: var(--ac-font-weight-regular); }
+.ac-section .ac-table .ac-row-hl :is(.ac-pillar-name, .ac-pillar-lever) { font-weight: var(--ac-font-weight-bold); }
+/* AI readiness: the index and its gauge, the dimension bars */
+.ac-section .ac-readiness-score { text-align: center; }
+.ac-section .ac-readiness-index { font-size: var(--ac-font-size-9xl); font-weight: var(--ac-font-weight-display); }
+.ac-section .ac-readiness-band { font-weight: var(--ac-font-weight-semibold); }
+.ac-section .ac-readiness-gauge {
+  height: 14px; border-radius: var(--ac-radius-lg); position: relative;
+  background: linear-gradient(90deg, var(--ac-danger-800), var(--ac-warning-600), var(--ac-info-700), var(--ac-teal-700));
+}
+.ac-section .ac-readiness-needle {
+  position: absolute; top: -4px; width: 4px; height: 22px; background: var(--ac-primary-700); border: var(--ac-border-thin) solid var(--ac-neutral-0);
+  border-radius: var(--ac-radius-2xs);
+}
+.ac-section .ac-readiness-dim { width: 140px; }
+.ac-section .ac-readiness-bar > [data-tone] { display: block; height: 16px; background: var(--tone); }
+.ac-section .ac-readiness-val { width: 52px; text-align: right; }
+.ac-section .ac-hri-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(320px, 1fr)); gap: 16px; }
+/* Risk & compliance: the tier / band box (its tint and border colour are inline: a hex alpha of the resolved role), the quality table */
+.ac-section .ac-risk-box { padding: 10px 12px; border-radius: var(--ac-radius-lg); border: var(--ac-border-thin) solid; }
+.ac-section .ac-risk-box.is-spaced { margin-top: 10px; }
+.ac-section .ac-risk-title { font-weight: var(--ac-font-weight-bold); }
+.ac-section .ac-quality-table { max-width: 560px; }
+/* Program & completeness, maturity */
+.ac-section .ac-table td.ac-cap-meter { width: 60%; }
+.ac-section .ac-socle-family { text-transform: uppercase; font-size: var(--ac-font-size-md); }
+/* Maturity levels: the threshold and label inputs */
+.ac-section input.ac-mm-bound { width: 70px; }
+.ac-section input.ac-mm-label { width: 230px; }
+/* Product profile & phase coefficients: the status × phase matrix (data-tone = up / down / neutral from 1.00; amber border once edited) */
+.ac-section .ac-lc-matrix { min-width: 760px; }
+.ac-section .ac-table input[type='number'].ac-lc-cell {
+  width: 52px; text-align: center; color: var(--tone); font-weight: var(--ac-font-weight-regular);
+  border: var(--ac-border-thin) solid var(--ac-slate-200); border-radius: var(--ac-radius-sm);
+}
+.ac-section .ac-table input[type='number'].ac-lc-cell.is-posture { width: 56px; }
+.ac-section .ac-table input[type='number'].ac-lc-cell[data-edited] { font-weight: var(--ac-font-weight-bold); border-color: var(--ac-amber); }
+.ac-section .ac-table td.ac-lc-posture { border-left: var(--ac-border-thick) solid var(--ac-blue); }
+/* Knowledge hub */
+.ac-section .ac-hub-value { font-weight: var(--ac-font-weight-bold); }
+.ac-section .ac-hub-group { border: 0; padding: 0; }

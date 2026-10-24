@@ -46,7 +46,7 @@ export function TransCard() {
         <thead><tr><th>Transition</th><th>Objective criteria</th></tr></thead>
         <tbody>
           {TRANSITIONS.map(([t, text], i) => (
-            <tr key={t} style={i + 2 === cur + 1 ? { background: 'var(--ac-bg)' } : undefined}>
+            <tr key={t} className={i + 2 === cur + 1 ? 'ac-row-hl' : undefined} data-tone={i + 2 === cur + 1 ? 'bg' : undefined}>
               <td><strong>{t}</strong>{i + 2 === cur + 1 ? ' ◀ your next gate' : ''}</td><td>{text}</td>
             </tr>
           ))}

@@ -12,7 +12,7 @@ export function HubResult() {
     ['Channel 2 — adoption uncertainty reduction', h.on ? `σ × ${fix(h.sigmaFactor, 2)}` : dash],
     ['Channel 3 — KT / onboarding cost avoided (3y)', h.on ? eurK(h.kt) : dash],
     ['Hub cost — setup + run (3y)', h.on ? eurK(h.hubCost) : dash],
-    ['Hub-attributable Δ net savings (3y)', h.on ? eurK(h.dSav) : dash, h.dSav >= 0 ? 'var(--ac-teal)' : 'var(--ac-brick)'],
+    ['Hub-attributable Δ net savings (3y)', h.on ? eurK(h.dSav) : dash, h.dSav >= 0 ? 'teal' : 'brick'],
   ];
   return (
     <>
@@ -26,7 +26,7 @@ export function HubResult() {
         <Stat label="MC Σ (adoption)" value={`−${Math.round(h.mcSigma)}%`} tone="teal" />
       </StatRow>
       <table className="ac-table"><tbody>
-        {rows.map(([l, v, col]) => <tr key={l}><td>{l}</td><td style={{ textAlign: 'center', fontWeight: 'var(--ac-font-weight-bold)', color: col }}>{v}</td></tr>)}
+        {rows.map(([l, v, tone]) => <tr key={l}><td>{l}</td><td className="ac-c ac-tone ac-hub-value" data-tone={tone}>{v}</td></tr>)}
       </tbody></table>
       <p className="ac-muted">CC-KH-01: the multiplier is capped by the regulatory ceiling headroom ({Math.round(h.effCap)} pts) — CC4 can never push automation
         past compliance. A negative hub Δ is shown honestly (CC-KH-03), typically when the scope is small.</p>

@@ -30,7 +30,10 @@ export function PilotCard() {
 /** EV-22 internal capability build (Volet A): operational now / in training / target mass. */
 export function CapCard() {
   const k = capability(useCtx());
-  const rows = [['Operational now', 'capOps', k.ops, k.bars.ops, 'var(--ac-teal-700)'], ['In training', 'capTrain', k.training, k.bars.training, 'var(--ac-warning-600)'], ['Target mass', 'capTarget', k.target, k.bars.target, 'var(--ac-primary-700)']] as const;
+  const rows = [
+    ['Operational now', 'capOps', k.ops, k.bars.ops, 'var(--ac-teal-700)'], ['In training', 'capTrain', k.training, k.bars.training, 'var(--ac-warning-600)'],
+    ['Target mass', 'capTarget', k.target, k.bars.target, 'var(--ac-primary-700)'],
+  ] as const;
   return (
     <Panel title="Internal capability build — Volet A" aside={<Badge tone="blue">EV-22</Badge>}>
       <div className="ac-form-row">
@@ -40,8 +43,12 @@ export function CapCard() {
       </div>
       <table className="ac-table">
         <tbody>
-          {rows.map(([label, id, v, w, color]) => <tr key={id}><td>{label}</td><td style={{ width: '60%' }}><Meter pct={w} color={color}
-            label={`${label} (share of target mass)`} /></td><td className="ac-c"><strong>{v}</strong></td></tr>)}
+          {rows.map(([label, id, v, w, color]) => (
+            <tr key={id}>
+              <td>{label}</td><td className="ac-cap-meter"><Meter pct={w} color={color} label={`${label} (share of target mass)`} /></td>
+              <td className="ac-c"><strong>{v}</strong></td>
+            </tr>
+          ))}
         </tbody>
       </table>
       <p>Internal transformation (Volet A, distinct from the client engagement Volet B): <strong>{k.pct}%</strong> of the target mass is operational. The

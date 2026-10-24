@@ -19,7 +19,7 @@ export function AsisPanel() {
   return (
     <Panel title="AS-IS assessment (9 statements, 0 = absent → 4 = excellent)" aside={<SubsetBadge field="maturityAnswers" label="Maturity answers" />}>
       {GROUPS.map((g, gi) => (
-        <fieldset key={g.title} style={{ border: 0, padding: 0 }}>
+        <fieldset key={g.title} className="ac-hub-group">
           <legend><strong>{g.title}</strong></legend>
           <div className="ac-form-row">
             {g.items.map((label, i) => <RangeInput key={label} id={`khA${gi * 3 + i}`} label={label} min={0} max={4} step={1} unit="" />)}

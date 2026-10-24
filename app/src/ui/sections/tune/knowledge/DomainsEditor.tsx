@@ -46,7 +46,7 @@ function Editor({ id, name, saved }: { id: string; name: string; saved: Knowledg
         </table>
       )}
       <p role="status" aria-live="polite" data-remaining={left}>{rows.length ? (left === 0 ? 'Total: 100% — ready to save.' : left > 0 ? `${fmt(left)}% left to allocate.` : `${fmt(-left)}% too much.`) : 'No domain: the curation effort is not split.'}</p>
-      {error && <p role="alert" style={{ color: 'var(--ac-danger-800)' }}>{error}</p>}
+      {error && <p role="alert" className="ac-tone" data-tone="danger-800">{error}</p>}
       <div className="ac-pf-actions" role="group" aria-label="Domain actions">
         <button type="button"
           onClick={() => { setError(''); setRows((rs) => [...rs, { key: next.current++, label: '', weight: String(Math.max(0, left)) }]); }}>Add a domain</button>

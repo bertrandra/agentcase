@@ -8,7 +8,8 @@ import { useTheme } from '@/ui/themeContext';
 
 /** Index (0–100) with its band and gauge, the radar chart, and the dimension bars with the weakest areas. */
 export function ScoreCard() {
-  const ans = useAnswers(), idx = readinessIndex(ans), band = readinessBand(idx), weak = weakestDims(ans), rows = useMemo(() => dimRows(ans), [ans]);
+  const ans = useAnswers(), idx = readinessIndex(ans), band = readinessBand(idx), weak = weakestDims(ans);
+  const rows = useMemo(() => dimRows(ans), [ans]);
   const { tok } = useTheme();
   const config = useMemo<ChartConfiguration>(() => ({
     type: 'radar',
@@ -19,13 +20,13 @@ export function ScoreCard() {
   return (
     <>
       <Panel title="AI Readiness Index">
-        <div style={{ textAlign: 'center' }} aria-live="polite">
-          <div style={{ fontSize: 'var(--ac-font-size-9xl)', fontWeight: 'var(--ac-font-weight-display)', color: `var(--ac-${band.tone})` }}>{idx == null ? '—' : Math.round(idx)}</div>
-          <div style={{ fontWeight: 'var(--ac-font-weight-semibold)', color: `var(--ac-${band.tone})` }}>{band.label}</div>
+        <div className="ac-readiness-score" aria-live="polite">
+          <div className="ac-tone ac-readiness-index" data-tone={band.tone}>{idx == null ? '—' : Math.round(idx)}</div>
+          <div className="ac-tone ac-readiness-band" data-tone={band.tone}>{band.label}</div>
         </div>
-        <div role="meter" aria-label="AI readiness gauge" aria-valuenow={idx ?? 0} aria-valuemin={0} aria-valuemax={100}
-          style={{ height: 14, borderRadius: 'var(--ac-radius-lg)', position: 'relative', background: 'linear-gradient(90deg,var(--ac-danger-800),var(--ac-warning-600),var(--ac-info-700),var(--ac-teal-700))' }}>
-          <div style={{ position: 'absolute', top: -4, width: 4, height: 22, background: 'var(--ac-primary-700)', border: '1px solid var(--ac-neutral-0)', borderRadius: 'var(--ac-radius-2xs)', left: `${idx ?? 0}%` }} />
+        <div role="meter" aria-label="AI readiness gauge" aria-valuenow={idx ?? 0} aria-valuemin={0} aria-valuemax={100} className="ac-readiness-gauge">
+          {/* dynamic: the needle sits at the index */}
+          <div className="ac-readiness-needle" style={{ left: `${idx ?? 0}%` }} />
         </div>
         <p className="ac-muted"><span>0 Nascent</span> · <span>Leading 100</span></p>
       </Panel>
@@ -33,9 +34,10 @@ export function ScoreCard() {
       <Panel title="Dimension scores">
         {rows.map((r) => (
           <div key={r.key} className="ac-form-row">
-            <span style={{ width: 140 }}>{r.label}</span>
-            <span className="ac-grow ac-bar"><span style={{ display: 'block', width: `${r.score ?? 0}%`, height: 16, background: `var(--ac-${r.band.tone})` }} /></span>
-            <strong style={{ width: 52, textAlign: 'right', color: `var(--ac-${r.band.tone})` }}>{r.score == null ? '—' : Math.round(r.score)}</strong>
+            <span className="ac-readiness-dim">{r.label}</span>
+            {/* dynamic: the bar width is the dimension score */}
+            <span className="ac-grow ac-bar ac-readiness-bar"><span data-tone={r.band.tone} style={{ width: `${r.score ?? 0}%` }} /></span>
+            <strong className="ac-tone ac-readiness-val" data-tone={r.band.tone}>{r.score == null ? '—' : Math.round(r.score)}</strong>
           </div>
         ))}
         {weak && <Callout><strong>Priority pre-requisites:</strong> {weak}</Callout>}

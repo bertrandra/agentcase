@@ -29,8 +29,8 @@ export function QualityCard() {
         <p className="ac-muted">Cap on the rework multiplier above, and how strongly it converts into the DI-bar penalty (capped at 0.15 pts). Also editable
           from the Due-diligence register.</p>
       </div>
-      <table className="ac-table" style={{ maxWidth: 560 }}><tbody>
-        {rows.map(([l, v, b]) => <tr key={l}><td>{l}</td><td style={{ textAlign: 'center' }}>{b ? <strong>{v}</strong> : v}</td></tr>)}
+      <table className="ac-table ac-quality-table"><tbody>
+        {rows.map(([l, v, b]) => <tr key={l}><td>{l}</td><td className="ac-c">{b ? <strong>{v}</strong> : v}</td></tr>)}
       </tbody></table>
       <p className="ac-muted">Reference 5.1: AI code shows correctness ×1.75, maintainability ×1.64, security ×1.57 issues vs human; ≥62% of generated
         programs carry a known weakness. The premium raises the verification tax and the DI bar, and is mitigated by SDD maturity (EV-16,

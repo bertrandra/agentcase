@@ -47,19 +47,19 @@ export function AbaquePanel() {
             {d.rows.map((r) => (
               <tr key={r.ph}>
                 <td>{PHASE_LABEL[r.ph]} <small className="ac-muted">({ACTIVITY_LABEL[r.act]})</small></td>
-                <td className="ac-c">{pct(r.addressable)}</td><td className="ac-c">{pillar ? `×${r.lever.toFixed(2)}` : '—'}</td><td className="ac-c">{pct(r.captured)}</td>
-                <td className="ac-c" style={{ color: r.tax > 0 ? 'var(--ac-brick)' : 'var(--ac-muted)' }}>{r.tax > 0 ? `−${Math.round(r.tax * 100)} pts` : '—'}</td>
-                <td className="ac-c"><strong style={{ color: 'var(--ac-teal)' }}>{pct(r.net)}</strong></td>
+                <td className="ac-c">{pct(r.addressable)}</td><td className="ac-c">{pillar ? `×${r.lever.toFixed(2)}` : '—'}</td>
+                <td className="ac-c">{pct(r.captured)}</td>
+                <td className="ac-c ac-tone" data-tone={r.tax > 0 ? 'brick' : 'muted'}>{r.tax > 0 ? `−${Math.round(r.tax * 100)} pts` : '—'}</td>
+                <td className="ac-c"><strong className="ac-tone" data-tone="teal">{pct(r.net)}</strong></td>
               </tr>
             ))}
           </tbody>
         </table>
       </div>
-      <div role="status" className="ac-callout" style={{ borderColor: t.applied ? 'var(--ac-amber)' : undefined }}>
+      <div role="status" className={t.applied ? 'ac-callout ac-vtax is-applied' : 'ac-callout ac-vtax'}>
         <strong>Verification tax</strong> — rate {pct(d.vTaxRate)} of gross saving
-        {t.applied ? <> · <strong style={{ color: 'var(--ac-amber)' }}>APPLIED</strong>: deducted from savings
-          ({fmtK(t.yearly[0] ?? 0)} / {fmtK(t.yearly[1] ?? 0)} / {fmtK(t.yearly[2] ?? 0)} over
-            Y1–Y3)</> : ' · informative only — tick the box above to feed it into the economics'}.
+        {t.applied ? <> · <strong className="ac-tone" data-tone="amber">APPLIED</strong>: deducted from savings
+          ({fmtK(t.yearly[0] ?? 0)} / {fmtK(t.yearly[1] ?? 0)} / {fmtK(t.yearly[2] ?? 0)} over Y1–Y3)</> : ' · informative only — tick the box above to feed it into the economics'}.
         <Explain />
       </div>
       <Note>CC-ABQ-01: net gain never exceeds the Abaque A addressable ceiling. CC-ABQ-02: with the tax applied, net saving ≤ gross saving.</Note>

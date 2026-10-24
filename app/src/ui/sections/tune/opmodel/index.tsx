@@ -6,7 +6,10 @@ import { NumberInput } from '@/ui/widgets/fields';
 import { Note } from '@/ui/widgets/tuneA';
 import { SectionFrame } from '@/ui/zones/SectionFrame';
 
-const MAPPING = [['Pod Orchestrator', 'Agent Supervisor'], ['AI Reviewer', 'AI QA'], ['Token FinOps Officer', 'AI FinOps'], ['Agent Architect', 'AI Engineer / Prompt Engineer'], ['Preceptor', '— (human-to-human coaching)']];
+const MAPPING = [
+  ['Pod Orchestrator', 'Agent Supervisor'], ['AI Reviewer', 'AI QA'], ['Token FinOps Officer', 'AI FinOps'], ['Agent Architect', 'AI Engineer / Prompt Engineer'],
+  ['Preceptor', '— (human-to-human coaching)'],
+];
 const help = (
   <>
     <p>The referential&apos;s target organisation: pods of 2–4 (orchestrator + AI reviewer + engineers), transverse roles (preceptor, agent architect) and an AI
@@ -17,6 +20,9 @@ const help = (
 );
 
 type Row = [string, (t: Topology) => number, string?];
+const HOLDS = '✓ CC-OM-01 — V7 reconciliation holds: roles are a re-labelling of the residual volume (Δ ≤ 2%), nothing is added.';
+const widened = (pod: number) => ` Pod size auto-widened to ${pod} FTE so the lean residual can absorb the topology.`;
+const BROKEN = '✗ CC-OM-01 — the pod structure does not fit the residual volume: reduce pod size, mutualise reviewers, or accept fewer transverse roles.';
 
 function Topologies() {
   const c = useCtx(), v = opModelView(c), { y1, yN } = v;
@@ -27,7 +33,9 @@ function Topologies() {
     ['AI Office — Design Authority', (t) => t.da], ['AI Office — Lead', (t) => t.lead],
   ];
   const line = (l: string, f: (t: Topology) => number, note?: string, strong = false) => (
-    <tr key={l} style={strong ? { fontWeight: 'var(--ac-font-weight-bold)' } : undefined}><td>{l}{note && <small className="ac-muted"> {note}</small>}</td><td className="ac-c">{f(y1).toFixed(2)}</td><td className="ac-c">{f(yN).toFixed(2)}</td></tr>
+    <tr key={l} className={strong ? 'ac-om-total' : undefined}>
+      <td>{l}{note && <small className="ac-muted"> {note}</small>}</td><td className="ac-c">{f(y1).toFixed(2)}</td><td className="ac-c">{f(yN).toFixed(2)}</td>
+    </tr>
   );
   return (
     <>
@@ -48,9 +56,8 @@ function Topologies() {
             {line('Total human headcount', (t) => t.total, undefined, true)}
           </tbody>
         </table>
-        <p role="status" style={{ color: v.ok ? 'var(--ac-teal)' : 'var(--ac-brick)' }}>
-          {v.ok ? `✓ CC-OM-01 — V7 reconciliation holds: roles are a re-labelling of the residual volume (Δ ≤ 2%), nothing is added.${yN.widened || y1.widened ? ` Pod size auto-widened to ${Math.max(y1.pod, yN.pod)} FTE so the lean residual can absorb the topology.` : ''}`
-            : '✗ CC-OM-01 — the pod structure does not fit the residual volume: reduce pod size, mutualise reviewers, or accept fewer transverse roles.'}
+        <p role="status" className="ac-tone" data-tone={v.ok ? 'teal' : 'brick'}>
+          {v.ok ? `${HOLDS}${yN.widened || y1.widened ? widened(Math.max(y1.pod, yN.pod)) : ''}` : BROKEN}
         </p>
       </Panel>
       <Panel title="Human ↔ agentic role mapping">

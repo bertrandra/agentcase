@@ -26,16 +26,20 @@ export function PillarPanel() {
       </div>
       <div className="ac-table-wrap" tabIndex={0}>
         <table className="ac-table">
-          <thead><tr><th>Profile \
-            Phase</th>{PROFILE_PHASES.map((ph) => <th key={ph} className="ac-c" title={ph}>{ph === 'Cross-cutting' ? 'X' : ph}</th>)}</tr></thead>
+          <thead>
+            <tr><th>Profile \ Phase</th>{PROFILE_PHASES.map((ph) => <th key={ph} className="ac-c" title={ph}>{ph === 'Cross-cutting' ? 'X' : ph}</th>)}</tr>
+          </thead>
           <tbody>
             {PRODUCT_PROFILES.map((pr) => (
-              <tr key={pr.id} style={pr.id === cur ? { background: 'var(--ac-bg)' } : undefined}>
-                <td style={{ fontWeight: pr.id === cur ? 'var(--ac-font-weight-bold)' : 'var(--ac-font-weight-semibold)' }}>{pr.label}{pr.id === cur ? ' ◀' : ''}</td>
+              <tr key={pr.id} className={pr.id === cur ? 'ac-row-hl' : undefined} data-tone={pr.id === cur ? 'bg' : undefined}>
+                <td className="ac-pillar-name">{pr.label}{pr.id === cur ? ' ◀' : ''}</td>
                 {PROFILE_PHASES.map((ph) => {
                   const x = profileCoef(c, pr.id, ph);
-                  return <td key={ph} className="ac-c"
-                    style={{ color: `var(--ac-${leverTone(x)})`, fontWeight: pr.id === cur ? 'var(--ac-font-weight-bold)' : 'var(--ac-font-weight-regular)' }}>{leverWord(x)}<br /><small className="ac-muted">({x.toFixed(2)})</small></td>;
+                  return (
+                    <td key={ph} className="ac-c ac-tone ac-pillar-lever" data-tone={leverTone(x)}>
+                      {leverWord(x)}<br /><small className="ac-muted">({x.toFixed(2)})</small>
+                    </td>
+                  );
                 })}
               </tr>
             ))}
@@ -43,8 +47,8 @@ export function PillarPanel() {
         </table>
       </div>
       <Note>Reference 1.2 potential matrix (Strong / Medium / Cautious). It tells <em>where</em> to deploy agents first. {pillarApplyOn(c)
-        ? <>Leverage is <strong>applied</strong> to the Abaque reconciliation
-          below.</> : 'Analytical only — tick the box above to apply it to the Abaque reconciliation.'}</Note>
+        ? <>Leverage is <strong>applied</strong> to the Abaque reconciliation below.</>
+        : 'Analytical only — tick the box above to apply it to the Abaque reconciliation.'}</Note>
     </Panel>
   );
 }

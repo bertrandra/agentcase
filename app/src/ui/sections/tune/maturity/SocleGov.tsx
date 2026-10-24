@@ -12,9 +12,11 @@ export function SoclePanel() {
         billable-staffing rate as the sole performance metric.</p>
       {s.families.map((f) => (
         <section key={f.title}>
-          <h3 style={{ color: `var(--ac-${f.tone})`, textTransform: 'uppercase', fontSize: 'var(--ac-font-size-md)' }}>{f.title}</h3>
+          <h3 className="ac-tone ac-socle-family" data-tone={f.tone}>{f.title}</h3>
           <table className="ac-table">
-            <tbody>{f.rows.map(([name, kind, text]) => <tr key={name}><td>{name}</td><td className="ac-c ac-muted">{kind}</td><td className="ac-muted">{text}</td></tr>)}</tbody>
+            <tbody>
+              {f.rows.map(([name, kind, text]) => <tr key={name}><td>{name}</td><td className="ac-c ac-muted">{kind}</td><td className="ac-muted">{text}</td></tr>)}
+            </tbody>
           </table>
         </section>
       ))}
