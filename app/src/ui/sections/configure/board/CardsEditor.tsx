@@ -28,7 +28,7 @@ export function CardsEditor({ section }: { section: DynSection }) {
       head={<><th>Seq</th><th>On</th><th>Name</th><th>Source</th><th>{SLOTS[0]![1]}</th><th>{SLOTS[1]![1]}</th><th>{SLOTS[2]![1]}</th><th>Overlay</th><th>Target (goto)</th></>}>
       {sortedCards(section.cards).map((card) => (
         <tr key={card.CARD_ID}>
-          <td><input type="number" aria-label={`Order of ${card.CARD_ID}`} style={{ width: 56 }} value={card.CARD_SEQ || 0} onChange={(e) => setCardField(id, card.CARD_ID, 'CARD_SEQ', e.target.value)} /></td>
+          <td><input type="number" aria-label={`Order of ${card.CARD_ID}`} className="ac-seq-input" value={card.CARD_SEQ || 0} onChange={(e) => setCardField(id, card.CARD_ID, 'CARD_SEQ', e.target.value)} /></td>
           <td><input type="checkbox" aria-label={`On ${card.CARD_ID}`} checked={!!card.CARD_ENABLED} onChange={(e) => setCardField(id, card.CARD_ID, 'CARD_ENABLED', e.target.checked)} /></td>
           <td><input type="text" aria-label={`Name of ${card.CARD_ID}`} value={card.CARD_NAME_VALUE} onChange={(e) => renameCard(id, card.CARD_ID, e.target.value)} /></td>
           <td><SectionPicker value={card.CARD_SOURCE_SECTION} label={`Source of ${card.CARD_ID}`} onChange={(v) => v && setCardSource(id, card.CARD_ID, v)} /></td>

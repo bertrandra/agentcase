@@ -1,5 +1,6 @@
 import { groupColor } from '@/domain/nav/layout';
 import { textColor } from '@/ui/colorText';
+import { cssVars } from '@/ui/cssVars';
 import { goSection } from '@/ui/uiState';
 import { sectionById } from '@/ui/zones/registry';
 import type { CardModel } from './dynamic';
@@ -10,14 +11,15 @@ export function CardView({ card, colors, preview }: { card: CardModel; colors: R
   const { tok } = useTheme(), sec = card.target ? sectionById(card.target) : undefined, col = sec ? groupColor(colors, sec.group, tok('slate-600')) : tok('primary-700');
   const body = (
     <>
-      <div className="ac-card-label" style={{ fontSize: 'var(--ac-font-size-sm)', textTransform: 'uppercase', color: 'var(--ac-slate-600)' }}>{card.name}</div>
-      <div style={{ fontSize: 'var(--ac-font-size-6xl)', fontWeight: 'var(--ac-font-weight-bold)', color: card.impact == null ? 'var(--ac-neutral-700)' : textColor(col, tok, tok('slate-60')) }}>{card.impact ?? '—'}</div>
-      {card.keys.map((k) => <div key={k.label ?? k.value} style={{ fontSize: 'var(--ac-font-size-md)' }}>{k.label && <span className="ac-muted">{k.label}: </span>}<b>{k.value}</b></div>)}
-      {sec && <div style={{ fontSize: 'var(--ac-font-size-sm)', color: textColor(col, tok, tok('slate-60')), marginTop: 6 }}>{sec.label}{!preview && ' →'}</div>}
+      <div className="ac-card-label ac-dyn-card-name">{card.name}</div>
+      <div className={card.impact == null ? 'ac-dyn-card-v is-empty' : 'ac-dyn-card-v'}>{card.impact ?? '—'}</div>
+      {card.keys.map((k) => <div key={k.label ?? k.value} className="ac-dyn-card-key">{k.label && <span className="ac-muted">{k.label}: </span>}<b>{k.value}</b></div>)}
+      {sec && <div className="ac-dyn-card-go">{sec.label}{!preview && ' →'}</div>}
     </>
   );
-  const style = { borderLeft: `4px solid ${col}`, background: `${col}14`, border: `1px solid ${col}4D`, borderRadius: 'var(--ac-radius-lg)', padding: '10px 12px', textAlign: 'left' as const };
+  // dynamic: the card wears the colour of the group of the section it opens (case data), as a tint and an edge (alpha suffixes of the hex)
+  const style = cssVars({ '--ac-dyn-tint': `${col}14`, '--ac-dyn-edge': `${col}4D`, '--ac-dyn-ink': textColor(col, tok, tok('slate-60')) });
   return sec && !preview
-    ? <button type="button" className="ac-card" style={{ ...style, cursor: 'pointer' }} title={`Open ${sec.label}`} onClick={() => goSection(sec.id)}>{body}</button>
-    : <div className="ac-card" style={style}>{body}</div>;
+    ? <button type="button" className="ac-card ac-dyn-card is-link" style={style} title={`Open ${sec.label}`} onClick={() => goSection(sec.id)}>{body}</button>
+    : <div className="ac-card ac-dyn-card" style={style}>{body}</div>;
 }

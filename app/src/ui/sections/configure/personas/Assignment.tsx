@@ -16,13 +16,13 @@ export function Assignment({ persona: p, lists }: { persona: Persona; lists: Rec
   if (p.protected) return <p className="ac-muted">{p.label} is protected: it sees every section ({SECTIONS.length}).</p>;
   return (
     <div className="ac-form-row">
-      <div style={{ flex: '1 1 380px' }}>
+      <div className="ac-assign-list">
         <p className="ac-muted">Assigned sections, in the order of {p.label} (blank order = the global order).{' '}
           <button type="button" className="ac-btn" disabled={!shown.length} onClick={() => setPersonaSectionOrder(`Respace the menu of ${p.id}`, p.id, respaceOrders(p.id, shown, groups, order))}>↔ Respace ×10</button></p>
         <ul aria-label={`Sections of ${p.label}`}>
           {shown.map((s) => (
             <li key={s.id}>{s.label} <small className="ac-muted">{groupLabel(s.group)}</small>{' '}
-              <input type="number" aria-label={`Order of ${s.id} for ${p.id}`} placeholder={String(s.groupSeq || 0)} style={{ width: 60, textAlign: 'center' }} value={mine(s.id) ?? ''}
+              <input type="number" aria-label={`Order of ${s.id} for ${p.id}`} placeholder={String(s.groupSeq || 0)} className="ac-order-input" value={mine(s.id) ?? ''}
                 onChange={(e) => { const n = parseFloat(e.target.value); if (!isNaN(n)) setPersonaSectionOrder(`Set the order of ${s.id} for ${p.id} to ${n}`, p.id, { [s.id]: n }); }} />
               {mine(s.id) != null && <button type="button" className="ac-btn" aria-label={`Inherit the order of ${s.id}`} onClick={() => clearPersonaSectionOrder(p.id, s.id)}>↺</button>}
               <button type="button" className="ac-btn" aria-label={`Remove ${s.label}`} onClick={() => removePersonaSection(p.id, s.id)}>✕</button></li>

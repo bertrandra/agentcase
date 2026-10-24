@@ -4,6 +4,7 @@ import { resolveTokens, THEME_DEFAULT } from '@/domain/theme';
 import { contrastWord, GENERATOR_DEFAULTS, HARMONIES, HARMONY_LABELS, type GeneratorSettings, type Harmony } from '@/domain/theme/generatorSettings';
 import { normHex, SCALE_KEYS, type ColourKey, type ThemeDef } from '@/domain/theme/themeDef';
 import { clearDraft, generated, setDraft, useDraft } from './selection';
+import { cssVars } from '@/ui/cssVars';
 
 const SERIES = Array.from({ length: 8 }, (_, i) => `chart-cat-${i + 1}` as ColourKey);
 const SWATCHES: readonly ColourKey[] = [...SCALE_KEYS, 'header-start', 'bg', 'ink', ...SERIES];
@@ -50,7 +51,7 @@ export function GeneratorPanel({ def }: { def: ThemeDef }) {
       </fieldset>
       <ul className="ac-bt-gen-swatches" aria-label="Generated colours">
         {SWATCHES.map((k) => (
-          <li key={k}><span className="ac-bt-swatch" style={{ background: palette[k] }} aria-hidden="true" /><span>{swatchName(k)}</span> <code>{palette[k]}</code></li>
+          <li key={k}><span className="ac-bt-swatch" style={cssVars({ '--ac-swatch': palette[k] })} aria-hidden="true" />{/* dynamic: the generated colour */}<span>{swatchName(k)}</span> <code>{palette[k]}</code></li>
         ))}
       </ul>
       <div className="ac-bt-actions">

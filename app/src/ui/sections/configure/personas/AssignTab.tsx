@@ -17,7 +17,7 @@ export function AssignTab({ personas, lists }: { personas: Persona[]; lists: Rec
   const p = personas.find((x) => x.id === pid);
   return (
     <>
-      <div className="ac-form-row" style={{ alignItems: 'flex-end' }}>
+      <div className="ac-form-row">
         <label className="ac-field"><span className="ac-field-l">Persona</span>
           <select value={pid} onChange={(e) => setPid(e.target.value)}><option value="">— Pick a persona —</option>{personasByOrder(personas).map((x) => <option key={x.id} value={x.id}>{x.label}</option>)}</select></label>
         {p && (

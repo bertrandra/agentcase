@@ -74,3 +74,55 @@
 .ac-section td[data-cell='direct'], .ac-section [data-mark='direct'] { color: var(--ac-primary-700); }
 .ac-section td[data-cell='write'], .ac-section [data-mark='write'] { color: var(--ac-warning-600); }
 .ac-section td[data-cell='indirect'], .ac-section [data-mark='indirect'] { color: var(--ac-slate-675); }
+
+/* ---- shared section text tones: an alert or a destructive prompt, a confirmation, a tag; small print */
+.ac-section .ac-alert-text { color: var(--ac-danger-800); }
+.ac-section .ac-ok-text { color: var(--ac-teal-700); }
+.ac-section .ac-tag-text { color: var(--ac-warning-600); }
+.ac-section .ac-small { font-size: var(--ac-font-size-sm); }
+.ac-section .ac-wide { width: 100%; }
+
+/* ---- Configure: dashboards (dynamic sections) */
+.ac-section .ac-card.ac-dyn-card { padding: 10px 12px; text-align: left; background: var(--ac-dyn-tint); border: 1px solid var(--ac-dyn-edge); border-radius: var(--ac-radius-lg); }
+.ac-section .ac-card.ac-dyn-card.is-link { cursor: pointer; }
+.ac-section .ac-dyn-card-name { font-size: var(--ac-font-size-sm); text-transform: uppercase; color: var(--ac-slate-600); }
+.ac-section .ac-dyn-card-v { font-size: var(--ac-font-size-6xl); font-weight: var(--ac-font-weight-bold); color: var(--ac-dyn-ink); }
+.ac-section .ac-dyn-card-v.is-empty { color: var(--ac-neutral-700); }
+.ac-section .ac-dyn-card-key { font-size: var(--ac-font-size-md); }
+.ac-section .ac-dyn-card-go { margin-top: 6px; font-size: var(--ac-font-size-sm); color: var(--ac-dyn-ink); }
+.ac-section .ac-catalog-value { font-weight: var(--ac-font-weight-semibold); }
+.ac-section .ac-seq-input { width: 56px; }
+
+/* ---- Configure: personas, groups and menu structures */
+.ac-nboard .ac-ncol { border-top-color: var(--ac-group-color); }
+.ac-nboard .ac-ncard { border-left-color: var(--ac-group-color); }
+.ac-nboard .ac-ncol-head { display: flex; align-items: center; gap: 4px; font-weight: var(--ac-font-weight-bold); color: var(--ac-group-ink); }
+.ac-nboard .ac-ncol-empty { text-align: center; font-style: italic; }
+.ac-nboard .ac-ncard-id { font-size: var(--ac-font-size-xs); }
+.ac-section .ac-npreview-group { padding-left: 10px; box-shadow: var(--ac-shadow-rail-offset) var(--ac-group-color); }
+.ac-section .ac-structure-note { margin: .4rem 0 0; }
+.ac-section .ac-th-note { font-size: var(--ac-font-size-xs); font-weight: var(--ac-font-weight-regular); color: var(--ac-table-head-note); }
+.ac-section .ac-order-input { width: 60px; text-align: center; }
+.ac-section .ac-navstyle-opt { margin-right: 16px; }
+.ac-section .ac-sectable-tools { margin: .2rem 0 .6rem; }
+.ac-section .ac-sectable-id { font-size: 10px; }
+.ac-section .ac-table select.ac-sectable-group { min-width: 150px; font-weight: 600; border-left: 4px solid var(--ac-group-color); }
+.ac-section .ac-table select.ac-sectable-tag { min-width: 112px; font-weight: 400; color: var(--ac-tag-color); }
+.ac-section .ac-table select.ac-sectable-tag.is-set { font-weight: 700; }
+.ac-section .ac-assign-list { flex: 1 1 380px; }
+.ac-section .ac-secdetail { margin-top: 1rem; }
+.ac-section .ac-secdetail-box { padding: 14px 18px; margin-bottom: 1rem; background: var(--ac-primary-80); border-left: 4px solid var(--ac-primary-700); border-radius: 6px; }
+.ac-section .ac-secdetail-head { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 8px; }
+.ac-section .ac-secdetail-name { font-size: 15px; color: var(--ac-primary-700); }
+.ac-section .ac-secdetail-meta { font-size: 11px; color: var(--ac-neutral-750); }
+.ac-section .ac-secdetail-label { text-transform: uppercase; letter-spacing: 1px; }
+.ac-section .ac-secdetail-desc { margin: .4rem 0; }
+.ac-section .ac-secdetail-open { margin-top: 8px; }
+.ac-section .ac-grp-count { font-weight: var(--ac-font-weight-bold); color: var(--ac-primary-700); }
+.ac-section .ac-grp-count.is-zero { color: var(--ac-neutral-700); }
+.ac-section .ac-grp-desc { width: 100%; min-width: 220px; }
+.ac-section .ac-seq-step input.ac-seq-step-label { flex: 1; font-weight: var(--ac-font-weight-bold); }
+.ac-section .ac-seq-step-list { min-height: 26px; padding: 0; list-style: none; }
+.ac-section .ac-seq-step-chip { display: inline-flex; align-items: center; gap: 4px; margin: 2px 6px 2px 0; padding: 2px 6px; background: var(--ac-primary-80);
+  border: 1px solid var(--ac-primary-200); border-radius: var(--ac-radius-2xl); }
+.ac-bt-swatch { background: var(--ac-swatch); }

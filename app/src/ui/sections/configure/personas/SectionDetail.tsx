@@ -20,15 +20,15 @@ export function SectionDetail({ structure, id }: { structure: string; id: string
   if (!s) return <p className="ac-muted"><em>Click a section name above to preview it here.</em></p>;
   const who = personas.some((p) => p.id === sel) ? sel : persona, group = groups.find((g) => g.id === s.group);
   return (
-    <section aria-label={`Details of ${s.label}`} style={{ marginTop: '1rem' }}>
-      <div style={{ background: 'var(--ac-primary-80)', borderLeft: '4px solid var(--ac-primary-700)', borderRadius: 6, padding: '14px 18px', marginBottom: '1rem' }}>
-        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: 8 }}>
-          <div><strong style={{ color: 'var(--ac-primary-700)', fontSize: 15 }}>{s.label}</strong> <code>{s.id}</code></div>
-          <div style={{ fontSize: 11, color: 'var(--ac-neutral-750)' }}>Group: <strong>{group?.label ?? s.group}</strong></div>
+    <section aria-label={`Details of ${s.label}`} className="ac-secdetail">
+      <div className="ac-secdetail-box">
+        <div className="ac-secdetail-head">
+          <div><strong className="ac-secdetail-name">{s.label}</strong> <code>{s.id}</code></div>
+          <div className="ac-secdetail-meta">Group: <strong>{group?.label ?? s.group}</strong></div>
         </div>
-        <p style={{ margin: '.4rem 0' }}>{s.description || 'No description.'}</p>
-        <div><strong style={{ fontSize: 11, color: 'var(--ac-neutral-750)', textTransform: 'uppercase', letterSpacing: 1 }}>Personas using it:</strong> {usersOf(personas, lists, s.id).join(', ')}</div>
-        <button type="button" className="ac-btn" style={{ marginTop: 8 }} onClick={() => goSection(s.id)}>Open {s.label} →</button>
+        <p className="ac-secdetail-desc">{s.description || 'No description.'}</p>
+        <div><strong className="ac-secdetail-meta ac-secdetail-label">Personas using it:</strong> {usersOf(personas, lists, s.id).join(', ')}</div>
+        <button type="button" className="ac-btn ac-secdetail-open" onClick={() => goSection(s.id)}>Open {s.label} →</button>
       </div>
       <label className="ac-field"><span className="ac-field-l">Preview the menu of</span>
         <select value={who} onChange={(e) => setSel(e.target.value)}>{personas.map((p) => <option key={p.id} value={p.id}>{p.label}</option>)}</select></label>

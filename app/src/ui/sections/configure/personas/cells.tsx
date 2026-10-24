@@ -14,12 +14,18 @@ export function ListTable({ head, children }: { head: ReactNode; children: React
 
 /** The inline delete confirmation of a row. */
 export function ConfirmDelete({ name, onConfirm, onCancel }: { name: string; onConfirm: () => void; onCancel: () => void }) {
-  return <><span style={{ color: 'var(--ac-danger-800)', fontSize: 'var(--ac-font-size-sm)' }}>Delete “{name}”?</span><button type="button" className="ac-btn" onClick={onConfirm}>✓ Confirm</button><button type="button" className="ac-btn" onClick={onCancel}>Cancel</button></>;
+  return (
+    <>
+      <span className="ac-alert-text ac-small">Delete “{name}”?</span>
+      <button type="button" className="ac-btn" onClick={onConfirm}>✓ Confirm</button>
+      <button type="button" className="ac-btn" onClick={onCancel}>Cancel</button>
+    </>
+  );
 }
 
 /** The order number of a row (centred, 60 px). */
 export function OrderInput({ id, value, onChange }: { id: string; value: number; onChange: (order: number) => void }) {
-  return <input type="number" aria-label={`Order of ${id}`} style={{ width: 60, textAlign: 'center' }} value={value} onChange={(e) => onChange(parseFloat(e.target.value))} />;
+  return <input type="number" aria-label={`Order of ${id}`} className="ac-order-input" value={value} onChange={(e) => onChange(parseFloat(e.target.value))} />;
 }
 
 /** The inline rename field: Enter commits, Escape cancels. */

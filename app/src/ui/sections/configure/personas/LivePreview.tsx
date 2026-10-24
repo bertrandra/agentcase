@@ -2,6 +2,7 @@ import { useState } from 'react';
 import type { MenuPreview } from '@/domain/nav/preview';
 import type { Persona } from '@/domain/pdc/personas';
 import { groupColor } from '@/ui/zones/navModel';
+import { cssVars } from '@/ui/cssVars';
 
 /** Which persona the Menu layout preview shows: the user's pick while it still exists, else the current persona. */
 export function usePreviewPersona(personas: Persona[], current: string): [string, (id: string) => void] {
@@ -25,7 +26,8 @@ export function LivePreview({ persona, preview, colors, pending, mark }: Props) 
       {preview.nav.length === 0 && <p className="ac-muted">This persona has an empty menu.</p>}
       {preview.nav.map(({ group, sections }) => (
         <div key={group.id} data-pgroup={group.id}>
-          <h4 style={{ boxShadow: `var(--ac-shadow-rail-offset) ${groupColor(colors, group.id)}`, paddingLeft: 10 }}>{group.label}</h4>
+          {/* dynamic: the group colour is case data */}
+          <h4 className="ac-npreview-group" style={cssVars({ '--ac-group-color': groupColor(colors, group.id) })}>{group.label}</h4>
           <ul>{sections.map((s) => <li key={s.id} data-psection={s.id} className={s.id === preview.moved || s.id === mark ? 'is-moving' : ''}>{s.label}{s.id === preview.moved ? ' (moving)' : s.id === mark ? ' (selected)' : ''}</li>)}</ul>
         </div>
       ))}
