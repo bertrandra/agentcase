@@ -28,7 +28,7 @@ export default function ProductivitySection() {
           computes cost and savings per year, so the twelve months of a year always sum to that year’s value. There is no month-by-month adoption
           curve and the tool does not infer one.</Callout>
         <ChartPanel config={cfg} label="Throughput per engineer per month by category" height={260} />
-        <p className="ac-muted" style={{ fontStyle: 'italic' }}>{note}</p>
+        <p className="ac-muted ac-productivity-note">{note}</p>
         <DataTable rows={v.rows} rowKey={(r) => r.label} columns={[
           { key: 'type', header: 'Type', render: (r) => <strong>{r.label}</strong> }, col('asis', 'AS-IS'), col('y1', 'Y1'), col('y2', 'Y2'), col('y3', v.endL),
           { key: 'f', header: 'Factor', align: 'center', render: (r) => `${(r.y3 / r.asis).toFixed(1)}x` },

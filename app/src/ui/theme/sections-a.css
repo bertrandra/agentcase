@@ -239,3 +239,13 @@
   text-overflow: ellipsis;
 }
 .ac-section .ac-gantt-marker-d { font-size: var(--ac-font-size-3xs); color: var(--ac-neutral-700); }
+/* TO-BE figures of the comparison tables, the quality anchors (bold with a brick border once edited), velocity, productivity, compliance */
+.ac-section .ac-tobe-value { font-weight: var(--ac-font-weight-semibold); color: var(--ac-blue); }
+.ac-section .ac-table input[type='number'].ac-quality-input { width: 64px; text-align: center; font-weight: var(--ac-font-weight-regular); }
+.ac-section .ac-table input[type='number'].ac-quality-input.is-target { width: 60px; }
+.ac-section .ac-table input[type='number'].ac-quality-input[data-edited] { border-color: var(--ac-brick); font-weight: var(--ac-font-weight-bold); }
+.ac-section .ac-quality-target { text-transform: uppercase; }
+.ac-section .ac-velocity-coefs { display: flex; gap: 12px; flex-wrap: wrap; }
+.ac-section .ac-field input.ac-velocity-coef { width: 90px; }
+.ac-section .ac-productivity-note { font-style: italic; }
+.ac-section .ac-sector-selected { font-weight: var(--ac-font-weight-semibold); background: var(--ac-primary-60); }

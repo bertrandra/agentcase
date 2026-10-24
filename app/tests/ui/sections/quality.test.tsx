@@ -40,9 +40,9 @@ describe('quality section', () => {
   });
   it('an edited value is flagged (amber) and a non-number is ignored', () => {
     const { container } = render(<Quality />), asis = () => screen.getByLabelText('Doc sync % AS-IS') as HTMLInputElement;
-    expect(asis().style.fontWeight).toBe('var(--ac-font-weight-regular)');   // theme token (400)
+    expect(asis().dataset.edited).toBeUndefined();   // plain (regular weight)
     fireEvent.change(asis(), { target: { value: '60' } });
-    expect(asis().style.fontWeight).toBe('var(--ac-font-weight-bold)');   // theme token (700)
+    expect(asis().dataset.edited).toBe('true');   // flagged: bold with a brick border (sections-a.css)
     fireEvent.change(asis(), { target: { value: '' } });
     expect((appStore().getState().doc.QUALITY as unknown[][])[4]![1]).toBe(60);
     expect(container.querySelector('canvas')!.dataset.series).toBe('AS-IS:7,TO-BE Y3:7');

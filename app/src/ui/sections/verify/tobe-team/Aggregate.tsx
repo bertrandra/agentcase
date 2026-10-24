@@ -25,7 +25,7 @@ export default function TobeTeamAggregate() {
   return (
     <SectionFrame title="👥 TO-BE team composition (by skill)" help={help} result={
       <>
-        <div className="ac-form-row" style={{ justifyContent: 'space-between' }}>
+        <div className="ac-form-row is-spread">
           <span className="ac-muted">Residual human FTE and agent vFTE by skill for {a.label}, added up over its planned products.</span>
           <span>{Array.from({ length: a.years }, (_, i) => <button key={i} type="button" aria-pressed={i === a.year}
             className={i === a.year ? 'btn-primary' : ''} onClick={() => setYear(i)}>{`Year ${i + 1}`}</button>)}</span>
