@@ -10,5 +10,9 @@ export default defineConfig({
   plugins: [react(), viteSingleFile()],
   resolve: { alias: { '@': src } },
   build: { target: 'es2022', chunkSizeWarningLimit: 6000 },
-  test: { environment: 'node', include: ['tests/**/*.test.{ts,tsx}'] },
+  // In CI the suite also writes a JUnit report (uploaded by .github/workflows/app.yml when the job fails); the default 5 s test timeout is the gate everywhere.
+  test: {
+    environment: 'node', include: ['tests/**/*.test.{ts,tsx}'],
+    reporters: process.env.CI ? ['default', 'junit'] : ['default'], outputFile: { junit: 'test-results/vitest-junit.xml' },
+  },
 });
