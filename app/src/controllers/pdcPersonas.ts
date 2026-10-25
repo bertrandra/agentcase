@@ -3,6 +3,7 @@ import { duplicateOf, uniqueId, type Persona } from '@/domain/pdc/personas';
 import { defineCommand } from '@/store/commands';
 import { editBase } from '@/store/editBase';
 import { appStore } from '@/store/instance';
+import { dropAppOverrides } from './appSections';
 import { currentPersona, setPersona } from './persona';
 import type { Doc } from '@/store/types';
 import { groupsIn, inStructure, setColorIn, setGroupsIn } from './menuTarget';
@@ -40,6 +41,7 @@ const deleteCmd = defineCommand<{ id: string }>({
     d.PERSONAS = personas(d).filter((x) => x.id !== p.id);
     d.PERSONA_SECTIONS = omit(sections(d), p.id);   // rebuilt (not `delete`d), so undo restores the key in its place
     d.PERSONA_SECTION_ORDER = omit((d.PERSONA_SECTION_ORDER ?? {}) as Record<string, unknown>, p.id);
+    dropAppOverrides(d, p.id);
   },
 });
 const renameCmd = defineCommand<{ id: string; label: string }>({

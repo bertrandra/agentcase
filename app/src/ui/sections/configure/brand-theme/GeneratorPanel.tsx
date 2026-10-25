@@ -5,6 +5,7 @@ import { contrastWord, GENERATOR_DEFAULTS, HARMONIES, HARMONY_LABELS, type Gener
 import { normHex, SCALE_KEYS, type ColourKey, type ThemeDef } from '@/domain/theme/themeDef';
 import { clearDraft, generated, setDraft, useDraft } from './selection';
 import { cssVars } from '@/ui/cssVars';
+import { LogoPalette } from './LogoPalette';
 
 const SERIES = Array.from({ length: 8 }, (_, i) => `chart-cat-${i + 1}` as ColourKey);
 const SWATCHES: readonly ColourKey[] = [...SCALE_KEYS, 'header-start', 'bg', 'ink', ...SERIES];
@@ -41,6 +42,7 @@ export function GeneratorPanel({ def }: { def: ThemeDef }) {
           <output htmlFor={`${id}-contrast`}>{s.contrast} · {word}</output>
         </div>
       </div>
+      <LogoPalette def={def} settings={s} />
       <fieldset className="ac-bt-gen-harmony">
         <legend className="ac-field-l">Harmony</legend>
         {HARMONIES.map((h: Harmony) => (

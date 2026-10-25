@@ -1,10 +1,12 @@
 /** @calc-zone workspace-config */
 import type { DynRow, PersonaOrder, SectionRow } from '@/domain/nav/layout';
 import type { Placement } from '@/domain/nav/moves';
+import { splitMenu, type AppSectionDef } from '@/domain/nav/appSections';
 import type { MenuGroup } from '@/domain/pdc/personas';
 import { defineCommand } from '@/store/commands';
 import { appStore } from '@/store/instance';
 import type { Doc } from '@/store/types';
+import { setAppOverride } from './appSections';
 import { editableStructure, groupsIn, inStructure, isStandard, setGroupsIn } from './menuTarget';
 
 const rows = (d: Doc): SectionRow[] => ((d.sectionGroups ??= []) as SectionRow[]);
@@ -56,9 +58,14 @@ const clearOrderCmd = defineCommand<{ persona: string; id: string }>({
   // rebuilt, not `delete`d: undo keeps key order
   run(d, p) { orders(d)[p.persona] = Object.fromEntries(Object.entries(orders(d)[p.persona] ?? {}).filter(([k]) => k !== p.id)); },
 });
-const membersCmd = defineCommand<{ persona: string; ids: string[] }>({
+// `apps` (the app sections, DEV-APP-SECTION-PERSONAS): their membership goes to PERSONA_APP_SECTIONS, the legacy list keeps the others only.
+const membersCmd = defineCommand<{ persona: string; ids: string[]; apps?: AppSectionDef[] }>({
   type: 'nav.setPersonaSections', label: (p) => `Set the menu of ${p.persona} to ${p.ids.length} section(s)`,
-  run(d, p) { d.PERSONA_SECTIONS = { ...((d.PERSONA_SECTIONS ?? {}) as Record<string, string[]>), [p.persona]: p.ids.slice() }; },
+  run(d, p) {
+    const { legacy, app } = splitMenu(p.ids, p.apps ?? []);
+    d.PERSONA_SECTIONS = { ...((d.PERSONA_SECTIONS ?? {}) as Record<string, string[]>), [p.persona]: legacy };
+    for (const s of p.apps ?? []) setAppOverride(d, p.persona, s, app.has(s.id));
+  },
 });
 
 // ---- Sidebar display of the current group's sections in the compact (hide-menu) bar -----------------------------------------
@@ -85,6 +92,7 @@ export const setPersonaSectionOrder = (title: string, persona: string, entries: 
   if (Object.keys(entries).length) go(personaOrderCmd, { title, persona, entries });
 };
 export const clearPersonaSectionOrder = (persona: string, id: string): void => go(clearOrderCmd, { persona, id });
-/** Replace the persona's whole menu (Sync menu to sequence). */
-export const setPersonaSections = (persona: string, ids: string[]): void => go(membersCmd, { persona, ids });
+/** Replace the persona's whole menu (Sync menu to sequence); with `apps`, the app sections among `ids` are stored as app-section overrides. */
+export const setPersonaSections = (persona: string, ids: string[], apps?: readonly AppSectionDef[]): void =>
+  go(membersCmd, apps?.length ? { persona, ids, apps: apps.map((s) => ({ id: s.id, personas: [...(s.personas ?? [])] })) } : { persona, ids });
 export const setSectionNavStyle = (style: 'buttons' | 'tabs'): void => go(styleCmd, { style });
