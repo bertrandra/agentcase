@@ -25,6 +25,7 @@ When releasing, follow [docs/BUMP_PROCEDURE.md](docs/BUMP_PROCEDURE.md) (§7 for
   the text, bar, border and row-highlight rules. 202 inline styles → 31: 28 genuinely dynamic (a place or length on a calendar or a bar, a series colour
   resolved in JS, a computed alpha tint), each marked `dynamic:`; 3 on the shared `CommitNumber` widget, which takes no class yet. Computed styles are
   unchanged: every element of every section (golden and the portfolio view, toggles expanded) compares equal before and after, and ui-parity stays at 0.
+  New guard `tests/ui/sections/inline-style-a.test.ts`: every remaining inline style of these sections says why (`dynamic:` / `shared widget:`), at most 31.
 - **Long lines** (decision D1): every line of these sections, their aggregates and their tests is at most 160 characters (475 source lines and 16 test lines
   were longer; the scope's `max-len` warnings go from 172 to 0) — prose re-flowed, long notes and labels as constants, JSX attributes wrapped, small
   components extracted (`GroupCard` on Welcome, `TargetRow`, `RateCell`, `BucketPanel`, the Gantt `Marker`, `Legend` and `Release`). The emitted JavaScript of
