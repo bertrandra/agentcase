@@ -62,7 +62,7 @@ describe('theme tokens: one source of truth', () => {
   });
   it('keeps the legacy values: v18 token names, chrome, exports', () => {
     const v: Partial<Record<TokenName, string>> = { blue: '#0058ab', teal: '#006e79', brick: '#8f3237', amber: '#b04600', focus: '#0058ab', ink: '#333',
-    muted: '#636363', line: '#e3e3e3',
+      muted: '#636363', line: '#e3e3e3',
       surface: '#fff', bg: '#f5f6fa', radius: '6px', 'header-end': '#121a38', 'kpibar-end': '#00488c', 'shadow-card': '0 2px 10px rgba(18, 26, 56, .08)' };
     for (const [n, want] of Object.entries(v)) expect(tok(n as TokenName), n).toBe(want);
     expect(['excel-head-bg', 'excel-head-text', 'excel-subtotal-bg', 'excel-band-bg', 'excel-note', 'excel-input',

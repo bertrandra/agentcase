@@ -52,7 +52,7 @@ export default function ResultsAggregate() {
         <SavingsAndTeam savingsTitle="Savings decomposition (last year of each product)" teamTitle="Team shift (horizon end of each product)" b={L} team={T} />
         <AggregateTable caption={`Results by product — ${a.label}`} rows={a.rows} columns={cols} edit={false}
           totals={{ label: `Total — ${a.label}`, cells: { setup: fmtEurK(t.setup), net: fmtEurK(t.net), roi: fmtRoiPct(t.roi), pay: fmtMonths(t.paybackMonth),
-          eff: `${t.eff.toFixed(1)}%` } }} />
+            eff: `${t.eff.toFixed(1)}%` } }} />
         <ExcludedNote excluded={a.excluded} />
       </>} />
   );

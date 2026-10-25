@@ -35,7 +35,7 @@ export function scopeScurve(pf: Portfolio, ids: string[]): ScurveAgg {
     const v = scurveView(p.ctx, engineNow(p.ctx).horizonMonths), at = (m: number) => Math.round(v.curve(Math.min(v.N, m)));
     fam.set(v.family, (fam.get(v.family) ?? 0) + 1);
     return { ...base(p), family: v.family, points: v.pts.length, horizonMonths: v.N, y1: at(12), y2: at(24), y3: at(36), endAdoption: v.endAdoption,
-    endMaturity: v.endMaturity,
+      endMaturity: v.endMaturity,
       l2Month: v.levels[1]?.month ?? null, l4Month: v.levels[3]?.month ?? null };
   });
   return { rows, endAdoption: spread(rows.map((r) => r.endAdoption)), families: [...fam].map(([family, count]) => ({ family, count })) };

@@ -26,7 +26,7 @@ export function baselineLocStrat(pf: Portfolio, ids: string[]): LocStratAgg {
     }
     fte += mx.tot;
     return { ...base(p), fte: mx.tot, asisTJM: sum.asisTJM, targetTJM: sum.tgtTJM, gap: sum.gap, localAsis: cls.Local ?? 0,
-    localTarget: classTargetPct(p.c, 'Local'),
+      localTarget: classTargetPct(p.c, 'Local'),
       offshoreAsis: cls.Offshore ?? 0, offshoreTarget: classTargetPct(p.c, 'Offshore'), own: p.overridden('targetLocPct'), asis: mx.pct, target: t };
   });
   const mix = LOCATIONS.map((l) => ({ name: l.name, cls: l.cls, fte: byLoc[l.name] ?? 0, asisPct: fte ? ((byLoc[l.name] ?? 0) / fte) * 100 : 0,

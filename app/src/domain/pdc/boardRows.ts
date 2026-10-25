@@ -31,7 +31,7 @@ export function newRow(sectionId: string, rows: readonly BoardRow[]): BoardRow {
 /** A new card (legacy dynCardAdd): last in order, switched off, no variable bound. */
 export function newCard(sectionId: string, cards: readonly BoardCard[]): BoardCard {
   return { CARD_ID: freshId(`card-${sectionId}-`, cards.map((c) => c.CARD_ID), cards.length + 1),
-  CARD_SEQ: cards.reduce((m, c) => Math.max(m, c.CARD_SEQ || 0), 0) + 1, CARD_ENABLED: false,
+    CARD_SEQ: cards.reduce((m, c) => Math.max(m, c.CARD_SEQ || 0), 0) + 1, CARD_ENABLED: false,
     CARD_SOURCE_SECTION: sectionId, CARD_TARGET_SECTION: sectionId, CARD_NAME_SRC: 'static', CARD_NAME_VALUE: 'New card', CARD_IMPACT_VAR: null,
     CARD_IMPACT_FMT: null,
     CARD_KEY1_VAR: null, CARD_KEY1_FMT: null, CARD_KEY1_LABEL: null, CARD_KEY2_VAR: null, CARD_KEY2_FMT: null, CARD_KEY2_LABEL: null, CARD_OVERLAY_CTRL: null };

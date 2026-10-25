@@ -60,7 +60,7 @@ export function affected(root: string, changed: string[], level: Level): Report 
     reasons.push(`${picked.size} of ${total} test files (more than ${Math.round(RULE.maxShare * 100)}%) are selected anyway`);
   const full = reasons.length > 0, selected = full ? live.tests.map((t) => t[0]).sort() : [...picked].sort();
   return { level, changed, zones: [...zones].sort(), sections: [...sections].sort(), downstreamZones: imp.zones, impactedSections: imp.sections, unmapped,
-  full, reasons, selected, total,
+    full, reasons, selected, total,
     saved: Math.round(((total - selected.length) / total) * 100),
       parts: { precise: precise.size, zone: zoneTests.size, related: coarse.size, contract: contract.length } };
 }

@@ -40,7 +40,7 @@ export function aggregateResults(pf: Portfolio, c: Consolidated, scope: DisplayS
     label: sel.label, headline: h, last, excluded: selectionView(pf, c, scope)?.excluded ?? [],
     team: { asis: sumBy(cores, (r) => r.team.asis), human: sumBy(cores, (r) => r.team.human), agent: sumBy(cores, (r) => r.team.agent) },
     rows: sel.items.map((v, i) => ({ id: v.id, name: v.name, wave: pf.waves.find((w) => w.id === v.waveId)?.name ?? '',
-    status: (cores[i] as ReturnType<typeof resultsCore>).status,
+      status: (cores[i] as ReturnType<typeof resultsCore>).status,
       setup: v.summary.setup, net: v.summary.net, roi: v.summary.roi, paybackMonth: v.summary.paybackMonth, eff: v.run.automation().eff })),
     totals: { setup: h.setup, net: h.net, roi: roiCanonical(h.net, h.setup), paybackMonth: h.paybackMonth, eff: h.eff },
   };

@@ -30,7 +30,7 @@ const SPECS: Spec[] = [
       { name: /Net by scenario/, shown: (id) => KEYS.map((k) => fmtSigned(cell(id, k).totBen - cell(id, k).setup)) },
       { name: /ROI by scenario/, shown: (id) => KEYS.map((k) => roiText(cell(id, k))) },
       { name: /Payback by scenario/,
-      shown: (id) => KEYS.map((k) => fmtPayback(scenarioByProduct(pf(), [id])[0]!.cells.find((c) => c.key === k)!.payback, cell(id, k).horizon * 12)) },
+        shown: (id) => KEYS.map((k) => fmtPayback(scenarioByProduct(pf(), [id])[0]!.cells.find((c) => c.key === k)!.payback, cell(id, k).horizon * 12)) },
     ],
     drill: (id) => ({ caption: /ROI trajectory by scenario/, shown: [roiText(cell(id, 'aidst')), roiText(cell(id, 'ai'))] }) },
   { id: 'compare', title: /3-way Comparison/, product: /3-way Comparison — AS-IS \/ AS-IS \+ saving \/ Agentic/,

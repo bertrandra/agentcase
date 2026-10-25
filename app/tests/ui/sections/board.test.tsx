@@ -36,7 +36,7 @@ describe('board section', () => {
     loadCase(id);
     const l = pdc<Dash>('pdc_dash', id),
       sections = resolveSections(SECTIONS as NavSection[], appStore().getState().doc.sectionGroups as SectionRow[] | undefined,
-      undefined).map((s) => ({ id: s.id, group: s.group, label: s.label })), groups = GROUPS;
+        undefined).map((s) => ({ id: s.id, group: s.group, label: s.label })), groups = GROUPS;
     for (const [k, ids, all] of [['one', ['tune'], false], ['two', ['tune', 'verify'], false], ['all', [], true]] as const) {
       const got = newDashboard({ groupIds: [...ids], allGroups: all, existing: [], groups, sections, maxOrder: l.max })!, want = l[k];
       expect({ ...got, cards: undefined }).toEqual({ ...want, cards: undefined, nCards: undefined, slots: undefined });

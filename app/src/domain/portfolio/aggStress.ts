@@ -61,7 +61,7 @@ export function scenarioByProduct(pf: Portfolio, ids: string[]): ScenarioProduct
     return {
       horizon: (set[0] as (typeof set)[number]).m.horizon,
       cells: set.map((s) => ({ key: s.key, label: s.label, setup: s.m.setup, totBen: s.m.totBen, net: s.m.totBen - s.m.setup, roi: s.m.roi ?? null,
-      payback: paybackShown(s.m), horizon: s.m.horizon })),
+        payback: paybackShown(s.m), horizon: s.m.horizon })),
     };
   });
 }
@@ -85,7 +85,7 @@ export function compareByProduct(pf: Portfolio, ids: string[]): { rows: CompareP
   return {
     rows,
     totals: { asisFte: sum('asisFte'), classicFte: sum('classicFte'), agenticFte: sum('agenticFte'), vfte: sum('vfte'), asisCost: sum('asisCost'),
-    classicCost: sum('classicCost'),
+      classicCost: sum('classicCost'),
       agenticCost: sum('agenticCost'), classicSave: sum('classicSave'), agenticSave: sum('agenticSave') },
   };
 }

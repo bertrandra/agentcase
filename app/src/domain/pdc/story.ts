@@ -13,6 +13,6 @@ export interface Story {
 export function storySummary(c: Ctx): Story {
   const m = model(c), ys = engineNow(c).years(), e = ys[ys.length - 1]!;
   return { baseFte: m.base.etp, tgtFte: e.totalHumanFteEnd, velocityPct: velocityUpliftPct(c), baselineRun: m.baselineRun, endRun: e.totalRunCost,
-  endSavings: e.savings,
+    endSavings: e.savings,
     payback: paybackMonthsCanonical(c), horizon: m.horizon, endLabel: `Y${ys.length}` };
 }

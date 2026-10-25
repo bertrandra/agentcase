@@ -29,7 +29,7 @@ describe('Model-Engine read-outs reproduce the legacy oracle', () => {
     ['classes', 'totalW', 'phiWeighted', 'kappaTerm', 'rate', 'rhoMax', 'baseP']));
   it.each(ids)('P3 supervision · %s',
     (id) => same('me_sup', id, (i) => supModel(ctxOf(i)), ['provision', 'constrained', 'mode', 'esup', 'vMax', 'vfteRaw', 'vfteEff', 'esupNeeded',
-    'supervisorsToUnlock']));
+      'supervisorsToUnlock']));
   it.each(ids)('P3 DORA read-out · %s', (id) => same('me_dora', id, (i) => doraReadout(ctxOf(i))));
   it.each(ids)('P5 flow and value · %s', (id) => same('me_flow', id, (i) => flowModel(ctxOf(i))));
   it.each(ids)('P6 evidence ledger, equal weights · %s', (id) => same('me_evlNoRun', id, (i) => {

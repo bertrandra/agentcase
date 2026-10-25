@@ -46,7 +46,7 @@ export function aggregatePlayback(pf: Portfolio, c: Consolidated, scope: Display
     horizon: L / 12, months: L,
   };
   const row = (v: ProductView): PlaybackProductRow => ({ id: v.id, name: v.name, wave: pf.waves.find((w) => w.id === v.waveId)?.name ?? '',
-  baseEtp: v.run.baseEtp,
+    baseEtp: v.run.baseEtp,
     etp: lastOf(v.series.humanFte), vfte: lastOf(v.series.agentVfte), velocityPct: v.run.velocityPct(), net: v.summary.net });
   return {
     label: sel.label, headline: h, series, rows: sel.items.map(row), excluded: selectionView(pf, c, scope)?.excluded ?? [],

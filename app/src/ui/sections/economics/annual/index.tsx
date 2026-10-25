@@ -23,7 +23,7 @@ export default function AnnualSection() {
   const cfg = useMemo(() => runBars(v, { label: (i) => `Year ${i + 1}`, names: ['Team cost', 'Agentic run (team)'], yTitle: true }, tok), [v, tok]);
   if (!end || !first) return null;
   const items: [string, string][] = [['AS-IS cost/yr', fmtK(v.baselineRun)], ['Run Y1', fmtK(first.totalRunCost)],
-  [`Run ${yLabel(v.H)}`, fmtK(end.totalRunCost)],
+    [`Run ${yLabel(v.H)}`, fmtK(end.totalRunCost)],
     [`Saving ${yLabel(v.H)}`, fmtK(end.savings)], ['Setup', fmtK(v.setup)], [`ROI ${v.H} year${v.H > 1 ? 's' : ''} (net)`, fmtRoiPct(v.roi)]];
   return (
     <SectionFrame title="Annual summary" help={help}

@@ -23,7 +23,7 @@ const g = (i: number): string | null => GLOBALS[i] ?? GLOBALS[0] ?? null;
 
 function mk(secId: string, n: number, name: string, source: string, target: string, iv: string | null, k1: string | null, k2: string | null): BoardCard {
   return { CARD_ID: `card-${secId}-${n}`, CARD_SEQ: n, CARD_ENABLED: true, CARD_SOURCE_SECTION: source, CARD_TARGET_SECTION: target, CARD_NAME_SRC: 'static',
-  CARD_NAME_VALUE: name,
+    CARD_NAME_VALUE: name,
     CARD_IMPACT_VAR: iv, CARD_IMPACT_FMT: null, CARD_KEY1_VAR: k1, CARD_KEY1_FMT: null, CARD_KEY1_LABEL: null, CARD_KEY2_VAR: k2, CARD_KEY2_FMT: null,
       CARD_KEY2_LABEL: null, CARD_OVERLAY_CTRL: null };
 }
@@ -69,6 +69,6 @@ export function newDashboard(opts: { groupIds: string[]; allGroups: boolean; exi
   const description =
     `Auto-generated: 2 cards per section that owns a bindable variable, ${allGroups ? 'across every menu group' : `from ${labels.join(', ')}`}.`;
   return { id, title, archetype: allGroups ? 'ALL' : `GROUPS:${groupIds.join(',')}`, description,
-  menuGroup: !allGroups && groupIds.length === 1 ? groupIds[0]! : 'configure',
+    menuGroup: !allGroups && groupIds.length === 1 ? groupIds[0]! : 'configure',
     order: maxOrder + 1, visible: true, cards: buildGroupCards(id, groupIds, allGroups, sections), rows: [] };
 }

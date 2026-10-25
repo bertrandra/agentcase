@@ -27,7 +27,7 @@ export function aggSetup(pf: Portfolio, productIds: string[]): SetupAgg {
   return {
     rows, spread: spreadOf(rows.map((r) => r.total)), duration: spreadOf(rows.map((r) => r.duration)),
     totals: { tooling: total(rows, (r) => r.tooling), training: total(rows, (r) => r.training), coaching: total(rows, (r) => r.coaching),
-    governance: total(rows, (r) => r.governance), total: total(rows, (r) => r.total) },
+      governance: total(rows, (r) => r.governance), total: total(rows, (r) => r.total) },
   };
 }
 
@@ -69,7 +69,7 @@ export function aggProgram(pf: Portfolio, productIds: string[]): ProgramAgg {
   return {
     rows, pilotCost: spreadOf(rows.map((r) => r.pilotCost)), overhead: spreadOf(rows.map((r) => r.overheadPct)),
     totals: { pilotFte: total(rows, (r) => r.pilotFte), pilotCost: total(rows, (r) => r.pilotCost), capOps: ops, capTarget: target,
-    capPct: target > 0 ? Math.round((ops / target) * 100) : 0 },
+      capPct: target > 0 ? Math.round((ops / target) * 100) : 0 },
   };
 }
 
@@ -93,6 +93,6 @@ export function aggRisk(pf: Portfolio, productIds: string[]): RiskAgg {
   return {
     rows, score: spreadOf(rows.map((r) => r.score)), diBar: spreadOf(rows.map((r) => r.diBar)),
     counts: { highTier: rows.filter((r) => r.tier === 'high' || r.tier === 'unacceptable').length, highRisk: rows.filter((r) => r.band === 'High').length,
-    applied: rows.filter((r) => r.diBar > 0).length },
+      applied: rows.filter((r) => r.diBar > 0).length },
   };
 }

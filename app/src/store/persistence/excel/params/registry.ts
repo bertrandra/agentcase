@@ -20,14 +20,14 @@ import type { SheetFamily } from './types';
 
 /** Sheet order of the workbook (legacy exportParams). */
 export const WRITE_ORDER: SheetFamily[] = [parameters, rateCard, inputTeam, phaseScope, locationTarget, qualityAsIs, tokenModels, regSettings, regNorms,
-regArtifacts, sdlcArtifacts,
+  regArtifacts, sdlcArtifacts,
   agentCatalogSheet, loopPairsSheet, personas, personaSections, groups, sections, menuStructures, dependencies, sCurve, personaSectionOrder, personaSequence,
   dynamicSections, dynamicCards, dynamicRows,
   statusLifecycle, tobeTeam, skillMap, tobeSplit, strategies, factoryMeta, themesSheet];
 
 /** Order in which sheets are applied on import (legacy importParams): later sheets validate against what earlier ones set. */
 export const READ_ORDER: SheetFamily[] = [parameters, rateCard, inputTeam, phaseScope, locationTarget, qualityAsIs, tokenModels, regSettings, regNorms,
-regArtifacts, agentCatalogSheet, loopPairsSheet,
+  regArtifacts, agentCatalogSheet, loopPairsSheet,
   sdlcArtifacts, personas, personaSections, personaSectionOrder, personaSequence, groups, sections, menuStructures, dependencies, sCurve, dynamicSections,
   dynamicCards, dynamicRows, factoryMeta,
   statusLifecycle, skillMap, tobeSplit, strategies, themesSheet];

@@ -41,7 +41,7 @@ function totals(out: CostRow[], w: string, label: string, subs: number[], views:
 function productBlock(out: CostRow[], v: ProductView, wave: string, L: number, rates: RatesIndex): number {
   const k = (g: string, line: string, basis: string, sign: string) => ['Portfolio', wave, v.name, g, line, basis, sign], K = v.run.engine.K, first = out.length;
   out.push(row('team', k('Team', 'Team cost (human days x applied rate)', 'Rate cards: sum of days x applied rate + blending adjustment', COST), EUR, 'eur',
-  K.baselineRunMonth,
+    K.baselineRunMonth,
     lay(v, L, (t) => v.run.rows[t - 1]!.teamCost), { k: 'link', row: rates.check.get(v.id)! }));
   out.push(...costLines(v, L, k));
   const pilot = pilotCells(v, L);
@@ -51,7 +51,7 @@ function productBlock(out: CostRow[], v: ProductView, wave: string, L: number, r
   out.push(row('total', k('Total', 'TOTAL TO-BE COST (days x rate + other costs + pilot)', 'sum of the lines above', COST), EUR, 'eur', sum.t0, sum.months,
     { k: 'sum', rows: ids }, true));
   const eng = row('engine', k('Check', 'Engine total + pilot (AS-IS cost less net savings, plus the pilot)', 'baselineRunMonth - netSavings + pilot', COST),
-  EUR, 'eur', K.baselineRunMonth,
+    EUR, 'eur', K.baselineRunMonth,
     plus(layWide(v, L, (i) => (running(v, L, i) ? K.baselineRunMonth : 0) - v.series.net[i]!), pilot));
   out.push(eng);
   const d = subRows(out[out.length - 2] as CostRow, eng), total = out.length - 2, M = 'Memo (not in the total)';

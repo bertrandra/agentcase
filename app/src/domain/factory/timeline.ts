@@ -16,16 +16,16 @@ export function timelineEvents(d: Source): TimelineEvent[] {
   const all: Omit<TimelineEvent, 't'>[] = [
     ...d.COMMITS.filter((c) => c.committedAt).map((c) => ({ date: c.committedAt, lane: 'Commits' as const, label: c.message || '(commit)', tone: C.BLUE })),
     ...d.BUILDS.filter((b) => b.builtAt).map((b) => ({ date: b.builtAt, lane: 'Builds' as const, label: b.name,
-    tone: b.status === 'Success' ? C.TEAL : C.BRICK })),
+      tone: b.status === 'Success' ? C.TEAL : C.BRICK })),
     ...d.RELEASE_CANDIDATES.filter((r) => r.cutAt).map((r) => ({ date: r.cutAt, lane: 'Release Candidates' as const, label: r.name, tone: C.PURPLE })),
     ...d.APPROVALS.filter((a) => a.decidedAt).map((a) => ({ date: a.decidedAt as string, lane: 'Approvals' as const,
-    label: `${a.approver || '?'}: ${a.decision}`, tone: a.decision === 'Approved' ? C.TEAL : C.BRICK })),
+      label: `${a.approver || '?'}: ${a.decision}`, tone: a.decision === 'Approved' ? C.TEAL : C.BRICK })),
     ...d.DEPLOYMENTS.filter((x) => x.deployedAt).map((x) => ({ date: x.deployedAt, lane: 'Deployments' as const,
-    label: `${env(x.environmentId)} · ${x.status}`, tone: x.status === 'Success' ? C.TEAL : x.status === 'Failed' ? C.BRICK : C.AMBER })),
+      label: `${env(x.environmentId)} · ${x.status}`, tone: x.status === 'Success' ? C.TEAL : x.status === 'Failed' ? C.BRICK : C.AMBER })),
     ...d.MONITORING_EVENTS.filter((m) => m.timestamp).map((m) => ({ date: m.timestamp, lane: 'Monitoring' as const, label: m.description || '(event)',
-    tone: m.severity === 'Critical' ? C.BRICK : m.severity === 'Warning' ? C.AMBER : C.BLUE })),
+      tone: m.severity === 'Critical' ? C.BRICK : m.severity === 'Warning' ? C.AMBER : C.BLUE })),
     ...d.FEEDBACK_ITEMS.filter((f) => f.createdAt).map((f) => ({ date: f.createdAt, lane: 'Feedback' as const, label: f.description || '(feedback)',
-    tone: C.TEAL })),
+      tone: C.TEAL })),
   ];
   return all.map((e) => ({ ...e, t: new Date(e.date).getTime() })).filter((e) => !isNaN(e.t));
 }

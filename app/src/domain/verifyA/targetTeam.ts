@@ -38,7 +38,7 @@ export function teamPoles(l: Live, t: TargetTeam): TeamPoles {
     sup: poleRows(l, [['Agent Supervisor (output review)', t.supETP * 0.7], ['Sec/Quality', t.supETP * 0.3]]),
     setup: poleRows(l, [['Transformation lead', 0.65], ['Agentic architect', 0.75], ['Coach', 0.6]], 1.15),
     run: poleRows(l, [['AI/Agent Engineer', Math.max(0.3, e / 12)], ['Skill/Prompt Engineer', Math.max(0.2, e / 20)], ['AI-FinOps', coef(l, 'aiFinOpsFte')],
-    ['AI-QA', Math.max(0.2, e / 25)]], 1.15),
+      ['AI-QA', Math.max(0.2, e / 25)]], 1.15),
     setupTotal: l.m.setupTotal,
   };
 }
@@ -54,7 +54,7 @@ export function groupRows(l: Live, t: TargetTeam): GroupRow[] {
     { group: 'Supervision', composition: 'AI output review & validation', fte: t.supETP, cost: cost(t.supETP), kind: 'Recurring', tone: 'sup' },
     { group: 'Agentic Run', composition: 'AI Eng, Prompt Eng, FinOps, AI-QA', fte: t.runETP, cost: cost(t.runETP, 1.15), kind: 'Recurring', tone: 'run' },
     { group: 'Agentic Setup', composition: 'Lead, architect, coach (transitional Y1)', fte: t.setupETP, cost: cost(t.setupETP, 1.15), kind: 'Transitional',
-    tone: 'setup' },
+      tone: 'setup' },
   ];
 }
 

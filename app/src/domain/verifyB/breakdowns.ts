@@ -14,7 +14,7 @@ export function execView(c: Ctx) {
   return {
     endL,
     sprints: [['AS-IS', 35], ['Y1', sp(r[0] as number / 100, 0.3)], ['Y2', sp(r[1] as number / 100, 0.5)],
-    [endL, sp(end.adoptionEndPct / 100, 0.8)]] as [string, number][],
+      [endL, sp(end.adoptionEndPct / 100, 0.8)]] as [string, number][],
     rows: phases.map(([name, a, t]) => {
       const y = (k: number) => Math.round(a - (a - t) * (r[k] as number) / (r[2] as number));
       return { name, cells: [`${a}j`, `${y(0)}j`, `${y(1)}j`, `${t}j`] };
@@ -47,7 +47,7 @@ export function productivityView(c: Ctx) {
   return {
     endL, fallback, count: items.length, intensity: sc.avgAgent, scopeCount: sc.count, totalArt: sc.totalArt,
     rows: items.map((a) => ({ label: a.label, asis: a.asis, y1: tpVal(a.asis, a.target, r1), y2: tpVal(a.asis, a.target, r2),
-    y3: tpVal(a.asis, a.target, r3) })),
+      y3: tpVal(a.asis, a.target, r3) })),
   };
 }
 
@@ -58,7 +58,7 @@ export function velocityView(c: Ctx) {
     endL, velocity: [vs.asis, vv(r1), vv(r2), vv(r3)],
     rows: doraAnchors(c.s).filter((a) => a.id !== 'velocitySp').map((a) => ({
       label: a.label, cells: [a.asis, anchorClamp(a.asis, a.target, r1), anchorClamp(a.asis, a.target, r2), anchorClamp(a.asis, a.target, r3),
-      a.target].map((v) => daFmt(c.s, a.id, v)),
+        a.target].map((v) => daFmt(c.s, a.id, v)),
     })),
   };
 }

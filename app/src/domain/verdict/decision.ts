@@ -50,7 +50,7 @@ export function decide(c: Ctx, run: Pick<McResult, 'stats' | 'sens'>): Decision 
 export const VERDICT_META: Record<Verdict, { tone: ColourRole; bgTone: ColourRole; icon: string; label: string; sub: string; short: string }> = {
   strong: { tone: 'teal-700', bgTone: 'success-50', icon: '✅', label: 'RECOMMENDED', short: 'RECOMMENDED', sub: 'High confidence, contained downside' },
   conditional: { tone: 'warning-600', bgTone: 'warning-55', icon: '⚠️', label: 'CONDITIONALLY VIABLE', short: 'CONDITIONALLY VIABLE',
-  sub: 'Proceed only if the conditions below hold' },
+    sub: 'Proceed only if the conditions below hold' },
   defer: { tone: 'danger-800', bgTone: 'danger-75', icon: '⛔', label: 'DEFER — DE-RISK FIRST', short: 'DEFER — DE-RISK FIRST',
-  sub: 'Confidence too low to commit' },
+    sub: 'Confidence too low to commit' },
 };

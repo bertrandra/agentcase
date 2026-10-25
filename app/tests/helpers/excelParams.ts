@@ -53,4 +53,4 @@ export function stateMismatches(ours: Doc, legacy: Record<string, unknown>, pris
  */
 const norm = (k: string,
   v: unknown): unknown => (k === 'ENVIRONMENTS' && Array.isArray(v) ? v.map((e: Record<string,
-  unknown>) => Object.fromEntries(Object.entries(e).filter(([key]) => key !== 'isProd'))) : v);
+    unknown>) => Object.fromEntries(Object.entries(e).filter(([key]) => key !== 'isProd'))) : v);

@@ -59,7 +59,7 @@ export default function AnnualAggregate() {
         />
         <AggregateTable caption={`Annual table by calendar year — ${a.label}`} first="Year" rows={years} columns={yearCols} edit={false}
           totals={{ label: `Total — ${a.label}`, cells: { run: fmtK(t.run), setup: fmtK(t.setup), savings: fmtK(t.savings), net: fmtK(t.net),
-          cum: fmtK(t.net) } }} />
+            cum: fmtK(t.net) } }} />
         <AggregateTable caption={`Net by product and calendar year — ${a.label}`} rows={a.rows} columns={prodCols} edit={false}
           totals={{ label: `Total — ${a.label}`, cells: Object.fromEntries(a.totalNet.map((n, i) => [`y${i}`, fmtK(n)])) }} />
         <ExcludedNote excluded={a.excluded} />

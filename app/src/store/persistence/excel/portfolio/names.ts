@@ -20,6 +20,6 @@ export const PF_HEADERS: Record<string, string[]> = {
   [PF_SHEETS.team]: ['Product id', 'Skill', 'Grade', 'Location', 'FTE', 'Pinned artefacts (; separated)'],
   [PF_SHEETS.overrides]: ['Product id', 'Key', 'Part', 'Value (JSON)'],
   [PF_SHEETS.subsets]: ['Product id', 'Enabled', 'Target CC', 'Curation FTE', 'Setup base', 'KT lead (months)',
-  ...Array.from({ length: 9 }, (_, i) => `Maturity A${i + 1}`)],
+    ...Array.from({ length: 9 }, (_, i) => `Maturity A${i + 1}`)],
   [PF_SHEETS.domains]: ['Product id', 'Domain', 'Weight %'],
 };

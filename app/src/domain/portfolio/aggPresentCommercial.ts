@@ -41,6 +41,6 @@ export function aggregateCommercial(pf: Portfolio, c: Consolidated, scope: Displ
   return {
     label: sel.label, rows, excluded: selectionView(pf, c, scope)?.excluded ?? [],
     totals: { revenue, cost: total(ok.map((r) => r.row.cost)), margin, marginPct: revenue > 0 ? (margin / revenue) * 100 : 0,
-    tco: total(ok.map((r) => r.row.tco)), unavailable: rows.length - ok.length },
+      tco: total(ok.map((r) => r.row.tco)), unavailable: rows.length - ok.length },
   };
 }

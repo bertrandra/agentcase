@@ -19,7 +19,7 @@ describe('economics domain reproduces the legacy', () => {
     expect(diffs(extra('econ_savings', id), savingsBreakdown(c))).toEqual([]);
     expect(diffs({ ...e, roi: e.roi ?? 'null', roiPct: e.roiPct, paybackText: e.paybackText, payback: e.payback ?? 'null' },
       { totalBen: v.totalBenefit, net: v.net, roi: v.roi ?? 'null', roiPct: fmtRoiPct(v.roi), payback: v.payback ?? 'null',
-      paybackText: fmtPayback(v.payback, v.months.length),
+        paybackText: fmtPayback(v.payback, v.months.length),
         months: v.months.length, npvRate: v.npvRate, npv: v.npv, horizon: v.H, freed: v.freed })).toEqual([]);
   });
   it('formatting rules match the legacy helpers', () => {

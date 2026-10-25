@@ -52,7 +52,7 @@ export function kpiView(c: Ctx) {
   ];
   const idx = (v: number, a: number) => Math.round(v / a * 100);
   const chart = [etp > 0 ? Math.round(end.humanFteEnd / etp * 100) : 0, run0 > 0 ? Math.round(runEnd / run0 * 100) : 0,
-  idx(daVal(s, 'leadTime', r3), daGet(s, 'leadTime').asis), idx(runEnd, run0),
+    idx(daVal(s, 'leadTime', r3), daGet(s, 'leadTime').asis), idx(runEnd, run0),
     idx(qv('Bugs/1000 LOC'), qual('Bugs/1000 LOC')[1]), idx(qv('Test coverage'), qual('Test coverage')[1]),
       idx(daVal(s, 'velocitySp', r3), daGet(s, 'velocitySp').asis)];
   return { endL, cards, eco, vq, comp, chart };

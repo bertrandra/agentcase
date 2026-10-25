@@ -35,7 +35,7 @@ function readProduct(v: unknown): Portfolio['products'][number] {
   need(rec(p.knowledge) && rec(p.overrides), `product ${id}: knowledge and overrides must be objects`);
   need(p.waveId === null || typeof p.waveId === 'string', `product ${id}: waveId must be text or null`);
   return { id, name: p.name as string, note: typeof p.note === 'string' ? p.note : undefined, archived: p.archived === true ? true : undefined,
-  teamIn: p.teamIn as never,
+    teamIn: p.teamIn as never,
     knowledge: p.knowledge as never, overrides: p.overrides as never, waveId: p.waveId as string | null,
       offsetMonths: num(p.offsetMonths, `product ${id}: offsetMonths`) };
 }
@@ -60,7 +60,7 @@ export function readPortfolio(raw: unknown): Portfolio {
     waves: (s.waves as unknown[]).map((x) => clean(readWave(x))),
     activeProductId: safe(s.activeProductId, 'activeProductId'),
     hub: { enabled: hub.enabled as boolean, infraMonthly: num((hub as Rec).infraMonthly, 'hub.infraMonthly'),
-    infraAllocation: hub.infraAllocation as 'perProduct' | 'byBaseEtp' },
+      infraAllocation: hub.infraAllocation as 'perProduct' | 'byBaseEtp' },
     horizonMonths: num(s.horizonMonths, 'horizonMonths'), startDate: typeof s.startDate === 'string' ? s.startDate : '',
     ...(s.rho === undefined || s.rho === 0 ? {} : { rho: num(s.rho, 'rho') }),
   };

@@ -13,7 +13,7 @@ const inputs = (row: XL.Row, n: number): void => { for (let i = 1; i <= n; i++) 
 function writeSettings(wb: XL.Workbook, pf: Portfolio): void {
   const w = ws(wb, PF_SHEETS.settings, [30, 24]);
   const rows: [string, string | number][] = [['Hub enabled', pf.hub.enabled ? 'Yes' : 'No'], ['Hub infrastructure (€/month)', pf.hub.infraMonthly],
-  ['Hub infrastructure allocation', pf.hub.infraAllocation],
+    ['Hub infrastructure allocation', pf.hub.infraAllocation],
     ['Horizon (months)', pf.horizonMonths], ['Start date (ISO)', pf.startDate], ['Active product id', pf.activeProductId],
       ['Correlation rho (0-1)', pf.rho ?? 0]];
   rows.forEach(([k, v]) => inputs(w.addRow([k, v]), 2));

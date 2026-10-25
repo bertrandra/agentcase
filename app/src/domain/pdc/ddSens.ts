@@ -19,7 +19,7 @@ const endSavings = (s: CaseState): number => { const ys = engineNow(makeCtx(s)).
 export function ddFingerprint(c: Ctx): string {
   const s = c.s as unknown as Record<string, unknown>,
     src = JSON.stringify([s.dom, [...(c.a.selected)].sort(), [...(c.a.selectedReg)].sort(), s.artefactsEdited, s.QUALITY, s.DORA_ANCHORS,
-    s.THROUGHPUT_ANCHORS, s.COEF, s.engageCoef, s.statusLifecycle]);
+      s.THROUGHPUT_ANCHORS, s.COEF, s.engageCoef, s.statusLifecycle]);
   let h = 2166136261;
   for (let i = 0; i < src.length; i++) { h ^= src.charCodeAt(i); h = Math.imul(h, 16777619); }
   return (h >>> 0).toString(36);

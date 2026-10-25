@@ -14,7 +14,7 @@ const EXPORTS = [
   { scope: 'all', label: '⬇️ Export all', hint: 'Full workbook — every sheet (parameters, team, scope, personas, Factory meta-model, …).' },
   { scope: 'no-factory', label: '⬇️ Export all except Factory', hint: 'Everything except the Factory meta-model (FM…) sheets.' },
   { scope: 'persona-only', label: '⬇️ Export persona config only',
-  hint: 'Only the persona and section configuration sheets, including the dependency edges (plus a JSON copy).' },
+    hint: 'Only the persona and section configuration sheets, including the dependency edges (plus a JSON copy).' },
 ] as const;
 
 function saveBlob(filename: string, blob: Blob): void {

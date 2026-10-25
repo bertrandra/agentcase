@@ -15,7 +15,7 @@ export function FteShift() {
   const rows = v.years.map((y, i) => ({
     key: String(i), label: <strong>{yLabel(i + 1)}</strong>,
     cells: [fmt1(y.humanFteEnd), fmtE(s.team[i] as number), fmt1(y.agentVfteEnd), fmtE(s.token[i] as number),
-    fmtE((s.team[i] as number) + (s.token[i] as number))],
+      fmtE((s.team[i] as number) + (s.token[i] as number))],
   }));
   return (
     <Panel title="Workforce Shift — Human FTE to Agent vFTE (with costs)">

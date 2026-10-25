@@ -53,7 +53,7 @@ describe('the guard itself (negative tests)', () => {
       '.a { font: var(--ac-font-size-md) / var(--ac-leading-code) var(--ac-font-mono); }',
       '.a { box-shadow: var(--ac-shadow-rail-offset) var(--dyn-group-color); }']) expect(css(s), s).toEqual([]);
     for (const s of ["<b style={{ color: 'var(--ac-brick)' }} />", "const c = tok('primary-700'); // was #0058AB", "<rect fill=\"var(--ac-neutral-0)\" />",
-    "const e = '&#160;';",
+      "const e = '&#160;';",
       "<b style={{ boxShadow: `var(--ac-shadow-rail-offset) ${c}` }} />"]) expect(tsx(s), s).toEqual([]);
   });
 });

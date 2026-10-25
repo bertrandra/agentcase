@@ -88,7 +88,7 @@ export function ganttView(c: Ctx): GanttView {
     tone: PAL[i % PAL.length]!, arts: artRows(ax, x.arts, lam, win[x.id]!),
   }));
   if (cross.length) phases.push({ ...spanOf(ax, win['Cross-cutting']!, cw.sf), key: '__cross__', name: '🔶 Cross-cutting', count: cross.length,
-  last: lastId === 'Cross-cutting', cross: true,
+    last: lastId === 'Cross-cutting', cross: true,
     meta: meta('Cross-cutting', cw.sf, 'AI · Sustainability · Usability · '), tone: 'chart-cat-3', arts: artRows(ax, cross, lam, win['Cross-cutting']!) });
 
   return {
@@ -97,7 +97,7 @@ export function ganttView(c: Ctx): GanttView {
     ticks: Array.from({ length: Math.floor(totalM / 12) + 1 }, (_, k) => ({ left: ax.left(k * 12), label: ax.dateAt(k * 12) })),
     program: prog.rows.map((r) => ({ ...r, left: ax.left(r.start), w: ax.width(r.dur), range: spanDates(ax, r.start, r.dur) })),
     summary: [['Start', ax.startOk ? ax.startDate.toLocaleDateString('en-US') : ax.startStr], ['Horizon', `${ax.horizon} yr`],
-    ['Onboarding', `${prog.onboardWeeks} wk`],
+      ['Onboarding', `${prog.onboardWeeks} wk`],
       ['Phases in scope', String(ordered.length)], ['Velocity gain', `×${vAt(1).toFixed(2)}`]],
   };
 }

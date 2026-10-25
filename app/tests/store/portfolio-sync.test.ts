@@ -57,7 +57,7 @@ describe('autosave and multi-tab on a portfolio', () => {
     const other = createAppStore(makeDefaultDoc());
     restoreRecord(other,
       { tabId: 'x', savedAt: '', label: 'old', snapshot: old,
-      history: { undo: [{ label: 'a', type: 't', ts: 0, patches: [{ op: 'replace', path: ['dom'], value: 1 }], inverse: [] }], redo: [] } });
+        history: { undo: [{ label: 'a', type: 't', ts: 0, patches: [{ op: 'replace', path: ['dom'], value: 1 }], inverse: [] }], redo: [] } });
     expect(other.getState().history.undo).toHaveLength(0);
   });
   it('portfolio patches reach a second tab; the active product and edit scope stay local', () => {

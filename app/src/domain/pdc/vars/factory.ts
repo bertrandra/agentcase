@@ -11,7 +11,7 @@ const SCOPE = ['release-pipeline', 'factory-model', 'engineering'] as const;
 export function kpiDataOf(c: Ctx): KpiData {
   const s = c.s as unknown as Partial<FactoryData>;
   return { DEPLOYMENTS: s.DEPLOYMENTS ?? NONE, ENVIRONMENTS: s.ENVIRONMENTS ?? NONE, RELEASE_CANDIDATES: s.RELEASE_CANDIDATES ?? NONE,
-  MONITORING_EVENTS: s.MONITORING_EVENTS ?? NONE,
+    MONITORING_EVENTS: s.MONITORING_EVENTS ?? NONE,
     APPROVALS: s.APPROVALS ?? NONE, QUALITY_GATES: s.QUALITY_GATES ?? NONE, COMMITS: s.COMMITS ?? NONE, BUILDS: s.BUILDS ?? NONE,
       FEEDBACK_ITEMS: s.FEEDBACK_ITEMS ?? NONE, tasks: factoryTasks(c) } as KpiData;
 }

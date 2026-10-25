@@ -33,7 +33,7 @@ describe('A11: an inherited subset gives today\'s hub figures', () => {
     const pf = three(), before = consolidate(pf), builds = runStats.builds;
     const next = { ...pf,
       products: pf.products.map((p) => (p.id === 'B' ? { ...p, knowledge: { targetCC: 1, maturityAnswers: [4, 4, 4, 4, 4, 4, 4, 4, 4], curationFTE: 1.5,
-      setupBase: 50000 } } : p)) };
+        setupBase: 50000 } } : p)) };
     const after = consolidate(next);
     expect(runStats.builds - builds).toBe(1);
     for (const id of ['p1', 'C']) {

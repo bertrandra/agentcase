@@ -8,7 +8,7 @@ import type { Portfolio } from './types';
 import type { ProductView } from './waves';
 
 const IN = { setup: 'Agentic Setup — Initial investment', ctx: 'Engagement context', tok: 'Token economics & FinOps', kh: 'Knowledge hub — living memory',
-team: 'Input team (AS-IS) — breakdown by resource',
+  team: 'Input team (AS-IS) — breakdown by resource',
   loc: 'Location strategy', rate: 'Rate Card — Day rate by Grade × Location', run: 'Agentic run-team sizing', prog: 'Program & Completeness', waves: 'Waves',
   hub: 'Knowledge transfer (hub settings)',
   curve: 'S-curve — adoption ramp', elig: 'Eligibility & Abaques', fixed: 'Fixed in the engine (not editable)', mc: 'Portfolio stress (1 = base case)' };
@@ -21,12 +21,12 @@ function commonParams(pf: Portfolio, v: ProductView, rate: number, horizon: numb
   return [
     common('Annual discount rate', rate, 'per year', IN.ctx), common('Monthly discount rate (annual rate / 12)', rate / 12, 'per month', IN.ctx),
     common('Portfolio horizon', horizon, 'months', IN.waves), common('Portfolio start date', pf.startDate || '(not set: months are labelled M1, M2...)',
-    'date', IN.waves),
+      'date', IN.waves),
     common('Currency', 'EUR', '', IN.fixed), common('Knowledge Hub enabled for the portfolio', pf.hub.enabled ? 'Yes' : 'No', '', IN.hub),
     common('Hub infrastructure', pf.hub.infraMonthly, 'EUR/month', IN.hub), common('Hub infrastructure allocation', pf.hub.infraAllocation, '', IN.hub),
     common('Output share of tokens (TOK_OUT_SHARE)', s.TOK_OUT_SHARE, '%', IN.tok),
     ...s.TOKEN_MODELS.flatMap((m) => [common(`Token model ${m.name}: share of the mix`, m.mix, '%', IN.tok),
-    common(`Token model ${m.name}: price in`, m.priceIn, 'EUR per 1M tokens', IN.tok),
+      common(`Token model ${m.name}: price in`, m.priceIn, 'EUR per 1M tokens', IN.tok),
       common(`Token model ${m.name}: price out`, m.priceOut, 'EUR per 1M tokens', IN.tok)]),
     common('Day-rate scale', ctx.rateScale ?? 1, 'x', IN.mc), common('Token-price scale', ctx.tokenScale ?? 1, 'x', IN.mc),
     common('AgentOps premium on the day rate', 1.15, 'x', IN.fixed), common('Setup spread over', v.run.profile, 'months', IN.fixed),

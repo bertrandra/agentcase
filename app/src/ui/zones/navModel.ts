@@ -13,7 +13,7 @@ import { withAppSections, withPortfolio } from './portfolioNav';
 import { DEFAULT_PERSONA_SECTIONS, GROUPS, SECTIONS } from './registry';
 
 const FALLBACK: Persona[] = [{ id: 'builder', label: 'Builder', protected: false, order: 1 },
-{ id: 'clientcase', label: 'Client case', protected: false, order: 2 },
+  { id: 'clientcase', label: 'Client case', protected: false, order: 2 },
   { id: 'admin', label: 'Admin', protected: false, order: 3 }, { id: 'advanced', label: 'Advanced', protected: true, order: 0 }];
 const NO_COLORS: Record<string, string> = {}, NO_ORDER: PersonaOrder = {};
 /** A group colour reaches inline styles: only #rgb … #rrggbbaa is accepted (legacy groupColor). */
@@ -63,7 +63,7 @@ export function useNavModel(): NavModel {
     const current = personas.find((p) => p.id === persona), mine = view(structureOfPersona(persona)), { groups, sections, colors } = mine,
       visible = fastPathSections(sections, fastPath);
     return { persona, personas, groups, colors, sections, visible, fastPath, lists, order, style, nav: navGroups(persona, visible, groups, lists, order),
-    compact: !!current?.compactNav,
+      compact: !!current?.compactNav,
       seq: activeSeq(current?.seq), structure: mine.id, structures: structureList(stored), view, structureOfPersona,
       landing: (id: string) => { const v = view(structureOfPersona(id)); return landingSection(id, v.sections, v.groups, lists, order); } };
   }, [wanted, docPersonas, docGroups, docColors, rows, dyn, docLists, order, stored, style, fastPath, multi]);

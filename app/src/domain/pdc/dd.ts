@@ -75,19 +75,19 @@ export function ddRows(c: Ctx, base: DdDoc & AssumptionBase, ok: Validated = {})
   const thr = (d.THROUGHPUT_ANCHORS ?? []).map((a, i) => anchor(`an-${a.id}`, 'Metric anchors (throughput)', a.label ?? a.id, a, base.THROUGHPUT_ANCHORS?.[i],
     'THROUGHPUT_ANCHORS', 'Drives the productivity categories and the consolidated throughput row.', { kind: 'thr', id: a.id }));
   const qual = (d.QUALITY ?? []).map((q, i): DdRow => ({ id: `an-q${i}`, g: 'Metric anchors (quality)', l: q[0], v: `${q[1]} → ${q[2]}`, where: 'QUALITY',
-  eff: 'Drives the quality table and the KPI scorecard.',
+    eff: 'Drives the quality table and the KPI scorecard.',
     edit: { sec: 'quality', note: 'as-is also editable in Quality — target only here' }, cls: 'PC4',
       ed: { a: q[1], t: q[2], da: base.QUALITY?.[i]?.[1], dt: base.QUALITY?.[i]?.[2], field: { kind: 'qual', i } } }));
   const inputs = ASSUMPTION_DEFS.map((a): DdRow => {
     const cur = a.id === 'horizon' ? c.inp.v(a.id) : c.s.dom.values[a.id], def = base.dom.values[a.id];
     return { id: `in-${a.id}`, g: `Inputs — ${a.g}`, l: a.l, v: cur === undefined ? '—' : cur, where: 'assumptions register',
-    eff: String(cur) !== String(def) ? `Adjusted from default ${def}` : 'At default',
+      eff: String(cur) !== String(def) ? `Adjusted from default ${def}` : 'At default',
       edit: { sec: 'assumptions', also: 'params', note: 'set in Parameters / Levers, tracked in the register' }, cls: 'PC1', ok: !!ok[a.id] };
   });
   const fg = Object.keys(base.FG_PARAMS ?? {}).map((k): DdRow => {
     const raw = d.FG_PARAMS?.[k], v = raw == null || isNaN(raw) ? (base.FG_PARAMS?.[k] as number) : raw;
     return { id: `fg-${k}`, g: 'Factory generation parameters', l: FG_LABEL[k] ?? k, v, where: 'FG_PARAMS', cls: 'PC4',
-    eff: 'Shapes the generated factory data. No euro path — illustration only.',
+      eff: 'Shapes the generated factory data. No euro path — illustration only.',
       edit: 'here', ed: { a: v, t: null, da: base.FG_PARAMS?.[k] as number, field: { kind: 'fg', key: k } },
       ask: 'Confirm this reflects how delivery actually runs in your organisation — or provide the measured value from your tooling so it can replace the estimate.' };
   });

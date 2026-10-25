@@ -22,7 +22,7 @@ export function CashChart({ chart, label = 'Cumulative cash by calendar month: p
     },
     options: {
       plugins: { legend: { position: 'bottom' },
-      tooltip: { callbacks: { label: (x) => `${x.dataset.label}: €${Math.round(x.parsed.y / 1000).toLocaleString('en-US')}k` } } },
+        tooltip: { callbacks: { label: (x) => `${x.dataset.label}: €${Math.round(x.parsed.y / 1000).toLocaleString('en-US')}k` } } },
       scales: { y: { title: { display: true, text: 'Cumulative cash (€)' } } },
     },
   }), [chart, tok]);

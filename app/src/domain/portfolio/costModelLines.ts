@@ -35,9 +35,9 @@ export function costLines(v: ProductView, L: number, k: Keys): CostRow[] {
     line('Run costs', 'Tokens', 'engine row tokenCost', COST, eng((r) => r.tokenCost)),
     line('Run costs', 'Infrastructure', 'engine row infrastructureCost', COST, eng((r) => r.infrastructureCost)),
     line('Knowledge Hub', 'Knowledge Hub curation', 'knowledgeHubCost less the allocated hub infrastructure', COST,
-    eng((r) => r.knowledgeHubCost - (r.knowledgeHubCost > 0 ? hub : 0))),
+      eng((r) => r.knowledgeHubCost - (r.knowledgeHubCost > 0 ? hub : 0))),
     line('Knowledge Hub', 'Knowledge Hub infrastructure (allocated)', 'khInfraMonthly of the resolved case (hub allocation)', COST,
-    eng((r) => (r.knowledgeHubCost > 0 ? hub : 0))),
+      eng((r) => (r.knowledgeHubCost > 0 ? hub : 0))),
     line('Taxes and rework', 'Verification tax', 'engine row verificationTaxCost', COST, eng((r) => r.verificationTaxCost)),
     line('Taxes and rework', 'External rework loops', 'engine row externalReworkCost', COST, eng((r) => r.externalReworkCost)),
     line('Taxes and rework', 'Compliance tax', 'engine row complianceTaxCost', COST, eng((r) => r.complianceTaxCost)),
@@ -45,6 +45,6 @@ export function costLines(v: ProductView, L: number, k: Keys): CostRow[] {
     line('Setup', 'Setup: tooling, training, coaching, governance', 'setup rows of the consolidated series', COST, home(tooling)),
     line('Setup', 'Setup: engagement change cost', 'setup rows of the consolidated series', COST, home((i) => other(i) - tooling(i))),
     line('Setup', 'Setup: Knowledge Hub and knowledge transfer (KT)', `KT setup placed ${v.lead} month(s) before month 0`, COST,
-    layWide(v, L, (i) => s.ktSetup[i]!)),
+      layWide(v, L, (i) => s.ktSetup[i]!)),
   ];
 }

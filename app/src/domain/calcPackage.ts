@@ -21,7 +21,7 @@ export function buildCalcPackage(state: CaseState): CalcPackage {
     schemaVersion: CALC_PACKAGE_SCHEMA, calculationVersion: e.K.calculationVersion, inputHash: e.K.inputHash, curveModelId: e.K.curveModelId,
     headline: { payback: h.payback, npv: h.npv, roi: h.roi, totalSavings: h.totalSavings },
     annual: e.years().map((y) => ({ yearIndex: y.yearIndex, savings: y.savings, totalRunCost: y.totalRunCost, netAfterSetup: y.netAfterSetup,
-    cumulativeCashFlowEnd: y.cumulativeCashFlowEnd })),
+      cumulativeCashFlowEnd: y.cumulativeCashFlowEnd })),
   };
 }
 

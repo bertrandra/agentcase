@@ -19,7 +19,7 @@ export function frameEngagement(pf: Portfolio, ids: string[]): EngagementAgg {
     const k = engagementKey(p.ctx), c = engagementCoef(p.ctx);
     count.set(k, (count.get(k) ?? 0) + 1);
     return { ...base(p), key: k, label: c.label, own: p.overridden('values.engagementCtx'), maturityCap: c.maturityCap, rampSpeed: c.rampSpeed,
-    glassFactor: c.glassFactor, setupBillable: c.setupBillable,
+      glassFactor: c.glassFactor, setupBillable: c.setupBillable,
       riskPremium: c.riskPremium, authorityCap: c.authorityCap, khMaxCC: c.khMaxCC, discountRate: caseDiscountRate(p.ctx) };
   });
   return { rows, contexts: [...count].map(([key, n]) => ({ key, count: n })), discountRate: spread(rows.map((r) => r.discountRate)),
@@ -50,7 +50,7 @@ export function frameIndustry(pf: Portfolio, ids: string[]): IndustryAgg {
     const code = p.c.dom.values.industry ?? 'NONE', ind = INDUSTRIES.find((i) => i.code === code), norms = p.c.selectedNorms;
     count.set(code, (count.get(code) ?? 0) + 1);
     return { ...base(p), code, label: ind ? industryLabel(ind) : code, regUse: !!p.c.dom.checked.regUse, norms: norms.length,
-    regArtefacts: p.c.selectedRegArtefacts.length,
+      regArtefacts: p.c.selectedRegArtefacts.length,
       cross: CROSS_CATEGORIES.filter((x) => crossOn(norms, x.code)).map((x) => x.code), regCeiling: regGlassCeiling(p.ctx),
         own: p.overridden('selectedNorms') || p.overridden('values.industry') };
   });

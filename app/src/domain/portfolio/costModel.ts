@@ -23,7 +23,7 @@ export function costModel(pf: Portfolio, scope: CostScope): CostModel {
   const pk = pickScope(pf, scope), L = pk.c.horizon, rate = pk.c.rate, vals = buildValues(pk, L), rates = buildRates(pk, L, vals),
     other = buildOther(pk, L, rates, rate);
   other.rows.push(row('factor', ['Portfolio', '(all waves)', '(all products)', 'Discounting', 'Monthly discount factor',
-  'calendar axis: 1 / (1 + annual rate / 12) ^ month', ''], 'factor', 'factor', 1,
+    'calendar axis: 1 / (1 + annual rate / 12) ^ month', ''], 'factor', 'factor', 1,
     Array.from({ length: L }, (_, i) => discountFactor(i + 1, rate)), { k: 'factor' }));
   return {
     title: 'AgentCase cost model (monthly)', scopeLabel: pk.label, currency: 'EUR', horizon: L, monthLabels: monthLabels(pf, L), annualRate: rate,

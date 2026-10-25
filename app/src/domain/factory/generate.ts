@@ -53,7 +53,7 @@ function weekCommits(g: Gen, c: Ctx, m: ModelResult, w: number, year: number, ra
       : (() => { const t = team[Math.floor(rnd() * team.length) % team.length];
         return `${t?.grade || 'Engineer'} ${t?.skill || a.skill || 'Software'} · ${t?.loc || 'FR'}`; })();
     g.d.COMMITS.push({ id: 'cm-' + g.d.COMMITS.length, taskId: (a.isReg ? 'reg:' : 'sdlc:') + a.id,
-    message: `${isAgent ? '[agent] ' : ''}${a.name || a.id} — w${w}`,
+      message: `${isAgent ? '[agent] ' : ''}${a.name || a.id} — w${w}`,
       author, committedAt: g.grid.date(w, Math.floor(rnd() * 5)) });
     g.cnt++;
   }

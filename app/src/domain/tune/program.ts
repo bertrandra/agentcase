@@ -45,11 +45,11 @@ export function safeOverhead(c: Ctx) {
 /** EV-26 IP · confidentiality · sovereignty synthesis per engagement context. */
 export const IP_SYNTH: Record<string, [string, string, string]> = {
   MSC: ['Capgemini controls stack & assets; deliverable IP per contract, assets reusable', 'Data on Capgemini infra — strongest confidentiality control',
-  'Sovereign options available (SovBox / on-prem) if required'],
+    'Sovereign options available (SovBox / on-prem) if required'],
   MSI: ['Client infra; asset reuse negotiated; deliverable IP typically client', 'Data under client rules — shared responsibility',
-  'Sovereignty follows client hosting; air-gap possible'],
+    'Sovereignty follows client hosting; air-gap possible'],
   STA: ['Individual contribution; little asset reuse; IP client by default', 'Client-framed data; endured confidentiality posture',
-  'Sovereignty entirely client-defined'],
+    'Sovereignty entirely client-defined'],
 };
 export const ipSynthesis = (c: Ctx) => { const key = engagementKey(c); return { key, rows: IP_SYNTH[key] ?? (IP_SYNTH.MSC as [string, string, string]) }; };
 

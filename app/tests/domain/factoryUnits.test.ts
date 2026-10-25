@@ -54,7 +54,7 @@ describe('record ids and the timeline', () => {
   it('plots the dated events of the demo on one axis, dropping undated and unparsable ones', () => {
     const d = { ...(demo as unknown as FactoryData), ENVIRONMENTS: DEFAULT_ENVIRONMENTS,
       FEEDBACK_ITEMS: [...(demo.FEEDBACK_ITEMS as FactoryData['FEEDBACK_ITEMS']),
-      { id: 'fb-x', description: 'bad', createdAt: 'not a date', backlogItemId: null }] };
+        { id: 'fb-x', description: 'bad', createdAt: 'not a date', backlogItemId: null }] };
     const ev = timelineEvents(d);
     expect(ev.filter((e) => e.lane === 'Commits')).toHaveLength(18);
     expect(ev.filter((e) => e.lane === 'Approvals')).toHaveLength(4);

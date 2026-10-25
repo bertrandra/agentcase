@@ -56,7 +56,7 @@ describe.each(ids.filter(have))('tune B domain vs legacy oracle: %s', (id) => {
   it('risk, AI-Act tier and quality premium', () => {
     const q = qualityView(c), e = extra('tuneBRisk', id);
     expect(near({ score: riskScore(c), riskBar: riskBar(c), aiBar: aiActBar(c), aiKey: aiActKey(c), qualKey: qualKey(c), prem: q.premium, factor: q.factor,
-    qualBar: qualBar(c), wave2: wave2RiskPremium(c), sdd: q.sdd,
+      qualBar: qualBar(c), wave2: wave2RiskPremium(c), sdd: q.sdd,
       probs: RISK_REGISTER.map((r) => [riskProb(c, r), riskImpact(c, r)]) }, e)).toEqual([]);
   });
   it('knowledge hub read-out', () => {

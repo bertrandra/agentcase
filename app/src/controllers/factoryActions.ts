@@ -15,7 +15,7 @@ import { list } from './factory';
 /** Vision, release items, approvals, feedback, integrated product, demo data, "clear all", the weekly generator and its parameters. */
 const rec = (d: Doc) => d as Record<string, unknown>;
 const KEYS_CLEARED = ['PORTFOLIO_ITEMS', 'EPICS', 'FEATURES', 'STORIES', 'RELEASES', 'RELEASE_ITEMS', 'RELEASE_CANDIDATES', 'APPROVALS', 'DEPLOYMENTS',
-'ENVIRONMENTS',
+  'ENVIRONMENTS',
   'COMMITS', 'BUILDS', 'BUILD_ARTIFACTS', 'QUALITY_GATES', 'INTEGRATED_PRODUCT', 'MONITORING_EVENTS', 'FEEDBACK_ITEMS', 'BACKLOG_ITEMS'] as const;
 const ip = (d: Doc) => rec(d).INTEGRATED_PRODUCT as IntegratedProduct;
 

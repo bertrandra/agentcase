@@ -53,7 +53,7 @@ export function aggregateAnnual(pf: Portfolio, c: Consolidated, scope: DisplaySc
   return {
     label: sel.label, headline: h, excluded: excludedOf(pf, c, scope),
     years: h.years.savings.map((sv, i) => ({ label: `Year ${i + 1}`, savings: sv, run: h.years.run[i] ?? 0, setup: h.years.setup[i] ?? 0,
-    net: h.years.net[i] ?? 0, cum: cum[i] ?? 0, etp: etp[i] ?? 0, vfte: vfte[i] ?? 0 })),
+      net: h.years.net[i] ?? 0, cum: cum[i] ?? 0, etp: etp[i] ?? 0, vfte: vfte[i] ?? 0 })),
     rows: sel.items.map((v) => ({ id: v.id, name: v.name, wave: waveName(pf, v.waveId), net: byYear(v.series.net) })),
     totalNet: byYear(s.net), totals: { savings: h.totalBenefit, run: total(s.run), setup: h.setup, net: h.net },
   };
@@ -73,6 +73,6 @@ export function aggregateMonthly(pf: Portfolio, c: Consolidated, scope: DisplayS
   return {
     label: sel.label, headline: sel.headline, excluded: view.excluded, chart: view.chart,
     months: s.net.map((net, i) => ({ month: i + 1, label: cal.dateAt(i), savings: s.savings[i] ?? 0, run: s.run[i] ?? 0, setup: s.setup[i] ?? 0, net,
-    cum: cum[i] ?? 0, etp: s.humanFte[i] ?? 0, vfte: s.agentVfte[i] ?? 0 })),
+      cum: cum[i] ?? 0, etp: s.humanFte[i] ?? 0, vfte: s.agentVfte[i] ?? 0 })),
   };
 }

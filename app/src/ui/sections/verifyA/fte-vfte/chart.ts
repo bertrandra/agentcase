@@ -28,15 +28,15 @@ export function fteChart(s: FteSeries, tok: Tok): ChartConfiguration {
     type: 'line',
     data: { labels: s.labels, datasets: [
       { label: 'Total effort (FTE-eq) = baseline', data: s.base, borderColor: tok('neutral-700'), borderWidth: 1.5, borderDash: [6, 4], pointRadius: 0,
-      fill: false },
+        fill: false },
       { label: 'Human FTE', data: s.human, borderColor: tok('chart-cat-3'), backgroundColor: tok('warning-500-a15'), borderWidth: 3, tension: 0.4, fill: true,
-      pointRadius: 2 },
+        pointRadius: 2 },
       { label: 'Agent vFTE', data: s.agent, borderColor: tok('chart-cat-2'), backgroundColor: tok('success-500-a15'), borderWidth: 3, tension: 0.4,
-      fill: true, pointRadius: 2 },
+        fill: true, pointRadius: 2 },
     ] },
     options: { plugins: { legend: { position: 'top' } },
-    scales: { y: { min: 0, max: s.max, title: { display: true, text: 'FTE/vFTE' }, grid: { color: tok('chart-grid') } },
-    x: { title: { display: true, text: 'Month' } } } },
+      scales: { y: { min: 0, max: s.max, title: { display: true, text: 'FTE/vFTE' }, grid: { color: tok('chart-grid') } },
+        x: { title: { display: true, text: 'Month' } } } },
     plugins: [levels],
   };
 }

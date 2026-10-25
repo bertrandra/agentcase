@@ -28,7 +28,7 @@ const help = (
   </>
 );
 const TABS = [['personas', '👥 Personas'], ['assign', '🧩 Section assignment'], ['groups', '🗂️ Menu groups'], ['sections', '📄 Sections'],
-['seq', '🧭 Guided sequence'],
+  ['seq', '🧭 Guided sequence'],
   ['layout', '🗺️ Menu layout'], ['playout', '🧩 Persona layout']] as const;
 const NO_PERSONAS: Persona[] = [], NO_LISTS: Record<string, string[]> = {};
 

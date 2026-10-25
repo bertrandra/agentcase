@@ -21,10 +21,10 @@ describe('due-diligence domain reproduces the legacy register', () => {
   it.each(PDC_FIXTURES)('%s: every row, its value, class, usage, editors and the ceiling coverage', (id) => {
     const c = ctxOf(id), e = pdc<{ rows: LegacyRow[]; cover: number | null; ceilRows: string[] }>('pdc_dd', id), rows = ddRows(c, base);
     const want = e.rows.map((r) => ({ id: r.id, g: r.g, l: r.l, v: r.v ?? null, where: r.where, eff: r.eff, edit: r.edit, cls: r.cls, share: r.share ?? null,
-    role: r.role ?? null, ok: r.ok,
+      role: r.role ?? null, ok: r.ok,
       ed: r.ed ? [Number(r.ed[0]), r.ed[1] == null ? null : Number(r.ed[1])] : null, use: r.use }));
     const got = rows.map((r: DdRow) => ({ id: r.id, g: r.g, l: r.l, v: r.v, where: r.where, eff: r.eff, edit: r.edit, cls: r.cls, share: r.ceilShare ?? null,
-    role: r.ceilRole ?? null, ok: !!r.ok,
+      role: r.ceilRole ?? null, ok: !!r.ok,
       ed: r.ed ? [r.ed.a, r.ed.t] : null, use: ddUse(r) }));
     expect(diffs(want, got)).toEqual([]);
     expect(ceilingCoverage(c, rows)).toBe(e.cover);

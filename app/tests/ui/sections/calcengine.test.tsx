@@ -21,7 +21,7 @@ describe('calcengine section', () => {
     // not ported yet
     expectParity('calcengine', CalcEngine,
       { ignore: [14, 16.2], headings: ['Calculation Engine', 'Time Engine', 'Engines', 'Function surface', 'Overlay contract', 'Which sections reach it',
-      'Engine function surface'] });
+        'Engine function surface'] });
   });
   it('every entry point listed exists in the engine it points to', () => {
     const eng = time.timeFor(domain.makeCtx(appStore().getState().doc));

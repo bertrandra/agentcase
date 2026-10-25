@@ -44,7 +44,7 @@ export default function MonthlyPlaybackAggregate() {
         <PlaybackStage metric={key} cfg={cfg} pos={Math.min(p.seq, seq.length - 1)} count={seq.length} months={months} scope={a.label} />
         <AggregateTable caption={`End state by product — ${a.label}`} rows={a.rows} columns={cols} edit={false}
           totals={{ label: `Total — ${a.label}`, cells: { base: fmt1(t.baseEtp), etp: fmt1(t.etp), vfte: fmt1(t.vfte), vel: pct(t.velocityPct),
-          net: fmtK(t.net) } }} />
+            net: fmtK(t.net) } }} />
         <ExcludedNote excluded={a.excluded} />
       </>} />
   );

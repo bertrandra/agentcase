@@ -17,7 +17,7 @@ type Case = CaseState & Partial<FactoryData> & { FG_PARAMS?: Partial<ReturnType<
 const ids = extraIds('fm_gen');
 const ctxOf = (id: string) => { const s = loadCase<Case>(id); return { s, c: makeCtx(s), p: fgParams(s.FG_PARAMS) }; };
 const ARRAYS = ['PORTFOLIO_ITEMS', 'EPICS', 'FEATURES', 'STORIES', 'SPRINTS', 'PROGRAM_INCREMENTS', 'STORY_ASSIGNMENTS', 'RELEASES', 'RELEASE_ITEMS',
-'RELEASE_CANDIDATES', 'APPROVALS',
+  'RELEASE_CANDIDATES', 'APPROVALS',
   'DEPLOYMENTS', 'ENVIRONMENTS', 'COMMITS', 'BUILDS', 'BUILD_ARTIFACTS', 'QUALITY_GATES', 'MONITORING_EVENTS', 'FEEDBACK_ITEMS', 'BACKLOG_ITEMS'] as const;
 const seen = (v: unknown[] | undefined) => v ?? [];
 /** The digest the oracle records of a factory dataset (counts + canonical hash per array). */
@@ -36,7 +36,7 @@ describe('factory domain reproduces the legacy oracle', () => {
     expect(ids).toContain('fm-generated-tuned');
   });
   const kpiData = (s: Case, c: ReturnType<typeof makeCtx>) => ({ DEPLOYMENTS: s.DEPLOYMENTS ?? [], ENVIRONMENTS: s.ENVIRONMENTS ?? [],
-  RELEASE_CANDIDATES: s.RELEASE_CANDIDATES ?? [], MONITORING_EVENTS: s.MONITORING_EVENTS ?? [],
+    RELEASE_CANDIDATES: s.RELEASE_CANDIDATES ?? [], MONITORING_EVENTS: s.MONITORING_EVENTS ?? [],
       APPROVALS: s.APPROVALS ?? [], QUALITY_GATES: s.QUALITY_GATES ?? [], COMMITS: s.COMMITS ?? [], BUILDS: s.BUILDS ?? [],
         FEEDBACK_ITEMS: s.FEEDBACK_ITEMS ?? [], tasks: factoryTasks(c) } as KpiData);
   it.each(ids)('KPIs, tasks and sample sizes · %s', (id) => {

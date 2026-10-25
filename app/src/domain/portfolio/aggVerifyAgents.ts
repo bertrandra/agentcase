@@ -47,7 +47,7 @@ export const usageAgg = viewMemo((sel): UsageAgg => {
 });
 
 const DIR: VCol[] = [num('agents', 'Agents', 'int'), ...AUTH_LEVELS.map((a, i) => num(`l${i}`, a, 'int')), num('roles', 'Active roles', 'int'),
-num('avgSup', 'Avg. agentSup', 'pct'),
+  num('avgSup', 'Avg. agentSup', 'pct'),
   { key: 'loop', header: 'Internal loop', kind: 'text' }, num('loopTok', 'Loop tokens (M, est.)', 'n2'),
     { key: 'ext', header: 'External rework', kind: 'text' }];
 
@@ -86,7 +86,7 @@ export const agentDetailTable = viewMemo((sel): VTable => {
 });
 
 const PHASE: VCol[] = [num('phases', 'Phases in scope', 'int'), num('arts', 'In-scope artifacts', 'int'),
-{ key: 'tight', header: 'Tightest phase', kind: 'text' },
+  { key: 'tight', header: 'Tightest phase', kind: 'text' },
   num('margin', 'Tightest margin (pts)', 'int', 'Projected human share minus the supervision floor; negative = floor violated (CC-SUP-01)'),
     num('viol', 'Floor violations', 'int'), num('vfte', 'vFTE at horizon end (relative)')];
 

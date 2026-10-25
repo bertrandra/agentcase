@@ -23,8 +23,8 @@ const help = (
 export default function AgentUsageSection() {
   const live = useLive(), u = agentUsage(live), s = u.summary, { tok } = useTheme();
   const cfg = useMemo((): ChartConfiguration => ({ type: 'bar',
-  data: { labels: u.phases.map((p) => p.id),
-  datasets: [{ label: 'Relative agent effort', data: u.phases.map((p) => p.effort), backgroundColor: tok('primary-700') }] },
+    data: { labels: u.phases.map((p) => p.id),
+      datasets: [{ label: 'Relative agent effort', data: u.phases.map((p) => p.effort), backgroundColor: tok('primary-700') }] },
     options: { plugins: { legend: { display: false } },
       scales: { y: { beginAtZero: true, title: { display: true, text: 'artifacts × automatable %' } } } } }), [u.phases, tok]);
   return (

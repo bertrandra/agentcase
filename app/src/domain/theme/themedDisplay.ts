@@ -31,7 +31,7 @@ const turn = (hex: string, s: Shift): string => {
 const withL = (hex: string, f: (L: number) => number, cf = 1): string => { const [L, C, h] = oklch(hex); return fromOklch(f(L), C * cf, h); };
 
 const BRAND = ['surface-tint', 'text-link', 'text-heading', 'line-tint', 'focus', 'focus-header', 'hover', 'hover-text', 'selected', 'header-start',
-'header-end', 'kpibar-start',
+  'header-end', 'kpibar-start',
   'kpibar-end', 'sidebar-group-text', 'sidebar-group-hover-bg', 'table-head-bg', 'table-head-note', 'table-hover', 'chart-cat-1'];
 const SURFACES = ['bg', 'surface', 'surface-raised', 'surface-muted', 'table-stripe', 'sidebar-bg', 'sidebar-group-bg', 'line', 'line-strong', 'line-subtle',
   'table-line', 'table-head-line'];

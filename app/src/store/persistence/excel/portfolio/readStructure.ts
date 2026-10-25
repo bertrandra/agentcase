@@ -25,7 +25,7 @@ export function readProductRows(sheets: Sheets): ProductRow[] {
     if (!name) fail(t.name, l.n, 'name is required');
     const wave = str(l.c[2]), pos = numberCell(t, l, 4, 'position in wave', { min: 1, max: 1000, int: true, optional: true });
     return clean({ id, name, waveId: wave === '' ? null : wave,
-    offset: numberCell(t, l, 3, 'offset', { min: 0, max: PF_LIMITS.offset, int: true, optional: true }) ?? 0,
+      offset: numberCell(t, l, 3, 'offset', { min: 0, max: PF_LIMITS.offset, int: true, optional: true }) ?? 0,
       position: pos ?? Number.MAX_SAFE_INTEGER, note: cleanText(l.c[5], 400) || undefined, archived: flagCell(t, l, 6, 'archived') || undefined });
   });
 }
@@ -42,7 +42,7 @@ export function readWaveRows(sheets: Sheets): WaveRow[] {
     seen.add(id);
     if (!name) fail(t.name, l.n, 'name is required');
     return clean({ id, name, startMonth: numberCell(t, l, 2, 'start month', { min: 0, max: PF_LIMITS.startMonth, int: true }) as number,
-    note: cleanText(l.c[3], 400) || undefined,
+      note: cleanText(l.c[3], 400) || undefined,
       order: numberCell(t, l, 4, 'order', { min: 1, max: 1000, int: true, optional: true }) ?? i + 1 });
   });
   return rows.map((r, i) => ({ r, i })).sort((a, b) => a.r.order - b.r.order || a.i - b.i).map((x) => x.r);

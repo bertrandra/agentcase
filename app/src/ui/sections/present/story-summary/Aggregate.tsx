@@ -43,7 +43,7 @@ export default function StoryAggregate() {
           { key: 'b', header: `TO-BE (${s.endLabel})`, align: 'center', render: (r) => <b>{r[2]}</b> }]} />
         <AggregateTable caption={`Story by product — ${a.label}`} rows={a.rows} columns={cols} edit={false}
           totals={{ label: `Total — ${a.label}`, cells: { base: s.baseFte.toFixed(1), tgt: s.tgtFte.toFixed(1), asis: fmtK(s.baselineRun),
-          end: fmtK(s.endRun), vel: `+${Math.round(s.velocityPct)}%`, sav: fmtK(s.endSavings), pay: fmtMonths(s.paybackMonth) } }} />
+            end: fmtK(s.endRun), vel: `+${Math.round(s.velocityPct)}%`, sav: fmtK(s.endSavings), pay: fmtMonths(s.paybackMonth) } }} />
         <p className="ac-muted">Product lines are read on each product&apos;s own horizon; the total line is on the calendar of the selection. Confidence
           grading is per product, once the Modelling Engine&apos;s P6 evidence ledger is enabled.</p>
         <ExcludedNote excluded={a.excluded} />

@@ -46,7 +46,7 @@ export function portfolioReportData(source: Portfolio, scope: DisplayScope, now:
     horizon: c.horizon, start: calendarOf(pf).dateAt(0), waves: pf.waves.length, headline,
     waveRows: wave ? view.waves.filter((w) => w.id === wave.id) : view.waves, productRows: view.products.filter((p) => inScope.has(p.id)), years,
     reg: ids.map((id) => ({ id, name: pf.products.find((p) => p.id === id)?.name ?? id,
-    data: reportBlocker(resolveProduct(pf, id)) ? null : reportData(resolveProduct(pf, id), now) })),
+      data: reportBlocker(resolveProduct(pf, id)) ? null : reportData(resolveProduct(pf, id), now) })),
     kt: { rows, totals: knowledgeTotals(rows), effects: waveEffects(pf, kt.rows).filter((w) => (wave ? w.waveId === wave.id : true)) },
     diagnostics: wave ? view.diagnostics.filter((d) => !d.productId || inScope.has(d.productId)) : view.diagnostics, hub: pf.hub,
     stress: stressReport(source, wave ? { kind: 'wave', id: wave.id } : { kind: 'portfolio' }, stress), ...reportLogo(pf.common),

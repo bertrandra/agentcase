@@ -11,7 +11,7 @@ const fte = (v: number): string => v.toFixed(1);
 const COLS: AggColumn<CompareProductRow>[] = [
   { key: 'h', header: 'Horizon', align: R, render: (r) => `${r.horizon} yr` },
   { key: 'cs', header: 'Classic saving', align: R, title: 'Annual saving rate of the optimised AS-IS trajectory (an input of the product)',
-  render: (r) => `${r.classicSaving}%/yr` },
+    render: (r) => `${r.classicSaving}%/yr` },
   { key: 'af', header: 'FTE AS-IS', align: R, render: (r) => fte(r.asisFte) },
   { key: 'cf', header: 'FTE AS-IS + saving', align: R, render: (r) => fte(r.classicFte) },
   { key: 'gf', header: 'FTE Agentic', align: R, render: (r) => fte(r.agenticFte) }, { key: 'vf', header: 'Agent vFTE', align: R, render: (r) => fte(r.vfte) },

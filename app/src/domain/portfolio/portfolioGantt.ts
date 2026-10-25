@@ -83,7 +83,7 @@ export function portfolioGantt(pf: Portfolio, c: Consolidated): PortfolioGantt {
     const products = c.products.filter((v) => v.waveId === w.id).map((v) => productRow(v, total, cal));
     const from = Math.min(...products.map((p) => p.from)), to = Math.max(...products.map((p) => p.to));
     return { id: w.id, name: w.name, startMonth: w.startMonth, from, to, left: (from / total) * 100, width: Math.max(0.4, ((to - from) / total) * 100),
-    products,
+      products,
       meta: `${products.length} product${products.length > 1 ? "s" : ""}, from ${cal.dateAt(from)} to ${cal.dateAt(to)}` };
   });
   const out = {

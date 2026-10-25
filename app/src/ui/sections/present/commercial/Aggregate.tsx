@@ -47,7 +47,7 @@ export default function CommercialAggregate() {
       result={<>
         <AggregateTable caption={`Commercial model by product — ${a.label}`} rows={a.rows} columns={cols} edit={false}
           totals={{ label: `Total — ${a.label}`,
-          cells: { rev: fmtK(t.revenue), cost: fmtK(t.cost), margin: `${fmtK(t.margin)} (${Math.round(t.marginPct)}%)` } }} />
+            cells: { rev: fmtK(t.revenue), cost: fmtK(t.cost), margin: `${fmtK(t.margin)} (${Math.round(t.marginPct)}%)` } }} />
         <Callout kind="blue">Each line is a product&apos;s own contract over its own horizon; the total adds the contracts
           up{t.unavailable ? ` (${t.unavailable} product${t.unavailable > 1 ? 's' : ''} on a model unavailable under its engagement context left out)` : ''}.
           Open a product below to compare the four models for it.</Callout>
