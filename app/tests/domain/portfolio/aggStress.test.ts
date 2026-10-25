@@ -35,7 +35,7 @@ describe('selectionStress: the portfolio Monte Carlo restricted to the selection
   });
   it('wave: its stats, its products, the diversification of its P10 against its products', () => {
     const s = selectionStress(run, { kind: 'wave', id: w1 })!, w = run.waves.find((x) => x.id === w1)!, mine = run.products.filter((p) => p.waveId === w1);
-    expect(s.stats).toBe(w.stats); expect(s.products.map((p) => p.id)).toEqual(mine.map((p) => p.id)); expect(s.outcomes).toBeNull();
+    expect(s.stats).toBe(w.stats); expect(s.products.map((p) => p.id)).toEqual(mine.map((p) => p.id)); expect(s.outcomes).toBe(w.outcomes);
     expectClose(s.diversification.p10, w.stats.p10);
     expectClose(s.diversification.sumP10, mine.reduce((a, p) => a + p.stats.p10, 0));
     expectClose(s.diversification.reduction, s.diversification.p10 - s.diversification.sumP10);

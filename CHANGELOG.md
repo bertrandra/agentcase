@@ -15,6 +15,15 @@ All notable changes to AgentCase, newest first. Product version from v19.0.0 = t
 
 When releasing, follow [docs/BUMP_PROCEDURE.md](docs/BUMP_PROCEDURE.md) (§7 for the legacy file) and add the new version at the top.
 
+## [Unreleased]
+
+- **Portfolio stress: per-draw horizon truncation** — each draw of each product is placed on the calendar (wave start + offset) and cut at the
+  portfolio horizon exactly as the deterministic consolidation does (`domain/portfolio/stressCut.ts`), before the draws are added; a product starting
+  at month 48 of a 60-month portfolio counts 12 months. With zero spreads every draw equals the consolidated net. A product inside the horizon draws
+  exactly what it drew before (single-product runs unchanged; same seeds, same ρ). DEV-PF-STRESS updated, row removed from DEV-PF-GAPS.
+- **Monte Carlo histogram in the Wave view** — the Monte Carlo aggregate view draws the histogram of a Wave from its products' draws added draw by
+  draw (`WaveStress.outcomes`), with the same chart component as the Portfolio (shared `SelectionHistogram`). Row removed from DEV-PF-GAPS.
+
 ## [v20.16.0] 2026-10-25 — Architecture lot 5b: inline styles to CSS classes, max-len 0
 
 ### Lot 5b part A — frame, baseline, scope, tune and verify sections: named classes instead of inline styles, no line over 160 characters

@@ -35,8 +35,8 @@ export interface SelectionStress {
   waves: WaveStress[];
   /** risk reduction on the downside (P10) of the selection: its P10 minus the sum of its products' stand-alone P10 */
   diversification: Diversification;
-  /** sorted net-benefit draws: only the portfolio run keeps them (null for a wave) */
-  outcomes: number[] | null;
+  /** sorted net-benefit draws of the selection (the portfolio's, or the wave's: its products added draw by draw) */
+  outcomes: number[];
 }
 
 /** The last portfolio run read for a Portfolio or a Wave; null when the wave has no product in the run. */
@@ -47,7 +47,7 @@ export function selectionStress(run: PfStress, group: VerdictGroup): SelectionSt
   if (!wave || !products.length) return null;
   const sumP10 = products.reduce((a, p) => a + p.stats.p10, 0);
   return { label: wave.name, stats: wave.stats, products, waves: [wave], diversification: { sumP10, p10: wave.stats.p10, reduction: wave.stats.p10 - sumP10 },
-    outcomes: null };
+    outcomes: wave.outcomes };
 }
 
 /** --- Scenarios: the six strategies priced for each product (scenarioSet of the product's own case) --- */
