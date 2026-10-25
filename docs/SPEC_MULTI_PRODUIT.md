@@ -75,7 +75,20 @@ is targeted, at what cost and when (§ 3.5).
 - **F11** — Assign a product to a wave (drag and drop and selector). A product without a wave is **unscheduled**: it is excluded from the
   consolidation (shown greyed out, with a warning in the diagnostics).
 - **F12** — A product may have **its own offset** (in months) inside its wave, to stagger the start without creating a wave.
-- **F13** — Waves may overlap in time. No dependency constraint between waves in v1 (out of scope, § 9).
+- **F13** — Waves may overlap in time. **Built after v1 (lot 7, optional, absent = v1 behaviour):**
+  - *Dependency between waves.* A wave may start after another wave reaches a milestone, plus a lag `L` in months (whole, ≥ 0). Two milestones:
+    `start` (the other wave's effective start + `L`) and `setupEnd` (the latest end of setup of the other wave's planned products,
+    `month0 + setup profile months`, + `L`; the other wave's start when it has no planned product). The **effective start** of a wave is
+    `max(own start, dependency-derived start)`; a product starts at `effective start + offset`. At most one dependency per wave.
+  - *Cycles are never followed.* A choice that would close a cycle is refused (and not offered by the Waves section); a cycle that comes from a file
+    is flagged (`wave-dep-cycle`) and the dependencies of the waves on it are ignored. A dependency on an unknown wave is dropped on open (note) or
+    flagged (`wave-dep-unknown`).
+  - *Transformation-team capacity.* Optional portfolio parameter `maxConcurrentSetups` (whole, ≥ 1): at most that many products have their own
+    setup months `[month0, month0 + setup)` overlapping (KT preparation not counted; a product with no setup counts for one month). Placement is
+    greedy in a fixed order: wave order (a wave after the wave it depends on), then the wave's product order; a product that does not fit is pushed
+    to the first month where it does. Each push is a diagnostic (`setup-pushed`), as is each wave moved by its dependency (`wave-delayed`).
+  - *One owner.* `domain/portfolio/waveSchedule.ts` (`resolveSchedule`, pure; memoised per portfolio by `timeline.ts#waveSchedule`) computes the
+    effective starts; `scheduledProducts` reads them, so the consolidation, Gantt, KPI bar, stress, Excel and report use them without their own rule.
 - **F14** — The duration of a transformation (adoption ramp, setup, S-curve) is the product's; it runs from its
   month 0. The portfolio horizon is calendar-based (`portfolioHorizon` in months); each product is truncated at the horizon.
 
@@ -179,7 +192,9 @@ interface Wave {
   id: string; name: string; note?: string;
   startMonth: number;                       // 0 = start of the portfolio (≥ 0)
   productIds: string[];                     // display order; consistent with Product.waveId
+  dependsOn?: { waveId: string; milestone: 'start' | 'setupEnd'; lagMonths: number };   // F13 (lot 7); absent = none
 }
+// Portfolio.maxConcurrentSetups?: number   // F13 (lot 7): transformation-team capacity, whole >= 1; absent = no limit
 ```
 
 Invariants (checked by a property test): a product is in only **one** wave; `Wave.productIds` and `Product.waveId` are
@@ -298,7 +313,8 @@ The domain imports nothing but the existing domain. `computeCase` stays the only
 `product.add / rename / duplicate / archive / remove / setNote`, `product.setTeam*` (reuses the existing team commands, addressed by
 `productId`), `product.setOverride(key, value)`, `product.clearOverride(key)`, `product.applyToCommon(key)`, `portfolio.setCommon(key, value)`
 (reuses the existing parameter commands when the active product is "inherited"), `wave.add / rename / remove / reorder / setStart`,
-`wave.assign(productId, waveId)`, `product.setOffset`, `portfolio.setHorizon`.
+`wave.assign(productId, waveId)`, `product.setOffset`, `portfolio.setHorizon`, `wave.setDependency(id, dep | null)` and
+`portfolio.setMaxConcurrentSetups(n | null)` (F13, lot 7).
 
 Addressing rule: the **existing commands** (≈ 202) keep their signature; an **addressing** layer decides whether the write goes to
 `common` (inherited key) or to `products[active].overrides` (key already overridden, or "edit this product only" mode active).
@@ -360,7 +376,7 @@ the current state), except `activeProductId`, persisted in the document so that 
 
 ## 9. Out of scope (v1)
 
-- Dependencies and constraints between waves (product B after product A), transformation-team capacity shared between waves.
+- ~~Dependencies between waves (product B after product A), transformation-team capacity between waves~~ — built in lot 7, see F13.
 - Teams shared between products (a person assigned to two products). The team is strictly per product in v1.
 - Rates / model / coefficients specific to a product (the whitelist of § 4.3 excludes them).
 - Monte Carlo with a full correlation matrix (global `ρ` only in v2).
@@ -529,7 +545,7 @@ All the recommendations of § 12 were **accepted** by the sponsor. They are the 
 - **Version 20.0.0** (D-M8): `APP_VERSION`, `package.json` and its lock file, `index.html` title (v20); the file names (`AgentCase_v20_0_…`) are derived from the version. **Deliberately unchanged**: the schema tags (`agentcase.snapshot.v1`, `agentcase.portfolio.v1`), the name and version of the autosave database (`agentcase-v19`, 1) and the name of the `BroadcastChannel` (`agentcase-v19`), so as never to orphan the users' saves. (Since the documentation-governance lot, the version is written only in `app/package.json`; see BUMP_PROCEDURE.md.)
 - **Example**: `docs/examples/AgentCase_Portfolio_Example.json` (4 products, 2 waves including an offset product, an unscheduled product, hub in proportion to the headcount with different subsets, ρ = 0.3, overrides), generated by `app/scripts/portfolio-example.ts`; `tests/store/portfolio-example.test.ts` opens it through the real open path and checks `validate()` and the conservation of the consolidated totals.
 - **Exit checks**: `tools/e2e-smoke.mjs` visits every section, including the six of the Portfolio group, on two portfolio files; `tools/perf.mjs` also measures the change of section in the Portfolio group; figures in the CHANGELOG.
-- **Still out of scope** (see ARCHITECTURE.md § 12 and DEVIATIONS.md DEV-PF-GAPS): portfolio scenarios table, dependencies between waves, shared teams, truncation of the draws at the calendar horizon, "apply to all" for the knowledge subset.
+- **Still out of scope** (see ARCHITECTURE.md § 12 and DEVIATIONS.md DEV-PF-GAPS): portfolio scenarios table, shared teams, truncation of the draws at the calendar horizon, "apply to all" for the knowledge subset.
 
 ### Notes: "Show" / "Change" lists and in-place editing (after v20.10)
 

@@ -1,5 +1,6 @@
 import { addWave, assignWave, removeWave, renameWave, reorderWave, setWaveNote, setWaveStart } from '@/controllers/wave';
 import { setDisplayScope } from '@/controllers/displayScope';
+import { setMaxConcurrentSetups, setWaveDependency } from '@/controllers/waveDeps';
 import { setPortfolioHorizon, setPortfolioHub, setPortfolioRho } from '@/controllers/portfolio';
 import { clearProductOverride, applyOverrideToCommon, setProductKnowledge, setProductOverride } from '@/controllers/productOverrides';
 import { addProduct, archiveProduct, duplicateProduct, removeProduct, renameProduct, setActiveProduct, setEditScope, setProductNote, setProductOffset } from '@/controllers/product';
@@ -40,5 +41,7 @@ export const samples: Record<string, Sample> = {
   'wave.assign': { prep: withWave, run: () => { assignWave(other, w2); } },
   'portfolio.setHorizon': () => { setPortfolioHorizon(48); },
   'portfolio.setRho': () => { setPortfolioRho(0.5); },
+  'wave.setDependency': { prep: withWave, run: () => { setWaveDependency(w2, { waveId: wave(), milestone: 'setupEnd', lagMonths: 2 }); } },
+  'portfolio.setMaxConcurrentSetups': () => { setMaxConcurrentSetups(1); },
   'portfolio.setHub': () => { setPortfolioHub({ enabled: true, infraMonthly: 1234 }); },
 };

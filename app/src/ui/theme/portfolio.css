@@ -28,6 +28,10 @@
 .ac-section .ac-wave-title { display: block; margin: 0 0 6px; font-size: var(--ac-font-size-lg); }
 .ac-section .ac-wave-ctrl { display: flex; flex-direction: column; gap: 6px; font-size: var(--ac-font-size-md); }
 .ac-section .ac-wave-ctrl input[type='text'] { width: 100%; font-weight: var(--ac-font-weight-bold); }
+.ac-section .ac-wave-dep { display: flex; flex-direction: column; gap: 4px; margin: 0; padding: 6px 8px; border: var(--ac-border-thin) solid var(--ac-primary-200); border-radius: var(--ac-radius-lg); font-size: var(--ac-font-size-sm-plus); }
+.ac-section .ac-wave-dep legend { padding: 0 4px; font-weight: var(--ac-font-weight-bold); }
+.ac-section .ac-wave-eff { margin: 0; color: var(--ac-blue); }
+.ac-section .ac-gantt-dep { font-size: var(--ac-font-size-sm-plus); color: var(--ac-blue); }
 .ac-section .ac-wave-totals { margin: 6px 0; font-size: var(--ac-font-size-sm-plus); }
 .ac-section .ac-wave-cards { display: flex; flex-direction: column; gap: 8px; margin: 0; padding: 0; list-style: none; min-height: 40px; }
 .ac-section .ac-wave-card { margin: 0; padding: 10px 12px; font-size: var(--ac-font-size-md-plus); border-radius: var(--ac-radius-xl); cursor: grab; border-left: var(--ac-border-rail) solid var(--ac-blue); }

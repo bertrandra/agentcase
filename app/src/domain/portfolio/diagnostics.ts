@@ -3,7 +3,7 @@ import { engagementCoef } from '../engagement';
 import { khEnabled } from '../knowledge';
 import { ctxOf } from './memo';
 import { resolveProduct } from './resolve';
-import { scheduledProducts, unscheduledIds } from './timeline';
+import { scheduledProducts, unscheduledIds, waveSchedule } from './timeline';
 import type { Issue } from './validate';
 import type { Portfolio } from './types';
 
@@ -23,5 +23,6 @@ export function diagnose(pf: Portfolio): Issue[] {
     if (on && s.lead < (s.product.knowledge.ktLeadMonths ?? 0)) out.push({ code: 'kt-lead-clamped', message: `${name(id)}: KT preparation starts at calendar month 1 (lead capped at ${s.lead})`, productId: id });
   }
   if (users === 0 && pf.hub.enabled) out.push({ code: 'hub-unused', message: 'the Knowledge Hub is on but no planned product uses it' });
+  out.push(...waveSchedule(pf).notes);   // wave dependencies and transformation-team capacity (F13)
   return out;
 }

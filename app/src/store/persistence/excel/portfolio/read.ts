@@ -1,5 +1,5 @@
 /** @calc-zone exports */
-import { setHorizon, setHub, setOverride, setRho, validate, type Portfolio, type Product } from '@/domain/portfolio';
+import { setHorizon, setHub, setMaxConcurrentSetups, setOverride, setRho, validate, type Portfolio, type Product } from '@/domain/portfolio';
 import { clean } from '@/domain/portfolio/products';
 import { ParamsImportError } from '../params/safe';
 import type { Sheets } from '../params/types';
@@ -23,10 +23,10 @@ export function readPortfolioSheets(sheets: Sheets, base: Portfolio): Portfolio 
     overrides: {}, waveId: r.waveId, offsetMonths: r.offset,
   }));
   const s = readSettings(sheets, { hub: base.hub, horizonMonths: base.horizonMonths, startDate: base.startDate, activeProductId: base.activeProductId,
-    rho: 0 }, ids);   // a workbook without the row means independent products
+    rho: 0, cap: 0 }, ids);   // a workbook without the row means independent products, no setup capacity
   let pf: Portfolio = { ...base, products, waves, activeProductId: ids.has(s.activeProductId) ? s.activeProductId : (products[0] as Product).id,
     startDate: s.startDate };
-  pf = setRho(setHorizon(setHub(pf, s.hub), s.horizonMonths), s.rho);
+  pf = setMaxConcurrentSetups(setRho(setHorizon(setHub(pf, s.hub), s.horizonMonths), s.rho), s.cap);
   for (const o of readOverrides(sheets, ids)) pf = setOverride(pf, o.productId, o.ref, o.value);
   const errors = validate(pf).errors;
   if (errors.length) throw new ParamsImportError(`Portfolio: ${errors[0]?.message}`);

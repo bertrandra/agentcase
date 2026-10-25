@@ -29,7 +29,7 @@ Figures are the golden fixture unless stated. "Before" = the build at the start 
 | DEV-COSTMODEL-PILOT | the pilot cost is a dated line included in the cost-model totals (decision D4, lot 4); the app headline does not count it |
 | DEV-APP-SECTION-PERSONAS | Brand & theme cannot be removed from its personas (current; lot 7 will change it) |
 | DEV-THEME-SEQ-UNDO | known defect: a theme `seq` can be reissued after an undo (lot 3 fixes it) |
-| DEV-PF-GAPS | portfolio features not built: scenarios table, wave dependencies, shared teams, Wave-view histogram, per-draw truncation |
+| DEV-PF-GAPS | portfolio features not built: scenarios table, shared teams, Wave-view histogram, per-draw truncation (wave dependencies and setup capacity: built in lot 7) |
 | DEV-SNAPSHOT-RESTORE | the parallel run of the 107 case files: 2 legacy restore defects (bass / legacy curve), 1 fixed in the new build (File > Open… re-fit) |
 
 ## DEV-HEADLINE-OWNER — one economics headline
@@ -284,10 +284,22 @@ missing feature is not read as a bug. The authoritative list of known gaps is do
 | Gap | State | Where it is discussed |
 |---|---|---|
 | **Portfolio scenarios table** (the six scenarios summed over products) | not built: scenarios and sensitivity stay per product (active product) | DEV-PF-STRESS, SPEC_MULTI_PRODUIT.md §9 |
-| **Dependencies between waves** (product B after product A) and transformation-team capacity between waves | not built: waves may overlap freely (F13) | SPEC_MULTI_PRODUIT.md F13, §9 |
 | **Shared teams** across products (a person on two products) | not built: each product has its own entry team | SPEC_MULTI_PRODUIT.md §9 |
 | **Monte Carlo histogram in the Wave view** | the histogram is drawn for the Portfolio only; a Wave shows the statistics (P10 / P50 / P90, P(net<0), CVaR, diversification) without it | VUE_AGREGEE.md (stress group) |
 | **Per-draw horizon truncation** in the portfolio stress | not modelled: a product cut by the portfolio horizon is simulated on its own horizon; the deterministic consolidation does cut it (diagnostic `truncated`) | DEV-PF-STRESS (outcome of a draw) |
+
+Built since (removed from the table above):
+
+- **Dependencies between waves and transformation-team capacity (lot 7, SPEC_MULTI_PRODUIT.md F13).** A wave may start after another wave
+  `start`s or after its last product finishes setup (`setupEnd`), plus a lag in months; its effective start is `max(own start, derived start)`.
+  An optional portfolio parameter `maxConcurrentSetups` caps the products whose own setup months overlap; the later ones (wave order, a wave after
+  the one it depends on, then board order) are pushed back. One owner: `domain/portfolio/waveSchedule.ts#resolveSchedule` (pure, acyclic: a cycle
+  is refused by the command and, from a file, flagged and ignored), read by `scheduledProducts`, so the consolidation, Gantt (dependency marker),
+  KPI bar, stress, results workbook and report use the effective starts. Commands `wave.setDependency`, `portfolio.setMaxConcurrentSetups`
+  (undoable); Waves section: a "Dependency" group per wave, the capacity field, a "Schedule" checks panel (codes `wave-delayed`, `setup-pushed`,
+  `wave-dep-cycle`, `wave-dep-unknown`, also in the Consolidation diagnostics). Both fields are optional: absent = the v1 calendar (every existing
+  portfolio test unchanged); no schema bump. The parameters workbook carries them (Waves columns F-H, PortfolioSettings row "Max products in setup
+  at once"). Tests: `tests/domain/portfolio/waveSchedule.test.ts`, `tests/store/portfolio-wave-deps.test.ts`, `tests/ui/portfolio-wave-deps.test.tsx`.
 
 ## DEV-SNAPSHOT-RESTORE — opening the 107 case files: the legacy restore against the new build
 

@@ -1,28 +1,38 @@
 /** @calc-zone portfolio-consolidation */
+import { resolveProduct } from './resolve';
+import { runOf } from './run';
 import { ktLead } from './subset';
 import type { Portfolio, Product, Wave } from './types';
+import { resolveSchedule, whole, type WaveSchedule } from './waveSchedule';
 
 /** A planned product on the calendar. Calendar month T = month0 + t, where t = 1.. is the product's own Time Engine month. */
 export interface Scheduled {
   product: Product;
   wave: Wave;
-  /** wave start + product offset (0 = the portfolio's first month starts at T = 1) */
+  /** effective wave start + product offset, pushed back by the capacity (0 = the portfolio's first month starts at T = 1); see `waveSchedule` */
   month0: number;
   /** months the KT setup is placed before month0, bounded so it never falls before calendar month 1 */
   lead: number;
 }
 
-const whole = (x: number): number => (Number.isFinite(x) ? Math.max(0, Math.floor(x)) : 0);
-
+/** Own (planned) month 0 of a product: its wave's own start + offset, before any dependency or capacity. */
 export const productMonth0 = (wave: Wave, product: Product): number => whole(wave.startMonth) + whole(product.offsetMonths);
+
+const schedules = new WeakMap<Portfolio, WaveSchedule>();
+/** The effective calendar (wave dependencies, transformation-team capacity), once per portfolio identity. A product's setup is its own setup profile. */
+export function waveSchedule(pf: Portfolio): WaveSchedule {
+  let s = schedules.get(pf);
+  if (!s) { s = resolveSchedule(pf, (id) => runOf(resolveProduct(pf, id)).profile); schedules.set(pf, s); }
+  return s;
+}
 
 /** Planned products in portfolio order. Archived products and those without a wave (or with an unknown wave) are left out. */
 export function scheduledProducts(pf: Portfolio): Scheduled[] {
-  const out: Scheduled[] = [];
+  const out: Scheduled[] = [], plan = waveSchedule(pf);
   for (const product of pf.products) {
     const wave = product.archived || product.waveId === null ? undefined : pf.waves.find((w) => w.id === product.waveId);
     if (!wave) continue;
-    const month0 = productMonth0(wave, product);
+    const month0 = plan.month0.get(product.id) ?? productMonth0(wave, product);
     out.push({ product, wave, month0, lead: Math.min(ktLead(product.knowledge), month0) });
   }
   return out;

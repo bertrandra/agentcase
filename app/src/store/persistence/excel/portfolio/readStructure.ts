@@ -1,15 +1,15 @@
 /** @calc-zone exports */
 import { clean } from '@/domain/portfolio/products';
-import type { HubSettings, Product, Wave } from '@/domain/portfolio';
+import { WAVE_MILESTONES, type HubSettings, type Product, type Wave, type WaveDependency, type WaveMilestone } from '@/domain/portfolio';
 import { cleanText, str } from '../params/safe';
 import type { Sheets } from '../params/types';
 import { PF_LIMITS, PF_SHEETS } from './names';
-import { fail, flagCell, idOf, numberCell, tab, type Tab } from './tab';
+import { fail, flagCell, idOf, numberCell, SAFE_ID, tab, type Line, type Tab } from './tab';
 
 const NEED_PRODUCTS = 'a portfolio workbook needs the Products sheet';
 
 export interface ProductRow { id: string; name: string; waveId: string | null; offset: number; position: number; note?: string; archived?: boolean }
-export interface WaveRow { id: string; name: string; startMonth: number; note?: string; order: number }
+export interface WaveRow { id: string; name: string; startMonth: number; note?: string; order: number; dependsOn?: WaveDependency }
 
 /** Products sheet: unique safe ids, names, wave reference (checked against Waves later), offset, position in the wave, note, archived. Capped at 50. */
 export function readProductRows(sheets: Sheets): ProductRow[] {
@@ -43,9 +43,18 @@ export function readWaveRows(sheets: Sheets): WaveRow[] {
     if (!name) fail(t.name, l.n, 'name is required');
     return clean({ id, name, startMonth: numberCell(t, l, 2, 'start month', { min: 0, max: PF_LIMITS.startMonth, int: true }) as number,
       note: cleanText(l.c[3], 400) || undefined,
-      order: numberCell(t, l, 4, 'order', { min: 1, max: 1000, int: true, optional: true }) ?? i + 1 });
+      order: numberCell(t, l, 4, 'order', { min: 1, max: 1000, int: true, optional: true }) ?? i + 1, dependsOn: dependencyCells(t, l) });
   });
   return rows.map((r, i) => ({ r, i })).sort((a, b) => a.r.order - b.r.order || a.i - b.i).map((x) => x.r);
+}
+
+/** Columns F-H of a wave: the wave it depends on (blank = none), the milestone (start / setupEnd, blank = start) and the lag in months. */
+function dependencyCells(t: Tab, l: Line): WaveDependency | undefined {
+  const target = str(l.c[5]), m = str(l.c[6]) || 'start';
+  if (!target) return undefined;
+  if (!SAFE_ID.test(target)) fail(t.name, l.n, `depends on must be a wave id (got "${target.slice(0, 40)}")`);
+  if (!(WAVE_MILESTONES as readonly string[]).includes(m)) fail(t.name, l.n, `milestone must be start or setupEnd (got "${m.slice(0, 20)}")`);
+  return { waveId: target, milestone: m as WaveMilestone, lagMonths: numberCell(t, l, 7, 'lag', { min: 0, max: PF_LIMITS.startMonth, int: true, optional: true }) ?? 0 };
 }
 
 /** Waves with their products listed by position; a product pointing at an unknown wave is an error. */
@@ -53,14 +62,17 @@ export function assemble(rows: ProductRow[], waves: WaveRow[], build: (r: Produc
   const known = new Set(waves.map((w) => w.id));
   for (const r of rows) if (r.waveId !== null && !known.has(r.waveId)) fail(PF_SHEETS.products, null,
     `product "${r.id}" points at unknown wave "${r.waveId.slice(0, 40)}"`);
+  for (const w of waves) if (w.dependsOn && (!known.has(w.dependsOn.waveId) || w.dependsOn.waveId === w.id)) fail(PF_SHEETS.waves, null,
+    `wave "${w.id}" depends on unknown wave "${w.dependsOn.waveId}"`);
   const byPos = (w: WaveRow) => rows.map((r, i) => ({ r, i })).filter((x) => x.r.waveId === w.id).sort((a,
     b) => a.r.position - b.r.position || a.i - b.i).map((x) => x.r.id);
   return { products: rows.map(build),
-    waves: waves.map((w) => clean({ id: w.id, name: w.name, note: w.note, startMonth: w.startMonth, productIds: byPos(w) })) };
+    waves: waves.map((w) => clean({ id: w.id, name: w.name, note: w.note, startMonth: w.startMonth, productIds: byPos(w), dependsOn: w.dependsOn })) };
 }
 
 /** PortfolioSettings sheet (all keys optional): hub, horizon, start date, active product. Values are checked, never clamped. */
-export function readSettings(sheets: Sheets, base: { hub: HubSettings; horizonMonths: number; startDate: string; activeProductId: string; rho: number },
+export function readSettings(sheets: Sheets,
+  base: { hub: HubSettings; horizonMonths: number; startDate: string; activeProductId: string; rho: number; cap: number },
   ids: ReadonlySet<string>) {
   const t = tab(sheets, PF_SHEETS.settings), out = { ...base };
   if (!t) return out;
@@ -72,6 +84,7 @@ export function readSettings(sheets: Sheets, base: { hub: HubSettings; horizonMo
     else if (key === 'hub infrastructure allocation') out.hub = { ...out.hub, infraAllocation: allocation(t, l.n, str(l.c[1])) };
     else if (key === 'horizon (months)') out.horizonMonths = numberCell(t, l, 1, 'horizon', { min: 1, max: 120, int: true }) as number;
     else if (key.startsWith('correlation rho')) out.rho = numberCell(t, l, 1, 'correlation rho', { min: 0, max: 1 }) as number;
+    else if (key.startsWith('max products in setup')) out.cap = numberCell(t, l, 1, 'max products in setup', { min: 0, max: PF_LIMITS.products, int: true }) as number;
     else if (key === 'start date (iso)') out.startDate = isoDate(t, l.n, str(l.c[1]));
     else if (key === 'active product id') {
       const id = str(l.c[1]);

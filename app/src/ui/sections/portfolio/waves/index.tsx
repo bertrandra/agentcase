@@ -5,6 +5,7 @@ import { Callout } from '@/ui/widgets/cards';
 import { SectionFrame } from '@/ui/zones/SectionFrame';
 import { AddWave } from './AddWave';
 import { columnOf, moveProduct } from './moves';
+import { ScheduleNotes, SetupCapacity } from './Schedule';
 import { WaveColumn } from './WaveColumn';
 
 const help = (
@@ -15,6 +16,10 @@ const help = (
     <p>Move a card by <strong>drag and drop</strong>, with the <strong>ArrowLeft / ArrowRight</strong> keys when the card has focus, or with its <strong>Move
       to wave…</strong> menu. Every action is one undoable step (Ctrl+Z); the live region announces it. The totals of a wave are the consolidated figures of
       its planned products.</p>
+    <p>A wave may <strong>start after</strong> another wave: after it starts, or after its last product finishes setup, plus a lag in months. Its
+      effective start is the later of its own start and that date (a choice that would close a cycle is not offered). The <strong>transformation-team
+      capacity</strong> caps how many products are in setup at the same time: later products (wave order, then board order) are pushed back, and the
+      Schedule checks list every move.</p>
   </>
 );
 
@@ -28,7 +33,7 @@ export default function WavesSection() {
     if (id && card) moveProduct(id, card.name, from, to);
   };
   return (
-    <SectionFrame title="🌊 Waves" help={help} input={<AddWave />}
+    <SectionFrame title="🌊 Waves" help={help} input={<><AddWave /><SetupCapacity /></>} diagnostic={<ScheduleNotes />}
       result={
         <>
           <div className="ac-wave-board" role="group" aria-label="Wave board">

@@ -2,7 +2,7 @@
 import { summarize, type Summary } from './headline';
 import type { ProductRun } from './run';
 import { addInto, emptySeries, type ProductSeries, type Series } from './series';
-import type { Scheduled } from './timeline';
+import { waveSchedule, type Scheduled } from './timeline';
 import type { Portfolio } from './types';
 
 /** A planned product with its calendar series and its own figures. */
@@ -22,6 +22,7 @@ export interface ProductView {
 export interface WaveView {
   id: string;
   name: string;
+  /** effective start (after its dependency, see `waveSchedule`) */
   startMonth: number;
   /** planned products of the wave, in portfolio order */
   productIds: string[];
@@ -39,9 +40,10 @@ export function aggregate(items: ProductView[], horizon: number, rate: number): 
 
 /** Per-wave aggregates in wave order; the products are those the consolidation planned (see `scheduledProducts`). */
 export function waveViews(pf: Portfolio, products: ProductView[], horizon: number, rate: number): WaveView[] {
+  const starts = waveSchedule(pf).starts;
   return pf.waves.map((w) => {
     const mine = products.filter((v) => v.waveId === w.id);
-    return { id: w.id, name: w.name, startMonth: w.startMonth, productIds: mine.map((v) => v.id), ...aggregate(mine, horizon, rate) };
+    return { id: w.id, name: w.name, startMonth: starts.get(w.id) ?? w.startMonth, productIds: mine.map((v) => v.id), ...aggregate(mine, horizon, rate) };
   });
 }
 

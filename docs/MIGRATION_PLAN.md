@@ -402,7 +402,6 @@ Delivered: P1-P7 of [SPEC_MULTI_PRODUIT.md](SPEC_MULTI_PRODUIT.md) (decisions D-
 | Gap | Note |
 |---|---|
 | Portfolio scenarios table | the six scenarios and the sensitivity stay per product (spec P6 "hors périmètre") |
-| Dependencies and capacity between waves | spec § 9; waves may overlap, no precedence constraint |
 | Shared teams across products | the team is strictly per product (spec § 9) |
 | Per-draw horizon truncation in the portfolio stress | each product is simulated on its own horizon; the portfolio draw is the sum (DEV-PF-STRESS) |
 | KnowledgeSubsets "apply to all" | only "back to common" exists for the fields of a knowledge subset |

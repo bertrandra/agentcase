@@ -1,5 +1,5 @@
 /** @calc-zone exports */
-import { FORBIDDEN_DOM_IDS, OVERRIDABLE_KEYS } from '@/domain/portfolio';
+import { FORBIDDEN_DOM_IDS, OVERRIDABLE_KEYS, WAVE_MILESTONES } from '@/domain/portfolio';
 import { makeDefaultDoc } from '../../instance';
 import { checkCase, checkTeam, rec, type Notes, type Rec } from './caseChecks';
 
@@ -75,6 +75,7 @@ function waves(list: unknown, prods: Rec[], n: Notes): Rec[] {
     if (start !== w.startMonth) n.push(`Wave ${w.id}: start month ${JSON.stringify(w.startMonth)} is not a number >= 0 — set to 0`);
     out.push({ ...w, name: typeof w.name === 'string' ? w.name : `Wave ${out.length + 1}`, startMonth: start, productIds: Array.isArray(w.productIds) ? w.productIds : [] });
   });
+  dependencies(out, n);
   const ids = new Set(prods.map((p) => p.id as string)), owner = new Map<string, string>();
   for (const w of out) w.productIds = (w.productIds as unknown[]).filter((pid): pid is string => {
     if (typeof pid !== 'string' || !ids.has(pid) || owner.has(pid)) { n.push(`Wave ${w.id}: product ${JSON.stringify(pid)} is unknown or already in a wave — removed from the wave`); return false; }
@@ -85,6 +86,18 @@ function waves(list: unknown, prods: Rec[], n: Notes): Rec[] {
     if (p.waveId !== listed) { n.push(`Product ${p.id}: wave ${JSON.stringify(p.waveId)} does not list it — ${listed ? `placed in wave ${listed}` : 'unscheduled'}`); p.waveId = listed; }
   }
   return out;
+}
+
+/** Wave dependencies: a malformed one, or one on an unknown wave or on itself, is dropped (the wave starts at its own start). Cycles are kept (diagnostic). */
+function dependencies(waves: Rec[], n: Notes): void {
+  const ids = new Set(waves.map((w) => w.id as string));
+  for (const w of waves) {
+    if (w.dependsOn === undefined) continue;
+    const d = w.dependsOn as Rec;
+    const ok = rec(d) && typeof d.waveId === 'string' && ids.has(d.waveId) && d.waveId !== w.id && (WAVE_MILESTONES as readonly unknown[]).includes(d.milestone)
+      && Number.isInteger(d.lagMonths) && (d.lagMonths as number) >= 0;
+    if (!ok) { n.push(`Wave ${w.id}: dependency ${JSON.stringify(w.dependsOn).slice(0, 80)} is not valid — dropped`); delete w.dependsOn; }
+  }
 }
 
 /** Repair a raw portfolio file (sanitised, migrated). Returns the repaired raw file for `readPortfolio`. */
@@ -105,5 +118,7 @@ export function repairPortfolio(raw: Rec, n: Notes): Rec {
     n.push(`Portfolio: horizon ${JSON.stringify(s.horizonMonths)} months is invalid — ${months} months (the horizon input) used`); s.horizonMonths = months;
   }
   if (s.rho !== undefined && !(typeof s.rho === 'number' && s.rho >= 0 && s.rho <= 1)) { n.push(`Portfolio: correlation rho ${JSON.stringify(s.rho)} is not in [0, 1] — products independent (0)`); delete s.rho; }
+  const cap = s.maxConcurrentSetups;
+  if (cap !== undefined && !(Number.isInteger(cap) && (cap as number) >= 1)) { n.push(`Portfolio: setup capacity ${JSON.stringify(cap)} is not a whole number >= 1 — no limit`); delete s.maxConcurrentSetups; }
   return s;
 }
