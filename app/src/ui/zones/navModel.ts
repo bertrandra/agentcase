@@ -1,6 +1,7 @@
 import { useMemo } from 'react';
 import { landingSection, navGroups, resolveSections, type DynRow, type NavGroupView, type NavSection, type PersonaLists, type PersonaOrder,
   type SectionRow } from '@/domain/nav/layout';
+import { readAppOverrides, withAppSections } from '@/domain/nav/appSections';
 import { fastPathSections } from '@/domain/nav/fastPath';
 import { activeSeq } from '@/domain/nav/sequence';
 import { findStructure, placeIn, STANDARD_LABEL, STANDARD_STRUCTURE, structureList, structureOf, type MenuStructure,
@@ -9,8 +10,8 @@ import { personasByOrder, type MenuGroup, type Persona, type PersonaSeq } from '
 import { useDoc } from '@/store/hooks';
 import { useIsMulti, usePersona } from '@/store/portfolioHooks';
 import { useUi } from '../uiState';
-import { withAppSections, withPortfolio } from './portfolioNav';
-import { DEFAULT_PERSONA_SECTIONS, GROUPS, SECTIONS } from './registry';
+import { withPortfolio } from './portfolioNav';
+import { APP_SECTIONS, DEFAULT_PERSONA_SECTIONS, GROUPS, SECTIONS } from './registry';
 
 const FALLBACK: Persona[] = [{ id: 'builder', label: 'Builder', protected: false, order: 1 },
   { id: 'clientcase', label: 'Client case', protected: false, order: 2 },
@@ -40,12 +41,12 @@ export function useNavModel(): NavModel {
   const rows = useDoc((d) => d.sectionGroups as SectionRow[] | undefined), dyn = useDoc((d) => d.dynamicSections as DynRow[] | undefined);
   const docLists = useDoc((d) => d.PERSONA_SECTIONS as PersonaLists | undefined),
     order = useDoc((d) => (d.PERSONA_SECTION_ORDER as PersonaOrder | undefined) ?? NO_ORDER);
-  const stored = useDoc((d) => d.MENU_STRUCTURES as MenuStructure[] | undefined);
+  const stored = useDoc((d) => d.MENU_STRUCTURES as MenuStructure[] | undefined), appOv = useDoc((d) => d.PERSONA_APP_SECTIONS);
   const style = useDoc((d) => (d.SECTION_NAV_STYLE === 'tabs' ? 'tabs' : 'buttons'));
   const fastPath = useUi((s) => s.fastPath), multi = useIsMulti();
   return useMemo(() => {
     const base = resolveSections(SECTIONS, rows, dyn), stdGroups = docGroups?.length ? docGroups : (GROUPS as MenuGroup[]),
-      allLists = withAppSections(docLists ?? DEFAULT_PERSONA_SECTIONS);
+      allLists = withAppSections(docLists ?? DEFAULT_PERSONA_SECTIONS, APP_SECTIONS, readAppOverrides(appOv));
     const personas = personasByOrder(docPersonas?.length ? docPersonas : FALLBACK), lists = withPortfolio(multi, base, stdGroups, allLists).lists,
       cache = new Map<string, StructureView>();
     const view = (id: string): StructureView => {
@@ -66,5 +67,5 @@ export function useNavModel(): NavModel {
       compact: !!current?.compactNav,
       seq: activeSeq(current?.seq), structure: mine.id, structures: structureList(stored), view, structureOfPersona,
       landing: (id: string) => { const v = view(structureOfPersona(id)); return landingSection(id, v.sections, v.groups, lists, order); } };
-  }, [wanted, docPersonas, docGroups, docColors, rows, dyn, docLists, order, stored, style, fastPath, multi]);
+  }, [wanted, docPersonas, docGroups, docColors, rows, dyn, docLists, appOv, order, stored, style, fastPath, multi]);
 }

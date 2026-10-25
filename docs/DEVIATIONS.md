@@ -22,12 +22,12 @@ Figures are the golden fixture unless stated. "Before" = the build at the start 
 | DEV-ARCH-CONTENT | the two architecture sections describe the TypeScript build |
 | DEV-DEPS-ZONES | the Section Dependencies page shows the graph generated from the code, not the authored registry |
 | DEV-MENU-STRUCTURES | several menu structures; each persona picks one; Business journey persona |
-| DEV-BRAND-THEME | theme library, Brand & theme screen (an app section), `?theme=` links, customer logo |
+| DEV-BRAND-THEME | theme library, Brand & theme screen (an app section), `?theme=` links, customer logo, palette from logo |
 | DEV-HEADER-MENU | header and top bar: title without subtitle, compact two-zone header, file menu, Show / Change, group bar without ☰ / persona |
 | DEV-KPI-BAR | KPI bar shows FTE before / after, saving over the horizon, velocity; NPV moved to Results / Financial |
 | DEV-UI-PARITY | cross-reference of `app/ui-parity-exceptions.json` (accessibility corrections, header decisions) |
 | DEV-COSTMODEL-PILOT | the pilot cost is a dated line included in the cost-model totals (decision D4, lot 4); the app headline does not count it |
-| DEV-APP-SECTION-PERSONAS | Brand & theme cannot be removed from its personas (current; lot 7 will change it) |
+| DEV-APP-SECTION-PERSONAS | app sections (Brand & theme) are assignable per persona, stored apart from the legacy-shaped `PERSONA_SECTIONS` |
 | DEV-THEME-SEQ-UNDO | known defect: a theme `seq` can be reissued after an undo (lot 3 fixes it) |
 | DEV-PF-GAPS | portfolio features not built: scenarios table, wave dependencies, shared teams, Wave-view histogram, per-draw truncation |
 | DEV-SNAPSHOT-RESTORE | the parallel run of the 107 case files: 2 legacy restore defects (bass / legacy curve), 1 fixed in the new build (File > Open… re-fit) |
@@ -181,14 +181,19 @@ default case load, display and save exactly as before (the default theme writes 
 - New section **🎨 Brand & theme** (CONFIGURE, groupSeq 30; Business journey: Reference). It has no legacy equivalent, so it is an **app section**
   (`"app": true` in `ui/zones/data/sectionCatalog.json`): like the Portfolio sections it is not in `LEGACY_SECTIONS`, hence not on the "Sections"
   sheet of the parameters workbook and not in the case's `PERSONA_SECTIONS` (the default case is unchanged); the navigation adds it to the personas
-  its `personas` field names (Admin, Builder, Business journey; Advanced sees every section). It cannot be removed from those personas in Persona
-  management in this version. Tests that compare the navigation with the legacy page leave app sections out (`tests/domain/nav.test.ts`,
+  its `personas` field names by default (Admin, Builder, Business journey; Advanced sees every section). Persona management can add it to or remove
+  it from any other persona (DEV-APP-SECTION-PERSONAS). Tests that compare the navigation with the legacy page leave app sections out (`tests/domain/nav.test.ts`,
   `tests/ui/nav.test.tsx`); the catalogue counts are 86 sections (79 + 6 Portfolio + 1 app section), 19 `S-static`.
 - Parameters workbook: sheet **Themes**, written only when the case has a user theme or another active theme than 1; the logo is not carried.
 - Engagement context: a "Customer logo" card (upload, backdrop, hide, remove). The header shows the logo next to "AgentCase for <customer>" only when
   one is set; the HTML report shows it above the title only when one is set (otherwise byte-identical).
 - `?theme=<n>` in the address shows a theme without changing the case (a notice offers to adopt or clear it).
-- Files: `domain/theme/{themeDef,derive,themedDisplay,catalogue,library,themeFile,themeProps,themeChecks,active,logo}.ts`, `controllers/{themes,brand}.ts`,
+- **Palette from logo** (lot 7): with a customer logo set, the one-colour generator of a user theme offers "🖼️ Palette from logo": the logo (already a
+  data URL in the case, nothing fetched) is drawn on an offscreen canvas (`ui/brand/logoPixels.ts`, the only canvas code) and its dominant
+  non-neutral colours found by `domain/theme/logoPalette.ts` `logoColours()` (pure: transparent, near-white, near-black and grey pixels ignored,
+  4-bit histogram, close shades merged in OKLab); the first one feeds the generator with its contrast slider and harmony as one undoable
+  `theme.generate` step, the others are offered as buttons. Details: docs/THEME.md §8.10.
+- Files: `domain/theme/{themeDef,derive,themedDisplay,catalogue,library,themeFile,themeProps,themeChecks,active,logo,logoPalette}.ts`, `controllers/{themes,brand}.ts`,
   `ui/brand/*`, `ui/sections/configure/brand-theme/*`, `ui/sections/frame/engagement-context/LogoPanel.tsx`, `store/persistence/excel/params/sheets/themes.ts`,
   `store/persistence/excel/results/logo.ts`, `store/persistence/report/{data,render}.ts`.
 
@@ -255,16 +260,27 @@ Changed in lot 4 (user decision D4). The Cost model (monthly) workbook (`domain/
   tests `tests/domain/portfolio/costModel.test.ts` (pilot months = the sizing, totals = sum of the rows including the pilot, reconciliation with the app net on
   four fixtures, the 107 fixtures and the multi-product portfolios), `tests/store/excel-costmodel.test.ts`.
 
-## DEV-APP-SECTION-PERSONAS — Brand & theme cannot be removed from the personas that show it
+## DEV-APP-SECTION-PERSONAS — app sections are assigned per persona apart from the legacy-shaped persona lists
 
-Current state (v20.9.0). 🎨 Brand & theme is an *app section* (DEV-BRAND-THEME): it is not in the case's `PERSONA_SECTIONS` (so the default case and the
-parameters workbook stay legacy-shaped), and the navigation adds it to the personas its catalogue entry names (Admin, Builder, Business journey; Advanced
-sees every section). Consequence: **Persona management cannot remove it** from those personas (the Section assignment tab lists it as assigned but the
-removal has no effect on an app section), unlike any legacy section.
+Built in lot 7 (before: v20.9.0 → v20.16.0, 🎨 Brand & theme could not be removed from the personas its catalogue entry names). 🎨 Brand & theme is
+an *app section* (DEV-BRAND-THEME): it is not in the case's `PERSONA_SECTIONS`, so the default case and the parameters workbook stay legacy-shaped.
 
+- **Default**: the navigation shows an app section to the personas its catalogue entry names (`personas` in `ui/zones/data/sectionCatalog.json`:
+  Admin, Builder, Business journey) and to a persona whose legacy list already names it (added by hand before lot 7).
+- **Override**: Persona management (🧩 Section assignment ✕ / ➕ Add, the 🧩 Persona layout double-click, 🧭 Sync menu to sequence) adds or removes
+  it like any section. The choice is stored in the optional case key `PERSONA_APP_SECTIONS = { <persona>: { <app section id>: true | false } }`, never
+  in `PERSONA_SECTIONS`. Command `persona.setAppSection` (one undoable step; Sync menu to sequence writes both keys in its one step). The overrides
+  are normalised: a value equal to the default is dropped, and when none is left the key itself is removed, so a case edited back to its defaults
+  saves exactly as an untouched one. Deleting a persona drops its overrides. Absent key = the catalogue default = the build before lot 7.
+- **Guard (a way back)**: the protected Advanced persona takes no override and always sees every section, and it cannot be deleted, so every
+  case keeps a way back to 🎨 Brand & theme (switch the persona picker to Advanced). No further guard: any other persona may lose it, like any section.
+- **Files and workbooks**: the key travels with the case file (and the persona-config JSON companion of the persona-only export) only when set. The
+  parameters workbook does not carry it ("Persona Sections" keeps the legacy shape), so a workbook round trip keeps the defaults; the parallel run
+  and excel-compat are unchanged (no case file sets it). Not a model input (excluded from the Monte Carlo fingerprint).
 - Legacy: no such section; every section is assignable.
-- **Planned change (lot 7)**: app sections become assignable like the others (stored without breaking the legacy shape of `PERSONA_SECTIONS`).
-- Files: `ui/zones/registry.ts` (`APP_SECTIONS`), `ui/zones/navModel.ts`, `ui/zones/data/sectionCatalog.json`.
+- Files: `domain/nav/appSections.ts` (resolution, normalisation), `controllers/appSections.ts`, `controllers/{navLayout,pdcPersonas}.ts`,
+  `ui/zones/{registry,navModel}.ts` (`APP_SECTIONS`), `ui/sections/configure/personas/assign.ts`; tests `tests/domain/nav-app-sections.test.ts`,
+  `tests/store/app-sections.test.ts`, `tests/ui/sections/personas-app.test.tsx`.
 
 ## DEV-THEME-SEQ-UNDO — known defect: a theme sequence id can be issued twice after an undo
 

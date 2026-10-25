@@ -1,11 +1,11 @@
 import { useState } from 'react';
 import { setPersonaSectionOrder } from '@/controllers/navLayout';
-import { addPersonaSection, removePersonaSection } from '@/controllers/pdcPersonas';
 import { bySeq, groupsByOrder } from '@/domain/nav/layout';
 import { previewMenu, type Pending } from '@/domain/nav/preview';
 import { placeForPersona, shiftForPersona } from '@/domain/nav/moves';
 import { personasByOrder, type Persona } from '@/domain/pdc/personas';
 import { useNavModel } from '@/ui/zones/navModel';
+import { assignSection } from './assign';
 import { Board } from './Board';
 import { LivePreview } from './LivePreview';
 
@@ -29,7 +29,7 @@ export function PersonaLayout({ personas, lists }: { personas: Persona[]; lists:
       <p className="ac-muted">{assigned.length} section(s) assigned. Double-click a card to assign or remove it; drag (or ↑ ↓) to order it inside its group for this persona only.</p>
       <Board label="Persona layout" cols={cols} colors={colors} canDrag={(s) => on(s.id)} onPending={setPending}
         cardClass={(s) => (on(s.id) ? '' : 'is-off')} cardExtra={(s) => on(s.id) && <small className="ac-ok-text">✓ assigned</small>}
-        onDouble={(id) => (on(id) ? removePersonaSection(pid, id) : addPersonaSection(pid, id))}
+        onDouble={(id) => assignSection(pid, id, !on(id))}
         onDrop={(id, group, index) => { if (on(id) && sections.find((s) => s.id === id)?.group === group) setPersonaSectionOrder(`Reorder ${label(id)} for ${pid}`, pid, placeForPersona(sections, pid, order, id, index)); }}
         onShift={(id, dir) => setPersonaSectionOrder(`Move ${label(id)} ${dir < 0 ? 'up' : 'down'} for ${pid}`, pid, shiftForPersona(sections, pid, order, id, dir))} />
       <LivePreview persona={editable.find((p) => p.id === pid)} preview={preview} colors={colors} pending={!!valid} />

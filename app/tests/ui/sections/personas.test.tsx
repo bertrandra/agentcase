@@ -79,7 +79,7 @@ describe('personas section', () => {
     render(<Personas />);
     fireEvent.click(screen.getByText('🧩 Section assignment'));
     fireEvent.change(screen.getByRole('combobox'), { target: { value: 'admin' } });
-    expect(within(screen.getByLabelText('Sections of Admin')).getAllByRole('listitem')).toHaveLength(lists().admin!.length);
+    expect(within(screen.getByLabelText('Sections of Admin')).getAllByRole('listitem')).toHaveLength(lists().admin!.length + 1);   // + Brand & theme (an app section, by default)
     fireEvent.change(screen.getByLabelText('Available sections'), { target: { value: 'financial' } });
     fireEvent.click(screen.getByText('➕ Add to Admin'));
     expect(lists().admin).toContain('financial');

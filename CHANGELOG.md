@@ -15,6 +15,19 @@ All notable changes to AgentCase, newest first. Product version from v19.0.0 = t
 
 When releasing, follow [docs/BUMP_PROCEDURE.md](docs/BUMP_PROCEDURE.md) (§7 for the legacy file) and add the new version at the top.
 
+## [Unreleased]
+
+### Lot 7 — app sections assignable per persona, palette from logo
+- **App sections are assignable** (DEV-APP-SECTION-PERSONAS): 🎨 Brand & theme can now be added to or removed from any persona in Persona management
+  (Section assignment, Persona layout double-click, Sync menu to sequence), like any section. The choice is stored in the new optional case key
+  `PERSONA_APP_SECTIONS` (per persona, per app section: shown or not), never in the legacy-shaped `PERSONA_SECTIONS`; absent = the catalogue default
+  (Admin, Builder, Business journey), i.e. the previous behaviour. Command `persona.setAppSection` (undoable); edited back to the defaults, the key
+  disappears. The protected Advanced persona always sees every section (the way back). Parameters workbook, parallel run and excel-compat unchanged.
+- **Palette from logo** (DEV-BRAND-THEME, docs/THEME.md §8.10): with a customer logo set, the one-colour generator of a user theme offers
+  "🖼️ Palette from logo". The logo's dominant non-neutral colours (pure `domain/theme/logoPalette.ts`; transparent, near-white, near-black and grey
+  pixels ignored, close shades merged) feed the generator with its contrast slider and harmony as one undoable `theme.generate` step; the other colours
+  found are offered as buttons. The canvas is isolated in `ui/brand/logoPixels.ts`; nothing is fetched (the logo is a data URL already).
+
 ## [v20.16.0] 2026-10-25 — Architecture lot 5b: inline styles to CSS classes, max-len 0
 
 ### Lot 5b part A — frame, baseline, scope, tune and verify sections: named classes instead of inline styles, no line over 160 characters
