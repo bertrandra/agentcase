@@ -9,9 +9,10 @@ const layers = [
   { type: 'store', pattern: 'src/store/**' },
   { type: 'controllers', pattern: 'src/controllers/**' },
   { type: 'ui', pattern: 'src/ui/**' },
-  { type: 'entry', pattern: 'src/main.tsx', mode: 'file' },
 ];
-const allow = (from, to) => ({ from, allow: to });
+// The entry file is classified as a file (eslint-plugin-boundaries 7: element descriptors match folders, single files are file descriptors).
+const files = [{ pattern: 'src/main.tsx', category: 'entry' }];
+const allow = (from, to) => ({ from: { element: { type: from } }, allow: { to: { element: { type: to } } } });
 
 // D1 (readability) — a source line is at most 300 characters, whatever it holds (an error); over 160 is a warning (`max-len` below). A local rule because
 // ESLint's `max-len` takes one limit per configuration. Characters are counted as code points (an emoji is one).
@@ -40,6 +41,7 @@ export default tseslint.config(
     plugins: { 'react-hooks': reactHooks, boundaries, local },
     settings: {
       'boundaries/elements': layers,
+      'boundaries/files': files,
       'import/resolver': { typescript: { alwaysTryTypes: true } },
     },
     rules: {
@@ -55,14 +57,14 @@ export default tseslint.config(
         'error',
         { selector: "JSXAttribute[name.name='dangerouslySetInnerHTML']", message: 'Never inject raw HTML (XSS surface of the legacy app).' },
       ],
-      'boundaries/element-types': ['error', {
+      'boundaries/dependencies': ['error', {
         default: 'disallow',
-        rules: [
+        policies: [
           allow('domain', ['domain']),
           allow('store', ['store', 'domain']),
           allow('controllers', ['controllers', 'store', 'domain']),
           allow('ui', ['ui', 'controllers', 'store', 'domain']),
-          allow('entry', ['ui', 'store', 'controllers', 'domain']),
+          { from: { file: { categories: 'entry' } }, allow: [{ to: { element: { type: ['ui', 'store', 'controllers', 'domain'] } } }, { to: { file: { categories: 'entry' } } }] },
         ],
       }],
     },

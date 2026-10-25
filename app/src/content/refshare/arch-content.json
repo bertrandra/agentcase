@@ -22,7 +22,7 @@
    ["tr",["td",["code","domain"]],["td","Pure calculation engine and catalogues; no I/O, no DOM, no store"],["td","domain"],["td",["code","domain/model"],", ",["code","domain/time"],", ",["code","domain/economics"],", ",["code","domain/portfolio"],", ",["code","domain/stress"]]]
   ]],
   ["ul",
-   ["li",["strong","Import direction"]," — rule ",["code","boundaries/element-types"],"; the entry file ",["code","main.tsx"]," may import every layer."],
+   ["li",["strong","Import direction"]," — rule ",["code","boundaries/dependencies"],"; the entry file ",["code","main.tsx"]," may import every layer."],
    ["li",["strong","No write path in the UI"]," — ",["code","no-restricted-imports"]," forbids ",["code","@/store/core"],", commands, instance, derive and persistence from ",["code","ui"],", so a screen cannot reach ",["code","dispatch"],"."],
    ["li",["strong","At most 150 lines per file"]," — ESLint ",["code","max-lines"]," and ",["code","tests/size.test.ts"],"; JSON and CSS data are exempt."],
    ["li",["strong","No any"]," — ",["code","@typescript-eslint/no-explicit-any"],"; TypeScript is strict."],
