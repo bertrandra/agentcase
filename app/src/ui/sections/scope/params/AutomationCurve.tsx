@@ -17,6 +17,7 @@ function Row({ col, name, val, sub, on, onToggle }: RowProps) {
     <>
       <span className="ac-leg-head">
         {onToggle && <input type="checkbox" checked={!!on} aria-label={name} onChange={(e) => onToggle(e.target.checked)} />}
+        {/* dynamic: the series colour and its text variant (above) */}
         <span className="ac-leg-sw" style={swatch} /><span className="ac-leg-name">{name}</span><span className="ac-leg-fill" />
         <span className="ac-leg-val" style={value}>{val}</span>
       </span>

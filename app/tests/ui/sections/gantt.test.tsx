@@ -50,7 +50,8 @@ describe('gantt section', () => {
     expect(container.textContent).toContain('Payback (break-even)');
   });
   it('the roadmap durations and the onboarding toggle reshape the program; undo restores it', () => {
-    const { container } = render(<Gantt />), summary = () => Object.fromEntries(statsOf(container)), n = () => container.querySelectorAll('[data-gantt-row]').length;
+    const { container } = render(<Gantt />), summary = () => Object.fromEntries(statsOf(container));
+    const n = () => container.querySelectorAll('[data-gantt-row]').length;
     const rows0 = n();
     act(() => setInput('rmD1', 10));
     expect(summary()['Onboarding']).toBe('24 wk');

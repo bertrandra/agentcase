@@ -5,6 +5,9 @@ import { RollupFrame } from '../aggregate/Rollup';
 
 const Section = lazy(() => import('./index'));
 
+const NOTE = 'Sector, glass ceiling, maximum automatable share and regulatory artifacts of each product. The selection '
+  + 'line weights the ceiling by the entry team of each product and counts the regulatory artifacts.';
+
 /**
  * Regulatory compliance — aggregate view (R-rollup): sector, glass ceiling and
  * regulatory artifacts of each product; the line is the entry-team weighted ceiling.
@@ -12,5 +15,5 @@ const Section = lazy(() => import('./index'));
 export default function ComplianceAggregate() {
   return <RollupFrame title="Regulatory compliance" caption="Compliance coverage by product" totalLabel="Weighted by entry team" Section={Section}
     table={useVerifyView(complianceTable)}
-    note="Sector, glass ceiling, maximum automatable share and regulatory artifacts of each product. The selection line weights the ceiling by the entry team of each product and counts the regulatory artifacts." />;
+    note={NOTE} />;
 }

@@ -10,7 +10,9 @@ import { useView } from '../vbShared';
 
 type Row = ReturnType<typeof qualityAnchorView>['rows'][number];
 /** The class and edited flag of an anchor input (bold with a brick border once it differs from the shipped value). */
-const box = (edited: boolean, target = false) => ({ className: target ? 'ac-quality-input is-target' : 'ac-quality-input', 'data-edited': edited || undefined });
+const box = (edited: boolean, target = false) => ({
+  className: target ? 'ac-quality-input is-target' : 'ac-quality-input', 'data-edited': edited || undefined,
+});
 
 /** Quality metrics: editable AS-IS baseline and target per metric; Y1–Y3 interpolate between them (amber = overridden). */
 export default function QualitySection() {

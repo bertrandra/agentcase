@@ -7,7 +7,8 @@ import { appStore } from '@/store/instance';
 import { legacySectionText, missingNumbers, renderedText } from '../../helpers/parity';
 import { PARITY_FIXTURES, loadFixture } from '../../helpers/fixtures';
 
-beforeAll(() => { HTMLCanvasElement.prototype.getContext = (() => null) as typeof HTMLCanvasElement.prototype.getContext; });   // jsdom has no canvas: ChartPanel tolerates null
+// jsdom has no canvas: ChartPanel tolerates null
+beforeAll(() => { HTMLCanvasElement.prototype.getContext = (() => null) as typeof HTMLCanvasElement.prototype.getContext; });
 afterEach(cleanup);
 const doc = () => appStore().getState().doc;
 const base = () => computeCase(doc()).model.base;

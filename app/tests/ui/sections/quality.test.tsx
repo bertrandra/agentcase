@@ -20,7 +20,8 @@ describe('quality section', () => {
   it.each(VB_FIXTURES)('reproduces the legacy table (Y1..Y3, targets) and the editable fields (%s)', (id) => {
     loadFixture(id);
     const { container } = render(<Quality />), L = legacyDom(id);
-    expect(bodies(container)[0]!.map((r) => [r[0], r[2], r[3], r[4]!.replace(/target$/, ' target')])).toEqual(L.qual.slice(1).map((r) => [r[0], r[2], r[3], r[4]]));
+    const shown = bodies(container)[0]!.map((r) => [r[0], r[2], r[3], r[4]!.replace(/target$/, ' target')]);
+    expect(shown).toEqual(L.qual.slice(1).map((r) => [r[0], r[2], r[3], r[4]]));
     expect(inputs(container)).toEqual(L.qualInputs);
   });
   it('editing the AS-IS baseline and the target moves Y1..Y3 and the radar; Reset AS-IS and undo restore them', () => {

@@ -11,6 +11,7 @@ export function GroupCard({ group, sections, color }: NavGroupView & { color: st
   const tint = { '--dyn-color-group': color, '--dyn-color-group-text': textColor(color, tok) } as CSSProperties;
   const count = `${sections.length} section${sections.length === 1 ? '' : 's'} active for this persona`;
   return (
+    // dynamic: the group tint (custom properties above)
     <button type="button" className="ac-home-card" title={`Opens ${group.label}`} onClick={() => goSection(sections[0]!.id)} style={tint}>
       <div className="ac-home-card-head">
         <span>{group.label}</span>

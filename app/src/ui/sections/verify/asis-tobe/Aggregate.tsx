@@ -12,7 +12,8 @@ import { ExcludedNote, VerifyTable } from '../aggregate/Rollup';
 export default function AsisTobeAggregate() {
   const a = useVerifyView(asisTobeAgg);
   if (!a) return null;
-  const intro = `Comparison of the same workload run manually (AS-IS) vs agentic (TO-BE) for ${a.label}: figures of the planned products added up; ratios weighted by their entry team.`;
+  const intro = `Comparison of the same workload run manually (AS-IS) vs agentic (TO-BE) for ${a.label}: `
+    + 'figures of the planned products added up; ratios weighted by their entry team.';
   return (
     <SectionFrame title="AS-IS vs TO-BE" help={<p>{intro}</p>} result={
       <>

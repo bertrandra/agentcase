@@ -31,6 +31,7 @@ export function ProgramBar({ r }: { r: Row }) {
     : { role: 'group', 'aria-label': text };
   return (
     <div className="ac-gantt-track is-program">
+      {/* dynamic: place, length and colour role (above) */}
       <div title={`${r.name} — ${r.meta}`} tabIndex={0} onKeyDown={onKey} className="ac-gantt-pbar" style={place} {...aria} />
     </div>
   );

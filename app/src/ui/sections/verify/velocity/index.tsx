@@ -16,7 +16,10 @@ type Row = ReturnType<typeof velocityView>['rows'][number];
 /** One performance-realisation coefficient: the field keeps what was typed, the number reaches COEF (legacy coefSet). */
 function CoefInput({ id, coef, label }: { id: string; coef: PerfCoefKey; label: string }) {
   // COEF wins (the DD register edits it too)
-  const value = useDoc((d) => { const text = d.dom.values[id], n = d.COEF[coef]; return text !== undefined && parseFloat(text) === n ? text : String(n ?? ''); });
+  const value = useDoc((d) => {
+    const text = d.dom.values[id], n = d.COEF[coef];
+    return text !== undefined && parseFloat(text) === n ? text : String(n ?? '');
+  });
   return (
     <Field label={label}>
       <input type="number" id={id} min={0} step={0.05} value={value} onChange={(e) => setPerfCoef(coef, e.target.value)} className="ac-velocity-coef" />

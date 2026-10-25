@@ -21,7 +21,8 @@ describe('phase-scope section', () => {
     render(<PhaseScope />);
     const ceiling0 = modelOf(s).ceiling;
     expect(screen.getByText(/10\/53 art\./)).toBeTruthy();
-    ['V1', 'V3', 'V6'].forEach((p) => fireEvent.click(screen.getByLabelText(`Phase ${p}`)));   // each phase fully on (V1 and V3 hold only some of their artefacts by default; V4 is already complete)
+    // each phase fully on (V1 and V3 hold only some of their artefacts by default; V4 is already complete)
+    ['V1', 'V3', 'V6'].forEach((p) => fireEvent.click(screen.getByLabelText(`Phase ${p}`)));
     expect(screen.getByText(/\d+\/53 art\./).textContent).toBe(`${s.getState().doc.selectedArtefacts.length}/53 art.`);
     expect(s.getState().doc.selectedArtefacts.length).toBeGreaterThan(10);
     expectLikeFixture(s, 'scope-reduced');

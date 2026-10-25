@@ -46,7 +46,9 @@ function Row({ r, i, c, W, open, onPin }: RowProps) {
       <td className="ac-td-num">{tjm}</td>
       <td className="ac-td-num ac-team-cost">{fmtK(r.etp * tjm * wd)}</td>
       <td>
-        <button type="button" aria-pressed={open} aria-label={`Pin line ${i + 1}`} title={pinTitle} onClick={() => onPin(i)}>📌{pinned ? ` ${live}` : ''}</button>
+        <button type="button" aria-pressed={open} aria-label={`Pin line ${i + 1}`} title={pinTitle} onClick={() => onPin(i)}>
+          📌{pinned ? ` ${live}` : ''}
+        </button>
       </td>
       <td><button type="button" aria-label={`Remove line ${i + 1}`} onClick={() => removeTeamRow(i)}>×</button></td>
     </tr>

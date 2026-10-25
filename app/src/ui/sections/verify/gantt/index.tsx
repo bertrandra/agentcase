@@ -10,7 +10,8 @@ import { Program } from './Program';
 import { PortfolioGanttPart } from './Waves';
 
 const STAGES = ['Discover', 'Calibrate', 'Validate', 'Pilot & Prove'];
-const INTRO = 'A planning view of the whole engagement on one timeline: the transformation program (Discover → Calibrate → Validate → Pilot, then Agentic Build ramp and Agentic Run steady state), '
+const INTRO = 'A planning view of the whole engagement on one timeline: the transformation program (Discover → Calibrate → Validate → Pilot, '
+  + 'then Agentic Build ramp and Agentic Run steady state), '
   + 'the SDLC phases in their V-cycle sequence, and every artefact placed in its phase. In-scope items are solid; out-of-scope ones are dimmed. '
   + 'Durations for the program come from the AI Readiness roadmap inputs; the delivery bands are laid out across the case horizon.';
 

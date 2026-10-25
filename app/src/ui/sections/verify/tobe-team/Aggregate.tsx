@@ -14,6 +14,8 @@ const help = (
   </>
 );
 const f2 = (v: number) => v.toFixed(2);
+/** The signed human-FTE change from AS-IS. */
+const delta = (human: number, asis: number) => `${human - asis >= 0 ? '+' : ''}${f2(human - asis)}`;
 
 /**
  * TO-BE team composition — aggregate view (R-conso): human FTE and agent vFTE by skill
@@ -22,6 +24,11 @@ const f2 = (v: number) => v.toFixed(2);
 export default function TobeTeamAggregate() {
   const [year, setYear] = useState(2), a = useVerifyView(tobeTeamAgg, year);
   if (!a) return null;
+  const t = a.total, auto = `${Math.round(t.asis > 0 ? (t.agent / t.asis) * 100 : 0)}%`;
+  const rows = a.skills.map((r) => ({
+    key: r.skill, cells: [<b>{r.skill}</b>, f2(r.asis), f2(r.human), f2(r.agent), delta(r.human, r.asis), `${Math.round(r.autoPct)}%`],
+  }));
+  const foot = [`Total — ${a.label}`, f2(t.asis), f2(t.human), f2(t.agent), delta(t.human, t.asis), auto];
   return (
     <SectionFrame title="👥 TO-BE team composition (by skill)" help={help} result={
       <>
@@ -32,9 +39,10 @@ export default function TobeTeamAggregate() {
         </div>
         <SimpleTable caption={`TO-BE team by skill, Year ${a.year + 1} — ${a.label}`} align={['left', 'center', 'center', 'center', 'center', 'center']}
           head={['Skill', 'AS-IS FTE', 'TO-BE Human FTE', 'TO-BE Agent vFTE', 'Human Δ', 'Auto %']}
-          rows={a.skills.map((r) => ({ key: r.skill, cells: [<b>{r.skill}</b>, f2(r.asis), f2(r.human), f2(r.agent), `${r.human - r.asis >= 0 ? '+' : ''}${f2(r.human - r.asis)}`, `${Math.round(r.autoPct)}%`] }))}
-          foot={{ key: 'tot', cells: [`Total — ${a.label}`, f2(a.total.asis), f2(a.total.human), f2(a.total.agent), `${a.total.human - a.total.asis >= 0 ? '+' : ''}${f2(a.total.human - a.total.asis)}`, `${Math.round(a.total.asis > 0 ? (a.total.agent / a.total.asis) * 100 : 0)}%`] }} />
-        <Panel title="By product (reconciled to the aggregate model)"><VerifyTable table={a.table} caption={`TO-BE team by product, Year ${a.year + 1}`} /></Panel>
+          rows={rows} foot={{ key: 'tot', cells: foot }} />
+        <Panel title="By product (reconciled to the aggregate model)">
+          <VerifyTable table={a.table} caption={`TO-BE team by product, Year ${a.year + 1}`} />
+        </Panel>
         <ExcludedNote />
       </>
     } />

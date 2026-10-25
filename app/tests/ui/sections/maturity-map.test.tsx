@@ -47,7 +47,8 @@ describe('maturity-map section', () => {
   it('the read-out follows: the lower of the two axes, capped by the context', () => {
     render(<MaturityMap />);
     const euros = computeCase(appStore().getState().doc).model.yearSav;
-    expect(screen.getByText(/This case reaches/).textContent).toMatch(/L4 — adoption axis L4 \(100% adoption\), agent-share axis L4 \(75% share\), engagement-context cap L4/);
+    expect(screen.getByText(/This case reaches/).textContent)
+      .toMatch(/L4 — adoption axis L4 \(100% adoption\), agent-share axis L4 \(75% share\), engagement-context cap L4/);
     fireEvent.change(bound('Agent vFTE share', 4), { target: { value: '80' } });        // 75 % share no longer clears L4
     expect(screen.getByText(/This case reaches/).textContent).toMatch(/L3 — adoption axis L4.*agent-share axis L3/);
     expect(computeCase(appStore().getState().doc).model.yearSav).toEqual(euros);        // levels are read-outs: the euro result is untouched

@@ -23,15 +23,18 @@ const help = (
  */
 export default function FteVfteAggregate() {
   const a = useVerifyView(fteVfteAgg);
-  const lines = useMemo(() => (a ? [{ label: `${a.label} — Human FTE`, data: a.chart.human, thick: true }, { label: `${a.label} — Agent vFTE`, data: a.chart.agent, thick: true },
-    ...a.chart.products.map((p) => ({ label: `${p.label} — Agent vFTE`, data: p.agent }))] : []), [a]);
+  const lines = useMemo(() => (a ? [
+    { label: `${a.label} — Human FTE`, data: a.chart.human, thick: true }, { label: `${a.label} — Agent vFTE`, data: a.chart.agent, thick: true },
+    ...a.chart.products.map((p) => ({ label: `${p.label} — Agent vFTE`, data: p.agent })),
+  ] : []), [a]);
   if (!a) return null;
   return (
     <SectionFrame title="FTE / vFTE Chart" help={help} result={
       <>
         <p className="ac-muted">Effort evolution of {a.label}: human FTE decreases and agent vFTE grows as each product starts and ramps up. Every figure is
           read from the domain consolidation.</p>
-        <LineChart labels={a.chart.labels} lines={lines} yTitle="FTE / vFTE" label={`Human FTE and agent vFTE by calendar month: ${a.label} and its products`} />
+        <LineChart labels={a.chart.labels} lines={lines} yTitle="FTE / vFTE"
+          label={`Human FTE and agent vFTE by calendar month: ${a.label} and its products`} />
         <Panel title="By calendar year (year end)">
           <SimpleTable caption={`Headcount at calendar year end — ${a.label}`} align={['left', 'right', 'right', 'right']}
             head={['Year', 'Human FTE', 'Agent vFTE', 'Total effort (FTE-eq)']}

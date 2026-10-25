@@ -50,7 +50,8 @@ export function Delivery({ v }: { v: GanttView }) {
   const toggle = (k: string) => setOpen((s) => { const n = new Set(s); if (!n.delete(k)) n.add(k); return n; });
   const rows = (p: PhaseRow) => (
     <div key={p.key}>
-      <Row kind={p.cross ? 'cross' : 'phase'} title={`${p.name} — ${p.meta}`} label={<PhaseLabel p={p} open={open.has(p.key)} onToggle={() => toggle(p.key)} />}>
+      <Row kind={p.cross ? 'cross' : 'phase'} title={`${p.name} — ${p.meta}`}
+        label={<PhaseLabel p={p} open={open.has(p.key)} onToggle={() => toggle(p.key)} />}>
         <DualBar left={p.start} act={p.act} sup={p.sup} tone={p.tone} title={`${p.name} — ${p.meta}`} />
       </Row>
       {open.has(p.key) && p.arts.map((a) => (
