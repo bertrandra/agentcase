@@ -19,8 +19,8 @@ jobs:
     timeout-minutes: 45
     defaults: { run: { working-directory: app } }
     steps:
-      - uses: actions/checkout@v4
-      - uses: actions/setup-node@v4
+      - uses: actions/checkout@v6
+      - uses: actions/setup-node@v6
         with: { node-version: 22, cache: npm, cache-dependency-path: app/package-lock.json }
       - run: npm ci
       - run: npm audit --omit=dev --audit-level=moderate   # the shipped dependencies have no known advisory (uuid is overridden in package.json; GitHub runners have network)
@@ -30,7 +30,7 @@ jobs:
       - run: npm run check   # typecheck + ESLint (150-line rule, layer rules) + graph freshness + the FULL suite (test:affected is a development aid, never the gate)
       - run: npm run build   # one offline HTML file
       - if: failure()
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v6
         with:
           name: vitest-report
           path: app/test-results/   # JUnit report of the suite (vite.config.ts writes it when CI is set)
@@ -41,8 +41,8 @@ jobs:
     timeout-minutes: 45
     needs: check
     steps:
-      - uses: actions/checkout@v4
-      - uses: actions/setup-node@v4
+      - uses: actions/checkout@v6
+      - uses: actions/setup-node@v6
         with: { node-version: 22, cache: npm, cache-dependency-path: app/package-lock.json }
       - run: npm ci
         working-directory: app
@@ -60,8 +60,8 @@ jobs:
     timeout-minutes: 45
     needs: check
     steps:
-      - uses: actions/checkout@v4
-      - uses: actions/setup-node@v4
+      - uses: actions/checkout@v6
+      - uses: actions/setup-node@v6
         with: { node-version: 22, cache: npm, cache-dependency-path: app/package-lock.json }
       - run: npm ci
         working-directory: app
@@ -88,14 +88,14 @@ jobs:
         if: success() || failure()
         timeout-minutes: 10
       - if: always()
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v6
         with:
           name: a11y-reports
           path: test-results/a11y/*.json
           if-no-files-found: ignore
           retention-days: 14
       - if: failure()
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v6
         with:
           name: browser-gate-screenshots   # ui-parity: persona and sample section screenshots + divergences.json; a11y: every state with a violation
           path: |

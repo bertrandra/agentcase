@@ -16,8 +16,8 @@ jobs:
     runs-on: ubuntu-latest
     timeout-minutes: 120
     steps:
-      - uses: actions/checkout@v4
-      - uses: actions/setup-node@v4
+      - uses: actions/checkout@v6
+      - uses: actions/setup-node@v6
         with: { node-version: 22, cache: npm, cache-dependency-path: app/package-lock.json }
       - run: npm ci
         working-directory: app
@@ -46,7 +46,7 @@ jobs:
         if: success() || failure()
         working-directory: app
       - if: always()
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v6
         with:
           name: nightly-check-runs   # the JUnit report of each check run
           path: app/test-results/check-runs/
@@ -69,8 +69,8 @@ jobs:
     timeout-minutes: 240
     defaults: { run: { working-directory: app } }
     steps:
-      - uses: actions/checkout@v4
-      - uses: actions/setup-node@v4
+      - uses: actions/checkout@v6
+      - uses: actions/setup-node@v6
         with: { node-version: 22, cache: npm, cache-dependency-path: app/package-lock.json }
       - run: npm ci
       # One mutation per sampled module, the full suite after each: fails when a failing test file is outside the selection (recall < 100 %).

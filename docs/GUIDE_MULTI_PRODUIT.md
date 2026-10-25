@@ -31,13 +31,16 @@ interface labels. Full specification in English: [SPEC_MULTI_PRODUIT.md](SPEC_MU
 - **6. Consolidation and display scope** — **📈 Consolidation**: the portfolio is exactly the sum of the shifted products; NPV is the **Calendar NPV**.
   **Show** drives the KPI bar, the Gantt, Decision Intelligence and the report; it is not saved. Ctrl+Z / Ctrl+Y cover every portfolio edit.
 - **7. Portfolio stress** — **🎲 Portfolio stress**: draws, seed, **Correlation between products ρ**, **▶ Run the simulation**; P10 / P50 / P90, CVaR,
-  P(net < 0), **Risk reduction**; a stale marker when the portfolio changes. Scenarios and sensitivity stay per product.
+  P(net < 0), **Risk reduction**; a stale marker when the portfolio changes. With **Show** on Portfolio or a Wave, **Scenarios** and
+  **Sensitivity** are summed on the calendar (**Portfolio scenarios**, **Portfolio sensitivity**: each driver moved by the same **Relative step**
+  on every product, ranked by swing on the net).
 - **8. Export** — parameters workbook with the portfolio sheets (one undoable import), results workbook (Portfolio, waves, Knowledge transfer,
   Portfolio stress, per product), scoped critical-delivery report, HTML save and snapshots. **Cost model workbook** (monthly): three tabs
   **Values** (human days), **Rate cards** (applied rates, blending adjustment), **Other costs** (other cost lines, total vs the engine with a
   *Difference* row of 0; the pilot is a dated line included in the totals, the check row adds it to the engine total, DEV-COSTMODEL-PILOT).
-- **9. Known limits** — no portfolio sensitivity, no pins on a shared team line, no knowledge reuse between products, common
-  rates and coefficients, no *Apply to all products* for the knowledge-subset fields (DEVIATIONS.md DEV-PF-GAPS).
+- **9. Known limits** — no knowledge reuse between products, common rates and coefficients (decisions of the specification, v2). A shared team
+  line has pins (📌 in **Shared team lines**), and the knowledge-subset fields held by the common case have *Apply to all products* (not the
+  domains nor the preparation months, which have no common value). DEVIATIONS.md DEV-PF-GAPS lists no gap left.
 
 ---
 
@@ -153,7 +156,8 @@ Le **Knowledge Hub** est commun au portefeuille ; chaque produit en utilise un *
 Section **🎲 Portfolio stress** : réglez *Draws per product*, *Seed* et **Correlation between products ρ** (0 = indépendants, 1 = mêmes chocs), puis
 **▶ Run the simulation**. Vous obtenez P10 / P50 / P90, CVaR, P(net < 0), la **Risk reduction** (diversification) par vague et par produit.
 Si le portefeuille change après la simulation, un marqueur « The portfolio changed since the last simulation » apparaît. Avec la vue
-Portfolio ou Wave, **Decision Intelligence** applique la règle du verdict à cette distribution. Les scénarios et la sensibilité restent par produit.
+Portfolio ou Wave, **Decision Intelligence** applique la règle du verdict à cette distribution. Les scénarios et la sensibilité sont alors sommés sur le
+calendrier (**Portfolio scenarios**, **Portfolio sensitivity** : chaque facteur déplacé du même pas relatif sur chaque produit).
 
 ## 8. Exporter
 
@@ -194,5 +198,6 @@ Pour recalculer : modifier un tarif (Rate cards) ou un nombre de jours (Values) 
 
 ## 9. Limites connues
 
-Pas de tableau de scénarios de portefeuille (les six scénarios restent par produit), pas de dépendances entre vagues, pas d'équipes partagées entre produits,
-pas de réutilisation de connaissance d'un produit à l'autre, tarifs et coefficients communs, *Apply to all products* non proposé pour les champs du sous-ensemble de connaissance.
+Pas de réutilisation de connaissance d'un produit à l'autre, tarifs et coefficients communs (décisions de la spécification, v2). Le tableau de scénarios et la
+sensibilité de portefeuille, les dépendances entre vagues, les équipes partagées (avec leurs épingles 📌) et *Apply to all products* pour les champs du
+sous-ensemble de connaissance tenus par le cas commun (pas les domaines ni les mois de préparation) existent : DEVIATIONS.md DEV-PF-GAPS ne liste plus d'écart.

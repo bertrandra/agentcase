@@ -2,24 +2,17 @@ import { describe, expect, it } from 'vitest';
 import { exportParamsWorkbook, importParamsWorkbook } from '@/controllers/excelParams';
 import { setTeamTotal } from '@/controllers/baseline';
 import { removeProduct } from '@/controllers/product';
-import { addSharedLine, removeSharedLine, setSharedShare, updateSharedLine } from '@/controllers/sharedTeam';
+import { removeSharedLine, setSharedShare, updateSharedLine } from '@/controllers/sharedTeam';
 import { addTeamRow, removeTeamRow, updateTeamRow } from '@/controllers/team';
 import { teamEtp } from '@/domain/portfolio/alloc';
-import { appStore } from '@/store/instance';
 import { openSnapshot, toPortfolioSnapshot } from '@/store/persistence/portfolioSnapshot';
 import { openChecked } from '@/store/persistence/schema';
 import { toSnapshot } from '@/store/persistence/snapshot';
 import { ENV } from '../helpers/excelParams';
-import { threeProducts } from '../helpers/portfolioStore';
+import { docNow, pfNow, sharedSetup, xlsxFile } from '../helpers/sharedTeamStore';
 import { snapUndoable } from './helpers';
 
-const pf = () => appStore().getState().portfolio;
-const doc = () => appStore().getState().doc;
-const setup = () => {
-  const t = threeProducts(), [a, b] = t.ids, id = addSharedLine({ etp: 2, allocations: { [a]: 50, [b]: 50 } })!;
-  return { ...t, id };
-};
-const file = (b: ArrayBuffer) => ({ name: 'pf.xlsx', size: b.byteLength, arrayBuffer: async () => b });
+const pf = pfNow, doc = docNow, setup = sharedSetup, file = xlsxFile;
 
 describe('shared team commands (undoable)', () => {
   it('add / edit / share / remove are one undo step each and undo restores the exact portfolio', () => {

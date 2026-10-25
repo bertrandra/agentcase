@@ -33,6 +33,8 @@ const ALLOWED: Record<string, string> = {
   'domain/portfolio/series.ts:cache': 'memo: the series of a consolidation object',
   'domain/portfolio/aggScenarios.ts:runsMemo': 'memo: the six scenario engines of a product run',
   'domain/portfolio/aggScenarios.ts:memo': 'memo: the portfolio scenarios of a consolidation and a selection',
+  'domain/portfolio/aggSensitivity.ts:runsMemo': 'memo: the moved cases (tornado drivers) of a product run for a step',
+  'domain/portfolio/aggSensitivity.ts:memo': 'memo: the portfolio sensitivity of a consolidation, a selection and a step',
   'domain/portfolio/portfolioGantt.ts:ramps': 'memo: the ramp end and milestones of a product run',
   'domain/portfolio/portfolioGantt.ts:memo': 'memo: the Gantt of a consolidation',
   'domain/portfolio/keys.ts:TOP': 'constant lookup (never written after)',

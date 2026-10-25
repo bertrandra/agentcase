@@ -4,6 +4,8 @@ export type { Scenario, ScenarioDef, ScenarioResult, ScenOpts } from './scenario
 export { cumAt, fmtE, fmtPayback, fmtSigned, monthAxis, paybackShown, roiText } from './scenarioView';
 export { compareData, fmtK, type CompareData, type Trajectory } from './compare';
 export { sensitivityMatrix, sensitivityRows, type SensCell, type SensMatrix, type SensRow } from './sensitivity';
+export { movedCtx, movedValue, productTornado, rankTornado, tornadoRow, TORNADO_DEFAULT_STEP, TORNADO_DRIVERS, TORNADO_STEPS, type Tornado, type TornadoDriver,
+  type TornadoFigures, type TornadoRow } from './tornado';
 export { MC_PARAMS_DEFAULT, mcParamsOf, mcSpreadScale, type McParam } from './mcParams';
 export { mcRng, mcSample, mcSampleT } from './rng';
 export { PNEG_AMBER, PNEG_BRICK, pNegTone, type PNegTone } from './pNeg';

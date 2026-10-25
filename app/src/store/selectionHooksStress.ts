@@ -1,6 +1,6 @@
 /** @calc-zone aggregate-views */
 import { useMemo } from 'react';
-import { compareByProduct, portfolioScenarios, scenarioByProduct, selectionStress, sensitivityByProduct, type SelectionStress } from '@/domain/portfolio';
+import { compareByProduct, portfolioScenarios, portfolioSensitivity, scenarioByProduct, selectionStress, sensitivityByProduct, type SelectionStress } from '@/domain/portfolio';
 import { useCorePortfolio } from './consolidationHooks';
 import { usePortfolioSimulation } from './portfolioSimulation';
 import { useViewScope } from './viewScope';
@@ -16,6 +16,11 @@ export const useScenarioRows = () => {
 export const usePortfolioScenarios = () => {
   const core = useCorePortfolio(), { productIds } = useViewScope();
   return useMemo(() => portfolioScenarios(core, productIds), [core, productIds]);
+};
+/** The tornado of the products of the View on the portfolio calendar: every driver moved by `step` % on each product (domain `portfolioSensitivity`). */
+export const usePortfolioSensitivity = (step: number) => {
+  const core = useCorePortfolio(), { productIds } = useViewScope();
+  return useMemo(() => portfolioSensitivity(core, productIds, step), [core, productIds, step]);
 };
 /** AS-IS / classic saving / Agentic at the horizon end, per product, with the domain's roll-up line. */
 export const useCompareRows = () => {

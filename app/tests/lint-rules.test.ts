@@ -31,7 +31,7 @@ describe('architecture lint rules (G2, G4, edit base)', () => {
     expect(await lint("import { useDoc } from '@/store/hooks';\nimport { setInput } from '@/controllers/inputs';\nexport const x = [useDoc, setInput];\n", 'src/ui/Ok.tsx')).not.toContain('no-restricted-imports');
   });
   it('the domain cannot import the store or the UI', async () => {
-    expect(await lint("import { appStore } from '@/store/instance';\nexport const x = appStore;\n", 'src/domain/Bad.ts')).toContain('boundaries/element-types');
+    expect(await lint("import { appStore } from '@/store/instance';\nexport const x = appStore;\n", 'src/domain/Bad.ts')).toContain('boundaries/dependencies');
   });
   it('A8: no .reduce( in the portfolio sections, the portfolio KPI hooks and tiles, the wave Gantt; other code and non-summing helpers are fine', async () => {
     const sum = "export const total = (xs: { net: number }[]) => xs.reduce((a, x) => a + x.net, 0);\n";

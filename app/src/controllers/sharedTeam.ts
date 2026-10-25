@@ -36,3 +36,19 @@ export const updateSharedLine = (id: string, field: SharedLineField, value: stri
 export const removeSharedLine = (id: string): boolean => dispatchChecked(removeCmd({ id }));
 /** A product's share of a shared line, in percent 0..100 (0 = no share). Shares adding up to more than 100 % are accepted and flagged (diagnostic). */
 export const setSharedShare = (id: string, productId: string, pct: number): boolean => dispatchChecked(shareCmd({ id, productId, pct }));
+
+const what = (ids: string[]): string => (ids.length === 1 ? (ids[0] as string) : `${ids.length} artefacts`);
+const pinCmd = definePortfolioCommand<{ id: string; artIds: string[]; on: boolean }>({
+  type: 'sharedTeam.setPins', label: (p) => `${p.on ? 'Pin' : 'Unpin'} ${what(p.artIds)} ${p.on ? 'to' : 'from'} a shared team line`,
+  apply: (pf, p) => ops.pinSharedLine(pf, p.id, p.artIds, p.on),
+});
+const clearPinsCmd = definePortfolioCommand<{ id: string }>({
+  type: 'sharedTeam.clearPins', label: () => 'Clear the pins of a shared team line', apply: (pf, p) => ops.clearSharedPins(pf, p.id),
+});
+/**
+ * Pin (or unpin) artefacts on a shared line: they go to every product's share row of the line and leave the other shared lines. One undoable step,
+ * a whole phase too.
+ */
+export const setSharedPins = (id: string, artIds: string[], on: boolean): boolean => dispatchChecked(pinCmd({ id, artIds, on }));
+/** Remove every pin of a shared line (one undoable step). */
+export const clearSharedPins = (id: string): boolean => dispatchChecked(clearPinsCmd({ id }));
