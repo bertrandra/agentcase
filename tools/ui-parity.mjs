@@ -5,7 +5,8 @@
 // matching element pair (plus hover / active states) for each persona. Fails on any divergence that is not a recorded exception in
 // app/ui-parity-exceptions.json (each exception pins the NEW value, so drift inside an exception fails too).
 // Usage: node tools/ui-parity.mjs [--personas builder,admin] [--shots <dir>] [--all] [--areas-only | --sections-only] [--fixtures golden,ctx-msi,industry-med] [--sections id,id]
-//   (--all also lists the excepted rows). Section exceptions are recorded with area "sections:<kind>".
+//   (--all also lists the excepted rows). Section exceptions are recorded with area "sections:<kind>"; an element kind present in the legacy file and
+//   absent from every visited section of the new app fails too, unless recorded as { area: "sections:<kind>", prop: "(element)", expected: "missing" }.
 //   --shots <dir> also writes <dir>/divergences.json (every failing row) when there is one; CI uploads the folder on failure. A Markdown summary goes to
 //   $GITHUB_STEP_SUMMARY when it is set.
 import { createRequire } from 'node:module';
@@ -58,7 +59,7 @@ async function current(browser, persona) {
   const page = await browser.newPage({ viewport: { width: 1360, height: 900 } });
   await page.goto('file://' + resolve(app, 'dist/index.html')); await page.waitForSelector('.ac-shell');
   await page.setInputFiles('input[type=file]', { name: 'golden.json', mimeType: 'application/json', buffer: readFileSync(resolve(app, 'fixtures/cases/golden.json')) });
-  await page.selectOption('select[aria-label=Persona]', persona); await page.waitForTimeout(400);
+  await page.selectOption('select[aria-label=Persona]', persona); await page.waitForFunction((p) => document.querySelector('select[aria-label=Persona]')?.value === p, persona);
   const toggle = page.locator('button[aria-label="Toggle the sidebar menu"]');
   if ((await toggle.getAttribute('aria-pressed')) === 'false') await toggle.click();
   await page.mouse.move(0, 0); await page.waitForTimeout(400);
@@ -92,6 +93,23 @@ if (!args.includes('--areas-only')) {   // section content: one row per (element
     const row = { persona: r.sections.slice(0, 2).join(','), area: `sections:${r.kind}`, prop: r.prop, l: r.l, n: r.n };
     if (ex && norm(ex.expected) === r.n) { excepted++; if (showAll) rows.push({ ...row, status: 'EXCEPTED' }); continue; }
     unexpected++; rows.push({ ...row, status: ex ? 'FAIL (exception drifted)' : 'FAIL' });
+  }
+  // an element kind found on the legacy side and on the new side of no visited section: a missing kind fails unless it is a recorded exception
+  // { area: "sections:<kind>", prop: "(element)", expected: "missing" }; such an exception drifts (fails) once the new app renders the kind again.
+  // Checked on the full run only (all sections of golden): a --sections subset misses kinds that live elsewhere.
+  const fullRun = !list('--sections').length && (!list('--fixtures').length || list('--fixtures').includes('golden'));
+  if (!fullRun) console.log(`missing element kinds: not checked on a partial run (${res.legacyOnly.length} kind(s) absent from the visited new sections)`);
+  for (const m of fullRun ? res.legacyOnly : []) {
+    const ex = exceptions.find((e) => e.area === `sections:${m.kind}` && e.prop === '(element)');
+    const row = { persona: m.sections.slice(0, 2).join(','), area: `sections:${m.kind}`, prop: '(element)', l: 'present', n: 'missing' };
+    if (ex && ex.expected === 'missing') { excepted++; if (showAll) rows.push({ ...row, status: 'EXCEPTED' }); continue; }
+    unexpected++; rows.push({ ...row, status: ex ? 'FAIL (exception drifted)' : 'FAIL' });
+  }
+  for (const ex of exceptions.filter((e) => fullRun && e.prop === '(element)' && e.area.startsWith('sections:'))) {
+    const p = res.presence.get(ex.area.slice('sections:'.length));
+    if (!p?.n) continue;
+    unexpected++;
+    rows.push({ persona: '-', area: ex.area, prop: '(element)', l: p.l ? 'present' : 'missing', n: 'present', status: 'FAIL (exception drifted)' });
   }
 }
 await browser.close();

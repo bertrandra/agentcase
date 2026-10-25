@@ -243,6 +243,12 @@ exception. Two kinds of entries, both cross-referenced here so that this file st
 
 A new deliberate visual difference is added to the JSON file AND described here (or in the entry of the feature that causes it).
 
+- **Missing element kinds** (lot 10): an element kind of `tools/ui-parity-kinds.mjs` found in the legacy page and in no visited section of the new app
+  fails the full run, unless recorded as `{ "area": "sections:<kind>", "prop": "(element)", "expected": "missing", "reason": … }`; such an entry fails in
+  turn ("exception drifted") once the new app renders the kind again. None is recorded: the first run of the check found `table:td-right`,
+  `table:td-center` and `table:th-right` missing, a stale selector of the tool (the app marks aligned cells with the `ac-num` / `ac-center` classes since
+  inline styles left the sections, not `style="text-align: …"`), not a missing look; with the selectors fixed they are compared, 0 divergence.
+
 ## DEV-COSTMODEL-PILOT — the pilot cost is included in the totals of the cost-model workbook
 
 Changed in lot 4 (user decision D4). The Cost model (monthly) workbook (`domain/portfolio/costModel*.ts`) now carries the pilot of 🧭 Program & Completeness

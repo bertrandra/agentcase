@@ -1,6 +1,6 @@
 name: nightly
 # The long gates, once a day on main and on demand: flake detection (the full check three times), the parallel run on the full corpus, the mutation check
-# of the test selection, the documented test count and the audit of all advisories. Every run: line is mirrored, in the same order, by tools/gates.mjs
+# of the test selection, the documented test count and the audit of all advisories. Every run: line (with its if:, working directory, timeout) is mirrored, in order, by tools/gates.mjs
 # (`cd app && npm run gates -- --nightly`). The results are in the job summaries; no issue is opened (the workflow only reads the repository).
 on:
   schedule:

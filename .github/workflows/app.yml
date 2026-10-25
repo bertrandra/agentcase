@@ -1,12 +1,13 @@
 name: app
-# The tools/ scripts and the frozen legacy file are inputs of the browser gates, so a change to them runs the workflow too.
-# Every run: line below is mirrored, in the same order, by tools/gates.mjs (`cd app && npm run gates` runs them locally; it fails when the two differ).
+# The tools/ scripts and the frozen legacy file are inputs of the browser gates, and docs/ (docs/examples/ included), README.md and CHANGELOG.md are
+# read by the suite (docs facts, deviations, portfolio example) and by perf / a11y / e2e-smoke, so a change to any of them runs the workflow too.
+# Every run: line below (with its if:, working directory and timeout-minutes) is mirrored, in the same order, by tools/gates.mjs (`cd app && npm run gates` runs them locally; it fails when the two differ).
 on:
   pull_request:
-    paths: ['app/**', 'tools/**', 'AgentCase_v*_EN.html', '.github/workflows/app.yml']
+    paths: ['app/**', 'tools/**', 'docs/**', 'README.md', 'CHANGELOG.md', 'AgentCase_v*_EN.html', '.github/workflows/app.yml']
   push:
     branches: [main]
-    paths: ['app/**', 'tools/**', 'AgentCase_v*_EN.html', '.github/workflows/app.yml']
+    paths: ['app/**', 'tools/**', 'docs/**', 'README.md', 'CHANGELOG.md', 'AgentCase_v*_EN.html', '.github/workflows/app.yml']
 permissions:
   contents: read
 # A newer push to the same branch or pull request supersedes the run in progress: it is cancelled, the newer commit is checked in full.

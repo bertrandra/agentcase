@@ -1,6 +1,8 @@
 {
  "sizeMB": 5,
  "gzipMB": 1.5,
+ "sizeRegressionMB": 3.08,
+ "gzipRegressionMB": 1.12,
  "shellMs": 3000,
  "editMedianMs": 200,
  "editP95Ms": 500,

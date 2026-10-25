@@ -8,6 +8,11 @@
 // differs between a laptop and a CI runner (measured: 25 to 27 clones and 174 to 211 lines for the same tree). We therefore hand jscpd an explicit,
 // byte-sorted list of the git-tracked sources (plus untracked, non-ignored ones, so a new file is checked before it is committed), never generated
 // code, with every option pinned, and run the installed jscpd binary.
+//
+// The baseline holds the totals AND one fingerprint per clone (`clonePrints`): the two files (sorted) and a hash of the duplicated fragment with its
+// whitespace collapsed, no line numbers, so moving a block or editing elsewhere in the file keeps its fingerprint. Any clone whose fingerprint is not
+// in the baseline fails (counted with multiplicity), even when the totals stay at or under the baseline (one clone removed, another added).
+import { createHash } from 'node:crypto';
 import { spawnSync } from 'node:child_process';
 import { existsSync, mkdtempSync, readFileSync, readdirSync, rmSync, statSync, writeFileSync } from 'node:fs';
 import { tmpdir } from 'node:os';
@@ -54,8 +59,16 @@ const report = detect(files);
 const version = JSON.parse(readFileSync('node_modules/jscpd/package.json', 'utf8')).version;
 const clones = report.duplicates.map((d) =>
   `${d.firstFile.name}:${d.firstFile.start} <-> ${d.secondFile.name}:${d.secondFile.start} (${d.lines} lines)`).sort(byBytes);
+/** The stable identity of a clone: its two files (sorted) and the hash of its fragment, whitespace collapsed (no line numbers). */
+const printOf = (d) => {
+  const hash = createHash('sha256').update(String(d.fragment ?? '').replace(/\s+/g, ' ').trim()).digest('hex').slice(0, 16);
+  return `${[d.firstFile.name, d.secondFile.name].sort(byBytes).join(' <-> ')} #${hash}`;
+};
+const prints = report.duplicates.map(printOf).sort(byBytes);
 const now = { clones: report.statistics.total.clones, duplicatedLines: report.statistics.total.duplicatedLines, files: files.length, jscpd: version,
-  ...SETTINGS };
+  ...SETTINGS, clonePrints: prints };
+/** The entries of `a` not matched by one of `b` (multisets: a fingerprint twice in `a` and once in `b` leaves one). */
+const minus = (a, b) => { const left = [...b]; return a.filter((x) => { const i = left.indexOf(x); if (i < 0) return true; left.splice(i, 1); return false; }); };
 const printClones = () => clones.forEach((c) => console.error(`  ${c}`));
 
 if (process.argv.includes('--update')) {
@@ -64,16 +77,21 @@ if (process.argv.includes('--update')) {
 } else {
   const base = JSON.parse(readFileSync(BASELINE, 'utf8'));
   console.log(`duplicates: ${now.clones} clones / ${now.duplicatedLines} lines in ${now.files} files (baseline ${base.clones} / ${base.duplicatedLines}, jscpd ${version})`);
+  if (!Array.isArray(base.clonePrints)) { console.error('The baseline has no clone fingerprints: record them with `npm run dup -- --update` (after checking the clones with --list).'); process.exit(1); }
   const drift = Object.keys(SETTINGS).filter((k) => JSON.stringify(base[k]) !== JSON.stringify(SETTINGS[k])).concat(base.jscpd === version ? [] : ['jscpd']);
   if (drift.length) {
     console.error(`The baseline was recorded with other settings (${drift.join(', ')}): the numbers are not comparable. Re-measure with \`npm run dup -- --update\` in the same change.`);
     process.exit(1);
   }
-  if (now.clones > base.clones || now.duplicatedLines > base.duplicatedLines) {
-    console.error('New duplicated code. Reuse the existing owner of the block (see the @owner tags and docs/ARCHITECTURE.md section 13), or, if the copy is intended, record it with `npm run dup -- --update`. Clones:');
+  const added = minus(prints, base.clonePrints), gone = minus(base.clonePrints, prints);
+  if (now.clones > base.clones || now.duplicatedLines > base.duplicatedLines || added.length) {
+    console.error('New duplicated code. Reuse the existing owner of the block (see the @owner tags and docs/ARCHITECTURE.md section 13), or, if the copy is intended, record it with `npm run dup -- --update`.');
+    if (added.length) { console.error(`Clone(s) not in the baseline (${added.length}):`); added.forEach((c) => console.error(`  ${c}`)); }
+    console.error('All clones:');
     printClones();
     process.exit(1);
   }
+  if (gone.length) console.log(`${gone.length} baseline clone(s) no longer found: lower the baseline with \`npm run dup -- --update\`.`);
   if (process.argv.includes('--list')) printClones();
   if (now.clones < base.clones
     || now.duplicatedLines < base.duplicatedLines) console.log('Less duplication than the baseline: lower it with `npm run dup -- --update`.');

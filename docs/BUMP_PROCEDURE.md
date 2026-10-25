@@ -83,6 +83,8 @@ If a change is meant to move the golden case, see §6 (it starts in the legacy f
 
 * `npm run dup` (`app/scripts/dup.mjs`) fails when the share of duplicated code grows beyond the recorded baseline (`app/dup-baseline.json`): a new copy of an existing
   block is a second source of a number. It lowers its own threshold when the code gets better: after removing duplicates, run `npm run dup -- --update` and commit.
+  The baseline also lists one fingerprint per clone (`clonePrints`: the two files and a hash of the fragment, no line numbers): any clone not in that
+  list fails, even when the totals do not grow (one clone removed and another added).
   It scans the sorted git file list of `src/` and `tests/`, so it reports the same numbers on your machine and in CI ([TEST_SELECTION.md §7](TEST_SELECTION.md));
   `npm run dup -- --list` prints every clone. Never raise the baseline to make a red check green: reuse the owner of the block.
 * `npm run test:affected` runs only the tests a change can reach ([TEST_SELECTION.md](TEST_SELECTION.md)). It is for the inner loop and optional PR feedback; **the
@@ -116,7 +118,7 @@ git push -u origin release/vX.Y.Z   # then open a pull request
 
 `.github/workflows/app.yml` (job `check`, working directory `app`, Node 22) runs `npm ci`, `npm audit --omit=dev --audit-level=moderate` (no known advisory in
 the shipped dependencies), `npm run deps:check`, `npm run dup`, `npm run check` and `npm run build` on pull requests and on pushes to `main` that touch `app/**` or
-the workflow (or `tools/**`, or the legacy file); then two jobs in parallel: job `e2e` builds and runs the Chromium smoke (no CSP violation), the file / canvas flows under the CSP (`tools/e2e-flows.mjs`), the
+the workflow (or `tools/**`, the legacy file, `docs/**`, `README.md` or `CHANGELOG.md`, which the suite and the browser gates read); then two jobs in parallel: job `e2e` builds and runs the Chromium smoke (no CSP violation), the file / canvas flows under the CSP (`tools/e2e-flows.mjs`), the
 performance budgets and the parallel run; job `browser` builds and runs `tools/ui-parity.mjs` (fails on any divergence that is not a recorded exception of
 `app/ui-parity-exceptions.json`, or an exception whose pinned value drifted) and `tools/a11y.mjs` on `golden`, `pf-three-products`, `golden` dark and `golden` dark +
 high contrast (fails on any serious / critical violation or a count above `app/a11y-budget.json`). A newer push to the same branch or pull request cancels the run in progress. When `check` fails, the JUnit report of the suite is attached

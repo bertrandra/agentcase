@@ -36,7 +36,10 @@ export const groupOf = (s: ReturnType<typeof useDisplayScope>): VerdictGroup | n
 /** The verdict of a group of products from the last portfolio run, null without a run (or for a wave with no planned product). */
 export function usePortfolioDecision(group: VerdictGroup | null): Decision | null {
   const core = useCorePortfolio(), { run } = usePortfolioSimulation(), key = group ? (group.kind === 'wave' ? `w:${group.id}` : 'p') : '';
-  return useMemo(() => (run && group ? pfDecision(core, run, group) : null), [core, run, key]);   // eslint-disable-line react-hooks/exhaustive-deps
+  // keyed on the group's content: `key` (kind + wave id) is all pfDecision reads of `group`, so a caller may pass an equal group literal built at
+  // render without recomputing the verdict; not a stale read (a group with the same key gives the same decision)
+  // eslint-disable-next-line react-hooks/exhaustive-deps -- `key` stands for `group` (see above)
+  return useMemo(() => (run && group ? pfDecision(core, run, group) : null), [core, run, key]);
 }
 
 /** The verdict of every wave (the per-wave table of the dashboard). */
@@ -58,5 +61,8 @@ export function usePfSimParams(): PfSimParams {
  */
 export function useVerdictGroup(): VerdictGroup | null {
   const scope = useDisplayScope(), multi = useIsMulti(), key = `${scope.kind}:${scope.kind === 'wave' ? scope.id : ''}`;
-  return useMemo(() => (multi ? groupOf(scope) : null), [multi, key]);   // eslint-disable-line react-hooks/exhaustive-deps
+  // keyed on the scope's content: `key` (kind + wave id) is all groupOf reads of `scope`, so the group keeps its identity while the scope is
+  // replaced by an equal one (a file opened, the same scope chosen again); not a stale read
+  // eslint-disable-next-line react-hooks/exhaustive-deps -- `key` stands for `scope` (see above)
+  return useMemo(() => (multi ? groupOf(scope) : null), [multi, key]);
 }

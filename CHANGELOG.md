@@ -15,6 +15,38 @@ All notable changes to AgentCase, newest first. Product version from v19.0.0 = t
 
 When releasing, follow [docs/BUMP_PROCEDURE.md](docs/BUMP_PROCEDURE.md) (§7 for the legacy file) and add the new version at the top.
 
+## [Unreleased]
+
+### Lot 10 — CI, tools and test infrastructure
+
+- CI: the `app` workflow also runs on a change to `docs/**` (examples included), `README.md` or `CHANGELOG.md`, which the suite (docs facts, deviations,
+  portfolio example) and the browser gates read. `npm run gates` (workflow-sync) now compares each step's `if:`, working directory and `timeout-minutes`
+  with the workflows, not only the `run:` command, and runs an `if: success() || failure()` step after a failure, as CI does.
+- `tools/ui-parity.mjs`: an element kind present in the legacy page and absent from every visited section of the new app fails the full run unless
+  recorded as a `(element)` / `missing` exception (pinned: it drifts once the kind is back). The first run found three kinds (`table:td-right`,
+  `table:td-center`, `table:th-right`) missing because the tool still looked for `style="text-align: …"`; the selectors now use the `ac-num` /
+  `ac-center` classes, and the three are compared (0 divergence). No exception recorded (docs/DEVIATIONS.md DEV-UI-PARITY).
+- `tools/perf.mjs`: a section switch is timed until the TARGET section's heading is shown (the previous section's `main h1` satisfied the old wait),
+  an undo until the headline bar repainted (it was the key press plus a fixed 30 ms); a missing `app/perf-budget.json` fails instead of being written.
+  New regression budgets `sizeRegressionMB` 3.08 / `gzipRegressionMB` 1.12 (1.15 x the build) under the hard 5 / 1.5 MiB ceilings; time budgets
+  re-baselined with the existing rule (all at their floors: measured shell 345 ms, edit 20 / 38 ms, undo 38 ms, sections 207 / 114 ms).
+- `tools/a11y.mjs`: after "Run" it waits for what only a simulation result renders and records a serious finding when it does not appear (the old
+  wait matched any table and swallowed the timeout); it fails when the navigation is empty or when fewer sections were audited than nav entries found.
+  Fixed waits replaced by state waits in `a11y`, `a11y-lib` (section active, no lazy placeholder; the transition settle of the audit is kept),
+  `e2e-smoke`, `e2e-flows`, `parallel-run` and the app side of `ui-parity`.
+- `npm run dup`: the baseline also stores one fingerprint per clone (the two files and a hash of the fragment, no line numbers); a clone not in the
+  baseline fails even when the totals do not grow.
+- `tests/size.test.ts` is one test listing every file over 150 lines (it generated one test per file, about 1,400); the documented test count is
+  re-counted.
+- Snapshot comparison: the "Current case" column follows an edit, an undo and a product switch (it subscribed to nothing and hid it behind an
+  `eslint-disable`); `compareSnapshots` takes the subscribed case and product. Due diligence: a redundant dependency and its `eslint-disable` removed;
+  the two remaining `exhaustive-deps` exceptions (`store/portfolioSimulation.ts`, keyed memos) carry their justification.
+- Strategy ranking: the default radar selection is memoised, so the chart is no longer rebuilt on every render.
+- chart.js: only the bar / line / doughnut / radar controllers, their elements, the category / linear / radial scales and the filler, legend, tooltip
+  and title plugins are registered (`registerables` before); `dist/index.html` 2,809.46 kB → 2,798.23 kB (gzip 1,023.10 → 1,020.08 kB).
+  `tests/ui/chart-registry.test.ts` checks every chart type and scale named in `src` against the registry.
+- `vite.config.ts`: the comment on test timeouts says which tests raise the 5 s default and why.
+
 ## [v20.18.1] 2026-10-25 — Architecture lot 9: tidy-up (no change to the app)
 
 - `tools/a11y.mjs` writes its default report to `test-results/a11y/report.json` (git-ignored): a local audit no longer rewrites a tracked file.

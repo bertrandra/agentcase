@@ -75,7 +75,7 @@ async function openCurrent(browser, root, fx) {
   const page = await browser.newPage({ viewport: { width: 1360, height: 900 } });
   await page.goto('file://' + resolve(root, 'app/dist/index.html')); await page.waitForSelector('.ac-shell');
   await page.setInputFiles('input[type=file]', { name: fx + '.json', mimeType: 'application/json', buffer: readFileSync(resolve(root, `app/fixtures/cases/${fx}.json`)) });
-  await page.selectOption('select[aria-label=Persona]', 'advanced'); await page.waitForTimeout(300);
+  await page.selectOption('select[aria-label=Persona]', 'advanced'); await page.waitForFunction(() => document.querySelector('select[aria-label=Persona]')?.value === 'advanced');
   const toggle = page.locator('button[aria-label="Toggle the sidebar menu"]');
   if ((await toggle.getAttribute('aria-pressed')) === 'false') await toggle.click();
   return page;
@@ -83,7 +83,9 @@ async function openCurrent(browser, root, fx) {
 async function gotoCurrent(page, id) {
   const btn = page.locator(`nav[aria-label=Sections] button[data-section="${id}"]`).first();
   if (!(await btn.isVisible())) await btn.locator('xpath=ancestor::section').locator('.ac-nav-toggle').click();
-  await btn.click(); await page.waitForTimeout(260);
+  await btn.click();   // until the entry is the active one and the lazy section has rendered (no "Loading…" placeholder)
+  await page.waitForFunction((b) => b.classList.contains('is-active') && ![...document.querySelectorAll('main p.ac-muted')].some((p) => p.textContent === 'Loading…'),
+    await btn.elementHandle(), { timeout: 15000 });
   await page.mouse.move(0, 0);
 }
 
@@ -95,13 +97,16 @@ async function toastKind(lp, np) {
   return { toast: { l, n } };
 }
 
-/** Returns { cells: Map kind -> Map "prop|l|n" -> {kind, prop, l, n, sections:[fixture/id]} , compared, unpaired: Map kind -> count }. */
+/** Returns { cells: Map kind -> Map "prop|l|n" -> {kind, prop, l, n, sections:[fixture/id]} , compared, unpaired: Map kind -> count,
+ *  legacyOnly: [{ kind, sections }], presence: Map kind -> { l, n } }: `legacyOnly` lists every kind found on the legacy side of some visited
+ *  section and on the new side of none (a missing element kind: tools/ui-parity.mjs fails on it unless it is a recorded `(element)` exception). */
 export async function compareSections(browser, root, { fixtures = ['golden', 'ctx-msi', 'industry-med'], only = [], shots = '' } = {}) {
   // the multi-product Portfolio group has no legacy counterpart and is not in the single-product nav
   const catalog = JSON.parse(readFileSync(resolve(root, 'app/src/ui/zones/data/sectionCatalog.json'), 'utf8')).filter((s) => s.group !== 'portfolio'), cells = new Map(), unpaired = new Map(), seen = new Map();
   let compared = 0; const cross = [];
   if (shots) mkdirSync(shots, { recursive: true });
-  const first = new Map(), paired = new Map();   // first element of each kind per side (fallback for kinds that never co-occur in one section)
+  // first element of each kind per side (fallback for kinds that never co-occur in one section); the sections where the legacy side has the kind
+  const first = new Map(), paired = new Map(), legacyAt = new Map();
   const diff = (label, kind, l, n, skip = []) => {
     for (const prop of SPROPS) {
       if (skip.includes(prop)) continue;
@@ -115,6 +120,7 @@ export async function compareSections(browser, root, { fixtures = ['golden', 'ct
   const add = (fx, id, kind, l, n, skip = []) => {
     seen.set(kind, (seen.get(kind) ?? 0) + 1);
     const f = first.get(kind) ?? {}; if (l && !f.l) f.l = { v: l, id }; if (n && !f.n) f.n = { v: n, id }; first.set(kind, f);
+    if (l) legacyAt.set(kind, [...(legacyAt.get(kind) ?? []), `${fx}/${id}`]);
     if (!l || !n) { unpaired.set(kind, (unpaired.get(kind) ?? 0) + 1); return; }
     paired.set(kind, (paired.get(kind) ?? 0) + 1);
     diff(`${fx}/${id}`, kind, l, n, skip);
@@ -137,7 +143,9 @@ export async function compareSections(browser, root, { fixtures = ['golden', 'ct
     const f = first.get(k.kind);
     if (!paired.get(k.kind) && f?.l && f?.n) { cross.push(k.kind); diff(`${f.l.id}~${f.n.id}`, k.kind, f.l.v, f.n.v, k.skip); }
   }
-  return { cells, compared, unpaired, seen, cross };
+  const legacyOnly = KINDS.filter((k) => first.get(k.kind)?.l && !first.get(k.kind)?.n).map((k) => ({ kind: k.kind, sections: legacyAt.get(k.kind) ?? [] }));
+  const presence = new Map(KINDS.map((k) => [k.kind, { l: !!first.get(k.kind)?.l, n: !!first.get(k.kind)?.n }]));
+  return { cells, compared, unpaired, seen, cross, legacyOnly, presence };
 }
 
 /** One row per (kind, prop, legacy, new) with the sections affected, sorted by kind order then section count. */
@@ -151,8 +159,10 @@ if (import.meta.url === `file://${process.argv[1]}`) {
   const res = await compareSections(browser, root, { fixtures: opt('--fixtures').length ? opt('--fixtures') : undefined, only: opt('--sections'), shots: opt('--shots')[0] ?? '' });
   await browser.close();
   const rows = rowsOf(res.cells);
-  if (opt('--json')[0]) writeFileSync(opt('--json')[0], JSON.stringify({ compared: res.compared, rows, unpaired: Object.fromEntries(res.unpaired), seen: Object.fromEntries(res.seen), cross: res.cross }, null, 1));
+  if (opt('--json')[0]) writeFileSync(opt('--json')[0], JSON.stringify({ compared: res.compared, rows, unpaired: Object.fromEntries(res.unpaired), seen: Object.fromEntries(res.seen), cross: res.cross, legacyOnly: res.legacyOnly }, null, 1));
   const cut = (s, k) => (s.length > k ? s.slice(0, k - 1) + '…' : s);
   for (const r of rows) console.log(`${r.kind.padEnd(20)} ${r.prop.padEnd(22)} ${String(r.sections.length).padStart(3)} | legacy=${cut(r.l, 48)} | new=${cut(r.n, 48)}`);
-  console.log(`${res.compared} properties compared; ${rows.length} distinct divergences`);
+  for (const m of res.legacyOnly) console.log(
+    `${m.kind.padEnd(20)} ${'(element)'.padEnd(22)} ${String(m.sections.length).padStart(3)} | legacy=present | new=missing`);
+  console.log(`${res.compared} properties compared; ${rows.length} distinct divergences; ${res.legacyOnly.length} kind(s) missing in the new app`);
 }

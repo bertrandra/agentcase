@@ -24,7 +24,9 @@ function radar(N: Ranked[], sel: string[], tok: Tok): ChartConfiguration {
 /** Metric weights, the weighted composite ranking (min-max normalised, direction-aware), the radar and "→ Apply". */
 export function Ranking({ N, W }: { N: Ranked[]; W: Weights }) {
   const [picked, setPicked] = useState<string[] | null>(null);   // radar selection: a view choice, not part of the case
-  const sel = picked ?? N.slice(0, 3).map((o) => o.id), { tok } = useTheme(), cfg = useMemo(() => radar(N, sel, tok), [N, sel, tok]);
+  // the default selection (top 3) is memoised on N: a fresh array each render would rebuild the chart config, and the chart, on every render
+  const top3 = useMemo(() => N.slice(0, 3).map((o) => o.id), [N]), sel = picked ?? top3;
+  const { tok } = useTheme(), cfg = useMemo(() => radar(N, sel, tok), [N, sel, tok]);
   const apply = (id: string) => { applyStrategy(id); goSection('results'); runSimulation(); };
   return (
     <>

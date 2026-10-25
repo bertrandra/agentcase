@@ -35,7 +35,10 @@ export default defineConfig({
   define: { __APP_VERSION__: JSON.stringify(version) },
   resolve: { alias: { '@': src } },
   build: { target: 'es2022', chunkSizeWarningLimit: 6000 },
-  // In CI the suite also writes a JUnit report (uploaded by .github/workflows/app.yml when the job fails); the default 5 s test timeout is the gate everywhere.
+  // In CI the suite also writes a JUnit report (uploaded by .github/workflows/app.yml when the job fails). Vitest's default 5 s timeout applies to every
+  // test that does not set its own, locally and in CI alike; about twenty tests raise it explicitly (the third argument of `it`, or a `describe` option)
+  // because they spawn a process (vitest / tsc / vite-node: affected-tests, deps-fresh, docs-facts), run a full Monte Carlo or a cost-model workbook, or
+  // render every section of a portfolio. No global override: a slow new test fails here first.
   test: {
     environment: 'node', include: ['tests/**/*.test.{ts,tsx}'],
     reporters: process.env.CI ? ['default', 'junit'] : ['default'], outputFile: { junit: 'test-results/vitest-junit.xml' },

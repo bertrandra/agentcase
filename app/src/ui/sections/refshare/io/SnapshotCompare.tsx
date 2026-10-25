@@ -1,6 +1,7 @@
 import { useMemo, useState } from 'react';
 import { compareSnapshots } from '@/controllers/snapshots';
 import type { CompareRow, NamedSnapshot } from '@/domain/snapshots';
+import { useDoc, usePortfolio } from '@/store/hooks';
 import { fmtK } from '@/ui/economicsFormat';
 import { DataTable } from '@/ui/widgets/DataTable';
 
@@ -12,7 +13,11 @@ export function SnapshotCompare({ list }: { list: NamedSnapshot[] }) {
   const [a, setA] = useState('current'), [b, setB] = useState('');
   // a chosen snapshot that was deleted meanwhile reads as "not chosen"
   const ok = (id: string) => id === 'current' || list.some((s) => s.id === id);
-  const rows = useMemo(() => (ok(a) && b && ok(b) ? compareSnapshots(a, b) : null), [a, b, list]);   // eslint-disable-line react-hooks/exhaustive-deps
+  // the case being edited ('current') and the active product (a multi-product capture is compared on it) are subscribed and passed in: an edit,
+  // an undo or a product switch recomputes the table
+  const doc = useDoc((d) => d), productId = usePortfolio((p) => p.activeProductId);
+  const okA = ok(a), okB = !!b && ok(b);
+  const rows = useMemo(() => (okA && okB ? compareSnapshots(a, b, doc, productId) : null), [a, b, okA, okB, doc, productId]);
   const options = [<option key="current" value="current">Current case</option>, ...list.map((s) => <option key={s.id} value={s.id}>{s.name}</option>)];
   return (
     <div>
