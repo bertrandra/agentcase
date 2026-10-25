@@ -30,7 +30,10 @@ export function SizingPolicy() {
       </div>
       <DataTable rowKey={(r) => r.key} rows={rows} columns={[
         { key: 'l', header: '', render: (r) => r.label },
-        ...v.av.map((_, i) => ({ key: `y${i}`, header: `Year ${i + 1}`, align: 'center' as const, render: (r: (typeof rows)[number]) => (r.bold ? <strong>{r.cells[i]}</strong> : r.cells[i]) })),
+        ...v.av.map((_, i) => ({
+          key: `y${i}`, header: `Year ${i + 1}`, align: 'center' as const,
+          render: (r: (typeof rows)[number]) => (r.bold ? <strong>{r.cells[i]}</strong> : r.cells[i]),
+        })),
       ]} />
       <p className="ac-muted">Live on the current scenario (automation {fix(v.eff, 1)}%). Change the sliders in Parameters and this table follows.</p>
     </Panel>

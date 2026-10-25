@@ -9,16 +9,21 @@ import { SubsetFieldBox } from './SubsetBadge';
 
 const help = (
   <>
-    <p>Quantifies the referential's living memory (Knowledge Graph, KT Hub) through three channels: (1) a potential multiplier from the connected-context maturity CC0–CC4, capped by the regulatory ceiling headroom;
-      (2) a variance reducer on the Monte Carlo adoption spread, σ × (1 − 0.08 × CC); (3) avoided knowledge-transfer and onboarding cost, added to savings.</p>
-    <p>The hub is not free: a setup cost (added to the Setup budget), a curation FTE and an infrastructure line, charged only in years where agents run. The reachable CC level is capped by the engagement context (MSC up to CC4, MSI up to CC2, STA locked).
-      Untick the hub and all three channels go neutral.</p>
-    <p>With several products the hub is shared by the portfolio, and each product has its own subset: activation, the nine maturity answers, target CC, curation, setup base, knowledge domains and the preparation of its
-      knowledge transfer. Each field shows whether the product inherits the common hub or has its own value. The shared hub settings (activation by default, infrastructure and how it is charged) are in the card below.</p>
+    <p>Quantifies the referential's living memory (Knowledge Graph, KT Hub) through three channels: (1) a potential multiplier from the connected-context
+      maturity CC0–CC4, capped by the regulatory ceiling headroom; (2) a variance reducer on the Monte Carlo adoption spread, σ × (1 − 0.08 × CC); (3) avoided
+      knowledge-transfer and onboarding cost, added to savings.</p>
+    <p>The hub is not free: a setup cost (added to the Setup budget), a curation FTE and an infrastructure line, charged only in years where agents run. The
+      reachable CC level is capped by the engagement context (MSC up to CC4, MSI up to CC2, STA locked). Untick the hub and all three channels go neutral.</p>
+    <p>With several products the hub is shared by the portfolio, and each product has its own subset: activation, the nine maturity answers, target CC,
+      curation, setup base, knowledge domains and the preparation of its knowledge transfer. Each field shows whether the product inherits the common hub or has
+      its own value. The shared hub settings (activation by default, infrastructure and how it is charged) are in the card below.</p>
   </>
 );
 
-/** Knowledge hub — enable, AS-IS assessment, target maturity and cost inputs; the three-channel read-out. With 2+ products it edits the ACTIVE product's subset of the shared hub. */
+/**
+ * Knowledge hub — enable, AS-IS assessment, target maturity and cost inputs; the three-channel
+ * read-out. With 2+ products it edits the ACTIVE product's subset of the shared hub.
+ */
 export default function KnowledgeSection() {
   return (
     <SectionFrame title="🧠 Knowledge hub — living memory" help={help}

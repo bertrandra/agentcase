@@ -10,7 +10,10 @@ import { legacySectionText, missingNumbers, renderedText } from '../../helpers/p
 afterEach(cleanup);
 // jsdom has no PointerEvent: a MouseEvent carrying the pointer id is enough for the editor's handlers
 if (!('PointerEvent' in window)) {
-  class PointerEventShim extends MouseEvent { pointerId: number; constructor(type: string, init: MouseEventInit & { pointerId?: number } = {}) { super(type, init); this.pointerId = init.pointerId ?? 1; } }
+  class PointerEventShim extends MouseEvent {
+    pointerId: number;
+    constructor(type: string, init: MouseEventInit & { pointerId?: number } = {}) { super(type, init); this.pointerId = init.pointerId ?? 1; }
+  }
   Object.defineProperty(window, 'PointerEvent', { value: PointerEventShim });
 }
 const pts = (s: AppStore) => s.getState().doc.scurve.pts;
@@ -99,7 +102,8 @@ describe('scurve section', () => {
     const s = loadFixture('golden');
     render(<Scurve />);
     const dot = () => screen.getByLabelText('Adoption point 2');
-    fireEvent.keyDown(dot(), { key: 'ArrowRight' }); fireEvent.keyDown(dot(), { key: 'ArrowRight' }); fireEvent.keyDown(dot(), { key: 'ArrowDown', shiftKey: true });
+    fireEvent.keyDown(dot(), { key: 'ArrowRight' }); fireEvent.keyDown(dot(), { key: 'ArrowRight' });
+    fireEvent.keyDown(dot(), { key: 'ArrowDown', shiftKey: true });
     expect(pts(s)![1]).toEqual({ t: 26, a: 50 });
     act(() => { s.undo(); });
     expect(pts(s)).toBeNull();

@@ -58,7 +58,8 @@ describe('lifecycle-edit section', () => {
     render(<LifecycleEdit />);
     fireEvent.change(screen.getByLabelText('Feature add (active development) · automation posture'), { target: { value: '1.3' } });
     fireEvent.change(screen.getByLabelText('Feature add (active development) · V3 weight'), { target: { value: '0.5' } });
-    act(() => { [['runFloorMin', '2'], ['runFloorPct', '10'], ['runOpsPerAgent', '0.3'], ['khTargetCC', '1'], ['khA3', '4']].forEach(([k, v]) => setInput(k as string, v as string)); });
+    const inputs = [['runFloorMin', '2'], ['runFloorPct', '10'], ['runOpsPerAgent', '0.3'], ['khTargetCC', '1'], ['khA3', '4']];
+    act(() => { inputs.forEach(([k, v]) => setInput(k as string, v as string)); });
     const exp = JSON.parse(readFileSync('fixtures/expected/tuneB-run.json', 'utf8')).model;
     sav().forEach((v, i) => expect(Math.abs(v - (exp.yearSav[i] as number))).toBeLessThan(1e-6 * Math.max(1, Math.abs(exp.yearSav[i] as number))));
     expect(computeCase(doc()).model.eff).toBeCloseTo(exp.eff, 6);

@@ -14,7 +14,10 @@ afterEach(cleanup);
 const doc = () => appStore().getState().doc;
 const sav = () => computeCase(doc()).model.yearSav;
 const expectedSav = (id: string) => JSON.parse(readFileSync(`fixtures/expected/${id}.json`, 'utf8')).model.yearSav as number[];
-const sameAs = (got: number[], exp: number[]) => got.forEach((v, i) => expect(Math.abs(v - (exp[i] as number))).toBeLessThan(1e-6 * Math.max(1, Math.abs(exp[i] as number))));
+const sameAs = (got: number[], exp: number[]) => got.forEach((v, i) => {
+  const e = exp[i] as number;
+  expect(Math.abs(v - e)).toBeLessThan(1e-6 * Math.max(1, Math.abs(e)));
+});
 
 describe('knowledge section', () => {
   it.each(FIXTURES)('shows every figure the legacy section showed (%s)', (fx) => {
@@ -36,7 +39,8 @@ describe('knowledge section', () => {
   it('AS-IS answers and the target maturity reproduce the legacy kh-high fixture', () => {
     render(<Knowledge />);
     fireEvent.change(screen.getByLabelText('Target CC (Y3)'), { target: { value: '4' } });
-    ['Key artifacts are captured', 'Domain knowledge is captured', 'Decisions/ADRs are captured'].forEach((l) => fireEvent.change(screen.getByLabelText(new RegExp(l)), { target: { value: '4' } }));
+    ['Key artifacts are captured', 'Domain knowledge is captured', 'Decisions/ADRs are captured']
+      .forEach((l) => fireEvent.change(screen.getByLabelText(new RegExp(l)), { target: { value: '4' } }));
     expect(doc().dom.values.khA2).toBe('4');
     sameAs(sav(), expectedSav('kh-high'));
     expect(screen.getByText('× 1.06')).toBeTruthy();

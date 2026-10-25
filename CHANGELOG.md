@@ -15,6 +15,24 @@ All notable changes to AgentCase, newest first. Product version from v19.0.0 = t
 
 When releasing, follow [docs/BUMP_PROCEDURE.md](docs/BUMP_PROCEDURE.md) (§7 for the legacy file) and add the new version at the top.
 
+## [Unreleased]
+
+### Lot 5b part A — frame, baseline, scope, tune and verify sections: named classes instead of inline styles, no line over 160 characters
+- **Inline styles → CSS classes** (decision D5): the static `style={{…}}` props of the frame, baseline, scope, tune and verify sections (and of their
+  aggregate views) became semantic classes (`.ac-home-card`, `.ac-roadmap-stage`, `.ac-gantt-row`, `.ac-readiness-gauge`, `.ac-lc-cell`, …) in the new
+  `app/src/ui/theme/sections-a.css` (imported once from `main.tsx`), on theme tokens only — borders use the border-width tokens, so the shape axes now
+  reach these sections too. A colour chosen from the case is a `data-tone` attribute (the role name) mapped to `--tone` once in that file, then used by
+  the text, bar, border and row-highlight rules. 202 inline styles → 31: 28 genuinely dynamic (a place or length on a calendar or a bar, a series colour
+  resolved in JS, a computed alpha tint), each marked `dynamic:`; 3 on the shared `CommitNumber` widget, which takes no class yet. Computed styles are
+  unchanged: every element of every section (golden and the portfolio view, toggles expanded) compares equal before and after, and ui-parity stays at 0.
+  New guard `tests/ui/sections/inline-style-a.test.ts`: every remaining inline style of these sections says why (`dynamic:` / `shared widget:`), at most 31.
+- **Long lines** (decision D1): every line of these sections, their aggregates and their tests is at most 160 characters (475 source lines and 16 test lines
+  were longer; the scope's `max-len` warnings go from 172 to 0) — prose re-flowed, long notes and labels as constants, JSX attributes wrapped, small
+  components extracted (`GroupCard` on Welcome, `TargetRow`, `RateCell`, `BucketPanel`, the Gantt `Marker`, `Legend` and `Release`). The emitted JavaScript of
+  the pure re-wrapping steps is byte-identical to before.
+- Tests: four tests read the inline style of an element and now read its `data-tone` / `data-edited` attribute or its class instead (loc-strat,
+  scope-sel, quality, gantt ticks); no behaviour, text, number or accessible name changed.
+
 ## [v20.15.0] 2026-10-24 — Architecture lots 5a and 6: theme state out of the domain, no remount, selector hooks, compressed Excel library; every quality gate in CI, nightly workflow
 
 - ui-parity: the header title width is no longer compared (it follows the title text and the fonts of the machine: 197.8 px locally, 195 px on the GitHub runner); its pinned exception is removed.

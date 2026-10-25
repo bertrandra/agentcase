@@ -47,7 +47,7 @@ describe('loc-strat section', () => {
     fireEvent.change(target('Portugal'), { target: { value: '30' } });
     const sum = [...container.querySelectorAll('strong')].find((e) => /^\d+%$/.test(e.textContent ?? ''))!;
     expect(sum.textContent).toBe('130%');
-    expect(sum.style.color).toContain('brick');
+    expect(sum.dataset.tone).toBe('brick');
   });
   it('Copy AS-IS resets the target to the team mix (undoable)', () => {
     const s = loadFixture('baseline-mixed-team');

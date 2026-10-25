@@ -12,7 +12,7 @@ type Sector = ReturnType<typeof complianceView>['sectors'][number];
 /** Regulatory compliance: glass ceiling and regulatory artefacts of the selected industry, against every sector. */
 export default function ComplianceSection() {
   const v = useView(complianceView), { tok } = useTheme(), cfg = useMemo(() => complianceChart(v, tok), [v, tok]);
-  const hl = (s: Sector) => (s.selected ? { fontWeight: 'var(--ac-font-weight-semibold)', background: 'var(--ac-primary-60)' } : undefined);
+  const hl = (s: Sector) => (s.selected ? 'ac-sector-selected' : undefined);
   return (
     <SectionFrame title="Regulatory compliance"
       help={<p>Glass ceiling and regulatory artifacts by selected industry (with a "None" option). Contextual to industry + reference.</p>}
@@ -21,7 +21,7 @@ export default function ComplianceSection() {
         <MetricCards cards={v.cards.map(([l, val, sub]) => [l.toUpperCase(), val, sub])} />
         <ChartPanel config={cfg} label="Max automatable and glass ceiling by sector" height={280} />
         <DataTable rows={v.sectors} rowKey={(s) => s.code} columns={[
-          { key: 'n', header: 'Sector', render: (s) => <span style={hl(s)}>{s.name}{s.selected ? ' ◄' : ''}</span> },
+          { key: 'n', header: 'Sector', render: (s) => <span className={hl(s)}>{s.name}{s.selected ? ' ◄' : ''}</span> },
           { key: 'st', header: 'Standards', render: (s) => <small>{s.norms}</small> },
           { key: 'g', header: 'Glass ceiling', align: 'center', render: (s) => `${s.ceiling}%` },
           { key: 'm', header: 'Max automatable', align: 'center', render: (s) => `${s.max}%` },

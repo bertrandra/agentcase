@@ -35,7 +35,8 @@ describe('transform-params section', () => {
     expect(doc().dom.values.industry).toBe('MED');
     expect(doc().selectedNorms).toHaveLength(4);
     expect(doc().selectedRegArtefacts).toHaveLength(33);
-    expect(screen.getByText((_, el) => el?.tagName === 'P' && /Weighted glass ceiling from selection: 75% \(mean human sup. on 33 artifacts\)/.test(el.textContent ?? ''))).toBeTruthy();
+    const ceiling = /Weighted glass ceiling from selection: 75% \(mean human sup. on 33 artifacts\)/;
+    expect(screen.getByText((_, el) => el?.tagName === 'P' && ceiling.test(el.textContent ?? ''))).toBeTruthy();
     expect(screen.getByText('33')).toBeTruthy();
     expect(calc().model.ceiling).toBeGreaterThan(before.ceiling);
     act(() => { appStore().undo(); });

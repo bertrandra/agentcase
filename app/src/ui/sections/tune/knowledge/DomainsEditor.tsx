@@ -22,11 +22,17 @@ function Editor({ id, name, saved }: { id: string; name: string; saved: Knowledg
     if (rows.some((r) => !(num(r.weight) >= 0))) { setError('Weights must be numbers greater than or equal to 0.'); return; }
     const domains = rows.map((r) => ({ label: r.label.trim(), weightPct: num(r.weight) }));
     if (setProductKnowledge(id, { domains })) { setError(''); toast(`Knowledge domains saved for ${name}`); return; }
-    setError(Math.abs(left) > 1e-6 ? `Weights must add up to 100% (${left > 0 ? `${fmt(left)}% left` : `${fmt(-left)}% too much`}): change refused.` : 'Change refused.');
+    const off = left > 0 ? `${fmt(left)}% left` : `${fmt(-left)}% too much`;
+    setError(Math.abs(left) > 1e-6 ? `Weights must add up to 100% (${off}): change refused.` : 'Change refused.');
   };
+  const remaining = left === 0 ? 'Total: 100% — ready to save.' : left > 0 ? `${fmt(left)}% left to allocate.` : `${fmt(-left)}% too much.`;
+  const status = rows.length ? remaining : 'No domain: the curation effort is not split.';
+  const add = () => { setError(''); setRows((rs) => [...rs, { key: next.current++, label: '', weight: String(Math.max(0, left)) }]); };
+  const removeAll = () => { if (setProductKnowledge(id, {}, ['domains'])) toast(`Domains removed for ${name}`); };
   return (
     <>
-      <p className="ac-muted">Domains kept for {name} (documentation, code, tickets, operating procedures, architecture decisions…). The weight spreads the curation effort; it does not act on the multiplier, which is driven by the CC level. Weights must add up to 100%.</p>
+      <p className="ac-muted">Domains kept for {name} (documentation, code, tickets, operating procedures, architecture decisions…). The weight spreads the
+        curation effort; it does not act on the multiplier, which is driven by the CC level. Weights must add up to 100%.</p>
       {rows.length > 0 && (
         <table className="ac-table">
           <caption className="ac-sr">Knowledge domains of {name}</caption>
@@ -35,19 +41,21 @@ function Editor({ id, name, saved }: { id: string; name: string; saved: Knowledg
             {rows.map((r, i) => (
               <tr key={r.key}>
                 <td><input type="text" aria-label={`Domain label ${i + 1}`} value={r.label} onChange={(e) => edit(r.key, { label: e.target.value })} /></td>
-                <td><input type="number" min={0} max={100} step={5} aria-label={`Domain weight ${i + 1} (%)`} value={r.weight} onChange={(e) => edit(r.key, { weight: e.target.value })} /></td>
-                <td><button type="button" aria-label={`Remove domain ${r.label || i + 1}`} onClick={() => { setError(''); setRows((rs) => rs.filter((x) => x.key !== r.key)); }}>Remove</button></td>
+                <td><input type="number" min={0} max={100} step={5} aria-label={`Domain weight ${i + 1} (%)`} value={r.weight}
+                  onChange={(e) => edit(r.key, { weight: e.target.value })} /></td>
+                <td><button type="button" aria-label={`Remove domain ${r.label || i + 1}`}
+                  onClick={() => { setError(''); setRows((rs) => rs.filter((x) => x.key !== r.key)); }}>Remove</button></td>
               </tr>
             ))}
           </tbody>
         </table>
       )}
-      <p role="status" aria-live="polite" data-remaining={left}>{rows.length ? (left === 0 ? 'Total: 100% — ready to save.' : left > 0 ? `${fmt(left)}% left to allocate.` : `${fmt(-left)}% too much.`) : 'No domain: the curation effort is not split.'}</p>
-      {error && <p role="alert" style={{ color: 'var(--ac-danger-800)' }}>{error}</p>}
+      <p role="status" aria-live="polite" data-remaining={left}>{status}</p>
+      {error && <p role="alert" className="ac-tone" data-tone="danger-800">{error}</p>}
       <div className="ac-pf-actions" role="group" aria-label="Domain actions">
-        <button type="button" onClick={() => { setError(''); setRows((rs) => [...rs, { key: next.current++, label: '', weight: String(Math.max(0, left)) }]); }}>Add a domain</button>
+        <button type="button" onClick={add}>Add a domain</button>
         <button type="button" disabled={!rows.length} onClick={apply}>Save the domains</button>
-        <button type="button" disabled={!saved.length} onClick={() => { if (setProductKnowledge(id, {}, ['domains'])) toast(`Domains removed for ${name}`); }}>Remove all domains</button>
+        <button type="button" disabled={!saved.length} onClick={removeAll}>Remove all domains</button>
       </div>
     </>
   );

@@ -9,8 +9,9 @@ import { legacySectionText, missingNumbers, renderedText } from '../../helpers/p
 afterEach(cleanup);
 const scrub = (month: number) => fireEvent.change(screen.getByLabelText('Month within the horizon'), { target: { value: String(month) } });
 const slider = (name: RegExp | string) => screen.getByRole('slider', { name }) as HTMLInputElement;
-// Legacy discrepancy (stale snapshot): the industry-med fixture stores autoPotential 75 while fit-to-scope gives 46. The legacy engine (oracle) computes with the stored 75,
-// but the text dump walks through the Scope tab first, whose render refits the slider to 46. Only the two funnel figures derived from the refit potential differ.
+// Legacy discrepancy (stale snapshot): the industry-med fixture stores autoPotential 75 while fit-to-scope gives
+// 46. The legacy engine (oracle) computes with the stored 75, but the text dump walks through the Scope tab first,
+// whose render refits the slider to 46. Only the two funnel figures derived from the refit potential differ.
 const IGNORE: Record<string, number[]> = { 'industry-med': [21.2, 20.2] };
 
 describe('params section', () => {

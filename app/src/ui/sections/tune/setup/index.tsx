@@ -12,8 +12,9 @@ import { SetupChart } from './SetupChart';
 const help = (
   <>
     <p>The one-off seed investment to stand up the agentic capability: tooling, training, coaching, governance. It is the denominator of the ROI.</p>
-    <p>Setup total = tooling + training + coaching + governance (+ the HRI change cost and the Knowledge hub setup when those modules are on), spread linearly over the first 6 months of the cash flow.
-      The setup duration shapes the Gantt bar only, not the cash profile. Recurring costs (tokens, infrastructure, run team, hub curation) never belong here.</p>
+    <p>Setup total = tooling + training + coaching + governance (+ the HRI change cost and the Knowledge hub setup when those modules are on), spread linearly
+      over the first 6 months of the cash flow. The setup duration shapes the Gantt bar only, not the cash profile. Recurring costs (tokens, infrastructure, run
+      team, hub curation) never belong here.</p>
   </>
 );
 
@@ -34,7 +35,8 @@ export default function SetupSection() {
             <NumberInput id="setupGov" label="Setup governance (€)" step={5000} />
             <NumberInput id="infra" label="Monthly infra (€)" step={50} />
             <NumberInput id="workdays" label="Working days / year" step={5} />
-            <CoefInput coef="setupETP" domId="setupETPCoef" label="Transitional setup headcount (FTE)" hint="lead + architect + coach, display only — € already in Setup total" step={0.1} />
+            <CoefInput coef="setupETP" domId="setupETPCoef" label="Transitional setup headcount (FTE)"
+              hint="lead + architect + coach, display only — € already in Setup total" step={0.1} />
           </div>
         </Panel>
       }

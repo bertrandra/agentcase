@@ -19,7 +19,8 @@ const COLS: AggColumn<ScurveRow>[] = [
   { key: 'end', header: 'Adoption at horizon end', align: R, render: (r) => `${r.endAdoption}% (${r.endMaturity})` },
 ];
 
-const help = <p>Aggregate view of the adoption ramp of each product: the curve family, its Year 1 / 2 / 3 anchors, the month it crosses the maturity levels and the adoption reached at the end of the horizon. The horizon is common to all products.</p>;
+const help = <p>Aggregate view of the adoption ramp of each product: the curve family, its Year 1 / 2 / 3 anchors, the month it crosses the maturity levels and
+  the adoption reached at the end of the horizon. The horizon is common to all products.</p>;
 
 /** S-curve — adoption ramp — Aggregate view: the curve of each product (family, anchors, key points) and the range of the adoption at the horizon end. */
 export default function ScurveAggregate() {

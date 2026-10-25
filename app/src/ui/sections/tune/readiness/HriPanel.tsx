@@ -23,16 +23,27 @@ function Outcome() {
   const h = hriSummary(useCtx());
   return (
     <div aria-live="polite">
-      <StatRow><Stat label="Human readiness index" value={`${h.index}/100 · ${h.label}`} tone={h.index >= 75 ? 'teal' : h.index >= 50 ? 'amber' : 'brick'} /></StatRow>
+      <StatRow>
+        <Stat label="Human readiness index" value={`${h.index}/100 · ${h.label}`} tone={h.index >= 75 ? 'teal' : h.index >= 50 ? 'amber' : 'brick'} />
+      </StatRow>
       <table className="ac-table">
         <tbody>
           <tr><td>Change intensity</td><td className="ac-c"><strong>{h.intensity}</strong></td></tr>
-          <tr><td>Change cost ({h.etp.toFixed(1)} AS-IS FTE × €{Math.round(h.costPerFte).toLocaleString('en-US')})</td><td className="ac-c"><strong>{fmtK(h.cost)}</strong></td></tr>
+          <tr>
+            <td>Change cost ({h.etp.toFixed(1)} AS-IS FTE × €{Math.round(h.costPerFte).toLocaleString('en-US')})</td>
+            <td className="ac-c"><strong>{fmtK(h.cost)}</strong></td>
+          </tr>
           <tr><td>Adoption drag on the S-curve</td><td className="ac-c"><strong>× {h.drag.toFixed(2)}</strong></td></tr>
-          <tr><td>Status in the model</td><td className="ac-c"><strong style={{ color: h.on ? 'var(--ac-teal)' : 'var(--ac-muted)' }}>{h.on ? 'APPLIED (setup + ramp)' : 'informative only — enable above'}</strong></td></tr>
+          <tr>
+            <td>Status in the model</td>
+            <td className="ac-c">
+              <strong className="ac-tone" data-tone={h.on ? 'teal' : 'muted'}>{h.on ? 'APPLIED (setup + ramp)' : 'informative only — enable above'}</strong>
+            </td>
+          </tr>
         </tbody>
       </table>
-      <Note>Referential mapping: leadership, fears, skills, champions/preceptorship, incentives, rituals. Raising the change intensity at low HRI is how the model shows the ROI of change itself (CC-HRI-02).</Note>
+      <Note>Referential mapping: leadership, fears, skills, champions/preceptorship, incentives, rituals. Raising the change intensity at low HRI is how the
+        model shows the ROI of change itself (CC-HRI-02).</Note>
     </div>
   );
 }
@@ -46,7 +57,7 @@ export function HriPanel() {
         When enabled, it (a) adds a <strong>change cost</strong> line to the Agentic Setup and (b) applies an <strong>adoption drag</strong> to the
         S-curve: ramp × (0.6 + 0.4 × HRI/100).</p>
       <CheckInput id="hriEnabled" label="Enable Human Readiness in the model (change cost + adoption drag)" />
-      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit,minmax(320px,1fr))', gap: 16 }}>
+      <div className="ac-hri-grid">
         <Questions />
         <div>
           <Outcome />
@@ -61,7 +72,8 @@ export function HriPanel() {
             <CoefInput coef="hriFloor" id="hriFloorCoef" label="Ramp floor" min={0} max={1} step={0.05} />
             <CoefInput coef="hriSlope" id="hriSlopeCoef" label="Ramp slope" min={0} step={0.05} />
           </div>
-          <Note>Drag = floor + slope × HRI/100. A zero-readiness org still realises &quot;floor&quot; of the ramp; &quot;slope&quot; is how much readiness buys back. Also editable from the Due-diligence register.</Note>
+          <Note>Drag = floor + slope × HRI/100. A zero-readiness org still realises &quot;floor&quot; of the ramp; &quot;slope&quot; is how much readiness buys
+            back. Also editable from the Due-diligence register.</Note>
         </div>
       </div>
     </Panel>

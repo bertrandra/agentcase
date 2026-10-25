@@ -11,17 +11,25 @@ import { fmtCell } from './fmtCell';
 /** The products the View leaves out of the figures (no wave, or archived), named; nothing when all are in. */
 export function ExcludedNote() {
   const vs = useViewScope(), products = useProducts();
-  const left = vs.excludedIds.flatMap((id) => { const p = products.find((x) => x.id === id); return p ? [`${p.name}${p.archived ? ' (archived)' : ''}`] : []; });
+  const left = vs.excludedIds.flatMap((id) => {
+    const p = products.find((x) => x.id === id);
+    return p ? [`${p.name}${p.archived ? ' (archived)' : ''}`] : [];
+  });
   return left.length ? <Callout kind="blue">Excluded from the figures (no wave, or archived): {left.join(', ')}.</Callout> : null;
 }
 
 /** A VTable of the domain as the aggregate table: a Wave column, the domain's columns and the selection line as the domain computed it (never summed here). */
-export function VerifyTable({ table, caption, totalLabel = 'Total', first, edit = false }: { table: VTable; caption: string; totalLabel?: string; first?: string; edit?: boolean }) {
+interface VerifyTableProps { table: VTable; caption: string; totalLabel?: string; first?: string; edit?: boolean }
+export function VerifyTable({ table, caption, totalLabel = 'Total', first, edit = false }: VerifyTableProps) {
   const vs = useViewScope();
   const columns: AggColumn<VRow>[] = [{ key: 'wave', header: 'Wave', render: (r) => r.wave },
-    ...table.columns.map((c) => ({ key: c.key, header: c.header, title: c.title, align: c.kind === 'text' ? ('left' as const) : ('right' as const), render: (r: VRow) => fmtCell(r.cells[c.key], c.kind) }))];
+    ...table.columns.map((c) => ({
+      key: c.key, header: c.header, title: c.title, align: c.kind === 'text' ? ('left' as const) : ('right' as const),
+      render: (r: VRow) => fmtCell(r.cells[c.key], c.kind),
+    }))];
   const cells = Object.fromEntries(table.columns.map((c) => [c.key, fmtCell(table.total[c.key], c.kind)]));
-  return <AggregateTable caption={`${caption} — ${vs.label}`} rows={table.rows} columns={columns} first={first} edit={edit} totals={{ label: `${totalLabel} — ${vs.label}`, cells }} />;
+  return <AggregateTable caption={`${caption} — ${vs.label}`} rows={table.rows} columns={columns} first={first} edit={edit}
+    totals={{ label: `${totalLabel} — ${vs.label}`, cells }} />;
 }
 
 /**

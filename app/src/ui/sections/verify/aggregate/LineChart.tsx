@@ -12,7 +12,11 @@ export function LineChart({ labels, lines, label, yTitle, height = 300 }: { labe
   const { tok } = useTheme();
   const config = useMemo<ChartConfiguration>(() => ({
     type: 'line',
-    data: { labels, datasets: lines.map((s, i) => ({ label: s.label, data: s.data, borderColor: tok(COLORS[i % COLORS.length]!), backgroundColor: tok(COLORS[i % COLORS.length]!), borderWidth: s.thick ? 3 : 1.5, pointRadius: 0, tension: 0.15, borderDash: s.thick ? [] : [5, 3] })) },
+    data: { labels, datasets: lines.map((s, i) => {
+      const colour = tok(COLORS[i % COLORS.length]!);
+      return { label: s.label, data: s.data, borderColor: colour, backgroundColor: colour, borderWidth: s.thick ? 3 : 1.5, pointRadius: 0, tension: 0.15,
+        borderDash: s.thick ? [] : [5, 3] };
+    }) },
     options: { plugins: { legend: { position: 'bottom' } }, scales: { y: { beginAtZero: true, title: { display: true, text: yTitle } } } },
   }), [labels, lines, yTitle, tok]);
   return <ChartPanel config={config} label={label} height={height} />;

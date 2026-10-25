@@ -34,7 +34,7 @@ describe('gantt section', () => {
     const { container } = render(<Gantt />), L = extra<{ collapsed: Cap }>('vb_gantt', id).collapsed;
     expect(statsOf(container).map((s) => [s[0], s[1]])).toEqual(L.summary.map(([l, v]) => [l!, v!]));
     sameRows(rowsOf(container), [...L.prog, ...L.phases]);
-    const ticks = container.querySelectorAll('span[style*="top: -16px"], span[style*="top:-16px"]');
+    const ticks = container.querySelectorAll('.ac-gantt-tick-l');
     expect([...ticks].map((t) => t.textContent)).toEqual(L.ticks.map((t) => t[1]));
   });
   it.each(['golden', 'vb-seq', 'cross-cutting'])('expanding every phase reproduces the legacy artefact rows (%s)', (id) => {
@@ -50,7 +50,8 @@ describe('gantt section', () => {
     expect(container.textContent).toContain('Payback (break-even)');
   });
   it('the roadmap durations and the onboarding toggle reshape the program; undo restores it', () => {
-    const { container } = render(<Gantt />), summary = () => Object.fromEntries(statsOf(container)), n = () => container.querySelectorAll('[data-gantt-row]').length;
+    const { container } = render(<Gantt />), summary = () => Object.fromEntries(statsOf(container));
+    const n = () => container.querySelectorAll('[data-gantt-row]').length;
     const rows0 = n();
     act(() => setInput('rmD1', 10));
     expect(summary()['Onboarding']).toBe('24 wk');

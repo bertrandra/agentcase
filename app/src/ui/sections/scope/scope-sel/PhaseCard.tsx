@@ -4,25 +4,30 @@ type WArtefactView = PhaseRow['sdlc'][number] & { seq?: number | null };
 import { setSeq, toggleArtefact, togglePhase, toggleRegArtefact } from '@/controllers/scope';
 import { Badge } from '@/ui/widgets/cards';
 
-const wLabel = (a: WArtefactView, lw: number, lifecycleOn: boolean) =>
-  lifecycleOn && Math.abs(lw - 1) > 0.001 ? <>w{a.w.toFixed(1)} <b style={{ color: lw > 1 ? 'var(--ac-teal)' : 'var(--ac-brick)' }}>×{lw.toFixed(2)}</b></> : <>w{a.effort}</>;
+const lwTone = (lw: number) => (lw > 1 ? 'teal' : 'brick');
+const wLabel = (a: WArtefactView, lw: number, lifecycleOn: boolean) => (
+  lifecycleOn && Math.abs(lw - 1) > 0.001 ? <>w{a.w.toFixed(1)} <b className="ac-tone" data-tone={lwTone(lw)}>×{lw.toFixed(2)}</b></> : <>w{a.effort}</>
+);
+interface PhaseCardProps { row: PhaseRow; lifecycleOn: boolean; selected: Set<string>; selectedReg: Set<string> }
 
 function SeqInput({ value, onChange, label }: { value: number | undefined | null; onChange: (v: number | null) => void; label: string }) {
-  return <input type="number" step={1} aria-label={label} title={label} className="ac-seq" value={value ?? ''} onChange={(e) => onChange(e.target.value === '' ? null : parseFloat(e.target.value))} />;
+  return <input type="number" step={1} aria-label={label} title={label} className="ac-seq" value={value ?? ''}
+    onChange={(e) => onChange(e.target.value === '' ? null : parseFloat(e.target.value))} />;
 }
 
 /** One phase: tri-state checkbox, lifecycle weight, its SDLC and regulatory artefacts. */
-export function PhaseCard({ row, lifecycleOn, selected, selectedReg }: { row: PhaseRow; lifecycleOn: boolean; selected: Set<string>; selectedReg: Set<string> }) {
+export function PhaseCard({ row, lifecycleOn, selected, selectedReg }: PhaseCardProps) {
   const box = useRef<HTMLInputElement>(null);
   useEffect(() => { if (box.current) box.current.indeterminate = row.state === 'some'; }, [row.state]);
   const lw = row.lifecycle, showLw = lifecycleOn && Math.abs(lw - 1) > 0.001;
   return (
     <div className={`ac-phase${row.isCross ? ' is-cross' : ''}`}>
       <label className="ac-phase-head">
-        <input ref={box} type="checkbox" checked={row.state === 'all'} aria-label={`Phase ${row.phase.id}`} onChange={(e) => togglePhase(row.phase.id, e.target.checked)} />
+        <input ref={box} type="checkbox" checked={row.state === 'all'} aria-label={`Phase ${row.phase.id}`}
+          onChange={(e) => togglePhase(row.phase.id, e.target.checked)} />
         <span className="ac-grow"><strong>{row.phase.id}</strong> {row.phase.name}
           {row.reg.length > 0 && <small className="ac-reg"> · {row.regOn}/{row.reg.length} reg</small>}
-          {showLw && <small style={{ color: lw > 1 ? 'var(--ac-teal)' : 'var(--ac-brick)', fontWeight: 'var(--ac-font-weight-bold)' }} title="Product-status lifecycle weight"> ×{lw.toFixed(2)}</small>}</span>
+          {showLw && <small className="ac-tone ac-phase-lw" data-tone={lwTone(lw)} title="Product-status lifecycle weight"> ×{lw.toFixed(2)}</small>}</span>
         <small>seq</small><SeqInput value={row.phase.seq} label={`Ramp-up sequence of ${row.phase.id}`} onChange={(v) => setSeq('phase', row.phase.id, v)} />
         <small>{row.onCount}/{row.total}</small>
       </label>

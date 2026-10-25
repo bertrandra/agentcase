@@ -17,7 +17,7 @@ function Prerequisite({ id, label, critical }: { id: string; label: string; crit
   const st = useDoc((d) => d.dom.values['elPre_' + id]) || 'met';
   return (
     <tr>
-      <td>{label}{critical && <small style={{ color: 'var(--ac-brick)' }}> critical</small>}</td>
+      <td>{label}{critical && <small className="ac-tone" data-tone="brick"> critical</small>}</td>
       <td className="ac-c">
         <FieldChoice bare label={label} value={st} options={STATUSES} onChange={(v) => setInput('elPre_' + id, v)}>
           <select aria-label={label} value={st} onChange={(e) => setInput('elPre_' + id, e.target.value)}>
@@ -44,11 +44,12 @@ export function GatePanel() {
           <tbody>{ELIG_PREREQS.map((p) => <Prerequisite key={p.id} {...p} />)}</tbody>
         </table>
       </div>
-      <div role="status" style={{ marginTop: 8, padding: '10px 12px', borderRadius: 'var(--ac-radius-lg)', border: `1px solid var(--ac-${view.tone})` }}>
-        <strong style={{ color: `var(--ac-${view.tone})` }}>{view.text}</strong>
+      <div role="status" className="ac-verdict" data-tone={view.tone}>
+        <strong>{view.text}</strong>
         {v.notes.length > 0 && <ul>{v.notes.map((n) => <li key={n}>{n}</li>)}</ul>}
       </div>
-      <Note>Reference 1.2: six prerequisites + red-flag legacy screening. A large critical legacy can stay eligible per task without being eligible globally. The verdict annotates Decision Intelligence (CC-ELIG-01).</Note>
+      <Note>Reference 1.2: six prerequisites + red-flag legacy screening. A large critical legacy can stay eligible per task without being eligible globally.
+        The verdict annotates Decision Intelligence (CC-ELIG-01).</Note>
     </Panel>
   );
 }

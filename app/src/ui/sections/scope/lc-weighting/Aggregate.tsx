@@ -11,10 +11,12 @@ const COLS: AggColumn<LifecycleRow>[] = [
   { key: 'use', header: 'Weighting', render: (r) => (r.use ? 'on' : 'off (neutral)') },
   { key: 'pos', header: 'Lifecycle position', align: R, title: '0 = greenfield, 100 = legacy in maintenance', render: (r) => `${r.pos.toFixed(0)}/100` },
   { key: 'status', header: 'Blended status', render: (r) => r.label },
-  { key: 'posture', header: 'Automation posture', align: R, title: 'Global factor applied to the effective depth (×1.00 when off)', render: (r) => `×${r.posture.toFixed(2)}` },
+  { key: 'posture', header: 'Automation posture', align: R, render: (r) => `×${r.posture.toFixed(2)}`,
+    title: 'Global factor applied to the effective depth (×1.00 when off)' },
 ];
 
-const help = <p>Aggregate view of where each product sits on its lifecycle. The position re-weights the effort of every SDLC phase and sets the automation posture; the last line gives the number of products using the weighting and the posture range.</p>;
+const help = <p>Aggregate view of where each product sits on its lifecycle. The position re-weights the effort of every SDLC phase and sets the automation
+  posture; the last line gives the number of products using the weighting and the posture range.</p>;
 
 /** Product status lifecycle weighting — Aggregate view: the lifecycle position, blended status and posture of each product. */
 export default function LcWeightingAggregate() {

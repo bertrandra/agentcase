@@ -18,7 +18,8 @@ export function SupervisionShare() {
         <CoefInput coef="supShareFactor" domId="runSupShareFactor" label="Supervision share factor" max={2} step={0.05} />
         <span aria-live="polite">→ {fix(t.devETP, 1)} dev + {fix(t.supETP, 1)} supervision FTE (of {fix(t.residualETP, 1)} residual, {t.endLabel})</span>
       </div>
-      <p className="ac-muted">supShare = min(cap, avg. human supervision × factor). Also editable from the Due-diligence register — both controls share the same value.</p>
+      <p className="ac-muted">supShare = min(cap, avg. human supervision × factor). Also editable from the Due-diligence register — both controls share the same
+        value.</p>
     </Panel>
   );
 }

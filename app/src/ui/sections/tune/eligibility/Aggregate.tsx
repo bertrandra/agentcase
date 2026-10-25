@@ -20,12 +20,18 @@ const COLS: AggColumn<EligibilityRow>[] = [
   { key: 'tax', header: 'Verification tax', align: R, render: (r) => `${(r.vTaxRate * 100).toFixed(1)}%` },
 ];
 
-/** Eligibility & Abaques — Aggregate view: the go / conditional / no-go gate of each product with its prerequisites, profile and verification tax, and the verdict count. */
+const NOTE = 'The gate is a control per product and does not add up: the total line counts the verdicts. '
+  + 'Open a product below for its gate, pillar matrix and Abaque reconciliation.';
+
+/**
+ * Eligibility & Abaques — Aggregate view: the go / conditional / no-go gate of each
+ * product with its prerequisites, profile and verification tax, and the verdict count.
+ */
 export default function EligibilityAggregate() {
   const a = useEligibilityAgg(), vs = useViewScope(), t = a.totals;
   return (
     <RollupAggregate title="🎯 Eligibility & Abaques" Section={EligibilitySection}
-      note="The gate is a control per product and does not add up: the total line counts the verdicts. Open a product below for its gate, pillar matrix and Abaque reconciliation.">
+      note={NOTE}>
       <AggregateTable caption={`Eligibility gate by product — ${vs.label}`} rows={a.rows} columns={COLS} edit={false}
         totals={{ label: `Verdicts — ${vs.label}`, cells: { verdict: `${t.go} go · ${t.conditional} conditional · ${t.noGo} blocked` } }} />
     </RollupAggregate>

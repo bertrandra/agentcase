@@ -5,10 +5,12 @@ import { CommitNumber } from '@/ui/widgets/CommitNumber';
 import { OverrideBadge } from '@/ui/widgets/OverrideBadge';
 
 const FIELDS: [string, string][] = [
-  ['rampSpeed', 'Ramp speed ×'], ['rampCapPct', 'Ramp cap %'], ['glassFactor', 'Glass factor ×'], ['setupBillable', 'Setup billable ×'], ['riskPremium', 'Risk premium pts'],
-  ['maturityCap', 'Maturity cap L'], ['authorityCap', 'Authority cap A'], ['khMaxCC', 'Hub max CC'], ['mcWiden', 'MC widen ×'],
+  ['rampSpeed', 'Ramp speed ×'], ['rampCapPct', 'Ramp cap %'], ['glassFactor', 'Glass factor ×'], ['setupBillable', 'Setup billable ×'],
+  ['riskPremium', 'Risk premium pts'], ['maturityCap', 'Maturity cap L'], ['authorityCap', 'Authority cap A'], ['khMaxCC', 'Hub max CC'],
+  ['mcWiden', 'MC widen ×'],
 ];
 type Row = Record<string, number>;
+const PLAIN = { width: 64, textAlign: 'center' } as const, EDITED = { ...PLAIN, borderColor: 'var(--ac-warning-600)' };
 
 /** The nine coefficients of the three engagement contexts; edited cells are flagged against the referential defaults. */
 export function CoefTable() {
@@ -20,17 +22,18 @@ export function CoefTable() {
       <summary>Context coefficients (editable)</summary>
       <OverrideBadge refKey="engageCoef" label="Context coefficients" />
       <div className="ac-table-wrap" tabIndex={0}>
-        <table className="ac-table" style={{ maxWidth: 560 }}>
-          <thead><tr><th scope="col">Coefficient</th>{keys.map((k) => <th key={k} scope="col" style={{ textAlign: 'center' }}>{k}</th>)}</tr></thead>
+        <table className="ac-table ac-coef-table">
+          <thead><tr><th scope="col">Coefficient</th>{keys.map((k) => <th key={k} scope="col" className="ac-th-c">{k}</th>)}</tr></thead>
           <tbody>
             {FIELDS.map(([f, label]) => (
               <tr key={f}><td>{label}</td>
                 {keys.map((k) => {
                   const cur = (coef[k] as Row)[f] as number, edited = Math.abs(cur - ((defaults[k] as Row | undefined)?.[f] ?? cur)) > 1e-9;
                   return (
-                    <td key={k} style={{ textAlign: 'center' }}>
-                      <CommitNumber value={String(cur)} label={`${label} of ${k}`} step={0.05} style={{ width: 64, textAlign: 'center', borderColor: edited ? 'var(--ac-warning-600)' : undefined }}
-                        onCommit={(v) => setEngageCoef(k, f, parseFloat(v))} />
+                    <td key={k} className="ac-c">
+                      {/* shared widget: CommitNumber (ui/widgets) takes a style, not a class */}
+                      <CommitNumber value={String(cur)} label={`${label} of ${k}`} step={0.05} onCommit={(v) => setEngageCoef(k, f, parseFloat(v))}
+                        style={edited ? EDITED : PLAIN} />
                     </td>
                   );
                 })}

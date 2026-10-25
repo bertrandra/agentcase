@@ -1,6 +1,6 @@
 {
  "schema": 1,
- "counts": {"files":1001,"tagged":471,"tests":293},
+ "counts": {"files":1002,"tagged":471,"tests":293},
  "zones": [
   {"id":"rate-card-team","modules":8,"tmed":115,"tmax":255},
   {"id":"scope-automation","modules":15,"tmed":132,"tmax":259},
@@ -23,7 +23,7 @@
   {"id":"presentation","modules":29,"tmed":148,"tmax":188}
  ],
  "sections": [
-  {"id":"home","label":"🏠 Welcome","group":"frame","kind":"S-static","files":2},
+  {"id":"home","label":"🏠 Welcome","group":"frame","kind":"S-static","files":3},
   {"id":"engagement-context","label":"🧭 Engagement context","group":"frame","kind":"I-input","files":5},
   {"id":"engage","label":"🤝 Engage","group":"frame","kind":"I-input","files":8},
   {"id":"transform-params","label":"🏛️ Industry / regulatory profile","group":"frame","kind":"I-input","files":4},
