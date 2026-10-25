@@ -2,8 +2,7 @@ import type { ReactNode } from 'react';
 import { setCoef, type CoefKey } from '@/controllers/tuneA';
 import { useDoc } from '@/store/hooks';
 import { cssVars } from '../cssVars';
-import { Field } from './field/Field';
-import { FieldNumber } from './field/FieldNumber';
+import { PlainNumber } from './field/PlainNumber';
 
 /** Legacy fmtK(): €45K (explicit en-US grouping). */
 export { fmtK } from '@/ui/format';
@@ -13,16 +12,7 @@ export function CoefInput({ coef, id, label, hint, min, max, step }: { coef: Coe
   step?: number }) {
   const value = useDoc((d) => d.COEF[coef] ?? '');
   return (
-    <FieldNumber native="number" label={label} hint={hint} value={value} min={min} max={max} step={step} onCommit={(v) => setCoef(coef, id, v)}>
-      <Field label={label} hint={hint}><input
-        type="number"
-        value={value}
-        min={min}
-        max={max}
-        step={step}
-        onChange={(e) => setCoef(coef, id, e.target.value)}
-      /></Field>
-    </FieldNumber>
+    <PlainNumber label={label} hint={hint} value={value} min={min} max={max} step={step} onCommit={(v) => setCoef(coef, id, v)} />
   );
 }
 

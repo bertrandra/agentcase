@@ -11,8 +11,8 @@ import { idsOf, scopesOf, shifted, sum } from '../../helpers/aggEPV';
 
 let pf: Portfolio;
 beforeAll(() => { pf = fourProducts(); });
-const runs = (scope: Parameters<typeof idsOf>[1]) => idsOf(pf,
-  scope).map((id) => ({ id, run: runOf(resolveProduct(pf, id)), month0: scheduledProducts(pf).find((s) => s.product.id === id)!.month0 }));
+const month0 = (id: string) => scheduledProducts(pf).find((s) => s.product.id === id)!.month0;
+const runs = (scope: Parameters<typeof idsOf>[1]) => idsOf(pf, scope).map((id) => ({ id, run: runOf(resolveProduct(pf, id)), month0: month0(id) }));
 
 describe('Monthly Playback aggregate: Portfolio and every Wave', () => {
   it('FTE, vFTE, cost and cumulative cash are the products\' months shifted by month0 (1e-9); index 0 is AS-IS', () => {

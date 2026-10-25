@@ -4,6 +4,7 @@ import { Field } from './field/Field';
 import { FieldChoice } from './field/FieldChoice';
 import { FieldNumber } from './field/FieldNumber';
 import { FieldToggle } from './field/FieldToggle';
+import { PlainNumber } from './field/PlainNumber';
 import { FieldKeepers } from './KeepersNotice';
 
 /**
@@ -16,16 +17,10 @@ export { Field };
 export function NumberInput({ id, label, hint, min, max, step }: { id: string; label: string; hint?: string; min?: number; max?: number; step?: number }) {
   const value = useDoc((d) => d.dom.values[id] ?? '');
   return (
-    <><FieldNumber native="number" label={label} hint={hint} value={value} min={min} max={max} step={step} onCommit={(v) => setInput(id, v)}>
-      <Field label={label} hint={hint}><input
-        type="number"
-        value={value}
-        min={min}
-        max={max}
-        step={step}
-        onChange={(e) => setInput(id, e.target.value)}
-      /></Field>
-    </FieldNumber><FieldKeepers kind="values" id={id} label={label} /></>
+    <>
+      <PlainNumber label={label} hint={hint} value={value} min={min} max={max} step={step} onCommit={(v) => setInput(id, v)} />
+      <FieldKeepers kind="values" id={id} label={label} />
+    </>
   );
 }
 

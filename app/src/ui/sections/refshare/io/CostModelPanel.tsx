@@ -6,6 +6,7 @@ import { useActiveProductId, useHasPortfolioContent, useProducts, useWaves } fro
 import { toast } from '@/ui/uiState';
 import { Callout, Panel } from '@/ui/widgets/cards';
 import { downloadBlob } from '../download';
+import { ProductOptions, WaveOptions } from './ScopeOptions';
 
 /** "portfolio" | "wave:<id>" | "product:<id>", the value of the scope selector. */
 const parse = (v: string): CostScope => {
@@ -49,12 +50,8 @@ export function CostModelPanel() {
         <label>Cost model scope{' '}
           <select aria-label="Cost model scope" value={value} disabled={busy} onChange={(e) => setPicked(e.target.value)}>
             {portfolio && <option value="portfolio">Portfolio</option>}
-            {portfolio && <optgroup label="Waves">{waves.map((w) => <option key={w.id} value={`wave:${w.id}`}>Wave: {w.name}</option>)}</optgroup>}
-            <optgroup label="Products">{products.filter((p) => !p.archived && (portfolio || p.id === active)).map((p) => <option
-              key={p.id}
-              value={`product:${p.id}`}
-              disabled={!planned(p)}
-            >Product: {p.name}{planned(p) ? '' : ' (no wave)'}</option>)}</optgroup>
+            {portfolio && <WaveOptions waves={waves} />}
+            <ProductOptions products={products.filter((p) => !p.archived && (portfolio || p.id === active))} unplanned={(p) => !planned(p)} />
           </select>
         </label>
       </p>

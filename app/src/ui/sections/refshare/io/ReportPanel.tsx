@@ -5,6 +5,7 @@ import { useDisplayScope } from '@/store/consolidationHooks';
 import { useActiveProductId, useHasPortfolioContent, useProducts, useWaves } from '@/store/portfolioHooks';
 import { Callout, Panel } from '@/ui/widgets/cards';
 import { downloadText } from '../download';
+import { ProductOptions, WaveOptions } from './ScopeOptions';
 
 /** "portfolio" | "wave:<id>" | "product:<id>", the value of the report scope selector. */
 const parse = (v: string): { scope: DisplayScope; productId?: string } => {
@@ -37,11 +38,8 @@ export function ReportPanel() {
           <label>Report scope{' '}
             <select aria-label="Report scope" value={value} onChange={(e) => setPicked(e.target.value)}>
               <option value="portfolio">Portfolio</option>
-              <optgroup label="Waves">{waves.map((w) => <option key={w.id} value={`wave:${w.id}`}>Wave: {w.name}</option>)}</optgroup>
-              <optgroup label="Products">{products.filter((p) => !p.archived).map((p) => <option
-                key={p.id}
-                value={`product:${p.id}`}
-              >Product: {p.name}</option>)}</optgroup>
+              <WaveOptions waves={waves} />
+              <ProductOptions products={products.filter((p) => !p.archived)} />
             </select>
           </label>
           {' '}A product gives the usual report of its effective case; the portfolio or a wave gives the consolidated report (economics by wave and product,

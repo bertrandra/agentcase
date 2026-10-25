@@ -2,6 +2,7 @@
 import type { WArtefact } from '../artefacts';
 import { engineNow } from '../canonical';
 import type { Ctx } from '../ctx';
+import { mulberry32 } from '../model/numerics';
 import { aiQualityTaxFactor } from '../model/vtax';
 import { model } from '../model/overlay';
 import { activeArtefacts } from '../scope';
@@ -21,16 +22,7 @@ export function fgAgentShare(a: WArtefact, ramp: number): number {
   return Math.max(0, Math.min(Math.min(permitted, permitted * (ramp / 100)), 1 - (+a.humanSup || 0) / 100));
 }
 /** Seeded PRNG of the generator (no Math.random anywhere). */
-export function fgRng(seed: number): () => number {
-  let a = (seed >>> 0) || 1;
-  return () => {
-    a |= 0;
-    a = (a + 0x6d2b79f5) | 0;
-    let t = Math.imul(a ^ (a >>> 15), 1 | a);
-    t = (t + Math.imul(t ^ (t >>> 7), 61 | t)) ^ t;
-    return ((t ^ (t >>> 14)) >>> 0) / 4294967296;
-  };
-}
+export const fgRng = (seed: number): (() => number) => mulberry32((seed >>> 0) || 1);   // the model's mulberry32; seed 0 starts at 1
 
 /** Mutable collections + counters shared by the weekly passes. */
 export interface Gen { d: FactoryData; cnt: number; cap: number; rnd: () => number; p: FgParams; grid: Grid; relN: number; lastRelease: number; vol: number;

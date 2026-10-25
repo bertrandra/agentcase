@@ -1,6 +1,6 @@
 {
  "schema": 1,
- "counts": {"files":1003,"tagged":471,"tests":293},
+ "counts": {"files":1005,"tagged":471,"tests":293},
  "zones": [
   {"id":"rate-card-team","modules":8,"tmed":115,"tmax":255},
   {"id":"scope-automation","modules":15,"tmed":132,"tmax":259},
@@ -98,7 +98,7 @@
   {"id":"datamodel","label":"🗄️ Data Model","group":"refshare","kind":"S-static","files":4},
   {"id":"calcengine","label":"⚙️ Calculation Engine","group":"refshare","kind":"S-static","files":4},
   {"id":"glossary","label":"📖 Delivery-model glossary","group":"refshare","kind":"S-static","files":3},
-  {"id":"io","label":"📥 Import / Export","group":"refshare","kind":"S-static","files":13},
+  {"id":"io","label":"📥 Import / Export","group":"refshare","kind":"S-static","files":14},
   {"id":"sessions","label":"🗂️ Session manager","group":"refshare","kind":"S-static","files":2},
   {"id":"duediligence","label":"🧾 Due diligence","group":"defend","kind":"R-rollup","files":8},
   {"id":"personas","label":"👥 Persona management","group":"configure","kind":"S-static","files":16},
