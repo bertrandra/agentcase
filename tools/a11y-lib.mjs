@@ -26,6 +26,10 @@ export function recorder() {
   const rows = [], state = { audits: 0 };
   const audit = async (page, fixture, section) => {
     const res = await page.evaluate(async () => {
+      // Audit the settled page: finish the running CSS transitions first (a nav button fading out of its active colour, 150 ms, read mid-fade on a
+      // slow runner gave a false color-contrast). Infinite animations are left alone; 2 s at most.
+      const finite = document.getAnimations().filter((a) => a.effect?.getTiming().iterations !== Infinity);
+      await Promise.race([Promise.all(finite.map((a) => a.finished.catch(() => undefined))), new Promise((r) => setTimeout(r, 2000))]);
       const r = await window.axe.run(document, { resultTypes: ['violations'] });
       return r.violations.map((v) => ({ rule: v.id, impact: v.impact, help: v.help, nodes: v.nodes.length, targets: v.nodes.slice(0, 3).map((n) => n.target.join(' ')) }));
     });
