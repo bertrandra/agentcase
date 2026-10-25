@@ -4,13 +4,15 @@
 // Standalone report:  node tools/ui-parity-sections.mjs [--fixtures golden,ctx-msi,industry-med] [--sections id,id] [--json out.json] [--shots dir]
 import { readFileSync, writeFileSync, mkdirSync } from 'node:fs';
 import { resolve } from 'node:path';
-import { KINDS, SPROPS } from './ui-parity-kinds.mjs';
+import { KINDS, LOOK_TYPOGRAPHY, SPROPS } from './ui-parity-kinds.mjs';
 
 export const SAMPLE = ['financial', 'params', 'compliance'];   // sections visited on the non-golden fixtures
+/** A section-local typography look on an ancestor (theme/sections-*.css) overrides like an inline font / colour: its descendants are not plain. */
+const LOCAL_SEL = LOOK_TYPOGRAPHY.map((c) => `, ${c}`).join('');
 export const norm = (v) => String(v ?? '').replace(/(\d+\.\d+)px/g, (_, n) => `${Math.round(Number(n) * 10) / 10}px`).replace(/ (0|100)%(?=[,)])/g, '').replace(/\s+/g, ' ').trim();
 
 /** Runs in the page: the first visible match of every kind under `rootSel` that does not inherit an inline typography override; its computed style, or (`mark`) a data-parity attribute for Playwright. */
-function extract({ rootSel, kinds, props, mark }) {
+function extract({ rootSel, kinds, props, mark, local }) {
   const root = document.querySelector(rootSel), out = {};
   if (!root) return out;
   root.querySelectorAll('[data-parity]').forEach((e) => e.removeAttribute('data-parity'));
@@ -18,7 +20,7 @@ function extract({ rootSel, kinds, props, mark }) {
     let el = null;
     if (k.sel === ':scope') el = root;
     else for (const e of root.querySelectorAll(k.sel)) {
-      const cx = e.parentElement && e.parentElement.closest('[style*="font"], [style*="color"], [style*="line-height"], [style*="text-transform"], [style*="letter-spacing"], [style*="opacity"]');   // inherits an inline typography override: the section's own decision
+      const cx = e.parentElement && e.parentElement.closest(`[style*="font"], [style*="color"], [style*="line-height"], [style*="text-transform"], [style*="letter-spacing"], [style*="opacity"]${local}`);   // inherits an inline typography override: the section's own decision
       if (e.offsetWidth > 0 && e.offsetHeight > 0 && getComputedStyle(e).visibility !== 'hidden' && !(cx && root.contains(cx) && cx !== root)) { el = e; break; }
     }
     if (!el) { out[k.kind] = null; continue; }
@@ -39,7 +41,7 @@ const sty = (el, props) => {
 
 /** Hover / focus kinds need a real pointer or focus: the picked element of the kind, measured after the action. */
 async function interactive(page, rootSel, kinds, which, state) {
-  const out = {}, picked = await page.evaluate(extract, { rootSel, kinds: kinds.map((k) => ({ kind: k.kind, sel: k[which] })), props: [], mark: true });
+  const out = {}, picked = await page.evaluate(extract, { rootSel, kinds: kinds.map((k) => ({ kind: k.kind, sel: k[which] })), props: [], mark: true, local: LOCAL_SEL });
   for (const k of kinds) {
     const loc = page.locator(`${rootSel} [data-parity="${k.kind}"]`);
     if (!picked[k.kind] || !(await loc.count())) { out[k.kind] = null; continue; }
@@ -55,11 +57,11 @@ async function interactive(page, rootSel, kinds, which, state) {
 
 async function measureSection(page, rootSel, which, helpSel) {
   const pick = (f) => KINDS.filter(f).map((k) => ({ kind: k.kind, sel: k[which] }));
-  const res = await page.evaluate(extract, { rootSel, kinds: pick((k) => !k.state), props: SPROPS });
+  const res = await page.evaluate(extract, { rootSel, kinds: pick((k) => !k.state), props: SPROPS, local: LOCAL_SEL });
   Object.assign(res, await interactive(page, rootSel, KINDS.filter((k) => k.state === 'hover'), which, 'hover'));
   Object.assign(res, await interactive(page, rootSel, KINDS.filter((k) => k.state === 'focus'), which, 'focus'));
   const help = page.locator(`${rootSel} ${helpSel}`).first();
-  if (await help.count()) { await help.click(); await page.mouse.move(0, 0); await page.waitForTimeout(150); Object.assign(res, await page.evaluate(extract, { rootSel, kinds: pick((k) => k.state === 'help'), props: SPROPS })); }
+  if (await help.count()) { await help.click(); await page.mouse.move(0, 0); await page.waitForTimeout(150); Object.assign(res, await page.evaluate(extract, { rootSel, kinds: pick((k) => k.state === 'help'), props: SPROPS, local: LOCAL_SEL })); }
   return res;
 }
 
