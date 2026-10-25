@@ -15,7 +15,7 @@ All notable changes to AgentCase, newest first. Product version from v19.0.0 = t
 
 When releasing, follow [docs/BUMP_PROCEDURE.md](docs/BUMP_PROCEDURE.md) (§7 for the legacy file) and add the new version at the top.
 
-## [Unreleased]
+## [v20.18.0] 2026-10-25 — Architecture lot 8: dev toolchain with 0 audit findings, Node 24 CI actions, portfolio sensitivity, pins on shared team lines, "apply to all" for the knowledge subset
 
 ### Lot 8 — dev toolchain security
 
