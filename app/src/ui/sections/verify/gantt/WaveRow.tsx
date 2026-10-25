@@ -40,6 +40,7 @@ export function WaveRow({ w, index, open, onToggle }: { w: GanttWaveRow; index: 
       <button type="button" className="ac-gantt-toggle" data-tone={tone} onClick={onToggle} aria-expanded={open}
         aria-label={`${open ? 'Collapse' : 'Expand'} ${w.name}`}>{open ? '▼' : '▶'}</button>
       <strong className="ac-gantt-name">{w.name}</strong> <span className="ac-gantt-count">({w.products.length})</span>
+      {w.after && <span className="ac-gantt-dep" data-gantt-dep="" title={`${w.name} starts ${w.after}`}> ⤷ {w.after}</span>}
     </>
   );
   return (

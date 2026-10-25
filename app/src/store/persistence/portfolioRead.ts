@@ -45,7 +45,15 @@ function readWave(v: unknown): Portfolio['waves'][number] {
   const w = v as Rec, id = safe(w.id, 'wave id');
   need(typeof w.name === 'string' && Array.isArray(w.productIds), `wave ${id}: name and productIds expected`);
   return { id, name: w.name as string, note: typeof w.note === 'string' ? w.note : undefined, startMonth: num(w.startMonth, `wave ${id}: startMonth`),
-    productIds: (w.productIds as unknown[]).map((x) => safe(x, `wave ${id}: product id`)) };
+    productIds: (w.productIds as unknown[]).map((x) => safe(x, `wave ${id}: product id`)), dependsOn: readDependency(w.dependsOn, id) };
+}
+
+/** A wave dependency (optional): target wave id, milestone and lag; its shape is checked by `validate`, the target by the schedule. */
+function readDependency(v: unknown, id: string): Portfolio['waves'][number]['dependsOn'] {
+  if (v === undefined) return undefined;
+  need(rec(v), `wave ${id}: dependsOn must be an object`);
+  const d = v as Rec;
+  return { waveId: safe(d.waveId, `wave ${id}: dependsOn.waveId`), milestone: d.milestone as 'start', lagMonths: num(d.lagMonths, `wave ${id}: dependsOn.lagMonths`) };
 }
 
 /** A portfolio snapshot (`agentcase.portfolio.v1`) -> a validated Portfolio. Hostile keys are dropped, shapes checked, invariants of spec 4.1 enforced. */
@@ -63,6 +71,7 @@ export function readPortfolio(raw: unknown): Portfolio {
       infraAllocation: hub.infraAllocation as 'perProduct' | 'byBaseEtp' },
     horizonMonths: num(s.horizonMonths, 'horizonMonths'), startDate: typeof s.startDate === 'string' ? s.startDate : '',
     ...(s.rho === undefined || s.rho === 0 ? {} : { rho: num(s.rho, 'rho') }),
+    ...(s.maxConcurrentSetups === undefined ? {} : { maxConcurrentSetups: num(s.maxConcurrentSetups, 'maxConcurrentSetups') }),
   };
   const errors = validate(pf).errors;
   if (errors.length) throw new SnapshotError(`Portfolio snapshot: ${errors[0]!.message}`);

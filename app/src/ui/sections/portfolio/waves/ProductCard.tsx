@@ -22,7 +22,8 @@ export function ProductCard({ card, cols, onDrag }: { card: BoardCard; cols: Boa
       aria-description="Left and right arrows: change wave. Drag and drop also works."
       onKeyDown={onKey} onDragStart={(e) => { e.dataTransfer?.setData('text/plain', card.id); onDrag(card.id); }} onDragEnd={() => onDrag(null)}>
       <strong>{card.name}</strong>{card.archived && <em> (archived)</em>}
-      <div className="ac-muted">{card.etp.toFixed(1)} FTE{card.startLabel ? ` · starts ${card.startLabel}` : ' · excluded from the consolidation'}</div>
+      <div className="ac-muted">{card.etp.toFixed(1)} FTE{card.startLabel ? ` · starts ${card.startLabel}` : ' · excluded from the consolidation'}
+        {card.pushed > 0 && <span data-pushed={card.pushed}> (setup pushed back {card.pushed} mo by the capacity)</span>}</div>
       <label className="ac-wave-offset">Offset (months){' '}
         <NumCell ariaLabel={`Offset in months of ${card.name}`} value={card.offset} min={0} step={1} width={56} onCommit={(v) => { setProductOffset(card.id, parseInt(v, 10) || 0); }} />
       </label>

@@ -24,6 +24,7 @@ const ALLOWED: Record<string, string> = {
   'domain/portfolio/run.ts:runs': 'memo: the product run of a case state',
   'domain/portfolio/costModelRow.ts:SUMMED': 'constant lookup (never written after)',
   'domain/portfolio/core.ts:roots': 'memo: the core portfolio of a portfolio object',
+  'domain/portfolio/timeline.ts:schedules': 'memo: the wave schedule (effective starts) of a portfolio object',
   'domain/portfolio/consolidate.ts:rates': 'memo: the discount rate of a common case',
   'domain/portfolio/consolidate.ts:memo': 'memo: the consolidation of a portfolio',
   'domain/portfolio/memo.ts:ctxs': 'memo: the Ctx of a case state',

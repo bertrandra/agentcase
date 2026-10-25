@@ -16,7 +16,7 @@ export const PF_LIMITS = { products: MAX_PRODUCTS, waves: 50, teamRowsPerProduct
 export const PF_HEADERS: Record<string, string[]> = {
   [PF_SHEETS.settings]: ['Setting', 'Value'],
   [PF_SHEETS.products]: ['Product id', 'Name', 'Wave id', 'Offset (months)', 'Position in wave', 'Note', 'Archived'],
-  [PF_SHEETS.waves]: ['Wave id', 'Name', 'Start month', 'Note', 'Order'],
+  [PF_SHEETS.waves]: ['Wave id', 'Name', 'Start month', 'Note', 'Order', 'Depends on (wave id)', 'Milestone (start / setupEnd)', 'Lag (months)'],
   [PF_SHEETS.team]: ['Product id', 'Skill', 'Grade', 'Location', 'FTE', 'Pinned artefacts (; separated)'],
   [PF_SHEETS.overrides]: ['Product id', 'Key', 'Part', 'Value (JSON)'],
   [PF_SHEETS.subsets]: ['Product id', 'Enabled', 'Target CC', 'Curation FTE', 'Setup base', 'KT lead (months)',

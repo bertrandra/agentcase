@@ -15,6 +15,19 @@ All notable changes to AgentCase, newest first. Product version from v19.0.0 = t
 
 When releasing, follow [docs/BUMP_PROCEDURE.md](docs/BUMP_PROCEDURE.md) (§7 for the legacy file) and add the new version at the top.
 
+## [Unreleased]
+
+### Lot 7 — dependencies between waves and transformation-team capacity (SPEC_MULTI_PRODUIT F13, was DEV-PF-GAPS)
+
+- A wave may **start after another wave**: after it starts, or after its last product finishes setup, plus a lag in months. Effective start =
+  max(own start, dependency-derived start). A choice that would close a cycle is refused; a cycle read from a file is flagged and ignored.
+- Optional portfolio parameter **max products in setup at the same time**: later products (wave order, then board order) are pushed back; every
+  push and every delayed wave is a diagnostic (Waves "Schedule" checks, Consolidation diagnostics, report, results workbook).
+- One owner, `domain/portfolio/waveSchedule.ts` (pure), read by `scheduledProducts`: consolidation, Gantt (dependency marker), KPI bar, stress,
+  Excel and report all use the effective starts. Undoable commands `wave.setDependency` and `portfolio.setMaxConcurrentSetups`; keyboard-accessible
+  controls in the Waves section; the parameters workbook carries both (Waves columns F-H, PortfolioSettings row). Both fields are optional:
+  without them the calendar is unchanged; no schema bump.
+
 ## [v20.16.0] 2026-10-25 — Architecture lot 5b: inline styles to CSS classes, max-len 0
 
 ### Lot 5b part A — frame, baseline, scope, tune and verify sections: named classes instead of inline styles, no line over 160 characters
