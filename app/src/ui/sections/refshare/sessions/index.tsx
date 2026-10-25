@@ -12,7 +12,10 @@ export default function SessionsSection() {
   const [rows, setRows] = useState<SessionInfo[]>([]), [confirmAll, setConfirmAll] = useState(false), available = sessionsAvailable();
   const refresh = useCallback(async () => { setRows(await listSessions()); }, []);
   useEffect(() => { void refresh(); }, [refresh]);
-  const act = (fn: () => Promise<unknown>, message: string) => async () => { await fn(); await refresh(); toast(message); };
+  const act = (fn: () => Promise<unknown>, message: string) => async () => {
+    try { await fn(); toast(message); } catch (e) { toast(e instanceof Error ? e.message : String(e), 5000); }
+    await refresh();
+  };
   return (
     <SectionFrame title={content.title} help={<Rich nodes={content.help} />}
       input={<>

@@ -1,11 +1,14 @@
 /** @calc-zone workspace-config */
 import { appStore } from '@/store/instance';
-import { restoreRecord, startAutosave, type AutosaveRecord, type AutosaveStorage } from '@/store/persistence/autosave';
+import { AUTOSAVE_CAP, restoreRecord, startAutosave, type AutosaveRecord, type AutosaveStorage } from '@/store/persistence/autosave';
 import { idbStorage } from '@/store/persistence/idb';
 import { setOpenNotes } from './openNotes';
 
-/** The sessions list shows at most this many records (the legacy autosave keeps the 20 most recent). */
-export const SESSION_CAP = 20;
+/** The sessions list shows at most this many records: the autosave keeps no more (the legacy autosave keeps the 20 most recent, oldest pruned). */
+export const SESSION_CAP = AUTOSAVE_CAP;
+
+/** What the user is told when the browser refuses an autosave (quota exceeded, storage blocked). */
+export const AUTOSAVE_FAILED = 'This session could not be autosaved (browser storage full or blocked): save the file to keep your work';
 
 export interface SessionsEnv { storage: AutosaveStorage | null; tabId: string }
 let env: SessionsEnv | null = null;
@@ -48,10 +51,12 @@ export async function clearAllSessions(): Promise<number> {
   return all.length;
 }
 
-/** Write this tab's autosave record right now (instead of waiting for the debounce). */
+/** Write this tab's autosave record right now (instead of waiting for the debounce). Throws when the browser refused to store it. */
 export async function saveSessionNow(): Promise<void> {
   const { storage, tabId } = current();
   if (!storage) return;
-  const a = startAutosave(appStore(), storage, tabId);
-  try { await a.flush(); } finally { a.stop(); }
+  const a = startAutosave(appStore(), storage, tabId, { cap: SESSION_CAP });
+  let ok: boolean;
+  try { ok = await a.flush(); } finally { a.stop(); }
+  if (!ok) throw new Error(AUTOSAVE_FAILED);
 }

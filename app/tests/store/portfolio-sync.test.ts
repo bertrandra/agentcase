@@ -9,11 +9,12 @@ import { assignWave } from '@/controllers/wave';
 import { createAppStore } from '@/store/core';
 import { appStore, makeDefaultDoc, setAppStore } from '@/store/instance';
 import { memoryStorage, restoreRecord, startAutosave } from '@/store/persistence/autosave';
-import { connectBroadcast, type ChannelLike } from '@/store/persistence/broadcast';
+import { connectBroadcast } from '@/store/persistence/broadcast';
 import { openSnapshot, toPortfolioSnapshot } from '@/store/persistence/portfolioSnapshot';
 import { readEmbeddedCase } from '@/store/persistence/html/read';
 import { openChecked } from '@/store/persistence/schema';
 import { validate } from '@/domain/portfolio';
+import { channelPair } from '../helpers/channels';
 import { threeProducts } from '../helpers/portfolioStore';
 import { freshStore } from './helpers';
 
@@ -62,9 +63,8 @@ describe('autosave and multi-tab on a portfolio', () => {
   });
   it('portfolio patches reach a second tab; the active product and edit scope stay local', () => {
     const t = threeProducts(), B = createAppStore(t.s.getState().portfolio, { now: () => 0 });
-    const a: ChannelLike = { postMessage: () => undefined, onmessage: null, close: () => undefined },
-      b: ChannelLike = { postMessage: () => undefined, onmessage: null, close: () => undefined };
-    a.postMessage = (m) => b.onmessage?.({ data: structuredClone(m) });
+    // two-way channel (lot 10): B starts on a copy at another revision than A, so A's first patch is a divergence B resolves by asking A for its document
+    const [a, b] = channelPair();
     connectBroadcast(t.s, a, 'A'); connectBroadcast(B, b, 'B');
     addProduct('D'); setProductOverride(t.ids[0], 'values.y1Ramp', '22'); setActiveProduct(t.ids[2]); setEditScope('product');
     expect(B.getState().portfolio.products.map((p) => p.name)).toEqual(t.s.getState().portfolio.products.map((p) => p.name));

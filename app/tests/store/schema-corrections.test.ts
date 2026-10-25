@@ -75,11 +75,16 @@ describe('a damaged file opens with its corrections listed (never refused)', () 
     expect(other.getState().doc.customerName).toBe('ACME');
     expect(other.getState().history.undo).toHaveLength(0);
   });
-  it('a change broadcast by a tab of a newer schema is ignored; one from an older build (no version) is applied', () => {
+  // Lot 10: a message without a document id (a build before the sync identity) is now ignored, where it was applied: nothing tells which document
+  // its patches address, and a patch must never land on a different document. A tagged message without a version (older schema) is still applied.
+  it('a change broadcast by a tab of a newer schema is ignored; one without a document id is ignored; an untagged-version one is applied', () => {
     const B = createAppStore(makeDefaultDoc()), [ca, cb] = channelPair();
     connectBroadcast(B, cb, 'B');
-    const send = (v: number | undefined, name: string) => ca.postMessage({ tabId: 'A', v, patches: [{ op: 'replace', path: ['common', 'customerName'], value: name }] });
+    const patches = (name: string) => [{ op: 'replace', path: ['common', 'customerName'], value: name }];
+    const send = (v: number | undefined, name: string, tag = true) =>
+      ca.postMessage({ tabId: 'A', v, patches: patches(name), ...(tag ? { kind: 'patch', docId: B.syncId().docId, base: B.syncId().rev, rev: B.syncId().rev + 1 } : {}) });
     send(99, 'Future'); expect(B.getState().doc.customerName).toBe('');
+    send(undefined, 'NoDoc', false); expect(B.getState().doc.customerName).toBe('');
     send(undefined, 'Old'); expect(B.getState().doc.customerName).toBe('Old');
   });
 });

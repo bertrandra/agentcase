@@ -9,10 +9,15 @@ const layers = [
   { type: 'store', pattern: 'src/store/**' },
   { type: 'controllers', pattern: 'src/controllers/**' },
   { type: 'ui', pattern: 'src/ui/**' },
+  // DATA, not code: the help / reference texts (src/content) and the generated dependency graph (src/generated). The UI and the domain read them;
+  // they import nothing. Classified so that no file of src/ is outside a layer (`boundaries/no-unknown-dependencies`).
+  { type: 'content', pattern: 'src/content/**' },
+  { type: 'generated', pattern: 'src/generated/**' },
 ];
 // The entry file is classified as a file (eslint-plugin-boundaries 7: element descriptors match folders, single files are file descriptors).
 const files = [{ pattern: 'src/main.tsx', category: 'entry' }];
 const allow = (from, to) => ({ from: { element: { type: from } }, allow: { to: { element: { type: to } } } });
+const DATA = ['content', 'generated'];
 
 // D1 (readability) — a source line is at most 300 characters, whatever it holds (an error); over 160 is a warning (`max-len` below). A local rule because
 // ESLint's `max-len` takes one limit per configuration. Characters are counted as code points (an emoji is one).
@@ -27,9 +32,49 @@ const local = { rules: { 'hard-max-len': {
       });
     } };
   },
-} } };
+},
+// EDIT BASE (data flow) — `const s = appStore().getState(); s.doc` and `const { doc } = s` read the derived case as surely as `getState().doc`:
+// every variable initialised with a `getState()` call is followed through its references.
+'no-derived-doc': {
+  meta: { type: 'problem', schema: [{ type: 'string' }], messages: { doc: '{{msg}}' } },
+  create(context) {
+    const msg = context.options[0] ?? 'Do not read getState().doc.';
+    const isGetState = (n) => n?.type === 'CallExpression' && ((n.callee.type === 'MemberExpression' && n.callee.property.name === 'getState') || n.callee.name === 'getState');
+    const isDocKey = (p) => (p.type === 'Identifier' && !p.computed) || p.type === 'Literal' ? (p.name ?? p.value) === 'doc' : false;
+    const report = (node) => context.report({ node, messageId: 'doc', data: { msg } });
+    return { VariableDeclarator(node) {
+      if (!isGetState(node.init) || node.id.type !== 'Identifier') return;
+      for (const v of context.sourceCode.getDeclaredVariables(node)) {
+        for (const ref of v.references) {
+          const id = ref.identifier, up = id.parent;
+          if (up?.type === 'MemberExpression' && up.object === id && (up.computed ? up.property.type === 'Literal' && up.property.value === 'doc' : up.property.name === 'doc')) report(up);
+          if (up?.type === 'VariableDeclarator' && up.init === id && up.id.type === 'ObjectPattern' && up.id.properties.some((p) => p.type === 'Property' && isDocKey(p.key))) report(up);
+        }
+      }
+    } };
+  },
+},
+// `import()` escapes `no-restricted-imports`: the same module patterns (as regular expressions) apply to dynamic imports.
+'no-restricted-dynamic-import': {
+  meta: { type: 'problem', schema: [{ type: 'array', items: { type: 'object', properties: { pattern: { type: 'string' }, message: { type: 'string' } } } }], messages: { dyn: '{{msg}}' } },
+  create(context) {
+    const rules = (context.options[0] ?? []).map((r) => ({ re: new RegExp(r.pattern), msg: r.message }));
+    return { ImportExpression(node) {
+      const src = node.source.type === 'Literal' ? node.source.value : node.source.type === 'TemplateLiteral' && !node.source.expressions.length ? node.source.quasis[0].value.cooked : null;
+      const hit = typeof src === 'string' && rules.find((r) => r.re.test(src));
+      if (hit) context.report({ node, messageId: 'dyn', data: { msg: hit.msg } });
+    } };
+  },
+},
+} };
 // Store modules the UI may not import (write path, internals); each is restricted by alias and by any relative path.
-const UI_FORBIDDEN_STORE = ['core', 'commands', 'instance', 'derive', 'history', 'syncDraft', 'persistence', 'persistence/**', 'address', 'address/**'];
+// `portfolioState` (runCommands, deriveDoc, editBaseOf) and `editBase` are controller-side reads of the write path's state.
+const UI_FORBIDDEN_STORE = ['core', 'commands', 'instance', 'derive', 'history', 'syncDraft', 'persistence', 'persistence/**', 'address', 'address/**', 'portfolioState',
+  'editBase'];
+const UI_STORE_MSG = 'UI code must not touch the store directly: read with @/store/hooks, write through @/controllers/*.';
+/** The store modules `mods` (`x/**`: x and below) as one regular expression over an import source (`@/store/x`, `../store/x`), for `import()`. */
+const storeRe = (mods) => `(^|/)store/(${mods.map((m) => m.replace('/**', '(/.*)?')).join('|')})$`;
+const UI_DYNAMIC = [{ pattern: storeRe(UI_FORBIDDEN_STORE), message: UI_STORE_MSG }];
 const EDIT_BASE = 'Controllers never read getState().doc (the active product\'s case): compute in the command\'s run(draft), or use editBase() / activeDoc() from @/store/editBase.';
 
 export default tseslint.config(
@@ -57,13 +102,14 @@ export default tseslint.config(
         'error',
         { selector: "JSXAttribute[name.name='dangerouslySetInnerHTML']", message: 'Never inject raw HTML (XSS surface of the legacy app).' },
       ],
+      'boundaries/no-unknown-dependencies': 'error',
       'boundaries/dependencies': ['error', {
         default: 'disallow',
         policies: [
-          allow('domain', ['domain']),
+          allow('domain', ['domain', ...DATA]),
           allow('store', ['store', 'domain']),
           allow('controllers', ['controllers', 'store', 'domain']),
-          allow('ui', ['ui', 'controllers', 'store', 'domain']),
+          allow('ui', ['ui', 'controllers', 'store', 'domain', ...DATA]),
           { from: { file: { categories: 'entry' } }, allow: [{ to: { element: { type: ['ui', 'store', 'controllers', 'domain'] } } }, { to: { file: { categories: 'entry' } } }] },
         ],
       }],
@@ -96,6 +142,8 @@ export default tseslint.config(
         { selector: "MemberExpression[property.name='doc'][object.type='CallExpression'][object.callee.property.name='getState']", message: EDIT_BASE },
         { selector: "VariableDeclarator[init.callee.property.name='getState'] > ObjectPattern > Property[key.name='doc']", message: EDIT_BASE },
       ],
+      'local/no-derived-doc': ['error', EDIT_BASE],
+      'local/no-restricted-dynamic-import': ['error', [{ pattern: storeRe(['hooks']), message: 'Controllers are not React: read the case with editBase() / activeDoc().' }]],
       // Each rule names the alias and its relative spellings (`../store/hooks`, `../../store/portfolioState`), so a relative path cannot bypass it.
       'no-restricted-imports': ['error', { patterns: [
         { group: ['@/store/hooks', '**/store/hooks'], message: 'Controllers are not React: read the case with editBase() / activeDoc() from @/store/editBase.' },
@@ -109,9 +157,12 @@ export default tseslint.config(
     files: ['src/ui/**/*.{ts,tsx}'],
     rules: {
       'no-restricted-imports': ['error', { patterns: [
-        { group: UI_FORBIDDEN_STORE.flatMap((m) => [`@/store/${m}`, `**/store/${m}`]),
-          message: 'UI code must not touch the store directly: read with @/store/hooks, write through @/controllers/*.' },
+        { group: UI_FORBIDDEN_STORE.flatMap((m) => [`@/store/${m}`, `**/store/${m}`]), message: UI_STORE_MSG },
+        // the simulation modules are read through their hooks; their writable stores are written by the controllers only
+        { group: ['@/store/simulation', '**/store/simulation'], importNames: ['simStore'], message: UI_STORE_MSG },
+        { group: ['@/store/portfolioSimulation', '**/store/portfolioSimulation'], importNames: ['pfSimStore'], message: UI_STORE_MSG },
       ] }],
+      'local/no-restricted-dynamic-import': ['error', UI_DYNAMIC],
     },
   },
 );
