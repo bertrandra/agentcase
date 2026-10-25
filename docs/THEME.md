@@ -43,6 +43,7 @@ A value may refer to another token as `{name}`. In CSS that becomes `var(--ac-na
 |---|---|---|
 | CSS | `var(--ac-<name>)` | `color: var(--ac-text-heading);` |
 | inline style, SVG presentation attribute | the `var()` string | `style={{ color: 'var(--ac-danger-800)' }}`, `fill="var(--ac-neutral-0)"`, `` `var(--ac-${band.tone})` `` |
+| a look of section markup (D5, lot 5b) | a class of `ui/theme/sections-*.css`; a value that is data rides on the element as a local `--dyn-*` custom property (`cssVars()`), a domain colour role as `data-tone` | `.ac-section .ac-dd-gauge-v { color: var(--dyn-dd-tone); }` |
 | chart.js (canvas), colour arithmetic (`textColor`, `${hex}22` alpha suffix, `alpha()`) | `tok('<name>')` of the theme in effect: `const { tok } = useTheme()` in a component, a `tok: Tok` argument in a chart builder | `borderColor: tok('teal-700')` |
 | a palette or a role map | token names (`readonly TokenName[]`, `{ real: 'chart-cat-2', … }`), resolved where they are drawn: `tok(name)`, `list(names)`, `useRoles(map)` | `const COL = useRoles(COL_ROLES)` |
 | domain read-outs (a status band, a scenario hue) | a colour **role**: the token name (`ColourRole`), never a resolved value | `riskBand(score).tone === 'danger-800'` |
