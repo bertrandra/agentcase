@@ -12,8 +12,9 @@ import { ProductStressDetail, SelectionResults, StaleRun } from './AggregatePart
 
 const help = (
   <p>In a Portfolio or a Wave view this section shows the <strong>portfolio Monte Carlo</strong> of the selection: every planned product is simulated as in
-    the single-product Monte Carlo and the net benefits are added draw by draw. Draws, seed and correlation ρ are set below; the same run feeds Portfolio
-    stress and the portfolio verdict. A product on its own keeps its single-product Monte Carlo: choose “Edit this product”.</p>
+    the single-product Monte Carlo, cut at the portfolio horizon like the consolidation, and the net benefits are added draw by draw (the histogram of a
+    Wave is that of its products). Draws, seed and correlation ρ are set below; the same run feeds Portfolio stress and the portfolio verdict. A product
+    on its own keeps its single-product Monte Carlo: choose “Edit this product”.</p>
 );
 
 /**

@@ -28,6 +28,7 @@ export { addWave, renameWave, setWaveStart, setWaveNote, removeWave, reorderWave
 export { buildPortfolioPackages, type PortfolioPackages } from './package';
 export { checkPortfolioStaleness } from './staleness';
 export { portfolioMonteCarlo, pfStressJob, relSpreadOf } from './stress';
+export { cutNet, cutOutcome } from './stressCut';
 export { pfStressFingerprint } from './stressFingerprint';
 export { clampRho, commonShock, idHash, productSeed } from './stressSeed';
 export type { Diversification, PfStress, PfStressJob, PfStressOpts, ProductStress, StressStats, WaveStress } from './stressTypes';

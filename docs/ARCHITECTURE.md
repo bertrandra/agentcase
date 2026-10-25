@@ -482,8 +482,8 @@ The authoritative list is [MIGRATION_PLAN.md §15](MIGRATION_PLAN.md). Architect
 - Out of scope (removed from the spec): the ADVANCED lock and its unlock gestures. Being ported: Gantt keyboard editing. The layout boards and the 📄 Sections tab have a read-only in-page live preview of the menu (`domain/nav/preview.ts`) plus a link to the section, not the legacy iframe.
 - Golden-vs-AME comparison, AME reference capture and per-snapshot Excel export are not ported; Agent Catalog capacity and loop external % cannot be imported (catalogues are immutable).
 - Legacy-only engine `TE-10b` (legacy-mode monthly derivation) fires on 2 supervision fixtures in the legacy and is reproduced only in the verification section.
-- Multi-product, left out on purpose or not yet built: a **portfolio scenarios table** (the six scenarios and the sensitivity stay per product); **shared teams** across products (a person on two products); **per-draw horizon truncation** in the portfolio stress
-  (products are simulated on their own horizon; the portfolio net is the sum, not cut at the calendar horizon); **"apply to all"** for the fields of the Knowledge subset (only "back to common" exists);
+- Multi-product, left out on purpose or not yet built: a **portfolio scenarios table** (the six scenarios and the sensitivity stay per product); **shared teams** across products (a person on two products);
+  **"apply to all"** for the fields of the Knowledge subset (only "back to common" exists);
   rates, model and coefficients per product (common only, D-M3); set-up shared at portfolio level (D-M5, per product); knowledge reuse between products (`reusePct`, D-M11); a full correlation matrix (global `rho` only);
   item-level scope overrides (whole key only, D-M2); portfolio charts as images in the results workbook.
 - Excel cross-version note: a parameters workbook exported by 20.0.0 from a real portfolio carries seven extra sheets that a 19.x build ignores (it reads only the common case); a 19.x workbook imports into 20.0.0 as a case on the active product. An import does not re-fit the automation potential (the workbook states the stored values; the next open re-fits).

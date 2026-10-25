@@ -403,7 +403,6 @@ Delivered: P1-P7 of [SPEC_MULTI_PRODUIT.md](SPEC_MULTI_PRODUIT.md) (decisions D-
 |---|---|
 | Portfolio scenarios table | the six scenarios and the sensitivity stay per product (spec P6 "hors périmètre") |
 | Shared teams across products | the team is strictly per product (spec § 9) |
-| Per-draw horizon truncation in the portfolio stress | each product is simulated on its own horizon; the portfolio draw is the sum (DEV-PF-STRESS) |
 | KnowledgeSubsets "apply to all" | only "back to common" exists for the fields of a knowledge subset |
 | Rates, model, coefficients per product; item-level scope overrides; shared set-up line; knowledge reuse; full correlation matrix | decisions D-M2, D-M3, D-M5, D-M11 and spec § 9: v2 |
 | Excel cross-version | a 20.0.0 portfolio workbook has seven extra sheets that a 19.x build ignores; a 19.x file imports as a case; the import does not re-fit the potential |

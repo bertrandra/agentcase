@@ -6,8 +6,10 @@ import { Results } from './Results';
 
 const help = (
   <>
-    <p>Each product is simulated as in <strong>Monte Carlo</strong> (same uncertain parameters, same net benefit over its horizon), with its own draw: run
-      seed ⊕ product id. The portfolio net benefit, for one draw, is the <strong>sum</strong> of that of the scheduled products; nothing is recomputed here.</p>
+    <p>Each product is simulated as in <strong>Monte Carlo</strong> (same uncertain parameters, same net benefit), with its own draw: run seed ⊕ product id.
+      In every draw a product is placed on the calendar (wave start + offset) and cut at the portfolio horizon, as in the consolidation: a product starting
+      at month 48 of a 60-month portfolio counts 12 months. The portfolio net benefit, for one draw, is the <strong>sum</strong> of that of the scheduled
+      products; a wave’s is the sum of its products.</p>
     <p><strong>ρ</strong> sets the correlation between products: each uncertain input of a product is √ρ · Z + √(1 − ρ) · ε,
     where Z is a shock common to all products and ε the product’s own shock, then mapped back to the same marginal distribution as in the single-product
     simulation. ρ = 0: independent (default); ρ = 1: same shocks, diversification disappears. The distribution of each product does not depend on ρ, only the
