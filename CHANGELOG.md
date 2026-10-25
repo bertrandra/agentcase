@@ -15,6 +15,17 @@ All notable changes to AgentCase, newest first. Product version from v19.0.0 = t
 
 When releasing, follow [docs/BUMP_PROCEDURE.md](docs/BUMP_PROCEDURE.md) (§7 for the legacy file) and add the new version at the top.
 
+## [Unreleased]
+
+### Lot 8 — dev toolchain security
+
+- `npm audit` in `app/` is clean (was 8 dev-only advisories: 2 critical, 1 high, 5 moderate; the shipped HTML was already clean and its
+  production dependency tree is unchanged): Vite 5 → 8, Vitest 2 → 5 (no more tinypool), vite-node 2 → 6 (now a direct dev dependency),
+  @vitejs/plugin-react 4 → 6, vite-plugin-singlefile 2.3.3, eslint-plugin-boundaries 4 → 7.2.1. Same 17,179 tests; the single offline HTML,
+  its CSP, the gzipped ExcelJS payload and `__APP_VERSION__` are unchanged in behaviour.
+- The layer rule is now `boundaries/dependencies` (v7 policies; the entry `src/main.tsx` is a file descriptor): the same allow matrix
+  ui → controllers → store → domain, checked cell by cell against the old configuration.
+
 ## [v20.17.0] 2026-10-25 — Architecture lot 7: portfolio scenarios, wave dependencies and setup capacity, shared teams, stress cut at the horizon, Wave histogram, assignable app sections, palette from logo
 
 ### Lot 7 — dependencies between waves and transformation-team capacity (SPEC_MULTI_PRODUIT F13, was DEV-PF-GAPS)

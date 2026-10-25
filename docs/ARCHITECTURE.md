@@ -20,7 +20,7 @@ AS-IS team × rate card × SDLC/regulatory artefact scope
   → scenarios, Monte Carlo, strategy ranking, decision verdict
 ```
 
-The build is React 18 + strict TypeScript (Vite 5, Vitest 2, Immer 10, Zustand 4, Chart.js 4.4.1, ExcelJS 4.4). `npm run build`
+The build is React 18 + strict TypeScript (Vite 8, Vitest 5, Immer 10, Zustand 4, Chart.js 4.4.1, ExcelJS 4.4). `npm run build`
 produces **one offline HTML file** (`app/dist/index.html`, about 2.7 MB with ExcelJS stored compressed, §9; `vite-plugin-singlefile` inlines script and style). The whole
 case is one JSON document (`Doc`); the UI renders selectors over it and changes it only through commands.
 
@@ -45,7 +45,7 @@ Config: `app/eslint.config.js`. Path alias `@` → `app/src`.
 
 | Rule | Where | Effect |
 |---|---|---|
-| `boundaries/element-types` | all of `src` and `tests` | `domain` → domain; `store` → store, domain; `controllers` → controllers, store, domain; `ui` → ui, controllers, store, domain; `src/main.tsx` (entry) → all. Anything else is an error |
+| `boundaries/dependencies` | all of `src` and `tests` | `domain` → domain; `store` → store, domain; `controllers` → controllers, store, domain; `ui` → ui, controllers, store, domain; `src/main.tsx` (entry) → all. Anything else is an error |
 | `no-restricted-imports` | `src/ui/**` | UI cannot import `@/store/core`, `commands`, `instance`, `derive`, `history`, `syncDraft`, `persistence/**` or `address/**`: it cannot reach `dispatch` or the store instance. Each module is restricted by its alias **and by any relative path** (`**/store/core`: `../store/core`, `../../store/persistence/…`), so a relative import cannot bypass the layering; a UI-local module named `store` (`ui/display/store.ts`) is not affected |
 | `max-lines` 150 | `src` and `tests`, blank lines and comments counted | error; `tests/size.test.ts` repeats the check (JSON/CSS data are exempt, decision D1) |
 | `local/hard-max-len` 300, `max-len` 160 | `src` and `tests` | D1 readability: a line over **300** characters (code points) is an **error** whatever it holds, comments included (a local rule of `eslint.config.js`, since `max-len` takes one limit); over **160** is a **warning** (`max-len`; long string, template and regex literals and URLs are excepted). Long prose in JSX is wrapped (JSX joins the lines with one space, so the rendered text is unchanged), long code is split into constants, helpers or components |

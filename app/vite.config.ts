@@ -4,7 +4,7 @@ import { viteSingleFile } from 'vite-plugin-singlefile';
 import { readFileSync } from 'node:fs';
 import { fileURLToPath } from 'node:url';
 import { gzipSync } from 'node:zlib';
-import { versionTag } from './src/domain/versionTag';
+import { versionTag } from './src/domain/versionTag.ts';
 
 const src = fileURLToPath(new URL('./src', import.meta.url));
 // The single version source: package.json "version" (bump with `npm version X.Y.Z --no-git-tag-version`). It reaches the code as

@@ -68,7 +68,7 @@ describe('architecture pages: pinned facts', () => {
     const bad: string[] = [], seen = new Set<string>();
     for (const page of Object.values(PAGES)) for (const raw of codeStrings(page)) {
       const s = raw.replace(/#.*$/, '').replace(/^@\//, '');
-      if (s.startsWith('.') || s === 'boundaries/element-types' || !/^[\w.\-/]+$/.test(s) || !(s.includes('/') || /\.(ts|tsx|json|mjs|md|js)$/.test(s)) || /^\d/.test(s) || seen.has(s)) continue;
+      if (s.startsWith('.') || s === 'boundaries/dependencies' || !/^[\w.\-/]+$/.test(s) || !(s.includes('/') || /\.(ts|tsx|json|mjs|md|js)$/.test(s)) || /^\d/.test(s) || seen.has(s)) continue;
       seen.add(s);
       if (![join(APP, 'src', s), join(APP, 'src', `${s}.ts`), join(APP, s), join(REPO, s), join(REPO, 'docs', s)].some(existsSync)) bad.push(s);
     }
