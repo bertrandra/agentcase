@@ -12,7 +12,10 @@ const today = (): string => new Date().toISOString().slice(0, 10);
 
 const addCmd = defineCommand<{ coll: Coll; today: string }>({
   type: 'factory.add', label: (p) => `Add to ${p.coll.toLowerCase().replace(/_/g, ' ')}`,
-  run(d, p) { const spec = NEW_RECORD[p.coll], arr = list(d, p.coll); arr.push({ id: nextId(spec.prefix, arr), ...spec.make(d as Record<string, unknown>, p.today) }); },
+  run(d, p) {
+    const spec = NEW_RECORD[p.coll], arr = list(d, p.coll);
+    arr.push({ id: nextId(spec.prefix, arr), ...spec.make(d as Record<string, unknown>, p.today) });
+  },
 });
 const setCmd = defineCommand<{ coll: Coll; id: string; field: string; value: unknown }>({
   type: 'factory.set', label: (p) => `Set ${p.field} of ${p.id}`, coalesceKey: (p) => `factory.set:${p.coll}:${p.id}:${p.field}`,
@@ -27,9 +30,16 @@ const removeCmd = defineCommand<{ coll: Coll; id: string }>({
       if (r.mode === 'delete') (d as Record<string, unknown>)[r.coll] = list(d, r.coll).filter((x) => x[r.field] !== p.id);
       else list(d, r.coll).forEach((x) => { if (x[r.field] === p.id) x[r.field] = null; });
     }
-    if (p.coll === 'FEATURES') list<PhaseFeatures>(d, 'fmPhaseFeatures').forEach((ph) => { if (ph.featureIds) ph.featureIds = ph.featureIds.filter((x) => x !== p.id); });
-    if (p.coll === 'STORIES') [...list<ArtefactTag>(d, 'fmArtefactTags'), ...list<ArtefactTag>(d, 'fmRegArtefactTags')].forEach((t) => { if (t.storyId === p.id) t.storyId = null; });
-    if (p.coll === 'BUILD_ARTIFACTS') { const ip = (d as Record<string, unknown>).INTEGRATED_PRODUCT as IntegratedProduct; ip.buildArtifactIds = (ip.buildArtifactIds || []).filter((x) => x !== p.id); }
+    if (p.coll === 'FEATURES') list<PhaseFeatures>(d, 'fmPhaseFeatures').forEach((ph) => {
+      if (ph.featureIds) ph.featureIds = ph.featureIds.filter((x) => x !== p.id);
+    });
+    if (p.coll === 'STORIES') [...list<ArtefactTag>(d, 'fmArtefactTags'), ...list<ArtefactTag>(d, 'fmRegArtefactTags')].forEach((t) => {
+      if (t.storyId === p.id) t.storyId = null;
+    });
+    if (p.coll === 'BUILD_ARTIFACTS') {
+      const ip = (d as Record<string, unknown>).INTEGRATED_PRODUCT as IntegratedProduct;
+      ip.buildArtifactIds = (ip.buildArtifactIds || []).filter((x) => x !== p.id);
+    }
   },
 });
 const phaseCmd = defineCommand<{ featureId: string; phaseId: string; on: boolean }>({
@@ -53,4 +63,5 @@ export const addRecord = (coll: Coll): void => appStore().dispatch(addCmd({ coll
 export const setField = (coll: Coll, id: string, field: string, value: unknown): void => appStore().dispatch(setCmd({ coll, id, field, value }));
 export const removeRecord = (coll: Coll, id: string): void => appStore().dispatch(removeCmd({ coll, id }));
 export const togglePhaseFeature = (featureId: string, phaseId: string, on: boolean): void => appStore().dispatch(phaseCmd({ featureId, phaseId, on }));
-export const toggleStoryArtefact = (storyId: string, artId: string, isReg: boolean, on: boolean): void => appStore().dispatch(taskCmd({ storyId, artId, isReg, on }));
+export const toggleStoryArtefact = (storyId: string, artId: string, isReg: boolean,
+  on: boolean): void => appStore().dispatch(taskCmd({ storyId, artId, isReg, on }));

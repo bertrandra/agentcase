@@ -11,8 +11,10 @@ import { CmTable } from './CmTable';
 
 const help = (
   <>
-    <p>Decides how the value created is sold, and therefore how it splits between client and supplier. Same delivery, four commercial framings: Effort &amp; Tools, AI-Augmented Humans, Agentshore (capacity tiers T0/T1/T2) and Gain sharing.</p>
-    <p>Every model is shown from both sides (client price, supplier margin). Availability follows the engagement context: gain sharing needs full control (MSC), Agentshore needs a managed service.</p>
+    <p>Decides how the value created is sold, and therefore how it splits between client and supplier. Same delivery, four commercial framings: Effort &amp;
+      Tools, AI-Augmented Humans, Agentshore (capacity tiers T0/T1/T2) and Gain sharing.</p>
+    <p>Every model is shown from both sides (client price, supplier margin). Availability follows the engagement context: gain sharing needs full control
+      (MSC), Agentshore needs a managed service.</p>
   </>
 );
 
@@ -37,8 +39,10 @@ export default function CommercialSection() {
       result={<>
         <CmTable v={v} sel={sel} />
         <CmDetail v={v} sel={sel} />
-        <Callout><strong>Recommended for this case:</strong> {CM_DEFS[rec[0]].label} — {rec[1]}. <span className="ac-muted">(rule: STA→AAH · MSI→AGS if vFTE share at horizon end &gt; 15% else ET · MSC→GS if MC confidence ≥ 70% else AGS)</span></Callout>
-        <p className="ac-muted">Absorbed (non-billable) setup under {k}: {fmtK(v.absorbed)} — excluded from the margin above, carried as investment (CC-CTX-03).</p>
+        <Callout><strong>Recommended for this case:</strong> {CM_DEFS[rec[0]].label} — {rec[1]}. <span
+          className="ac-muted">(rule: STA→AAH · MSI→AGS if vFTE share at horizon end &gt; 15% else ET · MSC→GS if MC confidence ≥ 70% else AGS)</span></Callout>
+        <p className="ac-muted">Absorbed (non-billable) setup under {k}: {fmtK(v.absorbed)} — excluded from the margin above, carried as investment
+          (CC-CTX-03).</p>
       </>} />
   );
 }

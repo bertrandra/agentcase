@@ -40,7 +40,7 @@ function Frame() {
       <TopZone />
       <KpiZone />
       {!collapsed && <NavZone />}
-      <div className="ac-workcol" style={{ gridArea: 'work' }}>
+      <div className="ac-workcol">
         <ThemeLinkNotice />
         <GroupNavBar />
         <WizardBar />

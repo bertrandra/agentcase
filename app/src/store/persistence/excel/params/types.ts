@@ -21,7 +21,8 @@ export type Sheets = Map<string, Rows>;
 
 export interface StrategyDef {
   id: string; icon?: string; label?: string; desc?: string;
-  levers?: { auto?: number | null; y1?: number | null; y2?: number | null; y3?: number | null; ceiling?: number | null; setupF?: number | null; runF?: number | null };
+  levers?: { auto?: number | null; y1?: number | null; y2?: number | null; y3?: number | null; ceiling?: number | null; setupF?: number | null;
+    runF?: number | null };
   declared?: { risk?: number; agility?: number }; locSplit?: null | 'ASIS' | Record<string, number>;
 }
 export interface SectionGroupEntry { id: string; group: string; groupSeq: number; tag?: string; mvp?: boolean }

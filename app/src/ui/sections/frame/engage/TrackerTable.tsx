@@ -13,10 +13,9 @@ const str = (v: number | null | undefined) => (v == null ? '' : String(v));
 /** One row per quarter of the horizon: the plan next to the actuals the user records. */
 export function TrackerTable({ plan, actuals }: { plan: PlannedQuarter[]; actuals: Actuals }) {
   const key = (i: number) => 'q' + (i + 1), act = (i: number) => actuals[key(i)];
-  // shared widget: CommitNumber (ui/widgets) takes a style, not a class — the column width
   const input = (field: keyof TrackActual, name: string, width: number, step: number) => (r: PlannedQuarter, i: number) => (
     <CommitNumber value={str(act(i)?.[field])} label={`${name} actual ${r.label}`} placeholder="—" min={0} step={step} onCommit={commit(key(i), field)}
-      style={{ width }} />
+      className={width === 100 ? 'ac-num-w100' : 'ac-num-w70'} />
   );
   const columns: Column<PlannedQuarter>[] = [
     { key: 'q', header: 'Quarter', render: (r) => <strong>{r.label}</strong> },

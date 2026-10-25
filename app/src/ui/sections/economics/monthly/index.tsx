@@ -12,10 +12,12 @@ import { useEconomics } from '../useEconomics';
 const help = (
   <>
     <p>The month-by-month trajectory showing how the ramp translates into cost, saving and cumulative cash-flow, including the break-even point.</p>
-    <p>Net(m) = (Baseline/12 − run costs) − setup spread(m); Cumulative(m) = Σ Net up to month m. Months with setup spend carry it in the Setup column, so early cumulative is negative.</p>
+    <p>Net(m) = (Baseline/12 − run costs) − setup spread(m); Cumulative(m) = Σ Net up to month m. Months with setup spend carry it in the Setup column, so
+      early cumulative is negative.</p>
   </>
 );
-const sign = (x: number) => ({ color: x >= 0 ? 'var(--ac-teal-725)' : 'var(--ac-warning-595)' });
+/** The sign of a cash figure (`data-sign` of `.ac-cash`: teal when positive, amber when negative). */
+const sign = (x: number): 'pos' | 'neg' => (x >= 0 ? 'pos' : 'neg');
 
 /** Monthly detail — one row per month of the horizon, chart decimated for long horizons. */
 export default function MonthlySection() {
@@ -37,8 +39,8 @@ export default function MonthlySection() {
           { key: 'k', header: 'Tokens', align: 'right', render: (r) => fmtE(r.tokenCost) },
           { key: 's', header: 'Setup', align: 'right', render: (r) => (r.setupSpend > 0 ? fmtE(r.setupSpend) : '—') },
           { key: 'tot', header: 'Total cost', align: 'right', render: (r) => fmtE(r.total) },
-          { key: 'sv', header: 'Saving', align: 'right', render: (r) => <span style={sign(r.sav)}>{fmtE(r.sav)}</span> },
-          { key: 'c', header: 'Cumulative', align: 'right', render: (r) => <b style={sign(r.cum)}>{fmtE(r.cum)}</b> },
+          { key: 'sv', header: 'Saving', align: 'right', render: (r) => <span className="ac-cash" data-sign={sign(r.sav)}>{fmtE(r.sav)}</span> },
+          { key: 'c', header: 'Cumulative', align: 'right', render: (r) => <b className="ac-cash" data-sign={sign(r.cum)}>{fmtE(r.cum)}</b> },
         ]} />
       </>} />
   );

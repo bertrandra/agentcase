@@ -14,7 +14,10 @@ import { freshStore } from '../store/helpers';
 beforeEach(() => { freshStore(); uiStore.setState({ activeSection: 'home', toast: '', dockOpen: false }); });
 afterEach(cleanup);
 /** The default persona opens with the sidebar hidden (its "hide menu" flag): bring the full menu back, as the user does with the ☰ toggle of the top bar. */
-const openMenu = () => { const b = screen.queryByRole('button', { name: 'Toggle the sidebar menu' }); if (b?.getAttribute('aria-pressed') === 'false') fireEvent.click(b); };
+const openMenu = () => {
+  const b = screen.queryByRole('button', { name: 'Toggle the sidebar menu' });
+  if (b?.getAttribute('aria-pressed') === 'false') fireEvent.click(b);
+};
 const kpi = (label: string) => screen.getByText(label).parentElement!.querySelector('.ac-kpi-v')!.textContent;
 
 describe('shell zones', () => {
@@ -34,7 +37,8 @@ describe('shell zones', () => {
     const nav = screen.getByRole('navigation', { name: 'Sections' }), items = () => nav.querySelectorAll('[data-section]');
     expect(items()).toHaveLength(visibleSections('builder').length + 1);   // + 🎨 Brand & theme, an app section the navigation adds to Builder
     act(() => { fireEvent.change(screen.getByLabelText('Persona'), { target: { value: 'advanced' } }); });
-    expect(items()).toHaveLength(LEGACY_SECTIONS.length + APP_SECTIONS.length);   // one product: the 5 Portfolio sections are not in the menu (84 in the catalogue)
+    // one product: the 5 Portfolio sections are not in the menu (84 in the catalogue)
+    expect(items()).toHaveLength(LEGACY_SECTIONS.length + APP_SECTIONS.length);
     expect(within(nav).getAllByRole('heading').length).toBeGreaterThan(8);
   });
   it('persona changes are not undoable; navigation opens the section placeholder', async () => {
@@ -44,7 +48,8 @@ describe('shell zones', () => {
     openMenu();
     act(() => openGroup('scope'));
     fireEvent.click(screen.getByRole('button', { name: /^🎯 Scope$/ }));
-    expect((await screen.findByRole('heading', { level: 1, name: 'Scope — target artifact selection' }, { timeout: 8000 }))).toBeTruthy();   // migrated section (lazy)
+    // migrated section (lazy)
+    expect((await screen.findByRole('heading', { level: 1, name: 'Scope — target artifact selection' }, { timeout: 8000 }))).toBeTruthy();
     act(() => openGroup('frame'));
     fireEvent.click(within(screen.getByRole('navigation', { name: 'Sections' })).getByRole('button', { name: /Welcome/ }));
     expect(screen.getByRole('main').querySelector('h1')!.textContent).toMatch(/Welcome/);   // placeholder for a section not migrated yet
@@ -63,7 +68,8 @@ describe('shell zones', () => {
 describe('undo / redo in the UI', () => {
   it('buttons, keyboard and toast', () => {
     render(<App />);
-    const undoBtn = screen.getByRole('button', { name: 'Undo' }) as HTMLButtonElement, redoBtn = screen.getByRole('button', { name: 'Redo' }) as HTMLButtonElement;
+    const undoBtn = screen.getByRole('button', { name: 'Undo' }) as HTMLButtonElement,
+      redoBtn = screen.getByRole('button', { name: 'Redo' }) as HTMLButtonElement;
     expect(undoBtn.disabled).toBe(true);
     act(() => setAgentSup('A017', 100));
     expect(undoBtn.disabled).toBe(false);

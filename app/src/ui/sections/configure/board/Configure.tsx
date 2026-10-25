@@ -9,7 +9,7 @@ export function Configure({ section }: { section: DynSection }) {
     <section aria-label={`Configure ${section.title}`}>
       <h3>⚙️ Configure — {section.title}</h3>
       <h4>Description</h4>
-      <textarea rows={2} style={{ width: '100%' }} aria-label={`Description of ${section.title}`} placeholder="Shown under the section title on its own tab" value={section.description ?? ''} onChange={(e) => setDescription(section.id, e.target.value)} />
+      <textarea rows={2} className="ac-wide" aria-label={`Description of ${section.title}`} placeholder="Shown under the section title on its own tab" value={section.description ?? ''} onChange={(e) => setDescription(section.id, e.target.value)} />
       <CardsEditor section={section} />
       <RowsEditor section={section} />
     </section>

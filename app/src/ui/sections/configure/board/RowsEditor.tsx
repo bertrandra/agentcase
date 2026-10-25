@@ -15,7 +15,7 @@ export function RowsEditor({ section }: { section: DynSection }) {
       {order.map((r, i) => r.id && (
         <tr key={r.id}>
           <td>
-            <input type="number" aria-label={`Order of ${r.id}`} style={{ width: 56 }} value={r.seq || 0} onChange={(e) => setRowSeq(id, r.id!, parseFloat(e.target.value))} />{' '}
+            <input type="number" aria-label={`Order of ${r.id}`} className="ac-seq-input" value={r.seq || 0} onChange={(e) => setRowSeq(id, r.id!, parseFloat(e.target.value))} />{' '}
             <button type="button" className="ac-btn" aria-label={`Move ${r.id} up`} disabled={i === 0} onClick={() => moveBodyRow(id, r.id!, -1)}>▲</button>
             <button type="button" className="ac-btn" aria-label={`Move ${r.id} down`} disabled={i === order.length - 1} onClick={() => moveBodyRow(id, r.id!, 1)}>▼</button>
           </td>

@@ -52,7 +52,10 @@ export function fitCurve(points: CurvePoint[], family: string): CurveFn {
   };
   let bestC = Math.min(100, Math.max(amax + 1, amax / 0.85)), bestR = Infinity;
   for (let C = amax + 0.5; C <= 100.0001; C += 0.5) { const r = lin(C); if (r && r.res < bestR) { bestR = r.res; bestC = C; } }
-  for (let C = Math.max(amax + 0.2, bestC - 0.5); C <= Math.min(100, bestC + 0.5); C += 0.05) { const r = lin(C); if (r && r.res < bestR) { bestR = r.res; bestC = C; } }
+  for (let C = Math.max(amax + 0.2, bestC - 0.5); C <= Math.min(100, bestC + 0.5); C += 0.05) {
+    const r = lin(C);
+    if (r && r.res < bestR) { bestR = r.res; bestC = C; }
+  }
   const L = lin(bestC) ?? { slope: -0.15, ic: 2 };
   let k = -L.slope;
   if (!(k > 0.0005)) k = 0.01;
@@ -73,7 +76,8 @@ export function curveOf(family: string, pts: CurvePoint[]): CurveFn {
 /** Y1/Y2/Y3 anchors: the curve sampled at months 12/24/36, rounded and clamped to the slider bounds (legacy scCommit). */
 export function sampleRamps(family: string, pts: CurvePoint[]): [number, number, number] {
   const f = curveOf(family, pts);
-  return SAMPLE_MONTHS.map((m, i) => { const [lo, hi] = RAMP_LIMITS[i] as readonly [number, number]; return Math.round(Math.max(lo, Math.min(hi, f(m)))); }) as [number, number, number];
+  return SAMPLE_MONTHS.map((m, i) => { const [lo, hi] = RAMP_LIMITS[i] as readonly [number, number]; return Math.round(Math.max(lo, Math.min(hi, f(m))));
+    }) as [number, number, number];
 }
 
 /** Insert a point in the middle of the widest gap, on the curve (legacy scAddPoint). Unchanged when already at the maximum. */

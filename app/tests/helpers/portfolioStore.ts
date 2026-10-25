@@ -14,7 +14,10 @@ export function threeProducts(now: () => number = () => 0): Three {
   s.setHistory(EMPTY_HISTORY);   // the set-up is the starting point, not an undo step
   return { s, ids: [a, b, c], waves: [w1, w2] };
 }
-/** The portfolio without its view fields, serialised with sorted keys: undo / redo replays Immer patches, which can re-add an object key at the end, so key order is not part of the state. */
+/**
+ * The portfolio without its view fields, serialised with sorted keys: undo / redo replays Immer patches, which can re-add an object key at the end,
+ * so key order is not part of the state.
+ */
 export const docOnly = (s: AppStore): string => {
   const { activeProductId: _a, editScope: _e, displayScope: _d, ...rest } = s.getState().portfolio as unknown as Record<string, unknown>;
   void _a; void _e; void _d;

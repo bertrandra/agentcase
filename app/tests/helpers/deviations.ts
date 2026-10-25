@@ -43,7 +43,10 @@ export function legacyNames(v: unknown): unknown {
   return v;
 }
 
-/** DEV-ANCHOR-CLAMP: the legacy registry interpolated velocity / lead time without the clamp to [as-is, target] (and with fixed 35/59, 21/1); v19 uses the case's anchor. */
+/**
+ * DEV-ANCHOR-CLAMP: the legacy registry interpolated velocity / lead time without the clamp to [as-is, target] (and with fixed 35/59, 21/1); v19 uses
+ * the case's anchor.
+ */
 export function anchored(asis: number, target: number, rel: number): number {
   const v = asis + (target - asis) * rel;
   return target >= asis ? Math.min(v, target) : Math.max(v, target);

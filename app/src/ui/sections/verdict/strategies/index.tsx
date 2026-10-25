@@ -7,9 +7,9 @@ import { Comparison } from './Comparison';
 import { EditorRow } from './EditorRow';
 
 const help = (
-  <p>Seven delivery strategies (T&amp;M · Skill center · Service center · Hybrid · Agentic Organization · Offshore · Nearshore) evaluated on the same calculation core and the same invariants —
-    current product status &amp; posture, phase/artefact scope, team, rate card, tokens and horizon. Only the transformation levers differ. The comparison answers: for THIS product, THIS scope,
-    THIS status — which delivery strategy?</p>
+  <p>Seven delivery strategies (T&amp;M · Skill center · Service center · Hybrid · Agentic Organization · Offshore · Nearshore) evaluated on the same
+    calculation core and the same invariants — current product status &amp; posture, phase/artefact scope, team, rate card, tokens and horizon. Only the
+    transformation levers differ. The comparison answers: for THIS product, THIS scope, THIS status — which delivery strategy?</p>
 );
 const HEAD = ['Strategy', 'Auto %', 'Y1', 'Y2', 'Y3', 'Ceiling %', 'Setup ×', 'Run ×', 'Risk', 'Agility', 'TO-BE geo split'];
 

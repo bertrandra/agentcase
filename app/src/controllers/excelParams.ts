@@ -3,7 +3,8 @@ import { defineCommand, definePortfolioCommand } from '@/store/commands';
 import { activeDoc, editBase } from '@/store/editBase';
 import { appStore } from '@/store/instance';
 import { applyParamsPatch } from '@/store/persistence/excel/params/apply';
-import { interpretParams, LIMITS, loadParamsSheets, paramsFileName, paramsWorkbookBytes, ParamsImportError, personaConfigJson, workbookBytes, type ParamsEnv, type ParamsScope } from '@/store/persistence/excel/params';
+import { interpretParams, LIMITS, loadParamsSheets, paramsFileName, paramsWorkbookBytes, ParamsImportError, personaConfigJson, workbookBytes, type ParamsEnv,
+  type ParamsScope } from '@/store/persistence/excel/params';
 import { buildPortfolioParamsWorkbook, interpretPortfolioParams, isPortfolioWorkbook } from '@/store/persistence/excel/portfolio';
 import { keepTabView, withSavedPersona } from '@/store/persona';
 import { hasPortfolioContent } from '@/store/persistence/portfolioSnapshot';
@@ -40,10 +41,12 @@ export interface ParamsExport { filename: string; blob: Blob; companion?: { file
  */
 export async function exportParamsWorkbook(scope: ParamsScope, env: ParamsEnv, now: Date = new Date()): Promise<ParamsExport> {
   const portfolio = appStore().getState().portfolio, doc = activeDoc(), print = exportTheme();
-  const bytes = hasPortfolioContent(portfolio) ? await workbookBytes(await buildPortfolioParamsWorkbook(portfolio, scope, env, print)) : await paramsWorkbookBytes(doc, scope, env, print);
+  const bytes = hasPortfolioContent(portfolio) ? await workbookBytes(await buildPortfolioParamsWorkbook(portfolio, scope, env,
+    print)) : await paramsWorkbookBytes(doc, scope, env, print);
   const out: ParamsExport = { filename: paramsFileName(scope, now), blob: new Blob([bytes], { type: XLSX }) };
   // the JSON copy names this tab's persona (`currentPersona`), like the legacy
-  if (scope === 'persona-only') out.companion = { filename: paramsFileName(scope, now, 'json'), blob: new Blob([personaConfigJson(withSavedPersona(doc, portfolio.persona), now)], { type: 'application/json' }) };
+  if (scope === 'persona-only') out.companion = { filename: paramsFileName(scope, now, 'json'),
+    blob: new Blob([personaConfigJson(withSavedPersona(doc, portfolio.persona), now)], { type: 'application/json' }) };
   return out;
 }
 
@@ -55,7 +58,9 @@ export interface ParamsFile { name: string; size?: number; arrayBuffer(): Promis
  * foreign file throws `ParamsImportError` and the case is untouched. A good file becomes one undoable step labelled "Import parameters".
  */
 export async function importParamsWorkbook(file: ParamsFile, env: ParamsEnv): Promise<ParamsImportResult> {
-  if (typeof file.size === 'number' && file.size > LIMITS.fileBytes) throw new ParamsImportError(`File too large (${Math.round(file.size / 1024 / 1024)} MB, limit ${LIMITS.fileBytes / 1024 / 1024} MB)`);
+  if (typeof file.size === 'number'
+    && file.size > LIMITS.fileBytes) throw new
+    ParamsImportError(`File too large (${Math.round(file.size / 1024 / 1024)} MB, limit ${LIMITS.fileBytes / 1024 / 1024} MB)`);
   const sheets = await loadParamsSheets(await file.arrayBuffer());
   if (isPortfolioWorkbook(sheets)) {
     const { next, notes } = interpretPortfolioParams(sheets, appStore().getState().portfolio, env);   // validates everything; throws before any write

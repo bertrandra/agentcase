@@ -9,7 +9,8 @@ import { selectionView } from './selectionView';
 import type { Portfolio } from './types';
 
 /** The strategy a product's own comparison ranks first (weighted score), with the figures it computes for it. */
-export interface StrategyPick { strategyId: string; icon: string; label: string; score: number; roi: number | null; tco: number; net: number; setup: number; payback: number | null }
+export interface StrategyPick { strategyId: string; icon: string; label: string; score: number; roi: number | null; tco: number; net: number; setup: number;
+  payback: number | null }
 export interface StrategyRow extends StrategyPick { id: string; name: string; wave: string }
 export interface StrategyAgg {
   label: string;
@@ -22,7 +23,10 @@ export interface StrategyAgg {
 }
 
 const cache = new WeakMap<ProductRun, StrategyPick | null>();
-/** The recommended strategy of a product: `evaluateStrategies` then `stratNormalize` with the product's own strategy definitions and weights (the section's ranking). */
+/**
+ * The recommended strategy of a product: `evaluateStrategies` then `stratNormalize` with the product's own strategy definitions and weights (the
+ * section's ranking).
+ */
 export function pickStrategy(r: ProductRun): StrategyPick | null {
   if (cache.has(r)) return cache.get(r) ?? null;
   const s = r.ctx.s, top = stratNormalize(evaluateStrategies(r.ctx, strategyDefsOf(s)), stratWeightsOf(s))[0];
@@ -40,6 +44,8 @@ export function aggregateStrategies(pf: Portfolio, c: Consolidated, scope: Displ
     return p ? [{ ...p, id: v.id, name: v.name, wave: pf.waves.find((w) => w.id === v.waveId)?.name ?? '' }] : [];
   });
   const net = total(rows.map((r) => r.net)), setup = total(rows.map((r) => r.setup)), ids = [...new Set(rows.map((r) => r.strategyId))];
-  const mix = ids.map((id) => ({ id, label: rows.find((r) => r.strategyId === id)?.label ?? id, count: rows.filter((r) => r.strategyId === id).length })).sort((a, b) => b.count - a.count);
-  return { label: sel.label, rows, mix, totals: { tco: total(rows.map((r) => r.tco)), net, setup, roi: roiCanonical(net, setup) }, excluded: selectionView(pf, c, scope)?.excluded ?? [] };
+  const mix = ids.map((id) => ({ id, label: rows.find((r) => r.strategyId === id)?.label ?? id,
+    count: rows.filter((r) => r.strategyId === id).length })).sort((a, b) => b.count - a.count);
+  return { label: sel.label, rows, mix, totals: { tco: total(rows.map((r) => r.tco)), net, setup, roi: roiCanonical(net, setup) },
+    excluded: selectionView(pf, c, scope)?.excluded ?? [] };
 }

@@ -64,7 +64,8 @@ export function knowledgeRow(pf: Portfolio, productId: string): KnowledgeRow {
   const cs = resolveProduct(pf, productId), ctx = ctxOf(cs), run = runOf(cs), hv = hubOf(ctx), K = run.engine.K;
   return {
     productId, name: prod.name, waveId: prod.waveId, prepMonth: s ? s.month0 - (run.ktSetup > 0 ? s.lead : 0) + 1 : null,
-    lead: ktLead(prod.knowledge), usesHub: hv.on, locked: hv.locked, capped: hv.clamped, asisCC: hv.asisCC, targetCC: hv.target, mult: hv.on ? (CC_MULT[hv.target] as number) : 1,
+    lead: ktLead(prod.knowledge), usesHub: hv.on, locked: hv.locked, capped: hv.clamped, asisCC: hv.asisCC, targetCC: hv.target,
+    mult: hv.on ? (CC_MULT[hv.target] as number) : 1,
     domains: prod.knowledge.domains ?? [], setup: khSetupCost(ctx), annual: khRunAnnual(ctx, K.dayRateTarget, K.wdMonth * 12),
     ktDays: hv.on ? run.baseEtp * 0.2 * 15 * (KT_RED[Math.max(0, Math.min(4, hv.target))] || 0) : 0, ktAvoided: hv.kt, hubDeltaSav: hv.dSav,
   };
@@ -75,7 +76,8 @@ export type KnowledgeTotals = KnowledgeTable['totals'];
 /** Sum of the additive columns of some rows (the whole table, or a wave filter of it). */
 export function knowledgeTotals(rows: KnowledgeRow[]): KnowledgeTotals {
   const sum = (f: (r: KnowledgeRow) => number) => rows.reduce((a, r) => a + f(r), 0);
-  return { setup: sum((r) => r.setup), annual: sum((r) => r.annual), ktDays: sum((r) => r.ktDays), ktAvoided: sum((r) => r.ktAvoided), hubDeltaSav: sum((r) => r.hubDeltaSav) };
+  return { setup: sum((r) => r.setup), annual: sum((r) => r.annual), ktDays: sum((r) => r.ktDays), ktAvoided: sum((r) => r.ktAvoided),
+    hubDeltaSav: sum((r) => r.hubDeltaSav) };
 }
 
 export function knowledgeTable(pf: Portfolio): KnowledgeTable {

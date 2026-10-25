@@ -35,7 +35,10 @@ function checkType(t: Tab, l: Line, ref: string, v: unknown): void {
   if (!ok) fail(t.name, l.n, `the value of "${ref}" has the wrong type`);
 }
 
-/** Overrides sheet: product, key, part, JSON. The key must be on the whitelist (horizon, discountRate, khInfraMonthly, RATE, MODEL, COEF and prototype keys are refused), the JSON valid and of the key's type. */
+/**
+ * Overrides sheet: product, key, part, JSON. The key must be on the whitelist (horizon, discountRate, khInfraMonthly, RATE, MODEL, COEF and prototype
+ * keys are refused), the JSON valid and of the key's type.
+ */
 export function readOverrides(sheets: Sheets, ids: ReadonlySet<string>): { productId: string; ref: string; value: unknown }[] {
   const t = tab(sheets, PF_SHEETS.overrides);
   if (!t) return [];

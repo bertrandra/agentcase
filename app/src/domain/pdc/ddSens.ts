@@ -17,7 +17,9 @@ const endSavings = (s: CaseState): number => { const ys = engineNow(makeCtx(s)).
 
 /** Content hash of everything the measurement depends on, so a stale measurement is recognised after any edit. */
 export function ddFingerprint(c: Ctx): string {
-  const s = c.s as unknown as Record<string, unknown>, src = JSON.stringify([s.dom, [...(c.a.selected)].sort(), [...(c.a.selectedReg)].sort(), s.artefactsEdited, s.QUALITY, s.DORA_ANCHORS, s.THROUGHPUT_ANCHORS, s.COEF, s.engageCoef, s.statusLifecycle]);
+  const s = c.s as unknown as Record<string, unknown>,
+    src = JSON.stringify([s.dom, [...(c.a.selected)].sort(), [...(c.a.selectedReg)].sort(), s.artefactsEdited, s.QUALITY, s.DORA_ANCHORS,
+      s.THROUGHPUT_ANCHORS, s.COEF, s.engageCoef, s.statusLifecycle]);
   let h = 2166136261;
   for (let i = 0; i < src.length; i++) { h ^= src.charCodeAt(i); h = Math.imul(h, 16777619); }
   return (h >>> 0).toString(36);
@@ -49,8 +51,10 @@ export function computeDdSensitivity(c: Ctx, now: () => string = () => new Date(
   const vb = parseFloat(s.dom.values.vtaxBase as string);
   w['cf-vtax-base'] = delta(withValue('vtaxBase', String((isNaN(vb) ? 0.3 : vb) * (1 + DD_PERTURB))));
   const row = table[key];
-  w['cf-khmult'] = w['cf-autoposture'] = row ? delta({ ...s, engageCoef: { ...table, [key]: { ...row, glassFactor: row.glassFactor * (1 + DD_PERTURB) } } }) : 0;
-  w['cf-ceiling'] = s.forceGlassCeiling ? 0 : delta({ ...withValue('glassCeiling', String(computeGlassCeiling(c) * (1 + DD_PERTURB))), forceGlassCeiling: true });
+  w['cf-khmult'] = w['cf-autoposture'] = row ? delta({ ...s, engageCoef: { ...table, [key]: { ...row, glassFactor: row.glassFactor * (1 + DD_PERTURB) } } })
+    : 0;
+  w['cf-ceiling'] = s.forceGlassCeiling ? 0 : delta({ ...withValue('glassCeiling', String(computeGlassCeiling(c) * (1 + DD_PERTURB))),
+    forceGlassCeiling: true });
   const d = s as unknown as { DORA_ANCHORS?: { id: string }[]; THROUGHPUT_ANCHORS?: { id: string }[]; QUALITY?: unknown[] };
   for (const a of [...(d.DORA_ANCHORS ?? []), ...(d.THROUGHPUT_ANCHORS ?? [])]) w[`an-${a.id}`] = 0;      // display path only: no euro path by construction
   (d.QUALITY ?? []).forEach((_, i) => { w[`an-q${i}`] = 0; });

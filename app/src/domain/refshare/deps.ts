@@ -43,7 +43,8 @@ export const tagMismatch = (deps: DepEdges, s: DepSection): string =>
   String(s.tag ?? '').includes('drives') && outDegree(deps, s.id) === 0 ? 'tagged drives but has no outgoing edge' : '';
 
 /** Integrity pass: drop every edge whose source or target is no longer a live section (legacy pruneSectionDeps). */
-export function pruneDeps(deps: DepEdges, desc: Record<string, string>, sections: DepSection[]): { deps: DepEdges; desc: Record<string, string>; dropped: string[] } {
+export function pruneDeps(deps: DepEdges, desc: Record<string, string>, sections: DepSection[]): { deps: DepEdges; desc: Record<string, string>;
+  dropped: string[] } {
   const live = new Set(sections.map((s) => s.id)), dropped: string[] = [], nd: DepEdges = {}, ndesc = { ...desc };
   for (const src of Object.keys(deps)) {
     if (!live.has(src)) { dropped.push(`${src} (source)`); delete ndesc[src]; continue; }
@@ -54,7 +55,8 @@ export function pruneDeps(deps: DepEdges, desc: Record<string, string>, sections
 }
 
 export interface Lane { id: string; label: string; ids: string[] }
-export interface GraphLayout { width: number; height: number; lanes: Lane[]; pos: Record<string, { x: number; y: number }>; nodeW: number; nodeH: number; colW: number }
+export interface GraphLayout { width: number; height: number; lanes: Lane[]; pos: Record<string, { x: number; y: number }>; nodeW: number; nodeH: number;
+  colW: number }
 
 /** Staged-flow layout of the graph: one lane per menu group (in group order), participating nodes stacked and centred in their lane. */
 export function graphLayout(deps: DepEdges, sections: DepSection[], groups: DepGroup[]): GraphLayout {

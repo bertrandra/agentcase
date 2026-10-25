@@ -27,7 +27,16 @@ function legacyMonth(t: number, K: K) {
 function legacyYear(K: K, y: number) {
   const first = (y - 1) * 12 + 1, last = Math.min(y * 12, K.horizonMonths);
   const acc = { savings: 0, team: 0, token: 0, run: 0, human: 0, agent: 0, ramp: 0 };
-  for (let t = first; t <= last; t++) { const r = legacyMonth(t, K); acc.savings += r.gross; acc.team += r.team; acc.token += r.token; acc.run += r.run; acc.human = r.human; acc.agent = r.agent; acc.ramp = r.ramp; }
+  for (let t = first; t <= last; t++) {
+    const r = legacyMonth(t, K);
+    acc.savings += r.gross;
+    acc.team += r.team;
+    acc.token += r.token;
+    acc.run += r.run;
+    acc.human = r.human;
+    acc.agent = r.agent;
+    acc.ramp = r.ramp;
+  }
   return acc;
 }
 const legacyK = (c: Ctx) => buildK(c, modelRaw(c), { mode: 'legacy', curveModelId: 'legacy.flatAnnual' });
@@ -42,13 +51,16 @@ export function playbackChecks(c: Ctx, rt: ConvRuntime): ConvCheck[] {
   return [
     auditTry('CC-MP-01', () => {
       const s = playbackSeries(c), etp = model(c).base.etp;
-      for (let i = 0; i < s.humanFte.length; i++) if (Math.abs((s.humanFte[i] as number) + (s.agentVfte[i] as number) - etp) > TOL) return `Monthly Playback: Human FTE + Agent vFTE ≠ Input FTE at month ${i}`;
+      for (let i = 0; i < s.humanFte.length;
+        i++) if (Math.abs((s.humanFte[i] as number) + (s.agentVfte[i] as number) - etp) > TOL)
+        return `Monthly Playback: Human FTE + Agent vFTE ≠ Input FTE at month ${i}`;
       return null;
     }),
     auditTry('CC-MP-02', () => {
       const s = playbackSeries(c), ms = monthlySeries(engineNow(c)), last = ms[ms.length - 1], h = s.cumulative.length - 1;
       return last && Math.abs((s.cumulative[h] as number) - last.cum) > TOL
-        ? `Monthly Playback cumulative[${h}] (${(s.cumulative[h] as number).toFixed(2)}) ≠ 📅 Monthly detail cumulative at month H (${last.cum.toFixed(2)})` : null;
+        ? `Monthly Playback cumulative[${h}] (${(s.cumulative[h] as number).toFixed(2)}) ≠ 📅 Monthly detail cumulative at month H (${last.cum.toFixed(2)})`
+          : null;
     }),
     auditTry('CC-MP-03', () => (rt.playbackHorizon != null && rt.playbackHorizon !== model(c).horizon
       ? 'Monthly Playback: horizon changed while playing without resetting to idle (advisory)' : null)),
@@ -58,7 +70,8 @@ export function playbackChecks(c: Ctx, rt: ConvRuntime): ConvCheck[] {
 /** TE-13, TE-10, TE-10b, TE-09, TE-05, TE-07, TE-08 (Time Engine spec v5 §17). */
 export function timeChecksA(c: Ctx): ConvCheck[] {
   const finite = (c2: Ctx, label: string, eng = engineNow(c2)): string | null => {
-    for (const r of monthlySeries(eng)) if (![r.total, r.sav, r.cum, r.humanETP, r.agentVfte].every(isFinite)) return `${label}: non-finite value at month ${r.mo}`;
+    for (const r of monthlySeries(eng)) if (![r.total, r.sav, r.cum, r.humanETP,
+      r.agentVfte].every(isFinite)) return `${label}: non-finite value at month ${r.mo}`;
     return null;
   };
   return [
@@ -76,10 +89,12 @@ export function timeChecksA(c: Ctx): ConvCheck[] {
         const m = modelRaw(c), K = legacyK(c);
         for (let y = 1; y <= m.horizon; y++) {
           const Y = legacyYear(K, y), i = y - 1;
-          if (Math.abs(Y.savings - (m.yearSav[i] as number)) > TOL) return `year(${y}).savings ${Y.savings.toFixed(4)} != yearSav ${(m.yearSav[i] as number).toFixed(4)}`;
+          if (Math.abs(Y.savings - (m.yearSav[i] as number)) > TOL)
+            return `year(${y}).savings ${Y.savings.toFixed(4)} != yearSav ${(m.yearSav[i] as number).toFixed(4)}`;
           if (Math.abs(Y.team - (m.yearTeamCost[i] as number)) > TOL) return `year(${y}).teamCost != yearTeamCost`;
           if (Math.abs(Y.token - (m.yearToken[i] as number)) > TOL) return `year(${y}).tokenCost != yearToken`;
-          if (Math.abs(Y.run - (m.yearRun[i] as number)) > TOL) return `year(${y}).totalRunCost ${Y.run.toFixed(4)} != yearRun ${(m.yearRun[i] as number).toFixed(4)}`;
+          if (Math.abs(Y.run - (m.yearRun[i] as number)) > TOL)
+            return `year(${y}).totalRunCost ${Y.run.toFixed(4)} != yearRun ${(m.yearRun[i] as number).toFixed(4)}`;
           if (Math.abs(Y.human - (m.yearETP[i] as number)) > TOL) return `year(${y}).humanFteEnd != yearETP`;
           if (Math.abs(Y.agent - (m.yearAgentVfte[i] as number)) > TOL) return `year(${y}).agentVfteEnd != yearAgentVfte`;
         }
@@ -101,7 +116,8 @@ export function timeChecksA(c: Ctx): ConvCheck[] {
     }),
     auditTry('TE-09', () => {
       const a = legacyHeadline(legacyK(c)), b = legacyHeadline(legacyK(c));
-      return a.payback !== b.payback || Math.abs(a.npv - b.npv) > 1e-9 || Math.abs(a.y1 - b.y1) > 1e-9 ? `memo clear changed a value: payback ${a.payback}/${b.payback} npv ${a.npv}/${b.npv}` : null;
+      return a.payback !== b.payback || Math.abs(a.npv - b.npv) > 1e-9 || Math.abs(a.y1 - b.y1) > 1e-9
+        ? `memo clear changed a value: payback ${a.payback}/${b.payback} npv ${a.npv}/${b.npv}` : null;
     }),
     auditTry('TE-05', () => {
       const K = legacyK(c);
@@ -120,8 +136,8 @@ export function timeChecksA(c: Ctx): ConvCheck[] {
       for (let t = 1; t <= eng.horizonMonths; t++) if (eng.cumulativeAt(t) >= 0) { ref = t; break; }
       if (eng.payback() !== ref) return `engine.payback() ${eng.payback()} != first cum>=0 crossing ${ref}`;
       if (paybackMonthsCanonical(c) !== ref) return 'paybackMonthsCanonical() != engine crossing';
-      const h = headline(c);
-      if (h.paybackMonth !== ref || h.paybackYear !== (ref == null ? null : Math.ceil(ref / 12))) return `headline payback ${h.paybackMonth}/${h.paybackYear} != crossing ${ref}`;
+      const h = headline(c), year = ref == null ? null : Math.ceil(ref / 12);
+      if (h.paybackMonth !== ref || h.paybackYear !== year) return `headline payback ${h.paybackMonth}/${h.paybackYear} != crossing ${ref}`;
       const r = reg(c, 'paybackMonths');
       return r !== undefined && r !== ref ? `registry paybackMonths ${r} != canonical ${ref}` : null;
     }),

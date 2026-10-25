@@ -68,7 +68,7 @@ describe('engagement-context section', () => {
     fireEvent.change(cell, { target: { value: '0.5' } });
     expect(doc().engageCoef.MSI!.glassFactor).toBe(0.5);
     expect(calc().model.eff).toBeLessThan(before);
-    expect((screen.getByLabelText('Glass factor × of MSI') as HTMLInputElement).style.borderColor).not.toBe('');
+    expect(screen.getByLabelText('Glass factor × of MSI').classList.contains('is-edited')).toBe(true);
     act(() => { appStore().undo(); });
     expect(calc().model.eff).toBe(before);
   });

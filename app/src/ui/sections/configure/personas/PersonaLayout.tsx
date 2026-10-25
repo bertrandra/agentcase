@@ -9,7 +9,10 @@ import { useNavModel } from '@/ui/zones/navModel';
 import { Board } from './Board';
 import { LivePreview } from './LivePreview';
 
-/** The per-persona board (in the persona's menu structure): every group's sections, the persona's ones highlighted. Double-click assigns / removes; drag or arrows reorder for this persona only. */
+/**
+ * The per-persona board (in the persona's menu structure): every group's sections, the persona's ones highlighted. Double-click assigns / removes;
+ * drag or arrows reorder for this persona only.
+ */
 export function PersonaLayout({ personas, lists }: { personas: Persona[]; lists: Record<string, string[]> }) {
   const { order, view, structureOfPersona } = useNavModel(), editable = personasByOrder(personas).filter((p) => !p.protected), [sel, setSel] = useState(''), [pending, setPending] = useState<Pending | null>(null);
   const pid = editable.some((p) => p.id === sel) ? sel : editable[0]?.id ?? '', assigned = lists[pid] ?? [], on = (id: string) => assigned.includes(id);
@@ -25,7 +28,7 @@ export function PersonaLayout({ personas, lists }: { personas: Persona[]; lists:
         <select value={pid} onChange={(e) => setSel(e.target.value)}>{editable.map((p) => <option key={p.id} value={p.id}>{p.label}</option>)}</select></label>
       <p className="ac-muted">{assigned.length} section(s) assigned. Double-click a card to assign or remove it; drag (or ↑ ↓) to order it inside its group for this persona only.</p>
       <Board label="Persona layout" cols={cols} colors={colors} canDrag={(s) => on(s.id)} onPending={setPending}
-        cardClass={(s) => (on(s.id) ? '' : 'is-off')} cardExtra={(s) => on(s.id) && <small style={{ color: 'var(--ac-teal-700)' }}>✓ assigned</small>}
+        cardClass={(s) => (on(s.id) ? '' : 'is-off')} cardExtra={(s) => on(s.id) && <small className="ac-ok-text">✓ assigned</small>}
         onDouble={(id) => (on(id) ? removePersonaSection(pid, id) : addPersonaSection(pid, id))}
         onDrop={(id, group, index) => { if (on(id) && sections.find((s) => s.id === id)?.group === group) setPersonaSectionOrder(`Reorder ${label(id)} for ${pid}`, pid, placeForPersona(sections, pid, order, id, index)); }}
         onShift={(id, dir) => setPersonaSectionOrder(`Move ${label(id)} ${dir < 0 ? 'up' : 'down'} for ${pid}`, pid, shiftForPersona(sections, pid, order, id, dir))} />

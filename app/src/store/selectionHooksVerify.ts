@@ -10,7 +10,10 @@ export function useVScope(): VScope | null {
   return useMemo((): VScope | null => (vs.kind === 'portfolio' ? { kind: 'portfolio' } : vs.kind === 'wave' && vs.waveId ? { kind: 'wave', id: vs.waveId } : null), [vs]);
 }
 
-/** A "verify" aggregate view model (`domain/portfolio/aggVerify*`) of the View's selection; null for a Product view or an unknown wave. Memoised in the domain per consolidation. */
+/**
+ * A "verify" aggregate view model (`domain/portfolio/aggVerify*`) of the View's selection; null for a Product view or an unknown wave. Memoised in
+ * the domain per consolidation.
+ */
 export function useVerifyView<T, A = undefined>(view: (pf: Portfolio, scope: VScope, arg?: A) => T | null, arg?: A): T | null {
   const core = useCorePortfolio(), scope = useVScope();
   return useMemo(() => (scope ? view(core, scope, arg) : null), [core, scope, view, arg]);

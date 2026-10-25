@@ -91,7 +91,8 @@ export const resetStratWeights = (): void => go(resetWeightsCmd, {});
 export const applyStrategy = (id: string): void => go(applyCmd, { id });
 
 /**
- * Run the seeded Monte Carlo on the active product's case (the results' case, `activeDoc`) and keep the distribution (derived data: never in the document or the history).
+ * Run the seeded Monte Carlo on the active product's case (the results' case, `activeDoc`) and keep the distribution (derived data: never in the
+ * document or the history).
  * `draws` defaults to the mcDraws input; the verdict screens ask for 1000 like the legacy "Run now" buttons.
  */
 export function runSimulation(draws?: number): void {

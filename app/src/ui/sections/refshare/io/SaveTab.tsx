@@ -29,7 +29,7 @@ export function SaveTab() {
       <Panel title={T.saveJsonTitle}>
         <p>{T.saveJson}</p>
         <SaveOpenButtons save="⬇️ Save snapshot file" open="⬆️ Open snapshot file…" accept="application/json,.json" fileLabel="Snapshot file" onSave={save} onOpen={open} />
-        <div role="status" aria-live="polite" style={{ marginTop: 8 }}>{status && <Callout>{status}</Callout>}</div>
+        <div role="status" aria-live="polite" className="ac-status">{status && <Callout>{status}</Callout>}</div>
       </Panel>
       <ReportPanel />
     </div>

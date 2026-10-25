@@ -14,14 +14,16 @@ export function ValueCard({ fm }: { fm: ReturnType<typeof flowModel> }) {
   if (!fm.hasMargin) {
     return (
       <Panel title={title} aside={owner}>
-        <Callout>This valuation is <strong>hidden, not zero</strong>, until a real margin-per-month is provided - the spec&apos;s own warning against reading a blank revenue field as &quot;no value&quot;. Provide it once your sponsor has one.</Callout>
+        <Callout>This valuation is <strong>hidden, not zero</strong>, until a real margin-per-month is provided - the spec&apos;s own warning against reading
+          a blank revenue field as &quot;no value&quot;. Provide it once your sponsor has one.</Callout>
         <NumField label="Margin per month (€, sponsor-owned)" value={flow.marginPerMonth || 0} min={0} step={1000} width={160} onCommit={setFlowMargin} />
       </Panel>
     );
   }
   return (
     <Panel title={title} aside={owner}>
-      <Callout>Phase <strong>ON</strong>. Value of arriving {fm.deltaTRaw.toFixed(2)} months earlier, {(fm.share * 100).toFixed(0)}% of which is credited here (the rest is assumed already captured as ordinary cost-out in the Financial tab - CC-FL-01&apos;s double-counting guard).</Callout>
+      <Callout>Phase <strong>ON</strong>. Value of arriving {fm.deltaTRaw.toFixed(2)} months earlier, {(fm.share * 100).toFixed(0)}% of which is credited here
+        (the rest is assumed already captured as ordinary cost-out in the Financial tab - CC-FL-01&apos;s double-counting guard).</Callout>
       <div className="ac-form-row">
         <NumField label="Margin per month (€)" value={flow.marginPerMonth} min={0} step={1000} width={120} onCommit={setFlowMargin} />
         <NumField label="Discount rate (/yr)" value={flow.discountRate} min={0} max={1} step={0.01} width={90} onCommit={setFlowDiscount} />

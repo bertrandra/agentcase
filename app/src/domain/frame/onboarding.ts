@@ -17,7 +17,8 @@ export interface OnboardingBand { totalWeeks: number; months: string; pilotStart
 /** "Runway to decision" strip of the Engage section. */
 export function onboardingBand(c: Ctx): OnboardingBand {
   const dw = stageWeeks(c), tot = dw[0]! + dw[1]! + dw[2]! + dw[3]!, t0 = startDate(c).getTime();
-  return { totalWeeks: tot, months: (tot / 4.345).toFixed(1), pilotStart: iso(new Date(t0 + (dw[0]! + dw[1]! + dw[2]!) * 7 * DAY)), decide: iso(new Date(t0 + tot * 7 * DAY)) };
+  return { totalWeeks: tot, months: (tot / 4.345).toFixed(1), pilotStart: iso(new Date(t0 + (dw[0]! + dw[1]! + dw[2]!) * 7 * DAY)),
+    decide: iso(new Date(t0 + tot * 7 * DAY)) };
 }
 
 export interface RoadmapStage { name: string; label: string; gate: string; section: string; from: string; to: string | null; current: boolean }

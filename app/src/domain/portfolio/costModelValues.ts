@@ -10,7 +10,10 @@ export const G_DAYS = 'Human days', G_INFO = 'Information (agentic side, not in 
 /** Where a product sits in the Values table: its human-days rows (inclusive) and its subtotal row. */
 export interface ValuesIndex { table: CostTable; at: Map<string, { first: number; last: number; sub: number }> }
 
-/** The human days a product carries each month, by AS-IS team line: the engine's human FTE spread over the entry lines in proportion to their FTE, x working days / 12. */
+/**
+ * The human days a product carries each month, by AS-IS team line: the engine's human FTE spread over the entry lines in proportion to their FTE, x
+ * working days / 12.
+ */
 function productRows(v: ProductView, L: number, wave: string): CostRow[] {
   const s = v.run.ctx.s, K = v.run.engine.K, rows = v.run.rows, base = K.baseEtp, wd = K.wdMonth, k = (...x: string[]) => ['Portfolio', wave, v.name, ...x];
   const days = s.teamIn.map((r) => {
@@ -27,7 +30,10 @@ function productRows(v: ProductView, L: number, wave: string): CostRow[] {
     drv('Human FTE', 'FTE', 'fte', base, (t) => rows[t - 1]!.humanFte), drv('Agent vFTE', 'vFTE', 'fte', 0, (t) => rows[t - 1]!.agentVfte)];
 }
 
-/** TAB 1: days per month by Portfolio / Wave / Product / Skill / Grade / Location, with product, wave and portfolio subtotals (Excel formulas over the rows). */
+/**
+ * TAB 1: days per month by Portfolio / Wave / Product / Skill / Grade / Location, with product, wave and portfolio subtotals (Excel formulas over the
+ * rows).
+ */
 export function buildValues(pk: Picked, L: number): ValuesIndex {
   const out: CostRow[] = [], at: ValuesIndex['at'] = new Map(), waveSubs: number[] = [];
   for (const w of pk.waves) {

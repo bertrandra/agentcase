@@ -28,5 +28,6 @@ export function strategyPatch(c: Ctx, S: StrategyDef): ApplyPatch {
     values[id] = String(written[id]);
   });
   set('runTeamFactor', rF);
-  return { values, fitAutoOff: L.auto != null, forceCeiling: L.ceiling != null, targetLocPct: stratTargetLoc(c, S), applied: { id: S.id, base: { ...base }, written } };
+  return { values, fitAutoOff: L.auto != null, forceCeiling: L.ceiling != null, targetLocPct: stratTargetLoc(c, S),
+    applied: { id: S.id, base: { ...base }, written } };
 }

@@ -30,7 +30,7 @@ function ErrorsPanel() {
 export function DockZone() {
   const open = useUi((s) => s.dockOpen), h = useHistory(), errors = useCaughtErrors().length;
   return (
-    <footer className="ac-dock" style={{ gridArea: 'dock' }}>
+    <footer className="ac-dock">
       <button type="button" aria-expanded={open} onClick={toggleDock}>{open ? '▾' : '▸'} History ({h.undo.length}){errors ? ` · ${errors} display error${errors > 1 ? 's' : ''}` : ''}</button>
       {open && <HistoryPanel />}
       {open && <ErrorsPanel />}

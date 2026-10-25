@@ -13,7 +13,8 @@ export function DriftCard() {
     { key: 'y', header: 'Year', align: 'center', render: (i) => `Y${i + 1}` },
     { key: 'g', header: 'Gross savings', align: 'center', render: (i) => fmtK(m.yearSav[i] as number) },
     { key: 'a', header: 'Attributable savings', align: 'center', render: (i) => fmtK(m.cbd.yearSavAttributable[i] as number) },
-    { key: 'w', header: 'Wedge (would have happened anyway)', align: 'center', render: (i) => <span style={{ color: (m.cbd.wedge[i] as number) > 1 ? 'var(--ac-brick)' : 'var(--ac-muted)' }}>{fmtK(m.cbd.wedge[i] as number)}</span> },
+    { key: 'w', header: 'Wedge (would have happened anyway)', align: 'center',
+      render: (i) => <span className={(m.cbd.wedge[i] as number) > 1 ? 'ac-loss' : 'ac-muted'}>{fmtK(m.cbd.wedge[i] as number)}</span> },
   ];
   return (
     <Panel title="Counterfactual baseline drift — gross vs. attributable">
@@ -22,7 +23,8 @@ export function DriftCard() {
         <NumField label="δ — secular drift (/yr)" value={drift} min={0} max={1} step={0.01} width={90} onCommit={setCbdDrift} />
       </div>
       <Callout>{on
-        ? <>Phase <strong>ON</strong>. δ={(drift * 100).toFixed(1)}%/yr assumed secular improvement — the wedge below is what gross savings overstate the agentic programme&apos;s true attributable benefit.</>
+        ? <>Phase <strong>ON</strong>. δ={(drift * 100).toFixed(1)}%/yr assumed secular improvement — the wedge below is what gross savings overstate the
+          agentic programme&apos;s true attributable benefit.</>
         : <>Phase <strong>OFF</strong> — attributable savings equal gross savings exactly (δ=0 in effect).</>}</Callout>
       <DataTable columns={cols} rows={[0, 1, 2]} rowKey={(i) => `y${i}`} />
     </Panel>

@@ -65,7 +65,8 @@ function coverage(wb: Workbook, d: DdPackData, product?: string): void {
 }
 
 /** The due-diligence pack: DD_Register, DD_Coefficients, DD_Evidence_Requests, DD_Coverage (legacy ddExportPack). `label` names a section from its id.
- * `product` (portfolios only) names the product whose effective case the pack describes: a portfolio exports the ACTIVE product's pack, see docs/ARCHITECTURE.md §5. */
+ * `product` (portfolios only) names the product whose effective case the pack describes: a portfolio exports the ACTIVE product's pack, see
+ * docs/ARCHITECTURE.md §5. */
 export function buildDdPack(xl: ExcelJS, d: DdPackData, label: (id: string) => string, print: Readonly<ThemeValues>, product?: string): Workbook {
   const wb = withPrint(new xl.Workbook(), print);
   wb.creator = 'AgentCase'; wb.created = new Date();

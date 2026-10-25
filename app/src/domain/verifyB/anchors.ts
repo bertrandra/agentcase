@@ -30,9 +30,18 @@ export const QUALITY_DEFAULT: QualityRow[] = [
 
 const keyed = (s: CaseState) => s as unknown as Record<string, unknown>;
 /** The case's anchor tables (state keys DORA_ANCHORS / THROUGHPUT_ANCHORS / QUALITY), code defaults when absent. */
-export const doraAnchors = (s: CaseState): DoraAnchor[] => { const v = keyed(s).DORA_ANCHORS; return Array.isArray(v) && v.length ? (v as DoraAnchor[]) : DORA_DEFAULT; };
-export const throughputAnchors = (s: CaseState): ThroughputAnchor[] => { const v = keyed(s).THROUGHPUT_ANCHORS; return Array.isArray(v) && v.length ? (v as ThroughputAnchor[]) : THROUGHPUT_DEFAULT; };
-export const qualityRows = (s: CaseState): QualityRow[] => { const v = keyed(s).QUALITY; return Array.isArray(v) && v.length ? (v as QualityRow[]) : QUALITY_DEFAULT; };
+export const doraAnchors = (s: CaseState): DoraAnchor[] => {
+  const v = keyed(s).DORA_ANCHORS;
+  return Array.isArray(v) && v.length ? (v as DoraAnchor[]) : DORA_DEFAULT;
+};
+export const throughputAnchors = (s: CaseState): ThroughputAnchor[] => {
+  const v = keyed(s).THROUGHPUT_ANCHORS;
+  return Array.isArray(v) && v.length ? (v as ThroughputAnchor[]) : THROUGHPUT_DEFAULT;
+};
+export const qualityRows = (s: CaseState): QualityRow[] => {
+  const v = keyed(s).QUALITY;
+  return Array.isArray(v) && v.length ? (v as QualityRow[]) : QUALITY_DEFAULT;
+};
 
 /** Legacy daGet: the case's anchor, else the default one. */
 export const daGet = (s: CaseState, id: string): DoraAnchor => (doraAnchors(s).find((a) => a.id === id) ?? DORA_DEFAULT.find((a) => a.id === id)) as DoraAnchor;

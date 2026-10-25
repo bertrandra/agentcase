@@ -1,5 +1,8 @@
 /** @calc-zone workspace-config */
-/** `r` a section reads a zone (zone feeds section), `w` an input section writes a zone through a controller (section feeds zone), `z` a zone imports another (source feeds importer). */
+/**
+ * `r` a section reads a zone (zone feeds section), `w` an input section writes a zone through a controller (section feeds zone), `z` a zone imports
+ * another (source feeds importer).
+ */
 export type EdgeKind = 'r' | 'w' | 'z';
 /** [source, target, kind, number of modules involved]: the data flows from the source to the target. */
 export type DepEdge = [string, string, EdgeKind, number];
@@ -27,9 +30,13 @@ export const encodeSet = (nums: number[]): string => {
   for (let i = 0; i < a.length; i++) { let j = i; while (a[j + 1] === a[j]! + 1) j++; out.push(j > i ? `${a[i]}-${a[j]}` : `${a[i]}`); i = j; }
   return out.join(',');
 };
-export const decodeSet = (s: string): number[] => s.split(',').filter(Boolean).flatMap((r) => { const [a, b] = r.split('-').map(Number) as [number, number | undefined]; return Array.from({ length: (b ?? a) - a + 1 }, (_, i) => a + i); });
+export const decodeSet = (s: string): number[] => s.split(',').filter(Boolean).flatMap((r) => {
+  const [a, b] = r.split('-').map(Number) as [number, number | undefined];
+  return Array.from({ length: (b ?? a) - a + 1 }, (_, i) => a + i);
+});
 /** Section ids that depend on a figure. */
-export const consumersOf = (d: DepsData, figure: string): string[] => decodeSet(d.figures.find((f) => f.id === figure)?.consumers ?? '').map((i) => d.sections[i]!.id);
+export const consumersOf = (d: DepsData,
+  figure: string): string[] => decodeSet(d.figures.find((f) => f.id === figure)?.consumers ?? '').map((i) => d.sections[i]!.id);
 
 const adj = (edges: DepEdge[], dir: 'out' | 'in'): Map<string, string[]> => {
   const m = new Map<string, string[]>();
@@ -48,14 +55,20 @@ export const upstream = (edges: DepEdge[], ids: Iterable<string>): Set<string> =
 
 /** Strongly connected components of the zone graph with more than one zone: the documented cycles. */
 export function cycles(zones: string[], edges: DepEdge[]): string[][] {
-  const g = adj(edges.filter((e) => e[2] === 'z'), 'out'), idx = new Map<string, number>(), low = new Map<string, number>(), stack: string[] = [], on = new Set<string>(), out: string[][] = [];
+  const g = adj(edges.filter((e) => e[2] === 'z'), 'out'), idx = new Map<string, number>(), low = new Map<string, number>(), stack: string[] = [],
+    on = new Set<string>(), out: string[][] = [];
   let n = 0;
   const visit = (v: string): void => {
     idx.set(v, n); low.set(v, n++); stack.push(v); on.add(v);
     for (const w of g.get(v) ?? []) {
       if (!idx.has(w)) { visit(w); low.set(v, Math.min(low.get(v)!, low.get(w)!)); } else if (on.has(w)) low.set(v, Math.min(low.get(v)!, idx.get(w)!));
     }
-    if (low.get(v) === idx.get(v)) { const c: string[] = []; let w: string; do { w = stack.pop()!; on.delete(w); c.push(w); } while (w !== v); if (c.length > 1) out.push(c.sort()); }
+    if (low.get(v) === idx.get(v)) {
+      const c: string[] = [];
+      let w: string;
+      do { w = stack.pop()!; on.delete(w); c.push(w); } while (w !== v);
+      if (c.length > 1) out.push(c.sort());
+    }
   };
   zones.forEach((z) => { if (!idx.has(z)) visit(z); });
   return out.sort((a, b) => a[0]!.localeCompare(b[0]!));
@@ -67,8 +80,10 @@ export function cycles(zones: string[], edges: DepEdge[]): string[][] {
  * goes on with the zone of the largest out-minus-in weight (Eades-Lin-Smyth) and the links that then point backwards are the `feedback` set.
  * Layers are longest paths over the forward links.
  */
-export function buildLayers(zones: string[], edges: DepEdge[], lanes: Record<string, string> = {}): { layer: Record<string, number>; order: string[]; feedback: DepEdge[] } {
-  const rank = (z: string): number => ['input', 'calc', 'result'].indexOf(lanes[z] ?? 'calc'), ze = edges.filter((e) => e[2] === 'z' && e[0] !== e[1]), left = new Set(zones), order: string[] = [];
+export function buildLayers(zones: string[], edges: DepEdge[], lanes: Record<string, string> = {}): { layer: Record<string, number>; order: string[];
+  feedback: DepEdge[] } {
+  const rank = (z: string): number => ['input', 'calc', 'result'].indexOf(lanes[z] ?? 'calc'), ze = edges.filter((e) => e[2] === 'z' && e[0] !== e[1]),
+    left = new Set(zones), order: string[] = [];
   const w = (z: string, dir: 0 | 1): number => ze.filter((e) => e[dir] === z && left.has(dir === 0 ? e[1] : e[0])).reduce((a, e) => a + e[3], 0);
   const byLane = (a: string, b: string): number => rank(a) - rank(b) || a.localeCompare(b);
   while (left.size) {
@@ -84,7 +99,8 @@ export function buildLayers(zones: string[], edges: DepEdge[], lanes: Record<str
 
 /** Tests whose import closure touches one of the zones or sections. */
 export function testsTouching(d: DepsData, ids: Set<string>): string[] {
-  return d.tests.filter(([, zs, ss]) => decodeSet(zs).some((i) => ids.has(d.zones[i]!.id)) || decodeSet(ss).some((i) => ids.has(d.sections[i]!.id))).map((t) => t[0]);
+  return d.tests.filter(([, zs, ss]) => decodeSet(zs).some((i) => ids.has(d.zones[i]!.id))
+    || decodeSet(ss).some((i) => ids.has(d.sections[i]!.id))).map((t) => t[0]);
 }
 
 const zoneFlow = (d: DepsData): DepEdge[] => d.edges.filter((e) => e[2] === 'z');
@@ -92,8 +108,8 @@ export interface Impact { zones: string[]; sections: string[]; tests: string[] }
 
 /**
  * What must be re-checked when these zones or sections change. `zones` and `sections` report the impact (the zones they feed through imports, every section
- * that reads or writes one of them). `tests` are the test files whose import closure touches the changed zones or sections: the closure is transitive, so a test
- * that reaches anything downstream already reaches the changed zone and the downstream expansion adds nothing.
+ * that reads or writes one of them). `tests` are the test files whose import closure touches the changed zones or sections: the closure is
+ * transitive, so a test that reaches anything downstream already reaches the changed zone and the downstream expansion adds nothing.
  */
 export function impact(d: DepsData, zoneIds: string[], sectionIds: string[]): Impact {
   const zones = downstream(zoneFlow(d), zoneIds), ids = new Set(d.zones.map((z) => z.id));

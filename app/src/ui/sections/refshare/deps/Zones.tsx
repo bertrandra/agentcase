@@ -3,16 +3,18 @@ import { Badge } from '@/ui/widgets/cards';
 import { DATA, DRAWN, edgesOf, figuresOf, labelOf, LAYERS, SHARED } from './model';
 import type { ZoneDef } from '@/domain/zones';
 
+const SectionLink = ({ id }: { id: string }) => <button type="button" className="ac-golink ac-dep-link" onClick={() => goSection(id)}>{labelOf(id)}</button>;
+
 function Card({ z }: { z: ZoneDef }) {
   const e = edgesOf(z.id), figs = figuresOf(z.id), modules = DATA.zones.find((m) => m.id === z.id)?.modules ?? 0;
   const feeds = e.out.filter((x) => x[2] === 'z').length, fed = e.in.filter((x) => x[2] === 'z').length;
   const readers = e.out.filter((x) => x[2] === 'r').length + e.in.filter((x) => x[2] === 'w').length;
   return (
-    <article className="ac-chip" data-zone={z.id} style={{ display: 'block', padding: 10, margin: '8px 0' }} aria-label={z.label}>
-      <h3 style={{ margin: 0 }}>{z.label} <Badge tone={z.lane === 'input' ? 'blue' : z.lane === 'calc' ? 'amber' : 'grey'}>{z.lane}</Badge></h3>
+    <article className="ac-chip ac-dep-card" data-zone={z.id} aria-label={z.label}>
+      <h3 className="ac-dep-card-title">{z.label} <Badge tone={z.lane === 'input' ? 'blue' : z.lane === 'calc' ? 'amber' : 'grey'}>{z.lane}</Badge></h3>
       <p>{z.description}</p>
       <p className="ac-muted">{modules} tagged modules · feeds {feeds} zones · fed by {fed} zones · used by {readers} sections{z.lane !== 'shared' && <> · build layer {LAYERS.layer[z.id]}</>}</p>
-      <p><strong>Entry modules:</strong> {z.entry.map((m) => <code key={m} style={{ marginRight: 8 }}>{m}</code>)}</p>
+      <p><strong>Entry modules:</strong> {z.entry.map((m) => <code key={m} className="ac-dep-entry">{m}</code>)}</p>
       {figs.length > 0 && (
         <table className="ac-table" aria-label={`Figures owned by ${z.label}`}>
           <thead><tr><th>Figure</th><th>Owner module</th><th>Sections that depend on it</th></tr></thead>
@@ -20,7 +22,12 @@ function Card({ z }: { z: ZoneDef }) {
             <tr key={f.id}>
               <td><strong>{f.label}</strong><br /><span className="ac-muted">{f.description}</span></td>
               <td><code>{f.owner}</code></td>
-              <td><details><summary>{f.consumers.length} sections</summary><p style={{ maxWidth: 420 }}>{f.consumers.map((c) => <button key={c} type="button" className="ac-golink" style={{ marginRight: 8 }} onClick={() => goSection(c)}>{labelOf(c)}</button>)}</p></details></td>
+              <td>
+                <details>
+                  <summary>{f.consumers.length} sections</summary>
+                  <p className="ac-dep-consumers">{f.consumers.map((c) => <SectionLink key={c} id={c} />)}</p>
+                </details>
+              </td>
             </tr>
           ))}</tbody>
         </table>

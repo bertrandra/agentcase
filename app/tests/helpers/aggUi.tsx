@@ -7,7 +7,10 @@ import { freshStore } from '../store/helpers';
 import { variedProducts, type Varied } from './aggFixture';
 import { mountApp, pf, sectionReady } from './portfolioUi';
 
-/** What an aggregate must show for a selection, from the DOMAIN (never from the UI): per product row the strings of its cells, and the strings of the total line. */
+/**
+ * What an aggregate must show for a selection, from the DOMAIN (never from the UI): per product row the strings of its cells, and the strings of the
+ * total line.
+ */
 export interface AggExpect { rows: { id: string; cells: string[] }[]; total: string[] }
 export interface AggCase { id: string; title: RegExp; table: RegExp; expected: (pf: Portfolio, ids: string[]) => AggExpect; edit?: boolean }
 

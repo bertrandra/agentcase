@@ -43,6 +43,7 @@ A value may refer to another token as `{name}`. In CSS that becomes `var(--ac-na
 |---|---|---|
 | CSS | `var(--ac-<name>)` | `color: var(--ac-text-heading);` |
 | inline style, SVG presentation attribute | the `var()` string | `style={{ color: 'var(--ac-danger-800)' }}`, `fill="var(--ac-neutral-0)"`, `` `var(--ac-${band.tone})` `` |
+| a look of section markup (D5, lot 5b) | a class of `ui/theme/sections-*.css`; a value that is data rides on the element as a local `--dyn-*` custom property (`cssVars()`), a domain colour role as `data-tone` | `.ac-section .ac-dd-gauge-v { color: var(--dyn-dd-tone); }` |
 | chart.js (canvas), colour arithmetic (`textColor`, `${hex}22` alpha suffix, `alpha()`) | `tok('<name>')` of the theme in effect: `const { tok } = useTheme()` in a component, a `tok: Tok` argument in a chart builder | `borderColor: tok('teal-700')` |
 | a palette or a role map | token names (`readonly TokenName[]`, `{ real: 'chart-cat-2', … }`), resolved where they are drawn: `tok(name)`, `list(names)`, `useRoles(map)` | `const COL = useRoles(COL_ROLES)` |
 | domain read-outs (a status band, a scenario hue) | a colour **role**: the token name (`ColourRole`), never a resolved value | `riskBand(score).tone === 'danger-800'` |
@@ -138,7 +139,7 @@ Excel: `excel-head-bg` (#1E2761), `excel-head-text`, `excel-subtotal-bg`, `excel
 | `border-thin` / `medium` / `thick` / `heavy` / `rail`, `focus-width` | 1 / 1.5 / 2 / 3 / 4 px (the coloured left rail), 2 px |
 | `shadow-none`, `shadow-sm` … `shadow-xl` | none and the four legacy elevations |
 | `shadow-card`, `shadow-kpibar`, `shadow-header`, `shadow-toast`, `shadow-focus` | the roles built on them (the focus glow of inputs) |
-| `shadow-rail`, `shadow-rail-offset`, `shadow-ring-offset` | the inset 4 px row marker and the geometry of the coloured markers whose colour is data |
+| `shadow-rail`, `shadow-rail-offset`, `shadow-ring`, `shadow-ring-offset` | the inset 4 px row marker, the 1 px milestone ring (slate) and the geometry of the coloured markers whose colour is data (`var(--ac-shadow-ring-offset) var(--dyn-…)` in CSS) |
 
 ### 3.8 Density (11) and motion (3)
 

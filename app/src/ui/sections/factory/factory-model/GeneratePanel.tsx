@@ -26,7 +26,7 @@ export function GeneratePanel() {
       <p>From the current case · <strong>weekly</strong> · {pf.from} → {pf.to} ({pf.weeks} weeks)<br />
         {pf.phases} phase(s) · {pf.arts} artefact(s) in scope<br />
         → {portfolios} portfolios · {epics} epics · {pf.phases} features · {pf.stories} stories · {pf.arts} tasks · ~{pf.releases} releases<br />
-        Estimated records: <strong style={{ color: over ? 'var(--ac-amber)' : 'var(--ac-blue)' }}>{n(pf.est)}</strong> / {n(pf.cap)} cap{over && ' — will be down-sampled (commits first, time span never truncated)'}</p>
+        Estimated records: <strong data-ink={over ? 'amber' : 'blue'}>{n(pf.est)}</strong> / {n(pf.cap)} cap{over && ' — will be down-sampled (commits first, time span never truncated)'}</p>
       <div className="ac-form-row">
         <NumField label="Density" value={p.density} min={0.25} max={2} step={0.25} width={64} onCommit={(v) => setGeneratorParam('density', v)} />
         <NumField label="Seed" value={p.seed} step={1} width={96} onCommit={(v) => setGeneratorParam('seed', v)} />
@@ -43,7 +43,7 @@ export function GeneratePanel() {
             ({pv.ramps.join('/')}% at months 12/24/36), not the annual step. Its yearly averages are {pv.curveMeans.join('/')}% — lower than the
             model&apos;s annual figures by construction, because the model states the year&apos;s representative level while the curve states the
             path. No euro figure is affected.<br /></>}
-          <strong style={{ color: 'var(--ac-amber)' }}>Simulated from this case&apos;s assumptions — not measured data.</strong></p>
+          <strong className="ac-warn-ink">Simulated from this case&apos;s assumptions — not measured data.</strong></p>
       )}
     </Panel>
   );

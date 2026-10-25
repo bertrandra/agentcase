@@ -22,7 +22,8 @@ function weighted(items: ProductView[], pick: (p: PlaybackSeries) => number[], T
 }
 
 export interface PlaybackProductRow { id: string; name: string; wave: string; baseEtp: number; etp: number; vfte: number; velocityPct: number; net: number }
-export interface PlaybackAgg { label: string; headline: PortfolioHeadline; series: PlaybackSeries; rows: PlaybackProductRow[]; totals: Omit<PlaybackProductRow, 'id' | 'name' | 'wave'>; excluded: { id: string; name: string; archived: boolean }[] }
+export interface PlaybackAgg { label: string; headline: PortfolioHeadline; series: PlaybackSeries; rows: PlaybackProductRow[];
+  totals: Omit<PlaybackProductRow, 'id' | 'name' | 'wave'>; excluded: { id: string; name: string; archived: boolean }[] }
 
 /**
  * Monthly Playback of a Portfolio / Wave on the calendar axis, shaped like a product's `PlaybackSeries` (index 0 = AS-IS): FTE, monthly cost and cumulative
@@ -31,17 +32,21 @@ export interface PlaybackAgg { label: string; headline: PortfolioHeadline; serie
 export function aggregatePlayback(pf: Portfolio, c: Consolidated, scope: DisplayScope): PlaybackAgg | null {
   const sel = selectionOf(c, scope);
   if (!sel) return null;
-  const s = sel.series, L = s.net.length, T = Array.from({ length: L }, (_, i) => i + 1), h = sel.headline, asisRun = total(sel.items.map((v) => model(v.run.ctx).baselineRun)) / 12;
+  const s = sel.series, L = s.net.length, T = Array.from({ length: L }, (_, i) => i + 1), h = sel.headline,
+    asisRun = total(sel.items.map((v) => model(v.run.ctx).baselineRun)) / 12;
   const withAsis = (asis: number, a: number[]) => [asis, ...a];
   const series: PlaybackSeries = {
     humanFte: withAsis(h.fte.before, s.humanFte), agentVfte: withAsis(0, s.agentVfte),
     teamCost: withAsis(asisRun, s.run),
     tokenCost: withAsis(0, s.token), totalCost: withAsis(asisRun, T.map((_, i) => (s.run[i] ?? 0) + (s.setup[i] ?? 0))),
-    netMonth: withAsis(0, s.net), cumulative: withAsis(0, sel.summary.cum), ramp: withAsis(0, s.adoptionW.map((w) => (h.fte.before > 0 ? w / h.fte.before : 0))),
-    velocity: [0, ...T].map((t) => weighted(sel.items, (p) => p.velocity, t)), costPerSp: [0, ...T].map((t) => (sel.items.length ? weighted(sel.items, (p) => p.costPerSp, t) : MP_COST_SP_ASIS)),
+    netMonth: withAsis(0, s.net), cumulative: withAsis(0, sel.summary.cum),
+    ramp: withAsis(0, s.adoptionW.map((w) => (h.fte.before > 0 ? w / h.fte.before : 0))),
+    velocity: [0, ...T].map((t) => weighted(sel.items, (p) => p.velocity, t)),
+    costPerSp: [0, ...T].map((t) => (sel.items.length ? weighted(sel.items, (p) => p.costPerSp, t) : MP_COST_SP_ASIS)),
     horizon: L / 12, months: L,
   };
-  const row = (v: ProductView): PlaybackProductRow => ({ id: v.id, name: v.name, wave: pf.waves.find((w) => w.id === v.waveId)?.name ?? '', baseEtp: v.run.baseEtp,
+  const row = (v: ProductView): PlaybackProductRow => ({ id: v.id, name: v.name, wave: pf.waves.find((w) => w.id === v.waveId)?.name ?? '',
+    baseEtp: v.run.baseEtp,
     etp: lastOf(v.series.humanFte), vfte: lastOf(v.series.agentVfte), velocityPct: v.run.velocityPct(), net: v.summary.net });
   return {
     label: sel.label, headline: h, series, rows: sel.items.map(row), excluded: selectionView(pf, c, scope)?.excluded ?? [],

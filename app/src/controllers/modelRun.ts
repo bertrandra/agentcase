@@ -6,12 +6,15 @@ import { runMcs, type McsResult } from '@/domain/model/mcs';
 import { activeDoc } from '@/store/editBase';
 
 /**
- * The last stochastic run (legacy MCS_LAST): session-only, never part of the case and never undoable, so it lives beside the
- * controllers rather than in the document. The Evidence ledger reads its tornado as influence weights.
+ * The last stochastic run (legacy MCS_LAST): session-only, never part of the case and never undoable, so it lives beside the controllers rather than
+ * in the document. The Evidence ledger reads its tornado as influence weights.
  */
 export const mcsRunStore = createStore<{ last: McsResult | null; running: boolean }>(() => ({ last: null, running: false }));
 
-/** Run the simulation on the active product's case (`activeDoc`, like every result) (synchronous, ~1 s at the default 2 000 draws). Returns the elapsed milliseconds. */
+/**
+ * Run the simulation on the active product's case (`activeDoc`, like every result) (synchronous, ~1 s at the default 2 000 draws). Returns the
+ * elapsed milliseconds.
+ */
 export function runMcsSync(minDraws = 100): number {
   const t0 = Date.now(), doc = activeDoc(), mc = mcsOf(doc.MODEL);
   mcsRunStore.setState({ running: true });

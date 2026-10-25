@@ -33,7 +33,8 @@ export const applyDdPackEntries = (entries: PackEntry[]): void => { if (entries.
  * hold conflicting copies of the same ids. Switch the active product to export another one.
  */
 export async function exportDdPack(label: (id: string) => string = (id) => id, now: Date = new Date()): Promise<ExcelFile> {
-  const doc = activeDoc(), portfolio = appStore().getState().portfolio, product = hasPortfolioContent(portfolio) ? portfolio.products.find((p) => p.id === portfolio.activeProductId)?.name : undefined;
+  const doc = activeDoc(), portfolio = appStore().getState().portfolio,
+    product = hasPortfolioContent(portfolio) ? portfolio.products.find((p) => p.id === portfolio.activeProductId)?.name : undefined;
   const xl = await loadExcelJS(), wb = buildDdPack(xl, ddPackData(doc), label, exportTheme(), product);
   return { blob: new Blob([await wb.xlsx.writeBuffer()], { type: XLSX_MIME }), filename: excelFilename('DueDiligence', now) };
 }

@@ -16,9 +16,9 @@ export function StoryTable() {
   const row = (id: string, name: string, isReg: boolean, sid: string) => {
     const other = storyOf(isReg ? reg : sdlc, id);
     return (
-      <label key={id} className="ac-check" style={{ display: 'flex', gap: 6, fontSize: 'var(--ac-font-size-sm)' }}>
+      <label key={id} className="ac-check ac-story-art">
         <input type="checkbox" aria-label={`${id} in story ${sid}`} checked={other === sid} onChange={(e) => toggleStoryArtefact(sid, id, isReg, e.target.checked)} />
-        {isReg ? '⚖️' : '📄'} {id} · {name}{other && other !== sid && <span style={{ color: 'var(--ac-amber)' }}> (linked to another story)</span>}
+        {isReg ? '⚖️' : '📄'} {id} · {name}{other && other !== sid && <span className="ac-warn-ink"> (linked to another story)</span>}
       </label>
     );
   };
@@ -33,13 +33,13 @@ export function StoryTable() {
               return (
                 <Fragment key={s.id}>
                   <tr>
-                    <td><input type="text" aria-label={`Name of ${name}`} style={{ width: '100%' }} value={name} onChange={(e) => setField('STORIES', s.id, 'name', e.target.value)} /></td>
+                    <td><input type="text" aria-label={`Name of ${name}`} className="ac-fill" value={name} onChange={(e) => setField('STORIES', s.id, 'name', e.target.value)} /></td>
                     <td><LazySelect ariaLabel={`Feature of ${name}`} value={String(s.featureId ?? '')} options={nameOptions(features)} onChange={(v) => setField('STORIES', s.id, 'featureId', v || null)} /></td>
                     <td><button type="button" aria-expanded={!!open[s.id]} onClick={() => setOpen({ ...open, [s.id]: !open[s.id] })}>{open[s.id] ? '▼' : '▶'} {linked} linked</button></td>
                     <td><ConfirmButton label="🗑" onConfirm={() => removeRecord('STORIES', s.id)} /></td>
                   </tr>
                   {open[s.id] && (
-                    <tr><td colSpan={4}><div style={{ maxHeight: 260, overflowY: 'auto' }}>
+                    <tr><td colSpan={4}><div className="ac-story-arts">
                       <strong className="ac-muted">SDLC artefacts</strong>{SDLC_ARTEFACTS.map((a) => row(a.id, a.name, false, s.id))}
                       <strong className="ac-muted">Regulatory artefacts</strong>{REG_ARTEFACTS.map((a) => row(a.id, a.name, true, s.id))}
                     </div></td></tr>

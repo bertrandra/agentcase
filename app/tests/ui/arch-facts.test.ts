@@ -16,7 +16,8 @@ import { codeStrings, goTargets, PAGES, textOf } from '../helpers/archContent';
 import.meta.glob('/src/controllers/*.ts', { eager: true });   // registers every command, as tests/store/registry.test.ts does
 
 // DEV-ARCH-CONTENT: the architecture pages describe the TypeScript build, not the legacy file, so these facts replace the old legacy-text parity.
-// Their section / group / command / zone counts are rewritten by `npm run docs:facts` (scripts/lib/docFacts.ts); tests/docs-facts.test.ts checks they are fresh.
+// Their section / group / command / zone counts are rewritten by `npm run docs:facts` (scripts/lib/docFacts.ts); tests/docs-facts.test.ts checks they
+// are fresh.
 const APP = process.cwd(), REPO = resolve(APP, '..');
 const text = textOf(PAGES['arch-content']), both = `${textOf(PAGES['arch-layers'])} ${text}`;
 const nums = (re: RegExp, s = both): number[] => [...s.matchAll(re)].map((m) => Number((m[1] ?? '').replace(/,/g, '')));

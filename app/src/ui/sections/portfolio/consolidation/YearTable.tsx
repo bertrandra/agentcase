@@ -2,7 +2,10 @@ import type { ReactNode } from 'react';
 import { fmtEurK } from '@/ui/format';
 import { Panel } from '@/ui/widgets/cards';
 
-/** The "By calendar year" panel of a consolidation (Portfolio consolidation, Financial of a Portfolio / Wave): savings, run cost, setup and net per calendar year. */
+/**
+ * The "By calendar year" panel of a consolidation (Portfolio consolidation, Financial of a Portfolio / Wave): savings, run cost, setup and net per
+ * calendar year.
+ */
 export function YearTable({ caption, years }: { caption: ReactNode; years: { label: string; savings: number; run: number; setup: number; net: number }[] }) {
   return (
     <Panel title="By calendar year">

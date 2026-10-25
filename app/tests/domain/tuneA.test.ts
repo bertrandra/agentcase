@@ -32,13 +32,15 @@ describe('tune A domain reproduces the legacy', () => {
   });
   it.each(ids)('Human Readiness index, cost and drag: %s', (id) => {
     const c = ctxOf(id), e = extra<Record<string, unknown>>('tuneAHri', id);
-    const got = { on: hriEnabled(c), index: hriIndex(c), intensity: hriIntensity(c), costPerFte: hriCostPerFTE(c), change: convChangeCost(c), ramp: hriRampFactor(c) };
+    const got = { on: hriEnabled(c), index: hriIndex(c), intensity: hriIntensity(c), costPerFte: hriCostPerFTE(c), change: convChangeCost(c),
+      ramp: hriRampFactor(c) };
     expect(diff(e, got, 'hri')).toEqual([]);
   });
   it.each(ids)('eligibility verdict, pillar matrix and Abaque rows: %s', (id) => {
     const c = ctxOf(id), e = extra<{ pillar: number[][]; profile: string }>('tuneAEligibility', id);
     const got = {
-      verdict: eligVerdict(c), abaque: abaqueRows(c), base: vtaxEffBase(c), avgHuman: vtaxAvgHuman(c), mode: vtaxModeOf(c), profile: currentProfileId(c.s.lifecyclePos),
+      verdict: eligVerdict(c), abaque: abaqueRows(c), base: vtaxEffBase(c), avgHuman: vtaxAvgHuman(c), mode: vtaxModeOf(c),
+      profile: currentProfileId(c.s.lifecyclePos),
       pillar: PRODUCT_PROFILES.map((p) => PROFILE_PHASES.map((ph) => profileCoef(c, p.id, ph))), vtaxRate: verificationTaxRate(c),
     };
     expect(diff(e, got, 'elig')).toEqual([]);

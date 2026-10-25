@@ -13,7 +13,10 @@ afterEach(cleanup);
 const set = () => scenarioSet(makeCtx(appStore().getState().doc));
 const rowOf = (name: RegExp) => screen.getAllByRole('row').find((r) => name.test(r.textContent ?? ''))!;
 
-/** DEV-SCENARIO-ENGINE: the legacy flat-model figures of the setup, run cost, savings, net, ROI and payback columns (the AS-IS row and the baseline are unchanged). */
+/**
+ * DEV-SCENARIO-ENGINE: the legacy flat-model figures of the setup, run cost, savings, net, ROI and payback columns (the AS-IS row and the baseline
+ * are unchanged).
+ */
 const flatFigures = (fx: string): number[] => {
   const oracle = loadExtra('scenarioSet', fx) as { key: string; m: { setup: number; yearRun: number[]; totBen: number; roi: number | null; pbMonth: number | null } }[];
   return oracle.filter((s) => s.key !== 'asis').flatMap(({ m }) => numberTokens([...m.yearRun, m.yearRun.reduce((a, b) => a + b, 0), m.setup, m.totBen, m.totBen - m.setup]

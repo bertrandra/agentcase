@@ -22,7 +22,11 @@ const POINTS = ['circle', 'rect', 'triangle', 'rectRot', 'star', 'crossRot', 're
 type Hatch = (g: CanvasRenderingContext2D, s: number) => void;
 const line = (g: CanvasRenderingContext2D, x0: number, y0: number, x1: number, y1: number): void => { g.moveTo(x0, y0); g.lineTo(x1, y1); };
 const HATCHES: (Hatch | null)[] = [
-  null, (g, s) => { line(g, 0, s, s, 0); line(g, -1, 1, 1, -1); line(g, s - 1, s + 1, s + 1, s - 1); }, (g, s) => { line(g, 0, 0, s, s); line(g, -1, s - 1, 1, s + 1); line(g, s - 1, -1, s + 1, 1); },
+  null, (g, s) => { line(g, 0, s, s, 0); line(g, -1, 1, 1, -1); line(g, s - 1, s + 1, s + 1, s - 1); }, (g, s) => {
+    line(g, 0, 0, s, s);
+    line(g, -1, s - 1, 1, s + 1);
+    line(g, s - 1, -1, s + 1, 1);
+  },
   (g, s) => line(g, 0, s / 2, s, s / 2), (g, s) => line(g, s / 2, 0, s / 2, s), (g, s) => { line(g, 0, s / 2, s, s / 2); line(g, s / 2, 0, s / 2, s); },
   (g, s) => { g.moveTo(s / 2 + 1.5, s / 2); g.arc(s / 2, s / 2, 1.5, 0, Math.PI * 2); }, (g, s) => { line(g, 0, s, s, 0); line(g, 0, 0, s, s); },
 ];
@@ -35,7 +39,8 @@ function hatch(color: string, i: number, tok: Tok): CanvasPattern | null {
     const g = c.getContext('2d');
     if (!g) return null;
     g.fillStyle = color; g.fillRect(0, 0, s, s);
-    g.strokeStyle = tok('surface'); g.fillStyle = tok('surface'); g.lineWidth = 1.5; g.beginPath(); draw(g, s); g.stroke(); if (i % HATCHES.length === 6) g.fill();
+    g.strokeStyle = tok('surface'); g.fillStyle = tok('surface'); g.lineWidth = 1.5; g.beginPath(); draw(g, s); g.stroke();
+      if (i % HATCHES.length === 6) g.fill();
     return g.createPattern(c, 'repeat');
   } catch { return null; }
 }

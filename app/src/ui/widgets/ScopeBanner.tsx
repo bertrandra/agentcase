@@ -19,7 +19,8 @@ export function scopeText(kind: SectionKind, v: ViewScope, editAll = false): { m
 
 /**
  * States the View and what it means for THIS section by kind (docs/VUE_AGREGEE.md): "Calculated on: Portfolio (3 planned products)" for a result,
- * "Changing: product X — aggregate view..." for an input ("Changing: all products (shared values)" with that Change choice in a Portfolio / Wave), "Independent of the view" for a reference, "Portfolio level" for the Portfolio group.
+ * "Changing: product X — aggregate view..." for an input ("Changing: all products (shared values)" with that Change choice in a Portfolio / Wave),
+ * "Independent of the view" for a reference, "Portfolio level" for the Portfolio group.
  * A polite live region, so a change of View is read once the section re-renders. Nothing at all with one product.
  */
 export function ScopeBanner() {

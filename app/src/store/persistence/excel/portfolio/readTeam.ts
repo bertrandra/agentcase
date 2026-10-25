@@ -13,7 +13,8 @@ const KNOWN_ART = new Set([...SDLC_ARTEFACTS, ...REG_ARTEFACTS].map((a) => a.id)
 
 /**
  * TeamIn sheet: ONE sheet, a Product column. Every row is validated (known product, known location, FTE >= 0, known pinned artefacts, a pin only once per
- * product) and a bad row stops the import, unlike the single-case "Input Team" that skips rows: a portfolio must not silently lose a team. Each product needs >= 1 row.
+ * product) and a bad row stops the import, unlike the single-case "Input Team" that skips rows: a portfolio must not silently lose a team. Each
+ * product needs >= 1 row.
  */
 export function readTeams(sheets: Sheets, ids: ReadonlySet<string>): Map<string, TeamRow[]> {
   const t = tab(sheets, PF_SHEETS.team);

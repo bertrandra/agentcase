@@ -18,9 +18,11 @@ export function directionalSensitivity(c: Ctx): SensiRow[] {
     const vc = makeCtx(s);
     return { sav: sum(horizonYears(vc).sav), r: headline(vc).roi, f: model(vc).yearETP[2]! };
   };
-  const atCap = m.eff >= 100 - m.ceiling - 1e-9, dnAuto = Math.max(0, m.auto - 10), upAuto = atCap ? dnAuto : Math.min(80, m.auto + 10), upCeil = Math.min(100, m.ceiling + 10), tol = 1e-9;
+  const atCap = m.eff >= 100 - m.ceiling - 1e-9, dnAuto = Math.max(0, m.auto - 10), upAuto = atCap ? dnAuto : Math.min(80, m.auto + 10),
+    upCeil = Math.min(100, m.ceiling + 10), tol = 1e-9;
   const vUp = variant({ autoPotential: String(upAuto) }, false), vCeil = variant({ glassCeiling: String(upCeil) }, true);
-  const okUp = atCap ? (dnAuto < m.auto ? vUp.f >= baseFte - tol && vUp.sav < baseSav - tol : null) : (upAuto > m.auto ? vUp.f <= baseFte + tol && vUp.sav > baseSav + tol : null);
+  const okUp = atCap ? (dnAuto < m.auto ? vUp.f >= baseFte - tol && vUp.sav < baseSav - tol : null)
+    : (upAuto > m.auto ? vUp.f <= baseFte + tol && vUp.sav > baseSav + tol : null);
   const okCeil = upCeil > m.ceiling ? vCeil.f >= baseFte - tol && vCeil.sav < baseSav - tol : null;
   const seen = (v: { f: number; r: number | null }) => `FTE ${v.f.toFixed(1)} (vs ${baseFte.toFixed(1)}) · ROI ${fx(v.r)} (vs ${fx(baseRoi)})`;
   return [

@@ -33,7 +33,8 @@ export function modelTrajectory(c: Ctx, d: Drivers) {
   const yearRunAgenticCost = supRunCostFor(c, yearRunAgenticETP, tgtTJM, wd, runTeamF);
   const yearInfraEff = yearAgentVfte.map((v) => (runMode === 'legacy' ? infraYear : v > 1e-4 ? infraYear : 0));
   const khRunYr = yearAgentVfte.map((v) => (v > 1e-4 ? khRunAnnual(c, tgtTJM, wd) : 0));
-  const yearRun = yearTeamCost.map((tc, i) => tc + (yearToken[i] as number) + (yearInfraEff[i] as number) + (yearRunAgenticCost[i] as number) + (khRunYr[i] as number));
+  const yearRun = yearTeamCost.map((tc,
+    i) => tc + (yearToken[i] as number) + (yearInfraEff[i] as number) + (yearRunAgenticCost[i] as number) + (khRunYr[i] as number));
   return {
     base, sup, yearETPRaw, yearAgentVfteRaw, yearAgentVfte, yearETP, PROD_FACTOR, yearAgentCapacity: yearAgentVfte.map((v) => v * PROD_FACTOR),
     blendedTJM, tgtTJM, yearTeamCost, baseArtMonth, yearArtMonth: ramps.map((r) => (rampMax > 0 ? baseArtMonth * (r / rampMax) : 0)),

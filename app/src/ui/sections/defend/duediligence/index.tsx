@@ -5,8 +5,10 @@ import { useDd } from './useDd';
 
 const help = (
   <>
-    <p>A register of what must be confirmed with the client for the model to be defensible, including the coefficients that were hardcoded in the calculation path. Surfacing a coefficient is not a criticism of the model — every model has coefficients; the defect was that they were unseeable.</p>
-    <p>PC1 client-provided · PC2 client-observable · PC3 catalogue default · PC4 unvalidated estimate · PC5 embedded coefficient. The € weight is measured, never asserted: several coefficients turn out to have no euro path at all.</p>
+    <p>A register of what must be confirmed with the client for the model to be defensible, including the coefficients that were hardcoded in the calculation
+      path. Surfacing a coefficient is not a criticism of the model — every model has coefficients; the defect was that they were unseeable.</p>
+    <p>PC1 client-provided · PC2 client-observable · PC3 catalogue default · PC4 unvalidated estimate · PC5 embedded coefficient. The € weight is measured,
+      never asserted: several coefficients turn out to have no euro path at all.</p>
   </>
 );
 

@@ -7,7 +7,8 @@ import { freshStore } from '../../store/helpers';
 
 /**
  * axe-core on every tab of the generated dependency page, with and without a selected node (colour contrast needs a browser: tools/a11y.mjs covers it).
- * One audit per test: each takes 0.2 s (graph) to 1.1 s (matrix, ~2,900 cells) alone; the 15 s timeout is a safety margin for a loaded CI runner, not the budget.
+ * One audit per test: each takes 0.2 s (graph) to 1.1 s (matrix, ~2,900 cells) alone; the 15 s timeout is a safety margin for a loaded CI runner, not
+ * the budget.
  */
 beforeEach(() => { freshStore(); });
 afterEach(cleanup);

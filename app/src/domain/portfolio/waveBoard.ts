@@ -36,7 +36,8 @@ export function waveBoard(pf: Portfolio, c: Consolidated): BoardColumn[] {
   const cal = calendarOf(pf), byId = new Map(pf.products.map((p) => [p.id, p]));
   const card = (id: string, month0: number | null): BoardCard => {
     const p = byId.get(id)!;
-    return { id, name: p.name, archived: !!p.archived, offset: p.offsetMonths, etp: teamEtp(p.teamIn), startLabel: month0 === null ? null : cal.dateAt(month0) };
+    return { id, name: p.name, archived: !!p.archived, offset: p.offsetMonths, etp: teamEtp(p.teamIn),
+      startLabel: month0 === null ? null : cal.dateAt(month0) };
   };
   const cols = pf.waves.map((w): BoardColumn => {
     const view = c.waves.find((x) => x.id === w.id)!;
@@ -46,6 +47,7 @@ export function waveBoard(pf: Portfolio, c: Consolidated): BoardColumn[] {
       totals: summaryRow(w.id, w.name, view.productIds.length, view.series, view.summary),
     };
   });
-  const out: BoardColumn[] = [{ id: null, name: 'Unscheduled', startMonth: 0, startLabel: null, note: '', cards: pf.products.filter((p) => p.waveId === null).map((p) => card(p.id, null)), totals: null }];
+  const out: BoardColumn[] = [{ id: null, name: 'Unscheduled', startMonth: 0, startLabel: null, note: '',
+    cards: pf.products.filter((p) => p.waveId === null).map((p) => card(p.id, null)), totals: null }];
   return [...cols, ...out];
 }

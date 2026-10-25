@@ -72,6 +72,7 @@ export function applyToCommon(pf: Portfolio, productId: string, r: string): Port
   const prod = pf.products.find((x) => x.id === productId);
   const value = prod ? overrideValue(prod.overrides, r) : undefined;
   if (value === undefined) throw new Error(`applyToCommon: product ${productId} does not override ${r}`);
-  const products = pf.products.map((x) => (deepEqual(overrideValue(x.overrides, r), value) ? { ...x, overrides: writeOverride(x.overrides, r, undefined) } : x));
+  const products = pf.products.map((x) => (deepEqual(overrideValue(x.overrides, r), value) ? { ...x,
+    overrides: writeOverride(x.overrides, r, undefined) } : x));
   return { ...pf, common: writeCommon(pf.common, r, value), products };
 }

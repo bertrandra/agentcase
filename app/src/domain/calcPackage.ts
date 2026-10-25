@@ -20,7 +20,8 @@ export function buildCalcPackage(state: CaseState): CalcPackage {
   return {
     schemaVersion: CALC_PACKAGE_SCHEMA, calculationVersion: e.K.calculationVersion, inputHash: e.K.inputHash, curveModelId: e.K.curveModelId,
     headline: { payback: h.payback, npv: h.npv, roi: h.roi, totalSavings: h.totalSavings },
-    annual: e.years().map((y) => ({ yearIndex: y.yearIndex, savings: y.savings, totalRunCost: y.totalRunCost, netAfterSetup: y.netAfterSetup, cumulativeCashFlowEnd: y.cumulativeCashFlowEnd })),
+    annual: e.years().map((y) => ({ yearIndex: y.yearIndex, savings: y.savings, totalRunCost: y.totalRunCost, netAfterSetup: y.netAfterSetup,
+      cumulativeCashFlowEnd: y.cumulativeCashFlowEnd })),
   };
 }
 
@@ -34,6 +35,7 @@ export function parseCalcPackage(v: unknown): CalcPackage | null {
   const h = v.headline;
   if (typeof v.calculationVersion !== 'string' || typeof v.inputHash !== 'string' || typeof v.curveModelId !== 'string') return null;
   if (!isNumOrNull(h.payback) || !isNum(h.npv) || !isNumOrNull(h.roi) || !isNum(h.totalSavings)) return null;
-  const rows = v.annual.every((y) => rec(y) && isNum(y.yearIndex) && isNum(y.savings) && isNum(y.totalRunCost) && isNum(y.netAfterSetup) && isNum(y.cumulativeCashFlowEnd));
+  const rows = v.annual.every((y) => rec(y) && isNum(y.yearIndex) && isNum(y.savings) && isNum(y.totalRunCost) && isNum(y.netAfterSetup)
+    && isNum(y.cumulativeCashFlowEnd));
   return rows ? (v as unknown as CalcPackage) : null;
 }

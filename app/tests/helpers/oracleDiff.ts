@@ -10,7 +10,8 @@ export function diffValues(exp: unknown, got: unknown, path: string, out: string
     if (!Array.isArray(got) || got.length !== exp.length) out.push(`${path}: array length ${(got as unknown[] | undefined)?.length} vs ${exp.length}`);
     else exp.forEach((v, i) => diffValues(v, got[i], `${path}[${i}]`, out, tol));
   } else if (exp && typeof exp === 'object') {
-    for (const k of Object.keys(exp)) diffValues((exp as Record<string, unknown>)[k], (got as Record<string, unknown> | undefined)?.[k], `${path}.${k}`, out, tol);
+    for (const k of Object.keys(exp)) diffValues((exp as Record<string, unknown>)[k], (got as Record<string, unknown> | undefined)?.[k], `${path}.${k}`, out,
+      tol);
   } else if (exp !== got) out.push(`${path}: expected ${JSON.stringify(exp)}, got ${JSON.stringify(got)}`);
   return out;
 }
@@ -27,4 +28,5 @@ export function omitDeep(v: unknown, keys: string[]): unknown {
   return v;
 }
 /** Keep only `keys` of an object (the legacy read-outs carry more fields than the ported ones). */
-export const pick = <T extends object>(o: T, keys: string[]): Partial<T> => Object.fromEntries(keys.filter((k) => k in o).map((k) => [k, (o as Record<string, unknown>)[k]])) as Partial<T>;
+export const pick = <T extends object>(o: T,
+  keys: string[]): Partial<T> => Object.fromEntries(keys.filter((k) => k in o).map((k) => [k, (o as Record<string, unknown>)[k]])) as Partial<T>;

@@ -15,7 +15,10 @@ const cols = (f: (c: ScenarioCell) => ReactNode): AggColumn<ScenarioProductRow>[
   ...KEYS.map(([k, label]) => ({ key: k, header: label, align: R, render: (r: ScenarioProductRow) => f(cell(r, k)) })),
 ];
 
-/** Scenarios — Aggregate view: the five transformation strategies of every product in view (net, ROI, payback over its own horizon), read-only; no portfolio scenario exists. */
+/**
+ * Scenarios — Aggregate view: the five transformation strategies of every product in view (net, ROI, payback over its own horizon), read-only; no
+ * portfolio scenario exists.
+ */
 export default function ScenariosAggregate() {
   const rows = useScenarioRows(), vs = useViewScope();
   return (

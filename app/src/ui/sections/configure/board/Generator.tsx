@@ -13,17 +13,28 @@ export function Generator({ groups, onDone }: { groups: GroupDef[]; onDone?: (s:
   const toggle = (id: string, on: boolean) => { setAll(false); setPicked(on ? [...picked, id] : picked.filter((x) => x !== id)); };
   const generate = () => {
     const live = resolveSections(SECTIONS as NavSection[], rows, undefined);   // the document's own section→group assignment, like the legacy catalogue
-    const s = newDashboard({ groupIds: picked, allGroups: all, existing, groups: groups.length ? groups : GROUPS, sections: live, maxOrder: Math.max(0, ...live.map((x) => x.groupSeq || 0)) });
+    const s = newDashboard({ groupIds: picked, allGroups: all, existing, groups: groups.length ? groups : GROUPS, sections: live,
+      maxOrder: Math.max(0, ...live.map((x) => x.groupSeq || 0)) });
     setWarn(!s);
     if (s) { addDashboard(s); setPicked([]); setAll(false); onDone?.(s); }
   };
   return (
     <>
-      <p className="ac-muted">Pick a group, several, or all — cards generate from those sections’ own bindable variables (🗄️ Data Model → 📊 Variable registry), two per section that owns any, plus two GLOBAL headline cards.</p>
+      <p className="ac-muted">Pick a group, several, or all — cards generate from those sections’ own bindable variables
+        (🗄️ Data Model → 📊 Variable registry), two per section that owns any, plus two GLOBAL headline cards.</p>
       <div className="ac-form-row">
-        <label className="ac-check"><input type="checkbox" checked={all} onChange={(e) => { setAll(e.target.checked); if (e.target.checked) setPicked([]); }} /> <b>All groups</b></label>
+        <label className="ac-check"><input
+          type="checkbox"
+          checked={all}
+          onChange={(e) => { setAll(e.target.checked); if (e.target.checked) setPicked([]); }}
+        /> <b>All groups</b></label>
         {groups.map((g) => (
-          <label key={g.id} className="ac-check"><input type="checkbox" checked={all || picked.includes(g.id)} disabled={all} onChange={(e) => toggle(g.id, e.target.checked)} /> {g.label}</label>
+          <label key={g.id} className="ac-check"><input
+            type="checkbox"
+            checked={all || picked.includes(g.id)}
+            disabled={all}
+            onChange={(e) => toggle(g.id, e.target.checked)}
+          /> {g.label}</label>
         ))}
       </div>
       <button type="button" className="ac-btn" onClick={generate}>➕ Generate dashboard</button>

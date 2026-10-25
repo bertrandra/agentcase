@@ -19,7 +19,8 @@ export function logoFileProblem(type: string, bytes: number): string | null {
   return null;
 }
 /** A PNG or JPEG base64 data URL within the size limit. */
-export const isLogoSrc = (s: unknown): s is string => typeof s === 'string' && s.length <= SRC_MAX && /^data:image\/(png|jpeg);base64,[A-Za-z0-9+/]+={0,2}$/.test(s);
+export const isLogoSrc = (s: unknown): s is string => typeof s === 'string' && s.length <= SRC_MAX
+  && /^data:image\/(png|jpeg);base64,[A-Za-z0-9+/]+={0,2}$/.test(s);
 
 /** The logo of a case, validated (null when there is none or it is not a valid image). */
 export function logoOf(d: { CUSTOMER_LOGO?: unknown; [key: string]: unknown }): CustomerLogo | null {
@@ -28,6 +29,9 @@ export function logoOf(d: { CUSTOMER_LOGO?: unknown; [key: string]: unknown }): 
   return { src: l.src, backdrop: l.backdrop === 'pill' ? 'pill' : 'none', hidden: l.hidden === true };
 }
 /** The logo to show (null when there is none or it is hidden for the presentation). */
-export const shownLogo = (d: { CUSTOMER_LOGO?: unknown; [key: string]: unknown }): CustomerLogo | null => { const l = logoOf(d); return l && !l.hidden ? l : null; };
+export const shownLogo = (d: { CUSTOMER_LOGO?: unknown; [key: string]: unknown }): CustomerLogo | null => {
+  const l = logoOf(d);
+  return l && !l.hidden ? l : null;
+};
 /** The alternative text: "<customer> logo". */
 export const logoAlt = (customer: string): string => `${customer.trim() || 'Customer'} logo`;

@@ -15,11 +15,13 @@ const setCoefCmd = defineCommand<{ key: string; value: number; domId?: string }>
   },
 });
 /** Edit an embedded coefficient (legacy coefSet); `domId` is the legacy input that mirrors it. Invalid numbers are ignored. */
-export const setCoef = (key: string, value: string | number, domId?: string): void => appStore().dispatch(setCoefCmd({ key, value: typeof value === 'number' ? value : parseFloat(value), domId }));
+export const setCoef = (key: string, value: string | number,
+  domId?: string): void => appStore().dispatch(setCoefCmd({ key, value: typeof value === 'number' ? value : parseFloat(value), domId }));
 
 type TokField = 'name' | 'mix' | 'priceIn' | 'priceOut';
 const setTokFieldCmd = defineCommand<{ index: number; field: TokField; value: string }>({
-  type: 'tuneB.token.setField', label: (p) => `Set model ${p.index + 1} ${p.field} to ${p.value}`, coalesceKey: (p) => `tuneB.token.setField:${p.index}:${p.field}`,
+  type: 'tuneB.token.setField', label: (p) => `Set model ${p.index + 1} ${p.field} to ${p.value}`,
+  coalesceKey: (p) => `tuneB.token.setField:${p.index}:${p.field}`,
   run(d, p) {
     const m = d.TOKEN_MODELS[p.index]; if (!m) return;
     if (p.field === 'name') { m.name = p.value; return; }
@@ -45,15 +47,22 @@ export const setTokenField = (index: number, field: TokField, value: string): vo
 export const addTokenModel = (): void => appStore().dispatch(addTokenCmd({}));
 export const removeTokenModel = (index: number): void => appStore().dispatch(removeTokenCmd({ index }));
 export const resetTokenModels = (): void => appStore().dispatch(resetTokensCmd({}));
-export const setTokenOutShare = (value: string | number): void => appStore().dispatch(setOutShareCmd({ value: typeof value === 'number' ? value : parseFloat(value) }));
+export const setTokenOutShare = (value: string | number): void => appStore().dispatch(setOutShareCmd({ value: typeof value === 'number' ? value
+  : parseFloat(value) }));
 
 function statusOf(d: Doc, id: string) {
   let s = d.statusLifecycle.find((x) => x.id === id);
-  if (!s) { const def = STATUS_LIFECYCLE.find((x) => x.id === id); if (!def) return undefined; s = { id, autoPosture: def.autoPosture, weights: { ...def.weights } }; d.statusLifecycle.push(s); }
+  if (!s) {
+    const def = STATUS_LIFECYCLE.find((x) => x.id === id);
+    if (!def) return undefined;
+    s = { id, autoPosture: def.autoPosture, weights: { ...def.weights } };
+    d.statusLifecycle.push(s);
+  }
   return s;
 }
 const setPostureCmd = defineCommand<{ status: string; value: number }>({
-  type: 'tuneB.lifecycle.setPosture', label: (p) => `Set the ${p.status} automation posture to ${p.value}`, coalesceKey: (p) => `tuneB.lifecycle.setPosture:${p.status}`,
+  type: 'tuneB.lifecycle.setPosture', label: (p) => `Set the ${p.status} automation posture to ${p.value}`,
+  coalesceKey: (p) => `tuneB.lifecycle.setPosture:${p.status}`,
   run(d, p) { const s = statusOf(d, p.status); if (s && !isNaN(p.value) && p.value >= 0) s.autoPosture = p.value; },
 });
 const resetLifecycleCmd = defineCommand<Record<string, never>>({
@@ -61,5 +70,6 @@ const resetLifecycleCmd = defineCommand<Record<string, never>>({
   run(d) { d.statusLifecycle = STATUS_LIFECYCLE.map((s) => ({ id: s.id, autoPosture: s.autoPosture, weights: { ...s.weights } })); },
 });
 /** Automation posture of a product status (legacy setStatusPosture): negative or invalid values are ignored. */
-export const setStatusPosture = (status: string, value: string | number): void => appStore().dispatch(setPostureCmd({ status, value: typeof value === 'number' ? value : parseFloat(value) }));
+export const setStatusPosture = (status: string,
+  value: string | number): void => appStore().dispatch(setPostureCmd({ status, value: typeof value === 'number' ? value : parseFloat(value) }));
 export const resetLifecycleCoefficients = (): void => appStore().dispatch(resetLifecycleCmd({}));

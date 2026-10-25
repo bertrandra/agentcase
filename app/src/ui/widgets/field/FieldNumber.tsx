@@ -43,19 +43,45 @@ export function FieldNumber(p: FieldNumberProps) {
     <input type="range" aria-label={p.label} aria-valuetext={shown} value={p.value} min={p.min} max={p.max} step={p.step} disabled={p.disabled}
       onChange={(e) => p.onCommit(e.target.value)} />
   );
-  const box = (name: string) => <NumCell value={p.value} onCommit={p.onCommit} min={p.min} max={p.max} step={p.step} width={null} ariaLabel={name} disabled={p.disabled} />;
+  const box = (name: string) => <NumCell
+    value={p.value}
+    onCommit={p.onCommit}
+    min={p.min}
+    max={p.max}
+    step={p.step}
+    width={null}
+    ariaLabel={name}
+    disabled={p.disabled}
+  />;
   if (variant === 'number') return p.bare ? box(p.label) : <Field label={p.label} hint={p.hint}>{box(p.label)}</Field>;
   if (variant === 'slider') return p.bare ? slider : <Field label={`${p.label}: ${shown}`} hint={p.hint}>{slider}</Field>;
   if (variant === 'slider-field') {
-    return <FieldGroup id={id} label={p.label} hint={p.hint} bare={p.bare}><span className="ac-fv-row">{slider}{box(`${p.label} (value)`)}{p.unit && <span>{p.unit}</span>}</span></FieldGroup>;
+    return <FieldGroup
+      id={id}
+      label={p.label}
+      hint={p.hint}
+      bare={p.bare}
+    ><span className="ac-fv-row">{slider}{box(`${p.label} (value)`)}{p.unit && <span>{p.unit}</span>}</span></FieldGroup>;
   }
   const x = parseFloat(String(p.value)), atMin = p.min != null && x <= p.min, atMax = p.max != null && x >= p.max;
   return (
     <FieldGroup id={id} label={p.label} hint={p.hint} bare={p.bare}>
       <span className="ac-fv-row ac-fv-stepper">
-        <button type="button" className="ac-fv-step" aria-label={`Decrease ${p.label}`} disabled={p.disabled || atMin} onClick={() => p.onCommit(nudge(p.value, -1, p))}>−</button>
+        <button
+          type="button"
+          className="ac-fv-step"
+          aria-label={`Decrease ${p.label}`}
+          disabled={p.disabled || atMin}
+          onClick={() => p.onCommit(nudge(p.value, -1, p))}
+        >−</button>
         {box(p.label)}
-        <button type="button" className="ac-fv-step" aria-label={`Increase ${p.label}`} disabled={p.disabled || atMax} onClick={() => p.onCommit(nudge(p.value, 1, p))}>+</button>
+        <button
+          type="button"
+          className="ac-fv-step"
+          aria-label={`Increase ${p.label}`}
+          disabled={p.disabled || atMax}
+          onClick={() => p.onCommit(nudge(p.value, 1, p))}
+        >+</button>
         {p.unit && <span>{p.unit}</span>}
       </span>
     </FieldGroup>

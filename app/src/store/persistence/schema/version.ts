@@ -23,8 +23,9 @@ type Raw = Record<string, unknown>;
 const KNOWN_PORTFOLIO = 'agentcase.portfolio.v1';
 
 /**
- * v1 -> v2. v2 is the shape written since files carry `_schemaVersion`: identical to v1 but stamped. Normalised legacy spellings: a portfolio `_schema` written with
- * other letter case or spaces (hand-edited files) is read as the portfolio tag. A no-op for every file this app or the legacy app wrote.
+ * v1 -> v2. v2 is the shape written since files carry `_schemaVersion`: identical to v1 but stamped. Normalised legacy spellings: a portfolio
+ * `_schema` written with other letter case or spaces (hand-edited files) is read as the portfolio tag. A no-op for every file this app or the legacy
+ * app wrote.
  */
 function v1ToV2(s: Raw): Raw {
   const tag = typeof s._schema === 'string' ? s._schema.trim().toLowerCase() : s._schema;

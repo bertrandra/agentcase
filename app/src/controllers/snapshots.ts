@@ -65,7 +65,10 @@ export function setBaselineSnapshot(id: string): boolean {
   return true;
 }
 
-/** Headline figures of two snapshots side by side; 'current' stands for the case being edited (the ACTIVE product). A multi-product capture is compared on that same product. Null when an id is unknown. */
+/**
+ * Headline figures of two snapshots side by side; 'current' stands for the case being edited (the ACTIVE product). A multi-product capture is
+ * compared on that same product. Null when an id is unknown.
+ */
 export function compareSnapshots(a: string, b: string): CompareRow[] | null {
   const pick = (id: string): Doc | null => {
     if (id === 'current') return activeDoc();

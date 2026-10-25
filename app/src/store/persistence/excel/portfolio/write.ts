@@ -5,14 +5,17 @@ import { blue, frz, geDV, head, listDV, rangeDV, sheet, ynDV } from '../params/k
 import { PF_HEADERS, PF_SHEETS } from './names';
 import { writeKnowledge } from './writeKnowledge';
 
-const ws = (wb: XL.Workbook, name: string, widths: number[]): XL.Worksheet => sheet(wb, name, (PF_HEADERS[name] as string[]).map((h, i): [string, number] => [h, widths[i] ?? 12]));
+const ws = (wb: XL.Workbook, name: string, widths: number[]): XL.Worksheet => sheet(wb, name,
+  (PF_HEADERS[name] as string[]).map((h, i): [string, number] => [h, widths[i] ?? 12]));
 const finish = (w: XL.Worksheet): void => { head(w); frz(w); };
 const inputs = (row: XL.Row, n: number): void => { for (let i = 1; i <= n; i++) blue(row.getCell(i)); };
 
 function writeSettings(wb: XL.Workbook, pf: Portfolio): void {
   const w = ws(wb, PF_SHEETS.settings, [30, 24]);
-  const rows: [string, string | number][] = [['Hub enabled', pf.hub.enabled ? 'Yes' : 'No'], ['Hub infrastructure (€/month)', pf.hub.infraMonthly], ['Hub infrastructure allocation', pf.hub.infraAllocation],
-    ['Horizon (months)', pf.horizonMonths], ['Start date (ISO)', pf.startDate], ['Active product id', pf.activeProductId], ['Correlation rho (0-1)', pf.rho ?? 0]];
+  const rows: [string, string | number][] = [['Hub enabled', pf.hub.enabled ? 'Yes' : 'No'], ['Hub infrastructure (€/month)', pf.hub.infraMonthly],
+    ['Hub infrastructure allocation', pf.hub.infraAllocation],
+    ['Horizon (months)', pf.horizonMonths], ['Start date (ISO)', pf.startDate], ['Active product id', pf.activeProductId],
+      ['Correlation rho (0-1)', pf.rho ?? 0]];
   rows.forEach(([k, v]) => inputs(w.addRow([k, v]), 2));
   w.getCell('B2').dataValidation = listDV(['Yes', 'No'], 'Hub enabled');
   w.getCell('B4').dataValidation = listDV(['perProduct', 'byBaseEtp'], 'perProduct: full cost per product; byBaseEtp: shared by entry headcount');

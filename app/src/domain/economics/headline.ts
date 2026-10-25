@@ -4,7 +4,10 @@ import type { Ctx } from '../ctx';
 import type { Engine } from '../time';
 import { roiCanonical } from './cashflow';
 
-/** The case's money headline, derived once from the Time Engine rows (payback, NPV and ROI by the cash-flow kernel): every screen that prints net, ROI, payback or NPV reads this. */
+/**
+ * The case's money headline, derived once from the Time Engine rows (payback, NPV and ROI by the cash-flow kernel): every screen that prints net,
+ * ROI, payback or NPV reads this.
+ */
 export interface Headline {
   /** sum of savings over the horizon */
   totalBenefit: number;

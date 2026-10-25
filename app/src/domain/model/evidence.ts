@@ -47,5 +47,6 @@ export function evlModel(c: Ctx, tornado: TornadoRow[] | null, now = Date.now())
   const meets = grade == null ? null : GRADE_ORDER.indexOf(grade) >= GRADE_ORDER.indexOf(expectedGrade);
   const upgradePriority = drivers.map((d) => ({ ...d, priority: d.weight * (EVIDENCE_TIERS.MEASURED - (EVIDENCE_TIERS[d.effectiveTier] || 0.25)) }))
     .filter((r) => r.priority > 1e-9).sort((a, b) => b.priority - a.priority);
-  return { on: !!c.s.MODEL.FLAGS.evl, stage: ev.stage, expectedGrade, hasTornado: w.hasTornado, score, grade, meetsExpectation: meets, drivers, upgradePriority };
+  return { on: !!c.s.MODEL.FLAGS.evl, stage: ev.stage, expectedGrade, hasTornado: w.hasTornado, score, grade, meetsExpectation: meets, drivers,
+    upgradePriority };
 }

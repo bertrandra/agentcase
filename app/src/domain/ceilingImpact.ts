@@ -21,7 +21,8 @@ export function ceilingImpact(c: Ctx): CeilingImpact {
     const arts = act.filter((a) => a.phase === p.id);
     if (!arts.length) return [];
     const W = arts.reduce((s, a) => s + (+a.w || 0), 0), H = arts.reduce((s, a) => s + (+a.w || 0) * a.humanSup, 0);
-    const top = [...arts].sort((x, y) => pts(y, totW) - pts(x, totW)).slice(0, 3).map((a) => ({ id: a.id, name: a.name, humanSup: a.humanSup, pts: pts(a, totW) }));
+    const top = [...arts].sort((x, y) => pts(y, totW) - pts(x, totW)).slice(0,
+      3).map((a) => ({ id: a.id, name: a.name, humanSup: a.humanSup, pts: pts(a, totW) }));
     return [{ phaseId: p.id, name: p.name, pts: H / totW, ownHuman: W ? H / W : 0, effortShare: (W / totW) * 100, count: arts.length, top }];
   }).sort((x, y) => y.pts - x.pts) : [];
   const ceiling = rows.reduce((s, r) => s + r.pts, 0);

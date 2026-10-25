@@ -5,8 +5,6 @@ import { Row } from './bars';
 const TONES = ['chart-cat-1', 'chart-cat-2', 'chart-cat-3', 'chart-cat-4', 'chart-cat-5'];
 const FAMILY: Record<string, string> = { adoption: 'chart-cat-1', maturity: 'chart-cat-4', financial: 'chart-cat-3', workforce: 'chart-cat-2' };
 const pct = (v: number) => `${v.toFixed(2)}%`;
-// theme guard: a composite shadow (offset + colour) lives in a token pair, never in CSS; inline until a ring token exists
-const RING = { boxShadow: 'var(--ac-shadow-ring-offset) var(--ac-slate-650)' };
 
 /** A bar on the calendar track (coloured by the wave's tone): a focusable, labelled, read-only group. */
 function Bar({ left, width, tone, label, cls, children }: { left: number; width: number; tone: string; label: string; cls: string; children?: ReactNode }) {
@@ -28,7 +26,7 @@ function ProductBar({ p, tone }: { p: GanttProductRow; tone: string }) {
       {p.milestones.map((m) => (
         // dynamic: the milestone's place on the calendar
         <span key={`${m.month}:${m.label}`} aria-hidden="true" title={m.title} data-milestone={m.family} className="ac-gantt-milestone"
-          data-tone={FAMILY[m.family] ?? 'slate-650'} style={{ ...RING, left: pct(m.left) }} />
+          data-tone={FAMILY[m.family] ?? 'slate-650'} style={{ left: pct(m.left) }} />
       ))}
     </Bar>
   );

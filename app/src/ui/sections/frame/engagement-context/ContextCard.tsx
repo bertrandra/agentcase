@@ -58,8 +58,7 @@ export function DiscountCard() {
       <summary>Case discount rate (/yr) <span className="ac-muted">— headline NPV, sponsor&apos;s WACC / hurdle rate</span></summary>
       <FieldNumber native="number" label={DISCOUNT_LABEL} hint={DISCOUNT_HINT} value={value} min={0} max={1} step={0.01} onCommit={setCaseDiscountRate}>
         <Field label={DISCOUNT_LABEL} hint={DISCOUNT_HINT}>
-          {/* shared widget: CommitNumber (ui/widgets) takes a style, not a class */}
-          <CommitNumber value={value} label={DISCOUNT_LABEL} min={0} max={1} step={0.01} style={{ width: 100 }} onCommit={setCaseDiscountRate} />
+          <CommitNumber value={value} label={DISCOUNT_LABEL} min={0} max={1} step={0.01} className="ac-num-w100" onCommit={setCaseDiscountRate} />
         </Field>
       </FieldNumber>
     </details>

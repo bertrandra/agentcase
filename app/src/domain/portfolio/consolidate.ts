@@ -48,7 +48,8 @@ export function consolidate(pf: Portfolio): Consolidated {
   const { series, summary } = aggregate(products, horizon, rate);
   const baseEtp = products.reduce((a, v) => a + v.run.baseEtp, 0);
   const adoptionPct = series.adoptionW.map((w) => (baseEtp > 0 ? w / baseEtp : 0));
-  const out: Consolidated = { horizon, rate, products, waves: waveViews(pf, products, horizon, rate), excluded: unscheduledIds(pf), series, summary, baseEtp, adoptionPct };
+  const out: Consolidated = { horizon, rate, products, waves: waveViews(pf, products, horizon, rate), excluded: unscheduledIds(pf), series, summary, baseEtp,
+    adoptionPct };
   memo.set(pf, out);
   return out;
 }

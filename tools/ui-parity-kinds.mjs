@@ -9,7 +9,39 @@ export const SPROPS = ['fontFamily', 'fontSize', 'fontWeight', 'fontStyle', 'lin
   'borderTopLeftRadius', 'borderBottomRightRadius', 'boxShadow', 'paddingTop', 'paddingRight', 'paddingBottom', 'paddingLeft', 'marginTop', 'marginRight', 'marginBottom', 'marginLeft', 'opacity', 'cursor', 'whiteSpace',
   'outlineStyle', 'outlineWidth'];
 
-const NOT = ['font', 'color', 'background', 'padding', 'border', 'margin', 'text-transform', 'width', 'opacity', 'cursor', 'line-height', 'letter-spacing'].map((p) => `:not([style*="${p}"])`).join('');
+import { readdirSync, readFileSync } from 'node:fs';
+
+/**
+ * Section-local looks (D5, architecture lot 5b): the rules of `app/src/ui/theme/sections-*.css` replaced inline styles, so an element their subject
+ * (a class, or a `data-*` attribute alone) gives a look property is an override like the inline style was: `LOOK_OVERRIDES` set a property of the
+ * NOT list below on the element, `LOOK_TYPOGRAPHY` set an inherited typography property (what an ancestor's inline font / colour did). Classes and
+ * attributes the shared stylesheets also use are not counted; neither are the column alignment classes (they replace an inline text-align, a column's
+ * data decision, which never made an element an override).
+ */
+const THEME = new URL('../app/src/ui/theme/', import.meta.url), WIDGETS = new URL('../app/src/ui/widgets/', import.meta.url);
+const cssIn = (dir, re) => readdirSync(dir, { recursive: true }).filter((f) => re.test(f)).map((f) => readFileSync(new URL(f, dir), 'utf8'));
+const SHARED = new Set([...cssIn(THEME, /^(?!sections-).*\.css$/), ...cssIn(WIDGETS, /\.css$/)].flatMap((t) => [...t.matchAll(/\.(ac-[a-z0-9-]+)|\[(data-[a-z-]+)/g)].map((m) => m[1] ?? m[2])));
+SHARED.add('ac-num').add('ac-center');
+/** Splits on `sep` outside brackets and parentheses. */
+const splitTop = (text, sep) => { const out = []; let depth = 0, cur = ''; for (const ch of text) { depth += '([' .includes(ch) ? 1 : ')]'.includes(ch) ? -1 : 0; if (!depth && sep.test(ch)) { out.push(cur); cur = ''; } else cur += ch; } return [...out, cur]; };
+const looks = new Map();   // subject -> its properties
+for (const text of cssIn(THEME, /^sections-.*\.css$/)) {
+  for (const [, sel, body] of text.replace(/\/\*[\s\S]*?\*\//g, '').matchAll(/([^{}]+)\{([^}]*)\}/g)) {
+    const props = [...body.matchAll(/(?:^|;)\s*([a-z-]+)\s*:/g)].map((m) => m[1]);
+    for (const one of splitTop(sel.trim(), /,/)) {
+      const last = splitTop(one.trim(), /[\s>+~]/).filter(Boolean).pop() ?? '';
+      const classes = [...last.matchAll(/\.(ac-[a-z0-9-]+)/g)].map((m) => m[1]).filter((c) => !SHARED.has(c));
+      const subjects = classes.length ? classes.map((c) => `.${c}`) : /\.ac-/.test(last) ? [] : [...last.matchAll(/\[(data-[a-z-]+)/g)].map((m) => m[1]).filter((a) => !SHARED.has(a)).map((a) => `[${a}]`);
+      for (const sub of subjects) looks.set(sub, [...(looks.get(sub) ?? []), ...props]);
+    }
+  }
+}
+const OVERRIDE = ['font', 'color', 'background', 'padding', 'border', 'margin', 'text-transform', 'width', 'opacity', 'cursor', 'line-height', 'letter-spacing'];
+const TYPO = ['font', 'color', 'line-height', 'text-transform', 'letter-spacing', 'opacity'];
+const having = (words) => [...looks].filter(([, ps]) => ps.some((p) => words.some((w) => p.includes(w)))).map(([sub]) => sub);
+export const LOOK_OVERRIDES = having(OVERRIDE), LOOK_TYPOGRAPHY = having(TYPO);
+const NOT = ['font', 'color', 'background', 'padding', 'border', 'margin', 'text-transform', 'width', 'opacity', 'cursor', 'line-height', 'letter-spacing']
+  .map((p) => `:not([style*="${p}"])`).join('') + LOOK_OVERRIDES.map((c) => `:not(${c})`).join('');
 /** Appends the plain-instance filter to every alternative of a comma list. */
 const plain = (...alts) => alts.map((a) => a + NOT).join(', ');
 const OUT = ':not(.sec-help-panel *)';   // legacy: the explainer lives in the (hidden) help panel and has its own kinds

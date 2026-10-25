@@ -14,7 +14,10 @@ const COLS: AggColumn<ConvergenceRow>[] = [
   { key: 'pass', header: 'CC-LC checks passed', align: R, render: (r) => r.checksPass }, { key: 'fail', header: 'CC-LC checks failed', align: R, render: (r) => r.checksFail },
 ];
 
-/** Loop convergence (P1) — Aggregate view: expected attempts, escape rate and the CC-LC checks of each product in view; the roll-up counts phases on, loops at risk and failing checks. */
+/**
+ * Loop convergence (P1) — Aggregate view: expected attempts, escape rate and the CC-LC checks of each product in view; the roll-up counts phases on,
+ * loops at risk and failing checks.
+ */
 export default function ConvergenceAggregate() {
   const { rows, on, above, checksFail } = useConvergenceRows();
   return (

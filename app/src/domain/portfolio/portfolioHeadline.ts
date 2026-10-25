@@ -21,11 +21,15 @@ export interface PortfolioHeadline extends Summary {
   products: number;
 }
 
-/** The figures of any group of planned products (portfolio, wave): its consolidated summary plus what the top bar and the results read, from the existing owners. */
+/**
+ * The figures of any group of planned products (portfolio, wave): its consolidated summary plus what the top bar and the results read, from the
+ * existing owners.
+ */
 function groupHeadline(items: ProductView[], series: Series, summary: Summary): PortfolioHeadline {
   const { endYear, ...years } = yearTable(series), runs = items.map((v) => v.run), auto = weightedAutomation(runs);
   const after = runs.reduce((a, r) => a + (r.engine.years().at(-1)?.totalHumanFteEnd ?? 0), 0), before = runs.reduce((a, r) => a + r.baseEtp, 0);
-  return { ...summary, velocityPct: weightedVelocity(runs), ...auto, costReduction: portfolioCostReduction(runs), fte: fteBeforeAfter(before, after), years, endYear, products: items.length };
+  return { ...summary, velocityPct: weightedVelocity(runs), ...auto, costReduction: portfolioCostReduction(runs), fte: fteBeforeAfter(before, after), years,
+    endYear, products: items.length };
 }
 
 const memo = new WeakMap<object, PortfolioHeadline>();

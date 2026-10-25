@@ -13,7 +13,8 @@ export class ThemeFileError extends Error {}
 /** The JSON of one or several themes (built-ins included: their content is copied, they import as user themes). */
 export function themeFileJson(themes: readonly ThemeDef[]): string {
   const list = themes.map((t) => ({
-    seq: t.seq, name: t.name, ...(t.description ? { description: t.description } : {}), colours: { ...t.colours }, axes: { ...t.axes }, ...(t.generator ? { generator: { ...t.generator } } : {}),
+    seq: t.seq, name: t.name, ...(t.description ? { description: t.description } : {}), colours: { ...t.colours }, axes: { ...t.axes },
+    ...(t.generator ? { generator: { ...t.generator } } : {}),
   }));
   return JSON.stringify({ _schema: THEME_FILE_SCHEMA, themes: list }, null, 2);
 }
@@ -30,7 +31,8 @@ export function readThemeFile(text: string): { themes: ThemeContent[]; notes: st
   const obj = raw && typeof raw === 'object' && !Array.isArray(raw) ? (raw as Record<string, unknown>) : null;
   const list = obj && Array.isArray(obj.themes) ? obj.themes : obj && 'colours' in obj ? [obj] : null;
   if (!list) throw new ThemeFileError('No theme in this file (expected {"themes": [...]}).');
-  if (obj && obj._schema !== undefined && obj._schema !== THEME_FILE_SCHEMA) throw new ThemeFileError(`Unknown theme file version "${String(obj._schema).slice(0, 40)}".`);
+  if (obj && obj._schema !== undefined
+    && obj._schema !== THEME_FILE_SCHEMA) throw new ThemeFileError(`Unknown theme file version "${String(obj._schema).slice(0, 40)}".`);
   const notes: string[] = [];
   if (list.length > MAX_USER_THEMES) notes.push(`Only the first ${MAX_USER_THEMES} themes are read.`);
   const themes = list.slice(0, MAX_USER_THEMES).map((t, i) => parseTheme(t, notes, `Theme ${i + 1}`)).filter((t): t is ThemeContent => !!t);

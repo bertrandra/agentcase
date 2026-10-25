@@ -200,7 +200,7 @@
 .ac-section .ac-gantt-bar { position: absolute; top: 0; height: 16px; background: var(--tone); border-radius: var(--ac-radius-xs); }
 .ac-section .ac-gantt-milestone {
   position: absolute; top: 3px; width: 9px; height: 9px; margin-left: -4px; border-radius: var(--ac-radius-round);
-  border: var(--ac-border-thick) solid var(--ac-neutral-0); background: var(--tone);
+  border: var(--ac-border-thick) solid var(--ac-neutral-0); background: var(--tone); box-shadow: var(--ac-shadow-ring);
 }
 /* row labels: the expand toggle (coloured by the row's tone), the name, the count, the release flag, the meta line */
 .ac-section .ac-gantt-toggle { border: 0; background: none; cursor: pointer; padding: 0; width: 14px; color: var(--tone); }
@@ -249,3 +249,9 @@
 .ac-section .ac-field input.ac-velocity-coef { width: 90px; }
 .ac-section .ac-productivity-note { font-style: italic; }
 .ac-section .ac-sector-selected { font-weight: var(--ac-font-weight-semibold); background: var(--ac-primary-60); }
+
+/* shared CommitNumber inputs (classes instead of inline styles) */
+.ac-section .ac-num-w70 { width: 70px; }
+.ac-section .ac-num-w100 { width: 100px; }
+.ac-section .ac-coef-input { width: 64px; text-align: center; }
+.ac-section .ac-coef-input.is-edited { border-color: var(--ac-warning-600); }

@@ -57,7 +57,7 @@ describe('the sidebar follows the document', () => {
     const h = navEl().querySelector<HTMLElement>('#g-frame')!;
     expect(h.textContent).toBe('A · Framing▼');
     expect(h.title).toBe('First things first');
-    expect(h.style.boxShadow).toContain('#112233');
+    expect(h.style.getPropertyValue('--dyn-group-color')).toContain('#112233');   // the rail colour (sections-b.css draws it)
     act(() => setGroupOrders('Move frame last', { frame: 999 }));
     expect(heads(navEl()).at(-1)).toBe('A · Framing');
     act(() => { appStore().undo(); });

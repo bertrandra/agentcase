@@ -19,4 +19,5 @@ export const snapUndoable = (s: AppStore): string => {
 };
 
 /** A saved case file as far as the calculation package tests touch it. */
-export interface Saved { dom: { values: Record<string, string> }; calculationPackage: { calculationVersion: string; inputHash: string; headline: { npv: number }; annual: { savings: number }[] } }
+export interface Saved { dom: { values: Record<string, string> };
+  calculationPackage: { calculationVersion: string; inputHash: string; headline: { npv: number }; annual: { savings: number }[] } }

@@ -17,7 +17,7 @@ export function CycleCard({ fm }: { fm: ReturnType<typeof flowModel> }) {
         <Tile label="Compression Θ" tone="purple" value={`${(fm.theta * 100).toFixed(0)}%`} />
         <Tile label="WIP (Little's Law)" tone="amber" value={fm.wip.toFixed(1)} note={fm.wipMeasured != null ? `measured: ${fm.wipMeasured.toFixed(1)}` : undefined} />
       </div>
-      {fm.throttle < 0.999 && <p style={{ color: 'var(--ac-amber)' }}>⚠ Throttled to {(fm.throttle * 100).toFixed(0)}% of the unconstrained
+      {fm.throttle < 0.999 && <p className="ac-warn-ink">⚠ Throttled to {(fm.throttle * 100).toFixed(0)}% of the unconstrained
         compression - P3&apos;s supervision cap is binding, so cycle time cannot compress as far as automation depth alone would suggest (&quot;a
         faster generator does not shorten cycle time if the queue is at the reviewer&quot;).</p>}
       <div className="ac-form-row">

@@ -64,7 +64,8 @@ export function evaluateStrategies(c: Ctx, defs: StrategyDef[] = strategyDefsOf(
     ov.runTeamFactor = String(rF);
     const tlp = stratTargetLoc(c, S), cs = withInputs(c, ov);
     const cc = tlp ? { ...cs, s: { ...cs.s, targetLocPct: tlp } } : cs, m = model(cc), h = headline(cc);
-    const run = engineNow(cc).years().reduce((a, y) => a + y.totalRunCost, 0), payback = m.setupTotal === 0 ? null : h.paybackYear;   // nothing invested: nothing to pay back
+    // nothing invested: nothing to pay back
+    const run = engineNow(cc).years().reduce((a, y) => a + y.totalRunCost, 0), payback = m.setupTotal === 0 ? null : h.paybackYear;
     const eff = m.eff;
     return {
       id: S.id, icon: S.icon, label: S.label, desc: S.desc,

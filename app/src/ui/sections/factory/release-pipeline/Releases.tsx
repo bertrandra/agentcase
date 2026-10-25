@@ -30,7 +30,10 @@ function NewItem({ releaseId }: { releaseId: string }) {
   );
 }
 
-/** Releases — polymorphic: a release ships any mix of Stories, Features, Fixes and Technical Changes. Deleting a release deletes its join rows, orphans its candidates. */
+/**
+ * Releases — polymorphic: a release ships any mix of Stories, Features, Fixes and Technical Changes. Deleting a release deletes its join rows,
+ * orphans its candidates.
+ */
 export function Releases() {
   const releases = useRecs('RELEASES'), items = useList<ReleaseItem>('RELEASE_ITEMS'), stories = useRecs('STORIES'), features = useRecs('FEATURES');
   const [open, setOpen] = useState<Record<string, boolean>>({});
@@ -46,7 +49,7 @@ export function Releases() {
               return (
                 <Fragment key={r.id}>
                   <tr>
-                    <td><input type="text" aria-label={`Name of ${name}`} style={{ width: '100%' }} value={name} onChange={(e) => setField('RELEASES', r.id, 'name', e.target.value)} /></td>
+                    <td><input type="text" aria-label={`Name of ${name}`} className="ac-fill" value={name} onChange={(e) => setField('RELEASES', r.id, 'name', e.target.value)} /></td>
                     <td><button type="button" aria-expanded={!!open[r.id]} onClick={() => setOpen({ ...open, [r.id]: !open[r.id] })}>{open[r.id] ? '▼' : '▶'} {mine.length} item(s)</button></td>
                     <td><ConfirmButton label="🗑" onConfirm={() => removeRecord('RELEASES', r.id)} /></td>
                   </tr>

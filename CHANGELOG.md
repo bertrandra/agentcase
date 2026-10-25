@@ -15,7 +15,7 @@ All notable changes to AgentCase, newest first. Product version from v19.0.0 = t
 
 When releasing, follow [docs/BUMP_PROCEDURE.md](docs/BUMP_PROCEDURE.md) (§7 for the legacy file) and add the new version at the top.
 
-## [Unreleased]
+## [v20.16.0] 2026-10-25 — Architecture lot 5b: inline styles to CSS classes, max-len 0
 
 ### Lot 5b part A — frame, baseline, scope, tune and verify sections: named classes instead of inline styles, no line over 160 characters
 - **Inline styles → CSS classes** (decision D5): the static `style={{…}}` props of the frame, baseline, scope, tune and verify sections (and of their
@@ -32,6 +32,34 @@ When releasing, follow [docs/BUMP_PROCEDURE.md](docs/BUMP_PROCEDURE.md) (§7 for
   the pure re-wrapping steps is byte-identical to before.
 - Tests: four tests read the inline style of an element and now read its `data-tone` / `data-edited` attribute or its class instead (loc-strat,
   scope-sel, quality, gantt ticks); no behaviour, text, number or accessible name changed.
+### Lot 5b part B
+- **D5, inline looks become theme classes** in the shell, the widgets and the sections of Economics, Stress, Verdict, Defend, Present, Reference & share,
+  Configure, Factory, Model engine, Portfolio and the Verify bodies (`ui/sections/verifyA`): every `style={{…}}` of that scope is a semantic `.ac-<area>-<thing>`
+  rule of the new `app/src/ui/theme/sections-b.css` (theme tokens only, imported once by `main.tsx`), written specific enough to win where the inline value
+  won. A value that is data stays on the element as a local custom property `--dyn-*` (`ui/cssVars.ts`: a share, a caller-chosen size, a colour of the case,
+  a theme colour computed for contrast), with a `// dynamic:` comment; the theme tokens stay `--ac-*` (each one a name of the token table). Domain colour roles
+  arrive as `data-tone` / `data-bg-tone`, named inks as `data-ink`, signs as `data-sign`. Computed styles of every section and tab (golden, a three-product
+  portfolio in product and portfolio scope, fm-demo; simulation run, selected graph node) are unchanged before / after, apart from `text-align: left` → `start`
+  on default-aligned cells (same rendering).
+- **Widgets**: `DataTable` / `AggregateTable` / `SimpleTable` alignment is a class (`ac-num` right with the figures font, `ac-center`; `widgets/align.ts`);
+  `CommitNumber` and `LazySelect` take a `className` (their `style` prop still works); `NumCell` / `TextField` widths and `ChartPanel` heights are custom
+  properties; new `PlainNumber` field (shared by `NumberInput` and `CoefInput`). `SimpleTable` rows take a `className` instead of a `style`.
+- **D1, no line over 160 characters** in `app/src`, `app/tests` and `app/scripts` outside part A: one JSX attribute per line, one statement per line for
+  one-line blocks, prose and comment paragraphs reflowed, never minified; every reformatted file compiles to the same code (esbuild output compared file by
+  file). Lines ESLint exempts (long string, template and URL literals) and the generated `axes.css` / `tokens.css` / the embedded fonts are unchanged.
+- **Theme**: new `shadow-ring` token (the 1 px slate milestone ring); the hard-coded-style guard accepts `var(--ac-shadow-*) var(--dyn-*)` (a shadow token's
+  geometry coloured by a value of the case).
+- **Fixed**: the Section Dependencies side panel nested a `<details>` in a `<p>` (React `validateDOMNesting` warning, invalid HTML): the Feeds / Fed by
+  relations are blocks now (same text, same look); `tests/ui/sections/deps.test.tsx` asserts it. The test run has no React warning left.
+- **Fixed**: `tools/excel-compat.mjs` reported every workbook different (67/67 at v20.15.0): it wrote the Portfolio and app sections the legacy page does not
+  know (the app's own export uses the 79 case sections), compared the persona (view state of the tab since D3, not a key of the case) and replayed the
+  imports on a default case with the Business journey persona the legacy pristine page never had. It now compares like `tests/helpers/excelParams.ts`:
+  67 identical. `--no-mutations` without `--only` no longer reads it as a fixture id.
+- **ui-parity**: an element carrying a section-local look of `theme/sections-*.css` counts as an override, as an inline style did (`LOOK_OVERRIDES`,
+  `LOOK_TYPOGRAPHY` in `tools/ui-parity-kinds.mjs`), so the comparison keeps measuring the same plain elements.
+- **Tests changed for pure DOM refactors**: `nav.test.tsx` (rail colour read from `--dyn-group-color`), `no-remount.test.tsx` (glossary ink from
+  `--dyn-gloss-ink`), `strategies.test.tsx` and `montecarlo.test.tsx` (edited inputs carry `is-edited`, the Σ check `data-sign`), `parity-widgets.test.tsx`
+  (DataTable alignment classes), `no-hardcoded-style.test.ts` (the shadow-plus-value case, positive and negative).
 
 ## [v20.15.0] 2026-10-24 — Architecture lots 5a and 6: theme state out of the domain, no remount, selector hooks, compressed Excel library; every quality gate in CI, nightly workflow
 

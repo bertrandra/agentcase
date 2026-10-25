@@ -20,11 +20,18 @@ export const structuresToWrite = (d: ParamsDoc): MenuStructure[] => stored(d).fi
 function write({ wb, d, secs }: WriteCtx): void {
   const list = structuresToWrite(d);
   if (!list.length) return;
-  const gs = sheet(wb, 'Menu Structures', [['Structure ID', 18], ['Structure Label', 24], ['Group ID', 16], ['Group Label', 24], ['Order', 8], ['Description', 70], ['Color', 12]]);
-  list.forEach((st) => groupsByOrder(st.groups).forEach((g) => { const r = gs.addRow([st.id, st.label, g.id, g.label, g.order, g.description || '', st.colors[g.id] ?? '']); [4, 5, 6, 7].forEach((i) => blue(r.getCell(i))); }));
+  const gs = sheet(wb, 'Menu Structures', [['Structure ID', 18], ['Structure Label', 24], ['Group ID', 16], ['Group Label', 24], ['Order', 8],
+    ['Description', 70], ['Color', 12]]);
+  list.forEach((st) => groupsByOrder(st.groups).forEach((g) => {
+    const r = gs.addRow([st.id, st.label, g.id, g.label, g.order, g.description || '', st.colors[g.id] ?? '']);
+    [4, 5, 6, 7].forEach((i) => blue(r.getCell(i)));
+  }));
   head(gs); frz(gs);
   const ss = sheet(wb, 'Menu Structure Sections', [['Structure ID', 18], ['Section ID', 18], ['Group', 16], ['Group Seq', 11]]);
-  list.forEach((st) => placeIn(secs.map((s) => ({ ...s })), st).forEach((s) => { const r = ss.addRow([st.id, s.id, s.group, s.groupSeq || 0]); [3, 4].forEach((i) => blue(r.getCell(i))); }));
+  list.forEach((st) => placeIn(secs.map((s) => ({ ...s })), st).forEach((s) => {
+    const r = ss.addRow([st.id, s.id, s.group, s.groupSeq || 0]);
+    [3, 4].forEach((i) => blue(r.getCell(i)));
+  }));
   head(ss); frz(ss);
 }
 
@@ -44,7 +51,10 @@ function read({ rows, w, notes, hasSection }: ReadCtx): void {
   (rows('Menu Structure Sections') ?? []).slice(1).forEach((x) => {
     const st = by.get(safeId(x[0])), sid = str(x[1]), grp = safeId(x[2]), seq = num(x[3]);
     if (!st || !sid || !hasSection(sid) || !okKey(sid)) return;
-    if (!st.groups.some((g) => g.id === grp)) { notes.push(`Menu Structure Sections: "${cleanText(sid, 60)}" names the unknown group "${grp}" of ${st.id} — row skipped.`); return; }
+    if (!st.groups.some((g) => g.id === grp)) {
+      notes.push(`Menu Structure Sections: "${cleanText(sid, 60)}" names the unknown group "${grp}" of ${st.id} — row skipped.`);
+      return;
+    }
     st.placement[sid] = { group: grp, groupSeq: Number.isNaN(seq) ? 0 : seq };
   });
   let list = stored(w).filter((s) => !by.has(s.id));

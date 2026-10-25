@@ -10,7 +10,8 @@ const app = process.cwd(), read = (f: string): string => readFileSync(join(app, 
 describe('documentation facts are generated (npm run docs:facts)', () => {
   const facts = collectFacts(app, codeCounts()), blocks = collectBlocks(app);
   it('every marked fact in the docs and the in-app architecture pages is up to date (the message tells what to run)', () => {
-    const stale = [...FACT_DOCS.filter((f) => applyFacts(read(f), facts, blocks) !== read(f)), ...APP_PAGES.filter((f) => applyAppCounts(read(f), facts) !== read(f))];
+    const stale = [...FACT_DOCS.filter((f) => applyFacts(read(f), facts, blocks) !== read(f)),
+      ...APP_PAGES.filter((f) => applyAppCounts(read(f), facts) !== read(f))];
     if (stale.length) throw new Error(`${STALE_MESSAGE} Stale: ${stale.join(', ')}`);
     expect(STALE_MESSAGE).toContain('npm run docs:facts');
   }, 90000);

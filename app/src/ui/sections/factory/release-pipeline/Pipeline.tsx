@@ -2,26 +2,28 @@ import { feedbackToBacklog, setApprovalDecision } from '@/controllers/factoryAct
 import type { Environment } from '@/domain/factory/types';
 import { Panel } from '@/ui/widgets/cards';
 import { nameOptions, useRecs } from '../data';
-import { RecordTable, type Rec } from '../RecordTable';
+import { RecordTable, type Ink, type Rec } from '../RecordTable';
 
 const hint = (t: string) => <small className="ac-muted">{t}</small>;
 const nm = (r: Rec) => String(r.name ?? r.id);
-const TONE = { Success: 'var(--ac-teal)', Failed: 'var(--ac-brick)', RolledBack: 'var(--ac-amber)', Info: 'var(--ac-blue)', Warning: 'var(--ac-amber)', Critical: 'var(--ac-brick)' };
+const TONE: Record<string, Ink> = { Success: 'teal', Failed: 'brick', RolledBack: 'amber', Info: 'blue', Warning: 'amber', Critical: 'brick' };
 const text = (v: unknown) => String(v ?? '');
 
-const decisionColour = (d: unknown) => (d === 'Approved' ? 'var(--ac-teal)' : d === 'Rejected' ? 'var(--ac-brick)' : 'var(--ac-amber)');
+const decisionInk = (d: unknown): Ink => (d === 'Approved' ? 'teal' : d === 'Rejected' ? 'brick' : 'amber');
 
 /** Candidates, approvals, deployments, environments, monitoring, feedback and backlog: the rest of the release flow. */
 export function Pipeline() {
   const releases = useRecs('RELEASES'), rcs = useRecs('RELEASE_CANDIDATES'), envs = useRecs('ENVIRONMENTS') as unknown as (Rec & Environment)[], deps = useRecs('DEPLOYMENTS');
   const envName = (id: unknown) => envs.find((e) => e.id === id)?.name ?? '(none)';
   const decision = (r: Rec) => (
-    <select aria-label={`Decision of ${r.id}`} value={text(r.decision)} style={{ width: '100%', fontWeight: 'var(--ac-font-weight-bold)', color: decisionColour(r.decision) }}
+    <select aria-label={`Decision of ${r.id}`} value={text(r.decision)} className="ac-fill ac-choice is-toned" data-ink={decisionInk(r.decision)}
       onChange={(e) => setApprovalDecision(r.id, e.target.value)}>
       {['Pending', 'Approved', 'Rejected'].map((o) => <option key={o} value={o}>{o}</option>)}
     </select>
   );
-  const backlogCell = (r: Rec) => (r.backlogItemId ? <span style={{ color: 'var(--ac-teal)' }}>✓ backlog item created</span> : <button type="button" onClick={() => feedbackToBacklog(r.id)}>→ Create backlog item</button>);
+  const backlogCell = (r: Rec) => (r.backlogItemId
+    ? <span data-ink="teal">✓ backlog item created</span>
+    : <button type="button" onClick={() => feedbackToBacklog(r.id)}>→ Create backlog item</button>);
   return (
     <>
       <Panel title="🏷️ Release Candidates" aside={hint('a cut proposed for a Release')}>

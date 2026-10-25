@@ -15,7 +15,8 @@ function compare(stored: unknown, live: CalcPackage): CalcState {
   return samePackage(pkg, live) ? 'valid' : 'stale';
 }
 
-const own = (o: unknown, k: string): unknown => (o && typeof o === 'object' && Object.prototype.hasOwnProperty.call(o, k) ? (o as Record<string, unknown>)[k] : undefined);
+const own = (o: unknown, k: string): unknown => (o && typeof o === 'object' && Object.prototype.hasOwnProperty.call(o, k) ? (o as Record<string,
+  unknown>)[k] : undefined);
 
 /**
  * Staleness of a saved portfolio at BOTH levels with the single-case banner states: every product's package against its resolved case, and the
@@ -23,7 +24,8 @@ const own = (o: unknown, k: string): unknown => (o && typeof o === 'object' && O
  * A file with no package at all (older or hand-made) is `notCalculated`: silent.
  */
 export function checkPortfolioStaleness(storedPortfolio: unknown, storedProducts: unknown, pf: Portfolio): CalcStaleness {
-  if ((storedPortfolio === undefined || storedPortfolio === null) && (storedProducts === undefined || storedProducts === null)) return { state: 'notCalculated' };
+  if ((storedPortfolio === undefined || storedPortfolio === null)
+    && (storedProducts === undefined || storedProducts === null)) return { state: 'notCalculated' };
   const live = buildPortfolioPackages(pf), top = live.calculationPackage;
   let state: CalcState = compare(storedPortfolio, top);
   const staleProducts: string[] = [];
@@ -34,7 +36,8 @@ export function checkPortfolioStaleness(storedPortfolio: unknown, storedProducts
   }
   const pkg = parseCalcPackage(storedPortfolio);
   return {
-    state, liveHeadline: top.headline, liveVersion: top.calculationVersion, ...(pkg ? { storedHeadline: pkg.headline, storedVersion: pkg.calculationVersion } : {}),
+    state, liveHeadline: top.headline, liveVersion: top.calculationVersion,
+    ...(pkg ? { storedHeadline: pkg.headline, storedVersion: pkg.calculationVersion } : {}),
     ...(staleProducts.length ? { staleProducts } : {}),
   };
 }

@@ -13,7 +13,10 @@ export const log: RenderLog = { commits: 0, renders: new Map() };
 
 const nameOf = (t: unknown): string => {
   if (typeof t === 'function') return (t as { displayName?: string; name?: string }).displayName || (t as { name?: string }).name || 'anonymous';
-  if (t && typeof t === 'object') { const o = t as { displayName?: string; render?: unknown; type?: unknown }; return o.displayName || nameOf(o.render ?? o.type); }
+  if (t && typeof t === 'object') {
+    const o = t as { displayName?: string; render?: unknown; type?: unknown };
+    return o.displayName || nameOf(o.render ?? o.type);
+  }
   return 'unknown';
 };
 /**
@@ -23,7 +26,10 @@ const nameOf = (t: unknown): string => {
 function visit(parent: Fiber): void {
   if (parent.alternate && parent.child === parent.alternate.child) return;
   for (let n = parent.child; n; n = n.sibling) {
-    if (COMPONENT_TAGS.has(n.tag) && (n.alternate === null || n.flags & PERFORMED_WORK)) { const k = nameOf(n.type); log.renders.set(k, (log.renders.get(k) ?? 0) + 1); }
+    if (COMPONENT_TAGS.has(n.tag) && (n.alternate === null || n.flags & PERFORMED_WORK)) {
+      const k = nameOf(n.type);
+      log.renders.set(k, (log.renders.get(k) ?? 0) + 1);
+    }
     visit(n);
   }
 }
@@ -31,7 +37,8 @@ function visit(parent: Fiber): void {
 export function installRenderCounter(): void {
   (globalThis as Record<string, unknown>).__REACT_DEVTOOLS_GLOBAL_HOOK__ = {
     isDisabled: false, supportsFiber: true, renderers: new Map(),
-    inject: () => 1, checkDCE: () => undefined, onScheduleFiberRoot: () => undefined, onCommitFiberUnmount: () => undefined, onPostCommitFiberRoot: () => undefined,
+    inject: () => 1, checkDCE: () => undefined, onScheduleFiberRoot: () => undefined, onCommitFiberUnmount: () => undefined,
+    onPostCommitFiberRoot: () => undefined,
     onCommitFiberRoot: (_id: number, root: Root) => { log.commits++; visit(root.current); },
   };
 }

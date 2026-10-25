@@ -43,7 +43,10 @@ export interface PortfolioGantt {
 }
 
 const ramps = new WeakMap<ProductRun, { end: number; marks: { label: string; family: string; month: number }[] }>();
-/** The product's own milestones (adoption levels, payback, first agent vFTE) and the month its ramp ends: the later of the setup profile and its last adoption / maturity milestone. */
+/**
+ * The product's own milestones (adoption levels, payback, first agent vFTE) and the month its ramp ends: the later of the setup profile and its last
+ * adoption / maturity milestone.
+ */
 function ownMarks(run: ProductRun) {
   let r = ramps.get(run);
   if (!r) {
@@ -59,7 +62,8 @@ function ownMarks(run: ProductRun) {
 function productRow(v: ProductView, total: number, cal: Calendar): GanttProductRow {
   const { end, marks } = ownMarks(v.run), from = v.month0 - v.lead, to = Math.min(total, v.month0 + end);
   const milestones = marks.map((m) => ({ ...m, month: v.month0 + m.month })).filter((m) => m.month <= total)
-    .map((m) => ({ ...m, date: cal.dateAt(m.month), left: (m.month / total) * 100, title: `${v.name}: ${m.label} — ${cal.dateAt(m.month)} (calendar month ${m.month})` }));
+    .map((m) => ({ ...m, date: cal.dateAt(m.month), left: (m.month / total) * 100,
+      title: `${v.name}: ${m.label} — ${cal.dateAt(m.month)} (calendar month ${m.month})` }));
   return {
     id: v.id, name: v.name, from, to, month0: v.month0, left: (from / total) * 100, width: Math.max(0.4, ((to - from) / total) * 100), milestones,
     meta: `starts ${cal.dateAt(v.month0)} (month ${v.month0 + 1}), ramps up to ${cal.dateAt(to)}`,
@@ -78,7 +82,8 @@ export function portfolioGantt(pf: Portfolio, c: Consolidated): PortfolioGantt {
   const waves = c.waves.filter((w) => w.productIds.length > 0).map((w): GanttWaveRow => {
     const products = c.products.filter((v) => v.waveId === w.id).map((v) => productRow(v, total, cal));
     const from = Math.min(...products.map((p) => p.from)), to = Math.max(...products.map((p) => p.to));
-    return { id: w.id, name: w.name, startMonth: w.startMonth, from, to, left: (from / total) * 100, width: Math.max(0.4, ((to - from) / total) * 100), products,
+    return { id: w.id, name: w.name, startMonth: w.startMonth, from, to, left: (from / total) * 100, width: Math.max(0.4, ((to - from) / total) * 100),
+      products,
       meta: `${products.length} product${products.length > 1 ? "s" : ""}, from ${cal.dateAt(from)} to ${cal.dateAt(to)}` };
   });
   const out = {

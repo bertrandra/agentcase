@@ -18,7 +18,8 @@ export const labelOf = (id: string): string => zoneOf(id)?.label ?? sectionOf(id
 export const isZone = (id: string): boolean => drawnIds.includes(id);
 /** Reference sections (kind S-static) show no calculation: they are collapsed into one counted lane of the graph. */
 export const isReference = (id: string): boolean => sectionOf(id)?.kind === 'S-static';
-export const edgesOf = (id: string): { out: DepEdge[]; in: DepEdge[] } => ({ out: DATA.edges.filter((e) => e[0] === id), in: DATA.edges.filter((e) => e[1] === id) });
+export const edgesOf = (id: string): { out: DepEdge[];
+  in: DepEdge[] } => ({ out: DATA.edges.filter((e) => e[0] === id), in: DATA.edges.filter((e) => e[1] === id) });
 
 export interface Selection { upstream: Set<string>; downstream: Set<string>; impacted: ReturnType<typeof impact> }
 /** Nodes reachable along the flow (dir 0 = downstream, 1 = upstream). A section other than the start is a terminal node: it shows values, it relays none. */
@@ -37,7 +38,10 @@ export function select(id: string): Selection {
   return { upstream: sweep(id, 1), downstream: sweep(id, 0), impacted: impact(DATA, zone ? [id] : [], zone ? [] : [id]) };
 }
 
-/** Matrix cell between a row node and a zone column: `direct` (imported), `write` (input section through a controller), `indirect` (only through other zones). */
+/**
+ * Matrix cell between a row node and a zone column: `direct` (imported), `write` (input section through a controller), `indirect` (only through other
+ * zones).
+ */
 export type Cell = 'direct' | 'write' | 'indirect' | null;
 export function cell(row: string, col: string): Cell {
   if (row === col) return null;
@@ -50,7 +54,8 @@ export function cell(row: string, col: string): Cell {
   return indirectZones(DATA, row).includes(col) ? 'indirect' : null;
 }
 const reaches = (from: string, to: string): boolean => sweep(from, 0).has(to);
-export const figuresOf = (zone: string) => FIGURES.filter((f) => f.zone === zone).map((f) => ({ ...f, owner: DATA.figures.find((x) => x.id === f.id)?.owner ?? '', consumers: consumersOf(DATA, f.id) }));
+export const figuresOf = (zone: string) => FIGURES.filter((f) => f.zone === zone).map((f) => ({ ...f,
+  owner: DATA.figures.find((x) => x.id === f.id)?.owner ?? '', consumers: consumersOf(DATA, f.id) }));
 
 /** The rule (docs/TEST_SELECTION.md) and its outcome for a change in a zone or a section. */
 export const RULE = config.selection as SelectionConfig;

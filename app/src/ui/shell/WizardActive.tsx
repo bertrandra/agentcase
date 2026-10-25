@@ -1,5 +1,6 @@
 import type { PersonaSeq } from '@/domain/pdc/personas';
 import type { Stop } from '@/domain/nav/sequence';
+import { cssVars } from '../cssVars';
 import { rescueFocus } from '../focusRescue';
 import { useUi, wizExit as exitWalk, wizGo } from '../uiState';
 import { useNavModel } from '../zones/navModel';
@@ -33,8 +34,18 @@ export function WizardActive({ seq, stops }: { seq: PersonaSeq; stops: Stop[] })
         {last ? <button type="button" className="ac-btn ac-btn-primary" onClick={wizExit}>✓ Finish</button> : <button type="button" className="ac-btn ac-btn-primary" onClick={() => go(at + 1)}>Next →</button>}
         <button type="button" className="ac-btn" title="Exit the sequence" aria-label="Exit the sequence" onClick={wizExit}>✕</button>
       </div>
-      <div className="ac-progress" role="progressbar" aria-label="Guided sequence progress" aria-valuemin={0} aria-valuemax={100} aria-valuenow={pct} aria-valuetext={`${pct}% visited`}><div style={{ width: `${pct}%` }} /></div>
-      <div className="ac-muted" style={{ fontSize: 'var(--ac-font-size-xs)' }}>{pct}% of the sequence visited</div>
+      <div
+        className="ac-progress"
+        role="progressbar"
+        aria-label="Guided sequence progress"
+        aria-valuemin={0}
+        aria-valuemax={100}
+        aria-valuenow={pct}
+        aria-valuetext={`${pct}% visited`}
+      >
+        <div style={cssVars({ '--dyn-progress-pct': `${pct}%` })} />{/* dynamic: the share of the sequence visited */}
+      </div>
+      <div className="ac-muted ac-wiz-pct">{pct}% of the sequence visited</div>
     </div>
   );
 }

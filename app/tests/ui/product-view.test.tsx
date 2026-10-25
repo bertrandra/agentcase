@@ -24,7 +24,8 @@ beforeEach(() => {
 afterEach(cleanup);
 
 function Probe() {
-  const r = useCaseResult(), etp = useDoc((d) => d.teamIn.reduce((a, x) => a + x.etp, 0)), ctx = useCtx(), active = useActiveProduct(), id = useActiveProductId(), vs = useViewScope();
+  const r = useCaseResult(), etp = useDoc((d) => d.teamIn.reduce((a, x) => a + x.etp, 0)), ctx = useCtx();
+  const active = useActiveProduct(), id = useActiveProductId(), vs = useViewScope();
   return <p data-testid="p">{`${active.name}|${id}|${etp}|${r.endYear.savings}|${ctx.s.teamIn.length}|${vs.kind}`}</p>;
 }
 const text = () => screen.getByTestId('p').textContent;

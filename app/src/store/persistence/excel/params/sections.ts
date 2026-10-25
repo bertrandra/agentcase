@@ -8,7 +8,8 @@ import type { ParamsDoc, ParamsEnv, SectionGroupEntry, SectionInfo } from './typ
 export function effectiveSections(env: ParamsEnv, d: ParamsDoc): SectionInfo[] {
   const list: SectionInfo[] = env.sections.map((s) => ({ ...s }));
   (d.dynamicSections ?? []).forEach((dy) => {
-    if (!list.some((s) => s.id === dy.id)) list.push({ id: dy.id, label: `🗂️ ${dy.title}`, group: dy.menuGroup, groupSeq: dy.order != null ? dy.order : list.length, description: `Dynamic section (${dy.archetype})` });
+    if (!list.some((s) => s.id === dy.id)) list.push({ id: dy.id, label: `🗂️ ${dy.title}`, group: dy.menuGroup,
+      groupSeq: dy.order != null ? dy.order : list.length, description: `Dynamic section (${dy.archetype})` });
   });
   const by = new Map(list.map((s) => [s.id, s]));
   (d.sectionGroups ?? []).forEach((e) => {
@@ -21,4 +22,5 @@ export function effectiveSections(env: ParamsEnv, d: ParamsDoc): SectionInfo[] {
   return list;
 }
 /** Back to the stored form (legacy `sectionGroups` state entry). */
-export const toSectionGroups = (secs: SectionInfo[]): SectionGroupEntry[] => secs.map((s) => ({ id: s.id, group: s.group, groupSeq: s.groupSeq, tag: s.tag, mvp: s.mvp }));
+export const toSectionGroups = (secs: SectionInfo[]): SectionGroupEntry[] => secs.map((s) => ({ id: s.id, group: s.group, groupSeq: s.groupSeq, tag: s.tag,
+  mvp: s.mvp }));

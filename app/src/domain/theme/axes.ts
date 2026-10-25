@@ -12,7 +12,8 @@ import { FONT_BODY, FONT_HEADING, FONT_NUMERIC, HEADING_WEIGHT, TYPE_SCALE } fro
 const NONE = <K extends string>(...keys: K[]): Record<K, TokenSet> => Object.fromEntries(keys.map((k) => [k, {}])) as Record<K, TokenSet>;
 
 interface Axis<V extends string> { group: string; label: string; default: V; values: Record<V, TokenSet>; labels: Record<V, string> }
-const axis = <V extends string>(group: string, label: string, def: NoInfer<V>, values: Record<V, TokenSet>, labels: Record<V, string>): Axis<V> => ({ group, label, default: def, values, labels });
+const axis = <V extends string>(group: string, label: string, def: NoInfer<V>, values: Record<V, TokenSet>, labels: Record<V,
+  string>): Axis<V> => ({ group, label, default: def, values, labels });
 
 export const AXES = {
   radius: axis('Shape', 'Corner radius', 'soft', RADIUS, { square: 'Square', soft: 'Soft', round: 'Round' }),

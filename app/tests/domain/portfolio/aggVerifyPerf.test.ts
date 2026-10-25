@@ -1,5 +1,6 @@
 import { beforeAll, describe, expect, it } from 'vitest';
-import { asisTobeAgg, complianceTable, execTable, kpiAgg, productivityTable, qualityTable, scopeHeadline, consolidate, velocityTable, weightedAutomation, weightedVelocity, scheduledProducts, type Portfolio } from '@/domain/portfolio';
+import { asisTobeAgg, complianceTable, execTable, kpiAgg, productivityTable, qualityTable, scopeHeadline, consolidate, velocityTable, weightedAutomation,
+  weightedVelocity, scheduledProducts, type Portfolio } from '@/domain/portfolio';
 import { complianceView, execView, productivityView, qualityAnchorView, velocityView } from '@/domain/verifyB';
 import { expectClose } from '../../helpers/portfolio';
 import { fourProducts } from '../../helpers/portfolioFixtures';
@@ -48,7 +49,10 @@ describe.each([['Portfolio', 0], ['Wave 1', 1], ['Wave 2', 2]] as const)('verify
 
   it('compliance: ceiling per product; the line is the weighted ceiling and the regulatory artifact count', () => {
     const t = complianceTable(pf, scope())!;
-    ind().forEach((p, i) => { expectCell(t.rows[i]!.cells.ceiling, p.live.m.ceiling); expectCell(t.rows[i]!.cells.reg, complianceView(p.live.c).sectors.find((s) => s.selected)!.reg); });
+    ind().forEach((p, i) => {
+      expectCell(t.rows[i]!.cells.ceiling, p.live.m.ceiling);
+      expectCell(t.rows[i]!.cells.reg, complianceView(p.live.c).sectors.find((s) => s.selected)!.reg);
+    });
     expectCell(t.total.ceiling, weightedAutomation(runs(ids())).ceiling);
     expectCell(t.total.max, 100 - weightedAutomation(runs(ids())).ceiling);
   });

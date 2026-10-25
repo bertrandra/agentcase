@@ -369,6 +369,7 @@
   --ac-shadow-rail-offset: inset 4px 0 0;
   --ac-shadow-rail: var(--ac-shadow-rail-offset) var(--ac-primary-700);
   --ac-shadow-ring-offset: 0 0 0 1px;
+  --ac-shadow-ring: var(--ac-shadow-ring-offset) var(--ac-slate-650);
   --ac-pad-section: 2rem;
   --ac-pad-card: 1.25rem;
   --ac-pad-callout: 1.1rem;

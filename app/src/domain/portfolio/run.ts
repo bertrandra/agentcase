@@ -49,7 +49,10 @@ export function runOf(s: CaseState): ProductRun {
     velocityPct: lazy(() => velocityUpliftPct(ctx)),
     automation: lazy(() => { const m = model(ctx); return { eff: m.eff, ceiling: m.ceiling }; }),
     headline: lazy(() => headlineOf(engine, ctx)),
-    endYear: lazy(() => { const hy = horizonYears(ctx), last = hy.sav.length - 1; return { savings: hy.sav[last] ?? 0, run: hy.run[last] ?? 0, index: last + 1 }; }),
+    endYear: lazy(() => {
+      const hy = horizonYears(ctx), last = hy.sav.length - 1;
+      return { savings: hy.sav[last] ?? 0, run: hy.run[last] ?? 0, index: last + 1 };
+    }),
     cost: lazy(() => { const c = costReduction(ctx); return { years: c.years, base: c.base, sav: c.ok ? c.gross * c.base : 0, setup: c.setup }; }),
   };
   runs.set(s, r);

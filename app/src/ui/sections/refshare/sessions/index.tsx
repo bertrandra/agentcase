@@ -17,7 +17,7 @@ export default function SessionsSection() {
     <SectionFrame title={content.title} help={<Rich nodes={content.help} />}
       input={<>
         <Callout>{content.intro}</Callout>
-        <div style={{ display: 'flex', gap: 8, flexWrap: 'wrap', margin: '8px 0' }}>
+        <div className="ac-actions ac-actions-block">
           <button type="button" className="ac-btn ac-btn-primary" disabled={!available} onClick={act(saveSessionNow, 'This session was autosaved')}>Autosave this session</button>
           <button type="button" className="ac-btn" disabled={!available} onClick={act(() => removeSession(thisTabId()), "This tab's autosave was cleared")}>Clear this tab's autosave</button>
           {confirmAll

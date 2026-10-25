@@ -1,5 +1,6 @@
 import { beforeAll, describe, expect, it } from 'vitest';
-import { aggregateTeams, consolidate, inputSummary, keptMonths, overrideRefs, portfolioHeadline, resolveProduct, runOf, scheduledProducts, selectionView, waveHeadline, type Portfolio } from '@/domain/portfolio';
+import { aggregateTeams, consolidate, inputSummary, keptMonths, overrideRefs, portfolioHeadline, resolveProduct, runOf, scheduledProducts, selectionView,
+  waveHeadline, type Portfolio } from '@/domain/portfolio';
 import { expectClose } from '../../helpers/portfolio';
 import { fourProducts } from '../../helpers/portfolioFixtures';
 
@@ -23,7 +24,8 @@ describe('selectionView: the figures of a Portfolio / Wave selection (aggregate 
   it('each product line equals the product alone, shifted, within the horizon (independent derivation from the Time Engine months)', () => {
     const c = consolidate(pf), v = selectionView(pf, c, { kind: 'portfolio' })!;
     for (const s of scheduledProducts(pf)) {
-      const rows = runOf(resolveProduct(pf, s.product.id)).rows, kept = keptMonths(c.horizon, s.month0, rows.length), row = v.rows.find((r) => r.id === s.product.id)!;
+      const rows = runOf(resolveProduct(pf, s.product.id)).rows, kept = keptMonths(c.horizon, s.month0, rows.length),
+        row = v.rows.find((r) => r.id === s.product.id)!;
       expectClose(row.net, sum(rows.slice(0, kept).map((r) => r.netSavings)));
       expectClose(row.savings, sum(rows.slice(0, kept).map((r) => r.grossSavings)));
       expect(row.month0).toBe(s.month0);

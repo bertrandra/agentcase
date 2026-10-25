@@ -28,7 +28,8 @@ describe('factory generator (properties the oracle comparison relies on)', () =>
     expect(g.provenance.volScale).toBeLessThan(1);
     const last = g.data.SPRINTS[g.data.SPRINTS.length - 1]!;
     expect(last.startAt > '2029-06-01').toBe(true);
-    expect(g.data.RELEASES.length).toBeGreaterThan(0);   // the release cadence alone (19 x 20 records) already exceeds this cap: later releases are cut off, like the legacy
+    // the release cadence alone (19 x 20 records) already exceeds this cap: later releases are cut off, like the legacy
+    expect(g.data.RELEASES.length).toBeGreaterThan(0);
   });
   it('links every story to a feature and the in-scope artefacts to their story', () => {
     const g = gen({});
@@ -51,7 +52,9 @@ describe('record ids and the timeline', () => {
     expect(nextId('epic', [{ id: 'epic-2' }, { id: 'epic-3' }])).toBe('epic-4');
   });
   it('plots the dated events of the demo on one axis, dropping undated and unparsable ones', () => {
-    const d = { ...(demo as unknown as FactoryData), ENVIRONMENTS: DEFAULT_ENVIRONMENTS, FEEDBACK_ITEMS: [...(demo.FEEDBACK_ITEMS as FactoryData['FEEDBACK_ITEMS']), { id: 'fb-x', description: 'bad', createdAt: 'not a date', backlogItemId: null }] };
+    const d = { ...(demo as unknown as FactoryData), ENVIRONMENTS: DEFAULT_ENVIRONMENTS,
+      FEEDBACK_ITEMS: [...(demo.FEEDBACK_ITEMS as FactoryData['FEEDBACK_ITEMS']),
+        { id: 'fb-x', description: 'bad', createdAt: 'not a date', backlogItemId: null }] };
     const ev = timelineEvents(d);
     expect(ev.filter((e) => e.lane === 'Commits')).toHaveLength(18);
     expect(ev.filter((e) => e.lane === 'Approvals')).toHaveLength(4);

@@ -12,7 +12,8 @@ import { SectionFrame } from '@/ui/zones/SectionFrame';
 export function ExcludedNote() {
   const vs = useViewScope(), products = useProducts(), names = vs.excludedIds.map((id) => products.find((p) => p.id === id)?.name ?? id);
   if (!names.length) return null;
-  return <Callout kind="warn">Excluded from the figures: {names.join(', ')} (no wave, or archived). Assign a wave to include {names.length > 1 ? 'them' : 'it'}.</Callout>;
+  return <Callout kind="warn">Excluded from the figures: {names.join(', ')} (no wave,
+    or archived). Assign a wave to include {names.length > 1 ? 'them' : 'it'}.</Callout>;
 }
 
 export interface RollupProps<R extends { id: string; name: string }> {
@@ -31,14 +32,21 @@ export interface RollupProps<R extends { id: string; name: string }> {
 }
 
 /** The R-rollup aggregate layout: exclusions, optional lead-in, the per-product table with its roll-up line, notes, then the lazy per-product detail. */
-export function RollupFrame<R extends { id: string; name: string }>({ title, help, caption, rows, columns, totals, notes, Section, children, input }: RollupProps<R>) {
+export function RollupFrame<R extends { id: string; name: string }>({ title, help, caption, rows, columns, totals, notes, Section, children,
+  input }: RollupProps<R>) {
   const vs = useViewScope();
   return (
     <SectionFrame title={title} help={help} input={input} result={
       <>
         <ExcludedNote />
         {children}
-        <AggregateTable caption={`${caption} — ${vs.label}`} rows={rows} columns={columns} edit={false} totals={totals ? { label: `Total — ${vs.label}`, cells: totals } : undefined} />
+        <AggregateTable
+          caption={`${caption} — ${vs.label}`}
+          rows={rows}
+          columns={columns}
+          edit={false}
+          totals={totals ? { label: `Total — ${vs.label}`, cells: totals } : undefined}
+        />
         {notes}
         {Section && <ProductDrill Section={Section} productIds={vs.productIds} />}
       </>

@@ -19,7 +19,8 @@ function changedFiles(): string[] {
   if (files) return files.split(',').map((f) => normalize(f.trim())).filter(Boolean);
   const base = arg('--base') ?? (() => { try { return git('merge-base', 'origin/main', 'HEAD'); } catch { return 'HEAD'; } })();
   const top = git('rev-parse', '--show-toplevel');
-  const names = [...git('diff', '--name-only', '--no-renames', base).split('\n'), ...git('ls-files', '--others', '--exclude-standard', top).split('\n')].filter(Boolean);
+  const names = [...git('diff', '--name-only', '--no-renames', base).split('\n'),
+    ...git('ls-files', '--others', '--exclude-standard', top).split('\n')].filter(Boolean);
   return [...new Set(names.map((n) => normalize(relative(root, `${top}/${n}`))))].sort();
 }
 

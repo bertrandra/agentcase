@@ -6,9 +6,12 @@ import { Timeline } from './Timeline';
 
 const help = (
   <>
-    <p>Two independent visuals, kept apart from the Gantt / Timeline (which schedules SDLC phases by effort weight and is not touched). The <strong>Business chain</strong> is a structural diagram — Vision, Portfolio, Epic,
-      Feature and Story carry no date fields, so it shows the hierarchy, not a calendar. The <strong>Release &amp; Engineering timeline</strong> plots every dated event recorded in the Release Pipeline and Engineering sections as one swimlane per type on a shared calendar axis.</p>
-    <p>The KPIs are computed live from the same records. Purely a display of existing data: nothing here changes the Scope, the Gantt or any cost or saving figure.</p>
+    <p>Two independent visuals, kept apart from the Gantt / Timeline (which schedules SDLC phases by effort weight and is not touched). The <strong>Business
+    chain</strong> is a structural diagram — Vision, Portfolio, Epic, Feature and Story carry no date fields, so it shows the hierarchy, not a calendar.
+    The <strong>Release &amp; Engineering timeline</strong> plots every dated event recorded in the Release Pipeline and Engineering sections as one swimlane
+    per type on a shared calendar axis.</p>
+    <p>The KPIs are computed live from the same records. Purely a display of existing data: nothing here changes the Scope, the Gantt or any cost or saving
+      figure.</p>
   </>
 );
 

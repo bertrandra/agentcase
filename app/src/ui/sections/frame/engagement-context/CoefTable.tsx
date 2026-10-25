@@ -10,7 +10,6 @@ const FIELDS: [string, string][] = [
   ['mcWiden', 'MC widen ×'],
 ];
 type Row = Record<string, number>;
-const PLAIN = { width: 64, textAlign: 'center' } as const, EDITED = { ...PLAIN, borderColor: 'var(--ac-warning-600)' };
 
 /** The nine coefficients of the three engagement contexts; edited cells are flagged against the referential defaults. */
 export function CoefTable() {
@@ -31,9 +30,8 @@ export function CoefTable() {
                   const cur = (coef[k] as Row)[f] as number, edited = Math.abs(cur - ((defaults[k] as Row | undefined)?.[f] ?? cur)) > 1e-9;
                   return (
                     <td key={k} className="ac-c">
-                      {/* shared widget: CommitNumber (ui/widgets) takes a style, not a class */}
                       <CommitNumber value={String(cur)} label={`${label} of ${k}`} step={0.05} onCommit={(v) => setEngageCoef(k, f, parseFloat(v))}
-                        style={edited ? EDITED : PLAIN} />
+                        className={edited ? 'ac-coef-input is-edited' : 'ac-coef-input'} />
                     </td>
                   );
                 })}

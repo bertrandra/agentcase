@@ -16,7 +16,8 @@ import type { Doc } from '@/store/types';
 
 /** A stored user theme (what `doc.THEMES` holds). */
 type Stored = Pick<ThemeDef, 'seq' | 'name' | 'colours' | 'axes' | 'generator'> & { description?: string };
-const copy = (c: Omit<ThemeContent, 'name'>) => ({ ...(c.description ? { description: c.description } : {}), colours: { ...c.colours }, axes: { ...c.axes }, ...(c.generator ? { generator: { ...c.generator } } : {}) });
+const copy = (c: Omit<ThemeContent, 'name'>) => ({ ...(c.description ? { description: c.description } : {}), colours: { ...c.colours }, axes: { ...c.axes },
+  ...(c.generator ? { generator: { ...c.generator } } : {}) });
 const stored = (d: Doc): Stored[] => userThemes(d).map((t) => ({ seq: t.seq, name: t.name, ...copy(t) }));
 /** Add themes with fresh sequence ids (returns nothing when the library is full). */
 function append(d: Doc, items: ThemeContent[]): void {
@@ -95,7 +96,8 @@ const deleteCmd = defineCommand<{ seq: number }>({
 });
 const activateCmd = defineCommand<{ seq: number }>({
   type: 'theme.activate', label: (p) => `Use the theme ${p.seq} for this case`,
-  run(d, p) { if (!findTheme(d, p.seq)) return; if (p.seq === 1) delete d.ACTIVE_THEME; else d.ACTIVE_THEME = p.seq; },   // the default theme = no key (older files unchanged)
+  // the default theme = no key (older files unchanged)
+  run(d, p) { if (!findTheme(d, p.seq)) return; if (p.seq === 1) delete d.ACTIVE_THEME; else d.ACTIVE_THEME = p.seq; },
 });
 
 const go = <P>(c: ReturnType<typeof defineCommand<P>>, p: P): void => appStore().dispatch(c(p));

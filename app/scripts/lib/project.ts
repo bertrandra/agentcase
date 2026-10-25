@@ -46,7 +46,10 @@ function globFiles(root: string, from: string, pattern: string, files: string[])
 const target = (p: Project, file: string, spec: string): string | null => resolveSpec(p.root, file, spec, p.known);
 function provides(p: Project, file: string, name: string, depth = 0): boolean {
   const ps = p.parsed.get(file);
-  return !!ps && depth < 8 && (ps.locals.has(name) || ps.reexports.some((r) => r.exported === name) || ps.stars.some((s) => { const t = target(p, file, s); return !!t && provides(p, t, name, depth + 1); }));
+  return !!ps && depth < 8 && (ps.locals.has(name) || ps.reexports.some((r) => r.exported === name) || ps.stars.some((s) => {
+    const t = target(p, file, s);
+    return !!t && provides(p, t, name, depth + 1);
+  }));
 }
 
 /** Where `name` of module `file` is declared: follows re-exports of pure modules (a barrel in `src/domain`), else the module itself. */
@@ -59,7 +62,10 @@ function declaredIn(p: Project, file: string, name: string, depth = 0): string {
   return file;
 }
 
-/** Read every `.ts/.tsx` of `src` and `tests` and build the runtime import graph. Barrels of `src/domain` are flattened by symbol; `routes` redirect generic accessors. */
+/**
+ * Read every `.ts/.tsx` of `src` and `tests` and build the runtime import graph. Barrels of `src/domain` are flattened by symbol;
+ * `routes` redirect generic accessors.
+ */
 export function loadProject(root: string, routes: Routes = {}, flatten = true): Project {
   const files = [...walk(root, 'src'), ...walk(root, 'tests')].sort();
   const known = new Set(files), text = new Map<string, string>(), parsed = new Map<string, Parsed>();
@@ -87,11 +93,16 @@ export function loadProject(root: string, routes: Routes = {}, flatten = true): 
 }
 
 const READ = /['"`]((?:\.\.?\/|docs\/|fixtures\/|src\/)[^'"`\n]*\.(?:json|md|html|csv|xlsx|tsx?|css))['"`]/g;
-/** Data files a test or helper names in a string literal (`readFileSync('../docs/x.md')`): an edge like an import, so a change to the file selects the readers. */
+/**
+ * Data files a test or helper names in a string literal (`readFileSync('../docs/x.md')`): an edge like an import, so a change to the file selects
+ * the readers.
+ */
 function readsOf(root: string, from: string, text: string): string[] {
   const out: string[] = [];
   for (const m of text.matchAll(READ)) {
-    for (const c of [posix.normalize(m[1]!), posix.normalize(posix.join(dirname(from), m[1]!))]) if (!c.startsWith('src/') || /\.(json|css)$/.test(c)) { if (existsSync(join(root, c)) && statSync(join(root, c)).isFile()) { out.push(c); break; } }
+    for (const c of [posix.normalize(m[1]!), posix.normalize(posix.join(dirname(from), m[1]!))]) if (!c.startsWith('src/') || /\.(json|css)$/.test(c)) {
+      if (existsSync(join(root, c)) && statSync(join(root, c)).isFile()) { out.push(c); break; }
+    }
   }
   return out;
 }

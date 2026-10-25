@@ -11,7 +11,8 @@ import { freshStore } from './helpers';
 
 const expected = (id: string) => JSON.parse(readFileSync(`fixtures/expected/${id}.json`, 'utf8')).model;
 const sav = (s: ReturnType<typeof freshStore>) => computeCase(s.getState().doc).model.yearSav;
-const near = (a: number[], b: number[]) => a.forEach((v, i) => expect(Math.abs(v - (b[i] as number))).toBeLessThan(1e-6 * Math.max(1, Math.abs(b[i] as number))));
+const near = (a: number[],
+  b: number[]) => a.forEach((v, i) => expect(Math.abs(v - (b[i] as number))).toBeLessThan(1e-6 * Math.max(1, Math.abs(b[i] as number))));
 
 describe('controllers reproduce the legacy results of the same edits', () => {
   it('artefact edits (% auto and effort) == legacy fixture artefact-edits', () => {
@@ -51,7 +52,8 @@ describe('controllers reproduce the legacy results of the same edits', () => {
     const s = freshStore(); const start = JSON.stringify(s.getState().doc.artefactsEdited);
     setAgentSup('A017', 140); expect(s.getState().doc.artefactsEdited.find((e) => e.id === 'A017')?.agentSup).toBe(100);
     setAgentSup('A017', 'abc');   // ignored
-    resetAgent(); expect(JSON.stringify(s.getState().doc.artefactsEdited.map((e) => ({ id: e.id, a: e.agentSup })))).toBe(JSON.stringify(JSON.parse(start).map((e: { id: string; agentSup: number }) => ({ id: e.id, a: e.agentSup }))));
+    resetAgent(); expect(JSON.stringify(s.getState().doc.artefactsEdited.map((e) => ({ id: e.id,
+      a: e.agentSup })))).toBe(JSON.stringify(JSON.parse(start).map((e: { id: string; agentSup: number }) => ({ id: e.id, a: e.agentSup }))));
   });
   it('team rows: add, edit (snapped to 0.5), remove (never the last)', () => {
     const s = freshStore(), n = s.getState().doc.teamIn.length;

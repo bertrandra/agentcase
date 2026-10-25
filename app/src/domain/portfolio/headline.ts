@@ -19,7 +19,8 @@ export interface Summary extends Headline {
 export function summarize(s: Series, first: number, rate: number): Summary {
   const sum = (a: number[]) => a.reduce((x, y) => x + y, 0), cf = cashflowSummary(s.net, { annualRate: rate, firstMonth: first });
   const setup = sum(s.setup), net = sum(s.net);
-  return { totalBenefit: sum(s.savings), setup, net, roi: roiCanonical(net, setup), paybackMonth: cf.paybackMonth, paybackYear: paybackYearOf(cf.paybackMonth), npv: cf.npv, npvRate: rate, cum: cf.cumulative, first };
+  return { totalBenefit: sum(s.savings), setup, net, roi: roiCanonical(net, setup), paybackMonth: cf.paybackMonth,
+    paybackYear: paybackYearOf(cf.paybackMonth), npv: cf.npv, npvRate: rate, cum: cf.cumulative, first };
 }
 
 /** Calendar-year sums of the consolidated flows; the last entry is the last horizon year. */

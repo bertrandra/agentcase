@@ -15,8 +15,10 @@ import { setPreviewDark, useBrandThemeView, useDraft, withDraft } from './select
  */
 export function Preview({ def: theme }: { def: ThemeDef }) {
   const draft = useDraft(theme.seq), def = useMemo(() => withDraft(theme, draft), [theme, draft]);
-  const ref = useRef<HTMLDivElement>(null), dark = useBrandThemeView((s) => s.previewDark), customer = useDoc((d) => (d.customerName as string | undefined) ?? '');
-  useLayoutEffect(() => { if (ref.current) applyPreviewTheme(def, { mode: dark ? 'dark' : 'light', contrast: 'standard', cvd: false, reduceMotion: false }, ref.current); }, [def, dark]);
+  const ref = useRef<HTMLDivElement>(null), dark = useBrandThemeView((s) => s.previewDark),
+    customer = useDoc((d) => (d.customerName as string | undefined) ?? '');
+  useLayoutEffect(() => { if (ref.current) applyPreviewTheme(def, { mode: dark ? 'dark' : 'light', contrast: 'standard', cvd: false, reduceMotion: false },
+    ref.current); }, [def, dark]);
   return (
     <section className="ac-card ac-bt-preview-card" aria-label="Live preview">
       <h2>Live preview{draft ? ' (generated palette, not applied)' : ''}</h2>
@@ -31,7 +33,8 @@ export function Preview({ def: theme }: { def: ThemeDef }) {
           <div className="ac-bt-pv-body">
             <div className="ac-bt-pv-nav">
               <div className="ac-bt-pv-group">2 · Baseline</div>
-              <span className="ac-bt-pv-item">Team</span><span className="ac-bt-pv-item is-active">Rate card</span><span className="ac-bt-pv-item">Locations</span>
+              <span className="ac-bt-pv-item">Team</span><span className="ac-bt-pv-item is-active">Rate card</span><span
+                className="ac-bt-pv-item">Locations</span>
             </div>
             <div className="ac-bt-pv-section">
               <h3>Section title</h3>
@@ -39,7 +42,11 @@ export function Preview({ def: theme }: { def: ThemeDef }) {
               <StatRow><Stat label="Run cost" value="€840K" /><Stat label="Saving" value="€410K" /></StatRow>
               <table className="ac-table">
                 <thead><tr><th>Phase</th><th>FTE</th><th>Automation</th></tr></thead>
-                <tbody><tr><td>Design</td><td>4.0</td><td>35%</td></tr><tr><td>Build</td><td>9.5</td><td>52%</td></tr><tr><td>Test</td><td>6.0</td><td>44%</td></tr></tbody>
+                <tbody>
+                  <tr><td>Design</td><td>4.0</td><td>35%</td></tr>
+                  <tr><td>Build</td><td>9.5</td><td>52%</td></tr>
+                  <tr><td>Test</td><td>6.0</td><td>44%</td></tr>
+                </tbody>
               </table>
               <PreviewChart />
               <PreviewControls />

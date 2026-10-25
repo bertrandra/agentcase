@@ -51,6 +51,7 @@ describe('deps section (generated graph)', () => {
     expect(panel.textContent).toContain(`${n} of ${total} test files`);
     expect(panel.textContent).toContain(`${hit.impacted.zones.filter((z) => z !== 'kpi').length} zones · ${hit.impacted.sections.filter((x) => x !== 'kpi').length} sections`);
     expect(within(panel).getByText(`Test files (${n})`)).toBeTruthy();
+    expect(panel.querySelectorAll('p details, p summary')).toHaveLength(0);   // the "+n more" fold is a <details>: never inside a <p> (valid HTML)
     const lit2 = [...container.querySelectorAll('path[data-edge]')].filter((p) => p.getAttribute('opacity') === '1');
     expect(lit2.length).toBeGreaterThan(0);
   });

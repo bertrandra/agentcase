@@ -22,10 +22,14 @@ const withStructures = (): Doc => produce(golden(), (d) => {
   (d.PERSONAS as Persona[]).find((p) => p.id === 'admin')!.menuStructure = 'lean';
   (d.PERSONAS as Persona[]).find((p) => p.id === 'builder')!.menuStructure = 'business-journey';
 });
-/** What a structure shows for the workbook's sections (its groups, colours, label, and where each of those sections sits): the Portfolio sections are not in the workbook. */
+/**
+ * What a structure shows for the workbook's sections (its groups, colours, label, and where each of those sections sits): the Portfolio sections are
+ * not in the workbook.
+ */
 const structures = (d: Doc) => ['business-journey', 'lean'].map((id) => {
   const st = findStructure(id, d.MENU_STRUCTURES as MenuStructure[]);
-  return st && { label: st.label, groups: st.groups, colors: st.colors, layout: placeIn(ENV.sections.map((s) => ({ ...s })), st).map((s) => [s.id, s.group, s.groupSeq]) };
+  return st && { label: st.label, groups: st.groups, colors: st.colors,
+    layout: placeIn(ENV.sections.map((s) => ({ ...s })), st).map((s) => [s.id, s.group, s.groupSeq]) };
 });
 const structureOf = (d: Doc) => (d.PERSONAS as Persona[]).map((p) => `${p.id}:${p.menuStructure ?? 'standard'}`).sort();
 
