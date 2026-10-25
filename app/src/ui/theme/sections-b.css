@@ -206,7 +206,7 @@
 .ac-section .ac-loss { color: var(--ac-brick); }
 .ac-section .ac-regular { font-weight: var(--ac-font-weight-regular); }
 .ac-section .ac-inline { display: inline; }
-.ac-section .ac-stretch { align-items: stretch; }
+.ac-section .ac-form-row.ac-stretch { align-items: stretch; }
 .ac-section .ac-lines { line-height: var(--ac-leading-code); }
 /* an edited control (it differs from its default) */
 .ac-section :is(.ac-table, .ac-field, .ac-form-row) :is(input, select).is-edited { border-color: var(--ac-amber); }
@@ -295,3 +295,20 @@
 .ac-section .ac-tl-lane { display: flex; align-items: center; height: 24px; border-bottom: 1px solid var(--ac-line); }
 .ac-section .ac-tl-dots { height: 16px; }
 .ac-section .ac-tl-dot { position: absolute; top: 3px; left: var(--ac-at); width: 9px; height: 9px; background: var(--ac-tone); border-radius: var(--ac-radius-round); transform: translateX(-50%); }
+
+/* ---- Model engine */
+.ac-section .ac-stat.ac-me-tile { min-width: 140px; }
+.ac-section .ac-form-row.ac-center-items { align-items: center; }
+.ac-section .ac-grade { min-width: 100px; padding: 14px 24px; text-align: center; border: 2px solid var(--ac-grade); border-radius: var(--ac-radius-2xl); }
+.ac-section .ac-grade-v { font-size: var(--ac-font-size-8xl); font-weight: var(--ac-font-weight-extrabold); color: var(--ac-grade); }
+.ac-grade[data-grade='A'] { --ac-grade: var(--ac-teal); } .ac-grade[data-grade='B'] { --ac-grade: var(--ac-blue); }
+.ac-grade[data-grade='C'] { --ac-grade: var(--ac-amber); } .ac-grade[data-grade='D'] { --ac-grade: var(--ac-brick); }
+.ac-section .ac-table select.ac-tier { font-weight: var(--ac-font-weight-semibold); }
+.ac-section .ac-table select.ac-tier[data-ink] { color: var(--ac-ink); }
+.ac-section .ac-tier-note { font-size: var(--ac-font-size-xs); }
+.ac-section .ac-ev-source { width: 120px; } .ac-section .ac-ev-date { width: 130px; } .ac-section .ac-ev-owner { width: 100px; }
+.ac-section .ac-bar.ac-swing-bar { width: 160px; }
+.ac-section .ac-swing-bar > span { width: var(--ac-bar-pct); background: var(--ac-blue); }
+.ac-section .ac-check.ac-check-alert { color: var(--ac-brick); }
+.ac-section .ac-flag { font-weight: var(--ac-font-weight-semibold); color: var(--ac-brick); }
+.ac-section .ac-dora-input { width: 90px; }

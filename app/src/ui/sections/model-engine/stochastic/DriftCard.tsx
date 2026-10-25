@@ -13,7 +13,7 @@ export function DriftCard() {
     { key: 'y', header: 'Year', align: 'center', render: (i) => `Y${i + 1}` },
     { key: 'g', header: 'Gross savings', align: 'center', render: (i) => fmtK(m.yearSav[i] as number) },
     { key: 'a', header: 'Attributable savings', align: 'center', render: (i) => fmtK(m.cbd.yearSavAttributable[i] as number) },
-    { key: 'w', header: 'Wedge (would have happened anyway)', align: 'center', render: (i) => <span style={{ color: (m.cbd.wedge[i] as number) > 1 ? 'var(--ac-brick)' : 'var(--ac-muted)' }}>{fmtK(m.cbd.wedge[i] as number)}</span> },
+    { key: 'w', header: 'Wedge (would have happened anyway)', align: 'center', render: (i) => <span className={(m.cbd.wedge[i] as number) > 1 ? 'ac-loss' : 'ac-muted'}>{fmtK(m.cbd.wedge[i] as number)}</span> },
   ];
   return (
     <Panel title="Counterfactual baseline drift — gross vs. attributable">

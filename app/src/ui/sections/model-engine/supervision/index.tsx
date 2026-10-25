@@ -39,7 +39,7 @@ export default function ModelSupervisionSection() {
           </>}
           {!constrained && <NumField label="Day-rate override (€, 0=use blended)" value={sup.supervisorCost} min={0} max={400000} step={10} width={120} onCommit={setSupervisorCost} />}
         </div>
-        {constrained && sm.supervisorsToUnlock > 0 && <p style={{ color: 'var(--ac-amber)' }}>+{sm.supervisorsToUnlock} supervisor(s) would unlock the unconstrained case at Y3 — the bridge back to Provisioned.</p>}
+        {constrained && sm.supervisorsToUnlock > 0 && <p className="ac-warn-ink">+{sm.supervisorsToUnlock} supervisor(s) would unlock the unconstrained case at Y3 — the bridge back to Provisioned.</p>}
         <Callout>{on ? <>Phase <strong>ON — {constrained ? 'Constrained' : 'Provisioned'}</strong>. {constrained
           ? <>Achievable agent capacity is capped at what {sup.supervisors} supervisor(s) can absorb; the shortfall stays with the residual human team (effort conservation holds).</>
           : <>Supervisor headcount is solved from agent capacity and priced as a cost line; throughput is never capped. This is the pre-existing default policy, now named and surfaced.</>}</>

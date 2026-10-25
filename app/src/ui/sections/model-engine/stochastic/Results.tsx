@@ -5,6 +5,7 @@ import { useCtx } from '@/store/hooks';
 import { DataTable, type Column } from '@/ui/widgets/DataTable';
 import { Panel } from '@/ui/widgets/cards';
 import { Tile, fmtEur } from '../shared';
+import { cssVars } from '@/ui/cssVars';
 
 type T = McsResult['tornado'][number];
 const card = (label: string, s: McsStats, f: (v: number) => string = fmtEur) => <Tile key={label} label={label} value={`P50 ${f(s.p50)}`} note={`P10 ${f(s.p10)} · P90 ${f(s.p90)}`} />;
@@ -15,7 +16,11 @@ export function Results({ run }: { run: McsResult }) {
   const tCols: Column<T>[] = [
     { key: 'd', header: 'Driver', render: (t) => t.label },
     { key: 'r', header: 'Range', align: 'center', render: (t) => `${fmtEur(t.lo)} → ${fmtEur(t.hi)}` },
-    { key: 's', header: 'Swing', render: (t) => <div className="ac-bar" style={{ width: 160 }}><span style={{ width: `${max > 0 ? (t.swing / max) * 100 : 0}%`, background: 'var(--ac-blue)' }} /></div> },
+    { key: 's', header: 'Swing', render: (t) => (
+      <div className="ac-bar ac-swing-bar">
+        <span style={cssVars({ '--ac-bar-pct': `${max > 0 ? (t.swing / max) * 100 : 0}%` })} />{/* dynamic: the driver's share of the largest swing */}
+      </div>
+    ) },
   ];
   const cCols: Column<McsResult['convergence'][number]>[] = [
     { key: 'n', header: 'Draws', align: 'center', render: (c) => c.n }, { key: 'p', header: 'P50', align: 'center', render: (c) => fmtEur(c.p50) },

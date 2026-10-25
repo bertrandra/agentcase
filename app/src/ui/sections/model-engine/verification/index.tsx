@@ -28,10 +28,10 @@ export default function ModelVerificationSection() {
           <ChoiceField label="Tax mode" value={net ? 'net' : 'overlay'} onChange={setEvtMode} options={[{ value: 'overlay', label: 'Overlay (on top of supervision)' }, { value: 'net', label: 'Net (of retained supervision)' }]} />
           <ChoiceField label="Reliability source" value={evt.rSource === 'direct' ? 'direct' : 'fromLCE'} onChange={setEvtRSource} options={[{ value: 'fromLCE', label: 'From P1 (r = p^γ)' }, { value: 'direct', label: 'Direct input' }]} />
           {evt.rSource === 'direct' && <NumField label="r (direct)" value={evt.rDirect.toFixed(2)} min={0} max={1} step={0.05} width={74} onCommit={setEvtRDirect} />}
-          <span>φₐ (weighted) <strong>{pct1(e.phiWeighted)}</strong> · rate <strong>{pct1(e.rate)}</strong> · <strong style={{ color: 'var(--ac-blue)' }}>ρ<sub>max</sub> = {pct1(e.rhoMax)}</strong></span>
+          <span>φₐ (weighted) <strong>{pct1(e.phiWeighted)}</strong> · rate <strong>{pct1(e.rate)}</strong> · <strong data-ink="blue">ρ<sub>max</sub> = {pct1(e.rhoMax)}</strong></span>
         </div>
         {net && rawNet < -1e-9 && (
-          <label className="ac-check" style={{ color: 'var(--ac-brick)' }}><input type="checkbox" checked={!!evt.ackNegativeNet} onChange={(ev) => setEvtAck(ev.target.checked)} /> Net
+          <label className="ac-check ac-check-alert"><input type="checkbox" checked={!!evt.ackNegativeNet} onChange={(ev) => setEvtAck(ev.target.checked)} /> Net
             tax would be <strong>{(rawNet * 100).toFixed(1)}%</strong> (negative = a savings credit) — I acknowledge this explicit claim
             (CC-VT-02)</label>
         )}
