@@ -1,9 +1,10 @@
 import { useState } from 'react';
-import { setPersonaSectionOrder, setPersonaSections } from '@/controllers/navLayout';
+import { setPersonaSectionOrder } from '@/controllers/navLayout';
 import { addSeqStep, replaceSeq, setSeqEnabled } from '@/controllers/navSequence';
 import { generateSeq, membershipDiff, syncOrderToSeq } from '@/domain/nav/sequence';
 import { personasByOrder, type Persona } from '@/domain/pdc/personas';
 import { useNavModel } from '@/ui/zones/navModel';
+import { syncPersonaMenu } from './assign';
 import { SeqStep } from './SeqStep';
 
 /**
@@ -47,7 +48,7 @@ export function SeqEditor({ personas, lists, persona }: { personas: Persona[]; l
           <strong>This will change the menu of {p.label} — review before confirming.</strong>
           <p>+ Add ({diff.toAdd.length}): {diff.toAdd.map(name).join(', ') || 'None'}</p>
           <p>− Remove ({diff.toRemove.length}): {diff.toRemove.map(name).join(', ') || 'None'}</p>
-          <button type="button" className="ac-btn" onClick={() => { setPersonaSections(p.id, diff.finalList); say(`Menu membership synced — +${diff.toAdd.length} added, −${diff.toRemove.length} removed. ${diff.finalList.length} sections total.`); }}>✓ Confirm</button>
+          <button type="button" className="ac-btn" onClick={() => { syncPersonaMenu(p.id, diff.finalList); say(`Menu membership synced — +${diff.toAdd.length} added, −${diff.toRemove.length} removed. ${diff.finalList.length} sections total.`); }}>✓ Confirm</button>
           <button type="button" className="ac-btn" onClick={() => setAsk(null)}>Cancel</button>
         </div>
       )}

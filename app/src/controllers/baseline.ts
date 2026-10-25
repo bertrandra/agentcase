@@ -5,6 +5,7 @@ import { defaultGradeLoc } from '@/domain/baseline/skills';
 import { targetMix } from '@/domain/baseline/locStrat';
 import { alignTeamRows, buildTeamRows, scaleRows } from '@/domain/baseline/teamMix';
 import { FTE_STEP } from '@/domain/baseline/apportion';
+import { ownRows, sharedEtp } from '@/domain/portfolio';
 import type { TeamRow } from '@/domain/types/state';
 import { defineCommand } from '@/store/commands';
 import { appStore } from '@/store/instance';
@@ -31,15 +32,20 @@ const resetTargetLocCmd = defineCommand<Record<string, never>>({
 
 // ---- Input team: whole-team actions and pins ----
 const replaceRows = (d: Doc, rows: TeamRow[] | null) => { if (rows) d.teamIn = rows; };
+/**
+ * The whole-team actions work on the product's OWN rows: the contributions of shared lines keep their FTE (they are edited in the Products section),
+ * so the case they see is the case without them. Without shared lines this is the case itself.
+ */
+const ownCase = (d: Doc): Doc => { const s = snap(d), own = ownRows(s.teamIn); return own === s.teamIn ? s : { ...s, teamIn: own }; };
 const setTotalCmd = defineCommand<{ value: number | string }>({
   type: 'baseline.setTeamTotal', label: (p) => `Scale the AS-IS team to ${p.value} FTE`, coalesceKey: () => 'baseline.setTeamTotal',
-  run(d, p) { replaceRows(d, scaleRows(snap(d).teamIn, p.value)); },
+  run(d, p) { const sh = sharedEtp(snap(d).teamIn); replaceRows(d, scaleRows(ownCase(d).teamIn, sh ? num(p.value) - sh : p.value)); },
 });
 const buildCmd = defineCommand<Record<string, never>>({
-  type: 'baseline.buildTeam', label: () => 'Build the team from the artefact mix', run(d) { replaceRows(d, buildTeamRows(makeCtx(snap(d)))); },
+  type: 'baseline.buildTeam', label: () => 'Build the team from the artefact mix', run(d) { replaceRows(d, buildTeamRows(makeCtx(ownCase(d)))); },
 });
 const alignCmd = defineCommand<Record<string, never>>({
-  type: 'baseline.alignTeam', label: () => 'Align team FTE to the artefact mix', run(d) { replaceRows(d, alignTeamRows(makeCtx(snap(d)))); },
+  type: 'baseline.alignTeam', label: () => 'Align team FTE to the artefact mix', run(d) { replaceRows(d, alignTeamRows(makeCtx(ownCase(d)))); },
 });
 const addForCmd = defineCommand<{ skill: string }>({
   type: 'baseline.addTeamRowFor', label: (p) => `Add an auto line for ${p.skill}`,

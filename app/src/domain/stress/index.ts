@@ -1,5 +1,6 @@
 /** @calc-zone stress */
-export { scenarioModel, scenarioSet, scenTargetLocName, scenTargetTJM, SCENARIO_DESTINATIONS, type Scenario, type ScenarioResult, type ScenOpts } from './scenarios';
+export { scenarioDefs, scenarioEngine, scenarioModel, scenarioSet, scenTargetLocName, scenTargetTJM, SCENARIO_DESTINATIONS } from './scenarios';
+export type { Scenario, ScenarioDef, ScenarioResult, ScenOpts } from './scenarios';
 export { cumAt, fmtE, fmtPayback, fmtSigned, monthAxis, paybackShown, roiText } from './scenarioView';
 export { compareData, fmtK, type CompareData, type Trajectory } from './compare';
 export { sensitivityMatrix, sensitivityRows, type SensCell, type SensMatrix, type SensRow } from './sensitivity';

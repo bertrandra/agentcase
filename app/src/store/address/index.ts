@@ -1,6 +1,6 @@
 /** @calc-zone product-resolution */
 import type { Patch } from 'immer';
-import { OVERRIDABLE_KEYS, deepEqual } from '@/domain/portfolio';
+import { OVERRIDABLE_KEYS, deepEqual, isSharedRow, ownRows } from '@/domain/portfolio';
 import type { Doc, PortfolioDoc } from '../types';
 import { writeDomDiff } from './dom';
 import { add, productPath, remove, type AddressCtx, type AddressScope } from './types';
@@ -25,9 +25,19 @@ function overridable(c: AddressCtx, p: Patch, key: string, rest: Patch['path']):
 }
 
 /**
+ * The team of a product that has shares of shared lines: its effective team ends with those contributions (marked `shared`), which belong to
+ * the portfolio's shared lines, not to the product. The product's own rows of the result replace its team in one patch; a change of a
+ * contribution row is dropped (shared lines are edited in the Products section).
+ */
+function writeOwnTeam(c: AddressCtx): void {
+  const own = ownRows(c.next.teamIn);
+  if (!deepEqual(own, c.prod.teamIn)) c.out.push({ op: 'replace', path: productPath(c, 'teamIn'), value: own });
+}
+
+/**
  * THE ADDRESS LAYER (spec 6.1). A case command ran on the active product's effective case and produced `patches` (relative to that case);
  * this maps each of them to the portfolio, so the caller applies them in ONE produce and history/undo/coalescing/remote behave as before:
- *  - `teamIn` -> the active product's team (never common);
+ *  - `teamIn` -> the active product's team (never common; the contributions of shared lines are left out, `writeOwnTeam`);
  *  - a whitelisted key (spec 4.3) -> the product's override if it already has one or the scope is 'product', else the common value
  *    (scope 'common', "All products" in a Portfolio / Wave view: the command ran on the common case and always writes the common value);
  *  - a form field of `dom` -> knowledge subset / override / common by the same rules (`address/dom.ts`);
@@ -37,10 +47,12 @@ export function addressPatches(pf: PortfolioDoc, base: Doc, next: Doc, patches: 
   const ai = pf.products.findIndex((x) => x.id === pf.activeProductId);
   if (ai < 0) throw new Error(`address: unknown active product ${pf.activeProductId}`);
   const c: AddressCtx = { pf, base, next, ai, prod: pf.products[ai] as AddressCtx['prod'], scope, out: [], made: new Set() };
-  let domDone = false;
+  let domDone = false, teamDone = false;
+  const shared = base.teamIn.some(isSharedRow) || next.teamIn.some(isSharedRow);   // e.g. a restored case that carries shares
   for (const p of patches) {
     const [key, ...rest] = p.path as [string, ...(string | number)[]];
     if (key === 'dom') { if (!domDone) { domDone = true; writeDomDiff(c); } continue; }
+    if (key === 'teamIn' && shared) { if (!teamDone) { teamDone = true; writeOwnTeam(c); } continue; }
     if (key === 'teamIn') { c.out.push({ ...p, path: productPath(c, 'teamIn', ...rest) }); continue; }
     if (rest.length === 0 && p.op === 'replace' && deepEqual(asBag(base)[key], p.value)) continue;
     if (TOP.has(key)) overridable(c, p, key, rest); else c.out.push({ ...p, path: ['common', key, ...rest] });

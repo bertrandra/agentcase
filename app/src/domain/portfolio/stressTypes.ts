@@ -21,7 +21,7 @@ export interface ProductStress {
   name: string;
   waveId: string;
   month0: number;
-  /** the product's own distribution (its standalone law, whatever rho) */
+  /** the product's own distribution (its standalone law, whatever rho), on the months it has inside the portfolio horizon */
   stats: StressStats;
   /** correlation of the product's draws with the portfolio draws (its share of the aggregate risk) */
   r: number;
@@ -29,7 +29,14 @@ export interface ProductStress {
   rWave: number;
 }
 
-export interface WaveStress { id: string; name: string; productIds: string[]; stats: StressStats }
+export interface WaveStress {
+  id: string;
+  name: string;
+  productIds: string[];
+  stats: StressStats;
+  /** the wave's net benefit per draw (sum over its products, each cut at the portfolio horizon), sorted ascending */
+  outcomes: number[];
+}
 
 /**
  * The risk-reduction figure of the portfolio, on the downside (P10): `sumP10` is the sum of the standalone P10 of the planned products,
@@ -41,7 +48,7 @@ export interface PfStress {
   draws: number;
   seed: number;
   rho: number;
-  /** portfolio net benefit per draw (sum over the planned products), sorted ascending */
+  /** portfolio net benefit per draw (sum over the planned products, each cut at the portfolio horizon), sorted ascending */
   outcomes: number[];
   stats: StressStats;
   products: ProductStress[];

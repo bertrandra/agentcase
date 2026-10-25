@@ -43,7 +43,7 @@ describe('stress aggregate: Monte Carlo = the portfolio Monte Carlo of the selec
     expect(screen.queryByText(/changed since the last simulation/)).toBeNull();
   });
 
-  it('Wave: the wave’s statistics, its products only, no histogram', async () => {
+  it('Wave: the wave’s statistics, its products only, and the histogram of the wave’s draws', async () => {
     await runPortfolioSimulation({ draws: 200, seed: 3 });
     mountApp('montecarlo'); view('wave', waves[0]);
     await sectionReady(title);
@@ -52,6 +52,15 @@ describe('stress aggregate: Monte Carlo = the portfolio Monte Carlo of the selec
     expectShown(totalOf(/Stress by product/), [fmtEur(sel.stats.p50), 'Total — Wave 1']);
     expectShown(document.querySelector('.ac-zone-result'), [fmtEur(sel.diversification.sumP10), fmtEur(sel.diversification.p10)]);
     expect(screen.queryByRole('img', { name: 'Distribution of the portfolio net benefit' })).toBeNull();
+    const chart = screen.getByRole('img', { name: 'Distribution of the wave net benefit' });
+    expect(chart.closest('section, .ac-panel')?.textContent).toContain('Wave distribution');
+    expect(chart.getAttribute('data-points')).toBe('20');
+    expect(chart.getAttribute('data-series')).toBe('Frequency:20');
+    expect(sel.outcomes).toBe(pfSimStore.getState().run!.waves.find((w) => w.id === waves[0])!.outcomes);
+    expect(sel.outcomes).toHaveLength(200);
+    view('wave', waves[1]);
+    expect(await screen.findByRole('img', { name: 'Distribution of the wave net benefit' })).toBeTruthy();
+    expect(bodyRows(/Stress by product — Wave 2/)).toBe(1);
   });
 
   it('a change of the portfolio marks the run stale, with the way to run again', async () => {

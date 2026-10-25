@@ -44,17 +44,33 @@ const cols = (rLabel: string, r: (p: ProductStress) => number): AggColumn<Produc
   { key: 'r', header: rLabel, align: R, render: (p) => { const v = r(p); return `${v > 0 ? '+' : ''}${v}`; } },
 ];
 
-/** The selection’s distribution (cards, histogram for the portfolio, diversification) and its product table with the selection’s stats as the roll-up line. */
+/**
+ * Histogram of a portfolio's or a wave's draws (its products added draw by draw), in its panel: the single-product `histogram` and the shared
+ * `ChartPanel` (chart error boundary, theme changes applied in place with `chart.update('none')`).
+ */
+export function SelectionHistogram({ outcomes, scope }: { outcomes: number[]; scope: 'portfolio' | 'wave' }) {
+  const { tok } = useTheme(), what = scope === 'portfolio' ? 'portfolio' : 'wave';
+  const config = useMemo(() => {
+    const h = histogram(outcomes, tok), sum = scope === 'portfolio' ? 'the products' : 'the wave’s products';
+    const title = { display: true, text: `Distribution of the ${what} net benefit (sum of ${sum}, after setup)` };
+    return { ...h, options: { ...h.options, plugins: { ...(h.options?.plugins ?? {}), title } } };
+  }, [outcomes, tok, what, scope]);
+  return (
+    <Panel title={scope === 'portfolio' ? 'Portfolio distribution' : 'Wave distribution'}>
+      <ChartPanel config={config} label={`Distribution of the ${what} net benefit`} />
+    </Panel>
+  );
+}
+
+/** The selection’s distribution (cards, histogram, diversification) and its product table with the selection’s stats as the roll-up line. */
 export function SelectionResults({ sel, scope }: { sel: SelectionStress; scope: 'portfolio' | 'wave' }) {
-  const d = sel.diversification, s = sel.stats, { tok } = useTheme();
-  const config = useMemo(() => (sel.outcomes ? histogram(sel.outcomes, tok) : null), [sel.outcomes, tok]);
+  const d = sel.diversification, s = sel.stats;
   const columns = cols(scope === 'portfolio' ? 'Correlation with the portfolio' : 'Correlation with the wave', (p) => (scope === 'portfolio' ? p.r : p.rWave));
   const t = (v: number) => fmtEur(v);
   return (
     <>
       <StatsCards s={s} />
-      {config ? <Panel title="Portfolio distribution"><ChartPanel config={config} label="Distribution of the portfolio net benefit" /></Panel>
-        : <p className="ac-muted">The histogram is drawn for the whole portfolio; a wave keeps its statistics (above and below).</p>}
+      <SelectionHistogram outcomes={sel.outcomes} scope={scope} />
       <Panel title="Risk reduction (diversification)">
         <StatRow>
           <Stat label="Sum of the products’ P10" value={t(d.sumP10)} tone="grey" /><Stat label={`${sel.label} P10`} value={t(d.p10)} tone={tone(d.p10)} />

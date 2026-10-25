@@ -6,6 +6,7 @@ import { toast } from '@/ui/uiState';
 import { NumCell } from '@/ui/widgets/CommitField';
 import { DraftText } from '@/ui/widgets/DraftText';
 import { ProductCard } from './ProductCard';
+import { WaveDependency } from './WaveDependency';
 
 interface Props { col: BoardColumn; cols: BoardColumn[]; index: number; waves: number; dragging: string | null; onDrag: (id: string | null) => void;
   onDrop: (col: BoardColumn) => void }
@@ -27,6 +28,7 @@ function Controls({ col, index, waves }: Pick<Props, 'col' | 'index' | 'waves'>)
         />
       </label>
       <span className="ac-muted" title="Calendar month of the start (portfolio start date + month)">→ {col.startLabel}</span>
+      <WaveDependency col={col} />
       <div className="ac-pf-actions" role="group" aria-label={`Actions of wave ${n}`}>
         <button
           type="button"

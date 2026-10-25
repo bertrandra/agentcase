@@ -27,7 +27,23 @@ function Pick({ i, field, list, name, value }: { i: number; field: 'skill' | 'gr
 
 interface RowProps { r: TeamRow; i: number; c: Ctx; W: TeamWeights; open: boolean; onPin: (i: number) => void }
 
+/** A product's share of a portfolio shared line: read-only here (edited in Products > Shared team lines). */
+function SharedRow({ r, i, c, W }: Omit<RowProps, 'open' | 'onPin'>) {
+  const tjm = rateFor(c.s, r.loc, r.grade), wd = c.inp.p('workdays');
+  return (
+    <tr className="ac-row-hl" data-tone="primary-80" data-shared-row={r.shared}>
+      <td>{r.skill}</td><td>{r.grade}</td><td>{r.loc}</td>
+      <td className="ac-td-num" aria-label={`FTE of line ${i + 1} (share of a shared line)`}>{(+r.etp).toFixed(2)}</td>
+      <td className="ac-td-num">{(W.targetFTE[i] ?? 0).toFixed(1)}</td>
+      <td className="ac-td-num">{tjm}</td>
+      <td className="ac-td-num ac-team-cost">{fmtK(r.etp * tjm * wd)}</td>
+      <td colSpan={2}><em title="This product's share of a team line shared between products: edit it in Products, Shared team lines">Shared</em></td>
+    </tr>
+  );
+}
+
 function Row({ r, i, c, W, open, onPin }: RowProps) {
+  if (r.shared !== undefined) return <SharedRow r={r} i={i} c={c} W={W} />;
   const tjm = rateFor(c.s, r.loc, r.grade), wd = c.inp.p('workdays');
   const d = (+r.etp || 0) - (W.targetFTE[i] ?? 0), pinned = isPinnedRow(r);
   const live = pinsOf(r).filter((id) => activeArtefacts(c.a, c.s).some((a) => a.id === id)).length;

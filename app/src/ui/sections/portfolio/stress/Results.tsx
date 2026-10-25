@@ -1,21 +1,13 @@
-import { useMemo } from 'react';
-import { useTheme } from '@/ui/themeContext';
 import type { PfStress } from '@/domain/portfolio';
 import { Callout, Panel, Stat, StatRow } from '@/ui/widgets/cards';
-import { ChartPanel } from '@/ui/widgets/ChartPanel';
 import { goSection } from '@/ui/uiState';
-import { StatsCards } from '../../stress/montecarlo/AggregateParts';
-import { histogram } from '../../stress/montecarlo/RunResults';
+import { SelectionHistogram, StatsCards } from '../../stress/montecarlo/AggregateParts';
 import { fmtEur } from '../../stress/fmt';
 import { Tables } from './Tables';
 
 /** Cards, distribution, diversification and the by-wave / by-product tables of the last portfolio run. */
 export function Results({ run, stale, rerun }: { run: PfStress; stale: boolean; rerun: () => void }) {
-  const s = run.stats, d = run.diversification, { tok } = useTheme();
-  const config = useMemo(() => {
-    const h = histogram(run.outcomes, tok), plugins = { ...(h.options?.plugins ?? {}), title: { display: true, text: 'Distribution of the portfolio net benefit (sum of the products, after setup)' } };
-    return { ...h, options: { ...h.options, plugins } };
-  }, [run, tok]);
+  const s = run.stats, d = run.diversification;
   const tone = (v: number) => (v < 0 ? 'brick' : 'teal');
   return (
     <>
@@ -24,7 +16,7 @@ export function Results({ run, stale, rerun }: { run: PfStress; stale: boolean; 
           <button type="button" onClick={rerun}>⟳ Run again</button></Callout>
       )}
       <StatsCards s={s}><Stat label="Draws · seed · ρ" value={`${run.draws} · ${run.seed} · ${String(run.rho)}`} tone="grey" /></StatsCards>
-      <Panel title="Portfolio distribution"><ChartPanel config={config} label="Distribution of the portfolio net benefit" /></Panel>
+      <SelectionHistogram outcomes={run.outcomes} scope="portfolio" />
       <Panel title="Risk reduction (diversification)">
         <StatRow>
           <Stat label="Sum of the products’ P10" value={fmtEur(d.sumP10)} tone="grey" /><Stat label="Portfolio P10" value={fmtEur(d.p10)} tone={tone(d.p10)} />

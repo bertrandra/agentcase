@@ -106,7 +106,7 @@ describe('assignment order and sidebar display', () => {
     fireEvent.click(screen.getByLabelText('Inherit the order of board'));
     expect((doc().PERSONA_SECTION_ORDER as PersonaOrder).admin).toEqual({});
     fireEvent.click(screen.getByText('↔ Respace ×10'));
-    expect(Object.values((doc().PERSONA_SECTION_ORDER as PersonaOrder).admin!).sort((a, b) => a - b)).toEqual([10, 20, 30, 40, 50]);
+    expect(Object.values((doc().PERSONA_SECTION_ORDER as PersonaOrder).admin!).sort((a, b) => a - b)).toEqual([10, 20, 30, 40, 50, 60]);
   });
   it('the display style switch writes SECTION_NAV_STYLE', () => {
     open(/Menu groups/);

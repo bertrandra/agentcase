@@ -3,6 +3,7 @@ import { calendarOf, type Calendar } from './calendar';
 import type { Consolidated } from './consolidate';
 import type { ProductRun } from './run';
 import type { Portfolio } from './types';
+import { dependencyLabel } from './waveSchedule';
 import type { ProductView } from './waves';
 
 /** A product milestone placed on the portfolio calendar: its own Time Engine month + its month 0. */
@@ -24,7 +25,10 @@ export interface GanttProductRow {
 export interface GanttWaveRow {
   id: string;
   name: string;
+  /** effective start month (after its dependency) */
   startMonth: number;
+  /** the dependency marker ("after Wave 1 finishes setup + 2 months"); null when the wave has none */
+  after: string | null;
   from: number;
   to: number;
   left: number;
@@ -82,9 +86,10 @@ export function portfolioGantt(pf: Portfolio, c: Consolidated): PortfolioGantt {
   const waves = c.waves.filter((w) => w.productIds.length > 0).map((w): GanttWaveRow => {
     const products = c.products.filter((v) => v.waveId === w.id).map((v) => productRow(v, total, cal));
     const from = Math.min(...products.map((p) => p.from)), to = Math.max(...products.map((p) => p.to));
-    return { id: w.id, name: w.name, startMonth: w.startMonth, from, to, left: (from / total) * 100, width: Math.max(0.4, ((to - from) / total) * 100),
+    const own = pf.waves.find((x) => x.id === w.id), after = own ? dependencyLabel(pf, own) : null;
+    return { id: w.id, name: w.name, startMonth: w.startMonth, after, from, to, left: (from / total) * 100, width: Math.max(0.4, ((to - from) / total) * 100),
       products,
-      meta: `${products.length} product${products.length > 1 ? "s" : ""}, from ${cal.dateAt(from)} to ${cal.dateAt(to)}` };
+      meta: `${products.length} product${products.length > 1 ? "s" : ""}, from ${cal.dateAt(from)} to ${cal.dateAt(to)}${after ? ` (${after})` : ''}` };
   });
   const out = {
     totalM: total, ticks: Array.from({ length: Math.floor(total / 12) + 1 }, (_, k) => ({ left: ((k * 12) / total) * 100, label: cal.dateAt(k * 12) })),

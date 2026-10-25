@@ -36,7 +36,7 @@ export function inputSummary(pf: Portfolio, productIds: string[]): InputSummaryR
     const c = resolveProduct(pf, id), own = Object.values(p.knowledge).some((v) => v !== undefined);
     out.push({
       id, name: p.name, wave: pf.waves.find((w) => w.id === p.waveId)?.name ?? '', planned: planned.has(id), archived: !!p.archived,
-      etp: teamEtp(p.teamIn), artefacts: c.selectedArtefacts.length, regArtefacts: c.selectedRegArtefacts.length, overrides: overrideRefs(p.overrides).length,
+      etp: teamEtp(c.teamIn), artefacts: c.selectedArtefacts.length, regArtefacts: c.selectedRegArtefacts.length, overrides: overrideRefs(p.overrides).length,
       hub: !khEnabled(ctxOf(c)) ? 'off' : own ? 'own subset' : 'common',
     });
   }

@@ -2,6 +2,7 @@
 import { defineCommand } from '@/store/commands';
 import { appStore } from '@/store/instance';
 import { FTE_STEP, snapFTE } from '@/domain/baseline/apportion';
+import { ownRows } from '@/domain/portfolio';
 import type { TeamRow } from '@/domain/types/state';
 
 
@@ -18,7 +19,7 @@ const updateRowCmd = defineCommand<{ index: number; field: 'skill' | 'grade' | '
 });
 const removeRowCmd = defineCommand<{ index: number }>({
   type: 'team.removeRow', label: (p) => `Remove team row ${p.index + 1}`,
-  run(d, p) { if (d.teamIn.length > 1) d.teamIn.splice(p.index, 1); },
+  run(d, p) { if (ownRows(d.teamIn).length > 1) d.teamIn.splice(p.index, 1); },   // the product keeps one own row (shared rows are not its own)
 });
 
 export const addTeamRow = (row: Partial<TeamRow> = {}): void => appStore().dispatch(addRowCmd(row));

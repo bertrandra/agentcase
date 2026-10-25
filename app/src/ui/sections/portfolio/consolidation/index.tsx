@@ -1,3 +1,4 @@
+import { SCHEDULE_LABELS } from '@/domain/portfolio';
 import { useConsolidation } from '@/store/consolidationHooks';
 import { Callout, Panel } from '@/ui/widgets/cards';
 import { SectionFrame } from '@/ui/zones/SectionFrame';
@@ -18,7 +19,7 @@ const help = (
 
 const LABEL: Record<string, string> = {
   unscheduled: 'Unscheduled product', truncated: 'Cut at the horizon', 'kt-lead-clamped': 'Preparation capped at month 1', 'target-capped': 'Target capped',
-  'hub-unused': 'Hub unused',
+  'hub-unused': 'Hub unused', ...SCHEDULE_LABELS,
 };
 
 /** Consolidation — the portfolio trajectory (F15, F16): cards, cumulative cash by month, by wave, by product, by year, diagnostics. */

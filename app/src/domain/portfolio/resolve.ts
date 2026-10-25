@@ -3,6 +3,7 @@ import { khEnabled } from '../knowledge';
 import type { CaseState } from '../types/state';
 import { allocateCents, teamEtp } from './alloc';
 import { mergeCase } from './layers';
+import { effectiveTeam } from './sharedTeam';
 import { ctxOf, memoChain } from './memo';
 import type { Portfolio, Product } from './types';
 
@@ -10,7 +11,9 @@ const roots = new WeakMap<object, unknown>();
 
 /** Merge memoised on the identities of common, overrides, team and knowledge (plus the two hub numbers): editing one product never rebuilds another. */
 function resolveWith(p: Portfolio, prod: Product, infra: number): CaseState {
-  return memoChain(roots, [p.common, prod.overrides, prod.teamIn, prod.knowledge], `${p.hub.enabled}|${infra}`, () => mergeCase(p.common, prod, p.hub.enabled, infra));
+  const team = effectiveTeam(p, prod);   // the product's own team, plus its shares of the shared lines (same identity when none)
+  return memoChain(roots, [p.common, prod.overrides, team, prod.knowledge], `${p.hub.enabled}|${infra}`,
+    () => mergeCase(p.common, team === prod.teamIn ? prod : { ...prod, teamIn: team }, p.hub.enabled, infra));
 }
 
 /** A product takes part in the hub allocation when it is planned, kept, and its resolved case really runs the hub (engagement context allowing). */
@@ -25,7 +28,7 @@ export function infraShares(p: Portfolio): number[] {
   const full = p.hub.infraMonthly;
   if (p.hub.infraAllocation !== 'byBaseEtp') return p.products.map(() => full);
   const users = p.products.filter((x) => usesHub(p, x));
-  const shares = allocateCents(full, users.map((x) => teamEtp(x.teamIn)));
+  const shares = allocateCents(full, users.map((x) => teamEtp(effectiveTeam(p, x))));
   return p.products.map((x) => { const i = users.indexOf(x); return i < 0 ? full : (shares[i] as number); });
 }
 

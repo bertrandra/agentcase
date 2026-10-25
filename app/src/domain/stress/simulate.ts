@@ -59,8 +59,10 @@ export function mcStats(outcomes: number[], seed: number): { sorted: number[]; s
  * The draws of one case: per draw the sampled parameters and the net benefit they give. Without `shock` each driver is the legacy
  * triangular draw of the case's own stream. With a shock, driver = sqrt(rho) * Z + sqrt(1 - rho) * eps (eps from the case's own stream) is a
  * standard normal, mapped through Phi and the inverse of the same triangular marginal: the marginal law of every driver is unchanged.
+ * `outcome` is the metric of a draw (`mcOutcome`; the portfolio passes the horizon-cut net of a product cut by the portfolio horizon).
  */
-export function mcDraws(c: Ctx, n: number, seed: number, params: McParam[], shock?: McShock): { outcomes: number[]; samples: number[][] } {
+export function mcDraws(c: Ctx, n: number, seed: number, params: McParam[], shock?: McShock,
+  outcome: (c: Ctx) => number = mcOutcome): { outcomes: number[]; samples: number[][] } {
   const rng = mcRng(seed), cap = autoTechCap(c);
   const base = params.map((p) => parseFloat(c.inp.v(p.id)) || 0), scale = params.map((p) => mcSpreadScale(c, p.id));
   const outcomes = new Array<number>(n), samples = params.map(() => new Array<number>(n));
@@ -74,7 +76,7 @@ export function mcDraws(c: Ctx, n: number, seed: number, params: McParam[], shoc
       } else v = mcSample(rng, base[k] as number, p, scale[k] as number, cap);
       (samples[k] as number[])[i] = v; ov[p.id] = String(v);
     });
-    outcomes[i] = mcOutcome(withInputs(c, ov));
+    outcomes[i] = outcome(withInputs(c, ov));
   }
   return { outcomes, samples };
 }

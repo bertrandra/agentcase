@@ -22,14 +22,14 @@ Figures are the golden fixture unless stated. "Before" = the build at the start 
 | DEV-ARCH-CONTENT | the two architecture sections describe the TypeScript build |
 | DEV-DEPS-ZONES | the Section Dependencies page shows the graph generated from the code, not the authored registry |
 | DEV-MENU-STRUCTURES | several menu structures; each persona picks one; Business journey persona |
-| DEV-BRAND-THEME | theme library, Brand & theme screen (an app section), `?theme=` links, customer logo |
+| DEV-BRAND-THEME | theme library, Brand & theme screen (an app section), `?theme=` links, customer logo, palette from logo |
 | DEV-HEADER-MENU | header and top bar: title without subtitle, compact two-zone header, file menu, Show / Change, group bar without ☰ / persona |
 | DEV-KPI-BAR | KPI bar shows FTE before / after, saving over the horizon, velocity; NPV moved to Results / Financial |
 | DEV-UI-PARITY | cross-reference of `app/ui-parity-exceptions.json` (accessibility corrections, header decisions) |
 | DEV-COSTMODEL-PILOT | the pilot cost is a dated line included in the cost-model totals (decision D4, lot 4); the app headline does not count it |
-| DEV-APP-SECTION-PERSONAS | Brand & theme cannot be removed from its personas (current; lot 7 will change it) |
+| DEV-APP-SECTION-PERSONAS | app sections (Brand & theme) are assignable per persona, stored apart from the legacy-shaped `PERSONA_SECTIONS` |
 | DEV-THEME-SEQ-UNDO | known defect: a theme `seq` can be reissued after an undo (lot 3 fixes it) |
-| DEV-PF-GAPS | portfolio features not built: scenarios table, wave dependencies, shared teams, Wave-view histogram, per-draw truncation |
+| DEV-PF-GAPS | portfolio features not built: portfolio sensitivity (scenarios table, wave dependencies and setup capacity, shared teams, Wave-view histogram, per-draw truncation: built in lot 7) |
 | DEV-SNAPSHOT-RESTORE | the parallel run of the 107 case files: 2 legacy restore defects (bass / legacy curve), 1 fixed in the new build (File > Open… re-fit) |
 
 ## DEV-HEADLINE-OWNER — one economics headline
@@ -130,13 +130,14 @@ Figures are the golden fixture unless stated. "Before" = the build at the start 
 The single-product Monte Carlo, scenarios, sensitivity, strategies and decision are untouched (same seed, same draws, same verdict: `tests/domain/portfolio/stress.test.ts` replays the 100 `mcRun` fixtures through `portfolioMonteCarlo`). What differs for a portfolio, and why:
 
 - **Per-product seed.** `seed XOR djb2(productId)` (`stressSeed.ts#productSeed`), but the seed itself when the run has a single planned product, so a one-product portfolio draws exactly what `runMonteCarlo` draws. The seed of a product therefore changes when a second product is planned (its stand-alone law does not).
-- **Outcome of a draw.** The decision layer's metric is the horizon-aware **net benefit** (`mcOutcome`: Σ savings − setup, undiscounted, over the product's own horizon). The portfolio outcome is the **sum of the products' net benefits of the draw**. Placing a product on the calendar (wave start + offset, KT lead) does not change an undiscounted sum, so the month-0 shift is not applied to the draws. Two consequences, both documented rather than modelled: (a) a product cut by the portfolio horizon is **not** truncated in the draws (the deterministic consolidation does cut it; diagnostic `truncated`), (b) the KT preparation placement does not move cash across the horizon boundary. The deterministic net / ROI / payback shown next to the verdict stay the consolidated ones.
+- **Outcome of a draw.** The decision layer's metric is the horizon-aware **net benefit** (`mcOutcome`: Σ savings − setup, undiscounted, over the product's own horizon). In the portfolio run, each draw of each product is placed on the calendar (wave start + product offset) and **cut at the portfolio horizon exactly as the deterministic consolidation cuts it** (`stressCut.ts#cutNet`: the product's months past `portfolioHorizon` are dropped, and with a KT lead the KT part of the setup is booked on its preparation months, so it counts when they fall inside the horizon and the home months do not); the portfolio outcome is the **sum of the products' cut net benefits of the draw**, and a wave's outcome the same sum over its products. A product starting at month 48 of a 60-month portfolio contributes its first 12 months. A product that fits inside the horizon keeps `mcOutcome` (the same undiscounted sum: no truncation means no change, and the single-product run is bit for bit today's). Invariant (`tests/domain/portfolio/stressCut.test.ts`): with zero spreads every draw equals the deterministic consolidated net (portfolio, waves and products). A product's stand-alone stats in the run are therefore those of its months inside the horizon, which differ from its own Monte Carlo when it is cut. The deterministic net / ROI / payback shown next to the verdict stay the consolidated ones.
 - **Correlation.** Gaussian copula with one global ρ ∈ [0, 1] (D-M7, default 0): per draw and per uncertain driver, `g = sqrt(ρ)·Z + sqrt(1−ρ)·ε` (Z shared by all products, ε the product's own stream), mapped by Φ and the inverse CDF of the same triangular marginal (`mcSampleT`). Marginals are unchanged for any ρ. ρ = 0 does **not** use the copula: it is the legacy stream, bit for bit. Drivers stay independent of each other inside a product (as today). A lone product is not affected by ρ in law (its draws are reshuffled, not rescaled).
 - **Risk reduction ("diversification").** Reported as `portfolio P10 − Σ standalone P10` (>= 0 when diversified, 0 at ρ = 1). This is the "sum of standalone P10 minus portfolio P10" asked for in the downside-magnitude sense (Σ(−P10) − (−P10 of the portfolio)); the sign is chosen so that a bigger number means more protection.
 - **Verdict rule.** `verdictRule` (extracted from `decide`, same thresholds `DI_THRESHOLDS`, same coherence invariant) applies unchanged to the portfolio / wave distribution. Only its inputs are extended: **setup** = Σ of the products' `setupTotal` (the floor is −50 % of it); **risk-bar premium** = the product premiums (engagement context + wave-2 modules, `riskPremiumOf`) **averaged with the entry headcount (base ETP) as weight** (simple mean if the weights are all 0) — a large product's context weighs more than a small one's, and a portfolio mixing a regulated and a plain product gets an intermediate bar; **conditions** name the products whose draws correlate most with the group outcome (|r| >= 0.2) instead of single-case input drivers (a product-level input has no meaning across products). No other rule differs.
-- **Scenarios and sensitivity** stay per product (active product); no portfolio scenario table: re-running `scenarioModel` per product and summing it would need a calendar placement of six cases and a second set of headline owners, which is a new feature, not a reuse. Out of scope.
+- **Scenarios**: the product view is untouched (active product). With the Portfolio or a Wave in view, the Scenarios section also shows the **portfolio scenarios table** (lot 7, `domain/portfolio/aggScenarios.ts#portfolioScenarios`): each product's six scenario engines (`domain/stress/scenarios.ts#scenarioEngine`, the very engine `scenarioModel` reads, memoised per product run) are laid on the calendar by the consolidation kernel (`productSeries`: month 0, KT lead, truncation at the portfolio horizon; a scenario without setup has no KT setup either) and summed by `aggregate` / `summarize` (F16), so there is no second set of headline owners: NPV at the common rate from portfolio month 1, ROI `roiCanonical`, payback = first calendar month with cumulative cash >= 0 (shown "immediate" when there is no setup and the scenario saves, as `paybackShown`). With one product starting at month 0 the table is the product's scenarios; "AI + Location" is the deterministic consolidation. A scenario's label falls back to a generic one when the products' destinations or ramp rates differ. **Sensitivity** stays per product.
 - **Speed.** `splineEval` caches the Fritsch-Carlson slopes per control-point list and `withInputs` parses its overrides once: same arithmetic, bit-identical numbers (all oracles green), 20 products × 1,000 draws ≈ 1.4 s instead of 2.2 s.
-- Files: `domain/portfolio/{stress,stressSeed,stressFingerprint,stressTypes,stressVerdict}.ts`, `domain/stress/{simulate,rng}.ts` (`mcDraws`, `mcStats`, `mcSampleT`), `domain/verdict/decision.ts` (`verdictRule`, `riskPremiumOf`).
+- **Histogram per scope.** The Monte Carlo aggregate view draws the histogram for a Portfolio and for a Wave (the wave's draws: its products added draw by draw, kept in `WaveStress.outcomes`), with the same `ChartPanel` (chart error boundary, theme applied in place by `chart.update('none')`) as Portfolio stress.
+- Files: `domain/portfolio/{stress,stressCut,stressSeed,stressFingerprint,stressTypes,stressVerdict}.ts`, `domain/stress/{simulate,rng}.ts` (`mcDraws`, `mcStats`, `mcSampleT`), `domain/verdict/decision.ts` (`verdictRule`, `riskPremiumOf`).
 
 ## DEV-ARCH-CONTENT — the architecture sections describe the TypeScript build
 
@@ -181,14 +182,19 @@ default case load, display and save exactly as before (the default theme writes 
 - New section **🎨 Brand & theme** (CONFIGURE, groupSeq 30; Business journey: Reference). It has no legacy equivalent, so it is an **app section**
   (`"app": true` in `ui/zones/data/sectionCatalog.json`): like the Portfolio sections it is not in `LEGACY_SECTIONS`, hence not on the "Sections"
   sheet of the parameters workbook and not in the case's `PERSONA_SECTIONS` (the default case is unchanged); the navigation adds it to the personas
-  its `personas` field names (Admin, Builder, Business journey; Advanced sees every section). It cannot be removed from those personas in Persona
-  management in this version. Tests that compare the navigation with the legacy page leave app sections out (`tests/domain/nav.test.ts`,
+  its `personas` field names by default (Admin, Builder, Business journey; Advanced sees every section). Persona management can add it to or remove
+  it from any other persona (DEV-APP-SECTION-PERSONAS). Tests that compare the navigation with the legacy page leave app sections out (`tests/domain/nav.test.ts`,
   `tests/ui/nav.test.tsx`); the catalogue counts are 86 sections (79 + 6 Portfolio + 1 app section), 19 `S-static`.
 - Parameters workbook: sheet **Themes**, written only when the case has a user theme or another active theme than 1; the logo is not carried.
 - Engagement context: a "Customer logo" card (upload, backdrop, hide, remove). The header shows the logo next to "AgentCase for <customer>" only when
   one is set; the HTML report shows it above the title only when one is set (otherwise byte-identical).
 - `?theme=<n>` in the address shows a theme without changing the case (a notice offers to adopt or clear it).
-- Files: `domain/theme/{themeDef,derive,themedDisplay,catalogue,library,themeFile,themeProps,themeChecks,active,logo}.ts`, `controllers/{themes,brand}.ts`,
+- **Palette from logo** (lot 7): with a customer logo set, the one-colour generator of a user theme offers "🖼️ Palette from logo": the logo (already a
+  data URL in the case, nothing fetched) is drawn on an offscreen canvas (`ui/brand/logoPixels.ts`, the only canvas code) and its dominant
+  non-neutral colours found by `domain/theme/logoPalette.ts` `logoColours()` (pure: transparent, near-white, near-black and grey pixels ignored,
+  4-bit histogram, close shades merged in OKLab); the first one feeds the generator with its contrast slider and harmony as one undoable
+  `theme.generate` step, the others are offered as buttons. Details: docs/THEME.md §8.10.
+- Files: `domain/theme/{themeDef,derive,themedDisplay,catalogue,library,themeFile,themeProps,themeChecks,active,logo,logoPalette}.ts`, `controllers/{themes,brand}.ts`,
   `ui/brand/*`, `ui/sections/configure/brand-theme/*`, `ui/sections/frame/engagement-context/LogoPanel.tsx`, `store/persistence/excel/params/sheets/themes.ts`,
   `store/persistence/excel/results/logo.ts`, `store/persistence/report/{data,render}.ts`.
 
@@ -255,16 +261,27 @@ Changed in lot 4 (user decision D4). The Cost model (monthly) workbook (`domain/
   tests `tests/domain/portfolio/costModel.test.ts` (pilot months = the sizing, totals = sum of the rows including the pilot, reconciliation with the app net on
   four fixtures, the 107 fixtures and the multi-product portfolios), `tests/store/excel-costmodel.test.ts`.
 
-## DEV-APP-SECTION-PERSONAS — Brand & theme cannot be removed from the personas that show it
+## DEV-APP-SECTION-PERSONAS — app sections are assigned per persona apart from the legacy-shaped persona lists
 
-Current state (v20.9.0). 🎨 Brand & theme is an *app section* (DEV-BRAND-THEME): it is not in the case's `PERSONA_SECTIONS` (so the default case and the
-parameters workbook stay legacy-shaped), and the navigation adds it to the personas its catalogue entry names (Admin, Builder, Business journey; Advanced
-sees every section). Consequence: **Persona management cannot remove it** from those personas (the Section assignment tab lists it as assigned but the
-removal has no effect on an app section), unlike any legacy section.
+Built in lot 7 (before: v20.9.0 → v20.16.0, 🎨 Brand & theme could not be removed from the personas its catalogue entry names). 🎨 Brand & theme is
+an *app section* (DEV-BRAND-THEME): it is not in the case's `PERSONA_SECTIONS`, so the default case and the parameters workbook stay legacy-shaped.
 
+- **Default**: the navigation shows an app section to the personas its catalogue entry names (`personas` in `ui/zones/data/sectionCatalog.json`:
+  Admin, Builder, Business journey) and to a persona whose legacy list already names it (added by hand before lot 7).
+- **Override**: Persona management (🧩 Section assignment ✕ / ➕ Add, the 🧩 Persona layout double-click, 🧭 Sync menu to sequence) adds or removes
+  it like any section. The choice is stored in the optional case key `PERSONA_APP_SECTIONS = { <persona>: { <app section id>: true | false } }`, never
+  in `PERSONA_SECTIONS`. Command `persona.setAppSection` (one undoable step; Sync menu to sequence writes both keys in its one step). The overrides
+  are normalised: a value equal to the default is dropped, and when none is left the key itself is removed, so a case edited back to its defaults
+  saves exactly as an untouched one. Deleting a persona drops its overrides. Absent key = the catalogue default = the build before lot 7.
+- **Guard (a way back)**: the protected Advanced persona takes no override and always sees every section, and it cannot be deleted, so every
+  case keeps a way back to 🎨 Brand & theme (switch the persona picker to Advanced). No further guard: any other persona may lose it, like any section.
+- **Files and workbooks**: the key travels with the case file (and the persona-config JSON companion of the persona-only export) only when set. The
+  parameters workbook does not carry it ("Persona Sections" keeps the legacy shape), so a workbook round trip keeps the defaults; the parallel run
+  and excel-compat are unchanged (no case file sets it). Not a model input (excluded from the Monte Carlo fingerprint).
 - Legacy: no such section; every section is assignable.
-- **Planned change (lot 7)**: app sections become assignable like the others (stored without breaking the legacy shape of `PERSONA_SECTIONS`).
-- Files: `ui/zones/registry.ts` (`APP_SECTIONS`), `ui/zones/navModel.ts`, `ui/zones/data/sectionCatalog.json`.
+- Files: `domain/nav/appSections.ts` (resolution, normalisation), `controllers/appSections.ts`, `controllers/{navLayout,pdcPersonas}.ts`,
+  `ui/zones/{registry,navModel}.ts` (`APP_SECTIONS`), `ui/sections/configure/personas/assign.ts`; tests `tests/domain/nav-app-sections.test.ts`,
+  `tests/store/app-sections.test.ts`, `tests/ui/sections/personas-app.test.tsx`.
 
 ## DEV-THEME-SEQ-UNDO — known defect: a theme sequence id can be issued twice after an undo
 
@@ -283,11 +300,30 @@ missing feature is not read as a bug. The authoritative list of known gaps is do
 
 | Gap | State | Where it is discussed |
 |---|---|---|
-| **Portfolio scenarios table** (the six scenarios summed over products) | not built: scenarios and sensitivity stay per product (active product) | DEV-PF-STRESS, SPEC_MULTI_PRODUIT.md §9 |
-| **Dependencies between waves** (product B after product A) and transformation-team capacity between waves | not built: waves may overlap freely (F13) | SPEC_MULTI_PRODUIT.md F13, §9 |
-| **Shared teams** across products (a person on two products) | not built: each product has its own entry team | SPEC_MULTI_PRODUIT.md §9 |
-| **Monte Carlo histogram in the Wave view** | the histogram is drawn for the Portfolio only; a Wave shows the statistics (P10 / P50 / P90, P(net<0), CVaR, diversification) without it | VUE_AGREGEE.md (stress group) |
-| **Per-draw horizon truncation** in the portfolio stress | not modelled: a product cut by the portfolio horizon is simulated on its own horizon; the deterministic consolidation does cut it (diagnostic `truncated`) | DEV-PF-STRESS (outcome of a draw) |
+| **Portfolio sensitivity** (the tornado summed over products) | not built: the sensitivity stays per product (active product); the six scenarios are summed since lot 7 | DEV-PF-STRESS |
+
+Built since (removed from the table above):
+
+- **Dependencies between waves and transformation-team capacity (lot 7, SPEC_MULTI_PRODUIT.md F13).** A wave may start after another wave
+  `start`s or after its last product finishes setup (`setupEnd`), plus a lag in months; its effective start is `max(own start, derived start)`.
+  An optional portfolio parameter `maxConcurrentSetups` caps the products whose own setup months overlap; the later ones (wave order, a wave after
+  the one it depends on, then board order) are pushed back. One owner: `domain/portfolio/waveSchedule.ts#resolveSchedule` (pure, acyclic: a cycle
+  is refused by the command and, from a file, flagged and ignored), read by `scheduledProducts`, so the consolidation, Gantt (dependency marker),
+  KPI bar, stress, results workbook and report use the effective starts. Commands `wave.setDependency`, `portfolio.setMaxConcurrentSetups`
+  (undoable); Waves section: a "Dependency" group per wave, the capacity field, a "Schedule" checks panel (codes `wave-delayed`, `setup-pushed`,
+  `wave-dep-cycle`, `wave-dep-unknown`, also in the Consolidation diagnostics). Both fields are optional: absent = the v1 calendar (every existing
+  portfolio test unchanged); no schema bump. The parameters workbook carries them (Waves columns F-H, PortfolioSettings row "Max products in setup
+  at once"). Tests: `tests/domain/portfolio/waveSchedule.test.ts`, `tests/store/portfolio-wave-deps.test.ts`, `tests/ui/portfolio-wave-deps.test.tsx`.
+
+**Built (lot 7): shared teams across products.** A portfolio may hold `sharedTeam` lines (skill, grade, location, FTE, `allocations`: product id ->
+share in percent); resolving a product appends FTE x share to its effective team (rows marked `shared`), so a line whose shares add up to at most
+100 % is counted once in the portfolio (consolidation, team aggregate, hub allocation by headcount). Absent field = the previous behaviour exactly.
+Diagnostics `shared-over` (shares > 100 %) and `shared-orphan` (share of a deleted product); deleting a product drops its shares in the same undo
+step. Undoable commands `sharedTeam.add / edit / remove / setShare`; Products section, "Shared team lines" table; Input team shows the share as a
+read-only "Shared" row; the parameters workbook exports and imports the `SharedTeam` sheet. What it does not do (by choice): a shared line has no
+pins; duplicating a product (F3) copies its own team, not its shares (they would exceed 100 %); the whole-team actions of Input team (total, build
+from artefacts, align) act on the product's own rows and leave the shares as they are; an imported workbook without a `SharedTeam` sheet has no
+shared line.
 
 ## DEV-SNAPSHOT-RESTORE — opening the 107 case files: the legacy restore against the new build
 

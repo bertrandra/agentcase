@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useMemo, useState } from 'react';
 import { addBuiltinPersona } from '@/controllers/menuStructures';
 import { BUILTIN_PERSONAS } from '@/domain/nav/structures';
 import type { Persona } from '@/domain/pdc/personas';
@@ -7,6 +7,7 @@ import { LEGACY_SECTIONS } from '@/ui/zones/registry';
 import { useNavModel } from '@/ui/zones/navModel';
 import { SectionFrame } from '@/ui/zones/SectionFrame';
 import { TabPanel, TabStrip, useStripBase } from '@/ui/widgets/TabStrip';
+import { effectiveLists } from './assign';
 import { AssignTab } from './AssignTab';
 import { GroupTable } from './GroupTable';
 import { MenuLayout } from './MenuLayout';
@@ -36,7 +37,8 @@ const NO_PERSONAS: Persona[] = [], NO_LISTS: Record<string, string[]> = {};
 export default function PersonasSection() {
   const [tab, setTab] = useState<(typeof TABS)[number][0]>('personas'), base = useStripBase(), m = useNavModel(), [sel, setSel] = useState('');
   const personas = useDoc((d) => (d.PERSONAS as Persona[] | undefined) ?? NO_PERSONAS),
-    lists = useDoc((d) => (d.PERSONA_SECTIONS as Record<string, string[]> | undefined) ?? NO_LISTS);
+    raw = useDoc((d) => (d.PERSONA_SECTIONS as Record<string, string[]> | undefined) ?? NO_LISTS), appOv = useDoc((d) => d.PERSONA_APP_SECTIONS);
+  const lists = useMemo(() => effectiveLists(raw, appOv), [raw, appOv]);   // what each menu shows, app sections included
   const structure = m.structures.some((s) => s.id === sel) ? sel : m.structure, missing = BUILTIN_PERSONAS.filter((b) => !personas.some((p) => p.id === b.id));
   const bar = <StructureBar value={structure} onChange={setSel} />;
   return (

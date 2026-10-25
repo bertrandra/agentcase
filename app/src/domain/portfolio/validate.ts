@@ -1,6 +1,7 @@
 /** @calc-zone portfolio-consolidation */
 import { diagnose } from './diagnostics';
-import { FORBIDDEN_DOM_IDS, OVERRIDABLE_KEYS, type Portfolio } from './types';
+import { sharedTeamErrors } from './sharedTeamIssues';
+import { FORBIDDEN_DOM_IDS, OVERRIDABLE_KEYS, WAVE_MILESTONES, type Portfolio } from './types';
 
 export interface Issue { code: string; message: string; productId?: string; waveId?: string }
 export interface Validation { errors: Issue[]; diagnostics: Issue[] }
@@ -17,10 +18,15 @@ export function validate(pf: Portfolio): Validation {
   if (!pf.products.some((p) => p.id === pf.activeProductId)) err('active-unknown', `active product ${pf.activeProductId} does not exist`);
   if (!Number.isInteger(pf.horizonMonths) || pf.horizonMonths < 1) err('horizon', 'horizonMonths must be a positive integer');
   if (pf.rho !== undefined && !(typeof pf.rho === 'number' && pf.rho >= 0 && pf.rho <= 1)) err('rho', 'the correlation rho must be a number in [0, 1]');
+  const cap = pf.maxConcurrentSetups;
+  if (cap !== undefined && !(Number.isInteger(cap) && cap >= 1)) err('capacity', 'maxConcurrentSetups must be a whole number >= 1');
   if (!nonNeg(pf.hub.infraMonthly)) err('hub-infra', 'hub infrastructure must be a number >= 0');
   const listed = new Map<string, string[]>();
   for (const w of pf.waves) {
     if (!nonNeg(w.startMonth)) err('wave-start', `wave ${w.id}: startMonth must be >= 0`, { waveId: w.id });
+    const d = w.dependsOn;
+    if (d && !(typeof d.waveId === 'string' && WAVE_MILESTONES.includes(d.milestone) && Number.isInteger(d.lagMonths) && d.lagMonths >= 0)) err('wave-dep',
+      `wave ${w.id}: a dependency needs a wave id, a milestone (${WAVE_MILESTONES.join(' / ')}) and a whole lag >= 0`, { waveId: w.id });
     for (const pid of w.productIds) listed.set(pid, [...(listed.get(pid) ?? []), w.id]);
   }
   for (const p of pf.products) {
@@ -39,6 +45,7 @@ export function validate(pf: Portfolio): Validation {
       if (FORBIDDEN_DOM_IDS.includes(id)) err('override-key', `product ${p.id}: "${id}" is never overridden`, ref);
     }
   }
+  errors.push(...sharedTeamErrors(pf));
   const diagnostics = errors.length ? [] : diagnose(pf);
   return { errors, diagnostics };
 }

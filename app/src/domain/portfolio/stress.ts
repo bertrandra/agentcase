@@ -1,6 +1,7 @@
 /** @calc-zone stress */
 import { mcDraws, mcParamsOf, mcPearson, mcStats } from '../stress';
 import { pfStressFingerprint } from './stressFingerprint';
+import { cutOutcome } from './stressCut';
 import { clampRho, commonShock, productSeed } from './stressSeed';
 import type { Diversification, PfStress, PfStressJob, PfStressOpts, ProductStress, StressStats, WaveStress } from './stressTypes';
 import { runOf } from './run';
@@ -30,20 +31,21 @@ const sum = (cols: number[][], n: number): number[] => {
  * metric `mcOutcome` as the product's own Monte Carlo) from a stream seeded by `productSeed` (seed XOR hash(id); the seed itself for a lone
  * product). With rho > 0 each driver's triangular shock is read from g = sqrt(rho) Z + sqrt(1 - rho) eps (Z shared by all products, eps the
  * product's own), through Phi and the inverse of the same marginal: every product keeps its own marginal law, rho = 1 gives the products the
- * same shocks. The portfolio outcome of a draw is the sum of the products' net benefits of that draw (shifting a product on the calendar
- * does not change an undiscounted sum; products are not cut at the portfolio horizon, see DEVIATIONS).
+ * same shocks. The portfolio outcome of a draw is the sum of the products' net benefits of that draw, each placed on the calendar (wave
+ * start + offset) and cut at the portfolio horizon exactly as the deterministic consolidation does (`cutOutcome`; a product inside the
+ * horizon keeps `mcOutcome`, the same undiscounted sum). A wave's outcome is the same sum over its products.
  */
 export function pfStressJob(pf: Portfolio, o: PfStressOpts): PfStressJob {
-  const n = Math.max(1, Math.floor(o.draws)), rho = clampRho(o.rho), plan = scheduledProducts(pf);
+  const n = Math.max(1, Math.floor(o.draws)), rho = clampRho(o.rho), plan = scheduledProducts(pf), L = Math.max(0, Math.floor(pf.horizonMonths) || 0);
   const runs = plan.map((s) => runOf(resolveProduct(pf, s.product.id)));
   const drivers = Math.max(0, ...runs.map((r) => mcParamsOf(r.ctx.s).length)), shock = commonShock(o.seed, rho, n, drivers);
   const draws: number[][] = [];
   return {
     steps: plan.length,
     step(i) {
-      const ctx = (runs[i] as (typeof runs)[number]).ctx;
-      draws[i] = mcDraws(ctx, n, productSeed(o.seed, (plan[i] as (typeof plan)[number]).product.id, plan.length), mcParamsOf(ctx.s),
-        shock ?? undefined).outcomes;
+      const r = runs[i] as (typeof runs)[number], s = plan[i] as (typeof plan)[number];
+      draws[i] = mcDraws(r.ctx, n, productSeed(o.seed, s.product.id, plan.length), mcParamsOf(r.ctx.s), shock ?? undefined,
+        cutOutcome(s, r.rows.length, L)).outcomes;
     },
     finish() {
       const unsorted = sum(draws, n), total = statsOf(unsorted, o.seed);
@@ -54,8 +56,9 @@ export function pfStressJob(pf: Portfolio, o: PfStressOpts): PfStressJob {
         r: r3(d, unsorted), rWave: r3(d, sums.get(s.wave.id) as number[]) }));
       const waves: WaveStress[] = pf.waves.flatMap((w) => {
         const mine = per.filter((x) => x.s.wave.id === w.id);
-        return mine.length ? [{ id: w.id, name: w.name, productIds: mine.map((x) => x.s.product.id),
-          stats: statsOf(sums.get(w.id) as number[], o.seed).stats }] : [];
+        if (!mine.length) return [];
+        const st = statsOf(sums.get(w.id) as number[], o.seed);
+        return [{ id: w.id, name: w.name, productIds: mine.map((x) => x.s.product.id), stats: st.stats, outcomes: st.sorted }];
       });
       const sumP10 = products.reduce((a, p) => a + p.stats.p10, 0),
         diversification: Diversification = { sumP10, p10: total.stats.p10, reduction: total.stats.p10 - sumP10 };

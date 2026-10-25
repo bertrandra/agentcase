@@ -1,6 +1,7 @@
 /** @calc-zone portfolio-consolidation */
 import { infraShares } from './resolve';
 import { knowledgeTotals, type KnowledgeRow, type KnowledgeTotals } from './knowledge';
+import { waveSchedule } from './timeline';
 import type { Portfolio } from './types';
 
 /** F31: the hub effect of one wave = the sum, over its kept products, of each product's with/without-hub delta (`hubView`). */
@@ -8,9 +9,10 @@ export interface WaveEffect extends KnowledgeTotals { waveId: string; name: stri
 
 /** Per-wave sums of the Knowledge transfer rows, in wave order (no new formula: sums of the rows, which come from `hubView`). */
 export function waveEffects(pf: Portfolio, rows: KnowledgeRow[]): WaveEffect[] {
+  const starts = waveSchedule(pf).starts;
   return pf.waves.map((w) => {
     const mine = rows.filter((r) => r.waveId === w.id);
-    return { waveId: w.id, name: w.name, startMonth: w.startMonth, products: mine.length, users: mine.filter((r) => r.usesHub).length,
+    return { waveId: w.id, name: w.name, startMonth: starts.get(w.id) ?? w.startMonth, products: mine.length, users: mine.filter((r) => r.usesHub).length,
       ...knowledgeTotals(mine) };
   });
 }

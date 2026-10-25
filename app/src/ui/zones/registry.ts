@@ -13,7 +13,8 @@ export const SECTIONS = sectionCatalog as SectionDef[];
 export const GROUPS = [...(groups as GroupDef[])].sort((a, b) => a.order - b.order);
 /**
  * App sections (`app: true`): added by the TS app with no legacy equivalent (🎨 Brand & theme). Like the Portfolio ones they stay out of the
- * legacy-shaped artefacts and the case's persona lists; the navigation adds each to the personas its `personas` field names (`withAppSections`).
+ * legacy-shaped artefacts and the case's persona lists; shown by default to the personas their `personas` field names, overridden per persona in
+ * `PERSONA_APP_SECTIONS` (`domain/nav/appSections.ts` `withAppSections`, DEV-APP-SECTION-PERSONAS).
  */
 export const APP_SECTIONS = SECTIONS.filter((s) => s.app);
 /** The 79 case sections / 14 groups of the legacy file: what the legacy-shaped artefacts (parameters workbook, legacy oracle tests) describe. */

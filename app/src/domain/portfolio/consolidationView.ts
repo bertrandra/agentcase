@@ -6,6 +6,7 @@ import { portfolioHeadline, type PortfolioHeadline } from './portfolioHeadline';
 import type { Series } from './series';
 import type { Portfolio } from './types';
 import { validate, type Issue } from './validate';
+import { SCHEDULE_CODES } from './waveSchedule';
 
 /** One line of the by-wave / by-product tables (calendar figures, NPV discounted from portfolio month 1: the sum of the products is the portfolio NPV). */
 export interface SummaryRow {
@@ -49,7 +50,7 @@ export const summaryRow = (id: string, name: string, products: number, s: Series
   paybackMonth: m.paybackMonth,
 });
 
-const CODES = ['unscheduled', 'target-capped', 'kt-lead-clamped', 'hub-unused'];
+const CODES = ['unscheduled', 'target-capped', 'kt-lead-clamped', 'hub-unused', ...SCHEDULE_CODES];
 
 function diagnosticsOf(pf: Portfolio, c: Consolidated): Issue[] {
   const out = validate(pf).diagnostics.filter((d) => CODES.includes(d.code));

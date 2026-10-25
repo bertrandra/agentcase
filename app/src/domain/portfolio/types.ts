@@ -47,7 +47,23 @@ export interface Product {
   offsetMonths: number;
 }
 
-export interface Wave { id: string; name: string; note?: string; startMonth: number; productIds: string[] }
+/** What a wave waits for (see `waveSchedule.ts`): another wave's start, or the end of the setup of that wave's last product. */
+export type WaveMilestone = 'start' | 'setupEnd';
+export const WAVE_MILESTONES: readonly WaveMilestone[] = ['start', 'setupEnd'];
+/** "Starts after wave `waveId` reaches `milestone`, plus `lagMonths`." The effective start is the later of this and the wave's own start. */
+export interface WaveDependency { waveId: string; milestone: WaveMilestone; lagMonths: number }
+
+export interface Wave {
+  id: string; name: string; note?: string; startMonth: number; productIds: string[];
+  /** optional dependency on another wave; absent = the wave starts at its own start month */
+  dependsOn?: WaveDependency;
+}
+
+/**
+ * A team line shared by several products (a person or a group on two products). `allocations`: product id -> share of the line's FTE in percent
+ * (0..100, adding up to <= 100). Resolving a product adds FTE x share to its entry team; the line is counted once in the portfolio.
+ */
+export interface SharedTeamLine { id: string; skill: string; grade: string; loc: string; etp: number; allocations: Record<string, number> }
 
 export interface HubSettings { enabled: boolean; infraMonthly: number; infraAllocation: 'perProduct' | 'byBaseEtp' }
 
@@ -63,4 +79,8 @@ export interface Portfolio {
   startDate: string;
   /** global correlation between products in the portfolio Monte Carlo, 0..1; absent = 0 (independent, D-M7) */
   rho?: number;
+  /** transformation-team capacity: at most this many products in setup at the same time (integer >= 1); absent = no limit */
+  maxConcurrentSetups?: number;
+  /** team lines shared between products; absent = every team is the product's own (spec F2) */
+  sharedTeam?: SharedTeamLine[];
 }

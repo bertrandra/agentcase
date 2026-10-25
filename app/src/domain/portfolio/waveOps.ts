@@ -1,6 +1,7 @@
 /** @calc-zone portfolio-consolidation */
 import { clean, placeProduct } from './products';
 import type { HubSettings, Portfolio, Wave } from './types';
+import { dropDependenciesOn } from './waveDepOps';
 
 const whole = (n: number): number => (Number.isFinite(n) ? Math.max(0, Math.floor(n)) : 0);
 const mapWave = <T extends Portfolio>(pf: T, id: string, f: (w: Wave) => Wave): T =>
@@ -16,10 +17,11 @@ export const setWaveStart = <T extends Portfolio>(pf: T, id: string, startMonth:
   (w) => ({ ...w, startMonth: whole(startMonth) }));
 export const setWaveNote = <T extends Portfolio>(pf: T, id: string, note: string): T => mapWave(pf, id, (w) => ({ ...w, note: note || undefined }));
 
-/** Removing a wave unassigns its products (they become "unplanned"); they are not deleted. */
+/** Removing a wave unassigns its products (they become "unplanned"); they are not deleted. Waves that depended on it lose that dependency. */
 export function removeWave<T extends Portfolio>(pf: T, id: string): T {
   if (!pf.waves.some((w) => w.id === id)) return pf;
-  return { ...pf, waves: pf.waves.filter((w) => w.id !== id), products: pf.products.map((p) => (p.waveId === id ? { ...p, waveId: null } : p)) };
+  return { ...pf, waves: dropDependenciesOn(pf.waves.filter((w) => w.id !== id), id),
+    products: pf.products.map((p) => (p.waveId === id ? { ...p, waveId: null } : p)) };
 }
 
 /** Move a wave to a new position in the deployment order (clamped). */

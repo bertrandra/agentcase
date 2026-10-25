@@ -11,7 +11,7 @@ This page covers the configurable-theme programme: T1 (the tokens), T3 (axes, §
 | **T1** (done) | the token set; no literal outside the token files | nothing visible |
 | **T3** (done, §6) | shapes, density, typography, box style; `Field*` controls with variants | token values, plus the new controls |
 | **T2** (done) | dark mode, contrast levels, chart palettes, colour-blind option, reduced motion, per-user preference (§7) | token **values** only, plus the Display control of the top bar |
-| **T4 + T5** (done, §8) | theme library in the case (7 built-ins, own themes), "Brand & theme" screen with live preview, `?theme=<n>` links, customer logo; the theme reaches the HTML snapshot, the report and the Excel workbooks (palette from logo: not done) | token values, inline on `<html>` |
+| **T4 + T5** (done, §8) | theme library in the case (7 built-ins, own themes), "Brand & theme" screen with live preview, `?theme=<n>` links, customer logo, palette from logo (§8.10); the theme reaches the HTML snapshot, the report and the Excel workbooks | token values, inline on `<html>` |
 
 ## 1. Where the tokens live
 
@@ -454,7 +454,8 @@ theme.
 ### 8.8 The 🎨 Brand & theme screen (`ui/sections/configure/brand-theme/`)
 
 An app section (no legacy equivalent: outside the legacy catalogue and the legacy-shaped workbook sheets, `app: true` in sectionCatalog.json),
-in CONFIGURE (Business journey: Reference), shown to Admin, Builder, Business journey and Advanced. Left: the library (number, name, Built-in /
+in CONFIGURE (Business journey: Reference), shown by default to Admin, Builder, Business journey and Advanced (Persona management can add it to or
+remove it from any persona but Advanced, which always sees it: docs/DEVIATIONS.md DEV-APP-SECTION-PERSONAS). Left: the library (number, name, Built-in /
 Diagnostic / Active badges; Activate, Duplicate, Export, Delete, Rename; the share link; New theme, Import…, Export library). Centre: the
 editor of the selected theme, read-only for a built-in ("Duplicate to edit"): for a user theme the **Generate from one colour** panel first (§8.9), then colours by group with a picker, the value, a **live contrast
 badge** (AAA / AA / AA large / Fail with the ratio of the pair the colour paints, `themeChecks.ts`) and a warning line per failing pair (a
@@ -511,3 +512,19 @@ setting is a **draft** of the screen's view state (never in the case): the live 
 palette, not applied"); Apply writes it. The colour pickers below stay editable after applying (fine-tuning; the settings stay on the theme).
 Built-in themes keep "Duplicate to edit" and show no panel.
 
+### 8.10 Palette from logo (`domain/theme/logoPalette.ts`, `ui/brand/logoPixels.ts`, `brand-theme/LogoPalette.tsx`)
+
+When the case has a customer logo (§8.6), the **Generate from one colour** panel of a user theme shows **🖼️ Palette from logo**. It draws the logo,
+already a PNG / JPEG data URL in the case (nothing is fetched: the CSP's `img-src data:` is enough, `connect-src 'none'` untouched), on an offscreen
+canvas scaled to at most 96 px on its longest side (`readLogoPixels`, the only code that touches a canvas, stubbed in the jsdom tests), then
+`logoColours(rgba)` (pure) finds its dominant colours:
+
+- a pixel counts when alpha >= 128, OKLCH L in .20 … .94 (not near-black, not near-white) and C >= .045 (not grey); the others are ignored;
+- the counted pixels go to a 4-bit-per-channel histogram (4096 bins); bins, most frequent first, merge into a cluster when their mean colour is
+  within .09 (OKLab distance) of a cluster's seed bin (anti-aliased edges join their colour);
+- the clusters are ranked by pixel count, `share` = part of the counted pixels; at most 4, each at least 3 %. A logo with no coloured pixel gives none.
+
+The first colour is applied at once with the panel's current contrast and harmony: one `theme.generate` step (§8.9; undo restores the previous
+colours), the colour becomes the theme's seed, so the contrast slider and the harmony then try variations of it as usual. The other colours found are
+listed as buttons ("Use the logo colour #rrggbb (n % of its coloured pixels)", the applied one pressed) that apply the same way. A logo without a
+distinct colour, or that the browser cannot read, changes nothing and says so in the panel's status line (polite live region).

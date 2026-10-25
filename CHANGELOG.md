@@ -15,6 +15,65 @@ All notable changes to AgentCase, newest first. Product version from v19.0.0 = t
 
 When releasing, follow [docs/BUMP_PROCEDURE.md](docs/BUMP_PROCEDURE.md) (§7 for the legacy file) and add the new version at the top.
 
+## [v20.17.0] 2026-10-25 — Architecture lot 7: portfolio scenarios, wave dependencies and setup capacity, shared teams, stress cut at the horizon, Wave histogram, assignable app sections, palette from logo
+
+### Lot 7 — dependencies between waves and transformation-team capacity (SPEC_MULTI_PRODUIT F13, was DEV-PF-GAPS)
+
+- A wave may **start after another wave**: after it starts, or after its last product finishes setup, plus a lag in months. Effective start =
+  max(own start, dependency-derived start). A choice that would close a cycle is refused; a cycle read from a file is flagged and ignored.
+- Optional portfolio parameter **max products in setup at the same time**: later products (wave order, then board order) are pushed back; every
+  push and every delayed wave is a diagnostic (Waves "Schedule" checks, Consolidation diagnostics, report, results workbook).
+- One owner, `domain/portfolio/waveSchedule.ts` (pure), read by `scheduledProducts`: consolidation, Gantt (dependency marker), KPI bar, stress,
+  Excel and report all use the effective starts. Undoable commands `wave.setDependency` and `portfolio.setMaxConcurrentSetups`; keyboard-accessible
+  controls in the Waves section; the parameters workbook carries both (Waves columns F-H, PortfolioSettings row). Both fields are optional:
+  without them the calendar is unchanged; no schema bump.
+
+### Lot 7 — portfolio stress: per-draw horizon truncation, Wave-view histogram
+
+- **Portfolio stress: per-draw horizon truncation** — each draw of each product is placed on the calendar (wave start + offset) and cut at the
+  portfolio horizon exactly as the deterministic consolidation does (`domain/portfolio/stressCut.ts`), before the draws are added; a product starting
+  at month 48 of a 60-month portfolio counts 12 months. With zero spreads every draw equals the consolidated net. A product inside the horizon draws
+  exactly what it drew before (single-product runs unchanged; same seeds, same ρ). DEV-PF-STRESS updated, row removed from DEV-PF-GAPS.
+- **Monte Carlo histogram in the Wave view** — the Monte Carlo aggregate view draws the histogram of a Wave from its products' draws added draw by
+  draw (`WaveStress.outcomes`), with the same chart component as the Portfolio (shared `SelectionHistogram`). Row removed from DEV-PF-GAPS.
+
+### Lot 7 — portfolio scenarios table (DEV-PF-GAPS)
+
+- Scenarios, Portfolio / Wave view: a new **Portfolio scenarios** table sums the six scenarios over the products in view on the portfolio calendar
+  (setup, savings, net, NPV at the common rate, ROI, payback month), with an expandable breakdown by product (net and NPV, total line from the domain).
+- Domain: `portfolioScenarios(pf, ids)` (`domain/portfolio/aggScenarios.ts`) runs each product's scenario engines (`scenarioEngine`, extracted from
+  `scenarioModel`; `scenarioDefs` lists the six scenarios) through the consolidation kernel (`productSeries`, `aggregate`, `summarize`): shifted by the
+  product's month 0 and KT lead, truncated at the portfolio horizon. Engines memoised per product run; the table memoised per consolidation and selection.
+- With one product the table equals the product's scenarios; "AI + Location" equals the deterministic consolidation. Single-product figures unchanged.
+- Docs: DEV-PF-GAPS row removed, DEV-PF-STRESS, SPEC_MULTI_PRODUIT F20 / P6, ARCHITECTURE § 12, MIGRATION_PLAN § 15.6, VUE_AGREGEE updated.
+
+### Lot 7 — app sections assignable per persona, palette from logo
+- **App sections are assignable** (DEV-APP-SECTION-PERSONAS): 🎨 Brand & theme can now be added to or removed from any persona in Persona management
+  (Section assignment, Persona layout double-click, Sync menu to sequence), like any section. The choice is stored in the new optional case key
+  `PERSONA_APP_SECTIONS` (per persona, per app section: shown or not), never in the legacy-shaped `PERSONA_SECTIONS`; absent = the catalogue default
+  (Admin, Builder, Business journey), i.e. the previous behaviour. Command `persona.setAppSection` (undoable); edited back to the defaults, the key
+  disappears. The protected Advanced persona always sees every section (the way back). Parameters workbook, parallel run and excel-compat unchanged.
+- **Palette from logo** (DEV-BRAND-THEME, docs/THEME.md §8.10): with a customer logo set, the one-colour generator of a user theme offers
+  "🖼️ Palette from logo". The logo's dominant non-neutral colours (pure `domain/theme/logoPalette.ts`; transparent, near-white, near-black and grey
+  pixels ignored, close shades merged) feed the generator with its contrast slider and harmony as one undoable `theme.generate` step; the other colours
+  found are offered as buttons. The canvas is isolated in `ui/brand/logoPixels.ts`; nothing is fetched (the logo is a data URL already).
+
+### Lot 7 — shared teams across products (DEV-PF-GAPS, SPEC_MULTI_PRODUIT F2 / §9)
+
+- Portfolio field `sharedTeam` (optional; absent = the previous behaviour, files and figures): team lines shared between products with a share per
+  product in percent. `domain/portfolio/sharedTeam.ts`: `effectiveTeam` appends FTE x share to a product's effective team (rows marked `shared`,
+  memoised, the product's own `teamIn` itself when it holds no share); `resolveProduct`, the hub allocation by headcount, the wave board, the input
+  summary and the team aggregate read the effective team, so a line with shares <= 100 % is counted once in the portfolio.
+- Validation: errors for a bad line (id, labels, FTE < 0, share outside [0, 100]); diagnostics `shared-over` (shares > 100 %) and `shared-orphan`
+  (share of a deleted product). Deleting a product drops its shares in the same undo step.
+- Undoable commands `sharedTeam.add`, `sharedTeam.edit`, `sharedTeam.remove`, `sharedTeam.setShare` (`controllers/sharedTeam.ts`); the address
+  layer never writes a shared row into a product's own team, and the whole-team actions of Input team act on the own rows.
+- Products section: "Shared team lines" table (labelled selects and number inputs, allocated total, over-100 % status, clearing a deleted product's
+  share); Input team shows the active product's share as a read-only "Shared" row.
+- Persistence: portfolio snapshot read / repair of `sharedTeam`; parameters workbook `SharedTeam` sheet (export and import, one row per share).
+- Tests: `tests/domain/portfolio/sharedTeam.test.ts`, `tests/store/shared-team.test.ts`, `tests/store/samples/sharedTeam.ts`,
+  `tests/ui/portfolio-team.test.tsx` (Products table and the read-only row of Input team).
+
 ## [v20.16.0] 2026-10-25 — Architecture lot 5b: inline styles to CSS classes, max-len 0
 
 ### Lot 5b part A — frame, baseline, scope, tune and verify sections: named classes instead of inline styles, no line over 160 characters

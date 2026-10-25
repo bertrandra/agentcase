@@ -62,3 +62,9 @@
 .ac-bt-gen-swatches { display: grid; grid-template-columns: repeat(auto-fill, minmax(118px, 1fr)); gap: 2px 8px; list-style: none; margin: 6px 0; padding: 0 !important; }
 .ac-bt-gen-swatches li { display: flex; align-items: center; gap: 4px; font-size: var(--ac-font-size-2xs); color: var(--ac-ink); }
 .ac-bt-gen-swatches code { color: var(--ac-muted); }
+/* palette from logo (docs/THEME.md §8.10) */
+.ac-bt-logo-pal { margin: 6px 0; }
+.ac-section .ac-bt-logo-pal > p { margin: 4px 0; font-size: var(--ac-font-size-sm); }
+.ac-bt-logo-colours { display: flex; flex-wrap: wrap; gap: 4px 6px; list-style: none; margin: 6px 0; padding: 0 !important; }
+.ac-section .ac-bt-logo-colours button { display: inline-flex; align-items: center; gap: 4px; font-size: var(--ac-font-size-xs); }
+.ac-section .ac-bt-logo-colours button[aria-pressed='true'] { color: var(--ac-selected-text); background: var(--ac-selected); }

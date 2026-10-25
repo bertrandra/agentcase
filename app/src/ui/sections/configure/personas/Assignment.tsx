@@ -1,10 +1,11 @@
 import { useState } from 'react';
 import { clearPersonaSectionOrder, setPersonaSectionOrder } from '@/controllers/navLayout';
-import { addPersonaSection, removePersonaSection } from '@/controllers/pdcPersonas';
 import { appOrder, type NavSection } from '@/domain/nav/layout';
 import { respaceOrders } from '@/domain/nav/sequence';
 import type { Persona } from '@/domain/pdc/personas';
 import { useNavModel } from '@/ui/zones/navModel';
+import { APP_SECTIONS } from '@/ui/zones/registry';
+import { assignSection } from './assign';
 
 /** The menu of one persona (legacy pmRenderAssignment): sections it can reach in the persona's own order (editable, sparse override) and grouped by
  *  the persona's menu structure, and the ones that can still be added. */
@@ -38,13 +39,15 @@ export function Assignment({ persona: p, lists }: { persona: Persona; lists: Rec
                 aria-label={`Inherit the order of ${s.id}`}
                 onClick={() => clearPersonaSectionOrder(p.id, s.id)}
               >↺</button>}
-              <button type="button" className="ac-btn" aria-label={`Remove ${s.label}`} onClick={() => removePersonaSection(p.id, s.id)}>✕</button></li>
+              <button type="button" className="ac-btn" aria-label={`Remove ${s.label}`} onClick={() => assignSection(p.id, s.id, false)}>✕</button></li>
           ))}
           {assigned.filter((id) => !known.some((s) => s.id === id)).map((id) =>
-            <li key={id}>{id} <button type="button" className="ac-btn" aria-label={`Remove ${id}`} onClick={() => removePersonaSection(p.id,
-            id)}>✕</button></li>)}
+            <li key={id}>{id} <button type="button" className="ac-btn" aria-label={`Remove ${id}`} onClick={() => assignSection(p.id,
+            id, false)}>✕</button></li>)}
           {assigned.length === 0 && <li className="ac-muted">No section yet.</li>}
         </ul>
+        {APP_SECTIONS.length > 0 && <p className="ac-muted">{APP_SECTIONS.map((s) => s.label).join(', ')}: app section, assignable like the others;
+          the protected Advanced persona always shows it.</p>}
       </div>
       <div>
         <select aria-label="Available sections" size={8} value={add} onChange={(e) => setAdd(e.target.value)}>{available.map((s) => <option
@@ -55,7 +58,7 @@ export function Assignment({ persona: p, lists }: { persona: Persona; lists: Rec
           type="button"
           className="ac-btn"
           disabled={!add}
-          onClick={() => { addPersonaSection(p.id, add); setAdd(''); }}
+          onClick={() => { assignSection(p.id, add, true); setAdd(''); }}
         >➕ Add to {p.label}</button></div>
       </div>
     </div>

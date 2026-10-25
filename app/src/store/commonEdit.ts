@@ -1,5 +1,5 @@
 /** @calc-zone product-resolution */
-import { isOverridden, parseRef, resolveCommon, type Portfolio, type Product, type SubsetField } from '@/domain/portfolio';
+import { effectiveTeam, isOverridden, parseRef, resolveCommon, type Portfolio, type Product, type SubsetField } from '@/domain/portfolio';
 import { subsetField } from './address/subset';
 import type { Doc, PortfolioDoc } from './types';
 
@@ -17,7 +17,7 @@ export function editsCommon(pf: PortfolioDoc): boolean {
 const activeOf = (pf: Portfolio): Product => pf.products.find((p) => p.id === pf.activeProductId) ?? (pf.products[0] as Product);
 
 /** The case every product inherits, as a `Doc` (identity-stable while the common values, the hub and the active team are). */
-export const commonEditDoc = (pf: Portfolio): Doc => resolveCommon(pf, activeOf(pf).teamIn) as Doc;
+export const commonEditDoc = (pf: Portfolio): Doc => resolveCommon(pf, effectiveTeam(pf, activeOf(pf))) as Doc;
 
 const SUBSET: readonly SubsetField[] = ['enabled', 'domains', 'maturityAnswers', 'targetCC', 'curationFTE', 'setupBase', 'ktLeadMonths'];
 
