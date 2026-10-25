@@ -138,7 +138,7 @@ Excel: `excel-head-bg` (#1E2761), `excel-head-text`, `excel-subtotal-bg`, `excel
 | `border-thin` / `medium` / `thick` / `heavy` / `rail`, `focus-width` | 1 / 1.5 / 2 / 3 / 4 px (the coloured left rail), 2 px |
 | `shadow-none`, `shadow-sm` … `shadow-xl` | none and the four legacy elevations |
 | `shadow-card`, `shadow-kpibar`, `shadow-header`, `shadow-toast`, `shadow-focus` | the roles built on them (the focus glow of inputs) |
-| `shadow-rail`, `shadow-rail-offset`, `shadow-ring-offset` | the inset 4 px row marker and the geometry of the coloured markers whose colour is data |
+| `shadow-rail`, `shadow-rail-offset`, `shadow-ring`, `shadow-ring-offset` | the inset 4 px row marker, the 1 px milestone ring (slate) and the geometry of the coloured markers whose colour is data (`var(--ac-shadow-ring-offset) var(--dyn-…)` in CSS) |
 
 ### 3.8 Density (11) and motion (3)
 

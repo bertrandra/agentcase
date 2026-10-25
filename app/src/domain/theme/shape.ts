@@ -20,6 +20,7 @@ export const SHAPE = {
   'shadow-none': 'none', 'shadow-sm': '0 2px 10px {primary-975-a8}', 'shadow-md': '0 2px 10px {primary-975-a22}', 'shadow-lg': '0 4px 16px {primary-975-a25}',
   'shadow-xl': '0 6px 22px {primary-965-a28}', 'shadow-card': '{shadow-sm}', 'shadow-kpibar': '{shadow-md}', 'shadow-header': '{shadow-lg}', 'shadow-toast': '{shadow-xl}',
   'shadow-focus': '0 0 0 3px {info-375-a30}', 'shadow-rail-offset': 'inset 4px 0 0', 'shadow-rail': '{shadow-rail-offset} {primary-700}', 'shadow-ring-offset': '0 0 0 1px',
+  'shadow-ring': '{shadow-ring-offset} {slate-650}',
 } as const;
 
 export const DENSITY = {
