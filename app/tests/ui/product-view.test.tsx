@@ -80,6 +80,22 @@ describe('ReadOnlyScope: nothing inside can reach a controller', () => {
     expect(document.querySelector('fieldset')!.hasAttribute('inert')).toBe(false);
   });
 
+  it('a custom slider cannot be dragged nor moved with the arrow keys; Tab, Escape and shortcut chords still pass', () => {
+    const hits: string[] = [];
+    render(
+      <ReadOnlyScope who="B">
+        <div role="slider" aria-valuenow={3} tabIndex={0} aria-label="s" onPointerDown={() => hits.push('pointer')} onMouseDown={() => hits.push('mouse')}
+          onTouchStart={() => hits.push('touch')} onDragStart={() => hits.push('drag')} onKeyDown={(e) => hits.push(e.key)} />
+      </ReadOnlyScope>,
+    );
+    const s = screen.getByRole('slider');
+    fireEvent.pointerDown(s); fireEvent.mouseDown(s); fireEvent.touchStart(s); fireEvent.dragStart(s);
+    for (const key of ['ArrowRight', 'ArrowUp', 'Home', 'End', 'PageUp', '5', 'Backspace']) fireEvent.keyDown(s, { key });
+    expect(hits).toEqual([]);
+    fireEvent.keyDown(s, { key: 'Tab' }); fireEvent.keyDown(s, { key: 'Escape' }); fireEvent.keyDown(s, { key: 'z', ctrlKey: true });
+    expect(hits).toEqual(['Tab', 'Escape', 'z']);
+  });
+
   it('inert is opt-in', () => {
     render(<ReadOnlyScope who="B" inert><button type="button">x</button></ReadOnlyScope>);
     expect(document.querySelector('fieldset')!.hasAttribute('inert')).toBe(true);

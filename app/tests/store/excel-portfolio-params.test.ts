@@ -38,8 +38,11 @@ describe.each([['pf-three-products fixture', () => openPortfolioFixture()],
     expect(appStore().getState().history.undo.map((h) => h.label)).toEqual(['Import portfolio parameters']);
     appStore().undo();
     expect(pfNow().products).toHaveLength(1);
+    const viewed = pfNow().activeProductId;
     appStore().redo();
-    expect(core(pfNow())).toEqual(core(before));
+    // the active product is view state, never undone nor redone (lot 10): the redo brings the products back, the tab stays on the product it shows
+    expect({ ...core(pfNow()), active: before.activeProductId }).toEqual(core(before));
+    expect(pfNow().activeProductId).toBe(viewed);
   });
   it('is stable: a second export/import changes nothing, the three re-normalised keys included', async () => {
     make(); const b = await bytes();

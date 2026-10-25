@@ -8,10 +8,11 @@ import { useSimulation } from '@/store/simulation';
 const BASE = ddBase(defaultDoc);
 
 /**
- * What the registry variables read besides the case: the last Monte Carlo run (store/simulation, dash until one exists), the tornado of the
- * last stochastic run and the due-diligence benchmark. Re-evaluates when a run is made.
+ * What the registry variables read besides the case: the last Monte Carlo run (store/simulation) ONLY while it was made on this case — a stale
+ * run is never shown as current: the Monte Carlo cards show a dash and the decision cards recompute their fallback run on the case —, the tornado
+ * of the last stochastic run and the due-diligence benchmark. Re-evaluates when a run is made or the case moves.
  */
 export function useVarRuntime(): VarRuntime {
-  const { run } = useSimulation(), last = useSyncExternalStore(mcsRunStore.subscribe, () => mcsRunStore.getState().last);
-  return useMemo(() => ({ mc: run, tornado: last?.tornado ?? null, ddBase: BASE }), [run, last]);
+  const { run, stale } = useSimulation(), last = useSyncExternalStore(mcsRunStore.subscribe, () => mcsRunStore.getState().last);
+  return useMemo(() => ({ mc: stale ? null : run, tornado: last?.tornado ?? null, ddBase: BASE }), [run, stale, last]);
 }

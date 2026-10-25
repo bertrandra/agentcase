@@ -9,7 +9,10 @@ import type { Doc } from '@/store/types';
 import { groupsIn, inStructure, setColorIn, setGroupsIn } from './menuTarget';
 
 type Lists = Record<string, string[]>;
+/** On a command draft only: creates the list when the case has none. */
 const personas = (d: Doc): Persona[] => ((d.PERSONAS ??= []) as Persona[]);
+/** Read-only: never writes the case it reads (`editBase()` is derived and frozen). */
+const personasOf = (d: Doc): readonly Persona[] => (Array.isArray(d.PERSONAS) ? (d.PERSONAS as Persona[]) : []);
 const sections = (d: Doc): Lists => ((d.PERSONA_SECTIONS ??= {}) as Lists);
 const omit = <T extends object>(o: T, key: string): T => Object.fromEntries(Object.entries(o).filter(([k]) => k !== key)) as T;
 const maxOrder = (l: { order: number }[]): number => Math.max(0, ...l.map((x) => x.order));
@@ -108,7 +111,7 @@ export const duplicatePersona = (id: string, catalogue: string[]): void => go(du
 /** Delete a persona; a tab showing it moves to Advanced (its persona is view state: the switch is not part of the undo step). */
 export function deletePersona(id: string): void {
   go(deleteCmd, { id });
-  if (currentPersona() === id && !personas(editBase()).some((x) => x.id === id)) setPersona('advanced');
+  if (currentPersona() === id && !personasOf(editBase()).some((x) => x.id === id)) setPersona('advanced');
 }
 export const renamePersona = (id: string, label: string): void => go(renameCmd, { id, label });
 export const setPersonaOrder = (id: string, order: number): void => go(orderCmd, { id, order });

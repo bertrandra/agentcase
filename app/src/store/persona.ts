@@ -32,10 +32,15 @@ export function liftPersona(pf: PortfolioDoc, adopt: boolean, fallback?: string)
   return out;
 }
 
-/** A portfolio replacing the current one (import, snapshot activation) keeps this tab's view state: its persona and its edit scope. */
+/**
+ * A portfolio replacing the current one (import, snapshot activation, another tab's document) keeps this tab's view state: its persona, its edit
+ * scope and its display scope (a Wave view only while that wave exists). The active product is the caller's choice (it is also saved).
+ */
 export function keepTabView(cur: PortfolioDoc, next: Portfolio): PortfolioDoc {
-  const out: PortfolioDoc = { ...next };
+  const out: PortfolioDoc = { ...next }, shown = cur.displayScope;
+  delete out.editScope; delete out.displayScope; delete out.persona;
   if (cur.editScope) out.editScope = cur.editScope;
+  if (shown && (shown.kind !== 'wave' || next.waves.some((w) => w.id === shown.id))) out.displayScope = shown;
   if (cur.persona) out.persona = cur.persona;
   return out;
 }

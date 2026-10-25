@@ -15,6 +15,31 @@ All notable changes to AgentCase, newest first. Product version from v19.0.0 = t
 
 When releasing, follow [docs/BUMP_PROCEDURE.md](docs/BUMP_PROCEDURE.md) (§7 for the legacy file) and add the new version at the top.
 
+## [Unreleased]
+
+### Lot 10 — store, sync, persistence, layer lint
+
+- **Multi-tab sync keeps one document.** Every broadcast now carries a document id (new at every open) and a revision; a patch lands only on the
+  same document at the revision it was made on, never on another one. Opening a file, restoring a session or an autosave is broadcast whole: the
+  other tabs replace their document and keep their own view (persona, edit and display scope, active product). A tab out of step resyncs on the
+  whole document of the tab ahead; a patch that does not fit is refused (no crash) and the document is requested instead. Messages without a
+  document id (older builds) are ignored.
+- **Undo after another tab's change.** A remote change that adds, removes or reorders products or waves, or a replaced document, clears this tab's
+  undo / redo (their steps address positions) and says so: "Another tab changed the products or waves: undo history cleared" (live region).
+- **View state never undone.** Undo steps no longer carry view fields (active product, edit / display scope, persona): activating a portfolio
+  snapshot in a Wave view keeps the Wave view, and undo / redo of it, or of File > Open, no longer move the view. Redoing an import keeps the
+  product the tab shows.
+- **Board dashboards** no longer show a Monte Carlo run made on an earlier version of the case: the Monte Carlo cards show a dash and the decision
+  cards use their fallback run until a new run.
+- **Autosave**: records are pruned to the 20 most recent after each save (they piled up, one per page load); a refused save (quota, blocked storage)
+  is announced once instead of failing silently, and "Autosave this session" reports it. A record of an older file schema restores its document but
+  not its history. The calculation packages stay in the record: the restore compares them (staleness banner).
+- **Read-only product views** (aggregate drill-down) also stop pointer, drag and arrow / character keys, so a custom slider or Gantt bar inside
+  cannot be moved. Deleting the persona a tab shows no longer writes the (derived) case it reads.
+- **Layer lint**: the edit-base rule follows `const s = …getState(); s.doc`; the UI may not import `portfolioState`, `editBase` or the writable
+  `simStore` / `pfSimStore`; dynamic `import()` is restricted like static imports; `src/content` and `src/generated` are data layers (read by the UI
+  and the domain) and an import of an unclassified file is an error.
+
 ## [v20.18.1] 2026-10-25 — Architecture lot 9: tidy-up (no change to the app)
 
 - `tools/a11y.mjs` writes its default report to `test-results/a11y/report.json` (git-ignored): a local audit no longer rewrites a tracked file.

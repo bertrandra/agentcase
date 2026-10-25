@@ -4,7 +4,9 @@ import { restoreRecord, startAutosave, type AutosaveRecord, type AutosaveStorage
 import { connectBroadcast, type ChannelLike } from '@/store/persistence/broadcast';
 import { readEmbeddedCase } from '@/store/persistence/html/read';
 import { checkLoadedCase } from './calcStaleness';
+import { notify as announce } from './notices';
 import { setOpenNotes } from './openNotes';
+import { AUTOSAVE_FAILED } from './sessions';
 import { refitPortfolio } from '@/store/derive';
 
 export interface RestoreOffer { label: string; savedAt: string; steps: number }
@@ -41,7 +43,7 @@ export function loadEmbeddedCase(d: Pick<Document, 'getElementById'>): { savedAt
   } catch (e) { console.error('The case embedded in this file could not be opened:', e); return null; }
 }
 
-let flushNow: (() => Promise<void>) | null = null;
+let flushNow: (() => Promise<boolean>) | null = null;
 /** Write the autosave now instead of after its delay (the app-level error fallback calls it); a no-op without storage. */
 export async function flushAutosave(): Promise<void> {
   try { await flushNow?.(); } catch (e) { console.error('AgentCase: the autosave could not be written:', e); }
@@ -54,10 +56,10 @@ export async function bootApp(env: BootEnv): Promise<() => void> {
     const others = (await env.storage.list()).filter((r) => r.tabId !== env.tabId && r.savedAt > (env.embeddedSavedAt ?? '')).sort((a,
       b) => b.savedAt.localeCompare(a.savedAt));
     setPending(others[0] ?? null);
-    const autosave = startAutosave(appStore(), env.storage, env.tabId);
+    const autosave = startAutosave(appStore(), env.storage, env.tabId, { onError: () => announce(AUTOSAVE_FAILED) });
     flushNow = autosave.flush;
     stops.push(() => { autosave.stop(); flushNow = null; });
   }
-  if (env.channel) stops.push(connectBroadcast(appStore(), env.channel, env.tabId));
+  if (env.channel) stops.push(connectBroadcast(appStore(), env.channel, env.tabId, { onNotice: announce }));
   return () => stops.forEach((s) => s());
 }

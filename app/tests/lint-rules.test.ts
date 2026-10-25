@@ -64,6 +64,40 @@ describe('architecture lint rules (G2, G4, edit base)', () => {
     expect(await lint(ok, 'src/controllers/Ok.ts')).toEqual([]);
     expect(await lint(`${head}export const x = () => appStore().getState().doc;\n`, 'src/store/Ok.ts')).not.toContain('no-restricted-syntax');
   });
+  it('EDIT BASE follows the data flow: a variable holding getState() cannot read .doc (property, computed or destructured)', async () => {
+    const head = "import { appStore } from '@/store/instance';\n";
+    for (const body of ['const s = appStore().getState(); return s.doc;', "const s = appStore().getState(); return s['doc'];",
+      'const s = appStore().getState(); const { doc } = s; return doc;', 'const st = appStore().store.getState(); return st.doc.MODEL;']) {
+      expect(await lint(`${head}export const x = () => { ${body} };\n`, 'src/controllers/Bad.ts'), body).toContain('local/no-derived-doc');
+    }
+    expect(await lint(`${head}export const x = () => { const s = appStore().getState(); return s.portfolio; };\n`, 'src/controllers/Ok.ts')).toEqual([]);
+    expect(await lint(`${head}export const x = () => { const s = appStore().getState(); return s.doc; };\n`, 'src/store/Ok.ts')).not.toContain('local/no-derived-doc');
+  });
+  it('UI code cannot import portfolioState, editBase, or the writable simulation stores; the simulation hooks stay allowed', async () => {
+    for (const [what, from] of [['editBaseOf', '@/store/portfolioState'], ['runCommands', '../../store/portfolioState'], ['editBase', '@/store/editBase'],
+      ['simStore', '@/store/simulation'], ['pfSimStore', '../../store/portfolioSimulation']]) {
+      expect(await lint(`import { ${what} } from '${from}';\nexport const y = ${what};\n`, 'src/ui/shell/Bad.tsx'), from).toContain('no-restricted-imports');
+    }
+    expect(await lint("import { useSimulation } from '@/store/simulation';\nimport { usePortfolioSimulation } from '@/store/portfolioSimulation';\nexport const y = [useSimulation, usePortfolioSimulation];\n",
+      'src/ui/shell/Ok.tsx')).not.toContain('no-restricted-imports');
+  });
+  it('a dynamic import() is restricted like a static one (UI write path, controller hooks); a lazy section stays allowed', async () => {
+    for (const from of ['@/store/core', '../store/instance', '../../store/persistence/html/export', '@/store/portfolioState']) {
+      expect(await lint(`export const y = () => import('${from}');\n`, 'src/ui/shell/Bad.tsx'), from).toContain('local/no-restricted-dynamic-import');
+    }
+    expect(await lint("export const y = () => import('../store/hooks');\n", 'src/controllers/Bad.ts')).toContain('local/no-restricted-dynamic-import');
+    expect(await lint("export const y = () => import('@/ui/sections/baseline/team-in');\n", 'src/ui/shell/Ok.tsx')).not.toContain('local/no-restricted-dynamic-import');
+    expect(await lint("export const y = () => import('@/store/hooks');\n", 'src/ui/shell/Ok.tsx')).not.toContain('local/no-restricted-dynamic-import');
+  });
+  it('content and generated data are layers of their own: the UI and the domain read them, the controllers and the store do not', async () => {
+    const data = "import facts from '@/generated/dependencies.json';\nimport c from '@/content/refshare/sessions.json';\nexport const y = [facts, c];\n";
+    expect(await lint(data, 'src/ui/shell/Ok.tsx')).toEqual([]);
+    expect(await lint(data, 'src/domain/Ok.ts')).toEqual([]);
+    expect(await lint(data, 'src/controllers/Bad.ts')).toContain('boundaries/dependencies');
+    expect(await lint(data, 'src/store/Bad.ts')).toContain('boundaries/dependencies');
+    // a file outside every layer cannot be imported from one (it would escape the layer rule)
+    expect(await lint("import { near } from '../../../tests/helpers/near';\nexport const y = near;\n", 'src/ui/shell/Bad.tsx')).toContain('boundaries/no-unknown-dependencies');
+  });
   it('D1: a line over 300 characters is an error whatever it holds; over 160 is a warning, long literals and URLs excepted', async () => {
     const ids = (n: number) => `export const x = [${Array.from({ length: n }, (_, i) => `a${i}`).join(', ')}];\n`;   // code, no literal
     expect(ids(60).length).toBeGreaterThan(300);
