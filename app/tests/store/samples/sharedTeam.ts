@@ -1,5 +1,5 @@
 import { addProduct } from '@/controllers/product';
-import { addSharedLine, removeSharedLine, setSharedShare, updateSharedLine } from '@/controllers/sharedTeam';
+import { addSharedLine, clearSharedPins, removeSharedLine, setSharedPins, setSharedShare, updateSharedLine } from '@/controllers/sharedTeam';
 import { appStore } from '@/store/instance';
 import type { Sample } from './types';
 
@@ -13,4 +13,6 @@ export const samples: Record<string, Sample> = {
   'sharedTeam.edit': { prep: withLine, run: () => { updateSharedLine(line, 'etp', 3); } },
   'sharedTeam.remove': { prep: withLine, run: () => { removeSharedLine(line); } },
   'sharedTeam.setShare': { prep: withLine, run: () => { setSharedShare(line, first(), 80); } },
+  'sharedTeam.setPins': { prep: withLine, run: () => { setSharedPins(line, ['A001'], true); } },
+  'sharedTeam.clearPins': { prep: () => { withLine(); setSharedPins(line, ['A001'], true); }, run: () => { clearSharedPins(line); } },
 };

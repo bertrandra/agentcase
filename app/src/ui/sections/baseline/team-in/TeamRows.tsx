@@ -37,7 +37,8 @@ function SharedRow({ r, i, c, W }: Omit<RowProps, 'open' | 'onPin'>) {
       <td className="ac-td-num">{(W.targetFTE[i] ?? 0).toFixed(1)}</td>
       <td className="ac-td-num">{tjm}</td>
       <td className="ac-td-num ac-team-cost">{fmtK(r.etp * tjm * wd)}</td>
-      <td colSpan={2}><em title="This product's share of a team line shared between products: edit it in Products, Shared team lines">Shared</em></td>
+      <td colSpan={2}><em title="This product's share of a team line shared between products: edit it in Products, Shared team lines">Shared</em>
+        {isPinnedRow(r) && <span title="Pinned artefacts of the shared line (edited in Products, Shared team lines)"> · 📌 {pinsOf(r).length}</span>}</td>
     </tr>
   );
 }

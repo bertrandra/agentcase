@@ -15,6 +15,25 @@ All notable changes to AgentCase, newest first. Product version from v19.0.0 = t
 
 When releasing, follow [docs/BUMP_PROCEDURE.md](docs/BUMP_PROCEDURE.md) (§7 for the legacy file) and add the new version at the top.
 
+## [Unreleased]
+
+### Lot 8 — the last documented portfolio gaps (DEVIATIONS.md DEV-PF-GAPS now lists none)
+
+- **Portfolio sensitivity.** With Show on Portfolio or a Wave, the Sensitivity section opens on a portfolio tornado: each Monte Carlo driver
+  (automation potential, ramps, glass ceiling, tokens per artefact, infrastructure cost) moved down and up by the same relative step (±5 / 10 / 20 %,
+  view state) on every product, each product rerun on its effective case, laid on the calendar and summed by the consolidation kernel like the
+  portfolio scenarios (`domain/portfolio/aggSensitivity.ts#portfolioSensitivity`, memoised per product run). Ranked by swing on the net; net and NPV
+  at −step / +step; breakdown by product for the three largest swings. One product = its own tornado (`domain/stress/tornado.ts#productTornado`).
+  The product view is unchanged.
+- **Pins on a shared team line.** 📌 on each line of Products > Shared team lines: pin artefacts (one, or a whole phase) to the line; they go to
+  every holder's share row (FTE × share) and leave its auto pool, like the pins of a team row. Undoable (`sharedTeam.setPins`,
+  `sharedTeam.clearPins`); kept in the portfolio file (optional `pins`, repaired on open) and in the parameters workbook `SharedTeam` sheet
+  (column H, export and import). The Input team shows the pin count on the read-only Shared row. Absent = the previous behaviour.
+- **"Apply to all products" for the knowledge subset** (spec F7): the subset fields held by the common case (hub use, maturity answers, target CC,
+  curation, setup base) get the button next to "Revert to common"; the value becomes the common one and identical subset values are dropped, in one
+  undo step (`product.applySubsetToCommon`). Domains and preparation months keep "Revert to common" only (no common value).
+- Single-product behaviour unchanged; no schema version change.
+
 ## [v20.17.0] 2026-10-25 — Architecture lot 7: portfolio scenarios, wave dependencies and setup capacity, shared teams, stress cut at the horizon, Wave histogram, assignable app sections, palette from logo
 
 ### Lot 7 — dependencies between waves and transformation-team capacity (SPEC_MULTI_PRODUIT F13, was DEV-PF-GAPS)

@@ -57,7 +57,8 @@ function readDependency(v: unknown, id: string): Portfolio['waves'][number]['dep
 }
 
 /**
- * The optional `sharedTeam` list of a portfolio snapshot: lines with an id, skill / grade / location, FTE and the shares per product id. The numbers
+ * The optional `sharedTeam` list of a portfolio snapshot: lines with an id, skill / grade / location, FTE, the shares per product id and the optional
+ * pins (artefact ids; a non-list is refused by `validate`). The numbers
  * are checked by `validate` (shares in [0, 100]); a share held by an unknown product is kept and flagged (diagnostic `shared-orphan`).
  */
 export function readSharedTeam(v: unknown): SharedTeamLine[] {
@@ -68,7 +69,8 @@ export function readSharedTeam(v: unknown): SharedTeamLine[] {
     need(typeof x.id === 'string' && typeof x.skill === 'string' && typeof x.grade === 'string' && typeof x.loc === 'string' && typeof x.etp === 'number',
       `shared team line ${i + 1}: id, skill, grade, loc (text) and etp (number) expected`);
     return { id: x.id as string, skill: x.skill as string, grade: x.grade as string, loc: x.loc as string, etp: x.etp as number,
-      allocations: { ...(x.allocations as Record<string, number>) } };
+      allocations: { ...(x.allocations as Record<string, number>) },
+      ...(x.pins === undefined ? {} : { pins: (Array.isArray(x.pins) ? [...x.pins] : x.pins) as string[] }) };
   });
 }
 
