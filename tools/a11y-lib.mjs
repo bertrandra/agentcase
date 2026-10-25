@@ -51,11 +51,15 @@ export async function openCase(ctx, fx) {
   return page;
 }
 
-/** Click a navigation entry by its label (sidebar or group bar) and let the section render. */
+/** Click a navigation entry by its label (sidebar or group bar) and wait until it is the active entry and the section has rendered (no lazy-load placeholder). */
 export async function openSection(page, label) {
   const btn = page.locator(NAV).filter({ hasText: new RegExp(`^\\s*${label.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')}\\s*$`) }).first();   // the exact label ("Compliance" is not "Risk & Compliance")
   if (!(await btn.count())) return false;
   if (!(await btn.isVisible())) { const toggle = btn.locator('xpath=ancestor::section').locator('.ac-nav-toggle'); if (await toggle.count()) await toggle.click(); }   // the sidebar groups are an accordion
-  await btn.click(); await page.waitForTimeout(200);
+  // a group header of the sidebar (also a navigation entry) toggles its group: wait for aria-expanded to flip; a section entry: wait until it is active
+  const el = await btn.elementHandle(), was = await el.getAttribute('aria-expanded');
+  await btn.click();
+  await page.waitForFunction(([b, w]) => (w !== null ? b.getAttribute('aria-expanded') !== w : b.classList.contains('is-active'))
+    && ![...document.querySelectorAll('main p.ac-muted')].some((p) => p.textContent === 'Loading…'), [el, was], { timeout: 15000 });
   return true;
 }

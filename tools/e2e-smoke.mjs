@@ -41,7 +41,11 @@ for (const fx of fixtures) {
     const btn = page.locator('nav[aria-label=Sections] button:visible, .ac-groupbar button:visible').filter({ hasText: new RegExp('^\\s*' + String(label).replace(/[.*+?^${}()|[\]\\]/g, '\\$&') + '\\s*$') }).first();
     if (!(await btn.count())) continue;
     errors.length = 0;
-    await btn.click(); await page.waitForTimeout(250);
+    // a section entry: until it is the active one and the lazy section has rendered; a group header (also listed): until its group toggled
+    const el = await btn.elementHandle(), was = await el.getAttribute('aria-expanded');
+    await btn.click();
+    await page.waitForFunction(([b, w]) => (w !== null ? b.getAttribute('aria-expanded') !== w : b.classList.contains('is-active'))
+      && ![...document.querySelectorAll('main p.ac-muted')].some((p) => p.textContent === 'Loading…'), [el, was], { timeout: 15000 }).catch(() => {});
     const h1 = await page.locator('main h1').first().textContent({ timeout: 5000 }).catch(() => null);
     const text = await page.locator('main').innerText();
     const problems = [];

@@ -44,14 +44,16 @@ async function newFigures(file) {
     await page.locator('[role=tab]', { hasText: /Export \/ Import current settings/ }).click();
     await page.setInputFiles('input[aria-label="Settings workbook (.xlsx)"]', { name: basename(file), mimeType: 'application/octet-stream', buffer: data });
   } else await page.setInputFiles('input[type=file][accept*="json"]', { name: basename(file), mimeType: ext === '.html' ? 'text/html' : 'application/json', buffer: data });
-  await page.waitForTimeout(700);
+  // until the app says the file was applied (the toast of Open… or of the settings import) or refused; 15 s at most, a refusal shows in the figures
+  await page.waitForFunction(() => /Case opened|Parameters imported|Cannot open/.test([...document.querySelectorAll('.ac-live')].map((e) => e.textContent).join(' ')), null, { timeout: 15000 }).catch(() => {});
   const kpi = await page.locator('.ac-kpi').evaluateAll(els => els.map(e => [e.querySelector('.ac-kpi-l').textContent, e.querySelector('.ac-kpi-v').textContent]));
   // the NPV left the top bar (v19): read it from the Financial section's verdict tile ("€1,074K" above "NPV @8%")
   await page.selectOption('select[aria-label=Persona]', 'advanced');   // opening a file resets the persona; Advanced shows every section
-  await page.waitForTimeout(300);
+  await page.waitForFunction(() => document.querySelector('select[aria-label=Persona]')?.value === 'advanced');
   const fin = page.locator('nav[aria-label=Sections] button:visible, .ac-groupbar button:visible').filter({ hasText: /Financial/ }).first(), heads2 = page.locator('nav[aria-label=Sections] button').filter({ hasText: /▼$/ });
   for (let i = 0, n = await heads2.count(); i < n && !(await fin.count()); i++) await heads2.nth(i).click();
-  await fin.click(); await page.waitForTimeout(400);
+  await fin.click();
+  await page.waitForFunction(() => document.querySelector('main h1')?.textContent.startsWith('Financial Summary') && /NPV @/.test(document.querySelector('main')?.innerText ?? ''), null, { timeout: 15000 });
   const npv = /([-−]?€[\d,]+K)\s*\nNPV @/.exec(await page.locator('main').innerText())?.[1];
   await page.context().close(); return { ...Object.fromEntries(kpi), NPV: npv && npv.replace('−', '-').replace('K', 'k') };
 }

@@ -3,6 +3,7 @@ import { act, cleanup, fireEvent, render, screen, waitFor, within } from '@testi
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 import { setAgentSup } from '@/controllers/artefacts';
 import { setCustomerName } from '@/controllers/persona';
+import { addProduct, setActiveProduct } from '@/controllers/product';
 import { appVerFileTag, appVerTag, snapshotsOf } from '@/domain/snapshots';
 import { appStore } from '@/store/instance';
 import Io from '@/ui/sections/refshare/io';
@@ -92,6 +93,24 @@ describe('Snapshot Manager tab', () => {
     fireEvent.click(screen.getByText('✓ Confirm'));
     expect(lib()).toHaveLength(0);
     expect(screen.getByText(/No snapshots captured yet/)).toBeTruthy();
+  });
+  it('the "Current case" side follows an edit, an undo and a product switch (the table subscribes to the active case and product)', () => {
+    loadFixture('golden');
+    render(<Io />); tab('🗂️ Snapshot Manager');
+    fireEvent.click(screen.getByText('📸 Capture current configuration'));
+    fireEvent.change(screen.getByLabelText('With'), { target: { value: lib()[0]!.id } });
+    const first = () => within(screen.getByRole('table', { name: 'Snapshot comparison' })).getByText('Net savings, end-year').closest('tr')!.children[1]!.textContent;
+    const captured = first();
+    act(() => { setAgentSup('A017', 100); });
+    const edited = first();
+    expect(edited).not.toBe(captured);
+    act(() => { appStore().undo(); });
+    expect(first()).toBe(captured);
+    let other = '';
+    act(() => { other = addProduct('Second')!; });
+    act(() => { setActiveProduct(other); });
+    expect(appStore().getState().portfolio.activeProductId).toBe(other);
+    expect(first()).not.toBe(captured);
   });
   it('baseline needs two confirmations', () => {
     render(<Io />); tab('🗂️ Snapshot Manager');

@@ -19,7 +19,7 @@ export interface DdModel {
 export function useDd(): DdModel {
   const c = useCtx(), ok = useDoc((d) => (d.assumptValidated as Validated | undefined) ?? NONE),
     sens = useDoc((d) => (d.DD_SENS as DdSens | null | undefined) ?? null);
-  const stateDoc = useDoc((d) => d.DD_STATE);
+  // `c` is the context of the document (a new one on every edit, the review states DD_STATE included): it is the dependency that refreshes the rows
   return useMemo(() => {
     const rows = ddRows(c, base, ok), fresh = !!sens && sens.fp === ddFingerprint(c);
     const weight = (id: string) => (fresh ? sens!.w[id] ?? null : null);
@@ -33,6 +33,5 @@ export function useDd(): DdModel {
       zeroEur: fresh ? rows.filter((r) => { const x = weight(r.id); return x != null && x < 1; }).length : null,
       ceilCover: ceilingCoverage(c, rows), ceiling: computeGlassCeiling(c), weight,
     };
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [c, ok, sens, stateDoc]);
+  }, [c, ok, sens]);
 }

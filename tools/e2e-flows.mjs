@@ -59,7 +59,8 @@ const kpis = (p) => p.evaluate(() => [...document.querySelectorAll('.ac-kpi-v')]
 await page.goto(url); await page.waitForSelector('.ac-shell .ac-kpi-v');
 await step('the policy blocks the network (probe)', async () => {
   await page.evaluate(() => { const i = new Image(); i.src = 'https://example.invalid/probe.png'; document.body.append(i); return fetch('https://example.invalid/').catch(() => null); });
-  await page.waitForTimeout(300);
+  // the violation reports are asynchronous: until both arrived (5 s at most; read without consuming them)
+  await page.waitForFunction(() => ['img-src', 'connect-src'].every((d) => window.__cspViolations.some((x) => x.startsWith(d))), null, { timeout: 5000 }).catch(() => {});
   await page.evaluate(() => document.querySelectorAll('img[src^="https://example.invalid"]').forEach((i) => i.remove()));   // not into the snapshot below
   const v = await violations(page);
   if (!v.some((x) => x.startsWith('img-src')) || !v.some((x) => x.startsWith('connect-src'))) throw new Error(`expected img-src and connect-src violations, got: ${v.join(' | ') || 'none'}`);
@@ -82,7 +83,8 @@ const reopened = await ctx.newPage(), errors2 = [];
 watch(reopened, errors2);
 await step('HTML snapshot reopen', async () => {
   await reopened.goto('file://' + snapshot); await reopened.waitForSelector('.ac-shell .ac-kpi-v');
-  await reopened.waitForTimeout(500);
+  // the embedded case is applied after the shell: until the headline shows its figures (5 s), then compared
+  await reopened.waitForFunction((b) => [...document.querySelectorAll('.ac-kpi-v')].map((e) => e.textContent).join('|') === b, before, { timeout: 5000 }).catch(() => {});
   if ((await kpis(reopened)) !== before) throw new Error('the snapshot reopens with other headline figures');
   if (errors2.length) throw new Error(errors2.join(' | '));
 }, reopened);
@@ -102,7 +104,7 @@ await step('parameters workbook export + import', async () => {
   const f = await download(() => page.getByRole('button', { name: '⬇️ Export all', exact: true }).click());
   if (await excelInDom(page)) throw new Error('the decompressed ExcelJS script or its global was left in the page');
   await page.setInputFiles('input[aria-label="Settings workbook (.xlsx)"]', f);
-  await page.waitForTimeout(1500);
+  await page.getByText(/Imported successfully/).first().waitFor({ timeout: 30000 });
   if ((await kpis(page)) !== before) throw new Error('the re-imported workbook changed the headline figures');
 });
 await step('Results workbook + cost model export', async () => {
@@ -114,17 +116,17 @@ await step('Monte Carlo run', async () => {
   await section('Monte Carlo');
   await page.getByRole('button', { name: '▶ Run simulation' }).click();
   await page.waitForFunction(() => /P50/.test(document.querySelector('main')?.textContent ?? ''), null, { timeout: 60000 });
-  await page.waitForTimeout(500);
 });
 await step('display theme: dark, then back to light', async () => {
   await page.getByRole('button', { name: 'Display settings' }).click();
-  await page.getByRole('radio', { name: /Dark/ }).check(); await page.waitForTimeout(300);
-  await page.getByRole('radio', { name: /Light/ }).check(); await page.getByRole('button', { name: 'Display settings' }).click();
+  await page.getByRole('radio', { name: /Dark/ }).check(); await page.waitForFunction(() => document.documentElement.getAttribute('data-ac-mode') === 'dark');
+  await page.getByRole('radio', { name: /Light/ }).check(); await page.waitForFunction(() => !document.documentElement.hasAttribute('data-ac-mode'));
+  await page.getByRole('button', { name: 'Display settings' }).click();
 });
 await step('case theme: activate another built-in theme', async () => {
   await section('Brand & theme');
   await page.locator('.ac-bt-item').nth(1).click();
-  await page.getByRole('button', { name: 'Activate', exact: true }).click(); await page.waitForTimeout(300);
+  await page.getByRole('button', { name: 'Activate', exact: true }).click(); await page.locator('.ac-bt-item').nth(1).locator('.ac-bt-badge.is-active').waitFor();
 });
 await step('customer logo: PNG, then SVG (FileReader, canvas)', async () => {
   await section('Engagement context');
@@ -134,7 +136,8 @@ await step('customer logo: PNG, then SVG (FileReader, canvas)', async () => {
   }
 });
 await step('?theme= link', async () => {
-  await page.goto(url + '?theme=2'); await page.waitForSelector('.ac-shell .ac-kpi-v'); await page.waitForTimeout(500);
+  await page.goto(url + '?theme=2'); await page.waitForSelector('.ac-shell .ac-kpi-v');
+  await page.getByText(/Viewing theme 2 · .* from the link/).waitFor({ timeout: 5000 });   // the link's theme is in effect (its notice is shown)
 });
 await browser.close();
 console.log(steps, 'flows,', failures, 'failure(s)');

@@ -30,7 +30,10 @@ vi.mock('chart.js', () => {
     update(mode: string): void { this.updates.push(mode); }
     destroy(): void { this.destroyed = true; }
   }
-  return { Chart, registerables: [] };
+  // the components ChartPanel registers (placeholders: the recorder registers nothing)
+  const parts = ['ArcElement', 'BarController', 'BarElement', 'CategoryScale', 'DoughnutController', 'Filler', 'Legend', 'LinearScale', 'LineController',
+    'LineElement', 'PointElement', 'RadarController', 'RadialLinearScale', 'Title', 'Tooltip'];
+  return { Chart, ...Object.fromEntries(parts.map((n) => [n, {}])) };
 });
 
 let mounts = 0;
