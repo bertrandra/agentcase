@@ -1,4 +1,7 @@
-/** Code-derived counts for the documentation facts: loads every controller (which registers the commands) and the section loader map. Vite only (vite-node, Vitest). */
+/**
+ * Code-derived counts for the documentation facts: loads every controller (which registers the commands) and the section loader map. Vite only (vite-node,
+ * Vitest).
+ */
 import { COMMAND_REGISTRY } from '../../src/store/commands';
 import { SECTION_COMPONENTS } from '../../src/ui/sections';
 import type { CodeCounts } from './docFacts';

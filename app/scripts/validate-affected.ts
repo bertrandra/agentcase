@@ -28,7 +28,8 @@ for (const m of MUTATIONS.filter((x) => !only || only.some((o) => x.file.include
   if (orig.split(m.find).length !== 2) { console.error(`stale mutation (find must occur once): ${m.file}`); process.exit(2); }
   const sels = Object.fromEntries(LEVELS.map((l) => [l, affected(root, [m.file], l)])) as Record<Level, ReturnType<typeof affected>>;
   const trivial = LEVELS.every((l) => sels[l].full);
-  const row = { file: m.file, failing: 0, sel: { precise: sels.precise.selected.length, zone: sels.zone.selected.length } as Record<Level, number>, missed: { precise: [], zone: [] } as Record<Level, string[]>, ran: false };
+  const row = { file: m.file, failing: 0, sel: { precise: sels.precise.selected.length, zone: sels.zone.selected.length } as Record<Level, number>,
+    missed: { precise: [], zone: [] } as Record<Level, string[]>, ran: false };
   rows.push(row);
   if (trivial && !force) { console.log(`${m.file}: selection is the full suite, nothing to check`); continue; }
   restore = () => writeFileSync(path, orig);
@@ -49,6 +50,8 @@ for (const l of LEVELS) {
   const line = `level ${l}: recall ${fail ? Math.round(((fail - miss) / fail) * 1000) / 10 : 100}% (${fail - miss}/${fail} failing files selected, ${ran.length} mutations run), average saving ${Math.round(saving * 100)}% over ${rows.length} modules`;
   console.log(line);
   ran.forEach((r) => r.missed[l].forEach((f) => console.log(`  MISSED ${f} (mutation of ${r.file})`)));
-  if (process.env.GITHUB_STEP_SUMMARY) appendFileSync(process.env.GITHUB_STEP_SUMMARY, `- validate:affected ${line}${ran.flatMap((r) => r.missed[l].map((f) => `\n  - MISSED ${f} (mutation of ${r.file})`)).join('')}\n`);   // the nightly job summary
+  if (process.env.GITHUB_STEP_SUMMARY) appendFileSync(process.env.GITHUB_STEP_SUMMARY,
+    // the nightly job summary
+    `- validate:affected ${line}${ran.flatMap((r) => r.missed[l].map((f) => `\n  - MISSED ${f} (mutation of ${r.file})`)).join('')}\n`);
 }
 process.exit(ran.some((r) => LEVELS.some((l) => r.missed[l].length)) ? 1 : 0);

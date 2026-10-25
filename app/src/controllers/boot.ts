@@ -26,8 +26,11 @@ export function acceptRestore(): void {
 }
 export function dismissRestore(): void { setPending(null); }
 
-export interface BootEnv { storage: AutosaveStorage | null; channel: ChannelLike | null; tabId: string;
-  /** when the page was saved with a case inside: autosaves older than it are not offered */ embeddedSavedAt?: string }
+export interface BootEnv {
+  storage: AutosaveStorage | null; channel: ChannelLike | null; tabId: string;
+  /** when the page was saved with a case inside: autosaves older than it are not offered */
+  embeddedSavedAt?: string;
+}
 
 /** A page saved by "Save HTML snapshot" carries its case: open it before anything else (autosave offers come after, and only for newer records). */
 export function loadEmbeddedCase(d: Pick<Document, 'getElementById'>): { savedAt: string } | null {

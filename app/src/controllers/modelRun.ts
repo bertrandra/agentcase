@@ -6,8 +6,8 @@ import { runMcs, type McsResult } from '@/domain/model/mcs';
 import { activeDoc } from '@/store/editBase';
 
 /**
- * The last stochastic run (legacy MCS_LAST): session-only, never part of the case and never undoable, so it lives beside the
- * controllers rather than in the document. The Evidence ledger reads its tornado as influence weights.
+ * The last stochastic run (legacy MCS_LAST): session-only, never part of the case and never undoable, so it lives beside the controllers rather than
+ * in the document. The Evidence ledger reads its tornado as influence weights.
  */
 export const mcsRunStore = createStore<{ last: McsResult | null; running: boolean }>(() => ({ last: null, running: false }));
 

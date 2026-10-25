@@ -3,10 +3,11 @@
 //                                                                     npm run dup -- --update  record the current level (after removing duplicates)
 //                                                                     npm run dup -- --list    print every clone, even when green
 //
-// Deterministic by construction (docs/TEST_SELECTION.md §Duplication): jscpd's detection is incremental (the first file that holds a block owns it), so its result
-// depends on the order in which it reads files. Left to its own glob, that order is the directory order of the file system, which differs between a laptop and a CI
-// runner (measured: 25 to 27 clones and 174 to 211 lines for the same tree). We therefore hand jscpd an explicit, byte-sorted list of the git-tracked sources (plus
-// untracked, non-ignored ones, so a new file is checked before it is committed), never generated code, with every option pinned, and run the installed jscpd binary.
+// Deterministic by construction (docs/TEST_SELECTION.md §Duplication): jscpd's detection is incremental (the first file that holds a block owns it),
+// so its result depends on the order in which it reads files. Left to its own glob, that order is the directory order of the file system, which
+// differs between a laptop and a CI runner (measured: 25 to 27 clones and 174 to 211 lines for the same tree). We therefore hand jscpd an explicit,
+// byte-sorted list of the git-tracked sources (plus untracked, non-ignored ones, so a new file is checked before it is committed), never generated
+// code, with every option pinned, and run the installed jscpd binary.
 import { spawnSync } from 'node:child_process';
 import { existsSync, mkdtempSync, readFileSync, readdirSync, rmSync, statSync, writeFileSync } from 'node:fs';
 import { tmpdir } from 'node:os';
@@ -17,14 +18,19 @@ const SETTINGS = { minTokens: 50, minLines: 5, maxLines: 10000, maxSize: '1mb', 
 const SOURCE = /\.tsx?$/, EXCLUDED = /(^|\/)(generated|dist|node_modules)\//;
 const byBytes = (a, b) => (a < b ? -1 : a > b ? 1 : 0);
 
-/** Sources in scope, relative to app/, sorted. Git when available (tracked + untracked-not-ignored), else a walk of the roots (an exported tree without .git). */
+/**
+ * Sources in scope, relative to app/, sorted. Git when available (tracked + untracked-not-ignored),
+ * else a walk of the roots (an exported tree without .git).
+ */
 export function sourceFiles(roots = SETTINGS.roots) {
   const git = spawnSync('git', ['ls-files', '-z', '--cached', '--others', '--exclude-standard', '--', ...roots], { encoding: 'utf8' });
   let files;
   if (git.status === 0) files = git.stdout.split('\0').filter(Boolean);
   else {
     files = [];
-    const walk = (d) => { for (const e of readdirSync(d)) { const p = join(d, e); if (statSync(p).isDirectory()) walk(p); else files.push(relative('.', p).split(sep).join('/')); } };
+    const walk = (d) => {
+      for (const e of readdirSync(d)) { const p = join(d, e); if (statSync(p).isDirectory()) walk(p); else files.push(relative('.', p).split(sep).join('/')); }
+    };
     roots.forEach(walk);
   }
   return [...new Set(files)].filter((f) => SOURCE.test(f) && !EXCLUDED.test(f) && existsSync(f)).sort(byBytes);
@@ -46,8 +52,10 @@ function detect(files) {
 const files = sourceFiles();
 const report = detect(files);
 const version = JSON.parse(readFileSync('node_modules/jscpd/package.json', 'utf8')).version;
-const clones = report.duplicates.map((d) => `${d.firstFile.name}:${d.firstFile.start} <-> ${d.secondFile.name}:${d.secondFile.start} (${d.lines} lines)`).sort(byBytes);
-const now = { clones: report.statistics.total.clones, duplicatedLines: report.statistics.total.duplicatedLines, files: files.length, jscpd: version, ...SETTINGS };
+const clones = report.duplicates.map((d) =>
+  `${d.firstFile.name}:${d.firstFile.start} <-> ${d.secondFile.name}:${d.secondFile.start} (${d.lines} lines)`).sort(byBytes);
+const now = { clones: report.statistics.total.clones, duplicatedLines: report.statistics.total.duplicatedLines, files: files.length, jscpd: version,
+  ...SETTINGS };
 const printClones = () => clones.forEach((c) => console.error(`  ${c}`));
 
 if (process.argv.includes('--update')) {
@@ -67,5 +75,6 @@ if (process.argv.includes('--update')) {
     process.exit(1);
   }
   if (process.argv.includes('--list')) printClones();
-  if (now.clones < base.clones || now.duplicatedLines < base.duplicatedLines) console.log('Less duplication than the baseline: lower it with `npm run dup -- --update`.');
+  if (now.clones < base.clones
+    || now.duplicatedLines < base.duplicatedLines) console.log('Less duplication than the baseline: lower it with `npm run dup -- --update`.');
 }

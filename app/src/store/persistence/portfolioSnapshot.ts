@@ -17,9 +17,9 @@ const withDefaultNames = (pf: Portfolio): Portfolio => ({
 /**
  * THE F22 RULE. A portfolio is saved as a plain single-case `agentcase.snapshot.v1` file exactly when that file re-opens (as "Product 1" in
  * "Wave 1") to the very same portfolio: one product, one wave, no overrides, no knowledge subset, default names (English, or the French "Produit 1" /
- * "Vague 1" of a v20.0 file)/ids/offset, hub and horizon
- * consistent with the case. Anything else (more products or waves, overrides, knowledge subsets, a renamed or noted product, a start
- * date, ...) keeps the portfolio format, so a save never loses information. Existing file/HTML/Excel tools keep seeing v1 files.
+ * "Vague 1" of a v20.0 file)/ids/offset, hub and horizon consistent with the case. Anything else (more products or waves, overrides, knowledge
+ * subsets, a renamed or noted product, a start date, ...) keeps the portfolio format, so a save never loses information. Existing file/HTML/Excel
+ * tools keep seeing v1 files.
  */
 export function isSingleCase(pf: PortfolioDoc): boolean {
   if (pf.products.length !== 1 || pf.waves.length !== 1) return false;

@@ -109,8 +109,7 @@ export interface Impact { zones: string[]; sections: string[]; tests: string[] }
 /**
  * What must be re-checked when these zones or sections change. `zones` and `sections` report the impact (the zones they feed through imports, every section
  * that reads or writes one of them). `tests` are the test files whose import closure touches the changed zones or sections: the closure is
- * transitive, so a test
- * that reaches anything downstream already reaches the changed zone and the downstream expansion adds nothing.
+ * transitive, so a test that reaches anything downstream already reaches the changed zone and the downstream expansion adds nothing.
  */
 export function impact(d: DepsData, zoneIds: string[], sectionIds: string[]): Impact {
   const zones = downstream(zoneFlow(d), zoneIds), ids = new Set(d.zones.map((z) => z.id));
