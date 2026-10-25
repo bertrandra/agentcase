@@ -2,6 +2,7 @@
 import type { Ctx } from '../ctx';
 import { model } from '../model/overlay';
 import { engineNow } from '../canonical';
+import { displayedPayback } from './cashflow';
 import { headline } from './headline';
 import type { YearRow } from '../time/years';
 import type { ModelResult } from '../types/model';
@@ -20,8 +21,10 @@ export interface EconomicsView {
   net: number;
   /** net ROI as a ratio, null when nothing was invested */
   roi: number | null;
-  /** canonical payback month (1-based) or null */
+  /** canonical payback month (1-based, the cash-flow kernel) or null */
   payback: number | null;
+  /** the payback a screen prints (`displayedPayback`): the kernel month, 0 = immediate when there is no setup, null = not within the horizon */
+  paybackShown: number | null;
   /** case discount rate and the NPV at that rate */
   npvRate: number; npv: number;
   /** human FTE freed at each year end: max(0, base - residual) */
@@ -37,7 +40,7 @@ export function economicsView(c: Ctx): EconomicsView {
   let cum = -setup;
   return {
     m, eng, years, months: monthlySeries(eng), H, setup, baselineRun: m.baselineRun, baseFte: m.base.etp, totalBenefit, net, roi: h.roi,
-    payback: h.paybackMonth, npvRate, npv: h.npv,
+    payback: h.paybackMonth, paybackShown: displayedPayback(h.paybackMonth, setup, totalBenefit), npvRate, npv: h.npv,
     freed: years.map((y) => Math.max(0, m.base.etp - y.humanFteEnd)), cumulative: years.map((y) => (cum += y.savings)),
   };
 }

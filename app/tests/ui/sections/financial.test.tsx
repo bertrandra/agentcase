@@ -23,9 +23,12 @@ describe('financial section', () => {
     expect(legacy).not.toBeNull();
     expect(missingNumbers(legacy!, renderedText(container))).toEqual([]);
   });
+  /** DEV-PAYBACK-NOSETUP: with no setup the payback reads "immediate" (the legacy Financial screen printed the kernel's month 1). */
+  const noSetupShown = (id: string, d: Dom): Dom => (id !== 'econ-no-setup' ? d
+    : JSON.parse(JSON.stringify(d).replace(/\["Payback","1 mo"\]/g, '["Payback","immediate"]').replace(/1 months/g, 'immediate')) as Dom);
   it.each(FIXTURES)('reproduces the legacy tables, bands, verdict and walk-through cell by cell (%s)', (id) => {
     loadFixture(id);
-    const { container } = render(<Financial />), d = extra<Dom>('econ_dom', id);
+    const { container } = render(<Financial />), d = noSetupShown(id, extra<Dom>('econ_dom', id));
     expect(missingCells(container, d, { tables: TABLES, bands: BANDS })).toEqual([]);
     expect(squash(container.querySelector('[data-verdict]')!.textContent!)).toBe(squash(d.reco));
     expect(squash(container.textContent!)).toContain(squash(d.how.map((r) => r.join('')).join('')));

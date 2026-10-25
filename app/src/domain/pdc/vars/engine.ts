@@ -46,6 +46,6 @@ export const ENGINE_VARS = [
   v('lceWeightedEN', 'Weighted expected iterations E[N]', 'DEC2', '', 'model-convergence', (c) => lceModel(c).weightedEN),
   v('esupNeededY3', 'Supervisors needed at achieved vFTE, Y3 (Esup*)', 'DEC1', 'FTE', 'model-supervision', (c) => supModel(c).esupNeeded[2]),
   v('flowTimeToMarketNpv', 'Time-to-market NPV (P5, distinct from savings NPV)', 'EUR_K', '€', 'model-flow', (c) => flowModel(c).flowNpv),
-  v('evidenceConfidenceGrade', 'Evidence confidence grade', 'TEXT', '', 'model-evidence', (c, rt) => evlModel(c, rt.tornado).grade || '—'),
+  v('evidenceConfidenceGrade', 'Evidence confidence grade', 'TEXT', '', 'model-evidence', (c, rt) => evlModel(c, rt.tornado, rt.now).grade || '—'),
   v('verificationTaxRatePct', 'Verification tax rate (endogenous)', 'PCT', '%', 'model-verification', (c) => evtModel(c).rate * 100),
 ];

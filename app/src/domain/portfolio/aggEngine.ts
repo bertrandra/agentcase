@@ -1,13 +1,17 @@
 /** @calc-zone aggregate-views */
-import { evlModel } from '../model/evidence';
+import { evlModel, type EvalDate } from '../model/evidence';
 import { evtModel } from '../model/evt';
-import { flowModel } from '../model/flow';
+import type { Ctx } from '../ctx';
+import { npvOf } from '../economics/cashflow';
+import { flowModel, flowMonthValue, flowRate } from '../model/flow';
 import { lceModel } from '../model/lce';
 import { mcsOf } from '../model/modelState';
 import { supModel } from '../model/supView';
 import { convergenceChecks } from '../pdc/verifConvergence';
 import { perProduct, type AggProduct } from './aggStress';
+import { consolidate } from './consolidate';
 import type { PfStress } from './stressTypes';
+import { keptMonths } from './timeline';
 import type { Portfolio } from './types';
 
 /**
@@ -56,25 +60,42 @@ export function supervisionByProduct(pf: Portfolio, ids: string[]): { rows: Supe
     needed: sum('needed'), runCost: sum('runCost'), vfte: sum('vfte'), toUnlock: sum('toUnlock') } };
 }
 
-/** P5 — flow and value: cycle time, compression, WIP (Little) and the sponsor-owned time-to-market value (null while no margin is given). */
+/**
+ * The product's time-to-market value on the portfolio calendar: its monthly value laid on its own months (month0 + 1 ..), cut at the portfolio horizon,
+ * discounted by the kernel from calendar month 1 at the product's flow rate (annual compounding, the P5 rule). 0 for a product not planned.
+ */
+export function calendarFlowNpv(pf: Portfolio, id: string, c: Ctx, deltaTEff: number): number {
+  const cons = consolidate(pf), v = cons.products.find((x) => x.id === id), L = cons.horizon, value = flowMonthValue(c, deltaTEff);
+  if (!v || value === 0) return 0;
+  const flow = new Array<number>(L).fill(0), kept = keptMonths(L, v.month0, v.run.rows.length);
+  for (let t = 0; t < kept; t++) flow[v.month0 + t] = value;
+  return npvOf(flow, flowRate(c), 'annual');
+}
+
+/**
+ * P5 — flow and value: cycle time, compression, WIP (Little) and the sponsor-owned time-to-market value (null while no margin is given), on the
+ * portfolio calendar (`calendarFlowNpv`), so the products add up to the portfolio's value.
+ */
 export type FlowRow = AggProduct & { on: boolean; ctAsis: number; ctNew: number; theta: number; wip: number; flowNpv: number | null };
 export function flowByProduct(pf: Portfolio, ids: string[]): { rows: FlowRow[]; on: number; wip: number; flowNpv: number; valued: number } {
-  const rows = perProduct(pf, ids, (c) => {
+  const rows = perProduct(pf, ids, (c, p) => {
     const f = flowModel(c);
-    return { on: f.on, ctAsis: f.ctAsis, ctNew: f.ctNew, theta: f.theta, wip: f.wip, flowNpv: f.hasMargin ? f.flowNpv : null };
+    return { on: f.on, ctAsis: f.ctAsis, ctNew: f.ctNew, theta: f.theta, wip: f.wip, flowNpv: f.hasMargin ? calendarFlowNpv(pf, p.id, c, f.deltaTEff) : null };
   });
   const valued = rows.filter((r) => r.flowNpv !== null);
   return { rows, on: rows.filter((r) => r.on).length, wip: rows.reduce((a, r) => a + r.wip, 0),
     flowNpv: valued.reduce((a, r) => a + (r.flowNpv as number), 0), valued: valued.length };
 }
 
-/** P6 — evidence ledger: stage, grade A-D, and how many of the seven drivers stand on measured, benchmark or assumed evidence. */
+/** P6 — evidence ledger (at the evaluation date `now`): stage, grade A-D, and how many of the seven drivers stand on measured, benchmark or assumed
+ * evidence. */
 export type EvidenceRow = AggProduct & { on: boolean; stage: string; grade: string | null; score: number | null; meets: boolean | null; measured: number;
   benchmark: number; assumed: number };
-export function evidenceByProduct(pf: Portfolio, ids: string[]): { rows: EvidenceRow[]; on: number; measured: number; benchmark: number; assumed: number;
+export function evidenceByProduct(pf: Portfolio, ids: string[], now: EvalDate): { rows: EvidenceRow[]; on: number; measured: number; benchmark: number;
+  assumed: number;
   worst: string | null } {
   const rows = perProduct(pf, ids, (c) => {
-    const e = evlModel(c, null), n = (t: string): number => e.drivers.filter((d) => d.effectiveTier === t).length;
+    const e = evlModel(c, null, now), n = (t: string): number => e.drivers.filter((d) => d.effectiveTier === t).length;
     return { on: e.on, stage: e.stage, grade: e.grade, score: e.score, meets: e.meetsExpectation, measured: n('MEASURED'), benchmark: n('BENCHMARK'),
       assumed: n('ASSUMPTION') };
   });

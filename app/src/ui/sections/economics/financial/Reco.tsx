@@ -32,7 +32,7 @@ export function Reco({ v }: { v: EconomicsView }) {
         <Line k={`4. Σ savings over ${v.H} year${v.H > 1 ? 's' : ''}`}>{fmtK(v.totalBenefit)}</Line>
         <Line k="5. One-time setup (tooling + training + coaching + governance)">{fmtK(v.setup)}</Line>
         <Line k="ROI (net) = (Σ savings − setup) / setup">({fmtK(v.totalBenefit)} − {fmtK(v.setup)}) / {fmtK(v.setup)} = <span className="ac-reco-roi">{pct}%</span></Line>
-        <Line k="Payback = first month cumulative cash-flow ≥ 0">{fmtPayback(v.payback, v.months.length).replace(/ mo$/, ' months')}</Line>
+        <Line k="Payback = first month cumulative cash-flow ≥ 0">{fmtPayback(v.paybackShown, v.months.length).replace(/ mo$/, ' months')}</Line>
         <Line k={`NPV @${rate}%/yr = Σ monthly (saving − setup spend), discounted`}>{fmtK(v.npv)}</Line>
         <div className="ac-reco-note">Y1 savings are typically negative (ramp at {v.m.ramps[0]}% while the agentic run team and infra are paid in full) — the J-curve. Every figure updates live with your parameters.</div>
       </div>

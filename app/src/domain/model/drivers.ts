@@ -1,5 +1,6 @@
 /** @calc-zone time-engine @owner setup, effective-automation */
 import type { Ctx } from '../ctx';
+import { caseHorizonYears } from '../inputs';
 import { engagementCoef, hriCostPerFTE, hriEnabled, hriRampFactor } from '../engagement';
 import { khMult, khSetupCost } from '../knowledge';
 import { lifecycleAutoPosture } from '../lifecycle';
@@ -25,7 +26,7 @@ export function modelDrivers(c: Ctx) {
   const setupBase = inp.p('setupTooling') + inp.p('setupTraining') + inp.p('setupCoaching') + inp.p('setupGov');
   const convChange = convChangeCost(c), khSetup = khSetupCost(c);
   return {
-    auto, ceiling, cvx, khM, effCap, eff, hriF, ramps, horizon: parseInt(inp.v('horizon'), 10), wd: inp.p('workdays'),
+    auto, ceiling, cvx, khM, effCap, eff, hriF, ramps, horizon: caseHorizonYears(inp), wd: inp.p('workdays'),
     tokenCost: blendedTokenCostPer1M(s, c.tokenScale), tokensPerArt: inp.p('tokensPerArt'), infra: inp.p('infra'),
     setupBase, convChange, khSetup, setupTotal: setupBase + convChange + khSetup, scope: phaseScope(c.a, s),
   };

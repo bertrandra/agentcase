@@ -1,4 +1,5 @@
 import { LOCATIONS } from '@/domain';
+import { isSplitComplete } from '@/domain/split';
 import type { LocSplitRow } from '@/domain/verdict';
 import { cssVars } from '@/ui/cssVars';
 
@@ -22,7 +23,7 @@ export function LocSplit({ rows }: { rows: LocSplitRow[] }) {
           <tr key={r.id}>
             <td>{r.icon} <strong>{r.label}</strong> <span className="ac-badge ac-split-mode" data-mode={r.mode}>{MODE[r.mode]}</span></td>
             {LOCATIONS.map((l) => <td key={l.name} className="ac-c">{share(r.perLoc[l.name] as number)}</td>)}
-            <td className={Math.abs(r.tot - 100) < 0.5 || r.tot === 0 ? 'ac-c ac-split-tot' : 'ac-c ac-split-tot is-off'}>{r.tot ? `${r.tot.toFixed(0)}%` : '—'}</td>
+            <td className={isSplitComplete(r.tot) || r.tot === 0 ? 'ac-c ac-split-tot' : 'ac-c ac-split-tot is-off'}>{r.tot ? `${r.tot.toFixed(0)}%` : '—'}</td>
           </tr>))}</tbody>
       </table></div>
       <h3>Aggregate by class</h3>

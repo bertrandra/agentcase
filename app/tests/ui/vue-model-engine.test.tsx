@@ -17,6 +17,9 @@ import { threeProducts } from '../helpers/portfolioStore';
 import { LAZY, mountApp, pf, sectionReady } from '../helpers/portfolioUi';
 import { banner, bodyRows, expectShown, openDrill, planned, rowOf, text, totalOf, view } from '../helpers/vueAgg';
 
+/** The evaluation date the sections pass (`useEvalDate`: today at local midnight). */
+const TODAY = ((d: Date) => new Date(d.getFullYear(), d.getMonth(), d.getDate()).getTime())(new Date());
+
 vi.mock('@/ui/widgets/ChartPanel', async () => import('../helpers/chartStub'));
 
 let ids: [string, string, string], waves: [string, string];
@@ -51,9 +54,9 @@ const SPECS: Spec[] = [
     total: (s) => { const a = flowByProduct(pf(), s); return [a.wip.toFixed(1), `${a.on} of ${a.rows.length} on`]; },
     drill: { caption: /Cycle time & WIP/, shown: (id) => [`${flowModel(productCtx(pf(), id)).ctNew.toFixed(1)}d`] } },
   { id: 'model-evidence', title: /Evidence ledger/, caption: /Evidence by product/,
-    shown: (id) => { const r = evidenceByProduct(pf(), [id]).rows[0]!; return [r.grade ?? 'n/a', r.score === null ? 'n/a' : `${(r.score * 100).toFixed(0)}%`, onOff(r.on)]; },
-    total: (s) => { const a = evidenceByProduct(pf(), s); return [a.worst ? `worst: ${a.worst}` : 'n/a']; },
-    drill: { caption: /Evidence ledger of the product/, shown: (id) => [evlModel(productCtx(pf(), id), null).grade ?? 'n/a'] } },
+    shown: (id) => { const r = evidenceByProduct(pf(), [id], TODAY).rows[0]!; return [r.grade ?? 'n/a', r.score === null ? 'n/a' : `${(r.score * 100).toFixed(0)}%`, onOff(r.on)]; },
+    total: (s) => { const a = evidenceByProduct(pf(), s, TODAY); return [a.worst ? `worst: ${a.worst}` : 'n/a']; },
+    drill: { caption: /Evidence ledger of the product/, shown: (id) => [evlModel(productCtx(pf(), id), null, TODAY).grade ?? 'n/a'] } },
   { id: 'model-verification', title: /Verification tax/, caption: /Verification tax by product/,
     shown: (id) => { const r = verificationByProduct(pf(), [id]).rows[0]!; return [pct1(r.rate), pct1(r.rhoMax), pct1(r.phi), r.net ? 'Net' : 'Overlay']; },
     total: (s) => { const a = verificationByProduct(pf(), s); return [`lowest ${pct1(a.lowestRhoMax as number)}`, `${a.on} of ${a.rows.length} on`]; },

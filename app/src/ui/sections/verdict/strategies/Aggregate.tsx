@@ -1,4 +1,4 @@
-import { fmtRoiPct } from '@/domain/economics/roi';
+import { fmtPaybackYear, fmtRoiPct } from '@/domain/economics/roi';
 import { useStrategiesAggregate } from '@/store/selectionHooksVerdict';
 import { useViewScope } from '@/store/viewScope';
 import { fmtEurK } from '@/ui/format';
@@ -29,7 +29,7 @@ export default function StrategiesAggregate() {
     { key: 'roi', header: 'ROI', align: R, render: (r) => fmtRoiPct(r.roi) },
     { key: 'tco', header: 'TCO', align: R, title: 'Setup plus run cost over the product horizon', render: (r) => fmtEurK(r.tco) },
     { key: 'net', header: 'Net', align: R, render: (r) => fmtEurK(r.net) },
-    { key: 'pay', header: 'Payback', align: R, render: (r) => (r.payback == null ? 'n/a' : `Year ${r.payback}`) },
+    { key: 'pay', header: 'Payback', align: R, render: (r) => fmtPaybackYear(r.payback, 'n/a') },
   ];
   const t = a.totals;
   return (

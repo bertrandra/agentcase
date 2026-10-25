@@ -1,5 +1,6 @@
 /** @calc-zone exports */
 import { clean } from '@/domain/portfolio/products';
+import { isSplitComplete, splitTotal } from '@/domain/split';
 import type { KnowledgeDomain, KnowledgeSubset } from '@/domain/portfolio';
 import { cleanText } from '../params/safe';
 import type { Sheets } from '../params/types';
@@ -19,8 +20,8 @@ function readDomains(sheets: Sheets, ids: ReadonlySet<string>): Map<string, Know
     out.set(id, list);
   }
   for (const [id, list] of out) {
-    const total = list.reduce((a, d) => a + d.weightPct, 0);
-    if (Math.abs(total - 100) > 1e-6) fail(t.name, null, `domain weights of product "${id}" add up to ${Math.round(total * 1e6) / 1e6}, expected 100`);
+    const total = splitTotal(list.map((d) => d.weightPct));
+    if (!isSplitComplete(total)) fail(t.name, null, `domain weights of product "${id}" add up to ${Math.round(total * 1e6) / 1e6}, expected 100`);
   }
   return out;
 }

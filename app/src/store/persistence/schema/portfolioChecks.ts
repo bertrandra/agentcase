@@ -1,4 +1,6 @@
 /** @calc-zone exports */
+import { clampHorizonYears } from '@/domain/inputs';
+import { isSplitComplete, splitTotal } from '@/domain/split';
 import { FORBIDDEN_DOM_IDS, OVERRIDABLE_KEYS, WAVE_MILESTONES } from '@/domain/portfolio';
 import { makeDefaultDoc } from '../../instance';
 import { checkCase, checkTeam, rec, type Notes, type Rec } from './caseChecks';
@@ -14,7 +16,7 @@ const nonNeg = (v: unknown): v is number => typeof v === 'number' && Number.isFi
 const KNOWLEDGE: Record<string, (v: unknown) => boolean> = {
   enabled: (v) => typeof v === 'boolean', curationFTE: nonNeg, setupBase: nonNeg, ktLeadMonths: nonNeg, targetCC: (v) => nonNeg(v) && v <= 4,
   maturityAnswers: (v) => Array.isArray(v) && v.length === 9 && v.every((x) => nonNeg(x) && x <= 4),
-  domains: (v) => Array.isArray(v) && v.every((d) => rec(d) && typeof d.label === 'string' && nonNeg(d.weightPct)) && (v.length === 0 || Math.abs(v.reduce((a: number, d: Rec) => a + (d.weightPct as number), 0) - 100) <= 1e-6),
+  domains: (v) => Array.isArray(v) && v.every((d) => rec(d) && typeof d.label === 'string' && nonNeg(d.weightPct)) && (v.length === 0 || isSplitComplete(splitTotal(v.map((d: Rec) => d.weightPct as number)))),
 };
 
 function knowledge(k: unknown, n: Notes, who: string): Rec {
@@ -115,7 +117,7 @@ export function repairPortfolio(raw: Rec, n: Notes): Rec {
   const okHub = typeof hub.enabled === 'boolean' && nonNeg(hub.infraMonthly) && (hub.infraAllocation === 'perProduct' || hub.infraAllocation === 'byBaseEtp');
   if (!okHub) { n.push('Portfolio: Knowledge Hub settings are invalid — hub off, no infrastructure cost'); s.hub = { enabled: hub.enabled === true, infraMonthly: nonNeg(hub.infraMonthly) ? hub.infraMonthly : 0, infraAllocation: hub.infraAllocation === 'byBaseEtp' ? 'byBaseEtp' : 'perProduct' }; }
   if (!(Number.isInteger(s.horizonMonths) && (s.horizonMonths as number) >= 1)) {
-    const months = (parseInt(String(((s.common as Rec).dom as { values: Rec }).values.horizon), 10) || 3) * 12;
+    const months = clampHorizonYears(((s.common as Rec).dom as { values: Rec }).values.horizon) * 12;
     n.push(`Portfolio: horizon ${JSON.stringify(s.horizonMonths)} months is invalid — ${months} months (the horizon input) used`); s.horizonMonths = months;
   }
   if (s.rho !== undefined && !(typeof s.rho === 'number' && s.rho >= 0 && s.rho <= 1)) { n.push(`Portfolio: correlation rho ${JSON.stringify(s.rho)} is not in [0, 1] — products independent (0)`); delete s.rho; }

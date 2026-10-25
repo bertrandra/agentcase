@@ -55,7 +55,8 @@ export function scenarioModel(c: Ctx, opts: Partial<ScenOpts>) {
   return {
     opts: o, base, setup: h.setup, net: h.net, npv: h.npv, roi: h.roi, pbMonth: h.paybackMonth, pbYear: h.paybackYear, totBen: h.totalBenefit, cum,
     yearETP: at((y) => y.humanFteEnd), yearAgentVfte: at((y) => y.agentVfteEnd), yearTeamCost: at((y) => y.teamCost), yearToken: at((y) => y.tokenCost),
-    yearRun: at((y) => y.totalRunCost), yearSav: at((y) => y.savings), baselineRun: base.cost, horizon: eng.horizonYears,
+    yearRun: at((y) => y.totalRunCost), totRun: Y.reduce((a, y) => a + y.totalRunCost, 0), yearSav: at((y) => y.savings), baselineRun: base.cost,
+    horizon: eng.horizonYears,
     tgtTJM: raw.tgtTJM, asisTJM: raw.blendedTJM, tgtRateTJM: scenTargetTJM(c),
   };
 }

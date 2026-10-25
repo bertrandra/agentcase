@@ -6,13 +6,18 @@ import { makeCtx } from '@/domain';
 import { sensitivityMatrix } from '@/domain/stress';
 import { appStore } from '@/store/instance';
 import Sensitivity from '@/ui/sections/stress/sensitivity';
+import { loadExtra } from '../../helpers/extras';
 import { missingFor, openFixture, PARITY_FIXTURES } from '../../helpers/stressParity';
 
 afterEach(cleanup);
 
 describe('sensitivity section', () => {
-  it.each(PARITY_FIXTURES)('shows every figure the legacy section showed (%s)', (fx) => {
-    expect(missingFor(Sensitivity, 'sensitivity', fx)).toEqual([]);
+  it.each(PARITY_FIXTURES)('shows every figure the legacy section showed (%s), the matrix cells being the rerun ones (DEV-SENS-RERUN)', (fx) => {
+    const legacyCells = (loadExtra('sensitivityView', fx) as { matrix: string[][] }).matrix.flatMap((r) => r.slice(1).map((x) => parseFloat(x)));
+    expect(missingFor(Sensitivity, 'sensitivity', fx, legacyCells)).toEqual([]);
+    const m = sensitivityMatrix(makeCtx(appStore().getState().doc)), { container, unmount } = render(<Sensitivity />);
+    for (const cell of m.cells.flat()) expect(container.textContent).toContain(cell.text);
+    unmount();
   });
   it('shows the six parameters with their level and the 4 × 5 matrix', () => {
     openFixture('golden');

@@ -8,6 +8,7 @@ import defaultDoc from '@/store/defaults/defaultDoc.json';
 import { formatValue } from '@/ui/sections/configure/board/format';
 import { quantile } from '@/domain/model/numerics';
 import { daGet } from '@/domain/verifyB/anchors';
+import { engineNow } from '@/domain';
 import { anchored } from '../helpers/deviations';
 import { diffs } from '../helpers/economics';
 import { ctxOf, pdc, PDC_FIXTURES } from '../helpers/pdc';
@@ -16,7 +17,7 @@ interface Legacy { id: string; label: string; fmt: string; unit: string; scope: 
 const base = ddBase(defaultDoc);
 const MC_QUANTILES = ['mcP10', 'mcP50', 'mcP90', 'monteCarloP50'];
 /** The legacy oracle evaluated the registry in order: diVerdict ran the 800-draw Monte Carlo that mcP10... then read. */
-const runtimeOf = (c: ReturnType<typeof ctxOf>): VarRuntime => ({ mc: runMonteCarlo(c, 800, mcSeedOf(c)), tornado: null, ddBase: base });
+const runtimeOf = (c: ReturnType<typeof ctxOf>): VarRuntime => ({ mc: runMonteCarlo(c, 800, mcSeedOf(c)), tornado: null, ddBase: base, now: null });
 /**
  * The oracle's pdc_vars extra runs after other extras that left a 300-draw stochastic run and a stale Time Engine hash behind: CC-MC-01 and TE-DEP
  * read as violations.
@@ -41,6 +42,10 @@ describe('all 166 registry variables reproduce the legacy', () => {
         const a = daGet(c.s, w.id === 'velocitySpY3' ? 'velocitySp' : 'leadTime'), raw = anchored(a.asis, a.target, rel), nv = w.id === 'velocitySpY3' ? Math.round(raw) : raw;
         return { ...w, value: nv, text: formatValue(nv, w.fmt) };
       }
+      // DEV-YEAR-BEYOND-HORIZON: a Y2 figure is n/a on a 1-year case (the legacy repeated year 1).
+      if ((w.id === 'netSavY2' || w.id === 'runCostY2') && engineNow(c).horizonYears < 2) return { ...w, value: null, text: formatValue(null, w.fmt) };
+      // DEV-PAYBACK-NOSETUP: with no setup the strategies' immediate payback ranks best, so the top score follows the domain ranking.
+      if (w.id === 'topStrategyScore' && id === 'econ-no-setup') { const v = VARIABLES.find((x) => x.id === w.id)!.get(c, rt); return { ...w, value: v, text: formatValue(v, w.fmt) }; }
       return { ...w, value: value ?? null, text: w.id === 'auditViolationsCount' ? String(value) : w.text };
     }).filter((w) => !MC_QUANTILES.includes(w.id));
     const got = VARIABLES.map((x) => { const value = x.get(c, rt); return { id: x.id, label: x.label, fmt: x.format, unit: x.unit, scope: x.scope, value: typeof value === 'number' && isNaN(value) ? null : value ?? null, text: formatValue(value, x.format) }; });

@@ -1,6 +1,7 @@
 /** @calc-zone exports */
 import { ALL_PHASE_IDS, LOCATIONS, PHASES, SDLC_ARTEFACTS } from '@/domain/catalog';
 import { locationMix } from '@/domain/location';
+import { isSplitComplete, splitTotal } from '@/domain/split';
 import { phaseRows } from '@/domain/scopeView';
 import type { CaseState } from '@/domain/types/state';
 import { blue, frz, geDV, grey, head, listDV, note, rangeDV, sheet } from '../kit';
@@ -51,8 +52,8 @@ function readTarget({ rows, w, notes, clamp }: ReadCtx): void {
     if (LOCATIONS.some((l) => l.name === loc) && t[loc] !== undefined && !Number.isNaN(pct)) { t[loc] = clamp(pct, 0, 100, `Target % ${loc}`); any = true; }
   });
   if (!any) return;
-  const sum = LOCATIONS.reduce((s, l) => s + (t[l.name] || 0), 0);
-  if (Math.abs(sum - 100) > 1) notes.push(`Location targets sum to ${Math.round(sum)}% (should be 100%)`);
+  const sum = splitTotal(LOCATIONS.map((l) => t[l.name]));
+  if (!isSplitComplete(sum)) notes.push(`Location targets sum to ${Math.round(sum)}% (should be 100%)`);
 }
 
 function writeQuality({ wb, d }: WriteCtx): void {

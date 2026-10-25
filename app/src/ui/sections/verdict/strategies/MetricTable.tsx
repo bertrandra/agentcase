@@ -1,5 +1,6 @@
 import { METRICS, metricExtremes, metricValue, lifecycleStatusLabel, type StrategyRow } from '@/domain/verdict';
 import type { CaseState } from '@/domain';
+import { fmtPaybackYear } from '@/domain/economics/roi';
 import { Badge } from '@/ui/widgets/cards';
 
 const k = (n: number) => `${n < 0 ? '−' : ''}€${Math.round(Math.abs(n) / 1000).toLocaleString('en-US')}k`;
@@ -9,7 +10,7 @@ function fmt(key: string, v: number | null): string {
   if (v != null && isNaN(v)) return 'n/a';   // horizon beyond 3 years: the net benefit is undefined (legacy limitation)
   if (key === 'roi') return v == null ? '—' : `${Math.round(v * 100)}%`;
   if (key === 'tco') return k(v as number);
-  if (key === 'payback') return v == null ? '—' : `Year ${v}`;
+  if (key === 'payback') return fmtPaybackYear(v);
   if (key === 'aiCoverage' || key === 'humanSup') return `${(v as number).toFixed(1)}%`;
   return dots(v as number);
 }

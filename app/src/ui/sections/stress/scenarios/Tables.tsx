@@ -19,7 +19,7 @@ export function CostTable({ S }: { S: Scenario[] }) {
     { key: 'name', header: 'Scenario', render: (s) => <Name s={s} /> },
     { key: 'base', header: 'Baseline (AS-IS)', align: 'right', render: (s) => money(s.m.baselineRun) },
     ...Array.from({ length: H }, (_, i): Column<Scenario> => ({ key: `y${i}`, header: `Year ${i + 1} (€)`, align: 'right', render: (s) => money(s.m.yearRun[i] as number) })),
-    { key: 'run', header: `${H}-yr run (€)`, align: 'right', render: (s) => money(s.m.yearRun.reduce((a, b) => a + b, 0)) },
+    { key: 'run', header: `${H}-yr run (€)`, align: 'right', render: (s) => money(s.m.totRun) },
     { key: 'sav', header: `${H}-yr savings (€)`, align: 'right',
       render: (s) => (s.key === 'asis' ? <span className="ac-muted">—</span> : <span className="ac-gain ac-value" data-sign={s.m.totBen >= 0 ? 'pos' : 'neg'}>{fmtSigned(s.m.totBen)}</span>) },
   ];

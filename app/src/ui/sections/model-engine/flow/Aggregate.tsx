@@ -12,7 +12,9 @@ const COLS: AggColumn<FlowRow>[] = [
   phaseColumn('P5'), { key: 'asis', header: 'Cycle time AS-IS', align: R, render: (r) => days(r.ctAsis) },
   { key: 'new', header: 'Cycle time with agents', align: R, render: (r) => days(r.ctNew) }, { key: 'theta', header: 'Compression θ', align: R, render: (r) => `${(r.theta * 100).toFixed(0)}%` },
   { key: 'wip', header: 'WIP (Little)', align: R, render: (r) => r.wip.toFixed(1) },
-  { key: 'npv', header: 'Time-to-market value (NPV)', align: R, title: 'Hidden until the sponsor gives a margin per month', render: (r) => (r.flowNpv === null ? 'no margin given' : fmtEurK(r.flowNpv)) },
+  { key: 'npv', header: 'Time-to-market value (calendar NPV)', align: R,
+    title: 'On the portfolio calendar (each product from its start, cut at the horizon, discounted from month 1); hidden until a margin per month is given',
+    render: (r) => (r.flowNpv === null ? 'no margin given' : fmtEurK(r.flowNpv)) },
 ];
 
 /**

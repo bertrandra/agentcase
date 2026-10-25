@@ -40,6 +40,20 @@ When releasing, follow [docs/BUMP_PROCEDURE.md](docs/BUMP_PROCEDURE.md) (§7 for
   `simStore` / `pfSimStore`; dynamic `import()` is restricted like static imports; `src/content` and `src/generated` are data layers (read by the UI
   and the domain) and an import of an unclassified file is an error.
 
+### Lot 10 — calculations (domain)
+
+- Legacy flat curves: Monte Carlo outcome, `horizonYears` and cost reduction read the Time Engine over the whole horizon (DEV-LEGACY-CURVE-HORIZON).
+- Sensitivity matrix: each of the 20 cells reruns the engine with the moved automation potential and glass ceiling (DEV-SENS-RERUN); the portfolio negative-cell count is now meaningful.
+- Payback = the month after the last negative cumulative month, null when the final cumulative is negative (DEV-PAYBACK-RECOVERY; no single-product change).
+- One displayed payback (`displayedPayback`): no setup = "immediate", ranked best by the strategies (DEV-PAYBACK-NOSETUP); one `fmtPayback`.
+- Portfolio: stock measures (human FTE incl. run team, vFTE, adoption) held after a product's own horizon; `fte.after` read from the calendar series; cost reduction on the calendar basis; flow (time-to-market) NPV laid on the calendar and discounted from calendar month 1.
+- Saved packages: `totalSavings` is net of setup at portfolio level too (was gross); files saved before stay valid; no crash on an empty product list; year-end cumulative read from the consolidated cumulative.
+- One clamped horizon reader (`clampHorizonYears`, whole years 1..10): "0" / "-1" from a file no longer throws or diverges.
+- `headlineOf` reads the engine totals (`total()`, `roi()`); scenario run-cost total `totRun` in the domain; registry Y2 variables n/a beyond the horizon (DEV-YEAR-BEYOND-HORIZON).
+- Evidence ledger and DD sensitivity no longer read the clock in the domain: the evaluation date / timestamp is passed by the UI / controller.
+- One "adds up to 100 %" rule (`domain/split.ts`, 0.5 point) for the UI, validation, file check and Excel readers (DEV-SPLIT-TOLERANCE).
+- Dead code removed: `firstActiveMonth`, the duplicate `fmtPayback`, the portfolio package's own cumulative, the Results aggregate's ROI recomputation.
+
 ## [v20.18.1] 2026-10-25 — Architecture lot 9: tidy-up (no change to the app)
 
 - `tools/a11y.mjs` writes its default report to `test-results/a11y/report.json` (git-ignored): a local audit no longer rewrites a tracked file.

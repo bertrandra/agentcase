@@ -46,6 +46,3 @@ export const unscheduledIds = (pf: Portfolio): string[] => {
 
 /** Number of a product's own months that fit in the portfolio horizon (truncation). */
 export const keptMonths = (horizon: number, month0: number, ownMonths: number): number => Math.max(0, Math.min(ownMonths, horizon - month0));
-
-/** First calendar month (1-based) on which a planned product weighs on the cash: its month 1, or the first KT preparation month. */
-export const firstActiveMonth = (s: Scheduled): number => s.month0 - s.lead + 1;

@@ -4,7 +4,7 @@ import { npvCanonical, paybackMonthsCanonical } from '../../canonical';
 import { engineOf as engineNow, modelOf as model } from '../../tune/memo';
 import { headline } from '../../economics/headline';
 import { cmRecommend, CM_DEFS, cmTierSplit, commercialRevenue, type CmCode } from '../commercial';
-import { end, v } from './types';
+import { end, v, yearIn } from './types';
 
 const sel = (c: Ctx): CmCode => (c.inp.v('cmModel') || 'ET') as CmCode;
 /** Selected model's revenue over the horizon and the run cost of the same years (legacy cgMargin3ySel / clientSavingPctSel). */
@@ -33,7 +33,7 @@ export const FINANCE_VARS = [
   v('setupBillableEur', 'Setup billable share (€)', 'EUR_K', '€', 'setup', (c) => model(c).conv.setupBillable),
   v('setupAbsorbedEur', 'Setup absorbed share (€)', 'EUR_K', '€', 'setup', (c) => model(c).conv.setupAbsorbed),
   v('changeMgmtCost', 'Change-management cost (HRI)', 'EUR_K', '€', 'setup', (c) => model(c).conv.changeCost),
-  v('runCostY2', 'Run cost, Y2', 'EUR_K', '€', 'financial', (c) => model(c).yearRun[1]),
+  v('runCostY2', 'Run cost, Y2', 'EUR_K', '€', 'financial', (c) => yearIn(c, model(c).yearRun, 2)),
   v('teamCostY3', 'Human workforce cost, end-year', 'EUR_K', '€', 'financial', (c) => end(c).teamCost),
   v('agenticRunCostY3', 'Agentic run-team cost, end-year', 'EUR_K', '€', 'financial', (c) => end(c).runTeamCost),
   v('runCostEndYearOwn', 'Total run cost, end-year', 'EUR_K', '€', 'run', (c) => end(c).totalRunCost),

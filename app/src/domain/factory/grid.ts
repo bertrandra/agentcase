@@ -2,13 +2,14 @@
 import { PHASES } from '../catalog';
 import type { WArtefact } from '../artefacts';
 import type { Ctx } from '../ctx';
+import { caseHorizonYears } from '../inputs';
 import { activeArtefacts } from '../scope';
 
 /** The weekly grid, anchored on the roadmap start (rmStart) and sized by the horizon. Dates are UTC calendar days. */
 export interface Grid { totalW: number; horizon: number; date(w: number, dayOffset?: number): string }
 
 export function fgGrid(c: Ctx): Grid {
-  const horizon = parseInt(c.inp.v('horizon')) || 3;
+  const horizon = caseHorizonYears(c.inp);
   const start = /^\d{4}-\d{2}-\d{2}$/.test(c.inp.v('rmStart')) ? c.inp.v('rmStart') : '2026-09-01';
   let t0 = Date.parse(start + 'T00:00:00Z');
   if (isNaN(t0)) t0 = Date.parse('2026-09-01T00:00:00Z');

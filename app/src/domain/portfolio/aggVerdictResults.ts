@@ -1,5 +1,4 @@
 /** @calc-zone aggregate-views */
-import { roiCanonical } from '../economics/roi';
 import { resultsCore, type SavingsYear, type TeamShift } from '../verdict';
 import { selectionOf, total } from './aggEconomicsSel';
 import type { Consolidated } from './consolidate';
@@ -42,6 +41,6 @@ export function aggregateResults(pf: Portfolio, c: Consolidated, scope: DisplayS
     rows: sel.items.map((v, i) => ({ id: v.id, name: v.name, wave: pf.waves.find((w) => w.id === v.waveId)?.name ?? '',
       status: (cores[i] as ReturnType<typeof resultsCore>).status,
       setup: v.summary.setup, net: v.summary.net, roi: v.summary.roi, paybackMonth: v.summary.paybackMonth, eff: v.run.automation().eff })),
-    totals: { setup: h.setup, net: h.net, roi: roiCanonical(h.net, h.setup), paybackMonth: h.paybackMonth, eff: h.eff },
+    totals: { setup: h.setup, net: h.net, roi: h.roi, paybackMonth: h.paybackMonth, eff: h.eff },
   };
 }

@@ -54,26 +54,43 @@ function oldFlow(value: number, months: number, d: number) {
 /** portfolio/costModel.ts discount factor row before lot 4 */
 const oldFactor = (i: number, rate: number) => 1 / Math.pow(1 + rate / 12, i + 1);
 
+/**
+ * Lot 10 payback rule (the loops above keep the old first-crossing rule): the month after the last month >= first with a negative cumulative, null
+ * when the final cumulative is negative. On a flow that never dips again once it crossed 0 it is the old first crossing (checked below).
+ */
+function paybackRef(cum: number[], first = 1): number | null {
+  const f = Math.max(1, first);
+  if (cum.length < f || (cum[cum.length - 1] as number) < 0) return null;
+  let last = f - 1;
+  for (let t = f; t <= cum.length; t++) if ((cum[t - 1] as number) < 0) last = t;
+  return last + 1;
+}
+
 const money = fc.double({ min: -2e6, max: 2e6, noNaN: true, noDefaultInfinity: true });
 const flow = fc.array(money, { minLength: 0, maxLength: 130 });
 const rate = fc.oneof(fc.constant(undefined), fc.constant(null), fc.double({ min: 0, max: 1, noNaN: true }));
 const same = (a: unknown, b: unknown) => expect(Object.is(a, b) || JSON.stringify(a) === JSON.stringify(b), `${String(a)} vs ${String(b)}`).toBe(true);
+/** The new rule, and the old first crossing whenever the cumulative stays >= 0 after that crossing. */
+function samePayback(k: number | null, oldFirst: number | null, cum: number[], first = 1): void {
+  same(k, paybackRef(cum, first));
+  if (oldFirst !== null && cum.slice(oldFirst - 1).every((x) => x >= 0)) same(k, oldFirst);
+}
 const sameArr = (a: number[], b: number[]) => { expect(a.length).toBe(b.length); a.forEach((x, i) => expect(Object.is(x, b[i]), `index ${i}`).toBe(true)); };
 
 describe('cash-flow kernel = the loops it replaced, bit for bit', () => {
   it('Time Engine path, NPV and total', () => fc.assert(fc.property(flow, rate, (net, r) => {
     const o = oldEngine(net, r), k = cashflowSummary(net, { annualRate: r });
-    sameArr(k.cumulative, o.cum); same(k.paybackMonth, o.payback); same(k.npv, o.npv); same(k.total, o.tot);
+    sameArr(k.cumulative, o.cum); samePayback(k.paybackMonth, o.payback, o.cum); same(k.npv, o.npv); same(k.total, o.tot);
     same(npvOf(net, rateOr(r)), o.npv);
   }), { numRuns: 400 }));
   it('thin Monte Carlo pass', () => fc.assert(fc.property(flow, rate, (net, r) => {
     const o = oldThin(net, r), k = cashflowSummary(net, { annualRate: r });
-    same(k.paybackMonth, o.payback); same(k.npv, o.npv); same(k.total, o.totalNet);
+    samePayback(k.paybackMonth, o.payback, cumulativeOf(net)); same(k.npv, o.npv); same(k.total, o.totalNet);
   }), { numRuns: 400 }));
   it('portfolio summary with a first month',
     () => fc.assert(fc.property(flow, fc.integer({ min: 1, max: 140 }), fc.double({ min: 0, max: 1, noNaN: true }), (net, first, r) => {
     const o = oldPortfolio(net, first, r), k = cashflowSummary(net, { annualRate: r, firstMonth: first });
-    sameArr(k.cumulative, o.cum); same(k.paybackMonth, o.paybackMonth); same(k.npv, o.npv);
+    sameArr(k.cumulative, o.cum); samePayback(k.paybackMonth, o.paybackMonth, o.cum, first); same(k.npv, o.npv);
   }), { numRuns: 400 }));
   it('time-to-market value: annual compounding',
     () => fc.assert(fc.property(money, fc.integer({ min: 0, max: 120 }), fc.double({ min: 0, max: 1, noNaN: true }), (v, n, d) => {
@@ -92,6 +109,11 @@ describe('cash-flow kernel: rules', () => {
     expect(paybackMonthOf([0, 0, 1], 3)).toBe(3);
     expect(paybackMonthOf([-1, -2])).toBeNull();
     expect(paybackMonthOf([])).toBeNull();
+    // lot 10: a cumulative that dips below 0 again pays back only after its last negative month; a negative final cumulative never pays back
+    expect(paybackMonthOf([-5, 1, 2, -1, 3, 4])).toBe(5);
+    expect(paybackMonthOf([-5, 1, 2, -1])).toBeNull();
+    expect(paybackMonthOf([0, -1, 2], 3)).toBe(3);
+    expect(paybackMonthOf([1, 2], 3)).toBeNull();
     expect(cashflowSummary([]).total).toBe(0);
     expect(cumulativeOf([1, 2, 3])).toEqual([1, 3, 6]);
     expect(roiCanonical(10, 0)).toBeNull(); expect(roiCanonical(Infinity, 5)).toBeNull(); expect(roiCanonical(10, 5)).toBe(2);

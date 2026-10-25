@@ -1,4 +1,5 @@
 import { LOCATIONS } from '@/domain';
+import { isSplitComplete, splitTotal } from '@/domain/split';
 import { locationMix } from '@/domain/location';
 import { targetMix } from '@/domain/baseline/locStrat';
 import { resetTargetLoc, setTargetLoc } from '@/controllers/baseline';
@@ -57,14 +58,14 @@ function TargetRow({ name, cls, share }: { name: string; cls: string; share: str
 }
 
 function Target() {
-  const t = targetMix(useCtx().s), sum = LOCATIONS.reduce((s, l) => s + (t[l.name] || 0), 0);
+  const t = targetMix(useCtx().s), sum = splitTotal(LOCATIONS.map((l) => t[l.name]));
   return (
     <div>
       <h2>🎯 Target (editable)</h2>
       <OverrideBadge refKey="targetLocPct" label="Target location mix" />
       <div className="ac-form-row is-spread">
         <button type="button" onClick={resetTargetLoc}>↺ Copy AS-IS</button>
-        <span>Target sum : <strong className="ac-tone" data-tone={Math.abs(sum - 100) < 1 ? 'teal' : 'brick'}>{sum.toFixed(0)}%</strong></span>
+        <span>Target sum : <strong className="ac-tone" data-tone={isSplitComplete(sum) ? 'teal' : 'brick'}>{sum.toFixed(0)}%</strong></span>
       </div>
       {LOCATIONS.map((l) => <TargetRow key={l.name} name={l.name} cls={l.cls} share={(t[l.name] || 0).toFixed(0)} />)}
     </div>

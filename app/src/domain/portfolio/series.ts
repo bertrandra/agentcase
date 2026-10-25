@@ -3,7 +3,12 @@ import { memoChain } from './memo';
 import type { ProductRun } from './run';
 import type { Scheduled } from './timeline';
 
-/** Additive monthly measures on the calendar axis (index i = calendar month i + 1). `adoptionW` is adoption % x base ETP, to be weighted back. */
+/**
+ * Additive monthly measures on the calendar axis (index i = calendar month i + 1). `adoptionW` is adoption % x base ETP, to be weighted back.
+ * `humanFte` is the total human FTE (delivery team plus the agentic run team), the definition of the single case's `fte.after`.
+ * Flows (net, savings, run, setup, ...) are 0 outside the product's own months; the stock measures (`humanFte`, `agentVfte`, `adoptionW`) are 0 before
+ * the product starts and HELD at their last value after its own horizon ends inside a longer portfolio horizon (the team does not vanish).
+ */
 export const MEASURES = ['net', 'savings', 'run', 'setup', 'ktSetup', 'token', 'infra', 'humanFte', 'agentVfte', 'ktAvoided', 'khCost', 'adoptionW'] as const;
 export type Measure = (typeof MEASURES)[number];
 export type Series = Record<Measure, number[]>;
@@ -39,8 +44,13 @@ function build(run: SeriesSource, s: Placement, L: number): ProductSeries {
   for (let t = 1; t <= kept; t++) {
     const r = run.rows[t - 1]!, i = s.month0 + t - 1;
     out.net[i] = r.netSavings; out.savings[i] = r.grossSavings; out.run[i] = r.totalRunCost; out.setup[i] = r.setupCost; out.token[i] = r.tokenCost;
-    out.infra[i] = r.infrastructureCost; out.humanFte[i] = r.humanFte; out.agentVfte[i] = r.agentVfte; out.ktAvoided[i] = r.knowledgeTransferAvoided;
+    out.infra[i] = r.infrastructureCost; out.humanFte[i] = r.humanFte + r.runTeamFte; out.agentVfte[i] = r.agentVfte;
+    out.ktAvoided[i] = r.knowledgeTransferAvoided;
     out.khCost[i] = r.knowledgeHubCost; out.adoptionW[i] = run.baseEtp * r.adoptionRampPct;
+  }
+  if (kept > 0 && kept === run.rows.length) {   // the product's horizon ends inside the portfolio's: its stocks stay where they ended
+    const e = s.month0 + kept - 1;
+    for (let i = e + 1; i < L; i++) { out.humanFte[i] = out.humanFte[e]!; out.agentVfte[i] = out.agentVfte[e]!; out.adoptionW[i] = out.adoptionW[e]!; }
   }
   const part = run.ktSetup > 0 ? run.ktSetup / run.profile : 0;
   if (part === 0) return out;

@@ -12,7 +12,11 @@ export interface ConvCheck { id: string; name: string; pass: boolean; detail: st
  *  - sections / deps: the section catalogue and the dependency registry (SECTION_CATALOG / SECTION_DEPS).
  *  - playbackHorizon: horizon of the Monthly Playback series while it is playing (MP.series.horizon), null when idle.
  */
-export interface ConvRuntime { mcsLast?: McsResult | null; sections?: DepSection[]; deps?: DepEdges; playbackHorizon?: number | null }
+export interface ConvRuntime {
+  mcsLast?: McsResult | null; sections?: DepSection[]; deps?: DepEdges; playbackHorizon?: number | null;
+  /** evaluation date of the evidence checks (`EvalDate`; absent = undated) */
+  now?: number | null;
+}
 export type ConvFamily = (c: Ctx, rt: ConvRuntime) => ConvCheck[];
 
 export const OK = 'no violation detected';

@@ -1,6 +1,6 @@
 /** @calc-zone scope-automation */
 import { makeCtx } from '@/domain';
-import { clampAutoCap } from '@/domain/inputs';
+import { clampAutoCap, clampHorizonYears } from '@/domain/inputs';
 import { computeGlassCeiling } from '@/domain/model/ceiling';
 import { addPoint, curveIdOf, ensurePts, movePoint, removePoint, sampleRamps } from '@/domain/scope/scurve';
 import { current } from 'immer';
@@ -30,7 +30,7 @@ const setForceGCCmd = defineCommand<{ on: boolean }>({
 });
 
 // ---- S-curve editor (legacy scSetFamily, scAddPoint, scRemovePoint, scDragMove + scCommit) ----
-const horizonMonths = (d: Doc): number => (parseInt(d.dom.values.horizon ?? '', 10) || 3) * 12;
+const horizonMonths = (d: Doc): number => clampHorizonYears(d.dom.values.horizon) * 12;
 const anchors = (d: Doc): number[] => ['y1Ramp', 'y2Ramp', 'y3Ramp'].map((id) => parseFloat(d.dom.values[id] ?? ''));
 /** The points as the editor shows them (seeded from the anchors, clamped to the horizon). */
 const shownPts = (d: Doc): CurvePoint[] => ensurePts(d.scurve?.pts, horizonMonths(d), anchors(d));

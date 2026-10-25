@@ -1,5 +1,6 @@
 /** @calc-zone delivery-views */
 import type { Ctx } from '../ctx';
+import { caseHorizonYears } from '../inputs';
 import { engineNow } from '../canonical';
 import { khEnabled } from '../knowledge';
 import { addMonthsLocal, parseLocalDate } from './ganttLayout';
@@ -17,7 +18,7 @@ export interface Axis {
 }
 /** The calendar axis: horizon, roadmap start, month → % mapping and "Sep 26"-style tick labels. */
 export function ganttAxis(c: Ctx): Axis {
-  const horizon = parseInt(c.inp.v('horizon'), 10) || 3, totalM = Math.max(12, horizon * 12), startStr = c.inp.v('rmStart') || '2026-09-01';
+  const horizon = caseHorizonYears(c.inp), totalM = Math.max(12, horizon * 12), startStr = c.inp.v('rmStart') || '2026-09-01';
   const startDate = parseLocalDate(startStr), startOk = !isNaN(startDate.getTime());
   return {
     horizon, totalM, startStr, startDate, startOk, left: (m) => (m / totalM) * 100, width: (m) => Math.max(0.4, (m / totalM) * 100),

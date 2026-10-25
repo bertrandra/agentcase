@@ -35,7 +35,7 @@ export function statsChecks(c: Ctx, rt: ConvRuntime): ConvCheck[] {
     if (!(share >= 0 && share <= 100)) fl = 'throughputInShare out of [0,100] bounds';
     else if (share === 0 && Math.abs(flowModel(c).flowNpv) > 1e-6) fl = 'share=0 but flow value is nonzero — the same capacity is being counted as both cost-out and throughput-in';
   }
-  const ev = M.FLAGS.evl ? evlModel(c, tornado) : null;
+  const ev = M.FLAGS.evl ? evlModel(c, tornado, rt.now ?? null) : null;
   const untagged = ev ? ev.drivers.filter((d) => d.weight > 1e-9 && !evidenceOf(M).drivers[d.id]).map((d) => d.label) : [];
   const stale = ev ? ev.drivers.filter((d) => d.tier === 'MEASURED' && d.effectiveTier === 'BENCHMARK').map((d) => d.label) : [];
   out.push(audit('CC-MC-01', mc01), audit('CC-MC-02', mc02),

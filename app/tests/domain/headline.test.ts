@@ -26,8 +26,10 @@ describe('one economics headline serves every display', () => {
     expect(reg(c, 'roiPct')).toBeCloseTo((h.roi ?? 0) * 100, 6);
   });
   it.each(ids)('%s: Results payback year == ceil(KPI payback months / 12)', (id) => {
-    const c = makeCtx(load(id)), months = paybackMonthsCanonical(c), r = resultsCore(c);
-    expect(r.payback).toBe(months == null ? '—' : `Year ${Math.ceil(months / 12)}`);
+    const c = makeCtx(load(id)), months = paybackMonthsCanonical(c), r = resultsCore(c), h = headline(c);
+    // DEV-PAYBACK-NOSETUP: nothing invested and positive savings is "Immediate" (the kernel month stays 1, the displayed payback is 0)
+    const shown = h.setup <= 0 ? (h.totalBenefit > 0 ? 'Immediate' : '—') : months == null ? '—' : `Year ${Math.ceil(months / 12)}`;
+    expect(r.payback).toBe(shown);
     expect(headline(c).paybackYear).toBe(months == null ? null : Math.ceil(months / 12));
   });
   it('strategies report the payback year of the same engine rule, and one null ROI for "no setup"', () => {

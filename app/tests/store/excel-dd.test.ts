@@ -24,7 +24,7 @@ const open = (f: DdFixture, state: DdState) => loadCase(f.id, (d) => { d.DD_STAT
 describe('due-diligence pack reproduces the legacy export', () => {
   it.each(IDS)('%s: the four sheets match the legacy cell by cell', async (id) => {
     const f = fx(id);
-    const sens = f.withSens ? computeDdSensitivity(makeCtx(loadCase(id).getState().doc)) : null;
+    const sens = f.withSens ? computeDdSensitivity(makeCtx(loadCase(id).getState().doc), '2026-01-01T00:00:00.000Z') : null;
     if (sens) for (const [k, w] of Object.entries(f.sens!.w)) expect(Math.abs((sens.w[k] ?? NaN) - w)).toBeLessThanOrEqual(1e-6 * Math.max(1, Math.abs(w)));
     loadCase(id, (d) => { d.DD_STATE = JSON.parse(JSON.stringify(f.exportState)); if (sens) d.DD_SENS = sens; });
     const out = await exportDdPack(label), dump = await dumpBuffer(await buf(out));
