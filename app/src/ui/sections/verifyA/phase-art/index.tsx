@@ -32,7 +32,7 @@ export default function PhaseArtSection() {
             and the referential <b>posture</b> (floor ≥ 60% → Human-in-the-lead · 30–60% → on-the-loop · &lt; 30% → over-the-loop). A negative margin would violate the floor (CC-SUP-01).</p>
           <SimpleTable align={['left', 'center', 'center', 'center', 'center']} head={['Phase', 'Supervision floor', `Human share Y${h}`, 'Margin', 'Posture']}
             rows={sup.map((r) => ({ key: r.phase, cells: [<>{r.phase} <small>({r.n} art.)</small></>, `${Math.round(r.floor)}%`, `${Math.round(r.human)}%`,
-              <b style={{ color: r.gap >= 10 ? 'var(--ac-teal)' : r.gap >= 0 ? 'var(--ac-amber, var(--ac-warning-600))' : 'var(--ac-brick)' }}>{`${r.gap >= 0 ? '+' : ''}${Math.round(r.gap)} pts`}</b>, r.posture] }))} />
+              <b data-ink={r.gap >= 10 ? 'teal' : r.gap >= 0 ? 'amber' : 'brick'}>{`${r.gap >= 0 ? '+' : ''}${Math.round(r.gap)} pts`}</b>, r.posture] }))} />
         </Panel>
         <p className="ac-muted">Detail per V-cycle phase: number of SDLC &amp; regulatory artifacts, average human supervision, vFTE by ramp. Contextual to the loaded reference.</p>
         <ChartPanel config={cfg} label="Human supervision and automatable share by phase" height={260} />

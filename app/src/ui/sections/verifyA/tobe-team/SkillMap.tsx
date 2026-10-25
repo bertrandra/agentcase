@@ -16,9 +16,9 @@ export function SkillMap({ live }: { live: Live }) {
         rows={allArtefactSkills(live).map((as) => {
           const cur = map[as] || as, edited = map[as] !== SKILL_MAP_DEFAULT[as], arts = act.filter((a) => a.skill === as);
           return { key: as, cells: [<code>{as}</code>, '→',
-            <select aria-label={`Team skill of ${as}`} value={cur} style={{ borderColor: edited ? 'var(--ac-amber, var(--ac-warning-600))' : undefined, fontWeight: edited ? 'var(--ac-font-weight-bold)' : undefined }} onChange={(e) => setSkillMap(as, e.target.value)}>
+            <select aria-label={`Team skill of ${as}`} value={cur} className={edited ? 'ac-skill-pick is-edited' : 'ac-skill-pick'} onChange={(e) => setSkillMap(as, e.target.value)}>
               {teams.map((t) => <option key={t} value={t}>{t}</option>)}</select>,
-            arts.length ? <div style={{ maxHeight: 120, overflow: 'auto', fontSize: 'var(--ac-font-size-sm)' }}>{arts.map((a) => <div key={a.id}><b>{phaseName(a.phase)}</b> <span>/</span> {a.name}</div>)}</div> : '—'] };
+            arts.length ? <div className="ac-skill-arts">{arts.map((a) => <div key={a.id}><b>{phaseName(a.phase)}</b> <span>/</span> {a.name}</div>)}</div> : '—'] };
         })} />
       <p><button type="button" onClick={resetSkillMap}>↺ Reset mapping to defaults</button></p>
     </>

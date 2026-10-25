@@ -22,7 +22,7 @@ export function CommitNumber({ value, onCommit, label, placeholder, min, max, st
       max={max}
       step={step}
       className={className}
-      style={style}
+      style={style}   // a caller's own inline look (older callers; the theme class is `className`)
       onChange={(e) => { setDraft(e.target.value); if (COMPLETE.test(e.target.value) && e.target.value !== value) onCommit(e.target.value); }}
       onBlur={(e) => { if (draft !== null && draft !== value && e.target.value !== value) onCommit(e.target.value); setDraft(null); }} />
   );

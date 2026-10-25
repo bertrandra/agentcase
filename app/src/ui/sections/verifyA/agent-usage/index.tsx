@@ -9,6 +9,7 @@ import { Band } from '../../economics/Band';
 import { SimpleTable } from '../SimpleTable';
 import { useLive } from '../useLive';
 import { useTheme } from '@/ui/themeContext';
+import { cssVars } from '@/ui/cssVars';
 
 const help = (
   <>
@@ -35,7 +36,9 @@ export default function AgentUsageSection() {
           <ChartPanel config={cfg} label="Relative agent effort by phase" height={220} />
           <SimpleTable align={['left', 'center', 'center', 'left']} head={['Phase', 'Artifacts', 'Avg automatable %', 'Relative agent effort']}
             rows={u.phases.map((p) => ({ key: p.id, cells: [<><b>{p.id}</b> {p.name}</>, p.n, `${p.avgAgent}%`,
-              <div className="ac-bar" role="img" aria-label={`${p.id} relative agent effort`}><span style={{ display: 'block', height: 14, minWidth: 2, background: 'var(--ac-blue)', width: `${Math.round((p.effort / u.maxEffort) * 100)}%` }} /></div>] }))} />
+              <div className="ac-bar ac-effort-bar" role="img" aria-label={`${p.id} relative agent effort`}>
+                <span style={cssVars({ '--ac-bar-pct': `${Math.round((p.effort / u.maxEffort) * 100)}%` })} />{/* dynamic: the phase's share of the effort */}
+              </div>] }))} />
         </Panel>
         <Panel title="🔐 Agent effort by authorization level (Y3)">
           <SimpleTable align={['left', 'center', 'center', 'center']} head={['Authorization', 'Artifacts', 'Avg automatable %', 'Share of agent effort']}

@@ -15,8 +15,8 @@ export function Location({ live, year }: { live: Live; year: number }) {
         rows={comp.rows.map((r) => {
           const sp = split[r.skill] ?? {}, sum = LOCATIONS.reduce((t, l) => t + (+(sp[l.name] ?? 0) || 0), 0);
           return { key: r.skill, cells: [<b>{r.skill}</b>, ...LOCATIONS.map((l) => (
-            <input key={l.name} type="number" min={0} max={100} style={{ width: 52 }} aria-label={`${r.skill} share in ${l.name}`} value={+(sp[l.name] ?? 0) || 0} onChange={(e) => setTobeLoc(r.skill, l.name, e.target.value)} />)),
-          <b style={{ color: Math.abs(sum - 100) < 0.5 ? 'var(--ac-teal)' : 'var(--ac-brick)' }}>{Math.round(sum)}%</b>] };
+            <input key={l.name} type="number" min={0} max={100} className="ac-loc-input" aria-label={`${r.skill} share in ${l.name}`} value={+(sp[l.name] ?? 0) || 0} onChange={(e) => setTobeLoc(r.skill, l.name, e.target.value)} />)),
+          <b className="ac-gain" data-sign={Math.abs(sum - 100) < 0.5 ? 'pos' : 'neg'}>{Math.round(sum)}%</b>] };
         })} />
       <p><button type="button" onClick={resetTobeLoc}>↺ Reset split to AS-IS mix</button></p>
       <h2>Resulting TO-BE human team by location ({label})</h2>

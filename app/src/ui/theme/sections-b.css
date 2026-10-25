@@ -312,3 +312,21 @@
 .ac-section .ac-check.ac-check-alert { color: var(--ac-brick); }
 .ac-section .ac-flag { font-weight: var(--ac-font-weight-semibold); color: var(--ac-brick); }
 .ac-section .ac-dora-input { width: 90px; }
+
+/* ---- Portfolio */
+.ac-section .ac-table tr.ac-pick-row { cursor: pointer; }
+.ac-section .ac-field input.ac-pfs-input { width: 90px; }
+
+/* ---- Verify bodies (verifyA) */
+.ac-section .ac-table tr.is-total { font-weight: var(--ac-font-weight-bold); border-top: 2px solid var(--ac-blue); }
+.ac-section .ac-table tbody tr.is-current-level:nth-child(n) { font-weight: var(--ac-font-weight-bold); background: var(--ac-warning-55); }
+.ac-section .ac-table tr.is-blocked { color: var(--ac-muted); }
+.ac-section .ac-table tbody tr.ac-row-reg:nth-child(n) { background: var(--ac-warning-55); }
+.ac-section .ac-reg-tag { margin-right: 5px; font-size: var(--ac-font-size-xs); }
+.ac-section .ac-form-row.ac-spread { justify-content: space-between; }
+.ac-section .ac-table select.ac-skill-pick.is-edited { font-weight: var(--ac-font-weight-bold); }
+.ac-section .ac-skill-arts { max-height: 120px; overflow: auto; font-size: var(--ac-font-size-sm); }
+.ac-section .ac-loc-input { width: 52px; }
+.ac-section .ac-effort-bar > span { display: block; width: var(--ac-bar-pct); min-width: 2px; height: 14px; background: var(--ac-blue); }
+.ac-section .ac-form-row.ac-pole-line { margin: 0; font-size: var(--ac-font-size-md); }
+.ac-section .ac-poles { display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap: 12px; }

@@ -19,7 +19,7 @@ export function LazySelect({ value, options, onChange, ariaLabel, emptyLabel = '
       aria-label={ariaLabel}
       value={value}
       className={className}
-      style={style}
+      style={style}   // a caller's own inline look (older callers; the theme class is `className`)
       onFocus={() => setOpen(true)}
       onMouseDown={() => setOpen(true)}
       onBlur={() => setOpen(false)}
