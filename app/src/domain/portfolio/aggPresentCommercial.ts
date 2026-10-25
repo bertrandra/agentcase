@@ -35,10 +35,12 @@ function commercialOf(r: ProductRun) {
 export function aggregateCommercial(pf: Portfolio, c: Consolidated, scope: DisplayScope): CommercialAgg | null {
   const sel = selectionOf(c, scope);
   if (!sel) return null;
-  const rows = sel.items.map((v): CommercialRow => ({ id: v.id, name: v.name, wave: pf.waves.find((w) => w.id === v.waveId)?.name ?? '', ...commercialOf(v.run) }));
+  const rows = sel.items.map((v): CommercialRow => ({ id: v.id, name: v.name, wave: pf.waves.find((w) => w.id === v.waveId)?.name ?? '',
+    ...commercialOf(v.run) }));
   const ok = rows.filter((r) => r.row.available), revenue = total(ok.map((r) => r.row.revenue)), margin = total(ok.map((r) => r.row.margin));
   return {
     label: sel.label, rows, excluded: selectionView(pf, c, scope)?.excluded ?? [],
-    totals: { revenue, cost: total(ok.map((r) => r.row.cost)), margin, marginPct: revenue > 0 ? (margin / revenue) * 100 : 0, tco: total(ok.map((r) => r.row.tco)), unavailable: rows.length - ok.length },
+    totals: { revenue, cost: total(ok.map((r) => r.row.cost)), margin, marginPct: revenue > 0 ? (margin / revenue) * 100 : 0,
+    tco: total(ok.map((r) => r.row.tco)), unavailable: rows.length - ok.length },
   };
 }

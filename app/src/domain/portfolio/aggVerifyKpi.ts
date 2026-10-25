@@ -34,13 +34,17 @@ export const kpiAgg = viewMemo((sel): KpiAgg => {
   ];
   const rows = productRows(sel, (v, l) => {
     const f = perfFrame(l.c), e = endOf(v), q = qualityAnchorView(l.c).rows.find((r) => r.name === 'Test coverage'), a = v.run.automation();
-    return { base: v.run.baseEtp, after: e.totalHumanFteEnd, change: rel(e.totalHumanFteEnd, v.run.baseEtp), run0: f.m.baselineRun, runEnd: e.totalRunCost, eff: a.eff, ceiling: a.ceiling,
-      uplift: v.run.velocityPct(), cov: q ? `${q.asis} → ${q.y3}` : '—', lead: `${daFmt(l.c.s, 'leadTime', daGet(l.c.s, 'leadTime').asis)} → ${daFmt(l.c.s, 'leadTime', daVal(l.c.s, 'leadTime', f.r3))}` };
+    return { base: v.run.baseEtp, after: e.totalHumanFteEnd, change: rel(e.totalHumanFteEnd, v.run.baseEtp), run0: f.m.baselineRun, runEnd: e.totalRunCost,
+    eff: a.eff, ceiling: a.ceiling,
+      uplift: v.run.velocityPct(), cov: q ? `${q.asis} → ${q.y3}` : '—',
+        lead: `${daFmt(l.c.s, 'leadTime', daGet(l.c.s, 'leadTime').asis)} → ${daFmt(l.c.s, 'leadTime', daVal(l.c.s, 'leadTime', f.r3))}` };
   });
   const base = sum(colOf(rows, 'base')), after = sum(colOf(rows, 'after'));
   const total = { base, after, change: rel(after, base), run0, runEnd, eff: h.eff, ceiling: h.ceiling, uplift: h.velocityPct, cov: null, lead: null };
-  const columns = [col('base', 'Headcount AS-IS (FTE)'), col('after', 'Headcount at horizon end (FTE)'), col('change', 'Change', 'pct'), col('run0', 'Run cost / year AS-IS', 'eur'), col('runEnd', 'Run cost / year at horizon end', 'eur'),
-    col('eff', 'Effective automation', 'pct'), col('ceiling', 'Glass ceiling', 'pct'), col('uplift', 'Velocity uplift', 'pct'), col('cov', 'Test coverage', 'text', 'AS-IS → horizon end'), col('lead', 'Lead time', 'text', 'AS-IS → horizon end')];
+  const columns = [col('base', 'Headcount AS-IS (FTE)'), col('after', 'Headcount at horizon end (FTE)'), col('change', 'Change', 'pct'),
+  col('run0', 'Run cost / year AS-IS', 'eur'), col('runEnd', 'Run cost / year at horizon end', 'eur'),
+    col('eff', 'Effective automation', 'pct'), col('ceiling', 'Glass ceiling', 'pct'), col('uplift', 'Velocity uplift', 'pct'),
+      col('cov', 'Test coverage', 'text', 'AS-IS → horizon end'), col('lead', 'Lead time', 'text', 'AS-IS → horizon end')];
   return { label: sel.label, headline: h, consolidated, table: { columns, rows, total } };
 });
 
@@ -54,7 +58,9 @@ export const asisTobeAgg = viewMemo((sel): AsisTobeAgg => {
   const h = head(sel), cr = h.costReduction;
   const rows: BeforeAfter[] = [
     { metric: 'Headcount (FTE)', asis: h.fte.before, tobe: h.fte.after, change: rel(h.fte.after, h.fte.before), kind: 'n1' },
-    { metric: `Reference cost over ${cr.years} years`, asis: cr.ok ? cr.base : null, tobe: cr.ok ? cr.tobe : null, change: cr.ok ? rel(cr.tobe, cr.base) : null, kind: 'eur', title: 'AS-IS cost vs TO-BE cost (cost - savings + setup), components summed over the products' },
+    { metric: `Reference cost over ${cr.years} years`, asis: cr.ok ? cr.base : null, tobe: cr.ok ? cr.tobe : null,
+    change: cr.ok ? rel(cr.tobe, cr.base) : null, kind: 'eur',
+    title: 'AS-IS cost vs TO-BE cost (cost - savings + setup), components summed over the products' },
     { metric: 'Setup investment', asis: 0, tobe: cr.setup, change: null, kind: 'eur' },
     { metric: 'Effective automation (weighted)', asis: 0, tobe: h.eff, change: h.eff, kind: 'pct' },
     { metric: 'Glass ceiling (weighted)', asis: 100, tobe: h.ceiling, change: h.ceiling - 100, kind: 'pct' },
@@ -63,8 +69,10 @@ export const asisTobeAgg = viewMemo((sel): AsisTobeAgg => {
     const c = v.run.cost(), a = v.run.automation(), after = endOf(v).totalHumanFteEnd, tobe = c.base - c.sav + c.setup;
     return { base: v.run.baseEtp, after, cost0: c.base, cost1: tobe, change: rel(tobe, c.base), setup: c.setup, eff: a.eff, ceiling: a.ceiling };
   });
-  const total = { base: h.fte.before, after: h.fte.after, cost0: cr.ok ? cr.base : null, cost1: cr.ok ? cr.tobe : null, change: cr.ok ? rel(cr.tobe, cr.base) : null, setup: cr.setup, eff: h.eff, ceiling: h.ceiling };
-  const columns = [col('base', 'Headcount AS-IS (FTE)'), col('after', 'Headcount TO-BE (FTE)'), col('cost0', 'Reference cost', 'eur'), col('cost1', 'TO-BE cost', 'eur'), col('change', 'Cost change', 'pct'),
+  const total = { base: h.fte.before, after: h.fte.after, cost0: cr.ok ? cr.base : null, cost1: cr.ok ? cr.tobe : null,
+    change: cr.ok ? rel(cr.tobe, cr.base) : null, setup: cr.setup, eff: h.eff, ceiling: h.ceiling };
+  const columns = [col('base', 'Headcount AS-IS (FTE)'), col('after', 'Headcount TO-BE (FTE)'), col('cost0', 'Reference cost', 'eur'),
+  col('cost1', 'TO-BE cost', 'eur'), col('change', 'Cost change', 'pct'),
     col('setup', 'Setup', 'eur'), col('eff', 'Effective automation', 'pct'), col('ceiling', 'Glass ceiling', 'pct')];
   return { label: sel.label, years: cr.years, rows, table: { columns, rows: lines, total } };
 });

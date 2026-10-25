@@ -31,7 +31,10 @@ const placeCmd = defineCommand<{ title: string; rows: Placement[]; structure?: s
 });
 const groupOrdersCmd = defineCommand<{ title: string; orders: Record<string, number>; structure?: string }>({
   type: 'nav.setGroupOrders', label: (p) => `${p.title}${inStructure(p.structure)}`,
-  run(d, p) { const l = isStandard(p.structure) ? ((d.GROUPS ?? []) as MenuGroup[]) : groupsIn(d, p.structure); if (l) setGroupsIn(d, p.structure, l.map((g) => (g.id in p.orders ? { ...g, order: p.orders[g.id]! } : g))); },
+  run(d, p) {
+    const l = isStandard(p.structure) ? ((d.GROUPS ?? []) as MenuGroup[]) : groupsIn(d, p.structure);
+    if (l) setGroupsIn(d, p.structure, l.map((g) => (g.id in p.orders ? { ...g, order: p.orders[g.id]! } : g)));
+  },
 });
 // ---- Build-path tag and MVP (Fast Path) flag of a section: properties of the section, shared by every structure --------------
 const tagCmd = defineCommand<{ id: string; tag: string }>({
@@ -50,7 +53,8 @@ const personaOrderCmd = defineCommand<{ title: string; persona: string; entries:
 });
 const clearOrderCmd = defineCommand<{ persona: string; id: string }>({
   type: 'nav.clearPersonaOrder', label: (p) => `Inherit the global order of ${p.id} for ${p.persona}`,
-  run(d, p) { orders(d)[p.persona] = Object.fromEntries(Object.entries(orders(d)[p.persona] ?? {}).filter(([k]) => k !== p.id)); },   // rebuilt, not `delete`d: undo keeps key order
+  // rebuilt, not `delete`d: undo keeps key order
+  run(d, p) { orders(d)[p.persona] = Object.fromEntries(Object.entries(orders(d)[p.persona] ?? {}).filter(([k]) => k !== p.id)); },
 });
 const membersCmd = defineCommand<{ persona: string; ids: string[] }>({
   type: 'nav.setPersonaSections', label: (p) => `Set the menu of ${p.persona} to ${p.ids.length} section(s)`,
@@ -59,19 +63,27 @@ const membersCmd = defineCommand<{ persona: string; ids: string[] }>({
 
 // ---- Sidebar display of the current group's sections in the compact (hide-menu) bar -----------------------------------------
 const styleCmd = defineCommand<{ style: 'buttons' | 'tabs' }>({
-  type: 'nav.setSectionNavStyle', label: (p) => `Show the group sections as ${p.style}`, run(d, p) { d.SECTION_NAV_STYLE = p.style === 'tabs' ? 'tabs' : 'buttons'; },
+  type: 'nav.setSectionNavStyle', label: (p) => `Show the group sections as ${p.style}`, run(d, p) {
+    d.SECTION_NAV_STYLE = p.style === 'tabs' ? 'tabs' : 'buttons';
+  },
 });
 
 const go = <P>(c: ReturnType<typeof defineCommand<P>>, p: P): void => appStore().dispatch(c(p));
 /** Group and order of one or several sections (a card dropped or shifted on the Menu layout board). */
-export const placeSections = (title: string, placements: Placement[], structure?: string): void => { if (placements.length) go(placeCmd, isStandard(structure) ? { title, rows: placements } : { title, rows: placements, structure }); };
+export const placeSections = (title: string, placements: Placement[], structure?: string): void => {
+  if (placements.length) go(placeCmd, isStandard(structure) ? { title, rows: placements } : { title, rows: placements, structure });
+};
 /** New `order` of some menu groups (a group column moved on the board). */
-export const setGroupOrders = (title: string, byGroup: Record<string, number>, structure?: string): void => { if (Object.keys(byGroup).length) go(groupOrdersCmd, isStandard(structure) ? { title, orders: byGroup } : { title, orders: byGroup, structure }); };
+export const setGroupOrders = (title: string, byGroup: Record<string, number>, structure?: string): void => {
+  if (Object.keys(byGroup).length) go(groupOrdersCmd, isStandard(structure) ? { title, orders: byGroup } : { title, orders: byGroup, structure });
+};
 /** Build-path tag (blank = none) and Fast Path membership of a section (global). */
 export const setSectionTag = (id: string, tag: string): void => go(tagCmd, { id, tag });
 export const setSectionMvp = (id: string, on: boolean): void => go(mvpCmd, { id, on });
 /** Order of sections in one persona's menu (a card shifted on the persona board, respace, sync to the sequence). */
-export const setPersonaSectionOrder = (title: string, persona: string, entries: Record<string, number>): void => { if (Object.keys(entries).length) go(personaOrderCmd, { title, persona, entries }); };
+export const setPersonaSectionOrder = (title: string, persona: string, entries: Record<string, number>): void => {
+  if (Object.keys(entries).length) go(personaOrderCmd, { title, persona, entries });
+};
 export const clearPersonaSectionOrder = (persona: string, id: string): void => go(clearOrderCmd, { persona, id });
 /** Replace the persona's whole menu (Sync menu to sequence). */
 export const setPersonaSections = (persona: string, ids: string[]): void => go(membersCmd, { persona, ids });

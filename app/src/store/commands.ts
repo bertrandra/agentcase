@@ -24,7 +24,8 @@ function register(type: string, undoable: boolean | undefined): boolean {
 /** Declare a case command (acts on the active product's effective case): returns its factory `(payload) => Command`. */
 export function defineCommand<P>(def: CommandDef<P>): (payload: P) => Command<P> {
   const undoable = register(def.type, def.undoable);
-  return (payload) => ({ type: def.type, payload, label: def.label(payload), coalesceKey: def.coalesceKey?.(payload), undoable, run: def.run as Command<P>['run'] });
+  return (payload) => ({ type: def.type, payload, label: def.label(payload), coalesceKey: def.coalesceKey?.(payload), undoable,
+    run: def.run as Command<P>['run'] });
 }
 
 /** Declare a portfolio command (products, waves, overrides, hub): a pure `apply` on the portfolio, applied to the draft as a minimal diff. */
@@ -34,5 +35,6 @@ export function definePortfolioCommand<P>(def: PortfolioCommandDef<P>): (payload
     const cur = current(d) as PortfolioDoc;
     syncDraft(d as unknown as Record<string, unknown>, cur as unknown as Record<string, unknown>, def.apply(cur, p) as unknown as Record<string, unknown>);
   };
-  return (payload) => ({ type: def.type, payload, label: def.label(payload), coalesceKey: def.coalesceKey?.(payload), undoable, run: () => undefined, runPortfolio });
+  return (payload) => ({ type: def.type, payload, label: def.label(payload), coalesceKey: def.coalesceKey?.(payload), undoable, run: () => undefined,
+    runPortfolio });
 }

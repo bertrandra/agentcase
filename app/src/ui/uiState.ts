@@ -6,8 +6,10 @@ export interface WizState { active: boolean; pos: number; visited: number[] }
 const IDLE: WizState = { active: false, pos: 0, visited: [] };
 
 /** View state — never undoable, never persisted in the case (current section, toast, dock, hidden menu, guided walk). */
-export interface UiState { activeSection: string; toast: string; dockOpen: boolean; menuHidden: boolean; wiz: WizState; openGroup: string | null; fastPath: boolean }
-export const uiStore = createStore<UiState>(() => ({ activeSection: 'home', toast: '', dockOpen: false, menuHidden: false, wiz: IDLE, openGroup: null, fastPath: false }));
+export interface UiState { activeSection: string; toast: string; dockOpen: boolean; menuHidden: boolean; wiz: WizState; openGroup: string | null;
+  fastPath: boolean }
+export const uiStore = createStore<UiState>(() => ({ activeSection: 'home', toast: '', dockOpen: false, menuHidden: false, wiz: IDLE, openGroup: null,
+  fastPath: false }));
 
 export const useUi = <T,>(select: (s: UiState) => T): T => useSyncExternalStore(uiStore.subscribe, () => select(uiStore.getState()));
 export const goSection = (id: string): void => uiStore.setState({ activeSection: id });

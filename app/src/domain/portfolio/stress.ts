@@ -40,7 +40,11 @@ export function pfStressJob(pf: Portfolio, o: PfStressOpts): PfStressJob {
   const draws: number[][] = [];
   return {
     steps: plan.length,
-    step(i) { const ctx = (runs[i] as (typeof runs)[number]).ctx; draws[i] = mcDraws(ctx, n, productSeed(o.seed, (plan[i] as (typeof plan)[number]).product.id, plan.length), mcParamsOf(ctx.s), shock ?? undefined).outcomes; },
+    step(i) {
+      const ctx = (runs[i] as (typeof runs)[number]).ctx;
+      draws[i] = mcDraws(ctx, n, productSeed(o.seed, (plan[i] as (typeof plan)[number]).product.id, plan.length), mcParamsOf(ctx.s),
+        shock ?? undefined).outcomes;
+    },
     finish() {
       const unsorted = sum(draws, n), total = statsOf(unsorted, o.seed);
       const per = plan.map((s, i) => ({ s, d: draws[i] as number[], st: statsOf(draws[i] as number[], o.seed).stats }));
@@ -50,10 +54,13 @@ export function pfStressJob(pf: Portfolio, o: PfStressOpts): PfStressJob {
         r: r3(d, unsorted), rWave: r3(d, sums.get(s.wave.id) as number[]) }));
       const waves: WaveStress[] = pf.waves.flatMap((w) => {
         const mine = per.filter((x) => x.s.wave.id === w.id);
-        return mine.length ? [{ id: w.id, name: w.name, productIds: mine.map((x) => x.s.product.id), stats: statsOf(sums.get(w.id) as number[], o.seed).stats }] : [];
+        return mine.length ? [{ id: w.id, name: w.name, productIds: mine.map((x) => x.s.product.id),
+          stats: statsOf(sums.get(w.id) as number[], o.seed).stats }] : [];
       });
-      const sumP10 = products.reduce((a, p) => a + p.stats.p10, 0), diversification: Diversification = { sumP10, p10: total.stats.p10, reduction: total.stats.p10 - sumP10 };
-      return { draws: n, seed: o.seed, rho, outcomes: total.sorted, stats: total.stats, products, waves, diversification, fingerprint: pfStressFingerprint(pf, rho) };
+      const sumP10 = products.reduce((a, p) => a + p.stats.p10, 0),
+        diversification: Diversification = { sumP10, p10: total.stats.p10, reduction: total.stats.p10 - sumP10 };
+      return { draws: n, seed: o.seed, rho, outcomes: total.sorted, stats: total.stats, products, waves, diversification,
+        fingerprint: pfStressFingerprint(pf, rho) };
     },
   };
 }

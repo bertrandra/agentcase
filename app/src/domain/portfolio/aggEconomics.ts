@@ -24,7 +24,8 @@ const partsOf = (s: Series, from = 0, to = s.run.length): RunParts => {
 };
 export interface RunYearRow extends RunParts { label: string; etp: number }
 export interface RunProductRow extends RunParts { id: string; name: string; wave: string; etp: number }
-export interface RunAgg { label: string; headline: PortfolioHeadline; years: RunYearRow[]; rows: RunProductRow[]; totals: RunParts & { etp: number }; excluded: Excluded }
+export interface RunAgg { label: string; headline: PortfolioHeadline; years: RunYearRow[]; rows: RunProductRow[]; totals: RunParts & { etp: number };
+  excluded: Excluded }
 
 /** Agentic Run of a Portfolio / Wave: recurring costs by calendar year (the 12-month blocks of the summed series) and by product. */
 export function aggregateRun(pf: Portfolio, c: Consolidated, scope: DisplayScope): RunAgg | null {
@@ -41,7 +42,8 @@ export function aggregateRun(pf: Portfolio, c: Consolidated, scope: DisplayScope
 
 export interface AnnualYearRow { label: string; savings: number; run: number; setup: number; net: number; cum: number; etp: number; vfte: number }
 export interface AnnualProductRow { id: string; name: string; wave: string; net: number[] }
-export interface AnnualAgg { label: string; headline: PortfolioHeadline; years: AnnualYearRow[]; rows: AnnualProductRow[]; totalNet: number[]; totals: { savings: number; run: number; setup: number; net: number }; excluded: Excluded }
+export interface AnnualAgg { label: string; headline: PortfolioHeadline; years: AnnualYearRow[]; rows: AnnualProductRow[]; totalNet: number[];
+  totals: { savings: number; run: number; setup: number; net: number }; excluded: Excluded }
 
 /** Annual summary of a Portfolio / Wave: one line per calendar year (12-month blocks), the net by product and year, year-end headcount. */
 export function aggregateAnnual(pf: Portfolio, c: Consolidated, scope: DisplayScope): AnnualAgg | null {
@@ -50,7 +52,8 @@ export function aggregateAnnual(pf: Portfolio, c: Consolidated, scope: DisplaySc
   const s = sel.series, h = sel.headline, cum = yearEnds(cumulative(s.net)), etp = yearEnds(s.humanFte), vfte = yearEnds(s.agentVfte);
   return {
     label: sel.label, headline: h, excluded: excludedOf(pf, c, scope),
-    years: h.years.savings.map((sv, i) => ({ label: `Year ${i + 1}`, savings: sv, run: h.years.run[i] ?? 0, setup: h.years.setup[i] ?? 0, net: h.years.net[i] ?? 0, cum: cum[i] ?? 0, etp: etp[i] ?? 0, vfte: vfte[i] ?? 0 })),
+    years: h.years.savings.map((sv, i) => ({ label: `Year ${i + 1}`, savings: sv, run: h.years.run[i] ?? 0, setup: h.years.setup[i] ?? 0,
+    net: h.years.net[i] ?? 0, cum: cum[i] ?? 0, etp: etp[i] ?? 0, vfte: vfte[i] ?? 0 })),
     rows: sel.items.map((v) => ({ id: v.id, name: v.name, wave: waveName(pf, v.waveId), net: byYear(v.series.net) })),
     totalNet: byYear(s.net), totals: { savings: h.totalBenefit, run: total(s.run), setup: h.setup, net: h.net },
   };
@@ -69,6 +72,7 @@ export function aggregateMonthly(pf: Portfolio, c: Consolidated, scope: DisplayS
   const s = sel.series, cum = sel.summary.cum, cal = calendarOf(pf);
   return {
     label: sel.label, headline: sel.headline, excluded: view.excluded, chart: view.chart,
-    months: s.net.map((net, i) => ({ month: i + 1, label: cal.dateAt(i), savings: s.savings[i] ?? 0, run: s.run[i] ?? 0, setup: s.setup[i] ?? 0, net, cum: cum[i] ?? 0, etp: s.humanFte[i] ?? 0, vfte: s.agentVfte[i] ?? 0 })),
+    months: s.net.map((net, i) => ({ month: i + 1, label: cal.dateAt(i), savings: s.savings[i] ?? 0, run: s.run[i] ?? 0, setup: s.setup[i] ?? 0, net,
+    cum: cum[i] ?? 0, etp: s.humanFte[i] ?? 0, vfte: s.agentVfte[i] ?? 0 })),
   };
 }

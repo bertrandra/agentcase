@@ -8,7 +8,8 @@ import { asFile, editXlsx, fakeZip, ourXlsx, setByLabel } from '../helpers/xlsxE
 import { freshStore, snap } from './helpers';
 
 beforeEach(() => { freshStore(); });
-const doc = () => appStore().getState().doc as Record<string, unknown> & { RATE: Record<string, Record<string, number>>; dom: { values: Record<string, string> } };
+const doc = () => appStore().getState().doc as Record<string,
+  unknown> & { RATE: Record<string, Record<string, number>>; dom: { values: Record<string, string> } };
 
 describe('import limits', () => {
   it('rejects an oversize file before reading it', async () => {
@@ -44,7 +45,8 @@ describe('hostile content', () => {
     await importParamsWorkbook(asFile('evil.xlsx', bytes), ENV);
     expect(({} as Record<string, unknown>).home).toBeUndefined();
     expect(Object.getPrototypeOf(doc().PERSONA_SECTIONS)).toBe(Object.prototype);
-    const d = doc() as unknown as { PERSONAS: { id: string }[]; PERSONA_SECTIONS: Record<string, string[]>; skillMap: Record<string, string>; GROUPS: { id: string }[] };
+    const d = doc() as unknown as { PERSONAS: { id: string }[]; PERSONA_SECTIONS: Record<string, string[]>; skillMap: Record<string, string>;
+      GROUPS: { id: string }[] };
     expect(d.PERSONAS.map((x) => x.id)).not.toContain('__proto__');
     expect(Object.keys(d.PERSONA_SECTIONS)).not.toContain('__proto__');
     expect(Object.keys(d.PERSONA_SECTIONS)).not.toContain('constructor');
@@ -54,7 +56,10 @@ describe('hostile content', () => {
   });
   it('text is cleaned: control characters, markup survives only as inert text, lengths are capped', async () => {
     const long = 'x'.repeat(10000), nasty = 'Acme\u0000\u0007 <img src=x onerror=alert(1)>\n\ttrailing';
-    const bytes = await editXlsx(await ourXlsx(), (wb) => { setByLabel(wb, 'Parameters', 'Customer', nasty); wb.getWorksheet('Personas')!.addRow(['ok-id', long, 'No', 8, 'No', 'No']); });
+    const bytes = await editXlsx(await ourXlsx(), (wb) => {
+      setByLabel(wb, 'Parameters', 'Customer', nasty);
+      wb.getWorksheet('Personas')!.addRow(['ok-id', long, 'No', 8, 'No', 'No']);
+    });
     await importParamsWorkbook(asFile('text.xlsx', bytes), ENV);
     expect(doc().customerName).toBe('Acme <img src=x onerror=alert(1)> trailing');   // React renders text, never HTML
     const label = (doc().PERSONAS as { id: string; label: string }[]).find((p) => p.id === 'ok-id')!.label;
@@ -74,7 +79,8 @@ describe('hostile content', () => {
   });
   it('values of the wrong type or kind are ignored, not coerced into state', async () => {
     const bytes = await editXlsx(await ourXlsx(), (wb) => {
-      setByLabel(wb, 'Parameters', 'Infra', 'n/a'); setByLabel(wb, 'Parameters', 'Monthly infra (€)', 'lots'); setByLabel(wb, 'Parameters', 'Industry (code)', 'NOT_A_CODE');
+      setByLabel(wb, 'Parameters', 'Infra', 'n/a'); setByLabel(wb, 'Parameters', 'Monthly infra (€)', 'lots');
+        setByLabel(wb, 'Parameters', 'Industry (code)', 'NOT_A_CODE');
       wb.getWorksheet('Input Team')!.getRow(2).getCell(4).value = -3; wb.getWorksheet('Input Team')!.getRow(3).getCell(3).value = 'Atlantis';
     });
     const r = await importParamsWorkbook(asFile('types.xlsx', bytes), ENV);
@@ -98,12 +104,16 @@ describe('hostile content', () => {
   });
   it('a template-shaped workbook (labels and values only, short rows, fewer columns) imports what it carries', async () => {
     const X = await loadExcelJS(), wb = new X.Workbook();
-    const p = wb.addWorksheet('Parameters'); p.addRow(['Parameter', 'Value']); p.addRow(['Automation potential (%)', 60]); p.addRow(['Setup tooling (€)', 12345]); p.addRow(['Customer', 'Template Co']);
-    const t = wb.addWorksheet('Input Team'); t.addRow(['Skill', 'Grade', 'Location', 'FTE']); t.addRow(['Dev', 'B2', 'France', 5]); t.addRow(['Test/QA', 'B1', 'India', 3]);
-    const ps = wb.addWorksheet('Phase Scope'); ps.addRow(['Phase ID', 'Phase name', 'Included']); ps.addRow(['V1', 'Specification', 'Yes']); ps.addRow(['V3', 'Build', 'Yes']);
+    const p = wb.addWorksheet('Parameters'); p.addRow(['Parameter', 'Value']); p.addRow(['Automation potential (%)', 60]);
+      p.addRow(['Setup tooling (€)', 12345]); p.addRow(['Customer', 'Template Co']);
+    const t = wb.addWorksheet('Input Team'); t.addRow(['Skill', 'Grade', 'Location', 'FTE']); t.addRow(['Dev', 'B2', 'France', 5]);
+      t.addRow(['Test/QA', 'B1', 'India', 3]);
+    const ps = wb.addWorksheet('Phase Scope'); ps.addRow(['Phase ID', 'Phase name', 'Included']); ps.addRow(['V1', 'Specification', 'Yes']);
+      ps.addRow(['V3', 'Build', 'Yes']);
     const bytes = (await wb.xlsx.writeBuffer()) as ArrayBuffer;
     await importParamsWorkbook(asFile('template.xlsx', bytes), ENV);
-    const d = doc() as unknown as { customerName: string; teamIn: { skill: string; etp: number; pins: string[] }[]; phaseOff: string[]; dom: { values: Record<string, string> } };
+    const d = doc() as unknown as { customerName: string; teamIn: { skill: string; etp: number; pins: string[] }[]; phaseOff: string[];
+      dom: { values: Record<string, string> } };
     expect(d.customerName).toBe('Template Co');
     expect(d.dom.values.setupTooling).toBe('12345');
     expect(d.teamIn.map((x) => [x.skill, x.etp, x.pins.length])).toEqual([['Dev', 5, 0], ['Test/QA', 3, 0]]);

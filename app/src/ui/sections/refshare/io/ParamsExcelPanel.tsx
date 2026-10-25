@@ -13,7 +13,8 @@ const ENV = { sections: LEGACY_SECTIONS };
 const EXPORTS = [
   { scope: 'all', label: '⬇️ Export all', hint: 'Full workbook — every sheet (parameters, team, scope, personas, Factory meta-model, …).' },
   { scope: 'no-factory', label: '⬇️ Export all except Factory', hint: 'Everything except the Factory meta-model (FM…) sheets.' },
-  { scope: 'persona-only', label: '⬇️ Export persona config only', hint: 'Only the persona and section configuration sheets, including the dependency edges (plus a JSON copy).' },
+  { scope: 'persona-only', label: '⬇️ Export persona config only',
+  hint: 'Only the persona and section configuration sheets, including the dependency edges (plus a JSON copy).' },
 ] as const;
 
 function saveBlob(filename: string, blob: Blob): void {
@@ -40,7 +41,8 @@ export function ParamsExcelPanel() {
     setBusy(true); setStatus({ kind: 'note', text: 'Reading…' });
     try {
       const r = await importParamsWorkbook(f as ParamsFile, ENV);
-      setStatus({ kind: r.notes.length ? 'warn' : 'note', text: `✓ Imported successfully${r.notes.length ? '' : ' — all values within constraints'}. Ctrl+Z undoes the whole import.`, notes: r.notes });
+      setStatus({ kind: r.notes.length ? 'warn' : 'note',
+        text: `✓ Imported successfully${r.notes.length ? '' : ' — all values within constraints'}. Ctrl+Z undoes the whole import.`, notes: r.notes });
       toast('Parameters imported — Ctrl+Z undoes it');
     } catch (e) { setStatus({ kind: 'error', text: `✗ Import failed: ${(e as Error).message}. The case was not changed.` }); } finally { setBusy(false); }
   };
@@ -51,16 +53,31 @@ export function ParamsExcelPanel() {
       <Panel title={T.exportTitle}>
         <p>{T.exportText}</p>
         <div className="ac-actions">
-          {EXPORTS.map((x) => <button key={x.scope} type="button" className="ac-btn" disabled={busy} title={x.hint} onClick={() => void run(x.scope)}>{x.label}</button>)}
+          {EXPORTS.map((x) => <button
+            key={x.scope}
+            type="button"
+            className="ac-btn"
+            disabled={busy}
+            title={x.hint}
+            onClick={() => void run(x.scope)}
+          >{x.label}</button>)}
         </div>
       </Panel>
       <Panel title={T.importTitle}>
         <p>{T.importText}</p>
         <button type="button" className="ac-btn" disabled={busy} onClick={() => file.current?.click()}>⬆️ Import parameters…</button>
-        <input ref={file} type="file" accept=".xlsx" aria-label="Settings workbook (.xlsx)" hidden onChange={(e) => { void load(e.target.files?.[0]); e.target.value = ''; }} />
+        <input
+          ref={file}
+          type="file"
+          accept=".xlsx"
+          aria-label="Settings workbook (.xlsx)"
+          hidden
+          onChange={(e) => { void load(e.target.files?.[0]); e.target.value = ''; }}
+        />
       </Panel>
       <div role="status" aria-live="polite" className="ac-status">
-        {status && <Callout kind={status.kind}>{status.text}{status.notes && status.notes.length > 0 && <ul>{status.notes.map((n, i) => <li key={i}>{n}</li>)}</ul>}</Callout>}
+        {status && <Callout kind={status.kind}>{status.text}{status.notes && status.notes.length > 0
+          && <ul>{status.notes.map((n, i) => <li key={i}>{n}</li>)}</ul>}</Callout>}
       </div>
     </div>
   );

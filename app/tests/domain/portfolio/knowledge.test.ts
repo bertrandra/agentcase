@@ -26,11 +26,14 @@ describe('A11: an inherited subset gives today\'s hub figures', () => {
     expect([row.usesHub, row.setup > 0, row.annual > 0, row.ktDays > 0]).toEqual([true, true, true, true]);
   });
 
-  const three = (): Portfolio => withProduct(withProduct(envelopeCase(loadCase('golden')), { id: 'B', teamIn: scaledTeam(loadCase('golden'), 2) }), { id: 'C' });
+  const three = (): Portfolio => withProduct(withProduct(envelopeCase(loadCase('golden')), { id: 'B', teamIn: scaledTeam(loadCase('golden'), 2) }),
+    { id: 'C' });
 
   it('editing the subset of one product leaves the others bit-identical and recomputes only that product', () => {
     const pf = three(), before = consolidate(pf), builds = runStats.builds;
-    const next = { ...pf, products: pf.products.map((p) => (p.id === 'B' ? { ...p, knowledge: { targetCC: 1, maturityAnswers: [4, 4, 4, 4, 4, 4, 4, 4, 4], curationFTE: 1.5, setupBase: 50000 } } : p)) };
+    const next = { ...pf,
+      products: pf.products.map((p) => (p.id === 'B' ? { ...p, knowledge: { targetCC: 1, maturityAnswers: [4, 4, 4, 4, 4, 4, 4, 4, 4], curationFTE: 1.5,
+      setupBase: 50000 } } : p)) };
     const after = consolidate(next);
     expect(runStats.builds - builds).toBe(1);
     for (const id of ['p1', 'C']) {
@@ -88,7 +91,8 @@ describe('A12: hub infrastructure allocation', () => {
   });
 
   it('property: apportioning cents is exact for any weights', () => {
-    fc.assert(fc.property(fc.integer({ min: 0, max: 5_000_000 }), fc.array(fc.double({ min: 0, max: 100, noNaN: true }), { minLength: 2, maxLength: 12 }), (cents, w) => {
+    fc.assert(fc.property(fc.integer({ min: 0, max: 5_000_000 }), fc.array(fc.double({ min: 0, max: 100, noNaN: true }), { minLength: 2, maxLength: 12 }),
+      (cents, w) => {
       const s = allocateCents(cents / 100, w);
       expect(s.reduce((a, x) => a + Math.round(x * 100), 0)).toBe(cents);
       expect(s.every((x) => x >= 0)).toBe(true);

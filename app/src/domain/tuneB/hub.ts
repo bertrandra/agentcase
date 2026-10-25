@@ -20,7 +20,8 @@ export function hubView(c: Ctx): HubView {
   const raw = parseInt(c.inp.v('khTargetCC'), 10) || 3;
   let dEff = 0, dSav = 0;
   if (on) {
-    const off = makeCtx({ ...c.s, dom: { ...c.s.dom, checked: { ...c.s.dom.checked, khEnabled: false } } }, { rateScale: c.rateScale, tokenScale: c.tokenScale });
+    const off = makeCtx({ ...c.s, dom: { ...c.s.dom, checked: { ...c.s.dom.checked, khEnabled: false } } },
+      { rateScale: c.rateScale, tokenScale: c.tokenScale });
     const m0 = model(off);
     dEff = m.eff - m0.eff; dSav = sum(horizonYears(c).sav) - sum(horizonYears(off).sav);
   }

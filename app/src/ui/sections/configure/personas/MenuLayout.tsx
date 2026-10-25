@@ -10,21 +10,26 @@ import { LivePreview, usePreviewPersona } from './LivePreview';
 /** The graphical menu layout (legacy "Menu layout" board) of one menu structure: sections per group column; drag a card or use the arrows to change its
  *  group and order for every persona navigating with that structure. The preview shows a persona's menu as this structure lays it out. */
 export function MenuLayout({ structure }: { structure: string }) {
-  const { personas, persona, lists, order, view } = useNavModel(), { sections, groups, colors } = view(structure), [mvp, setMvp] = useState(false), [pending, setPending] = useState<Pending | null>(null);
+  const { personas, persona, lists, order, view } = useNavModel(), { sections, groups, colors } = view(structure), [mvp, setMvp] = useState(false),
+    [pending, setPending] = useState<Pending | null>(null);
   const [who, setWho] = usePreviewPersona(personas, persona), preview = previewMenu(who, sections, groups, lists, order, pending, 'global');
   const label = (id: string) => sections.find((s) => s.id === id)?.label ?? id, groupLabel = (id: string) => groups.find((g) => g.id === id)?.label ?? id;
-  const cols = groupsByOrder(groups).map((group) => ({ group, cards: sections.filter((s) => s.group === group.id && (!mvp || s.mvp)).sort((a, b) => (a.groupSeq || 0) - (b.groupSeq || 0)) }));
+  const cols = groupsByOrder(groups).map((group) => ({ group,
+    cards: sections.filter((s) => s.group === group.id && (!mvp || s.mvp)).sort((a, b) => (a.groupSeq || 0) - (b.groupSeq || 0)) }));
   return (
     <>
       <label className="ac-field"><span><input type="checkbox" checked={mvp} onChange={(e) => setMvp(e.target.checked)} /> Show MVP only</span></label>
-      <p className="ac-muted">Drag cards across groups, or use the arrows: ↑ ↓ reorder inside the group, ← → move to the previous / next group; ◀ ▶ move a group. Applies to every persona that navigates with this structure.</p>
+      <p className="ac-muted">Drag cards across groups, or use the arrows: ↑ ↓ reorder inside the group, ← → move to the previous / next group; ◀ ▶ move a
+        group. Applies to every persona that navigates with this structure.</p>
       <Board label="Menu layout" cols={cols} colors={colors}
         onPending={setPending} cardClass={(s) => (s.mvp ? 'is-mvp' : '')}
         cardExtra={(s) => (s.mvp || s.tag) && <small className="ac-tag-text">{s.mvp ? 'MVP ' : ''}{s.tag ?? ''}</small>}
         onDrop={(id, group, index) => placeSections(`Move ${label(id)} to ${groupLabel(group)}`, placeSection(sections, id, group, index), structure)}
         onShift={(id, dir) => placeSections(`Move ${label(id)} ${dir < 0 ? 'up' : 'down'}`, shiftSection(sections, id, dir), structure)}
-        onShiftGroup={(id, dir) => placeSections(`Move ${label(id)} to the ${dir < 0 ? 'previous' : 'next'} group`, shiftToGroup(sections, groups, id, dir), structure)}
-        onShiftColumn={(id, dir) => setGroupOrders(`Move the group ${groupLabel(id)} ${dir < 0 ? 'earlier' : 'later'} in the menu`, shiftGroup(groups, id, dir), structure)} />
+        onShiftGroup={(id, dir) => placeSections(`Move ${label(id)} to the ${dir < 0 ? 'previous' : 'next'} group`, shiftToGroup(sections, groups, id, dir),
+          structure)}
+        onShiftColumn={(id, dir) => setGroupOrders(`Move the group ${groupLabel(id)} ${dir < 0 ? 'earlier' : 'later'} in the menu`,
+          shiftGroup(groups, id, dir), structure)} />
       <label className="ac-field"><span className="ac-field-l">Preview as</span>
         <select value={who} onChange={(e) => setWho(e.target.value)}>{personas.map((p) => <option key={p.id} value={p.id}>{p.label}</option>)}</select></label>
       <LivePreview persona={personas.find((p) => p.id === who)} preview={preview} colors={colors} pending={!!pending} />

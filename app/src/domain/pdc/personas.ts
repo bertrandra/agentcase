@@ -1,7 +1,8 @@
 /** @calc-zone workspace-config */
 export interface PersonaSeq { on: boolean; steps: { label: string; sections: string[] }[] }
 /** `menuStructure`: the menu structure the persona navigates with (absent = the standard one, see domain/nav/structures). */
-export interface Persona { id: string; label: string; protected: boolean; order: number; compactNav?: boolean; default?: boolean; seq?: PersonaSeq; menuStructure?: string }
+export interface Persona { id: string; label: string; protected: boolean; order: number; compactNav?: boolean; default?: boolean; seq?: PersonaSeq;
+  menuStructure?: string }
 export interface MenuGroup { id: string; label: string; order: number; description?: string }
 
 export const slugify = (s: string): string => String(s).toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-|-$/g, '');

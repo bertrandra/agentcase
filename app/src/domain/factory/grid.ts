@@ -12,7 +12,8 @@ export function fgGrid(c: Ctx): Grid {
   const start = /^\d{4}-\d{2}-\d{2}$/.test(c.inp.v('rmStart')) ? c.inp.v('rmStart') : '2026-09-01';
   let t0 = Date.parse(start + 'T00:00:00Z');
   if (isNaN(t0)) t0 = Date.parse('2026-09-01T00:00:00Z');
-  return { totalW: Math.round(horizon * 52.18), horizon, date: (w, off = 0) => new Date(t0 + Math.trunc((w - 1) * 7 + off) * 86400000).toISOString().slice(0, 10) };
+  return { totalW: Math.round(horizon * 52.18), horizon, date: (w, off = 0) => new Date(t0 + Math.trunc((w - 1) * 7 + off) * 86400000).toISOString().slice(0,
+    10) };
 }
 
 interface Item { id: string; seqKey: number; len: number }
@@ -30,7 +31,10 @@ export function ganttGroupLayout(items: Item[], overlapFrac: number, winStartM: 
     i = j;
   }
   const scale = winDurM / (maxEnd || 1), out: Record<string, { startM: number; durM: number }> = {};
-  for (const id of Object.keys(rel)) { const o = rel[id] as { rst: number; rlen: number }; out[id] = { startM: winStartM + o.rst * scale, durM: o.rlen * scale }; }
+  for (const id of Object.keys(rel)) {
+    const o = rel[id] as { rst: number; rlen: number };
+    out[id] = { startM: winStartM + o.rst * scale, durM: o.rlen * scale };
+  }
   return out;
 }
 
@@ -42,7 +46,8 @@ export function fgPhaseWindows(c: Ctx, grid: Grid): Record<string, PhaseWindow> 
   const seqOf = new Map((c.s.phaseSeq ?? []).map((x) => [x.id, x.seq]));
   const phases = PHASES.filter((p) => byPhase[p.id]?.length);
   if (!phases.length) return {};
-  const items = phases.map((p) => ({ id: p.id, seqKey: seqOf.has(p.id) ? (seqOf.get(p.id) ?? 0) : (p.seq ?? 0), len: Math.max(0.5, (byPhase[p.id] as WArtefact[]).reduce((t, a) => t + (+a.w || 0), 0)) }));
+  const items = phases.map((p) => ({ id: p.id, seqKey: seqOf.has(p.id) ? (seqOf.get(p.id) ?? 0) : (p.seq ?? 0),
+    len: Math.max(0.5, (byPhase[p.id] as WArtefact[]).reduce((t, a) => t + (+a.w || 0), 0)) }));
   const ov = c.inp.p('ganttOverlap'), setup = c.inp.p('setupDuration');
   const overlap = Math.min(0.8, Math.max(0, (ov > 0 ? ov : 0) / 100)), setupM = Math.max(0, setup > 0 ? setup : 0);
   const totalM = Math.max(12, grid.horizon * 12);

@@ -20,7 +20,8 @@ const ENHANCED_LIGHT = {
 };
 const ENHANCED_DARK = {
   bg: '#0a0d12', surface: '#10141a', 'surface-raised': '#161b23', 'surface-muted': '#13171e', 'table-stripe': '#13171e', 'sidebar-bg': '#0e1218',
-  ink: '#f5f6f8', muted: '#d2d7de', 'text-strong': '#ffffff', 'text-soft': '#dde1e6', 'text-label': '#d2d7de', 'text-link': '#b4d4ff', 'text-heading': '#b4d4ff',
+  ink: '#f5f6f8', muted: '#d2d7de', 'text-strong': '#ffffff', 'text-soft': '#dde1e6', 'text-label': '#d2d7de', 'text-link': '#b4d4ff',
+  'text-heading': '#b4d4ff',
   'sidebar-item-text': '#dde1e6', 'sidebar-group-text': '#dbe8ff', 'table-head-note': '#dce8fa', 'hover-text': '#c8e0ff', 'chart-axis': '#d2d7de',
   line: '#6b7483', 'line-strong': '#838c9b', 'line-subtle': '#5f6876', 'line-tint': '#5a77a6', 'table-line': '#6b7483', 'table-head-line': '#838c9b',
   automation: '#86e0e4', 'glass-ceiling': '#ffb8bc', 'human-supervision': '#ffc690', agentic: '#d3c7f7', ai: '#9ddcf8', vfte: '#97e6b6',
@@ -28,12 +29,15 @@ const ENHANCED_DARK = {
 };
 const HIGH_LIGHT = {
   bg: '#ffffff', surface: '#ffffff', 'surface-raised': '#ffffff', 'surface-muted': '#ffffff', 'surface-tint': '#ffffff',
-  ink: '#000000', muted: '#000000', 'text-strong': '#000000', 'text-soft': '#000000', 'text-label': '#000000', 'text-inverse': '#ffffff', 'text-link': '#00008f', 'text-heading': '#000000',
+  ink: '#000000', muted: '#000000', 'text-strong': '#000000', 'text-soft': '#000000', 'text-label': '#000000', 'text-inverse': '#ffffff',
+  'text-link': '#00008f', 'text-heading': '#000000',
   line: '#000000', 'line-strong': '#000000', 'line-subtle': '#000000', 'line-tint': '#000000',
   focus: '#000000', 'focus-header': '#ffffff', hover: '#e0e0e0', 'hover-text': '#000000', selected: '#000000', 'selected-text': '#ffffff',
   'header-start': '#000000', 'header-end': '#000000', 'header-text': '#ffffff', 'kpibar-start': '#000000', 'kpibar-end': '#000000', 'kpibar-text': '#ffffff',
-  'sidebar-bg': '#ffffff', 'sidebar-text': '#000000', 'sidebar-item-text': '#000000', 'sidebar-group-bg': '#ffffff', 'sidebar-group-text': '#000000', 'sidebar-group-hover-bg': '#e0e0e0',
-  'table-head-bg': '#000000', 'table-head-text': '#ffffff', 'table-head-note': '#ffffff', 'table-head-line': '#ffffff', 'table-line': '#000000', 'table-stripe': '#ffffff', 'table-hover': '#ebebeb',
+  'sidebar-bg': '#ffffff', 'sidebar-text': '#000000', 'sidebar-item-text': '#000000', 'sidebar-group-bg': '#ffffff', 'sidebar-group-text': '#000000',
+  'sidebar-group-hover-bg': '#e0e0e0',
+  'table-head-bg': '#000000', 'table-head-text': '#ffffff', 'table-head-note': '#ffffff', 'table-head-line': '#ffffff', 'table-line': '#000000',
+  'table-stripe': '#ffffff', 'table-hover': '#ebebeb',
   automation: '#004d55', 'glass-ceiling': '#6e1a1f', 'human-supervision': '#7a2e00', agentic: '#3f2d78', ai: '#004a70', vfte: '#14532d',
   'chart-div-neg-strong': '#ffd9cc', 'chart-div-neg': '#ffebe5', 'chart-div-mid': '#fffbd6', 'chart-div-pos': '#e3f7ec',
   'chart-grid': 'rgba(0,0,0,.35)', 'chart-axis': '#000000', 'focus-width': '3px', 'shadow-focus': '0 0 0 3px #000000',
@@ -41,12 +45,15 @@ const HIGH_LIGHT = {
 };
 const HIGH_DARK = {
   bg: '#000000', surface: '#000000', 'surface-raised': '#000000', 'surface-muted': '#000000', 'surface-tint': '#000000',
-  ink: '#ffffff', muted: '#ffffff', 'text-strong': '#ffffff', 'text-soft': '#ffffff', 'text-label': '#ffffff', 'text-inverse': '#000000', 'text-link': '#ffff00', 'text-heading': '#ffffff',
+  ink: '#ffffff', muted: '#ffffff', 'text-strong': '#ffffff', 'text-soft': '#ffffff', 'text-label': '#ffffff', 'text-inverse': '#000000',
+  'text-link': '#ffff00', 'text-heading': '#ffffff',
   line: '#ffffff', 'line-strong': '#ffffff', 'line-subtle': '#ffffff', 'line-tint': '#ffffff',
   focus: '#ffff00', 'focus-header': '#ffff00', hover: '#1f1f1f', 'hover-text': '#ffffff', selected: '#ffff00', 'selected-text': '#000000',
   'header-start': '#000000', 'header-end': '#000000', 'header-text': '#ffffff', 'kpibar-start': '#000000', 'kpibar-end': '#000000', 'kpibar-text': '#ffffff',
-  'sidebar-bg': '#000000', 'sidebar-text': '#ffffff', 'sidebar-item-text': '#ffffff', 'sidebar-group-bg': '#000000', 'sidebar-group-text': '#ffffff', 'sidebar-group-hover-bg': '#1f1f1f',
-  'table-head-bg': '#000000', 'table-head-text': '#ffffff', 'table-head-note': '#ffffff', 'table-head-line': '#ffffff', 'table-line': '#ffffff', 'table-stripe': '#000000', 'table-hover': '#1f1f1f',
+  'sidebar-bg': '#000000', 'sidebar-text': '#ffffff', 'sidebar-item-text': '#ffffff', 'sidebar-group-bg': '#000000', 'sidebar-group-text': '#ffffff',
+  'sidebar-group-hover-bg': '#1f1f1f',
+  'table-head-bg': '#000000', 'table-head-text': '#ffffff', 'table-head-note': '#ffffff', 'table-head-line': '#ffffff', 'table-line': '#ffffff',
+  'table-stripe': '#000000', 'table-hover': '#1f1f1f',
   automation: '#7ff0f5', 'glass-ceiling': '#ffb3b8', 'human-supervision': '#ffc98f', agentic: '#d9ccff', ai: '#9fe0ff', vfte: '#9ff0bd',
   'chart-div-neg-strong': '#3a0d00', 'chart-div-neg': '#260a00', 'chart-div-mid': '#1f1c00', 'chart-div-pos': '#00210f',
   'chart-grid': 'rgba(255,255,255,.35)', 'chart-axis': '#ffffff', 'focus-width': '3px', 'shadow-focus': '0 0 0 3px #ffff00',
@@ -63,7 +70,8 @@ export function contrastDelta(dark: boolean, level: 'enhanced' | 'high', scales:
     const steps = dark ? mapSteps(scales, (L) => (L > 0.6 ? L + (1 - L) * 0.5 : L)) : mapSteps(scales, (L) => (L < 0.72 ? L * 0.8 : L));
     return { ...steps, ...(dark ? ENHANCED_DARK : ENHANCED_LIGHT) };
   }
-  const steps = dark ? mapSteps(scales, (L) => (L < 0.5 ? 0 : 0.97), (L) => (L > 0.5 ? 0.3 : 0)) : mapSteps(scales, (L) => (L >= 0.8 ? 1 : 0.22), (L) => (L > 0.5 ? 0 : 0.8));
+  const steps = dark ? mapSteps(scales, (L) => (L < 0.5 ? 0 : 0.97), (L) => (L > 0.5 ? 0.3 : 0)) : mapSteps(scales, (L) => (L >= 0.8 ? 1 : 0.22),
+    (L) => (L > 0.5 ? 0 : 0.8));
   return { ...steps, ...(dark ? HIGH_DARK : HIGH_LIGHT) };
 }
 

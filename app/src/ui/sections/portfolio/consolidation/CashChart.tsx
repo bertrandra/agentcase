@@ -15,12 +15,14 @@ export function CashChart({ chart, label = 'Cumulative cash by calendar month: p
     data: {
       labels: chart.labels,
       datasets: chart.series.map((s, i) => ({
-        label: s.label, data: s.data, borderColor: tok(COLORS[i % COLORS.length]!), backgroundColor: tok(COLORS[i % COLORS.length]!), borderWidth: i === 0 ? 3 : 1.5, pointRadius: 0, tension: 0.15,
+        label: s.label, data: s.data, borderColor: tok(COLORS[i % COLORS.length]!), backgroundColor: tok(COLORS[i % COLORS.length]!), borderWidth: i === 0 ? 3
+        : 1.5, pointRadius: 0, tension: 0.15,
         borderDash: i === 0 ? [] : [5, 3],
       })),
     },
     options: {
-      plugins: { legend: { position: 'bottom' }, tooltip: { callbacks: { label: (x) => `${x.dataset.label}: €${Math.round(x.parsed.y / 1000).toLocaleString('en-US')}k` } } },
+      plugins: { legend: { position: 'bottom' },
+      tooltip: { callbacks: { label: (x) => `${x.dataset.label}: €${Math.round(x.parsed.y / 1000).toLocaleString('en-US')}k` } } },
       scales: { y: { title: { display: true, text: 'Cumulative cash (€)' } } },
     },
   }), [chart, tok]);

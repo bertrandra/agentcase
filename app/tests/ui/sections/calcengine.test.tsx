@@ -19,7 +19,9 @@ describe('calcengine section', () => {
   it('shows the legacy headings; figures that described the legacy engine are ignored on purpose (4 fixtures)', () => {
     // 14 = legacy "14 entry points" (the TypeScript engine lists its own count, 21); 16.2 = the legacy spec section (§16.2) of TIME.thin(), which is
     // not ported yet
-    expectParity('calcengine', CalcEngine, { ignore: [14, 16.2], headings: ['Calculation Engine', 'Time Engine', 'Engines', 'Function surface', 'Overlay contract', 'Which sections reach it', 'Engine function surface'] });
+    expectParity('calcengine', CalcEngine,
+      { ignore: [14, 16.2], headings: ['Calculation Engine', 'Time Engine', 'Engines', 'Function surface', 'Overlay contract', 'Which sections reach it',
+      'Engine function surface'] });
   });
   it('every entry point listed exists in the engine it points to', () => {
     const eng = time.timeFor(domain.makeCtx(appStore().getState().doc));
@@ -33,7 +35,8 @@ describe('calcengine section', () => {
     const changed = new Set<string>();
     for (const fx of [...FIXTURES, 'curve-gompertz', 'curve-bass', 'curve-legacy']) {
       loadFixture(fx);
-      const c = domain.makeCtx(appStore().getState().doc), raw = domain.modelRaw(c) as unknown as Record<string, unknown>, over = domain.model(c) as unknown as Record<string, unknown>;
+      const c = domain.makeCtx(appStore().getState().doc), raw = domain.modelRaw(c) as unknown as Record<string, unknown>,
+        over = domain.model(c) as unknown as Record<string, unknown>;
       for (const k of Object.keys(over)) {
         if (k.startsWith('_')) continue;
         if (JSON.stringify(over[k]) !== JSON.stringify(raw[k])) changed.add(k);

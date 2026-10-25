@@ -5,10 +5,14 @@ import { Releases } from './Releases';
 
 const help = (
   <>
-    <p>Models the release pipeline as a separate flow, not a continuation of the Business/Delivery tree: a Release polymorphically includes Stories, Features, Fixes and Technical Changes. A Release Candidate is cut from the current
-      Integrated Product, gated by an Approval, then promoted through Deployments into Environments (Development → Integration → System Test → UAT → Pre-production → Production). Monitoring captures what happens once it is live;
+    <p>Models the release pipeline as a separate flow, not a continuation of the Business/Delivery tree: a Release polymorphically includes Stories, Features,
+      Fixes and Technical Changes. A Release Candidate is cut from the current
+      Integrated Product, gated by an Approval,
+        then promoted through Deployments into Environments (Development → Integration → System Test → UAT → Pre-production → Production). Monitoring captures
+        what happens once it is live;
       Feedback closes the loop by creating a new Backlog item.</p>
-    <p>Deleting a Release deletes its own Release Items (pure join records) but only orphans the Release Candidates built from it; every other delete orphans its direct references, like the Factory Model.</p>
+    <p>Deleting a Release deletes its own Release Items (pure join records) but only orphans the Release Candidates built from it; every other delete orphans
+      its direct references, like the Factory Model.</p>
   </>
 );
 

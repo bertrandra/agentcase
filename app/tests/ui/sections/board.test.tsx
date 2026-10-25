@@ -14,10 +14,15 @@ import { loadCase, pdc, PDC_FIXTURES } from '../../helpers/pdc';
 afterEach(cleanup);
 const FOUR = ['golden', 'ctx-msi', 'curve-logistic', 'industry-med'];
 const docSections = () => appStore().getState().doc.dynamicSections as DynSection[];
-const generate = (...groups: string[]) => { groups.forEach((g) => fireEvent.click(screen.getByLabelText(new RegExp(GROUPS.find((x) => x.id === g)!.label)))); fireEvent.click(screen.getByText('➕ Generate dashboard')); };
+const generate = (...groups: string[]) => {
+  groups.forEach((g) => fireEvent.click(screen.getByLabelText(new RegExp(GROUPS.find((x) => x.id === g)!.label))));
+  fireEvent.click(screen.getByText('➕ Generate dashboard'));
+};
 type Slots = (string | null)[][];
-type Dash = { one: DynSection & { nCards: number; slots: Slots }; two: DynSection & { nCards: number; slots: Slots }; all: DynSection & { nCards: number; slots: Slots }; max: number };
-const slotsOf = (d: DynSection): Slots => d.cards.map((c) => [c.CARD_NAME_VALUE, c.CARD_SOURCE_SECTION, c.CARD_TARGET_SECTION, c.CARD_IMPACT_VAR, c.CARD_KEY1_VAR, c.CARD_KEY2_VAR]);
+type Dash = { one: DynSection & { nCards: number; slots: Slots }; two: DynSection & { nCards: number; slots: Slots };
+  all: DynSection & { nCards: number; slots: Slots }; max: number };
+const slotsOf = (d: DynSection): Slots => d.cards.map((c) => [c.CARD_NAME_VALUE, c.CARD_SOURCE_SECTION, c.CARD_TARGET_SECTION, c.CARD_IMPACT_VAR,
+  c.CARD_KEY1_VAR, c.CARD_KEY2_VAR]);
 
 describe('board section', () => {
   it.each(FOUR)('shows every figure the legacy section showed (%s)', (id) => {
@@ -29,7 +34,9 @@ describe('board section', () => {
   });
   it.each(PDC_FIXTURES)('generates the same dashboard record and persona cascade as the legacy (%s)', (id) => {
     loadCase(id);
-    const l = pdc<Dash>('pdc_dash', id), sections = resolveSections(SECTIONS as NavSection[], appStore().getState().doc.sectionGroups as SectionRow[] | undefined, undefined).map((s) => ({ id: s.id, group: s.group, label: s.label })), groups = GROUPS;
+    const l = pdc<Dash>('pdc_dash', id),
+      sections = resolveSections(SECTIONS as NavSection[], appStore().getState().doc.sectionGroups as SectionRow[] | undefined,
+      undefined).map((s) => ({ id: s.id, group: s.group, label: s.label })), groups = GROUPS;
     for (const [k, ids, all] of [['one', ['tune'], false], ['two', ['tune', 'verify'], false], ['all', [], true]] as const) {
       const got = newDashboard({ groupIds: [...ids], allGroups: all, existing: [], groups, sections, maxOrder: l.max })!, want = l[k];
       expect({ ...got, cards: undefined }).toEqual({ ...want, cards: undefined, nCards: undefined, slots: undefined });

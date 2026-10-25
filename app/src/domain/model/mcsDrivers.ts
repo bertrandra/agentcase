@@ -39,7 +39,10 @@ export function mcsBaseValue(c: Ctx, id: string): number {
 }
 
 /** The ±8 pt acceptance band around the base p. */
-const pBand = (base: number) => { const mean = Math.min(0.999, Math.max(0.05, base)); return { mean, lo: Math.max(0.05, mean - 0.08), hi: Math.min(0.999, mean + 0.08) }; };
+const pBand = (base: number) => {
+  const mean = Math.min(0.999, Math.max(0.05, base));
+  return { mean, lo: Math.max(0.05, mean - 0.08), hi: Math.min(0.999, mean + 0.08) };
+};
 
 /** One correlated draw across the seven drivers (one-factor Gaussian copula; the exogenous token price ignores the common factor). */
 export function mcsDrawOne(c: Ctx, rng: () => number, bases: McsSample, rho: number): McsSample {

@@ -29,6 +29,13 @@ export function OrderInput({ id, value, onChange }: { id: string; value: number;
 }
 
 /** The inline rename field: Enter commits, Escape cancels. */
-export function RenameInput({ label, value, onChange, onCommit, onCancel }: { label: string; value: string; onChange: (v: string) => void; onCommit: () => void; onCancel: () => void }) {
-  return <input type="text" aria-label={label} value={value} onChange={(e) => onChange(e.target.value)} onKeyDown={(e) => { if (e.key === 'Enter') onCommit(); if (e.key === 'Escape') onCancel(); }} />;
+export function RenameInput({ label, value, onChange, onCommit, onCancel }: { label: string; value: string; onChange: (v: string) => void;
+  onCommit: () => void; onCancel: () => void }) {
+  return <input
+    type="text"
+    aria-label={label}
+    value={value}
+    onChange={(e) => onChange(e.target.value)}
+    onKeyDown={(e) => { if (e.key === 'Enter') onCommit(); if (e.key === 'Escape') onCancel(); }}
+  />;
 }

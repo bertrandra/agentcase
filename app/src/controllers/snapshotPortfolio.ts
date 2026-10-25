@@ -29,7 +29,8 @@ export function capturePortfolio(pf: PortfolioDoc): Record<string, unknown> | un
 function restored(s: NamedSnapshot, library: unknown, current: PortfolioDoc): PortfolioDoc {
   const pf = refitPortfolio(readPortfolio(s.portfolio));
   const next: PortfolioDoc = { ...pf, common: { ...pf.common, [SNAPSHOT_KEY]: library } as Portfolio['common'] };
-  const keep = next.products.some((p) => p.id === current.activeProductId) ? current.activeProductId : next.activeProductId;   // the user stays on the product they were on
+  // the user stays on the product they were on
+  const keep = next.products.some((p) => p.id === current.activeProductId) ? current.activeProductId : next.activeProductId;
   return keepTabView(current, { ...next, activeProductId: keep });
 }
 

@@ -3,7 +3,8 @@ import { MODEL_DEFAULTS } from '../catalog';
 import type { ModelState } from '../types/state';
 
 /** Typed views of the MODEL namespaces the shared ModelState type leaves open (`[k: string]: unknown`). */
-export interface McsDriverOverride { kind?: string; group?: string; label?: string; spreadPct?: number; sigma?: number; fallbackMean?: number; fallbackLo?: number; fallbackHi?: number }
+export interface McsDriverOverride { kind?: string; group?: string; label?: string; spreadPct?: number; sigma?: number; fallbackMean?: number;
+  fallbackLo?: number; fallbackHi?: number }
 export interface McsState { enabled: boolean; seed: number; draws: number; rho: number; tokenDrift: number; dists: Record<string, McsDriverOverride> }
 export interface FlowState { wip: number; cycleTime: number; marginPerMonth: number; discountRate: number; throughputInShare: number }
 export interface DoraState { measured: Record<string, number | null> }

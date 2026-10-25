@@ -52,11 +52,17 @@ function readTeam({ rows, w, notes }: ReadCtx): void {
     const loc = str(x[2]), raw = num(x[3]);
     if (Number.isNaN(raw) || raw < 0) return;
     if (!LOC_NAMES.includes(loc)) { notes.push(`Unknown location "${cleanText(loc, 40)}" in team — row skipped`); return; }
-    nt.push({ skill: cleanText(x[0], 60), grade: cleanText(x[1], 20), loc, etp: snapFTE(raw), pins: String(x[4] || '').split(';').map((p) => p.trim()).filter(Boolean) });
+    nt.push({ skill: cleanText(x[0], 60), grade: cleanText(x[1], 20), loc, etp: snapFTE(raw),
+      pins: String(x[4] || '').split(';').map((p) => p.trim()).filter(Boolean) });
   });
   if (!nt.length) { notes.push('Input Team empty — kept previous team'); return; }
   const seen = new Set<string>(); let dropped = 0, dup = 0;
-  nt.forEach((t) => { t.pins = t.pins.filter((id) => { if (!KNOWN_ART.has(id)) { dropped++; return false; } if (seen.has(id)) { dup++; return false; } seen.add(id); return true; }); });
+  nt.forEach((t) => {
+    t.pins = t.pins.filter((id) => {
+      if (!KNOWN_ART.has(id)) { dropped++; return false; } if (seen.has(id)) { dup++; return false; } seen.add(id);
+      return true;
+    });
+  });
   if (dropped) notes.push(`${dropped} pinned artefact id(s) unknown — dropped`);
   if (dup) notes.push(`${dup} artefact(s) pinned on several lines — kept on the first`);
   w.teamIn = nt;

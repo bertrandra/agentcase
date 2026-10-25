@@ -12,7 +12,8 @@ const NO_SYSTEM: SystemPrefs = { dark: false, contrastMore: false, reducedMotion
 export const displayStore = createStore<DisplayState>(() => ({ prefs: loadPrefs(), system: NO_SYSTEM, spec: DISPLAY_DEFAULT }));
 export const useDisplay = <T,>(select: (s: DisplayState) => T): T => useSyncExternalStore(displayStore.subscribe, () => select(displayStore.getState()));
 
-const same = (a: DisplaySpec, b: DisplaySpec): boolean => a.mode === b.mode && a.contrast === b.contrast && a.cvd === b.cvd && a.reduceMotion === b.reduceMotion;
+const same = (a: DisplaySpec,
+  b: DisplaySpec): boolean => a.mode === b.mode && a.contrast === b.contrast && a.cvd === b.cvd && a.reduceMotion === b.reduceMotion;
 /** The attributes of <html> that switch the CSS blocks of tokens.css; none for the default display (the DOM stays as it was). */
 export function displayAttributes(spec: DisplaySpec): Record<string, string | null> {
   return {

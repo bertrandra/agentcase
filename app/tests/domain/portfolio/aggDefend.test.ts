@@ -40,8 +40,10 @@ describe('verifByProduct', () => {
     const a = verifByProduct(pf, ids);
     for (const r of a.rows) {
       const c = productCtx(pf, r.id), v = verifChecks(c), cv = convergenceChecks(c);
-      expect([r.checks, r.checksFail]).toEqual([v.length, v.filter((x) => !x.ok).length]); expect([r.conv, r.convFail]).toEqual([cv.length, cv.filter((x) => !x.pass).length]);
-      expect(r.failing).toEqual(cv.filter((x) => !x.pass).map((x) => x.id)); expect(r.sensiAbnormal).toBe(directionalSensitivity(c).filter((s) => s.ok === false).length);
+      expect([r.checks, r.checksFail]).toEqual([v.length, v.filter((x) => !x.ok).length]);
+        expect([r.conv, r.convFail]).toEqual([cv.length, cv.filter((x) => !x.pass).length]);
+      expect(r.failing).toEqual(cv.filter((x) => !x.pass).map((x) => x.id));
+        expect(r.sensiAbnormal).toBe(directionalSensitivity(c).filter((s) => s.ok === false).length);
       expect(r.roi).toBe(calcChain(c).find((x) => x[0]!.startsWith('ROI'))![3]); expect(r.status).toBe(r.checksFail + r.convFail === 0 ? 'PASS' : 'FAIL');
     }
     expect(a.rows[0]!.conv).toBe(67);
@@ -55,8 +57,10 @@ describe('dueDiligenceByProduct', () => {
     const a = dueDiligenceByProduct(pf, ids, dd);
     for (const r of a.rows) {
       const c = productCtx(pf, r.id), rows = ddRows(c, dd, {});
-      expect(r.items).toBe(rows.length); expect(r.confirmed).toBe(rows.filter((x) => isDone(c, x)).length); expect(r.open).toBe(r.items - r.confirmed); expect(r.ceilCover).toBe(ceilingCoverage(c, rows));
-      expect(r.groups.map((g) => g.group)).toEqual([...new Set(rows.map((x) => x.g))]); expect(r.groups.map((g) => g.items)).toEqual(r.groups.map((g) => rows.filter((x) => x.g === g.group).length));
+      expect(r.items).toBe(rows.length); expect(r.confirmed).toBe(rows.filter((x) => isDone(c, x)).length); expect(r.open).toBe(r.items - r.confirmed);
+        expect(r.ceilCover).toBe(ceilingCoverage(c, rows));
+      expect(r.groups.map((g) => g.group)).toEqual([...new Set(rows.map((x) => x.g))]);
+        expect(r.groups.map((g) => g.items)).toEqual(r.groups.map((g) => rows.filter((x) => x.g === g.group).length));
       expect(r.invisible).toBe(rows.filter((x) => x.id.startsWith('cf-') && x.edit === 'NONE').length);
     }
     expect(a.totals.items).toBe(a.rows.reduce((s, r) => s + r.items, 0)); expect(a.totals.confirmed + a.totals.open).toBe(a.totals.items);

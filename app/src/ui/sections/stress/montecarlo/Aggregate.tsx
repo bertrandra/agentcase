@@ -11,8 +11,9 @@ import { ExcludedNote } from '../AggParts';
 import { ProductStressDetail, SelectionResults, StaleRun } from './AggregateParts';
 
 const help = (
-  <p>In a Portfolio or a Wave view this section shows the <strong>portfolio Monte Carlo</strong> of the selection: every planned product is simulated as in the single-product Monte Carlo and the net benefits are added draw by draw.
-    Draws, seed and correlation ρ are set below; the same run feeds Portfolio stress and the portfolio verdict. A product on its own keeps its single-product Monte Carlo: choose “Edit this product”.</p>
+  <p>In a Portfolio or a Wave view this section shows the <strong>portfolio Monte Carlo</strong> of the selection: every planned product is simulated as in
+    the single-product Monte Carlo and the net benefits are added draw by draw. Draws, seed and correlation ρ are set below; the same run feeds Portfolio
+    stress and the portfolio verdict. A product on its own keeps its single-product Monte Carlo: choose “Edit this product”.</p>
 );
 
 /**
@@ -27,10 +28,15 @@ export default function MonteCarloAggregate() {
         <ExcludedNote />
         {run && stale && <StaleRun />}
         {sel ? <SelectionResults sel={sel} scope={vs.kind === 'wave' ? 'wave' : 'portfolio'} />
-          : <p className="ac-muted"><em>{run ? `${vs.label} has no planned product in the last simulation: run it again.` : 'No simulation yet: run the portfolio simulation to draw the distribution of the selection.'}</em>{' '}
+          : <p className="ac-muted"><em>{run ? `${vs.label} has no planned product in the last simulation: run it again.`
+            : 'No simulation yet: run the portfolio simulation to draw the distribution of the selection.'}</em>{' '}
             {!run && progress === null && <button type="button" onClick={() => { void runPortfolioSimulation(); }}>▶ Run now</button>}</p>}
         <Callout kind="blue">This is the portfolio simulation of the selection ({vs.label}), shared with{' '}
-          <button type="button" className="ac-link" onClick={() => goSection('portfolio-stress')}>🎲 Portfolio stress</button>: nothing is recomputed here. The distribution of one product on its own is below.</Callout>
+          <button
+            type="button"
+            className="ac-link"
+            onClick={() => goSection('portfolio-stress')}
+          >🎲 Portfolio stress</button>: nothing is recomputed here. The distribution of one product on its own is below.</Callout>
         <ProductDrill Section={ProductStressDetail} productIds={vs.productIds} />
       </>
     } />

@@ -26,7 +26,8 @@ export const useEditScope = (): EditScope => usePortfolio((p) => p.editScope ?? 
 /** This tab's persona (view state, D3; `store/persona.ts`). */
 export const usePersona = (): string => usePortfolio((p) => p.persona ?? DEFAULT_PERSONA);
 /** The case as a file stores it: the case plus the persona it opens on (`currentPersona`), e.g. for the Data Model's state registry. */
-export function useSavedCase(): Doc { const doc = useDoc((d) => d), persona = usePersona(); return useMemo(() => withSavedPersona(doc, persona), [doc, persona]); }
+export function useSavedCase(): Doc { const doc = useDoc((d) => d), persona = usePersona();
+  return useMemo(() => withSavedPersona(doc, persona), [doc, persona]); }
 export const useActiveProduct = (): Product => {
   const as = useViewProductId();
   return usePortfolio((p) => p.products.find((x) => x.id === shownProductId(p, as)) ?? (p.products[0] as Product));
@@ -45,5 +46,6 @@ export function useProductRows(): ProductRow[] {
 export interface FieldState { multi: boolean; productId: string; productName: string; overridden: boolean; common: unknown }
 export function useFieldState(ref: string): FieldState {
   const multi = useIsMulti(), prod = useActiveProduct(), common = useCommon();
-  return useMemo(() => ({ multi, productId: prod.id, productName: prod.name, overridden: isOverridden(prod, ref), common: commonValue(common, ref) }), [multi, prod, common, ref]);
+  return useMemo(() => ({ multi, productId: prod.id, productName: prod.name, overridden: isOverridden(prod, ref), common: commonValue(common, ref) }),
+    [multi, prod, common, ref]);
 }

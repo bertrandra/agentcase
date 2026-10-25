@@ -14,7 +14,8 @@ export const METRICS: { k: MetricKey; label: string; dir: 1 | -1; declared: bool
   { k: 'agility', label: 'Business Agility', dir: 1, declared: true },
 ];
 
-const val = (r: StrategyRow, k: MetricKey): number | null => (k in r.computed ? (r.computed as unknown as Record<string, number | null>)[k] as number | null : (r.declared as Record<string, number>)[k] as number);
+const val = (r: StrategyRow, k: MetricKey): number | null => (k in r.computed ? (r.computed as unknown as Record<string,
+  number | null>)[k] as number | null : (r.declared as Record<string, number>)[k] as number);
 /** Value used for ranking: a missing payback is the worst (99 years), a missing ROI the worst possible. */
 const raw = (r: StrategyRow, k: MetricKey): number => { const v = val(r, k); return v == null ? (k === 'payback' ? 99 : -1e9) : v; };
 
@@ -49,7 +50,8 @@ export function metricExtremes(R: StrategyRow[], m: (typeof METRICS)[number]) {
 }
 export const metricValue = val;
 
-export interface LocSplitRow { id: string; icon: string; label: string; mode: 'asis' | 'custom' | 'inherit'; perLoc: Record<string, number>; byCls: Record<string, number>; tot: number }
+export interface LocSplitRow { id: string; icon: string; label: string; mode: 'asis' | 'custom' | 'inherit'; perLoc: Record<string, number>;
+  byCls: Record<string, number>; tot: number }
 
 /** TO-BE location split per strategy and its aggregate by class (Local / Nearshore / Offshore). */
 export function strategyLocSplits(c: Ctx, defs: StrategyDef[]): LocSplitRow[] {

@@ -24,7 +24,9 @@ export const TASK_OPTIONS: Opt[] = [
 /** KPI input of the current case: the factory arrays plus the tasks in scope. */
 export function useKpiData(): { data: KpiData; params: ReturnType<typeof fgParams> } {
   const c = useCtx(), s = c.s as unknown as Partial<FactoryData> & { FG_PARAMS?: Parameters<typeof fgParams>[0] };
-  const data = { DEPLOYMENTS: s.DEPLOYMENTS ?? NONE, ENVIRONMENTS: s.ENVIRONMENTS ?? NONE, RELEASE_CANDIDATES: s.RELEASE_CANDIDATES ?? NONE, MONITORING_EVENTS: s.MONITORING_EVENTS ?? NONE,
-    APPROVALS: s.APPROVALS ?? NONE, QUALITY_GATES: s.QUALITY_GATES ?? NONE, COMMITS: s.COMMITS ?? NONE, BUILDS: s.BUILDS ?? NONE, FEEDBACK_ITEMS: s.FEEDBACK_ITEMS ?? NONE, tasks: factoryTasks(c) } as KpiData;
+  const data = { DEPLOYMENTS: s.DEPLOYMENTS ?? NONE, ENVIRONMENTS: s.ENVIRONMENTS ?? NONE, RELEASE_CANDIDATES: s.RELEASE_CANDIDATES ?? NONE,
+  MONITORING_EVENTS: s.MONITORING_EVENTS ?? NONE,
+    APPROVALS: s.APPROVALS ?? NONE, QUALITY_GATES: s.QUALITY_GATES ?? NONE, COMMITS: s.COMMITS ?? NONE, BUILDS: s.BUILDS ?? NONE,
+      FEEDBACK_ITEMS: s.FEEDBACK_ITEMS ?? NONE, tasks: factoryTasks(c) } as KpiData;
   return { data, params: fgParams(s.FG_PARAMS) };
 }

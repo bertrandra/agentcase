@@ -13,7 +13,8 @@ export interface MenuPreview { nav: NavGroupView[]; moved: string | null }
  * The sidebar `persona` would see if the pending drop were committed. Pure and read-only: it reuses the board's own move functions on
  * copies, so what is previewed is exactly what the drop would write, and nothing is written.
  */
-export function previewMenu(persona: string, sections: NavSection[], groups: MenuGroup[], lists: PersonaLists, order: PersonaOrder, pending: Pending | null, scope: PendingScope): MenuPreview {
+export function previewMenu(persona: string, sections: NavSection[], groups: MenuGroup[], lists: PersonaLists, order: PersonaOrder, pending: Pending | null,
+  scope: PendingScope): MenuPreview {
   if (!pending || !sections.some((s) => s.id === pending.id)) return { nav: navGroups(persona, sections, groups, lists, order), moved: null };
   if (scope === 'global') {
     const at = new Map(placeSection(sections, pending.id, pending.group, pending.index).map((p) => [p.id, p]));

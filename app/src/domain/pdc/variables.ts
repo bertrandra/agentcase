@@ -19,7 +19,8 @@ const rank = new Map(ORDER.map((id, i) => [id, i]));
  * section scope, getter). Families live in `vars/`; a getter is a pure function of the case (and, for the Monte Carlo ones, of the
  * session runtime). A card bound to a value that cannot be computed shows a dash.
  */
-export const VARIABLES: VariableDef[] = [...GLOBAL_VARS, ...FINANCE_VARS, ...TEAM_VARS, ...SCOPE_VARS, ...TUNE_VARS, ...ENGINE_VARS, ...TOGGLE_VARS, ...FACTORY_VARS, ...REGISTER_VARS]
+export const VARIABLES: VariableDef[] = [...GLOBAL_VARS, ...FINANCE_VARS, ...TEAM_VARS, ...SCOPE_VARS, ...TUNE_VARS, ...ENGINE_VARS, ...TOGGLE_VARS,
+  ...FACTORY_VARS, ...REGISTER_VARS]
   .sort((a, b) => (rank.get(a.id) ?? 1e9) - (rank.get(b.id) ?? 1e9));
 
 export const variableById = (id: string | null | undefined): VariableDef | undefined => VARIABLES.find((x) => x.id === id);

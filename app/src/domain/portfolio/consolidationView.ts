@@ -45,7 +45,8 @@ export interface ConsolidationView {
 const last = (a: number[]): number => a[a.length - 1] ?? 0;
 const sum = (a: number[]): number => a.reduce((x, y) => x + y, 0);
 export const summaryRow = (id: string, name: string, products: number, s: Series, m: Summary): SummaryRow => ({
-  id, name, products, npv: m.npv, net: m.net, setup: m.setup, savings: m.totalBenefit, run: sum(s.run), etp: last(s.humanFte), vfte: last(s.agentVfte), paybackMonth: m.paybackMonth,
+  id, name, products, npv: m.npv, net: m.net, setup: m.setup, savings: m.totalBenefit, run: sum(s.run), etp: last(s.humanFte), vfte: last(s.agentVfte),
+  paybackMonth: m.paybackMonth,
 });
 
 const CODES = ['unscheduled', 'target-capped', 'kt-lead-clamped', 'hub-unused'];
@@ -53,7 +54,8 @@ const CODES = ['unscheduled', 'target-capped', 'kt-lead-clamped', 'hub-unused'];
 function diagnosticsOf(pf: Portfolio, c: Consolidated): Issue[] {
   const out = validate(pf).diagnostics.filter((d) => CODES.includes(d.code));
   for (const v of c.products) {
-    if (v.run.rows.length > c.horizon - v.month0) out.push({ code: 'truncated', message: `${v.name}: cut at the portfolio horizon (${c.horizon} months); ${v.run.rows.length - Math.max(0, c.horizon - v.month0)} of its months fall beyond`, productId: v.id });
+    if (v.run.rows.length > c.horizon - v.month0) out.push({ code: 'truncated',
+      message: `${v.name}: cut at the portfolio horizon (${c.horizon} months); ${v.run.rows.length - Math.max(0, c.horizon - v.month0)} of its months fall beyond`, productId: v.id });
   }
   return out;
 }

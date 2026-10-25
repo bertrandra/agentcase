@@ -38,7 +38,8 @@ export function tokenModelRows(c: Ctx): { rows: ModelRow[]; mixSum: number; cost
   return { rows, mixSum, costTot };
 }
 
-export interface RunRow { key: string; label: string; mix?: number; phase?: string; phaseName?: string; isReg?: boolean; runs: number[]; total: number; tokM: number; cost: number }
+export interface RunRow { key: string; label: string; mix?: number; phase?: string; phaseName?: string; isReg?: boolean; runs: number[]; total: number;
+  tokM: number; cost: number }
 export interface RunTable { rows: RunRow[]; totals: RunRow }
 const sum = (a: number[]) => a.reduce((x, y) => x + y, 0);
 function totalsOf(rows: RunRow[], H: number, label: string, mix?: number): RunRow {

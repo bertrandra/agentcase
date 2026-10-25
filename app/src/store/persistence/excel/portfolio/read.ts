@@ -19,10 +19,13 @@ export function readPortfolioSheets(sheets: Sheets, base: Portfolio): Portfolio 
   const rows = readProductRows(sheets), ids = new Set(rows.map((r) => r.id)), waveRows = readWaveRows(sheets);
   const teams = readTeams(sheets, ids), subsets = readKnowledge(sheets, ids);
   const { products, waves } = assemble(rows, waveRows, (r): Product => clean({
-    id: r.id, name: r.name, note: r.note, archived: r.archived, teamIn: teams.get(r.id) as Product['teamIn'], knowledge: subsets.get(r.id) ?? {}, overrides: {}, waveId: r.waveId, offsetMonths: r.offset,
+    id: r.id, name: r.name, note: r.note, archived: r.archived, teamIn: teams.get(r.id) as Product['teamIn'], knowledge: subsets.get(r.id) ?? {},
+    overrides: {}, waveId: r.waveId, offsetMonths: r.offset,
   }));
-  const s = readSettings(sheets, { hub: base.hub, horizonMonths: base.horizonMonths, startDate: base.startDate, activeProductId: base.activeProductId, rho: 0 }, ids);   // a workbook without the row means independent products
-  let pf: Portfolio = { ...base, products, waves, activeProductId: ids.has(s.activeProductId) ? s.activeProductId : (products[0] as Product).id, startDate: s.startDate };
+  const s = readSettings(sheets, { hub: base.hub, horizonMonths: base.horizonMonths, startDate: base.startDate, activeProductId: base.activeProductId,
+    rho: 0 }, ids);   // a workbook without the row means independent products
+  let pf: Portfolio = { ...base, products, waves, activeProductId: ids.has(s.activeProductId) ? s.activeProductId : (products[0] as Product).id,
+    startDate: s.startDate };
   pf = setRho(setHorizon(setHub(pf, s.hub), s.horizonMonths), s.rho);
   for (const o of readOverrides(sheets, ids)) pf = setOverride(pf, o.productId, o.ref, o.value);
   const errors = validate(pf).errors;

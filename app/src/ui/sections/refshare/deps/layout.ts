@@ -2,7 +2,8 @@ import { DATA, DRAWN, LAYERS, isReference } from './model';
 
 export interface Pos { x: number; y: number; lane: number }
 export interface Lane { id: string; label: string; count: number }
-export interface Layout { width: number; height: number; lanes: Lane[]; pos: Record<string, Pos>; nodeW: number; nodeH: number; colW: number; reference: string[] }
+export interface Layout { width: number; height: number; lanes: Lane[]; pos: Record<string, Pos>; nodeW: number; nodeH: number; colW: number;
+  reference: string[] }
 
 const NODE_W = 148, NODE_H = 24, COL_W = 176, ROW_H = 32, M_X = 14, M_TOP = 46, SPLIT = 26;
 

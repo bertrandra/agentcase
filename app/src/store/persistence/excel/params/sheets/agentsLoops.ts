@@ -19,7 +19,8 @@ function writeAgents({ wb, c }: WriteCtx): void {
   head(ws); frz(ws);
 }
 function writeLoops({ wb }: WriteCtx): void {
-  const ws = sheet(wb, 'Loop Pairs', [['ID', 8], ['Label', 26], ['Artefact A', 11], ['Artefact B', 11], ['Internal iterations', 16], ['External rework %', 16], ['From phase', 11], ['To phase', 11], ['Cost share %', 12]]);
+  const ws = sheet(wb, 'Loop Pairs', [['ID', 8], ['Label', 26], ['Artefact A', 11], ['Artefact B', 11], ['Internal iterations', 16],
+    ['External rework %', 16], ['From phase', 11], ['To phase', 11], ['Cost share %', 12]]);
   LOOP_PAIRS.forEach((lp) => {
     const row = ws.addRow([lp.id, lp.label, (lp as unknown as { artA: string }).artA, (lp as unknown as { artB: string }).artB, lp.internalIter,
       Math.round((lp.extReworkPct || 0) * 100), lp.extFrom || '', lp.extTo || '', Math.round((lp.extCostShare || 0) * 100)]);
@@ -35,12 +36,14 @@ function writeLoops({ wb }: WriteCtx): void {
  */
 function readAgents({ rows, notes }: ReadCtx): void {
   const r = rows('Agent Catalog'); if (!r) return;
-  const diff = r.slice(1).filter((x) => { const ag = AGENTS.find((a) => a.id === str(x[0])), cap = num(x[3]); return ag && !Number.isNaN(cap) && cap >= 0 && cap !== ag.capacity; }).length;
+  const diff = r.slice(1).filter((x) => { const ag = AGENTS.find((a) => a.id === str(x[0])), cap = num(x[3]);
+    return ag && !Number.isNaN(cap) && cap >= 0 && cap !== ag.capacity; }).length;
   if (diff) notes.push(`Agent Catalog: ${diff} capacity value(s) differ from the catalogue — reference only, not stored in the case.`);
 }
 function readLoops({ rows, notes }: ReadCtx): void {
   const r = rows('Loop Pairs'); if (!r) return;
-  const diff = r.slice(1).filter((x) => { const lp = LOOP_PAIRS.find((p) => p.id === str(x[0])), pct = num(x[5]); return lp && lp.extFrom && lp.extTo && !Number.isNaN(pct) && Math.round(pct) !== Math.round((lp.extReworkPct || 0) * 100); }).length;
+  const diff = r.slice(1).filter((x) => { const lp = LOOP_PAIRS.find((p) => p.id === str(x[0])), pct = num(x[5]);
+    return lp && lp.extFrom && lp.extTo && !Number.isNaN(pct) && Math.round(pct) !== Math.round((lp.extReworkPct || 0) * 100); }).length;
   if (diff) notes.push(`Loop Pairs: ${diff} external rework value(s) differ from the catalogue — reference only, not stored in the case.`);
 }
 

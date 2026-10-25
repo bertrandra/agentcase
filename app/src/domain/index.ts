@@ -30,6 +30,8 @@ export function computeCase(s: CaseState) {
   const c = makeCtx(s);
   const eng = engineNow(c), rate = caseDiscountRate(c);
   const hy = horizonYears(c), last = hy.sav.length - 1;
-  return { model: model(c), endYear: { savings: hy.sav[last] ?? 0, run: hy.run[last] ?? 0, index: last + 1 }, headline: eng.headline(rate), payback: eng.payback(), npv: eng.npv(rate),
-    costReduction: costReduction(c), fte: fteBeforeAfter(model(c).base.etp, eng.years()[eng.years().length - 1]?.totalHumanFteEnd ?? 0), velocityPct: velocityUpliftPct(c), phaseScope: phaseScope(c.a, c.s), glassCeiling: computeGlassCeiling(c) };
+  return { model: model(c), endYear: { savings: hy.sav[last] ?? 0, run: hy.run[last] ?? 0, index: last + 1 }, headline: eng.headline(rate),
+  payback: eng.payback(), npv: eng.npv(rate),
+    costReduction: costReduction(c), fte: fteBeforeAfter(model(c).base.etp, eng.years()[eng.years().length - 1]?.totalHumanFteEnd ?? 0),
+      velocityPct: velocityUpliftPct(c), phaseScope: phaseScope(c.a, c.s), glassCeiling: computeGlassCeiling(c) };
 }

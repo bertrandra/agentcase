@@ -1,6 +1,7 @@
 import { describe, expect, it } from 'vitest';
 import {
-  calendarOf, consolidate, consolidationView, corePortfolio, envelopeCase, portfolioGantt, portfolioHeadline, scopeHeadline, validate, waveBoard, waveHeadline, type Portfolio,
+  calendarOf, consolidate, consolidationView, corePortfolio, envelopeCase, portfolioGantt, portfolioHeadline, scopeHeadline, validate, waveBoard,
+  waveHeadline, type Portfolio,
 } from '@/domain/portfolio';
 import { expectClose, loadCase, scaledTeam, withProduct, withWave } from '../../helpers/portfolio';
 
@@ -19,7 +20,9 @@ describe('scope headline (F17): single owners, equal to the domain headline', ()
     expect(p.headline).toBe(portfolioHeadline(c));
     expect(w.products).toBe(2);
     expectClose(w.net, c.waves[0]!.summary.net);
-    expectClose(w.endYear.savings, c.products.filter((v) => v.waveId === 'w1').reduce((a, v) => a + v.series.savings.slice(Math.floor((c.horizon - 1) / 12) * 12).reduce((x, y) => x + y, 0), 0));
+    expectClose(w.endYear.savings,
+      c.products.filter((v) => v.waveId === 'w1').reduce((a, v) => a + v.series.savings.slice(Math.floor((c.horizon - 1) / 12) * 12).reduce((x, y) => x + y,
+      0), 0));
     expect(scopeHeadline(c, { kind: 'product' })).toBeNull();
     expect(scopeHeadline(c, { kind: 'wave', id: 'gone' })).toBeNull();
     expect(scopeHeadline(c, { kind: 'wave', id: 'w2' })!.label).toBe('w2');

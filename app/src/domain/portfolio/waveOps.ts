@@ -7,10 +7,13 @@ const mapWave = <T extends Portfolio>(pf: T, id: string, f: (w: Wave) => Wave): 
   pf.waves.some((w) => w.id === id) ? { ...pf, waves: pf.waves.map((w) => (w.id === id ? clean(f(w)) : w)) } : pf;
 
 export function addWave<T extends Portfolio>(pf: T, o: { id: string; name: string; startMonth: number }): T {
-  return pf.waves.some((w) => w.id === o.id) ? pf : { ...pf, waves: [...pf.waves, { id: o.id, name: o.name, startMonth: whole(o.startMonth), productIds: [] }] };
+  return pf.waves.some((w) => w.id === o.id) ? pf : { ...pf,
+    waves: [...pf.waves, { id: o.id, name: o.name, startMonth: whole(o.startMonth), productIds: [] }] };
 }
-export const renameWave = <T extends Portfolio>(pf: T, id: string, name: string): T => (name.trim() ? mapWave(pf, id, (w) => ({ ...w, name: name.trim() })) : pf);
-export const setWaveStart = <T extends Portfolio>(pf: T, id: string, startMonth: number): T => mapWave(pf, id, (w) => ({ ...w, startMonth: whole(startMonth) }));
+export const renameWave = <T extends Portfolio>(pf: T, id: string,
+  name: string): T => (name.trim() ? mapWave(pf, id, (w) => ({ ...w, name: name.trim() })) : pf);
+export const setWaveStart = <T extends Portfolio>(pf: T, id: string, startMonth: number): T => mapWave(pf, id,
+  (w) => ({ ...w, startMonth: whole(startMonth) }));
 export const setWaveNote = <T extends Portfolio>(pf: T, id: string, note: string): T => mapWave(pf, id, (w) => ({ ...w, note: note || undefined }));
 
 /** Removing a wave unassigns its products (they become "unplanned"); they are not deleted. */
@@ -45,7 +48,9 @@ export function setHub<T extends Portfolio>(pf: T, patch: Partial<HubSettings>):
   const hub: HubSettings = { ...pf.hub, ...patch };
   if (!Number.isFinite(hub.infraMonthly) || hub.infraMonthly < 0) return pf;
   const { dom } = pf.common;
-  return { ...pf, hub, common: { ...pf.common, dom: { values: { ...dom.values, khInfraMonthly: String(hub.infraMonthly) }, checked: { ...dom.checked, khEnabled: hub.enabled } } } };
+  return { ...pf, hub,
+    common: { ...pf.common,
+    dom: { values: { ...dom.values, khInfraMonthly: String(hub.infraMonthly) }, checked: { ...dom.checked, khEnabled: hub.enabled } } } };
 }
 
 /** Global correlation between products for the portfolio Monte Carlo (D-M7): 0..1; 0 is the default and is stored as "absent". Out of range is refused. */

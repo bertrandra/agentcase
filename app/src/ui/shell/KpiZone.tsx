@@ -26,7 +26,8 @@ const ProductKpis = memo(function ProductKpis() {
 
 function headlineOf(r: ReturnType<typeof caseResultOf>): { f: HeadlineFigures; titles: TileTitles } {
   const m = r.model, e = r.endYear, cr = r.costReduction, fte = r.fte;   // end-year figures come from the Time Engine rows (model() arrays hold three entries)
-  const f: HeadlineFigures = { fte, year: e.index, savings: e.savings, run: e.run, cr, velocity: { raw: r.velocityPct, shown: r.velocityPct }, payback: r.payback, eff: m.eff, ceiling: m.ceiling };
+  const f: HeadlineFigures = { fte, year: e.index, savings: e.savings, run: e.run, cr, velocity: { raw: r.velocityPct, shown: r.velocityPct },
+    payback: r.payback, eff: m.eff, ceiling: m.ceiling };
   return { f, titles: {
     fteBefore: 'Total AS-IS headcount: the sum of the input team rows (FTE).',
     fteAfter: `Total human FTE at the horizon end (year ${e.index}): delivery team plus the agentic run team (AgentOps), so the reduction is not overstated. Reduction: ${fmtPct(fte.reductionPct)}.`,

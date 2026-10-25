@@ -7,7 +7,8 @@ import type { Portfolio } from './types';
 
 /** Section "Location strategy": the AS-IS and target location mix of each product, with the blended day rates they imply. */
 export interface LocStratRow extends AggBase {
-  fte: number; asisTJM: number; targetTJM: number; gap: string; localAsis: number; localTarget: number; offshoreAsis: number; offshoreTarget: number; own: boolean;
+  fte: number; asisTJM: number; targetTJM: number; gap: string; localAsis: number; localTarget: number; offshoreAsis: number; offshoreTarget: number;
+    own: boolean;
   asis: Record<string, number>; target: Record<string, number>;
 }
 /** One location of the selection: entry FTE there, its share of the selection, and the target share weighted by each product's entry FTE. */
@@ -24,9 +25,11 @@ export function baselineLocStrat(pf: Portfolio, ids: string[]): LocStratAgg {
       tgt[l.name] = (tgt[l.name] ?? 0) + (tsum ? ((t[l.name] || 0) / tsum) * mx.tot : 0);
     }
     fte += mx.tot;
-    return { ...base(p), fte: mx.tot, asisTJM: sum.asisTJM, targetTJM: sum.tgtTJM, gap: sum.gap, localAsis: cls.Local ?? 0, localTarget: classTargetPct(p.c, 'Local'),
+    return { ...base(p), fte: mx.tot, asisTJM: sum.asisTJM, targetTJM: sum.tgtTJM, gap: sum.gap, localAsis: cls.Local ?? 0,
+    localTarget: classTargetPct(p.c, 'Local'),
       offshoreAsis: cls.Offshore ?? 0, offshoreTarget: classTargetPct(p.c, 'Offshore'), own: p.overridden('targetLocPct'), asis: mx.pct, target: t };
   });
-  const mix = LOCATIONS.map((l) => ({ name: l.name, cls: l.cls, fte: byLoc[l.name] ?? 0, asisPct: fte ? ((byLoc[l.name] ?? 0) / fte) * 100 : 0, targetPct: fte ? ((tgt[l.name] ?? 0) / fte) * 100 : 0 }));
+  const mix = LOCATIONS.map((l) => ({ name: l.name, cls: l.cls, fte: byLoc[l.name] ?? 0, asisPct: fte ? ((byLoc[l.name] ?? 0) / fte) * 100 : 0,
+    targetPct: fte ? ((tgt[l.name] ?? 0) / fte) * 100 : 0 }));
   return { rows, mix, fte, localTarget: spread(rows.map((r) => r.localTarget)), offshoreTarget: spread(rows.map((r) => r.offshoreTarget)) };
 }

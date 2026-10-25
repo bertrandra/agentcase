@@ -30,14 +30,23 @@ describe('P4 budgets (best of several runs): 20 products x 60 months', () => {
   it('consolidation + view model together (products warm) stay under 30 ms', () => {
     warm();
     let k = 0;
-    const ms = best(8, () => { k++; const next = { ...pf, waves: pf.waves.map((w) => ({ ...w, startMonth: w.startMonth + (k % 2) })), horizonMonths: 60 + k }; consolidationView(next, consolidate(next)); });
+    const ms = best(8, () => {
+      k++;
+      const next = { ...pf, waves: pf.waves.map((w) => ({ ...w, startMonth: w.startMonth + (k % 2) })), horizonMonths: 60 + k };
+      consolidationView(next, consolidate(next));
+    });
     expect(ms).toBeLessThan(30);
   });
 
   it('switching the display scope (portfolio, wave, back) reads the memoised headlines in < 5 ms', () => {
     const c = warm();
     scopeHeadline(c, { kind: 'portfolio' }); scopeHeadline(c, { kind: 'wave', id: 'w2' });
-    const ms = best(20, () => { scopeHeadline(c, { kind: 'portfolio' }); scopeHeadline(c, { kind: 'wave', id: 'w2' }); scopeHeadline(c, { kind: 'wave', id: 'w3' }); scopeHeadline(c, { kind: 'product' }); });
+    const ms = best(20, () => {
+      scopeHeadline(c, { kind: 'portfolio' });
+      scopeHeadline(c, { kind: 'wave', id: 'w2' });
+      scopeHeadline(c, { kind: 'wave', id: 'w3' });
+      scopeHeadline(c, { kind: 'product' });
+    });
     expect(ms).toBeLessThan(5);
   });
 
@@ -86,7 +95,14 @@ describe('P4 budgets at store level: 20 products, one edit refreshes every view 
   it('a wave move or an offset edit re-uses every product run (no engine rebuilt) and stays < 150 ms', () => {
     twenty();
     const s = appStore().getState().portfolio, ids = s.products.map((p) => p.id), before = consolidate(corePortfolio(s)).products.map((v) => v.run);
-    const ms = best(3, () => { assignWave(ids[4]!, s.waves[1]!.id); setProductOffset(ids[7]!, 2); refresh(); assignWave(ids[4]!, s.waves[0]!.id); setProductOffset(ids[7]!, 0); refresh(); });
+    const ms = best(3, () => {
+      assignWave(ids[4]!, s.waves[1]!.id);
+      setProductOffset(ids[7]!, 2);
+      refresh();
+      assignWave(ids[4]!, s.waves[0]!.id);
+      setProductOffset(ids[7]!, 0);
+      refresh();
+    });
     const after = consolidate(corePortfolio(appStore().getState().portfolio)).products.map((v) => v.run);
     expect(after.every((r, i) => r === before[i])).toBe(true);
     expect(ms).toBeLessThan(150);

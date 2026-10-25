@@ -7,10 +7,12 @@ import { StoryTable } from './StoryTable';
 
 const help = (
   <>
-    <p>Models the Business and Delivery domains of a Software/Agentic Factory meta-model as a graph, not a tree: Epics realize the Vision, Features implement Epics, Stories implement Features, and every existing
-      SDLC/regulatory artefact is a Task — optionally linked up to the Story it fulfils. Deleting a Portfolio, Epic, Feature or Story orphans (unlinks) its direct children; nothing downstream is silently deleted.</p>
-    <p>Purely additive metadata: the Scope, the Gantt and every cost or saving figure are computed exactly as before. The generator derives a whole weekly dataset (Vision → … → Task, releases, commits, builds,
-      incidents) from the current case; it is simulated from the case&apos;s assumptions, never measured data.</p>
+    <p>Models the Business and Delivery domains of a Software/Agentic Factory meta-model as a graph, not a tree: Epics realize the Vision, Features implement
+      Epics, Stories implement Features, and every existing SDLC/regulatory artefact is a Task — optionally linked up to the Story it fulfils. Deleting a
+      Portfolio, Epic, Feature or Story orphans (unlinks) its direct children; nothing downstream is silently deleted.</p>
+    <p>Purely additive metadata: the Scope, the Gantt and every cost or saving figure are computed exactly as before. The generator derives a whole weekly
+    dataset (Vision → … → Task, releases, commits, builds, incidents) from the current case; it is simulated from the case&apos;s assumptions, never measured
+    data.</p>
   </>
 );
 

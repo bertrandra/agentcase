@@ -8,7 +8,8 @@ import { SectionDetail, usersOf } from './SectionDetail';
 import { cssVars } from '@/ui/cssVars';
 
 const TAGS = ['drives', 'shapes', 'reads', 'supports'];
-const TAG_COLOR: Record<string, string> = { drives: 'var(--ac-danger-800)', shapes: 'var(--ac-warning-610)', reads: 'var(--ac-primary-700)', supports: 'var(--ac-secondary-600)' };
+const TAG_COLOR: Record<string, string> = { drives: 'var(--ac-danger-800)', shapes: 'var(--ac-warning-610)', reads: 'var(--ac-primary-700)',
+  supports: 'var(--ac-secondary-600)' };
 
 /**
  * Legacy "📄 Sections (group & order)" table, for one menu structure: every section in app order with its group and group order (of that structure),
@@ -21,10 +22,12 @@ export function SectionTable({ structure }: { structure: string }) {
   const place = (title: string, id: string, group: string, groupSeq: number) => placeSections(title, [{ id, group, groupSeq }], structure);
   return (
     <>
-      <p className="ac-callout">Every section’s group and its order within that group belong to the <strong>{name}</strong> menu structure — the same for every persona that
-        navigates with it. Editing them here changes that sidebar for all of those personas. Tag and MVP belong to the section and are shared by every structure.</p>
+      <p className="ac-callout">Every section’s group and its order within that group belong to the <strong>{name}</strong> menu structure — the same for
+        every persona that navigates with it. Editing them here changes that sidebar for all of those personas. Tag and MVP belong to the section and are
+        shared by every structure.</p>
       <div className="ac-sectable-tools">
-        <button type="button" className="ac-btn" title="Renumber every section's Group Seq to 10, 20, 30 … within each group (current order kept), so there's room to slot a new section in between."
+        <button type="button" className="ac-btn"
+          title="Renumber every section's Group Seq to 10, 20, 30 … within each group (current order kept), so there's room to slot a new section in between."
           onClick={() => placeSections('Respace the group order ×10', respaceGroupSeq(sections), structure)}>↔ Respace ×10 Group Seq</button>
       </div>
       <div className="ac-table-wrap" tabIndex={0} aria-label="Sections (group & order)"><table className="ac-table">
@@ -34,7 +37,13 @@ export function SectionTable({ structure }: { structure: string }) {
             const gc = groupColor(colors, s.group), tc = s.tag ? TAG_COLOR[s.tag] ?? 'var(--ac-neutral-750)' : 'var(--ac-neutral-700)';
             return (
               <tr key={s.id} className={sel === s.id ? 'is-selected' : undefined}>
-                <td><button type="button" className="ac-link" aria-pressed={sel === s.id} title="Show this section's details and live preview" onClick={() => setSel(s.id)}><strong>{s.label}</strong></button> <code className="ac-sectable-id">{s.id}</code></td>
+                <td><button
+                  type="button"
+                  className="ac-link"
+                  aria-pressed={sel === s.id}
+                  title="Show this section's details and live preview"
+                  onClick={() => setSel(s.id)}
+                ><strong>{s.label}</strong></button> <code className="ac-sectable-id">{s.id}</code></td>
                 <td className="ac-c">
                   <select
                     aria-label={`Group of ${s.id}`}
@@ -46,7 +55,8 @@ export function SectionTable({ structure }: { structure: string }) {
                     {ordered.map((g) => <option key={g.id} value={g.id}>{g.label}</option>)}
                   </select></td>
                 <td className="ac-c"><input type="number" aria-label={`Group order of ${s.id}`} className="ac-seq-input ac-c" value={s.groupSeq || 0}
-                  onChange={(e) => { const n = parseFloat(e.target.value); if (!isNaN(n)) place(`Set the group order of ${s.id} to ${n}`, s.id, s.group, n); }} /></td>
+                  onChange={(e) => { const n = parseFloat(e.target.value); if (!isNaN(n)) place(`Set the group order of ${s.id} to ${n}`, s.id, s.group, n);
+                    }} /></td>
                 <td className="ac-c">
                   <select
                     aria-label={`Tag of ${s.id}`}
@@ -58,7 +68,13 @@ export function SectionTable({ structure }: { structure: string }) {
                     {s.tag && !TAGS.includes(s.tag) && <option value={s.tag}>{s.tag}</option>}
                     <option value="">— none —</option>{TAGS.map((t) => <option key={t} value={t}>{t}</option>)}
                   </select></td>
-                <td className="ac-c"><input type="checkbox" aria-label={`Fast Path member ${s.id}`} title="Member of the Fast Path (minimum-viable-path) filter" checked={!!s.mvp} onChange={(e) => setSectionMvp(s.id, e.target.checked)} /></td>
+                <td className="ac-c"><input
+                  type="checkbox"
+                  aria-label={`Fast Path member ${s.id}`}
+                  title="Member of the Fast Path (minimum-viable-path) filter"
+                  checked={!!s.mvp}
+                  onChange={(e) => setSectionMvp(s.id, e.target.checked)}
+                /></td>
                 <td>{s.description || '—'}</td>
                 <td>{usersOf(personas, lists, s.id).join(', ')}</td>
               </tr>

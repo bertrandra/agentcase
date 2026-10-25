@@ -10,11 +10,17 @@ import { freshStore } from '../../store/helpers';
 beforeEach(() => { freshStore(); });
 afterEach(() => { cleanup(); vi.restoreAllMocks(); });
 
-const headings = (): { level: number; text: string }[] => [...document.querySelectorAll('h1,h2,h3,h4')].map((h) => ({ level: Number(h.tagName[1]), text: h.textContent ?? '' }));
-const inOrder = (all: string[], wanted: string[]): boolean => { let i = 0; for (const t of all) if (i < wanted.length && t.includes(wanted[i] as string)) i++; return i === wanted.length; };
+const headings = (): { level: number;
+  text: string }[] => [...document.querySelectorAll('h1,h2,h3,h4')].map((h) => ({ level: Number(h.tagName[1]), text: h.textContent ?? '' }));
+const inOrder = (all: string[], wanted: string[]): boolean => {
+  let i = 0;
+  for (const t of all) if (i < wanted.length && t.includes(wanted[i] as string)) i++;
+  return i === wanted.length;
+};
 
 describe.each([
-  ['arch-layers', ArchLayers, ['Layer 4 · ui', 'Layer 3 · controllers', 'Layer 2 · store', 'Layer 1 · domain', 'Rules enforced', 'Time Engine', 'Command bus', 'Portfolio layer', 'Persistence', 'View selector', 'Proof layer', 'Single-source-of-truth registries', 'Legacy engines']],
+  ['arch-layers', ArchLayers, ['Layer 4 · ui', 'Layer 3 · controllers', 'Layer 2 · store', 'Layer 1 · domain', 'Rules enforced', 'Time Engine', 'Command bus',
+  'Portfolio layer', 'Persistence', 'View selector', 'Proof layer', 'Single-source-of-truth registries', 'Legacy engines']],
   ['arch-content', ArchContent, ['Layers and the rules enforced by ESLint', 'Domain: the calculation engine', 'Time Engine', 'Store and the command bus',
     'Data flow of one user action', 'Portfolio layer', 'View selector', 'Persistence, exports', 'Security properties', 'Performance budgets', 'Proof layer',
     'Single-source-of-truth registries', 'Versioning and release', 'Known gaps', 'What changed since the legacy app']],

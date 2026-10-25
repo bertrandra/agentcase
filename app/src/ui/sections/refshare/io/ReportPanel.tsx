@@ -9,7 +9,8 @@ import { downloadText } from '../download';
 /** "portfolio" | "wave:<id>" | "product:<id>", the value of the report scope selector. */
 const parse = (v: string): { scope: DisplayScope; productId?: string } => {
   const [kind, id = ''] = v.split(':');
-  return kind === 'portfolio' ? { scope: { kind: 'portfolio' } } : kind === 'wave' ? { scope: { kind: 'wave', id } } : { scope: { kind: 'product' }, productId: id };
+  return kind === 'portfolio' ? { scope: { kind: 'portfolio' } } : kind === 'wave' ? { scope: { kind: 'wave', id } } : { scope: { kind: 'product' },
+    productId: id };
 };
 
 /**
@@ -29,17 +30,22 @@ export function ReportPanel() {
   };
   return (
     <Panel title="📄 Critical & Regulated Software Delivery report">
-      <p>Standalone HTML report of the current case: selected norms, glass-ceiling arithmetic, supervision floors and postures by phase, the AI authority cap of the engagement context and the economics of compliance. Needs the Regulatory catalog on and at least one norm selected.</p>
+      <p>Standalone HTML report of the current case: selected norms, glass-ceiling arithmetic, supervision floors and postures by phase, the AI authority cap
+        of the engagement context and the economics of compliance. Needs the Regulatory catalog on and at least one norm selected.</p>
       {portfolio && (
         <p>
           <label>Report scope{' '}
             <select aria-label="Report scope" value={value} onChange={(e) => setPicked(e.target.value)}>
               <option value="portfolio">Portfolio</option>
               <optgroup label="Waves">{waves.map((w) => <option key={w.id} value={`wave:${w.id}`}>Wave: {w.name}</option>)}</optgroup>
-              <optgroup label="Products">{products.filter((p) => !p.archived).map((p) => <option key={p.id} value={`product:${p.id}`}>Product: {p.name}</option>)}</optgroup>
+              <optgroup label="Products">{products.filter((p) => !p.archived).map((p) => <option
+                key={p.id}
+                value={`product:${p.id}`}
+              >Product: {p.name}</option>)}</optgroup>
             </select>
           </label>
-          {' '}A product gives the usual report of its effective case; the portfolio or a wave gives the consolidated report (economics by wave and product, knowledge transfer).
+          {' '}A product gives the usual report of its effective case; the portfolio or a wave gives the consolidated report (economics by wave and product,
+            knowledge transfer).
         </p>
       )}
       <button type="button" className="ac-btn" onClick={run}>📄 Export critical-delivery report</button>

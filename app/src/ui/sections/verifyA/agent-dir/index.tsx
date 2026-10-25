@@ -8,8 +8,10 @@ import { useLive } from '../useLive';
 
 const help = (
   <>
-    <p>Execution agents and operational roles active per lifecycle phase, derived from the artefact catalogue, plus the three agentic loop pairs that connect artefacts across phases.</p>
-    <p>Both loop toggles are off by default and never move the golden case: the internal loop only adds an informational token-cost estimate, the external rework majors the destination phase's effort (verification-tax mechanism).</p>
+    <p>Execution agents and operational roles active per lifecycle phase, derived from the artefact catalogue, plus the three agentic loop pairs that connect
+      artefacts across phases.</p>
+    <p>Both loop toggles are off by default and never move the golden case: the internal loop only adds an informational token-cost estimate, the external
+      rework majors the destination phase's effort (verification-tax mechanism).</p>
   </>
 );
 const OPTIONS = [{ value: 'ALL', label: 'All phases' }, ...REG_PHASES.map((p) => ({ value: p, label: p }))];
@@ -25,7 +27,8 @@ export default function AgentDirSection() {
         <Panel title="Execution agents by authorization level">
           <SimpleTable align={['left', 'left', 'left', 'left', 'center', 'center', 'left']} empty="No agent active for this phase"
             head={['Agent code', 'Agent', 'Auth. level', 'Skill', 'Capacity (runs/day)', 'Avg. agentSup', 'Artefacts produced']}
-            rows={agents.map((a) => ({ key: a.agent.id, cells: [a.agent.id, <b>{agentName(a.agent)}</b>, a.agent.aiAuth, a.agent.skill, a.agent.capacity, a.avgSup == null ? '—' : `${a.avgSup}%`, a.produced] }))} />
+            rows={agents.map((a) => ({ key: a.agent.id, cells: [a.agent.id, <b>{agentName(a.agent)}</b>, a.agent.aiAuth, a.agent.skill, a.agent.capacity,
+              a.avgSup == null ? '—' : `${a.avgSup}%`, a.produced] }))} />
         </Panel>
         <Panel title="Operational roles relevant to this phase">
           <SimpleTable head={['Operational role']} empty="No role active for this phase" rows={roles.map((r) => ({ key: r, cells: [r] }))} />

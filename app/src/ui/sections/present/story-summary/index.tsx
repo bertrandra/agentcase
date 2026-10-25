@@ -6,7 +6,8 @@ import { DataTable } from '@/ui/widgets/DataTable';
 import { SectionFrame } from '@/ui/zones/SectionFrame';
 
 const help = (
-  <p>The guided sequence’s own close: one page, baseline vs target, across team, cost, delivery and confidence. Distinct from the detailed AS-IS vs TO-BE comparison tab — this is the narrative summary, not the row-by-row breakdown (Story Mode, SM-SPEC v0.1 §10 Q4).</p>
+  <p>The guided sequence’s own close: one page, baseline vs target, across team, cost, delivery and confidence. Distinct from the detailed AS-IS vs TO-BE
+    comparison tab — this is the narrative summary, not the row-by-row breakdown (Story Mode, SM-SPEC v0.1 §10 Q4).</p>
 );
 
 /** The story so far — AS-IS to TO-BE on one page. */
@@ -23,8 +24,10 @@ export default function StorySummarySection() {
   return (
     <SectionFrame title="📖 The story so far — AS-IS → TO-BE" help={help}
       result={<>
-        <p className="ac-story-lead">This case moves the team from <strong>{s.baseFte.toFixed(1)} FTE</strong> to <strong>{s.tgtFte.toFixed(1)} FTE</strong> by {s.endLabel},
-          at <strong>+{s.velocityPct}%</strong> delivery velocity, saving <strong>{fmtK(s.endSavings)}</strong> in {s.endLabel} with a payback of <strong>{payTxt}</strong>.</p>
+        <p className="ac-story-lead">This case moves the team
+        from <strong>{s.baseFte.toFixed(1)} FTE</strong> to <strong>{s.tgtFte.toFixed(1)} FTE</strong> by {s.endLabel},
+        at <strong>+{s.velocityPct}%</strong> delivery velocity, saving <strong>{fmtK(s.endSavings)}</strong> in {s.endLabel} with a payback
+        of <strong>{payTxt}</strong>.</p>
         <DataTable rows={rows} rowKey={(r) => r[0]} columns={[
           { key: 'k', header: '', render: (r) => r[0] }, { key: 'a', header: 'AS-IS', align: 'center', render: (r) => r[1] },
           { key: 'b', header: `TO-BE (${s.endLabel})`, align: 'center', render: (r) => <b>{r[2]}</b> }]} />

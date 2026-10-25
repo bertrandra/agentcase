@@ -9,11 +9,19 @@ import { FieldNumber } from './field/FieldNumber';
 export { fmtK } from '@/ui/format';
 
 /** A model coefficient (COEF) shown and edited as a form input; the case's COEF is the source of truth. */
-export function CoefInput({ coef, id, label, hint, min, max, step }: { coef: CoefKey; id: string; label: string; hint?: string; min?: number; max?: number; step?: number }) {
+export function CoefInput({ coef, id, label, hint, min, max, step }: { coef: CoefKey; id: string; label: string; hint?: string; min?: number; max?: number;
+  step?: number }) {
   const value = useDoc((d) => d.COEF[coef] ?? '');
   return (
     <FieldNumber native="number" label={label} hint={hint} value={value} min={min} max={max} step={step} onCommit={(v) => setCoef(coef, id, v)}>
-      <Field label={label} hint={hint}><input type="number" value={value} min={min} max={max} step={step} onChange={(e) => setCoef(coef, id, e.target.value)} /></Field>
+      <Field label={label} hint={hint}><input
+        type="number"
+        value={value}
+        min={min}
+        max={max}
+        step={step}
+        onChange={(e) => setCoef(coef, id, e.target.value)}
+      /></Field>
     </FieldNumber>
   );
 }

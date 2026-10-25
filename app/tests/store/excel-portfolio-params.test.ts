@@ -18,13 +18,15 @@ const sheetNames = async (b: ArrayBuffer): Promise<string[]> => {
   return wb.worksheets.map((w) => w.name);
 };
 /** What a round trip must reproduce exactly: products, waves, hub, horizon, start date, knowledge subsets (inside the products), active product. */
-const core = (p: Portfolio) => ({ products: p.products, waves: p.waves, hub: p.hub, horizonMonths: p.horizonMonths, startDate: p.startDate, active: p.activeProductId });
+const core = (p: Portfolio) => ({ products: p.products, waves: p.waves, hub: p.hub, horizonMonths: p.horizonMonths, startDate: p.startDate,
+  active: p.activeProductId });
 const npv = (p: Portfolio) => portfolioHeadline(consolidate(p)).npv;
 /** The legacy-faithful rebuilds of the case import (see excel-params-roundtrip.test.ts NORMALISED): not compared, but stable (second test). */
 const OMIT = ['phaseOff', 'PERSONAS', 'SECTION_DEPS'];
 const rest = (c: Portfolio['common']) => Object.fromEntries(Object.entries(c).filter(([k]) => !OMIT.includes(k)));
 
-describe.each([['pf-three-products fixture', () => openPortfolioFixture()], ['generated 4-product portfolio', () => fourProducts()]])('parameters workbook round trip: %s', (_n, make) => {
+describe.each([['pf-three-products fixture', () => openPortfolioFixture()],
+  ['generated 4-product portfolio', () => fourProducts()]])('parameters workbook round trip: %s', (_n, make) => {
   it('export -> import into a fresh store reproduces the portfolio, in one undo step', async () => {
     const before = make(), b = await bytes();
     freshStore();
@@ -55,7 +57,8 @@ describe('scopes of the export', () => {
     const all = await sheetNames(await bytes('all'));
     expect(all.slice(-7)).toEqual(['PortfolioSettings', 'Products', 'Waves', 'TeamIn', 'Overrides', 'KnowledgeSubsets', 'KnowledgeDomains']);
     expect(all.slice(0, -7).some((n) => PORTFOLIO_SHEETS.has(n))).toBe(false);
-    for (const scope of ['no-factory', 'persona-only'] as const) expect((await sheetNames(await bytes(scope))).filter((n) => PORTFOLIO_SHEETS.has(n))).toEqual([]);
+    for (const scope of ['no-factory',
+      'persona-only'] as const) expect((await sheetNames(await bytes(scope))).filter((n) => PORTFOLIO_SHEETS.has(n))).toEqual([]);
     expect((await sheetNames(await bytes('no-factory'))).some((n) => /^FM /.test(n))).toBe(false);
   });
   it('a plain single case exports its 47 sheets and none of the portfolio ones', async () => {

@@ -1,5 +1,6 @@
 import {
-  addGroup, addPersona, addPersonaSection, deleteGroup, deletePersona, duplicatePersona, removePersonaSection, renameGroup, renamePersona, setDefaultPersona, setGroupColor, setGroupDescription,
+  addGroup, addPersona, addPersonaSection, deleteGroup, deletePersona, duplicatePersona, removePersonaSection, renameGroup, renamePersona, setDefaultPersona,
+  setGroupColor, setGroupDescription,
   setGroupOrder, setPersonaCompactNav, setPersonaOrder,
 } from '@/controllers/pdcPersonas';
 import type { Sample } from './types';

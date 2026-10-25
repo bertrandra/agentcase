@@ -9,14 +9,16 @@ import type { ProductView } from './waves';
  * What the aggregate views of a Portfolio / Wave read: the planned products of the selection and their summed series, exactly the consolidation's own
  * objects.
  */
-export interface Sel { kind: 'portfolio' | 'wave'; label: string; waveId?: string; items: ProductView[]; series: Series; summary: Summary; headline: PortfolioHeadline }
+export interface Sel { kind: 'portfolio' | 'wave'; label: string; waveId?: string; items: ProductView[]; series: Series; summary: Summary;
+  headline: PortfolioHeadline }
 
 /** The selection of a Portfolio / Wave View; null for a Product view or an unknown wave. */
 export function selectionOf(c: Consolidated, scope: DisplayScope): Sel | null {
   const sh = scopeHeadline(c, scope);
   if (!sh || scope.kind === 'product') return null;
   const wave = scope.kind === 'wave' ? c.waves.find((w) => w.id === scope.id) : undefined;
-  return { kind: scope.kind, label: sh.label, waveId: wave?.id, items: c.products.filter((v) => !wave || v.waveId === wave.id), series: wave ? wave.series : c.series, summary: wave ? wave.summary : c.summary, headline: sh.headline };
+  return { kind: scope.kind, label: sh.label, waveId: wave?.id, items: c.products.filter((v) => !wave || v.waveId === wave.id),
+    series: wave ? wave.series : c.series, summary: wave ? wave.summary : c.summary, headline: sh.headline };
 }
 
 /** Total of a monthly measure over a range of months. */

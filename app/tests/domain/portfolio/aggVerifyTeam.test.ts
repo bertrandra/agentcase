@@ -33,7 +33,12 @@ describe.each([['Portfolio', 0], ['Wave 1', 1], ['Wave 2', 2]] as const)('verify
 
   it(`vfte-ov: the horizon-end composition of each product`, () => {
     const t = vfteOvTable(pf, scope())!, ind = independent(pf, scope());
-    ind.forEach((p, i) => { const last = periodRows(p.live).at(-1)!; expectCell(t.rows[i]!.cells.human, last.human); expectCell(t.rows[i]!.cells.agent, last.agent); expectCell(t.rows[i]!.cells.ramp, last.ramp); });
+    ind.forEach((p, i) => {
+      const last = periodRows(p.live).at(-1)!;
+      expectCell(t.rows[i]!.cells.human, last.human);
+      expectCell(t.rows[i]!.cells.agent, last.agent);
+      expectCell(t.rows[i]!.cells.ramp, last.ramp);
+    });
     expectCell(t.total.human, sum(ind.map((p) => periodRows(p.live).at(-1)!.human)));
     expectCell(t.total.freed, sum(ind.map((p) => periodRows(p.live).at(-1)!.freed)));
     expect(t.total.ramp).toBeNull();
@@ -58,7 +63,8 @@ describe.each([['Portfolio', 0], ['Wave 1', 1], ['Wave 2', 2]] as const)('verify
     expectClose(a.total.human, sum(comps.map((c) => c.tot.human)));
     expectClose(a.total.agent, sum(comps.map((c) => c.tot.agent)));
     expectClose(a.total.asis, sum(comps.map((c) => c.tot.asis)));
-    for (const s of a.skills) expectClose(s.human, sum(comps.flatMap((c) => c.rows.filter((r) => r.skill === s.skill).map((r) => r.perYear[Math.min(a.year, c.years.length - 1)]!.human))));
+    for (const s of a.skills) expectClose(s.human,
+      sum(comps.flatMap((c) => c.rows.filter((r) => r.skill === s.skill).map((r) => r.perYear[Math.min(a.year, c.years.length - 1)]!.human))));
     expectClose(sum(a.skills.map((s) => s.human)), a.total.human);
     expect(a.year).toBeLessThan(a.years);
   });

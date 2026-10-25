@@ -23,9 +23,13 @@ const same = (name: string, id: string, got: (id: string) => unknown, keys?: str
 
 describe('Model-Engine read-outs reproduce the legacy oracle', () => {
   it('has fixtures for the flags (me-*) and the base cases', () => { expect(ids.length).toBeGreaterThanOrEqual(50); expect(ids).toContain('me-mcs'); });
-  it.each(ids)('P1 loop convergence · %s', (id) => same('me_lce', id, (i) => lceModel(ctxOf(i)), ['loops', 'nMax', 'calibrated', 'weightedEN', 'escapePct', 'reviewShare']));
-  it.each(ids)('P2 verification tax · %s', (id) => same('me_evt', id, (i) => ({ ...evtModel(ctxOf(i)), baseP: evtBaseP(ctxOf(i)) }), ['classes', 'totalW', 'phiWeighted', 'kappaTerm', 'rate', 'rhoMax', 'baseP']));
-  it.each(ids)('P3 supervision · %s', (id) => same('me_sup', id, (i) => supModel(ctxOf(i)), ['provision', 'constrained', 'mode', 'esup', 'vMax', 'vfteRaw', 'vfteEff', 'esupNeeded', 'supervisorsToUnlock']));
+  it.each(ids)('P1 loop convergence · %s',
+    (id) => same('me_lce', id, (i) => lceModel(ctxOf(i)), ['loops', 'nMax', 'calibrated', 'weightedEN', 'escapePct', 'reviewShare']));
+  it.each(ids)('P2 verification tax · %s', (id) => same('me_evt', id, (i) => ({ ...evtModel(ctxOf(i)), baseP: evtBaseP(ctxOf(i)) }),
+    ['classes', 'totalW', 'phiWeighted', 'kappaTerm', 'rate', 'rhoMax', 'baseP']));
+  it.each(ids)('P3 supervision · %s',
+    (id) => same('me_sup', id, (i) => supModel(ctxOf(i)), ['provision', 'constrained', 'mode', 'esup', 'vMax', 'vfteRaw', 'vfteEff', 'esupNeeded',
+    'supervisorsToUnlock']));
   it.each(ids)('P3 DORA read-out · %s', (id) => same('me_dora', id, (i) => doraReadout(ctxOf(i))));
   it.each(ids)('P5 flow and value · %s', (id) => same('me_flow', id, (i) => flowModel(ctxOf(i))));
   it.each(ids)('P6 evidence ledger, equal weights · %s', (id) => same('me_evlNoRun', id, (i) => {
@@ -35,9 +39,11 @@ describe('Model-Engine read-outs reproduce the legacy oracle', () => {
   it.each(ids)('P6 evidence ledger weighted by the P4 tornado · %s', (id) => same('me_evlRun', id, (i) => {
     const mc = loadExtra<Json>('me_mcs', i);
     const e = evlModel(ctxOf(i), (mc.tornado ?? null) as { id: string; swing: number }[] | null, NOW);
-    return { ...e, confidence: { score: e.score, grade: e.grade, hasTornado: e.hasTornado }, upgradePriority: e.upgradePriority.map((u) => ({ ...u, tier: u.effectiveTier })) };
+    return { ...e, confidence: { score: e.score, grade: e.grade, hasTornado: e.hasTornado },
+      upgradePriority: e.upgradePriority.map((u) => ({ ...u, tier: u.effectiveTier })) };
   }, ['stage', 'expectedGrade', 'confidence', 'meetsExpectation', 'upgradePriority']));
-  it.each(['golden', 'me-mcs', 'me-sup-hard', 'me-lce', 'curve-logistic', 'horizon-5', 'sup-hard', 'evt-on'])('P4 stochastic layer (seed 777, 300 draws) · %s', (id) => {
+  it.each(['golden', 'me-mcs', 'me-sup-hard', 'me-lce', 'curve-logistic', 'horizon-5', 'sup-hard',
+    'evt-on'])('P4 stochastic layer (seed 777, 300 draws) · %s', (id) => {
     same('me_mcs', id, (i) => legacyNames(runMcs(ctxOf(i), 300, 777)));
   }, 60000);
 });

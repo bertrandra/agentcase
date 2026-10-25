@@ -46,5 +46,6 @@ export function waveViews(pf: Portfolio, products: ProductView[], horizon: numbe
 }
 
 export function productView(s: Scheduled, run: ProductRun, series: ProductSeries, rate: number): ProductView {
-  return { id: s.product.id, name: s.product.name, waveId: s.wave.id, month0: s.month0, lead: s.lead, run, series, summary: summarize(series, series.first, rate) };
+  return { id: s.product.id, name: s.product.name, waveId: s.wave.id, month0: s.month0, lead: s.lead, run, series,
+    summary: summarize(series, series.first, rate) };
 }

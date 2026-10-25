@@ -32,8 +32,18 @@ function CardOps({ s, onShift, onShiftGroup }: { s: NavSection } & Pick<Props, '
     <div className="ac-ncard-ops">
       <button type="button" className="ac-btn" aria-label={`Move ${s.label} up`} onClick={() => onShift(s.id, -1)}>↑</button>
       <button type="button" className="ac-btn" aria-label={`Move ${s.label} down`} onClick={() => onShift(s.id, 1)}>↓</button>
-      {onShiftGroup && <button type="button" className="ac-btn" aria-label={`Move ${s.label} to the previous group`} onClick={() => onShiftGroup(s.id, -1)}>←</button>}
-      {onShiftGroup && <button type="button" className="ac-btn" aria-label={`Move ${s.label} to the next group`} onClick={() => onShiftGroup(s.id, 1)}>→</button>}
+      {onShiftGroup && <button
+        type="button"
+        className="ac-btn"
+        aria-label={`Move ${s.label} to the previous group`}
+        onClick={() => onShiftGroup(s.id, -1)}
+      >←</button>}
+      {onShiftGroup && <button
+        type="button"
+        className="ac-btn"
+        aria-label={`Move ${s.label} to the next group`}
+        onClick={() => onShiftGroup(s.id, 1)}
+      >→</button>}
     </div>
   );
 }
@@ -78,9 +88,19 @@ function Column({ col, over, ops, leave, props }: { col: Col; over: boolean; ops
       onDrop={(e) => { e.preventDefault(); ops.drop(null); }}
     >
       <div className="ac-ncol-head">
-        {onShiftColumn && <button type="button" className="ac-btn" aria-label={`Move the group ${group.label} left`} onClick={() => onShiftColumn(group.id, -1)}>◀</button>}
+        {onShiftColumn && <button
+          type="button"
+          className="ac-btn"
+          aria-label={`Move the group ${group.label} left`}
+          onClick={() => onShiftColumn(group.id, -1)}
+        >◀</button>}
         <span className="ac-grow">{group.label} <small className="ac-muted">({cards.length})</small></span>
-        {onShiftColumn && <button type="button" className="ac-btn" aria-label={`Move the group ${group.label} right`} onClick={() => onShiftColumn(group.id, 1)}>▶</button>}
+        {onShiftColumn && <button
+          type="button"
+          className="ac-btn"
+          aria-label={`Move the group ${group.label} right`}
+          onClick={() => onShiftColumn(group.id, 1)}
+        >▶</button>}
       </div>
       {cards.length === 0 && <p className="ac-muted ac-ncol-empty">drop here</p>}
       {cards.map((s) => <Card key={s.id} s={s} color={color} ops={ops} props={props} />)}
@@ -96,7 +116,10 @@ export function Board(props: Props) {
     const rest = cards.filter((c) => c.id !== drag), i = before ? rest.findIndex((c) => c.id === before) : -1;
     return i < 0 ? rest.length : i;
   };
-  const hover = (group: string, cards: NavSection[], before: string | null) => { setOver(group); if (drag) onPending?.({ id: drag, group, index: at(cards, before) }); };
+  const hover = (group: string, cards: NavSection[], before: string | null) => {
+    setOver(group);
+    if (drag) onPending?.({ id: drag, group, index: at(cards, before) });
+  };
   const clear = () => { setDrag(null); setOver(null); onPending?.(null); };
   const drop = (group: string, cards: NavSection[], before: string | null) => {
     const id = drag; clear();

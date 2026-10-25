@@ -21,7 +21,8 @@ export function Tests({ initial }: { initial?: string | null }) {
         <optgroup label="Sections">{DATA.sections.map((s) => <option key={s.id} value={s.id}>{s.label}</option>)}</optgroup>
       </select></label>
       <p data-testid="deps-selection" className="ac-dep-selection">
-        {p.full ? <strong>Full suite: {total} of {total} test files (saved 0%).</strong> : <strong>{p.tests.length} of {total} test files would run (saved {pct(p.tests.length, total)}%).</strong>}
+        {p.full ? <strong>Full suite: {total} of {total} test files (saved 0%).</strong>
+          : <strong>{p.tests.length} of {total} test files would run (saved {pct(p.tests.length, total)}%).</strong>}
         {' '}Impacted: {p.zones.length} zones, {p.sections.length} sections.
       </p>
       {p.reasons.map((r) => <Callout key={r} kind="warn">{r}</Callout>)}
@@ -31,14 +32,17 @@ export function Tests({ initial }: { initial?: string | null }) {
       </details>
       <h3>Zone by zone</h3>
       <table className="ac-table" aria-label="Tests selected per changed zone">
-        <thead><tr><th>Zone changed</th><th>Zones impacted</th><th>Sections impacted</th><th>Tests if any module changes</th><th>Saved</th><th>One module changed: median · worst</th></tr></thead>
+        <thead><tr><th>Zone changed</th><th>Zones impacted</th><th>Sections impacted</th><th>Tests if any module changes</th><th>Saved</th><th>One module
+          changed: median · worst</th></tr></thead>
         <tbody>{rows.map(({ z, p: r }) => (
-          <tr key={z}><td>{labelOf(z)}</td><td>{r.zones.length}</td><td>{r.sections.length}</td><td>{r.full ? `${total} (full suite)` : r.tests.length}</td><td>{r.full ? '0%' : `${pct(r.tests.length, total)}%`}</td><td>{one(z)}</td></tr>
+          <tr key={z}><td>{labelOf(z)}</td><td>{r.zones.length}</td><td>{r.sections.length}</td><td>{r.full ? `${total} (full suite)`
+            : r.tests.length}</td><td>{r.full ? '0%' : `${pct(r.tests.length, total)}%`}</td><td>{one(z)}</td></tr>
         ))}</tbody>
       </table>
       <h3>The rule</h3>
       <ul>{notes.ruleSteps.map((s) => <li key={s}>{s}</li>)}</ul>
-      <p className="ac-muted">Contract tests that always run: {RULE.contractTests.join(', ')}. More than {Math.round(RULE.maxShare * 100)}% selected, or a change in {RULE.fullZones.join(', ')}, or any of {RULE.fullSuite.length} configuration, helper and fixture paths: the full suite.</p>
+      <p className="ac-muted">Contract tests that always run: {RULE.contractTests.join(', ')}. More than {Math.round(RULE.maxShare * 100)}% selected, or a
+        change in {RULE.fullZones.join(', ')}, or any of {RULE.fullSuite.length} configuration, helper and fixture paths: the full suite.</p>
     </div>
   );
 }

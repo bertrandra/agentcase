@@ -23,7 +23,13 @@ function oldEngine(net: number[], annualRate?: number | null) {
 function oldThin(net: number[], annualRate?: number | null) {
   const dr = (annualRate == null ? D : annualRate) / 12;
   let cum = 0, payback: number | null = null, npv = 0, totalNet = 0;
-  for (let t = 1; t <= net.length; t++) { const n = net[t - 1] as number; cum += n; if (payback === null && cum >= 0) payback = t; npv += n / Math.pow(1 + dr, t); totalNet += n; }
+  for (let t = 1; t <= net.length; t++) {
+    const n = net[t - 1] as number;
+    cum += n;
+    if (payback === null && cum >= 0) payback = t;
+    npv += n / Math.pow(1 + dr, t);
+    totalNet += n;
+  }
   return { payback, npv, totalNet };
 }
 /** portfolio/headline.ts summarize() before lot 4 (payback not before the first movement) */
@@ -33,7 +39,10 @@ function oldPortfolio(net: number[], first: number, rate: number) {
   for (const x of net) { c += x; cum.push(c); }
   const dr = rate / 12;
   let paybackMonth: number | null = null, npv = 0;
-  for (let T = 1; T <= net.length; T++) { if (paybackMonth === null && T >= first && (cum[T - 1] as number) >= 0) paybackMonth = T; npv += (net[T - 1] as number) / Math.pow(1 + dr, T); }
+  for (let T = 1; T <= net.length; T++) {
+    if (paybackMonth === null && T >= first && (cum[T - 1] as number) >= 0) paybackMonth = T;
+    npv += (net[T - 1] as number) / Math.pow(1 + dr, T);
+  }
   return { cum, paybackMonth, npv };
 }
 /** model/flow.ts flowModel() before lot 4: a constant monthly value, annual compounding with a fractional exponent */
@@ -61,11 +70,13 @@ describe('cash-flow kernel = the loops it replaced, bit for bit', () => {
     const o = oldThin(net, r), k = cashflowSummary(net, { annualRate: r });
     same(k.paybackMonth, o.payback); same(k.npv, o.npv); same(k.total, o.totalNet);
   }), { numRuns: 400 }));
-  it('portfolio summary with a first month', () => fc.assert(fc.property(flow, fc.integer({ min: 1, max: 140 }), fc.double({ min: 0, max: 1, noNaN: true }), (net, first, r) => {
+  it('portfolio summary with a first month',
+    () => fc.assert(fc.property(flow, fc.integer({ min: 1, max: 140 }), fc.double({ min: 0, max: 1, noNaN: true }), (net, first, r) => {
     const o = oldPortfolio(net, first, r), k = cashflowSummary(net, { annualRate: r, firstMonth: first });
     sameArr(k.cumulative, o.cum); same(k.paybackMonth, o.paybackMonth); same(k.npv, o.npv);
   }), { numRuns: 400 }));
-  it('time-to-market value: annual compounding', () => fc.assert(fc.property(money, fc.integer({ min: 0, max: 120 }), fc.double({ min: 0, max: 1, noNaN: true }), (v, n, d) => {
+  it('time-to-market value: annual compounding',
+    () => fc.assert(fc.property(money, fc.integer({ min: 0, max: 120 }), fc.double({ min: 0, max: 1, noNaN: true }), (v, n, d) => {
     same(npvOf(new Array<number>(n).fill(v), d, 'annual'), oldFlow(v, n, d));
   }), { numRuns: 400 }));
   it('discount factor row', () => fc.assert(fc.property(fc.integer({ min: 0, max: 200 }), fc.double({ min: 0, max: 1, noNaN: true }), (i, r) => {

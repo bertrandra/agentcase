@@ -19,16 +19,21 @@ import { PORTFOLIO_SHEETS } from '../portfolio/names';
 import type { SheetFamily } from './types';
 
 /** Sheet order of the workbook (legacy exportParams). */
-export const WRITE_ORDER: SheetFamily[] = [parameters, rateCard, inputTeam, phaseScope, locationTarget, qualityAsIs, tokenModels, regSettings, regNorms, regArtifacts, sdlcArtifacts,
-  agentCatalogSheet, loopPairsSheet, personas, personaSections, groups, sections, menuStructures, dependencies, sCurve, personaSectionOrder, personaSequence, dynamicSections, dynamicCards, dynamicRows,
+export const WRITE_ORDER: SheetFamily[] = [parameters, rateCard, inputTeam, phaseScope, locationTarget, qualityAsIs, tokenModels, regSettings, regNorms,
+regArtifacts, sdlcArtifacts,
+  agentCatalogSheet, loopPairsSheet, personas, personaSections, groups, sections, menuStructures, dependencies, sCurve, personaSectionOrder, personaSequence,
+  dynamicSections, dynamicCards, dynamicRows,
   statusLifecycle, tobeTeam, skillMap, tobeSplit, strategies, factoryMeta, themesSheet];
 
 /** Order in which sheets are applied on import (legacy importParams): later sheets validate against what earlier ones set. */
-export const READ_ORDER: SheetFamily[] = [parameters, rateCard, inputTeam, phaseScope, locationTarget, qualityAsIs, tokenModels, regSettings, regNorms, regArtifacts, agentCatalogSheet, loopPairsSheet,
-  sdlcArtifacts, personas, personaSections, personaSectionOrder, personaSequence, groups, sections, menuStructures, dependencies, sCurve, dynamicSections, dynamicCards, dynamicRows, factoryMeta,
+export const READ_ORDER: SheetFamily[] = [parameters, rateCard, inputTeam, phaseScope, locationTarget, qualityAsIs, tokenModels, regSettings, regNorms,
+regArtifacts, agentCatalogSheet, loopPairsSheet,
+  sdlcArtifacts, personas, personaSections, personaSectionOrder, personaSequence, groups, sections, menuStructures, dependencies, sCurve, dynamicSections,
+  dynamicCards, dynamicRows, factoryMeta,
   statusLifecycle, skillMap, tobeSplit, strategies, themesSheet];
 
 /** The sheets the loader keeps: the 47 case sheets plus the portfolio sheets (read by `portfolio/`, ignored by the case import). */
 export const KNOWN_SHEETS: Set<string> = new Set([...WRITE_ORDER.flatMap((f) => f.sheets), ...PORTFOLIO_SHEETS]);
 /** Sheets kept by the "persona config only" export. */
-export const PERSONA_SHEETS = new Set(['Personas', 'Persona Sections', 'Persona Section Order', 'Persona Sequence', 'Groups', 'Sections', 'Menu Structures', 'Menu Structure Sections', 'Dependencies']);
+export const PERSONA_SHEETS = new Set(['Personas', 'Persona Sections', 'Persona Section Order', 'Persona Sequence', 'Groups', 'Sections', 'Menu Structures',
+  'Menu Structure Sections', 'Dependencies']);

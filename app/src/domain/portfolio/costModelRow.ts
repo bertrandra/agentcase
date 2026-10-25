@@ -8,7 +8,8 @@ export interface Cells { t0: number | null; months: (number | null)[] }
 /** Roles whose Total column is the sum of the months (flows, days); the others (rates, percentages, FTE, factors) have none. */
 const SUMMED = new Set<CostRole>(['days', 'info', 'sub', 'adjust', 'teamcost', 'engine', 'diff', 'line', 'team', 'total']);
 
-export function row(role: CostRole, keys: string[], unit: string, fmt: CostFmt, t0: number | null, months: (number | null)[], f?: CostFormula, bold = false): CostRow {
+export function row(role: CostRole, keys: string[], unit: string, fmt: CostFmt, t0: number | null, months: (number | null)[], f?: CostFormula,
+  bold = false): CostRow {
   return { role, keys, unit, fmt, t0, months, total: SUMMED.has(role) ? sumOf(months) : null, f, bold };
 }
 

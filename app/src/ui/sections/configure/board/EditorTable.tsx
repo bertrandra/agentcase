@@ -2,7 +2,8 @@ import type { ReactNode } from 'react';
 
 /** The editing table of a dashboard's cards or body rows: heading with the count, hint, table (empty line when there is nothing), and the Add button. */
 export function EditorTable({ title, count, hint, caption, head, cols, empty, add, onAdd, children }: {
-  title: string; count: number; hint: string; caption: string; head: ReactNode; cols: number; empty: string; add: string; onAdd: () => void; children: ReactNode;
+  title: string; count: number; hint: string; caption: string; head: ReactNode; cols: number; empty: string; add: string; onAdd: () => void;
+    children: ReactNode;
 }) {
   return (
     <>

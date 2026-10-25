@@ -30,7 +30,8 @@ describe.each(KINDS)('frameEngagement (%s)', (k) => {
 
 describe.each(KINDS)('frameEngage (%s)', (k) => {
   it('stage durations, runway and decision dates', () => {
-    const ids = sel(k), a = frameEngage(pf, ids), dw = (id: string) => [1, 2, 3, 4].map((i) => +(resolveProduct(pf, id).dom.values[`rmD${i}`] || [4, 4, 4, 6][i - 1]!));
+    const ids = sel(k), a = frameEngage(pf, ids),
+      dw = (id: string) => [1, 2, 3, 4].map((i) => +(resolveProduct(pf, id).dom.values[`rmD${i}`] || [4, 4, 4, 6][i - 1]!));
     a.rows.forEach((r) => { expect(r.weeks).toEqual(dw(r.id)); expect(r.totalWeeks).toBe(dw(r.id).reduce((s, x) => s + x, 0)); });
     expect(a.rows.find((r) => r.id === v.ids[1])!.weeks[0]).toBe(8);
     expect(a.totalWeeks!.max).toBe(22); expect(a.totalWeeks!.min).toBe(18);
@@ -53,7 +54,8 @@ describe.each(KINDS)('baselineLocStrat (%s)', (k) => {
   it('FTE by location is the sum of the products; shares add up to 100', () => {
     const ids = sel(k), a = baselineLocStrat(pf, ids), teams = ids.map((id) => pf.products.find((p) => p.id === id)!);
     expectClose(a.fte, teams.reduce((s, p) => s + teamEtp(p.teamIn), 0));
-    for (const l of LOCATIONS) expectClose(a.mix.find((m) => m.name === l.name)!.fte, ids.reduce((s, id) => s + locationMix(resolveProduct(pf, id)).byLoc[l.name]!, 0));
+    for (const l of LOCATIONS) expectClose(a.mix.find((m) => m.name === l.name)!.fte,
+      ids.reduce((s, id) => s + locationMix(resolveProduct(pf, id)).byLoc[l.name]!, 0));
     expectClose(a.mix.reduce((s, m) => s + m.asisPct, 0), 100);
     expectClose(a.mix.reduce((s, m) => s + m.targetPct, 0), 100);
     const b = a.rows.find((r) => r.id === v.ids[1])!;

@@ -13,7 +13,8 @@ import { cssVars } from '@/ui/cssVars';
 
 const help = (
   <>
-    <p>How intensively agents are used in your configured scenario: token consumption, agent effort (vFTE) by phase and by authorization level, and the FinOps cost build-up.</p>
+    <p>How intensively agents are used in your configured scenario: token consumption, agent effort (vFTE) by phase and by authorization level, and the FinOps
+      cost build-up.</p>
     <p>Everything recomputes from your parameters (team, automation, ramp, scope, token price). Relative agent effort = artefacts × automatable %.</p>
   </>
 );
@@ -21,16 +22,22 @@ const help = (
 /** Agent usage — consumption for this case, by year, by phase and by authorization level. */
 export default function AgentUsageSection() {
   const live = useLive(), u = agentUsage(live), s = u.summary, { tok } = useTheme();
-  const cfg = useMemo((): ChartConfiguration => ({ type: 'bar', data: { labels: u.phases.map((p) => p.id), datasets: [{ label: 'Relative agent effort', data: u.phases.map((p) => p.effort), backgroundColor: tok('primary-700') }] },
-    options: { plugins: { legend: { display: false } }, scales: { y: { beginAtZero: true, title: { display: true, text: 'artifacts × automatable %' } } } } }), [u.phases, tok]);
+  const cfg = useMemo((): ChartConfiguration => ({ type: 'bar',
+  data: { labels: u.phases.map((p) => p.id),
+  datasets: [{ label: 'Relative agent effort', data: u.phases.map((p) => p.effort), backgroundColor: tok('primary-700') }] },
+    options: { plugins: { legend: { display: false } },
+      scales: { y: { beginAtZero: true, title: { display: true, text: 'artifacts × automatable %' } } } } }), [u.phases, tok]);
   return (
     <SectionFrame title="📊 Agent usage — consumption for this case" help={help}
       result={<>
-        <Band items={[[`Agent vFTE ${s.endLabel}`, fmt1(s.vfte)], [`Artifacts/month ${s.endLabel}`, String(Math.round(s.artsPerMonth))], [`Tokens ${s.endLabel}`, `${Math.round(s.tokensM)}M`],
+        <Band items={[[`Agent vFTE ${s.endLabel}`, fmt1(s.vfte)], [`Artifacts/month ${s.endLabel}`, String(Math.round(s.artsPerMonth))],
+        [`Tokens ${s.endLabel}`, `${Math.round(s.tokensM)}M`],
           [`Token cost ${s.endLabel}`, fmtE(s.tokenCost)], ['In-scope artifacts', `${s.count}/${s.totalArt}`]]} />
         <Panel title="🔢 Token & agent-effort consumption by year">
-          <SimpleTable align={['left', 'center', 'right', 'right', 'right', 'right', 'right']} head={['Year', 'Ramp', 'Agent vFTE', 'Artifacts/month', 'Tokens/year', 'Token €/year', 'Infra €/year']}
-            rows={u.years.map((y) => ({ key: y.label, cells: [<b>{y.label}</b>, `${Math.round(y.ramp)}%`, fmt1(y.vfte), Math.round(y.arts), `${Math.round(y.tokensM)}M`, fmtE(y.tokenCost), fmtE(y.infra)] }))} />
+          <SimpleTable align={['left', 'center', 'right', 'right', 'right', 'right', 'right']} head={['Year', 'Ramp', 'Agent vFTE', 'Artifacts/month',
+            'Tokens/year', 'Token €/year', 'Infra €/year']}
+            rows={u.years.map((y) => ({ key: y.label, cells: [<b>{y.label}</b>, `${Math.round(y.ramp)}%`, fmt1(y.vfte), Math.round(y.arts),
+              `${Math.round(y.tokensM)}M`, fmtE(y.tokenCost), fmtE(y.infra)] }))} />
         </Panel>
         <Panel title="🤖 Agent effort by phase (Y3, in scope)">
           <ChartPanel config={cfg} label="Relative agent effort by phase" height={220} />

@@ -30,7 +30,8 @@ export function resolveSections(catalogue: NavSection[], rows: SectionRow[] | un
   });
   const known = new Set(base.map((s) => s.id)), live = new Map((dyn ?? []).map((d) => [d.id, d]));
   const extra = (dyn ?? []).filter((d) => !known.has(d.id)).map((d, i): NavSection => ({
-    id: d.id, label: d.title, description: `Dynamic section (${d.archetype ?? ''})`, group: d.menuGroup, groupSeq: d.order ?? base.length + i, dynamic: true }));
+    id: d.id, label: d.title, description: `Dynamic section (${d.archetype ?? ''})`, group: d.menuGroup, groupSeq: d.order ?? base.length + i,
+      dynamic: true }));
   return [...base, ...extra].map((s) => {
     const d = live.get(s.id);
     return d ? { ...s, label: d.title, group: d.menuGroup, groupSeq: d.order ?? s.groupSeq, dynamic: true } : s;
@@ -51,7 +52,8 @@ export const groupColor = (colors: Record<string, string> | undefined, id: strin
 };
 /** The persona's own order for a section, else the section's global order (legacy effectiveGroupSeq). */
 export const effectiveSeq = (s: NavSection, persona: string, order: PersonaOrder): number => order[persona]?.[s.id] ?? (s.groupSeq || 0);
-export const bySeq = (persona: string, order: PersonaOrder) => (a: NavSection, b: NavSection): number => effectiveSeq(a, persona, order) - effectiveSeq(b, persona, order);
+export const bySeq = (persona: string, order: PersonaOrder) => (a: NavSection, b: NavSection): number => effectiveSeq(a, persona, order) - effectiveSeq(b,
+  persona, order);
 
 /** Sections a persona can reach: Advanced sees everything, the others exactly their list (unknown ids are dropped). */
 export function reachable(persona: string, sections: NavSection[], lists: PersonaLists): NavSection[] {

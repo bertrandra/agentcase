@@ -9,14 +9,18 @@ import { ALLOWED_KEYWORDS, argbLiterals, hardcodedStyles } from '../helpers/hard
  * then only switches token values. The token files themselves are the only place a literal may live.
  */
 const ROOT = join(process.cwd(), 'src');
-const walk = (d: string, ext: RegExp): string[] => readdirSync(d).flatMap((n) => { const p = join(d, n); return statSync(p).isDirectory() ? walk(p, ext) : ext.test(n) ? [p] : []; });
+const walk = (d: string, ext: RegExp): string[] => readdirSync(d).flatMap((n) => {
+  const p = join(d, n);
+  return statSync(p).isDirectory() ? walk(p, ext) : ext.test(n) ? [p] : [];
+});
 /** Files allowed to hold literals, each with its reason. */
 const ALLOWED_FILES: Record<string, string> = {
   'ui/theme/tokens.css': 'the generated default theme (src/domain/theme rendered as custom properties)',
   'ui/theme/fonts.css': "the embedded Ubuntu faces: @font-face names the family it declares ('Ubuntu')",
 };
 const rel = (f: string) => f.slice(ROOT.length + 1);
-const scan = (files: string[]) => files.filter((f) => !ALLOWED_FILES[rel(f)] && !rel(f).startsWith('domain/theme/')).flatMap((f) => hardcodedStyles(f, readFileSync(f, 'utf8')).map((h) => `${rel(f)}:${h}`));
+const scan = (files: string[]) => files.filter((f) => !ALLOWED_FILES[rel(f)] && !rel(f).startsWith('domain/theme/')).flatMap((f) => hardcodedStyles(f,
+  readFileSync(f, 'utf8')).map((h) => `${rel(f)}:${h}`));
 
 describe('no hard-coded visual value (theme tokens only)', () => {
   it('src/ui: no colour, font family or raw box-shadow in .css / .ts / .tsx outside the token files', () => {
@@ -25,7 +29,8 @@ describe('no hard-coded visual value (theme tokens only)', () => {
   it('src/domain and src/store: visual colours come from the theme module (no hex / rgb literal, no ARGB literal)', () => {
     const files = [...walk(join(ROOT, 'domain'), /\.tsx?$/), ...walk(join(ROOT, 'store'), /\.tsx?$/)];
     expect(scan(files)).toEqual([]);
-    expect(files.filter((f) => !rel(f).startsWith('domain/theme/')).flatMap((f) => argbLiterals(readFileSync(f, 'utf8')).map((a) => `${rel(f)}: ${a}`))).toEqual([]);
+    expect(files.filter((f) => !rel(f).startsWith('domain/theme/')).flatMap((f) => argbLiterals(readFileSync(f,
+      'utf8')).map((a) => `${rel(f)}: ${a}`))).toEqual([]);
   });
   it('every allowance is explained', () => {
     for (const why of [...Object.values(ALLOWED_FILES), ...Object.values(ALLOWED_KEYWORDS)]) expect(why.length).toBeGreaterThan(20);
@@ -44,9 +49,11 @@ describe('the guard itself (negative tests)', () => {
   });
   it('lets tokens, keywords and comments through', () => {
     for (const s of ['.a { color: var(--ac-ink); background: transparent; box-shadow: var(--ac-shadow-card); }', '/* legacy #0058AB */ .a { font: inherit; }',
-      '.a { font-family: var(--ac-font-mono); } .b { outline: 2px solid Highlight; } .c { box-shadow: none; }', '.a { font: var(--ac-font-size-md) / var(--ac-leading-code) var(--ac-font-mono); }',
+      '.a { font-family: var(--ac-font-mono); } .b { outline: 2px solid Highlight; } .c { box-shadow: none; }',
+      '.a { font: var(--ac-font-size-md) / var(--ac-leading-code) var(--ac-font-mono); }',
       '.a { box-shadow: var(--ac-shadow-rail-offset) var(--dyn-group-color); }']) expect(css(s), s).toEqual([]);
-    for (const s of ["<b style={{ color: 'var(--ac-brick)' }} />", "const c = tok('primary-700'); // was #0058AB", "<rect fill=\"var(--ac-neutral-0)\" />", "const e = '&#160;';",
+    for (const s of ["<b style={{ color: 'var(--ac-brick)' }} />", "const c = tok('primary-700'); // was #0058AB", "<rect fill=\"var(--ac-neutral-0)\" />",
+    "const e = '&#160;';",
       "<b style={{ boxShadow: `var(--ac-shadow-rail-offset) ${c}` }} />"]) expect(tsx(s), s).toEqual([]);
   });
 });

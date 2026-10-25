@@ -19,7 +19,8 @@ export function placeSection(sections: NavSection[], id: string, group: string, 
   const ids = sections.filter((s) => s.group === group && s.id !== id).sort(byGlobal).map((s) => s.id);
   ids.splice(clamp(index, ids.length), 0, id);
   const out = ids.map((x, i) => ({ id: x, group, groupSeq: (i + 1) * STEP }));
-  if (moved.group !== group) sections.filter((s) => s.group === moved.group && s.id !== id).sort(byGlobal).forEach((s, i) => out.push({ id: s.id, group: s.group, groupSeq: (i + 1) * STEP }));
+  if (moved.group !== group) sections.filter((s) => s.group === moved.group && s.id !== id).sort(byGlobal).forEach((s,
+    i) => out.push({ id: s.id, group: s.group, groupSeq: (i + 1) * STEP }));
   return out;
 }
 
@@ -69,6 +70,8 @@ export function shiftGroup(groups: MenuGroup[], id: string, dir: -1 | 1): Record
 export function respaceGroupSeq(sections: NavSection[], step = STEP): Placement[] {
   const byGroup = new Map<string, NavSection[]>(), out: Placement[] = [];
   sections.forEach((s) => byGroup.set(s.group, [...(byGroup.get(s.group) ?? []), s]));
-  byGroup.forEach((list, group) => [...list].sort(byGlobal).forEach((s, i) => { if ((s.groupSeq || 0) !== (i + 1) * step) out.push({ id: s.id, group, groupSeq: (i + 1) * step }); }));
+  byGroup.forEach((list, group) => [...list].sort(byGlobal).forEach((s, i) => {
+    if ((s.groupSeq || 0) !== (i + 1) * step) out.push({ id: s.id, group, groupSeq: (i + 1) * step });
+  }));
   return out;
 }

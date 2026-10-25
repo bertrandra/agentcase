@@ -13,13 +13,17 @@ export function CmTable({ v, sel }: { v: CmView; sel: string }) {
     <div className="ac-table-wrap" tabIndex={0}>
       <table className="ac-table">
         <thead><tr>
-          <th>Model</th><th>Client revenue {H}y</th><th>CG cost {H}y (run + billable setup)</th><th>CG margin {H}y</th><th>Client TCO {H}y</th><th>Client saving vs AS-IS</th>
+          <th>Model</th><th>Client revenue {H}y</th><th>CG cost {H}y (run + billable setup)</th><th>CG margin {H}y</th><th>Client TCO {H}y</th><th>Client
+            saving vs AS-IS</th>
         </tr></thead>
         <tbody>
           {v.rows.map((r) => {
             const d = CM_DEFS[r.code];
             if (!r.available) {
-              return <tr key={r.code} className="ac-cm-off"><td>{d.label}</td><td colSpan={5} className="ac-c ac-small ac-alert-text">unavailable under {key} — {d.why}</td></tr>;
+              return <tr key={r.code} className="ac-cm-off"><td>{d.label}</td><td
+                colSpan={5}
+                className="ac-c ac-small ac-alert-text"
+              >unavailable under {key} — {d.why}</td></tr>;
             }
             const on = r.code === sel;
             return (

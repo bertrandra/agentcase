@@ -16,7 +16,8 @@ type Json = Record<string, unknown> & { error?: string; skipped?: boolean };
 type Case = CaseState & Partial<FactoryData> & { FG_PARAMS?: Partial<ReturnType<typeof fgParams>> };
 const ids = extraIds('fm_gen');
 const ctxOf = (id: string) => { const s = loadCase<Case>(id); return { s, c: makeCtx(s), p: fgParams(s.FG_PARAMS) }; };
-const ARRAYS = ['PORTFOLIO_ITEMS', 'EPICS', 'FEATURES', 'STORIES', 'SPRINTS', 'PROGRAM_INCREMENTS', 'STORY_ASSIGNMENTS', 'RELEASES', 'RELEASE_ITEMS', 'RELEASE_CANDIDATES', 'APPROVALS',
+const ARRAYS = ['PORTFOLIO_ITEMS', 'EPICS', 'FEATURES', 'STORIES', 'SPRINTS', 'PROGRAM_INCREMENTS', 'STORY_ASSIGNMENTS', 'RELEASES', 'RELEASE_ITEMS',
+'RELEASE_CANDIDATES', 'APPROVALS',
   'DEPLOYMENTS', 'ENVIRONMENTS', 'COMMITS', 'BUILDS', 'BUILD_ARTIFACTS', 'QUALITY_GATES', 'MONITORING_EVENTS', 'FEEDBACK_ITEMS', 'BACKLOG_ITEMS'] as const;
 const seen = (v: unknown[] | undefined) => v ?? [];
 /** The digest the oracle records of a factory dataset (counts + canonical hash per array). */
@@ -30,9 +31,14 @@ function dump(d: FactoryData, phaseFeatures: Record<string, string[]>, storyOf: 
 }
 
 describe('factory domain reproduces the legacy oracle', () => {
-  it('has the oracle fixtures (base cases, demo, generated)', () => { expect(ids.length).toBeGreaterThanOrEqual(50); expect(ids).toContain('fm-generated-tuned'); });
-  const kpiData = (s: Case, c: ReturnType<typeof makeCtx>) => ({ DEPLOYMENTS: s.DEPLOYMENTS ?? [], ENVIRONMENTS: s.ENVIRONMENTS ?? [], RELEASE_CANDIDATES: s.RELEASE_CANDIDATES ?? [], MONITORING_EVENTS: s.MONITORING_EVENTS ?? [],
-      APPROVALS: s.APPROVALS ?? [], QUALITY_GATES: s.QUALITY_GATES ?? [], COMMITS: s.COMMITS ?? [], BUILDS: s.BUILDS ?? [], FEEDBACK_ITEMS: s.FEEDBACK_ITEMS ?? [], tasks: factoryTasks(c) } as KpiData);
+  it('has the oracle fixtures (base cases, demo, generated)', () => {
+    expect(ids.length).toBeGreaterThanOrEqual(50);
+    expect(ids).toContain('fm-generated-tuned');
+  });
+  const kpiData = (s: Case, c: ReturnType<typeof makeCtx>) => ({ DEPLOYMENTS: s.DEPLOYMENTS ?? [], ENVIRONMENTS: s.ENVIRONMENTS ?? [],
+  RELEASE_CANDIDATES: s.RELEASE_CANDIDATES ?? [], MONITORING_EVENTS: s.MONITORING_EVENTS ?? [],
+      APPROVALS: s.APPROVALS ?? [], QUALITY_GATES: s.QUALITY_GATES ?? [], COMMITS: s.COMMITS ?? [], BUILDS: s.BUILDS ?? [],
+        FEEDBACK_ITEMS: s.FEEDBACK_ITEMS ?? [], tasks: factoryTasks(c) } as KpiData);
   it.each(ids)('KPIs, tasks and sample sizes · %s', (id) => {
     const { s, c, p } = ctxOf(id), exp = loadExtra<Json>('fm_kpi', id) as Record<string, { v: number; n: number | null }> & { tasks: number };
     const d = kpiData(s, c);
@@ -61,8 +67,10 @@ describe('factory domain reproduces the legacy oracle', () => {
     const { c, p } = ctxOf(id), exp = loadExtra<Json>('fm_gen', id), gen = generateFactory(c, p, '2026-01-01T00:00:00.000Z');
     if (exp.skipped) { expect(gen).toBeNull(); return; }
     expect(gen).not.toBeNull();
-    const got = { ...dump(gen!.data, gen!.phaseFeatures, gen!.storyOf), provenance: pick(gen!.provenance, ['seed', 'weeks', 'volScale', 'curve', 'curveMeans', 'from', 'phases', 'ramps', 'eff', 'ceiling', 'records']) };
-    const strip = (o: Json) => Object.fromEntries(Object.entries(o).map(([k, v]) => [k, v && typeof v === 'object' && 'head' in v ? { n: (v as Json).n, h: (v as Json).h } : v]));
+    const got = { ...dump(gen!.data, gen!.phaseFeatures, gen!.storyOf),
+      provenance: pick(gen!.provenance, ['seed', 'weeks', 'volScale', 'curve', 'curveMeans', 'from', 'phases', 'ramps', 'eff', 'ceiling', 'records']) };
+    const strip = (o: Json) => Object.fromEntries(Object.entries(o).map(([k, v]) => [k,
+      v && typeof v === 'object' && 'head' in v ? { n: (v as Json).n, h: (v as Json).h } : v]));
     expect(diffValues(legacyJson(strip(exp)), got, 'gen').slice(0, 8)).toEqual([]);
   });
   it('the demo dataset is the legacy one', () => {
@@ -70,7 +78,8 @@ describe('factory domain reproduces the legacy oracle', () => {
     const d = { ...demo, INTEGRATED_PRODUCT: demo.INTEGRATED_PRODUCT } as unknown as FactoryData & { phaseFeatures: { id: string; featureIds: string[] }[] };
     const pf = Object.fromEntries(demo.phaseFeatures.map((x) => [x.id, x.featureIds]));
     const got = dump(d, pf, demo.storyOf as Record<string, string>);
-    const strip = (o: Json) => Object.fromEntries(Object.entries(o).map(([k, v]) => [k, v && typeof v === 'object' && 'head' in v ? { n: (v as Json).n, h: (v as Json).h } : v]));
+    const strip = (o: Json) => Object.fromEntries(Object.entries(o).map(([k, v]) => [k,
+      v && typeof v === 'object' && 'head' in v ? { n: (v as Json).n, h: (v as Json).h } : v]));
     const e = strip(exp);
     // the legacy demo never touches sprints / program increments / story assignments
     ['SPRINTS', 'PROGRAM_INCREMENTS', 'STORY_ASSIGNMENTS', 'ENVIRONMENTS'].forEach((k) => { delete e[k]; delete got[k]; });

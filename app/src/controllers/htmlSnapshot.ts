@@ -11,5 +11,6 @@ import { toPortfolioSnapshot } from '@/store/persistence/portfolioSnapshot';
  */
 export function htmlSnapshotFile(documentElement: Element, now: Date = new Date()): { filename: string; html: string } {
   const doc = activeDoc();
-  return { filename: snapshotFileName(doc.customerName, appVerFileTag(), now), html: buildSnapshotHtml(documentElement, toPortfolioSnapshot(appStore().getState().portfolio, () => now)) };
+  return { filename: snapshotFileName(doc.customerName, appVerFileTag(), now),
+    html: buildSnapshotHtml(documentElement, toPortfolioSnapshot(appStore().getState().portfolio, () => now)) };
 }

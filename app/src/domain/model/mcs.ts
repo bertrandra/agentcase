@@ -34,7 +34,8 @@ function drawCtx(c: Ctx, sample: McsSample): Ctx {
     }
   }
   const baseRate = mcsBaseValue(c, 'dayRate'), baseTok = mcsBaseValue(c, 'tokenPrice');
-  return { s, inp: makeInputs(s), a: c.a, rateScale: baseRate > 0 ? (sample.dayRate as number) / baseRate : 1, tokenScale: baseTok > 0 ? (sample.tokenPrice as number) / baseTok : 1 };
+  return { s, inp: makeInputs(s), a: c.a, rateScale: baseRate > 0 ? (sample.dayRate as number) / baseRate : 1,
+    tokenScale: baseTok > 0 ? (sample.tokenPrice as number) / baseTok : 1 };
 }
 
 /**

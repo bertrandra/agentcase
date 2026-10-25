@@ -34,7 +34,10 @@ export function reportData(s: CaseState, now: Date): ReportData {
   const by = new Map<string, { w: number; h: number }>();
   const act = activeArtefacts(c.a, c.s);
   act.forEach((a) => { const p = a.phase || '—', o = by.get(p) ?? { w: 0, h: 0 }, w = +a.w || 0; o.w += w; o.h += w * a.humanSup; by.set(p, o); });
-  const supervision = [...by.keys()].sort().flatMap((phase) => { const o = by.get(phase)!; return o.w > 0 ? [{ phase, floor: o.h / o.w, posture: posture(o.h / o.w) }] : []; });
+  const supervision = [...by.keys()].sort().flatMap((phase) => {
+    const o = by.get(phase)!;
+    return o.w > 0 ? [{ phase, floor: o.h / o.w, posture: posture(o.h / o.w) }] : [];
+  });
   const sel = new Set(s.selectedRegArtefacts);
   return {
     version: appVerTag(), stamp: now.toISOString().slice(0, 10), context: k,

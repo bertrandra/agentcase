@@ -20,10 +20,14 @@ export function Summary({ m }: { m: DdModel }) {
   const ccTone: Tone = ceilCover === null ? '' : ceilCover >= 0.85 ? 'teal' : ceilCover >= 0.4 ? 'amber' : 'brick';
   return (
     <>
-      <Callout>This register lists what a client must <strong>confirm</strong> for the model to be defensible — not what the model computes. It deliberately surfaces <strong>{m.invisible} coefficients that are hardcoded in the calculation path and editable nowhere in the interface</strong>.
-        They materially drive the euro result, so until now the question <em>“where does that number come from?”</em> had no answer, even internally. Surfacing them is not a criticism of the model — every model has coefficients; the defect was that they were unseeable.</Callout>
-      <Callout kind="warn"><strong>Where these values come from.</strong> AgentCase ships with defaults for the metric anchors and for the model’s internal coefficients. These are engineering estimates: no study, dataset or delivery record is cited for them, and they are not benchmarks.
-        That is what this register is for — each becomes a confirmed input once validated against the client’s own records. Rows marked <b>PC4 unvalidated</b> and <b>PC5 embedded</b> are the ones still awaiting that confirmation.</Callout>
+      <Callout>This register lists what a client must <strong>confirm</strong> for the model to be defensible — not what the model computes. It deliberately
+        surfaces <strong>{m.invisible} coefficients that are hardcoded in the calculation path and editable nowhere in the interface</strong>. They materially
+        drive the euro result, so until now the question <em>“where does that number come from?”</em> had no answer, even internally. Surfacing them is not a
+        criticism of the model — every model has coefficients; the defect was that they were unseeable.</Callout>
+      <Callout kind="warn"><strong>Where these values come from.</strong> AgentCase ships with defaults for the metric anchors and for the model’s internal
+        coefficients. These are engineering estimates: no study, dataset or delivery record is cited for them, and they are not benchmarks. That is what this
+        register is for — each becomes a confirmed input once validated against the client’s own records. Rows marked <b>PC4 unvalidated</b> and <b>PC5
+        embedded</b> are the ones still awaiting that confirmation.</Callout>
       <div className="ac-form-row">
         <Card label="Items to confirm" value={String(m.rows.length)} tone="blue" />
         <Card label="Editable nowhere (PC5)" value={String(m.invisible)} tone="brick" />
@@ -39,7 +43,9 @@ export function Summary({ m }: { m: DdModel }) {
             Telemetry cannot measure this and a simulation cannot validate it: only the people who sign the certification can.</p>
         </div>
       )}
-      {wPct != null && wPct < 60 && <Callout kind="warn">Y3 savings rest on <strong>{100 - wPct}% unconfirmed input weight</strong>. Below the 60% advisory floor — this is a banner, not a gate (spec Q11).</Callout>}
+      {wPct != null && wPct < 60
+        && <Callout kind="warn">Y3 savings rest on <strong>{100 - wPct}% unconfirmed input weight</strong>. Below the 60% advisory floor — this is a banner,
+        not a gate (spec Q11).</Callout>}
       <PackButtons />
       <div className="ac-form-row">
         <button type="button" className="ac-btn" onClick={computeSensitivity}>{fresh ? '↻ Recompute € sensitivity' : '⚖️ Compute € sensitivity'}</button>

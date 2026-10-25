@@ -5,7 +5,8 @@ import { cssVars } from '@/ui/cssVars';
 
 /** An overlay's state chip, tinted with its colour (`${col}18`: a resolved hex of the theme, so set as a value). */
 const chip = (col: string, text: string) => (
-  <span className="ac-prov-chip" style={cssVars({ '--dyn-prov-col': col, '--dyn-prov-tint': `${col}18` })}>{text}</span>   // dynamic: a theme colour and its tint
+  // dynamic: a theme colour and its tint
+  <span className="ac-prov-chip" style={cssVars({ '--dyn-prov-col': col, '--dyn-prov-tint': `${col}18` })}>{text}</span>
 );
 
 /** One top-bar figure: its label above its value. */
@@ -23,12 +24,15 @@ export function Provenance({ p }: { p: Prov }) {
     <section className="ac-panel" aria-label="Provenance of the headline">
       <h2>🧾 What the headline reflects <small className="ac-muted">provenance &amp; double-count audit</small></h2>
       {p.clean
-        ? <Callout><strong>Clean baseline.</strong> All euro-affecting overlays are neutral, so the top bar is the deterministic reference case — nothing optional is inflating or deflating it.</Callout>
-        : <Callout kind="warn"><strong>You are NOT on the clean baseline.</strong> One or more euro-affecting overlays are active (highlighted below). Turn them off to return the top bar to the reference case.</Callout>}
+        ? <Callout><strong>Clean baseline.</strong> All euro-affecting overlays are neutral,
+          so the top bar is the deterministic reference case — nothing optional is inflating or deflating it.</Callout>
+        : <Callout kind="warn"><strong>You are NOT on the clean baseline.</strong> One or more euro-affecting overlays are active (highlighted below). Turn
+          them off to return the top bar to the reference case.</Callout>}
       <div className="ac-form-row">
         {p.head.map(([k, v]) => <HeadTile key={k} label={k} value={v} />)}
       </div>
-      <p className="ac-muted">The top-bar figures are the deterministic output of the current inputs. Risk / AI-Act / eligibility overlays move only the <em>Decision-Intelligence verdict</em>, never these euros.</p>
+      <p className="ac-muted">The top-bar figures are the deterministic output of the current inputs. Risk / AI-Act / eligibility overlays move only
+        the <em>Decision-Intelligence verdict</em>, never these euros.</p>
       <h3>Optional overlays — current state</h3>
       <div className="ac-table-wrap" tabIndex={0}><table className="ac-table">
         <thead><tr><th>Overlay</th><th>State</th><th>Effect</th></tr></thead>

@@ -20,7 +20,8 @@ describe('staleness of a portfolio file is reported at the right level', () => {
     expect(b?.staleProducts).toContain(victim.id);
   });
   it('tampering an unscheduled product’s inputs: stale at the PRODUCT level only, that product alone is named', () => {
-    const r = raw(), products = r.products as { id: string; waveId: string | null; teamIn: { etp: number }[] }[], victim = products.find((p) => p.waveId === null)!;
+    const r = raw(), products = r.products as { id: string; waveId: string | null; teamIn: { etp: number }[] }[],
+      victim = products.find((p) => p.waveId === null)!;
     victim.teamIn[0]!.etp += 5;
     const b = open(r);
     expect(b?.state).toBe('stale');

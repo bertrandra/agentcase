@@ -17,7 +17,8 @@ export function targetTeam(l: Live): TargetTeam {
   const avgHumanSup = act.length ? act.reduce((s, a) => s + a.humanSup, 0) / act.length / 100 : 0.4;
   const supShare = Math.min(coef(l, 'supShareCap'), avgHumanSup * coef(l, 'supShareFactor'));
   const supETP = residualETP * supShare, runETP = l.m.runAgenticETP;
-  return { devETP: residualETP - supETP, supETP, setupETP: coef(l, 'setupETP'), runETP, residualETP, totalRecurrent: residualETP + runETP, avgHumanSup, supShare };
+  return { devETP: residualETP - supETP, supETP, setupETP: coef(l, 'setupETP'), runETP, residualETP, totalRecurrent: residualETP + runETP, avgHumanSup,
+    supShare };
 }
 
 export interface Pole { name: string; fte: number; cost: number }
@@ -36,12 +37,14 @@ export function teamPoles(l: Live, t: TargetTeam): TeamPoles {
     dev: poleRows(l, [['Residual dev production', t.devETP * 0.7], ['QA/Test', t.devETP * 0.2], ['Ops/Run', t.devETP * 0.1]]),
     sup: poleRows(l, [['Agent Supervisor (output review)', t.supETP * 0.7], ['Sec/Quality', t.supETP * 0.3]]),
     setup: poleRows(l, [['Transformation lead', 0.65], ['Agentic architect', 0.75], ['Coach', 0.6]], 1.15),
-    run: poleRows(l, [['AI/Agent Engineer', Math.max(0.3, e / 12)], ['Skill/Prompt Engineer', Math.max(0.2, e / 20)], ['AI-FinOps', coef(l, 'aiFinOpsFte')], ['AI-QA', Math.max(0.2, e / 25)]], 1.15),
+    run: poleRows(l, [['AI/Agent Engineer', Math.max(0.3, e / 12)], ['Skill/Prompt Engineer', Math.max(0.2, e / 20)], ['AI-FinOps', coef(l, 'aiFinOpsFte')],
+    ['AI-QA', Math.max(0.2, e / 25)]], 1.15),
     setupTotal: l.m.setupTotal,
   };
 }
 
-export interface GroupRow { group: string; composition: string; fte: number; cost: number; kind: 'Recurring' | 'Transitional'; tone: 'dev' | 'sup' | 'run' | 'setup' }
+export interface GroupRow { group: string; composition: string; fte: number; cost: number; kind: 'Recurring' | 'Transitional';
+  tone: 'dev' | 'sup' | 'run' | 'setup' }
 
 /** The four-line summary table of the poles. */
 export function groupRows(l: Live, t: TargetTeam): GroupRow[] {
@@ -50,7 +53,8 @@ export function groupRows(l: Live, t: TargetTeam): GroupRow[] {
     { group: 'Dev team', composition: 'Residual production (code, test, ops)', fte: t.devETP, cost: cost(t.devETP), kind: 'Recurring', tone: 'dev' },
     { group: 'Supervision', composition: 'AI output review & validation', fte: t.supETP, cost: cost(t.supETP), kind: 'Recurring', tone: 'sup' },
     { group: 'Agentic Run', composition: 'AI Eng, Prompt Eng, FinOps, AI-QA', fte: t.runETP, cost: cost(t.runETP, 1.15), kind: 'Recurring', tone: 'run' },
-    { group: 'Agentic Setup', composition: 'Lead, architect, coach (transitional Y1)', fte: t.setupETP, cost: cost(t.setupETP, 1.15), kind: 'Transitional', tone: 'setup' },
+    { group: 'Agentic Setup', composition: 'Lead, architect, coach (transitional Y1)', fte: t.setupETP, cost: cost(t.setupETP, 1.15), kind: 'Transitional',
+    tone: 'setup' },
   ];
 }
 
@@ -73,6 +77,7 @@ export function locRows(l: Live, t: TargetTeam): LocRow[] {
   const sum = LOCATIONS.reduce((s, x) => s + (tm[x.name] || 0), 0) || 1;
   return LOCATIONS.map((x) => {
     const pc = ((tm[x.name] || 0) / sum) * 100;
-    return { name: x.name, cls: x.cls, asisPct: mx.pct[x.name] ?? 0, asisFte: mx.byLoc[x.name] ?? 0, tgtPct: pc, tgtFte: (total * pc) / 100, rate: locBlendedTJM(l, x.name) };
+    return { name: x.name, cls: x.cls, asisPct: mx.pct[x.name] ?? 0, asisFte: mx.byLoc[x.name] ?? 0, tgtPct: pc, tgtFte: (total * pc) / 100,
+      rate: locBlendedTJM(l, x.name) };
   });
 }

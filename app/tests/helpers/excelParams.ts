@@ -12,7 +12,8 @@ import type { Doc } from '@/store/types';
 /** The workbook (and the legacy file it is compared with) knows the 79 case sections, not the Portfolio ones. */
 export const ENV: ParamsEnv = { sections: LEGACY_SECTIONS };
 const DIR = 'fixtures/xlsx';
-export const xlsxIds = (): string[] => (existsSync(DIR) ? readdirSync(DIR).filter((f) => f.endsWith('.imported.json')).map((f) => f.replace('.imported.json', '')).sort() : []);
+export const xlsxIds = (): string[] => (existsSync(DIR) ? readdirSync(DIR).filter((f) => f.endsWith('.imported.json')).map((f) => f.replace('.imported.json',
+  '')).sort() : []);
 export function legacyXlsx(id: string): ArrayBuffer {
   const b = readFileSync(`${DIR}/${id}.xlsx`);
   return b.buffer.slice(b.byteOffset, b.byteOffset + b.byteLength) as ArrayBuffer;
@@ -43,10 +44,13 @@ export const importTarget = (leg: LegacyImport): Doc => ({ ...freshDoc(), ...str
  */
 export function stateMismatches(ours: Doc, legacy: Record<string, unknown>, pristine: Record<string, unknown>, ignore: string[] = []): string[] {
   const keys = new Set([...Object.keys(legacy), ...Object.keys(pristine)]);
-  return [...keys].filter((k) => k !== PERSONA_KEY && !ignore.includes(k) && !sameJson(norm(k, (ours as Record<string, unknown>)[k]), norm(k, k in legacy ? legacy[k] : pristine[k])));
+  return [...keys].filter((k) => k !== PERSONA_KEY && !ignore.includes(k) && !sameJson(norm(k, (ours as Record<string, unknown>)[k]),
+    norm(k, k in legacy ? legacy[k] : pristine[k])));
 }
 /**
  * The one deliberate difference from the legacy import: its "FM Environments" sheet drops the `isProd` flag of the production environment
  * (the flag is not a column), ours keeps it for the same environment id. Compared without it.
  */
-const norm = (k: string, v: unknown): unknown => (k === 'ENVIRONMENTS' && Array.isArray(v) ? v.map((e: Record<string, unknown>) => Object.fromEntries(Object.entries(e).filter(([key]) => key !== 'isProd'))) : v);
+const norm = (k: string,
+  v: unknown): unknown => (k === 'ENVIRONMENTS' && Array.isArray(v) ? v.map((e: Record<string,
+  unknown>) => Object.fromEntries(Object.entries(e).filter(([key]) => key !== 'isProd'))) : v);

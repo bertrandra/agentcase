@@ -12,7 +12,8 @@ import { useEconomics } from '../useEconomics';
 const help = (
   <>
     <p>The month-by-month trajectory showing how the ramp translates into cost, saving and cumulative cash-flow, including the break-even point.</p>
-    <p>Net(m) = (Baseline/12 − run costs) − setup spread(m); Cumulative(m) = Σ Net up to month m. Months with setup spend carry it in the Setup column, so early cumulative is negative.</p>
+    <p>Net(m) = (Baseline/12 − run costs) − setup spread(m); Cumulative(m) = Σ Net up to month m. Months with setup spend carry it in the Setup column, so
+      early cumulative is negative.</p>
   </>
 );
 /** The sign of a cash figure (`data-sign` of `.ac-cash`: teal when positive, amber when negative). */

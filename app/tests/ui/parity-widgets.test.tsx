@@ -21,12 +21,21 @@ describe('shared widgets carry the classes the legacy-matching styles hang on', 
     }
   });
   it('Rich: legacy classes become ac-rich-* (styled in content.css) and content headings keep the legacy h3 / h4 scale one level up', () => {
-    const html = renderToStaticMarkup(<Rich nodes={[['h3', 'T'], ['div', { class: 'note-green' }, 'n'], ['div', { class: 'formula' }, ['span', { class: 'v' }, 'v']], ['div', { class: 'worked' }, 'w'], ['div', { class: 'card' }, 'c'], ['h4', 'S']]} />);
+    const html = renderToStaticMarkup(<Rich nodes={[['h3', 'T'], ['div', { class: 'note-green' }, 'n'],
+      ['div', { class: 'formula' }, ['span', { class: 'v' }, 'v']], ['div', { class: 'worked' }, 'w'], ['div', { class: 'card' }, 'c'], ['h4', 'S']]} />);
     expect(html).toContain('<h2>T</h2>'); expect(html).toContain('<h3>S</h3>');
-    for (const c of ['ac-rich-note-green', 'ac-rich-formula', 'ac-rich-v', 'ac-rich-worked', 'ac-rich-card']) { expect(html).toContain(c); expect(css).toContain(`.${c}`); }
+    for (const c of ['ac-rich-note-green', 'ac-rich-formula', 'ac-rich-v', 'ac-rich-worked', 'ac-rich-card']) {
+      expect(html).toContain(c);
+      expect(css).toContain(`.${c}`);
+    }
   });
   it('DataTable: numeric alignment is a class of header and cells (legacy .text-right / .text-center, styled in sections-b.css); the scroller stays focusable', () => {
-    const html = renderToStaticMarkup(<DataTable columns={[{ key: 'a', header: 'A', render: (r: number) => r }, { key: 'b', header: 'B', align: 'right', render: (r: number) => r * 2 }, { key: 'c', header: 'C', align: 'center', render: () => 'c' }]} rows={[1]} rowKey={(r) => String(r)} />);
+    const html = renderToStaticMarkup(<DataTable
+      columns={[{ key: 'a', header: 'A', render: (r: number) => r }, { key: 'b', header: 'B', align: 'right', render: (r: number) => r * 2 },
+        { key: 'c', header: 'C', align: 'center', render: () => 'c' }]}
+      rows={[1]}
+      rowKey={(r) => String(r)}
+    />);
     expect(html).toContain('<th scope="col" class="ac-num">B</th>'); expect(html).toContain('<td class="ac-center">c</td>');
     for (const c of ['ac-num', 'ac-center']) expect(sectionsB).toContain(`.${c}`);
     expect(html).toContain('class="ac-table-wrap" tabindex="0"');
@@ -43,7 +52,8 @@ describe('section exceptions pin the measured contrast', () => {
   it.each(list.map((e) => [e.area + ' ' + e.prop, e] as const))('%s', (_n, e) => {
     const x = e as typeof e & { fg?: string; bg?: string; min?: number; ratio?: number; tokenOnly?: boolean };
     expect(x.reason.length).toBeGreaterThan(40);
-    if (x.tokenOnly) expect(css.toLowerCase()).toContain(x.expected.toLowerCase());   // not reachable by the computed-style walk: the value is in the stylesheet
+    // not reachable by the computed-style walk: the value is in the stylesheet
+    if (x.tokenOnly) expect(css.toLowerCase()).toContain(x.expected.toLowerCase());
     if (x.fg && x.bg && x.min && x.ratio) {
       const r = contrast(x.fg, x.bg);
       expect(r).toBeGreaterThanOrEqual(x.min);

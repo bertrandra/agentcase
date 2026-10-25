@@ -41,15 +41,18 @@ export interface SelectionStress {
 
 /** The last portfolio run read for a Portfolio or a Wave; null when the wave has no product in the run. */
 export function selectionStress(run: PfStress, group: VerdictGroup): SelectionStress | null {
-  if (group.kind === 'portfolio') return { label: 'Portfolio', stats: run.stats, products: run.products, waves: run.waves, diversification: run.diversification, outcomes: run.outcomes };
+  if (group.kind === 'portfolio') return { label: 'Portfolio', stats: run.stats, products: run.products, waves: run.waves,
+    diversification: run.diversification, outcomes: run.outcomes };
   const wave = run.waves.find((w) => w.id === group.id), products = run.products.filter((p) => p.waveId === group.id);
   if (!wave || !products.length) return null;
   const sumP10 = products.reduce((a, p) => a + p.stats.p10, 0);
-  return { label: wave.name, stats: wave.stats, products, waves: [wave], diversification: { sumP10, p10: wave.stats.p10, reduction: wave.stats.p10 - sumP10 }, outcomes: null };
+  return { label: wave.name, stats: wave.stats, products, waves: [wave], diversification: { sumP10, p10: wave.stats.p10, reduction: wave.stats.p10 - sumP10 },
+    outcomes: null };
 }
 
 /** --- Scenarios: the six strategies priced for each product (scenarioSet of the product's own case) --- */
-export interface ScenarioCell { key: string; label: string; setup: number; totBen: number; net: number; roi: number | null; payback: number | null; horizon: number }
+export interface ScenarioCell { key: string; label: string; setup: number; totBen: number; net: number; roi: number | null; payback: number | null;
+  horizon: number }
 export type ScenarioProductRow = AggProduct & { horizon: number; cells: ScenarioCell[] };
 
 export function scenarioByProduct(pf: Portfolio, ids: string[]): ScenarioProductRow[] {
@@ -57,20 +60,23 @@ export function scenarioByProduct(pf: Portfolio, ids: string[]): ScenarioProduct
     const set = scenarioSet(c);
     return {
       horizon: (set[0] as (typeof set)[number]).m.horizon,
-      cells: set.map((s) => ({ key: s.key, label: s.label, setup: s.m.setup, totBen: s.m.totBen, net: s.m.totBen - s.m.setup, roi: s.m.roi ?? null, payback: paybackShown(s.m), horizon: s.m.horizon })),
+      cells: set.map((s) => ({ key: s.key, label: s.label, setup: s.m.setup, totBen: s.m.totBen, net: s.m.totBen - s.m.setup, roi: s.m.roi ?? null,
+      payback: paybackShown(s.m), horizon: s.m.horizon })),
     };
   });
 }
 
 /** --- 3-way comparison: AS-IS / AS-IS + classic saving / Agentic at the end of each product's horizon --- */
-export interface CompareFigures { asisFte: number; classicFte: number; agenticFte: number; vfte: number; asisCost: number; classicCost: number; agenticCost: number; classicSave: number; agenticSave: number }
+export interface CompareFigures { asisFte: number; classicFte: number; agenticFte: number; vfte: number; asisCost: number; classicCost: number;
+  agenticCost: number; classicSave: number; agenticSave: number }
 export type CompareProductRow = AggProduct & CompareFigures & { horizon: number; classicSaving: number };
 
 export function compareByProduct(pf: Portfolio, ids: string[]): { rows: CompareProductRow[]; totals: CompareFigures } {
   const rows = perProduct(pf, ids, (c) => {
     const d = compareData(c), last = d.labels.length - 1, ey = engineNow(c).years(), e = ey[Math.min(last, ey.length - 1)];
     return {
-      horizon: d.labels.length, classicSaving: d.classicSaving, asisFte: d.asis.fte[last] as number, classicFte: d.classic.fte[last] as number, agenticFte: d.agentic.fte[last] as number,
+      horizon: d.labels.length, classicSaving: d.classicSaving, asisFte: d.asis.fte[last] as number, classicFte: d.classic.fte[last] as number,
+      agenticFte: d.agentic.fte[last] as number,
       vfte: e?.agentVfteEnd ?? 0, asisCost: d.asis.cost[last] as number, classicCost: d.classic.cost[last] as number, agenticCost: e?.totalRunCost ?? 0,
       classicSave: d.classic.save[last] as number, agenticSave: d.agentic.save[last] as number,
     };
@@ -78,7 +84,8 @@ export function compareByProduct(pf: Portfolio, ids: string[]): { rows: CompareP
   const sum = (k: keyof CompareFigures): number => rows.reduce((a, r) => a + r[k], 0);
   return {
     rows,
-    totals: { asisFte: sum('asisFte'), classicFte: sum('classicFte'), agenticFte: sum('agenticFte'), vfte: sum('vfte'), asisCost: sum('asisCost'), classicCost: sum('classicCost'),
+    totals: { asisFte: sum('asisFte'), classicFte: sum('classicFte'), agenticFte: sum('agenticFte'), vfte: sum('vfte'), asisCost: sum('asisCost'),
+    classicCost: sum('classicCost'),
       agenticCost: sum('agenticCost'), classicSave: sum('classicSave'), agenticSave: sum('agenticSave') },
   };
 }
@@ -89,6 +96,7 @@ export type SensProductRow = AggProduct & { params: SensRow[]; most: SensRow; ro
 export function sensitivityByProduct(pf: Portfolio, ids: string[]): SensProductRow[] {
   return perProduct(pf, ids, (c) => {
     const params = sensitivityRows(c), rois = sensitivityMatrix(c).cells.flat().flatMap((x) => (x.roi == null ? [] : [x.roi]));
-    return { params, most: params[0] as SensRow, roiLow: rois.length ? Math.min(...rois) : null, roiHigh: rois.length ? Math.max(...rois) : null, negative: rois.filter((r) => r < 0).length, cells: rois.length };
+    return { params, most: params[0] as SensRow, roiLow: rois.length ? Math.min(...rois) : null, roiHigh: rois.length ? Math.max(...rois) : null,
+      negative: rois.filter((r) => r < 0).length, cells: rois.length };
   });
 }

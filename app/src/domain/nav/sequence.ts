@@ -27,7 +27,8 @@ export function generateSeq(persona: string, sections: NavSection[], groups: Men
  * Persona order that follows the sequence (legacy pmSyncSectionOrderToSeq): in every group the sequence touches, its sections get 1..N in first-occurrence
  * order and the group's other sections follow in their current order. Returns the entries to write and how many groups were touched.
  */
-export function syncOrderToSeq(persona: string, seq: PersonaSeq, sections: NavSection[], order: PersonaOrder): { entries: Record<string, number>; ids: number; groups: number } {
+export function syncOrderToSeq(persona: string, seq: PersonaSeq, sections: NavSection[], order: PersonaOrder): { entries: Record<string, number>; ids: number;
+  groups: number } {
   const seen = new Set<string>(), ordered: string[] = [];
   seq.steps.forEach((st) => (st.sections ?? []).forEach((id) => { if (!seen.has(id)) { seen.add(id); ordered.push(id); } }));
   const byGroup = new Map<string, string[]>();

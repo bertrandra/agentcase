@@ -19,10 +19,16 @@ export function AssignTab({ personas, lists }: { personas: Persona[]; lists: Rec
     <>
       <div className="ac-form-row">
         <label className="ac-field"><span className="ac-field-l">Persona</span>
-          <select value={pid} onChange={(e) => setPid(e.target.value)}><option value="">— Pick a persona —</option>{personasByOrder(personas).map((x) => <option key={x.id} value={x.id}>{x.label}</option>)}</select></label>
+          <select value={pid} onChange={(e) => setPid(e.target.value)}><option value="">— Pick a persona —</option>{personasByOrder(personas).map((x) => <option
+            key={x.id}
+            value={x.id}
+          >{x.label}</option>)}</select></label>
         {p && (
           <label className="ac-field"><span className="ac-field-l">Menu structure of {p.label}</span>
-            <select value={m.structureOfPersona(p.id)} onChange={(e) => setPersonaMenuStructure(p.id, e.target.value)}>{m.structures.map((s) => <option key={s.id} value={s.id}>{s.label}</option>)}</select></label>
+            <select value={m.structureOfPersona(p.id)} onChange={(e) => setPersonaMenuStructure(p.id, e.target.value)}>{m.structures.map((s) => <option
+              key={s.id}
+              value={s.id}
+            >{s.label}</option>)}</select></label>
         )}
       </div>
       <TabStrip className="ac-pills" base={base} label="Section assignment views" value={sub} onChange={setSub} tabs={SUBS} />

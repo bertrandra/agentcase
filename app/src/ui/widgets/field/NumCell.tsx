@@ -2,7 +2,8 @@ import { useState } from 'react';
 import { cssVars, px } from '../../cssVars';
 
 export interface Num {
-  value: number | string; onCommit: (raw: string) => void; min?: number; max?: number; step?: number; width?: number | null; ariaLabel?: string; invalid?: boolean;
+  value: number | string; onCommit: (raw: string) => void; min?: number; max?: number; step?: number; width?: number | null; ariaLabel?: string;
+    invalid?: boolean;
   disabled?: boolean;
 }
 

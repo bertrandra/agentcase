@@ -8,7 +8,9 @@ import type { FactoryData, FgParams } from './types';
 
 /** A task = an SDLC / regulatory artefact with its factory tags (capability and who does the work). */
 export interface Task { id: string; capability?: string; agentActivityType?: string }
-export type KpiData = Pick<FactoryData, 'DEPLOYMENTS' | 'ENVIRONMENTS' | 'RELEASE_CANDIDATES' | 'MONITORING_EVENTS' | 'APPROVALS' | 'QUALITY_GATES' | 'COMMITS' | 'BUILDS' | 'FEEDBACK_ITEMS'> & { tasks: Task[] };
+export type KpiData = Pick<FactoryData,
+  'DEPLOYMENTS' | 'ENVIRONMENTS' | 'RELEASE_CANDIDATES' | 'MONITORING_EVENTS' | 'APPROVALS' | 'QUALITY_GATES' | 'COMMITS' | 'BUILDS' | 'FEEDBACK_ITEMS'> & {
+  tasks: Task[] };
 
 /** Tasks the Delivery KPIs count: the artefacts in scope (all of the catalogue when none is, or when scope-awareness is switched off). */
 export function factoryTasks(c: Ctx): Task[] {
@@ -32,7 +34,10 @@ export function prodEnvIds(envs: KpiData['ENVIRONMENTS']): Set<string> {
   if (!p.length && envs.length) { const mx = Math.max(...envs.map((e) => e.seq || 0)); p = envs.filter((e) => (e.seq || 0) === mx); }
   return new Set(p.map((e) => e.id));
 }
-const prodDeploys = (d: KpiData) => { const p = prodEnvIds(d.ENVIRONMENTS); return d.DEPLOYMENTS.filter((x) => x.environmentId != null && p.has(x.environmentId) && x.deployedAt); };
+const prodDeploys = (d: KpiData) => {
+  const p = prodEnvIds(d.ENVIRONMENTS);
+  return d.DEPLOYMENTS.filter((x) => x.environmentId != null && p.has(x.environmentId) && x.deployedAt);
+};
 const decided = (d: KpiData) => d.QUALITY_GATES.filter((g) => g.result === 'Pass' || g.result === 'Fail');
 
 export function deployFreqPerMonth(d: KpiData): number {
@@ -69,19 +74,28 @@ const dated = (d: KpiData) => d.DEPLOYMENTS.filter((x) => x.deployedAt).length;
 export const KPIS: KpiDef[] = [
   { id: 'fmDeployFreq', label: 'Deployment frequency', format: 'DEC1', unit: '/mo', group: 0, get: deployFreqPerMonth, sample: (d) => prodDeploys(d).length },
   { id: 'fmPromotionLeadDays', label: 'Promotion lead time', format: 'DEC1', unit: 'days', group: 0, get: promotionLeadDays, sample: dated },
-  { id: 'fmRollbackRate', label: 'Rollback rate', format: 'PCT', unit: '%', group: 0, get: (d) => pct(d.DEPLOYMENTS.filter((x) => x.status === 'RolledBack').length, d.DEPLOYMENTS.length), sample: (d) => d.DEPLOYMENTS.length },
-  { id: 'fmFailedDeployRate', label: 'Failed-deployment rate', format: 'PCT', unit: '%', group: 0, get: (d) => pct(d.DEPLOYMENTS.filter((x) => x.status === 'Failed').length, d.DEPLOYMENTS.length), sample: (d) => d.DEPLOYMENTS.length },
-  { id: 'fmEnvStabilityDays', label: 'Environment stability (mean days between monitoring events)', format: 'DEC1', unit: 'days', group: 0, get: envStabilityDays, sample: (d) => d.MONITORING_EVENTS.length },
-  { id: 'fmApprovalDurationDays', label: 'Approval duration', format: 'DEC1', unit: 'days', group: 0, get: approvalDurationDays, sample: (d) => d.APPROVALS.filter((a) => a.requestedAt && a.decidedAt).length },
-  { id: 'fmAutonomousCompletion', label: 'Autonomous completion rate (Tasks)', format: 'PCT', unit: '%', group: 1, get: (d) => pct(d.tasks.filter((a) => a.agentActivityType === 'Agent').length, d.tasks.length) },
-  { id: 'fmHumanIntervention', label: 'Human intervention rate (Tasks)', format: 'PCT', unit: '%', group: 1, get: (d) => pct(d.tasks.filter((a) => a.agentActivityType !== 'Agent').length, d.tasks.length) },
-  { id: 'fmGatePassRate', label: 'Quality-gate pass rate', format: 'PCT', unit: '%', group: 2, get: (d) => pct(decided(d).filter((g) => g.result === 'Pass').length, decided(d).length), sample: (d) => decided(d).length },
-  { id: 'fmGateReworkRate', label: 'Quality-gate rework rate', format: 'PCT', unit: '%', group: 2, get: (d) => pct(decided(d).filter((g) => g.result === 'Fail').length, decided(d).length), sample: (d) => decided(d).length },
+  { id: 'fmRollbackRate', label: 'Rollback rate', format: 'PCT', unit: '%', group: 0,
+  get: (d) => pct(d.DEPLOYMENTS.filter((x) => x.status === 'RolledBack').length, d.DEPLOYMENTS.length), sample: (d) => d.DEPLOYMENTS.length },
+  { id: 'fmFailedDeployRate', label: 'Failed-deployment rate', format: 'PCT', unit: '%', group: 0,
+  get: (d) => pct(d.DEPLOYMENTS.filter((x) => x.status === 'Failed').length, d.DEPLOYMENTS.length), sample: (d) => d.DEPLOYMENTS.length },
+  { id: 'fmEnvStabilityDays', label: 'Environment stability (mean days between monitoring events)', format: 'DEC1', unit: 'days', group: 0,
+  get: envStabilityDays, sample: (d) => d.MONITORING_EVENTS.length },
+  { id: 'fmApprovalDurationDays', label: 'Approval duration', format: 'DEC1', unit: 'days', group: 0, get: approvalDurationDays,
+  sample: (d) => d.APPROVALS.filter((a) => a.requestedAt && a.decidedAt).length },
+  { id: 'fmAutonomousCompletion', label: 'Autonomous completion rate (Tasks)', format: 'PCT', unit: '%', group: 1,
+  get: (d) => pct(d.tasks.filter((a) => a.agentActivityType === 'Agent').length, d.tasks.length) },
+  { id: 'fmHumanIntervention', label: 'Human intervention rate (Tasks)', format: 'PCT', unit: '%', group: 1,
+  get: (d) => pct(d.tasks.filter((a) => a.agentActivityType !== 'Agent').length, d.tasks.length) },
+  { id: 'fmGatePassRate', label: 'Quality-gate pass rate', format: 'PCT', unit: '%', group: 2,
+  get: (d) => pct(decided(d).filter((g) => g.result === 'Pass').length, decided(d).length), sample: (d) => decided(d).length },
+  { id: 'fmGateReworkRate', label: 'Quality-gate rework rate', format: 'PCT', unit: '%', group: 2,
+  get: (d) => pct(decided(d).filter((g) => g.result === 'Fail').length, decided(d).length), sample: (d) => decided(d).length },
   { id: 'fmCommitVolume', label: 'Generated change volume (commit count)', format: 'INT', unit: '', group: 2, get: (d) => d.COMMITS.length },
   { id: 'fmAgentTestShare', label: 'Agent-driven test share (capability=Test Tasks)', format: 'PCT', unit: '%', group: 2,
     get: (d) => { const t = d.tasks.filter((a) => a.capability === 'Test'); return pct(t.filter((a) => a.agentActivityType === 'Agent').length, t.length); } },
   { id: 'fmAvgCommitsPerTask', label: 'Avg commits per Task', format: 'DEC1', unit: '', group: 2, get: avgCommitsPerTask, sample: (d) => d.COMMITS.length },
-  { id: 'fmBuildSuccessRate', label: 'Build success rate', format: 'PCT', unit: '%', group: 2, get: (d) => pct(d.BUILDS.filter((b) => b.status === 'Success').length, d.BUILDS.length), sample: (d) => d.BUILDS.length },
+  { id: 'fmBuildSuccessRate', label: 'Build success rate', format: 'PCT', unit: '%', group: 2,
+  get: (d) => pct(d.BUILDS.filter((b) => b.status === 'Success').length, d.BUILDS.length), sample: (d) => d.BUILDS.length },
 ];
 export const KPI_GROUPS = ['🚀 Release pipeline', '🏭 Delivery — Tasks', '⚙️ Engineering'];
 

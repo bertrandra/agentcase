@@ -46,9 +46,12 @@ export function fromSnapshot(raw: unknown): Doc {
   const snap = sanitize(raw as Record<string, unknown>);
   if (snap._schema === 'agentcase.portfolio.v1') throw new SnapshotError('This file holds a portfolio, not a single case: open it with openSnapshot()');
   const dom = snap.dom as { values?: unknown; checked?: unknown } | undefined;
-  if (!dom || typeof dom !== 'object' || typeof dom.values !== 'object' || typeof dom.checked !== 'object') throw new SnapshotError('Snapshot has no form inputs (dom)');
+  if (!dom || typeof dom !== 'object' || typeof dom.values !== 'object'
+    || typeof dom.checked !== 'object') throw new SnapshotError('Snapshot has no form inputs (dom)');
   const doc = { ...makeDefaultDoc(), ...snap } as Doc;
-  delete doc.savedAt; delete doc._schema; delete doc[VERSION_KEY]; delete doc.calculationPackage; delete doc[PERSONA_KEY];   // the persona the file opens on: `openSnapshot`
-  doc.dom = { values: { ...makeDefaultDoc().dom.values, ...(dom.values as object) }, checked: { ...makeDefaultDoc().dom.checked, ...(dom.checked as object) } } as Doc['dom'];
+  // the persona the file opens on: `openSnapshot`
+  delete doc.savedAt; delete doc._schema; delete doc[VERSION_KEY]; delete doc.calculationPackage; delete doc[PERSONA_KEY];
+  doc.dom = { values: { ...makeDefaultDoc().dom.values, ...(dom.values as object) },
+    checked: { ...makeDefaultDoc().dom.checked, ...(dom.checked as object) } } as Doc['dom'];
   return doc;
 }

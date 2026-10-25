@@ -53,7 +53,8 @@ export function cmRecommend(c: Ctx, mcConfidence: number | null = null): [CmCode
   const k = engagementKey(c);
   if (k === 'STA') return ['AAH', 'uplifted day-rate is the only agentic capture in staff augmentation'];
   const ys = engineNow(c).years(), e = ys[ys.length - 1]!, tot = e.humanFteEnd + e.agentVfteEnd, share = tot > 0 ? e.agentVfteEnd / tot : 0;
-  if (k === 'MSI') return share > 0.15 ? ['AGS', 'vFTE share at horizon end > 15% — capacity pricing captures the mix'] : ['ET', 'vFTE share still low — stay on effort & tools'];
+  if (k === 'MSI') return share > 0.15 ? ['AGS', 'vFTE share at horizon end > 15% — capacity pricing captures the mix'] : ['ET',
+    'vFTE share still low — stay on effort & tools'];
   if (mcConfidence != null && mcConfidence >= 0.7) return ['GS', 'MSC + Monte Carlo confidence ≥ 70% — share the upside'];
   return ['AGS', 'MSC but confidence not yet proven — price the capacity, revisit GS after the pilot'];
 }
@@ -68,7 +69,8 @@ export function commercialView(c: Ctx): CmView {
   const rows = CM_CODES.map((code): CmRow => {
     if (!cmAvailable(c, code)) return { code, available: false, revenue: 0, cost: 0, margin: 0, marginPct: 0, tco: 0, clientSaving: 0 };
     const R = commercialRevenue(c, code, m).rev.reduce((a, b) => a + b, 0), margin = R - run - billable;
-    return { code, available: true, revenue: R, cost: run + billable, margin, marginPct: R > 0 ? (margin / R) * 100 : 0, tco: R, clientSaving: base > 0 ? (1 - R / base) * 100 : 0 };
+    return { code, available: true, revenue: R, cost: run + billable, margin, marginPct: R > 0 ? (margin / R) * 100 : 0, tco: R,
+      clientSaving: base > 0 ? (1 - R / base) * 100 : 0 };
   });
   const humDays = ys.reduce((a, y) => a + y.totalHumanFteEnd * m.tgtTJM * m.wd, 0);
   return { rows, horizon: H, run, billableSetup: billable, absorbed: m.conv.setupAbsorbed, ppAgs: commercialRevenue(c, 'AGS', m).pp,

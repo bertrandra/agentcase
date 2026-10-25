@@ -7,13 +7,15 @@ import { ganttView, type GanttView } from '@/domain/verifyB';
 const ids = readdirSync('fixtures/extras/vb_gantt').map((f) => f.replace('.json', '')).sort();
 const json = (p: string) => JSON.parse(readFileSync(p, 'utf8'));
 interface LRow { label: string; bars: string[][]; title: string }
-interface Cap { summary: string[][]; ticks: string[][]; prog: LRow[]; phases: LRow[]; marks: string[][]; release: string[]; overlap: string; crossSeq: string | null }
+interface Cap { summary: string[][]; ticks: string[][]; prog: LRow[]; phases: LRow[]; marks: string[][]; release: string[]; overlap: string;
+  crossSeq: string | null }
 const pct = (s: string | undefined) => parseFloat(s ?? 'NaN');
 const near = (got: number, exp: string | undefined) => expect(Math.abs(got - pct(exp))).toBeLessThanOrEqual(0.0051);
 
 /** The legacy rows in display order: each phase, then (when expanded) its artefacts. */
 function flatten(v: GanttView, expanded: boolean) {
-  return v.phases.flatMap((p) => [{ label: `${expanded && p.arts.length ? '▼' : p.cross || p.arts.length ? '▶' : '·'}${p.name} (${p.count})${p.last ? ' 🏁' : ''}`, s: p, meta: p.meta },
+  return v.phases.flatMap((p) =>
+  [{ label: `${expanded && p.arts.length ? '▼' : p.cross || p.arts.length ? '▶' : '·'}${p.name} (${p.count})${p.last ? ' 🏁' : ''}`, s: p, meta: p.meta },
     ...(expanded ? p.arts.map((a) => ({ label: a.label, s: a, meta: a.meta })) : [])]);
 }
 

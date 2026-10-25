@@ -13,9 +13,10 @@ import { SavingsAndTeam, UncertaintyPanel } from './Parts';
 
 const help = (
   <>
-    <p>The business case of the <strong>selection</strong> (Portfolio or one Wave) on one screen: the confidence-conditional verdict of its Monte Carlo distribution, the consolidated key figures, the uncertainty band,
-      where the savings come from and the human to agent team shift.</p>
-    <p>Money figures are the consolidated calendar flows; the decomposition and the team shift add up the products&apos; own last-year figures. Choose a product in “Show” for the single-product Results.</p>
+    <p>The business case of the <strong>selection</strong> (Portfolio or one Wave) on one screen: the confidence-conditional verdict of its Monte Carlo
+    distribution, the consolidated key figures, the uncertainty band, where the savings come from and the human to agent team shift.</p>
+    <p>Money figures are the consolidated calendar flows; the decomposition and the team shift add up the products&apos; own last-year figures. Choose a
+      product in “Show” for the single-product Results.</p>
   </>
 );
 const R = 'right' as const;
@@ -31,13 +32,15 @@ export default function ResultsAggregate() {
   const cols: AggColumn<(typeof a.rows)[number]>[] = [
     { key: 'wave', header: 'Wave', render: (r) => r.wave }, { key: 'status', header: 'Status', render: (r) => r.status },
     { key: 'setup', header: 'Setup', align: R, render: (r) => fmtEurK(r.setup) }, { key: 'net', header: 'Net', align: R, render: (r) => fmtEurK(r.net) },
-    { key: 'roi', header: 'ROI', align: R, render: (r) => fmtRoiPct(r.roi) }, { key: 'pay', header: 'Payback', align: R, render: (r) => fmtMonths(r.paybackMonth) },
+    { key: 'roi', header: 'ROI', align: R, render: (r) => fmtRoiPct(r.roi) },
+    { key: 'pay', header: 'Payback', align: R, render: (r) => fmtMonths(r.paybackMonth) },
     { key: 'eff', header: 'Automation depth', align: R, render: (r) => `${r.eff.toFixed(1)}%` },
   ];
   return (
     <SectionFrame title={`📋 Results — consolidated outcome — ${a.label}`} help={help}
       result={<>
-        <p className="ac-muted">Consolidated outcome of the selection: {a.label} ({a.rows.length} planned product{a.rows.length > 1 ? 's' : ''}): the verdict of its distribution, the key figures, the uncertainty band, where the savings come from and the team shift.</p>
+        <p className="ac-muted">Consolidated outcome of the selection: {a.label} ({a.rows.length} planned product{a.rows.length > 1 ? 's' : ''}): the verdict
+          of its distribution, the key figures, the uncertainty band, where the savings come from and the team shift.</p>
         <AggBanner d={d} label={a.label} />
         <StatRow>
           <Kpi label="Net benefit" value={fmtEurK(t.net)} tone={t.net < 0 ? 'brick' : 'blue'} sub={`after ${fmtEurK(t.setup)} setup`} />
@@ -48,7 +51,8 @@ export default function ResultsAggregate() {
         {d && s && fin && <UncertaintyPanel title={`Uncertainty (portfolio Monte Carlo, ${s.n} draws)`} s={s} />}
         <SavingsAndTeam savingsTitle="Savings decomposition (last year of each product)" teamTitle="Team shift (horizon end of each product)" b={L} team={T} />
         <AggregateTable caption={`Results by product — ${a.label}`} rows={a.rows} columns={cols} edit={false}
-          totals={{ label: `Total — ${a.label}`, cells: { setup: fmtEurK(t.setup), net: fmtEurK(t.net), roi: fmtRoiPct(t.roi), pay: fmtMonths(t.paybackMonth), eff: `${t.eff.toFixed(1)}%` } }} />
+          totals={{ label: `Total — ${a.label}`, cells: { setup: fmtEurK(t.setup), net: fmtEurK(t.net), roi: fmtRoiPct(t.roi), pay: fmtMonths(t.paybackMonth),
+          eff: `${t.eff.toFixed(1)}%` } }} />
         <ExcludedNote excluded={a.excluded} />
       </>} />
   );

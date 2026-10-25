@@ -49,10 +49,12 @@ export const tokenUsage = (l: Live): TokenUsage => tokenUsageOf(l.c);
 
 /** Consumption by year, phase and authorization level, and the headline figures (legacy renderAgentUsage). */
 export function agentUsage(l: Live) {
-  const { c, m, eng } = l, ys = eng.years(), adopt = ys.map((y) => y.adoptionEndPct), maxA = Math.max(...adopt) || 1, baseArt = Math.max(1, Math.round(m.base.etp * 6));
+  const { c, m, eng } = l, ys = eng.years(), adopt = ys.map((y) => y.adoptionEndPct), maxA = Math.max(...adopt) || 1,
+    baseArt = Math.max(1, Math.round(m.base.etp * 6));
   const years: UsageYear[] = ys.map((y, i) => {
     const arts = baseArt * ((adopt[i] as number) / maxA);
-    return { label: `Y${i + 1}`, ramp: adopt[i] as number, vfte: y.agentVfteEnd, arts, tokensM: (arts * m.tokensPerArt * 12) / 1e6, tokenCost: y.tokenCost, infra: y.infrastructureCost };
+    return { label: `Y${i + 1}`, ramp: adopt[i] as number, vfte: y.agentVfteEnd, arts, tokensM: (arts * m.tokensPerArt * 12) / 1e6, tokenCost: y.tokenCost,
+      infra: y.infrastructureCost };
   });
   const act = activeArtefacts(c.a, c.s), ids = new Set(act.map((a) => a.phase));
   const phases: UsagePhase[] = PHASES.filter((p) => ids.has(p.id)).map((p) => {
@@ -65,7 +67,8 @@ export function agentUsage(l: Live) {
   });
   const tot = byAuth.reduce((s, x) => s + x.effort, 0) || 1, est = tokenUsage(l), end = eng.year(eng.horizonYears), sc = phaseScope(c.a, c.s);
   return { years, phases, auth: byAuth.map((x): UsageAuth => ({ ...x, share: (x.effort / tot) * 100 })), maxEffort: Math.max(1, ...phases.map((p) => p.effort)),
-    summary: { endLabel: est.endLabel, vfte: end.agentVfteEnd, artsPerMonth: baseArt * ((adopt[adopt.length - 1] as number) / maxA), tokensM: est.y3, tokenCost: end.tokenCost, count: sc.count, totalArt: sc.totalArt } };
+    summary: { endLabel: est.endLabel, vfte: end.agentVfteEnd, artsPerMonth: baseArt * ((adopt[adopt.length - 1] as number) / maxA), tokensM: est.y3,
+      tokenCost: end.tokenCost, count: sc.count, totalArt: sc.totalArt } };
 }
 
 export interface RunRow { phase: string; phaseName: string; name: string; reg: boolean; runs: number[]; total: number; tokM: number; cost: number }
@@ -77,10 +80,12 @@ export function artifactRuns(l: Live) {
   const idx = (p: string) => { const i = PHASES.findIndex((x) => x.id === p); return i < 0 ? 99 : i; };
   const name = (p: string) => (p === 'Cross-cutting' ? 'Cross-cutting (regulatory)' : PHASES.find((x) => x.id === p)?.name ?? p);
   const rows = act.slice().sort((a, b) => idx(a.phase) - idx(b.phase) || String(a.name).localeCompare(String(b.name))).map((a): RunRow => {
-    const sh = ((a.effort || 0) * (a.agentSup || 0)) / denom, runs = est.agentRuns.map((r) => r * sh), total = runs.reduce((x, y) => x + y, 0), tokM = (total * est.tpa) / 1e6;
+    const sh = ((a.effort || 0) * (a.agentSup || 0)) / denom, runs = est.agentRuns.map((r) => r * sh), total = runs.reduce((x, y) => x + y, 0),
+      tokM = (total * est.tpa) / 1e6;
     return { phase: a.phase, phaseName: name(a.phase), name: a.name, reg: !!a.isReg, runs, total, tokM, cost: tokM * blended };
   });
   const sum = (f: (r: RunRow) => number) => rows.reduce((t, r) => t + f(r), 0);
   return { rows, count: act.length, years: est.agentRuns.length,
-    totals: { runs: est.agentRuns.map((_, i) => sum((r) => r.runs[i] as number)), total: sum((r) => r.total), tokM: sum((r) => r.tokM), cost: sum((r) => r.cost) } };
+    totals: { runs: est.agentRuns.map((_, i) => sum((r) => r.runs[i] as number)), total: sum((r) => r.total), tokM: sum((r) => r.tokM),
+      cost: sum((r) => r.cost) } };
 }

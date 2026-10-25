@@ -31,13 +31,26 @@ export function OverrideBadge({ refKey, label }: { refKey: string; label: string
  * The chip of an inherited / overridden value (the common value in its tooltip) and, once the product has its own, its "Revert to common" (and "Apply
  * to all products").
  */
-export function OverrideChip({ label, own, common, onRevert, onApplyAll }: { label: string; own: boolean; common: unknown; onRevert: () => void; onApplyAll?: () => void }) {
+export function OverrideChip({ label, own, common, onRevert, onApplyAll }: { label: string; own: boolean; common: unknown; onRevert: () => void;
+  onApplyAll?: () => void }) {
   const state = own ? 'overridden' : 'inherited', tip = `Common value: ${describeValue(common)}`;
   return (
     <span className="ac-ovr" data-state={state} role="group" aria-label={`${label}: ${state}`}>
       <span className="ac-ovr-chip" title={tip}>{state}<span className="ac-sr"> — {tip}</span></span>
-      {own && <button type="button" className="ac-ovr-btn" aria-label={`Revert to common: ${label}`} title={`Back to the common value (${describeValue(common)})`} onClick={onRevert}>Revert to common</button>}
-      {own && onApplyAll && <button type="button" className="ac-ovr-btn" aria-label={`Apply to all products: ${label}`} title="This product’s value becomes the common value" onClick={onApplyAll}>Apply to all products</button>}
+      {own && <button
+        type="button"
+        className="ac-ovr-btn"
+        aria-label={`Revert to common: ${label}`}
+        title={`Back to the common value (${describeValue(common)})`}
+        onClick={onRevert}
+      >Revert to common</button>}
+      {own && onApplyAll && <button
+        type="button"
+        className="ac-ovr-btn"
+        aria-label={`Apply to all products: ${label}`}
+        title="This product’s value becomes the common value"
+        onClick={onApplyAll}
+      >Apply to all products</button>}
     </span>
   );
 }

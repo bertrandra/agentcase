@@ -12,7 +12,8 @@ import { useEconomics } from '../useEconomics';
 const help = (
   <>
     <p>Year-by-year cost build-up: residual team + setup + run (tokens/infra) and the resulting saving vs baseline.</p>
-    <p>Run(y) = Team cost(y) + Tokens(y) + Infra + Agentic run. Saving(y) = Baseline − Run(y). Costs and savings are sums of the monthly rows; FTE and adoption are year-end samples.</p>
+    <p>Run(y) = Team cost(y) + Tokens(y) + Infra + Agentic run. Saving(y) = Baseline − Run(y). Costs and savings are sums of the monthly rows; FTE and
+      adoption are year-end samples.</p>
   </>
 );
 
@@ -21,7 +22,8 @@ export default function AnnualSection() {
   const { tok } = useTheme(), v = useEconomics(), end = v.years[v.H - 1], first = v.years[0];
   const cfg = useMemo(() => runBars(v, { label: (i) => `Year ${i + 1}`, names: ['Team cost', 'Agentic run (team)'], yTitle: true }, tok), [v, tok]);
   if (!end || !first) return null;
-  const items: [string, string][] = [['AS-IS cost/yr', fmtK(v.baselineRun)], ['Run Y1', fmtK(first.totalRunCost)], [`Run ${yLabel(v.H)}`, fmtK(end.totalRunCost)],
+  const items: [string, string][] = [['AS-IS cost/yr', fmtK(v.baselineRun)], ['Run Y1', fmtK(first.totalRunCost)],
+  [`Run ${yLabel(v.H)}`, fmtK(end.totalRunCost)],
     [`Saving ${yLabel(v.H)}`, fmtK(end.savings)], ['Setup', fmtK(v.setup)], [`ROI ${v.H} year${v.H > 1 ? 's' : ''} (net)`, fmtRoiPct(v.roi)]];
   return (
     <SectionFrame title="Annual summary" help={help}

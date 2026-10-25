@@ -15,7 +15,8 @@ export const chunks = (json: string): string[] => {
 };
 
 const hasSubset = (k: Portfolio['products'][number]['knowledge']): boolean =>
-  k.enabled !== undefined || k.targetCC !== undefined || k.curationFTE !== undefined || k.setupBase !== undefined || k.ktLeadMonths !== undefined || !!k.maturityAnswers;
+  k.enabled !== undefined || k.targetCC !== undefined || k.curationFTE !== undefined || k.setupBase !== undefined || k.ktLeadMonths !== undefined
+    || !!k.maturityAnswers;
 
 /** Overrides, KnowledgeSubsets and KnowledgeDomains: one row per override (value as JSON), per product subset, per domain. */
 export function writeKnowledge(wb: XL.Workbook, pf: Portfolio, make: MakeSheet, finish: Finish, inputs: Inputs): void {
@@ -29,7 +30,8 @@ export function writeKnowledge(wb: XL.Workbook, pf: Portfolio, make: MakeSheet, 
   const ks = make(wb, PF_SHEETS.subsets, [16, 10, 11, 12, 12, 14, ...Array<number>(9).fill(11)]);
   for (const p of pf.products.filter((x) => hasSubset(x.knowledge))) {
     const k = p.knowledge, a = k.maturityAnswers ?? [];
-    inputs(ks.addRow([p.id, k.enabled === undefined ? '' : k.enabled ? 'Yes' : 'No', k.targetCC ?? '', k.curationFTE ?? '', k.setupBase ?? '', k.ktLeadMonths ?? '', ...Array.from({ length: 9 }, (_, i) => a[i] ?? '')]), 15);
+    inputs(ks.addRow([p.id, k.enabled === undefined ? '' : k.enabled ? 'Yes' : 'No', k.targetCC ?? '', k.curationFTE ?? '', k.setupBase ?? '',
+      k.ktLeadMonths ?? '', ...Array.from({ length: 9 }, (_, i) => a[i] ?? '')]), 15);
   }
   finish(ks);
   const kd = make(wb, PF_SHEETS.domains, [16, 40, 10]);

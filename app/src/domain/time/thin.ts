@@ -24,7 +24,8 @@ export function thinAggregate(K: K, annualRate?: number | null): ThinResult {
   }
   const cf = cashflowSummary(net, { annualRate });
   const years: ThinYear[] = [];
-  for (let y = 0; y < nY; y++) years.push({ savings: ySav[y] as number, totalRunCost: yRun[y] as number, teamCost: yTeam[y] as number, tokenCost: yTok[y] as number });
+  for (let y = 0; y < nY; y++) years.push({ savings: ySav[y] as number, totalRunCost: yRun[y] as number, teamCost: yTeam[y] as number,
+    tokenCost: yTok[y] as number });
   return { npv: cf.npv, payback: cf.paybackMonth, roi: roiCanonical(cf.total, K.setupTotal), totalSavings: cf.total, years, inputHash: K.inputHash };
 }
 
