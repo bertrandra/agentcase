@@ -31,7 +31,7 @@ export interface WaveView {
 }
 
 /** Sum a set of product series and read its headline. An empty set gives zero flows and no payback. */
-export function aggregate(items: ProductView[], horizon: number, rate: number): { series: Series; summary: Summary } {
+export function aggregate(items: Pick<ProductView, 'series'>[], horizon: number, rate: number): { series: Series; summary: Summary } {
   const series = emptySeries(horizon);
   for (const v of items) addInto(series, v.series);
   const first = items.length ? Math.min(...items.map((v) => v.series.first)) : horizon + 1;

@@ -5,7 +5,7 @@ import { headlineOf } from '../economics/headline';
 import { rateFor, targetBlendedTJM } from '../location';
 import { activeCurve } from '../model/overlay';
 import { modelRaw } from '../model/raw';
-import { timeFor } from '../time';
+import { timeFor, type Engine } from '../time';
 import type { Levers } from '../time/kernel';
 import type { YearRow } from '../time/years';
 import type { ColourRole } from '../theme';
@@ -42,11 +42,14 @@ export function scenarioLevers(c: Ctx, o: ScenOpts): Levers {
   };
 }
 
+/** The scenario's Time Engine: the case's own engine with the scenario's levers (the portfolio consolidation lays its months on the calendar). */
+export const scenarioEngine = (c: Ctx, o: ScenOpts, raw = modelRaw(c)): Engine =>
+  timeFor(c, { mode: 'full', curveModelId: activeCurve(c), model: raw, levers: scenarioLevers(c, o) });
+
 /** Generic scenario model: the case's own Time Engine run with the levers switched by `opts` (no second implementation of the economics). */
 export function scenarioModel(c: Ctx, opts: Partial<ScenOpts>) {
   const o: ScenOpts = { ai: true, loc: 'target', frPerYear: 0, ...opts };
-  const raw = modelRaw(c), base = raw.base;
-  const eng = timeFor(c, { mode: 'full', curveModelId: activeCurve(c), model: raw, levers: scenarioLevers(c, o) });
+  const raw = modelRaw(c), base = raw.base, eng = scenarioEngine(c, o, raw);
   const h = headlineOf(eng, c), Y = eng.years(), at = (f: (y: YearRow) => number) => Y.map(f);
   const cum = [0, ...Array.from({ length: eng.horizonMonths }, (_, i) => eng.cumulativeAt(i + 1))];
   return {
@@ -61,16 +64,20 @@ export type ScenarioResult = ReturnType<typeof scenarioModel>;
 
 export interface Scenario { key: 'asis' | 'ai' | 'loc' | 'ramp' | 'ailoc' | 'aidst'; label: string; tone: ColourRole; m: ScenarioResult }
 
-/** The six scenarios, in display order. */
-export function scenarioSet(c: Ctx): Scenario[] {
+export type ScenarioDef = Omit<Scenario, 'm'> & { opts: ScenOpts };
+
+/** The six scenarios' identities and levers, in display order (shared by the product view and the portfolio consolidation). */
+export function scenarioDefs(c: Ctx): ScenarioDef[] {
   const frPer = c.inp.p('scenFrPerYear'), dst = scenTargetLocName(c);
+  const d = (key: Scenario['key'], label: string, tone: ColourRole, ai: boolean, loc: ScenLoc, frPerYear = 0): ScenarioDef =>
+    ({ key, label, tone, opts: { ai, loc, frPerYear } });
   return [
-    { key: 'asis', label: 'AS-IS', tone: 'slate-700', m: scenarioModel(c, { ai: false, loc: 'asis' }) },
-    { key: 'ai', label: 'AI only', tone: 'info-700', m: scenarioModel(c, { ai: true, loc: 'asis' }) },
-    { key: 'loc', label: 'Location only', tone: 'warning-600', m: scenarioModel(c, { ai: false, loc: 'target' }) },
-    { key: 'ramp', label: `Ramp to ${dst} (${frPer}%/yr)`, tone: 'warning-550', m: scenarioModel(c, { ai: false, loc: 'ramp', frPerYear: frPer }) },
-    { key: 'ailoc', label: 'AI + Location', tone: 'teal-700', m: scenarioModel(c, { ai: true, loc: 'target' }) },
-    { key: 'aidst', label: `AI + 100% ${dst}`, tone: 'primary-700', m: scenarioModel(c, { ai: true, loc: 'destination' }) },
+    d('asis', 'AS-IS', 'slate-700', false, 'asis'), d('ai', 'AI only', 'info-700', true, 'asis'), d('loc', 'Location only', 'warning-600', false, 'target'),
+    d('ramp', `Ramp to ${dst} (${frPer}%/yr)`, 'warning-550', false, 'ramp', frPer), d('ailoc', 'AI + Location', 'teal-700', true, 'target'),
+    d('aidst', `AI + 100% ${dst}`, 'primary-700', true, 'destination'),
   ];
 }
+
+/** The six scenarios, in display order. */
+export const scenarioSet = (c: Ctx): Scenario[] => scenarioDefs(c).map(({ opts, ...s }) => ({ ...s, m: scenarioModel(c, opts) }));
 export const SCENARIO_DESTINATIONS = LOCATIONS.map((l) => ({ name: l.name, cls: l.cls }));

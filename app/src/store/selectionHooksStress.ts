@@ -1,6 +1,6 @@
 /** @calc-zone aggregate-views */
 import { useMemo } from 'react';
-import { compareByProduct, scenarioByProduct, selectionStress, sensitivityByProduct, type SelectionStress } from '@/domain/portfolio';
+import { compareByProduct, portfolioScenarios, scenarioByProduct, selectionStress, sensitivityByProduct, type SelectionStress } from '@/domain/portfolio';
 import { useCorePortfolio } from './consolidationHooks';
 import { usePortfolioSimulation } from './portfolioSimulation';
 import { useViewScope } from './viewScope';
@@ -11,6 +11,11 @@ import { useViewScope } from './viewScope';
 export const useScenarioRows = () => {
   const core = useCorePortfolio(), { productIds } = useViewScope();
   return useMemo(() => scenarioByProduct(core, productIds), [core, productIds]);
+};
+/** The six scenarios summed over the products of the View on the portfolio calendar, with the per-product breakdown (domain `portfolioScenarios`). */
+export const usePortfolioScenarios = () => {
+  const core = useCorePortfolio(), { productIds } = useViewScope();
+  return useMemo(() => portfolioScenarios(core, productIds), [core, productIds]);
 };
 /** AS-IS / classic saving / Agentic at the horizon end, per product, with the domain's roll-up line. */
 export const useCompareRows = () => {

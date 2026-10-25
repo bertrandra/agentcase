@@ -31,6 +31,8 @@ const ALLOWED: Record<string, string> = {
   'domain/portfolio/aggVerdictStrategies.ts:cache': 'memo: the strategy pick of a product run',
   'domain/portfolio/aggPresentPlayback.ts:cache': 'memo: the playback series of a product run',
   'domain/portfolio/series.ts:cache': 'memo: the series of a consolidation object',
+  'domain/portfolio/aggScenarios.ts:runsMemo': 'memo: the six scenario engines of a product run',
+  'domain/portfolio/aggScenarios.ts:memo': 'memo: the portfolio scenarios of a consolidation and a selection',
   'domain/portfolio/portfolioGantt.ts:ramps': 'memo: the ramp end and milestones of a product run',
   'domain/portfolio/portfolioGantt.ts:memo': 'memo: the Gantt of a consolidation',
   'domain/portfolio/keys.ts:TOP': 'constant lookup (never written after)',

@@ -8,7 +8,7 @@ export { scheduledProducts, unscheduledIds, productMonth0, keptMonths, waveSched
 export { resolveSchedule, cyclicWaves, capacityOf, dependencyLabel, SCHEDULE_CODES, SCHEDULE_LABELS, type WaveSchedule } from './waveSchedule';
 export { setWaveDependency, dependencyTargets, setMaxConcurrentSetups } from './waveDepOps';
 export { runOf, runStats, type ProductRun } from './run';
-export { MEASURES, productSeries, byYear, type Measure, type Series, type ProductSeries } from './series';
+export { MEASURES, productSeries, byYear, type SeriesSource, type Placement, type Measure, type Series, type ProductSeries } from './series';
 export { consolidate, type Consolidated } from './consolidate';
 export { summarize, yearTable, weightedVelocity, weightedAutomation, portfolioCostReduction, type Summary } from './headline';
 export { portfolioHeadline, waveHeadline, scopeHeadline, type PortfolioHeadline, type DisplayScope } from './portfolioHeadline';
@@ -40,5 +40,5 @@ export * from './aggScope'; export * from './aggFrame'; export * from './aggBase
 export * from './aggVerifyAll';
 export * from './aggIndexEPV';
 export * from './aggTune';
-export * from './aggStress'; export * from './aggEngine'; export * from './aggDefend';export type { Spread as TuneSpread } from './aggTuneCore';
+export * from './aggStress'; export * from './aggScenarios'; export * from './aggEngine'; export * from './aggDefend';export type { Spread as TuneSpread } from './aggTuneCore';
 export { costModel, scopeSlug, type CostFmt, type CostFormula, type CostModel, type CostRole, type CostRow, type CostScope, type CostTable, type ParamRow, type RateCardBlock } from './costModel';

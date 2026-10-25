@@ -37,6 +37,16 @@ When releasing, follow [docs/BUMP_PROCEDURE.md](docs/BUMP_PROCEDURE.md) (§7 for
 - **Monte Carlo histogram in the Wave view** — the Monte Carlo aggregate view draws the histogram of a Wave from its products' draws added draw by
   draw (`WaveStress.outcomes`), with the same chart component as the Portfolio (shared `SelectionHistogram`). Row removed from DEV-PF-GAPS.
 
+### Lot 7 — portfolio scenarios table (DEV-PF-GAPS)
+
+- Scenarios, Portfolio / Wave view: a new **Portfolio scenarios** table sums the six scenarios over the products in view on the portfolio calendar
+  (setup, savings, net, NPV at the common rate, ROI, payback month), with an expandable breakdown by product (net and NPV, total line from the domain).
+- Domain: `portfolioScenarios(pf, ids)` (`domain/portfolio/aggScenarios.ts`) runs each product's scenario engines (`scenarioEngine`, extracted from
+  `scenarioModel`; `scenarioDefs` lists the six scenarios) through the consolidation kernel (`productSeries`, `aggregate`, `summarize`): shifted by the
+  product's month 0 and KT lead, truncated at the portfolio horizon. Engines memoised per product run; the table memoised per consolidation and selection.
+- With one product the table equals the product's scenarios; "AI + Location" equals the deterministic consolidation. Single-product figures unchanged.
+- Docs: DEV-PF-GAPS row removed, DEV-PF-STRESS, SPEC_MULTI_PRODUIT F20 / P6, ARCHITECTURE § 12, MIGRATION_PLAN § 15.6, VUE_AGREGEE updated.
+
 ## [v20.16.0] 2026-10-25 — Architecture lot 5b: inline styles to CSS classes, max-len 0
 
 ### Lot 5b part A — frame, baseline, scope, tune and verify sections: named classes instead of inline styles, no line over 160 characters

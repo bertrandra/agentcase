@@ -66,7 +66,7 @@ describe.each(SPECS)('stress aggregate: $id', (s) => {
       for (const id of ids) expectShown(rowOf(t.name, id), t.shown(id));
     }
     if (s.total) expectShown(totalOf(s.tables[0]!.name), s.total());
-    else expect(document.querySelector('tfoot')).toBeNull();
+    else expect(totalOf(s.tables[0]!.name)).toBeNull();
     expect(document.body.textContent).not.toMatch(/coming/i);
   });
 

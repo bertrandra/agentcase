@@ -29,7 +29,12 @@ export function byYear(a: number[]): number[] {
   return out;
 }
 
-function build(run: ProductRun, s: Scheduled, L: number): ProductSeries {
+/** What the calendar layout reads of a run: the engine's months, the entry headcount and the KT part of the setup (a product, or one of its scenarios). */
+export type SeriesSource = Pick<ProductRun, 'rows' | 'baseEtp' | 'ktSetup' | 'profile'>;
+/** Where a product sits on the calendar. */
+export type Placement = Pick<Scheduled, 'month0' | 'lead'>;
+
+function build(run: SeriesSource, s: Placement, L: number): ProductSeries {
   const out = { ...emptySeries(L), first: s.month0 + 1 }, kept = Math.max(0, Math.min(run.rows.length, L - s.month0));
   for (let t = 1; t <= kept; t++) {
     const r = run.rows[t - 1]!, i = s.month0 + t - 1;
@@ -50,5 +55,5 @@ function build(run: ProductRun, s: Scheduled, L: number): ProductSeries {
 
 const cache = new WeakMap<object, unknown>();
 /** The product's calendar series; memoised on the run, so moving another product never recomputes it. A KT lead moves only the KT part of the setup. */
-export const productSeries = (run: ProductRun, s: Scheduled, L: number): ProductSeries =>
+export const productSeries = (run: SeriesSource, s: Placement, L: number): ProductSeries =>
   memoChain(cache, [run], `${s.month0}|${s.lead}|${L}`, () => build(run, s, L));
