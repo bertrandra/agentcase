@@ -44,3 +44,4 @@
 
 /* Portfolio Gantt (P4) */
 .ac-section .ac-gantt-wave:focus-visible, .ac-section .ac-gantt-prod:focus-visible { outline: var(--ac-border-thick) solid var(--ac-blue); outline-offset: 1px; }
+.ac-section .ac-pf-shared { margin-top: 1.5rem; }

@@ -31,6 +31,8 @@ export { clampRho, commonShock, idHash, productSeed } from './stressSeed';
 export type { Diversification, PfStress, PfStressJob, PfStressOpts, ProductStress, StressStats, WaveStress } from './stressTypes';
 export { pfDecision, groupDecision, type VerdictGroup } from './stressVerdict';
 export { selectionView, type SelectionView, type SelectionRow } from './selectionView';
+export { effectiveTeam, shareOf, allocatedPct, isSharedRow, ownRows, sharedEtp, addSharedLine, editSharedLine, removeSharedLine, setSharedAllocation,
+  dropProductShares, type SharedLineField } from './sharedTeam';
 export { aggregateTeams, type TeamAggregate, type TeamBucket, type TeamLine, type TeamProductRow } from './teams';
 export { inputSummary, type InputSummaryRow, type HubState } from './inputSummary';
 export * from './aggScope'; export * from './aggFrame'; export * from './aggBaseline'; export { spread, type Spread, type AggBase } from './aggScopeRows';

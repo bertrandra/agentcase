@@ -1,5 +1,6 @@
 /** @calc-zone product-resolution */
 import type { TeamRow } from '../types/state';
+import { dropProductShares } from './sharedTeam';
 import type { KnowledgeSubset, Portfolio, Product } from './types';
 
 /** Spec F1: a portfolio holds 1 to 50 products. */
@@ -49,14 +50,17 @@ export function duplicateProduct<T extends Portfolio>(pf: T, id: string, copyId:
   return place({ ...pf, products: [...pf.products.slice(0, i + 1), copy, ...pf.products.slice(i + 1)] }, copyId, src.waveId, id);
 }
 
-/** Removing a product also leaves its wave; the active product moves to a neighbour. The last product cannot be removed. */
+/**
+ * Removing a product also leaves its wave and drops its shares of the shared team lines (one undoable step); the active product moves to a
+ * neighbour. The last product cannot be removed.
+ */
 export function removeProduct<T extends Portfolio>(pf: T, id: string): T {
   const i = pf.products.findIndex((p) => p.id === id);
   if (i < 0 || pf.products.length < 2) return pf;
   const products = pf.products.filter((p) => p.id !== id);
   const active = pf.activeProductId === id ? (products[Math.min(i, products.length - 1)] as Product).id : pf.activeProductId;
-  return { ...pf, products, activeProductId: active,
-    waves: pf.waves.map((w) => (w.productIds.includes(id) ? { ...w, productIds: w.productIds.filter((x) => x !== id) } : w)) };
+  return dropProductShares({ ...pf, products, activeProductId: active,
+    waves: pf.waves.map((w) => (w.productIds.includes(id) ? { ...w, productIds: w.productIds.filter((x) => x !== id) } : w)) }, id);
 }
 
 /** Set (or, for `clear`ed fields, drop) fields of the product's knowledge subset; an absent field is inherited from the common hub. */

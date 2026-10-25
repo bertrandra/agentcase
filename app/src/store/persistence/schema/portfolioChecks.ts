@@ -2,6 +2,7 @@
 import { FORBIDDEN_DOM_IDS, OVERRIDABLE_KEYS } from '@/domain/portfolio';
 import { makeDefaultDoc } from '../../instance';
 import { checkCase, checkTeam, rec, type Notes, type Rec } from './caseChecks';
+import { repairSharedTeam } from './sharedChecks';
 
 /**
  * Repair of the portfolio structure of a raw `agentcase.portfolio.v1` file BEFORE the strict reader (`readPortfolio`) sees it: every invariant the
@@ -105,5 +106,6 @@ export function repairPortfolio(raw: Rec, n: Notes): Rec {
     n.push(`Portfolio: horizon ${JSON.stringify(s.horizonMonths)} months is invalid — ${months} months (the horizon input) used`); s.horizonMonths = months;
   }
   if (s.rho !== undefined && !(typeof s.rho === 'number' && s.rho >= 0 && s.rho <= 1)) { n.push(`Portfolio: correlation rho ${JSON.stringify(s.rho)} is not in [0, 1] — products independent (0)`); delete s.rho; }
+  if (s.sharedTeam !== undefined) { const lines = repairSharedTeam(s.sharedTeam, n); if (lines) s.sharedTeam = lines; else delete s.sharedTeam; }
   return s;
 }

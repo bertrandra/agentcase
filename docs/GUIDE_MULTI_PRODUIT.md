@@ -36,7 +36,7 @@ interface labels. Full specification in English: [SPEC_MULTI_PRODUIT.md](SPEC_MU
   Portfolio stress, per product), scoped critical-delivery report, HTML save and snapshots. **Cost model workbook** (monthly): three tabs
   **Values** (human days), **Rate cards** (applied rates, blending adjustment), **Other costs** (other cost lines, total vs the engine with a
   *Difference* row of 0; the pilot is a dated line included in the totals, the check row adds it to the engine total, DEV-COSTMODEL-PILOT).
-- **9. Known limits** — no portfolio scenarios table, no dependencies between waves, no shared teams, no knowledge reuse between products, common
+- **9. Known limits** — no portfolio scenarios table, no dependencies between waves, no knowledge reuse between products, common
   rates and coefficients, no *Apply to all products* for the knowledge-subset fields (DEVIATIONS.md DEV-PF-GAPS).
 
 ---
@@ -69,6 +69,9 @@ le groupe 📦 Portfolio et l'étape « Portfolio » de sa séquence guidée n'a
 3. Le nouveau produit **hérite de toutes les valeurs communes** ; seule son **équipe d'entrée** lui est propre.
 4. Dans **📦 Products** : *Duplicate* (copie équipe et surcharges), *Archive / Restore*, *Delete*, note, **décalage** en mois (*Offset (months)*), bouton *Activate*.
    Un portefeuille compte de 1 à 50 produits ; le dernier produit ne peut pas être supprimé.
+   Sous la table, **Shared team lines** : une ligne d'équipe partagée entre produits (*+ Add a shared line*, compétence, grade, lieu, ETP) et la
+   part de chaque produit en % ; chaque produit reçoit ETP × sa part (ligne *Shared* en lecture seule dans *Input team*), la colonne *Allocated*
+   signale un total au-delà de 100 % (la ligne serait comptée plus d'une fois).
 
 ## 2. L'équipe d'entrée de chaque produit
 
@@ -157,7 +160,7 @@ Portfolio ou Wave, **Decision Intelligence** applique la règle du verdict à ce
 Section **📥 Import / Export** :
 
 - **⬇️ Export / Import current settings** → *Export all* : le classeur de paramètres ajoute `PortfolioSettings`, `Products`, `Waves`, `TeamIn`, `Overrides`,
-  `KnowledgeSubsets` et `KnowledgeDomains` ; l'import remplace tout le portefeuille en **une seule étape annulable**.
+  `KnowledgeSubsets`, `KnowledgeDomains` et, s'il y a des lignes partagées, `SharedTeam` ; l'import remplace tout le portefeuille en **une seule étape annulable**.
 - **📊 Results workbook** : feuilles *Portfolio*, une par vague, *Knowledge transfer*, *Portfolio stress* (si une simulation existe) et, pour chaque produit, ses feuilles de résultats.
 - **📄 Export critical-delivery report** avec *Report scope* (Portfolio, Wave: … ou Product: …).
 - **💾 Save HTML**, **🗂️ Snapshot Manager** : le fichier ou la photo contient tout le portefeuille. Un portefeuille qui revient à un cas simple est enregistré comme avant

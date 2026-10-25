@@ -29,7 +29,7 @@ Figures are the golden fixture unless stated. "Before" = the build at the start 
 | DEV-COSTMODEL-PILOT | the pilot cost is a dated line included in the cost-model totals (decision D4, lot 4); the app headline does not count it |
 | DEV-APP-SECTION-PERSONAS | Brand & theme cannot be removed from its personas (current; lot 7 will change it) |
 | DEV-THEME-SEQ-UNDO | known defect: a theme `seq` can be reissued after an undo (lot 3 fixes it) |
-| DEV-PF-GAPS | portfolio features not built: scenarios table, wave dependencies, shared teams, Wave-view histogram, per-draw truncation |
+| DEV-PF-GAPS | portfolio features not built: scenarios table, wave dependencies, Wave-view histogram, per-draw truncation |
 | DEV-SNAPSHOT-RESTORE | the parallel run of the 107 case files: 2 legacy restore defects (bass / legacy curve), 1 fixed in the new build (File > Open… re-fit) |
 
 ## DEV-HEADLINE-OWNER — one economics headline
@@ -285,9 +285,18 @@ missing feature is not read as a bug. The authoritative list of known gaps is do
 |---|---|---|
 | **Portfolio scenarios table** (the six scenarios summed over products) | not built: scenarios and sensitivity stay per product (active product) | DEV-PF-STRESS, SPEC_MULTI_PRODUIT.md §9 |
 | **Dependencies between waves** (product B after product A) and transformation-team capacity between waves | not built: waves may overlap freely (F13) | SPEC_MULTI_PRODUIT.md F13, §9 |
-| **Shared teams** across products (a person on two products) | not built: each product has its own entry team | SPEC_MULTI_PRODUIT.md §9 |
 | **Monte Carlo histogram in the Wave view** | the histogram is drawn for the Portfolio only; a Wave shows the statistics (P10 / P50 / P90, P(net<0), CVaR, diversification) without it | VUE_AGREGEE.md (stress group) |
 | **Per-draw horizon truncation** in the portfolio stress | not modelled: a product cut by the portfolio horizon is simulated on its own horizon; the deterministic consolidation does cut it (diagnostic `truncated`) | DEV-PF-STRESS (outcome of a draw) |
+
+**Built (lot 7): shared teams across products.** A portfolio may hold `sharedTeam` lines (skill, grade, location, FTE, `allocations`: product id ->
+share in percent); resolving a product appends FTE x share to its effective team (rows marked `shared`), so a line whose shares add up to at most
+100 % is counted once in the portfolio (consolidation, team aggregate, hub allocation by headcount). Absent field = the previous behaviour exactly.
+Diagnostics `shared-over` (shares > 100 %) and `shared-orphan` (share of a deleted product); deleting a product drops its shares in the same undo
+step. Undoable commands `sharedTeam.add / edit / remove / setShare`; Products section, "Shared team lines" table; Input team shows the share as a
+read-only "Shared" row; the parameters workbook exports and imports the `SharedTeam` sheet. What it does not do (by choice): a shared line has no
+pins; duplicating a product (F3) copies its own team, not its shares (they would exceed 100 %); the whole-team actions of Input team (total, build
+from artefacts, align) act on the product's own rows and leave the shares as they are; an imported workbook without a `SharedTeam` sheet has no
+shared line.
 
 ## DEV-SNAPSHOT-RESTORE — opening the 107 case files: the legacy restore against the new build
 

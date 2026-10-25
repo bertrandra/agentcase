@@ -49,6 +49,12 @@ export interface Product {
 
 export interface Wave { id: string; name: string; note?: string; startMonth: number; productIds: string[] }
 
+/**
+ * A team line shared by several products (a person or a group on two products). `allocations`: product id -> share of the line's FTE in percent
+ * (0..100, adding up to <= 100). Resolving a product adds FTE x share to its entry team; the line is counted once in the portfolio.
+ */
+export interface SharedTeamLine { id: string; skill: string; grade: string; loc: string; etp: number; allocations: Record<string, number> }
+
 export interface HubSettings { enabled: boolean; infraMonthly: number; infraAllocation: 'perProduct' | 'byBaseEtp' }
 
 export interface Portfolio {
@@ -63,4 +69,6 @@ export interface Portfolio {
   startDate: string;
   /** global correlation between products in the portfolio Monte Carlo, 0..1; absent = 0 (independent, D-M7) */
   rho?: number;
+  /** team lines shared between products; absent = every team is the product's own (spec F2) */
+  sharedTeam?: SharedTeamLine[];
 }

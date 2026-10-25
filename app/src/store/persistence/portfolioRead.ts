@@ -1,5 +1,5 @@
 /** @calc-zone exports */
-import { validate, type Portfolio } from '@/domain/portfolio';
+import { validate, type Portfolio, type SharedTeamLine } from '@/domain/portfolio';
 import { clean } from '@/domain/portfolio/products';
 import { makeDefaultDoc } from '../instance';
 import { PERSONA_KEY } from '../persona';
@@ -48,6 +48,22 @@ function readWave(v: unknown): Portfolio['waves'][number] {
     productIds: (w.productIds as unknown[]).map((x) => safe(x, `wave ${id}: product id`)) };
 }
 
+/**
+ * The optional `sharedTeam` list of a portfolio snapshot: lines with an id, skill / grade / location, FTE and the shares per product id. The numbers
+ * are checked by `validate` (shares in [0, 100]); a share held by an unknown product is kept and flagged (diagnostic `shared-orphan`).
+ */
+export function readSharedTeam(v: unknown): SharedTeamLine[] {
+  need(Array.isArray(v), 'sharedTeam must be a list of lines');
+  return (v as unknown[]).map((l, i) => {
+    need(rec(l) && rec(l.allocations), `shared team line ${i + 1} must be an object with allocations`);
+    const x = l as Rec;
+    need(typeof x.id === 'string' && typeof x.skill === 'string' && typeof x.grade === 'string' && typeof x.loc === 'string' && typeof x.etp === 'number',
+      `shared team line ${i + 1}: id, skill, grade, loc (text) and etp (number) expected`);
+    return { id: x.id as string, skill: x.skill as string, grade: x.grade as string, loc: x.loc as string, etp: x.etp as number,
+      allocations: { ...(x.allocations as Record<string, number>) } };
+  });
+}
+
 /** A portfolio snapshot (`agentcase.portfolio.v1`) -> a validated Portfolio. Hostile keys are dropped, shapes checked, invariants of spec 4.1 enforced. */
 export function readPortfolio(raw: unknown): Portfolio {
   need(rec(raw), 'must be a JSON object');
@@ -63,6 +79,7 @@ export function readPortfolio(raw: unknown): Portfolio {
       infraAllocation: hub.infraAllocation as 'perProduct' | 'byBaseEtp' },
     horizonMonths: num(s.horizonMonths, 'horizonMonths'), startDate: typeof s.startDate === 'string' ? s.startDate : '',
     ...(s.rho === undefined || s.rho === 0 ? {} : { rho: num(s.rho, 'rho') }),
+    ...(s.sharedTeam === undefined ? {} : { sharedTeam: readSharedTeam(s.sharedTeam) }),
   };
   const errors = validate(pf).errors;
   if (errors.length) throw new SnapshotError(`Portfolio snapshot: ${errors[0]!.message}`);

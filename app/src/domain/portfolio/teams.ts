@@ -1,4 +1,5 @@
 /** @calc-zone portfolio-consolidation */
+import { effectiveTeam, isSharedRow } from './sharedTeam';
 import { scheduledProducts } from './timeline';
 import type { Portfolio } from './types';
 
@@ -6,7 +7,8 @@ import type { Portfolio } from './types';
 export interface TeamBucket { key: string; etp: number }
 /** One skill x grade x location line of the selection, merged over the products. */
 export interface TeamLine { skill: string; grade: string; loc: string; etp: number }
-export interface TeamProductRow { id: string; name: string; wave: string; planned: boolean; archived: boolean; etp: number; lines: number }
+/** `etp` includes the product's shares of the shared lines (`sharedEtp` of it); `lines` counts its own rows and the shared lines it has a share of. */
+export interface TeamProductRow { id: string; name: string; wave: string; planned: boolean; archived: boolean; etp: number; sharedEtp: number; lines: number }
 
 /** The entry teams of a set of products, added up (aggregate view of "Input team"). */
 export interface TeamAggregate {
@@ -30,7 +32,8 @@ function add<K>(m: Map<string, K & { etp: number }>, key: string, make: () => K 
 
 /**
  * Entry teams of the given products added up by skill, grade, location and by skill x grade x location, with a per-product table. Archived and
- * unplanned products are counted when asked for (the caller chooses the selection) and flagged `planned: false`; a team is each product's own (spec F2).
+ * unplanned products are counted when asked for (the caller chooses the selection) and flagged `planned: false`. A shared line counts FTE x share
+ * in each product, so over the products of a line (shares <= 100 %) it never counts more than its FTE once (spec F2).
  */
 export function aggregateTeams(pf: Portfolio, productIds: string[]): TeamAggregate {
   const planned = new Set(scheduledProducts(pf).map((s) => s.product.id)), byId = new Map(pf.products.map((p) => [p.id, p]));
@@ -40,17 +43,19 @@ export function aggregateTeams(pf: Portfolio, productIds: string[]): TeamAggrega
   for (const id of productIds) {
     const p = byId.get(id);
     if (!p) continue;
-    let etp = 0;
-    for (const r of p.teamIn) {
+    let etp = 0, shared = 0;
+    const team = effectiveTeam(pf, p);
+    for (const r of team) {
       const e = etpOf(r.etp);
       etp += e;
+      if (isSharedRow(r)) shared += e;
       add(skill, r.skill, () => ({ key: r.skill, etp: 0 }), e);
       add(grade, r.grade, () => ({ key: r.grade, etp: 0 }), e);
       add(loc, r.loc, () => ({ key: r.loc, etp: 0 }), e);
       add(lines, `${r.skill}|${r.grade}|${r.loc}`, () => ({ skill: r.skill, grade: r.grade, loc: r.loc, etp: 0 }), e);
     }
     total += etp;
-    products.push({ id, name: p.name, wave: pf.waves.find((w) => w.id === p.waveId)?.name ?? '', planned: planned.has(id), archived: !!p.archived, etp, lines: p.teamIn.length });
+    products.push({ id, name: p.name, wave: pf.waves.find((w) => w.id === p.waveId)?.name ?? '', planned: planned.has(id), archived: !!p.archived, etp, sharedEtp: shared, lines: team.length });
   }
   return { products, total, bySkill: [...skill.values()], byGrade: [...grade.values()], byLoc: [...loc.values()], lines: [...lines.values()] };
 }
