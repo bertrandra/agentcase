@@ -49,7 +49,7 @@ export function Releases() {
               return (
                 <Fragment key={r.id}>
                   <tr>
-                    <td><input type="text" aria-label={`Name of ${name}`} style={{ width: '100%' }} value={name} onChange={(e) => setField('RELEASES', r.id, 'name', e.target.value)} /></td>
+                    <td><input type="text" aria-label={`Name of ${name}`} className="ac-fill" value={name} onChange={(e) => setField('RELEASES', r.id, 'name', e.target.value)} /></td>
                     <td><button type="button" aria-expanded={!!open[r.id]} onClick={() => setOpen({ ...open, [r.id]: !open[r.id] })}>{open[r.id] ? '▼' : '▶'} {mine.length} item(s)</button></td>
                     <td><ConfirmButton label="🗑" onConfirm={() => removeRecord('RELEASES', r.id)} /></td>
                   </tr>

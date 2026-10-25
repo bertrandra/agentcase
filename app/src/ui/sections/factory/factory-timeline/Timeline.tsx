@@ -1,6 +1,7 @@
 import { LANES, timelineAxis, timelineEvents } from '@/domain/factory/timeline';
 import { Panel } from '@/ui/widgets/cards';
 import { useKpiData } from '../data';
+import { cssVars } from '@/ui/cssVars';
 
 const ASIDE = <small className="ac-muted">Commits, Builds, Release Candidates, Approvals, Deployments, Monitoring, Feedback — by their real dates</small>;
 const short = (t: number) => new Date(t).toLocaleDateString(undefined, { month: 'short', day: 'numeric' });
@@ -15,17 +16,22 @@ export function Timeline() {
   const ax = timelineAxis(events);
   return (
     <Panel title="🗓️ Release & Engineering timeline" aside={ASIDE}>
-      <div style={{ display: 'flex', height: 16, marginBottom: 4 }}>
-        <div style={{ width: 150, flex: 'none' }} className="ac-muted">Calendar →</div>
-        <div style={{ position: 'relative', flex: 1 }}>{ax.ticks.map((k) => <span key={k.at} style={{ position: 'absolute', left: `${k.at.toFixed(2)}%`, fontSize: 'var(--ac-font-size-2xs-plus)', color: 'var(--ac-muted)', whiteSpace: 'nowrap' }}>{short(k.t)}</span>)}</div>
+      <div className="ac-tl-axis">
+        <div className="ac-muted ac-tl-name">Calendar →</div>
+        <div className="ac-tl-track">
+          {/* dynamic: each tick and dot sits at its date on the axis */}
+          {ax.ticks.map((k) => <span key={k.at} className="ac-tl-tick" style={cssVars({ '--ac-at': `${k.at.toFixed(2)}%` })}>{short(k.t)}</span>)}
+        </div>
       </div>
       {LANES.map((lane) => {
         const mine = events.filter((e) => e.lane === lane);
         return (
-          <div key={lane} role="group" aria-label={lane} style={{ display: 'flex', alignItems: 'center', height: 24, borderBottom: '1px solid var(--ac-line)' }}>
-            <div style={{ width: 150, flex: 'none', fontSize: 'var(--ac-font-size-sm)' }}>{lane} <span className="ac-muted">({mine.length})</span></div>
-            <div style={{ position: 'relative', flex: 1, height: 16 }}>
-              {mine.map((e, i) => <span key={i} title={`${e.label} — ${e.date}`} style={{ position: 'absolute', left: `${ax.pct(e.t).toFixed(2)}%`, top: 3, width: 9, height: 9, borderRadius: 'var(--ac-radius-round)', background: `var(--ac-${e.tone})`, transform: 'translateX(-50%)' }} />)}
+          <div key={lane} role="group" aria-label={lane} className="ac-tl-lane">
+            <div className="ac-tl-name ac-small">{lane} <span className="ac-muted">({mine.length})</span></div>
+            <div className="ac-tl-track ac-tl-dots">
+              {mine.map((e, i) => (
+                <span key={i} title={`${e.label} — ${e.date}`} className="ac-tl-dot" data-tone={e.tone} style={cssVars({ '--ac-at': `${ax.pct(e.t).toFixed(2)}%` })} />
+              ))}
             </div>
           </div>
         );

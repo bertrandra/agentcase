@@ -5,10 +5,12 @@ import { ConfirmButton } from '@/ui/widgets/CommitField';
 import { LazySelect, type Opt } from '@/ui/widgets/LazySelect';
 
 export type Rec = { id: string; [k: string]: unknown };
+/** The named inks a choice column can give its values (`data-ink` in sections-b.css). */
+export type Ink = 'teal' | 'brick' | 'amber' | 'blue';
 /** A column: a text field, a choice among fixed values or among linked records, plain text, or anything (`custom`). */
 export type Col =
   | { kind: 'text'; header: string; field: string; placeholder?: string }
-  | { kind: 'choice'; header: string; field: string; options: string[]; tone?: Record<string, string> }
+  | { kind: 'choice'; header: string; field: string; options: string[]; tone?: Record<string, Ink> }
   | { kind: 'link'; header: string; field: string; options: Opt[]; emptyLabel?: string }
   | { kind: 'static'; header: string; text: (r: Rec) => string }
   | { kind: 'custom'; header: string; render: (r: Rec) => ReactNode };
@@ -20,13 +22,25 @@ export function RecordTable({ coll, rows, cols, noun, empty, addLabel, label, ca
   const shown = cap && rows.length > cap ? rows.slice(0, cap) : rows;
   const cell = (c: Col, r: Rec) => {
     const aria = `${c.header} of ${label(r)}`;
-    if (c.kind === 'text') return <input type="text" aria-label={aria} placeholder={c.placeholder} style={{ width: '100%' }} value={String(r[c.field] ?? '')} onChange={(e) => setField(coll, r.id, c.field, e.target.value)} />;
+    const value = (f: string) => String(r[f] ?? '');
+    if (c.kind === 'text') {
+      return <input type="text" aria-label={aria} placeholder={c.placeholder} className="ac-fill" value={value(c.field)} onChange={(e) => setField(coll, r.id, c.field, e.target.value)} />;
+    }
     if (c.kind === 'choice') return (
-      <select aria-label={aria} value={String(r[c.field] ?? '')} style={{ width: '100%', color: c.tone?.[String(r[c.field])], fontWeight: c.tone ? 'var(--ac-font-weight-bold)' : undefined }} onChange={(e) => setField(coll, r.id, c.field, e.target.value)}>
+      <select
+        aria-label={aria}
+        value={value(c.field)}
+        className={c.tone ? 'ac-fill ac-choice is-toned' : 'ac-fill ac-choice'}
+        data-ink={c.tone?.[value(c.field)]}
+        onChange={(e) => setField(coll, r.id, c.field, e.target.value)}
+      >
         {c.options.map((o) => <option key={o} value={o}>{o}</option>)}
       </select>
     );
-    if (c.kind === 'link') return <LazySelect ariaLabel={aria} emptyLabel={c.emptyLabel} value={String(r[c.field] ?? '')} options={c.options} onChange={(v) => setField(coll, r.id, c.field, v || null)} style={{ width: '100%' }} />;
+    if (c.kind === 'link') {
+      const pick = (v: string) => setField(coll, r.id, c.field, v || null);
+      return <LazySelect ariaLabel={aria} emptyLabel={c.emptyLabel} value={value(c.field)} options={c.options} onChange={pick} className="ac-fill" />;
+    }
     if (c.kind === 'static') return <small className="ac-muted">{c.text(r)}</small>;
     return c.render(r);
   };

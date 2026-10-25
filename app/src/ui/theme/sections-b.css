@@ -190,13 +190,16 @@
 [data-tone='teal-700'] { --ac-tone: var(--ac-teal-700); } [data-tone='warning-600'] { --ac-tone: var(--ac-warning-600); }
 [data-tone='danger-800'] { --ac-tone: var(--ac-danger-800); } [data-tone='primary-700'] { --ac-tone: var(--ac-primary-700); }
 [data-tone='info-700'] { --ac-tone: var(--ac-info-700); } [data-tone='secondary-600'] { --ac-tone: var(--ac-secondary-600); }
+[data-tone='chart-cat-1'] { --ac-tone: var(--ac-chart-cat-1); } [data-tone='chart-cat-2'] { --ac-tone: var(--ac-chart-cat-2); }
+[data-tone='chart-cat-3'] { --ac-tone: var(--ac-chart-cat-3); } [data-tone='chart-cat-4'] { --ac-tone: var(--ac-chart-cat-4); }
 [data-bg-tone='success-50'] { --ac-tone-bg: var(--ac-success-50); } [data-bg-tone='warning-55'] { --ac-tone-bg: var(--ac-warning-55); }
 [data-bg-tone='danger-75'] { --ac-tone-bg: var(--ac-danger-75); }
 [data-bg-tone='chart-div-pos'] { --ac-tone-bg: var(--ac-chart-div-pos); } [data-bg-tone='chart-div-mid'] { --ac-tone-bg: var(--ac-chart-div-mid); }
 [data-bg-tone='chart-div-neg'] { --ac-tone-bg: var(--ac-chart-div-neg); } [data-bg-tone='chart-div-neg-strong'] { --ac-tone-bg: var(--ac-chart-div-neg-strong); }
 /* a figure's ink by name, and the sign of a money figure */
-[data-ink='teal'] { color: var(--ac-teal); } [data-ink='brick'] { color: var(--ac-brick); } [data-ink='amber'] { color: var(--ac-amber); }
-[data-ink='blue'] { color: var(--ac-blue); } [data-ink='info'] { color: var(--ac-info-700); }
+[data-ink] { color: var(--ac-ink); }
+[data-ink='teal'] { --ac-ink: var(--ac-teal); } [data-ink='brick'] { --ac-ink: var(--ac-brick); } [data-ink='amber'] { --ac-ink: var(--ac-amber); }
+[data-ink='blue'] { --ac-ink: var(--ac-blue); } [data-ink='info'] { --ac-ink: var(--ac-info-700); }
 .ac-gain[data-sign='pos'] { color: var(--ac-teal); } .ac-gain[data-sign='neg'] { color: var(--ac-brick); }
 .ac-cash[data-sign='pos'] { color: var(--ac-teal-725); } .ac-cash[data-sign='neg'] { color: var(--ac-warning-595); }
 .ac-margin[data-sign='pos'] { color: var(--ac-teal-700); } .ac-margin[data-sign='neg'] { color: var(--ac-danger-800); }
@@ -271,3 +274,24 @@
 .ac-section .ac-table tr.ac-cm-off { color: var(--ac-muted); }
 .ac-section .ac-table tbody tr.is-selected-model:nth-child(n) { font-weight: var(--ac-font-weight-bold); background: var(--ac-warning-55); }
 .ac-section .ac-mp-swatch { display: inline-block; width: 10px; height: 10px; margin-right: 4px; background: var(--ac-tone); }
+
+/* ---- Factory */
+.ac-section .ac-table :is(input, select).ac-fill { width: 100%; }
+.ac-section .ac-table select.ac-choice.is-toned { font-weight: var(--ac-font-weight-bold); }
+.ac-section .ac-table select.ac-choice.is-toned[data-ink] { color: var(--ac-ink); }
+.ac-section .ac-warn-ink { color: var(--ac-amber); }
+.ac-section .ac-check.ac-story-art { display: flex; gap: 6px; font-size: var(--ac-font-size-sm); }
+.ac-section .ac-story-arts { max-height: 260px; overflow-y: auto; }
+.ac-section .ac-check.ac-phase-check { display: inline-flex; gap: 2px; margin-right: 6px; font-size: var(--ac-font-size-xs-plus); }
+.ac-section .ac-stat .ac-stat-v.is-thin { color: var(--ac-muted); }
+.ac-section .ac-kpi-thin { display: block; color: var(--ac-amber); }
+.ac-section .ac-chain { padding: 3px 8px; font-size: var(--ac-font-size-md); border-left: 2px solid var(--ac-chain); }
+.ac-chain[data-level='portfolio'] { --ac-chain: var(--ac-blue); border-left-width: 3px; } .ac-chain[data-level='epic'] { --ac-chain: var(--ac-teal); margin-left: 12px; }
+.ac-chain[data-level='feature'] { --ac-chain: var(--ac-secondary-600); margin-left: 24px; }
+.ac-section .ac-tl-axis { display: flex; height: 16px; margin-bottom: 4px; }
+.ac-section .ac-tl-name { flex: none; width: 150px; }
+.ac-section .ac-tl-track { position: relative; flex: 1; }
+.ac-section .ac-tl-tick { position: absolute; left: var(--ac-at); font-size: var(--ac-font-size-2xs-plus); white-space: nowrap; color: var(--ac-muted); }
+.ac-section .ac-tl-lane { display: flex; align-items: center; height: 24px; border-bottom: 1px solid var(--ac-line); }
+.ac-section .ac-tl-dots { height: 16px; }
+.ac-section .ac-tl-dot { position: absolute; top: 3px; left: var(--ac-at); width: 9px; height: 9px; background: var(--ac-tone); border-radius: var(--ac-radius-round); transform: translateX(-50%); }

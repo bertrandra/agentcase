@@ -1,12 +1,12 @@
 import { Panel } from '@/ui/widgets/cards';
 import { TASK_OPTIONS, nameOptions, useRecs } from '../data';
-import { RecordTable, type Rec } from '../RecordTable';
+import { RecordTable, type Ink, type Rec } from '../RecordTable';
 
 /** Rendered rows are capped (every KPI still reads all records): hundreds of editable rows are for scanning, not typing. */
 const CAP = 100;
 const hint = (t: string) => <small className="ac-muted">{t}</small>;
 const nm = (r: Rec) => String(r.name ?? r.id);
-const TONE = { Success: 'var(--ac-teal)', Failed: 'var(--ac-brick)', Pass: 'var(--ac-teal)', Fail: 'var(--ac-brick)', Pending: 'var(--ac-amber)' };
+const TONE: Record<string, Ink> = { Success: 'teal', Failed: 'brick', Pass: 'teal', Fail: 'brick', Pending: 'amber' };
 
 /** Commits, builds, build artefacts and quality gates. */
 export function Builds() {
