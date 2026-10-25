@@ -2,6 +2,7 @@ import { describe, expect, it } from 'vitest';
 import { makeCtx } from '@/domain';
 import { mcSeedOf, runMonteCarlo } from '@/domain/stress';
 import { decide, evaluateStrategies, resultsCore, savingsBreakdown, stratNormalize, strategyDefsOf, strategyLocSplits, stratWeightsOf, STRATEGY_DEFS_DEFAULT } from '@/domain/verdict';
+import { withoutDeviations } from '../helpers/deviations';
 import { diff, extraIds, loadCase, loadExtra, problems } from '../helpers/extras';
 
 const ctx = (id: string) => makeCtx(loadCase(id));
@@ -43,6 +44,6 @@ describe('results core reproduces the legacy aggregation', () => {
     const c = ctx(id), r = resultsCore(c), out: string[] = [], e = loadExtra('resultsCore', id) as { tot: Record<string, number> };
     e.tot = { asis: e.tot.asis as number, human: e.tot.human as number, agent: e.tot.agent as number };   // reconciliation fields are legacy diagnostics
     diff(e, { net: r.net, roi: r.roi, payback: r.payback, B: r.last, years: savingsBreakdown(c), eff: r.eff, setup: r.setup, horizon: r.horizon, status: r.status, tot: r.team }, 'resultsCore', out);
-    expect(out.slice(0, 6)).toEqual([]);
+    expect(withoutDeviations(out, id).slice(0, 6)).toEqual([]);   // DEV-PAYBACK-NOSETUP: econ-no-setup reads "Immediate"
   });
 });

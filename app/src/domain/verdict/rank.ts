@@ -16,7 +16,7 @@ export const METRICS: { k: MetricKey; label: string; dir: 1 | -1; declared: bool
 
 const val = (r: StrategyRow, k: MetricKey): number | null => (k in r.computed ? (r.computed as unknown as Record<string,
   number | null>)[k] as number | null : (r.declared as Record<string, number>)[k] as number);
-/** Value used for ranking: a missing payback is the worst (99 years), a missing ROI the worst possible. */
+/** Value used for ranking: a missing payback (not within the horizon) is the worst (99 years), an immediate one (0) the best; a missing ROI the worst. */
 const raw = (r: StrategyRow, k: MetricKey): number => { const v = val(r, k); return v == null ? (k === 'payback' ? 99 : -1e9) : v; };
 
 export interface Ranked { id: string; icon: string; label: string; norm: Record<MetricKey, number>; score: number; row: StrategyRow }

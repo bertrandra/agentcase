@@ -13,9 +13,10 @@ describe.each([['Portfolio', 0], ['Wave 1', 1], ['Wave 2', 2]] as const)('verify
 
   it(`fte-vfte: the calendar trajectory is the products' own months shifted`, () => {
     const a = fteVfteAgg(pf, scope())!, ind = independent(pf, scope()), L = consolidate(pf).horizon;
-    expectSeriesClose(a.chart.human, shifted(ind, L, (r) => r.humanFte));
-    expectSeriesClose(a.chart.agent, shifted(ind, L, (r) => r.agentVfte));
-    const h = shifted(ind, L, (r) => r.humanFte);
+    // one human-FTE definition (lot 10): delivery team plus run team; stocks held after a product's own horizon
+    expectSeriesClose(a.chart.human, shifted(ind, L, (r) => r.humanFte + r.runTeamFte, true));
+    expectSeriesClose(a.chart.agent, shifted(ind, L, (r) => r.agentVfte, true));
+    const h = shifted(ind, L, (r) => r.humanFte + r.runTeamFte, true);
     a.years.forEach((y, i) => { expectClose(y.human, h[Math.min(12 * i + 11, L - 1)]!); expectClose(y.total, y.human + y.agent); });
     expect(a.table.rows.map((r) => r.id)).toEqual(ind.map((p) => p.id));
   });

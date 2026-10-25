@@ -31,6 +31,12 @@ Figures are the golden fixture unless stated. "Before" = the build at the start 
 | DEV-THEME-SEQ-UNDO | known defect: a theme `seq` can be reissued after an undo (lot 3 fixes it) |
 | DEV-PF-GAPS | no portfolio gap left (built in lot 7: scenarios table, wave dependencies and setup capacity, shared teams, Wave-view histogram, per-draw truncation; in lot 8: portfolio sensitivity, pins on a shared team line, "apply to all" for the knowledge subset) |
 | DEV-SNAPSHOT-RESTORE | the parallel run of the 107 case files: 2 legacy restore defects (bass / legacy curve), 1 fixed in the new build (File > Open… re-fit) |
+| DEV-LEGACY-CURVE-HORIZON | under the legacy flat curves, Monte Carlo, `horizonYears` and cost reduction read the Time Engine over the whole horizon |
+| DEV-SENS-RERUN | each cell of the automation × glass-ceiling ROI matrix reruns the Time Engine |
+| DEV-PAYBACK-RECOVERY | payback = the month after the last negative cumulative month (no single-product change) |
+| DEV-PAYBACK-NOSETUP | one displayed payback: no setup and positive savings is "immediate" everywhere and ranks best |
+| DEV-YEAR-BEYOND-HORIZON | registry Y2 variables are n/a beyond the horizon |
+| DEV-SPLIT-TOLERANCE | one "adds up to 100 %" tolerance (0.5 point) |
 
 ## DEV-HEADLINE-OWNER — one economics headline
 
@@ -372,3 +378,51 @@ tests are not concerned: they drive the legacy *engine* through recipes, and the
 - Tests: `tests/store/snapshot-restore-parity.test.ts` (File > Open… = snapshot panel on all 107 files; lifecycle-pos-0 re-fitted to 74 % with the legacy
   restore figures, the stored case keeps the oracle figures; curve-bass / curve-legacy keep their family and the oracle figures, and the legacy setter
   line is asserted verbatim in the legacy file, so a change on either side fails the test).
+
+## DEV-LEGACY-CURVE-HORIZON — the legacy flat curves read the Time Engine over the whole horizon
+
+- Legacy: under `legacy.flatAnnual` / `legacy.linearAnchor` the Monte Carlo outcome (`mcOutcome`), `horizonYears()` and the cost reduction summed the three-entry annual model (`model().yearSav`), while the headline used the Time Engine over the N-year horizon; a 5-year case counted three years.
+- v19: the legacy curves are Time Engine adapters like the others: `mcOutcome` is the thin pass's net cash-flow (`totalSavings` = the headline net), `horizonYears` the engine's year rows, on every curve. The flat annual sums stand only if the engine throws.
+- Effect: fixture horizon-5 with `scurve.curve = 'legacy.flatAnnual'`: headline net €4,117,251, Monte Carlo outcome €1,989,307 → €4,117,251 (the zero-variance P50 equals the net), `costReduction.years` 3 → 5. Under `legacy.linearAnchor` the outcome followed the flat annual model even at horizon 3 (€1,989,307 against a headline of €1,617,351); it now equals the headline. The `curve-legacy` fixture (flat, horizon 3) is unchanged to 1e-15: no oracle field moves.
+- Tests: `tests/domain/lot10-calc.test.ts` (both legacy curves at horizon 5; zero-variance single-product run P50 = net), `tests/domain/portfolio/lot10-portfolio.test.ts` (zero-variance portfolio Monte Carlo P50 = consolidated net on a legacy-curve portfolio).
+- Files: `domain/stress/simulate.ts`, `domain/model/horizonYears.ts` (`economics/costReduction.ts` and the product runs read it).
+
+## DEV-SENS-RERUN — each cell of the automation × glass-ceiling ROI matrix reruns the Time Engine
+
+- Legacy (`renderSensitivity`): `roi = baseRoi × (eff / m.eff) × (a / m.auto)`: the base ROI scaled, which ignored the fixed setup and the location savings, never changed sign, and divided by zero ("Infinity%") when the potential was 0.
+- v19: each of the 20 cells is the case with `autoPotential = a` and a forced glass ceiling `= ce` (`cellCtx`, the `withInputs` rerun of the tornado), its ROI read from the one headline owner (`headlineOf(engineNow(…)).roi`, null = n/a when there is no setup). The portfolio `sensitivityByProduct` counts the negative cells of these reruns.
+- Effect (golden, rows 25 / 35 / 50 / 65 %): 79 / 155 / 317 / 535 % → 394 / 458 / 554 / 649 % (the location savings do not scale with automation). A heavy setup now gives negative cells (⚠️); a potential of 0 no longer prints Infinity.
+- Tests touched: oracle field `sensitivityView.matrix` skipped (`table` and `head` still compared); `tests/ui/sections/sensitivity.test.tsx` ignores the legacy matrix numbers and asserts every rerun cell is shown; new assertions in `tests/domain/lot10-calc.test.ts` (each cell = the rerun headline ROI; negative cells; no Infinity) and `tests/domain/portfolio/lot10-portfolio.test.ts` (negative-cell count by product).
+- Files: `domain/stress/sensitivity.ts`.
+
+## DEV-PAYBACK-RECOVERY — payback after the last negative cumulative month
+
+- Before: `paybackMonthOf` returned the first month whose cumulative cash-flow was ≥ 0, even when it dipped below 0 again (a late, costly portfolio wave).
+- v19: the month after the last month (≥ the first movement) with a negative cumulative; null when the final cumulative is negative. Used by the engine, the thin pass and the portfolio consolidation (one kernel).
+- Effect: none on the 107 fixtures (a single product's cumulative never dips again after it crosses 0; asserted fixture by fixture). Portfolio: a second wave whose setup pushes the cumulative back below 0 now pays back after it recovers, or never.
+- Tests: `tests/domain/cashflow.test.ts` (the old loops' payback replaced by the new rule, and equal to the old first crossing whenever the cumulative stays ≥ 0 afterwards; edge cases), `tests/domain/lot10-calc.test.ts` (107 fixtures unchanged), `tests/domain/portfolio/lot10-portfolio.test.ts` (late costly wave; null case).
+- Files: `domain/economics/cashflow.ts`.
+
+## DEV-PAYBACK-NOSETUP — one displayed payback
+
+- Legacy: a case or strategy with no setup had three paybacks: month 1 / "Year 1" (Financial, Results, KPI bar: the cash-flow crossing), "immediate" (scenarios), null ranked as 99 years, the worst (strategies).
+- v19: `displayedPayback(month, setup, benefit)` (`domain/economics/cashflow.ts`) owns the displayed payback: no setup and positive savings = 0 ("immediate"), no setup and no saving = null, else the kernel month. Financial (`economicsView().paybackShown`), Results (`paybackYearShown` → "Immediate"), the KPI tile, the scenarios and the strategies (`computed.payback = 0`, "Immediate") read it; the ranking treats 0 as the best payback (null stays the worst). The numeric kernel month (registry `paybackMonths`, `computeCase().payback`, packages, Excel) stays the crossing month 1.
+- Effect (econ-no-setup, the only fixture without setup): Financial bands "1 mo" → "immediate"; Results "Year 1" → "Immediate"; six strategies payback null → 0; ranking payback norm 50 → 100 for those, scores +5 (agentic 60 → 65, hybrid 48 → 53, …), registry `topStrategyScore` 60 → 65. The T&M strategy (no setup, no saving) stays null on every fixture.
+- Tests touched: oracle fields `strategyEval[].computed.payback`, `strategyRanking[].norm.payback`, `strategyRanking[].score`, `resultsCore.payback`, `resultsText` skipped on econ-no-setup only (`only` in `deviations.ts`); `tests/ui/sections/financial.test.tsx` maps the legacy "1 mo" to "immediate" on that fixture; `headline.test.ts` / `figure-owners.test.ts` assert the displayed owner; `pdc-vars.test.ts` reads `topStrategyScore` from the domain ranking on econ-no-setup; new assertions in `tests/domain/lot10-calc.test.ts`.
+- Files: `domain/economics/{cashflow,headline,roi,view}.ts`, `domain/stress/scenarioView.ts` (one `fmtPayback`), `domain/verdict/{evaluate,rank,results}.ts`, UI `verdict/strategies/{MetricTable,Aggregate}.tsx`, `economics/financial/{Verdict,Reco,Pl}.tsx`, `shell/KpiZone.tsx`, `ui/format.ts` (`fmtMonths(0)` = "immediate").
+
+## DEV-YEAR-BEYOND-HORIZON — registry Y2 variables are n/a beyond the horizon
+
+- Legacy: `model()` annual arrays hold three entries whatever the horizon; below 3 years the entries past the horizon repeat the last year, so a 1-year case showed a "Net savings Y2" and a "Run cost, Y2".
+- v19: the arrays keep their three entries (the oracle `model` contract); the registry reads per-year values through `yearIn(c, array, y)`, null (n/a) beyond the horizon.
+- Effect: horizon-1 and fm-generated-scope: `netSavY2` €357K → n/a, `runCostY2` €1,417K → n/a. Other fixtures unchanged.
+- Tests touched: `pdc-vars.test.ts` (the two variables expected null when the horizon is < 2); `tests/domain/lot10-calc.test.ts`.
+- Files: `domain/pdc/vars/{types,global,finance}.ts`, `domain/model/overlay.ts` (comment).
+
+## DEV-SPLIT-TOLERANCE — one "adds up to 100 %" tolerance
+
+- Legacy: 0.5 point for the TO-BE location split, the strategy geo split and the token mix; 1 point for the target location mix (screen colour and the Excel reader note). The new build added 1e-6 for the knowledge-domain weights (validation, file check, Excel reader) while their editor rounded to 0.01 and said "ready to save" for 33.333 × 3 before refusing it.
+- v19: `domain/split.ts` (`splitTotal`, `splitRemainder`, `isSplitComplete`, `SPLIT_TOLERANCE = 0.5`, the legacy's majority tolerance) used by the UI, `portfolio/validate.ts`, the portfolio file check and both Excel readers. The domains editor says "ready" exactly when the save accepts.
+- Effect: the target location mix sum turns red (and the Excel reader notes it) between 0.5 and 1 point off 100 % (legacy: only beyond 1 point); knowledge-domain weights within 0.5 point of 100 are accepted. No oracle field.
+- Tests: `tests/domain/lot10-calc.test.ts`, `tests/ui/portfolio-knowledge-edit.test.tsx` (33.333 × 3 is ready and saved; 99.4 is not ready and refused).
+- Files: `domain/split.ts`, `domain/portfolio/validate.ts`, UI `tune/knowledge/DomainsEditor.tsx`, `verdict/strategies/{EditorRow,LocSplit}.tsx`, `verifyA/tobe-team/Location.tsx`, `baseline/loc-strat/index.tsx`, `store/persistence/excel/params/sheets/scopeSheets.ts`, `store/persistence/excel/portfolio/readKnowledge.ts`, `store/persistence/schema/portfolioChecks.ts`.

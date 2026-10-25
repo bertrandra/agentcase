@@ -7,7 +7,7 @@ import { storySummary } from '@/domain/pdc/story';
 import { model } from '@/domain/model/overlay';
 import { expectClose, expectSeriesClose } from '../../helpers/portfolio';
 import { fourProducts } from '../../helpers/portfolioFixtures';
-import { idsOf, scopesOf, shifted, sum } from '../../helpers/aggEPV';
+import { humanTotal, idsOf, scopesOf, shifted, sum } from '../../helpers/aggEPV';
 
 let pf: Portfolio;
 beforeAll(() => { pf = fourProducts(); });
@@ -19,8 +19,8 @@ describe('Monthly Playback aggregate: Portfolio and every Wave', () => {
     for (const scope of scopesOf(pf)) {
       const a = aggregatePlayback(pf, consolidate(pf), scope)!, ids = idsOf(pf, scope), p = a.series, L = consolidate(pf).horizon;
       expect(p.months).toBe(L);
-      expectSeriesClose(p.humanFte.slice(1), shifted(pf, ids, (r) => r.humanFte));
-      expectSeriesClose(p.agentVfte.slice(1), shifted(pf, ids, (r) => r.agentVfte));
+      expectSeriesClose(p.humanFte.slice(1), shifted(pf, ids, humanTotal, true));   // lot 10: run team included, stock held
+      expectSeriesClose(p.agentVfte.slice(1), shifted(pf, ids, (r) => r.agentVfte, true));
       expectClose(p.humanFte[0]!, sum(runs(scope).map((r) => r.run.baseEtp)));
       expectClose(p.totalCost[0]!, sum(runs(scope).map((r) => model(r.run.ctx).baselineRun / 12)));
       expectClose(sum(p.totalCost.slice(1)), sum(shifted(pf, ids, (r) => r.total)));
@@ -52,7 +52,11 @@ describe('Story aggregate: Portfolio and every Wave', () => {
       const a = aggregateStory(pf, consolidate(pf), scope)!, rs = runs(scope), st = rs.map((r) => storySummary(r.run.ctx));
       expect(a.rows.map((r) => r.id)).toEqual(rs.map((r) => r.id));
       expectClose(a.story.baseFte, sum(st.map((s) => s.baseFte)));
-      expectClose(a.story.tgtFte, sum(st.map((s) => s.tgtFte)));
+      // lot 10: the target team is the calendar series at the portfolio horizon end (a product cut by the horizon counts its team of that month,
+      // one that has not started its AS-IS team); equal to the sum of the products' own story when every product ends inside the horizon
+      const L = consolidate(pf).horizon, notStarted = sum(rs.filter((r) => r.month0 >= L).map((r) => r.run.baseEtp));
+      expectClose(a.story.tgtFte, shifted(pf, idsOf(pf, scope), humanTotal, true)[L - 1]! + notStarted);
+      if (rs.every((r) => r.month0 + r.run.rows.length <= L)) expectClose(a.story.tgtFte, sum(st.map((s) => s.tgtFte)));
       expectClose(a.story.baselineRun, sum(st.map((s) => s.baselineRun)));
       expectClose(a.story.velocityPct, weightedVelocity(rs.map((r) => r.run)));
       const ids = idsOf(pf, scope), year = shifted(pf, ids, (r) => r.grossSavings), last = a.story.years;

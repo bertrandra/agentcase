@@ -7,6 +7,7 @@ import { convergenceChecks } from '@/domain/pdc/verifConvergence';
 import { provenance } from '@/domain/pdc/verifProvenance';
 import { directionalSensitivity } from '@/domain/pdc/verifSensi';
 import { useCtx, useDoc } from '@/store/hooks';
+import { useEvalDate } from '@/ui/evalDate';
 import { Callout } from '@/ui/widgets/cards';
 import { SECTIONS } from '@/ui/zones/registry';
 import { SectionFrame } from '@/ui/zones/SectionFrame';
@@ -25,12 +26,12 @@ const help = (
 
 /** Detailed logic verification — provenance, convergence checks, consistency checks, calculation chain and directional sensitivity. */
 export default function VerifSection() {
-  const c = useCtx(), mcsLast = useSyncExternalStore(mcsRunStore.subscribe, () => mcsRunStore.getState().last),
+  const c = useCtx(), now = useEvalDate(), mcsLast = useSyncExternalStore(mcsRunStore.subscribe, () => mcsRunStore.getState().last),
     deps = useDoc((d) => d.SECTION_DEPS as DepEdges | undefined);
   // session state some audits read (legacy MCS_LAST, SECTION_CATALOG / SECTION_DEPS); the Monthly Playback keeps its play state in its own section,
   // so it is idle here
-  const v = useMemo(() => ({ prov: provenance(c), conv: convergenceChecks(c, { mcsLast, deps, sections: SECTIONS }), checks: verifChecks(c),
-    chain: calcChain(c), sensi: directionalSensitivity(c) }), [c, mcsLast, deps]);
+  const v = useMemo(() => ({ prov: provenance(c), conv: convergenceChecks(c, { mcsLast, deps, sections: SECTIONS, now }), checks: verifChecks(c),
+    chain: calcChain(c), sensi: directionalSensitivity(c) }), [c, mcsLast, deps, now]);
   return (
     <SectionFrame title="🔍 Detailed logic verification" help={help}
       result={<>

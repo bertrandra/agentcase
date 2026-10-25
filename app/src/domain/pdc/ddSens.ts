@@ -25,7 +25,8 @@ export function ddFingerprint(c: Ctx): string {
   return (h >>> 0).toString(36);
 }
 
-export function computeDdSensitivity(c: Ctx, now: () => string = () => new Date().toISOString()): DdSens {
+/** `at`: the ISO timestamp the measurement is stamped with, given by the caller (the domain never reads the clock). */
+export function computeDdSensitivity(c: Ctx, at: string): DdSens {
   const s = c.s, base = endSavings(s), w: Record<string, number> = {}, bad: string[] = [];
   const delta = (alt: CaseState) => { const v = endSavings(alt); return isNaN(v) ? 0 : Math.abs(v - base); };
   const withValue = (id: string, v: string): CaseState => ({ ...s, dom: { ...s.dom, values: { ...s.dom.values, [id]: v } } });
@@ -58,5 +59,5 @@ export function computeDdSensitivity(c: Ctx, now: () => string = () => new Date(
   const d = s as unknown as { DORA_ANCHORS?: { id: string }[]; THROUGHPUT_ANCHORS?: { id: string }[]; QUALITY?: unknown[] };
   for (const a of [...(d.DORA_ANCHORS ?? []), ...(d.THROUGHPUT_ANCHORS ?? [])]) w[`an-${a.id}`] = 0;      // display path only: no euro path by construction
   (d.QUALITY ?? []).forEach((_, i) => { w[`an-q${i}`] = 0; });
-  return { fp: ddFingerprint(c), base, w, unmeasurable: bad, at: now() };
+  return { fp: ddFingerprint(c), base, w, unmeasurable: bad, at };
 }

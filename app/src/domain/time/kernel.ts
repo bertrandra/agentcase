@@ -7,6 +7,9 @@ import { fitCurveCached } from './fit';
 import { enginePts } from './spline';
 
 /** Constants captured from a (raw) model so the engine is a pure function of them (legacy buildK). */
+/** Identity of the Time Engine's calculation (every package carries it). */
+export const CALCULATION_VERSION = 'agentcase.timeengine.v1';
+
 export interface K extends CurveK {
   ctx: Ctx; mode: string; scenarioId: string; calculationVersion: string; horizonYears: number; horizonMonths: number;
   baseEtp: number; baselineRunMonth: number; eff: number; wdMonth: number; dayRateTarget: number; dayRateAsIs: number; rateMode: string;
@@ -25,7 +28,7 @@ export function buildK(c: Ctx, m: ModelResult, opts: BuildOpts = {}): K {
   const conv = m.conv, num = (id: string, d: number) => { const v = parseFloat(c.inp.v(id)); return isNaN(v) ? d : v; };
   const K: K = {
     ctx: c, mode: opts.mode || 'legacy', curveModelId: opts.curveModelId || 'legacy.flatAnnual', scenarioId: opts.scenarioId || 'base',
-    calculationVersion: 'agentcase.timeengine.v1', horizonYears: m.horizon, horizonMonths: m.horizon * 12, ramps: m.ramps.slice(),
+    calculationVersion: CALCULATION_VERSION, horizonYears: m.horizon, horizonMonths: m.horizon * 12, ramps: m.ramps.slice(),
     baseEtp: m.base.etp, baselineRunMonth: m.baselineRun / 12, eff: m.eff, wdMonth: m.wd / 12, dayRateTarget: m.tgtTJM, dayRateAsIs: m.blendedTJM,
     rateMode: 'target', frPerYear: 0, runsPerDay: num('runsPerDay', 25), tokensPerArt: m.tokensPerArt, tokenUnitCost: m.tokenCost,
     infraMonth: m.infraYear / 12, setupTotal: m.setupTotal, setupProfileMonths: 6, runSizeMode: c.inp.v('runSizeMode') || 'hybrid',

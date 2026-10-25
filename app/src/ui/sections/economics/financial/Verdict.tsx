@@ -15,7 +15,7 @@ export function Verdict() {
   const { tok } = useTheme(), v = useEconomics(), cfg = useMemo(() => cashflowLine(v, tok), [v, tok]);
   const items: [string, string][] = [
     ['Investment', fmtK(v.setup)], [`Benefits ${v.H}y`, fmtK(v.totalBenefit)], ['Profit net', fmtK(v.net)], [`ROI (net, ${v.H}y)`, fmtRoiPct(v.roi)],
-    ['Payback', fmtPayback(v.payback, v.months.length)], [`NPV @${Math.round(v.npvRate * 100)}%`, fmtK(v.npv)],
+    ['Payback', fmtPayback(v.paybackShown, v.months.length)], [`NPV @${Math.round(v.npvRate * 100)}%`, fmtK(v.npv)],
   ];
   return (
     <Panel title={`ROI & ${v.H}-year verdict`}>

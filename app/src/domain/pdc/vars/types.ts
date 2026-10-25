@@ -13,8 +13,12 @@ export type VarValue = number | string | boolean | null | undefined;
  * stochastic run (controllers/modelRun) and the benchmark document of the due-diligence register. The UI fills it; an empty one is the
  * legacy "nothing run yet".
  */
-export interface VarRuntime { mc: McResult | null; tornado: { id: string; swing: number }[] | null; ddBase: (DdDoc & AssumptionBase) | null }
-export const NO_RUNTIME: VarRuntime = { mc: null, tornado: null, ddBase: null };
+export interface VarRuntime {
+  mc: McResult | null; tornado: { id: string; swing: number }[] | null; ddBase: (DdDoc & AssumptionBase) | null;
+  /** evaluation date of the evidence ledger (`EvalDate`): the UI passes today, null = undated (the 18-month age rule is not applied) */
+  now: number | null;
+}
+export const NO_RUNTIME: VarRuntime = { mc: null, tornado: null, ddBase: null, now: null };
 
 export interface VariableDef { id: string; label: string; format: string; unit: string; scope: string; get: (c: Ctx, rt?: VarRuntime) => VarValue }
 
@@ -27,3 +31,8 @@ export const end = (c: Ctx) => { const ys = engineNow(c).years(); return ys[ys.l
 /** Index of the last horizon year (legacy teEndYear() - 1). */
 export const endIdx = (c: Ctx): number => engineNow(c).years().length - 1;
 export const sumSav = (c: Ctx): number => headline(c).totalBenefit;
+/**
+ * Year `y` (1-based) of a `model()` annual array, null (n/a) beyond the horizon: the arrays keep the legacy three entries and repeat the last horizon
+ * year past it (a 1-year case has no Y2: DEV-YEAR-BEYOND-HORIZON).
+ */
+export const yearIn = (c: Ctx, a: number[], y: number): number | null => (y <= engineNow(c).horizonYears ? (a[y - 1] ?? null) : null);

@@ -1,4 +1,5 @@
 import type { EvidenceRow } from '@/domain/portfolio';
+import { useEvalDate } from '@/ui/evalDate';
 import { EVL_STAGE_LABEL, evlModel } from '@/domain/model/evidence';
 import { useCtx } from '@/store/hooks';
 import { useEvidenceRows } from '@/store/selectionHooksModelEngine';
@@ -21,7 +22,7 @@ const COLS: AggColumn<EvidenceRow>[] = [
  * product).
  */
 function EvidenceDetail() {
-  const em = evlModel(useCtx(), null);
+  const em = evlModel(useCtx(), null, useEvalDate());
   return <SectionFrame title="Evidence ledger of the product" result={<><Grade em={em} /><DriverTable em={em} /></>} />;
 }
 
@@ -30,7 +31,7 @@ function EvidenceDetail() {
  * and gives the worst grade.
  */
 export default function EvidenceAggregate() {
-  const { rows, on, measured, benchmark, assumed, worst } = useEvidenceRows();
+  const { rows, on, measured, benchmark, assumed, worst } = useEvidenceRows(useEvalDate());
   return (
     <RollupFrame title="📋 Evidence ledger · P6 · v16.10 · cross-cutting" caption="Evidence by product" rows={rows} columns={COLS} Section={EvidenceDetail}
       totals={{ on: `${countOf(on, rows.length)} on`, grade: worst ? `worst: ${worst}` : 'n/a', m: measured, b: benchmark, a: assumed }}

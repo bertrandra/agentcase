@@ -1,4 +1,5 @@
 import { LOCATIONS } from '@/domain';
+import { isSplitComplete, splitTotal } from '@/domain/split';
 import { setStratDeclared, setStratLever, setStratSplit, setStratSplitMode } from '@/controllers/stress';
 import type { LeverKey, StrategyDef } from '@/domain/verdict';
 
@@ -13,7 +14,7 @@ const edit = (on: boolean) => (on ? 'is-edited' : undefined);
 /** One strategy: levers (empty = inherit), declared risk/agility, location-split mode and, when custom, the geo split that must total 100 %. */
 export function EditorRow({ S, D }: { S: StrategyDef; D: StrategyDef | undefined }) {
   const mode = modeOf(S), split = typeof S.locSplit === 'object' && S.locSplit ? S.locSplit : null;
-  const tot = split ? LOCATIONS.reduce((a, l) => a + (split[l.name] || 0), 0) : 0;
+  const tot = split ? splitTotal(LOCATIONS.map((l) => split[l.name])) : 0;
   return (
     <>
       <tr>
@@ -35,7 +36,7 @@ export function EditorRow({ S, D }: { S: StrategyDef; D: StrategyDef | undefined
             {LOCATIONS.map((l) => (
               <label key={l.name} className="ac-check">{l.name} <input type="number" min={0} max={100} step={5} aria-label={`${l.name} share of ${S.label}`} value={split[l.name] || 0}
                 onChange={(e) => setStratSplit(S.id, l.name, e.target.value)} className="ac-geo-input" /></label>))}
-            <strong className="ac-gain" data-sign={Math.abs(tot - 100) < 0.5 ? 'pos' : 'neg'}>Σ {Math.round(tot * 10) / 10}%</strong>
+            <strong className="ac-gain" data-sign={isSplitComplete(tot) ? 'pos' : 'neg'}>Σ {Math.round(tot * 10) / 10}%</strong>
           </div></td></tr>
       )}
     </>

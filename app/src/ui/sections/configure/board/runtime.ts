@@ -4,6 +4,7 @@ import { ddBase } from '@/domain/pdc/dd';
 import type { VarRuntime } from '@/domain/pdc/variables';
 import defaultDoc from '@/store/defaults/defaultDoc.json';
 import { useSimulation } from '@/store/simulation';
+import { useEvalDate } from '@/ui/evalDate';
 
 const BASE = ddBase(defaultDoc);
 
@@ -12,6 +13,6 @@ const BASE = ddBase(defaultDoc);
  * last stochastic run and the due-diligence benchmark. Re-evaluates when a run is made.
  */
 export function useVarRuntime(): VarRuntime {
-  const { run } = useSimulation(), last = useSyncExternalStore(mcsRunStore.subscribe, () => mcsRunStore.getState().last);
-  return useMemo(() => ({ mc: run, tornado: last?.tornado ?? null, ddBase: BASE }), [run, last]);
+  const { run } = useSimulation(), last = useSyncExternalStore(mcsRunStore.subscribe, () => mcsRunStore.getState().last), now = useEvalDate();
+  return useMemo(() => ({ mc: run, tornado: last?.tornado ?? null, ddBase: BASE, now }), [run, last, now]);
 }

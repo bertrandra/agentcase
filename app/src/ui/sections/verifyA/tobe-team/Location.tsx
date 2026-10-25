@@ -1,4 +1,5 @@
 import { LOCATIONS } from '@/domain';
+import { isSplitComplete, splitTotal } from '@/domain/split';
 import { locSplitOf, tobeComposition, tobeLocResult, type Live } from '@/domain/verifyA';
 import { resetTobeLoc, setTobeLoc } from '@/controllers/verifyA';
 import { SimpleTable } from '../SimpleTable';
@@ -13,10 +14,10 @@ export function Location({ live, year }: { live: Live; year: number }) {
       <p className="ac-muted">Distribute each skill's <b>residual human FTE</b> across locations for the TO-BE target ({label}). Default = current AS-IS mix; edit to model relocation. Rows should total 100%.</p>
       <SimpleTable align={['left', ...LOCATIONS.map(() => 'center' as const), 'center']} head={['Skill', ...LOCATIONS.map((l) => l.name), 'Σ']}
         rows={comp.rows.map((r) => {
-          const sp = split[r.skill] ?? {}, sum = LOCATIONS.reduce((t, l) => t + (+(sp[l.name] ?? 0) || 0), 0);
+          const sp = split[r.skill] ?? {}, sum = splitTotal(LOCATIONS.map((l) => sp[l.name]));
           return { key: r.skill, cells: [<b>{r.skill}</b>, ...LOCATIONS.map((l) => (
             <input key={l.name} type="number" min={0} max={100} className="ac-loc-input" aria-label={`${r.skill} share in ${l.name}`} value={+(sp[l.name] ?? 0) || 0} onChange={(e) => setTobeLoc(r.skill, l.name, e.target.value)} />)),
-          <b className="ac-gain" data-sign={Math.abs(sum - 100) < 0.5 ? 'pos' : 'neg'}>{Math.round(sum)}%</b>] };
+          <b className="ac-gain" data-sign={isSplitComplete(sum) ? 'pos' : 'neg'}>{Math.round(sum)}%</b>] };
         })} />
       <p><button type="button" onClick={resetTobeLoc}>↺ Reset split to AS-IS mix</button></p>
       <h2>Resulting TO-BE human team by location ({label})</h2>

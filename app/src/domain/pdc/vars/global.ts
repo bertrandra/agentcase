@@ -5,12 +5,12 @@ import { savingsBreakdown } from '../../economics/savings';
 import { locationMix } from '../../location';
 import { modelOf as model } from '../../tune/memo';
 import { phaseScope } from '../../scope';
-import { end, sumSav, v } from './types';
+import { end, sumSav, v, yearIn } from './types';
 
 /** The headline values every dashboard can bind (scope GLOBAL). */
 export const GLOBAL_VARS = [
   v('netSavY1', 'Net savings Y1', 'EUR_K', '€', 'GLOBAL', (c) => model(c).yearSav[0]),
-  v('netSavY2', 'Net savings Y2', 'EUR_K', '€', 'GLOBAL', (c) => model(c).yearSav[1]),
+  v('netSavY2', 'Net savings Y2', 'EUR_K', '€', 'GLOBAL', (c) => yearIn(c, model(c).yearSav, 2)),
   v('netSavY3', 'Net savings, end-year', 'EUR_K', '€', 'GLOBAL', (c) => end(c).savings),
   v('cumSav3yr', 'Cumulative gain over horizon', 'EUR_K', '€', 'GLOBAL', sumSav),
   v('runCostY1', 'Run cost Y1', 'EUR_K', '€', 'GLOBAL', (c) => model(c).yearRun[0]),

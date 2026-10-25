@@ -3,10 +3,11 @@ import { exportResultsWorkbook } from '@/controllers/excelResults';
 import { makeCtx, type Ctx } from '@/domain';
 import { buildCalcPackage } from '@/domain/calcPackage';
 import { economicsView } from '@/domain/economics';
-import { headline } from '@/domain/economics/headline';
+import { displayedPayback } from '@/domain/economics/cashflow';
+import { headline, paybackYearShown } from '@/domain/economics/headline';
 import { costReduction } from '@/domain/economics/costReduction';
 import { fteBeforeAfter } from '@/domain/economics/fte';
-import { roiCanonical } from '@/domain/economics/roi';
+import { fmtPaybackYear, roiCanonical } from '@/domain/economics/roi';
 import { VARIABLES } from '@/domain/pdc/variables';
 import { consolidate, envelopeCase, portfolioHeadline } from '@/domain/portfolio';
 import { resultsCore } from '@/domain/verdict/results';
@@ -29,6 +30,7 @@ const same = (a: number | null | undefined, b: number | null | undefined, what: 
   if (a == null || b == null) { expect(a ?? null, what).toBe(b ?? null); return; }
   expect(abs ? Math.abs(a - b) <= abs : close(a, b, 1e-9), `${what}: ${a} vs ${b}`).toBe(true);
 };
+const e_shown = (c: Ctx): number | null => economicsView(c).paybackShown;
 const variable = (id: string, c: Ctx) => VARIABLES.find((v) => v.id === id)!.get(c);
 
 describe.each(CASES)('figure owners: %s', (id) => {
@@ -40,7 +42,8 @@ describe.each(CASES)('figure owners: %s', (id) => {
     same(kpi.headline.roi, h.roi, 'KPI roi'); same(kpi.headline.totalSavings, h.net, 'KPI engine totalSavings (savings net of setup)');
     const r = resultsCore(c);
     same(r.net, h.net, 'Results net'); same(r.roi, h.roi, 'Results roi');
-    expect(r.payback).toBe(h.paybackYear == null ? '—' : `Year ${h.paybackYear}`);
+    expect(r.payback).toBe(fmtPaybackYear(paybackYearShown(h)));   // the displayed payback owner (DEV-PAYBACK-NOSETUP: no setup = Immediate)
+    same(e_shown(c), displayedPayback(h.paybackMonth, h.setup, h.totalBenefit), 'Financial displayed payback');
     const e = economicsView(c);
     same(e.net, h.net, 'Financial net'); same(e.roi, h.roi, 'Financial roi'); same(e.payback, h.paybackMonth, 'Financial payback'); same(e.npv, h.npv, 'Financial npv'); same(e.totalBenefit, h.totalBenefit, 'Financial total benefit');
     const p = buildCalcPackage(state).headline;

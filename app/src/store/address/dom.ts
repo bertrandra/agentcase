@@ -1,5 +1,6 @@
 /** @calc-zone product-resolution */
 import { deepEqual, parseRef } from '@/domain/portfolio';
+import { clampHorizonYears } from '@/domain/inputs';
 import { commonInfra } from '@/domain/portfolio/layers';
 import type { CommonCase } from '@/domain/portfolio';
 import { subsetDefines, subsetField, writeSubset } from './subset';
@@ -17,7 +18,7 @@ function syncMirrors(c: AddressCtx, kind: Kind, id: string, value: unknown): voi
     const infra = commonInfra({ dom: { values: { khInfraMonthly: String(value) } } } as unknown as CommonCase);
     c.out.push({ op: 'replace', path: ['hub', 'infraMonthly'], value: infra });
   }
-  if (kind === 'values' && id === 'horizon') c.out.push({ op: 'replace', path: ['horizonMonths'], value: (parseInt(String(value), 10) || 3) * 12 });
+  if (kind === 'values' && id === 'horizon') c.out.push({ op: 'replace', path: ['horizonMonths'], value: clampHorizonYears(value) * 12 });
 }
 
 function ensureOverrideBag(c: AddressCtx, kind: Kind): void {

@@ -2,17 +2,24 @@
 import { parseCalcPackage, type CalcPackage } from '../calcPackage';
 import type { CalcStaleness, CalcState } from '../calcStaleness';
 import { samePackage } from '../calcStaleness';
+import { consolidate } from './consolidate';
 import { buildPortfolioPackages } from './package';
+import { portfolioHeadline } from './portfolioHeadline';
 import type { Portfolio } from './types';
 
 const RANK: Record<CalcState, number> = { notCalculated: 0, valid: 1, stale: 2, versionMismatch: 3 };
 
-/** The state of one stored package against its live twin (the single-case rules of `checkStaleness`). A missing or unreadable package is stale. */
-function compare(stored: unknown, live: CalcPackage): CalcState {
+/**
+ * The state of one stored package against its live twin (the single-case rules of `checkStaleness`). A missing or unreadable package is stale.
+ * `grossTotal`: the portfolio package of a file saved before lot 10 carried the GROSS total benefit as `totalSavings` (now net, like a product's); such
+ * a file is still valid when its figures are otherwise the live ones.
+ */
+function compare(stored: unknown, live: CalcPackage, grossTotal?: number): CalcState {
   const pkg = parseCalcPackage(stored);
   if (!pkg) return 'stale';
   if (pkg.calculationVersion !== live.calculationVersion) return 'versionMismatch';
-  return samePackage(pkg, live) ? 'valid' : 'stale';
+  if (samePackage(pkg, live)) return 'valid';
+  return grossTotal !== undefined && samePackage(pkg, { ...live, headline: { ...live.headline, totalSavings: grossTotal } }) ? 'valid' : 'stale';
 }
 
 const own = (o: unknown, k: string): unknown => (o && typeof o === 'object' && Object.prototype.hasOwnProperty.call(o, k) ? (o as Record<string,
@@ -27,7 +34,7 @@ export function checkPortfolioStaleness(storedPortfolio: unknown, storedProducts
   if ((storedPortfolio === undefined || storedPortfolio === null)
     && (storedProducts === undefined || storedProducts === null)) return { state: 'notCalculated' };
   const live = buildPortfolioPackages(pf), top = live.calculationPackage;
-  let state: CalcState = compare(storedPortfolio, top);
+  let state: CalcState = compare(storedPortfolio, top, portfolioHeadline(consolidate(pf)).totalBenefit);
   const staleProducts: string[] = [];
   for (const p of pf.products) {
     const s = compare(own(storedProducts, p.id), live.calculationPackages[p.id] as CalcPackage);

@@ -1,5 +1,6 @@
 /** @calc-zone exports */
 import { buildCalcPackage, type CalcPackage, CALC_PACKAGE_SCHEMA } from '../calcPackage';
+import { CALCULATION_VERSION } from '../time/kernel';
 import { consolidate } from './consolidate';
 import { portfolioHeadline } from './portfolioHeadline';
 import { resolveProduct } from './resolve';
@@ -25,17 +26,16 @@ export function buildPortfolioPackages(pf: Portfolio): PortfolioPackages {
   for (const p of pf.products) per[p.id] = buildCalcPackage(resolveProduct(pf, p.id));
   const all = Object.values(per), c = consolidate(pf), h = portfolioHeadline(c);
   const planned = scheduledProducts(pf).map((s) => [s.product.id, (per[s.product.id] as CalcPackage).inputHash, s.month0, s.lead]);
-  let cum = 0;
-  const annual = h.years.net.map((net, i) => {
-    cum += net;
-    return { yearIndex: i + 1, savings: h.years.savings[i] as number, totalRunCost: h.years.run[i] as number, netAfterSetup: net, cumulativeCashFlowEnd: cum };
-  });
-  const first = all[0] as CalcPackage;
+  // the year-end cumulative is read from the consolidated cumulative (summary.cum), never re-accumulated here
+  const annual = h.years.net.map((net, i) => ({ yearIndex: i + 1, savings: h.years.savings[i] as number, totalRunCost: h.years.run[i] as number,
+    netAfterSetup: net, cumulativeCashFlowEnd: h.cum[Math.min(h.cum.length, (i + 1) * 12) - 1] ?? 0 }));
   return {
     calculationPackage: {
-      schemaVersion: CALC_PACKAGE_SCHEMA, calculationVersion: first.calculationVersion, curveModelId: [...new Set(all.map((x) => x.curveModelId))].sort().join('+'),
+      schemaVersion: CALC_PACKAGE_SCHEMA, calculationVersion: all[0]?.calculationVersion ?? CALCULATION_VERSION,
+      curveModelId: [...new Set(all.map((x) => x.curveModelId))].sort().join('+'),
       inputHash: 'pf1:' + djb2(JSON.stringify(pf.rho ? [pf.horizonMonths, c.rate, planned, pf.rho] : [pf.horizonMonths, c.rate, planned])),
-      headline: { payback: h.paybackMonth, npv: h.npv, roi: h.roi, totalSavings: h.totalBenefit }, annual,
+      // totalSavings is NET of setup at both levels (the product package carries the engine total, savings minus setup)
+      headline: { payback: h.paybackMonth, npv: h.npv, roi: h.roi, totalSavings: h.net }, annual,
     },
     calculationPackages: per,
   };

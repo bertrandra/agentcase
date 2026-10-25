@@ -4,6 +4,7 @@ import { daFmt, daGet, daVal } from '../verifyB/anchors';
 import { perfFrame } from '../verifyB/perf';
 import { colOf, liveOf, productRows, sum, viewMemo, type CellKind, type VCol, type VSel, type VTable } from './aggVerifyBase';
 import type { ProductView } from './waves';
+import { calendarCost, productFteAfter } from './headline';
 import { scopeHeadline, type PortfolioHeadline } from './portfolioHeadline';
 
 /** A before / after line of the selection; `change` is a relative change in percent (or points for a percentage), null when the base is nil. */
@@ -34,7 +35,7 @@ export const kpiAgg = viewMemo((sel): KpiAgg => {
   ];
   const rows = productRows(sel, (v, l) => {
     const f = perfFrame(l.c), e = endOf(v), q = qualityAnchorView(l.c).rows.find((r) => r.name === 'Test coverage'), a = v.run.automation();
-    return { base: v.run.baseEtp, after: e.totalHumanFteEnd, change: rel(e.totalHumanFteEnd, v.run.baseEtp), run0: f.m.baselineRun, runEnd: e.totalRunCost,
+    return { base: v.run.baseEtp, after: productFteAfter(v), change: rel(productFteAfter(v), v.run.baseEtp), run0: f.m.baselineRun, runEnd: e.totalRunCost,
       eff: a.eff, ceiling: a.ceiling,
       uplift: v.run.velocityPct(), cov: q ? `${q.asis} → ${q.y3}` : '—',
         lead: `${daFmt(l.c.s, 'leadTime', daGet(l.c.s, 'leadTime').asis)} → ${daFmt(l.c.s, 'leadTime', daVal(l.c.s, 'leadTime', f.r3))}` };
@@ -66,7 +67,7 @@ export const asisTobeAgg = viewMemo((sel): AsisTobeAgg => {
     { metric: 'Glass ceiling (weighted)', asis: 100, tobe: h.ceiling, change: h.ceiling - 100, kind: 'pct' },
   ];
   const lines = productRows(sel, (v) => {
-    const c = v.run.cost(), a = v.run.automation(), after = endOf(v).totalHumanFteEnd, tobe = c.base - c.sav + c.setup;
+    const c = calendarCost(v), a = v.run.automation(), after = productFteAfter(v), tobe = c.base - c.sav + c.setup;
     return { base: v.run.baseEtp, after, cost0: c.base, cost1: tobe, change: rel(tobe, c.base), setup: c.setup, eff: a.eff, ceiling: a.ceiling };
   });
   const total = { base: h.fte.before, after: h.fte.after, cost0: cr.ok ? cr.base : null, cost1: cr.ok ? cr.tobe : null,

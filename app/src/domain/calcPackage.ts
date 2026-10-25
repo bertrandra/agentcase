@@ -6,6 +6,10 @@ import type { CaseState } from './types/state';
 /** Schema tag of the package (legacy `materialise()` value). */
 export const CALC_PACKAGE_SCHEMA = 'agentcase.calculation.v1';
 
+/**
+ * The key canonical figures of a package. `totalSavings` is the NET cash-flow over the horizon (savings minus setup: the engine's `total()`), at product
+ * and at portfolio level alike; `payback` is the kernel's payback month (calendar month for a portfolio), null when not reached.
+ */
 export interface PackageHeadline { payback: number | null; npv: number; roi: number | null; totalSavings: number }
 export interface PackageYear { yearIndex: number; savings: number; totalRunCost: number; netAfterSetup: number; cumulativeCashFlowEnd: number }
 /** The canonical calculation package a saved case carries: engine identity plus the key canonical figures. */

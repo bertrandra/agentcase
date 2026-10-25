@@ -1,4 +1,5 @@
 import { addCurvePoint, removeCurvePoint, setCurveFamily } from '@/controllers/scopeTools';
+import { caseHorizonYears } from '@/domain/inputs';
 import { MAX_POINTS, MIN_POINTS } from '@/domain/scope/scurve';
 import { scurveView } from '@/domain/scope/scurveView';
 import { useCtx } from '@/store/hooks';
@@ -17,7 +18,7 @@ const FAMILY_OPTIONS = FAMILIES.map(([value, label]) => ({ value: value!, label:
 
 /** Adoption curve & maturity levels: family, add/remove point, the draggable curve, horizon-end readout and the L1–L4 crossings. */
 export function Editor() {
-  const c = useCtx(), view = scurveView(c, (parseInt(c.inp.v('horizon'), 10) || 3) * 12);
+  const c = useCtx(), view = scurveView(c, caseHorizonYears(c.inp) * 12);
   return (
     <Panel title="📈 Adoption curve & maturity levels">
       <p className="ac-muted">The live adoption S-curve, with the four maturity levels marked where the curve crosses each threshold. Maturity is defined by the

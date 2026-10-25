@@ -61,6 +61,7 @@ export function makeEngine(K: K) {
   }
   /** Payback, NPV at the caller's discount rate, ROI and total savings; the rate is an explicit argument (the case owns it: canonical `caseDiscountRate`). */
   const headline = (annualRate: number) => ({ payback: payback(), npv: npv(annualRate), roi: roi(), totalSavings: total() });
-  return { K, horizonYears: K.horizonYears, horizonMonths: N, monthAt, months, cumulativeAt, payback, npv, roi, year, years: allYears, milestones, headline };
+  return { K, horizonYears: K.horizonYears, horizonMonths: N, monthAt, months, cumulativeAt, payback, total, npv, roi, year, years: allYears, milestones,
+    headline };
 }
 export type Engine = ReturnType<typeof makeEngine>;

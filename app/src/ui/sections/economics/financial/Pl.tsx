@@ -26,7 +26,7 @@ export function Pl() {
     <Panel title={`${v.H}-Year P&L & Cash Flow`}>
       <GridTable head={['Line', ...v.years.map((_, i) => `${yLabel(i + 1)} (€)`), 'Cumulative (€)']} rows={rows} />
       <ChartPanel config={cfg} label="Cumulative cash-flow after setup and each year" height={260} />
-      <Band items={[[`${v.H}-yr ROI (net)`, fmtRoiPct(v.roi)], [`Net profit ${v.H}y`, fmtE(v.net)], ['Payback', fmtPayback(v.payback, v.m.horizon * 12)]]} />
+      <Band items={[[`${v.H}-yr ROI (net)`, fmtRoiPct(v.roi)], [`Net profit ${v.H}y`, fmtE(v.net)], ['Payback', fmtPayback(v.paybackShown, v.m.horizon * 12)]]} />
     </Panel>
   );
 }

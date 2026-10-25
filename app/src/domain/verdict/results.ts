@@ -1,6 +1,7 @@
 /** @calc-zone verdict */
 import { engineNow } from '../canonical';
-import { headline } from '../economics/headline';
+import { headline, paybackYearShown } from '../economics/headline';
+import { fmtPaybackYear } from '../economics/roi';
 import type { Ctx } from '../ctx';
 import { model } from '../model/overlay';
 import { savingsBreakdown as economicsSavings, type SavingsYear } from '../economics/savings';
@@ -26,6 +27,6 @@ export interface ResultsCore {
 /** The deterministic part of the Results screen: net benefit, ROI, payback year, depth, savings decomposition and team shift. */
 export function resultsCore(c: Ctx): ResultsCore {
   const m = model(c), h = headline(c), sb = savingsBreakdown(c);
-  return { net: h.net, roi: h.roi, payback: h.paybackYear == null ? '—' : `Year ${h.paybackYear}`, horizon: m.horizon, setup: m.setupTotal, eff: m.eff,
+  return { net: h.net, roi: h.roi, payback: fmtPaybackYear(paybackYearShown(h)), horizon: m.horizon, setup: m.setupTotal, eff: m.eff,
     status: lifecycleStatusLabel(c.s), last: sb[sb.length - 1] as SavingsYear, team: teamShift(c) };
 }

@@ -3,7 +3,7 @@
  * ROI / payback presentation rules shared by every economics view (legacy v18.9 M-2/M-3). The ROI rule itself is the cash-flow kernel's
  * `roiCanonical` (economics/cashflow.ts), re-exported here for the views. Pure, no formatting of money.
  */
-export { roiCanonical } from './cashflow';
+export { displayedPayback, roiCanonical } from './cashflow';
 
 /** "123%" or "n/a" for a null ratio. */
 export const fmtRoiPct = (r: number | null): string => (r == null ? 'n/a' : `${Math.round(r * 100)}%`);
@@ -21,3 +21,6 @@ export type Verdict = 'go' | 'conditional' | 'reconsider';
 
 /** Plain-language read of the deterministic case: ROI >= 150 % GO, >= 30 % conditional, otherwise reconsider (a null ROI reconsiders). */
 export const roiVerdict = (roi: number | null): Verdict => (roi != null && roi >= 1.5 ? 'go' : roi != null && roi >= 0.3 ? 'conditional' : 'reconsider');
+
+/** Payback year label: "Year 2", "Immediate" (year 0: no setup, nothing to recover) or `none` (not within the horizon). */
+export const fmtPaybackYear = (y: number | null, none = '—'): string => (y == null ? none : y <= 0 ? 'Immediate' : `Year ${y}`);

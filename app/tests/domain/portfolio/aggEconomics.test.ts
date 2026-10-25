@@ -2,7 +2,7 @@ import { beforeAll, describe, expect, it } from 'vitest';
 import { aggregateAnnual, aggregateMonthly, aggregateRun, consolidate, type Portfolio } from '@/domain/portfolio';
 import { expectClose, expectSeriesClose } from '../../helpers/portfolio';
 import { fourProducts } from '../../helpers/portfolioFixtures';
-import { idsOf, scopesOf, shifted, sum } from '../../helpers/aggEPV';
+import { humanTotal, idsOf, scopesOf, shifted, sum } from '../../helpers/aggEPV';
 
 let pf: Portfolio;
 beforeAll(() => { pf = fourProducts(); });
@@ -31,8 +31,8 @@ describe('economics aggregates: Portfolio and every Wave, against the products\'
 
   it('Annual: years equal the headline years, year-end headcount, net by product adds up to the net by year', () => {
     for (const scope of scopesOf(pf)) {
-      const a = aggregateAnnual(pf, consolidate(pf), scope)!, ids = idsOf(pf, scope), etp = shifted(pf, ids, (r) => r.humanFte),
-        vf = shifted(pf, ids, (r) => r.agentVfte);
+      const a = aggregateAnnual(pf, consolidate(pf), scope)!, ids = idsOf(pf, scope), etp = shifted(pf, ids, humanTotal, true),
+        vf = shifted(pf, ids, (r) => r.agentVfte, true);
       expectSeriesClose(a.years.map((y) => y.savings), blocks(shifted(pf, ids, (r) => r.grossSavings)));
       expectSeriesClose(a.years.map((y) => y.run), blocks(shifted(pf, ids, (r) => r.totalRunCost)));
       expectSeriesClose(a.years.map((y) => y.etp), a.years.map((_, i) => etp[Math.min(i * 12 + 11, etp.length - 1)]!));
@@ -51,7 +51,7 @@ describe('economics aggregates: Portfolio and every Wave, against the products\'
       expect(a.months).toHaveLength(consolidate(pf).horizon);
       expectSeriesClose(a.months.map((m) => m.run), shifted(pf, ids, (r) => r.totalRunCost));
       expectSeriesClose(a.months.map((m) => m.savings), shifted(pf, ids, (r) => r.grossSavings));
-      expectSeriesClose(a.months.map((m) => m.etp), shifted(pf, ids, (r) => r.humanFte));
+      expectSeriesClose(a.months.map((m) => m.etp), shifted(pf, ids, humanTotal, true));   // lot 10: run team included, stock held
       expectSeriesClose(a.months.map((m) => m.vfte), shifted(pf, ids, (r) => r.agentVfte));
       expectClose(a.months[a.months.length - 1]!.cum, a.headline.net);
       expectClose(sum(a.months.map((m) => m.net)), a.headline.net);

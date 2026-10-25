@@ -26,3 +26,16 @@ export function makeInputs(s: CaseState): Inputs {
 export const clampAutoCap = (n: number): number => (isNaN(n) ? 100 : Math.max(10, Math.min(100, n)));
 /** Technical cap on the automation potential from the raw autoCapPct input text (10..100, 100 when blank or invalid). */
 export const autoCapFrom = (raw: string | undefined): number => clampAutoCap(parseFloat(raw ?? ''));
+
+/** Horizon bounds in whole years (the Horizon field and the Excel Parameters sheet offer 1 to 10). */
+export const HORIZON_MIN = 1, HORIZON_MAX = 10, HORIZON_DEFAULT = 3;
+/**
+ * The one horizon reader: a raw horizon value (form text, JSON, Excel cell) as whole years in 1..10. Empty or not a number reads 3 (legacy
+ * readInputs), the integer part is kept like the legacy parseInt, and "0" / "-1" / "25" from a file are clamped instead of throwing or diverging.
+ */
+export function clampHorizonYears(raw: unknown): number {
+  const n = parseInt(String(raw ?? ''), 10);
+  return Number.isFinite(n) ? Math.max(HORIZON_MIN, Math.min(HORIZON_MAX, n)) : HORIZON_DEFAULT;
+}
+/** The case horizon in years from its inputs (`clampHorizonYears` of the Horizon field). */
+export const caseHorizonYears = (inp: Pick<Inputs, 'v'>): number => clampHorizonYears(inp.v('horizon'));

@@ -1,4 +1,5 @@
 import { memo } from 'react';
+import { displayedPayback } from '@/domain/economics/cashflow';
 import { useScopeKpis } from '@/store/consolidationHooks';
 import { caseResultOf, useDocSelector } from '@/store/hooks';
 import { fmtEurK, fmtPct } from '../format';
@@ -27,7 +28,7 @@ const ProductKpis = memo(function ProductKpis() {
 function headlineOf(r: ReturnType<typeof caseResultOf>): { f: HeadlineFigures; titles: TileTitles } {
   const m = r.model, e = r.endYear, cr = r.costReduction, fte = r.fte;   // end-year figures come from the Time Engine rows (model() arrays hold three entries)
   const f: HeadlineFigures = { fte, year: e.index, savings: e.savings, run: e.run, cr, velocity: { raw: r.velocityPct, shown: r.velocityPct },
-    payback: r.payback, eff: m.eff, ceiling: m.ceiling };
+    payback: displayedPayback(r.payback, m.setupTotal, r.headline.totalSavings), eff: m.eff, ceiling: m.ceiling };   // no setup: immediate
   return { f, titles: {
     fteBefore: 'Total AS-IS headcount: the sum of the input team rows (FTE).',
     fteAfter: `Total human FTE at the horizon end (year ${e.index}): delivery team plus the agentic run team (AgentOps), so the reduction is not overstated. Reduction: ${fmtPct(fte.reductionPct)}.`,
@@ -38,7 +39,7 @@ function headlineOf(r: ReturnType<typeof caseResultOf>): { f: HeadlineFigures; t
         + ` (run + tokens + infra + run team + ${fmtEurK(cr.setup)} setup). Excluding setup: ${fmtPct(cr.gross * 100)}.`
       : 'No baseline cost: set the AS-IS team and rate card.',
     velocity: `Delivery velocity uplift in year ${e.index} (the horizon end) versus the AS-IS velocity: story points per sprint reached at the adoption of that year, kept within the case anchors.`,
-    payback: 'First month in which the cumulative net cash flow, setup included, turns positive.',
+    payback: 'First month from which the cumulative net cash flow, setup included, stays positive; immediate when nothing was invested.',
     eff: 'Share of the work effectively automated: potential, capped by the glass ceiling, adjusted for posture, context and hub multiplier.',
     ceiling: 'Irreducible human-supervision floor: the share of the work that must stay human, whatever the automation potential.',
   } };

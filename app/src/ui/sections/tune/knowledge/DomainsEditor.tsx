@@ -1,13 +1,14 @@
 import { useRef, useState } from 'react';
 import { setProductKnowledge } from '@/controllers/productOverrides';
 import type { KnowledgeDomain } from '@/domain/portfolio';
+import { isSplitComplete, splitRemainder, splitTotal } from '@/domain/split';
 import { useActiveProduct } from '@/store/portfolioHooks';
 import { toast } from '@/ui/uiState';
 import { Panel } from '@/ui/widgets/cards';
 import { SubsetBadge } from './SubsetBadge';
 
 interface Draft { key: number; label: string; weight: string }
-const num = (w: string): number => { const n = parseFloat(w); return Number.isFinite(n) ? n : 0; };
+const num = (w: string): number => splitTotal([w]);
 const fmt = (n: number): string => String(Math.round(n * 100) / 100);
 
 /** The editor itself, remounted (by `DomainsEditor`) whenever the product or its saved domains change, so its draft always starts from the document. */
@@ -15,7 +16,8 @@ function Editor({ id, name, saved }: { id: string; name: string; saved: Knowledg
   const next = useRef(saved.length);
   const [rows, setRows] = useState<Draft[]>(saved.map((d, i) => ({ key: i, label: d.label, weight: String(d.weightPct) })));
   const [error, setError] = useState('');
-  const total = rows.reduce((a, r) => a + num(r.weight), 0), left = Math.round((100 - total) * 100) / 100;
+  // the one split rule (domain/split.ts): "ready to save" exactly when the save accepts the total
+  const total = splitTotal(rows.map((r) => r.weight)), complete = isSplitComplete(total), left = Math.round(splitRemainder(total) * 100) / 100;
   const edit = (key: number, p: Partial<Draft>) => { setError(''); setRows((rs) => rs.map((r) => (r.key === key ? { ...r, ...p } : r))); };
   const apply = () => {
     if (rows.some((r) => !r.label.trim())) { setError('Every domain must have a label.'); return; }
@@ -23,9 +25,9 @@ function Editor({ id, name, saved }: { id: string; name: string; saved: Knowledg
     const domains = rows.map((r) => ({ label: r.label.trim(), weightPct: num(r.weight) }));
     if (setProductKnowledge(id, { domains })) { setError(''); toast(`Knowledge domains saved for ${name}`); return; }
     const off = left > 0 ? `${fmt(left)}% left` : `${fmt(-left)}% too much`;
-    setError(Math.abs(left) > 1e-6 ? `Weights must add up to 100% (${off}): change refused.` : 'Change refused.');
+    setError(!complete ? `Weights must add up to 100% (${off}): change refused.` : 'Change refused.');
   };
-  const remaining = left === 0 ? 'Total: 100% — ready to save.' : left > 0 ? `${fmt(left)}% left to allocate.` : `${fmt(-left)}% too much.`;
+  const remaining = complete ? 'Total: 100% — ready to save.' : left > 0 ? `${fmt(left)}% left to allocate.` : `${fmt(-left)}% too much.`;
   const status = rows.length ? remaining : 'No domain: the curation effort is not split.';
   const add = () => { setError(''); setRows((rs) => [...rs, { key: next.current++, label: '', weight: String(Math.max(0, left)) }]); };
   const removeAll = () => { if (setProductKnowledge(id, {}, ['domains'])) toast(`Domains removed for ${name}`); };
