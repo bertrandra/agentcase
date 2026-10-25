@@ -36,7 +36,8 @@ export interface MaturityMap { rampBounds: number[]; shareBounds: number[]; labe
 /** The case's L1-L4 thresholds, completed with the defaults for whatever the snapshot does not carry. */
 export function maturityMap(c: Ctx): MaturityMap {
   const own = (c.s.MATURITY_MAP ?? {}) as Partial<MaturityMap>, def = MATURITY_DEFAULT as unknown as MaturityMap;
-  return { rampBounds: own.rampBounds ?? def.rampBounds, shareBounds: own.shareBounds ?? def.shareBounds, labels: own.labels ?? def.labels, auth: def.auth, sup: def.sup };
+  return { rampBounds: own.rampBounds ?? def.rampBounds, shareBounds: own.shareBounds ?? def.shareBounds, labels: own.labels ?? def.labels, auth: def.auth,
+    sup: def.sup };
 }
 
 export type { MaturityInfo } from '../tune/maturity';

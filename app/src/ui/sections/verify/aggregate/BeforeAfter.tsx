@@ -9,7 +9,7 @@ export function BeforeAfterTable({ rows, caption, asis = 'AS-IS', tobe = 'TO-BE'
     <DataTable caption={caption} rows={rows} rowKey={(r) => r.metric} columns={[
       { key: 'm', header: 'Metric', render: (r) => <strong title={r.title}>{r.metric}</strong> },
       { key: 'a', header: asis, align: 'center', render: (r) => fmtCell(r.asis, r.kind) || '—' },
-      { key: 't', header: tobe, align: 'center', render: (r) => <span style={{ fontWeight: 'var(--ac-font-weight-semibold)', color: 'var(--ac-blue)' }}>{fmtCell(r.tobe, r.kind) || '—'}</span> },
+      { key: 't', header: tobe, align: 'center', render: (r) => <span className="ac-tobe-value">{fmtCell(r.tobe, r.kind) || '—'}</span> },
       { key: 'c', header: 'Change', align: 'center', render: pct },
     ]} />
   );

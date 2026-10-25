@@ -13,7 +13,7 @@ export function ParamTable() {
       { key: 's', header: 'Uncertainty (±)', align: 'center', render: (p) => {
         const def = MC_PARAMS_DEFAULT.find((x) => x.id === p.id), edited = !!def && Math.abs(p.spread - def.spread) > 0.001;
         return <>±<input type="number" min={0} step={1} aria-label={`Spread of ${p.label}`} value={p.spread} onChange={(e) => setMcSpread(p.id, e.target.value)}
-          style={{ width: 56, textAlign: 'center', borderColor: edited ? 'var(--ac-amber)' : undefined }} /> {p.mode === 'pct' ? '%' : 'pts'}</>; } },
+          className={edited ? 'ac-seq-input ac-c is-edited' : 'ac-seq-input ac-c'} /> {p.mode === 'pct' ? '%' : 'pts'}</>; } },
     ]} />
   );
 }

@@ -12,7 +12,11 @@ afterEach(cleanup);
 const dyn = () => (appStore().getState().doc.dynamicSections as DynSection[])[0]!;
 const undo = (n = 1) => act(() => { for (let i = 0; i < n; i++) appStore().undo(); });
 /** Pick an option of a lazy select: its list only exists once the user is choosing. */
-const choose = (label: string, value: string) => { const el = screen.getByLabelText(label); fireEvent.mouseDown(el); fireEvent.change(el, { target: { value } }); };
+const choose = (label: string, value: string) => {
+  const el = screen.getByLabelText(label);
+  fireEvent.mouseDown(el);
+  fireEvent.change(el, { target: { value } });
+};
 const text = (label: string) => screen.getByLabelText(label) as HTMLInputElement;
 
 /** A board with one generated dashboard, its Configure panel open. */

@@ -58,6 +58,6 @@ describe('scope-sel section', () => {
     expect(pts.length).toBeGreaterThan(0);
     expect(Math.abs(pts.reduce((a, b) => a + b, 0) - calc().model.ceiling)).toBeLessThanOrEqual(0.1 * pts.length);
     expect([...pts].sort((a, b) => b - a)).toEqual(pts);
-    expect((container.querySelector('.ac-impact-row summary b') as HTMLElement).style.color).toContain('brick');
+    expect((container.querySelector('.ac-impact-row summary b') as HTMLElement).dataset.tone).toBe('brick');
   });
 });

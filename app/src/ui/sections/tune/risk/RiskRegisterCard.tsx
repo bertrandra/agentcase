@@ -9,7 +9,8 @@ import { useTheme } from '@/ui/themeContext';
 
 const LEVELS = [{ v: 1, l: 'Low' }, { v: 2, l: 'Med' }, { v: 3, l: 'High' }];
 const LEVEL_OPTIONS = LEVELS.map((o) => ({ value: String(o.v), label: o.l }));
-const scoreColor = (s: number) => (s >= 6 ? 'var(--ac-danger-800)' : s >= 4 ? 'var(--ac-warning-600)' : 'var(--ac-teal-700)');
+const scoreTone = (s: number) => (s >= 6 ? 'danger-800' : s >= 4 ? 'warning-600' : 'teal-700');
+const Score = ({ s }: { s: number }) => <strong className="ac-tone" data-tone={scoreTone(s)}>{s}</strong>;
 
 function Level({ id, which, value, label }: { id: string; which: 'p' | 'i'; value: number; label: string }) {
   const set = (v: string) => setInput(`risk_${which}_${id}`, v);
@@ -32,14 +33,16 @@ export function RiskRegisterCard() {
         { key: 'r', header: 'Agentic risk', render: (r) => <><strong>{r.label}</strong><div className="ac-muted">{r.evidence}</div></> },
         { key: 'p', header: 'Prob.', align: 'center', render: (r) => <Level id={r.id} which="p" value={riskProb(c, r)} label={`Probability of ${r.label}`} /> },
         { key: 'i', header: 'Impact', align: 'center', render: (r) => <Level id={r.id} which="i" value={riskImpact(c, r)} label={`Impact of ${r.label}`} /> },
-        { key: 's', header: 'Score', align: 'center', render: (r) => { const s = riskProb(c, r) * riskImpact(c, r); return <strong style={{ color: scoreColor(s) }}>{s}</strong>; } },
+        { key: 's', header: 'Score', align: 'center', render: (r) => <Score s={riskProb(c, r) * riskImpact(c, r)} /> },
         { key: 'm', header: 'Mitigation', render: (r) => r.mitigation },
       ]} />
-      <div style={{ marginTop: 10, padding: '10px 12px', borderRadius: 'var(--ac-radius-lg)', background: `${tok(band.tone)}18`, border: `1px solid ${tok(band.tone)}` }}>
-        <strong style={{ color: tok(band.tone) }}>Consolidated risk: {band.label} ({Math.round(score * 100)}/100)</strong>
+      {/* dynamic: the band colour with a hex alpha suffix, resolved in the theme in effect */}
+      <div className="ac-risk-box is-spaced" style={{ background: `${tok(band.tone)}18`, borderColor: tok(band.tone) }}>
+        <strong className="ac-tone" data-tone={band.tone}>Consolidated risk: {band.label} ({Math.round(score * 100)}/100)</strong>
         {applied ? ` · +${Math.round(riskBar(c) * 100)} pts on the DI bar` : ' · informative only — tick the box above to feed Decision Intelligence'}
       </div>
-      <p className="ac-muted">Reference 5.2 agentic risk register. Probability×Impact on a 1–3 scale; the consolidated score can raise the Decide & Scale verdict bar. CC-RISK-01.</p>
+      <p className="ac-muted">Reference 5.2 agentic risk register. Probability×Impact on a 1–3 scale; the consolidated score can raise the Decide & Scale
+        verdict bar. CC-RISK-01.</p>
     </Panel>
   );
 }

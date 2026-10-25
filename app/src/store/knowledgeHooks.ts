@@ -1,7 +1,8 @@
 /** @calc-zone knowledge-hub */
 import { useMemo } from 'react';
 import {
-  commonSubsetValue, corePortfolio, infraView, knowledgeTable, validate, waveEffects, type HubSettings, type InfraView, type Issue, type KnowledgeTable, type SubsetField, type WaveEffect,
+  commonSubsetValue, corePortfolio, infraView, knowledgeTable, validate, waveEffects, type HubSettings, type InfraView, type Issue, type KnowledgeTable,
+  type SubsetField, type WaveEffect,
 } from '@/domain/portfolio';
 import { usePortfolio } from './hooks';
 import { useActiveProduct, useCommon, useIsMulti } from './portfolioHooks';
@@ -19,7 +20,8 @@ export function useKnowledgeView(): KnowledgeView {
   const pf = usePortfolio(corePortfolio);   // memoised on the inputs of the figures, not on view state
   return useMemo(() => {
     const table = knowledgeTable(pf);
-    return { table, waves: waveEffects(pf, table.rows), infra: infraView(pf, table.rows), diagnostics: validate(pf).diagnostics.filter((d) => KT_CODES.includes(d.code)) };
+    return { table, waves: waveEffects(pf, table.rows), infra: infraView(pf, table.rows),
+      diagnostics: validate(pf).diagnostics.filter((d) => KT_CODES.includes(d.code)) };
   }, [pf]);
 }
 
@@ -27,5 +29,6 @@ export function useKnowledgeView(): KnowledgeView {
 export interface SubsetState { multi: boolean; productId: string; productName: string; own: boolean; common: unknown }
 export function useSubsetField(field: SubsetField): SubsetState {
   const multi = useIsMulti(), prod = useActiveProduct(), common = useCommon();
-  return useMemo(() => ({ multi, productId: prod.id, productName: prod.name, own: prod.knowledge[field] !== undefined, common: commonSubsetValue(common, field) }), [multi, prod, common, field]);
+  return useMemo(() => ({ multi, productId: prod.id, productName: prod.name, own: prod.knowledge[field] !== undefined,
+    common: commonSubsetValue(common, field) }), [multi, prod, common, field]);
 }

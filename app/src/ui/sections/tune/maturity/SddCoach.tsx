@@ -36,14 +36,16 @@ export function CoachPanel() {
         <NumberInput id="coachCruise" label="Cruise coaching load (%)" min={0} max={60} step={5} />
       </div>
       <StatRow>
-        {k.loads.map((p, i) => <Stat key={i} label={`Y${i + 1} coaching load`} value={`${Math.round(p)}%`} hint={`≈ ${fmtK(k.costs[i] as number)}/yr`} tone="blue" />)}
+        {k.loads.map((p, i) => <Stat key={i} label={`Y${i + 1} coaching load`} value={`${Math.round(p)}%`} hint={`≈ ${fmtK(k.costs[i] as number)}/yr`}
+          tone="blue" />)}
       </StatRow>
       <p className="ac-muted">{k.costs.map((x, i) => `Y${i + 1} ≈ ${fmtK(x)}/yr`).join(' · ')}</p>
       <table className="ac-table">
         <thead><tr><th>Autonomy tier</th><th className="ac-c">Phase</th><th>Mechanism</th></tr></thead>
         <tbody>{AUTONOMY_TIERS.map(([t, ph, m]) => <tr key={t}><td><strong>{t}</strong></td><td className="ac-c">{ph}</td><td>{m}</td></tr>)}</tbody>
       </table>
-      <Note>Reference 3.2/4.2: coaching starts at ~{k.y1}% of capacity and decays to ~{k.cruise}% at cruise as support is weaned (intensive → on-demand → self-service → community). Costs are indicative (analytical) and overlap the HRI change model. CC-COACH-01.</Note>
+      <Note>Reference 3.2/4.2: coaching starts at ~{k.y1}% of capacity and decays to ~{k.cruise}% at cruise as support is weaned (intensive → on-demand →
+        self-service → community). Costs are indicative (analytical) and overlap the HRI change model. CC-COACH-01.</Note>
     </Panel>
   );
 }

@@ -32,7 +32,10 @@ function groupScales(flat: Table): { [F in keyof typeof SCALES]: Record<string, 
   return out as { [F in keyof typeof SCALES]: Record<string, string> };
 }
 
-/** The delta of a contrast level over a mode (for high: the charts keep the standard sequential ramp, take paler / deeper diverging cells and the strong series). */
+/**
+ * The delta of a contrast level over a mode (for high: the charts keep the standard sequential ramp, take paler / deeper diverging cells and the
+ * strong series).
+ */
 export function contrastValues(dark: boolean, level: 'enhanced' | 'high', base: Readonly<ThemeValues> = THEME_DEFAULT): Table {
   const standard = { ...base, ...(dark ? darkValues(base) : {}) } as ThemeValues;
   const delta = contrastDelta(dark, level, scalesOf(standard));

@@ -16,7 +16,8 @@ export const ELIG_PREREQS: { id: string; label: string; critical: boolean }[] = 
   { id: 'client', label: 'Open & collaborative client', critical: false },
   { id: 'res', label: 'Committed qualified resources', critical: false },
 ];
-export const NATURE_LABEL: Record<string, string> = { standard: 'Standard', embedded: 'Embedded/firmware', critical: 'Critical/safety', sovereign: 'Sovereign/air-gap' };
+export const NATURE_LABEL: Record<string, string> = { standard: 'Standard', embedded: 'Embedded/firmware', critical: 'Critical/safety',
+  sovereign: 'Sovereign/air-gap' };
 
 export const eligState = (c: Ctx, id: string): string => c.inp.v('elPre_' + id) || 'met';
 export const eligLoc = (c: Ctx): number => { const v = c.inp.p('elLoc'); return isNaN(v) ? 150 : v; };
@@ -67,7 +68,8 @@ export const leverWord = (x: number): string => (x >= 0.85 ? 'Strong' : x >= 0.6
 export const leverTone = (x: number): ColourRole => (x >= 0.85 ? 'teal-700' : x >= 0.6 ? 'warning-600' : x > 0 ? 'danger-800' : 'neutral-700');
 
 /** EV-27 Abaque A (addressable effort reduction per activity, [min,max] %) and Abaque B (share captured per maturity level). */
-const ABAQUE_A: Record<string, [number, number]> = { plan: [5, 20], design: [20, 40], coding: [30, 60], buildint: [20, 40], test: [30, 70], deploy: [10, 30], operate: [20, 40], xcut: [10, 30] };
+const ABAQUE_A: Record<string, [number, number]> = { plan: [5, 20], design: [20, 40], coding: [30, 60], buildint: [20, 40], test: [30, 70], deploy: [10, 30],
+  operate: [20, 40], xcut: [10, 30] };
 const ABAQUE_B: Record<number, [number, number]> = { 1: [0, 15], 2: [30, 50], 3: [50, 75], 4: [75, 100] };
 const mid = (a: [number, number]) => (a[0] + a[1]) / 2;
 export const abaqueCeiling = (act: string): number => mid(ABAQUE_A[act] ?? [100, 100]) / 100;
@@ -77,8 +79,10 @@ const PILLAR_LEVER: Record<string, Record<string, number>> = {
   modernisation: { plan: 0.7, design: 0.45, coding: 0.7, buildint: 0.7, test: 1, deploy: 0.45, operate: 0.7, xcut: 1 },
   maintenance: { plan: 0.7, design: 0, coding: 0.7, buildint: 0.7, test: 1, deploy: 0.7, operate: 1, xcut: 1 },
 };
-const SDLC_ACTIVITY: Record<string, string> = { L0: 'plan', V1: 'plan', V2: 'design', V3: 'coding', V5: 'buildint', V4: 'test', V6: 'test', V7: 'test', L8: 'deploy', L9: 'operate', L10: 'operate', 'Cross-cutting': 'xcut' };
-export const ACTIVITY_LABEL: Record<string, string> = { plan: 'Plan / Analyse', design: 'Design', coding: 'Coding', buildint: 'Build / Integrate', test: 'Test', deploy: 'Deploy', operate: 'Operate', xcut: 'Cross-cutting' };
+const SDLC_ACTIVITY: Record<string, string> = { L0: 'plan', V1: 'plan', V2: 'design', V3: 'coding', V5: 'buildint', V4: 'test', V6: 'test', V7: 'test',
+  L8: 'deploy', L9: 'operate', L10: 'operate', 'Cross-cutting': 'xcut' };
+export const ACTIVITY_LABEL: Record<string, string> = { plan: 'Plan / Analyse', design: 'Design', coding: 'Coding', buildint: 'Build / Integrate',
+  test: 'Test', deploy: 'Deploy', operate: 'Operate', xcut: 'Cross-cutting' };
 export const PHASE_LABEL: Record<string, string> = {
   L0: 'L0 Upstream', V1: 'V1 Specification', V2: 'V2 Design', V3: 'V3 Implementation', V4: 'V4 Verification', V5: 'V5 Integration', V6: 'V6 Validation',
   V7: 'V7 Qualification', L8: 'L8 Deployment', L9: 'L9 Run / AMS', L10: 'L10 End-of-life', 'Cross-cutting': 'Cross-cutting',
@@ -116,7 +120,8 @@ export function abaqueRows(c: Ctx) {
   return { rows, lvl, bCap, vTaxRate };
 }
 
-export interface TaxExplain { base: number; avgHuman: number; mode: 'net' | 'overlay'; rateOverlay: number; rateNet: number; gross: number; applied: boolean; yearly: number[] }
+export interface TaxExplain { base: number; avgHuman: number; mode: 'net' | 'overlay'; rateOverlay: number; rateNet: number; gross: number; applied: boolean;
+  yearly: number[] }
 /** The figures behind the two verification-tax cases (Case 1 overlay / Case 2 net). */
 export function taxExplain(c: Ctx): TaxExplain {
   const m = modelOf(c), base = vtaxEffBase(c), avgHuman = vtaxAvgHuman(c);

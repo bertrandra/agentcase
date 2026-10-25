@@ -4,7 +4,8 @@ import { resolveCss } from '../helpers/themeCss';
 
 /**
  * Token-level guard of the SECTION CONTENT styles against the frozen legacy file: each pair names a legacy rule and the rule of content.css / a11y.css
- * that must carry the same declarations. The computed-style comparison of all 79 sections is `npm run ui-parity`; this catches a drifting token in milliseconds.
+ * that must carry the same declarations. The computed-style comparison of all 79 sections is `npm run ui-parity`; this catches a drifting token in
+ * milliseconds.
  */
 const read = (u: string): string => readFileSync(new URL(u, import.meta.url), 'utf8');
 const theme = (f: string): string => resolveCss(read(`../../src/ui/theme/${f}`));   // tokens resolved to their default-theme values

@@ -14,7 +14,8 @@ describe('economics aggregates: Portfolio and every Wave, against the products\'
   it('Run: calendar-year parts, product lines and total line', () => {
     for (const scope of scopesOf(pf)) {
       const a = aggregateRun(pf, consolidate(pf), scope)!, ids = idsOf(pf, scope);
-      const run = shifted(pf, ids, (r) => r.totalRunCost), tok = shifted(pf, ids, (r) => r.tokenCost), inf = shifted(pf, ids, (r) => r.infrastructureCost), kh = shifted(pf, ids, (r) => r.knowledgeHubCost);
+      const run = shifted(pf, ids, (r) => r.totalRunCost), tok = shifted(pf, ids, (r) => r.tokenCost), inf = shifted(pf, ids, (r) => r.infrastructureCost),
+        kh = shifted(pf, ids, (r) => r.knowledgeHubCost);
       expectSeriesClose(a.years.map((y) => y.run), blocks(run));
       expectSeriesClose(a.years.map((y) => y.token), blocks(tok));
       expectSeriesClose(a.years.map((y) => y.infra), blocks(inf));
@@ -30,7 +31,8 @@ describe('economics aggregates: Portfolio and every Wave, against the products\'
 
   it('Annual: years equal the headline years, year-end headcount, net by product adds up to the net by year', () => {
     for (const scope of scopesOf(pf)) {
-      const a = aggregateAnnual(pf, consolidate(pf), scope)!, ids = idsOf(pf, scope), etp = shifted(pf, ids, (r) => r.humanFte), vf = shifted(pf, ids, (r) => r.agentVfte);
+      const a = aggregateAnnual(pf, consolidate(pf), scope)!, ids = idsOf(pf, scope), etp = shifted(pf, ids, (r) => r.humanFte),
+        vf = shifted(pf, ids, (r) => r.agentVfte);
       expectSeriesClose(a.years.map((y) => y.savings), blocks(shifted(pf, ids, (r) => r.grossSavings)));
       expectSeriesClose(a.years.map((y) => y.run), blocks(shifted(pf, ids, (r) => r.totalRunCost)));
       expectSeriesClose(a.years.map((y) => y.etp), a.years.map((_, i) => etp[Math.min(i * 12 + 11, etp.length - 1)]!));
@@ -59,6 +61,9 @@ describe('economics aggregates: Portfolio and every Wave, against the products\'
 
   it('a Product view or an unknown wave has no aggregate', () => {
     const c = consolidate(pf);
-    for (const f of [aggregateRun, aggregateAnnual, aggregateMonthly]) { expect(f(pf, c, { kind: 'product' })).toBeNull(); expect(f(pf, c, { kind: 'wave', id: 'nope' })).toBeNull(); }
+    for (const f of [aggregateRun, aggregateAnnual, aggregateMonthly]) {
+      expect(f(pf, c, { kind: 'product' })).toBeNull();
+      expect(f(pf, c, { kind: 'wave', id: 'nope' })).toBeNull();
+    }
   });
 });

@@ -8,7 +8,8 @@ import type { HistoryState } from '../types';
  * `format: 'portfolio'` marks a record whose snapshot is the exact portfolio and whose history patches address it. Records written before the
  * portfolio store (no `format`) carry case-level patches: their document is restored, their history is not.
  */
-export interface AutosaveRecord { tabId: string; savedAt: string; label: string; snapshot: Record<string, unknown>; history: HistoryState; format?: 'portfolio' }
+export interface AutosaveRecord { tabId: string; savedAt: string; label: string; snapshot: Record<string, unknown>; history: HistoryState;
+  format?: 'portfolio' }
 /** Where records live: IndexedDB in the browser, a Map in tests. */
 export interface AutosaveStorage {
   put(r: AutosaveRecord): Promise<void>;
@@ -18,7 +19,9 @@ export interface AutosaveStorage {
 
 export function memoryStorage(): AutosaveStorage {
   const m = new Map<string, AutosaveRecord>();
-  return { put: async (r) => { m.set(r.tabId, structuredClone(r)); }, list: async () => [...m.values()].map((r) => structuredClone(r)), remove: async (id) => { m.delete(id); } };
+  return { put: async (r) => { m.set(r.tabId, structuredClone(r)); }, list: async () => [...m.values()].map((r) => structuredClone(r)), remove: async (id) => {
+    m.delete(id);
+  } };
 }
 
 export interface AutosaveOptions { delayMs?: number; setTimer?: (fn: () => void, ms: number) => unknown; clearTimer?: (h: unknown) => void; now?: () => Date }
@@ -30,7 +33,8 @@ export function startAutosave(store: AppStore, storage: AutosaveStorage, tabId: 
   const save = async () => {
     handle = null;
     const s = store.getState(), name = (s.doc as { customerName?: string }).customerName;
-    await storage.put({ tabId, savedAt: (o.now ?? (() => new Date()))().toISOString(), label: name || 'Untitled case', snapshot: toPortfolioSnapshot(s.portfolio, o.now, true), history: s.history, format: 'portfolio' });
+    await storage.put({ tabId, savedAt: (o.now ?? (() => new Date()))().toISOString(), label: name || 'Untitled case',
+      snapshot: toPortfolioSnapshot(s.portfolio, o.now, true), history: s.history, format: 'portfolio' });
   };
   const off = store.onChange(() => { if (handle !== null) clearT(handle); handle = setT(() => { void save(); }, o.delayMs ?? 1500); });
   return { flush: save, stop: () => { off(); if (handle !== null) clearT(handle); } };

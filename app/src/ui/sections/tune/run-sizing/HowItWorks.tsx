@@ -4,10 +4,13 @@ import { Panel } from '@/ui/widgets/cards';
 export function HowItWorks() {
   return (
     <Panel title="How it works — and why">
-      <p><strong>Hybrid (default):</strong> <code>run FTE(year) = platform floor + agent vFTE(year) × ops load</code>, where the floor = <code>max(floor min, base team × floor %)</code> and applies <em>only while at least one agent is deployed</em>.</p>
+      <p><strong>Hybrid (default):</strong> <code>run FTE(year) = platform floor + agent vFTE(year) × ops load</code>, where the floor = <code>max(floor min,
+        base team × floor %)</code> and applies <em>only while at least one agent is deployed</em>.</p>
       <ul>
-        <li><strong>Platform floor</strong> — as soon as one agent runs, a minimal platform exists: prompt/version CI-CD, observability, guardrails, incident response. It does not depend on how many agents run.</li>
-        <li><strong>Per-agent ops load</strong> — each deployed agent vFTE adds monitoring, evaluation, cost tracking and maintenance. 0.15 FTE per agent ≈ one run engineer for 6–7 agents: frugal by design, which is precisely the economic argument of agentic delivery.</li>
+        <li><strong>Platform floor</strong> — as soon as one agent runs, a minimal platform exists: prompt/version CI-CD, observability, guardrails, incident
+          response. It does not depend on how many agents run.</li>
+        <li><strong>Per-agent ops load</strong> — each deployed agent vFTE adds monitoring, evaluation, cost tracking and maintenance. 0.15 FTE per agent ≈ one
+          run engineer for 6–7 agents: frugal by design, which is precisely the economic argument of agentic delivery.</li>
         <li><strong>At zero automation the cost is zero</strong> — no agents, no platform, no AgentOps, and (in hybrid mode) no agent infrastructure
           either: the infra line is charged only in years where agents exist. The ROI near 0% automation is therefore honest: only the setup remains
           at stake.</li>

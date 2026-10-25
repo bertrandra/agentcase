@@ -13,10 +13,13 @@ export function CeilingBox() {
   return (
     <div className="ac-card">
       <div className="ac-card-t">Effective glass ceiling</div>
-      <div className="ac-card-d">Computed from the selected scope: phases + norms + cross-cutting. The irreducible human share that caps how deep automation can go.</div>
-      <FieldNumber native="slider" label="Glass ceiling" unit="%" value={ceiling} min={0} max={100} disabled={!forced} onCommit={(v) => setInput('glassCeiling', v)}>
+      <div className="ac-card-d">Computed from the selected scope: phases + norms + cross-cutting. The irreducible human share that caps how deep automation can
+        go.</div>
+      <FieldNumber native="slider" label="Glass ceiling" unit="%" value={ceiling} min={0} max={100} disabled={!forced}
+        onCommit={(v) => setInput('glassCeiling', v)}>
         <Field label={`Glass ceiling: ${ceiling}%`}>
-          <input type="range" min={0} max={100} value={ceiling} disabled={!forced} aria-label="Glass ceiling" onChange={(e) => setInput('glassCeiling', e.target.value)} />
+          <input type="range" min={0} max={100} value={ceiling} disabled={!forced} aria-label="Glass ceiling"
+            onChange={(e) => setInput('glassCeiling', e.target.value)} />
         </Field>
       </FieldNumber>
       <FieldToggle label={FORCE} checked={forced} onChange={setForceGC}>

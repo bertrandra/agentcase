@@ -8,7 +8,8 @@ import { legacyMoney, legacyVelocityRow } from '../helpers/deviations';
 import { diffs } from '../helpers/economics';
 import { ctxOf, pdc, PDC_FIXTURES } from '../helpers/pdc';
 
-type Cm = { rev: Record<string, { rev: number[]; pp: number }>; rec: [string, string]; tier: object; avail: boolean[]; out: Record<string, { rows: string[][] }> };
+type Cm = { rev: Record<string, { rev: number[]; pp: number }>; rec: [string, string]; tier: object; avail: boolean[]; out: Record<string,
+  { rows: string[][] }> };
 
 describe('present domain reproduces the legacy', () => {
   it('has the fixtures', () => expect(PDC_FIXTURES.length).toBeGreaterThanOrEqual(56));
@@ -18,7 +19,8 @@ describe('present domain reproduces the legacy', () => {
     expect(diffs(e.tier, cmTierSplit(c))).toEqual([]);
     expect(cmRecommend(c)).toEqual(e.rec);
     expect(CM_CODES.map((k) => cmAvailable(c, k))).toEqual(e.avail);
-    const rows = commercialView(c).rows.filter((r) => r.available).map((r) => [fmtK(r.revenue), fmtK(r.cost), `${fmtK(r.margin)} (${Math.round(r.marginPct)}%)`, fmtK(r.tco), `${Math.round(r.clientSaving)}%`]);
+    const rows = commercialView(c).rows.filter((r) => r.available).map((r) => [fmtK(r.revenue), fmtK(r.cost),
+      `${fmtK(r.margin)} (${Math.round(r.marginPct)}%)`, fmtK(r.tco), `${Math.round(r.clientSaving)}%`]);
     expect(rows).toEqual(e.out.ET!.rows.filter((r) => r.length === 6).map((r) => r.slice(1).map(legacyMoney)));   // DEV-NEG-MONEY
   });
   it.each(PDC_FIXTURES)('%s: playback series', (id) => {

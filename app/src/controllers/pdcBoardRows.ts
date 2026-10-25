@@ -10,7 +10,8 @@ const rowOf = (d: Doc, id: string, row: string): BoardRow | undefined => sec(d, 
 const cardOf = (d: Doc, id: string, card: string): BoardCard | undefined => sec(d, id)?.cards.find((c) => c.CARD_ID === card);
 
 export type RowField = 'label' | 'var' | 'format' | 'defaultValue';
-export type CardField = 'CARD_ENABLED' | 'CARD_SEQ' | 'CARD_TARGET_SECTION' | 'CARD_OVERLAY_CTRL' | 'CARD_IMPACT_FMT' | 'CARD_KEY1_FMT' | 'CARD_KEY2_FMT' | 'CARD_KEY1_LABEL' | 'CARD_KEY2_LABEL';
+export type CardField = 'CARD_ENABLED' | 'CARD_SEQ' | 'CARD_TARGET_SECTION' | 'CARD_OVERLAY_CTRL' | 'CARD_IMPACT_FMT' | 'CARD_KEY1_FMT' | 'CARD_KEY2_FMT' |
+  'CARD_KEY1_LABEL' | 'CARD_KEY2_LABEL';
 
 const descCmd = defineCommand<{ id: string; text: string }>({
   type: 'board.setDescription', label: () => 'Edit the description of a dashboard', coalesceKey: (p) => `board.setDescription:${p.id}`,
@@ -42,7 +43,8 @@ const rowFieldCmd = defineCommand<{ id: string; row: string; field: RowField; va
 });
 const rowSourceCmd = defineCommand<{ id: string; row: string; source: string }>({
   type: 'board.setRowSource', label: () => 'Set the source section of a body row',
-  run(d, p) { const r = rowOf(d, p.id, p.row); if (r) { r.source = p.source; if (!bindable(p.source, r.var)) r.var = null; } },   // a variable the new source does not offer is unbound
+  // a variable the new source does not offer is unbound
+  run(d, p) { const r = rowOf(d, p.id, p.row); if (r) { r.source = p.source; if (!bindable(p.source, r.var)) r.var = null; } },
 });
 const addCardCmd = defineCommand<{ id: string }>({
   type: 'board.addCard', label: () => 'Add a card to a dashboard',
@@ -59,7 +61,8 @@ const cardFieldCmd = defineCommand<{ id: string; card: string; field: CardField;
     const c = cardOf(d, p.id, p.card);
     if (!c) return;
     if (p.field === 'CARD_ENABLED') c.CARD_ENABLED = !!p.value;
-    else if (p.field === 'CARD_SEQ') { const n = Number(p.value); c.CARD_SEQ = isNaN(n) ? 0 : n; } else (c as unknown as Record<string, unknown>)[p.field] = p.value === '' ? null : p.value;
+    else if (p.field === 'CARD_SEQ') { const n = Number(p.value); c.CARD_SEQ = isNaN(n) ? 0 : n; } else (c as unknown as Record<string,
+      unknown>)[p.field] = p.value === '' ? null : p.value;
   },
 });
 const cardSourceCmd = defineCommand<{ id: string; card: string; source: string }>({
@@ -80,5 +83,6 @@ export const setRowField = (id: string, row: string, field: RowField, value: str
 export const setRowSource = (id: string, row: string, source: string): void => appStore().dispatch(rowSourceCmd({ id, row, source }));
 export const addCard = (id: string): void => appStore().dispatch(addCardCmd({ id }));
 export const removeCard = (id: string, card: string, name: string): void => appStore().dispatch(removeCardCmd({ id, card, name }));
-export const setCardField = (id: string, card: string, field: CardField, value: string | number | boolean): void => appStore().dispatch(cardFieldCmd({ id, card, field, value }));
+export const setCardField = (id: string, card: string, field: CardField,
+  value: string | number | boolean): void => appStore().dispatch(cardFieldCmd({ id, card, field, value }));
 export const setCardSource = (id: string, card: string, source: string): void => appStore().dispatch(cardSourceCmd({ id, card, source }));

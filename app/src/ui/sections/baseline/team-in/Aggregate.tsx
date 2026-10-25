@@ -8,8 +8,10 @@ import { ExcludedNote } from '../../aggregates/AggregateParts';
 
 const help = (
   <>
-    <p>Aggregate view of the entry teams of the products in view. Each product keeps its <b>own</b> AS-IS team (never shared): this page only adds them up by skill, grade and location, and lists them product by product.</p>
-    <p>The sums are computed in the domain (<code>aggregateTeams</code>); nothing is typed here. To change a team, open the product with <b>Edit this product</b>.</p>
+    <p>Aggregate view of the entry teams of the products in view. Each product keeps its <b>own</b> AS-IS team (never shared): this page only adds them up by
+      skill, grade and location, and lists them product by product.</p>
+    <p>The sums are computed in the domain (<code>aggregateTeams</code>); nothing is typed here. To change a team, open the product with <b>Edit this
+      product</b>.</p>
   </>
 );
 
@@ -18,32 +20,46 @@ const PRODUCTS: AggColumn<TeamProductRow>[] = [
   { key: 'lines', header: 'Lines', align: 'right', render: (r) => r.lines },
   { key: 'etp', header: 'Entry FTE', align: 'right', title: 'AS-IS total of the product’s team (FTE)', render: (r) => r.etp.toFixed(2) },
 ];
-const BUCKET: AggColumn<TeamBucket & { id: string; name: string }>[] = [{ key: 'etp', header: 'FTE', align: 'right', render: (r) => r.etp.toFixed(2) }];
+const FTE = { key: 'etp', header: 'FTE', align: 'right', render: (r: { etp: number }) => r.etp.toFixed(2) } as const;
+const BUCKET: AggColumn<TeamBucket & { id: string; name: string }>[] = [FTE];
 const asRows = (b: TeamBucket[]) => b.map((x) => ({ ...x, id: x.key, name: x.key }));
 const LINES: AggColumn<TeamLine & { id: string; name: string }>[] = [
-  { key: 'grade', header: 'Grade', render: (r) => r.grade }, { key: 'loc', header: 'Location', render: (r) => r.loc }, { key: 'etp', header: 'FTE', align: 'right', render: (r) => r.etp.toFixed(2) },
+  { key: 'grade', header: 'Grade', render: (r) => r.grade }, { key: 'loc', header: 'Location', render: (r) => r.loc }, FTE,
 ];
 
-/** Input team (AS-IS) — Aggregate view: the teams of the selection by product and, added up, by skill, grade and location (read-only; edit a product to change its team). */
+/** One "added up by …" panel: entry FTE by skill, grade or location. */
+function BucketPanel({ by, first, buckets, totals }: { by: string; first: string; buckets: TeamBucket[]; totals: { label: string; cells: { etp: string } } }) {
+  return (
+    <Panel title={`By ${by}`}>
+      <AggregateTable caption={`Entry FTE by ${by}`} first={first} rows={asRows(buckets)} columns={BUCKET} edit={false} totals={totals} />
+    </Panel>
+  );
+}
+
+/**
+ * Input team (AS-IS) — Aggregate view: the teams of the selection by product and, added
+ * up, by skill, grade and location (read-only; edit a product to change its team).
+ */
 export default function TeamInAggregate() {
   const t = useTeamAggregate(), vs = useViewScope(), total = t.total.toFixed(2);
-  const sum = { label: `Total — ${vs.label}` };
+  const totals = { label: `Total — ${vs.label}`, cells: { etp: total } };
   return (
     <SectionFrame title="Input team (AS-IS) — breakdown by resource" help={help}
       input={
         <>
-          <Callout kind="blue">Summary, read-only: the entry team belongs to each product. Pick a product in “Change” of the top bar to change its team in place below, or “Edit this product” to view that product.</Callout>
-          <AggregateTable caption={`Entry teams by product — ${vs.label}`} rows={t.products} columns={PRODUCTS} totals={{ ...sum, cells: { etp: total } }} />
+          <Callout kind="blue">Summary, read-only: the entry team belongs to each product. Pick a product in “Change” of the top bar to change its team in place
+            below, or “Edit this product” to view that product.</Callout>
+          <AggregateTable caption={`Entry teams by product — ${vs.label}`} rows={t.products} columns={PRODUCTS} totals={totals} />
           <ExcludedNote />
         </>
       }
       result={
         <>
-          <Panel title="By skill"><AggregateTable caption="Entry FTE by skill" first="Skill" rows={asRows(t.bySkill)} columns={BUCKET} edit={false} totals={{ ...sum, cells: { etp: total } }} /></Panel>
-          <Panel title="By grade"><AggregateTable caption="Entry FTE by grade" first="Grade" rows={asRows(t.byGrade)} columns={BUCKET} edit={false} totals={{ ...sum, cells: { etp: total } }} /></Panel>
-          <Panel title="By location"><AggregateTable caption="Entry FTE by location" first="Location" rows={asRows(t.byLoc)} columns={BUCKET} edit={false} totals={{ ...sum, cells: { etp: total } }} /></Panel>
+          <BucketPanel by="skill" first="Skill" buckets={t.bySkill} totals={totals} />
+          <BucketPanel by="grade" first="Grade" buckets={t.byGrade} totals={totals} />
+          <BucketPanel by="location" first="Location" buckets={t.byLoc} totals={totals} />
           <Panel title="By skill, grade and location">
-            <AggregateTable caption="Entry FTE by skill, grade and location" first="Skill" edit={false} columns={LINES} totals={{ ...sum, cells: { etp: total } }}
+            <AggregateTable caption="Entry FTE by skill, grade and location" first="Skill" edit={false} columns={LINES} totals={totals}
               rows={t.lines.map((l) => ({ ...l, id: `${l.skill}|${l.grade}|${l.loc}`, name: l.skill }))} />
           </Panel>
         </>

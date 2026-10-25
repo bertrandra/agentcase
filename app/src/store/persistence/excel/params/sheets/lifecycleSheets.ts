@@ -53,8 +53,12 @@ function readLifecycle({ rows, w }: ReadCtx): void {
 function writeTobe({ wb, live }: WriteCtx): void {
   const l = live(), last = l.eng.years().length - 1, comp = tobeComposition(l, last), ey = l.eng.years()[last];
   const lbl = `Y${comp.years.length}`;
-  const ws = sheet(wb, 'TO-BE Team', [['Skill', 18], ['AS-IS FTE', 11], [`TO-BE Human FTE (${lbl})`, 20], [`TO-BE Agent vFTE (${lbl})`, 20], ['Human Delta', 12], ['Auto %', 9]]);
-  comp.rows.forEach((r) => { const y = r.perYear[last] ?? r.perYear[r.perYear.length - 1]!; ws.addRow([r.skill, +r.asisFTE.toFixed(2), +y.human.toFixed(2), +y.agent.toFixed(2), +(y.human - r.asisFTE).toFixed(2), Math.round(y.autoPct)]); });
+  const ws = sheet(wb, 'TO-BE Team', [['Skill', 18], ['AS-IS FTE', 11], [`TO-BE Human FTE (${lbl})`, 20], [`TO-BE Agent vFTE (${lbl})`, 20],
+    ['Human Delta', 12], ['Auto %', 9]]);
+  comp.rows.forEach((r) => {
+    const y = r.perYear[last] ?? r.perYear[r.perYear.length - 1]!;
+    ws.addRow([r.skill, +r.asisFTE.toFixed(2), +y.human.toFixed(2), +y.agent.toFixed(2), +(y.human - r.asisFTE).toFixed(2), Math.round(y.autoPct)]);
+  });
   ws.addRow(['TOTAL', +comp.tot.asis.toFixed(2), +(ey?.humanFteEnd ?? 0).toFixed(2), +(ey?.agentVfteEnd ?? 0).toFixed(2), '', '']);
   head(ws); frz(ws);
 }
@@ -70,7 +74,8 @@ function readSkillMap({ rows, w }: ReadCtx): void {
   w.skillMap = map;
 }
 function writeSplit({ wb, d }: WriteCtx): void {
-  const names = LOCATIONS.map((l) => l.name), ws = sheet(wb, 'TO-BE Location Split', [['Skill', 18], ...names.map((n): [string, number] => [n, 11])]), split = locSplitOf(cs(d));
+  const names = LOCATIONS.map((l) => l.name), ws = sheet(wb, 'TO-BE Location Split', [['Skill', 18], ...names.map((n): [string, number] => [n, 11])]),
+    split = locSplitOf(cs(d));
   teamSkillList(cs(d)).forEach((ts) => ws.addRow([ts, ...names.map((n) => +(split[ts] ?? {})[n]! || 0)]));
   head(ws); frz(ws);
 }

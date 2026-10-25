@@ -27,27 +27,33 @@ export function stochasticByProduct(pf: Portfolio, ids: string[], run: PfStress 
 }
 
 /** P1 — loop convergence: E[N], escape rate, loops above the escape limit and the CC-LC checks of the product. */
-export type ConvergenceRow = AggProduct & { on: boolean; calibrated: boolean; loops: number; weightedEN: number; escapePct: number; reviewShare: number; above: number; checksPass: number; checksFail: number };
+export type ConvergenceRow = AggProduct & { on: boolean; calibrated: boolean; loops: number; weightedEN: number; escapePct: number; reviewShare: number;
+  above: number; checksPass: number; checksFail: number };
 export function convergenceByProduct(pf: Portfolio, ids: string[]): { rows: ConvergenceRow[]; on: number; above: number; checksFail: number } {
   const rows = perProduct(pf, ids, (c) => {
     const m = lceModel(c), lc = convergenceChecks(c).filter((k) => k.id.startsWith('CC-LC'));
     return {
       on: !!c.s.MODEL.FLAGS.lce, calibrated: m.calibrated, loops: m.loops.length, weightedEN: m.weightedEN, escapePct: m.escapePct, reviewShare: m.reviewShare,
-      above: m.loops.filter((l) => l.escapePct > ESCAPE_LIMIT).length, checksPass: lc.filter((k) => k.pass).length, checksFail: lc.filter((k) => !k.pass).length,
+      above: m.loops.filter((l) => l.escapePct > ESCAPE_LIMIT).length, checksPass: lc.filter((k) => k.pass).length,
+      checksFail: lc.filter((k) => !k.pass).length,
     };
   });
   return { rows, on: rows.filter((r) => r.on).length, above: rows.reduce((a, r) => a + r.above, 0), checksFail: rows.reduce((a, r) => a + r.checksFail, 0) };
 }
 
 /** P3 — supervision: provisioned or constrained, supervisors, capacity needed, run cost and agent vFTE at the horizon end. */
-export interface SupervisionRow extends AggProduct { on: boolean; constrained: boolean; supervisors: number; needed: number; runCost: number; vfte: number; toUnlock: number }
-export function supervisionByProduct(pf: Portfolio, ids: string[]): { rows: SupervisionRow[]; totals: Omit<SupervisionRow, keyof AggProduct | 'on' | 'constrained'> & { on: number; constrained: number } } {
+export interface SupervisionRow extends AggProduct { on: boolean; constrained: boolean; supervisors: number; needed: number; runCost: number; vfte: number;
+  toUnlock: number }
+export function supervisionByProduct(pf: Portfolio, ids: string[]): { rows: SupervisionRow[]; totals: Omit<SupervisionRow,
+  keyof AggProduct | 'on' | 'constrained'> & { on: number; constrained: number } } {
   const rows = perProduct(pf, ids, (c): Omit<SupervisionRow, keyof AggProduct> => {
     const s = supModel(c), last = <T,>(a: T[]): T => a[a.length - 1] as T;
-    return { on: !!c.s.MODEL.FLAGS.sup, constrained: s.constrained, supervisors: s.esup, needed: last(s.esupNeeded), runCost: last(s.runCost), vfte: last(s.vfteEff), toUnlock: s.supervisorsToUnlock };
+    return { on: !!c.s.MODEL.FLAGS.sup, constrained: s.constrained, supervisors: s.esup, needed: last(s.esupNeeded), runCost: last(s.runCost),
+      vfte: last(s.vfteEff), toUnlock: s.supervisorsToUnlock };
   });
   const sum = (k: 'supervisors' | 'needed' | 'runCost' | 'vfte' | 'toUnlock'): number => rows.reduce((a, r) => a + r[k], 0);
-  return { rows, totals: { on: rows.filter((r) => r.on).length, constrained: rows.filter((r) => r.constrained).length, supervisors: sum('supervisors'), needed: sum('needed'), runCost: sum('runCost'), vfte: sum('vfte'), toUnlock: sum('toUnlock') } };
+  return { rows, totals: { on: rows.filter((r) => r.on).length, constrained: rows.filter((r) => r.constrained).length, supervisors: sum('supervisors'),
+    needed: sum('needed'), runCost: sum('runCost'), vfte: sum('vfte'), toUnlock: sum('toUnlock') } };
 }
 
 /** P5 — flow and value: cycle time, compression, WIP (Little) and the sponsor-owned time-to-market value (null while no margin is given). */
@@ -58,18 +64,23 @@ export function flowByProduct(pf: Portfolio, ids: string[]): { rows: FlowRow[]; 
     return { on: f.on, ctAsis: f.ctAsis, ctNew: f.ctNew, theta: f.theta, wip: f.wip, flowNpv: f.hasMargin ? f.flowNpv : null };
   });
   const valued = rows.filter((r) => r.flowNpv !== null);
-  return { rows, on: rows.filter((r) => r.on).length, wip: rows.reduce((a, r) => a + r.wip, 0), flowNpv: valued.reduce((a, r) => a + (r.flowNpv as number), 0), valued: valued.length };
+  return { rows, on: rows.filter((r) => r.on).length, wip: rows.reduce((a, r) => a + r.wip, 0),
+    flowNpv: valued.reduce((a, r) => a + (r.flowNpv as number), 0), valued: valued.length };
 }
 
 /** P6 — evidence ledger: stage, grade A-D, and how many of the seven drivers stand on measured, benchmark or assumed evidence. */
-export type EvidenceRow = AggProduct & { on: boolean; stage: string; grade: string | null; score: number | null; meets: boolean | null; measured: number; benchmark: number; assumed: number };
-export function evidenceByProduct(pf: Portfolio, ids: string[]): { rows: EvidenceRow[]; on: number; measured: number; benchmark: number; assumed: number; worst: string | null } {
+export type EvidenceRow = AggProduct & { on: boolean; stage: string; grade: string | null; score: number | null; meets: boolean | null; measured: number;
+  benchmark: number; assumed: number };
+export function evidenceByProduct(pf: Portfolio, ids: string[]): { rows: EvidenceRow[]; on: number; measured: number; benchmark: number; assumed: number;
+  worst: string | null } {
   const rows = perProduct(pf, ids, (c) => {
     const e = evlModel(c, null), n = (t: string): number => e.drivers.filter((d) => d.effectiveTier === t).length;
-    return { on: e.on, stage: e.stage, grade: e.grade, score: e.score, meets: e.meetsExpectation, measured: n('MEASURED'), benchmark: n('BENCHMARK'), assumed: n('ASSUMPTION') };
+    return { on: e.on, stage: e.stage, grade: e.grade, score: e.score, meets: e.meetsExpectation, measured: n('MEASURED'), benchmark: n('BENCHMARK'),
+      assumed: n('ASSUMPTION') };
   });
   const sum = (k: 'measured' | 'benchmark' | 'assumed'): number => rows.reduce((a, r) => a + r[k], 0), grades = rows.flatMap((r) => (r.grade ? [r.grade] : []));
-  return { rows, on: rows.filter((r) => r.on).length, measured: sum('measured'), benchmark: sum('benchmark'), assumed: sum('assumed'), worst: grades.length ? grades.reduce((a, g) => (g > a ? g : a)) : null };
+  return { rows, on: rows.filter((r) => r.on).length, measured: sum('measured'), benchmark: sum('benchmark'), assumed: sum('assumed'),
+    worst: grades.length ? grades.reduce((a, g) => (g > a ? g : a)) : null };
 }
 
 /** P2 — verification tax: mode, derived rate, weighted irreducible floor, structural ROI ceiling and the criticality classes in scope. */

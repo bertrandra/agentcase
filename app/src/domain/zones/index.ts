@@ -1,7 +1,10 @@
 /** @calc-zone foundation */
 import catalog from './catalog.json';
 
-/** Role of a zone in the staged graph: `input` feeds the model, `calc` computes, `result` is read by screens and exports, `shared` is plumbing (reported, never drawn). */
+/**
+ * Role of a zone in the staged graph: `input` feeds the model, `calc` computes, `result` is read by screens and exports, `shared` is plumbing
+ * (reported, never drawn).
+ */
 export type ZoneLane = 'input' | 'calc' | 'result' | 'shared';
 export interface ZoneDef { id: string; label: string; lane: ZoneLane; description: string; entry: string[] }
 export interface FigureDef { id: string; label: string; zone: string; description: string }

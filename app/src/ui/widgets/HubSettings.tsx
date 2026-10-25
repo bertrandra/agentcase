@@ -57,11 +57,11 @@ export function HubSettings() {
       <div className="ac-form-row">
         <NumField label="Hub infrastructure (€/month)" value={hub.infraMonthly} min={0} step={250} onCommit={commitInfra} />
       </div>
-      {error && <p role="alert" style={{ color: 'var(--ac-danger-800)' }}>{error}</p>}
-      <fieldset style={{ border: 0, padding: 0 }}>
+      {error && <p role="alert" className="ac-hub-error">{error}</p>}
+      <fieldset className="ac-hub-modes">
         <legend><strong>Infrastructure allocation</strong></legend>
         {MODES.map((m) => (
-          <label key={m.value} className="ac-check" style={{ display: 'block' }}>
+          <label key={m.value} className="ac-check">
             <input type="radio" name="hub-infra-allocation" value={m.value} checked={hub.infraAllocation === m.value} onChange={() => { setPortfolioHub({ infraAllocation: m.value }); }} /> <strong>{m.label}</strong>
             <span className="ac-field-h"> — {m.text}</span>
           </label>

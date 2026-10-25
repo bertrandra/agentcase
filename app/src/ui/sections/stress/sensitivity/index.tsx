@@ -7,7 +7,8 @@ import { SectionFrame } from '@/ui/zones/SectionFrame';
 const help = (
   <>
     <p>Quantifies how much ROI and target headcount move when each key parameter changes — so you know which assumptions matter most.</p>
-    <p>Each matrix cell = ROI recomputed for a given (automation %, glass ceiling %) pair. Steeper gradients mean higher sensitivity: those assumptions deserve the most validation effort.</p>
+    <p>Each matrix cell = ROI recomputed for a given (automation %, glass ceiling %) pair. Steeper gradients mean higher sensitivity: those assumptions
+      deserve the most validation effort.</p>
   </>
 );
 const TONE = { CRITICAL: 'brick', HIGH: 'amber', MEDIUM: 'teal', LOW: 'grey' } as const;
@@ -20,8 +21,10 @@ export default function SensitivitySection() {
       result={<>
         <p className="ac-muted">Impact of key parameters on ROI and target headcount. Recomputed for your configuration.</p>
         <DataTable rowKey={(r) => r.parameter} rows={rows} columns={[
-          { key: 'p', header: 'Parameter', render: (r) => <strong>{r.parameter}</strong> }, { key: 'v', header: 'Value', align: 'center', render: (r) => r.value },
-          { key: 'f', header: `Impact FTE Y${end}`, align: 'center', render: (r) => r.impactFte }, { key: 'r', header: 'ROI impact', align: 'center', render: (r) => r.roiImpact },
+          { key: 'p', header: 'Parameter', render: (r) => <strong>{r.parameter}</strong> },
+          { key: 'v', header: 'Value', align: 'center', render: (r) => r.value },
+          { key: 'f', header: `Impact FTE Y${end}`, align: 'center', render: (r) => r.impactFte },
+          { key: 'r', header: 'ROI impact', align: 'center', render: (r) => r.roiImpact },
           { key: 's', header: 'Sensitivity', align: 'center', render: (r) => <Badge tone={TONE[r.level]}>{r.level}</Badge> },
         ]} />
         <Panel title="Automation × Glass ceiling matrix (ROI)">
@@ -29,7 +32,13 @@ export default function SensitivitySection() {
             <thead><tr><th>Automation %</th>{mx.ceils.map((x) => <th key={x}>Glass {x}%</th>)}</tr></thead>
             <tbody>{mx.cells.map((row, i) => (
               <tr key={mx.autos[i]}><td><strong>{mx.autos[i]}%</strong></td>
-                {row.map((cell, j) => <td key={mx.ceils[j]} style={{ background: cell.bgTone ? `var(--ac-${cell.bgTone})` : undefined, textAlign: 'center', color: cell.roi == null ? 'var(--ac-neutral-700)' : undefined }}>{cell.text}</td>)}</tr>))}
+                {row.map((cell, j) => (
+                  <td
+                    key={mx.ceils[j]}
+                    className={cell.roi == null ? 'ac-c ac-heat is-na' : 'ac-c ac-heat'}
+                    data-bg-tone={cell.bgTone ?? undefined}
+                  >{cell.text}</td>
+                ))}</tr>))}
             </tbody></table></div>
         </Panel>
       </>} />

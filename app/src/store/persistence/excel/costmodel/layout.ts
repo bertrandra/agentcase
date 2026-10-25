@@ -37,7 +37,10 @@ export function writeHeader(ws: XL.Worksheet, m: CostModel, meta: Meta, tab: str
   put(8, 'Not exported', m.excluded.length ? `${m.excluded.join(', ')} (archived or without a wave)` : 'None: every product of the scope is planned');
 }
 
-/** Header row, key/unit/t0/month/Total cells, formats, freeze panes, autofilter, widths and print setup. `fx` gives the Excel formula of a derived cell (c = column letter, n = month number, 0 for t0). */
+/**
+ * Header row, key/unit/t0/month/Total cells, formats, freeze panes, autofilter, widths and print setup. `fx` gives the Excel formula of a derived
+ * cell (c = column letter, n = month number, 0 for t0).
+ */
 export function writeTable(ws: XL.Worksheet, m: CostModel, t: CostTable, widths: number[], fx: (r: CostRow, c: string, n: number) => string | undefined): void {
   const last = lastMonthCol(m), total = last + 1, heads = [...t.keyHeads, 'Unit', 't0', ...m.monthLabels, 'Total'];
   heads.forEach((h, i) => {

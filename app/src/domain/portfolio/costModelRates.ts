@@ -23,7 +23,10 @@ function rateCard(pk: Picked): RateCardBlock {
     rows: LOCATIONS.map((l) => [l.name, l.cls, ...BANDS.map(([b]) => rateFor(s, l.name, b))]) };
 }
 
-/** TAB 2: the applied day rate of every AS-IS team line each month, the blending adjustment to the engine's single target rate, and the team-cost check per product. */
+/**
+ * TAB 2: the applied day rate of every AS-IS team line each month, the blending adjustment to the engine's single target rate, and the team-cost
+ * check per product.
+ */
 export function buildRates(pk: Picked, L: number, vals: ValuesIndex): RatesIndex {
   const out: CostRow[] = [], check = new Map<string, number>(), mix: RateCardBlock = { heads: ['Portfolio', 'Wave', 'Product', 'AS-IS day rate (TJM)', 'Target day rate (TJM)', 'Delta (target - AS-IS)', ...LOCATIONS.map((l) => `Target mix ${l.name} (%)`)], rows: [] };
   for (const v of pk.views) {

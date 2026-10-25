@@ -30,7 +30,8 @@ setProductNote(d, 'Not scheduled yet: excluded from the consolidation');
 setProductOffset(b, 2);                                    // Payments starts 2 months after the beginning of Wave 1
 setPortfolioHub({ enabled: true, infraMonthly: 3000, infraAllocation: 'byBaseEtp' });
 setProductKnowledge(a, { domains: [{ label: 'Documentation', weightPct: 50 }, { label: 'Code', weightPct: 50 }] });
-setProductKnowledge(b, { targetCC: 2, curationFTE: 1, setupBase: 90000, maturityAnswers: [1, 1, 2, 1, 2, 2, 1, 1, 2], domains: [{ label: 'Documentation', weightPct: 40 }, { label: 'Code', weightPct: 60 }] });
+setProductKnowledge(b, { targetCC: 2, curationFTE: 1, setupBase: 90000, maturityAnswers: [1, 1, 2, 1, 2, 2, 1, 1, 2],
+  domains: [{ label: 'Documentation', weightPct: 40 }, { label: 'Code', weightPct: 60 }] });
 setProductKnowledge(c, { ktLeadMonths: 3, targetCC: 4, domains: [{ label: 'Operating procedures', weightPct: 100 }] });
 setPortfolioRho(0.3);
 setActiveProduct(a);

@@ -9,7 +9,10 @@ import type { Doc, HistoryEntry, PortfolioDoc } from './types';
 
 const subscribe = (cb: () => void) => appStore().subscribe(cb);
 
-/** Read a slice of the document (re-renders only when the selected value changes by identity). The active product's case, or the one of the enclosing `ProductViewContext`. */
+/**
+ * Read a slice of the document (re-renders only when the selected value changes by identity). The active product's case, or the one of the enclosing
+ * `ProductViewContext`.
+ */
 export function useDoc<T>(select: (d: Doc) => T): T {
   const as = useViewProductId();   // inside a ProductViewContext: that product's resolved case instead of the active one (aggregate view)
   return useSyncExternalStore(subscribe, () => { const s = appStore().getState(); return select((as && productDocOf(s.portfolio, as)) || s.doc); });

@@ -2,7 +2,8 @@ import { beforeEach, describe, expect, it } from 'vitest';
 import { setProductOverride } from '@/controllers/productOverrides';
 import { setAllReadiness } from '@/controllers/tuneA';
 import {
-  aggEligibility, aggKnowledge, aggLifecycle, aggMaturity, aggMaturityMap, aggOpModel, aggProgram, aggReadiness, aggRisk, aggRunSizing, aggSetup, aggTokens, consolidate,
+  aggEligibility, aggKnowledge, aggLifecycle, aggMaturity, aggMaturityMap, aggOpModel, aggProgram, aggReadiness, aggRisk, aggRunSizing, aggSetup, aggTokens,
+  consolidate,
   corePortfolio, knowledgeTable, knowledgeTotals, resolveProduct, scheduledProducts, spreadOf, type Portfolio,
 } from '@/domain/portfolio';
 import { ctxOf } from '@/domain/portfolio/memo';
@@ -40,7 +41,8 @@ describe('spreadOf', () => {
 describe('selection: planned products only, in the order asked', () => {
   it('every aggregate returns one line per requested product, unknown ids ignored, and the Portfolio holds three planned products', () => {
     expect(all).toHaveLength(3);
-    const fns = [aggMaturityMap, aggReadiness, aggLifecycle, aggTokens, aggKnowledge, aggRunSizing, aggOpModel, aggSetup, aggEligibility, aggMaturity, aggProgram, aggRisk];
+    const fns = [aggMaturityMap, aggReadiness, aggLifecycle, aggTokens, aggKnowledge, aggRunSizing, aggOpModel, aggSetup, aggEligibility, aggMaturity,
+      aggProgram, aggRisk];
     for (const f of fns) {
       expect(f(pf, all).rows.map((r) => r.id), f.name).toEqual(all);
       expect(f(pf, wave1).rows.map((r) => r.id), f.name).toEqual(wave1);
@@ -110,7 +112,8 @@ describe('Portfolio and Wave: the lines are the domain figures of each product',
     setAllReadiness(50);
     const p2 = corePortfolio(pfNow()), a = aggReadiness(p2, all);
     expect(a.assessed).toBe(3);
-    a.rows.forEach((r) => near(r.index as number, readinessIndex((resolveProduct(p2, r.id) as unknown as { readinessAns: Record<string, (number | null)[]> }).readinessAns) as number));
+    a.rows.forEach((r) => near(r.index as number,
+      readinessIndex((resolveProduct(p2, r.id) as unknown as { readinessAns: Record<string, (number | null)[]> }).readinessAns) as number));
     near(a.index.avg, 50);
   });
 

@@ -15,7 +15,8 @@ export interface PfSimParams { draws: number; seed: number }
  * The last portfolio Monte Carlo and the progress of the one in flight (0..1, null when idle). Derived data, kept out of the undoable
  * document like `simStore`: the distribution is recomputed, never restored, and a run carries the fingerprint of what it was made on.
  */
-export const pfSimStore = createStore<{ run: PfStress | null; progress: number | null; params: PfSimParams | null }>(() => ({ run: null, progress: null, params: null }));
+export const pfSimStore = createStore<{ run: PfStress | null; progress: number | null;
+  params: PfSimParams | null }>(() => ({ run: null, progress: null, params: null }));
 
 export interface PortfolioSimulation { run: PfStress | null; stale: boolean; progress: number | null; rho: number }
 
@@ -29,7 +30,8 @@ export function usePortfolioSimulation(): PortfolioSimulation {
 }
 
 /** Where a display scope other than the active product points; null for the product scope. */
-export const groupOf = (s: ReturnType<typeof useDisplayScope>): VerdictGroup | null => (s.kind === 'portfolio' ? { kind: 'portfolio' } : s.kind === 'wave' ? { kind: 'wave', id: s.id } : null);
+export const groupOf = (s: ReturnType<typeof useDisplayScope>): VerdictGroup | null => (s.kind === 'portfolio' ? { kind: 'portfolio' } : s.kind === 'wave'
+  ? { kind: 'wave', id: s.id } : null);
 
 /** The verdict of a group of products from the last portfolio run, null without a run (or for a wave with no planned product). */
 export function usePortfolioDecision(group: VerdictGroup | null): Decision | null {
@@ -40,7 +42,8 @@ export function usePortfolioDecision(group: VerdictGroup | null): Decision | nul
 /** The verdict of every wave (the per-wave table of the dashboard). */
 export function useWaveDecisions(): { id: string; name: string; decision: Decision | null }[] {
   const core = useCorePortfolio(), { run } = usePortfolioSimulation();
-  return useMemo(() => core.waves.filter((w) => run?.waves.some((x) => x.id === w.id)).map((w) => ({ id: w.id, name: w.name, decision: run ? pfDecision(core, run, { kind: 'wave', id: w.id }) : null })), [core, run]);
+  return useMemo(() => core.waves.filter((w) => run?.waves.some((x) => x.id === w.id)).map((w) => ({ id: w.id, name: w.name,
+    decision: run ? pfDecision(core, run, { kind: 'wave', id: w.id }) : null })), [core, run]);
 }
 
 /** Draws and seed shown for the next run: those the user set here, else those of the active product's Monte Carlo inputs. */
@@ -49,7 +52,10 @@ export function usePfSimParams(): PfSimParams {
   return useMemo(() => set ?? { draws: mcDrawsOf(c), seed: mcSeedOf(c) }, [set, c]);
 }
 
-/** The group the Decision section speaks for: the portfolio or a wave when the display scope says so and there are two products or more; null = the active product. */
+/**
+ * The group the Decision section speaks for: the portfolio or a wave when the display scope says so and there are two products or more; null = the
+ * active product.
+ */
 export function useVerdictGroup(): VerdictGroup | null {
   const scope = useDisplayScope(), multi = useIsMulti(), key = `${scope.kind}:${scope.kind === 'wave' ? scope.id : ''}`;
   return useMemo(() => (multi ? groupOf(scope) : null), [multi, key]);   // eslint-disable-line react-hooks/exhaustive-deps

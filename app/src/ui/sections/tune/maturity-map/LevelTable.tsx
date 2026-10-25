@@ -3,11 +3,12 @@ import { resetMaturityMap, setMaturityBound, setMaturityLabel } from '@/controll
 import { useDoc } from '@/store/hooks';
 import { useMemo } from 'react';
 
-const COLORS = ['var(--ac-slate-700)', 'var(--ac-info-700)', 'var(--ac-teal-700)', 'var(--ac-primary-700)'];
+const TONES = ['slate-700', 'info-700', 'teal-700', 'primary-700'];
 
 function BoundInput({ kind, idx, value }: { kind: 'ramp' | 'share'; idx: number; value: number }) {
   return (
-    <input type="number" min={0} max={100} step={5} style={{ width: 70 }} value={value} aria-label={`${kind === 'ramp' ? 'Adoption' : 'Agent vFTE share'} threshold of L${idx + 1}`}
+    <input type="number" min={0} max={100} step={5} className="ac-mm-bound" value={value}
+      aria-label={`${kind === 'ramp' ? 'Adoption' : 'Agent vFTE share'} threshold of L${idx + 1}`}
       onChange={(e) => setMaturityBound(kind, idx, e.target.value)} />
   );
 }
@@ -25,10 +26,15 @@ export function LevelTable() {
           <tbody>
             {[0, 1, 2, 3].map((i) => (
               <tr key={i}>
-                <td><strong style={{ color: COLORS[i] }}>L{i + 1}</strong></td>
-                <td><input type="text" style={{ width: 230 }} aria-label={`Label of L${i + 1}`} value={mm.labels[i] ?? ''} onChange={(e) => setMaturityLabel(i, e.target.value)} /></td>
-                <td className="ac-c">{i === 0 ? <span className="ac-muted">0 · start</span> : <BoundInput kind="ramp" idx={i} value={mm.rampBounds[i] as number} />}</td>
-                <td className="ac-c">{i === 0 ? <span className="ac-muted">0</span> : <BoundInput kind="share" idx={i} value={mm.shareBounds[i] as number} />}</td>
+                <td><strong className="ac-tone" data-tone={TONES[i]}>L{i + 1}</strong></td>
+                <td><input type="text" className="ac-mm-label" aria-label={`Label of L${i + 1}`} value={mm.labels[i] ?? ''}
+                  onChange={(e) => setMaturityLabel(i, e.target.value)} /></td>
+                <td className="ac-c">
+                  {i === 0 ? <span className="ac-muted">0 · start</span> : <BoundInput kind="ramp" idx={i} value={mm.rampBounds[i] as number} />}
+                </td>
+                <td className="ac-c">
+                  {i === 0 ? <span className="ac-muted">0</span> : <BoundInput kind="share" idx={i} value={mm.shareBounds[i] as number} />}
+                </td>
                 <td className="ac-c ac-muted">{ranges[i]}</td>
               </tr>
             ))}

@@ -27,7 +27,8 @@ export default function KnowledgeAggregate() {
     { id: 'acc', name: 'AS-IS CC', s: a.asis, f: (v) => `CC${v.toFixed(1)}` },
   ];
   return (
-    <InputAggregate title="🧠 Knowledge hub — living memory" intro="the hub is shared by the portfolio and each product holds its own subset (activation, answers, target, curation, setup base, domains, KT lead).">
+    <InputAggregate title="🧠 Knowledge hub — living memory"
+      intro="the hub is shared by the portfolio and each product holds its own subset (activation, answers, target, curation, setup base, domains, KT lead).">
       <AggregateTable caption={`Knowledge hub subset by product — ${vs.label}`} rows={a.rows} columns={COLS}
         totals={{ label: `Total — ${vs.label}`, cells: { setup: fmtEurK(t.setup), annual: fmtEurK(t.annual) } }} />
       <p className="ac-muted">{a.users} of {a.rows.length} product(s) run the hub. Effects and the per-wave table are in Knowledge transfer.</p>

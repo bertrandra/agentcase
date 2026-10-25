@@ -5,7 +5,10 @@ export type CostScope = { kind: 'portfolio' } | { kind: 'wave'; id: string } | {
 /** How a row is displayed (number format) and what it measures. */
 export type CostFmt = 'days' | 'pct' | 'eur' | 'rate' | 'fte' | 'factor';
 
-/** How a derived cell is recomputed by Excel. Row numbers are indexes into the rows of the table named (`Values`, `Rate cards`, `Other costs`) or of the same table. */
+/**
+ * How a derived cell is recomputed by Excel. Row numbers are indexes into the rows of the table named (`Values`, `Rate cards`, `Other costs`) or of
+ * the same table.
+ */
 export type CostFormula =
   | { k: 'sum'; rows: number[] }
   | { k: 'diff'; a: number; b: number }

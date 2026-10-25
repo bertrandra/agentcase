@@ -4,7 +4,10 @@ import { describe, expect, it } from 'vitest';
 import { buildSnapshotHtml } from '@/store/persistence/html/embed';
 import { REPORT_CSP, REPORT_POLICY } from '@/store/persistence/report/render';
 
-/** The policy of the single HTML file (docs/ARCHITECTURE.md §9): nothing is loaded from the network. The browser gate is tools/e2e-smoke.mjs + e2e-flows.mjs. */
+/**
+ * The policy of the single HTML file (docs/ARCHITECTURE.md §9): nothing is loaded from the network. The browser gate is tools/e2e-smoke.mjs +
+ * e2e-flows.mjs.
+ */
 const html = readFileSync('index.html', 'utf8');
 const directives = (policy: string) => Object.fromEntries(policy.split(';').map((d) => d.trim().split(/\s+/)).map(([k, ...v]) => [k!, v.join(' ')]));
 const policyOf = (page: string) => /<meta http-equiv="Content-Security-Policy" content="([^"]*)"/.exec(page)?.[1] ?? '';

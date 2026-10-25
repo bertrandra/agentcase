@@ -26,7 +26,8 @@ export interface VSel {
 /** The planned products of a Portfolio / Wave selection; null for an unknown wave. Everything is read from `consolidate`. */
 export function selectionOf(pf: Portfolio, scope: VScope): VSel | null {
   const c = consolidate(pf), cal = calendarOf(pf), waveName = (id: string) => pf.waves.find((w) => w.id === id)?.name ?? '';
-  const left = (ids: string[]) => ids.map((id) => pf.products.find((p) => p.id === id)).flatMap((p) => (p ? [{ id: p.id, name: p.name, archived: !!p.archived }] : []));
+  const left = (ids: string[]) => ids.map((id) => pf.products.find((p) => p.id === id)).flatMap((p) => (p ? [{ id: p.id, name: p.name,
+    archived: !!p.archived }] : []));
   if (scope.kind === 'portfolio') return { c, scope, label: 'Portfolio', items: c.products, series: c.series, cal, waveName, excluded: left(c.excluded) };
   const w = c.waves.find((x) => x.id === scope.id), wave = pf.waves.find((x) => x.id === scope.id);
   if (!w || !wave) return null;

@@ -4,6 +4,7 @@ import { Field } from './field/Field';
 import { FieldChoice } from './field/FieldChoice';
 import { FieldNumber } from './field/FieldNumber';
 import { FieldToggle } from './field/FieldToggle';
+import { PlainNumber } from './field/PlainNumber';
 import { FieldKeepers } from './KeepersNotice';
 
 /**
@@ -16,17 +17,30 @@ export { Field };
 export function NumberInput({ id, label, hint, min, max, step }: { id: string; label: string; hint?: string; min?: number; max?: number; step?: number }) {
   const value = useDoc((d) => d.dom.values[id] ?? '');
   return (
-    <><FieldNumber native="number" label={label} hint={hint} value={value} min={min} max={max} step={step} onCommit={(v) => setInput(id, v)}>
-      <Field label={label} hint={hint}><input type="number" value={value} min={min} max={max} step={step} onChange={(e) => setInput(id, e.target.value)} /></Field>
-    </FieldNumber><FieldKeepers kind="values" id={id} label={label} /></>
+    <>
+      <PlainNumber label={label} hint={hint} value={value} min={min} max={max} step={step} onCommit={(v) => setInput(id, v)} />
+      <FieldKeepers kind="values" id={id} label={label} />
+    </>
   );
 }
 
-export function RangeInput({ id, label, hint, min = 0, max = 100, step = 1, unit = '%' }: { id: string; label: string; hint?: string; min?: number; max?: number; step?: number; unit?: string }) {
+export function RangeInput({ id, label, hint, min = 0, max = 100, step = 1, unit = '%' }: { id: string; label: string; hint?: string; min?: number;
+  max?: number; step?: number; unit?: string }) {
   const value = useDoc((d) => d.dom.values[id] ?? '');
   const locked = useDoc((d) => id === 'autoPotential' && !!d.dom.checked.fitAuto);
   return (
-    <><FieldNumber native="slider" label={label} hint={hint} value={value} min={min} max={max} step={step} unit={unit} disabled={locked} onCommit={(v) => setInput(id, v)}>
+    <><FieldNumber
+      native="slider"
+      label={label}
+      hint={hint}
+      value={value}
+      min={min}
+      max={max}
+      step={step}
+      unit={unit}
+      disabled={locked}
+      onCommit={(v) => setInput(id, v)}
+    >
       <Field label={`${label}: ${value}${unit}`} hint={hint}>
         <input type="range" value={value} min={min} max={max} step={step} disabled={locked} onChange={(e) => setInput(id, e.target.value)} />
       </Field>
@@ -39,7 +53,10 @@ export function SelectInput({ id, label, options, hint }: { id: string; label: s
   return (
     <><FieldChoice label={label} hint={hint} value={value} options={options} onChange={(v) => setInput(id, v)}>
       <Field label={label} hint={hint}>
-        <select value={value} onChange={(e) => setInput(id, e.target.value)}>{options.map((o) => <option key={o.value} value={o.value}>{o.label}</option>)}</select>
+        <select
+          value={value}
+          onChange={(e) => setInput(id, e.target.value)}
+        >{options.map((o) => <option key={o.value} value={o.value}>{o.label}</option>)}</select>
       </Field>
     </FieldChoice><FieldKeepers kind="values" id={id} label={label} /></>
   );
@@ -49,7 +66,11 @@ export function CheckInput({ id, label, hint }: { id: string; label: string; hin
   const on = useDoc((d) => !!d.dom.checked[id]);
   return (
     <><FieldToggle label={label} hint={hint} checked={on} onChange={(v) => setChecked(id, v)}>
-      <label className="ac-check"><input type="checkbox" checked={on} onChange={(e) => setChecked(id, e.target.checked)} /> {label}{hint && <span className="ac-field-h"> — {hint}</span>}</label>
+      <label className="ac-check"><input
+        type="checkbox"
+        checked={on}
+        onChange={(e) => setChecked(id, e.target.checked)}
+      /> {label}{hint && <span className="ac-field-h"> — {hint}</span>}</label>
     </FieldToggle><FieldKeepers kind="checked" id={id} label={label} /></>
   );
 }

@@ -55,12 +55,14 @@ export function funnelStage(b: AutoBase, month: number | null): FunnelStage {
   const { m, eng, N } = b, t = Math.max(1, Math.min(N, month || N)), row = eng.monthAt(t), baseEtp = m.base.etp || 1;
   const v1 = clamp(m.auto, 0, 100);
   return { t, N, v0: 100, v1, v2: v1 * (1 - clamp(m.ceiling, 0, 100) / 100), v3: Math.max(0, Math.min(v1, row.effectiveAutomationPct)),
-    v4: Math.max(0, ((row.agentVfteRaw || 0) / baseEtp) * 100), v5: Math.max(0, row.realizedAutomationPct || 0), ramp: row.adoptionRampPct || 0, yearIdx: row.yearIndex };
+    v4: Math.max(0, ((row.agentVfteRaw || 0) / baseEtp) * 100), v5: Math.max(0, row.realizedAutomationPct || 0), ramp: row.adoptionRampPct || 0,
+      yearIdx: row.yearIndex };
 }
 
 export const FUNNEL_EPS = 0.05;
 /** Which stages get a band: those that cost something at month 1, mid-horizon or at the end (decided once, never per frame). */
 export function activeStages(b: AutoBase) {
-  const probe = [1, Math.ceil(b.N / 2), b.N].map((t) => funnelStage(b, t)), bites = (pick: (s: FunnelStage) => number) => probe.some((s) => pick(s) > FUNNEL_EPS);
+  const probe = [1, Math.ceil(b.N / 2), b.N].map((t) => funnelStage(b, t)),
+    bites = (pick: (s: FunnelStage) => number) => probe.some((s) => pick(s) > FUNNEL_EPS);
   return { ceiling: bites((s) => s.v1 - s.v2), mix: bites((s) => s.v2 - s.v3), ramp: bites((s) => s.v3 - s.v4), sup: bites((s) => s.v4 - s.v5) };
 }

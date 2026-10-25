@@ -55,7 +55,7 @@ describe('display and theme changes keep the open section mounted', () => {
     fireEvent.click(tab);
     const main = screen.getByRole('main');
     main.scrollTop = 240;
-    const cell = main.querySelector('tbody td')!, colour = (cell as HTMLElement).style.color;
+    const cell = main.querySelector('tbody td')!, ink = () => (cell as HTMLElement).style.getPropertyValue('--dyn-gloss-ink'), colour = ink();
     expect(mounts).toBe(1);
     const steps: [string, () => void][] = [
       ['dark', () => setDisplayPrefs({ mode: 'dark' })], ['high contrast', () => setDisplayPrefs({ contrast: 'high' })],
@@ -72,7 +72,7 @@ describe('display and theme changes keep the open section mounted', () => {
       expect(main.querySelector('tbody td'), what).toBe(cell);   // the same DOM node: re-rendered, not re-created
     }
     act(() => setDisplayPrefs({ mode: 'dark' }));
-    expect((cell as HTMLElement).style.color).not.toBe(colour);   // the data-colour text was recomputed for the dark surface, in place
+    expect(ink()).not.toBe(colour);   // the data-colour text was recomputed for the dark surface, in place
   });
 });
 

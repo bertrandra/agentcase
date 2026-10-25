@@ -8,6 +8,7 @@ import { Field } from '@/ui/widgets/fields';
 import { useTheme } from '@/ui/themeContext';
 import type { Tok } from '@/domain/theme/resolve';
 import type { TokenName } from '@/domain/theme';
+import { cssVars } from '@/ui/cssVars';
 
 const WLBL: Record<MetricKey, string> = { roi: 'ROI', tco: 'TCO', payback: 'Payback', aiCoverage: 'AI Coverage', humanSup: 'Human Supervision', risk: 'Op. Risk', agility: 'Agility' };
 const MEDAL = ['🥇', '🥈', '🥉'];
@@ -31,7 +32,15 @@ export function Ranking({ N, W }: { N: Ranked[]; W: Weights }) {
       <div className="ac-form-row">
         {(Object.keys(W) as MetricKey[]).map((key) => (
           <Field key={key} label={WLBL[key]}>
-            <input type="number" min={0} max={100} step={5} value={W[key]} onChange={(e) => setStratWeight(key, e.target.value)} style={{ width: 60, borderColor: W[key] !== STRAT_WEIGHTS_DEFAULT[key] ? 'var(--ac-amber)' : undefined }} />
+            <input
+              type="number"
+              min={0}
+              max={100}
+              step={5}
+              value={W[key]}
+              onChange={(e) => setStratWeight(key, e.target.value)}
+              className={W[key] !== STRAT_WEIGHTS_DEFAULT[key] ? 'ac-weight-input is-edited' : 'ac-weight-input'}
+            />
           </Field>
         ))}
         <button type="button" onClick={resetStratWeights}>↺ Reset weights</button>
@@ -39,15 +48,19 @@ export function Ranking({ N, W }: { N: Ranked[]; W: Weights }) {
       <div className="ac-table-wrap" tabIndex={0}><table className="ac-table">
         <thead><tr><th>#</th><th>Strategy</th><th>Composite score (0-100, weighted normalised)</th><th>Score</th><th>Radar</th><th>Apply</th></tr></thead>
         <tbody>{N.map((o, i) => (
-          <tr key={o.id} style={i === 0 ? { background: 'var(--ac-success-50)', fontWeight: 'var(--ac-font-weight-bold)' } : undefined}>
+          <tr key={o.id} className={i === 0 ? 'is-best' : undefined}>
             <td>{MEDAL[i] ?? i + 1}</td><td>{o.icon} {o.label}</td>
-            <td><span className="ac-bar" style={{ display: 'block', minWidth: 120 }}><span style={{ width: `${isNaN(o.score) ? 0 : o.score}%`, background: i === 0 ? 'var(--ac-teal)' : 'var(--ac-info-700)' }} /></span></td>
-            <td className="ac-c" style={{ fontWeight: 'var(--ac-font-weight-bold)' }}>{isNaN(o.score) ? 'n/a' : o.score}</td>
+            <td>
+              <span className="ac-bar ac-score-bar">
+                <span className={i === 0 ? 'is-top' : undefined} style={cssVars({ '--dyn-bar-pct': `${isNaN(o.score) ? 0 : o.score}%` })} />{/* dynamic: the score */}
+              </span>
+            </td>
+            <td className="ac-c ac-score">{isNaN(o.score) ? 'n/a' : o.score}</td>
             <td className="ac-c"><input type="checkbox" aria-label={`Show ${o.label} on the radar`} checked={sel.includes(o.id)} onChange={(e) => setPicked(e.target.checked ? [...sel, o.id] : sel.filter((x) => x !== o.id))} /></td>
             <td className="ac-c"><button type="button" onClick={() => apply(o.id)} title="Push these levers into the live simulation">→ Apply</button></td>
           </tr>))}</tbody>
       </table></div>
-      <div style={{ maxWidth: 560, margin: '12px auto' }}><ChartPanel config={cfg} label="Normalised strategy profiles" height={300} /></div>
+      <div className="ac-radar"><ChartPanel config={cfg} label="Normalised strategy profiles" height={300} /></div>
       <p className="ac-muted">Scores are min-max normalised across the 7 strategies per metric (direction-aware), then weighted. <strong>→ Apply</strong> pushes the strategy levers into the live simulation — the Monte Carlo
         and the verdict re-run on it automatically. Weights are consulting benchmarks; adjust to the client’s priorities.</p>
     </>

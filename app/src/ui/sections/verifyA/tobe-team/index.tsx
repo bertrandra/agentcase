@@ -8,8 +8,10 @@ import { SkillMap } from './SkillMap';
 
 const help = (
   <>
-    <p>Derives the target team from the artefact allocation: each artefact's effective effort (base × lifecycle) is split into a residual human FTE and an agent vFTE using its automatable share, then aggregated by skill.</p>
-    <p>The split honours the model's automation depth and ramp; the totals reconcile to the aggregate model (see the reconciliation line). The skill map and the location split are the two editable inputs.</p>
+    <p>Derives the target team from the artefact allocation: each artefact's effective effort (base × lifecycle) is split into a residual human FTE and an
+      agent vFTE using its automatable share, then aggregated by skill.</p>
+    <p>The split honours the model's automation depth and ramp; the totals reconcile to the aggregate model (see the reconciliation line). The skill map and
+      the location split are the two editable inputs.</p>
   </>
 );
 

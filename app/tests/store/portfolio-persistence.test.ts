@@ -50,7 +50,8 @@ describe('portfolio files', () => {
     const after = pf();
     expect(after.activeProductId).toBe(t.ids[2]);
     expect(after.editScope).toBeUndefined();   // view state, never saved
-    expect(after.products.map((p) => [p.id, p.name, p.overrides, p.knowledge, p.waveId])).toEqual(before.products.map((p) => [p.id, p.name, p.overrides, p.knowledge, p.waveId]));
+    expect(after.products.map((p) => [p.id, p.name, p.overrides, p.knowledge, p.waveId])).toEqual(before.products.map((p) => [p.id, p.name, p.overrides,
+      p.knowledge, p.waveId]));
     expect(after.waves).toEqual(before.waves);
     expect(after.hub).toEqual(before.hub);
     expect(after.common.dom).toEqual(before.common.dom);
@@ -58,7 +59,8 @@ describe('portfolio files', () => {
     expect(getCalcBanner()).toBeNull();   // packages at both levels are valid
   });
   it('the file stamps one package per product and one for the portfolio', () => {
-    const t = threeProducts(), raw = JSON.parse(exportSnapshotJson().json) as { calculationPackages: Record<string, unknown>; calculationPackage: { inputHash: string } };
+    const t = threeProducts(), raw = JSON.parse(exportSnapshotJson().json) as { calculationPackages: Record<string, unknown>;
+      calculationPackage: { inputHash: string } };
     expect(Object.keys(raw.calculationPackages).sort()).toEqual([...t.ids].sort());
     expect(raw.calculationPackage.inputHash).toMatch(/^pf1:/);
   });
@@ -93,7 +95,9 @@ describe('portfolio files', () => {
     setEditScope('product'); setActiveProduct(t.ids[1]); togglePhase('V1', false); togglePhase('V2', false); togglePhase('V3', false);
     setEditScope('all'); setActiveProduct(t.ids[0]);
     const { json } = exportSnapshotJson(), raw = JSON.parse(json);
-    raw.common.dom.values.autoPotential = '1'; raw.products.forEach((p: { overrides: { dom?: { values?: Record<string, string> } } }) => { if (p.overrides.dom?.values) delete p.overrides.dom.values.autoPotential; });
+    raw.common.dom.values.autoPotential = '1'; raw.products.forEach((p: { overrides: { dom?: { values?: Record<string, string> } } }) => {
+      if (p.overrides.dom?.values) delete p.overrides.dom.values.autoPotential;
+    });
     freshStore(); openCaseText(JSON.stringify(raw));
     const fit = (id: string) => fitTarget(resolveProduct(pf(), id) as never);
     expect(fit(t.ids[1])).not.toBe(fit(t.ids[0]));

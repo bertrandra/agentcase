@@ -8,14 +8,17 @@ import { YearTable } from './YearTable';
 
 const help = (
   <>
-    <p>The portfolio trajectory is <strong>exactly the sum of the products&apos; own trajectories</strong>, each shifted to its start (wave start + offset) and cut at the portfolio horizon; nothing is recomputed here.
-      Products without a wave (or archived) are left out. Payback is the first calendar month the consolidated cumulative cash is positive; the NPV discounts each calendar month from month 1.</p>
-    <p>The by-wave and by-product lines add up to the total line, which is the portfolio headline. Change the start of a wave or move a product in the 🌊 Waves section: every figure follows.</p>
+    <p>The portfolio trajectory is <strong>exactly the sum of the products&apos; own trajectories</strong>, each shifted to its start (wave start + offset)
+      and cut at the portfolio horizon; nothing is recomputed here. Products without a wave (or archived) are left out. Payback is the first calendar month
+      the consolidated cumulative cash is positive; the NPV discounts each calendar month from month 1.</p>
+    <p>The by-wave and by-product lines add up to the total line, which is the portfolio headline. Change the start of a wave or move a product in
+      the 🌊 Waves section: every figure follows.</p>
   </>
 );
 
 const LABEL: Record<string, string> = {
-  unscheduled: 'Unscheduled product', truncated: 'Cut at the horizon', 'kt-lead-clamped': 'Preparation capped at month 1', 'target-capped': 'Target capped', 'hub-unused': 'Hub unused',
+  unscheduled: 'Unscheduled product', truncated: 'Cut at the horizon', 'kt-lead-clamped': 'Preparation capped at month 1', 'target-capped': 'Target capped',
+  'hub-unused': 'Hub unused',
 };
 
 /** Consolidation — the portfolio trajectory (F15, F16): cards, cumulative cash by month, by wave, by product, by year, diagnostics. */
@@ -30,17 +33,22 @@ export default function ConsolidationSection() {
           <Panel title="By wave"><SummaryTable caption="Consolidation by wave" first="Wave" rows={v.waves} totals={v.totals} withCount /></Panel>
           <Panel title="By product"><SummaryTable caption="Consolidation by product" first="Product" rows={v.products} totals={v.totals} /></Panel>
           <YearTable caption="Portfolio flows by calendar year" years={v.years} />
-          <Callout>A product’s NPV is calendar-based here (discounted from month 1 of the portfolio); its NPV from its own start is in the Products section.</Callout>
+          <Callout>A product’s NPV is calendar-based here (discounted from month 1 of the portfolio); its NPV from its own start is in the Products
+            section.</Callout>
         </>
       }
       diagnostic={
         <Panel title="Diagnostics">
           {v.diagnostics.length === 0 ? <p className="ac-muted">No diagnostic: every product is scheduled and fits within the horizon.</p> : (
             <ul aria-label="Consolidation diagnostics">
-              {v.diagnostics.map((d, i) => <li key={`${d.code}-${d.productId ?? ''}-${i}`} data-code={d.code}><strong>{LABEL[d.code] ?? d.code}</strong> — {d.message}</li>)}
+              {v.diagnostics.map((d, i) => <li
+                key={`${d.code}-${d.productId ?? ''}-${i}`}
+                data-code={d.code}
+              ><strong>{LABEL[d.code] ?? d.code}</strong> — {d.message}</li>)}
             </ul>
           )}
-          {v.excluded.length > 0 && <p className="ac-muted">Excluded from the consolidation: {v.excluded.map((e) => `${e.name}${e.archived ? ' (archived)' : ''}`).join(', ')}.</p>}
+          {v.excluded.length > 0
+            && <p className="ac-muted">Excluded from the consolidation: {v.excluded.map((e) => `${e.name}${e.archived ? ' (archived)' : ''}`).join(', ')}.</p>}
         </Panel>
       } />
   );

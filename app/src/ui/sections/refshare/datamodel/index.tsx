@@ -30,7 +30,8 @@ export default function DataModelSection() {
           describes the legacy registries they replace.</Callout>
       </>}
       result={<>
-        <p><b>{counts.sections}</b> sections · <b>{counts.state}</b> persisted state keys · <b>{counts.variables}</b> bindable variables · <b>{counts.coefs}</b> coefficients · <b>{counts.namespaces}</b> model namespaces</p>
+        <p><b>{counts.sections}</b> sections · <b>{counts.state}</b> persisted state keys · <b>{counts.variables}</b> bindable variables
+          · <b>{counts.coefs}</b> coefficients · <b>{counts.namespaces}</b> model namespaces</p>
         <Tabs key={tab} tabs={tabs} label="Data model tables" initial={tab} />
       </>} />
   );

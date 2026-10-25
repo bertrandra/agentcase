@@ -11,9 +11,9 @@ export function Controls() {
   return (
     <div className="ac-form-row">
       <label className="ac-field"><span className="ac-field-l">Draws per product</span>
-        <CommitNumber label="Draws per product" value={String(draws)} min={100} max={5000} step={100} onCommit={(v) => setPortfolioSimParams({ draws: parseFloat(v) })} style={{ width: 90 }} /></label>
+        <CommitNumber label="Draws per product" value={String(draws)} min={100} max={5000} step={100} onCommit={(v) => setPortfolioSimParams({ draws: parseFloat(v) })} className="ac-pfs-input" /></label>
       <label className="ac-field"><span className="ac-field-l">Seed</span>
-        <CommitNumber label="Seed" value={String(seed)} min={1} step={1} onCommit={(v) => setPortfolioSimParams({ seed: parseFloat(v) })} style={{ width: 90 }} /></label>
+        <CommitNumber label="Seed" value={String(seed)} min={1} step={1} onCommit={(v) => setPortfolioSimParams({ seed: parseFloat(v) })} className="ac-pfs-input" /></label>
       <label className="ac-field"><span className="ac-field-l">Correlation between products ρ: <strong>{fmtRho(rho)}</strong></span>
         <input type="range" min={0} max={1} step={0.05} value={rho} aria-describedby="pfs-rho-help" aria-valuetext={`ρ = ${fmtRho(rho)}`}
           onChange={(e) => setPortfolioRho(parseFloat(e.target.value))} />

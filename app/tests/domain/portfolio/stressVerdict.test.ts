@@ -15,8 +15,10 @@ describe('portfolio verdict = the single-case rule on the portfolio outcome', ()
   it('a lone product gets exactly decide()', () => {
     for (const id of ['horizon-5', 'ctx-msi', 'di-risk-on']) {
       const c = loadCase(id), ctx = makeCtx(c), seed = mcSeedOf(ctx), pf = envelopeCase(c);
-      const legacy = decide(ctx, runMonteCarlo(ctx, 200, seed)), d = pfDecision(pf, portfolioMonteCarlo(pf, { draws: 200, seed, rho: 0 }), { kind: 'portfolio' })!;
-      expect([d.verdict, d.confidence, d.p10Floor, d.premium, d.setup]).toEqual([legacy.verdict, legacy.confidence, legacy.p10Floor, legacy.premium, legacy.setup]);
+      const legacy = decide(ctx, runMonteCarlo(ctx, 200, seed)),
+        d = pfDecision(pf, portfolioMonteCarlo(pf, { draws: 200, seed, rho: 0 }), { kind: 'portfolio' })!;
+      expect([d.verdict, d.confidence, d.p10Floor, d.premium, d.setup]).toEqual([legacy.verdict, legacy.confidence, legacy.p10Floor, legacy.premium,
+        legacy.setup]);
     }
   });
   const floor = pfDecision(pf2, real, { kind: 'portfolio' })!.p10Floor;
@@ -38,7 +40,8 @@ describe('portfolio verdict = the single-case rule on the portfolio outcome', ()
     expect(verdictOf({ pNetNeg: 0.25, p10: floor + 1 })).not.toBe('strong');
   });
   it('setup is the sum of the products, the premium is weighted by entry headcount', () => {
-    const d = pfDecision(pf2, real, { kind: 'portfolio' })!, one = pfDecision(envelopeCase(base), portfolioMonteCarlo(envelopeCase(base), { draws: 100, seed: 42, rho: 0 }), { kind: 'portfolio' })!;
+    const d = pfDecision(pf2, real, { kind: 'portfolio' })!,
+      one = pfDecision(envelopeCase(base), portfolioMonteCarlo(envelopeCase(base), { draws: 100, seed: 42, rho: 0 }), { kind: 'portfolio' })!;
     expect(d.setup).toBeCloseTo(2 * one.setup, 6);
     expect(d.premium).toBeCloseTo(one.premium, 9);
     expect(d.ctx.map((x) => x.k)).toEqual(expect.arrayContaining(['Scope', 'Correlation between products (rho)', 'Risk bar premium']));

@@ -15,7 +15,10 @@ describe('multi-product budgets (spec 8): best of several runs, so a loaded mach
   it('consolidating 20 products x 60 months takes < 30 ms (product runs warm)', () => {
     consolidate(pf);
     let k = 0;
-    const ms = best(8, () => { k++; consolidate({ ...pf, waves: pf.waves.map((w) => ({ ...w, startMonth: w.startMonth + (k % 2) })), horizonMonths: 60 + k }); });
+    const ms = best(8, () => {
+      k++;
+      consolidate({ ...pf, waves: pf.waves.map((w) => ({ ...w, startMonth: w.startMonth + (k % 2) })), horizonMonths: 60 + k });
+    });
     expect(ms).toBeLessThan(30);
   });
 

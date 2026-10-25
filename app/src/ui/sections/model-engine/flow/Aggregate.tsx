@@ -15,7 +15,10 @@ const COLS: AggColumn<FlowRow>[] = [
   { key: 'npv', header: 'Time-to-market value (NPV)', align: R, title: 'Hidden until the sponsor gives a margin per month', render: (r) => (r.flowNpv === null ? 'no margin given' : fmtEurK(r.flowNpv)) },
 ];
 
-/** Flow & value (P5) — Aggregate view: cycle time, compression, WIP and time-to-market value of each product in view; WIP and value add up, cycle times do not. */
+/**
+ * Flow & value (P5) — Aggregate view: cycle time, compression, WIP and time-to-market value of each product in view; WIP and value add up, cycle
+ * times do not.
+ */
 export default function FlowAggregate() {
   const { rows, on, wip, flowNpv, valued } = useFlowRows();
   return (

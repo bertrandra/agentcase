@@ -1,5 +1,6 @@
 import { useEffect, useId, useState } from 'react';
 import { errorDetails, type CaughtError } from './errorLog';
+import { cssVars, px } from '../cssVars';
 import '../theme/errors.css';
 
 /** "Copy details": the error text to the clipboard; where the clipboard is blocked, the details stay readable (and selectable) below. */
@@ -49,5 +50,9 @@ export function SectionFallback({ error, retry }: { error: CaughtError; retry: (
 
 /** One chart failed: its place keeps its height, the figures and tables of the section are unaffected. */
 export function ChartFallback({ label, height }: { label: string; height: number }) {
-  return <div className="ac-chart ac-error-chart" style={{ height }} role="note">The chart “{label}” could not be drawn. The figures around it are unaffected.</div>;
+  return (
+    <div className="ac-chart ac-error-chart" style={cssVars({ '--dyn-chart-h': px(height) })} role="note">{/* dynamic: the failed chart's own height */}
+      The chart “{label}” could not be drawn. The figures around it are unaffected.
+    </div>
+  );
 }

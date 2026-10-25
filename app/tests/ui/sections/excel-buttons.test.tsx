@@ -12,7 +12,9 @@ let saved: Blob[] = [];
 beforeEach(() => {
   saved = [];
   // jsdom's Blob has no arrayBuffer() (every browser does)
-  Blob.prototype.arrayBuffer = function (this: Blob) { return new Promise<ArrayBuffer>((res) => { const r = new FileReader(); r.onload = () => res(r.result as ArrayBuffer); r.readAsArrayBuffer(this); }); };
+  Blob.prototype.arrayBuffer = function (this: Blob) {
+    return new Promise<ArrayBuffer>((res) => { const r = new FileReader(); r.onload = () => res(r.result as ArrayBuffer); r.readAsArrayBuffer(this); });
+  };
   URL.createObjectURL = (b: Blob | MediaSource) => { saved.push(b as Blob); return 'blob:test'; };
   URL.revokeObjectURL = () => {};
   vi.spyOn(HTMLAnchorElement.prototype, 'click').mockImplementation(() => {});

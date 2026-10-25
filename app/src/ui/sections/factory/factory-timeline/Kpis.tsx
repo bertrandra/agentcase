@@ -15,8 +15,8 @@ export function Kpis() {
               const c = kpiCard(k, data, params);
               return (
                 <div key={k.id} className="ac-stat" data-tone={c.thin ? 'grey' : 'blue'} data-kpi={k.id}>
-                  <span className="ac-stat-v" style={c.thin ? { color: 'var(--ac-muted)' } : undefined}>{c.display}</span>
-                  <span className="ac-stat-l">{c.label}{c.thin && <span style={{ display: 'block', color: 'var(--ac-amber)' }} title="A rate over this few events is quantised, not measured">insufficient sample (n={c.n})</span>}</span>
+                  <span className={c.thin ? 'ac-stat-v is-thin' : 'ac-stat-v'}>{c.display}</span>
+                  <span className="ac-stat-l">{c.label}{c.thin && <span className="ac-kpi-thin" title="A rate over this few events is quantised, not measured">insufficient sample (n={c.n})</span>}</span>
                 </div>
               );
             })}

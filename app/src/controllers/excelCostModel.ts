@@ -9,7 +9,8 @@ import { exportTheme } from './exportTheme';
 
 /**
  * The "Cost model (monthly)" workbook of the current portfolio for a scope (Portfolio, one wave or one product): Values (days), Rate cards, Other costs,
- * on the portfolio's monthly calendar with a t0 (AS-IS) column. Read-only: nothing is written to the document. A scope with no planned product is refused (the message is shown to the user).
+ * on the portfolio's monthly calendar with a t0 (AS-IS) column. Read-only: nothing is written to the document. A scope with no planned product is
+ * refused (the message is shown to the user).
  * File name: "AgentCase_v<version>_CostModel_<scope>_<UTC stamp>.xlsx".
  */
 export async function exportCostModel(scope: CostScope, now: Date = new Date()): Promise<ExcelFile> {

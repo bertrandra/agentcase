@@ -17,7 +17,10 @@ const COLS: AggColumn<VerifRow>[] = [
   { key: 'sensi', header: 'Sensitivity anomalies', align: R, render: (r) => r.sensiAbnormal }, { key: 'roi', header: 'ROI (calculation chain)', align: R, render: (r) => r.roi },
 ];
 
-/** Logic verification — Aggregate view: consistency and convergence checks, failing rows and the ROI row of the calculation chain per product; the roll-up adds the failures and takes the worst status. */
+/**
+ * Logic verification — Aggregate view: consistency and convergence checks, failing rows and the ROI row of the calculation chain per product; the
+ * roll-up adds the failures and takes the worst status.
+ */
 export default function VerifAggregate() {
   const deps = useDoc((d) => d.SECTION_DEPS as DepEdges | undefined), rt = useMemo(() => ({ sections: SECTIONS, deps }), [deps]);
   const { rows, totals: t } = useVerifRows(rt);

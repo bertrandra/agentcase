@@ -7,7 +7,10 @@ import { xlArgb } from '../../print';
 export type V = string | number | null;
 export const MONEY = '#,##0', PCT = '0.0', RATIO = '0.0000';
 
-/** A "Metric / Value" sheet: the navy header row 1 then one line per figure. Values are written as they come from the domain view (the number format does the rounding). */
+/**
+ * A "Metric / Value" sheet: the navy header row 1 then one line per figure. Values are written as they come from the domain view (the number format
+ * does the rounding).
+ */
 export function cardSheet(ws: Worksheet, rows: [string, V, string?][]): void {
   ws.addRow(['Metric', 'Value']);
   for (const [label, value, fmt] of rows) { const r = ws.addRow([label, value]); if (fmt && typeof value === 'number') r.getCell(2).numFmt = fmt; }

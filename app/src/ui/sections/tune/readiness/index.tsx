@@ -7,11 +7,14 @@ import { ScoreCard } from './ScoreCard';
 
 const help = (
   <>
-    <p><strong>Dimension score</strong> = average of its statements (No = 0, Partial = 50, Yes = 100). <strong>AI Readiness Index</strong> = average of the 10 dimension
-      scores (equal weight): Documentation · Process Maturity · DevOps · Cloud · Security · Data Quality · Governance · SDLC · Architecture · Skills.</p>
-    <p>Low-scoring dimensions are the prerequisites to raise before (or alongside) an agentic AI roll-out — they typically translate into a higher glass ceiling and a slower adoption ramp.</p>
-    <p>When Human Readiness is enabled, the S-curve ramp is multiplied by max(ramp floor, floor + slope × HRI ÷ 100): a low-readiness organisation adopts more slowly even at full technical capability.
-      Defaults 0.6 and 0.4, so a perfect HRI = 100 reaches 1.0 (no drag). Both coefficients are shared with the Due-diligence register.</p>
+    <p><strong>Dimension score</strong> = average of its statements (No = 0, Partial = 50, Yes = 100). <strong>AI Readiness Index</strong> = average of the 10
+      dimension scores (equal weight): Documentation · Process Maturity · DevOps · Cloud · Security · Data Quality · Governance · SDLC · Architecture ·
+      Skills.</p>
+    <p>Low-scoring dimensions are the prerequisites to raise before (or alongside) an agentic AI roll-out — they typically translate into a higher glass ceiling
+      and a slower adoption ramp.</p>
+    <p>When Human Readiness is enabled, the S-curve ramp is multiplied by max(ramp floor, floor + slope × HRI ÷ 100): a low-readiness organisation adopts more
+      slowly even at full technical capability. Defaults 0.6 and 0.4, so a perfect HRI = 100 reaches 1.0 (no drag). Both coefficients are shared with the
+      Due-diligence register.</p>
   </>
 );
 
@@ -23,8 +26,10 @@ export default function ReadinessSection() {
     <SectionFrame title="AI Readiness Index" help={help}
       input={
         <>
-          <p>A quick online assessment of how ready your organization is to industrialize agentic AI in software delivery. Answer the statements below (No / Partial / Yes). The index (0–100) and the radar chart update live. Weak dimensions are your transformation pre-requisites.</p>
-          <TabStrip base={base} label="Readiness views" value={tab} onChange={(id) => setTab(id as 'hri' | 'assess')} tabs={[{ id: 'hri', label: '🧑‍🤝‍🧑 Human Readiness Index & change cost' }, { id: 'assess', label: 'Assessment questionnaire' }]} />
+          <p>A quick online assessment of how ready your organization is to industrialize agentic AI in software delivery. Answer the statements below (No /
+            Partial / Yes). The index (0–100) and the radar chart update live. Weak dimensions are your transformation pre-requisites.</p>
+          <TabStrip base={base} label="Readiness views" value={tab} onChange={(id) => setTab(id as 'hri' | 'assess')}
+            tabs={[{ id: 'hri', label: '🧑‍🤝‍🧑 Human Readiness Index & change cost' }, { id: 'assess', label: 'Assessment questionnaire' }]} />
           <TabPanel base={base} current={tab}>{tab === 'hri' ? <HriPanel /> : <Assessment />}</TabPanel>
         </>
       }

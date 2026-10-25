@@ -7,10 +7,12 @@ import { WaveEffect } from './WaveEffect';
 
 const help = (
   <>
-    <p>The Knowledge Hub is shared by the portfolio; <strong>each product uses a subset of it</strong>: its own maturity answers (starting CC), target CC (capped by the engagement context), curation, setup base,
-      knowledge domains and the months of preparation before its wave. A product that sets nothing inherits the common hub, so its figures are today&apos;s.</p>
-    <p>The table has one row per product: the one-off KT setup cost, the yearly cost (curation plus the product&apos;s share of the infrastructure), the KT days avoided per year and the effect of the hub (savings with the hub
-      minus savings with it off, for that product). Click a row to make the product active, then edit its subset in the Knowledge hub section. The infrastructure is charged per product (full cost each) or shared by entry headcount.</p>
+    <p>The Knowledge Hub is shared by the portfolio; <strong>each product uses a subset of it</strong>: its own maturity answers (starting CC), target CC
+    (capped by the engagement context), curation, setup base, knowledge domains and the months of preparation before its wave. A product that sets nothing
+    inherits the common hub, so its figures are today&apos;s.</p>
+    <p>The table has one row per product: the one-off KT setup cost, the yearly cost (curation plus the product&apos;s share of the infrastructure), the KT
+      days avoided per year and the effect of the hub (savings with the hub minus savings with it off, for that product). Click a row to make the product
+      active, then edit its subset in the Knowledge hub section. The infrastructure is charged per product (full cost each) or shared by entry headcount.</p>
   </>
 );
 
@@ -23,7 +25,8 @@ export default function KnowledgeTransferSection() {
         <>
           <Panel title="Hub subset by product"><KtTable /></Panel>
           <Panel title="Hub effect by wave"><WaveEffect /></Panel>
-          <Callout>A product’s subset is edited in the “Knowledge hub” section (active product); the transfer preparation (months before the wave) only moves the transfer setup cost in the consolidation.</Callout>
+          <Callout>A product’s subset is edited in the “Knowledge hub” section (active product); the transfer preparation (months before the wave) only moves
+            the transfer setup cost in the consolidation.</Callout>
         </>
       }
       diagnostic={<KtDiagnostics />} />

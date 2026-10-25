@@ -10,13 +10,15 @@ export interface WaveEffect extends KnowledgeTotals { waveId: string; name: stri
 export function waveEffects(pf: Portfolio, rows: KnowledgeRow[]): WaveEffect[] {
   return pf.waves.map((w) => {
     const mine = rows.filter((r) => r.waveId === w.id);
-    return { waveId: w.id, name: w.name, startMonth: w.startMonth, products: mine.length, users: mine.filter((r) => r.usesHub).length, ...knowledgeTotals(mine) };
+    return { waveId: w.id, name: w.name, startMonth: w.startMonth, products: mine.length, users: mine.filter((r) => r.usesHub).length,
+      ...knowledgeTotals(mine) };
   });
 }
 
 /** Total of the wave rows (products in a wave only; unplanned products are excluded from the consolidation, so from the waves). */
 export function waveEffectsTotal(ws: WaveEffect[]): { products: number; users: number; hubDeltaSav: number } {
-  return { products: ws.reduce((a, w) => a + w.products, 0), users: ws.reduce((a, w) => a + w.users, 0), hubDeltaSav: ws.reduce((a, w) => a + w.hubDeltaSav, 0) };
+  return { products: ws.reduce((a, w) => a + w.products, 0), users: ws.reduce((a, w) => a + w.users, 0),
+    hubDeltaSav: ws.reduce((a, w) => a + w.hubDeltaSav, 0) };
 }
 
 export interface InfraShare { productId: string; name: string; monthly: number; annual: number }

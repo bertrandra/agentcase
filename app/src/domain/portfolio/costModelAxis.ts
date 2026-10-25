@@ -9,7 +9,10 @@ import type { ProductView, WaveView } from './waves';
 /** The planned products an export covers, in portfolio order, with the consolidation they come from. */
 export interface Picked { c: Consolidated; views: ProductView[]; waves: WaveView[]; label: string; excluded: string[] }
 
-/** Select the scope's products among the planned ones (archived and wave-less products are never planned). A product or wave that is not planned is an error. */
+/**
+ * Select the scope's products among the planned ones (archived and wave-less products are never planned). A product or wave that is not planned is an
+ * error.
+ */
 export function pickScope(pf: Portfolio, scope: CostScope): Picked {
   const c = consolidate(pf), name = (id: string) => pf.products.find((p) => p.id === id)?.name ?? id;
   const excluded = c.excluded.map(name);

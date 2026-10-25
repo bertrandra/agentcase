@@ -4,9 +4,10 @@ import { useDoc } from '@/store/hooks';
 import { TextField } from '@/ui/widgets/CommitField';
 import { Panel } from '@/ui/widgets/cards';
 import { useRecs } from '../data';
+import type { Ink } from '../RecordTable';
 
 const EMPTY: IP = { id: 'ip-1', name: '', buildArtifactIds: [] };
-const RESULT = { Pass: 'var(--ac-teal)', Fail: 'var(--ac-brick)', Pending: 'var(--ac-amber)' } as Record<string, string>;
+const RESULT: Record<string, Ink> = { Pass: 'teal', Fail: 'brick', Pending: 'amber' };
 
 /** The current integration baseline: which build artefacts it is composed of (with the gate result beside each). */
 export function IntegratedProduct() {
@@ -21,7 +22,7 @@ export function IntegratedProduct() {
         return (
           <label key={a.id} className="ac-check">
             <input type="checkbox" aria-label={`Include ${String(a.name)}`} checked={included.has(a.id)} onChange={(e) => toggleIpArtifact(a.id, e.target.checked)} />
-            {String(a.name)} <span className="ac-muted">({String(a.type)} {String(a.version)})</span>{gate && <span style={{ color: RESULT[String(gate.result)] }}> {String(gate.result)}</span>}
+            {String(a.name)} <span className="ac-muted">({String(a.type)} {String(a.version)})</span>{gate && <span data-ink={RESULT[String(gate.result)]}> {String(gate.result)}</span>}
           </label>
         );
       }) : <p className="ac-muted">No build artifacts to include yet.</p>}

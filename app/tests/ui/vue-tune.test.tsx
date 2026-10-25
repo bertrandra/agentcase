@@ -14,7 +14,6 @@ import { openPortfolioFixture } from '../helpers/portfolioFixtures';
 import { LAZY, mountApp, pf, sectionReady } from '../helpers/portfolioUi';
 
 vi.mock('@/ui/widgets/ChartPanel', async () => import('../helpers/chartStub'));
-
 type View = { kind: 'portfolio' } | { kind: 'wave'; i: 0 | 1 };
 interface Case {
   id: string; title: RegExp; caption: string; input: boolean; drill?: (id: string, p: Portfolio) => string; spread?: string;
@@ -49,7 +48,8 @@ const CASES: Case[] = [
     rows: (p, ids) => D.aggEligibility(p, ids).rows.map((r) => ({ id: r.id, texts: [U(r.verdict), `${(r.vTaxRate * 100).toFixed(1)}%`, `L${r.level}`] })),
     total: (p, ids) => { const t = D.aggEligibility(p, ids).totals; return [`${t.go} go · ${t.conditional} conditional · ${t.noGo} blocked`]; } },
   { id: 'maturity', title: /Maturity & Measurement/, caption: 'Maturity and coaching by product', input: true, spread: 'Spread of the maturity inputs',
-    rows: (p, ids) => D.aggMaturity(p, ids).rows.map((r) => ({ id: r.id, texts: [r.sddName, r.sdd.toFixed(0), eurK(r.coachCostY1)] })), total: (p, ids) => [eurK(D.aggMaturity(p, ids).totals.coachCostY1)] },
+    rows: (p, ids) => D.aggMaturity(p, ids).rows.map((r) => ({ id: r.id, texts: [r.sddName, r.sdd.toFixed(0), eurK(r.coachCostY1)] })),
+    total: (p, ids) => [eurK(D.aggMaturity(p, ids).totals.coachCostY1)] },
   { id: 'program', title: /Program & Completeness/, caption: 'Programme inputs by product', input: true, spread: 'Spread of the programme inputs',
     rows: (p, ids) => D.aggProgram(p, ids).rows.map((r) => ({ id: r.id, texts: [r.pilotFte.toFixed(1), eurK(r.pilotCost), `${r.capPct}%`] })),
     total: (p, ids) => { const t = D.aggProgram(p, ids).totals; return [t.pilotFte.toFixed(1), eurK(t.pilotCost)]; } },

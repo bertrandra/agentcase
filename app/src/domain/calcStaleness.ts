@@ -8,13 +8,16 @@ import type { CaseState } from './types/state';
  * `versionMismatch`: another engine version computed the file.
  */
 export type CalcState = 'valid' | 'stale' | 'versionMismatch' | 'notCalculated';
-export interface CalcStaleness { state: CalcState; storedHeadline?: PackageHeadline; liveHeadline?: PackageHeadline; storedVersion?: string; liveVersion?: string; /** portfolio files: the products whose package is stale */ staleProducts?: string[] }
+export interface CalcStaleness { state: CalcState; storedHeadline?: PackageHeadline; liveHeadline?: PackageHeadline; storedVersion?: string;
+  liveVersion?: string; /** portfolio files: the products whose package is stale */ staleProducts?: string[] }
 export const needsBanner = (s: CalcStaleness): boolean => s.state === 'stale' || s.state === 'versionMismatch';
 
 const REL = 1e-6;
-const close = (a: number | null, b: number | null): boolean => a === b || (a !== null && b !== null && Math.abs(a - b) <= REL * Math.max(1, Math.abs(a), Math.abs(b)));
+const close = (a: number | null, b: number | null): boolean => a === b || (a !== null && b !== null && Math.abs(a - b) <= REL * Math.max(1, Math.abs(a),
+  Math.abs(b)));
 const same = (a: number[], b: number[]): boolean => a.length === b.length && a.every((x, i) => close(x, b[i] as number));
-const flat = (p: CalcPackage): number[] => [p.headline.npv, p.headline.totalSavings, ...p.annual.flatMap((y) => [y.yearIndex, y.savings, y.totalRunCost, y.netAfterSetup, y.cumulativeCashFlowEnd])];
+const flat = (p: CalcPackage): number[] => [p.headline.npv, p.headline.totalSavings,
+  ...p.annual.flatMap((y) => [y.yearIndex, y.savings, y.totalRunCost, y.netAfterSetup, y.cumulativeCashFlowEnd])];
 
 /** Do two packages carry the same engine identity and the same figures (to 1e-6 relative)? */
 export function samePackage(a: CalcPackage, b: CalcPackage): boolean {

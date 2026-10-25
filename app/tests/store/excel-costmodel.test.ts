@@ -17,8 +17,12 @@ async function read(scope: CostScope = { kind: 'portfolio' }): Promise<{ wb: XL.
   return { wb, filename: out.filename };
 }
 /** A formula cell reads as its cached result (ExcelJS drops a result of exactly 0 on load: read it as 0). */
-const val = (ws: XL.Worksheet, r: number, c: number): unknown => { const v = ws.getCell(r, c).value; return v && typeof v === 'object' && 'formula' in v ? ((v as { result?: unknown }).result ?? 0) : v; };
-const heads = (ws: XL.Worksheet): unknown[] => Array.from({ length: ws.columnCount }, (_, i) => val(ws, HDR, i + 1)).filter((x) => x !== null && x !== undefined);
+const val = (ws: XL.Worksheet, r: number, c: number): unknown => {
+  const v = ws.getCell(r, c).value;
+  return v && typeof v === 'object' && 'formula' in v ? ((v as { result?: unknown }).result ?? 0) : v;
+};
+const heads = (ws: XL.Worksheet): unknown[] => Array.from({ length: ws.columnCount },
+  (_, i) => val(ws, HDR, i + 1)).filter((x) => x !== null && x !== undefined);
 /** Data rows of the monthly table: from FIRST until the first empty key cell. */
 const table = (ws: XL.Worksheet): number[] => { const out: number[] = []; for (let r = FIRST; val(ws, r, 1); r++) out.push(r); return out; };
 const col = (ws: XL.Worksheet, name: string): number => (heads(ws) as string[]).indexOf(name) + 1;
@@ -30,12 +34,16 @@ describe('the cost-model workbook', () => {
     expect(filename).toBe(`AgentCase_${appVerFileTag()}_CostModel_Portfolio_2026-10-22-10-30-00.xlsx`);
     for (const ws of wb.worksheets) {
       expect(String(val(ws, 1, 1))).toContain('AgentCase cost model (monthly)');
-      expect(['Scope', 'Generated (UTC)', 'App version', 'Currency', 'Convention', 'How to recompute', 'Not exported'].map((_, i) => val(ws, 2 + i, 1))).toEqual(['Scope', 'Generated (UTC)', 'App version', 'Currency', 'Convention', 'How to recompute', 'Not exported']);
-      expect(val(ws, 2, 3)).toBe('Portfolio'); expect(val(ws, 3, 3)).toBe('2026-10-22 10:30:00'); expect(val(ws, 4, 3)).toBe(`v${APP_VERSION}`); expect(val(ws, 5, 3)).toBe('EUR');
+      expect(['Scope', 'Generated (UTC)', 'App version', 'Currency', 'Convention', 'How to recompute',
+        'Not exported'].map((_, i) => val(ws, 2 + i, 1))).toEqual(['Scope', 'Generated (UTC)', 'App version', 'Currency', 'Convention', 'How to recompute',
+        'Not exported']);
+      expect(val(ws, 2, 3)).toBe('Portfolio'); expect(val(ws, 3, 3)).toBe('2026-10-22 10:30:00'); expect(val(ws, 4, 3)).toBe(`v${APP_VERSION}`);
+        expect(val(ws, 5, 3)).toBe('EUR');
       expect(String(val(ws, 6, 3))).toMatch(/M1 = first portfolio month/); expect(String(val(ws, 8, 3))).toContain('Archive (no wave)');
       const h = heads(ws);
       expect(h.slice(0, 3)).toEqual(['Portfolio', 'Wave', 'Product']);
-      expect(h.slice(7, 9)).toEqual(['Unit', 't0']); expect(h[9]).toBe('M1'); expect(h[8 + L]).toBe(`M${L}`); expect(h[9 + L]).toBe('Total'); expect(h.length).toBe(10 + L);
+      expect(h.slice(7, 9)).toEqual(['Unit', 't0']); expect(h[9]).toBe('M1'); expect(h[8 + L]).toBe(`M${L}`); expect(h[9 + L]).toBe('Total');
+        expect(h.length).toBe(10 + L);
       expect(ws.views[0]).toMatchObject({ state: 'frozen', ySplit: HDR });
       expect(ws.autoFilter).toBeTruthy();
     }
@@ -48,7 +56,12 @@ describe('the cost-model workbook', () => {
     const payroll = rows.filter((r) => val(ws, r, 3) === 'Payroll' && val(ws, r, 4) === 'Human days');
     expect(payroll.length).toBeGreaterThan(0);
     const t0 = col(ws, 't0'), m1 = col(ws, 'M1'), m3 = col(ws, 'M3');
-    for (const r of payroll) { expect(typeof val(ws, r, t0)).toBe('number'); expect(ws.getCell(r, m1).value).toBeNull(); expect(ws.getCell(r, m1 + 1).value).toBeNull(); expect(typeof val(ws, r, m3)).toBe('number'); }
+    for (const r of payroll) {
+      expect(typeof val(ws, r, t0)).toBe('number');
+      expect(ws.getCell(r, m1).value).toBeNull();
+      expect(ws.getCell(r, m1 + 1).value).toBeNull();
+      expect(typeof val(ws, r, m3)).toBe('number');
+    }
     const billing = rows.filter((r) => val(ws, r, 3) === 'Billing' && val(ws, r, 4) === 'Human days');
     for (const r of billing) expect(ws.getCell(r, m1 + 5).value).toBeNull();
     const sub = rows.find((r) => val(ws, r, 3) === 'Payroll' && val(ws, r, 4) === 'Subtotal')!;
@@ -73,14 +86,17 @@ describe('the cost-model workbook', () => {
     expect(ws.getCell(adj, col(ws, 'M5')).value).toMatchObject({ formula: expect.stringMatching(/^Values!.*\*\$F\$/) });
     const dot = rows.find((r) => String(val(ws, r, 5)).startsWith('Team cost ='))!;
     expect((ws.getCell(dot, col(ws, 'M5')).value as { formula: string }).formula).toMatch(/^SUMPRODUCT\(Values!/);
-    for (const r of rows.filter((x) => val(ws, x, 5) === 'Difference (must be 0)')) for (let c = col(ws, 't0'); c <= col(ws, 'Total'); c++) expect(Math.abs(Number(val(ws, r, c)) || 0)).toBeLessThan(1e-6);
+    for (const r of rows.filter((x) => val(ws, x, 5) === 'Difference (must be 0)')) for (let c = col(ws, 't0'); c <= col(ws, 'Total');
+      c++) expect(Math.abs(Number(val(ws, r, c)) || 0)).toBeLessThan(1e-6);
   });
   it('Other costs: setup, KT, Knowledge Hub, pilot, tokens, infrastructure, totals and the parameters block', async () => {
     fourProducts();
     const { wb } = await read(), ws = wb.getWorksheet('Other costs')!, rows = table(ws), lines = new Set(rows.map((r) => String(val(ws, r, 5))));
-    for (const l of ['Tokens', 'Infrastructure', 'Knowledge Hub curation', 'Knowledge Hub infrastructure (allocated)', 'Setup: Knowledge Hub and knowledge transfer (KT)',
+    for (const l of ['Tokens', 'Infrastructure', 'Knowledge Hub curation', 'Knowledge Hub infrastructure (allocated)',
+      'Setup: Knowledge Hub and knowledge transfer (KT)',
       'Setup: tooling, training, coaching, governance', 'Agentic run team (AgentOps)', 'Knowledge transfer avoided', 'Verification tax',
-      'Pilot (included in totals)', 'TOTAL TO-BE COST (days x rate + other costs + pilot)', 'PORTFOLIO TOTAL TO-BE COST (pilot included)']) expect(lines.has(l), l).toBe(true);
+      'Pilot (included in totals)', 'TOTAL TO-BE COST (days x rate + other costs + pilot)',
+        'PORTFOLIO TOTAL TO-BE COST (pilot included)']) expect(lines.has(l), l).toBe(true);
     const team = rows.find((r) => val(ws, r, 5) === 'Team cost (human days x applied rate)')!;
     expect((ws.getCell(team, col(ws, 'M3')).value as { formula: string }).formula).toMatch(/^'Rate cards'!/);
     let p = 0;
@@ -98,7 +114,8 @@ describe('the cost-model workbook', () => {
     const names = (ws: XL.Worksheet) => new Set(table(ws).map((r) => val(ws, r, 3)).filter((x) => x !== '(all products)'));
     expect(names(wave)).toEqual(new Set(['Billing'])); expect(table(wave).length).toBeLessThan(all);
     expect(names(prod.wb.getWorksheet('Values')!)).toEqual(new Set(['Payroll']));
-    expect(prod.filename).toMatch(new RegExp(String.raw`^AgentCase_${appVerFileTag()}_CostModel_Product_Payroll_`)); expect((await read({ kind: 'wave', id: w2.id })).filename).toMatch(/CostModel_Wave_Wave_2_/);
+    expect(prod.filename).toMatch(new RegExp(String.raw`^AgentCase_${appVerFileTag()}_CostModel_Product_Payroll_`));
+      expect((await read({ kind: 'wave', id: w2.id })).filename).toMatch(/CostModel_Wave_Wave_2_/);
     expect(val(prod.wb.getWorksheet('Values')!, 8, 3)).toBe('None: every product of the scope is planned');
     freshStore();
     const single = (await read()).wb.getWorksheet('Values')!, one = table(single);

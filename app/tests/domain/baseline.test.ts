@@ -15,7 +15,8 @@ const check = (exp: unknown, got: unknown) => expect(nearDiff(exp, JSON.parse(JS
 describe('baseline domain reproduces the legacy extras', () => {
   it('apportionFTE (largest remainder)', () => {
     expect(existsSync('fixtures/extras/baselineApportion/golden.json')).toBe(true);
-    const got = [apportionFTE([3, 2, 1], 10), apportionFTE([0, 0, 0], 7.5), apportionFTE([5.5, 0.2, 12], 15), apportionFTE([1, 1, 1], 0.5), apportionFTE([], 4), apportionFTE([2, 3], 0)];
+    const got = [apportionFTE([3, 2, 1], 10), apportionFTE([0, 0, 0], 7.5), apportionFTE([5.5, 0.2, 12], 15), apportionFTE([1, 1, 1], 0.5),
+      apportionFTE([], 4), apportionFTE([2, 3], 0)];
     check(read('extras/baselineApportion', 'golden'), got);
   });
   describe.each(ids)('%s', (id) => {

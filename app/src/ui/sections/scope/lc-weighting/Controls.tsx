@@ -11,7 +11,7 @@ const USE = 'Apply product-status lifecycle weighting';
 export function Controls() {
   const { s } = useCtx(), opts = statusOptions(s).map((o) => ({ value: String(o.value), label: o.label }));
   return (
-    <div style={{ maxWidth: 520 }}>
+    <div className="ac-lc-controls">
       <FieldToggle label={USE} checked={s.lifecycleUse} onChange={setLifecycleUse}>
         <label className="ac-check"><input type="checkbox" checked={s.lifecycleUse} onChange={(e) => setLifecycleUse(e.target.checked)} />{` ${USE}`}</label>
       </FieldToggle>
@@ -22,11 +22,13 @@ export function Controls() {
             {statusOptions(s).map((o) => <option key={o.value} value={o.value}>{o.label}</option>)}
           </select></label>
       </FieldChoice>
-      <FieldNumber native="slider" label="Lifecycle position" value={s.lifecyclePos} min={0} max={100} onCommit={(v) => setLifecyclePos(+v)} hint="Or slide gradually between statuses.">
+      <FieldNumber native="slider" label="Lifecycle position" value={s.lifecyclePos} min={0} max={100} onCommit={(v) => setLifecyclePos(+v)}
+        hint="Or slide gradually between statuses.">
         <label className="ac-field"><span className="ac-field-h">Or slide gradually between statuses:</span>
-          <input type="range" min={0} max={100} value={s.lifecyclePos} aria-label="Lifecycle position" onChange={(e) => setLifecyclePos(+e.target.value)} /></label>
+          <input type="range" min={0} max={100} value={s.lifecyclePos} aria-label="Lifecycle position"
+            onChange={(e) => setLifecyclePos(+e.target.value)} /></label>
       </FieldNumber>
-      <p style={{ fontSize: 'var(--ac-font-size-md)', color: 'var(--ac-blue)', fontWeight: 'var(--ac-font-weight-semibold)' }}>Current status: <span>{statusLabel(s)}</span></p>
+      <p className="ac-lc-status">Current status: <span>{statusLabel(s)}</span></p>
     </div>
   );
 }

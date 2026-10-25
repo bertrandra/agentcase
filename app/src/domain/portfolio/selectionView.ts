@@ -43,7 +43,8 @@ function build(pf: Portfolio, c: Consolidated, scope: DisplayScope): SelectionVi
     totals: wave ? (cv.waves.find((w) => w.id === wave.id) as SummaryRow) : cv.totals,
     years: savings.map((s, i) => ({ label: `Year ${i + 1}`, savings: s, run: run[i] ?? 0, setup: setup[i] ?? 0, net: net[i] ?? 0 })),
     chart: { labels: Array.from({ length: c.horizon }, (_, i) => cal.dateAt(i)), series: [{ label, data: wave ? wave.summary.cum : c.summary.cum }, ...lines] },
-    excluded: wave ? wave.productIds.filter((id) => !items.some((v) => v.id === id)).map((id) => ({ id, name: pf.products.find((p) => p.id === id)?.name ?? id, archived: !!pf.products.find((p) => p.id === id)?.archived })) : cv.excluded,
+    excluded: wave ? wave.productIds.filter((id) => !items.some((v) => v.id === id)).map((id) => ({ id,
+      name: pf.products.find((p) => p.id === id)?.name ?? id, archived: !!pf.products.find((p) => p.id === id)?.archived })) : cv.excluded,
     diagnostics: wave ? cv.diagnostics.filter((d) => d.productId !== undefined && wave.productIds.includes(d.productId)) : cv.diagnostics,
   };
 }

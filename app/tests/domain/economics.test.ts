@@ -8,7 +8,8 @@ import { diffs, extra, FIXTURES } from '../helpers/economics';
 import { readFileSync } from 'node:fs';
 
 const ctxOf = (id: string) => makeCtx(fromSnapshot(JSON.parse(readFileSync(`fixtures/cases/${id}.json`, 'utf8'))));
-type Roi = { totalBen: number; net: number; roi: number | null; roiPct: string; payback: number | null; paybackText: string; months: number; npvRate: number; npv: number; horizon: number; freed: number[] };
+type Roi = { totalBen: number; net: number; roi: number | null; roiPct: string; payback: number | null; paybackText: string; months: number; npvRate: number;
+  npv: number; horizon: number; freed: number[] };
 
 describe('economics domain reproduces the legacy', () => {
   it('has the fixtures', () => expect(FIXTURES.length).toBeGreaterThanOrEqual(56));
@@ -17,7 +18,8 @@ describe('economics domain reproduces the legacy', () => {
     expect(diffs(extra('econ_monthly', id), monthlySeries(engineNow(c)))).toEqual([]);
     expect(diffs(extra('econ_savings', id), savingsBreakdown(c))).toEqual([]);
     expect(diffs({ ...e, roi: e.roi ?? 'null', roiPct: e.roiPct, paybackText: e.paybackText, payback: e.payback ?? 'null' },
-      { totalBen: v.totalBenefit, net: v.net, roi: v.roi ?? 'null', roiPct: fmtRoiPct(v.roi), payback: v.payback ?? 'null', paybackText: fmtPayback(v.payback, v.months.length),
+      { totalBen: v.totalBenefit, net: v.net, roi: v.roi ?? 'null', roiPct: fmtRoiPct(v.roi), payback: v.payback ?? 'null',
+        paybackText: fmtPayback(v.payback, v.months.length),
         months: v.months.length, npvRate: v.npvRate, npv: v.npv, horizon: v.H, freed: v.freed })).toEqual([]);
   });
   it('formatting rules match the legacy helpers', () => {
@@ -30,7 +32,8 @@ describe('economics domain reproduces the legacy', () => {
     expect([roiCanonical(5, 0), roiCanonical(NaN, 10), roiCanonical(Infinity, 10), roiCanonical(50, 10)]).toEqual(f.roiNull);
   });
   it('verdict bands and the no-setup edge', () => {
-    expect([1.5, 1.49, 0.3, 0.29, 0, -1, null].map(roiVerdict)).toEqual(['go', 'conditional', 'conditional', 'reconsider', 'reconsider', 'reconsider', 'reconsider']);
+    expect([1.5, 1.49, 0.3, 0.29, 0, -1, null].map(roiVerdict)).toEqual(['go', 'conditional', 'conditional', 'reconsider', 'reconsider', 'reconsider',
+      'reconsider']);
     expect(economicsView(ctxOf('econ-no-setup')).roi).toBeNull();
     expect(roiVerdict(economicsView(ctxOf('econ-roi-mid')).roi)).toBe('conditional');
     expect(roiVerdict(economicsView(ctxOf('econ-roi-low')).roi)).toBe('reconsider');

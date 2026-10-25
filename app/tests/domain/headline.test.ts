@@ -32,7 +32,10 @@ describe('one economics headline serves every display', () => {
   });
   it('strategies report the payback year of the same engine rule, and one null ROI for "no setup"', () => {
     const c = makeCtx(load('golden')), rows = evaluateStrategies(c);
-    rows.forEach((s) => { expect(s.computed.roi == null || Number.isFinite(s.computed.roi)).toBe(true); expect(s.computed.payback == null || Number.isInteger(s.computed.payback)).toBe(true); });
+    rows.forEach((s) => {
+      expect(s.computed.roi == null || Number.isFinite(s.computed.roi)).toBe(true);
+      expect(s.computed.payback == null || Number.isInteger(s.computed.payback)).toBe(true);
+    });
     expect(roiCanonical(5, 0)).toBeNull();
     expect(roiCanonical(Infinity, 10)).toBeNull();
   });

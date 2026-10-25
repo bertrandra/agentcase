@@ -47,7 +47,8 @@ export function tobeComposition(l: Live, year: number): TobeComposition {
     return { skill: ts, asisFTE, perYear };
   });
   const sum = (f: (r: TobeRow) => number) => rows.reduce((t, r) => t + f(r), 0);
-  return { rows, years, tot: { asis: totalFTE, sumAsis: sum((r) => r.asisFTE), human: sum((r) => r.perYear[y]!.human), agent: sum((r) => r.perYear[y]!.agent) } };
+  return { rows, years, tot: { asis: totalFTE, sumAsis: sum((r) => r.asisFTE), human: sum((r) => r.perYear[y]!.human),
+    agent: sum((r) => r.perYear[y]!.agent) } };
 }
 
 export type LocSplit = Record<string, Record<string, number>>;
@@ -62,7 +63,11 @@ export function tobeSkillLocDefault(s: CaseState): LocSplit {
     locs.forEach((x) => { o[x] = tot > 0 ? Math.round(((d[x] || 0) / tot) * 100) : 0; });
     if (tot === 0) o[locs[0] as string] = 100;
     const sum = locs.reduce((t, x) => t + (o[x] as number), 0);
-    if (sum !== 100) { let mx = locs[0] as string; locs.forEach((x) => { if ((o[x] as number) > (o[mx] as number)) mx = x; }); o[mx] = (o[mx] as number) + (100 - sum); }
+    if (sum !== 100) {
+      let mx = locs[0] as string;
+      locs.forEach((x) => { if ((o[x] as number) > (o[mx] as number)) mx = x; });
+      o[mx] = (o[mx] as number) + (100 - sum);
+    }
   });
   return out;
 }
@@ -77,7 +82,12 @@ export function locSplitOf(s: CaseState): LocSplit {
 export function skillGradeRate(s: CaseState, skill: string, loc: string): number {
   const g: Record<string, number> = {};
   let tot = 0;
-  s.teamIn.forEach((r) => { if (r.skill !== skill) return; const fam = String(r.grade || 'C')[0] as string; g[fam] = (g[fam] || 0) + (+r.etp || 0); tot += +r.etp || 0; });
+  s.teamIn.forEach((r) => {
+    if (r.skill !== skill) return;
+    const fam = String(r.grade || 'C')[0] as string;
+    g[fam] = (g[fam] || 0) + (+r.etp || 0);
+    tot += +r.etp || 0;
+  });
   const rl = s.RATE[loc] ?? {};
   if (tot === 0) return rl['C'] || 500;
   return Object.keys(g).reduce((rate, fam) => rate + ((rl[fam] || rl['C'] || 500) * (g[fam] as number)) / tot, 0);
@@ -92,9 +102,14 @@ export function tobeLocResult(l: Live, comp: TobeComposition, year: number): { r
   LOCATIONS.forEach((x) => { fte[x.name] = 0; cost[x.name] = 0; });
   comp.rows.forEach((r) => {
     const sp = split[r.skill] ?? {}, h = r.perYear[y]!.human;
-    LOCATIONS.forEach((x) => { const f = (h * (+(sp[x.name] ?? 0) || 0)) / 100; fte[x.name]! += f; cost[x.name]! += f * skillGradeRate(s, r.skill, x.name) * wd; });
+    LOCATIONS.forEach((x) => {
+      const f = (h * (+(sp[x.name] ?? 0) || 0)) / 100;
+      fte[x.name]! += f;
+      cost[x.name]! += f * skillGradeRate(s, r.skill, x.name) * wd;
+    });
   });
-  const rows = LOCATIONS.filter((x) => (fte[x.name] as number) > 0.001).map((x) => ({ loc: x.name, cls: x.cls, fte: fte[x.name] as number, cost: cost[x.name] as number }));
+  const rows = LOCATIONS.filter((x) => (fte[x.name] as number) > 0.001).map((x) => ({ loc: x.name, cls: x.cls, fte: fte[x.name] as number,
+    cost: cost[x.name] as number }));
   return { rows, fte: LOCATIONS.reduce((t, x) => t + (fte[x.name] as number), 0), cost: LOCATIONS.reduce((t, x) => t + (cost[x.name] as number), 0), wd };
 }
 

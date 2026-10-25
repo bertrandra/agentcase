@@ -16,7 +16,7 @@ export function SnapshotCompare({ list }: { list: NamedSnapshot[] }) {
   const options = [<option key="current" value="current">Current case</option>, ...list.map((s) => <option key={s.id} value={s.id}>{s.name}</option>)];
   return (
     <div>
-      <div style={{ display: 'flex', gap: 8, flexWrap: 'wrap', alignItems: 'center' }}>
+      <div className="ac-snap-pick">
         <label>Compare <select aria-label="Compare" value={ok(a) ? a : 'current'} onChange={(e) => setA(e.target.value)}>{options}</select></label>
         <label>with <select aria-label="With" value={ok(b) ? b : ''} onChange={(e) => setB(e.target.value)}><option value="">— choose —</option>{options}</select></label>
       </div>

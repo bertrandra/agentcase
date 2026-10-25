@@ -17,7 +17,10 @@ const COLS: AggColumn<RiskRow>[] = [
   { key: 'bar', header: 'DI bar premium (pts)', align: R, render: (r) => (r.diBar * 100).toFixed(1) },
 ];
 
-/** Risk & Compliance — Aggregate view: AI-Act tier, risk-register score and quality premium of each product, with the Decision-Intelligence bar they add (read-only). */
+/**
+ * Risk & Compliance — Aggregate view: AI-Act tier, risk-register score and quality
+ * premium of each product, with the Decision-Intelligence bar they add (read-only).
+ */
 export default function RiskAggregate() {
   const a = useRiskAgg(), vs = useViewScope();
   const items: SpreadItem[] = [
@@ -27,7 +30,8 @@ export default function RiskAggregate() {
   return (
     <InputAggregate title="🛡️ Risk & Compliance" intro="the AI-Act tier, the risk register and the quality premium belong to each product.">
       <AggregateTable caption={`Risk inputs by product — ${vs.label}`} rows={a.rows} columns={COLS} />
-      <p className="ac-muted">{a.counts.highTier} product(s) in a high-risk or prohibited AI-Act tier · {a.counts.highRisk} with a high register score · {a.counts.applied} raising the Decision Intelligence bar.</p>
+      <p className="ac-muted">{a.counts.highTier} product(s) in a high-risk or prohibited AI-Act tier · {a.counts.highRisk} with a high register score
+        · {a.counts.applied} raising the Decision Intelligence bar.</p>
       <SpreadTable caption={`Spread of the risk inputs — ${vs.label}`} items={items} />
     </InputAggregate>
   );

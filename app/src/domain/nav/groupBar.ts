@@ -19,7 +19,8 @@ export interface GroupBar { groups: MenuGroup[]; selected: string; sections: Nav
  * holding only Welcome is not offered), the group shown in the selector (the section's own, else the first offered) and that group's sections.
  * `sections` may be a filtered list (Fast Path); the open section is still looked up in `all`.
  */
-export function groupBar(persona: string, active: string, sections: NavSection[], groups: MenuGroup[], lists: PersonaLists, order: PersonaOrder, all: NavSection[] = sections): GroupBar | null {
+export function groupBar(persona: string, active: string, sections: NavSection[], groups: MenuGroup[], lists: PersonaLists, order: PersonaOrder,
+  all: NavSection[] = sections): GroupBar | null {
   const sec = all.find((s) => s.id === active);
   if (!sec) return null;
   const offered = groupsByOrder(groups).filter((g) => firstOfGroup(persona, g.id, sections, lists));

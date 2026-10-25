@@ -13,7 +13,10 @@ const COLS: AggColumn<AssumptionRow>[] = [
   { key: 'ovr', header: 'Product-specific values', align: R, title: 'Values the product overrides instead of inheriting the common ones (0 = everything is common)', render: (r) => r.overrides },
 ];
 
-/** Assumptions register — Aggregate view: per product, how many assumptions sit at default, are adjusted and unvalidated, or validated; the roll-up adds the counts. */
+/**
+ * Assumptions register — Aggregate view: per product, how many assumptions sit at default, are adjusted and unvalidated, or validated; the roll-up
+ * adds the counts.
+ */
 export default function AssumptionsAggregate() {
   const { rows, totals: t } = useAssumptionRows();
   return (

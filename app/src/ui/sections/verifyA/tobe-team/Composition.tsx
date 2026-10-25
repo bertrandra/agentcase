@@ -18,7 +18,7 @@ export function Composition({ live, year, setYear }: { live: Live; year: number;
   const model = live.eng.years()[y]!;
   return (
     <>
-      <div className="ac-form-row" style={{ justifyContent: 'space-between' }}>
+      <div className="ac-form-row ac-spread">
         <span className="ac-muted">Residual human FTE and agent vFTE by skill, decomposed from the aggregate model. Σ reconciles to yearETP / yearAgentVfte.</span>
         <span>{comp.years.map((_, i) => <button key={i} type="button" aria-pressed={i === y} className={i === y ? 'btn-primary' : ''} onClick={() => setYear(i)}>{`Year ${i + 1}`}</button>)}</span>
       </div>

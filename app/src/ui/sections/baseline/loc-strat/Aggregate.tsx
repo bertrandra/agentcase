@@ -21,14 +21,16 @@ const MIX: AggColumn<LocMixLine & { id: string }>[] = [
   { key: 'cls', header: 'Class', render: (r) => r.cls },
   { key: 'fte', header: 'Entry FTE', align: R, render: (r) => r.fte.toFixed(1) },
   { key: 'asis', header: 'AS-IS share', align: R, render: (r) => `${r.asisPct.toFixed(0)}%` },
-  { key: 'tgt', header: 'Target share', align: R, title: 'Each product’s target mix weighted by its entry FTE', render: (r) => `${r.targetPct.toFixed(0)}%` },
+  { key: 'tgt', header: 'Target share', align: R, render: (r) => `${r.targetPct.toFixed(0)}%`, title: 'Each product’s target mix weighted by its entry FTE' },
 ];
 
-const help = <p>Aggregate view of the location strategy: the AS-IS and target mix and blended day rates of each product, and the location mix of the whole selection weighted by entry FTE. The target mix of a product is its own intention; it prices its residual team.</p>;
+const help = <p>Aggregate view of the location strategy: the AS-IS and target mix and blended day rates of each product, and the location mix of the whole
+  selection weighted by entry FTE. The target mix of a product is its own intention; it prices its residual team.</p>;
 
 /** Location strategy — Aggregate view: the location mix and blended rates of each product, and the location mix of the selection by FTE. */
 export default function LocStratAggregate() {
-  const a = useLocStratAggregate(), vs = useViewScope();
+  const a = useLocStratAggregate(), vs = useViewScope(), total = `Total — ${vs.label}`;
+  const cells = { fte: a.fte.toFixed(1), local: fmtRange(a.localTarget, 0, '%'), off: fmtRange(a.offshoreTarget, 0, '%') };
   return (
     <InputAggregate title="Location strategy" help={help} intro="the target location mix belongs to each product.">
       <StatRow>
@@ -36,11 +38,10 @@ export default function LocStratAggregate() {
         <Stat label="Target % Local (min – max)" value={fmtRange(a.localTarget, 0, '%')} tone="teal" />
         <Stat label="Target % Offshore (min – max)" value={fmtRange(a.offshoreTarget, 0, '%')} tone="amber" />
       </StatRow>
-      <AggregateTable caption={`Location strategy by product — ${vs.label}`} rows={a.rows} columns={COLS}
-        totals={{ label: `Total — ${vs.label}`, cells: { fte: a.fte.toFixed(1), local: fmtRange(a.localTarget, 0, '%'), off: fmtRange(a.offshoreTarget, 0, '%') } }} />
+      <AggregateTable caption={`Location strategy by product — ${vs.label}`} rows={a.rows} columns={COLS} totals={{ label: total, cells }} />
       <Panel title="Location mix of the selection">
-        <AggregateTable caption={`Location mix by entry FTE — ${vs.label}`} first="Location" rows={a.mix.map((m) => ({ ...m, id: m.name }))} columns={MIX} edit={false}
-          totals={{ label: `Total — ${vs.label}`, cells: { fte: a.fte.toFixed(1) } }} />
+        <AggregateTable caption={`Location mix by entry FTE — ${vs.label}`} first="Location" rows={a.mix.map((m) => ({ ...m, id: m.name }))} columns={MIX}
+          edit={false} totals={{ label: total, cells: { fte: a.fte.toFixed(1) } }} />
       </Panel>
     </InputAggregate>
   );

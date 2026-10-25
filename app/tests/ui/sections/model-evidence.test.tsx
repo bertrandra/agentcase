@@ -10,7 +10,8 @@ import { legacySectionText, missingNumbers, renderedText } from '../../helpers/p
 beforeEach(() => { mcsRunStore.setState({ last: null, running: false }); });
 afterEach(cleanup);
 const doc = () => appStore().getState().doc;
-const ev = () => (doc().MODEL as unknown as { EVIDENCE: { stage: string; drivers: Record<string, { tier: string; source: string; asOf: string; owner: string }> } }).EVIDENCE;
+const ev = () => (doc().MODEL as unknown as { EVIDENCE: { stage: string; drivers: Record<string,
+  { tier: string; source: string; asOf: string; owner: string }> } }).EVIDENCE;
 const undo = (n = 1) => act(() => { for (let i = 0; i < n; i++) appStore().undo(); });
 const tier = (label: string) => screen.getByLabelText(`Evidence tier of ${label}`);
 
@@ -37,7 +38,8 @@ describe('model-evidence section (P6 evidence ledger)', () => {
   it('a MEASURED tier needs a source and a fresh date, else it counts as BENCHMARK; editing a tier switches the ledger on', () => {
     loadFixture('golden');
     render(<Section />);
-    ['Acceptance rate (P1)', 'Year-1 ramp', 'Year-2 ramp', 'Year-3 ramp', 'Loaded day rate (blended)', 'Supervising capacity (P3)', 'Token unit price'].forEach((l) => fireEvent.change(tier(l), { target: { value: 'MEASURED' } }));
+    ['Acceptance rate (P1)', 'Year-1 ramp', 'Year-2 ramp', 'Year-3 ramp', 'Loaded day rate (blended)', 'Supervising capacity (P3)',
+      'Token unit price'].forEach((l) => fireEvent.change(tier(l), { target: { value: 'MEASURED' } }));
     expect(doc().MODEL.FLAGS.evl).toBe(true);
     expect(screen.getAllByText('used as BENCHMARK - see note')).toHaveLength(7);
     expect(screen.getByText(/score 60%/)).toBeTruthy();                           // BENCHMARK for all

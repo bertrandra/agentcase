@@ -10,13 +10,15 @@ const ids = readdirSync('fixtures/extras/vb_dom').map((f) => f.replace('.json', 
 const json = (p: string) => JSON.parse(readFileSync(p, 'utf8'));
 type Rows = string[][];
 interface Dom {
-  kpiCards: Rows; kpiEco: Rows; kpiVq: Rows; kpiComp: Rows; exec: Rows; asis: Rows; prod: Rows; dora: Rows; qual: Rows; qualInputs: string[]; compCards: Rows; comp: Rows;
+  kpiCards: Rows; kpiEco: Rows; kpiVq: Rows; kpiComp: Rows; exec: Rows; asis: Rows; prod: Rows; dora: Rows; qual: Rows; qualInputs: string[]; compCards: Rows;
+    comp: Rows;
   charts: Record<string, { labels: string[]; sets: { label: string; data: number[] }[] } | null>;
 }
 const body = (rows: string[][]) => rows.slice(1);
 
 describe('verify (second half) views reproduce the legacy renders', () => {
-  it('has fixtures for the extra cases', () => expect(ids).toEqual(expect.arrayContaining(['golden', 'vb-seq', 'vb-gantt-alt', 'vb-perf-edit', 'vb-scope-l0'])));
+  it('has fixtures for the extra cases',
+    () => expect(ids).toEqual(expect.arrayContaining(['golden', 'vb-seq', 'vb-gantt-alt', 'vb-perf-edit', 'vb-scope-l0'])));
   describe.each(ids)('%s', (id) => {
     const c = makeCtx(json(`fixtures/cases/${id}.json`) as CaseState), L = legacyJson(json(`fixtures/extras/vb_dom/${id}.json`) as Dom);
     it('kpi: cards, tables and index chart', () => {
@@ -37,7 +39,8 @@ describe('verify (second half) views reproduce the legacy renders', () => {
       const rows = L.prod.slice(2);
       expect(v.rows.map((r) => [r.label, String(r.asis), String(r.y1), String(r.y2), String(r.y3), `${(r.y3 / r.asis).toFixed(1)}x`])).toEqual(rows);
       expect(ch.labels).toEqual(v.rows.map((r) => r.label));
-      expect(L.prod[1]![0]).toBe(v.fallback ? `Selected scope maps to no standard throughput category — showing all, scaled to scope intensity (${v.intensity}% auto).`
+      expect(L.prod[1]![0]).toBe(v.fallback
+        ? `Selected scope maps to no standard throughput category — showing all, scaled to scope intensity (${v.intensity}% auto).`
         : `Showing ${v.count} categor${v.count > 1 ? 'ies' : 'y'} in scope · scope intensity ${v.intensity}% auto (${v.scopeCount}/${v.totalArt} artifacts).`);
     });
     it('velocity and DORA', () => {

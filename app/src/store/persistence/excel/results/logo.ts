@@ -24,5 +24,6 @@ export function addLogo(wb: Workbook, ws: Worksheet, src: string | undefined, at
   const m = src ? /^data:image\/(png|jpeg);base64,([A-Za-z0-9+/]+={0,2})$/.exec(src) : null;
   if (!m) return;
   const kind = m[1] as 'png' | 'jpeg', size = imageSize(m[2]!, kind), h = 48, w = size && size.h > 0 ? Math.min(240, Math.round((h * size.w) / size.h)) : 144;
-  try { ws.addImage(wb.addImage({ base64: m[2]!, extension: kind }), { tl: at, ext: { width: w, height: h } }); } catch { /* an unreadable picture is skipped */ }
+  try { ws.addImage(wb.addImage({ base64: m[2]!, extension: kind }), { tl: at, ext: { width: w, height: h } });
+    } catch { /* an unreadable picture is skipped */ }
 }

@@ -44,7 +44,8 @@ export const ThemeAxesContext = createContext<Partial<ThemeAxes> | null>(null);
 /** The value of one axis, re-rendering when the attribute changes (inside a ThemeAxesContext: that theme's value). */
 export function useThemeAxis<K extends AxisName>(k: K): ThemeAxes[K] {
   const scoped = useContext(ThemeAxesContext);
-  const root = useSyncExternalStore(subscribe, () => { const v = rootEl()?.getAttribute(axisAttr(k)); return isAxisValue(k, v) ? v : AXES[k].default; }, () => AXES[k].default) as ThemeAxes[K];
+  const root = useSyncExternalStore(subscribe, () => { const v = rootEl()?.getAttribute(axisAttr(k)); return isAxisValue(k, v) ? v : AXES[k].default; },
+    () => AXES[k].default) as ThemeAxes[K];
   if (!scoped) return root;
   const v = scoped[k];
   return (isAxisValue(k, v) ? v : AXES[k].default) as ThemeAxes[K];

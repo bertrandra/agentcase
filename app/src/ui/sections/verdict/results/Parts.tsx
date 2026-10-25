@@ -10,7 +10,7 @@ import { Kpi } from './Kpi';
 /** Invitation to run the simulation before any probabilistic verdict is shown. */
 export function NotComputed({ what, run }: { what: string; run: ReactNode }) {
   return (
-    <div className="ac-callout" style={{ borderStyle: 'dashed' }}>
+    <div className="ac-callout ac-callout-pending">
       {what} not yet computed — {run} to add the confidence-conditional recommendation.
       The figures below are the deterministic view.
     </div>
@@ -21,9 +21,9 @@ export function NotComputed({ what, run }: { what: string; run: ReactNode }) {
 export function VerdictBox({ d }: { d: Decision }) {
   const meta = VERDICT_META[d.verdict];
   return (
-    <div style={{ border: `2px solid var(--ac-${meta.tone})`, background: `var(--ac-${meta.bgTone})`, borderRadius: 'var(--ac-radius-xl)', padding: '12px 16px', margin: '8px 0', display: 'flex', justifyContent: 'space-between', flexWrap: 'wrap', gap: 8 }}>
-      <div style={{ fontSize: 'var(--ac-font-size-2xl)', fontWeight: 'var(--ac-font-weight-bold)', color: `var(--ac-${meta.tone})` }}>{meta.icon} {meta.label}</div>
-      <div><strong style={{ color: `var(--ac-${meta.tone})` }}>{d.confidence}%</strong> confidence · downside P10 <strong>{fmtEur(d.stats.p10)}</strong> · median P50 <strong>{fmtEur(d.stats.p50)}</strong></div>
+    <div className="ac-verdict ac-verdict-compact" data-tone={meta.tone} data-bg-tone={meta.bgTone}>
+      <div className="ac-verdict-label">{meta.icon} {meta.label}</div>
+      <div><strong className="ac-verdict-pct">{d.confidence}%</strong> confidence · downside P10 <strong>{fmtEur(d.stats.p10)}</strong> · median P50 <strong>{fmtEur(d.stats.p50)}</strong></div>
     </div>
   );
 }
@@ -46,19 +46,19 @@ export function SavingsAndTeam({ savingsTitle, teamTitle, b, team, extra }: {
   b: { grossAuto: number; agentCost: number; relocation: number; total: number }; team: { asis: number; human: number; agent: number };
 }) {
   return (
-    <div className="ac-form-row" style={{ alignItems: 'stretch' }}>
+    <div className="ac-form-row ac-stretch">
       <Panel title={savingsTitle}>
-        <div style={{ lineHeight: 'var(--ac-leading-code)' }}>
-          <b style={{ color: 'var(--ac-teal)' }}>{fmtEur(b.grossAuto)}</b> gross automation<br />
-          <b style={{ color: 'var(--ac-brick)' }}>−{fmtEur(b.agentCost)}</b> agent operating cost<br />
-          <b style={{ color: 'var(--ac-amber)' }}>{b.relocation >= 0 ? '+' : ''}{fmtEur(b.relocation)}</b> relocation<br />
-          <b style={{ color: 'var(--ac-blue)' }}>= {fmtEur(b.total)} total savings / yr</b>
+        <div className="ac-lines">
+          <b data-ink="teal">{fmtEur(b.grossAuto)}</b> gross automation<br />
+          <b data-ink="brick">−{fmtEur(b.agentCost)}</b> agent operating cost<br />
+          <b data-ink="amber">{b.relocation >= 0 ? '+' : ''}{fmtEur(b.relocation)}</b> relocation<br />
+          <b data-ink="blue">= {fmtEur(b.total)} total savings / yr</b>
         </div>
       </Panel>
       <Panel title={teamTitle}>
-        <div style={{ lineHeight: 'var(--ac-leading-code)' }}>
+        <div className="ac-lines">
           <strong>{team.asis.toFixed(1)}</strong> AS-IS human FTE →<br />
-          <b style={{ color: 'var(--ac-blue)' }}>{team.human.toFixed(1)}</b> residual human FTE + <b style={{ color: 'var(--ac-info-700)' }}>{team.agent.toFixed(1)}</b> agent vFTE
+          <b data-ink="blue">{team.human.toFixed(1)}</b> residual human FTE + <b data-ink="info">{team.agent.toFixed(1)}</b> agent vFTE
           {extra && <><br />{extra}</>}
         </div>
       </Panel>

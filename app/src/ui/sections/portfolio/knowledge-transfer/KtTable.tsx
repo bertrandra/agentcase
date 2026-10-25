@@ -37,7 +37,7 @@ export function KtTable() {
           <thead><tr>{COLS.map(([h, t]) => <th key={h} scope="col" title={t || undefined}>{h}</th>)}</tr></thead>
           <tbody>
             {rows.map((r) => (
-              <tr key={r.productId} className={r.productId === active ? 'is-active' : undefined} data-product={r.productId} onClick={() => pick(r)} style={{ cursor: 'pointer' }}>
+              <tr key={r.productId} className={r.productId === active ? 'ac-pick-row is-active' : 'ac-pick-row'} data-product={r.productId} onClick={() => pick(r)}>
                 <th scope="row">
                   <button type="button" aria-current={r.productId === active ? 'true' : undefined} aria-label={r.productId === active ? `${r.name} (active product)` : `Activate ${r.name}`}
                     onClick={(e) => { e.stopPropagation(); pick(r); }}>{r.name}</button>
@@ -46,11 +46,11 @@ export function KtTable() {
                 <td>{r.locked ? 'locked' : r.usesHub ? 'on' : 'off'}</td>
                 <td>{r.usesHub ? `CC${r.asisCC} → CC${r.targetCC}` : dash}{r.usesHub && r.capped && <strong title="The requested target exceeds the context cap"> (capped)</strong>}</td>
                 <td>{domains(r)}</td>
-                <td style={{ textAlign: 'right' }}>{money(r.setup, r.usesHub)}</td>
-                <td style={{ textAlign: 'right' }}>{money(r.annual, r.usesHub)}</td>
-                <td style={{ textAlign: 'right' }}>{r.usesHub ? Math.round(r.ktDays) : dash}</td>
+                <td className="ac-num">{money(r.setup, r.usesHub)}</td>
+                <td className="ac-num">{money(r.annual, r.usesHub)}</td>
+                <td className="ac-num">{r.usesHub ? Math.round(r.ktDays) : dash}</td>
                 <td>{r.usesHub && r.prepMonth !== null ? `${r.lead} months (from month ${r.prepMonth})` : dash}</td>
-                <td style={{ textAlign: 'right' }}>{money(r.hubDeltaSav, r.usesHub)}</td>
+                <td className="ac-num">{money(r.hubDeltaSav, r.usesHub)}</td>
               </tr>
             ))}
             {!rows.length && <tr><td colSpan={COLS.length}>No product in this filter.</td></tr>}
@@ -58,8 +58,8 @@ export function KtTable() {
           <tfoot>
             <tr data-total="true">
               <th scope="row">Total</th><td></td><td></td><td></td><td></td>
-              <td style={{ textAlign: 'right' }}>{fmtEurK(tot.setup)}</td><td style={{ textAlign: 'right' }}>{fmtEurK(tot.annual)}</td>
-              <td style={{ textAlign: 'right' }}>{Math.round(tot.ktDays)}</td><td></td><td style={{ textAlign: 'right' }}>{fmtEurK(tot.hubDeltaSav)}</td>
+              <td className="ac-num">{fmtEurK(tot.setup)}</td><td className="ac-num">{fmtEurK(tot.annual)}</td>
+              <td className="ac-num">{Math.round(tot.ktDays)}</td><td></td><td className="ac-num">{fmtEurK(tot.hubDeltaSav)}</td>
             </tr>
           </tfoot>
         </table>

@@ -4,7 +4,6 @@ import { Panel } from '@/ui/widgets/cards';
 import { useList } from '../data';
 
 const plural = (n: number, one: string, many: string) => `${n} ${n === 1 ? one : many}`;
-const box = (color: string, left: number) => ({ marginLeft: left, padding: '3px 8px', borderLeft: `${left ? 2 : 3}px solid ${color}`, fontSize: 'var(--ac-font-size-md)' });
 
 /** Vision → Portfolio → Epic → Feature → Story as a structure (these records carry no dates, so this is a hierarchy, not a calendar). */
 export function BusinessChain() {
@@ -16,13 +15,13 @@ export function BusinessChain() {
       {ports.length ? ports.map((p) => {
         const eps = epics.filter((e) => e.portfolioId === p.id);
         return (
-          <div key={p.id} style={box('var(--ac-blue)', 0)}>📁 <strong>{p.name}</strong> <span className="ac-muted">({plural(eps.length, 'epic', 'epics')})</span>
+          <div key={p.id} className="ac-chain" data-level="portfolio">📁 <strong>{p.name}</strong> <span className="ac-muted">({plural(eps.length, 'epic', 'epics')})</span>
             {eps.map((e) => {
               const fs = feats.filter((f) => f.epicId === e.id);
               return (
-                <div key={e.id} style={box('var(--ac-teal)', 12)}>🧩 <strong>{e.name}</strong> <span className="ac-muted">({plural(fs.length, 'feature', 'features')})</span>
+                <div key={e.id} className="ac-chain" data-level="epic">🧩 <strong>{e.name}</strong> <span className="ac-muted">({plural(fs.length, 'feature', 'features')})</span>
                   {fs.map((f) => (
-                    <div key={f.id} style={box('var(--ac-secondary-600)', 24)}>⭐ <strong>{f.name}</strong> <span className="ac-muted">({plural(stories.filter((s) => s.featureId === f.id).length, 'story', 'stories')})</span></div>
+                    <div key={f.id} className="ac-chain" data-level="feature">⭐ <strong>{f.name}</strong> <span className="ac-muted">({plural(stories.filter((s) => s.featureId === f.id).length, 'story', 'stories')})</span></div>
                   ))}
                 </div>
               );

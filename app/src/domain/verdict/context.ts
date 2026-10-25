@@ -9,7 +9,10 @@ import { wave2DecisionNotes } from './risk';
 
 export interface CtxLine { k: string; v: string }
 
-/** Where the product sits on the status axis, e.g. "Feature add (active development)" or "40% Greenfield · 60% Feature add" (one owner: scope/lifecycleView). */
+/**
+ * Where the product sits on the status axis, e.g. "Feature add (active development)" or "40% Greenfield · 60% Feature add" (one owner:
+ * scope/lifecycleView).
+ */
 export { statusLabel as lifecycleStatusLabel } from '../scope/lifecycleView';
 
 /** AI readiness index 0..100 of a case (null when nothing is answered): the tune/readiness owner applied to the case's answers. */

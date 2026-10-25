@@ -13,7 +13,11 @@ const subs = new Set<() => void>();
 const notify = () => subs.forEach((f) => f());
 
 let offer: RestoreOffer | null = null;   // a stable object per pending record (useSyncExternalStore compares snapshots by identity)
-const setPending = (r: AutosaveRecord | null) => { pending = r; offer = r ? { label: r.label, savedAt: r.savedAt, steps: r.format === 'portfolio' ? r.history.undo.length : 0 } : null; notify(); };
+const setPending = (r: AutosaveRecord | null) => {
+  pending = r;
+  offer = r ? { label: r.label, savedAt: r.savedAt, steps: r.format === 'portfolio' ? r.history.undo.length : 0 } : null;
+  notify();
+};
 export const getRestoreOffer = (): RestoreOffer | null => offer;
 export const onRestoreOffer = (f: () => void): (() => void) => { subs.add(f); return () => { subs.delete(f); }; };
 export function acceptRestore(): void {
@@ -22,7 +26,11 @@ export function acceptRestore(): void {
 }
 export function dismissRestore(): void { setPending(null); }
 
-export interface BootEnv { storage: AutosaveStorage | null; channel: ChannelLike | null; tabId: string; /** when the page was saved with a case inside: autosaves older than it are not offered */ embeddedSavedAt?: string }
+export interface BootEnv {
+  storage: AutosaveStorage | null; channel: ChannelLike | null; tabId: string;
+  /** when the page was saved with a case inside: autosaves older than it are not offered */
+  embeddedSavedAt?: string;
+}
 
 /** A page saved by "Save HTML snapshot" carries its case: open it before anything else (autosave offers come after, and only for newer records). */
 export function loadEmbeddedCase(d: Pick<Document, 'getElementById'>): { savedAt: string } | null {
@@ -43,7 +51,8 @@ export async function flushAutosave(): Promise<void> {
 export async function bootApp(env: BootEnv): Promise<() => void> {
   const stops: (() => void)[] = [];
   if (env.storage) {
-    const others = (await env.storage.list()).filter((r) => r.tabId !== env.tabId && r.savedAt > (env.embeddedSavedAt ?? '')).sort((a, b) => b.savedAt.localeCompare(a.savedAt));
+    const others = (await env.storage.list()).filter((r) => r.tabId !== env.tabId && r.savedAt > (env.embeddedSavedAt ?? '')).sort((a,
+      b) => b.savedAt.localeCompare(a.savedAt));
     setPending(others[0] ?? null);
     const autosave = startAutosave(appStore(), env.storage, env.tabId);
     flushNow = autosave.flush;

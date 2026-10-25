@@ -9,10 +9,12 @@ import { perfFrame } from './perf';
 export function execView(c: Ctx) {
   const { m, end, endL } = perfFrame(c), f = m.eff / 38, r = m.ramps as number[];
   const sp = (g: number, k: number) => Math.round(35 * (1 + g * k * f));
-  const phases: [string, number, number][] = [['L0/Spec', 14, 6], ['V1-V2 Design', 21, 10], ['V3 Code', 28, 11], ['V4-V5 Test', 21, 7], ['V6-V7 Release', 10, 3]];
+  const phases: [string, number, number][] = [['L0/Spec', 14, 6], ['V1-V2 Design', 21, 10], ['V3 Code', 28, 11], ['V4-V5 Test', 21, 7],
+    ['V6-V7 Release', 10, 3]];
   return {
     endL,
-    sprints: [['AS-IS', 35], ['Y1', sp(r[0] as number / 100, 0.3)], ['Y2', sp(r[1] as number / 100, 0.5)], [endL, sp(end.adoptionEndPct / 100, 0.8)]] as [string, number][],
+    sprints: [['AS-IS', 35], ['Y1', sp(r[0] as number / 100, 0.3)], ['Y2', sp(r[1] as number / 100, 0.5)],
+      [endL, sp(end.adoptionEndPct / 100, 0.8)]] as [string, number][],
     rows: phases.map(([name, a, t]) => {
       const y = (k: number) => Math.round(a - (a - t) * (r[k] as number) / (r[2] as number));
       return { name, cells: [`${a}j`, `${y(0)}j`, `${y(1)}j`, `${t}j`] };
@@ -30,7 +32,8 @@ export function asisTobeView(c: Ctx) {
     ['Calendar duration', '14 wk', `${(14 * (1 - red / 100 * 0.6)).toFixed(1)} wk`, `-${Math.round(red * 0.6)}%`],
     ['Human effort (PD)', '120', (120 * (1 - red / 100)).toFixed(0), `-${red}%`],
     ['Generation/artifact', '8h', `${(8 * (1 - red / 100 * 0.75)).toFixed(1)}h`, `-${Math.round(red * 0.75)}%`],
-    ['Review cycles', '3.2', '1.5', '-53%'], ['Defects', '8-12%', '2-4%', '-75%'], ['Test coverage', '55-65%', '85-92%', '+27pp'], ['Cost/SP', '€650', '€185', '-71%'],
+    ['Review cycles', '3.2', '1.5', '-53%'], ['Defects', '8-12%', '2-4%', '-75%'], ['Test coverage', '55-65%', '85-92%', '+27pp'],
+    ['Cost/SP', '€650', '€185', '-71%'],
   ];
   return { endL, rows };
 }
@@ -43,7 +46,8 @@ export function productivityView(c: Ctx) {
   const inList = all.filter((a) => inScope.has(a.phase)), fallback = inList.length === 0, items = fallback ? all : inList;
   return {
     endL, fallback, count: items.length, intensity: sc.avgAgent, scopeCount: sc.count, totalArt: sc.totalArt,
-    rows: items.map((a) => ({ label: a.label, asis: a.asis, y1: tpVal(a.asis, a.target, r1), y2: tpVal(a.asis, a.target, r2), y3: tpVal(a.asis, a.target, r3) })),
+    rows: items.map((a) => ({ label: a.label, asis: a.asis, y1: tpVal(a.asis, a.target, r1), y2: tpVal(a.asis, a.target, r2),
+      y3: tpVal(a.asis, a.target, r3) })),
   };
 }
 
@@ -53,7 +57,8 @@ export function velocityView(c: Ctx) {
   return {
     endL, velocity: [vs.asis, vv(r1), vv(r2), vv(r3)],
     rows: doraAnchors(c.s).filter((a) => a.id !== 'velocitySp').map((a) => ({
-      label: a.label, cells: [a.asis, anchorClamp(a.asis, a.target, r1), anchorClamp(a.asis, a.target, r2), anchorClamp(a.asis, a.target, r3), a.target].map((v) => daFmt(c.s, a.id, v)),
+      label: a.label, cells: [a.asis, anchorClamp(a.asis, a.target, r1), anchorClamp(a.asis, a.target, r2), anchorClamp(a.asis, a.target, r3),
+        a.target].map((v) => daFmt(c.s, a.id, v)),
     })),
   };
 }

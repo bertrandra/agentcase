@@ -1,6 +1,7 @@
 import { Chart, registerables, type ChartConfiguration } from 'chart.js';
 import { useEffect, useMemo, useRef } from 'react';
 import type { Theme } from '@/domain/theme/resolve';
+import { cssVars, px } from '../cssVars';
 import { ErrorBoundary } from '../errors/ErrorBoundary';
 import { ChartFallback } from '../errors/fallbacks';
 import { useTheme } from '../themeContext';
@@ -57,7 +58,7 @@ function ChartCanvas({ config, label, height = 280 }: ChartProps) {
   }, [config, theme]);
   useEffect(() => () => { chart.current?.destroy(); chart.current = null; }, []);
   return (
-    <div className="ac-chart" style={{ height }}>
+    <div className="ac-chart" style={cssVars({ '--dyn-chart-h': px(height) })}>{/* dynamic: each chart has its own height */}
       <canvas ref={canvas} role="img" aria-label={label} />
       {lines.length > 0 && <div className="ac-sr" data-chart-data role="group" aria-label={`${label} — data`}>{lines.map((l, i) => <p key={i}>{l}</p>)}</div>}
     </div>

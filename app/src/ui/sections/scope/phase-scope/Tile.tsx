@@ -8,8 +8,9 @@ export function Tile({ t }: { t: PhaseTile }) {
   useEffect(() => { if (box.current) box.current.indeterminate = t.state === 'some'; }, [t.state]);
   return (
     <label className={`ac-tile${t.state === 'none' ? ' is-off' : ''}`}>
-      <span style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
-        <input ref={box} type="checkbox" aria-label={`Phase ${t.id}`} checked={t.state === 'all'} disabled={t.empty} onChange={(e) => togglePhase(t.id, e.target.checked)} />
+      <span className="ac-tile-head">
+        <input ref={box} type="checkbox" aria-label={`Phase ${t.id}`} checked={t.state === 'all'} disabled={t.empty}
+          onChange={(e) => togglePhase(t.id, e.target.checked)} />
         <span><strong>{t.id}</strong> — {t.name}</span>
       </span>
       <span className="ac-tile-m">

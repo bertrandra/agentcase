@@ -59,8 +59,10 @@ export function sheetDiffs(exp: SheetDump[], got: SheetDump[]): string[] {
 }
 
 type EditValue = string | number | { date: string } | { rich: string } | { formula: string; result: string };
-export interface DdEdits { rows: { id: string; st?: EditValue; owner?: EditValue; due?: EditValue; note?: EditValue }[]; append: { id: string; st?: EditValue; note?: EditValue }[] }
-const asCell = (v: EditValue) => (typeof v === 'object' ? ('date' in v ? new Date(v.date) : 'rich' in v ? { richText: [{ text: v.rich.slice(0, 4) }, { text: v.rich.slice(4) }] } : { formula: v.formula, result: v.result }) : v);
+export interface DdEdits { rows: { id: string; st?: EditValue; owner?: EditValue; due?: EditValue; note?: EditValue }[];
+  append: { id: string; st?: EditValue; note?: EditValue }[] }
+const asCell = (v: EditValue) => (typeof v === 'object' ? ('date' in v ? new Date(v.date) : 'rich' in v ? { richText: [{ text: v.rich.slice(0, 4) },
+  { text: v.rich.slice(4) }] } : { formula: v.formula, result: v.result }) : v);
 
 /** Mirror of editDdWorkbook() in tools/xlsx-dump.mjs: the hand edits a client makes to a pack, returned as a new .xlsx. */
 export async function editPack(buf: ArrayBuffer, edits: DdEdits): Promise<ArrayBuffer> {

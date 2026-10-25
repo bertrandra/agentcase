@@ -10,7 +10,8 @@ const FORMAT_OPTS: Opt[] = FORMAT_IDS.map((f) => ({ value: f, label: f }));
 const OVERLAY_OPTS: Opt[] = OVERLAY_CONTROLS.map((o) => ({ value: o.id, label: o.label }));
 
 /** Variables of `source` (its own plus the GLOBAL ones): set the Source first, it decides what can be picked. Lists build only while choosing. */
-export function VarPicker({ source, value, label, onChange }: { source: string | null | undefined; value: string | null | undefined; label: string; onChange: (v: string | null) => void }) {
+export function VarPicker({ source, value, label, onChange }: { source: string | null | undefined; value: string | null | undefined; label: string;
+  onChange: (v: string | null) => void }) {
   const options = variablesForSection(source ?? '').map((v) => ({ value: v.id, label: `[${scopeLabel(v.scope)}] ${v.label}` }));
   return <LazySelect ariaLabel={label} value={value ?? ''} options={options} emptyLabel="—" onChange={(v) => onChange(v || null)} />;
 }

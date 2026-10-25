@@ -32,10 +32,13 @@ export function addProduct<T extends Portfolio>(pf: T, o: { id: string; name: st
   return place({ ...pf, products: [...pf.products, prod] }, o.id, o.waveId ?? null);
 }
 
-export const renameProduct = <T extends Portfolio>(pf: T, id: string, name: string): T => (name.trim() ? mapProduct(pf, id, (p) => ({ ...p, name: name.trim() })) : pf);
+export const renameProduct = <T extends Portfolio>(pf: T, id: string,
+  name: string): T => (name.trim() ? mapProduct(pf, id, (p) => ({ ...p, name: name.trim() })) : pf);
 export const setProductNote = <T extends Portfolio>(pf: T, id: string, note: string): T => mapProduct(pf, id, (p) => ({ ...p, note: note || undefined }));
-export const archiveProduct = <T extends Portfolio>(pf: T, id: string, archived: boolean): T => mapProduct(pf, id, (p) => ({ ...p, archived: archived || undefined }));
-export const setProductOffset = <T extends Portfolio>(pf: T, id: string, months: number): T => mapProduct(pf, id, (p) => ({ ...p, offsetMonths: whole(months) }));
+export const archiveProduct = <T extends Portfolio>(pf: T, id: string, archived: boolean): T => mapProduct(pf, id,
+  (p) => ({ ...p, archived: archived || undefined }));
+export const setProductOffset = <T extends Portfolio>(pf: T, id: string, months: number): T => mapProduct(pf, id,
+  (p) => ({ ...p, offsetMonths: whole(months) }));
 
 /** F3: the copy takes the team, the overrides and the knowledge subset, and joins the source's wave right after it. */
 export function duplicateProduct<T extends Portfolio>(pf: T, id: string, copyId: string, name?: string): T {
@@ -52,7 +55,8 @@ export function removeProduct<T extends Portfolio>(pf: T, id: string): T {
   if (i < 0 || pf.products.length < 2) return pf;
   const products = pf.products.filter((p) => p.id !== id);
   const active = pf.activeProductId === id ? (products[Math.min(i, products.length - 1)] as Product).id : pf.activeProductId;
-  return { ...pf, products, activeProductId: active, waves: pf.waves.map((w) => (w.productIds.includes(id) ? { ...w, productIds: w.productIds.filter((x) => x !== id) } : w)) };
+  return { ...pf, products, activeProductId: active,
+    waves: pf.waves.map((w) => (w.productIds.includes(id) ? { ...w, productIds: w.productIds.filter((x) => x !== id) } : w)) };
 }
 
 /** Set (or, for `clear`ed fields, drop) fields of the product's knowledge subset; an absent field is inherited from the common hub. */

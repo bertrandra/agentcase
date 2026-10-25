@@ -16,13 +16,19 @@ const COLS: AggColumn<EvidenceRow>[] = [
   { key: 'm', header: 'Measured drivers', align: R, render: (r) => r.measured }, { key: 'b', header: 'Benchmark drivers', align: R, render: (r) => r.benchmark }, { key: 'a', header: 'Assumed drivers', align: R, render: (r) => r.assumed },
 ];
 
-/** Per-product detail with the equal-weight grade (the tornado weights come from the P4 run of the edited product, so they are not applied to another product). */
+/**
+ * Per-product detail with the equal-weight grade (the tornado weights come from the P4 run of the edited product, so they are not applied to another
+ * product).
+ */
 function EvidenceDetail() {
   const em = evlModel(useCtx(), null);
   return <SectionFrame title="Evidence ledger of the product" result={<><Grade em={em} /><DriverTable em={em} /></>} />;
 }
 
-/** Evidence ledger (P6) — Aggregate view: confidence grade and evidence tiers of the seven drivers of each product in view; the roll-up counts tiers and gives the worst grade. */
+/**
+ * Evidence ledger (P6) — Aggregate view: confidence grade and evidence tiers of the seven drivers of each product in view; the roll-up counts tiers
+ * and gives the worst grade.
+ */
 export default function EvidenceAggregate() {
   const { rows, on, measured, benchmark, assumed, worst } = useEvidenceRows();
   return (

@@ -18,7 +18,10 @@ const COLS: AggColumn<StochasticRow>[] = [
   { key: 'p50', header: 'P50 net benefit (portfolio run)', align: R, title: 'Median of the product’s own distribution in the last portfolio simulation', render: (r) => (r.p50 === null ? '—' : fmtEur(r.p50)) },
 ];
 
-/** Per-product detail: the stochastic settings of the product and its distribution in the last portfolio simulation (the P4 run of the edited product is not shown for another product). */
+/**
+ * Per-product detail: the stochastic settings of the product and its distribution in the last portfolio simulation (the P4 run of the edited product
+ * is not shown for another product).
+ */
 function StochasticDetail() {
   const c = useCtx(), id = useActiveProductId(), m = mcsOf(c.s.MODEL), p = usePortfolioSimulation().run?.products.find((x) => x.id === id);
   return (
@@ -32,7 +35,10 @@ function StochasticDetail() {
   );
 }
 
-/** Stochastic layer (P4) — Aggregate view: phase flag, settings and median net benefit of each product in view; the distribution of the selection is the portfolio Monte Carlo. */
+/**
+ * Stochastic layer (P4) — Aggregate view: phase flag, settings and median net benefit of each product in view; the distribution of the selection is
+ * the portfolio Monte Carlo.
+ */
 export default function StochasticAggregate() {
   const { rows, on } = useStochasticRows(), sel = useSelectionStress();
   return (

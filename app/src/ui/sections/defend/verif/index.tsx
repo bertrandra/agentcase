@@ -25,14 +25,18 @@ const help = (
 
 /** Detailed logic verification — provenance, convergence checks, consistency checks, calculation chain and directional sensitivity. */
 export default function VerifSection() {
-  const c = useCtx(), mcsLast = useSyncExternalStore(mcsRunStore.subscribe, () => mcsRunStore.getState().last), deps = useDoc((d) => d.SECTION_DEPS as DepEdges | undefined);
-  // session state some audits read (legacy MCS_LAST, SECTION_CATALOG / SECTION_DEPS); the Monthly Playback keeps its play state in its own section, so it is idle here
-  const v = useMemo(() => ({ prov: provenance(c), conv: convergenceChecks(c, { mcsLast, deps, sections: SECTIONS }), checks: verifChecks(c), chain: calcChain(c), sensi: directionalSensitivity(c) }), [c, mcsLast, deps]);
+  const c = useCtx(), mcsLast = useSyncExternalStore(mcsRunStore.subscribe, () => mcsRunStore.getState().last),
+    deps = useDoc((d) => d.SECTION_DEPS as DepEdges | undefined);
+  // session state some audits read (legacy MCS_LAST, SECTION_CATALOG / SECTION_DEPS); the Monthly Playback keeps its play state in its own section,
+  // so it is idle here
+  const v = useMemo(() => ({ prov: provenance(c), conv: convergenceChecks(c, { mcsLast, deps, sections: SECTIONS }), checks: verifChecks(c),
+    chain: calcChain(c), sensi: directionalSensitivity(c) }), [c, mcsLast, deps]);
   return (
     <SectionFrame title="🔍 Detailed logic verification" help={help}
       result={<>
         <Provenance p={v.prov} /><Convergence checks={v.conv} />
-        <Callout>This tab exposes the <strong>full calculation chain</strong> and runs <strong>automatic consistency checks</strong> on the current configuration. Goal: traceability and auditability of the model (V7 fixes).</Callout>
+        <Callout>This tab exposes the <strong>full calculation chain</strong> and runs <strong>automatic consistency checks</strong> on the current
+          configuration. Goal: traceability and auditability of the model (V7 fixes).</Callout>
         <Checks checks={v.checks} /><Chain rows={v.chain} /><Conventions /><Sensi rows={v.sensi} />
       </>} />
   );

@@ -14,7 +14,10 @@ afterEach(cleanup);
 const state = () => appStore().getState().doc;
 const calc = () => computeCase(state());
 const text = (c: HTMLElement) => renderedText(c).replace(/\s+/g, ' ');
-const yearCost = (c: HTMLElement, y: number) => parseFloat(/Y1 ≈ €[\d,]+K/.test(text(c)) ? (new RegExp(`Y${y} ≈ €([\\d,]+)K/yr`).exec(text(c))?.[1] ?? 'NaN').replace(',', '') : 'NaN');
+const yearCost = (c: HTMLElement, y: number) => {
+  if (!/Y1 ≈ €[\d,]+K/.test(text(c))) return NaN;
+  return parseFloat((new RegExp(`Y${y} ≈ €([\\d,]+)K/yr`).exec(text(c))?.[1] ?? 'NaN').replace(',', ''));
+};
 
 describe('maturity section', () => {
   it.each(['golden', 'ctx-msi', 'curve-logistic', 'industry-med'])('shows every figure the legacy section showed (%s)', (fx) => {

@@ -8,7 +8,10 @@ import { portfolioGantt } from './portfolioGantt';
 const col = (key: string, header: string, kind: VCol['kind'] = 'int', title?: string): VCol => ({ key, header, kind, title });
 const BLANK = { start: null, end: null, first: null, s0: null, s1: null, s2: null, s3: null };
 
-/** Execution timeline of a selection: where each product sits on the calendar (start, ramp end, first agent vFTE) and its sprint velocity; the line is the programme span. */
+/**
+ * Execution timeline of a selection: where each product sits on the calendar (start, ramp end, first agent vFTE) and its sprint velocity; the line is
+ * the programme span.
+ */
 export const execTable = viewMemo((sel, pf): VTable => {
   const g = portfolioGantt(pf, sel.c), rows = g.waves.flatMap((w) => w.products), by = new Map(rows.map((p) => [p.id, p]));
   const at = (id: string) => by.get(id)!;
@@ -34,7 +37,10 @@ export const productivityTable = viewMemo((sel): VTable => {
     col('factor', 'Factor (x)', 'n2'), col('base', 'Entry FTE', 'n1')], rows, total: { cats: null, intensity: null, asis, end, factor: asis > 0 ? end / asis : null, base: w } };
 });
 
-/** Velocity of a selection: sprint velocity from AS-IS to the horizon end and the lead time of each product; the uplift line is `weightedVelocity` (entry-team weighted). */
+/**
+ * Velocity of a selection: sprint velocity from AS-IS to the horizon end and the lead time of each product; the uplift line is `weightedVelocity`
+ * (entry-team weighted).
+ */
 export const velocityTable = viewMemo((sel): VTable => {
   const rows = productRows(sel, (v, l) => {
     const d = velocityView(l.c), lead = d.rows.find((r) => r.label === 'Lead time')?.cells;
@@ -55,7 +61,10 @@ export const qualityTable = viewMemo((sel): VTable => {
   return { columns: [...METRICS.map(([k, n]) => col(k, n, 'text', 'AS-IS → horizon end')), col('edited', 'Overridden anchors')], rows, total: { ...Object.fromEntries(METRICS.map(([k]) => [k, null])), edited: sum(colOf(rows, 'edited')) } };
 });
 
-/** Compliance of a selection: sector, glass ceiling, automatable maximum and regulatory artifacts of each product; the line is the entry-team weighted ceiling and the artifact count. */
+/**
+ * Compliance of a selection: sector, glass ceiling, automatable maximum and regulatory artifacts of each product; the line is the entry-team weighted
+ * ceiling and the artifact count.
+ */
 export const complianceTable = viewMemo((sel): VTable => {
   const rows = productRows(sel, (_v, l) => {
     const s = complianceView(l.c).sectors.find((x) => x.selected), ceil = l.m.ceiling;

@@ -13,7 +13,10 @@ const COLS: AggColumn<VerificationRow>[] = [
   { key: 'rate', header: 'Verification-tax rate', align: R, render: (r) => pct1(r.rate) }, { key: 'rho', header: 'ρmax (ROI ceiling)', align: R, render: (r) => pct1(r.rhoMax) },
 ];
 
-/** Verification tax (P2) — Aggregate view: derived tax rate, floor and structural ROI ceiling ρmax of each product in view; the roll-up counts phases on and gives the lowest ceiling. */
+/**
+ * Verification tax (P2) — Aggregate view: derived tax rate, floor and structural ROI ceiling ρmax of each product in view; the roll-up counts phases
+ * on and gives the lowest ceiling.
+ */
 export default function VerificationAggregate() {
   const { rows, on, lowestRhoMax } = useVerificationRows();
   return (

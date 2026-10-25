@@ -40,10 +40,14 @@ export function buildDeps(root: string): DepsData {
     if (p.pure.has(t) || p.pure.has(f) || !drawn(zt) || !drawn(tag.zone) || zt === tag.zone) continue;
     push(f.startsWith('src/domain/') ? pairs : outerPairs, `${zt}|${tag.zone}`, `${t}>${f}`);
   }
-  const zoneEdges = (m: Map<string, Set<string>>): DepEdge[] => [...m].map(([k, v]) => { const [a, b] = k.split('|') as [string, string]; return [a, b, 'z', v.size] as DepEdge; });
+  const zoneEdges = (m: Map<string, Set<string>>): DepEdge[] => [...m].map(([k, v]) => {
+    const [a, b] = k.split('|') as [string, string];
+    return [a, b, 'z', v.size] as DepEdge;
+  });
   const edges = zoneEdges(pairs), outer = zoneEdges(outerPairs).sort((a, b) => a[0].localeCompare(b[0]) || a[1].localeCompare(b[1]));
 
-  const sections = catalog.map((c) => ({ id: c.id, label: c.label, group: c.group, kind: kinds[c.id] ?? 'S-static', files: found.get(c.id)?.files.length ?? 0 }));
+  const sections = catalog.map((c) => ({ id: c.id, label: c.label, group: c.group, kind: kinds[c.id] ?? 'S-static',
+    files: found.get(c.id)?.files.length ?? 0 }));
   const zIdx = new Map(zoneIds.map((z, i) => [z, i])), sIdx = new Map(sections.map((s, i) => [s.id, i])), reaches = new Map<string, Set<string>>();
   for (const c of catalog) {
     const s = found.get(c.id);
@@ -51,7 +55,10 @@ export function buildDeps(root: string): DepsData {
     const reach = sectionReach(p, s, tags, ignore), by = new Map<string, Set<string>>();
     reaches.set(c.id, reach);
     for (const m of reach) if (drawn(tags.get(m)!.zone)) push(by, `${tags.get(m)!.zone}|${m.startsWith('src/controllers/') ? 'w' : 'r'}`, m);
-    for (const [k, mods] of by) { const [z, kind] = k.split('|') as [string, 'r' | 'w']; edges.push(kind === 'w' ? [c.id, z, 'w', mods.size] : [z, c.id, 'r', mods.size]); }
+    for (const [k, mods] of by) {
+      const [z, kind] = k.split('|') as [string, 'r' | 'w'];
+      edges.push(kind === 'w' ? [c.id, z, 'w', mods.size] : [z, c.id, 'r', mods.size]);
+    }
   }
   edges.sort((a, b) => a[0].localeCompare(b[0]) || a[1].localeCompare(b[1]) || a[2].localeCompare(b[2]));
 
@@ -68,14 +75,20 @@ export function buildDeps(root: string): DepsData {
   const hits = new Map<string, number>();
   const tests = p.files.filter((f) => /^tests\/.*\.test\.tsx?$/.test(f)).map((f): [string, string, string] => {
     const zs = new Set<number>(), ss = new Set<number>();
-    for (const m of closure(p, f)) { hits.set(m, (hits.get(m) ?? 0) + 1); const z = tags.get(m)?.zone; if (z) zs.add(zIdx.get(z)!); (secOf.get(m) ?? []).forEach((i) => { if (i >= 0) ss.add(i); }); }
+    for (const m of closure(p, f)) {
+      hits.set(m, (hits.get(m) ?? 0) + 1);
+      const z = tags.get(m)?.zone;
+      if (z) zs.add(zIdx.get(z)!);
+      (secOf.get(m) ?? []).forEach((i) => { if (i >= 0) ss.add(i); });
+    }
     return [f, encodeSet([...zs]), encodeSet([...ss])];
   });
   const modules = zoneIds.map((id) => {
     const own = [...tags].filter(([, t]) => t.zone === id).map(([f]) => hits.get(f) ?? 0).sort((a, b) => a - b);
     return { id, modules: own.length, tmed: own[own.length >> 1] ?? 0, tmax: own[own.length - 1] ?? 0 };
   });
-  return { schema: 1, counts: { files: p.files.filter((f) => f.startsWith('src/')).length, tagged: tags.size, tests: tests.length }, zones: modules, sections, edges, outer, figures, ignored: cfg.ignore, tests };
+  return { schema: 1, counts: { files: p.files.filter((f) => f.startsWith('src/')).length, tagged: tags.size, tests: tests.length }, zones: modules, sections,
+    edges, outer, figures, ignored: cfg.ignore, tests };
 }
 
 /** One line per array element: small diffs, compact file. */

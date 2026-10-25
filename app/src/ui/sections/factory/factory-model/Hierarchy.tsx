@@ -18,7 +18,7 @@ export function Hierarchy() {
   return (
     <>
       <Panel title="🎯 Vision">
-        <textarea aria-label="Vision" rows={2} style={{ width: '100%' }} placeholder="The transformation's north star — one line." value={vision} onChange={(e) => setVision(e.target.value)} />
+        <textarea aria-label="Vision" rows={2} className="ac-wide" placeholder="The transformation's north star — one line." value={vision} onChange={(e) => setVision(e.target.value)} />
       </Panel>
       <Panel title="📁 Portfolio">
         <RecordTable coll="PORTFOLIO_ITEMS" rows={portfolios} noun="portfolio items" empty="No portfolio items yet." addLabel="+ Add portfolio item" label={label} cols={[{ kind: 'text', header: 'Name', field: 'name' }]} />
@@ -32,7 +32,7 @@ export function Hierarchy() {
           cols={[{ kind: 'text', header: 'Name', field: 'name' }, { kind: 'link', header: 'Epic', field: 'epicId', options: nameOptions(epics) },
             { kind: 'custom', header: 'SDLC phases', render: (f) => (
               <span>{PHASES.map((p) => (
-                <label key={p.id} className="ac-check" style={{ display: 'inline-flex', gap: 2, marginRight: 6, fontSize: 'var(--ac-font-size-xs-plus)' }}>
+                <label key={p.id} className="ac-check ac-phase-check">
                   <input type="checkbox" aria-label={`Link ${label(f)} to phase ${p.id}`} checked={(phases.find((x) => x.id === p.id)?.featureIds ?? []).includes(f.id)} onChange={(e) => togglePhaseFeature(f.id, p.id, e.target.checked)} />{p.id}
                 </label>))}</span>) }]} />
       </Panel>

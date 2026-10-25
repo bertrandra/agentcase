@@ -8,12 +8,19 @@ import { isPinnedRow, pinIndex, teamWeights } from './teamWeights';
 
 const withRows = (c: Ctx, rows: TeamRow[]): Ctx => ({ ...c, s: { ...c.s, teamIn: rows } });
 
-/** Rebuild the auto rows from the artefact skill mix, keep pinned rows; the (snapped) total is apportioned over every row's weight (legacy buildTeamFromArtefacts). */
+/**
+ * Rebuild the auto rows from the artefact skill mix, keep pinned rows; the (snapped) total is apportioned over every row's weight (legacy
+ * buildTeamFromArtefacts).
+ */
 export function buildTeamRows(c: Ctx): TeamRow[] {
   const rows = c.s.teamIn, W = teamWeights(c), map = skillMapOf(c.s);
   const totalFTE = W.totalFTE > 0 ? W.totalFTE : 15;
   const gl: Record<string, [string, string, number]> = {};
-  rows.forEach((r) => { if (isPinnedRow(r)) return; const cur = gl[r.skill]; if (!cur || (+r.etp || 0) > cur[2]) gl[r.skill] = [r.grade, r.loc, +r.etp || 0]; });
+  rows.forEach((r) => {
+    if (isPinnedRow(r)) return;
+    const cur = gl[r.skill];
+    if (!cur || (+r.etp || 0) > cur[2]) gl[r.skill] = [r.grade, r.loc, +r.etp || 0];
+  });
   const kept: TeamRow[] = [], keptW: number[] = [];
   rows.forEach((r, i) => { if (isPinnedRow(r)) { kept.push({ ...r }); keptW.push(W.rowW[i]!); } });
   const pin = pinIndex(rows), pool: Record<string, number> = {};

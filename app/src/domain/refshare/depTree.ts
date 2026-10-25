@@ -68,7 +68,9 @@ export function buildOrder(deps: DepEdges, sections: DepSection[], groups: DepGr
   sections.forEach((s) => perGroup.set(s.group, [...(perGroup.get(s.group) ?? []), s]));
   for (const list of perGroup.values()) {
     const slots = list.map((s) => s.groupSeq || 0).sort((a, b) => a - b);
-    list.slice().sort((a, b) => ((depth[a.id] as number) - (depth[b.id] as number)) || ((a.groupSeq || 0) - (b.groupSeq || 0))).forEach((s, i) => { newSeq[s.id] = slots[i] as number; });
+    list.slice().sort((a, b) => ((depth[a.id] as number) - (depth[b.id] as number)) || ((a.groupSeq || 0) - (b.groupSeq || 0))).forEach((s, i) => {
+      newSeq[s.id] = slots[i] as number;
+    });
   }
   const gBySrc = new Map<string, string[]>(), gLayer: Record<string, number> = {}, brokenSet = new Set(gBroken.map((e) => `${e[0]}>${e[1]}`));
   gKept.forEach(([a, b]) => gBySrc.set(a, [...(gBySrc.get(a) ?? []), b]));

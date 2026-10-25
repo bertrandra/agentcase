@@ -8,7 +8,8 @@ import { exportTheme } from './exportTheme';
 
 /**
  * The Critical & Regulated Software Delivery report (read-only: nothing is written to the document). The scope is the store's display scope (not saved:
- * Product = the active product, Portfolio, Wave) unless given; a product other than the active one is asked for by `productId`. A plain single case, and the Product scope, give today's report text for text.
+ * Product = the active product, Portfolio, Wave) unless given; a product other than the active one is asked for by `productId`. A plain single case,
+ * and the Product scope, give today's report text for text.
  */
 export const criticalReport = (now: Date = new Date(), scope?: DisplayScope, productId?: string): ReportResult => {
   const { portfolio } = appStore().getState();

@@ -8,7 +8,10 @@ import { mountApp } from '../helpers/portfolioUi';
 
 vi.mock('@/ui/widgets/ChartPanel', async () => import('../helpers/chartStub'));
 
-/** Smoke test of the 13 aggregate views of the groups stress, model-engine and defend: under a Portfolio and under a Wave, no crash, no console error, the banner, no "coming soon" note. */
+/**
+ * Smoke test of the 13 aggregate views of the groups stress, model-engine and defend: under a Portfolio and under a Wave, no crash, no console error,
+ * the banner, no "coming soon" note.
+ */
 const IDS = ['montecarlo', 'scenarios', 'compare', 'sensitivity', 'model-stochastic', 'model-convergence', 'model-supervision', 'model-flow', 'model-evidence', 'model-verification', 'assumptions', 'verif', 'duediligence'];
 let waves: [string, string];
 beforeEach(() => { ({ waves } = threeProducts()); });

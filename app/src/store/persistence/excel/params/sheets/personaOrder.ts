@@ -52,7 +52,10 @@ function readSeq({ rows, w, hasSection }: ReadCtx): void {
     if (!st) { st = { label: str(x[3]), sections: [] }; a.steps.set(stepNo, st); a.order.push(stepNo); }
     const sid = str(x[4]); if (sid && hasSection(sid)) st.sections.push(sid);
   });
-  by.forEach((a, pid) => { const p = w.PERSONAS.find((q) => q.id === pid); if (p) p.seq = { on: a.on, steps: a.order.map((n) => a.steps.get(n) as { label: string; sections: string[] }) }; });
+  by.forEach((a, pid) => {
+    const p = w.PERSONAS.find((q) => q.id === pid);
+    if (p) p.seq = { on: a.on, steps: a.order.map((n) => a.steps.get(n) as { label: string; sections: string[] }) };
+  });
 }
 
 export const personaSectionOrder: SheetFamily = { sheets: ['Persona Section Order'], write: writeOrder, read: readOrder };

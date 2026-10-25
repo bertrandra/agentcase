@@ -41,7 +41,8 @@ describe('opmodel section', () => {
   });
   it('the roles re-label the residual team: they add up to it (CC-OM-01) and nothing is added', () => {
     render(<OpModel />);
-    const roles = [/Pod Orchestrator/, /AI Reviewer/, /Engineers/, /Preceptor/, /Agent Architect/, /Token FinOps/, /Design Authority/, /AI Office — Lead/].map(y1);
+    const roles = [/Pod Orchestrator/, /AI Reviewer/, /Engineers/, /Preceptor/, /Agent Architect/, /Token FinOps/, /Design Authority/, /AI Office — Lead/]
+      .map(y1);
     const residual = y1(/Residual project team/);
     expect(roles.reduce((a, b) => a + b, 0)).toBeCloseTo(residual, 1);
     expect(y1(/Total human headcount/)).toBeCloseTo(residual + y1(/Agentic run team/), 1);

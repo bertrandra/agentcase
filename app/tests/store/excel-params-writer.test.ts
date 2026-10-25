@@ -12,7 +12,10 @@ import { THEME_DEFAULT } from '@/domain/theme';
 const ids = xlsxIds().filter((id) => !id.startsWith('xl-'));
 /** Cells whose text differs from the legacy file on purpose: none today (reference columns are reproduced too). */
 const SKIP = new Set<string>([]);
-/** DEV-ARCH-CONTENT: the two architecture sections have a new catalogue description (Sections sheet, description column), so the legacy text differs on purpose. */
+/**
+ * DEV-ARCH-CONTENT: the two architecture sections have a new catalogue description (Sections sheet, description column), so the legacy text differs
+ * on purpose.
+ */
 const ARCH_DESC = /^(One-line-each index of the 5 layers|Full technical detail: functions, code references, wiring status)/;
 const archDescription = (name: string, v: unknown): boolean => name === 'Sections' && typeof v === 'string' && ARCH_DESC.test(v);
 const same = (a: unknown, b: unknown, sheet = ''): boolean => {
@@ -25,7 +28,8 @@ const same = (a: unknown, b: unknown, sheet = ''): boolean => {
 async function look(buf: ArrayBuffer): Promise<Record<string, unknown>> {
   const X = await loadExcelJS(), wb = new X.Workbook(); await wb.xlsx.load(buf);
   return Object.fromEntries(wb.worksheets.map((ws) => [ws.name, {
-    frozen: ws.views[0]?.state, widths: ws.columns.map((c) => c.width), dv: Object.keys((ws as unknown as { dataValidations: { model: Record<string, unknown> } }).dataValidations.model).length,
+    frozen: ws.views[0]?.state, widths: ws.columns.map((c) => c.width),
+    dv: Object.keys((ws as unknown as { dataValidations: { model: Record<string, unknown> } }).dataValidations.model).length,
     head: JSON.stringify(ws.getRow(1).getCell(1).fill) + JSON.stringify(ws.getRow(1).getCell(1).font?.bold),
   }]));
 }
@@ -40,7 +44,10 @@ describe('our writer reproduces the legacy workbook layout and values', () => {
     theirs.forEach((rows, name) => {
       const m = mine.get(name) ?? [];
       if (m.length !== rows.length) diffs.push(`${name}: ${m.length} rows vs ${rows.length}`);
-      rows.forEach((r, i) => r.forEach((v, j) => { if (!SKIP.has(name) && !archDescription(name, v) && !same(v, m[i]?.[j], name)) diffs.push(`${name}!${i + 1}:${j + 1} legacy=${JSON.stringify(v)} ours=${JSON.stringify(m[i]?.[j])}`); }));
+      rows.forEach((r, i) => r.forEach((v, j) => {
+        if (!SKIP.has(name) && !archDescription(name, v) && !same(v, m[i]?.[j],
+          name)) diffs.push(`${name}!${i + 1}:${j + 1} legacy=${JSON.stringify(v)} ours=${JSON.stringify(m[i]?.[j])}`);
+      }));
     });
     expect(diffs.slice(0, 8)).toEqual([]);
     expect(await look(await paramsWorkbookBytes(doc, 'all', ENV, THEME_DEFAULT))).toEqual(await look(legacyXlsx(id)));

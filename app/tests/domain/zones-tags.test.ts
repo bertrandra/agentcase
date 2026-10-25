@@ -4,7 +4,10 @@ import { describe, expect, it } from 'vitest';
 import { FIGURES, ZONES, ZONE_IDS } from '@/domain/zones';
 import { tagOf } from '../../scripts/lib/zones';
 
-/** Calculation zones (docs/ARCHITECTURE.md section 12): every calculation-bearing module carries exactly one `@calc-zone`; each figure has exactly one `@owner` module. */
+/**
+ * Calculation zones (docs/ARCHITECTURE.md section 12): every calculation-bearing module carries exactly one `@calc-zone`; each figure has exactly one
+ * `@owner` module.
+ */
 const walk = (d: string): string[] => readdirSync(d).flatMap((f) => { const p = join(d, f); return statSync(p).isDirectory() ? walk(p) : /\.tsx?$/.test(f) ? [p] : []; });
 const MUST_TAG = ['src/domain', 'src/controllers', 'src/store/persistence/excel', 'src/store/persistence/report', 'src/store/persistence/html'];
 const read = (f: string): string => readFileSync(f, 'utf8');

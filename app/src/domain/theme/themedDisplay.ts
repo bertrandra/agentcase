@@ -30,9 +30,11 @@ const turn = (hex: string, s: Shift): string => {
 };
 const withL = (hex: string, f: (L: number) => number, cf = 1): string => { const [L, C, h] = oklch(hex); return fromOklch(f(L), C * cf, h); };
 
-const BRAND = ['surface-tint', 'text-link', 'text-heading', 'line-tint', 'focus', 'focus-header', 'hover', 'hover-text', 'selected', 'header-start', 'header-end', 'kpibar-start',
+const BRAND = ['surface-tint', 'text-link', 'text-heading', 'line-tint', 'focus', 'focus-header', 'hover', 'hover-text', 'selected', 'header-start',
+  'header-end', 'kpibar-start',
   'kpibar-end', 'sidebar-group-text', 'sidebar-group-hover-bg', 'table-head-bg', 'table-head-note', 'table-hover', 'chart-cat-1'];
-const SURFACES = ['bg', 'surface', 'surface-raised', 'surface-muted', 'table-stripe', 'sidebar-bg', 'sidebar-group-bg', 'line', 'line-strong', 'line-subtle', 'table-line', 'table-head-line'];
+const SURFACES = ['bg', 'surface', 'surface-raised', 'surface-muted', 'table-stripe', 'sidebar-bg', 'sidebar-group-bg', 'line', 'line-strong', 'line-subtle',
+  'table-line', 'table-head-line'];
 const CHROME = ['header-start', 'header-end', 'kpibar-start', 'kpibar-end', 'table-head-bg', 'selected'];
 const LIFT = ['automation', 'glass-ceiling', 'human-supervision', 'focus', 'text-link', 'text-heading'];
 const CHART = Array.from({ length: 8 }, (_, i) => `chart-cat-${i + 1}`);
@@ -44,7 +46,8 @@ export function themedDisplay(spec: DisplaySpec, def: Pick<ThemeDef, 'colours' |
   const brand = shiftOf('primary', o.primary), surf = shiftOf('slate', o.slate);
   if (brand) for (const k of BRAND) if (d[k] && !(spec.cvd && CHART.includes(k))) d[k] = turn(d[k]!, brand);
   if (surf) for (const k of SURFACES) if (d[k]) d[k] = turn(d[k]!, surf);
-  if (!dark) {   // enhanced: a chrome background or a text colour the theme sets darkens like the text steps (by a fifth): white text on it / it as text reach 7:1
+  // enhanced: a chrome background or a text colour the theme sets darkens like the text steps (by a fifth): white text on it / it as text reach 7:1
+  if (!dark) {
     for (const k of [...CHROME, ...LIFT]) if (normHex(o[k])) d[k] = withL(normHex(o[k])!, (L) => (L < 0.72 ? L * 0.8 : L));
     return d as Partial<ThemeValues>;
   }

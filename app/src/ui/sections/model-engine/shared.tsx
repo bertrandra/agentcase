@@ -18,8 +18,8 @@ export function PhaseBanner({ on, children, off }: { on: boolean; children: Reac
 /** A coloured read-out tile (ρmax, WIP, ...). */
 export function Tile({ label, value, note, tone = 'blue' }: { label: string; value: ReactNode; note?: string; tone?: 'blue' | 'teal' | 'amber' | 'brick' | 'purple' }) {
   return (
-    <div className="ac-stat" data-tone={tone === 'purple' ? 'grey' : tone} style={{ minWidth: 140 }}>
-      <span className="ac-stat-l" style={{ textTransform: 'uppercase' }}>{label}</span><span className="ac-stat-v">{value}</span>{note && <span className="ac-stat-l">{note}</span>}
+    <div className="ac-stat ac-me-tile" data-tone={tone === 'purple' ? 'grey' : tone}>
+      <span className="ac-stat-l">{label}</span><span className="ac-stat-v">{value}</span>{note && <span className="ac-stat-l">{note}</span>}
     </div>
   );
 }

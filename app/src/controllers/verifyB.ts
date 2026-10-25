@@ -8,7 +8,8 @@ import { QUALITY_DEFAULT, type QualityRow } from '@/domain/verifyB';
 const table = (d: Doc): QualityRow[] => ((d as Record<string, unknown>).QUALITY ??= QUALITY_DEFAULT.map((r) => r.slice())) as QualityRow[];
 
 const setQualityCmd = defineCommand<{ index: number; field: 'asis' | 'target'; value: number }>({
-  type: 'quality.set', label: (p) => `Set quality ${p.field === 'asis' ? 'AS-IS' : 'target'} of row ${p.index + 1} to ${p.value}`, coalesceKey: (p) => `quality.set:${p.index}:${p.field}`,
+  type: 'quality.set', label: (p) => `Set quality ${p.field === 'asis' ? 'AS-IS' : 'target'} of row ${p.index + 1} to ${p.value}`,
+  coalesceKey: (p) => `quality.set:${p.index}:${p.field}`,
   run(d, p) { const row = table(d)[p.index]; if (row) row[p.field === 'asis' ? 1 : 2] = p.value; },
 });
 const resetQualityCmd = defineCommand<Record<string, never>>({
@@ -23,9 +24,12 @@ const setPerfCoefCmd = defineCommand<{ key: PerfCoefKey; text: string; value: nu
 });
 
 /** Edit the AS-IS baseline of a quality metric (legacy setQualityAsis: a non-number is ignored). */
-export function setQualityAsis(index: number, raw: string | number): void { const n = parseFloat(String(raw)); if (!isNaN(n)) appStore().dispatch(setQualityCmd({ index, field: 'asis', value: n })); }
+export function setQualityAsis(index: number, raw: string | number): void { const n = parseFloat(String(raw));
+  if (!isNaN(n)) appStore().dispatch(setQualityCmd({ index, field: 'asis', value: n })); }
 /** Edit the target of a quality metric (legacy setQualityTarget). */
-export function setQualityTarget(index: number, raw: string | number): void { const n = parseFloat(String(raw)); if (!isNaN(n)) appStore().dispatch(setQualityCmd({ index, field: 'target', value: n })); }
+export function setQualityTarget(index: number, raw: string | number): void { const n = parseFloat(String(raw));
+  if (!isNaN(n)) appStore().dispatch(setQualityCmd({ index, field: 'target', value: n })); }
 export const resetQuality = (): void => appStore().dispatch(resetQualityCmd({}));
 /** Edit a performance-realisation coefficient (legacy coefSet: the text is kept in the field, only a number reaches COEF). */
-export function setPerfCoef(key: PerfCoefKey, text: string): void { const x = parseFloat(text); appStore().dispatch(setPerfCoefCmd({ key, text, value: isNaN(x) ? null : x })); }
+export function setPerfCoef(key: PerfCoefKey, text: string): void { const x = parseFloat(text);
+  appStore().dispatch(setPerfCoefCmd({ key, text, value: isNaN(x) ? null : x })); }

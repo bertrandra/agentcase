@@ -20,7 +20,8 @@ describe('quality section', () => {
   it.each(VB_FIXTURES)('reproduces the legacy table (Y1..Y3, targets) and the editable fields (%s)', (id) => {
     loadFixture(id);
     const { container } = render(<Quality />), L = legacyDom(id);
-    expect(bodies(container)[0]!.map((r) => [r[0], r[2], r[3], r[4]!.replace(/target$/, ' target')])).toEqual(L.qual.slice(1).map((r) => [r[0], r[2], r[3], r[4]]));
+    const shown = bodies(container)[0]!.map((r) => [r[0], r[2], r[3], r[4]!.replace(/target$/, ' target')]);
+    expect(shown).toEqual(L.qual.slice(1).map((r) => [r[0], r[2], r[3], r[4]]));
     expect(inputs(container)).toEqual(L.qualInputs);
   });
   it('editing the AS-IS baseline and the target moves Y1..Y3 and the radar; Reset AS-IS and undo restore them', () => {
@@ -40,9 +41,9 @@ describe('quality section', () => {
   });
   it('an edited value is flagged (amber) and a non-number is ignored', () => {
     const { container } = render(<Quality />), asis = () => screen.getByLabelText('Doc sync % AS-IS') as HTMLInputElement;
-    expect(asis().style.fontWeight).toBe('var(--ac-font-weight-regular)');   // theme token (400)
+    expect(asis().dataset.edited).toBeUndefined();   // plain (regular weight)
     fireEvent.change(asis(), { target: { value: '60' } });
-    expect(asis().style.fontWeight).toBe('var(--ac-font-weight-bold)');   // theme token (700)
+    expect(asis().dataset.edited).toBe('true');   // flagged: bold with a brick border (sections-a.css)
     fireEvent.change(asis(), { target: { value: '' } });
     expect((appStore().getState().doc.QUALITY as unknown[][])[4]![1]).toBe(60);
     expect(container.querySelector('canvas')!.dataset.series).toBe('AS-IS:7,TO-BE Y3:7');

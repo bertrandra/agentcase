@@ -34,7 +34,8 @@ const has = (a: string, b: string, k: string): number | undefined => d.edges.fin
 
 describe('dependency generator (synthetic project)', () => {
   it('flattens a barrel by symbol: y reads x through the barrel, z reads y; type-only imports are not edges', () => {
-    // impl.ts imports x (1 pair); the pure barrel y/index.ts re-exports x but uses nothing: no zone edge (lot 4), its re-export edges stay for the tests' closure
+    // impl.ts imports x (1 pair); the pure barrel y/index.ts re-exports x but uses nothing: no zone edge (lot 4), its re-export edges stay for the
+    // tests' closure
     expect(has('x', 'y', 'z')).toBe(1);
     expect(has('y', 'z', 'z')).toBe(1);
     expect(has('z', 'y', 'z')).toBeUndefined();

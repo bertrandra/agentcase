@@ -29,7 +29,8 @@ describe('compliance section', () => {
     expect([c.dataset.points, c.dataset.series]).toEqual(['12', 'Max automatable %:12,Glass ceiling %:12']);
   });
   it('picking an industry marks its row and moves the ceiling cards; undo restores', () => {
-    const { container } = render(<Compliance />), marked = () => [...container.querySelectorAll('tbody tr')].filter((r) => r.textContent!.includes('◄')).map((r) => r.children[0]!.textContent);
+    const { container } = render(<Compliance />);
+    const marked = () => [...container.querySelectorAll('tbody tr')].filter((r) => r.textContent!.includes('◄')).map((r) => r.children[0]!.textContent);
     expect(marked()).toEqual(['None ◄']);
     act(() => setInput('industry', 'MED'));
     expect(marked()).toEqual(['Medical (MD / IVD) ◄']);

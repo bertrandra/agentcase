@@ -49,7 +49,7 @@ describe('Monte Carlo section', () => {
     const input = screen.getByLabelText('Spread of Year-3 ramp (pts)') as HTMLInputElement;
     fireEvent.change(input, { target: { value: '30' } });
     expect(input.value).toBe('30');
-    expect(input.style.borderColor).toContain('amber');
+    expect(input.classList.contains('is-edited')).toBe(true);   // amber edge (sections-b.css)
     fireEvent.click(screen.getByText('↺ Reset ranges'));
     expect((screen.getByLabelText('Spread of Year-3 ramp (pts)') as HTMLInputElement).value).toBe('10');
   });

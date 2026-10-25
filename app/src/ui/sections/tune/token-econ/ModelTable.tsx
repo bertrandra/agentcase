@@ -18,17 +18,21 @@ const NUM: { field: Exclude<Field, 'name'>; header: string; step: number; max?: 
 export function ModelTable() {
   const c = useCtx(), t = useMemo(() => tokenModelRows(c), [c]), L = tokenUsage(c).endLabel;
   const columns: Column<ModelRow>[] = [
-    { key: 'name', header: 'Model', render: (r) => <input type="text" aria-label={`Model ${r.index + 1} name`} defaultValue={r.name} key={r.name} onBlur={(e) => setTokenField(r.index, 'name', e.target.value)} /> },
+    { key: 'name', header: 'Model', render: (r) => <input type="text" aria-label={`Model ${r.index + 1} name`} defaultValue={r.name} key={r.name}
+      onBlur={(e) => setTokenField(r.index, 'name', e.target.value)} /> },
     ...NUM.map((n): Column<ModelRow> => ({
       key: n.field, header: n.header, align: 'center',
       render: (r) => (
-        <FieldNumber bare native="number" label={`${r.name} ${n.header}`} value={r[n.field]} min={0} max={n.max} step={n.step} onCommit={(v) => setTokenField(r.index, n.field, v)}>
-          <input type="number" aria-label={`${r.name} ${n.header}`} value={r[n.field]} min={0} max={n.max} step={n.step} onChange={(e) => setTokenField(r.index, n.field, e.target.value)} />
+        <FieldNumber bare native="number" label={`${r.name} ${n.header}`} value={r[n.field]} min={0} max={n.max} step={n.step}
+          onCommit={(v) => setTokenField(r.index, n.field, v)}>
+          <input type="number" aria-label={`${r.name} ${n.header}`} value={r[n.field]} min={0} max={n.max} step={n.step}
+            onChange={(e) => setTokenField(r.index, n.field, e.target.value)} />
         </FieldNumber>),
     })),
     { key: 'vol', header: `Tokens ${L} (M)`, align: 'right', render: (r) => `${r.volM.toFixed(1)} M` },
     { key: 'cost', header: `Cost ${L} (€)`, align: 'right', render: (r) => eur(r.cost) },
-    { key: 'rm', header: '', align: 'center', render: (r) => <button type="button" title="Remove model" aria-label={`Remove ${r.name}`} onClick={() => removeTokenModel(r.index)}>✕</button> },
+    { key: 'rm', header: '', align: 'center', render: (r) => <button type="button" title="Remove model" aria-label={`Remove ${r.name}`}
+      onClick={() => removeTokenModel(r.index)}>✕</button> },
   ];
   const ok = Math.abs(t.mixSum - 100) <= 0.5;
   return (
@@ -39,7 +43,8 @@ export function ModelTable() {
       <div className="ac-form-row">
         <button type="button" onClick={addTokenModel}>＋ Add model</button>
         <button type="button" onClick={resetTokenModels}>↺ Reset</button>
-        <span>Mix total : <strong style={{ color: ok ? 'var(--ac-teal-725)' : 'var(--ac-danger-700)' }}>{Math.round(t.mixSum)}%</strong> · Annual token cost : <strong>{eur(t.costTot)} / yr ({L})</strong></span>
+        <span>Mix total : <strong className="ac-tone" data-tone={ok ? 'teal-725' : 'danger-700'}>{Math.round(t.mixSum)}%</strong> · Annual token cost
+          : <strong>{eur(t.costTot)} / yr ({L})</strong></span>
       </div>
       <DataTable columns={columns} rows={t.rows} rowKey={(r) => String(r.index)} empty="No model: add one." />
     </Panel>

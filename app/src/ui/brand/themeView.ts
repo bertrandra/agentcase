@@ -7,7 +7,8 @@ export { setThemeOverride, themeViewStore, type ThemeViewState };
  * The `?theme=<seq>` link (docs/THEME.md §8.7): a view override, never in the case and never undoable. The page shows that theme until the viewer
  * clears it or makes it the case theme; the case and its history are untouched. The state itself is `@/store/themeView` (the exports read it too).
  */
-export const useThemeView = <T,>(select: (s: ThemeViewState) => T): T => useSyncExternalStore(themeViewStore.subscribe, () => select(themeViewStore.getState()));
+export const useThemeView = <T,>(select: (s: ThemeViewState) => T): T => useSyncExternalStore(themeViewStore.subscribe,
+  () => select(themeViewStore.getState()));
 
 /** The sequence id of a `?theme=` query (null without one, NaN for a value that is not a positive whole number). */
 export function themeParam(search: string): number | null {

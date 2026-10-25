@@ -11,7 +11,10 @@ export interface CommercialRow { id: string; name: string; wave: string; horizon
 export interface CommercialAgg {
   label: string;
   rows: CommercialRow[];
-  /** the roll-up line: the contracts of the products (each under its own selected model, over its own horizon) added up; the margin % is from the sums. The gain share is not linear: no figure is derived from a summed input */
+  /**
+   * the roll-up line: the contracts of the products (each under its own selected model, over its own horizon) added up; the margin % is from the
+   * sums. The gain share is not linear: no figure is derived from a summed input
+   */
   totals: { revenue: number; cost: number; margin: number; marginPct: number; tco: number; unavailable: number };
   excluded: { id: string; name: string; archived: boolean }[];
 }
@@ -32,10 +35,12 @@ function commercialOf(r: ProductRun) {
 export function aggregateCommercial(pf: Portfolio, c: Consolidated, scope: DisplayScope): CommercialAgg | null {
   const sel = selectionOf(c, scope);
   if (!sel) return null;
-  const rows = sel.items.map((v): CommercialRow => ({ id: v.id, name: v.name, wave: pf.waves.find((w) => w.id === v.waveId)?.name ?? '', ...commercialOf(v.run) }));
+  const rows = sel.items.map((v): CommercialRow => ({ id: v.id, name: v.name, wave: pf.waves.find((w) => w.id === v.waveId)?.name ?? '',
+    ...commercialOf(v.run) }));
   const ok = rows.filter((r) => r.row.available), revenue = total(ok.map((r) => r.row.revenue)), margin = total(ok.map((r) => r.row.margin));
   return {
     label: sel.label, rows, excluded: selectionView(pf, c, scope)?.excluded ?? [],
-    totals: { revenue, cost: total(ok.map((r) => r.row.cost)), margin, marginPct: revenue > 0 ? (margin / revenue) * 100 : 0, tco: total(ok.map((r) => r.row.tco)), unavailable: rows.length - ok.length },
+    totals: { revenue, cost: total(ok.map((r) => r.row.cost)), margin, marginPct: revenue > 0 ? (margin / revenue) * 100 : 0,
+      tco: total(ok.map((r) => r.row.tco)), unavailable: rows.length - ok.length },
   };
 }

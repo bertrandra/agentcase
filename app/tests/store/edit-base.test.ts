@@ -75,7 +75,8 @@ describe('controllers write the common value computed from the common case, neve
     const before = docOnly(t.s), loops = editBase().MODEL.LCE.loops.map((l) => l.pAccept);
     const moved = recalibrateLce(), common = commonEditDoc(pf());
     expect(common.MODEL.LCE.loops).toEqual(lceLoops(makeCtx(common)).loops);
-    expect(moved).toBe(loops.length !== common.MODEL.LCE.loops.length || common.MODEL.LCE.loops.some((l, i) => Math.abs(l.pAccept - (loops[i] ?? NaN)) > 1e-9 || loops[i] == null));
+    expect(moved).toBe(loops.length !== common.MODEL.LCE.loops.length || common.MODEL.LCE.loops.some((l,
+      i) => Math.abs(l.pAccept - (loops[i] ?? NaN)) > 1e-9 || loops[i] == null));
     exactUndo(t.s, before);
     setDisplayScope({ kind: 'product' }); recalibrateLce();
     expect(activeDoc().MODEL.LCE.loops).toEqual(lceLoops(makeCtx(docOf(t.ids[0]))).loops);

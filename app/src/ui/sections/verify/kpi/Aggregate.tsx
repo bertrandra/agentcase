@@ -8,7 +8,8 @@ import { ExcludedNote, VerifyTable } from '../aggregate/Rollup';
 
 const help = (
   <>
-    <p>The KPI scorecard of the <strong>selection</strong> (Portfolio or one Wave): the financial KPIs of the consolidated cash-flow, the capacity KPIs before and after, and the ratios that do not add up (automation, ceiling, velocity) weighted by the entry team of each product.</p>
+    <p>The KPI scorecard of the <strong>selection</strong> (Portfolio or one Wave): the financial KPIs of the consolidated cash-flow, the capacity KPIs before
+      and after, and the ratios that do not add up (automation, ceiling, velocity) weighted by the entry team of each product.</p>
     <p>Quality KPIs (test coverage, lead time) stay product by product. Choose a product in “Show” for the single-product scorecard.</p>
   </>
 );
@@ -22,7 +23,8 @@ export default function KpiAggregate() {
       <>
         <p className="ac-muted">Consolidated dashboard of {a.label}: initial state (entry teams) vs the end of each product&apos;s horizon.</p>
         <Cards h={a.headline} />
-        <Panel title="💰 Economic & Capacity KPIs"><BeforeAfterTable rows={a.consolidated} caption={`Economic and capacity KPIs — ${a.label}`} asis="AS-IS" tobe="Horizon end" /></Panel>
+        <Panel title="💰 Economic & Capacity KPIs"><BeforeAfterTable rows={a.consolidated} caption={`Economic and capacity KPIs — ${a.label}`} asis="AS-IS"
+          tobe="Horizon end" /></Panel>
         <Panel title="By product"><VerifyTable table={a.table} caption="KPIs by product" totalLabel="Consolidated" /></Panel>
         <ExcludedNote />
       </>
