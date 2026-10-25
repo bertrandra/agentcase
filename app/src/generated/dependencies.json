@@ -1,6 +1,6 @@
 {
  "schema": 1,
- "counts": {"files":1001,"tagged":471,"tests":293},
+ "counts": {"files":1003,"tagged":471,"tests":293},
  "zones": [
   {"id":"rate-card-team","modules":8,"tmed":115,"tmax":255},
   {"id":"scope-automation","modules":15,"tmed":132,"tmax":259},

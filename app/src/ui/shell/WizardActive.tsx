@@ -43,7 +43,7 @@ export function WizardActive({ seq, stops }: { seq: PersonaSeq; stops: Stop[] })
         aria-valuenow={pct}
         aria-valuetext={`${pct}% visited`}
       >
-        <div style={cssVars({ '--ac-progress-pct': `${pct}%` })} />{/* dynamic: the share of the sequence visited */}
+        <div style={cssVars({ '--dyn-progress-pct': `${pct}%` })} />{/* dynamic: the share of the sequence visited */}
       </div>
       <div className="ac-muted ac-wiz-pct">{pct}% of the sequence visited</div>
     </div>

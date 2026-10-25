@@ -40,7 +40,7 @@ export function SectionTable({ structure }: { structure: string }) {
                     aria-label={`Group of ${s.id}`}
                     value={s.group}
                     className="ac-sectable-group"
-                    style={cssVars({ '--ac-group-color': gc })}   // dynamic: the group colour is case data
+                    style={cssVars({ '--dyn-group-color': gc })}   // dynamic: the group colour is case data
                     onChange={(e) => place(`Move ${s.label} to ${e.target.value}`, s.id, e.target.value, s.groupSeq || 0)}>
                     {!ordered.some((g) => g.id === s.group) && <option value={s.group}>{s.group}</option>}
                     {ordered.map((g) => <option key={g.id} value={g.id}>{g.label}</option>)}
@@ -52,7 +52,7 @@ export function SectionTable({ structure }: { structure: string }) {
                     aria-label={`Tag of ${s.id}`}
                     value={s.tag ?? ''}
                     className={s.tag ? 'ac-sectable-tag is-set' : 'ac-sectable-tag'}
-                    style={cssVars({ '--ac-tag-color': tc })}   // dynamic: the tag's colour (TAG_COLOR)
+                    style={cssVars({ '--dyn-tag-color': tc })}   // dynamic: the tag's colour (TAG_COLOR)
                     onChange={(e) => setSectionTag(s.id, e.target.value)}
                   >
                     {s.tag && !TAGS.includes(s.tag) && <option value={s.tag}>{s.tag}</option>}

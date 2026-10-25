@@ -5,7 +5,7 @@ import { cssVars } from '@/ui/cssVars';
 
 /** An overlay's state chip, tinted with its colour (`${col}18`: a resolved hex of the theme, so set as a value). */
 const chip = (col: string, text: string) => (
-  <span className="ac-prov-chip" style={cssVars({ '--ac-prov-col': col, '--ac-prov-tint': `${col}18` })}>{text}</span>   // dynamic: a theme colour and its tint
+  <span className="ac-prov-chip" style={cssVars({ '--dyn-prov-col': col, '--dyn-prov-tint': `${col}18` })}>{text}</span>   // dynamic: a theme colour and its tint
 );
 
 /** One top-bar figure: its label above its value. */

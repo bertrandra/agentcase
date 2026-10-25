@@ -9,6 +9,7 @@ import { DataTable } from '../../src/ui/widgets/DataTable';
 import { resolveCss } from '../helpers/themeCss';
 
 const css = resolveCss(readFileSync(new URL('../../src/ui/theme/content.css', import.meta.url), 'utf8'));   // tokens resolved to their default-theme values
+const sectionsB = readFileSync(new URL('../../src/ui/theme/sections-b.css', import.meta.url), 'utf8');
 
 describe('shared widgets carry the classes the legacy-matching styles hang on', () => {
   it('Callout: note (insight box), warn, error, and the legacy green / blue notes', () => {
@@ -24,9 +25,10 @@ describe('shared widgets carry the classes the legacy-matching styles hang on', 
     expect(html).toContain('<h2>T</h2>'); expect(html).toContain('<h3>S</h3>');
     for (const c of ['ac-rich-note-green', 'ac-rich-formula', 'ac-rich-v', 'ac-rich-worked', 'ac-rich-card']) { expect(html).toContain(c); expect(css).toContain(`.${c}`); }
   });
-  it('DataTable: numeric alignment stays an inline text-align of header and cells (legacy .text-right / .text-center); the scroller stays focusable', () => {
+  it('DataTable: numeric alignment is a class of header and cells (legacy .text-right / .text-center, styled in sections-b.css); the scroller stays focusable', () => {
     const html = renderToStaticMarkup(<DataTable columns={[{ key: 'a', header: 'A', render: (r: number) => r }, { key: 'b', header: 'B', align: 'right', render: (r: number) => r * 2 }, { key: 'c', header: 'C', align: 'center', render: () => 'c' }]} rows={[1]} rowKey={(r) => String(r)} />);
-    expect(html).toContain('<th scope="col" style="text-align:right">B</th>'); expect(html).toContain('<td style="text-align:center">c</td>');
+    expect(html).toContain('<th scope="col" class="ac-num">B</th>'); expect(html).toContain('<td class="ac-center">c</td>');
+    for (const c of ['ac-num', 'ac-center']) expect(sectionsB).toContain(`.${c}`);
     expect(html).toContain('class="ac-table-wrap" tabindex="0"');
   });
   it('Stat / Badge keep the tone hooks', () => {

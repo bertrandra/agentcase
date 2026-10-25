@@ -46,7 +46,7 @@ function Card({ s, color, ops, props }: { s: NavSection; color: string; ops: Dra
       data-section={s.id}
       className={`ac-ncard ${cardClass?.(s) ?? ''}`}
       draggable={canDrag ? canDrag(s) : true}
-      style={cssVars({ '--ac-group-color': color })}   // dynamic: the group colour is case data
+      style={cssVars({ '--dyn-group-color': color })}   // dynamic: the group colour is case data
       onDragStart={(e) => { ops.start(s.id); e.dataTransfer?.setData('text/plain', s.id); }}
       onDragEnd={ops.end}
       onDragOver={(e) => { e.preventDefault(); e.stopPropagation(); ops.hover(s.id); }}
@@ -72,7 +72,7 @@ function Column({ col, over, ops, leave, props }: { col: Col; over: boolean; ops
       aria-label={group.label}
       data-group={group.id}
       className={`ac-ncol${over ? ' is-over' : ''}`}
-      style={cssVars({ '--ac-group-color': color, '--ac-group-ink': ink })}   // dynamic: the group colour is case data
+      style={cssVars({ '--dyn-group-color': color, '--dyn-group-ink': ink })}   // dynamic: the group colour is case data
       onDragOver={(e) => { e.preventDefault(); ops.hover(null); }}
       onDragLeave={leave}
       onDrop={(e) => { e.preventDefault(); ops.drop(null); }}

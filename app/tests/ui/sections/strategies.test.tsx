@@ -36,7 +36,7 @@ describe('strategies section', () => {
     fireEvent.change(roiW, { target: { value: '0' } });
     fireEvent.change(screen.getByText('TCO', { selector: '.ac-field-l' }).closest('label')!.querySelector('input')!, { target: { value: '100' } });
     expect(stratWeightsOf(ctx().s).tco).toBe(100);
-    expect(roiW.style.borderColor).toContain('amber');
+    expect(roiW.classList.contains('is-edited')).toBe(true);   // amber edge (sections-b.css)
     fireEvent.click(screen.getByText('↺ Reset weights'));
     expect(stratWeightsOf(ctx().s)).toEqual({ roi: 20, tco: 15, payback: 10, aiCoverage: 15, humanSup: 10, risk: 15, agility: 15 });
     act(() => { appStore().undo(); });
@@ -50,7 +50,7 @@ describe('strategies section', () => {
     const after = rows();
     expect(after.find((r) => r.id === 'hybrid')!.computed.aiCoverage).not.toBe(before.find((r) => r.id === 'hybrid')!.computed.aiCoverage);
     expect(after.find((r) => r.id === 'offshore')).toEqual(before.find((r) => r.id === 'offshore'));
-    expect((screen.getByLabelText('auto of Hybrid') as HTMLInputElement).style.borderColor).toContain('amber');
+    expect((screen.getByLabelText('auto of Hybrid') as HTMLInputElement).classList.contains('is-edited')).toBe(true);
     fireEvent.click(screen.getByText('↺ Reset all strategies'));
     expect(rows()).toEqual(before);
   });
@@ -63,7 +63,7 @@ describe('strategies section', () => {
     fireEvent.change(france, { target: { value: '70' } });
     const sigma = within(france.closest('td')!).getByText(/^Σ /);
     expect(sigma.textContent).toBe('Σ 120%');
-    expect(sigma.style.color).toContain('brick');
+    expect(sigma.dataset.sign).toBe('neg');   // brick (sections-b.css)
   });
   it('→ Apply pushes the levers into the case, opens Results and is one undoable step', () => {
     const s = openFixture('golden');

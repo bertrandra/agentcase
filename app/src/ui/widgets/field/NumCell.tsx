@@ -24,7 +24,7 @@ export function NumCell({ value, onCommit, min, max, step, width = 80, ariaLabel
       max={max}
       step={step}
       className={width === null ? undefined : 'ac-sized'}
-      style={width === null ? undefined : cssVars({ '--ac-w': px(width) })}   // dynamic: the width the caller asks for
+      style={width === null ? undefined : cssVars({ '--dyn-w': px(width) })}   // dynamic: the width the caller asks for
       value={shown}
       disabled={disabled}
       onChange={(e) => { setText(e.target.value); if (ok(e.target.value)) onCommit(e.target.value); }}

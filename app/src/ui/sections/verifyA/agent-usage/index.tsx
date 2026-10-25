@@ -37,7 +37,7 @@ export default function AgentUsageSection() {
           <SimpleTable align={['left', 'center', 'center', 'left']} head={['Phase', 'Artifacts', 'Avg automatable %', 'Relative agent effort']}
             rows={u.phases.map((p) => ({ key: p.id, cells: [<><b>{p.id}</b> {p.name}</>, p.n, `${p.avgAgent}%`,
               <div className="ac-bar ac-effort-bar" role="img" aria-label={`${p.id} relative agent effort`}>
-                <span style={cssVars({ '--ac-bar-pct': `${Math.round((p.effort / u.maxEffort) * 100)}%` })} />{/* dynamic: the phase's share of the effort */}
+                <span style={cssVars({ '--dyn-bar-pct': `${Math.round((p.effort / u.maxEffort) * 100)}%` })} />{/* dynamic: the phase's share of the effort */}
               </div>] }))} />
         </Panel>
         <Panel title="🔐 Agent effort by authorization level (Y3)">

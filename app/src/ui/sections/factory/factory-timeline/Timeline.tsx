@@ -20,7 +20,7 @@ export function Timeline() {
         <div className="ac-muted ac-tl-name">Calendar →</div>
         <div className="ac-tl-track">
           {/* dynamic: each tick and dot sits at its date on the axis */}
-          {ax.ticks.map((k) => <span key={k.at} className="ac-tl-tick" style={cssVars({ '--ac-at': `${k.at.toFixed(2)}%` })}>{short(k.t)}</span>)}
+          {ax.ticks.map((k) => <span key={k.at} className="ac-tl-tick" style={cssVars({ '--dyn-at': `${k.at.toFixed(2)}%` })}>{short(k.t)}</span>)}
         </div>
       </div>
       {LANES.map((lane) => {
@@ -30,7 +30,7 @@ export function Timeline() {
             <div className="ac-tl-name ac-small">{lane} <span className="ac-muted">({mine.length})</span></div>
             <div className="ac-tl-track ac-tl-dots">
               {mine.map((e, i) => (
-                <span key={i} title={`${e.label} — ${e.date}`} className="ac-tl-dot" data-tone={e.tone} style={cssVars({ '--ac-at': `${ax.pct(e.t).toFixed(2)}%` })} />
+                <span key={i} title={`${e.label} — ${e.date}`} className="ac-tl-dot" data-tone={e.tone} style={cssVars({ '--dyn-at': `${ax.pct(e.t).toFixed(2)}%` })} />
               ))}
             </div>
           </div>

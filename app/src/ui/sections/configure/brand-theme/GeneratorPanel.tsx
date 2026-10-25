@@ -51,7 +51,7 @@ export function GeneratorPanel({ def }: { def: ThemeDef }) {
       </fieldset>
       <ul className="ac-bt-gen-swatches" aria-label="Generated colours">
         {SWATCHES.map((k) => (
-          <li key={k}><span className="ac-bt-swatch" style={cssVars({ '--ac-swatch': palette[k] })} aria-hidden="true" />{/* dynamic: the generated colour */}<span>{swatchName(k)}</span> <code>{palette[k]}</code></li>
+          <li key={k}><span className="ac-bt-swatch" style={cssVars({ '--dyn-swatch': palette[k] })} aria-hidden="true" />{/* dynamic: the generated colour */}<span>{swatchName(k)}</span> <code>{palette[k]}</code></li>
         ))}
       </ul>
       <div className="ac-bt-actions">

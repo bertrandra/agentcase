@@ -23,7 +23,7 @@ export function Meter({ pct, color, label }: { pct: number; color: string; label
   return (
     <div className="ac-meter" role="meter" aria-label={label} aria-valuenow={pct} aria-valuemin={0} aria-valuemax={100}>
       {/* dynamic: the filled share and its colour are the caller's data */}
-      <div style={cssVars({ '--ac-meter-pct': `${Math.max(0, Math.min(100, pct))}%`, '--ac-meter-color': color })} />
+      <div style={cssVars({ '--dyn-meter-pct': `${Math.max(0, Math.min(100, pct))}%`, '--dyn-meter-color': color })} />
     </div>
   );
 }

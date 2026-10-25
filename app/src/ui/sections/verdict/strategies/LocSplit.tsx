@@ -40,7 +40,7 @@ export function LocSplit({ rows }: { rows: LocSplitRow[] }) {
                       key={c}
                       data-cls={c}
                       title={`${c} ${(r.byCls[c] as number).toFixed(0)}%`}
-                      style={cssVars({ '--ac-split-pct': `${((r.byCls[c] as number) / sum) * 100}%` })}   // dynamic: the class's share of the split
+                      style={cssVars({ '--dyn-split-pct': `${((r.byCls[c] as number) / sum) * 100}%` })}   // dynamic: the class's share of the split
                     />
                   ))}
                 </div>

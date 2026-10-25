@@ -18,7 +18,7 @@ export function CardView({ card, colors, preview }: { card: CardModel; colors: R
     </>
   );
   // dynamic: the card wears the colour of the group of the section it opens (case data), as a tint and an edge (alpha suffixes of the hex)
-  const style = cssVars({ '--ac-dyn-tint': `${col}14`, '--ac-dyn-edge': `${col}4D`, '--ac-dyn-ink': textColor(col, tok, tok('slate-60')) });
+  const style = cssVars({ '--dyn-card-tint': `${col}14`, '--dyn-card-edge': `${col}4D`, '--dyn-card-ink': textColor(col, tok, tok('slate-60')) });
   return sec && !preview
     ? <button type="button" className="ac-card ac-dyn-card is-link" style={style} title={`Open ${sec.label}`} onClick={() => goSection(sec.id)}>{body}</button>
     : <div className="ac-card ac-dyn-card" style={style}>{body}</div>;

@@ -33,7 +33,8 @@ export function hardcodedStyles(file: string, src: string): string[] {
     hit(/(?:^|[;{\s])(?:color|background(?:-color)?|border(?:-\w+)?(?:-color)?|outline(?:-color)?|fill|stroke)\s*:[^;}]*/, 'named colour', (m) => !NAMED.test(m[0].split(':').slice(1).join(':').replace(/var\([^)]*\)/g, '')));
     hit(/font-family\s*:\s*[^;}]+/, 'font family', (m) => /^font-family\s*:\s*(var\(--ac-[a-z0-9-]+\)|inherit)\s*$/.test(m[0].trim()));
     hit(/(?:^|[;{\s])font\s*:\s*[^;}]+/, 'font shorthand', (m) => /:\s*(inherit|revert|var\(--ac-font[a-z0-9-]*\)|[^;}]*var\(--ac-font-(?:body|heading|numeric|mono|code|toast)\))\s*$/.test(m[0].trim()));
-    hit(/box-shadow\s*:\s*[^;}]+/, 'box-shadow', (m) => /:\s*(var\(--ac-shadow-[a-z0-9-]+\)|none|inherit)\s*$/.test(m[0].trim()));
+    // a shadow token, or a shadow token's geometry coloured by a local value (`var(--ac-shadow-rail-offset) var(--dyn-group-color)`: a colour of the case)
+    hit(/box-shadow\s*:\s*[^;}]+/, 'box-shadow', (m) => /:\s*(var\(--ac-shadow-[a-z0-9-]+\)( var\(--dyn-[a-z0-9-]+\))?|none|inherit)\s*$/.test(m[0].trim()));
   } else {
     hit(/\b(?:color|background|backgroundColor|borderColor|fill|stroke|stopColor)\s*[:=]\s*\{?\s*['"`](?:[^'"`]*\s)?(white|black|red|green|blue|gray|grey|orange|yellow|purple|navy)['"`\s]/, 'named colour');
     hit(/\bfontFamily\s*[:=]\s*\{?\s*['"`](?!var\(--ac-)/, 'font family');

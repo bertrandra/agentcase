@@ -51,7 +51,7 @@ export function SectionFallback({ error, retry }: { error: CaughtError; retry: (
 /** One chart failed: its place keeps its height, the figures and tables of the section are unaffected. */
 export function ChartFallback({ label, height }: { label: string; height: number }) {
   return (
-    <div className="ac-chart ac-error-chart" style={cssVars({ '--ac-chart-h': px(height) })} role="note">{/* dynamic: the failed chart's own height */}
+    <div className="ac-chart ac-error-chart" style={cssVars({ '--dyn-chart-h': px(height) })} role="note">{/* dynamic: the failed chart's own height */}
       The chart “{label}” could not be drawn. The figures around it are unaffected.
     </div>
   );

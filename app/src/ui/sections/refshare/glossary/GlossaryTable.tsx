@@ -20,18 +20,18 @@ export function GlossaryTable({ rows }: { rows: Entry[] }) {
             return (
               <Fragment key={c.id}>
                 <tr>
-                  <th colSpan={4} scope="colgroup" className="ac-gloss-dim" style={cssVars({ '--ac-gloss-dim': c.color })}>{/* dynamic: the dimension's colour */}
+                  <th colSpan={4} scope="colgroup" className="ac-gloss-dim" style={cssVars({ '--dyn-gloss-dim': c.color })}>{/* dynamic: the dimension's colour */}
                     {i + 1} · {c.label}
                   </th>
                 </tr>
                 {sub.map((r) => (
                   <tr key={r[1]}>
                     {/* dynamic: the term and status colours are the referential's, made readable against the theme */}
-                    <td className="ac-gloss-term" style={cssVars({ '--ac-gloss-ink': textColor(c.color, tok, tok('neutral-25')) })}>{r[1]}</td>
+                    <td className="ac-gloss-term" style={cssVars({ '--dyn-gloss-ink': textColor(c.color, tok, tok('neutral-25')) })}>{r[1]}</td>
                     <td>{r[2]}</td>
                     <td>{r[3]}</td>
                     <td>
-                      <span className="ac-gloss-status" style={cssVars({ '--ac-gloss-ink': statusInk(r[4]) })}>{STATUS[r[4]]?.label ?? r[4]}</span>
+                      <span className="ac-gloss-status" style={cssVars({ '--dyn-gloss-ink': statusInk(r[4]) })}>{STATUS[r[4]]?.label ?? r[4]}</span>
                     </td>
                   </tr>
                 ))}

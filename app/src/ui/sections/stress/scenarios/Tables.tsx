@@ -8,7 +8,7 @@ import { useTheme } from '@/ui/themeContext';
 function Name({ s }: { s: Scenario }) {
   const { tok } = useTheme();
   // dynamic: the scenario's colour, made readable as text against the table (computed against the theme)
-  return <strong className="ac-scen-name" style={cssVars({ '--ac-scen-ink': textColor(tok(s.tone), tok, tok('slate-60')) })}>{s.label}</strong>;
+  return <strong className="ac-scen-name" style={cssVars({ '--dyn-scen-ink': textColor(tok(s.tone), tok, tok('slate-60')) })}>{s.label}</strong>;
 }
 const money = (v: number) => fmtE(v);
 

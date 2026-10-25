@@ -18,7 +18,7 @@ export function Results({ run }: { run: McsResult }) {
     { key: 'r', header: 'Range', align: 'center', render: (t) => `${fmtEur(t.lo)} → ${fmtEur(t.hi)}` },
     { key: 's', header: 'Swing', render: (t) => (
       <div className="ac-bar ac-swing-bar">
-        <span style={cssVars({ '--ac-bar-pct': `${max > 0 ? (t.swing / max) * 100 : 0}%` })} />{/* dynamic: the driver's share of the largest swing */}
+        <span style={cssVars({ '--dyn-bar-pct': `${max > 0 ? (t.swing / max) * 100 : 0}%` })} />{/* dynamic: the driver's share of the largest swing */}
       </div>
     ) },
   ];

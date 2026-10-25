@@ -36,14 +36,16 @@ describe('the guard itself (negative tests)', () => {
   const css = (s: string) => hardcodedStyles('x.css', s), tsx = (s: string) => hardcodedStyles('x.tsx', s);
   it('catches literals', () => {
     for (const s of ['.a { color: #fff; }', '.a { background: rgba(0, 0, 0, .1); }', '.a { color: hsl(10, 20%, 30%); }', '.a { border: 1px solid white; }',
-      ".a { font-family: Arial, sans-serif; }", ".a { font: 600 13px Calibri, sans-serif; }", '.a { box-shadow: 0 1px 2px var(--ac-line); }']) expect(css(s), s).not.toEqual([]);
+      ".a { font-family: Arial, sans-serif; }", ".a { font: 600 13px Calibri, sans-serif; }", '.a { box-shadow: 0 1px 2px var(--ac-line); }',
+      '.a { box-shadow: 0 0 1px var(--dyn-group-color); }']) expect(css(s), s).not.toEqual([]);
     for (const s of ["const a = <b style={{ color: '#8F3237' }} />;", "const c = 'rgba(1,2,3,.5)';", "<b style={{ boxShadow: '0 0 1px var(--ac-line)' }} />",
       "<b style={{ fontFamily: 'Arial' }} />", "<b style={{ background: 'white' }} />", '<rect fill="#fff" />']) expect(tsx(s), s).not.toEqual([]);
     expect(argbLiterals("c.fill = { argb: 'FF1E2761' };")).toHaveLength(1);
   });
   it('lets tokens, keywords and comments through', () => {
     for (const s of ['.a { color: var(--ac-ink); background: transparent; box-shadow: var(--ac-shadow-card); }', '/* legacy #0058AB */ .a { font: inherit; }',
-      '.a { font-family: var(--ac-font-mono); } .b { outline: 2px solid Highlight; } .c { box-shadow: none; }', '.a { font: var(--ac-font-size-md) / var(--ac-leading-code) var(--ac-font-mono); }']) expect(css(s), s).toEqual([]);
+      '.a { font-family: var(--ac-font-mono); } .b { outline: 2px solid Highlight; } .c { box-shadow: none; }', '.a { font: var(--ac-font-size-md) / var(--ac-leading-code) var(--ac-font-mono); }',
+      '.a { box-shadow: var(--ac-shadow-rail-offset) var(--dyn-group-color); }']) expect(css(s), s).toEqual([]);
     for (const s of ["<b style={{ color: 'var(--ac-brick)' }} />", "const c = tok('primary-700'); // was #0058AB", "<rect fill=\"var(--ac-neutral-0)\" />", "const e = '&#160;';",
       "<b style={{ boxShadow: `var(--ac-shadow-rail-offset) ${c}` }} />"]) expect(tsx(s), s).toEqual([]);
   });

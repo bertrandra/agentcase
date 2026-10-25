@@ -27,7 +27,7 @@ export function LivePreview({ persona, preview, colors, pending, mark }: Props) 
       {preview.nav.map(({ group, sections }) => (
         <div key={group.id} data-pgroup={group.id}>
           {/* dynamic: the group colour is case data */}
-          <h4 className="ac-npreview-group" style={cssVars({ '--ac-group-color': groupColor(colors, group.id) })}>{group.label}</h4>
+          <h4 className="ac-npreview-group" style={cssVars({ '--dyn-group-color': groupColor(colors, group.id) })}>{group.label}</h4>
           <ul>{sections.map((s) => <li key={s.id} data-psection={s.id} className={s.id === preview.moved || s.id === mark ? 'is-moving' : ''}>{s.label}{s.id === preview.moved ? ' (moving)' : s.id === mark ? ' (selected)' : ''}</li>)}</ul>
         </div>
       ))}

@@ -28,7 +28,7 @@ export function TextField({ label, value, onChange, placeholder, width }: {
         placeholder={placeholder}
         value={value}
         className={width ? 'ac-sized' : undefined}
-        style={width ? cssVars({ '--ac-w': px(width) }) : undefined}   // dynamic: the width the caller asks for
+        style={width ? cssVars({ '--dyn-w': px(width) }) : undefined}   // dynamic: the width the caller asks for
         onChange={(e) => onChange(e.target.value)}
       />
     </Field>

@@ -52,7 +52,7 @@ export function Ranking({ N, W }: { N: Ranked[]; W: Weights }) {
             <td>{MEDAL[i] ?? i + 1}</td><td>{o.icon} {o.label}</td>
             <td>
               <span className="ac-bar ac-score-bar">
-                <span className={i === 0 ? 'is-top' : undefined} style={cssVars({ '--ac-bar-pct': `${isNaN(o.score) ? 0 : o.score}%` })} />{/* dynamic: the score */}
+                <span className={i === 0 ? 'is-top' : undefined} style={cssVars({ '--dyn-bar-pct': `${isNaN(o.score) ? 0 : o.score}%` })} />{/* dynamic: the score */}
               </span>
             </td>
             <td className="ac-c ac-score">{isNaN(o.score) ? 'n/a' : o.score}</td>
