@@ -21,14 +21,14 @@ Start with the user guide [`docs/GUIDE_MULTI_PRODUIT.md`](docs/GUIDE_MULTI_PRODU
 
 | | Where | Status |
 |---|---|---|
-| **TypeScript + React build (the product)** | [`app/`](app/) — version `<!-- fact:version -->20.16.0<!-- /fact -->` (`app/package.json`, the single version source) | <!-- fact:sections -->86<!-- /fact --> sections in <!-- fact:groups -->15<!-- /fact --> groups (the single-case sections plus the <!-- fact:portfolioSections -->6<!-- /fact --> of the *Portfolio* group), <!-- fact:commands -->254<!-- /fact --> commands (<!-- fact:undoable -->250<!-- /fact --> undoable). Builds to one offline HTML file, `app/dist/<!-- fact:releaseFile -->AgentCase_v20_16_EN.html<!-- /fact -->` with `npm run release`. Multi-product release; see [`CHANGELOG.md`](CHANGELOG.md) and [`docs/MIGRATION_PLAN.md`](docs/MIGRATION_PLAN.md) §15 |
+| **TypeScript + React build (the product)** | [`app/`](app/) — version `<!-- fact:version -->20.17.0<!-- /fact -->` (`app/package.json`, the single version source) | <!-- fact:sections -->86<!-- /fact --> sections in <!-- fact:groups -->15<!-- /fact --> groups (the single-case sections plus the <!-- fact:portfolioSections -->6<!-- /fact --> of the *Portfolio* group), <!-- fact:commands -->254<!-- /fact --> commands (<!-- fact:undoable -->250<!-- /fact --> undoable). Builds to one offline HTML file, `app/dist/<!-- fact:releaseFile -->AgentCase_v20_17_EN.html<!-- /fact -->` with `npm run release`. Multi-product release; see [`CHANGELOG.md`](CHANGELOG.md) and [`docs/MIGRATION_PLAN.md`](docs/MIGRATION_PLAN.md) §15 |
 | **Legacy single-file app (frozen reference)** | [`AgentCase_v18_13_EN.html`](AgentCase_v18_13_EN.html) | Kept in the repository until cut-over. It is the oracle the new build is proven against. Changes only for security fixes and deliberate calculation decisions (decision D7), see [`docs/BUMP_PROCEDURE.md`](docs/BUMP_PROCEDURE.md) §7 |
 
 ### Deliverables
 
 | Deliverable | Where / how | Notes |
 |---|---|---|
-| Release file `<!-- fact:releaseFile -->AgentCase_v20_16_EN.html<!-- /fact -->` | `cd app && npm run release` -> `app/dist/` (one offline file, not committed) | file name derived from the version in `app/package.json` (`AgentCase_v<MAJOR>_<MINOR>[_<PATCH>]_EN.html`) |
+| Release file `<!-- fact:releaseFile -->AgentCase_v20_17_EN.html<!-- /fact -->` | `cd app && npm run release` -> `app/dist/` (one offline file, not committed) | file name derived from the version in `app/package.json` (`AgentCase_v<MAJOR>_<MINOR>[_<PATCH>]_EN.html`) |
 | Portfolio file | `agentcase.portfolio.v1` JSON / HTML snapshot; a plain single case is still saved as `agentcase.snapshot.v1` | v18.x snapshots and workbooks, v19 case files open as "Product 1" in "Wave 1" |
 | Example portfolio | [`docs/examples/AgentCase_Portfolio_Example.json`](docs/examples/AgentCase_Portfolio_Example.json) | 4 products, 2 waves, hub, rho 0.3; opened by a test |
 | Workbooks and report | parameters (`AgentCase_vX_Y_Parameters_….xlsx`), results, due-diligence pack, critical-delivery report | portfolio sheets only for a real portfolio |

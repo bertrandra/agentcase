@@ -15,7 +15,7 @@ All notable changes to AgentCase, newest first. Product version from v19.0.0 = t
 
 When releasing, follow [docs/BUMP_PROCEDURE.md](docs/BUMP_PROCEDURE.md) (§7 for the legacy file) and add the new version at the top.
 
-## [Unreleased]
+## [v20.17.0] 2026-10-25 — Architecture lot 7: portfolio scenarios, wave dependencies and setup capacity, shared teams, stress cut at the horizon, Wave histogram, assignable app sections, palette from logo
 
 ### Lot 7 — dependencies between waves and transformation-team capacity (SPEC_MULTI_PRODUIT F13, was DEV-PF-GAPS)
 
