@@ -15,6 +15,13 @@ All notable changes to AgentCase, newest first. Product version from v19.0.0 = t
 
 When releasing, follow [docs/BUMP_PROCEDURE.md](docs/BUMP_PROCEDURE.md) (§7 for the legacy file) and add the new version at the top.
 
+## [v20.18.1] 2026-10-25 — Architecture lot 9: tidy-up (no change to the app)
+
+- `tools/a11y.mjs` writes its default report to `test-results/a11y/report.json` (git-ignored): a local audit no longer rewrites a tracked file.
+  The stale committed `app/a11y-report.json` (it still listed the false colour-contrast finding fixed in v20.17.0) is removed; no test or tool read it.
+- Test for the last untested error path of lot 8: a parameters workbook pinning an unknown artefact, or one artefact twice, to a shared team line
+  is refused before any write (`tests/store/shared-team-pins.test.ts`).
+
 ## [v20.18.0] 2026-10-25 — Architecture lot 8: dev toolchain with 0 audit findings, Node 24 CI actions, portfolio sensitivity, pins on shared team lines, "apply to all" for the knowledge subset
 
 ### Lot 8 — dev toolchain security

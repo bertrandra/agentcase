@@ -4,6 +4,7 @@ import { clearSharedPins, removeSharedLine, setSharedPins } from '@/controllers/
 import { openSnapshot, toPortfolioSnapshot } from '@/store/persistence/portfolioSnapshot';
 import { openChecked } from '@/store/persistence/schema';
 import { ENV } from '../helpers/excelParams';
+import { editXlsx } from '../helpers/xlsxEdit';
 import { docNow, pfNow, sharedSetup, xlsxFile } from '../helpers/sharedTeamStore';
 import { snapUndoable } from './helpers';
 
@@ -59,5 +60,16 @@ describe('pins on a shared team line: persistence', () => {
     await importParamsWorkbook(file(b), ENV);
     expect(pf().sharedTeam).toEqual(before);
     expect(pf().sharedTeam![0]!.pins).toEqual(['A001', 'A003']);
+  });
+
+  it('an import with an unknown or a twice-pinned artefact stops before any write: the portfolio is untouched', async () => {
+    const { id } = setup();
+    setSharedPins(id, ['A001'], true);
+    const b = await (await exportParamsWorkbook('all', ENV)).blob.arrayBuffer(), before = JSON.stringify(pf());
+    const pinsTo = (v: string) => editXlsx(b, (wb) => { wb.getWorksheet('SharedTeam')!.getRow(2).getCell(8).value = v; });
+    await expect(importParamsWorkbook(file(await pinsTo('A001;ZZZ999')), ENV)).rejects.toThrow(/unknown pinned artefact "ZZZ999"/);
+    expect(JSON.stringify(pf())).toBe(before);
+    await expect(importParamsWorkbook(file(await pinsTo('A001; A001')), ENV)).rejects.toThrow(/artefact "A001" is pinned twice/);
+    expect(JSON.stringify(pf())).toBe(before);
   });
 });

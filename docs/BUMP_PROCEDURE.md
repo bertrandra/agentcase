@@ -94,8 +94,8 @@ If a change is meant to move the golden case, see §6 (it starts in the legacy f
 (audit, `deps:check`, `dup`, `check`, build), job `e2e` (smoke, flows, performance, parallel run on the 40 workbooks), job `browser` (UI parity, then the
 accessibility audit on `golden`, `pf-three-products`, `golden --mode dark`, `golden --mode dark --contrast high`) — and prints a table of the results and
 times. It stops at the first failure like CI (`--keep-going` runs the rest), skips `npm ci` and the Playwright install unless `--install`, builds once and reuses
-it, and writes the reports and screenshots CI uploads under `test-results/` (git-ignored; the committed `app/a11y-report.json` is not rewritten when `CI` is set
-or a `--report` is given). `--only name,name` / `--from name` select gates, `--list` prints them. `npm run gates -- --nightly` runs the nightly ones
+it, and writes the reports and screenshots CI uploads under `test-results/` (git-ignored; `tools/a11y.mjs` writes its default report to `test-results/a11y/report.json`,
+so no audit run changes a tracked file). `--only name,name` / `--from name` select gates, `--list` prints them. `npm run gates -- --nightly` runs the nightly ones
 (`.github/workflows/nightly.yml`: `npm run check` three times, the documented test count, the parallel run on 147 files, `npm audit --omit=dev`,
 `npm run validate:affected`, about 2 h; `--affected-only stress,rank` samples the last one). The first row, `workflow-sync`, fails when the step list of the script
 and the `run:` lines of the workflow differ: change both together. Times on a 4-core machine: about 30 min for the pull-request gates, the nightly suite about

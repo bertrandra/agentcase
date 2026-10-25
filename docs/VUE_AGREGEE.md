@@ -56,7 +56,7 @@ Generic fallbacks per kind (Portfolio / Wave, section without an aggregate):
 6. Register **one line** in `ui/sections/aggregates/<group>.ts`: `'id': () => import('../<group>/<section>/Aggregate'),`.
 7. For a section that is already view-aware, register its own component (examples: `decision`, `gantt`).
 8. RTL test (real store, `threeProducts`): Portfolio, Wave and Product equal to the domain within 1e-9; unplanned product excluded with the warning; single product unchanged.
-9. Audit: `node ../tools/a11y.mjs --fixtures pf-three-products --sections "<label>"` (Portfolio and Wave are audited), then restore `app/a11y-report.json`.
+9. Audit: `node ../tools/a11y.mjs --fixtures pf-three-products --sections "<label>"` (Portfolio and Wave are audited; the report goes to `test-results/a11y/report.json`).
 10. Set the section's state to DONE in the table of § 4 and remove it from the tracking of § 5.
 
 ## 4. Classification of the 86 sections
