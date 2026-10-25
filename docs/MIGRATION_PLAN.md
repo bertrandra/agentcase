@@ -402,7 +402,6 @@ Delivered: P1-P7 of [SPEC_MULTI_PRODUIT.md](SPEC_MULTI_PRODUIT.md) (decisions D-
 | Gap | Note |
 |---|---|
 | Portfolio sensitivity | the sensitivity stays per product; the six scenarios are summed on the calendar since lot 7 (`portfolioScenarios`) |
-| Shared teams across products | the team is strictly per product (spec § 9) |
 | KnowledgeSubsets "apply to all" | only "back to common" exists for the fields of a knowledge subset |
 | Rates, model, coefficients per product; item-level scope overrides; shared set-up line; knowledge reuse; full correlation matrix | decisions D-M2, D-M3, D-M5, D-M11 and spec § 9: v2 |
 | Excel cross-version | a 20.0.0 portfolio workbook has seven extra sheets that a 19.x build ignores; a 19.x file imports as a case; the import does not re-fit the potential |

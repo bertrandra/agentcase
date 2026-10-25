@@ -42,6 +42,7 @@ const ALLOWED: Record<string, string> = {
   'domain/portfolio/knowledge.ts:hubs': 'memo: the hub view of a Ctx',
   'domain/portfolio/aggPresentCommercial.ts:cache': 'memo: the commercial row of a product run',
   'domain/portfolio/resolve.ts:roots': 'memo: the resolved root of a portfolio object',
+  'domain/portfolio/sharedTeam.ts:roots': 'memo: the effective team of a product (own team plus its shares of the shared lines)',
   'domain/portfolio/resolve.ts:commons': 'memo: the common case of a portfolio object',
   'domain/stress/fingerprint.ts:EXCLUDED': 'constant lookup (never written after)',
   'domain/time/spline.ts:prepared': 'memo: the prepared spline of a knot object',

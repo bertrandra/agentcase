@@ -29,7 +29,7 @@ Figures are the golden fixture unless stated. "Before" = the build at the start 
 | DEV-COSTMODEL-PILOT | the pilot cost is a dated line included in the cost-model totals (decision D4, lot 4); the app headline does not count it |
 | DEV-APP-SECTION-PERSONAS | app sections (Brand & theme) are assignable per persona, stored apart from the legacy-shaped `PERSONA_SECTIONS` |
 | DEV-THEME-SEQ-UNDO | known defect: a theme `seq` can be reissued after an undo (lot 3 fixes it) |
-| DEV-PF-GAPS | portfolio features not built: shared teams (scenarios table, wave dependencies and setup capacity, Wave-view histogram, per-draw truncation: built in lot 7) |
+| DEV-PF-GAPS | portfolio features not built: portfolio sensitivity (scenarios table, wave dependencies and setup capacity, shared teams, Wave-view histogram, per-draw truncation: built in lot 7) |
 | DEV-SNAPSHOT-RESTORE | the parallel run of the 107 case files: 2 legacy restore defects (bass / legacy curve), 1 fixed in the new build (File > Open… re-fit) |
 
 ## DEV-HEADLINE-OWNER — one economics headline
@@ -300,7 +300,7 @@ missing feature is not read as a bug. The authoritative list of known gaps is do
 
 | Gap | State | Where it is discussed |
 |---|---|---|
-| **Shared teams** across products (a person on two products) | not built: each product has its own entry team | SPEC_MULTI_PRODUIT.md §9 |
+| **Portfolio sensitivity** (the tornado summed over products) | not built: the sensitivity stays per product (active product); the six scenarios are summed since lot 7 | DEV-PF-STRESS |
 
 Built since (removed from the table above):
 
@@ -314,6 +314,16 @@ Built since (removed from the table above):
   `wave-dep-cycle`, `wave-dep-unknown`, also in the Consolidation diagnostics). Both fields are optional: absent = the v1 calendar (every existing
   portfolio test unchanged); no schema bump. The parameters workbook carries them (Waves columns F-H, PortfolioSettings row "Max products in setup
   at once"). Tests: `tests/domain/portfolio/waveSchedule.test.ts`, `tests/store/portfolio-wave-deps.test.ts`, `tests/ui/portfolio-wave-deps.test.tsx`.
+
+**Built (lot 7): shared teams across products.** A portfolio may hold `sharedTeam` lines (skill, grade, location, FTE, `allocations`: product id ->
+share in percent); resolving a product appends FTE x share to its effective team (rows marked `shared`), so a line whose shares add up to at most
+100 % is counted once in the portfolio (consolidation, team aggregate, hub allocation by headcount). Absent field = the previous behaviour exactly.
+Diagnostics `shared-over` (shares > 100 %) and `shared-orphan` (share of a deleted product); deleting a product drops its shares in the same undo
+step. Undoable commands `sharedTeam.add / edit / remove / setShare`; Products section, "Shared team lines" table; Input team shows the share as a
+read-only "Shared" row; the parameters workbook exports and imports the `SharedTeam` sheet. What it does not do (by choice): a shared line has no
+pins; duplicating a product (F3) copies its own team, not its shares (they would exceed 100 %); the whole-team actions of Input team (total, build
+from artefacts, align) act on the product's own rows and leave the shares as they are; an imported workbook without a `SharedTeam` sheet has no
+shared line.
 
 ## DEV-SNAPSHOT-RESTORE — opening the 107 case files: the legacy restore against the new build
 

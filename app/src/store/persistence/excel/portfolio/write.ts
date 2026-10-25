@@ -48,7 +48,21 @@ function writeTeams(wb: XL.Workbook, pf: Portfolio): void {
   finish(w);
 }
 
-/** The portfolio part of the parameters workbook: settings, products, waves, one team sheet with a Product column, overrides and the knowledge subsets. */
+/** SharedTeam (only when the portfolio has shared lines): one row per share of a line (line id, skill, grade, location, FTE, product id, share %). */
+function writeShared(wb: XL.Workbook, pf: Portfolio): void {
+  if (!pf.sharedTeam?.length) return;
+  const w = ws(wb, PF_SHEETS.shared, [12, 16, 9, 12, 8, 16, 10]);
+  for (const l of pf.sharedTeam) {
+    const shares = Object.entries(l.allocations);
+    for (const [pid, pct] of shares.length ? shares : [['', '']]) inputs(w.addRow([l.id, l.skill, l.grade, l.loc, l.etp, pid, pct]), 7);
+  }
+  finish(w);
+}
+
+/**
+ * The portfolio part of the parameters workbook: settings, products, waves, one team sheet with a Product column, overrides, the knowledge subsets
+ * and the shared team lines.
+ */
 export function writePortfolioSheets(wb: XL.Workbook, pf: Portfolio): void {
-  writeSettings(wb, pf); writeProducts(wb, pf); writeWaves(wb, pf); writeTeams(wb, pf); writeKnowledge(wb, pf, ws, finish, inputs);
+  writeSettings(wb, pf); writeProducts(wb, pf); writeWaves(wb, pf); writeTeams(wb, pf); writeKnowledge(wb, pf, ws, finish, inputs); writeShared(wb, pf);
 }

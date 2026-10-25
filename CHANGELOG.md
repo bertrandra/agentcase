@@ -58,6 +58,22 @@ When releasing, follow [docs/BUMP_PROCEDURE.md](docs/BUMP_PROCEDURE.md) (§7 for
   pixels ignored, close shades merged) feed the generator with its contrast slider and harmony as one undoable `theme.generate` step; the other colours
   found are offered as buttons. The canvas is isolated in `ui/brand/logoPixels.ts`; nothing is fetched (the logo is a data URL already).
 
+### Lot 7 — shared teams across products (DEV-PF-GAPS, SPEC_MULTI_PRODUIT F2 / §9)
+
+- Portfolio field `sharedTeam` (optional; absent = the previous behaviour, files and figures): team lines shared between products with a share per
+  product in percent. `domain/portfolio/sharedTeam.ts`: `effectiveTeam` appends FTE x share to a product's effective team (rows marked `shared`,
+  memoised, the product's own `teamIn` itself when it holds no share); `resolveProduct`, the hub allocation by headcount, the wave board, the input
+  summary and the team aggregate read the effective team, so a line with shares <= 100 % is counted once in the portfolio.
+- Validation: errors for a bad line (id, labels, FTE < 0, share outside [0, 100]); diagnostics `shared-over` (shares > 100 %) and `shared-orphan`
+  (share of a deleted product). Deleting a product drops its shares in the same undo step.
+- Undoable commands `sharedTeam.add`, `sharedTeam.edit`, `sharedTeam.remove`, `sharedTeam.setShare` (`controllers/sharedTeam.ts`); the address
+  layer never writes a shared row into a product's own team, and the whole-team actions of Input team act on the own rows.
+- Products section: "Shared team lines" table (labelled selects and number inputs, allocated total, over-100 % status, clearing a deleted product's
+  share); Input team shows the active product's share as a read-only "Shared" row.
+- Persistence: portfolio snapshot read / repair of `sharedTeam`; parameters workbook `SharedTeam` sheet (export and import, one row per share).
+- Tests: `tests/domain/portfolio/sharedTeam.test.ts`, `tests/store/shared-team.test.ts`, `tests/store/samples/sharedTeam.ts`,
+  `tests/ui/portfolio-team.test.tsx` (Products table and the read-only row of Input team).
+
 ## [v20.16.0] 2026-10-25 — Architecture lot 5b: inline styles to CSS classes, max-len 0
 
 ### Lot 5b part A — frame, baseline, scope, tune and verify sections: named classes instead of inline styles, no line over 160 characters

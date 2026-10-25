@@ -3,6 +3,7 @@ import { engagementCoef } from '../engagement';
 import { khEnabled } from '../knowledge';
 import { ctxOf } from './memo';
 import { resolveProduct } from './resolve';
+import { sharedTeamDiagnostics } from './sharedTeamIssues';
 import { scheduledProducts, unscheduledIds, waveSchedule } from './timeline';
 import type { Issue } from './validate';
 import type { Portfolio } from './types';
@@ -24,5 +25,5 @@ export function diagnose(pf: Portfolio): Issue[] {
   }
   if (users === 0 && pf.hub.enabled) out.push({ code: 'hub-unused', message: 'the Knowledge Hub is on but no planned product uses it' });
   out.push(...waveSchedule(pf).notes);   // wave dependencies and transformation-team capacity (F13)
-  return out;
+  return [...out, ...sharedTeamDiagnostics(pf)];
 }

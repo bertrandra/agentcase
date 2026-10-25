@@ -1,5 +1,6 @@
 /** @calc-zone portfolio-consolidation */
 import { diagnose } from './diagnostics';
+import { sharedTeamErrors } from './sharedTeamIssues';
 import { FORBIDDEN_DOM_IDS, OVERRIDABLE_KEYS, WAVE_MILESTONES, type Portfolio } from './types';
 
 export interface Issue { code: string; message: string; productId?: string; waveId?: string }
@@ -44,6 +45,7 @@ export function validate(pf: Portfolio): Validation {
       if (FORBIDDEN_DOM_IDS.includes(id)) err('override-key', `product ${p.id}: "${id}" is never overridden`, ref);
     }
   }
+  errors.push(...sharedTeamErrors(pf));
   const diagnostics = errors.length ? [] : diagnose(pf);
   return { errors, diagnostics };
 }

@@ -66,6 +66,7 @@ export function checkTeam(t: unknown, n: Notes, at: string, fallback: unknown[])
     if (!num(r.etp) || r.etp < 0) { n.push(`${at}teamIn row ${i + 1}: FTE ${JSON.stringify(r.etp)} is not a number >= 0 — set to 0`); r.etp = 0; }
     for (const k of ['skill', 'grade', 'loc']) if (r[k] !== undefined && !str(r[k])) { n.push(`${at}teamIn row ${i + 1}: ${k} is not text — emptied`); r[k] = ''; }
     if (r.pins !== undefined && !Array.isArray(r.pins)) { n.push(`${at}teamIn row ${i + 1}: pins is not a list — emptied`); r.pins = []; }
+    delete r.shared;   // a stored team is a product's own: the share of a shared line saved with a case is an ordinary row of that case
     out.push(r);
   });
   return out;

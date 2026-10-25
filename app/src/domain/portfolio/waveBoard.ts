@@ -3,6 +3,7 @@ import { teamEtp } from './alloc';
 import { calendarOf } from './calendar';
 import type { Consolidated } from './consolidate';
 import { summaryRow, type SummaryRow } from './consolidationView';
+import { effectiveTeam } from './sharedTeam';
 import { productMonth0, waveSchedule } from './timeline';
 import type { Portfolio, WaveDependency } from './types';
 import { dependencyTargets } from './waveDepOps';
@@ -49,7 +50,7 @@ export function waveBoard(pf: Portfolio, c: Consolidated): BoardColumn[] {
   const cal = calendarOf(pf), byId = new Map(pf.products.map((p) => [p.id, p])), plan = waveSchedule(pf);
   const card = (id: string, month0: number | null): BoardCard => {
     const p = byId.get(id)!;
-    return { id, name: p.name, archived: !!p.archived, offset: p.offsetMonths, etp: teamEtp(p.teamIn),
+    return { id, name: p.name, archived: !!p.archived, offset: p.offsetMonths, etp: teamEtp(effectiveTeam(pf, p)),
       startLabel: month0 === null ? null : cal.dateAt(month0), pushed: plan.pushed.get(id) ?? 0 };
   };
   const cols = pf.waves.map((w): BoardColumn => {

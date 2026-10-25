@@ -2,6 +2,7 @@
 import { FORBIDDEN_DOM_IDS, OVERRIDABLE_KEYS, WAVE_MILESTONES } from '@/domain/portfolio';
 import { makeDefaultDoc } from '../../instance';
 import { checkCase, checkTeam, rec, type Notes, type Rec } from './caseChecks';
+import { repairSharedTeam } from './sharedChecks';
 
 /**
  * Repair of the portfolio structure of a raw `agentcase.portfolio.v1` file BEFORE the strict reader (`readPortfolio`) sees it: every invariant the
@@ -120,5 +121,6 @@ export function repairPortfolio(raw: Rec, n: Notes): Rec {
   if (s.rho !== undefined && !(typeof s.rho === 'number' && s.rho >= 0 && s.rho <= 1)) { n.push(`Portfolio: correlation rho ${JSON.stringify(s.rho)} is not in [0, 1] — products independent (0)`); delete s.rho; }
   const cap = s.maxConcurrentSetups;
   if (cap !== undefined && !(Number.isInteger(cap) && (cap as number) >= 1)) { n.push(`Portfolio: setup capacity ${JSON.stringify(cap)} is not a whole number >= 1 — no limit`); delete s.maxConcurrentSetups; }
+  if (s.sharedTeam !== undefined) { const lines = repairSharedTeam(s.sharedTeam, n); if (lines) s.sharedTeam = lines; else delete s.sharedTeam; }
   return s;
 }

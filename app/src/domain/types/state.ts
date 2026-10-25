@@ -1,7 +1,8 @@
 /** @calc-zone foundation */
 /** Shape of a case = the legacy snapshot state (what collectSnapshotState() returns). Only the keys the engine reads are typed. */
 export interface DomState { values: Record<string, string>; checked: Record<string, boolean> }
-export interface TeamRow { skill: string; grade: string; loc: string; etp: number; pins?: unknown[] }
+/** `shared`: set only on a row a portfolio shared line contributes to a product's effective case (its id); never stored in a product's own team. */
+export interface TeamRow { skill: string; grade: string; loc: string; etp: number; pins?: unknown[]; shared?: string }
 export interface ArtefactEdit { id: string; agentSup?: number; humanSup?: number; effort?: number; seq?: number }
 export interface CurvePoint { t: number; a: number }
 export interface ScurveState { pts: CurvePoint[] | null; family: string; curve: string }
