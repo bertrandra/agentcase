@@ -6,8 +6,8 @@
 // Exit code 1 when any serious/critical violation remains, or when the moderate/minor counts exceed app/a11y-budget.json.
 // Usage: node tools/a11y.mjs [--fixtures golden,ctx-msi,industry-med | pf-three-products | pf-example] [--sections label,label] [--update-budget]
 //        [--mode light|dark|auto] [--contrast standard|enhanced|high]   (the viewer's display preference, set in localStorage before each page loads)
-//        [--report <path> | --no-write] [--shots <dir>]   (report: default app/a11y-report.json, the committed one, which is never written when CI is set:
-//        CI passes --report and uploads it; --shots: a screenshot of every state with a violation)
+//        [--report <path> | --no-write] [--shots <dir>]   (report: default test-results/a11y/report.json, git-ignored, so a local run
+//        never dirties the repository; CI passes --report and uploads it; --shots: a screenshot of every state with a violation)
 import { appendFileSync, readFileSync, writeFileSync, existsSync, mkdirSync } from 'node:fs';
 import { dirname, resolve } from 'node:path';
 import { app, pw, NAV, DISPLAY, recorder, openCase, openSection } from './a11y-lib.mjs';
@@ -15,7 +15,7 @@ import { historyStates, keyboardStates, mediaStates, menuToggleFocus, personaMen
 const args = process.argv.slice(2), opt = (n) => (args.indexOf(n) < 0 ? '' : args[args.indexOf(n) + 1] || '').split(',').filter(Boolean);
 const fixtures = opt('--fixtures').length ? opt('--fixtures') : ['golden', 'ctx-msi', 'industry-med', 'pf-example'], only = opt('--sections');
 const budgetFile = resolve(app, 'a11y-budget.json'), reportArg = args.indexOf('--report') < 0 ? '' : args[args.indexOf('--report') + 1] || '';
-const reportFile = args.includes('--no-write') || (!reportArg && process.env.CI) ? '' : resolve(reportArg || resolve(app, 'a11y-report.json'));   // never rewrite the committed report in CI
+const reportFile = args.includes('--no-write') ? '' : resolve(reportArg || resolve(app, '../test-results/a11y/report.json'));   // git-ignored: never a tracked file
 const ORDER = ['critical', 'serious', 'moderate', 'minor'];
 
 const browser = await pw.chromium.launch();

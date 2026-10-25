@@ -74,7 +74,7 @@ jobs:
       - run: node tools/ui-parity.mjs --shots test-results/ui-parity
         timeout-minutes: 15
       # axe-core on every section and state: fails on any serious / critical violation or a moderate / minor count above app/a11y-budget.json.
-      # The committed app/a11y-report.json is never rewritten in CI: each run writes its report under test-results/a11y/ (uploaded below).
+      # Each run writes its report under test-results/a11y/ (git-ignored, uploaded below); no report is committed.
       - run: node tools/a11y.mjs --fixtures golden --report test-results/a11y/golden.json --shots test-results/a11y/golden
         if: success() || failure()
         timeout-minutes: 10
