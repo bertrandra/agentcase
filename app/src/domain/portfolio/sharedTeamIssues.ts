@@ -17,6 +17,9 @@ export function sharedTeamErrors(pf: Portfolio): Issue[] {
     if (!l.allocations || typeof l.allocations !== 'object' || !Object.values(l.allocations).every(isPct)) {
       out.push({ code: 'shared-share', message: `shared team line ${l.id}: every share must be a percentage in [0, 100]` });
     }
+    if (l.pins !== undefined && !(Array.isArray(l.pins) && l.pins.every((x) => typeof x === 'string'))) {
+      out.push({ code: 'shared-line', message: `shared team line ${l.id}: pins must be a list of artefact ids` });
+    }
   }
   return out;
 }

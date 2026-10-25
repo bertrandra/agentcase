@@ -5,6 +5,7 @@ import { useViewScope } from '@/store/viewScope';
 import { AggregateTable, type AggColumn } from '@/ui/widgets/AggregateTable';
 import { Badge, Callout } from '@/ui/widgets/cards';
 import { R, RollupFrame } from '../AggParts';
+import { PortfolioTornado } from './PortfolioTornado';
 
 const Detail = lazy(() => import('./index'));
 const TONE = { CRITICAL: 'brick', HIGH: 'amber', MEDIUM: 'teal', LOW: 'grey' } as const;
@@ -20,9 +21,12 @@ const MOST: AggColumn<SensProductRow>[] = [
   { key: 'neg', header: 'Negative cells', align: R, render: (r) => `${r.negative} of ${r.cells}` },
 ];
 
+const NOTE = 'The two tables above are product by product and are not added up (ROI ratios do not add up): the impacts are the editorial ranges of '
+  + 'the product view; the matrix span is recomputed for each product’s configuration. The portfolio sensitivity at the top is summed on the calendar.';
+
 /**
- * Sensitivity — Aggregate view: the key parameters of each product in view, its most sensitive parameter and the span of its automation ×
- * glass-ceiling ROI matrix.
+ * Sensitivity — Aggregate view: the portfolio tornado of the products in view (domain `portfolioSensitivity`, the consolidation kernel); then the
+ * key parameters of each product in view, its most sensitive parameter and the span of its automation × glass-ceiling ROI matrix.
  */
 export default function SensitivityAggregate() {
   const rows = useSensitivityRows(), vs = useViewScope();
@@ -31,8 +35,10 @@ export default function SensitivityAggregate() {
       notes={
         <>
           <AggregateTable caption={`Most sensitive parameter and ROI span by product — ${vs.label}`} rows={rows} columns={MOST} edit={false} />
-          <Callout kind="blue">No portfolio total: sensitivities are product-specific and ROI ratios do not add up. The impacts are the editorial ranges of the product view; the matrix span is recomputed for each product’s configuration.</Callout>
+          <Callout kind="blue">{NOTE}</Callout>
         </>
-      } />
+      }>
+      <PortfolioTornado label={vs.label} />
+    </RollupFrame>
   );
 }

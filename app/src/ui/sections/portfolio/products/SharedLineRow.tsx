@@ -9,10 +9,12 @@ const LOC_NAMES = LOCATIONS.map((l) => l.name);
 const LISTS: [SharedLineField, string, string[]][] = [['skill', 'Skill', SKILLS_EXIST], ['grade', 'Grade', GRADES], ['loc', 'Location', LOC_NAMES]];
 const pctText = (x: number): string => `${+x.toFixed(2)} %`;
 
-/** One shared line: skill / grade / location / FTE, then one share (percent of the line's FTE) per product, the allocated total and removal. */
-export function SharedLineRow({ line, index, products }: { line: SharedTeamLine; index: number; products: Product[] }) {
+interface Props { line: SharedTeamLine; index: number; products: Product[]; open: boolean; onPin: (id: string) => void }
+
+/** One shared line: skill / grade / location / FTE, one share (percent of the line's FTE) per product, the allocated total, pins and removal. */
+export function SharedLineRow({ line, index, products, open, onPin }: Props) {
   const who = `shared line ${index + 1}`, sum = allocatedPct(line), over = sum > 100 + 1e-9, known = new Set(products.map((p) => p.id));
-  const orphans = Object.keys(line.allocations).filter((id) => !known.has(id));
+  const orphans = Object.keys(line.allocations).filter((id) => !known.has(id)), pins = line.pins?.length ?? 0;
   return (
     <tr data-shared={line.id}>
       {LISTS.map(([field, name, list]) => (
@@ -36,6 +38,10 @@ export function SharedLineRow({ line, index, products }: { line: SharedTeamLine;
         {orphans.map((id) => (
           <button key={id} type="button" className="ac-link" onClick={() => { setSharedShare(line.id, id, 0); }}>Clear the share of deleted product {id}</button>
         ))}
+      </td>
+      <td>
+        <button type="button" aria-pressed={open} aria-label={`Pin ${who}`} title={pins ? `${pins} pinned artefact${pins === 1 ? '' : 's'}` : 'Auto: no pin'}
+          onClick={() => onPin(line.id)}>📌{pins ? ` ${pins}` : ''}</button>
       </td>
       <td>
         <button type="button" aria-label={`Remove ${who}`}

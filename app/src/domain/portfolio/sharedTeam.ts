@@ -22,21 +22,22 @@ export const sharedEtp = (rows: TeamRow[]): number => rows.reduce((a, r) => a + 
 const roots = new WeakMap<object, unknown>();
 /**
  * The entry team a product's effective case runs on: its own rows, then one row per shared line that gives it a share (FTE x share, marked
- * `shared`). Without a share it is the product's own `teamIn` itself (same identity: absent sharing = today's behaviour exactly). Memoised.
+ * `shared`, carrying the line's pins). Without a share it is the product's own `teamIn` itself (same identity: absent sharing = today's behaviour
+ * exactly). Memoised.
  */
 export function effectiveTeam(pf: Portfolio, prod: Product): TeamRow[] {
   const lines = pf.sharedTeam;
   if (!lines?.length || !lines.some((l) => shareOf(l, prod.id) > 0)) return prod.teamIn;
   return memoChain(roots, [prod.teamIn, lines], prod.id, () => [...prod.teamIn, ...lines.filter((l) => shareOf(l, prod.id) > 0)
-    .map((l): TeamRow => ({ skill: l.skill, grade: l.grade, loc: l.loc, etp: shareOf(l, prod.id), pins: [], shared: l.id }))]);
+    .map((l): TeamRow => ({ skill: l.skill, grade: l.grade, loc: l.loc, etp: shareOf(l, prod.id), pins: l.pins ?? [], shared: l.id }))]);
 }
 
-const withLines = <T extends Portfolio>(pf: T, lines: SharedTeamLine[]): T => {
+export const withLines = <T extends Portfolio>(pf: T, lines: SharedTeamLine[]): T => {
   const out: T = { ...pf, sharedTeam: lines };
   if (!lines.length) delete out.sharedTeam;   // no shared line left: the field disappears (absent = today's file)
   return out;
 };
-const mapLine = <T extends Portfolio>(pf: T, id: string, f: (l: SharedTeamLine) => SharedTeamLine): T =>
+export const mapLine = <T extends Portfolio>(pf: T, id: string, f: (l: SharedTeamLine) => SharedTeamLine): T =>
   pf.sharedTeam?.some((l) => l.id === id) ? withLines(pf, pf.sharedTeam.map((l) => (l.id === id ? f(l) : l))) : pf;
 
 /** Add a shared line (refused on a duplicate id). */

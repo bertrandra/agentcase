@@ -29,7 +29,7 @@ Figures are the golden fixture unless stated. "Before" = the build at the start 
 | DEV-COSTMODEL-PILOT | the pilot cost is a dated line included in the cost-model totals (decision D4, lot 4); the app headline does not count it |
 | DEV-APP-SECTION-PERSONAS | app sections (Brand & theme) are assignable per persona, stored apart from the legacy-shaped `PERSONA_SECTIONS` |
 | DEV-THEME-SEQ-UNDO | known defect: a theme `seq` can be reissued after an undo (lot 3 fixes it) |
-| DEV-PF-GAPS | portfolio features not built: portfolio sensitivity (scenarios table, wave dependencies and setup capacity, shared teams, Wave-view histogram, per-draw truncation: built in lot 7) |
+| DEV-PF-GAPS | no portfolio gap left (built in lot 7: scenarios table, wave dependencies and setup capacity, shared teams, Wave-view histogram, per-draw truncation; in lot 8: portfolio sensitivity, pins on a shared team line, "apply to all" for the knowledge subset) |
 | DEV-SNAPSHOT-RESTORE | the parallel run of the 107 case files: 2 legacy restore defects (bass / legacy curve), 1 fixed in the new build (File > Open… re-fit) |
 
 ## DEV-HEADLINE-OWNER — one economics headline
@@ -134,6 +134,8 @@ The single-product Monte Carlo, scenarios, sensitivity, strategies and decision 
 - **Correlation.** Gaussian copula with one global ρ ∈ [0, 1] (D-M7, default 0): per draw and per uncertain driver, `g = sqrt(ρ)·Z + sqrt(1−ρ)·ε` (Z shared by all products, ε the product's own stream), mapped by Φ and the inverse CDF of the same triangular marginal (`mcSampleT`). Marginals are unchanged for any ρ. ρ = 0 does **not** use the copula: it is the legacy stream, bit for bit. Drivers stay independent of each other inside a product (as today). A lone product is not affected by ρ in law (its draws are reshuffled, not rescaled).
 - **Risk reduction ("diversification").** Reported as `portfolio P10 − Σ standalone P10` (>= 0 when diversified, 0 at ρ = 1). This is the "sum of standalone P10 minus portfolio P10" asked for in the downside-magnitude sense (Σ(−P10) − (−P10 of the portfolio)); the sign is chosen so that a bigger number means more protection.
 - **Verdict rule.** `verdictRule` (extracted from `decide`, same thresholds `DI_THRESHOLDS`, same coherence invariant) applies unchanged to the portfolio / wave distribution. Only its inputs are extended: **setup** = Σ of the products' `setupTotal` (the floor is −50 % of it); **risk-bar premium** = the product premiums (engagement context + wave-2 modules, `riskPremiumOf`) **averaged with the entry headcount (base ETP) as weight** (simple mean if the weights are all 0) — a large product's context weighs more than a small one's, and a portfolio mixing a regulated and a plain product gets an intermediate bar; **conditions** name the products whose draws correlate most with the group outcome (|r| >= 0.2) instead of single-case input drivers (a product-level input has no meaning across products). No other rule differs.
+- **Sensitivity**: the product view is untouched; with the Portfolio or a Wave in view the Sensitivity section shows the portfolio tornado (lot 8,
+  `domain/portfolio/aggSensitivity.ts#portfolioSensitivity`, see DEV-PF-GAPS "Built since").
 - **Scenarios**: the product view is untouched (active product). With the Portfolio or a Wave in view, the Scenarios section also shows the **portfolio scenarios table** (lot 7, `domain/portfolio/aggScenarios.ts#portfolioScenarios`): each product's six scenario engines (`domain/stress/scenarios.ts#scenarioEngine`, the very engine `scenarioModel` reads, memoised per product run) are laid on the calendar by the consolidation kernel (`productSeries`: month 0, KT lead, truncation at the portfolio horizon; a scenario without setup has no KT setup either) and summed by `aggregate` / `summarize` (F16), so there is no second set of headline owners: NPV at the common rate from portfolio month 1, ROI `roiCanonical`, payback = first calendar month with cumulative cash >= 0 (shown "immediate" when there is no setup and the scenario saves, as `paybackShown`). With one product starting at month 0 the table is the product's scenarios; "AI + Location" is the deterministic consolidation. A scenario's label falls back to a generic one when the products' destinations or ramp rates differ. **Sensitivity** stays per product.
 - **Speed.** `splineEval` caches the Fritsch-Carlson slopes per control-point list and `withInputs` parses its overrides once: same arithmetic, bit-identical numbers (all oracles green), 20 products × 1,000 draws ≈ 1.4 s instead of 2.2 s.
 - **Histogram per scope.** The Monte Carlo aggregate view draws the histogram for a Portfolio and for a Wave (the wave's draws: its products added draw by draw, kept in `WaveStress.outcomes`), with the same `ChartPanel` (chart error boundary, theme applied in place by `chart.update('none')`) as Portfolio stress.
@@ -298,11 +300,34 @@ key of the document, so **undoing** the creation of a theme also rolls `THEME_SE
 The multi-product build has no legacy counterpart; these are the gaps against the specification and the user's expectations, recorded so that a
 missing feature is not read as a bug. The authoritative list of known gaps is docs/ARCHITECTURE.md §12 and docs/MIGRATION_PLAN.md §15.
 
-| Gap | State | Where it is discussed |
-|---|---|---|
-| **Portfolio sensitivity** (the tornado summed over products) | not built: the sensitivity stays per product (active product); the six scenarios are summed since lot 7 | DEV-PF-STRESS |
+**No gap is left**: every documented gap has been built (history below). What remains out of the multi-product build is decided in the
+specification (SPEC_MULTI_PRODUIT.md § 9, v2: rates, model and coefficients per product, item-level scope overrides, a shared set-up line, knowledge
+reuse, a full correlation matrix), not a gap.
 
-Built since (removed from the table above):
+Built since (removed from the gap table):
+
+- **Portfolio sensitivity (lot 8).** With Portfolio or a Wave in view, the Sensitivity section opens on a **portfolio tornado**: each driver of the
+  Monte Carlo (`TORNADO_DRIVERS`: automation potential, the three ramps, glass ceiling, tokens per artefact, infrastructure cost) is moved down and
+  up by the same relative step (5, 10 or 20 % of the product's own value, clamped to the driver's range; view state) on every product of the scope,
+  each product is rerun on its effective case (`domain/stress/tornado.ts#movedCtx`, the case's own Time Engine), laid on the calendar by
+  `productSeries` and summed by `aggregate` / `summarize` exactly like the portfolio scenarios (`domain/portfolio/aggSensitivity.ts#portfolioSensitivity`,
+  memoised per product run and step); rows ranked by swing on the net, with net and NPV at −step / +step and a per-product breakdown. One product
+  gives the product's own tornado (`productTornado`: net and NPV from its headline) exactly. The product view (the editorial parameter table and the
+  automation × glass-ceiling matrix) is unchanged. Tests: `tests/domain/portfolio/aggSensitivity.test.ts`, `tests/ui/vue-sensitivity-portfolio.test.tsx`.
+- **Pins on a shared team line (lot 8).** A shared line may carry `pins` (artefact ids, optional: absent = no pin, today's file); resolving a product
+  copies them on its share row, so the pinned artefacts leave the auto pool of every holder and go to that row (FTE × share), as the pins of a team
+  row do. One shared line per artefact (pinning moves it off the other shared lines); a product's own pinned row comes first in that product (first
+  pin wins). Undoable commands `sharedTeam.setPins` (one artefact or a whole phase) and `sharedTeam.clearPins`; Products > Shared team lines, 📌 per
+  line (the artefacts offered are those of the products holding a share); the Input team shows the pin count on the read-only "Shared" row. The
+  portfolio file keeps them (repair: a non-list is emptied, a repeated or non-text pin dropped, with a note); the parameters workbook `SharedTeam`
+  sheet has a column H "Pinned artefacts" (export and import; known artefacts only; an older workbook without the column has no pin). Tests:
+  `tests/domain/portfolio/sharedTeamPins.test.ts`, `tests/store/shared-team-pins.test.ts`, `tests/ui/portfolio-shared-pins.test.tsx`.
+- **"Apply to all products" for the knowledge subset (lot 8, spec F7).** The fields of a product's knowledge subset that the common case holds (hub
+  use, the nine maturity answers, target CC, curation, setup base) have "Apply to all products" next to "Revert to common": the value is written at
+  the common level (`khEnabled`, `khA0..khA8`, `khTargetCC`, ...; the portfolio hub follows the switch) and every product holding the identical value
+  drops it, in one undo step (`domain/portfolio/subsetCommon.ts#applySubsetToCommon`, command `product.applySubsetToCommon`). The domains and the preparation
+  months have no common value and keep only "Revert to common". Tests: `tests/domain/portfolio/subsetCommon.test.ts`,
+  `tests/ui/portfolio-knowledge-apply.test.tsx`.
 
 - **Dependencies between waves and transformation-team capacity (lot 7, SPEC_MULTI_PRODUIT.md F13).** A wave may start after another wave
   `start`s or after its last product finishes setup (`setupEnd`), plus a lag in months; its effective start is `max(own start, derived start)`.
@@ -320,9 +345,9 @@ share in percent); resolving a product appends FTE x share to its effective team
 100 % is counted once in the portfolio (consolidation, team aggregate, hub allocation by headcount). Absent field = the previous behaviour exactly.
 Diagnostics `shared-over` (shares > 100 %) and `shared-orphan` (share of a deleted product); deleting a product drops its shares in the same undo
 step. Undoable commands `sharedTeam.add / edit / remove / setShare`; Products section, "Shared team lines" table; Input team shows the share as a
-read-only "Shared" row; the parameters workbook exports and imports the `SharedTeam` sheet. What it does not do (by choice): a shared line has no
-pins; duplicating a product (F3) copies its own team, not its shares (they would exceed 100 %); the whole-team actions of Input team (total, build
-from artefacts, align) act on the product's own rows and leave the shares as they are; an imported workbook without a `SharedTeam` sheet has no
+read-only "Shared" row; the parameters workbook exports and imports the `SharedTeam` sheet. Pins on a shared line: since lot 8 (above). What it
+does not do (by choice): duplicating a product (F3) copies its own team, not its shares (they would exceed 100 %); the whole-team actions of Input
+team (total, build from artefacts, align) act on the product's own rows and leave the shares as they are; an imported workbook without a `SharedTeam` sheet has no
 shared line.
 
 ## DEV-SNAPSHOT-RESTORE — opening the 107 case files: the legacy restore against the new build

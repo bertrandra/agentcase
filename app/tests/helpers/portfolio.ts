@@ -1,6 +1,6 @@
 import { readdirSync, readFileSync } from 'node:fs';
 import type { CaseState } from '@/domain';
-import { envelopeCase, type KnowledgeSubset, type Overrides, type Portfolio, type Product } from '@/domain/portfolio';
+import { envelopeCase, type KnowledgeSubset, type Overrides, type Portfolio, type Product, type SharedTeamLine } from '@/domain/portfolio';
 
 export const FIXTURE_IDS = readdirSync('fixtures/cases').map((f) => f.replace('.json', '')).sort();
 export const loadCase = (id: string): CaseState => JSON.parse(readFileSync(`fixtures/cases/${id}.json`, 'utf8')) as CaseState;
@@ -58,3 +58,8 @@ export const bestOf = (n: number, f: () => void): number => {
   for (let i = 0; i < n; i++) { const t = performance.now(); f(); m = Math.min(m, performance.now() - t); }
   return m;
 };
+
+/** Golden as product p1 (wave 1) and a second product B in wave w2 starting at month 6: the shared-team tests' portfolio. */
+export const goldenAndB = (): Portfolio => withProduct(withWave(envelopeCase(loadCase('golden')), 'w2', 6), { id: 'B', waveId: 'w2' });
+/** A shared line of 2 FTE (Dev B2 France) split 50 / 50 between p1 and B. */
+export const SHARED_LINE: SharedTeamLine = { id: 's1', skill: 'Dev', grade: 'B2', loc: 'France', etp: 2, allocations: { p1: 50, B: 50 } };

@@ -1,12 +1,11 @@
 import { describe, expect, it } from 'vitest';
 import {
-  addSharedLine, aggregateTeams, consolidate, corePortfolio, editSharedLine, effectiveTeam, envelopeCase, removeProduct, removeSharedLine, resolveProduct,
+  addSharedLine, aggregateTeams, consolidate, corePortfolio, editSharedLine, effectiveTeam, removeProduct, removeSharedLine, resolveProduct,
   runOf, setSharedAllocation, validate, type Portfolio, type SharedTeamLine,
 } from '@/domain/portfolio';
-import { loadCase, withProduct, withWave } from '../../helpers/portfolio';
+import { goldenAndB, SHARED_LINE } from '../../helpers/portfolio';
 
-const two = (): Portfolio => withProduct(withWave(envelopeCase(loadCase('golden')), 'w2', 6), { id: 'B', waveId: 'w2' });
-const LINE: SharedTeamLine = { id: 's1', skill: 'Dev', grade: 'B2', loc: 'France', etp: 2, allocations: { p1: 50, B: 50 } };
+const two = goldenAndB, LINE = SHARED_LINE;
 const shared = (line: SharedTeamLine = LINE): Portfolio => addSharedLine(two(), line);
 const etpOf = (pf: Portfolio, id: string): number => runOf(resolveProduct(pf, id)).baseEtp;
 const baseCost = (pf: Portfolio): number => pf.products.reduce((a, p) => a + runOf(resolveProduct(pf, p.id)).cost().base, 0);

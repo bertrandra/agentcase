@@ -1,5 +1,5 @@
 /** @calc-zone product-resolution */
-import { applyToCommon, clearOverride, setKnowledge, setOverride, type KnowledgeSubset } from '@/domain/portfolio';
+import { applySubsetToCommon, applyToCommon, clearOverride, setKnowledge, setOverride, type KnowledgeSubset, type SubsetField } from '@/domain/portfolio';
 import { definePortfolioCommand } from '@/store/commands';
 import { subsetFieldOfRef } from '@/store/commonEdit';
 import { appStore } from '@/store/instance';
@@ -21,6 +21,10 @@ const clearCmd = definePortfolioCommand<{ id: string; ref: string }>({
 const toCommonCmd = definePortfolioCommand<{ id: string; ref: string }>({
   type: 'product.applyToCommon', label: (p) => `Apply ${p.ref} to all products`, apply: (pf, p) => mirrorHub(applyToCommon(pf, p.id, p.ref)),
 });
+const subsetToCommonCmd = definePortfolioCommand<{ id: string; field: SubsetField }>({
+  type: 'product.applySubsetToCommon', label: (p) => `Apply knowledge ${p.field} to all products`,
+  apply: (pf, p) => mirrorHub(applySubsetToCommon(pf, p.id, p.field)),
+});
 const knowledgeCmd = definePortfolioCommand<{ id: string; patch: KnowledgeSubset; clear: (keyof KnowledgeSubset)[] }>({
   type: 'product.setKnowledge', label: () => 'Edit product knowledge subset',
   coalesceKey: (p) => `product.setKnowledge:${p.id}:${Object.keys(p.patch).join(',')}`,
@@ -36,6 +40,11 @@ export const setProductOverride = (id: string, ref: string, value: unknown): boo
 export const clearProductOverride = (id: string, ref: string): boolean => dispatchChecked(clearCmd({ id, ref }));
 /** "Apply to all products": the product's value becomes the common one; every override now identical to it is dropped. */
 export const applyOverrideToCommon = (id: string, ref: string): boolean => dispatchChecked(toCommonCmd({ id, ref }));
+/**
+ * "Apply to all products" for a field of the product's knowledge subset: its value becomes the common one and every product holding the identical
+ * value inherits it again. One undoable step; false (nothing changes) for a field the common case does not hold or the product does not set.
+ */
+export const applySubsetFieldToCommon = (id: string, field: SubsetField): boolean => dispatchChecked(subsetToCommonCmd({ id, field }));
 /**
  * Set fields of the product's knowledge subset (an absent field is inherited from the hub); `clear` drops fields. Domain weights must add up
  * to 100, `targetCC` in [0, 4], `ktLeadMonths` >= 0, nine maturity answers in [0, 4]: otherwise nothing changes and false is returned.

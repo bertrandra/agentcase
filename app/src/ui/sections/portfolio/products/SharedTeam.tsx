@@ -1,8 +1,10 @@
+import { useState } from 'react';
 import { allocatedPct } from '@/domain/portfolio';
 import { addSharedLine } from '@/controllers/sharedTeam';
 import { useProducts, useSharedTeam } from '@/store/portfolioHooks';
 import { toast } from '@/ui/uiState';
 import { SharedLineRow } from './SharedLineRow';
+import { SharedPinEditor } from './SharedPinEditor';
 
 /**
  * Shared team lines (a person or a group on several products): each line gives every product FTE x its share; the shares of a line add up to at most
@@ -10,6 +12,7 @@ import { SharedLineRow } from './SharedLineRow';
  */
 export function SharedTeam() {
   const lines = useSharedTeam(), products = useProducts();
+  const [pinOf, setPinOf] = useState<string | null>(null), pinAt = lines.findIndex((l) => l.id === pinOf);
   const over = lines.filter((l) => allocatedPct(l) > 100 + 1e-9).length;
   const add = () => toast(addSharedLine() ? 'Shared line added: give each product its share — Ctrl+Z to undo' : 'Shared line refused');
   return (
@@ -24,12 +27,16 @@ export function SharedTeam() {
             <thead><tr>
               <th scope="col">Skill</th><th scope="col">Grade</th><th scope="col">Location</th><th scope="col">FTE</th>
               {products.map((p) => <th key={p.id} scope="col" title="Share of the line's FTE given to this product">{p.name} (%)</th>)}
-              <th scope="col" title="Sum of the shares (at most 100 %)">Allocated</th><th scope="col"><span className="ac-sr">Remove</span></th>
+              <th scope="col" title="Sum of the shares (at most 100 %)">Allocated</th>
+              <th scope="col" title="Pin this line to specific artefacts, in every product that has a share of it">Pin</th>
+              <th scope="col"><span className="ac-sr">Remove</span></th>
             </tr></thead>
-            <tbody>{lines.map((l, i) => <SharedLineRow key={l.id} line={l} index={i} products={products} />)}</tbody>
+            <tbody>{lines.map((l, i) => <SharedLineRow key={l.id} line={l} index={i} products={products} open={pinOf === l.id}
+              onPin={(id) => setPinOf(pinOf === id ? null : id)} />)}</tbody>
           </table>
         </div>
       ) : <p>No shared line: every product&apos;s team is its own.</p>}
+      {pinAt >= 0 && <SharedPinEditor line={lines[pinAt]!} index={pinAt} lines={lines} onClose={() => setPinOf(null)} />}
       <p aria-live="polite" className="ac-muted" data-shared-status="">
         {over ? `${over} shared line${over > 1 ? 's are' : ' is'} allocated over 100 %: counted more than once in the portfolio.` : ''}
       </p>

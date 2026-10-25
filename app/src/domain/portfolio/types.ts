@@ -63,7 +63,11 @@ export interface Wave {
  * A team line shared by several products (a person or a group on two products). `allocations`: product id -> share of the line's FTE in percent
  * (0..100, adding up to <= 100). Resolving a product adds FTE x share to its entry team; the line is counted once in the portfolio.
  */
-export interface SharedTeamLine { id: string; skill: string; grade: string; loc: string; etp: number; allocations: Record<string, number> }
+export interface SharedTeamLine {
+  id: string; skill: string; grade: string; loc: string; etp: number; allocations: Record<string, number>;
+  /** artefact ids pinned to the line, applied to every product's share row (like the pins of a team row); absent = none */
+  pins?: string[];
+}
 
 export interface HubSettings { enabled: boolean; infraMonthly: number; infraAllocation: 'perProduct' | 'byBaseEtp' }
 
