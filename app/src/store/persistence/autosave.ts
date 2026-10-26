@@ -4,6 +4,7 @@ import { toPortfolioSnapshot } from './portfolioSnapshot';
 import { openChecked } from './schema';
 import { fileVersion, SNAPSHOT_SCHEMA_VERSION } from './schema/version';
 import type { HistoryState } from '../types';
+import type { FieldSet } from '@/domain/portfolio/fields';
 
 /**
  * `format: 'portfolio'` marks a record whose snapshot is the exact portfolio and whose history patches address it. Records written before the
@@ -11,6 +12,10 @@ import type { HistoryState } from '../types';
  */
 export interface AutosaveRecord { tabId: string; savedAt: string; label: string; snapshot: Record<string, unknown>; history: HistoryState;
   format?: 'portfolio' }
+/** The fields of a record, at runtime (the 🗄️ Data Model section lists them; `FieldSet` keeps the list equal to the interface). */
+export const AUTOSAVE_RECORD_FIELDS: FieldSet<AutosaveRecord> = {
+  tabId: 'required', savedAt: 'required', label: 'required', snapshot: 'required', history: 'required', format: 'optional',
+};
 /** Where records live: IndexedDB in the browser, a Map in tests. */
 export interface AutosaveStorage {
   put(r: AutosaveRecord): Promise<void>;

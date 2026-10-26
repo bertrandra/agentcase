@@ -45,6 +45,8 @@
 .ac-section .ac-dm-card { padding: 10px; text-align: left; cursor: pointer; border-left-color: var(--dyn-dm-tone); }
 .ac-dm-card[data-layer='sections'] { --dyn-dm-tone: var(--ac-primary-700); } .ac-dm-card[data-layer='state'] { --dyn-dm-tone: var(--ac-teal-700); }
 .ac-dm-card[data-layer='variables'] { --dyn-dm-tone: var(--ac-secondary-600); } .ac-dm-card[data-layer='model'] { --dyn-dm-tone: var(--ac-warning-600); }
+.ac-dm-card[data-layer='document'], .ac-dm-card[data-layer='files'] { --dyn-dm-tone: var(--ac-primary-700); }
+.ac-dm-card[data-layer='overrides'], .ac-dm-card[data-layer='packages'] { --dyn-dm-tone: var(--ac-teal-700); } .ac-dm-card[data-layer='view'] { --dyn-dm-tone: var(--ac-secondary-600); }
 .ac-section .ac-dm-card-n { font-size: var(--ac-font-size-6xl); font-weight: var(--ac-font-weight-bold); color: var(--dyn-dm-tone); }
 .ac-section .ac-dm-card-t { font-weight: var(--ac-font-weight-semibold); }
 .ac-section .ac-dm-tags { margin-top: 12px; }
