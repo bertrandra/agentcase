@@ -8,7 +8,8 @@ export function BuildOrder() {
   const modules = (id: string) => DATA.zones.find((z) => z.id === id)?.modules ?? 0;
   return (
     <div>
-      <h2>Build order <span className="ac-muted">— {LAYERS.order.length} zones in {layers.length} layers, {LAYERS.feedback.length} feedback links set aside</span></h2>
+      <h2>Build order <span className="ac-muted">— {LAYERS.order.length} zones in {layers.length} layers, {LAYERS.feedback.length} feedback links set
+        aside</span></h2>
       <Callout>{notes.buildOrderNote}</Callout>
       {layers.map((l) => (
         <div key={l} data-layer={l} className="ac-dep-layer">
@@ -23,12 +24,15 @@ export function BuildOrder() {
           </div>
         </div>
       ))}
-      {!CYCLES.length && <Callout kind="green"><span data-acyclic>✅ <strong>No cycle</strong>: {DATA.edges.filter((e) => e[2] === 'z').length} zone links.</span> {notes.acyclicNote} {DATA.outer.length} {notes.outerNote}</Callout>}
+      {!CYCLES.length && <Callout kind="green"><span data-acyclic>✅ <strong>No cycle</strong>: {DATA.edges.filter((e) => e[2] === 'z').length} zone
+        links.</span> {notes.acyclicNote} {DATA.outer.length} {notes.outerNote}</Callout>}
       {CYCLES.map((c) => (
-        <Callout key={c.join()} kind="warn"><span data-cycle={c.length}>🔁 <strong>Cycle of {c.length} zones</strong> (each reaches the others through imports): {c.map(labelOf).join(' · ')}.</span> {notes.cycleNote}</Callout>
+        <Callout key={c.join()} kind="warn"><span data-cycle={c.length}>🔁 <strong>Cycle of {c.length} zones</strong> (each reaches the others through
+          imports): {c.map(labelOf).join(' · ')}.</span> {notes.cycleNote}</Callout>
       ))}
       <h3>Feedback links ({LAYERS.feedback.length})</h3>
-      <p className="ac-muted">Imports that point backwards in the order above; the number is the count of module pairs. They are real dependencies, documented rather than hidden.</p>
+      <p className="ac-muted">Imports that point backwards in the order above; the number is the count of module pairs. They are real dependencies, documented
+        rather than hidden.</p>
       <ul>{LAYERS.feedback.map((e) => <li key={`${e[0]}>${e[1]}`}>{labelOf(e[0])} → {labelOf(e[1])} ({e[3]})</li>)}</ul>
     </div>
   );

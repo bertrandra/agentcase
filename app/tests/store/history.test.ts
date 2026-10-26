@@ -2,7 +2,8 @@ import { describe, expect, it } from 'vitest';
 import { canRedo, canUndo, EMPTY_HISTORY, popRedo, popUndo, pushEntry } from '@/store/history';
 import type { HistoryEntry } from '@/store/types';
 
-const e = (label: string, ts: number, key?: string): HistoryEntry => ({ label, type: 't', ts, coalesceKey: key, patches: [{ op: 'replace', path: ['a'], value: ts }], inverse: [{ op: 'replace', path: ['a'], value: -ts }] });
+const e = (label: string, ts: number, key?: string): HistoryEntry =>
+  ({ label, type: 't', ts, coalesceKey: key, patches: [{ op: 'replace', path: ['a'], value: ts }], inverse: [{ op: 'replace', path: ['a'], value: -ts }] });
 
 describe('history', () => {
   it('pushes, undoes and redoes', () => {

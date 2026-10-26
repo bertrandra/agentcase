@@ -9,7 +9,8 @@ export { movedCtx, movedValue, productTornado, rankTornado, tornadoRow, TORNADO_
 export { MC_PARAMS_DEFAULT, mcParamsOf, mcSpreadScale, type McParam } from './mcParams';
 export { mcRng, mcSample, mcSampleT } from './rng';
 export { PNEG_AMBER, PNEG_BRICK, pNegTone, type PNegTone } from './pNeg';
-export { MC_DRAWS_DEFAULT, MC_DRAWS_MAX, MC_DRAWS_MIN, MC_SEED_DEFAULT, mcDrawsOf, mcOutcome, mcSeedOf, runMonteCarlo, mcDraws, mcStats, pearson as mcPearson, type McResult, type McSens, type McShock, type McStats } from './simulate';
+export { MC_DRAWS_DEFAULT, MC_DRAWS_MAX, MC_DRAWS_MIN, MC_SEED_DEFAULT, mcDrawsOf, mcOutcome, mcSeedOf, runMonteCarlo, mcDraws, mcStats, pearson as mcPearson,
+  type McResult, type McSens, type McShock, type McStats } from './simulate';
 export { mcFingerprint } from './fingerprint';
 export { autoTechCap, withInputs } from './withInputs';
 export { thinAggregate, thinFor, type ThinResult } from '../time/thin';

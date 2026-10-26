@@ -16,7 +16,8 @@ const blockKey = (e: KeyboardEvent): void => { if (!PASS.has(e.key) && !e.ctrlKe
 export function ReadOnlyScope({ who, children, inert }: { who: string; children: ReactNode; inert?: boolean }) {
   const id = useId(), extra = inert ? ({ inert: '' } as Record<string, string>) : {};
   return (
-    <div className="ac-readonly" data-readonly onClickCapture={block} onChangeCapture={block} onInputCapture={block} onSubmitCapture={block} onDropCapture={block}
+    <div className="ac-readonly" data-readonly onClickCapture={block} onChangeCapture={block} onInputCapture={block} onSubmitCapture={block}
+      onDropCapture={block}
       onPointerDownCapture={block} onMouseDownCapture={block} onTouchStartCapture={block} onDragStartCapture={block} onKeyDownCapture={blockKey}>
       <p id={id} className="ac-muted ac-ro-note">Read-only: view of the product <strong>{who}</strong>. To change it, use “Edit this product”.</p>
       <fieldset disabled aria-describedby={id} className="ac-ro-fieldset" {...extra}>

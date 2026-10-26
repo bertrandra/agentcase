@@ -7,7 +7,8 @@ const pct = (x: number) => `${Math.round(x * 100)}%`;
 /** The sentence under the table that belongs to the selected model (break-even uplift, capacity tiers, true-up). */
 export function CmDetail({ v, sel }: { v: CmView; sel: string }) {
   const c = useCtx();
-  if (sel === 'AAH') return <p className="ac-muted">AAH break-even uplift (margin = 0): <strong>{v.breakEvenUplift.toFixed(1)}%</strong> — the configured uplift must exceed this to be profitable.</p>;
+  if (sel === 'AAH') return <p className="ac-muted">AAH break-even uplift (margin = 0): <strong>{v.breakEvenUplift.toFixed(1)}%</strong> — the configured uplift
+    must exceed this to be profitable.</p>;
   if (sel === 'AGS') {
     const t = cmTierSplit(c), ratio = cmVfteRatioOf(c);
     return (
@@ -16,6 +17,7 @@ export function CmDetail({ v, sel }: { v: CmView; sel: string }) {
         vFTE billing ratio {ratio} = the share of agent capacity billed; the rest is ceded to the client as price.</p>
     );
   }
-  if (sel === 'GS') return <p className="ac-muted">Quarterly true-up against the Client view tracker (plan vs actual). Capgemini carries the delivery risk — the Monte Carlo P10/P90 band applies to the margin, not only to the client saving.</p>;
+  if (sel === 'GS') return <p className="ac-muted">Quarterly true-up against the Client view tracker (plan vs actual). Capgemini carries the delivery risk — the
+    Monte Carlo P10/P90 band applies to the margin, not only to the client saving.</p>;
   return null;
 }

@@ -6,7 +6,8 @@ import { Field } from '@/ui/widgets/fields';
 
 function Num({ id, label, dflt, min, max, step }: { id: string; label: string; dflt: number; min: number; max?: number; step: number }) {
   const v = useDoc((d) => d.dom.values[id] || String(dflt));
-  return <Field label={label}><input type="number" value={v} min={min} max={max} step={step} onChange={(e) => setInput(id, e.target.value)} className="ac-mc-input" /></Field>;
+  return <Field label={label}>
+    <input type="number" value={v} min={min} max={max} step={step} onChange={(e) => setInput(id, e.target.value)} className="ac-mc-input" /></Field>;
 }
 
 /** Draws, seed, run button, auto re-run switch and the reset of the uncertainty ranges. */

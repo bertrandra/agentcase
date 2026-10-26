@@ -16,9 +16,12 @@ vi.mock('@/ui/widgets/ChartPanel', async () => import('../helpers/chartStub'));
 let ids: [string, string, string], waves: [string, string];
 beforeEach(() => { ({ ids, waves } = threeProducts()); pfSimStore.setState({ run: null, progress: null, params: null }); });
 afterEach(cleanup);
-const scopes = () => [{ name: 'Portfolio', scope: { kind: 'portfolio' } as DisplayScope, n: 3 }, { name: 'Wave 1', scope: { kind: 'wave', id: waves[0] } as DisplayScope, n: 2 }, { name: 'Wave 2', scope: { kind: 'wave', id: waves[1] } as DisplayScope, n: 1 }];
+const scopes = () => [{ name: 'Portfolio', scope: { kind: 'portfolio' } as DisplayScope, n: 3 },
+  { name: 'Wave 1', scope: { kind: 'wave', id: waves[0] } as DisplayScope, n: 2 },
+  { name: 'Wave 2', scope: { kind: 'wave', id: waves[1] } as DisplayScope, n: 1 }];
 const banner = () => document.querySelector('.ac-scope-banner')!.textContent;
-const kpi = (label: RegExp): string => screen.getAllByText(label).find((e) => e.classList.contains('ac-stat-l'))!.parentElement!.querySelector('.ac-stat-v')!.textContent ?? '';
+const kpi = (label: RegExp): string =>
+  screen.getAllByText(label).find((e) => e.classList.contains('ac-stat-l'))!.parentElement!.querySelector('.ac-stat-v')!.textContent ?? '';
 
 describe('Verdict > Results: aggregate view', () => {
   it.each([0, 1, 2])('scope %i: key figures, decomposition, team shift and product lines are the domain figures; no run yet = invitation', async (i) => {

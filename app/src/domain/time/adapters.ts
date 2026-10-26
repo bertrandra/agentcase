@@ -28,11 +28,13 @@ export const ADAPTERS: Record<string, Adapter> = {
   },
   'logistic.default': {
     id: 'logistic.default', family: 'logistic',
-    evaluate(t, K) { const P = need(K.logistic, 'logistic.default'); return P.floor + (P.ceiling - P.floor) / (1 + Math.exp(-num(P, 'k') * (t - num(P, 't0')))); },
+    evaluate(t, K) { const P = need(K.logistic, 'logistic.default'); return P.floor +
+      (P.ceiling - P.floor) / (1 + Math.exp(-num(P, 'k') * (t - num(P, 't0')))); },
   },
   'gompertz.default': {
     id: 'gompertz.default', family: 'gompertz',
-    evaluate(t, K) { const P = need(K.gompertz, 'gompertz.default'); return P.floor + (P.ceiling - P.floor) * Math.exp(-num(P, 'b') * Math.exp(-num(P, 'c') * t)); },
+    evaluate(t, K) { const P = need(K.gompertz, 'gompertz.default'); return P.floor +
+      (P.ceiling - P.floor) * Math.exp(-num(P, 'b') * Math.exp(-num(P, 'c') * t)); },
   },
   'bass.default': {
     id: 'bass.default', family: 'bass',

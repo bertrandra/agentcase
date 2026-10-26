@@ -3,7 +3,8 @@ import { setDisplayScope } from '@/controllers/displayScope';
 import { setMaxConcurrentSetups, setWaveDependency } from '@/controllers/waveDeps';
 import { setPortfolioHorizon, setPortfolioHub, setPortfolioRho } from '@/controllers/portfolio';
 import { clearProductOverride, applyOverrideToCommon, applySubsetFieldToCommon, setProductKnowledge, setProductOverride } from '@/controllers/productOverrides';
-import { addProduct, archiveProduct, duplicateProduct, removeProduct, renameProduct, setActiveProduct, setEditScope, setProductNote, setProductOffset } from '@/controllers/product';
+import { addProduct, archiveProduct, duplicateProduct, removeProduct, renameProduct, setActiveProduct, setEditScope, setProductNote,
+  setProductOffset } from '@/controllers/product';
 import { appStore } from '@/store/instance';
 import type { Sample } from './types';
 
@@ -32,7 +33,8 @@ export const samples: Record<string, Sample> = {
   'product.clearOverride': { prep: overridden, run: () => { clearProductOverride(first(), 'selectedArtefacts'); } },
   'product.applyToCommon': { prep: overridden, run: () => { applyOverrideToCommon(first(), 'selectedArtefacts'); } },
   'product.setKnowledge': () => { setProductKnowledge(first(), { targetCC: 2 }); },
-  'product.applySubsetToCommon': { prep: () => { setProductKnowledge(first(), { targetCC: 1 }); }, run: () => { applySubsetFieldToCommon(first(), 'targetCC'); } },
+  'product.applySubsetToCommon': { prep: () => { setProductKnowledge(first(), { targetCC: 1 }); },
+    run: () => { applySubsetFieldToCommon(first(), 'targetCC'); } },
   'wave.add': () => { addWave('Wave B', 6); },
   'wave.rename': () => { renameWave(wave(), 'Renamed'); },
   'wave.remove': { prep: withWave, run: () => { removeWave(w2); } },

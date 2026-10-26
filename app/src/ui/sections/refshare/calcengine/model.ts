@@ -23,8 +23,10 @@ const get = (o: unknown, path: string): unknown => path.split('.').reduce<unknow
 export function overlayRows(c: Ctx): { rows: OverlayRow[]; nested: OverlayRow[]; curve: string; horizon: number } {
   const raw = modelRaw(c), over = model(c) as unknown as Record<string, unknown>, rawR = raw as unknown as Record<string, unknown>;
   const rows = Object.keys(over).filter((k) => !k.startsWith('_')).map<OverlayRow>((field) => ({
-    field, source: OVERLAID.includes(field) ? 'OVERLAID' : 'raw', delta: OVERLAID.includes(field) ? relDelta(rawR[field], over[field]) : null, type: typeOf(over[field]),
+    field, source: OVERLAID.includes(field) ? 'OVERLAID' : 'raw', delta: OVERLAID.includes(field) ? relDelta(rawR[field], over[field]) : null,
+    type: typeOf(over[field]),
   })).sort((a, b) => (a.source === b.source ? a.field.localeCompare(b.field) : a.source === 'OVERLAID' ? -1 : 1));
-  const nested = NESTED.map<OverlayRow>((field) => ({ field, source: 'OVERLAID', delta: relDelta(get(raw, field), get(over, field)), type: typeOf(get(over, field)) }));
+  const nested = NESTED.map<OverlayRow>((field) =>
+    ({ field, source: 'OVERLAID', delta: relDelta(get(raw, field), get(over, field)), type: typeOf(get(over, field)) }));
   return { rows, nested, curve: String(c.s.scurve?.curve || 'spline.default'), horizon: over.horizon as number };
 }

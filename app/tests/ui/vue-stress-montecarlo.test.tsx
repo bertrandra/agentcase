@@ -33,7 +33,9 @@ describe('stress aggregate: Monte Carlo = the portfolio Monte Carlo of the selec
     await sectionReady(title);
     const run = pfSimStore.getState().run!, sel = selectionStress(run, { kind: 'portfolio' })!;
     const stat = (l: string) => screen.getAllByText(l).find((e) => e.classList.contains('ac-stat-l'))!.parentElement!.querySelector('.ac-stat-v')!.textContent;
-    expect(stat('P10 (adverse outcome)')).toBe(fmtEur(sel.stats.p10)); expect(stat('P50 (median)')).toBe(fmtEur(sel.stats.p50)); expect(stat('P90 (favourable outcome)')).toBe(fmtEur(sel.stats.p90));
+    expect(stat('P10 (adverse outcome)'))
+      .toBe(fmtEur(sel.stats.p10)); expect(stat('P50 (median)')).toBe(fmtEur(sel.stats.p50)); expect(stat('P90 (favourable outcome)'))
+      .toBe(fmtEur(sel.stats.p90));
     expect(stat('P(net < 0)')).toBe(`${Math.round(sel.stats.pNetNeg * 100)} %`); expect(stat('Risk reduction')).toBe(fmtEur(sel.diversification.reduction));
     expect(screen.getByRole('img', { name: 'Distribution of the portfolio net benefit' })).toBeTruthy();
     expect(bodyRows(/Stress by product — Portfolio/)).toBe(3);

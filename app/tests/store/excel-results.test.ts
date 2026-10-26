@@ -11,7 +11,8 @@ import { dumpBuffer, loadCase, readJson, sheetDiffs, type SheetDump } from '../h
 import { THEME_DEFAULT } from '@/domain/theme';
 
 // Fixtures recorded by tools/excel-results-oracle.mjs: the LEGACY "Export financial to Excel" of each case, dumped cell by cell.
-const IDS = ['golden', 'ctx-msi', 'curve-logistic', 'curve-gompertz', 'curve-bass', 'industry-med', 'horizon-1', 'horizon-5', 'econ-horizon-7', 'horizon-10', 'scope-reduced', 'hri-on', 'vtax-on', 'kh-high', 'econ-no-setup', 'econ-roi-low', 'econ-roi-mid'];
+const IDS = ['golden', 'ctx-msi', 'curve-logistic', 'curve-gompertz', 'curve-bass', 'industry-med', 'horizon-1', 'horizon-5', 'econ-horizon-7', 'horizon-10',
+  'scope-reduced', 'hri-on', 'vtax-on', 'kh-high', 'econ-no-setup', 'econ-roi-low', 'econ-roi-mid'];
 
 /**
  * The legacy workbook with the owners' figures: DEV-SETUP-BREAKDOWN (the Investment sheet lists the HRI change cost and the hub setup before its unchanged
@@ -38,7 +39,8 @@ describe('results workbook reproduces the legacy export', () => {
   });
   it('has the six legacy sheets in order', async () => {
     loadCase('golden');
-    expect((await dumpBuffer(await (await exportResultsWorkbook()).blob.arrayBuffer())).map((s) => s.name)).toEqual(['ROI', 'Investment', 'Operating costs', 'Savings', 'P&L', 'Workforce shift']);
+    expect((await dumpBuffer(await (await exportResultsWorkbook()).blob.arrayBuffer())).map((s) => s.name))
+      .toEqual(['ROI', 'Investment', 'Operating costs', 'Savings', 'P&L', 'Workforce shift']);
   });
   it('embeds a chart picture only where one was captured, and survives a broken one', async () => {
     const png = 'iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVR42mP8z8BQDwAEhQGAhKmMIQAAAABJRU5ErkJggg==';

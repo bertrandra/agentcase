@@ -65,7 +65,8 @@ export function viewFieldFacts(): ViewFieldFact[] {
   const file = probeFile(), common = (file.common ?? {}) as Record<string, unknown>;
   return VIEW_FIELDS.map((field) => ({
     field,
-    saved: field in file ? 'saved in the file' : common[PERSONA_KEY] === 'probe-persona' && field === 'persona' ? `saved as common.${PERSONA_KEY} (opening persona)` : 'never saved',
+    saved: field in file ? 'saved in the file' : common[PERSONA_KEY] === 'probe-persona' && field === 'persona'
+      ? `saved as common.${PERSONA_KEY} (opening persona)` : 'never saved',
     broadcast: documentPatches([{ op: 'replace', path: [field], value: null }]).length > 0,
   }));
 }

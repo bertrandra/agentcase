@@ -61,7 +61,8 @@ export default function ModelSupervisionSection() {
           />}
         </div>
         {constrained && sm.supervisorsToUnlock > 0
-          && <p className="ac-warn-ink">+{sm.supervisorsToUnlock} supervisor(s) would unlock the unconstrained case up to the horizon end — the bridge back to Provisioned.</p>}
+          && <p className="ac-warn-ink">+{sm.supervisorsToUnlock} supervisor(s) would unlock the unconstrained case up to the horizon end — the bridge back to
+            Provisioned.</p>}
         <Callout>{on ? <>Phase <strong>ON — {constrained ? 'Constrained' : 'Provisioned'}</strong>. {constrained
           ? <>Achievable agent capacity is capped at what {sup.supervisors} supervisor(s) can absorb;
             the shortfall stays with the residual human team (effort conservation holds).</>

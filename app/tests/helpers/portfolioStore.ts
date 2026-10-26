@@ -21,5 +21,7 @@ export function threeProducts(now: () => number = () => 0): Three {
 export const docOnly = (s: AppStore): string => {
   const { activeProductId: _a, editScope: _e, displayScope: _d, ...rest } = s.getState().portfolio as unknown as Record<string, unknown>;
   void _a; void _e; void _d;
-  return JSON.stringify(rest, (_k, v: unknown) => (v && typeof v === 'object' && !Array.isArray(v) ? Object.fromEntries(Object.entries(v).sort(([a], [b]) => (a < b ? -1 : a > b ? 1 : 0))) : v));
+  return JSON.stringify(rest,
+    (_k, v: unknown) => (v && typeof v === 'object' && !Array.isArray(v)
+    ? Object.fromEntries(Object.entries(v).sort(([a], [b]) => (a < b ? -1 : a > b ? 1 : 0))) : v));
 };

@@ -29,7 +29,8 @@ export default function SetupAggregate() {
     knowledge: eurK(t.knowledge), total: eurK(t.total) };
   return (
     <InputAggregate title="Agentic Setup — Initial investment"
-      intro="the one-off setup lines belong to each product (the HRI change cost and the hub setup are computed by the model); each total is the setup the economics use.">
+      intro={'the one-off setup lines belong to each product (the HRI change cost and the hub setup are computed by the model); each total is the setup the ' +
+        'economics use.'}>
       <AggregateTable caption={`Setup lines by product — ${vs.label}`} rows={a.rows} columns={COLS}
         totals={{ label: `Total — ${vs.label}`, cells }} />
       <SpreadTable caption={`Spread of the setup inputs — ${vs.label}`} items={items} />

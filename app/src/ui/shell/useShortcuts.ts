@@ -6,7 +6,8 @@ import { toast } from '../uiState';
 export function shouldHandle(e: Pick<KeyboardEvent, 'key' | 'ctrlKey' | 'metaKey' | 'shiftKey' | 'target'>): 'undo' | 'redo' | null {
   if (!(e.ctrlKey || e.metaKey)) return null;
   const t = e.target as HTMLElement | null, tag = t?.tagName;
-  if (tag === 'TEXTAREA' || (tag === 'INPUT' && !['range', 'checkbox', 'radio', 'button'].includes((t as HTMLInputElement).type)) || t?.isContentEditable) return null;
+  if (tag === 'TEXTAREA' || (tag === 'INPUT' && !['range', 'checkbox', 'radio', 'button'].includes((t as HTMLInputElement).type)) ||
+    t?.isContentEditable) return null;
   const k = e.key.toLowerCase();
   if (k === 'z') return e.shiftKey ? 'redo' : 'undo';
   if (k === 'y') return 'redo';

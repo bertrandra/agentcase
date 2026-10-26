@@ -15,5 +15,6 @@ export const samples: Record<string, Sample> = {
   'scope.toggleArtefact': () => toggleArtefact('A017', false), 'scope.togglePhase': () => togglePhase('V4', false),
   'team.addRow': () => addTeamRow(), 'team.updateRow': () => updateTeamRow(0, 'loc', 'Poland'), 'team.removeRow': () => removeTeamRow(0),
   'case.setCustomerName': () => setCustomerName('Acme'), 'view.setPersona': () => setPersona('admin'),
-  'lifecycle.setPos': () => setLifecyclePos(80), 'lifecycle.setUse': () => setLifecycleUse(false), 'lifecycle.setWeight': () => setLifecycleWeight('growth', 'V1', 2),
+  'lifecycle.setPos': () => setLifecyclePos(80), 'lifecycle.setUse': () => setLifecycleUse(false),
+  'lifecycle.setWeight': () => setLifecycleWeight('growth', 'V1', 2),
 };

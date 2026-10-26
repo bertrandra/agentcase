@@ -23,7 +23,8 @@ interface Part { key: string; add: () => void }
  * Names obey Excel's rules (31 characters, no []:*?/\, unique). Numbers come from `consolidate`, `portfolioHeadline`, `consolidationView` and
  * `knowledgeTable` only; the product sheets are the single-case results writer on the effective case.
  */
-export function buildPortfolioResultsWorkbook(xl: ExcelJS, source: Portfolio, print: Readonly<ThemeValues>, scope: DisplayScope = { kind: 'portfolio' }, productId: string = source.activeProductId, stress: StressExtra | null = null): Workbook {
+export function buildPortfolioResultsWorkbook(xl: ExcelJS, source: Portfolio, print: Readonly<ThemeValues>, scope: DisplayScope = { kind: 'portfolio' },
+  productId: string = source.activeProductId, stress: StressExtra | null = null): Workbook {
   const pf = corePortfolio(source), c = consolidate(pf), view = consolidationView(pf, c), used = new Set<string>();
   const wb = withPrint(new xl.Workbook(), print);
   wb.creator = 'AgentCase'; wb.created = new Date();

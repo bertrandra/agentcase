@@ -87,7 +87,9 @@ function keepSelection(w: ParamsDoc, sel: Set<string>, notes: string[]): void {
   });
   w.phaseOff = [...off];
   if (contradict.length)
-    notes.push(`Phase Scope marks ${contradict.join(', ')} as "No", but the SDLC Artifacts sheet selects artefacts in ${contradict.length > 1 ? 'them' : 'it'} — the artefact selection was kept.`);
+    notes.push(
+      `Phase Scope marks ${contradict.join(', ')} as "No", but the SDLC Artifacts sheet selects artefacts in ${contradict.length > 1 ? 'them' : 'it'} — the ` +
+        `artefact selection was kept.`);
 }
 
 export const regArtifacts: SheetFamily = { sheets: ['Reg Artifacts'], write: writeReg, read: readReg };

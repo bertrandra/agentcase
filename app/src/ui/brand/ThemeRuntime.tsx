@@ -24,7 +24,8 @@ export function ThemeProvider({ children }: { children: ReactNode }) {
   const theme = useMemo(() => resolveAppTheme(JSON.parse(key) as typeof def, spec), [key, spec]);
   useLayoutEffect(() => {
     if (override !== null && !linked) {
-      toast(Number.isNaN(override) ? 'The theme link is not a theme number: it is ignored.' : `Theme ${override} is not in this case's library: the link is ignored.`, 5000);
+      toast(Number.isNaN(override) ? 'The theme link is not a theme number: it is ignored.'
+        : `Theme ${override} is not in this case's library: the link is ignored.`, 5000);
       clearThemeOverride();
     }
   }, [override, linked]);

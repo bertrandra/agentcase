@@ -1,7 +1,8 @@
 /** Canonical JSON (sorted keys) and its FNV-1a hash: the same digest the oracle extras (tools/oracle-extras.d/factory.mjs) record for big arrays. */
 export function canon(v: unknown): string {
   if (Array.isArray(v)) return '[' + v.map(canon).join(',') + ']';
-  if (v && typeof v === 'object') return '{' + Object.keys(v).sort().map((k) => JSON.stringify(k) + ':' + canon((v as Record<string, unknown>)[k])).join(',') + '}';
+  if (v && typeof v === 'object') return '{' + Object.keys(v).sort().map((k) => JSON.stringify(k) + ':' + canon((v as Record<string, unknown>)[k])).join(',') +
+    '}';
   return JSON.stringify(v);
 }
 export function fnv(s: string): string {

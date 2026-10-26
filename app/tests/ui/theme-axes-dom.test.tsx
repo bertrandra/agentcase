@@ -25,15 +25,18 @@ function token(name: string, el: Element = document.documentElement, depth = 0):
 
 describe('theme axes in the DOM (generated CSS, data attributes)', () => {
   it('no attribute: the default look', () => {
-    expect([token('pad-card'), token('radius'), token('radius-button'), token('box-border'), token('callout-rail'), token('font-size-base')]).toEqual(['1.25rem', '6px', '6px', '1px', '4px', '13px']);
+    expect([token('pad-card'), token('radius'), token('radius-button'), token('box-border'), token('callout-rail'), token('font-size-base')])
+      .toEqual(['1.25rem', '6px', '6px', '1px', '4px', '13px']);
   });
   it('each axis switches its tokens and the tokens built on them', () => {
     applyThemeAxes({ density: 'compact', radius: 'square', box: 'flat', callout: 'tint' });
     expect(document.documentElement.getAttribute('data-ac-density')).toBe('compact');
-    expect([token('pad-card'), token('pad-table-cell'), token('space-block'), token('radius'), token('radius-button'), token('radius-card')]).toEqual(['.85rem', '4px 8px', '1rem', '0px', '0px', '0px']);
+    expect([token('pad-card'), token('pad-table-cell'), token('space-block'), token('radius'), token('radius-button'), token('radius-card')])
+      .toEqual(['.85rem', '4px 8px', '1rem', '0px', '0px', '0px']);
     expect([token('box-border'), token('box-bg'), token('callout-rail')]).toEqual(['0px', token('surface-muted'), '1px']);
     applyThemeAxes({ density: 'spacious', radius: 'round', buttons: 'pill', box: 'elevated', shadow: 'floating' });
-    expect([token('pad-card'), token('font-size-figure'), token('radius'), token('radius-button'), token('shadow-box')]).toEqual(['1.75rem', '30px', '12px', '999px', token('shadow-lg')]);
+    expect([token('pad-card'), token('font-size-figure'), token('radius'), token('radius-button'), token('shadow-box')])
+      .toEqual(['1.75rem', '30px', '12px', '999px', token('shadow-lg')]);
     expect(document.documentElement.hasAttribute('data-ac-callout')).toBe(false);
   });
   it('typography: body, heading, numbers, scale, display weight', () => {

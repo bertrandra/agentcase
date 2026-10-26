@@ -1,6 +1,7 @@
 /** @calc-zone aggregate-views */
 import { useMemo } from 'react';
-import { aggregateAnnual, aggregateMonthly, aggregateRun, consolidate, type AnnualAgg, type DisplayScope, type MonthlyAgg, type Portfolio, type RunAgg } from '@/domain/portfolio';
+import { aggregateAnnual, aggregateMonthly, aggregateRun, consolidate, type AnnualAgg, type DisplayScope, type MonthlyAgg, type Portfolio,
+  type RunAgg } from '@/domain/portfolio';
 import type { Consolidated } from '@/domain/portfolio';
 import { useCorePortfolio } from './consolidationHooks';
 import { useViewScope } from './viewScope';

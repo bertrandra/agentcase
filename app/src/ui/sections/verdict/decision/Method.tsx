@@ -44,7 +44,8 @@ export function Method() {
         <li><strong>Freshness:</strong> the verdict is fingerprinted against the full scenario; if anything model-relevant changes,
           it is flagged stale and re-run (automatically or on demand) — a verdict never silently outlives its scenario.</li>
       </ul>
-      <p className="ac-muted">All thresholds ({pc(T.strongPPos)} / {pc(T.condPPos)} / {pc(T.maxPNegForStrong)} / −{pc(T.p10SetupMult)} of setup) are consulting benchmarks to validate with the client’s risk appetite — like
+      <p className="ac-muted">All thresholds ({pc(T.strongPPos)} / {pc(T.condPPos)} / {pc(T.maxPNegForStrong)} / −{pc(T.p10SetupMult)} of setup) are consulting
+        benchmarks to validate with the client’s risk appetite — like
         every other coefficient in AgentCase.</p>
     </details>
   );

@@ -76,7 +76,9 @@ describe('named snapshots of a portfolio', () => {
   });
   it('a damaged capture is refused, nothing is applied', () => {
     fourProducts(); captureSnapshot('Plan A', T0, 'a');
-    appStore().batch('damage', [{ type: 't', payload: 0, label: 'damage', undoable: true, run: (d) => { (d.namedSnapshots as { portfolio: { products: unknown } }[])[0]!.portfolio.products = 'x'; } }]);
+    appStore().batch('damage',
+      [{ type: 't', payload: 0, label: 'damage', undoable: true,
+      run: (d) => { (d.namedSnapshots as { portfolio: { products: unknown } }[])[0]!.portfolio.products = 'x'; } }]);
     const before = snapAll(appStore());
     expect(activateSnapshot('a')).toBe(false);
     expect(snapAll(appStore())).toBe(before);
@@ -93,7 +95,11 @@ describe('named snapshots of a portfolio', () => {
 });
 
 describe('HTML snapshot and file of a portfolio', () => {
-  const page = () => new DOMParser().parseFromString('<!doctype html><html><head><meta charset="utf-8"><title>AgentCase</title></head><body><div id="root"><p>x</p></div></body></html>', 'text/html').documentElement;
+  const page =
+    () =>
+    new DOMParser().parseFromString(
+    '<!doctype html><html><head><meta charset="utf-8"><title>AgentCase</title></head><body><div id="root"><p>x</p></div></body></html>',
+    'text/html').documentElement;
   it('HTML round trip keeps waves, offsets, overrides, knowledge subsets, hub and the snapshot library', () => {
     fourProducts(); captureSnapshot('Plan A', T0, 'a');
     const before = structuredClone(pfNow()), { html } = htmlSnapshotFile(page(), T0);

@@ -30,7 +30,9 @@ export const VFA_FIXTURES = readdirSync('fixtures/extras/vfa_dom').map((f) => f.
 
 interface LegacyDom { tables: string[][][]; bands: string[][]; error?: string }
 const clean = (s: string, mask?: RegExp) => { const t = s.replace(/\s+/g, ' ').trim(); return mask ? t.replace(mask, '#') : t; };
-const cells = (root: Element, mask?: RegExp): string[][][] => [...root.querySelectorAll('table')].map((t) => [...t.querySelectorAll('tr')].map((r) => [...r.children].map((c) => (c.querySelector('select') ? '' : clean(c.textContent ?? '', mask)))));
+const cells = (root: Element, mask?: RegExp): string[][][] =>
+  [...root.querySelectorAll('table')].map((t) =>
+  [...t.querySelectorAll('tr')].map((r) => [...r.children].map((c) => (c.querySelector('select') ? '' : clean(c.textContent ?? '', mask)))));
 
 /**
  * The legacy tables / summary bands of section `id` (recorded by tools/oracle-extras.d/verifyA.mjs) that the rendered tree does not reproduce
@@ -45,6 +47,7 @@ export function missingVerifyCells(root: Element, fixture: string, id: string, s
     const j = JSON.stringify(t.map((r) => r.map((c) => clean(c, mask))));
     if (!skip.includes(i) && !have.includes(j)) out.push(`table ${i}: ${j.slice(0, 200)}`);
   });
-  leg.bands.forEach((b) => { if (!skipBands.includes(b[0] ?? '') && !stats.includes(JSON.stringify(b.map((x) => clean(x))))) out.push(`band ${JSON.stringify(b)}`); });
+  leg.bands.forEach(
+    (b) => { if (!skipBands.includes(b[0] ?? '') && !stats.includes(JSON.stringify(b.map((x) => clean(x))))) out.push(`band ${JSON.stringify(b)}`); });
   return out;
 }

@@ -9,7 +9,8 @@ const plural = (n: number, one: string, many = `${one}s`): string => `${n} ${n >
 export function scopeText(kind: SectionKind, v: ViewScope, editAll = false): { main: string; detail: string } {
   const n = v.productIds.length, planned = plural(n, 'planned product', 'planned products');
   const sel = v.kind === 'portfolio' ? `Portfolio (${planned})` : `Wave: ${v.label} (${planned})`;
-  const k = v.excludedIds.length, out = k ? ` — ${plural(k, 'unscheduled or archived product', 'unscheduled or archived products')} excluded from the figures` : '';
+  const k = v.excludedIds.length,
+    out = k ? ` — ${plural(k, 'unscheduled or archived product', 'unscheduled or archived products')} excluded from the figures` : '';
   if (kind === 'S-static') return { main: 'Independent of the view', detail: '' };
   if (kind === 'P-portfolio') return { main: 'Portfolio level', detail: '' };
   const editing = v.kind !== 'product' && editAll ? 'Changing: all products (shared values)' : `Changing: product ${v.activeProductName}`;

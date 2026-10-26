@@ -18,7 +18,8 @@ export function FieldToggle(p: FieldToggleProps) {
   if (axis !== 'switch') return <>{p.children}</>;
   return (
     <label className="ac-check ac-fv-switch">
-      <input type="checkbox" role="switch" aria-checked={p.checked} aria-label={p.ariaLabel} checked={p.checked} disabled={p.disabled} onChange={(e) => p.onChange(e.target.checked)} />
+      <input type="checkbox" role="switch" aria-checked={p.checked} aria-label={p.ariaLabel} checked={p.checked} disabled={p.disabled}
+        onChange={(e) => p.onChange(e.target.checked)} />
       <span>{p.label}{p.hint && <span className="ac-field-h"> — {p.hint}</span>}</span>
     </label>
   );

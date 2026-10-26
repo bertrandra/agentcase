@@ -72,7 +72,9 @@ describe('persistence of rho', () => {
   it('the sheet refuses a correlation out of [0, 1]', async () => {
     fourProducts();
     const bytes = await (await exportParamsWorkbook('all', ENV)).blob.arrayBuffer();
-    const bad = await editXlsx(bytes, (wb) => { wb.getWorksheet('PortfolioSettings')!.eachRow((r) => { if (String(r.getCell(1).value).startsWith('Correlation rho')) r.getCell(2).value = 1.5; }); });
+    const bad = await editXlsx(bytes,
+      (wb) => { wb.getWorksheet('PortfolioSettings')!.eachRow(
+      (r) => { if (String(r.getCell(1).value).startsWith('Correlation rho')) r.getCell(2).value = 1.5; }); });
     await expect(importParamsWorkbook(asFile('c.xlsx', bad), ENV)).rejects.toThrow(/correlation rho/i);
   });
 });

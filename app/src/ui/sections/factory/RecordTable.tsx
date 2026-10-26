@@ -24,7 +24,8 @@ export function RecordTable({ coll, rows, cols, noun, empty, addLabel, label, ca
     const aria = `${c.header} of ${label(r)}`;
     const value = (f: string) => String(r[f] ?? '');
     if (c.kind === 'text') {
-      return <input type="text" aria-label={aria} placeholder={c.placeholder} className="ac-fill" value={value(c.field)} onChange={(e) => setField(coll, r.id, c.field, e.target.value)} />;
+      return <input type="text" aria-label={aria} placeholder={c.placeholder} className="ac-fill" value={value(c.field)}
+        onChange={(e) => setField(coll, r.id, c.field, e.target.value)} />;
     }
     if (c.kind === 'choice') return (
       <select
@@ -46,7 +47,9 @@ export function RecordTable({ coll, rows, cols, noun, empty, addLabel, label, ca
   };
   return (
     <>
-      {cap && rows.length > cap && <p role="note" className="ac-callout ac-callout-warn">Showing the first {cap} of {rows.length.toLocaleString('en-US')} {noun} — editing stays available on these; all {rows.length.toLocaleString('en-US')} are counted by the KPIs.</p>}
+      {cap && rows.length > cap && <p role="note" className="ac-callout ac-callout-warn">Showing the
+        first {cap} of {rows.length.toLocaleString('en-US')} {noun} — editing stays available on these; all {rows.length.toLocaleString('en-US')} are counted by
+        the KPIs.</p>}
       <div className="ac-table-wrap" tabIndex={0}>
         <table className="ac-table">
           <thead><tr>{cols.map((c) => <th key={c.header} scope="col">{c.header}</th>)}<th scope="col"><span className="ac-sr">Actions</span></th></tr></thead>

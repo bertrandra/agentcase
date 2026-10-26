@@ -18,7 +18,8 @@ export function buildCriticalReport(s: CaseState, print: Readonly<ThemeValues>, 
   const reason = reportBlocker(s);
   if (reason) return { ok: false, reason };
   const d = reportData(s, now);
-  return { ok: true, filename: `AgentCase_Critical_Regulated_Report_${d.stamp.replace(/-/g, '')}.html`, html: renderReport(d, print), norms: d.norms.length, artefacts: d.artefactsInScope };
+  return { ok: true, filename: `AgentCase_Critical_Regulated_Report_${d.stamp.replace(/-/g, '')}.html`, html: renderReport(d, print), norms: d.norms.length,
+    artefacts: d.artefactsInScope };
 }
 
 const slug = (s: string): string => s.replace(/[^A-Za-z0-9]+/g, '_').replace(/^_|_$/g, '').slice(0, 40) || 'wave';
@@ -36,7 +37,8 @@ export function buildScopedReport(
   if (scope.kind === 'product' || !hasPortfolioContent(pf)) return buildCriticalReport(resolveProduct(pf, productId ?? pf.activeProductId), print, now);
   const d = portfolioReportData(pf, scope, now, stress);
   if (!d) return { ok: false, reason: 'That wave does not exist any more.' };
-  const first = d.reg[0], reason = !first ? 'The selected scope has no planned product.' : d.reg.every((r) => !r.data) ? reportBlocker(resolveProduct(pf, first.id)) : null;
+  const first = d.reg[0], reason = !first ? 'The selected scope has no planned product.'
+    : d.reg.every((r) => !r.data) ? reportBlocker(resolveProduct(pf, first.id)) : null;
   if (reason) return { ok: false, reason };
   const tag = d.kind === 'wave' ? `Wave_${slug(d.label)}_` : 'Portfolio_', norms = new Set(d.reg.flatMap((r) => r.data?.norms ?? []));
   return {

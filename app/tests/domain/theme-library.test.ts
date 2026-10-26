@@ -21,11 +21,13 @@ describe('theme derivation (docs/THEME.md §8.1)', () => {
     expect(themeProps(BUILTIN_THEMES[0]!, DISPLAY_DEFAULT)).toBeNull();
     for (const f of Object.keys(SCALE_ANCHORS) as ScaleKey[]) expect(familyFrom(f, (SCALES[f] as Record<number, string>)[SCALE_ANCHORS[f]]!)).toEqual({});
   });
-  it.each(['#5b2a9e', '#16693a', '#b84a00', '#7a4a24', '#336699', '#cc0000'])('an anchor %s lands on its step and every family stays ordered by lightness', (anchor) => {
+  it.each(['#5b2a9e', '#16693a', '#b84a00', '#7a4a24', '#336699', '#cc0000'])('an anchor %s lands on its step and every family stays ordered by lightness',
+    (anchor) => {
     for (const f of Object.keys(SCALE_ANCHORS) as ScaleKey[]) {
       const steps = familyFrom(f, anchor), list = Object.keys(SCALES[f]).map(Number).sort((a, b) => a - b);
       expect(steps[`${f}-${SCALE_ANCHORS[f]}`]).toBe(anchor);
-      for (let i = 1; i < list.length; i++) expect(L(steps[`${f}-${list[i]}`]!), `${f}-${list[i]}`).toBeLessThanOrEqual(L(steps[`${f}-${list[i - 1]}`]!) + 0.005);
+      for (let i = 1; i < list.length; i++) expect(L(steps[`${f}-${list[i]}`]!),
+        `${f}-${list[i]}`).toBeLessThanOrEqual(L(steps[`${f}-${list[i - 1]}`]!) + 0.005);
     }
   });
   it('a family keeps the hue of its anchor; white and black stay white and black', () => {
@@ -61,12 +63,14 @@ describe('theme derivation (docs/THEME.md §8.1)', () => {
 describe('library validation (doc.THEMES, theme files)', () => {
   it('parseTheme keeps known colours and axis values only, and reports the rest', () => {
     const notes: string[] = [];
-    const t = parseTheme({ name: ' <b>Mine</b> ', colours: { primary: '#ABC', bogus: '#fff', ink: 'red' }, axes: { radius: 'round', density: 'huge', nope: 1 }, __proto__x: 1 }, notes);
+    const t = parseTheme({ name: ' <b>Mine</b> ', colours: { primary: '#ABC', bogus: '#fff', ink: 'red' }, axes: { radius: 'round', density: 'huge', nope: 1 },
+      __proto__x: 1 }, notes);
     expect(t).toEqual({ name: 'b Mine /b', colours: { primary: '#aabbcc' }, axes: { radius: 'round' } });
     expect(notes).toHaveLength(5);
   });
   it('stored themes: built-in or duplicate sequence ids are dropped; the active id falls back to 1', () => {
-    const d = { THEMES: [{ seq: 3, name: 'x', colours: {}, axes: {} }, { seq: 120, name: 'A', colours: {}, axes: {} }, { seq: 120, name: 'B', colours: {}, axes: {} }], ACTIVE_THEME: 999 };
+    const d = { THEMES: [{ seq: 3, name: 'x', colours: {}, axes: {} }, { seq: 120, name: 'A', colours: {}, axes: {} },
+      { seq: 120, name: 'B', colours: {}, axes: {} }], ACTIVE_THEME: 999 };
     expect(userThemes(d).map((t) => `${t.seq} ${t.name}`)).toEqual(['120 A']);
     expect(activeSeq(d)).toBe(1);
     expect(activeTheme({ ACTIVE_THEME: 7 }).name).toBe('Purple');

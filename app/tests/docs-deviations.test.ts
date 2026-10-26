@@ -18,7 +18,8 @@ describe('docs/DEVIATIONS.md register', () => {
     expect(indexRows).toEqual(headings);
   });
   it('every DEV-* id cited by the changelog, the docs, the code, the tests or the ui-parity exceptions has a section', () => {
-    const files = ['../CHANGELOG.md', 'ui-parity-exceptions.json', ...walk('../docs').filter((f) => f.endsWith('.md') && !f.includes('history')), ...walk('src'), ...walk('tests')]
+    const files = ['../CHANGELOG.md', 'ui-parity-exceptions.json', ...walk('../docs').filter((f) => f.endsWith('.md') && !f.includes('history')),
+      ...walk('src'), ...walk('tests')]
       .filter((f) => /\.(md|json|ts|tsx|css)$/.test(f));
     const cited = new Set(files.flatMap((f) => readFileSync(f, 'utf8').match(ID) ?? []));
     expect([...cited].filter((id) => !headings.includes(id) && !RETIRED.includes(id) && !id.endsWith('-'))).toEqual([]);

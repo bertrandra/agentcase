@@ -82,7 +82,8 @@ describe('a damaged file opens with its corrections listed (never refused)', () 
     connectBroadcast(B, cb, 'B');
     const patches = (name: string) => [{ op: 'replace', path: ['common', 'customerName'], value: name }];
     const send = (v: number | undefined, name: string, tag = true) =>
-      ca.postMessage({ tabId: 'A', v, patches: patches(name), ...(tag ? { kind: 'patch', docId: B.syncId().docId, base: B.syncId().rev, rev: B.syncId().rev + 1 } : {}) });
+      ca.postMessage({ tabId: 'A', v, patches: patches(name),
+        ...(tag ? { kind: 'patch', docId: B.syncId().docId, base: B.syncId().rev, rev: B.syncId().rev + 1 } : {}) });
     send(99, 'Future'); expect(B.getState().doc.customerName).toBe('');
     send(undefined, 'NoDoc', false); expect(B.getState().doc.customerName).toBe('');
     send(undefined, 'Old'); expect(B.getState().doc.customerName).toBe('Old');

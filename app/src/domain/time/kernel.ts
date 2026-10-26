@@ -23,7 +23,8 @@ export interface K extends CurveK {
   inputHash: string;
 }
 /** Case-level switches a scenario overrides on the frozen constants (AI on/off, the day-rate path, the setup); the monthly arithmetic is untouched. */
-export type Levers = Partial<Pick<K, 'eff' | 'aiActive' | 'rateMode' | 'frPerYear' | 'dayRateTarget' | 'infraMonth' | 'setupTotal' | 'vTaxRate' | 'loopExtRate' | 'complianceTaxRate'>>;
+export type Levers = Partial<Pick<K, 'eff' | 'aiActive' | 'rateMode' | 'frPerYear' | 'dayRateTarget' | 'infraMonth' | 'setupTotal' | 'vTaxRate' |
+  'loopExtRate' | 'complianceTaxRate'>>;
 export interface BuildOpts { mode?: string; curveModelId?: string; scenarioId?: string; levers?: Levers }
 
 export function buildK(c: Ctx, m: ModelResult, opts: BuildOpts = {}): K {
@@ -34,7 +35,8 @@ export function buildK(c: Ctx, m: ModelResult, opts: BuildOpts = {}): K {
     baseEtp: m.base.etp, baselineRunMonth: m.baselineRun / 12, eff: m.eff, wdMonth: m.wd / 12, dayRateTarget: m.tgtTJM, dayRateAsIs: m.blendedTJM,
     rateMode: 'target', frPerYear: 0, runsPerDay: num('runsPerDay', 25), tokensPerArt: m.tokensPerArt, tokenUnitCost: m.tokenCost,
     infraMonth: m.infraYear / 12, setupTotal: m.setupTotal, setupProfileMonths: 6, runSizeMode: c.inp.v('runSizeMode') || 'hybrid',
-    runFloorMin: num('runFloorMin', 0.5), runFloorPct: num('runFloorPct', 4), runOpsPerAgent: num('runOpsPerAgent', 0.15), runTeamFactor: num('runTeamFactor', 1),
+    runFloorMin: num('runFloorMin', 0.5), runFloorPct: num('runFloorPct', 4), runOpsPerAgent: num('runOpsPerAgent', 0.15),
+    runTeamFactor: num('runTeamFactor', 1),
     legacyRunFte: Math.max(0.5, m.base.etp * 0.06 + 0.5 + m.base.etp * 0.04), vTaxRate: conv.vTaxRate || 0, loopExtRate: conv.loopExtRate || 0,
     complianceTaxRate: num('complianceTaxPct', 0) / 100, aiActive: true,
     rampCapPct: m.conv.ctx.rampCapPct || 100, maturityBounds: rampBoundsOf(c.s),
@@ -49,7 +51,8 @@ export function buildK(c: Ctx, m: ModelResult, opts: BuildOpts = {}): K {
   else if (fam === 'spline') K.spline = { points: enginePts(c) };
   const rnd = (x: number) => Math.round(x);
   K.inputHash = 'te1:' + [K.curveModelId, K.horizonMonths, K.baseEtp, K.eff, K.baselineRunMonth, K.dayRateTarget, K.setupTotal, K.ramps.join(','),
-    m.yearSav.map(rnd).join(','), K.spline ? 'sp:' + K.spline.points.map((p) => rnd(p.t) + ':' + rnd(p.a)).join(',') : '', ...(opts.levers ? [JSON.stringify(opts.levers)] : [])].join('|');
+    m.yearSav.map(rnd).join(','), K.spline ? 'sp:' + K.spline.points.map((p) => rnd(p.t) + ':' + rnd(p.a)).join(',') : '',
+    ...(opts.levers ? [JSON.stringify(opts.levers)] : [])].join('|');
   return K;
 }
 

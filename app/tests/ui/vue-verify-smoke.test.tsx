@@ -11,7 +11,9 @@ import { VERIFY_IDS } from '../helpers/verifyIds';
 vi.mock('@/ui/widgets/ChartPanel', async () => import('../helpers/chartStub'));
 
 type V = 'portfolio' | 'wave1' | 'wave2' | 'product';
-const view = (v: V) => act(() => { setDisplayScope(v === 'portfolio' ? { kind: 'portfolio' } : v === 'product' ? { kind: 'product' } : { kind: 'wave', id: pf().waves[v === 'wave1' ? 0 : 1]!.id }); });
+const view = (v: V) => act(
+  () => { setDisplayScope(v === 'portfolio' ? { kind: 'portfolio' } : v === 'product' ? { kind: 'product' }
+  : { kind: 'wave', id: pf().waves[v === 'wave1' ? 0 : 1]!.id }); });
 const banner = () => document.querySelector('.ac-scope-banner');
 let errors: ReturnType<typeof vi.spyOn>;
 
@@ -19,7 +21,8 @@ beforeEach(() => { threeProducts(); errors = vi.spyOn(console, 'error').mockImpl
 afterEach(() => { errors.mockRestore(); cleanup(); });
 
 describe('verify group: every section renders under the Portfolio and under a Wave', () => {
-  it.each(VERIFY_IDS.flatMap(([id, t]) => (['portfolio', 'wave1'] as const).map((v) => [id, t, v] as const)))('%s, %s view: banner, no crash, no "coming soon"', async (id, title, v) => {
+  it.each(VERIFY_IDS.flatMap(([id, t]) => (['portfolio', 'wave1'] as const).map((v) => [id, t, v] as const)))('%s, %s view: banner, no crash, no "coming soon"',
+    async (id, title, v) => {
     mountApp(id); view(v);
     await sectionReady(title);
     expect(banner()!.textContent).toContain('Calculated on:');

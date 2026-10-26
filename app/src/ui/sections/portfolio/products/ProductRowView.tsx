@@ -19,22 +19,29 @@ export function ProductRowView({ row, index, active, last, waves }: { row: Produ
       </td>
       <td>
         <select aria-label={`Wave of ${who}`} value={p.waveId ?? ''}
-          onChange={(e) => { const to = waves.find((w) => w.id === e.target.value); act(assignWave(p.id, to?.id ?? null), `${p.name}: ${to ? to.name : 'unscheduled (excluded from the consolidation)'} — Ctrl+Z to undo`, 'Assignment refused'); }}>
+          onChange={(e) => { const to = waves.find((w) => w.id === e.target.value); act(assignWave(p.id, to?.id ?? null),
+            `${p.name}: ${to ? to.name : 'unscheduled (excluded from the consolidation)'} — Ctrl+Z to undo`, 'Assignment refused'); }}>
           <option value="">unscheduled</option>
           {waves.map((w) => <option key={w.id} value={w.id}>{w.name}</option>)}
         </select>
       </td>
-      <td className="ac-num"><NumCell ariaLabel={`Offset in months of ${who}`} value={p.offsetMonths} min={0} step={1} width={64} onCommit={(v) => { setProductOffset(p.id, parseInt(v, 10) || 0); }} /></td>
+      <td className="ac-num"><NumCell ariaLabel={`Offset in months of ${who}`} value={p.offsetMonths} min={0} step={1} width={64}
+        onCommit={(v) => { setProductOffset(p.id, parseInt(v, 10) || 0); }} /></td>
       <td className="ac-num" title="Entry team of the product (FTE)">{r.model.base.etp.toFixed(1)}</td>
-      <td title={n ? 'Overridden keys: see the Overrides section' : 'All values come from the common case'}>{n ? `${n} override${n > 1 ? 's' : ''}` : 'inherited'}</td>
+      <td title={n ? 'Overridden keys: see the Overrides section' : 'All values come from the common case'}>
+        {n ? `${n} override${n > 1 ? 's' : ''}` : 'inherited'}</td>
       <td className="ac-num" title={`Savings of year ${r.endYear.index} (end of horizon) of the product alone`}>{fmtEurK(r.endYear.savings)}</td>
       <td className="ac-num" title="First month the product’s cumulative cash turns positive">{fmtMonths(r.payback)}</td>
       <td><DraftText label={`Note of ${who}`} value={p.note ?? ''} onCommit={(v) => { setProductNote(p.id, v); }} /></td>
       <td>
         <div className="ac-pf-actions" role="group" aria-label={`Actions of ${who}`}>
-          <button type="button" disabled={active} aria-label={`Activate ${p.name}`} onClick={() => act(setActiveProduct(p.id), `Active product: ${p.name}`, 'Product not found')}>Activate</button>
-          <button type="button" aria-label={`Duplicate ${p.name}`} onClick={() => act(duplicateProduct(p.id) !== null, `${p.name} duplicated`, 'Limit of 50 products reached')}>Duplicate</button>
-          <button type="button" aria-label={`${p.archived ? 'Restore' : 'Archive'} ${p.name}`} onClick={() => act(archiveProduct(p.id, !p.archived), p.archived ? `${p.name} restored` : `${p.name} archived`, 'Action refused')}>{p.archived ? 'Restore' : 'Archive'}</button>
+          <button type="button" disabled={active} aria-label={`Activate ${p.name}`}
+            onClick={() => act(setActiveProduct(p.id), `Active product: ${p.name}`, 'Product not found')}>Activate</button>
+          <button type="button" aria-label={`Duplicate ${p.name}`}
+            onClick={() => act(duplicateProduct(p.id) !== null, `${p.name} duplicated`, 'Limit of 50 products reached')}>Duplicate</button>
+          <button type="button" aria-label={`${p.archived ? 'Restore' : 'Archive'} ${p.name}`}
+            onClick={() => act(archiveProduct(p.id, !p.archived), p.archived ? `${p.name} restored` : `${p.name} archived`, 'Action refused')}>
+            {p.archived ? 'Restore' : 'Archive'}</button>
           <button type="button" disabled={last} aria-label={`Delete ${p.name}`} title={last ? 'The last product cannot be deleted' : undefined}
             onClick={() => act(removeProduct(p.id), `${p.name} deleted — Ctrl+Z to undo`, 'The last product cannot be deleted')}>Delete</button>
         </div>

@@ -11,14 +11,17 @@ export function SkillMap({ live }: { live: Live }) {
   const phaseName = (p: string) => PHASES.find((x) => x.id === p)?.name ?? p;
   return (
     <>
-      <p className="ac-muted">Artefacts carry fine-grained skill labels; the team is planned in a smaller set of skills. This editable map aligns the two. Amber = edited vs default.</p>
+      <p className="ac-muted">Artefacts carry fine-grained skill labels; the team is planned in a smaller set of skills. This editable map aligns the two. Amber
+        = edited vs default.</p>
       <SimpleTable head={['Artefact skill', '', 'Team skill', 'Phase / artefact']}
         rows={allArtefactSkills(live).map((as) => {
           const cur = map[as] || as, edited = map[as] !== SKILL_MAP_DEFAULT[as], arts = act.filter((a) => a.skill === as);
           return { key: as, cells: [<code>{as}</code>, '→',
-            <select aria-label={`Team skill of ${as}`} value={cur} className={edited ? 'ac-skill-pick is-edited' : 'ac-skill-pick'} onChange={(e) => setSkillMap(as, e.target.value)}>
+            <select aria-label={`Team skill of ${as}`} value={cur} className={edited ? 'ac-skill-pick is-edited' : 'ac-skill-pick'}
+              onChange={(e) => setSkillMap(as, e.target.value)}>
               {teams.map((t) => <option key={t} value={t}>{t}</option>)}</select>,
-            arts.length ? <div className="ac-skill-arts">{arts.map((a) => <div key={a.id}><b>{phaseName(a.phase)}</b> <span>/</span> {a.name}</div>)}</div> : '—'] };
+            arts.length ? <div className="ac-skill-arts">{arts.map((a) => <div key={a.id}><b>{phaseName(a.phase)}</b> <span>/</span> {a.name}</div>)}</div>
+              : '—'] };
         })} />
       <p><button type="button" onClick={resetSkillMap}>↺ Reset mapping to defaults</button></p>
     </>

@@ -18,9 +18,11 @@ describe('legacy workbook → our reader reproduces the legacy import', () => {
     expect(stateMismatches(ours, leg.state, pristine.state, IGNORE)).toEqual([]);
     expect(notes).toEqual(leg.notes);
     // the same keys are touched (ENVIRONMENTS aside: the legacy import drops isProd, see helpers/excelParams)
-    const touched = (Object.keys(ours) as string[]).filter((k) => k !== 'ENVIRONMENTS' && !sameJson((ours as Record<string, unknown>)[k], (base as Record<string, unknown>)[k])).sort();
+    const touched = (Object.keys(ours) as string[]).filter((k) => k !== 'ENVIRONMENTS' &&
+      !sameJson((ours as Record<string, unknown>)[k], (base as Record<string, unknown>)[k])).sort();
     const final = (k: string) => (k in leg.state ? leg.state[k] : pristine.state[k]);
-    const legTouched = [...new Set([...Object.keys(leg.state), ...Object.keys(leg.base ?? {})])].filter((k) => k !== 'ENVIRONMENTS' && !sameJson(final(k), (base as Record<string, unknown>)[k])).sort();
+    const legTouched = [...new Set([...Object.keys(leg.state), ...Object.keys(leg.base ?? {})])].filter((k) =>
+      k !== 'ENVIRONMENTS' && !sameJson(final(k), (base as Record<string, unknown>)[k])).sort();
     expect(touched).toEqual(legTouched);
     const got = computeCase(ours), problems: string[] = [];
     diffValues(leg.exp.model, JSON.parse(JSON.stringify(got.model, (_k, v) => (v === Infinity ? 'Infinity' : v))), 'model', problems);

@@ -29,7 +29,8 @@ describe("'AI + Location' is the main case (DEV-SCENARIO-ENGINE)", () => {
       expectMirror(withInputs(makeCtx(withCurve(load(id), curve)), { horizon: String(h) }));
     });
   });
-  it('golden, default curve: benefit, setup, ROI and payback now read the headline (before: +32 %, €135,000 vs €225,000, ROI 16.9 vs 7.1, month 4 vs 9)', () => {
+  it('golden, default curve: benefit, setup, ROI and payback now read the headline (before: +32 %, €135,000 vs €225,000, ROI 16.9 vs 7.1, month 4 vs 9)',
+    () => {
     const a = by(makeCtx(load('golden')), 'ailoc');
     expect([a.setup, Math.round(a.net), Math.round(a.totBen)]).toEqual([225000, 1603919, 1828919]);
     expect(a.roi).toBeCloseTo(7.13, 2);

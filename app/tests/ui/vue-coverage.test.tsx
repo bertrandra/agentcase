@@ -22,7 +22,8 @@ describe('coverage: all 85 sections follow the View — Portfolio and Wave', () 
     const missing = SECTION_KIND_IDS.filter((id) => ['R-conso', 'R-rollup', 'I-input'].includes(sectionKind(id)) && !SECTION_AGGREGATES[id]);
     expect(missing).toEqual([]);
   });
-  it.each(SECTION_KIND_IDS.flatMap((id) => [[id, 'portfolio'], [id, 'wave']] as const))('%s under %s: renders, says what it is calculated on, no placeholder', async (id, kind) => {
+  it.each(SECTION_KIND_IDS.flatMap((id) => [[id, 'portfolio'], [id, 'wave']] as const))('%s under %s: renders, says what it is calculated on, no placeholder',
+    async (id, kind) => {
     const errors = vi.spyOn(console, 'error').mockImplementation(() => undefined);
     mountApp(id); view(kind === 'wave' ? { kind: 'wave', id: waves[0] } : { kind: 'portfolio' });
     await waitFor(() => expect(document.querySelector('.ac-scope-banner')).not.toBeNull(), { timeout: 20000 });

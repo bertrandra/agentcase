@@ -2,7 +2,8 @@ import { addDashboard, bindCardVariable, removeDashboard, renameCard, renameDash
 import { newDashboard } from '@/domain/pdc/board';
 import type { Sample } from './types';
 
-const dash = newDashboard({ groupIds: ['tune'], allGroups: false, existing: [], groups: [{ id: 'tune', label: '4 · Tune' }], sections: [{ id: 'knowledge', group: 'tune', label: '🧠 Knowledge hub' }], maxOrder: 170 })!;
+const dash = newDashboard({ groupIds: ['tune'], allGroups: false, existing: [], groups: [{ id: 'tune', label: '4 · Tune' }],
+  sections: [{ id: 'knowledge', group: 'tune', label: '🧠 Knowledge hub' }], maxOrder: 170 })!;
 const prep = () => addDashboard(dash);
 
 export const samples: Record<string, Sample> = {

@@ -24,7 +24,8 @@ function WaveVerdicts() {
     <Panel title="Verdict by wave">
       <DataTable caption="Verdict of each wave" rows={rows} rowKey={(r) => r.id} empty="No wave simulated." columns={[
         { key: 'w', header: 'Wave', render: (r) => <strong>{r.name}</strong> },
-        { key: 'v', header: 'Verdict', render: (r) => (r.decision ? `${VERDICT_META[r.decision.verdict].icon} ${VERDICT_META[r.decision.verdict].short}` : 'n/a') },
+        { key: 'v', header: 'Verdict',
+          render: (r) => (r.decision ? `${VERDICT_META[r.decision.verdict].icon} ${VERDICT_META[r.decision.verdict].short}` : 'n/a') },
         { key: 'c', header: 'Confidence', align: 'right', render: (r) => (r.decision ? `${r.decision.confidence}%` : '') },
         { key: 'p10', header: 'P10', align: 'right', render: (r) => (r.decision ? fmtEur(r.decision.stats.p10) : '') },
         { key: 'p50', header: 'P50', align: 'right', render: (r) => (r.decision ? fmtEur(r.decision.stats.p50) : '') },
@@ -50,7 +51,8 @@ export function PortfolioVerdict({ group }: { group: VerdictGroup }) {
             <button type="button" onClick={() => { void runPortfolioSimulation(); }}>▶ Run now</button></>)}</em></p>
       )}
       {run && <WaveVerdicts />}
-      <p className="ac-muted">Same rules as for a product, applied to the distribution of the scope; P10 floor on the sum of the setups; the bar uplift is the average
+      <p className="ac-muted">Same rules as for a product, applied to the distribution of the scope; P10 floor on the sum of the setups; the bar uplift is the
+        average
         of the products weighted by entry headcount. Details in{' '}
         <button type="button" className="ac-link" onClick={() => goSection('portfolio-stress')}>🎲 Portfolio stress</button>.</p>
     </>

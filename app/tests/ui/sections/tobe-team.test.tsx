@@ -9,7 +9,8 @@ import { parityTests } from '../../helpers/verifyA';
 vi.mock('@/ui/widgets/ChartPanel', async () => import('../../helpers/chartStub'));   // jsdom has no canvas
 beforeEach(() => { freshStore(); });
 afterEach(cleanup);
-const rows = (c: HTMLElement, t: number) => [...c.querySelectorAll('table')[t]!.querySelectorAll('tbody tr, tfoot tr')].map((r) => [...r.children].map((x) => x.textContent));
+const rows = (c: HTMLElement, t: number) =>
+  [...c.querySelectorAll('table')[t]!.querySelectorAll('tbody tr, tfoot tr')].map((r) => [...r.children].map((x) => x.textContent));
 /** Table order: 0 skill map, 1 composition, 2 location split, 3 location result. */
 const comp = (c: HTMLElement) => rows(c, 1);
 
@@ -18,7 +19,8 @@ describe('tobe-team section', () => {
   parityTests('tobe-team', TobeTeam);
   it('composition reconciles with the model and the year buttons switch the year', () => {
     const { container } = render(<TobeTeam />);
-    expect(container.textContent).toContain('Reconciliation (Year 3): Σ human = 3.75 vs model human FTE = 3.75 · Σ agent vFTE = 11.25 vs model agent vFTE = 11.25');
+    expect(container.textContent).toContain(
+      'Reconciliation (Year 3): Σ human = 3.75 vs model human FTE = 3.75 · Σ agent vFTE = 11.25 vs model agent vFTE = 11.25');
     fireEvent.click(screen.getByText('Year 1'));
     expect(container.textContent).toContain('Reconciliation (Year 1)');
     expect(comp(container).slice(-1)[0]![0]).toBe('TOTAL');

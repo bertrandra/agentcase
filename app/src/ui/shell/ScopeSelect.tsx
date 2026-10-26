@@ -24,7 +24,8 @@ export function ScopeSelect() {
       <select aria-label="Show" value={value} onChange={(e) => pick(e.target.value)}>
         <option value="portfolio">Portfolio</option>
         <optgroup label="Waves">{waves.map((w) => <option key={w.id} value={`wave:${w.id}`}>{w.name}</option>)}</optgroup>
-        <optgroup label="Products">{products.map((p) => <option key={p.id} value={`product:${p.id}`}>{p.name} ({waveOf(p.waveId)}){p.archived ? ' (archived)' : ''}</option>)}</optgroup>
+        <optgroup label="Products">
+          {products.map((p) => <option key={p.id} value={`product:${p.id}`}>{p.name} ({waveOf(p.waveId)}){p.archived ? ' (archived)' : ''}</option>)}</optgroup>
       </select>
     </label>
   );

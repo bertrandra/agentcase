@@ -127,6 +127,7 @@ describe('KPI bar at horizons above 3 years', () => {
     const want = computeCase(appStore().getState().doc);
     expect(want.endYear.index).toBe(5);
     expect(want.endYear.savings).toBeGreaterThan(0);
-    expect(screen.getByText('Savings Y5').parentElement!.querySelector('.ac-kpi-v')!.textContent).toBe(`€${Math.round(want.endYear.savings / 1000).toLocaleString('en-US')}k`);
+    expect(screen.getByText('Savings Y5').parentElement!.querySelector('.ac-kpi-v')!.textContent)
+      .toBe(`€${Math.round(want.endYear.savings / 1000).toLocaleString('en-US')}k`);
   });
 });

@@ -32,15 +32,24 @@ const SPECS: Spec[] = [
   { id: 'assumptions', title: /Assumptions register/, caption: /Assumptions by product/,
     row: (id) => { const r = assumptionsByProduct(pf(), [id], base).rows[0]!; return s(r.inputs, r.atDefault, r.adjusted, r.validated, r.state, r.overrides); },
     total: (l) => { const t = assumptionsByProduct(pf(), l, base).totals; return s(t.inputs, t.atDefault, t.adjusted, t.validated, t.state, t.overrides); },
-    drill: { caption: /Assumptions register/, shown: (id) => { const r = assumptionsByProduct(pf(), [id], base).rows[0]!; return [`${r.atDefault} at default`, `${r.adjusted} adjusted`]; } } },
+    drill: { caption: /Assumptions register/,
+      shown: (id) => { const r = assumptionsByProduct(pf(), [id], base).rows[0]!; return [`${r.atDefault} at default`, `${r.adjusted} adjusted`]; } } },
   { id: 'verif', title: /Detailed logic verification/, caption: /Logic verification by product/,
-    row: (id) => { const r = verifByProduct(pf(), [id], rt).rows[0]!; return s(r.status, `${r.checksFail} of ${r.checks}`, `${r.convFail} of ${r.conv}`, r.failing.length ? r.failing.join(', ') : '—', r.sensiAbnormal, r.roi); },
-    total: (l) => { const t = verifByProduct(pf(), l, rt).totals; return s(t.status === 'PASS' ? 'PASS' : `FAIL (${t.failingProducts} product${t.failingProducts > 1 ? 's' : ''})`, `${t.checksFail} of ${t.checks}`, `${t.convFail} of ${t.conv}`, '', t.sensiAbnormal, ''); },
-    drill: { caption: /Convergence checks/, shown: (id) => { const r = verifByProduct(pf(), [id], rt).rows[0]!; return [`${r.convFail} failing of ${r.conv} invariants`]; } } },
+    row: (id) => { const r = verifByProduct(pf(), [id], rt).rows[0]!; return s(r.status, `${r.checksFail} of ${r.checks}`, `${r.convFail} of ${r.conv}`,
+      r.failing.length ? r.failing.join(', ') : '—', r.sensiAbnormal, r.roi); },
+    total: (l) => { const t = verifByProduct(pf(), l, rt).totals; return s(t.status === 'PASS' ? 'PASS'
+      : `FAIL (${t.failingProducts} product${t.failingProducts > 1 ? 's' : ''})`, `${t.checksFail} of ${t.checks}`, `${t.convFail} of ${t.conv}`, '',
+      t.sensiAbnormal, ''); },
+    drill:
+      { caption: /Convergence checks/,
+      shown: (id) => { const r = verifByProduct(pf(), [id], rt).rows[0]!; return [`${r.convFail} failing of ${r.conv} invariants`]; } } },
   { id: 'duediligence', title: /Due diligence/, caption: /Due diligence by product/,
-    row: (id) => { const r = dueDiligenceByProduct(pf(), [id], dd).rows[0]!; return s(r.items, r.confirmed, r.open, `${r.pct}%`, r.invisible, r.ceilCover === null ? 'n/a' : `${Math.round(r.ceilCover * 100)}%`); },
+    row: (id) => { const r = dueDiligenceByProduct(pf(), [id], dd).rows[0]!; return s(r.items, r.confirmed, r.open, `${r.pct}%`, r.invisible,
+      r.ceilCover === null ? 'n/a' : `${Math.round(r.ceilCover * 100)}%`); },
     total: (l) => { const t = dueDiligenceByProduct(pf(), l, dd).totals; return s(t.items, t.confirmed, t.open, `${t.pct}%`, t.invisible, ''); },
-    drill: { caption: /Due diligence register of the product/, shown: (id) => { const r = dueDiligenceByProduct(pf(), [id], dd).rows[0]!; return [`${r.items}Items to confirm`, `${r.confirmed} (${r.pct}%)`, r.groups[0]!.group]; } } },
+    drill: { caption: /Due diligence register of the product/,
+      shown: (id) => { const r = dueDiligenceByProduct(pf(), [id], dd).rows[0]!; return [`${r.items}Items to confirm`, `${r.confirmed} (${r.pct}%)`,
+      r.groups[0]!.group]; } } },
 ];
 
 describe.each(SPECS)('defend aggregate: $id', (sp) => {

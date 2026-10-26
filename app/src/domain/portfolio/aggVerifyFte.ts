@@ -33,7 +33,8 @@ export const fteVfteAgg = viewMemo((sel): FteVfteAgg => {
     return { base: l.m.base.etp, human, agent: s.agent, total: s.total, reduction: s.reduction, freed: s.freed };
   });
   const base = sum(colOf(rows, 'base')), human = sum(colOf(rows, 'human'));
-  const total = { base, human, agent: sum(colOf(rows, 'agent')), total: sum(colOf(rows, 'total')), freed: sum(colOf(rows, 'freed')), reduction: base > 0 ? Math.round((1 - human / base) * 100) : null };
+  const total = { base, human, agent: sum(colOf(rows, 'agent')), total: sum(colOf(rows, 'total')), freed: sum(colOf(rows, 'freed')),
+    reduction: base > 0 ? Math.round((1 - human / base) * 100) : null };
   return {
     label: sel.label, years,
     chart: { labels: Array.from({ length: L }, (_, i) => sel.cal.dateAt(i)), human: sel.series.humanFte, agent: sel.series.agentVfte,

@@ -14,7 +14,8 @@ vi.mock('@/ui/widgets/ChartPanel', async () => import('../helpers/chartStub'));
 let ids: [string, string, string], waves: [string, string];
 beforeEach(() => { ({ ids, waves } = threeProducts()); });
 afterEach(cleanup);
-const scopes = () => [{ name: 'Portfolio', scope: { kind: 'portfolio' } as const, n: 3 }, { name: 'Wave 1', scope: { kind: 'wave', id: waves[0] } as const, n: 2 }, { name: 'Wave 2', scope: { kind: 'wave', id: waves[1] } as const, n: 1 }];
+const scopes = () => [{ name: 'Portfolio', scope: { kind: 'portfolio' } as const, n: 3 },
+  { name: 'Wave 1', scope: { kind: 'wave', id: waves[0] } as const, n: 2 }, { name: 'Wave 2', scope: { kind: 'wave', id: waves[1] } as const, n: 1 }];
 
 describe('Economics > Agentic Run: aggregate view', () => {
   it.each([0, 1, 2])('scope %i: totals, product lines and calendar years are the domain figures', async (i) => {
@@ -80,7 +81,8 @@ describe('Economics > Monthly detail: aggregate view', () => {
     const rows = bodyRows(/Monthly table/);
     expect(rows).toHaveLength(a.months.length);
     expect(rows[rows.length - 1]!.textContent).toContain(fmtE(a.months[a.months.length - 1]!.cum));
-    expect(document.querySelector(`canvas[data-series*="Cumulative cash"], canvas[aria-label*="Cumulative cash by calendar month"]`)!.getAttribute('data-series')).toContain(':');
+    expect(document.querySelector(`canvas[data-series*="Cumulative cash"], canvas[aria-label*="Cumulative cash by calendar month"]`)!.getAttribute(
+      'data-series')).toContain(':');
     expect(a.chart.series).toHaveLength(1 + n);
     expect(document.querySelector('.ac-scope-banner')!.textContent).toContain('Calculated on');
   });

@@ -14,7 +14,8 @@ import { freshStore, snapAll } from './helpers';
  * - curve-bass, curve-legacy: the legacy restore is wrong. Its `scurve` setter accepts only the logistic, gompertz and spline families, so a saved
  *   `bass` or `legacy` curve reopens on the default spline (the golden figures). Ours reopens the saved curve: the oracle figures of those fixtures.
  */
-const expected = (id: string) => JSON.parse(readFileSync(`fixtures/expected/${id}.json`, 'utf8')) as { npv: number; payback: number | null; model: { eff: number } };
+const expected =
+  (id: string) => JSON.parse(readFileSync(`fixtures/expected/${id}.json`, 'utf8')) as { npv: number; payback: number | null; model: { eff: number } };
 const LEGACY = readFileSync('../AgentCase_v18_13_EN.html', 'utf8');
 async function viaFileMenu(id: string) {
   const s = freshStore();

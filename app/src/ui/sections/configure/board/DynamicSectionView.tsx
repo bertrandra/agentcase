@@ -26,7 +26,8 @@ export function DynamicSectionView({ section, preview }: { section: DynSection; 
         {m.cards.map((card) => <CardView key={card.id} card={card} colors={colors} preview={preview} />)}
       </div>
       <div className="ac-card" role="list" aria-label="Body rows">
-        {m.rows.map((r) => <div key={r.id} role="listitem" className="ac-stat"><div className="ac-stat-l">{r.label}</div><div className="ac-stat-v">{r.display}</div></div>)}
+        {m.rows.map((r) => <div key={r.id} role="listitem" className="ac-stat"><div className="ac-stat-l">{r.label}</div>
+          <div className="ac-stat-v">{r.display}</div></div>)}
       </div>
     </section>
   );

@@ -1,4 +1,5 @@
-import { applyStrategy, resetMcRanges, resetStrategies, resetStratWeights, setMcAuto, setMcSpread, setStratDeclared, setStratLever, setStratSplit, setStratSplitMode, setStratWeight } from '@/controllers/stress';
+import { applyStrategy, resetMcRanges, resetStrategies, resetStratWeights, setMcAuto, setMcSpread, setStratDeclared, setStratLever, setStratSplit,
+  setStratSplitMode, setStratWeight } from '@/controllers/stress';
 import type { Sample } from './types';
 
 /** One sample call per command of the stress / verdict controllers. */

@@ -39,7 +39,8 @@ describe('sensitivity section', () => {
   });
   it('a case without setup shows n/a in the matrix', () => {
     const s = openFixture('kh-off');
-    for (const id of ['setupTooling', 'setupTraining', 'setupCoaching', 'setupGov']) s.dispatch({ type: 'test', label: 'zero setup', undoable: true, payload: id, run: (d, p) => { d.dom.values[p as string] = '0'; } });
+    for (const id of ['setupTooling', 'setupTraining', 'setupCoaching',
+      'setupGov']) s.dispatch({ type: 'test', label: 'zero setup', undoable: true, payload: id, run: (d, p) => { d.dom.values[p as string] = '0'; } });
     render(<Sensitivity />);
     expect(screen.getAllByText('n/a')).toHaveLength(20);
   });

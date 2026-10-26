@@ -10,19 +10,24 @@ const root = mkdtempSync(join(tmpdir(), 'deps-'));
 const put = (rel: string, text: string): void => { mkdirSync(dirname(join(root, rel)), { recursive: true }); writeFileSync(join(root, rel), text); };
 afterAll(() => rmSync(root, { recursive: true, force: true }));
 
-put('src/domain/zones/catalog.json', JSON.stringify({ zones: [{ id: 'x', lane: 'input' }, { id: 'y', lane: 'calc' }, { id: 'z', lane: 'result' }, { id: 'sh', lane: 'shared' }], figures: [{ id: 'fx' }, { id: 'fy' }] }));
+put('src/domain/zones/catalog.json',
+  JSON.stringify({ zones: [{ id: 'x', lane: 'input' }, { id: 'y', lane: 'calc' }, { id: 'z', lane: 'result' }, { id: 'sh', lane: 'shared' }],
+  figures: [{ id: 'fx' }, { id: 'fy' }] }));
 put('src/domain/zones/graphConfig.json', JSON.stringify({ ignore: [{ path: 'src/ui/chrome/', reason: 'chrome' }], routes: {} }));
-put('src/ui/zones/data/sectionCatalog.json', JSON.stringify([{ id: 's-in', label: 'In', group: 'g' }, { id: 's-out', label: 'Out', group: 'g' }, { id: 's-ref', label: 'Ref', group: 'g' }]));
+put('src/ui/zones/data/sectionCatalog.json',
+  JSON.stringify([{ id: 's-in', label: 'In', group: 'g' }, { id: 's-out', label: 'Out', group: 'g' }, { id: 's-ref', label: 'Ref', group: 'g' }]));
 put('src/ui/zones/data/sectionScope.json', JSON.stringify({ 's-in': 'I-input', 's-out': 'R-conso', 's-ref': 'S-static' }));
 put('src/domain/x.ts', '/** @calc-zone x @owner fx */\nexport const a = 1;\nexport const b = 2;\n');
-put('src/domain/y/impl.ts', "/** @calc-zone y @owner fy */\nimport { a } from '../x';\nimport type { T } from '../z';\nexport const y = a + 1;\nexport const unused = 0;\n");
+put('src/domain/y/impl.ts',
+  "/** @calc-zone y @owner fy */\nimport { a } from '../x';\nimport type { T } from '../z';\nexport const y = a + 1;\nexport const unused = 0;\n");
 put('src/domain/y/index.ts', "/** @calc-zone y */\nexport { y } from './impl';\nexport * from '../x';\n");
 put('src/domain/z.ts', "/** @calc-zone z */\nimport { y } from './y';\nexport type T = number;\nexport const z = y;\n");
 put('src/domain/shared.ts', '/** @calc-zone sh */\nexport const s = 0;\n');
 put('src/controllers/c.ts', "/** @calc-zone x */\nimport { b } from '@/domain/x';\nexport const set = b;\n");
 put('src/controllers/d.ts', "/** @calc-zone z */\nimport { y } from '@/domain/y/impl';\nexport const get = y;\n");
 put('src/ui/chrome/Frame.tsx', "import { z } from '@/domain/z';\nexport const F = z;\n");
-put('src/ui/sections/g.ts', "export const G = {\n  's-in': () => import('./g/in'),\n  's-out': () => import('./g/out'),\n  's-ref': () => import('./g/ref'),\n};\n");
+put('src/ui/sections/g.ts',
+  "export const G = {\n  's-in': () => import('./g/in'),\n  's-out': () => import('./g/out'),\n  's-ref': () => import('./g/ref'),\n};\n");
 put('src/ui/sections/g/in/index.tsx', "import { set } from '@/controllers/c';\nimport { s } from '@/domain/shared';\nexport default () => set + s;\n");
 put('src/ui/sections/g/out/index.tsx', "import { z } from '@/domain/z';\nimport { F } from '../../../chrome/Frame';\nexport default () => z + F;\n");
 put('src/ui/sections/g/ref/index.tsx', 'export default () => 1;\n');

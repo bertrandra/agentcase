@@ -19,11 +19,14 @@ export const CASE_KEYS: readonly string[] = CASE_SHEET_NAMES;
  */
 export function productSheets(wb: Workbook, names: ProductNames, pf: Portfolio, c: Consolidated, prod: Product): void {
   const v = c.products.find((x) => x.id === prod.id), wave = pf.waves.find((w) => w.id === prod.waveId);
-  const rows: [string, string | number | null, string?][] = [['Product', prod.name], ['Note', prod.note ?? ''], ['Wave', wave?.name ?? 'Not scheduled'], ['Offset in the wave (months)', prod.offsetMonths]];
+  const rows: [string, string | number | null, string?][] = [['Product', prod.name], ['Note', prod.note ?? ''], ['Wave', wave?.name ?? 'Not scheduled'],
+    ['Offset in the wave (months)', prod.offsetMonths]];
   if (v) {
     const own = v.run.headline(), h = v.summary;
-    rows.push(['Starts at calendar month', v.month0 + 1], ['KT preparation (months before start)', v.lead], ['NPV, calendar (EUR)', h.npv, MONEY], ['NPV from its own start (EUR)', own.npv, MONEY],
-      ['ROI', fmtRoiPct(h.roi)], ['Total benefits', h.totalBenefit, MONEY], ['Setup investment', h.setup, MONEY], ['Net (benefits - setup)', h.net, MONEY], ['Payback (calendar month)', h.paybackMonth ?? 'not reached']);
+    rows.push(['Starts at calendar month', v.month0 + 1], ['KT preparation (months before start)', v.lead], ['NPV, calendar (EUR)', h.npv, MONEY],
+      ['NPV from its own start (EUR)', own.npv, MONEY],
+      ['ROI', fmtRoiPct(h.roi)], ['Total benefits', h.totalBenefit, MONEY], ['Setup investment', h.setup, MONEY], ['Net (benefits - setup)', h.net, MONEY],
+      ['Payback (calendar month)', h.paybackMonth ?? 'not reached']);
   }
   cardSheet(wb.addWorksheet(names.summary), rows);
   const state: CaseState = resolveProduct(pf, prod.id);

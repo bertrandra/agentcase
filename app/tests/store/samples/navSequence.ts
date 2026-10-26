@@ -1,4 +1,5 @@
-import { addSeqSection, addSeqStep, moveSeqSection, moveSeqStep, removeSeqSection, removeSeqStep, replaceSeq, setSeqEnabled, setSeqStepLabel } from '@/controllers/navSequence';
+import { addSeqSection, addSeqStep, moveSeqSection, moveSeqStep, removeSeqSection, removeSeqStep, replaceSeq, setSeqEnabled,
+  setSeqStepLabel } from '@/controllers/navSequence';
 import type { Sample } from './types';
 
 export const samples: Record<string, Sample> = {

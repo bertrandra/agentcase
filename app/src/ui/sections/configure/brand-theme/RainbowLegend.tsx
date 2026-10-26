@@ -10,10 +10,12 @@ export function RainbowLegend({ table }: { table: ThemeValues }) {
       <ul>
         {RAINBOW_ZONES.map(([zone, token]) => {
           const hex = resolveTokens(table[token as TokenName], table);
-          return <li key={zone}><span className="ac-bt-swatch" style={cssVars({ '--dyn-swatch': hex })} aria-hidden="true" />{/* dynamic: the zone's colour */} {zone} <code>{token}</code> <code>{hex}</code></li>;
+          return <li key={zone}><span className="ac-bt-swatch" style={cssVars({ '--dyn-swatch': hex })} aria-hidden="true" />
+            {/* dynamic: the zone's colour */} {zone} <code>{token}</code> <code>{hex}</code></li>;
         })}
       </ul>
-      <p className="ac-muted">Activate Rainbow (or open the app with ?theme=4) to see every zone painted; text stays readable, but the contrast checks are not applied to this theme.</p>
+      <p className="ac-muted">Activate Rainbow (or open the app with ?theme=4) to see every zone painted; text stays readable, but the contrast checks are not
+        applied to this theme.</p>
     </div>
   );
 }

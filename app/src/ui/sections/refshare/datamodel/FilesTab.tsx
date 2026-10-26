@@ -9,11 +9,13 @@ import { FileIdentity } from './DocumentTab';
 export function FilesTab() {
   const f = useMemo(formatFacts, []), sheets = useMemo(workbookSheets, []), extras = useMemo(() => portfolioFileExtras(Object.keys(PORTFOLIO_FIELDS)), []);
   const formats = [
-    { id: 'Case snapshot (JSON)', what: <><code>{f.snapshotTag}</code>: one case. Written when the work re-opens to the very same portfolio (one product, one wave, no
+    { id: 'Case snapshot (JSON)',
+      what: <><code>{f.snapshotTag}</code>: one case. Written when the work re-opens to the very same portfolio (one product, one wave, no
       override, default names); opening it envelopes the case as Product 1 in Wave 1.</> },
     { id: 'Portfolio file (JSON)', what: <><code>{f.portfolioTag}</code>: the portfolio fields plus {extras.map((k) => <code key={k}>{k} </code>)}(stamps and
       calculation packages, never read back as input).</> },
-    { id: 'HTML snapshot', what: <>The running page with the same JSON embedded in <code>&lt;script id=&quot;{f.htmlScriptId}&quot;&gt;</code>; legacy v18 HTML snapshots
+    { id: 'HTML snapshot', what: <>The running page with the same JSON embedded in <code>&lt;script id=&quot;{f.htmlScriptId}&quot;&gt;</code>; legacy v18 HTML
+      snapshots
       open too (parsed, never evaluated).</> },
     { id: 'Autosave record', what: <>The portfolio file (always the portfolio format) plus the undo history: see 🔄 Document vs view.</> },
     { id: 'Workbooks', what: <>Parameters (import and export), Results and Cost model (export only): sheets below.</> },

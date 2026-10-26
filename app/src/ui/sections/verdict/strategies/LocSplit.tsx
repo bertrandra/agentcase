@@ -17,7 +17,8 @@ export function LocSplit({ rows }: { rows: LocSplitRow[] }) {
       <h3>TO-BE location split per strategy</h3>
       <div className="ac-table-wrap" tabIndex={0}><table className="ac-table">
         <thead>
-          <tr><th>Strategy</th>{LOCATIONS.map((l) => <th key={l.name} className="ac-center">{l.name}<br /><small>{l.cls}</small></th>)}<th className="ac-center">Σ</th></tr>
+          <tr><th>Strategy</th>{LOCATIONS.map((l) => <th key={l.name} className="ac-center">{l.name}<br /><small>{l.cls}</small></th>)}
+            <th className="ac-center">Σ</th></tr>
         </thead>
         <tbody>{rows.map((r) => (
           <tr key={r.id}>
@@ -50,7 +51,8 @@ export function LocSplit({ rows }: { rows: LocSplitRow[] }) {
           );
         })}</tbody>
       </table></div>
-      <p className="ac-muted">Custom = the strategy carries its own explicit geo split; AS-IS = the current input-team mix; Inherit current = the strategy uses the live Location strategy of the simulation
+      <p className="ac-muted">Custom = the strategy carries its own explicit geo split; AS-IS = the current input-team mix; Inherit current = the strategy uses
+        the live Location strategy of the simulation
         (previewed here against AS-IS for a deterministic view). Editable in the Strategy configuration table below.</p>
     </>
   );

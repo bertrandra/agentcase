@@ -42,7 +42,8 @@ function read({ rows, w, notes }: ReadCtx): void {
     const seq = num(x[0]), setting = str(x[2]), value = str(x[3]);
     if (setting === ACTIVE) { if (Number.isInteger(seq)) active = seq; continue; }
     if (setting === LAST) { if (Number.isInteger(num(value))) last = num(value); continue; }
-    if (!Number.isInteger(seq) || isBuiltinSeq(seq) || seq < 1) { if (setting) notes.push(`Themes: a row of theme "${cleanText(x[0], 20)}" was skipped (not a user theme sequence id).`); continue; }
+    if (!Number.isInteger(seq) || isBuiltinSeq(seq) ||
+      seq < 1) { if (setting) notes.push(`Themes: a row of theme "${cleanText(x[0], 20)}" was skipped (not a user theme sequence id).`); continue; }
     const t = by.get(seq) ?? { colours: {}, axes: {} };
     by.set(seq, t);
     const [kind, key] = setting.split(':', 2);

@@ -27,7 +27,8 @@ export function parseTheme(raw: unknown, notes: string[] = [], where = 'theme'):
     if ((AXIS_NAMES as string[]).includes(k) && isAxisValue(k as (typeof AXIS_NAMES)[number], v)) axes[k] = v as string;
     else notes.push(`${where}: axis "${cleanName(k)}" ignored (unknown axis or value).`);
   }
-  for (const k of Object.keys(raw)) if (!['name', 'description', 'colours', 'axes', 'generator', 'seq', 'id', 'builtin'].includes(k)) notes.push(`${where}: key "${cleanName(k)}" ignored.`);
+  for (const k of Object.keys(raw)) if (!['name', 'description', 'colours', 'axes', 'generator', 'seq', 'id',
+    'builtin'].includes(k)) notes.push(`${where}: key "${cleanName(k)}" ignored.`);
   const generator = raw.generator === undefined ? null : parseGenerator(raw.generator);
   if (raw.generator !== undefined && !generator) notes.push(`${where}: palette generator settings ignored (no valid seed colour).`);
   const name = cleanName(raw.name) || 'Untitled theme', description = cleanName(raw.description);

@@ -21,9 +21,11 @@ export function statsChecks(c: Ctx, rt: ConvRuntime): ConvCheck[] {
   let mc01: string | null = null, mc02: string | null = null, tornado = last ? last.tornado : null;
   if (last) {
     const s = last.stats.savY3, ordered = s.p10 <= s.p50 + 1e-9 && s.p50 <= s.p90 + 1e-9;
-    if (!(last.seed > 0 && last.n >= 500 && ordered)) mc01 = `seed/draws/ordering violated: seed=${last.seed} n=${last.n} p10=${s.p10.toFixed(0)} p50=${s.p50.toFixed(0)} p90=${s.p90.toFixed(0)}`;
+    if (!(last.seed > 0 && last.n >= 500 && ordered)) mc01 =
+      `seed/draws/ordering violated: seed=${last.seed} n=${last.n} p10=${s.p10.toFixed(0)} p50=${s.p50.toFixed(0)} p90=${s.p90.toFixed(0)}`;
     const a = runMcs(c, Math.min(500, last.n), last.seed), b = runMcs(c, Math.min(500, last.n), last.seed);
-    if (!(Math.abs(a.stats.savY3.p50 - b.stats.savY3.p50) < 1e-9 && Math.abs(a.stats.savY3.p10 - b.stats.savY3.p10) < 1e-9)) mc02 = 'same seed produced different output across two runs';
+    if (!(Math.abs(a.stats.savY3.p50 - b.stats.savY3.p50) < 1e-9 && Math.abs(a.stats.savY3.p10 - b.stats.savY3.p10) < 1e-9)) mc02 =
+      'same seed produced different output across two runs';
     tornado = b.tornado;
   }
   const undeclared = MCS_DRIVER_ORDER.filter((id) => { const g = mcsSpec(c, id).group; return g !== 'organisational' && g !== 'exogenous'; });
@@ -33,7 +35,8 @@ export function statsChecks(c: Ctx, rt: ConvRuntime): ConvCheck[] {
   let fl: string | null = null;
   if (M.FLAGS.flow) {
     if (!(share >= 0 && share <= 100)) fl = 'throughputInShare out of [0,100] bounds';
-    else if (share === 0 && Math.abs(flowModel(c).flowNpv) > 1e-6) fl = 'share=0 but flow value is nonzero — the same capacity is being counted as both cost-out and throughput-in';
+    else if (share === 0 &&
+      Math.abs(flowModel(c).flowNpv) > 1e-6) fl = 'share=0 but flow value is nonzero — the same capacity is being counted as both cost-out and throughput-in';
   }
   const ev = M.FLAGS.evl ? evlModel(c, tornado, rt.now ?? null) : null;
   const untagged = ev ? ev.drivers.filter((d) => d.weight > 1e-9 && !evidenceOf(M).drivers[d.id]).map((d) => d.label) : [];

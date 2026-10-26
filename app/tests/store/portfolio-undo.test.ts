@@ -3,7 +3,8 @@ import { describe, expect, it } from 'vitest';
 import { setChecked, setInput } from '@/controllers/inputs';
 import { setLifecyclePos } from '@/controllers/lifecycle';
 import { assignWave, addWave, removeWave, renameWave, reorderWave, setWaveStart } from '@/controllers/wave';
-import { addProduct, archiveProduct, duplicateProduct, removeProduct, renameProduct, setActiveProduct, setEditScope, setProductOffset } from '@/controllers/product';
+import { addProduct, archiveProduct, duplicateProduct, removeProduct, renameProduct, setActiveProduct, setEditScope,
+  setProductOffset } from '@/controllers/product';
 import { clearProductOverride, setProductKnowledge, setProductOverride } from '@/controllers/productOverrides';
 import { setPortfolioHorizon } from '@/controllers/portfolio';
 import { addTeamRow, updateTeamRow } from '@/controllers/team';

@@ -38,7 +38,8 @@ describe('Import / Export with a portfolio', () => {
     freshStore(); addProduct('Second');
     await open(/Export \/ Import current settings/);
     const note = screen.getByText(/Portfolio: what the parameters workbook contains/).closest('div')!;
-    for (const sheet of ['PortfolioSettings', 'Products', 'Waves', 'TeamIn', 'Overrides', 'KnowledgeSubsets', 'KnowledgeDomains']) expect(note.textContent).toContain(sheet);
+    for (const sheet of ['PortfolioSettings', 'Products', 'Waves', 'TeamIn', 'Overrides', 'KnowledgeSubsets',
+      'KnowledgeDomains']) expect(note.textContent).toContain(sheet);
     expect(within(note).getAllByRole('listitem').length).toBeGreaterThanOrEqual(3);
     fireEvent.click(screen.getByRole('tab', { name: /Results workbook/ }));
     expect(screen.getByText(/Portfolio: what the results workbook contains/)).toBeTruthy();
@@ -47,17 +48,20 @@ describe('Import / Export with a portfolio', () => {
     regulatedPortfolio(); setDisplayScope({ kind: 'portfolio' });
     await open(/Save HTML/);
     const sel = screen.getByRole('combobox', { name: 'Report scope' }) as HTMLSelectElement;
-    expect([...sel.options].map((o) => o.textContent)).toEqual(['Portfolio', 'Wave: Wave 1', 'Wave: Wave 2', 'Product: Product 1', 'Product: Payroll', 'Product: Billing', 'Product: Archive (no wave)']);
+    expect([...sel.options].map((o) => o.textContent)).toEqual(['Portfolio', 'Wave: Wave 1', 'Wave: Wave 2', 'Product: Product 1', 'Product: Payroll',
+      'Product: Billing', 'Product: Archive (no wave)']);
     expect(sel.value).toBe('portfolio');
   });
   it('exports the report of the chosen scope', async () => {
     regulatedPortfolio();
     await open(/Save HTML/);
-    const sel = screen.getByRole('combobox', { name: 'Report scope' }), run = () => fireEvent.click(screen.getByRole('button', { name: /Export critical-delivery report/ }));
+    const sel = screen.getByRole('combobox', { name: 'Report scope' }), run =
+      () => fireEvent.click(screen.getByRole('button', { name: /Export critical-delivery report/ }));
     fireEvent.change(sel, { target: { value: 'portfolio' } }); run();
     expect(saved.at(-1)!.filename).toMatch(/Report_Portfolio_/);
     expect(saved.at(-1)!.text).toContain('Model — Portfolio');
-    fireEvent.change(sel, { target: { value: 'wave:' + (document.querySelector('option[value^="wave:"]:nth-of-type(2)') as HTMLOptionElement).value.slice(5) } }); run();
+    fireEvent.change(sel, { target:
+      { value: 'wave:' + (document.querySelector('option[value^="wave:"]:nth-of-type(2)') as HTMLOptionElement).value.slice(5) } }); run();
     expect(saved.at(-1)!.filename).toMatch(/Report_Wave_Wave_2_/);
     const paie = [...(sel as HTMLSelectElement).options].find((o) => o.textContent === 'Product: Payroll')!;
     fireEvent.change(sel, { target: { value: paie.value } }); run();

@@ -10,12 +10,15 @@ export const ALLOWED_KEYWORDS: Record<string, string> = {
   none: 'no shadow / no background', buttontext: 'system colour: the legacy secondary button keeps the browser face',
   buttonface: 'system colour: the legacy secondary button keeps the browser face', highlight: 'system colour of forced-colors mode (Windows high contrast)',
 };
-const NAMED = /\b(white|black|red|green|blue|gray|grey|orange|yellow|purple|navy|silver|maroon|teal|olive|lime|aqua|fuchsia|pink|brown|gold|beige|ivory|khaki|coral|salmon|tomato|crimson|indigo|violet|cyan|magenta)\b/i;
+const BASIC_COLOURS = 'white|black|red|green|blue|gray|grey|orange|yellow|purple|navy';
+const MORE_COLOURS = 'silver|maroon|teal|olive|lime|aqua|fuchsia|pink|brown|gold|beige|ivory|khaki|coral|salmon|tomato|crimson|indigo|violet|cyan|magenta';
+const NAMED = new RegExp(`\\b(${BASIC_COLOURS}|${MORE_COLOURS})\\b`, 'i');
 
 /** Source text without comments (CSS and TS block comments, TS line comments outside strings). */
 export function stripComments(src: string, css: boolean): string {
   if (css) return src.replace(/\/\*[\s\S]*?\*\//g, '');
-  return src.replace(/\/\*[\s\S]*?\*\/|'(?:[^'\\\n]|\\.)*'|"(?:[^"\\\n]|\\.)*"|`(?:[^`\\]|\\.)*`|\/\/[^\n]*/g, (m) => (m.startsWith('//') || m.startsWith('/*') ? '' : m));
+  return src.replace(/\/\*[\s\S]*?\*\/|'(?:[^'\\\n]|\\.)*'|"(?:[^"\\\n]|\\.)*"|`(?:[^`\\]|\\.)*`|\/\/[^\n]*/g,
+    (m) => (m.startsWith('//') || m.startsWith('/*') ? '' : m));
 }
 
 /** Every literal visual value of one file, as `line: snippet [kind]`. */
@@ -30,13 +33,17 @@ export function hardcodedStyles(file: string, src: string): string[] {
   hit(/#[0-9a-fA-F]{8}\b|#[0-9a-fA-F]{6}\b|#[0-9a-fA-F]{3,4}\b(?![\w-])/, 'hex colour', (m) => /[\w&]$/.test(text.slice(Math.max(0, m.index! - 1), m.index)));
   hit(/\b(rgba?|hsla?)\(\s*[\d.]/, 'rgb/hsl colour');
   if (css) {
-    hit(/(?:^|[;{\s])(?:color|background(?:-color)?|border(?:-\w+)?(?:-color)?|outline(?:-color)?|fill|stroke)\s*:[^;}]*/, 'named colour', (m) => !NAMED.test(m[0].split(':').slice(1).join(':').replace(/var\([^)]*\)/g, '')));
+    hit(/(?:^|[;{\s])(?:color|background(?:-color)?|border(?:-\w+)?(?:-color)?|outline(?:-color)?|fill|stroke)\s*:[^;}]*/, 'named colour',
+      (m) => !NAMED.test(m[0].split(':').slice(1).join(':').replace(/var\([^)]*\)/g, '')));
     hit(/font-family\s*:\s*[^;}]+/, 'font family', (m) => /^font-family\s*:\s*(var\(--ac-[a-z0-9-]+\)|inherit)\s*$/.test(m[0].trim()));
-    hit(/(?:^|[;{\s])font\s*:\s*[^;}]+/, 'font shorthand', (m) => /:\s*(inherit|revert|var\(--ac-font[a-z0-9-]*\)|[^;}]*var\(--ac-font-(?:body|heading|numeric|mono|code|toast)\))\s*$/.test(m[0].trim()));
+    hit(/(?:^|[;{\s])font\s*:\s*[^;}]+/, 'font shorthand',
+      (m) => /:\s*(inherit|revert|var\(--ac-font[a-z0-9-]*\)|[^;}]*var\(--ac-font-(?:body|heading|numeric|mono|code|toast)\))\s*$/.test(m[0].trim()));
     // a shadow token, or a shadow token's geometry coloured by a local value (`var(--ac-shadow-rail-offset) var(--dyn-group-color)`: a colour of the case)
     hit(/box-shadow\s*:\s*[^;}]+/, 'box-shadow', (m) => /:\s*(var\(--ac-shadow-[a-z0-9-]+\)( var\(--dyn-[a-z0-9-]+\))?|none|inherit)\s*$/.test(m[0].trim()));
   } else {
-    hit(/\b(?:color|background|backgroundColor|borderColor|fill|stroke|stopColor)\s*[:=]\s*\{?\s*['"`](?:[^'"`]*\s)?(white|black|red|green|blue|gray|grey|orange|yellow|purple|navy)['"`\s]/, 'named colour');
+    hit(new RegExp(/\b(?:color|background|backgroundColor|borderColor|fill|stroke|stopColor)\s*[:=]\s*\{?\s*['"`](?:[^'"`]*\s)?/.source +
+      `(${BASIC_COLOURS})['"\`\\s]`),
+      'named colour');
     hit(/\bfontFamily\s*[:=]\s*\{?\s*['"`](?!var\(--ac-)/, 'font family');
     hit(/\bboxShadow\s*:\s*['"`](?!var\(--ac-)/, 'box-shadow');
   }

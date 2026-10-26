@@ -30,6 +30,7 @@ describe('Content-Security-Policy', () => {
   });
   it('the reports carry a stricter policy: no script at all, inline style and a data: logo only', () => {
     expect(REPORT_CSP).toBe(`<meta http-equiv="Content-Security-Policy" content="${REPORT_POLICY}">`);
-    expect(directives(REPORT_POLICY)).toEqual({ 'default-src': "'none'", 'style-src': "'unsafe-inline'", 'img-src': 'data:', 'base-uri': "'none'", 'form-action': "'none'" });
+    expect(directives(REPORT_POLICY)).toEqual({ 'default-src': "'none'", 'style-src': "'unsafe-inline'", 'img-src': 'data:', 'base-uri': "'none'",
+      'form-action': "'none'" });
   });
 });

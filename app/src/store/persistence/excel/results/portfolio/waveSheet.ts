@@ -16,7 +16,8 @@ export function waveSheet(wb: Workbook, name: string, c: Consolidated, view: Con
   const mine = new Set(w.productIds);
   table(ws, 'Products of the wave', HDR_LINES, view.products.filter((p) => mine.has(p.id)).map(lineCells), FMT_LINES);
   table(ws, 'Cumulative cash by calendar month', ['Month', 'Calendar', 'Savings', 'Run cost', 'Setup', 'Net', 'Cumulative cash', 'Human FTE', 'Agent vFTE'],
-    s.net.map((_, i) => [i + 1, view.chart.labels[i] ?? '', at(s.savings, i), at(s.run, i), at(s.setup, i), at(s.net, i), at(w.summary.cum, i), at(s.humanFte, i), at(s.agentVfte, i)]),
+    s.net.map((_, i) => [i + 1, view.chart.labels[i] ?? '', at(s.savings, i), at(s.run, i), at(s.setup, i), at(s.net, i), at(w.summary.cum, i),
+      at(s.humanFte, i), at(s.agentVfte, i)]),
     [undefined, undefined, MONEY, MONEY, MONEY, MONEY, MONEY, PCT, PCT]);
   ws.getColumn(1).width = 46;
 }

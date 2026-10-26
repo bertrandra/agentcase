@@ -29,7 +29,8 @@ describe('paletteFromSeed', () => {
     expect(paletteFromSeed('#0b7a75', { contrast: 60 })).toEqual(paletteFromSeed('#0b7a75', { contrast: 60, harmony: 'analogous' }));
   });
   it('the primary colour is the seed when white text reads on it; otherwise the seed darkened (hue kept) until it does', () => {
-    for (const seed of ['#0b7a75', '#0058ab', '#8b1a2b', '#101010', '#5b2a9e']) for (const c of STEPS) expect(paletteFromSeed(seed, { contrast: c }).primary).toBe(seed);
+    for (const seed of ['#0b7a75', '#0058ab', '#8b1a2b', '#101010',
+      '#5b2a9e']) for (const c of STEPS) expect(paletteFromSeed(seed, { contrast: c }).primary).toBe(seed);
     for (const seed of ['#ffff66', '#ff00ff', '#ffa500', '#00ffff']) {
       const p = paletteFromSeed(seed, { contrast: 50 }).primary;
       expect(contrastRatio(p, '#ffffff')).toBeGreaterThanOrEqual(5);
@@ -40,7 +41,8 @@ describe('paletteFromSeed', () => {
   it('the semantic families keep their meaning: teal, green, amber / orange, red (and the business colours on them)', () => {
     const range = { teal: [185, 225], success: [118, 150], warning: [33, 55], danger: [10, 32] } as const;
     all((seed, c, h, p) => {
-      for (const [k, [lo, hi]] of Object.entries(range)) expect(lch(p[k as keyof typeof range])[2], `${seed} ${c} ${h} ${k}`).toSatisfy((x: number) => x >= lo && x <= hi);
+      for (const [k, [lo, hi]] of Object.entries(range)) expect(lch(p[k as keyof typeof range])[2],
+        `${seed} ${c} ${h} ${k}`).toSatisfy((x: number) => x >= lo && x <= hi);
       expect([p.automation, p['glass-ceiling'], p['human-supervision']]).toEqual([p.teal, p.danger, p.warning]);
     });
   });

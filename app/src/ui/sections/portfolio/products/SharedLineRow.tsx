@@ -36,7 +36,8 @@ export function SharedLineRow({ line, index, products, open, onPin }: Props) {
         <b className="ac-tone" data-tone={over ? 'danger-800' : 'slate-700'}>{pctText(sum)}</b>
         {over && <span className="ac-sr"> (more than 100 %: counted more than once)</span>}
         {orphans.map((id) => (
-          <button key={id} type="button" className="ac-link" onClick={() => { setSharedShare(line.id, id, 0); }}>Clear the share of deleted product {id}</button>
+          <button key={id} type="button" className="ac-link" onClick={() => { setSharedShare(line.id, id, 0); }}>Clear the share of deleted product {id}
+            </button>
         ))}
       </td>
       <td>

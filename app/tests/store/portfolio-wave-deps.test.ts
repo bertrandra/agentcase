@@ -76,7 +76,8 @@ describe('persistence', () => {
     openPortfolioFixture(); setWaveDependency(W2, DEP); setMaxConcurrentSetups(2);
     const snap = toPortfolioSnapshot(pfNow()), back = openSnapshot(snap);
     expect(back.waves[1]!.dependsOn).toEqual(DEP); expect(back.maxConcurrentSetups).toBe(2);
-    const waves = (snap.waves as Record<string, unknown>[]).map((w, i) => (i === 1 ? { ...w, dependsOn: { waveId: 'ghost', milestone: 'start', lagMonths: 0 } } : w));
+    const waves = (snap.waves as Record<string, unknown>[]).map((w, i) =>
+      (i === 1 ? { ...w, dependsOn: { waveId: 'ghost', milestone: 'start', lagMonths: 0 } } : w));
     const { portfolio, notes } = openChecked({ ...snap, waves, maxConcurrentSetups: 'x' });
     expect(portfolio.waves[1]).not.toHaveProperty('dependsOn'); expect('maxConcurrentSetups' in portfolio).toBe(false);
     expect(notes).toEqual([expect.stringMatching(/dependency .* not valid — dropped/), expect.stringMatching(/setup capacity "x"/)]);

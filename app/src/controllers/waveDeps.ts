@@ -11,7 +11,8 @@ const depCmd = definePortfolioCommand<{ id: string; dep: WaveDependency | null }
   apply: (pf, p) => ops.setWaveDependency(pf, p.id, p.dep),
 });
 const capCmd = definePortfolioCommand<{ n: number | null }>({
-  type: 'portfolio.setMaxConcurrentSetups', label: (p) => (p.n ? `Allow at most ${p.n} product(s) in setup at the same time` : 'Remove the setup capacity limit'),
+  type: 'portfolio.setMaxConcurrentSetups',
+  label: (p) => (p.n ? `Allow at most ${p.n} product(s) in setup at the same time` : 'Remove the setup capacity limit'),
   coalesceKey: () => 'portfolio.setMaxConcurrentSetups', apply: (pf, p) => ops.setMaxConcurrentSetups(pf, p.n),
 });
 

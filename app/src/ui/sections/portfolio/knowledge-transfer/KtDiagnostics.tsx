@@ -10,9 +10,11 @@ export function KtDiagnostics() {
   const { diagnostics } = useKnowledgeView();
   return (
     <Panel title="Diagnostics">
-      {diagnostics.length === 0 ? <p className="ac-muted">No diagnostic: every scheduled product has a usable hub, a reachable target and a possible preparation.</p> : (
+      {diagnostics.length === 0 ? <p className="ac-muted">No diagnostic: every scheduled product has a usable hub, a reachable target and a possible
+        preparation.</p> : (
         <ul aria-label="Knowledge transfer diagnostics">
-          {diagnostics.map((d, i) => <li key={`${d.code}-${d.productId ?? ''}-${i}`} data-code={d.code}><strong>{LABEL[d.code] ?? d.code}</strong> — {d.message}</li>)}
+          {diagnostics.map((d, i) => <li key={`${d.code}-${d.productId ?? ''}-${i}`} data-code={d.code}><strong>{LABEL[d.code] ?? d.code}</strong> — {d.message}
+            </li>)}
         </ul>
       )}
     </Panel>

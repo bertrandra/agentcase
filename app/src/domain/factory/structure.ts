@@ -16,7 +16,8 @@ const BANDS = [
   { id: 'V6V7', label: 'Validation & qualification', test: /^V6|^V7/, pf: 'pf-assure' },
   { id: 'OPS', label: 'Deploy, run & retire', test: /^L8|^L9|^L10/, pf: 'pf-run' },
 ];
-const PF_LABEL: Record<string, string> = { 'pf-core': 'Core delivery', 'pf-assure': 'Regulatory assurance', 'pf-run': 'Run & operations', 'pf-upstream': 'Upstream & governance' };
+const PF_LABEL: Record<string, string> = { 'pf-core': 'Core delivery', 'pf-assure': 'Regulatory assurance', 'pf-run': 'Run & operations',
+  'pf-upstream': 'Upstream & governance' };
 
 export interface Structure {
   vision: string; portfolios: Portfolio[]; epics: Epic[]; features: Feature[]; stories: Story[];
@@ -37,7 +38,8 @@ export function fgStructure(c: Ctx, win: Record<string, PhaseWindow>, tags: Map<
   if (hasReg) pfNeed['pf-assure'] = true;
   const portfolios = Object.keys(pfNeed).map((k) => ({ id: k, name: PF_LABEL[k] || k }));
   const epics: Epic[] = [], features: Feature[] = [], stories: Story[] = [], phaseFeatures: Record<string, string[]> = {}, storyOf: Record<string, string> = {};
-  BANDS.forEach((b) => { if (phaseIds.some((p) => b.test.test(p))) epics.push({ id: 'ep-' + b.id.toLowerCase(), name: b.label, portfolioId: pfNeed[b.pf] ? b.pf : (portfolios[0] as Portfolio).id }); });
+  BANDS.forEach((b) => { if (phaseIds.some((p) => b.test.test(p))) epics.push({ id: 'ep-' + b.id.toLowerCase(), name: b.label,
+    portfolioId: pfNeed[b.pf] ? b.pf : (portfolios[0] as Portfolio).id }); });
   PHASES.forEach((p) => { phaseFeatures[p.id] = []; });
   phaseIds.sort((a, b) => (win[a] as PhaseWindow).sw - (win[b] as PhaseWindow).sw).forEach((pid) => {
     const band = BANDS.find((b) => b.test.test(pid)), ph = PHASES.find((p) => p.id === pid), fid = 'fe-' + pid.toLowerCase();

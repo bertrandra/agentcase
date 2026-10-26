@@ -24,16 +24,19 @@ export function MetricTable({ R, horizon, s }: { R: StrategyRow[]; horizon: numb
         <tbody>{METRICS.map((m) => {
           const ex = metricExtremes(R, m);
           return (
-            <tr key={m.k}><td className="ac-nowrap">{m.k === 'tco' ? `TCO (${horizon}-yr)` : m.label} <Badge tone={m.declared ? 'amber' : 'blue'}>{m.declared ? 'declared' : 'computed'}</Badge></td>
+            <tr key={m.k}><td className="ac-nowrap">{m.k === 'tco' ? `TCO (${horizon}-yr)` : m.label} <Badge tone={m.declared ? 'amber' : 'blue'}>
+              {m.declared ? 'declared' : 'computed'}</Badge></td>
               {R.map((r, i) => {
                 const v = ex.vals[i] as number, best = v === ex.best, worst = v === ex.worst && ex.best !== ex.worst;
                 return <td key={r.id} className="ac-c ac-rank" data-rank={best ? 'best' : worst ? 'worst' : undefined}>{fmt(m.k, metricValue(r, m.k))}</td>;
               })}</tr>
           );
         })}</tbody>
-        <tfoot><tr className="ac-muted"><td>Target blended rate</td>{R.map((r) => <td key={r.id} className="ac-c">€{Math.round(r.computed.tgtTJM)}/d</td>)}</tr></tfoot>
+        <tfoot><tr className="ac-muted"><td>Target blended rate</td>{R.map((r) => <td key={r.id} className="ac-c">€{Math.round(r.computed.tgtTJM)}/d</td>)}</tr>
+          </tfoot>
       </table></div>
-      <p className="ac-muted">Evaluated live on the current scenario invariants — product status <strong>{lifecycleStatusLabel(s)}</strong>, current phase/artefact scope, team, rate card and horizon.
+      <p className="ac-muted">Evaluated live on the current scenario invariants — product status <strong>{lifecycleStatusLabel(s)}</strong>, current
+        phase/artefact scope, team, rate card and horizon.
         Green = best per metric, red = worst. Declared metrics are editable consulting benchmarks (v12.23 editor).</p>
     </>
   );

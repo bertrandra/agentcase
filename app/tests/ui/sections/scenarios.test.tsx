@@ -18,8 +18,10 @@ const rowOf = (name: RegExp) => screen.getAllByRole('row').find((r) => name.test
  * are unchanged).
  */
 const flatFigures = (fx: string): number[] => {
-  const oracle = loadExtra('scenarioSet', fx) as { key: string; m: { setup: number; yearRun: number[]; totBen: number; roi: number | null; pbMonth: number | null } }[];
-  return oracle.filter((s) => s.key !== 'asis').flatMap(({ m }) => numberTokens([...m.yearRun, m.yearRun.reduce((a, b) => a + b, 0), m.setup, m.totBen, m.totBen - m.setup]
+  const oracle =
+    loadExtra('scenarioSet', fx) as { key: string; m: { setup: number; yearRun: number[]; totBen: number; roi: number | null; pbMonth: number | null } }[];
+  return oracle.filter((s) => s.key !== 'asis')
+    .flatMap(({ m }) => numberTokens([...m.yearRun, m.yearRun.reduce((a, b) => a + b, 0), m.setup, m.totBen, m.totBen - m.setup]
     .map(fmtE).concat(m.roi == null ? [] : [`${Math.round(m.roi * 100)}%`], m.pbMonth == null ? [] : [`${m.pbMonth} mo`]).join('  ')));
 };
 

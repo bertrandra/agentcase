@@ -19,7 +19,8 @@ export function HeadlineTiles({ f, titles }: { f: HeadlineFigures; titles: TileT
       <Kpi label={`FTE after Y${e}`} value={fmt1(f.fte.after)} tone="teal" title={titles.fteAfter} />
       <Kpi label={`Savings Y${e}`} value={fmtEurK(f.savings)} tone="teal" title={titles.savings} />
       <Kpi label={`Run cost Y${e}`} value={fmtEurK(f.run)} tone="amber" title={titles.run} />
-      <Kpi label={`Saving over ${cr.years} yr`} value={cr.ok ? fmtPct(cr.net * 100) : 'n/a'} tone={cr.ok && cr.net < 0 ? 'brick' : 'teal'} title={titles.saving} />
+      <Kpi label={`Saving over ${cr.years} yr`} value={cr.ok ? fmtPct(cr.net * 100) : 'n/a'} tone={cr.ok && cr.net < 0 ? 'brick' : 'teal'}
+        title={titles.saving} />
       <Kpi label={`Velocity Y${e}`} value={`${f.velocity.raw >= 0 ? '+' : ''}${f.velocity.shown}%`} tone="teal" title={titles.velocity} />
       <Kpi label="Payback" value={fmtMonths(f.payback)} tone="blue" title={titles.payback} />
       <Kpi label="Effective automation" value={fmtPct(f.eff)} tone="teal" title={titles.eff} />

@@ -5,7 +5,8 @@ import { xlArgb } from '../print';
 /** Cell styling and data validation of the legacy workbook (navy header, blue = editable input, grey = reference). */
 const NAVY = (wb: XL.Workbook): string => xlArgb(wb, 'excel-head-bg');
 /** The thin border of a styled cell, in the print theme of its workbook. */
-const bd = (c: XL.Cell): Partial<XL.Borders> => { const T = { style: 'thin' as const, color: { argb: xlArgb(c.workbook, 'excel-border') } }; return { top: T, left: T, bottom: T, right: T }; };
+const bd = (c: XL.Cell): Partial<XL.Borders> => { const T = { style: 'thin' as const,
+  color: { argb: xlArgb(c.workbook, 'excel-border') } }; return { top: T, left: T, bottom: T, right: T }; };
 
 export const head = (ws: XL.Worksheet): void => {
   ws.getRow(1).eachCell((c) => {
@@ -14,18 +15,22 @@ export const head = (ws: XL.Worksheet): void => {
     c.alignment = { horizontal: 'center' }; c.border = bd(c);
   });
 };
-export const blue = (c: XL.Cell): void => { c.font = { color: { argb: xlArgb(c.workbook, 'excel-input') }, size: 11 }; c.alignment = { horizontal: 'center' }; c.border = bd(c); };
+export const blue = (c: XL.Cell): void => { c.font = { color: { argb: xlArgb(c.workbook, 'excel-input') },
+  size: 11 }; c.alignment = { horizontal: 'center' }; c.border = bd(c); };
 export const grey = (c: XL.Cell): void => { c.font = { color: { argb: xlArgb(c.workbook, 'excel-note') }, size: 11 }; c.alignment = { horizontal: 'center' }; };
 export const note = (c: XL.Cell): void => { c.font = { color: { argb: xlArgb(c.workbook, 'excel-note') }, size: 11 }; };
 export const frz = (ws: XL.Worksheet): void => { ws.views = [{ state: 'frozen', ySplit: 1 }]; };
 
 const base = { allowBlank: true, showErrorMessage: true, errorStyle: 'error', showInputMessage: true } as const;
 export const listDV = (vals: (string | number)[], prompt: string): XL.DataValidation =>
-  ({ ...base, type: 'list', formulae: [`"${vals.join(',')}"`], errorTitle: 'Invalid', error: 'Pick a value from the list.', promptTitle: 'Choose', prompt }) as XL.DataValidation;
+  ({ ...base, type: 'list', formulae: [`"${vals.join(',')}"`], errorTitle: 'Invalid', error: 'Pick a value from the list.', promptTitle: 'Choose',
+    prompt }) as XL.DataValidation;
 export const rangeDV = (mn: number, mx: number, whole: boolean, prompt: string): XL.DataValidation =>
-  ({ ...base, type: whole ? 'whole' : 'decimal', operator: 'between', formulae: [mn, mx], errorTitle: 'Out of range', error: `Value must be between ${mn} and ${mx}.`, promptTitle: 'Allowed range', prompt }) as XL.DataValidation;
+  ({ ...base, type: whole ? 'whole' : 'decimal', operator: 'between', formulae: [mn, mx], errorTitle: 'Out of range',
+    error: `Value must be between ${mn} and ${mx}.`, promptTitle: 'Allowed range', prompt }) as XL.DataValidation;
 export const geDV = (mn: number, prompt: string): XL.DataValidation =>
-  ({ ...base, type: 'decimal', operator: 'greaterThanOrEqual', formulae: [mn], errorTitle: 'Invalid', error: `Value must be ≥ ${mn}.`, promptTitle: 'Minimum', prompt }) as XL.DataValidation;
+  ({ ...base, type: 'decimal', operator: 'greaterThanOrEqual', formulae: [mn], errorTitle: 'Invalid', error: `Value must be ≥ ${mn}.`, promptTitle: 'Minimum',
+    prompt }) as XL.DataValidation;
 export const ynDV = (): XL.DataValidation => listDV(['Yes', 'No'], 'Yes or No');
 
 /** A worksheet with its header row and column widths. */

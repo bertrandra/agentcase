@@ -14,7 +14,8 @@ const SECTIONS = { ...STRESS, ...VERDICT };
 
 // Every migrated section of the group renders on every oracle fixture (horizons 1..10, empty scopes, supervision caps…), with and without a Monte Carlo run.
 describe('stress and verdict sections render on every fixture', () => {
-  it('registers the seven sections', () => expect(Object.keys(SECTIONS).sort()).toEqual(['compare', 'decision', 'montecarlo', 'results', 'scenarios', 'sensitivity', 'strategies']));
+  it('registers the seven sections',
+    () => expect(Object.keys(SECTIONS).sort()).toEqual(['compare', 'decision', 'montecarlo', 'results', 'scenarios', 'sensitivity', 'strategies']));
   it.each(FIXTURES)('%s', async (fx) => {
     for (const [id, load] of Object.entries(SECTIONS)) {
       const s = openFixture(fx);

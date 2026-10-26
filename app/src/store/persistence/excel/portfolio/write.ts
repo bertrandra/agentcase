@@ -38,7 +38,8 @@ function writeWaves(wb: XL.Workbook, pf: Portfolio): void {
   const w = ws(wb, PF_SHEETS.waves, [14, 28, 14, 40, 8, 20, 26, 12]);
   pf.waves.forEach((x, i) => { const d = x.dependsOn;
     inputs(w.addRow([x.id, x.name, x.startMonth, x.note ?? '', i + 1, d?.waveId ?? '', d?.milestone ?? '', d ? d.lagMonths : '']), 8); });
-  for (let r = 2; r <= pf.waves.length + 1; r++) w.getCell(`G${r}`).dataValidation = listDV(['start', 'setupEnd'], 'start: after its start; setupEnd: after its last product finishes setup');
+  for (let r = 2; r <= pf.waves.length + 1; r++) w.getCell(`G${r}`).dataValidation =
+    listDV(['start', 'setupEnd'], 'start: after its start; setupEnd: after its last product finishes setup');
   finish(w);
 }
 

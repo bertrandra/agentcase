@@ -21,17 +21,22 @@ export function Registry({ sections, groups }: { sections: DynSection[]; groups:
           {sections.map((s) => (
             <tr key={s.id}>
               <td>{is(s, 'rename')
-                ? <input type="text" aria-label="New name" value={name} onChange={(e) => setName(e.target.value)} onKeyDown={(e) => { if (e.key === 'Enter') { renameDashboard(s.id, name); setMode(null); } if (e.key === 'Escape') setMode(null); }} />
+                ? <input type="text" aria-label="New name" value={name} onChange={(e) => setName(e.target.value)}
+                  onKeyDown={(e) => { if (e.key === 'Enter') { renameDashboard(s.id, name); setMode(null); } if (e.key === 'Escape') setMode(null); }} />
                 : `🗂️ ${s.title}`}</td>
-              <td><select aria-label={`Group of ${s.title}`} value={s.menuGroup} onChange={(e) => setDashboardGroup(s.id, e.target.value)}>{groups.map((g) => <option key={g.id} value={g.id}>{g.label}</option>)}</select></td>
+              <td><select aria-label={`Group of ${s.title}`} value={s.menuGroup} onChange={(e) => setDashboardGroup(s.id, e.target.value)}>
+                {groups.map((g) => <option key={g.id} value={g.id}>{g.label}</option>)}</select></td>
               <td>{s.cards.length}</td><td>{s.rows.length}</td>
               <td>{is(s, 'delete')
-                ? <>Delete “{s.title}”? <button type="button" className="ac-btn" onClick={() => { removeDashboard(s.id, s.title); setMode(null); }}>✓ Confirm</button> <button type="button" className="ac-btn" onClick={() => setMode(null)}>Cancel</button></>
+                ? <>Delete “{s.title}”? <button type="button" className="ac-btn" onClick={() => { removeDashboard(s.id, s.title); setMode(null); }}>✓
+                  Confirm</button> <button type="button" className="ac-btn" onClick={() => setMode(null)}>Cancel</button></>
                 : <>
                   <button type="button" className="ac-btn" onClick={() => setMode(is(s, 'open') ? null : { id: s.id, kind: 'open' })}>Open</button>{' '}
-                  <button type="button" className="ac-btn" onClick={() => setMode(is(s, 'configure') ? null : { id: s.id, kind: 'configure' })}>⚙️ Configure</button>{' '}
+                  <button type="button" className="ac-btn" onClick={() => setMode(is(s, 'configure') ? null : { id: s.id, kind: 'configure' })}>⚙️
+                    Configure</button>{' '}
                   {is(s, 'rename') ? <button type="button" className="ac-btn" onClick={() => { renameDashboard(s.id, name); setMode(null); }}>✓ Save</button>
-                    : <button type="button" className="ac-btn" onClick={() => { setName(s.title); setMode({ id: s.id, kind: 'rename' }); }}>✎ Rename</button>}{' '}
+                    : <button type="button" className="ac-btn" onClick={() => { setName(s.title); setMode({ id: s.id, kind: 'rename' }); }}>✎ Rename</button>}
+                  {' '}
                   <button type="button" className="ac-btn" onClick={() => setMode({ id: s.id, kind: 'delete' })}>✕ Remove</button></>}</td>
             </tr>
           ))}

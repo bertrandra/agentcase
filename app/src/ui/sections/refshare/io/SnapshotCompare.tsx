@@ -23,7 +23,8 @@ export function SnapshotCompare({ list }: { list: NamedSnapshot[] }) {
     <div>
       <div className="ac-snap-pick">
         <label>Compare <select aria-label="Compare" value={ok(a) ? a : 'current'} onChange={(e) => setA(e.target.value)}>{options}</select></label>
-        <label>with <select aria-label="With" value={ok(b) ? b : ''} onChange={(e) => setB(e.target.value)}><option value="">— choose —</option>{options}</select></label>
+        <label>with <select aria-label="With" value={ok(b) ? b : ''} onChange={(e) => setB(e.target.value)}><option value="">— choose —</option>{options}
+          </select></label>
       </div>
       {rows && (
         <DataTable caption="Snapshot comparison" rows={rows} rowKey={(r) => r.id} columns={[

@@ -13,7 +13,8 @@ export const EVIDENCE_CHECKS: [id: string, check: RtCheck][] = [
     if (!c.s.MODEL.FLAGS.flow) return null;
     const share = flowOf(c.s.MODEL).throughputInShare;
     if (!(share >= 0 && share <= 100)) return 'throughputInShare out of [0,100] bounds';
-    return share === 0 && Math.abs(flowModel(c).flowNpv) > 1e-6 ? 'share=0 but flow value is nonzero — the same capacity is being counted as both cost-out and throughput-in' : null;
+    return share === 0 && Math.abs(flowModel(c).flowNpv) > 1e-6
+      ? 'share=0 but flow value is nonzero — the same capacity is being counted as both cost-out and throughput-in' : null;
   }],
   ['CC-EV-01', (c, rt) => {
     if (!c.s.MODEL.FLAGS.evl) return null;
@@ -28,6 +29,7 @@ export const EVIDENCE_CHECKS: [id: string, check: RtCheck][] = [
   ['CC-EV-03', (c, rt) => {
     if (!c.s.MODEL.FLAGS.evl) return null;
     const e = evlModel(c, rt.tornado, rt.now);
-    return e.meetsExpectation === false ? `grade ${e.grade} is below the ${e.expectedGrade} expected at ${EVL_STAGE_LABEL[e.stage] || e.stage} - see the upgrade path, not a gate` : null;
+    return e.meetsExpectation === false
+      ? `grade ${e.grade} is below the ${e.expectedGrade} expected at ${EVL_STAGE_LABEL[e.stage] || e.stage} - see the upgrade path, not a gate` : null;
   }],
 ];

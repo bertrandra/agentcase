@@ -8,7 +8,8 @@ import { Tile, fmtEur } from '../shared';
 import { cssVars } from '@/ui/cssVars';
 
 type T = McsResult['tornado'][number];
-const card = (label: string, s: McsStats, f: (v: number) => string = fmtEur) => <Tile key={label} label={label} value={`P50 ${f(s.p50)}`} note={`P10 ${f(s.p10)} · P90 ${f(s.p90)}`} />;
+const card = (label: string, s: McsStats, f: (v: number) => string = fmtEur) =>
+  <Tile key={label} label={label} value={`P50 ${f(s.p50)}`} note={`P10 ${f(s.p10)} · P90 ${f(s.p90)}`} />;
 
 /** Distribution of the last run, tornado (driver P10→P90 swing on horizon-end savings) and the running P50 by draw count. */
 export function Results({ run }: { run: McsResult }) {
@@ -29,10 +30,12 @@ export function Results({ run }: { run: McsResult }) {
     <>
       <Panel title={`Distribution — n=${run.n}, seed=${run.seed}, ρ=${run.rho}`}>
         <div className="ac-stat-row">
-          {card(`${end} savings`, run.stats.savY3)}{card(`${end} run cost`, run.stats.runY3)}{card('NPV', run.stats.npv)}{card('Payback', run.stats.paybackMonths, (v) => `${Math.round(v)} mo`)}
+          {card(`${end} savings`, run.stats.savY3)}{card(`${end} run cost`, run.stats.runY3)}{card('NPV', run.stats.npv)}
+          {card('Payback', run.stats.paybackMonths, (v) => `${Math.round(v)} mo`)}
           <Tile label={`P(${end} savings < 0)`} tone={pNegTone(run.stats.pSavNeg)} value={`${(run.stats.pSavNeg * 100).toFixed(1)}%`} />
         </div>
-        <p className="ac-muted">Deterministic point estimate: {fmtEur(det)}. P50 sitting at or slightly below it is <strong>expected</strong> under Jensen&apos;s inequality — the engine has concave transformations (P1 truncation, P2 floor, P3 min()) — not a defect.</p>
+        <p className="ac-muted">Deterministic point estimate: {fmtEur(det)}. P50 sitting at or slightly below it is <strong>expected</strong> under
+          Jensen&apos;s inequality — the engine has concave transformations (P1 truncation, P2 floor, P3 min()) — not a defect.</p>
       </Panel>
       <Panel title={`Tornado — driver P10→P90 swing on ${end} savings`}>
         <DataTable columns={tCols} rows={run.tornado} rowKey={(t) => t.id} />

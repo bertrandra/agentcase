@@ -14,7 +14,8 @@ export interface ScurveView {
   levelsText: string;
 }
 
-const parseLocalDate = (s: string): Date => { const m = /^(\d{4})-(\d{2})-(\d{2})/.exec(s); return m ? new Date(+(m[1] as string), +(m[2] as string) - 1, +(m[3] as string)) : new Date(s); };
+const parseLocalDate = (s: string): Date => { const m = /^(\d{4})-(\d{2})-(\d{2})/.exec(s); return m
+  ? new Date(+(m[1] as string), +(m[2] as string) - 1, +(m[3] as string)) : new Date(s); };
 function addMonthsLocal(d: Date, n: number): Date {
   const r = new Date(d.getFullYear(), d.getMonth() + n, 1);
   r.setDate(Math.min(d.getDate(), new Date(r.getFullYear(), r.getMonth() + 1, 0).getDate()));
@@ -45,7 +46,8 @@ export function scurveView(c: Ctx, horizonMonths: number): ScurveView {
   const cross = (th: number): number | null => { if (th <= 0) return 1; for (let t = 1; t <= N; t++) if (curve(t) >= th) return t; return null; };
   const levels = bounds.map((from, i) => {
     const month = cross(from);
-    return { lvl: `L${i + 1}`, from, range: `${Math.round(from)}–${Math.round(i + 1 < bounds.length ? (bounds[i + 1] as number) : 100)}%`, month, when: month == null ? 'beyond horizon' : `${monthLabel(start, month)} · month ${month}` };
+    return { lvl: `L${i + 1}`, from, range: `${Math.round(from)}–${Math.round(i + 1 < bounds.length ? (bounds[i + 1] as number) : 100)}%`, month,
+      when: month == null ? 'beyond horizon' : `${monthLabel(start, month)} · month ${month}` };
   });
   const endAdoption = Math.round(curve(N));
   const bands = levels.map((l, i): [number, number, string] => [l.from, i + 1 < bounds.length ? (bounds[i + 1] as number) : 100, l.lvl]);

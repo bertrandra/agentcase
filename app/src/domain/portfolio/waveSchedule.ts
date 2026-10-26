@@ -63,7 +63,8 @@ export function resolveSchedule(pf: Portfolio, setupMonths: (productId: string) 
   const edge = (w: Wave): Wave | undefined => {
     const d = w.dependsOn;
     if (!d) return undefined;
-    if (cyclic.has(w.id)) { out.notes.push({ code: 'wave-dep-cycle', message: `${w.name}: its dependency on another wave forms a cycle — ignored`, waveId: w.id }); return undefined; }
+    if (cyclic.has(w.id)) { out.notes.push({ code: 'wave-dep-cycle', message: `${w.name}: its dependency on another wave forms a cycle — ignored`,
+      waveId: w.id }); return undefined; }
     const x = byId.get(d.waveId);
     if (!x) out.notes.push({ code: 'wave-dep-unknown', message: `${w.name}: depends on an unknown wave (${d.waveId}) — ignored`, waveId: w.id });
     return x;

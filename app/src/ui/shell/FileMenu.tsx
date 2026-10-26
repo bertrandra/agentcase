@@ -10,7 +10,8 @@ const save = () => {
 };
 const open = async (f: File | undefined) => {
   if (!f) return;
-  try { await importSnapshotFile(f); toast('Case opened — Ctrl+Z restores the previous one'); } catch (e) { toast(`Cannot open file: ${(e as Error).message}`, 5000); }
+  try { await importSnapshotFile(f); toast('Case opened — Ctrl+Z restores the previous one'); } catch (e) { toast(`Cannot open file: ${(e as Error).message}`,
+    5000); }
 };
 
 /**

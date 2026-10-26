@@ -15,7 +15,9 @@ export const VERSION_KEY = '_schemaVersion';
 /** A file made by a newer AgentCase: refused, the user is told to open it with an up-to-date build. */
 export class NewerFileError extends SnapshotError {
   constructor(readonly version: number) {
-    super(`This file was made with a newer AgentCase (file format v${version}; this version reads up to v${SNAPSHOT_SCHEMA_VERSION}). Open it with an up-to-date AgentCase.`);
+    super(
+      `This file was made with a newer AgentCase (file format v${version}; this version reads up to v${SNAPSHOT_SCHEMA_VERSION}). Open it with an ` +
+        `up-to-date AgentCase.`);
   }
 }
 

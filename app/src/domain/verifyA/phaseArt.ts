@@ -34,7 +34,8 @@ export function valueRows(l: Live): ValueRow[] {
 
 /** Supervision-floor bounds of the referential postures: ≥ 60 % in-the-lead, 30–60 % on-the-loop, below over-the-loop. */
 export const POSTURE_LEAD = 60, POSTURE_LOOP = 30;
-export const posture = (floor: number): string => (floor >= POSTURE_LEAD ? 'Human-in-the-lead' : floor >= POSTURE_LOOP ? 'Human-on-the-loop' : 'Human-over-the-loop');
+export const posture = (floor: number): string =>
+  (floor >= POSTURE_LEAD ? 'Human-in-the-lead' : floor >= POSTURE_LOOP ? 'Human-on-the-loop' : 'Human-over-the-loop');
 /** Margin (points) above the floor that reads as comfortable; below 0 the floor is violated (CC-SUP-01). */
 export const MARGIN_COMFORT = 10;
 export const marginBand = (gap: number): 'ok' | 'thin' | 'violated' => (gap >= MARGIN_COMFORT ? 'ok' : gap >= 0 ? 'thin' : 'violated');

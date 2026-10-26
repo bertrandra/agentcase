@@ -36,30 +36,36 @@ export function build(s: Seed, seed: string, t: number, harmony: Harmony): Palet
     slate: fitDark(by(t, 0.54, 0.49, 0.42), s.grey ? 0.004 : Math.min(0.045, 0.012 + s.C * 0.15), h, page, 4.6),
     bg, surface, 'surface-raised': on(by(t, 0.996, 1, 1), by(t, 0.004, 0, 0)), 'line-strong': on(by(t, 0.9, 0.885, 0.7), 0.01),
     'header-start': chrome(by(t, 0.56, 0.46, 0.34), Cb * by(t, 0.75, 1, 1.1)), 'header-end': chrome(by(t, 0.4, 0.24, 0.16), Cb * by(t, 0.5, 0.45, 0.55)),
-    'header-text': WHITE, 'kpibar-start': chrome(by(t, 0.54, 0.46, 0.36), Cb * by(t, 0.75, 1, 1.1)), 'kpibar-end': chrome(by(t, 0.47, 0.4, 0.28), Cb * by(t, 0.7, 0.85, 1)),
+    'header-text': WHITE, 'kpibar-start': chrome(by(t, 0.54, 0.46, 0.36), Cb * by(t, 0.75, 1, 1.1)),
+    'kpibar-end': chrome(by(t, 0.47, 0.4, 0.28), Cb * by(t, 0.7, 0.85, 1)),
     'kpibar-text': WHITE, 'sidebar-bg': on(by(t, 0.977, 0.99, 1), by(t, 0.012, 0.004, 0)), 'sidebar-text': ink, 'sidebar-group-bg': groupBg,
     'sidebar-group-text': fitDark(by(t, 0.28, 0.23, 0.18), Math.min(0.09, s.C), h, [groupBg], 7), selected: chrome(by(t, 0.5, 0.46, 0.36), Cb),
-    'table-head-bg': fitDark(by(t, 0.46, 0.44, 0.34), Cb, h, [WHITE, familyFrom('primary', primary)['primary-200'] ?? WHITE], 5.2),   /* its note: primary-200 */
+    'table-head-bg': fitDark(by(t, 0.46, 0.44, 0.34), Cb, h, [WHITE, familyFrom('primary', primary)['primary-200'] ?? WHITE], 5.2),
+    /* its note: primary-200 */
     'table-head-text': WHITE, 'table-stripe': on(by(t, 0.975, 0.98, 0.955), by(t, 0.012, 0.006, 0.012)),
     ink, 'text-heading': fitDark(by(t, 0.52, 0.46, 0.36), Cb * by(t, 0.8, 1, 1.1), h, page, 4.6),
-    'text-link': fitDark(by(t, 0.5, 0.45, 0.38), Cb * by(t, 0.9, 1, 1.15), h, page, 4.6), focus: fitDark(by(t, 0.56, 0.5, 0.42), Math.max(Cb, 0.1), h, page, 3.2),
+    'text-link': fitDark(by(t, 0.5, 0.45, 0.38), Cb * by(t, 0.9, 1, 1.15), h, page, 4.6),
+    focus: fitDark(by(t, 0.56, 0.5, 0.42), Math.max(Cb, 0.1), h, page, 3.2),
     automation: teal, 'glass-ceiling': danger, 'human-supervision': warning,
     ...(Object.fromEntries(cat.map((c, i) => [`chart-cat-${i + 1}`, c])) as Record<`chart-cat-${1 | 2 | 3 | 4 | 5 | 6 | 7 | 8}`, string>),
   };
 }
 
-const DISPLAYS: readonly (readonly [DisplayMode, ContrastLevel])[] = [['light', 'standard'], ['light', 'enhanced'], ['light', 'high'], ['dark', 'standard'], ['dark', 'enhanced'], ['dark', 'high']];
+const DISPLAYS: readonly (readonly [DisplayMode, ContrastLevel])[] = [['light', 'standard'], ['light', 'enhanced'], ['light', 'high'], ['dark', 'standard'],
+  ['dark', 'enhanced'], ['dark', 'high']];
 /** The table of a theme with these colours in a display (base + themed display). */
 export function paletteTable(colours: Partial<Palette>, mode: DisplayMode, contrast: ContrastLevel): ThemeValues {
   const def = { colours, axes: {} }, base = themeBase(def);
   return { ...base, ...themedDisplay({ mode, contrast, cvd: false, reduceMotion: false }, def, base) } as ThemeValues;
 }
 /** Every contrast pair a palette misses, over the six displays (empty: it passes). */
-export const paletteFailures = (p: Partial<Palette>): string[] => DISPLAYS.flatMap(([m, c]) => failures(paletteTable(p, m, c), c, `${m}/${c}`).map((f) => `${m}/${c}: ${f}`));
+export const paletteFailures =
+  (p: Partial<Palette>): string[] => DISPLAYS.flatMap(([m, c]) => failures(paletteTable(p, m, c), c, `${m}/${c}`).map((f) => `${m}/${c}: ${f}`));
 
 /** The palette of a seed colour. `contrast` 0..100 (clamped); `harmony` defaults to analogous. A seed that is not a hex colour reads as the default blue. */
 export function paletteFromSeed(seed: string, opts: Pick<GeneratorSettings, 'contrast'> & { harmony?: Harmony }): Palette {
-  const hex = normHex(seed) ?? '#0058ab', s = seedOf(hex), harmony = opts.harmony ?? 'analogous', t0 = Math.max(0, Math.min(100, Number(opts.contrast) || 0)) / 100;
+  const hex = normHex(seed) ?? '#0058ab', s = seedOf(hex), harmony = opts.harmony ?? 'analogous',
+    t0 = Math.max(0, Math.min(100, Number(opts.contrast) || 0)) / 100;
   let p = build(s, hex, t0, harmony);
   for (let t = t0 + 0.1; paletteFailures(p).length && t < 1.1; t += 0.1) p = build(s, hex, Math.min(1, t), harmony);
   return p;

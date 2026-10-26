@@ -4,7 +4,8 @@ import { exportDdPack } from '@/controllers/excelDd';
 import { exportResultsWorkbook } from '@/controllers/excelResults';
 import { renameProduct, addProduct, setActiveProduct } from '@/controllers/product';
 import { makeCtx } from '@/domain';
-import { consolidate, consolidationView, corePortfolio, knowledgeTable, portfolioHeadline, resolveProduct, waveEffects, type DisplayScope } from '@/domain/portfolio';
+import { consolidate, consolidationView, corePortfolio, knowledgeTable, portfolioHeadline, resolveProduct, waveEffects,
+  type DisplayScope } from '@/domain/portfolio';
 import { fmtRoiPct } from '@/domain/economics';
 import { loadExcelJS } from '@/store/persistence/excel/lazy';
 import { buildResultsWorkbook, resultsData } from '@/store/persistence/excel/results';
@@ -29,7 +30,8 @@ describe('the results workbook of a portfolio', () => {
     const pf = fourProducts(), wb = await read({ kind: 'portfolio' });
     expect(names(wb)).toEqual([
       'Portfolio', 'Wave Wave 1', 'Wave Wave 2', 'Knowledge transfer',
-      ...pf.products.flatMap((p, i) => [`Product ${p.name}`, ...['ROI', 'Investment', 'Operating costs', 'Savings', 'P&L', 'Workforce shift'].map((k) => `P${i + 1} ${k}`)]),
+      ...pf.products.flatMap((p, i) =>
+        [`Product ${p.name}`, ...['ROI', 'Investment', 'Operating costs', 'Savings', 'P&L', 'Workforce shift'].map((k) => `P${i + 1} ${k}`)]),
     ].map((n) => (n.length > 31 ? n.slice(0, 31) : n)));
   });
   it('the display scope decides which group leads; all sheets are always exported', async () => {
@@ -52,7 +54,8 @@ describe('the results workbook of a portfolio', () => {
     expect(line(wb, 'Portfolio', 'Planned products')[1]).toBe(h.products);
     // by year / by wave / by product, cell by cell, and the total line is the headline
     view.years.forEach((y) => expect(line(wb, 'Portfolio', y.label).slice(0, 5)).toEqual([y.label, y.savings, y.run, y.setup, y.net]));
-    view.waves.forEach((w) => expect(line(wb, 'Portfolio', w.name).slice(0, 9)).toEqual([w.name, w.products, w.npv, w.net, w.setup, w.savings, w.run, w.etp, w.vfte]));
+    view.waves.forEach((w) => expect(line(wb, 'Portfolio', w.name).slice(0, 9))
+      .toEqual([w.name, w.products, w.npv, w.net, w.setup, w.savings, w.run, w.etp, w.vfte]));
     view.products.forEach((p) => expect(line(wb, 'Portfolio', p.name).slice(0, 4)).toEqual([p.name, 1, p.npv, p.net]));
     expect(line(wb, 'Portfolio', 'Portfolio').filter((x) => typeof x === 'number')).toContain(view.totals.npv);
     expect(view.totals.npv).toBe(h.npv);
@@ -82,14 +85,17 @@ describe('the results workbook of a portfolio', () => {
     const pf = fourProducts(), wb = await read(), xl = await loadExcelJS();
     for (const [i, p] of pf.products.entries()) {
       const legacy = buildResultsWorkbook(xl, resultsData(makeCtx(resolveProduct(pf, p.id))), THEME_DEFAULT);
-      for (const k of ['ROI', 'Investment', 'Operating costs', 'Savings', 'P&L', 'Workforce shift']) expect(rows(wb, `P${i + 1} ${k}`)).toEqual(rows(legacy, k));
+      for (const k of ['ROI', 'Investment', 'Operating costs', 'Savings', 'P&L',
+        'Workforce shift']) expect(rows(wb, `P${i + 1} ${k}`)).toEqual(rows(legacy, k));
     }
   });
   it('Knowledge transfer equals knowledgeTable and the wave effects', async () => {
     const pf = fourProducts(), kt = knowledgeTable(pf), wb = await read();
     kt.rows.forEach((r) => expect(line(wb, 'Knowledge transfer', r.name).slice(9, 14)).toEqual([r.setup, r.annual, r.ktDays, r.ktAvoided, r.hubDeltaSav]));
-    expect(line(wb, 'Knowledge transfer', 'Total').slice(9, 14)).toEqual([kt.totals.setup, kt.totals.annual, kt.totals.ktDays, kt.totals.ktAvoided, kt.totals.hubDeltaSav]);
-    waveEffects(pf, kt.rows).forEach((w) => expect(line(wb, 'Knowledge transfer', w.name).slice(1, 7)).toEqual([w.products, w.users, w.setup, w.annual, w.ktAvoided, w.hubDeltaSav]));
+    expect(line(wb, 'Knowledge transfer', 'Total').slice(9, 14)).toEqual([kt.totals.setup, kt.totals.annual, kt.totals.ktDays, kt.totals.ktAvoided,
+      kt.totals.hubDeltaSav]);
+    waveEffects(pf, kt.rows).forEach((w) => expect(line(wb, 'Knowledge transfer', w.name).slice(1, 7))
+      .toEqual([w.products, w.users, w.setup, w.annual, w.ktAvoided, w.hubDeltaSav]));
     expect(line(wb, 'Knowledge transfer', 'Conserved')[1]).toBe('Yes');
   });
   it('a plain single case still exports the six legacy sheets, nothing else', async () => {
@@ -101,7 +107,8 @@ describe('the results workbook of a portfolio', () => {
 describe('Excel-safe sheet names', () => {
   it('limits to 31 characters, drops []:*?/\\ and apostrophes at the ends, stays unique case-insensitively', () => {
     const used = new Set<string>();
-    const got = ['Wave A very long wave name that exceeds the limit', "'quoted'", 'Pr[o]d:uct*?/\\', 'Same', 'SAME', 'same', '', 'History'].map((n) => sheetName(n, used));
+    const got = ['Wave A very long wave name that exceeds the limit', "'quoted'", 'Pr[o]d:uct*?/\\', 'Same', 'SAME', 'same', '',
+      'History'].map((n) => sheetName(n, used));
     expect(got.every((n) => n.length > 0 && n.length <= 31 && !/[[\]:*?/\\]/.test(n) && !/^'|'$/.test(n))).toBe(true);
     expect(new Set(got.map((n) => n.toLowerCase())).size).toBe(got.length);
     expect(got[0]).toBe('Wave A very long wave name that');

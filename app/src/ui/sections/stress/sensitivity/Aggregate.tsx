@@ -16,8 +16,10 @@ const VALUES: AggColumn<SensProductRow>[] = ['Automation potential', 'Y3 ramp', 
 const MOST: AggColumn<SensProductRow>[] = [
   { key: 'most', header: 'Most sensitive parameter', render: (r) => r.most.parameter },
   { key: 'lvl', header: 'Sensitivity', render: (r) => <Badge tone={TONE[r.most.level]}>{r.most.level}</Badge> },
-  { key: 'roi', header: 'ROI impact', align: R, render: (r) => r.most.roiImpact }, { key: 'fte', header: 'FTE impact', align: R, render: (r) => r.most.impactFte },
-  { key: 'lo', header: 'Matrix ROI, lowest', align: R, render: (r) => pct(r.roiLow) }, { key: 'hi', header: 'Matrix ROI, highest', align: R, render: (r) => pct(r.roiHigh) },
+  { key: 'roi', header: 'ROI impact', align: R, render: (r) => r.most.roiImpact },
+  { key: 'fte', header: 'FTE impact', align: R, render: (r) => r.most.impactFte },
+  { key: 'lo', header: 'Matrix ROI, lowest', align: R, render: (r) => pct(r.roiLow) },
+  { key: 'hi', header: 'Matrix ROI, highest', align: R, render: (r) => pct(r.roiHigh) },
   { key: 'neg', header: 'Negative cells', align: R, render: (r) => `${r.negative} of ${r.cells}` },
 ];
 

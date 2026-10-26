@@ -56,7 +56,8 @@ export function createAppStore(initial: Doc | PortfolioDoc, opts: StoreOptions =
     const patches = documentPatches(all), inverse = documentPatches(allInverse), undoable = patches.length > 0 && cmds.some((c) => c.undoable);
     const entry: HistoryEntry = { label, type: cmds.length === 1 ? (cmds[0] as Command).type : 'batch', ts: now(), coalesceKey, patches, inverse };
     moved(patches, entry.type === 'doc.load' && patches.length > 0);
-    commit(s, pf, { history: undoable ? pushEntry(s.history, entry, opts.coalesceMs, opts.cap) : s.history, audit: log(s, 'do', entry.type, label) }, entry.type === 'doc.load');
+    commit(s, pf, { history: undoable ? pushEntry(s.history, entry, opts.coalesceMs, opts.cap) : s.history, audit: log(s, 'do', entry.type, label) },
+      entry.type === 'doc.load');
     emit('do', entry);
   }
   const dispatch = <P>(cmd: Command<P>): void => batch(cmd.label, [cmd as Command], cmd.coalesceKey);
@@ -65,7 +66,8 @@ export function createAppStore(initial: Doc | PortfolioDoc, opts: StoreOptions =
     const s = get(), r = dir === 'undo' ? popUndo(s.history) : popRedo(s.history);
     if (!r) return false;
     moved(dir === 'undo' ? r.entry.inverse : r.entry.patches);
-    commit(s, applyPatches(s.portfolio, dir === 'undo' ? r.entry.inverse : r.entry.patches) as PortfolioDoc, { history: r.next, audit: log(s, dir, r.entry.type, r.entry.label) });
+    commit(s, applyPatches(s.portfolio, dir === 'undo' ? r.entry.inverse : r.entry.patches) as PortfolioDoc,
+      { history: r.next, audit: log(s, dir, r.entry.type, r.entry.label) });
     emit(dir, r.entry);
     return true;
   }
@@ -119,7 +121,8 @@ export function createAppStore(initial: Doc | PortfolioDoc, opts: StoreOptions =
     if (structuralEqual(documentOf(s.portfolio), documentOf(next))) return { applied: false, historyCleared: false };
     const keep = next.products.some((p) => p.id === s.portfolio.activeProductId) ? s.portfolio.activeProductId : next.activeProductId;
     const historyCleared = hasHistory(s);
-    commit(s, keepTabView(s.portfolio, { ...next, activeProductId: keep }), { history: EMPTY_HISTORY, audit: log(s, 'remote', 'remote', 'Document from another tab') });
+    commit(s, keepTabView(s.portfolio, { ...next, activeProductId: keep }),
+      { history: EMPTY_HISTORY, audit: log(s, 'remote', 'remote', 'Document from another tab') });
     emit('remote');
     return { applied: true, historyCleared };
   }

@@ -1,6 +1,7 @@
 import { useCallback, useEffect, useState } from 'react';
 import content from '@/content/refshare/sessions.json';
-import { clearAllSessions, listSessions, removeSession, restoreSession, saveSessionNow, sessionsAvailable, thisTabId, type SessionInfo } from '@/controllers/sessions';
+import { clearAllSessions, listSessions, removeSession, restoreSession, saveSessionNow, sessionsAvailable, thisTabId,
+  type SessionInfo } from '@/controllers/sessions';
 import { toast } from '@/ui/uiState';
 import { Callout } from '@/ui/widgets/cards';
 import { Rich } from '@/ui/widgets/Rich';
@@ -21,14 +22,19 @@ export default function SessionsSection() {
       input={<>
         <Callout>{content.intro}</Callout>
         <div className="ac-actions ac-actions-block">
-          <button type="button" className="ac-btn ac-btn-primary" disabled={!available} onClick={act(saveSessionNow, 'This session was autosaved')}>Autosave this session</button>
-          <button type="button" className="ac-btn" disabled={!available} onClick={act(() => removeSession(thisTabId()), "This tab's autosave was cleared")}>Clear this tab's autosave</button>
+          <button type="button" className="ac-btn ac-btn-primary" disabled={!available} onClick={act(saveSessionNow, 'This session was autosaved')}>Autosave
+            this session</button>
+          <button type="button" className="ac-btn" disabled={!available}
+            onClick={act(() => removeSession(thisTabId()), "This tab's autosave was cleared")}>Clear this tab's autosave</button>
           {confirmAll
-            ? <><button type="button" className="ac-btn" onClick={() => { setConfirmAll(false); void act(clearAllSessions, 'All sessions cleared')(); }}>Confirm: remove every session</button><button type="button" className="ac-btn" onClick={() => setConfirmAll(false)}>Cancel</button></>
+            ? <><button type="button" className="ac-btn"
+              onClick={() => { setConfirmAll(false); void act(clearAllSessions, 'All sessions cleared')(); }}>Confirm: remove every session</button>
+              <button type="button" className="ac-btn" onClick={() => setConfirmAll(false)}>Cancel</button></>
             : <button type="button" className="ac-btn" disabled={!available} onClick={() => setConfirmAll(true)}>🗑 Clear all sessions</button>}
         </div>
       </>}
-      result={!available ? <Callout kind="warn">{content.texts.unavailable}</Callout> : rows.length === 0 ? <p className="ac-muted">{content.texts.empty}</p> : (
+      result={!available ? <Callout kind="warn">{content.texts.unavailable}</Callout>
+        : rows.length === 0 ? <p className="ac-muted">{content.texts.empty}</p> : (
         <>
           <p className="ac-muted">{content.texts.restoreNote}</p>
           <SessionTable rows={rows}

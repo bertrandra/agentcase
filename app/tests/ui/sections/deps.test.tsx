@@ -36,7 +36,8 @@ describe('deps section (generated graph)', () => {
     expect(nodes(container)).toHaveLength(expected);
     const refs = DATA.sections.filter((s) => isReference(s.id)).length;
     expect(screen.getByText(new RegExp(`${refs} reference sections have no calculation`))).toBeTruthy();
-    expect(container.querySelectorAll('path[data-edge]').length).toBe(DATA.edges.filter((e) => nodes(container).some((n) => n.dataset.node === e[0]) && nodes(container).some((n) => n.dataset.node === e[1])).length);
+    expect(container.querySelectorAll('path[data-edge]').length)
+      .toBe(DATA.edges.filter((e) => nodes(container).some((n) => n.dataset.node === e[0]) && nodes(container).some((n) => n.dataset.node === e[1])).length);
   });
   it('selecting a node highlights its upstream and downstream and lists the impacted sections, zones and tests', () => {
     const { container } = render(<Deps />);
@@ -49,7 +50,8 @@ describe('deps section (generated graph)', () => {
     const panel = screen.getByRole('group', { name: 'Selected node' });
     const total = DATA.counts.tests, pl = planFor('kpi'), n = pl.tests.length;
     expect(panel.textContent).toContain(`${n} of ${total} test files`);
-    expect(panel.textContent).toContain(`${hit.impacted.zones.filter((z) => z !== 'kpi').length} zones · ${hit.impacted.sections.filter((x) => x !== 'kpi').length} sections`);
+    expect(panel.textContent).toContain(
+      `${hit.impacted.zones.filter((z) => z !== 'kpi').length} zones · ${hit.impacted.sections.filter((x) => x !== 'kpi').length} sections`);
     expect(within(panel).getByText(`Test files (${n})`)).toBeTruthy();
     expect(panel.querySelectorAll('p details, p summary')).toHaveLength(0);   // the "+n more" fold is a <details>: never inside a <p> (valid HTML)
     const lit2 = [...container.querySelectorAll('path[data-edge]')].filter((p) => p.getAttribute('opacity') === '1');

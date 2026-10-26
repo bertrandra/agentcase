@@ -68,7 +68,8 @@ describe('numeric family', () => {
   it('a native slider can become a number field or a stepper (same command)', () => {
     const slider = <RangeInput id="khA0" label="Maturity" min={0} max={4} step={1} unit="" />;
     const nat = outcome({}, slider, () => { fireEvent.change(screen.getByRole('slider'), { target: { value: '3' } }); });
-    same(nat, outcome({ controlsNumeric: 'number' }, slider, () => { fireEvent.change(screen.getByRole('spinbutton', { name: 'Maturity' }), { target: { value: '3' } }); }));
+    same(nat, outcome({ controlsNumeric: 'number' }, slider,
+      () => { fireEvent.change(screen.getByRole('spinbutton', { name: 'Maturity' }), { target: { value: '3' } }); }));
     same(nat, outcome({ controlsNumeric: 'stepper' }, slider, () => { fireEvent.click(screen.getByRole('button', { name: 'Increase Maturity' })); }));
   });
   it('stepper bounds: the button at a bound is disabled; nudge rounds to the step and clamps', () => {
@@ -76,14 +77,16 @@ describe('numeric family', () => {
     render(<RangeInput id="khA0" label="Maturity" min={0} max={2} step={1} unit="" />);
     expect((screen.getByRole('button', { name: 'Increase Maturity' }) as HTMLButtonElement).disabled).toBe(true);
     expect((screen.getByRole('button', { name: 'Decrease Maturity' }) as HTMLButtonElement).disabled).toBe(false);
-    expect([nudge('0.1', 1, { step: 0.05 }), nudge('0.3', 1, { step: 0.05 }), nudge('99', 1, { max: 100, step: 5 }), nudge('', -1, { min: 1 })]).toEqual(['0.15', '0.35', '100', '1']);
+    expect([nudge('0.1', 1, { step: 0.05 }), nudge('0.3', 1, { step: 0.05 }), nudge('99', 1, { max: 100, step: 5 }), nudge('', -1, { min: 1 })])
+      .toEqual(['0.15', '0.35', '100', '1']);
   });
 });
 
 describe('choice family', () => {
   const ui = <SelectInput id="runSizeMode" label="Mode" options={MODES} />;
   const native = () => outcome({}, ui, () => { fireEvent.change(screen.getByRole('combobox'), { target: { value: 'legacy' } }); });
-  it.each(['segmented', 'radio'] as const)('%s: a named radiogroup of native radios (one name: arrow keys move within it); selecting = the dropdown command', (variant) => {
+  it.each(['segmented', 'radio'] as const)('%s: a named radiogroup of native radios (one name: arrow keys move within it); selecting = the dropdown command',
+    (variant) => {
     const v = outcome({ controlsChoice: variant }, ui, () => {
       const group = screen.getByRole('radiogroup', { name: 'Mode' }), radios = screen.getAllByRole('radio') as HTMLInputElement[];
       expect(group).toBeTruthy();

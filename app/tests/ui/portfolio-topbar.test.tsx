@@ -101,7 +101,8 @@ describe('top bar with several products', () => {
     mountApp();
     act(() => openGroup('portfolio'));
     const group = sidebar().querySelector('[data-group="portfolio"]')!;
-    expect([...group.querySelectorAll('[data-section]')].map((b) => (b as HTMLElement).dataset.section)).toEqual(['products', 'overrides', 'knowledge-transfer', 'waves', 'consolidation', 'portfolio-stress']);
+    expect([...group.querySelectorAll('[data-section]')].map((b) => (b as HTMLElement).dataset.section))
+      .toEqual(['products', 'overrides', 'knowledge-transfer', 'waves', 'consolidation', 'portfolio-stress']);
     act(() => { removeProduct(ids[1]); });
     expect(sidebar().querySelector('[data-group="portfolio"]')).toBeTruthy();
     act(() => { removeProduct(ids[2]); });

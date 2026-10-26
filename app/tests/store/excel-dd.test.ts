@@ -71,7 +71,8 @@ describe('due-diligence re-import reproduces the legacy', () => {
     ws.addRow(['__proto__', 0, 0, 0, 0, 0, 0, 0, 0, 0, 'confirmed']);
     ws.addRow(['constructor', 0, 0, 0, 0, 0, 0, 0, 0, 0, 'confirmed']);
     ws.addRow(['cf-perfrel-cap', 0, 0, 0, 0, 0, 0, 0, 0, 0, 'constructor']);
-    ws.addRow(['cf-perfuplift', 0, 0, 0, 0, 0, 0, 0, 0, 0, { error: '#N/A' }, { formula: 'A1', result: { error: '#REF!' } }, { text: { richText: [{ text: 'deep' }] }, hyperlink: 'http://x' }, '<img src=x onerror=alert(1)>']);
+    ws.addRow(['cf-perfuplift', 0, 0, 0, 0, 0, 0, 0, 0, 0, { error: '#N/A' }, { formula: 'A1', result: { error: '#REF!' } },
+      { text: { richText: [{ text: 'deep' }] }, hyperlink: 'http://x' }, '<img src=x onerror=alert(1)>']);
     const res = await importDdPack({ arrayBuffer: async () => (await wb.xlsx.writeBuffer()) as ArrayBuffer });
     expect(res.message).toContain('1 row(s) applied · 1 unchanged · 2 unknown id(s) ignored');
     expect(Object.keys(stateOf())).toEqual(['cf-perfuplift']);

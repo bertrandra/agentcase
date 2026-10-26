@@ -30,7 +30,8 @@ const renderIn = (spec: DisplaySpec) => function render(n: unknown, key: number)
   if (tag === 'hr') return <hr key={key} />;
   if (tag === 'go') return <button key={key} type="button" className="ac-golink" onClick={() => attrs.to && goSection(attrs.to)}>{kids}</button>;
   if (!TAGS.has(tag)) return <span key={key}>{kids}</span>;
-  const Tag = (tag === 'h3' ? 'h2' : tag === 'h4' ? 'h3' : tag) as 'div';   // content headings sit one level up: the section title is the h1, there is no h2 above them
+  const Tag =
+    (tag === 'h3' ? 'h2' : tag === 'h4' ? 'h3' : tag) as 'div';   // content headings sit one level up: the section title is the h1, there is no h2 above them
   const cls = attrs.class ? attrs.class.split(' ').map((c) => `ac-rich-${c}`).join(' ') : undefined;
   // dynamic: the accent / tint colours are the content's own data (re-ranked for the display in effect)
   return <Tag key={key} className={cls} style={style(attrs, spec)} title={attrs.title}>{kids}</Tag>;

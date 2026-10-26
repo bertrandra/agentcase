@@ -50,7 +50,8 @@ describe('snapshot manager', () => {
     expect(lib(s)).toHaveLength(0);
     s.undo();
     expect(lib(s)).toHaveLength(1);
-    s.batch('golden', [{ type: 't', payload: 0, label: 'golden', undoable: true, run: (d) => { (d.namedSnapshots as { protected?: boolean }[])[0]!.protected = true; } }]);
+    s.batch('golden', [{ type: 't', payload: 0, label: 'golden', undoable: true,
+      run: (d) => { (d.namedSnapshots as { protected?: boolean }[])[0]!.protected = true; } }]);
     const n = s.getState().history.undo.length;
     deleteSnapshot('a');
     expect(lib(s)).toHaveLength(1);

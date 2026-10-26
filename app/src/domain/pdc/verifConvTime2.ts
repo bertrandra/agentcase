@@ -42,7 +42,8 @@ export function timeChecksB(c: Ctx): ConvCheck[] {
     auditTry('TE-06b', () => {
       try {
         const raw = modelRaw(c), full = engineNow(c), thin = thinFor(c, { curveModelId: activeCurve(c), model: raw }, DEFAULT_DISCOUNT_RATE);
-        if (Math.abs(thin.npv - full.npv(DEFAULT_DISCOUNT_RATE)) > TOL) return `thin.npv ${thin.npv.toFixed(4)} != full.npv ${full.npv(DEFAULT_DISCOUNT_RATE).toFixed(4)}`;
+        if (Math.abs(thin.npv -
+          full.npv(DEFAULT_DISCOUNT_RATE)) > TOL) return `thin.npv ${thin.npv.toFixed(4)} != full.npv ${full.npv(DEFAULT_DISCOUNT_RATE).toFixed(4)}`;
         if (thin.payback !== full.payback()) return `thin.payback ${thin.payback} != full.payback ${full.payback()}`;
         for (let y = 1; y <= full.horizonYears; y++) {
           const t = thin.years[y - 1], f = full.year(y);
@@ -57,7 +58,9 @@ export function timeChecksB(c: Ctx): ConvCheck[] {
         const pkg = engineNow(c), fresh = engineNow(c);
         if (pkg.K.inputHash !== fresh.K.inputHash) return 'materialise inputHash != fresh engine inputHash';
         const ph = pkg.headline(DEFAULT_DISCOUNT_RATE), h = fresh.headline(DEFAULT_DISCOUNT_RATE);
-        if (ph.payback !== h.payback || Math.abs(ph.npv - h.npv) > TOL) return `materialise headline (pb ${ph.payback}, npv ${Math.round(ph.npv)}) != fresh (pb ${h.payback}, npv ${Math.round(h.npv)})`;
+        if (ph.payback !== h.payback ||
+          Math.abs(ph.npv -
+          h.npv) > TOL) return `materialise headline (pb ${ph.payback}, npv ${Math.round(ph.npv)}) != fresh (pb ${h.payback}, npv ${Math.round(h.npv)})`;
         return pkg.months().length !== fresh.horizonMonths ? 'materialise monthly length mismatch' : null;
       } catch (e) { return fail('TE-12', e); }
     }),
@@ -94,14 +97,17 @@ export function timeChecksB(c: Ctx): ConvCheck[] {
         if (ys.length !== hy) return `engine.years() length ${ys.length} != horizonYears ${hy}`;
         if (!end || end.yearIndex !== hy) return `teEndYearRow().yearIndex ${end?.yearIndex} != ${hy}`;
         const nsav = reg(c, 'netSavY3'), rcost = reg(c, 'runCostY3');
-        if (typeof nsav === 'number' && Math.abs(nsav - end.savings) > TOL) return `netSavY3 ${Math.round(nsav)} != end-year savings ${Math.round(end.savings)}`;
-        return typeof rcost === 'number' && Math.abs(rcost - end.totalRunCost) > TOL ? `runCostY3 ${Math.round(rcost)} != end-year run ${Math.round(end.totalRunCost)}` : null;
+        if (typeof nsav === 'number' &&
+          Math.abs(nsav - end.savings) > TOL) return `netSavY3 ${Math.round(nsav)} != end-year savings ${Math.round(end.savings)}`;
+        return typeof rcost === 'number' && Math.abs(rcost - end.totalRunCost) > TOL
+          ? `runCostY3 ${Math.round(rcost)} != end-year run ${Math.round(end.totalRunCost)}` : null;
       } catch (e) { return fail('TE-HZN', e); }
     }),
     auditTry('CC-OV-01', () => {
       try { const m = model(c); return m._overlayError ? `model() fell back to the raw flat model: ${m._overlayError}` : null; }
       catch (e) { return `model() threw: ${e instanceof Error ? e.message : String(e)}`; }
     }),
-    auditTry('TE-DEP', () => (engineNow(c).K.curveModelId !== activeCurve(c) ? `TIME.current curve ${engineNow(c).K.curveModelId} != live ${activeCurve(c)}` : null)),
+    auditTry('TE-DEP', () =>
+      (engineNow(c).K.curveModelId !== activeCurve(c) ? `TIME.current curve ${engineNow(c).K.curveModelId} != live ${activeCurve(c)}` : null)),
   ];
 }

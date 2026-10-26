@@ -133,6 +133,21 @@ When releasing, follow [docs/BUMP_PROCEDURE.md](docs/BUMP_PROCEDURE.md) (§7 for
   the Excel results workbook does; `tests/ui/sot-screens.test.tsx` checks the rendered screens; `tests/domain/lot10-sot.test.ts` asserts each new
   rule.
 
+### Lot 10 — line length (D1: the 160 limit is real)
+
+- **`max-len` 160 no longer exempts literals.** `ignoreStrings`, `ignoreTemplateLiterals`, `ignoreRegExpLiterals` and `ignoreUrls` are gone (each
+  exempted any line that merely contained such a literal or a URL, so 1,266 lines of `src` and `tests` over 160 characters reported 0 warnings).
+  Comments count too. The one exemption left is a line that is nothing but a URL (`ignorePattern`). `npm run lint`: 0 errors, 0 warnings.
+- **Every line of `app/src` and `app/tests` is at most 160 characters** (1,266 lines before, 0 after): lists, JSX attributes and children,
+  conditions and chains wrapped at their natural break points, long string and template literals split with `+`. No behaviour change: every
+  reformatted file compiles and minifies to the same output as before (JSX text included), ui-parity 0 divergences.
+- Two test files would have passed 150 lines: their data tables moved to `tests/helpers/vueTuneCases.ts` and `tests/helpers/modelEngineSpecs.ts`;
+  the shell tests' common start (`tests/helpers/shellReset.ts`) replaces a clone that the wrapping made visible. Duplication baseline 66 clones /
+  496 lines (was 68 / 501; recorded with `npm run dup -- --update`, one fingerprint changed because its block moved into the new helper).
+- `tests/lint-rules.test.ts`: a 161-character line holding a string, a template or a regex literal, or a long comment, is reported; 160 is not; a
+  line that is only a URL is exempt, code holding a URL is not (the former "a long string: only the hard limit applies" assertion now asserts the
+  warning).
+
 ## [v20.18.1] 2026-10-25 — Architecture lot 9: tidy-up (no change to the app)
 
 - `tools/a11y.mjs` writes its default report to `test-results/a11y/report.json` (git-ignored): a local audit no longer rewrites a tracked file.

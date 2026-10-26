@@ -16,7 +16,8 @@ const customer = () => appStore().getState().doc.customerName;
 
 describe('io section', () => {
   it('shows every figure and heading the legacy section showed (4 fixtures)', () => {
-    expectParity('io', Io, { headings: ['Import / Export — all editable settings', '💾 Save HTML', '⬇️ Export / Import current settings', '🗂️ Snapshot Manager', '💾 Save HTML Snapshot', 'Download the entire application as a single standalone HTML file', '💾 Download HTML snapshot'] });
+    expectParity('io', Io, { headings: ['Import / Export — all editable settings', '💾 Save HTML', '⬇️ Export / Import current settings',
+      '🗂️ Snapshot Manager', '💾 Save HTML Snapshot', 'Download the entire application as a single standalone HTML file', '💾 Download HTML snapshot'] });
   });
   it('the HTML snapshot is enabled and the snapshot manager is available (the Excel settings tab is covered by io-params.test.tsx)', () => {
     render(<Io />);

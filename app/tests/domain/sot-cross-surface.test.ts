@@ -37,7 +37,8 @@ describe('one source of truth: the same figure on every surface (all fixtures)',
     expect(b.total).toBe(m.setupTotal);
     close(b.lines.reduce((a, l) => a + l.amount, 0), m.setupTotal, 'Σ lines = setupTotal');
     close(investmentLines(b).reduce((a, [, x]) => a + x, 0), m.setupTotal, 'Σ investment lines (Financial, Excel)');
-    expect([h.setup, economicsView(c).setup, resultsCore(c).setup, variable('setupTotal', c), reportData(state, new Date(0)).setup]).toEqual(Array(5).fill(m.setupTotal));
+    expect([h.setup, economicsView(c).setup, resultsCore(c).setup, variable('setupTotal', c), reportData(state, new Date(0)).setup])
+      .toEqual(Array(5).fill(m.setupTotal));
     close(resultsData(c).setupLines.reduce((a, [, x]) => a + x, 0), m.setupTotal, 'Excel Investment sheet lines');
   });
 

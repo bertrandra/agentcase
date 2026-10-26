@@ -38,7 +38,8 @@ export function fourProducts(): Portfolio {
   setProductNote(c, 'Starts in month 6'); setProductNote(d, 'Unscheduled');
   setProductOffset(b, 2);
   setPortfolioHub({ enabled: true, infraMonthly: 3000, infraAllocation: 'byBaseEtp' });
-  setProductKnowledge(b, { targetCC: 2, curationFTE: 1, setupBase: 90000, maturityAnswers: [1, 1, 2, 1, 2, 2, 1, 1, 2], domains: [{ label: 'Documentation', weightPct: 40 }, { label: 'Code', weightPct: 60 }] });
+  setProductKnowledge(b, { targetCC: 2, curationFTE: 1, setupBase: 90000, maturityAnswers: [1, 1, 2, 1, 2, 2, 1, 1, 2],
+    domains: [{ label: 'Documentation', weightPct: 40 }, { label: 'Code', weightPct: 60 }] });
   setProductKnowledge(c, { ktLeadMonths: 3, targetCC: 4, enabled: true, domains: [{ label: 'Operating procedures', weightPct: 100 }] });
   setActiveProduct(a);
   s.setHistory(EMPTY_HISTORY);

@@ -10,7 +10,8 @@ import { goSection, setFastPath, setMenuHidden, uiStore } from '@/ui/uiState';
 import { loadCase } from '../helpers/pdc';
 
 beforeEach(() => {
-  uiStore.setState({ activeSection: 'home', toast: '', dockOpen: false, menuHidden: false, openGroup: null, fastPath: false, wiz: { active: false, pos: 0, visited: [] } });
+  uiStore.setState({ activeSection: 'home', toast: '', dockOpen: false, menuHidden: false, openGroup: null, fastPath: false,
+    wiz: { active: false, pos: 0, visited: [] } });
   loadCase('golden');
   act(() => setPersona('advanced'));
 });

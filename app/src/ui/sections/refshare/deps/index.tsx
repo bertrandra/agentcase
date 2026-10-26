@@ -24,7 +24,8 @@ export default function DepsSection() {
     { id: 'graph', label: '🕸️ Dependency graph', render: () => (
       <div>
         <h2>Dependency graph <span className="ac-muted">— lanes run from inputs to results; click a node to highlight its upstream and downstream</span></h2>
-        <p className="ac-muted"><span data-mark="direct">→</span> {notes.legend.read} · <span data-mark="write">→</span> {notes.legend.write} · {notes.legend.back}</p>
+        <p className="ac-muted">
+          <span data-mark="direct">→</span> {notes.legend.read} · <span data-mark="write">→</span> {notes.legend.write} · {notes.legend.back}</p>
         <Panel sel={sel} onSelect={setSel} />
         <Graph sel={sel} onSelect={setSel} />
       </div>

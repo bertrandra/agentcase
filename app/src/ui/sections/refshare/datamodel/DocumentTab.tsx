@@ -39,7 +39,8 @@ export function DocumentTab() {
       <p className="ac-muted">Keys of the common case (the 💾 State registry tab lists all of them) that are optional or easy to misplace.</p>
       <DataTable caption="Common keys of note" rows={common} rowKey={(r) => r.key} columns={[
         { key: 'k', header: 'Key', render: (r) => <code>{r.key}</code> },
-        { key: 'p', header: 'In this document', render: (r) => (r.present ? '✓ present' : 'absent (default)') }, { key: 'w', header: 'What it holds', render: (r) => r.what },
+        { key: 'p', header: 'In this document', render: (r) => (r.present ? '✓ present' : 'absent (default)') },
+        { key: 'w', header: 'What it holds', render: (r) => r.what },
       ]} />
     </div>
   );

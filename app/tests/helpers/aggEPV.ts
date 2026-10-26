@@ -4,7 +4,8 @@ import type { MonthRow } from '@/domain/time/rows';
 export const sum = (xs: number[]): number => xs.reduce((a, b) => a + b, 0);
 
 /** The scopes every aggregate must serve: the Portfolio, then each wave that has planned products. */
-export const scopesOf = (pf: Portfolio): DisplayScope[] => [{ kind: 'portfolio' }, ...pf.waves.filter((w) => consolidate(pf).waves.find((x) => x.id === w.id)?.productIds.length).map((w): DisplayScope => ({ kind: 'wave', id: w.id }))];
+export const scopesOf = (pf: Portfolio): DisplayScope[] => [{ kind: 'portfolio' },
+  ...pf.waves.filter((w) => consolidate(pf).waves.find((x) => x.id === w.id)?.productIds.length).map((w): DisplayScope => ({ kind: 'wave', id: w.id }))];
 
 /** Planned products of a scope. */
 export const idsOf = (pf: Portfolio, scope: DisplayScope): string[] =>

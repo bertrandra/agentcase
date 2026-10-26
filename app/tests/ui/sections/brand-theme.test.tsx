@@ -19,7 +19,8 @@ afterEach(cleanup);
 describe('Brand & theme section', () => {
   it('lists the seven built-ins with their number and badges, Capgemini active', () => {
     render(<BrandTheme />);
-    const items = library().getAllByRole('button', { pressed: false }).concat(library().getAllByRole('button', { pressed: true })).filter((b) => b.classList.contains('ac-bt-item'));
+    const items = library().getAllByRole('button', { pressed: false }).concat(library().getAllByRole('button', { pressed: true }))
+      .filter((b) => b.classList.contains('ac-bt-item'));
     expect(items).toHaveLength(7);
     expect(library().getByRole('button', { pressed: true }).textContent).toMatch(/^1 Capgemini.*Built-in.*Active/);
     expect(library().getByRole('button', { name: /4 Rainbow/ }).textContent).toContain('Diagnostic');

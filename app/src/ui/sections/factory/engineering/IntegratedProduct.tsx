@@ -21,8 +21,10 @@ export function IntegratedProduct() {
         const gate = gates.find((g) => g.buildArtifactId === a.id);
         return (
           <label key={a.id} className="ac-check">
-            <input type="checkbox" aria-label={`Include ${String(a.name)}`} checked={included.has(a.id)} onChange={(e) => toggleIpArtifact(a.id, e.target.checked)} />
-            {String(a.name)} <span className="ac-muted">({String(a.type)} {String(a.version)})</span>{gate && <span data-ink={RESULT[String(gate.result)]}> {String(gate.result)}</span>}
+            <input type="checkbox" aria-label={`Include ${String(a.name)}`} checked={included.has(a.id)}
+              onChange={(e) => toggleIpArtifact(a.id, e.target.checked)} />
+            {String(a.name)} <span className="ac-muted">({String(a.type)} {String(a.version)})</span>
+            {gate && <span data-ink={RESULT[String(gate.result)]}> {String(gate.result)}</span>}
           </label>
         );
       }) : <p className="ac-muted">No build artifacts to include yet.</p>}

@@ -49,7 +49,8 @@ export const MODEL_CHECKS: [id: string, check: AuditCheck][] = [
     if (!flags(c).evt) return null;
     const derived = activeArtefacts(c.a, c.s).filter((a) => !c.s.MODEL.EVT.classMap[a.id]).length;
     return derived > 0
-      ? `${derived} in-scope artefact(s) using the derived default classification (no explicit MODEL.EVT.classMap override) — seed φ/κ values, review before quoting` : null;
+      ? `${derived} in-scope artefact(s) using the derived default classification (no explicit MODEL.EVT.classMap override) — seed φ/κ values, review ` +
+        `before quoting` : null;
   }],
   ['CC-VT-05', (c) => {
     if (!flags(c).evt) return null;

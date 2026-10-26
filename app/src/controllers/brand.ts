@@ -15,11 +15,14 @@ const clearCmd = defineCommand<Record<string, never>>({
   type: 'case.clearLogo', label: () => 'Remove the customer logo', run(d) { delete d.CUSTOMER_LOGO; },
 });
 const optionsCmd = defineCommand<{ backdrop?: LogoBackdrop; hidden?: boolean }>({
-  type: 'case.setLogoOptions', label: (p) => (p.hidden !== undefined ? `${p.hidden ? 'Hide' : 'Show'} the customer logo` : `Logo backdrop: ${p.backdrop === 'pill' ? 'white pill' : 'none'}`),
+  type: 'case.setLogoOptions',
+  label: (p) => (p.hidden !== undefined ? `${p.hidden ? 'Hide' : 'Show'} the customer logo`
+    : `Logo backdrop: ${p.backdrop === 'pill' ? 'white pill' : 'none'}`),
   run(d, p) {
     const l = logoOf(d);
     if (!l) return;
-    d.CUSTOMER_LOGO = { ...l, ...(p.backdrop ? { backdrop: p.backdrop === 'pill' ? 'pill' : 'none' } : {}), ...(p.hidden !== undefined ? { hidden: !!p.hidden } : {}) };
+    d.CUSTOMER_LOGO = { ...l, ...(p.backdrop ? { backdrop: p.backdrop === 'pill' ? 'pill' : 'none' } : {}),
+      ...(p.hidden !== undefined ? { hidden: !!p.hidden } : {}) };
   },
 });
 

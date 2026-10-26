@@ -10,8 +10,9 @@ import { rescueFocus } from '@/ui/focusRescue';
 import { App } from '@/ui/App';
 import { uiStore } from '@/ui/uiState';
 import { loadCase } from '../helpers/pdc';
+import { resetShell } from '../helpers/shellReset';
 
-beforeEach(() => { uiStore.setState({ activeSection: 'home', toast: '', dockOpen: false, menuHidden: false, wiz: { active: false, pos: 0, visited: [] } }); loadCase('golden'); });
+beforeEach(resetShell);
 afterEach(() => { cleanup(); dismissRestore(); document.body.innerHTML = ''; });
 const bar = () => within(screen.getByRole('region', { name: 'Guided sequence' }));
 const focused = () => document.activeElement as HTMLElement;

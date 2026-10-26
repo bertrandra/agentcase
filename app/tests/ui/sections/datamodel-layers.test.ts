@@ -58,7 +58,8 @@ describe('Data Model: every documented layer is introspected from the code', () 
   });
   it('every documented field has its one-line meaning and every meaning names a field', () => {
     const lists: [keyof typeof texts, readonly string[]][] = [['portfolio', keys(F.PORTFOLIO_FIELDS)], ['product', keys(F.PRODUCT_FIELDS)],
-      ['wave', keys(F.WAVE_FIELDS)], ['dependency', keys(F.WAVE_DEPENDENCY_FIELDS)], ['sharedTeam', keys(F.SHARED_TEAM_LINE_FIELDS)], ['hub', keys(F.HUB_FIELDS)],
+      ['wave', keys(F.WAVE_FIELDS)], ['dependency', keys(F.WAVE_DEPENDENCY_FIELDS)], ['sharedTeam', keys(F.SHARED_TEAM_LINE_FIELDS)],
+      ['hub', keys(F.HUB_FIELDS)],
       ['knowledge', keys(F.KNOWLEDGE_SUBSET_FIELDS)], ['autosave', keys(AUTOSAVE_RECORD_FIELDS)], ['broadcast', [...BROADCAST_FIELDS].sort()],
       ['view', [...VIEW_FIELDS].sort()]];
     for (const [g, fields] of lists) expect(keys(texts[g]), g).toEqual(fields);

@@ -10,7 +10,8 @@ import { parityTests } from '../../helpers/verifyA';
 
 beforeEach(() => { freshStore(); });
 afterEach(cleanup);
-const cells = (c: HTMLElement, t: number) => [...c.querySelectorAll('table')[t]!.querySelectorAll('tbody tr')].map((r) => [...r.children].map((x) => x.textContent));
+const cells = (c: HTMLElement, t: number) =>
+  [...c.querySelectorAll('table')[t]!.querySelectorAll('tbody tr')].map((r) => [...r.children].map((x) => x.textContent));
 
 /** the legacy "Y1 Q1-Q2" ramp of golden, 13 % = half of the Y1 end adoption (v19: the engine adoption at month 6) */
 const IGNORE = [13];

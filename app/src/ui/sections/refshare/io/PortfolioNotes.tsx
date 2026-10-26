@@ -20,9 +20,11 @@ export function ParamsNote() {
   return (
     <Note title="Portfolio: what the parameters workbook contains" items={[
       'The usual sheets describe the common case (shared defaults).',
-      '"Export all" adds, to the parameters workbook: PortfolioSettings (hub, horizon, start date), Products, Waves, TeamIn (one team per product, a Product column), Overrides (product, key, JSON value), KnowledgeSubsets and KnowledgeDomains.',
+      '"Export all" adds, to the parameters workbook: PortfolioSettings (hub, horizon, start date), Products, Waves, TeamIn (one team per product, a ' +
+        'Product column), Overrides (product, key, JSON value), KnowledgeSubsets and KnowledgeDomains.',
       '"Export all except Factory" and "Export persona config only" stay as they are, without the portfolio sheets.',
-      'Importing a workbook with a Products sheet replaces the whole portfolio in one undoable step; a problem in any row refuses the file and leaves the case untouched.',
+      'Importing a workbook with a Products sheet replaces the whole portfolio in one undoable step; a problem in any row refuses the file and leaves the ' +
+        'case untouched.',
     ]} />
   );
 }

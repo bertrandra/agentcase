@@ -14,7 +14,8 @@ import { LivePreview } from './LivePreview';
  * drag or arrows reorder for this persona only.
  */
 export function PersonaLayout({ personas, lists }: { personas: Persona[]; lists: Record<string, string[]> }) {
-  const { order, view, structureOfPersona } = useNavModel(), editable = personasByOrder(personas).filter((p) => !p.protected), [sel, setSel] = useState(''), [pending, setPending] = useState<Pending | null>(null);
+  const { order, view, structureOfPersona } = useNavModel(), editable = personasByOrder(personas).filter((p) => !p.protected), [sel, setSel] = useState(''),
+    [pending, setPending] = useState<Pending | null>(null);
   const pid = editable.some((p) => p.id === sel) ? sel : editable[0]?.id ?? '', assigned = lists[pid] ?? [], on = (id: string) => assigned.includes(id);
   const { sections, groups, colors } = view(structureOfPersona(pid));   // the board follows the persona's own menu structure
   const label = (id: string) => sections.find((s) => s.id === id)?.label ?? id;
@@ -26,12 +27,16 @@ export function PersonaLayout({ personas, lists }: { personas: Persona[]; lists:
     <>
       <label className="ac-field"><span className="ac-field-l">Persona</span>
         <select value={pid} onChange={(e) => setSel(e.target.value)}>{editable.map((p) => <option key={p.id} value={p.id}>{p.label}</option>)}</select></label>
-      <p className="ac-muted">{assigned.length} section(s) assigned. Double-click a card to assign or remove it; drag (or ↑ ↓) to order it inside its group for this persona only.</p>
+      <p className="ac-muted">{assigned.length} section(s) assigned. Double-click a card to assign or remove it; drag (or ↑ ↓) to order it inside its group for
+        this persona only.</p>
       <Board label="Persona layout" cols={cols} colors={colors} canDrag={(s) => on(s.id)} onPending={setPending}
         cardClass={(s) => (on(s.id) ? '' : 'is-off')} cardExtra={(s) => on(s.id) && <small className="ac-ok-text">✓ assigned</small>}
         onDouble={(id) => assignSection(pid, id, !on(id))}
-        onDrop={(id, group, index) => { if (on(id) && sections.find((s) => s.id === id)?.group === group) setPersonaSectionOrder(`Reorder ${label(id)} for ${pid}`, pid, placeForPersona(sections, pid, order, id, index)); }}
-        onShift={(id, dir) => setPersonaSectionOrder(`Move ${label(id)} ${dir < 0 ? 'up' : 'down'} for ${pid}`, pid, shiftForPersona(sections, pid, order, id, dir))} />
+        onDrop={(id, group, index) => { if (on(id) &&
+          sections.find((s) => s.id === id)?.group === group) setPersonaSectionOrder(`Reorder ${label(id)} for ${pid}`, pid,
+          placeForPersona(sections, pid, order, id, index)); }}
+        onShift={(id, dir) => setPersonaSectionOrder(`Move ${label(id)} ${dir < 0 ? 'up' : 'down'} for ${pid}`, pid,
+          shiftForPersona(sections, pid, order, id, dir))} />
       <LivePreview persona={editable.find((p) => p.id === pid)} preview={preview} colors={colors} pending={!!valid} />
     </>
   );

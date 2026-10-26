@@ -24,7 +24,8 @@ function captureDownloads() {
 describe('Excel parameters panel (Import / Export → settings)', () => {
   it('offers the three exports and the import, all enabled', () => {
     openTab();
-    for (const label of ['⬇️ Export all', '⬇️ Export all except Factory', '⬇️ Export persona config only', '⬆️ Import parameters…']) expect((screen.getByRole('button', { name: label }) as HTMLButtonElement).disabled).toBe(false);
+    for (const label of ['⬇️ Export all', '⬇️ Export all except Factory', '⬇️ Export persona config only',
+      '⬆️ Import parameters…']) expect((screen.getByRole('button', { name: label }) as HTMLButtonElement).disabled).toBe(false);
     expect(screen.queryByText(/available in a later release/)).toBeNull();
     expect((screen.getByLabelText('Settings workbook (.xlsx)') as HTMLInputElement).accept).toBe('.xlsx');
   });
@@ -61,7 +62,8 @@ describe('Excel parameters panel (Import / Export → settings)', () => {
   });
   it('a bad file is reported, the case is untouched and nothing is on the undo stack', async () => {
     openTab();
-    fireEvent.change(screen.getByLabelText('Settings workbook (.xlsx)'), { target: { files: [xlsxFile('bad.xlsx', new TextEncoder().encode('definitely not a workbook').buffer as ArrayBuffer)] } });
+    fireEvent.change(screen.getByLabelText('Settings workbook (.xlsx)'),
+      { target: { files: [xlsxFile('bad.xlsx', new TextEncoder().encode('definitely not a workbook').buffer as ArrayBuffer)] } });
     expect(await screen.findByText(/✗ Import failed: .*The case was not changed\./, undefined, { timeout: 15000 })).toBeTruthy();
     expect(appStore().getState().history.undo).toHaveLength(0);
     expect(industry()).toBe('NONE');

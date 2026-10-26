@@ -16,10 +16,15 @@ export function ScopeKpis({ label, h }: { label: string; h: PortfolioHeadline })
       <Kpi label="Scope" value={label} tone="grey" title={`Scope of the figures: ${who}. Change it with “Show” in the top bar.`} />
       <HeadlineTiles f={f} titles={{
         fteBefore: `${who}: total AS-IS headcount, summed over the products (FTE).`,
-        fteAfter: `${who}: total human FTE at each product's horizon end (delivery plus agentic run team), summed over the products. Reduction: ${fmtPct(fte.reductionPct)}.`,
+        fteAfter:
+          `${who}: total human FTE at each product's horizon end (delivery plus agentic run team), summed over the products. ` +
+            `Reduction: ${fmtPct(fte.reductionPct)}.`,
         savings: `${who}: savings of calendar year ${e.index} (the horizon end), summed over the products, each shifted to its own start.`,
         run: `${who}: to-be run cost of calendar year ${e.index}, summed over the products.`,
-        saving: cr.ok ? `${who}: net cost reduction over the horizon, (savings − setup) / baseline cost summed over the products: baseline ${fmtEurK(cr.base)} vs ${fmtEurK(cr.tobe)} to-be (incl. ${fmtEurK(cr.setup)} setup). Excluding setup: ${fmtPct(cr.gross * 100)}.` : `${who}: no baseline cost.`,
+        saving:
+          cr.ok
+          ? `${who}: net cost reduction over the horizon, (savings − setup) / baseline cost summed over the products: baseline ${fmtEurK(cr.base)} ` +
+            `vs ${fmtEurK(cr.tobe)} to-be (incl. ${fmtEurK(cr.setup)} setup). Excluding setup: ${fmtPct(cr.gross * 100)}.` : `${who}: no baseline cost.`,
         velocity: `${who}: delivery velocity uplift at the horizon end, averaged over the products weighted by their entry headcount.`,
         payback: `${who}: first calendar month in which the cumulative net cash flow of the scope, setup included, turns positive (month 1 = portfolio start).`,
         eff: `${who}: effective automation averaged over the products weighted by their entry headcount.`,
