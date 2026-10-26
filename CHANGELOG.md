@@ -15,7 +15,7 @@ All notable changes to AgentCase, newest first. Product version from v19.0.0 = t
 
 When releasing, follow [docs/BUMP_PROCEDURE.md](docs/BUMP_PROCEDURE.md) (§7 for the legacy file) and add the new version at the top.
 
-## [Unreleased]
+## [v20.19.0] 2026-10-26 — Architecture lot 10: audit fixes, one source of truth for every figure, live Data Model, real 160-character limit
 
 ### Lot 10 — store, sync, persistence, layer lint
 
