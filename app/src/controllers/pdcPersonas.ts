@@ -34,7 +34,8 @@ const duplicateCmd = defineCommand<{ id: string; catalogue: string[] }>({
     if (!src) return;
     const copy = duplicateOf(src, personas(d).map((x) => x.id), maxOrder(personas(d)));
     personas(d).push(copy);
-    sections(d)[copy.id] = (p.id === 'advanced' ? p.catalogue : sections(d)[p.id] ?? []).slice();   // Advanced has no list of its own: it sees the whole catalogue
+    sections(d)[copy.id] =
+      (p.id === 'advanced' ? p.catalogue : sections(d)[p.id] ?? []).slice();   // Advanced has no list of its own: it sees the whole catalogue
   },
 });
 const deleteCmd = defineCommand<{ id: string }>({
@@ -61,7 +62,8 @@ const compactCmd = defineCommand<{ id: string; on: boolean }>({
 });
 const defaultCmd = defineCommand<{ id: string }>({
   type: 'persona.setDefault', label: (p) => `Open the app on the persona ${p.id}`,
-  run(d, p) { if (personas(d).some((x) => x.id === p.id)) d.PERSONAS = personas(d).map((x) => (x.id === p.id ? { ...x, default: true } : omit(x, 'default'))); },
+  run(d, p) { if (personas(d).some((x) => x.id === p.id)) d.PERSONAS =
+    personas(d).map((x) => (x.id === p.id ? { ...x, default: true } : omit(x, 'default'))); },
 });
 const addSectionCmd = defineCommand<{ persona: string; section: string }>({
   type: 'persona.addSection', label: (p) => `Add ${p.section} to the menu of ${p.persona}`,
@@ -91,15 +93,18 @@ const deleteGroupCmd = defineCommand<{ id: string } & In>({
   run(d, p) { const l = groupsIn(d, p.structure); if (l) setGroupsIn(d, p.structure, l.filter((x) => x.id !== p.id)); },
 });
 const groupOrderCmd = defineCommand<{ id: string; order: number } & In>({
-  type: 'persona.setGroupOrder', label: (p) => `Set the order of the menu group ${p.id} to ${p.order}${inStructure(p.structure)}`, coalesceKey: (p) => `persona.setGroupOrder:${p.structure ? `${p.structure}:` : ''}${p.id}`,
+  type: 'persona.setGroupOrder', label: (p) => `Set the order of the menu group ${p.id} to ${p.order}${inStructure(p.structure)}`,
+  coalesceKey: (p) => `persona.setGroupOrder:${p.structure ? `${p.structure}:` : ''}${p.id}`,
   run(d, p) { const g = groupsIn(d, p.structure)?.find((x) => x.id === p.id); if (g && !isNaN(p.order)) g.order = p.order; },
 });
 const groupDescCmd = defineCommand<{ id: string; description: string } & In>({
-  type: 'persona.setGroupDescription', label: (p) => `Describe the menu group ${p.id}${inStructure(p.structure)}`, coalesceKey: (p) => `persona.setGroupDescription:${p.structure ? `${p.structure}:` : ''}${p.id}`,
+  type: 'persona.setGroupDescription', label: (p) => `Describe the menu group ${p.id}${inStructure(p.structure)}`,
+  coalesceKey: (p) => `persona.setGroupDescription:${p.structure ? `${p.structure}:` : ''}${p.id}`,
   run(d, p) { const g = groupsIn(d, p.structure)?.find((x) => x.id === p.id); if (g) g.description = p.description; },
 });
 const groupColorCmd = defineCommand<{ id: string; color: string } & In>({
-  type: 'persona.setGroupColor', label: (p) => `Set the colour of the menu group ${p.id}${inStructure(p.structure)}`, coalesceKey: (p) => `persona.setGroupColor:${p.structure ? `${p.structure}:` : ''}${p.id}`,
+  type: 'persona.setGroupColor', label: (p) => `Set the colour of the menu group ${p.id}${inStructure(p.structure)}`,
+  coalesceKey: (p) => `persona.setGroupColor:${p.structure ? `${p.structure}:` : ''}${p.id}`,
   run(d, p) { if (/^#[0-9a-fA-F]{3,8}$/.test(p.color)) setColorIn(d, p.structure, p.id, p.color); },
 });
 

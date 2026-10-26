@@ -7,7 +7,8 @@ import { LazySelect } from '@/ui/widgets/LazySelect';
 import { Badge, Panel } from '@/ui/widgets/cards';
 import { nameOptions, useList, useRecs } from '../data';
 
-const TYPES: { value: ReleaseItemType; label: string }[] = [{ value: 'Story', label: 'Story' }, { value: 'Feature', label: 'Feature' }, { value: 'Fix', label: 'Fix' }, { value: 'TechnicalChange', label: 'Technical Change' }];
+const TYPES: { value: ReleaseItemType; label: string }[] = [{ value: 'Story', label: 'Story' }, { value: 'Feature', label: 'Feature' },
+  { value: 'Fix', label: 'Fix' }, { value: 'TechnicalChange', label: 'Technical Change' }];
 
 /** The editor adding one item to a release: a Story / Feature picked from the model, or a Fix / Technical Change described in words. */
 function NewItem({ releaseId }: { releaseId: string }) {
@@ -21,10 +22,13 @@ function NewItem({ releaseId }: { releaseId: string }) {
   };
   return (
     <div className="ac-form-row">
-      <select aria-label="New item type" value={type} onChange={(e) => { setType(e.target.value as ReleaseItemType); setPick(''); }}>{TYPES.map((t) => <option key={t.value} value={t.value}>{t.label}</option>)}</select>
+      <select aria-label="New item type" value={type} onChange={(e) => { setType(e.target.value as ReleaseItemType); setPick(''); }}>
+        {TYPES.map((t) => <option key={t.value} value={t.value}>{t.label}</option>)}</select>
       {linked
-        ? <LazySelect ariaLabel="Item to add" emptyLabel={`(pick a ${type.toLowerCase()})`} value={pick} onChange={setPick} options={nameOptions(type === 'Story' ? stories : features)} />
-        : <input type="text" aria-label="Item description" placeholder={`Describe the ${type.toLowerCase()}…`} value={text} onChange={(e) => setText(e.target.value)} />}
+        ? <LazySelect ariaLabel="Item to add" emptyLabel={`(pick a ${type.toLowerCase()})`} value={pick} onChange={setPick}
+          options={nameOptions(type === 'Story' ? stories : features)} />
+        : <input type="text" aria-label="Item description" placeholder={`Describe the ${type.toLowerCase()}…`} value={text}
+          onChange={(e) => setText(e.target.value)} />}
       <button type="button" onClick={add}>+ Add item</button>
     </div>
   );
@@ -37,7 +41,9 @@ function NewItem({ releaseId }: { releaseId: string }) {
 export function Releases() {
   const releases = useRecs('RELEASES'), items = useList<ReleaseItem>('RELEASE_ITEMS'), stories = useRecs('STORIES'), features = useRecs('FEATURES');
   const [open, setOpen] = useState<Record<string, boolean>>({});
-  const nameOf = (it: ReleaseItem) => String(it.itemType === 'Story' ? stories.find((s) => s.id === it.itemId)?.name ?? '(deleted story)' : it.itemType === 'Feature' ? features.find((f) => f.id === it.itemId)?.name ?? '(deleted feature)' : it.label ?? '');
+  const nameOf = (it: ReleaseItem) =>
+    String(it.itemType === 'Story' ? stories.find((s) => s.id === it.itemId)?.name ?? '(deleted story)'
+    : it.itemType === 'Feature' ? features.find((f) => f.id === it.itemId)?.name ?? '(deleted feature)' : it.label ?? '');
   return (
     <Panel title="📦 Releases" aside={<small className="ac-muted">polymorphic — includes Stories, Features, Fixes, Technical Changes</small>}>
       <div className="ac-table-wrap" tabIndex={0}>
@@ -49,8 +55,10 @@ export function Releases() {
               return (
                 <Fragment key={r.id}>
                   <tr>
-                    <td><input type="text" aria-label={`Name of ${name}`} className="ac-fill" value={name} onChange={(e) => setField('RELEASES', r.id, 'name', e.target.value)} /></td>
-                    <td><button type="button" aria-expanded={!!open[r.id]} onClick={() => setOpen({ ...open, [r.id]: !open[r.id] })}>{open[r.id] ? '▼' : '▶'} {mine.length} item(s)</button></td>
+                    <td><input type="text" aria-label={`Name of ${name}`} className="ac-fill" value={name}
+                      onChange={(e) => setField('RELEASES', r.id, 'name', e.target.value)} /></td>
+                    <td><button type="button" aria-expanded={!!open[r.id]} onClick={() => setOpen({ ...open, [r.id]: !open[r.id] })}>
+                      {open[r.id] ? '▼' : '▶'} {mine.length} item(s)</button></td>
                     <td><ConfirmButton label="🗑" onConfirm={() => removeRecord('RELEASES', r.id)} /></td>
                   </tr>
                   {open[r.id] && (

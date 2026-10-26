@@ -13,7 +13,8 @@ const columns: Column<Row>[] = [
   { key: 'ref', header: 'Reference subchapter', render: (r) => <strong>{r.ref}</strong> },
   { key: 'summary', header: 'Summary', render: (r) => r.summary },
   { key: 'status', header: 'Coverage', align: 'center', render: (r) => <Badge tone={TONE[r.status as keyof typeof TONE]}>{r.statusLabel}</Badge> },
-  { key: 'to', header: 'Section', align: 'center', render: (r) => <button type="button" className="ac-golink" onClick={() => goSection(r.to)}>{r.label} →</button> },
+  { key: 'to', header: 'Section', align: 'center',
+    render: (r) => <button type="button" className="ac-golink" onClick={() => goSection(r.to)}>{r.label} →</button> },
 ];
 
 /** Reference Map — coverage of the Software Engineering Delivery Model 2026 by AgentCase, one row per subchapter. */

@@ -46,7 +46,8 @@ export function Summary({ m }: { m: DdModel }) {
         </div>
       )}
       {belowAdvisoryFloor(wPct)
-        && <Callout kind="warn">{m.endLabel} savings rest on <strong>{100 - (wPct as number)}% unconfirmed input weight</strong>. Below the {DD_ADVISORY_FLOOR_PCT}% advisory floor — this is a banner,
+        && <Callout kind="warn">{m.endLabel} savings rest on <strong>{100 - (wPct as number)}% unconfirmed input weight</strong>. Below
+          the {DD_ADVISORY_FLOOR_PCT}% advisory floor — this is a banner,
         not a gate (spec Q11).</Callout>}
       <PackButtons />
       <div className="ac-form-row">
@@ -61,7 +62,8 @@ export function Summary({ m }: { m: DdModel }) {
         ? <>Weighted coverage answers the only question that matters: <strong>how much of the euro result rests on something nobody has
           checked.</strong> Item count is shown alongside because a high item percentage with low weighted coverage means the easy things were
           confirmed and the load-bearing ones were not.</>
-        : 'Item count over-credits cheap confirmations. Run the sensitivity measurement to weight this by euro impact — until then, read it as progress, not as model confidence.'}</p>
+        : 'Item count over-credits cheap confirmations. Run the sensitivity measurement to weight this by euro impact — until then, read it as progress, ' +
+          'not as model confidence.'}</p>
     </>
   );
 }

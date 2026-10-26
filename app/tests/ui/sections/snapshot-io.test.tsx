@@ -99,7 +99,8 @@ describe('Snapshot Manager tab', () => {
     render(<Io />); tab('🗂️ Snapshot Manager');
     fireEvent.click(screen.getByText('📸 Capture current configuration'));
     fireEvent.change(screen.getByLabelText('With'), { target: { value: lib()[0]!.id } });
-    const first = () => within(screen.getByRole('table', { name: 'Snapshot comparison' })).getByText('Net savings, end-year').closest('tr')!.children[1]!.textContent;
+    const first = () => within(screen.getByRole('table', { name: 'Snapshot comparison' })).getByText('Net savings, end-year')
+      .closest('tr')!.children[1]!.textContent;
     const captured = first();
     act(() => { setAgentSup('A017', 100); });
     const edited = first();

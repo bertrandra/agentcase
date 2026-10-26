@@ -14,7 +14,11 @@ export function loadFixture(id: string): AppStore {
   setAppStore(s);
   return s;
 }
-export const expectedModel = (id: string) => JSON.parse(readFileSync(`fixtures/expected/${id}.json`, 'utf8')).model as { yearSav: number[]; yearRun: number[]; ramps: number[]; auto: number; ceiling: number; eff: number };
+export const expectedModel =
+  (id: string) =>
+  JSON.parse(
+  readFileSync(`fixtures/expected/${id}.json`,
+  'utf8')).model as { yearSav: number[]; yearRun: number[]; ramps: number[]; auto: number; ceiling: number; eff: number };
 export const modelOf = (s: AppStore) => computeCase(s.getState().doc).model;
 
 /** Assert the live case reproduces the legacy figures of oracle fixture `id` (all three yearly savings, to 1e-6). */

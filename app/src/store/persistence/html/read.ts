@@ -14,5 +14,6 @@ export function readEmbeddedCase(d: Pick<Document, 'getElementById'>): EmbeddedC
   if (!el) return null;
   const raw = JSON.parse(el.textContent ?? '') as Record<string, unknown>;
   const { portfolio, notes } = openChecked(raw);
-  return { portfolio, doc: resolveProduct(portfolio, portfolio.activeProductId) as Doc, savedAt: typeof raw.savedAt === 'string' ? raw.savedAt : '', raw, notes };
+  return { portfolio, doc: resolveProduct(portfolio, portfolio.activeProductId) as Doc, savedAt: typeof raw.savedAt === 'string' ? raw.savedAt : '', raw,
+    notes };
 }

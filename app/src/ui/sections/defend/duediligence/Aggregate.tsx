@@ -6,7 +6,8 @@ import { R, RollupFrame } from '../../stress/AggParts';
 import { DueDiligenceDetail } from './AggregateDetail';
 
 const COLS: AggColumn<DdProductRow>[] = [
-  { key: 'items', header: 'Items to confirm', align: R, render: (r) => r.items }, { key: 'done', header: 'Confirmed or waived', align: R, render: (r) => r.confirmed },
+  { key: 'items', header: 'Items to confirm', align: R, render: (r) => r.items },
+  { key: 'done', header: 'Confirmed or waived', align: R, render: (r) => r.confirmed },
   { key: 'open', header: 'Still open', align: R, render: (r) => r.open }, { key: 'pct', header: 'Coverage (items)', align: R, render: (r) => `${r.pct}%` },
   { key: 'pc5', header: 'Editable nowhere (PC5)', align: R, title: 'Embedded coefficients that no screen can change', render: (r) => r.invisible },
   { key: 'ceil', header: 'Glass ceiling confirmed', align: R, render: (r) => (r.ceilCover === null ? 'n/a' : `${Math.round(r.ceilCover * 100)}%`) },

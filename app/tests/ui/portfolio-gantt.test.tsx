@@ -21,7 +21,8 @@ describe('Gantt: wave rows (F18)', () => {
     expect(wavePanel()).toBeNull();
     expect(document.querySelector('[data-gantt-offset]')!.textContent).toContain('Portfolio calendar: Product 1 starts');
     act(() => { fireEvent.change(screen.getByRole('combobox', { name: 'Show' }), { target: { value: `product:${ids[2]}` } }); });
-    expect(document.querySelector('[data-gantt-offset]')!.textContent).toContain(`C starts ${portfolioGantt(pf(), consolidate(pf())).waves[1]!.products[0]!.meta.replace(/^starts /, '').split(' (')[0]}`);
+    expect(document.querySelector('[data-gantt-offset]')!.textContent).toContain(
+      `C starts ${portfolioGantt(pf(), consolidate(pf())).waves[1]!.products[0]!.meta.replace(/^starts /, '').split(' (')[0]}`);
   });
 
   it('Portfolio scope: one bar row per wave, focusable groups with labels; expandable to products with their milestones', async () => {

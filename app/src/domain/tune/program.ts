@@ -56,8 +56,11 @@ export const ipSynthesis = (c: Ctx) => { const key = engagementKey(c); return { 
 /** EV-14 maturity transition criteria. */
 export const TRANSITIONS: [string, string][] = [
   ['L1 → L2', 'Team rules & shared prompts in place; agents used on ≥ 1 activity; basic guardrails; positive first-value signal'],
-  ['L2 → L3', 'Agent-recommendation acceptance ≥ 90%; human override 5–15%; 0 P1 incident caused by an agent; all gates green for 90 days; Design Authority approval'],
-  ['L3 → L4', 'Multi-agent orchestration stable; autonomous within bounded scope; measured value at scale; AI Office + Design Authority sign-off; governance & audit in place'],
+  ['L2 → L3',
+    'Agent-recommendation acceptance ≥ 90%; human override 5–15%; 0 P1 incident caused by an agent; all gates green for 90 days; Design Authority approval'],
+  ['L3 → L4',
+    'Multi-agent orchestration stable; autonomous within bounded scope; measured value at scale; AI Office + Design Authority sign-off; governance & audit ' +
+      'in place'],
 ];
 export const currentLevel = (c: Ctx): number => maturityInfo(c).capped;
 

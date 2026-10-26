@@ -21,7 +21,8 @@ export function wave1Checks(c: Ctx): ConvCheck[] {
     wave('CC-ABQ-01', over === 0, over === 0 ? 'all phases within addressable' : `${over} phase(s) exceed`),
     wave('CC-ABQ-02', taxOk, taxApplied ? 'tax applied, savings stay ≥ net' : 'tax not applied (neutral)'),
     wave('CC-PROF-01', pillarKey(c) === prof, `profile ${prof} @pos ${Math.round(c.s.lifecyclePos)} drives weights + potential matrix`),
-    wave('CC-ABQ-03', netOk, `need ${Math.round(need * 100)}% − retained ${Math.round(kept * 100)}% → excess ${Math.round(Math.max(0, need - kept) * 100)}% (${mode} mode)`),
+    wave('CC-ABQ-03', netOk,
+      `need ${Math.round(need * 100)}% − retained ${Math.round(kept * 100)}% → excess ${Math.round(Math.max(0, need - kept) * 100)}% (${mode} mode)`),
   ];
 }
 

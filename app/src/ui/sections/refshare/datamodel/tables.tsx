@@ -8,7 +8,8 @@ import { COEF_ROWS, VARIABLES, nsRows, nsState, stateRows, type StateRow } from 
 
 const Link = ({ id }: { id: string }) => {
   const s = sectionById(id);
-  return s ? <button type="button" className="ac-golink" onClick={() => goSection(id)}>{s.label}</button> : <span className="ac-muted">{id || 'not yet exposed'}</span>;
+  return s ? <button type="button" className="ac-golink" onClick={() => goSection(id)}>{s.label}</button>
+    : <span className="ac-muted">{id || 'not yet exposed'}</span>;
 };
 
 /** Sections grouped by menu group in build order. */
@@ -42,7 +43,8 @@ export function StateTab() {
   return (
     <div>
       <h2>State registry <span className="ac-muted">— {rows.length} keys of the case, what a snapshot, the autosave and the Excel round-trip carry</span></h2>
-      <p className="ac-muted">Live: the keys, types and sizes of the active product's effective case as a saved file writes it (common values + its overrides, knowledge
+      <p className="ac-muted">Live: the keys, types and sizes of the active product's effective case as a saved file writes it (common values + its overrides,
+        knowledge
         subset and entry team; <code>currentPersona</code> is the persona the file opens on). An optional key that is unset (for example the themes) is absent
         until it is first written. The portfolio around the case is in the 🗂️ Document tab.</p>
       <DataTable<StateRow> rows={rows} rowKey={(r) => r.key} columns={[
@@ -62,7 +64,8 @@ export function VariablesTab() {
         stored — it is recomputed from the live case whenever a card shows it.</p>
       <DataTable rows={VARIABLES} rowKey={(v) => v[0]} columns={[
         { key: 'id', header: 'Id', render: (v) => <code>{v[0]}</code> }, { key: 'label', header: 'Label', render: (v) => v[1] },
-        { key: 'format', header: 'Format', render: (v) => v[2] }, { key: 'unit', header: 'Unit', render: (v) => v[3] }, { key: 'scope', header: 'Scope', render: (v) => v[4] },
+        { key: 'format', header: 'Format', render: (v) => v[2] }, { key: 'unit', header: 'Unit', render: (v) => v[3] },
+        { key: 'scope', header: 'Scope', render: (v) => v[4] },
       ]} />
     </div>
   );
@@ -82,7 +85,9 @@ export function ModelTab() {
       ]} />
       <h2>MODEL namespaces <span className="ac-muted">— {NS_ROWS.length} namespaces holding everything not a per-section input</span></h2>
       <DataTable rows={NS_ROWS} rowKey={(r) => r[0]} columns={[
-        { key: 'ns', header: 'Namespace', render: (r) => <><code>{r[0]}</code> {nsState(doc, r[0]).on !== null && <Badge tone={nsState(doc, r[0]).on ? 'teal' : 'grey'}>{nsState(doc, r[0]).on ? 'on' : 'off'}</Badge>}</> },
+        { key: 'ns', header: 'Namespace',
+          render: (r) => <><code>{r[0]}</code> {nsState(doc, r[0]).on !== null &&
+          <Badge tone={nsState(doc, r[0]).on ? 'teal' : 'grey'}>{nsState(doc, r[0]).on ? 'on' : 'off'}</Badge>}</> },
         { key: 'what', header: 'What it holds', render: (r) => r[1] },
         { key: 'fields', header: 'Live fields', align: 'center', render: (r) => `${nsState(doc, r[0]).fields} fields` },
         { key: 'home', header: 'Home section', align: 'center', render: (r) => <Link id={r[2]} /> },

@@ -9,9 +9,11 @@ export function NavStyle() {
   const { style } = useNavModel();
   return (
     <div role="radiogroup" aria-label="Sidebar section display">
-      <p className="ac-muted">Buttons: small bordered pills in a wrapping row (default). Tabs: an underlined tab strip for the same sections. Used by the group bar of the hide-menu mode.</p>
+      <p className="ac-muted">Buttons: small bordered pills in a wrapping row (default). Tabs: an underlined tab strip for the same sections. Used by the group
+        bar of the hide-menu mode.</p>
       {(['buttons', 'tabs'] as const).map((s) => (
-        <label key={s} className="ac-navstyle-opt"><input type="radio" name="navStyle" checked={style === s} onChange={() => setSectionNavStyle(s)} /> {s === 'tabs' ? 'Tabs' : 'Buttons'}</label>
+        <label key={s} className="ac-navstyle-opt">
+          <input type="radio" name="navStyle" checked={style === s} onChange={() => setSectionNavStyle(s)} /> {s === 'tabs' ? 'Tabs' : 'Buttons'}</label>
       ))}
     </div>
   );

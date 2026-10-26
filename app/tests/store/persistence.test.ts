@@ -73,7 +73,8 @@ describe('multi-tab', () => {
   it('remote changes move the document but never the local undo stack', () => {
     const A = createAppStore(makeDefaultDoc(), { now: () => 0 }), B = createAppStore(makeDefaultDoc(), { now: () => 0 });
     const [ca, cb] = pair(); connectBroadcast(A, ca, 'A'); connectBroadcast(B, cb, 'B');
-    const set = (s: typeof A, v: string) => s.batch('x', [{ type: 'input.set', payload: v, label: 'x', undoable: true, run: (d) => { d.dom.values.y1Ramp = v; } }]);
+    const set = (s: typeof A, v: string) =>
+      s.batch('x', [{ type: 'input.set', payload: v, label: 'x', undoable: true, run: (d) => { d.dom.values.y1Ramp = v; } }]);
     set(A, '41');
     expect(B.getState().doc.dom.values.y1Ramp).toBe('41');
     expect(B.getState().history.undo).toHaveLength(0);

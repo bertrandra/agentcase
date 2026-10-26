@@ -15,7 +15,8 @@ export interface AggExpect { rows: { id: string; cells: string[] }[]; total: str
 export interface AggCase { id: string; title: RegExp; table: RegExp; expected: (pf: Portfolio, ids: string[]) => AggExpect; edit?: boolean }
 
 export const view = (kind: 'portfolio' | 'wave' | 'product', id = ''): void => { act(() => { setDisplayScope(kind === 'wave' ? { kind, id } : { kind }); }); };
-const idsOf = (v: Varied, k: 'portfolio' | 'wave'): string[] => viewScopeOf(pf(), k === 'portfolio' ? { kind: 'portfolio' } : { kind: 'wave', id: v.waves[0] }, v.ids[0]).productIds;
+const idsOf = (v: Varied, k: 'portfolio' | 'wave'): string[] => viewScopeOf(pf(), k === 'portfolio' ? { kind: 'portfolio' } : { kind: 'wave', id: v.waves[0] },
+  v.ids[0]).productIds;
 const table = (name: RegExp) => screen.getByRole('table', { name });
 
 /** The shared checks of the aggregate input views: Portfolio, Wave, exclusions note, Product unchanged, "Edit this product", single product. */

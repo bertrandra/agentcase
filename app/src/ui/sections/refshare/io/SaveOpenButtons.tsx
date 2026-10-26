@@ -12,7 +12,8 @@ export function SaveOpenButtons({ save, open, accept, fileLabel, onSave, onOpen 
     <div className="ac-actions">
       <button type="button" className="ac-btn ac-btn-primary" onClick={onSave}>{save}</button>
       <button type="button" className="ac-btn" onClick={() => file.current?.click()}>{open}</button>
-      <input ref={file} type="file" accept={accept} aria-label={fileLabel} hidden onChange={(e) => { void onOpen(e.target.files?.[0]); e.target.value = ''; }} />
+      <input ref={file} type="file" accept={accept} aria-label={fileLabel} hidden
+        onChange={(e) => { void onOpen(e.target.files?.[0]); e.target.value = ''; }} />
     </div>
   );
 }

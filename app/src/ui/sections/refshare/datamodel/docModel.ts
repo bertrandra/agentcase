@@ -16,7 +16,8 @@ export function fieldRows(set: Readonly<Record<string, string>>, group: TextGrou
   const at = (sample ?? {}) as Record<string, unknown>;
   return Object.entries(set).map(([field, presence]) => {
     const d = describe(sample === undefined ? undefined : at[field]);
-    return { field, presence, value: sample === undefined ? 'no instance' : d.type === 'absent' ? 'absent' : `${d.type} ${d.size}`.trim(), what: textOf(group, field) };
+    return { field, presence, value: sample === undefined ? 'no instance' : d.type === 'absent' ? 'absent' : `${d.type} ${d.size}`.trim(),
+      what: textOf(group, field) };
   });
 }
 
@@ -30,7 +31,8 @@ export function levels(pf: Portfolio): Level[] {
     { id: 'product', title: 'Product (active product)', set: PRODUCT_FIELDS, group: 'product', sample: active },
     { id: 'knowledge', title: 'Knowledge subset (active product)', set: KNOWLEDGE_SUBSET_FIELDS, group: 'knowledge', sample: active?.knowledge },
     { id: 'wave', title: 'Wave (first wave)', set: WAVE_FIELDS, group: 'wave', sample: pf.waves[0] },
-    { id: 'dependency', title: 'Wave dependency (first one set)', set: WAVE_DEPENDENCY_FIELDS, group: 'dependency', sample: pf.waves.find((w) => w.dependsOn)?.dependsOn },
+    { id: 'dependency', title: 'Wave dependency (first one set)', set: WAVE_DEPENDENCY_FIELDS, group: 'dependency',
+      sample: pf.waves.find((w) => w.dependsOn)?.dependsOn },
     { id: 'shared', title: 'Shared team line (first line)', set: SHARED_TEAM_LINE_FIELDS, group: 'sharedTeam', sample: pf.sharedTeam?.[0] },
     { id: 'hub', title: 'Hub settings', set: HUB_FIELDS, group: 'hub', sample: pf.hub },
   ];

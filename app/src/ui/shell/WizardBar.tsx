@@ -18,14 +18,18 @@ export function WizardBar() {
   const stops = seq ? flattenFast(seq, sections, fastPath).filter((st) => multi || !isPortfolioSection(st.sec)) : [];
   useEffect(() => { wizExit(); }, [persona]);
   useEffect(() => { if (!stops.length && uiStore.getState().wiz.active) wizExit(); }, [stops.length]);
-  if (seq && !stops.length && fastPath && flatten(seq).length) return <div className="ac-wiz ac-wiz-idle" role="status">🧭 Fast Path is on and this sequence has no minimum-viable-path sections — turn Fast Path off to run it.</div>;
+  if (seq && !stops.length && fastPath && flatten(seq).length) return <div className="ac-wiz ac-wiz-idle" role="status">🧭 Fast Path is on and this sequence has
+    no minimum-viable-path sections — turn Fast Path off to run it.</div>;
   if (!seq || !stops.length) return null;
   if (walking) return <WizardActive seq={seq} stops={stops} />;
   const steps = new Set(stops.map((s) => s.si)).size;
   return (
     <div className="ac-wiz ac-wiz-idle" role="region" aria-label="Guided sequence">
-      <span>🧭 A guided <strong>build sequence</strong> ({steps} step{steps === 1 ? '' : 's'}{fastPath ? ` · ${stops.length} Fast-Path section${stops.length === 1 ? '' : 's'}` : ''}) is available for this persona.</span>
-      <button type="button" className="ac-btn ac-btn-primary" onClick={() => { wizStart(stops.map((s) => s.sec)); rescueFocus(() => document.querySelector<HTMLElement>('.ac-wiz-active .ac-btn-primary')); }}>▶ Start guided sequence</button>
+      <span>🧭 A guided <strong>build sequence</strong> ({steps} step{steps === 1 ? '' : 's'}
+        {fastPath ? ` · ${stops.length} Fast-Path section${stops.length === 1 ? '' : 's'}` : ''}) is available for this persona.</span>
+      <button type="button" className="ac-btn ac-btn-primary"
+        onClick={() => { wizStart(stops.map((s) => s.sec)); rescueFocus(() => document.querySelector<HTMLElement>('.ac-wiz-active .ac-btn-primary')); }}>▶ Start
+        guided sequence</button>
     </div>
   );
 }

@@ -55,7 +55,8 @@ export function aggregateTeams(pf: Portfolio, productIds: string[]): TeamAggrega
       add(lines, `${r.skill}|${r.grade}|${r.loc}`, () => ({ skill: r.skill, grade: r.grade, loc: r.loc, etp: 0 }), e);
     }
     total += etp;
-    products.push({ id, name: p.name, wave: pf.waves.find((w) => w.id === p.waveId)?.name ?? '', planned: planned.has(id), archived: !!p.archived, etp, sharedEtp: shared, lines: team.length });
+    products.push({ id, name: p.name, wave: pf.waves.find((w) => w.id === p.waveId)?.name ?? '', planned: planned.has(id), archived: !!p.archived, etp,
+      sharedEtp: shared, lines: team.length });
   }
   return { products, total, bySkill: [...skill.values()], byGrade: [...grade.values()], byLoc: [...loc.values()], lines: [...lines.values()] };
 }

@@ -15,7 +15,8 @@ vi.mock('@/ui/widgets/ChartPanel', async () => import('../helpers/chartStub'));
 let ids: [string, string, string], waves: [string, string];
 beforeEach(() => { ({ ids, waves } = threeProducts()); });
 afterEach(cleanup);
-const scopes = () => [{ name: 'Portfolio', scope: { kind: 'portfolio' } as const, n: 3 }, { name: 'Wave 1', scope: { kind: 'wave', id: waves[0] } as const, n: 2 }, { name: 'Wave 2', scope: { kind: 'wave', id: waves[1] } as const, n: 1 }];
+const scopes = () => [{ name: 'Portfolio', scope: { kind: 'portfolio' } as const, n: 3 },
+  { name: 'Wave 1', scope: { kind: 'wave', id: waves[0] } as const, n: 2 }, { name: 'Wave 2', scope: { kind: 'wave', id: waves[1] } as const, n: 1 }];
 const banner = () => document.querySelector('.ac-scope-banner')!.textContent;
 
 describe('Present > Monthly Playback: aggregate view', () => {

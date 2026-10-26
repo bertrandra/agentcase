@@ -28,7 +28,8 @@ export default function ScenariosSection() {
         <div className="ac-form-row">
           <SelectInput id="scenTargetLoc" label="Target location for relocation scenarios" options={options}
             hint={'Destination used by "Ramp" and "AI + 100 % [target]". Switch to France for a sovereignty / reshoring scenario.'} />
-          <RangeInput id="scenFrPerYear" label="Progressive relocation ramp — % of AS-IS → target gap closed per year" hint="Share of the AS-IS → target day-rate gap closed each year (cumulative). Drives the “Ramp” scenario." />
+          <RangeInput id="scenFrPerYear" label="Progressive relocation ramp — % of AS-IS → target gap closed per year"
+            hint="Share of the AS-IS → target day-rate gap closed each year (cumulative). Drives the “Ramp” scenario." />
         </div>
       </>}
       result={<>

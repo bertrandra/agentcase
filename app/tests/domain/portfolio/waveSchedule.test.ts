@@ -45,7 +45,8 @@ describe('wave schedule: effective starts', () => {
     expect(s.notes[1]!.message).toContain('W-c: starts at month 17 instead of 0 — after W-a finishes the setup of its last product + 1 month(s)');
   });
   it('a cycle is flagged and ignored, never followed', () => {
-    const w = [wave('a', 0, ['p1', 'p2'], { waveId: 'b', milestone: 'start', lagMonths: 1 }), wave('b', 3, ['p3'], { waveId: 'a', milestone: 'start', lagMonths: 1 }),
+    const w = [wave('a', 0, ['p1', 'p2'], { waveId: 'b', milestone: 'start', lagMonths: 1 }),
+      wave('b', 3, ['p3'], { waveId: 'a', milestone: 'start', lagMonths: 1 }),
       wave('c', 0, ['p4'], { waveId: 'c', milestone: 'start', lagMonths: 0 })];
     expect([...cyclicWaves(w)].sort()).toEqual(['a', 'b', 'c']);
     const s = resolveSchedule(pf(w), setup);
@@ -99,7 +100,8 @@ describe('wave dependency and capacity operations', () => {
     expect(setMaxConcurrentSetups(p, -1)).toBe(p);
     const f = openPortfolioFixture();
     expect(validate({ ...f, maxConcurrentSetups: 0 }).errors.map((e) => e.code)).toEqual(['capacity']);
-    expect(validate({ ...f, waves: f.waves.map((w) => ({ ...w, dependsOn: { waveId: 'w1', milestone: 'x' as 'start', lagMonths: 0 } })) }).errors[0]!.code).toBe('wave-dep');
+    expect(validate({ ...f, waves: f.waves.map((w) => ({ ...w, dependsOn: { waveId: 'w1', milestone: 'x' as 'start', lagMonths: 0 } })) }).errors[0]!.code)
+      .toBe('wave-dep');
   });
 });
 

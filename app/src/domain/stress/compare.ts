@@ -30,10 +30,12 @@ export function compareData(c: Ctx): CompareData {
   const be = paybackMonthsCanonical(c), vf = (ey[Math.min(last, ey.length - 1)]?.agentVfteEnd ?? 0);
   const aCost = ey[Math.min(last, ey.length - 1)]?.totalRunCost ?? 0;
   const rows = [
-    ['Final headcount (FTE)', m.base.etp.toFixed(1), at(classic, 'fte').toFixed(1), at(agentic, 'fte').toFixed(1), `-${Math.round((1 - at(agentic, 'fte') / m.base.etp) * 100)}%`],
+    ['Final headcount (FTE)', m.base.etp.toFixed(1), at(classic, 'fte').toFixed(1), at(agentic, 'fte').toFixed(1),
+      `-${Math.round((1 - at(agentic, 'fte') / m.base.etp) * 100)}%`],
     [`Agent vFTE (Y${yrs})`, '0', '0', vf.toFixed(1), `+${vf.toFixed(1)}`],
     ['Final annual cost', fmtK(m.baselineRun), fmtK(at(classic, 'cost')), fmtK(aCost), `-${Math.round((1 - aCost / m.baselineRun) * 100)}%`],
-    ['Cumulative saving', fmtK(at(asis, 'save')), fmtK(at(classic, 'save')), fmtK(at(agentic, 'save')), at(agentic, 'save') > at(classic, 'save') ? 'better' : '—'],
+    ['Cumulative saving', fmtK(at(asis, 'save')), fmtK(at(classic, 'save')), fmtK(at(agentic, 'save')),
+      at(agentic, 'save') > at(classic, 'save') ? 'better' : '—'],
     ['Velocity increase', '0%', `+${Math.round((at(classic, 'velo') / 35 - 1) * 100)}%`, `+${Math.round((at(agentic, 'velo') / 35 - 1) * 100)}%`,
       `×${(at(agentic, 'velo') / Math.max(1, at(classic, 'velo'))).toFixed(1)} vs classic`],
     ['Temps ROI (break-even)', '—', '—', be ? `${be} mois` : `> ${yrs * 12} mois`, be ? 'atteint' : '—'],

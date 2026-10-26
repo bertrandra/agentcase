@@ -22,7 +22,8 @@ const APP = new Set(APP_SECTIONS.map((s) => s.id));
 const ids = (nav: HTMLElement) => [...nav.querySelectorAll<HTMLElement>('[data-section]')].map((b) => b.dataset.section).filter((id) => !APP.has(id!));
 const heads = (nav: HTMLElement) => [...nav.querySelectorAll('h2')].map((h) => h.querySelector('span')?.textContent);
 const navEl = () => screen.getByRole('navigation', { name: 'Sections' });
-const menu = () => { const b = screen.queryByRole('button', { name: 'Toggle the sidebar menu' }); if (b?.getAttribute('aria-pressed') === 'false') fireEvent.click(b); };
+const menu =
+  () => { const b = screen.queryByRole('button', { name: 'Toggle the sidebar menu' }); if (b?.getAttribute('aria-pressed') === 'false') fireEvent.click(b); };
 
 describe('the sidebar follows the document', () => {
   it.each(NAV_FIXTURES)('renders the legacy groups and sections, in order, for every persona (%s)', (id) => {
@@ -30,7 +31,8 @@ describe('the sidebar follows the document', () => {
     render(<NavZone />);
     for (const [persona, want] of Object.entries(legacyNav(id).personas)) {
       act(() => setPersona(persona));
-      const groups = [...navEl().querySelectorAll<HTMLElement>('section[data-group]')].map((g) => ({ group: g.dataset.group, sections: ids(g) })).filter((g) => g.sections.length);
+      const groups = [...navEl().querySelectorAll<HTMLElement>('section[data-group]')].map((g) => ({ group: g.dataset.group, sections: ids(g) }))
+        .filter((g) => g.sections.length);
       expect(groups, `${id} / ${persona}`).toEqual(want.groups);
     }
   });

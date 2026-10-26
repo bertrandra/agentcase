@@ -25,7 +25,8 @@ export function PackButtons() {
     <div className="ac-form-row">
       <button type="button" className="ac-btn" onClick={() => void save()}>📤 Export pack (Excel)</button>
       <button type="button" className="ac-btn" onClick={() => input.current?.click()}>📥 Re-import annotated pack</button>
-      <input ref={input} type="file" accept=".xlsx" aria-label="Annotated due-diligence pack (.xlsx)" hidden onChange={(e) => { void load(e.target.files?.[0]); e.target.value = ''; }} />
+      <input ref={input} type="file" accept=".xlsx" aria-label="Annotated due-diligence pack (.xlsx)" hidden
+        onChange={(e) => { void load(e.target.files?.[0]); e.target.value = ''; }} />
       <span role="status" aria-live="polite" className={status && !status.ok ? 'ac-muted ac-alert-text' : 'ac-muted'}>{status?.text}</span>
     </div>
   );

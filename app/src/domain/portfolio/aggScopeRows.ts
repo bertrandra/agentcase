@@ -21,7 +21,8 @@ export function productCases(pf: Portfolio, ids: string[]): ProductCase[] {
     const prod = pf.products.find((p) => p.id === id);
     if (!prod) continue;
     const c = resolveProduct(pf, id);
-    out.push({ id, name: prod.name, wave: pf.waves.find((w) => w.id === prod.waveId)?.name ?? '', planned: planned.has(id), prod, c, ctx: ctxOf(c), overridden: (r) => isOverridden(prod, r) });
+    out.push({ id, name: prod.name, wave: pf.waves.find((w) => w.id === prod.waveId)?.name ?? '', planned: planned.has(id), prod, c, ctx: ctxOf(c),
+      overridden: (r) => isOverridden(prod, r) });
   }
   return out;
 }

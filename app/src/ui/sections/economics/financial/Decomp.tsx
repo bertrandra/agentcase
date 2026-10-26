@@ -30,8 +30,10 @@ export function Decomp() {
         removed, priced at the AS-IS rate), the <strong>agent operating cost</strong> (tokens + infra + agentic run team),
         and <strong>relocation</strong> (residual team priced at the target-location rate vs the AS-IS blend).</p>
       <GridTable head={['Component', ...b.years.map((_, i) => `Year ${i + 1}`)]} rows={rows} />
-      {b.relocationNeutral && <p className="ac-muted">Relocation is currently near-neutral (target location ≈ AS-IS blend, {Math.round(b.asis)} €/day) — savings are essentially all automation-driven. Change the location strategy to introduce a relocation component.</p>}
-      <p className="ac-muted">Reconciliation (Y{n}): gross auto {fmtSigned(last.grossAuto)} − agent cost {fmtSigned(last.agentCost)} + relocation {fmtSigned(last.relocation)} = {fmtSigned(last.total)} vs model yearSav {fmtSigned(last.model)}.</p>
+      {b.relocationNeutral && <p className="ac-muted">Relocation is currently near-neutral (target location ≈ AS-IS blend, {Math.round(b.asis)} €/day) — savings
+        are essentially all automation-driven. Change the location strategy to introduce a relocation component.</p>}
+      <p className="ac-muted">Reconciliation (Y{n}): gross auto {fmtSigned(last.grossAuto)} − agent cost {fmtSigned(last.agentCost)} +
+        relocation {fmtSigned(last.relocation)} = {fmtSigned(last.total)} vs model yearSav {fmtSigned(last.model)}.</p>
       {!b.reconciles && <Callout kind="warn">These components price the year-end team for the whole year, so they do not add up to
         the Time-Engine savings used everywhere else (the legacy screen says "reconcile exactly"; it does not): the ± line above is the gap. Use the
         Financial summary figures for decisions.</Callout>}

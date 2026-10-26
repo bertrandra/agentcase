@@ -11,7 +11,8 @@ import { freshStore } from './helpers';
 afterEach(() => configureSessions(null));
 const manual = { setTimer: () => 1, clearTimer: () => undefined };
 const old = (i: number): AutosaveRecord => ({ tabId: `old-${i}`, savedAt: new Date(Date.UTC(2026, 0, 1, 0, i)).toISOString(), label: `Old ${i}`,
-  snapshot: toPortfolioSnapshot(createAppStore(makeDefaultDoc()).getState().portfolio, undefined, true), history: { undo: [], redo: [] }, format: 'portfolio' });
+  snapshot: toPortfolioSnapshot(createAppStore(makeDefaultDoc()).getState().portfolio, undefined, true), history: { undo: [], redo: [] },
+  format: 'portfolio' });
 const failing = (inner: AutosaveStorage, fail: { on: boolean }): AutosaveStorage => ({ ...inner,
   put: async (r) => { if (fail.on) throw new DOMException('Quota exceeded', 'QuotaExceededError'); await inner.put(r); } });
 

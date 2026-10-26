@@ -44,7 +44,8 @@ export function connectBroadcast(store: AppStore, ch: ChannelLike, tabId: string
     const pf = store.getState().portfolio, portfolio = { ...documentOf(pf), activeProductId: pf.activeProductId } as unknown as Portfolio;
     post({ kind: 'full', reason, to, ...store.syncId(), portfolio });
   };
-  const say = (what: string, r: RemoteResult) => { if (r.historyCleared || what !== SYNC_NOTICES.structure) o.onNotice?.(r.historyCleared ? `${what}: ${SYNC_NOTICES.cleared}` : what); };
+  const say = (what: string, r: RemoteResult) => { if (r.historyCleared ||
+    what !== SYNC_NOTICES.structure) o.onNotice?.(r.historyCleared ? `${what}: ${SYNC_NOTICES.cleared}` : what); };
   const ahead = (m: { tabId: string; rev?: number }, me: SyncId) => (m.rev ?? 0) > me.rev || ((m.rev ?? 0) === me.rev && m.tabId > tabId);
   const off = store.onChange((kind, entry) => {
     if (kind === 'remote') return;
@@ -56,7 +57,8 @@ export function connectBroadcast(store: AppStore, ch: ChannelLike, tabId: string
   ch.onmessage = (e) => {
     const m = e.data as Msg | null;
     if (!m || typeof m !== 'object' || m.tabId === tabId || typeof m.docId !== 'string' || !Number.isInteger(m.rev)) return;
-    if ((Number.isInteger(m.v) ? (m.v as number) : 1) > SNAPSHOT_SCHEMA_VERSION) { console.warn('AgentCase: a change from a tab of a newer version was ignored'); return; }
+    if ((Number.isInteger(m.v) ? (m.v as number) : 1) > SNAPSHOT_SCHEMA_VERSION) { console.warn(
+      'AgentCase: a change from a tab of a newer version was ignored'); return; }
     const me = store.syncId(), at = { docId: m.docId, rev: m.rev as number };
     if (m.kind === 'request') { if (m.to === tabId && m.docId === me.docId) full('sync', m.tabId); return; }
     if (m.kind === 'full') {

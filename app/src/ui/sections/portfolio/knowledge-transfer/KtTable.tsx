@@ -7,9 +7,12 @@ import { fmtEurK } from '@/ui/format';
 import { toast } from '@/ui/uiState';
 
 const COLS: [string, string][] = [
-  ['Product', 'Click (or Enter) to make it the active product'], ['Wave', ''], ['Hub', 'Does the product use the hub?'], ['Initial CC → target', 'Context completeness level: starting state → target (capped by the engagement context)'],
-  ['Domains', 'Knowledge domains kept and their weight'], ['KT setup', 'One-off ingestion and initial curation cost'], ['Annual cost', 'Curation + charged share of the infrastructure'],
-  ['KT days avoided / year', 'Starting FTE × 0.2 × 15 × target level reduction'], ['Preparation', 'Months of preparation before the product starts, and the calendar month the setup cost falls'],
+  ['Product', 'Click (or Enter) to make it the active product'], ['Wave', ''], ['Hub', 'Does the product use the hub?'],
+  ['Initial CC → target', 'Context completeness level: starting state → target (capped by the engagement context)'],
+  ['Domains', 'Knowledge domains kept and their weight'], ['KT setup', 'One-off ingestion and initial curation cost'],
+  ['Annual cost', 'Curation + charged share of the infrastructure'],
+  ['KT days avoided / year', 'Starting FTE × 0.2 × 15 × target level reduction'],
+  ['Preparation', 'Months of preparation before the product starts, and the calendar month the setup cost falls'],
   ['Hub effect', 'Savings gap with the same product without the hub, over its horizon'],
 ];
 const dash = '—';
@@ -37,14 +40,17 @@ export function KtTable() {
           <thead><tr>{COLS.map(([h, t]) => <th key={h} scope="col" title={t || undefined}>{h}</th>)}</tr></thead>
           <tbody>
             {rows.map((r) => (
-              <tr key={r.productId} className={r.productId === active ? 'ac-pick-row is-active' : 'ac-pick-row'} data-product={r.productId} onClick={() => pick(r)}>
+              <tr key={r.productId} className={r.productId === active ? 'ac-pick-row is-active' : 'ac-pick-row'} data-product={r.productId}
+                onClick={() => pick(r)}>
                 <th scope="row">
-                  <button type="button" aria-current={r.productId === active ? 'true' : undefined} aria-label={r.productId === active ? `${r.name} (active product)` : `Activate ${r.name}`}
+                  <button type="button" aria-current={r.productId === active ? 'true' : undefined}
+                    aria-label={r.productId === active ? `${r.name} (active product)` : `Activate ${r.name}`}
                     onClick={(e) => { e.stopPropagation(); pick(r); }}>{r.name}</button>
                 </th>
                 <td>{waveName(r.waveId)}</td>
                 <td>{r.locked ? 'locked' : r.usesHub ? 'on' : 'off'}</td>
-                <td>{r.usesHub ? `CC${r.asisCC} → CC${r.targetCC}` : dash}{r.usesHub && r.capped && <strong title="The requested target exceeds the context cap"> (capped)</strong>}</td>
+                <td>{r.usesHub ? `CC${r.asisCC} → CC${r.targetCC}` : dash}
+                  {r.usesHub && r.capped && <strong title="The requested target exceeds the context cap"> (capped)</strong>}</td>
                 <td>{domains(r)}</td>
                 <td className="ac-num">{money(r.setup, r.usesHub)}</td>
                 <td className="ac-num">{money(r.annual, r.usesHub)}</td>

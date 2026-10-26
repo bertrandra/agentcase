@@ -82,7 +82,8 @@ describe('display and theme changes keep the open section mounted', () => {
 /** A chart whose colours come from the theme in effect, like every section chart. */
 function ThemedChart() {
   const { tok } = useTheme();
-  const config = useMemo<ChartConfiguration>(() => ({ type: 'bar', data: { labels: ['a', 'b'], datasets: [{ label: 'S', data: [1, 2], backgroundColor: tok('chart-cat-1') }] } }), [tok]);
+  const config = useMemo<ChartConfiguration>(() =>
+    ({ type: 'bar', data: { labels: ['a', 'b'], datasets: [{ label: 'S', data: [1, 2], backgroundColor: tok('chart-cat-1') }] } }), [tok]);
   return <ChartPanel config={config} label="Themed" />;
 }
 const colourOf = (c: (typeof charts.made)[number]) => ((c.data as ChartConfiguration['data']).datasets[0] as { backgroundColor: string }).backgroundColor;

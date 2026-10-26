@@ -9,6 +9,7 @@ export const samples: Record<string, Sample> = {
   'excel.importParams': () => applyParamsImport({ customerName: 'Imported Co', QUALITY: [['Bugs/1000 LOC', 3, 0.4, 'DORA']] }),
   'excel.importPortfolio': {
     prep: () => { addProduct('Second'); },
-    run: () => { const pf = appStore().getState().portfolio; applyPortfolioImport(setHub(renameProduct(pf, pf.products[0]!.id, 'Imported'), { infraMonthly: 4321 })); },
+    run: () => { const pf = appStore().getState().portfolio; applyPortfolioImport(setHub(renameProduct(pf, pf.products[0]!.id, 'Imported'),
+      { infraMonthly: 4321 })); },
   },
 };

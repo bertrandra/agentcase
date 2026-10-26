@@ -59,8 +59,10 @@ export function groupRows(l: Live, t: TargetTeam): GroupRow[] {
   return [
     { group: 'Dev team', composition: 'Residual production (code, test, ops)', fte: t.devETP, cost: cost(t.devETP), kind: 'Recurring', tone: 'dev' },
     { group: 'Supervision', composition: 'AI output review & validation', fte: t.supETP, cost: cost(t.supETP), kind: 'Recurring', tone: 'sup' },
-    { group: 'Agentic Run', composition: 'AI Eng, Prompt Eng, FinOps, AI-QA', fte: t.runETP, cost: cost(t.runETP, AI_SKILL_PREMIUM), kind: 'Recurring', tone: 'run' },
-    { group: 'Agentic Setup', composition: 'Lead, architect, coach (transitional Y1)', fte: t.setupETP, cost: cost(t.setupETP, AI_SKILL_PREMIUM), kind: 'Transitional',
+    { group: 'Agentic Run', composition: 'AI Eng, Prompt Eng, FinOps, AI-QA', fte: t.runETP, cost: cost(t.runETP, AI_SKILL_PREMIUM), kind: 'Recurring',
+      tone: 'run' },
+    { group: 'Agentic Setup', composition: 'Lead, architect, coach (transitional Y1)', fte: t.setupETP, cost: cost(t.setupETP, AI_SKILL_PREMIUM),
+      kind: 'Transitional',
       tone: 'setup' },
   ];
 }

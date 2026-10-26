@@ -47,7 +47,8 @@ describe('datamodel section: the document layers (lot 10)', () => {
     const { ids } = threeProducts();
     render(<DataModel />);
     tab('🎚️ Overridable keys');
-    const t = caption('Keys a product can hold for itself')!, row = () => [...t.querySelectorAll('tbody tr')].find((r) => r.textContent?.startsWith('forceGlassCeiling'))!;
+    const t = caption('Keys a product can hold for itself')!,
+      row = () => [...t.querySelectorAll('tbody tr')].find((r) => r.textContent?.startsWith('forceGlassCeiling'))!;
     expect(t.querySelectorAll('tbody tr')).toHaveLength(OVERRIDABLE_KEYS.length + 2);   // + the entry team and the form fields
     expect(row().textContent).toContain('0 / 3');
     act(() => { setProductOverride(ids[1], 'forceGlassCeiling', true); });

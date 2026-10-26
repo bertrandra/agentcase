@@ -14,7 +14,8 @@ export function AddProduct() {
   return (
     <div className="ac-form-row">
       <label className="ac-field"><span className="ac-field-l">Name of the new product</span>
-        <input type="text" value={name} placeholder="e.g. Payroll application" onChange={(e) => setName(e.target.value)} onKeyDown={(e) => { if (e.key === 'Enter') add(); }} />
+        <input type="text" value={name} placeholder="e.g. Payroll application" onChange={(e) => setName(e.target.value)}
+          onKeyDown={(e) => { if (e.key === 'Enter') add(); }} />
       </label>
       <button type="button" onClick={add}>Add a product</button>
     </div>

@@ -32,7 +32,8 @@ describe('due-diligence domain reproduces the legacy register', () => {
     expect(rows.filter((r) => r.id.startsWith('ce')).map((r) => r.id)).toEqual(e.ceilRows);
   });
   it.each(PDC_FIXTURES)('%s: one-at-a-time euro sensitivity ', (id) => {
-    const e = pdc<{ base: number; w: Record<string, number>; unmeasurable: string[] }>('pdc_ddsens', id), got = computeDdSensitivity(ctxOf(id), '2026-01-01T00:00:00.000Z');
+    const e = pdc<{ base: number; w: Record<string, number>; unmeasurable: string[] }>('pdc_ddsens', id),
+      got = computeDdSensitivity(ctxOf(id), '2026-01-01T00:00:00.000Z');
     expect(diffs(e.w, got.w)).toEqual([]);
     expect(got.base).toBeCloseTo(e.base, 6);
     expect(got.unmeasurable).toEqual(e.unmeasurable);

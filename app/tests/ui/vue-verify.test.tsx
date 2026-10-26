@@ -20,25 +20,36 @@ const core = () => D.corePortfolio(pf());
 const view = (s: D.VScope | { kind: 'product' }) => act(() => { setDisplayScope(s); });
 const N = (x: D.Cell | undefined): number => +(x ?? 0);
 const pct = (x: D.Cell | undefined) => `${Math.round(N(x))}%`;
-const scopes = (): [string, D.VScope, string][] => [['Portfolio', { kind: 'portfolio' }, 'Portfolio'], ['Wave 1', { kind: 'wave', id: pf().waves[0]!.id }, pf().waves[0]!.name]];
+const scopes = (): [string, D.VScope, string][] => [['Portfolio', { kind: 'portfolio' }, 'Portfolio'],
+  ['Wave 1', { kind: 'wave', id: pf().waves[0]!.id }, pf().waves[0]!.name]];
 
 /** id → [caption of the by-product table, the strings its selection line must show (formatted like the domain's figures)]. */
 const CASES: Record<string, (s: D.VScope) => [string, string[]]> = {
-  'fte-vfte': (s) => { const t = D.fteVfteAgg(core(), s)!.table.total; return ['FTE and vFTE by product', [N(t.base).toFixed(1), N(t.agent).toFixed(1), N(t.total).toFixed(1)]]; },
-  'vfte-ov': (s) => { const t = D.vfteOvTable(core(), s)!.total; return ['vFTE composition by product', [N(t.human).toFixed(1), N(t.agent).toFixed(1), String(Math.round(N(t.arts)))]]; },
-  'team-out': (s) => { const t = D.targetTeamAgg(core(), s)!.table.total; return ['Target team by product', [N(t.recurring).toFixed(1), N(t.dev).toFixed(1), N(t.run).toFixed(1)]]; },
-  'tobe-team': (s) => { const t = D.tobeTeamAgg(core(), s, 2)!.total; return ['TO-BE team by product, Year 3', [t.asis.toFixed(2), t.human.toFixed(2), t.agent.toFixed(2)]]; },
+  'fte-vfte': (s) => { const t = D.fteVfteAgg(core(), s)!.table.total; return ['FTE and vFTE by product',
+    [N(t.base).toFixed(1), N(t.agent).toFixed(1), N(t.total).toFixed(1)]]; },
+  'vfte-ov': (s) => { const t = D.vfteOvTable(core(), s)!.total; return ['vFTE composition by product',
+    [N(t.human).toFixed(1), N(t.agent).toFixed(1), String(Math.round(N(t.arts)))]]; },
+  'team-out': (s) => { const t = D.targetTeamAgg(core(), s)!.table.total; return ['Target team by product',
+    [N(t.recurring).toFixed(1), N(t.dev).toFixed(1), N(t.run).toFixed(1)]]; },
+  'tobe-team': (s) => { const t = D.tobeTeamAgg(core(), s, 2)!.total; return ['TO-BE team by product, Year 3',
+    [t.asis.toFixed(2), t.human.toFixed(2), t.agent.toFixed(2)]]; },
   'phase-art': (s) => { const t = D.phaseArtTable(core(), s)!.total; return ['Phase and artifact scope by product', [String(N(t.arts)), String(N(t.viol))]]; },
-  'agent-dir': (s) => { const t = D.agentDirTable(core(), s)!.total; return ['Agents by authorization level and product', [String(N(t.agents)), String(N(t.roles))]]; },
-  'agent-detail': (s) => { const t = D.agentDetailTable(core(), s)!.total; return ['Agentic operating team by product', [N(t.run).toFixed(1), N(t.sup).toFixed(1)]]; },
-  'agent-usage': (s) => { const t = D.usageAgg(core(), s)!.table.total; return ['Agent usage by product', [fmtE(N(t.tokenCost)), String(Math.round(N(t.runs)))]]; },
+  'agent-dir': (s) => { const t = D.agentDirTable(core(), s)!.total; return ['Agents by authorization level and product',
+    [String(N(t.agents)), String(N(t.roles))]]; },
+  'agent-detail': (s) => { const t = D.agentDetailTable(core(), s)!.total; return ['Agentic operating team by product',
+    [N(t.run).toFixed(1), N(t.sup).toFixed(1)]]; },
+  'agent-usage': (s) => { const t = D.usageAgg(core(), s)!.table.total; return ['Agent usage by product',
+    [fmtE(N(t.tokenCost)), String(Math.round(N(t.runs)))]]; },
   exec: (s) => ['Milestones and sprint velocity by product', [String(D.execTable(core(), s)!.total.start)]],
-  productivity: (s) => { const t = D.productivityTable(core(), s)!.total; return ['Throughput per engineer by product', [N(t.asis).toFixed(1), N(t.end).toFixed(1)]]; },
+  productivity: (s) => { const t = D.productivityTable(core(), s)!.total; return ['Throughput per engineer by product',
+    [N(t.asis).toFixed(1), N(t.end).toFixed(1)]]; },
   velocity: (s) => ['Velocity by product', [N(D.velocityTable(core(), s)!.total.uplift).toFixed(1)]],
   quality: (s) => ['Quality metrics by product', [String(N(D.qualityTable(core(), s)!.total.edited))]],
-  compliance: (s) => { const t = D.complianceTable(core(), s)!.total; return ['Compliance coverage by product', [pct(t.ceiling), pct(t.max), String(N(t.reg))]]; },
+  compliance: (s) => { const t = D.complianceTable(core(), s)!.total; return ['Compliance coverage by product',
+    [pct(t.ceiling), pct(t.max), String(N(t.reg))]]; },
   kpi: (s) => { const a = D.kpiAgg(core(), s)!; return ['KPIs by product', [N(a.table.total.after).toFixed(1), pct(a.table.total.eff)]]; },
-  'asis-tobe': (s) => { const t = D.asisTobeAgg(core(), s)!.table.total; return ['AS-IS vs TO-BE by product', [fmtE(N(t.cost0)), fmtE(N(t.setup)), pct(t.ceiling)]]; },
+  'asis-tobe': (s) => { const t = D.asisTobeAgg(core(), s)!.table.total; return ['AS-IS vs TO-BE by product',
+    [fmtE(N(t.cost0)), fmtE(N(t.setup)), pct(t.ceiling)]]; },
 };
 const titleOf = (id: string) => VERIFY_IDS.find(([i]) => i === id)![1];
 const byProduct = (cap: string, label: string) => screen.getByRole('table', { name: new RegExp(`${cap} — ${label}`) });

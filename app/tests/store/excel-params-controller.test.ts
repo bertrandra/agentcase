@@ -24,11 +24,13 @@ describe('exportParamsWorkbook', () => {
     expect(out.companion).toBeUndefined();
   });
   it('scopes: no-factory drops the FM sheets, persona-only keeps the seven configuration sheets and adds the JSON copy', async () => {
-    const names = async (scope: 'all' | 'no-factory' | 'persona-only') => [...(await loadParamsSheets(await (await exportParamsWorkbook(scope, ENV, now)).blob.arrayBuffer())).keys()];
+    const names = async (scope: 'all' | 'no-factory' | 'persona-only') =>
+      [...(await loadParamsSheets(await (await exportParamsWorkbook(scope, ENV, now)).blob.arrayBuffer())).keys()];
     const all = await names('all');
     expect(all.filter((n) => /^FM /.test(n)).length).toBeGreaterThan(10);
     expect((await names('no-factory')).some((n) => /^FM /.test(n))).toBe(false);
-    expect(await names('persona-only')).toEqual(['Personas', 'Persona Sections', 'Groups', 'Sections', 'Dependencies', 'Persona Section Order', 'Persona Sequence']);
+    expect(await names('persona-only')).toEqual(['Personas', 'Persona Sections', 'Groups', 'Sections', 'Dependencies', 'Persona Section Order',
+      'Persona Sequence']);
     const p = await exportParamsWorkbook('persona-only', ENV, now);
     const cfg = JSON.parse(await p.companion!.blob.text()) as Record<string, unknown>;
     expect(cfg.scope).toBe('persona-only');
@@ -56,8 +58,11 @@ describe('importParamsWorkbook', () => {
   it('re-fits the automation potential to the FINAL scope (Phase Scope, then the SDLC Artifacts selection) and reports the contradiction', async () => {
     const keep = ['A008', 'A017', 'A018', 'A026', 'A027', 'A045'], pct: Record<string, number> = { A008: 20, A017: 30, A018: 40, A026: 95, A027: 90, A045: 85 };
     const bytes = await editXlsx(await ourXlsx(), (wb) => {
-      wb.getWorksheet('Phase Scope')?.eachRow((r, i) => { if (i > 1) r.getCell(3).value = ['V1', 'V3', 'V4', 'V6'].includes(String(r.getCell(1).value)) ? 'Yes' : 'No'; });
-      wb.getWorksheet('SDLC Artifacts')?.eachRow((r, i) => { if (i > 1) { const id = String(r.getCell(1).value); r.getCell(5).value = keep.includes(id) ? 'Yes' : 'No'; if (keep.includes(id)) r.getCell(6).value = pct[id] as number; } });
+      wb.getWorksheet('Phase Scope')?.eachRow(
+        (r, i) => { if (i > 1) r.getCell(3).value = ['V1', 'V3', 'V4', 'V6'].includes(String(r.getCell(1).value)) ? 'Yes' : 'No'; });
+      wb.getWorksheet('SDLC Artifacts')
+        ?.eachRow((r, i) => { if (i > 1) { const id = String(r.getCell(1).value); r.getCell(5).value =
+        keep.includes(id) ? 'Yes' : 'No'; if (keep.includes(id)) r.getCell(6).value = pct[id] as number; } });
     });
     const r = await importParamsWorkbook(asFile('refit.xlsx', bytes), ENV), c = computeCase(doc());
     expect(doc().selectedArtefacts).toHaveLength(keep.length);
@@ -67,7 +72,10 @@ describe('importParamsWorkbook', () => {
     expect(makeCtx(doc()).a.selected.size).toBe(keep.length);
   });
   it('clamps out-of-range values and reports each one, exactly like the legacy import', async () => {
-    const bytes = await editXlsx(await ourXlsx(), (wb) => { setByLabel(wb, 'Parameters', 'Year 1 ramp (%)', 99); setByLabel(wb, 'Parameters', 'Horizon (years)', 4); setByLabel(wb, 'Parameters', 'Working days / year', 1); });
+    const bytes =
+      await editXlsx(await ourXlsx(),
+      (wb) => { setByLabel(wb, 'Parameters', 'Year 1 ramp (%)', 99); setByLabel(wb, 'Parameters', 'Horizon (years)', 4); setByLabel(wb, 'Parameters',
+      'Working days / year', 1); });
     const r = await importParamsWorkbook(asFile('clamp.xlsx', bytes), ENV);
     expect(r.notes).toContain('Year 1 ramp (%) clamped down to 40');
     expect(r.notes).toContain('Working days / year clamped up to 180');
@@ -78,14 +86,17 @@ describe('importParamsWorkbook', () => {
     const before = snap(appStore()), bad: [string, ArrayBuffer][] = [
       ['garbage', new TextEncoder().encode('not a zip at all, just text').buffer as ArrayBuffer],
       ['empty', new ArrayBuffer(0)],
-      ['foreign', await editXlsx(await ourXlsx(), (wb) => { [...wb.worksheets].forEach((w) => wb.removeWorksheet(w.id)); wb.addWorksheet('Budget').addRow(['a', 1]); })],
+      ['foreign',
+        await editXlsx(await ourXlsx(), (wb) => { [...wb.worksheets].forEach((w) => wb.removeWorksheet(w.id)); wb.addWorksheet('Budget').addRow(['a', 1]); })],
     ];
     for (const [name, buf] of bad) await expect(importParamsWorkbook(asFile(`${name}.xlsx`, buf), ENV), name).rejects.toThrow();
     expect(snap(appStore())).toBe(before);
     expect(appStore().getState().history.undo).toHaveLength(0);
   });
   it('an absent sheet leaves its data alone; a partial file only touches what it carries', async () => {
-    const bytes = await editXlsx(await ourXlsx(), (wb) => { [...wb.worksheets].filter((w) => w.name !== 'Rate Card').forEach((w) => wb.removeWorksheet(w.id)); wb.getWorksheet('Rate Card')!.getRow(2).getCell(2).value = 999; });
+    const bytes = await editXlsx(await ourXlsx(),
+      (wb) => { [...wb.worksheets].filter((w) => w.name !== 'Rate Card').forEach(
+      (w) => wb.removeWorksheet(w.id)); wb.getWorksheet('Rate Card')!.getRow(2).getCell(2).value = 999; });
     const before = JSON.parse(snap(appStore())) as Record<string, unknown>;
     await importParamsWorkbook(asFile('rate.xlsx', bytes), ENV);
     const after = doc() as Record<string, unknown>;
@@ -94,12 +105,14 @@ describe('importParamsWorkbook', () => {
   });
   it('a persona-config-only workbook only ever touches the persona / menu configuration, never the case data', async () => {
     const out = await exportParamsWorkbook('persona-only', ENV);
-    appStore().dispatch({ type: 'test.edit', label: 'edit', undoable: true, payload: null, run: (d) => { d.customerName = 'Keep me'; d.dom.values.setupTooling = '777'; (d.PERSONAS as unknown[]).reverse(); } });
+    appStore().dispatch({ type: 'test.edit', label: 'edit', undoable: true, payload: null,
+      run: (d) => { d.customerName = 'Keep me'; d.dom.values.setupTooling = '777'; (d.PERSONAS as unknown[]).reverse(); } });
     const before = JSON.parse(snap(appStore())) as Record<string, unknown>;
     await importParamsWorkbook(asFile('persona.xlsx', await out.blob.arrayBuffer()), ENV);
     const after = doc() as Record<string, unknown>;
     const changed = Object.keys(after).filter((k) => JSON.stringify(after[k]) !== JSON.stringify(before[k]));
-    expect(changed.every((k) => ['PERSONAS', 'PERSONA_SECTIONS', 'PERSONA_SECTION_ORDER', 'GROUPS', 'GROUP_COLORS', 'sectionGroups', 'SECTION_DEPS', 'SECTION_DEPS_DESC'].includes(k))).toBe(true);
+    expect(changed.every((k) => ['PERSONAS', 'PERSONA_SECTIONS', 'PERSONA_SECTION_ORDER', 'GROUPS', 'GROUP_COLORS', 'sectionGroups', 'SECTION_DEPS',
+      'SECTION_DEPS_DESC'].includes(k))).toBe(true);
     expect(doc().customerName).toBe('Keep me');
     expect(doc().dom.values.setupTooling).toBe('777');
   });

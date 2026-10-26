@@ -40,7 +40,8 @@ export function phaseRows(c: Ctx, selectedOnly: boolean): PhaseRow[] {
 /** "10/53 SDLC art. · 3 reg. art. · 28% effort · 3/11 ph." */
 export function scopeSummary(c: Ctx): string {
   const sc = phaseScope(c.a, c.s), regN = c.a.selectedReg.size;
-  return `${sc.count}/${sc.totalArt} SDLC art.${regN ? ` · ${regN} reg art.` : ''} · ${Math.round(sc.weight * 100)}% effort · ${sc.nPhases}/${sc.nPhasesTotal} ph.`;
+  return `${sc.count}/${sc.totalArt} SDLC art.${regN ? ` · ${regN} reg art.` : ''} · ${Math.round(sc.weight * 100)}% effort ` +
+    `· ${sc.nPhases}/${sc.nPhasesTotal} ph.`;
 }
 export const allRegCount = REG_ARTEFACTS.length;
 

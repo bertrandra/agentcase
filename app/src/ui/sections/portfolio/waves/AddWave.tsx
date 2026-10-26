@@ -13,7 +13,8 @@ export function AddWave() {
   return (
     <div className="ac-form-row">
       <label className="ac-field"><span className="ac-field-l">Name of the new wave</span>
-        <input type="text" value={name} placeholder="e.g. Wave 3" onChange={(e) => setName(e.target.value)} onKeyDown={(e) => { if (e.key === 'Enter') add(); }} />
+        <input type="text" value={name} placeholder="e.g. Wave 3" onChange={(e) => setName(e.target.value)}
+          onKeyDown={(e) => { if (e.key === 'Enter') add(); }} />
       </label>
       <label className="ac-field"><span className="ac-field-l">Start of the new wave (month)</span>
         <input type="number" min={0} step={1} value={start} onChange={(e) => setStart(e.target.value)} />

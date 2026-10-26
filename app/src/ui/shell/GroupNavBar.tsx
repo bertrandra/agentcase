@@ -14,7 +14,8 @@ export function GroupNavBar() {
   const pickGroup = (id: string) => { const target = firstOfGroup(m.persona, id, m.visible, m.lists); if (target) goSection(target); };
   return (
     <div className="ac-gnav" role="navigation" aria-label="Group navigation">
-      <button type="button" className={`ac-btn${active === 'home' ? ' is-active' : ''}`} aria-label="Welcome" title="Welcome" onClick={() => goSection('home')}>🏠</button>
+      <button type="button" className={`ac-btn${active === 'home' ? ' is-active' : ''}`} aria-label="Welcome" title="Welcome"
+        onClick={() => goSection('home')}>🏠</button>
       <select aria-label="Group" value={bar.selected} onChange={(e) => pickGroup(e.target.value)}>
         {bar.groups.map((g) => <option key={g.id} value={g.id}>{g.label}</option>)}
       </select>

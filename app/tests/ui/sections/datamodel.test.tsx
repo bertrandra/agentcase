@@ -15,7 +15,9 @@ afterEach(cleanup);
 describe('datamodel section', () => {
   it('shows every figure and heading the legacy overview showed (4 fixtures)', () => {
     // 79 sections / 42 'supports' in the legacy; the catalogue now also holds the 6 Portfolio sections and 🎨 Brand & theme (86 / 49)
-    expectParity('datamodel', DataModel, { ignore: [79, 42], headings: ['Data Model', 'The four layers', 'Sections', 'State registry', 'Variable registry', 'Coefficients & namespaces', 'Sections by build-path tag', 'drives × 22', 'reads × 13', 'supports × 49'] });
+    expectParity('datamodel', DataModel,
+      { ignore: [79, 42], headings: ['Data Model', 'The four layers', 'Sections', 'State registry', 'Variable registry', 'Coefficients & namespaces',
+      'Sections by build-path tag', 'drives × 22', 'reads × 13', 'supports × 49'] });
   });
   it('the overview cards jump to their table; every table is complete', () => {
     render(<DataModel />);

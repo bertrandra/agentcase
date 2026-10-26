@@ -16,7 +16,8 @@ export function safeId(s: unknown): string {
   return FORBIDDEN.has(r) ? `x-${r}` : r;
 }
 /* eslint-disable no-control-regex -- stripping control characters is the point of these two helpers */
-export const cleanText = (s: unknown, max = 200): string => String(s == null ? '' : s).replace(/[\u0000-\u001f\u007f]/g, ' ').replace(/\s+/g, ' ').trim().slice(0, max);
+export const cleanText =
+  (s: unknown, max = 200): string => String(s == null ? '' : s).replace(/[\u0000-\u001f\u007f]/g, ' ').replace(/\s+/g, ' ').trim().slice(0, max);
 /** Free text that may span lines (vision statement): control characters other than newline/tab are dropped. */
 export const longText = (s: unknown, max = LIMITS.text): string => String(s == null ? '' : s).replace(/[\u0000-\u0008\u000b-\u001f\u007f]/g, '').slice(0, max);
 
@@ -46,7 +47,8 @@ export function asArrayBuffer(x: ArrayBuffer | ArrayBufferView): ArrayBuffer {
 
 /** Reject files that are too big or look like zip bombs before ExcelJS inflates anything: reads the zip central directory only. */
 export function guardZip(buf: ArrayBuffer): void {   // (callers pass asArrayBuffer(input))
-  if (buf.byteLength > LIMITS.fileBytes) throw new ParamsImportError(`File too large (${Math.round(buf.byteLength / 1024 / 1024)} MB, limit ${LIMITS.fileBytes / 1024 / 1024} MB)`);
+  if (buf.byteLength > LIMITS.fileBytes) throw new ParamsImportError(
+    `File too large (${Math.round(buf.byteLength / 1024 / 1024)} MB, limit ${LIMITS.fileBytes / 1024 / 1024} MB)`);
   const v = new DataView(buf);
   if (buf.byteLength < 22 || v.getUint32(0, true) !== 0x04034b50) throw new ParamsImportError('Not an .xlsx workbook (zip signature missing)');
   let eocd = -1;
@@ -58,7 +60,8 @@ export function guardZip(buf: ArrayBuffer): void {   // (callers pass asArrayBuf
   for (let i = 0; i < n; i++) {
     if (p + 46 > buf.byteLength || v.getUint32(p, true) !== 0x02014b50) throw new ParamsImportError('Corrupt workbook (zip directory)');
     const comp = v.getUint32(p + 20, true), raw = v.getUint32(p + 24, true);
-    if (raw > LIMITS.unzippedBytes || (comp > 0 && raw / comp > LIMITS.ratio && raw > 1024 * 1024)) throw new ParamsImportError('Workbook rejected: part inflates beyond the allowed size');
+    if (raw > LIMITS.unzippedBytes ||
+      (comp > 0 && raw / comp > LIMITS.ratio && raw > 1024 * 1024)) throw new ParamsImportError('Workbook rejected: part inflates beyond the allowed size');
     total += raw;
     p += 46 + v.getUint16(p + 28, true) + v.getUint16(p + 30, true) + v.getUint16(p + 32, true);
   }

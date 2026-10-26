@@ -9,7 +9,8 @@ export const FRENCH_ALIASES = {
   defaultProductNames: ['Produit 1'] as string[],
   defaultWaveNames: ['Vague 1'] as string[],
   /** French text the legacy v18.13 oracle itself shows (golden fixtures compare it character for character, so it is kept verbatim). */
-  legacyOracle: { 'domain/stress/compare.ts': ['mois'], 'ui/sections/tune/knowledge/index.tsx': ['mémoire vivante'], 'ui/zones/data/sectionCatalog.json': ['AS-IS team composition: skill × grade × location × ETP'] } as Record<string, string[]>,
+  legacyOracle: { 'domain/stress/compare.ts': ['mois'], 'ui/sections/tune/knowledge/index.tsx': ['mémoire vivante'],
+    'ui/zones/data/sectionCatalog.json': ['AS-IS team composition: skill × grade × location × ETP'] } as Record<string, string[]>,
 };
 
 /** The default name of the first product / wave of an enveloped single case (English since v20.1). */

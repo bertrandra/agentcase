@@ -10,7 +10,8 @@ import type { Tok } from '@/domain/theme/resolve';
 import type { TokenName } from '@/domain/theme';
 import { cssVars } from '@/ui/cssVars';
 
-const WLBL: Record<MetricKey, string> = { roi: 'ROI', tco: 'TCO', payback: 'Payback', aiCoverage: 'AI Coverage', humanSup: 'Human Supervision', risk: 'Op. Risk', agility: 'Agility' };
+const WLBL: Record<MetricKey, string> = { roi: 'ROI', tco: 'TCO', payback: 'Payback', aiCoverage: 'AI Coverage', humanSup: 'Human Supervision',
+  risk: 'Op. Risk', agility: 'Agility' };
 const MEDAL = ['🥇', '🥈', '🥉'];
 const COLORS: readonly TokenName[] = ['primary-700', 'info-700', 'warning-600', 'teal-700'];
 
@@ -18,7 +19,8 @@ function radar(N: Ranked[], sel: string[], tok: Tok): ChartConfiguration {
   const axes = Object.keys(WLBL) as MetricKey[];
   return { type: 'radar', data: { labels: axes.map((a) => WLBL[a]), datasets: N.filter((o) => sel.includes(o.id)).slice(0, 4).map((o, i) => ({
     label: o.label, data: axes.map((a) => o.norm[a]), borderColor: tok(COLORS[i % 4]!), backgroundColor: `${tok(COLORS[i % 4]!)}22`, pointRadius: 2 })) },
-  options: { scales: { r: { min: 0, max: 100, ticks: { stepSize: 25 } } }, plugins: { legend: { position: 'bottom' }, title: { display: true, text: 'Normalised strategy profiles (0-100)' } } } };
+  options: { scales: { r: { min: 0, max: 100, ticks: { stepSize: 25 } } },
+    plugins: { legend: { position: 'bottom' }, title: { display: true, text: 'Normalised strategy profiles (0-100)' } } } };
 }
 
 /** Metric weights, the weighted composite ranking (min-max normalised, direction-aware), the radar and "→ Apply". */
@@ -54,16 +56,19 @@ export function Ranking({ N, W }: { N: Ranked[]; W: Weights }) {
             <td>{MEDAL[i] ?? i + 1}</td><td>{o.icon} {o.label}</td>
             <td>
               <span className="ac-bar ac-score-bar">
-                <span className={i === 0 ? 'is-top' : undefined} style={cssVars({ '--dyn-bar-pct': `${isNaN(o.score) ? 0 : o.score}%` })} />{/* dynamic: the score */}
+                <span className={i === 0 ? 'is-top' : undefined} style={cssVars({ '--dyn-bar-pct': `${isNaN(o.score) ? 0 : o.score}%` })} />
+                {/* dynamic: the score */}
               </span>
             </td>
             <td className="ac-c ac-score">{isNaN(o.score) ? 'n/a' : o.score}</td>
-            <td className="ac-c"><input type="checkbox" aria-label={`Show ${o.label} on the radar`} checked={sel.includes(o.id)} onChange={(e) => setPicked(e.target.checked ? [...sel, o.id] : sel.filter((x) => x !== o.id))} /></td>
+            <td className="ac-c"><input type="checkbox" aria-label={`Show ${o.label} on the radar`} checked={sel.includes(o.id)}
+              onChange={(e) => setPicked(e.target.checked ? [...sel, o.id] : sel.filter((x) => x !== o.id))} /></td>
             <td className="ac-c"><button type="button" onClick={() => apply(o.id)} title="Push these levers into the live simulation">→ Apply</button></td>
           </tr>))}</tbody>
       </table></div>
       <div className="ac-radar"><ChartPanel config={cfg} label="Normalised strategy profiles" height={300} /></div>
-      <p className="ac-muted">Scores are min-max normalised across the 7 strategies per metric (direction-aware), then weighted. <strong>→ Apply</strong> pushes the strategy levers into the live simulation — the Monte Carlo
+      <p className="ac-muted">Scores are min-max normalised across the 7 strategies per metric (direction-aware), then weighted. <strong>→ Apply</strong> pushes
+        the strategy levers into the live simulation — the Monte Carlo
         and the verdict re-run on it automatically. Weights are consulting benchmarks; adjust to the client’s priorities.</p>
     </>
   );

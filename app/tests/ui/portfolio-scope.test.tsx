@@ -19,7 +19,8 @@ beforeEach(() => { ({ ids, waves } = threeProducts()); });
 afterEach(cleanup);
 const select = () => screen.getByRole('combobox', { name: 'Show' }) as HTMLSelectElement;
 const choose = (v: string) => fireEvent.change(select(), { target: { value: v } });
-const savings = () => kpi(/^Savings Y/), run = () => kpi(/^Run cost Y/), payback = () => kpi(/^Payback$/), eff = () => kpi(/^Effective automation$/), ceil = () => kpi(/^Glass ceiling$/);
+const savings = () => kpi(/^Savings Y/), run = () => kpi(/^Run cost Y/), payback = () => kpi(/^Payback$/), eff = () => kpi(/^Effective automation$/),
+  ceil = () => kpi(/^Glass ceiling$/);
 
 describe('display scope selector (F17)', () => {
   it('offers Portfolio, each Wave and each Product; defaults to the active product', () => {

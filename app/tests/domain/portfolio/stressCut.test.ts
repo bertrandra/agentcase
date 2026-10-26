@@ -6,9 +6,11 @@ import { expectClose, identical, loadCase, scaledTeam, shiftWaves, withProduct, 
 const base = loadCase('horizon-5');
 const run = (pf: Portfolio, rho = 0, draws = 120, seed = 42) => portfolioMonteCarlo(pf, { draws, seed, rho });
 /** The same portfolio with no uncertainty: every driver keeps its value, every draw is the deterministic case. */
-const still = (pf: Portfolio): Portfolio => ({ ...pf, common: { ...pf.common, mcParams: MC_PARAMS_DEFAULT.map((p) => ({ ...p, spread: 0 })) } as Portfolio['common'] });
+const still = (pf: Portfolio): Portfolio =>
+  ({ ...pf, common: { ...pf.common, mcParams: MC_PARAMS_DEFAULT.map((p) => ({ ...p, spread: 0 })) } as Portfolio['common'] });
 /** Two products over a 60-month calendar: p1 at month 0 (inside), p2 starting at month 48 (cut to 12 months). */
-const late = (): Portfolio => withProduct(withWave({ ...envelopeCase(base), horizonMonths: 60 }, 'w2', 48), { id: 'p2', waveId: 'w2', teamIn: scaledTeam(base, 0.6) });
+const late = (): Portfolio => withProduct(withWave({ ...envelopeCase(base), horizonMonths: 60 }, 'w2', 48),
+  { id: 'p2', waveId: 'w2', teamIn: scaledTeam(base, 0.6) });
 
 describe('per-draw horizon truncation: the draws are cut like the consolidation', () => {
   it('a product starting at month 48 on a 60-month horizon contributes its first 12 months only', () => {

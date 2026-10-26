@@ -9,9 +9,9 @@ import { appStore } from '@/store/instance';
 import { App } from '@/ui/App';
 import { uiStore } from '@/ui/uiState';
 import { SECTIONS } from '@/ui/zones/registry';
-import { loadCase } from '../helpers/pdc';
+import { resetShell } from '../helpers/shellReset';
 
-beforeEach(() => { uiStore.setState({ activeSection: 'home', toast: '', dockOpen: false, menuHidden: false, wiz: { active: false, pos: 0, visited: [] } }); loadCase('golden'); });
+beforeEach(resetShell);
 afterEach(cleanup);
 const seqOf = (id: string) => (appStore().getState().doc.PERSONAS as Persona[]).find((p) => p.id === id)!.seq!;
 const stops = () => flatten(activeSeq(seqOf('builder'))!);

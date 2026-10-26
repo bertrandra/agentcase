@@ -12,7 +12,8 @@ import { fromSnapshot, sanitize } from '@/store/persistence/snapshot';
  * table of expected values, not a case).
  */
 const files = (dir: string, ext: RegExp) => readdirSync(dir).filter((f) => ext.test(f)).map((f) => `${dir}/${f}`);
-const ALL = [...files('fixtures/cases', /\.json$/), ...files('fixtures/snapshots', /\.(json|html)$/).filter((f) => !f.endsWith('open-fit.json')), ...files('fixtures/portfolios', /\.json$/), 'tests/store/data/pf-v20-french.json'];
+const ALL = [...files('fixtures/cases', /\.json$/), ...files('fixtures/snapshots', /\.(json|html)$/).filter((f) => !f.endsWith('open-fit.json')),
+  ...files('fixtures/portfolios', /\.json$/), 'tests/store/data/pf-v20-french.json'];
 const rawOf = (f: string): unknown => parseCaseFile(readFileSync(f, 'utf8')).raw;
 /** The strict readers alone, as every file was opened before the schema pipeline (the persona aside: view state since D3). */
 const strict = (raw: unknown) => (isPortfolioSnapshot(raw) ? readPortfolio(raw) : envelopeCase(fromSnapshot(raw)));

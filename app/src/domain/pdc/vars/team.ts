@@ -39,7 +39,8 @@ export const TEAM_VARS = [
   v('maturityLevelCapped', 'Maturity level, end-year (capped)', 'INT', 'L', 'maturity', (c) => maturityInfo(c).capped),
   v('agentShareY3Pct', 'Agent vFTE share, end-year', 'PCT', '%', 'maturity', (c) => maturityInfo(c).share),
   v('maturityMapLevelLabel', 'Maturity level reached', 'TEXT', '', 'maturity-map', (c) => `L${maturityInfo(c).capped}`),
-  v('vfteConservationCheck', 'Conservation check |human+agent−base|', 'DEC2', 'FTE', 'fte-vfte', (c) => { const e = end(c); return Math.abs(e.humanFteEnd + e.agentVfteEnd - model(c).base.etp); }),
+  v('vfteConservationCheck', 'Conservation check |human+agent−base|', 'DEC2', 'FTE', 'fte-vfte',
+    (c) => { const e = end(c); return Math.abs(e.humanFteEnd + e.agentVfteEnd - model(c).base.etp); }),
   v('aiRunSupportTeamFte', 'AI-run support team (Eng+Prompt+FinOps+QA)', 'DEC1', 'FTE', 'agent-detail', (c) => {
     const e = model(c).base.etp;
     return Math.max(0.3, e / 12) + Math.max(0.2, e / 20) + (c.s.COEF.aiFinOpsFte as number) + Math.max(0.2, e / 25);

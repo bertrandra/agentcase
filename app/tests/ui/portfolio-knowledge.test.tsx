@@ -38,7 +38,8 @@ describe('Knowledge hub, several products: the subset of the active product', ()
   it('shows the banner, a chip per field (inherited at first) and the shared hub card instead of the infra field', () => {
     render(<Knowledge />);
     expect(screen.getByText(/Knowledge Hub subset of/).textContent).toContain('everything is inherited');
-    for (const l of ['Hub use', 'Maturity answers', 'Target CC', 'Setup base', 'Curation', 'Knowledge domains', 'Knowledge transfer preparation']) expect(chip(new RegExp(`^${l}: inherited`))).toBeTruthy();
+    for (const l of ['Hub use', 'Maturity answers', 'Target CC', 'Setup base', 'Curation', 'Knowledge domains',
+      'Knowledge transfer preparation']) expect(chip(new RegExp(`^${l}: inherited`))).toBeTruthy();
     expect(screen.queryByLabelText('Hub infra (€/mo)')).toBeNull();
     expect(screen.getByLabelText('Hub infrastructure (€/month)')).toBeTruthy();
   });

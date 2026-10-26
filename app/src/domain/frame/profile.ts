@@ -15,7 +15,8 @@ export const CROSS_CATEGORIES = [
 ] as const;
 export const CROSS_CODES: string[] = CROSS_CATEGORIES.map((x) => x.code);
 
-export const industryLabel = (i: Industry): string => (i.code === 'NONE' ? i.name : `${i.code} — ${i.name}${i.regArtifacts ? ` (${i.regArtifacts} reg. art.)` : ''}`);
+export const industryLabel =
+  (i: Industry): string => (i.code === 'NONE' ? i.name : `${i.code} — ${i.name}${i.regArtifacts ? ` (${i.regArtifacts} reg. art.)` : ''}`);
 /** Norms of an industry (or cross-cutting category). */
 export const normsOf = (code: string) => REG_NORMS.filter((n) => n.industry === code);
 /** The regulatory artefacts a norm brings. */

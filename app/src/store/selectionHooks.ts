@@ -1,6 +1,7 @@
 /** @calc-zone aggregate-views */
 import { useMemo } from 'react';
-import { aggregateTeams, consolidate, corePortfolio, inputSummary, selectionView, type InputSummaryRow, type SelectionView, type TeamAggregate } from '@/domain/portfolio';
+import { aggregateTeams, consolidate, corePortfolio, inputSummary, selectionView, type InputSummaryRow, type SelectionView,
+  type TeamAggregate } from '@/domain/portfolio';
 import { useCorePortfolio } from './consolidationHooks';
 import { usePortfolioSelector } from './hooks';
 import { useViewProductId } from './productView';

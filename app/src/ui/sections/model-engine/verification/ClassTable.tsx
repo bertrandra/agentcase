@@ -15,7 +15,8 @@ export function ClassTable({ on }: { on: boolean }) {
   const edit = (v: number, id: string, set: (c: string, x: string) => void, min: number, max: number, step: number, name: string) =>
     on ? <NumCell ariaLabel={`${name} of ${id}`} value={v.toFixed(2)} min={min} max={max} step={step} width={64} onCommit={(x) => set(id, x)} /> : v.toFixed(2);
   const cols: Column<Row>[] = [
-    { key: 'c', header: 'Criticality class', render: (r) => <><strong>{r.id}</strong> <small className="ac-muted">{EVT_CLASS_SEED[r.id]?.label ?? r.id}</small></> },
+    { key: 'c', header: 'Criticality class',
+      render: (r) => <><strong>{r.id}</strong> <small className="ac-muted">{EVT_CLASS_SEED[r.id]?.label ?? r.id}</small></> },
     { key: 'n', header: 'Artefacts', align: 'center', render: (r) => r.count },
     { key: 's', header: 'Scope share', align: 'center', render: (r) => pct1(r.share) },
     { key: 'phi', header: 'φ (floor)', align: 'center', render: (r) => edit(r.phi, r.id, setEvtPhi, 0, 0.6, 0.01, 'φ') },
@@ -30,8 +31,10 @@ export function ClassTable({ on }: { on: boolean }) {
         <Tile label="φₐ weighted" value={pct1(e.phiWeighted)} note="irreducible independent review" tone="purple" />
         <Tile label="κ term" value={pct1(e.kappaTerm)} note="marginal, shrinks as r→1" tone="amber" />
       </div>
-      <DataTable columns={cols} rows={e.classes} rowKey={(r) => r.id} empty="No in-scope artefacts yet — select scope (and, for regulated classes, the Regulatory catalog) first." />
-      <p className="ac-muted">C0 = unregulated SDLC default (φ=κ=0). C1–C4 derive from each regulatory artefact&apos;s existing human-supervision % (≥80%→C4 … &lt;40%→C2/C1) — an override per artefact can replace this default (MODEL.EVT.classMap), not yet exposed as a UI control here.</p>
+      <DataTable columns={cols} rows={e.classes} rowKey={(r) => r.id}
+        empty="No in-scope artefacts yet — select scope (and, for regulated classes, the Regulatory catalog) first." />
+      <p className="ac-muted">C0 = unregulated SDLC default (φ=κ=0). C1–C4 derive from each regulatory artefact&apos;s existing human-supervision % (≥80%→C4 …
+        &lt;40%→C2/C1) — an override per artefact can replace this default (MODEL.EVT.classMap), not yet exposed as a UI control here.</p>
     </Panel>
   );
 }

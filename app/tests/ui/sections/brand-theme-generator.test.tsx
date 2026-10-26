@@ -68,7 +68,8 @@ describe('palette generator panel', () => {
   it('the harmony is a keyboard radio group with a legend', () => {
     newTheme();
     const group = panel().getByRole('group', { name: 'Harmony' });
-    expect(within(group).getAllByRole('radio').map((r) => (r as HTMLInputElement).labels![0]!.textContent!.trim())).toEqual(['Monochrome', 'Analogous', 'Complementary', 'Triadic']);
+    expect(within(group).getAllByRole('radio').map((r) => (r as HTMLInputElement).labels![0]!.textContent!.trim()))
+      .toEqual(['Monochrome', 'Analogous', 'Complementary', 'Triadic']);
     expect((within(group).getByRole('radio', { name: 'Analogous' }) as HTMLInputElement).checked).toBe(true);
   });
   it.each([false, true])('has no axe violation with the panel (preview dark: %s)', async (dark) => {

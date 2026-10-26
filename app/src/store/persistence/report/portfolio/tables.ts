@@ -24,7 +24,8 @@ export const yearsTable = (years: YearRow[]): string =>
 /** The headline of the scope in one sentence (the same figures as the Consolidation cards). */
 export function headlineText(d: PortfolioReportData): string {
   const h = d.headline;
-  return `NPV ${fmtK(h.npv)} (calendar, ${(h.npvRate * 100).toFixed(1)}% a year) · ROI ${fmtRoiPct(h.roi)} · benefits ${fmtK(h.totalBenefit)} · setup ${fmtK(h.setup)} · net ${fmtK(h.net)} · payback ${payback(h.paybackMonth, d.horizon)}`
+  return `NPV ${fmtK(h.npv)} (calendar, ${(h.npvRate * 100).toFixed(1)}% a year) · ROI ${fmtRoiPct(h.roi)} · benefits ${fmtK(h.totalBenefit)} · ` +
+    `setup ${fmtK(h.setup)} · net ${fmtK(h.net)} · payback ${payback(h.paybackMonth, d.horizon)}`
     + ` · velocity +${Math.round(h.velocityPct)}% · effective automation ${h.eff.toFixed(1)}% under a ${Math.round(h.ceiling)}% glass ceiling.`;
 }
 

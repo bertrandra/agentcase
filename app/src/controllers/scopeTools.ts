@@ -52,7 +52,8 @@ const removePointCmd = defineCommand<Record<string, never>>({
   type: 'scurve.removePoint', label: () => 'Remove an adoption-curve point', run(d) { commit(d, removePoint(shownPts(d))); },
 });
 const movePointCmd = defineCommand<{ index: number; t: number; a: number }>({
-  type: 'scurve.movePoint', label: (p) => `Move adoption point ${p.index + 1} to month ${Math.round(p.t)}, ${Math.round(p.a)} %`, coalesceKey: (p) => `scurve.movePoint:${p.index}`,
+  type: 'scurve.movePoint', label: (p) => `Move adoption point ${p.index + 1} to month ${Math.round(p.t)}, ${Math.round(p.a)} %`,
+  coalesceKey: (p) => `scurve.movePoint:${p.index}`,
   run(d, p) { commit(d, movePoint(shownPts(d), p.index, p.t, p.a, horizonMonths(d))); },
 });
 

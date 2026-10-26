@@ -79,7 +79,8 @@ describe('personas section', () => {
     render(<Personas />);
     fireEvent.click(screen.getByText('🧩 Section assignment'));
     fireEvent.change(screen.getByRole('combobox'), { target: { value: 'admin' } });
-    expect(within(screen.getByLabelText('Sections of Admin')).getAllByRole('listitem')).toHaveLength(lists().admin!.length + 1);   // + Brand & theme (an app section, by default)
+    expect(within(screen.getByLabelText('Sections of Admin')).getAllByRole('listitem'))
+      .toHaveLength(lists().admin!.length + 1);   // + Brand & theme (an app section, by default)
     fireEvent.change(screen.getByLabelText('Available sections'), { target: { value: 'financial' } });
     fireEvent.click(screen.getByText('➕ Add to Admin'));
     expect(lists().admin).toContain('financial');
@@ -131,7 +132,8 @@ describe('the navigation honours the document’s PERSONA_SECTIONS', () => {
   });
   it('a document without PERSONA_SECTIONS falls back to the shipped defaults', () => {
     const s = loadCase('golden');
-    act(() => { s.dispatch({ type: 'test.clear', payload: null, label: 'clear', undoable: false, run(d) { delete (d as Record<string, unknown>).PERSONA_SECTIONS; } }); setPersona('builder'); });
+    act(() => { s.dispatch({ type: 'test.clear', payload: null, label: 'clear', undoable: false,
+      run(d) { delete (d as Record<string, unknown>).PERSONA_SECTIONS; } }); setPersona('builder'); });
     render(<NavZone />);
     expect(labels().length).toBeGreaterThan(20);
   });

@@ -68,7 +68,9 @@ const selectAllCmd = defineCommand<{ on: boolean }>({
 const setSeqCmd = defineCommand<{ kind: 'phase' | 'artefact'; id: string; value: number | null }>({
   type: 'scope.setSeq', label: (p) => `Set ramp-up sequence of ${p.id}`, coalesceKey: (p) => `scope.setSeq:${p.id}`,
   run(d, p) {
-    if (p.kind === 'phase') { const l = (d.phaseSeq ??= []) as { id: string; seq: number | null }[]; const e = l.find((x) => x.id === p.id); if (e) e.seq = p.value; else l.push({ id: p.id, seq: p.value }); return; }
+    if (p.kind === 'phase') { const l =
+      (d.phaseSeq ??= []) as { id: string; seq: number | null }[]; const e = l.find((x) => x.id === p.id); if (e) e.seq =
+      p.value; else l.push({ id: p.id, seq: p.value }); return; }
     const list = p.id.startsWith('R') ? d.regArtefactsEdited : d.artefactsEdited, e = list.find((x) => x.id === p.id);
     if (e) e.seq = p.value ?? undefined;
   },

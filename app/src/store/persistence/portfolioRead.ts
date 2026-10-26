@@ -53,7 +53,8 @@ function readDependency(v: unknown, id: string): Portfolio['waves'][number]['dep
   if (v === undefined) return undefined;
   need(rec(v), `wave ${id}: dependsOn must be an object`);
   const d = v as Rec;
-  return { waveId: safe(d.waveId, `wave ${id}: dependsOn.waveId`), milestone: d.milestone as 'start', lagMonths: num(d.lagMonths, `wave ${id}: dependsOn.lagMonths`) };
+  return { waveId: safe(d.waveId, `wave ${id}: dependsOn.waveId`), milestone: d.milestone as 'start',
+    lagMonths: num(d.lagMonths, `wave ${id}: dependsOn.lagMonths`) };
 }
 
 /**

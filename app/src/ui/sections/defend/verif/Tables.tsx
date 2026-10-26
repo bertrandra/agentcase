@@ -4,10 +4,14 @@ import { Badge } from '@/ui/widgets/cards';
 import { DataTable } from '@/ui/widgets/DataTable';
 
 const NOTES = [
-  ['Effort conservation', ': Agent vFTE = exactly the replaced human effort (Human FTE + Agent vFTE = baseline). The productivity factor (×1.4) is isolated in yearAgentCapacity (indicative); it no longer inflates the vFTE.'],
+  ['Effort conservation',
+    ': Agent vFTE = exactly the replaced human effort (Human FTE + Agent vFTE = baseline). The productivity factor (×1.4) is isolated in yearAgentCapacity ' +
+      '(indicative); it no longer inflates the vFTE.'],
   ['Day-rate consistency', ': the annual summary AND the monthly detail use the same target day rate (location strategy). No more divergence.'],
-  ['No double counting in target team', ': Dev + Supervision = residual FTE (supervision is a part of the residual). The agentic run is the only added team (new, external to the project).'],
-  ['Scope vs unit cost', ': headcount reduction comes from automation (× phase weight); the location strategy acts only on the day rate. Separate levers, no double counting.'],
+  ['No double counting in target team',
+    ': Dev + Supervision = residual FTE (supervision is a part of the residual). The agentic run is the only added team (new, external to the project).'],
+  ['Scope vs unit cost',
+    ': headcount reduction comes from automation (× phase weight); the location strategy acts only on the day rate. Separate levers, no double counting.'],
   ['Baseline', ': cost of the AS-IS team alone. AI costs (tokens, infra, run-team) are incremental and subtracted from benefits.'],
   ['ROI', ': (cumulative net benefits over the horizon) ÷ (Setup investment €). Agentic run costs are already net in the benefits.'],
   ['Setup FTE', ': transitional headcount whose € cost is included in the Setup budget (coaching/training), not recounted in the Run.'],
@@ -45,7 +49,9 @@ export function Sensi({ rows }: { rows: SensiRow[] }) {
       <DataTable rows={rows} rowKey={(r) => r.variation} columns={[
         { key: 'v', header: 'Variation', render: (r) => <strong>{r.variation}</strong> }, { key: 'e', header: 'Expected effect', render: (r) => r.expected },
         { key: 'o', header: 'Observed effect (FTE Y3 / ROI)', render: (r) => r.observed },
-        { key: 's', header: 'Status', align: 'center', render: (r) => (r.ok === null ? <Badge>n/a (at limit)</Badge> : <Badge tone={r.ok ? 'teal' : 'brick'}>{r.ok ? '✓ Consistent' : '✗ Abnormal'}</Badge>) }]} />
+        { key: 's', header: 'Status', align: 'center',
+          render: (r) => (r.ok === null ? <Badge>n/a (at limit)</Badge> : <Badge tone={r.ok ? 'teal' : 'brick'}>{r.ok ? '✓ Consistent' : '✗ Abnormal'}
+          </Badge>) }]} />
     </>
   );
 }

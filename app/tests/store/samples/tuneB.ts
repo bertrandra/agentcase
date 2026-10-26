@@ -1,4 +1,5 @@
-import { addTokenModel, removeTokenModel, resetLifecycleCoefficients, resetTokenModels, setCoef, setStatusPosture, setTokenField, setTokenOutShare } from '@/controllers/tuneB';
+import { addTokenModel, removeTokenModel, resetLifecycleCoefficients, resetTokenModels, setCoef, setStatusPosture, setTokenField,
+  setTokenOutShare } from '@/controllers/tuneB';
 import type { Sample } from './types';
 
 export const samples: Record<string, Sample> = {

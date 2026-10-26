@@ -10,7 +10,8 @@ const Detail = lazy(() => import('./index'));
 const days = (v: number): string => `${v.toFixed(1)} d`;
 const COLS: AggColumn<FlowRow>[] = [
   phaseColumn('P5'), { key: 'asis', header: 'Cycle time AS-IS', align: R, render: (r) => days(r.ctAsis) },
-  { key: 'new', header: 'Cycle time with agents', align: R, render: (r) => days(r.ctNew) }, { key: 'theta', header: 'Compression θ', align: R, render: (r) => `${(r.theta * 100).toFixed(0)}%` },
+  { key: 'new', header: 'Cycle time with agents', align: R, render: (r) => days(r.ctNew) },
+  { key: 'theta', header: 'Compression θ', align: R, render: (r) => `${(r.theta * 100).toFixed(0)}%` },
   { key: 'wip', header: 'WIP (Little)', align: R, render: (r) => r.wip.toFixed(1) },
   { key: 'npv', header: 'Time-to-market value (calendar NPV)', align: R,
     title: 'On the portfolio calendar (each product from its start, cut at the horizon, discounted from month 1); hidden until a margin per month is given',
@@ -25,7 +26,9 @@ export default function FlowAggregate() {
   const { rows, on, wip, flowNpv, valued } = useFlowRows();
   return (
     <RollupFrame title="⏱️ Flow & value · P5 · v16.9 · strategic bet" caption="Flow and value by product" rows={rows} columns={COLS} Section={Detail}
-      totals={{ on: `${countOf(on, rows.length)} on`, wip: wip.toFixed(1), npv: valued ? `${fmtEurK(flowNpv)} (${countOf(valued, rows.length)} valued)` : 'no margin given' }}
-      notes={<Callout kind="blue">The roll-up adds the work in progress and the sponsor-owned value of the products that have a margin; cycle times and compression are per product and are not averaged. Nothing here feeds the financial model.</Callout>} />
+      totals={{ on: `${countOf(on, rows.length)} on`, wip: wip.toFixed(1), npv:
+        valued ? `${fmtEurK(flowNpv)} (${countOf(valued, rows.length)} valued)` : 'no margin given' }}
+      notes={<Callout kind="blue">The roll-up adds the work in progress and the sponsor-owned value of the products that have a margin; cycle times and
+        compression are per product and are not averaged. Nothing here feeds the financial model.</Callout>} />
   );
 }

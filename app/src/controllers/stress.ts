@@ -20,7 +20,8 @@ const setSpreadCmd = defineCommand<{ id: string; value: string }>({
   type: 'mc.setSpread', label: (p) => `Set the Monte Carlo spread of ${p.id} to ±${p.value}`, coalesceKey: (p) => `mc.setSpread:${p.id}`,
   run(d, p) { const x = mcParams(d).find((q) => q.id === p.id), v = parseFloat(p.value); if (x && !isNaN(v) && v >= 0) x.spread = v; },
 });
-const resetMcCmd = defineCommand<Record<string, never>>({ type: 'mc.resetRanges', label: () => 'Reset the Monte Carlo ranges', run(d) { (d as { mcParams?: McParam[] }).mcParams = clone(MC_PARAMS_DEFAULT); } });
+const resetMcCmd = defineCommand<Record<string, never>>({ type: 'mc.resetRanges', label: () => 'Reset the Monte Carlo ranges',
+  run(d) { (d as { mcParams?: McParam[] }).mcParams = clone(MC_PARAMS_DEFAULT); } });
 const setAutoCmd = defineCommand<{ on: boolean }>({
   type: 'mc.setAuto', label: (p) => `${p.on ? 'Enable' : 'Disable'} the automatic Monte Carlo re-run`, run(d, p) { (d as { mcAuto?: boolean }).mcAuto = p.on; },
 });
@@ -57,12 +58,14 @@ const setSplitCmd = defineCommand<{ id: string; loc: string; value: string }>({
     const n = parseFloat(p.value); s.locSplit[p.loc] = isNaN(n) ? 0 : Math.max(0, Math.min(100, n));
   },
 });
-const resetStratCmd = defineCommand<Record<string, never>>({ type: 'strategy.resetAll', label: () => 'Reset all strategies', run(d) { (d as { strategyDefs?: StrategyDef[] }).strategyDefs = clone(STRATEGY_DEFS_DEFAULT); } });
+const resetStratCmd = defineCommand<Record<string, never>>({ type: 'strategy.resetAll', label: () => 'Reset all strategies',
+  run(d) { (d as { strategyDefs?: StrategyDef[] }).strategyDefs = clone(STRATEGY_DEFS_DEFAULT); } });
 const setWeightCmd = defineCommand<{ key: keyof Weights; value: string }>({
   type: 'strategy.setWeight', label: (p) => `Set the ${p.key} weight to ${p.value}`, coalesceKey: (p) => `strategy.setWeight:${p.key}`,
   run(d, p) { weights(d)[p.key] = Math.max(0, Math.min(100, parseFloat(p.value) || 0)); },
 });
-const resetWeightsCmd = defineCommand<Record<string, never>>({ type: 'strategy.resetWeights', label: () => 'Reset the strategy weights', run(d) { (d as { stratWeights?: Weights }).stratWeights = clone(STRAT_WEIGHTS_DEFAULT); } });
+const resetWeightsCmd = defineCommand<Record<string, never>>({ type: 'strategy.resetWeights', label: () => 'Reset the strategy weights',
+  run(d) { (d as { stratWeights?: Weights }).stratWeights = clone(STRAT_WEIGHTS_DEFAULT); } });
 const applyCmd = defineCommand<{ id: string }>({
   type: 'strategy.apply', label: (p) => `Apply strategy ${p.id} to the live case`,
   run(d, p) {

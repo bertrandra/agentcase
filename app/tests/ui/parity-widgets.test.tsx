@@ -29,7 +29,8 @@ describe('shared widgets carry the classes the legacy-matching styles hang on', 
       expect(css).toContain(`.${c}`);
     }
   });
-  it('DataTable: numeric alignment is a class of header and cells (legacy .text-right / .text-center, styled in sections-b.css); the scroller stays focusable', () => {
+  it('DataTable: numeric alignment is a class of header and cells (legacy .text-right / .text-center, styled in sections-b.css); the scroller stays focusable',
+    () => {
     const html = renderToStaticMarkup(<DataTable
       columns={[{ key: 'a', header: 'A', render: (r: number) => r }, { key: 'b', header: 'B', align: 'right', render: (r: number) => r * 2 },
         { key: 'c', header: 'C', align: 'center', render: () => 'c' }]}

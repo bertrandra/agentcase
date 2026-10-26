@@ -11,8 +11,13 @@ import { NumField } from './CommitField';
 const eur2 = (v: number): string => '€' + v.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
 
 const MODES: { value: Hub['infraAllocation']; label: string; text: string }[] = [
-  { value: 'perProduct', label: 'Full cost per product', text: 'Each product that uses the hub bears the whole infrastructure, as in a single case: prudent and additive, but the sum exceeds the real hub cost from two users on.' },
-  { value: 'byBaseEtp', label: 'In proportion to the entry headcount', text: 'The infrastructure is split between the planned products that use the hub, in proportion to their entry headcount; the shares add up exactly to the hub cost (to the cent).' },
+  { value: 'perProduct', label: 'Full cost per product',
+    text:
+    'Each product that uses the hub bears the whole infrastructure, as in a single case: prudent and additive, but the sum exceeds the real hub cost from ' +
+      'two users on.' },
+  { value: 'byBaseEtp', label: 'In proportion to the entry headcount', text:
+    'The infrastructure is split between the planned products that use the hub, in proportion to their entry headcount; the shares add up exactly to the ' +
+      'hub cost (to the cent).' },
 ];
 
 /** Live conservation check: what each hub user carries and whether the shares add up to the hub cost (never counted twice). */
@@ -32,7 +37,8 @@ function Conservation() {
       </table>
       <p role="status" data-conserved={infra.conserved} className={infra.conserved ? 'ac-muted' : undefined}>
         {infra.conserved
-          ? `Conservation checked: ${by ? `the shares add up to the hub cost (${eur2(infra.monthly)}/month)` : `${infra.shares.length} user(s) × ${eur2(infra.monthly)}/month = ${eur2(infra.expected)}/month`}.`
+          ? `Conservation checked: ${by ? `the shares add up to the hub cost (${eur2(infra.monthly)}/month)` : `${infra.shares.length} user(s) ` +
+            `× ${eur2(infra.monthly)}/month = ${eur2(infra.expected)}/month`}.`
           : `Conservation gap: the shares add up to ${eur2(infra.sum)}/month, expected ${eur2(infra.expected)}/month.`}
       </p>
     </div>
@@ -52,7 +58,9 @@ export function HubSettings() {
     <section className="ac-panel" aria-labelledby={tid}>
       <header><h2 id={tid}>Portfolio Knowledge Hub (common to all products)</h2></header>
       <label className="ac-check">
-        <input type="checkbox" checked={hub.enabled} onChange={(e) => { if (setPortfolioHub({ enabled: e.target.checked })) toast(e.target.checked ? 'Hub enabled by default' : 'Hub disabled by default'); }} /> Hub enabled by default (inherited by the products)
+        <input type="checkbox" checked={hub.enabled}
+          onChange={(e) => { if (setPortfolioHub({ enabled: e.target.checked })) toast(e.target.checked ? 'Hub enabled by default'
+          : 'Hub disabled by default'); }} /> Hub enabled by default (inherited by the products)
       </label>
       <div className="ac-form-row">
         <NumField label="Hub infrastructure (€/month)" value={hub.infraMonthly} min={0} step={250} onCommit={commitInfra} />
@@ -62,7 +70,8 @@ export function HubSettings() {
         <legend><strong>Infrastructure allocation</strong></legend>
         {MODES.map((m) => (
           <label key={m.value} className="ac-check">
-            <input type="radio" name="hub-infra-allocation" value={m.value} checked={hub.infraAllocation === m.value} onChange={() => { setPortfolioHub({ infraAllocation: m.value }); }} /> <strong>{m.label}</strong>
+            <input type="radio" name="hub-infra-allocation" value={m.value} checked={hub.infraAllocation === m.value}
+              onChange={() => { setPortfolioHub({ infraAllocation: m.value }); }} /> <strong>{m.label}</strong>
             <span className="ac-field-h"> — {m.text}</span>
           </label>
         ))}

@@ -22,7 +22,8 @@ export function Results({ run, stale, rerun }: { run: PfStress; stale: boolean; 
           <Stat label="Sum of the products’ P10" value={fmtEur(d.sumP10)} tone="grey" /><Stat label="Portfolio P10" value={fmtEur(d.p10)} tone={tone(d.p10)} />
           <Stat label="Risk reduction" value={fmtEur(d.reduction)} tone="teal" hint="Portfolio P10 minus the sum of the stand-alone P10s" />
         </StatRow>
-        <p className="ac-muted">What the portfolio gains on the adverse scenario because products do not all fall together: portfolio P10 − Σ P10 of each product alone.
+        <p className="ac-muted">What the portfolio gains on the adverse scenario because products do not all fall together: portfolio P10 − Σ P10 of each
+          product alone.
           Zero when ρ = 1 (same shocks), maximal when the products are independent (ρ = 0).</p>
       </Panel>
       <Panel title="By wave and by product"><Tables waves={run.waves} products={run.products} total={s} /></Panel>

@@ -24,7 +24,8 @@ async function refused(edit: (wb: XL.Workbook) => void, msg: RegExp): Promise<vo
 const sheet = (wb: XL.Workbook, n: string): XL.Worksheet => wb.getWorksheet(n)!;
 
 describe('overrides: the whitelist is enforced', () => {
-  it.each(['values.horizon', 'values.khInfraMonthly', 'values.discountRate', 'RATE', 'MODEL.CASE.discountRate', 'COEF', 'MODEL', '__proto__', 'constructor', 'values.__proto__', 'checked.constructor', 'dom', 'unknownKey'])('refuses %s', async (key) => {
+  it.each(['values.horizon', 'values.khInfraMonthly', 'values.discountRate', 'RATE', 'MODEL.CASE.discountRate', 'COEF', 'MODEL', '__proto__', 'constructor',
+    'values.__proto__', 'checked.constructor', 'dom', 'unknownKey'])('refuses %s', async (key) => {
     await refused((wb) => sheet(wb, 'Overrides').addRow([ids[0], key, 1, '"x"']), /not an overridable key/);
   });
   it('refuses a value of the wrong type or invalid JSON', async () => {
@@ -34,7 +35,8 @@ describe('overrides: the whitelist is enforced', () => {
     await refused((wb) => sheet(wb, 'Overrides').addRow([ids[0], 'checked.khEnabled', 1, '{bad']), /not valid JSON/);
   });
   it('refuses a duplicate override and a part out of sequence', async () => {
-    await refused((wb) => { const w = sheet(wb, 'Overrides'); w.addRow([ids[0], 'lifecycleUse', 1, 'true']); w.addRow([ids[0], 'lifecycleUse', 1, 'true']); }, /duplicate override/);
+    await refused((wb) => { const w = sheet(wb, 'Overrides'); w.addRow([ids[0], 'lifecycleUse', 1, 'true']); w.addRow([ids[0], 'lifecycleUse', 1, 'true']); },
+      /duplicate override/);
     await refused((wb) => sheet(wb, 'Overrides').addRow([ids[0], 'lifecycleUse', 2, 'true']), /out of sequence/);
   });
   it('strips prototype keys from a nested value', async () => {
@@ -48,7 +50,8 @@ describe('overrides: the whitelist is enforced', () => {
 
 describe('ids, references and sizes', () => {
   it('refuses unknown product ids in every sheet that names a product', async () => {
-    for (const [name, row] of [['TeamIn', ['nope', 'Dev', 'B1', 'France', 1, '']], ['Overrides', ['nope', 'lifecycleUse', 1, 'true']], ['KnowledgeSubsets', ['nope', 'Yes', 2]], ['KnowledgeDomains', ['nope', 'Docs', 100]]] as const) {
+    for (const [name, row] of [['TeamIn', ['nope', 'Dev', 'B1', 'France', 1, '']], ['Overrides', ['nope', 'lifecycleUse', 1, 'true']],
+      ['KnowledgeSubsets', ['nope', 'Yes', 2]], ['KnowledgeDomains', ['nope', 'Docs', 100]]] as const) {
       await refused((wb) => sheet(wb, name).addRow([...row]), /unknown product "nope"/);
     }
   });
@@ -72,7 +75,8 @@ describe('ids, references and sizes', () => {
     await refused((wb) => sheet(wb, 'KnowledgeSubsets').addRow([ids[1], 'Yes']), /two subset rows/);
   });
   it('caps the products at 50 and the waves at 50', async () => {
-    await refused((wb) => { const w = sheet(wb, 'Products'); for (let i = 0; i < 50; i++) w.addRow([`extra${i}`, `E${i}`, '', 0, '', '', '']); }, /too many products \(54, limit 50\)/);
+    await refused((wb) => { const w = sheet(wb, 'Products'); for (let i = 0; i < 50; i++) w.addRow([`extra${i}`, `E${i}`, '', 0, '', '', '']); },
+      /too many products \(54, limit 50\)/);
     await refused((wb) => { const w = sheet(wb, 'Waves'); for (let i = 0; i < 50; i++) w.addRow([`xw${i}`, `W${i}`, 0, '', 9]); }, /too many waves/);
   });
   it('caps the rows of a sheet (the workbook-wide limit applies to the new sheets too)', async () => {
@@ -92,13 +96,17 @@ describe('teams: every row is validated', () => {
     ['unknown pinned artefact', (r: XL.Row) => { r.getCell(6).value = 'no-such-artefact'; }, /unknown pinned artefact/],
   ])('refuses %s', async (_n, edit, msg) => { await refused((wb) => edit(sheet(wb, 'TeamIn').getRow(2)), msg); });
   it('refuses a product without a team row', async () => {
-    await refused((wb) => { const w = sheet(wb, 'TeamIn'); w.eachRow((r, i) => { if (i > 1 && String(r.getCell(1).value) === ids[3]) r.getCell(1).value = ids[0]; }); }, /product ".*" has no team row/);
+    await refused((wb) => { const w = sheet(wb, 'TeamIn'); w.eachRow(
+      (r, i) => { if (i > 1 && String(r.getCell(1).value) === ids[3]) r.getCell(1).value = ids[0]; }); }, /product ".*" has no team row/);
   });
 });
 
 describe('settings', () => {
-  it.each([['Hub infrastructure allocation', 'cheapest', /allocation must be/], ['Horizon (months)', 500, /horizon must be/], ['Start date (ISO)', '31/12/2026', /start date must be/], ['Active product id', 'ghost', /unknown active product/]])('refuses %s', async (label, value, msg) => {
-    await refused((wb) => sheet(wb, 'PortfolioSettings').eachRow((r) => { if (String(r.getCell(1).value) === label) r.getCell(2).value = value as never; }), msg);
+  it.each([['Hub infrastructure allocation', 'cheapest', /allocation must be/], ['Horizon (months)', 500, /horizon must be/],
+    ['Start date (ISO)', '31/12/2026', /start date must be/], ['Active product id', 'ghost', /unknown active product/]])('refuses %s',
+    async (label, value, msg) => {
+    await refused((wb) => sheet(wb, 'PortfolioSettings').eachRow((r) => { if (String(r.getCell(1).value) === label) r.getCell(2).value = value as never; }),
+      msg);
   });
 });
 

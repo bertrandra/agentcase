@@ -89,7 +89,8 @@ describe('section error boundary', () => {
 describe('chart error boundary', () => {
   const broken = { type: 'bar', get data(): never { throw new Error('bad chart data'); } } as unknown as ChartConfiguration;
   it('a throwing chart shows a note in its place; the rest of the section renders', async () => {
-    render(<div className="ac-section"><h1>Section</h1><p>Figure 42</p><ChartPanel config={broken} label="Savings" height={120} /><ChartPanel config={{ type: 'bar', data: { labels: ['a'], datasets: [{ label: 's', data: [1] }] } }} label="Fine" /></div>);
+    render(<div className="ac-section"><h1>Section</h1><p>Figure 42</p><ChartPanel config={broken} label="Savings" height={120} />
+      <ChartPanel config={{ type: 'bar', data: { labels: ['a'], datasets: [{ label: 's', data: [1] }] } }} label="Fine" /></div>);
     expect(screen.getByRole('note').textContent).toContain('The chart “Savings” could not be drawn');
     expect(screen.getByText('Figure 42')).toBeTruthy();
     expect(screen.getByRole('img', { name: 'Fine' })).toBeTruthy();

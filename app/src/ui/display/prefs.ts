@@ -15,7 +15,8 @@ const MODES = ['light', 'dark', 'auto'] as const, LEVELS = ['standard', 'enhance
 /** A stored value read back with every field checked (an unknown field value falls back to its default). */
 export function parsePrefs(raw: string | null): DisplayPrefs {
   let o: Record<string, unknown> = {};
-  try { const v: unknown = raw ? JSON.parse(raw) : {}; if (v && typeof v === 'object' && !Array.isArray(v)) o = v as Record<string, unknown>; } catch { /* malformed: defaults */ }
+  try { const v: unknown = raw ? JSON.parse(raw) : {}; if (v && typeof v === 'object' &&
+    !Array.isArray(v)) o = v as Record<string, unknown>; } catch { /* malformed: defaults */ }
   return {
     mode: MODES.find((m) => m === o.mode) ?? PREFS_DEFAULT.mode, contrast: LEVELS.find((l) => l === o.contrast) ?? PREFS_DEFAULT.contrast,
     reduceMotion: o.reduceMotion === true, cvd: o.cvd === true,

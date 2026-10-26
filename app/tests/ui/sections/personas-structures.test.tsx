@@ -19,7 +19,8 @@ const BJ = BUILTIN_STRUCTURES[0]!, BJ_LABELS = [...BJ.groups].sort((a, b) => a.o
 const doc = () => appStore().getState().doc;
 const persona = (id: string) => (doc().PERSONAS as Persona[]).find((p) => p.id === id)!;
 const stored = () => (doc().MENU_STRUCTURES ?? []) as MenuStructure[];
-const open = (tab: RegExp) => { render(<Personas />); fireEvent.click(within(screen.getByRole('tablist', { name: 'Persona management views' })).getByRole('tab', { name: tab })); };
+const open = (tab: RegExp) => { render(<Personas />); fireEvent.click(within(screen.getByRole('tablist', { name: 'Persona management views' }))
+  .getByRole('tab', { name: tab })); };
 const pick = (label: string | RegExp, value: string) => fireEvent.change(screen.getByRole('combobox', { name: label }), { target: { value } });
 const undo = () => act(() => { appStore().undo(); });
 const all = () => LEGACY_SECTIONS.map((s) => s.id);
@@ -104,7 +105,8 @@ describe('menu structures in Persona management', () => {
 });
 
 describe('the navigation follows the active persona’s structure', () => {
-  const groups = () => [...screen.getByRole('navigation', { name: 'Sections' }).querySelectorAll('[data-group]')].map((g) => g.querySelector('button span')!.textContent);
+  const groups = () => [...screen.getByRole('navigation', { name: 'Sections' }).querySelectorAll('[data-group]')].map((g) =>
+    g.querySelector('button span')!.textContent);
   it('switching persona switches the sidebar groups, the Welcome cards and the guided walk', () => {
     act(() => { addBuiltinPersona('business-journey', all()); setPersona('builder'); });
     render(<><NavZone /><Home /><WizardBar /></>);

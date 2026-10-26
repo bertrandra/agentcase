@@ -21,7 +21,9 @@ async function otherTabSession(name: string, tabId: string, now: string): Promis
 
 describe('sessions section', () => {
   it('shows every figure and heading the legacy section showed (4 fixtures)', () => {
-    expectParity('sessions', Sessions, { headings: ['Session manager — autosave', 'Autosave this session', "Clear this tab's autosave", '🗑 Clear all sessions', 'No autosaved sessions yet', 'A rolling autosave of this browser'] });
+    expectParity('sessions', Sessions,
+      { headings: ['Session manager — autosave', 'Autosave this session', "Clear this tab's autosave", '🗑 Clear all sessions', 'No autosaved sessions yet',
+      'A rolling autosave of this browser'] });
   });
   it('lists the autosaved sessions newest first, restores one with its undo history, and removes one', async () => {
     await otherTabSession('Older case', 'tab-B', '2026-01-01T10:00:00Z');

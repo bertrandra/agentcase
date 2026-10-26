@@ -22,7 +22,8 @@ describe('team-out section', () => {
     ? { skip: [0, 1], skipBands: ['Agentic run (en plus)', 'Total recurring target', 'Net reduction'] } : {}) });
   it('the input team and the automation depth drive the headline figures; undo restores them', () => {
     const { container } = render(<TeamOut />);
-    expect([statValue(container, 'Input (FTE)'), statValue(container, 'Total recurring target'), statValue(container, 'Net reduction')]).toEqual(['15.0', '6.0', '-60%']);
+    expect([statValue(container, 'Input (FTE)'), statValue(container, 'Total recurring target'), statValue(container, 'Net reduction')])
+      .toEqual(['15.0', '6.0', '-60%']);
     act(() => setInput('y3Ramp', 40));
     expect(statValue(container, 'Total recurring target')).not.toBe('6.0');
     act(() => appStore().undo());
@@ -38,6 +39,7 @@ describe('team-out section', () => {
   });
   it('the group table adds up to the poles', () => {
     const { container } = render(<TeamOut />);
-    expect([...container.querySelectorAll('table')[1]!.querySelectorAll('tbody tr')].map((r) => r.children[2]?.textContent)).toEqual(['3.3', '0.5', '2.3', '2.0']);
+    expect([...container.querySelectorAll('table')[1]!.querySelectorAll('tbody tr')].map((r) => r.children[2]?.textContent))
+      .toEqual(['3.3', '0.5', '2.3', '2.0']);
   });
 });

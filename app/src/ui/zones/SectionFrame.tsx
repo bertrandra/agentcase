@@ -14,7 +14,8 @@ export function SectionFrame(props: FrameProps) {
     <article className="ac-section" aria-labelledby="ac-section-title">
       <div className="ac-section-head">
         <h1 id="ac-section-title">{title}</h1>
-        {help && <button type="button" className="ac-help-btn" aria-expanded={showHelp} onClick={() => setShowHelp(!showHelp)} title="What does this section do?">?</button>}
+        {help && <button type="button" className="ac-help-btn" aria-expanded={showHelp} onClick={() => setShowHelp(!showHelp)}
+          title="What does this section do?">?</button>}
       </div>
       {help && showHelp && <div className="ac-help" role="note">{help}</div>}
       <ScopeBanner />

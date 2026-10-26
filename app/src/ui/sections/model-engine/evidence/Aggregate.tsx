@@ -12,9 +12,11 @@ import { Grade } from './Grade';
 
 const COLS: AggColumn<EvidenceRow>[] = [
   phaseColumn('P6'), { key: 'stage', header: 'Stage', render: (r) => EVL_STAGE_LABEL[r.stage] ?? r.stage },
-  { key: 'grade', header: 'Confidence grade', render: (r) => r.grade ?? 'n/a' }, { key: 'score', header: 'Score', align: R, render: (r) => (r.score === null ? 'n/a' : `${(r.score * 100).toFixed(0)}%`) },
+  { key: 'grade', header: 'Confidence grade', render: (r) => r.grade ?? 'n/a' },
+  { key: 'score', header: 'Score', align: R, render: (r) => (r.score === null ? 'n/a' : `${(r.score * 100).toFixed(0)}%`) },
   { key: 'meets', header: 'Meets the stage', render: (r) => (r.meets === null ? 'n/a' : r.meets ? 'yes' : 'no') },
-  { key: 'm', header: 'Measured drivers', align: R, render: (r) => r.measured }, { key: 'b', header: 'Benchmark drivers', align: R, render: (r) => r.benchmark }, { key: 'a', header: 'Assumed drivers', align: R, render: (r) => r.assumed },
+  { key: 'm', header: 'Measured drivers', align: R, render: (r) => r.measured },
+  { key: 'b', header: 'Benchmark drivers', align: R, render: (r) => r.benchmark }, { key: 'a', header: 'Assumed drivers', align: R, render: (r) => r.assumed },
 ];
 
 /**
@@ -35,6 +37,7 @@ export default function EvidenceAggregate() {
   return (
     <RollupFrame title="📋 Evidence ledger · P6 · v16.10 · cross-cutting" caption="Evidence by product" rows={rows} columns={COLS} Section={EvidenceDetail}
       totals={{ on: `${countOf(on, rows.length)} on`, grade: worst ? `worst: ${worst}` : 'n/a', m: measured, b: benchmark, a: assumed }}
-      notes={<Callout kind="blue">Grades are computed with equal driver weights (influence weights come from the P4 run of the edited product); a grade is never averaged, the roll-up shows the worst. Choose “Edit this product” to run P4 and re-weight.</Callout>} />
+      notes={<Callout kind="blue">Grades are computed with equal driver weights (influence weights come from the P4 run of the edited product); a grade is never
+        averaged, the roll-up shows the worst. Choose “Edit this product” to run P4 and re-weight.</Callout>} />
   );
 }

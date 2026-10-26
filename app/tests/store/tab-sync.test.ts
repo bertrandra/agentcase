@@ -78,7 +78,8 @@ describe('multi-tab sync: document id + revision (lot 10)', () => {
     connectBroadcast(B, b, 'B');
     (a as ChannelLike).onmessage = (e) => got.push(e.data);
     const before = JSON.stringify(B.getState().portfolio), at = B.syncId();
-    a.postMessage({ tabId: 'X', kind: 'patch', docId: at.docId, base: at.rev, rev: at.rev + 1, patches: [{ op: 'replace', path: ['products', 7, 'name'], value: 'x' }] });
+    a.postMessage({ tabId: 'X', kind: 'patch', docId: at.docId, base: at.rev, rev: at.rev + 1,
+      patches: [{ op: 'replace', path: ['products', 7, 'name'], value: 'x' }] });
     expect(JSON.stringify(B.getState().portfolio)).toBe(before);
     expect(B.syncId()).toEqual(at);
     expect(got).toEqual([expect.objectContaining({ kind: 'request', to: 'X', tabId: 'B', docId: at.docId })]);

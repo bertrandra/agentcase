@@ -8,7 +8,8 @@ import { tagOf } from '../../scripts/lib/zones';
  * Calculation zones (docs/ARCHITECTURE.md section 12): every calculation-bearing module carries exactly one `@calc-zone`; each figure has exactly one
  * `@owner` module.
  */
-const walk = (d: string): string[] => readdirSync(d).flatMap((f) => { const p = join(d, f); return statSync(p).isDirectory() ? walk(p) : /\.tsx?$/.test(f) ? [p] : []; });
+const walk = (d: string): string[] =>
+  readdirSync(d).flatMap((f) => { const p = join(d, f); return statSync(p).isDirectory() ? walk(p) : /\.tsx?$/.test(f) ? [p] : []; });
 const MUST_TAG = ['src/domain', 'src/controllers', 'src/store/persistence/excel', 'src/store/persistence/report', 'src/store/persistence/html'];
 const read = (f: string): string => readFileSync(f, 'utf8');
 const all = ['src/domain', 'src/controllers', 'src/store'].flatMap(walk);
@@ -30,12 +31,14 @@ describe('calculation zones: tags', () => {
     for (const z of ZONES) {
       expect(['input', 'calc', 'result', 'shared'], z.id).toContain(z.lane);
       expect(z.description.length, z.id).toBeGreaterThan(20);
-      for (const e of z.entry) { expect(existsSync(`src/${e}`), `${z.id}: ${e}`).toBe(true); expect(tagOf(read(`src/${e}`))?.zone, `${z.id}: ${e}`).toBe(z.id); }
+      for (const e of z.entry) { expect(existsSync(`src/${e}`), `${z.id}: ${e}`).toBe(true); expect(tagOf(read(`src/${e}`))?.zone,
+        `${z.id}: ${e}`).toBe(z.id); }
     }
   });
   it('every @owner names a catalogue figure, each figure has exactly one owner module, in the figure zone', () => {
     const owners = new Map<string, string[]>(), ids = new Set(FIGURES.map((f) => f.id));
-    for (const f of all) for (const o of tagOf(read(f))?.owners ?? []) { expect(ids.has(o), `${f} owns unknown figure ${o}`).toBe(true); owners.set(o, [...(owners.get(o) ?? []), f]); }
+    for (const f of all) for (const o of tagOf(read(f))?.owners ?? []) { expect(ids.has(o),
+      `${f} owns unknown figure ${o}`).toBe(true); owners.set(o, [...(owners.get(o) ?? []), f]); }
     for (const fig of FIGURES) {
       const mods = owners.get(fig.id) ?? [];
       expect(mods.length, `figure ${fig.id} must have exactly one owner module, found [${mods.join(', ')}]`).toBe(1);

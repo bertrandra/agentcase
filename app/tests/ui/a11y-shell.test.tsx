@@ -4,9 +4,9 @@ import { afterEach, beforeEach, describe, expect, it } from 'vitest';
 import { setPersona } from '@/controllers/persona';
 import { App } from '@/ui/App';
 import { goSection, uiStore } from '@/ui/uiState';
-import { loadCase } from '../helpers/pdc';
+import { resetShell } from '../helpers/shellReset';
 
-beforeEach(() => { uiStore.setState({ activeSection: 'home', toast: '', dockOpen: false, menuHidden: false, wiz: { active: false, pos: 0, visited: [] } }); loadCase('golden'); });
+beforeEach(resetShell);
 afterEach(cleanup);
 
 describe('shell landmarks and names', () => {
@@ -41,7 +41,8 @@ describe('shell landmarks and names', () => {
     const announcer = screen.getByTestId('section-announcer');
     expect(announcer.getAttribute('aria-live')).toBe('polite');
     expect(announcer.textContent).toContain('Welcome');
-    expect(within(screen.getByRole('navigation', { name: 'Sections' })).getAllByRole('button', { hidden: true }).filter((b) => b.getAttribute('aria-current') === 'page')).toHaveLength(1);
+    expect(within(screen.getByRole('navigation', { name: 'Sections' })).getAllByRole('button',
+      { hidden: true }).filter((b) => b.getAttribute('aria-current') === 'page')).toHaveLength(1);
     act(() => goSection('team-in'));
     expect(announcer.textContent).not.toContain('Welcome');
   });

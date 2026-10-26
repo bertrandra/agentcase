@@ -70,7 +70,8 @@ describe('a stored dynamic section as its tab shows it', () => {
     expect(rowDisplay(c, newRow('x', []))).toBe('—');
   });
   it('cards and rows come in seq order and the section is described', () => {
-    const c = ctxOf('golden'), d = { ...dash(false), description: 'Steering', rows: [{ ...row('b', 2), var: 'baseFte' }, { ...row('a', 1), defaultValue: 'x' }] };
+    const c = ctxOf('golden'),
+      d = { ...dash(false), description: 'Steering', rows: [{ ...row('b', 2), var: 'baseFte' }, { ...row('a', 1), defaultValue: 'x' }] };
     d.cards = [{ ...d.cards[1]!, CARD_SEQ: 1 }, { ...d.cards[0]!, CARD_SEQ: 2 }];
     const m = renderDynamicSection(d, c);
     expect(m.description).toBe('Steering');

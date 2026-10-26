@@ -13,7 +13,9 @@ export function ProductBanner({ refs }: { refs: readonly string[] }) {
   return (
     <p className="ac-prod-banner" role="note" data-overrides={n}>
       Product: <strong>{prod.name}</strong> ({n ? `${n} override${n > 1 ? 's' : ''} in this section` : 'inherited'})
-      <span className="ac-muted"> — a change applies {n ? 'to this product (overridden keys) or to all, depending on the “Change” choice' : 'depending on the “Change” choice of the top bar'}.</span>
+      <span className="ac-muted"> — a change
+        applies {n ? 'to this product (overridden keys) or to all, depending on the “Change” choice'
+        : 'depending on the “Change” choice of the top bar'}.</span>
     </p>
   );
 }
@@ -22,5 +24,6 @@ export function ProductBanner({ refs }: { refs: readonly string[] }) {
 export function TeamOwnerLabel() {
   const multi = useIsMulti(), prod = useActiveProduct();
   if (!multi) return null;
-  return <p className="ac-prod-banner" role="note">Team of: <strong>{prod.name}</strong><span className="ac-muted"> — the team belongs to this product and is never shared with the others.</span></p>;
+  return <p className="ac-prod-banner" role="note">Team of: <strong>{prod.name}</strong>
+    <span className="ac-muted"> — the team belongs to this product and is never shared with the others.</span></p>;
 }

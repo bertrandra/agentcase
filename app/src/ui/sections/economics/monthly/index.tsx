@@ -23,8 +23,10 @@ const sign = (x: number): 'pos' | 'neg' => (x >= 0 ? 'pos' : 'neg');
 export default function MonthlySection() {
   const { tok } = useTheme(), v = useEconomics(), curve = activeCurveOf(useCtx()), cfg = useMemo(() => monthlyMix(v, tok), [v, tok]);
   const note = /^legacy/.test(curve)
-    ? 'The ramp steps at months 12 and 24: this is the exact annual disaggregation, not a smoothing artefact. The twelve months of each year sum to that year’s modelled value, which is why payback and NPV read straight off this table.'
-    : `The ramp follows the active adoption curve (${curve.replace(/\.default$/, '')}) month by month. The twelve months of each year sum to that year’s modelled value, which is why payback and NPV read straight off this table.`;
+    ? 'The ramp steps at months 12 and 24: this is the exact annual disaggregation, not a smoothing artefact. The twelve months of each year sum to that ' +
+      'year’s modelled value, which is why payback and NPV read straight off this table.'
+    : `The ramp follows the active adoption curve (${curve.replace(/\.default$/, '')}) month by month. The twelve months of each year sum to that year’s ` +
+      `modelled value, which is why payback and NPV read straight off this table.`;
   return (
     <SectionFrame title="Monthly detail (36 / 60 months)" help={help}
       result={<>

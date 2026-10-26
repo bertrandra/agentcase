@@ -47,7 +47,8 @@ describe('A4: portfolio = sum of the products (every fixture, two products on tw
     expectClose(sum((v) => v.summary.net), cons.summary.net);
     expectClose(sum((v) => v.summary.totalBenefit), cons.summary.totalBenefit);
     expectClose(sum((v) => v.summary.setup), cons.summary.setup);
-    for (const m of ['savings', 'run', 'setup', 'humanFte', 'agentVfte'] as const) expectSeriesClose(cons.series[m], cons.series[m].map((_, i) => sum((v) => v.series[m][i] as number)));
+    for (const m of ['savings', 'run', 'setup', 'humanFte', 'agentVfte'] as const) expectSeriesClose(cons.series[m],
+      cons.series[m].map((_, i) => sum((v) => v.series[m][i] as number)));
     // calendar NPV of a product = its own-start NPV discounted by its month 0 (no truncation, no KT lead here)
     for (const v of cons.products) expectClose(v.summary.npv, v.run.headline().npv * Math.pow(1 + cons.rate / 12, -v.month0));
     // wave aggregates add up to the portfolio as well

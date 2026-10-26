@@ -15,9 +15,11 @@ export function KeepersNotice({ refKey, label }: { refKey: string; label: string
   const reset = (id: string, name: string) => { if (resetToCommon(id, refKey)) toast(`${label}: ${name} back to shared`); };
   return (
     <span className="ac-ovr ac-keepers" data-keepers={n} role="note" aria-label={`${label}: ${n} product${n > 1 ? 's override' : ' overrides'} this`}>
-      <span className="ac-keepers-text">{n} product{n > 1 ? 's' : ''} override{n > 1 ? '' : 's'} this: {names} — {n > 1 ? 'they keep their' : 'it keeps its'} value</span>
+      <span className="ac-keepers-text">
+        {n} product{n > 1 ? 's' : ''} override{n > 1 ? '' : 's'} this: {names} — {n > 1 ? 'they keep their' : 'it keeps its'} value</span>
       {keepers.map((k) => (
-        <button key={k.id} type="button" className="ac-ovr-btn" aria-label={`Back to shared: ${label} for ${k.name}`} onClick={() => reset(k.id, k.name)}>Back to shared: {k.name}</button>
+        <button key={k.id} type="button" className="ac-ovr-btn" aria-label={`Back to shared: ${label} for ${k.name}`} onClick={() => reset(k.id, k.name)}>Back
+          to shared: {k.name}</button>
       ))}
     </span>
   );

@@ -9,7 +9,8 @@ import { legacyNav, legacyNavDyn, NAV_FIXTURES, navInputs } from '../helpers/nav
 import { caseOf } from '../helpers/pdc';
 
 describe('navigation parity with the legacy sidebar (oracle)', () => {
-  it('records the three navigation recipes besides the base fixtures', () => expect(NAV_FIXTURES).toEqual(expect.arrayContaining(['golden', 'nav-custom-group', 'nav-persona-order', 'nav-guided-seq'])));
+  it('records the three navigation recipes besides the base fixtures', () =>
+    expect(NAV_FIXTURES).toEqual(expect.arrayContaining(['golden', 'nav-custom-group', 'nav-persona-order', 'nav-guided-seq'])));
   it.each(NAV_FIXTURES)('groups, sections, landing, group bar, hide-menu flag and guided walk equal the legacy for every persona (%s)', (id) => {
     const doc = caseOf(id), legacy = legacyNav(id), { sections, groups, lists, order } = navInputs(doc), personas = doc.PERSONAS as Persona[];
     expect(Object.keys(legacy.personas)).toEqual(personas.map((p) => p.id));
@@ -23,7 +24,8 @@ describe('navigation parity with the legacy sidebar (oracle)', () => {
       if (want.locked) continue;   // the legacy keeps Advanced locked: no group bar / walk to compare
       expect(!!p.compactNav, `${p.id} hide menu`).toBe(want.compact);
       const bar = groupBar(p.id, want.landing, sections, groups, lists, order);
-      expect(bar && { group: bar.selected, sections: bar.sections.map((s) => s.id), groups: bar.groups.map((g) => g.id) }, `${p.id} group bar`).toEqual(want.bar);
+      expect(bar && { group: bar.selected, sections: bar.sections.map((s) => s.id), groups: bar.groups.map((g) => g.id) },
+        `${p.id} group bar`).toEqual(want.bar);
       const seq = activeSeq(p.seq);
       expect(seq ? flatten(seq).map((f) => [f.si, f.step, f.sec]) : null, `${p.id} walk`).toEqual(want.wiz);
     }
@@ -34,7 +36,8 @@ describe('dynamic sections in the sidebar (oracle: a Board dashboard added to th
   it.each(NAV_FIXTURES)('every persona sees it where the legacy shows it (%s)', (id) => {
     const doc = caseOf(id), { groups, lists, order } = navInputs(doc), legacy = legacyNavDyn(id);
     // the legacy page has no app section (🎨 Brand & theme): compared on the legacy catalogue
-    const sections = resolveSections(SECTIONS.filter((s) => !s.app), doc.sectionGroups as never, [{ id: 'dyn-groups-1', title: 'Dashboard — Tune', archetype: 'GROUPS:tune', menuGroup: 'tune', order: 15 }]);
+    const sections = resolveSections(SECTIONS.filter((s) => !s.app), doc.sectionGroups as never,
+      [{ id: 'dyn-groups-1', title: 'Dashboard — Tune', archetype: 'GROUPS:tune', menuGroup: 'tune', order: 15 }]);
     const withIt = Object.fromEntries(Object.entries(lists).map(([k, v]) => [k, [...v, 'dyn-groups-1']]));
     for (const p of doc.PERSONAS as Persona[]) {
       const got = navGroups(p.id, sections, groups, withIt, order).map((g) => ({ group: g.group.id, sections: g.sections.map((s) => s.id) }));
@@ -45,7 +48,8 @@ describe('dynamic sections in the sidebar (oracle: a Board dashboard added to th
 
 describe('resolved catalogue', () => {
   const doc = caseOf('nav-guided-seq'), base = navInputs(doc), { groups, lists, order } = base;
-  const sections = resolveSections(SECTIONS, doc.sectionGroups as never, [{ id: 'dyn-groups-1', title: 'Dashboard — Tune', archetype: 'GROUPS:tune', menuGroup: 'tune', order: 15 }]);
+  const sections = resolveSections(SECTIONS, doc.sectionGroups as never,
+    [{ id: 'dyn-groups-1', title: 'Dashboard — Tune', archetype: 'GROUPS:tune', menuGroup: 'tune', order: 15 }]);
   it('adds the stored dynamic sections under their group, ordered by their own order', () => {
     const dyn = sections.find((s) => s.id === 'dyn-groups-1')!;
     expect(dyn).toMatchObject({ dynamic: true, group: 'tune', groupSeq: 15, label: 'Dashboard — Tune' });
@@ -58,11 +62,13 @@ describe('resolved catalogue', () => {
     const orphan = navGroups('advanced', sections, groups.filter((g) => g.id !== 'tune'), lists, order).flatMap((g) => g.sections.map((s) => s.id));
     expect(orphan).not.toContain('risk');
   });
-  it('without any stored placement the static catalogue is the default', () => expect(resolveSections(sections.filter((s) => !s.dynamic), undefined, undefined)).toEqual(sections.filter((s) => !s.dynamic)));
+  it('without any stored placement the static catalogue is the default', () =>
+    expect(resolveSections(sections.filter((s) => !s.dynamic), undefined, undefined)).toEqual(sections.filter((s) => !s.dynamic)));
 });
 
 describe('moves', () => {
-  const { sections, groups } = navInputs(caseOf('golden')), ids = (g: string) => sections.filter((s) => s.group === g).sort((a, b) => a.groupSeq - b.groupSeq).map((s) => s.id);
+  const { sections, groups } = navInputs(caseOf('golden')),
+    ids = (g: string) => sections.filter((s) => s.group === g).sort((a, b) => a.groupSeq - b.groupSeq).map((s) => s.id);
   it('dropping a card renumbers the target group and the group it left (10, 20 …)', () => {
     const rows = placeSection(sections, 'risk', 'frame', 1), frame = rows.filter((r) => r.group === 'frame');
     expect(frame.map((r) => r.id)).toEqual([ids('frame')[0], 'risk', ...ids('frame').slice(1)]);

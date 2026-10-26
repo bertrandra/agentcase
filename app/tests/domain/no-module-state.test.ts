@@ -10,7 +10,8 @@ import { describe, expect, it } from 'vitest';
  * UI theme runtime (the React context, the provider): the theme in effect is passed in.
  */
 const SRC = join(process.cwd(), 'src');
-const walk = (d: string): string[] => readdirSync(d).flatMap((n) => { const p = join(d, n); return statSync(p).isDirectory() ? walk(p) : /\.tsx?$/.test(n) ? [p] : []; });
+const walk = (d: string): string[] =>
+  readdirSync(d).flatMap((n) => { const p = join(d, n); return statSync(p).isDirectory() ? walk(p) : /\.tsx?$/.test(n) ? [p] : []; });
 const rel = (f: string) => relative(SRC, f).replace(/\\/g, '/');
 
 /** `file:name` → why this module-level container is not state: a memo keyed by an immutable input (same input, same output) or a constant lookup. */
@@ -60,7 +61,8 @@ function moduleState(file: string): Hit[] {
     for (const d of st.declarationList.declarations) {
       const name = d.name.getText(sf), where = `${rel(file)}:${name}`;
       if (mutable) out.push({ where, kind: 'let' });
-      else if (d.initializer && ts.isNewExpression(d.initializer) && /^(Weak)?(Map|Set)$/.test(d.initializer.expression.getText(sf))) out.push({ where, kind: 'container' });
+      else if (d.initializer && ts.isNewExpression(d.initializer) &&
+        /^(Weak)?(Map|Set)$/.test(d.initializer.expression.getText(sf))) out.push({ where, kind: 'container' });
     }
   }
   return out;
@@ -76,7 +78,8 @@ describe('no module state in domain (lot 5a)', () => {
     expect(Object.keys(ALLOWED).filter((k) => !hits.some((h) => h.where === k)), 'stale allowlist entries').toEqual([]);
   });
   it('domain and store never import the UI theme runtime (the context, the provider, the display store)', () => {
-    const bad = [...walk(join(SRC, 'domain')), ...walk(join(SRC, 'store'))].filter((f) => /from '[^']*(ui\/themeContext|brand\/ThemeRuntime|display\/store|\/ui\/)[^']*'/.test(readFileSync(f, 'utf8')));
+    const bad = [...walk(join(SRC, 'domain')), ...walk(join(SRC, 'store'))].filter((f) =>
+      /from '[^']*(ui\/themeContext|brand\/ThemeRuntime|display\/store|\/ui\/)[^']*'/.test(readFileSync(f, 'utf8')));
     expect(bad.map(rel)).toEqual([]);
   });
   it('the theme module exports no setter of a global theme', async () => {

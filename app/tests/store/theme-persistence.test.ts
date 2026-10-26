@@ -25,7 +25,8 @@ const golden = (): Doc => fromSnapshot(JSON.parse(readFileSync('fixtures/cases/g
 function themed(): Doc {
   const s = freshStore();
   s.load(golden());
-  addTheme('Client blue'); updateTheme(100, { colours: { primary: '#224488', 'header-start': '#112244' }, axes: { radius: 'round', controlsBoolean: 'switch' } });
+  addTheme('Client blue'); updateTheme(100, { colours: { primary: '#224488', 'header-start': '#112244' },
+    axes: { radius: 'round', controlsBoolean: 'switch' } });
   duplicateTheme(7); activateTheme(101);
   return s.getState().doc;
 }
@@ -50,7 +51,8 @@ describe('theme library persistence', () => {
   });
   it('a workbook that only switches to a built-in theme carries just that', async () => {
     freshStore().load(golden()); activateTheme(3);
-    const { patch } = await readParamsWorkbook(await paramsWorkbookBytes((await import('@/store/instance')).appStore().getState().doc, 'all', ENV, THEME_DEFAULT), golden(), ENV);
+    const { patch } = await readParamsWorkbook(await paramsWorkbookBytes((await import('@/store/instance')).appStore().getState().doc, 'all', ENV,
+      THEME_DEFAULT), golden(), ENV);
     expect(patch.ACTIVE_THEME).toBe(3);
     expect(patch.THEMES).toBeUndefined();
   });
@@ -62,7 +64,8 @@ describe('theme library persistence', () => {
 
 describe('customer logo in the exports', () => {
   it('the HTML report shows it above the title with its alt text; hidden or absent, the report is unchanged', () => {
-    const s = freshStore(); s.load(fromSnapshot(JSON.parse(readFileSync('fixtures/cases/combo-stress.json', 'utf8'))));   // a case with the regulatory catalogue on
+    const s = freshStore(); s.load(
+      fromSnapshot(JSON.parse(readFileSync('fixtures/cases/combo-stress.json', 'utf8'))));   // a case with the regulatory catalogue on
     const plain = buildCriticalReport(s.getState().doc, THEME_DEFAULT, new Date(0));
     expect(plain.ok).toBe(true);
     setCustomerName('Acme'); setCustomerLogo(PNG);

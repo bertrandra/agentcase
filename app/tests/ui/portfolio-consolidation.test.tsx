@@ -16,7 +16,8 @@ afterEach(cleanup);
 const open = async () => { mountApp('consolidation'); await sectionReady(/Consolidation/); };
 const table = (name: RegExp) => screen.getByRole('table', { name });
 const cells = (tr: Element) => [...tr.querySelectorAll('th, td')].map((c) => c.textContent ?? '');
-const stat = (label: RegExp) => screen.getAllByText(label).find((e) => e.classList.contains('ac-stat-l'))!.parentElement!.querySelector('.ac-stat-v')!.textContent;
+const stat = (label: RegExp) =>
+  screen.getAllByText(label).find((e) => e.classList.contains('ac-stat-l'))!.parentElement!.querySelector('.ac-stat-v')!.textContent;
 
 describe('Consolidation section', () => {
   it('headline cards are the domain portfolio headline', async () => {

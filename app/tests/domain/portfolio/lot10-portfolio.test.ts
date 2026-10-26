@@ -11,7 +11,8 @@ import { MC_PARAMS_DEFAULT, sensitivityMatrix } from '@/domain/stress';
 import type { CaseState } from '@/domain';
 import { expectClose, loadCase, scaledTeam, withProduct, withWave } from '../../helpers/portfolio';
 
-const still = (pf: Portfolio): Portfolio => ({ ...pf, common: { ...pf.common, mcParams: MC_PARAMS_DEFAULT.map((p) => ({ ...p, spread: 0 })) } as Portfolio['common'] });
+const still = (pf: Portfolio): Portfolio =>
+  ({ ...pf, common: { ...pf.common, mcParams: MC_PARAMS_DEFAULT.map((p) => ({ ...p, spread: 0 })) } as Portfolio['common'] });
 const legacyCurve = (c: CaseState): CaseState => ({ ...c, scurve: { ...c.scurve, curve: 'legacy.flatAnnual' } } as CaseState);
 /** horizon-5 (60 months) as p1 at month 0, plus p2 of `teamF` x the team starting at `start`, with an optional extra setup. */
 function two(base: CaseState, horizonMonths: number, start: number, setupTooling?: string, teamF = 0.6): Portfolio {

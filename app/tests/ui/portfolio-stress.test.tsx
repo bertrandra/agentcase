@@ -16,8 +16,10 @@ import { threeProducts } from '../helpers/portfolioStore';
 beforeEach(() => { threeProducts(); pfSimStore.setState({ run: null, progress: null, params: null }); });
 afterEach(cleanup);
 const open = async () => { mountApp('portfolio-stress'); await sectionReady(/Portfolio stress/); };
-const stat = (label: RegExp) => screen.getAllByText(label).find((e) => e.classList.contains('ac-stat-l'))!.parentElement!.querySelector('.ac-stat-v')!.textContent;
-const run = async () => { fireEvent.click(screen.getByRole('button', { name: /Run the simulation/ })); await screen.findByRole('table', { name: /Stress by wave/ }, { timeout: 30000 }); };
+const stat = (label: RegExp) =>
+  screen.getAllByText(label).find((e) => e.classList.contains('ac-stat-l'))!.parentElement!.querySelector('.ac-stat-v')!.textContent;
+const run = async () => { fireEvent.click(screen.getByRole('button', { name: /Run the simulation/ })); await screen.findByRole('table',
+  { name: /Stress by wave/ }, { timeout: 30000 }); };
 
 describe('Portfolio stress section', () => {
   it('is in the Portfolio group and invites to run before any result', async () => {

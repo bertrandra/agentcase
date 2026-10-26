@@ -11,7 +11,8 @@ function repairPins(v: unknown, id: string, n: Notes): string[] | undefined {
   if (!Array.isArray(v)) { n.push(`Shared team line ${id}: pins is not a list — emptied`); return undefined; }
   const out: string[] = [];
   for (const x of v) {
-    if (text(x) && !out.includes(x)) out.push(x); else n.push(`Shared team line ${id}: pin ${JSON.stringify(x).slice(0, 40)} is not valid or repeated — dropped`);
+    if (text(x) && !out.includes(x)) out.push(x); else n.push(
+      `Shared team line ${id}: pin ${JSON.stringify(x).slice(0, 40)} is not valid or repeated — dropped`);
   }
   return out.length ? out : undefined;
 }

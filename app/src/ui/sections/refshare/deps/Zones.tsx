@@ -13,7 +13,8 @@ function Card({ z }: { z: ZoneDef }) {
     <article className="ac-chip ac-dep-card" data-zone={z.id} aria-label={z.label}>
       <h3 className="ac-dep-card-title">{z.label} <Badge tone={z.lane === 'input' ? 'blue' : z.lane === 'calc' ? 'amber' : 'grey'}>{z.lane}</Badge></h3>
       <p>{z.description}</p>
-      <p className="ac-muted">{modules} tagged modules · feeds {feeds} zones · fed by {fed} zones · used by {readers} sections{z.lane !== 'shared' && <> · build layer {LAYERS.layer[z.id]}</>}</p>
+      <p className="ac-muted">{modules} tagged modules · feeds {feeds} zones · fed by {fed} zones · used
+        by {readers} sections{z.lane !== 'shared' && <> · build layer {LAYERS.layer[z.id]}</>}</p>
       <p><strong>Entry modules:</strong> {z.entry.map((m) => <code key={m} className="ac-dep-entry">{m}</code>)}</p>
       {figs.length > 0 && (
         <table className="ac-table" aria-label={`Figures owned by ${z.label}`}>
@@ -41,7 +42,8 @@ export function Zones() {
   const owned = DATA.figures.length;
   return (
     <div>
-      <h2>Zones &amp; figures <span className="ac-muted">— {DRAWN.length} calculation zones, {SHARED.length} shared, {owned} figures with exactly one owner each</span></h2>
+      <h2>Zones &amp; figures <span className="ac-muted">— {DRAWN.length} calculation zones, {SHARED.length} shared, {owned} figures with exactly one owner
+        each</span></h2>
       <p className="ac-muted">Every module under <code>src/domain</code> carries a <code>@calc-zone</code> tag and the module that owns a figure
         an <code>@owner</code> tag; <code>tests/domain/zones-tags.test.ts</code> enforces both, so a number has one source and no second copy of its
         formula. A section depends on a figure when the import closure of what it touches reaches the owner module.</p>

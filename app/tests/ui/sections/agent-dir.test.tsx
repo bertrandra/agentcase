@@ -9,7 +9,8 @@ import { parityTests } from '../../helpers/verifyA';
 
 beforeEach(() => { freshStore(); });
 afterEach(cleanup);
-const rows = (c: HTMLElement, t: number) => [...c.querySelectorAll('table')[t]!.querySelectorAll('tbody tr')].map((r) => [...r.children].map((x) => x.textContent));
+const rows = (c: HTMLElement, t: number) =>
+  [...c.querySelectorAll('table')[t]!.querySelectorAll('tbody tr')].map((r) => [...r.children].map((x) => x.textContent));
 const calc = () => computeCase(appStore().getState().doc);
 
 describe('agent-dir section', () => {

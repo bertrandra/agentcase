@@ -93,8 +93,12 @@ export default tseslint.config(
       ...reactHooks.configs.recommended.rules,
       // G2 — no code file over 150 lines (blank lines and comments count).
       'max-lines': ['error', { max: 150, skipBlankLines: false, skipComments: false }],
-      // D1 — lines over 160 characters are a warning (long string, template or regex literals and URLs excepted); over 300 is an error for every line.
-      'max-len': ['warn', { code: 160, ignoreUrls: true, ignoreStrings: true, ignoreTemplateLiterals: true, ignoreRegExpLiterals: true }],
+      // D1 — a line over 160 characters is a warning (target: none), whatever it holds: code, strings, template or regex literals, comments (a long
+      // literal is split with `+`, a long text becomes a constant); over 300 is an error for every line (`local/hard-max-len`). One exemption only,
+      // `ignorePattern`: a line that is nothing but a URL (optionally quoted or after `//` / `*`, with a trailing `,` `;` `)`), which cannot be broken.
+      // Not `ignoreUrls` (it exempts any line that merely CONTAINS a URL), nor `ignoreStrings` / `ignoreTemplateLiterals` / `ignoreRegExpLiterals`
+      // (each exempts any line that contains such a literal, i.e. most long lines).
+      'max-len': ['warn', { code: 160, ignorePattern: '^\\s*(?:(?://|\\*)\\s*)?[\'"`]?https?://\\S+?[\'"`]?[,;)]*$' }],
       'local/hard-max-len': 'error',
       '@typescript-eslint/no-explicit-any': 'error',
       '@typescript-eslint/consistent-type-imports': 'error',

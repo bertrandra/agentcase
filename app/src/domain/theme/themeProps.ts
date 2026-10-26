@@ -15,7 +15,8 @@ import type { ThemeDef } from './themeDef';
 
 /** Every colour token: scale steps, translucent steps, roles, charts, export colours (the report fonts are not colours). */
 export const COLOUR_TOKENS: readonly TokenName[] = [
-  ...Object.entries(SCALES).flatMap(([f, steps]) => Object.keys(steps).map((s) => `${f}-${s}`)), ...Object.keys(ALPHAS), ...Object.keys(ROLES), ...Object.keys(CHART),
+  ...Object.entries(SCALES).flatMap(([f, steps]) => Object.keys(steps).map((s) => `${f}-${s}`)), ...Object.keys(ALPHAS), ...Object.keys(ROLES),
+  ...Object.keys(CHART),
   ...Object.keys(EXPORT).filter((n) => !n.startsWith('report-font')),
 ] as TokenName[];
 

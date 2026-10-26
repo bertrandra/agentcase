@@ -13,7 +13,8 @@ const doc = () => appStore().getState().doc;
 
 describe('navigation layout commands', () => {
   it('a dynamic section keeps its placement in its own record, a static one in sectionGroups', () => {
-    const s = freshStore(), d = newDashboard({ groupIds: ['tune'], allGroups: false, existing: [], groups: doc().GROUPS as never, sections: SECTIONS, maxOrder: 1 })!;
+    const s = freshStore(), d =
+      newDashboard({ groupIds: ['tune'], allGroups: false, existing: [], groups: doc().GROUPS as never, sections: SECTIONS, maxOrder: 1 })!;
     addDashboard(d);
     const before = snap(s);
     placeSections('Move both', [{ id: d.id, group: 'verify', groupSeq: 7 }, { id: 'risk', group: 'verify', groupSeq: 8 }]);

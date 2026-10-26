@@ -10,7 +10,8 @@ export interface GeneratorSettings { seed: string; contrast: number; harmony: Ha
 export const GENERATOR_DEFAULTS = { contrast: 50, harmony: 'analogous' } as const satisfies Omit<GeneratorSettings, 'seed'>;
 
 const isHarmony = (v: unknown): v is Harmony => (HARMONIES as readonly unknown[]).includes(v);
-const hex6 = (v: unknown): string | null => (typeof v === 'string' && /^#([0-9a-f]{3}|[0-9a-f]{6})$/i.test(v.trim()) ? v.trim().toLowerCase().replace(/^#(.)(.)(.)$/, '#$1$1$2$2$3$3') : null);
+const hex6 = (v: unknown): string | null =>
+  (typeof v === 'string' && /^#([0-9a-f]{3}|[0-9a-f]{6})$/i.test(v.trim()) ? v.trim().toLowerCase().replace(/^#(.)(.)(.)$/, '#$1$1$2$2$3$3') : null);
 /** The contrast as an integer 0..100 (NaN and out-of-range values clamped; null when it is not a number). */
 export const clampContrast = (v: unknown): number | null => {
   const n = typeof v === 'string' && v.trim() !== '' ? Number(v) : v;

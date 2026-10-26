@@ -63,7 +63,8 @@ describe('generator settings persistence', () => {
     const t = userThemes(themed())[0]!, { themes, notes } = readThemeFile(themeFileJson([t]));
     expect(themes[0]!.generator).toEqual(G);
     expect(notes).toEqual([]);
-    expect(readThemeFile(JSON.stringify({ themes: [{ name: 'Old', colours: { primary: '#123456' }, axes: {} }] })).themes[0]).toEqual({ name: 'Old', colours: { primary: '#123456' }, axes: {} });
+    expect(readThemeFile(JSON.stringify({ themes: [{ name: 'Old', colours: { primary: '#123456' }, axes: {} }] })).themes[0])
+      .toEqual({ name: 'Old', colours: { primary: '#123456' }, axes: {} });
     const n: string[] = [];
     expect(parseTheme({ name: 'X', colours: {}, axes: {}, generator: { seed: 'nope' } }, n)!.generator).toBeUndefined();
     expect(n).toEqual(['theme: palette generator settings ignored (no valid seed colour).']);

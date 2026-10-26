@@ -46,7 +46,8 @@ export default function GanttSection() {
           <h2>Delivery timeline <small className="ac-muted">— one real calendar — transformation program + delivery rollout</small></h2>
           <Program v={v} />
           <Delivery v={v} />
-          <p className="ac-muted">One shared calendar, dates from the 🧭 AI Readiness roadmap. <strong>Program</strong> rows run in real time (incl. 🧠 Knowledge
+          <p className="ac-muted">One shared calendar, dates from the 🧭 AI Readiness roadmap. <strong>Program</strong> rows run in real time (incl. 🧠
+            Knowledge
             Hub build/setup + run when enabled).
             <strong> Delivery rollout</strong> places every in-scope participant — phases <em>and</em> 🔶 Cross-cutting — on the same calendar in ramp-up (seq)
             order, each sized by its own effort weight (w = effort × lifecycle) and compressed as automation ramps — later work is shorter for the same weight

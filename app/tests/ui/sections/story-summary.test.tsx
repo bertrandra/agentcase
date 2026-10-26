@@ -29,7 +29,8 @@ describe('story-summary section', () => {
     const rows = e.rows.map((r, i) => (i === 2 ? [r[0]!, r[1]!, legacyVelocityRow(r[2]!)] : i === 4 ? [r[0]!, r[1]!, payback(r[2]!)] : r).map(legacyMoney));
     expect(tablesOf(container)[0]!.slice(1)).toEqual(rows);
     const lead = e.lead.replace(/\+(\d+)%(?= delivery velocity)/, (m) => legacyVelocityRow(m))
-      .replace(/payback of (\d+) months/, (_m, n: string) => (deviationFixtures('DEV-PAYBACK-NOSETUP').includes(id) ? 'payback of immediate' : `payback of ${n} months`));
+      .replace(/payback of (\d+) months/,
+        (_m, n: string) => (deviationFixtures('DEV-PAYBACK-NOSETUP').includes(id) ? 'payback of immediate' : `payback of ${n} months`));
     expect(sq(container.querySelector('p')!.textContent!)).toBe(sq(lead));
   });
   it('follows the case: a higher potential moves the savings line; undo restores it', () => {

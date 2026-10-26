@@ -33,9 +33,11 @@ describe('documentation facts are generated (npm run docs:facts)', () => {
 describe('the facts generator', () => {
   const f = { version: '7.3.1', commands: '12' }, b = { groupTable: '| a | 1 |' };
   it('fills inline markers and blocks, idempotently', () => {
-    const src = 'v<!-- fact:version -->1.0.0<!-- /fact --> has <!-- fact:commands -->3<!-- /fact -->\n<!-- facts:groupTable -->\n| old |\n| rows |\n<!-- /facts -->\nend';
+    const src =
+      'v<!-- fact:version -->1.0.0<!-- /fact --> has <!-- fact:commands -->3<!-- /fact -->\n<!-- facts:groupTable -->\n| old |\n| rows |\n<!-- /facts -->\nend';
     const out = applyFacts(src, f, b);
-    expect(out).toBe('v<!-- fact:version -->7.3.1<!-- /fact --> has <!-- fact:commands -->12<!-- /fact -->\n<!-- facts:groupTable -->\n| a | 1 |\n<!-- /facts -->\nend');
+    expect(out).toBe(
+      'v<!-- fact:version -->7.3.1<!-- /fact --> has <!-- fact:commands -->12<!-- /fact -->\n<!-- facts:groupTable -->\n| a | 1 |\n<!-- /facts -->\nend');
     expect(applyFacts(out, f, b)).toBe(out);
   });
   it('keeps the cached value of a volatile fact (the number of tests) and refuses an unknown key', () => {

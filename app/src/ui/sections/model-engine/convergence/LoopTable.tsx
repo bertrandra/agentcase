@@ -14,17 +14,23 @@ export function LoopTable({ on }: { on: boolean }) {
   const cols: Column<Row>[] = [
     { key: 'l', header: 'Loop pair', render: (l) => <strong>{l.label}</strong> },
     { key: 'it', header: 'Legacy iter', align: 'center', render: (_l, i) => LOOP_PAIRS[i]?.internalIter },
-    { key: 'p', header: 'p (accept)', align: 'center', render: (l, i) => (on ? <NumCell ariaLabel={`p of ${l.label}`} value={l.p.toFixed(3)} min={0.05} max={1} step={0.01} width={74} onCommit={(v) => setLceP(i, v)} /> : l.p.toFixed(3)) },
+    { key: 'p', header: 'p (accept)', align: 'center',
+      render: (l, i) => (on ? <NumCell ariaLabel={`p of ${l.label}`} value={l.p.toFixed(3)} min={0.05} max={1} step={0.01} width={74}
+      onCommit={(v) => setLceP(i, v)} /> : l.p.toFixed(3)) },
     { key: 'en', header: 'E[N]', align: 'center', render: (l) => l.EN.toFixed(2) },
-    { key: 'esc', header: 'Escape', align: 'center', render: (l) => <span className={escapeMaterial(l) ? 'ac-flag' : undefined}>{l.escapePct.toFixed(1)}%</span> },
-    { key: 'tr', header: 'trev (h)', align: 'center', render: (l, i) => (on ? <NumCell ariaLabel={`Review time of ${l.label}`} value={tRev(i)} min={0} max={40} step={0.5} width={64} onCommit={(v) => setLceTRev(i, v)} /> : tRev(i)) },
+    { key: 'esc', header: 'Escape', align: 'center',
+      render: (l) => <span className={escapeMaterial(l) ? 'ac-flag' : undefined}>{l.escapePct.toFixed(1)}%</span> },
+    { key: 'tr', header: 'trev (h)', align: 'center',
+      render: (l, i) => (on ? <NumCell ariaLabel={`Review time of ${l.label}`} value={tRev(i)} min={0} max={40} step={0.5} width={64}
+      onCommit={(v) => setLceTRev(i, v)} /> : tRev(i)) },
     { key: 'k', header: 'keff', align: 'center', render: (l) => l.kEff.toFixed(2) },
     { key: 'rs', header: 'Review share', align: 'center', render: (l) => `${(l.reviewShare * 100).toFixed(0)}%` },
   ];
   return (
     <Panel title="Per loop pair">
       <DataTable columns={cols} rows={m.loops} rowKey={(l) => l.id} />
-      <p className="ac-muted">E[N] = (1 − (1−p)<sup>nmax</sup>)/p · escape = (1−p)<sup>nmax</sup> · k<sub>eff</sub> = cost-per-accepted ÷ token cost per attempt. Escape &gt; {ESCAPE_MATERIAL_PCT}% (red) means the fallback path is material and should be costed (CC-LC-03).</p>
+      <p className="ac-muted">E[N] = (1 − (1−p)<sup>nmax</sup>)/p · escape = (1−p)<sup>nmax</sup> · k<sub>eff</sub> = cost-per-accepted ÷ token cost per
+        attempt. Escape &gt; {ESCAPE_MATERIAL_PCT}% (red) means the fallback path is material and should be costed (CC-LC-03).</p>
     </Panel>
   );
 }

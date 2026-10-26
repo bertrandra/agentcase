@@ -8,20 +8,23 @@ const addCmd = definePortfolioCommand<{ id: string; name: string; startMonth: nu
   type: 'wave.add', label: (p) => `Add wave "${p.name}"`, apply: (pf, p) => ops.addWave(pf, p),
 });
 const renameCmd = definePortfolioCommand<{ id: string; name: string }>({
-  type: 'wave.rename', label: (p) => `Rename wave to "${p.name}"`, coalesceKey: (p) => `wave.rename:${p.id}`, apply: (pf, p) => ops.renameWave(pf, p.id, p.name),
+  type: 'wave.rename', label: (p) => `Rename wave to "${p.name}"`, coalesceKey: (p) => `wave.rename:${p.id}`,
+  apply: (pf, p) => ops.renameWave(pf, p.id, p.name),
 });
 const removeCmd = definePortfolioCommand<{ id: string }>({ type: 'wave.remove', label: () => 'Remove wave', apply: (pf, p) => ops.removeWave(pf, p.id) });
 const reorderCmd = definePortfolioCommand<{ id: string; toIndex: number }>({
   type: 'wave.reorder', label: (p) => `Move wave to position ${p.toIndex + 1}`, apply: (pf, p) => ops.reorderWave(pf, p.id, p.toIndex),
 });
 const startCmd = definePortfolioCommand<{ id: string; startMonth: number }>({
-  type: 'wave.setStart', label: (p) => `Start wave at month ${p.startMonth}`, coalesceKey: (p) => `wave.setStart:${p.id}`, apply: (pf, p) => ops.setWaveStart(pf, p.id, p.startMonth),
+  type: 'wave.setStart', label: (p) => `Start wave at month ${p.startMonth}`, coalesceKey: (p) => `wave.setStart:${p.id}`,
+  apply: (pf, p) => ops.setWaveStart(pf, p.id, p.startMonth),
 });
 const noteCmd = definePortfolioCommand<{ id: string; note: string }>({
   type: 'wave.setNote', label: () => 'Edit wave note', coalesceKey: (p) => `wave.setNote:${p.id}`, apply: (pf, p) => ops.setWaveNote(pf, p.id, p.note),
 });
 const assignCmd = definePortfolioCommand<{ productId: string; waveId: string | null }>({
-  type: 'wave.assign', label: (p) => (p.waveId === null ? 'Unassign product from its wave' : 'Assign product to a wave'), apply: (pf, p) => ops.assignWave(pf, p.productId, p.waveId),
+  type: 'wave.assign', label: (p) => (p.waveId === null ? 'Unassign product from its wave' : 'Assign product to a wave'),
+  apply: (pf, p) => ops.assignWave(pf, p.productId, p.waveId),
 });
 
 /** Add a wave starting at `startMonth` (0 = portfolio start). Returns its id. */

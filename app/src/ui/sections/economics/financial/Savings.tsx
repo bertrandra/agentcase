@@ -20,7 +20,8 @@ export function Savings() {
     <Panel title="Benefits & Savings Realized">
       <GridTable head={['Metric', ...v.years.map((_, i) => yLabel(i + 1))]} rows={rows} />
       <ChartPanel config={cfg} label="Savings per year" height={260} />
-      <Band items={[[`Freed FTE ${yLabel(v.H)}`, fmt1(v.freed[e] as number)], [`Savings ${yLabel(v.H)}`, fmtE(s.savings[e] as number)], [`Cumulative ${v.H}y`, fmtE(v.totalBenefit)]]} />
+      <Band items={[[`Freed FTE ${yLabel(v.H)}`, fmt1(v.freed[e] as number)], [`Savings ${yLabel(v.H)}`, fmtE(s.savings[e] as number)],
+        [`Cumulative ${v.H}y`, fmtE(v.totalBenefit)]]} />
     </Panel>
   );
 }

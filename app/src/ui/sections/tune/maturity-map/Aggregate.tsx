@@ -31,7 +31,8 @@ export default function MaturityMapAggregate() {
     { id: 'reached', name: 'Level reached', s: a.reached, f: (v) => `L${v.toFixed(1)}` },
   ];
   return (
-    <InputAggregate title="📐 Maturity levels (L1–L4)" intro="the L1–L4 thresholds belong to each product (inherited from the common values unless overridden).">
+    <InputAggregate title="📐 Maturity levels (L1–L4)"
+      intro="the L1–L4 thresholds belong to each product (inherited from the common values unless overridden).">
       <AggregateTable caption={`Maturity thresholds by product — ${vs.label}`} rows={a.rows} columns={COLS} />
       <Callout kind={a.uniform ? 'green' : 'note'}>{a.uniform ? SAME : DIFFER}</Callout>
       <SpreadTable caption={`Spread of the thresholds — ${vs.label}`} items={items} />

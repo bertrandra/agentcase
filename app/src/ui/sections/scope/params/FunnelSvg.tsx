@@ -9,10 +9,12 @@ type Cols = Record<keyof typeof COL_ROLES, string>;
 export type Active = ReturnType<typeof activeStages>;
 interface Band extends FunnelLink { t: string; s: string; c: string; fin?: boolean }
 const TEXT: Record<FunnelKey, [string, string, keyof Cols]> = {
-  scope: ['Delivery work in scope', 'everything the case covers', 'mix'], potential: ['Automation potential', 'what an agent could take, before any constraint', 'pot'],
+  scope: ['Delivery work in scope', 'everything the case covers', 'mix'],
+  potential: ['Automation potential', 'what an agent could take, before any constraint', 'pot'],
   ceiling: ['After regulatory / glass ceiling', 'compliance, safety and risk that cannot be delegated', 'ceil'],
   mix: ['After posture · context · knowledge', 'how automatable this work mix actually is', 'mix'],
-  ramp: ['After the adoption ramp', 'the depth the ramp has reached by this month', 'gap'], sup: ['After human supervision (P3)', 'the capacity ceiling supervisors impose', 'sup'],
+  ramp: ['After the adoption ramp', 'the depth the ramp has reached by this month', 'gap'],
+  sup: ['After human supervision (P3)', 'the capacity ceiling supervisors impose', 'sup'],
   effective: ['Effective, auditable automation', 'the depth every number in this case is built on', 'real'],
 };
 

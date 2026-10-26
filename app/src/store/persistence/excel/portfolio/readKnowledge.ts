@@ -37,8 +37,10 @@ export function readKnowledge(sheets: Sheets, ids: ReadonlySet<string>): Map<str
     if (given !== 0 && given !== 9) fail(t!.name, l.n, `give the 9 maturity answers or none (got ${given})`);
     out.set(id, clean({
       enabled: flagCell(t!, l, 1, 'enabled'), targetCC: numberCell(t!, l, 2, 'target CC', { min: 0, max: 4, optional: true }),
-      curationFTE: numberCell(t!, l, 3, 'curation FTE', { min: 0, max: 1e6, optional: true }), setupBase: numberCell(t!, l, 4, 'setup base', { min: 0, max: 1e12, optional: true }),
-      ktLeadMonths: numberCell(t!, l, 5, 'KT lead (months)', { min: 0, max: 600, int: true, optional: true }), maturityAnswers: given ? (answers as number[]) : undefined,
+      curationFTE: numberCell(t!, l, 3, 'curation FTE', { min: 0, max: 1e6, optional: true }),
+      setupBase: numberCell(t!, l, 4, 'setup base', { min: 0, max: 1e12, optional: true }),
+      ktLeadMonths: numberCell(t!, l, 5, 'KT lead (months)', { min: 0, max: 600, int: true, optional: true }),
+      maturityAnswers: given ? (answers as number[]) : undefined,
     }) as KnowledgeSubset);
   }
   for (const [id, domains] of readDomains(sheets, ids)) out.set(id, { ...(out.get(id) ?? {}), domains });

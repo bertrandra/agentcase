@@ -17,7 +17,8 @@ export const byLine = (t: CostTable, product: string, line: string): CostRow => 
  */
 export function expectChecksZero(m: CostModel): number {
   let n = 0;
-  for (const t of [m.rates, m.other]) for (const r of t.rows.filter((x) => x.role === 'diff')) { n++; for (const x of cells(r)) expect(Math.abs(nz(x))).toBeLessThanOrEqual(TOL); }
+  for (const t of [m.rates, m.other]) for (const r of t.rows.filter((x) => x.role === 'diff')) { n++; for (const x of cells(r)) expect(Math.abs(nz(x)))
+    .toBeLessThanOrEqual(TOL); }
   return n;
 }
 

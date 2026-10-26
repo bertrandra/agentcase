@@ -11,7 +11,8 @@ export interface Calendar {
 }
 
 export function calendarOf(pf: Portfolio): Calendar {
-  const start = pf.startDate || pf.common.dom?.values?.rmStart || '2026-09-01', d = parseLocalDate(start), ok = !isNaN(d.getTime()), labels = new Map<number, string>();
+  const start = pf.startDate || pf.common.dom?.values?.rmStart || '2026-09-01', d = parseLocalDate(start), ok = !isNaN(d.getTime()),
+    labels = new Map<number, string>();
   const label = (m: number) => (ok ? addMonthsLocal(d, m).toLocaleDateString('en-US', { month: 'short', year: '2-digit' }) : `M${m}`);
   return {
     start,

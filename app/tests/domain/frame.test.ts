@@ -2,7 +2,8 @@ import { describe, expect, it } from 'vitest';
 import { existsSync, readdirSync, readFileSync } from 'node:fs';
 import { REG_ARTEFACTS, engineNow, makeCtx, type CaseState } from '@/domain';
 import { fteAtMonth } from '@/domain/economics/fte';
-import { CROSS_CODES, GLOSSARY_TERMS, INDUSTRIES, crossOn, onboardingBand, plannedQuarters, regGlassCeiling, roadmapStages, trackStatus, type TrackActual } from '@/domain/frame';
+import { CROSS_CODES, GLOSSARY_TERMS, INDUSTRIES, crossOn, onboardingBand, plannedQuarters, regGlassCeiling, roadmapStages, trackStatus,
+  type TrackActual } from '@/domain/frame';
 
 const ids = readdirSync('fixtures/cases').map((f) => f.replace('.json', '')).sort().filter((id) => existsSync(`fixtures/extras/frameQuarters/${id}.json`));
 const load = (kind: string, id: string) => JSON.parse(readFileSync(`fixtures/${kind}/${id}.json`, 'utf8'));

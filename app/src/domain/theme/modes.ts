@@ -40,7 +40,8 @@ export function contrastValues(dark: boolean, level: 'enhanced' | 'high', base: 
   const standard = { ...base, ...(dark ? darkValues(base) : {}) } as ThemeValues;
   const delta = contrastDelta(dark, level, scalesOf(standard));
   if (level === 'enhanced') return delta;
-  const charts = Object.fromEntries([...SEQ_DIV.filter((n) => !(n in delta)).map((n) => [n, resolveTokens(standard[n as TokenName], standard)]), ...CAT.map((n, i) => [n, HIGH_CHART[dark ? 'dark' : 'light'][i]!])]);
+  const charts = Object.fromEntries([...SEQ_DIV.filter((n) => !(n in delta)).map((n) => [n, resolveTokens(standard[n as TokenName], standard)]),
+    ...CAT.map((n, i) => [n, HIGH_CHART[dark ? 'dark' : 'light'][i]!])]);
   return { ...delta, ...charts };
 }
 /** The colour-blind safe categorical series of a mode / level. */
@@ -66,10 +67,12 @@ const LIGHT = ':root:not([data-ac-mode="dark"])', DARK = ':root[data-ac-mode="da
 export function modesCss(): string {
   return [
     block(DARK, darkValues(), '  color-scheme: dark;\n'),
-    block(`${LIGHT}[data-ac-contrast="enhanced"]`, contrastValues(false, 'enhanced')), block(`${DARK}[data-ac-contrast="enhanced"]`, contrastValues(true, 'enhanced')),
+    block(`${LIGHT}[data-ac-contrast="enhanced"]`, contrastValues(false, 'enhanced')),
+    block(`${DARK}[data-ac-contrast="enhanced"]`, contrastValues(true, 'enhanced')),
     block(`${LIGHT}[data-ac-contrast="high"]`, contrastValues(false, 'high')), block(`${DARK}[data-ac-contrast="high"]`, contrastValues(true, 'high')),
     block(`${LIGHT}[data-ac-cvd="on"]`, cvdValues(false, false)), block(`${DARK}[data-ac-cvd="on"]`, cvdValues(true, false)),
-    block(`${LIGHT}[data-ac-contrast="high"][data-ac-cvd="on"]`, cvdValues(false, true)), block(`${DARK}[data-ac-contrast="high"][data-ac-cvd="on"]`, cvdValues(true, true)),
+    block(`${LIGHT}[data-ac-contrast="high"][data-ac-cvd="on"]`, cvdValues(false, true)),
+    block(`${DARK}[data-ac-contrast="high"][data-ac-cvd="on"]`, cvdValues(true, true)),
     block(':root[data-ac-motion="reduce"]', MOTION_OFF),
   ].join('\n');
 }

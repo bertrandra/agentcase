@@ -30,7 +30,8 @@ export interface StateRow { key: string; type: string; size: string; preview: st
 /** Type, size and a short preview of a value (legacy dmDescribeValue / dmPreview). */
 export function describe(v: unknown): { type: string; size: string; preview: string } {
   const type = v === null ? 'null' : v === undefined ? 'absent' : Array.isArray(v) ? 'array' : typeof v;
-  const size = Array.isArray(v) ? `${v.length} items` : type === 'object' ? `${Object.keys(v as object).length} keys` : type === 'string' ? `${(v as string).length} chars` : type === 'number' || type === 'boolean' ? String(v) : '';
+  const size = Array.isArray(v) ? `${v.length} items` : type === 'object' ? `${Object.keys(v as object).length} keys`
+    : type === 'string' ? `${(v as string).length} chars` : type === 'number' || type === 'boolean' ? String(v) : '';
   const empty = v === null || v === undefined || (Array.isArray(v) && !v.length) || (type === 'object' && !Object.keys(v as object).length);
   const raw = empty ? 'empty' : type === 'object' ? Object.keys(v as object).slice(0, 4).join(', ') : Array.isArray(v) ? JSON.stringify(v[0]) : String(v);
   return { type, size, preview: raw.length > 70 ? `${raw.slice(0, 70)} …` : raw };

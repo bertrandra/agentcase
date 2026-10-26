@@ -14,8 +14,10 @@ function UndoRedo() {
   const h = useHistory();
   return (
     <>
-      <button type="button" disabled={!h.canUndo} onClick={() => runHistory('undo')} title={h.undo.at(-1)?.label ?? 'Nothing to undo'} aria-label="Undo">↶</button>
-      <button type="button" disabled={!h.canRedo} onClick={() => runHistory('redo')} title={h.redo.at(-1)?.label ?? 'Nothing to redo'} aria-label="Redo">↷</button>
+      <button type="button" disabled={!h.canUndo} onClick={() => runHistory('undo')} title={h.undo.at(-1)?.label ?? 'Nothing to undo'}
+        aria-label="Undo">↶</button>
+      <button type="button" disabled={!h.canRedo} onClick={() => runHistory('redo')} title={h.redo.at(-1)?.label ?? 'Nothing to redo'}
+        aria-label="Redo">↷</button>
     </>
   );
 }
@@ -31,11 +33,13 @@ export function TopZone() {
     <header className="ac-top" role="banner">
       <div className="ac-top-left">
         <div className={logo ? 'ac-top-id has-logo' : 'ac-top-id'}>
-          <strong className="ac-brand" title="Back to Welcome" onClick={() => goSection('home')}>AgentCase{customer ? ` for ${customer}` : ''} <small>v{APP_VERSION}</small></strong>
+          <strong className="ac-brand" title="Back to Welcome"
+            onClick={() => goSection('home')}>AgentCase{customer ? ` for ${customer}` : ''} <small>v{APP_VERSION}</small></strong>
           <BrandLogo />
         </div>
         <div className="ac-top-ctrls ac-top-ctrls-left">
-          <button type="button" className="ac-icon-btn" aria-label="Toggle the sidebar menu" aria-pressed={!hidden} title="Show or hide the sidebar; hidden, the group bar above the section navigates" onClick={toggleMenuHidden}>☰</button>
+          <button type="button" className="ac-icon-btn" aria-label="Toggle the sidebar menu" aria-pressed={!hidden}
+            title="Show or hide the sidebar; hidden, the group bar above the section navigates" onClick={toggleMenuHidden}>☰</button>
           <select aria-label="Persona" value={persona} onChange={(e) => switchPersona(e.target.value, landing(e.target.value))}>
             {personas.map((p) => <option key={p.id} value={p.id}>{p.label ?? p.id}</option>)}
           </select>

@@ -13,7 +13,8 @@ export const IO_PARAMS: ParamDef[] = [
   ['setupTooling', 'Setup tooling (€)', 0, 1000000, 'num'], ['setupTraining', 'Setup training (€)', 0, 1000000, 'num'],
   ['setupCoaching', 'Setup coaching (€)', 0, 1000000, 'num'], ['setupGov', 'Setup governance (€)', 0, 1000000, 'num'],
   ['tokensPerArt', 'Tokens / agent run', 0, 1000000, 'num'], ['runsPerDay', 'Agent runs / day per FTE', 0, 200, 'int'],
-  ['infra', 'Monthly infra (€)', 0, 1000000, 'num'], ['workdays', 'Working days / year', 180, 260, 'int'], ['classicSaving', 'Classic annual saving (%)', 0, 15, 'int'],
+  ['infra', 'Monthly infra (€)', 0, 1000000, 'num'], ['workdays', 'Working days / year', 180, 260, 'int'],
+  ['classicSaving', 'Classic annual saving (%)', 0, 15, 'int'],
 ];
 const HORIZONS = [1, 2, 3, 5, 7, 10];
 /** Inputs that are sliders in the legacy page: assigning a fractional value snaps to whole numbers. */
@@ -25,7 +26,8 @@ function write({ wb, d }: WriteCtx): void {
     const raw = d.dom.values[id], v = raw === undefined ? NaN : type === 'enum35' ? parseInt(raw, 10) : parseFloat(raw);
     const row = ws.addRow([label, Number.isNaN(v) ? '' : v, mn, mx, type === 'enum35' ? '1,2,3,5,7 or 10' : type === 'int' ? 'whole' : 'number']);
     style(row, ' bggn');
-    row.getCell(2).dataValidation = type === 'enum35' ? listDV(HORIZONS, 'Horizon: 1, 2, 3, 5, 7 or 10 years') : rangeDV(mn, mx, type === 'int', `${label}: ${mn}–${mx}`);
+    row.getCell(2).dataValidation = type === 'enum35' ? listDV(HORIZONS, 'Horizon: 1, 2, 3, 5, 7 or 10 years')
+      : rangeDV(mn, mx, type === 'int', `${label}: ${mn}–${mx}`);
   });
   const ir = ws.addRow(['Industry (code)', d.dom.values.industry ?? 'NONE', '', '', 'One of the codes']);
   blue(ir.getCell(2)); note(ir.getCell(5)); ir.getCell(2).dataValidation = listDV(INDUSTRIES.map((i) => i.code), 'Industry code');

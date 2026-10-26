@@ -12,14 +12,16 @@ import { parityTests } from '../../helpers/verifyA';
 vi.mock('@/ui/widgets/ChartPanel', async () => import('../../helpers/chartStub'));   // jsdom has no canvas
 beforeEach(() => { freshStore(); });
 afterEach(cleanup);
-const rows = (c: HTMLElement, t: number) => [...c.querySelectorAll('table')[t]!.querySelectorAll('tbody tr')].map((r) => [...r.children].map((x) => x.textContent));
+const rows = (c: HTMLElement, t: number) =>
+  [...c.querySelectorAll('table')[t]!.querySelectorAll('tbody tr')].map((r) => [...r.children].map((x) => x.textContent));
 
 describe('agent-usage section', () => {
   // the legacy "relative agent effort" bar has no text: only its row label and the other cells are compared
   parityTests('agent-usage', AgentUsage);
   it('the headline figures follow the ramp and the token mix; undo restores them', () => {
     const { container } = render(<AgentUsage />);
-    expect([statValue(container, 'Agent vFTE Y3'), statValue(container, 'Tokens Y3'), statValue(container, 'In-scope artifacts')]).toEqual(['11.3', '3094M', '10/53']);
+    expect([statValue(container, 'Agent vFTE Y3'), statValue(container, 'Tokens Y3'), statValue(container, 'In-scope artifacts')])
+      .toEqual(['11.3', '3094M', '10/53']);
     act(() => setInput('y3Ramp', 40));
     expect(statValue(container, 'Agent vFTE Y3')).not.toBe('11.3');
     act(() => appStore().undo());

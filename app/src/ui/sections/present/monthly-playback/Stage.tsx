@@ -10,7 +10,8 @@ export function PlaybackStage({ metric, cfg, pos, count, months, scope }: {
   if (!metric || !cfg) return <p className="ac-muted">Select at least one metric</p>;
   return (
     <>
-      <div className="ac-form-row"><h2 data-testid="mp-title">{MP_META[metric].title}</h2><span className="ac-muted" data-testid="mp-pos">{pos + 1} / {count}</span></div>
+      <div className="ac-form-row"><h2 data-testid="mp-title">{MP_META[metric].title}</h2>
+        <span className="ac-muted" data-testid="mp-pos">{pos + 1} / {count}</span></div>
       <div className="ac-form-row">
         {legendOf(metric).map((l) => <span key={l.label}><span className="ac-mp-swatch" data-tone={l.tone} />{l.label}</span>)}
       </div>

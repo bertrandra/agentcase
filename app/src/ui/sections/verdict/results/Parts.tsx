@@ -23,7 +23,8 @@ export function VerdictBox({ d }: { d: Decision }) {
   return (
     <div className="ac-verdict ac-verdict-compact" data-tone={meta.tone} data-bg-tone={meta.bgTone}>
       <div className="ac-verdict-label">{meta.icon} {meta.label}</div>
-      <div><strong className="ac-verdict-pct">{d.confidence}%</strong> confidence · downside P10 <strong>{fmtEur(d.stats.p10)}</strong> · median P50 <strong>{fmtEur(d.stats.p50)}</strong></div>
+      <div><strong className="ac-verdict-pct">{d.confidence}%</strong> confidence · downside P10 <strong>{fmtEur(d.stats.p10)}</strong> · median
+        P50 <strong>{fmtEur(d.stats.p50)}</strong></div>
     </div>
   );
 }
@@ -34,7 +35,8 @@ export function UncertaintyPanel({ title, s }: { title: string; s: { p10: number
     <Panel title={title}>
       <StatRow>
         <Kpi label="P10 downside" value={fmtEur(s.p10)} tone={s.p10 < 0 ? 'brick' : 'teal'} /><Kpi label="P50 median" value={fmtEur(s.p50)} tone="blue" />
-        <Kpi label="P90 upside" value={fmtEur(s.p90)} tone="teal" /><Kpi label="P(net < 0)" value={`${Math.round(s.pNetNeg * 100)}%`} tone={pNegTone(s.pNetNeg)} />
+        <Kpi label="P90 upside" value={fmtEur(s.p90)} tone="teal" />
+        <Kpi label="P(net < 0)" value={`${Math.round(s.pNetNeg * 100)}%`} tone={pNegTone(s.pNetNeg)} />
       </StatRow>
     </Panel>
   );

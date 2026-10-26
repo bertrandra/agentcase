@@ -22,7 +22,8 @@ const SECTIONS = { setup: Setup, risk: Risk, 'lc-weighting': LcWeighting, 'engag
 const THEMES: Record<string, Partial<ThemeAxes>> = {
   'stepper + segmented + switch, compact': { controlsNumeric: 'stepper', controlsChoice: 'segmented', controlsBoolean: 'switch', density: 'compact' },
   'slider + radio, spacious': { controlsNumeric: 'slider', controlsChoice: 'radio', density: 'spacious', radius: 'round', box: 'elevated' },
-  'slider-field + dropdown + checkbox, compact': { controlsNumeric: 'slider-field', controlsChoice: 'dropdown', controlsBoolean: 'checkbox', density: 'compact', radius: 'square', box: 'flat' },
+  'slider-field + dropdown + checkbox, compact': { controlsNumeric: 'slider-field', controlsChoice: 'dropdown', controlsBoolean: 'checkbox', density: 'compact',
+    radius: 'square', box: 'flat' },
   'number fields everywhere': { controlsNumeric: 'number' },
 };
 const audit = (c: HTMLElement): Promise<string[]> => axeViolations(c, { region: false });

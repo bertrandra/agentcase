@@ -29,7 +29,8 @@ export function supervisionChecks(c: Ctx): ConvCheck[] {
   const sc05: string[] = [];
   if (on && m && (c.inp.v('runSizeMode') || 'hybrid') !== 'legacy') {
     const span = supSpanFor(c, m.base.etp);
-    m.yearAgentVfte.forEach((v, i) => { if (Math.abs((m.yearRunAgenticETP[i] as number) - ((v > 1e-4 ? span.floor : 0) + v * span.rOps)) > 1e-6) sc05.push(`Y${i + 1}`); });
+    m.yearAgentVfte.forEach(
+      (v, i) => { if (Math.abs((m.yearRunAgenticETP[i] as number) - ((v > 1e-4 ? span.floor : 0) + v * span.rOps)) > 1e-6) sc05.push(`Y${i + 1}`); });
   }
   return [
     audit('CC-SC-01', sc01.length ? sc01.join('; ') : null),

@@ -7,7 +7,8 @@ import { openParsed } from './openFile';
 /** Download-ready JSON of the current work: the legacy single-case shape when the portfolio is one plain case (F22), else `agentcase.portfolio.v1`. */
 export function exportSnapshotJson(): { filename: string; json: string } {
   const doc = activeDoc(), name = (doc.customerName as string | undefined)?.trim() || 'case';
-  return { filename: `AgentCase_${name.replace(/[^\w-]+/g, '_')}_${new Date().toISOString().slice(0, 10)}.json`, json: JSON.stringify(toPortfolioSnapshot(appStore().getState().portfolio)) };
+  return { filename: `AgentCase_${name.replace(/[^\w-]+/g, '_')}_${new Date().toISOString().slice(0, 10)}.json`,
+    json: JSON.stringify(toPortfolioSnapshot(appStore().getState().portfolio)) };
 }
 
 /**

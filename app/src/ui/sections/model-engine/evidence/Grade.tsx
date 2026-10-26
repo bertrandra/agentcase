@@ -5,7 +5,8 @@ import { Panel } from '@/ui/widgets/cards';
 
 /** The case confidence grade (its colour is the `data-grade` rule of sections-b.css) against what the stage expects. */
 export function Grade({ em }: { em: ReturnType<typeof evlModel> }) {
-  if (em.grade == null || em.score == null) return <Panel title="Case confidence"><p className="ac-muted">No influence weight anywhere yet - run P4 or wait for a driver to matter.</p></Panel>;
+  if (em.grade == null || em.score == null) return <Panel title="Case confidence">
+    <p className="ac-muted">No influence weight anywhere yet - run P4 or wait for a driver to matter.</p></Panel>;
   return (
     <Panel title="Case confidence">
       <div className="ac-form-row ac-center-items">

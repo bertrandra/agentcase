@@ -11,7 +11,8 @@ function HistoryPanel() {
     <ol className="ac-history" aria-label="History">
       <li><button type="button" onClick={() => jumpToStep(0)}>Initial state</button></li>
       {h.undo.map((e, i) => <li key={`u${i}`}><button type="button" className="is-done" onClick={() => jumpToStep(i + 1)}>{e.label}</button></li>)}
-      {[...h.redo].reverse().map((e, i) => <li key={`r${i}`}><button type="button" className="is-undone" onClick={() => jumpToStep(h.undo.length + i + 1)}>{e.label}</button></li>)}
+      {[...h.redo].reverse().map((e, i) =>
+        <li key={`r${i}`}><button type="button" className="is-undone" onClick={() => jumpToStep(h.undo.length + i + 1)}>{e.label}</button></li>)}
     </ol>
   );
 }
@@ -31,7 +32,8 @@ export function DockZone() {
   const open = useUi((s) => s.dockOpen), h = useHistory(), errors = useCaughtErrors().length;
   return (
     <footer className="ac-dock">
-      <button type="button" aria-expanded={open} onClick={toggleDock}>{open ? '▾' : '▸'} History ({h.undo.length}){errors ? ` · ${errors} display error${errors > 1 ? 's' : ''}` : ''}</button>
+      <button type="button" aria-expanded={open} onClick={toggleDock}>{open ? '▾' : '▸'} History
+        ({h.undo.length}){errors ? ` · ${errors} display error${errors > 1 ? 's' : ''}` : ''}</button>
       {open && <HistoryPanel />}
       {open && <ErrorsPanel />}
     </footer>

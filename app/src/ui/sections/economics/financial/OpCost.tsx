@@ -20,7 +20,8 @@ export function OpCost() {
     <Panel title="Operating Costs Breakdown">
       <GridTable head={['Cost Category', ...v.years.map((_, i) => `${yLabel(i + 1)} (€)`), `${v.H}y avg (€)`]} rows={rows} />
       <ChartPanel config={cfg} label="Operating cost mix of the end year" height={300} />
-      <Band items={[[`${yLabel(v.H)} operating cost`, fmtE(s.run[e] as number)], ['AS-IS baseline run', fmtE(v.baselineRun)], [`Run delta ${yLabel(v.H)}`, fmtE(v.runDelta[e] as number)]]} />
+      <Band items={[[`${yLabel(v.H)} operating cost`, fmtE(s.run[e] as number)], ['AS-IS baseline run', fmtE(v.baselineRun)],
+        [`Run delta ${yLabel(v.H)}`, fmtE(v.runDelta[e] as number)]]} />
     </Panel>
   );
 }

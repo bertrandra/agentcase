@@ -8,7 +8,8 @@ export type Act =
   | { t: 'play' } | { t: 'pause' } | { t: 'seek'; month: number } | { t: 'speed'; speed: string } | { t: 'loop'; loop: boolean }
   | { t: 'metric'; key: MetricKey; on: boolean } | { t: 'tick'; months: number } | { t: 'reset' };
 
-const INIT: PlayerState = { playing: false, month: 0, seq: 0, speed: '1', loop: true, metrics: { fte: true, cost: true, savings: true, velocity: false, costsp: false } };
+const INIT: PlayerState = { playing: false, month: 0, seq: 0, speed: '1', loop: true,
+  metrics: { fte: true, cost: true, savings: true, velocity: false, costsp: false } };
 export const sequence = (m: PlayerState['metrics']): MetricKey[] => MP_ORDER.filter((k) => m[k]);
 
 function reduce(s: PlayerState, a: Act): PlayerState {

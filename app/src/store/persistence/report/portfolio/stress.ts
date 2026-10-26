@@ -34,9 +34,11 @@ export function renderStress(r: StressReport | null, label: string): string {
   if (!r) return '';
   const v = r.verdict ? VERDICT_META[r.verdict.verdict] : null;
   return '<h2>7 · Portfolio stress</h2>'
-    + `<p>Monte Carlo of the planned products, ${r.draws} draws per product, seed ${r.seed}, correlation between products ρ = ${r.rho}.${r.stale ? ' <strong>The portfolio changed after this run: the figures below are stale.</strong>' : ''}`
+    + `<p>Monte Carlo of the planned products, ${r.draws} draws per product, seed ${r.seed}, correlation between products ρ = ${r.rho}.${r.stale ? ' ' +
+      '<strong>The portfolio changed after this run: the figures below are stale.</strong>' : ''}`
     + `${v && r.verdict ? ` Decision Intelligence verdict for ${esc(label)}: <strong>${esc(v.label)}</strong> (${r.verdict.confidence}% confidence).` : ''}`
     + `${r.reduction === null ? '' : ` Risk reduction against the products taken alone (P10): ${fmtK(r.reduction)}.`}</p>`
     + '<table><tr><th>Scope</th><th>P10</th><th>P50</th><th>P90</th><th>CVaR 10%</th><th>P(net &lt; 0)</th></tr>'
-    + `${row(label, r.stats)}${r.waves.map((w) => row(`Wave ${w.name}`, w.stats)).join('')}${r.products.map((p) => row(`Product ${p.name}`, p.stats)).join('')}</table>`;
+    + `${row(label, r.stats)}${r.waves.map((w) => row(`Wave ${w.name}`, w.stats)).join('')}${r.products.map((p) => row(`Product ${p.name}`, p.stats))
+      .join('')}</table>`;
 }

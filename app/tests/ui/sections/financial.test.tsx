@@ -36,7 +36,8 @@ describe('financial section', () => {
    */
   const SETUP_LINE = '5. One-time setup (tooling + training + coaching + governance, + HRI change and hub setup when on)';
   const ownersShown = (d: Dom): Dom => {
-    const c = makeCtx(appStore().getState().doc), v = economicsView(c), extraLines = investmentLines(setupBreakdown(c)).slice(4), dash = v.years.slice(1).map(() => '—');
+    const c = makeCtx(appStore().getState().doc), v = economicsView(c), extraLines = investmentLines(setupBreakdown(c)).slice(4),
+      dash = v.years.slice(1).map(() => '—');
     const inv = d.T.investTable!, free = fmt1(v.fte.freed);
     const T = { ...d.T, investTable: [...inv.slice(0, -1), ...extraLines.map(([l, x]) => [l, fmtE(x), ...dash, fmtE(x)]), inv.at(-1)!],
       savTable: d.T.savTable!.map((r) => (r[0] === 'Human FTE freed' ? [r[0], ...v.freed.map(fmt1)] : r)) };
@@ -55,7 +56,9 @@ describe('financial section', () => {
     expect(d.sdRows.every((r) => r.every((c) => squash(container.textContent!).includes(squash(c))))).toBe(true);
   });
   it('the verdict follows the ROI band and "n/a" appears when nothing was invested', () => {
-    const verdict = (id: string) => { loadFixture(id); const r = render(<Financial />); const v = r.container.querySelector('[data-verdict]')!.getAttribute('data-verdict'); const roi = statValue(r.container, 'ROI (net, 3y)'); r.unmount(); return [v, roi]; };
+    const verdict = (id: string) => { loadFixture(id); const r = render(<Financial />); const v =
+      r.container.querySelector('[data-verdict]')!.getAttribute('data-verdict'); const roi =
+      statValue(r.container, 'ROI (net, 3y)'); r.unmount(); return [v, roi]; };
     expect(verdict('golden')).toEqual(['go', '713%']);
     expect(verdict('econ-roi-mid')[0]).toBe('conditional');
     expect(verdict('econ-roi-low')[0]).toBe('reconsider');
