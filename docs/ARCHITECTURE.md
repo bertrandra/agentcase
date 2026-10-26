@@ -92,8 +92,8 @@ financial figure is testable without a browser.
   Carlo draws) and `fit.ts`. `canonical.ts` exposes `engineNow`, `paybackMonthsCanonical` and `npvCanonical` (discount rate from
   `MODEL.CASE.discountRate`, default 8 %): the single source for payback and NPV. The engine is always built from the raw model.
 - **Discounted-cash-flow kernel** (`domain/economics/cashflow.ts`, zone *time-engine*, owner of the payback-month, NPV and ROI figures). The one place
-  where a monthly cash-flow becomes a cumulative (`cumulativeOf`), a payback month (`paybackMonthOf`: first month >= `firstMonth` whose cumulative is
-  >= 0), an NPV (`npvOf`: month t discounted by (1 + r/12)^t, or by (1 + r)^(t/12) with `compounding: 'annual'`), a discount factor and an ROI
+  where a monthly cash-flow becomes a cumulative (`cumulativeOf`), a payback month (`paybackMonthOf`: the month after the last month >= `firstMonth`
+  whose cumulative is < 0, null when the final cumulative is < 0, DEV-PAYBACK-RECOVERY; `displayedPayback` is the one shown payback), an NPV (`npvOf`: month t discounted by (1 + r/12)^t, or by (1 + r)^(t/12) with `compounding: 'annual'`), a discount factor and an ROI
   (`roiCanonical`); `cashflowSummary(net, { annualRate, firstMonth, compounding })` returns all of them. `DEFAULT_DISCOUNT_RATE` (0.08) is the only
   literal of the default rate. Callers: the Time Engine (`engine.ts`: path, `npv`, `roi`, `headline`), the Monte Carlo thin pass (`thin.ts`, used by
   `model/mcs.ts`), the portfolio summary (`portfolio/headline.ts`, payback not before the first movement), the legacy-mode audit (`pdc/verifConvTime.ts`,
@@ -458,7 +458,7 @@ user guide is [GUIDE_MULTI_PRODUIT.md](GUIDE_MULTI_PRODUIT.md). How the pieces c
 | Views (P4) | `consolidationView`, `waveBoard`, `portfolioGantt`, `scopeHeadline`, `corePortfolio` | pure view models memoised on `corePortfolio` (the portfolio without view state); rule A8: no financial `.reduce(` in `ui/` portfolio code (ESLint) |
 | Store (P2) | `store/` (`Portfolio` is the source of truth; `doc` = effective case of the active product) and `store/address/` | the ~200 case commands are unchanged; the address layer re-addresses their patches onto team / override / common inside ONE `produceWithPatches`, so history, coalescing and remote patches are unchanged |
 | Commands (P2-P6) | `controllers/{product,productOverrides,wave,portfolio}.ts`, `portfolioGuard.dispatchChecked` | every portfolio write is a named, undoable command; a result that breaks `validate` is refused |
-| Persistence (P2, P5) | `persistence/{snapshot,excel/portfolio,report/portfolio}`, `snapshots`, `calc package` | `agentcase.portfolio.v1` (a plain single case is still saved as `agentcase.snapshot.v1`, rule F22); seven extra parameter sheets; results sheets per portfolio / wave / product; scoped report; photos carry the portfolio; staleness at product and portfolio level |
+| Persistence (P2, P5) | `persistence/{snapshot,excel/portfolio,report/portfolio}`, `snapshots`, `calc package` | `agentcase.portfolio.v1` (a plain single case is still saved as `agentcase.snapshot.v1`, rule F22); eight extra parameter sheets (`PF_SHEETS`, SharedTeam since lot 7); results sheets per portfolio / wave / product; scoped report; photos carry the portfolio; staleness at product and portfolio level |
 | Stress (P6) | `domain/portfolio/stress*.ts`, `store/portfolioSimulation.ts`, `controllers/stressPortfolio.ts` | per-product Monte Carlo (seed XOR hash(id)), global correlation `rho` (Gaussian copula on a shared factor), sum per draw, risk reduction, verdict by `verdictRule` |
 | UI (P3-P6) | `ui/shell/{ProductBar,ScopeSelect}`, `ui/sections/portfolio/{products,overrides,knowledge-transfer,waves,consolidation,stress}` | active product, edit scope (all / this product only), display scope; progressive disclosure: with one product nothing is shown |
 
