@@ -1,5 +1,6 @@
 import { useState } from 'react';
 import { setAutoCap } from '@/controllers/scopeTools';
+import { autoCapFrom } from '@/domain/inputs';
 import { useDoc } from '@/store/hooks';
 import { CheckInput, RangeInput } from '@/ui/widgets/fields';
 import { FieldNumber } from '@/ui/widgets/field/FieldNumber';
@@ -25,7 +26,7 @@ function CapInput() {
 
 /** Target automation potential: slider (locked while fitted to the scope), fit switch and technical cap. */
 export function PotentialBox() {
-  const cap = useDoc((d) => Math.max(10, Math.min(100, parseFloat(d.dom.values.autoCapPct ?? '') || 100)));
+  const cap = useDoc((d) => autoCapFrom(d.dom.values.autoCapPct));
   return (
     <div className="ac-card">
       <div className="ac-card-t">Target automation potential (%)</div>

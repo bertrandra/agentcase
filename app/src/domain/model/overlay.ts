@@ -10,7 +10,7 @@ export const activeCurve = (c: Ctx): string => c.s.scurve?.curve || 'spline.defa
  * model() = modelRaw() + Time-Engine overlay: under a non-legacy curve every annual array is replaced by the engine's own
  * yearly sums/samples, so Annual, Monthly, Financial and Monte Carlo read the same figures (legacy model(), v18.5–v18.8).
  * The arrays keep the legacy three entries (the oracle contract): below a 3-year horizon the entries past it repeat the last horizon year, above it
- * only the first three years are there. Per-year readers go through the horizon (`horizonYears`, the engine's `years()`, `yearIn` of the registry).
+ * only the first three years are there. Per-year readers go through the horizon (`horizonYears`, the engine's `years()`, `engineYear` of the registry).
  */
 function buildModel(c: Ctx): ModelResult {
   const raw = modelRaw(c), curve = activeCurve(c);

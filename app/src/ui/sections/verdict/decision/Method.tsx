@@ -1,7 +1,12 @@
+import { DI_THRESHOLDS as T } from '@/domain/verdict/decision';
+
+/** The thresholds in percent (the decision engine's `DI_THRESHOLDS`, the ones VerdictBox applies). */
+const pc = (x: number) => `${Math.round(x * 100)}%`;
 const RULES = [
-  ['✅ Recommended', 'P(net>0) ≥ 80% and P10 > −50% of setup', 'High confidence and the plausible downside stays within half the committed setup'],
-  ['⚠️ Conditionally viable', 'P(net>0) ≥ 60%', 'Viable only if the conditions derived from the top sensitivity drivers hold'],
-  ['⛔ Defer', 'P(net>0) < 60%', 'Confidence too low to commit — de-risk first (readiness, scope, ceiling)'],
+  ['✅ Recommended', `P(net>0) ≥ ${pc(T.strongPPos)} and P10 > −${pc(T.p10SetupMult)} of setup`,
+    'High confidence and the plausible downside stays within half the committed setup'],
+  ['⚠️ Conditionally viable', `P(net>0) ≥ ${pc(T.condPPos)}`, 'Viable only if the conditions derived from the top sensitivity drivers hold'],
+  ['⛔ Defer', `P(net>0) < ${pc(T.condPPos)}`, 'Confidence too low to commit — de-risk first (readiness, scope, ceiling)'],
 ];
 
 /** "How this verdict is computed": pipeline, editable decision rules, hypotheses and assumptions. */
@@ -17,7 +22,7 @@ export function Method() {
       <h3>2 · Decision rules (editable benchmarks)</h3>
       <table className="ac-table"><thead><tr><th>Verdict</th><th>Trigger</th><th>Meaning</th></tr></thead>
         <tbody>{RULES.map((r) => <tr key={r[0]}><td>{r[0]}</td><td>{r[1]}</td><td>{r[2]}</td></tr>)}</tbody></table>
-      <p><em>Coherence invariant (enforced in code):</em> a Recommended verdict is impossible when P(net&lt;0) &gt; 20%,
+      <p><em>Coherence invariant (enforced in code):</em> a Recommended verdict is impossible when P(net&lt;0) &gt; {pc(T.maxPNegForStrong)},
       whatever the rules above conclude. Because the recommendation is computed from the distribution,
         “Recommended” and “worst case very risky” can never coexist on screen.</p>
       <h3>3 · Hypotheses &amp; assumptions</h3>
@@ -39,7 +44,7 @@ export function Method() {
         <li><strong>Freshness:</strong> the verdict is fingerprinted against the full scenario; if anything model-relevant changes,
           it is flagged stale and re-run (automatically or on demand) — a verdict never silently outlives its scenario.</li>
       </ul>
-      <p className="ac-muted">All thresholds (80% / 60% / 20% / −50% of setup) are consulting benchmarks to validate with the client’s risk appetite — like
+      <p className="ac-muted">All thresholds ({pc(T.strongPPos)} / {pc(T.condPPos)} / {pc(T.maxPNegForStrong)} / −{pc(T.p10SetupMult)} of setup) are consulting benchmarks to validate with the client’s risk appetite — like
         every other coefficient in AgentCase.</p>
     </details>
   );

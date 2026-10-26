@@ -47,3 +47,12 @@ export function statusDoc(s: CaseState): StatusDocRow[] {
     return { id: d.id, label: d.label ?? d.id, blurb: (d as { blurb?: string }).blurb ?? '', posture: d.autoPosture, marker, share };
   });
 }
+
+/** Neutral bands of the lifecycle factors: a posture outside ±2 % and a phase weight outside ±5 % read as a lift or a cut. */
+export const POSTURE_BAND = 0.02, WEIGHT_BAND = 0.05;
+/** Direction of a lifecycle factor around 1 (×1.00 = neutral) for its band. */
+/** Tolerance of the lifecycle matrix editor: a coefficient away from 1 (tone) or from its benchmark (edited) by more than this. */
+export const MATRIX_EPS = 0.001;
+/** A coefficient differs from its benchmark (the matrix marks it edited). */
+export const isEditedCoef = (v: number, def: number): boolean => Math.abs(v - def) > MATRIX_EPS;
+export const factorDirection = (v: number, band: number): 'up' | 'down' | 'flat' => (v > 1 + band ? 'up' : v < 1 - band ? 'down' : 'flat');

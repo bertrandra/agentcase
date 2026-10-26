@@ -1,6 +1,7 @@
 /** @calc-zone workspace-config */
 import { classTargetPct } from '../../baseline/locStrat';
-import { locationMix, targetBlendedTJM, teamInCost } from '../../location';
+import { caseFte } from '../../economics/fte';
+import { blendedDayRate, targetBlendedTJM } from '../../location';
 import { modelOf as model } from '../../tune/memo';
 import { maturityInfo } from '../../tune/maturity';
 import { opModelCompute } from '../../tune/opmodel';
@@ -12,16 +13,16 @@ export const TEAM_VARS = [
   v('blendedTjmAsIs', 'Blended day rate (AS-IS)', 'DEC1', '€/day', 'ratecard', (c) => model(c).blendedTJM),
   v('blendedTjmTgt', 'Blended day rate (target)', 'DEC1', '€/day', 'ratecard', (c) => model(c).tgtTJM),
   v('baseFte', 'Baseline headcount (FTE)', 'DEC1', 'FTE', 'team-in', (c) => model(c).base.etp),
-  v('residualFteY3', 'Residual headcount, end-year (FTE)', 'DEC1', 'FTE', 'team-out', (c) => end(c).totalHumanFteEnd),
-  v('headcountReductionPctKpi', 'Headcount reduction, end-year', 'PCT', '%', 'kpi', (c) => { const m = model(c); return m.base.etp > 0 ? (1 - end(c).totalHumanFteEnd / m.base.etp) * 100 : 0; }),
-  v('asisTobeFreedFte', 'Human FTE freed, AS-IS vs TO-BE', 'DEC1', 'FTE', 'asis-tobe', (c) => Math.max(0, model(c).base.etp - end(c).totalHumanFteEnd)),
+  v('residualFteY3', 'Residual headcount, end-year (FTE)', 'DEC1', 'FTE', 'team-out', (c) => caseFte(c).after),
+  v('headcountReductionPctKpi', 'Headcount reduction, end-year', 'PCT', '%', 'kpi', (c) => caseFte(c).reductionPct),
+  v('asisTobeFreedFte', 'Human FTE freed, AS-IS vs TO-BE', 'DEC1', 'FTE', 'asis-tobe', (c) => caseFte(c).freed),
   v('runTeamFteEndYear', 'AgentOps run-team FTE, end-year', 'DEC1', 'FTE', 'run-sizing', (c) => end(c).runTeamFteEnd),
-  v('tobeTeamTotalHeadcount', 'TO-BE team (delivery + run), end-year', 'DEC1', 'FTE', 'tobe-team', (c) => end(c).totalHumanFteEnd),
+  v('tobeTeamTotalHeadcount', 'TO-BE team (delivery + run), end-year', 'DEC1', 'FTE', 'tobe-team', (c) => caseFte(c).after),
   v('agentVfteAvgEndYear', 'Agent vFTE, end-year average', 'DEC1', 'FTE', 'vfte-ov', (c) => end(c).agentVfteAvg),
   v('targetOffshorePct', 'Target location mix — Offshore %', 'PCT', '%', 'loc-strat', (c) => classTargetPct(c.s, 'Offshore')),
   v('targetNearshorePct', 'Target location mix — Nearshore %', 'PCT', '%', 'loc-strat', (c) => classTargetPct(c.s, 'Nearshore')),
   v('locRateGapPct', 'Blended rate gap, target vs AS-IS', 'PCT', '%', 'loc-strat', (c) => {
-    const mx = locationMix(c.s), asis = mx.tot ? teamInCost(c.s, c.inp).cost / (mx.tot * c.inp.p('workdays')) : 0, tgt = targetBlendedTJM(c.s, c.rateScale);
+    const asis = blendedDayRate(c.s, c.inp), tgt = targetBlendedTJM(c.s, c.rateScale);
     return asis ? (tgt / asis - 1) * 100 : 0;
   }),
   v('omPodsY3', 'Pods, end-year (topology)', 'INT', '', 'opmodel', (c) => opModelCompute(c, endIdx(c)).pods),

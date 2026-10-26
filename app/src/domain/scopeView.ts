@@ -43,3 +43,8 @@ export function scopeSummary(c: Ctx): string {
   return `${sc.count}/${sc.totalArt} SDLC art.${regN ? ` · ${regN} reg art.` : ''} · ${Math.round(sc.weight * 100)}% effort · ${sc.nPhases}/${sc.nPhasesTotal} ph.`;
 }
 export const allRegCount = REG_ARTEFACTS.length;
+
+/** Smallest change (in the figure's unit) the live result strip marks with ▲ / ▼. */
+export const LIVE_DELTA_MIN = 0.5;
+/** The direction of a live change, null when it is below `LIVE_DELTA_MIN`. */
+export const liveDelta = (d: number): 'up' | 'down' | null => (Math.abs(d) < LIVE_DELTA_MIN ? null : d > 0 ? 'up' : 'down');

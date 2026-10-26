@@ -1,5 +1,5 @@
 import { setTrackActual } from '@/controllers/frame';
-import type { PlannedQuarter, TrackActual } from '@/domain/frame';
+import { quarterStatus, type PlannedQuarter, type TrackActual } from '@/domain/frame';
 import { CommitNumber } from '@/ui/widgets/CommitNumber';
 import { DataTable, type Column } from '@/ui/widgets/DataTable';
 
@@ -26,9 +26,9 @@ export function TrackerTable({ plan, actuals }: { plan: PlannedQuarter[]; actual
     { key: 'sp', header: 'Savings plan (cum.)', align: 'right', render: (r) => '€' + Math.round(r.savPlan).toLocaleString('en-US') },
     { key: 'sa', header: 'Savings actual (cum. €)', render: input('sav', 'Savings', 100, 1000) },
     { key: 'st', header: 'Status', render: (r, i) => {
-      const a = act(i)?.ad;
-      if (a == null) return '—';
-      return a >= r.ad ? <span className="ac-tone" data-tone="teal">▲ On/Ahead</span> : <span className="ac-tone" data-tone="brick">▼ Behind</span>;
+      const st = quarterStatus(r, act(i));
+      if (st == null) return '—';
+      return st === 'ahead' ? <span className="ac-tone" data-tone="teal">▲ On/Ahead</span> : <span className="ac-tone" data-tone="brick">▼ Behind</span>;
     } },
   ];
   return <DataTable columns={columns} rows={plan} rowKey={(r) => r.label} />;

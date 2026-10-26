@@ -46,8 +46,10 @@ export function productivityView(c: Ctx) {
   const inList = all.filter((a) => inScope.has(a.phase)), fallback = inList.length === 0, items = fallback ? all : inList;
   return {
     endL, fallback, count: items.length, intensity: sc.avgAgent, scopeCount: sc.count, totalArt: sc.totalArt,
-    rows: items.map((a) => ({ label: a.label, asis: a.asis, y1: tpVal(a.asis, a.target, r1), y2: tpVal(a.asis, a.target, r2),
-      y3: tpVal(a.asis, a.target, r3) })),
+    rows: items.map((a) => {
+      const y3 = tpVal(a.asis, a.target, r3);
+      return { label: a.label, asis: a.asis, y1: tpVal(a.asis, a.target, r1), y2: tpVal(a.asis, a.target, r2), y3, factor: y3 / a.asis };
+    }),
   };
 }
 

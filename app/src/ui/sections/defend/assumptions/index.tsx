@@ -1,3 +1,4 @@
+import { STRONG_CORRELATION } from '@/domain/stress';
 import { useMemo } from 'react';
 import { assumptionRegister, benchmarkBase, STATUS_LABEL, type AssumptionStatus, type Validated } from '@/domain/pdc/assumptions';
 import { setAssumptValidated } from '@/controllers/pdc';
@@ -40,7 +41,7 @@ export default function AssumptionsSection() {
             {r.inputs.flatMap((x) => {
               const head = x.def.g !== group ? <Group key={`g-${x.def.g}`} label={x.def.g} /> : null;
               group = x.def.g;
-              const hot = Math.abs(x.impact ?? 0) > 0.4;
+              const hot = Math.abs(x.impact ?? 0) > STRONG_CORRELATION;
               return [head, <tr key={x.def.id}><td>{x.def.l}</td><td className="ac-value">{x.current ?? '—'}</td><td className="ac-muted">{x.dflt ?? '—'}</td>
                 <td><Badge tone={TONE[x.status]}>{STATUS_LABEL[x.status]}</Badge></td>
                 <td className={hot ? 'ac-impact is-hot' : 'ac-impact'}>{x.impact === undefined ? '—' : `${x.impact > 0 ? '+' : ''}${x.impact}`}</td>

@@ -7,6 +7,7 @@ import { targetBlendedTJM } from '@/domain/location';
 import { loopExternalReworkEffort } from '@/domain/model/loops';
 import { diffs, extra } from '../helpers/economics';
 import { VFA_FIXTURES } from '../helpers/verifyA';
+import { withoutDeviations } from '../helpers/deviations';
 
 const live = (id: string) => { const c = makeCtx(fromSnapshot(JSON.parse(readFileSync(`fixtures/cases/${id}.json`, 'utf8')))); return { c, m: model(c), eng: engineNow(c) }; };
 const pick = <T extends object>(o: T, keys: string[]) => Object.fromEntries(keys.map((k) => [k, (o as Record<string, unknown>)[k]]));
@@ -24,7 +25,10 @@ describe('verify (first half) domain reproduces the legacy', () => {
   });
   it.each(VFA_FIXTURES)('%s: target team, location rates, maturity level', (id) => {
     const l = live(id), t = targetTeam(l);
-    expect(diffs(extra('vfa_target', id), { ...t, tjm: locBlendedTJM(l, 'India'), tgt: targetBlendedTJM(l.c.s) })).toEqual([]);
+    // DEV-TEAM-RUN-END: past a 3-year horizon the run team is the horizon end year's (the legacy read year 3), and the total is the FTE owner's after.
+    expect(withoutDeviations(diffs(extra('vfa_target', id), { ...t, tjm: locBlendedTJM(l, 'India'), tgt: targetBlendedTJM(l.c.s) }, 'vfa_target'), id)).toEqual([]);
+    const end = l.eng.year(l.eng.horizonYears);
+    expect([t.runETP, t.totalRecurrent]).toEqual([end.runTeamFteEnd, end.totalHumanFteEnd]);
     expect(diffs(extra('vfa_maturity', id), maturityInfo(l))).toEqual([]);
   });
   it.each(VFA_FIXTURES)('%s: agent directory, roles, loops and token usage', (id) => {

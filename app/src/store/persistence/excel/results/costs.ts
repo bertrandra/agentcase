@@ -1,6 +1,5 @@
 /** @calc-zone exports */
 import type { Workbook } from 'exceljs';
-import { avg, yearSeries } from '@/domain/economics';
 import type { ResultsData, SheetImages } from './data';
 import { addImage, head, r0 } from './style';
 
@@ -15,10 +14,10 @@ export function investmentSheet(wb: Workbook, { v, setupLines }: ResultsData, na
 
 /** Operating costs sheet: four cost lines and their total by year, with the per-year average. */
 export function operatingSheet(wb: Workbook, { v }: ResultsData, images?: SheetImages, name = 'Operating costs'): void {
-  const ws = wb.addWorksheet(name), s = yearSeries(v.years);
+  const ws = wb.addWorksheet(name), s = v.series;
   ws.addRow(['Category', ...v.years.map((_, i) => `Y${i + 1}`), `${v.H}y avg`]);
-  const line = (label: string, a: number[]) => ws.addRow([label, ...a.map(r0), r0(avg(a))]);
-  line('Human workforce (target team)', s.team); line('Agent execution (tokens)', s.token); line('Infrastructure & tools', s.infra);
-  line('Agentic run team (AI premium)', s.agentRun); line('Total operating cost', s.run);
+  const line = (label: string, k: keyof typeof s) => ws.addRow([label, ...s[k].map(r0), r0(v.avgOf[k])]);
+  line('Human workforce (target team)', 'team'); line('Agent execution (tokens)', 'token'); line('Infrastructure & tools', 'infra');
+  line('Agentic run team (AI premium)', 'agentRun'); line('Total operating cost', 'run');
   head(ws); addImage(wb, ws, 'Operating costs', images);
 }

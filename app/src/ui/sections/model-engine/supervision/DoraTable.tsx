@@ -1,5 +1,5 @@
 import { setDoraMeasured } from '@/controllers/modelSupervision';
-import { doraReadout, type DoraRow } from '@/domain/model/supView';
+import { doraMatches, doraReadout, type DoraRow } from '@/domain/model/supView';
 import { useCtx } from '@/store/hooks';
 import { DataTable, type Column } from '@/ui/widgets/DataTable';
 import { Panel } from '@/ui/widgets/cards';
@@ -19,7 +19,7 @@ export function DoraTable() {
     { key: 'me', header: 'Measured', align: 'center', render: (r) => <input type="number" step={0.1} aria-label={`Measured ${r.label}`} placeholder="measured" className="ac-dora-input" value={r.row.measured ?? ''} onChange={(e) => setDoraMeasured(r.key, e.target.value)} /> },
     { key: 'dl', header: 'Δ', align: 'center', render: (r) => {
       const x = r.row.delta; if (x == null) return '';
-      return <span data-ink={Math.abs(x) < 0.05 * Math.abs(r.row.derived || 1) ? 'teal' : 'brick'}>Δ {x > 0 ? '+' : ''}{x.toFixed(2)}</span>;
+      return <span data-ink={doraMatches(r.row) ? 'teal' : 'brick'}>Δ {x > 0 ? '+' : ''}{x.toFixed(2)}</span>;
     } },
     { key: 'u', header: 'Unit', render: (r) => <small className="ac-muted">{r.row.unit}</small> },
   ];

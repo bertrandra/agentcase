@@ -34,8 +34,30 @@ export const DEVIATIONS: Deviation[] = [
   { id: 'DEV-PAYBACK-RECOVERY', reason: 'Payback = the month after the last negative cumulative month (null when the final cumulative is negative); identical on ' +
     'the 107 fixtures (single products never dip again).', skip: [] },
   { id: 'DEV-SPLIT-TOLERANCE', reason: 'One "adds up to 100 %" tolerance (0.5 point, domain/split.ts); the legacy target location mix used 1 point.', skip: [] },
+  // Lot 10, one source of truth (docs/DEVIATIONS.md; asserted in tests/domain/lot10-sot.test.ts and tests/domain/sot-cross-surface.test.ts).
+  { id: 'DEV-FTE-ONE-DEF', reason: 'One human-FTE definition (fteBeforeAfter: delivery team + agentic run team, freed = max(0, before - after)) on every screen; the ' +
+    'legacy freed FTE / residual human FTE used the delivery team only (Financial, Results), a flat base × ramp × eff (Results, fte-vfte table) or base × ' +
+    'adoption (engage tracker).', skip: ['econ_roi.freed', 'resultsCore.tot.human', 'resultsCore.tot.agent', 'frameQuarters[].freed', 'kpiChart[0]'] },
+  { id: 'DEV-TEAM-RUN-END', reason: 'The target team adds the agentic run team of the horizon end year (the legacy read year 3 whatever the horizon); identical at ' +
+    'horizon <= 3.', only: ['combo-stress', 'fm-generated-tuned', 'me-flow', 'sc-horizon-5'],
+    skip: ['vfa_target.runETP', 'vfa_target.totalRecurrent', 'scurveMath.team.runETP', 'pdc_verif.checks[5]', 'pdc_vars.totalTargetFteY3'] },
+  { id: 'DEV-SETUP-BREAKDOWN', reason: 'One setup breakdown whose total is model().setupTotal: the Agentic Setup total, the Investment table and the Excel ' +
+    'Investment sheet list the HRI change cost and the hub setup; the legacy Setup screen totalled the four input lines only.', skip: [] },
+  { id: 'DEV-RESULTS-ENGINE-SAVINGS', reason: 'Results "total savings / yr" is the Time-Engine end-year savings (the decomposition lines plus a reconciling line); ' +
+    'the legacy printed the decomposition subtotal. No oracle field (resultsCore.B is still the decomposition).', skip: [] },
+  { id: 'DEV-VTAX-CAP', reason: 'The verification-tax explanation applies COEF.vtaxCap (the cap the model applies) instead of a hard-coded 0.6, and prints the € ' +
+    'at the horizon end year and the tax of every horizon year.', skip: [] },
+  { id: 'DEV-MATURITY-BOUNDS', reason: 'The S-curve readout, bands, gridlines and the legends follow the editable maturity bounds (rampBoundsOf); the legacy readout ' +
+    'used fixed 25 / 55 / 80.', skip: [] },
+  { id: 'DEV-GLASS-CEILING-OWNER', reason: 'The registry glass ceiling, max automatable % and the decision context read model().ceiling (the computed ceiling) ' +
+    'instead of the raw glassCeiling input; identical on the 107 fixtures (none has a computed ceiling that differs from its input).', skip: [] },
+  { id: 'DEV-CM-CONFIDENCE', reason: 'The commercial recommendation (screen and registry) reads the confidence of the last Monte Carlo run, like the legacy screen; ' +
+    'the legacy registry evaluated it before its own run, so its oracle value is the no-run recommendation (pdc-vars.test.ts compares that order).', skip: [] },
   { id: 'DEV-ARCH-CONTENT', reason: 'The two architecture sections (arch-layers, arch-content) describe the TypeScript build; the legacy text is no longer their oracle (tests/ui/arch-facts.test.ts, tests/ui/sections/arch.test.tsx).', skip: [] },
 ];
+
+/** The fixtures a deviation restricted with `only` applies to. */
+export const deviationFixtures = (id: string): string[] => DEVIATIONS.find((d) => d.id === id)?.only ?? [];
 
 const strip = (p: string): string => p.replace(/\[\d+\]/g, '[]');
 

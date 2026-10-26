@@ -1,7 +1,7 @@
 import { setCaseDiscountRate, setEngagementCtx } from '@/controllers/frame';
-import { DEFAULT_DISCOUNT_RATE } from '@/domain/economics/cashflow';
+import { caseDiscountRate } from '@/domain/canonical';
 import { engagementCoef } from '@/domain/frame';
-import { useCtx, useDoc } from '@/store/hooks';
+import { useCtx, useCtxSelector, useDoc } from '@/store/hooks';
 import { CommitNumber } from '@/ui/widgets/CommitNumber';
 import { Field } from '@/ui/widgets/fields';
 import { Panel } from '@/ui/widgets/cards';
@@ -52,7 +52,8 @@ export function ContextCard() {
 }
 
 export function DiscountCard() {
-  const value = useDoc((d) => d.dom.values.caseDiscountRate ?? String(d.MODEL?.CASE?.discountRate ?? DEFAULT_DISCOUNT_RATE));
+  // the typed text when there is one, else the rate the NPV uses (`caseDiscountRate`: clamped to 0..1, the default when unset)
+  const value = useCtxSelector((c) => c.s.dom.values.caseDiscountRate ?? String(caseDiscountRate(c)));
   return (
     <details>
       <summary>Case discount rate (/yr) <span className="ac-muted">— headline NPV, sponsor&apos;s WACC / hurdle rate</span></summary>

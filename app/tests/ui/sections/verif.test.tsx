@@ -10,6 +10,7 @@ import Verif from '@/ui/sections/defend/verif';
 import { tablesOf } from '../../helpers/economics';
 import { legacySectionText, missingNumbers, renderedText } from '../../helpers/parity';
 import { loadCase, pdc, PDC_FIXTURES } from '../../helpers/pdc';
+import { deviationFixtures } from '../../helpers/deviations';
 
 afterEach(cleanup);
 const FOUR = ['golden', 'ctx-msi', 'curve-logistic', 'industry-med'];
@@ -26,7 +27,10 @@ describe('verif section', () => {
   it.each(PDC_FIXTURES)('reproduces the legacy checks, chain, sensitivity, provenance and convergence tables cell by cell (%s)', (id) => {
     loadCase(id);
     const { container } = render(<Verif />), e = pdc<V>('pdc_verif', id), t = tables(container);
-    expect(t.checks).toEqual(e.checks);
+    // DEV-TEAM-RUN-END: past a 3-year horizon check 6 adds the horizon end year's run team (the legacy year 3); it still reconciles.
+    const moved = deviationFixtures('DEV-TEAM-RUN-END').includes(id) ? [6] : [];
+    expect(t.checks.filter((_, i) => !moved.includes(i))).toEqual(e.checks.filter((_, i) => !moved.includes(i)));
+    for (const i of moved) expect(t.checks[i]![4]).toBe('✓ OK');
     const legacySensi = e.sensi.map((r, i) => (i && r[3] === 'n/a (at limit)' ? r : r.map((x) => x.replace('CONSISTENT', 'Consistent'))));
     if (model(makeCtx(appStore().getState().doc)).horizon === 3) {
       expect(t.chain).toEqual(e.chain);

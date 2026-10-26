@@ -1,4 +1,5 @@
 /** @calc-zone delivery-views */
+import { authRank } from '../authority';
 import { LOOP_PAIRS } from '../catalog';
 import { artTeamSkill, skillMapOf } from '../baseline/skills';
 import type { Ctx } from '../ctx';
@@ -11,8 +12,7 @@ import catalog from './agentCatalog.json';
 
 export interface Agent { id: string; skill: string; aiAuth: string; artifactIds: string[]; capacity: number }
 export const AGENT_CATALOG = catalog as Agent[];
-export const AUTH_LEVELS = ['Assistance', 'Copilot', 'Supervised autonomous', 'Autonomous'];
-const AUTH_ORDER: Record<string, number> = { Assistance: 1, Copilot: 2, 'Supervised autonomous': 3, Autonomous: 4 };
+export { AUTH_LEVELS } from '../authority';
 /** Phases of the agent-directory selector. */
 export const REG_PHASES = ['L0', 'V1', 'V2', 'V3', 'V4', 'V5', 'V6', 'V7', 'L8', 'L9', 'L10', 'Cross-cutting'];
 export type LoopPairFull = LoopPair & { artA: string; artB: string; internalNote: string };
@@ -26,7 +26,7 @@ export interface AgentRow { agent: Agent; avgSup: number | null; produced: strin
 /** Execution agents active in a phase ('ALL' for every one), by authorization level then skill. */
 export function agentDirectory(c: Ctx, phase: string): AgentRow[] {
   return AGENT_CATALOG.filter((a) => phase === 'ALL' || arts(c, a).some((x) => x.phase === phase))
-    .sort((a, b) => (AUTH_ORDER[a.aiAuth] || 0) - (AUTH_ORDER[b.aiAuth] || 0) || a.skill.localeCompare(b.skill))
+    .sort((a, b) => authRank(a.aiAuth, 0) - authRank(b.aiAuth, 0) || a.skill.localeCompare(b.skill))
     .map((agent) => {
       const list = arts(c, agent);
       return { agent, avgSup: list.length ? Math.round(list.reduce((s, x) => s + (x.agentSup || 0), 0) / list.length) : null,

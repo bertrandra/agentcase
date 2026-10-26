@@ -1,6 +1,7 @@
 /** @calc-zone delivery-views */
 import { engineNow } from '../canonical';
 import type { Ctx } from '../ctx';
+import { fteAtMonth } from '../economics/fte';
 import { model } from '../model/overlay';
 import { rampAt } from '../time/adapters';
 
@@ -45,23 +46,29 @@ export function roadmapStages(c: Ctx, today: Date): RoadmapStage[] {
 }
 
 export interface PlannedQuarter { label: string; ad: number; freed: number; savPlan: number }
-/** Plan per quarter over the whole horizon: effective adoption, FTE freed, cumulative savings (legacy plannedQuarters). */
+/**
+ * Plan per quarter over the whole horizon: effective adoption at mid-quarter, FTE freed at the same month (the FTE owner `fteAtMonth`: entry team
+ * minus delivery team and agentic run team), cumulative savings (legacy plannedQuarters, whose freed was entry team × adoption).
+ */
 export function plannedQuarters(c: Ctx): PlannedQuarter[] {
-  const m = model(c), eng = engineNow(c), base = m.base.etp, n = Math.max(1, eng.horizonYears * 4), q: PlannedQuarter[] = [];
+  const m = model(c), eng = engineNow(c), n = Math.max(1, eng.horizonYears * 4), q: PlannedQuarter[] = [];
   let cum = 0, month = 0;
   for (let i = 1; i <= n; i++) {
-    const r = rampAt(Math.min(eng.horizonMonths, Math.max(1, (i - 1) * 3 + 1.5)), eng.K) / 100, ad = r * m.eff;
+    const t = Math.min(eng.horizonMonths, Math.max(1, (i - 1) * 3 + 1.5)), r = rampAt(t, eng.K) / 100, ad = r * m.eff;
     for (const upto = Math.min(i * 3, eng.horizonMonths); month < upto;) cum += eng.monthAt(++month).grossSavings || 0;
-    q.push({ label: 'Q' + i, ad: Math.round(ad * 10) / 10, freed: Math.round(((base * ad) / 100) * 10) / 10, savPlan: Math.round(cum) });
+    q.push({ label: 'Q' + i, ad: Math.round(ad * 10) / 10, freed: Math.round(fteAtMonth(c, t).freed * 10) / 10, savPlan: Math.round(cum) });
   }
   return q;
 }
 
 export interface TrackActual { ad: number | null; fte: number | null; sav: number | null }
+/** A quarter's status from its recorded adoption: on / ahead of the plan, behind it, or null (nothing recorded). The one rule `trackStatus` counts. */
+export const quarterStatus = (q: PlannedQuarter, a: TrackActual | undefined): 'ahead' | 'behind' | null =>
+  (a?.ad == null ? null : a.ad >= q.ad ? 'ahead' : 'behind');
 /** Overall tracker status from the recorded actuals (only quarters inside the horizon count). */
 export function trackStatus(q: PlannedQuarter[], actuals: Record<string, TrackActual | undefined>) {
   const rows = Object.entries(actuals).map(([k, a]) => ({ i: parseInt(k.slice(1), 10) - 1, a })).filter((x) => x.i >= 0 && x.i < q.length && x.a);
-  const filled = rows.filter((x) => x.a!.ad != null).length, behind = rows.filter((x) => x.a!.ad != null && x.a!.ad < q[x.i]!.ad).length;
+  const filled = rows.filter((x) => quarterStatus(q[x.i]!, x.a) != null).length, behind = rows.filter((x) => quarterStatus(q[x.i]!, x.a) === 'behind').length;
   const [head, tone] = filled === 0 ? ['Not started — enter actuals to track', 'grey'] as const
     : behind === 0 ? ['On track — actuals meet or exceed the plan', 'teal'] as const
     : behind < filled / 2 ? [`Mostly on track — ${behind} quarter(s) behind`, 'amber'] as const : ['Behind plan — steer required', 'brick'] as const;

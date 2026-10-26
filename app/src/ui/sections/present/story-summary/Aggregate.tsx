@@ -1,4 +1,5 @@
 import { useStoryAggregate } from '@/store/selectionHooksPresent';
+import { fmtPayback } from '@/domain/economics';
 import { fmtK } from '@/ui/economicsFormat';
 import { fmtMonths } from '@/ui/format';
 import { AggregateTable, type AggColumn } from '@/ui/widgets/AggregateTable';
@@ -29,7 +30,7 @@ export default function StoryAggregate() {
     { key: 'end', header: 'TO-BE run / yr', align: R, render: (r) => fmtK(r.endRun) },
     { key: 'vel', header: 'Velocity', align: R, render: (r) => `+${r.velocityPct}%` },
     { key: 'sav', header: 'Savings (last year)', align: R, render: (r) => fmtK(r.endSavings) },
-    { key: 'pay', header: 'Payback', align: R, render: (r) => (r.payback ? `${r.payback} mo` : `>${r.horizon * 12}m`) },
+    { key: 'pay', header: 'Payback', align: R, render: (r) => fmtPayback(r.payback, r.horizon * 12) },
   ];
   return (
     <SectionFrame title={`📖 The story so far — AS-IS → TO-BE — ${a.label}`} help={help}

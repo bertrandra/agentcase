@@ -1,4 +1,5 @@
 import { HRI_GROUPS, hriSummary } from '@/domain/tune';
+import { HRI_LIGHT, HRI_STANDARD } from '@/domain/engagement';
 import { useCtx } from '@/store/hooks';
 import { Panel, Stat, StatRow } from '@/ui/widgets/cards';
 import { CheckInput, NumberInput, SelectInput } from '@/ui/widgets/fields';
@@ -19,12 +20,14 @@ function Questions() {
   );
 }
 
+const STAT_TONE = { light: 'teal', standard: 'amber', intensive: 'brick' } as const;
+
 function Outcome() {
   const h = hriSummary(useCtx());
   return (
     <div aria-live="polite">
       <StatRow>
-        <Stat label="Human readiness index" value={`${h.index}/100 · ${h.label}`} tone={h.index >= 75 ? 'teal' : h.index >= 50 ? 'amber' : 'brick'} />
+        <Stat label="Human readiness index" value={`${h.index}/100 · ${h.label}`} tone={STAT_TONE[h.band]} />
       </StatRow>
       <table className="ac-table">
         <tbody>
@@ -63,9 +66,9 @@ export function HriPanel() {
           <Outcome />
           <h3>Change cost per AS-IS FTE (€)</h3>
           <div className="ac-form-row">
-            <NumberInput id="hriCostLight" label="Light (HRI ≥ 75)" min={0} step={100} />
-            <NumberInput id="hriCostStd" label="Standard (50–74)" min={0} step={100} />
-            <NumberInput id="hriCostInt" label="Intensive (< 50)" min={0} step={100} />
+            <NumberInput id="hriCostLight" label={`Light (HRI ≥ ${HRI_LIGHT})`} min={0} step={100} />
+            <NumberInput id="hriCostStd" label={`Standard (${HRI_STANDARD}–${HRI_LIGHT - 1})`} min={0} step={100} />
+            <NumberInput id="hriCostInt" label={`Intensive (< ${HRI_STANDARD})`} min={0} step={100} />
           </div>
           <h3>Adoption-drag formula coefficients</h3>
           <div className="ac-form-row">

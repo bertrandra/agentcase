@@ -1,6 +1,6 @@
 /** @calc-zone aggregate-views */
 import { groupRows, locRows, targetTeam } from '../verifyA/targetTeam';
-import { tobeComposition } from '../verifyA/tobe';
+import { autoSharePct, tobeComposition } from '../verifyA/tobe';
 import { colOf, liveOf, productRows, sum, viewMemo, type VCol, type VTable } from './aggVerifyBase';
 
 const TEAM: VCol[] = [
@@ -43,9 +43,9 @@ const TOBE: VCol[] = [
   { key: 'modelHuman', header: 'Model human FTE', title: 'Aggregate model, same year: the skills reconcile to it', kind: 'n2' },
   { key: 'modelAgent', header: 'Model agent vFTE', kind: 'n2' },
 ];
-export interface SkillAgg { skill: string; asis: number; human: number; agent: number; autoPct: number }
+export interface SkillAgg { skill: string; asis: number; human: number; agent: number; autoPct: number; delta: number }
 export interface TobeTeamAgg { label: string; /** 0-based year shown (clamped to the longest horizon of the selection) */ year: number; years: number;
-  skills: SkillAgg[]; total: { asis: number; human: number; agent: number }; table: VTable }
+  skills: SkillAgg[]; total: { asis: number; human: number; agent: number; delta: number; autoPct: number }; table: VTable }
 
 /**
  * TO-BE team of a selection by skill for year index `year`: the products' residual human FTE and agent vFTE per skill, added up (a product is read at
@@ -57,14 +57,15 @@ export const tobeTeamAgg = viewMemo((sel, _pf, year: number): TobeTeamAgg => {
   const names = [...new Set(comps.flatMap((c) => c.rows.map((r) => r.skill)))].sort();
   const skills = names.map((skill) => {
     const rs = comps.flatMap((c) => c.rows.filter((r) => r.skill === skill).map((r) => ({ asis: r.asisFTE, ...r.perYear[at(c)]! })));
-    const asis = sum(rs.map((r) => r.asis)), agent = sum(rs.map((r) => r.agent));
-    return { skill, asis, human: sum(rs.map((r) => r.human)), agent, autoPct: asis > 0 ? Math.min(100, (agent / asis) * 100) : 0 };
+    const asis = sum(rs.map((r) => r.asis)), agent = sum(rs.map((r) => r.agent)), human = sum(rs.map((r) => r.human));
+    return { skill, asis, human, agent, autoPct: autoSharePct(agent, asis), delta: human - asis };
   });
   const rows = productRows(sel, (v, l) => {
     const c = comps[sel.items.indexOf(v)]!, e = l.eng.years()[at(c)]!;
     return { asis: c.tot.asis, human: c.tot.human, agent: c.tot.agent, modelHuman: e.humanFteEnd, modelAgent: e.agentVfteEnd };
   });
-  const total = { asis: sum(comps.map((c) => c.tot.asis)), human: sum(comps.map((c) => c.tot.human)), agent: sum(comps.map((c) => c.tot.agent)) };
+  const sums = { asis: sum(comps.map((c) => c.tot.asis)), human: sum(comps.map((c) => c.tot.human)), agent: sum(comps.map((c) => c.tot.agent)) };
+  const total = { ...sums, delta: sums.human - sums.asis, autoPct: autoSharePct(sums.agent, sums.asis) };
   return { label: sel.label, year: y, years, skills, total,
-    table: { columns: TOBE, rows, total: { ...total, modelHuman: sum(colOf(rows, 'modelHuman')), modelAgent: sum(colOf(rows, 'modelAgent')) } } };
+    table: { columns: TOBE, rows, total: { ...sums, modelHuman: sum(colOf(rows, 'modelHuman')), modelAgent: sum(colOf(rows, 'modelAgent')) } } };
 });

@@ -1,4 +1,5 @@
 /** @calc-zone verification */
+import { AI_SKILL_PREMIUM } from '../rates';
 import type { Ctx } from '../ctx';
 import { headline } from '../economics/headline';
 import { fmtRoiPct } from '../economics/roi';
@@ -20,7 +21,7 @@ export function calcChain(c: Ctx): string[][] {
     ['Agent capacity Y3', `vFTE×${m.PROD_FACTOR} (indicative)`, '—', m.yearAgentCapacity[2]!.toFixed(1)],
     ['Team cost Y3', 'FTE_Y3×rate_target×days', '—', fmtK(m.yearTeamCost[2]!)],
     ['Tokens Y3', 'art/mo×tokens×€/1M×12', '—', `${fmtE(m.yearToken[2]!)}/yr`],
-    ['Agentic run', 'FTE_AI×day rate×1.15×days', `${m.runAgenticETP.toFixed(1)} FTE`, fmtK(m.runAgenticCost)],
+    ['Agentic run', `FTE_AI×day rate×${AI_SKILL_PREMIUM}×days`, `${m.runAgenticETP.toFixed(1)} FTE`, fmtK(m.runAgenticCost)],
     ['Total run Y3', 'team+tokens+infra+runAI', '—', fmtK(m.yearRun[2]!)],
     ['Benefit Y3', 'baseline−run+KT−tax−ext', '—', fmtK(m.yearSav[2]!)],
     ['ROI 3 years (net)', '(Σ benefits − Setup)/Setup', '—', fmtRoiPct(headline(c).roi)],

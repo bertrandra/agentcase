@@ -1,6 +1,7 @@
 /** @calc-zone aggregate-views */
 import { assumptionRegister, type AssumptionBase, type Validated } from '../pdc/assumptions';
 import { ceilingCoverage, ddRows, isDone, type DdDoc } from '../pdc/dd';
+import { ddGauges } from '../pdc/ddGauges';
 import { calcChain } from '../pdc/verifChain';
 import { verifChecks } from '../pdc/verifChecks';
 import { convergenceChecks } from '../pdc/verifConvergence';
@@ -59,11 +60,11 @@ export type DdProductRow = AggProduct & { items: number; confirmed: number; open
 export type DdTotals = { items: number; confirmed: number; open: number; pct: number; invisible: number };
 export function dueDiligenceByProduct(pf: Portfolio, ids: string[], base: DdDoc & AssumptionBase): { rows: DdProductRow[]; totals: DdTotals } {
   const rows = perProduct(pf, ids, (c, p) => {
-    const list = ddRows(c, base, validatedOf(pf, p.id)), done = list.filter((r) => isDone(c, r)).length;
+    const list = ddRows(c, base, validatedOf(pf, p.id)), g = ddGauges(c, list, null), done = g.confirmed;
     const by = new Map<string, DdGroup>();
     for (const r of list) { const g = by.get(r.g) ?? { group: r.g, items: 0, confirmed: 0 }; g.items++; if (isDone(c, r)) g.confirmed++; by.set(r.g, g); }
-    return { items: list.length, confirmed: done, open: list.length - done, pct: list.length ? Math.round((done / list.length) * 100) : 0,
-      invisible: list.filter((r) => r.id.startsWith('cf-') && r.edit === 'NONE').length, ceilCover: ceilingCoverage(c, list), groups: [...by.values()] };
+    return { items: list.length, confirmed: done, open: list.length - done, pct: g.pct, invisible: g.invisible,
+      ceilCover: ceilingCoverage(c, list), groups: [...by.values()] };
   });
   const sum = (k: 'items' | 'confirmed' | 'open' | 'invisible'): number => rows.reduce((a, r) => a + r[k], 0), items = sum('items'),
     confirmed = sum('confirmed');

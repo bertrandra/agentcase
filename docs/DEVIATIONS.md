@@ -37,6 +37,14 @@ Figures are the golden fixture unless stated. "Before" = the build at the start 
 | DEV-PAYBACK-NOSETUP | one displayed payback: no setup and positive savings is "immediate" everywhere and ranks best |
 | DEV-YEAR-BEYOND-HORIZON | registry Y2 variables are n/a beyond the horizon |
 | DEV-SPLIT-TOLERANCE | one "adds up to 100 %" tolerance (0.5 point) |
+| DEV-FTE-ONE-DEF | one human-FTE definition (delivery team + agentic run team) for every FTE freed / residual / reduction figure |
+| DEV-TEAM-RUN-END | the target team adds the agentic run team of the horizon end year (horizons beyond 3 years) |
+| DEV-SETUP-BREAKDOWN | one setup breakdown whose total is the setup of the ROI: the HRI change cost and the hub setup are listed lines |
+| DEV-RESULTS-ENGINE-SAVINGS | Results "total savings / yr" is the Time-Engine end-year savings, the decomposition reconciles to it |
+| DEV-VTAX-CAP | the verification-tax explanation applies `COEF.vtaxCap`, € at the horizon end year |
+| DEV-MATURITY-BOUNDS | the S-curve readout, bands and legends follow the editable maturity bounds |
+| DEV-GLASS-CEILING-OWNER | registry glass ceiling and decision context read the computed ceiling |
+| DEV-CM-CONFIDENCE | the commercial recommendation reads the last Monte Carlo confidence (screen and registry) |
 
 ## DEV-HEADLINE-OWNER — one economics headline
 
@@ -409,12 +417,13 @@ tests are not concerned: they drive the legacy *engine* through recipes, and the
 - v19: `displayedPayback(month, setup, benefit)` (`domain/economics/cashflow.ts`) owns the displayed payback: no setup and positive savings = 0 ("immediate"), no setup and no saving = null, else the kernel month. Financial (`economicsView().paybackShown`), Results (`paybackYearShown` → "Immediate"), the KPI tile, the scenarios and the strategies (`computed.payback = 0`, "Immediate") read it; the ranking treats 0 as the best payback (null stays the worst). The numeric kernel month (registry `paybackMonths`, `computeCase().payback`, packages, Excel) stays the crossing month 1.
 - Effect (econ-no-setup, the only fixture without setup): Financial bands "1 mo" → "immediate"; Results "Year 1" → "Immediate"; six strategies payback null → 0; ranking payback norm 50 → 100 for those, scores +5 (agentic 60 → 65, hybrid 48 → 53, …), registry `topStrategyScore` 60 → 65. The T&M strategy (no setup, no saving) stays null on every fixture.
 - Tests touched: oracle fields `strategyEval[].computed.payback`, `strategyRanking[].norm.payback`, `strategyRanking[].score`, `resultsCore.payback`, `resultsText` skipped on econ-no-setup only (`only` in `deviations.ts`); `tests/ui/sections/financial.test.tsx` maps the legacy "1 mo" to "immediate" on that fixture; `headline.test.ts` / `figure-owners.test.ts` assert the displayed owner; `pdc-vars.test.ts` reads `topStrategyScore` from the domain ranking on econ-no-setup; new assertions in `tests/domain/lot10-calc.test.ts`.
-- Files: `domain/economics/{cashflow,headline,roi,view}.ts`, `domain/stress/scenarioView.ts` (one `fmtPayback`), `domain/verdict/{evaluate,rank,results}.ts`, UI `verdict/strategies/{MetricTable,Aggregate}.tsx`, `economics/financial/{Verdict,Reco,Pl}.tsx`, `shell/KpiZone.tsx`, `ui/format.ts` (`fmtMonths(0)` = "immediate").
+- Lot 10: the story summary (and its Portfolio rows) reads the displayed payback too (econ-no-setup "1 mo" → "immediate"; the ">36m" spelling is now the shared `fmtPayback` ">36 mo"); `pdc-present.test.ts` and `story-summary.test.tsx` map the legacy spelling.
+- Files: `domain/economics/{cashflow,headline,roi,view}.ts`, `domain/pdc/story.ts`, `domain/stress/scenarioView.ts` (one `fmtPayback`), `domain/verdict/{evaluate,rank,results}.ts`, UI `verdict/strategies/{MetricTable,Aggregate}.tsx`, `economics/financial/{Verdict,Reco,Pl}.tsx`, `shell/KpiZone.tsx`, `ui/format.ts` (`fmtMonths(0)` = "immediate").
 
 ## DEV-YEAR-BEYOND-HORIZON — registry Y2 variables are n/a beyond the horizon
 
 - Legacy: `model()` annual arrays hold three entries whatever the horizon; below 3 years the entries past the horizon repeat the last year, so a 1-year case showed a "Net savings Y2" and a "Run cost, Y2".
-- v19: the arrays keep their three entries (the oracle `model` contract); the registry reads per-year values through `yearIn(c, array, y)`, null (n/a) beyond the horizon.
+- v19: the arrays keep their three entries (the oracle `model` contract); the registry reads per-year values from the Time Engine year rows through `engineYear(c, y)` (lot 10, one source of truth; it was `yearIn(c, array, y)` on the model arrays), undefined (n/a) beyond the horizon.
 - Effect: horizon-1 and fm-generated-scope: `netSavY2` €357K → n/a, `runCostY2` €1,417K → n/a. Other fixtures unchanged.
 - Tests touched: `pdc-vars.test.ts` (the two variables expected null when the horizon is < 2); `tests/domain/lot10-calc.test.ts`.
 - Files: `domain/pdc/vars/{types,global,finance}.ts`, `domain/model/overlay.ts` (comment).
@@ -426,3 +435,67 @@ tests are not concerned: they drive the legacy *engine* through recipes, and the
 - Effect: the target location mix sum turns red (and the Excel reader notes it) between 0.5 and 1 point off 100 % (legacy: only beyond 1 point); knowledge-domain weights within 0.5 point of 100 are accepted. No oracle field.
 - Tests: `tests/domain/lot10-calc.test.ts`, `tests/ui/portfolio-knowledge-edit.test.tsx` (33.333 × 3 is ready and saved; 99.4 is not ready and refused).
 - Files: `domain/split.ts`, `domain/portfolio/validate.ts`, UI `tune/knowledge/DomainsEditor.tsx`, `verdict/strategies/{EditorRow,LocSplit}.tsx`, `verifyA/tobe-team/Location.tsx`, `baseline/loc-strat/index.tsx`, `store/persistence/excel/params/sheets/scopeSheets.ts`, `store/persistence/excel/portfolio/readKnowledge.ts`, `store/persistence/schema/portfolioChecks.ts`.
+
+## DEV-FTE-ONE-DEF — one human-FTE definition (delivery team + agentic run team)
+
+- Legacy: "FTE freed" / residual human FTE had several formulas: Financial (Savings table and band, Workforce-shift band, the GO sentence, the Excel Savings sheet) `max(0, base − humanFteEnd)` (delivery team only); Results team shift `asis − asis × ramp × eff` (flat, no supervision ceiling, no run team); the fte-vfte / vfte-ov period table `base × (1 − ramp × eff)` with the first half of Y1 at half the Y1 adoption, while the band of the same screen subtracted the run team; "Effort reduction" `1 − humanFteEnd / base`; the KPI headcount index `humanFteEnd / base`; the engage tracker plan `base × adoption`.
+- v19: `domain/economics/fte.ts` owns it: `fteBeforeAfter(before, after)` = { before, after, freed = max(0, before − after), reductionPct }, with after = delivery team + agentic run team (`totalHumanFteEnd`, the KPI bar's and the portfolio's `fte.after`); `caseFte`, `fteByYear`, `fteAtMonth` read the Time Engine. Financial (`economicsView().freed / fte`), Results (`teamShift`: residual = after, split delivery + run team, agent = engine vFTE), fte-vfte / vfte-ov (`periodRows` from the engine: month 6, then each year end; `fteSummary`), KPI (cards, table, index), the registry (`freedFteY3`, `asisTobeFreedFte`, `residualFteY3`, `headcountReductionPctKpi`, `tobeTeamTotalHeadcount`, `fteShift`), the story, team-out (`targetTeam().fte`), the engage plan and the Excel Savings sheet read it.
+- Effect (golden): Financial freed Y1/Y2/Y3 2.8 / 6.2 / 11.3 → 1.8 / 4.7 / 9.0 (the GO sentence "Reduction 11.3 FTE" → 9.0); Results residual 3.8 → 6.0 (3.8 delivery + 2.3 agentic run team, shown); fte-vfte table Y1 Q1-Q2 ramp 13 % → 12 %, its freed column = the band's 9.0 at Y3 (was 11.3); "Effort reduction" 75 % → 60 %; KPI headcount index 25 → 40; engage plan freed Q1/Q2/Q3 0.3 / 1.0 / 1.7 → 0.0 / 0.4 / 1.0; the vfte-ov column "Automation %" is relabelled "Adoption %" (it always showed the adoption ramp). The registry variables do not move (they already counted the run team). On four fixtures the Results agent vFTE moves from the flat formula to the engine's.
+- Tests touched: oracle paths `econ_roi.freed`, `resultsCore.tot.human`, `resultsCore.tot.agent`, `frameQuarters[].freed`, `kpiChart[0]` dropped (deviations.ts) and the new rule asserted in the same tests (`economics.test.ts`, `verdict.test.ts`, `frame.test.ts`, `verifyB.test.ts`); `financial.test.tsx` and `excel-results.test.ts` read the owner's freed in the legacy cells; `fte-vfte.test.tsx` / `vfte-ov.test.tsx` skip the period table and the "Effort reduction" band (golden's 13 ignored); new `tests/domain/lot10-sot.test.ts`, `tests/domain/sot-cross-surface.test.ts` (every surface prints `fteBeforeAfter` on the 107 fixtures), `tests/ui/sot-screens.test.tsx`.
+- Files: `domain/economics/{fte,view}.ts`, `domain/index.ts`, `domain/verdict/results.ts`, `domain/verifyA/{fteVfte,targetTeam}.ts`, `domain/verifyB/kpi.ts`, `domain/pdc/{story,vars/finance,vars/team,vars/global}.ts`, `domain/frame/onboarding.ts`, `domain/portfolio/aggVerdictResults.ts`, UI `economics/financial/{Reco,FteShift,Savings}.tsx`, `verdict/results/Parts.tsx`, `verifyA/{team-out,vfte-ov}/index.tsx`, `store/persistence/excel/results/savings.ts`, `domain/zones/catalog.json` (the owner moves to the economics-headline zone, which reads it).
+
+## DEV-TEAM-RUN-END — the target team adds the run team of the horizon end year
+
+- Legacy: `targetTeam()` (team-out, the automation-over-time legend, verification check 6, registry `totalTargetFteY3`) added `model().runAgenticETP`, the third entry of the annual model, to the horizon-end residual team: past a 3-year horizon it mixed the year-5 delivery team with the year-3 run team.
+- v19: the run team of the same horizon end year (`runTeamFteEnd`); the total recurring team is the FTE owner's after. `scope/automation.teamSplit` reads `targetTeam` (one split rule). Identical up to a 3-year horizon.
+- Effect: combo-stress run team 1.13 → 1.27 FTE, total recurring 11.64 → 11.78; likewise fm-generated-tuned, me-flow, sc-horizon-5. Other fixtures unchanged.
+- Tests touched: oracle fields `vfa_target.runETP`, `vfa_target.totalRecurrent` (verifyA.test.ts, with the new rule asserted), `scurveMath.team.runETP` (scopeTools.oracle.test.ts), verification check 6 (pdc-defend.test.ts, verif.test.tsx: it still reconciles), `totalTargetFteY3` (pdc-vars.test.ts), team-out tables 0-1 and three bands on those four fixtures (team-out.test.tsx); `dedup.test.ts` compares the old implementation up to a 3-year horizon.
+- Files: `domain/verifyA/targetTeam.ts`, `domain/scope/automation.ts`.
+
+## DEV-SETUP-BREAKDOWN — one setup breakdown, read by the model
+
+- Legacy: the Agentic Setup screen totalled the four input lines (tooling, training, coaching, governance) while the model's setup (ROI, payback, Investment total, Results "after … setup") added the HRI change cost and the Knowledge hub setup; the Financial "Investment & Setup" table and the Excel Investment sheet listed the four lines under the larger total, so neither table added up.
+- v19: `domain/tuneB/setupBreakdown` owns it: the four input lines, the HRI change cost (`convChangeCost`, moved here from the model drivers) and the hub setup when their module is on, `base` (the four lines) and `total`. The model's drivers read it (`model().setupTotal = setupBreakdown().total`), and the Agentic Setup screen (total, an "Editable lines" figure when there are more than four lines, chart, table), the Financial Investment table, the Excel Investment sheet and the portfolio Setup view (two more columns) list its lines.
+- Effect (golden, hub on): Agentic Setup "Total setup" €135K → €225K (the €135K stays as "Editable lines"); the Investment table and the Excel sheet gain "Knowledge hub setup €90,000" above the unchanged €225,000 total; hri-on also lists "Change management (HRI)". No economics figure moves.
+- Tests touched: `tuneB.test.ts` (the four legacy lines, then the new ones, total = setupTotal), `financial.test.tsx`, `excel-results.test.ts` (the extra rows inserted in the legacy table); new `tests/domain/lot10-sot.test.ts`, `tests/domain/sot-cross-surface.test.ts` (the lines add up to `model().setupTotal` on the 107 fixtures and every setup surface prints it).
+- Files: `domain/tuneB/setup.ts`, `domain/model/drivers.ts`, `domain/portfolio/aggTuneInputsB.ts`, `store/persistence/excel/results/{data,costs}.ts`, UI `tune/setup/{index,SetupChart,Aggregate}.tsx`, `economics/financial/{Invest,Reco}.tsx`.
+
+## DEV-RESULTS-ENGINE-SAVINGS — Results prints the Time-Engine end-year savings
+
+- Legacy: Results "Savings decomposition (Y3) … = total savings / yr" printed the decomposition subtotal (gross automation − agent cost + relocation, priced on the year-end team for the whole year), which is not the end-year savings of Annual / Financial / Story.
+- v19: the decomposition lines stay, followed by "= … at the year-end team", a "within-year ramp and engine effects" line (`SavingsYear.other` = engine savings − subtotal) and "= {engine end-year savings} total savings / yr". The Financial decomposition table gains the same two rows; its thresholds (relocation near-neutral, reconciles) are domain constants.
+- Effect (golden): "= €1,178,868 total savings / yr" → "= €1,178,868 at the year-end team · −€287,313 within-year ramp and engine effects · = €891,555 total savings / yr". No oracle field (resultsCore.B is still the decomposition).
+- Tests: `tests/ui/sections/results.test.tsx`, `tests/domain/lot10-sot.test.ts`, `tests/domain/sot-cross-surface.test.ts`, `tests/ui/sot-screens.test.tsx`.
+- Files: `domain/economics/savings.ts`, `domain/verdict/results.ts`, UI `verdict/results/{Parts,index}.tsx`, `economics/financial/Decomp.tsx`.
+
+## DEV-VTAX-CAP — the verification-tax explanation applies the model cap
+
+- Legacy (`taxExplain`): the Case 1 / Case 2 rates of the explanation were capped at a hard-coded 0.6 while the model (`verificationTaxRate`) applies `COEF.vtaxCap`, editable on the same panel; the € amounts said "at Y3" and the applied tax listed Y1–Y3 whatever the horizon.
+- v19: the explanation reads `COEF.vtaxCap`, computes the € (`eurOverlay`, `eurNet`) in the domain at the horizon end year and lists the tax of every horizon year (the engine's `verificationTaxCost`).
+- Effect: none on the fixtures' rates (tuneA-elig-nogo has a 0.5 cap but its rates are below it); a 5-year case prints "at Y5" and five yearly amounts.
+- Tests: `tests/domain/lot10-sot.test.ts`.
+- Files: `domain/tune/eligibility.ts`, UI `tune/eligibility/AbaquePanel.tsx`.
+
+## DEV-MATURITY-BOUNDS — one owner of the L1–L4 adoption bounds
+
+- Legacy: the S-curve readout "Maturity at horizon end" used fixed 80 / 55 / 25 %, the S-curve bands and gridlines were fixed at 25 / 55 / 80, the explanation and the automation legend said "25 / 55 / 80 %", while the markers, the Time Engine maturity and the tune maturity level read the editable `MATURITY_MAP.rampBounds`; the `[0, 25, 55, 80]` fallback was repeated in three modules and verify's maturity map ignored the case's own authorisation and supervision labels.
+- v19: `domain/maturityBounds.ts` (`rampBoundsOf`, `levelFromBounds`, `levelLabelFor`, `crossingLabel`) is the one owner; the engine, the S-curve view (`endMaturity`, `bands`, `grid`, `levelsText`), the automation legend and `tune/maturity` read it; verify's map is `maturityMapOf`.
+- Effect: none at the default bounds; tuneA-maturity-bounds (0 / 40 / 60 / 70) now draws its own bands and says "crosses 40 / 60 / 70 %" (its end adoption, 100 %, is L4 under both rules).
+- Tests: `tests/domain/lot10-sot.test.ts`.
+- Files: `domain/maturityBounds.ts`, `domain/time/{kernel,rows}.ts`, `domain/scope/{automation,scurveView}.ts`, `domain/tune/maturity.ts`, `domain/verifyA/fteVfte.ts`, UI `scope/scurve/{geometry,CurveSvg,Editor}.tsx`, `scope/params/AutomationCurve.tsx`.
+
+## DEV-GLASS-CEILING-OWNER — the registry and the decision context read the computed ceiling
+
+- Legacy: registry `glassCeilingPct`, `maxAutomatablePct` and the decision context line read the raw `glassCeiling` input, while the model uses the ceiling computed from the scope (unless forced).
+- v19: they read `model().ceiling`.
+- Effect: none on the 107 fixtures (no fixture has a computed ceiling different from its input); a case whose scope moves the ceiling now shows the ceiling the economics use.
+- Tests: `tests/domain/lot10-sot.test.ts`.
+- Files: `domain/pdc/vars/{global,scope}.ts`, `domain/verdict/context.ts`.
+
+## DEV-CM-CONFIDENCE — the commercial recommendation reads the Monte Carlo confidence
+
+- Legacy: `cmRecommend` read `MC_LAST` (an MSC case sells gain sharing from 70 % confidence). The port never passed the confidence, so the MSC → GS branch was dead while the screen stated the rule; the legacy registry evaluated the variable before its own Monte Carlo run.
+- v19: the Commercial screen passes the confidence of the current (not stale) run, the registry the runtime's run; the 15 % / 70 % thresholds and the rule text are domain constants (`CM_RULE`, `cmRuleText`). The Portfolio view has no per-product run and keeps the no-run rule.
+- Effect: an MSC case shows "Gain sharing" once a Monte Carlo run with ≥ 70 % confidence exists (as the legacy screen did). The registry oracle (no run at that point) is compared in that order.
+- Tests: `pdc-vars.test.ts` (the legacy order without a run, then the runtime's), `tests/domain/lot10-sot.test.ts`.
+- Files: `domain/pdc/{commercial,vars/finance}.ts`, UI `present/commercial/{index,CmDetail}.tsx`.

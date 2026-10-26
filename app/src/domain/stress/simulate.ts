@@ -13,9 +13,11 @@ export interface McStats { p10: number; p50: number; p90: number; mean: number; 
 export interface McSens { id: string; label: string; r: number }
 export interface McResult { outcomes: number[]; stats: McStats; sens: McSens[]; n: number; seed: number }
 
-/** Seed and draw count of the case (inputs mcSeed / mcDraws; 42 and 1000 when empty, draws clamped to 100..5000). */
-export const mcSeedOf = (c: Ctx): number => Math.max(1, Math.round(c.inp.p('mcSeed')) || 42);
-export const mcDrawsOf = (c: Ctx): number => Math.max(100, Math.min(5000, Math.round(c.inp.p('mcDraws')) || 1000));
+/** Defaults and bounds of the Monte Carlo inputs: 1000 draws (100..5000), seed 42 (>= 1). */
+export const MC_DRAWS_DEFAULT = 1000, MC_DRAWS_MIN = 100, MC_DRAWS_MAX = 5000, MC_SEED_DEFAULT = 42;
+/** Seed and draw count of the case (inputs mcSeed / mcDraws; the defaults when empty, draws clamped to the bounds). */
+export const mcSeedOf = (c: Ctx): number => Math.max(1, Math.round(c.inp.p('mcSeed')) || MC_SEED_DEFAULT);
+export const mcDrawsOf = (c: Ctx): number => Math.max(MC_DRAWS_MIN, Math.min(MC_DRAWS_MAX, Math.round(c.inp.p('mcDraws')) || MC_DRAWS_DEFAULT));
 
 /**
  * Horizon-aware net benefit of one evaluation: the Time Engine's net cash-flow over the horizon (savings − setup, thin pass), on every curve, so it

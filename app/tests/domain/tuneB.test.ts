@@ -50,8 +50,13 @@ describe.each(ids.filter(have))('tune B domain vs legacy oracle: %s', (id) => {
       e)).toEqual([]);
   });
   it('setup lines', () => {
-    const b = setupBreakdown(c), e = extra('tuneBSetup', id);
-    expect(b.lines.map((l) => l.amount)).toEqual([e.t, e.tr, e.c, e.g]);
+    const b = setupBreakdown(c), e = extra('tuneBSetup', id), m = model(c);
+    // DEV-SETUP-BREAKDOWN: the four editable lines are the legacy ones; the HRI change cost and the hub setup follow, and the total is model().setupTotal.
+    expect(b.lines.slice(0, 4).map((l) => l.amount)).toEqual([e.t, e.tr, e.c, e.g]);
+    expect(b.lines.slice(4).map((l) => [l.id, l.amount])).toEqual([...(m.conv.hriOn ? [['change', m.conv.changeCost]] : []),
+      ...(m.conv.khOn ? [['knowledge', m.conv.khSetup]] : [])]);
+    expect(b.total).toBe(m.setupTotal);
+    expect(b.lines.reduce((a, l) => a + l.amount, 0)).toBeCloseTo(m.setupTotal, 6);
   });
   it('risk, AI-Act tier and quality premium', () => {
     const q = qualityView(c), e = extra('tuneBRisk', id);

@@ -22,7 +22,7 @@ export function Editor() {
   return (
     <Panel title="📈 Adoption curve & maturity levels">
       <p className="ac-muted">The live adoption S-curve, with the four maturity levels marked where the curve crosses each threshold. Maturity is defined by the
-        adoption reached: L1 0–25%, L2 25–55%, L3 55–80%, L4 80–100%.</p>
+        adoption reached: {view.levelsText}.</p>
       <div className="ac-form-row">
         <FieldChoice label="Curve shape" value={view.family} options={FAMILY_OPTIONS} onChange={setCurveFamily}>
           <label className="ac-field"><span className="ac-field-l">Curve shape</span>

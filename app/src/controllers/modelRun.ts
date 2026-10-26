@@ -2,7 +2,7 @@
 import { createStore } from 'zustand/vanilla';
 import { makeCtx } from '@/domain';
 import { mcsOf } from '@/domain/model/modelState';
-import { runMcs, type McsResult } from '@/domain/model/mcs';
+import { MCS_DRAWS_DEFAULT, runMcs, type McsResult } from '@/domain/model/mcs';
 import { activeDoc } from '@/store/editBase';
 
 /**
@@ -19,7 +19,7 @@ export function runMcsSync(minDraws = 100): number {
   const t0 = Date.now(), doc = activeDoc(), mc = mcsOf(doc.MODEL);
   mcsRunStore.setState({ running: true });
   try {
-    const last = runMcs(makeCtx(doc), Math.max(minDraws, mc.draws || 2000), mc.seed);
+    const last = runMcs(makeCtx(doc), Math.max(minDraws, mc.draws || MCS_DRAWS_DEFAULT), mc.seed);
     mcsRunStore.setState({ last, running: false });
   } catch (e) {
     mcsRunStore.setState({ running: false });

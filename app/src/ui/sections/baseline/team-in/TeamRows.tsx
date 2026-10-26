@@ -1,7 +1,7 @@
 import { LOCATIONS } from '@/domain';
 import { GRADES, SKILLS_EXIST } from '@/domain/baseline/skills';
-import { isPinnedRow, pinsOf, type TeamWeights } from '@/domain/baseline/teamWeights';
-import { rateFor } from '@/domain/location';
+import { deltaSign, fteDelta, isPinnedRow, pinsOf, type TeamWeights } from '@/domain/baseline/teamWeights';
+import { lineCost, rateFor } from '@/domain/location';
 import { activeArtefacts } from '@/domain';
 import { removeTeamRow, updateTeamRow } from '@/controllers/team';
 import type { Ctx } from '@/domain';
@@ -25,18 +25,20 @@ function Pick({ i, field, list, name, value }: { i: number; field: 'skill' | 'gr
   );
 }
 
+const DELTA_TONE = { zero: 'slate-700', over: 'danger-800', under: 'teal-725' } as const;
+
 interface RowProps { r: TeamRow; i: number; c: Ctx; W: TeamWeights; open: boolean; onPin: (i: number) => void }
 
 /** A product's share of a portfolio shared line: read-only here (edited in Products > Shared team lines). */
 function SharedRow({ r, i, c, W }: Omit<RowProps, 'open' | 'onPin'>) {
-  const tjm = rateFor(c.s, r.loc, r.grade), wd = c.inp.p('workdays');
+  const tjm = rateFor(c.s, r.loc, r.grade);
   return (
     <tr className="ac-row-hl" data-tone="primary-80" data-shared-row={r.shared}>
       <td>{r.skill}</td><td>{r.grade}</td><td>{r.loc}</td>
       <td className="ac-td-num" aria-label={`FTE of line ${i + 1} (share of a shared line)`}>{(+r.etp).toFixed(2)}</td>
       <td className="ac-td-num">{(W.targetFTE[i] ?? 0).toFixed(1)}</td>
       <td className="ac-td-num">{tjm}</td>
-      <td className="ac-td-num ac-team-cost">{fmtK(r.etp * tjm * wd)}</td>
+      <td className="ac-td-num ac-team-cost">{fmtK(lineCost(c.s, c.inp, r))}</td>
       <td colSpan={2}><em title="This product's share of a team line shared between products: edit it in Products, Shared team lines">Shared</em>
         {isPinnedRow(r) && <span title="Pinned artefacts of the shared line (edited in Products, Shared team lines)"> · 📌 {pinsOf(r).length}</span>}</td>
     </tr>
@@ -45,10 +47,10 @@ function SharedRow({ r, i, c, W }: Omit<RowProps, 'open' | 'onPin'>) {
 
 function Row({ r, i, c, W, open, onPin }: RowProps) {
   if (r.shared !== undefined) return <SharedRow r={r} i={i} c={c} W={W} />;
-  const tjm = rateFor(c.s, r.loc, r.grade), wd = c.inp.p('workdays');
-  const d = (+r.etp || 0) - (W.targetFTE[i] ?? 0), pinned = isPinnedRow(r);
+  const tjm = rateFor(c.s, r.loc, r.grade);
+  const d = fteDelta(r, W, i), pinned = isPinnedRow(r);
   const live = pinsOf(r).filter((id) => activeArtefacts(c.a, c.s).some((a) => a.id === id)).length;
-  const dTone = Math.abs(d) < 1e-9 ? 'slate-700' : d > 0 ? 'danger-800' : 'teal-725';
+  const dTone = DELTA_TONE[deltaSign(d)];
   const pinTitle = pinned ? `${live} of ${pinsOf(r).length} pinned artefacts are in scope` : `Auto: takes a share of the ${r.skill} pool`;
   const fte = `FTE of line ${i + 1}`, setFte = (v: string) => updateTeamRow(i, 'etp', v);
   return (
@@ -61,7 +63,7 @@ function Row({ r, i, c, W, open, onPin }: RowProps) {
       <td className="ac-td-num" title={`Implied by the artefact mix — exact ${(W.impliedETP[i] ?? 0).toFixed(2)}`}>
         {(W.targetFTE[i] ?? 0).toFixed(1)} <b className="ac-tone" data-tone={dTone}>{d >= 0 ? '+' : ''}{d.toFixed(1)}</b></td>
       <td className="ac-td-num">{tjm}</td>
-      <td className="ac-td-num ac-team-cost">{fmtK(r.etp * tjm * wd)}</td>
+      <td className="ac-td-num ac-team-cost">{fmtK(lineCost(c.s, c.inp, r))}</td>
       <td>
         <button type="button" aria-pressed={open} aria-label={`Pin line ${i + 1}`} title={pinTitle} onClick={() => onPin(i)}>
           📌{pinned ? ` ${live}` : ''}

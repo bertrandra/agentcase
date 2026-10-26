@@ -1,3 +1,4 @@
+import { aiSkillPremiumLabel } from '@/domain/rates';
 import { agentDetail } from '@/domain/verifyA';
 import { fmt1 } from '@/ui/economicsFormat';
 import { Badge, Panel } from '@/ui/widgets/cards';
@@ -22,7 +23,7 @@ export default function AgentDetailSection() {
   return (
     <SectionFrame title="🤖 Agent details — the agentic operating team" help={help}
       result={<>
-        <Band items={[['Agentic Run FTE', fmt1(d.runTotal)], ['Supervision pole', fmt1(d.supETP)], ['AI skill premium', '+15%'],
+        <Band items={[['Agentic Run FTE', fmt1(d.runTotal)], ['Supervision pole', fmt1(d.supETP)], ['AI skill premium', aiSkillPremiumLabel()],
           ['Run day-rate', `€${d.runRate}`], ['Authorization levels', String(d.auth.length)]]} />
         <Runs live={live} />
         <Panel title="The 5 agentic roles">

@@ -26,6 +26,8 @@ export function makeInputs(s: CaseState): Inputs {
 export const clampAutoCap = (n: number): number => (isNaN(n) ? 100 : Math.max(10, Math.min(100, n)));
 /** Technical cap on the automation potential from the raw autoCapPct input text (10..100, 100 when blank or invalid). */
 export const autoCapFrom = (raw: string | undefined): number => clampAutoCap(parseFloat(raw ?? ''));
+/** The potential "Fit to selected scope" gives (legacy applyScopeAuto): the scope's automatable average, rounded, within 0..the technical cap. */
+export const fitPotential = (avgAgent: number, cap: number): number => Math.max(0, Math.min(cap, Math.round(avgAgent)));
 
 /** Horizon bounds in whole years (the Horizon field and the Excel Parameters sheet offer 1 to 10). */
 export const HORIZON_MIN = 1, HORIZON_MAX = 10, HORIZON_DEFAULT = 3;

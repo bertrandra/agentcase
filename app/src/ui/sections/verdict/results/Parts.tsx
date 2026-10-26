@@ -1,6 +1,6 @@
 import type { ReactNode } from 'react';
 import { pNegTone } from '@/domain/stress';
-import { VERDICT_META, type Decision } from '@/domain/verdict';
+import { VERDICT_META, type Decision, type SavingsYear, type TeamShift } from '@/domain/verdict';
 import { Panel, StatRow } from '@/ui/widgets/cards';
 import { fmtEur } from '../../stress/fmt';
 import { Kpi } from './Kpi';
@@ -40,10 +40,12 @@ export function UncertaintyPanel({ title, s }: { title: string; s: { p10: number
   );
 }
 
-/** Where the savings come from (one year) and the human to agent team shift, side by side. `extra` is a last line under the team shift. */
+/**
+ * Where the savings come from (one year) and the human to agent team shift, side by side. The lines add up to the Time-Engine savings of the year
+ * (`b.model`, the figure of Annual / Financial / Story); `extra` is a last line under the team shift.
+ */
 export function SavingsAndTeam({ savingsTitle, teamTitle, b, team, extra }: {
-  savingsTitle: string; teamTitle: string; extra?: ReactNode;
-  b: { grossAuto: number; agentCost: number; relocation: number; total: number }; team: { asis: number; human: number; agent: number };
+  savingsTitle: string; teamTitle: string; extra?: ReactNode; b: SavingsYear; team: TeamShift;
 }) {
   return (
     <div className="ac-form-row ac-stretch">
@@ -52,13 +54,16 @@ export function SavingsAndTeam({ savingsTitle, teamTitle, b, team, extra }: {
           <b data-ink="teal">{fmtEur(b.grossAuto)}</b> gross automation<br />
           <b data-ink="brick">−{fmtEur(b.agentCost)}</b> agent operating cost<br />
           <b data-ink="amber">{b.relocation >= 0 ? '+' : ''}{fmtEur(b.relocation)}</b> relocation<br />
-          <b data-ink="blue">= {fmtEur(b.total)} total savings / yr</b>
+          <span className="ac-muted">= {fmtEur(b.total)} at the year-end team</span><br />
+          <b>{b.other >= 0 ? '+' : ''}{fmtEur(b.other)}</b> within-year ramp and engine effects<br />
+          <b data-ink="blue">= {fmtEur(b.model)} total savings / yr</b>
         </div>
       </Panel>
       <Panel title={teamTitle}>
         <div className="ac-lines">
           <strong>{team.asis.toFixed(1)}</strong> AS-IS human FTE →<br />
-          <b data-ink="blue">{team.human.toFixed(1)}</b> residual human FTE + <b data-ink="info">{team.agent.toFixed(1)}</b> agent vFTE
+          <b data-ink="blue">{team.human.toFixed(1)}</b> residual human FTE + <b data-ink="info">{team.agent.toFixed(1)}</b> agent vFTE<br />
+          <span className="ac-muted">residual = {team.delivery.toFixed(1)} delivery team + {team.runTeam.toFixed(1)} agentic run team</span>
           {extra && <><br />{extra}</>}
         </div>
       </Panel>

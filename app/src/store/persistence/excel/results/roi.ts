@@ -16,6 +16,6 @@ export function roiSheet(wb: Workbook, { v }: ResultsData, images?: SheetImages,
   ws.addRow(['Payback (months)', pb == null || !isFinite(pb) ? `>${v.m.horizon * 12}` : pb <= 0 ? 'immediate' : pb]);
   ws.addRow([]);
   ws.addRow(['Year', 'Benefit', 'Net', 'Cumulative']);
-  v.years.forEach((y, i) => { ws.addRow([`Y${i + 1}`, r0(y.savings), r0(y.savings - (i === 0 ? setup : 0)), r0(v.cumulative[i] as number)]); });
+  v.years.forEach((y, i) => { ws.addRow([`Y${i + 1}`, r0(y.savings), r0(y.netAfterSetup), r0(y.cumulativeCashFlowEnd)]); });
   head(ws); addImage(wb, ws, 'ROI', images);
 }

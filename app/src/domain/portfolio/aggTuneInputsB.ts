@@ -1,7 +1,7 @@
 /** @calc-zone aggregate-views */
 import type { Ctx } from '../ctx';
 import { capability, currentLevel, pilotSizing, safeOverhead, tokenCache, coachView, sddView } from '../tune';
-import { setupBreakdown } from '../tuneB/setup';
+import { setupBreakdown, setupLineAmount } from '../tuneB/setup';
 import { AIACT_TIERS, aiActKey, qualityView, riskBand, riskScore, wave2RiskPremium } from '../tuneB/risk';
 import { headOf, membersOf, spreadOf, type Head, type Spread } from './aggTuneCore';
 import type { Portfolio } from './types';
@@ -10,24 +10,27 @@ const num = (c: Ctx, id: string): number => { const v = c.inp.p(id); return Numb
 const total = <T>(rows: T[], f: (r: T) => number): number => rows.reduce((a, r) => a + f(r), 0);
 
 // ---- Agentic Setup -------------------------------------------------------------------------------------------------------------------------------
-export interface SetupRow extends Head { tooling: number; training: number; coaching: number; governance: number; total: number; duration: number;
-  infraMonthly: number }
+export interface SetupRow extends Head {
+  tooling: number; training: number; coaching: number; governance: number; change: number; knowledge: number; total: number; duration: number;
+  infraMonthly: number;
+}
 export interface SetupAgg { rows: SetupRow[]; totals: Omit<SetupRow, keyof Head | 'duration' | 'infraMonthly'>; spread: Spread; duration: Spread }
 
 /**
- * The four one-off setup lines of each product and their sum (`setupBreakdown`); the total line adds the products' lines, the spread describes the
- * product totals.
+ * The one-off setup lines of each product (`setupBreakdown`: the four editable lines, the HRI change cost and the hub setup) and its total (the
+ * model's setup total, the lines add up to it); the total line adds the products' lines, the spread describes the product totals.
  */
 export function aggSetup(pf: Portfolio, productIds: string[]): SetupAgg {
   const rows = membersOf(pf, productIds).map((m): SetupRow => {
-    const b = setupBreakdown(m.ctx), amount = (id: string) => b.lines.find((l) => l.id === id)?.amount ?? 0;
+    const b = setupBreakdown(m.ctx), amount = (id: Parameters<typeof setupLineAmount>[1]) => setupLineAmount(b, id);
     return { ...headOf(m), tooling: amount('tooling'), training: amount('training'), coaching: amount('coaching'), governance: amount('governance'),
-      total: b.total, duration: num(m.ctx, 'setupDuration'), infraMonthly: num(m.ctx, 'infra') };
+      change: amount('change'), knowledge: amount('knowledge'), total: b.total, duration: num(m.ctx, 'setupDuration'), infraMonthly: num(m.ctx, 'infra') };
   });
   return {
     rows, spread: spreadOf(rows.map((r) => r.total)), duration: spreadOf(rows.map((r) => r.duration)),
     totals: { tooling: total(rows, (r) => r.tooling), training: total(rows, (r) => r.training), coaching: total(rows, (r) => r.coaching),
-      governance: total(rows, (r) => r.governance), total: total(rows, (r) => r.total) },
+      governance: total(rows, (r) => r.governance), change: total(rows, (r) => r.change), knowledge: total(rows, (r) => r.knowledge),
+      total: total(rows, (r) => r.total) },
   };
 }
 

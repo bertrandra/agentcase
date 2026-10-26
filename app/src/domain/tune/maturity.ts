@@ -1,5 +1,6 @@
 /** @calc-zone tuning-programme */
 import { MATURITY_DEFAULT } from '../catalog';
+import { levelFromBounds, rampBoundsOf } from '../maturityBounds';
 import type { Ctx } from '../ctx';
 import { engagementCoef } from '../engagement';
 import type { ModelResult } from '../types/model';
@@ -12,15 +13,13 @@ export interface MaturityMap { rampBounds: number[]; shareBounds: number[]; labe
 export const MATURITY_DEFAULTS = MATURITY_DEFAULT as unknown as MaturityMap;
 
 /** The case's map; any part the case does not carry takes the shipped default. */
-export const maturityMapFrom = (own: unknown): MaturityMap => ({ ...MATURITY_DEFAULTS, ...((own ?? {}) as Partial<MaturityMap>) });
+export const maturityMapFrom = (own: unknown): MaturityMap => {
+  const o = (own ?? {}) as Partial<MaturityMap>;
+  return { ...MATURITY_DEFAULTS, ...o, rampBounds: rampBoundsOf({ MATURITY_MAP: o }) };
+};
 export const maturityMapOf = (s: CaseState): MaturityMap => maturityMapFrom(s.MATURITY_MAP);
 
-/** Highest level whose lower bound `v` has reached. */
-export function levelFromBounds(v: number, bounds: number[]): number {
-  let l = 1;
-  for (let i = 1; i < bounds.length; i++) if (v >= (bounds[i] as number)) l = i + 1;
-  return l;
-}
+export { levelFromBounds } from '../maturityBounds';
 
 /** "25–55%" ranges of the adoption axis (legacy maturityRampLevels). */
 export function rampRanges(bounds: number[]): string[] {

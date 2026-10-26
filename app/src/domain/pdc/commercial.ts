@@ -1,4 +1,5 @@
 /** @calc-zone delivery-views */
+import { authRank } from '../authority';
 import type { Ctx } from '../ctx';
 import { engineNow } from '../canonical';
 import { engagementKey } from '../engagement';
@@ -18,13 +19,12 @@ export const CM_DEFS: Record<CmCode, { label: string; why?: string; need?: (k: s
 
 export const cmAvailable = (c: Ctx, code: CmCode): boolean => { const n = CM_DEFS[code].need; return !n || n(engagementKey(c)); };
 
-const AUTH_ORDER: Record<string, number> = { Assistance: 1, Copilot: 2, 'Supervised autonomous': 3, Autonomous: 4 };
 
 /** Effort share of the in-scope artefacts by AI-authorisation tier: T0 (<= A2), T1 (A3), T2 (A4). */
 export function cmTierSplit(c: Ctx): { t0: number; t1: number; t2: number } {
   let w0 = 0, w1 = 0, w2 = 0, tot = 0;
   for (const a of activeArtefacts(c.a, c.s)) {
-    const w = +a.w || 0, lv = AUTH_ORDER[a.aiAuth] ?? 1;
+    const w = +a.w || 0, lv = authRank(a.aiAuth);
     tot += w;
     if (lv <= 2) w0 += w; else if (lv === 3) w1 += w; else w2 += w;
   }
@@ -32,10 +32,19 @@ export function cmTierSplit(c: Ctx): { t0: number; t1: number; t2: number } {
 }
 
 const num = (c: Ctx, id: string, dflt: number): number => { const v = c.inp.p(id); return isNaN(v) ? dflt : v; };
+/** The AGS vFTE billing ratio (input cmVfteRatio, 0.6 when blank): the share of agent capacity billed. */
+export const cmVfteRatioOf = (c: Ctx): number => num(c, 'cmVfteRatio', 0.6);
+/** The recommendation thresholds: MSI sells AGS above a 15 % vFTE share, MSC sells GS from a 70 % Monte Carlo confidence. */
+export const CM_RULE = { msiVfteShare: 0.15, mscConfidence: 0.7 } as const;
+/** The recommendation rule in words (the Commercial screen states it). */
+export const cmRuleText = (): string => `STA→AAH · MSI→AGS if vFTE share at horizon end > ${Math.round(CM_RULE.msiVfteShare * 100)}% else ET · MSC→GS if MC `
+  + `confidence ≥ ${Math.round(CM_RULE.mscConfidence * 100)}% else AGS`;
+/** Monte Carlo confidence of a run: 1 − P(net < 0), null when nothing was run. */
+export const mcConfidenceOf = (run: { stats: { pNetNeg: number } } | null | undefined): number | null => (run ? 1 - run.stats.pNetNeg : null);
 
 /** Client revenue per year of the horizon for one commercial model, and the Agentshore capacity-point price. */
 export function commercialRevenue(c: Ctx, code: CmCode, m: ModelResult): { rev: number[]; pp: number } {
-  const wd = m.wd, tjm = m.tgtTJM, uplift = num(c, 'cmUplift', 15), mk = num(c, 'cmToolMarkup', 10), ratio = num(c, 'cmVfteRatio', 0.6);
+  const wd = m.wd, tjm = m.tgtTJM, uplift = num(c, 'cmUplift', 15), mk = num(c, 'cmToolMarkup', 10), ratio = cmVfteRatioOf(c);
   let pp = c.inp.p('cmPricePoint'); if (isNaN(pp) || pp <= 0) pp = Math.round((tjm * wd) / 12);
   const disc = num(c, 'cmBaseDisc', 20), gs = num(c, 'cmGainShare', 40);
   const rev = engineNow(c).years().map((y) => {
@@ -53,9 +62,9 @@ export function cmRecommend(c: Ctx, mcConfidence: number | null = null): [CmCode
   const k = engagementKey(c);
   if (k === 'STA') return ['AAH', 'uplifted day-rate is the only agentic capture in staff augmentation'];
   const ys = engineNow(c).years(), e = ys[ys.length - 1]!, tot = e.humanFteEnd + e.agentVfteEnd, share = tot > 0 ? e.agentVfteEnd / tot : 0;
-  if (k === 'MSI') return share > 0.15 ? ['AGS', 'vFTE share at horizon end > 15% — capacity pricing captures the mix'] : ['ET',
+  if (k === 'MSI') return share > CM_RULE.msiVfteShare ? ['AGS', 'vFTE share at horizon end > 15% — capacity pricing captures the mix'] : ['ET',
     'vFTE share still low — stay on effort & tools'];
-  if (mcConfidence != null && mcConfidence >= 0.7) return ['GS', 'MSC + Monte Carlo confidence ≥ 70% — share the upside'];
+  if (mcConfidence != null && mcConfidence >= CM_RULE.mscConfidence) return ['GS', 'MSC + Monte Carlo confidence ≥ 70% — share the upside'];
   return ['AGS', 'MSC but confidence not yet proven — price the capacity, revisit GS after the pilot'];
 }
 

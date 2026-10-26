@@ -31,7 +31,7 @@ export default function ProductivitySection() {
         <p className="ac-muted ac-productivity-note">{note}</p>
         <DataTable rows={v.rows} rowKey={(r) => r.label} columns={[
           { key: 'type', header: 'Type', render: (r) => <strong>{r.label}</strong> }, col('asis', 'AS-IS'), col('y1', 'Y1'), col('y2', 'Y2'), col('y3', v.endL),
-          { key: 'f', header: 'Factor', align: 'center', render: (r) => `${(r.y3 / r.asis).toFixed(1)}x` },
+          { key: 'f', header: 'Factor', align: 'center', render: (r) => `${r.factor.toFixed(1)}x` },
         ]} />
       </>} />
   );

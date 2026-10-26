@@ -10,7 +10,7 @@ import { plSheet, savingsSheet } from './savings';
 import { workforceSheet } from './workforce';
 import { addLogo } from './logo';
 
-export { resultsData, SETUP_LINES, type ResultsData, type SheetImages, type ImageKey } from './data';
+export { resultsData, type ResultsData, type SheetImages, type ImageKey } from './data';
 
 /**
  * The results workbook of the Financial tab: ROI, Investment, Operating costs, Savings, P&L, Workforce shift (legacy exportFinancialExcel).

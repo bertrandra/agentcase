@@ -1,11 +1,12 @@
 import { roadmapStages } from '@/domain/frame';
 import { useCtx } from '@/store/hooks';
+import { useEvalDate } from '@/ui/evalDate';
 import { goSection } from '@/ui/uiState';
 import { Panel } from '@/ui/widgets/cards';
 
 /** The five gated stages on the calendar; each card jumps to the section that produces its evidence. */
 export function Roadmap() {
-  const stages = roadmapStages(useCtx(), new Date());
+  const stages = roadmapStages(useCtx(), new Date(useEvalDate()));
   return (
     <Panel title="🗺️ Engagement roadmap & gates">
       <p className="ac-muted">The five gated stages on the calendar, from the start date. Each card shows its window and the gate that must clear before the

@@ -1,12 +1,13 @@
 /** @calc-zone exports */
 import { activeArtefacts, engineNow, makeCtx, model, REG_ARTEFACTS, regActive } from '@/domain';
+import { authRank } from '@/domain/authority';
 import { engagementCoef, engagementKey } from '@/domain/engagement';
+import { headline } from '@/domain/economics/headline';
 import { posture } from '@/domain/verifyA/phaseArt';
 import { appVerTag } from '@/domain/snapshots';
 import type { CaseState } from '@/domain';
 import { logoAlt, shownLogo } from '@/domain/theme/logo';
 
-const AUTH_ORDER: Record<string, number> = { Assistance: 1, Copilot: 2, 'Supervised autonomous': 3, Autonomous: 4 };
 
 export interface ReportData {
   version: string; stamp: string; context: string;
@@ -44,8 +45,8 @@ export function reportData(s: CaseState, now: Date): ReportData {
     norms: [...s.selectedNorms].sort(), artefactsInScope: regActive(c.a, c.s).filter((a) => sel.has(a.id)).length, catalogueSize: REG_ARTEFACTS.length,
     potential: m.auto, ceiling: m.ceiling, effective: m.eff, headroom: m.conv.effCap,
     supervision, authorityCap: cx.authorityCap,
-    blocked: act.filter((a) => (AUTH_ORDER[a.aiAuth] ?? 1) > cx.authorityCap).map((a) => ({ name: a.name, phase: a.phase, aiAuth: a.aiAuth })),
-    setup: m.setupTotal, billablePct: cx.setupBillable * 100, endLabel: `Y${eng.horizonYears}`, endRun: end.totalRunCost, endSaving: end.savings,
+    blocked: act.filter((a) => authRank(a.aiAuth) > cx.authorityCap).map((a) => ({ name: a.name, phase: a.phase, aiAuth: a.aiAuth })),
+    setup: headline(c).setup, billablePct: cx.setupBillable * 100, endLabel: `Y${eng.horizonYears}`, endRun: end.totalRunCost, endSaving: end.savings,
     baselineRun: m.baselineRun, riskPremium: cx.riskPremium, ...reportLogo(s),
   };
 }
