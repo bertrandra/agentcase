@@ -1,9 +1,11 @@
 import { addDashboard } from '@/controllers/pdcBoard';
-import { addCard, addRow, moveBodyRow, removeCard, removeRow, setCardField, setCardSource, setDescription, setRowField, setRowSeq, setRowSource } from '@/controllers/pdcBoardRows';
+import { addCard, addRow, moveBodyRow, removeCard, removeRow, setCardField, setCardSource, setDescription, setRowField, setRowSeq,
+  setRowSource } from '@/controllers/pdcBoardRows';
 import { newDashboard } from '@/domain/pdc/board';
 import type { Sample } from './types';
 
-const dash = newDashboard({ groupIds: ['tune'], allGroups: false, existing: [], groups: [{ id: 'tune', label: '4 · Tune' }], sections: [{ id: 'knowledge', group: 'tune', label: '🧠 Knowledge hub' }], maxOrder: 170 })!;
+const dash = newDashboard({ groupIds: ['tune'], allGroups: false, existing: [], groups: [{ id: 'tune', label: '4 · Tune' }],
+  sections: [{ id: 'knowledge', group: 'tune', label: '🧠 Knowledge hub' }], maxOrder: 170 })!;
 const card = dash.cards[0]!.CARD_ID;
 const prep = () => addDashboard(dash);
 /** A dashboard with three body rows (row-1..row-3), the middle one bound to a variable of its source. */

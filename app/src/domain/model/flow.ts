@@ -28,6 +28,18 @@ export function flowCycleTime(c: Ctx, m: ModelResult = model(c)) {
   return { asis, ct: anchorClamp(a.asis, a.target, perfRel(c, e.year(e.horizonYears).adoptionEndPct) * throttle), source: 'derived' as const, throttle };
 }
 
+/** The sponsor's discount rate of the time-to-market value (P5 "Flow and value" rate, default 8 %, clamped to [0, 1]). */
+export const flowRate = (c: Ctx): number => Math.max(0, Math.min(1, numOr(flowOf(c.s.MODEL).discountRate, DEFAULT_DISCOUNT_RATE)));
+
+/**
+ * The time-to-market value of one month of the product's own horizon: margin per month × the effective lead-time gain (months), 0 while no margin
+ * is given. Constant over the horizon; the portfolio lays it on the calendar (`flowByProduct`).
+ */
+export function flowMonthValue(c: Ctx, deltaTEff: number = flowModel(c).deltaTEff): number {
+  const margin = Math.max(0, flowOf(c.s.MODEL).marginPerMonth || 0);
+  return margin > 0 && deltaTEff !== 0 ? margin * deltaTEff : 0;
+}
+
 /** Full P5 read-out: cycle time, Little's-law WIP and the sponsor-owned time-to-market value. */
 export function flowModel(c: Ctx) {
   const m = model(c), fl = flowOf(c.s.MODEL), ct = flowCycleTime(c, m), e = engineNow(c);
@@ -35,9 +47,9 @@ export function flowModel(c: Ctx) {
   const theta = ct.asis > 0 ? Math.max(0, (ct.asis - ct.ct) / ct.asis) : 0;
   const deltaTRaw = (ct.asis - ct.ct) / 30;
   const share = Math.max(0, Math.min(100, fl.throughputInShare || 0)) / 100, deltaTEff = deltaTRaw * share;
-  const margin = Math.max(0, fl.marginPerMonth || 0), d = Math.max(0, Math.min(1, numOr(fl.discountRate, DEFAULT_DISCOUNT_RATE)));
+  const margin = Math.max(0, fl.marginPerMonth || 0), d = flowRate(c);
   // the time-to-market value: a constant monthly margin over the horizon, discounted with ANNUAL compounding (1 + d)^(month / 12) (legacy P5 rule)
-  const npv = margin > 0 && deltaTEff !== 0 ? npvOf(new Array<number>(m.horizon * 12).fill(margin * deltaTEff), d, 'annual') : 0;
+  const npv = npvOf(new Array<number>(m.horizon * 12).fill(flowMonthValue(c, deltaTEff)), d, 'annual');
   return {
     on: !!c.s.MODEL.FLAGS.flow, hasMargin: fl.marginPerMonth > 0, ctAsis: ct.asis, ctNew: ct.ct, ctSource: ct.source, throttle: ct.throttle, theta, wip,
     wipMeasured: fl.wip > 0 ? fl.wip : null, deltaTRaw, deltaTEff, share, margin, discountRate: d, flowNpv: npv,

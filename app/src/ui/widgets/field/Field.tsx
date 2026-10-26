@@ -10,7 +10,8 @@ export function Field({ label, hint, children }: { label: string; hint?: ReactNo
  * Wrapper of a variant made of several controls (slider + field, stepper, radio group): a group named by its visible label. `bare` (a table cell)
  * keeps the name for assistive technology only and drops the field margins.
  */
-export function FieldGroup({ id, label, hint, role = 'group', bare, children }: { id: string; label: string; hint?: ReactNode; role?: 'group' | 'radiogroup'; bare?: boolean; children: ReactNode }) {
+export function FieldGroup({ id, label, hint, role = 'group', bare,
+  children }: { id: string; label: string; hint?: ReactNode; role?: 'group' | 'radiogroup'; bare?: boolean; children: ReactNode }) {
   return (
     <div className={bare ? 'ac-fv-bare' : 'ac-field'} role={role} aria-labelledby={id}>
       <span id={id} className={bare ? 'ac-sr' : 'ac-field-l'}>{label}</span>

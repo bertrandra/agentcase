@@ -1,4 +1,5 @@
 /** @calc-zone portfolio-consolidation */
+import { isSplitComplete, splitTotal } from '../split';
 import { diagnose } from './diagnostics';
 import { sharedTeamErrors } from './sharedTeamIssues';
 import { FORBIDDEN_DOM_IDS, OVERRIDABLE_KEYS, WAVE_MILESTONES, type Portfolio } from './types';
@@ -37,10 +38,13 @@ export function validate(pf: Portfolio): Validation {
     if (!nonNeg(p.offsetMonths)) err('offset', `product ${p.id}: offsetMonths must be >= 0`, ref);
     if (k.ktLeadMonths !== undefined && !nonNeg(k.ktLeadMonths)) err('kt-lead', `product ${p.id}: ktLeadMonths must be >= 0`, ref);
     if (k.targetCC !== undefined && !(k.targetCC >= 0 && k.targetCC <= 4)) err('target-cc', `product ${p.id}: targetCC must be in [0, 4]`, ref);
-    if (k.domains?.length && Math.abs(k.domains.reduce((a, d) => a + d.weightPct, 0) - 100) > 1e-6) err('domain-weights', `product ${p.id}: domain weights must add up to 100`, ref);
-    if (k.maturityAnswers && (k.maturityAnswers.length !== 9 || k.maturityAnswers.some((n) => !(n >= 0 && n <= 4)))) err('maturity', `product ${p.id}: 9 answers in [0, 4] expected`, ref);
+    if (k.domains?.length && !isSplitComplete(splitTotal(k.domains.map((d) => d.weightPct)))) err('domain-weights',
+      `product ${p.id}: domain weights must add up to 100`, ref);
+    if (k.maturityAnswers && (k.maturityAnswers.length !== 9 || k.maturityAnswers.some((n) => !(n >= 0 && n <= 4)))) err('maturity',
+      `product ${p.id}: 9 answers in [0, 4] expected`, ref);
     const o = p.overrides as Record<string, unknown>;
-    for (const key of Object.keys(o)) if (key !== 'dom' && !(OVERRIDABLE_KEYS as readonly string[]).includes(key)) err('override-key', `product ${p.id}: "${key}" is not overridable`, ref);
+    for (const key of Object.keys(o)) if (key !== 'dom' && !(OVERRIDABLE_KEYS as readonly string[]).includes(key)) err('override-key',
+      `product ${p.id}: "${key}" is not overridable`, ref);
     for (const id of [...Object.keys(p.overrides.dom?.values ?? {}), ...Object.keys(p.overrides.dom?.checked ?? {})]) {
       if (FORBIDDEN_DOM_IDS.includes(id)) err('override-key', `product ${p.id}: "${id}" is never overridden`, ref);
     }

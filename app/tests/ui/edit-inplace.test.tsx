@@ -63,7 +63,8 @@ describe('top bar: the "Change" dropdown', () => {
 });
 
 describe('an input section in a Portfolio view is editable in place', () => {
-  it('Change = All products: the section on the COMMON values below the summary; an edit writes common (one undo step); an overriding product keeps its value', async () => {
+  it('Change = All products: the section on the COMMON values below the summary; an edit writes common (one undo step); an overriding product keeps its value',
+    async () => {
     setProductOverride(ids[1], 'selectedArtefacts', pf().common.selectedArtefacts.slice(0, 1));
     mountApp('scope-sel'); portfolio();
     await sectionReady(/Scope/);

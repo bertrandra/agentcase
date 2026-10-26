@@ -11,7 +11,8 @@ import { freshStore } from '../store/helpers';
 import { appVerFileTag } from '@/domain/snapshots';
 
 const saved: { filename: string; blob: Blob }[] = [];
-vi.mock('@/ui/sections/refshare/download', () => ({ downloadText: () => undefined, downloadBlob: (filename: string, blob: Blob) => { saved.push({ filename, blob }); } }));
+vi.mock('@/ui/sections/refshare/download',
+  () => ({ downloadText: () => undefined, downloadBlob: (filename: string, blob: Blob) => { saved.push({ filename, blob }); } }));
 vi.mock('@/ui/widgets/ChartPanel', async () => import('../helpers/chartStub'));
 
 beforeEach(() => { saved.length = 0; uiStore.setState({ toast: '' }); });
@@ -33,13 +34,15 @@ describe('Import / Export: Cost model (monthly)', () => {
     expect([...scope().options].map((o) => o.textContent)).toEqual(['Product: Product 1']);
     fireEvent.click(exportBtn());
     await waitFor(() => expect(saved.length).toBe(1));
-    expect(saved[0]!.filename).toMatch(new RegExp(String.raw`^AgentCase_${appVerFileTag()}_CostModel_Product_Product_1_\d{4}-\d{2}-\d{2}-\d{2}-\d{2}-\d{2}\.xlsx$`));
+    expect(saved[0]!.filename).toMatch(
+      new RegExp(String.raw`^AgentCase_${appVerFileTag()}_CostModel_Product_Product_1_\d{4}-\d{2}-\d{2}-\d{2}-\d{2}-\d{2}\.xlsx$`));
     expect(saved[0]!.blob.size).toBeGreaterThan(5000);
   });
   it('with a portfolio: Portfolio, each wave and each product, starting on the current View', async () => {
     fourProducts(); setDisplayScope({ kind: 'portfolio' });
     await open();
-    expect([...scope().options].map((o) => o.textContent)).toEqual(['Portfolio', 'Wave: Wave 1', 'Wave: Wave 2', 'Product: Product 1', 'Product: Payroll', 'Product: Billing', 'Product: Archive (no wave) (no wave)']);
+    expect([...scope().options].map((o) => o.textContent)).toEqual(['Portfolio', 'Wave: Wave 1', 'Wave: Wave 2', 'Product: Product 1', 'Product: Payroll',
+      'Product: Billing', 'Product: Archive (no wave) (no wave)']);
     expect(scope().value).toBe('portfolio');
     expect((within(scope()).getByRole('option', { name: /Archive/ }) as HTMLOptionElement).disabled).toBe(true);
   });

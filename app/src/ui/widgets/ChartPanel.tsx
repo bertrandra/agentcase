@@ -1,4 +1,7 @@
-import { Chart, registerables, type ChartConfiguration } from 'chart.js';
+import {
+  ArcElement, BarController, BarElement, CategoryScale, Chart, DoughnutController, Filler, Legend, LinearScale, LineController, LineElement, PointElement,
+  RadarController, RadialLinearScale, Title, Tooltip, type ChartConfiguration,
+} from 'chart.js';
 import { useEffect, useMemo, useRef } from 'react';
 import type { Theme } from '@/domain/theme/resolve';
 import { cssVars, px } from '../cssVars';
@@ -8,7 +11,11 @@ import { useTheme } from '../themeContext';
 import { chartText } from './chartData';
 import { applyChartDefaults, themedConfig } from './chartTheme';
 
-Chart.register(...registerables);
+// Only what the app draws (tests/ui/chart-registry.test.ts checks every chart type and scale of src against it): bar, line, doughnut and radar charts
+// (mixed bar + line datasets), category / linear / radial scales, the area fill, legend, tooltip and title. Not registered: pie, polar area, bubble,
+// scatter, the logarithmic and time scales, decimation, subtitle and the Colors plugin (every dataset sets its own colours, so it never applied).
+Chart.register(BarController, LineController, DoughnutController, RadarController, BarElement, LineElement, PointElement, ArcElement,
+  CategoryScale, LinearScale, RadialLinearScale, Filler, Legend, Tooltip, Title);
 
 /**
  * Chart.js canvas bound to a config. The chart is created when its config changes identity (an edit) and destroyed on unmount (the legacy app leaked

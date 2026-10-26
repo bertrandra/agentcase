@@ -1,7 +1,7 @@
 import { useMemo } from 'react';
 import type { ChartConfiguration } from 'chart.js';
 import { PHASES } from '@/domain';
-import { phaseArtRows, supMatrix } from '@/domain/verifyA';
+import { marginBand, phaseArtRows, POSTURE_LEAD, POSTURE_LOOP, supMatrix } from '@/domain/verifyA';
 import { fmt1 } from '@/ui/economicsFormat';
 import { ChartPanel } from '@/ui/widgets/ChartPanel';
 import { Badge, Panel } from '@/ui/widgets/cards';
@@ -9,6 +9,8 @@ import { SectionFrame } from '@/ui/zones/SectionFrame';
 import { SimpleTable } from '../SimpleTable';
 import { useLive } from '../useLive';
 import { useTheme } from '@/ui/themeContext';
+
+const MARGIN_INK = { ok: 'teal', thin: 'amber', violated: 'brick' } as const;
 
 const help = (
   <>
@@ -33,11 +35,12 @@ export default function PhaseArtSection() {
       result={<>
         <Panel title="Supervision matrix — floors & postures" aside={<Badge tone="blue">EV-03 · v12.58</Badge>}>
           <p className="ac-muted">One view for the three control languages: the <b>floor</b> (w-weighted irreducible human supervision of in-scope artifacts),
-          the projected <b>human share at Y{h}</b>, and the referential <b>posture</b> (floor ≥ 60% → Human-in-the-lead · 30–60% → on-the-loop · &lt;
-          30% → over-the-loop). A negative margin would violate the floor (CC-SUP-01).</p>
+          the projected <b>human share at Y{h}</b>, and the referential <b>posture</b> (floor ≥ {POSTURE_LEAD}% → Human-in-the-lead ·
+          {POSTURE_LOOP}–{POSTURE_LEAD}% → on-the-loop · &lt;
+          {POSTURE_LOOP}% → over-the-loop). A negative margin would violate the floor (CC-SUP-01).</p>
           <SimpleTable align={['left', 'center', 'center', 'center', 'center']} head={['Phase', 'Supervision floor', `Human share Y${h}`, 'Margin', 'Posture']}
             rows={sup.map((r) => ({ key: r.phase, cells: [<>{r.phase} <small>({r.n} art.)</small></>, `${Math.round(r.floor)}%`, `${Math.round(r.human)}%`,
-              <b data-ink={r.gap >= 10 ? 'teal' : r.gap >= 0 ? 'amber' : 'brick'}>{`${r.gap >= 0 ? '+' : ''}${Math.round(r.gap)} pts`}</b>, r.posture] }))} />
+              <b data-ink={MARGIN_INK[marginBand(r.gap)]}>{`${r.gap >= 0 ? '+' : ''}${Math.round(r.gap)} pts`}</b>, r.posture] }))} />
         </Panel>
         <p className="ac-muted">Detail per V-cycle phase: number of SDLC &amp; regulatory artifacts, average human supervision, vFTE by ramp. Contextual to
           the loaded reference.</p>

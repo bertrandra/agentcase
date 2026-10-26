@@ -32,9 +32,12 @@ describe('theme catalogue', () => {
   }
   it('Rainbow (diagnostic, exempt from the full test) keeps its text readable on every zone it paints (4.5:1)', () => {
     const t = table(BUILTIN_THEMES[3]!, 'light', 'standard'), r = (n: string) => resolveTokens(t[n as TokenName], t);
-    const pairs = [['header-text', 'header-start'], ['header-text', 'header-end'], ['kpibar-text', 'kpibar-start'], ['kpibar-text', 'kpibar-end'], ['sidebar-text', 'sidebar-bg'],
-      ['sidebar-item-text', 'sidebar-bg'], ['sidebar-group-text', 'sidebar-group-bg'], ['selected-text', 'selected'], ['ink', 'bg'], ['ink', 'surface-raised'], ['ink', 'surface'],
-      ['ink', 'table-stripe'], ['table-head-text', 'table-head-bg'], ['text-on-primary', 'primary-700'], ['text-link', 'surface'], ['text-heading', 'surface-raised']];
+    const pairs = [['header-text', 'header-start'], ['header-text', 'header-end'], ['kpibar-text', 'kpibar-start'], ['kpibar-text', 'kpibar-end'],
+      ['sidebar-text', 'sidebar-bg'],
+      ['sidebar-item-text', 'sidebar-bg'], ['sidebar-group-text', 'sidebar-group-bg'], ['selected-text', 'selected'], ['ink', 'bg'], ['ink', 'surface-raised'],
+      ['ink', 'surface'],
+      ['ink', 'table-stripe'], ['table-head-text', 'table-head-bg'], ['text-on-primary', 'primary-700'], ['text-link', 'surface'],
+      ['text-heading', 'surface-raised']];
     expect(pairs.filter(([f, b]) => contrastRatio(r(f!), r(b!)) < 4.5).map(([f, b]) => `${f} on ${b}: ${contrastRatio(r(f!), r(b!)).toFixed(2)}`)).toEqual([]);
     const zones = RAINBOW_ZONES.map(([, tok]) => r(tok));
     expect(new Set(zones).size).toBe(zones.length);   // each zone its own colour

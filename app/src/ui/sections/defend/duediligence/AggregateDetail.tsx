@@ -17,12 +17,14 @@ export function DueDiligenceDetail() {
       <>
         <StatRow>
           <Stat label="Items to confirm" value={String(r.items)} /><Stat label="Confirmed or waived" value={`${r.confirmed} (${r.pct}%)`} tone="teal" />
-          <Stat label="Still open" value={String(r.open)} tone={r.open ? 'amber' : 'teal'} /><Stat label="Editable nowhere (PC5)" value={String(r.invisible)} tone="brick" />
+          <Stat label="Still open" value={String(r.open)} tone={r.open ? 'amber' : 'teal'} />
+          <Stat label="Editable nowhere (PC5)" value={String(r.invisible)} tone="brick" />
           <Stat label="Glass ceiling confirmed" value={r.ceilCover === null ? 'n/a' : `${Math.round(r.ceilCover * 100)}%`} />
         </StatRow>
         <DataTable<DdGroup> caption={`Register by group — ${r.name}`} rows={r.groups} rowKey={(g) => g.group} columns={[
           { key: 'g', header: 'Group', render: (g) => g.group }, { key: 'n', header: 'Items', align: 'right', render: (g) => g.items },
-          { key: 'c', header: 'Confirmed or waived', align: 'right', render: (g) => g.confirmed }, { key: 'o', header: 'Open', align: 'right', render: (g) => g.items - g.confirmed },
+          { key: 'c', header: 'Confirmed or waived', align: 'right', render: (g) => g.confirmed },
+          { key: 'o', header: 'Open', align: 'right', render: (g) => g.items - g.confirmed },
         ]} />
       </>
     } />

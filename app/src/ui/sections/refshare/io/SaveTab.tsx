@@ -21,14 +21,17 @@ export function SaveTab() {
   };
   const open = async (f: File | undefined) => {
     if (!f) return;
-    try { await importSnapshotFile(f); setStatus(`Opened ${f.name} — Ctrl+Z restores the previous case.`); toast('Case opened — Ctrl+Z restores the previous one'); } catch (e) { setStatus(`Cannot open ${f.name}: ${(e as Error).message}`); }
+    try { await importSnapshotFile(f); setStatus(
+      `Opened ${f.name} — Ctrl+Z restores the previous case.`); toast('Case opened — Ctrl+Z restores the previous one'); } catch (e) { setStatus(`Cannot ` +
+        `open ${f.name}: ${(e as Error).message}`); }
   };
   return (
     <div>
       <SnapshotPanel />
       <Panel title={T.saveJsonTitle}>
         <p>{T.saveJson}</p>
-        <SaveOpenButtons save="⬇️ Save snapshot file" open="⬆️ Open snapshot file…" accept="application/json,.json" fileLabel="Snapshot file" onSave={save} onOpen={open} />
+        <SaveOpenButtons save="⬇️ Save snapshot file" open="⬆️ Open snapshot file…" accept="application/json,.json" fileLabel="Snapshot file" onSave={save}
+          onOpen={open} />
         <div role="status" aria-live="polite" className="ac-status">{status && <Callout>{status}</Callout>}</div>
       </Panel>
       <ReportPanel />

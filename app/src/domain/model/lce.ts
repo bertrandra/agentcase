@@ -25,6 +25,9 @@ export function lceExpectedIter(p: number, nMax: number): number {
   return (1 - Math.pow(1 - p, nMax)) / p;
 }
 
+/** Escape rate (%) above which a loop's fallback path is material and must be costed (CC-LC-03). */
+export const ESCAPE_MATERIAL_PCT = 5;
+export const escapeMaterial = (l: { escapePct: number }): boolean => l.escapePct > ESCAPE_MATERIAL_PCT;
 export const lceEscapeRate = (p: number, nMax: number): number => Math.pow(1 - Math.min(1, Math.max(0, p)), nMax);
 
 /** F-LCE-4: invert E[N](p) = kLegacy by bisection. */

@@ -4,6 +4,9 @@ const BAD = /[\u0000-\u001f[\]:*?/\\]/g;
 /* eslint-enable no-control-regex */
 const MAX = 31;
 
+/** The sheet names (and name prefixes) of the portfolio part of the results workbook, in workbook order; each goes through `sheetName`. */
+export const PF_RESULT_SHEETS = { portfolio: 'Portfolio', wave: 'Wave ', kt: 'Knowledge transfer', stress: 'Portfolio stress', product: 'Product ' } as const;
+
 /**
  * An Excel-safe worksheet name: at most 31 characters, none of `[ ] : * ? / \`, no leading or trailing apostrophe, never empty, and unique
  * (case-insensitively) among `used`, to which it is added. A duplicate gets " (2)", " (3)"... inside the 31 characters.

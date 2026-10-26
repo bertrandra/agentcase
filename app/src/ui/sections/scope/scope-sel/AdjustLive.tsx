@@ -1,10 +1,12 @@
 import { useRef } from 'react';
+import { liveDelta } from '@/domain/scopeView';
 import { useCaseResult } from '@/store/hooks';
 import { fmtEurK } from '@/ui/format';
 
 const chip = (l: string, v: string, d: number, fmt: (x: number) => string, tone: string) => (
   <span className="ac-chip" data-tone={tone}>{l} <strong>{v}</strong>
-    {Math.abs(d) >= 0.5 && <b className="ac-tone" data-tone={d > 0 ? 'teal' : 'brick'}> {d > 0 ? '▲ +' : '▼ '}{fmt(d).replace(/^[-−]/, '')}</b>}</span>
+    {liveDelta(d) && <b className="ac-tone" data-tone={liveDelta(d) === 'up' ? 'teal' : 'brick'}> {liveDelta(d) === 'up' ? '▲ +' : '▼ '}
+      {fmt(d).replace(/^[-−]/, '')}</b>}</span>
 );
 
 /** Live result strip: values after the last edit and the change since the previous render. */

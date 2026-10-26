@@ -30,11 +30,13 @@ const coefCmd = defineCommand<{ key: string; value: number }>({
   run(d, p) { if (p.key in d.COEF && !isNaN(p.value)) d.COEF[p.key] = p.value; },
 });
 const anchorCmd = defineCommand<{ list: 'DORA_ANCHORS' | 'THROUGHPUT_ANCHORS'; id: string; which: 'asis' | 'target'; value: number }>({
-  type: 'pdc.setAnchor', label: (p) => `Set the ${p.which === 'asis' ? 'as-is' : 'target'} of the anchor ${p.id} to ${p.value}`, coalesceKey: (p) => `pdc.setAnchor:${p.id}:${p.which}`,
+  type: 'pdc.setAnchor', label: (p) => `Set the ${p.which === 'asis' ? 'as-is' : 'target'} of the anchor ${p.id} to ${p.value}`,
+  coalesceKey: (p) => `pdc.setAnchor:${p.id}:${p.which}`,
   run(d, p) { const a = (d[p.list] as Anchor[] | undefined)?.find((x) => x.id === p.id); if (a && !isNaN(p.value)) a[p.which] = p.value; },
 });
 const qualityCmd = defineCommand<{ index: number; col: 1 | 2; value: number }>({
-  type: 'pdc.setQuality', label: (p) => `Set the ${p.col === 1 ? 'as-is' : 'target'} of quality metric ${p.index + 1} to ${p.value}`, coalesceKey: (p) => `pdc.setQuality:${p.index}:${p.col}`,
+  type: 'pdc.setQuality', label: (p) => `Set the ${p.col === 1 ? 'as-is' : 'target'} of quality metric ${p.index + 1} to ${p.value}`,
+  coalesceKey: (p) => `pdc.setQuality:${p.index}:${p.col}`,
   run(d, p) { const q = (d.QUALITY as (string | number)[][] | undefined)?.[p.index]; if (q && !isNaN(p.value)) q[p.col] = p.value; },
 });
 const fgCmd = defineCommand<{ key: string; value: number }>({
@@ -42,13 +44,16 @@ const fgCmd = defineCommand<{ key: string; value: number }>({
   run(d, p) { const f = d.FG_PARAMS as Record<string, number> | undefined; if (f && p.key in f && !isNaN(p.value)) f[p.key] = p.value; },
 });
 /** Measured on the case the command runs on (the draft): the common case when the common values are edited, never another product's. */
-const sensCmd = defineCommand<Record<string, never>>({
-  type: 'pdc.setDdSensitivity', label: () => 'Measure the € sensitivity of the due-diligence register', run(d) { d.DD_SENS = computeDdSensitivity(makeCtx(current(d) as Doc)); },
+const sensCmd = defineCommand<{ at: string }>({
+  type: 'pdc.setDdSensitivity', label: () => 'Measure the € sensitivity of the due-diligence register',
+  run(d, p) { d.DD_SENS = computeDdSensitivity(makeCtx(current(d) as Doc), p.at); },
 });
 export const setDdState = (id: string, st: DdStatus): void => appStore().dispatch(ddStateCmd({ id, st }));
 export const setCoef = (key: string, value: string | number): void => appStore().dispatch(coefCmd({ key, value: num(value) }));
-export const setAnchor = (list: 'DORA_ANCHORS' | 'THROUGHPUT_ANCHORS', id: string, which: 'asis' | 'target', value: string | number): void => appStore().dispatch(anchorCmd({ list, id, which, value: num(value) }));
+export const setAnchor = (list: 'DORA_ANCHORS' | 'THROUGHPUT_ANCHORS', id: string, which: 'asis' | 'target',
+  value: string | number): void => appStore().dispatch(anchorCmd({ list, id, which, value: num(value) }));
 export const setQualityAnchor = (index: number, col: 1 | 2, value: string | number): void => appStore().dispatch(qualityCmd({ index, col, value: num(value) }));
 export const setFgParam = (key: string, value: string | number): void => appStore().dispatch(fgCmd({ key, value: num(value) }));
 /** Run the ~50 one-at-a-time model evaluations on the current case and store the result (cached until an input changes). */
-export const computeSensitivity = (): void => appStore().dispatch(sensCmd({}));
+/** The controller stamps the measurement time (the domain never reads the clock). */
+export const computeSensitivity = (): void => appStore().dispatch(sensCmd({ at: new Date().toISOString() }));

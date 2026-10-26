@@ -57,14 +57,16 @@ const evtModeCmd = defineCommand<{ mode: string }>({
   type: 'model.evt.setMode', label: (p) => `Set verification-tax mode to ${p.mode}`, run(d, p) { d.MODEL.EVT.mode = p.mode === 'net' ? 'net' : 'overlay'; },
 });
 const evtRSourceCmd = defineCommand<{ source: string }>({
-  type: 'model.evt.setRSource', label: (p) => `Set reliability source to ${p.source}`, run(d, p) { d.MODEL.EVT.rSource = p.source === 'direct' ? 'direct' : 'fromLCE'; },
+  type: 'model.evt.setRSource', label: (p) => `Set reliability source to ${p.source}`,
+  run(d, p) { d.MODEL.EVT.rSource = p.source === 'direct' ? 'direct' : 'fromLCE'; },
 });
 const evtRDirectCmd = defineCommand<{ value: string | number }>({
   type: 'model.evt.setRDirect', label: (p) => `Set direct reliability r to ${p.value}`, coalesceKey: () => 'model.evt.setRDirect',
   run(d, p) { d.MODEL.EVT.rDirect = clampNum(parseNum(p.value, 0.8), 0, 1); },
 });
 const evtAckCmd = defineCommand<{ on: boolean }>({
-  type: 'model.evt.setAck', label: (p) => `${p.on ? 'Acknowledge' : 'Withdraw acknowledgement of'} the negative net tax`, run(d, p) { d.MODEL.EVT.ackNegativeNet = p.on; },
+  type: 'model.evt.setAck', label: (p) => `${p.on ? 'Acknowledge' : 'Withdraw acknowledgement of'} the negative net tax`,
+  run(d, p) { d.MODEL.EVT.ackNegativeNet = p.on; },
 });
 const tableCmd = (type: string, name: string, table: 'phiTable' | 'kappa' | 'gamma', lo: number, hi: number) => defineCommand<Cls>({
   type, label: (p) => `Set ${name} of class ${p.cls} to ${p.value}`, coalesceKey: (p) => `${type}:${p.cls}`,

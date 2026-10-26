@@ -17,20 +17,28 @@ export function SeqStep({ persona, si, count, step, sections, groups }: Props) {
   return (
     <fieldset className="ac-seq-step" aria-label={`Step ${si + 1}`}>
       <div className="ac-form-row">
-        <input type="text" aria-label={`Label of step ${si + 1}`} placeholder="Step label" className="ac-seq-step-label" value={step.label} onChange={(e) => setSeqStepLabel(persona, si, e.target.value)} />
-        <button type="button" className="ac-btn" disabled={si === 0} aria-label={`Move step ${si + 1} up`} onClick={() => moveSeqStep(persona, si, -1)}>↑</button>
-        <button type="button" className="ac-btn" disabled={si === count - 1} aria-label={`Move step ${si + 1} down`} onClick={() => moveSeqStep(persona, si, 1)}>↓</button>
+        <input type="text" aria-label={`Label of step ${si + 1}`} placeholder="Step label" className="ac-seq-step-label" value={step.label}
+          onChange={(e) => setSeqStepLabel(persona, si, e.target.value)} />
+        <button type="button" className="ac-btn" disabled={si === 0} aria-label={`Move step ${si + 1} up`}
+          onClick={() => moveSeqStep(persona, si, -1)}>↑</button>
+        <button type="button" className="ac-btn" disabled={si === count - 1} aria-label={`Move step ${si + 1} down`}
+          onClick={() => moveSeqStep(persona, si, 1)}>↓</button>
         <button type="button" className="ac-btn" aria-label={`Remove step ${si + 1}`} onClick={() => removeSeqStep(persona, si)}>✕ Step</button>
       </div>
-      <ul aria-label={`Sections of step ${si + 1}`} className="ac-seq-step-list" onDragOver={(e) => e.preventDefault()} onDrop={(e) => { e.preventDefault(); drop(null); }}>
+      <ul aria-label={`Sections of step ${si + 1}`} className="ac-seq-step-list" onDragOver={(e) => e.preventDefault()}
+        onDrop={(e) => { e.preventDefault(); drop(null); }}>
         {step.sections.length === 0 && <li className="ac-muted">No sections yet — add one below</li>}
         {step.sections.map((id, i) => (
           <li key={id} draggable className="ac-seq-step-chip"
-            onDragStart={(e) => { setDrag(id); e.dataTransfer?.setData('text/plain', id); }} onDragOver={(e) => e.preventDefault()} onDrop={(e) => { e.preventDefault(); e.stopPropagation(); drop(id); }}>
+            onDragStart={(e) => { setDrag(id); e.dataTransfer?.setData('text/plain', id); }} onDragOver={(e) => e.preventDefault()}
+            onDrop={(e) => { e.preventDefault(); e.stopPropagation(); drop(id); }}>
             ⠿ {name(id)}
-            <button type="button" className="ac-btn" disabled={i === 0} aria-label={`Move ${name(id)} earlier in step ${si + 1}`} onClick={() => moveSeqSection(persona, si, id, i - 1)}>←</button>
-            <button type="button" className="ac-btn" disabled={i === step.sections.length - 1} aria-label={`Move ${name(id)} later in step ${si + 1}`} onClick={() => moveSeqSection(persona, si, id, i + 1)}>→</button>
-            <button type="button" className="ac-btn" aria-label={`Remove ${name(id)} from step ${si + 1}`} onClick={() => removeSeqSection(persona, si, id)}>✕</button>
+            <button type="button" className="ac-btn" disabled={i === 0} aria-label={`Move ${name(id)} earlier in step ${si + 1}`}
+              onClick={() => moveSeqSection(persona, si, id, i - 1)}>←</button>
+            <button type="button" className="ac-btn" disabled={i === step.sections.length - 1} aria-label={`Move ${name(id)} later in step ${si + 1}`}
+              onClick={() => moveSeqSection(persona, si, id, i + 1)}>→</button>
+            <button type="button" className="ac-btn" aria-label={`Remove ${name(id)} from step ${si + 1}`}
+              onClick={() => removeSeqSection(persona, si, id)}>✕</button>
           </li>
         ))}
       </ul>

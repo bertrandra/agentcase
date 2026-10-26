@@ -1,5 +1,6 @@
 /** @calc-zone time-engine */
 import type { Econ, K } from './kernel';
+import { levelLabelFor } from '../maturityBounds';
 
 export interface MonthRow {
   monthIndex: number; yearIndex: number; quarterIndex: number; adoptionRampPct: number; humanFte: number; agentVfte: number; agentVfteRaw: number;
@@ -9,12 +10,8 @@ export interface MonthRow {
   totalRunCost: number; total: number; grossSavings: number; netSavings: number; maturityLevel: string; curveModelId: string; sourceInputHash: string;
 }
 
-/** Maturity level L1..Ln for an adoption level (bounds are the single source of truth, editable in the case). */
-export function maturityLevelFor(rampPct: number, bounds: number[]): string {
-  let lvl = 1;
-  for (let i = 0; i < bounds.length; i++) { if (rampPct >= (bounds[i] as number)) lvl = i + 1; }
-  return 'L' + lvl;
-}
+/** Maturity level L1..Ln for an adoption level (bounds are the single source of truth, editable in the case: `rampBoundsOf`). */
+export const maturityLevelFor = levelLabelFor;
 
 export function monthRow(e: Econ, K: K): MonthRow {
   return {

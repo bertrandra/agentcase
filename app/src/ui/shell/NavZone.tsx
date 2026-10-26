@@ -24,7 +24,8 @@ export function NavZone() {
               title={group.description}
               style={cssVars({ '--dyn-group-color': groupColor(colors, group.id) })}   // dynamic: the group colour is case data (GROUP_COLORS)
             >
-              <button type="button" id={`gb-${group.id}`} className="ac-nav-toggle" aria-expanded={expanded} aria-controls={`gl-${group.id}`} onClick={() => toggleGroup(group.id)}>
+              <button type="button" id={`gb-${group.id}`} className="ac-nav-toggle" aria-expanded={expanded} aria-controls={`gl-${group.id}`}
+                onClick={() => toggleGroup(group.id)}>
                 <span>{group.label}</span><span className="ac-chev" aria-hidden="true">▼</span>
               </button>
             </h2>

@@ -1,5 +1,6 @@
 /** @calc-zone delivery-views */
 import type { Ctx } from '../ctx';
+import { caseHorizonYears } from '../inputs';
 import { engineNow } from '../canonical';
 import { khEnabled } from '../knowledge';
 import { addMonthsLocal, parseLocalDate } from './ganttLayout';
@@ -17,7 +18,7 @@ export interface Axis {
 }
 /** The calendar axis: horizon, roadmap start, month → % mapping and "Sep 26"-style tick labels. */
 export function ganttAxis(c: Ctx): Axis {
-  const horizon = parseInt(c.inp.v('horizon'), 10) || 3, totalM = Math.max(12, horizon * 12), startStr = c.inp.v('rmStart') || '2026-09-01';
+  const horizon = caseHorizonYears(c.inp), totalM = Math.max(12, horizon * 12), startStr = c.inp.v('rmStart') || '2026-09-01';
   const startDate = parseLocalDate(startStr), startOk = !isNaN(startDate.getTime());
   return {
     horizon, totalM, startStr, startDate, startOk, left: (m) => (m / totalM) * 100, width: (m) => Math.max(0.4, (m / totalM) * 100),
@@ -33,15 +34,20 @@ export function programRows(c: Ctx, totalM: number): { rows: ProgramRow[]; onboa
   const show = 'ganttShowOnboarding' in (c.s.dom?.checked ?? {}) ? c.inp.c('ganttShowOnboarding') : true;
   const rows: ProgramRow[] = []; let t = 0;
   if (show) {
-    const steps: [string, ColourRole][] = [['🔍 Discover', 'chart-cat-5'], ['🎯 Calibrate', 'chart-cat-5'], ['✅ Validate', 'chart-cat-5'], ['🚀 Pilot & Prove', 'chart-cat-3']];
-    steps.forEach(([name, tone], i) => { rows.push({ name, start: t, dur: d[i]! * W2M, tone, meta: `${d[i]} wk`, input: `rmD${i + 1}`, value: d[i] }); t += d[i]! * W2M; });
+    const steps: [string, ColourRole][] = [['🔍 Discover', 'chart-cat-5'], ['🎯 Calibrate', 'chart-cat-5'], ['✅ Validate', 'chart-cat-5'],
+      ['🚀 Pilot & Prove', 'chart-cat-3']];
+    steps.forEach(([name, tone], i) => { rows.push({ name, start: t, dur: d[i]! * W2M, tone, meta: `${d[i]} wk`, input: `rmD${i + 1}`,
+      value: d[i] }); t += d[i]! * W2M; });
   }
   const onboardEnd = t, build = Math.max(0.5, ganttNum(c, 'setupDuration', 12)), runStart = onboardEnd + build;
-  rows.push({ name: '🧱 Agentic Build (ramp)', start: onboardEnd, dur: build, tone: 'chart-cat-4', meta: `${build} mo ramp to steady state`, input: 'setupDuration', value: build });
-  rows.push({ name: '⚙️ Agentic Run (steady state)', start: runStart, dur: Math.max(0, totalM - runStart), tone: 'chart-cat-2', meta: 'ongoing delivery + support' });
+  rows.push({ name: '🧱 Agentic Build (ramp)', start: onboardEnd, dur: build, tone: 'chart-cat-4', meta: `${build} mo ramp to steady state`,
+    input: 'setupDuration', value: build });
+  rows.push({ name: '⚙️ Agentic Run (steady state)', start: runStart, dur: Math.max(0, totalM - runStart), tone: 'chart-cat-2',
+    meta: 'ongoing delivery + support' });
   if (khEnabled(c)) {
     const days = Math.max(1, ganttNum(c, 'khSetupDays', 30)), setup = Math.max(0.25, (days * 12) / 365), runAt = onboardEnd + setup;
-    rows.push({ name: '🧠 Knowledge Hub — Build / Setup', start: onboardEnd, dur: setup, tone: 'chart-cat-2', meta: `${days} days: ingest, index, guardrails`, input: 'khSetupDays', value: days });
+    rows.push({ name: '🧠 Knowledge Hub — Build / Setup', start: onboardEnd, dur: setup, tone: 'chart-cat-2', meta: `${days} days: ingest, index, guardrails`,
+      input: 'khSetupDays', value: days });
     rows.push({ name: '🧠 Knowledge Hub — Run', start: runAt, dur: Math.max(0, totalM - runAt), tone: 'chart-cat-2', meta: 'ongoing curation + retrieval' });
   }
   return { rows, onboardEnd, onboardWeeks: Math.round(d[0] + d[1] + d[2] + d[3]) };
@@ -52,6 +58,7 @@ export interface Marker { label: string; month: number; family: string; date: st
 export function milestoneMarkers(c: Ctx, ax: Axis): Marker[] {
   try {
     return engineNow(c).milestones().filter((x) => x.month >= 1 && x.month <= ax.totalM)
-      .map((x, i) => ({ label: x.label, month: x.month, family: x.family, date: ax.dateAt(x.month), title: `${x.label} — ${ax.dateAt(x.month)} (month ${x.month})`, left: ax.left(x.month), lift: i % 2 === 0 }));
+      .map((x, i) => ({ label: x.label, month: x.month, family: x.family, date: ax.dateAt(x.month),
+        title: `${x.label} — ${ax.dateAt(x.month)} (month ${x.month})`, left: ax.left(x.month), lift: i % 2 === 0 }));
   } catch { return []; }
 }

@@ -19,7 +19,7 @@ export default function TeamOutAggregate() {
   const a = useVerifyView(targetTeamAgg);
   if (!a) return null;
   return (
-    <SectionFrame title="Target team (TO-BE Y3) — computed breakdown" help={help} result={
+    <SectionFrame title="Target team (TO-BE at each product's horizon end) — computed breakdown" help={help} result={
       <>
         <p className="ac-muted">The target team of {a.label}: the products&apos; own target teams added up by pole and by location.</p>
         <Panel title="By product"><VerifyTable table={a.table} caption="Target team by product" /></Panel>

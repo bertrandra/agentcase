@@ -17,7 +17,8 @@ export function cardName(c: Ctx, card: BoardCard, rt: VarRuntime = NO_RUNTIME): 
   if (v) { try { return formatValue(v.get(c, rt), v.format); } catch { /* fall through to the static name */ } }
   return card.CARD_NAME_VALUE || card.CARD_ID;
 }
-const keyLabel = (card: BoardCard, k: 'CARD_KEY1' | 'CARD_KEY2'): string | null => card[`${k}_LABEL` as 'CARD_KEY1_LABEL'] || variableById(card[`${k}_VAR` as 'CARD_KEY1_VAR'])?.label || null;
+const keyLabel = (card: BoardCard, k: 'CARD_KEY1' | 'CARD_KEY2'): string | null =>
+  card[`${k}_LABEL` as 'CARD_KEY1_LABEL'] || variableById(card[`${k}_VAR` as 'CARD_KEY1_VAR'])?.label || null;
 
 /** What a body row shows: its variable in the row's format (else the variable's own), or its default text when unbound or not computable. */
 export function rowDisplay(c: Ctx, row: BoardRow, rt: VarRuntime = NO_RUNTIME): string {
@@ -32,8 +33,10 @@ export interface DynamicSectionModel { id: string; title: string; description: s
 
 /** One card as it displays: name, headline, up to two labelled key figures and the section it opens (the target, else the source). */
 export function cardModel(c: Ctx, card: BoardCard, rt: VarRuntime = NO_RUNTIME): CardModel {
-  const keys = (['CARD_KEY1', 'CARD_KEY2'] as const).map((k) => ({ label: keyLabel(card, k), value: slotValue(c, card, k, rt) })).filter((k): k is { label: string | null; value: string } => k.value != null);
-  return { id: card.CARD_ID, name: cardName(c, card, rt), impact: slotValue(c, card, 'CARD_IMPACT', rt), keys, target: card.CARD_TARGET_SECTION || card.CARD_SOURCE_SECTION || null };
+  const keys = (['CARD_KEY1', 'CARD_KEY2'] as const).map((k) => ({ label: keyLabel(card, k), value: slotValue(c, card, k, rt) }))
+    .filter((k): k is { label: string | null; value: string } => k.value != null);
+  return { id: card.CARD_ID, name: cardName(c, card, rt), impact: slotValue(c, card, 'CARD_IMPACT', rt), keys,
+    target: card.CARD_TARGET_SECTION || card.CARD_SOURCE_SECTION || null };
 }
 
 /**

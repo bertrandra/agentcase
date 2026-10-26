@@ -12,13 +12,19 @@ const EIGHTEEN_MONTHS = 548 * 24 * 3600 * 1000;
 
 export interface TornadoRow { id: string; swing: number }
 
-/** A MEASURED tier without a source, or older than ~18 months, counts as BENCHMARK for the grade (CC-EV-02). */
-export function effectiveTier(c: Ctx, id: string, now = Date.now()): EvidenceTier {
+/**
+ * The evaluation date of the evidence ledger: ms since the epoch, chosen by the caller (the UI passes today; the domain never reads the clock), or null
+ * for an undated evaluation (the age rule is not applied). The same file and the same date always give the same tiers and grade.
+ */
+export type EvalDate = number | null;
+
+/** A MEASURED tier without a source, or (at a given evaluation date) older than ~18 months, counts as BENCHMARK for the grade (CC-EV-02). */
+export function effectiveTier(c: Ctx, id: string, now: EvalDate): EvidenceTier {
   const e = evidenceOf(c.s.MODEL).drivers[id];
   if (!e) return 'ASSUMPTION';
   if (e.tier === 'MEASURED') {
     let fresh = true;
-    if (e.asOf) { const t = new Date(e.asOf).getTime(); if (!isNaN(t)) fresh = now - t <= EIGHTEEN_MONTHS; }
+    if (e.asOf && now !== null) { const t = new Date(e.asOf).getTime(); if (!isNaN(t)) fresh = now - t <= EIGHTEEN_MONTHS; }
     if (!(e.source && e.source.trim()) || !fresh) return 'BENCHMARK';
   }
   return e.tier || 'ASSUMPTION';
@@ -31,8 +37,8 @@ function weights(tornado: TornadoRow[] | null) {
   return { weights: total > 0 ? raw.map((v) => v / total) : MCS_DRIVER_ORDER.map(() => 1 / MCS_DRIVER_ORDER.length), hasTornado: !!tornado };
 }
 
-/** Full P6 read-out (legacy evlModel()). `tornado` is the last stochastic run, if any. */
-export function evlModel(c: Ctx, tornado: TornadoRow[] | null, now = Date.now()) {
+/** Full P6 read-out (legacy evlModel()). `tornado` is the last stochastic run, if any; `now` the evaluation date (see `EvalDate`). */
+export function evlModel(c: Ctx, tornado: TornadoRow[] | null, now: EvalDate) {
   const ev = evidenceOf(c.s.MODEL), w = weights(tornado);
   let num = 0, den = 0;
   const drivers = MCS_DRIVER_ORDER.map((id, i) => {

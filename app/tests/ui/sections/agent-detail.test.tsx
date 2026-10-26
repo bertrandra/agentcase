@@ -12,7 +12,8 @@ import { parityTests } from '../../helpers/verifyA';
 
 beforeEach(() => { freshStore(); });
 afterEach(cleanup);
-const rows = (c: HTMLElement, t: number) => [...c.querySelectorAll('table')[t]!.querySelectorAll('tbody tr')].map((r) => [...r.children].map((x) => x.textContent));
+const rows = (c: HTMLElement, t: number) =>
+  [...c.querySelectorAll('table')[t]!.querySelectorAll('tbody tr')].map((r) => [...r.children].map((x) => x.textContent));
 /** Table order: 0 agent runs by artifact, 1 the five roles, 2 authorization levels. */
 
 describe('agent-detail section', () => {

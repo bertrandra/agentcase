@@ -1,6 +1,6 @@
 /** @calc-zone scope-automation */
 import { makeCtx } from '@/domain';
-import { clampAutoCap } from '@/domain/inputs';
+import { clampAutoCap, clampHorizonYears } from '@/domain/inputs';
 import { computeGlassCeiling } from '@/domain/model/ceiling';
 import { addPoint, curveIdOf, ensurePts, movePoint, removePoint, sampleRamps } from '@/domain/scope/scurve';
 import { current } from 'immer';
@@ -30,7 +30,7 @@ const setForceGCCmd = defineCommand<{ on: boolean }>({
 });
 
 // ---- S-curve editor (legacy scSetFamily, scAddPoint, scRemovePoint, scDragMove + scCommit) ----
-const horizonMonths = (d: Doc): number => (parseInt(d.dom.values.horizon ?? '', 10) || 3) * 12;
+const horizonMonths = (d: Doc): number => clampHorizonYears(d.dom.values.horizon) * 12;
 const anchors = (d: Doc): number[] => ['y1Ramp', 'y2Ramp', 'y3Ramp'].map((id) => parseFloat(d.dom.values[id] ?? ''));
 /** The points as the editor shows them (seeded from the anchors, clamped to the horizon). */
 const shownPts = (d: Doc): CurvePoint[] => ensurePts(d.scurve?.pts, horizonMonths(d), anchors(d));
@@ -52,7 +52,8 @@ const removePointCmd = defineCommand<Record<string, never>>({
   type: 'scurve.removePoint', label: () => 'Remove an adoption-curve point', run(d) { commit(d, removePoint(shownPts(d))); },
 });
 const movePointCmd = defineCommand<{ index: number; t: number; a: number }>({
-  type: 'scurve.movePoint', label: (p) => `Move adoption point ${p.index + 1} to month ${Math.round(p.t)}, ${Math.round(p.a)} %`, coalesceKey: (p) => `scurve.movePoint:${p.index}`,
+  type: 'scurve.movePoint', label: (p) => `Move adoption point ${p.index + 1} to month ${Math.round(p.t)}, ${Math.round(p.a)} %`,
+  coalesceKey: (p) => `scurve.movePoint:${p.index}`,
   run(d, p) { commit(d, movePoint(shownPts(d), p.index, p.t, p.a, horizonMonths(d))); },
 });
 

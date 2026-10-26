@@ -12,6 +12,8 @@ const COLS: AggColumn<SetupRow>[] = [
   { key: 'training', header: 'Training & change', align: R, render: (r) => eurK(r.training) },
   { key: 'coaching', header: 'Coaching', align: R, render: (r) => eurK(r.coaching) },
   { key: 'governance', header: 'Governance', align: R, render: (r) => eurK(r.governance) },
+  { key: 'change', header: 'Change (HRI)', align: R, render: (r) => eurK(r.change) },
+  { key: 'knowledge', header: 'Knowledge hub', align: R, render: (r) => eurK(r.knowledge) },
   { key: 'total', header: 'Total setup', align: R, render: (r) => eurK(r.total) },
   { key: 'duration', header: 'Duration (months)', align: R, render: (r) => r.duration },
 ];
@@ -23,10 +25,12 @@ export default function SetupAggregate() {
     { id: 'total', name: 'Total setup per product', s: a.spread, f: eurK },
     { id: 'dur', name: 'Setup duration (months)', s: a.duration, f: (v) => v.toFixed(1) },
   ];
-  const cells = { tooling: eurK(t.tooling), training: eurK(t.training), coaching: eurK(t.coaching), governance: eurK(t.governance), total: eurK(t.total) };
+  const cells = { tooling: eurK(t.tooling), training: eurK(t.training), coaching: eurK(t.coaching), governance: eurK(t.governance), change: eurK(t.change),
+    knowledge: eurK(t.knowledge), total: eurK(t.total) };
   return (
     <InputAggregate title="Agentic Setup — Initial investment"
-      intro="the one-off setup lines belong to each product (the HRI change cost and the hub setup are added by the model).">
+      intro={'the one-off setup lines belong to each product (the HRI change cost and the hub setup are computed by the model); each total is the setup the ' +
+        'economics use.'}>
       <AggregateTable caption={`Setup lines by product — ${vs.label}`} rows={a.rows} columns={COLS}
         totals={{ label: `Total — ${vs.label}`, cells }} />
       <SpreadTable caption={`Spread of the setup inputs — ${vs.label}`} items={items} />

@@ -26,15 +26,16 @@ const TONE = { dev: 'blue', sup: 'amber', run: 'teal', setup: 'grey' } as const;
 /** Target team (TO-BE, horizon end) — computed breakdown into poles, by location and as a headcount comparison. */
 export default function TeamOutSection() {
   const live = useLive(), t = targetTeam(live), poles = teamPoles(live, t), locs = locRows(live, t), groups = groupRows(live, t), base = live.m.base.etp;
-  const { tok } = useTheme(), locCfg = useMemo(() => locChart(locs, tok), [locs, tok]), headCfg = useMemo(() => headcountChart(base, t, tok), [base, t, tok]);
+  const { tok } = useTheme(), locCfg = useMemo(() => locChart(locs, tok), [locs, tok]), endL = `Y${live.eng.horizonYears}`,
+    headCfg = useMemo(() => headcountChart(base, t, endL, tok), [base, t, endL, tok]);
   return (
-    <SectionFrame title="Target team (TO-BE Y3) — computed breakdown" help={help}
+    <SectionFrame title={`Target team (TO-BE ${endL}) — computed breakdown`} help={help}
       result={<>
         <p className="ac-muted">The target team is computed from the input team, the automation potential and the irreducible human supervision of
           artifacts. It breaks down into 4 poles: DEV TEAM (residual production) · SUPERVISION (review/validation of AI outputs) · AGENTIC SETUP
           (setup) · AGENTIC RUN(AI Engineer, FinOps, AI-QA).</p>
         <Band items={[['Input (FTE)', fmt1(base)], ['Target Dev', fmt1(t.devETP)], ['Supervision', fmt1(t.supETP)], ['Agentic run (en plus)', fmt1(t.runETP)],
-          ['Total recurring target', fmt1(t.totalRecurrent)], ['Net reduction', `-${Math.round((1 - t.totalRecurrent / base) * 100)}%`]]} />
+          ['Total recurring target', fmt1(t.totalRecurrent)], ['Net reduction', `-${Math.round(t.fte.reductionPct)}%`]]} />
         <Panel title="🌍 Distribution by location — input vs target">
           <ChartPanel config={locCfg} label="Share of effort by location, AS-IS and target" height={220} />
           <SimpleTable align={['left', 'left', 'center', 'right', 'center', 'right', 'right']} head={['Location', 'Class', '% AS-IS', 'FTE AS-IS', 'Target %',

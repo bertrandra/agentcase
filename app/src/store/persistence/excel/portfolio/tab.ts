@@ -10,7 +10,8 @@ export interface Tab { name: string; lines: Line[] }
 /** Product and wave ids end up in object keys, element ids and file names: the same safe list as the JSON snapshot reader (spec 8). */
 export const SAFE_ID = /^[A-Za-z0-9_-]{1,64}$/;
 
-export function fail(sheet: string, n: number | null, msg: string): never { throw new ParamsImportError(n === null ? `${sheet}: ${msg}` : `${sheet} row ${n}: ${msg}`); }
+export function fail(sheet: string, n: number | null,
+  msg: string): never { throw new ParamsImportError(n === null ? `${sheet}: ${msg}` : `${sheet} row ${n}: ${msg}`); }
 
 /** The data rows of a sheet (blank rows dropped), or null when the workbook has no such sheet. A sheet whose header is not ours is refused. */
 export function tab(sheets: Sheets, name: string): Tab | null {
@@ -41,7 +42,8 @@ export function numberCell(t: Tab, l: Line, i: number, label: string, o: { min: 
   const raw = l.c[i];
   if (str(raw) === '') { if (o.optional) return undefined; fail(t.name, l.n, `${label} is required`); }
   const v = typeof raw === 'number' ? raw : Number(str(raw).replace(',', '.'));
-  if (!Number.isFinite(v) || v < o.min || v > o.max || (o.int && !Number.isInteger(v))) fail(t.name, l.n, `${label} must be ${o.int ? 'a whole number' : 'a number'} between ${o.min} and ${o.max} (got "${str(raw).slice(0, 30)}")`);
+  if (!Number.isFinite(v) || v < o.min || v > o.max || (o.int && !Number.isInteger(v))) fail(t.name, l.n,
+    `${label} must be ${o.int ? 'a whole number' : 'a number'} between ${o.min} and ${o.max} (got "${str(raw).slice(0, 30)}")`);
   return v;
 }
 

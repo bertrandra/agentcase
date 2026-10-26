@@ -1,4 +1,4 @@
-import { opModelView, type Topology } from '@/domain/tune';
+import { OM_RATIO, opModelView, reviewersPerPod, type Topology } from '@/domain/tune';
 import { engagementCoef, engagementKey } from '@/domain/engagement';
 import { useCtx } from '@/store/hooks';
 import { Badge, Callout, Panel } from '@/ui/widgets/cards';
@@ -28,8 +28,9 @@ function Topologies() {
   const c = useCtx(), v = opModelView(c), { y1, yN } = v;
   const rows: Row[] = [
     [`Pods (${y1.pod} FTE each)`, (t) => t.pods, 'count'], ['· Pod Orchestrator (1/pod)', (t) => t.orch],
-    [`· AI Reviewer (${y1.lvl <= 2 ? '1' : '0.5'}/pod at L${y1.lvl})`, (t) => t.rev], ['· Engineers (remainder)', (t) => Math.max(0, t.eng)],
-    ['Preceptor (1/3 pods Y1 → 1/6 Y3)', (t) => t.prec], ['Agent Architect (1/5 pods)', (t) => t.arch], ['AI Office — Token FinOps', (t) => t.finops],
+    [`· AI Reviewer (${reviewersPerPod(y1.lvl)}/pod at L${y1.lvl})`, (t) => t.rev], ['· Engineers (remainder)', (t) => t.engShown],
+    [`Preceptor (1/${OM_RATIO.podsPerPreceptorY1} pods Y1 → 1/${OM_RATIO.podsPerPreceptorLater} ${v.endLabel})`, (t) => t.prec],
+    [`Agent Architect (1/${OM_RATIO.podsPerArchitect} pods)`, (t) => t.arch], ['AI Office — Token FinOps', (t) => t.finops],
     ['AI Office — Design Authority', (t) => t.da], ['AI Office — Lead', (t) => t.lead],
   ];
   const line = (l: string, f: (t: Topology) => number, note?: string, strong = false) => (

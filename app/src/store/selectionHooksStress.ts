@@ -1,6 +1,7 @@
 /** @calc-zone aggregate-views */
 import { useMemo } from 'react';
-import { compareByProduct, portfolioScenarios, portfolioSensitivity, scenarioByProduct, selectionStress, sensitivityByProduct, type SelectionStress } from '@/domain/portfolio';
+import { compareByProduct, portfolioScenarios, portfolioSensitivity, scenarioByProduct, selectionStress, sensitivityByProduct,
+  type SelectionStress } from '@/domain/portfolio';
 import { useCorePortfolio } from './consolidationHooks';
 import { usePortfolioSimulation } from './portfolioSimulation';
 import { useViewScope } from './viewScope';

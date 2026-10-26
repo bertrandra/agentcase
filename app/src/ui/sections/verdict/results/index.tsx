@@ -33,7 +33,7 @@ export default function ResultsSection() {
           <Kpi label={`Net benefit (${r.horizon}-yr)`} value={fmtEur(r.net)} tone={r.net < 0 ? 'brick' : 'blue'} sub={`after ${fmtEur(r.setup)} setup`} />
           <Kpi
             label="ROI"
-            value={r.roi == null ? 'n/a' : `${Math.round(r.roi * 100)}%`}
+            value={r.roiText}
             tone={r.roi != null && r.roi < 0 ? 'brick' : 'teal'}
             sub="on setup investment"
           />

@@ -12,8 +12,10 @@ export function sharedTeamErrors(pf: Portfolio): Issue[] {
   for (const l of pf.sharedTeam ?? []) {
     if (!SAFE_ID.test(l.id) || seen.has(l.id)) out.push({ code: 'shared-line-id', message: `shared team line "${l.id}": missing or duplicate id` });
     seen.add(l.id);
-    if (![l.skill, l.grade, l.loc].every((x) => typeof x === 'string')) out.push({ code: 'shared-line', message: `shared team line ${l.id}: skill, grade and location must be text` });
-    if (!(typeof l.etp === 'number' && Number.isFinite(l.etp) && l.etp >= 0)) out.push({ code: 'shared-line', message: `shared team line ${l.id}: FTE must be a number >= 0` });
+    if (![l.skill, l.grade, l.loc].every((x) => typeof x === 'string')) out.push({ code: 'shared-line',
+      message: `shared team line ${l.id}: skill, grade and location must be text` });
+    if (!(typeof l.etp === 'number' && Number.isFinite(l.etp) && l.etp >= 0)) out.push({ code: 'shared-line',
+      message: `shared team line ${l.id}: FTE must be a number >= 0` });
     if (!l.allocations || typeof l.allocations !== 'object' || !Object.values(l.allocations).every(isPct)) {
       out.push({ code: 'shared-share', message: `shared team line ${l.id}: every share must be a percentage in [0, 100]` });
     }
@@ -34,7 +36,8 @@ export function sharedTeamDiagnostics(pf: Portfolio): Issue[] {
   const out: Issue[] = [], ids = new Set(pf.products.map((p) => p.id));
   for (const l of pf.sharedTeam ?? []) {
     const sum = allocatedPct(l);
-    if (sum > 100 + 1e-9) out.push({ code: 'shared-over', message: `shared line ${label(pf, l.id)}: shares add up to ${+sum.toFixed(2)} % (more than 100 %): counted more than once` });
+    if (sum > 100 + 1e-9) out.push({ code: 'shared-over',
+      message: `shared line ${label(pf, l.id)}: shares add up to ${+sum.toFixed(2)} % (more than 100 %): counted more than once` });
     for (const pid of Object.keys(l.allocations)) {
       if (!ids.has(pid)) out.push({ code: 'shared-orphan', message: `shared line ${label(pf, l.id)}: share held by deleted product ${pid} (reaches nobody)` });
     }

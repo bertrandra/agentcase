@@ -1,4 +1,5 @@
 /** @calc-zone delivery-views */
+import { AI_SKILL_PREMIUM } from '../rates';
 import { COEF_DEFAULT, PHASES } from '../catalog';
 import { phaseScope, activeArtefacts } from '../scope';
 import { blendedTokenCostPer1M } from '../tokens';
@@ -34,7 +35,7 @@ export function agentDetail(l: Live): AgentDetail {
     const list = act.filter((a) => a.aiAuth === level);
     return { level, meaning: MEANING[level]![0], human: MEANING[level]![1], count: list.length, avgHuman: avg(list.map((a) => a.humanSup)) };
   });
-  return { roles, auth, runTotal: ai + prompt + finops + qa, supETP: t.supETP, runRate: Math.round(l.m.tgtTJM * 1.15) };
+  return { roles, auth, runTotal: ai + prompt + finops + qa, supETP: t.supETP, runRate: Math.round(l.m.tgtTJM * AI_SKILL_PREMIUM) };
 }
 
 export interface UsageYear { label: string; ramp: number; vfte: number; arts: number; tokensM: number; tokenCost: number; infra: number }

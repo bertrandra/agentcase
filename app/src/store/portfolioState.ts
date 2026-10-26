@@ -53,6 +53,8 @@ export function keepHighWater(prev: PortfolioDoc, next: PortfolioDoc): Portfolio
 
 /** Patches that only move view state (active product, edit scope) are not document changes for another tab. */
 export const documentPatches = (ps: Patch[]): Patch[] => ps.filter((p) => !VIEW_FIELDS.includes(p.path[0] as string));
+/** The portfolio without its view state: what two tabs compare to know they hold the same document. */
+export const documentOf = (pf: object): Record<string, unknown> => Object.fromEntries(Object.entries(pf).filter(([k]) => !VIEW_FIELDS.includes(k)));
 
 /**
  * Run commands on the portfolio draft. A portfolio command mutates it directly; a case command runs on a draft of the active product's

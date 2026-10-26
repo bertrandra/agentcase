@@ -14,7 +14,8 @@ export function CalcStaleBanner() {
     <div className="ac-banner ac-calc-banner" role="status" data-testid="calc-stale-banner">
       <span>
         ⚠️ {mismatch
-          ? <><strong>This saved case was computed by a different engine version</strong> ({st.storedVersion ?? '?'} → live {st.liveVersion ?? '?'}). The figures shown are recomputed live.</>
+          ? <><strong>This saved case was computed by a different engine version</strong> ({st.storedVersion ?? '?'} → live {st.liveVersion ?? '?'}). The
+            figures shown are recomputed live.</>
           : <><strong>The saved figures no longer match the current inputs</strong> — the numbers shown are recomputed live.</>}
         {st.storedHeadline && <> <span className="ac-calc-saved">Saved: {figures(st.storedHeadline)}</span></>}
         {st.liveHeadline && st.storedHeadline && <> <span className="ac-calc-live">· Live: {figures(st.liveHeadline)}</span></>}

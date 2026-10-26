@@ -35,7 +35,8 @@ describe.each([['Portfolio', 0], ['Wave 1', 1], ['Wave 2', 2]] as const)('verify
 
   it('agent-dir: levels per product, the line counts each agent and role once', () => {
     const t = agentDirTable(pf, scope())!, ind = independent(pf, scope());
-    ind.forEach((p, i) => { expectCell(t.rows[i]!.cells.agents, agentDirectory(p.live.c, 'ALL').length); expectCell(t.rows[i]!.cells.roles, rolesForPhase(p.live.c, 'ALL').length); });
+    ind.forEach((p, i) => { expectCell(t.rows[i]!.cells.agents, agentDirectory(p.live.c, 'ALL').length); expectCell(t.rows[i]!.cells.roles,
+      rolesForPhase(p.live.c, 'ALL').length); });
     expectCell(t.total.agents, AGENT_CATALOG.length);
     expectCell(t.total.roles, new Set(ind.flatMap((p) => rolesForPhase(p.live.c, 'ALL'))).size);
     expect(t.total.avgSup).toBeNull();

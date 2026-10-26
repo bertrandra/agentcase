@@ -15,6 +15,139 @@ All notable changes to AgentCase, newest first. Product version from v19.0.0 = t
 
 When releasing, follow [docs/BUMP_PROCEDURE.md](docs/BUMP_PROCEDURE.md) (§7 for the legacy file) and add the new version at the top.
 
+## [v20.19.0] 2026-10-26 — Architecture lot 10: audit fixes, one source of truth for every figure, live Data Model, real 160-character limit
+
+### Lot 10 — store, sync, persistence, layer lint
+
+- **Multi-tab sync keeps one document.** Every broadcast now carries a document id (new at every open) and a revision; a patch lands only on the
+  same document at the revision it was made on, never on another one. Opening a file, restoring a session or an autosave is broadcast whole: the
+  other tabs replace their document and keep their own view (persona, edit and display scope, active product). A tab out of step resyncs on the
+  whole document of the tab ahead; a patch that does not fit is refused (no crash) and the document is requested instead. Messages without a
+  document id (older builds) are ignored.
+- **Undo after another tab's change.** A remote change that adds, removes or reorders products or waves, or a replaced document, clears this tab's
+  undo / redo (their steps address positions) and says so: "Another tab changed the products or waves: undo history cleared" (live region).
+- **View state never undone.** Undo steps no longer carry view fields (active product, edit / display scope, persona): activating a portfolio
+  snapshot in a Wave view keeps the Wave view, and undo / redo of it, or of File > Open, no longer move the view. Redoing an import keeps the
+  product the tab shows.
+- **Board dashboards** no longer show a Monte Carlo run made on an earlier version of the case: the Monte Carlo cards show a dash and the decision
+  cards use their fallback run until a new run.
+- **Autosave**: records are pruned to the 20 most recent after each save (they piled up, one per page load); a refused save (quota, blocked storage)
+  is announced once instead of failing silently, and "Autosave this session" reports it. A record of an older file schema restores its document but
+  not its history. The calculation packages stay in the record: the restore compares them (staleness banner).
+- **Read-only product views** (aggregate drill-down) also stop pointer, drag and arrow / character keys, so a custom slider or Gantt bar inside
+  cannot be moved. Deleting the persona a tab shows no longer writes the (derived) case it reads.
+- **Layer lint**: the edit-base rule follows `const s = …getState(); s.doc`; the UI may not import `portfolioState`, `editBase` or the writable
+  `simStore` / `pfSimStore`; dynamic `import()` is restricted like static imports; `src/content` and `src/generated` are data layers (read by the UI
+  and the domain) and an import of an unclassified file is an error.
+
+### Lot 10 — calculations (domain)
+
+- Legacy flat curves: Monte Carlo outcome, `horizonYears` and cost reduction read the Time Engine over the whole horizon (DEV-LEGACY-CURVE-HORIZON).
+- Sensitivity matrix: each of the 20 cells reruns the engine with the moved automation potential and glass ceiling (DEV-SENS-RERUN); the portfolio negative-cell count is now meaningful.
+- Payback = the month after the last negative cumulative month, null when the final cumulative is negative (DEV-PAYBACK-RECOVERY; no single-product change).
+- One displayed payback (`displayedPayback`): no setup = "immediate", ranked best by the strategies (DEV-PAYBACK-NOSETUP); one `fmtPayback`.
+- Portfolio: stock measures (human FTE incl. run team, vFTE, adoption) held after a product's own horizon; `fte.after` read from the calendar series; cost reduction on the calendar basis; flow (time-to-market) NPV laid on the calendar and discounted from calendar month 1.
+- Saved packages: `totalSavings` is net of setup at portfolio level too (was gross); files saved before stay valid; no crash on an empty product list; year-end cumulative read from the consolidated cumulative.
+- One clamped horizon reader (`clampHorizonYears`, whole years 1..10): "0" / "-1" from a file no longer throws or diverges.
+- `headlineOf` reads the engine totals (`total()`, `roi()`); scenario run-cost total `totRun` in the domain; registry Y2 variables n/a beyond the horizon (DEV-YEAR-BEYOND-HORIZON).
+- Evidence ledger and DD sensitivity no longer read the clock in the domain: the evaluation date / timestamp is passed by the UI / controller.
+- One "adds up to 100 %" rule (`domain/split.ts`, 0.5 point) for the UI, validation, file check and Excel readers (DEV-SPLIT-TOLERANCE).
+- Dead code removed: `firstActiveMonth`, the duplicate `fmtPayback`, the portfolio package's own cumulative, the Results aggregate's ROI recomputation.
+
+### Lot 10 — CI, tools and test infrastructure
+
+- CI: the `app` workflow also runs on a change to `docs/**` (examples included), `README.md` or `CHANGELOG.md`, which the suite (docs facts, deviations,
+  portfolio example) and the browser gates read. `npm run gates` (workflow-sync) now compares each step's `if:`, working directory and `timeout-minutes`
+  with the workflows, not only the `run:` command, and runs an `if: success() || failure()` step after a failure, as CI does.
+- `tools/ui-parity.mjs`: an element kind present in the legacy page and absent from every visited section of the new app fails the full run unless
+  recorded as a `(element)` / `missing` exception (pinned: it drifts once the kind is back). The first run found three kinds (`table:td-right`,
+  `table:td-center`, `table:th-right`) missing because the tool still looked for `style="text-align: …"`; the selectors now use the `ac-num` /
+  `ac-center` classes, and the three are compared (0 divergence). No exception recorded (docs/DEVIATIONS.md DEV-UI-PARITY).
+- `tools/perf.mjs`: a section switch is timed until the TARGET section's heading is shown (the previous section's `main h1` satisfied the old wait),
+  an undo until the headline bar repainted (it was the key press plus a fixed 30 ms); a missing `app/perf-budget.json` fails instead of being written.
+  New regression budgets `sizeRegressionMB` 3.08 / `gzipRegressionMB` 1.12 (1.15 x the build) under the hard 5 / 1.5 MiB ceilings; time budgets
+  re-baselined with the existing rule (all at their floors: measured shell 345 ms, edit 20 / 38 ms, undo 38 ms, sections 207 / 114 ms).
+- `tools/a11y.mjs`: after "Run" it waits for what only a simulation result renders and records a serious finding when it does not appear (the old
+  wait matched any table and swallowed the timeout); it fails when the navigation is empty or when fewer sections were audited than nav entries found.
+  Fixed waits replaced by state waits in `a11y`, `a11y-lib` (section active, no lazy placeholder; the transition settle of the audit is kept),
+  `e2e-smoke`, `e2e-flows`, `parallel-run` and the app side of `ui-parity`.
+- `npm run dup`: the baseline also stores one fingerprint per clone (the two files and a hash of the fragment, no line numbers); a clone not in the
+  baseline fails even when the totals do not grow.
+- `tests/size.test.ts` is one test listing every file over 150 lines (it generated one test per file, about 1,400); the documented test count is
+  re-counted.
+- Snapshot comparison: the "Current case" column follows an edit, an undo and a product switch (it subscribed to nothing and hid it behind an
+  `eslint-disable`); `compareSnapshots` takes the subscribed case and product. Due diligence: a redundant dependency and its `eslint-disable` removed;
+  the two remaining `exhaustive-deps` exceptions (`store/portfolioSimulation.ts`, keyed memos) carry their justification.
+- Strategy ranking: the default radar selection is memoised, so the chart is no longer rebuilt on every render.
+- chart.js: only the bar / line / doughnut / radar controllers, their elements, the category / linear / radial scales and the filler, legend, tooltip
+  and title plugins are registered (`registerables` before); `dist/index.html` 2,809.46 kB → 2,798.23 kB (gzip 1,023.10 → 1,020.08 kB).
+  `tests/ui/chart-registry.test.ts` checks every chart type and scale named in `src` against the registry.
+- `vite.config.ts`: the comment on test timeouts says which tests raise the 5 s default and why.
+
+### Lot 10 — Data Model and Calculation Engine sections
+
+- **🗄️ Data Model describes the current data model**, every table read live from the code. New tabs: 🗂️ Document (portfolio, product,
+  knowledge subset, wave, wave dependency, shared team line, hub: fields, required / optional, live value, meaning; file tags,
+  `_schemaVersion` and the migration chain; common keys of note such as `PERSONA_APP_SECTIONS`, `THEMES` / `THEME_SEQ`, the opening persona),
+  🎚️ Overridable keys (`OVERRIDABLE_KEYS`, form fields except the forbidden ones, the common-only keys incl. `MODEL` and so the discount rate,
+  with how many products override each key now), 🔄 Document vs view (`VIEW_FIELDS`: what the real writer saves of them, measured; never
+  undone, never broadcast; the autosave record fields and cap; the broadcast message kinds and fields with document id and revision),
+  💽 Files & workbooks (formats, and every sheet of the parameters, results and cost-model workbooks from the writers' name constants, with
+  the portfolio sheets' columns, `SharedTeam` and `Waves` included), 📦 Calculation packages (the live package's fields and which of them
+  opening a file compares, measured on `samePackage`; per-product and portfolio packages).
+- The four existing tables are live too: the variable registry is read from `domain/pdc/variables.ts` (the frozen copy
+  `content/refshare/variables.json` is removed), the coefficients from `COEF_DEFAULT`, the namespaces from the document's `MODEL`; texts
+  refreshed (no more "~82 keys"); the stale "v18.8" badge is replaced by the build's live version tag (also in ⚙️ Calculation Engine).
+- Runtime twins of the portfolio types (`domain/portfolio/fields.ts`, `FieldSet<T>`: a field added to a type without its twin, or with
+  another optionality, fails `tsc`), `AUTOSAVE_RECORD_FIELDS`, `BROADCAST_KINDS` / `BROADCAST_FIELDS`, `PF_RESULT_SHEETS` (the portfolio
+  results sheet names, now used by the writer). Read-only facts for the UI in `controllers/dataModel.ts`.
+- **⚙️ Calculation Engine**: new 📏 Single sources tab (one headline owner, one cash-flow kernel, last-recovery payback, `displayedPayback`,
+  default discount rate, split tolerance, horizon reader, portfolio consolidation, stress cut, portfolio scenarios / sensitivity), each with
+  its owner module (from the generated `@owner` graph) and a fact computed live by the owner. Help text and function surface corrected
+  (payback rule, thin pass ported, overlay set declared and tested, no runtime DEP graph); heading levels fixed (axe `heading-order`).
+- Tests: `datamodel-layers.test.ts` (a portfolio with every optional field round-trips through the real writer and reader holding exactly
+  the documented fields; every field has its meaning; autosave and broadcast carry only documented fields; type-level exhaustiveness),
+  `datamodel-tabs.test.tsx` (every tab axe clean in both sections, live counts follow an override, both sections under a Portfolio view).
+
+### Lot 10 — one source of truth (every figure computed once in the domain)
+
+- **One setup breakdown.** `setupBreakdown` lists the four editable lines, the HRI change cost and the Knowledge hub setup; its total is the setup of
+  the ROI (the model's drivers read it). The Agentic Setup total (golden €135K → €225K, "Editable lines" €135K kept), the Financial Investment table,
+  the Excel Investment sheet and the portfolio Setup view now add up to their total (DEV-SETUP-BREAKDOWN).
+- **One human-FTE definition.** `fteBeforeAfter` (delivery team + agentic run team; freed never negative) feeds Financial, Results, fte-vfte, vFTE
+  overview, KPI, team-out, the story, the engage plan, the registry and the Excel Savings sheet (golden freed Y3 11.3 → 9.0, Results residual 3.8 →
+  6.0 = 3.8 delivery + 2.3 run team) (DEV-FTE-ONE-DEF). The target team adds the run team of the horizon end year (DEV-TEAM-RUN-END).
+- **Engine years everywhere.** The baseline-drift card, the supervision capacity table, the registry Y1 / Y2 savings and run cost, the verification-tax
+  amounts and the Results yearly savings read the Time Engine years of the horizon (Results: "= €891,555 total savings / yr", the decomposition
+  reconciles to it, DEV-RESULTS-ENGINE-SAVINGS).
+- **Owners for the rules the screens repeated.** Glass ceiling (`model().ceiling`, DEV-GLASS-CEILING-OWNER), the verification-tax cap
+  (`COEF.vtaxCap`, DEV-VTAX-CAP), the maturity bounds (`maturityBounds.ts`: S-curve readout, bands, legends, DEV-MATURITY-BOUNDS), AI authority
+  order, AI skill premium, HRI bands, posture and margin bands, lifecycle factor bands, risk bands, operating-model ratios, decision thresholds,
+  commercial thresholds (the recommendation now reads the Monte Carlo confidence, DEV-CM-CONFIDENCE), Monte Carlo defaults, histogram bins,
+  due-diligence gauges, escape / utilisation / DORA tolerances, the token-mix split rule, the blended day rate, line cost and FTE by skill, team
+  coverage, the fit-to-scope rule and the economics view's per-year net, cumulative, run delta and averages.
+- **Dates from the UI.** The roadmap and the "now" marker of the automation chart take today from the UI (`useEvalDate`); the domain never reads the
+  clock.
+- **Guard tests.** `tests/domain/sot-cross-surface.test.ts` asserts on the 107 fixtures that every surface prints the owner's setup (lines add up
+  to `model().setupTotal`), FTE before / after / freed / reduction, net, ROI, payback, total benefit and end-year savings, and on four fixtures that
+  the Excel results workbook does; `tests/ui/sot-screens.test.tsx` checks the rendered screens; `tests/domain/lot10-sot.test.ts` asserts each new
+  rule.
+
+### Lot 10 — line length (D1: the 160 limit is real)
+
+- **`max-len` 160 no longer exempts literals.** `ignoreStrings`, `ignoreTemplateLiterals`, `ignoreRegExpLiterals` and `ignoreUrls` are gone (each
+  exempted any line that merely contained such a literal or a URL, so 1,266 lines of `src` and `tests` over 160 characters reported 0 warnings).
+  Comments count too. The one exemption left is a line that is nothing but a URL (`ignorePattern`). `npm run lint`: 0 errors, 0 warnings.
+- **Every line of `app/src` and `app/tests` is at most 160 characters** (1,266 lines before, 0 after): lists, JSX attributes and children,
+  conditions and chains wrapped at their natural break points, long string and template literals split with `+`. No behaviour change: every
+  reformatted file compiles and minifies to the same output as before (JSX text included), ui-parity 0 divergences.
+- Two test files would have passed 150 lines: their data tables moved to `tests/helpers/vueTuneCases.ts` and `tests/helpers/modelEngineSpecs.ts`;
+  the shell tests' common start (`tests/helpers/shellReset.ts`) replaces a clone that the wrapping made visible. Duplication baseline 66 clones /
+  496 lines (was 68 / 501; recorded with `npm run dup -- --update`, one fingerprint changed because its block moved into the new helper).
+- `tests/lint-rules.test.ts`: a 161-character line holding a string, a template or a regex literal, or a long comment, is reported; 160 is not; a
+  line that is only a URL is exempt, code holding a URL is not (the former "a long string: only the hard limit applies" assertion now asserts the
+  warning).
+
 ## [v20.18.1] 2026-10-25 — Architecture lot 9: tidy-up (no change to the app)
 
 - `tools/a11y.mjs` writes its default report to `test-results/a11y/report.json` (git-ignored): a local audit no longer rewrites a tracked file.

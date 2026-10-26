@@ -25,7 +25,8 @@ export function ProductCard({ card, cols, onDrag }: { card: BoardCard; cols: Boa
       <div className="ac-muted">{card.etp.toFixed(1)} FTE{card.startLabel ? ` · starts ${card.startLabel}` : ' · excluded from the consolidation'}
         {card.pushed > 0 && <span data-pushed={card.pushed}> (setup pushed back {card.pushed} mo by the capacity)</span>}</div>
       <label className="ac-wave-offset">Offset (months){' '}
-        <NumCell ariaLabel={`Offset in months of ${card.name}`} value={card.offset} min={0} step={1} width={56} onCommit={(v) => { setProductOffset(card.id, parseInt(v, 10) || 0); }} />
+        <NumCell ariaLabel={`Offset in months of ${card.name}`} value={card.offset} min={0} step={1} width={56}
+          onCommit={(v) => { setProductOffset(card.id, parseInt(v, 10) || 0); }} />
       </label>
       <select aria-label={`Move ${card.name} to wave…`} value="" onChange={(e) => go(cols.find((c) => keyOf(c) === e.target.value))}>
         <option value="">Move to wave…</option>

@@ -25,7 +25,8 @@ export function Graph({ sel, onSelect }: { sel: string | null; onSelect: (id: st
   return (
     <div className="ac-dep-graph">
       <svg viewBox={`0 0 ${L.width} ${L.height}`} className="ac-dep-svg" role="group" onKeyDown={(ev) => { if (ev.key === 'Escape') onSelect(null); }}
-        aria-label="Dependency graph generated from the code: each node is a button that highlights what feeds it and what it feeds; the same links are listed in the Matrix sub-tab">
+        aria-label={'Dependency graph generated from the code: each node is a button that highlights what feeds it and what it feeds; the same links are ' +
+          'listed in the Matrix sub-tab'}>
         <defs>
           {(['r', 'w'] as const).map((k) => <marker key={k} id={`dep-arr-${k}`} markerWidth="7" markerHeight="7" refX="6" refY="3.5" orient="auto"><path
             d="M0,0 L7,3.5 L0,7 Z"

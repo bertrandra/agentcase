@@ -20,7 +20,8 @@ const open = async () => { mountApp('waves'); await sectionReady(/Waves/); };
 describe('Waves section: the board', () => {
   it('one labelled region per wave in order, then "Unscheduled"; cards are the products; totals are the consolidation\'s', async () => {
     await open();
-    expect(screen.getAllByRole('region').map((r) => r.getAttribute('aria-label')).filter((n) => /^(Wave|Unscheduled)/.test(n ?? ''))).toEqual(['Wave: Wave 1', 'Wave: Wave 2', 'Unscheduled']);
+    expect(screen.getAllByRole('region').map((r) => r.getAttribute('aria-label')).filter((n) => /^(Wave|Unscheduled)/.test(n ?? '')))
+      .toEqual(['Wave: Wave 1', 'Wave: Wave 2', 'Unscheduled']);
     expect([...col('Wave: Wave 1').querySelectorAll('li[data-product]')].map((l) => l.getAttribute('data-product'))).toEqual([ids[0], ids[1]]);
     expect(card(ids[2]).closest('section')!.getAttribute('aria-label')).toBe('Wave: Wave 2');
     const c = consolidate(pf());

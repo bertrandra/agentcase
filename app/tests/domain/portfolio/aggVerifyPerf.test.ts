@@ -4,7 +4,7 @@ import { asisTobeAgg, complianceTable, execTable, kpiAgg, productivityTable, qua
 import { complianceView, execView, productivityView, qualityAnchorView, velocityView } from '@/domain/verifyB';
 import { expectClose } from '../../helpers/portfolio';
 import { fourProducts } from '../../helpers/portfolioFixtures';
-import { expectCell, independent, scopesOf, sum } from '../../helpers/aggVerify';
+import { expectCell, independent, scopesOf, shifted as onCalendar, sum } from '../../helpers/aggVerify';
 
 let pf: Portfolio;
 beforeAll(() => { pf = fourProducts(); });
@@ -61,7 +61,9 @@ describe.each([['Portfolio', 0], ['Wave 1', 1], ['Wave 2', 2]] as const)('verify
     const a = kpiAgg(pf, scope())!, h = scopeHeadline(consolidate(pf), scope())!.headline, i = ind();
     expect(a.headline).toBe(h);
     expectCell(a.consolidated[0]!.asis, sum(i.map((p) => p.live.m.base.etp)));
-    expectCell(a.consolidated[0]!.tobe, sum(i.map((p) => p.live.eng.year(p.live.eng.horizonYears).totalHumanFteEnd)));
+    // lot 10: TO-BE headcount = the calendar series at the portfolio horizon end (run team included, a product cut by the horizon counts that month)
+    const L = consolidate(pf).horizon, ends = onCalendar(i, L, (r) => r.humanFte + r.runTeamFte, true)[L - 1]!;
+    expectCell(a.consolidated[0]!.tobe, ends + sum(i.filter((p) => p.month0 >= L).map((p) => p.live.m.base.etp)));
     expectCell(a.consolidated[1]!.asis, sum(i.map((p) => p.live.m.baselineRun)));
     expectCell(a.consolidated[3]!.tobe, h.eff);
     expectCell(a.table.total.after, a.consolidated[0]!.tobe as number);

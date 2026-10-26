@@ -11,13 +11,16 @@ function seqOf(d: Doc, id: string): PersonaSeq | null {
 }
 type P = { persona: string };
 const enabledCmd = defineCommand<P & { on: boolean }>({
-  type: 'seq.setEnabled', label: (p) => `${p.on ? 'Enable' : 'Disable'} the guided sequence of ${p.persona}`, run(d, p) { const s = seqOf(d, p.persona); if (s) s.on = p.on; },
+  type: 'seq.setEnabled', label: (p) => `${p.on ? 'Enable' : 'Disable'} the guided sequence of ${p.persona}`,
+  run(d, p) { const s = seqOf(d, p.persona); if (s) s.on = p.on; },
 });
 const addStepCmd = defineCommand<P>({
-  type: 'seq.addStep', label: (p) => `Add a step to the sequence of ${p.persona}`, run(d, p) { seqOf(d, p.persona)?.steps.push({ label: 'New step', sections: [] }); },
+  type: 'seq.addStep', label: (p) => `Add a step to the sequence of ${p.persona}`,
+  run(d, p) { seqOf(d, p.persona)?.steps.push({ label: 'New step', sections: [] }); },
 });
 const removeStepCmd = defineCommand<P & { step: number }>({
-  type: 'seq.removeStep', label: (p) => `Remove step ${p.step + 1} of the sequence of ${p.persona}`, run(d, p) { seqOf(d, p.persona)?.steps.splice(p.step, 1); },
+  type: 'seq.removeStep', label: (p) => `Remove step ${p.step + 1} of the sequence of ${p.persona}`,
+  run(d, p) { seqOf(d, p.persona)?.steps.splice(p.step, 1); },
 });
 const moveStepCmd = defineCommand<P & { step: number; dir: -1 | 1 }>({
   type: 'seq.moveStep', label: (p) => `Move step ${p.step + 1} of ${p.persona} ${p.dir < 0 ? 'up' : 'down'}`,
@@ -27,7 +30,8 @@ const moveStepCmd = defineCommand<P & { step: number; dir: -1 | 1 }>({
   },
 });
 const labelCmd = defineCommand<P & { step: number; text: string }>({
-  type: 'seq.setStepLabel', label: (p) => `Rename step ${p.step + 1} of ${p.persona} to ${p.text}`, coalesceKey: (p) => `seq.setStepLabel:${p.persona}:${p.step}`,
+  type: 'seq.setStepLabel', label: (p) => `Rename step ${p.step + 1} of ${p.persona} to ${p.text}`,
+  coalesceKey: (p) => `seq.setStepLabel:${p.persona}:${p.step}`,
   run(d, p) { const st = seqOf(d, p.persona)?.steps[p.step]; if (st) st.label = p.text; },
 });
 const addSectionCmd = defineCommand<P & { step: number; section: string }>({

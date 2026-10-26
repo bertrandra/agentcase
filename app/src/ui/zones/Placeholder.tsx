@@ -5,7 +5,8 @@ import type { SectionDef } from './registry';
 export function Placeholder({ section }: { section: SectionDef }) {
   return (
     <SectionFrame title={section.label} input={
-      <p className="ac-muted">{section.description}<br /><em>This section has not been migrated to the TypeScript build yet — open the legacy app for it.</em></p>
+      <p className="ac-muted">{section.description}<br /><em>This section has not been migrated to the TypeScript build yet — open the legacy app for it.</em>
+        </p>
     } />
   );
 }

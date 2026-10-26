@@ -52,7 +52,8 @@ describe('two or more products: the banner states the View for this section by k
     await sectionReady(/Financial Summary — Portfolio/);
     expect(text()).toBe('Calculated on: Portfolio (3 planned products)');
     await open('team-in', /Input team/);
-    expect(text()).toBe('Changing: all products (shared values) — aggregate view of the selection below: Portfolio (3 planned products)');   // "Change: All products" (default)
+    expect(text()).toBe(
+      'Changing: all products (shared values) — aggregate view of the selection below: Portfolio (3 planned products)');   // "Change: All products" (default)
     await open('glossary', /glossary/i);
     expect(text()).toBe('Independent of the view');
     await open('consolidation', /Consolidation/);

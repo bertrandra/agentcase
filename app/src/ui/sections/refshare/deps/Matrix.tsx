@@ -24,7 +24,8 @@ export function Matrix() {
         row. <span data-mark="direct">● direct</span> = the row imports modules of the zone · <span data-mark="write">✎
         write</span> = an input section changes the zone through a controller command · <span data-mark="indirect">○ indirect</span> =
         only through other zones. {shown('direct')} direct, {shown('write')} write and {shown('indirect')} indirect marks.</p>
-      <label className="ac-check"><input type="checkbox" checked={all} onChange={(e) => setAll(e.target.checked)} /> show the {DATA.sections.filter((s) => isReference(s.id)).length} reference sections (no calculation)</label>
+      <label className="ac-check"><input type="checkbox" checked={all} onChange={(e) => setAll(e.target.checked)} /> show
+        the {DATA.sections.filter((s) => isReference(s.id)).length} reference sections (no calculation)</label>
       <div className="ac-table-wrap" tabIndex={0} role="region" aria-label="Dependency matrix">
         <table className="ac-matrix ac-table">
           <thead>
@@ -37,7 +38,8 @@ export function Matrix() {
                 {r.cells.map((c, i) => {
                   if (!c) return <td key={cols[i]} className={r.id === cols[i] ? 'is-self' : undefined} />;
                   const [mark, why] = MARK[c];
-                  return <td key={cols[i]} data-cell={c} title={`${r.label} ← ${zoneOf(cols[i]!)!.label}: ${why}`}>{mark}<span className="ac-sr">{why}</span></td>;
+                  return <td key={cols[i]} data-cell={c} title={`${r.label} ← ${zoneOf(cols[i]!)!.label}: ${why}`}>{mark}<span className="ac-sr">{why}</span>
+                    </td>;
                 })}
               </tr>
             ))}

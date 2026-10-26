@@ -32,7 +32,13 @@ export function valueRows(l: Live): ValueRow[] {
   return [...group(l, 'value')].map(([value, b]) => ({ value, n: b.n, human: Math.round(b.h / b.n), agent: Math.round(b.ag / b.n) }));
 }
 
-export const posture = (floor: number): string => (floor >= 60 ? 'Human-in-the-lead' : floor >= 30 ? 'Human-on-the-loop' : 'Human-over-the-loop');
+/** Supervision-floor bounds of the referential postures: ≥ 60 % in-the-lead, 30–60 % on-the-loop, below over-the-loop. */
+export const POSTURE_LEAD = 60, POSTURE_LOOP = 30;
+export const posture = (floor: number): string =>
+  (floor >= POSTURE_LEAD ? 'Human-in-the-lead' : floor >= POSTURE_LOOP ? 'Human-on-the-loop' : 'Human-over-the-loop');
+/** Margin (points) above the floor that reads as comfortable; below 0 the floor is violated (CC-SUP-01). */
+export const MARGIN_COMFORT = 10;
+export const marginBand = (gap: number): 'ok' | 'thin' | 'violated' => (gap >= MARGIN_COMFORT ? 'ok' : gap >= 0 ? 'thin' : 'violated');
 
 export interface SupRow { phase: string; n: number; floor: number; human: number; gap: number; posture: string }
 

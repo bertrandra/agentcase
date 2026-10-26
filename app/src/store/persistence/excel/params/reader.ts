@@ -17,7 +17,8 @@ export async function loadParamsSheets(input: ArrayBuffer | ArrayBufferView): Pr
   const buf = asArrayBuffer(input);
   guardZip(buf);
   const X = await loadExcelJS(), wb = new X.Workbook();
-  try { await wb.xlsx.load(buf); } catch (e) { throw new ParamsImportError(`Not a readable .xlsx workbook (${e instanceof Error ? e.message : 'corrupt file'})`); }
+  try { await wb.xlsx.load(buf); } catch (e) { throw new ParamsImportError(
+    `Not a readable .xlsx workbook (${e instanceof Error ? e.message : 'corrupt file'})`); }
   const out: Sheets = new Map();
   for (const ws of wb.worksheets) {
     if (!KNOWN_SHEETS.has(ws.name)) continue;
@@ -44,7 +45,8 @@ export function interpretParams(sheets: Sheets, base: Doc, env: ParamsEnv): Para
   const w = JSON.parse(JSON.stringify(base)) as ParamsDoc, notes: string[] = [], secs = effectiveSections(env, w), ids = new Set(secs.map((s) => s.id));
   const x: ReadCtx = {
     w, env, notes, secs, rows: (name) => sheets.get(name) ?? null, hasSection: (id) => ids.has(id),
-    clamp(v, mn, mx, label) { let n = v; if (n < mn) { n = mn; notes.push(`${label} clamped up to ${mn}`); } if (n > mx) { n = mx; notes.push(`${label} clamped down to ${mx}`); } return n; },
+    clamp(v, mn, mx, label) { let n = v; if (n < mn) { n = mn; notes.push(`${label} clamped up to ${mn}`); } if (n > mx) { n =
+      mx; notes.push(`${label} clamped down to ${mx}`); } return n; },
   };
   READ_ORDER.forEach((f) => f.read(x));
   w.sectionGroups = toSectionGroups(secs);

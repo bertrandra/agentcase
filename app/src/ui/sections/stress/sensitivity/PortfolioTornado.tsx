@@ -58,7 +58,8 @@ export function PortfolioTornado({ label }: { label: string }) {
       </div>
       <p aria-live="polite" className="ac-muted" data-pf-tornado-top="">
         {top && top.swing > 0 ? `Most sensitive driver at ±${step}%: ${top.label} (swing ${fmtSigned(top.swing)} on the net).` : 'No driver moves the net.'}</p>
-      <DataTable columns={columns(step, max)} rows={data.rows} rowKey={(r) => r.id} caption={`Portfolio sensitivity — ${label} (±${step}%, ${data.horizon} months)`} />
+      <DataTable columns={columns(step, max)} rows={data.rows} rowKey={(r) => r.id}
+        caption={`Portfolio sensitivity — ${label} (±${step}%, ${data.horizon} months)`} />
       <button type="button" aria-expanded={open} aria-controls={id} onClick={() => setOpen(!open)}>
         {open ? 'Hide the breakdown by product' : 'Show the breakdown by product (three largest swings)'}</button>
       <div id={id} hidden={!open}>

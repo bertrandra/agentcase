@@ -1,10 +1,12 @@
 import { computeSensitivity } from '@/controllers/pdc';
+import { belowAdvisoryFloor, ceilCoverBand, DD_ADVISORY_FLOOR_PCT } from '@/domain/pdc/ddGauges';
 import { Callout } from '@/ui/widgets/cards';
 import { PackButtons } from './PackButtons';
 import type { DdModel } from './useDd';
 
 /** The tone of a gauge (its top edge and figure): the `data-tone` rule of sections-b.css. */
 type Tone = 'blue' | 'brick' | 'teal' | 'amber' | 'grey' | '';
+const COVER_TONE = { ok: 'teal', partial: 'amber', uncovered: 'brick' } as const;
 const Card = ({ label, value, tone, sub }: { label: string; value: string; tone: Tone; sub?: string }) => (
   <div className="ac-dd-gauge" data-tone={tone}>
     <div className="ac-dd-gauge-l">{label}</div>
@@ -15,9 +17,9 @@ const Card = ({ label, value, tone, sub }: { label: string; value: string; tone:
 
 /** Intro, confirmation gauges (items, € weight, glass ceiling), the € sensitivity control and its explanation. */
 export function Summary({ m }: { m: DdModel }) {
-  const { wPct, ceilCover, sens, fresh, zeroEur } = m, wTone: Tone = wPct == null ? 'grey' : wPct >= 60 ? 'teal' : 'amber';
+  const { wPct, ceilCover, sens, fresh, zeroEur } = m, wTone: Tone = wPct == null ? 'grey' : belowAdvisoryFloor(wPct) ? 'amber' : 'teal';
   const cc = ceilCover === null ? null : Math.round(ceilCover * 100);
-  const ccTone: Tone = ceilCover === null ? '' : ceilCover >= 0.85 ? 'teal' : ceilCover >= 0.4 ? 'amber' : 'brick';
+  const ccTone: Tone = ceilCover === null ? '' : COVER_TONE[ceilCoverBand(ceilCover)];
   return (
     <>
       <Callout>This register lists what a client must <strong>confirm</strong> for the model to be defensible — not what the model computes. It deliberately
@@ -43,14 +45,15 @@ export function Summary({ m }: { m: DdModel }) {
             Telemetry cannot measure this and a simulation cannot validate it: only the people who sign the certification can.</p>
         </div>
       )}
-      {wPct != null && wPct < 60
-        && <Callout kind="warn">Y3 savings rest on <strong>{100 - wPct}% unconfirmed input weight</strong>. Below the 60% advisory floor — this is a banner,
+      {belowAdvisoryFloor(wPct)
+        && <Callout kind="warn">{m.endLabel} savings rest on <strong>{100 - (wPct as number)}% unconfirmed input weight</strong>. Below
+          the {DD_ADVISORY_FLOOR_PCT}% advisory floor — this is a banner,
         not a gate (spec Q11).</Callout>}
       <PackButtons />
       <div className="ac-form-row">
         <button type="button" className="ac-btn" onClick={computeSensitivity}>{fresh ? '↻ Recompute € sensitivity' : '⚖️ Compute € sensitivity'}</button>
         <span className="ac-muted">{fresh && sens
-          ? <>Measured {sens.at.slice(0, 10)} by +20% one-at-a-time perturbation on Y3 savings.{zeroEur ? <> <strong>{zeroEur}</strong> element(s)
+          ? <>Measured {sens.at.slice(0, 10)} by +20% one-at-a-time perturbation on {m.endLabel} savings.{zeroEur ? <> <strong>{zeroEur}</strong> element(s)
             measured €0 <em>in this configuration</em> — either display-only, or their module is switched off for this
             case.</> : null}{sens.unmeasurable.length ? ` ${sens.unmeasurable.length} not reachable without a refactor.` : ''}</>
           : 'Not yet measured. Runs ~50 model evaluations; cached until an input changes.'}</span>
@@ -59,7 +62,8 @@ export function Summary({ m }: { m: DdModel }) {
         ? <>Weighted coverage answers the only question that matters: <strong>how much of the euro result rests on something nobody has
           checked.</strong> Item count is shown alongside because a high item percentage with low weighted coverage means the easy things were
           confirmed and the load-bearing ones were not.</>
-        : 'Item count over-credits cheap confirmations. Run the sensitivity measurement to weight this by euro impact — until then, read it as progress, not as model confidence.'}</p>
+        : 'Item count over-credits cheap confirmations. Run the sensitivity measurement to weight this by euro impact — until then, read it as progress, ' +
+          'not as model confidence.'}</p>
     </>
   );
 }

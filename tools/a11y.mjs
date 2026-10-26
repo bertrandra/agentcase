@@ -21,34 +21,48 @@ const ORDER = ['critical', 'serious', 'moderate', 'minor'];
 const browser = await pw.chromium.launch();
 const rec = recorder(), { rows } = rec, audit = rec.audit;
 const PERSONA = 'select[aria-label=Persona], select[aria-label="Switch persona"]';
+// What only a simulation result renders: the distribution cards (Portfolio stress, Monte Carlo of a scope) or the per-wave verdict table (Decision)
+const RESULT = 'main .ac-stat-l:has-text("P10 (adverse outcome)"), main caption:has-text("Verdict of each wave")';
+/** Open the first closed drill-down / wave row matched by `sel`, and wait until it says it is open. */
+async function expandFirst(page, sel) {
+  const loc = page.locator(sel).first();
+  if (!(await loc.count())) return;
+  const el = await loc.elementHandle();
+  await el.click(); await page.waitForFunction((e) => e.getAttribute('aria-expanded') === 'true' || !e.isConnected, el);
+}
 for (const fx of fixtures) {
   const ctx = await browser.newContext({ viewport: { width: 1360, height: 900 } });
   const page = await openCase(ctx, fx);
   await page.selectOption('select[aria-label=Persona]', 'advanced');
   await page.click('.ac-dock button');   // the History dock stays open for every audit
   const labels = [...new Set(await page.evaluate((sel) => [...document.querySelectorAll(sel)].map((b) => b.textContent), NAV))];
+  const before = rec.state.audits, want = only.length ? labels.filter((l) => only.includes(l)).length : labels.length;
   for (const label of labels) {
     if (only.length && !only.includes(label)) continue;
     if (await openSection(page, label)) await audit(page, fx, label);
   }
+  // coverage: one audit per navigation entry found (an empty or partly missing nav would otherwise pass with few or no audits)
+  const done = rec.state.audits - before;
+  if (!labels.length || !want || done < want) rec.note(fx, '(navigation)', 'audit-coverage', 'serious', `${done} section audit(s) for ${labels.length} nav entries (${want} wanted)`, NAV);
   if (fx.startsWith('pf-')) {   // multi-product fixture: the display scope is view state (not saved), so audit the portfolio views under the Portfolio scope too (P4)
     await page.selectOption('select[aria-label="Show"]', 'portfolio');
     for (const label of labels.filter((l) => /Waves|Consolidation|Gantt|Portfolio stress|Decision/.test(l ?? '') || only.includes(l))) {   // --sections: the listed ones are audited under the Portfolio View too (aggregate view)
       if (only.length && !only.includes(label)) continue;
       if (!(await openSection(page, label))) continue;
-      const expand = page.locator('button[aria-label^="Expand "]').first();   // the wave Gantt: open a wave to audit its product rows and milestones
-      if (await expand.count()) await expand.click();
-      const drill = page.locator('.ac-drill-head h3 button[aria-expanded=false]').first();   // aggregate view: open one product's read-only drill-down too
-      if (await drill.count()) { await drill.click(); await page.waitForTimeout(500); }
+      await expandFirst(page, 'button[aria-label^="Expand "]');   // the wave Gantt: open a wave to audit its product rows and milestones
+      await expandFirst(page, '.ac-drill-head h3 button[aria-expanded=false]');   // aggregate view: open one product's read-only drill-down too
       const run = page.locator('button:has-text("Run the simulation"), button:has-text("Run now")').first();   // P6: audit the portfolio stress / verdict WITH a result on screen
-      if (await run.count()) { await run.click(); await page.locator('table[aria-label], table caption').first().waitFor({ timeout: 60000 }).catch(() => {}); await page.waitForTimeout(500); }
+      if (await run.count()) {
+        await run.click();
+        const shown = await page.locator(RESULT).first().waitFor({ timeout: 60000 }).then(() => true, () => false);
+        if (!shown) rec.note(fx, `${label} (scope Portfolio)`, 'simulation-result-missing', 'serious', 'no simulation result rendered within 60 s of Run', RESULT);
+      }
       await audit(page, fx, `${label} (scope Portfolio)`);
     }
     await page.selectOption('select[aria-label="Show"]', { index: 1 });   // back to a wave: the KPI bar of a Wave
     for (const label of only.filter((l) => labels.includes(l))) {   // --sections: and under a Wave (with a drill-down opened, if the section has one)
       if (!(await openSection(page, label))) continue;
-      const drill = page.locator('.ac-drill-head h3 button[aria-expanded=false]').first();
-      if (await drill.count()) { await drill.click(); await page.waitForTimeout(500); }
+      await expandFirst(page, '.ac-drill-head h3 button[aria-expanded=false]');
       await audit(page, fx, `${label} (scope Wave)`);
     }
     await audit(page, fx, '(scope Wave: KPI bar)');
@@ -60,13 +74,16 @@ for (const fx of fixtures) {
   if (!only.length) {
     await personaMenu(page, fx, rec); await historyStates(page, fx, rec);
     // the Builder persona: hide-menu mode (group bar) and a guided sequence
-    await page.selectOption(PERSONA, 'builder'); await page.waitForTimeout(200);
+    await page.selectOption(PERSONA, 'builder'); await page.locator('.ac-gnav').waitFor();   // hide-menu mode: the group bar replaces the sidebar
     await audit(page, fx, '(builder: group bar + guided sequence idle)');
     const start = page.locator('button:has-text("Start guided sequence")');
     if (await start.count()) {
-      await start.click(); await page.waitForTimeout(200);
+      const step = () => page.evaluate(() => document.querySelector('.ac-wiz-title')?.textContent ?? '');
+      await start.click(); await page.locator('.ac-wiz-title').waitFor();
       await audit(page, fx, '(guided sequence active, step 1)');
-      await page.locator('.ac-wiz button:has-text("Next")').click(); await page.waitForTimeout(200);
+      const s1 = await step();
+      await page.locator('.ac-wiz button:has-text("Next")').click();
+      await page.waitForFunction((s) => (document.querySelector('.ac-wiz-title')?.textContent ?? '') !== s, s1);
       await audit(page, fx, '(guided sequence active, step 2)');
       await page.click('.ac-wiz button[aria-label="Exit the sequence"]');
     } else console.log(`note: no guided sequence offered for ${fx}`);

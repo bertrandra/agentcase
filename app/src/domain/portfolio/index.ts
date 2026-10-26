@@ -20,11 +20,13 @@ export { waveBoard, type BoardCard, type BoardColumn } from './waveBoard';
 export type { ProductView, WaveView } from './waves';
 export { commonSubsetValue, type SubsetField } from './subset';
 export { applySubsetToCommon, hasCommonLevel, COMMON_SUBSET_FIELDS } from './subsetCommon';
-export { subsetKeys, ktLead, allocateInfra, allocateCents, knowledgeRow, knowledgeTable, knowledgeTotals, type KnowledgeRow, type KnowledgeTable, type KnowledgeTotals } from './knowledge';
+export { subsetKeys, ktLead, allocateInfra, allocateCents, knowledgeRow, knowledgeTable, knowledgeTotals, type KnowledgeRow, type KnowledgeTable,
+  type KnowledgeTotals } from './knowledge';
 export { waveEffects, waveEffectsTotal, infraView, type WaveEffect, type InfraView, type InfraShare } from './ktview';
 export { envelopeCase, portfolioToCase } from './envelope';
 export { FRENCH_ALIASES, DEFAULT_PRODUCT_NAME, DEFAULT_WAVE_NAME, isDefaultProductName, isDefaultWaveName } from './frenchAliases';
-export { MAX_PRODUCTS, addProduct, renameProduct, setProductNote, archiveProduct, setProductOffset, duplicateProduct, removeProduct, setKnowledge, setActive } from './products';
+export { MAX_PRODUCTS, addProduct, renameProduct, setProductNote, archiveProduct, setProductOffset, duplicateProduct, removeProduct, setKnowledge,
+  setActive } from './products';
 export { addWave, renameWave, setWaveStart, setWaveNote, removeWave, reorderWave, assignWave, setHorizon, setHub, setRho } from './waveOps';
 export { buildPortfolioPackages, type PortfolioPackages } from './package';
 export { checkPortfolioStaleness } from './staleness';
@@ -44,5 +46,7 @@ export * from './aggScope'; export * from './aggFrame'; export * from './aggBase
 export * from './aggVerifyAll';
 export * from './aggIndexEPV';
 export * from './aggTune';
-export * from './aggStress'; export * from './aggScenarios'; export * from './aggSensitivity'; export * from './aggEngine'; export * from './aggDefend';export type { Spread as TuneSpread } from './aggTuneCore';
-export { costModel, scopeSlug, type CostFmt, type CostFormula, type CostModel, type CostRole, type CostRow, type CostScope, type CostTable, type ParamRow, type RateCardBlock } from './costModel';
+export * from './aggStress'; export * from './aggScenarios'; export * from './aggSensitivity'; export * from './aggEngine'; export * from './aggDefend';
+export type { Spread as TuneSpread } from './aggTuneCore';
+export { costModel, scopeSlug, type CostFmt, type CostFormula, type CostModel, type CostRole, type CostRow, type CostScope, type CostTable, type ParamRow,
+  type RateCardBlock } from './costModel';

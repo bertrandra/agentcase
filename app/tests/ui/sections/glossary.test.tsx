@@ -9,7 +9,9 @@ afterEach(cleanup);
 
 describe('glossary section', () => {
   it('shows every figure and heading the legacy section showed (4 fixtures)', () => {
-    expectParity('glossary', Glossary, { headings: ['Delivery-model glossary', 'All (96)', 'Vision & Engagement (14)', 'Software/Agentic Factory meta-model (15)', '1 · Vision & Engagement', '10 · Software/Agentic Factory meta-model', 'Agentic Software Engineering Reference Model'] });
+    expectParity('glossary', Glossary,
+      { headings: ['Delivery-model glossary', 'All (96)', 'Vision & Engagement (14)', 'Software/Agentic Factory meta-model (15)', '1 · Vision & Engagement',
+      '10 · Software/Agentic Factory meta-model', 'Agentic Software Engineering Reference Model'] });
   });
   it('searches terms and definitions, filters by dimension and counts what is shown', () => {
     render(<Glossary />);

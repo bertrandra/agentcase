@@ -4,7 +4,8 @@ import { makeCtx } from '@/domain';
 import type { CaseState } from '@/domain';
 import { asisTobeView, complianceView, execView, kpiView, productivityView, qualityAnchorView, velocityView } from '@/domain/verifyB';
 import { diffs } from '../helpers/economics';
-import { legacyJson } from '../helpers/deviations';
+import { legacyJson, withoutDeviations } from '../helpers/deviations';
+import { caseFte } from '@/domain/economics/fte';
 
 const ids = readdirSync('fixtures/extras/vb_dom').map((f) => f.replace('.json', '')).sort();
 const json = (p: string) => JSON.parse(readFileSync(p, 'utf8'));
@@ -24,7 +25,10 @@ describe('verify (second half) views reproduce the legacy renders', () => {
     it('kpi: cards, tables and index chart', () => {
       const v = kpiView(c);
       expect([v.cards, v.eco, v.vq, v.comp]).toEqual([L.kpiCards, body(L.kpiEco), body(L.kpiVq), body(L.kpiComp)]);
-      expect(diffs(L.charts.kc!.sets[1]!.data, v.chart)).toEqual([]);
+      // DEV-FTE-ONE-DEF: the headcount index [0] is the FTE owner's after / before (the cards' figure); the legacy chart used the delivery team only.
+      expect(withoutDeviations(diffs(L.charts.kc!.sets[1]!.data, v.chart, 'kpiChart'), id)).toEqual([]);
+      const f = caseFte(c);
+      expect(v.chart[0]).toBe(f.before > 0 ? Math.round((f.after / f.before) * 100) : 0);
       expect(L.charts.kc!.sets[1]!.label).toBe(`TO-BE ${v.endL}`);
     });
     it('exec timeline', () => {

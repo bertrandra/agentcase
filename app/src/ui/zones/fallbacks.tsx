@@ -19,7 +19,8 @@ const ROLLUP: AggColumn<SelectionRow>[] = [
   { key: 'setup', header: 'Setup', align: R, title: 'Setup investment of the product, on the calendar axis', render: (r) => fmtEurK(r.setup) },
   { key: 'savings', header: 'Savings', align: R, title: 'Cumulative savings over the calendar horizon', render: (r) => fmtEurK(r.savings) },
   { key: 'net', header: 'Net', align: R, render: (r) => fmtEurK(r.net) },
-  { key: 'npv', header: 'Calendar NPV', align: R, title: 'Discounted from month 1 of the portfolio: the sum of the lines is the NPV of the selection', render: (r) => fmtEurK(r.npv) },
+  { key: 'npv', header: 'Calendar NPV', align: R, title: 'Discounted from month 1 of the portfolio: the sum of the lines is the NPV of the selection',
+    render: (r) => fmtEurK(r.npv) },
   { key: 'payback', header: 'Payback', align: R, render: (r) => fmtMonths(r.paybackMonth) },
 ];
 
@@ -32,8 +33,10 @@ export function RollupFallback({ title, Section }: FallbackProps) {
     <SectionFrame title={title} result={
       <>
         <AggregateTable caption={`Key figures by product — ${v.label}`} rows={v.rows} columns={ROLLUP} edit={false}
-          totals={{ label: `Total — ${v.label}`, cells: { setup: fmtEurK(t.setup), savings: fmtEurK(t.savings), net: fmtEurK(t.net), npv: fmtEurK(t.npv), payback: fmtMonths(t.paybackMonth) } }} />
-        <Callout kind="blue">This section checks or details each product separately: the figures do not add up. Open a product below to see the section as it computes it.</Callout>
+          totals={{ label: `Total — ${v.label}`,
+            cells: { setup: fmtEurK(t.setup), savings: fmtEurK(t.savings), net: fmtEurK(t.net), npv: fmtEurK(t.npv), payback: fmtMonths(t.paybackMonth) } }} />
+        <Callout kind="blue">This section checks or details each product separately: the figures do not add up. Open a product below to see the section as it
+          computes it.</Callout>
         {Section && <ProductDrill Section={Section} productIds={vs.productIds} />}
       </>
     } />
@@ -56,7 +59,8 @@ export function InputFallback({ title }: FallbackProps) {
   return (
     <SectionFrame title={title} input={
       <>
-        <Callout kind="blue">Summary, read-only: the inputs of this section belong to each product. Edit them in place below (the choice of “Change” in the top bar), or “Edit this product” to view that product.</Callout>
+        <Callout kind="blue">Summary, read-only: the inputs of this section belong to each product. Edit them in place below (the choice of “Change” in the top
+          bar), or “Edit this product” to view that product.</Callout>
         <AggregateTable caption={`Inputs by product — ${vs.label}`} rows={rows} columns={INPUTS}
           totals={{ label: `Total — ${vs.label}`, cells: { etp: etp.toFixed(1) } }} />
       </>
@@ -70,7 +74,8 @@ export function ConsoFallback({ title, Section }: FallbackProps) {
   return (
     <SectionFrame title={title} result={
       <>
-        <Callout kind="blue">Consolidated view coming for this section: the detail by product of the selection ({vs.label}) is below. No figure is added up here.</Callout>
+        <Callout kind="blue">Consolidated view coming for this section: the detail by product of the selection ({vs.label}) is below. No figure is added up
+          here.</Callout>
         {Section && <ProductDrill Section={Section} productIds={vs.productIds} />}
       </>
     } />
@@ -78,4 +83,5 @@ export function ConsoFallback({ title, Section }: FallbackProps) {
 }
 
 /** The generic fallback of each kind that follows the View (the other kinds render the section as it is). */
-export const FALLBACKS: Partial<Record<SectionKind, ComponentType<FallbackProps>>> = { 'R-rollup': RollupFallback, 'I-input': InputFallback, 'R-conso': ConsoFallback };
+export const FALLBACKS: Partial<Record<SectionKind, ComponentType<FallbackProps>>> =
+  { 'R-rollup': RollupFallback, 'I-input': InputFallback, 'R-conso': ConsoFallback };

@@ -1,4 +1,5 @@
-import { setCaseDiscountRate, setCustomerName, setEngageCoef, setEngagementCtx, setIndustry, setRegInclude, setRegUse, setTrackActual, toggleCross, toggleNorm } from '@/controllers/frame';
+import { setCaseDiscountRate, setCustomerName, setEngageCoef, setEngagementCtx, setIndustry, setRegInclude, setRegUse, setTrackActual, toggleCross,
+  toggleNorm } from '@/controllers/frame';
 import type { Sample } from './types';
 
 export const samples: Record<string, Sample> = {

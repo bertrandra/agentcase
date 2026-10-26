@@ -79,7 +79,8 @@ export function assumptionRegister(c: Ctx, base: AssumptionBase, ok: Validated =
   });
   const state = STATE_DEFS.map((d): StateRow => {
     const adj = stateEdited(c, base, d.key);
-    return { key: d.key, label: d.label, detail: d.key === 'scope' ? `${activeArtefacts(c.a, c.s).length} artefacts` : adj ? 'edited vs default' : 'default', status: ok[d.key] ? 'ok' : adj ? 'adj' : 'def' };
+    return { key: d.key, label: d.label, detail: d.key === 'scope' ? `${activeArtefacts(c.a, c.s).length} artefacts` : adj ? 'edited vs default' : 'default',
+      status: ok[d.key] ? 'ok' : adj ? 'adj' : 'def' };
   });
   const nAdjusted = ASSUMPTION_DEFS.filter((d) => String(cur(d.id)) !== String(base.dom.values[d.id])).length;
   return { inputs, state, nAdjusted, nDefault: ASSUMPTION_DEFS.length - nAdjusted, nValidated: Object.keys(ok).length };

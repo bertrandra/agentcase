@@ -1,5 +1,6 @@
 import { describe, expect, it } from 'vitest';
-import { commonSubsetValue, envelopeCase, infraView, knowledgeRow, knowledgeTable, knowledgeTotals, waveEffects, waveEffectsTotal, type Portfolio } from '@/domain/portfolio';
+import { commonSubsetValue, envelopeCase, infraView, knowledgeRow, knowledgeTable, knowledgeTotals, waveEffects, waveEffectsTotal,
+  type Portfolio } from '@/domain/portfolio';
 import { expectClose, loadCase, scaledTeam, withProduct, withWave } from '../../helpers/portfolio';
 
 const golden = loadCase('golden');
@@ -42,7 +43,8 @@ describe('knowledgeRow.lead', () => {
 });
 
 describe('infraView (A12 in the UI)', () => {
-  const hub = (pf: Portfolio, infraAllocation: 'perProduct' | 'byBaseEtp', infraMonthly = 3000): Portfolio => ({ ...pf, hub: { enabled: true, infraMonthly, infraAllocation } });
+  const hub = (pf: Portfolio, infraAllocation: 'perProduct' | 'byBaseEtp',
+    infraMonthly = 3000): Portfolio => ({ ...pf, hub: { enabled: true, infraMonthly, infraAllocation } });
   it('perProduct: each hub user carries the full cost', () => {
     const pf = hub(four(), 'perProduct'), v = infraView(pf, knowledgeTable(pf).rows);
     expect(v.shares.map((s) => [s.productId, s.monthly])).toEqual([['p1', 3000], ['B', 3000], ['C', 3000]]);

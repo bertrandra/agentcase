@@ -21,6 +21,8 @@ export function Decomp() {
     { key: 'r', label: <>{dot('reloc')}Relocation (residual team × rate delta)</>, cells: cells((y) => y.relocation) },
     { key: 'n', label: '= Net automation', cells: cells((y) => y.netAuto), bold: true, rule: true },
     { key: 't', label: '= Total savings', cells: cells((y) => y.total), bold: true, rule: true },
+    { key: 'o', label: '± Within-year ramp and engine effects (KT, taxes, rework)', cells: cells((y) => y.other) },
+    { key: 'm', label: '= Time-Engine savings (Financial summary)', cells: cells((y) => y.model), bold: true, rule: true },
   ];
   return (
     <Panel title="Savings decomposition — automation vs relocation">
@@ -28,11 +30,13 @@ export function Decomp() {
         removed, priced at the AS-IS rate), the <strong>agent operating cost</strong> (tokens + infra + agentic run team),
         and <strong>relocation</strong> (residual team priced at the target-location rate vs the AS-IS blend).</p>
       <GridTable head={['Component', ...b.years.map((_, i) => `Year ${i + 1}`)]} rows={rows} />
-      {Math.abs(b.asis - b.tgt) <= 0.5 && <p className="ac-muted">Relocation is currently near-neutral (target location ≈ AS-IS blend, {Math.round(b.asis)} €/day) — savings are essentially all automation-driven. Change the location strategy to introduce a relocation component.</p>}
-      <p className="ac-muted">Reconciliation (Y{n}): gross auto {fmtSigned(last.grossAuto)} − agent cost {fmtSigned(last.agentCost)} + relocation {fmtSigned(last.relocation)} = {fmtSigned(last.total)} vs model yearSav {fmtSigned(last.model)}.</p>
-      {Math.abs(last.total - last.model) > 1 && <Callout kind="warn">These components are priced on the flat annual model, so they do not add up to
-        the Time-Engine savings used everywhere else (the legacy screen says "reconcile exactly"; it does not). Use the Financial summary figures for
-        decisions.</Callout>}
+      {b.relocationNeutral && <p className="ac-muted">Relocation is currently near-neutral (target location ≈ AS-IS blend, {Math.round(b.asis)} €/day) — savings
+        are essentially all automation-driven. Change the location strategy to introduce a relocation component.</p>}
+      <p className="ac-muted">Reconciliation (Y{n}): gross auto {fmtSigned(last.grossAuto)} − agent cost {fmtSigned(last.agentCost)} +
+        relocation {fmtSigned(last.relocation)} = {fmtSigned(last.total)} vs model yearSav {fmtSigned(last.model)}.</p>
+      {!b.reconciles && <Callout kind="warn">These components price the year-end team for the whole year, so they do not add up to
+        the Time-Engine savings used everywhere else (the legacy screen says "reconcile exactly"; it does not): the ± line above is the gap. Use the
+        Financial summary figures for decisions.</Callout>}
       <ChartPanel config={cfg} label="Savings decomposition by year" height={300} />
     </Panel>
   );

@@ -8,6 +8,7 @@ import TeamOut from '@/ui/sections/verifyA/team-out';
 import { statValue } from '../../helpers/economics';
 import { freshStore } from '../../store/helpers';
 import { parityTests } from '../../helpers/verifyA';
+import { deviationFixtures } from '../../helpers/deviations';
 
 vi.mock('@/ui/widgets/ChartPanel', async () => import('../../helpers/chartStub'));   // jsdom has no canvas
 beforeEach(() => { freshStore(); });
@@ -15,10 +16,14 @@ afterEach(cleanup);
 const row = (c: HTMLElement, name: string) => [...c.querySelectorAll('tbody tr')].find((r) => r.children[0]?.textContent === name)!.children;
 
 describe('team-out section', () => {
-  parityTests('team-out', TeamOut);
+  // DEV-TEAM-RUN-END: past a 3-year horizon the run team (and the totals that add it) is the horizon end year's; asserted in tests/domain/verifyA.test.ts.
+  const RUN_END = deviationFixtures('DEV-TEAM-RUN-END');
+  parityTests('team-out', TeamOut, { moved: (fx) => (RUN_END.includes(fx)
+    ? { skip: [0, 1], skipBands: ['Agentic run (en plus)', 'Total recurring target', 'Net reduction'] } : {}) });
   it('the input team and the automation depth drive the headline figures; undo restores them', () => {
     const { container } = render(<TeamOut />);
-    expect([statValue(container, 'Input (FTE)'), statValue(container, 'Total recurring target'), statValue(container, 'Net reduction')]).toEqual(['15.0', '6.0', '-60%']);
+    expect([statValue(container, 'Input (FTE)'), statValue(container, 'Total recurring target'), statValue(container, 'Net reduction')])
+      .toEqual(['15.0', '6.0', '-60%']);
     act(() => setInput('y3Ramp', 40));
     expect(statValue(container, 'Total recurring target')).not.toBe('6.0');
     act(() => appStore().undo());
@@ -34,6 +39,7 @@ describe('team-out section', () => {
   });
   it('the group table adds up to the poles', () => {
     const { container } = render(<TeamOut />);
-    expect([...container.querySelectorAll('table')[1]!.querySelectorAll('tbody tr')].map((r) => r.children[2]?.textContent)).toEqual(['3.3', '0.5', '2.3', '2.0']);
+    expect([...container.querySelectorAll('table')[1]!.querySelectorAll('tbody tr')].map((r) => r.children[2]?.textContent))
+      .toEqual(['3.3', '0.5', '2.3', '2.0']);
   });
 });

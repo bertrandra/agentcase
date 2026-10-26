@@ -23,10 +23,13 @@ export function runRelease(g: Gen, w: number, storyIds: string[]): void {
     if (!last) continue;
     envs.forEach((env, ei) => {
       if (g.cnt >= g.cap) return;
-      const day = ei * p.envPromotionDays, failed = rnd() < p.deployFailRate, rolled = !failed && !!env.isProd && rnd() < p.rollbackRate, dpid = 'dp-' + d.DEPLOYMENTS.length;
-      d.DEPLOYMENTS.push({ id: dpid, releaseCandidateId: rcid, environmentId: env.id, deployedAt: grid.date(w, day), status: failed ? 'Failed' : rolled ? 'RolledBack' : 'Success' }); g.cnt++;
+      const day = ei * p.envPromotionDays, failed = rnd() < p.deployFailRate, rolled = !failed && !!env.isProd && rnd() < p.rollbackRate,
+        dpid = 'dp-' + d.DEPLOYMENTS.length;
+      d.DEPLOYMENTS.push({ id: dpid, releaseCandidateId: rcid, environmentId: env.id, deployedAt: grid.date(w, day),
+        status: failed ? 'Failed' : rolled ? 'RolledBack' : 'Success' }); g.cnt++;
       if ((failed || rolled) && g.cnt < g.cap) {
-        d.DEPLOYMENTS.push({ id: 'dp-' + d.DEPLOYMENTS.length, releaseCandidateId: rcid, environmentId: env.id, deployedAt: grid.date(w, day + p.retryDelayDays), status: 'Success' }); g.cnt++;
+        d.DEPLOYMENTS.push({ id: 'dp-' + d.DEPLOYMENTS.length, releaseCandidateId: rcid, environmentId: env.id,
+          deployedAt: grid.date(w, day + p.retryDelayDays), status: 'Success' }); g.cnt++;
       }
       if (env.isProd && !failed && g.cnt < g.cap) {
         const nev = Math.round(p.incidentsPerProdDeploy);
@@ -41,7 +44,9 @@ export function runRelease(g: Gen, w: number, storyIds: string[]): void {
   const nfb = Math.round(p.feedbackPerRelease);
   for (let f = 0; f < nfb && g.cnt < g.cap; f++) {
     const blid = 'bl-' + d.BACKLOG_ITEMS.length;
-    d.BACKLOG_ITEMS.push({ id: blid, description: 'Improvement requested after R' + relN, status: 'New', sourceFeedbackId: 'fb-' + d.FEEDBACK_ITEMS.length }); g.cnt++;
-    d.FEEDBACK_ITEMS.push({ id: 'fb-' + d.FEEDBACK_ITEMS.length, description: 'Field feedback on release R' + relN, createdAt: grid.date(w, 7), backlogItemId: blid }); g.cnt++;
+    d.BACKLOG_ITEMS.push({ id: blid, description: 'Improvement requested after R' + relN, status: 'New',
+      sourceFeedbackId: 'fb-' + d.FEEDBACK_ITEMS.length }); g.cnt++;
+    d.FEEDBACK_ITEMS.push({ id: 'fb-' + d.FEEDBACK_ITEMS.length, description: 'Field feedback on release R' + relN, createdAt: grid.date(w, 7),
+      backlogItemId: blid }); g.cnt++;
   }
 }

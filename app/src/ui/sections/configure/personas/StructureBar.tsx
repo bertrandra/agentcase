@@ -21,24 +21,35 @@ export function StructureBar({ value, onChange }: { value: string; onChange: (id
   const rename = () => { if (text.trim()) renameStructure(cur.id, text); setMode(null); };
   const blocked = cur.builtin ? 'A built-in structure cannot be deleted' : users.length ? `Still used by ${users.map((p) => p.label).join(', ')}` : '';
   const field = (go: () => void) => (
-    <input type="text" aria-label="Menu structure name" value={text} onChange={(e) => setText(e.target.value)} onKeyDown={(e) => { if (e.key === 'Enter') go(); if (e.key === 'Escape') setMode(null); }} />
+    <input type="text" aria-label="Menu structure name" value={text} onChange={(e) => setText(e.target.value)}
+      onKeyDown={(e) => { if (e.key === 'Enter') go(); if (e.key === 'Escape') setMode(null); }} />
   );
   return (
     <div className="ac-callout-blue" role="group" aria-label="Menu structure">
       <div className="ac-form-row">
         <label className="ac-field"><span className="ac-field-l">Menu structure</span>
-          <select value={cur.id} onChange={(e) => { onChange(e.target.value); setMode(null); }}>{m.structures.map((s) => <option key={s.id} value={s.id}>{s.label}{s.builtin ? ' (built-in)' : ''}</option>)}</select></label>
-        {mode === 'new' ? <>{field(create)}<button type="button" className="ac-btn" onClick={create}>✓ Create</button><button type="button" className="ac-btn" onClick={() => setMode(null)}>Cancel</button></>
-          : mode === 'rename' ? <>{field(rename)}<button type="button" className="ac-btn" onClick={rename}>✓ Save</button><button type="button" className="ac-btn" onClick={() => setMode(null)}>Cancel</button></>
-            : mode === 'delete' ? <><span className="ac-alert-text">Delete “{cur.label}”?</span><button type="button" className="ac-btn" onClick={() => { deleteStructure(cur.id); setMode(null); onChange(STANDARD_STRUCTURE); }}>✓ Confirm</button>
+          <select value={cur.id} onChange={(e) => { onChange(e.target.value); setMode(null); }}>
+            {m.structures.map((s) => <option key={s.id} value={s.id}>{s.label}{s.builtin ? ' (built-in)' : ''}</option>)}</select></label>
+        {mode === 'new' ? <>{field(create)}<button type="button" className="ac-btn" onClick={create}>✓ Create</button>
+          <button type="button" className="ac-btn" onClick={() => setMode(null)}>Cancel</button></>
+          : mode === 'rename' ? <>{field(rename)}<button type="button" className="ac-btn" onClick={rename}>✓ Save</button>
+            <button type="button" className="ac-btn" onClick={() => setMode(null)}>Cancel</button></>
+            : mode === 'delete' ? <><span className="ac-alert-text">Delete “{cur.label}”?</span>
+              <button type="button" className="ac-btn" onClick={() => { deleteStructure(cur.id); setMode(null); onChange(STANDARD_STRUCTURE); }}>✓
+              Confirm</button>
               <button type="button" className="ac-btn" onClick={() => setMode(null)}>Cancel</button></>
               : <>
-                <button type="button" className="ac-btn" title="Create a new structure that starts as a copy of this one" onClick={() => open('new')}>⎘ Duplicate structure</button>
-                <button type="button" className="ac-btn" disabled={cur.id === STANDARD_STRUCTURE} title={cur.id === STANDARD_STRUCTURE ? 'The standard structure keeps its name' : undefined} onClick={() => open('rename')}>✎ Rename structure</button>
-                <button type="button" className="ac-btn" disabled={!!blocked} title={blocked || undefined} onClick={() => open('delete')}>✕ Delete structure</button>
+                <button type="button" className="ac-btn" title="Create a new structure that starts as a copy of this one" onClick={() => open('new')}>⎘
+                  Duplicate structure</button>
+                <button type="button" className="ac-btn" disabled={cur.id === STANDARD_STRUCTURE}
+                  title={cur.id === STANDARD_STRUCTURE ? 'The standard structure keeps its name' : undefined} onClick={() => open('rename')}>✎ Rename
+                  structure</button>
+                <button type="button" className="ac-btn" disabled={!!blocked} title={blocked || undefined} onClick={() => open('delete')}>✕ Delete
+                  structure</button>
               </>}
       </div>
-      <p className="ac-structure-note">Edits on this tab change the <strong>{cur.label}</strong> structure only. Used by: {users.length ? users.map((p) => p.label).join(', ') : 'no persona yet (pick it for a persona in 🧩 Section assignment)'}.</p>
+      <p className="ac-structure-note">Edits on this tab change the <strong>{cur.label}</strong> structure only. Used
+        by: {users.length ? users.map((p) => p.label).join(', ') : 'no persona yet (pick it for a persona in 🧩 Section assignment)'}.</p>
     </div>
   );
 }

@@ -32,7 +32,8 @@ export function SectionDetail({ structure, id }: { structure: string; id: string
       </div>
       <label className="ac-field"><span className="ac-field-l">Preview the menu of</span>
         <select value={who} onChange={(e) => setSel(e.target.value)}>{personas.map((p) => <option key={p.id} value={p.id}>{p.label}</option>)}</select></label>
-      <LivePreview persona={personas.find((p) => p.id === who)} preview={previewMenu(who, sections, groups, lists, order, null, 'global')} colors={colors} pending={false} mark={s.id} />
+      <LivePreview persona={personas.find((p) => p.id === who)} preview={previewMenu(who, sections, groups, lists, order, null, 'global')} colors={colors}
+        pending={false} mark={s.id} />
     </section>
   );
 }

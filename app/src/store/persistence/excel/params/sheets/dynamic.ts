@@ -26,22 +26,28 @@ const CARD_COLS: [string, number][] = [
 function writeCards({ wb, d, secs }: WriteCtx): void {
   const ws = sheet(wb, 'Dynamic Section Cards', CARD_COLS), vars = VARIABLES.map((v) => v.id), sids = secs.map((s) => s.id);
   d.dynamicSections.forEach((s) => (s.cards || []).forEach((c) => {
-    const row = ws.addRow([s.id, c.CARD_ID, c.CARD_ENABLED ? 'Yes' : 'No', c.CARD_NAME_VALUE || '', c.CARD_IMPACT_VAR || '', c.CARD_IMPACT_FMT || '', c.CARD_KEY1_VAR || '', c.CARD_KEY1_FMT || '',
-      c.CARD_KEY2_VAR || '', c.CARD_KEY2_FMT || '', c.CARD_OVERLAY_CTRL || '', c.CARD_SOURCE_SECTION || '', c.CARD_TARGET_SECTION || '', c.CARD_KEY1_LABEL || '', c.CARD_KEY2_LABEL || '', c.CARD_SEQ || 0]);
+    const row = ws.addRow([s.id, c.CARD_ID, c.CARD_ENABLED ? 'Yes' : 'No', c.CARD_NAME_VALUE || '', c.CARD_IMPACT_VAR || '', c.CARD_IMPACT_FMT || '',
+      c.CARD_KEY1_VAR || '', c.CARD_KEY1_FMT || '',
+      c.CARD_KEY2_VAR || '', c.CARD_KEY2_FMT || '', c.CARD_OVERLAY_CTRL || '', c.CARD_SOURCE_SECTION || '', c.CARD_TARGET_SECTION || '',
+      c.CARD_KEY1_LABEL || '', c.CARD_KEY2_LABEL || '', c.CARD_SEQ || 0]);
     grey(row.getCell(1)); for (let i = 2; i <= 16; i++) blue(row.getCell(i));
     row.getCell(3).dataValidation = ynDV();
-    [5, 7, 9].forEach((i) => { row.getCell(i).dataValidation = listDV(vars, 'Variable id (blank = unbound)'); row.getCell(i + 1).dataValidation = listDV(FORMAT_IDS, 'Format id (blank = auto)'); });
+    [5, 7, 9].forEach((i) => { row.getCell(i).dataValidation = listDV(vars, 'Variable id (blank = unbound)'); row.getCell(i + 1).dataValidation =
+      listDV(FORMAT_IDS, 'Format id (blank = auto)'); });
     row.getCell(12).dataValidation = listDV(sids, 'Section id'); row.getCell(13).dataValidation = listDV(sids, 'Section id');
   }));
   head(ws); frz(ws);
 }
 function writeRows({ wb, d, secs }: WriteCtx): void {
-  const ws = sheet(wb, 'Dynamic Section Rows', [['Section ID', 18], ['Row ID', 22], ['Seq', 7], ['Label', 26], ['Var', 16], ['Format', 10], ['Default Value', 16], ['Source Section', 16]]);
+  const ws = sheet(wb, 'Dynamic Section Rows', [['Section ID', 18], ['Row ID', 22], ['Seq', 7], ['Label', 26], ['Var', 16], ['Format', 10],
+    ['Default Value', 16], ['Source Section', 16]]);
   const vars = VARIABLES.map((v) => v.id), sids = secs.map((s) => s.id);
   d.dynamicSections.forEach((s) => rowsOf(s).forEach((r) => {
-    const row = ws.addRow([s.id, r.id ?? '', r.seq || 0, r.label || '', r.var || '', r.format || '', r.defaultValue != null ? String(r.defaultValue) : '', r.source || s.id]);
+    const row = ws.addRow([s.id, r.id ?? '', r.seq || 0, r.label || '', r.var || '', r.format || '', r.defaultValue != null ? String(r.defaultValue) : '',
+      r.source || s.id]);
     grey(row.getCell(1)); grey(row.getCell(2)); for (let i = 3; i <= 8; i++) blue(row.getCell(i));
-    row.getCell(5).dataValidation = listDV(vars, 'Variable id (blank = static default)'); row.getCell(6).dataValidation = listDV(FORMAT_IDS, 'Format id'); row.getCell(8).dataValidation = listDV(sids, 'Section id — scopes the Var picker');
+    row.getCell(5).dataValidation = listDV(vars, 'Variable id (blank = static default)'); row.getCell(6).dataValidation =
+      listDV(FORMAT_IDS, 'Format id'); row.getCell(8).dataValidation = listDV(sids, 'Section id — scopes the Var picker');
   }));
   head(ws); frz(ws);
 }
@@ -84,7 +90,8 @@ function readCards({ rows, w, notes, hasSection }: ReadCtx): void {
     const setVar = (f: string, v: unknown) => { const id = safeId(v); card[f] = id && (known.has(id) || card[f] === id) ? id : null; };
     const setFmt = (f: string, v: unknown) => { const id = str(v); card[f] = FORMAT_IDS.includes(id) ? id : null; };
     c.CARD_ENABLED = /^y/i.test(String(x[2] || '')); c.CARD_NAME_VALUE = cleanText(x[3], 120) || c.CARD_NAME_VALUE;
-    setVar('CARD_IMPACT_VAR', x[4]); setFmt('CARD_IMPACT_FMT', x[5]); setVar('CARD_KEY1_VAR', x[6]); setFmt('CARD_KEY1_FMT', x[7]); setVar('CARD_KEY2_VAR', x[8]); setFmt('CARD_KEY2_FMT', x[9]);
+    setVar('CARD_IMPACT_VAR', x[4]); setFmt('CARD_IMPACT_FMT', x[5]); setVar('CARD_KEY1_VAR', x[6]); setFmt('CARD_KEY1_FMT', x[7]); setVar('CARD_KEY2_VAR',
+      x[8]); setFmt('CARD_KEY2_FMT', x[9]);
     const ov = safeId(x[10]); c.CARD_OVERLAY_CTRL = ov || null;
     const src = str(x[11]); if (src && hasSection(src)) c.CARD_SOURCE_SECTION = src;
     const tgt = str(x[12]); if (tgt && hasSection(tgt)) c.CARD_TARGET_SECTION = tgt;
@@ -101,7 +108,8 @@ function readRows({ rows, w, notes, hasSection }: ReadCtx): void {
     if (!d) { notes.push(`Dynamic Section Rows: unknown section id "${cleanText(sid, 60)}" — row skipped.`); return; }
     const list = (d.rows ??= []) as Row[], rid = safeId(x[1]);
     let row = rid ? list.find((e) => e.id === rid) : undefined;
-    if (!row) { row = { id: rid || `row-import-${list.length}`, seq: list.length, label: '', var: null, source: sid, format: 'TEXT', defaultValue: '' }; list.push(row); }
+    if (!row) { row = { id: rid || `row-import-${list.length}`, seq: list.length, label: '', var: null, source: sid, format: 'TEXT',
+      defaultValue: '' }; list.push(row); }
     const seq = num(x[2]); if (!Number.isNaN(seq)) row.seq = seq;
     const label = cleanText(x[3], 120); if (label) row.label = label;
     const src = str(x[7]); if (src && hasSection(src)) row.source = src;

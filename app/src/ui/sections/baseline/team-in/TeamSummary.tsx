@@ -1,8 +1,7 @@
 import { useMemo } from 'react';
 import type { ChartConfiguration } from 'chart.js';
-import { LOCATIONS, type Ctx } from '@/domain';
-import { teamInCost } from '@/domain/location';
-import { locClass } from '@/domain/baseline/locStrat';
+import type { Ctx } from '@/domain';
+import { blendedDayRate, fteBySkill, locationMix, teamInCost } from '@/domain/location';
 import { Stat, StatRow } from '@/ui/widgets/cards';
 import { ChartPanel } from '@/ui/widgets/ChartPanel';
 import { CLASS_TONE } from '../ClassBadge';
@@ -11,12 +10,12 @@ import { useTheme } from '@/ui/themeContext';
 
 /** Total FTE, annual cost, blended day rate and number of lines. */
 export function TeamSummary({ c }: { c: Ctx }) {
-  const t = teamInCost(c.s, c.inp), wd = c.inp.p('workdays');
+  const t = teamInCost(c.s, c.inp), rate = blendedDayRate(c.s, c.inp);
   return (
     <StatRow>
       <Stat label="Total FTE" value={t.etp.toFixed(1)} />
       <Stat label="Annual cost" value={fmtK(t.cost)} />
-      <Stat label="Blended day-rate" value={t.etp * wd > 0 ? `€${Math.round(t.cost / (t.etp * wd))}` : '—'} />
+      <Stat label="Blended day-rate" value={rate > 0 ? `€${Math.round(rate)}` : '—'} />
       <Stat label="# resource lines" value={String(c.s.teamIn.length)} />
     </StatRow>
   );
@@ -24,14 +23,9 @@ export function TeamSummary({ c }: { c: Ctx }) {
 
 /** FTE by location classification (doughnut) and by skill (bars). */
 export function TeamCharts({ c }: { c: Ctx }) {
-  const rows = c.s.teamIn, { tok } = useTheme();
+  const s = c.s, { tok } = useTheme();
   const [byClass, bySkill] = useMemo(() => {
-    const cls: Record<string, number> = { Local: 0, Nearshore: 0, Offshore: 0 }, sk: Record<string, number> = {};
-    rows.forEach((r) => {
-      const k = LOCATIONS.some((l) => l.name === r.loc) ? locClass(r.loc) : 'Local';
-      cls[k] = (cls[k] ?? 0) + r.etp;
-      sk[r.skill] = (sk[r.skill] || 0) + r.etp;
-    });
+    const cls = locationMix(s).byClass, sk = fteBySkill(s);
     const a: ChartConfiguration = {
       type: 'doughnut',
       data: { labels: Object.keys(cls), datasets: [{ data: Object.values(cls), backgroundColor: Object.values(CLASS_TONE).map(tok) }] },
@@ -43,7 +37,7 @@ export function TeamCharts({ c }: { c: Ctx }) {
       options: { plugins: { legend: { display: false } } },
     };
     return [a, b];
-  }, [rows, tok]);
+  }, [s, tok]);
   return (
     <>
       <h2>Breakdown by location classification</h2>

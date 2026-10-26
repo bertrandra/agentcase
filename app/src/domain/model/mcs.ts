@@ -62,12 +62,15 @@ export function mcsTornado(c: Ctx, bases: McsSample) {
   }).sort((a, b) => b.swing - a.swing);
 }
 
+/** Defaults and bounds of the P4 settings: 2000 draws (100..20000), seed 20260728, organisational correlation ρ 0.35 (0..1). */
+export const MCS_DRAWS_DEFAULT = 2000, MCS_DRAWS_MIN = 100, MCS_DRAWS_MAX = 20000, MCS_SEED_DEFAULT = 20260728, MCS_RHO_DEFAULT = 0.35;
+
 /** The stochastic layer (P4): n correlated draws, seeded; same results as the legacy runMcs for the same seed. */
 export function runMcs(c: Ctx, nIn?: number, seedIn?: number): McsResult {
   const mc = mcsOf(c.s.MODEL);
-  const n = Math.max(100, Math.min(20000, nIn || mc.draws || 2000));
-  const seed = Math.max(1, Math.round(seedIn != null ? seedIn : mc.seed || 20260728));
-  const rho = Math.max(0, Math.min(1, mc.rho != null ? mc.rho : 0.35));
+  const n = Math.max(MCS_DRAWS_MIN, Math.min(MCS_DRAWS_MAX, nIn || mc.draws || MCS_DRAWS_DEFAULT));
+  const seed = Math.max(1, Math.round(seedIn != null ? seedIn : mc.seed || MCS_SEED_DEFAULT));
+  const rho = Math.max(0, Math.min(1, mc.rho != null ? mc.rho : MCS_RHO_DEFAULT));
   const rng = mulberry32(seed), bases: McsSample = {};
   MCS_DRIVER_ORDER.forEach((id) => { bases[id] = mcsBaseValue(c, id); });
   const sav: number[] = new Array(n), run: number[] = new Array(n), npv: number[] = new Array(n), pay: number[] = new Array(n);

@@ -7,7 +7,8 @@ import type { ReadCtx, SheetFamily, WriteCtx } from '../types';
 
 function writeTokens({ wb, d, c }: WriteCtx): void {
   const lbl = tokenUsage(c).endLabel, t = tokenModelRows(c);
-  const ws = sheet(wb, 'Token Models', [['Model', 22], ['Mix %', 9], ['Price in (€/1M)', 14], ['Price out (€/1M)', 14], [`Tokens ${lbl} (M)`, 14], [`Cost ${lbl} (€)`, 13]]);
+  const ws = sheet(wb, 'Token Models', [['Model', 22], ['Mix %', 9], ['Price in (€/1M)', 14], ['Price out (€/1M)', 14], [`Tokens ${lbl} (M)`, 14],
+    [`Cost ${lbl} (€)`, 13]]);
   t.rows.forEach((m) => {
     const row = ws.addRow([m.name, m.mix, m.priceIn, m.priceOut, Math.round(m.volM * 10) / 10, Math.round(m.cost)]);
     [1, 2, 3, 4].forEach((i) => blue(row.getCell(i))); row.getCell(1).alignment = { horizontal: 'left' };
@@ -25,7 +26,8 @@ function readTokens({ rows, w }: ReadCtx): void {
   const nm: typeof w.TOKEN_MODELS = [], pos = (v: unknown) => { const n = num(v); return Number.isNaN(n) ? 0 : Math.max(0, n); };
   r.slice(1).forEach((x) => {
     const name = str(x[0]); if (!name) return;
-    if (name.toLowerCase().startsWith('output token share')) { const os = num(x[1]); if (!Number.isNaN(os)) w.TOK_OUT_SHARE = Math.max(0, Math.min(100, os)); return; }
+    if (name.toLowerCase().startsWith('output token share')) { const os = num(x[1]); if (!Number.isNaN(os)) w.TOK_OUT_SHARE =
+      Math.max(0, Math.min(100, os)); return; }
     nm.push({ name: cleanText(name, 60), mix: Math.min(100, pos(x[1])), priceIn: pos(x[2]), priceOut: pos(x[3]) });
   });
   if (nm.length) w.TOKEN_MODELS = nm;
@@ -39,7 +41,8 @@ const SETTINGS: [string, 'regUse' | 'regInclude' | 'forceGlassCeiling', string, 
 ];
 function writeSettings({ wb, d }: WriteCtx): void {
   const ws = sheet(wb, 'Reg Settings', [['Setting', 34], ['Value', 10], ['Notes', 56]]);
-  SETTINGS.forEach(([label, key, , hint]) => { const row = ws.addRow([label, d[key] ? 'Yes' : 'No', hint]); style(row, ' bn'); row.getCell(2).dataValidation = ynDV(); });
+  SETTINGS.forEach(
+    ([label, key, , hint]) => { const row = ws.addRow([label, d[key] ? 'Yes' : 'No', hint]); style(row, ' bn'); row.getCell(2).dataValidation = ynDV(); });
   head(ws); frz(ws);
 }
 function readSettings({ rows, w }: ReadCtx): void {

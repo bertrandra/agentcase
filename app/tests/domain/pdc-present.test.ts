@@ -4,7 +4,8 @@ import { CM_CODES, cmAvailable, cmRecommend, cmTierSplit, commercialRevenue, com
 import { playbackSeries } from '@/domain/pdc/playback';
 import { storySummary } from '@/domain/pdc/story';
 import { fmtK } from '@/ui/economicsFormat';
-import { legacyMoney, legacyVelocityRow } from '../helpers/deviations';
+import { deviationFixtures, legacyMoney, legacyVelocityRow } from '../helpers/deviations';
+import { fmtPayback } from '@/domain/economics';
 import { diffs } from '../helpers/economics';
 import { ctxOf, pdc, PDC_FIXTURES } from '../helpers/pdc';
 
@@ -35,6 +36,8 @@ describe('present domain reproduces the legacy', () => {
     expect([fmtK(s.baselineRun), fmtK(s.endRun)]).toEqual([e.rows[1]![1], e.rows[1]![2]]);
     expect(`+${s.velocityPct}%`).toBe(legacyVelocityRow(e.rows[2]![2]!));
     expect(fmtK(s.endSavings)).toBe(legacyMoney(e.rows[3]![2]!));
-    expect(s.payback ? `${s.payback} mo` : `>${s.horizon * 12}m`).toBe(e.rows[4]![2]);
+    // one payback format (fmtPayback: ">36 mo" where the legacy story wrote ">36m"); DEV-PAYBACK-NOSETUP: no setup is "immediate" (legacy "1 mo")
+    const legacy = (e.rows[4]![2] as string).replace(/^>(\d+)m$/, '>$1 mo');
+    expect(fmtPayback(s.payback, s.horizon * 12)).toBe(deviationFixtures('DEV-PAYBACK-NOSETUP').includes(id) ? 'immediate' : legacy);
   });
 });

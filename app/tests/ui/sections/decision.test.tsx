@@ -42,7 +42,8 @@ describe('decision section', () => {
     act(() => { runSimulation(300); });
     const d = decision();
     expect(d.premium).toBeGreaterThan(0.1);
-    ['AI-Act tier', 'AI code-quality risk', 'Agentic risk register', 'Project eligibility', 'AI readiness index'].forEach((k) => expect(screen.getByText(k)).toBeTruthy());
+    ['AI-Act tier', 'AI code-quality risk', 'Agentic risk register', 'Project eligibility',
+      'AI readiness index'].forEach((k) => expect(screen.getByText(k)).toBeTruthy());
     expect(screen.getByText(new RegExp(VERDICT_META[d.verdict].label))).toBeTruthy();   // the raised bar is visible in the verdict
   });
   it('coherence: the verdict never reads Recommended while P(net<0) exceeds 20 %', () => {

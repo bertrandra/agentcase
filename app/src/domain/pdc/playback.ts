@@ -40,7 +40,8 @@ export const MP_META: Record<MetricKey, { title: string; yLabel: string; checkbo
 
 /** The curve(s) a metric plots. */
 export function metricSeries(s: PlaybackSeries, k: MetricKey): number[][] {
-  return k === 'fte' ? [s.humanFte, s.agentVfte] : k === 'cost' ? [s.totalCost] : k === 'savings' ? [s.cumulative] : k === 'velocity' ? [s.velocity] : [s.costPerSp];
+  return k === 'fte' ? [s.humanFte, s.agentVfte] : k === 'cost' ? [s.totalCost]
+    : k === 'savings' ? [s.cumulative] : k === 'velocity' ? [s.velocity] : [s.costPerSp];
 }
 
 /** Axis range with an 8 % margin (legacy mpRange). */

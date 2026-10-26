@@ -1,7 +1,7 @@
 import { useState } from 'react';
 import { activeArtefacts, phasesForScope, type Ctx } from '@/domain';
 import { artTeamSkill, skillMapOf } from '@/domain/baseline/skills';
-import { pinsOf, type TeamWeights } from '@/domain/baseline/teamWeights';
+import { pinsOf, teamCoverage, type TeamWeights } from '@/domain/baseline/teamWeights';
 import { clearPins, pinPhase, setPin } from '@/controllers/baseline';
 import { Badge, Panel } from '@/ui/widgets/cards';
 
@@ -13,7 +13,7 @@ export function PinEditor({ c, W, row, onClose }: { c: Ctx; W: TeamWeights; row:
   const map = skillMapOf(c.s), act = activeArtefacts(c.a, c.s), query = q.toLowerCase();
   const match = (a: (typeof act)[number]) => !query || `${a.id} ${a.name} ${a.norm ?? ''} ${a.skill ?? ''}`.toLowerCase().includes(query);
   const live = pinsOf(r).filter((id) => act.some((a) => a.id === id)).length, dead = pinsOf(r).length - live;
-  const pct = W.totW ? ((W.rowW[row] ?? 0) / W.totW) * 100 : 0;
+  const pct = teamCoverage(c.s.teamIn, W).rowSharePct[row] ?? 0;
   const blocks = phasesForScope().map((p) => ({ p, arts: act.filter((a) => a.phase === p.id && match(a)) })).filter((b) => b.arts.length);
   return (
     <Panel title={`📌 Pin line ${row + 1} — ${r.skill} (${r.grade}, ${r.loc})`}

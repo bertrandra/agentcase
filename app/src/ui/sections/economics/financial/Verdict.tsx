@@ -15,7 +15,7 @@ export function Verdict() {
   const { tok } = useTheme(), v = useEconomics(), cfg = useMemo(() => cashflowLine(v, tok), [v, tok]);
   const items: [string, string][] = [
     ['Investment', fmtK(v.setup)], [`Benefits ${v.H}y`, fmtK(v.totalBenefit)], ['Profit net', fmtK(v.net)], [`ROI (net, ${v.H}y)`, fmtRoiPct(v.roi)],
-    ['Payback', fmtPayback(v.payback, v.months.length)], [`NPV @${Math.round(v.npvRate * 100)}%`, fmtK(v.npv)],
+    ['Payback', fmtPayback(v.paybackShown, v.months.length)], [`NPV @${Math.round(v.npvRate * 100)}%`, fmtK(v.npv)],
   ];
   return (
     <Panel title={`ROI & ${v.H}-year verdict`}>
@@ -23,12 +23,12 @@ export function Verdict() {
       <ChartPanel config={cfg} label="Cumulative cash-flow by month" height={290} />
       <DataTable rows={v.years} rowKey={(y) => String(y.yearIndex)} columns={[
         { key: 'y', header: 'Year', render: (_y, i) => <strong>{yLabel(i + 1)}</strong> },
-        { key: 'set', header: 'Setup', align: 'right', render: (_y, i) => (i === 0 ? fmtK(v.setup) : '—') },
+        { key: 'set', header: 'Setup', align: 'right', render: (y) => (y.yearIndex === 1 || y.setupCost > 0 ? fmtK(y.setupCost) : '—') },
         { key: 'run', header: 'Actual run', align: 'right', render: (y) => fmtK(y.totalRunCost) },
         { key: 'base', header: 'AS-IS baseline', align: 'right', render: () => fmtK(v.baselineRun) },
         { key: 'ben', header: 'Benefit', align: 'right', render: (y) => fmtK(y.savings) },
-        { key: 'net', header: 'Net', align: 'right', render: (y, i) => <b>{fmtK(y.savings - (i === 0 ? v.setup : 0))}</b> },
-        { key: 'cum', header: 'Cumulative', align: 'right', render: (_y, i) => <b>{fmtK(v.cumulative[i] as number)}</b> },
+        { key: 'net', header: 'Net', align: 'right', render: (y) => <b>{fmtK(y.netAfterSetup)}</b> },
+        { key: 'cum', header: 'Cumulative', align: 'right', render: (y) => <b>{fmtK(y.cumulativeCashFlowEnd)}</b> },
       ]} />
       <Reco v={v} />
     </Panel>

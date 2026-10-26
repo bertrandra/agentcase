@@ -22,9 +22,10 @@ export const useFlowRows = () => {
   const core = useCorePortfolio(), { productIds } = useViewScope();
   return useMemo(() => flowByProduct(core, productIds), [core, productIds]);
 };
-export const useEvidenceRows = () => {
+/** `now`: the evaluation date the section passes (`useEvalDate`). */
+export const useEvidenceRows = (now: number | null) => {
   const core = useCorePortfolio(), { productIds } = useViewScope();
-  return useMemo(() => evidenceByProduct(core, productIds), [core, productIds]);
+  return useMemo(() => evidenceByProduct(core, productIds, now), [core, productIds, now]);
 };
 export const useVerificationRows = () => {
   const core = useCorePortfolio(), { productIds } = useViewScope();

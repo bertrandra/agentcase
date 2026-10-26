@@ -9,7 +9,10 @@ import type { Doc } from '@/store/types';
 import { groupsIn, inStructure, setColorIn, setGroupsIn } from './menuTarget';
 
 type Lists = Record<string, string[]>;
+/** On a command draft only: creates the list when the case has none. */
 const personas = (d: Doc): Persona[] => ((d.PERSONAS ??= []) as Persona[]);
+/** Read-only: never writes the case it reads (`editBase()` is derived and frozen). */
+const personasOf = (d: Doc): readonly Persona[] => (Array.isArray(d.PERSONAS) ? (d.PERSONAS as Persona[]) : []);
 const sections = (d: Doc): Lists => ((d.PERSONA_SECTIONS ??= {}) as Lists);
 const omit = <T extends object>(o: T, key: string): T => Object.fromEntries(Object.entries(o).filter(([k]) => k !== key)) as T;
 const maxOrder = (l: { order: number }[]): number => Math.max(0, ...l.map((x) => x.order));
@@ -31,7 +34,8 @@ const duplicateCmd = defineCommand<{ id: string; catalogue: string[] }>({
     if (!src) return;
     const copy = duplicateOf(src, personas(d).map((x) => x.id), maxOrder(personas(d)));
     personas(d).push(copy);
-    sections(d)[copy.id] = (p.id === 'advanced' ? p.catalogue : sections(d)[p.id] ?? []).slice();   // Advanced has no list of its own: it sees the whole catalogue
+    sections(d)[copy.id] =
+      (p.id === 'advanced' ? p.catalogue : sections(d)[p.id] ?? []).slice();   // Advanced has no list of its own: it sees the whole catalogue
   },
 });
 const deleteCmd = defineCommand<{ id: string }>({
@@ -58,7 +62,8 @@ const compactCmd = defineCommand<{ id: string; on: boolean }>({
 });
 const defaultCmd = defineCommand<{ id: string }>({
   type: 'persona.setDefault', label: (p) => `Open the app on the persona ${p.id}`,
-  run(d, p) { if (personas(d).some((x) => x.id === p.id)) d.PERSONAS = personas(d).map((x) => (x.id === p.id ? { ...x, default: true } : omit(x, 'default'))); },
+  run(d, p) { if (personas(d).some((x) => x.id === p.id)) d.PERSONAS =
+    personas(d).map((x) => (x.id === p.id ? { ...x, default: true } : omit(x, 'default'))); },
 });
 const addSectionCmd = defineCommand<{ persona: string; section: string }>({
   type: 'persona.addSection', label: (p) => `Add ${p.section} to the menu of ${p.persona}`,
@@ -88,15 +93,18 @@ const deleteGroupCmd = defineCommand<{ id: string } & In>({
   run(d, p) { const l = groupsIn(d, p.structure); if (l) setGroupsIn(d, p.structure, l.filter((x) => x.id !== p.id)); },
 });
 const groupOrderCmd = defineCommand<{ id: string; order: number } & In>({
-  type: 'persona.setGroupOrder', label: (p) => `Set the order of the menu group ${p.id} to ${p.order}${inStructure(p.structure)}`, coalesceKey: (p) => `persona.setGroupOrder:${p.structure ? `${p.structure}:` : ''}${p.id}`,
+  type: 'persona.setGroupOrder', label: (p) => `Set the order of the menu group ${p.id} to ${p.order}${inStructure(p.structure)}`,
+  coalesceKey: (p) => `persona.setGroupOrder:${p.structure ? `${p.structure}:` : ''}${p.id}`,
   run(d, p) { const g = groupsIn(d, p.structure)?.find((x) => x.id === p.id); if (g && !isNaN(p.order)) g.order = p.order; },
 });
 const groupDescCmd = defineCommand<{ id: string; description: string } & In>({
-  type: 'persona.setGroupDescription', label: (p) => `Describe the menu group ${p.id}${inStructure(p.structure)}`, coalesceKey: (p) => `persona.setGroupDescription:${p.structure ? `${p.structure}:` : ''}${p.id}`,
+  type: 'persona.setGroupDescription', label: (p) => `Describe the menu group ${p.id}${inStructure(p.structure)}`,
+  coalesceKey: (p) => `persona.setGroupDescription:${p.structure ? `${p.structure}:` : ''}${p.id}`,
   run(d, p) { const g = groupsIn(d, p.structure)?.find((x) => x.id === p.id); if (g) g.description = p.description; },
 });
 const groupColorCmd = defineCommand<{ id: string; color: string } & In>({
-  type: 'persona.setGroupColor', label: (p) => `Set the colour of the menu group ${p.id}${inStructure(p.structure)}`, coalesceKey: (p) => `persona.setGroupColor:${p.structure ? `${p.structure}:` : ''}${p.id}`,
+  type: 'persona.setGroupColor', label: (p) => `Set the colour of the menu group ${p.id}${inStructure(p.structure)}`,
+  coalesceKey: (p) => `persona.setGroupColor:${p.structure ? `${p.structure}:` : ''}${p.id}`,
   run(d, p) { if (/^#[0-9a-fA-F]{3,8}$/.test(p.color)) setColorIn(d, p.structure, p.id, p.color); },
 });
 
@@ -108,7 +116,7 @@ export const duplicatePersona = (id: string, catalogue: string[]): void => go(du
 /** Delete a persona; a tab showing it moves to Advanced (its persona is view state: the switch is not part of the undo step). */
 export function deletePersona(id: string): void {
   go(deleteCmd, { id });
-  if (currentPersona() === id && !personas(editBase()).some((x) => x.id === id)) setPersona('advanced');
+  if (currentPersona() === id && !personasOf(editBase()).some((x) => x.id === id)) setPersona('advanced');
 }
 export const renamePersona = (id: string, label: string): void => go(renameCmd, { id, label });
 export const setPersonaOrder = (id: string, order: number): void => go(orderCmd, { id, order });

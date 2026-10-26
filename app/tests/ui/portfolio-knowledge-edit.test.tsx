@@ -47,6 +47,21 @@ describe('Knowledge domains', () => {
     expect(prod(0).knowledge.domains).toBeUndefined();
   });
 
+  it('"ready to save" exactly when the save accepts the total (one split rule, domain/split.ts): 33.333 × 3 is saved, 99.4 is not ready', () => {
+    openFor(1);
+    for (let i = 1; i <= 3; i++) { fireEvent.click(
+      screen.getByRole('button', { name: 'Add a domain' })); type(`Domain label ${i}`, `D${i}`); type(`Domain weight ${i} (%)`, '33.333'); }
+    expect(screen.getByText('Total: 100% — ready to save.')).toBeTruthy();
+    fireEvent.click(screen.getByRole('button', { name: 'Save the domains' }));
+    expect(screen.queryByRole('alert')).toBeNull();
+    expect(prod(1).knowledge.domains?.map((d) => d.weightPct)).toEqual([33.333, 33.333, 33.333]);
+    type('Domain weight 3 (%)', '32.733');
+    expect(screen.queryByText('Total: 100% — ready to save.')).toBeNull();
+    fireEvent.click(screen.getByRole('button', { name: 'Save the domains' }));
+    expect(screen.getByRole('alert').textContent).toMatch(/change refused/);
+    expect(prod(1).knowledge.domains?.map((d) => d.weightPct)).toEqual([33.333, 33.333, 33.333]);
+  });
+
   it('an empty label is refused; a row can be removed; "Remove all" and Ctrl+Z', () => {
     openFor(1);
     fireEvent.click(screen.getByRole('button', { name: 'Add a domain' }));
@@ -86,7 +101,8 @@ describe('Knowledge transfer preparation (months before the wave)', () => {
     expect(prod(2).knowledge.ktLeadMonths).toBe(3);
     expect(screen.getByRole('group', { name: 'Knowledge transfer preparation: overridden' })).toBeTruthy();
     const after = consolidate(pf());
-    for (const m of ['savings', 'run', 'token', 'infra', 'humanFte', 'agentVfte', 'ktAvoided', 'khCost'] as const) expect(after.series[m]).toEqual(before.series[m]);
+    for (const m of ['savings', 'run', 'token', 'infra', 'humanFte', 'agentVfte', 'ktAvoided',
+      'khCost'] as const) expect(after.series[m]).toEqual(before.series[m]);
     expect(after.series.ktSetup).not.toEqual(before.series.ktSetup);
     expect(after.series.setup).not.toEqual(before.series.setup);
     const total = (s: number[]) => s.reduce((a, b) => a + b, 0);

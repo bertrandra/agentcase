@@ -1,4 +1,5 @@
 import { LOCATIONS } from '@/domain';
+import { isSplitComplete } from '@/domain/split';
 import type { LocSplitRow } from '@/domain/verdict';
 import { cssVars } from '@/ui/cssVars';
 
@@ -16,13 +17,14 @@ export function LocSplit({ rows }: { rows: LocSplitRow[] }) {
       <h3>TO-BE location split per strategy</h3>
       <div className="ac-table-wrap" tabIndex={0}><table className="ac-table">
         <thead>
-          <tr><th>Strategy</th>{LOCATIONS.map((l) => <th key={l.name} className="ac-center">{l.name}<br /><small>{l.cls}</small></th>)}<th className="ac-center">Σ</th></tr>
+          <tr><th>Strategy</th>{LOCATIONS.map((l) => <th key={l.name} className="ac-center">{l.name}<br /><small>{l.cls}</small></th>)}
+            <th className="ac-center">Σ</th></tr>
         </thead>
         <tbody>{rows.map((r) => (
           <tr key={r.id}>
             <td>{r.icon} <strong>{r.label}</strong> <span className="ac-badge ac-split-mode" data-mode={r.mode}>{MODE[r.mode]}</span></td>
             {LOCATIONS.map((l) => <td key={l.name} className="ac-c">{share(r.perLoc[l.name] as number)}</td>)}
-            <td className={Math.abs(r.tot - 100) < 0.5 || r.tot === 0 ? 'ac-c ac-split-tot' : 'ac-c ac-split-tot is-off'}>{r.tot ? `${r.tot.toFixed(0)}%` : '—'}</td>
+            <td className={isSplitComplete(r.tot) || r.tot === 0 ? 'ac-c ac-split-tot' : 'ac-c ac-split-tot is-off'}>{r.tot ? `${r.tot.toFixed(0)}%` : '—'}</td>
           </tr>))}</tbody>
       </table></div>
       <h3>Aggregate by class</h3>
@@ -49,7 +51,8 @@ export function LocSplit({ rows }: { rows: LocSplitRow[] }) {
           );
         })}</tbody>
       </table></div>
-      <p className="ac-muted">Custom = the strategy carries its own explicit geo split; AS-IS = the current input-team mix; Inherit current = the strategy uses the live Location strategy of the simulation
+      <p className="ac-muted">Custom = the strategy carries its own explicit geo split; AS-IS = the current input-team mix; Inherit current = the strategy uses
+        the live Location strategy of the simulation
         (previewed here against AS-IS for a deterministic view). Editable in the Strategy configuration table below.</p>
     </>
   );

@@ -1,4 +1,5 @@
 /** @calc-zone run-setup-taxes */
+import { AI_SKILL_PREMIUM } from '../rates';
 import { SUP_REF_HOURS_PER_PERIOD } from '../catalog';
 import type { Ctx } from '../ctx';
 
@@ -42,5 +43,5 @@ export function supApplyCeiling(c: Ctx, raw: number[], baseEtp: number) {
 
 export function supRunCostFor(c: Ctx, etp: number[], tgtTjm: number, wd: number, runTeamF: number): number[] {
   const override = supOn(c) && c.s.MODEL.SUP.supervisorCost > 0;
-  return etp.map((e) => (override ? e * c.s.MODEL.SUP.supervisorCost * wd : e * tgtTjm * 1.15 * wd * runTeamF));
+  return etp.map((e) => (override ? e * c.s.MODEL.SUP.supervisorCost * wd : e * tgtTjm * AI_SKILL_PREMIUM * wd * runTeamF));
 }

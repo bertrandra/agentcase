@@ -69,7 +69,8 @@ describe('A5: inherit / override / clear', () => {
 
   it('property: a random edit sequence is pure and local', () => {
     const keys = ['selectedNorms', 'phaseOff', 'selectedArtefacts'] as const;
-    const op = fc.record({ kind: fc.constantFrom('set', 'clear', 'common', 'apply'), who: fc.constantFrom('p1', 'B', 'C'), key: fc.constantFrom(...keys), n: fc.integer({ min: 0, max: 2 }) });
+    const op = fc.record({ kind: fc.constantFrom('set', 'clear', 'common', 'apply'), who: fc.constantFrom('p1', 'B', 'C'), key: fc.constantFrom(...keys),
+      n: fc.integer({ min: 0, max: 2 }) });
     fc.assert(fc.property(fc.array(op, { maxLength: 12 }), (ops) => {
       let pf = three();
       for (const o of ops) {

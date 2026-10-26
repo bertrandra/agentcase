@@ -1,6 +1,7 @@
 import { readFileSync, readdirSync } from 'node:fs';
 import { describe, expect, it } from 'vitest';
 import { makeCtx, type CaseState } from '@/domain';
+import { deviationFixtures } from '../helpers/deviations';
 import { activeStages, automationCurve, autoBase, funnelStage, maturityBounds } from '@/domain/scope/automation';
 import { lifecycleCascade, statusDoc, statusLabel } from '@/domain/scope/lifecycleView';
 import { phaseTiles } from '@/domain/scope/phaseTiles';
@@ -11,16 +12,20 @@ const load = (name: string, id: string) => JSON.parse(readFileSync(`fixtures/ext
 const state = (id: string) => JSON.parse(readFileSync(`fixtures/cases/${id}.json`, 'utf8')) as CaseState;
 const ids = readdirSync('fixtures/extras/scurveMath').map((f) => f.replace('.json', '')).sort();
 const near = (got: unknown, exp: unknown, path = ''): void => {
-  if (typeof exp === 'number') { expect(typeof got === 'number' && Math.abs(got - exp) <= 1e-6 * Math.max(1, Math.abs(exp)), `${path}: ${String(got)} vs ${exp}`).toBe(true); return; }
-  if (Array.isArray(exp)) { expect((got as unknown[]).length, path).toBe(exp.length); exp.forEach((v, i) => near((got as unknown[])[i], v, `${path}[${i}]`)); return; }
-  if (exp && typeof exp === 'object') { Object.keys(exp).forEach((k) => near((got as Record<string, unknown>)[k], (exp as Record<string, unknown>)[k], `${path}.${k}`)); return; }
+  if (typeof exp === 'number') { expect(typeof got === 'number' && Math.abs(got - exp) <= 1e-6 * Math.max(1, Math.abs(exp)),
+    `${path}: ${String(got)} vs ${exp}`).toBe(true); return; }
+  if (Array.isArray(exp)) { expect((got as unknown[]).length, path).toBe(exp.length); exp.forEach((v, i) =>
+    near((got as unknown[])[i], v, `${path}[${i}]`)); return; }
+  if (exp && typeof exp === 'object') { Object.keys(exp).forEach((k) => near((got as Record<string, unknown>)[k], (exp as Record<string, unknown>)[k],
+    `${path}.${k}`)); return; }
   expect(got, path).toEqual(exp);
 };
 const byT = <T extends { t: number }>(l: T[]) => [...l].sort((a, b) => a.t - b.t);
 const EVAL_AT = [1, 2, 3, 6, 9, 12, 18, 24, 30, 36, 48, 60];
 
 describe('S-curve editor maths reproduces the legacy page', () => {
-  it('has fixtures for the recipes of this group', () => expect(ids).toEqual(expect.arrayContaining(['golden', 'sc-logistic-4pt', 'sc-gompertz-4pt', 'sc-spline-5pt', 'sc-horizon-5', 'spline-custom'])));
+  it('has fixtures for the recipes of this group',
+    () => expect(ids).toEqual(expect.arrayContaining(['golden', 'sc-logistic-4pt', 'sc-gompertz-4pt', 'sc-spline-5pt', 'sc-horizon-5', 'spline-custom'])));
   it.each(ids)('%s: curve samples, sampled ramps, add / remove / drag, ensure', (id) => {
     const exp = load('scurveMath', id), anchors = exp.anchors as number[];
     for (const r of exp.out) {
@@ -58,11 +63,14 @@ describe('maturity block of the S-curve section matches the legacy render', () =
 describe('automation chart and glass-ceiling funnel match the legacy figures', () => {
   it.each(ids)('%s', (id) => {
     const exp = load('automationView', id), c = makeCtx(state(id)), b = autoBase(c), a = automationCurve(c, b);
+    // DEV-TEAM-RUN-END: past a 3-year horizon the agentic run team is the horizon end year's (the legacy read year 3).
+    if (deviationFixtures('DEV-TEAM-RUN-END').includes(id)) exp.team = { ...exp.team, runETP: b.eng.year(b.eng.horizonYears).runTeamFteEnd };
     near({ N: a.N, auto: a.auto, eff: a.eff, rampEnd: a.rampEnd, realEnd: a.realEnd, humanEnd: a.humanEnd, vfteEnd: a.vfteEndFte, team: a.team },
       { N: exp.N, auto: exp.auto, eff: exp.eff, rampEnd: exp.rampEnd, realEnd: exp.realEnd, humanEnd: exp.humanEnd, vfteEnd: exp.vfteEnd, team: exp.team });
     near(exp.real.map(([t]: [number, number]) => [t, a.real[t - 1]]), exp.real, 'real(t)');
     near(a.levels.map((l) => ({ lvl: l.lvl, month: l.month })), exp.levels, 'levels');
-    near([1, Math.ceil(b.N / 2), b.N].map((t) => funnelStage(b, t)), exp.stages.map((st: Record<string, number>) => Object.fromEntries(Object.entries(st).filter(([k]) => k !== 'comp'))), 'stages');
+    near([1, Math.ceil(b.N / 2), b.N].map((t) => funnelStage(b, t)),
+      exp.stages.map((st: Record<string, number>) => Object.fromEntries(Object.entries(st).filter(([k]) => k !== 'comp'))), 'stages');
     expect(activeStages(b)).toEqual(exp.active);
   });
 });
@@ -71,7 +79,8 @@ describe('phase tiles and lifecycle cascade match the legacy render', () => {
   it.each(ids)('%s', (id) => {
     const c = makeCtx(state(id)), t = phaseTiles(c), pe = load('phaseTiles', id), le = load('lcView', id);
     expect(`${t.selected}/${t.total} art.`).toBe(pe.count);
-    near(t.tiles.map((x) => ({ id: x.id, state: x.state, share: x.share, contrib: x.contrib, humanSup: x.humanSup, nStd: x.nStd, nReg: x.nReg, empty: x.empty })), pe.tiles, 'tiles');
+    near(t.tiles.map((x) => ({ id: x.id, state: x.state, share: x.share, contrib: x.contrib, humanSup: x.humanSup, nStd: x.nStd, nReg: x.nReg,
+      empty: x.empty })), pe.tiles, 'tiles');
     const lc = lifecycleCascade(c);
     expect(lc.label).toBe(le.label);
     expect(statusLabel(c.s)).toBe(le.label);

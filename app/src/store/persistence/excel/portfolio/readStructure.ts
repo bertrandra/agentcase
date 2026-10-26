@@ -54,7 +54,8 @@ function dependencyCells(t: Tab, l: Line): WaveDependency | undefined {
   if (!target) return undefined;
   if (!SAFE_ID.test(target)) fail(t.name, l.n, `depends on must be a wave id (got "${target.slice(0, 40)}")`);
   if (!(WAVE_MILESTONES as readonly string[]).includes(m)) fail(t.name, l.n, `milestone must be start or setupEnd (got "${m.slice(0, 20)}")`);
-  return { waveId: target, milestone: m as WaveMilestone, lagMonths: numberCell(t, l, 7, 'lag', { min: 0, max: PF_LIMITS.startMonth, int: true, optional: true }) ?? 0 };
+  return { waveId: target, milestone: m as WaveMilestone,
+    lagMonths: numberCell(t, l, 7, 'lag', { min: 0, max: PF_LIMITS.startMonth, int: true, optional: true }) ?? 0 };
 }
 
 /** Waves with their products listed by position; a product pointing at an unknown wave is an error. */
@@ -84,7 +85,8 @@ export function readSettings(sheets: Sheets,
     else if (key === 'hub infrastructure allocation') out.hub = { ...out.hub, infraAllocation: allocation(t, l.n, str(l.c[1])) };
     else if (key === 'horizon (months)') out.horizonMonths = numberCell(t, l, 1, 'horizon', { min: 1, max: 120, int: true }) as number;
     else if (key.startsWith('correlation rho')) out.rho = numberCell(t, l, 1, 'correlation rho', { min: 0, max: 1 }) as number;
-    else if (key.startsWith('max products in setup')) out.cap = numberCell(t, l, 1, 'max products in setup', { min: 0, max: PF_LIMITS.products, int: true }) as number;
+    else if (key.startsWith('max products in setup')) out.cap =
+      numberCell(t, l, 1, 'max products in setup', { min: 0, max: PF_LIMITS.products, int: true }) as number;
     else if (key === 'start date (iso)') out.startDate = isoDate(t, l.n, str(l.c[1]));
     else if (key === 'active product id') {
       const id = str(l.c[1]);

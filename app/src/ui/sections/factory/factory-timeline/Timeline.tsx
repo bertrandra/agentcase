@@ -11,7 +11,9 @@ export function Timeline() {
   const { data } = useKpiData();
   const events = timelineEvents(data);
   if (!events.length) {
-    return <Panel title="🗓️ Release & Engineering timeline" aside={ASIDE}><p className="ac-muted">No dated factory events yet — add Commits/Builds in ⚙️ Engineering, or Release Candidates/Approvals/Deployments/Monitoring/Feedback in 🚀 Release Pipeline.</p></Panel>;
+    return <Panel title="🗓️ Release & Engineering timeline" aside={ASIDE}>
+      <p className="ac-muted">No dated factory events yet — add Commits/Builds in ⚙️ Engineering, or Release
+      Candidates/Approvals/Deployments/Monitoring/Feedback in 🚀 Release Pipeline.</p></Panel>;
   }
   const ax = timelineAxis(events);
   return (
@@ -30,13 +32,15 @@ export function Timeline() {
             <div className="ac-tl-name ac-small">{lane} <span className="ac-muted">({mine.length})</span></div>
             <div className="ac-tl-track ac-tl-dots">
               {mine.map((e, i) => (
-                <span key={i} title={`${e.label} — ${e.date}`} className="ac-tl-dot" data-tone={e.tone} style={cssVars({ '--dyn-at': `${ax.pct(e.t).toFixed(2)}%` })} />
+                <span key={i} title={`${e.label} — ${e.date}`} className="ac-tl-dot" data-tone={e.tone}
+                  style={cssVars({ '--dyn-at': `${ax.pct(e.t).toFixed(2)}%` })} />
               ))}
             </div>
           </div>
         );
       })}
-      <p className="ac-muted">{events.length} dated event(s) across {new Date(ax.min).toLocaleDateString()} – {new Date(ax.max).toLocaleDateString()}. Hover a dot for details.</p>
+      <p className="ac-muted">{events.length} dated event(s) across {new Date(ax.min).toLocaleDateString()} – {new Date(ax.max).toLocaleDateString()}. Hover a
+        dot for details.</p>
     </Panel>
   );
 }

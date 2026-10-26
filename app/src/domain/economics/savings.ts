@@ -14,8 +14,21 @@ export interface SavingsYear {
   total: number;
   /** the Time-Engine savings of the year, for reconciliation */
   model: number;
+  /** what the decomposition does not price (= model − total): the within-year adoption ramp and the engine overlays (KT, taxes, rework) */
+  other: number;
 }
-export interface SavingsBreakdown { years: SavingsYear[]; asis: number; tgt: number; wd: number; baseEtp: number }
+export interface SavingsBreakdown {
+  years: SavingsYear[]; asis: number; tgt: number; wd: number; baseEtp: number;
+  /** the target blended rate is within `RATE_NEUTRAL_EUR` of the AS-IS blend: relocation is near-neutral */
+  relocationNeutral: boolean;
+  /** the last year's components add up to the Time-Engine savings within `RECONCILE_EUR` */
+  reconciles: boolean;
+}
+
+/** Day-rate gap (€/day) under which the relocation component reads as near-neutral. */
+export const RATE_NEUTRAL_EUR = 0.5;
+/** Gap (€) under which the decomposition reconciles with the Time-Engine savings. */
+export const RECONCILE_EUR = 1;
 
 /**
  * Split of the savings into automation and relocation components (legacy savingsBreakdown(), v12.11).
@@ -28,7 +41,10 @@ export function savingsBreakdown(c: Ctx): SavingsBreakdown {
     const grossAuto = (baseEtp - y.humanFteEnd) * asis * wd;
     const agentCost = (y.tokenCost || 0) + (y.infrastructureCost || 0) + (y.runTeamCost || 0);
     const relocation = y.humanFteEnd * wd * (asis - tgt);
-    return { grossAuto, agentCost, relocation, netAuto: grossAuto - agentCost, total: grossAuto - agentCost + relocation, model: y.savings };
+    const total = grossAuto - agentCost + relocation;
+    return { grossAuto, agentCost, relocation, netAuto: grossAuto - agentCost, total, model: y.savings, other: y.savings - total };
   });
-  return { years, asis, tgt, wd, baseEtp };
+  const last = years[years.length - 1];
+  return { years, asis, tgt, wd, baseEtp, relocationNeutral: Math.abs(asis - tgt) <= RATE_NEUTRAL_EUR,
+    reconciles: !last || Math.abs(last.total - last.model) <= RECONCILE_EUR };
 }

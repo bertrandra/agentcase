@@ -16,13 +16,13 @@ function Explain() {
     <p><strong>Case 2 — Net of retained supervision (precise).</strong> The review <em>need</em> is {b}% of transferred output; the supervision assumptions
       already retain <strong>{h} pts</strong> of human
       effort in the run (a cost already paid). Only the uncovered excess is deducted: max(0, {b}% − {h}%) = <strong>{pct(t.rateNet)}</strong> of the gross
-        saving ({fmtK(t.gross * t.rateNet)}/yr at Y3).
+        saving ({fmtK(t.eurNet)}/yr at {t.endLabel}).
       Nothing is counted twice; if supervision covers the need, the tax is zero.</p>
   ) : (
     <p><strong>Case 1 — Overlay: on top of retained supervision (conservative).</strong> Rate = base {b}% × avg human supervision {h}%
-      = <strong>{pct(t.rateOverlay)}</strong> of the gross saving ({fmtK(t.gross * t.rateOverlay)}/yr at Y3),
+      = <strong>{pct(t.rateOverlay)}</strong> of the gross saving ({fmtK(t.eurOverlay)}/yr at {t.endLabel}),
       deducted <em>in addition to</em> the supervision effort already retained in the run — a deliberate prudence cushion that partially overlaps the retained
-        review cost (for comparison, Case 2 would deduct {pct(t.rateNet)} = {fmtK(t.gross * t.rateNet)}/yr).</p>
+        review cost (for comparison, Case 2 would deduct {pct(t.rateNet)} = {fmtK(t.eurNet)}/yr).</p>
   );
 }
 
@@ -59,7 +59,7 @@ export function AbaquePanel() {
       <div role="status" className={t.applied ? 'ac-callout ac-vtax is-applied' : 'ac-callout ac-vtax'}>
         <strong>Verification tax</strong> — rate {pct(d.vTaxRate)} of gross saving
         {t.applied ? <> · <strong className="ac-tone" data-tone="amber">APPLIED</strong>: deducted from savings
-          ({fmtK(t.yearly[0] ?? 0)} / {fmtK(t.yearly[1] ?? 0)} / {fmtK(t.yearly[2] ?? 0)} over Y1–Y3)</>
+          ({t.yearly.map(fmtK).join(' / ')} over Y1–{t.endLabel})</>
           : ' · informative only — tick the box above to feed it into the economics'}.
         <Explain />
       </div>

@@ -9,7 +9,8 @@ afterEach(cleanup);
 
 describe('reference section', () => {
   it('shows every figure and heading the legacy section showed (4 fixtures)', () => {
-    expectParity('reference', Reference, { headings: ['Reference Map', 'Reference subchapter', 'Summary', 'Coverage', '1.1 Vision, ambition & maturity scale', '6.3 Performance measurement'] });
+    expectParity('reference', Reference,
+      { headings: ['Reference Map', 'Reference subchapter', 'Summary', 'Coverage', '1.1 Vision, ambition & maturity scale', '6.3 Performance measurement'] });
   });
   it('tallies the coverage statuses and links each row to its section', () => {
     render(<Reference />);

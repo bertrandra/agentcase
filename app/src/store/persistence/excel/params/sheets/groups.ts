@@ -10,7 +10,8 @@ const nextOrder = (w: ParamsDoc): number => Math.max(0, ...w.GROUPS.map((x) => x
 
 function writeGroups({ wb, d }: WriteCtx): void {
   const ws = sheet(wb, 'Groups', [['ID', 14], ['Label', 20], ['Order', 8], ['Description', 70], ['Color', 12]]);
-  groupsByOrder(d.GROUPS).forEach((g) => { const row = ws.addRow([g.id, g.label, g.order, g.description || '', groupColor(d, g.id)]); [3, 4, 5].forEach((i) => blue(row.getCell(i))); });
+  groupsByOrder(d.GROUPS).forEach(
+    (g) => { const row = ws.addRow([g.id, g.label, g.order, g.description || '', groupColor(d, g.id)]); [3, 4, 5].forEach((i) => blue(row.getCell(i))); });
   head(ws); frz(ws);
 }
 /** A row whose id is not known yet creates that group; colours are merged into the colour map. */
@@ -37,7 +38,8 @@ function writeSections({ wb, d, secs }: WriteCtx): void {
     const row = ws.addRow([s.id, s.label, s.group, s.groupSeq || 0, s.tag || '', s.mvp ? 'Yes' : '', s.description || '']);
     [3, 4, 5, 6].forEach((i) => blue(row.getCell(i))); grey(row.getCell(7));
     row.getCell(3).dataValidation = listDV(gids, `Pick a group id: ${gids.join(', ')}`);
-    row.getCell(5).dataValidation = listDV(['drives', 'shapes', 'reads', 'supports', 'supports,shapes'], 'Build-path tag: drives / shapes / reads / supports (blank = none)');
+    row.getCell(5).dataValidation = listDV(['drives', 'shapes', 'reads', 'supports', 'supports,shapes'],
+      'Build-path tag: drives / shapes / reads / supports (blank = none)');
     row.getCell(6).dataValidation = listDV(['Yes', ''], 'MVP (Fast Path) member: Yes or blank');
   });
   head(ws); frz(ws);
@@ -52,7 +54,8 @@ function readSections({ rows, w, notes, secs }: ReadCtx): void {
     if (!s) { notes.push(`Sections: unknown section id "${cleanText(id, 60)}" — row skipped.`); return; }
     const grp = safeId(x[2]);
     if (grp) {
-      if (!w.GROUPS.some((g) => g.id === grp)) { w.GROUPS.push({ id: grp, label: grp, order: nextOrder(w) }); notes.push(`Sections: created new group "${grp}" (referenced by "${id}", missing from the Groups sheet).`); }
+      if (!w.GROUPS.some((g) => g.id === grp)) { w.GROUPS.push({ id: grp, label: grp,
+        order: nextOrder(w) }); notes.push(`Sections: created new group "${grp}" (referenced by "${id}", missing from the Groups sheet).`); }
       s.group = grp;
     }
     const seq = num(x[3]); if (!Number.isNaN(seq)) s.groupSeq = seq;

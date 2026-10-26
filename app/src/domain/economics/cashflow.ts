@@ -24,13 +24,27 @@ export function cumulativeOf(net: ArrayLike<number>): number[] {
 }
 
 /**
- * Payback month (1-based): the first month t >= `firstMonth` whose cumulative cash-flow (cum[t - 1]) is >= 0, or null when never reached.
- * `firstMonth` > 1 is the portfolio rule: a wave that starts at month 7 cannot "pay back" in month 1 on an all-zero cumulative.
+ * Payback month (1-based): the month after the last month t >= `firstMonth` whose cumulative cash-flow (cum[t - 1]) is < 0 (`firstMonth` when none
+ * is), so the cumulative stays >= 0 from the payback month to the horizon end; null when the final cumulative is < 0 (or the flow ends before
+ * `firstMonth`). On a flow that never dips again after it crosses 0 (every single product) it is the first crossing; a portfolio whose late, costly
+ * wave pushes the cumulative back below 0 pays back only once it recovers for good. `firstMonth` > 1 is the portfolio rule: a wave that starts at
+ * month 7 cannot "pay back" in month 1 on an all-zero cumulative.
  */
 export function paybackMonthOf(cum: ArrayLike<number>, firstMonth = 1): number | null {
-  for (let t = Math.max(1, firstMonth); t <= cum.length; t++) if ((cum[t - 1] as number) >= 0) return t;
-  return null;
+  const f = Math.max(1, firstMonth);
+  if (cum.length < f || (cum[cum.length - 1] as number) < 0) return null;
+  let t = cum.length;
+  while (t >= f && (cum[t - 1] as number) >= 0) t--;
+  return t + 1;
 }
+
+/**
+ * The payback month a screen shows (the one owner of the displayed payback). Nothing invested (setup <= 0): 0 = "immediate" when the case saves money,
+ * null when it saves nothing (nothing to pay back, nothing gained); otherwise the kernel's month (null: not within the horizon). The verdict ranks 0
+ * as the best payback and null as the worst.
+ */
+export const displayedPayback = (paybackMonth: number | null, setup: number, benefit: number): number | null =>
+  (setup <= 0 ? (benefit > 0 ? 0 : null) : paybackMonth);
 
 /** Discount factor of month t: 1 / (1 + r/12)^t (monthly) or 1 / (1 + r)^(t/12) (annual). */
 export const discountFactor = (t: number, annualRate: number, compounding: Compounding = 'monthly'): number =>

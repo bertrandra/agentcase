@@ -6,7 +6,9 @@ import { useKpiData } from '../data';
 export function Kpis() {
   const { data, params } = useKpiData();
   return (
-    <Panel title="📊 Factory KPIs" aside={<small className="ac-muted">DORA + agentic metrics, computed live from the Release Pipeline / Engineering / Factory Model data — also bindable as Board variables</small>}>
+    <Panel title="📊 Factory KPIs"
+      aside={<small className="ac-muted">DORA + agentic metrics, computed live from the Release Pipeline / Engineering / Factory Model data — also bindable as
+      Board variables</small>}>
       {KPI_GROUPS.map((title, g) => (
         <section key={title} aria-label={title}>
           <h3>{title}</h3>
@@ -16,14 +18,17 @@ export function Kpis() {
               return (
                 <div key={k.id} className="ac-stat" data-tone={c.thin ? 'grey' : 'blue'} data-kpi={k.id}>
                   <span className={c.thin ? 'ac-stat-v is-thin' : 'ac-stat-v'}>{c.display}</span>
-                  <span className="ac-stat-l">{c.label}{c.thin && <span className="ac-kpi-thin" title="A rate over this few events is quantised, not measured">insufficient sample (n={c.n})</span>}</span>
+                  <span className="ac-stat-l">{c.label}
+                    {c.thin && <span className="ac-kpi-thin" title="A rate over this few events is quantised, not measured">insufficient sample
+                    (n={c.n})</span>}</span>
                 </div>
               );
             })}
           </div>
         </section>
       ))}
-      <p className="ac-muted">All 14 metrics compute live from 🚀 Release Pipeline / ⚙️ Engineering / 🏭 Factory Model data (0 when there is nothing to measure yet). They are also bindable as Board card variables — the source section decides which appear.</p>
+      <p className="ac-muted">All 14 metrics compute live from 🚀 Release Pipeline / ⚙️ Engineering / 🏭 Factory Model data (0 when there is nothing to measure
+        yet). They are also bindable as Board card variables — the source section decides which appear.</p>
     </Panel>
   );
 }

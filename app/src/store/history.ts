@@ -1,3 +1,4 @@
+import type { Patch } from 'immer';
 import type { HistoryEntry, HistoryState } from './types';
 
 export const EMPTY_HISTORY: HistoryState = { undo: [], redo: [] };
@@ -15,7 +16,14 @@ export function pushEntry(h: HistoryState, e: HistoryEntry, windowMs = COALESCE_
   return { undo: undo.length > cap ? undo.slice(undo.length - cap) : undo, redo: [] };
 }
 
-export const canUndo = (h: HistoryState): boolean => h.undo.length > 0;
+/**
+ * Does a change (from another tab) invalidate this tab's undo / redo? Their patches address products and waves BY POSITION (`['products', 2, …]`)
+ * and a wave's members by position: a change that adds, removes, replaces or reorders products or waves, or a wave's members, moves those positions.
+ */
+export const invalidatesHistory = (ps: Patch[]): boolean =>
+  ps.some((p) => (p.path[0] === 'products' || p.path[0] === 'waves') && (p.path.length <= 2 || p.path[2] === 'productIds'));
+
+export const canUndo =(h: HistoryState): boolean => h.undo.length > 0;
 export const canRedo = (h: HistoryState): boolean => h.redo.length > 0;
 
 /** Move the last undo step to the redo stack. */

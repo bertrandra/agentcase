@@ -28,8 +28,10 @@ export function StaleRun() {
 export function StatsCards({ s, children }: { s: SelectionStress['stats']; children?: ReactNode }) {
   return (
     <StatRow>
-      <Stat label="P10 (adverse outcome)" value={fmtEur(s.p10)} tone={tone(s.p10)} /><Stat label="P50 (median)" value={fmtEur(s.p50)} tone={s.p50 < 0 ? 'brick' : 'blue'} />
-      <Stat label="P90 (favourable outcome)" value={fmtEur(s.p90)} tone="teal" /><Stat label="P(net < 0)" value={`${Math.round(s.pNetNeg * 100)} %`} tone={pNegTone(s.pNetNeg)} />
+      <Stat label="P10 (adverse outcome)" value={fmtEur(s.p10)} tone={tone(s.p10)} />
+      <Stat label="P50 (median)" value={fmtEur(s.p50)} tone={s.p50 < 0 ? 'brick' : 'blue'} />
+      <Stat label="P90 (favourable outcome)" value={fmtEur(s.p90)} tone="teal" />
+      <Stat label="P(net < 0)" value={`${Math.round(s.pNetNeg * 100)} %`} tone={pNegTone(s.pNetNeg)} />
       <Stat label="CVaR 10 %" value={fmtEur(s.cvar10)} tone="amber" /><Stat label="Mean" value={fmtEur(s.mean)} tone="blue" />
       {children}
     </StatRow>
@@ -78,7 +80,8 @@ export function SelectionResults({ sel, scope }: { sel: SelectionStress; scope: 
         </StatRow>
       </Panel>
       <AggregateTable caption={`Stress by product — ${sel.label}`} rows={sel.products} columns={columns} edit={false}
-        totals={{ label: `Total — ${sel.label}`, cells: { p10: t(s.p10), p50: t(s.p50), p90: t(s.p90), mean: t(s.mean), cvar: t(s.cvar10), neg: pct(s.pNetNeg) } }} />
+        totals={{ label: `Total — ${sel.label}`,
+          cells: { p10: t(s.p10), p50: t(s.p50), p90: t(s.p90), mean: t(s.mean), cvar: t(s.cvar10), neg: pct(s.pNetNeg) } }} />
     </>
   );
 }
@@ -89,7 +92,8 @@ export function ProductStressDetail() {
   return (
     <SectionFrame title="Stand-alone distribution of the product" result={
       p ? <>{stale && <p className="ac-muted">Stale: the portfolio changed since the last simulation.</p>}<StatsCards s={p.stats} />
-        <p className="ac-muted">Correlation of the product’s draws with the portfolio: {p.r > 0 ? '+' : ''}{p.r}; with its wave: {p.rWave > 0 ? '+' : ''}{p.rWave}.</p></>
+        <p className="ac-muted">Correlation of the product’s draws with the portfolio: {p.r > 0 ? '+' : ''}{p.r}; with its wave: {p.rWave > 0 ? '+' : ''}
+          {p.rWave}.</p></>
         : <p className="ac-muted">This product is not in the last portfolio simulation: run it to see its distribution.</p>
     } />
   );

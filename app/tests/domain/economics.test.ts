@@ -3,7 +3,7 @@ import { fromSnapshot } from '@/store/persistence/snapshot';
 import { engineNow, makeCtx } from '@/domain';
 import { economicsView, fmtPayback, fmtRoiPct, monthlySeries, roiCanonical, roiVerdict, savingsBreakdown, yLabel } from '@/domain/economics';
 import { fmtE, fmtK } from '@/ui/economicsFormat';
-import { legacyMoney } from '../helpers/deviations';
+import { legacyMoney, withoutDeviations } from '../helpers/deviations';
 import { diffs, extra, FIXTURES } from '../helpers/economics';
 import { readFileSync } from 'node:fs';
 
@@ -17,10 +17,12 @@ describe('economics domain reproduces the legacy', () => {
     const c = ctxOf(id), v = economicsView(c), e = extra<Roi>('econ_roi', id);
     expect(diffs(extra('econ_monthly', id), monthlySeries(engineNow(c)))).toEqual([]);
     expect(diffs(extra('econ_savings', id), savingsBreakdown(c))).toEqual([]);
-    expect(diffs({ ...e, roi: e.roi ?? 'null', roiPct: e.roiPct, paybackText: e.paybackText, payback: e.payback ?? 'null' },
+    // DEV-FTE-ONE-DEF: `freed` is the FTE owner's (delivery + agentic run team), asserted below; the legacy freed the delivery team only.
+    expect(withoutDeviations(diffs({ ...e, roi: e.roi ?? 'null', roiPct: e.roiPct, paybackText: e.paybackText, payback: e.payback ?? 'null' },
       { totalBen: v.totalBenefit, net: v.net, roi: v.roi ?? 'null', roiPct: fmtRoiPct(v.roi), payback: v.payback ?? 'null',
         paybackText: fmtPayback(v.payback, v.months.length),
-        months: v.months.length, npvRate: v.npvRate, npv: v.npv, horizon: v.H, freed: v.freed })).toEqual([]);
+        months: v.months.length, npvRate: v.npvRate, npv: v.npv, horizon: v.H, freed: v.freed }, 'econ_roi'), id)).toEqual([]);
+    expect(v.freed).toEqual(v.years.map((y) => Math.max(0, v.baseFte - y.totalHumanFteEnd)));
   });
   it('formatting rules match the legacy helpers', () => {
     const f = extra<{ roi: string[]; payback: string[]; fmtK: string[]; fmtE: string[]; yLabel: string[]; roiNull: (number | null)[] }>('econ_fmt', 'golden');

@@ -1,15 +1,14 @@
 /** @calc-zone time-engine @owner setup, effective-automation */
 import type { Ctx } from '../ctx';
-import { engagementCoef, hriCostPerFTE, hriEnabled, hriRampFactor } from '../engagement';
-import { khMult, khSetupCost } from '../knowledge';
+import { caseHorizonYears } from '../inputs';
+import { engagementCoef, hriRampFactor } from '../engagement';
+import { khMult } from '../knowledge';
 import { lifecycleAutoPosture } from '../lifecycle';
-import { teamInCost } from '../location';
+import { setupBreakdown } from '../tuneB/setup';
 import { phaseScope } from '../scope';
 import { blendedTokenCostPer1M } from '../tokens';
 import { computeGlassCeiling } from './ceiling';
 
-/** Engagement change cost (HRI): entry headcount x cost per FTE of the readiness intensity, 0 when the HRI module is off. Part of the setup. */
-export const convChangeCost = (c: Ctx): number => (hriEnabled(c) ? teamInCost(c.s, c.inp).etp * hriCostPerFTE(c) : 0);
 
 /** Scalar drivers of the annual model: automation depth, ramps, tokens, setup. */
 export function modelDrivers(c: Ctx) {
@@ -22,12 +21,12 @@ export function modelDrivers(c: Ctx) {
   const eff = Math.min(effCap, Math.min(100, auto * lifecycleAutoPosture(s) * cvx.glassFactor * khM));
   const hriF = hriRampFactor(c);
   const ramps = [inp.p('y1Ramp'), inp.p('y2Ramp'), inp.p('y3Ramp')].map((r) => Math.min(cvx.rampCapPct, r * cvx.rampSpeed * hriF));
-  const setupBase = inp.p('setupTooling') + inp.p('setupTraining') + inp.p('setupCoaching') + inp.p('setupGov');
-  const convChange = convChangeCost(c), khSetup = khSetupCost(c);
+  // the one setup breakdown (tuneB/setup.ts): its lines add up to the setup total the economics use
+  const sb = setupBreakdown(c), setupBase = sb.base, convChange = sb.change, khSetup = sb.knowledge;
   return {
-    auto, ceiling, cvx, khM, effCap, eff, hriF, ramps, horizon: parseInt(inp.v('horizon'), 10), wd: inp.p('workdays'),
+    auto, ceiling, cvx, khM, effCap, eff, hriF, ramps, horizon: caseHorizonYears(inp), wd: inp.p('workdays'),
     tokenCost: blendedTokenCostPer1M(s, c.tokenScale), tokensPerArt: inp.p('tokensPerArt'), infra: inp.p('infra'),
-    setupBase, convChange, khSetup, setupTotal: setupBase + convChange + khSetup, scope: phaseScope(c.a, s),
+    setupBase, convChange, khSetup, setupTotal: sb.total, scope: phaseScope(c.a, s),
   };
 }
 export type Drivers = ReturnType<typeof modelDrivers>;

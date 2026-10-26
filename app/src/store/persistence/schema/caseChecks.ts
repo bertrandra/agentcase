@@ -31,7 +31,9 @@ function checkModel(m: unknown, def: Rec, n: Notes, at: string): Rec {
     if (!rec(b)) { n.push(`${at}MODEL.${blk}: not an object — default settings used`); out[blk] = structuredClone(d); continue; }
     const fixed: Rec = { ...b };
     for (const [k, dv] of Object.entries(d)) {
-      if (fixed[k] !== undefined && !sameShape(dv, fixed[k])) { n.push(`${at}MODEL.${blk}.${k}: ${kind(fixed[k])} instead of ${kind(dv)} — default ${JSON.stringify(dv)} used`); fixed[k] = structuredClone(dv); }
+      if (fixed[k] !== undefined &&
+        !sameShape(dv, fixed[k])) { n.push(
+        `${at}MODEL.${blk}.${k}: ${kind(fixed[k])} instead of ${kind(dv)} — default ${JSON.stringify(dv)} used`); fixed[k] = structuredClone(dv); }
     }
     out[blk] = fixed;
   }
@@ -43,7 +45,9 @@ function checkRate(r: unknown, def: Rec, n: Notes, at: string): Rec {
   if (!rec(r)) { n.push(`${at}RATE: not a rate card (${kind(r)}) — default rates used`); return structuredClone(def); }
   const out: Rec = {};
   for (const [loc, g] of Object.entries(r)) {
-    if (!rec(g)) { n.push(`${at}RATE.${loc}: not a list of grade rates — ${rec(def[loc]) ? 'default rates used' : 'location dropped'}`); if (rec(def[loc])) out[loc] = structuredClone(def[loc]); continue; }
+    if (!rec(g)) { n.push(
+      `${at}RATE.${loc}: not a list of grade rates — ${rec(def[loc]) ? 'default rates used' : 'location dropped'}`); if (rec(def[loc])) out[loc] =
+      structuredClone(def[loc]); continue; }
     const card: Rec = {};
     for (const [grade, v] of Object.entries(g)) {
       if (num(v) && v >= 0) { card[grade] = v; continue; }
@@ -64,7 +68,8 @@ export function checkTeam(t: unknown, n: Notes, at: string, fallback: unknown[])
     if (!rec(row)) { n.push(`${at}teamIn row ${i + 1}: not a row — dropped`); return; }
     const r: Rec = { ...row };
     if (!num(r.etp) || r.etp < 0) { n.push(`${at}teamIn row ${i + 1}: FTE ${JSON.stringify(r.etp)} is not a number >= 0 — set to 0`); r.etp = 0; }
-    for (const k of ['skill', 'grade', 'loc']) if (r[k] !== undefined && !str(r[k])) { n.push(`${at}teamIn row ${i + 1}: ${k} is not text — emptied`); r[k] = ''; }
+    for (const k of ['skill', 'grade', 'loc']) if (r[k] !== undefined && !str(r[k])) { n.push(
+      `${at}teamIn row ${i + 1}: ${k} is not text — emptied`); r[k] = ''; }
     if (r.pins !== undefined && !Array.isArray(r.pins)) { n.push(`${at}teamIn row ${i + 1}: pins is not a list — emptied`); r.pins = []; }
     delete r.shared;   // a stored team is a product's own: the share of a shared line saved with a case is an ordinary row of that case
     out.push(r);
@@ -89,7 +94,8 @@ function checkThemes(c: Rec, n: Notes, at: string): void {
       if (ok.length !== c.THEMES.length) { n.push(`${at}THEMES: ${c.THEMES.length - ok.length} damaged theme(s) dropped`); c.THEMES = ok; }
     }
   }
-  if (c.THEME_SEQ !== undefined && !Number.isInteger(c.THEME_SEQ)) { n.push(`${at}THEME_SEQ: not a whole number — recomputed from the themes`); delete c.THEME_SEQ; }
+  if (c.THEME_SEQ !== undefined &&
+    !Number.isInteger(c.THEME_SEQ)) { n.push(`${at}THEME_SEQ: not a whole number — recomputed from the themes`); delete c.THEME_SEQ; }
 }
 
 /** Check (and correct) the critical keys of a raw case or of the common values, in place of a copy. `at` prefixes the notes ("Common values: "). */

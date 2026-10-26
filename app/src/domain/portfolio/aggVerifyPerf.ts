@@ -20,7 +20,8 @@ export const execTable = viewMemo((sel, pf): VTable => {
     return { start: sel.cal.dateAt(v.month0), end: sel.cal.dateAt(p.to), first: first?.date ?? '—', s0: s[0]![1], s1: s[1]![1], s2: s[2]![1], s3: s[3]![1] };
   });
   const from = Math.min(...sel.items.map((v) => v.month0)), to = Math.max(...sel.items.map((v) => at(v.id).to));
-  return { columns: [col('start', 'Starts', 'text', 'Wave start + product offset, on the portfolio calendar'), col('end', 'Ramp ends', 'text'), col('first', 'First agent vFTE', 'text'),
+  return { columns: [col('start', 'Starts', 'text', 'Wave start + product offset, on the portfolio calendar'), col('end', 'Ramp ends', 'text'),
+    col('first', 'First agent vFTE', 'text'),
     col('s0', 'Sprint velocity AS-IS'), col('s1', 'Y1'), col('s2', 'Y2'), col('s3', 'Horizon end')], rows: lines,
   total: sel.items.length ? { ...BLANK, start: sel.cal.dateAt(from), end: sel.cal.dateAt(to) } : BLANK };
 });
@@ -33,8 +34,10 @@ export const productivityTable = viewMemo((sel): VTable => {
   });
   const w = sum(colOf(rows, 'base')), mean = (k: string) => (w > 0 ? sum(rows.map((r) => +(r.cells.base ?? 0) * +(r.cells[k] ?? 0))) / w : 0);
   const asis = mean('asis'), end = mean('end');
-  return { columns: [col('cats', 'Categories in scope'), col('intensity', 'Scope intensity (% auto)', 'pct'), col('asis', 'AS-IS (per eng./month)', 'n1'), col('end', 'Horizon end (per eng./month)', 'n1'),
-    col('factor', 'Factor (x)', 'n2'), col('base', 'Entry FTE', 'n1')], rows, total: { cats: null, intensity: null, asis, end, factor: asis > 0 ? end / asis : null, base: w } };
+  return { columns: [col('cats', 'Categories in scope'), col('intensity', 'Scope intensity (% auto)', 'pct'), col('asis', 'AS-IS (per eng./month)', 'n1'),
+    col('end', 'Horizon end (per eng./month)', 'n1'),
+    col('factor', 'Factor (x)', 'n2'), col('base', 'Entry FTE', 'n1')], rows,
+      total: { cats: null, intensity: null, asis, end, factor: asis > 0 ? end / asis : null, base: w } };
 });
 
 /**
@@ -44,10 +47,13 @@ export const productivityTable = viewMemo((sel): VTable => {
 export const velocityTable = viewMemo((sel): VTable => {
   const rows = productRows(sel, (v, l) => {
     const d = velocityView(l.c), lead = d.rows.find((r) => r.label === 'Lead time')?.cells;
-    return { v0: d.velocity[0]!, v1: d.velocity[1]!, v2: d.velocity[2]!, v3: d.velocity[3]!, uplift: v.run.velocityPct(), lead: lead ? `${lead[0]} → ${lead[3]}` : '—' };
+    return { v0: d.velocity[0]!, v1: d.velocity[1]!, v2: d.velocity[2]!, v3: d.velocity[3]!, uplift: v.run.velocityPct(),
+      lead: lead ? `${lead[0]} → ${lead[3]}` : '—' };
   });
-  return { columns: [col('v0', 'Velocity AS-IS (SP/sprint)'), col('v1', 'Y1'), col('v2', 'Y2'), col('v3', 'Horizon end'), col('uplift', 'Velocity uplift (model)', 'n1', 'Entry-team weighted on the selection line'),
-    col('lead', 'Lead time', 'text')], rows, total: { v0: null, v1: null, v2: null, v3: null, uplift: weightedVelocity(sel.items.map((v) => v.run)), lead: null } };
+  return { columns: [col('v0', 'Velocity AS-IS (SP/sprint)'), col('v1', 'Y1'), col('v2', 'Y2'), col('v3', 'Horizon end'),
+    col('uplift', 'Velocity uplift (model)', 'n1', 'Entry-team weighted on the selection line'),
+    col('lead', 'Lead time', 'text')], rows,
+      total: { v0: null, v1: null, v2: null, v3: null, uplift: weightedVelocity(sel.items.map((v) => v.run)), lead: null } };
 });
 
 const METRICS: [string, string][] = [['bugs', 'Bugs/1000 LOC'], ['cov', 'Test coverage'], ['leak', 'Defect leakage %'], ['enps', 'eNPS']];
@@ -56,9 +62,11 @@ const METRICS: [string, string][] = [['bugs', 'Bugs/1000 LOC'], ['cov', 'Test co
 export const qualityTable = viewMemo((sel): VTable => {
   const rows = productRows(sel, (_v, l) => {
     const q = qualityAnchorView(l.c).rows, one = (n: string) => q.find((r) => r.name === n);
-    return { ...Object.fromEntries(METRICS.map(([k, n]) => [k, one(n) ? `${one(n)!.asis} → ${one(n)!.y3}` : '—'])), edited: q.filter((r) => r.asisEdited || r.targetEdited).length };
+    return { ...Object.fromEntries(METRICS.map(([k, n]) => [k, one(n) ? `${one(n)!.asis} → ${one(n)!.y3}` : '—'])),
+      edited: q.filter((r) => r.asisEdited || r.targetEdited).length };
   });
-  return { columns: [...METRICS.map(([k, n]) => col(k, n, 'text', 'AS-IS → horizon end')), col('edited', 'Overridden anchors')], rows, total: { ...Object.fromEntries(METRICS.map(([k]) => [k, null])), edited: sum(colOf(rows, 'edited')) } };
+  return { columns: [...METRICS.map(([k, n]) => col(k, n, 'text', 'AS-IS → horizon end')), col('edited', 'Overridden anchors')], rows,
+    total: { ...Object.fromEntries(METRICS.map(([k]) => [k, null])), edited: sum(colOf(rows, 'edited')) } };
 });
 
 /**
@@ -71,6 +79,7 @@ export const complianceTable = viewMemo((sel): VTable => {
     return { industry: s?.name ?? '—', norms: s?.norms ?? '—', ceiling: ceil, max: 100 - ceil, reg: s?.reg ?? 0 };
   });
   const { ceiling } = weightedAutomation(sel.items.map((v) => v.run));
-  return { columns: [col('industry', 'Sector', 'text'), col('norms', 'Standards', 'text'), col('ceiling', 'Glass ceiling', 'pct'), col('max', 'Max automatable', 'pct'), col('reg', 'Reg. artifacts')],
+  return { columns: [col('industry', 'Sector', 'text'), col('norms', 'Standards', 'text'), col('ceiling', 'Glass ceiling', 'pct'),
+    col('max', 'Max automatable', 'pct'), col('reg', 'Reg. artifacts')],
     rows, total: { industry: null, norms: null, ceiling, max: 100 - ceiling, reg: sum(colOf(rows, 'reg')) } };
 });

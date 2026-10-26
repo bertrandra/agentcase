@@ -9,21 +9,34 @@ export const AIACT_TIERS: Record<string, { label: string; bar: number; obligatio
   none: { label: 'Not classified', bar: 0, obligations: ['Classify the delivered product per mission before commitment.'] },
   minimal: { label: 'Minimal risk', bar: 0, obligations: ['Voluntary codes of conduct; no mandatory obligation.'] },
   limited: { label: 'Limited risk (transparency)', bar: 0.03, obligations: ['Transparency: disclose AI interaction and AI-generated content.'] },
-  high: { label: 'High risk (Annex III)', bar: 0.1, obligations: ['Risk management system, data governance, technical documentation, logging, human oversight, accuracy/robustness/cybersecurity, conformity assessment, EU database registration.'] },
-  unacceptable: { label: 'Unacceptable (prohibited)', bar: 0.3, obligations: ['Prohibited practice — the delivered use case cannot proceed as specified; redesign or decline.'] },
+  high:
+    { label: 'High risk (Annex III)', bar: 0.1,
+    obligations:
+    ['Risk management system, data governance, technical documentation, logging, human oversight, accuracy/robustness/cybersecurity, conformity assessment, ' +
+      'EU database registration.'] },
+  unacceptable: { label: 'Unacceptable (prohibited)', bar: 0.3, obligations:
+    ['Prohibited practice — the delivered use case cannot proceed as specified; redesign or decline.'] },
 };
 
 /** Agentic risk register: id, label, default probability and impact (1-3), evidence, mitigation (legacy RISK_REGISTER). */
 export interface RiskDef { id: string; label: string; p: number; i: number; evidence: string; mitigation: string }
 export const RISK_REGISTER: RiskDef[] = [
-  { id: 'inject', label: 'Prompt / indirect injection', p: 3, i: 3, evidence: '~73% of deployments assessed vulnerable', mitigation: 'Input/output guardrails, content provenance, allow-listed tools, human-in-the-lead on privileged actions' },
-  { id: 'supply', label: 'MCP / skills supply chain', p: 2, i: 3, evidence: '492 MCP servers found exposed without auth; 1184 malicious skills catalogued', mitigation: 'Pinned & signed skills, vetted MCP registry, least-privilege scopes, egress control' },
-  { id: 'secret', label: 'Secret / credential theft', p: 2, i: 3, evidence: 'Agents with broad tool access exfiltrate tokens', mitigation: 'Scoped short-lived creds, no secrets in context, secret scanning in hooks' },
-  { id: 'vendor', label: 'Model / vendor dependency', p: 2, i: 2, evidence: 'Lock-in, price & policy volatility, export controls', mitigation: 'Abstraction layer, multi-model routing, sovereign fallback (SovBox)' },
-  { id: 'halluc', label: 'Hallucination / false success', p: 3, i: 2, evidence: 'Agents game the green (deleted tests, disabled lint)', mitigation: 'Anti-false-success guardrails, mutation testing, independent QA agent, C2 gate' },
-  { id: 'debt', label: 'Knowledge debt', p: 2, i: 3, evidence: 'Supervising without practising erodes deep understanding', mitigation: 'Preceptorship 3:1–5:1, review-first, explain-the-code gates (see HRI)' },
-  { id: 'pilot', label: 'Pilot never reaches production', p: 2, i: 2, evidence: '~88% of pilots never industrialised', mitigation: 'Pilot-as-product, distribution & governance from day one, break-in sprints' },
-  { id: 'cancel', label: 'Scale-stage cancellation', p: 2, i: 3, evidence: 'Gartner: ~40% agentic projects cancelled by 2027', mitigation: 'Measure-before-commit (T0/T1/T2), gated Decide & Scale, value tracking' },
+  { id: 'inject', label: 'Prompt / indirect injection', p: 3, i: 3, evidence: '~73% of deployments assessed vulnerable',
+    mitigation: 'Input/output guardrails, content provenance, allow-listed tools, human-in-the-lead on privileged actions' },
+  { id: 'supply', label: 'MCP / skills supply chain', p: 2, i: 3, evidence: '492 MCP servers found exposed without auth; 1184 malicious skills catalogued',
+    mitigation: 'Pinned & signed skills, vetted MCP registry, least-privilege scopes, egress control' },
+  { id: 'secret', label: 'Secret / credential theft', p: 2, i: 3, evidence: 'Agents with broad tool access exfiltrate tokens',
+    mitigation: 'Scoped short-lived creds, no secrets in context, secret scanning in hooks' },
+  { id: 'vendor', label: 'Model / vendor dependency', p: 2, i: 2, evidence: 'Lock-in, price & policy volatility, export controls',
+    mitigation: 'Abstraction layer, multi-model routing, sovereign fallback (SovBox)' },
+  { id: 'halluc', label: 'Hallucination / false success', p: 3, i: 2, evidence: 'Agents game the green (deleted tests, disabled lint)',
+    mitigation: 'Anti-false-success guardrails, mutation testing, independent QA agent, C2 gate' },
+  { id: 'debt', label: 'Knowledge debt', p: 2, i: 3, evidence: 'Supervising without practising erodes deep understanding',
+    mitigation: 'Preceptorship 3:1–5:1, review-first, explain-the-code gates (see HRI)' },
+  { id: 'pilot', label: 'Pilot never reaches production', p: 2, i: 2, evidence: '~88% of pilots never industrialised',
+    mitigation: 'Pilot-as-product, distribution & governance from day one, break-in sprints' },
+  { id: 'cancel', label: 'Scale-stage cancellation', p: 2, i: 3, evidence: 'Gartner: ~40% agentic projects cancelled by 2027',
+    mitigation: 'Measure-before-commit (T0/T1/T2), gated Decide & Scale, value tracking' },
 ];
 
 export const aiActKey = (c: Ctx): string => { const v = c.inp.v('aiActTier') || 'none'; return AIACT_TIERS[v] ? v : 'none'; };
@@ -33,7 +46,12 @@ const riskState = (c: Ctx, which: 'p' | 'i', id: string): number => parseInt(c.i
 export const riskProb = (c: Ctx, r: RiskDef): number => riskState(c, 'p', r.id) || r.p;
 export const riskImpact = (c: Ctx, r: RiskDef): number => riskState(c, 'i', r.id) || r.i;
 /** Consolidated risk score 0..1 (mean of probability × impact / 9). */
-export const riskScore = (c: Ctx): number => RISK_REGISTER.reduce((s, r) => s + (riskProb(c, r) * riskImpact(c, r)) / 9, 0) / RISK_REGISTER.length;
+/** One risk's score: probability × impact on the 1–3 scales (1..9). */
+export const riskItemScore = (c: Ctx, r: RiskDef): number => riskProb(c, r) * riskImpact(c, r);
+/** Band of one risk's 1..9 score: 6+ high, 4+ moderate, else contained (the tone of its cell). */
+export const riskItemBand = (s: number): RiskBand => (s >= 6 ? { tone: 'danger-800', label: 'High' } : s >= 4 ? { tone: 'warning-600', label: 'Moderate' }
+  : { tone: 'teal-700', label: 'Contained' });
+export const riskScore = (c: Ctx): number => RISK_REGISTER.reduce((s, r) => s + riskItemScore(c, r) / 9, 0) / RISK_REGISTER.length;
 export const riskBar = (c: Ctx): number => (c.inp.c('riskApply') ? Math.min(0.15, riskScore(c) * 0.15) : 0);
 
 export function qualKey(c: Ctx): string { const v = c.inp.v('qualSeverity') || 'correctness'; return QUAL_ANCHOR[v] ? v : 'correctness'; }
@@ -48,4 +66,6 @@ export function qualityView(c: Ctx) {
 }
 /** `tone`: the colour role of the band (the UI resolves it in the theme in effect). */
 export type RiskBand = { tone: ColourRole; label: string };
-export const riskBand = (score: number): RiskBand => (score >= 0.55 ? { tone: 'danger-800', label: 'High' } : score >= 0.35 ? { tone: 'warning-600', label: 'Moderate' } : { tone: 'teal-700', label: 'Contained' });
+export const riskBand = (score: number): RiskBand =>
+  (score >= 0.55 ? { tone: 'danger-800', label: 'High' } : score >= 0.35 ? { tone: 'warning-600', label: 'Moderate' }
+  : { tone: 'teal-700', label: 'Contained' });

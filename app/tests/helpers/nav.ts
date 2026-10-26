@@ -22,4 +22,5 @@ export function navInputs(doc: Doc): { sections: NavSection[]; groups: MenuGroup
   };
 }
 /** The legacy sidebar of every persona with a Board dashboard added (tools/oracle-extras.d/nav.mjs, navDyn). */
-export const legacyNavDyn = (id: string): Record<string, { group: string; sections: string[] }[]> => JSON.parse(readFileSync(`fixtures/extras/navDyn/${id}.json`, 'utf8')) as Record<string, { group: string; sections: string[] }[]>;
+export const legacyNavDyn = (id: string): Record<string, { group: string; sections: string[] }[]> =>
+  JSON.parse(readFileSync(`fixtures/extras/navDyn/${id}.json`, 'utf8')) as Record<string, { group: string; sections: string[] }[]>;

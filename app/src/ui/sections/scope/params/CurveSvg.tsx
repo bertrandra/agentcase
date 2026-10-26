@@ -1,5 +1,7 @@
 import type { AutomationCurve } from '@/domain/scope/automation';
 import type { TokenName } from '@/domain/theme';
+import { programMonthAt } from '@/domain/scope/scurveView';
+import { useEvalDate } from '@/ui/evalDate';
 import { useRoles } from '@/ui/themeContext';
 import { COL_ROLES, H, M, W, geoOf, layoutTags, linePath } from './chart';
 
@@ -22,7 +24,7 @@ export function CurveSvg({ a, show, start }: { a: AutomationCurve; show: Toggles
     ...(show.manual ? [{ y: sy(a.manualEndPct) + 4, col: COL.manln, txt: `Human work ${Math.round(a.manualEndPct)}%` }] : []),
     ...(show.vfte ? [{ y: sy(a.vfteShareEnd) + 4, col: COL.vfte, txt: `Agent vFTE ${Math.round(a.vfteShareEnd)}%` }] : []),
   ]);
-  const st = new Date(start), moNow = isNaN(st.getTime()) ? 0 : (Date.now() - st.getTime()) / (30.44 * 86400000) + 1;
+  const moNow = programMonthAt(start, useEvalDate());
   const dashed = (series: number[], col: string, dash: string) => (
     <path d={linePath(g, N, (t) => series[t - 1] as number)} fill="none" stroke={col} strokeWidth={2} strokeDasharray={dash} strokeLinejoin="round"
       strokeLinecap="round" />

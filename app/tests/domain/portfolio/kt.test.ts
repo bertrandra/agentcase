@@ -54,7 +54,8 @@ describe('A13: ktLeadMonths moves only the KT setup cost', () => {
 
   it('two waves: preparing wave 2 during wave 1 shows as an earlier KT cost of wave 2 only', () => {
     const pf = withLead(0, 0), two: Portfolio = { ...pf, waves: [...pf.waves, { id: 'w2', name: 'W2', startMonth: 12, productIds: ['p2'] }] };
-    const p2 = { ...pf.products[0]!, id: 'p2', waveId: 'w2' }, lead = (k: number): Portfolio => ({ ...two, products: [pf.products[0]!, { ...p2, knowledge: { ktLeadMonths: k } }] });
+    const p2 = { ...pf.products[0]!, id: 'p2', waveId: 'w2' },
+      lead = (k: number): Portfolio => ({ ...two, products: [pf.products[0]!, { ...p2, knowledge: { ktLeadMonths: k } }] });
     const a = consolidate(lead(0)), b = consolidate(lead(9));
     expect(b.waves[0]!.series.net).toEqual(a.waves[0]!.series.net);
     expect(b.waves[1]!.series.savings).toEqual(a.waves[1]!.series.savings);

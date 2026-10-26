@@ -2,7 +2,7 @@
 import { act, cleanup, fireEvent, render, screen } from '@testing-library/react';
 import { afterEach, describe, expect, it } from 'vitest';
 import { setInput } from '@/controllers/inputs';
-import { makeCtx } from '@/domain';
+import { engineNow, makeCtx } from '@/domain';
 import { mcSeedOf, runMonteCarlo } from '@/domain/stress';
 import { resultsCore } from '@/domain/verdict';
 import { appStore } from '@/store/instance';
@@ -51,8 +51,15 @@ describe('results section', () => {
     openFixture('golden');
     render(<Results />);
     const t = core();
-    expect(screen.getByText(`= ${fmtEur(t.last.total)} total savings / yr`)).toBeTruthy();
-    expect(screen.getByText(t.team.agent.toFixed(1))).toBeTruthy();
+    // DEV-RESULTS-ENGINE-SAVINGS: the yearly total is the Time-Engine end-year savings; the decomposition subtotal plus the reconciling line add up to it.
+    const end = engineNow(makeCtx(appStore().getState().doc)).years().at(-1)!;
+    expect(screen.getByText(`= ${fmtEur(end.savings)} total savings / yr`)).toBeTruthy();
+    expect(screen.getByText(`= ${fmtEur(t.last.total)} at the year-end team`)).toBeTruthy();
     expect(t.last.grossAuto - t.last.agentCost + t.last.relocation).toBeCloseTo(t.last.total, 6);
+    expect(t.last.total + t.last.other).toBeCloseTo(end.savings, 6);
+    // DEV-FTE-ONE-DEF: the residual human FTE is the FTE owner's after (delivery + agentic run team)
+    expect(screen.getByText(t.team.agent.toFixed(1))).toBeTruthy();
+    expect(screen.getByText(t.team.human.toFixed(1))).toBeTruthy();
+    expect(t.team.human).toBeCloseTo(end.totalHumanFteEnd, 9);
   });
 });

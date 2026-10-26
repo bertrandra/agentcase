@@ -1,7 +1,7 @@
 /** @calc-zone portfolio-consolidation @owner portfolio-headline */
 import { fteBeforeAfter, type FteBeforeAfter } from '../economics/fte';
 import type { Consolidated } from './consolidate';
-import { portfolioCostReduction, weightedAutomation, weightedVelocity, yearTable, type Summary } from './headline';
+import { portfolioCostReduction, productFteAfter, weightedAutomation, weightedVelocity, yearTable, type Summary } from './headline';
 import type { Series } from './series';
 import type { ProductView } from './waves';
 
@@ -12,7 +12,7 @@ export interface PortfolioHeadline extends Summary {
   eff: number;
   ceiling: number;
   costReduction: ReturnType<typeof portfolioCostReduction>;
-  /** total human FTE before / after (horizon end), summed over the planned products */
+  /** total human FTE before (entry teams) / after (portfolio horizon end, from the series: `productFteAfter`), summed over the planned products */
   fte: FteBeforeAfter;
   /** calendar-year sums: savings, run cost, setup, net */
   years: Omit<ReturnType<typeof yearTable>, 'endYear'>;
@@ -27,8 +27,10 @@ export interface PortfolioHeadline extends Summary {
  */
 function groupHeadline(items: ProductView[], series: Series, summary: Summary): PortfolioHeadline {
   const { endYear, ...years } = yearTable(series), runs = items.map((v) => v.run), auto = weightedAutomation(runs);
-  const after = runs.reduce((a, r) => a + (r.engine.years().at(-1)?.totalHumanFteEnd ?? 0), 0), before = runs.reduce((a, r) => a + r.baseEtp, 0);
-  return { ...summary, velocityPct: weightedVelocity(runs), ...auto, costReduction: portfolioCostReduction(runs), fte: fteBeforeAfter(before, after), years,
+  // after: read from the calendar series at the portfolio horizon end (one human-FTE definition: delivery team plus run team), not each engine's own end
+  const after = items.reduce((a, v) => a + productFteAfter(v), 0), before = runs.reduce((a, r) => a + r.baseEtp, 0);
+  return { ...summary, velocityPct: weightedVelocity(runs), ...auto, costReduction: portfolioCostReduction(items, series.net.length),
+    fte: fteBeforeAfter(before, after), years,
     endYear, products: items.length };
 }
 

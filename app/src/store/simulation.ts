@@ -18,10 +18,13 @@ export function fingerprintOf(doc: Doc): number {
   return h;
 }
 
+/** The run, only while it was made on this case (same fingerprint); null once the case moved: a reader then recomputes or shows a dash. */
+export const runFor = (run: SimRun | null, doc: Doc): SimRun | null => (run && run.fingerprint === fingerprintOf(doc) ? run : null);
+
 export interface Simulation { run: SimRun | null; stale: boolean; auto: boolean }
 /** The last run, whether the scenario moved since (a verdict never silently outlives its scenario) and the auto re-run switch. */
 export function useSimulation(): Simulation {
   const run = useSyncExternalStore(simStore.subscribe, () => simStore.getState().run);
   const doc = useDoc((d) => d), auto = useDoc((d) => (d as { mcAuto?: boolean }).mcAuto !== false);
-  return useMemo(() => ({ run, stale: !!run && run.fingerprint !== fingerprintOf(doc), auto }), [run, doc, auto]);
+  return useMemo(() => ({ run, stale: !!run && !runFor(run, doc), auto }), [run, doc, auto]);
 }

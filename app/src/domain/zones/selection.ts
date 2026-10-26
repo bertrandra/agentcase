@@ -18,6 +18,7 @@ export function plan(d: DepsData, cfg: SelectionConfig, zoneIds: string[], secti
   const picked = new Set([...imp.tests, ...extra, ...cfg.contractTests.filter((t) => all.includes(t))]);
   const wide = zoneIds.filter((z) => cfg.fullZones.includes(z));
   if (wide.length) reasons.push(`zone ${wide.join(', ')} is imported everywhere: run the full suite`);
-  if (picked.size > cfg.maxShare * all.length) reasons.push(`${picked.size} of ${all.length} test files (more than ${Math.round(cfg.maxShare * 100)}%) are selected anyway: run the full suite`);
+  if (picked.size > cfg.maxShare * all.length) reasons.push(
+    `${picked.size} of ${all.length} test files (more than ${Math.round(cfg.maxShare * 100)}%) are selected anyway: run the full suite`);
   return { full: reasons.length > 0, reasons, tests: reasons.length ? all : all.filter((t) => picked.has(t)), zones: imp.zones, sections: imp.sections };
 }

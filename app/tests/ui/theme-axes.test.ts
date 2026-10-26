@@ -68,7 +68,8 @@ describe('theme axes: tables and generated CSS', () => {
   });
   it('dependents: the tokens built on a changed one, transitively', () => {
     expect(dependents(['radius-md'])).toEqual(expect.arrayContaining(['radius', 'radius-button']));
-    expect(dependents(['shadow-sm'])).toEqual(expect.arrayContaining(['shadow-card', 'shadow-focus'].filter((n) => THEME_DEFAULT[n as TokenName].includes('shadow-sm'))));
+    expect(dependents(['shadow-sm']))
+      .toEqual(expect.arrayContaining(['shadow-card', 'shadow-focus'].filter((n) => THEME_DEFAULT[n as TokenName].includes('shadow-sm'))));
     expect(dependents(['font-body'])).toEqual(expect.arrayContaining(['font-heading', 'font-numeric', 'font']));
   });
 });

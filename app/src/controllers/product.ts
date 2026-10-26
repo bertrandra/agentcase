@@ -8,10 +8,12 @@ import { dispatchChecked, newPortfolioId } from './portfolioGuard';
 
 const addCmd = definePortfolioCommand<{ id: string; name: string; waveId: string | null }>({
   type: 'product.add', label: (p) => `Add product "${p.name}"`,
-  apply: (pf, p) => ops.addProduct(pf, { id: p.id, name: p.name, waveId: p.waveId, teamIn: [{ skill: 'Dev', grade: 'B1', loc: 'France', etp: FTE_STEP, pins: [] }] }),
+  apply: (pf, p) => ops.addProduct(pf, { id: p.id, name: p.name, waveId: p.waveId,
+    teamIn: [{ skill: 'Dev', grade: 'B1', loc: 'France', etp: FTE_STEP, pins: [] }] }),
 });
 const renameCmd = definePortfolioCommand<{ id: string; name: string }>({
-  type: 'product.rename', label: (p) => `Rename product to "${p.name}"`, coalesceKey: (p) => `product.rename:${p.id}`, apply: (pf, p) => ops.renameProduct(pf, p.id, p.name),
+  type: 'product.rename', label: (p) => `Rename product to "${p.name}"`, coalesceKey: (p) => `product.rename:${p.id}`,
+  apply: (pf, p) => ops.renameProduct(pf, p.id, p.name),
 });
 const duplicateCmd = definePortfolioCommand<{ id: string; copyId: string; name?: string }>({
   type: 'product.duplicate', label: (p) => `Duplicate product ${p.name ?? p.id}`, apply: (pf, p) => ops.duplicateProduct(pf, p.id, p.copyId, p.name),
@@ -19,12 +21,15 @@ const duplicateCmd = definePortfolioCommand<{ id: string; copyId: string; name?:
 const archiveCmd = definePortfolioCommand<{ id: string; archived: boolean }>({
   type: 'product.archive', label: (p) => `${p.archived ? 'Archive' : 'Restore'} product`, apply: (pf, p) => ops.archiveProduct(pf, p.id, p.archived),
 });
-const removeCmd = definePortfolioCommand<{ id: string }>({ type: 'product.remove', label: () => 'Remove product', apply: (pf, p) => ops.removeProduct(pf, p.id) });
+const removeCmd = definePortfolioCommand<{ id: string }>({ type: 'product.remove', label: () => 'Remove product',
+  apply: (pf, p) => ops.removeProduct(pf, p.id) });
 const noteCmd = definePortfolioCommand<{ id: string; note: string }>({
-  type: 'product.setNote', label: () => 'Edit product note', coalesceKey: (p) => `product.setNote:${p.id}`, apply: (pf, p) => ops.setProductNote(pf, p.id, p.note),
+  type: 'product.setNote', label: () => 'Edit product note', coalesceKey: (p) => `product.setNote:${p.id}`,
+  apply: (pf, p) => ops.setProductNote(pf, p.id, p.note),
 });
 const offsetCmd = definePortfolioCommand<{ id: string; months: number }>({
-  type: 'product.setOffset', label: (p) => `Offset product by ${p.months} months`, coalesceKey: (p) => `product.setOffset:${p.id}`, apply: (pf, p) => ops.setProductOffset(pf, p.id, p.months),
+  type: 'product.setOffset', label: (p) => `Offset product by ${p.months} months`, coalesceKey: (p) => `product.setOffset:${p.id}`,
+  apply: (pf, p) => ops.setProductOffset(pf, p.id, p.months),
 });
 /** View state, not a document change: no undo step (D-M6). The active product is saved with the file. */
 const activeCmd = definePortfolioCommand<{ id: string }>({
@@ -32,7 +37,8 @@ const activeCmd = definePortfolioCommand<{ id: string }>({
 });
 /** The top-bar "Change" choice: all products (shared values) or one product. Transient: never saved, never undone. */
 const scopeCmd = definePortfolioCommand<{ scope: EditScope }>({
-  type: 'product.setEditScope', label: () => 'Set edit scope', undoable: false, apply: (pf, p) => (pf.editScope === p.scope ? pf : { ...pf, editScope: p.scope }),
+  type: 'product.setEditScope', label: () => 'Set edit scope', undoable: false,
+  apply: (pf, p) => (pf.editScope === p.scope ? pf : { ...pf, editScope: p.scope }),
 });
 
 /** Add a product that inherits the common values (new default team row). Returns its id, or null beyond 50 products. */

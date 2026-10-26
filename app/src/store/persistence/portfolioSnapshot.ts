@@ -1,5 +1,6 @@
 /** @calc-zone exports */
-import { buildPortfolioPackages, DEFAULT_PRODUCT_NAME, DEFAULT_WAVE_NAME, deepEqual, envelopeCase, isDefaultProductName, isDefaultWaveName, portfolioToCase, type Portfolio } from '@/domain/portfolio';
+import { buildPortfolioPackages, DEFAULT_PRODUCT_NAME, DEFAULT_WAVE_NAME, deepEqual, envelopeCase, isDefaultProductName, isDefaultWaveName, portfolioToCase,
+  type Portfolio } from '@/domain/portfolio';
 import { withSavedPersona } from '../persona';
 import { openChecked, versionStamp } from './schema';
 import { PORTFOLIO_SCHEMA } from '../portfolioState';

@@ -17,7 +17,8 @@ export function numberTokens(raw: string): number[] {
   return out;
 }
 
-const close = (a: number, b: number) => Math.abs(a - b) <= Math.max(0.006 * Math.abs(a), 0.51) || (Math.abs(a) >= 1e3 && Math.abs(a - b) <= 1000.5 && String(Math.abs(a)).endsWith('000'));
+const close = (a: number, b: number) => Math.abs(a - b) <= Math.max(0.006 * Math.abs(a), 0.51) ||
+  (Math.abs(a) >= 1e3 && Math.abs(a - b) <= 1000.5 && String(Math.abs(a)).endsWith('000'));
 
 /** Legacy figures that do not appear (within display rounding) in the rendered text. */
 export function missingNumbers(legacy: string, rendered: string, ignore: number[] = []): number[] {

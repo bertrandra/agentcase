@@ -1,5 +1,5 @@
 import type { ChartConfiguration } from 'chart.js';
-import { cashSteps, ftePoints, yearSeries, yLabel, type EconomicsView, type SavingsBreakdown } from '@/domain/economics';
+import { cashSteps, ftePoints, yLabel, type EconomicsView, type SavingsBreakdown } from '@/domain/economics';
 import { yearLabels } from '../charts';
 import type { Tok } from '@/domain/theme/resolve';
 
@@ -9,15 +9,16 @@ const yTitle = { y: { title: title('€ thousands') } };
 
 /** Operating cost mix of the end year. */
 export function costMix(v: EconomicsView, tok: Tok): ChartConfiguration {
-  const s = yearSeries(v.years), last = (a: number[]) => a[a.length - 1] ?? 0;
+  const s = v.series, last = (a: number[]) => a[a.length - 1] ?? 0;
   return { type: 'doughnut', data: { labels: ['Human', 'Agent tokens', 'Infra', 'Agentic run'],
-    datasets: [{ data: [last(s.team), last(s.token), last(s.infra), last(s.agentRun)], backgroundColor: [tok('chart-cat-3'), tok('chart-cat-2'), tok('chart-cat-5'), tok('chart-cat-1')] }] },
+    datasets: [{ data: [last(s.team), last(s.token), last(s.infra), last(s.agentRun)],
+      backgroundColor: [tok('chart-cat-3'), tok('chart-cat-2'), tok('chart-cat-5'), tok('chart-cat-1')] }] },
   options: { plugins: { legend: { position: 'bottom' }, title: title(`${yLabel(v.H)} operating cost mix`) } } };
 }
 
 /** Savings per year (€ thousands). */
 export function savingsRamp(v: EconomicsView, tok: Tok): ChartConfiguration {
-  return { type: 'line', data: { labels: yearLabels(v.H), datasets: [{ label: 'Savings', data: yearSeries(v.years).savings.map(k), borderColor: tok('chart-cat-2'),
+  return { type: 'line', data: { labels: yearLabels(v.H), datasets: [{ label: 'Savings', data: v.series.savings.map(k), borderColor: tok('chart-cat-2'),
     backgroundColor: tok('success-500-a12'), fill: true, tension: 0.3 }] }, options: { plugins: { legend: { display: false } }, scales: yTitle } };
 }
 
@@ -25,15 +26,19 @@ export function savingsRamp(v: EconomicsView, tok: Tok): ChartConfiguration {
 export function decompBars(b: SavingsBreakdown, tok: Tok): ChartConfiguration {
   const ds = (label: string, data: number[], backgroundColor: string) => ({ label, data, backgroundColor });
   return { type: 'bar', data: { labels: b.years.map((_, i) => `Year ${i + 1}`), datasets: [
-    ds('Gross automation', b.years.map((y) => Math.round(y.grossAuto)), tok('chart-cat-2')), ds('Agent operating cost', b.years.map((y) => -Math.round(y.agentCost)), tok('danger-800')),
+    ds('Gross automation', b.years.map((y) => Math.round(y.grossAuto)), tok('chart-cat-2')),
+    ds('Agent operating cost', b.years.map((y) => -Math.round(y.agentCost)), tok('danger-800')),
     ds('Relocation', b.years.map((y) => Math.round(y.relocation)), tok('chart-cat-3'))] },
-  options: { scales: { x: { stacked: true }, y: { stacked: true, title: title('€ / year') } }, plugins: { legend: { position: 'bottom' }, title: title('Savings decomposition by year') } } };
+  options: { scales: { x: { stacked: true }, y: { stacked: true, title: title('€ / year') } },
+    plugins: { legend: { position: 'bottom' }, title: title('Savings decomposition by year') } } };
 }
 
 /** Cumulative cash-flow after setup and each year; red while negative. */
 export function plBars(v: EconomicsView, tok: Tok): ChartConfiguration {
-  const steps = cashSteps(yearSeries(v.years).savings, v.setup);
-  return { type: 'bar', data: { labels: ['Setup', ...yearLabels(v.H)], datasets: [{ label: 'Cumulative net', data: steps.map(k), backgroundColor: steps.map((x) => (x < 0 ? tok('chart-cat-3') : tok('chart-cat-2'))) }] },
+  const steps = cashSteps(v.series.savings, v.setup);
+  return { type: 'bar', data:
+    { labels: ['Setup', ...yearLabels(v.H)],
+    datasets: [{ label: 'Cumulative net', data: steps.map(k), backgroundColor: steps.map((x) => (x < 0 ? tok('chart-cat-3') : tok('chart-cat-2'))) }] },
     options: { plugins: { legend: { display: false }, title: title('Cumulative cash-flow (€ thousands) — crossover = payback') }, scales: yTitle } };
 }
 

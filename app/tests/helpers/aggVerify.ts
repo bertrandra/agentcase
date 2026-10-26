@@ -23,11 +23,13 @@ export const scopesOf = (pf: Portfolio): VScope[] => [{ kind: 'portfolio' }, ...
 export const scopeName = (s: VScope): string => (s.kind === 'portfolio' ? 'Portfolio' : `Wave ${s.id}`);
 
 /** A calendar series of the selection rebuilt from the products' own Time Engine months shifted by month0, truncated at the horizon. */
-export function shifted(inds: Ind[], horizon: number, pick: (r: ReturnType<Live['eng']['monthAt']>) => number): number[] {
+export function shifted(inds: Ind[], horizon: number, pick: (r: ReturnType<Live['eng']['monthAt']>) => number, hold = false): number[] {
   const out = new Array<number>(horizon).fill(0);
   for (const p of inds) {
     const n = p.live.eng.horizonMonths;
     for (let t = 1; t <= n; t++) { const i = p.month0 + t - 1; if (i < horizon) out[i]! += pick(p.live.eng.monthAt(t)); }
+    // a stock (`hold`) stays at its last value after the product's own horizon (lot 10)
+    if (hold && n > 0) for (let i = Math.max(0, p.month0 + n); i < horizon; i++) out[i]! += pick(p.live.eng.monthAt(n));
   }
   return out;
 }

@@ -38,7 +38,9 @@ const setCmd = defineCommand<{ persona: string; structure: string }>({
     if (!structureList(stored(d)).some((s) => s.id === p.structure)) return;
     d.PERSONAS = personas(d).map((x) => {
       if (x.id !== p.persona) return x;
-      const rest = Object.fromEntries(Object.entries(x).filter(([k]) => k !== 'menuStructure')) as Persona;   // standard = the absent field (older files stay byte-identical)
+      const rest =
+        Object.fromEntries(
+        Object.entries(x).filter(([k]) => k !== 'menuStructure')) as Persona;   // standard = the absent field (older files stay byte-identical)
       return isStandard(p.structure) ? rest : { ...rest, menuStructure: p.structure };
     });
   },

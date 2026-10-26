@@ -6,7 +6,7 @@ import { withPrint } from '../../print';
 import type { ThemeValues } from '@/domain/theme';
 import { CASE_KEYS, productSheets, type ProductNames } from './productSheet';
 import { ktSheet } from './ktSheet';
-import { sheetName } from './names';
+import { PF_RESULT_SHEETS as N, sheetName } from './names';
 import { portfolioSheet } from './portfolioSheet';
 import { stressSheet, type StressExtra } from './stressSheet';
 import { waveSheet } from './waveSheet';
@@ -23,17 +23,18 @@ interface Part { key: string; add: () => void }
  * Names obey Excel's rules (31 characters, no []:*?/\, unique). Numbers come from `consolidate`, `portfolioHeadline`, `consolidationView` and
  * `knowledgeTable` only; the product sheets are the single-case results writer on the effective case.
  */
-export function buildPortfolioResultsWorkbook(xl: ExcelJS, source: Portfolio, print: Readonly<ThemeValues>, scope: DisplayScope = { kind: 'portfolio' }, productId: string = source.activeProductId, stress: StressExtra | null = null): Workbook {
+export function buildPortfolioResultsWorkbook(xl: ExcelJS, source: Portfolio, print: Readonly<ThemeValues>, scope: DisplayScope = { kind: 'portfolio' },
+  productId: string = source.activeProductId, stress: StressExtra | null = null): Workbook {
   const pf = corePortfolio(source), c = consolidate(pf), view = consolidationView(pf, c), used = new Set<string>();
   const wb = withPrint(new xl.Workbook(), print);
   wb.creator = 'AgentCase'; wb.created = new Date();
-  const names = { pf: sheetName('Portfolio', used), kt: '' };
-  const waveNames = new Map(pf.waves.map((w) => [w.id, sheetName(`Wave ${w.name}`, used)]));
-  names.kt = sheetName('Knowledge transfer', used);
-  const stressName = stress ? sheetName('Portfolio stress', used) : '';
+  const names = { pf: sheetName(N.portfolio, used), kt: '' };
+  const waveNames = new Map(pf.waves.map((w) => [w.id, sheetName(`${N.wave}${w.name}`, used)]));
+  names.kt = sheetName(N.kt, used);
+  const stressName = stress ? sheetName(N.stress, used) : '';
   const kept = pf.products.filter((p) => !p.archived);
   const prodNames = new Map<string, ProductNames>(kept.map((p, i) => {
-    const summary = sheetName(`Product ${p.name}`, used);
+    const summary = sheetName(`${N.product}${p.name}`, used);
     return [p.id, { summary, cases: Object.fromEntries(CASE_KEYS.map((k) => [k, sheetName(`P${i + 1} ${k}`, used)])) }];
   }));
   const parts: Part[] = [

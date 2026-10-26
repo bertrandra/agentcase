@@ -21,9 +21,15 @@ export function allArtefactSkills(l: Live): string[] {
   return [...set].sort();
 }
 
-export interface TobeYear { human: number; agent: number; autoPct: number }
+/** Agent share of an AS-IS volume, in percent (0..100): the "Auto %" of a skill line and of the total. */
+export const autoSharePct = (agent: number, asis: number): number => (asis > 0 ? Math.min(100, (agent / asis) * 100) : 0);
+
+/** `delta` = human − AS-IS FTE (the signed "Human Δ"). */
+export interface TobeYear { human: number; agent: number; autoPct: number; delta: number }
 export interface TobeRow { skill: string; asisFTE: number; perYear: TobeYear[] }
-export interface TobeComposition { rows: TobeRow[]; tot: { asis: number; sumAsis: number; human: number; agent: number }; years: number[] }
+export interface TobeComposition {
+  rows: TobeRow[]; tot: { asis: number; sumAsis: number; human: number; agent: number; delta: number; autoPct: number }; years: number[];
+}
 
 /** Residual human FTE and agent vFTE by team skill for year index `year` (0-based, clamped): reconciles to the aggregate model (legacy tobeComposition). */
 export function tobeComposition(l: Live, year: number): TobeComposition {
@@ -42,13 +48,14 @@ export function tobeComposition(l: Live, year: number): TobeComposition {
     const asisFTE = (totalFTE * (eff[ts] as number)) / totW;
     const perYear = years.map((A) => {
       const agent = totalFTE * A * ((raw[ts] as number) / rawTot), human = Math.max(0, asisFTE - agent);
-      return { human, agent, autoPct: asisFTE > 0 ? Math.min(100, (agent / asisFTE) * 100) : 0 };
+      return { human, agent, autoPct: autoSharePct(agent, asisFTE), delta: human - asisFTE };
     });
     return { skill: ts, asisFTE, perYear };
   });
   const sum = (f: (r: TobeRow) => number) => rows.reduce((t, r) => t + f(r), 0);
-  return { rows, years, tot: { asis: totalFTE, sumAsis: sum((r) => r.asisFTE), human: sum((r) => r.perYear[y]!.human),
-    agent: sum((r) => r.perYear[y]!.agent) } };
+  const human = sum((r) => r.perYear[y]!.human), agent = sum((r) => r.perYear[y]!.agent);
+  return { rows, years, tot: { asis: totalFTE, sumAsis: sum((r) => r.asisFTE), human, agent, delta: human - totalFTE,
+    autoPct: autoSharePct(agent, totalFTE) } };
 }
 
 export type LocSplit = Record<string, Record<string, number>>;

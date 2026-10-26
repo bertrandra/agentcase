@@ -1,5 +1,5 @@
 /** @calc-zone product-resolution */
-import { makeInputs } from '../inputs';
+import { caseHorizonYears, makeInputs } from '../inputs';
 import type { CaseState } from '../types/state';
 import { DEFAULT_PRODUCT_NAME, DEFAULT_WAVE_NAME } from './frenchAliases';
 import { commonInfra } from './layers';
@@ -11,7 +11,7 @@ import type { CommonCase, Portfolio } from './types';
  * converted: the common values are the case itself, the hub settings are read from it, so every figure stays identical (A1).
  */
 export function envelopeCase(c: CaseState): Portfolio {
-  const { teamIn, ...common } = c, months = (parseInt(makeInputs(c).v('horizon'), 10) || 3) * 12;
+  const { teamIn, ...common } = c, months = caseHorizonYears(makeInputs(c)) * 12;
   return {
     _schema: 'agentcase.portfolio.v1',
     common: common as CommonCase,

@@ -8,7 +8,8 @@ import { NotComputed, VerdictBox } from './Parts';
 export function AggBanner({ d, label }: { d: Decision | null; label: string }) {
   const { stale } = usePortfolioSimulation();
   if (!d) {
-    return <NotComputed what={`Probabilistic verdict of ${label}`} run={<button type="button" onClick={() => { void runPortfolioSimulation(); }}>▶ Run portfolio simulation</button>} />;
+    return <NotComputed what={`Probabilistic verdict of ${label}`}
+      run={<button type="button" onClick={() => { void runPortfolioSimulation(); }}>▶ Run portfolio simulation</button>} />;
   }
   return (
     <>

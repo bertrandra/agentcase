@@ -21,7 +21,8 @@ function RenameField({ name, onSave, onCancel }: { name: string; onSave: (n: str
   const [v, setV] = useState(name);
   return (
     <span role="group" aria-label="Rename snapshot">
-      <input value={v} aria-label="New snapshot name" onChange={(e) => setV(e.target.value)} onKeyDown={(e) => { if (e.key === 'Enter' && v.trim()) onSave(v); if (e.key === 'Escape') onCancel(); }} />{' '}
+      <input value={v} aria-label="New snapshot name" onChange={(e) => setV(e.target.value)}
+        onKeyDown={(e) => { if (e.key === 'Enter' && v.trim()) onSave(v); if (e.key === 'Escape') onCancel(); }} />{' '}
       <button type="button" disabled={!v.trim()} onClick={() => onSave(v)}>Save</button> <button type="button" onClick={onCancel}>Cancel</button>
     </span>
   );
@@ -43,7 +44,8 @@ export function SnapshotActions({ s, a, onRename }: { s: NamedSnapshot; a: Actio
   const q = (n: string) => `${n} "${s.name}"`;
   return (
     <>
-      <button type="button" className="ac-btn ac-btn-primary" aria-label={q('Activate')} onClick={() => a.onActivate(s.id)}>{s.protected ? '🔄 Reset to this' : '▶ Activate'}</button>{' '}
+      <button type="button" className="ac-btn ac-btn-primary" aria-label={q('Activate')} onClick={() => a.onActivate(s.id)}>
+        {s.protected ? '🔄 Reset to this' : '▶ Activate'}</button>{' '}
       <button type="button" className="ac-btn" aria-label={q('Rename')} onClick={onRename}>✏️ Rename</button>{' '}
       {s.protected ? <span className="ac-muted" title="The golden case is protected — it cannot be deleted">🔒 protected</span> : (
         <>

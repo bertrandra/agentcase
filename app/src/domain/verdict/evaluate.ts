@@ -1,6 +1,6 @@
 /** @calc-zone verdict */
 import { engineNow } from '../canonical';
-import { headline } from '../economics/headline';
+import { headline, paybackYearShown } from '../economics/headline';
 import { LOCATIONS } from '../catalog';
 import type { Ctx } from '../ctx';
 import { locationMix } from '../location';
@@ -64,8 +64,8 @@ export function evaluateStrategies(c: Ctx, defs: StrategyDef[] = strategyDefsOf(
     ov.runTeamFactor = String(rF);
     const tlp = stratTargetLoc(c, S), cs = withInputs(c, ov);
     const cc = tlp ? { ...cs, s: { ...cs.s, targetLocPct: tlp } } : cs, m = model(cc), h = headline(cc);
-    // nothing invested: nothing to pay back
-    const run = engineNow(cc).years().reduce((a, y) => a + y.totalRunCost, 0), payback = m.setupTotal === 0 ? null : h.paybackYear;
+    // the displayed payback year (DEV-PAYBACK-NOSETUP): 0 = immediate when nothing was invested and the strategy saves money (the legacy gave null)
+    const run = engineNow(cc).years().reduce((a, y) => a + y.totalRunCost, 0), payback = paybackYearShown(h);
     const eff = m.eff;
     return {
       id: S.id, icon: S.icon, label: S.label, desc: S.desc,

@@ -17,7 +17,8 @@ export function StoryTable() {
     const other = storyOf(isReg ? reg : sdlc, id);
     return (
       <label key={id} className="ac-check ac-story-art">
-        <input type="checkbox" aria-label={`${id} in story ${sid}`} checked={other === sid} onChange={(e) => toggleStoryArtefact(sid, id, isReg, e.target.checked)} />
+        <input type="checkbox" aria-label={`${id} in story ${sid}`} checked={other === sid}
+          onChange={(e) => toggleStoryArtefact(sid, id, isReg, e.target.checked)} />
         {isReg ? '⚖️' : '📄'} {id} · {name}{other && other !== sid && <span className="ac-warn-ink"> (linked to another story)</span>}
       </label>
     );
@@ -33,9 +34,12 @@ export function StoryTable() {
               return (
                 <Fragment key={s.id}>
                   <tr>
-                    <td><input type="text" aria-label={`Name of ${name}`} className="ac-fill" value={name} onChange={(e) => setField('STORIES', s.id, 'name', e.target.value)} /></td>
-                    <td><LazySelect ariaLabel={`Feature of ${name}`} value={String(s.featureId ?? '')} options={nameOptions(features)} onChange={(v) => setField('STORIES', s.id, 'featureId', v || null)} /></td>
-                    <td><button type="button" aria-expanded={!!open[s.id]} onClick={() => setOpen({ ...open, [s.id]: !open[s.id] })}>{open[s.id] ? '▼' : '▶'} {linked} linked</button></td>
+                    <td><input type="text" aria-label={`Name of ${name}`} className="ac-fill" value={name}
+                      onChange={(e) => setField('STORIES', s.id, 'name', e.target.value)} /></td>
+                    <td><LazySelect ariaLabel={`Feature of ${name}`} value={String(s.featureId ?? '')} options={nameOptions(features)}
+                      onChange={(v) => setField('STORIES', s.id, 'featureId', v || null)} /></td>
+                    <td><button type="button" aria-expanded={!!open[s.id]} onClick={() => setOpen({ ...open, [s.id]: !open[s.id] })}>
+                      {open[s.id] ? '▼' : '▶'} {linked} linked</button></td>
                     <td><ConfirmButton label="🗑" onConfirm={() => removeRecord('STORIES', s.id)} /></td>
                   </tr>
                   {open[s.id] && (

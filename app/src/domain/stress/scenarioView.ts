@@ -1,4 +1,5 @@
 /** @calc-zone stress */
+import { displayedPayback } from '../economics/cashflow';
 import type { ScenarioResult } from './scenarios';
 
 /** Cumulative net cash-flow at month `mo`: the Time Engine's own cumulative series (setup spread as the engine spreads it), 0 at month 0. */
@@ -14,8 +15,8 @@ export const monthAxis = (horizon: number): number[] => Array.from({ length: Mat
 export const fmtE = (v: number): string => (isNaN(v) ? 'n/a' : `${v < 0 && Math.round(v) !== 0 ? '−' : ''}€${Math.abs(Math.round(v)).toLocaleString('en-US')}`);
 /** Savings / cash-flow: the same signed form (the legacy printed a negative in parentheses). */
 export const fmtSigned = fmtE;
-/** Payback month shown for a scenario: nothing to pay back when there is no setup and the lever saves money (immediate), else the engine's crossing. */
-export const paybackShown = (m: Pick<ScenarioResult, 'setup' | 'totBen' | 'pbMonth'>): number | null => (m.setup <= 0 && m.totBen > 0 ? 0 : m.pbMonth);
-export const fmtPayback = (mo: number | null, hMonths: number): string => (mo == null || !isFinite(mo) ? `>${hMonths} mo` : mo <= 0 ? 'immediate' : `${mo} mo`);
+/** Payback month shown for a scenario: the one displayed-payback owner (`displayedPayback`: 0 = immediate when there is no setup and it saves money). */
+export const paybackShown = (m: Pick<ScenarioResult, 'setup' | 'totBen' | 'pbMonth'>): number | null => displayedPayback(m.pbMonth, m.setup, m.totBen);
+export { fmtPayback } from '../economics/roi';
 export const roiText = (m: Pick<ScenarioResult, 'setup' | 'roi' | 'totBen'>): string =>
   m.setup > 0 ? (m.roi == null ? 'n/a' : `${Math.round(m.roi * 100)}%`) : m.totBen > 0 ? '∞ (no setup)' : 'n/a';

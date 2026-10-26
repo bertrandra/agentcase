@@ -51,7 +51,8 @@ describe('architecture pages: pinned facts', () => {
     expect(nums(/at most (\d+) steps/g)).toEqual([HISTORY_CAP]);
     expect(nums(/within (\d+) ms merge/g)).toEqual([COALESCE_MS]);
     expect(nums(/last (\d+) records/g)).toEqual([Number(/auditCap \?\? (\d+)/.exec(readFileSync(join(APP, 'src/store/core.ts'), 'utf8'))?.[1])]);
-    expect(text).toContain(`${LIMITS.fileBytes / 2 ** 20} MB file, ${LIMITS.unzippedBytes / 2 ** 20} MB unzipped, ${LIMITS.entries} entries, compression ratio ${LIMITS.ratio}`);
+    expect(text).toContain(
+      `${LIMITS.fileBytes / 2 ** 20} MB file, ${LIMITS.unzippedBytes / 2 ** 20} MB unzipped, ${LIMITS.entries} entries, compression ratio ${LIMITS.ratio}`);
     expect(text).toContain(`${LIMITS.rows.toLocaleString('en-US')} rows, ${LIMITS.cols} columns, ${LIMITS.text.toLocaleString('en-US')} characters`);
   });
   it('the version is not hard-coded', () => {
@@ -61,14 +62,16 @@ describe('architecture pages: pinned facts', () => {
   });
   it('layers named in the text exist on disk and are the four ESLint layers', () => {
     const cfg = readFileSync(join(APP, 'eslint.config.js'), 'utf8');
-    for (const l of ['ui', 'controllers', 'store', 'domain']) { expect(existsSync(join(APP, 'src', l))).toBe(true); expect(cfg).toContain(`pattern: 'src/${l}/**'`); }
+    for (const l of ['ui', 'controllers', 'store', 'domain']) { expect(existsSync(join(APP, 'src', l)))
+      .toBe(true); expect(cfg).toContain(`pattern: 'src/${l}/**'`); }
     for (const w of ['ui → controllers → store → domain']) expect(textOf(PAGES['arch-layers'])).toContain(w);
   });
   it('every path in a code element exists', () => {
     const bad: string[] = [], seen = new Set<string>();
     for (const page of Object.values(PAGES)) for (const raw of codeStrings(page)) {
       const s = raw.replace(/#.*$/, '').replace(/^@\//, '');
-      if (s.startsWith('.') || s === 'boundaries/dependencies' || !/^[\w.\-/]+$/.test(s) || !(s.includes('/') || /\.(ts|tsx|json|mjs|md|js)$/.test(s)) || /^\d/.test(s) || seen.has(s)) continue;
+      if (s.startsWith('.') || s === 'boundaries/dependencies' || !/^[\w.\-/]+$/.test(s) || !(s.includes('/') || /\.(ts|tsx|json|mjs|md|js)$/.test(s)) ||
+        /^\d/.test(s) || seen.has(s)) continue;
       seen.add(s);
       if (![join(APP, 'src', s), join(APP, 'src', `${s}.ts`), join(APP, s), join(REPO, s), join(REPO, 'docs', s)].some(existsSync)) bad.push(s);
     }
@@ -87,7 +90,8 @@ describe('architecture pages: pinned facts', () => {
       for (const to of t) expect(ids.has(to), `${id} -> ${to}`).toBe(true);
       expect((scope as Record<string, string>)[id]).toBe('S-static');
     }
-    expect(goTargets(PAGES['arch-content'])).toEqual(expect.arrayContaining(['datamodel', 'deps', 'calcengine', 'glossary', 'io', 'sessions', 'consolidation', 'products', 'arch-layers']));
+    expect(goTargets(PAGES['arch-content']))
+      .toEqual(expect.arrayContaining(['datamodel', 'deps', 'calcengine', 'glossary', 'io', 'sessions', 'consolidation', 'products', 'arch-layers']));
     expect(goTargets(PAGES['arch-layers'])).toContain('arch-content');
   });
 });

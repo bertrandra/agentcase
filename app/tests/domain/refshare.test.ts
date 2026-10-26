@@ -1,7 +1,8 @@
 import { readFileSync } from 'node:fs';
 import { describe, expect, it } from 'vitest';
 import { buildOrder } from '@/domain/refshare/depTree';
-import { catalogueOrder, incomingCount, liveEdges, participating, pruneDeps, sourceIds, tagMismatch, type DepEdges, type DepGroup, type DepSection } from '@/domain/refshare/deps';
+import { catalogueOrder, incomingCount, liveEdges, participating, pruneDeps, sourceIds, tagMismatch, type DepEdges, type DepGroup,
+  type DepSection } from '@/domain/refshare/deps';
 import { fromSnapshot } from '@/store/persistence/snapshot';
 // the legacy page knows the 79 case sections and 14 groups; the Portfolio group (multi-product) is not part of its catalogue
 import { LEGACY_GROUPS as GROUPS, LEGACY_SECTIONS as SECTIONS } from '@/ui/zones/registry';

@@ -9,8 +9,10 @@ import type { Doc } from '@/store/types';
 import { loadCase } from '../helpers/extras';
 
 const open = (id: string) => { const s = createAppStore(fromSnapshot(loadCase(id))); setAppStore(s); return s; };
-const KEYS = ['autoPotential', 'y1Ramp', 'y2Ramp', 'y3Ramp', 'glassCeiling', 'setupTooling', 'setupGov', 'setupTraining', 'setupCoaching', 'infra', 'runTeamFactor'];
-const view = (d: Doc) => ({ values: Object.fromEntries(KEYS.map((k) => [k, parseFloat(d.dom.values[k] ?? '')])), fit: d.dom.checked.fitAuto, force: d.forceGlassCeiling,
+const KEYS = ['autoPotential', 'y1Ramp', 'y2Ramp', 'y3Ramp', 'glassCeiling', 'setupTooling', 'setupGov', 'setupTraining', 'setupCoaching', 'infra',
+  'runTeamFactor'];
+const view = (d: Doc) =>
+  ({ values: Object.fromEntries(KEYS.map((k) => [k, parseFloat(d.dom.values[k] ?? '')])), fit: d.dom.checked.fitAuto, force: d.forceGlassCeiling,
   loc: d.targetLocPct, applied: (d as { stratApplied?: unknown }).stratApplied });
 
 describe('applying a strategy writes the same case as the legacy applyStrategy()', () => {

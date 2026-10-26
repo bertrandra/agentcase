@@ -27,5 +27,5 @@ export function diff(exp: unknown, got: unknown, path: string, out: string[]): v
 export function problems(name: string, id: string, got: unknown): string[] {
   const out: string[] = [];
   diff(loadExtra(name, id), legacyNames(got), name, out);
-  return withoutDeviations(out).slice(0, 10);   // registered deviations (docs/DEVIATIONS.md) are asserted by their own tests
+  return withoutDeviations(out, id).slice(0, 10);   // registered deviations (docs/DEVIATIONS.md) are asserted by their own tests
 }

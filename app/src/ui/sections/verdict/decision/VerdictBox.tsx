@@ -21,9 +21,12 @@ export function VerdictBox({ d, banner = <StaleBanner /> }: { d: Decision; banne
       </div>
       {d.conditions.length > 0 && (<><h3>Conditions (top risk drivers)</h3><ul>{d.conditions.map((x) => <li key={x}>{x}</li>)}</ul></>)}
       <h3>Business context read by the engine</h3>
-      <DataTable rows={d.ctx} rowKey={(x) => x.k} columns={[{ key: 'k', header: 'Signal', render: (x) => x.k }, { key: 'v', header: 'Value', render: (x) => <strong>{x.v}</strong> }]} />
-      <p className="ac-muted">Decision rules: <strong>Recommended</strong> requires P(net&gt;0) ≥ {pct(DI_THRESHOLDS.strongPPos)}% AND P10 &gt; −{pct(DI_THRESHOLDS.p10SetupMult)}% of setup ({fmtEur(d.p10Floor)}).
-        {' '}<strong>Conditional</strong> from {pct(DI_THRESHOLDS.condPPos)}%. <strong>Coherence invariant (enforced in code):</strong> a Recommended verdict is impossible when P(net&lt;0) &gt; {pct(DI_THRESHOLDS.maxPNegForStrong)}%
+      <DataTable rows={d.ctx} rowKey={(x) => x.k}
+        columns={[{ key: 'k', header: 'Signal', render: (x) => x.k }, { key: 'v', header: 'Value', render: (x) => <strong>{x.v}</strong> }]} />
+      <p className="ac-muted">Decision rules: <strong>Recommended</strong> requires P(net&gt;0) ≥ {pct(DI_THRESHOLDS.strongPPos)}% AND P10 &gt;
+        −{pct(DI_THRESHOLDS.p10SetupMult)}% of setup ({fmtEur(d.p10Floor)}).
+        {' '}<strong>Conditional</strong> from {pct(DI_THRESHOLDS.condPPos)}%. <strong>Coherence invariant (enforced in code):</strong> a Recommended verdict is
+          impossible when P(net&lt;0) &gt; {pct(DI_THRESHOLDS.maxPNegForStrong)}%
         {' '}— the recommendation and the distribution can never contradict each other, because the former is computed from the latter.</p>
     </>
   );

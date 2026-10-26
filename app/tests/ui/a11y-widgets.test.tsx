@@ -17,7 +17,8 @@ beforeEach(() => { freshStore(); });
 afterEach(cleanup);
 
 describe('Tabs / TabStrip — WAI-ARIA tabs pattern', () => {
-  const tabs = [{ id: 'a', label: 'Alpha', render: () => <p>panel a</p> }, { id: 'b', label: 'Beta', render: () => <p>panel b</p> }, { id: 'c', label: 'Gamma', render: () => <p>panel c</p> }];
+  const tabs = [{ id: 'a', label: 'Alpha', render: () => <p>panel a</p> }, { id: 'b', label: 'Beta', render: () => <p>panel b</p> },
+    { id: 'c', label: 'Gamma', render: () => <p>panel c</p> }];
   it('a named tablist, tabs wired to one labelled tabpanel, roving tabindex', () => {
     render(<Tabs tabs={tabs} label="Views" />);
     expect(screen.getByRole('tablist', { name: 'Views' })).toBeTruthy();
@@ -42,9 +43,12 @@ describe('Tabs / TabStrip — WAI-ARIA tabs pattern', () => {
     expect(screen.getByRole('tabpanel', { name: 'Alpha' })).toBeTruthy();
   });
   it('a strip whose panel lives elsewhere in the section still controls it', () => {
-    const { rerender } = render(<><TabStrip base="x" label="Strip" value="p" onChange={() => undefined} tabs={[{ id: 'p', label: 'P' }, { id: 'q', label: 'Q' }]} /><TabPanel base="x" current="p">body</TabPanel></>);
+    const { rerender } = render(<>
+      <TabStrip base="x" label="Strip" value="p" onChange={() => undefined} tabs={[{ id: 'p', label: 'P' }, { id: 'q', label: 'Q' }]} />
+      <TabPanel base="x" current="p">body</TabPanel></>);
     expect(screen.getByRole('tab', { name: 'P' }).getAttribute('aria-controls')).toBe(screen.getByRole('tabpanel', { name: 'P' }).id);
-    rerender(<><TabStrip base="x" label="Strip" value="q" onChange={() => undefined} tabs={[{ id: 'p', label: 'P' }, { id: 'q', label: 'Q' }]} /><TabPanel base="x" current="q">body</TabPanel></>);
+    rerender(<><TabStrip base="x" label="Strip" value="q" onChange={() => undefined} tabs={[{ id: 'p', label: 'P' }, { id: 'q', label: 'Q' }]} />
+      <TabPanel base="x" current="q">body</TabPanel></>);
     expect(screen.getByRole('tabpanel', { name: 'Q' })).toBeTruthy();
   });
 });
@@ -53,7 +57,8 @@ describe('form widgets — every control has an accessible name', () => {
   it('Field-based inputs are found by their label', () => {
     render(<>
       <NumberInput id="n1" label="Team size" /><RangeInput id="r1" label="Share" /><SelectInput id="s1" label="Region" options={[{ value: 'a', label: 'A' }]} />
-      <CheckInput id="c1" label="Include run cost" /><NumField label="Rate" value={1} onCommit={() => undefined} /><TextField label="Name" value="" onChange={() => undefined} />
+      <CheckInput id="c1" label="Include run cost" /><NumField label="Rate" value={1} onCommit={() => undefined} />
+      <TextField label="Name" value="" onChange={() => undefined} />
       <ChoiceField label="Mode" value="a" options={[{ value: 'a', label: 'A' }]} onChange={() => undefined} />
     </>);
     for (const name of ['Team size', /^Share/, 'Region', 'Include run cost', 'Rate', 'Name', 'Mode']) expect(screen.getByLabelText(name)).toBeTruthy();
@@ -68,7 +73,8 @@ describe('form widgets — every control has an accessible name', () => {
 describe('DataTable', () => {
   const rows = [{ k: 'a', v: 1 }];
   it('column headers carry scope, a header-less column gets a hidden name, the scroller is focusable', () => {
-    const { container } = render(<DataTable rows={rows} rowKey={(r) => r.k} caption="Figures" columns={[{ key: 'k', header: '', title: 'Key', render: (r) => r.k }, { key: 'v', header: 'Value', render: (r) => r.v }]} />);
+    const { container } = render(<DataTable rows={rows} rowKey={(r) => r.k} caption="Figures"
+      columns={[{ key: 'k', header: '', title: 'Key', render: (r) => r.k }, { key: 'v', header: 'Value', render: (r) => r.v }]} />);
     expect(screen.getByRole('table', { name: 'Figures' })).toBeTruthy();
     expect(screen.getByRole('columnheader', { name: 'Key' }).getAttribute('scope')).toBe('col');
     expect(screen.getByRole('columnheader', { name: 'Value' }).getAttribute('scope')).toBe('col');
@@ -77,7 +83,8 @@ describe('DataTable', () => {
 });
 
 describe('ChartPanel', () => {
-  const config = { type: 'line', data: { labels: ['Y1', 'Y2'], datasets: [{ label: 'Savings', data: [1.5, 2] }, { label: 'Cost', data: [3, 4] }] } } as ChartConfiguration;
+  const config = { type: 'line',
+    data: { labels: ['Y1', 'Y2'], datasets: [{ label: 'Savings', data: [1.5, 2] }, { label: 'Cost', data: [3, 4] }] } } as ChartConfiguration;
   it('the canvas is a named image and the plotted data is available as text', () => {
     render(<ChartPanel config={config} label="Savings vs cost" />);
     expect(screen.getByRole('img', { name: 'Savings vs cost' })).toBeTruthy();
@@ -87,7 +94,8 @@ describe('ChartPanel', () => {
   });
   it('chartText handles points, pairs and long series', () => {
     expect(chartText({ type: 'scatter', data: { datasets: [{ label: 'P', data: [{ x: 1, y: 2 }] }] } } as ChartConfiguration)).toEqual(['P: 1, 2']);
-    expect(chartText({ type: 'bar', data: { labels: ['a'], datasets: [{ data: [[1, 3]] }] } } as unknown as ChartConfiguration)).toEqual(['Series 1: a 1 to 3']);
+    expect(chartText({ type: 'bar', data: { labels: ['a'], datasets: [{ data: [[1, 3]] }] } } as unknown as ChartConfiguration))
+      .toEqual(['Series 1: a 1 to 3']);
     const long = chartText({ type: 'line', data: { datasets: [{ label: 'L', data: Array.from({ length: 100 }, (_, i) => i) }] } } as ChartConfiguration)[0]!;
     expect(long.endsWith('; …')).toBe(true);
     expect(chartText({ type: 'line', data: { datasets: [] } } as unknown as ChartConfiguration)).toEqual([]);

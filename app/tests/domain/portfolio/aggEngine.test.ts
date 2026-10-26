@@ -69,9 +69,9 @@ describe.each([['phases as shipped', off], ['every phase on', on]] as const)('mo
     expectClose(a.wip, a.rows.reduce((s, r) => s + r.wip, 0)); expect(a.valued).toBe(a.rows.filter((r) => r.flowNpv !== null).length);
   });
   it('P6 evidence: grade and tiers of the product, the roll-up has the worst grade', () => {
-    const a = evidenceByProduct(pf, sel);
+    const a = evidenceByProduct(pf, sel, null);
     for (const r of a.rows) {
-      const e = evlModel(productCtx(pf, r.id), null);
+      const e = evlModel(productCtx(pf, r.id), null, null);
       expect(r.grade).toBe(e.grade);
       expect(r.measured + r.benchmark + r.assumed).toBe(e.drivers.length);
       expect(r.stage).toBe(e.stage);
@@ -98,7 +98,7 @@ describe('model-engine aggregates — a selection', () => {
     expect(one.rows).toHaveLength(1);
     const none = supervisionByProduct(on, []);
     expect(none.rows).toEqual([]); expect(none.totals.vfte).toBe(0);
-    expect(verificationByProduct(on, []).lowestRhoMax).toBeNull(); expect(evidenceByProduct(on, []).worst).toBeNull();
+    expect(verificationByProduct(on, []).lowestRhoMax).toBeNull(); expect(evidenceByProduct(on, [], null).worst).toBeNull();
   });
   it('the phases turned on are seen as such', () => {
     expect(supervisionByProduct(on, ids(on)).totals.on).toBe(ids(on).length);

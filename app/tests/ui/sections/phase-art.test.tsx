@@ -12,7 +12,8 @@ import { parityTests } from '../../helpers/verifyA';
 vi.mock('@/ui/widgets/ChartPanel', async () => import('../../helpers/chartStub'));   // jsdom has no canvas
 beforeEach(() => { freshStore(); });
 afterEach(cleanup);
-const rows = (c: HTMLElement, t: number) => [...c.querySelectorAll('table')[t]!.querySelectorAll('tbody tr')].map((r) => [...r.children].map((x) => x.textContent));
+const rows = (c: HTMLElement, t: number) =>
+  [...c.querySelectorAll('table')[t]!.querySelectorAll('tbody tr')].map((r) => [...r.children].map((x) => x.textContent));
 
 describe('phase-art section', () => {
   parityTests('phase-art', PhaseArt, { mask: /vFTE Y\d+ \(relative\)/ });   // legacy header says Y3 whatever the horizon: the figures are the horizon end's

@@ -20,7 +20,8 @@ export function GlossaryTable({ rows }: { rows: Entry[] }) {
             return (
               <Fragment key={c.id}>
                 <tr>
-                  <th colSpan={4} scope="colgroup" className="ac-gloss-dim" style={cssVars({ '--dyn-gloss-dim': c.color })}>{/* dynamic: the dimension's colour */}
+                  <th colSpan={4} scope="colgroup" className="ac-gloss-dim" style={cssVars({ '--dyn-gloss-dim': c.color })}>
+                    {/* dynamic: the dimension's colour */}
                     {i + 1} · {c.label}
                   </th>
                 </tr>

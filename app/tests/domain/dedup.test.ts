@@ -64,7 +64,11 @@ describe('collapsed duplicates return the figures of the implementations they re
     expect(maturityInfo({ c, m, eng })).toEqual(tuneMaturity(c, m));
     const t = targetTeam({ c, m, eng }), o = oldTarget(c);
     expect(pdcTarget(c)).toEqual(t);
-    expect([t.residualETP, t.runETP, t.totalRecurrent]).toEqual([o.residualETP, o.runETP, o.totalRecurrent]);
+    expect(t.residualETP).toBe(o.residualETP);
+    // DEV-TEAM-RUN-END: the run team is the horizon end year's (the old one read the three-entry model, year 3); identical up to a 3-year horizon.
+    const end = eng.year(eng.horizonYears);
+    expect([t.runETP, t.totalRecurrent]).toEqual([end.runTeamFteEnd, end.totalHumanFteEnd]);
+    if (eng.horizonYears <= 3) { expect(t.runETP).toBeCloseTo(o.runETP, 9); expect(t.totalRecurrent).toBeCloseTo(o.totalRecurrent, 9); }
     for (const yi of [0, 2]) {
       const a = oldOm(c, m, yi), b = opModelCompute(c, yi, m);
       expect(a).toEqual({ pod: b.pod, pods: b.pods, orch: b.orch, rev: b.rev, prec: b.prec, arch: b.arch, finops: b.finops, da: b.da, lead: b.lead,
@@ -77,8 +81,10 @@ describe('collapsed duplicates return the figures of the implementations they re
     const u = tuneBTokens(c), w = tokenUsage({ c, m, eng });
     expect({ totM: w.totM, y3: w.y3, inputM: w.inputM, outputM: w.outputM, tpa: w.tpa, agentRuns: w.agentRuns, endLabel: w.endLabel }).toEqual({ totM: u.totM,
       y3: u.y3, inputM: u.inputM, outputM: u.outputM, tpa: u.tpa, agentRuns: u.agentRuns, endLabel: u.endLabel });
+    // the cumulative cash-flow is the engine's own year-end cumulative (one owner); it is the old "-setup + running savings" sum up to rounding
     let cum = -v.setup;
-    expect(v.years.map((y) => (cum += y.savings))).toEqual(v.cumulative);
+    expect(v.cumulative).toEqual(v.years.map((y) => y.cumulativeCashFlowEnd));
+    v.years.forEach((y, i) => expect(v.cumulative[i]).toBeCloseTo((cum += y.savings), 4));
     expect(model(c)).toBe(model(c));   // computed once per context
     expect(engineNow(c)).toBe(engineNow(c));
   });

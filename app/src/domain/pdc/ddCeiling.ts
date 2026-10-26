@@ -17,8 +17,12 @@ export function ceilingRole(a: WArtefact): string {
   return 'Software quality lead / reference architect';
 }
 
-const ASK = 'Confirm that human review and sign-off on this deliverable cannot be delegated, and cite the clause of the certification plan or quality procedure that requires it. If partial delegation is admissible, state the share that must remain human.';
-const ASK_GRP = 'Confirm the human review and sign-off floor that applies across this group, and whether any deliverable in it deviates from that floor. Cite the governing clause.';
+const ASK =
+  'Confirm that human review and sign-off on this deliverable cannot be delegated, and cite the clause of the certification plan or quality procedure that ' +
+    'requires it. If partial delegation is admissible, state the share that must remain human.';
+const ASK_GRP =
+  'Confirm the human review and sign-off floor that applies across this group, and whether any deliverable in it deviates from that floor. Cite the ' +
+    'governing clause.';
 
 /**
  * Register rows for the artefacts that determine the glass ceiling: each artefact's contribution is w*humanSup / sum(w*humanSup);
@@ -35,8 +39,10 @@ export function ceilingRows(c: Ctx, target: number): DdRow[] {
     if (cum / total < target) {
       cum += x.c;
       const a = x.a, share = x.c / total;
-      rows.push({ id: `ce-${a.id}`, g: `Supervision floor — ${a.norm ? `regulatory · ${a.norm}` : `SDLC · ${a.phase || '?'}`}`, l: `${a.phase ? `${a.phase} · ` : ''}${a.name || a.id}`,
-        v: `${+a.humanSup}%`, where: a.norm ? `REG_CATALOG · ${a.norm}` : 'DATA.artefacts', eff: `${(share * 100).toFixed(1)}% of the glass ceiling · cumulative ${((cum / total) * 100).toFixed(1)}%`,
+      rows.push({ id: `ce-${a.id}`, g: `Supervision floor — ${a.norm ? `regulatory · ${a.norm}` : `SDLC · ${a.phase || '?'}`}`,
+        l: `${a.phase ? `${a.phase} · ` : ''}${a.name || a.id}`,
+        v: `${+a.humanSup}%`, where: a.norm ? `REG_CATALOG · ${a.norm}` : 'DATA.artefacts',
+        eff: `${(share * 100).toFixed(1)}% of the glass ceiling · cumulative ${((cum / total) * 100).toFixed(1)}%`,
         edit: { sec: 'scope-sel', note: 'supervision set per artefact' }, cls: 'PC3', ceilShare: share, ceilRole: ceilingRole(a), ask: ASK });
     } else rest.push(x);
   }
@@ -47,7 +53,8 @@ export function ceilingRows(c: Ctx, target: number): DdRow[] {
   }
   for (const [k, g] of [...groups].sort((p, q) => q[1].c - p[1].c)) {
     const isNorm = k.startsWith('norm:'), label = k.split(':')[1] as string;
-    rows.push({ id: `ceg-${k.replace(/[^a-z0-9]+/gi, '-').toLowerCase()}`, g: 'Supervision floor — remainder', l: `${isNorm ? 'Regulatory · ' : 'SDLC · '}${label}  (${g.n} artefact${g.n > 1 ? 's' : ''})`,
+    rows.push({ id: `ceg-${k.replace(/[^a-z0-9]+/gi, '-').toLowerCase()}`, g: 'Supervision floor — remainder',
+      l: `${isNorm ? 'Regulatory · ' : 'SDLC · '}${label}  (${g.n} artefact${g.n > 1 ? 's' : ''})`,
       v: `${g.w ? Math.round(g.c / g.w) : 0}% avg`, where: isNorm ? `REG_CATALOG · ${label}` : 'DATA.artefacts',
       eff: `${((g.c / total) * 100).toFixed(1)}% of the glass ceiling, grouped — below the ${Math.round(target * 100)}% naming threshold`,
       edit: { sec: 'scope-sel', note: 'supervision set per artefact' }, cls: 'PC3', ceilShare: g.c / total, ceilRole: ceilingRole(g.sample), ask: ASK_GRP });

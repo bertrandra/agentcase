@@ -15,7 +15,8 @@ const CASES: Record<string, () => void> = {
   'industry-aero': () => ind('AERO'),
   'industry-bfi': () => ind('BFI'),
   'cross-cutting': () => { setRegUse(true); toggleCross('AI', true); },   // the recipe's 'SUST' / 'USAB' codes match no norm: only AI lands
-  'frame-industry-cross': () => { ind('AUTO'); toggleNorm('AUTO', normsOf('AUTO')[0]!.name, false); toggleCross('AI', true); toggleCross('USABILITY', true); setRegInclude(false); },
+  'frame-industry-cross':
+    () => { ind('AUTO'); toggleNorm('AUTO', normsOf('AUTO')[0]!.name, false); toggleCross('AI', true); toggleCross('USABILITY', true); setRegInclude(false); },
 };
 
 describe('frame controllers reproduce the legacy regulatory state', () => {

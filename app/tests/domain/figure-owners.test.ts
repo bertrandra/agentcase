@@ -3,10 +3,11 @@ import { exportResultsWorkbook } from '@/controllers/excelResults';
 import { makeCtx, type Ctx } from '@/domain';
 import { buildCalcPackage } from '@/domain/calcPackage';
 import { economicsView } from '@/domain/economics';
-import { headline } from '@/domain/economics/headline';
+import { displayedPayback } from '@/domain/economics/cashflow';
+import { headline, paybackYearShown } from '@/domain/economics/headline';
 import { costReduction } from '@/domain/economics/costReduction';
 import { fteBeforeAfter } from '@/domain/economics/fte';
-import { roiCanonical } from '@/domain/economics/roi';
+import { fmtPaybackYear, roiCanonical } from '@/domain/economics/roi';
 import { VARIABLES } from '@/domain/pdc/variables';
 import { consolidate, envelopeCase, portfolioHeadline } from '@/domain/portfolio';
 import { resultsCore } from '@/domain/verdict/results';
@@ -29,6 +30,7 @@ const same = (a: number | null | undefined, b: number | null | undefined, what: 
   if (a == null || b == null) { expect(a ?? null, what).toBe(b ?? null); return; }
   expect(abs ? Math.abs(a - b) <= abs : close(a, b, 1e-9), `${what}: ${a} vs ${b}`).toBe(true);
 };
+const e_shown = (c: Ctx): number | null => economicsView(c).paybackShown;
 const variable = (id: string, c: Ctx) => VARIABLES.find((v) => v.id === id)!.get(c);
 
 describe.each(CASES)('figure owners: %s', (id) => {
@@ -40,11 +42,14 @@ describe.each(CASES)('figure owners: %s', (id) => {
     same(kpi.headline.roi, h.roi, 'KPI roi'); same(kpi.headline.totalSavings, h.net, 'KPI engine totalSavings (savings net of setup)');
     const r = resultsCore(c);
     same(r.net, h.net, 'Results net'); same(r.roi, h.roi, 'Results roi');
-    expect(r.payback).toBe(h.paybackYear == null ? '—' : `Year ${h.paybackYear}`);
+    expect(r.payback).toBe(fmtPaybackYear(paybackYearShown(h)));   // the displayed payback owner (DEV-PAYBACK-NOSETUP: no setup = Immediate)
+    same(e_shown(c), displayedPayback(h.paybackMonth, h.setup, h.totalBenefit), 'Financial displayed payback');
     const e = economicsView(c);
-    same(e.net, h.net, 'Financial net'); same(e.roi, h.roi, 'Financial roi'); same(e.payback, h.paybackMonth, 'Financial payback'); same(e.npv, h.npv, 'Financial npv'); same(e.totalBenefit, h.totalBenefit, 'Financial total benefit');
+    same(e.net, h.net, 'Financial net'); same(e.roi, h.roi, 'Financial roi'); same(e.payback, h.paybackMonth,
+      'Financial payback'); same(e.npv, h.npv, 'Financial npv'); same(e.totalBenefit, h.totalBenefit, 'Financial total benefit');
     const p = buildCalcPackage(state).headline;
-    same(p.payback, h.paybackMonth, 'package payback'); same(p.npv, h.npv, 'package npv'); same(p.roi, h.roi, 'package roi'); same(p.totalSavings, h.net, 'package totalSavings (savings net of setup)');
+    same(p.payback, h.paybackMonth, 'package payback'); same(p.npv, h.npv, 'package npv'); same(p.roi, h.roi, 'package roi'); same(p.totalSavings, h.net,
+      'package totalSavings (savings net of setup)');
   });
   it('the Board variables read the owner', () => {
     same(variable('netProfit3y', c) as number, h.net, 'board net');
@@ -80,13 +85,15 @@ describe('figure owners: multi-product portfolios', () => {
   it('the portfolio headline is the sum of its products on the calendar; ROI is the owner rule on the sums; a product at month 0 is its owner headline', () => {
     const base = envelopeCase(loadCase('golden'));
     for (const pf of [identical(loadCase('golden'), 3), withProduct(withProduct(base, { id: 'b' }), { id: 'c', offset: 4 })]) {
-      const con = consolidate(pf), ph = portfolioHeadline(con), sum = (f: (s: (typeof con.products)[number]['summary']) => number): number => con.products.reduce((a, p) => a + f(p.summary), 0);
+      const con = consolidate(pf), ph = portfolioHeadline(con),
+        sum = (f: (s: (typeof con.products)[number]['summary']) => number): number => con.products.reduce((a, p) => a + f(p.summary), 0);
       same(ph.net, sum((s) => s.net), 'portfolio net = sum of the calendar nets');
       same(ph.totalBenefit, sum((s) => s.totalBenefit), 'portfolio total benefit');
       same(ph.setup, sum((s) => s.setup), 'portfolio setup');
       same(ph.roi, roiCanonical(ph.net, ph.setup), 'portfolio roi = roiCanonical(net, setup)');
       const first = con.products.find((p) => p.month0 === 0 && p.lead === 0);
-      if (first) { same(first.summary.net, first.run.headline().net, 'a product at month 0: calendar net = owner net'); same(first.summary.roi, first.run.headline().roi, 'a product at month 0: calendar roi = owner roi'); }
+      if (first) { same(first.summary.net, first.run.headline().net, 'a product at month 0: calendar net = owner net'); same(first.summary.roi,
+        first.run.headline().roi, 'a product at month 0: calendar roi = owner roi'); }
     }
   });
 });

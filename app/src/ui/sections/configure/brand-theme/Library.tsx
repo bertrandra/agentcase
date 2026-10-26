@@ -15,7 +15,9 @@ async function importFile(f: File | undefined): Promise<void> {
     const { themes, notes } = readThemeFile(await f.text());
     importThemes(themes);
     selectTheme(lastIssuedSeq());
-    toast(`Imported ${themes.length} theme${themes.length === 1 ? '' : 's'}${notes.length ? ` (${notes.length} setting${notes.length === 1 ? '' : 's'} ignored: ${notes[0]})` : ''}`, 6000);
+    toast(
+      `Imported ${themes.length} theme${themes.length === 1 ? '' : 's'}${notes.length ? ` (${notes.length} setting${notes.length === 1 ? '' : 's'} ` +
+        `ignored: ${notes[0]})` : ''}`, 6000);
   } catch (e) { toast(`Cannot import the themes: ${(e as Error).message}`, 6000); }
 }
 
@@ -38,19 +40,22 @@ export function Library({ themes, active, selected }: { themes: readonly ThemeDe
         ))}
       </ul>
       <div className="ac-bt-actions" role="group" aria-label={`Actions on ${sel.name}`}>
-        <button type="button" data-tone="primary" disabled={sel.seq === active} onClick={() => { activateTheme(sel.seq); toast(`${sel.name} is now the theme of this case`); }}>Activate</button>
+        <button type="button" data-tone="primary" disabled={sel.seq === active}
+          onClick={() => { activateTheme(sel.seq); toast(`${sel.name} is now the theme of this case`); }}>Activate</button>
         <button type="button" className="ac-btn" onClick={() => { duplicateTheme(sel.seq); selectTheme(lastIssuedSeq()); }}>Duplicate</button>
         <button type="button" className="ac-btn" onClick={() => exportThemes([sel])}>Export</button>
         <button type="button" className="ac-btn" disabled={sel.builtin} title={sel.builtin ? 'Built-in themes cannot be deleted' : undefined}
           onClick={() => { deleteTheme(sel.seq); selectTheme(null); toast(`Deleted ${sel.name} — Ctrl+Z restores it`); }}>Delete</button>
       </div>
-      {!sel.builtin && <label className="ac-field"><span className="ac-field-l">Rename</span><DraftText label={`Name of theme ${sel.seq}`} value={sel.name} onCommit={(v) => renameTheme(sel.seq, v)} /></label>}
+      {!sel.builtin && <label className="ac-field"><span className="ac-field-l">Rename</span>
+        <DraftText label={`Name of theme ${sel.seq}`} value={sel.name} onCommit={(v) => renameTheme(sel.seq, v)} /></label>}
       <ShareLink seq={sel.seq} />
       <div className="ac-bt-actions">
         <button type="button" className="ac-btn" onClick={() => { addTheme('My theme'); selectTheme(lastIssuedSeq()); }}>New theme</button>
         <button type="button" className="ac-btn" onClick={() => file.current?.click()}>Import…</button>
         <button type="button" className="ac-btn" disabled={!own.length} onClick={() => exportThemes(own)}>Export library</button>
-        <input ref={file} type="file" accept="application/json,.json" hidden aria-label="Import a theme file" onChange={(e) => { void importFile(e.target.files?.[0]); e.target.value = ''; }} />
+        <input ref={file} type="file" accept="application/json,.json" hidden aria-label="Import a theme file"
+          onChange={(e) => { void importFile(e.target.files?.[0]); e.target.value = ''; }} />
       </div>
     </section>
   );

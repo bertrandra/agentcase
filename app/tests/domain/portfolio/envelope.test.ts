@@ -38,14 +38,15 @@ describe('A1: a case wrapped as one product / one wave at month 0 gives the sing
 
   it('the envelope names the product and the wave as the spec asks', () => {
     const pf = envelopeCase(loadCase('golden'));
-    expect([pf.products[0]!.name, pf.waves[0]!.name, pf.waves[0]!.startMonth, pf.products[0]!.waveId, pf.hub.infraAllocation]).toEqual(['Product 1', 'Wave 1', 0, 'w1', 'perProduct']);
+    expect([pf.products[0]!.name, pf.waves[0]!.name, pf.waves[0]!.startMonth, pf.products[0]!.waveId, pf.hub.infraAllocation])
+      .toEqual(['Product 1', 'Wave 1', 0, 'w1', 'perProduct']);
     expect(pf.horizonMonths).toBe(36);
   });
 
   it('the monthly series of the envelope are the engine rows', () => {
     const c = loadCase('golden'), cons = consolidate(envelopeCase(c)), rows = cons.products[0]!.run.rows;
     expectSeriesClose(cons.series.net, rows.map((r) => r.netSavings));
-    expectSeriesClose(cons.series.humanFte, rows.map((r) => r.humanFte));
+    expectSeriesClose(cons.series.humanFte, rows.map((r) => r.humanFte + r.runTeamFte));   // total human FTE (delivery + run team)
     expectSeriesClose(cons.series.agentVfte, rows.map((r) => r.agentVfte));
   });
 });

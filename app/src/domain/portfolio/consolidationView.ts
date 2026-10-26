@@ -56,7 +56,9 @@ function diagnosticsOf(pf: Portfolio, c: Consolidated): Issue[] {
   const out = validate(pf).diagnostics.filter((d) => CODES.includes(d.code));
   for (const v of c.products) {
     if (v.run.rows.length > c.horizon - v.month0) out.push({ code: 'truncated',
-      message: `${v.name}: cut at the portfolio horizon (${c.horizon} months); ${v.run.rows.length - Math.max(0, c.horizon - v.month0)} of its months fall beyond`, productId: v.id });
+      message:
+        `${v.name}: cut at the portfolio horizon (${c.horizon} months); ${v.run.rows.length - Math.max(0, c.horizon - v.month0)} of its months fall beyond`,
+      productId: v.id });
   }
   return out;
 }

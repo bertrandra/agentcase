@@ -22,7 +22,10 @@ const SERIES: { key: 'asis' | 'classic' | 'agentic'; label: string; bg: TokenNam
 ] as const;
 
 function chartOf(d: CompareData, key: keyof Trajectory, line: boolean, tok: Tok): ChartConfiguration {
-  return { type: line ? 'line' : 'bar', data: { labels: d.labels, datasets: SERIES.map((s) => ({ label: s.label, data: d[s.key][key], backgroundColor: tok(s.bg), borderColor: tok(s.border), borderWidth: 2, fill: false })) },
+  return { type: line ? 'line' : 'bar',
+    data: { labels: d.labels,
+    datasets: SERIES.map((s) =>
+    ({ label: s.label, data: d[s.key][key], backgroundColor: tok(s.bg), borderColor: tok(s.border), borderWidth: 2, fill: false })) },
     options: { plugins: { legend: { position: 'top' } } } };
 }
 
@@ -30,7 +33,9 @@ function chartOf(d: CompareData, key: keyof Trajectory, line: boolean, tok: Tok)
 export default function CompareSection() {
   const c = useCtx(), d = useMemo(() => compareData(c), [c]);
   const { tok } = useTheme();
-  const cfg = useMemo(() => ({ fte: chartOf(d, 'fte', false, tok), cost: chartOf(d, 'cost', false, tok), save: chartOf(d, 'save', true, tok), velo: chartOf(d, 'velo', false, tok) }), [d, tok]);
+  const cfg = useMemo(() =>
+    ({ fte: chartOf(d, 'fte', false, tok), cost: chartOf(d, 'cost', false, tok), save: chartOf(d, 'save', true, tok), velo: chartOf(d, 'velo', false, tok) }),
+    [d, tok]);
   return (
     <SectionFrame title="3-way Comparison — AS-IS / AS-IS + saving / Agentic" help={help}
       input={<RangeInput id="classicSaving" label="Classic annual saving — optimized AS-IS scenario" min={0} max={15} unit="%/yr" />}
@@ -42,7 +47,8 @@ export default function CompareSection() {
           <h3>Velocity (story points / sprint)</h3><ChartPanel config={cfg.velo} label="Velocity by year" height={220} />
         </Panel>
         <Panel title="Key figures — comparison">
-          <DataTable columns={['Metric', 'AS-IS', 'AS-IS + saving', 'Agentic', 'Agentic vs AS-IS'].map((h, i) => ({ key: h, header: h, align: i ? 'center' as const : 'left' as const,
+          <DataTable columns={['Metric', 'AS-IS', 'AS-IS + saving', 'Agentic',
+            'Agentic vs AS-IS'].map((h, i) => ({ key: h, header: h, align: i ? 'center' as const : 'left' as const,
             render: (r: string[]) => (i === 0 ? <strong>{r[0]}</strong> : r[i]) }))} rows={d.rows} rowKey={(r) => r[0] as string} />
         </Panel>
       </>} />

@@ -1,7 +1,7 @@
 /** @calc-zone rate-card-team */
 import { LOCATIONS } from '../catalog';
 import type { Ctx } from '../ctx';
-import { locationMix, targetBlendedTJM, teamInCost } from '../location';
+import { blendedDayRate, locationMix, targetBlendedTJM } from '../location';
 import type { CaseState } from '../types/state';
 
 export const locClass = (loc: string): string => LOCATIONS.find((l) => l.name === loc)?.cls ?? 'Local';
@@ -33,8 +33,8 @@ export interface LocSummary { asisTJM: number; tgtTJM: number; gap: string; loca
 
 /** The five figures of the Location-strategy summary band. */
 export function locSummary(c: Ctx): LocSummary {
-  const s = c.s, mx = locationMix(s), cls = classPct(s);
-  const asisTJM = mx.tot ? teamInCost(s, c.inp).cost / (mx.tot * c.inp.p('workdays')) : 0;
+  const s = c.s, cls = classPct(s);
+  const asisTJM = blendedDayRate(s, c.inp);
   const tgtTJM = targetBlendedTJM(s);
   const gap = asisTJM > 0 ? `${tgtTJM < asisTJM ? '-' : '+'}${Math.round(Math.abs(1 - tgtTJM / asisTJM) * 100)}%` : '—';
   return {

@@ -52,11 +52,12 @@ describe('controllers write the common value computed from the common case, neve
     const { s, ids } = setup('values.y1Ramp', '30', '14', 'portfolio'), before = docOnly(s);
     computeSensitivity();
     const sens = (pf().common as Record<string, unknown>).DD_SENS as { fp: string; base: number };
-    expect(sens.fp).toBe(computeDdSensitivity(makeCtx(commonEditDoc(pf()))).fp);
-    expect(sens.fp).not.toBe(computeDdSensitivity(makeCtx(docOf(ids[0]))).fp);
+    expect(sens.fp).toBe(computeDdSensitivity(makeCtx(commonEditDoc(pf())), '2026-01-01T00:00:00.000Z').fp);
+    expect(sens.fp).not.toBe(computeDdSensitivity(makeCtx(docOf(ids[0])), '2026-01-01T00:00:00.000Z').fp);
     exactUndo(s, before);
     setDisplayScope({ kind: 'product' }); computeSensitivity();
-    expect(((pf().common as Record<string, unknown>).DD_SENS as { fp: string }).fp).toBe(computeDdSensitivity(makeCtx(docOf(ids[0]))).fp);
+    expect(((pf().common as Record<string, unknown>).DD_SENS as { fp: string }).fp)
+      .toBe(computeDdSensitivity(makeCtx(docOf(ids[0])), '2026-01-01T00:00:00.000Z').fp);
   });
   it('ganttEdit.nudgeBar (move): the common roadmap start moves from the COMMON date; A keeps its own; undo exact; Product view moves A', () => {
     const { s, ids } = setup('values.rmStart', '2026-06-01', '2026-01-05', 'portfolio'), before = docOnly(s);

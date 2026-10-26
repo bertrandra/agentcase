@@ -6,7 +6,9 @@ import { extra, legacyText, loadFixture, PARITY_FIXTURES, statsOf } from './econ
 import { missingNumbers, renderedText } from './parity';
 
 /** The two parity checks every migrated section carries: every legacy figure is shown (4 fixtures), tables and bands match cell by cell (all cases). */
-export function parityTests(id: string, Section: ComponentType, o: { ignore?: number[]; skip?: number[]; mask?: RegExp } = {}): void {
+export function parityTests(id: string, Section: ComponentType, o: { ignore?: number[]; skip?: number[]; mask?: RegExp; skipBands?: string[];
+  /** per-fixture extra skips (a deviation restricted to some fixtures) */
+  moved?: (fx: string) => { skip?: number[]; skipBands?: string[] } } = {}): void {
   it.each(PARITY_FIXTURES)('shows every figure the legacy section showed (%s)', (fx) => {
     loadFixture(fx);
     const { container } = render(<Section />), legacy = legacyText(fx, id);
@@ -15,7 +17,9 @@ export function parityTests(id: string, Section: ComponentType, o: { ignore?: nu
   });
   it.each(VFA_FIXTURES)('reproduces the legacy tables and summary cell by cell (%s)', (fx) => {
     loadFixture(fx);
-    expect(missingVerifyCells(render(<Section />).container, fx, id, o.skip, o.mask)).toEqual([]);
+    const mv = o.moved?.(fx) ?? {};
+    expect(missingVerifyCells(render(<Section />).container, fx, id, [...(o.skip ?? []), ...(mv.skip ?? [])], o.mask,
+      [...(o.skipBands ?? []), ...(mv.skipBands ?? [])])).toEqual([]);
   });
 }
 
@@ -26,13 +30,16 @@ export const VFA_FIXTURES = readdirSync('fixtures/extras/vfa_dom').map((f) => f.
 
 interface LegacyDom { tables: string[][][]; bands: string[][]; error?: string }
 const clean = (s: string, mask?: RegExp) => { const t = s.replace(/\s+/g, ' ').trim(); return mask ? t.replace(mask, '#') : t; };
-const cells = (root: Element, mask?: RegExp): string[][][] => [...root.querySelectorAll('table')].map((t) => [...t.querySelectorAll('tr')].map((r) => [...r.children].map((c) => (c.querySelector('select') ? '' : clean(c.textContent ?? '', mask)))));
+const cells = (root: Element, mask?: RegExp): string[][][] =>
+  [...root.querySelectorAll('table')].map((t) =>
+  [...t.querySelectorAll('tr')].map((r) => [...r.children].map((c) => (c.querySelector('select') ? '' : clean(c.textContent ?? '', mask)))));
 
 /**
  * The legacy tables / summary bands of section `id` (recorded by tools/oracle-extras.d/verifyA.mjs) that the rendered tree does not reproduce
- * cell for cell (cell whitespace ignored). `skip` lists legacy table indexes deliberately not compared. Empty = identical.
+ * cell for cell (cell whitespace ignored). `skip` lists legacy table indexes, `skipBands` legacy band labels deliberately not compared (a recorded
+ * deviation, asserted by its own test). Empty = identical.
  */
-export function missingVerifyCells(root: Element, fixture: string, id: string, skip: number[] = [], mask?: RegExp): string[] {
+export function missingVerifyCells(root: Element, fixture: string, id: string, skip: number[] = [], mask?: RegExp, skipBands: string[] = []): string[] {
   const leg = extra<Record<string, LegacyDom>>('vfa_dom', fixture)[id] as LegacyDom;
   if (leg.error) return [`legacy error ${leg.error}`];
   const have = cells(root, mask).map((t) => JSON.stringify(t)), stats = statsOf(root).map((s) => JSON.stringify(s.map((x) => clean(x)))), out: string[] = [];
@@ -40,6 +47,7 @@ export function missingVerifyCells(root: Element, fixture: string, id: string, s
     const j = JSON.stringify(t.map((r) => r.map((c) => clean(c, mask))));
     if (!skip.includes(i) && !have.includes(j)) out.push(`table ${i}: ${j.slice(0, 200)}`);
   });
-  leg.bands.forEach((b) => { if (!stats.includes(JSON.stringify(b.map((x) => clean(x))))) out.push(`band ${JSON.stringify(b)}`); });
+  leg.bands.forEach(
+    (b) => { if (!skipBands.includes(b[0] ?? '') && !stats.includes(JSON.stringify(b.map((x) => clean(x))))) out.push(`band ${JSON.stringify(b)}`); });
   return out;
 }

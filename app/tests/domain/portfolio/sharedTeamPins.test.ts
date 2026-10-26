@@ -45,7 +45,8 @@ describe('pins on a shared line', () => {
 
   it('a product’s own pinned row comes first in that product', () => {
     const base = addSharedLine(two(), LINE), [a1] = arts(base);
-    const own: Portfolio = { ...base, products: base.products.map((p) => (p.id === 'p1' ? { ...p, teamIn: p.teamIn.map((r, i) => (i === 0 ? { ...r, pins: [a1!] } : r)) } : p)) };
+    const own: Portfolio = { ...base,
+      products: base.products.map((p) => (p.id === 'p1' ? { ...p, teamIn: p.teamIn.map((r, i) => (i === 0 ? { ...r, pins: [a1!] } : r)) } : p)) };
     const pf = pinSharedLine(own, 's1', [a1!], true);
     expect(teamWeights(ctx(pf, 'p1')).pin[a1!]).toBe(0);
     const b = ctx(pf, 'B');

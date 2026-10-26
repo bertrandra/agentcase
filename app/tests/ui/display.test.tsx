@@ -33,12 +33,14 @@ describe('display preference', () => {
     expect(parsePrefs('{oops')).toEqual(PREFS_DEFAULT);
     expect(parsePrefs('[1]')).toEqual(PREFS_DEFAULT);
     expect(parsePrefs(JSON.stringify({ mode: 'sepia', contrast: 'max', cvd: 'yes', reduceMotion: true }))).toEqual({ ...PREFS_DEFAULT, reduceMotion: true });
-    expect(parsePrefs(JSON.stringify({ mode: 'auto', contrast: 'high', cvd: true }))).toEqual({ mode: 'auto', contrast: 'high', cvd: true, reduceMotion: false });
+    expect(parsePrefs(JSON.stringify({ mode: 'auto', contrast: 'high', cvd: true })))
+      .toEqual({ mode: 'auto', contrast: 'high', cvd: true, reduceMotion: false });
   });
   it('auto follows the system scheme, and "more contrast" lifts standard to enhanced; explicit choices win', () => {
     const auto = { ...PREFS_DEFAULT, mode: 'auto' as const };
     expect(resolveDisplay(auto, NO_SYS)).toEqual(DISPLAY_DEFAULT);
-    expect(resolveDisplay(auto, { dark: true, contrastMore: true, reducedMotion: true })).toEqual({ mode: 'dark', contrast: 'enhanced', cvd: false, reduceMotion: true });
+    expect(resolveDisplay(auto, { dark: true, contrastMore: true, reducedMotion: true }))
+      .toEqual({ mode: 'dark', contrast: 'enhanced', cvd: false, reduceMotion: true });
     expect(resolveDisplay({ ...PREFS_DEFAULT, mode: 'light' }, { dark: true, contrastMore: true, reducedMotion: false })).toEqual(DISPLAY_DEFAULT);
   });
   it('applies to <html> and to the theme the provider hands down, saves to localStorage; the print theme stays light', () => {
@@ -94,7 +96,9 @@ describe('Display control of the top bar', () => {
 });
 
 describe('charts under the display options', () => {
-  const cfg = { type: 'line', data: { labels: ['a'], datasets: [{ label: 'A', data: [1] }, { label: 'B', data: [2] }, { type: 'bar', label: 'C', data: [3], backgroundColor: '#123456' }] } } as unknown as ChartConfiguration;
+  const cfg = { type: 'line',
+    data: { labels: ['a'], datasets: [{ label: 'A', data: [1] }, { label: 'B', data: [2] },
+    { type: 'bar', label: 'C', data: [3], backgroundColor: '#123456' }] } } as unknown as ChartConfiguration;
   it('colour-blind: dash + point style per line series; reduced motion: no animation; default: the config untouched', () => {
     HTMLCanvasElement.prototype.getContext = (() => null) as unknown as HTMLCanvasElement['getContext'];   // jsdom: no 2D canvas
     expect(themedConfig(cfg, DEFAULT_THEME)).toBe(cfg);

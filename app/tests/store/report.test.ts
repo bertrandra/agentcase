@@ -18,14 +18,17 @@ const doc = (id: string) => fromSnapshot(JSON.parse(readFileSync(`fixtures/cases
 const text = (html: string) => html.replace(/<style>[\s\S]*?<\/style>/g, ' ').replace(/<title>[\s\S]*?<\/title>/g, ' ').replace(/<[^>]+>/g, ' ')
   .replace(/&lt;/g, '<').replace(/&gt;/g, '>').replace(/&quot;/g, '"').replace(/&#39;/g, "'").replace(/&amp;/g, '&').replace(/\s+/g, ' ').trim();
 const headings = (html: string) => [...html.matchAll(/<h[12]>([\s\S]*?)<\/h[12]>/g)].map((m) => text(m[1] as string));
-const stampOf = (id: string) => { const n = readFileSync(`fixtures/reports/${id}.name.txt`, 'utf8').match(/(\d{4})(\d{2})(\d{2})\.html$/)!; return new Date(`${n[1]}-${n[2]}-${n[3]}T12:00:00Z`); };
+const stampOf = (id: string) => { const n =
+  readFileSync(`fixtures/reports/${id}.name.txt`, 'utf8').match(/(\d{4})(\d{2})(\d{2})\.html$/)!; return new Date(`${n[1]}-${n[2]}-${n[3]}T12:00:00Z`); };
 /** The only wording that differs on purpose: the build tag, and the legacy's hard-coded catalogue size (stale: the catalogue has 370 artifacts, not 349). */
-const unversion = (t: string) => legacyMoney(t).replace(/v18\.1[123]|v2\d\.\d+(?:\.\d+(?:-dev)?)?/g, 'vX').replace('349-artifact', `${REG_ARTEFACTS.length}-artifact`);
+const unversion = (t: string) => legacyMoney(t).replace(/v18\.1[123]|v2\d\.\d+(?:\.\d+(?:-dev)?)?/g, 'vX').replace('349-artifact',
+  `${REG_ARTEFACTS.length}-artifact`);
 
 describe('Critical & Regulated Software Delivery report vs the legacy output', () => {
   it('has at least 8 recorded legacy reports, including the edge cases', () => {
     expect(IDS.length).toBeGreaterThanOrEqual(8);
-    expect(IDS).toEqual(expect.arrayContaining(['industry-med', 'combo-stress', 'frame-industry-cross']));   // MSI context + 5-year horizon + regulatory artifacts excluded
+    expect(IDS).toEqual(expect.arrayContaining(['industry-med', 'combo-stress',
+      'frame-industry-cross']));   // MSI context + 5-year horizon + regulatory artifacts excluded
   });
   it.each(IDS)('%s: same sections, same figures, same wording', (id) => {
     const legacy = readFileSync(`fixtures/reports/${id}.html`, 'utf8');
@@ -44,7 +47,8 @@ describe('Critical & Regulated Software Delivery report vs the legacy output', (
   });
   it('refuses a case without the regulatory catalog or without a norm (the legacy gate)', () => {
     const d = makeDefaultDoc();
-    expect(buildCriticalReport(d, THEME_DEFAULT)).toEqual({ ok: false, reason: 'Enable the Regulatory catalog and select at least one norm first (Parameters).' });
+    expect(buildCriticalReport(d, THEME_DEFAULT))
+      .toEqual({ ok: false, reason: 'Enable the Regulatory catalog and select at least one norm first (Parameters).' });
     expect(buildCriticalReport({ ...doc('industry-med'), selectedNorms: [] }, THEME_DEFAULT).ok).toBe(false);
     expect(buildCriticalReport({ ...doc('industry-med'), regUse: false } as ReturnType<typeof doc>, THEME_DEFAULT).ok).toBe(false);
   });

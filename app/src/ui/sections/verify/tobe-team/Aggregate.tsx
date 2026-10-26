@@ -14,8 +14,8 @@ const help = (
   </>
 );
 const f2 = (v: number) => v.toFixed(2);
-/** The signed human-FTE change from AS-IS. */
-const delta = (human: number, asis: number) => `${human - asis >= 0 ? '+' : ''}${f2(human - asis)}`;
+/** The signed human-FTE change from AS-IS (the domain's `delta`). */
+const signed = (d: number) => `${d >= 0 ? '+' : ''}${f2(d)}`;
 
 /**
  * TO-BE team composition — aggregate view (R-conso): human FTE and agent vFTE by skill
@@ -24,11 +24,11 @@ const delta = (human: number, asis: number) => `${human - asis >= 0 ? '+' : ''}$
 export default function TobeTeamAggregate() {
   const [year, setYear] = useState(2), a = useVerifyView(tobeTeamAgg, year);
   if (!a) return null;
-  const t = a.total, auto = `${Math.round(t.asis > 0 ? (t.agent / t.asis) * 100 : 0)}%`;
+  const t = a.total, auto = `${Math.round(t.autoPct)}%`;
   const rows = a.skills.map((r) => ({
-    key: r.skill, cells: [<b>{r.skill}</b>, f2(r.asis), f2(r.human), f2(r.agent), delta(r.human, r.asis), `${Math.round(r.autoPct)}%`],
+    key: r.skill, cells: [<b>{r.skill}</b>, f2(r.asis), f2(r.human), f2(r.agent), signed(r.delta), `${Math.round(r.autoPct)}%`],
   }));
-  const foot = [`Total — ${a.label}`, f2(t.asis), f2(t.human), f2(t.agent), delta(t.human, t.asis), auto];
+  const foot = [`Total — ${a.label}`, f2(t.asis), f2(t.human), f2(t.agent), signed(t.delta), auto];
   return (
     <SectionFrame title="👥 TO-BE team composition (by skill)" help={help} result={
       <>

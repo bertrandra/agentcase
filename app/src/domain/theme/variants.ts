@@ -46,13 +46,15 @@ export const CALLOUT = { bar: {}, tint: { 'callout-rail': '{border-thin}' } } sa
 /** Density: paddings of sections, cards, notes, table cells (row height), controls, buttons, tabs and badges, and the spacing between blocks. */
 export const DENSITY_SETS = {
   compact: {
-    'pad-section': '1.25rem', 'pad-card': '.85rem', 'pad-callout': '.75rem', 'pad-table-head': '6px 8px', 'pad-table-cell': '4px 8px', 'pad-matrix-cell': '1px 3px',
+    'pad-section': '1.25rem', 'pad-card': '.85rem', 'pad-callout': '.75rem', 'pad-table-head': '6px 8px', 'pad-table-cell': '4px 8px',
+    'pad-matrix-cell': '1px 3px',
     'pad-control': '5px 8px', 'pad-button': '6px 12px', 'pad-button-compact': '4px 8px', 'pad-tab': '6px 12px', 'pad-badge': '2px 7px',
     'space-block': '1rem', 'space-heading': '1rem', 'space-field': '.8rem', 'space-row': '8px',
   },
   comfortable: {},
   spacious: {
-    'pad-section': '2.75rem', 'pad-card': '1.75rem', 'pad-callout': '1.4rem', 'pad-table-head': '12px 14px', 'pad-table-cell': '11px 14px', 'pad-matrix-cell': '4px 6px',
+    'pad-section': '2.75rem', 'pad-card': '1.75rem', 'pad-callout': '1.4rem', 'pad-table-head': '12px 14px', 'pad-table-cell': '11px 14px',
+    'pad-matrix-cell': '4px 6px',
     'pad-control': '11px 14px', 'pad-button': '12px 22px', 'pad-button-compact': '8px 12px', 'pad-tab': '12px 22px', 'pad-badge': '4px 11px',
     'space-block': '2rem', 'space-heading': '2rem', 'space-field': '1.6rem', 'space-row': '16px',
     // client presentations: bigger key figures

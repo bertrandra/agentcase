@@ -53,14 +53,17 @@ export function GeneratorPanel({ def }: { def: ThemeDef }) {
       </fieldset>
       <ul className="ac-bt-gen-swatches" aria-label="Generated colours">
         {SWATCHES.map((k) => (
-          <li key={k}><span className="ac-bt-swatch" style={cssVars({ '--dyn-swatch': palette[k] })} aria-hidden="true" />{/* dynamic: the generated colour */}<span>{swatchName(k)}</span> <code>{palette[k]}</code></li>
+          <li key={k}><span className="ac-bt-swatch" style={cssVars({ '--dyn-swatch': palette[k] })} aria-hidden="true" />{/* dynamic: the generated colour */}
+            <span>{swatchName(k)}</span> <code>{palette[k]}</code></li>
         ))}
       </ul>
       <div className="ac-bt-actions">
         <button type="button" data-tone="primary" onClick={apply}>Apply to theme</button>
         {draft && <button type="button" className="ac-btn" onClick={clearDraft}>Discard preview</button>}
       </div>
-      <p className="ac-muted" role="status">{draft ? 'The live preview shows the generated palette: not applied yet.' : def.generator ? `Last applied: ${def.generator.seed}, contrast ${def.generator.contrast}, ${HARMONY_LABELS[def.generator.harmony]}.` : ''}</p>
+      <p className="ac-muted" role="status">
+        {draft ? 'The live preview shows the generated palette: not applied yet.'
+        : def.generator ? `Last applied: ${def.generator.seed}, contrast ${def.generator.contrast}, ${HARMONY_LABELS[def.generator.harmony]}.` : ''}</p>
     </section>
   );
 }

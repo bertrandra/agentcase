@@ -60,14 +60,16 @@ describe('restitution of the run', () => {
   });
   it('with a run it follows "Knowledge transfer" and carries the domain figures, staleness and verdicts', async () => {
     await runPortfolioSimulation({ draws: 150, seed: 5 });
-    const run = pfSimStore.getState().run!, wb = await book(), names = wb.worksheets.map((w) => w.name), line = (l: string) => rows(wb, 'Portfolio stress').find((r) => r[0] === l) ?? [];
+    const run = pfSimStore.getState().run!, wb = await book(), names = wb.worksheets.map((w) => w.name),
+      line = (l: string) => rows(wb, 'Portfolio stress').find((r) => r[0] === l) ?? [];
     expect(names.indexOf('Portfolio stress')).toBe(names.indexOf('Knowledge transfer') + 1);
     expect(line('Portfolio P10')[1]).toBe(run.stats.p10);
     expect(line('P(net benefit < 0)')[1]).toBe(run.stats.pNetNeg);
     expect(line('Correlation rho')[1]).toBe(run.rho);
     expect(line('Stale (portfolio changed since the run)')[1]).toBe('No');
     expect(line('Risk reduction (portfolio P10 - sum of product P10)')[1]).toBe(run.diversification.reduction);
-    const verdict = rows(wb, 'Portfolio stress').find((r) => r[0] === 'Portfolio' && typeof r[2] === 'number' && r[1] !== undefined && typeof r[1] === 'string')!;
+    const verdict = rows(wb, 'Portfolio stress').find((r) => r[0] === 'Portfolio' && typeof r[2] === 'number' && r[1] !== undefined &&
+      typeof r[1] === 'string')!;
     expect(verdict[2]).toBe(pfDecision(pfNow(), run, { kind: 'portfolio' })!.confidence);
     expect(rows(wb, 'Portfolio stress').filter((r) => run.products.some((p) => p.name === r[0]))).toHaveLength(run.products.length);
     setProductOffset(pfNow().products[1]!.id, 3);

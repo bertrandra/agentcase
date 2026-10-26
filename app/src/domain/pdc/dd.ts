@@ -89,7 +89,9 @@ export function ddRows(c: Ctx, base: DdDoc & AssumptionBase, ok: Validated = {})
     return { id: `fg-${k}`, g: 'Factory generation parameters', l: FG_LABEL[k] ?? k, v, where: 'FG_PARAMS', cls: 'PC4',
       eff: 'Shapes the generated factory data. No euro path — illustration only.',
       edit: 'here', ed: { a: v, t: null, da: base.FG_PARAMS?.[k] as number, field: { kind: 'fg', key: k } },
-      ask: 'Confirm this reflects how delivery actually runs in your organisation — or provide the measured value from your tooling so it can replace the estimate.' };
+      ask:
+        'Confirm this reflects how delivery actually runs in your organisation — or provide the measured value from your tooling so it can replace the ' +
+          'estimate.' };
   });
   return [...coef, ...ceilingRows(c, ceilTarget(c)), ...dora, ...thr, ...qual, ...inputs, ...fg];
 }

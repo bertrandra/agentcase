@@ -12,7 +12,8 @@ const theme = (f: string): string => resolveCss(read(`../../src/ui/theme/${f}`))
 const legacy = [...read('../../../AgentCase_v18_13_EN.html').matchAll(/<style[^>]*>([\s\S]*?)<\/style>/g)].map((m) => m[1]).join('\n');
 const content = theme('content.css'), a11y = theme('a11y.css'), tokens = theme('tokens.css'), shell = theme('shell.css');
 
-const flat = (v: string): string => v.replace(/\s+/g, '').replace(/\.(\d)/g, '0.$1').replace(/(\d)0+(?=px|rem|em|%|s\b)/g, '$1').toLowerCase().replace(/0\.(\d)/g, '.$1');
+const flat = (v: string): string => v.replace(/\s+/g, '').replace(/\.(\d)/g, '0.$1').replace(/(\d)0+(?=px|rem|em|%|s\b)/g, '$1').toLowerCase()
+  .replace(/0\.(\d)/g, '.$1');
 /** The declarations of the first rule whose selector is exactly `selector` (whitespace-insensitive). */
 function decls(css: string, selector: string): Map<string, string> {
   const want = flat(selector);
@@ -39,7 +40,8 @@ describe('section content keeps the legacy values', () => {
   });
   it('title and help button', () => {
     same('h2', '.ac-section h1', ['font-size', 'font-weight', 'color']);
-    same('.sec-help-btn', '.ac-section .ac-help-btn', ['width', 'height', 'border', 'border-radius', 'background', 'color', 'font-size', 'font-weight', 'line-height', 'cursor']);
+    same('.sec-help-btn', '.ac-section .ac-help-btn', ['width', 'height', 'border', 'border-radius', 'background', 'color', 'font-size', 'font-weight',
+      'line-height', 'cursor']);
     same('.sec-help-panel', '.ac-section .ac-help', ['padding', 'background', 'border', 'border-left', 'border-radius']);
   });
   it('headings keep the legacy scale whatever the outline level (h3 -> h2, h4 -> h3)', () => {
@@ -78,23 +80,28 @@ describe('section content keeps the legacy values', () => {
   });
   it('forms: label, inputs, focus glow, check label', () => {
     same('label', '.ac-section .ac-field-l', ['font-size', 'color', 'font-weight', 'text-transform', 'letter-spacing']);
-    same('input[type=number],input[type=range],select', ".ac-section :is(input[type='number'], input[type='text'], input[type='range'], input:not([type]), select, textarea)", ['padding', 'border', 'border-radius', 'background']);
+    same('input[type=number],input[type=range],select',
+      ".ac-section :is(input[type='number'], input[type='text'], input[type='range'], input:not([type]), select, textarea)",
+      ['padding', 'border', 'border-radius', 'background']);
     same('input:focus,select:focus', ".ac-section :is(input[type='number'], input[type='text'], input:not([type]), select, textarea):focus", ['box-shadow']);
     expect(content).toMatch(/:focus \{ border-color: #0058ab; box-shadow: 0 0 0 3px rgba\(29, 184, 242, \.3\); \}/);
     expect(content).not.toMatch(/outline: none/);   // the focus ring of the accessibility pass is never removed
   });
   it('buttons and badges', () => {
-    same('.btn', '.ac-section :is(.ac-btn, button:not([class], [style], [role], [data-tone]):not(td button))', ['padding', 'border-radius', 'font-size', 'font-weight', 'cursor']);   // legacy `border: none`, here `border: 0`
+    same('.btn', '.ac-section :is(.ac-btn, button:not([class], [style], [role], [data-tone]):not(td button))',
+      ['padding', 'border-radius', 'font-size', 'font-weight', 'cursor']);   // legacy `border: none`, here `border: 0`
     same('.btn-primary', '.ac-section :is(.ac-btn.ac-btn-primary, button[data-tone=\'primary\'])', ['background', 'color']);
     same('.btn-primary:hover', '.ac-section :is(.ac-btn.ac-btn-primary, button[data-tone=\'primary\']):hover:not(:disabled)', ['background']);
     same('.btn-del', ".ac-section button[data-tone='danger']", ['color', 'background', 'border', 'border-radius', 'font-weight']);
     same('.badge', '.ac-section .ac-badge', ['padding', 'border-radius', 'font-size', 'font-weight', 'text-transform', 'letter-spacing']);
-    for (const [legacyTone, tone] of [['.badge.va', 'teal'], ['.badge.nva', 'brick'], ['.badge.nvan', 'amber'], ['.badge.dev', 'blue'], ['.badge.setup', 'grey']] as const)
+    for (const [legacyTone, tone] of [['.badge.va', 'teal'], ['.badge.nva', 'brick'], ['.badge.nvan', 'amber'], ['.badge.dev', 'blue'],
+      ['.badge.setup', 'grey']] as const)
       same(legacyTone, `.ac-badge[data-tone='${tone}']`, ['color', 'background']);
   });
   it('toast: the legacy sbToast look', () => {
     const live = shell.toLowerCase().match(/^\.ac-live \{[^}]*\}/m)?.[0] ?? '';
-    for (const v of ['bottom: 26px', 'background: #0058ab', 'border-radius: 8px', 'font: 600 13px calibri, sans-serif', 'box-shadow: 0 6px 22px rgba(20, 30, 70, .28)']) expect(live).toContain(v);
+    for (const v of ['bottom: 26px', 'background: #0058ab', 'border-radius: 8px', 'font: 600 13px calibri, sans-serif',
+      'box-shadow: 0 6px 22px rgba(20, 30, 70, .28)']) expect(live).toContain(v);
     expect(shell).toMatch(/\.ac-live:not\(:empty\) \{ padding: 9px 18px; \}/);
   });
 });

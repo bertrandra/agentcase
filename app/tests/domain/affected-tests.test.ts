@@ -35,7 +35,8 @@ describe('affected tests: selection on the real graph', () => {
     expect(foundation.full).toBe(true);
     expect(foundation.reasons.join(' ')).toMatch(/foundation/);
     expect(foundation.selected).toHaveLength(foundation.total);
-    for (const f of ['package.json', 'tsconfig.json', 'vite.config.ts', 'tests/helpers/fixtures.ts', 'fixtures/cases/golden.json', 'scripts/dup.mjs', 'src/generated/dependencies.json', 'src/domain/zones/catalog.json']) expect(triggersFull(f, RULE), f).toBe(true);
+    for (const f of ['package.json', 'tsconfig.json', 'vite.config.ts', 'tests/helpers/fixtures.ts', 'fixtures/cases/golden.json', 'scripts/dup.mjs',
+      'src/generated/dependencies.json', 'src/domain/zones/catalog.json']) expect(triggersFull(f, RULE), f).toBe(true);
     expect(run(['some/unknown.cfg']).reasons.join(' ')).toMatch(/unknown file/);
     expect(run(['package.json']).full).toBe(true);
   }, 90000);
@@ -60,7 +61,8 @@ describe('affected tests: selection on the real graph', () => {
 
 describe('affected tests: the decision function', () => {
   const zones = [{ id: 'x', modules: 1, tmed: 0, tmax: 0 }, { id: 'y', modules: 1, tmed: 0, tmax: 0 }];
-  const d = { tests: [['a', '0', ''], ['b', '1', ''], ['c', '0-1', ''], ['k', '', '']], zones, sections: [], edges: [['x', 'y', 'z', 1]], figures: [], ignored: [], schema: 1,
+  const d = { tests: [['a', '0', ''], ['b', '1', ''], ['c', '0-1', ''], ['k', '', '']], zones, sections: [], edges: [['x', 'y', 'z', 1]], figures: [],
+    ignored: [], schema: 1,
     counts: { files: 0, tagged: 0, tests: 4 } } as unknown as DepsData;
   const cfg: SelectionConfig = { maxShare: 0.8, contractTests: ['k', 'missing'], fullZones: ['wide'], fullSuite: ['package.json', 'fixtures/'] };
   it('selects the tests touching the zone, the contract tests that exist, and extras', () => {

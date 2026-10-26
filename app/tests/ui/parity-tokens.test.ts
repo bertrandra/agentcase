@@ -25,13 +25,15 @@ describe('shell chrome keeps the legacy values', () => {
     expect(rule('.ac-brand')).toMatch(/font-size: 30px; font-weight: 300; letter-spacing: -\.01em/);
   });
   it('KPI bar: sticky blue gradient, 16px/700 values, 9.5px uppercase labels', () => {
-    for (const v of ['position: sticky', 'z-index: 40', 'linear-gradient(135deg, #0058ab, #00488c)', 'padding: .6rem 1.5rem']) expect(rule('.ac-kpis')).toContain(v);
+    for (const v of ['position: sticky', 'z-index: 40', 'linear-gradient(135deg, #0058ab, #00488c)',
+      'padding: .6rem 1.5rem']) expect(rule('.ac-kpis')).toContain(v);
     expect(shell).toMatch(/\.ac-kpi-v \{ font-size: 16px; font-weight: 700; \}/);
     expect(shell).toMatch(/\.ac-kpi-l \{ font-size: 9\.5px; text-transform: uppercase; letter-spacing: \.6px;/);
   });
   it('sidebar: 248px white card, group labels 10.5px/800, items 12.5px/600, hover and active colours', () => {
     expect(rule('.ac-nav')).toMatch(/width: 248px.*border-radius: 16px.*box-shadow: 0 2px 10px rgba\(18, 26, 56, \.08\)/s);
-    expect(rule('.ac-nav-group')).toMatch(/font-size: 10\.5px; font-weight: 800; text-transform: uppercase; letter-spacing: \.8px.*color: #121a38; background: #eef1f7/);
+    expect(rule('.ac-nav-group')).toMatch(
+      /font-size: 10\.5px; font-weight: 800; text-transform: uppercase; letter-spacing: \.8px.*color: #121a38; background: #eef1f7/);
     expect(rule('.ac-nav-group:hover')).toMatch(/background: #e0e7f5; color: #0058ab/);
     expect(rule('.ac-nav button')).toMatch(/font-size: 12\.5px; font-weight: 600; line-height: 1\.3/);
     expect(rule('.ac-nav button:hover')).toMatch(/background: #f0f4ff; color: #0058ab/);

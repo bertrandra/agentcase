@@ -14,7 +14,8 @@ const FOUR = ['golden', 'ctx-msi', 'curve-logistic', 'industry-med'];
 // industry-med: opening the tab in the legacy page re-fits the locked automation potential (75 -> 46); the case itself holds 75.
 const IGNORE: Record<string, number[]> = { 'industry-med': [46] };
 const body = (c: Element) => tablesOf(c)[0]!.slice(1);
-const NO_PACK = /📤 Export pack \(Excel\)|📥 Re-import annotated pack/g;   // the legacy text of the pack buttons (they are rendered by PackButtons, covered in excel-buttons.test.tsx)
+// the legacy text of the pack buttons (they are rendered by PackButtons, covered in excel-buttons.test.tsx)
+const NO_PACK = /📤 Export pack \(Excel\)|📥 Re-import annotated pack/g;
 
 describe('duediligence section', () => {
   it.each(FOUR)('shows every figure the legacy section showed (%s)', (id) => {
@@ -27,7 +28,8 @@ describe('duediligence section', () => {
     loadCase(id);
     const { container } = render(<Dd />), e = pdc<{ tr: string[][]; top: string }>('pdc_dd', id);
     expect(body(container)).toEqual(e.tr);
-    expect(sq(container.textContent!)).toContain(sq(e.top.replace(NO_PACK, '').split('Twogauges')[0]!.split('Items to confirm')[1]!.replace(/^/, 'Items to confirm')).slice(0, 120));
+    expect(sq(container.textContent!))
+      .toContain(sq(e.top.replace(NO_PACK, '').split('Twogauges')[0]!.split('Items to confirm')[1]!.replace(/^/, 'Items to confirm')).slice(0, 120));
   });
   it.each(PDC_FIXTURES)('after the € sensitivity run, weights and gauges match the legacy (%s)', (id) => {
     loadCase(id);
@@ -35,7 +37,8 @@ describe('duediligence section', () => {
     act(() => computeSensitivity());
     expect(body(container)).toEqual(e.tr);
     const top = sq(container.textContent!), want = sq(e.top.replace(NO_PACK, '').replace(/Measured \d{4}-\d{2}-\d{2}/, 'Measured'));
-    for (const part of want.split(/Itemstoconfirm/)[1]!.split('Twogauges,twoquestions.')) expect(top.replace(/Measured\d{4}-\d{2}-\d{2}/, 'Measured')).toContain(part.slice(0, 160));
+    for (const part of want.split(/Itemstoconfirm/)[1]!.split('Twogauges,twoquestions.')) expect(top.replace(/Measured\d{4}-\d{2}-\d{2}/, 'Measured'))
+      .toContain(part.slice(0, 160));
   });
   it('editing a coefficient goes through the controller, moves the model-fed value and is undoable', () => {
     loadCase('golden');

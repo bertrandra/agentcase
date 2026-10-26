@@ -1,4 +1,5 @@
 import { useEffect } from 'react';
+import { getNotice, onNotice } from '@/controllers/notices';
 import '../theme/nav.css';
 import '../theme/a11y.css';
 import '../theme/portfolio.css';
@@ -8,7 +9,7 @@ import { ThemeProvider } from '../brand/ThemeRuntime';
 import { SectionHost } from '../zones/SectionHost';
 import { sectionById } from '../zones/registry';
 import { useNavModel } from '../zones/navModel';
-import { setMenuHidden, useUi } from '../uiState';
+import { setMenuHidden, toast, useUi } from '../uiState';
 import { CalcStaleBanner } from './CalcStaleBanner';
 import { OpenNotesBanner } from './OpenNotesBanner';
 import { DockZone } from './DockZone';
@@ -34,6 +35,8 @@ function Frame() {
   const toastText = useUi((s) => s.toast), active = useUi((s) => s.activeSection), hidden = useUi((s) => s.menuHidden), walking = useUi((s) => s.wiz.active);
   const { persona, compact } = useNavModel(), collapsed = hidden || walking;
   useEffect(() => { setMenuHidden(compact); }, [persona, compact]);   // the persona's "hide menu" default, live when it is edited
+  // a notice from outside a user action (another tab changed the document, the autosave failed) is announced in the live region below
+  useEffect(() => onNotice(() => { const n = getNotice(); if (n) toast(n.text, 6000); }), []);
   return (
     <div className={`ac-shell${collapsed ? ' is-compact' : ''}`}>
       <a className="ac-skip" href="#main">Skip to content</a>

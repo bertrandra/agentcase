@@ -1,7 +1,7 @@
 /** @calc-zone time-engine @owner baseline-cost, run-cost-per-year */
 import type { Ctx } from '../ctx';
 import { khRunAnnual } from '../knowledge';
-import { targetBlendedTJM, teamInCost } from '../location';
+import { blendedDayRate, targetBlendedTJM, teamInCost } from '../location';
 import type { Drivers } from './drivers';
 import { supApplyCeiling, supRunCostFor } from './supervision';
 
@@ -14,7 +14,7 @@ export function modelTrajectory(c: Ctx, d: Drivers) {
   const sup = supApplyCeiling(c, yearAgentVfteRaw, base.etp);
   const yearAgentVfte = sup ? sup.vfte : yearAgentVfteRaw, yearETP = sup ? sup.etp : yearETPRaw;
   const PROD_FACTOR = s.COEF.prodFactor as number;
-  const blendedTJM = base.etp * wd > 0 ? base.cost / (base.etp * wd) : 0;
+  const blendedTJM = blendedDayRate(s, inp);
   const tgtTJM = targetBlendedTJM(s, c.rateScale);
   const yearTeamCost = yearETP.map((e) => e * tgtTJM * wd);
   const baseArtMonth = Math.max(1, Math.round(base.etp * 6));

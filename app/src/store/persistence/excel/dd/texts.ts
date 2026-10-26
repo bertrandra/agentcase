@@ -14,7 +14,8 @@ export function ddEvidence(r: DdRow): string {
   if (r.ask) return r.ask;
   const known = EVIDENCE[r.id];
   if (known) return known;
-  if (r.id.startsWith('an-')) return 'Provide the current measured value and the target committed for this metric (tooling export: CI/CD, ticketing, quality dashboard). Both ends of the pair are currently estimates.';
+  if (r.id.startsWith('an-')) return 'Provide the current measured value and the target committed for this metric (tooling export: CI/CD, ticketing, ' +
+    'quality dashboard). Both ends of the pair are currently estimates.';
   if (r.id.startsWith('in-')) return 'Confirm this input against the client’s own records (team roster, rate card, volumes, calendar).';
   return 'Confirm this value with the client.';
 }

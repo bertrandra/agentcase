@@ -15,7 +15,8 @@ vi.mock('@/ui/widgets/ChartPanel', async () => import('../helpers/chartStub'));
 let ids: [string, string, string], waves: [string, string];
 beforeEach(() => { ({ ids, waves } = threeProducts()); });
 afterEach(cleanup);
-const stat = (label: string): string => screen.getAllByText(label).find((e) => e.classList.contains('ac-stat-l'))!.parentElement!.querySelector('.ac-stat-v')!.textContent ?? '';
+const stat = (label: string): string =>
+  screen.getAllByText(label).find((e) => e.classList.contains('ac-stat-l'))!.parentElement!.querySelector('.ac-stat-v')!.textContent ?? '';
 const table = (name: RegExp) => screen.getByRole('table', { name });
 const totalRow = (name: RegExp) => table(name).querySelector('tfoot tr')!;
 const view = (kind: 'portfolio' | 'wave' | 'product', id = '') => act(() => { setDisplayScope(kind === 'wave' ? { kind, id } : { kind }); });

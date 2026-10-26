@@ -49,7 +49,8 @@ function write(f: NonNullable<DdRow['ed']>['field'], which: 'a' | 't', v: string
 function Num({ r, which }: { r: DdRow; which: 'a' | 't' }) {
   const ed = r.ed!, val = which === 'a' ? ed.a : ed.t, dflt = which === 'a' ? ed.da : ed.dt, edited = dflt !== undefined && +(val as number) !== +dflt;
   return (
-    <input type="number" step="any" aria-label={`${r.l}${which === 't' ? ' target' : ''}`} title={dflt !== undefined ? `default ${dflt}` : ''} value={val as number}
+    <input type="number" step="any" aria-label={`${r.l}${which === 't' ? ' target' : ''}`} title={dflt !== undefined ? `default ${dflt}` : ''}
+      value={val as number}
       onChange={(e) => write(ed.field, which, e.target.value)}
       className={edited ? 'ac-dd-num is-edited' : 'ac-dd-num'} />
   );
@@ -77,6 +78,8 @@ export function StateCell({ r, st }: { r: DdRow; st: DdStatus }) {
 export function WeightCell({ fresh, w }: { fresh: boolean; w: number | null }) {
   if (!fresh) return <span className="ac-dd-none">—</span>;
   if (w == null) return <span className="ac-alert-text" title="Not reachable without refactoring the calculation path">n/m</span>;
-  if (w < 1) return <span className="ac-dd-soft" title="Zero measured impact in this configuration: the element drives the display only, or the module that consumes it is switched off for this case.">€0 here</span>;
+  if (w < 1) return <span className="ac-dd-soft"
+    title="Zero measured impact in this configuration: the element drives the display only, or the module that consumes it is switched off for this case.">€0
+    here</span>;
   return <strong>{fmtK(w)}</strong>;
 }

@@ -67,13 +67,16 @@ export function setBaselineSnapshot(id: string): boolean {
 
 /**
  * Headline figures of two snapshots side by side; 'current' stands for the case being edited (the ACTIVE product). A multi-product capture is
- * compared on that same product. Null when an id is unknown.
+ * compared on that same product. Null when an id is unknown. `current` / `productId` default to the store's; a component passes the values it
+ * subscribed to, so that its memo depends on them.
  */
-export function compareSnapshots(a: string, b: string): CompareRow[] | null {
+export function compareSnapshots(
+  a: string, b: string, current: Doc = activeDoc(), productId = appStore().getState().portfolio.activeProductId,
+): CompareRow[] | null {
   const pick = (id: string): Doc | null => {
-    if (id === 'current') return activeDoc();
+    if (id === 'current') return current;
     const s = find(id);
-    return s ? compareCaseOf(s, appStore().getState().portfolio.activeProductId, fromSnapshot) : null;
+    return s ? compareCaseOf(s, productId, fromSnapshot) : null;
   };
   const x = pick(a), y = pick(b);
   return x && y ? compareCases(x, y) : null;

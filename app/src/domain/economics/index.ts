@@ -1,5 +1,5 @@
 /** @calc-zone economics-headline */
-export { roiCanonical, fmtRoiPct, fmtPayback, yLabel, roiVerdict, type Verdict } from './roi';
+export { displayedPayback, roiCanonical, fmtRoiPct, fmtPayback, fmtPaybackMonths, fmtPaybackYear, yLabel, roiVerdict, type Verdict } from './roi';
 export { monthlySeries, decimate, type MonthlyRow } from './monthlySeries';
 export { savingsBreakdown, type SavingsBreakdown, type SavingsYear } from './savings';
 export { economicsView, type EconomicsView } from './view';
