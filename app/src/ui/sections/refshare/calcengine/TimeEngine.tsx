@@ -19,7 +19,7 @@ function Surface() {
         { key: 'what', header: 'What it does', render: (e) => e.what }, { key: 'legacy', header: 'Legacy v18.11', render: (e) => <code>{e.legacy}</code> },
       ]} />
       <p>Registered curve families (<code>ADAPTERS</code>, legacy <code>TIME.adapters()</code>): {Object.keys(ADAPTERS).map((id) => <Badge key={id} tone="teal">{id}</Badge>)}</p>
-      <h3>Not ported</h3>
+      <h3>Not ported, or internal only</h3>
       <ul>{surface.notPorted.map((x) => <li key={x.legacy}><code>{x.legacy}</code> — {x.why}</li>)}</ul>
     </div>
   );
@@ -31,7 +31,7 @@ function Overlay() {
   const o = overlayRows(useCtx()), moved = o.rows.filter((r) => r.source === 'OVERLAID' && (r.delta ?? 0) > 0);
   return (
     <div>
-      <h3>Overlay contract <span className="ac-muted">— {o.rows.filter((r) => r.source === 'OVERLAID').length} of {o.rows.length} fields rewritten by the engine, plus {o.nested.length} nested</span></h3>
+      <h2>Overlay contract <span className="ac-muted">— {o.rows.filter((r) => r.source === 'OVERLAID').length} of {o.rows.length} fields rewritten by the engine, plus {o.nested.length} nested</span></h2>
       <p><code>model()</code> = <code>modelRaw()</code> + the curve overlay. Under any non-legacy curve the fields marked <b>OVERLAID</b> are replaced
         with values from <code>engineNow(ctx).year(y)</code>; the rest are <code>modelRaw()</code> pass-throughs. Under
         a <code>legacy.*</code> curve <code>model()</code> returns early and nothing is overlaid.</p>
@@ -52,7 +52,7 @@ function Overlay() {
 function Reach() {
   return (
     <div>
-      <h3>Which sections reach the engine</h3>
+      <h2>Which sections reach the engine</h2>
       <p>The legacy page traced this by instrumenting the engine while rendering every section. In the TypeScript build there is one access path, so
         no trace is needed: components read the case through <code>useCaseResult()</code> (headline, payback, NPV, model)
         and <code>useCtx()</code> (inputs and working artefacts), both memoised once per document. By the porting rules a section that calls neither

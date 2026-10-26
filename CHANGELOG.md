@@ -84,6 +84,31 @@ When releasing, follow [docs/BUMP_PROCEDURE.md](docs/BUMP_PROCEDURE.md) (§7 for
   `tests/ui/chart-registry.test.ts` checks every chart type and scale named in `src` against the registry.
 - `vite.config.ts`: the comment on test timeouts says which tests raise the 5 s default and why.
 
+### Lot 10 — Data Model and Calculation Engine sections
+
+- **🗄️ Data Model describes the current data model**, every table read live from the code. New tabs: 🗂️ Document (portfolio, product,
+  knowledge subset, wave, wave dependency, shared team line, hub: fields, required / optional, live value, meaning; file tags,
+  `_schemaVersion` and the migration chain; common keys of note such as `PERSONA_APP_SECTIONS`, `THEMES` / `THEME_SEQ`, the opening persona),
+  🎚️ Overridable keys (`OVERRIDABLE_KEYS`, form fields except the forbidden ones, the common-only keys incl. `MODEL` and so the discount rate,
+  with how many products override each key now), 🔄 Document vs view (`VIEW_FIELDS`: what the real writer saves of them, measured; never
+  undone, never broadcast; the autosave record fields and cap; the broadcast message kinds and fields with document id and revision),
+  💽 Files & workbooks (formats, and every sheet of the parameters, results and cost-model workbooks from the writers' name constants, with
+  the portfolio sheets' columns, `SharedTeam` and `Waves` included), 📦 Calculation packages (the live package's fields and which of them
+  opening a file compares, measured on `samePackage`; per-product and portfolio packages).
+- The four existing tables are live too: the variable registry is read from `domain/pdc/variables.ts` (the frozen copy
+  `content/refshare/variables.json` is removed), the coefficients from `COEF_DEFAULT`, the namespaces from the document's `MODEL`; texts
+  refreshed (no more "~82 keys"); the stale "v18.8" badge is replaced by the build's live version tag (also in ⚙️ Calculation Engine).
+- Runtime twins of the portfolio types (`domain/portfolio/fields.ts`, `FieldSet<T>`: a field added to a type without its twin, or with
+  another optionality, fails `tsc`), `AUTOSAVE_RECORD_FIELDS`, `BROADCAST_KINDS` / `BROADCAST_FIELDS`, `PF_RESULT_SHEETS` (the portfolio
+  results sheet names, now used by the writer). Read-only facts for the UI in `controllers/dataModel.ts`.
+- **⚙️ Calculation Engine**: new 📏 Single sources tab (one headline owner, one cash-flow kernel, last-recovery payback, `displayedPayback`,
+  default discount rate, split tolerance, horizon reader, portfolio consolidation, stress cut, portfolio scenarios / sensitivity), each with
+  its owner module (from the generated `@owner` graph) and a fact computed live by the owner. Help text and function surface corrected
+  (payback rule, thin pass ported, overlay set declared and tested, no runtime DEP graph); heading levels fixed (axe `heading-order`).
+- Tests: `datamodel-layers.test.ts` (a portfolio with every optional field round-trips through the real writer and reader holding exactly
+  the documented fields; every field has its meaning; autosave and broadcast carry only documented fields; type-level exhaustiveness),
+  `datamodel-tabs.test.tsx` (every tab axe clean in both sections, live counts follow an override, both sections under a Portfolio view).
+
 ## [v20.18.1] 2026-10-25 — Architecture lot 9: tidy-up (no change to the app)
 
 - `tools/a11y.mjs` writes its default report to `test-results/a11y/report.json` (git-ignored): a local audit no longer rewrites a tracked file.

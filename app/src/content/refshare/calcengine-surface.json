@@ -5,8 +5,8 @@
   {"name": "modelRaw", "kind": "domain", "legacy": "modelRaw()", "what": "The flat annual model: ceiling, weights, supervision, run cost, token cost, verification tax, loops — before any curve is applied."},
   {"name": "model", "kind": "domain", "legacy": "model()", "what": "modelRaw() plus the Time-Engine curve overlay: under a non-legacy curve the annual arrays are replaced by the engine's own yearly sums and samples."},
   {"name": "engineNow", "kind": "domain", "legacy": "teEngineNow()", "what": "The standard entry point: an engine for the active curve, always built from the RAW model (never the overlaid one, which would apply the curve twice)."},
-  {"name": "paybackMonthsCanonical", "kind": "domain", "legacy": "paybackMonthsCanonical()", "what": "THE single canonical payback month (1-based) or null — same one-source-of-truth discipline as NPV."},
-  {"name": "npvCanonical", "kind": "domain", "legacy": "npvCanonical()", "what": "THE single canonical NPV: monthly-discounted at the case discount rate (MODEL.CASE.discountRate, else 8 %)."},
+  {"name": "paybackMonthsCanonical", "kind": "domain", "legacy": "paybackMonthsCanonical()", "what": "The case's payback month (1-based) or null: the engine's payback, computed by the cash-flow kernel (paybackMonthOf)."},
+  {"name": "npvCanonical", "kind": "domain", "legacy": "npvCanonical()", "what": "The case's NPV: monthly-discounted at the case discount rate (MODEL.CASE.discountRate, else DEFAULT_DISCOUNT_RATE, 8 %) by the cash-flow kernel."},
   {"name": "phaseScopeOf", "kind": "domain", "legacy": "phaseScope()", "what": "Phase-scope averages (automatable share, supervision, effort) of the selected artefacts."},
   {"name": "timeFor", "kind": "time", "legacy": "TIME.for()", "what": "Builds a FRESH engine for {mode, curveModelId, model}. No caching: the engine is immutable, invalidation is by reconstruction."},
   {"name": "buildK", "kind": "time", "legacy": "TIME kernel constants", "what": "Freezes the constants of one engine instance (ramps, curve anchors, rates, costs, horizon) from a context and a model."},
@@ -14,16 +14,16 @@
   {"name": "monthAt", "kind": "engine", "legacy": "TIME.current.monthAt()", "what": "One monthly row (adoption, maturity level, vFTE, costs, net savings). Throws outside 1..horizon."},
   {"name": "months", "kind": "engine", "legacy": "TIME.current.months()", "what": "All monthly rows."},
   {"name": "cumulativeAt", "kind": "engine", "legacy": "TIME.current.cumulativeAt()", "what": "Cumulative net savings at month t."},
-  {"name": "payback", "kind": "engine", "legacy": "paybackMonthsCanonical()", "what": "First month where the cumulative net savings turn non-negative, or null."},
+  {"name": "payback", "kind": "engine", "legacy": "paybackMonthsCanonical()", "what": "The month after the last month whose cumulative net savings are negative (the cumulative stays >= 0 from it to the horizon end), or null."},
   {"name": "npv", "kind": "engine", "legacy": "npvCanonical()", "what": "Monthly-discounted NPV of the net savings."},
-  {"name": "roi", "kind": "engine", "legacy": "TIME.current.roi()", "what": "Net savings over the horizon divided by the setup total."},
+  {"name": "roi", "kind": "engine", "legacy": "TIME.current.roi()", "what": "Net cash-flow over the horizon divided by the setup total (null when nothing was invested), by the cash-flow kernel."},
   {"name": "year", "kind": "engine", "legacy": "teYears()[y]", "what": "One annual row, aggregated from the months (the annual view is a reduce over months, never a parallel calculation)."},
   {"name": "years", "kind": "engine", "legacy": "teYears()", "what": "Every annual row 1..horizon. The last one is the canonical end-of-horizon read (legacy teEndYearRow())."},
   {"name": "milestones", "kind": "engine", "legacy": "TIME.current.milestones()", "what": "Adoption thresholds, maturity-level crossings, first agent vFTE and payback, in month order."},
-  {"name": "headline", "kind": "engine", "legacy": "TIME.current.headline()", "what": "Payback, NPV at the case discount rate, ROI and total savings of the horizon."}
+  {"name": "headline", "kind": "engine", "legacy": "TIME.current.headline()", "what": "Payback, NPV at a given rate, ROI and total net cash-flow of the horizon (the calculation package reads it). Screens read headlineOf()."}
  ],
  "notPorted": [
-  {"legacy": "TIME.thin() / teThinNow()", "why": "the allocation-free aggregate pass for Monte Carlo — ported with the Stress group"},
+  {"legacy": "TIME.thin() / teThinNow()", "why": "ported as domain/time/thin.ts (thinAggregate): the row-free pass the Monte Carlo runs once per draw, through the cash-flow kernel; internal, not a public entry point"},
   {"legacy": "TIME.registerAdapter() / TIME.rebuild() / TIME.reset()", "why": "not needed: the adapters are a constant table and the engine is rebuilt per document by the memoised selectors"},
   {"legacy": "teSubTab()", "why": "a UI helper of the legacy page, not an engine function"}
  ],

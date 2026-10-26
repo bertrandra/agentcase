@@ -16,6 +16,11 @@ type Body = (
   | { kind: 'full'; reason: 'load' | 'sync'; to?: string; portfolio: Portfolio }
   | { kind: 'request'; to: string });
 type Msg = { tabId: string; v?: number; docId?: string; rev?: number } & Body;
+/** A message on the channel (exported for the type-level check of `BROADCAST_FIELDS`). */
+export type BroadcastMessage = Msg;
+/** The message kinds and every field a message may carry, at runtime (the 🗄️ Data Model section lists them; a test keeps them equal to `Msg`). */
+export const BROADCAST_KINDS = ['patch', 'full', 'request'] as const satisfies readonly NonNullable<Msg['kind']>[];
+export const BROADCAST_FIELDS = ['tabId', 'v', 'docId', 'rev', 'kind', 'base', 'patches', 'reason', 'to', 'portfolio'] as const;
 
 /** Messages a tab shows when another tab changed its document under it (an aria-live toast). */
 export const SYNC_NOTICES = {
