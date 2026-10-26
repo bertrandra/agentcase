@@ -3,15 +3,17 @@ import { STATUS_LIFECYCLE } from '@/domain/catalog';
 import { lifecycleBlend, statusTable } from '@/domain/lifecycle';
 import { setStatusPosture } from '@/controllers/tuneB';
 import { setLifecycleWeight } from '@/controllers/lifecycle';
+import { factorDirection, isEditedCoef, MATRIX_EPS } from '@/domain/scope/lifecycleView';
 import { useCtx } from '@/store/hooks';
 
-const tone = (v: number) => (v > 1.001 ? 'teal' : v < 0.999 ? 'brick' : 'neutral-750');
+const TONE = { up: 'teal', down: 'brick', flat: 'neutral-750' } as const;
+const tone = (v: number) => TONE[factorDirection(v, MATRIX_EPS)];
 
 interface CellProps { label: string; value: number; def: number; step: number; posture?: boolean; onValid: (n: number) => void }
 
 /** One coefficient: coloured up (teal) / down (brick) from 1.00, bold with an amber border once it differs from the benchmark. */
 function Cell({ label, value, def, step, posture, onValid }: CellProps) {
-  const edited = Math.abs(value - def) > 0.001;
+  const edited = isEditedCoef(value, def);
   return (
     <input type="number" aria-label={label} min={0} step={step} value={value} data-edited={edited || undefined}
       className={posture ? 'ac-lc-cell is-posture' : 'ac-lc-cell'} data-tone={tone(value)}

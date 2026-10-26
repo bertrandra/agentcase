@@ -39,8 +39,8 @@ export default function AnnualSection() {
           { key: 't', header: 'Team cost', align: 'right', render: (y) => fmtK(y.teamCost) },
           { key: 'k', header: 'Token cost', align: 'right', render: (y) => fmtE(y.tokenCost) },
           { key: 'i', header: 'Infra cost', align: 'right', render: (y) => fmtE(y.infrastructureCost) },
-          { key: 's', header: 'Setup', align: 'right', render: (_y, i) => (i === 0 ? fmtK(v.setup) : '—') },
-          { key: 'tot', header: 'Total', align: 'right', render: (y, i) => fmtK(y.totalRunCost + (i === 0 ? v.setup : 0)) },
+          { key: 's', header: 'Setup', align: 'right', render: (y) => (y.yearIndex === 1 || y.setupCost > 0 ? fmtK(y.setupCost) : '—') },
+          { key: 'tot', header: 'Total', align: 'right', render: (_y, i) => fmtK(v.yearCost[i] as number) },
           { key: 'sv', header: 'Saving vs AS-IS', align: 'right', render: (y) => <b>{fmtK(y.savings)}</b> },
         ]} />
       </>} />

@@ -29,15 +29,14 @@ export function CostTable({ S }: { S: Scenario[] }) {
 /** ROI trajectory: setup, savings, net, ROI, payback and cumulative cash-flow at the horizon end. */
 export function RoiTable({ S }: { S: Scenario[] }) {
   const rows = S.filter((s) => s.key !== 'asis'), H = (S[0] as Scenario).m.yearRun.length;
-  const net = (s: Scenario) => s.m.totBen - s.m.setup;
   const cols: Column<Scenario>[] = [
     { key: 'name', header: 'Scenario', render: (s) => <Name s={s} /> },
     { key: 'setup', header: 'Setup (€)', align: 'right', render: (s) => money(s.m.setup) },
     { key: 'sav', header: `${H}-yr savings (€)`, align: 'right', render: (s) => money(s.m.totBen) },
-    { key: 'net', header: 'Net (€)', align: 'right', render: (s) => fmtSigned(net(s)) },
+    { key: 'net', header: 'Net (€)', align: 'right', render: (s) => fmtSigned(s.m.net) },
     { key: 'roi', header: 'ROI (net)', align: 'right', render: (s) => <b className="ac-gain" data-sign={(s.m.roi ?? 0) >= 0 ? 'pos' : 'neg'}>{roiText(s.m)}</b> },
     { key: 'pb', header: 'Payback', align: 'right', render: (s) => fmtPayback(paybackShown(s.m), s.m.horizon * 12) },
-    { key: 'cum', header: `Cum. cash-flow Y${H} (€)`, align: 'right', render: (s) => fmtSigned(net(s)) },
+    { key: 'cum', header: `Cum. cash-flow Y${H} (€)`, align: 'right', render: (s) => fmtSigned(s.m.cumEnd) },
   ];
   return <DataTable columns={cols} rows={rows} rowKey={(s) => s.key} caption="ROI trajectory by scenario" />;
 }

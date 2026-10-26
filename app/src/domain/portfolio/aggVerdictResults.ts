@@ -34,10 +34,11 @@ export function aggregateResults(pf: Portfolio, c: Consolidated, scope: DisplayS
   const h = sel.headline, cores = sel.items.map((v) => resultsCore(v.run.ctx)), lasts = cores.map((r) => r.last);
   const last: SavingsYear = { grossAuto: sumBy(lasts, (l) => l.grossAuto), agentCost: sumBy(lasts, (l) => l.agentCost),
     relocation: sumBy(lasts, (l) => l.relocation), netAuto: sumBy(lasts, (l) => l.netAuto), total: sumBy(lasts, (l) => l.total),
-    model: sumBy(lasts, (l) => l.model) };
+    model: sumBy(lasts, (l) => l.model), other: sumBy(lasts, (l) => l.other) };
   return {
     label: sel.label, headline: h, last, excluded: selectionView(pf, c, scope)?.excluded ?? [],
-    team: { asis: sumBy(cores, (r) => r.team.asis), human: sumBy(cores, (r) => r.team.human), agent: sumBy(cores, (r) => r.team.agent) },
+    team: { asis: sumBy(cores, (r) => r.team.asis), human: sumBy(cores, (r) => r.team.human), delivery: sumBy(cores, (r) => r.team.delivery),
+      runTeam: sumBy(cores, (r) => r.team.runTeam), agent: sumBy(cores, (r) => r.team.agent) },
     rows: sel.items.map((v, i) => ({ id: v.id, name: v.name, wave: pf.waves.find((w) => w.id === v.waveId)?.name ?? '',
       status: (cores[i] as ReturnType<typeof resultsCore>).status,
       setup: v.summary.setup, net: v.summary.net, roi: v.summary.roi, paybackMonth: v.summary.paybackMonth, eff: v.run.automation().eff })),

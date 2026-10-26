@@ -1,4 +1,6 @@
 /** @calc-zone time-engine */
+import { AI_SKILL_PREMIUM } from '../rates';
+import { rampBoundsOf } from '../maturityBounds';
 import type { Ctx } from '../ctx';
 import { supCeilVfte } from '../model/supervision';
 import type { ModelResult } from '../types/model';
@@ -35,7 +37,7 @@ export function buildK(c: Ctx, m: ModelResult, opts: BuildOpts = {}): K {
     runFloorMin: num('runFloorMin', 0.5), runFloorPct: num('runFloorPct', 4), runOpsPerAgent: num('runOpsPerAgent', 0.15), runTeamFactor: num('runTeamFactor', 1),
     legacyRunFte: Math.max(0.5, m.base.etp * 0.06 + 0.5 + m.base.etp * 0.04), vTaxRate: conv.vTaxRate || 0, loopExtRate: conv.loopExtRate || 0,
     complianceTaxRate: num('complianceTaxPct', 0) / 100, aiActive: true,
-    rampCapPct: m.conv.ctx.rampCapPct || 100, maturityBounds: c.s.MATURITY_MAP?.rampBounds?.length ? c.s.MATURITY_MAP.rampBounds : [0, 25, 55, 80],
+    rampCapPct: m.conv.ctx.rampCapPct || 100, maturityBounds: rampBoundsOf(c.s),
     A: { baselineRun: m.baselineRun, yearETP: m.yearETP.slice(), yearAgentVfte: m.yearAgentVfte.slice(), yearTeamCost: m.yearTeamCost.slice(),
          yearToken: m.yearToken.slice(), yearInfraEff: m.yearInfraEff.slice(), yearRunAgenticCost: m.yearRunAgenticCost.slice(), khRunYr: conv.khRunYr.slice(),
          ktAvoidYr: conv.ktAvoidYr.slice(), vTaxYr: conv.vTaxYr.slice(), loopExtYr: conv.loopExtYr.slice() },
@@ -80,7 +82,7 @@ export function econ(t: number, K: K): Econ {
   const infraCost = K.runSizeMode === 'legacy' ? K.infraMonth : hasAgents ? K.infraMonth : 0;
   const khCost = hasAgents ? aAt(A.khRunYr, y) / 12 : 0;
   const runTeamFte = runTeamSizing(agentVfte, K);
-  const runTeamCost = runTeamFte * dayRate * 1.15 * K.wdMonth * K.runTeamFactor;
+  const runTeamCost = runTeamFte * dayRate * AI_SKILL_PREMIUM * K.wdMonth * K.runTeamFactor;
   const setupCost = t <= K.setupProfileMonths ? K.setupTotal / K.setupProfileMonths : 0;
   const totalRun = teamCost + tokenCost + infraCost + runTeamCost + khCost;
   const rawSav = Math.max(0, K.baselineRunMonth - totalRun);

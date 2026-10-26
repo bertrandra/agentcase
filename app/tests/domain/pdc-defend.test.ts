@@ -12,6 +12,7 @@ import { directionalSensitivity } from '@/domain/pdc/verifSensi';
 import { computeDdSensitivity } from '@/domain/pdc/ddSens';
 import { diffs } from '../helpers/economics';
 import { ctxOf, pdc, PDC_FIXTURES } from '../helpers/pdc';
+import { deviationFixtures } from '../helpers/deviations';
 
 const base = ddBase(makeDefaultDoc());
 interface LegacyRow { id: string; g: string; l: string; v: unknown; where: string; eff: string; edit: unknown; cls: string; share?: number; role?: string;
@@ -41,7 +42,11 @@ describe('due-diligence domain reproduces the legacy register', () => {
     interface V { checks: string[][]; chain: string[][]; sensi: string[][]; prov: string[][]; conv: string[][] }
     it.each(PDC_FIXTURES)('%s: the 16 checks, the calculation chain and the directional sensitivity', (id) => {
       const c = ctxOf(id), e = pdc<V>('pdc_verif', id);
-      expect(verifChecks(c).map((x, i) => [String(i + 1), x.name, x.exp, x.got, x.ok ? '✓ OK' : '✗ GAP'])).toEqual(e.checks.slice(1));
+      const checks = verifChecks(c), rows = checks.map((x, i) => [String(i + 1), x.name, x.exp, x.got, x.ok ? '✓ OK' : '✗ GAP']);
+      // DEV-TEAM-RUN-END: past a 3-year horizon check 6 adds the horizon end year's run team (the legacy year 3); it still reconciles.
+      const moved = deviationFixtures('DEV-TEAM-RUN-END').includes(id) ? [5] : [];
+      expect(rows.filter((_, i) => !moved.includes(i))).toEqual(e.checks.slice(1).filter((_, i) => !moved.includes(i)));
+      for (const i of moved) expect(checks[i]!.ok).toBe(true);
       const sensi = directionalSensitivity(c).map((x) => [x.variation, x.expected, x.observed,
         x.ok === null ? 'n/a (at limit)' : x.ok ? '✓ Consistent' : '✗ Abnormal']);
       if (model(c).horizon === 3) {

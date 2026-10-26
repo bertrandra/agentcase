@@ -18,7 +18,7 @@ export const SCOPE_VARS = [
   v('khMultiplier', 'Knowledge-hub multiplier', 'RATIO', 'x', 'knowledge', (c) => khMult(c)),
   v('avgAgentSuitability', 'Avg. agent-suitability in scope', 'PCT', '%', 'scope-sel', (c) => phaseScope(c.a, c.s).avgAgent),
   v('regArtifactsCount', 'Regulatory artifacts (current industry)', 'INT', '', 'compliance', (c) => industry(c)?.regArtifacts || 0),
-  v('maxAutomatablePct', 'Max automatable % (100 − glass ceiling)', 'PCT', '%', 'compliance', (c) => 100 - c.inp.p('glassCeiling')),
+  v('maxAutomatablePct', 'Max automatable % (100 − glass ceiling)', 'PCT', '%', 'compliance', (c) => 100 - model(c).ceiling),
   v('activePhaseCount', 'Active phases in scope', 'INT', '', 'phase-art', (c) => PHASES.filter((p) => activePhaseIds(c).has(p.id)).length),
   v('selectedArtefactsCount', 'SDLC artefacts selected', 'INT', '', 'scope-sel', (c) => c.a.selected.size),
   v('totalArtefactsAvailable', 'Total SDLC artefacts (catalog)', 'INT', '', 'scope-sel', () => SDLC_ARTEFACTS.length),

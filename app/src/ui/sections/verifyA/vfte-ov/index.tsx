@@ -22,7 +22,7 @@ export default function VfteOverviewSection() {
         <p className="ac-muted">Total effort (FTE-eq) = combined human + agent effort (conserved). Human/agent breakdown per period, contextual to your
           team.</p>
         <SimpleTable align={['left', 'right', 'right', 'right', 'center', 'center']} head={['Period', 'Human FTE', 'Agent vFTE', 'Total effort (FTE-eq)',
-          'Automation %', 'Reduction vs AS-IS']}
+          'Adoption %', 'Reduction vs AS-IS']}
           rows={rows.map((r) => ({ key: r.label, cells: [r.label, fmt1(r.human), fmt1(r.agent), fmt1(r.total), `${Math.round(r.ramp)}%`,
             `${fmt1(r.freed)} FTE`] }))} />
         <Panel title="Agent effort by artifact category (reference)">

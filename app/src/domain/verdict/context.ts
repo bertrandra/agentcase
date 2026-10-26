@@ -2,6 +2,7 @@
 import type { Ctx } from '../ctx';
 import { engagementCoef, engagementKey, hriEnabled, hriIndex } from '../engagement';
 import { khEnabled, khTargetCC } from '../knowledge';
+import { model } from '../model/overlay';
 import { statusLabel as lifecycleStatusLabel } from '../scope/lifecycleView';
 import { readinessIndex as readinessIndexOf, type ReadinessAns } from '../tune/readiness';
 import type { CaseState } from '../types/state';
@@ -38,7 +39,7 @@ export function eligibilityNote(c: Ctx): CtxLine | null {
 /** Business context the decision engine reads, in display order. */
 export function decisionContext(c: Ctx): CtxLine[] {
   const prem = engagementCoef(c).riskPremium || 0, out: CtxLine[] = [];
-  out.push({ k: 'Product status', v: lifecycleStatusLabel(c.s) }, { k: 'Glass ceiling', v: `${Math.round(c.inp.p('glassCeiling'))}%` });
+  out.push({ k: 'Product status', v: lifecycleStatusLabel(c.s) }, { k: 'Glass ceiling', v: `${Math.round(model(c).ceiling)}%` });
   const ri = readinessIndex(c.s);
   if (ri != null && !isNaN(ri)) out.push({ k: 'AI readiness index', v: `${Math.round(ri)}/100` });
   out.push({ k: 'Engagement context', v: `${engagementKey(c)} (+${Math.round(prem)} pts risk bar)` });

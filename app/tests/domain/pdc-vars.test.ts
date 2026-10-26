@@ -9,7 +9,8 @@ import { formatValue } from '@/ui/sections/configure/board/format';
 import { quantile } from '@/domain/model/numerics';
 import { daGet } from '@/domain/verifyB/anchors';
 import { engineNow } from '@/domain';
-import { anchored } from '../helpers/deviations';
+import { anchored, deviationFixtures } from '../helpers/deviations';
+import { caseFte } from '@/domain/economics/fte';
 import { diffs } from '../helpers/economics';
 import { ctxOf, pdc, PDC_FIXTURES } from '../helpers/pdc';
 
@@ -44,6 +45,14 @@ describe('all 166 registry variables reproduce the legacy', () => {
       }
       // DEV-YEAR-BEYOND-HORIZON: a Y2 figure is n/a on a 1-year case (the legacy repeated year 1).
       if ((w.id === 'netSavY2' || w.id === 'runCostY2') && engineNow(c).horizonYears < 2) return { ...w, value: null, text: formatValue(null, w.fmt) };
+      // DEV-TEAM-RUN-END: past a 3-year horizon the target team adds the horizon end year's run team (the FTE owner's after).
+      const domain = (r: VarRuntime) => {
+        const nv = VARIABLES.find((x) => x.id === w.id)!.get(c, r);
+        return { ...w, value: nv, text: formatValue(nv, w.fmt) };
+      };
+      if (w.id === 'totalTargetFteY3' && deviationFixtures('DEV-TEAM-RUN-END').includes(id)) { expect(domain(rt).value).toBe(caseFte(c).after); return domain(rt); }
+      // DEV-CM-CONFIDENCE: the legacy registry evaluated the recommendation before its own Monte Carlo run (no confidence): that order gives the legacy value.
+      if (w.id === 'recommendedCommercialModel') { expect(domain({ ...rt, mc: null }).value).toBe(w.value); return domain(rt); }
       // DEV-PAYBACK-NOSETUP: with no setup the strategies' immediate payback ranks best, so the top score follows the domain ranking.
       if (w.id === 'topStrategyScore' && id === 'econ-no-setup') { const v = VARIABLES.find((x) => x.id === w.id)!.get(c, rt); return { ...w, value: v, text: formatValue(v, w.fmt) }; }
       return { ...w, value: value ?? null, text: w.id === 'auditViolationsCount' ? String(value) : w.text };

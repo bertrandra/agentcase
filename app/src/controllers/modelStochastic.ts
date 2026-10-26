@@ -1,4 +1,5 @@
 /** @calc-zone stress */
+import { MCS_DRAWS_DEFAULT, MCS_DRAWS_MAX, MCS_DRAWS_MIN, MCS_RHO_DEFAULT, MCS_SEED_DEFAULT } from '@/domain/model/mcs';
 import { ensureNs } from '@/domain/model/modelState';
 import { defineCommand } from '@/store/commands';
 import { appStore } from '@/store/instance';
@@ -12,15 +13,15 @@ const toggleCmd = defineCommand<{ on: boolean }>({
 });
 const drawsCmd = defineCommand<Val>({
   type: 'model.mcs.setDraws', label: (p) => `Set draws to ${p.value}`, coalesceKey: () => 'model.mcs.setDraws',
-  run(d, p) { ensureNs(d.MODEL, 'MCS').draws = clampNum(parseInteger(p.value, 2000), 100, 20000); },
+  run(d, p) { ensureNs(d.MODEL, 'MCS').draws = clampNum(parseInteger(p.value, MCS_DRAWS_DEFAULT), MCS_DRAWS_MIN, MCS_DRAWS_MAX); },
 });
 const seedCmd = defineCommand<Val>({
   type: 'model.mcs.setSeed', label: (p) => `Set seed to ${p.value}`, coalesceKey: () => 'model.mcs.setSeed',
-  run(d, p) { ensureNs(d.MODEL, 'MCS').seed = Math.max(1, parseInteger(p.value, 20260728)); },
+  run(d, p) { ensureNs(d.MODEL, 'MCS').seed = Math.max(1, parseInteger(p.value, MCS_SEED_DEFAULT)); },
 });
 const rhoCmd = defineCommand<Val>({
   type: 'model.mcs.setRho', label: (p) => `Set organisational correlation ρ to ${p.value}`, coalesceKey: () => 'model.mcs.setRho',
-  run(d, p) { ensureNs(d.MODEL, 'MCS').rho = clampNum(parseNum(p.value, 0.35), 0, 1); },
+  run(d, p) { ensureNs(d.MODEL, 'MCS').rho = clampNum(parseNum(p.value, MCS_RHO_DEFAULT), 0, 1); },
 });
 /** Enabling with no drift seeds the typical 3 %/yr (legacy cbdToggleUi); typing 0 legitimately disables the phase. */
 const cbdToggleCmd = defineCommand<Record<string, never>>({

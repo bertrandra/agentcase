@@ -16,7 +16,7 @@ export default function KpiSection() {
       help={<p>Consolidated dashboard: initial state (input team) vs the horizon end. Economic KPIs are driven by your parameters; quality and velocity KPIs by
         the anchors and the in-scope automatable intensity.</p>}
       result={<>
-        <p className="ac-muted">Consolidated dashboard: initial state (input team) vs Y3 target. Economic KPIs driven by your parameters.</p>
+        <p className="ac-muted">Consolidated dashboard: initial state (input team) vs {v.endL} target. Economic KPIs driven by your parameters.</p>
         <MetricCards cards={v.cards} />
         <ChartPanel config={cfg} label="Index of the horizon-end state against AS-IS = 100" height={260} />
         <CompareTable caption="💰 Economic & Capacity KPIs" head={head} rows={v.eco} />

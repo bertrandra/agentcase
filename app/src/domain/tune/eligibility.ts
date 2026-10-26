@@ -4,7 +4,7 @@ import { statusTable } from '../lifecycle';
 import { verificationTaxRate, sddMaturity, vtaxAvgHuman } from '../model/vtax';
 import { activeArtefacts } from '../scope';
 import { maturityInfo } from './maturity';
-import { endYear, endYearRow, modelOf } from './memo';
+import { endYear, endYearRow, engineOf, modelOf } from './memo';
 import type { ColourRole } from '../theme';
 
 /** EV-15 eligibility gate: six prerequisites, the first four critical. */
@@ -120,16 +120,24 @@ export function abaqueRows(c: Ctx) {
   return { rows, lvl, bCap, vTaxRate };
 }
 
-export interface TaxExplain { base: number; avgHuman: number; mode: 'net' | 'overlay'; rateOverlay: number; rateNet: number; gross: number; applied: boolean;
-  yearly: number[] }
+export interface TaxExplain {
+  base: number; avgHuman: number; mode: 'net' | 'overlay'; rateOverlay: number; rateNet: number;
+  /** the hard cap of the rate (`COEF.vtaxCap`, the one `verificationTaxRate` applies) */
+  cap: number;
+  /** gross saving of the horizon end year (AS-IS cost − end-year run cost) and the € each case deducts from it */
+  gross: number; eurOverlay: number; eurNet: number; endLabel: string;
+  /** the tax deducted per horizon year (the Time Engine's `verificationTaxCost`) */
+  applied: boolean; yearly: number[];
+}
 /** The figures behind the two verification-tax cases (Case 1 overlay / Case 2 net). */
 export function taxExplain(c: Ctx): TaxExplain {
   const m = modelOf(c), base = vtaxEffBase(c), avgHuman = vtaxAvgHuman(c);
   let runEnd = m.yearRun[m.yearRun.length - 1] as number;
-  try { if (endYear(c) > 3) runEnd = endYearRow(c).totalRunCost; } catch { /* flat model */ }
-  const cap = 0.6;
+  try { runEnd = endYearRow(c).totalRunCost; } catch { /* flat model */ }
+  const cap = c.s.COEF.vtaxCap as number, rateOverlay = Math.min(cap, base * avgHuman), rateNet = Math.min(cap, Math.max(0, base - avgHuman));
+  const gross = m.baselineRun - runEnd, yearly = engineOf(c).years().map((y) => y.verificationTaxCost);
   return {
-    base, avgHuman, mode: vtaxModeOf(c), rateOverlay: Math.min(cap, base * avgHuman), rateNet: Math.min(cap, Math.max(0, base - avgHuman)),
-    gross: m.base.cost - runEnd, applied: c.inp.c('vtaxApply'), yearly: m.conv?.vTaxYr ?? [0, 0, 0],
+    base, avgHuman, mode: vtaxModeOf(c), rateOverlay, rateNet, cap, gross, eurOverlay: gross * rateOverlay, eurNet: gross * rateNet, endLabel: `Y${endYear(c)}`,
+    applied: c.inp.c('vtaxApply'), yearly,
   };
 }

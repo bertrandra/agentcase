@@ -1,9 +1,10 @@
 import { lifecycleAutoPosture } from '@/domain/lifecycle';
-import { statusDoc, statusLabel } from '@/domain/scope/lifecycleView';
+import { factorDirection, POSTURE_BAND, statusDoc, statusLabel } from '@/domain/scope/lifecycleView';
 import { useCtx } from '@/store/hooks';
 import { useTheme } from '@/ui/themeContext';
 
-const tone = (v: number) => (v > 1.02 ? 'teal' : v < 0.98 ? 'brick' : 'slate-700');
+const TONE = { up: 'teal', down: 'brick', flat: 'slate-700' } as const;
+const tone = (v: number) => TONE[factorDirection(v, POSTURE_BAND)];
 
 /** Reference table of the product profiles (EV-13): character, automation posture, and the live blended position. */
 export function StatusTable() {

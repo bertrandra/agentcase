@@ -1,5 +1,5 @@
 import { setInput } from '@/controllers/inputs';
-import { RISK_REGISTER, riskBand, riskBar, riskImpact, riskProb, riskScore, type RiskDef } from '@/domain/tuneB/risk';
+import { RISK_REGISTER, riskBand, riskBar, riskImpact, riskItemBand, riskItemScore, riskProb, riskScore, type RiskDef } from '@/domain/tuneB/risk';
 import { useCtx } from '@/store/hooks';
 import { Badge, Panel } from '@/ui/widgets/cards';
 import { DataTable } from '@/ui/widgets/DataTable';
@@ -9,8 +9,7 @@ import { useTheme } from '@/ui/themeContext';
 
 const LEVELS = [{ v: 1, l: 'Low' }, { v: 2, l: 'Med' }, { v: 3, l: 'High' }];
 const LEVEL_OPTIONS = LEVELS.map((o) => ({ value: String(o.v), label: o.l }));
-const scoreTone = (s: number) => (s >= 6 ? 'danger-800' : s >= 4 ? 'warning-600' : 'teal-700');
-const Score = ({ s }: { s: number }) => <strong className="ac-tone" data-tone={scoreTone(s)}>{s}</strong>;
+const Score = ({ s }: { s: number }) => <strong className="ac-tone" data-tone={riskItemBand(s).tone}>{s}</strong>;
 
 function Level({ id, which, value, label }: { id: string; which: 'p' | 'i'; value: number; label: string }) {
   const set = (v: string) => setInput(`risk_${which}_${id}`, v);
@@ -33,7 +32,7 @@ export function RiskRegisterCard() {
         { key: 'r', header: 'Agentic risk', render: (r) => <><strong>{r.label}</strong><div className="ac-muted">{r.evidence}</div></> },
         { key: 'p', header: 'Prob.', align: 'center', render: (r) => <Level id={r.id} which="p" value={riskProb(c, r)} label={`Probability of ${r.label}`} /> },
         { key: 'i', header: 'Impact', align: 'center', render: (r) => <Level id={r.id} which="i" value={riskImpact(c, r)} label={`Impact of ${r.label}`} /> },
-        { key: 's', header: 'Score', align: 'center', render: (r) => <Score s={riskProb(c, r) * riskImpact(c, r)} /> },
+        { key: 's', header: 'Score', align: 'center', render: (r) => <Score s={riskItemScore(c, r)} /> },
         { key: 'm', header: 'Mitigation', render: (r) => r.mitigation },
       ]} />
       {/* dynamic: the band colour with a hex alpha suffix, resolved in the theme in effect */}

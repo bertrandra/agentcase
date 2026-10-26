@@ -21,7 +21,7 @@ const help = (
 /** Agentic Setup — the one-off investment lines, the transitional headcount and the breakdown. */
 export default function SetupSection() {
   const c = useCtx();
-  const { lines, total } = useMemo(() => setupBreakdown(c), [c]);
+  const { lines, base, total } = useMemo(() => setupBreakdown(c), [c]), extra = lines.length > 4;
   return (
     <SectionFrame title="Agentic Setup — Initial investment" help={help}
       input={
@@ -44,6 +44,7 @@ export default function SetupSection() {
         <>
           <StatRow>
             <Stat label="Total setup" value={eurK(total)} tone="blue" />
+            {extra && <Stat label="Editable lines" value={eurK(base)} tone="grey" />}
             {lines.map((l) => <Stat key={l.id} label={l.label.split(' ')[0] as string} value={eurK(l.amount)} tone="teal" />)}
           </StatRow>
           <SetupChart lines={lines} />

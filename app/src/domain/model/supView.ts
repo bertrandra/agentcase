@@ -43,6 +43,27 @@ export function supModel(c: Ctx) {
   };
 }
 
+/** Supervision utilisation (%) above which a year is flagged: demand close to (or over) what the fixed headcount absorbs. */
+export const UTIL_WARN_PCT = 85;
+export interface CapacityRow { year: number; label: string; raw: number; cap: number | null; eff: number; util: number | null; flagged: boolean; esup: number;
+  cost: number }
+/**
+ * Agent capacity vs supervision, one row per horizon year of the Time Engine: raw vFTE demand, the cap the supervisors allow (constrained mode), the
+ * achieved vFTE, the utilisation and the run team the engine provisions with its cost.
+ */
+export function capacityRows(c: Ctx): CapacityRow[] {
+  const sm = supModel(c), base = model(c).base.etp;
+  return engineNow(c).years().map((y, i) => {
+    const cap = sm.constrained ? supMaxVfte(c, sm.esup, base, i) : null, util = cap != null && cap > 0 ? (y.agentVfteRawEnd / cap) * 100 : null;
+    return { year: i + 1, label: `Y${i + 1}`, raw: y.agentVfteRawEnd, cap, eff: y.agentVfteEnd, util, flagged: util != null && util > UTIL_WARN_PCT,
+      esup: y.runTeamFteEnd, cost: y.runTeamCost };
+  });
+}
+
+/** Relative gap under which a measured DORA value matches the derived read-out (free evidence); above it, a calibration signal. */
+export const DORA_MATCH_TOL = 0.05;
+export const doraMatches = (r: DoraRow): boolean => r.delta != null && Math.abs(r.delta) < DORA_MATCH_TOL * Math.abs(r.derived || 1);
+
 export interface DoraRow { derived: number | null; measured: number | null; delta: number | null; unit: string }
 /** DORA read-outs pulled forward from P5: pure read-outs of P1/P3 state beside the client's measured values. */
 export function doraReadout(c: Ctx) {

@@ -1,7 +1,7 @@
 /** @calc-zone workspace-config */
 import type { Ctx } from '../../ctx';
 import { evtModel } from '../../model/evt';
-import { lceLoops, lceModel } from '../../model/lce';
+import { ESCAPE_MATERIAL_PCT, escapeMaterial, lceLoops, lceModel } from '../../model/lce';
 import { modelOf as model } from '../../tune/memo';
 import { supRampMultiplier, supSpanFor } from '../../model/supervision';
 import { vtaxAvgHuman } from '../../model/vtax';
@@ -26,8 +26,8 @@ export const MODEL_CHECKS: [id: string, check: AuditCheck][] = [
   }],
   ['CC-LC-03', (c) => {
     if (!flags(c).lce) return null;
-    const hi = lceModel(c).loops.filter((l) => l.escapePct > 5);
-    return hi.length ? `escape rate >5% — fallback must be costed: ${list(hi.map((l) => `${l.id} ${l.escapePct.toFixed(1)}%`))}` : null;
+    const hi = lceModel(c).loops.filter(escapeMaterial);
+    return hi.length ? `escape rate >${ESCAPE_MATERIAL_PCT}% — fallback must be costed: ${list(hi.map((l) => `${l.id} ${l.escapePct.toFixed(1)}%`))}` : null;
   }],
   ['CC-VT-01', (c) => {
     if (!flags(c).evt) return null;

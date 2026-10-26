@@ -1,6 +1,6 @@
 import { enableEvt, setEvtAck, setEvtMode, setEvtRDirect, setEvtRSource } from '@/controllers/modelEngine';
 import { evtModel } from '@/domain/model/evt';
-import { vtaxAvgHuman } from '@/domain/model/vtax';
+import { evtRawNet } from '@/domain/model/vtax';
 import { useCtx } from '@/store/hooks';
 import { ChoiceField, NumField } from '@/ui/widgets/CommitField';
 import { Callout } from '@/ui/widgets/cards';
@@ -18,7 +18,7 @@ const help = (
 /** P2 — verification tax derived from criticality class: φ floor, κ intensity, γ stiffness, reliability r and the ceiling ρmax. */
 export default function ModelVerificationSection() {
   const c = useCtx(), on = !!c.s.MODEL.FLAGS.evt, e = evtModel(c), evt = c.s.MODEL.EVT, net = evt.mode === 'net';
-  const rawNet = e.rate - vtaxAvgHuman(c), vtaxOn = c.inp.c('vtaxApply');
+  const rawNet = evtRawNet(c), vtaxOn = c.inp.c('vtaxApply');
   return (
     <SectionFrame title="🛡️ Verification tax · P2 · v16.6" help={help}
       input={<>

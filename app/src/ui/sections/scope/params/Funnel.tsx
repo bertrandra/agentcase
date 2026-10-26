@@ -36,7 +36,7 @@ export function Funnel({ base }: { base: AutoBase }) {
       <div className="ac-callout">
         {atEnd
           ? <>At {end} the case is built on <strong className="ac-tone" data-tone="teal">{S.v5.toFixed(1)}%</strong>, not the {S.v1.toFixed(1)}%
-            potential{S.v1 - S.v5 > FUNNEL_EPS ? <> — <strong>{(S.v1 - S.v5).toFixed(1)} points</strong> of theoretical automation are given back to
+            potential{S.lost > FUNNEL_EPS ? <> — <strong>{S.lost.toFixed(1)} points</strong> of theoretical automation are given back to
             the constraints above before a single euro is claimed.</> : '.'}</>
           : <>At month {S.t} the case is running at <strong className="ac-tone" data-tone="teal">{S.v5.toFixed(1)}%</strong> of the delivery work, against a
             permitted depth of {S.v3.toFixed(1)}% — the gap is the ramp, and it closes on its own; the gap above it does not.</>}

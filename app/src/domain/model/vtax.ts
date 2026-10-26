@@ -28,11 +28,14 @@ function legacyVerificationTaxRate(c: Ctx): number {
   return Math.max(0, Math.min(c.s.COEF.vtaxCap as number, rate));
 }
 
+/** The EVT net tax before any clamp: the endogenous rate minus the retained supervision (negative = supervision already covers the review). */
+export const evtRawNet = (c: Ctx): number => evtModel(c).rate - vtaxAvgHuman(c);
+
 /** Endogenous (EVT) tax rate: negative net tax is clamped to 0 unless acknowledged. */
 function evtEndogenousTaxRate(c: Ctx): number {
   const e = evtModel(c), cap = c.s.COEF.vtaxCap as number, evt = c.s.MODEL.EVT;
   if (evt.mode === 'net') {
-    const rawNet = e.rate - vtaxAvgHuman(c);
+    const rawNet = evtRawNet(c);
     if (rawNet < 0) return evt.ackNegativeNet ? Math.min(cap, rawNet) : 0;
     return Math.max(0, Math.min(cap, rawNet));
   }

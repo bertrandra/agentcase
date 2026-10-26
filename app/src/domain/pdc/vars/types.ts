@@ -31,8 +31,5 @@ export const end = (c: Ctx) => { const ys = engineNow(c).years(); return ys[ys.l
 /** Index of the last horizon year (legacy teEndYear() - 1). */
 export const endIdx = (c: Ctx): number => engineNow(c).years().length - 1;
 export const sumSav = (c: Ctx): number => headline(c).totalBenefit;
-/**
- * Year `y` (1-based) of a `model()` annual array, null (n/a) beyond the horizon: the arrays keep the legacy three entries and repeat the last horizon
- * year past it (a 1-year case has no Y2: DEV-YEAR-BEYOND-HORIZON).
- */
-export const yearIn = (c: Ctx, a: number[], y: number): number | null => (y <= engineNow(c).horizonYears ? (a[y - 1] ?? null) : null);
+/** Time Engine year `y` (1-based) of the live case, undefined (n/a) beyond the horizon (DEV-YEAR-BEYOND-HORIZON). */
+export const engineYear = (c: Ctx, y: number) => (y <= engineNow(c).horizonYears ? engineNow(c).years()[y - 1] : undefined);

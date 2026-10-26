@@ -1,5 +1,6 @@
 import { useMemo } from 'react';
-import { commercialView, cmRecommend, CM_DEFS } from '@/domain/pdc/commercial';
+import { commercialView, cmRecommend, cmRuleText, CM_DEFS, mcConfidenceOf } from '@/domain/pdc/commercial';
+import { useSimulation } from '@/store/simulation';
 import { engagementKey } from '@/domain/engagement';
 import { useCtx, useDoc } from '@/store/hooks';
 import { fmtK } from '@/ui/economicsFormat';
@@ -24,7 +25,7 @@ const MODELS = [['ET', 'ET — Effort & Tools'], ['AAH', 'AAH — AI-Augmented H
 /** Commercial model — the four selling models compared on revenue, margin and client saving. */
 export default function CommercialSection() {
   const c = useCtx(), v = useMemo(() => commercialView(c), [c]), sel = useDoc((d) => d.dom.values.cmModel || 'ET');
-  const rec = cmRecommend(c), k = engagementKey(c);
+  const { run, stale } = useSimulation(), rec = cmRecommend(c, mcConfidenceOf(stale ? null : run)), k = engagementKey(c);
   return (
     <SectionFrame title="Commercial model" help={help}
       input={<div className="ac-form-row">
@@ -40,7 +41,7 @@ export default function CommercialSection() {
         <CmTable v={v} sel={sel} />
         <CmDetail v={v} sel={sel} />
         <Callout><strong>Recommended for this case:</strong> {CM_DEFS[rec[0]].label} — {rec[1]}. <span
-          className="ac-muted">(rule: STA→AAH · MSI→AGS if vFTE share at horizon end &gt; 15% else ET · MSC→GS if MC confidence ≥ 70% else AGS)</span></Callout>
+          className="ac-muted">(rule: {cmRuleText()})</span></Callout>
         <p className="ac-muted">Absorbed (non-billable) setup under {k}: {fmtK(v.absorbed)} — excluded from the margin above, carried as investment
           (CC-CTX-03).</p>
       </>} />

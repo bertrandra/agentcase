@@ -24,10 +24,26 @@ export function locationMix(s: CaseState) {
   return { byLoc, byClass, tot, pct };
 }
 
+/** Annual cost of one team line: FTE × day rate of its location / grade × working days. */
+export const lineCost = (s: CaseState, inp: Inputs, r: CaseState['teamIn'][number]): number => r.etp * rateFor(s, r.loc, r.grade) * inp.p('workdays');
+
 export function teamInCost(s: CaseState, inp: Inputs) {
   let etp = 0, cost = 0;
-  s.teamIn.forEach((r) => { etp += r.etp; cost += r.etp * rateFor(s, r.loc, r.grade) * inp.p('workdays'); });
+  s.teamIn.forEach((r) => { etp += r.etp; cost += lineCost(s, inp, r); });
   return { etp, cost };
+}
+
+/** The AS-IS blended day rate: team cost / (FTE × working days), 0 without FTE (the one owner: model().blendedTJM, the team summary, loc strategy). */
+export function blendedDayRate(s: CaseState, inp: Inputs): number {
+  const t = teamInCost(s, inp), wd = inp.p('workdays');
+  return t.etp * wd > 0 ? t.cost / (t.etp * wd) : 0;
+}
+
+/** Entry FTE by skill, in the order the skills first appear in the team. */
+export function fteBySkill(s: CaseState): Record<string, number> {
+  const sk: Record<string, number> = {};
+  s.teamIn.forEach((r) => { sk[r.skill] = (sk[r.skill] || 0) + r.etp; });
+  return sk;
 }
 
 function locBlendedTJM(s: CaseState, loc: string): number {

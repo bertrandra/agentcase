@@ -28,7 +28,7 @@ function Row({ col, name, val, sub, on, onToggle }: RowProps) {
 }
 
 function Legend({ a, show, set }: { a: Data; show: Toggles; set: (k: keyof Toggles, v: boolean) => void }) {
-  const closed = a.adoptGapEnd <= 0.05, COL = useRoles(COL_ROLES);
+  const closed = a.gapClosed, COL = useRoles(COL_ROLES);
   return (
     <div className="ac-legend">
       <div>
@@ -48,7 +48,7 @@ function Legend({ a, show, set }: { a: Data; show: Toggles; set: (k: keyof Toggl
           on={show.manual} onToggle={(v) => set('manual', v)} />
         <Row col={COL.vfte} name="Agent vFTE share" val={`${a.vfteEndFte.toFixed(1)} vFTE by ${a.endLabel}`}
           sub={`${Math.round(a.vfteShareEnd)}% of the blended human + agent team`} on={show.vfte} onToggle={(v) => set('vfte', v)} />
-        <Row col={LEVELS} name="Maturity levels L1–L4" val="crosses 25 / 55 / 80%" on={show.levels} onToggle={(v) => set('levels', v)} />
+        <Row col={LEVELS} name="Maturity levels L1–L4" val={`crosses ${a.levelsLabel}`} on={show.levels} onToggle={(v) => set('levels', v)} />
       </div>
     </div>
   );

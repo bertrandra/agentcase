@@ -1,7 +1,7 @@
 /** @calc-zone product-resolution */
 import { current } from 'immer';
 import { makeCtx, phaseScopeOf } from '@/domain';
-import { autoCapFrom } from '@/domain/inputs';
+import { autoCapFrom, fitPotential } from '@/domain/inputs';
 import { resolveProduct, setCommon, setOverride, type Portfolio } from '@/domain/portfolio';
 import type { Doc } from './types';
 
@@ -14,7 +14,7 @@ export function autoTechCap(d: Doc): number {
 export function fitTarget(d: Doc): string | null {
   if (!d.dom.checked.fitAuto) return null;
   const sc = phaseScopeOf(makeCtx(d));
-  return String(Math.max(0, Math.min(autoTechCap(d), Math.round(sc.avgAgent))));
+  return String(fitPotential(sc.avgAgent, autoTechCap(d)));
 }
 
 /** Fit-to-scope: when `fitAuto` is on, the potential follows the scope's effort-weighted automatable share (legacy applyScopeAuto). */

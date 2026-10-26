@@ -1,5 +1,6 @@
 /** @calc-zone delivery-views @owner kpi-scorecard */
 import type { Ctx } from '../ctx';
+import { fteBeforeAfter, humanFteOfYear } from '../economics/fte';
 import { fmtK } from '../format';
 import { model } from '../model/overlay';
 import { anchorClamp, daFmt, daGet, daVal, qualityRows, throughputAnchors } from './anchors';
@@ -15,7 +16,7 @@ export type KpiCard = [label: string, value: string, sub: string];
 /** KPI scorecard: AS-IS vs the horizon end — cards, three tables of [metric, AS-IS, TO-BE, change] and the index chart. */
 export function kpiView(c: Ctx) {
   const { m, end, endL, r3 } = perfFrame(c), s = c.s;
-  const humanEnd = end.totalHumanFteEnd, etp = m.base.etp, run0 = m.baselineRun, runEnd = end.totalRunCost;
+  const fte = fteBeforeAfter(m.base.etp, humanFteOfYear(end)), humanEnd = fte.after, etp = fte.before, run0 = m.baselineRun, runEnd = end.totalRunCost;
   const qual = (id: string) => qualityRows(s).find((q) => q[0] === id) ?? [id, 0, 0, ''] as const;
   const qv = (id: string) => anchorClamp(qual(id)[1], qual(id)[2], r3);
   const leadPct = Math.round((daVal(s, 'leadTime', r3) / daGet(s, 'leadTime').asis - 1) * 100),
@@ -28,7 +29,7 @@ export function kpiView(c: Ctx) {
     ['Lead time', `${daFmt(s, 'leadTime', daGet(s, 'leadTime').asis)} → ${daFmt(s, 'leadTime', daVal(s, 'leadTime', r3))}`, `${leadPct}%`],
     [`Savings ${endL}`, fmtK(end.savings), `${fmtChg(run0 - end.savings, run0)} of baseline run`],
   ];
-  const freed = etp - humanEnd, autoEnd = Math.round(m.eff * end.adoptionEndPct / 100);
+  const freed = fte.freed, autoEnd = Math.round(m.eff * end.adoptionEndPct / 100);
   const eco: string[][] = [
     ['Headcount (FTE)', etp.toFixed(1), humanEnd.toFixed(1), fmtChg(humanEnd, etp)], ['Run cost/yr', fmtK(run0), fmtK(runEnd), fmtChg(runEnd, run0)],
     ['Freed capacity', '0', `${freed.toFixed(1)} FTE`, `+${freed.toFixed(1)}`], ['Effective automation', '0%', `${autoEnd}%`, `+${autoEnd}pp`],
@@ -51,7 +52,7 @@ export function kpiView(c: Ctx) {
     ['Traceability', 'Manual', 'Auto 95%', '+50pp'], ['Audit trail', 'Partial', 'Complete', 'Reinforced'],
   ];
   const idx = (v: number, a: number) => Math.round(v / a * 100);
-  const chart = [etp > 0 ? Math.round(end.humanFteEnd / etp * 100) : 0, run0 > 0 ? Math.round(runEnd / run0 * 100) : 0,
+  const chart = [etp > 0 ? Math.round(humanEnd / etp * 100) : 0, run0 > 0 ? Math.round(runEnd / run0 * 100) : 0,
     idx(daVal(s, 'leadTime', r3), daGet(s, 'leadTime').asis), idx(runEnd, run0),
     idx(qv('Bugs/1000 LOC'), qual('Bugs/1000 LOC')[1]), idx(qv('Test coverage'), qual('Test coverage')[1]),
       idx(daVal(s, 'velocitySp', r3), daGet(s, 'velocitySp').asis)];

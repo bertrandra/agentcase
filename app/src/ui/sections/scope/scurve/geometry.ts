@@ -15,9 +15,6 @@ export const geoOf = (N: number): Geo => ({
 
 /** The colour role of each maturity level (resolve with `useRoles`). */
 export const LEVEL_ROLES: Record<string, TokenName> = { L1: 'slate-700', L2: 'chart-cat-5', L3: 'chart-cat-2', L4: 'chart-cat-1' };
-/** Fixed adoption bands drawn behind the curve. */
-export const BANDS: [number, number, string][] = [[0, 25, 'L1'], [25, 55, 'L2'], [55, 80, 'L3'], [80, 100, 'L4']];
-export const GRID = [0, 25, 55, 80, 100];
 
 /** "M1 M13 M25 … M{N}" axis months (a label every 12 months, the last one right-aligned). */
 export const axisMonths = (N: number): number[] => { const l: number[] = []; for (let m = 1; m <= N; m += 12) l.push(m); return l; };

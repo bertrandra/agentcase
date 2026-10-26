@@ -33,7 +33,12 @@ const riskState = (c: Ctx, which: 'p' | 'i', id: string): number => parseInt(c.i
 export const riskProb = (c: Ctx, r: RiskDef): number => riskState(c, 'p', r.id) || r.p;
 export const riskImpact = (c: Ctx, r: RiskDef): number => riskState(c, 'i', r.id) || r.i;
 /** Consolidated risk score 0..1 (mean of probability × impact / 9). */
-export const riskScore = (c: Ctx): number => RISK_REGISTER.reduce((s, r) => s + (riskProb(c, r) * riskImpact(c, r)) / 9, 0) / RISK_REGISTER.length;
+/** One risk's score: probability × impact on the 1–3 scales (1..9). */
+export const riskItemScore = (c: Ctx, r: RiskDef): number => riskProb(c, r) * riskImpact(c, r);
+/** Band of one risk's 1..9 score: 6+ high, 4+ moderate, else contained (the tone of its cell). */
+export const riskItemBand = (s: number): RiskBand => (s >= 6 ? { tone: 'danger-800', label: 'High' } : s >= 4 ? { tone: 'warning-600', label: 'Moderate' }
+  : { tone: 'teal-700', label: 'Contained' });
+export const riskScore = (c: Ctx): number => RISK_REGISTER.reduce((s, r) => s + riskItemScore(c, r) / 9, 0) / RISK_REGISTER.length;
 export const riskBar = (c: Ctx): number => (c.inp.c('riskApply') ? Math.min(0.15, riskScore(c) * 0.15) : 0);
 
 export function qualKey(c: Ctx): string { const v = c.inp.v('qualSeverity') || 'correctness'; return QUAL_ANCHOR[v] ? v : 'correctness'; }

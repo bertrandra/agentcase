@@ -3,7 +3,7 @@ import { moveCurvePoint } from '@/controllers/scopeTools';
 import { curveOf, movePoint } from '@/domain/scope/scurve';
 import type { ScurveView } from '@/domain/scope/scurveView';
 import type { CurvePoint } from '@/domain/types/state';
-import { BANDS, GRID, H, LEVEL_ROLES, M, W, axisMonths, geoOf, pathOf } from './geometry';
+import { H, LEVEL_ROLES, M, W, axisMonths, geoOf, pathOf } from './geometry';
 import { useRoles, useTheme } from '@/ui/themeContext';
 
 const KEYS: Record<string, [number, number]> = { ArrowLeft: [-1, 0], ArrowRight: [1, 0], ArrowUp: [0, 1], ArrowDown: [0, -1] };
@@ -33,8 +33,8 @@ export function CurveSvg({ view }: { view: ScurveView }) {
   return (
     <svg ref={svg} viewBox={`0 0 ${W} ${H}`} className="ac-svg ac-svg-drag" role="group" aria-label="Editable adoption curve with maturity levels"
       onPointerDown={down} onPointerMove={move} onPointerUp={up} onPointerCancel={() => setDrag(null)}>
-      {BANDS.map(([lo, hi, l]) => <rect key={l} x={M.l} y={g.sy(hi)} width={W - M.l - M.r} height={g.sy(lo) - g.sy(hi)} fill={`${LEVEL_COLOR[l]}11`} />)}
-      {GRID.map((v) => (
+      {view.bands.map(([lo, hi, l]) => <rect key={l} x={M.l} y={g.sy(hi)} width={W - M.l - M.r} height={g.sy(lo) - g.sy(hi)} fill={`${LEVEL_COLOR[l]}11`} />)}
+      {view.grid.map((v) => (
         <g key={v}>
           <line x1={M.l} y1={g.sy(v)} x2={W - M.r} y2={g.sy(v)} stroke="var(--ac-slate-105)" /><text x={M.l - 8} y={g.sy(v) + 4} textAnchor="end">{v}%</text>
         </g>

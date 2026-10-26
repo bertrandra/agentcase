@@ -21,9 +21,14 @@ export function hriIndex(c: Ctx): number {
   return (sum / (18 * 4)) * 100;
 }
 
-export function hriIntensity(c: Ctx): 'light' | 'standard' | 'intensive' {
-  const x = hriIndex(c);
-  return x >= 75 ? 'light' : x >= 50 ? 'standard' : 'intensive';
+/** Lower bounds of the HRI bands: 75+ light change (ready), 50–74 standard (fragile), below 50 intensive (at risk). */
+export const HRI_LIGHT = 75, HRI_STANDARD = 50;
+export type HriBand = 'light' | 'standard' | 'intensive';
+/** Band of an HRI value: the one rule behind the change intensity, its cost per FTE and the read-out tone. */
+export const hriBandOf = (x: number): HriBand => (x >= HRI_LIGHT ? 'light' : x >= HRI_STANDARD ? 'standard' : 'intensive');
+
+export function hriIntensity(c: Ctx): HriBand {
+  return hriBandOf(hriIndex(c));
 }
 
 export function hriCostPerFTE(c: Ctx): number {

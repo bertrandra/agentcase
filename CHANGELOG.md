@@ -109,6 +109,30 @@ When releasing, follow [docs/BUMP_PROCEDURE.md](docs/BUMP_PROCEDURE.md) (§7 for
   the documented fields; every field has its meaning; autosave and broadcast carry only documented fields; type-level exhaustiveness),
   `datamodel-tabs.test.tsx` (every tab axe clean in both sections, live counts follow an override, both sections under a Portfolio view).
 
+### Lot 10 — one source of truth (every figure computed once in the domain)
+
+- **One setup breakdown.** `setupBreakdown` lists the four editable lines, the HRI change cost and the Knowledge hub setup; its total is the setup of
+  the ROI (the model's drivers read it). The Agentic Setup total (golden €135K → €225K, "Editable lines" €135K kept), the Financial Investment table,
+  the Excel Investment sheet and the portfolio Setup view now add up to their total (DEV-SETUP-BREAKDOWN).
+- **One human-FTE definition.** `fteBeforeAfter` (delivery team + agentic run team; freed never negative) feeds Financial, Results, fte-vfte, vFTE
+  overview, KPI, team-out, the story, the engage plan, the registry and the Excel Savings sheet (golden freed Y3 11.3 → 9.0, Results residual 3.8 →
+  6.0 = 3.8 delivery + 2.3 run team) (DEV-FTE-ONE-DEF). The target team adds the run team of the horizon end year (DEV-TEAM-RUN-END).
+- **Engine years everywhere.** The baseline-drift card, the supervision capacity table, the registry Y1 / Y2 savings and run cost, the verification-tax
+  amounts and the Results yearly savings read the Time Engine years of the horizon (Results: "= €891,555 total savings / yr", the decomposition
+  reconciles to it, DEV-RESULTS-ENGINE-SAVINGS).
+- **Owners for the rules the screens repeated.** Glass ceiling (`model().ceiling`, DEV-GLASS-CEILING-OWNER), the verification-tax cap
+  (`COEF.vtaxCap`, DEV-VTAX-CAP), the maturity bounds (`maturityBounds.ts`: S-curve readout, bands, legends, DEV-MATURITY-BOUNDS), AI authority
+  order, AI skill premium, HRI bands, posture and margin bands, lifecycle factor bands, risk bands, operating-model ratios, decision thresholds,
+  commercial thresholds (the recommendation now reads the Monte Carlo confidence, DEV-CM-CONFIDENCE), Monte Carlo defaults, histogram bins,
+  due-diligence gauges, escape / utilisation / DORA tolerances, the token-mix split rule, the blended day rate, line cost and FTE by skill, team
+  coverage, the fit-to-scope rule and the economics view's per-year net, cumulative, run delta and averages.
+- **Dates from the UI.** The roadmap and the "now" marker of the automation chart take today from the UI (`useEvalDate`); the domain never reads the
+  clock.
+- **Guard tests.** `tests/domain/sot-cross-surface.test.ts` asserts on the 107 fixtures that every surface prints the owner's setup (lines add up
+  to `model().setupTotal`), FTE before / after / freed / reduction, net, ROI, payback, total benefit and end-year savings, and on four fixtures that
+  the Excel results workbook does; `tests/ui/sot-screens.test.tsx` checks the rendered screens; `tests/domain/lot10-sot.test.ts` asserts each new
+  rule.
+
 ## [v20.18.1] 2026-10-25 — Architecture lot 9: tidy-up (no change to the app)
 
 - `tools/a11y.mjs` writes its default report to `test-results/a11y/report.json` (git-ignored): a local audit no longer rewrites a tracked file.

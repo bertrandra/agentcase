@@ -14,6 +14,9 @@ export function fmtPayback(mo: number | null | undefined, horizonMonths: number)
   return mo <= 0 ? 'immediate' : `${mo} mo`;
 }
 
+/** The payback in words: "9 months", "immediate" or ">36 months" (`fmtPayback` with the unit spelt out). */
+export const fmtPaybackMonths = (mo: number | null | undefined, horizonMonths: number): string => fmtPayback(mo, horizonMonths).replace(/ mo$/, ' months');
+
 /** Year label: 1 -> "Y1". */
 export const yLabel = (y: number): string => `Y${y}`;
 

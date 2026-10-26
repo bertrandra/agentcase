@@ -1,4 +1,5 @@
 /** @calc-zone verification */
+import { authRank } from '../authority';
 import { makeCtx, type Ctx } from '../ctx';
 import { engagementCoef, engagementKey } from '../engagement';
 import { khTargetCC } from '../knowledge';
@@ -19,12 +20,11 @@ import { maturityInfo } from '../tune/maturity';
 import { opModelCompute } from '../tune/opmodel';
 
 export type { ConvCheck, ConvRuntime } from './verifConvTypes';
-const AUTH: Record<string, number> = { Assistance: 1, Copilot: 2, 'Supervised autonomous': 3, Autonomous: 4 };
 
 /** The nine engagement-context rows at the head of the legacy `renderConvChecks()`: CC-CTX-01..04, CC-KH-01/02, CC-OM-01, CC-SUP-01. */
 function contextChecks(c: Ctx): ConvCheck[] {
   const m = model(c), mi = maturityInfo(c, m), cx = engagementCoef(c), key = engagementKey(c);
-  const blocked = activeArtefacts(c.a, c.s).filter((a) => (AUTH[a.aiAuth] || 1) > cx.authorityCap).length;
+  const blocked = activeArtefacts(c.a, c.s).filter((a) => authRank(a.aiAuth) > cx.authorityCap).length;
   const withCtx = (k: string) => model(makeCtx({ ...c.s, dom: { ...c.s.dom, values: { ...c.s.dom.values, engagementCtx: k } } })), mS = withCtx('STA'), mM = withCtx('MSC');
   const om = opModelCompute(c, 2, m);
   return [

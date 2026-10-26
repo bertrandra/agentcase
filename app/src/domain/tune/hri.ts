@@ -1,6 +1,6 @@
 /** @calc-zone tuning-programme */
 import type { Ctx } from '../ctx';
-import { hriCostPerFTE, hriEnabled, hriIndex, hriIntensity } from '../engagement';
+import { hriBandOf, hriCostPerFTE, hriEnabled, hriIndex, hriIntensity, type HriBand } from '../engagement';
 import { teamInCost } from '../location';
 import type { ColourRole } from '../theme';
 
@@ -15,16 +15,17 @@ export const HRI_GROUPS: { title: string; q: string[] }[] = [
 ];
 
 export interface HriSummary {
-  on: boolean; index: number; label: string; tone: ColourRole; intensity: string; etp: number; costPerFte: number; cost: number; drag: number;
+  on: boolean; index: number; band: HriBand; label: string; tone: ColourRole; intensity: string; etp: number; costPerFte: number; cost: number; drag: number;
 }
+const BAND_READOUT: Record<HriBand, [ColourRole, string]> = { light: ['teal-700', 'Ready'], standard: ['warning-600', 'Fragile'], intensive: ['danger-800', 'At risk'] };
 
 /** What the Human Readiness card shows (legacy renderHri). The drag uses the rounded index, like the legacy read-out. */
 export function hriSummary(c: Ctx): HriSummary {
   const idx = Math.round(hriIndex(c)), etp = teamInCost(c.s, c.inp).etp, costPerFte = hriCostPerFTE(c);
   const { hriFloor, hriSlope } = c.s.COEF as { hriFloor: number; hriSlope: number };
-  const [tone, label]: [ColourRole, string] = idx >= 75 ? ['teal-700', 'Ready'] : idx >= 50 ? ['warning-600', 'Fragile'] : ['danger-800', 'At risk'];
+  const band = hriBandOf(idx), [tone, label] = BAND_READOUT[band];
   return {
-    on: hriEnabled(c), index: idx, label, tone, intensity: hriIntensity(c), etp, costPerFte,
+    on: hriEnabled(c), index: idx, band, label, tone, intensity: hriIntensity(c), etp, costPerFte,
     cost: etp * costPerFte, drag: Math.max(hriFloor, hriFloor + (hriSlope * idx) / 100),
   };
 }

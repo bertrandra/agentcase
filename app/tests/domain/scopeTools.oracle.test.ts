@@ -1,6 +1,7 @@
 import { readFileSync, readdirSync } from 'node:fs';
 import { describe, expect, it } from 'vitest';
 import { makeCtx, type CaseState } from '@/domain';
+import { deviationFixtures } from '../helpers/deviations';
 import { activeStages, automationCurve, autoBase, funnelStage, maturityBounds } from '@/domain/scope/automation';
 import { lifecycleCascade, statusDoc, statusLabel } from '@/domain/scope/lifecycleView';
 import { phaseTiles } from '@/domain/scope/phaseTiles';
@@ -58,6 +59,8 @@ describe('maturity block of the S-curve section matches the legacy render', () =
 describe('automation chart and glass-ceiling funnel match the legacy figures', () => {
   it.each(ids)('%s', (id) => {
     const exp = load('automationView', id), c = makeCtx(state(id)), b = autoBase(c), a = automationCurve(c, b);
+    // DEV-TEAM-RUN-END: past a 3-year horizon the agentic run team is the horizon end year's (the legacy read year 3).
+    if (deviationFixtures('DEV-TEAM-RUN-END').includes(id)) exp.team = { ...exp.team, runETP: b.eng.year(b.eng.horizonYears).runTeamFteEnd };
     near({ N: a.N, auto: a.auto, eff: a.eff, rampEnd: a.rampEnd, realEnd: a.realEnd, humanEnd: a.humanEnd, vfteEnd: a.vfteEndFte, team: a.team },
       { N: exp.N, auto: exp.auto, eff: exp.eff, rampEnd: exp.rampEnd, realEnd: exp.realEnd, humanEnd: exp.humanEnd, vfteEnd: exp.vfteEnd, team: exp.team });
     near(exp.real.map(([t]: [number, number]) => [t, a.real[t - 1]]), exp.real, 'real(t)');

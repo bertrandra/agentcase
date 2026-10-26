@@ -1,7 +1,7 @@
 /** @calc-zone verification */
 import type { Ctx } from '../ctx';
 import { evtModel } from '../model/evt';
-import { lceLoops, lceModel } from '../model/lce';
+import { ESCAPE_MATERIAL_PCT, escapeMaterial, lceLoops, lceModel } from '../model/lce';
 import { vtaxAvgHuman } from '../model/vtax';
 import { activeArtefacts } from '../scope';
 import { audit, type ConvCheck } from './verifConvTypes';
@@ -16,11 +16,11 @@ export function loopChecks(c: Ctx): ConvCheck[] {
   const ids = (list: { id: string }[]) => list.map((l) => l.id).join(', ');
   const outside = m ? m.loops.filter((l) => !(l.EN >= 1 - 1e-9 && l.EN <= m.nMax + 1e-9)) : [];
   const uncal = m ? m.loops.filter((_, i) => { const s = st[i]; return (s ? s.calibResidual : 0) >= 1e-9 || (s ? !!s.clamped : false); }) : [];
-  const hi = m ? m.loops.filter((l) => l.escapePct > 5) : [];
+  const hi = m ? m.loops.filter(escapeMaterial) : [];
   return [
     audit('CC-LC-01', outside.length ? `E[N] outside [1, nMax] for: ${ids(outside)}` : null),
     audit('CC-LC-02', uncal.length ? `uncalibrated / clamped loop(s): ${ids(uncal)}` : null),
-    audit('CC-LC-03', hi.length ? `escape rate >5% — fallback must be costed: ${hi.map((l) => `${l.id} ${l.escapePct.toFixed(1)}%`).join(', ')}` : null),
+    audit('CC-LC-03', hi.length ? `escape rate >${ESCAPE_MATERIAL_PCT}% — fallback must be costed: ${hi.map((l) => `${l.id} ${l.escapePct.toFixed(1)}%`).join(', ')}` : null),
   ];
 }
 

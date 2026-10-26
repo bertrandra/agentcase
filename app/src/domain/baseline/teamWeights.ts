@@ -56,3 +56,31 @@ export function teamWeights(c: Ctx): TeamWeights {
     fteToFullScope: staffedW > 0 ? (totalFTE * unassignedW) / staffedW : 0,
   };
 }
+
+export interface TeamCoverage {
+  /** share of the scope weight staffed (%), the unstaffed rest, and whether any is unstaffed */
+  coveredPct: number; unstaffedPct: number; unstaffed: boolean;
+  /** the unstaffed skills: their share of the scope weight (%) and how many of their lines are pinned elsewhere */
+  bySkill: { skill: string; pct: number; pinnedLines: number }[];
+  /** share of the scope weight on pinned lines (%), the auto pool, and whether pinning is visible (above 0.05 %) */
+  pinnedPct: number; autoPct: number; pinned: boolean;
+  /** each row's share of the scope weight (%) and its FTE minus the FTE the artefact mix implies */
+  rowSharePct: number[]; rowDelta: number[];
+}
+
+/** A line's FTE minus the FTE its artefact mix implies (the "implied FTE" column), and its sign (|Δ| < 1e-9 reads as zero). */
+export const fteDelta = (r: TeamRow, W: TeamWeights, i: number): number => (+r.etp || 0) - (W.targetFTE[i] ?? 0);
+export const deltaSign = (d: number): 'zero' | 'over' | 'under' => (Math.abs(d) < 1e-9 ? 'zero' : d > 0 ? 'over' : 'under');
+
+/** How far the team covers the scope weight (the Team-in banner, the pin editor and the implied-FTE column read it). */
+export function teamCoverage(rows: TeamRow[], W: TeamWeights): TeamCoverage {
+  const pct = (w: number) => (W.totW ? (w / W.totW) * 100 : 0), coveredPct = W.totW ? (1 - W.unassignedW / W.totW) * 100 : 100;
+  const pinnedPct = pct(rows.reduce((s, r, i) => s + (isPinnedRow(r) ? W.rowW[i]! : 0), 0));
+  return {
+    coveredPct, unstaffedPct: 100 - coveredPct, unstaffed: W.unassignedW > 1e-9,
+    bySkill: Object.keys(W.unassigned).sort().map((skill) => ({ skill, pct: pct(W.unassigned[skill]!),
+      pinnedLines: rows.filter((r) => r.skill === skill && isPinnedRow(r)).length })),
+    pinnedPct, autoPct: 100 - pinnedPct, pinned: pinnedPct > 0.05,
+    rowSharePct: rows.map((_, i) => pct(W.rowW[i] ?? 0)), rowDelta: rows.map((r, i) => fteDelta(r, W, i)),
+  };
+}

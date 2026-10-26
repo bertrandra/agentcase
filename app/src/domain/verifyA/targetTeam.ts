@@ -1,7 +1,9 @@
 /** @calc-zone delivery-views */
+import { AI_SKILL_PREMIUM } from '../rates';
 import { LOCATIONS, COEF_DEFAULT } from '../catalog';
 import { targetMix } from '../baseline/locStrat';
 import { locationMix, rateFor } from '../location';
+import { fteBeforeAfter, humanFteOfYear, type FteBeforeAfter } from '../economics/fte';
 import { activeArtefacts } from '../scope';
 import type { Live } from './fteVfte';
 
@@ -9,16 +11,21 @@ const coef = (l: Live, k: string): number => (l.c.s.COEF?.[k] ?? COEF_DEFAULT[k]
 
 export interface TargetTeam {
   devETP: number; supETP: number; setupETP: number; runETP: number; residualETP: number; totalRecurrent: number; avgHumanSup: number; supShare: number;
+  /** before / after / freed / reduction of the FTE owner (`fteBeforeAfter`): totalRecurrent is its `after` */
+  fte: FteBeforeAfter;
 }
 
-/** The target team at the horizon end: residual human FTE split into dev and supervision, plus the agentic run team (legacy targetTeam). */
+/**
+ * The target team at the horizon end: residual human FTE split into dev and supervision, plus the agentic run team of the same year end (legacy
+ * targetTeam read the run team of year 3 whatever the horizon); the total is the FTE owner's `after`.
+ */
 export function targetTeam(l: Live): TargetTeam {
-  const residualETP = l.eng.year(l.eng.horizonYears).humanFteEnd, act = activeArtefacts(l.c.a, l.c.s);
+  const end = l.eng.year(l.eng.horizonYears), residualETP = end.humanFteEnd, act = activeArtefacts(l.c.a, l.c.s);
   const avgHumanSup = act.length ? act.reduce((s, a) => s + a.humanSup, 0) / act.length / 100 : 0.4;
   const supShare = Math.min(coef(l, 'supShareCap'), avgHumanSup * coef(l, 'supShareFactor'));
-  const supETP = residualETP * supShare, runETP = l.m.runAgenticETP;
-  return { devETP: residualETP - supETP, supETP, setupETP: coef(l, 'setupETP'), runETP, residualETP, totalRecurrent: residualETP + runETP, avgHumanSup,
-    supShare };
+  const supETP = residualETP * supShare, runETP = end.runTeamFteEnd, fte = fteBeforeAfter(l.m.base.etp, humanFteOfYear(end));
+  return { devETP: residualETP - supETP, supETP, setupETP: coef(l, 'setupETP'), runETP, residualETP, totalRecurrent: fte.after, avgHumanSup,
+    supShare, fte };
 }
 
 export interface Pole { name: string; fte: number; cost: number }
@@ -36,9 +43,9 @@ export function teamPoles(l: Live, t: TargetTeam): TeamPoles {
   return {
     dev: poleRows(l, [['Residual dev production', t.devETP * 0.7], ['QA/Test', t.devETP * 0.2], ['Ops/Run', t.devETP * 0.1]]),
     sup: poleRows(l, [['Agent Supervisor (output review)', t.supETP * 0.7], ['Sec/Quality', t.supETP * 0.3]]),
-    setup: poleRows(l, [['Transformation lead', 0.65], ['Agentic architect', 0.75], ['Coach', 0.6]], 1.15),
+    setup: poleRows(l, [['Transformation lead', 0.65], ['Agentic architect', 0.75], ['Coach', 0.6]], AI_SKILL_PREMIUM),
     run: poleRows(l, [['AI/Agent Engineer', Math.max(0.3, e / 12)], ['Skill/Prompt Engineer', Math.max(0.2, e / 20)], ['AI-FinOps', coef(l, 'aiFinOpsFte')],
-      ['AI-QA', Math.max(0.2, e / 25)]], 1.15),
+      ['AI-QA', Math.max(0.2, e / 25)]], AI_SKILL_PREMIUM),
     setupTotal: l.m.setupTotal,
   };
 }
@@ -52,8 +59,8 @@ export function groupRows(l: Live, t: TargetTeam): GroupRow[] {
   return [
     { group: 'Dev team', composition: 'Residual production (code, test, ops)', fte: t.devETP, cost: cost(t.devETP), kind: 'Recurring', tone: 'dev' },
     { group: 'Supervision', composition: 'AI output review & validation', fte: t.supETP, cost: cost(t.supETP), kind: 'Recurring', tone: 'sup' },
-    { group: 'Agentic Run', composition: 'AI Eng, Prompt Eng, FinOps, AI-QA', fte: t.runETP, cost: cost(t.runETP, 1.15), kind: 'Recurring', tone: 'run' },
-    { group: 'Agentic Setup', composition: 'Lead, architect, coach (transitional Y1)', fte: t.setupETP, cost: cost(t.setupETP, 1.15), kind: 'Transitional',
+    { group: 'Agentic Run', composition: 'AI Eng, Prompt Eng, FinOps, AI-QA', fte: t.runETP, cost: cost(t.runETP, AI_SKILL_PREMIUM), kind: 'Recurring', tone: 'run' },
+    { group: 'Agentic Setup', composition: 'Lead, architect, coach (transitional Y1)', fte: t.setupETP, cost: cost(t.setupETP, AI_SKILL_PREMIUM), kind: 'Transitional',
       tone: 'setup' },
   ];
 }

@@ -1,5 +1,6 @@
 import { useMemo } from 'react';
 import { addTokenModel, removeTokenModel, resetTokenModels, setTokenField } from '@/controllers/tuneB';
+import { isSplitComplete } from '@/domain/split';
 import { tokenModelRows, tokenUsage, type ModelRow } from '@/domain/tuneB/tokens';
 import { useCtx } from '@/store/hooks';
 import { DataTable, type Column } from '@/ui/widgets/DataTable';
@@ -34,7 +35,7 @@ export function ModelTable() {
     { key: 'rm', header: '', align: 'center', render: (r) => <button type="button" title="Remove model" aria-label={`Remove ${r.name}`}
       onClick={() => removeTokenModel(r.index)}>✕</button> },
   ];
-  const ok = Math.abs(t.mixSum - 100) <= 0.5;
+  const ok = isSplitComplete(t.mixSum);
   return (
     <Panel title="💸 Token economics by model">
       <p className="ac-muted">Per model: usage <strong>mix %</strong> and <strong>input / output price</strong> (€ per 1M tokens). Volume ({L}) and
