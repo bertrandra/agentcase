@@ -6,8 +6,7 @@ export type CommonCase = Omit<CaseState, 'teamIn'>;
 
 /** Top-level case keys a product may override (spec 4.3). `dom` is overridden field by field, see `Overrides.dom`. */
 export const OVERRIDABLE_KEYS = [
-  'selectedArtefacts', 'artefactsEdited', 'selectedRegArtefacts', 'regArtefactsEdited', 'phaseOff', 'phaseSeq', 'selectedNorms', 'regInclude',
-  'lifecycleUse', 'lifecyclePos', 'statusLifecycle', 'targetLocPct', 'forceGlassCeiling', 'scurve', 'engageCoef', 'MATURITY_MAP',
+  'BPMN', 'lifecycleUse', 'lifecyclePos', 'statusLifecycle', 'targetLocPct', 'forceGlassCeiling', 'scurve', 'engageCoef', 'MATURITY_MAP',
 ] as const;
 export type OverridableKey = (typeof OVERRIDABLE_KEYS)[number];
 

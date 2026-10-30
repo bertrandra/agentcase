@@ -2,6 +2,7 @@
 import type { Ctx } from '../ctx';
 import { activeArtefacts } from '../scope';
 import { phasesForScope, regOfActiveNorms, type PhaseState } from '../scopeView';
+import { scopeOf } from '../process/scope';
 
 /** One tile of the quick phase selector (legacy renderQuickPhases): effort share, glass-ceiling contribution and human supervision of a phase. */
 export interface PhaseTile {
@@ -17,7 +18,7 @@ export function phaseTiles(c: Ctx): PhaseTiles {
     const w = +a.w || 0, e = by.get(a.phase) ?? { w: 0, hw: 0 };
     totW += w; e.w += w; e.hw += w * (+a.humanSup || 0); by.set(a.phase, e);
   }
-  const off = new Set(c.s.phaseOff ?? []);
+  const off = new Set(scopeOf(c.s).phaseOff);
   const tiles = phasesForScope().map((p) => {
     const v = by.get(p.id), reg = regOfActiveNorms(c, p.id), sdlc = c.a.sdlc.filter((a) => a.phase === p.id);
     const nStd = sdlc.filter((a) => c.a.selected.has(a.id)).length, nReg = reg.filter((a) => c.a.selectedReg.has(a.id)).length;

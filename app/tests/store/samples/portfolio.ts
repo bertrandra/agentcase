@@ -2,11 +2,12 @@ import { addWave, assignWave, removeWave, renameWave, reorderWave, setWaveNote, 
 import { setDisplayScope } from '@/controllers/displayScope';
 import { setMaxConcurrentSetups, setWaveDependency } from '@/controllers/waveDeps';
 import { setPortfolioHorizon, setPortfolioHub, setPortfolioRho } from '@/controllers/portfolio';
-import { clearProductOverride, applyOverrideToCommon, applySubsetFieldToCommon, setProductKnowledge, setProductOverride } from '@/controllers/productOverrides';
+import { clearProductOverride, applyOverrideToCommon, applySubsetFieldToCommon, setProductKnowledge } from '@/controllers/productOverrides';
 import { addProduct, archiveProduct, duplicateProduct, removeProduct, renameProduct, setActiveProduct, setEditScope, setProductNote,
   setProductOffset } from '@/controllers/product';
 import { appStore } from '@/store/instance';
 import type { Sample } from './types';
+import { setScopeOverride } from '../../helpers/scope';
 
 const pfs = () => appStore().getState().portfolio;
 const first = (): string => pfs().products[0]!.id;
@@ -15,7 +16,7 @@ const second = (): string => { const id = addProduct('Second'); if (!id) throw n
 let other = '', w2 = '';
 const two = () => { other = second(); };
 const withWave = () => { two(); w2 = addWave('Wave B', 6)!; };
-const overridden = () => { setProductOverride(first(), 'selectedArtefacts', ['x']); };
+const overridden = () => { setScopeOverride(first(), { selectedArtefacts: ['x'] }); };
 
 /** One sample call per portfolio command (product, wave, portfolio). */
 export const samples: Record<string, Sample> = {
@@ -30,8 +31,8 @@ export const samples: Record<string, Sample> = {
   'product.setEditScope': () => { setEditScope('product'); },
   'portfolio.setDisplayScope': () => { setDisplayScope({ kind: 'portfolio' }); },
   'product.setOverride': () => { overridden(); },
-  'product.clearOverride': { prep: overridden, run: () => { clearProductOverride(first(), 'selectedArtefacts'); } },
-  'product.applyToCommon': { prep: overridden, run: () => { applyOverrideToCommon(first(), 'selectedArtefacts'); } },
+  'product.clearOverride': { prep: overridden, run: () => { clearProductOverride(first(), 'BPMN'); } },
+  'product.applyToCommon': { prep: overridden, run: () => { applyOverrideToCommon(first(), 'BPMN'); } },
   'product.setKnowledge': () => { setProductKnowledge(first(), { targetCC: 2 }); },
   'product.applySubsetToCommon': { prep: () => { setProductKnowledge(first(), { targetCC: 1 }); },
     run: () => { applySubsetFieldToCommon(first(), 'targetCC'); } },

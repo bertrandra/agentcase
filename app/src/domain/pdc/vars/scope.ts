@@ -9,6 +9,7 @@ import { modelOf as model } from '../../tune/memo';
 import { phaseScope } from '../../scope';
 import { activePhaseIds } from '../../verifyB/phases';
 import { v } from './types';
+import { scopeOf } from '../../process/scope';
 
 const industry = (c: Ctx) => INDUSTRIES.find((i) => i.code === c.inp.v('industry'));
 const weeks = (c: Ctx) => ['rmD1', 'rmD2', 'rmD3', 'rmD4'].map((id, i) => c.inp.p(id) || (i === 3 ? 6 : 4)).reduce((a, b) => a + b, 0);
@@ -24,7 +25,7 @@ export const SCOPE_VARS = [
   v('totalArtefactsAvailable', 'Total SDLC artefacts (catalog)', 'INT', '', 'scope-sel', () => SDLC_ARTEFACTS.length),
   v('selectedRegArtefactsCount', 'Regulatory artefacts selected', 'INT', '', 'scope-sel', (c) => c.a.selectedReg.size),
   v('totalRegArtefactsAvailable', 'Total regulatory artefacts (catalog)', 'INT', '', 'scope-sel', () => REG_ARTEFACTS.length),
-  v('selectedNormsCount', 'Regulatory norms selected', 'INT', '', 'scope-sel', (c) => new Set(c.s.selectedNorms).size),
+  v('selectedNormsCount', 'Regulatory norms selected', 'INT', '', 'scope-sel', (c) => new Set(scopeOf(c.s).selectedNorms).size),
   v('avgHumanSupInScope', 'Avg. human-supervision in scope', 'PCT', '%', 'scope-sel', (c) => phaseScope(c.a, c.s).avgHuman),
   v('effectiveGlassCeilingPct', 'Effective glass ceiling (computed)', 'PCT', '%', 'scope-sel', (c) => model(c).ceiling),
   v('scopeWeightPct', 'Scope share (effort-weighted)', 'PCT', '%', 'scope-sel', (c) => phaseScope(c.a, c.s).weight * 100),

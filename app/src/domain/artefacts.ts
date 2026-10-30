@@ -3,11 +3,13 @@ import { REG_ARTEFACTS, SDLC_ARTEFACTS } from './catalog';
 import { lifecycleWeight } from './lifecycle';
 import type { Artefact } from './types/catalog';
 import type { ArtefactEdit, CaseState } from './types/state';
+import { scopeOf } from './process/scope';
 
 /** An artefact as the engine sees it: catalogue defaults + the case's edits, with its effective weight w = effort × lifecycleWeight. */
 export interface WArtefact extends Artefact { w: number }
 
-function applyEdits(base: Artefact[], edits: ArtefactEdit[] | undefined): Artefact[] {
+/** Catalogue artefacts with legacy edit records applied (a missing record or value: the catalogue's). */
+export function editedArtefacts(base: Artefact[], edits: ArtefactEdit[] | undefined): Artefact[] {
   const by = new Map((edits ?? []).map((e) => [e.id, e]));
   return base.map((a) => {
     const e = by.get(a.id);
@@ -26,10 +28,11 @@ export interface ArtefactSets { sdlc: WArtefact[]; reg: WArtefact[]; selected: S
 
 /** All artefacts of the case with edits and weights applied. */
 export function workingArtefacts(s: CaseState): ArtefactSets {
+  const k = scopeOf(s);
   return {
-    sdlc: withWeights(applyEdits(SDLC_ARTEFACTS, s.artefactsEdited), s),
-    reg: withWeights(applyEdits(REG_ARTEFACTS, s.regArtefactsEdited), s),
-    selected: new Set(s.selectedArtefacts ?? []),
-    selectedReg: new Set(s.selectedRegArtefacts ?? []),
+    sdlc: withWeights(editedArtefacts(SDLC_ARTEFACTS, k.artefactsEdited), s),
+    reg: withWeights(editedArtefacts(REG_ARTEFACTS, k.regArtefactsEdited), s),
+    selected: new Set(k.selectedArtefacts),
+    selectedReg: new Set(k.selectedRegArtefacts),
   };
 }

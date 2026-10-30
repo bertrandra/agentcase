@@ -5,6 +5,7 @@ import { CROSS_CATEGORIES, INDUSTRIES, industryLabel, regGlassCeiling, crossOn }
 import { onboardingBand, stageWeeks } from '../frame/onboarding';
 import { base, productCases, spread, type AggBase, type Spread } from './aggScopeRows';
 import type { Portfolio } from './types';
+import { scopeOf } from '../process/scope';
 
 /** Section "Engagement context": the contractual frame (MSC / MSI / STA) of each product and the coefficients it implies. */
 export interface EngagementRow extends AggBase {
@@ -47,12 +48,12 @@ export interface IndustryAgg { rows: IndustryRow[]; regulated: number; industrie
 export function frameIndustry(pf: Portfolio, ids: string[]): IndustryAgg {
   const count = new Map<string, number>();
   const rows = productCases(pf, ids).map((p) => {
-    const code = p.c.dom.values.industry ?? 'NONE', ind = INDUSTRIES.find((i) => i.code === code), norms = p.c.selectedNorms;
+    const code = p.c.dom.values.industry ?? 'NONE', ind = INDUSTRIES.find((i) => i.code === code), k = scopeOf(p.c), norms = k.selectedNorms;
     count.set(code, (count.get(code) ?? 0) + 1);
     return { ...base(p), code, label: ind ? industryLabel(ind) : code, regUse: !!p.c.dom.checked.regUse, norms: norms.length,
-      regArtefacts: p.c.selectedRegArtefacts.length,
+      regArtefacts: k.selectedRegArtefacts.length,
       cross: CROSS_CATEGORIES.filter((x) => crossOn(norms, x.code)).map((x) => x.code), regCeiling: regGlassCeiling(p.ctx),
-        own: p.overridden('selectedNorms') || p.overridden('values.industry') };
+        own: p.overridden('BPMN') || p.overridden('values.industry') };
   });
   return { rows, regulated: rows.filter((r) => r.regUse && r.code !== 'NONE').length,
     industries: [...count].map(([code, n]) => ({ code, label: INDUSTRIES.find((i) => i.code === code)?.name ?? code, count: n })) };

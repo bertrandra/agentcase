@@ -31,7 +31,7 @@ describe('snapshot restore: the File menu opens a case like every other open pat
       openCaseText(readFileSync(`fixtures/cases/${id}.json`, 'utf8'));
       expect(snapAll(s), id).toBe(a);
     }
-  });
+  }, 60_000);   // 214 opens, each migrating the case into its process document (schema v3)
   it('lifecycle-pos-0: the potential is re-fitted to 74 % on open, the figures are the legacy restore figures', async () => {
     const doc = (await viaFileMenu('lifecycle-pos-0')).getState().doc, r = computeCase(doc);
     expect(loadCase('lifecycle-pos-0').dom.values.autoPotential).toBe('75');

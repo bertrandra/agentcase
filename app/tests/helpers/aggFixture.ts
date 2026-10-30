@@ -6,6 +6,7 @@ import { phasesForScope } from '@/domain/scopeView';
 import { EMPTY_HISTORY } from '@/store/history';
 import { appStore } from '@/store/instance';
 import { threeProducts, type Three } from './portfolioStore';
+import { keysOf, setScopeOverride } from './scope';
 
 export interface Varied extends Three { d: string }
 
@@ -18,8 +19,7 @@ export interface Varied extends Three { d: string }
 export function variedProducts(): Varied {
   const t = threeProducts(), [a, b, c] = t.ids, pf0 = appStore().getState().portfolio;
   const d = addProduct('D', null)!;
-  setProductOverride(b, 'selectedArtefacts', pf0.common.selectedArtefacts.slice(0, 5));
-  setProductOverride(b, 'phaseOff', [phasesForScope()[0]!.id]);
+  setScopeOverride(b, { selectedArtefacts: keysOf(pf0.common).selectedArtefacts.slice(0, 5), phaseOff: [phasesForScope()[0]!.id] });
   setProductOverride(b, 'lifecycleUse', true);
   setProductOverride(b, 'lifecyclePos', 70);
   setProductOverride(b, 'values.engagementCtx', 'MSI');
@@ -32,8 +32,7 @@ export function variedProducts(): Varied {
   setProductOverride(c, 'lifecycleUse', false);
   setProductOverride(c, 'values.industry', 'MED');
   setProductOverride(c, 'checked.regUse', true);
-  setProductOverride(c, 'selectedNorms', ['MED:IEC 62304']);
-  setProductOverride(c, 'selectedRegArtefacts', ['R039']);
+  setScopeOverride(c, { selectedNorms: ['MED:IEC 62304'], selectedRegArtefacts: ['R039'] });
   setActiveProduct(b); setTeamTotal(20); setActiveProduct(a);
   t.s.setHistory(EMPTY_HISTORY);
   return { ...t, ids: [a, b, c], d };

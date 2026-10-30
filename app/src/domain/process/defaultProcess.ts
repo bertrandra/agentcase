@@ -38,14 +38,15 @@ export function byRank<T>(items: T[], rank: (t: T) => number | undefined): T[] {
 }
 
 /**
- * How a case's ordered id list sits on the document: `ranks` (id → 1-based position) is null when the list is the natural order of its members;
- * `extras` are the entries no element can carry (unknown ids, repeats), kept with their position so the list comes back exactly.
+ * How a case's ordered id list sits on the document: `ranks` (id → 1-based position) is null when the list is the natural order of its members
+ * followed by its extras; `extras` are the entries no element can carry (unknown ids, repeats), kept with their position so the list comes back exactly.
  */
 export interface Placed { ranks: Map<string, number> | null; extras: { rank: number; value: string }[] }
 export function placeList(list: readonly string[], natural: readonly string[]): Placed {
   const known = new Set(natural), ranks = new Map<string, number>(), extras: Placed['extras'] = [];
   list.forEach((id, i) => { if (known.has(id) && !ranks.has(id)) ranks.set(id, i + 1); else extras.push({ rank: i + 1, value: id }); });
   const nat = natural.filter((id) => ranks.has(id));
-  return { ranks: !extras.length && nat.every((id, i) => id === list[i]) ? null : ranks, extras };
+  // no rank when the known entries open the list in their natural order (the extras, if any, all come after them)
+  return { ranks: nat.every((id, i) => id === list[i]) ? null : ranks, extras };
 }
 export const ranksOf = (list: readonly string[], natural: readonly string[]): Map<string, number> | null => placeList(list, natural).ranks;

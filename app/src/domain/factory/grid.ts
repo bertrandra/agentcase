@@ -4,6 +4,7 @@ import type { WArtefact } from '../artefacts';
 import type { Ctx } from '../ctx';
 import { caseHorizonYears } from '../inputs';
 import { activeArtefacts } from '../scope';
+import { scopeOf } from '../process/scope';
 
 /** The weekly grid, anchored on the roadmap start (rmStart) and sized by the horizon. Dates are UTC calendar days. */
 export interface Grid { totalW: number; horizon: number; date(w: number, dayOffset?: number): string }
@@ -44,7 +45,7 @@ export interface PhaseWindow { sw: number; ew: number; arts: WArtefact[] }
 export function fgPhaseWindows(c: Ctx, grid: Grid): Record<string, PhaseWindow> {
   const byPhase: Record<string, WArtefact[]> = {};
   activeArtefacts(c.a, c.s).forEach((a) => { (byPhase[a.phase] ??= []).push(a); });
-  const seqOf = new Map((c.s.phaseSeq ?? []).map((x) => [x.id, x.seq]));
+  const seqOf = new Map((scopeOf(c.s).phaseSeq ?? []).map((x) => [x.id, x.seq]));
   const phases = PHASES.filter((p) => byPhase[p.id]?.length);
   if (!phases.length) return {};
   const items = phases.map((p) => ({ id: p.id, seqKey: seqOf.has(p.id) ? (seqOf.get(p.id) ?? 0) : (p.seq ?? 0),

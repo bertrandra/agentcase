@@ -5,6 +5,7 @@ import type { Ctx } from './ctx';
 import { lifecycleWeight } from './lifecycle';
 import { phaseScope } from './scope';
 import type { Phase } from './types/catalog';
+import { scopeOf } from './process/scope';
 
 export type PhaseState = 'all' | 'some' | 'none';
 export interface PhaseRow {
@@ -16,14 +17,14 @@ export const phasesForScope = (): Phase[] => [...PHASES, CROSS_CUTTING];
 
 /** Regulatory artefacts of a phase whose norm is ticked (regardless of individual selection). */
 export function regOfActiveNorms(c: Ctx, phaseId: string): WArtefact[] {
-  const norms = new Set(c.s.selectedNorms ?? []);
+  const norms = new Set(scopeOf(c.s).selectedNorms);
   return c.a.reg.filter((a) => a.phase === phaseId && norms.has(`${a.industry}:${a.norm}`));
 }
 
 /** Per-phase view of the scope selector (counts, tri-state checkbox, lifecycle weight). Empty phases are dropped. */
 export function phaseRows(c: Ctx, selectedOnly: boolean): PhaseRow[] {
-  const off = new Set(c.s.phaseOff ?? []);
-  const seqOf = new Map((c.s.phaseSeq ?? []).map((x) => [x.id, x.seq]));
+  const k = scopeOf(c.s), off = new Set(k.phaseOff);
+  const seqOf = new Map((k.phaseSeq ?? []).map((x) => [x.id, x.seq]));
   return phasesForScope().map((p) => {
     const phase = seqOf.has(p.id) ? { ...p, seq: seqOf.get(p.id) as number } : p;
     const sdlc = c.a.sdlc.filter((a) => a.phase === phase.id), reg = regOfActiveNorms(c, phase.id);

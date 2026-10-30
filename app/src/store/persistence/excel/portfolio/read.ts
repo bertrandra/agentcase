@@ -1,6 +1,8 @@
 /** @calc-zone exports */
 import { setHorizon, setHub, setMaxConcurrentSetups, setOverride, setRho, validate, type Portfolio, type Product } from '@/domain/portfolio';
 import { clean } from '@/domain/portfolio/products';
+import { BPMN_KEY, SCOPE_KEYS } from '@/domain/process';
+import { scopedProcess } from '../../bpmn/legacy';
 import { ParamsImportError } from '../params/safe';
 import type { Sheets } from '../params/types';
 import { readKnowledge } from './readKnowledge';
@@ -31,7 +33,12 @@ export function readPortfolioSheets(sheets: Sheets, base: Portfolio): Portfolio 
     startDate: s.startDate };
   if (shared) pf.sharedTeam = shared; else delete pf.sharedTeam;
   pf = setMaxConcurrentSetups(setRho(setHorizon(setHub(pf, s.hub), s.horizonMonths), s.rho), s.cap);
-  for (const o of readOverrides(sheets, ids)) pf = setOverride(pf, o.productId, o.ref, o.value);
+  const scoped = new Map<string, Record<string, unknown>>();   // version 2 scope rows: one process document override per product (F-B20)
+  for (const o of readOverrides(sheets, ids)) {
+    if ((SCOPE_KEYS as readonly string[]).includes(o.ref)) scoped.set(o.productId, { ...scoped.get(o.productId), [o.ref]: o.value });
+    else pf = setOverride(pf, o.productId, o.ref, o.value);
+  }
+  for (const [id, scope] of scoped) pf = setOverride(pf, id, BPMN_KEY, scopedProcess(pf.common.BPMN, scope));
   const errors = validate(pf).errors;
   if (errors.length) throw new ParamsImportError(`Portfolio: ${errors[0]?.message}`);
   return pf;

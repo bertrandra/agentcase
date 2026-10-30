@@ -11,7 +11,9 @@ import { addProduct, renameProduct, setActiveProduct, setProductNote, setProduct
 import { setPortfolioHub, setPortfolioRho } from '@/controllers/portfolio';
 import { setProductKnowledge, setProductOverride } from '@/controllers/productOverrides';
 import { addWave, renameWave, setWaveStart } from '@/controllers/wave';
+import { resolveProduct } from '@/domain/portfolio';
 import { createAppStore } from '@/store/core';
+import { scopedProcess } from '@/store/persistence/bpmn/legacy';
 import { appStore, makeDefaultDoc, setAppStore } from '@/store/instance';
 
 setAppStore(createAppStore(makeDefaultDoc()));
@@ -23,7 +25,8 @@ setWaveStart(w2, 6);
 setActiveProduct(b); setTeamTotal(24);
 setActiveProduct(c); setTeamTotal(16);
 setActiveProduct(d); setTeamTotal(8);
-setProductOverride(b, 'regInclude', true);                 // Payments is regulated: the regulatory catalogue applies to it only
+// Payments is regulated: the regulatory artefacts count in its effort only (its own process document, a whole-document override, F-B20)
+setProductOverride(b, 'BPMN', scopedProcess(resolveProduct(appStore().getState().portfolio, b).BPMN, { regInclude: true }));
 setProductOverride(c, 'values.engagementCtx', 'STA');      // Mobile app: another engagement context
 setProductNote(c, 'Starts at month 6; its knowledge transfer is prepared 3 months earlier');
 setProductNote(d, 'Not scheduled yet: excluded from the consolidation');

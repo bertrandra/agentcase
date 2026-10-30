@@ -3,7 +3,7 @@ import { LOCATIONS, PHASES } from '@/domain/catalog';
 import { lifecycleAutoPosture, lifecycleBlend, lifecycleWeight, statusTable } from '@/domain/lifecycle';
 import { lifecycleStatusLabel } from '@/domain/verdict/context';
 import type { CaseState } from '@/domain/types/state';
-import { skillMapOf } from '@/domain/baseline/skills';
+import { SKILL_MAP_DEFAULT, skillMapOf } from '@/domain/baseline/skills';
 import { allArtefactSkills, locSplitOf, teamSkillList, tobeComposition, type LocSplit } from '@/domain/verifyA';
 import { frz, head, sheet } from '../kit';
 import { cleanText, num, okKey, str } from '../safe';
@@ -69,7 +69,7 @@ function writeSkillMap({ wb, d, live }: WriteCtx): void {
 }
 function readSkillMap({ rows, w }: ReadCtx): void {
   const r = rows('Skill Map'); if (!r) return;
-  const map = { ...skillMapOf(cs(w)) };
+  const map = { ...(w.skillMap ?? SKILL_MAP_DEFAULT) };   // the working copy's legacy key (the import may run on a case without one)
   r.slice(1).forEach((x) => { const a = cleanText(x[0], 60), t = cleanText(x[1], 60); if (a && t && okKey(a)) map[a] = t; });
   w.skillMap = map;
 }

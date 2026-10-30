@@ -66,7 +66,8 @@ describe('menu structures: migration', () => {
     expect('MENU_STRUCTURES' in doc).toBe(false);
     expect((doc.PERSONAS as Persona[]).every((p) => structureOf(p) === STANDARD_STRUCTURE && !('menuStructure' in p))).toBe(true);
     const saved = toSnapshot(doc, () => new Date(0));
-    expect(Object.keys(saved).filter((k) => !(k in raw) && !['savedAt', '_schema', '_schemaVersion', 'calculationPackage'].includes(k))).toEqual([]);
+    // BPMN: schema v3 writes the case's process document (its scope keys migrated into it, docs/SPEC_BPMN.md § 6.1)
+    expect(Object.keys(saved).filter((k) => !(k in raw) && !['savedAt', '_schema', '_schemaVersion', 'calculationPackage', 'BPMN'].includes(k))).toEqual([]);
     expect(saved.PERSONAS).toEqual(raw.PERSONAS);
     expect(saved.GROUPS).toEqual(raw.GROUPS);
     expect(saved.sectionGroups).toEqual(raw.sectionGroups);

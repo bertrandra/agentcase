@@ -1,6 +1,7 @@
 /** @calc-zone exports */
 import type { Doc } from '@/store/types';
 import { loadExcelJS } from '../lazy';
+import { legacyCase } from '../../bpmn/legacy';
 import { KNOWN_SHEETS, READ_ORDER } from './registry';
 import { asArrayBuffer, guardZip, flatten, LIMITS, ParamsImportError } from './safe';
 import { sameJson } from './compare';
@@ -42,7 +43,9 @@ export interface ParamsPatch { patch: Partial<Doc>; notes: string[] }
  * differs (replace them wholesale), `notes` the messages the legacy import showed. `base` is not modified.
  */
 export function interpretParams(sheets: Sheets, base: Doc, env: ParamsEnv): ParamsPatch {
-  const w = JSON.parse(JSON.stringify(base)) as ParamsDoc, notes: string[] = [], secs = effectiveSections(env, w), ids = new Set(secs.map((s) => s.id));
+  // the legacy keys (scope keys derived from the process document); the document itself stays out of the copy and of the patch
+  const legacy = legacyCase(base), w = { ...JSON.parse(JSON.stringify(legacy)), BPMN: base.BPMN } as ParamsDoc, notes: string[] = [];
+  const secs = effectiveSections(env, w), ids = new Set(secs.map((s) => s.id));
   const x: ReadCtx = {
     w, env, notes, secs, rows: (name) => sheets.get(name) ?? null, hasSection: (id) => ids.has(id),
     clamp(v, mn, mx, label) { let n = v; if (n < mn) { n = mn; notes.push(`${label} clamped up to ${mn}`); } if (n > mx) { n =
@@ -50,8 +53,8 @@ export function interpretParams(sheets: Sheets, base: Doc, env: ParamsEnv): Para
   };
   READ_ORDER.forEach((f) => f.read(x));
   w.sectionGroups = toSectionGroups(secs);
-  const clean = JSON.parse(JSON.stringify(w)) as Record<string, unknown>, patch: Record<string, unknown> = {};
-  for (const k of Object.keys(clean)) if (!sameJson(clean[k], (base as Record<string, unknown>)[k])) patch[k] = clean[k];
+  const clean = JSON.parse(JSON.stringify({ ...w, BPMN: undefined })) as Record<string, unknown>, patch: Record<string, unknown> = {};
+  for (const k of Object.keys(clean)) if (!sameJson(clean[k], legacy[k])) patch[k] = clean[k];
   return { patch: patch as Partial<Doc>, notes };
 }
 

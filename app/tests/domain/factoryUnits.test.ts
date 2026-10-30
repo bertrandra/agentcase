@@ -10,6 +10,8 @@ import { timelineAxis, timelineEvents } from '@/domain/factory/timeline';
 import type { FactoryData } from '@/domain/factory/types';
 import { digest } from '../helpers/digest';
 import { loadCase } from '../helpers/oracleDiff';
+import { caseInStore } from '@/store/persistence/bpmn/caseDoc';
+import { withScopeKeys } from '../helpers/scope';
 
 const ctx = () => makeCtx(loadCase<CaseState>('golden'));
 const gen = (p: Record<string, number>) => generateFactory(ctx(), fgParams(p), '2026-01-01T00:00:00.000Z')!;
@@ -40,7 +42,7 @@ describe('factory generator (properties the oracle comparison relies on)', () =>
   });
   it('returns null when nothing is in scope (the legacy alert case)', () => {
     const s = loadCase<CaseState>('golden');
-    expect(generateFactory(makeCtx({ ...s, selectedArtefacts: [], selectedRegArtefacts: [] }), fgParams({}), 'now')).toBeNull();
+    expect(generateFactory(makeCtx(withScopeKeys(caseInStore(s), { selectedArtefacts: [], selectedRegArtefacts: [] })), fgParams({}), 'now')).toBeNull();
   });
 });
 

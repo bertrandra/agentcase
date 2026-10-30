@@ -1,5 +1,6 @@
 /** @calc-zone exports */
 import { makeDefaultDoc } from '../../instance';
+import { processOf } from '../bpmn/caseDoc';
 
 /**
  * Light runtime validation of the critical keys of a case (no schema library): a value of the wrong shape is replaced by the code default (or
@@ -112,5 +113,10 @@ export function checkCase(raw: Rec, n: Notes, at = ''): Rec {
   if (c.teamIn !== undefined) c.teamIn = checkTeam(c.teamIn, n, at, def.teamIn as unknown[]);
   for (const k of ['PERSONAS', 'GROUPS', 'sectionGroups']) if (c[k] !== undefined) c[k] = checkIdList(k, c[k], def[k], n, at);
   checkThemes(c, n, at);
+  if (c.BPMN !== undefined) {   // schema v3: the process document, XML text in a file (read by the B2 reader and its security checks)
+    const doc = processOf(c.BPMN);
+    if (typeof doc !== 'string') c.BPMN = doc;
+    else { n.push(`${at}BPMN: the process document cannot be read (${doc}) — the default process used`); delete c.BPMN; }
+  }
   return c;
 }

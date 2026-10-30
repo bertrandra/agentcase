@@ -7,6 +7,7 @@ import type { CaseState } from '../types/state';
 import { computeGlassCeiling } from '../model/ceiling';
 import { ASSUMPTION_DEFS } from './assumptions';
 import coefficients from './ddCoefficients.json';
+import { scopeOf } from '../process/scope';
 
 /** One-at-a-time euro sensitivity of the due-diligence register (legacy P13c): |change of the horizon-end savings| for a +20 % perturbation. */
 export interface DdSens { fp: string; base: number; w: Record<string, number>; unmeasurable: string[]; at: string }
@@ -18,7 +19,7 @@ const endSavings = (s: CaseState): number => { const ys = engineNow(makeCtx(s)).
 /** Content hash of everything the measurement depends on, so a stale measurement is recognised after any edit. */
 export function ddFingerprint(c: Ctx): string {
   const s = c.s as unknown as Record<string, unknown>,
-    src = JSON.stringify([s.dom, [...(c.a.selected)].sort(), [...(c.a.selectedReg)].sort(), s.artefactsEdited, s.QUALITY, s.DORA_ANCHORS,
+    src = JSON.stringify([s.dom, [...(c.a.selected)].sort(), [...(c.a.selectedReg)].sort(), scopeOf(c.s).artefactsEdited, s.QUALITY, s.DORA_ANCHORS,
       s.THROUGHPUT_ANCHORS, s.COEF, s.engageCoef, s.statusLifecycle]);
   let h = 2166136261;
   for (let i = 0; i < src.length; i++) { h ^= src.charCodeAt(i); h = Math.imul(h, 16777619); }

@@ -3,6 +3,7 @@ import { addProduct, setActiveProduct } from '@/controllers/product';
 import { EMPTY_HISTORY } from '@/store/history';
 import type { AppStore } from '@/store/core';
 import { freshStore } from '../store/helpers';
+import { serialize, type XDocument } from '@/domain/process';
 
 export interface Three { s: AppStore; ids: [string, string, string]; waves: [string, string] }
 
@@ -22,6 +23,7 @@ export const docOnly = (s: AppStore): string => {
   const { activeProductId: _a, editScope: _e, displayScope: _d, ...rest } = s.getState().portfolio as unknown as Record<string, unknown>;
   void _a; void _e; void _d;
   return JSON.stringify(rest,
-    (_k, v: unknown) => (v && typeof v === 'object' && !Array.isArray(v)
-    ? Object.fromEntries(Object.entries(v).sort(([a], [b]) => (a < b ? -1 : a > b ? 1 : 0))) : v));
+    // the process document: its text
+    (_k, v: unknown) => (v && typeof v === 'object' && (v as { kind?: unknown }).kind === 'document' ? serialize(v as XDocument)
+      : v && typeof v === 'object' && !Array.isArray(v) ? Object.fromEntries(Object.entries(v).sort(([a], [b]) => (a < b ? -1 : a > b ? 1 : 0))) : v));
 };

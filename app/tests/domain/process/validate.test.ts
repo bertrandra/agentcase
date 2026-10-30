@@ -2,9 +2,8 @@ import { mkdtempSync, rmSync, writeFileSync } from 'node:fs';
 import { tmpdir } from 'node:os';
 import { join } from 'node:path';
 import { afterAll, describe, expect, it } from 'vitest';
-import { processFromCase, serialize } from '@/domain/process';
-import type { CaseState } from '@/domain';
-import { makeDefaultDoc } from '@/store/instance';
+import { catalogueProcess, processFromCase, scopeKeysOf, serialize, withScope } from '@/domain/process';
+import defaultDoc from '@/store/defaults/defaultDoc.json';
 import { DEFAULT_PROCESS_FILE } from '../../../scripts/lib/defaultProcess';
 import { schemaTestsRun, validate } from '../../helpers/bpmnValidate';
 
@@ -23,13 +22,17 @@ describe.skipIf(!schemaTestsRun())('BPMN B1 — generated documents validate (xm
   }, 60000);
   it('a case document carrying every case mark (positions, null ramp-up, partial edits, unmatched entries, absent keys)', () => {
     const c = {
-      ...makeDefaultDoc(), selectedArtefacts: ['A017', 'A001', 'X1', 'A017'], selectedRegArtefacts: ['R002', 'R001'], phaseOff: ['V3', 'L0', 'Cross-cutting'],
+      ...structuredClone(defaultDoc), selectedArtefacts: ['A017', 'A001', 'X1', 'A017'], selectedRegArtefacts: ['R002', 'R001'],
+      phaseOff: ['V3', 'L0', 'Cross-cutting'],
       selectedNorms: ['MED:ISO 13485', 'ISO 26262', 'AERO:DO-178C'], artefactsEdited: [{ id: 'A002', effort: 4 }, { id: 'A001', seq: 3, humanSup: 50 }],
       regArtefactsEdited: [], phaseSeq: [{ id: 'V3', seq: 2 }, { id: 'L0', seq: null }], regInclude: false,
     } as Record<string, unknown>;
     delete c.skillMap;
     const file = join(dir, 'case-marks.bpmn');
-    writeFileSync(file, serialize(processFromCase(c as unknown as CaseState)));
+    writeFileSync(file, serialize(processFromCase(c)));
     expect(report([file])).toEqual([{ file: 'case-marks.bpmn', schema: 'valid', errors: [], warnings: [] }]);
+    const normal = join(dir, 'case-normal.bpmn');   // B3: the same keys in the normal form the migration writes (withScope)
+    writeFileSync(normal, serialize(withScope(catalogueProcess(), scopeKeysOf(c))));
+    expect(report([normal])).toEqual([{ file: 'case-normal.bpmn', schema: 'valid', errors: [], warnings: [] }]);
   }, 60000);
 });

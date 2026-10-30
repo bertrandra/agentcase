@@ -3,6 +3,7 @@ import type { Portfolio } from '@/domain/portfolio';
 import type { AppStore, RemoteResult, SyncId } from '../core';
 import { documentOf, documentPatches } from '../portfolioState';
 import { SNAPSHOT_SCHEMA_VERSION } from './schema/version';
+import { portfolioInFile, portfolioInStore } from './bpmn/caseFile';
 
 /** Minimal BroadcastChannel surface (so tests can inject a fake). */
 export interface ChannelLike { postMessage(m: unknown): void; onmessage: ((e: { data: unknown }) => void) | null; close(): void }
@@ -22,6 +23,13 @@ export type BroadcastMessage = Msg;
 export const BROADCAST_KINDS = ['patch', 'full', 'request'] as const satisfies readonly NonNullable<Msg['kind']>[];
 export const BROADCAST_FIELDS = ['tabId', 'v', 'docId', 'rev', 'kind', 'base', 'patches', 'reason', 'to', 'portfolio'] as const;
 
+/** A whole document received from another tab, its process documents read from their XML text (null when one cannot be read). */
+function inStore(pf: Portfolio): Portfolio | null {
+  let ok = true;
+  const out = portfolioInStore(pf, () => { ok = false; });
+  return ok ? out : null;
+}
+
 /** Messages a tab shows when another tab changed its document under it (an aria-live toast). */
 export const SYNC_NOTICES = {
   opened: 'Another tab opened a document: this tab now shows it',
@@ -36,12 +44,13 @@ export interface BroadcastOptions { onNotice?: (text: string) => void }
  * *remote* patch — it moves the document but is never put on this tab's undo stack — only on the same document at the same revision. Opening a
  * document broadcasts it whole: the other tabs replace theirs (keeping their own view state). A patch on another revision of the same document is a
  * divergence: the tab that is behind (lower revision, then lower tab id) takes the other one's whole document. A tab of a NEWER build (a newer file
- * schema) is ignored: its messages may address a shape this build does not know (each tab keeps its own document; saving from either still works).
+ * schema) or of an older one is ignored: its messages may address a shape this build does not know (each tab keeps its own document; saving from
+ * either still works). A patch addresses nodes of the process tree (an attribute, an element), never the whole document.
  */
 export function connectBroadcast(store: AppStore, ch: ChannelLike, tabId: string, o: BroadcastOptions = {}) {
   const post = (m: Body & SyncId) => ch.postMessage({ ...m, tabId, v: SNAPSHOT_SCHEMA_VERSION });
   const full = (reason: 'load' | 'sync', to?: string) => {
-    const pf = store.getState().portfolio, portfolio = { ...documentOf(pf), activeProductId: pf.activeProductId } as unknown as Portfolio;
+    const pf = store.getState().portfolio, portfolio = portfolioInFile({ ...documentOf(pf), activeProductId: pf.activeProductId } as unknown as Portfolio);
     post({ kind: 'full', reason, to, ...store.syncId(), portfolio });
   };
   const say = (what: string, r: RemoteResult) => { if (r.historyCleared ||
@@ -57,14 +66,16 @@ export function connectBroadcast(store: AppStore, ch: ChannelLike, tabId: string
   ch.onmessage = (e) => {
     const m = e.data as Msg | null;
     if (!m || typeof m !== 'object' || m.tabId === tabId || typeof m.docId !== 'string' || !Number.isInteger(m.rev)) return;
-    if ((Number.isInteger(m.v) ? (m.v as number) : 1) > SNAPSHOT_SCHEMA_VERSION) { console.warn(
-      'AgentCase: a change from a tab of a newer version was ignored'); return; }
+    if ((Number.isInteger(m.v) ? (m.v as number) : 1) !== SNAPSHOT_SCHEMA_VERSION) { console.warn(
+      'AgentCase: a change from a tab of another version was ignored'); return; }
     const me = store.syncId(), at = { docId: m.docId, rev: m.rev as number };
     if (m.kind === 'request') { if (m.to === tabId && m.docId === me.docId) full('sync', m.tabId); return; }
     if (m.kind === 'full') {
-      if (m.reason === 'load') { const r = store.replaceRemote(m.portfolio, at); if (r.applied) say(SYNC_NOTICES.opened, r); return; }
+      const next = inStore(m.portfolio);
+      if (!next) return;
+      if (m.reason === 'load') { const r = store.replaceRemote(next, at); if (r.applied) say(SYNC_NOTICES.opened, r); return; }
       if (m.docId !== me.docId || (m.to !== tabId && !ahead(m, me))) return;
-      const r = store.replaceRemote(m.portfolio, at);
+      const r = store.replaceRemote(next, at);
       if (r.applied) say(SYNC_NOTICES.resynced, r);
       return;
     }

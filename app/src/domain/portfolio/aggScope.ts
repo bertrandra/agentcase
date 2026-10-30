@@ -9,6 +9,7 @@ import { scurveView } from '../scope/scurveView';
 import { phasesForScope } from '../scopeView';
 import { base, productCases, spread, type AggBase, type Spread } from './aggScopeRows';
 import type { Portfolio } from './types';
+import { scopeOf } from '../process/scope';
 
 /** Section "Automation & Glass ceiling": each product's potential, effective depth and glass ceiling. */
 export interface ScopeParamsRow extends AggBase { potential: number; effective: number; ceiling: number; forced: boolean; fitted: boolean; cap: number }
@@ -56,7 +57,7 @@ export function scopePhases(pf: Portfolio, ids: string[]): PhaseScopeAgg {
       cells[x.id] = { state: x.state, share: x.share, active: x.nStd + x.nReg };
       if (x.state !== 'none') productsIn[x.id] = (productsIn[x.id] ?? 0) + 1;
     }
-    const off = p.c.phaseOff ?? [];
+    const off = scopeOf(p.c).phaseOff;
     if (off.length) disabled++;
     return { ...base(p), selected: t.selected, total: t.total, off, cells };
   });
@@ -84,19 +85,19 @@ export interface ScopeSelAgg {
 
 export function scopeSelection(pf: Portfolio, ids: string[]): ScopeSelAgg {
   const cs = productCases(pf, ids), phases = phasesForScope().map((p) => ({ id: p.id, name: p.name }));
-  const com = new Set([...pf.common.selectedArtefacts, ...pf.common.selectedRegArtefacts]), votes = new Map<string, number>();
+  const ck = scopeOf(pf.common), com = new Set([...ck.selectedArtefacts, ...ck.selectedRegArtefacts]), votes = new Map<string, number>();
   const total = { sdlc: 0, reg: 0, phases: Object.fromEntries(phases.map((p) => [p.id, 0])) as Record<string, number> };
   const rows = cs.map((p) => {
-    const t = phaseTiles(p.ctx), mine = new Set([...p.c.selectedArtefacts, ...p.c.selectedRegArtefacts]), per: Record<string, number> = {};
+    const t = phaseTiles(p.ctx), k = scopeOf(p.c), mine = new Set([...k.selectedArtefacts, ...k.selectedRegArtefacts]), per: Record<string, number> = {};
     for (const x of t.tiles) { per[x.id] = x.nStd + x.nReg; total.phases[x.id] = (total.phases[x.id] ?? 0) + per[x.id]!; }
     for (const a of p.ctx.a.sdlc) if (p.ctx.a.selected.has(a.id)) votes.set(a.id, (votes.get(a.id) ?? 0) + 1);
-    total.sdlc += t.selected; total.reg += p.c.selectedRegArtefacts.length;
-    return { ...base(p), sdlc: t.selected, sdlcTotal: t.total, reg: p.c.selectedRegArtefacts.length, edited: p.c.artefactsEdited.length, phases: per,
+    total.sdlc += t.selected; total.reg += k.selectedRegArtefacts.length;
+    return { ...base(p), sdlc: t.selected, sdlcTotal: t.total, reg: k.selectedRegArtefacts.length, edited: k.artefactsEdited.length, phases: per,
       added: [...mine].filter((x) => !com.has(x)).length, removed: [...com].filter((x) => !mine.has(x)).length,
-        own: p.overridden('selectedArtefacts') || p.overridden('selectedRegArtefacts') };
+        own: p.overridden('BPMN') };
   });
   const sdlc = cs[0]?.ctx.a.sdlc ?? [], n = cs.length;
   const contested = sdlc.map((a) => ({ id: a.id, name: a.name, phase: a.phase, count: votes.get(a.id) ?? 0 })).filter((a) => a.count > 0 && a.count < n);
-  return { phases, rows, common: { sdlc: pf.common.selectedArtefacts.length, reg: pf.common.selectedRegArtefacts.length }, total,
+  return { phases, rows, common: { sdlc: ck.selectedArtefacts.length, reg: ck.selectedRegArtefacts.length }, total,
     unanimous: sdlc.filter((a) => votes.get(a.id) === n).length, contested };
 }

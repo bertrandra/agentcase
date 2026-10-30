@@ -106,7 +106,7 @@ describe('Data Model: every documented layer is introspected from the code', () 
     expect(pfSheets.find((s) => s.sheet === 'SharedTeam')!.columns).toEqual(PF_HEADERS.SharedTeam);
     expect(pfSheets.find((s) => s.sheet === 'Waves')!.columns).toContain('Depends on (wave id)');
     expect(sheets.filter((s) => s.workbook === 'Cost model')).toHaveLength(3);
-    expect(formatFacts().migrations).toEqual(['v1 → v2']);
+    expect(formatFacts().migrations).toEqual(['v1 → v2', 'v2 → v3']);
   });
   it('calculation package: every figure and identity field is compared on open, the schema tag is not (measured on samePackage)', () => {
     const f = packageFields(buildCalcPackage(makeDefaultDoc()));

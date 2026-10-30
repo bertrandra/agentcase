@@ -4,7 +4,7 @@ import { CeilingImpact } from './CeilingImpact';
 import { PhaseList } from './PhaseList';
 import { ScopeToolbar } from './ScopeToolbar';
 
-const OVERRIDES = ['selectedArtefacts', 'selectedRegArtefacts', 'artefactsEdited'] as const;
+const OVERRIDES = ['BPMN'] as const;
 
 const help = (
   <>

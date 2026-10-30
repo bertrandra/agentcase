@@ -32,7 +32,8 @@ const knowledgeCmd = definePortfolioCommand<{ id: string; patch: KnowledgeSubset
 });
 
 /**
- * The product takes its own value for an overridable key (`selectedArtefacts`, `phaseOff`, ..., or one form field `values.<id>` / `checked.<id>`).
+ * The product takes its own value for an overridable key (`BPMN`, its whole process document; `lifecycleUse`, ..., or one form field `values.<id>` /
+ * `checked.<id>`).
  * Throws for a key off the whitelist.
  */
 export const setProductOverride = (id: string, ref: string, value: unknown): boolean => dispatchChecked(setCmd({ id, ref, value }));

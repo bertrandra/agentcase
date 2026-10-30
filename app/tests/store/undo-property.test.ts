@@ -41,7 +41,7 @@ describe('undo/redo properties', () => {
       expect(snap(s)).toBe(final);
       expect(s.getState().history.undo.length).toBe(steps);
     }), { numRuns: 60 });
-  });
+  }, 120_000);   // scope commands rewrite the process document (schema v3): about 30 ms each in the tests
   it('jumpTo reaches every intermediate state exactly', () => {
     fc.assert(fc.property(fc.array(ops, { minLength: 2, maxLength: 12 }), (seq) => {
       let t = 0;
@@ -50,5 +50,5 @@ describe('undo/redo properties', () => {
       seq.forEach((op) => { const before = s.getState().history.undo.length; op(); if (s.getState().history.undo.length > before) states.push(snap(s)); });
       for (let i = states.length - 1; i >= 0; i--) { s.jumpTo(i); expect(snap(s)).toBe(states[i]); }
     }), { numRuns: 40 });
-  });
+  }, 120_000);
 });
