@@ -1,5 +1,6 @@
 /** @calc-zone exports */
 import { makeCtx } from '@/domain';
+import { evalDay } from '@/domain/model/evidenceTiers';
 import { pfStressFingerprint } from '@/domain/portfolio';
 import type { DisplayScope } from '@/domain/portfolio';
 import { appVerFileTag } from '@/domain/snapshots';
@@ -39,7 +40,7 @@ export async function exportResultsWorkbook(images?: SheetImages, now: Date = ne
     const wb = buildPortfolioResultsWorkbook(xl, portfolio, print, scope ?? portfolio.displayScope ?? { kind: 'product' }, portfolio.activeProductId, stress);
     return { blob: new Blob([await wb.xlsx.writeBuffer()], { type: XLSX_MIME }), filename: excelFilename('Financial_Portfolio', now) };
   }
-  const wb = buildResultsWorkbook(xl, resultsData(makeCtx(doc)), print, images, shownLogo(doc)?.src);
+  const wb = buildResultsWorkbook(xl, resultsData(makeCtx(doc), undefined, evalDay(now)), print, images, shownLogo(doc)?.src);
   const buf = await wb.xlsx.writeBuffer();
   return { blob: new Blob([buf], { type: XLSX_MIME }), filename: excelFilename('Financial', now) };
 }

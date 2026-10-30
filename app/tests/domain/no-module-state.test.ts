@@ -16,6 +16,7 @@ const rel = (f: string) => relative(SRC, f).replace(/\\/g, '/');
 
 /** `file:name` → why this module-level container is not state: a memo keyed by an immutable input (same input, same output) or a constant lookup. */
 const ALLOWED: Record<string, string> = {
+  'domain/model/auditEvidence.ts:memo': 'memo: the audited evidence per driver of a process document and an evaluation date (keyed by its node tree)',
   'domain/canonical.ts:engines': 'memo: the engine of a Ctx (WeakMap keyed by the immutable context)',
   'domain/model/overlay.ts:cache': 'memo: the model result of a Ctx',
   'domain/tuneB/tokens.ts:memo': 'memo: the token usage of a Ctx',
@@ -55,7 +56,7 @@ const ALLOWED: Record<string, string> = {
   'domain/process/views.ts:memo': 'memo: the engine views of a process document (keyed by the immutable node tree)',
   'domain/audit/read.ts:memo': 'memo: the audit of a process document (keyed by the immutable node tree)',
   'domain/audit/analysis.ts:memo': 'memo: observed versus modelled per activity of a process document (keyed by the immutable node tree)',
-  'domain/audit/catalog.ts:memo': 'memo: the effective tool catalogue of a case (keyed by the immutable list of its own entries)',
+  'domain/audit/catalog.ts:memo':'memo: the effective tool catalogue of a case (keyed by the immutable list of its own entries)',
   'domain/audit/catalog.ts:SHIPPED_BY_CODE': 'constant lookup: the shipped tool catalogue by code',
   'domain/audit/fields.ts:FIELD_BY_NAME': 'constant lookup: the audit fields by name',
   'domain/org/readRaci.ts:memo': 'memo: the RACI of each activity of a process document (keyed by the immutable node tree)',

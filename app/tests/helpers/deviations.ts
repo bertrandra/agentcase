@@ -73,6 +73,9 @@ export const DEVIATIONS: Deviation[] = [
   { id: 'DEV-GLASS-CEILING-OWNER',
     reason: 'The registry glass ceiling, max automatable % and the decision context read model().ceiling (the computed ceiling) ' +
     'instead of the raw glassCeiling input; identical on the 107 fixtures (none has a computed ceiling that differs from its input).', skip: [] },
+  { id: 'DEV-AUDIT-EVIDENCE',
+    reason: 'Audited observations count as evidence in the evidence ledger (D-B33); no legacy case holds audit data, so no oracle field changes ' +
+    '(asserted per fixture in tests/domain/audit/evidence.test.ts).', skip: [] },
   { id: 'DEV-CM-CONFIDENCE',
     reason: 'The commercial recommendation (screen and registry) reads the confidence of the last Monte Carlo run, like the legacy screen; ' +
     'the legacy registry evaluated it before its own run, so its oracle value is the no-run recommendation (pdc-vars.test.ts compares that order).', skip: [] },

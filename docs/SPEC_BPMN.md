@@ -704,6 +704,7 @@ an **audit header**: audit id, client, scope, auditors, interview list (who, rol
 | D-B12 | Who maintains the tool catalogue? | (a) shipped and dated with each release, editable per case; (b) per case only | **(a)**, with "client-specific" entries kept in the case. |
 | D-B13 | Granularity of operational data | (a) per activity; (b) per activity and per role | **(b)** optional: per activity by default, a role split when the interview gives it. |
 | D-B14 | Audit data in BPMN exports by default? | (a) no, opt-in; (b) yes | **(a)** (F-B33, F-B35): client data leaves only on purpose. |
+| D-B33 | Do audited observations count as evidence in the evidence ledger (Defend group)? | (a) yes, per model driver, from a fixed mapping driver ← audit field, weighted by confidence; (b) no, the ledger stays declared only | **(a)** (adopted 2026-10-30, § 15.7): the confidence grade (P6) moves only with audit data; a case without audit keeps its figures. |
 
 ### 15.7 Built in B7 (audit layer)
 
@@ -740,9 +741,28 @@ an **audit header**: audit id, client, scope, auditors, interview list (who, rol
   regulatory activity). Each with its formula. The user ticks some; `audit.calibrate` applies only those, as one undoable step, and appends
   `CAL-n` (date, source, each parameter before → after, formula) to the log. Tests: `tests/domain/audit/calibration.test.ts` (hand-computed:
   k = 10 / 30 → 6.67 / 3.33; selected weight 10 → 9.67; tiers [0.7, 0, 0.3] → [0, 0.7, 0.3]; LP001 rework 10 × 0.1 × 0.4 = 0.4 w → 0.8 w), and
-  `fixtures-identical.test.ts`: on the 107 fixtures a full audit leaves `computeCase` identical. **Not built:** the evidence ledger of the Defend
-  group does not count audited parameters yet (it is keyed by model drivers, not activity parameters, and turning it on moves the PDC figures: a
-  deviation to decide).
+  `fixtures-identical.test.ts`: on the 107 fixtures a full audit leaves `computeCase` identical. The evidence ledger's use of the audit: below
+  (D-B33).
+- **Audit evidence in the evidence ledger (D-B33, built after B7).** One owner, `domain/model/auditEvidence.ts` (`AUDIT_DRIVER_FIELDS`,
+  `auditEvidence`): an audited observation counts as evidence for the ledger driver it supports.
+  - **Mapping driver ← audit field.** `p` (acceptance rate, P1) ← `firstPassYield`, `reworkRate` (the share of the work accepted without
+    rework); `supCapacity` (supervising capacity, P3) ← `fteShare` (per role: the share of the people's time the activity really takes). The
+    year-1/2/3 ramps (forecasts, not observable today), the loaded day rate and the token price (§ 15.3 has no cost field) have no audit field. Only
+    observations on in-scope activities count; tools, pain points, evidence references, role-level observations and the calibration log do not
+    (a calibration changes activity parameters, not ledger drivers; the observations behind it count).
+  - **Tier of one observation** (§ 15.3 provenance): confidence high → MEASURED, medium → BENCHMARK, low or none → ASSUMPTION; without a
+    source or a date → ASSUMPTION; source "estimate", or a date older than ~18 months at the evaluation date (the CC-EV-02 rule) → at most
+    BENCHMARK. Tier of an activity: the strongest of its supporting observations (per-role values included).
+  - **Audited tier of a driver**: score = Σ effort × tier value (1 / 0.6 / 0.25) / Σ effort over the in-scope activities, an activity without a
+    supporting observation counting as ASSUMPTION; MEASURED at score 1 (every in-scope activity measured), BENCHMARK from 0.6, else
+    ASSUMPTION. A driver without a supporting observation has no audited tier.
+  - **In the ledger**: the tier the grade, the upgrade path and the portfolio counts use is the stronger of the declared tier (after CC-EV-02)
+    and the audited tier; the declared tier, source and date are never rewritten; CC-EV-01 counts an audited driver as having evidence. The
+    Defend section shows the audited tier, score and activities under each driver; the audit report (section 6 "Evidence ledger") and the results
+    workbook's Audit sheet print the same rows (`evidenceRows`), evaluated on the export day like the section on the day it is open.
+  - **Effect**: none without audit data (107 fixtures, parallel run, excel-compat identical; no legacy surface has audit data, DEV-AUDIT-EVIDENCE).
+    Tests: `tests/domain/audit/evidence.test.ts` (hand-computed: (7 × 1 + 3 × 0.25) / 10 = 0.775 → BENCHMARK; grade 0.25 D → 2.5 / 7 D →
+    3.25 / 7 C), `evidence-surfaces.test.tsx` (section, report and workbook print the owner's rows).
 - **F-B30 partial.** The audit is per process document: a product that overrides its process (F-B20) has its own audit, the others share the
   common one (no separate per-product key, per D-B26 and the brief "no new case key"). The section is `I-input`: its aggregate view consolidates
   coverage, gaps, overlaps, pain points and calibrations per product and the tooling map across the products and waves (`aggAudit.ts`).
@@ -1164,10 +1184,21 @@ waves, report).
 `maxConcurrentSetups` becomes a lane capacity); results (FTE before / after, vFTE, KT days avoided, risk scores, stress, verdict); the
 agent factory (`fm*`, a simulation of the delivery process), **out of the BPMN scope by the owner's decision (2026-10-30)**. Governance
 gates, maturity transitions and capability building are in the table above (added 2026-10-30, built in B9a). Not found in the application
-and possible later additions (opt-in new activities, not planned): licence procurement and agent-toolchain integration as their own items;
-hypercare and decommissioning of the **agent rollout or of replaced legacy tools**. The delivered software's own go-live, run and end of
-life are already delivery activities (phase L8 Deployment `A044` Go-live dossier; L9 Run / AMS `A045`–`A049`; L10 End-of-life `A050`
-Decommissioning plan) and stay there.
+and the four agent-rollout activities of the table below. The delivered software's own go-live, run and end of life are already delivery
+activities (phase L8 Deployment `A044` Go-live dossier; L9 Run / AMS `A045`–`A049`; L10 End-of-life `A050` Decommissioning plan) and stay there.
+
+**Agent-rollout activities (added 2026-10-30, built in B9b; new costs, opt-in, off by default per D-B31):**
+
+| Activity | What it is | Level | Cost rule (§ 19.3) |
+|---|---|---|---|
+| Licence procurement | Selecting and buying the agent platform, model and tool licences (sourcing, security and legal review, contract) | portfolio, per product for product-specific tools | labour from resources (procurement, security, legal roles × days); the licence amounts stay the existing tooling and token cost lines, never added twice |
+| Agent-toolchain integration | Connecting the agents to the delivery toolchain: repository, CI/CD, ticketing, wiki, test management, the Knowledge Hub (API / MCP / CLI per the tool catalogue, § 15.2; the B5b "agent blocked: no API" check lists the gaps) | per product | labour from resources (agent architect, platform engineer × days per integration) |
+| Rollout hypercare | Intensified support after each product's agent go-live (adoption ramp start): incident triage, prompt / guardrail tuning, user support | per product | labour from resources (AgentOps, AI reviewer × weeks), placed right after the go-live milestone; ends before the steady AgentOps run (no overlap with `runTeamSizing`) |
+| Legacy decommissioning | Retiring the tools, scripts and manual steps the agents replace (licences ended, data archived, access removed) | per product | labour from resources; an optional saving line (licences ended) only when entered, never inferred |
+
+Each one is a programme task with its role lane, RACI, duration, placement and parameters in the Process screen (§ 19.7), appears in the
+Gantt, WBS, OBS / RAM and resource histogram (§ 19.8), and follows the one-owner rule. Off by default, so no figure of an existing case moves;
+switching one on adds its cost to the programme cost and the cash flow (hand-computed tests).
 
 ### 19.3 Cost of a programme activity
 
@@ -1200,7 +1231,7 @@ Decommissioning plan) and stay there.
 | Phase | Content | Gate | Duration | Difficulty |
 |---|---|---|---|---|
 | B9a | Programme process **derived** from today's keys (like the B6b teams); one timing owner per activity for the Gantt, cost model and stages; the two stage lists merged; message flows; export; screens per § 19.7 (swim lanes, parameter panel, context screens) | 107 fixtures identical; parallel-run 40/40; excel-compat 67/67; Gantt and cost-model surfaces read one owner | 2 d | 4 / 5 |
-| B9b | Conflicts T1–T5 resolved by the decisions below; training, coaching and governance derived from resources; opt-in new costs | Hand-computed reference tests; each changed figure recorded in DEVIATIONS.md | 2 d | 4 / 5 |
+| B9b | Conflicts T1–T5 resolved by the decisions below; training, coaching and governance derived from resources; the four opt-in agent-rollout activities (§ 19.2); opt-in new costs | Hand-computed reference tests; each changed figure recorded in DEVIATIONS.md | 2 d | 4 / 5 |
 | B9c | Stored values move into the document (schema v4 migration), keys removed, views derived | All persistence round trips; v3 → v4 open → save → open identical | 2 d | 5 / 5 |
 
 ### 19.6 Decisions (adopted 2026-10-30, as recommended)

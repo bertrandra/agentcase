@@ -1,4 +1,5 @@
 import { setEvlAsOf, setEvlOwner, setEvlSource, setEvlTier } from '@/controllers/modelEvidence';
+import { evidenceScore } from '@/domain/model/auditEvidence';
 import type { evlModel } from '@/domain/model/evidence';
 import { DataTable, type Column } from '@/ui/widgets/DataTable';
 import { Panel } from '@/ui/widgets/cards';
@@ -25,6 +26,8 @@ export function DriverTable({ em }: { em: Em }) {
           {TIERS.map((t) => <option key={t} value={t}>{t}</option>)}
         </select>
         {d.tier === 'MEASURED' && d.effectiveTier === 'BENCHMARK' && <div className="ac-tier-note" data-ink="brick">used as BENCHMARK - see note</div>}
+        {d.audit && <div className="ac-tier-note" data-ink={INK[d.audit.tier]}>
+          audited {d.audit.tier} · score {evidenceScore(d.audit)} · {d.audit.activities}/{d.audit.inScope} activities</div>}
       </>
     ) },
     { key: 's', header: 'Source', render: (d) => <input
@@ -56,7 +59,8 @@ export function DriverTable({ em }: { em: Em }) {
       <Panel title="Driver evidence tiers" aside={<small className="ac-muted">weight = P4 tornado influence</small>}>
         <DataTable columns={cols} rows={em.drivers} rowKey={(d) => d.id} />
         <p className="ac-muted">A MEASURED tier without a source, or with an as-of date older than 18 months, is used as BENCHMARK for the grade above
-          (CC-EV-02) - it is not silently accepted.</p>
+          (CC-EV-02) - it is not silently accepted. Audited observations count as evidence for the driver they support: the grade uses the stronger of
+          the declared and the audited tier (see the audit).</p>
       </Panel>
       <Panel title="Upgrade path - worth instrumenting first">
         {em.upgradePriority.length
