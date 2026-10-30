@@ -1,6 +1,6 @@
 # AgentCase — Specification: the delivery process as a native BPMN 2.0 model (export and import)
 
-> Status: **proposed, not built**. Decisions D-B1…D-B10 (§ 12) and D-B11…D-B14 for the audit layer (§ 15.6) and D-B15…D-B19 for the organisation model (§ 16.7) to be adopted. Scope: the TypeScript + React application in `app/`.
+> Status: **proposed, not built**. Decisions D-B1…D-B10 (§ 12) and D-B11…D-B14 for the audit layer (§ 15.6) D-B15…D-B19 for the organisation model (§ 16.7) and D-B20…D-B25 for the extended profile (§ 17.9) to be adopted. Scope: the TypeScript + React application in `app/`.
 > Related documents: [ARCHITECTURE.md](ARCHITECTURE.md), [DEVIATIONS.md](DEVIATIONS.md), [SPEC_MULTI_PRODUIT.md](SPEC_MULTI_PRODUIT.md).
 > Code rules unchanged: files ≤ 150 lines, no `any`, layers `ui → controllers → store → domain`, every write is an undoable
 > command, one owner per figure in `src/domain`, single-product figures identical to the legacy file unless a deviation is recorded.
@@ -33,6 +33,10 @@ Target: **the delivery process of a case is one process model, stored and exchan
 - **Organisation** — an organisation model in three layers (organisation, product, activity), each shared at its own level, says
   who does what: a RACI per activity (roles and agents), the teams that provide each role for each product, and the organisation
   units they belong to (§ 16).
+
+- **Extended BPMN** — inputs and traceability, data stores bound to tools, deliverable states, volumes (multi-instance), cadence and
+  service levels (timers), exceptions and rework (boundary events), conditional scope, a shared process library (call activities),
+  automation types, hand-offs between units, DMN rules and a CMMN view of run (§ 17).
 
 Guiding principle: **the BPMN model is the single source of truth of the process.** The catalogues become the *default
 process* (a BPMN model shipped with the application); the case keys listed above become views derived from the case's process
@@ -174,7 +178,15 @@ process* (a BPMN model shipped with the application); the case keys listed above
 `parallelGateway`, `standardLoopCharacteristics`, `dataObject`, `dataObjectReference`, `dataOutputAssociation`, `resource`,
 `resourceRole` / `humanPerformer` / `performer` / `potentialOwner`, `category`, `categoryValue`, `group`, `documentation`,
 `extensionElements`, and BPMN DI (`BPMNDiagram`, `BPMNPlane`, `BPMNShape`, `BPMNEdge`, `Bounds`, `waypoint`, `BPMNLabel`).
-Everything else is pass-through (F-B11).
+The extended profile of § 17 adds: `dataInputAssociation`, `ioSpecification` (`dataInput`, `dataOutput`, `inputSet`, `outputSet`),
+`dataStore`, `dataStoreReference`, `dataState`, `itemDefinition`, `import`, `multiInstanceLoopCharacteristics`, `loopMaximum` /
+`testBefore`, `boundaryEvent`, `intermediateCatchEvent`, `intermediateThrowEvent`, `timerEventDefinition`, `errorEventDefinition`,
+`escalationEventDefinition`, `messageEventDefinition`, `signalEventDefinition`, `compensateEventDefinition`, `error`, `escalation`,
+`message`, `signal`, `messageFlow`, `eventSubProcess` (`subProcess triggeredByEvent="true"`), `callActivity`, `globalTask` /
+`globalUserTask` / `globalManualTask`, global `process`, `inclusiveGateway`, default flows, `scriptTask`, `sendTask`, `receiveTask`,
+`businessRuleTask`, `textAnnotation`, `association`, `lane.partitionElementRef`, `resourceAssignmentExpression`, `resourceParameter`,
+`resourceParameterBinding`, `participantMultiplicity`, `conversation` / `conversationLink`, `extension` (namespace declaration), several
+`BPMNDiagram` per file and the BPMN-in-Color DI attributes. Everything else is pass-through (F-B11).
 
 ### 5.2 Extension namespace
 
@@ -318,9 +330,11 @@ these. Portfolio: the process follows the override commands of spec F6–F9.
 | B3 | Schema v3 + migration, `PROCESS` key, commands, existing scope sections on the model | 107 fixtures identical; parallel run 40/40; excel-compat 67/67 |
 | B4 | Process section: SVG diagram, activity table, actor panel, import (replace / merge, preview, report), export | axe clean; ui-parity 0 divergence |
 | B5 | Custom activities / roles / agents in the engine; rework flows from the model; portfolio override; Excel / report / HTML outputs | Hand-computed reference tests; cross-surface equality |
+| B5b | Extended profile (§ 17): inputs / traceability graph, data stores bound to the tool catalogue, data states and types, multi-instance volumes, timers and cadence, bounded loops, boundary events and reusable definitions, event sub-processes, compensation, conditional scope (FEEL subset), shared process library (call activities), task types incl. script / send / receive / business rule, formal assignment and lanes, message flows and multiplicity, conversation view, annotations, several diagrams, colours, file header | Default process unchanged in figures; each element has a reader / writer / round-trip test and a test of the figure, check or view it feeds |
 | B6 | Optional lazy BPMN editor (D-B6 b) | Size budget; editor round trip |
 | B6b | Organisation model (§ 16): `ORG` key, migration of `teamIn` / shared team lines to teams (parity), RACI on activities, `domain/org` (load, staffing, cost by unit), Organisation and Who-does-what sections, BPMN resource roles and organisation view | 107 fixtures identical before the RACI-driven figures; diagnostics tests; axe clean |
 | B7 | Audit layer (§ 15): tool catalogue, `AUDIT` key and `domain/audit` (observed vs modelled, coverage, tooling map), Audit section, audit workbook, BPMN `ac:audit`, audit report, explicit calibration | Round trip with audit data; calibration log; axe clean |
+| B7b | DMN decisions (F-B62) and the optional CMMN export of the run phase (F-B63) | DMN round trip; evaluator tests per hit policy |
 | B8 | Release: guide, DEVIATIONS (if any), CHANGELOG, version bump | All gates green |
 
 ## 14. Risks
@@ -332,7 +346,9 @@ these. Portfolio: the process follows the override commands of spec F6–F9.
 | Vendor tools dropping `extensionElements` | Key flags also as attributes; BPSim as a second encoding; re-import fills missing parameters from the default process and flags them. |
 | File size of a full regulatory process (~430 tasks) | Compact DI; in-scope-only export option; gzip in the HTML. |
 | XML security | F-B10, unit tests with hostile files. |
-| Scope creep toward a BPMN execution engine | Out of scope (§ 15). |
+| Scope creep toward a BPMN execution engine | Out of scope (§ 18): events, timers and conditions are parameters and rules, never executed. |
+| Profile breadth (§ 17) slows delivery | Each element is optional in files and lands in phase B5b behind its own tests; the default process stays parity-identical. |
+| Expression evaluation (conditions, DMN) as an attack surface | Own FEEL-subset parser, no `eval`, size and depth limits, unit tests with hostile expressions. |
 
 ## 15. Audit layer: technical and operational data per activity
 
@@ -536,7 +552,132 @@ and, for an agent-performed activity, `activity --(performer)--> agent --(superv
 | D-B18 | Accountable for agent activities | (a) mandatory human Accountable; (b) optional | **(a)** (F-B36). |
 | D-B19 | Default organisation diagram | (a) by role; (b) by organisation | **(a)** by role, (b) on demand (F-B39). |
 
-## 17. Out of scope
+## 17. Extended BPMN profile: every element AgentCase exploits
 
-Executing processes (tokens, timers, messages), process mining, DMN decision tables, CMMN, choreography diagrams, collaborative
-real-time editing, BPMN 1.x or XPDL import (a later converter may be considered).
+Each element below is read, written and **used** (it feeds a figure, a check, a view or the audit), not only kept. Elements are listed
+by what they bring; the phase that builds them is in § 13.
+
+### 17.1 Data, traceability and tools
+
+- **F-B40 — Inputs as well as outputs.** Activities declare what they **consume** (`dataInputAssociation`, `ioSpecification` with
+  `dataInput` / `inputSet`) as well as what they produce. The default process links the SDLC chain (framing → requirements → design →
+  code → tests → release → run). `domain/process/trace.ts` derives the traceability graph: upstream / downstream of each deliverable,
+  impact of an activity change, orphan deliverables (produced, never consumed) and missing inputs (consumed, never produced in scope).
+  The Section Dependencies page and the impact views read it. Regulatory norms that require traceability (DO-178C, ISO 26262,
+  IEC 62304…) get a "traceability complete" check per norm.
+- **F-B41 — Data stores = repositories and tools.** `dataStore` / `dataStoreReference` model where data lives: backlog tool, source
+  repository, wiki, test management, CI, ticketing, the Knowledge Hub. Each data store references tool catalogue entries (§ 15.2) through
+  `ac:tool`. An activity's read / write associations to data stores give: the tools an agent needs access to, the integration surface
+  required (API / MCP / CLI from the catalogue), and "agent blocked: no API to its data store" diagnostics. The Knowledge Hub is the data
+  store the agents read context from; its curation load links to the activities that write it.
+- **F-B42 — Deliverable states.** `dataState` on data objects: draft, reviewed, approved, baselined (configurable list). Quality gates
+  and approvals require a state (`ac:requiresState`); the Defend group's evidence counts deliverables reaching "approved" / "baselined".
+  `dataObject isCollection="true"` marks deliverables that come in numbers (test cases, stories), multiplied by their volume.
+- **F-B43 — Typed deliverables.** `itemDefinition` types each deliverable (document, code, test suite, model, record, dataset);
+  `import` may reference an external schema (e.g. a requirements interchange format). Types drive the default tools proposed by the
+  audit and the token profile of agent work (code vs prose).
+
+### 17.2 Volumes, cadence, time and repetition
+
+- **F-B44 — Multi-instance.** `multiInstanceLoopCharacteristics` (`isSequential`, `loopCardinality`, `completionCondition`) marks an
+  activity repeated per item: per story, per test case, per release, per ticket. The cardinality is a parameter bound to a **volume**
+  (`ac:volume` per period, filled from the operational audit, § 15.3). Effort becomes effort per item × volume when the activity is
+  multi-instance; otherwise today's lump effort applies (parity: the default process has no multi-instance until a case sets volumes).
+- **F-B45 — Cadence and service levels.** `timerEventDefinition` on start events (`timeCycle`, ISO 8601 such as `R/P2W` for a two-week
+  sprint, `R/P1M` for a monthly release) gives the delivery cadence the factory model and the velocity views read; timers on
+  intermediate events model waiting time (approval lead time); `timeDuration` on boundary timers models service levels in run.
+- **F-B46 — Bounded loops.** `standardLoopCharacteristics` with `loopMaximum` and `testBefore` carries the agent's internal iterations
+  (the loop pairs' `internalIterations`), so "the agent codes, tests and fixes up to 3 times" is standard BPMN.
+
+### 17.3 Exceptions, rework, escalation, rollback
+
+- **F-B47 — Boundary events.** On an activity: **error** (`errorEventDefinition`, e.g. "Defect escaped") → rework path with its
+  probability and cost share (replaces or complements the back flows of § 3); **timer** (SLA breach, waiting too long) → escalation path;
+  **escalation** (`escalationEventDefinition`) → the Accountable role (§ 16) takes over. Interrupting and non-interrupting kinds are both
+  read. The rework cost the engine computes from the loop pairs is computed from these paths when present (one owner, `domain/process`).
+- **F-B48 — Reusable definitions.** Root `error`, `escalation`, `signal` and `message` definitions ("Defect escaped", "Escalate to
+  Accountable", "Release published", "Hand-off package") are defined once and referenced everywhere.
+- **F-B49 — Event sub-processes.** `subProcess triggeredByEvent="true"` models work triggered during the process: incident in run
+  (L9), regulatory audit request, security vulnerability, change request. They replace the ad-hoc "Cross-cutting" bucket where the work is
+  event-driven; their frequency is a parameter (`ac:frequency`, from the audit).
+- **F-B50 — Compensation.** `isForCompensation` activities and compensation events model rollback (failed deployment in L8, revert of a
+  release). Their probability is the change-failure rate; their cost feeds the DORA views (Model Engine) instead of a flat coefficient.
+
+### 17.4 Variants and reuse
+
+- **F-B51 — Conditional scope.** `inclusiveGateway` and `exclusiveGateway` with `conditionExpression` (and default flows) express the
+  case's scope as rules on case parameters: "norm DO-178C selected", "industry = AERO", "regulatory scope included", "lifecycle =
+  run". Conditions use a small, safe expression language (`ac:` FEEL subset: comparisons, `and` / `or` / `not`, membership) evaluated by
+  `domain/process/conditions.ts`; never `eval`. The selection screens keep working: they set the parameters the conditions read.
+- **F-B52 — Reusable process library.** `callActivity` calling a global `process` or a `globalTask` / `globalUserTask` /
+  `globalManualTask`: patterns such as "code review", "quality gate", "release to production", "regulatory sign-off" are modelled once.
+  At portfolio level they form a **shared process library** (common layer); each product's process calls them; a product may override
+  one library entry (same whole-key rule as F-B20). A change in the library reaches every product that calls it.
+
+### 17.5 Automation types
+
+- **F-B53 — Who or what does the work.** The task type separates:
+  | Task type | Meaning in AgentCase |
+  |---|---|
+  | `userTask` | a person with tool support |
+  | `manualTask` | a person without a system |
+  | `serviceTask` with `ac:agent` | an **AI agent** |
+  | `scriptTask` | **already automated by a tool** (CI pipeline, script, RPA): not an AI gain |
+  | `sendTask` / `receiveTask` | a hand-off: sending or receiving a package between roles or units |
+  | `businessRuleTask` | a rule-based decision (quality gate, AI authority rule), optionally bound to a DMN table (§ 17.8) |
+
+  The engine never counts AI savings on `scriptTask` activities (already automated today), and counts the hand-off cost of send /
+  receive tasks. Parity: the default process maps today's three activity types only (Human, Manual, Agent).
+
+### 17.6 Organisation, interfaces and assignment (with § 16)
+
+- **F-B54 — Formal lanes and assignment rules.** `lane.partitionElementRef` binds each lane to its role, team or unit; activities assign
+  their actors through `resourceAssignmentExpression` and `resourceParameterBinding` against `resourceParameter`s declared on resources
+  (team, grade, location, sourcing, product). The § 16 chain "role Dev of the team serving this product, grade B, Portugal" is then plain
+  BPMN; `ac:raci` stays as a convenience copy.
+- **F-B55 — Hand-offs between units.** In the organisation view, `messageFlow`s between pools (client ↔ vendor, onshore ↔ offshore,
+  delivery ↔ run) carry the hand-off packages (`message` definitions). The number of interfaces per product and the hand-offs per activity
+  feed the operational audit (§ 15.3 "Flow") and a coordination-cost parameter (`ac:handoffCost`).
+- **F-B56 — Several similar participants.** `participantMultiplicity` (minimum / maximum) models "three vendors of the same kind" or
+  "two offshore teams" without duplicating pools.
+- **F-B57 — Conversation view.** A conversation diagram (`conversation`, `conversationLink`) gives the map of who talks to whom between
+  units, generated from the message flows: a light organisation view for steering committees.
+
+### 17.7 Diagram, annotations, file header
+
+- **F-B58 — Annotations.** `textAnnotation` + `association` carry audit notes and pain points (§ 15) on the diagram, visible in any
+  BPMN tool; written only when the export includes audit data (F-B33).
+- **F-B59 — Several diagrams per file.** One `.bpmn` holds the role view, the organisation view and one view per phase (several
+  `BPMNDiagram`), all over the same semantic model.
+- **F-B60 — Colours.** BPMN-in-Color DI attributes (`color:background-color`, `color:border-color`, understood by bpmn.io and Camunda
+  Modeler) show scope, audit status, AI authority or task type in third-party tools, with a legend as a text annotation.
+- **F-B61 — File header.** `definitions` carries `exporter="AgentCase"` and `exporterVersion`, a stable `targetNamespace`, and a
+  `bpmn:extension` declaring the `ac:` namespace (`mustUnderstand="false"`); processes are `isExecutable="false"` and `processType="None"`
+  so tools know the file is a documentation model, not an executable one.
+
+### 17.8 Neighbouring OMG standards
+
+- **F-B62 — DMN.** Decision tables (DMN 1.x XML) for the rules the case already holds: quality-gate criteria, the AI authority level
+  per activity class, the supervision split per authority level. `businessRuleTask` references a DMN decision (`ac:decisionRef`); the
+  decisions export as a `.dmn` file next to the `.bpmn` and import back. Evaluation is done by AgentCase's own table evaluator (hit
+  policies UNIQUE / FIRST / COLLECT, FEEL subset of F-B51); no external engine.
+- **F-B63 — CMMN.** Run and support work (L9) is case-like (unordered, event-driven). A CMMN view of the run phase (case plan, stages,
+  sentries, human tasks, milestones) may be exported for tools that use it; AgentCase reads back only what maps to its model (tasks,
+  roles, frequencies) and keeps the rest as pass-through.
+
+### 17.9 Decisions for the extended profile
+
+| # | Question | Options | Recommendation |
+|---|---|---|---|
+| D-B20 | Do rework figures come from boundary events or back flows? | (a) back flows only; (b) boundary events when present, back flows otherwise | **(b)**: one owner in `domain/process`, back flows kept for parity. |
+| D-B21 | Multi-instance volumes | (a) effort per item × volume when volumes exist; (b) always lump effort | **(a)**, opt-in per activity; default process unchanged (parity). |
+| D-B22 | Expression language for conditions and DMN | (a) safe FEEL subset evaluated by AgentCase; (b) JavaScript expressions | **(a)**: no `eval`, portable to DMN tools. |
+| D-B23 | `scriptTask` and AI savings | (a) no AI saving on already-automated work; (b) same as human work | **(a)** (F-B53). |
+| D-B24 | DMN | (a) export + import + built-in evaluator; (b) export only | **(a)** for the three rule families of F-B62. |
+| D-B25 | CMMN | (a) export of the run phase, read back what maps; (b) out of scope | **(a)** as the last phase, optional. |
+
+## 18. Out of scope
+
+Executing processes (tokens, timers, messages): timers, events and conditions are read as parameters and rules, never run. Process
+mining, choreography diagrams, collaborative real-time editing, BPMN 1.x or XPDL import (a later converter may be considered). DMN and
+CMMN are in scope only as described in § 17.8.
