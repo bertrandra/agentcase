@@ -1148,13 +1148,13 @@ hypercare, decommissioning, licence procurement and integration work as their ow
 
 | Phase | Content | Gate | Duration | Difficulty |
 |---|---|---|---|---|
-| B9a | Programme process **derived** from today's keys (like the B6b teams); one timing owner per activity for the Gantt, cost model and stages; the two stage lists merged; message flows; export | 107 fixtures identical; parallel-run 40/40; excel-compat 67/67; Gantt and cost-model surfaces read one owner | 2 d | 4 / 5 |
+| B9a | Programme process **derived** from today's keys (like the B6b teams); one timing owner per activity for the Gantt, cost model and stages; the two stage lists merged; message flows; export; screens per § 19.7 (swim lanes, parameter panel, context screens) | 107 fixtures identical; parallel-run 40/40; excel-compat 67/67; Gantt and cost-model surfaces read one owner | 2 d | 4 / 5 |
 | B9b | Conflicts T1–T5 resolved by the decisions below; training, coaching and governance derived from resources; opt-in new costs | Hand-computed reference tests; each changed figure recorded in DEVIATIONS.md | 2 d | 4 / 5 |
 | B9c | Stored values move into the document (schema v4 migration), keys removed, views derived | All persistence round trips; v3 → v4 open → save → open identical | 2 d | 5 / 5 |
 
-### 19.6 Decisions to take
+### 19.6 Decisions (adopted 2026-10-30, as recommended)
 
-| # | Question | Options | Recommendation |
+| # | Question | Options | Adopted (2026-10-30) |
 |---|---|---|---|
 | D-B27 | Setup duration (T1) | (a) the engine's 6 months everywhere; (b) the `setupDuration` input everywhere, the engine spreads over it; (c) per setup line, from its activity | **(c)**, which reduces to (b) when lines share one duration |
 | D-B28 | Pilot placement (T2) | (a) before the build (Pilot & Prove); (b) from month 1 overlapping the setup | **(a)**: the pilot proves before scaling; its cost moves earlier |
@@ -1162,3 +1162,21 @@ hypercare, decommissioning, licence procurement and integration work as their ow
 | D-B30 | Coaching (T5) | (a) one coaching activity, curve-based, in the euro result; (b) keep the setup line, curve informative | **(a)** |
 | D-B31 | New costs (stages, value tracking, AI Act, audit interviews) | (a) opt-in, off by default; (b) on by default | **(a)**: no figure moves without a choice |
 | D-B32 | Where the programme lives | (a) second participant in the same document; (b) a separate document | **(a)** (D-B26) |
+
+### 19.7 Screens: activities live in the BPMN, screens show the context (clean by design)
+
+Adopted with the decisions above. **An activity's description and parameters are held only in the BPMN document**; no other screen
+defines, describes or edits an activity.
+
+- **F-B70 — Process screen with swim lanes.** The 🧩 Process (BPMN) section draws both processes (delivery and transformation
+  programme) as BPMN with **swim lanes per role** (the organisation's roles, § 16; agents in their own lane) and phases or waves as
+  sub-processes. Selecting an activity opens its **parameter panel**: description, role (lane), RACI, duration and placement, effort,
+  cost rule (§ 19.3) and the activity's own parameters (for example pilot team and weeks, hub setup base, coaching load), each edit one
+  undoable command on the document. The table stays the accessible alternative of the diagram.
+- **F-B71 — Context screens.** The screens that today define programme activities (engagement and onboarding stages, Gantt, program /
+  pilot, setup, change management, Knowledge Hub, knowledge transfer, waves, run sizing, maturity / coaching, value tracking) keep
+  **only the context**: results, figures, charts, diagnostics and the case-level inputs that are not activity parameters. Each shows the
+  activities it relies on as read-only references with a "Open in Process" link to the activity in the Process screen. No activity
+  description, list or parameter field is duplicated on them.
+- **F-B72 — One owner.** A test fails if an activity parameter key is written by a screen other than the Process screen's parameter
+  panel (or the BPMN import / editor), and if an activity description exists outside the document.
