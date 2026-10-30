@@ -1,6 +1,6 @@
 # AgentCase — Specification: the delivery process as a native BPMN 2.0 model (export and import)
 
-> Status: **proposed, not built**. Decisions D-B1…D-B10 to be adopted (§ 12). Scope: the TypeScript + React application in `app/`.
+> Status: **proposed, not built**. Decisions D-B1…D-B10 (§ 12) and D-B11…D-B14 for the audit layer (§ 15.6) to be adopted. Scope: the TypeScript + React application in `app/`.
 > Related documents: [ARCHITECTURE.md](ARCHITECTURE.md), [DEVIATIONS.md](DEVIATIONS.md), [SPEC_MULTI_PRODUIT.md](SPEC_MULTI_PRODUIT.md).
 > Code rules unchanged: files ≤ 150 lines, no `any`, layers `ui → controllers → store → domain`, every write is an undoable
 > command, one owner per figure in `src/domain`, single-product figures identical to the legacy file unless a deviation is recorded.
@@ -25,6 +25,10 @@ Target: **the delivery process of a case is one process model, stored and exchan
   activities, run / support activities, governance (quality gates, approvals), review and supervision steps, agent runs,
   rework loops. Each has its actors (human roles, AI agents) and its parameters (effort, weight, value class, AI authority,
   human / agent supervision split, capability, deliverable, norm…).
+
+- **Audit** — a capture layer on each activity and actor records the technical audit (tools in use, picked from a catalogue of
+  market tools proposed per activity) and the operational audit (volumes, time, rework, hand-offs, pain points), shown against the
+  model and fed back into it only by explicit calibration (§ 15).
 
 Guiding principle: **the BPMN model is the single source of truth of the process.** The catalogues become the *default
 process* (a BPMN model shipped with the application); the case keys listed above become views derived from the case's process
@@ -311,7 +315,8 @@ these. Portfolio: the process follows the override commands of spec F6–F9.
 | B4 | Process section: SVG diagram, activity table, actor panel, import (replace / merge, preview, report), export | axe clean; ui-parity 0 divergence |
 | B5 | Custom activities / roles / agents in the engine; rework flows from the model; portfolio override; Excel / report / HTML outputs | Hand-computed reference tests; cross-surface equality |
 | B6 | Optional lazy BPMN editor (D-B6 b) | Size budget; editor round trip |
-| B7 | Release: guide, DEVIATIONS (if any), CHANGELOG, version bump | All gates green |
+| B7 | Audit layer (§ 15): tool catalogue, `AUDIT` key and `domain/audit` (observed vs modelled, coverage, tooling map), Audit section, audit workbook, BPMN `ac:audit`, audit report, explicit calibration | Round trip with audit data; calibration log; axe clean |
+| B8 | Release: guide, DEVIATIONS (if any), CHANGELOG, version bump | All gates green |
 
 ## 14. Risks
 
@@ -324,7 +329,113 @@ these. Portfolio: the process follows the override commands of spec F6–F9.
 | XML security | F-B10, unit tests with hostile files. |
 | Scope creep toward a BPMN execution engine | Out of scope (§ 15). |
 
-## 15. Out of scope
+## 15. Audit layer: technical and operational data per activity
+
+### 15.1 Objective
+
+The migration adds a **capture layer** on top of the process model, for the **audit** an engagement starts with: for every activity
+(and every actor), what the client really uses and how the work really runs. The layer is **observed data**, separate from the
+**model parameters** of § 3: the model says what the business case assumes, the audit says what was found. The application shows
+both side by side and the gap between them.
+
+- **Technical audit** — per activity: the tools in use, chosen from a **catalogue of market tools proposed for that activity**, with
+  their integration and AI-readiness facts.
+- **Operational audit** — per activity: volumes, durations, effort, rework, hand-offs, quality and pain points, with the source of each
+  value (interview, tool export, measurement) and its date.
+
+### 15.2 Tool catalogue (the application proposes market tools per activity)
+
+- **F-B23** — A **tool catalogue** ships with the application (`catalog/tools.json`, offline, no network call). Each tool has: id,
+  name, vendor, category, licence model (commercial / open source / SaaS / on-premise), the **capabilities** it serves (Documentation,
+  Analysis, Design, Coding, Review, Test, Security, Release, Compliance, Run / support, Knowledge, Planning), its **AI features**
+  (assistant, code generation, test generation, review, agent / autonomous mode, none), its integration surface (REST API, webhooks,
+  CLI, MCP server, export formats), hosting options and an "as of" date.
+- **F-B24** — For each activity the audit screen **proposes the tools of the catalogue that serve its capability** (activity
+  `capability` → tool `capabilities`), ordered by category, with a search box; the auditor ticks the tools in use, or adds a tool that
+  is not in the catalogue (kept in the case, flagged "client-specific", and offered for every activity of the same capability).
+- **F-B25** — Indicative content of the first catalogue (curated in phase B8, each entry dated and reviewed; the list is neutral and
+  never a recommendation):
+
+  | Capability | Examples of market tools |
+  |---|---|
+  | Planning / backlog | Jira, Azure Boards, GitHub Projects, GitLab Issues, Linear, Rally, Polarion |
+  | Documentation / knowledge | Confluence, SharePoint, Notion, GitBook, Docusaurus, MkDocs |
+  | Analysis / requirements | Jama Connect, IBM DOORS Next, Polarion ALM, Codebeamer, Jira with requirements add-ons |
+  | Design / architecture | Enterprise Architect, Archi, LeanIX, draw.io, Lucidchart, Structurizr, Figma |
+  | Coding (IDE and AI assistants) | VS Code, IntelliJ IDEA, Visual Studio, Eclipse; GitHub Copilot, Cursor, Claude Code, Amazon Q Developer, Tabnine, JetBrains AI, Gemini Code Assist |
+  | Review / source control | GitHub, GitLab, Bitbucket, Azure Repos, Gerrit; AI review: CodeRabbit, Copilot code review |
+  | Test | Selenium, Playwright, Cypress, JUnit, pytest, Tricentis Tosca, Xray, Zephyr, TestRail, Katalon, mabl |
+  | Security | SonarQube, Snyk, Checkmarx, Veracode, Fortify, OWASP ZAP, Burp Suite, GitHub Advanced Security, Trivy |
+  | Release / CI-CD | Jenkins, GitHub Actions, GitLab CI, Azure Pipelines, CircleCI, Argo CD, Spinnaker, Octopus Deploy, Harness |
+  | Run / support / observability | ServiceNow, Jira Service Management, PagerDuty, Opsgenie, Datadog, Dynatrace, Splunk, Grafana, Elastic, New Relic |
+  | Compliance / quality | Polarion, Codebeamer, Jama Connect, MasterControl, Veeva Vault, LDRA, VectorCAST, Parasoft |
+
+- **F-B26** — The catalogue is editable in the application (add, edit, retire a tool, as undoable commands on the case) and
+  exchangeable: exported and imported as JSON and as a sheet of the audit workbook (§ 15.5). A newer catalogue shipped with the
+  application never overwrites the case's own entries; the audit screen shows "catalogue updated since this audit" when dates differ.
+
+### 15.3 Data captured per activity
+
+| Block | Fields (all optional, each with source and date) |
+|---|---|
+| **Tools (technical)** | tools in use (catalogue ids or client-specific); per tool: version / edition, licence count, hosting, integration used (API, webhook, CLI, MCP, manual export), AI features enabled (none / pilot / production), data residency constraint, owner team |
+| **Technical readiness** | automation level today (none / scripted / pipeline / agentic), data availability for agents (structured / semi / none), API access to the tool (yes / partial / no), security or regulatory constraint on AI use (free text + norm reference), test coverage or quality signal where relevant |
+| **Volume and frequency** | items per period (stories, test cases, releases, tickets…), frequency (per sprint / month / release), batch size |
+| **Time** | effort per item (person-hours), cycle time, waiting time, share of FTE of each role on the activity |
+| **Quality and rework** | rework rate, defect escape, first-pass yield, review rounds |
+| **Flow** | hand-offs (to which roles / activities), approvals, blocking dependencies, tooling breaks (manual copy between tools) |
+| **People** | roles and headcount involved (linked to the team skills), skill gaps, change appetite |
+| **Pain points and opportunities** | free text, severity (1–5), candidate for AI (yes / no / later), auditor's note |
+| **Evidence** | attachments by reference (document name, link, interview id), confidence (low / medium / high) |
+
+Actors get the same blocks at their level (tools a role uses across activities, workload, constraints). The process as a whole gets
+an **audit header**: audit id, client, scope, auditors, interview list (who, role, date), status (planned / in progress / closed),
+"as of" date.
+
+### 15.4 Data model and engine
+
+- **F-B27** — Case key `AUDIT` (schema v3, optional, absent = no audit): header, catalogue entries of the case, and observations keyed
+  by activity id and actor id. Observations never live inside the model parameters: the process model stays the business case; the
+  audit is evidence about it.
+- **F-B28** — `domain/audit` derives, per activity: **observed versus modelled** (effort per item × volume against the activity's
+  modelled effort; observed rework against the rework flow's probability; observed automation level against the AI authority;
+  observed FTE share against the team weights), coverage (share of in-scope activities audited, weighted by effort), and a
+  **tooling map** (activities × capabilities × tools, gaps where no tool serves an in-scope activity, overlaps where several tools serve
+  the same capability).
+- **F-B29** — **Calibration is explicit**: audit values never change a figure on their own. A "Calibrate from audit" action proposes,
+  activity by activity, new model parameters from the observed values (with the formula shown); the user accepts each one; the
+  accepted set is one undoable step, recorded in the evidence ledger with its source. The existing evidence tiers (Defend group) count
+  audited parameters as evidence.
+- **F-B30** — Portfolio: the audit is per product (an override-free per-product key, like the knowledge subset); a portfolio view
+  consolidates coverage, gaps and the tooling map across products and waves.
+
+### 15.5 Capture, export and import
+
+- **F-B31** — **Audit screen** (new section "🔎 Audit" in the Frame group): activity list (filter by phase, actor, capability,
+  audited / not audited), a form per activity with the blocks of § 15.3, the proposed tools for its capability, and progress per phase.
+  Keyboard-first, works without the diagram; the Process diagram colours activities by audit status (with a text legend).
+- **F-B32** — **Audit workbook** (Excel), for interviews off-line: "Export audit template" writes one sheet per block, one row per
+  in-scope activity, with drop-down lists from the catalogue and the enumerations; "Import audit workbook" reads it back with the same
+  validate-before-write rule as the parameters workbook, merges by activity id and reports added / updated / ignored rows.
+- **F-B33** — **BPMN**: the audit travels in the `.bpmn` export when the user ticks "include audit data": `ac:audit` extension elements
+  on tasks and resources (`ac:tool`, `ac:observation name value unit source date confidence`), and the catalogue entries used as
+  `ac:toolCatalog` under `definitions`. Without the option the file carries the process only (client data stays in the case).
+  Import reads them back; foreign tools ignore them (pass-through).
+- **F-B34** — **Outputs**: an audit report (PDF / print) per scope: header, coverage, tooling map, observed versus modelled table,
+  top pain points, calibration log; the results workbook gains "Audit" and "Tooling" sheets.
+- **F-B35** — **Confidentiality**: audit data may contain client names and interview notes. Exports with audit data are marked
+  "Contains audit data" in the file name and in the file; the HTML snapshot asks whether to include it (default: no).
+
+### 15.6 Decisions for the audit layer
+
+| # | Question | Options | Recommendation |
+|---|---|---|---|
+| D-B11 | Do audit values change figures? | (a) never directly, explicit calibration; (b) audited values override parameters automatically | **(a)** (F-B29): the business case stays explainable. |
+| D-B12 | Who maintains the tool catalogue? | (a) shipped and dated with each release, editable per case; (b) per case only | **(a)**, with "client-specific" entries kept in the case. |
+| D-B13 | Granularity of operational data | (a) per activity; (b) per activity and per role | **(b)** optional: per activity by default, a role split when the interview gives it. |
+| D-B14 | Audit data in BPMN exports by default? | (a) no, opt-in; (b) yes | **(a)** (F-B33, F-B35): client data leaves only on purpose. |
+
+## 16. Out of scope
 
 Executing processes (tokens, timers, messages), process mining, DMN decision tables, CMMN, choreography diagrams, collaborative
 real-time editing, BPMN 1.x or XPDL import (a later converter may be considered).
