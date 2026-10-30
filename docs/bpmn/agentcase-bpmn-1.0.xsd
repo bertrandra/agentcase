@@ -115,6 +115,12 @@
     <xsd:annotation><xsd:documentation>Capability tokens of a tool (§ 15.2): Documentation Analysis Design Coding Review Test Security Release Compliance RunSupport Knowledge Planning, or a custom capability without spaces.</xsd:documentation></xsd:annotation>
     <xsd:list itemType="xsd:NMTOKEN"/>
   </xsd:simpleType>
+  <xsd:simpleType name="tCalibratedParam">
+    <xsd:annotation><xsd:documentation>B7: the model parameters a calibration from the audit may change (F-B29).</xsd:documentation></xsd:annotation>
+    <xsd:restriction base="xsd:token">
+      <xsd:enumeration value="effort"/><xsd:enumeration value="aiAuthority"/><xsd:enumeration value="probability"/>
+    </xsd:restriction>
+  </xsd:simpleType>
   <xsd:simpleType name="tYesNoLater">
     <xsd:restriction base="xsd:token"><xsd:enumeration value="yes"/><xsd:enumeration value="no"/><xsd:enumeration value="later"/></xsd:restriction>
   </xsd:simpleType>
@@ -410,6 +416,25 @@
             <xsd:attribute name="role" type="ac:tName" use="required"/>
             <xsd:attribute name="who" type="ac:tName"/>
             <xsd:attribute name="date" type="xsd:date" use="required"/>
+          </xsd:complexType>
+        </xsd:element>
+        <xsd:element name="calibration" minOccurs="0" maxOccurs="unbounded">
+          <xsd:annotation><xsd:documentation>B7 (F-B29): one accepted calibration from the audit, in order; each change gives the parameter before and after and the formula shown.</xsd:documentation></xsd:annotation>
+          <xsd:complexType>
+            <xsd:sequence>
+              <xsd:element name="change" maxOccurs="unbounded">
+                <xsd:complexType>
+                  <xsd:attribute name="element" type="ac:tKey" use="required"/>
+                  <xsd:attribute name="param" type="ac:tCalibratedParam" use="required"/>
+                  <xsd:attribute name="from" type="ac:tText" use="required"/>
+                  <xsd:attribute name="to" type="ac:tText" use="required"/>
+                  <xsd:attribute name="formula" type="ac:tText"/>
+                </xsd:complexType>
+              </xsd:element>
+            </xsd:sequence>
+            <xsd:attribute name="code" type="ac:tKey" use="required"/>
+            <xsd:attribute name="date" type="xsd:date" use="required"/>
+            <xsd:attribute name="source" type="ac:tText"/>
           </xsd:complexType>
         </xsd:element>
       </xsd:sequence>

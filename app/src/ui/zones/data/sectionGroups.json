@@ -504,6 +504,12 @@
   "tag": "supports"
  },
  {
+  "id": "audit",
+  "group": "frame",
+  "groupSeq": 32,
+  "tag": "supports"
+ },
+ {
   "id": "who-does-what",
   "group": "scope",
   "groupSeq": 40,

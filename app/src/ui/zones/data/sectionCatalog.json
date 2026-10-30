@@ -684,6 +684,19 @@
   ]
  },
  {
+  "id": "audit",
+  "group": "frame",
+  "groupSeq": 32,
+  "label": "🔎 Audit",
+  "description": "The audit an engagement starts with: per activity and role, the tools in use (picked from a dated catalogue of market tools proposed for the activity capability) and the observed volumes, time, rework, hand-offs, people and pain points, each with its source and date; coverage, tooling map, observed versus modelled, explicit calibration with its log, audit workbook and report",
+  "tag": "supports",
+  "app": true,
+  "personas": [
+   "admin",
+   "business-journey"
+  ]
+ },
+ {
   "id": "who-does-what",
   "group": "scope",
   "groupSeq": 40,

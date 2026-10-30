@@ -418,6 +418,10 @@
    "who-does-what": {
     "group": "choose-scope",
     "groupSeq": 95
+   },
+   "audit": {
+    "group": "today",
+    "groupSeq": 97
    }
   }
  },

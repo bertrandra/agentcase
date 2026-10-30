@@ -11,15 +11,16 @@ const download = (filename: string, text: string) => {
 /**
  * "Export process (BPMN)" (docs/SPEC_BPMN.md F-B1, F-B3, F-B5): a small dialog under the File button. A single case exports at once with the
  * in-scope option; a portfolio adds the choice of the product shown, one file per product, or one file with one pool per product.
- * Escape or Cancel closes it and focus returns to the File button (`onClose`).
+ * A case with audit data adds "Include audit data" (F-B33, D-B14: off by default). Escape or Cancel closes it and focus returns to the File
+ * button (`onClose`).
  */
 export function BpmnExportPanel({ onClose }: { onClose: () => void }) {
-  const { portfolio, products, shown } = bpmnExportChoices(), id = useId(), box = useRef<HTMLDivElement>(null);
-  const [mode, setMode] = useState<BpmnExportMode>('shown'), [partial, setPartial] = useState(false);
+  const { portfolio, products, shown, audit: hasAudit } = bpmnExportChoices(), id = useId(), box = useRef<HTMLDivElement>(null);
+  const [mode, setMode] = useState<BpmnExportMode>('shown'), [partial, setPartial] = useState(false), [audit, setAudit] = useState(false);
   useEffect(() => { box.current?.querySelector<HTMLInputElement>('input')?.focus(); }, []);
   const run = () => {
     try {
-      const files = exportProcessFiles(mode, partial);
+      const files = exportProcessFiles(mode, partial, new Date(), audit);
       for (const f of files) download(f.filename, f.text);
       toast(files.length === 1 ? `Exported ${files[0]?.filename ?? ''}` : `Exported ${files.length} BPMN files`);
       onClose();
@@ -41,6 +42,8 @@ export function BpmnExportPanel({ onClose }: { onClose: () => void }) {
         </fieldset>
       )}
       <label><input type="checkbox" checked={partial} onChange={(e) => setPartial(e.target.checked)} /> In-scope activities only</label>
+      {hasAudit && <label><input type="checkbox" checked={audit} onChange={(e) => setAudit(e.target.checked)} /> Include audit data (client data: off by
+        default, the file name says so)</label>}
       <p className="ac-display-note">BPMN 2.0 with diagram, AgentCase parameters and BPSim data. The in-scope file cannot replace a full process on import.</p>
       <div className="ac-bpmn-actions">
         <button type="button" className="ac-btn" onClick={run}>Export</button>
