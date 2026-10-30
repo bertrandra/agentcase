@@ -6,6 +6,7 @@ import { setProductKnowledge, setProductOverride } from '@/controllers/productOv
 import { resolveProduct } from '@/domain/portfolio';
 import { mountApp, pf, sectionReady } from '../helpers/portfolioUi';
 import { threeProducts } from '../helpers/portfolioStore';
+import { processView } from '@/ui/sections/scope/process/view';
 
 vi.mock('@/ui/widgets/ChartPanel', async () => import('../helpers/chartStub'));   // jsdom has no canvas
 
@@ -15,11 +16,17 @@ afterEach(cleanup);
 const region = () => screen.getByRole('region', { name: /^Changing all products/ });
 const vals = (i: number) => (resolveProduct(pf(), ids[i]!) as unknown as { dom: { values: Record<string, string> } }).dom.values;
 
-describe('"Change: All products" in place: form fields', () => {
+/** B9a (DEV-B9A-CONTEXT-SCREENS): the pilot and the hub's target are programme activity parameters, edited in the Process section's panel. */
+async function processPanel(id: string): Promise<void> {
+  processView.setState({ selected: id });
+  mountApp('process'); act(() => { setDisplayScope({ kind: 'portfolio' }); });
+  await sectionReady(/Process \(BPMN\)/);
+}
+
+describe('"Change: All products" in place: form fields', { timeout: 60_000 }, () => {
   it('a number field edits the common value: inheriting products follow; the overriding product is named, keeps its value, and can be reset', async () => {
     setProductOverride(ids[2], 'values.pilotFte', '5');
-    mountApp('program'); act(() => { setDisplayScope({ kind: 'portfolio' }); });
-    await sectionReady(/Program & Completeness/);
+    await processPanel('prog-pilot');
     const r = region(), note = await within(r).findByRole('note', { name: 'Pilot pod size (FTE): 1 product overrides this' }, { timeout: 15000 });
     expect(note.textContent).toContain('1 product overrides this: C — it keeps its value');
     fireEvent.change(within(r).getByLabelText('Pilot pod size (FTE)'), { target: { value: '3' } });
@@ -34,10 +41,12 @@ describe('"Change: All products" in place: form fields', () => {
     setProductKnowledge(ids[1], { targetCC: 3 });
     mountApp('knowledge'); act(() => { setDisplayScope({ kind: 'portfolio' }); });
     await sectionReady(/Knowledge hub/);
+    expect(await within(region()).findByText(/knowledge domains and the knowledge transfer preparation are per product/, {}, { timeout: 15000 })).toBeTruthy();
+    expect(within(region()).queryByRole('button', { name: 'Save the domains' })).toBeNull();
+    cleanup();
+    await processPanel('prog-hubSetup');
     const r = region();
     expect((await within(r).findByRole('note', { name: 'Target CC: 1 product overrides this' }, { timeout: 15000 })).textContent).toContain('B');
-    expect(within(r).getByText(/knowledge domains and the knowledge transfer preparation are per product/)).toBeTruthy();
-    expect(within(r).queryByRole('button', { name: 'Save the domains' })).toBeNull();
     expect(within(r).getAllByRole('note', { name: /overrides? this/ })).toHaveLength(1);   // one notice per field, not one per form control
   });
 });

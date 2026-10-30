@@ -4,6 +4,8 @@ import { afterEach, beforeAll, describe, expect, it, vi } from 'vitest';
 import { computeCase } from '@/domain';
 import { appStore } from '@/store/instance';
 import Engage from '@/ui/sections/frame/engage';
+import { setInput } from '@/controllers/inputs';
+import { processView } from '@/ui/sections/scope/process/view';
 import { uiStore } from '@/ui/uiState';
 import { FIXTURES, loadFixture, parityGap } from './frameHelpers';
 
@@ -21,11 +23,16 @@ describe('engage section', () => {
     const { container } = render(<Engage />);
     expect(parityGap(f, 'engage', container)).toEqual([]);
   });
-  it('the four durations edit the document; the runway, dates and roadmap follow; undo restores', () => {
+  // Phase B9a (SPEC_BPMN § 19.7, DEV-B9A-CONTEXT-SCREENS): the stage durations are programme activity parameters, edited in the Process section;
+  // this screen links to them and follows their values.
+  it('the stages are read-only references that open the Process section; a duration change moves the runway, dates and roadmap; undo restores', () => {
     loadFixture('golden');
     const { container } = render(<Engage />);
     expect(screen.getByText('18 wk')).toBeTruthy();
-    fireEvent.change(screen.getByLabelText('Pilot & Prove (wk)'), { target: { value: '10' } });
+    expect(screen.queryByLabelText('Pilot & Prove (wk)')).toBeNull();
+    fireEvent.click(screen.getByText('Open Pilot & Prove in Process'));
+    expect([uiStore.getState().activeSection, processView.getState().selected]).toEqual(['process', 'prog-stage-pilotProve']);
+    act(() => { setInput('rmD4', '10'); });
     expect(doc().dom.values.rmD4).toBe('10');
     expect(screen.getByText('22 wk')).toBeTruthy();
     expect(screen.getByText('2027-02-02')).toBeTruthy();          // decide & scale: 2026-09-01 + 22 weeks

@@ -3,6 +3,7 @@ import { useCtx } from '@/store/hooks';
 import { Badge, Panel, Stat, StatRow } from '@/ui/widgets/cards';
 import { NumberInput } from '@/ui/widgets/fields';
 import { Note } from '@/ui/widgets/tuneA';
+import { ActivityRefs } from '@/ui/widgets/ActivityRefs';
 
 /** EV-18 multi-pod / AI-Native SAFe: coordination overhead grows with the number of pods at Y3. */
 export function SafeCard() {
@@ -52,6 +53,7 @@ export function TransCard() {
           ))}
         </tbody>
       </table>
+      <ActivityRefs kinds={['gate-L2', 'gate-L3', 'gate-L4']} />
       <Note>Reference 1.1 playbook: maturity rises on evidence, not ambition. CC-TRANS-01.</Note>
     </Panel>
   );

@@ -46,6 +46,8 @@ Figures are the golden fixture unless stated. "Before" = the build at the start 
 | DEV-GLASS-CEILING-OWNER | registry glass ceiling and decision context read the computed ceiling |
 | DEV-CM-CONFIDENCE | the commercial recommendation reads the last Monte Carlo confidence (screen and registry) |
 | DEV-AUDIT-EVIDENCE | audited observations count as evidence in the evidence ledger (D-B33); no legacy figure changes |
+| DEV-REGINCLUDE-DERIVED | "Include regulatory artefacts" is the process's `regInclude` only: the form copy `dom.checked.regInclude` is gone, `tgRegInclude` reads the process |
+| DEV-B9A-CONTEXT-SCREENS | the programme activities' fields and descriptions leave the context screens for the Process section's parameter panel (no figure changes) |
 
 ## DEV-HEADLINE-OWNER — one economics headline
 
@@ -515,3 +517,41 @@ tests are not concerned: they drive the legacy *engine* through recipes, and the
 - Effect: none on the 107 fixtures, the parallel run or excel-compat (no legacy case holds audit data, so no legacy figure or surface changes; the ledger is the declared one, asserted per fixture). With audit data the confidence grade can rise (golden reduced to two activities: D 0.25 → D 0.357 → C 0.464).
 - Tests: `tests/domain/audit/evidence.test.ts`, `tests/domain/audit/evidence-surfaces.test.tsx`.
 - Files: `domain/model/auditEvidence.ts`, `domain/model/{evidence,evidenceTiers}.ts`, `domain/pdc/vars/auditEvidence.ts`, `store/persistence/{report/audit,excel/results/audit,excel/results/data}.ts`, UI `model-engine/evidence/DriverTable.tsx`.
+
+## DEV-REGINCLUDE-DERIVED — "Include regulatory artefacts" is the process's value only
+
+- Legacy: the tick box `regInclude` was a form state (`dom.checked.regInclude`) beside the variable `regInclude`; a case could hold them apart. The oracle
+  fixture `frame-industry-cross` does: the box ticked, regulatory artefacts excluded (`regInclude` false). Since B3 the scope value lives in the
+  process document (`ac:process regInclude`), which the screen and the engine read; the frame command still wrote both, and the On/Off variable
+  `tgRegInclude`, the parameters workbook's reader and the Data Model read the form copy.
+- v20 (BPMN B9a, owner's decision 2026-10-30, docs/SPEC_BPMN.md § 7.1 item 3): one value, the process's. `dom.checked.regInclude` (and a product's
+  `checked.regInclude` override) is dropped on open (`store/persistence/bpmn/caseDoc.ts` `withoutRegIncludeBox`, `snapshot.ts`) and so never saved;
+  `frame.setRegInclude` writes the process only; `tgRegInclude` reads `scopeOf(case).regInclude`; the legacy shape (`legacyView`: the parameters
+  workbook, excel-compat) derives the box from the process, and the workbook reader no longer writes it back. No schema change.
+- Effect: `frame-industry-cross` — `tgRegInclude` On → Off (the box now says what the model does); every euro figure unchanged on the 107 fixtures. Other
+  fixtures hold the two equal: unchanged.
+- Tests: `tests/store/reg-include-derived.test.ts`.
+- Files: `controllers/frame.ts`, `domain/pdc/vars/toggles.ts`, `store/persistence/bpmn/{caseDoc,legacy}.ts`, `store/persistence/snapshot.ts`,
+  `store/persistence/excel/params/{reader.ts,sheets/tokensReg.ts}`.
+
+## DEV-B9A-CONTEXT-SCREENS — the programme activities are edited in the Process section only
+
+- Legacy: the screens that plan the transformation defined its activities themselves: the Engage durations and the Gantt edited the four stage
+  weeks (fields, and the Gantt bars as keyboard sliders over `rmD1..4`, `setupDuration`, `khSetupDays`); Program & Completeness edited the pilot
+  (`pilotFte`, `pilotBreakin`, `pilotWeeks`) and described it, and the capability build (`capOps`, `capTrain`, `capTarget`); Agentic Setup edited the setup duration and the four setup amounts and described each
+  line; the Knowledge hub edited the hub target, setup base, setup days, curation and infrastructure and the knowledge-transfer preparation; Run
+  sizing edited the sizing policy; Maturity edited the coaching load (Y1, cruise).
+- v20 (BPMN B9a, docs/SPEC_BPMN.md § 19.7, owner's decision "activities are held in BPMN; screens display the context, not the activities; clean by
+  design"): those activities are activities of the transformation programme, shown in the 🧩 Process section with their description and
+  parameters; the parameter panel is the one place that edits them (the same keys, the same undoable input command). The context screens keep their
+  results, figures, charts, diagnostics and case-level inputs, and list the activities they rely on as read-only references with their values and
+  "Open … in Process". The Gantt program bars are read-only (Enter or a click opens the activity; Alt+arrows still move the roadmap start, a
+  case-level date); the Engage roadmap cards keep their window and gate, not the stage description; the Setup table loses its Description column.
+- Effect: no figure changes (107 fixtures, the parallel run and the workbooks are identical); the screens lose input fields and description texts.
+  `tools/ui-parity.mjs` compares computed styles by element kind, which the change does not alter (0 divergence, no exception recorded).
+- Not moved in B9a: the 🌊 Waves board still edits the wave start, dependency and the setup capacity (§ 19.9).
+- Tests: `tests/ui/programme-one-owner.test.ts` (F-B72), `tests/ui/sections/process-programme.test.tsx`, `tests/ui/sections/gantt-keyboard.test.tsx` and
+  `tests/ui/sections/engage.test.tsx` (the new behaviour).
+- Files: `ui/sections/frame/engage/{Durations,Roadmap,Tracker,index}.tsx`, `ui/sections/verify/gantt/{index,ProgramBar}.tsx`,
+  `ui/sections/tune/{program/PilotCap,setup/index,knowledge/{AsisPanel,MultiPanels},run-sizing/SizingPolicy,maturity/SddCoach,readiness/HriPanel}.tsx`,
+  `ui/widgets/ActivityRefs.tsx`, `controllers/ganttEdit.ts`, `domain/tuneB/setup.ts`.

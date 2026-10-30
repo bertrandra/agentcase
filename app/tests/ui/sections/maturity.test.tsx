@@ -8,6 +8,7 @@ import Maturity from '@/ui/sections/tune/maturity';
 import { freshStore } from '../../store/helpers';
 import { legacySectionText, missingNumbers, renderedText } from '../../helpers/parity';
 import { loadFixture } from '../../helpers/tuneA';
+import { editParam, expectReference } from '../../helpers/programmeParam';
 
 beforeEach(() => { freshStore(); });
 afterEach(cleanup);
@@ -48,12 +49,14 @@ describe('maturity section', () => {
     expect(text(container)).toMatch(/35\/100\s*Harness readiness/);
     expect(calc().model.yearSav[2]).toBe(sav0);
   });
+  // B9a (DEV-B9A-CONTEXT-SCREENS): the coaching load is a parameter of the coaching activity, edited in the Process section; the curve follows it
   it('the coaching curve follows the Y1 and cruise loads (Y2 is mid-way) and prices them on the AS-IS team', () => {
     const { container } = render(<Maturity />);
     expect(yearCost(container, 1)).toBeGreaterThan(0);
     const y1 = yearCost(container, 1), y3 = yearCost(container, 3);
-    fireEvent.change(screen.getByLabelText('Y1 coaching load (% capacity)'), { target: { value: '60' } });
-    fireEvent.change(screen.getByLabelText('Cruise coaching load (%)'), { target: { value: '10' } });
+    expectReference('Y1 coaching load (% capacity)', 'Setup: coaching');
+    editParam('coachY1', '60');
+    editParam('coachCruise', '10');
     expect(text(container)).toMatch(/60%\s*Y1 coaching load/);
     expect(text(container)).toMatch(/35%\s*Y2 coaching load/);
     expect(text(container)).toMatch(/10%\s*Y3 coaching load/);

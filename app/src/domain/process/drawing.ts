@@ -14,8 +14,11 @@ export interface DrawShape {
   inScope?: boolean; regulatory?: boolean; phase?: string;
   /** placed by the layout (no BPMN DI shape yet) */
   placed?: boolean;
+  /** a second line under the label: the multi-instance marker of a programme activity, the facts of a wave (B9a) */
+  marker?: string;
 }
-export interface DrawEdge { id: string; points: [number, number][]; rework: boolean }
+/** `message`: a message flow between pools (the programme's flows to the delivery process, B9a), drawn dashed. */
+export interface DrawEdge { id: string; points: [number, number][]; rework: boolean; message?: boolean }
 export interface Drawing { box: { x: number; y: number; w: number; h: number }; shapes: DrawShape[]; edges: DrawEdge[] }
 
 const KIND: Record<string, ShapeKind> = { participant: 'pool', lane: 'lane', subProcess: 'phase', adHocSubProcess: 'phase', startEvent: 'event',

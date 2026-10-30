@@ -17,6 +17,36 @@ When releasing, follow [docs/BUMP_PROCEDURE.md](docs/BUMP_PROCEDURE.md) (§7 for
 
 ## [Unreleased]
 
+## [v20.30.0] 2026-10-30 — BPMN B9a: the transformation programme process, one timing owner, swim lanes and context screens
+
+### BPMN B9a — the transformation programme as a second process: one timing owner, swim lanes, a parameter panel, context screens
+
+Phase B9a of [docs/SPEC_BPMN.md](docs/SPEC_BPMN.md) (§ 19, F-B64–F-B72, D-B27…D-B32; details in § 19.9). Every figure of the 107 fixtures
+unchanged: the programme is derived from today's keys, nothing is stored yet (B9c).
+
+- **Transformation programme** (`domain/programme`): a second participant beside the delivery process, with a swim lane per operating-model role
+  (orchestrator, AI reviewer, preceptor, agent architect, FinOps, Design Authority, AI Office lead) and the AI agents in their own lane; 20 activities
+  (engagement stages, pilot, setup lines, change management, Knowledge Hub setup and run, knowledge-transfer preparation, build ramp, agentic run,
+  AgentOps run team, value tracking, risk and AI Act, audit interviews), each with its description, RACI, cost rule, timing and parameters;
+  per-product activities multi-instance over the products of their wave, waves as sub-processes, message flows to the delivery process.
+- **One timing owner** (`domain/programme/timing.ts`): the engine's setup profile, the Gantt programme band, the engagement roadmap and runway,
+  the Board, the pilot sizing, the cost model's pilot months, the wave schedule and the knowledge-transfer lead read it; where two surfaces
+  disagreed (T1–T3) it returns each one's current value, for B9b to unify. The two engagement-stage lists are one (`domain/programme/stages.ts`).
+- **🧩 Process**: the programme is drawn under the delivery process (swim lanes, phases and waves as sub-processes, message flows), with its
+  table as the accessible alternative and a **parameter panel**: description, role, RACI, duration and placement, effort, cost and the activity's
+  own parameters, each edit one undoable step.
+- **Context screens** (DEV-B9A-CONTEXT-SCREENS): Engage, Gantt, Program & Completeness, Agentic Setup, Knowledge hub, Run sizing, Maturity,
+  Human readiness and the value tracker keep their results and link to the activities they rely on ("Open … in Process"); their activity fields
+  and descriptions are gone. The Gantt program bars are read-only (Enter opens the activity). The Waves board is unchanged in B9a.
+- **Export**: the BPMN export offers the delivery process (as before), the transformation programme, or both in one file; the extension XSD
+  gains `ac:programme`, `ac:setupCapacity`, `ac:programmeActivity` and `ac:wave` (additions only). An import reads the delivery part.
+- **Milestones and gateways**: the maturity transitions L1 → L4 (gateways) and "Governance gates in place", per product, placed at the
+  engine's adoption and maturity crossings; the capability build (operational / in training / target) is part of the training activity with
+  the milestone "Target capability reached". No cost; the Program, Maturity and Gantt screens link to them.
+- **"Include regulatory artefacts" has one value, the process's** (DEV-REGINCLUDE-DERIVED, owner's decision): the duplicate form state
+  `dom.checked.regInclude` is dropped on open and no longer saved; the On/Off variable `tgRegInclude` reads the process (the oracle case
+  frame-industry-cross, box ticked with regulatory artefacts excluded, now reads Off). No euro figure changes.
+
 ## [v20.29.0] 2026-10-30 — BPMN B7: audit evidence in the ledger (D-B33); spec for the agent-rollout activities
 
 ### BPMN B7 — audit evidence in the ledger

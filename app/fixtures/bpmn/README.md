@@ -48,3 +48,11 @@ are tested on files the tests generate. They are not checked in. `foreign-roundt
 | `bad-id-reserved.bpmn` | `__proto__` and `constructor` as ids (schema-valid) | refused: `reserved-id` |
 | `bad-id-too-long.bpmn` | an id of 300 characters (schema-valid) | refused: `bad-id` (128 at most) |
 | `html-in-names.bpmn` | `<script>`, `<img onerror>`, `javascript:` in names, documentation, CDATA and character references (schema-valid) | accepted as text, flagged `markup-in-text`; refused with `--strict` |
+
+## `programme/` — the transformation programme (BPMN B9a, docs/SPEC_BPMN.md § 19)
+
+- `programme/programme-three-products.bpmn`: the "Transformation programme only" export of the three-product portfolio (`pf-three-products`) with a
+  setup capacity of 2: the programme pool (a lane per operating-model role, the AI agents' lane), its phases and waves as sub-processes, multi-instance
+  per-product activities, `ac:programmeActivity` / `ac:param` / `ac:raci` / `ac:wave` / `ac:setupCapacity`, a black-box delivery pool and the
+  message flows to it. Written by the application (`tests/helpers/programmeSample.ts`); `tests/bpmn/samples.test.ts` checks it is still that export
+  and that it validates. Kept in a sub-folder: it is not a delivery-process sample, so the import and round-trip tests of the samples above skip it.

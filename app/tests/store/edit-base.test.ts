@@ -62,12 +62,12 @@ describe('controllers write the common value computed from the common case, neve
   });
   it('ganttEdit.nudgeBar (move): the common roadmap start moves from the COMMON date; A keeps its own; undo exact; Product view moves A', () => {
     const { s, ids } = setup('values.rmStart', '2026-06-01', '2026-01-05', 'portfolio'), before = docOnly(s);
-    expect(nudgeBar({ name: 'Roadmap', input: 'rmStart', current: 0, mode: 'move', dir: 1, big: true })).toMatch(/Roadmap: roadmap starts/);
+    expect(nudgeBar({ name: 'Roadmap', dir: 1, big: true })).toMatch(/Roadmap: roadmap starts/);
     expect(pf().common.dom.values.rmStart).toBe('2026-01-12');
     expect(docOf(ids[0]).dom.values.rmStart).toBe('2026-06-01');
     exactUndo(s, before);
     setDisplayScope({ kind: 'product' });
-    nudgeBar({ name: 'Roadmap', input: 'rmStart', current: 0, mode: 'move', dir: 1, big: false });
+    nudgeBar({ name: 'Roadmap', dir: 1, big: false });
     expect(docOf(ids[0]).dom.values.rmStart).toBe('2026-06-02');
     expect(pf().common.dom.values.rmStart).toBe('2026-01-05');
   });

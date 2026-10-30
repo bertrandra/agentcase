@@ -4,7 +4,7 @@ import { makeDefaultDoc } from '../instance';
 import { PERSONA_KEY } from '../persona';
 import { SnapshotError } from './errors';
 import { VERSION_KEY, versionStamp } from './schema/version';
-import { caseInStore, isTrustedTree } from './bpmn/caseDoc';
+import { caseInStore, isTrustedTree, withoutRegIncludeBox } from './bpmn/caseDoc';
 import { caseInFile } from './bpmn/caseFile';
 import type { Doc } from '../types';
 
@@ -60,5 +60,5 @@ export function fromSnapshot(raw: unknown): Doc {
   delete doc.savedAt; delete doc._schema; delete doc[VERSION_KEY]; delete doc.calculationPackage; delete doc[PERSONA_KEY];
   doc.dom = { values: { ...makeDefaultDoc().dom.values, ...(dom.values as object) },
     checked: { ...makeDefaultDoc().dom.checked, ...(dom.checked as object) } } as Doc['dom'];
-  return doc;
+  return withoutRegIncludeBox(doc);   // B9a: the box is the process's regInclude, not a stored form state
 }
