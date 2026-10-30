@@ -17,6 +17,8 @@ When releasing, follow [docs/BUMP_PROCEDURE.md](docs/BUMP_PROCEDURE.md) (§7 for
 
 ## [Unreleased]
 
+## [v20.27.0] 2026-10-30 — BPMN B7: the audit layer (tool catalogue, observations, calibration)
+
 ### BPMN B7 — the audit layer: tool catalogue, observations per activity and role, explicit calibration
 
 Phase B7 of [docs/SPEC_BPMN.md](docs/SPEC_BPMN.md) (§ 15, F-B23–F-B35, D-B11–D-B14; details in § 15.7). Every figure of the 107 fixtures
