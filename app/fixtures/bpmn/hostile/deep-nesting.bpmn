@@ -1,0 +1,146 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- 70 nested sub-processes: schema-valid BPMN, deeper than the depth limit of F-B10 (64). -->
+<bpmn:definitions xmlns:bpmn="http://www.omg.org/spec/BPMN/20100524/MODEL" id="defs-deep" targetNamespace="https://example.org/hostile">
+  <bpmn:process id="proc" isExecutable="false">
+    <bpmn:subProcess id="sp-1">
+      <bpmn:subProcess id="sp-2">
+        <bpmn:subProcess id="sp-3">
+          <bpmn:subProcess id="sp-4">
+            <bpmn:subProcess id="sp-5">
+              <bpmn:subProcess id="sp-6">
+                <bpmn:subProcess id="sp-7">
+                  <bpmn:subProcess id="sp-8">
+                    <bpmn:subProcess id="sp-9">
+                      <bpmn:subProcess id="sp-10">
+                        <bpmn:subProcess id="sp-11">
+                          <bpmn:subProcess id="sp-12">
+                            <bpmn:subProcess id="sp-13">
+                              <bpmn:subProcess id="sp-14">
+                                <bpmn:subProcess id="sp-15">
+                                  <bpmn:subProcess id="sp-16">
+                                    <bpmn:subProcess id="sp-17">
+                                      <bpmn:subProcess id="sp-18">
+                                        <bpmn:subProcess id="sp-19">
+                                          <bpmn:subProcess id="sp-20">
+                                            <bpmn:subProcess id="sp-21">
+                                              <bpmn:subProcess id="sp-22">
+                                                <bpmn:subProcess id="sp-23">
+                                                  <bpmn:subProcess id="sp-24">
+                                                    <bpmn:subProcess id="sp-25">
+                                                      <bpmn:subProcess id="sp-26">
+                                                        <bpmn:subProcess id="sp-27">
+                                                          <bpmn:subProcess id="sp-28">
+                                                            <bpmn:subProcess id="sp-29">
+                                                              <bpmn:subProcess id="sp-30">
+                                                                <bpmn:subProcess id="sp-31">
+                                                                  <bpmn:subProcess id="sp-32">
+                                                                    <bpmn:subProcess id="sp-33">
+                                                                      <bpmn:subProcess id="sp-34">
+                                                                        <bpmn:subProcess id="sp-35">
+                                                                          <bpmn:subProcess id="sp-36">
+                                                                            <bpmn:subProcess id="sp-37">
+                                                                              <bpmn:subProcess id="sp-38">
+                                                                                <bpmn:subProcess id="sp-39">
+                                                                                  <bpmn:subProcess id="sp-40">
+                                                                                    <bpmn:subProcess id="sp-41">
+                                                                                      <bpmn:subProcess id="sp-42">
+                                                                                        <bpmn:subProcess id="sp-43">
+                                                                                          <bpmn:subProcess id="sp-44">
+                                                                                            <bpmn:subProcess id="sp-45">
+                                                                                              <bpmn:subProcess id="sp-46">
+                                                                                                <bpmn:subProcess id="sp-47">
+                                                                                                  <bpmn:subProcess id="sp-48">
+                                                                                                    <bpmn:subProcess id="sp-49">
+                                                                                                      <bpmn:subProcess id="sp-50">
+                                                                                                        <bpmn:subProcess id="sp-51">
+                                                                                                          <bpmn:subProcess id="sp-52">
+                                                                                                            <bpmn:subProcess id="sp-53">
+                                                                                                              <bpmn:subProcess id="sp-54">
+                                                                                                                <bpmn:subProcess id="sp-55">
+                                                                                                                  <bpmn:subProcess id="sp-56">
+                                                                                                                    <bpmn:subProcess id="sp-57">
+                                                                                                                      <bpmn:subProcess id="sp-58">
+                                                                                                                        <bpmn:subProcess id="sp-59">
+                                                                                                                          <bpmn:subProcess id="sp-60">
+                                                                                                                            <bpmn:subProcess id="sp-61">
+                                                                                                                              <bpmn:subProcess id="sp-62">
+                                                                                                                                <bpmn:subProcess id="sp-63">
+                                                                                                                                  <bpmn:subProcess id="sp-64">
+                                                                                                                                    <bpmn:subProcess id="sp-65">
+                                                                                                                                      <bpmn:subProcess id="sp-66">
+                                                                                                                                        <bpmn:subProcess id="sp-67">
+                                                                                                                                          <bpmn:subProcess id="sp-68">
+                                                                                                                                            <bpmn:subProcess id="sp-69">
+                                                                                                                                              <bpmn:subProcess id="sp-70">
+                                                                                                                                              </bpmn:subProcess>
+                                                                                                                                            </bpmn:subProcess>
+                                                                                                                                          </bpmn:subProcess>
+                                                                                                                                        </bpmn:subProcess>
+                                                                                                                                      </bpmn:subProcess>
+                                                                                                                                    </bpmn:subProcess>
+                                                                                                                                  </bpmn:subProcess>
+                                                                                                                                </bpmn:subProcess>
+                                                                                                                              </bpmn:subProcess>
+                                                                                                                            </bpmn:subProcess>
+                                                                                                                          </bpmn:subProcess>
+                                                                                                                        </bpmn:subProcess>
+                                                                                                                      </bpmn:subProcess>
+                                                                                                                    </bpmn:subProcess>
+                                                                                                                  </bpmn:subProcess>
+                                                                                                                </bpmn:subProcess>
+                                                                                                              </bpmn:subProcess>
+                                                                                                            </bpmn:subProcess>
+                                                                                                          </bpmn:subProcess>
+                                                                                                        </bpmn:subProcess>
+                                                                                                      </bpmn:subProcess>
+                                                                                                    </bpmn:subProcess>
+                                                                                                  </bpmn:subProcess>
+                                                                                                </bpmn:subProcess>
+                                                                                              </bpmn:subProcess>
+                                                                                            </bpmn:subProcess>
+                                                                                          </bpmn:subProcess>
+                                                                                        </bpmn:subProcess>
+                                                                                      </bpmn:subProcess>
+                                                                                    </bpmn:subProcess>
+                                                                                  </bpmn:subProcess>
+                                                                                </bpmn:subProcess>
+                                                                              </bpmn:subProcess>
+                                                                            </bpmn:subProcess>
+                                                                          </bpmn:subProcess>
+                                                                        </bpmn:subProcess>
+                                                                      </bpmn:subProcess>
+                                                                    </bpmn:subProcess>
+                                                                  </bpmn:subProcess>
+                                                                </bpmn:subProcess>
+                                                              </bpmn:subProcess>
+                                                            </bpmn:subProcess>
+                                                          </bpmn:subProcess>
+                                                        </bpmn:subProcess>
+                                                      </bpmn:subProcess>
+                                                    </bpmn:subProcess>
+                                                  </bpmn:subProcess>
+                                                </bpmn:subProcess>
+                                              </bpmn:subProcess>
+                                            </bpmn:subProcess>
+                                          </bpmn:subProcess>
+                                        </bpmn:subProcess>
+                                      </bpmn:subProcess>
+                                    </bpmn:subProcess>
+                                  </bpmn:subProcess>
+                                </bpmn:subProcess>
+                              </bpmn:subProcess>
+                            </bpmn:subProcess>
+                          </bpmn:subProcess>
+                        </bpmn:subProcess>
+                      </bpmn:subProcess>
+                    </bpmn:subProcess>
+                  </bpmn:subProcess>
+                </bpmn:subProcess>
+              </bpmn:subProcess>
+            </bpmn:subProcess>
+          </bpmn:subProcess>
+        </bpmn:subProcess>
+      </bpmn:subProcess>
+    </bpmn:subProcess>
+  </bpmn:process>
+</bpmn:definitions>

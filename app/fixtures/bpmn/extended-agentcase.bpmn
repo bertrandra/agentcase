@@ -1,0 +1,152 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<bpmn:definitions xmlns:bpmn="http://www.omg.org/spec/BPMN/20100524/MODEL"
+                  xmlns:ac="https://agentcase.app/schema/bpmn/1.0"
+                  id="defs-extended" targetNamespace="https://agentcase.app/cases/sample-extended"
+                  exporter="AgentCase" exporterVersion="0.0.0-sample" ac:partial="false">
+  <bpmn:extension definition="ac:process" mustUnderstand="false"/>
+  <bpmn:itemDefinition id="item-test-suite" isCollection="true" itemKind="Information"/>
+  <bpmn:dataStore id="store-backlog" name="Backlog tool">
+    <bpmn:extensionElements><ac:tool ref="jira" hosting="saas" integration="api mcp"/></bpmn:extensionElements>
+  </bpmn:dataStore>
+  <bpmn:error id="err-defect-escaped" name="Defect escaped" errorCode="DEFECT_ESCAPED"/>
+  <bpmn:escalation id="esc-accountable" name="Escalate to Accountable" escalationCode="ESCALATE"/>
+  <bpmn:message id="msg-handoff" name="Hand-off package"/>
+  <bpmn:resource id="role-qa" name="Test/QA">
+    <bpmn:extensionElements>
+      <ac:actor kind="role" teamSkill="Test/QA" sourcing="vendor"/>
+      <ac:audit status="inProgress" asOf="2026-10-15">
+        <ac:observation name="workload" value="0.8" unit="FTE share" source="interview" date="2026-10-12" confidence="medium"/>
+      </ac:audit>
+    </bpmn:extensionElements>
+  </bpmn:resource>
+  <bpmn:resource id="role-lead" name="PO/Lead">
+    <bpmn:extensionElements><ac:actor kind="role" teamSkill="Analysis/PO" sourcing="internal"/></bpmn:extensionElements>
+  </bpmn:resource>
+  <bpmn:collaboration id="collab" name="Sample customer - extended profile">
+    <bpmn:extensionElements>
+      <ac:auditHeader code="AUD-1" client="Sample customer" scope="Product delivery, V4 only" status="inProgress" asOf="2026-10-15">
+        <ac:auditor name="Lead auditor" organisation="Sample consultancy"/>
+        <ac:interview code="INT-1" role="Test manager" date="2026-10-12"/>
+      </ac:auditHeader>
+      <ac:toolCatalog asOf="2026-10-01">
+        <ac:tool code="jira" name="Jira" vendor="Atlassian" category="Planning / backlog" licence="commercial saas" capabilities="Planning"
+                 aiFeatures="assistant" integration="api webhook mcp" hosting="saas onPremise" asOf="2026-10-01"/>
+        <ac:tool code="playwright" name="Playwright" vendor="Microsoft" category="Test" licence="openSource" capabilities="Test"
+                 aiFeatures="none" integration="cli" hosting="onPremise" asOf="2026-10-01"/>
+        <ac:tool code="in-house-bench" name="In-house test bench" capabilities="Test" clientSpecific="true"/>
+      </ac:toolCatalog>
+      <ac:orgUnit id="unit-company" name="Sample customer" type="company"/>
+      <ac:orgUnit id="unit-vendor" name="Sample test vendor" type="vendor" parent="unit-company" location="Portugal" costCentre="CC-42" sourcing="vendor"/>
+      <ac:team id="team-test" name="Nearshore test team" unit="unit-vendor">
+        <ac:line skill="Test/QA" grade="B1" location="Portugal" fte="5" pins="A023"/>
+      </ac:team>
+    </bpmn:extensionElements>
+    <bpmn:participant id="pool-delivery" name="Delivery" processRef="proc-main"/>
+    <bpmn:participant id="pool-vendors" name="Test vendors">
+      <bpmn:participantMultiplicity minimum="1" maximum="3"/>
+    </bpmn:participant>
+    <bpmn:messageFlow id="mf-handoff" name="Test package" sourceRef="A030" targetRef="pool-vendors" messageRef="msg-handoff">
+      <bpmn:extensionElements><ac:handoffCost hours="4" costShare="0.05"/></bpmn:extensionElements>
+    </bpmn:messageFlow>
+  </bpmn:collaboration>
+  <bpmn:process id="proc-main" name="Extended profile" isExecutable="false" processType="None">
+    <bpmn:extensionElements>
+      <ac:process caseSchema="3" catalogueVersion="sample" containsAudit="true"/>
+      <ac:product code="P1" name="Sample product" ownerUnit="unit-company">
+        <ac:serves team="team-test" allocationPct="60"/>
+        <ac:component code="C1" name="Mobile app"/>
+      </ac:product>
+    </bpmn:extensionElements>
+    <bpmn:startEvent id="start-sprint" name="Every sprint">
+      <bpmn:outgoing>f1</bpmn:outgoing>
+      <bpmn:timerEventDefinition id="timer-sprint"><bpmn:timeCycle>R/P2W</bpmn:timeCycle></bpmn:timerEventDefinition>
+    </bpmn:startEvent>
+    <bpmn:userTask id="A023" name="Unit tests" ac:inScope="true">
+      <bpmn:extensionElements>
+        <ac:activity type="Human" phase="V4" seq="1" effort="0.5" weight="2.2" value="VA" capability="Test" aiAuthority="Copilot"/>
+        <ac:supervision human="55" agent="45"/>
+        <ac:raci responsible="role-qa" accountable="role-lead"/>
+        <ac:volume items="40" per="sprint" source="toolExport" date="2026-10-10"/>
+        <ac:audit status="closed" asOf="2026-10-15">
+          <ac:tool ref="playwright" version="1.56" licenceCount="0" hosting="onPremise" integration="cli" aiFeatures="none" ownerTeam="team-test"/>
+          <ac:tool ref="in-house-bench" integration="manual" confidence="low"/>
+          <ac:observation name="effortPerItem" value="0.4" unit="person-hours" per="sprint" role="role-qa" source="measurement" confidence="high"/>
+          <ac:painPoint severity="4" aiCandidate="yes">Test data is copied by hand between the bench and the backlog.</ac:painPoint>
+          <ac:evidence name="Sprint report 42" link="https://example.org/reports/42" interview="INT-1" confidence="medium"/>
+        </ac:audit>
+      </bpmn:extensionElements>
+      <bpmn:incoming>f1</bpmn:incoming>
+      <bpmn:outgoing>f2</bpmn:outgoing>
+      <bpmn:ioSpecification id="A023-io">
+        <bpmn:dataInput id="A023-input" name="Stories"/>
+        <bpmn:inputSet id="A023-inputs"><bpmn:dataInputRefs>A023-input</bpmn:dataInputRefs></bpmn:inputSet>
+        <bpmn:outputSet id="A023-outputs"/>
+      </bpmn:ioSpecification>
+      <bpmn:dataInputAssociation id="A023-in"><bpmn:sourceRef>backlog-ref</bpmn:sourceRef><bpmn:targetRef>A023-input</bpmn:targetRef></bpmn:dataInputAssociation>
+      <bpmn:dataOutputAssociation id="A023-out"><bpmn:targetRef>tests-ref</bpmn:targetRef></bpmn:dataOutputAssociation>
+      <bpmn:humanPerformer id="A023-R"><bpmn:resourceRef>role-qa</bpmn:resourceRef></bpmn:humanPerformer>
+      <bpmn:multiInstanceLoopCharacteristics id="A023-mi" isSequential="false">
+        <bpmn:loopCardinality>40</bpmn:loopCardinality>
+      </bpmn:multiInstanceLoopCharacteristics>
+    </bpmn:userTask>
+    <bpmn:boundaryEvent id="A023-defect" name="Defect escaped" attachedToRef="A023" cancelActivity="false">
+      <bpmn:outgoing>f-defect</bpmn:outgoing>
+      <bpmn:errorEventDefinition id="A023-defect-def" errorRef="err-defect-escaped"/>
+    </bpmn:boundaryEvent>
+    <bpmn:businessRuleTask id="A031" name="Quality gate rule" ac:activityType="BusinessRule" ac:decisionRef="dec-quality-gate">
+      <bpmn:incoming>f2</bpmn:incoming>
+      <bpmn:outgoing>f3</bpmn:outgoing>
+    </bpmn:businessRuleTask>
+    <bpmn:userTask id="A032" name="Test report approval" ac:gate="true" ac:requiresState="approved">
+      <bpmn:extensionElements>
+        <ac:activity type="Review" phase="V4" seq="3" effort="1" weight="1" value="NVA-N" capability="Review" aiAuthority="Assistance"/>
+      </bpmn:extensionElements>
+      <bpmn:incoming>f3</bpmn:incoming>
+      <bpmn:outgoing>f4</bpmn:outgoing>
+    </bpmn:userTask>
+    <bpmn:scriptTask id="A033" name="Nightly regression pipeline" ac:activityType="Script" scriptFormat="text/plain">
+      <bpmn:incoming>f4</bpmn:incoming>
+      <bpmn:outgoing>f5</bpmn:outgoing>
+    </bpmn:scriptTask>
+    <bpmn:sendTask id="A030" name="Send test package" ac:activityType="Send" messageRef="msg-handoff">
+      <bpmn:extensionElements><ac:handoffCost hours="2"/></bpmn:extensionElements>
+      <bpmn:incoming>f5</bpmn:incoming>
+      <bpmn:outgoing>f6</bpmn:outgoing>
+    </bpmn:sendTask>
+    <bpmn:endEvent id="end"><bpmn:incoming>f6</bpmn:incoming></bpmn:endEvent>
+    <bpmn:intermediateThrowEvent id="esc-throw" name="Escalate">
+      <bpmn:incoming>f-defect</bpmn:incoming>
+      <bpmn:escalationEventDefinition id="esc-throw-def" escalationRef="esc-accountable"/>
+    </bpmn:intermediateThrowEvent>
+    <bpmn:subProcess id="evt-vulnerability" name="Security vulnerability" triggeredByEvent="true">
+      <bpmn:extensionElements><ac:frequency count="2" per="month" source="interview" date="2026-10-12"/></bpmn:extensionElements>
+      <bpmn:startEvent id="evt-vulnerability-start" isInterrupting="false">
+        <bpmn:outgoing>fe1</bpmn:outgoing>
+        <bpmn:signalEventDefinition id="evt-vulnerability-signal"/>
+      </bpmn:startEvent>
+      <bpmn:manualTask id="A040" name="Triage vulnerability">
+        <bpmn:incoming>fe1</bpmn:incoming>
+        <bpmn:outgoing>fe2</bpmn:outgoing>
+      </bpmn:manualTask>
+      <bpmn:endEvent id="evt-vulnerability-end"><bpmn:incoming>fe2</bpmn:incoming></bpmn:endEvent>
+      <bpmn:sequenceFlow id="fe1" sourceRef="evt-vulnerability-start" targetRef="A040"/>
+      <bpmn:sequenceFlow id="fe2" sourceRef="A040" targetRef="evt-vulnerability-end"/>
+    </bpmn:subProcess>
+    <bpmn:dataStoreReference id="backlog-ref" name="Backlog" dataStoreRef="store-backlog"/>
+    <bpmn:dataObject id="tests" name="Unit test suite" itemSubjectRef="item-test-suite" isCollection="true"/>
+    <bpmn:dataObjectReference id="tests-ref" name="Unit test suite" dataObjectRef="tests">
+      <bpmn:dataState id="tests-state" name="reviewed"/>
+    </bpmn:dataObjectReference>
+    <bpmn:sequenceFlow id="f1" sourceRef="start-sprint" targetRef="A023"/>
+    <bpmn:sequenceFlow id="f2" sourceRef="A023" targetRef="A031"/>
+    <bpmn:sequenceFlow id="f3" sourceRef="A031" targetRef="A032"/>
+    <bpmn:sequenceFlow id="f4" sourceRef="A032" targetRef="A033"/>
+    <bpmn:sequenceFlow id="f5" sourceRef="A033" targetRef="A030"/>
+    <bpmn:sequenceFlow id="f6" sourceRef="A030" targetRef="end"/>
+    <bpmn:sequenceFlow id="f-defect" sourceRef="A023-defect" targetRef="esc-throw">
+      <bpmn:extensionElements><ac:rework probability="0.08" costShare="0.30"/></bpmn:extensionElements>
+    </bpmn:sequenceFlow>
+    <bpmn:textAnnotation id="note-1"><bpmn:text>Audit: test data copied by hand (pain point, severity 4).</bpmn:text></bpmn:textAnnotation>
+    <bpmn:association id="note-1-link" sourceRef="note-1" targetRef="A023"/>
+  </bpmn:process>
+</bpmn:definitions>

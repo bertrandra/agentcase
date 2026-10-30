@@ -15,6 +15,46 @@ All notable changes to AgentCase, newest first. Product version from v19.0.0 = t
 
 When releasing, follow [docs/BUMP_PROCEDURE.md](docs/BUMP_PROCEDURE.md) (§7 for the legacy file) and add the new version at the top.
 
+## [v20.20.0] 2026-10-30 — BPMN B0 and B1: extension XSD, OMG schemas, validator, sample files; domain/process with the default BPMN process and parity views
+
+### BPMN B1 — the process model in the domain (no store, UI or schema change)
+
+- **`domain/process`** (new zone `process-model`): the delivery process as a native BPMN 2.0 document held as an immutable XML node tree
+  (elements, attributes in order, text, comments, namespace declarations kept) that serialises to the same bytes every time; typed reads
+  (phases, activities, actors, flows, norms, diagram) memoised on the tree; derived views giving exactly what the engine reads today.
+- **Default process**: `npm run process:gen` writes `app/src/domain/catalog/defaultProcess.bpmn` from today's catalogues (11 phases and
+  Cross-cutting, 53 SDLC and 370 regulatory activities, 47 norms, roles, agents, 3 rework loops) with a deterministic diagram (lanes per team
+  skill, phases left to right, Cross-cutting band). 414 KB raw, 35 KB gzipped; valid for `tools/bpmn-validate.mjs` (OMG XSDs, the `ac:` XSD
+  and the profile, 0 error / 0 warning, tested); not in the application bundle yet. `npm run process:check` (run by `npm run check`) fails on any difference.
+- **Parity gate**: `viewsOf(processFromCase(case))` equals the version 2 scope keys (selected artefacts, edits, regulatory selection, phases off,
+  ramp-up sequences, norms, regulatory inclusion, skill map) on the 107 fixtures and on every product of the portfolio fixtures; the artefact
+  lists, phases, norms and loop pairs read from the document equal the JSON catalogues.
+- **`docs/bpmn/agentcase-bpmn-1.0.xsd`** (additive, 1.x rule): optional local attributes for the catalogue fields and case marks the
+  views give back (`ac:phase order sdlc reg featureIds offRank rampSeq rampRank`, `ac:activity order scopeRank edited editRank`,
+  `ac:supervision agent0`, `ac:norm count scopeRank`, `ac:actor regulatory capability`, `ac:rework order note activityA activityB
+  external`, `ac:process regInclude sdlcEdits regEdits rampSeq skillMap` and its `ac:unmatched` children); `tKey` accepts parentheses.
+
+### BPMN B0 — extension XSD, official OMG schemas, validator, sample and hostile files
+
+Phase B0 of [docs/SPEC_BPMN.md](docs/SPEC_BPMN.md) (§ 5.3, § 11 items 3-5). No change to the app (`app/src` untouched).
+
+- `docs/bpmn/agentcase-bpmn-1.0.xsd`: the schema of the `ac:` namespace (`https://agentcase.app/schema/bpmn/1.0`): 18 global elements
+  (process model § 5.2, `ac:phase`, organisation § 16, audit § 15, extended profile § 17) and 9 global attributes (`ac:inScope`,
+  `ac:partial`, `ac:regulatory`, `ac:norm`, `ac:activityType`, `ac:gate`, `ac:agent`, `ac:requiresState`, `ac:decisionRef`). No type has a
+  wildcard, so every declared `ac:` element is validated strictly.
+- `docs/bpmn/omg/`: BPMN20.xsd, Semantic.xsd, BPMNDI.xsd, DC.xsd and DI.xsd, downloaded unchanged from omg.org (URLs and SHA-256 in
+  `SOURCES.md`, kept byte-for-byte by `.gitattributes`).
+- `tools/bpmn-validate.mjs`: F-B10 security checks (no DOCTYPE, entity or processing instruction; 5 MB, depth 64, 20,000 elements; safe
+  ids), then `xmllint --nonet --schema docs/bpmn/agentcase-bpmn-validate.xsd`, then the profile checks: an undeclared `ac:` name (which
+  BPMN's `processContents="lax"` would skip) and an unresolved IDREF (which libxml2 does not check) are errors. It exits 1 on an
+  invalid file.
+- `app/fixtures/bpmn/`: two AgentCase profile samples, four hand-written imitations of foreign files (bpmn.io / Camunda 7, Camunda 8 /
+  zeebe, Signavio, plain OMG), and ten hostile files. Their README says which files are imitations.
+- Tests `app/tests/bpmn/samples.test.ts` and `hostile.test.ts`. CI (job `check`) installs `libxml2-utils` when the runner lacks it, and
+  `npm run gates` mirrors that step. The schema tests skip locally without `xmllint`, and fail in CI.
+- SPEC_BPMN § 5.2 corrected: `resourceRef` is a child element of `performer` / `humanPerformer`. `bpmn:definitions` has no
+  `extensionElements`, so the document-level `ac:` elements go in the collaboration's.
+
 ## [v20.19.0] 2026-10-26 — Architecture lot 10: audit fixes, one source of truth for every figure, live Data Model, real 160-character limit
 
 ### Lot 10 — store, sync, persistence, layer lint

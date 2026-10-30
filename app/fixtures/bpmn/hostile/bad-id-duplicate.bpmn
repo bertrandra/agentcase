@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<bpmn:definitions xmlns:bpmn="http://www.omg.org/spec/BPMN/20100524/MODEL" id="defs-dup" targetNamespace="https://example.org/hostile">
+  <bpmn:process id="proc" isExecutable="false">
+    <bpmn:task id="A017" name="First"/>
+    <bpmn:task id="A017" name="Second with the same id"/>
+  </bpmn:process>
+</bpmn:definitions>

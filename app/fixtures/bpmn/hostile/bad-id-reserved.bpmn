@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- Schema-valid BPMN (both ids are NCNames) whose ids would pollute a JavaScript object used as a map: refused by the id check of F-B10. -->
+<bpmn:definitions xmlns:bpmn="http://www.omg.org/spec/BPMN/20100524/MODEL" id="defs-reserved" targetNamespace="https://example.org/hostile">
+  <bpmn:process id="proc" isExecutable="false">
+    <bpmn:task id="__proto__" name="Prototype pollution"/>
+    <bpmn:task id="constructor" name="Constructor"/>
+  </bpmn:process>
+</bpmn:definitions>

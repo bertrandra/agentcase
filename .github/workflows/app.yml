@@ -24,6 +24,7 @@ jobs:
       - uses: actions/setup-node@v6
         with: { node-version: 22, cache: npm, cache-dependency-path: app/package-lock.json }
       - run: npm ci
+      - run: xmllint --version || (sudo apt-get update && sudo apt-get install -y --no-install-recommends libxml2-utils)   # BPMN XSD validation (D-B7): tests/bpmn fail in CI without it
       - run: npm audit --omit=dev --audit-level=moderate   # the shipped dependencies have no known advisory (uuid is overridden in package.json; GitHub runners have network)
       # Cheap and informative first (seconds each), then the full gate.
       - run: npm run deps:check   # app/src/generated/dependencies.json matches the imports and @calc-zone tags (else: npm run deps:gen)

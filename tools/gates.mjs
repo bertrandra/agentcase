@@ -21,6 +21,7 @@ const install = (job) => [s(job, 'npm ci', 'npm ci', { ci: true }), s(job, 'play
 /** The pull-request / main gates: .github/workflows/app.yml, job by job, step by step (working directory app/ unless cwd '.'). */
 const PR = [
   s('check', 'npm ci', 'npm ci', { ci: true }),
+  s('check', 'xmllint', 'xmllint --version || (sudo apt-get update && sudo apt-get install -y --no-install-recommends libxml2-utils)', { ci: true }),
   s('check', 'audit', 'npm audit --omit=dev --audit-level=moderate'),
   s('check', 'deps:check', 'npm run deps:check'),
   s('check', 'dup', 'npm run dup'),
@@ -95,6 +96,8 @@ const rows = [], done = new Set();
 let failed = 0, started = !from;
 const fmt = (sec) => (sec >= 60 ? `${Math.floor(sec / 60)} min ${String(sec % 60).padStart(2, '0')} s` : `${sec} s`);
 const t0 = Date.now(), syncCode = workflowSync();
+// The BPMN XSD tests (app/tests/bpmn) skip locally without xmllint and fail in CI without it (decision D-B7): say so before the run.
+if (spawnSync('xmllint', ['--version']).status !== 0) console.log('warning: xmllint is not installed (apt-get install libxml2-utils): the BPMN schema tests will be skipped locally');
 rows.push({ job: '-', name: 'workflow-sync', status: syncCode ? 'FAIL' : 'pass', sec: 0 }); if (syncCode) failed++;
 for (const x of STEPS) {
   if (from && x.name === from) started = true;

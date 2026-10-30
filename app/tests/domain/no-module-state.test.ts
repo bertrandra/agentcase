@@ -49,6 +49,9 @@ const ALLOWED: Record<string, string> = {
   'domain/portfolio/resolve.ts:commons': 'memo: the common case of a portfolio object',
   'domain/stress/fingerprint.ts:EXCLUDED': 'constant lookup (never written after)',
   'domain/time/spline.ts:prepared': 'memo: the prepared spline of a knot object',
+  'domain/process/defaultProcess.ts:built': 'memo: the catalogue process of a catalogue object (built once per catalogue)',
+  'domain/process/read.ts:memo': 'memo: the typed views of a process document (keyed by the immutable node tree)',
+  'domain/process/views.ts:memo': 'memo: the engine views of a process document (keyed by the immutable node tree)',
   'domain/time/fit.ts:cache': 'fit cache: the S-curve fit of a key built from its inputs (pure, bounded by the inputs a session uses)',
 };
 
