@@ -1113,12 +1113,14 @@ waves, report).
 | Value tracking | `plannedQuarters`, `trackStatus` | case | resources, opt-in (new cost) |
 | Risk mitigations and AI Act obligations | `RISK_REGISTER`, `AIACT_TIERS` | case | resources, opt-in (new cost) |
 | Audit / discovery interviews (§ 15) | audit header | case | resources, opt-in (new cost) |
+| Governance gates and maturity transitions L1→L4 (Design Authority, AI Office sign-off) | `tune/program.ts` `TRANSITIONS`, `tune/maturityTab.ts` `GOV_GATES` (text only) | per product | milestones and gateways, no cost; placed at the engine's adoption crossings (B9a) |
+| Capability building (operational / in training / target headcount) | `capOps`, `capTrain`, `capTarget`; `tune/program.ts` `capability` | per product | part of the training activity (trainees = in training); milestone "target capability reached"; no new cost in B9a, training cost from resources in B9b |
 
 **Not programme activities**: parameters and coefficients (S-curve, maturity bounds, discount rate, horizon, hub allocation mode;
 `maxConcurrentSetups` becomes a lane capacity); results (FTE before / after, vFTE, KT days avoided, risk scores, stress, verdict); the
-agent factory (`fm*`, a simulation of the delivery process, which belongs to the delivery BPMN as an event log); governance gates and
-maturity transitions (gateways and milestones of the delivery process). Not found in the application and possible later additions:
-hypercare, decommissioning, licence procurement and integration work as their own items.
+agent factory (`fm*`, a simulation of the delivery process), **out of the BPMN scope by the owner's decision (2026-10-30)**. Governance
+gates, maturity transitions and capability building are in the table above (added 2026-10-30, built in B9a). Not found in the application
+and possible later additions (opt-in new activities, not planned): hypercare, decommissioning, licence procurement and integration work as their own items.
 
 ### 19.3 Cost of a programme activity
 
