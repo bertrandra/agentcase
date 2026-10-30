@@ -1,6 +1,6 @@
 # AgentCase — Specification: the delivery process as a native BPMN 2.0 model (export and import)
 
-> Status: **proposed, not built**. Decisions D-B1…D-B10 (§ 12) and D-B11…D-B14 for the audit layer (§ 15.6) to be adopted. Scope: the TypeScript + React application in `app/`.
+> Status: **proposed, not built**. Decisions D-B1…D-B10 (§ 12) and D-B11…D-B14 for the audit layer (§ 15.6) and D-B15…D-B19 for the organisation model (§ 16.7) to be adopted. Scope: the TypeScript + React application in `app/`.
 > Related documents: [ARCHITECTURE.md](ARCHITECTURE.md), [DEVIATIONS.md](DEVIATIONS.md), [SPEC_MULTI_PRODUIT.md](SPEC_MULTI_PRODUIT.md).
 > Code rules unchanged: files ≤ 150 lines, no `any`, layers `ui → controllers → store → domain`, every write is an undoable
 > command, one owner per figure in `src/domain`, single-product figures identical to the legacy file unless a deviation is recorded.
@@ -29,6 +29,10 @@ Target: **the delivery process of a case is one process model, stored and exchan
 - **Audit** — a capture layer on each activity and actor records the technical audit (tools in use, picked from a catalogue of
   market tools proposed per activity) and the operational audit (volumes, time, rework, hand-offs, pain points), shown against the
   model and fed back into it only by explicit calibration (§ 15).
+
+- **Organisation** — an organisation model in three layers (organisation, product, activity), each shared at its own level, says
+  who does what: a RACI per activity (roles and agents), the teams that provide each role for each product, and the organisation
+  units they belong to (§ 16).
 
 Guiding principle: **the BPMN model is the single source of truth of the process.** The catalogues become the *default
 process* (a BPMN model shipped with the application); the case keys listed above become views derived from the case's process
@@ -59,7 +63,7 @@ process* (a BPMN model shipped with the application); the case keys listed above
 | Regulatory artefact (`regCatalog.artifacts`) | 370 | `bpmn:task` with `ac:regulatory="true"`, `ac:norm` | Placed in its phase, or in Cross-cutting. |
 | Norm (`regCatalog.norms`) | 47 | `bpmn:category` / `categoryValue` per norm, grouped by industry | Tasks reference it through `categoryValueRef` (a `bpmn:group` on the diagram). |
 | Deliverable (artefact `deliverable` text) | per artefact | `bpmn:dataObject` + `dataOutputAssociation` | The deliverable text is the data object's `documentation`. |
-| Role (artefact `skill`, `skillMap` → team skill) | 26 roles → 7 team skills | `bpmn:resource` (role) + `humanPerformer` | Lanes = team skills; `skillMap` becomes the resource's `ac:teamSkill`. |
+| Role (artefact `skill`, `skillMap` → team skill) | 26 roles → 7 team skills | `bpmn:resource` (role) + `humanPerformer` | Lanes = team skills; `skillMap` becomes the resource's `ac:teamSkill`. The full RACI and the organisation behind each role: § 16. |
 | AI agent (activity type "Agent") | per activity | `bpmn:resource` `ac:kind="agent"` + `performer` | The agent is an actor of its own, supervised by a role. |
 | Effort, weight `w`, value class, seq, capability, story id | per artefact | `ac:activity` extension (§ 5) | |
 | AI authority (`aiAuth`) | 4 levels + Compliance | `ac:aiAuthority` | Assistance, Copilot, Supervised autonomous, Autonomous, Compliance. |
@@ -315,6 +319,7 @@ these. Portfolio: the process follows the override commands of spec F6–F9.
 | B4 | Process section: SVG diagram, activity table, actor panel, import (replace / merge, preview, report), export | axe clean; ui-parity 0 divergence |
 | B5 | Custom activities / roles / agents in the engine; rework flows from the model; portfolio override; Excel / report / HTML outputs | Hand-computed reference tests; cross-surface equality |
 | B6 | Optional lazy BPMN editor (D-B6 b) | Size budget; editor round trip |
+| B6b | Organisation model (§ 16): `ORG` key, migration of `teamIn` / shared team lines to teams (parity), RACI on activities, `domain/org` (load, staffing, cost by unit), Organisation and Who-does-what sections, BPMN resource roles and organisation view | 107 fixtures identical before the RACI-driven figures; diagnostics tests; axe clean |
 | B7 | Audit layer (§ 15): tool catalogue, `AUDIT` key and `domain/audit` (observed vs modelled, coverage, tooling map), Audit section, audit workbook, BPMN `ac:audit`, audit report, explicit calibration | Round trip with audit data; calibration log; axe clean |
 | B8 | Release: guide, DEVIATIONS (if any), CHANGELOG, version bump | All gates green |
 
@@ -435,7 +440,103 @@ an **audit header**: audit id, client, scope, auditors, interview list (who, rol
 | D-B13 | Granularity of operational data | (a) per activity; (b) per activity and per role | **(b)** optional: per activity by default, a role split when the interview gives it. |
 | D-B14 | Audit data in BPMN exports by default? | (a) no, opt-in; (b) yes | **(a)** (F-B33, F-B35): client data leaves only on purpose. |
 
-## 16. Out of scope
+## 16. Organisation model: organisation × product × activity, and who does what
+
+### 16.1 Objective and today's gap
+
+Today "who does what" is a single fact per activity: the artefact's `skill` (26 role names) mapped by `skillMap` to one of 7 team
+skills, which selects the rate and the team lines of the product (`teamIn`, shared team lines). There is no accountable role, no
+consulted or informed role, no organisation that supplies the teams, and no way to say that a role is filled by a vendor, a
+near-shore centre or an AI agent for one product and by an internal team for another.
+
+Target: an **organisation model in three layers**, each shared at its own level, linked by explicit assignments, exported in BPMN:
+
+| Layer | Holds | Shared at | Today |
+|---|---|---|---|
+| **Organisation** | organisation units (company, business unit, department, centre of excellence, vendor / partner, offshore or near-shore centre), teams, the role catalogue | the portfolio (common to every product) | nothing (implicit) |
+| **Product** | products (portfolio), optional components / value streams, the teams serving each product with their allocation, the product's owner unit | per product | products, `teamIn`, shared team lines |
+| **Activity** | the process (BPMN), the RACI of each activity: which **roles** are Responsible, Accountable, Consulted, Informed, and which **agent** performs | the process (common by default, overridable per product) | the artefact `skill` only |
+
+### 16.2 Who does what: the assignment chain
+
+For an activity of a product, the application resolves:
+
+`activity --(RACI)--> role --(team serving the product that provides the role)--> team --(belongs to)--> organisation unit`
+
+and, for an agent-performed activity, `activity --(performer)--> agent --(supervised by the Accountable / Responsible role)--> role`.
+
+- **F-B36** — Every in-scope activity has **exactly one Accountable** role and **at least one Responsible** (a role or an agent);
+  Consulted and Informed are optional lists. An activity performed by an agent must have a **human Accountable** (AI governance rule,
+  consistent with the human / agent supervision split). Violations are diagnostics, listed per activity, never silent.
+- **F-B37** — For each product, every Responsible role of an in-scope activity must be **provided by at least one team serving that
+  product**; otherwise the activity is flagged "role not staffed for this product". When several teams provide the role, the split
+  follows the teams' allocation to the product (or an explicit share per activity).
+- **F-B38** — Answers the user can get in one screen each:
+  - **by activity**: R / A / C / I roles, the agent, and per product the teams and units that do it;
+  - **by role**: the activities it is R / A / C / I for, the products and teams that provide it, its load (effort of its R activities);
+  - **by team**: the products it serves (allocation), the roles it provides, the activities it performs, its load against its FTE;
+  - **by organisation unit**: its teams, the products they serve, the activities performed, cost by location / grade;
+  - **by product**: its organisation chart (units → teams → roles) and its RACI matrix.
+
+### 16.3 Data model
+
+- **Organisation (portfolio level, common)** — `ORG` key: `units[]` (id, name, type, parent id, location, cost centre, internal /
+  vendor), `teams[]` (id, name, unit id, members: lines of role, grade, location, FTE, pins — the same line shape as `teamIn`),
+  `roles[]` (id, name, team skill, description, kind human / agent, sourcing internal / vendor / either). The 26 legacy role names
+  and the 7 team skills become the default role catalogue.
+- **Product** — `teams` served: list of `{ teamId, allocationPct }` (≤ 100 % per team across products, the rule of lot 7 shared
+  team lines), optional `components[]`, `ownerUnitId`.
+- **Activity** — `raci: { R: actorId[], A: roleId, C: roleId[], I: roleId[] }`, agent performer as today (`ac:agent`). The legacy
+  `skill` becomes the default R (and A when no Accountable is known: flagged "accountable to confirm").
+- **Migration (parity)** — each product's `teamIn` becomes a team "‹product› delivery team" in a default unit "‹customer› delivery",
+  served at 100 % by that product; each lot 7 shared team line becomes a shared team served by its products with their shares; the
+  effective team of a product (`effectiveTeam`) is then derived from the teams serving it, with identical lines, so every figure is
+  unchanged on the 107 fixtures. `teamIn` and `sharedTeam` become derived views (one source: `ORG` + product assignments).
+- **Overrides** — the organisation is common; a product may override the RACI of its process (whole process key, F-B20) and its team
+  assignments (its own key).
+
+### 16.4 BPMN mapping
+
+| Concept | BPMN element |
+|---|---|
+| Role | `bpmn:resource` with `ac:actor kind="role" teamSkill=".." sourcing=".."` |
+| Agent | `bpmn:resource` with `ac:actor kind="agent"` |
+| Responsible | `bpmn:humanPerformer` (role) or `bpmn:performer` (agent) |
+| Accountable, Consulted, Informed | `bpmn:resourceRole name="Accountable|Consulted|Informed" resourceRef=".."` (valid BPMN 2.0; tools show it as a resource role) plus `ac:raci` for tools that drop names |
+| Organisation unit, team | `bpmn:participant` / pool per unit in a collaboration view, nested lanes `unit → team → role` (`childLaneSet`) in the organisation view; `ac:orgUnit`, `ac:team` on resources |
+| Product | one `bpmn:process` (and pool) per product in a portfolio export (F-B5) |
+
+- **F-B39** — Export offers two diagram views of the same semantic model: **by role** (lanes = team skills, the default of § 4.5) and
+  **by organisation** (pools per unit, lanes per team, sub-lanes per role, for a chosen product). Import reads either and maps lanes to
+  roles / teams / units through the mapping dialog of F-B8.
+
+### 16.5 Engine
+
+- Phase parity: figures read the derived team views (identical).
+- Then the RACI feeds the figures that need it, with one owner in `domain/org`: the load of each role and team (effort of its R
+  activities × its share), the supervision effort of the Accountable role for agent-performed activities (today a global coefficient),
+  the cost by organisation unit / location / vendor, and the "unstaffed role" and over-allocation diagnostics. Each change of a figure
+  versus the legacy file is a recorded deviation.
+
+### 16.6 Interface
+
+- New section **🏢 Organisation** (Frame group): unit tree, teams with their lines, role catalogue; keyboard-editable tree.
+- New section **🧭 Who does what** (Scope group): the RACI matrix (activities × roles, R / A / C / I per cell, filters by phase, product,
+  team, unit), and the five views of F-B38; diagnostics of F-B36 / F-B37 inline.
+- Team In and the shared team table of the Products section become views of the Organisation (same commands underneath).
+- The audit layer (§ 15) attaches observations to roles, teams and units too (workload, tools a team uses, constraints).
+
+### 16.7 Decisions for the organisation model
+
+| # | Question | Options | Recommendation |
+|---|---|---|---|
+| D-B15 | Responsibility model | (a) RACI; (b) RASCI (adds Support); (c) R only | **(a)** RACI, with Support available as a Consulted subtype later. |
+| D-B16 | Granularity of people | (a) roles and FTE lines only; (b) named people | **(a)**: no personal data in the case; names stay out of scope. |
+| D-B17 | Where does the organisation live in a single-product case? | (a) same `ORG` key, one product; (b) inside the case | **(a)**: one model for single and multi product. |
+| D-B18 | Accountable for agent activities | (a) mandatory human Accountable; (b) optional | **(a)** (F-B36). |
+| D-B19 | Default organisation diagram | (a) by role; (b) by organisation | **(a)** by role, (b) on demand (F-B39). |
+
+## 17. Out of scope
 
 Executing processes (tokens, timers, messages), process mining, DMN decision tables, CMMN, choreography diagrams, collaborative
 real-time editing, BPMN 1.x or XPDL import (a later converter may be considered).
