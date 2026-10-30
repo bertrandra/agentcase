@@ -17,6 +17,16 @@ When releasing, follow [docs/BUMP_PROCEDURE.md](docs/BUMP_PROCEDURE.md) (§7 for
 
 ## [Unreleased]
 
+## [v20.29.0] 2026-10-30 — BPMN B7: audit evidence in the ledger (D-B33); spec for the agent-rollout activities
+
+### BPMN B7 — audit evidence in the ledger
+
+- **Audited observations count as evidence in the evidence ledger** (Defend group, P6; decision D-B33, docs/SPEC_BPMN.md § 15.7): the acceptance
+  rate (P1) is supported by first-pass yield and rework rate, the supervising capacity (P3) by the FTE share per role; each observation weighs by
+  its confidence, source and date, and the driver's audited tier is the effort-weighted score over the in-scope activities. The grade uses the
+  stronger of the declared and the audited tier; the audit report (section 6) and the results workbook's Audit sheet print the same rows. A case
+  without audit data keeps every figure (107 fixtures, parallel run 40/40, excel-compat 67/67).
+
 ## [v20.28.0] 2026-10-30 — BPMN B7b: DMN decisions and the CMMN run view
 
 ### BPMN B7b — DMN decisions and the CMMN run view

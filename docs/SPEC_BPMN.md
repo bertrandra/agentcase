@@ -704,6 +704,7 @@ an **audit header**: audit id, client, scope, auditors, interview list (who, rol
 | D-B12 | Who maintains the tool catalogue? | (a) shipped and dated with each release, editable per case; (b) per case only | **(a)**, with "client-specific" entries kept in the case. |
 | D-B13 | Granularity of operational data | (a) per activity; (b) per activity and per role | **(b)** optional: per activity by default, a role split when the interview gives it. |
 | D-B14 | Audit data in BPMN exports by default? | (a) no, opt-in; (b) yes | **(a)** (F-B33, F-B35): client data leaves only on purpose. |
+| D-B33 | Do audited observations count as evidence in the evidence ledger (Defend group)? | (a) yes, per model driver, from a fixed mapping driver ← audit field, weighted by confidence; (b) no, the ledger stays declared only | **(a)** (adopted 2026-10-30, § 15.7): the confidence grade (P6) moves only with audit data; a case without audit keeps its figures. |
 
 ### 15.7 Built in B7 (audit layer)
 
@@ -740,9 +741,28 @@ an **audit header**: audit id, client, scope, auditors, interview list (who, rol
   regulatory activity). Each with its formula. The user ticks some; `audit.calibrate` applies only those, as one undoable step, and appends
   `CAL-n` (date, source, each parameter before → after, formula) to the log. Tests: `tests/domain/audit/calibration.test.ts` (hand-computed:
   k = 10 / 30 → 6.67 / 3.33; selected weight 10 → 9.67; tiers [0.7, 0, 0.3] → [0, 0.7, 0.3]; LP001 rework 10 × 0.1 × 0.4 = 0.4 w → 0.8 w), and
-  `fixtures-identical.test.ts`: on the 107 fixtures a full audit leaves `computeCase` identical. **Not built:** the evidence ledger of the Defend
-  group does not count audited parameters yet (it is keyed by model drivers, not activity parameters, and turning it on moves the PDC figures: a
-  deviation to decide).
+  `fixtures-identical.test.ts`: on the 107 fixtures a full audit leaves `computeCase` identical. The evidence ledger's use of the audit: below
+  (D-B33).
+- **Audit evidence in the evidence ledger (D-B33, built after B7).** One owner, `domain/model/auditEvidence.ts` (`AUDIT_DRIVER_FIELDS`,
+  `auditEvidence`): an audited observation counts as evidence for the ledger driver it supports.
+  - **Mapping driver ← audit field.** `p` (acceptance rate, P1) ← `firstPassYield`, `reworkRate` (the share of the work accepted without
+    rework); `supCapacity` (supervising capacity, P3) ← `fteShare` (per role: the share of the people's time the activity really takes). The
+    year-1/2/3 ramps (forecasts, not observable today), the loaded day rate and the token price (§ 15.3 has no cost field) have no audit field. Only
+    observations on in-scope activities count; tools, pain points, evidence references, role-level observations and the calibration log do not
+    (a calibration changes activity parameters, not ledger drivers; the observations behind it count).
+  - **Tier of one observation** (§ 15.3 provenance): confidence high → MEASURED, medium → BENCHMARK, low or none → ASSUMPTION; without a
+    source or a date → ASSUMPTION; source "estimate", or a date older than ~18 months at the evaluation date (the CC-EV-02 rule) → at most
+    BENCHMARK. Tier of an activity: the strongest of its supporting observations (per-role values included).
+  - **Audited tier of a driver**: score = Σ effort × tier value (1 / 0.6 / 0.25) / Σ effort over the in-scope activities, an activity without a
+    supporting observation counting as ASSUMPTION; MEASURED at score 1 (every in-scope activity measured), BENCHMARK from 0.6, else
+    ASSUMPTION. A driver without a supporting observation has no audited tier.
+  - **In the ledger**: the tier the grade, the upgrade path and the portfolio counts use is the stronger of the declared tier (after CC-EV-02)
+    and the audited tier; the declared tier, source and date are never rewritten; CC-EV-01 counts an audited driver as having evidence. The
+    Defend section shows the audited tier, score and activities under each driver; the audit report (section 6 "Evidence ledger") and the results
+    workbook's Audit sheet print the same rows (`evidenceRows`), evaluated on the export day like the section on the day it is open.
+  - **Effect**: none without audit data (107 fixtures, parallel run, excel-compat identical; no legacy surface has audit data, DEV-AUDIT-EVIDENCE).
+    Tests: `tests/domain/audit/evidence.test.ts` (hand-computed: (7 × 1 + 3 × 0.25) / 10 = 0.775 → BENCHMARK; grade 0.25 D → 2.5 / 7 D →
+    3.25 / 7 C), `evidence-surfaces.test.tsx` (section, report and workbook print the owner's rows).
 - **F-B30 partial.** The audit is per process document: a product that overrides its process (F-B20) has its own audit, the others share the
   common one (no separate per-product key, per D-B26 and the brief "no new case key"). The section is `I-input`: its aggregate view consolidates
   coverage, gaps, overlaps, pain points and calibrations per product and the tooling map across the products and waves (`aggAudit.ts`).

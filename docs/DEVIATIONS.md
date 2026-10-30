@@ -45,6 +45,7 @@ Figures are the golden fixture unless stated. "Before" = the build at the start 
 | DEV-MATURITY-BOUNDS | the S-curve readout, bands and legends follow the editable maturity bounds |
 | DEV-GLASS-CEILING-OWNER | registry glass ceiling and decision context read the computed ceiling |
 | DEV-CM-CONFIDENCE | the commercial recommendation reads the last Monte Carlo confidence (screen and registry) |
+| DEV-AUDIT-EVIDENCE | audited observations count as evidence in the evidence ledger (D-B33); no legacy figure changes |
 
 ## DEV-HEADLINE-OWNER — one economics headline
 
@@ -506,3 +507,11 @@ tests are not concerned: they drive the legacy *engine* through recipes, and the
 - Effect: an MSC case shows "Gain sharing" once a Monte Carlo run with ≥ 70 % confidence exists (as the legacy screen did). The registry oracle (no run at that point) is compared in that order.
 - Tests: `pdc-vars.test.ts` (the legacy order without a run, then the runtime's), `tests/domain/lot10-sot.test.ts`.
 - Files: `domain/pdc/{commercial,vars/finance}.ts`, UI `present/commercial/{index,CmDetail}.tsx`.
+
+## DEV-AUDIT-EVIDENCE — audited observations count as evidence in the evidence ledger
+
+- Legacy: the evidence ledger (P6) grades the seven drivers from their declared tier, source and as-of date only; the legacy file has no audit layer.
+- v20 (decision D-B33, docs/SPEC_BPMN.md § 15.7): an audited observation of the case's BPMN document counts as evidence for the driver it supports (`p` ← first-pass yield, rework rate; `supCapacity` ← FTE share), weighted by its confidence, source and date and by the effort of the in-scope activities; the grade, the upgrade path, CC-EV-01 and the portfolio tier counts use the stronger of the declared and the audited tier. One owner: `domain/model/auditEvidence.ts`.
+- Effect: none on the 107 fixtures, the parallel run or excel-compat (no legacy case holds audit data, so no legacy figure or surface changes; the ledger is the declared one, asserted per fixture). With audit data the confidence grade can rise (golden reduced to two activities: D 0.25 → D 0.357 → C 0.464).
+- Tests: `tests/domain/audit/evidence.test.ts`, `tests/domain/audit/evidence-surfaces.test.tsx`.
+- Files: `domain/model/auditEvidence.ts`, `domain/model/{evidence,evidenceTiers}.ts`, `domain/pdc/vars/auditEvidence.ts`, `store/persistence/{report/audit,excel/results/audit,excel/results/data}.ts`, UI `model-engine/evidence/DriverTable.tsx`.
