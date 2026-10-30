@@ -1,0 +1,234 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<bpmn:definitions xmlns:bpmn="http://www.omg.org/spec/BPMN/20100524/MODEL" xmlns:bpmndi="http://www.omg.org/spec/BPMN/20100524/DI" xmlns:dc="http://www.omg.org/spec/DD/20100524/DC" xmlns:zeebe="http://camunda.org/schema/zeebe/1.0" xmlns:di="http://www.omg.org/spec/DD/20100524/DI" xmlns:bioc="http://bpmn.io/schema/bpmn/biocolor/1.0" xmlns:color="http://www.omg.org/spec/BPMN/non-normative/color/1.0" xmlns:modeler="http://camunda.org/schema/modeler/1.0" id="Definitions_0r8l2pz" targetNamespace="http://bpmn.io/schema/bpmn" exporter="Camunda Modeler" exporterVersion="5.25.0" modeler:executionPlatform="Camunda Cloud" modeler:executionPlatformVersion="8.5.0">
+  <bpmn:collaboration id="Collaboration_1v7q0ah">
+    <bpmn:participant id="Participant_0w2j5ld" name="Release train" processRef="Process_release_train" />
+  </bpmn:collaboration>
+  <bpmn:process id="Process_release_train" name="Release train" isExecutable="true">
+    <bpmn:extensionElements>
+      <zeebe:userTaskForm id="UserTaskForm_1x0f4cq">{ "components": [ { "key": "approved", "type": "checkbox", "label": "Approved" } ] }</zeebe:userTaskForm>
+    </bpmn:extensionElements>
+    <bpmn:laneSet id="LaneSet_0yv3h1n">
+      <bpmn:lane id="Lane_1o0x7kc" name="Analysis">
+        <bpmn:flowNodeRef>StartEvent_1</bpmn:flowNodeRef>
+        <bpmn:flowNodeRef>Activity_spec</bpmn:flowNodeRef>
+      </bpmn:lane>
+      <bpmn:lane id="Lane_0c3s8tm" name="QA Engineers">
+        <bpmn:flowNodeRef>Activity_0secrev</bpmn:flowNodeRef>
+        <bpmn:flowNodeRef>Event_1sla0br</bpmn:flowNodeRef>
+        <bpmn:flowNodeRef>Event_0end2sla</bpmn:flowNodeRef>
+        <bpmn:flowNodeRef>Event_1golive</bpmn:flowNodeRef>
+        <bpmn:flowNodeRef>Activity_hypercare</bpmn:flowNodeRef>
+        <bpmn:flowNodeRef>Event_0done</bpmn:flowNodeRef>
+      </bpmn:lane>
+    </bpmn:laneSet>
+    <bpmn:startEvent id="StartEvent_1" name="Release planned">
+      <bpmn:outgoing>Flow_0a1</bpmn:outgoing>
+    </bpmn:startEvent>
+    <bpmn:subProcess id="Activity_spec" name="Specification">
+      <bpmn:incoming>Flow_0a1</bpmn:incoming>
+      <bpmn:outgoing>Flow_0a2</bpmn:outgoing>
+      <bpmn:startEvent id="Event_spec_start">
+        <bpmn:outgoing>Flow_s1</bpmn:outgoing>
+      </bpmn:startEvent>
+      <bpmn:userTask id="Activity_srs" name="Requirements spec (SRS)">
+        <bpmn:extensionElements>
+          <zeebe:userTask />
+          <zeebe:assignmentDefinition candidateGroups="analysts" />
+          <zeebe:formDefinition formKey="camunda-forms:bpmn:UserTaskForm_1x0f4cq" />
+          <zeebe:taskHeaders>
+            <zeebe:header key="sla" value="P5D" />
+          </zeebe:taskHeaders>
+        </bpmn:extensionElements>
+        <bpmn:incoming>Flow_s1</bpmn:incoming>
+        <bpmn:outgoing>Flow_s2</bpmn:outgoing>
+      </bpmn:userTask>
+      <bpmn:endEvent id="Event_spec_end">
+        <bpmn:incoming>Flow_s2</bpmn:incoming>
+      </bpmn:endEvent>
+      <bpmn:sequenceFlow id="Flow_s1" sourceRef="Event_spec_start" targetRef="Activity_srs" />
+      <bpmn:sequenceFlow id="Flow_s2" sourceRef="Activity_srs" targetRef="Event_spec_end" />
+    </bpmn:subProcess>
+    <bpmn:callActivity id="Activity_0secrev" name="Security review">
+      <bpmn:extensionElements>
+        <zeebe:calledElement processId="security-review" propagateAllChildVariables="false" />
+        <zeebe:ioMapping>
+          <zeebe:input source="=releaseId" target="releaseId" />
+          <zeebe:output source="=findings" target="securityFindings" />
+        </zeebe:ioMapping>
+      </bpmn:extensionElements>
+      <bpmn:incoming>Flow_0a2</bpmn:incoming>
+      <bpmn:outgoing>Flow_0a3</bpmn:outgoing>
+    </bpmn:callActivity>
+    <bpmn:boundaryEvent id="Event_1sla0br" name="5 days" cancelActivity="false" attachedToRef="Activity_0secrev">
+      <bpmn:outgoing>Flow_0sla</bpmn:outgoing>
+      <bpmn:timerEventDefinition id="TimerEventDefinition_0q7v1bd">
+        <bpmn:timeDuration>P5D</bpmn:timeDuration>
+      </bpmn:timerEventDefinition>
+    </bpmn:boundaryEvent>
+    <bpmn:endEvent id="Event_0end2sla" name="SLA breached">
+      <bpmn:incoming>Flow_0sla</bpmn:incoming>
+    </bpmn:endEvent>
+    <bpmn:intermediateCatchEvent id="Event_1golive" name="Go-live approved">
+      <bpmn:incoming>Flow_0a3</bpmn:incoming>
+      <bpmn:outgoing>Flow_0a4</bpmn:outgoing>
+      <bpmn:messageEventDefinition id="MessageEventDefinition_1kq3mfa" messageRef="Message_2golive" />
+    </bpmn:intermediateCatchEvent>
+    <bpmn:subProcess id="Activity_hypercare" name="Hypercare">
+      <bpmn:incoming>Flow_0a4</bpmn:incoming>
+      <bpmn:outgoing>Flow_0a5</bpmn:outgoing>
+      <bpmn:startEvent id="Event_hc_start">
+        <bpmn:outgoing>Flow_h1</bpmn:outgoing>
+      </bpmn:startEvent>
+      <bpmn:serviceTask id="Activity_monitor" name="Monitor error rates">
+        <bpmn:extensionElements>
+          <zeebe:taskDefinition type="monitor-errors" retries="3" />
+        </bpmn:extensionElements>
+        <bpmn:incoming>Flow_h1</bpmn:incoming>
+        <bpmn:outgoing>Flow_h2</bpmn:outgoing>
+      </bpmn:serviceTask>
+      <bpmn:endEvent id="Event_hc_end">
+        <bpmn:incoming>Flow_h2</bpmn:incoming>
+      </bpmn:endEvent>
+      <bpmn:sequenceFlow id="Flow_h1" sourceRef="Event_hc_start" targetRef="Activity_monitor" />
+      <bpmn:sequenceFlow id="Flow_h2" sourceRef="Activity_monitor" targetRef="Event_hc_end" />
+    </bpmn:subProcess>
+    <bpmn:endEvent id="Event_0done" name="Released">
+      <bpmn:incoming>Flow_0a5</bpmn:incoming>
+    </bpmn:endEvent>
+    <bpmn:sequenceFlow id="Flow_0a1" sourceRef="StartEvent_1" targetRef="Activity_spec" />
+    <bpmn:sequenceFlow id="Flow_0a2" sourceRef="Activity_spec" targetRef="Activity_0secrev" />
+    <bpmn:sequenceFlow id="Flow_0a3" sourceRef="Activity_0secrev" targetRef="Event_1golive" />
+    <bpmn:sequenceFlow id="Flow_0a4" sourceRef="Event_1golive" targetRef="Activity_hypercare" />
+    <bpmn:sequenceFlow id="Flow_0a5" sourceRef="Activity_hypercare" targetRef="Event_0done" />
+    <bpmn:sequenceFlow id="Flow_0sla" sourceRef="Event_1sla0br" targetRef="Event_0end2sla" />
+  </bpmn:process>
+  <bpmn:message id="Message_2golive" name="go-live-approved">
+    <bpmn:extensionElements>
+      <zeebe:subscription correlationKey="=releaseId" />
+    </bpmn:extensionElements>
+  </bpmn:message>
+  <bpmndi:BPMNDiagram id="BPMNDiagram_1">
+    <bpmndi:BPMNPlane id="BPMNPlane_1" bpmnElement="Collaboration_1v7q0ah">
+      <bpmndi:BPMNShape id="Participant_0w2j5ld_di" bpmnElement="Participant_0w2j5ld" isHorizontal="true">
+        <dc:Bounds x="150" y="80" width="1300" height="360" />
+        <bpmndi:BPMNLabel />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Lane_0c3s8tm_di" bpmnElement="Lane_0c3s8tm" isHorizontal="true">
+        <dc:Bounds x="180" y="260" width="1270" height="180" />
+        <bpmndi:BPMNLabel />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Lane_1o0x7kc_di" bpmnElement="Lane_1o0x7kc" isHorizontal="true">
+        <dc:Bounds x="180" y="80" width="1270" height="180" />
+        <bpmndi:BPMNLabel />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="_BPMNShape_StartEvent_2" bpmnElement="StartEvent_1">
+        <dc:Bounds x="212" y="152" width="36" height="36" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="190" y="195" width="81" height="14" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Activity_spec_di" bpmnElement="Activity_spec" isExpanded="true" bioc:stroke="#8e24aa" bioc:fill="#e1bee7" color:background-color="#e1bee7" color:border-color="#8e24aa">
+        <dc:Bounds x="290" y="100" width="360" height="140" />
+        <bpmndi:BPMNLabel />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Event_spec_start_di" bpmnElement="Event_spec_start">
+        <dc:Bounds x="310" y="152" width="36" height="36" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Activity_srs_di" bpmnElement="Activity_srs">
+        <dc:Bounds x="390" y="130" width="100" height="80" />
+        <bpmndi:BPMNLabel />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Event_spec_end_di" bpmnElement="Event_spec_end">
+        <dc:Bounds x="560" y="152" width="36" height="36" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNEdge id="Flow_s1_di" bpmnElement="Flow_s1">
+        <di:waypoint x="346" y="170" />
+        <di:waypoint x="390" y="170" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_s2_di" bpmnElement="Flow_s2">
+        <di:waypoint x="490" y="170" />
+        <di:waypoint x="560" y="170" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNShape id="Activity_0secrev_di" bpmnElement="Activity_0secrev">
+        <dc:Bounds x="700" y="310" width="100" height="80" />
+        <bpmndi:BPMNLabel />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Event_1golive_di" bpmnElement="Event_1golive">
+        <dc:Bounds x="872" y="332" width="36" height="36" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="848" y="375" width="85" height="14" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Activity_hypercare_di" bpmnElement="Activity_hypercare" isExpanded="false">
+        <dc:Bounds x="960" y="310" width="100" height="80" />
+        <bpmndi:BPMNLabel />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Event_0done_di" bpmnElement="Event_0done">
+        <dc:Bounds x="1112" y="332" width="36" height="36" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="1107" y="375" width="47" height="14" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Event_0end2sla_di" bpmnElement="Event_0end2sla">
+        <dc:Bounds x="802" y="392" width="36" height="36" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="846" y="403" width="69" height="14" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Event_1sla0br_di" bpmnElement="Event_1sla0br">
+        <dc:Bounds x="732" y="372" width="36" height="36" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="700" y="415" width="33" height="14" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNEdge id="Flow_0a1_di" bpmnElement="Flow_0a1">
+        <di:waypoint x="248" y="170" />
+        <di:waypoint x="290" y="170" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_0a2_di" bpmnElement="Flow_0a2">
+        <di:waypoint x="650" y="170" />
+        <di:waypoint x="675" y="170" />
+        <di:waypoint x="675" y="350" />
+        <di:waypoint x="700" y="350" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_0a3_di" bpmnElement="Flow_0a3">
+        <di:waypoint x="800" y="350" />
+        <di:waypoint x="872" y="350" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_0a4_di" bpmnElement="Flow_0a4">
+        <di:waypoint x="908" y="350" />
+        <di:waypoint x="960" y="350" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_0a5_di" bpmnElement="Flow_0a5">
+        <di:waypoint x="1060" y="350" />
+        <di:waypoint x="1112" y="350" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_0sla_di" bpmnElement="Flow_0sla">
+        <di:waypoint x="768" y="408" />
+        <di:waypoint x="802" y="410" />
+      </bpmndi:BPMNEdge>
+    </bpmndi:BPMNPlane>
+  </bpmndi:BPMNDiagram>
+  <bpmndi:BPMNDiagram id="BPMNDiagram_0hc1vqx">
+    <bpmndi:BPMNPlane id="BPMNPlane_0n4rk6q" bpmnElement="Activity_hypercare">
+      <bpmndi:BPMNShape id="Event_hc_start_di" bpmnElement="Event_hc_start">
+        <dc:Bounds x="180" y="82" width="36" height="36" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Activity_monitor_di" bpmnElement="Activity_monitor">
+        <dc:Bounds x="270" y="60" width="100" height="80" />
+        <bpmndi:BPMNLabel />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Event_hc_end_di" bpmnElement="Event_hc_end">
+        <dc:Bounds x="432" y="82" width="36" height="36" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNEdge id="Flow_h1_di" bpmnElement="Flow_h1">
+        <di:waypoint x="216" y="100" />
+        <di:waypoint x="270" y="100" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_h2_di" bpmnElement="Flow_h2">
+        <di:waypoint x="370" y="100" />
+        <di:waypoint x="432" y="100" />
+      </bpmndi:BPMNEdge>
+    </bpmndi:BPMNPlane>
+  </bpmndi:BPMNDiagram>
+</bpmn:definitions>

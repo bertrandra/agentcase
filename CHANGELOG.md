@@ -15,6 +15,29 @@ All notable changes to AgentCase, newest first. Product version from v19.0.0 = t
 
 When releasing, follow [docs/BUMP_PROCEDURE.md](docs/BUMP_PROCEDURE.md) (§7 for the legacy file) and add the new version at the top.
 
+## [Unreleased]
+
+### BPMN B0 — extension XSD, official OMG schemas, validator, sample and hostile files
+
+Phase B0 of [docs/SPEC_BPMN.md](docs/SPEC_BPMN.md) (§ 5.3, § 11 items 3-5). No change to the app (`app/src` untouched).
+
+- `docs/bpmn/agentcase-bpmn-1.0.xsd`: the schema of the `ac:` namespace (`https://agentcase.app/schema/bpmn/1.0`): 18 global elements
+  (process model § 5.2, `ac:phase`, organisation § 16, audit § 15, extended profile § 17) and 9 global attributes (`ac:inScope`,
+  `ac:partial`, `ac:regulatory`, `ac:norm`, `ac:activityType`, `ac:gate`, `ac:agent`, `ac:requiresState`, `ac:decisionRef`). No type has a
+  wildcard, so every declared `ac:` element is validated strictly.
+- `docs/bpmn/omg/`: BPMN20.xsd, Semantic.xsd, BPMNDI.xsd, DC.xsd and DI.xsd, downloaded unchanged from omg.org (URLs and SHA-256 in
+  `SOURCES.md`, kept byte-for-byte by `.gitattributes`).
+- `tools/bpmn-validate.mjs`: F-B10 security checks (no DOCTYPE, entity or processing instruction; 5 MB, depth 64, 20,000 elements; safe
+  ids), then `xmllint --nonet --schema docs/bpmn/agentcase-bpmn-validate.xsd`, then the profile checks: an undeclared `ac:` name (which
+  BPMN's `processContents="lax"` would skip) and an unresolved IDREF (which libxml2 does not check) are errors. It exits 1 on an
+  invalid file.
+- `app/fixtures/bpmn/`: two AgentCase profile samples, four hand-written imitations of foreign files (bpmn.io / Camunda 7, Camunda 8 /
+  zeebe, Signavio, plain OMG), and ten hostile files. Their README says which files are imitations.
+- Tests `app/tests/bpmn/samples.test.ts` and `hostile.test.ts`. CI (job `check`) installs `libxml2-utils` when the runner lacks it, and
+  `npm run gates` mirrors that step. The schema tests skip locally without `xmllint`, and fail in CI.
+- SPEC_BPMN § 5.2 corrected: `resourceRef` is a child element of `performer` / `humanPerformer`. `bpmn:definitions` has no
+  `extensionElements`, so the document-level `ac:` elements go in the collaboration's.
+
 ## [v20.19.0] 2026-10-26 — Architecture lot 10: audit fixes, one source of truth for every figure, live Data Model, real 160-character limit
 
 ### Lot 10 — store, sync, persistence, layer lint

@@ -1,6 +1,6 @@
 # AgentCase — Specification: the delivery process as a native BPMN 2.0 model (export and import)
 
-> Status: **specified, not built**. Decisions D-B1…D-B26 **adopted on 2026-10-30** (§ 12, § 15.6, § 16.7, § 17.9); D-B26: the case's BPMN
+> Status: **specified; phase B0 built** (extension XSD, official OMG schemas, `tools/bpmn-validate.mjs`, sample and hostile files, § 5.3). Decisions D-B1…D-B26 **adopted on 2026-10-30** (§ 12, § 15.6, § 16.7, § 17.9); D-B26: the case's BPMN
 > document is the **only** stored form of the process, the organisation and the audit (§ 6.1). Scope: the TypeScript + React application in `app/`.
 > Related documents: [ARCHITECTURE.md](ARCHITECTURE.md), [DEVIATIONS.md](DEVIATIONS.md), [SPEC_MULTI_PRODUIT.md](SPEC_MULTI_PRODUIT.md).
 > Code rules unchanged: files ≤ 150 lines, no `any`, layers `ui → controllers → store → domain`, every write is an undoable
@@ -202,8 +202,8 @@ most common flags, so standard tools keep them when they drop unknown elements):
                  aiAuthority="Supervised autonomous" storyId="" regulatory="false"/>
     <ac:supervision human="30" agent="70"/>
   </bpmn:extensionElements>
-  <bpmn:performer resourceRef="agent-coding"/>
-  <bpmn:humanPerformer resourceRef="role-dev"/>
+  <bpmn:performer id="A017-R"><bpmn:resourceRef>agent-coding</bpmn:resourceRef></bpmn:performer>
+  <bpmn:humanPerformer id="A017-S"><bpmn:resourceRef>role-dev</bpmn:resourceRef></bpmn:humanPerformer>
 </bpmn:serviceTask>
 <bpmn:resource id="role-dev" name="Dev">
   <bpmn:extensionElements><ac:actor kind="role" teamSkill="Dev"/></bpmn:extensionElements>
@@ -214,10 +214,30 @@ Flows: `<ac:rework probability="0.10" costShare="0.40" internalIterations="3"/>`
 `<ac:process caseSchema="3" catalogueVersion="…" partial="false"/>`. Norms: `<ac:norm industry="AERO" body="SAE"/>` on the
 `categoryValue`.
 
+Two rules of the OMG schema that the profile follows (found while writing the XSD in phase B0):
+
+- `resourceRef` of a `performer` / `humanPerformer` / `resourceRole` is a child **element** (`xsd:QName`), not an attribute: the
+  attribute form fails XSD validation (unqualified unknown attributes are not allowed by `anyAttribute namespace="##other"`).
+- `bpmn:definitions` has **no** `extensionElements`. The document-level `ac:` elements (`ac:auditHeader`, `ac:toolCatalog`,
+  `ac:orgUnit`, `ac:team`) are written in the `extensionElements` of the `bpmn:collaboration` (every AgentCase export has one: one
+  pool per process); `ac:process` and `ac:product` in each `bpmn:process`. Only attributes (`ac:partial`) go on `definitions`.
+  (Declaring `ac:` root elements in the `rootElement` substitution group would validate, but foreign tools would drop or reject them.)
+- The phase sub-process carries `<ac:phase code="V3" seq="4" role="…"/>` (code, order and role of `phases.json`), so a phase keeps its
+  code when a tool renames the sub-process or rewrites its id.
+
 ### 5.3 Validation
 
 - The extension XSD ships in `docs/bpmn/agentcase-bpmn-1.0.xsd`. CI validates every exported fixture against the OMG XSDs plus it
   (decision D-B7), and opens a sample in bpmn-js headless (moddle) as a second check of tool compatibility.
+- *Built in B0.* The official OMG schemas of BPMN 2.0.2 + DI are checked in, unchanged, under `docs/bpmn/omg/` (source URLs and
+  SHA-256 in `SOURCES.md`, re-checked by a test); `docs/bpmn/agentcase-bpmn-validate.xsd` imports them with the extension XSD.
+  `node tools/bpmn-validate.mjs [--json] [--strict] [--no-schema] file…` runs, per file: the F-B10 security checks on the raw text
+  (a refused file never reaches a parser), `xmllint --nonet --schema`, then the profile checks. BPMN reads extension content with
+  `processContents="lax"`, which validates a **declared** `ac:` name strictly but silently skips an undeclared one, and libxml2 does not
+  enforce `xsd:IDREF`: the tool refuses any `ac:` element or attribute the XSD does not declare, and resolves the IDREF attributes of
+  the extension (`ac:agent`, `ac:raci`, `supervisedBy`, units and teams) and of sequence and default flows. Samples and hostile files:
+  `app/fixtures/bpmn/` (README there); tests: `app/tests/bpmn/`. CI installs `libxml2-utils` when missing; the schema tests skip
+  locally without `xmllint` and fail in CI.
 - The importer validates semantically (references resolve, one start per process, no orphan flows, ids unique, parameters in
   range) and reports each problem with the element id.
 
@@ -330,7 +350,7 @@ these. Portfolio: the process follows the override commands of spec F6–F9.
 
 | Phase | Content | Gate | Duration | Difficulty | Needs | Main difficulty |
 |---|---|---|---|---|---|---|
-| B0 | This specification; extension XSD; sample foreign files | Decisions adopted | 0.5 d | 2 / 5 | — | Writing a correct extension XSD; collecting real files from bpmn.io, Camunda, Signavio |
+| B0 (**built in B0**) | This specification; extension XSD; sample foreign files | Decisions adopted | 0.5 d | 2 / 5 | — | Writing a correct extension XSD; collecting real files from bpmn.io, Camunda, Signavio |
 | B1 | `domain/process`: types, default process generator, derived views, layout | Views == v2 keys on 107 fixtures | 1 d | 3 / 5 | B0 | Exact parity of the derived views with today's keys |
 | B2 | BPMN reader / writer (DOMParser / XMLSerializer, no new dependency), node tree, security limits, pass-through, BPSim | Round trip byte-identical; XSD-valid; security tests | 1.5 d | 4 / 5 | B1 | Byte-identical round trip with foreign namespaces and vendor extensions |
 | B3 | Schema v3 + migration, `BPMN` key (native XML, node tree in the store), commands, existing scope sections on the model | 107 fixtures identical; parallel run 40/40; excel-compat 67/67 | 2 d | 5 / 5 | B2 | Touches store, undo, tab sync, autosave, Excel and every scope screen at once; node-level undo patches |
@@ -434,7 +454,8 @@ an **audit header**: audit id, client, scope, auditors, interview list (who, rol
 
 ### 15.4 Data model and engine
 
-- **F-B27** — The audit lives in the case's `BPMN` document (D-B26): an `ac:auditHeader` under `definitions`, the case's catalogue entries
+- **F-B27** — The audit lives in the case's `BPMN` document (D-B26): an `ac:auditHeader` at document level (in the collaboration's
+  `extensionElements`, § 5.2), the case's catalogue entries
   (`ac:toolCatalog`), and `ac:audit` observations on the tasks and resources they describe (absent = no audit). Observations never
   replace model parameters: the process stays the business case; the audit is evidence about it.
 - **F-B28** — `domain/audit` derives, per activity: **observed versus modelled** (effort per item × volume against the activity's
@@ -459,7 +480,7 @@ an **audit header**: audit id, client, scope, auditors, interview list (who, rol
   validate-before-write rule as the parameters workbook, merges by activity id and reports added / updated / ignored rows.
 - **F-B33** — **BPMN**: the audit travels in the `.bpmn` export when the user ticks "include audit data": `ac:audit` extension elements
   on tasks and resources (`ac:tool`, `ac:observation name value unit source date confidence`), and the catalogue entries used as
-  `ac:toolCatalog` under `definitions`. Without the option the file carries the process only (client data stays in the case).
+  `ac:toolCatalog` at document level (§ 5.2). Without the option the file carries the process only (client data stays in the case).
   Import reads them back; foreign tools ignore them (pass-through).
 - **F-B34** — **Outputs**: an audit report (PDF / print) per scope: header, coverage, tooling map, observed versus modelled table,
   top pain points, calibration log; the results workbook gains "Audit" and "Tooling" sheets.

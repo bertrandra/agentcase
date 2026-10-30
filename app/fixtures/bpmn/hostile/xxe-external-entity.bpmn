@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE bpmn:definitions [
+  <!ENTITY secret SYSTEM "file:///etc/passwd">
+]>
+<bpmn:definitions xmlns:bpmn="http://www.omg.org/spec/BPMN/20100524/MODEL" id="defs-xxe" targetNamespace="https://example.org/hostile">
+  <bpmn:process id="proc" isExecutable="false">
+    <bpmn:task id="task-1" name="Leak">
+      <bpmn:documentation>&secret;</bpmn:documentation>
+    </bpmn:task>
+  </bpmn:process>
+</bpmn:definitions>

@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<bpmn:definitions xmlns:bpmn="http://www.omg.org/spec/BPMN/20100524/MODEL" id="defs-bad-id" targetNamespace="https://example.org/hostile">
+  <bpmn:process id="proc" isExecutable="false">
+    <bpmn:task id="1-starts-with-a-digit" name="Digit"/>
+    <bpmn:task id="has space" name="Space"/>
+    <bpmn:task id="quote&quot;onmouseover=alert(1)" name="Quote"/>
+  </bpmn:process>
+</bpmn:definitions>
