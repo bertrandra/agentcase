@@ -8,7 +8,8 @@ import { opened, withDoc } from '../../helpers/processCases';
 /**
  * Phase B7 gate (D-B11, F-B29): on each of the 107 oracle fixtures, a full audit (header, tool catalogue entry, tools, observations per activity
  * and per role, pain points, evidence, an observation on a role resource) leaves every figure of the case identical: only an accepted
- * calibration changes the model. The proposals exist (there is something to calibrate), they are just not applied.
+ * calibration changes the model. The proposals exist (there is something to calibrate), they are just not applied. The one exception is the
+ * evidence ledger's confidence grade (D-B33): audited observations count there as evidence, asserted in evidence.test.ts.
  */
 describe('107 fixtures: identical figures with audit data and no calibration', () => {
   it.each(FIXTURE_IDS)('%s', (id) => {

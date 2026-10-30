@@ -20,7 +20,8 @@ When releasing, follow [docs/BUMP_PROCEDURE.md](docs/BUMP_PROCEDURE.md) (§7 for
 ### BPMN B7 — the audit layer: tool catalogue, observations per activity and role, explicit calibration
 
 Phase B7 of [docs/SPEC_BPMN.md](docs/SPEC_BPMN.md) (§ 15, F-B23–F-B35, D-B11–D-B14; details in § 15.7). Every figure of the 107 fixtures
-unchanged, with or without audit data: only an accepted calibration changes the model.
+unchanged, with or without audit data: only an accepted calibration changes the model (the evidence ledger's grade counts the audit as
+evidence, D-B33, below).
 
 - **🔎 Audit section** (frame group, app section for Admin and Business journey): audit header, activities with progress per phase and
   filters, a form per activity and per role (tools in use, the blocks of § 15.3 with source, date and confidence, a per-role split, pain points,
@@ -34,6 +35,14 @@ unchanged, with or without audit data: only an accepted calibration changes the 
 - **Files**: audit workbook (template out with drop-downs, import checked before anything is written, report of rows added / updated /
   ignored), audit report (printable HTML), Audit and Tooling sheets in the results workbook when the case holds audit data. The BPMN export
   carries the audit only when "Include audit data" is ticked; the HTML snapshot asks; every file with audit data says so in its name.
+
+### BPMN B7 — audit evidence in the ledger
+
+- **Audited observations count as evidence in the evidence ledger** (Defend group, P6; decision D-B33, docs/SPEC_BPMN.md § 15.7): the acceptance
+  rate (P1) is supported by first-pass yield and rework rate, the supervising capacity (P3) by the FTE share per role; each observation weighs by
+  its confidence, source and date, and the driver's audited tier is the effort-weighted score over the in-scope activities. The grade uses the
+  stronger of the declared and the audited tier; the audit report (section 6) and the results workbook's Audit sheet print the same rows. A case
+  without audit data keeps every figure (107 fixtures, parallel run 40/40, excel-compat 67/67).
 
 ## [v20.26.0] 2026-10-30 — BPMN B5b: the extended profile (data, events, volumes, rules, library, interfaces, diagrams)
 
