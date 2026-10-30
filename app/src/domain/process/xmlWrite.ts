@@ -2,9 +2,11 @@
 import { qnameOf, type XDocument, type XElement, type XNode } from './xml';
 
 /** Text content escaping: the three markup characters, and CR so that a reader's line-end normalisation keeps it. */
-export const escText = (s: string): string => s.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/\r/g, '&#13;');
+export const escText = (s: string): string => (/[&<>\r]/.test(s)
+  ? s.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/\r/g, '&#13;') : s);
 /** Attribute value escaping (double-quoted): also the quote, and the white space a reader would normalise to a space. */
-export const escAttr = (s: string): string => escText(s).replace(/"/g, '&quot;').replace(/\t/g, '&#9;').replace(/\n/g, '&#10;');
+export const escAttr = (s: string): string => (/[&<>\r"\t\n]/.test(s)
+  ? escText(s).replace(/"/g, '&quot;').replace(/\t/g, '&#9;').replace(/\n/g, '&#10;') : s);
 
 function write(n: XNode, out: string[]): void {
   if (n.kind === 'text') { out.push(escText(n.text)); return; }
