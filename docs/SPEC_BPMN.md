@@ -1120,7 +1120,10 @@ waves, report).
 `maxConcurrentSetups` becomes a lane capacity); results (FTE before / after, vFTE, KT days avoided, risk scores, stress, verdict); the
 agent factory (`fm*`, a simulation of the delivery process), **out of the BPMN scope by the owner's decision (2026-10-30)**. Governance
 gates, maturity transitions and capability building are in the table above (added 2026-10-30, built in B9a). Not found in the application
-and possible later additions (opt-in new activities, not planned): hypercare, decommissioning, licence procurement and integration work as their own items.
+and possible later additions (opt-in new activities, not planned): licence procurement and agent-toolchain integration as their own items;
+hypercare and decommissioning of the **agent rollout or of replaced legacy tools**. The delivered software's own go-live, run and end of
+life are already delivery activities (phase L8 Deployment `A044` Go-live dossier; L9 Run / AMS `A045`–`A049`; L10 End-of-life `A050`
+Decommissioning plan) and stay there.
 
 ### 19.3 Cost of a programme activity
 
