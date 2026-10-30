@@ -12,7 +12,7 @@ export interface Finding { code: string; message: string }
 export interface SecurityReport { errors: Finding[]; warnings: Finding[] }
 
 export interface Limits { readonly bytes: number; readonly depth: number; readonly elements: number }
-/** The F-B10 limits: 5 MB, depth 64, 20,000 elements. */
+/** The F-B10 limits: 5 MB, depth 64, 100,000 elements (raised from 20,000 in B2: a 2,000-activity file has about 25,300). */
 export const LIMITS: Limits = Object.freeze({ ...RULES.limits });
 export const ID_PATTERN = new RegExp(RULES.idPattern);
 export const RESERVED_IDS: ReadonlySet<string> = new Set(RULES.reservedIds);
@@ -37,8 +37,8 @@ const stripped = (text: string): string => text.replace(/^\uFEFF/, '').replace(/
 export const utf8Bytes = (text: string): number => new TextEncoder().encode(text).length;
 
 /** The checks that refuse a file before parsing: size, DTD, entities, processing instructions. */
-function refusals(text: string, bytes: number, max: Limits, err: (code: SecurityCode, message: string) => void): string {
-  if (bytes > max.bytes) err('too-large', `${bytes} bytes > ${max.bytes}`);
+function refusals(text: string, bytes: number, err: (code: SecurityCode, message: string) => void): string {
+  if (bytes > LIMITS.bytes) err('too-large', `${bytes} bytes > ${LIMITS.bytes}`);
   // on the text without comments and CDATA sections, where these constructs are inert (a code sample in documentation is not refused)
   const xml = stripped(text);
   if (/<!DOCTYPE/i.test(xml)) err('doctype', 'a <!DOCTYPE declaration (DTD, entities, XXE) is refused');
@@ -51,11 +51,10 @@ function refusals(text: string, bytes: number, max: Limits, err: (code: Security
 
 /**
  * F-B10 on the raw text (`bytes`: its size on disk, the UTF-8 length by default). Same codes, messages and order as tools/bpmn-validate.mjs.
- * `max` is the F-B10 limits; only tests pass others (a 2,000-activity file or a four-product collaboration file has more than 20,000 elements).
  */
-export function securityCheck(text: string, bytes: number = utf8Bytes(text), max: Limits = LIMITS): SecurityReport {
+export function securityCheck(text: string, bytes: number = utf8Bytes(text)): SecurityReport {
   const errors: Finding[] = [], warnings: Finding[] = [], err = (code: SecurityCode, message: string) => errors.push({ code, message });
-  const xml = refusals(text, bytes, max, err);
+  const xml = refusals(text, bytes, err);
   if (errors.length) return { errors, warnings };
   const cdata = [...text.matchAll(/<!\[CDATA\[([\s\S]*?)\]\]>/g)].map((m) => m[1] ?? '');
   const cdataMarkup = cdata.some((c) => /<\s*[A-Za-z!/?]/.test(c) || /javascript:/i.test(c));
@@ -76,8 +75,8 @@ export function securityCheck(text: string, bytes: number = utf8Bytes(text), max
     }
     if (t.selfClose) depth--;
   }
-  if (maxDepth > max.depth) err('too-deep', `depth ${maxDepth} > ${max.depth}`);
-  if (count > max.elements) err('too-many-elements', `${count} elements > ${max.elements}`);
+  if (maxDepth > LIMITS.depth) err('too-deep', `depth ${maxDepth} > ${LIMITS.depth}`);
+  if (count > LIMITS.elements) err('too-many-elements', `${count} elements > ${LIMITS.elements}`);
   if (markupIn.size) warnings.push({ code: 'markup-in-text', message: `text that looks like markup in ${[...markupIn].slice(0, 5).join(', ')}` });
   return { errors, warnings };
 }

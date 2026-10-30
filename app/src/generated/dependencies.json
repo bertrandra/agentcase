@@ -1,10 +1,10 @@
 {
  "schema": 1,
- "counts": {"files":1084,"tagged":527,"tests":347},
+ "counts": {"files":1084,"tagged":527,"tests":348},
  "zones": [
   {"id":"rate-card-team","modules":9,"tmed":138,"tmax":291},
   {"id":"scope-automation","modules":15,"tmed":160,"tmax":299},
-  {"id":"process-model","modules":25,"tmed":76,"tmax":78},
+  {"id":"process-model","modules":25,"tmed":77,"tmax":79},
   {"id":"adoption-curve","modules":4,"tmed":290,"tmax":290},
   {"id":"knowledge-hub","modules":4,"tmed":283,"tmax":298},
   {"id":"run-setup-taxes","modules":10,"tmed":290,"tmax":290},
@@ -20,7 +20,7 @@
   {"id":"aggregate-views","modules":41,"tmed":113,"tmax":117},
   {"id":"exports","modules":117,"tmed":82,"tmax":250},
   {"id":"workspace-config","modules":63,"tmed":74,"tmax":152},
-  {"id":"foundation","modules":27,"tmed":182,"tmax":305},
+  {"id":"foundation","modules":27,"tmed":182,"tmax":306},
   {"id":"presentation","modules":30,"tmed":165,"tmax":206}
  ],
  "sections": [
@@ -617,6 +617,7 @@
   ["tests/bpmn/export-validate.test.ts","0-19",""],
   ["tests/bpmn/foreign-roundtrip.test.ts","0,2,16,18",""],
   ["tests/bpmn/hostile.test.ts","",""],
+  ["tests/bpmn/large-roundtrip.test.ts","0,2,16,18",""],
   ["tests/bpmn/reader-security.test.ts","2,16",""],
   ["tests/bpmn/roundtrip-fixtures-0.test.ts","0,2,16,18",""],
   ["tests/bpmn/roundtrip-fixtures-1.test.ts","0,2,16,18",""],

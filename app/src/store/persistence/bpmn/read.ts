@@ -1,5 +1,5 @@
 /** @calc-zone exports */
-import { NS, securityCheck, type Finding, type Limits, type XAttr, type XDocument, type XElement, type XNode } from '@/domain/process';
+import { NS, securityCheck, type Finding, type XAttr, type XDocument, type XElement, type XNode } from '@/domain/process';
 
 /**
  * The BPMN reader (docs/SPEC_BPMN.md § 4.3, F-B6 / F-B10, phase B2): XML text → the node tree of `domain/process/xml.ts`. The F-B10 checks run
@@ -56,8 +56,8 @@ const parserError = (d: Document): string | null => {
 };
 
 /** Parses any XML text into the node tree (after the F-B10 checks); `bytes` is the file size when known. No BPMN check. */
-export function parseXml(text: string, bytes?: number, limits?: Limits): ParseResult {
-  const sec = securityCheck(text, bytes, limits);
+export function parseXml(text: string, bytes?: number): ParseResult {
+  const sec = securityCheck(text, bytes);
   if (sec.errors.length) return { doc: null, ...sec };
   const dom = new DOMParser().parseFromString(text, 'application/xml'), bad = parserError(dom), root = dom.documentElement;
   if (bad || !root) return { doc: null, errors: [{ code: 'not-xml', message: bad ?? 'no root element' }], warnings: sec.warnings };
@@ -65,8 +65,8 @@ export function parseXml(text: string, bytes?: number, limits?: Limits): ParseRe
 }
 
 /** Parses a BPMN file: the XML checks of `parseXml`, then the root must be `bpmn:definitions` (code `not-bpmn`, as tools/bpmn-validate.mjs). */
-export function parseBpmn(text: string, bytes?: number, limits?: Limits): ParseResult {
-  const r = parseXml(text, bytes, limits);
+export function parseBpmn(text: string, bytes?: number): ParseResult {
+  const r = parseXml(text, bytes);
   if (r.doc && (r.doc.root.ns !== NS.bpmn || r.doc.root.local !== 'definitions')) {
     return { doc: null, errors: [{ code: 'not-bpmn', message: 'the root element is not bpmn:definitions' }], warnings: r.warnings };
   }

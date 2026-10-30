@@ -126,7 +126,7 @@ process* (a BPMN model shipped with the application); the case keys listed above
 - **F-B9** — After import, a report lists: counts by kind, activities whose parameters were defaulted, unmapped roles, ignored
   or pass-through elements, and the figures that changed (headline net, ROI, FTE after) with before / after values.
 - **F-B10** — Security: the reader refuses any `<!DOCTYPE`, entity declaration or processing instruction other than the XML
-  declaration (no XXE, no entity expansion), caps file size (5 MB), element count (20,000) and depth (64), accepts ids from a safe
+  declaration (no XXE, no entity expansion), caps file size (5 MB), element count (100,000; raised from 20,000 in B2) and depth (64), accepts ids from a safe
   pattern only, and never renders imported text as HTML.
 
 ### 4.4 Round trip and pass-through
@@ -278,10 +278,10 @@ BPSim is a second, derived encoding on export and an accepted input on import wh
 - **Measured** (headless Chromium, built bundle, median of 7): a 2,000-activity AgentCase file (2.1 MB): parse + map (security, DOMParser,
   conversion, views) 195–275 ms (target < 300 ms); write 30–60 ms; export of a 2,000-activity document (BPSim + serialise) 60–65 ms, of the default
   case 24–37 ms (target < 150 ms). Default-case export 552 KB (424 KB of process + BPSim scenario).
-- **Open question (F-B10 vs § 10)**: an AgentCase file of 2,000 activities has about 25,300 elements and a collaboration file of four full products
-  about 26,400 — both over the element limit of 20,000, so the reader (and the validator) refuse them with `too-many-elements`. The tests pin that
-  refusal and test those round trips with a raised limit (`parseBpmn(text, bytes, limits)`, test-only). To decide before B4: raise the element limit
-  (for example to 100,000, still under the 5 MB cap) or keep it and document the ceiling.
+- **Element limit raised to 100,000 (decision of 2026-10-30)**: an AgentCase file of 2,000 activities has about 25,300 elements and a
+  collaboration file of four full products about 26,400, over the original limit of 20,000. The limit is now 100,000 in `securityRules.json`
+  (reader and validator alike); the 5 MB cap, depth 64 and the DOCTYPE / entity / processing-instruction refusal are unchanged. Both round
+  trips pass with the default limits; a generated file of 100,001 elements (under 5 MB) is refused before the parser.
 
 ## 6. Data model
 

@@ -48,11 +48,9 @@ describe.skipIf(!schemaTestsRun())('B2 export validates (xmllint: OMG XSDs + ac:
     const items = pf.products.map((p, i) => ({ code: `P${i + 1}`, name: p.name, case: resolveProduct(pf, p.id) }));
     const files = [...PARTIAL.map((id) => write(`${id}-partial`, exportCaseText(rawFixture(id), { partial: true }))),
       ...items.map((p) => write(`pf-${p.code}`, exportCaseText(p.case, { product: { code: p.code, name: p.name } }))),
-      write('pf-collaboration-2', collaborationText(items.slice(0, 2))), write('pf-collaboration-partial', collaborationText(items, { partial: true }))];
+      write('pf-collaboration', collaborationText(items)), write('pf-collaboration-partial', collaborationText(items, { partial: true }))];
+    expect(items).toHaveLength(4);   // four full products in one file: about 26,400 elements, under the F-B10 limit of 100,000
     expect(report(files)).toEqual(clean(files));
-    // open question for B4 / the spec: four full products in one file are about 26,000 elements, over the F-B10 limit of 20,000
-    expect(items).toHaveLength(4);
-    expect(validate([write('pf-collaboration-4', collaborationText(items))]).results.map(codes)).toEqual([['too-many-elements']]);
   }, 120000);
   it('the BPSim content is validated strictly by the BPSim 2.0 schema (not skipped as lax content)', () => {
     const text = exportCaseText(rawFixture('golden')), bad = text.replace('<bpsim:NumericParameter value="', '<bpsim:NumericParameter value="0.5');

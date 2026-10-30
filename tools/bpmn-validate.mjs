@@ -4,7 +4,7 @@
 //   node tools/bpmn-validate.mjs [--json] [--strict] [--no-schema] file.bpmn...
 // Per file, in this order:
 //   1. security (F-B10), on the raw text, before any XML parser sees it: size ≤ 5 MB; no <!DOCTYPE, no <!ENTITY, no processing instruction
-//      other than the XML declaration; depth ≤ 64; ≤ 20,000 elements; every `id` attribute matches ID_PATTERN and is not a reserved name.
+//      other than the XML declaration; depth ≤ 64; ≤ 100,000 elements; every `id` attribute matches ID_PATTERN and is not a reserved name.
 //      A file that fails here is NOT handed to xmllint. Text that looks like markup (names, documentation) is a warning, not an error
 //      (F-B10: imported text is never rendered as HTML, so it is neutralised, not refused).
 //   2. schema: xmllint --noout --nonet --schema docs/bpmn/agentcase-bpmn-validate.xsd (no entity expansion, no network).

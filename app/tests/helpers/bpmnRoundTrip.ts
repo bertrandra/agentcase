@@ -4,7 +4,7 @@
  */
 import { readdirSync, readFileSync } from 'node:fs';
 import { expect } from 'vitest';
-import { exportCaseText, indent, LIMITS, serialize, viewsOf, type ScopeKeys, type XDocument } from '@/domain/process';
+import { exportCaseText, indent, serialize, viewsOf, type ScopeKeys, type XDocument } from '@/domain/process';
 import type { CaseState } from '@/domain';
 import { parseBpmn } from '@/store/persistence/bpmn/read';
 
@@ -18,16 +18,9 @@ export const v2Keys = (c: CaseState): Partial<ScopeKeys> => {
   return Object.fromEntries(KEYS.filter((k) => o[k] !== undefined).map((k) => [k, o[k]])) as Partial<ScopeKeys>;
 };
 
-/**
- * Parses a text that must be accepted, with no error. A file over the F-B10 element limit (a collaboration file of four products: about 26,000
- * elements) must be refused by the reader with exactly `too-many-elements`; it is then read with a raised element limit to test the round trip.
- */
+/** Parses a text that must be accepted with the default F-B10 limits, with no error. */
 export function parsed(text: string): XDocument {
-  let r = parseBpmn(text);
-  if (r.errors.some((e) => e.code === 'too-many-elements')) {
-    expect(r.errors.map((e) => e.code)).toEqual(['too-many-elements']);
-    r = parseBpmn(text, undefined, { ...LIMITS, elements: 100000 });
-  }
+  const r = parseBpmn(text);
   expect(r.errors).toEqual([]);
   if (!r.doc) throw new Error('not parsed');
   return r.doc;

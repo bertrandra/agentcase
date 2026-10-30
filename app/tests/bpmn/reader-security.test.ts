@@ -23,7 +23,7 @@ afterEach(() => vi.restoreAllMocks());
 describe('B2 reader: one F-B10 rule table for the reader and tools/bpmn-validate.mjs', () => {
   it('the tool reads the shared table; the limits are those of the spec', () => {
     expect(readFileSync(join(REPO, 'tools', 'bpmn-validate.mjs'), 'utf8')).toContain('app/src/domain/process/securityRules.json');
-    expect(LIMITS).toEqual({ bytes: 5 * 1024 * 1024, depth: 64, elements: 20000 });
+    expect(LIMITS).toEqual({ bytes: 5 * 1024 * 1024, depth: 64, elements: 100000 });
     expect(Object.isFrozen(LIMITS)).toBe(true);
     expect(RULES.codes).toEqual(['too-large', 'doctype', 'entity', 'processing-instruction', 'bad-id', 'reserved-id', 'duplicate-id', 'too-deep',
       'too-many-elements', 'markup-in-text']);
@@ -57,10 +57,14 @@ describe('B2 reader: size, element-count and depth limits (generated)', () => {
     expect(parseBpmn(doc(`<bpmn:documentation>${'x'.repeat(LIMITS.bytes)}</bpmn:documentation>\n`)).errors.map((e) => e.code)).toEqual(['too-large']);
     expect(parseBpmn('', LIMITS.bytes + 1).errors.map((e) => e.code)).toEqual(['too-large']);
   });
-  it('20,000 elements accepted, 20,001 refused', () => {
+  it('100,000 elements accepted, 100,001 refused (a generated file under 5 MB, refused before the parser)', () => {
     const tasks = (n: number) => Array.from({ length: n }, (_, i) => `<bpmn:task id="t${i}"/>\n`).join('');
-    expect(parseBpmn(doc(tasks(LIMITS.elements - 2))).errors).toEqual([]);
-    expect(parseBpmn(doc(tasks(LIMITS.elements - 1))).errors.map((e) => e.code)).toEqual(['too-many-elements']);
+    const at = doc(tasks(LIMITS.elements - 2)), over = doc(tasks(LIMITS.elements - 1));   // + definitions + process
+    expect(over.length).toBeLessThan(LIMITS.bytes);
+    expect(securityCheck(at).errors).toEqual([]);
+    const spy = vi.spyOn(DOMParser.prototype, 'parseFromString'), r = parseBpmn(over);
+    expect([r.doc, r.errors]).toEqual([null, [{ code: 'too-many-elements', message: `${LIMITS.elements + 1} elements > ${LIMITS.elements}` }]]);
+    expect(spy).not.toHaveBeenCalled();
   });
   it('depth 64 accepted, 65 refused', () => {
     const nest = (n: number) => `${'<bpmn:subProcess>'.repeat(n)}${'</bpmn:subProcess>'.repeat(n)}\n`;
