@@ -37,7 +37,8 @@ describe('persona.setAppSection (DEV-APP-SECTION-PERSONAS)', () => {
     expect((doc(s).PERSONA_SECTIONS as Record<string, string[]>).clientcase).toEqual(['home']);
     expect(doc(s).PERSONA_APP_SECTIONS).toEqual({ clientcase: { 'brand-theme': true } });
     setPersonaSections('admin', ['home'], APP_SECTIONS);
-    expect(doc(s).PERSONA_APP_SECTIONS).toEqual({ clientcase: { 'brand-theme': true }, admin: { 'brand-theme': false } });
+    expect(doc(s).PERSONA_APP_SECTIONS).toEqual({ clientcase: { 'brand-theme': true },   // every app section Admin sees by default is hidden
+      admin: { 'brand-theme': false, 'organisation': false, 'who-does-what': false } });
     s.undo(); s.undo();
     expect(snap(s)).toBe(before);
   });

@@ -492,6 +492,18 @@
   "tag": "supports"
  },
  {
+  "id": "organisation",
+  "group": "frame",
+  "groupSeq": 30,
+  "tag": "supports"
+ },
+ {
+  "id": "who-does-what",
+  "group": "scope",
+  "groupSeq": 40,
+  "tag": "supports"
+ },
+ {
   "id": "products",
   "group": "portfolio",
   "groupSeq": 10,

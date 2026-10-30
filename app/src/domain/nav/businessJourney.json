@@ -406,6 +406,14 @@
    "brand-theme": {
     "group": "reference",
     "groupSeq": 35
+   },
+   "organisation": {
+    "group": "today",
+    "groupSeq": 95
+   },
+   "who-does-what": {
+    "group": "choose-scope",
+    "groupSeq": 95
    }
   }
  },

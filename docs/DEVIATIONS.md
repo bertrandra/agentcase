@@ -200,7 +200,8 @@ default case load, display and save exactly as before (the default theme writes 
   sheet of the parameters workbook and not in the case's `PERSONA_SECTIONS` (the default case is unchanged); the navigation adds it to the personas
   its `personas` field names by default (Admin, Builder, Business journey; Advanced sees every section). Persona management can add it to or remove
   it from any other persona (DEV-APP-SECTION-PERSONAS). Tests that compare the navigation with the legacy page leave app sections out (`tests/domain/nav.test.ts`,
-  `tests/ui/nav.test.tsx`); the catalogue counts are 86 sections (79 + 6 Portfolio + 1 app section), 19 `S-static`.
+  `tests/ui/nav.test.tsx`); the catalogue counts are 88 sections (79 + 6 Portfolio + 3 app sections: 🎨 Brand & theme, and 🏢 Organisation and 🧭 Who does what
+  since BPMN B6b, which change no figure), 21 `S-static`.
 - Parameters workbook: sheet **Themes**, written only when the case has a user theme or another active theme than 1; the logo is not carried.
 - Engagement context: a "Customer logo" card (upload, backdrop, hide, remove). The header shows the logo next to "AgentCase for <customer>" only when
   one is set; the HTML report shows it above the title only when one is set (otherwise byte-identical).
