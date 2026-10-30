@@ -17,6 +17,8 @@ When releasing, follow [docs/BUMP_PROCEDURE.md](docs/BUMP_PROCEDURE.md) (§7 for
 
 ## [Unreleased]
 
+## [v20.22.0] 2026-10-30 — BPMN B3: schema v3, the case stores its delivery process as one native BPMN document
+
 ### BPMN B3 — schema v3: the case stores its delivery process as one native BPMN document
 
 Phase B3 of [docs/SPEC_BPMN.md](docs/SPEC_BPMN.md) (§ 6.1, § 6.2, § 9, decisions D-B1 / D-B26; details in § 6.4). Every figure unchanged.
