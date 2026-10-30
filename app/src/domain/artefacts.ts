@@ -6,6 +6,7 @@ import type { ArtefactEdit, CaseState } from './types/state';
 import { caseViews } from './process/engineInputs';
 import { scopeOf } from './process/scope';
 import { ruledOut } from './scopeRules';
+import { caseDecisions, withDecided } from './decisionRules';
 
 /** An artefact as the engine sees it: catalogue defaults + the case's edits, with its effective weight w = effort × lifecycleWeight. */
 export interface WArtefact extends Artefact { w: number }
@@ -31,15 +32,16 @@ export interface ArtefactSets { sdlc: WArtefact[]; reg: WArtefact[]; selected: S
 /**
  * All artefacts of the case with edits and weights applied: the activities of its process document (catalogue and custom ones, with their own
  * parameters: spec § 7 phase 2, F-B18), or the edited catalogues for a version 2 object without a document. The selection leaves out what the
- * process's scope rules exclude (F-B51).
+ * process's scope rules exclude (F-B51); the decisions bound to its business-rule tasks set the parameters they decide (F-B62).
  */
 export function workingArtefacts(s: CaseState): ArtefactSets {
   const k = scopeOf(s), v = caseViews(s), out = ruledOut(s), keep = (ids: string[]): Set<string> => new Set(out.size ? ids.filter((i) => !out.has(i)) : ids);
+  // the scope rules of the process (F-B51, B5b) take out what their conditions exclude
+  const selected = keep(k.selectedArtefacts), selectedReg = keep(k.selectedRegArtefacts);
+  const dec = v ? caseDecisions(s, [v.sdlc, v.reg], (id) => selected.has(id) || selectedReg.has(id)) : null;
   return {
-    sdlc: withWeights(v ? v.sdlc : editedArtefacts(SDLC_ARTEFACTS, k.artefactsEdited), s),
-    reg: withWeights(v ? v.reg : editedArtefacts(REG_ARTEFACTS, k.regArtefactsEdited), s),
-    // the scope rules of the process (F-B51, B5b) take out what their conditions exclude
-    selected: keep(k.selectedArtefacts),
-    selectedReg: keep(k.selectedRegArtefacts),
+    sdlc: withWeights(v ? withDecided(v.sdlc, dec) : editedArtefacts(SDLC_ARTEFACTS, k.artefactsEdited), s),
+    reg: withWeights(v ? withDecided(v.reg, dec) : editedArtefacts(REG_ARTEFACTS, k.regArtefactsEdited), s),
+    selected, selectedReg,
   };
 }

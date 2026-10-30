@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+  Validation entry point of a .dmn file (phase B7b, docs/SPEC_BPMN.md F-B62): DMN 1.3 (the official OMG schemas of omg/dmn13/) together with the
+  AgentCase extension (agentcase-bpmn-1.0.xsd), so ac: content in a DMN extensionElements is validated strictly. Used by tools/bpmn-validate.mjs
+  when the root element is dmn:definitions. It declares nothing of its own.
+-->
+<xsd:schema xmlns:xsd="http://www.w3.org/2001/XMLSchema">
+  <xsd:import namespace="https://www.omg.org/spec/DMN/20191111/MODEL/" schemaLocation="omg/dmn13/DMN13.xsd"/>
+  <xsd:import namespace="https://agentcase.app/schema/bpmn/1.0" schemaLocation="agentcase-bpmn-1.0.xsd"/>
+</xsd:schema>

@@ -12,9 +12,12 @@ import { APP_VERSION } from '../version';
 /** One product of a portfolio export: its code (`P1`, `P2`…: the id prefix in a collaboration file), its name and its effective case. */
 export interface ProductInput { code: string; name: string; case: CaseState }
 
-/** The attributes that reference an id (BPMN, BPMN DI, BPSim, `ac:agent`), and the BPMN elements whose text is an id. */
+/** The attributes that reference an id (BPMN, BPMN DI, BPSim, `ac:agent`, `ac:decisionRef`), and the BPMN elements whose text is an id. */
 const REF_ATTRS = new Set(['sourceRef', 'targetRef', 'processRef', 'bpmnElement', 'default', 'attachedToRef', 'calledElement', 'elementRef', 'ac:agent',
-  'partitionElementRef', 'errorRef', 'escalationRef', 'signalRef', 'messageRef', 'dataObjectRef', 'dataStoreRef', 'itemSubjectRef', 'parameterRef']);
+  'partitionElementRef', 'errorRef', 'escalationRef', 'signalRef', 'messageRef', 'dataObjectRef', 'dataStoreRef', 'itemSubjectRef', 'parameterRef',
+  'ac:decisionRef']);
+/** A DMN reference (`href="#dec_x"`, B7b) to an id of the tree. */
+const isHref = (a: { name: string; value: string }): boolean => a.name === 'href' && a.value.startsWith('#');
 const isRefText = (e: XElement): boolean => e.ns === NS.bpmn && (/Refs?$/.test(e.local) || e.local === 'source' || e.local === 'target');
 const POOL_GAP = 40;
 
@@ -24,7 +27,8 @@ export function prefixIds(root: XElement, pre: string): XElement {
   mapElements(root, (e) => { const id = attr(e, 'id'); if (id !== undefined) ids.add(id); return e; });
   const fix = (v: string): string => v.split(' ').map((t) => (ids.has(t) ? pre + t : t)).join(' ');
   return mapElements(root, (e) => {
-    const attrs = e.attrs.map((a) => (a.name === 'id' || (a.ns !== NS.xmlns && REF_ATTRS.has(a.name)) ? { ...a, value: fix(a.value) } : a));
+    const attrs = e.attrs.map((a) => (a.name === 'id' || (a.ns !== NS.xmlns && REF_ATTRS.has(a.name)) ? { ...a, value: fix(a.value) }
+      : isHref(a) ? { ...a, value: `#${fix(a.value.slice(1))}` } : a));
     const ref = isRefText(e);
     const children: XNode[] = e.children.map((c) => (ref && c.kind === 'text' && ids.has(c.text) ? { kind: 'text', text: pre + c.text } : c));
     return { ...e, attrs, children };

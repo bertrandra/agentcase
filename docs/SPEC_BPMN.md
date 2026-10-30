@@ -1,6 +1,6 @@
 # AgentCase — Specification: the delivery process as a native BPMN 2.0 model (export and import)
 
-> Status: **specified; phases B0, B1, B2, B3, B4, B5, B5b, B6, B6b and B7 built** (B0: extension XSD, official OMG schemas, `tools/bpmn-validate.mjs`, sample and hostile files, § 5.3; B1: domain only, `app/src/domain/process`, § 6.3; B2: reader / writer, security, round trip, BPSim, export from the File menu, § 5.5; B3: schema v3, the case stores the BPMN document, § 6.4; B4: the Process section, import, § 9.1; B5: custom activities, roles, agents and rework from the model in the engine, § 7.1; B5b: extended profile in the domain, § 17.10; B6: the optional lazy BPMN editor, § 9.2; B6b: organisation model, § 16.8; B7: audit layer, § 15.7). Decisions D-B1…D-B26 **adopted on 2026-10-30** (§ 12, § 15.6, § 16.7, § 17.9); D-B26: the case's BPMN
+> Status: **specified; phases B0, B1, B2, B3, B4, B5, B5b, B6, B6b, B7 and B7b built** (B0: extension XSD, official OMG schemas, `tools/bpmn-validate.mjs`, sample and hostile files, § 5.3; B1: domain only, `app/src/domain/process`, § 6.3; B2: reader / writer, security, round trip, BPSim, export from the File menu, § 5.5; B3: schema v3, the case stores the BPMN document, § 6.4; B4: the Process section, import, § 9.1; B5: custom activities, roles, agents and rework from the model in the engine, § 7.1; B5b: extended profile in the domain, § 17.10; B6: the optional lazy BPMN editor, § 9.2; B6b: organisation model, § 16.8; B7: audit layer, § 15.7; B7b: DMN decisions and the CMMN run view, § 17.11). Decisions D-B1…D-B26 **adopted on 2026-10-30** (§ 12, § 15.6, § 16.7, § 17.9); D-B26: the case's BPMN
 > document is the **only** stored form of the process, the organisation and the audit (§ 6.1). Scope: the TypeScript + React application in `app/`.
 > Related documents: [ARCHITECTURE.md](ARCHITECTURE.md), [DEVIATIONS.md](DEVIATIONS.md), [SPEC_MULTI_PRODUIT.md](SPEC_MULTI_PRODUIT.md).
 > Code rules unchanged: files ≤ 150 lines, no `any`, layers `ui → controllers → store → domain`, every write is an undoable
@@ -427,7 +427,8 @@ the editorial source of the default process until decision D-B9 retires them.
   `LOOP_PAIRS` as reference lists (reset to the catalogue, pins validation, the factory pickers, the Excel legacy sheets, per-phase tables) must read the
   default process views instead. The figures do not depend on it any more (they read the case's document). (2) The factory story / feature links
   (`fmArtefactTags.storyId`, `fmPhaseFeatures`) stay case keys: they are workspace data shared by every product, while the process document is
-  overridable per product, so moving them into the document changes what a product override means (to decide). (3) `dom.checked.regInclude` stays: the
+  overridable per product, so moving them into the document changes what a product override means. **Decided 2026-10-30: the agent factory stays out of the
+  BPMN scope** (its story / feature links and `fm*` keys stay case keys, unchanged). (3) `dom.checked.regInclude` stays: the
   oracle fixture `frame-industry-cross` holds the box ticked with `regInclude` false, so deriving it changes the `tgRegInclude` variable and the
   excel-compat state comparison (a deviation to decide). (4) Pins of a custom activity are not accepted yet (`normalisedPins` checks the catalogue ids),
   and the per-phase tables that list the catalogue phases (`phaseArtRows`, agent usage) do not show a custom phase.
@@ -564,7 +565,7 @@ these. Portfolio: the process follows the override commands of spec F6–F9.
 | B6 (**built in B6**) | Optional lazy BPMN editor (D-B6 b) | Size budget; editor round trip | 1.5 d | 4 / 5 | B4 | Size budget, CSP, writing the editor's changes back to the node tree; bpmn-js licence requires its watermark to stay visible |
 | B6b (**built in B6b**, teams at the derived-view stage) | Organisation model (§ 16): organisation elements in the `BPMN` document, migration of `teamIn` / shared team lines to teams (parity), RACI on activities, `domain/org`, Organisation and Who-does-what sections, resource roles and organisation view | 107 fixtures identical before the RACI-driven figures; diagnostics tests; axe clean | 2 d | 4 / 5 | B3 | Moving the entry team and shared lines into the organisation with identical figures |
 | B7 (**built in B7**) | Audit layer (§ 15): tool catalogue, `ac:audit` elements and `domain/audit`, Audit section, audit workbook, audit report, explicit calibration | Round trip with audit data; calibration log; axe clean | 2 d | 3 / 5 | B4, B6b | Curating a neutral, dated tool catalogue (needs the owner's review) |
-| B7b | DMN decisions (F-B62) and the optional CMMN export of the run phase (F-B63) | DMN round trip; evaluator tests per hit policy | 1.5 d | 3 / 5 | B5b | DMN hit policies and the shared FEEL subset |
+| B7b (**built in B7b**, § 17.11) | DMN decisions (F-B62) and the optional CMMN export of the run phase (F-B63) | DMN round trip; evaluator tests per hit policy | 1.5 d | 3 / 5 | B5b | DMN hit policies and the shared FEEL subset |
 | B8 | Release: guide, DEVIATIONS (if any), CHANGELOG, version bump | All gates green | 0.5 d | 1 / 5 | all | — |
 | B9a | Transformation programme process derived from today's keys; one timing owner per programme activity (§ 19) | 107 fixtures identical; parallel-run 40/40; excel-compat 67/67 | 2 d | 4 / 5 | B8 | Unifying the Gantt, cost-model and engine timings without moving a figure |
 | B9b | Timing conflicts resolved (D-B27…D-B31); labour costs of training, coaching, governance from resources; opt-in new costs | Hand-computed reference tests; deviations recorded | 2 d | 4 / 5 | B9a | Figures move: each change explained and recorded |
@@ -1065,6 +1066,50 @@ common entries into the product (the override split of § 16.8 comes first). (4)
 (`applyImport(...).kept`); foreign content in an unmapped lane or crossing phases is dropped and counted. (5) The tool catalogue proposals by type
 (F-B43) and the operational-audit feeds (F-B55) wait for B7.
 
+### 17.11 Built in B7b (DMN decisions, CMMN run view)
+
+- **Placement (D-B1 / D-B26).** The decisions are one DMN 1.3 `dmn:definitions` inside the `extensionElements` of the case's main `bpmn:process`:
+  same document, no new case key. BPMN reads extension content with `processContents="lax"`; `agentcase-bpmn-validate.xsd` now imports the OMG
+  DMN13.xsd, so the embedded decisions are validated strictly (XML ids are unique across the file: an import refuses a DMN id the process already
+  uses). The process, not the collaboration, holds them because they travel with their process: the portfolio file keeps one process per product and
+  prefixes the ids, `href`s and `ac:decisionRef`s. A `businessRuleTask` (or a task typed BusinessRule) names its decision with `ac:decisionRef`
+  (already in the B0 XSD). The default process holds none: **every figure of the 107 fixtures is unchanged**.
+- **Model and evaluator (`app/src/domain/dmn`, D-B24 a).** Reader / writer of input data, decisions with information requirements, decision tables
+  (input / output clauses, allowed values, default output entries, rule annotations) and literal expressions; business knowledge models, contexts,
+  invocations and DMN DI stay in the tree and are reported as not evaluated. Hit policies UNIQUE, FIRST, PRIORITY, ANY, COLLECT (with SUM / COUNT
+  of the distinct outputs, MIN, MAX, as DMN 1.3 § 8.2.11 words it), RULE ORDER, OUTPUT ORDER; a multiple match under UNIQUE, a disagreement under ANY
+  or a non-numeric SUM is an error (null), never a guess. The decision requirements graph evaluates required decisions first (their result joins the
+  context under their name and id), detects cycles and caps the depth. Cells use the FEEL subset of F-B51 (`domain/feel`, no `eval`, bounded) without
+  change: the unary tests built in B5b cover the DMN input entries.
+- **What the decisions feed.** (1) **Conditional scope**: the gateway conditions read `decision.<id>`, each decision evaluated in the case context
+  (`scopeRules.ts conditionContext`). (2) **Parameters**: a business-rule task bound to a decision applies it to every activity of its phase (of its
+  process outside a phase), itself excepted, in document order; the decision reads `activity` (type, valueClass, phase, capability, regulatory,
+  aiAuthority, humanSup, agentSup, effort, norm) and the case context; its outputs `aiAuthority`, `humanSup`, `agentSup` replace those parameters in
+  the engine's activities (`decisionRules.ts`, `artefacts.ts workingArtefacts`). A rule task out of scope applies nothing; an unknown decision or a
+  value outside the levels / 0–100 is reported and not applied.
+- **The three rule families (F-B62).** `ruleFamilies(activities)` writes the rules a case already holds as decisions: the AI authority per activity
+  class (type × value class × regulatory → the level most of its activities have; UNIQUE), the supervision split per authority level (the mean
+  split at that level; requires the first) and the quality-gate review (regulatory → Formal review, agent-produced → Peer review, else Spot check;
+  PRIORITY). They are what a case without decisions exports as its `.dmn`.
+- **Files (F-B62, F-B63).** The export dialog adds "Decisions as a DMN file (.dmn)" (checked when the process holds decisions) and "Run phase as a
+  CMMN case (.cmmn)", for the case shown. The Process section's import field takes a `.dmn` file (checked in full: security, DMN 1.3 root,
+  references, cycles, cells inside the subset, ids; then one undoable step `process.importDecisions` replacing the decisions) or a `.cmmn` file.
+  `process.bindDecision` binds a rule task (API and tests; no screen yet).
+- **CMMN (D-B25 a, `app/src/domain/cmmn`).** The run phase L9 as a CMMN 1.1 case: a `humanTask` per activity performed by its role (`caseRoles`),
+  a `task` typed `ac:activityType` for agent, script and rule work, a repeatable `stage` per sub-process inside it (an event sub-process carries its
+  `ac:frequency`), a milestone "<phase> complete" with a sentry on every plan item. The read-back applies names, roles (by name, to the task's
+  `humanPerformer`) and frequencies of known ids as one undoable step and counts what it does not read.
+- **Schemas.** DMN 1.3 and CMMN 1.1 OMG XSDs in `docs/bpmn/omg/dmn13/` and `cmmn11/` (unchanged, SHA-256 in `SOURCES.md`, re-checked by
+  `tests/bpmn/omg-dmn-cmmn.test.ts`); `tools/bpmn-validate.mjs` validates a `.dmn` / `.cmmn` file against them (plus `ac:`) by its root element.
+- **Tests.** `tests/domain/dmn/` (hit policies by hand, round trip write → parse → write byte-identical and read(write(m)) = m, embedding, XSD of the
+  `.dmn`, of a BPMN export and of a portfolio file embedding decisions, figures and scope fed by decisions, the rule families), `tests/domain/cmmn/`
+  (export valid against CMMN11.xsd, deterministic, read-back), `tests/store/bpmn-b7b-commands.test.ts` (one undoable step, refusals), UI tests of the
+  dialog and the import field.
+- **Not done in B7b.** (1) No screen edits or binds decisions (a DMN tool edits the `.dmn`; binding is a command without a control). (2) The CMMN
+  read-back does not keep the CMMN content it does not map (sentries, milestones, planning tables): the case stores BPMN only (D-B1), so a re-export
+  regenerates them. (3) The rule families are an export of the case's current rules; they do not replace the parameters until bound. (4) The DMN
+  decision is not drawn on the diagram (no DMN DI is written).
+
 ## 18. Out of scope
 
 Executing processes (tokens, timers, messages): timers, events and conditions are read as parameters and rules, never run. Process
@@ -1112,12 +1157,17 @@ waves, report).
 | Value tracking | `plannedQuarters`, `trackStatus` | case | resources, opt-in (new cost) |
 | Risk mitigations and AI Act obligations | `RISK_REGISTER`, `AIACT_TIERS` | case | resources, opt-in (new cost) |
 | Audit / discovery interviews (§ 15) | audit header | case | resources, opt-in (new cost) |
+| Governance gates and maturity transitions L1→L4 (Design Authority, AI Office sign-off) | `tune/program.ts` `TRANSITIONS`, `tune/maturityTab.ts` `GOV_GATES` (text only) | per product | milestones and gateways, no cost; placed at the engine's adoption crossings (B9a) |
+| Capability building (operational / in training / target headcount) | `capOps`, `capTrain`, `capTarget`; `tune/program.ts` `capability` | per product | part of the training activity (trainees = in training); milestone "target capability reached"; no new cost in B9a, training cost from resources in B9b |
 
 **Not programme activities**: parameters and coefficients (S-curve, maturity bounds, discount rate, horizon, hub allocation mode;
 `maxConcurrentSetups` becomes a lane capacity); results (FTE before / after, vFTE, KT days avoided, risk scores, stress, verdict); the
-agent factory (`fm*`, a simulation of the delivery process, which belongs to the delivery BPMN as an event log); governance gates and
-maturity transitions (gateways and milestones of the delivery process). Not found in the application and possible later additions:
-hypercare, decommissioning, licence procurement and integration work as their own items.
+agent factory (`fm*`, a simulation of the delivery process), **out of the BPMN scope by the owner's decision (2026-10-30)**. Governance
+gates, maturity transitions and capability building are in the table above (added 2026-10-30, built in B9a). Not found in the application
+and possible later additions (opt-in new activities, not planned): licence procurement and agent-toolchain integration as their own items;
+hypercare and decommissioning of the **agent rollout or of replaced legacy tools**. The delivered software's own go-live, run and end of
+life are already delivery activities (phase L8 Deployment `A044` Go-live dossier; L9 Run / AMS `A045`–`A049`; L10 End-of-life `A050`
+Decommissioning plan) and stay there.
 
 ### 19.3 Cost of a programme activity
 
