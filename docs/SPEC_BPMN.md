@@ -427,7 +427,8 @@ the editorial source of the default process until decision D-B9 retires them.
   `LOOP_PAIRS` as reference lists (reset to the catalogue, pins validation, the factory pickers, the Excel legacy sheets, per-phase tables) must read the
   default process views instead. The figures do not depend on it any more (they read the case's document). (2) The factory story / feature links
   (`fmArtefactTags.storyId`, `fmPhaseFeatures`) stay case keys: they are workspace data shared by every product, while the process document is
-  overridable per product, so moving them into the document changes what a product override means (to decide). (3) `dom.checked.regInclude` stays: the
+  overridable per product, so moving them into the document changes what a product override means. **Decided 2026-10-30: the agent factory stays out of the
+  BPMN scope** (its story / feature links and `fm*` keys stay case keys, unchanged). (3) `dom.checked.regInclude` stays: the
   oracle fixture `frame-industry-cross` holds the box ticked with `regInclude` false, so deriving it changes the `tgRegInclude` variable and the
   excel-compat state comparison (a deviation to decide). (4) Pins of a custom activity are not accepted yet (`normalisedPins` checks the catalogue ids),
   and the per-phase tables that list the catalogue phases (`phaseArtRows`, agent usage) do not show a custom phase.
