@@ -30,6 +30,7 @@ const PR = [
   ...install('e2e'), s('e2e', 'build', 'npm run build'),
   r('e2e', 'e2e-smoke', 'node tools/e2e-smoke.mjs'),
   r('e2e', 'e2e-flows', 'node tools/e2e-flows.mjs'),
+  r('e2e', 'e2e-bpmn-editor', 'node tools/e2e-bpmn-editor.mjs'),
   r('e2e', 'perf', 'node tools/perf.mjs'),
   r('e2e', 'parallel-run', 'node tools/parallel-run.mjs'),
   ...install('browser'), s('browser', 'build', 'npm run build'),

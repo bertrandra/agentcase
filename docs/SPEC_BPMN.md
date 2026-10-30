@@ -1,6 +1,6 @@
 # AgentCase — Specification: the delivery process as a native BPMN 2.0 model (export and import)
 
-> Status: **specified; phases B0, B1, B2, B3, B4, B5 and B6b built** (B0: extension XSD, official OMG schemas, `tools/bpmn-validate.mjs`, sample and hostile files, § 5.3; B1: domain only, `app/src/domain/process`, § 6.3; B2: reader / writer, security, round trip, BPSim, export from the File menu, § 5.5; B3: schema v3, the case stores the BPMN document, § 6.4; B4: the Process section, import, § 9.1; B5: custom activities, roles, agents and rework from the model in the engine, § 7.1; B6b: organisation model, § 16.8). Decisions D-B1…D-B26 **adopted on 2026-10-30** (§ 12, § 15.6, § 16.7, § 17.9); D-B26: the case's BPMN
+> Status: **specified; phases B0, B1, B2, B3, B4, B5, B6 and B6b built** (B0: extension XSD, official OMG schemas, `tools/bpmn-validate.mjs`, sample and hostile files, § 5.3; B1: domain only, `app/src/domain/process`, § 6.3; B2: reader / writer, security, round trip, BPSim, export from the File menu, § 5.5; B3: schema v3, the case stores the BPMN document, § 6.4; B4: the Process section, import, § 9.1; B5: custom activities, roles, agents and rework from the model in the engine, § 7.1; B6: the optional lazy BPMN editor, § 9.2; B6b: organisation model, § 16.8). Decisions D-B1…D-B26 **adopted on 2026-10-30** (§ 12, § 15.6, § 16.7, § 17.9); D-B26: the case's BPMN
 > document is the **only** stored form of the process, the organisation and the audit (§ 6.1). Scope: the TypeScript + React application in `app/`.
 > Related documents: [ARCHITECTURE.md](ARCHITECTURE.md), [DEVIATIONS.md](DEVIATIONS.md), [SPEC_MULTI_PRODUIT.md](SPEC_MULTI_PRODUIT.md).
 > Code rules unchanged: files ≤ 150 lines, no `any`, layers `ui → controllers → store → domain`, every write is an undoable
@@ -441,7 +441,7 @@ the editorial source of the default process until decision D-B9 retires them.
   and a live region announcing the selected element. axe clean in light, dark and high contrast.
 - Existing sections keep their look (UI parity); their data comes from the process model.
 - Phase 4 (decision D-B6): an embedded BPMN editor (bpmn-js modeler) loaded lazily from a gzipped payload, like ExcelJS, only
-  when the user opens "Edit diagram".
+  when the user opens "Edit diagram" (built in B6, § 9.2).
 
 ## 9. Commands (all undoable)
 
@@ -475,6 +475,39 @@ these. Portfolio: the process follows the override commands of spec F6–F9.
   not kept in the case's process (F-B11 pass-through holds for AgentCase files; for foreign files it is open for B5b). A new role's resource is inserted
   after the existing resources (the XSD order of root elements), so its undo patch is larger than an append. Custom and imported activities count
   in the figures from B5 (§ 7).
+
+### 9.2 Built in B6 (the optional BPMN editor, D-B6 b)
+
+- **Editor.** "Edit diagram" under the read-only diagram of 🧩 Process (BPMN) opens bpmn-js's Modeler (bpmn-js 18.31.0, pinned, the only new
+  dependency) on the case's process document (the product shown, in a portfolio). Buttons "Save to the case", "Reload from the case", "Close editor"
+  (a second press when the editor has unsaved changes); the focus moves to the editor's heading on opening and back to "Edit diagram" on closing; a
+  live region gives the outcome. Ctrl+Z on the canvas is the editor's own undo (the case's shortcut does not see it); outside the canvas it undoes
+  the case. A clean editor follows the case when it changes elsewhere (undo, the table); an edited one says so and its save is refused (it would undo
+  the other edit) until it is reloaded.
+- **Lazy, offline, CSP unchanged.** Like ExcelJS (D5): the build (`vite.config.ts`, plugin `bpmnPayload`) replaces `controllers/processEditorKit.ts`
+  by one gzipped base64 string (bpmn-js's UMD browser bundle + its three style sheets, the icon font embedded as `data:`; the file URLs of the font
+  and the CSS comments are dropped), marked `agentcase-bpmn-js:`; `controllers/processEditorInline.ts` decompresses it on the first opening and runs it
+  as an inline script removed at once (the `BpmnJS` global taken and deleted); its style sheet is added while the editor is open (marked
+  `data-transient`, never copied into an HTML snapshot). bpmn-js needs no `eval`, no network and nothing the policy forbids (`tools/e2e-bpmn-editor.mjs`
+  fails on any CSP violation): the policy is unchanged.
+- **Size (§ 10).** App without the editor payload: 2.86 MB / 1.03 MB gzip (base `e767ff5`: 2.85 / 1.03; + 14 kB of app code); the payload: 0.27 MB,
+  budget `bpmnPayloadMB` 0.32 in `app/perf-budget.json`. `tools/perf.mjs` applies the regression budgets (3.08 / 1.12) to the app without the payload
+  and the hard ceilings (5 / 1.5) to the whole file (3.14 MB / 1.24 MB gzip).
+- **Write-back (`process.applyEditor`, one undoable command).** The editor's text goes through the B2 reader and the F-B10 checks, then is MERGED into
+  the case's tree (`domain/process/editorMerge.ts`): elements matched by id (else name, leaf text and rank), attributes compared after line-end /
+  tab normalisation, numbers on the diagram by value, attributes bpmn-moddle leaves out because they hold the metamodel default (or the unresolvable
+  `bpmn:extension definition`) kept; a matched element keeps its comments, white space and position, new elements take the case's prefixes and
+  indentation; nothing changed → the same tree, so open → save without a change is no command and byte-identical (tested on the case and on every
+  sample of `app/fixtures/bpmn`, through bpmn-moddle, the editor's serialiser). Then `editorApply.ts`: a task drawn in a phase becomes an activity with
+  the parameters of its phase and type (the F-B8 defaults, in scope, "review them in the table"); a task moved to another phase takes its phase and its
+  deliverable; a removed task loses its deliverable; elements AgentCase does not model (events, gateways, annotations, data stores, groups, a task outside
+  a phase…) are kept as pass-through, listed by kind and not counted. Refused with a message, nothing written: adding / removing pools or processes,
+  removing or adding a phase, changing actors or norms, moving or removing a task of a rework pair, a result that fails F-B10. The merged document is
+  XSD-valid (tested).
+- **Licence.** bpmn-js's licence (MIT plus the bpmn.io watermark clause) requires the watermark to stay fully visible: no style of the app targets it
+  (unit test), it is present, linked to bpmn.io and not hidden in jsdom, and in the built file it is visible and topmost at its centre (e2e).
+- **Not in B6.** No properties panel (parameters stay in the table and panels); the editor's undo history is lost on Save (it reloads from the case);
+  the editor shows the first diagram of the document.
 
 ## 10. Non-functional requirements
 
@@ -528,7 +561,7 @@ these. Portfolio: the process follows the override commands of spec F6–F9.
 | B4 (**built in B4**) | Process section: SVG diagram, activity table, actor panel, import (replace / merge, preview, report), export | axe clean; ui-parity 0 divergence | 1.5 d | 3 / 5 | B3 | Accessible diagram with a table alternative; the merge preview |
 | B5 (**built in B5**) | Custom activities / roles / agents in the engine; rework flows from the model; portfolio override; Excel / report / HTML outputs | Hand-computed reference tests; cross-surface equality | 2 d | 4 / 5 | B3 | New engine inputs without breaking the single-owner rule; deviations to record |
 | B5b | Extended profile (§ 17): traceability graph, data stores bound to tools, data states and types, multi-instance volumes, timers and cadence, bounded loops, boundary events and reusable definitions, event sub-processes, compensation, conditional scope (FEEL subset), shared process library, task types, formal assignment and lanes, message flows and multiplicity, conversation view, annotations, several diagrams, colours, file header | Default process unchanged in figures; each element has a reader / writer / round-trip test and a test of the figure, check or view it feeds | 3 d | 4 / 5 | B5 | Breadth (about 25 elements); a safe FEEL parser; the process library across products |
-| B6 | Optional lazy BPMN editor (D-B6 b) | Size budget; editor round trip | 1.5 d | 4 / 5 | B4 | Size budget, CSP, writing the editor's changes back to the node tree; bpmn-js licence requires its watermark to stay visible |
+| B6 (**built in B6**) | Optional lazy BPMN editor (D-B6 b) | Size budget; editor round trip | 1.5 d | 4 / 5 | B4 | Size budget, CSP, writing the editor's changes back to the node tree; bpmn-js licence requires its watermark to stay visible |
 | B6b (**built in B6b**, teams at the derived-view stage) | Organisation model (§ 16): organisation elements in the `BPMN` document, migration of `teamIn` / shared team lines to teams (parity), RACI on activities, `domain/org`, Organisation and Who-does-what sections, resource roles and organisation view | 107 fixtures identical before the RACI-driven figures; diagnostics tests; axe clean | 2 d | 4 / 5 | B3 | Moving the entry team and shared lines into the organisation with identical figures |
 | B7 | Audit layer (§ 15): tool catalogue, `ac:audit` elements and `domain/audit`, Audit section, audit workbook, audit report, explicit calibration | Round trip with audit data; calibration log; axe clean | 2 d | 3 / 5 | B4, B6b | Curating a neutral, dated tool catalogue (needs the owner's review) |
 | B7b | DMN decisions (F-B62) and the optional CMMN export of the run phase (F-B63) | DMN round trip; evaluator tests per hit policy | 1.5 d | 3 / 5 | B5b | DMN hit policies and the shared FEEL subset |

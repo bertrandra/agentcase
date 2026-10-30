@@ -28,3 +28,5 @@ export { DEFAULT_CHOICES, type ImportAnalysis, type ImportChoices, type ImportMo
   type IncomingUnit } from './importTypes';
 export { roleId } from './ids';
 export { drawingOf, type DrawEdge, type Drawing, type DrawShape, type ShapeKind } from './drawing';
+export { applyEditorDocument, type EditorOutcome } from './editorApply';
+export { mergeEditorDocument } from './editorMerge';

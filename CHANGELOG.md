@@ -17,6 +17,18 @@ When releasing, follow [docs/BUMP_PROCEDURE.md](docs/BUMP_PROCEDURE.md) (§7 for
 
 ## [Unreleased]
 
+### BPMN B6 — the optional BPMN editor (bpmn-js, loaded on demand)
+
+Phase B6 of [docs/SPEC_BPMN.md](docs/SPEC_BPMN.md) (D-B6 b; details in § 9.2). No figure of any fixture changes.
+
+- **Edit diagram.** The 🧩 Process (BPMN) section opens bpmn-js's Modeler on the case's process: move, rename, draw or remove tasks and flows, add
+  events, gateways or notes. "Save to the case" is one undoable step (`process.applyEditor`); a save without a change writes nothing.
+- **Write-back by merge.** The editor's document goes through the BPMN reader and its security checks and is merged into the stored tree: unchanged nodes
+  stay identical (comments, white space, prefixes, vendor extensions), a task drawn in a phase gets the parameters of its phase, elements the case does
+  not model are kept but not counted; pools, phases, actors, norms and rework pairs are refused with a message.
+- **Lazy and offline.** bpmn-js is embedded gzipped in the single file (0.27 MB, own budget) and started only on "Edit diagram"; the page policy is
+  unchanged; the bpmn.io watermark its licence requires stays visible. New gate `tools/e2e-bpmn-editor.mjs` (in `npm run e2e`, CI and `gates`).
+
 ### BPMN B5 — the engine reads the process model: custom activities, roles, agents and rework
 
 Phase B5 of [docs/SPEC_BPMN.md](docs/SPEC_BPMN.md) (§ 7, F-B18, F-B20, F-B22, D-B20; details in § 7.1). Every figure of the 107 fixtures unchanged.

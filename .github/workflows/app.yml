@@ -54,6 +54,7 @@ jobs:
         working-directory: app
       - run: node tools/e2e-smoke.mjs     # real Chromium: every section × 6 case fixtures + 2 portfolio files, no console error, no NaN, no CSP violation
       - run: node tools/e2e-flows.mjs     # under the CSP: JSON / HTML snapshot / report / workbooks round trips, Monte Carlo, themes, logo, ?theme= link
+      - run: node tools/e2e-bpmn-editor.mjs  # the lazy BPMN editor (B6) under the CSP: offline, watermark visible, one undoable save
       - run: node tools/perf.mjs          # size / shell / edit / undo / section budgets (app/perf-budget.json)
       - run: node tools/parallel-run.mjs  # same files in the legacy app and the TS build: identical headline figures (the 40 workbooks; the 107 case files run nightly)
   # The style and accessibility gates, in parallel with e2e (same start after check) to keep the wall time down. Each tool exits 1 on any unexpected finding.

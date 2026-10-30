@@ -52,3 +52,7 @@
   .ac-bpmn text { fill: CanvasText; }
   .ac-bpmn-activity.is-selected rect { stroke: Highlight; }
 }
+/* Phase B6: the optional BPMN editor (bpmn-js). Its bpmn.io watermark (licence) is never hidden or covered: no rule here targets it. */
+.ac-proc-editor-wrap { margin-bottom: 12px; }
+.ac-proc-editor { margin-top: 8px; }
+.ac-proc-editor-canvas { position: relative; height: 560px; background: var(--ac-neutral-0); border: var(--ac-border-thin) solid var(--ac-line-strong); border-radius: var(--ac-radius-md); }

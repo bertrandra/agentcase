@@ -29,9 +29,26 @@ const excelPayload = {
   },
 };
 
+// Phase B6 (docs/SPEC_BPMN.md D-B6 b): the BPMN editor (bpmn-js) the same way: its browser bundle and style sheets gzipped as one base64 string with a
+// marker prefix (tools/perf.mjs measures it apart, budget `bpmnPayloadMB`), in place of `processEditorKit.ts`; run on the first "Edit diagram" (`processEditorInline.ts`).
+const bpmnSourceFile = fileURLToPath(new URL('./src/controllers/processEditorKit.ts', import.meta.url));
+const bpmnPayload = {
+  name: 'agentcase-bpmn-payload', apply: 'build' as const,
+  load(id: string): string | null {
+    if (id.split('?')[0] !== bpmnSourceFile) return null;
+    const read = (p: string) => readFileSync(new URL(`./node_modules/bpmn-js/dist/${p}`, import.meta.url), 'utf8');
+    const js = read('bpmn-modeler.production.min.js').replace(/\n\/\/# sourceMappingURL=\S+\s*$/, '\n');
+    // comments and the icon font's file URLs (`../font/bpmn.eot`) dropped: the policy loads fonts from data: only, the embedded copy is kept
+    const css = ['assets/diagram-js.css', 'assets/bpmn-js.css', 'assets/bpmn-font/css/bpmn-embedded.css'].map(read).join('\n')
+      .replace(/\/\*[\s\S]*?\*\//g, '').replace(/@font-face\s*\{[^}]*url\('\.\.\/font\/[^}]*\}/g, '');
+    const payload = `agentcase-bpmn-js:${gzipSync(Buffer.from(JSON.stringify({ js, css }), 'utf8'), { level: 9 }).toString('base64')}`;
+    return `import { inlineBpmnJs } from './processEditorInline';\nconst PAYLOAD = ${JSON.stringify(payload)};\nexport const bpmnSource = () => inlineBpmnJs(PAYLOAD);\n`;
+  },
+};
+
 // One offline HTML file: scripts and styles are inlined by vite-plugin-singlefile.
 export default defineConfig({
-  plugins: [react(), viteSingleFile(), versionTitle, devCsp, excelPayload],
+  plugins: [react(), viteSingleFile(), versionTitle, devCsp, excelPayload, bpmnPayload],
   define: { __APP_VERSION__: JSON.stringify(version) },
   resolve: { alias: { '@': src } },
   build: { target: 'es2022', chunkSizeWarningLimit: 6000 },

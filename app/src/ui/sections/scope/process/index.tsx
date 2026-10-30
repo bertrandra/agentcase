@@ -7,6 +7,7 @@ import { ActivityPanel } from './ActivityPanel';
 import { ActivityTable } from './ActivityTable';
 import { ActorPanel } from './ActorPanel';
 import { Diagram } from './Diagram';
+import { DiagramEditor } from './editor/DiagramEditor';
 import { Filters } from './Filters';
 import { ImportPanel } from './ImportPanel';
 import { ImportReport } from './ImportReport';
@@ -26,6 +27,9 @@ const help = (
     <p>Import reads a BPMN file and shows what it will do before anything changes: replace or merge, the case&apos;s other activities kept or
       switched out of scope, and, for a file from another tool, the phase and team skill of what the case does not know. The import is one step,
       undone by Ctrl+Z, and ends with a report. Export writes the process as a .bpmn file (also in the File menu).</p>
+    <p>Edit diagram opens a BPMN editor (bpmn-js, loaded only then): move shapes, rename, draw or remove tasks and flows, add events, gateways or
+      notes. Save to the case writes the changes as one step (Ctrl+Z undoes it); a task drawn in a phase gets the parameters of its phase, elements the
+      case does not model are kept but not counted, and phases, actors, pools and rework pairs stay as they are.</p>
   </>
 );
 
@@ -46,6 +50,7 @@ export default function ProcessSection() {
       result={
         <>
           <Diagram doc={doc} tableId={tableId} />
+          <DiagramEditor />
           {selected && <ActivityPanel doc={doc} id={selected} />}
           <h2 id={tableId}>Activities</h2>
           <Filters rows={rows} shown={shown.length} />
