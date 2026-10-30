@@ -1,5 +1,6 @@
 import { useEffect, useId, useRef, useState, type KeyboardEvent } from 'react';
 import { exportSnapshotJson, importSnapshotFile } from '@/controllers/files';
+import { BpmnExportPanel } from './BpmnExport';
 import '../theme/display.css';
 import { toast } from '../uiState';
 
@@ -15,11 +16,12 @@ const open = async (f: File | undefined) => {
 };
 
 /**
- * The file menu of the top bar: an icon-only button (no text) that opens a menu with Save and Open… (WAI-ARIA menu button: the first item takes
- * focus, ↑ ↓ Home End move, Escape or a click outside closes and focus returns to the button).
+ * The file menu of the top bar: an icon-only button (no text) that opens a menu with Save, Open… and Export process (BPMN)… (WAI-ARIA menu
+ * button: the first item takes focus, ↑ ↓ Home End move, Escape or a click outside closes and focus returns to the button). The BPMN item opens
+ * its export dialog (BpmnExport.tsx) in the same place.
  */
 export function FileMenu() {
-  const [isOpen, setOpen] = useState(false), id = useId();
+  const [isOpen, setOpen] = useState(false), [bpmn, setBpmn] = useState(false), id = useId();
   const box = useRef<HTMLDivElement>(null), btn = useRef<HTMLButtonElement>(null), file = useRef<HTMLInputElement>(null);
   const items = () => [...(box.current?.querySelectorAll<HTMLButtonElement>('[role=menuitem]') ?? [])];
   const close = (refocus = true) => { setOpen(false); if (refocus) btn.current?.focus(); };
@@ -43,15 +45,18 @@ export function FileMenu() {
   return (
     <div className="ac-display" ref={box} onKeyDown={isOpen ? onKey : undefined}>
       <button ref={btn} type="button" className="ac-icon-btn" aria-label="File" aria-haspopup="menu" aria-expanded={isOpen} aria-controls={id}
-        title="File: save or open a case" onClick={() => setOpen((o) => !o)}>📁</button>
+        title="File: save or open a case, export the process" onClick={() => { setBpmn(false); setOpen((o) => !o); }}>📁</button>
       {isOpen && (
         <div className="ac-display-panel ac-file-panel" id={id} role="menu" aria-label="File">
           <button type="button" role="menuitem" title="Save the case as a JSON file" onClick={() => { close(); save(); }}>
             <span aria-hidden="true">💾</span> Save</button>
           <button type="button" role="menuitem" title="Open a case JSON file" onClick={() => { close(false); file.current?.click(); }}>
             <span aria-hidden="true">📂</span> Open…</button>
+          <button type="button" role="menuitem" title="Export the delivery process as a BPMN 2.0 file" onClick={() => { close(false); setBpmn(true); }}>
+            <span aria-hidden="true">🧩</span> Export process (BPMN)…</button>
         </div>
       )}
+      {bpmn && <BpmnExportPanel onClose={() => { setBpmn(false); btn.current?.focus(); }} />}
       <input ref={file} type="file" accept="application/json,.json" hidden onChange={(e) => { void open(e.target.files?.[0]); e.target.value = ''; }} />
     </div>
   );

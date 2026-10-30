@@ -15,6 +15,23 @@ All notable changes to AgentCase, newest first. Product version from v19.0.0 = t
 
 When releasing, follow [docs/BUMP_PROCEDURE.md](docs/BUMP_PROCEDURE.md) (§7 for the legacy file) and add the new version at the top.
 
+## [Unreleased]
+
+### BPMN B2 — reader, writer, byte-identical round trip, BPSim, "Export process (BPMN)"
+
+Phase B2 of [docs/SPEC_BPMN.md](docs/SPEC_BPMN.md) (§ 4.1, § 4.3, § 4.4, § 5.4; details in § 5.5). No schema change, engine untouched.
+
+- **File menu → Export process (BPMN)…**: the active case as a `.bpmn` file (BPMN 2.0.2 + DI + `ac:` parameters + BPSim 2.0), optionally
+  in-scope activities only (marked `ac:partial`). A portfolio offers the product shown, one file per product, or one file with one pool per
+  product. File names carry the customer, the product and the date; the content is deterministic.
+- **Reader** (`parseBpmnFile`, no store write yet): the F-B10 security checks on the raw text before any parser (DOCTYPE, entities, processing
+  instructions, 5 MB, 20,000 elements, depth 64, safe ids), with the same rule table, codes and messages as `tools/bpmn-validate.mjs`; then
+  `DOMParser` and the node tree. Round trip export → parse → write byte-identical on the 107 fixtures and the portfolio fixtures, views equal to
+  the version 2 keys; foreign files (bpmn.io / Camunda, Zeebe, Signavio, OMG) keep every element, attribute, namespace and vendor extension.
+- **BPSim 2.0**: official schema added to `docs/bpmn/omg/` (SHA-256 in `SOURCES.md`) and imported by the validation entry point; exports carry a
+  derived scenario (processing time = effort, rework probabilities, team FTE per role), read back only where `ac:` values are absent.
+- Open question for B4: 2,000 activities or a four-product collaboration file exceed the 20,000-element limit of F-B10 (spec § 5.5).
+
 ## [v20.20.0] 2026-10-30 — BPMN B0 and B1: extension XSD, OMG schemas, validator, sample files; domain/process with the default BPMN process and parity views
 
 ### BPMN B1 — the process model in the domain (no store, UI or schema change)

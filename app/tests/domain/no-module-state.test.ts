@@ -52,6 +52,9 @@ const ALLOWED: Record<string, string> = {
   'domain/process/defaultProcess.ts:built': 'memo: the catalogue process of a catalogue object (built once per catalogue)',
   'domain/process/read.ts:memo': 'memo: the typed views of a process document (keyed by the immutable node tree)',
   'domain/process/views.ts:memo': 'memo: the engine views of a process document (keyed by the immutable node tree)',
+  'domain/process/exportPortfolio.ts:REF_ATTRS': 'constant lookup: the attribute names that reference an id (never written)',
+  'domain/process/readPhases.ts:NONE': 'constant lookup: the empty BPSim value map (never written)',
+  'domain/process/security.ts:RESERVED_IDS': 'constant lookup: the reserved ids of the F-B10 rule table (ReadonlySet, never written)',
   'domain/time/fit.ts:cache': 'fit cache: the S-curve fit of a key built from its inputs (pure, bounded by the inputs a session uses)',
 };
 

@@ -1,0 +1,9 @@
+{
+  "about": "F-B10 rule table (docs/SPEC_BPMN.md § 4.3), the one source of tools/bpmn-validate.mjs and app/src/domain/process/security.ts: limits, safe id pattern, reserved ids, markup pattern, error codes.",
+  "limits": { "bytes": 5242880, "depth": 64, "elements": 20000 },
+  "idPattern": "^[A-Za-z_][A-Za-z0-9_.-]{0,127}$",
+  "reservedIds": ["__proto__", "prototype", "constructor"],
+  "markup": "&lt;\\s*[A-Za-z!/?]|&#0*60;|&#x0*3c;|javascript:",
+  "codes": ["too-large", "doctype", "entity", "processing-instruction", "bad-id", "reserved-id", "duplicate-id", "too-deep", "too-many-elements",
+    "markup-in-text"]
+}

@@ -19,12 +19,13 @@ const AC_XSD = readFileSync(join(REPO, 'docs', 'bpmn', 'agentcase-bpmn-1.0.xsd')
 if (!schemaTestsRun()) console.warn('BPMN schema tests SKIPPED: xmllint is not installed (Debian / Ubuntu: apt-get install libxml2-utils). CI runs them.');
 
 describe('BPMN B0 — official OMG schemas', () => {
-  it('docs/bpmn/omg/ holds the five OMG files, byte-identical to the SHA-256 recorded in SOURCES.md', () => {
+  it('docs/bpmn/omg/ holds the five OMG files and the BPSim 2.0 schema (B2), byte-identical to the SHA-256 recorded in SOURCES.md', () => {
     const omg = join(REPO, 'docs', 'bpmn', 'omg');
-    const rows = [...readFileSync(join(omg, 'SOURCES.md'), 'utf8').matchAll(/^\| `([\w.]+\.xsd)` \| (https:\/\/www\.omg\.org\/\S+) \| `([0-9a-f]{64})` \|$/gm)];
-    expect(rows.map((r) => r[1]).sort()).toEqual(['BPMN20.xsd', 'BPMNDI.xsd', 'DC.xsd', 'DI.xsd', 'Semantic.xsd']);
+    const rows = [...readFileSync(join(omg, 'SOURCES.md'), 'utf8').matchAll(/^\| `([\w.-]+\.xsd)` \| (https:\/\/\S+) \| `([0-9a-f]{64})` \|$/gm)];
+    expect(rows.map((r) => r[1]).sort()).toEqual(['BPMN20.xsd', 'BPMNDI.xsd', 'BPSim-2.0.xsd', 'DC.xsd', 'DI.xsd', 'Semantic.xsd']);
+    expect(readdirSync(omg).filter((f) => f.endsWith('.xsd')).sort()).toEqual(rows.map((r) => r[1]).sort());
     for (const [, file, url, sha] of rows) {
-      expect(url).toBe(`https://www.omg.org/spec/BPMN/20100501/${file}`);
+      expect(url).toBe(file === 'BPSim-2.0.xsd' ? 'https://www.bpsim.org/schemas/2.0/BPSim-2.0.xsd' : `https://www.omg.org/spec/BPMN/20100501/${file}`);
       expect(createHash('sha256').update(readFileSync(join(omg, file ?? ''))).digest('hex'), file).toBe(sha);
     }
   });

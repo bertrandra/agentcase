@@ -1,17 +1,19 @@
 /** @calc-zone process-model */
-import { activitiesOf, flowsIn, phasesOf } from './readPhases';
+import { readBpsim } from './bpsim';
+import { activitiesOf, flowsIn, phasesOf, type Sim } from './readPhases';
 import { bool, extOf, marks, num, type ActorView, type DiagramView, type NormView, type ProcessParams, type ProcessView } from './readTypes';
 import { attr, kid, kids, NS, type XDocument, type XElement } from './xml';
 
 export type { ActivityView, ActorView, DiagramView, FlowView, NormView, PhaseView, ProcessView } from './readTypes';
 const str = (v: string | undefined): string => v ?? '';
 
-function actorsOf(defs: XElement): ActorView[] {
+function actorsOf(defs: XElement, sim: Sim): ActorView[] {
   return kids(defs, NS.bpmn, 'resource').map((e) => {
     const x = extOf(e, 'actor'), a = (n: string) => (x ? attr(x, n) : undefined);
     const v: ActorView = { id: str(attr(e, 'id')), name: str(attr(e, 'name')), kind: a('kind') ?? 'role', regulatory: a('regulatory') === 'true' };
-    const ts = a('teamSkill'), cap = a('capability');
+    const ts = a('teamSkill'), cap = a('capability'), q = sim.get(v.id)?.quantity;
     if (ts !== undefined) v.teamSkill = ts;
+    if (q !== undefined) v.quantity = q;
     if (cap !== undefined) v.capability = cap;
     return v;
   });
@@ -60,10 +62,10 @@ const memo = new WeakMap<XDocument, ProcessView>();
 export function readProcess(d: XDocument): ProcessView {
   const hit = memo.get(d);
   if (hit) return hit;
-  const defs = d.root, proc = kid(defs, NS.bpmn, 'process'), phases = proc ? phasesOf(proc) : [];
+  const defs = d.root, proc = kid(defs, NS.bpmn, 'process'), phases = proc ? phasesOf(proc) : [], sim = readBpsim(defs);
   const view: ProcessView = {
-    params: paramsOf(proc), phases: phases.map((p) => p.view), activities: phases.flatMap((p) => activitiesOf(p.el)),
-    actors: actorsOf(defs), flows: proc ? [...flowsIn(proc), ...phases.flatMap((p) => flowsIn(p.el))] : [], norms: normsOf(defs),
+    params: paramsOf(proc), phases: phases.map((p) => p.view), activities: phases.flatMap((p) => activitiesOf(p.el, sim)),
+    actors: actorsOf(defs, sim), flows: proc ? [...flowsIn(proc, sim), ...phases.flatMap((p) => flowsIn(p.el, sim))] : [], norms: normsOf(defs),
     diagram: diagramOf(defs),
   };
   memo.set(d, view);

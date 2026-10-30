@@ -16,7 +16,18 @@ entry point is [`../agentcase-bpmn-validate.xsd`](../agentcase-bpmn-validate.xsd
 | `DC.xsd` | https://www.omg.org/spec/BPMN/20100501/DC.xsd | `a2f90e5ad9bb48c6915e4e034b4e27ac838264a1d4f27bfc70dbdfc69351312d` |
 | `DI.xsd` | https://www.omg.org/spec/BPMN/20100501/DI.xsd | `8220b179c175572df74e08a51bffabe957867962035cee7b5fee0b6acb4c4498` |
 
-The test `app/tests/bpmn/samples.test.ts` recomputes these hashes from this table on every run.
+## BPSim 2.0 (WfMC)
+
+The Business Process Simulation specification **BPSim 2.0** (WfMC-BPSWG-2016-01, namespace `http://www.bpsim.org/schemas/2.0`) is not an
+OMG standard; its schema sits here with the other standard schemas, under the same rule (unchanged, never edited). It was downloaded on
+2026-10-30 from the link of the BPSim home page (https://www.bpsim.org/). `../agentcase-bpmn-validate.xsd` imports it, so the
+`bpsim:BPSimData` scenario an AgentCase export writes (spec § 5.4, decision D-B5) is validated strictly.
+
+| File | Source URL | SHA-256 |
+|---|---|---|
+| `BPSim-2.0.xsd` | https://www.bpsim.org/schemas/2.0/BPSim-2.0.xsd | `35999c20096c2cba9e6012d8cbb1b37d2deaac152d8da2ea4f95eb5a990ffcd2` |
+
+The test `app/tests/bpmn/samples.test.ts` recomputes these hashes from these tables on every run.
 
 Licence: the OMG publishes these machine-readable files with the specification, for its implementation; see the copyright notice of
 the specification document.

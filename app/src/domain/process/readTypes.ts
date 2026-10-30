@@ -21,12 +21,20 @@ export interface ActivityView extends CaseMarks {
   /** legacy edit record of the case: which fields it holds, and its position when not in document order */
   edited?: string[]; editRank?: number;
 }
-export interface ActorView { id: string; name: string; kind: string; teamSkill?: string; regulatory: boolean; capability?: string }
+export interface ActorView {
+  id: string; name: string; kind: string; teamSkill?: string; regulatory: boolean; capability?: string;
+  /** BPSim resource quantity, when a file carries one (no `ac:` equivalent) */
+  quantity?: number;
+}
 export interface NormView extends CaseMarks { id: string; industry: string; name: string; count: number; body?: string; scope?: string }
 export interface ReworkView {
   order: number; probability: number; costShare: number; internalIterations: number; note?: string; activityA: string; activityB: string; external: boolean;
 }
-export interface FlowView { id: string; name?: string; source: string; target: string; container: string; rework?: ReworkView }
+export interface FlowView {
+  id: string; name?: string; source: string; target: string; container: string; rework?: ReworkView;
+  /** BPSim branching probability of a flow that carries no `ac:rework` (a foreign file) */
+  probability?: number;
+}
 export interface ShapeView { id: string; element: string; x: number; y: number; w: number; h: number; expanded: boolean }
 export interface EdgeView { id: string; element: string; points: [number, number][] }
 export interface DiagramView { shapes: ShapeView[]; edges: EdgeView[] }
