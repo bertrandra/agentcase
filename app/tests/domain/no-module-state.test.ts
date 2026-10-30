@@ -51,6 +51,7 @@ const ALLOWED: Record<string, string> = {
   'domain/time/spline.ts:prepared': 'memo: the prepared spline of a knot object',
   'domain/process/defaultProcess.ts:built': 'memo: the catalogue process of a catalogue object (built once per catalogue)',
   'domain/process/read.ts:memo': 'memo: the typed views of a process document (keyed by the immutable node tree)',
+  'domain/process/drawing.ts:memo': 'memo: what the Process section draws of a process document (keyed by the immutable node tree)',
   'domain/process/views.ts:memo': 'memo: the engine views of a process document (keyed by the immutable node tree)',
   'domain/org/readRaci.ts:memo': 'memo: the RACI of each activity of a process document (keyed by the immutable node tree)',
   'domain/org/readUnits.ts:memo': 'memo: the organisation units and imported teams of a process document (keyed by the immutable node tree)',

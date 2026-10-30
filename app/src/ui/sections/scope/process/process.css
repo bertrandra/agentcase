@@ -1,0 +1,54 @@
+/* 🧩 Process (BPMN), docs/SPEC_BPMN.md § 8: toolbar, import preview / report, read-only diagram, activity table, actor panel. Tokens only. */
+.ac-proc-toolbar { flex-wrap: wrap; gap: 8px; }
+.ac-proc-export { position: relative; display: inline-block; }
+.ac-proc-export .ac-display-panel { left: 0; right: auto; }
+.ac-proc-import { margin: 10px 0; padding: var(--ac-pad-card); background: var(--ac-surface-raised); border: var(--ac-border-thin) solid var(--ac-line-strong); border-radius: var(--ac-radius-card); }
+.ac-proc-choices { display: flex; flex-wrap: wrap; gap: 8px 24px; }
+.ac-proc-choices fieldset { margin: 0; padding: 4px 8px; border: var(--ac-border-thin) solid var(--ac-line); border-radius: var(--ac-radius-md); }
+.ac-proc-choices label { display: block; padding: 2px 0; }
+.ac-proc-mapping { display: flex; flex-wrap: wrap; gap: 16px; margin: 8px 0; }
+.ac-proc-preview td:last-child { font-size: var(--ac-font-size-xs); color: var(--ac-text-soft); }
+.ac-section .ac-proc-warn { color: var(--ac-danger-925); }
+.ac-proc-counts { display: flex; flex-wrap: wrap; gap: 4px 16px; list-style: none; padding: 0 !important; margin: 6px 0; }
+.ac-proc-diagram { margin-bottom: 12px; }
+.ac-section .ac-proc-live { margin: 0 0 0 8px; color: var(--ac-text-soft); }
+.ac-proc-canvas { height: 460px; overflow: hidden; touch-action: none; cursor: grab; background: var(--ac-surface); border: var(--ac-border-thin) solid var(--ac-line-strong); border-radius: var(--ac-radius-md); }
+.ac-proc-canvas:focus-visible { outline-offset: -2px; }
+.ac-proc-canvas svg { display: block; width: 100%; height: 100%; font-family: var(--ac-font-body); font-size: 12px; }
+.ac-bpmn rect, .ac-bpmn circle, .ac-bpmn polygon { fill: var(--ac-surface); stroke: var(--ac-line-strong); stroke-width: 1.5; }
+.ac-bpmn text { fill: var(--ac-ink); }
+.ac-bpmn-pool rect, .ac-bpmn-lane rect { fill: transparent; stroke: var(--ac-line); }
+.ac-bpmn-phase rect { fill: var(--ac-surface-tint); stroke: var(--ac-primary-700); }
+.ac-bpmn-phase text { font-weight: var(--ac-font-weight-bold); fill: var(--ac-text-heading); }
+.ac-bpmn-phase.is-out rect { fill: var(--ac-surface-muted); stroke-dasharray: 6 4; }
+.ac-bpmn-activity { cursor: pointer; }
+.ac-bpmn-activity rect { stroke: var(--ac-primary-700); }
+.ac-bpmn-activity.is-reg rect { stroke: var(--ac-warning-825); }
+.ac-bpmn-activity.is-out rect { fill: var(--ac-surface-muted); stroke: var(--ac-line-strong); stroke-dasharray: 4 3; }
+.ac-bpmn-activity.is-out text { fill: var(--ac-text-soft); }
+.ac-bpmn-activity.is-placed rect { stroke-dasharray: 2 2; }
+.ac-bpmn-activity.is-selected rect { fill: var(--ac-selected); stroke: var(--ac-focus); stroke-width: 4; stroke-dasharray: none; }
+.ac-bpmn-activity.is-selected text { fill: var(--ac-selected-text); }
+.ac-bpmn-id { font-weight: var(--ac-font-weight-bold); }
+.ac-bpmn-edge { fill: none; stroke: var(--ac-muted); stroke-width: 1.5; }
+.ac-bpmn-edge.is-rework { stroke: var(--ac-danger-700); stroke-dasharray: 6 3; }
+.ac-proc-filters { flex-wrap: wrap; gap: 6px 12px; }
+.ac-proc-table { max-height: 520px; overflow: auto; }
+.ac-proc-table tr.is-selected td { background: var(--ac-surface-tint); }
+.ac-section .ac-proc-sort { padding: 0; font: inherit; color: inherit; background: transparent; border: 0; cursor: pointer; text-decoration: underline dotted; }
+.ac-section .ac-proc-id { font-family: var(--ac-font-mono); }
+.ac-proc-num { text-align: right; font-variant-numeric: tabular-nums; white-space: nowrap; }
+.ac-proc-tag { margin-left: 6px; padding: 0 5px; font-size: var(--ac-font-size-2xs); color: var(--ac-text-soft); border: var(--ac-border-thin) solid var(--ac-line-strong); border-radius: var(--ac-radius-pill); }
+.ac-proc-panel { margin: 10px 0; padding: var(--ac-pad-card); background: var(--ac-surface-raised); border: var(--ac-border-thin) solid var(--ac-primary-700); border-radius: var(--ac-radius-card); }
+.ac-proc-facts { display: grid; grid-template-columns: max-content 1fr; gap: 2px 12px; margin: 0 0 8px; }
+.ac-proc-facts dt { font-weight: var(--ac-font-weight-semibold); }
+.ac-proc-facts dd { margin: 0; }
+.ac-proc-fields { display: flex; flex-wrap: wrap; gap: 8px 16px; margin-bottom: 8px; }
+.ac-proc-fields label { display: flex; flex-direction: column; gap: 2px; font-size: var(--ac-font-size-sm); }
+.ac-proc-actors { margin-top: 16px; }
+.ac-proc-actors .ac-table-wrap { max-height: 360px; overflow: auto; }
+@media (forced-colors: active) {
+  .ac-bpmn rect, .ac-bpmn circle, .ac-bpmn polygon, .ac-bpmn-edge { stroke: CanvasText; }
+  .ac-bpmn text { fill: CanvasText; }
+  .ac-bpmn-activity.is-selected rect { stroke: Highlight; }
+}

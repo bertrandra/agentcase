@@ -35,7 +35,7 @@ describe('shell zones', () => {
     render(<App />);
     openMenu();
     const nav = screen.getByRole('navigation', { name: 'Sections' }), items = () => nav.querySelectorAll('[data-section]');
-    expect(items()).toHaveLength(visibleSections('builder').length + 1);   // + 🎨 Brand & theme, an app section the navigation adds to Builder
+    expect(items()).toHaveLength(visibleSections('builder').length + 2);   // + the app sections Brand & theme and Process (BPMN)
     act(() => { fireEvent.change(screen.getByLabelText('Persona'), { target: { value: 'advanced' } }); });
     // one product: the 5 Portfolio sections are not in the menu (84 in the catalogue)
     expect(items()).toHaveLength(LEGACY_SECTIONS.length + APP_SECTIONS.length);
