@@ -1164,10 +1164,21 @@ waves, report).
 `maxConcurrentSetups` becomes a lane capacity); results (FTE before / after, vFTE, KT days avoided, risk scores, stress, verdict); the
 agent factory (`fm*`, a simulation of the delivery process), **out of the BPMN scope by the owner's decision (2026-10-30)**. Governance
 gates, maturity transitions and capability building are in the table above (added 2026-10-30, built in B9a). Not found in the application
-and possible later additions (opt-in new activities, not planned): licence procurement and agent-toolchain integration as their own items;
-hypercare and decommissioning of the **agent rollout or of replaced legacy tools**. The delivered software's own go-live, run and end of
-life are already delivery activities (phase L8 Deployment `A044` Go-live dossier; L9 Run / AMS `A045`–`A049`; L10 End-of-life `A050`
-Decommissioning plan) and stay there.
+and the four agent-rollout activities of the table below. The delivered software's own go-live, run and end of life are already delivery
+activities (phase L8 Deployment `A044` Go-live dossier; L9 Run / AMS `A045`–`A049`; L10 End-of-life `A050` Decommissioning plan) and stay there.
+
+**Agent-rollout activities (added 2026-10-30, built in B9b; new costs, opt-in, off by default per D-B31):**
+
+| Activity | What it is | Level | Cost rule (§ 19.3) |
+|---|---|---|---|
+| Licence procurement | Selecting and buying the agent platform, model and tool licences (sourcing, security and legal review, contract) | portfolio, per product for product-specific tools | labour from resources (procurement, security, legal roles × days); the licence amounts stay the existing tooling and token cost lines, never added twice |
+| Agent-toolchain integration | Connecting the agents to the delivery toolchain: repository, CI/CD, ticketing, wiki, test management, the Knowledge Hub (API / MCP / CLI per the tool catalogue, § 15.2; the B5b "agent blocked: no API" check lists the gaps) | per product | labour from resources (agent architect, platform engineer × days per integration) |
+| Rollout hypercare | Intensified support after each product's agent go-live (adoption ramp start): incident triage, prompt / guardrail tuning, user support | per product | labour from resources (AgentOps, AI reviewer × weeks), placed right after the go-live milestone; ends before the steady AgentOps run (no overlap with `runTeamSizing`) |
+| Legacy decommissioning | Retiring the tools, scripts and manual steps the agents replace (licences ended, data archived, access removed) | per product | labour from resources; an optional saving line (licences ended) only when entered, never inferred |
+
+Each one is a programme task with its role lane, RACI, duration, placement and parameters in the Process screen (§ 19.7), appears in the
+Gantt, WBS, OBS / RAM and resource histogram (§ 19.8), and follows the one-owner rule. Off by default, so no figure of an existing case moves;
+switching one on adds its cost to the programme cost and the cash flow (hand-computed tests).
 
 ### 19.3 Cost of a programme activity
 
@@ -1200,7 +1211,7 @@ Decommissioning plan) and stay there.
 | Phase | Content | Gate | Duration | Difficulty |
 |---|---|---|---|---|
 | B9a | Programme process **derived** from today's keys (like the B6b teams); one timing owner per activity for the Gantt, cost model and stages; the two stage lists merged; message flows; export; screens per § 19.7 (swim lanes, parameter panel, context screens) | 107 fixtures identical; parallel-run 40/40; excel-compat 67/67; Gantt and cost-model surfaces read one owner | 2 d | 4 / 5 |
-| B9b | Conflicts T1–T5 resolved by the decisions below; training, coaching and governance derived from resources; opt-in new costs | Hand-computed reference tests; each changed figure recorded in DEVIATIONS.md | 2 d | 4 / 5 |
+| B9b | Conflicts T1–T5 resolved by the decisions below; training, coaching and governance derived from resources; the four opt-in agent-rollout activities (§ 19.2); opt-in new costs | Hand-computed reference tests; each changed figure recorded in DEVIATIONS.md | 2 d | 4 / 5 |
 | B9c | Stored values move into the document (schema v4 migration), keys removed, views derived | All persistence round trips; v3 → v4 open → save → open identical | 2 d | 5 / 5 |
 
 ### 19.6 Decisions (adopted 2026-10-30, as recommended)
