@@ -17,6 +17,8 @@ When releasing, follow [docs/BUMP_PROCEDURE.md](docs/BUMP_PROCEDURE.md) (§7 for
 
 ## [Unreleased]
 
+## [v20.24.0] 2026-10-30 — BPMN B4 and B5: Process section, BPMN import, the engine reads the process model
+
 ### BPMN B5 — the engine reads the process model: custom activities, roles, agents and rework
 
 Phase B5 of [docs/SPEC_BPMN.md](docs/SPEC_BPMN.md) (§ 7, F-B18, F-B20, F-B22, D-B20; details in § 7.1). Every figure of the 107 fixtures unchanged.
