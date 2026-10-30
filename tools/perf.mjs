@@ -5,6 +5,8 @@
 // is painted, an undo when the headline bar shows other figures than before the key press.
 // Fails when a measure exceeds app/perf-budget.json, and when that file is missing. Two size budgets: sizeMB / gzipMB are the hard product ceilings (set
 // by the user, never rewritten by this script), sizeRegressionMB / gzipRegressionMB are about 1.15 x the measured build and fail on growth.
+// Phase B6 (docs/SPEC_BPMN.md § 10): the regression budgets measure the app WITHOUT the lazily loaded BPMN editor payload (the gzipped bpmn-js
+// string marked `agentcase-bpmn-js:`, never run before "Edit diagram"); the payload has its own budget, bpmnPayloadMB; the hard ceilings cover the whole file.
 // Usage: node tools/perf.mjs [--write-budget]   (--write-budget re-baselines the time and regression budgets from this run, margin rule below)
 import { createRequire } from 'node:module';
 import { readFileSync, statSync, writeFileSync, existsSync } from 'node:fs';
@@ -15,7 +17,10 @@ const require = createRequire(import.meta.url);
 const pw = require(process.env.PW_MODULE || (existsSync('/opt/node-tools/node_modules/playwright') ? '/opt/node-tools/node_modules/playwright' : resolve('app/node_modules/playwright')));
 const file = resolve('app/dist/index.html'), budgetFile = resolve('app/perf-budget.json');
 const html = readFileSync(file);
-const m = { sizeMB: +(statSync(file).size / 1048576).toFixed(2), gzipMB: +(gzipSync(html).length / 1048576).toFixed(2) };
+const MB = (n) => +(n / 1048576).toFixed(2), PAYLOAD = /`agentcase-bpmn-js:[A-Za-z0-9+/=]+`/;
+const payload = PAYLOAD.exec(html.toString('utf8'))?.[0], app = Buffer.from(html.toString('utf8').replace(PAYLOAD, '``'));
+const m = { sizeMB: MB(statSync(file).size), gzipMB: MB(gzipSync(html).length), appMB: MB(app.length), appGzipMB: MB(gzipSync(app).length) };
+if (payload) m.bpmnPayloadMB = MB(payload.length);   // absent: the bpmnPayloadMB budget reports an unknown measure (the build lost its editor payload)
 const browser = await pw.chromium.launch();
 const page = await (await browser.newContext({ viewport: { width: 1360, height: 900 } })).newPage();
 const errors = []; page.on('pageerror', e => errors.push(e.message));
@@ -74,13 +79,13 @@ const budget = JSON.parse(readFileSync(budgetFile, 'utf8'));
 // re-baseline: times = max(floor, 3 x measured); regression size budgets = 1.15 x measured (2 decimals, rounded up); the hard ceilings sizeMB / gzipMB are kept
 if (process.argv.includes('--write-budget')) {
   const up = (v) => Math.ceil(v * 1.15 * 100) / 100;
-  const b = { sizeMB: budget.sizeMB, gzipMB: budget.gzipMB, sizeRegressionMB: up(m.sizeMB), gzipRegressionMB: up(m.gzipMB),
+  const b = { sizeMB: budget.sizeMB, gzipMB: budget.gzipMB, sizeRegressionMB: up(m.appMB), gzipRegressionMB: up(m.appGzipMB), bpmnPayloadMB: up(m.bpmnPayloadMB),
     shellMs: Math.max(3000, m.shellMs * 3), editMedianMs: Math.max(200, m.editMedianMs * 3), editP95Ms: Math.max(500, m.editP95Ms * 3), undoMs: Math.max(250, m.undoMs * 3),
     sectionMaxMs: Math.max(1500, m.sectionMaxMs * 3), portfolioSectionMaxMs: Math.max(1500, m.portfolioSectionMaxMs * 3), heapMB: Math.max(300, Math.ceil(m.heapMB * 2.5)) };
   writeFileSync(budgetFile, JSON.stringify(b, null, 1) + '\n'); console.log('budget written', b);
   process.exit(0);
 }
-const measureOf = { sizeRegressionMB: 'sizeMB', gzipRegressionMB: 'gzipMB' }; let bad = 0;
+const measureOf = { sizeRegressionMB: 'appMB', gzipRegressionMB: 'appGzipMB' }; let bad = 0;
 for (const [k, lim] of Object.entries(budget)) {
   const v = m[measureOf[k] ?? k];
   if (typeof v !== 'number') { bad++; console.log(`UNKNOWN BUDGET ${k}: no such measure`); }

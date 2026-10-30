@@ -11,7 +11,7 @@
 import { appendFileSync, readFileSync, writeFileSync, existsSync, mkdirSync } from 'node:fs';
 import { dirname, resolve } from 'node:path';
 import { app, pw, NAV, DISPLAY, recorder, openCase, openSection } from './a11y-lib.mjs';
-import { historyStates, keyboardStates, mediaStates, menuToggleFocus, personaMenu, restoreBanner, wizardEnd } from './a11y-states.mjs';
+import { historyStates, keyboardStates, mediaStates, menuToggleFocus, personaMenu, processEditor, restoreBanner, wizardEnd } from './a11y-states.mjs';
 const args = process.argv.slice(2), opt = (n) => (args.indexOf(n) < 0 ? '' : args[args.indexOf(n) + 1] || '').split(',').filter(Boolean);
 const fixtures = opt('--fixtures').length ? opt('--fixtures') : ['golden', 'ctx-msi', 'industry-med', 'pf-example'], only = opt('--sections');
 const budgetFile = resolve(app, 'a11y-budget.json'), reportArg = args.indexOf('--report') < 0 ? '' : args[args.indexOf('--report') + 1] || '';
@@ -39,7 +39,9 @@ for (const fx of fixtures) {
   const before = rec.state.audits, want = only.length ? labels.filter((l) => only.includes(l)).length : labels.length;
   for (const label of labels) {
     if (only.length && !only.includes(label)) continue;
-    if (await openSection(page, label)) await audit(page, fx, label);
+    if (!(await openSection(page, label))) continue;
+    await audit(page, fx, label);
+    if (/Process \(BPMN\)/.test(label ?? '')) await processEditor(page, fx, rec);   // B6: and with its diagram editor open
   }
   // coverage: one audit per navigation entry found (an empty or partly missing nav would otherwise pass with few or no audits)
   const done = rec.state.audits - before;
