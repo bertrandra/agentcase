@@ -1,6 +1,7 @@
 # AgentCase — Specification: the delivery process as a native BPMN 2.0 model (export and import)
 
-> Status: **proposed, not built**. Decisions D-B1…D-B10 (§ 12) and D-B11…D-B14 for the audit layer (§ 15.6) D-B15…D-B19 for the organisation model (§ 16.7) and D-B20…D-B25 for the extended profile (§ 17.9) to be adopted. Scope: the TypeScript + React application in `app/`.
+> Status: **specified, not built**. Decisions D-B1…D-B26 **adopted on 2026-10-30** (§ 12, § 15.6, § 16.7, § 17.9); D-B26: the case's BPMN
+> document is the **only** stored form of the process, the organisation and the audit (§ 6.1). Scope: the TypeScript + React application in `app/`.
 > Related documents: [ARCHITECTURE.md](ARCHITECTURE.md), [DEVIATIONS.md](DEVIATIONS.md), [SPEC_MULTI_PRODUIT.md](SPEC_MULTI_PRODUIT.md).
 > Code rules unchanged: files ≤ 150 lines, no `any`, layers `ui → controllers → store → domain`, every write is an undoable
 > command, one owner per figure in `src/domain`, single-product figures identical to the legacy file unless a deviation is recorded.
@@ -230,18 +231,22 @@ BPSim is a second, derived encoding on export and an accepted input on import wh
 
 ### 6.1 Case document
 
-- New case key `PROCESS`: the **semantic process model** as typed JSON (`domain/process/types.ts`), not an XML string
-  (decision D-B1): phases, activities (id, name, kind, phase, seq, parameters, actor refs, scope, deliverable, norm refs), actors
-  (roles, agents), flows (sequence, rework, gates), norms / categories, diagram (shape bounds and edge waypoints per element id),
-  pass-through (the original XML fragments, keyed by parent id and position, kept verbatim).
-- `_schemaVersion` 3. Migration 2 → 3 builds `PROCESS` from the default process plus the case keys of § 3, then removes the keys that
-  become derived (§ 6.2). A version 2 file opens with identical figures (§ 11).
-- Size: the default process is about 430 activities; the JSON stays under 400 KB per case; a portfolio stores the common process
-  once and overrides per product only when a product overrides it.
+- **Native XML, no duplicate (D-B1, D-B26).** The case stores **one BPMN 2.0 document** (key `BPMN`): the process, the organisation
+  (§ 16: resources, participants, lanes, `ac:orgUnit` / `ac:team` elements, product assignments) and the audit (§ 15: `ac:audit`
+  elements, the case's tool catalogue entries). No other key repeats any of it. In a saved file and in the HTML snapshot it is XML text;
+  in the store it is the same document as a node tree (the XML infoset: elements, attributes, text, in order), which serialises back to
+  the identical bytes. Commands edit that tree, so undo patches touch only the nodes that changed (an attribute, an element), never the
+  whole document.
+- **Typed views are computed, never stored.** `domain/process/read.ts` reads the tree into typed, memoised views (phases, activities,
+  actors, flows, organisation, audit) keyed on the tree's identity; they are recomputed after an edit and discarded with the session.
+- `_schemaVersion` 3. Migration 2 → 3 writes the `BPMN` document from the default process plus the case keys of § 3 (and `teamIn`,
+  shared team lines for § 16), then removes the keys that become derived (§ 6.2). A version 2 file opens with identical figures (§ 11).
+- Size: the default process is about 430 activities, about 600 KB of XML before compression; the case file stores it as text (gzip
+  in the HTML snapshot); a portfolio stores the common process once and a product's document only when the product overrides it.
 
 ### 6.2 Derived views (no second source)
 
-`domain/process/views.ts` derives, from `PROCESS`, exactly what the engine reads today: the artefact lists with their edited
+`domain/process/views.ts` derives, from the `BPMN` document, exactly what the engine reads today: the artefact lists with their edited
 values, the selected ids, the active phases and their order, the regulatory selection, the loop pairs, the role → team-skill map.
 The engine code is unchanged in the first phases; it reads the views. Legacy readers (Excel parameters sheets, old snapshot fields
 in the HTML snapshot) are written from the views. A test asserts on every fixture that the views equal the version 2 keys.
@@ -307,9 +312,10 @@ these. Portfolio: the process follows the override commands of spec F6–F9.
 
 ## 12. Decisions to take (question, options, recommendation)
 
-| # | Question | Options | Recommendation |
+| # | Question | Options | Adopted (2026-10-30) |
 |---|---|---|---|
-| D-B1 | How is the process stored in the case? | (a) BPMN XML string; (b) typed JSON semantic model + XML only at import / export | **(b)**: fine-grained undo, validation, speed; XML is the exchange format. |
+| D-B1 | How is the process stored in the case? | (a) BPMN XML, native; (b) typed JSON semantic model + XML only at import / export | **(a) native XML, no duplicate data** (owner's decision): XML text in files, its node tree in the store, typed views computed only (§ 6.1). |
+| D-B26 | Do the organisation and the audit live in the same document? | (a) yes, one BPMN document; (b) separate keys | **(a)**: one document, no duplicate; the export filters the audit (D-B14). |
 | D-B2 | Granularity: one task per artefact, or explicit review tasks for supervision? | (a) one task, supervision as parameters; (b) agent task + generated human review task | **(a)** for parity; (b) as an export option ("show supervision steps"). |
 | D-B3 | Phases as sub-processes or as lanes? | (a) phases = sub-processes, lanes = team skills; (b) phases = lanes | **(a)**: BPMN lanes are for performers; phases are stages. |
 | D-B4 | Out-of-scope activities in exports? | (a) always, flagged; (b) never; (c) user choice | **(c)**, default (a) (F-B3). |
@@ -327,13 +333,13 @@ these. Portfolio: the process follows the override commands of spec F6–F9.
 | B0 | This specification; extension XSD; sample foreign files | Decisions adopted |
 | B1 | `domain/process`: types, default process generator, derived views, layout | Views == v2 keys on 107 fixtures |
 | B2 | BPMN reader / writer (DOMParser / XMLSerializer, no new dependency), security limits, pass-through, BPSim | Round trip byte-identical; XSD-valid; security tests |
-| B3 | Schema v3 + migration, `PROCESS` key, commands, existing scope sections on the model | 107 fixtures identical; parallel run 40/40; excel-compat 67/67 |
+| B3 | Schema v3 + migration, `BPMN` key (native XML, node tree in the store), commands, existing scope sections on the model | 107 fixtures identical; parallel run 40/40; excel-compat 67/67 |
 | B4 | Process section: SVG diagram, activity table, actor panel, import (replace / merge, preview, report), export | axe clean; ui-parity 0 divergence |
 | B5 | Custom activities / roles / agents in the engine; rework flows from the model; portfolio override; Excel / report / HTML outputs | Hand-computed reference tests; cross-surface equality |
 | B5b | Extended profile (§ 17): inputs / traceability graph, data stores bound to the tool catalogue, data states and types, multi-instance volumes, timers and cadence, bounded loops, boundary events and reusable definitions, event sub-processes, compensation, conditional scope (FEEL subset), shared process library (call activities), task types incl. script / send / receive / business rule, formal assignment and lanes, message flows and multiplicity, conversation view, annotations, several diagrams, colours, file header | Default process unchanged in figures; each element has a reader / writer / round-trip test and a test of the figure, check or view it feeds |
 | B6 | Optional lazy BPMN editor (D-B6 b) | Size budget; editor round trip |
-| B6b | Organisation model (§ 16): `ORG` key, migration of `teamIn` / shared team lines to teams (parity), RACI on activities, `domain/org` (load, staffing, cost by unit), Organisation and Who-does-what sections, BPMN resource roles and organisation view | 107 fixtures identical before the RACI-driven figures; diagnostics tests; axe clean |
-| B7 | Audit layer (§ 15): tool catalogue, `AUDIT` key and `domain/audit` (observed vs modelled, coverage, tooling map), Audit section, audit workbook, BPMN `ac:audit`, audit report, explicit calibration | Round trip with audit data; calibration log; axe clean |
+| B6b | Organisation model (§ 16): organisation elements in the `BPMN` document, migration of `teamIn` / shared team lines to teams (parity), RACI on activities, `domain/org` (load, staffing, cost by unit), Organisation and Who-does-what sections, BPMN resource roles and organisation view | 107 fixtures identical before the RACI-driven figures; diagnostics tests; axe clean |
+| B7 | Audit layer (§ 15): tool catalogue, `ac:audit` elements in the `BPMN` document and `domain/audit` (observed vs modelled, coverage, tooling map), Audit section, audit workbook, BPMN `ac:audit`, audit report, explicit calibration | Round trip with audit data; calibration log; axe clean |
 | B7b | DMN decisions (F-B62) and the optional CMMN export of the run phase (F-B63) | DMN round trip; evaluator tests per hit policy |
 | B8 | Release: guide, DEVIATIONS (if any), CHANGELOG, version bump | All gates green |
 
@@ -346,6 +352,7 @@ these. Portfolio: the process follows the override commands of spec F6–F9.
 | Vendor tools dropping `extensionElements` | Key flags also as attributes; BPSim as a second encoding; re-import fills missing parameters from the default process and flags them. |
 | File size of a full regulatory process (~430 tasks) | Compact DI; in-scope-only export option; gzip in the HTML. |
 | XML security | F-B10, unit tests with hostile files. |
+| Native XML in the store: undo memory and edit speed | Node-tree storage with node-level patches; typed views memoised on tree identity; perf budget per edit (§ 10). |
 | Scope creep toward a BPMN execution engine | Out of scope (§ 18): events, timers and conditions are parameters and rules, never executed. |
 | Profile breadth (§ 17) slows delivery | Each element is optional in files and lands in phase B5b behind its own tests; the default process stays parity-identical. |
 | Expression evaluation (conditions, DMN) as an attack surface | Own FEEL-subset parser, no `eval`, size and depth limits, unit tests with hostile expressions. |
@@ -415,9 +422,9 @@ an **audit header**: audit id, client, scope, auditors, interview list (who, rol
 
 ### 15.4 Data model and engine
 
-- **F-B27** — Case key `AUDIT` (schema v3, optional, absent = no audit): header, catalogue entries of the case, and observations keyed
-  by activity id and actor id. Observations never live inside the model parameters: the process model stays the business case; the
-  audit is evidence about it.
+- **F-B27** — The audit lives in the case's `BPMN` document (D-B26): an `ac:auditHeader` under `definitions`, the case's catalogue entries
+  (`ac:toolCatalog`), and `ac:audit` observations on the tasks and resources they describe (absent = no audit). Observations never
+  replace model parameters: the process stays the business case; the audit is evidence about it.
 - **F-B28** — `domain/audit` derives, per activity: **observed versus modelled** (effort per item × volume against the activity's
   modelled effort; observed rework against the rework flow's probability; observed automation level against the AI authority;
   observed FTE share against the team weights), coverage (share of in-scope activities audited, weighted by effort), and a
@@ -449,7 +456,7 @@ an **audit header**: audit id, client, scope, auditors, interview list (who, rol
 
 ### 15.6 Decisions for the audit layer
 
-| # | Question | Options | Recommendation |
+| # | Question | Options | Adopted (2026-10-30) |
 |---|---|---|---|
 | D-B11 | Do audit values change figures? | (a) never directly, explicit calibration; (b) audited values override parameters automatically | **(a)** (F-B29): the business case stays explainable. |
 | D-B12 | Who maintains the tool catalogue? | (a) shipped and dated with each release, editable per case; (b) per case only | **(a)**, with "client-specific" entries kept in the case. |
@@ -481,9 +488,9 @@ For an activity of a product, the application resolves:
 
 and, for an agent-performed activity, `activity --(performer)--> agent --(supervised by the Accountable / Responsible role)--> role`.
 
-- **F-B36** — Every in-scope activity has **exactly one Accountable** role and **at least one Responsible** (a role or an agent);
-  Consulted and Informed are optional lists. An activity performed by an agent must have a **human Accountable** (AI governance rule,
-  consistent with the human / agent supervision split). Violations are diagnostics, listed per activity, never silent.
+- **F-B36** — Every in-scope activity has **at most one Accountable** role and **at least one Responsible** (a role or an agent);
+  Consulted and Informed are optional lists. A human Accountable for an agent-performed activity is **optional** (D-B18): when it is missing, the activity is listed as
+  information ("no human Accountable"), not as an error. Missing Responsible roles are diagnostics, listed per activity, never silent.
 - **F-B37** — For each product, every Responsible role of an in-scope activity must be **provided by at least one team serving that
   product**; otherwise the activity is flagged "role not staffed for this product". When several teams provide the role, the split
   follows the teams' allocation to the product (or an explicit share per activity).
@@ -496,7 +503,8 @@ and, for an agent-performed activity, `activity --(performer)--> agent --(superv
 
 ### 16.3 Data model
 
-- **Organisation (portfolio level, common)** — `ORG` key: `units[]` (id, name, type, parent id, location, cost centre, internal /
+- **Organisation (portfolio level, common)** — in the `BPMN` document (D-B26), as `bpmn:resource`s, participants and `ac:orgUnit` /
+  `ac:team` elements: `units[]` (id, name, type, parent id, location, cost centre, internal /
   vendor), `teams[]` (id, name, unit id, members: lines of role, grade, location, FTE, pins — the same line shape as `teamIn`),
   `roles[]` (id, name, team skill, description, kind human / agent, sourcing internal / vendor / either). The 26 legacy role names
   and the 7 team skills become the default role catalogue.
@@ -507,7 +515,7 @@ and, for an agent-performed activity, `activity --(performer)--> agent --(superv
 - **Migration (parity)** — each product's `teamIn` becomes a team "‹product› delivery team" in a default unit "‹customer› delivery",
   served at 100 % by that product; each lot 7 shared team line becomes a shared team served by its products with their shares; the
   effective team of a product (`effectiveTeam`) is then derived from the teams serving it, with identical lines, so every figure is
-  unchanged on the 107 fixtures. `teamIn` and `sharedTeam` become derived views (one source: `ORG` + product assignments).
+  unchanged on the 107 fixtures. `teamIn` and `sharedTeam` become derived views (one source: the `BPMN` document).
 - **Overrides** — the organisation is common; a product may override the RACI of its process (whole process key, F-B20) and its team
   assignments (its own key).
 
@@ -544,12 +552,12 @@ and, for an agent-performed activity, `activity --(performer)--> agent --(superv
 
 ### 16.7 Decisions for the organisation model
 
-| # | Question | Options | Recommendation |
+| # | Question | Options | Adopted (2026-10-30) |
 |---|---|---|---|
 | D-B15 | Responsibility model | (a) RACI; (b) RASCI (adds Support); (c) R only | **(a)** RACI, with Support available as a Consulted subtype later. |
 | D-B16 | Granularity of people | (a) roles and FTE lines only; (b) named people | **(a)**: no personal data in the case; names stay out of scope. |
-| D-B17 | Where does the organisation live in a single-product case? | (a) same `ORG` key, one product; (b) inside the case | **(a)**: one model for single and multi product. |
-| D-B18 | Accountable for agent activities | (a) mandatory human Accountable; (b) optional | **(a)** (F-B36). |
+| D-B17 | Where does the organisation live in a single-product case? | (a) same model as a portfolio, one product; (b) a separate model | **(a)**: one model for single and multi product, in the `BPMN` document (D-B26). |
+| D-B18 | Accountable for agent activities | (a) mandatory human Accountable; (b) optional | **(b) optional** (owner's decision): shown as information (F-B36). |
 | D-B19 | Default organisation diagram | (a) by role; (b) by organisation | **(a)** by role, (b) on demand (F-B39). |
 
 ## 17. Extended BPMN profile: every element AgentCase exploits
@@ -667,7 +675,7 @@ by what they bring; the phase that builds them is in § 13.
 
 ### 17.9 Decisions for the extended profile
 
-| # | Question | Options | Recommendation |
+| # | Question | Options | Adopted (2026-10-30) |
 |---|---|---|---|
 | D-B20 | Do rework figures come from boundary events or back flows? | (a) back flows only; (b) boundary events when present, back flows otherwise | **(b)**: one owner in `domain/process`, back flows kept for parity. |
 | D-B21 | Multi-instance volumes | (a) effort per item × volume when volumes exist; (b) always lump effort | **(a)**, opt-in per activity; default process unchanged (parity). |
