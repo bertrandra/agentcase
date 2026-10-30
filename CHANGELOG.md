@@ -15,7 +15,7 @@ All notable changes to AgentCase, newest first. Product version from v19.0.0 = t
 
 When releasing, follow [docs/BUMP_PROCEDURE.md](docs/BUMP_PROCEDURE.md) (§7 for the legacy file) and add the new version at the top.
 
-## [Unreleased]
+## [v20.20.0] 2026-10-30 — BPMN B0 and B1: extension XSD, OMG schemas, validator, sample files; domain/process with the default BPMN process and parity views
 
 ### BPMN B1 — the process model in the domain (no store, UI or schema change)
 
