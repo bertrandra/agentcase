@@ -23,9 +23,13 @@ function editsOf(acts: ActivityView[], all: boolean): ArtefactEdit[] {
   if (all) return acts.map((a) => record(a, EDIT_FIELDS));
   return byRank(acts.filter((a) => a.edited), (a) => a.editRank).map((a) => record(a, a.edited ?? []));
 }
-/** A case list: the marked elements (by rank when ranked) merged with the entries kept on `ac:process`, by position. */
+/**
+ * A case list: the marked elements (by rank when ranked) merged with the entries kept on `ac:process`, by position; elements without a rank
+ * (document order) come first, then the kept entries.
+ */
 function listOf(v: ProcessView, list: string, items: { id: string; rank?: number }[]): string[] {
-  const extra = v.params.unmatched.filter((u) => u.list === list).map((u) => ({ id: u.value, rank: u.rank }));
+  const extra = byRank(v.params.unmatched.filter((u) => u.list === list).map((u) => ({ id: u.value, rank: u.rank })), (x) => x.rank);
+  if (!items.some((x) => x.rank !== undefined)) return [...items, ...extra].map((x) => x.id);
   return byRank([...items, ...extra], (x) => x.rank).map((x) => x.id);
 }
 const selectedOf = (v: ProcessView, list: string, acts: ActivityView[]): string[] =>

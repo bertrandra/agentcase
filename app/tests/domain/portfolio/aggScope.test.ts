@@ -10,6 +10,7 @@ import { appStore } from '@/store/instance';
 import { viewScopeOf } from '@/store/viewScope';
 import { variedProducts, type Varied } from '../../helpers/aggFixture';
 import { expectClose } from '../../helpers/portfolio';
+import { scopeOf } from '@/domain/process';
 
 let v: Varied, pf: Portfolio;
 beforeEach(() => { v = variedProducts(); pf = appStore().getState().portfolio; });
@@ -66,8 +67,8 @@ describe('scopePhases = phaseTiles of each product', () => {
     }
     const b = a.rows.find((r) => r.id === v.ids[1])!;
     expect(b.cells[phasesForScope()[0]!.id]!.state).toBe('none');
-    expect(a.disabled).toBe(ids.filter((id) => resolveProduct(pf, id).phaseOff.length > 0).length);
-    expect(resolveProduct(pf, v.ids[1]).phaseOff).toContain(phasesForScope()[0]!.id);
+    expect(a.disabled).toBe(ids.filter((id) => scopeOf(resolveProduct(pf, id)).phaseOff.length > 0).length);
+    expect(scopeOf(resolveProduct(pf, v.ids[1])).phaseOff).toContain(phasesForScope()[0]!.id);
   });
 });
 
@@ -84,7 +85,7 @@ describe('scopeLifecycle = lifecycleAutoPosture of each product', () => {
 describe('scopeSelection', () => {
   it.each(['portfolio', 'wave'] as const)('%s: totals are the sums of the products, B differs from common', (k) => {
     const ids = k === 'portfolio' ? portfolio() : wave1(), a = scopeSelection(pf, ids), n = ids.length;
-    expect(a.total.sdlc).toBe(ids.reduce((s, id) => s + resolveProduct(pf, id).selectedArtefacts.length, 0));
+    expect(a.total.sdlc).toBe(ids.reduce((s, id) => s + scopeOf(resolveProduct(pf, id)).selectedArtefacts.length, 0));
     const b = a.rows.find((r) => r.id === v.ids[1])!;
     const bc = ctxOf(v.ids[1]);
     expect(b.sdlc).toBe(bc.a.sdlc.filter((x) => bc.a.selected.has(x.id)).length);

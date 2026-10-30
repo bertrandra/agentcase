@@ -5,6 +5,7 @@ import { engagementCoef, engagementKey } from '@/domain/engagement';
 import { headline } from '@/domain/economics/headline';
 import { posture } from '@/domain/verifyA/phaseArt';
 import { appVerTag } from '@/domain/snapshots';
+import { scopeOf } from '@/domain/process';
 import type { CaseState } from '@/domain';
 import { logoAlt, shownLogo } from '@/domain/theme/logo';
 
@@ -27,7 +28,7 @@ export function reportLogo(s: object): { logo?: { src: string; alt: string } } {
 
 /** The report needs the regulatory catalogue switched on and at least one norm selected (the legacy gate). */
 export const reportBlocker = (s: CaseState & { regUse?: boolean }): string | null =>
-  !s.regUse || !s.selectedNorms?.length ? 'Enable the Regulatory catalog and select at least one norm first (Parameters).' : null;
+  !s.regUse || !scopeOf(s).selectedNorms.length ? 'Enable the Regulatory catalog and select at least one norm first (Parameters).' : null;
 
 /** Every figure of the Critical & Regulated Software Delivery report, computed from the case (legacy exportCriticalReport). */
 export function reportData(s: CaseState, now: Date): ReportData {
@@ -39,10 +40,10 @@ export function reportData(s: CaseState, now: Date): ReportData {
     const o = by.get(phase)!;
     return o.w > 0 ? [{ phase, floor: o.h / o.w, posture: posture(o.h / o.w) }] : [];
   });
-  const sel = new Set(s.selectedRegArtefacts);
+  const sk = scopeOf(s), sel = new Set(sk.selectedRegArtefacts);
   return {
     version: appVerTag(), stamp: now.toISOString().slice(0, 10), context: k,
-    norms: [...s.selectedNorms].sort(), artefactsInScope: regActive(c.a, c.s).filter((a) => sel.has(a.id)).length, catalogueSize: REG_ARTEFACTS.length,
+    norms: [...sk.selectedNorms].sort(), artefactsInScope: regActive(c.a, c.s).filter((a) => sel.has(a.id)).length, catalogueSize: REG_ARTEFACTS.length,
     potential: m.auto, ceiling: m.ceiling, effective: m.eff, headroom: m.conv.effCap,
     supervision, authorityCap: cx.authorityCap,
     blocked: act.filter((a) => authRank(a.aiAuth) > cx.authorityCap).map((a) => ({ name: a.name, phase: a.phase, aiAuth: a.aiAuth })),

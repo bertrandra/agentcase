@@ -4,6 +4,8 @@ import { makeDefaultDoc } from '../instance';
 import { PERSONA_KEY } from '../persona';
 import { SnapshotError } from './errors';
 import { VERSION_KEY, versionStamp } from './schema/version';
+import { caseInStore, isTrustedTree } from './bpmn/caseDoc';
+import { caseInFile } from './bpmn/caseFile';
 import type { Doc } from '../types';
 
 export const SNAPSHOT_SCHEMA = 'agentcase.snapshot.v1';
@@ -13,6 +15,7 @@ const FORBIDDEN = new Set(['__proto__', 'constructor', 'prototype']);
 
 /** Deep copy that drops prototype-pollution keys and non-JSON values (legacy review item L-13). */
 export function sanitize<T>(v: T): T {
+  if (isTrustedTree(v)) return v;   // a process tree the reader built or checked (immutable): kept as it is
   if (Array.isArray(v)) return v.map(sanitize) as unknown as T;
   if (v && typeof v === 'object') {
     const out: Record<string, unknown> = {};
@@ -22,9 +25,12 @@ export function sanitize<T>(v: T): T {
   return v;
 }
 
-/** Document → snapshot JSON (same shape as the legacy collectSnapshotState(), plus a schema tag and the file schema version). */
+/**
+ * Document → snapshot JSON (same shape as the legacy collectSnapshotState(), plus a schema tag and the file schema version). The process
+ * document is written as its XML text (`BPMN`, schema v3).
+ */
 export function toSnapshot(doc: Doc, now: () => Date = () => new Date()): Record<string, unknown> {
-  return { ...structuredClone(doc), savedAt: now().toISOString(), _schema: SNAPSHOT_SCHEMA, ...versionStamp(), ...packageOf(doc) };
+  return { ...structuredClone(caseInFile(doc)), savedAt: now().toISOString(), _schema: SNAPSHOT_SCHEMA, ...versionStamp(), ...packageOf(doc) };
 }
 
 /** The canonical calculation package (legacy v18.5 `calculationPackage`) stamped into every saved case; never read back as input. */
@@ -48,7 +54,8 @@ export function fromSnapshot(raw: unknown): Doc {
   const dom = snap.dom as { values?: unknown; checked?: unknown } | undefined;
   if (!dom || typeof dom !== 'object' || typeof dom.values !== 'object'
     || typeof dom.checked !== 'object') throw new SnapshotError('Snapshot has no form inputs (dom)');
-  const doc = { ...makeDefaultDoc(), ...snap } as Doc;
+  const bad = (why: string): never => { throw new SnapshotError(`The process document (BPMN) cannot be read: ${why}`); };
+  const doc = { ...makeDefaultDoc(), ...caseInStore(snap, bad) } as Doc;   // schema v3: the process document (a version 2 case's keys become it)
   // the persona the file opens on: `openSnapshot`
   delete doc.savedAt; delete doc._schema; delete doc[VERSION_KEY]; delete doc.calculationPackage; delete doc[PERSONA_KEY];
   doc.dom = { values: { ...makeDefaultDoc().dom.values, ...(dom.values as object) },

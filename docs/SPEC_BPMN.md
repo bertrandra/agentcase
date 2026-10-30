@@ -1,6 +1,6 @@
 # AgentCase — Specification: the delivery process as a native BPMN 2.0 model (export and import)
 
-> Status: **specified; phases B0, B1 and B2 built** (B0: extension XSD, official OMG schemas, `tools/bpmn-validate.mjs`, sample and hostile files, § 5.3; B1: domain only, `app/src/domain/process`, § 6.3; B2: reader / writer, security, round trip, BPSim, export from the File menu, § 5.5). Decisions D-B1…D-B26 **adopted on 2026-10-30** (§ 12, § 15.6, § 16.7, § 17.9); D-B26: the case's BPMN
+> Status: **specified; phases B0, B1, B2 and B3 built** (B0: extension XSD, official OMG schemas, `tools/bpmn-validate.mjs`, sample and hostile files, § 5.3; B1: domain only, `app/src/domain/process`, § 6.3; B2: reader / writer, security, round trip, BPSim, export from the File menu, § 5.5; B3: schema v3, the case stores the BPMN document, § 6.4). Decisions D-B1…D-B26 **adopted on 2026-10-30** (§ 12, § 15.6, § 16.7, § 17.9); D-B26: the case's BPMN
 > document is the **only** stored form of the process, the organisation and the audit (§ 6.1). Scope: the TypeScript + React application in `app/`.
 > Related documents: [ARCHITECTURE.md](ARCHITECTURE.md), [DEVIATIONS.md](DEVIATIONS.md), [SPEC_MULTI_PRODUIT.md](SPEC_MULTI_PRODUIT.md).
 > Code rules unchanged: files ≤ 150 lines, no `any`, layers `ui → controllers → store → domain`, every write is an undoable
@@ -337,6 +337,53 @@ the editorial source of the default process until decision D-B9 retires them.
   `<ac:unmatched list rank value>` children of `ac:process` keep list entries no element can carry (unknown ids, repeats, `selectedNorms`
   written without their industry); `ac:process rampSeq` / `skillMap="none"` record an absent key.
 
+### 6.4 Built in B3 (schema v3: the case stores the native document)
+
+- **Key list (final).** Schema v3 (`_schemaVersion: 3`) adds the case key **`BPMN`** and removes the nine version 2 keys it owns:
+  `selectedArtefacts`, `artefactsEdited`, `selectedRegArtefacts`, `regArtefactsEdited`, `phaseOff`, `selectedNorms`, `phaseSeq`, `regInclude`, `skillMap`
+  (`SCOPE_KEYS`, `domain/process/scope.ts`). No other case key is owned by the process today: `regUse` (the catalogue switch), the form mirror
+  `dom.checked.regInclude`, the factory tags `fmArtefactTags` / `fmRegArtefactTags` / `fmPhaseFeatures` and the unused legacy `REG_OVERRIDES`,
+  `REG_HUMAN_SUP`, `REG_EFFORT` stay case keys (open question for B5: the factory tags duplicate `ac:activity storyId` / `ac:phase featureIds`).
+- **Store and files.** In the store `BPMN` is the B1 node tree (plain objects and arrays, immutable, shared between versions); in every file it is XML
+  text: JSON save, HTML snapshot, autosave record, a whole document posted to another tab, the stored cases of the snapshot library
+  (`store/persistence/bpmn/caseFile.ts`: `caseInFile` / `portfolioInFile` on write; `caseInStore` / `portfolioInStore` on read, through the B2 reader and
+  its F-B10 checks). The tree a reader builds from the text is the very tree that was written (same nodes, same key order), so the undo history of an
+  autosave record still addresses it. A text that cannot be read is a correction note ("the default process used"), like any damaged value.
+- **Migration 2 → 3** (`store/persistence/schema/v3.ts`): the document of the file's keys (a missing key takes the default case's value, as the
+  version 2 reader filled it) on the catalogue process, in the normal form below, and the keys removed. A portfolio: the common document from the common
+  keys; a product that overrode any of the nine keys overrides the whole `BPMN` (F-B20), written from its effective keys. The snapshot library is
+  converted too. `fromSnapshot` / `readPortfolio` accept a version 2 object directly (tools, snapshot activation of an old capture).
+- **B1's open questions, decided** (the normal form, `normalKeys` / `withScope`): (1) **list order** — the selections, the phases switched off and the
+  ramp-up sequences are kept in document order (`scopeRank`, `offRank`, `rampRank` are no longer written): every reader treats them as sets or maps
+  (engine `Set`s, report sorted, Excel by catalogue row), so no figure depends on it; the Excel comparisons (`tests/helpers/excelParams.ts`,
+  `tools/excel-compat.mjs`) compare these four lists as sets. (2) **edit records** — always the complete list (`ac:process sdlcEdits="all"` /
+  `regEdits="all"`, no `edited` / `editRank`), the shape all 107 fixtures already hold; a partial or damaged record means what `applyEdits` made of it (the
+  catalogue value), so the applied values are identical. Kept for parity: `ac:inScope`, `ac:phase rampSeq` (with its null), `ac:process regInclude`, the
+  `ac:unmatched` entries (unknown ids and repeats: a count on screen includes them, as before), `rampSeq="none"` / `skillMap="none"` for an absent key.
+- **One accessor.** `scopeOf(case)` (= `viewsOf(case.BPMN).keys`, memoised on the tree) gives the version 2 keys, same shapes and values; every reader
+  goes through it (engine `workingArtefacts`, `regActive`, scope views, phase tiles, ramp-up phases, factory grid, PDC variables and DD fingerprint,
+  assumptions, skill map, portfolio aggregates, report, Excel). An object without a document (a version 2 case handed to the engine by a test or a tool)
+  is read by its own keys. The engine is unchanged.
+- **Commands (§ 9).** Every legacy scope command edits the tree: selection, phases, norms, industry, cross-cutting, regulatory inclusion, ramp-up
+  sequences and the skill map run their version 2 rule on a copy of the keys and write it back with `withScope` (`store/processEdit.ts#editScope`);
+  the artefact editors (% auto, effort, phase bulk, resets) write `ac:activity` / `ac:supervision` attributes directly (`updateActivities`). The store
+  receives the difference of the two trees (`syncDraft`), so an edit of one activity's effort is one patch of one attribute value (tested:
+  `tests/store/bpmn-b3-commands.test.ts`). New commands `process.setScope`, `updateActivity` (coalesced), `addActivity`, `removeActivity`, `addActor`,
+  `updateActor`, `removeActor` (refused while referenced), `addPhase`, `removePhase` (refused while it holds activities), `reorderPhases`
+  (`controllers/process.ts`, `domain/process/editActivity.ts`, `editModel.ts`): implemented and tested on the tree; no screen calls them before B4, and the
+  engine reads only catalogue activities before B5 (a custom activity counts in the scope lists, not in the figures yet). Not yet: `process.import`,
+  `reset`, `moveActivity`, `setReworkFlow`, `setDiagram` (B4).
+- **Portfolio.** `BPMN` replaces the nine keys in `OVERRIDABLE_KEYS` (whole-document override). The Overrides sheet of the parameters workbook writes a
+  `BPMN` override as the nine version 2 rows derived from it (older builds read them) and reads such rows back into a whole-document override on top of
+  the imported common document; the legacy sheets are written from the views and a legacy workbook edits the tree.
+- **Tabs.** A message from a tab of another file schema (older or newer) is ignored; whole documents travel with their process as text; patches address
+  tree nodes.
+- **Sizes (measured).** No new payload in the bundle: the default document is built at start from the catalogues already shipped (the B1 generator
+  code, already bundled by the B2 export), memoised, and equals `catalog/defaultProcess.bpmn` (regenerated in the normal form, 414 KB / 35 KB gzipped),
+  so the gzipped-base64 option was not needed. A saved case grows from 96 KB to 522 KB (golden: the XML text, JSON-escaped; 16 KB → 51 KB gzipped); the
+  shipped portfolio example (`docs/examples`, one product overriding its process) from 102 KB to 980 KB. The HTML snapshot embeds the text as is
+  (no gzip yet: an embedded case is read before the first paint, synchronously). An edit of one activity's effort is one undo patch of about 150 bytes.
+
 ## 7. Engine
 
 - **Phase 1 (parity)** — the engine reads the derived views: every figure identical on the 107 fixtures, the parallel run (40 files)
@@ -413,7 +460,7 @@ these. Portfolio: the process follows the override commands of spec F6–F9.
 | B0 (**built in B0**) | This specification; extension XSD; sample foreign files | Decisions adopted | 0.5 d | 2 / 5 | — | Writing a correct extension XSD; collecting real files from bpmn.io, Camunda, Signavio |
 | B1 (**built in B1**) | `domain/process`: types, default process generator, derived views, layout | Views == v2 keys on 107 fixtures | 1 d | 3 / 5 | B0 | Exact parity of the derived views with today's keys |
 | B2 (**built in B2**) | BPMN reader / writer (DOMParser / XMLSerializer, no new dependency), node tree, security limits, pass-through, BPSim | Round trip byte-identical; XSD-valid; security tests | 1.5 d | 4 / 5 | B1 | Byte-identical round trip with foreign namespaces and vendor extensions |
-| B3 | Schema v3 + migration, `BPMN` key (native XML, node tree in the store), commands, existing scope sections on the model | 107 fixtures identical; parallel run 40/40; excel-compat 67/67 | 2 d | 5 / 5 | B2 | Touches store, undo, tab sync, autosave, Excel and every scope screen at once; node-level undo patches |
+| B3 (**built in B3**) | Schema v3 + migration, `BPMN` key (native XML, node tree in the store), commands, existing scope sections on the model | 107 fixtures identical; parallel run 40/40; excel-compat 67/67 | 2 d | 5 / 5 | B2 | Touches store, undo, tab sync, autosave, Excel and every scope screen at once; node-level undo patches |
 | B4 | Process section: SVG diagram, activity table, actor panel, import (replace / merge, preview, report), export | axe clean; ui-parity 0 divergence | 1.5 d | 3 / 5 | B3 | Accessible diagram with a table alternative; the merge preview |
 | B5 | Custom activities / roles / agents in the engine; rework flows from the model; portfolio override; Excel / report / HTML outputs | Hand-computed reference tests; cross-surface equality | 2 d | 4 / 5 | B3 | New engine inputs without breaking the single-owner rule; deviations to record |
 | B5b | Extended profile (§ 17): traceability graph, data stores bound to tools, data states and types, multi-instance volumes, timers and cadence, bounded loops, boundary events and reusable definitions, event sub-processes, compensation, conditional scope (FEEL subset), shared process library, task types, formal assignment and lanes, message flows and multiplicity, conversation view, annotations, several diagrams, colours, file header | Default process unchanged in figures; each element has a reader / writer / round-trip test and a test of the figure, check or view it feeds | 3 d | 4 / 5 | B5 | Breadth (about 25 elements); a safe FEEL parser; the process library across products |

@@ -1,5 +1,6 @@
 import { readFileSync } from 'node:fs';
 import { describe, expect, it } from 'vitest';
+import { SNAPSHOT_SCHEMA_VERSION } from '@/store/persistence/schema/version';
 import { openCaseText } from '@/controllers/openFile';
 import { getOpenNotes } from '@/controllers/openNotes';
 import { validate } from '@/domain/portfolio';
@@ -76,8 +77,9 @@ describe('a damaged file opens with its corrections listed (never refused)', () 
     expect(other.getState().history.undo).toHaveLength(0);
   });
   // Lot 10: a message without a document id (a build before the sync identity) is now ignored, where it was applied: nothing tells which document
-  // its patches address, and a patch must never land on a different document. A tagged message without a version (older schema) is still applied.
-  it('a change broadcast by a tab of a newer schema is ignored; one without a document id is ignored; an untagged-version one is applied', () => {
+  // its patches address, and a patch must never land on a different document. Schema v3 (BPMN B3): a message of an OLDER schema is ignored too (its
+  // patches address the version 2 scope keys, which a case no longer holds); only a message of this schema is applied.
+  it('a change broadcast by a tab of a newer or an older schema is ignored; one without a document id is ignored; one of this schema is applied', () => {
     const B = createAppStore(makeDefaultDoc()), [ca, cb] = channelPair();
     connectBroadcast(B, cb, 'B');
     const patches = (name: string) => [{ op: 'replace', path: ['common', 'customerName'], value: name }];
@@ -86,6 +88,8 @@ describe('a damaged file opens with its corrections listed (never refused)', () 
         ...(tag ? { kind: 'patch', docId: B.syncId().docId, base: B.syncId().rev, rev: B.syncId().rev + 1 } : {}) });
     send(99, 'Future'); expect(B.getState().doc.customerName).toBe('');
     send(undefined, 'NoDoc', false); expect(B.getState().doc.customerName).toBe('');
-    send(undefined, 'Old'); expect(B.getState().doc.customerName).toBe('Old');
+    send(undefined, 'Old'); expect(B.getState().doc.customerName).toBe('');
+    send(SNAPSHOT_SCHEMA_VERSION - 1, 'V2'); expect(B.getState().doc.customerName).toBe('');
+    send(SNAPSHOT_SCHEMA_VERSION, 'Now'); expect(B.getState().doc.customerName).toBe('Now');
   });
 });

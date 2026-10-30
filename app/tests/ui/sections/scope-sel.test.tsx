@@ -6,6 +6,7 @@ import { appStore } from '@/store/instance';
 import ScopeSel from '@/ui/sections/scope/scope-sel';
 import { freshStore } from '../../store/helpers';
 import { legacySectionText, missingNumbers, renderedText } from '../../helpers/parity';
+import { keysOf } from '../../helpers/scope';
 
 beforeEach(() => { freshStore(); });
 afterEach(cleanup);
@@ -46,7 +47,7 @@ describe('scope-sel section', () => {
     expect(calc().model.auto).toBeGreaterThan(before.auto);
     expect(within(adjust).getByText(/Potential/).textContent).toMatch(/▲/);
     fireEvent.change(within(adjust).getByLabelText('Effort of A017'), { target: { value: '20' } });
-    expect(appStore().getState().doc.artefactsEdited.find((e) => e.id === 'A017')?.effort).toBe(20);
+    expect(keysOf(appStore().getState().doc).artefactsEdited.find((e) => e.id === 'A017')?.effort).toBe(20);
     fireEvent.change(within(adjust).getByRole('combobox'), { target: { value: 'V4' } });
     fireEvent.change(within(adjust).getByLabelText('Bulk % auto'), { target: { value: '100' } });
     fireEvent.click(within(adjust).getByText('Apply'));

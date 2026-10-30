@@ -6,7 +6,7 @@ import { SectionFrame } from '@/ui/zones/SectionFrame';
 import '../scope-tools.css';
 import { Tile } from './Tile';
 
-const OVERRIDES = ['phaseOff', 'selectedArtefacts'] as const;
+const OVERRIDES = ['BPMN'] as const;
 
 const help = (
   <>
@@ -27,8 +27,7 @@ export default function PhaseScopeSection() {
           <button type="button" onClick={() => selectAllPhases(true)}>Select all</button>
           <button type="button" onClick={() => selectAllPhases(false)}>Clear all</button>
           <span className="ac-muted">In scope : <strong>{selected}/{total} art.</strong></span>
-          <OverrideBadge refKey="phaseOff" label="Disabled phases" />
-          <OverrideBadge refKey="selectedArtefacts" label="Selected SDLC artefacts" />
+          <OverrideBadge refKey="BPMN" label="Process (phases and artefacts in scope)" />
         </div>
       }
       result={

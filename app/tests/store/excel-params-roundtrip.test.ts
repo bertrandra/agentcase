@@ -3,6 +3,7 @@ import { produce } from 'immer';
 import { describe, expect, it } from 'vitest';
 import { computeCase } from '@/domain';
 import { refitPotential } from '@/store/derive';
+import { legacyCase } from '@/store/persistence/bpmn/legacy';
 import { paramsWorkbookBytes, readParamsWorkbook } from '@/store/persistence/excel/params';
 import { IO_PARAMS } from '@/store/persistence/excel/params/sheets/parameters';
 import { fromSnapshot } from '@/store/persistence/snapshot';
@@ -47,7 +48,7 @@ describe('our writer → our reader round-trips every fixture', () => {
     expect(Object.keys(patch).filter((k) => !NORMALISED.includes(k))).toEqual([]);
     // (phaseOff is exempt: a phase with nothing selected is exported "No", so it joins the switched-off list — legacy behaviour, no effect on the figures)
     ['selectedNorms', 'selectedRegArtefacts', 'selectedArtefacts'].forEach((k) => {
-      const b = (back as Record<string, unknown>)[k], a = (doc as Record<string, unknown>)[k];
+      const b = legacyCase(back)[k], a = legacyCase(doc)[k];   // schema v3: derived from the process document
       if (!notes.some((n) => /^Phase Scope marks|^No phase included/.test(n))) expect(sameSet(a, b)).toBe(true);
     });
   });

@@ -1,5 +1,8 @@
 /** @calc-zone exports */
 import { APP_VERSION, versionFileTag, versionTag } from '../version';
+import { BPMN_KEY } from '../process/scope';
+import type { XDocument } from '../process/xml';
+import { serialize } from '../process/xmlWrite';
 import type { NamedSnapshot } from './types';
 
 export const SNAPSHOT_KEY = 'namedSnapshots';
@@ -23,10 +26,14 @@ export function withVerTag(name: string | null, now: Date): string {
   return base.includes(t) ? base : `${base} · ${t}`;
 }
 
-/** The case as stored in a snapshot: everything except the library itself. Shares (immutable) sub-objects with the document. */
+/**
+ * The case as stored in a snapshot: everything except the library itself, in its file form (the process document as XML text, schema v3).
+ * Shares (immutable) sub-objects with the document.
+ */
 export function captureState(doc: Record<string, unknown>, now: Date): Record<string, unknown> {
-  const rest = { ...doc };
+  const rest = { ...doc }, bpmn = rest[BPMN_KEY];
   delete rest[SNAPSHOT_KEY];
+  if (bpmn && typeof bpmn === 'object') rest[BPMN_KEY] = serialize(bpmn as XDocument);
   return { ...rest, savedAt: now.toISOString() };
 }
 

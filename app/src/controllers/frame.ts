@@ -2,7 +2,9 @@
 import { REG_ARTEFACTS } from '@/domain';
 import { DEFAULT_DISCOUNT_RATE } from '@/domain/economics/cashflow';
 import { CROSS_CATEGORIES, CROSS_CODES, crossOn, normArtefacts, normKey, normsOf, type TrackActual } from '@/domain/frame';
+import type { ScopeKeys } from '@/domain/process';
 import { refitPotential } from '@/store/derive';
+import { editScope, scopeNow } from '@/store/processEdit';
 import { defineCommand } from '@/store/commands';
 import { appStore } from '@/store/instance';
 import type { Doc } from '@/store/types';
@@ -38,54 +40,58 @@ const setTrackCmd = defineCommand<{ q: string; field: keyof TrackActual; value: 
   },
 });
 
-// ---- Industry / regulatory profile ---------------------------------------------------------------------------------------
-const off = (d: Doc) => new Set(d.phaseOff ?? []);
+// ---- Industry / regulatory profile (the scope keys of the case's process document: `editScope`) ------------------------------
 const add = (arr: string[], v: string) => { if (!arr.includes(v)) arr.push(v); };
 const del = (arr: string[], v: string) => { const i = arr.indexOf(v); if (i >= 0) arr.splice(i, 1); };
 
 /** Tick/untick a norm and its artefacts (artefacts of a switched-off phase are not added). */
-function setNorm(d: Doc, code: string, name: string, on: boolean): void {
-  const gated = off(d);
-  if (on) add(d.selectedNorms, normKey(code, name)); else del(d.selectedNorms, normKey(code, name));
-  for (const a of normArtefacts(code, name)) { if (on) { if (!gated.has(a.phase)) add(d.selectedRegArtefacts, a.id); } else del(d.selectedRegArtefacts, a.id); }
+function setNorm(k: ScopeKeys, code: string, name: string, on: boolean): void {
+  const gated = new Set(k.phaseOff);
+  if (on) add(k.selectedNorms, normKey(code, name)); else del(k.selectedNorms, normKey(code, name));
+  for (const a of normArtefacts(code, name)) { if (on) { if (!gated.has(a.phase)) add(k.selectedRegArtefacts, a.id); } else del(k.selectedRegArtefacts, a.id); }
 }
 /** Industry norms are cleared when the industry changes; cross-cutting selections survive. */
-function clearIndustryNorms(d: Doc): void {
-  d.selectedNorms = d.selectedNorms.filter((k) => CROSS_CODES.includes(k.split(':')[0] as string));
-  const keep = new Set(d.selectedRegArtefacts);
-  d.selectedRegArtefacts = REG_ARTEFACTS.filter((a) => keep.has(a.id) && CROSS_CODES.includes(a.industry as string)).map((a) => a.id);
+function clearIndustryNorms(k: ScopeKeys): void {
+  k.selectedNorms = k.selectedNorms.filter((x) => CROSS_CODES.includes(x.split(':')[0] as string));
+  const keep = new Set(k.selectedRegArtefacts);
+  k.selectedRegArtefacts = REG_ARTEFACTS.filter((a) => keep.has(a.id) && CROSS_CODES.includes(a.industry as string)).map((a) => a.id);
 }
 /** The industry is a shortcut: with the catalogue on, picking it pre-checks all its norms. */
-function applyIndustry(d: Doc): void {
-  clearIndustryNorms(d);
+function applyIndustry(d: Doc, k: ScopeKeys): void {
+  clearIndustryNorms(k);
   const code = d.dom.values.industry ?? '';
-  if (d.regUse && code && code !== 'NONE' && !CROSS_CODES.includes(code)) normsOf(code).forEach((n) => setNorm(d, code, n.name, true));
+  if (d.regUse && code && code !== 'NONE' && !CROSS_CODES.includes(code)) normsOf(code).forEach((n) => setNorm(k, code, n.name, true));
 }
 /** Keep the category checkboxes in step with the ticked norms and re-fit the potential to the changed scope (legacy v18.12). */
 function finish(d: Doc): void {
-  CROSS_CATEGORIES.forEach((x) => { d.dom.checked[x.checkId] = crossOn(d.selectedNorms, x.code); });
+  const norms = scopeNow(d).selectedNorms;
+  CROSS_CATEGORIES.forEach((x) => { d.dom.checked[x.checkId] = crossOn(norms, x.code); });
   refitPotential(d);
 }
 
 const setRegUseCmd = defineCommand<{ on: boolean }>({
   type: 'frame.setRegUse', label: (p) => `${p.on ? 'Use' : 'Stop using'} the regulatory catalogue`,
-  run(d, p) { d.regUse = p.on; d.dom.checked.regUse = p.on; if (p.on) applyIndustry(d); else clearIndustryNorms(d); finish(d); },
+  run(d, p) {
+    d.regUse = p.on; d.dom.checked.regUse = p.on;
+    editScope(d, (k) => { if (p.on) applyIndustry(d, k); else clearIndustryNorms(k); });
+    finish(d);
+  },
 });
 const setIndustryCmd = defineCommand<{ code: string }>({
   type: 'frame.setIndustry', label: (p) => `Select the industry profile ${p.code}`,
-  run(d, p) { d.dom.values.industry = p.code; applyIndustry(d); finish(d); },
+  run(d, p) { d.dom.values.industry = p.code; editScope(d, (k) => applyIndustry(d, k)); finish(d); },
 });
 const toggleNormCmd = defineCommand<{ code: string; name: string; on: boolean }>({
   type: 'frame.toggleNorm', label: (p) => `${p.on ? 'Add' : 'Remove'} the norm ${p.name}`,
-  run(d, p) { setNorm(d, p.code, p.name, p.on); finish(d); },
+  run(d, p) { editScope(d, (k) => setNorm(k, p.code, p.name, p.on)); finish(d); },
 });
 const toggleCrossCmd = defineCommand<{ code: string; on: boolean }>({
   type: 'frame.toggleCross', label: (p) => `${p.on ? 'Add' : 'Remove'} the cross-cutting category ${p.code}`,
-  run(d, p) { normsOf(p.code).forEach((n) => setNorm(d, p.code, n.name, p.on)); finish(d); },
+  run(d, p) { editScope(d, (k) => normsOf(p.code).forEach((n) => setNorm(k, p.code, n.name, p.on))); finish(d); },
 });
 const setRegIncludeCmd = defineCommand<{ on: boolean }>({
   type: 'frame.setRegInclude', label: (p) => `${p.on ? 'Include' : 'Exclude'} regulatory artefacts in effort and runs`,
-  run(d, p) { d.regInclude = p.on; d.dom.checked.regInclude = p.on; refitPotential(d); },
+  run(d, p) { editScope(d, (k) => { k.regInclude = p.on; }); d.dom.checked.regInclude = p.on; refitPotential(d); },
 });
 
 export const setCustomerName = (name: string): void => appStore().dispatch(setCustomerCmd({ name }));

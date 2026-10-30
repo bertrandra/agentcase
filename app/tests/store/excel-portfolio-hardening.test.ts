@@ -2,13 +2,14 @@ import type * as XL from 'exceljs';
 import { beforeEach, describe, expect, it } from 'vitest';
 import { exportParamsWorkbook, importParamsWorkbook } from '@/controllers/excelParams';
 import { addProduct } from '@/controllers/product';
-import { setProductOverride } from '@/controllers/productOverrides';
 import { appStore } from '@/store/instance';
 import { LIMITS } from '@/store/persistence/excel/params/safe';
 import { ENV } from '../helpers/excelParams';
 import { fourProducts, pfNow } from '../helpers/portfolioFixtures';
 import { asFile, editXlsx } from '../helpers/xlsxEdit';
 import { snapAll } from './helpers';
+import { keysOf, setScopeOverride } from '../helpers/scope';
+import { resolveProduct } from '@/domain/portfolio';
 
 let ids: string[] = [];
 beforeEach(() => { fourProducts(); ids = pfNow().products.map((p) => p.id); });
@@ -113,11 +114,11 @@ describe('settings', () => {
 describe('long overrides are chunked, never truncated', () => {
   it('a value longer than a cell survives the round trip', async () => {
     const list = Array.from({ length: 700 }, (_, i) => `sdlc-artefact-${i}`);
-    setProductOverride(ids[0]!, 'selectedArtefacts', list);
-    const bytes = await base(), before = pfNow().products[0]!.overrides.selectedArtefacts;
+    setScopeOverride(ids[0]!, { selectedArtefacts: list });   // schema v3: written as the scope rows of the product's process document
+    const bytes = await base(), before = keysOf(resolveProduct(pfNow(), ids[0]!)).selectedArtefacts;
     addProduct('Scratch');
     await importParamsWorkbook(asFile('long.xlsx', bytes), ENV);
-    expect(pfNow().products[0]!.overrides.selectedArtefacts).toEqual(before);
+    expect(keysOf(resolveProduct(pfNow(), pfNow().products[0]!.id)).selectedArtefacts).toEqual(before);
     expect(JSON.stringify(list).length).toBeGreaterThan(8000);
   });
 });

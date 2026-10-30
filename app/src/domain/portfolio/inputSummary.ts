@@ -6,6 +6,7 @@ import { ctxOf } from './memo';
 import { resolveProduct } from './resolve';
 import { scheduledProducts } from './timeline';
 import type { Portfolio } from './types';
+import { scopeOf } from '../process/scope';
 
 /** How a product runs the Knowledge Hub: not at all, as the common hub, or with its own subset. */
 export type HubState = 'off' | 'common' | 'own subset';
@@ -36,7 +37,8 @@ export function inputSummary(pf: Portfolio, productIds: string[]): InputSummaryR
     const c = resolveProduct(pf, id), own = Object.values(p.knowledge).some((v) => v !== undefined);
     out.push({
       id, name: p.name, wave: pf.waves.find((w) => w.id === p.waveId)?.name ?? '', planned: planned.has(id), archived: !!p.archived,
-      etp: teamEtp(c.teamIn), artefacts: c.selectedArtefacts.length, regArtefacts: c.selectedRegArtefacts.length, overrides: overrideRefs(p.overrides).length,
+      etp: teamEtp(c.teamIn), artefacts: scopeOf(c).selectedArtefacts.length, regArtefacts: scopeOf(c).selectedRegArtefacts.length,
+      overrides: overrideRefs(p.overrides).length,
       hub: !khEnabled(ctxOf(c)) ? 'off' : own ? 'own subset' : 'common',
     });
   }

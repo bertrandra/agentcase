@@ -6,6 +6,8 @@ import { guardZip, LIMITS } from '@/store/persistence/excel/params/safe';
 import { ENV } from '../helpers/excelParams';
 import { asFile, editXlsx, fakeZip, ourXlsx, setByLabel } from '../helpers/xlsxEdit';
 import { freshStore, snap } from './helpers';
+import { keysOf } from '../helpers/scope';
+import { serialize, type XDocument } from '@/domain/process';
 
 beforeEach(() => { freshStore(); });
 const doc = () => appStore().getState().doc as Record<string,
@@ -50,9 +52,10 @@ describe('hostile content', () => {
     expect(d.PERSONAS.map((x) => x.id)).not.toContain('__proto__');
     expect(Object.keys(d.PERSONA_SECTIONS)).not.toContain('__proto__');
     expect(Object.keys(d.PERSONA_SECTIONS)).not.toContain('constructor');
-    expect(Object.keys(d.skillMap)).not.toContain('__proto__');
+    expect(Object.keys(keysOf(doc()).skillMap ?? {})).not.toContain('__proto__');
     expect(d.GROUPS.map((g) => g.id)).toContain('x-__proto__');   // legacy safeId: the name is neutralised, not dropped
-    expect(JSON.stringify(doc())).not.toMatch(/"__proto__"/);
+    expect(JSON.stringify({ ...doc(), BPMN: undefined })).not.toMatch(/"__proto__"/);
+    expect(serialize(doc().BPMN as XDocument)).not.toMatch(/"__proto__"/);
   });
   it('text is cleaned: control characters, markup survives only as inert text, lengths are capped', async () => {
     const long = 'x'.repeat(10000), nasty = 'Acme\u0000\u0007 <img src=x onerror=alert(1)>\n\ttrailing';
@@ -117,6 +120,6 @@ describe('hostile content', () => {
     expect(d.customerName).toBe('Template Co');
     expect(d.dom.values.setupTooling).toBe('12345');
     expect(d.teamIn.map((x) => [x.skill, x.etp, x.pins.length])).toEqual([['Dev', 5, 0], ['Test/QA', 3, 0]]);
-    expect(d.phaseOff).toEqual(['L0', 'V2', 'V4', 'V5', 'V6', 'V7', 'L8', 'L9', 'L10']);
+    expect(keysOf(doc()).phaseOff).toEqual(['L0', 'V2', 'V4', 'V5', 'V6', 'V7', 'L8', 'L9', 'L10']);
   });
 });

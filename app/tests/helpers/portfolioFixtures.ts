@@ -10,6 +10,7 @@ import { EMPTY_HISTORY } from '@/store/history';
 import { appStore } from '@/store/instance';
 import { freshStore } from '../store/helpers';
 import { loadFixture } from './fixtures';
+import { keysOf, setScopeOverride } from './scope';
 
 export const pfNow = (): Portfolio => appStore().getState().portfolio;
 export const fixtureText = (name: string): string => readFileSync(`fixtures/portfolios/${name}.json`, 'utf8');
@@ -24,7 +25,7 @@ export function openPortfolioFixture(name = 'pf-three-products'): Portfolio {
 
 /**
  * A generated 4-product / 2-wave portfolio on the default case: one product offset inside its wave, one unscheduled, a hub shared by headcount,
- * knowledge subsets (with domains, KT lead), overrides of every kind (list, flag, form field) and notes. History starts empty.
+ * knowledge subsets (with domains, KT lead), overrides of every kind (process document, form field) and notes. History starts empty.
  */
 export function fourProducts(): Portfolio {
   const s = freshStore();
@@ -32,9 +33,9 @@ export function fourProducts(): Portfolio {
   const b = addProduct('Payroll', w1)!, w2 = addWave('Wave 2', 6)!, c = addProduct('Billing', w2)!, d = addProduct('Archive (no wave)', null)!;
   setWaveStart(w2, 6);
   setActiveProduct(b); setTeamTotal(12);
-  setProductOverride(b, 'regInclude', true);
+  setScopeOverride(b, { regInclude: true });
   setProductOverride(c, 'values.engagementCtx', 'STA');
-  setProductOverride(c, 'selectedNorms', ['ISO 26262', 'DO-178C']);
+  setScopeOverride(c, { selectedNorms: ['ISO 26262', 'DO-178C'] });
   setProductNote(c, 'Starts in month 6'); setProductNote(d, 'Unscheduled');
   setProductOffset(b, 2);
   setPortfolioHub({ enabled: true, infraMonthly: 3000, infraAllocation: 'byBaseEtp' });
@@ -54,7 +55,7 @@ export function regulatedPortfolio(fixture = 'industry-med'): Portfolio {
   const s = loadFixture(fixture), a = pfNow().products[0]!.id, w1 = pfNow().waves[0]!.id;
   const b = addProduct('Payroll', w1)!, w2 = addWave('Wave 2', 6)!, c = addProduct('Billing', w2)!, d = addProduct('Archive (no wave)', null)!;
   setWaveStart(w2, 6); setProductOffset(b, 2); setProductNote(d, 'Unscheduled');
-  setProductOverride(b, 'selectedNorms', pfNow().common.selectedNorms.slice(0, 1));
+  setScopeOverride(b, { selectedNorms: keysOf(pfNow().common).selectedNorms.slice(0, 1) });
   setPortfolioHub({ enabled: true, infraMonthly: 3000, infraAllocation: 'byBaseEtp' });
   setProductKnowledge(c, { ktLeadMonths: 3, targetCC: 3, domains: [{ label: 'Docs', weightPct: 100 }] });
   setActiveProduct(a);

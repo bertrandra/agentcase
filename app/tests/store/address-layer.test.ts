@@ -8,6 +8,7 @@ import { setCustomerName } from '@/controllers/persona';
 import { resolveProduct } from '@/domain/portfolio';
 import { appStore } from '@/store/instance';
 import { threeProducts } from '../helpers/portfolioStore';
+import { keysOf } from '../helpers/scope';
 
 const pf = () => appStore().getState().portfolio;
 const eff = (id: string) => resolveProduct(pf(), id) as unknown as Record<string, unknown> & { dom: { values: Record<string, string> } };
@@ -30,13 +31,13 @@ describe('address layer: where an existing command lands in the portfolio', () =
   it('scope "this product only" writes only to overrides of the active product', () => {
     const { ids } = threeProducts(), common = JSON.stringify(pf().common);
     setEditScope('product'); setActiveProduct(ids[1]);
-    setInput('y1Ramp', 23); setChecked('fitAuto', false); toggleArtefact(pf().common.selectedArtefacts[0]!, false);
+    setInput('y1Ramp', 23); setChecked('fitAuto', false); toggleArtefact(keysOf(pf().common).selectedArtefacts[0]!, false);
     expect(JSON.stringify(pf().common)).toBe(common);
     expect(pf().products[1]!.overrides.dom?.values?.y1Ramp).toBe('23');
     expect(eff(ids[1]).dom.values.y1Ramp).toBe('23');
     expect(eff(ids[0]).dom.values.y1Ramp).not.toBe('23');
     expect(pf().products[0]!.overrides).toEqual({});
-    expect(pf().products[1]!.overrides.selectedArtefacts).toBeDefined();
+    expect(pf().products[1]!.overrides.BPMN).toBeDefined();   // schema v3: the whole process document (F-B20)
   });
   it('an already-overridden key is edited as an override whatever the scope; the others keep following common', () => {
     const { ids } = threeProducts();

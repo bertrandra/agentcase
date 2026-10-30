@@ -1,6 +1,8 @@
 /** @calc-zone verdict */
 import type { Ctx } from '../ctx';
+import { scopeOf } from '../process/scope';
 import { activeArtefacts } from '../scope';
+import type { CaseState } from '../types/state';
 import inputDefaults from './inputDefaults.json';
 
 export interface AssumptionDef { g: string; id: string; l: string; mc?: boolean }
@@ -57,12 +59,15 @@ const STATE_DEFS: { key: string; label: string }[] = [
   { key: 'scope', label: 'Selected scope (phases & artefacts)' },
 ];
 
+/** The skill map of the benchmark: from its process document, or the legacy key of a version 2 default (the defaults JSON). */
+const skillMapIn = (b: AssumptionBase): unknown => (b.BPMN ? scopeOf(b as unknown as CaseState).skillMap : b.skillMap);
+
 function stateEdited(c: Ctx, base: AssumptionBase, key: string): boolean {
   const s = c.s as unknown as Record<string, unknown>;
   switch (key) {
     case 'lifecycle': return !sameJson({ u: !!s.lifecycleUse, p: s.lifecyclePos }, { u: true, p: 25 });
     case 'lcMatrix': return !sameJson(s.statusLifecycle, base.statusLifecycle);
-    case 'skillMap': return !sameJson(s.skillMap, base.skillMap);
+    case 'skillMap': return !sameJson(scopeOf(c.s).skillMap, skillMapIn(base));
     case 'locSplit': return (s.tobeLocSplit ?? null) !== null;
     case 'targetLoc': return (s.targetLocPct ?? null) !== null;
     case 'strategies': return !sameJson(s.strategyDefs, base.strategyDefs);

@@ -4,11 +4,19 @@ import { useInCommonView } from '@/store/commonEditHooks';
 import { useFieldState, useIsMulti } from '@/store/portfolioHooks';
 import { toast } from '../uiState';
 import { KeepersNotice } from './KeepersNotice';
+import { scopeOf, type XDocument } from '@/domain/process';
 
+/** A process document (key `BPMN`) in a few words: what is in scope. */
+function describeProcess(d: XDocument): string {
+  const k = scopeOf({ BPMN: d });
+  return `process: ${k.selectedArtefacts.length} SDLC + ${k.selectedRegArtefacts.length} regulatory artefacts in scope, ${k.phaseOff.length} phase(s) off, `
+    + `${k.selectedNorms.length} norm(s), regulatory in the effort: ${k.regInclude ? 'yes' : 'no'}`;
+}
 /** A short, safe text for a common value (tooltip): lists count their items, objects and long texts are cut. */
 export function describeValue(v: unknown): string {
   if (v === undefined || v === null) return 'not set';
   if (Array.isArray(v)) return `${v.length} item${v.length > 1 ? 's' : ''}`;
+  if (typeof v === 'object' && (v as { kind?: unknown }).kind === 'document') return describeProcess(v as XDocument);
   const t = typeof v === 'object' ? JSON.stringify(v) : String(v);
   return t.length > 120 ? `${t.slice(0, 117)}…` : t;
 }

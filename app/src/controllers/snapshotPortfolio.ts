@@ -3,19 +3,21 @@ import { resolveProduct, type Portfolio } from '@/domain/portfolio';
 import { SNAPSHOT_KEY, type NamedSnapshot } from '@/domain/snapshots';
 import { definePortfolioCommand } from '@/store/commands';
 import { refitPortfolio } from '@/store/derive';
+import { portfolioInFile } from '@/store/persistence/bpmn/caseFile';
 import { readPortfolio } from '@/store/persistence/portfolioRead';
 import { hasPortfolioContent } from '@/store/persistence/portfolioSnapshot';
 import { keepTabView } from '@/store/persona';
 import type { Doc, PortfolioDoc } from '@/store/types';
 
 /**
- * The whole portfolio as a capture stores it: structured clone without the view state (edit and display scope) and without the library (so captures
+ * The whole portfolio as a capture stores it (in its file form: process documents as XML text): structured clone without the view state (edit and
+ * display scope) and without the library (so captures
  * never nest).
  * Only for real portfolios (`hasPortfolioContent`); a plain single case keeps the single-case capture, byte for byte.
  */
 export function capturePortfolio(pf: PortfolioDoc): Record<string, unknown> | undefined {
   if (!hasPortfolioContent(pf)) return undefined;
-  const { editScope: _e, displayScope: _d, persona: _p, ...rest } = structuredClone(pf);
+  const { editScope: _e, displayScope: _d, persona: _p, ...rest } = structuredClone(portfolioInFile(pf));   // process documents as XML text
   void _e; void _d; void _p;
   const common = { ...rest.common } as Record<string, unknown>;
   delete common[SNAPSHOT_KEY];

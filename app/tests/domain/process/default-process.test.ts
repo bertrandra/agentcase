@@ -3,7 +3,9 @@ import { join } from 'node:path';
 import { gzipSync } from 'node:zlib';
 import { describe, expect, it } from 'vitest';
 import { LOOP_PAIRS, PHASES, REG_ARTEFACTS, REG_NORMS, SDLC_ARTEFACTS } from '@/domain/catalog';
-import { buildProcess, catalogueProcess, CROSS_PHASE, processFromCase, readProcess, serialize, TODAYS_CATALOGUE, viewsOf } from '@/domain/process';
+import { buildProcess, catalogueProcess, CROSS_PHASE, normalKeys, readProcess, scopeKeysOf, scopeOf, serialize, TODAYS_CATALOGUE,
+  viewsOf } from '@/domain/process';
+import defaultDoc from '@/store/defaults/defaultDoc.json';
 import { CROSS_CUTTING } from '@/domain/scopeView';
 import { makeDefaultDoc } from '@/store/instance';
 import { DEFAULT_PROCESS_FILE, defaultProcessText } from '../../../scripts/lib/defaultProcess';
@@ -13,15 +15,16 @@ const file = readFileSync(DEFAULT_PROCESS_FILE, 'utf8');
 
 describe('default process (catalog/defaultProcess.bpmn)', () => {
   it('is up to date: regenerating it gives the same bytes (else: npm run process:gen)', () => expect(defaultProcessText()).toBe(file));
-  it('is the process of the default case, and the build is deterministic', () => {
-    expect(serialize(processFromCase(makeDefaultDoc()))).toBe(file);
+  it('is the process of the default case (the document a new case holds, in the normal form of schema v3), and the build is deterministic', () => {
+    expect(serialize(makeDefaultDoc().BPMN)).toBe(file);
     expect(serialize(buildProcess(TODAYS_CATALOGUE))).toBe(serialize(buildProcess(TODAYS_CATALOGUE)));
   });
-  it('gives back the default case keys', () => {
-    const d = makeDefaultDoc(), k = viewsOf(processFromCase(d)).keys;
-    expect(k.selectedArtefacts).toEqual(d.selectedArtefacts);
-    expect(k.phaseOff).toEqual(d.phaseOff);
-    expect(k.artefactsEdited).toEqual(d.artefactsEdited);
+  it('gives back the default case keys (the legacy default, normalised: document order, complete edit lists)', () => {
+    const legacy = defaultDoc as unknown as Record<string, unknown>, k = scopeOf(makeDefaultDoc());
+    expect(k).toStrictEqual(normalKeys(readProcess(catalogueProcess()), scopeKeysOf(legacy)));
+    expect([...k.selectedArtefacts].sort()).toEqual([...(legacy.selectedArtefacts as string[])].sort());
+    expect([...k.phaseOff].sort()).toEqual([...(legacy.phaseOff as string[])].sort());
+    expect(k.artefactsEdited).toEqual(legacy.artefactsEdited);
   });
   it('its catalogue views are exactly the JSON catalogues the engine reads today', () => {
     const v = viewsOf(catalogueProcess());

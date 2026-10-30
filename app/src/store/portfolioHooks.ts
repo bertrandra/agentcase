@@ -45,7 +45,7 @@ export function useProductRows(): ProductRow[] {
   })), [pf]);
 }
 
-/** Inherited / overridden state of one overridable key (`selectedArtefacts`, `values.engagementCtx`, ...) for the active product. */
+/** Inherited / overridden state of one overridable key (`BPMN`, `values.engagementCtx`, ...) for the active product. */
 export interface FieldState { multi: boolean; productId: string; productName: string; overridden: boolean; common: unknown }
 export function useFieldState(ref: string): FieldState {
   const multi = useIsMulti(), prod = useActiveProduct(), common = useCommon();

@@ -60,7 +60,7 @@ describe('autosave', () => {
     expect(recs).toHaveLength(1); expect(recs[0]!.history.undo.length).toBe(2);
     const other = createAppStore(makeDefaultDoc());
     restoreRecord(other, recs[0]!);
-    expect(JSON.stringify(other.getState().doc)).toBe(snap(s));
+    expect(snap(other)).toBe(snap(s));
     expect(other.getState().history.undo).toHaveLength(2);
     expect(other.undo()).toBe(true);                       // Ctrl+Z works after a reload
     expect(other.getState().doc.dom.values.autoPotential).not.toBe(s.getState().doc.dom.values.autoPotential);

@@ -10,6 +10,7 @@ import { commonEditDoc, editsCommon, keepersOf } from '@/store/commonEdit';
 import { appStore } from '@/store/instance';
 import { docOnly, threeProducts } from '../helpers/portfolioStore';
 import { freshStore } from './helpers';
+import { keysOf, setScopeOverride } from '../helpers/scope';
 
 const pf = () => appStore().getState().portfolio;
 const eff = (id: string) => resolveProduct(pf(), id) as unknown as { dom: { values: Record<string, string> }; selectedArtefacts: string[] };
@@ -40,13 +41,13 @@ describe('"Edit: All products" in a Portfolio / Wave view writes the common valu
     s.redo(); expect(docOnly(s)).toBe(after);
   });
   it('a whole key (artefact selection) runs on the COMMON case: the active product\'s own selection is neither copied nor changed', () => {
-    const { ids } = threeProducts(), art = pf().common.selectedArtefacts;
-    setProductOverride(ids[0], 'selectedArtefacts', art.slice(0, 2));
+    const { ids } = threeProducts(), art = keysOf(pf().common).selectedArtefacts;
+    setScopeOverride(ids[0], { selectedArtefacts: art.slice(0, 2) });
     setDisplayScope({ kind: 'portfolio' });
     toggleArtefact(art[0]!, false);
-    expect(pf().common.selectedArtefacts).toEqual(art.slice(1));
-    expect(pf().products[0]!.overrides.selectedArtefacts).toEqual(art.slice(0, 2));
-    expect(eff(ids[1]).selectedArtefacts).toEqual(art.slice(1));
+    expect(keysOf(pf().common).selectedArtefacts).toEqual(art.slice(1));
+    expect(keysOf(eff(ids[0])).selectedArtefacts).toEqual(art.slice(0, 2));   // the product's own process document (F-B20)
+    expect(keysOf(eff(ids[1])).selectedArtefacts).toEqual(art.slice(1));
   });
   it('a knowledge field goes to the common hub, not to a subset; the entry team stays the active product\'s', () => {
     const { ids } = threeProducts();

@@ -2,6 +2,8 @@
 import { clampHorizonYears } from '@/domain/inputs';
 import { isSplitComplete, splitTotal } from '@/domain/split';
 import { FORBIDDEN_DOM_IDS, OVERRIDABLE_KEYS, WAVE_MILESTONES } from '@/domain/portfolio';
+import { BPMN_KEY } from '@/domain/process';
+import { processOf } from '../bpmn/caseDoc';
 import { makeDefaultDoc } from '../../instance';
 import { checkCase, checkTeam, rec, type Notes, type Rec } from './caseChecks';
 import { repairSharedTeam } from './sharedChecks';
@@ -43,6 +45,9 @@ function overrides(o: unknown, n: Notes, who: string): Rec {
         dom[part] = kept;
       }
       out.dom = dom;
+    } else if (k === BPMN_KEY) {
+      const doc = processOf(v);
+      if (typeof doc === 'string') n.push(`${who}: the process document (BPMN) cannot be read (${doc}) — inherits the common process`); else out[k] = doc;
     } else if ((OVERRIDABLE_KEYS as readonly string[]).includes(k)) out[k] = v;
     else n.push(`${who}: "${k}" cannot be overridden per product — dropped`);
   }

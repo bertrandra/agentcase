@@ -1,7 +1,6 @@
 /** @calc-zone process-model */
 import type { CaseState } from '../types/state';
 import { BPSIM_DECL, bpsimRelationship, elementParameters, isOwnBpsim, type BpsimValues } from './bpsim';
-import { processFromCase } from './fromCase';
 import { partialOf, withProduct, without } from './partial';
 import { readProcess } from './read';
 import { attr, NS, text, withAttrs, withChildren, type XDocument, type XElement } from './xml';
@@ -42,7 +41,7 @@ export function withBpsim(root: XElement, params: XElement[]): XElement {
 
 /** The process document of a product inside a portfolio file: product header and in-scope filter applied, no BPSim yet. */
 export function productDocument(c: CaseState, opts: ExportOptions): XDocument {
-  const d = processFromCase(c);
+  const d = c.BPMN;
   let root = d.root;
   if (opts.product) root = withProduct(root, opts.product.code, opts.product.name);
   if (opts.partial) root = partialOf(root);
@@ -50,7 +49,7 @@ export function productDocument(c: CaseState, opts: ExportOptions): XDocument {
 }
 
 /**
- * The `.bpmn` document of a case (spec § 4.1, F-B1–F-B4): the case's process (`processFromCase`), every activity with its scope (or only the
+ * The `.bpmn` document of a case (spec § 4.1, F-B1–F-B4): the case's process (its `BPMN` document), every activity with its scope (or only the
  * in-scope ones, `partial`), its diagram, and the BPSim scenario derived from the `ac:` values. Deterministic: same case, same options, same
  * tree (no clock, stable ids and order).
  */

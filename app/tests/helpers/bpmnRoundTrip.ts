@@ -1,22 +1,20 @@
 /**
  * Round trip of the BPMN reader / writer (docs/SPEC_BPMN.md § 4.4, § 11.2; phase B2): export → parse → write is byte-identical, and the parsed
- * export gives back the version 2 keys of the case (`viewsOf`). The reader needs a DOMParser: test files using this helper run in jsdom.
+ * export gives back the version 2 keys of the case (`viewsOf`; since B3 the keys the migration wrote into the case's document). The reader needs a
+ * DOMParser: test files using this helper run in jsdom.
  */
 import { readdirSync, readFileSync } from 'node:fs';
 import { expect } from 'vitest';
-import { exportCaseText, indent, serialize, viewsOf, type ScopeKeys, type XDocument } from '@/domain/process';
+import { exportCaseText, indent, scopeOf, serialize, viewsOf, type ScopeKeys, type XDocument } from '@/domain/process';
 import type { CaseState } from '@/domain';
+import { caseInStore } from '@/store/persistence/bpmn/caseDoc';
 import { parseBpmn } from '@/store/persistence/bpmn/read';
 
 export const FIXTURE_IDS = readdirSync('fixtures/cases').map((f) => f.replace('.json', '')).sort();
-export const rawFixture = (id: string): CaseState => JSON.parse(readFileSync(`fixtures/cases/${id}.json`, 'utf8')) as CaseState;
-const KEYS = ['selectedArtefacts', 'artefactsEdited', 'selectedRegArtefacts', 'regArtefactsEdited', 'phaseOff', 'selectedNorms', 'phaseSeq', 'regInclude',
-  'skillMap'] as const;
-/** The v2 keys exactly as the case holds them (absent keys stay absent). */
-export const v2Keys = (c: CaseState): Partial<ScopeKeys> => {
-  const o = c as unknown as Record<string, unknown>;
-  return Object.fromEntries(KEYS.filter((k) => o[k] !== undefined).map((k) => [k, o[k]])) as Partial<ScopeKeys>;
-};
+/** A fixture as the store holds it since schema v3 (B3): its version 2 keys migrated into its process document (`BPMN`). */
+export const rawFixture = (id: string): CaseState => caseInStore(JSON.parse(readFileSync(`fixtures/cases/${id}.json`, 'utf8')) as CaseState);
+/** The version 2 keys of the case as the migration computed them (normal form): the views of its document. */
+export const v2Keys = (c: CaseState): Partial<ScopeKeys> => scopeOf(c);
 
 /** Parses a text that must be accepted with the default F-B10 limits, with no error. */
 export function parsed(text: string): XDocument {

@@ -2,7 +2,6 @@ import { readdirSync, readFileSync } from 'node:fs';
 import { describe, expect, it } from 'vitest';
 import { criticalReport } from '@/controllers/report';
 import { setDisplayScope } from '@/controllers/displayScope';
-import { setProductOverride } from '@/controllers/productOverrides';
 import { addProduct } from '@/controllers/product';
 import { fmtRoiPct } from '@/domain/economics';
 import { fmtK } from '@/domain/format';
@@ -12,6 +11,7 @@ import { fromSnapshot } from '@/store/persistence/snapshot';
 import { fourProducts, pfNow, regulatedPortfolio } from '../helpers/portfolioFixtures';
 import { loadFixture } from '../helpers/fixtures';
 import { THEME_DEFAULT } from '@/domain/theme';
+import { setScopeOverride } from '../helpers/scope';
 
 const IDS = readdirSync('fixtures/reports').filter((f) => f.endsWith('.html')).map((f) => f.replace('.html', ''));
 const doc = (id: string) => fromSnapshot(JSON.parse(readFileSync(`fixtures/cases/${id}.json`, 'utf8')));
@@ -68,7 +68,7 @@ describe('Portfolio scope', () => {
     const pf = regulatedPortfolio(), t = text(ok(buildScopedReport(pf, { kind: 'portfolio' }, THEME_DEFAULT, NOW)));
     pf.products.filter((p) => p.waveId !== null).forEach((p) => expect(t).toContain(p.name));
     expect(t).toContain('Archive (no wave) has no wave');   // the unscheduled product is outside the consolidation tables and named in the diagnostics
-    const none = regulatedPortfolio(); setProductOverride(none.products[1]!.id, 'selectedNorms', []);
+    const none = regulatedPortfolio(); setScopeOverride(none.products[1]!.id, { selectedNorms: [] });
     expect(text(ok(buildScopedReport(pfNow(), { kind: 'portfolio' }, THEME_DEFAULT, NOW)))).toContain('catalogue off or no norm selected');
   });
   it('is a standalone page: no script, no external resource, everything escaped', () => {
@@ -104,7 +104,7 @@ describe('Wave scope', () => {
   });
   it('an empty wave has no planned product to report', () => {
     const pf = regulatedPortfolio(), empty = pf.waves[1]!;
-    setProductOverride(pf.products[2]!.id, 'selectedNorms', []);
+    setScopeOverride(pf.products[2]!.id, { selectedNorms: [] });
     expect(buildScopedReport(pfNow(), { kind: 'wave', id: empty.id }, THEME_DEFAULT, NOW))
       .toEqual({ ok: false, reason: 'Enable the Regulatory catalog and select at least one norm first (Parameters).' });
   });

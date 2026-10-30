@@ -8,6 +8,7 @@ import { createAppStore, type AppStore } from '@/store/core';
 import { makeDefaultDoc, setAppStore } from '@/store/instance';
 import { connectBroadcast, SYNC_NOTICES, type ChannelLike } from '@/store/persistence/broadcast';
 import { documentOf } from '@/store/portfolioState';
+import { SNAPSHOT_SCHEMA_VERSION } from '@/store/persistence/schema/version';
 import { channelBus, channelPair } from '../helpers/channels';
 
 /** Run controllers on one tab's store. */
@@ -78,12 +79,20 @@ describe('multi-tab sync: document id + revision (lot 10)', () => {
     connectBroadcast(B, b, 'B');
     (a as ChannelLike).onmessage = (e) => got.push(e.data);
     const before = JSON.stringify(B.getState().portfolio), at = B.syncId();
-    a.postMessage({ tabId: 'X', kind: 'patch', docId: at.docId, base: at.rev, rev: at.rev + 1,
+    a.postMessage({ tabId: 'X', v: SNAPSHOT_SCHEMA_VERSION, kind: 'patch', docId: at.docId, base: at.rev, rev: at.rev + 1,
       patches: [{ op: 'replace', path: ['products', 7, 'name'], value: 'x' }] });
     expect(JSON.stringify(B.getState().portfolio)).toBe(before);
     expect(B.syncId()).toEqual(at);
     expect(got).toEqual([expect.objectContaining({ kind: 'request', to: 'X', tabId: 'B', docId: at.docId })]);
     expect(B.applyRemote([{ op: 'remove', path: ['waves', 9, 'productIds', 3] }])).toEqual({ applied: false, historyCleared: false });
+    // schema v3: a message of a tab of an older schema (its patches address the version 2 scope keys) is ignored, like one of a newer schema
+    got.length = 0;
+    for (const v of [SNAPSHOT_SCHEMA_VERSION - 1, SNAPSHOT_SCHEMA_VERSION + 1, undefined]) {
+      a.postMessage({ tabId: 'X', v, kind: 'patch', docId: at.docId, base: B.syncId().rev, rev: B.syncId().rev + 1,
+        patches: [{ op: 'replace', path: ['common', 'customerName'], value: 'old tab' }] });
+    }
+    expect(JSON.stringify(B.getState().portfolio)).toBe(before);
+    expect(got).toEqual([]);
   });
 });
 

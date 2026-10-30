@@ -40,7 +40,7 @@ export default defineConfig({
   // because they spawn a process (vitest / tsc / vite-node: affected-tests, deps-fresh, docs-facts), run a full Monte Carlo or a cost-model workbook, or
   // render every section of a portfolio. No global override: a slow new test fails here first.
   test: {
-    environment: 'node', include: ['tests/**/*.test.{ts,tsx}'],
+    environment: 'node', include: ['tests/**/*.test.{ts,tsx}'], setupFiles: ['tests/setup/domParser.ts'],
     reporters: process.env.CI ? ['default', 'junit'] : ['default'], outputFile: { junit: 'test-results/vitest-junit.xml' },
   },
 });

@@ -1,6 +1,7 @@
 /** @calc-zone exports */
 import type * as XL from 'exceljs';
 import { makeCtx } from '@/domain';
+import { legacyView } from '../../bpmn/legacy';
 import { engineNow } from '@/domain/canonical';
 import { model } from '@/domain/model/overlay';
 import type { Live } from '@/domain/verifyA/fteVfte';
@@ -23,7 +24,7 @@ const SOFT = new Set(['TO-BE Team', 'Skill Map', 'TO-BE Location Split', 'Strate
 export async function buildParamsWorkbook(doc: Doc, scope: ParamsScope, env: ParamsEnv, print: Readonly<ThemeValues>): Promise<XL.Workbook> {
   const X = await loadExcelJS();
   const wb = withPrint(new X.Workbook(), print); wb.creator = 'AgentCase'; wb.created = new Date();
-  const d = doc as unknown as ParamsDoc, c = makeCtx(doc);
+  const d = legacyView(doc) as unknown as ParamsDoc, c = makeCtx(doc);   // the legacy sheets are written from the derived scope keys
   let live: Live | undefined;
   const x: WriteCtx = { wb, d, c, env, secs: effectiveSections(env, d), live: () => (live ??= { c, m: model(c), eng: engineNow(c) }) };
   WRITE_ORDER.forEach((f: SheetFamily) => {

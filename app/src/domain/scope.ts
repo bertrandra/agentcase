@@ -2,10 +2,11 @@
 import { ALL_PHASE_IDS } from './catalog';
 import type { ArtefactSets, WArtefact } from './artefacts';
 import type { CaseState } from './types/state';
+import { scopeOf } from './process/scope';
 
 /** Regulatory artefacts in scope: gated on content (selection non-empty), not on the panel toggle. */
 export function regActive(a: ArtefactSets, s: CaseState): WArtefact[] {
-  if (!s.regInclude || !a.selectedReg.size) return [];
+  if (!scopeOf(s).regInclude || !a.selectedReg.size) return [];
   return a.reg.filter((x) => a.selectedReg.has(x.id));
 }
 

@@ -1,12 +1,12 @@
 // @vitest-environment jsdom
 import { act, cleanup, fireEvent, screen, within } from '@testing-library/react';
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
-import { setProductOverride } from '@/controllers/productOverrides';
 import { computeCase } from '@/domain';
 import { resolveProduct } from '@/domain/portfolio';
 import { fmtEurK } from '@/ui/format';
 import { mountApp, pf, sectionReady } from '../helpers/portfolioUi';
 import { threeProducts } from '../helpers/portfolioStore';
+import { setScopeOverride } from '../helpers/scope';
 
 vi.mock('@/ui/widgets/ChartPanel', async () => import('../helpers/chartStub'));   // jsdom has no canvas
 
@@ -19,7 +19,7 @@ const undoKey = () => fireEvent.keyDown(document.body, { key: 'z', ctrlKey: true
 
 describe('Products section', () => {
   it('one row per product with wave, base team, state and the indicators of its own effective case', async () => {
-    setProductOverride(ids[1], 'regInclude', true);
+    setScopeOverride(ids[1], { regInclude: true });
     mountApp('products');
     await sectionReady(/Products/);
     expect(rows()).toHaveLength(3);
