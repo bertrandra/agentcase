@@ -17,6 +17,8 @@ When releasing, follow [docs/BUMP_PROCEDURE.md](docs/BUMP_PROCEDURE.md) (§7 for
 
 ## [Unreleased]
 
+## [v20.23.0] 2026-10-30 — BPMN B6b: organisation model, RACI, Organisation and Who-does-what sections
+
 ### BPMN B6b — organisation model: units, teams, roles and RACI in the case's BPMN document
 
 Phase B6b of [docs/SPEC_BPMN.md](docs/SPEC_BPMN.md) (§ 16, F-B36…F-B39, decisions D-B15…D-B19; details in § 16.8). Every figure unchanged.
