@@ -17,6 +17,23 @@ When releasing, follow [docs/BUMP_PROCEDURE.md](docs/BUMP_PROCEDURE.md) (§7 for
 
 ## [Unreleased]
 
+### BPMN B1 — the process model in the domain (no store, UI or schema change)
+
+- **`domain/process`** (new zone `process-model`): the delivery process as a native BPMN 2.0 document held as an immutable XML node tree
+  (elements, attributes in order, text, comments, namespace declarations kept) that serialises to the same bytes every time; typed reads
+  (phases, activities, actors, flows, norms, diagram) memoised on the tree; derived views giving exactly what the engine reads today.
+- **Default process**: `npm run process:gen` writes `app/src/domain/catalog/defaultProcess.bpmn` from today's catalogues (11 phases and
+  Cross-cutting, 53 SDLC and 370 regulatory activities, 47 norms, roles, agents, 3 rework loops) with a deterministic diagram (lanes per team
+  skill, phases left to right, Cross-cutting band). 414 KB raw, 35 KB gzipped; valid for `tools/bpmn-validate.mjs` (OMG XSDs, the `ac:` XSD
+  and the profile, 0 error / 0 warning, tested); not in the application bundle yet. `npm run process:check` (run by `npm run check`) fails on any difference.
+- **Parity gate**: `viewsOf(processFromCase(case))` equals the version 2 scope keys (selected artefacts, edits, regulatory selection, phases off,
+  ramp-up sequences, norms, regulatory inclusion, skill map) on the 107 fixtures and on every product of the portfolio fixtures; the artefact
+  lists, phases, norms and loop pairs read from the document equal the JSON catalogues.
+- **`docs/bpmn/agentcase-bpmn-1.0.xsd`** (additive, 1.x rule): optional local attributes for the catalogue fields and case marks the
+  views give back (`ac:phase order sdlc reg featureIds offRank rampSeq rampRank`, `ac:activity order scopeRank edited editRank`,
+  `ac:supervision agent0`, `ac:norm count scopeRank`, `ac:actor regulatory capability`, `ac:rework order note activityA activityB
+  external`, `ac:process regInclude sdlcEdits regEdits rampSeq skillMap` and its `ac:unmatched` children); `tKey` accepts parentheses.
+
 ### BPMN B0 — extension XSD, official OMG schemas, validator, sample and hostile files
 
 Phase B0 of [docs/SPEC_BPMN.md](docs/SPEC_BPMN.md) (§ 5.3, § 11 items 3-5). No change to the app (`app/src` untouched).

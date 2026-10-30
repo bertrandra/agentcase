@@ -1,6 +1,6 @@
 # AgentCase — Specification: the delivery process as a native BPMN 2.0 model (export and import)
 
-> Status: **specified; phase B0 built** (extension XSD, official OMG schemas, `tools/bpmn-validate.mjs`, sample and hostile files, § 5.3). Decisions D-B1…D-B26 **adopted on 2026-10-30** (§ 12, § 15.6, § 16.7, § 17.9); D-B26: the case's BPMN
+> Status: **specified; phases B0 and B1 built** (B0: extension XSD, official OMG schemas, `tools/bpmn-validate.mjs`, sample and hostile files, § 5.3; B1: domain only, `app/src/domain/process`, § 6.3). Decisions D-B1…D-B26 **adopted on 2026-10-30** (§ 12, § 15.6, § 16.7, § 17.9); D-B26: the case's BPMN
 > document is the **only** stored form of the process, the organisation and the audit (§ 6.1). Scope: the TypeScript + React application in `app/`.
 > Related documents: [ARCHITECTURE.md](ARCHITECTURE.md), [DEVIATIONS.md](DEVIATIONS.md), [SPEC_MULTI_PRODUIT.md](SPEC_MULTI_PRODUIT.md).
 > Code rules unchanged: files ≤ 150 lines, no `any`, layers `ui → controllers → store → domain`, every write is an undoable
@@ -277,6 +277,30 @@ in the HTML snapshot) are written from the views. A test asserts on every fixtur
 in, and read at build time. A test regenerates it and fails on any difference (like `deps:gen` / `theme:gen`). The catalogues stay
 the editorial source of the default process until decision D-B9 retires them.
 
+**Built in B1** (domain only, no store / UI / schema change; details in ARCHITECTURE.md § 14):
+
+- `domain/process/xml.ts` is the node tree (D-B1); `npm run process:gen` / `process:check` (in `npm run check`) write and check
+  `app/src/domain/catalog/defaultProcess.bpmn`: the catalogue process carrying the default case's scope (a new case starts from it).
+  **414 KB raw, 35 KB gzipped** (6,977 lines; 423 activities, 47 norms, 39 resources, 453 diagram shapes); valid for
+  `tools/bpmn-validate.mjs` (OMG XSDs + `agentcase-bpmn-1.0.xsd` + profile, 0 error, 0 warning; `tests/domain/process/validate.test.ts`);
+  not imported by the application yet.
+- It follows the B0 profile: `ac:phase code seq role crossCutting` on each phase sub-process, `ac:activity type phase …` and
+  `ac:supervision` on each task, `resourceRef` / `categoryValueRef` / `targetRef` as child elements, agent tasks as
+  `serviceTask implementation="https://agentcase.app/schema/bpmn/1.0#agent"` with `ac:agent`, `ac:norm industry …`, `ac:actor`,
+  `ac:rework`, `ac:process` in the process. No organisation or audit yet, so the collaboration has no `extensionElements`.
+  Other choices: `ac:activity order` keeps the engine's catalogue order; reworks of two activities of one phase are flows inside that
+  sub-process; lanes carry no `flowNodeRef` (phases span every lane).
+- **XSD additions in B1** (optional local attributes only, no new global name, per the 1.x rule): `tKey` accepts parentheses (team skill
+  "Software Quality Assurance (SQA)"); `ac:phase order sdlc reg featureIds`, `ac:activity order`, `ac:supervision agent0`,
+  `ac:norm count`, `ac:actor regulatory capability`, `ac:rework order note activityA activityB external` carry catalogue fields the
+  views give back; and the case marks below.
+- Case marks written by `processFromCase` (B1 parity; B3 decides which survive the migration): `ac:inScope` on tasks, phases and norms;
+  list positions (`scopeRank` on `ac:activity` / `ac:norm`, `offRank` / `rampRank` on `ac:phase`, `editRank` on `ac:activity`) only when
+  a list is not in document order; `ac:phase rampSeq` (legacy `phaseSeq`, empty = null); `ac:activity edited` lists the fields of a legacy
+  edit record (or `sdlcEdits` / `regEdits="all"` on `ac:process` for the full list every saved case holds); `ac:process regInclude`;
+  `<ac:unmatched list rank value>` children of `ac:process` keep list entries no element can carry (unknown ids, repeats, `selectedNorms`
+  written without their industry); `ac:process rampSeq` / `skillMap="none"` record an absent key.
+
 ## 7. Engine
 
 - **Phase 1 (parity)** — the engine reads the derived views: every figure identical on the 107 fixtures, the parallel run (40 files)
@@ -351,7 +375,7 @@ these. Portfolio: the process follows the override commands of spec F6–F9.
 | Phase | Content | Gate | Duration | Difficulty | Needs | Main difficulty |
 |---|---|---|---|---|---|---|
 | B0 (**built in B0**) | This specification; extension XSD; sample foreign files | Decisions adopted | 0.5 d | 2 / 5 | — | Writing a correct extension XSD; collecting real files from bpmn.io, Camunda, Signavio |
-| B1 | `domain/process`: types, default process generator, derived views, layout | Views == v2 keys on 107 fixtures | 1 d | 3 / 5 | B0 | Exact parity of the derived views with today's keys |
+| B1 (**built in B1**) | `domain/process`: types, default process generator, derived views, layout | Views == v2 keys on 107 fixtures | 1 d | 3 / 5 | B0 | Exact parity of the derived views with today's keys |
 | B2 | BPMN reader / writer (DOMParser / XMLSerializer, no new dependency), node tree, security limits, pass-through, BPSim | Round trip byte-identical; XSD-valid; security tests | 1.5 d | 4 / 5 | B1 | Byte-identical round trip with foreign namespaces and vendor extensions |
 | B3 | Schema v3 + migration, `BPMN` key (native XML, node tree in the store), commands, existing scope sections on the model | 107 fixtures identical; parallel run 40/40; excel-compat 67/67 | 2 d | 5 / 5 | B2 | Touches store, undo, tab sync, autosave, Excel and every scope screen at once; node-level undo patches |
 | B4 | Process section: SVG diagram, activity table, actor panel, import (replace / merge, preview, report), export | axe clean; ui-parity 0 divergence | 1.5 d | 3 / 5 | B3 | Accessible diagram with a table alternative; the merge preview |

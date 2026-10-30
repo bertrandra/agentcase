@@ -30,7 +30,7 @@
   <xsd:simpleType name="tName"><xsd:restriction base="xsd:token"><xsd:minLength value="1"/><xsd:maxLength value="200"/></xsd:restriction></xsd:simpleType>
   <xsd:simpleType name="tKey">
     <xsd:annotation><xsd:documentation>A code such as a phase id (L0, V3, Cross-cutting), a catalogue id (A017, R001, jira) or a team skill.</xsd:documentation></xsd:annotation>
-    <xsd:restriction base="xsd:token"><xsd:pattern value="[A-Za-z0-9_][A-Za-z0-9_.:/+ -]{0,79}"/></xsd:restriction>
+    <xsd:restriction base="xsd:token"><xsd:pattern value="[A-Za-z0-9_][A-Za-z0-9_.:/+ ()-]{0,79}"/></xsd:restriction>
   </xsd:simpleType>
   <xsd:simpleType name="tNonNegDecimal"><xsd:restriction base="xsd:decimal"><xsd:minInclusive value="0"/></xsd:restriction></xsd:simpleType>
   <xsd:simpleType name="tPercent"><xsd:restriction base="xsd:decimal"><xsd:minInclusive value="0"/><xsd:maxInclusive value="100"/></xsd:restriction></xsd:simpleType>
@@ -118,6 +118,20 @@
   <xsd:simpleType name="tYesNoLater">
     <xsd:restriction base="xsd:token"><xsd:enumeration value="yes"/><xsd:enumeration value="no"/><xsd:enumeration value="later"/></xsd:restriction>
   </xsd:simpleType>
+  <!-- B1 (docs/SPEC_BPMN.md § 6.3): the case marks that let the version 2 scope keys come back exactly from the document -->
+  <xsd:simpleType name="tRank"><xsd:restriction base="xsd:positiveInteger"/></xsd:simpleType>
+  <xsd:simpleType name="tOptionalSeq">
+    <xsd:annotation><xsd:documentation>A sequence number, or empty for a listed entry without a value (legacy phaseSeq null).</xsd:documentation></xsd:annotation>
+    <xsd:restriction base="xsd:token"><xsd:pattern value="[0-9]{0,9}"/></xsd:restriction>
+  </xsd:simpleType>
+  <xsd:simpleType name="tEditField">
+    <xsd:restriction base="xsd:token">
+      <xsd:enumeration value="agentSup"/><xsd:enumeration value="humanSup"/><xsd:enumeration value="effort"/><xsd:enumeration value="seq"/>
+    </xsd:restriction>
+  </xsd:simpleType>
+  <xsd:simpleType name="tEditFieldList"><xsd:list itemType="ac:tEditField"/></xsd:simpleType>
+  <xsd:simpleType name="tAll"><xsd:restriction base="xsd:token"><xsd:enumeration value="all"/></xsd:restriction></xsd:simpleType>
+  <xsd:simpleType name="tNone"><xsd:restriction base="xsd:token"><xsd:enumeration value="none"/></xsd:restriction></xsd:simpleType>
   <xsd:simpleType name="tSeverity"><xsd:restriction base="xsd:integer"><xsd:minInclusive value="1"/><xsd:maxInclusive value="5"/></xsd:restriction></xsd:simpleType>
 
   <!-- ===================================================================== global attributes (on BPMN elements) -->
@@ -151,10 +165,25 @@
   <xsd:element name="process">
     <xsd:annotation><xsd:documentation>In a bpmn:process: the case-level header of the process.</xsd:documentation></xsd:annotation>
     <xsd:complexType>
+      <xsd:sequence>
+        <xsd:element name="unmatched" minOccurs="0" maxOccurs="unbounded">
+          <xsd:annotation><xsd:documentation>B1: an entry of a case list that no element carries (an unknown id, a repeat), with its position.</xsd:documentation></xsd:annotation>
+          <xsd:complexType>
+            <xsd:attribute name="list" type="ac:tKey" use="required"/>
+            <xsd:attribute name="rank" type="ac:tRank" use="required"/>
+            <xsd:attribute name="value" type="ac:tText" use="required"/>
+          </xsd:complexType>
+        </xsd:element>
+      </xsd:sequence>
       <xsd:attribute name="caseSchema" type="xsd:positiveInteger" use="required"/>
       <xsd:attribute name="catalogueVersion" type="ac:tKey"/>
       <xsd:attribute name="partial" type="xsd:boolean" default="false"/>
       <xsd:attribute name="containsAudit" type="xsd:boolean" default="false"/>
+      <xsd:attribute name="regInclude" type="xsd:boolean"/>
+      <xsd:attribute name="sdlcEdits" type="ac:tAll"/>
+      <xsd:attribute name="regEdits" type="ac:tAll"/>
+      <xsd:attribute name="rampSeq" type="ac:tNone"/>
+      <xsd:attribute name="skillMap" type="ac:tNone"/>
     </xsd:complexType>
   </xsd:element>
 
@@ -165,6 +194,13 @@
       <xsd:attribute name="seq" type="xsd:nonNegativeInteger"/>
       <xsd:attribute name="role" type="ac:tName"/>
       <xsd:attribute name="crossCutting" type="xsd:boolean" default="false"/>
+      <xsd:attribute name="order" type="ac:tRank"/>
+      <xsd:attribute name="sdlc" type="xsd:nonNegativeInteger"/>
+      <xsd:attribute name="reg" type="xsd:nonNegativeInteger"/>
+      <xsd:attribute name="featureIds" type="xsd:NMTOKENS"/>
+      <xsd:attribute name="offRank" type="ac:tRank"/>
+      <xsd:attribute name="rampSeq" type="ac:tOptionalSeq"/>
+      <xsd:attribute name="rampRank" type="ac:tRank"/>
     </xsd:complexType>
   </xsd:element>
 
@@ -180,6 +216,10 @@
       <xsd:attribute name="aiAuthority" type="ac:tAiAuthority"/>
       <xsd:attribute name="storyId" type="xsd:token"/>
       <xsd:attribute name="regulatory" type="xsd:boolean" default="false"/>
+      <xsd:attribute name="order" type="ac:tRank"/>
+      <xsd:attribute name="scopeRank" type="ac:tRank"/>
+      <xsd:attribute name="edited" type="ac:tEditFieldList"/>
+      <xsd:attribute name="editRank" type="ac:tRank"/>
     </xsd:complexType>
   </xsd:element>
 
@@ -187,6 +227,7 @@
     <xsd:complexType>
       <xsd:attribute name="human" type="ac:tPercent" use="required"/>
       <xsd:attribute name="agent" type="ac:tPercent" use="required"/>
+      <xsd:attribute name="agent0" type="ac:tPercent"/>
     </xsd:complexType>
   </xsd:element>
 
@@ -198,6 +239,11 @@
       <xsd:attribute name="internalIterations" type="xsd:nonNegativeInteger"/>
       <xsd:attribute name="pair" type="ac:tKey"/>
       <xsd:attribute name="label" type="ac:tName"/>
+      <xsd:attribute name="order" type="ac:tRank"/>
+      <xsd:attribute name="note" type="ac:tText"/>
+      <xsd:attribute name="activityA" type="ac:tKey"/>
+      <xsd:attribute name="activityB" type="ac:tKey"/>
+      <xsd:attribute name="external" type="xsd:boolean" default="false"/>
     </xsd:complexType>
   </xsd:element>
 
@@ -207,6 +253,8 @@
       <xsd:attribute name="industry" type="ac:tKey" use="required"/>
       <xsd:attribute name="body" type="ac:tName"/>
       <xsd:attribute name="scope" type="ac:tText"/>
+      <xsd:attribute name="count" type="xsd:nonNegativeInteger"/>
+      <xsd:attribute name="scopeRank" type="ac:tRank"/>
     </xsd:complexType>
   </xsd:element>
 
@@ -218,6 +266,8 @@
       <xsd:attribute name="sourcing" type="ac:tSourcing"/>
       <xsd:attribute name="supervisedBy" type="xsd:IDREF"/>
       <xsd:attribute name="description" type="ac:tText"/>
+      <xsd:attribute name="regulatory" type="xsd:boolean" default="false"/>
+      <xsd:attribute name="capability" type="ac:tName"/>
     </xsd:complexType>
   </xsd:element>
 
