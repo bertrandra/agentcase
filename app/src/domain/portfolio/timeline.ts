@@ -1,7 +1,7 @@
 /** @calc-zone portfolio-consolidation */
 import { resolveProduct } from './resolve';
 import { runOf } from './run';
-import { ktLead } from './subset';
+import { ktPrepMonths, setupTiming } from '../programme/timing';
 import type { Portfolio, Product, Wave } from './types';
 import { resolveSchedule, whole, type WaveSchedule } from './waveSchedule';
 
@@ -19,10 +19,13 @@ export interface Scheduled {
 export const productMonth0 = (wave: Wave, product: Product): number => whole(wave.startMonth) + whole(product.offsetMonths);
 
 const schedules = new WeakMap<Portfolio, WaveSchedule>();
-/** The effective calendar (wave dependencies, transformation-team capacity), once per portfolio identity. A product's setup is its own setup profile. */
+/**
+ * The effective calendar (wave dependencies, transformation-team capacity), once per portfolio identity. A product's setup lasts what the
+ * programme's timing owner says (`setupTiming().engineMonths`, the engine's setup profile: SPEC_BPMN § 19.4 F-B65).
+ */
 export function waveSchedule(pf: Portfolio): WaveSchedule {
   let s = schedules.get(pf);
-  if (!s) { s = resolveSchedule(pf, (id) => runOf(resolveProduct(pf, id)).profile); schedules.set(pf, s); }
+  if (!s) { s = resolveSchedule(pf, (id) => setupTiming(runOf(resolveProduct(pf, id)).ctx).engineMonths); schedules.set(pf, s); }
   return s;
 }
 
@@ -33,7 +36,7 @@ export function scheduledProducts(pf: Portfolio): Scheduled[] {
     const wave = product.archived || product.waveId === null ? undefined : pf.waves.find((w) => w.id === product.waveId);
     if (!wave) continue;
     const month0 = plan.month0.get(product.id) ?? productMonth0(wave, product);
-    out.push({ product, wave, month0, lead: Math.min(ktLead(product.knowledge), month0) });
+    out.push({ product, wave, month0, lead: Math.min(ktPrepMonths(product.knowledge), month0) });
   }
   return out;
 }

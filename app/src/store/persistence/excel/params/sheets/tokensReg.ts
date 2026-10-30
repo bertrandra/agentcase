@@ -48,7 +48,10 @@ function writeSettings({ wb, d }: WriteCtx): void {
 function readSettings({ rows, w }: ReadCtx): void {
   const r = rows('Reg Settings'); if (!r) return;
   const map = new Map(r.slice(1).filter((x) => x[0] != null && x[0] !== '').map((x) => [str(x[0]), x[1]] as const));
-  SETTINGS.forEach(([label, key, domKey]) => { if (map.has(label)) w[key] = yes(map.get(label)); w.dom.checked[domKey] = w[key]; });
+  SETTINGS.forEach(([label, key, domKey]) => {
+    if (map.has(label)) w[key] = yes(map.get(label));
+    if (key !== 'regInclude') w.dom.checked[domKey] = w[key];   // B9a: the regInclude box is the process's value (DEV-REGINCLUDE-DERIVED)
+  });
 }
 
 function writeNorms({ wb, d }: WriteCtx): void {

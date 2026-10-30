@@ -7,6 +7,7 @@ import { appStore } from '@/store/instance';
 import Knowledge from '@/ui/sections/tune/knowledge';
 import { pf } from '../helpers/portfolioUi';
 import { threeProducts } from '../helpers/portfolioStore';
+import { renderProgrammePanel } from '../helpers/programmePanel';
 
 vi.mock('@/ui/widgets/ChartPanel', async () => import('../helpers/chartStub'));   // jsdom has no canvas
 
@@ -19,6 +20,11 @@ function openFor(i: number): void {
   render(<Knowledge />);
 }
 const type = (label: string | RegExp, value: string) => fireEvent.change(screen.getByLabelText(label), { target: { value } });
+/** B9a (DEV-B9A-CONTEXT-SCREENS): the KT preparation is a parameter of the programme's knowledge-transfer activity, edited in its panel. */
+function openPanelFor(i: number): void {
+  act(() => { setActiveProduct(ids[i]!); setEditScope('product'); });
+  renderProgrammePanel('ktPrep');
+}
 
 describe('Knowledge domains', () => {
   it('free label + weight rows; the weights must add up to 100 (the remaining % is shown), an invalid list is refused and announced', () => {
@@ -83,8 +89,12 @@ describe('Knowledge domains', () => {
 describe('Knowledge transfer preparation (months before the wave)', () => {
   const FIELD = 'Knowledge transfer preparation (months before the wave)';
 
-  it('refuses a negative or fractional number, announces it, and keeps the document unchanged', () => {
+  it('the Knowledge hub section links to it; refuses a negative or fractional number, announces it, and keeps the document unchanged', () => {
     openFor(2);
+    expect(screen.queryByLabelText(FIELD)).toBeNull();
+    expect(screen.getByText('Open Knowledge transfer preparation in Process')).toBeTruthy();
+    cleanup();
+    openPanelFor(2);
     type(FIELD, '-1');
     fireEvent.blur(screen.getByLabelText(FIELD));
     expect(screen.getByRole('alert').textContent).toMatch(/whole number of months, 0 or more/);
@@ -96,7 +106,7 @@ describe('Knowledge transfer preparation (months before the wave)', () => {
 
   it('typing 3 moves only the KT setup cost of that product in the consolidated series (setup/net/ktSetup), the others do not move', () => {
     const before = consolidate(pf());
-    openFor(2);
+    openPanelFor(2);
     type(FIELD, '3');
     expect(prod(2).knowledge.ktLeadMonths).toBe(3);
     expect(screen.getByRole('group', { name: 'Knowledge transfer preparation: overridden' })).toBeTruthy();
@@ -112,7 +122,7 @@ describe('Knowledge transfer preparation (months before the wave)', () => {
   });
 
   it('a preparation longer than the wave start shows the clamp diagnostic', () => {
-    openFor(2);
+    openPanelFor(2);
     type(FIELD, '9');
     expect(screen.getByText(/starts at calendar month 1 \(lead capped at 6\)/)).toBeTruthy();
   });

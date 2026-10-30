@@ -5,8 +5,9 @@ import { Tracker } from './Tracker';
 
 const help = (
   <>
-    <p>Sets the length of the four onboarding stages run <strong>with the client</strong> before the agentic build scales: Discover → Calibrate → Validate →
-      Pilot &amp; Prove. Each ends on an explicit gate, so commitment grows only as evidence does. The durations position everything downstream on the calendar
+    <p>Shows the runway of the four onboarding stages run <strong>with the client</strong> before the agentic build scales: Discover → Calibrate → Validate →
+      Pilot &amp; Prove. Each ends on an explicit gate, so commitment grows only as evidence does. Their durations (edited in the 🧩 Process section, where the
+      stages are activities of the transformation programme) position everything downstream on the calendar
       — the roadmap below, the 📅 Gantt, and the point at which the adoption ramp is allowed to start climbing.</p>
     <p>The stages are consecutive, not parallel: <code>onboarding end</code> = start date + Discover + Calibrate + Validate + Pilot. At the defaults (4 + 4 + 4
       + 6) that is 18 weeks. Shortening them moves the date benefits start, which flatters payback and NPV — resist it without cause, especially the Pilot,
@@ -19,9 +20,9 @@ const help = (
 export default function EngageSection() {
   return (
     <SectionFrame title="🤝 Engage — starting early with the client" help={help}
-      input={<><p className="ac-muted">Engage early, commit progressively. The weeks below are the runway you spend alongside the client before scaling: frame
-        the baseline (Discover), freeze the scope and coefficients (Calibrate), sign the assumptions (Validate), then prove the numbers on real pods (Pilot
-        &amp; Prove). Measurement precedes commitment — nothing scales until the pilot clears its gate.</p><Durations /></>}
+      input={<><p className="ac-muted">Engage early, commit progressively. The runway below is the time you spend alongside the client before scaling; its
+        stages are activities of the transformation programme, described and timed in the 🧩 Process section. Measurement precedes commitment — nothing
+        scales until the pilot clears its gate.</p><Durations /></>}
       result={<><Roadmap /><Tracker /></>} />
   );
 }

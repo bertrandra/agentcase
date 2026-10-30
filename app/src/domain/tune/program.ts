@@ -4,6 +4,7 @@ import { engagementKey } from '../engagement';
 import { maturityInfo } from './maturity';
 import { modelOf } from './memo';
 import { opModelCompute } from './opmodel';
+import { pilotTiming } from '../programme/timing';
 
 // Wave 4 (completeness) — analytical blocks: none of them feeds the euro result.
 // Like the legacy read-outs, a field left at 0 or blank falls back to its default (`P(id) || default`).
@@ -11,8 +12,7 @@ const num = (c: Ctx, id: string, dflt: number): number => c.inp.p(id) || dflt;
 
 /** EV-21 pilot sizing: duration (prove weeks + 2 weeks per break-in sprint) and indicative cost. */
 export function pilotSizing(c: Ctx) {
-  const m = modelOf(c), fte = num(c, 'pilotFte', 3), breakIn = num(c, 'pilotBreakin', 2), weeks = num(c, 'pilotWeeks', 12);
-  const totalWeeks = weeks + breakIn * 2;
+  const m = modelOf(c), fte = num(c, 'pilotFte', 3), { breakIn, weeks, totalWeeks } = pilotTiming(c);   // timing: the programme's owner (F-B65)
   return { fte, breakIn, weeks, totalWeeks, cost: fte * (totalWeeks / 52) * (m.wd || 220) * (m.tgtTJM || 600) };
 }
 
@@ -21,7 +21,7 @@ export function pilotSizing(c: Ctx) {
  * weeks), the last month pro rata. Index 0 = product month 1; the entries sum to the cost. Empty when the pilot has no duration or no cost.
  */
 export function pilotMonths(p: { totalWeeks: number; cost: number }): number[] {
-  const D = (p.totalWeeks * 12) / 52;
+  const D = (p.totalWeeks * 12) / 52;   // the same months as `pilotTiming().months`
   if (!(D > 0) || !(p.cost > 0)) return [];
   return Array.from({ length: Math.ceil(D - 1e-9) }, (_, k) => (p.cost * Math.min(1, D - k)) / D);
 }

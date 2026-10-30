@@ -6,6 +6,7 @@ import { computeCase } from '@/domain';
 import { appStore } from '@/store/instance';
 import RunSizing from '@/ui/sections/tune/run-sizing';
 import { freshStore } from '../../store/helpers';
+import { editParam, expectReference } from '../../helpers/programmeParam';
 import { expectParity, FIXTURES, loadFixture } from './tuneBHelpers';
 
 beforeEach(() => { freshStore(); });
@@ -19,10 +20,12 @@ describe('run-sizing section', () => {
     const { container } = render(<RunSizing />);
     expectParity(fx, 'run-sizing', container);
   });
+  // B9a (DEV-B9A-CONTEXT-SCREENS): the sizing policy is a parameter of the AgentOps run activity, edited in the Process section; the preview follows it
   it('the sizing policy drives the run-team cost and the preview; undo restores', () => {
     render(<RunSizing />);
     const before = runCost();
-    fireEvent.change(screen.getByLabelText('Ops load per agent vFTE'), { target: { value: '0.3' } });
+    expectReference('Ops load per agent vFTE', 'AgentOps run team');
+    editParam('runOpsPerAgent', '0.3');
     expect(doc().dom.values.runOpsPerAgent).toBe('0.3');
     expect((runCost()[2] as number)).toBeGreaterThan(before[2] as number);
     expect(screen.getByText('Run team (FTE)').closest('tr')!.textContent).not.toContain('2.29');
@@ -32,7 +35,7 @@ describe('run-sizing section', () => {
   });
   it('legacy mode reproduces the legacy run-legacy-size fixture', () => {
     render(<RunSizing />);
-    fireEvent.change(screen.getByLabelText('Mode'), { target: { value: 'legacy' } });
+    editParam('runSizeMode', 'legacy');
     const exp = JSON.parse(readFileSync('fixtures/expected/run-legacy-size.json', 'utf8')).model.yearRunAgenticCost as number[];
     runCost().forEach((v, i) => expect(Math.abs(v - (exp[i] as number))).toBeLessThan(1e-6 * Math.max(1, exp[i] as number)));
   });

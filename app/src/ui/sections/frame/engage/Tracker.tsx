@@ -3,6 +3,7 @@ import { plannedQuarters, trackStatus, type TrackActual } from '@/domain/frame';
 import { useCtx, useDoc } from '@/store/hooks';
 import { ChartPanel } from '@/ui/widgets/ChartPanel';
 import { Panel, Stat, StatRow } from '@/ui/widgets/cards';
+import { ActivityRefs } from '@/ui/widgets/ActivityRefs';
 import { TrackerTable } from './TrackerTable';
 import { trackerCharts } from './trackerCharts';
 import { useTheme } from '@/ui/themeContext';
@@ -44,6 +45,7 @@ export function Tracker() {
     <Panel title="📈 Plan vs actual — quarterly tracking" aside={toggle}>
       <p className="ac-muted">Record what actually happened each quarter against what the case predicted. Hidden by default — it only earns its place once
         delivery is under way.</p>
+      <ActivityRefs kinds={['valueTracking']} />
       {open && <TrackerBody />}
     </Panel>
   );

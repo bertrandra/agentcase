@@ -1,0 +1,4 @@
+/* Phase B9a (docs/SPEC_BPMN.md § 19.7 F-B71): the programme activities a context screen relies on, read-only, with "Open … in Process". Tokens only. */
+.ac-act-refs { margin: 8px 0; padding: 6px 10px; border-left: var(--ac-border-thin) solid var(--ac-primary-700); background: var(--ac-surface-raised); }
+.ac-act-refs p { margin: 0 0 4px; }
+.ac-act-refs ul { margin: 0; padding-left: 18px; }

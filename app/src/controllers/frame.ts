@@ -91,7 +91,7 @@ const toggleCrossCmd = defineCommand<{ code: string; on: boolean }>({
 });
 const setRegIncludeCmd = defineCommand<{ on: boolean }>({
   type: 'frame.setRegInclude', label: (p) => `${p.on ? 'Include' : 'Exclude'} regulatory artefacts in effort and runs`,
-  run(d, p) { editScope(d, (k) => { k.regInclude = p.on; }); d.dom.checked.regInclude = p.on; refitPotential(d); },
+  run(d, p) { editScope(d, (k) => { k.regInclude = p.on; }); refitPotential(d); },   // the process only (B9a: no form copy)
 });
 
 export const setCustomerName = (name: string): void => appStore().dispatch(setCustomerCmd({ name }));

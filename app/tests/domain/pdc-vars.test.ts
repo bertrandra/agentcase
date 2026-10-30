@@ -9,6 +9,7 @@ import { formatValue } from '@/ui/sections/configure/board/format';
 import { quantile } from '@/domain/model/numerics';
 import { daGet } from '@/domain/verifyB/anchors';
 import { engineNow } from '@/domain';
+import { scopeOf } from '@/domain/process';
 import { anchored, deviationFixtures } from '../helpers/deviations';
 import { caseFte } from '@/domain/economics/fte';
 import { diffs } from '../helpers/economics';
@@ -54,6 +55,10 @@ describe('all 166 registry variables reproduce the legacy', () => {
       };
       if (w.id === 'totalTargetFteY3' && deviationFixtures('DEV-TEAM-RUN-END')
         .includes(id)) { expect(domain(rt).value).toBe(caseFte(c).after); return domain(rt); }
+      // DEV-REGINCLUDE-DERIVED (B9a): the box reads the process's regInclude; frame-industry-cross held it ticked with regulatory artefacts excluded.
+      if (w.id === 'tgRegInclude' && deviationFixtures('DEV-REGINCLUDE-DERIVED').includes(id)) {
+        expect([w.value, domain(rt).value]).toEqual([true, scopeOf(c.s).regInclude]); return domain(rt);
+      }
       // DEV-CM-CONFIDENCE: the legacy registry evaluated the recommendation before its own Monte Carlo run (no confidence): that order gives the legacy value.
       if (w.id === 'recommendedCommercialModel') { expect(domain({ ...rt, mc: null }).value).toBe(w.value); return domain(rt); }
       // DEV-PAYBACK-NOSETUP: with no setup the strategies' immediate payback ranks best, so the top score follows the domain ranking.

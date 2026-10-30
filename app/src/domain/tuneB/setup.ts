@@ -8,18 +8,19 @@ import { teamInCost } from '../location';
 export const convChangeCost = (c: Ctx): number => (hriEnabled(c) ? teamInCost(c.s, c.inp).etp * hriCostPerFTE(c) : 0);
 
 export type SetupLineId = 'tooling' | 'training' | 'coaching' | 'governance' | 'change' | 'knowledge';
-/** One line of the setup: an editable input line, or a line the model adds (`input` null). */
-export interface SetupLine { id: SetupLineId; label: string; input: string | null; amount: number; h1: string; h2: string; text: string }
+/**
+ * One line of the setup: an editable input line, or a line the model adds (`input` null). Each line is an activity of the transformation
+ * programme, whose description is held by the programme (`domain/programme/catalogue.ts`, SPEC_BPMN § 19.7; phase B9a), not here.
+ */
+export interface SetupLine { id: SetupLineId; label: string; input: string | null; amount: number; h1: string; h2: string }
 const LINES: Omit<SetupLine, 'amount'>[] = [
-  { id: 'tooling', label: 'Tooling & infra', input: 'setupTooling', h1: '€20K', h2: '€15K', text: 'Claude API, monitoring, security, CI/CD' },
-  { id: 'training', label: 'Training & change', input: 'setupTraining', h1: '€15K', h2: '€30K', text: 'Workshops, champion certification' },
-  { id: 'coaching', label: 'Coaching', input: 'setupCoaching', h1: '€10K', h2: '€25K', text: 'Pair programming, deliverable review' },
-  { id: 'governance', label: 'Governance', input: 'setupGov', h1: '€8K', h2: '€12K', text: 'Compliance audit, IP, agentic charter' },
+  { id: 'tooling', label: 'Tooling & infra', input: 'setupTooling', h1: '€20K', h2: '€15K' },
+  { id: 'training', label: 'Training & change', input: 'setupTraining', h1: '€15K', h2: '€30K' },
+  { id: 'coaching', label: 'Coaching', input: 'setupCoaching', h1: '€10K', h2: '€25K' },
+  { id: 'governance', label: 'Governance', input: 'setupGov', h1: '€8K', h2: '€12K' },
 ];
-const CHANGE: Omit<SetupLine, 'amount'> = { id: 'change', label: 'Change management (HRI)', input: null, h1: '—', h2: '—',
-  text: 'Entry headcount × cost per FTE of the human-readiness intensity' };
-const KNOWLEDGE: Omit<SetupLine, 'amount'> = { id: 'knowledge', label: 'Knowledge hub setup', input: null, h1: '—', h2: '—',
-  text: 'Hub setup base × the context-completeness gap to close' };
+const CHANGE: Omit<SetupLine, 'amount'> = { id: 'change', label: 'Change management (HRI)', input: null, h1: '—', h2: '—' };
+const KNOWLEDGE: Omit<SetupLine, 'amount'> = { id: 'knowledge', label: 'Knowledge hub setup', input: null, h1: '—', h2: '—' };
 
 /** The setup of a case: every component line, the four editable lines' subtotal and the total. */
 export interface SetupBreakdown {

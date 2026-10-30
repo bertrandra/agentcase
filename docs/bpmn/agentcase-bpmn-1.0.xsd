@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
-  AgentCase BPMN extension, version 1.0 (docs/SPEC_BPMN.md § 5.2, § 15, § 16, § 17).
+  AgentCase BPMN extension, version 1.0 (docs/SPEC_BPMN.md § 5.2, § 15, § 16, § 17, § 19).
   Namespace https://agentcase.app/schema/bpmn/1.0, prefix `ac`.
 
   Where the ac: content goes in a BPMN 2.0.2 file
@@ -162,6 +162,12 @@
   </xsd:attribute>
   <xsd:attribute name="requiresState" type="ac:tName">
     <xsd:annotation><xsd:documentation>On a gate, an approval or a gateway: the bpmn:dataState its input must have reached (F-B42).</xsd:documentation></xsd:annotation>
+  </xsd:attribute>
+  <xsd:attribute name="programme" type="xsd:boolean">
+    <xsd:annotation><xsd:documentation>On a bpmn:participant and its bpmn:process: the transformation programme (§ 19, B9a), beside the delivery process.</xsd:documentation></xsd:annotation>
+  </xsd:attribute>
+  <xsd:attribute name="setupCapacity" type="xsd:positiveInteger">
+    <xsd:annotation><xsd:documentation>On the programme's bpmn:laneSet: at most this many products in setup at once (the transformation team's capacity, § 19.2).</xsd:documentation></xsd:annotation>
   </xsd:attribute>
   <xsd:attribute name="decisionRef" type="ac:tKey">
     <xsd:annotation><xsd:documentation>On a businessRuleTask: the id of the DMN decision it applies (F-B62).</xsd:documentation></xsd:annotation>
@@ -509,6 +515,44 @@
       </xsd:choice>
       <xsd:attribute name="status" type="ac:tAuditStatus"/>
       <xsd:attribute name="asOf" type="xsd:date"/>
+    </xsd:complexType>
+  </xsd:element>
+  <!-- ===================================================================== transformation programme (§ 19, B9a) -->
+  <xsd:simpleType name="tProgrammeLevel"><xsd:restriction base="xsd:token"><xsd:enumeration value="case"/><xsd:enumeration value="product"/></xsd:restriction></xsd:simpleType>
+  <xsd:simpleType name="tCostRule">
+    <xsd:restriction base="xsd:token">
+      <xsd:enumeration value="resources"/><xsd:enumeration value="nonLabour"/><xsd:enumeration value="engine"/><xsd:enumeration value="sameAsHubSetup"/>
+      <xsd:enumeration value="optIn"/><xsd:enumeration value="none"/>
+    </xsd:restriction>
+  </xsd:simpleType>
+  <xsd:element name="programmeActivity">
+    <xsd:annotation><xsd:documentation>On a task of the programme process: its kind, level, cost rule (§ 19.3), timing and placement (F-B65), and its parameters (the case keys that hold them until B9c).</xsd:documentation></xsd:annotation>
+    <xsd:complexType>
+      <xsd:sequence>
+        <xsd:element name="param" minOccurs="0" maxOccurs="unbounded">
+          <xsd:complexType>
+            <xsd:attribute name="key" type="ac:tKey" use="required"/>
+            <xsd:attribute name="value" type="ac:tText" use="required"/>
+            <xsd:attribute name="unit" type="ac:tText"/>
+          </xsd:complexType>
+        </xsd:element>
+      </xsd:sequence>
+      <xsd:attribute name="kind" type="ac:tKey" use="required"/>
+      <xsd:attribute name="level" type="ac:tProgrammeLevel" use="required"/>
+      <xsd:attribute name="costRule" type="ac:tCostRule" use="required"/>
+      <xsd:attribute name="timing" type="ac:tKey"/>
+      <xsd:attribute name="placement" type="ac:tText"/>
+      <xsd:attribute name="cost" type="ac:tNonNegDecimal"/>
+      <xsd:attribute name="active" type="xsd:boolean" default="true"/>
+    </xsd:complexType>
+  </xsd:element>
+  <xsd:element name="wave">
+    <xsd:annotation><xsd:documentation>On a wave sub-process of the programme: its code, effective start month, products and dependency (F-B67).</xsd:documentation></xsd:annotation>
+    <xsd:complexType>
+      <xsd:attribute name="code" type="ac:tKey" use="required"/>
+      <xsd:attribute name="start" type="ac:tNonNegDecimal"/>
+      <xsd:attribute name="products" type="xsd:nonNegativeInteger"/>
+      <xsd:attribute name="dependsOn" type="ac:tText"/>
     </xsd:complexType>
   </xsd:element>
 </xsd:schema>

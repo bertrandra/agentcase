@@ -1,21 +1,20 @@
-import { useIsMulti } from '@/store/portfolioHooks';
+import { ActivityRefs } from '@/ui/widgets/ActivityRefs';
 import { Panel } from '@/ui/widgets/cards';
-import { NumberInput, RangeInput, SelectInput } from '@/ui/widgets/fields';
-import { SubsetBadge, SubsetFieldBox } from './SubsetBadge';
+import { RangeInput } from '@/ui/widgets/fields';
+import { SubsetBadge } from './SubsetBadge';
 
 const GROUPS: { title: string; items: string[] }[] = [
   { title: 'Coverage', items: ['Key artifacts are captured', 'Domain knowledge is captured', 'Decisions/ADRs are captured'] },
   { title: 'Freshness', items: ['Updated within the sprint', 'Ownership & curation exist', 'Stale content is retired'] },
   { title: 'Structure', items: ['Machine-readable / indexed', 'Linked (graph / traceability)', 'Agent-accessible (RAG / MCP)'] },
 ];
-const CC = [0, 1, 2, 3, 4].map((n) => ({ value: String(n), label: `CC${n}` }));
 
 /**
- * AS-IS assessment (nine 0-4 statements) and the target / cost inputs of the hub. With several products the fields are those of the ACTIVE product's
- * subset (chips "inherited / overridden"), and the hub infrastructure, a portfolio cost, is edited in the shared hub card instead.
+ * AS-IS assessment (nine 0-4 statements), a case-level diagnostic. With several products the answers are those of the ACTIVE product's subset
+ * (chips "inherited / overridden"). The hub's target, setup base and duration, curation and infrastructure are parameters of the Knowledge Hub
+ * setup and run activities of the transformation programme, edited in the Process section (SPEC_BPMN § 19.7, phase B9a).
  */
 export function AsisPanel() {
-  const multi = useIsMulti();
   return (
     <Panel title="AS-IS assessment (9 statements, 0 = absent → 4 = excellent)" aside={<SubsetBadge field="maturityAnswers" label="Maturity answers" />}>
       {GROUPS.map((g, gi) => (
@@ -26,15 +25,7 @@ export function AsisPanel() {
           </div>
         </fieldset>
       ))}
-      <div className="ac-form-row">
-        <SubsetFieldBox field="targetCC" label="Target CC"><SelectInput id="khTargetCC" label="Target CC (Y3)" options={CC} /></SubsetFieldBox>
-        <SubsetFieldBox field="setupBase" label="Setup base"><NumberInput id="khSetupBase" label="Hub setup base (€)" min={0} step={10000} /></SubsetFieldBox>
-        <NumberInput id="khSetupDays" label="Setup duration (days)" hint="sizes its row in the Gantt programme band" min={1} step={5} />
-        <SubsetFieldBox field="curationFTE" label="Curation">
-          <NumberInput id="khCurationFTE" label="Curation (FTE)" min={0} max={2} step={0.25} />
-        </SubsetFieldBox>
-        {!multi && <NumberInput id="khInfraMonthly" label="Hub infra (€/mo)" min={0} step={250} />}
-      </div>
+      <ActivityRefs kinds={['hubSetup', 'hubRun']} />
     </Panel>
   );
 }

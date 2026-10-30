@@ -1,6 +1,6 @@
 # AgentCase — Specification: the delivery process as a native BPMN 2.0 model (export and import)
 
-> Status: **specified; phases B0, B1, B2, B3, B4, B5, B5b, B6, B6b and B7 built** (B0: extension XSD, official OMG schemas, `tools/bpmn-validate.mjs`, sample and hostile files, § 5.3; B1: domain only, `app/src/domain/process`, § 6.3; B2: reader / writer, security, round trip, BPSim, export from the File menu, § 5.5; B3: schema v3, the case stores the BPMN document, § 6.4; B4: the Process section, import, § 9.1; B5: custom activities, roles, agents and rework from the model in the engine, § 7.1; B5b: extended profile in the domain, § 17.10; B6: the optional lazy BPMN editor, § 9.2; B6b: organisation model, § 16.8; B7: audit layer, § 15.7). Decisions D-B1…D-B26 **adopted on 2026-10-30** (§ 12, § 15.6, § 16.7, § 17.9); D-B26: the case's BPMN
+> Status: **specified; phases B0, B1, B2, B3, B4, B5, B5b, B6, B6b and B7 built** (B0: extension XSD, official OMG schemas, `tools/bpmn-validate.mjs`, sample and hostile files, § 5.3; B1: domain only, `app/src/domain/process`, § 6.3; B2: reader / writer, security, round trip, BPSim, export from the File menu, § 5.5; B3: schema v3, the case stores the BPMN document, § 6.4; B4: the Process section, import, § 9.1; B5: custom activities, roles, agents and rework from the model in the engine, § 7.1; B5b: extended profile in the domain, § 17.10; B6: the optional lazy BPMN editor, § 9.2; B6b: organisation model, § 16.8; B7: audit layer, § 15.7; B9a: the transformation programme derived, its timing owner and screens, § 19.8). Decisions D-B1…D-B26 **adopted on 2026-10-30** (§ 12, § 15.6, § 16.7, § 17.9); D-B26: the case's BPMN
 > document is the **only** stored form of the process, the organisation and the audit (§ 6.1). Scope: the TypeScript + React application in `app/`.
 > Related documents: [ARCHITECTURE.md](ARCHITECTURE.md), [DEVIATIONS.md](DEVIATIONS.md), [SPEC_MULTI_PRODUIT.md](SPEC_MULTI_PRODUIT.md).
 > Code rules unchanged: files ≤ 150 lines, no `any`, layers `ui → controllers → store → domain`, every write is an undoable
@@ -427,9 +427,11 @@ the editorial source of the default process until decision D-B9 retires them.
   `LOOP_PAIRS` as reference lists (reset to the catalogue, pins validation, the factory pickers, the Excel legacy sheets, per-phase tables) must read the
   default process views instead. The figures do not depend on it any more (they read the case's document). (2) The factory story / feature links
   (`fmArtefactTags.storyId`, `fmPhaseFeatures`) stay case keys: they are workspace data shared by every product, while the process document is
-  overridable per product, so moving them into the document changes what a product override means (to decide). (3) `dom.checked.regInclude` stays: the
-  oracle fixture `frame-industry-cross` holds the box ticked with `regInclude` false, so deriving it changes the `tgRegInclude` variable and the
-  excel-compat state comparison (a deviation to decide). (4) Pins of a custom activity are not accepted yet (`normalisedPins` checks the catalogue ids),
+  overridable per product, so moving them into the document changes what a product override means (to decide). (3) `dom.checked.regInclude`: **decided and
+  built in B9a** (owner, 2026-10-30; DEV-REGINCLUDE-DERIVED): the form copy is dropped on open (`withoutRegIncludeBox`, also a product's
+  `checked.regInclude` override) and never saved; `frame.setRegInclude` writes the process only; `tgRegInclude` reads `scopeOf(case).regInclude`; the
+  legacy shape (`legacyView`: parameters workbook, excel-compat) derives the box from the process. The oracle fixture `frame-industry-cross` (box
+  ticked, `regInclude` false) now reads Off; no euro figure changes. (4) Pins of a custom activity are not accepted yet (`normalisedPins` checks the catalogue ids),
   and the per-phase tables that list the catalogue phases (`phaseArtRows`, agent usage) do not show a custom phase.
 
 ## 8. Interface
@@ -566,7 +568,7 @@ these. Portfolio: the process follows the override commands of spec F6–F9.
 | B7 (**built in B7**) | Audit layer (§ 15): tool catalogue, `ac:audit` elements and `domain/audit`, Audit section, audit workbook, audit report, explicit calibration | Round trip with audit data; calibration log; axe clean | 2 d | 3 / 5 | B4, B6b | Curating a neutral, dated tool catalogue (needs the owner's review) |
 | B7b | DMN decisions (F-B62) and the optional CMMN export of the run phase (F-B63) | DMN round trip; evaluator tests per hit policy | 1.5 d | 3 / 5 | B5b | DMN hit policies and the shared FEEL subset |
 | B8 | Release: guide, DEVIATIONS (if any), CHANGELOG, version bump | All gates green | 0.5 d | 1 / 5 | all | — |
-| B9a | Transformation programme process derived from today's keys; one timing owner per programme activity (§ 19) | 107 fixtures identical; parallel-run 40/40; excel-compat 67/67 | 2 d | 4 / 5 | B8 | Unifying the Gantt, cost-model and engine timings without moving a figure |
+| B9a (**built in B9a**, derived stage; waves board open, § 19.8) | Transformation programme process derived from today's keys; one timing owner per programme activity (§ 19) | 107 fixtures identical; parallel-run 40/40; excel-compat 67/67 | 2 d | 4 / 5 | B8 | Unifying the Gantt, cost-model and engine timings without moving a figure |
 | B9b | Timing conflicts resolved (D-B27…D-B31); labour costs of training, coaching, governance from resources; opt-in new costs | Hand-computed reference tests; deviations recorded | 2 d | 4 / 5 | B9a | Figures move: each change explained and recorded |
 | B9c | Programme values stored in the BPMN document (schema v4) | All round trips; v3 → v4 identical | 2 d | 5 / 5 | B9b | Second schema migration across every persistence path |
 
@@ -1111,12 +1113,17 @@ waves, report).
 | Value tracking | `plannedQuarters`, `trackStatus` | case | resources, opt-in (new cost) |
 | Risk mitigations and AI Act obligations | `RISK_REGISTER`, `AIACT_TIERS` | case | resources, opt-in (new cost) |
 | Audit / discovery interviews (§ 15) | audit header | case | resources, opt-in (new cost) |
+| Governance gates and maturity transitions L1→L4 (Design Authority, AI Office sign-off) | `tune/program.ts` `TRANSITIONS`, `tune/maturityTab.ts` `GOV_GATES` (text only) | per product | milestones and gateways, no cost; placed at the engine's adoption crossings (B9a) |
+| Capability building (operational / in training / target headcount) | `capOps`, `capTrain`, `capTarget`; `tune/program.ts` `capability` | per product | part of the training activity (trainees = in training); milestone "target capability reached"; no new cost in B9a, training cost from resources in B9b |
 
 **Not programme activities**: parameters and coefficients (S-curve, maturity bounds, discount rate, horizon, hub allocation mode;
 `maxConcurrentSetups` becomes a lane capacity); results (FTE before / after, vFTE, KT days avoided, risk scores, stress, verdict); the
-agent factory (`fm*`, a simulation of the delivery process, which belongs to the delivery BPMN as an event log); governance gates and
-maturity transitions (gateways and milestones of the delivery process). Not found in the application and possible later additions:
-hypercare, decommissioning, licence procurement and integration work as their own items.
+agent factory (`fm*`, a simulation of the delivery process), **out of the BPMN scope by the owner's decision (2026-10-30)**. Governance
+gates, maturity transitions and capability building are in the table above (added 2026-10-30, built in B9a). Not found in the application
+and possible later additions (opt-in new activities, not planned): licence procurement and agent-toolchain integration as their own items;
+hypercare and decommissioning of the **agent rollout or of replaced legacy tools**. The delivered software's own go-live, run and end of
+life are already delivery activities (phase L8 Deployment `A044` Go-live dossier; L9 Run / AMS `A045`–`A049`; L10 End-of-life `A050`
+Decommissioning plan) and stay there.
 
 ### 19.3 Cost of a programme activity
 
@@ -1180,3 +1187,71 @@ defines, describes or edits an activity.
   description, list or parameter field is duplicated on them.
 - **F-B72 — One owner.** A test fails if an activity parameter key is written by a screen other than the Process screen's parameter
   panel (or the BPMN import / editor), and if an activity description exists outside the document.
+
+### 19.8 Built in B9a (programme derived, one timing owner, screens)
+
+Every figure of the 107 fixtures is unchanged (B9a is figure-neutral): the programme is **derived** in memory from its catalogue and today's keys,
+like the B6b teams; no value moved, no key added, schema unchanged at 3. Code: `app/src/domain/programme/` (calc zones `run-setup-taxes` for the timing owner, stages and ids (an input the engine reads), `delivery-views` for the catalogue, lanes, milestones, placement and costs, `exports` for the derived view, diagram and BPMN writer).
+
+- **F-B64 built (lanes: partial).** `programmeProcess(ctx, portfolio?, product?)` gives the participant "Transformation programme", eight lanes (the
+  seven operating-model roles of `tune/opmodel.ts`, each with its Y1 FTE from the EV-09 topology, and "AI agents" in a lane of its own), four phases
+  (engagement stages; setup per product; build and run per product; assurance and value) and the 20 activities of the § 19.2 inventory
+  (`catalogue.ts`: name, description, lane, RACI on the lanes, level, cost rule, timing kind, parameters and the keys that hold them, source module,
+  the module switch it depends on). Each activity's cost is read from today's owner (`costs.ts`: setup lines, `pilotSizing`, `khSetupCost`,
+  `khRunAnnual`, the engine's run team; coaching curve shown as information, T5). *Partial:* the lanes are the operating-model roles; they are not
+  yet linked to the organisation model's units, teams and role catalogue (§ 16): that link comes with the stored form (B9c).
+- **F-B65 built (one owner, the pre-B9a readings kept).** `timing.ts` is the one timing owner: `stageTimings` / `stageWeeks` (engagement reading:
+  blank or 0 → default; Gantt reading `ganttWeeks`: blank → 0), `setupTiming` (`engineMonths` 6, the engine's setup profile; `buildMonths` from
+  `setupDuration`, the Gantt build), `pilotTiming` (weeks, break-in, total, months, `costFromProductMonth` 1), `hubSetupTiming` (Gantt days and
+  months; engine inside the setup profile), `ktPrepMonths`, and `programmeCalendar` (the Gantt programme band). Readers: the engine kernel
+  (`setupProfileMonths`), the Gantt (`programRows`), the engagement roadmap and runway (`frame/onboarding.ts`), the Board variable
+  `onboardWeeksTotal`, `pilotSizing`, the cost model's pilot months (`pilotCells`), the wave schedule (setup months of the capacity and of `setupEnd`
+  dependencies) and the knowledge-transfer lead (`timeline.ts`, `knowledge.ts`). Where two surfaces disagreed (T1 setup duration, T2 pilot
+  placement, T3 hub setup timing, the stage default of T4), the owner names each reading and returns today's value; B9b collapses each pair.
+  **T4 merged:** one stage list (`stages.ts`: names, Gantt names and colours, description, gate, evidence section, input, default) read by the
+  roadmap and the Gantt. Tests: `tests/domain/programme/timing-owner.test.ts` (each surface against its pre-B9a formula, written out, and against
+  the owner, on the 107 fixtures; the waves' capacity counts the owner's months).
+- **§ 19.2 rows of 2026-10-30 built.** *Governance gates and maturity transitions:* `milestones.ts` adds per product a milestone "Governance gates in
+  place" (criteria: `GOV_GATES`, placed at the engine's first adoption crossing) and three gateways "Maturity gate L1 → L2 / L2 → L3 / L3 → L4"
+  (lane Design Authority; criteria: `TRANSITIONS`, read from their owner, not copied; placed at the engine's maturity crossings,
+  `engineNow().milestones()`, never recomputed; "not reached inside the horizon" otherwise); no cost. Drawn as a gateway / event in their lane, listed
+  in the table, a panel of their own (criteria, role, placement), exported as `exclusiveGateway` / `intermediateThrowEvent` with
+  `ac:programmeActivity costRule="none" timing="engine"`. The Gantt (references list), 🧭 Program (transition criteria) and Maturity (governance
+  gates) link to them; the gate criteria stay on those screens as context, like the roadmap's gates. *Capability building:* `capOps`, `capTrain`,
+  `capTarget` are parameters of the training activity (its trainees = in training), edited in its panel, plus the milestone "Target capability
+  reached" (not placed by the engine: it states the build, operational of target); the 🧭 Program capability card keeps its bars and links to both;
+  no new cost (B9b). Tests: `tests/domain/programme/process.test.ts`. The sample `app/fixtures/bpmn/programme/programme-three-products.bpmn` (the
+  programme-only export of `pf-three-products`, capacity 2) carries every programme element of the XSD and is checked to stay that export.
+- **F-B66 built.** Message flows to the delivery participant: "Hub ready → agents enabled" (from the hub setup, or the tooling setup when the hub is
+  off), "Knowledge transfer done → the product's wave starts" (hub on), "Pilot decision → scale" (from the Decide & Scale gate).
+- **F-B67 built.** Per-product activities are multi-instance over the planned products (`loopCardinality`, × n on the shapes); each wave is a
+  sub-process with its effective start, its products and its dependency (`ac:wave`); the transformation-team capacity is on the lane set
+  (`ac:setupCapacity`). The waves are drawn in a band under the lanes.
+- **F-B68 not in B9a** (B9b): the engine and the cost model still read today's owners; the programme displays their figures.
+- **F-B69 partial.** RACI per activity (`ac:raci` on the lanes, shown in the panel) and export are built: the export dialog offers the delivery
+  process (default, byte-identical to before), the transformation programme alone (its pool, a black-box delivery pool for its message flows) or
+  both in one file (second participant, process, message flows, DI under the delivery pool). Extension XSD (1.x rule, additions only): global
+  attributes `ac:programme`, `ac:setupCapacity`; elements `ac:programmeActivity` (kind, level, cost rule, timing, placement, cost, active; `ac:param`
+  key value unit) and `ac:wave`. Both exports validate (OMG XSDs + `ac:` + profile). An import drops the programme of a file (`withoutProgramme`:
+  it is derived from the keys until B9c), so export "both" → import gives the delivery document back byte-identical. *Not built:* the audit layer
+  on programme activities (§ 15 observations attach to delivery tasks and roles only).
+- **F-B70 built (delivery lanes unchanged).** 🧩 Process draws the delivery process (unchanged) and, under it, the programme: one SVG component for
+  both (`Diagram`, labels from 100 % for the small programme), swim lanes per role, the agents' lane, phases and waves as sub-processes, message
+  flows drawn out of the pool, multi-instance markers. Selecting an activity (shape or table) opens its **parameter panel**: description, role
+  (lane), RACI, phase, instances, duration and placement (the owner's text), effort (days, where today's formula gives one), cost and cost rule,
+  source, and the activity's parameters (`NumberInput` / `SelectInput` on the key that holds each value in B9a, the knowledge-subset chips in a
+  portfolio, the knowledge-transfer preparation per product): each edit one undoable step. The programme table is the diagram's accessible
+  alternative; lanes (with Y1 FTE), message flows, capacity and waves are listed. *Not done:* the delivery diagram keeps the lanes of its stored
+  DI (team skills); an agents' lane there would change the default document of every case.
+- **F-B71 built for every listed screen but the waves board.** The activity fields and descriptions left: 🤝 Engage (stage durations → references;
+  the roadmap cards keep window and gate, not the description), 📅 Gantt (stage fields gone; program bars are read-only groups: Enter or a click
+  opens the activity in Process, Alt+arrows still move the roadmap start, a case-level date), 🧭 Program (pilot fields and description), Agentic
+  Setup (the four amounts and the setup duration; the Description column), Knowledge hub (target, setup base and days, curation, infrastructure;
+  the knowledge-transfer preparation field), Run sizing (mode, floor, ops load), Maturity / coaching (Y1 and cruise load), and references added on
+  Human readiness (change management) and the value tracker. Each shows the activities it relies on as read-only references with their values
+  and "Open … in Process" (`ui/widgets/ActivityRefs.tsx`, which selects the activity and opens the section). Recorded as DEV-B9A-CONTEXT-SCREENS.
+  *Not done:* 🌊 Waves still edits the wave start, dependency and the setup capacity on its board (the waves are sub-processes of the programme and
+  are shown there, but moving their editing into the panel is a portfolio-planning change for B9c with the stored form).
+- **F-B72 built.** `tests/ui/programme-one-owner.test.ts`: no file of `src/ui` or `src/controllers` writes a parameter key of a programme activity
+  (field ids, `setInput` / `setProductKnowledge` calls, the stage loop) except the parameter panel (and the knowledge-transfer field it renders);
+  no sentence of an activity description is written outside `src/domain/programme` (the setup lines lost their `text`).

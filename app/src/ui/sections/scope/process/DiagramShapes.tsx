@@ -32,6 +32,7 @@ function Shape({ s, selected, onPick, labels }: Props & { s: DrawShape }) {
           <tspan x={s.x + s.w / 2} className="ac-bpmn-id">{s.id}</tspan>
           {lines(s.label, 16, 3).map((l, i) => <tspan key={i} x={s.x + s.w / 2} dy={14}>{l}</tspan>)}
         </text>}
+        {s.marker && <text className="ac-bpmn-marker" x={s.x + s.w / 2} y={s.y + s.h - 6} textAnchor="middle">{s.marker}</text>}
       </g>
     );
   }
@@ -42,6 +43,7 @@ function Shape({ s, selected, onPick, labels }: Props & { s: DrawShape }) {
       {s.label && (vertical
         ? <text x={s.x + 18} y={s.y + s.h / 2} textAnchor="middle" transform={`rotate(-90 ${s.x + 18} ${s.y + s.h / 2})`}>{s.label}</text>
         : <text x={s.x + 10} y={s.y + 20}>{s.label}</text>)}
+      {s.marker && <text className="ac-bpmn-marker" x={s.x + 10} y={s.y + 38}>{s.marker}</text>}
     </g>
   );
 }
@@ -55,7 +57,8 @@ export const Shapes = memo(function Shapes({ d, selected, onPick, labels }: Prop
     <>
       {d.shapes.filter((s) => s.kind !== 'activity').map((s) => <Shape key={`${s.kind}:${s.id}`} s={s} selected={selected} onPick={onPick} labels={labels} />)}
       {d.edges.map((e) => (
-        <polyline key={e.id} className={e.rework ? 'ac-bpmn-edge is-rework' : 'ac-bpmn-edge'} points={e.points.map((p) => p.join(',')).join(' ')} />
+        <polyline key={e.id} className={`ac-bpmn-edge${e.rework ? ' is-rework' : ''}${e.message ? ' is-message' : ''}`}
+          points={e.points.map((p) => p.join(',')).join(' ')} />
       ))}
       {d.shapes.filter((s) => s.kind === 'activity').map((s) => <Shape key={s.id} s={s} selected={selected} onPick={onPick} labels={labels} />)}
     </>

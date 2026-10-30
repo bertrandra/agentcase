@@ -64,6 +64,7 @@ export function interpretParams(sheets: Sheets, base: Doc, env: ParamsEnv): Para
   READ_ORDER.forEach((f) => f.read(x));
   w.sectionGroups = toSectionGroups(secs);
   const clean = JSON.parse(JSON.stringify({ ...w, BPMN: undefined })) as Record<string, unknown>, patch: Record<string, unknown> = {};
+  for (const o of [clean, legacy]) delete (o.dom as { checked?: Record<string, unknown> } | undefined)?.checked?.regInclude;   // derived (B9a)
   for (const k of Object.keys(clean)) if (!sameJson(clean[k], legacy[k])) patch[k] = clean[k];
   return { patch: patch as Partial<Doc>, notes };
 }

@@ -7,6 +7,7 @@ import { computeCase } from '@/domain';
 import { appStore } from '@/store/instance';
 import Knowledge from '@/ui/sections/tune/knowledge';
 import { freshStore } from '../../store/helpers';
+import { editParam, expectReference } from '../../helpers/programmeParam';
 import { expectParity, FIXTURES, loadFixture } from './tuneBHelpers';
 
 beforeEach(() => { freshStore(); });
@@ -36,9 +37,12 @@ describe('knowledge section', () => {
     expect(sav()).toEqual(before);
     expect(screen.getByText(/Channel 2/).closest('tr')!.textContent).toContain('σ × 0.76');
   });
+  // B9a (DEV-B9A-CONTEXT-SCREENS): the hub's target, setup base, days, curation and infrastructure are parameters of the hub setup and run
+  // activities, edited in the Process section; the AS-IS assessment stays here and the read-out follows both
   it('AS-IS answers and the target maturity reproduce the legacy kh-high fixture', () => {
     render(<Knowledge />);
-    fireEvent.change(screen.getByLabelText('Target CC (Y3)'), { target: { value: '4' } });
+    expectReference('Target CC (Y3)', 'Knowledge Hub setup');
+    editParam('khTargetCC', '4');
     ['Key artifacts are captured', 'Domain knowledge is captured', 'Decisions/ADRs are captured']
       .forEach((l) => fireEvent.change(screen.getByLabelText(new RegExp(l)), { target: { value: '4' } }));
     expect(doc().dom.values.khA2).toBe('4');
@@ -49,10 +53,11 @@ describe('knowledge section', () => {
   it('cost inputs change the hub cost and the net delta', () => {
     render(<Knowledge />);
     expect(screen.getByText('Hub cost — setup + run (3y)').closest('tr')!.textContent).toContain('€318K');
-    fireEvent.change(screen.getByLabelText('Curation (FTE)'), { target: { value: '1' } });
+    expectReference('Curation (FTE)', 'Knowledge Hub run');
+    editParam('khCurationFTE', '1');
     expect(doc().dom.values.khCurationFTE).toBe('1');
     expect(screen.getByText('Hub cost — setup + run (3y)').closest('tr')!.textContent).not.toContain('€318K');
-    fireEvent.change(screen.getByLabelText('Hub setup base (€)'), { target: { value: '0' } });
+    editParam('khSetupBase', '0');
     expect(screen.getByText('Hub-attributable Δ net savings (3y)').closest('tr')!.textContent).toContain('€-');
   });
   it('the engagement context bounds the reachable level (STA locks the hub, MSI clamps the target)', () => {

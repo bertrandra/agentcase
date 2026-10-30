@@ -4,6 +4,7 @@ import { useCtx } from '@/store/hooks';
 import { Panel, Stat, StatRow } from '@/ui/widgets/cards';
 import { CheckInput, NumberInput, SelectInput } from '@/ui/widgets/fields';
 import { CoefInput, Note, fmtK } from '@/ui/widgets/tuneA';
+import { ActivityRefs } from '@/ui/widgets/ActivityRefs';
 
 const ANSWERS = [{ value: '0', label: 'No' }, { value: '2', label: 'Partial' }, { value: '4', label: 'Yes' }];
 
@@ -60,6 +61,7 @@ export function HriPanel() {
         When enabled, it (a) adds a <strong>change cost</strong> line to the Agentic Setup and (b) applies an <strong>adoption drag</strong> to the
         S-curve: ramp × (0.6 + 0.4 × HRI/100).</p>
       <CheckInput id="hriEnabled" label="Enable Human Readiness in the model (change cost + adoption drag)" />
+      <ActivityRefs kinds={['change']} />
       <div className="ac-hri-grid">
         <Questions />
         <div>

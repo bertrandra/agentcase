@@ -9,6 +9,7 @@ import { toast } from '@/ui/uiState';
 import { Callout, Panel } from '@/ui/widgets/cards';
 import { NumField } from '@/ui/widgets/CommitField';
 import { HubSettings } from '@/ui/widgets/HubSettings';
+import { ActivityRefs } from '@/ui/widgets/ActivityRefs';
 import { DomainsEditor } from './DomainsEditor';
 import { SubsetBadge } from './SubsetBadge';
 
@@ -37,8 +38,11 @@ function CapNote() {
     CC{h.rawTarget}{h.clamped ? ` — capped at CC${h.target}` : ''}.</p>;
 }
 
-/** "Knowledge transfer preparation": ktLeadMonths of the active product, >= 0 (spec F28). Shifts only the KT setup cost in the consolidation. */
-function LeadField() {
+/**
+ * "Knowledge transfer preparation": ktLeadMonths of the active product, >= 0 (spec F28). Shifts only the KT setup cost in the consolidation. A
+ * parameter of the programme's knowledge-transfer activity: shown in the Process section's parameter panel only (SPEC_BPMN § 19.7, phase B9a).
+ */
+export function LeadField() {
   const p = useActiveProduct(), { diagnostics } = useKnowledgeView(), [error, setError] = useState('');
   const clamp = diagnostics.find((d) => d.code === 'kt-lead-clamped' && d.productId === p.id);
   const commit = (raw: string) => {
@@ -62,8 +66,8 @@ function LeadField() {
 }
 
 /**
- * What the Knowledge Hub section adds with 2+ products: the target cap, the domains,
- * the preparation (per product: not in the common editor) and the shared hub settings.
+ * What the Knowledge Hub section adds with 2+ products: the target cap, the domains, a reference to the knowledge-transfer preparation (edited in
+ * the Process section) and the shared hub settings.
  */
 export function MultiPanels() {
   const multi = useIsMulti(), common = useInCommonView();
@@ -73,7 +77,7 @@ export function MultiPanels() {
       <CapNote />
       {common ? <Callout kind="blue">The knowledge domains and the knowledge transfer preparation are per product — pick a product in Change to change
         them.</Callout>
-        : <><DomainsEditor /><LeadField /></>}
+        : <><DomainsEditor /><ActivityRefs kinds={['ktPrep']} /></>}
       <HubSettings />
     </>
   );
