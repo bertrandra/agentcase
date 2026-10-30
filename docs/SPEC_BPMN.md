@@ -328,20 +328,32 @@ these. Portfolio: the process follows the override commands of spec F6–F9.
 
 ## 13. Delivery plan (one PR per phase, merged on green CI, HTML shared)
 
-| Phase | Content | Gate |
-|---|---|---|
-| B0 | This specification; extension XSD; sample foreign files | Decisions adopted |
-| B1 | `domain/process`: types, default process generator, derived views, layout | Views == v2 keys on 107 fixtures |
-| B2 | BPMN reader / writer (DOMParser / XMLSerializer, no new dependency), security limits, pass-through, BPSim | Round trip byte-identical; XSD-valid; security tests |
-| B3 | Schema v3 + migration, `BPMN` key (native XML, node tree in the store), commands, existing scope sections on the model | 107 fixtures identical; parallel run 40/40; excel-compat 67/67 |
-| B4 | Process section: SVG diagram, activity table, actor panel, import (replace / merge, preview, report), export | axe clean; ui-parity 0 divergence |
-| B5 | Custom activities / roles / agents in the engine; rework flows from the model; portfolio override; Excel / report / HTML outputs | Hand-computed reference tests; cross-surface equality |
-| B5b | Extended profile (§ 17): inputs / traceability graph, data stores bound to the tool catalogue, data states and types, multi-instance volumes, timers and cadence, bounded loops, boundary events and reusable definitions, event sub-processes, compensation, conditional scope (FEEL subset), shared process library (call activities), task types incl. script / send / receive / business rule, formal assignment and lanes, message flows and multiplicity, conversation view, annotations, several diagrams, colours, file header | Default process unchanged in figures; each element has a reader / writer / round-trip test and a test of the figure, check or view it feeds |
-| B6 | Optional lazy BPMN editor (D-B6 b) | Size budget; editor round trip |
-| B6b | Organisation model (§ 16): organisation elements in the `BPMN` document, migration of `teamIn` / shared team lines to teams (parity), RACI on activities, `domain/org` (load, staffing, cost by unit), Organisation and Who-does-what sections, BPMN resource roles and organisation view | 107 fixtures identical before the RACI-driven figures; diagnostics tests; axe clean |
-| B7 | Audit layer (§ 15): tool catalogue, `ac:audit` elements in the `BPMN` document and `domain/audit` (observed vs modelled, coverage, tooling map), Audit section, audit workbook, BPMN `ac:audit`, audit report, explicit calibration | Round trip with audit data; calibration log; axe clean |
-| B7b | DMN decisions (F-B62) and the optional CMMN export of the run phase (F-B63) | DMN round trip; evaluator tests per hit policy |
-| B8 | Release: guide, DEVIATIONS (if any), CHANGELOG, version bump | All gates green |
+| Phase | Content | Gate | Duration | Difficulty | Needs | Main difficulty |
+|---|---|---|---|---|---|---|
+| B0 | This specification; extension XSD; sample foreign files | Decisions adopted | 0.5 d | 2 / 5 | — | Writing a correct extension XSD; collecting real files from bpmn.io, Camunda, Signavio |
+| B1 | `domain/process`: types, default process generator, derived views, layout | Views == v2 keys on 107 fixtures | 1 d | 3 / 5 | B0 | Exact parity of the derived views with today's keys |
+| B2 | BPMN reader / writer (DOMParser / XMLSerializer, no new dependency), node tree, security limits, pass-through, BPSim | Round trip byte-identical; XSD-valid; security tests | 1.5 d | 4 / 5 | B1 | Byte-identical round trip with foreign namespaces and vendor extensions |
+| B3 | Schema v3 + migration, `BPMN` key (native XML, node tree in the store), commands, existing scope sections on the model | 107 fixtures identical; parallel run 40/40; excel-compat 67/67 | 2 d | 5 / 5 | B2 | Touches store, undo, tab sync, autosave, Excel and every scope screen at once; node-level undo patches |
+| B4 | Process section: SVG diagram, activity table, actor panel, import (replace / merge, preview, report), export | axe clean; ui-parity 0 divergence | 1.5 d | 3 / 5 | B3 | Accessible diagram with a table alternative; the merge preview |
+| B5 | Custom activities / roles / agents in the engine; rework flows from the model; portfolio override; Excel / report / HTML outputs | Hand-computed reference tests; cross-surface equality | 2 d | 4 / 5 | B3 | New engine inputs without breaking the single-owner rule; deviations to record |
+| B5b | Extended profile (§ 17): traceability graph, data stores bound to tools, data states and types, multi-instance volumes, timers and cadence, bounded loops, boundary events and reusable definitions, event sub-processes, compensation, conditional scope (FEEL subset), shared process library, task types, formal assignment and lanes, message flows and multiplicity, conversation view, annotations, several diagrams, colours, file header | Default process unchanged in figures; each element has a reader / writer / round-trip test and a test of the figure, check or view it feeds | 3 d | 4 / 5 | B5 | Breadth (about 25 elements); a safe FEEL parser; the process library across products |
+| B6 | Optional lazy BPMN editor (D-B6 b) | Size budget; editor round trip | 1.5 d | 4 / 5 | B4 | Size budget, CSP, writing the editor's changes back to the node tree; bpmn-js licence requires its watermark to stay visible |
+| B6b | Organisation model (§ 16): organisation elements in the `BPMN` document, migration of `teamIn` / shared team lines to teams (parity), RACI on activities, `domain/org`, Organisation and Who-does-what sections, resource roles and organisation view | 107 fixtures identical before the RACI-driven figures; diagnostics tests; axe clean | 2 d | 4 / 5 | B3 | Moving the entry team and shared lines into the organisation with identical figures |
+| B7 | Audit layer (§ 15): tool catalogue, `ac:audit` elements and `domain/audit`, Audit section, audit workbook, audit report, explicit calibration | Round trip with audit data; calibration log; axe clean | 2 d | 3 / 5 | B4, B6b | Curating a neutral, dated tool catalogue (needs the owner's review) |
+| B7b | DMN decisions (F-B62) and the optional CMMN export of the run phase (F-B63) | DMN round trip; evaluator tests per hit policy | 1.5 d | 3 / 5 | B5b | DMN hit policies and the shared FEEL subset |
+| B8 | Release: guide, DEVIATIONS (if any), CHANGELOG, version bump | All gates green | 0.5 d | 1 / 5 | all | — |
+
+Durations are **elapsed working days with the agent workflow** used so far (parallel agents in worktrees, full local gates, a PR per
+phase merged on green CI, the owner's review of each delivery), with an uncertainty of about ±50 %. Difficulty: 1 = routine,
+5 = touches the core of the application (store, undo, persistence) with strict parity.
+
+- **Total**: about 19 days of work. **Critical path** B0 → B1 → B2 → B3 → B5 → B5b → B7b → B8: about 12 days, because B4, B6, B6b and B7
+  run in parallel once B3 is merged (B7 also waits for B6b).
+- **Order of magnitude for a single senior developer without agents**: three to four months for the same scope and gates.
+- **Hardest phase: B3** (5 / 5). It switches the case to the native XML document; every surface that reads the scope moves at once.
+  It is delivered only after B1 and B2 prove parity and the byte-identical round trip on their own.
+- **Owner's time** per phase: a review of the delivered HTML and the decisions that come up (about 30 minutes; the tool catalogue of
+  B7 needs about 2 hours of review).
 
 ## 14. Risks
 
