@@ -1223,7 +1223,7 @@ are still edited only in the Process screen (§ 19.7).
 - **F-B78 — Screens.** The Gantt section becomes the **Plan** context screen (§ 19.7) with tabs Gantt, WBS, OBS / RAM, Histogram: views
   only, every row linking to its activity in the Process screen; keyboard and table alternatives for the charts (axe clean).
 
-| # | Question | Options | Recommendation |
+| # | Question | Options | Adopted (2026-10-30) |
 |---|---|---|---|
 | D-B34 | Histogram unit | (a) FTE per month; (b) person-days per month; (c) both, a toggle | **(c)**, FTE by default (the unit of the rest of the case) |
 | D-B35 | WBS orientation | (a) phase / wave-oriented with a named deliverable per work package; (b) strictly deliverable-oriented (ISO 21511 preference) | **(a)**: follows the programme process; the deliverable column keeps the ISO 21511 reading |
