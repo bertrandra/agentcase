@@ -80,7 +80,7 @@ describe('personas section', () => {
     fireEvent.click(screen.getByText('🧩 Section assignment'));
     fireEvent.change(screen.getByRole('combobox'), { target: { value: 'admin' } });
     expect(within(screen.getByLabelText('Sections of Admin')).getAllByRole('listitem'))
-      .toHaveLength(lists().admin!.length + 1);   // + Brand & theme (an app section, by default)
+      .toHaveLength(lists().admin!.length + 3);   // + the app sections shown by default: Brand & theme, Organisation, Who does what
     fireEvent.change(screen.getByLabelText('Available sections'), { target: { value: 'financial' } });
     fireEvent.click(screen.getByText('➕ Add to Admin'));
     expect(lists().admin).toContain('financial');
@@ -113,7 +113,7 @@ describe('the navigation honours the document’s PERSONA_SECTIONS', () => {
     act(() => setPersona('admin'));
     render(<NavZone />);
     const before = labels();
-    expect(before).toHaveLength(lists().admin!.length + 1);   // + 🎨 Brand & theme, an app section the navigation adds to Admin
+    expect(before).toHaveLength(lists().admin!.length + 3);   // + 🎨 Brand & theme, 🏢 Organisation, 🧭 Who does what (app sections, added to Admin)
     const extra = SECTIONS.find((s) => !lists().admin!.includes(s.id))!;
     act(() => addPersonaSection('admin', extra.id));
     expect(labels()).toContain(extra.label);

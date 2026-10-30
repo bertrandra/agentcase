@@ -6,4 +6,5 @@ export const FRAME: SectionMap = {
   'engagement-context': () => import('./frame/engagement-context'),
   'engage': () => import('./frame/engage'),
   'transform-params': () => import('./frame/transform-params'),
+  'organisation': () => import('./frame/organisation'),
 };

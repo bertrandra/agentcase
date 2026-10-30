@@ -17,6 +17,21 @@ When releasing, follow [docs/BUMP_PROCEDURE.md](docs/BUMP_PROCEDURE.md) (§7 for
 
 ## [Unreleased]
 
+### BPMN B6b — organisation model: units, teams, roles and RACI in the case's BPMN document
+
+Phase B6b of [docs/SPEC_BPMN.md](docs/SPEC_BPMN.md) (§ 16, F-B36…F-B39, decisions D-B15…D-B19; details in § 16.8). Every figure unchanged.
+
+- **Organisation in the document**: organisation units (`ac:orgUnit` in the collaboration) and the RACI of each activity (standard
+  `bpmn:resourceRole` Responsible / Accountable / Consulted / Informed plus `ac:raci`), written and read by `domain/org`; valid BPMN 2.0.2 + `ac:`.
+  No new case key, no schema change; every persistence path carries them with the document.
+- **Teams**: the products' entry teams and the shared team lines are read as teams of the organisation (derived view); proven identical to the
+  effective team on every fixture. `teamIn` / `sharedTeam` stay the stored form in this phase (reasons in SPEC_BPMN § 16.8).
+- **Checks** (F-B36, F-B37): no Responsible, several Accountable (errors); no Accountable, unknown role, role not staffed for a product, shared team
+  over 100 % (warnings); Accountable to confirm, agent activity without a human Accountable (information, D-B18).
+- **New sections**: 🏢 Organisation (unit tree, teams, role catalogue) and 🧭 Who does what (RACI matrix with filters, the views by activity,
+  role, team, unit and product, the checks). Commands `org.addUnit`, `org.updateUnit`, `org.removeUnit`, `org.setRaci`, `org.clearRaci`, all undoable.
+- **Organisation view** (F-B39, domain only): `organisationView(doc, org, product)` draws the process by organisation (lanes unit → team → role).
+
 ## [v20.22.0] 2026-10-30 — BPMN B3: schema v3, the case stores its delivery process as one native BPMN document
 
 ### BPMN B3 — schema v3: the case stores its delivery process as one native BPMN document

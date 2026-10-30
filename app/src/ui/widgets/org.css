@@ -1,0 +1,12 @@
+/* Organisation and Who-does-what sections (docs/SPEC_BPMN.md § 16.6). Colours come from the shared tokens. */
+.ac-org-name { white-space: nowrap; font-weight: var(--ac-font-weight-regular); }
+.ac-org-name[data-depth='1'] { padding-left: 1.25rem; } .ac-org-name[data-depth='2'] { padding-left: 2.5rem; }
+.ac-org-name[data-depth='3'] { padding-left: 3.75rem; } .ac-org-name[data-depth='4'] { padding-left: 5rem; }
+.ac-org-name[data-depth='5'], .ac-org-name[data-depth='6'] { padding-left: 6.25rem; }
+.ac-raci-edit { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 10px; margin: 8px 0; }
+.ac-raci-edit select[multiple] { min-height: 8rem; width: 100%; }
+.ac-org-answer dl { display: grid; grid-template-columns: max-content 1fr; gap: 4px 12px; margin: 6px 0; }
+.ac-org-answer dt { font-weight: var(--ac-font-weight-semibold); }
+.ac-org-answer dd { margin: 0; }
+.ac-org-chart ul { margin: 2px 0 2px 1.25rem; padding: 0; }
+.ac-org-answer dl > div { display: contents; }
