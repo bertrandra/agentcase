@@ -4,6 +4,7 @@ import { REG_ARTEFACTS, engineNow, makeCtx, type CaseState } from '@/domain';
 import { fteAtMonth } from '@/domain/economics/fte';
 import { CROSS_CODES, GLOSSARY_TERMS, INDUSTRIES, crossOn, onboardingBand, plannedQuarters, regGlassCeiling, roadmapStages, trackStatus,
   type TrackActual } from '@/domain/frame';
+import { scopeOf } from '@/domain/process';
 
 const ids = readdirSync('fixtures/cases').map((f) => f.replace('.json', '')).sort().filter((id) => existsSync(`fixtures/extras/frameQuarters/${id}.json`));
 const load = (kind: string, id: string) => JSON.parse(readFileSync(`fixtures/${kind}/${id}.json`, 'utf8'));
@@ -31,6 +32,6 @@ describe('frame domain = legacy oracle (tools/oracle-extras.d/frame.mjs)', () =>
     expect(roadmapStages(c, NOW).map((s) => [s.name, s.label, `${s.from} → ${s.to ?? 'open'}`, `Gate: ${s.gate}`].join('|'))).toEqual(x('frameRoadmap'));
     const st = trackStatus(q, state.trackActuals ?? {});
     expect([st.head, `${st.filled} / ${st.total}`, `${st.latest}%`]).toEqual(x('frameTrackStatus'));
-    expect(CROSS_CODES.map((code) => crossOn(state.selectedNorms, code))).toEqual(x('frameCrossOn'));
+    expect(CROSS_CODES.map((code) => crossOn(scopeOf(state).selectedNorms, code))).toEqual(x('frameCrossOn'));
   });
 });

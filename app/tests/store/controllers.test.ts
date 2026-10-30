@@ -8,6 +8,7 @@ import { addTeamRow, removeTeamRow, updateTeamRow } from '@/controllers/team';
 import { redo, undo } from '@/controllers/history';
 import { computeCase } from '@/domain';
 import { freshStore } from './helpers';
+import { keysOf } from '../helpers/scope';
 
 const expected = (id: string) => JSON.parse(readFileSync(`fixtures/expected/${id}.json`, 'utf8')).model;
 const sav = (s: ReturnType<typeof freshStore>) => computeCase(s.getState().doc).model.yearSav;
@@ -49,10 +50,10 @@ describe('controllers reproduce the legacy results of the same edits', () => {
     expect(s.getState().doc.dom.values.autoPotential).toBe('60');
   });
   it('% auto is clamped and rounded; resetAgent restores the defaults', () => {
-    const s = freshStore(); const start = JSON.stringify(s.getState().doc.artefactsEdited);
-    setAgentSup('A017', 140); expect(s.getState().doc.artefactsEdited.find((e) => e.id === 'A017')?.agentSup).toBe(100);
+    const s = freshStore(); const start = JSON.stringify(keysOf(s.getState().doc).artefactsEdited);
+    setAgentSup('A017', 140); expect(keysOf(s.getState().doc).artefactsEdited.find((e) => e.id === 'A017')?.agentSup).toBe(100);
     setAgentSup('A017', 'abc');   // ignored
-    resetAgent(); expect(JSON.stringify(s.getState().doc.artefactsEdited.map((e) => ({ id: e.id,
+    resetAgent(); expect(JSON.stringify(keysOf(s.getState().doc).artefactsEdited.map((e) => ({ id: e.id,
       a: e.agentSup })))).toBe(JSON.stringify(JSON.parse(start).map((e: { id: string; agentSup: number }) => ({ id: e.id, a: e.agentSup }))));
   });
   it('team rows: add, edit (snapped to 0.5), remove (never the last)', () => {
@@ -66,6 +67,6 @@ describe('controllers reproduce the legacy results of the same edits', () => {
   it('never leaves an empty scope', () => {
     const s = freshStore();
     ['L0', 'V1', 'V2', 'V3', 'V4', 'V5', 'V6', 'V7', 'L8', 'L9', 'L10'].forEach((p) => togglePhase(p, false));
-    expect(s.getState().doc.selectedArtefacts.length).toBeGreaterThan(0);
+    expect(keysOf(s.getState().doc).selectedArtefacts.length).toBeGreaterThan(0);
   });
 });

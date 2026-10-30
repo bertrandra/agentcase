@@ -1,12 +1,13 @@
 import { toggleCross } from '@/controllers/frame';
 import { CROSS_CATEGORIES, crossOn } from '@/domain/frame';
+import { scopeOf } from '@/domain/process';
 import { useDoc } from '@/store/hooks';
 import { NormList } from './NormsPanel';
 import { FieldToggle } from '@/ui/widgets/field/FieldToggle';
 
 /** AI, sustainability and usability: independent from the industry; ticking a category adds all its norms, then each can be refined. */
 export function CrossCutting() {
-  const norms = useDoc((d) => d.selectedNorms);
+  const norms = useDoc((d) => scopeOf(d).selectedNorms);
   return (
     <div>
       <h3>🧩 Cross-cutting concerns</h3>

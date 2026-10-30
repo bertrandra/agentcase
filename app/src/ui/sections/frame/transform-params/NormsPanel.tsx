@@ -1,5 +1,6 @@
 import { setRegInclude, toggleNorm } from '@/controllers/frame';
 import { normKey, normsOf, regGlassCeiling } from '@/domain/frame';
+import { scopeOf } from '@/domain/process';
 import { useCtx, useDoc } from '@/store/hooks';
 import { OverrideBadge } from '@/ui/widgets/OverrideBadge';
 import { FieldToggle } from '@/ui/widgets/field/FieldToggle';
@@ -8,7 +9,7 @@ const EXPORT_PENDING = 'The standalone report export is not migrated yet (Phase 
 
 /** Norm checkboxes of one industry (or cross-cutting category). */
 export function NormList({ code, dense }: { code: string; dense?: boolean }) {
-  const ticked = useDoc((d) => d.selectedNorms);
+  const ticked = useDoc((d) => scopeOf(d).selectedNorms);
   const norms = normsOf(code);
   if (!norms.length) return <em className="ac-muted">No norms configured for this industry.</em>;
   return (
@@ -25,14 +26,14 @@ export function NormList({ code, dense }: { code: string; dense?: boolean }) {
 
 /** The regulatory catalogue panel: norms of the chosen industry, what is in scope and the glass ceiling it implies. */
 export function NormsPanel() {
-  const code = useDoc((d) => d.dom.values.industry ?? 'NONE'), count = useDoc((d) => d.selectedRegArtefacts.length);
-  const include = useDoc((d) => d.regInclude);
+  const code = useDoc((d) => d.dom.values.industry ?? 'NONE'), count = useDoc((d) => scopeOf(d).selectedRegArtefacts.length);
+  const include = useDoc((d) => scopeOf(d).regInclude);
   const ceiling = regGlassCeiling(useCtx()), none = !code || code === 'NONE';
   return (
     <div>
       <p className="ac-muted">Norms for <strong>{none ? '—' : code}</strong> — tick to add the regulatory artifacts to the scope</p>
       {none ? <em className="ac-tone" data-tone="brick">Pick an industry above to see its applicable norms.</em> : <NormList code={code} />}
-      <OverrideBadge refKey="selectedNorms" label="Selected norms" />
+      <OverrideBadge refKey="BPMN" label="Process (norms and regulatory scope)" />
       <p>In scope: <strong>{none ? 0 : count}</strong> regulatory artifacts</p>
       {!none && count > 0 && (
         <p className="ac-tone" data-tone="teal">Weighted glass ceiling from selection: <strong>{Math.round(ceiling)}%</strong> (mean human sup.
@@ -44,7 +45,6 @@ export function NormsPanel() {
           glass ceiling only)
         </label>
       </FieldToggle>
-      <OverrideBadge refKey="regInclude" label="Regulatory inclusion" />
       <p><button type="button" disabled title={EXPORT_PENDING}>📄 Export Critical &amp; Regulated report</button></p>
     </div>
   );

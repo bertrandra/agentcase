@@ -4,6 +4,7 @@ import type { Portfolio } from '@/domain/portfolio';
 import type { Doc } from '@/store/types';
 import type { ThemeValues } from '@/domain/theme';
 import { interpretParams } from '../params/reader';
+import { withLegacyPatch } from '../../bpmn/legacy';
 import type { ParamsEnv, ParamsScope, Sheets } from '../params/types';
 import { buildParamsWorkbook } from '../params/writer';
 import { PORTFOLIO_SHEETS } from './names';
@@ -37,7 +38,7 @@ export async function buildPortfolioParamsWorkbook(pf: Portfolio, scope: ParamsS
 export function interpretPortfolioParams(sheets: Sheets, base: Portfolio, env: ParamsEnv): { next: Portfolio; notes: string[] } {
   const rest: Sheets = new Map([...sheets].filter(([name]) => !PORTFOLIO_SHEETS.has(name) && name !== 'Input Team'));
   const baseDoc = commonDocOf(base), { patch, notes } = interpretParams(rest, baseDoc, env);
-  const common: Record<string, unknown> = { ...baseDoc, ...structuredClone(patch) };
+  const common: Record<string, unknown> = withLegacyPatch(baseDoc as Record<string, unknown>, patch);   // scope sheets edit the process document
   delete common.teamIn;
   return { next: readPortfolioSheets(sheets, { ...base, common: common as Portfolio['common'] }), notes };
 }

@@ -9,7 +9,7 @@ import { SectionFrame } from '@/ui/zones/SectionFrame';
 import { CrossCutting } from './CrossCutting';
 import { NormsPanel } from './NormsPanel';
 
-const OVERRIDES = ['selectedNorms', 'regInclude', 'selectedRegArtefacts'] as const;
+const OVERRIDES = ['BPMN'] as const;
 const INDUSTRY_OPTIONS = INDUSTRIES.map((i) => ({ value: i.code, label: industryLabel(i) }));
 
 const help = (

@@ -7,6 +7,7 @@ import { ENV, legacyImported, legacyXlsx, stateMismatches, PRISTINE } from '../h
 import { asFile, editXlsx, ourXlsx, setByLabel } from '../helpers/xlsxEdit';
 import { freshStore, snap } from './helpers';
 import { appVerFileTag } from '@/domain/snapshots';
+import { keysOf } from '../helpers/scope';
 
 beforeEach(() => { freshStore(); });
 const doc = () => appStore().getState().doc;
@@ -65,7 +66,7 @@ describe('importParamsWorkbook', () => {
         keep.includes(id) ? 'Yes' : 'No'; if (keep.includes(id)) r.getCell(6).value = pct[id] as number; } });
     });
     const r = await importParamsWorkbook(asFile('refit.xlsx', bytes), ENV), c = computeCase(doc());
-    expect(doc().selectedArtefacts).toHaveLength(keep.length);
+    expect(keysOf(doc()).selectedArtefacts).toHaveLength(keep.length);
     expect(parseFloat(doc().dom.values.autoPotential as string)).toBe(Math.round(c.phaseScope.avgAgent));
     expect(c.glassCeiling + parseFloat(doc().dom.values.autoPotential as string)).toBe(100);
     expect(r.notes.some((n) => /^Phase Scope marks .* as "No", but the SDLC Artifacts sheet selects artefacts in/.test(n))).toBe(true);
@@ -99,7 +100,7 @@ describe('importParamsWorkbook', () => {
       (w) => wb.removeWorksheet(w.id)); wb.getWorksheet('Rate Card')!.getRow(2).getCell(2).value = 999; });
     const before = JSON.parse(snap(appStore())) as Record<string, unknown>;
     await importParamsWorkbook(asFile('rate.xlsx', bytes), ENV);
-    const after = doc() as Record<string, unknown>;
+    const after = JSON.parse(snap(appStore())) as Record<string, unknown>;
     expect(Object.keys(after).filter((k) => JSON.stringify(after[k]) !== JSON.stringify(before[k]))).toEqual(['RATE']);
     expect(doc().RATE.France?.A).toBe(999);
   });
@@ -109,7 +110,7 @@ describe('importParamsWorkbook', () => {
       run: (d) => { d.customerName = 'Keep me'; d.dom.values.setupTooling = '777'; (d.PERSONAS as unknown[]).reverse(); } });
     const before = JSON.parse(snap(appStore())) as Record<string, unknown>;
     await importParamsWorkbook(asFile('persona.xlsx', await out.blob.arrayBuffer()), ENV);
-    const after = doc() as Record<string, unknown>;
+    const after = JSON.parse(snap(appStore())) as Record<string, unknown>;
     const changed = Object.keys(after).filter((k) => JSON.stringify(after[k]) !== JSON.stringify(before[k]));
     expect(changed.every((k) => ['PERSONAS', 'PERSONA_SECTIONS', 'PERSONA_SECTION_ORDER', 'GROUPS', 'GROUP_COLORS', 'sectionGroups', 'SECTION_DEPS',
       'SECTION_DEPS_DESC'].includes(k))).toBe(true);

@@ -17,6 +17,7 @@ import { EMPTY_HISTORY } from '@/store/history';
 import { appStore } from '@/store/instance';
 import type { Doc } from '@/store/types';
 import { docOnly, threeProducts } from '../helpers/portfolioStore';
+import { keysOf, setScopeOverride } from '../helpers/scope';
 
 /**
  * EDIT BASE (docs/ARCHITECTURE.md § 4): with "Change: All products" in a Portfolio view the case commands run on the COMMON case. Every controller
@@ -71,8 +72,8 @@ describe('controllers write the common value computed from the common case, neve
     expect(pf().common.dom.values.rmStart).toBe('2026-01-05');
   });
   it('modelEngine.recalibrateLce: rebuilt on the common case and "moved" is judged on it; undo exact; Product view as before', () => {
-    const t = threeProducts(), art = pf().common.selectedArtefacts;
-    setProductOverride(t.ids[0], 'selectedArtefacts', art.slice(0, 3)); setDisplayScope({ kind: 'portfolio' }); t.s.setHistory(EMPTY_HISTORY);
+    const t = threeProducts(), art = keysOf(pf().common).selectedArtefacts;
+    setScopeOverride(t.ids[0], { selectedArtefacts: art.slice(0, 3) }); setDisplayScope({ kind: 'portfolio' }); t.s.setHistory(EMPTY_HISTORY);
     const before = docOnly(t.s), loops = editBase().MODEL.LCE.loops.map((l) => l.pAccept);
     const moved = recalibrateLce(), common = commonEditDoc(pf());
     expect(common.MODEL.LCE.loops).toEqual(lceLoops(makeCtx(common)).loops);

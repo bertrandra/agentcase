@@ -26,8 +26,13 @@ export function serializeElement(e: XElement): string {
   write(e, out);
   return out.join('');
 }
-/** The XML text of a document; serialising the same tree always gives the same bytes. */
-export const serialize = (d: XDocument): string => `${d.decl ?? ''}${d.before}${serializeElement(d.root)}${d.after}`;
+const texts = new WeakMap<XDocument, string>();
+/** The XML text of a document; serialising the same tree always gives the same bytes (memoised on the tree's identity: it is immutable). */
+export function serialize(d: XDocument): string {
+  let t = texts.get(d);
+  if (t === undefined) { t = `${d.decl ?? ''}${d.before}${serializeElement(d.root)}${d.after}`; texts.set(d, t); }
+  return t;
+}
 
 const blank = (n: XNode): boolean => n.kind === 'text' && !n.text.trim();
 /**

@@ -1,21 +1,22 @@
 /** @calc-zone delivery-views */
 import { current } from 'immer';
 import { SKILL_MAP_DEFAULT } from '@/domain/baseline/skills';
-import { skillMapOf } from '@/domain/baseline/skills';
 import { locSplitOf, tobeSkillLocDefault } from '@/domain/verifyA/tobe';
 import { defineCommand } from '@/store/commands';
 import { appStore } from '@/store/instance';
+import { editScope } from '@/store/processEdit';
 import type { Doc } from '@/store/types';
 
 const snap = (d: Doc): Doc => current(d) as Doc;
 
-// ---- TO-BE team: artefact skill -> team skill map ----
+// ---- TO-BE team: artefact skill -> team skill map (the roles of the case's process document, `ac:actor teamSkill`) ----
 const setSkillMapCmd = defineCommand<{ artSkill: string; teamSkill: string }>({
   type: 'verify.setSkillMap', label: (p) => `Map artefact skill ${p.artSkill} to ${p.teamSkill}`,
-  run(d, p) { d.skillMap = { ...skillMapOf(snap(d)), [p.artSkill]: p.teamSkill }; },
+  run(d, p) { editScope(d, (k) => { k.skillMap = { ...(k.skillMap ?? SKILL_MAP_DEFAULT), [p.artSkill]: p.teamSkill }; }); },
 });
 const resetSkillMapCmd = defineCommand<Record<string, never>>({
-  type: 'verify.resetSkillMap', label: () => 'Reset the skill mapping to defaults', run(d) { d.skillMap = { ...SKILL_MAP_DEFAULT }; },
+  type: 'verify.resetSkillMap', label: () => 'Reset the skill mapping to defaults',
+  run(d) { editScope(d, (k) => { k.skillMap = { ...SKILL_MAP_DEFAULT }; }); },
 });
 
 // ---- TO-BE team: target location split per skill ----

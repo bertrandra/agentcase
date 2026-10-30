@@ -7,6 +7,7 @@ import { applyParamsPatch } from '@/store/persistence/excel/params/apply';
 import type { ParamsEnv } from '@/store/persistence/excel/params';
 import { sameJson } from '@/store/persistence/excel/params';
 import { PERSONA_KEY } from '@/store/persona';
+import { legacyCase, withLegacyPatch } from '@/store/persistence/bpmn/legacy';
 import type { Doc } from '@/store/types';
 
 /** The workbook (and the legacy file it is compared with) knows the 79 case sections, not the Portfolio ones. */
@@ -36,21 +37,29 @@ export const freshDoc = (): Doc => {
   return d;
 };
 /** The document the legacy import ran against: the pristine case, or (recipes) the recipe's base state laid over it. */
-export const importTarget = (leg: LegacyImport): Doc => ({ ...freshDoc(), ...structuredClone(leg.base ?? {}) }) as Doc;
+export const importTarget = (leg: LegacyImport): Doc => withLegacyPatch(freshDoc(), leg.base ?? {});   // scope keys: written on the process document
 
 /**
  * Top-level keys of `ours` whose value differs from the legacy state (the pristine value where the legacy left a key alone). The persona is view
  * state of the tab, not a key of our case (D3).
  */
-export function stateMismatches(ours: Doc, legacy: Record<string, unknown>, pristine: Record<string, unknown>, ignore: string[] = []): string[] {
-  const keys = new Set([...Object.keys(legacy), ...Object.keys(pristine)]);
-  return [...keys].filter((k) => k !== PERSONA_KEY && !ignore.includes(k) && !sameJson(norm(k, (ours as Record<string, unknown>)[k]),
+export function stateMismatches(doc: Doc, legacy: Record<string, unknown>, pristine: Record<string, unknown>, ignore: string[] = []): string[] {
+  const keys = new Set([...Object.keys(legacy), ...Object.keys(pristine)]), ours = legacyCase(doc);   // schema v3: the scope keys derived from BPMN
+  return [...keys].filter((k) => k !== PERSONA_KEY && !ignore.includes(k) && !sameJson(norm(k, ours[k]),
     norm(k, k in legacy ? legacy[k] : pristine[k])));
 }
 /**
  * The one deliberate difference from the legacy import: its "FM Environments" sheet drops the `isProd` flag of the production environment
  * (the flag is not a column), ours keeps it for the same environment id. Compared without it.
+ * Schema v3 (BPMN B3, docs/SPEC_BPMN.md § 6.3): the scope lists are derived from the process document in document order; their order never
+ * carried a meaning (every reader treats them as sets), so they are compared as sets (ramp-up sequences by phase).
  */
-const norm = (k: string,
-  v: unknown): unknown => (k === 'ENVIRONMENTS' && Array.isArray(v) ? v.map((e: Record<string,
-    unknown>) => Object.fromEntries(Object.entries(e).filter(([key]) => key !== 'isProd'))) : v);
+const SETS = ['selectedArtefacts', 'selectedRegArtefacts', 'selectedNorms', 'phaseOff'];
+const norm = (k: string, v: unknown): unknown => {
+  if (k === 'ENVIRONMENTS' && Array.isArray(v)) {
+    return v.map((e: Record<string, unknown>) => Object.fromEntries(Object.entries(e).filter(([key]) => key !== 'isProd')));
+  }
+  if (SETS.includes(k) && Array.isArray(v)) return [...(v as string[])].sort();
+  if (k === 'phaseSeq' && Array.isArray(v)) return [...(v as { id: string }[])].sort((a, b) => a.id.localeCompare(b.id));
+  return v;
+};

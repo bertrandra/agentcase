@@ -2,6 +2,7 @@ import { describe, expect, it } from 'vitest';
 import { computeCase } from '@/domain';
 import { readParamsWorkbook } from '@/store/persistence/excel/params';
 import { diffValues } from '../helpers/oracleDiff';
+import { legacyCase } from '@/store/persistence/bpmn/legacy';
 import { sameJson } from '@/store/persistence/excel/params';
 import { applyTo, ENV, importTarget, legacyImported, legacyXlsx, PRISTINE, stateMismatches, xlsxIds } from '../helpers/excelParams';
 
@@ -18,11 +19,11 @@ describe('legacy workbook → our reader reproduces the legacy import', () => {
     expect(stateMismatches(ours, leg.state, pristine.state, IGNORE)).toEqual([]);
     expect(notes).toEqual(leg.notes);
     // the same keys are touched (ENVIRONMENTS aside: the legacy import drops isProd, see helpers/excelParams)
-    const touched = (Object.keys(ours) as string[]).filter((k) => k !== 'ENVIRONMENTS' &&
-      !sameJson((ours as Record<string, unknown>)[k], (base as Record<string, unknown>)[k])).sort();
+    const o = legacyCase(ours), b = legacyCase(base);   // schema v3: the scope keys are derived from the process document
+    const touched = Object.keys(o).filter((k) => k !== 'ENVIRONMENTS' && !sameJson(o[k], b[k])).sort();
     const final = (k: string) => (k in leg.state ? leg.state[k] : pristine.state[k]);
     const legTouched = [...new Set([...Object.keys(leg.state), ...Object.keys(leg.base ?? {})])].filter((k) =>
-      k !== 'ENVIRONMENTS' && !sameJson(final(k), (base as Record<string, unknown>)[k])).sort();
+      k !== 'ENVIRONMENTS' && !sameJson(final(k), b[k])).sort();
     expect(touched).toEqual(legTouched);
     const got = computeCase(ours), problems: string[] = [];
     diffValues(leg.exp.model, JSON.parse(JSON.stringify(got.model, (_k, v) => (v === Infinity ? 'Infinity' : v))), 'model', problems);

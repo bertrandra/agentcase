@@ -1,5 +1,6 @@
 /** @calc-zone exports */
 import { parseRef } from '@/domain/portfolio';
+import { SCOPE_KEYS } from '@/domain/process';
 import { sanitize } from '../../snapshot';
 import { str } from '../params/safe';
 import type { Sheets } from '../params/types';
@@ -13,12 +14,15 @@ const SHAPES: Record<string, Shape> = {
   regArtefactsEdited: 'array',
   phaseSeq: 'array', regInclude: 'bool', lifecycleUse: 'bool', lifecyclePos: 'number', statusLifecycle: 'array', targetLocPct: 'objectOrNull',
   forceGlassCeiling: 'bool',
-  scurve: 'object', engageCoef: 'object', MATURITY_MAP: 'object',
+  scurve: 'object', engageCoef: 'object', MATURITY_MAP: 'object', skillMap: 'object',
 };
+/** A version 2 scope key (written for a process document override, spec F-B20): read back into the product's `BPMN` override (`read.ts`). */
+const isScopeRef = (ref: string): boolean => (SCOPE_KEYS as readonly string[]).includes(ref);
 const plain = (v: unknown): boolean => !!v && typeof v === 'object' && !Array.isArray(v);
 
 function shapeOf(ref: string): Shape {
   const p = parseRef(ref);
+  if (isScopeRef(ref)) return SHAPES[ref] as Shape;
   return p && p.kind === 'top' ? (SHAPES[p.key] as Shape) : p?.kind === 'checked' ? 'bool' : 'array' /* unreachable for values.*: handled by the caller */;
 }
 
@@ -47,7 +51,8 @@ export function readOverrides(sheets: Sheets, ids: ReadonlySet<string>): { produ
   const parts = new Map<string, { id: string; ref: string; text: string; next: number; n: number }>();
   for (const l of t.lines) {
     const id = knownProduct(t, l, ids), ref = str(l.c[1]);
-    if (!parseRef(ref) || /discountrate/i.test(ref)) fail(t.name, l.n, `"${ref.slice(0, 60)}" is not an overridable key`);
+    const bad = (!parseRef(ref) && !isScopeRef(ref)) || ref === 'BPMN' || /discountrate/i.test(ref);
+    if (bad) fail(t.name, l.n, `"${ref.slice(0, 60)}" is not an overridable key`);
     const part = numberCell(t, l, 2, 'part', { min: 1, max: PF_LIMITS.overrideChunks, int: true }) as number, key = `${id}\u0000${ref}`, cur = parts.get(key);
     if (part === 1) { if (cur) fail(t.name, l.n, `duplicate override "${ref}" for product "${id}"`); parts.set(key,
       { id, ref, text: String(l.c[3] ?? ''), next: 2, n: l.n }); continue; }

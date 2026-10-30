@@ -4,6 +4,7 @@ import { clean } from '@/domain/portfolio/products';
 import { makeDefaultDoc } from '../instance';
 import { PERSONA_KEY } from '../persona';
 import { sanitize, SnapshotError } from './snapshot';
+import { portfolioInStore } from './bpmn/caseFile';
 
 type Rec = Record<string, unknown>;
 const rec = (v: unknown): v is Rec => !!v && typeof v === 'object' && !Array.isArray(v);
@@ -78,7 +79,9 @@ export function readSharedTeam(v: unknown): SharedTeamLine[] {
 /** A portfolio snapshot (`agentcase.portfolio.v1`) -> a validated Portfolio. Hostile keys are dropped, shapes checked, invariants of spec 4.1 enforced. */
 export function readPortfolio(raw: unknown): Portfolio {
   need(rec(raw), 'must be a JSON object');
-  const s = sanitize(raw) as Rec, hub = s.hub as Rec;
+  // schema v3: the process documents as trees (a version 2 portfolio's scope keys become documents, F-B20)
+  const s = portfolioInStore(sanitize(raw) as Rec, (why, product) =>
+    need(false, `${product ? `product ${product}: ` : ''}the process document (BPMN) cannot be read: ${why}`)), hub = s.hub as Rec;
   need(Array.isArray(s.products) && Array.isArray(s.waves), 'products and waves must be lists');
   need(rec(hub) && typeof hub.enabled === 'boolean' && (hub.infraAllocation === 'perProduct' || hub.infraAllocation === 'byBaseEtp'),
     'hub settings are invalid');

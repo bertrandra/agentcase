@@ -61,7 +61,8 @@ export function parseXml(text: string, bytes?: number): ParseResult {
   if (sec.errors.length) return { doc: null, ...sec };
   const dom = new DOMParser().parseFromString(text, 'application/xml'), bad = parserError(dom), root = dom.documentElement;
   if (bad || !root) return { doc: null, errors: [{ code: 'not-xml', message: bad ?? 'no root element' }], warnings: sec.warnings };
-  return { doc: { kind: 'document', ...around(text), root: elementOf(root) }, ...sec };
+  const a = around(text);   // the keys in the order of the domain's `doc()`, so a read tree is the same object shape as a built one
+  return { doc: { kind: 'document', decl: a.decl, before: a.before, root: elementOf(root), after: a.after }, ...sec };
 }
 
 /** Parses a BPMN file: the XML checks of `parseXml`, then the root must be `bpmn:definitions` (code `not-bpmn`, as tools/bpmn-validate.mjs). */

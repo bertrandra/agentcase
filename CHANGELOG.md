@@ -15,6 +15,29 @@ All notable changes to AgentCase, newest first. Product version from v19.0.0 = t
 
 When releasing, follow [docs/BUMP_PROCEDURE.md](docs/BUMP_PROCEDURE.md) (§7 for the legacy file) and add the new version at the top.
 
+## [Unreleased]
+
+## [v20.22.0] 2026-10-30 — BPMN B3: schema v3, the case stores its delivery process as one native BPMN document
+
+### BPMN B3 — schema v3: the case stores its delivery process as one native BPMN document
+
+Phase B3 of [docs/SPEC_BPMN.md](docs/SPEC_BPMN.md) (§ 6.1, § 6.2, § 9, decisions D-B1 / D-B26; details in § 6.4). Every figure unchanged.
+
+- **File schema v3.** A case holds key `BPMN`, its process document: a node tree in memory, XML text in every saved file, HTML snapshot, autosave
+  record and tab message. The nine version 2 scope keys (`selectedArtefacts`, `artefactsEdited`, `selectedRegArtefacts`, `regArtefactsEdited`,
+  `phaseOff`, `selectedNorms`, `phaseSeq`, `regInclude`, `skillMap`) are gone from the case: migration 2 → 3 writes them into the document, and the
+  engine, the screens, the Excel workbooks and the report read them as views of it (`scopeOf`). Version 2 files open with identical figures (the 107
+  fixtures, compared figure for figure); save → open is identical; the undo history of an autosave survives the reload.
+- **Normal form.** The scope lists are kept in document order and the artefact edits as the complete list (their order and shape never changed a
+  figure); unknown ids and repeats are kept.
+- **Commands.** Every scope command (artefact and phase selection, norms, industry, cross-cutting, regulatory inclusion, ramp-up sequences, % auto,
+  effort, resets, skill map) edits the document; an undo step holds the changed attribute or element, not the document. New commands for the
+  Process section of B4: `process.setScope`, `updateActivity`, `addActivity`, `removeActivity`, `addActor`, `updateActor`, `removeActor`, `addPhase`,
+  `removePhase`, `reorderPhases`.
+- **Portfolio.** A product overrides the process document as a whole (one "Process" override instead of up to nine scope keys); a version 2 portfolio's
+  scope overrides become that override. The Overrides sheet writes it as the nine scope rows, which this build and older ones read back.
+- **Tabs.** A tab of another file schema (older or newer) is ignored.
+
 ## [v20.21.0] 2026-10-30 — BPMN B2: reader / writer, F-B10 security, byte-identical round trip, BPSim, Export process (BPMN)
 
 ### BPMN B2 — reader, writer, byte-identical round trip, BPSim, "Export process (BPMN)"

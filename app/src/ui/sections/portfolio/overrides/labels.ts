@@ -1,7 +1,5 @@
 const KEYS: Record<string, string> = {
-  selectedArtefacts: 'Selected SDLC artefacts', artefactsEdited: 'Edited SDLC artefacts', selectedRegArtefacts: 'Selected regulatory artefacts',
-  regArtefactsEdited: 'Edited regulatory artefacts',
-  phaseOff: 'Disabled phases', phaseSeq: 'Phase sequences', selectedNorms: 'Selected norms', regInclude: 'Include regulatory in the effort',
+  BPMN: 'Process (scope, phases, artefact parameters, norms, skill map)',
   lifecycleUse: 'Lifecycle: use',
   lifecyclePos: 'Lifecycle: position', statusLifecycle: 'Lifecycle: status', targetLocPct: 'Target location mix', forceGlassCeiling: 'Forced glass ceiling',
   scurve: 'S-curve',

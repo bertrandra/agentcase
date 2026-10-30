@@ -4,11 +4,11 @@ import { axeViolations } from '../helpers/axe';
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 import { setDisplayScope } from '@/controllers/displayScope';
 import { undo } from '@/controllers/history';
-import { setProductOverride } from '@/controllers/productOverrides';
 import { isOverridden, resolveProduct } from '@/domain/portfolio';
 import { freshStore } from '../store/helpers';
 import { mountApp, pf, sectionReady } from '../helpers/portfolioUi';
 import { threeProducts } from '../helpers/portfolioStore';
+import { keysOf, setScopeOverride } from '../helpers/scope';
 
 vi.mock('@/ui/widgets/ChartPanel', async () => import('../helpers/chartStub'));   // jsdom has no canvas
 
@@ -65,35 +65,35 @@ describe('top bar: the "Change" dropdown', () => {
 describe('an input section in a Portfolio view is editable in place', () => {
   it('Change = All products: the section on the COMMON values below the summary; an edit writes common (one undo step); an overriding product keeps its value',
     async () => {
-    setProductOverride(ids[1], 'selectedArtefacts', pf().common.selectedArtefacts.slice(0, 1));
+    setScopeOverride(ids[1], { selectedArtefacts: keysOf(pf().common).selectedArtefacts.slice(0, 1) });
     mountApp('scope-sel'); portfolio();
     await sectionReady(/Scope/);
     expect(screen.getByRole('table', { name: /Artefact selection by product/ })).toBeTruthy();   // the summary stays on top
     const r = region(/^Changing all products/);
-    const note = await within(r).findByRole('note', { name: 'Selected SDLC artefacts: 1 product overrides this' }, { timeout: 15000 });
+    const note = await within(r).findByRole('note', { name: 'Process (artefacts in scope): 1 product overrides this' }, { timeout: 15000 });
     expect(note.textContent).toContain('1 product overrides this: B — it keeps its value');
-    const own = pf().products[1]!.overrides.selectedArtefacts, before = pf().common.selectedArtefacts.length;
+    const own = keysOf({ BPMN: pf().products[1]!.overrides.BPMN! }).selectedArtefacts, before = keysOf(pf().common).selectedArtefacts.length;
     fireEvent.click(within(r).getByRole('button', { name: 'Clear all' }));
-    const cleared = pf().common.selectedArtefacts;
+    const cleared = keysOf(pf().common).selectedArtefacts;
     expect(cleared.length).toBeLessThan(before);
-    expect(resolveProduct(pf(), ids[2]).selectedArtefacts).toEqual(cleared);
-    expect(pf().products[1]!.overrides.selectedArtefacts).toBe(own);
+    expect(keysOf(resolveProduct(pf(), ids[2])).selectedArtefacts).toEqual(cleared);
+    expect(keysOf({ BPMN: pf().products[1]!.overrides.BPMN! }).selectedArtefacts).toBe(own);
     expect(pf().products[0]!.overrides).toEqual({});
     act(() => { undo(); });
-    expect(pf().common.selectedArtefacts.length).toBe(before);
-    fireEvent.click(within(r).getByRole('button', { name: 'Back to shared: Selected SDLC artefacts for B' }));
-    expect(isOverridden(pf().products[1]!, 'selectedArtefacts')).toBe(false);
+    expect(keysOf(pf().common).selectedArtefacts.length).toBe(before);
+    fireEvent.click(within(r).getByRole('button', { name: 'Back to shared: Process (artefacts in scope) for B' }));
+    expect(isOverridden(pf().products[1]!, 'BPMN')).toBe(false);
     expect(within(r).queryByText(/override this/)).toBeNull();
   });
   it('Change = a product: the real section for it, with the banner; an edit creates its override, the common values do not move', async () => {
     mountApp('scope-sel'); portfolio(); pick(ids[1]);
     await sectionReady(/Scope/);
-    const r = region(/^Changing B only/), common = pf().common.selectedArtefacts;
+    const r = region(/^Changing B only/), common = keysOf(pf().common).selectedArtefacts;
     await within(r).findByRole('button', { name: 'Clear all' }, { timeout: 15000 });
     expect(within(r).getByRole('note').textContent).toBe('Changing B only — the results above and elsewhere still show the Portfolio.');
     fireEvent.click(within(r).getByRole('button', { name: 'Clear all' }));
-    expect(pf().products[1]!.overrides.selectedArtefacts!.length).toBeLessThan(common.length);
-    expect(pf().common.selectedArtefacts).toBe(common);
+    expect(keysOf({ BPMN: pf().products[1]!.overrides.BPMN! }).selectedArtefacts.length).toBeLessThan(common.length);
+    expect(keysOf(pf().common).selectedArtefacts).toBe(common);
   });
   it('the entry team is per product: a hint for All products, the team editor for a product', async () => {
     mountApp('team-in'); portfolio();
@@ -108,7 +108,7 @@ describe('an input section in a Portfolio view is editable in place', () => {
     expect(within(region(/^Changing Product 1 only/)).getByRole('note').textContent).toContain('still show the Wave Wave 1.');
   });
   it('axe: the section with its in-place editor has no violation (All products and a product)', async () => {
-    setProductOverride(ids[1], 'selectedArtefacts', []);
+    setScopeOverride(ids[1], { selectedArtefacts: [] });
     mountApp('scope-sel'); portfolio();
     await sectionReady(/Scope/);
     await noViolation(screen.getByRole('main'));

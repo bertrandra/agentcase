@@ -1,8 +1,8 @@
 /** @calc-zone exports */
 import { REG_ARTEFACTS, SDLC_ARTEFACTS } from '@/domain/catalog';
-import { workingArtefacts } from '@/domain/artefacts';
+import { editedArtefacts } from '@/domain/artefacts';
 import type { Artefact } from '@/domain/types/catalog';
-import type { ArtefactEdit, CaseState } from '@/domain/types/state';
+import type { ArtefactEdit } from '@/domain/types/state';
 import { blue, frz, geDV, head, rangeDV, sheet, ynDV } from '../kit';
 import { num, str, yes } from '../safe';
 import type { ParamsDoc, ReadCtx, SheetFamily, WriteCtx } from '../types';
@@ -66,13 +66,13 @@ function readReg({ rows, w }: ReadCtx): void {
     else sel.delete(id);
   });
   w.selectedRegArtefacts = [...sel];
-  w.regArtefactsEdited = editsWith(REG_ARTEFACTS, workingArtefacts(w as unknown as CaseState).reg, t);
+  w.regArtefactsEdited = editsWith(REG_ARTEFACTS, editedArtefacts(REG_ARTEFACTS, w.regArtefactsEdited), t);
 }
 function readSdlc({ rows, w, notes }: ReadCtx): void {
   const r = rows('SDLC Artifacts'); if (!r) return;
   const sel = new Set<string>(), ids = new Set(SDLC_ARTEFACTS.map((a) => a.id));
   const t = collect(r, 0, { sel: 4, as: 5, ef: 6, seq: 7 }, (id) => ids.has(id), (id, on) => { if (on) sel.add(id); });
-  w.artefactsEdited = editsWith(SDLC_ARTEFACTS, workingArtefacts(w as unknown as CaseState).sdlc, t);
+  w.artefactsEdited = editsWith(SDLC_ARTEFACTS, editedArtefacts(SDLC_ARTEFACTS, w.artefactsEdited), t);
   if (sel.size) keepSelection(w, sel, notes);
 }
 /**

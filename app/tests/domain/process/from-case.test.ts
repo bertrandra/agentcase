@@ -2,11 +2,12 @@ import fc from 'fast-check';
 import { describe, expect, it } from 'vitest';
 import { PHASES, REG_ARTEFACTS, REG_NORMS, SDLC_ARTEFACTS } from '@/domain/catalog';
 import { catalogueProcess, processFromCase, readProcess, scopeKeysOf, serialize, viewsOf } from '@/domain/process';
-import type { CaseState } from '@/domain';
-import { makeDefaultDoc } from '@/store/instance';
+import defaultDoc from '@/store/defaults/defaultDoc.json';
 
 /** processFromCase / viewsOf are inverse on the scope keys, whatever the lists hold: any order, unknown ids, repeats, partial edits. */
-const base = (): CaseState => makeDefaultDoc();
+/** A version 2 case (the default case as the legacy file holds it, its scope keys included): what `processFromCase` reads. */
+type CaseState = Record<string, unknown> & { phaseSeq?: { id: string; seq: number | null }[] };
+const base = (): CaseState => structuredClone(defaultDoc) as unknown as CaseState;
 const roundTrip = (c: CaseState) => viewsOf(processFromCase(c)).keys;
 const sdlcIds = SDLC_ARTEFACTS.map((a) => a.id), regIds = REG_ARTEFACTS.map((a) => a.id), phaseIds = [...PHASES.map((p) => p.id), 'Cross-cutting'];
 const normKeys = REG_NORMS.map((n) => `${n.industry}:${n.name}`);

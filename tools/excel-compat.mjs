@@ -23,6 +23,7 @@ const { createServer } = await import(pathToFileURL(resolve('app/node_modules/vi
 const vite = await createServer({ root: resolve('app'), server: { middlewareMode: true }, appType: 'custom', logLevel: 'error', optimizeDeps: { noDiscovery: true, include: [] } });
 const load = (p) => vite.ssrLoadModule(p);
 const P = await load('/src/store/persistence/excel/params/index.ts'), A = await load('/src/store/persistence/excel/params/apply.ts');
+const L = await load('/src/store/persistence/bpmn/legacy.ts');   // schema v3: the legacy keys of our case, derived from its process document
 const { LEGACY_SECTIONS } = await load('/src/ui/zones/registry.ts'), { fromSnapshot } = await load('/src/store/persistence/snapshot.ts');
 const { THEME_DEFAULT } = await load('/src/domain/theme/index.ts');   // the print theme of the exports (the default look)
 const { BUILTIN_PERSONAS } = await load('/src/domain/nav/structures.ts');
@@ -31,8 +32,14 @@ const { produce } = appReq('immer'), ExcelJS = appReq('exceljs');
 const ENV = { sections: LEGACY_SECTIONS };   // the 79 case sections, as the app's own export (ParamsExcelPanel): the legacy file knows no other
 
 const canon = (v) => JSON.stringify(v, (_k, x) => (x && typeof x === 'object' && !Array.isArray(x) ? Object.fromEntries(Object.entries(x).filter(([, y]) => y !== undefined).sort(([a], [b]) => (a < b ? -1 : 1))) : x));
-/** Legacy drops the production flag of the environments on import; ours keeps it (documented difference). */
-const norm = (k, v) => (k === 'ENVIRONMENTS' && Array.isArray(v) ? v.map(({ isProd, ...e }) => e) : v);
+/**
+ * Legacy drops the production flag of the environments on import; ours keeps it (documented difference). Schema v3 (BPMN B3, docs/SPEC_BPMN.md
+ * § 6.3): our scope lists are derived from the process document in document order; their order never carried a meaning (every reader treats them
+ * as sets), so they are compared as sets, the ramp-up sequences by phase.
+ */
+const SETS = ['selectedArtefacts', 'selectedRegArtefacts', 'selectedNorms', 'phaseOff'];
+const norm = (k, v) => (k === 'ENVIRONMENTS' && Array.isArray(v) ? v.map(({ isProd, ...e }) => e)
+  : SETS.includes(k) && Array.isArray(v) ? [...v].sort() : k === 'phaseSeq' && Array.isArray(v) ? [...v].sort((a, b) => a.id.localeCompare(b.id)) : v);
 const near = (a, b, p, out) => {
   if (a === 'Infinity') { if (b !== Infinity && b !== 'Infinity') out.push(`${p}: ${a} vs ${b}`); }
   else if (typeof a === 'number') { if (!(typeof b === 'number' && (Math.abs(a - b) <= 1e-6 * Math.max(1, Math.abs(a)) || (Number.isNaN(a) && Number.isNaN(b))))) out.push(`${p}: legacy ${a} vs ours ${b}`); }
@@ -83,7 +90,8 @@ function legacyPristineDoc() {
 /** Our reader on the pristine case, applied the way the import command does. */
 async function ourImport(bytes) {
   const base = legacyPristineDoc(), { patch, notes } = await P.readParamsWorkbook(bytes, base, ENV);
-  return { notes, doc: produce(base, (d) => { A.applyParamsPatch(d, patch); }) };
+  const doc = produce(base, (d) => { A.applyParamsPatch(d, patch); });
+  return { notes, doc: L.legacyCase(doc), real: doc };
 }
 /**
  * Keys outside the comparison: the save time, our schema stamp, and `currentPersona` — the persona is view state of the tab here (D3,
@@ -96,7 +104,7 @@ function compare(label, leg, ours) {
   // the two notes below are ours alone: the legacy page applied those columns to constants it never saved, here they are reported as reference-only
   ours.notes = ours.notes.filter((n) => !/^(Agent Catalog|Loop Pairs): /.test(n));
   if (canon(leg.notes) !== canon(ours.notes)) problems.push(`notes: legacy ${JSON.stringify(leg.notes)} vs ours ${JSON.stringify(ours.notes)}`);
-  const c = computeCase(ours.doc);
+  const c = computeCase(ours.real);
   near(leg.exp.model, JSON.parse(JSON.stringify(c.model, (_k, v) => (v === Infinity ? 'Infinity' : v))), 'model', problems);
   near(leg.exp.phaseScope, c.phaseScope, 'phaseScope', problems); near(leg.exp.glassCeiling, c.glassCeiling, 'glassCeiling', problems);
   near(leg.exp.payback, c.payback, 'payback', problems); near(leg.exp.npv, c.npv, 'npv', problems);

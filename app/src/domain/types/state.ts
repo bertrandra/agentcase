@@ -1,4 +1,5 @@
 /** @calc-zone foundation */
+import type { XDocument } from '../process/xml';
 /** Shape of a case = the legacy snapshot state (what collectSnapshotState() returns). Only the keys the engine reads are typed. */
 export interface DomState { values: Record<string, string>; checked: Record<string, boolean> }
 /** `shared`: set only on a row a portfolio shared line contributes to a product's effective case (its id); never stored in a product's own team. */
@@ -32,14 +33,12 @@ export interface CaseState {
   teamIn: TeamRow[];
   RATE: Record<string, Record<string, number>>;
   targetLocPct: Record<string, number> | null;
-  selectedArtefacts: string[];
-  artefactsEdited: ArtefactEdit[];
-  selectedRegArtefacts: string[];
-  regArtefactsEdited: ArtefactEdit[];
-  phaseOff: string[];
-  selectedNorms: string[];
-  phaseSeq?: { id: string; seq: number | null }[];
-  regInclude: boolean;
+  /**
+   * The case's process document (schema v3, docs/SPEC_BPMN.md § 6.1, D-B1): the BPMN node tree. It owns the version 2 scope keys
+   * (selectedArtefacts, artefactsEdited, selectedRegArtefacts, regArtefactsEdited, phaseOff, selectedNorms, phaseSeq, regInclude, skillMap),
+   * which are only derived from it (`scopeOf`, domain/process/scope.ts).
+   */
+  BPMN: XDocument;
   forceGlassCeiling: boolean;
   lifecycleUse: boolean;
   lifecyclePos: number;

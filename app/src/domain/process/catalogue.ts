@@ -1,6 +1,6 @@
 /** @calc-zone process-model */
 import { LOOP_PAIRS, PHASES, REG_ARTEFACTS, REG_NORMS, SDLC_ARTEFACTS } from '../catalog';
-import { SKILL_MAP_DEFAULT, SKILLS_EXIST } from '../baseline/skills';
+import { SKILL_MAP_DEFAULT, SKILLS_EXIST } from '../catalog/skills';
 import type { Phase } from '../types/catalog';
 import { CROSS_ID, type CatArtefact, type CatLoopPair, type CatPhase, type Norm, type ProcessCatalogue } from './types';
 

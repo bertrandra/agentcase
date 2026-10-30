@@ -62,7 +62,8 @@ is targeted, at what cost and when (§ 3.5).
 - **F5** — The portfolio holds a **reference scope** (SDLC artefacts, regulatory artefacts, standards, switched-off phases,
   regulatory inclusion, phase sequences). Every new product inherits it.
 - **F6** — A product may **override** the scope. The override is at the granularity of the key (e.g. `selectedArtefacts`, `phaseOff`,
-  `selectedNorms`) and **not** at the granularity of the item: an override of `selectedArtefacts` replaces the whole list.
+  `selectedNorms`) and **not** at the granularity of the item: an override of `selectedArtefacts` replaces the whole list. (Since schema v3 these
+  scope keys are one key, `BPMN`, the case's process document, overridden as a whole: [SPEC_BPMN.md](SPEC_BPMN.md) F-B20, § 6.4.)
   *(Reason: readable, predictable, no ambiguous merge. See decision D-M2.)*
 - **F7** — The interface shows a state for each field concerned: **inherited** (common value), **overridden** (chip + common value in the tooltip)
   and a "Revert to common" action. An "Apply to all products" action writes the value at the common level and removes the
@@ -232,6 +233,9 @@ resolveProduct(p: Portfolio, productId): CaseState   // pure domain function
 | Model / coefficients | `MODEL`, `COEF`, `TOKEN_MODELS`, `TOK_OUT_SHARE` | not in v1 (common) |
 | Discount rate | `MODEL.CASE.discountRate` | **never** (portfolio) |
 | Horizon | `dom.values.horizon` | **never** (calendar, portfolio) |
+
+> Since schema v3 (BPMN phase B3, [SPEC_BPMN.md](SPEC_BPMN.md) § 6.4) the nine scope keys of the Scope row are one key, `BPMN` (the case's process
+> document), overridden as a whole (F-B20); the other keys of the row are unchanged.
 
 ### 4.4 Persistence
 

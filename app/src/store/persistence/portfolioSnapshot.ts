@@ -6,6 +6,7 @@ import { openChecked, versionStamp } from './schema';
 import { PORTFOLIO_SCHEMA } from '../portfolioState';
 import type { Doc, PortfolioDoc } from '../types';
 import { sanitize, toSnapshot } from './snapshot';
+import { portfolioInFile } from './bpmn/caseFile';
 
 const withoutView = (pf: PortfolioDoc): Portfolio => { const out = { ...pf }; delete out.editScope; delete out.displayScope; delete out.persona; return out; };
 /** The same portfolio with the legacy French default names ("Produit 1", "Vague 1" of a v20.0 file) read as the English defaults: both are "default names". */
@@ -46,12 +47,13 @@ function packagesOf(pf: Portfolio): Record<string, unknown> {
 /**
  * Portfolio -> snapshot JSON. A single-case portfolio is written as `agentcase.snapshot.v1` (see `isSingleCase`) unless `full` is set (the
  * autosave record needs the exact portfolio: its undo patches address product and wave positions). The tab's persona is written as the legacy
- * `currentPersona` (first key of the case / of `common`): the persona the file opens on, nothing more (`store/persona.ts`).
+ * `currentPersona` (first key of the case / of `common`): the persona the file opens on, nothing more (`store/persona.ts`). Every process
+ * document is written as XML text (schema v3).
  */
 export function toPortfolioSnapshot(pf: PortfolioDoc, now: () => Date = () => new Date(), full = false): Record<string, unknown> {
   if (!full && isSingleCase(pf)) return toSnapshot(withSavedPersona(portfolioToCase(pf) as Doc, pf.persona), now);
   const plain = withoutView(pf), saved = { ...plain, common: withSavedPersona(plain.common, pf.persona) };
-  return { ...structuredClone(saved), savedAt: now().toISOString(), _schema: PORTFOLIO_SCHEMA, ...versionStamp(), ...packagesOf(plain) };
+  return { ...structuredClone(portfolioInFile(saved)), savedAt: now().toISOString(), _schema: PORTFOLIO_SCHEMA, ...versionStamp(), ...packagesOf(plain) };
 }
 
 export const isPortfolioSnapshot = (raw: unknown): boolean => !!raw && typeof raw === 'object' && (raw as { _schema?: unknown })._schema === PORTFOLIO_SCHEMA;

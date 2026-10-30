@@ -4,6 +4,7 @@ import { afterEach, describe, expect, it } from 'vitest';
 import PhaseScope from '@/ui/sections/scope/phase-scope';
 import { expectLikeFixture, loadFixture, modelOf, SECTION_FIXTURES } from '../../helpers/scopeToolsFixtures';
 import { legacySectionText, missingNumbers, renderedText } from '../../helpers/parity';
+import { keysOf } from '../../helpers/scope';
 
 afterEach(cleanup);
 
@@ -23,8 +24,8 @@ describe('phase-scope section', () => {
     expect(screen.getByText(/10\/53 art\./)).toBeTruthy();
     // each phase fully on (V1 and V3 hold only some of their artefacts by default; V4 is already complete)
     ['V1', 'V3', 'V6'].forEach((p) => fireEvent.click(screen.getByLabelText(`Phase ${p}`)));
-    expect(screen.getByText(/\d+\/53 art\./).textContent).toBe(`${s.getState().doc.selectedArtefacts.length}/53 art.`);
-    expect(s.getState().doc.selectedArtefacts.length).toBeGreaterThan(10);
+    expect(screen.getByText(/\d+\/53 art\./).textContent).toBe(`${keysOf(s.getState().doc).selectedArtefacts.length}/53 art.`);
+    expect(keysOf(s.getState().doc).selectedArtefacts.length).toBeGreaterThan(10);
     expectLikeFixture(s, 'scope-reduced');
     expect(modelOf(s).ceiling).not.toBe(ceiling0);
     act(() => { for (let i = 0; i < 3; i++) s.undo(); });   // one step per phase

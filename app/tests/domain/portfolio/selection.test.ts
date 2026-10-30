@@ -3,6 +3,7 @@ import { aggregateTeams, consolidate, inputSummary, keptMonths, overrideRefs, po
   waveHeadline, type Portfolio } from '@/domain/portfolio';
 import { expectClose } from '../../helpers/portfolio';
 import { fourProducts } from '../../helpers/portfolioFixtures';
+import { scopeOf } from '@/domain/process';
 
 let pf: Portfolio;
 beforeAll(() => { pf = fourProducts(); });
@@ -75,7 +76,7 @@ describe('aggregateTeams / inputSummary', () => {
     for (const r of rows) {
       const p = pf.products.find((x) => x.id === r.id)!, c = resolveProduct(pf, r.id);
       expect(r.overrides).toBe(overrideRefs(p.overrides).length);
-      expect(r.artefacts).toBe(c.selectedArtefacts.length);
+      expect(r.artefacts).toBe(scopeOf(c).selectedArtefacts.length);
       expect(r.wave).toBe(pf.waves.find((w) => w.id === p.waveId)?.name ?? '');
     }
     expect(rows.some((r) => r.overrides > 0)).toBe(true);

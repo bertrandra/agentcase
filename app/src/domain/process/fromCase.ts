@@ -1,5 +1,4 @@
 /** @calc-zone process-model */
-import type { CaseState } from '../types/state';
 import { roleResource } from './buildActors';
 import { casePlan, type CasePlan, type ElementPatch } from './casePlan';
 import { catalogueProcess, mapElements } from './defaultProcess';
@@ -8,15 +7,19 @@ import type { ScopeKeys } from './types';
 import { attr, el, kid, NS, text, withAttrs, withChildren, type AttrInput, type XDocument, type XElement, type XNode } from './xml';
 import { indent } from './xmlWrite';
 
-/** The version 2 scope keys of a case (`skillMap` is untyped on CaseState). */
-export function scopeKeysOf(s: CaseState): ScopeKeys {
+/** A version 2 case (or any object): the scope keys it may hold, untyped. */
+export type LegacyScope = { [K in keyof ScopeKeys]?: unknown };
+const list = <T>(v: unknown): T[] => (Array.isArray(v) ? (v as T[]) : []);
+/** The version 2 scope keys of a case file (absent or damaged lists read as empty, as the engine read them). */
+export function scopeKeysOf(o: object): ScopeKeys {
+  const s = o as LegacyScope;
   const k: ScopeKeys = {
-    selectedArtefacts: s.selectedArtefacts ?? [], artefactsEdited: s.artefactsEdited ?? [], selectedRegArtefacts: s.selectedRegArtefacts ?? [],
-    regArtefactsEdited: s.regArtefactsEdited ?? [], phaseOff: s.phaseOff ?? [], selectedNorms: s.selectedNorms ?? [], regInclude: !!s.regInclude,
+    selectedArtefacts: list(s.selectedArtefacts), artefactsEdited: list(s.artefactsEdited), selectedRegArtefacts: list(s.selectedRegArtefacts),
+    regArtefactsEdited: list(s.regArtefactsEdited), phaseOff: list(s.phaseOff), selectedNorms: list(s.selectedNorms), regInclude: !!s.regInclude,
   };
-  const m = (s as unknown as { skillMap?: Record<string, string> }).skillMap;
-  if (s.phaseSeq) k.phaseSeq = s.phaseSeq;
-  if (m && typeof m === 'object') k.skillMap = m;
+  const m = s.skillMap;
+  if (Array.isArray(s.phaseSeq)) k.phaseSeq = s.phaseSeq as ScopeKeys['phaseSeq'];
+  if (m && typeof m === 'object' && !Array.isArray(m)) k.skillMap = m as Record<string, string>;
   return k;
 }
 
@@ -54,12 +57,15 @@ function withSkillMap(defs: XElement, map: Record<string, string> | undefined): 
 }
 
 /**
- * The case's process document (spec § 3, § 6.1): the catalogue process with the case's scope (selected activities, phases switched off,
- * ramp-up sequences, norms, regulatory inclusion), its edited activity parameters and its skill map. Phase B1: the case still stores the
- * version 2 keys; this is the document migration 2 → 3 will write (B3). `viewsOf(processFromCase(c))` gives the keys back exactly.
+ * The process document of a version 2 case (spec § 3, § 6.1): the catalogue process with the case's scope (selected activities, phases switched
+ * off, ramp-up sequences, norms, regulatory inclusion), its edited activity parameters and its skill map, every list exactly as the file holds it
+ * (`viewsOf(processFromCase(c)).keys` gives the keys back exactly). The migration 2 → 3 writes the normalised form (`withScope`, scope.ts).
  */
-export function processFromCase(s: CaseState, base: XDocument = catalogueProcess()): XDocument {
-  const keys = scopeKeysOf(s), plan = casePlan(readProcess(base), keys);
+export const processFromCase = (s: object, base: XDocument = catalogueProcess()): XDocument => applyCase(base, scopeKeysOf(s));
+
+/** The document with these scope keys written on it (`processFromCase`; `withScope` in scope.ts writes them normalised). */
+export function applyCase(base: XDocument, keys: ScopeKeys): XDocument {
+  const plan = casePlan(readProcess(base), keys);
   const root = mapElements(base.root, (e) => {
     const id = attr(e, 'id'), p = id === undefined ? undefined : plan.patches.get(id);
     if (p) return apply(e, p);
