@@ -29,5 +29,28 @@ OMG standard; its schema sits here with the other standard schemas, under the sa
 
 The test `app/tests/bpmn/samples.test.ts` recomputes these hashes from these tables on every run.
 
+## DMN 1.3 and CMMN 1.1 (phase B7b)
+
+The machine-readable schemas of **DMN 1.3** (formal/21-01-01, namespace `https://www.omg.org/spec/DMN/20191111/MODEL/`) and **CMMN 1.1**
+(formal/16-12-01, namespace `http://www.omg.org/spec/CMMN/20151109/MODEL`), downloaded unchanged from the OMG site on 2026-10-30, the URLs the
+OMG pages of the specifications link (https://www.omg.org/spec/DMN/1.3/About-DMN/, https://www.omg.org/spec/CMMN/1.1/About-CMMN/). DMN 1.3 keeps the
+DC / DI schemas of DMN 1.2 (namespaces `http://www.omg.org/spec/DMN/20180521/DC/` and `…/DI/`). Each standard sits in its own folder, because both
+ship files named `DC.xsd` and `DI.xsd` (other namespaces than the BPMN ones above). Same rule: unchanged, never edited (CRLF line ends kept).
+`../agentcase-bpmn-validate.xsd` imports DMN13.xsd (the decisions a BPMN process embeds, spec F-B62); `../agentcase-dmn-validate.xsd` and
+`../agentcase-cmmn-validate.xsd` are the entry points of a `.dmn` and a `.cmmn` file (F-B62, F-B63). The test `app/tests/bpmn/omg-dmn-cmmn.test.ts`
+recomputes these hashes.
+
+| File | Source URL | SHA-256 |
+|---|---|---|
+| `dmn13/DMN13.xsd` | https://www.omg.org/spec/DMN/20191111/DMN13.xsd | `9d303f7a2146b98c00a3a53a5dce5364bfe4a22b1b1938933a5be4a2d1945834` |
+| `dmn13/DMNDI13.xsd` | https://www.omg.org/spec/DMN/20191111/DMNDI13.xsd | `fa65df22ef7ea6f98379e7c60dd874d8118c50d1cccaab1f0e1f0a1a5d36cc46` |
+| `dmn13/DC.xsd` | https://www.omg.org/spec/DMN/20180521/DC.xsd | `9f57b8e99b00163a65dfaf5de2a3e3ea4be041a1bb23228044c50693334d59e6` |
+| `dmn13/DI.xsd` | https://www.omg.org/spec/DMN/20180521/DI.xsd | `73a5908426f12021da85c9cce74ae70db5ddac1ebe9c9d28d8495f34bea60f07` |
+| `cmmn11/CMMN11.xsd` | https://www.omg.org/spec/CMMN/20151109/CMMN11.xsd | `90081878aaaf8efcf9cc69245d9455d90555b68f9155ae92fab3547a8170982f` |
+| `cmmn11/CMMN11CaseModel.xsd` | https://www.omg.org/spec/CMMN/20151109/CMMN11CaseModel.xsd | `78d4444e4cc01736012d8c6372f7cec17c307ebcc203ece0023aebee07f334fc` |
+| `cmmn11/CMMNDI11.xsd` | https://www.omg.org/spec/CMMN/20151109/CMMNDI11.xsd | `4fd610bbd91d90273d73cde100d62687c8a6b62c818370c3ee5961a78efe252b` |
+| `cmmn11/DC.xsd` | https://www.omg.org/spec/CMMN/20151109/DC.xsd | `2351f2fe3a3a4e2a30e2f8368666f933316746f64f3a987513ab1bbf5d53f600` |
+| `cmmn11/DI.xsd` | https://www.omg.org/spec/CMMN/20151109/DI.xsd | `d189d3f8566129d0b6cfb9437068331f7f9cec4a9b7843506c1e0ebb87ffff79` |
+
 Licence: the OMG publishes these machine-readable files with the specification, for its implementation; see the copyright notice of
 the specification document.

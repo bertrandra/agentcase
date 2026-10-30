@@ -4,9 +4,11 @@
   Used by tools/bpmn-validate.mjs (xmllint - -noout - -nonet - -schema docs/bpmn/agentcase-bpmn-validate.xsd file.bpmn), after the F-B10 security
   checks and before the check that every ac: name is declared. It declares nothing of its own.
   BPSim 2.0 (WfMC, omg/BPSim-2.0.xsd) is imported too, so the bpsim:BPSimData an export writes (spec 5.4) is validated strictly, not skipped as lax content.
+  DMN 1.3 (omg/dmn13/DMN13.xsd, phase B7b) likewise: the dmn:definitions a process embeds in its extensionElements (F-B62) is validated strictly.
 -->
 <xsd:schema xmlns:xsd="http://www.w3.org/2001/XMLSchema">
   <xsd:import namespace="http://www.omg.org/spec/BPMN/20100524/MODEL" schemaLocation="omg/BPMN20.xsd"/>
   <xsd:import namespace="https://agentcase.app/schema/bpmn/1.0" schemaLocation="agentcase-bpmn-1.0.xsd"/>
   <xsd:import namespace="http://www.bpsim.org/schemas/2.0" schemaLocation="omg/BPSim-2.0.xsd"/>
+  <xsd:import namespace="https://www.omg.org/spec/DMN/20191111/MODEL/" schemaLocation="omg/dmn13/DMN13.xsd"/>
 </xsd:schema>

@@ -2,6 +2,7 @@
 import { readFileSync } from 'node:fs';
 import { act, cleanup, fireEvent, render } from '@testing-library/react';
 import { afterEach, beforeEach, describe, expect, it } from 'vitest';
+import { decisionsEl, dmnFile, ruleFamilies, writeDmn } from '@/domain/dmn';
 import { readProcess, serialize } from '@/domain/process';
 import { appStore } from '@/store/instance';
 import Process from '@/ui/sections/scope/process';
@@ -33,7 +34,7 @@ const file = (name: string) => {
   return { name: `${name.split('/').pop() ?? name}.bpmn`, size: text.length, text: async () => text };
 };
 async function pick(name: string): Promise<void> {
-  const input = aria('BPMN file to import');
+  const input = aria('BPMN, DMN or CMMN file to import');
   await act(async () => { fireEvent.change(input, { target: { files: [file(name)] } }); await new Promise((r) => setTimeout(r, 30)); });
 }
 beforeEach(() => {
@@ -104,6 +105,16 @@ describe('Process section', { timeout: 90_000 }, () => {
     expect(processView.getState().errors.length).toBeGreaterThan(0);
     expect(button('Import')).toBeUndefined();
     expect(doc()).toBe(before);
+  });
+  it('B7b: a .dmn file picked in the same field imports the decisions as one undoable step (no preview)', async () => {
+    render(<Process />);
+    const text = serialize(dmnFile(writeDmn(ruleFamilies([]))));
+    await act(async () => {
+      fireEvent.change(aria('BPMN, DMN or CMMN file to import'), { target: { files: [{ name: 'rules.dmn', size: text.length, text: async () => text }] } });
+      await new Promise((r) => setTimeout(r, 30));
+    });
+    expect(appStore().getState().history.undo.at(-1)?.type).toBe('process.importDecisions');
+    expect(decisionsEl(doc().root)).toBeDefined();
   });
   it('is axe clean, with an import preview open', async () => {
     const { container } = render(<Process />);
