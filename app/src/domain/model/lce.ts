@@ -1,5 +1,5 @@
 /** @calc-zone run-setup-taxes */
-import { LOOP_PAIRS } from '../catalog';
+import { caseLoopPairs } from '../process/engineInputs';
 import type { Ctx } from '../ctx';
 import { targetBlendedTJM } from '../location';
 import { blendedTokenCostPer1M } from '../tokens';
@@ -41,10 +41,10 @@ export function lceCalibrateP(kLegacy: number, nMax: number) {
 
 /** Loops of the case, calibrated on demand (pure: the legacy function mutated MODEL.LCE). */
 export function lceLoops(c: Ctx): { loops: LceLoopState[]; calibrated: boolean } {
-  const lce = c.s.MODEL.LCE, nMax = lce.nMax || 5;
-  const need = !Array.isArray(lce.loops) || lce.loops.length !== LOOP_PAIRS.length || (!lce.calibrated && !lce.built);
+  const lce = c.s.MODEL.LCE, nMax = lce.nMax || 5, pairs = caseLoopPairs(c.s);
+  const need = !Array.isArray(lce.loops) || lce.loops.length !== pairs.length || (!lce.calibrated && !lce.built);
   if (!need) return { loops: lce.loops, calibrated: !!lce.calibrated };
-  const loops = LOOP_PAIRS.map((lp) => {
+  const loops = pairs.map((lp) => {
     const cal = lceCalibrateP(lp.internalIter || 1, nMax);
     return { id: lp.id, pAccept: cal.p, tRev: 0, cGen: null, calibResidual: cal.residual, clamped: cal.clamped };
   });
@@ -58,7 +58,7 @@ export function lceModel(c: Ctx) {
   let tpa = c.inp.p('tokensPerArt'); if (isNaN(tpa)) tpa = 50000;
   const hourly = targetBlendedTJM(c.s, c.rateScale) / 8;
   const cGenUnit = (tpa / 1e6) * tokenCost, cFb = lce.fallbackCost || 0;
-  const loops = LOOP_PAIRS.map((lp, idx) => {
+  const loops = caseLoopPairs(c.s).map((lp, idx) => {
     const L = state[idx];
     const p = L ? L.pAccept : 1;
     const EN = lceExpectedIter(p, nMax), qN = lceEscapeRate(p, nMax);

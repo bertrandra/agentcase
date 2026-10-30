@@ -60,6 +60,7 @@ const ALLOWED: Record<string, string> = {
   'domain/process/scope.ts:caseDocs': 'memo: the document of version 2 scope keys (pure function of their JSON, bounded to 64 entries)',
   'domain/process/xmlWrite.ts:texts': 'memo: the XML text of a process document (keyed by the immutable node tree)',
   'domain/process/exportPortfolio.ts:REF_ATTRS': 'constant lookup: the attribute names that reference an id (never written)',
+  'domain/process/engineInputs.ts:catalogueIds': 'memo: the activity and actor ids of the catalogue process (keyed by the catalogue process)',
   'domain/process/readPhases.ts:NONE': 'constant lookup: the empty BPSim value map (never written)',
   'domain/process/security.ts:RESERVED_IDS': 'constant lookup: the reserved ids of the F-B10 rule table (ReadonlySet, never written)',
   'domain/time/fit.ts:cache': 'fit cache: the S-curve fit of a key built from its inputs (pure, bounded by the inputs a session uses)',

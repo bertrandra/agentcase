@@ -1,6 +1,7 @@
 /** @calc-zone process-model */
 import { readBpsim } from './bpsim';
 import { activitiesOf, flowsIn, phasesOf, type Sim } from './readPhases';
+import { boundaryReworksIn, withTargets } from './readRework';
 import { bool, extOf, marks, num, type ActorView, type DiagramView, type NormView, type ProcessParams, type ProcessView } from './readTypes';
 import { attr, kid, kids, NS, type XDocument, type XElement } from './xml';
 
@@ -63,10 +64,11 @@ export function readProcess(d: XDocument): ProcessView {
   const hit = memo.get(d);
   if (hit) return hit;
   const defs = d.root, proc = kid(defs, NS.bpmn, 'process'), phases = proc ? phasesOf(proc) : [], sim = readBpsim(defs);
+  const flows = proc ? [...flowsIn(proc, sim), ...phases.flatMap((p) => flowsIn(p.el, sim))] : [];
+  const reworks = proc ? withTargets([...boundaryReworksIn(proc), ...phases.flatMap((p) => boundaryReworksIn(p.el))], flows) : [];
   const view: ProcessView = {
     params: paramsOf(proc), phases: phases.map((p) => p.view), activities: phases.flatMap((p) => activitiesOf(p.el, sim)),
-    actors: actorsOf(defs, sim), flows: proc ? [...flowsIn(proc, sim), ...phases.flatMap((p) => flowsIn(p.el, sim))] : [], norms: normsOf(defs),
-    diagram: diagramOf(defs),
+    actors: actorsOf(defs, sim), flows, reworks, norms: normsOf(defs), diagram: diagramOf(defs),
   };
   memo.set(d, view);
   return view;

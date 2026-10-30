@@ -1,6 +1,6 @@
 # AgentCase — Specification: the delivery process as a native BPMN 2.0 model (export and import)
 
-> Status: **specified; phases B0, B1, B2, B3 and B6b built** (B0: extension XSD, official OMG schemas, `tools/bpmn-validate.mjs`, sample and hostile files, § 5.3; B1: domain only, `app/src/domain/process`, § 6.3; B2: reader / writer, security, round trip, BPSim, export from the File menu, § 5.5; B3: schema v3, the case stores the BPMN document, § 6.4; B6b: organisation model, § 16.8). Decisions D-B1…D-B26 **adopted on 2026-10-30** (§ 12, § 15.6, § 16.7, § 17.9); D-B26: the case's BPMN
+> Status: **specified; phases B0, B1, B2, B3, B5 and B6b built** (B0: extension XSD, official OMG schemas, `tools/bpmn-validate.mjs`, sample and hostile files, § 5.3; B1: domain only, `app/src/domain/process`, § 6.3; B2: reader / writer, security, round trip, BPSim, export from the File menu, § 5.5; B3: schema v3, the case stores the BPMN document, § 6.4; B5: custom activities, roles, agents and rework from the model in the engine, § 7.1; B6b: organisation model, § 16.8). Decisions D-B1…D-B26 **adopted on 2026-10-30** (§ 12, § 15.6, § 16.7, § 17.9); D-B26: the case's BPMN
 > document is the **only** stored form of the process, the organisation and the audit (§ 6.1). Scope: the TypeScript + React application in `app/`.
 > Related documents: [ARCHITECTURE.md](ARCHITECTURE.md), [DEVIATIONS.md](DEVIATIONS.md), [SPEC_MULTI_PRODUIT.md](SPEC_MULTI_PRODUIT.md).
 > Code rules unchanged: files ≤ 150 lines, no `any`, layers `ui → controllers → store → domain`, every write is an undoable
@@ -393,6 +393,45 @@ the editorial source of the default process until decision D-B9 retires them.
   lifecycle weights). Rework flows read their probability and cost share from the model instead of `loopPairs.json`.
 - **One owner** — `domain/process` owns activity lookup, scope, ordering and parameters; no screen or export recomputes them.
 
+### 7.1 Built in B5 (the engine reads the model)
+
+- **Activities (F-B18, § 7 phase 2).** `workingArtefacts` reads the activities of the case's document (`caseViews(case).sdlc` / `.reg`,
+  `domain/process/engineInputs.ts`) instead of the edited JSON catalogues: a custom activity (`process.addActivity`) enters every per-activity figure
+  with its own phase, type, role, effort, value class, AI authority and supervision split; its weight is effort × the lifecycle weight of its phase (a
+  custom phase weighs 1.0, like any phase the status table does not name). Out of scope it counts in the total effort only, like a catalogue artefact.
+  On the 107 fixtures the activity lists are the edited catalogues, field for field (`tests/domain/process/parity.test.ts`), so no figure moves.
+  `addActivity` now also writes the deliverable's data object (the task's output association referenced a missing one).
+- **Roles and agents.** The role → team-skill map (`skillMapOf` → `caseSkillMap`) is the case's own map (derived from every role resource, custom ones
+  included) or, without one, the default map plus each custom role's `ac:actor teamSkill`. The agent directory (`agentsOf`: Agent Directory section,
+  `agentCatalogCount`, CC-AG-01 / 02, the Agent Catalog sheet) is the shipped catalogue plus each custom `ac:actor kind="agent"` resource: skill = its
+  capability, authority = that of its first activity, artefacts = the activities it performs. The factory tags (`tagMap`) take the capability and the
+  activity type from the activity (the story link stays the factory's `fmArtefactTags`).
+- **Rework (D-B20, F-B47).** The rework loops (`caseLoopPairs`: external rework effort, loop calibration, agentic loop table, CC-AG checks, Loop Pairs
+  sheet) are read from the model: the back flows with `ac:rework`, unless an error boundary event carrying `ac:rework` replaces them. A boundary event
+  names the loop it replaces (`ac:rework pair`, in place) or is a loop of its own (after the back flows); its loop runs from the phase of what it is
+  attached to (an activity, or a phase sub-process) back to the phase of the target of its outgoing flow (`domain/process/readRework.ts`). Removing an
+  activity removes the rework flows that name it.
+- **Portfolio (F-B20, B3 question 3).** The Overrides sheet writes a product's process override as the nine version 2 rows (older builds) and then as
+  the document itself (key `BPMN`, its XML text as a JSON string, up to 1,500 parts of 4,000 characters); the import reads the document back through
+  the BPMN reader (a damaged one refuses the workbook) and lays the scope rows over it, so custom content survives the round trip byte for byte.
+- **Outputs (F-B22).** `processSummary` (`domain/verifyA/processSummary.ts`) is the one owner of what the outputs print of the process: per activity the
+  engine's own selection, weight, role, team skill and agent; the actors; the rework loops with their added weight. When the process holds custom
+  content (activities, actors or rework boundary events the catalogue does not), the results workbook adds a **Process** sheet and the critical report
+  a section **7 · Delivery process**; a catalogue case keeps the legacy outputs exactly. The HTML snapshot embeds the document (B3).
+- **Tests.** Hand-computed reference figures per parameter (`tests/domain/process/engine-custom.test.ts`), the export of such a process validated
+  (`engine-custom-valid.test.ts`), the cross-surface equalities run on five process cases (`tests/domain/sot-cross-surface-process.test.ts`, the
+  equalities shared with the 107-fixture guard in `tests/helpers/sotChecks.ts`), the portfolio round trip (`tests/store/excel-portfolio-process.test.ts`).
+- **Not done in B5.** (1) **D-B9** — the JSON catalogues still generate the catalogue process. Retiring them needs a DOM-free reader of
+  `catalog/defaultProcess.bpmn` in the domain (or a build step that ships its node tree), because the engine, the Node tools (excel-compat, parallel-run,
+  oracle) and the generator check read the catalogues without a DOM; and the modules that read `SDLC_ARTEFACTS` / `REG_ARTEFACTS` / `PHASES` /
+  `LOOP_PAIRS` as reference lists (reset to the catalogue, pins validation, the factory pickers, the Excel legacy sheets, per-phase tables) must read the
+  default process views instead. The figures do not depend on it any more (they read the case's document). (2) The factory story / feature links
+  (`fmArtefactTags.storyId`, `fmPhaseFeatures`) stay case keys: they are workspace data shared by every product, while the process document is
+  overridable per product, so moving them into the document changes what a product override means (to decide). (3) `dom.checked.regInclude` stays: the
+  oracle fixture `frame-industry-cross` holds the box ticked with `regInclude` false, so deriving it changes the `tgRegInclude` variable and the
+  excel-compat state comparison (a deviation to decide). (4) Pins of a custom activity are not accepted yet (`normalisedPins` checks the catalogue ids),
+  and the per-phase tables that list the catalogue phases (`phaseArtRows`, agent usage) do not show a custom phase.
+
 ## 8. Interface
 
 - New section **🧩 Process (BPMN)** in the Scope group (persona assignment like any section): diagram (SVG, read-only),
@@ -462,7 +501,7 @@ these. Portfolio: the process follows the override commands of spec F6–F9.
 | B2 (**built in B2**) | BPMN reader / writer (DOMParser / XMLSerializer, no new dependency), node tree, security limits, pass-through, BPSim | Round trip byte-identical; XSD-valid; security tests | 1.5 d | 4 / 5 | B1 | Byte-identical round trip with foreign namespaces and vendor extensions |
 | B3 (**built in B3**) | Schema v3 + migration, `BPMN` key (native XML, node tree in the store), commands, existing scope sections on the model | 107 fixtures identical; parallel run 40/40; excel-compat 67/67 | 2 d | 5 / 5 | B2 | Touches store, undo, tab sync, autosave, Excel and every scope screen at once; node-level undo patches |
 | B4 | Process section: SVG diagram, activity table, actor panel, import (replace / merge, preview, report), export | axe clean; ui-parity 0 divergence | 1.5 d | 3 / 5 | B3 | Accessible diagram with a table alternative; the merge preview |
-| B5 | Custom activities / roles / agents in the engine; rework flows from the model; portfolio override; Excel / report / HTML outputs | Hand-computed reference tests; cross-surface equality | 2 d | 4 / 5 | B3 | New engine inputs without breaking the single-owner rule; deviations to record |
+| B5 (**built in B5**) | Custom activities / roles / agents in the engine; rework flows from the model; portfolio override; Excel / report / HTML outputs | Hand-computed reference tests; cross-surface equality | 2 d | 4 / 5 | B3 | New engine inputs without breaking the single-owner rule; deviations to record |
 | B5b | Extended profile (§ 17): traceability graph, data stores bound to tools, data states and types, multi-instance volumes, timers and cadence, bounded loops, boundary events and reusable definitions, event sub-processes, compensation, conditional scope (FEEL subset), shared process library, task types, formal assignment and lanes, message flows and multiplicity, conversation view, annotations, several diagrams, colours, file header | Default process unchanged in figures; each element has a reader / writer / round-trip test and a test of the figure, check or view it feeds | 3 d | 4 / 5 | B5 | Breadth (about 25 elements); a safe FEEL parser; the process library across products |
 | B6 | Optional lazy BPMN editor (D-B6 b) | Size budget; editor round trip | 1.5 d | 4 / 5 | B4 | Size budget, CSP, writing the editor's changes back to the node tree; bpmn-js licence requires its watermark to stay visible |
 | B6b (**built in B6b**, teams at the derived-view stage) | Organisation model (§ 16): organisation elements in the `BPMN` document, migration of `teamIn` / shared team lines to teams (parity), RACI on activities, `domain/org`, Organisation and Who-does-what sections, resource roles and organisation view | 107 fixtures identical before the RACI-driven figures; diagnostics tests; axe clean | 2 d | 4 / 5 | B3 | Moving the entry team and shared lines into the organisation with identical figures |

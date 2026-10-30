@@ -3,6 +3,8 @@
  * on files and returns its JSON report. Used by tests/bpmn (phase B0 of docs/SPEC_BPMN.md).
  */
 import { spawnSync } from 'node:child_process';
+import { mkdtempSync, rmSync, writeFileSync } from 'node:fs';
+import { tmpdir } from 'node:os';
 import { join, resolve } from 'node:path';
 
 export const REPO = resolve(process.cwd(), '..');
@@ -27,3 +29,10 @@ export function validate(files: string[], flags: string[] = []): { status: numbe
 }
 
 export const codes = (r: ValidationResult | undefined): string[] => [...new Set((r?.errors ?? []).map((e) => e.code))].sort();
+
+/** The validator's result for an XML text (written to a temporary file, removed after). */
+export function validateText(xml: string, name = 'doc.bpmn'): ValidationResult | undefined {
+  const dir = mkdtempSync(join(tmpdir(), 'ac-bpmn-')), file = join(dir, name);
+  writeFileSync(file, xml);
+  try { return validate([file]).results[0]; } finally { rmSync(dir, { recursive: true, force: true }); }
+}

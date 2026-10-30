@@ -17,6 +17,20 @@ When releasing, follow [docs/BUMP_PROCEDURE.md](docs/BUMP_PROCEDURE.md) (§7 for
 
 ## [Unreleased]
 
+### BPMN B5 — the engine reads the process model: custom activities, roles, agents and rework
+
+Phase B5 of [docs/SPEC_BPMN.md](docs/SPEC_BPMN.md) (§ 7, F-B18, F-B20, F-B22, D-B20; details in § 7.1). Every figure of the 107 fixtures unchanged.
+
+- **Custom activities count.** The engine's artefact lists are the activities of the case's process document: an activity added with
+  `process.addActivity` enters every figure with its phase, type, role, effort, value class, AI authority and supervision split.
+- **Custom roles and agents.** A custom role is staffed by its team skill; a custom agent joins the agent directory, the agent count and the Agent
+  Catalog sheet; the factory tags take the capability and type from the activity.
+- **Rework from the model (D-B20).** Rework loops come from the back flows of the process, or from error boundary events carrying `ac:rework` that
+  replace them (`pair`) or add a loop.
+- **Portfolio.** A product's own process survives the parameters workbook round trip (the Overrides sheet carries the document).
+- **Outputs.** A process with custom content adds a Process sheet to the results workbook and a "Delivery process" section to the critical report.
+- **Tests.** Hand-computed reference figures per parameter; the one-source-of-truth equalities run on five process cases.
+
 ## [v20.23.0] 2026-10-30 — BPMN B6b: organisation model, RACI, Organisation and Who-does-what sections
 
 ### BPMN B6b — organisation model: units, teams, roles and RACI in the case's BPMN document

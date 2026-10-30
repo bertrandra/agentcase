@@ -1,7 +1,7 @@
 /** @calc-zone exports */
 import type * as XL from 'exceljs';
 import { overrideRefs, overrideValue, type Portfolio } from '@/domain/portfolio';
-import { BPMN_KEY, scopeOf, type XDocument } from '@/domain/process';
+import { BPMN_KEY, scopeOf, serialize, type XDocument } from '@/domain/process';
 import { PF_LIMITS, PF_SHEETS } from './names';
 
 type MakeSheet = (wb: XL.Workbook, name: string, widths: number[]) => XL.Worksheet;
@@ -20,12 +20,13 @@ const hasSubset = (k: Portfolio['products'][number]['knowledge']): boolean =>
     || !!k.maturityAnswers;
 
 /**
- * The rows of a product's overrides: one per key or form field; a process document override (whole document, F-B20) is written as the version 2
- * scope keys derived from it (`scopeOf`), one row each, which this build and older ones read back.
+ * The rows of a product's overrides: one per key or form field. A process document override (whole document, F-B20) is written as the version 2
+ * scope keys derived from it (`scopeOf`), one row each, which older builds read back, then as the document itself (`BPMN`, its XML text as a JSON
+ * string), which this build reads back first: custom activities, roles, agents, rework paths and foreign content survive the round trip (B5).
  */
 function overrideRows(o: Portfolio['products'][number]['overrides']): [string, unknown][] {
   return overrideRefs(o).flatMap((ref): [string, unknown][] => (ref !== BPMN_KEY ? [[ref, overrideValue(o, ref)]]
-    : Object.entries(scopeOf({ BPMN: o.BPMN as XDocument })).filter(([, v]) => v !== undefined)));
+    : [...Object.entries(scopeOf({ BPMN: o.BPMN as XDocument })).filter(([, v]) => v !== undefined), [BPMN_KEY, serialize(o.BPMN as XDocument)]]));
 }
 
 /** Overrides, KnowledgeSubsets and KnowledgeDomains: one row per override (value as JSON), per product subset, per domain. */

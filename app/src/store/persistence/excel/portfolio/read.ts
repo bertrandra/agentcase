@@ -3,6 +3,7 @@ import { setHorizon, setHub, setMaxConcurrentSetups, setOverride, setRho, valida
 import { clean } from '@/domain/portfolio/products';
 import { BPMN_KEY, SCOPE_KEYS } from '@/domain/process';
 import { scopedProcess } from '../../bpmn/legacy';
+import { processOverride } from './readProcess';
 import { ParamsImportError } from '../params/safe';
 import type { Sheets } from '../params/types';
 import { readKnowledge } from './readKnowledge';
@@ -33,12 +34,17 @@ export function readPortfolioSheets(sheets: Sheets, base: Portfolio): Portfolio 
     startDate: s.startDate };
   if (shared) pf.sharedTeam = shared; else delete pf.sharedTeam;
   pf = setMaxConcurrentSetups(setRho(setHorizon(setHub(pf, s.hub), s.horizonMonths), s.rho), s.cap);
-  const scoped = new Map<string, Record<string, unknown>>();   // version 2 scope rows: one process document override per product (F-B20)
+  const scoped = new Map<string, Record<string, unknown>>(), docs = new Map<string, string>();   // one process document override per product (F-B20)
   for (const o of readOverrides(sheets, ids)) {
     if ((SCOPE_KEYS as readonly string[]).includes(o.ref)) scoped.set(o.productId, { ...scoped.get(o.productId), [o.ref]: o.value });
+    else if (o.ref === BPMN_KEY) docs.set(o.productId, o.value as string);
     else pf = setOverride(pf, o.productId, o.ref, o.value);
   }
-  for (const [id, scope] of scoped) pf = setOverride(pf, id, BPMN_KEY, scopedProcess(pf.common.BPMN, scope));
+  // the product's own document when the workbook carries it (B5), else the common one; its version 2 scope rows (edited in Excel or not) on top
+  for (const id of new Set([...docs.keys(), ...scoped.keys()])) {
+    const own = docs.get(id), base = own === undefined ? pf.common.BPMN : processOverride(own, id);
+    pf = setOverride(pf, id, BPMN_KEY, scopedProcess(base, scoped.get(id) ?? {}));
+  }
   const errors = validate(pf).errors;
   if (errors.length) throw new ParamsImportError(`Portfolio: ${errors[0]?.message}`);
   return pf;
