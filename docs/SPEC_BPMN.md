@@ -1,6 +1,6 @@
 # AgentCase — Specification: the delivery process as a native BPMN 2.0 model (export and import)
 
-> Status: **specified; phases B0, B1, B2, B3, B4, B5 and B6b built** (B0: extension XSD, official OMG schemas, `tools/bpmn-validate.mjs`, sample and hostile files, § 5.3; B1: domain only, `app/src/domain/process`, § 6.3; B2: reader / writer, security, round trip, BPSim, export from the File menu, § 5.5; B3: schema v3, the case stores the BPMN document, § 6.4; B4: the Process section, import, § 9.1; B5: custom activities, roles, agents and rework from the model in the engine, § 7.1; B6b: organisation model, § 16.8). Decisions D-B1…D-B26 **adopted on 2026-10-30** (§ 12, § 15.6, § 16.7, § 17.9); D-B26: the case's BPMN
+> Status: **specified; phases B0, B1, B2, B3, B4, B5, B6b and B7 built** (B0: extension XSD, official OMG schemas, `tools/bpmn-validate.mjs`, sample and hostile files, § 5.3; B1: domain only, `app/src/domain/process`, § 6.3; B2: reader / writer, security, round trip, BPSim, export from the File menu, § 5.5; B3: schema v3, the case stores the BPMN document, § 6.4; B4: the Process section, import, § 9.1; B5: custom activities, roles, agents and rework from the model in the engine, § 7.1; B6b: organisation model, § 16.8; B7: audit layer, § 15.7). Decisions D-B1…D-B26 **adopted on 2026-10-30** (§ 12, § 15.6, § 16.7, § 17.9); D-B26: the case's BPMN
 > document is the **only** stored form of the process, the organisation and the audit (§ 6.1). Scope: the TypeScript + React application in `app/`.
 > Related documents: [ARCHITECTURE.md](ARCHITECTURE.md), [DEVIATIONS.md](DEVIATIONS.md), [SPEC_MULTI_PRODUIT.md](SPEC_MULTI_PRODUIT.md).
 > Code rules unchanged: files ≤ 150 lines, no `any`, layers `ui → controllers → store → domain`, every write is an undoable
@@ -530,7 +530,7 @@ these. Portfolio: the process follows the override commands of spec F6–F9.
 | B5b | Extended profile (§ 17): traceability graph, data stores bound to tools, data states and types, multi-instance volumes, timers and cadence, bounded loops, boundary events and reusable definitions, event sub-processes, compensation, conditional scope (FEEL subset), shared process library, task types, formal assignment and lanes, message flows and multiplicity, conversation view, annotations, several diagrams, colours, file header | Default process unchanged in figures; each element has a reader / writer / round-trip test and a test of the figure, check or view it feeds | 3 d | 4 / 5 | B5 | Breadth (about 25 elements); a safe FEEL parser; the process library across products |
 | B6 | Optional lazy BPMN editor (D-B6 b) | Size budget; editor round trip | 1.5 d | 4 / 5 | B4 | Size budget, CSP, writing the editor's changes back to the node tree; bpmn-js licence requires its watermark to stay visible |
 | B6b (**built in B6b**, teams at the derived-view stage) | Organisation model (§ 16): organisation elements in the `BPMN` document, migration of `teamIn` / shared team lines to teams (parity), RACI on activities, `domain/org`, Organisation and Who-does-what sections, resource roles and organisation view | 107 fixtures identical before the RACI-driven figures; diagnostics tests; axe clean | 2 d | 4 / 5 | B3 | Moving the entry team and shared lines into the organisation with identical figures |
-| B7 | Audit layer (§ 15): tool catalogue, `ac:audit` elements and `domain/audit`, Audit section, audit workbook, audit report, explicit calibration | Round trip with audit data; calibration log; axe clean | 2 d | 3 / 5 | B4, B6b | Curating a neutral, dated tool catalogue (needs the owner's review) |
+| B7 (**built in B7**) | Audit layer (§ 15): tool catalogue, `ac:audit` elements and `domain/audit`, Audit section, audit workbook, audit report, explicit calibration | Round trip with audit data; calibration log; axe clean | 2 d | 3 / 5 | B4, B6b | Curating a neutral, dated tool catalogue (needs the owner's review) |
 | B7b | DMN decisions (F-B62) and the optional CMMN export of the run phase (F-B63) | DMN round trip; evaluator tests per hit policy | 1.5 d | 3 / 5 | B5b | DMN hit policies and the shared FEEL subset |
 | B8 | Release: guide, DEVIATIONS (if any), CHANGELOG, version bump | All gates green | 0.5 d | 1 / 5 | all | — |
 
@@ -666,6 +666,70 @@ an **audit header**: audit id, client, scope, auditors, interview list (who, rol
 | D-B12 | Who maintains the tool catalogue? | (a) shipped and dated with each release, editable per case; (b) per case only | **(a)**, with "client-specific" entries kept in the case. |
 | D-B13 | Granularity of operational data | (a) per activity; (b) per activity and per role | **(b)** optional: per activity by default, a role split when the interview gives it. |
 | D-B14 | Audit data in BPMN exports by default? | (a) no, opt-in; (b) yes | **(a)** (F-B33, F-B35): client data leaves only on purpose. |
+
+### 15.7 Built in B7 (audit layer)
+
+- **In the document** (D-B26, no new key, schema unchanged at 3): `ac:auditHeader` and `ac:toolCatalog` in the collaboration's `extensionElements`
+  (created on the first edit, removed with their last content), `ac:audit` in the extension elements of the tasks and resources it describes (removed
+  with its last observation, so an emptied audit gives back the original bytes). **XSD (1.x rule, additions only):** the audit header gains the
+  optional, ordered `ac:calibration code date source` with its `ac:change element param from to formula` children (type `tCalibratedParam`: effort,
+  aiAuthority, probability). Everything else uses the elements declared in B0. Every audited document and its exports validate (OMG XSDs + `ac:` +
+  profile).
+- **F-B23 / F-B25 built, the content is a draft for the owner's review.** `app/src/domain/catalog/tools.json`: 86 tools, every capability of § 15.2,
+  dated 2026-10-30, each with vendor, category, licence, capabilities, AI features, integration, hosting and its public product page as source; neutral
+  (alphabetical within a category, never ranked or recommended); the file and the screen say "DRAFT - needs the owner's review" (the facts are
+  indicative, written from public vendor pages, not re-checked online in B7). **F-B24** built: the tools of the activity's capability (case and
+  spaces ignored, "Run / support" = RunSupport), by category, with a search box; a client-specific tool is added to the case's catalogue and then
+  offered for every activity of its capability. **F-B26** built: retire / restore / remove a case entry (undoable), JSON export (effective catalogue
+  with sources) and import (entries equal to the shipped ones skipped); a shipped catalogue never overwrites the case's entries; "catalogue updated
+  since this audit" when the case's catalogue date is older than the shipped one. Not built: the catalogue as a sheet of the audit workbook (the
+  workbook's Lists sheet carries the codes only).
+- **F-B27 / § 15.3 built.** Every field of § 15.3 is an `ac:observation` (registry `domain/audit/fields.ts`: 25 fields in 7 blocks, each with
+  source, date and confidence; numbers, percentages 0–100 and choices checked) plus `ac:tool` (version, edition, licences, hosting, integration, AI
+  use, residency, owner team), `ac:painPoint` and `ac:evidence`; the header (code, client, scope, status, as of, auditors, interviews).
+  **D-B13**: effort per item, FTE share, headcount and skill gaps take an optional per-role split (`role`, a resource of the document); roles get
+  their own audit (the Roles tab: workload, tools, constraints), linked to the organisation model (team skill, the activities the role is
+  Responsible for from the RACI of B6b, the activities that hold an FTE share of it).
+- **F-B28 built** (`domain/audit/analysis.ts`, a view, never a figure): observed person-hours per month (effort per item, or the sum of its per-role
+  values, × items per period × periods per month: day 21, week 52/12, sprint 26/12, month 1, quarter 1/3, year 1/12; release and project not
+  comparable) against the modelled effort; observed rework rate against the back flows that rework the activity (`ac:rework activityA`); the
+  authority implied by the automation level (none → Assistance, scripted → Copilot, pipeline → Supervised autonomous, agentic → Autonomous)
+  against the AI authority; the observed FTE share of a role against its modelled share (the activity's effort over the effort of every in-scope
+  activity the role is Responsible for); coverage (count and effort-weighted); the tooling map (per capability: tools in use that serve it, gap,
+  overlap); progress per phase.
+- **F-B29 / D-B11 built.** `proposals(doc)`: effort = observed hours per month × k, k = Σ modelled effort / Σ observed hours over the in-scope
+  activities that have both (two at least); rework probability = observed rework rate; AI authority from the automation level (never for a
+  regulatory activity). Each with its formula. The user ticks some; `audit.calibrate` applies only those, as one undoable step, and appends
+  `CAL-n` (date, source, each parameter before → after, formula) to the log. Tests: `tests/domain/audit/calibration.test.ts` (hand-computed:
+  k = 10 / 30 → 6.67 / 3.33; selected weight 10 → 9.67; tiers [0.7, 0, 0.3] → [0, 0.7, 0.3]; LP001 rework 10 × 0.1 × 0.4 = 0.4 w → 0.8 w), and
+  `fixtures-identical.test.ts`: on the 107 fixtures a full audit leaves `computeCase` identical. **Not built:** the evidence ledger of the Defend
+  group does not count audited parameters yet (it is keyed by model drivers, not activity parameters, and turning it on moves the PDC figures: a
+  deviation to decide).
+- **F-B30 partial.** The audit is per process document: a product that overrides its process (F-B20) has its own audit, the others share the
+  common one (no separate per-product key, per D-B26 and the brief "no new case key"). The section is `I-input`: its aggregate view consolidates
+  coverage, gaps, overlaps, pain points and calibrations per product and the tooling map across the products and waves (`aggAudit.ts`).
+- **F-B31 built** (🔎 Audit, frame group, app section shown to Admin and Business journey): header, files, Activities (progress per phase, filters
+  by phase, actor (R / A / agent from the RACI), capability, audited; the first 100 rows; the form of the selected activity), Roles, Tool catalogue,
+  Coverage and calibration. Keyboard-only, axe clean. **Not built:** the Process diagram's colouring by audit status (the B6 editor changes the
+  diagram in parallel; to add after its merge).
+- **F-B32 built.** "Export audit template": Read me, one sheet per block (one row per in-scope activity, a row per role for a per-role split), Tools,
+  Pain points, Evidence and a Lists sheet; drop-downs (data validation) for tool codes and every enumeration. "Import audit workbook": the
+  parameters workbook's size and zip guards, every row checked against the document before anything is written, merged by activity id, one
+  undoable step, report added / updated / ignored / unchanged rows with the reason of each ignored row. The header and role-level audits are not in
+  the workbook.
+- **F-B33 / D-B14 built.** The export dialog (File menu and Process section) offers "Include audit data" only when the case holds some, unticked.
+  Without it every audit element leaves the file (the export of a case without audit is the same object: byte-identical, the B2 round trips hold);
+  with it the file is marked (`ac:process containsAudit="true"`, "contains_audit_data" in the name) and its catalogue carries the shipped entries
+  it uses. A collaboration file carries the header and catalogue of the first product that has them and prefixes the per-role split like every
+  id. Import: Replace takes the file's tree, audit included; Merge does not merge audit data yet.
+- **F-B34 built.** Audit report (standalone scriptless HTML in the report theme, to print or save as PDF): header, coverage, progress per phase,
+  tooling map, tools per activity, observed versus modelled, top pain points, calibration log. The results workbook adds "Audit" and "Tooling"
+  sheets only when the case holds audit data (excel-compat unchanged).
+- **F-B35 built.** The workbook, the report, the BPMN export and the HTML snapshot with audit data say "contains audit data" in their names
+  (and the report and workbook in the file); the HTML snapshot asks (Import / Export section, shown only when the case holds audit data, default
+  no).
+- **Persistence** (no code needed, the audit is the document): save / open, autosave with its undo history, tab sync, HTML embed (when asked),
+  BPMN export with and without audit, audit workbook out and back in — `tests/store/audit-persistence.test.ts`.
 
 ## 16. Organisation model: organisation × product × activity, and who does what
 

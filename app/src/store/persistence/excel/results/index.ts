@@ -9,13 +9,14 @@ import { roiSheet } from './roi';
 import { plSheet, savingsSheet } from './savings';
 import { workforceSheet } from './workforce';
 import { processSheet } from './process';
+import { auditResultSheets } from './audit';
 import { addLogo } from './logo';
 
 export { resultsData, type ResultsData, type SheetImages, type ImageKey } from './data';
 
 /**
  * The results workbook of the Financial tab: ROI, Investment, Operating costs, Savings, P&L, Workforce shift (legacy exportFinancialExcel), and the
- * Process sheet when the case's process holds custom content (B5).
+ * Process sheet when the case's process holds custom content (B5), Audit and Tooling sheets when the case holds audit data (B7).
  * `print`: the base theme of the export (controllers/exportTheme.ts).
  * `logo`: the customer logo of a client presentation (a PNG / JPEG data URL), placed on the ROI sheet (docs/THEME.md §8.6).
  */
@@ -24,6 +25,7 @@ export function buildResultsWorkbook(xl: ExcelJS, data: ResultsData, print: Read
   wb.creator = 'AgentCase';
   addCaseSheets(wb, data, images);
   processSheet(wb, data.process);
+  auditResultSheets(wb, data.audit ?? null);
   const roi = wb.getWorksheet('ROI');
   if (roi) addLogo(wb, roi, logo);
   return wb;

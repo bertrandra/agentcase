@@ -61,13 +61,13 @@ Generic fallbacks per kind (Portfolio / Wave, section without an aggregate):
 
 ## 4. Classification of the 89 sections
 
-Total: **89 = 79 case sections + 6 of the Portfolio group + 4 app sections, 🎨 Brand & theme, 🧩 Process (BPMN), 🏢 Organisation and 🧭 Who does what** (no legacy equivalent) (the group has 6 sections in the catalogue, not 7: products, overrides, knowledge transfer, waves, consolidation, portfolio stress).
+Total: **90 = 79 case sections + 6 of the Portfolio group + 5 app sections, 🎨 Brand & theme, 🧩 Process (BPMN), 🏢 Organisation, 🔎 Audit and 🧭 Who does what** (no legacy equivalent) (the group has 6 sections in the catalogue, not 7: products, overrides, knowledge transfer, waves, consolidation, portfolio stress).
 
 | Kind | Count | Meaning |
 |---|---|---|
 | `R-conso` | 15 | result with a natural consolidated form (sums and series of `domain/portfolio`) |
 | `R-rollup` | 28 | control or per-case logic that does not add up: summary table per product + detail of the product's own render |
-| `I-input` | 19 | per-product input: read-only aggregated synthesis, one row per product, "Edit this product", then the section editable in place according to "Change" (§ 2.1) |
+| `I-input` | 20 | per-product input: read-only aggregated synthesis, one row per product, "Edit this product", then the section editable in place according to "Change" (§ 2.1) |
 | `S-static` | 21 | reference, documentation, common settings, management: independent of the view (banner "Independent of the view") |
 | `P-portfolio` | 6 | section of the Portfolio group, already at portfolio level (banner "Portfolio level") |
 
@@ -79,6 +79,7 @@ State legend: **DONE** (built in V0), **NATIVE** (the section already follows th
 | `engagement-context` | frame | 🧭 Engagement context | `I-input` | MSC/MSI/STA contractual frame per product (inherited/overridden) | `inputSummary` + `values.engagementCtx` of the resolved case | DONE |
 | `engage` | frame | 🤝 Engage | `I-input` | Durations of the 4 onboarding steps and end of onboarding per product | resolved case of each product (`dom.values`) | DONE |
 | `transform-params` | frame | 🏛️ Industry / regulatory profile | `I-input` | Industry/regulatory profile and ticked standards per product | `selectedNorms`, `values.*` of the resolved case | DONE |
+| `audit` | frame | 🔎 Audit | `I-input` | Per product (F-B30): audit status, in-scope activities audited (count and share of effort), tooling gaps and overlaps, pain points, calibrations; the tooling map across the products (BPMN phase B7) | `scopeAudit`: `BPMN` of the resolved case | DONE |
 | `params` | scope | 🎯 Automation & Glass ceiling | `I-input` | Target potential and glass ceiling (forced or computed) per product | `model.eff`, `model.ceiling`, `forceGlassCeiling` | DONE |
 | `scurve` | scope | 📊 S-curve — adoption ramp | `I-input` | Y1/Y2/Y3 adoption ramp per product | `scurve` of the resolved case | DONE |
 | `scope-sel` | scope | 🎯 Scope | `I-input` | Number of SDLC / regulatory artefacts selected per product | `inputSummary` (`artefacts`, `regArtefacts`) | DONE |

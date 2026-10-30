@@ -7,4 +7,5 @@ export const FRAME: SectionMap = {
   'engage': () => import('./frame/engage'),
   'transform-params': () => import('./frame/transform-params'),
   'organisation': () => import('./frame/organisation'),
+  'audit': () => import('./frame/audit'),
 };

@@ -2,19 +2,15 @@ import { describe, expect, it } from 'vitest';
 import { exportParamsWorkbook, importParamsWorkbook } from '@/controllers/excelParams';
 import { htmlSnapshotFile } from '@/controllers/htmlSnapshot';
 import { addOrgUnit, setActivityRaci } from '@/controllers/org';
-import { setInput } from '@/controllers/inputs';
 import { derivedTeams, orgOf, readRaci, readStoredOrg } from '@/domain/org';
 import { serialize } from '@/domain/process';
-import { createAppStore, type AppStore } from '@/store/core';
-import { makeDefaultDoc, setAppStore } from '@/store/instance';
-import { memoryStorage, restoreRecord, startAutosave } from '@/store/persistence/autosave';
-import { connectBroadcast } from '@/store/persistence/broadcast';
+import type { AppStore } from '@/store/core';
 import { readEmbeddedCase } from '@/store/persistence/html/read';
 import { toPortfolioSnapshot } from '@/store/persistence/portfolioSnapshot';
 import { openChecked } from '@/store/persistence/schema';
-import { channelBus } from '../helpers/channels';
 import { ENV } from '../helpers/excelParams';
 import { sharedSetup } from '../helpers/sharedTeamStore';
+import { expectAutosaveRestores, expectTabSync } from '../helpers/docRoundTrips';
 import { freshStore } from './helpers';
 
 /**
@@ -59,24 +55,8 @@ describe('persistence round trips', () => {
     expect(serialize(back.common.BPMN)).toBe(serialize(pf.common.BPMN));
     expect(derivedTeams(back)).toStrictEqual(derivedTeams(pf));
   });
-  it('autosave: the record restores the organisation and its undo history', async () => {
-    const s = freshStore((): number => Date.now()), storage = memoryStorage(), a = startAutosave(s, storage, 'tab-1', { delayMs: 1 });
-    edit();
-    expect(await a.flush()).toBe(true);
-    a.stop();
-    const t = createAppStore(s.getState().doc);
-    restoreRecord(t, (await storage.list())[0]!);
-    expect(bpmnOf(t)).toStrictEqual(bpmnOf(s));
-    t.undo(); s.undo();
-    expect(serialize(bpmnOf(t))).toBe(serialize(bpmnOf(s)));
-  });
-  it('tab sync: the other tab receives the unit and the RACI as patches', () => {
-    const bus = channelBus();
-    const mk = (id: string) => { const x = createAppStore(makeDefaultDoc(), { now: () => 0 }); connectBroadcast(x, bus.end(), id); return x; };
-    const A = mk('A'), B = mk('B');
-    setAppStore(A); setInput('y1Ramp', 40); edit();
-    expect(serialize(bpmnOf(B))).toBe(serialize(bpmnOf(A)));
-  });
+  it('autosave: the record restores the organisation and its undo history', () => expectAutosaveRestores(edit));
+  it('tab sync: the other tab receives the unit and the RACI as patches', () => expectTabSync(edit));
   it('HTML snapshot: the embedded case carries the organisation', () => {
     const s = freshStore(); edit();
     const page = new DOMParser().parseFromString('<!doctype html><html><head><title>A</title></head><body><div id="root"></div></body></html>', 'text/html');

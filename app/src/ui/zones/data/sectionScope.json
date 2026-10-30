@@ -81,6 +81,7 @@
  "personas": "S-static",
  "brand-theme": "S-static",
  "organisation": "S-static",
+ "audit": "I-input",
  "who-does-what": "S-static",
  "products": "P-portfolio",
  "overrides": "P-portfolio",

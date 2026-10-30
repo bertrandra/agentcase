@@ -1,0 +1,11 @@
+/* 🔎 Audit section (docs/SPEC_BPMN.md § 15.5). Colours come from the shared tokens. */
+.ac-audit-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 8px 16px; margin: 8px 0; }
+.ac-audit-grid label { display: flex; flex-direction: column; gap: 2px; }
+.ac-audit-list, .ac-audit-block { margin: 10px 0; padding: 6px 10px; border: var(--ac-border-thin) solid var(--ac-line); border-radius: var(--ac-radius-md); }
+.ac-audit-list legend, .ac-audit-block legend { font-weight: var(--ac-font-weight-semibold); }
+.ac-audit-list ul { margin: 4px 0; padding-left: 1.25rem; }
+.ac-audit-toolbar { flex-wrap: wrap; gap: 8px; }
+.ac-audit-form { margin-top: 12px; padding: var(--ac-pad-card); background: var(--ac-surface-raised); border: var(--ac-border-thin) solid var(--ac-line-strong); border-radius: var(--ac-radius-card); }
+.ac-audit-tools { columns: 2 260px; list-style: none; padding: 0; margin: 6px 0; }
+.ac-audit-tools li { break-inside: avoid; padding: 1px 0; }
+.ac-audit-formula, .ac-audit-src { font-size: var(--ac-font-size-xs); color: var(--ac-text-soft); word-break: break-all; }

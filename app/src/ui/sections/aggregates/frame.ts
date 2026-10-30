@@ -8,4 +8,5 @@ export const FRAME_AGG: SectionMap = {
   'engagement-context': () => import('../frame/engagement-context/Aggregate'),
   'engage': () => import('../frame/engage/Aggregate'),
   'transform-params': () => import('../frame/transform-params/Aggregate'),
+  'audit': () => import('../frame/audit/Aggregate'),
 };
