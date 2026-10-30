@@ -7,4 +7,5 @@ export const SCOPE: SectionMap = {
   'phase-scope': () => import('./scope/phase-scope'),
   scurve: () => import('./scope/scurve'),
   params: () => import('./scope/params'),
+  'who-does-what': () => import('./scope/who-does-what'),
 };

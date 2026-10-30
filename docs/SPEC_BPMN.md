@@ -1,6 +1,6 @@
 # AgentCase — Specification: the delivery process as a native BPMN 2.0 model (export and import)
 
-> Status: **specified; phases B0, B1, B2 and B3 built** (B0: extension XSD, official OMG schemas, `tools/bpmn-validate.mjs`, sample and hostile files, § 5.3; B1: domain only, `app/src/domain/process`, § 6.3; B2: reader / writer, security, round trip, BPSim, export from the File menu, § 5.5; B3: schema v3, the case stores the BPMN document, § 6.4). Decisions D-B1…D-B26 **adopted on 2026-10-30** (§ 12, § 15.6, § 16.7, § 17.9); D-B26: the case's BPMN
+> Status: **specified; phases B0, B1, B2, B3 and B6b built** (B0: extension XSD, official OMG schemas, `tools/bpmn-validate.mjs`, sample and hostile files, § 5.3; B1: domain only, `app/src/domain/process`, § 6.3; B2: reader / writer, security, round trip, BPSim, export from the File menu, § 5.5; B3: schema v3, the case stores the BPMN document, § 6.4; B6b: organisation model, § 16.8). Decisions D-B1…D-B26 **adopted on 2026-10-30** (§ 12, § 15.6, § 16.7, § 17.9); D-B26: the case's BPMN
 > document is the **only** stored form of the process, the organisation and the audit (§ 6.1). Scope: the TypeScript + React application in `app/`.
 > Related documents: [ARCHITECTURE.md](ARCHITECTURE.md), [DEVIATIONS.md](DEVIATIONS.md), [SPEC_MULTI_PRODUIT.md](SPEC_MULTI_PRODUIT.md).
 > Code rules unchanged: files ≤ 150 lines, no `any`, layers `ui → controllers → store → domain`, every write is an undoable
@@ -465,7 +465,7 @@ these. Portfolio: the process follows the override commands of spec F6–F9.
 | B5 | Custom activities / roles / agents in the engine; rework flows from the model; portfolio override; Excel / report / HTML outputs | Hand-computed reference tests; cross-surface equality | 2 d | 4 / 5 | B3 | New engine inputs without breaking the single-owner rule; deviations to record |
 | B5b | Extended profile (§ 17): traceability graph, data stores bound to tools, data states and types, multi-instance volumes, timers and cadence, bounded loops, boundary events and reusable definitions, event sub-processes, compensation, conditional scope (FEEL subset), shared process library, task types, formal assignment and lanes, message flows and multiplicity, conversation view, annotations, several diagrams, colours, file header | Default process unchanged in figures; each element has a reader / writer / round-trip test and a test of the figure, check or view it feeds | 3 d | 4 / 5 | B5 | Breadth (about 25 elements); a safe FEEL parser; the process library across products |
 | B6 | Optional lazy BPMN editor (D-B6 b) | Size budget; editor round trip | 1.5 d | 4 / 5 | B4 | Size budget, CSP, writing the editor's changes back to the node tree; bpmn-js licence requires its watermark to stay visible |
-| B6b | Organisation model (§ 16): organisation elements in the `BPMN` document, migration of `teamIn` / shared team lines to teams (parity), RACI on activities, `domain/org`, Organisation and Who-does-what sections, resource roles and organisation view | 107 fixtures identical before the RACI-driven figures; diagnostics tests; axe clean | 2 d | 4 / 5 | B3 | Moving the entry team and shared lines into the organisation with identical figures |
+| B6b (**built in B6b**, teams at the derived-view stage) | Organisation model (§ 16): organisation elements in the `BPMN` document, migration of `teamIn` / shared team lines to teams (parity), RACI on activities, `domain/org`, Organisation and Who-does-what sections, resource roles and organisation view | 107 fixtures identical before the RACI-driven figures; diagnostics tests; axe clean | 2 d | 4 / 5 | B3 | Moving the entry team and shared lines into the organisation with identical figures |
 | B7 | Audit layer (§ 15): tool catalogue, `ac:audit` elements and `domain/audit`, Audit section, audit workbook, audit report, explicit calibration | Round trip with audit data; calibration log; axe clean | 2 d | 3 / 5 | B4, B6b | Curating a neutral, dated tool catalogue (needs the owner's review) |
 | B7b | DMN decisions (F-B62) and the optional CMMN export of the run phase (F-B63) | DMN round trip; evaluator tests per hit policy | 1.5 d | 3 / 5 | B5b | DMN hit policies and the shared FEEL subset |
 | B8 | Release: guide, DEVIATIONS (if any), CHANGELOG, version bump | All gates green | 0.5 d | 1 / 5 | all | — |
@@ -699,6 +699,38 @@ and, for an agent-performed activity, `activity --(performer)--> agent --(superv
 | D-B17 | Where does the organisation live in a single-product case? | (a) same model as a portfolio, one product; (b) a separate model | **(a)**: one model for single and multi product, in the `BPMN` document (D-B26). |
 | D-B18 | Accountable for agent activities | (a) mandatory human Accountable; (b) optional | **(b) optional** (owner's decision): shown as information (F-B36). |
 | D-B19 | Default organisation diagram | (a) by role; (b) by organisation | **(a)** by role, (b) on demand (F-B39). |
+
+### 16.8 Built in B6b (organisation model, derived-view stage for the teams)
+
+- **In the document** (D-B26, no new key, schema unchanged at 3): units as `ac:orgUnit` in the collaboration's `extensionElements`; per activity the
+  RACI as standard `bpmn:resourceRole name="Responsible|Accountable|Consulted|Informed"` (after the existing performers, before any loop
+  characteristics) plus `ac:raci`. Read back from either (a tool that drops `ac:raci` keeps the RACI). With neither, the default of § 16.3: the
+  `humanPerformer` (legacy skill) is R and A "to confirm". The `humanPerformer` always stays R and is never rewritten, so **no figure moves**; the
+  RACI-driven figures of § 16.5 are not built. The derived default unit "‹customer› delivery" is written into the document when first edited or
+  used as a parent.
+- **F-B36** built (`domain/org/diagnostics.ts`): errors no Responsible (role or agent), several Accountable; warnings no Accountable (human
+  activity), unknown role; information Accountable to confirm, agent activity without a human Accountable (D-B18). **F-B37** built: per product and
+  role, "role not staffed" when no team serving the product has a line (FTE > 0) of the role's team skill; shared team over 100 %. The split of a
+  role between teams follows their FTE × share (no per-activity share yet). **F-B38** built: the five answers; load = catalogue effort of the R
+  activities split between their R roles (effort points, a view, not an engine figure); the unit answer gives FTE by location and grade, not cost.
+  **F-B39** partial: `organisationView` writes the lane set unit → team → role (`childLaneSet`, each activity under the team giving the product the
+  most FTE on its role's skill, "Not staffed" otherwise), XSD-valid, role-lane shapes dropped; no geometry for the new lanes, not yet offered in
+  the export dialog; import of organisation lanes waits for the mapping dialog of F-B8 (B4).
+- **Teams: derived-view stage, `teamIn` / `sharedTeam` kept as the stored form.** `derivedTeams` + `teamRowsOf` rebuild every product's effective
+  team identically (107 fixtures, the three-product portfolio, the shipped example, a property test over shares and FTE: same rows, values,
+  order and identity). Moving the teams into the document was **not done** because it cannot be done safely in this phase:
+  1. *Override model.* The organisation is common (§ 16.3) but a product that overrides its process holds a whole-document copy (F-B20, B3); teams
+     in the document would be copied into every overriding product, a second source that drifts. The override must first split into a process
+     part and an organisation part (`OVERRIDABLE_KEYS`, the Overrides sheet, B5's portfolio override work).
+  2. *Level.* `teamIn` is a product key (never common: `store/address` routes it to `products[i]`), the document is common; editing one
+     product's team would change the common document and invalidate every product's resolved case (the per-product memo of § 10).
+  3. *Writers.* Team rows are written by the Input team commands, the address layer and tab-sync patches, the Input Team / RateTeam / SharedTeam
+     sheets of both workbooks, stress scenarios and Verify A; moving them is a v3 → v4 migration touching the files B4 / B5 change in parallel.
+  The derived teams are the proven migration target; the move belongs with the override split.
+- **Screens**: 🏢 Organisation (frame group: unit tree editable with the keyboard, teams with their lines, role catalogue) and 🧭 Who does what
+  (scope group: RACI matrix filtered by phase, team, unit and staffing of a product; RACI editor; the five views; checks inline). Both are app
+  sections (Admin, Builder, Business journey), `S-static`. Team In and the shared team table keep their screens (same commands); the Organisation
+  section links to them. Audit observations on roles / teams / units wait for B7.
 
 ## 17. Extended BPMN profile: every element AgentCase exploits
 

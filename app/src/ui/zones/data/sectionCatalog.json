@@ -659,6 +659,32 @@
   ]
  },
  {
+  "id": "organisation",
+  "group": "frame",
+  "groupSeq": 30,
+  "label": "🏢 Organisation",
+  "description": "The organisation that delivers the case: organisation units (tree, keyboard-editable), the teams (the products' entry teams and shared team lines) and the role catalogue; roles and FTE only, no named people",
+  "tag": "supports",
+  "app": true,
+  "personas": [
+   "admin",
+   "business-journey"
+  ]
+ },
+ {
+  "id": "who-does-what",
+  "group": "scope",
+  "groupSeq": 40,
+  "label": "🧭 Who does what",
+  "description": "The RACI of each activity (Responsible, Accountable, Consulted, Informed, and the agent), with its checks (no Responsible, Accountable to confirm, role not staffed for a product) and the views by activity, role, team, unit and product",
+  "tag": "supports",
+  "app": true,
+  "personas": [
+   "admin",
+   "business-journey"
+  ]
+ },
+ {
   "id": "products",
   "group": "portfolio",
   "groupSeq": 10,
