@@ -1,6 +1,7 @@
 /** @calc-zone process-model */
 import type { Phase } from '../types/catalog';
 import type { ActivityView, PhaseView, ProcessView } from './readTypes';
+import { mergeRework } from './readRework';
 import type { CatArtefact, CatLoopPair, CatPhase, Norm } from './types';
 
 /** The catalogue-shaped views of a process document: the same objects the engine reads from the JSON catalogues today. */
@@ -44,10 +45,10 @@ export function catalogueViews(v: ProcessView): CatalogueViews {
     phasesWithSeq: main.map((p, i) => (typeof p.rampSeq === 'number' ? { ...(phases[i] as CatPhase), seq: p.rampSeq } : phases[i] as CatPhase)),
     crossCutting: cross ? phaseOf(cross) : undefined,
     norms: v.norms.map((n) => defined({ industry: n.industry, name: n.name, count: n.count, body: n.body, scope: n.scope })),
-    loopPairs: v.flows.filter((f) => f.rework).sort((a, b) => byOrder(a.rework ?? {}, b.rework ?? {})).map((f) => {
+    loopPairs: mergeRework(v.flows.filter((f) => f.rework).sort((a, b) => byOrder(a.rework ?? {}, b.rework ?? {})).map((f) => {
       const r = f.rework as NonNullable<typeof f.rework>;
       return defined({ id: f.id, label: f.name ?? '', artA: r.activityA, artB: r.activityB, internalIter: r.internalIterations, internalNote: r.note,
         extReworkPct: r.probability, extFrom: r.external ? f.source : null, extTo: r.external ? f.target : null, extCostShare: r.costShare });
-    }),
+    }), v.reworks, v.phases, v.activities),
   };
 }

@@ -1,8 +1,8 @@
 /** @calc-zone rate-card-team */
 import type { CaseState } from '../types/state';
 import type { Artefact } from '../types/catalog';
+import { caseSkillMap } from '../process/engineInputs';
 import { scopeOf } from '../process/scope';
-import { SKILL_MAP_DEFAULT } from '../catalog/skills';
 
 export { REG_TEAM_SKILLS, SKILL_MAP_DEFAULT, SKILLS_EXIST } from '../catalog/skills';
 
@@ -16,8 +16,8 @@ export const SKILL_DEFAULT_GL: Record<string, [string, string]> = {
 };
 export const defaultGradeLoc = (skill: string): [string, string] => SKILL_DEFAULT_GL[skill] ?? ['C1', 'France'];
 
-/** The case's skill map (the role → team-skill map of its process document, legacy `skillMap`), falling back to the default. */
-export const skillMapOf = (s: CaseState): Record<string, string> => scopeOf(s).skillMap ?? SKILL_MAP_DEFAULT;
+/** The case's skill map (the role → team-skill map of its process document, legacy `skillMap`), falling back to the default; custom roles included. */
+export const skillMapOf = (s: CaseState): Record<string, string> => caseSkillMap(s, scopeOf(s).skillMap);
 
 /** THE resolver: every artefact maps to exactly one team skill (regulatory ones through their industry). */
 export function artTeamSkill(a: Artefact & { teamSkill?: string }, map: Record<string, string>): string {

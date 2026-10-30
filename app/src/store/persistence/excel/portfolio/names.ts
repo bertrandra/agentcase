@@ -10,6 +10,8 @@ export const PORTFOLIO_SHEETS: ReadonlySet<string> = new Set(Object.values(PF_SH
 
 /** Import caps of the portfolio sheets (on top of the workbook-wide limits of `params/safe.ts`). */
 export const PF_LIMITS = { products: MAX_PRODUCTS, waves: 50, teamRowsPerProduct: 200, overridesPerProduct: 120, overrideChunks: 25, chunkChars: 4000,
+  /** parts of a process document override (its XML text, at most the 5 MB of a BPMN file once JSON-escaped) */
+  processChunks: 1500,
   domainsPerProduct: 50, startMonth: 1200, offset: 1200, sharedLines: 200 };
 
 /** Header of every portfolio sheet: the first cell is checked on import so a foreign sheet of the same name is refused. */

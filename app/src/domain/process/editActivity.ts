@@ -1,5 +1,5 @@
 /** @calc-zone process-model */
-import { taskOf } from './buildTasks';
+import { dataObjectOf, taskOf } from './buildTasks';
 import { dataId, diId, normKey } from './ids';
 import { readProcess } from './read';
 import { appendChild, editById, editWhere, idsOf, withExt } from './editTree';
@@ -52,7 +52,9 @@ export function addActivity(d: XDocument, a: CatArtefact & { regulatory?: boolea
   if (idsOf(d.root).has(a.id) || !readProcess(d).phases.some((p) => p.id === a.phase)) return d;
   const order = Math.max(0, ...readProcess(d).activities.filter((x) => x.regulatory === !!a.regulatory).map((x) => x.order)) + 1;
   const task = withAttrs(taskOf(a, order, !!a.regulatory), { 'ac:inScope': a.inScope ?? true });
-  const root = editById(d.root, a.phase, (ph) => appendChild(ph, indent(task, '  ', depthOf(ph))));
+  const add = (ph: XElement, e: XElement): XElement => appendChild(ph, indent(e, '  ', depthOf(ph)));
+  // an SDLC activity's deliverable is a data object next to it (the task's output association references it)
+  const root = editById(d.root, a.phase, (ph) => (!a.regulatory && a.deliverable ? add(add(ph, task), dataObjectOf(a)) : add(ph, task)));
   return { ...d, root };
 }
 const depthOf = (ph: XElement): number => {

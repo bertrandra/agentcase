@@ -18,3 +18,5 @@ export { BPSIM_NS, readBpsim, type BpsimValues } from './bpsim';
 export { securityCheck, LIMITS, ID_PATTERN, RESERVED_IDS, type Finding, type Limits, type SecurityReport } from './security';
 export { addActivity, removeActivity, setScope, updateActivities, updateActivity, type ActivityPatch } from './editActivity';
 export { addActor, addPhase, removeActor, removePhase, reorderPhases, updateActor, type ActorInput } from './editModel';
+export { activitiesOfActor, caseLoopPairs, caseSkillMap, caseViews, customActors, isCustomActivity } from './engineInputs';
+export type { BoundaryRework } from './readRework';
