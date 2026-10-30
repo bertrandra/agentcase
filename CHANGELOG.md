@@ -17,6 +17,24 @@ When releasing, follow [docs/BUMP_PROCEDURE.md](docs/BUMP_PROCEDURE.md) (§7 for
 
 ## [Unreleased]
 
+### BPMN B5b — the extended profile: data, events, volumes, rules, library, interfaces, diagrams
+
+Phase B5b of [docs/SPEC_BPMN.md](docs/SPEC_BPMN.md) (§ 17, F-B40–F-B61, D-B20–D-B23; details in § 17.10). Every figure of the 107 fixtures
+unchanged: the default process holds none of the new elements.
+
+- **Read, written, used.** Traceability graph (upstream, downstream, impact, orphans, missing inputs, per-norm completeness), data stores bound to
+  tools ("agent blocked: no API"), deliverable states and types, multi-instance volumes, timers (cadence, waits, service levels), bounded loops,
+  boundary events and reusable definitions, event sub-processes, compensation, conditional scope, the process library, formal assignment and
+  lanes, message flows, multiplicity, conversations, annotations, several diagrams per file, colours.
+- **Figures that follow the model** (custom content only): effort × volume of a multi-instance activity (D-B21), × occurrences of an event
+  sub-process, × change-failure rate of a rollback; a call activity counts its library entry; no AI saving on a script task (D-B23); a rework loop
+  takes the loop maximum of its agent activity; gateway conditions take activities out of the selection.
+- **Safe FEEL subset** (`domain/feel`, D-B22): hand-written parser and evaluator, no `eval`; unary tests ready for the DMN tables of B7b.
+- **Export**: file header (exporter version, `ac:` extension, documentation processes, F-B61); BPSim probability of boundary rework paths.
+- **Import of foreign files** keeps what it does not map (definitions, events, gateways, flows, data, black-box pools, message flows, vendor
+  extensions) instead of dropping it (F-B11).
+- **XSD**: optional `ac:changeFailure` (F-B50).
+
 ### BPMN B5 — the engine reads the process model: custom activities, roles, agents and rework
 
 Phase B5 of [docs/SPEC_BPMN.md](docs/SPEC_BPMN.md) (§ 7, F-B18, F-B20, F-B22, D-B20; details in § 7.1). Every figure of the 107 fixtures unchanged.

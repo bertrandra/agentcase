@@ -2,6 +2,8 @@
 import { readBpsim } from './bpsim';
 import { activitiesOf, flowsIn, phasesOf, type Sim } from './readPhases';
 import { boundaryReworksIn, withTargets } from './readRework';
+import { bpsimReworksIn } from './profile/bpsimRework';
+import { loopIterations, withProfile } from './profile/readHook';
 import { bool, extOf, marks, num, type ActorView, type DiagramView, type NormView, type ProcessParams, type ProcessView } from './readTypes';
 import { attr, kid, kids, NS, type XDocument, type XElement } from './xml';
 
@@ -31,8 +33,9 @@ function normsOf(defs: XElement): NormView[] {
   }));
 }
 
+/** The shapes and edges of the first diagram (the role view; further diagrams of the file are other views, F-B59). */
 function diagramOf(defs: XElement): DiagramView {
-  const plane = kids(defs, NS.bpmndi, 'BPMNDiagram').flatMap((d) => kids(d, NS.bpmndi, 'BPMNPlane'));
+  const plane = kids(defs, NS.bpmndi, 'BPMNDiagram').slice(0, 1).flatMap((d) => kids(d, NS.bpmndi, 'BPMNPlane'));
   const n = (e: XElement | undefined, k: string): number => num(e ? attr(e, k) : undefined) ?? 0;
   return {
     shapes: plane.flatMap((p) => kids(p, NS.bpmndi, 'BPMNShape')).map((e) => {
@@ -64,10 +67,15 @@ export function readProcess(d: XDocument): ProcessView {
   const hit = memo.get(d);
   if (hit) return hit;
   const defs = d.root, proc = kid(defs, NS.bpmn, 'process'), phases = proc ? phasesOf(proc) : [], sim = readBpsim(defs);
-  const flows = proc ? [...flowsIn(proc, sim), ...phases.flatMap((p) => flowsIn(p.el, sim))] : [];
-  const reworks = proc ? withTargets([...boundaryReworksIn(proc), ...phases.flatMap((p) => boundaryReworksIn(p.el))], flows) : [];
+  const flows = (proc ? [...flowsIn(proc, sim), ...phases.flatMap((p) => flowsIn(p.el, sim))] : []).map((f) => {
+    const r = f.rework, n = r ? loopIterations(defs, f.id, r.internalIterations, r.activityB || r.activityA || undefined) : 0;
+    return r && n !== r.internalIterations ? { ...f, rework: { ...r, internalIterations: n } } : f;
+  });
+  const containers = proc ? [proc, ...phases.map((p) => p.el)] : [];
+  const reworks = withTargets(containers.flatMap((c) => [...boundaryReworksIn(c), ...bpsimReworksIn(c, flows, sim)]), flows)
+    .map((b) => ({ ...b, internalIterations: loopIterations(defs, b.id, b.internalIterations, b.activityB ?? b.attachedTo) }));
   const view: ProcessView = {
-    params: paramsOf(proc), phases: phases.map((p) => p.view), activities: phases.flatMap((p) => activitiesOf(p.el, sim)),
+    params: paramsOf(proc), phases: phases.map((p) => p.view), activities: withProfile(defs, proc, phases, phases.flatMap((p) => activitiesOf(p.el, sim)), sim),
     actors: actorsOf(defs, sim), flows, reworks, norms: normsOf(defs), diagram: diagramOf(defs),
   };
   memo.set(d, view);

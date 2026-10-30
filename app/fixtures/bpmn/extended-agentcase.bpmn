@@ -113,6 +113,12 @@
       <bpmn:incoming>f5</bpmn:incoming>
       <bpmn:outgoing>f6</bpmn:outgoing>
     </bpmn:sendTask>
+    <bpmn:boundaryEvent id="A030-compensate" name="Package recalled" attachedToRef="A030">
+      <bpmn:compensateEventDefinition id="A030-compensate-def"/>
+    </bpmn:boundaryEvent>
+    <bpmn:manualTask id="A034" name="Recall test package" isForCompensation="true">
+      <bpmn:extensionElements><ac:changeFailure probability="0.15" source="estimate" date="2026-10-12"/></bpmn:extensionElements>
+    </bpmn:manualTask>
     <bpmn:endEvent id="end"><bpmn:incoming>f6</bpmn:incoming></bpmn:endEvent>
     <bpmn:intermediateThrowEvent id="esc-throw" name="Escalate">
       <bpmn:incoming>f-defect</bpmn:incoming>
@@ -148,5 +154,6 @@
     </bpmn:sequenceFlow>
     <bpmn:textAnnotation id="note-1"><bpmn:text>Audit: test data copied by hand (pain point, severity 4).</bpmn:text></bpmn:textAnnotation>
     <bpmn:association id="note-1-link" sourceRef="note-1" targetRef="A023"/>
+    <bpmn:association id="A030-compensate-link" sourceRef="A030-compensate" targetRef="A034" associationDirection="One"/>
   </bpmn:process>
 </bpmn:definitions>

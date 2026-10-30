@@ -22,8 +22,11 @@ export interface ProcessCatalogue {
 }
 
 /** BPMN element of each AgentCase activity type (spec § 4.2). */
-export const TASK_OF_TYPE: Record<string, string> = { Human: 'userTask', Manual: 'manualTask', Agent: 'serviceTask' };
-export const TYPE_OF_TASK: Record<string, string> = { userTask: 'Human', manualTask: 'Manual', serviceTask: 'Agent' };
+export const TASK_OF_TYPE: Record<string, string> = { Human: 'userTask', Manual: 'manualTask', Agent: 'serviceTask', Review: 'userTask',
+  Script: 'scriptTask', Send: 'sendTask', Receive: 'receiveTask', BusinessRule: 'businessRuleTask' };
+/** The type a task kind gives (F-B53, B5b): a script task is already automated (D-B23: no AI saving), send / receive tasks are hand-offs. */
+export const TYPE_OF_TASK: Record<string, string> = { userTask: 'Human', manualTask: 'Manual', serviceTask: 'Agent', scriptTask: 'Script',
+  sendTask: 'Send', receiveTask: 'Receive', businessRuleTask: 'BusinessRule' };
 export const CROSS_ID = 'Cross-cutting';
 
 /** The version 2 case keys the process document replaces (spec § 3, § 6.2): what `processFromCase` reads and `viewsOf` gives back. */

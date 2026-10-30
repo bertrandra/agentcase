@@ -17,8 +17,10 @@ const byOrder = (a: { order?: number }, b: { order?: number }): number => (a.ord
 const defined = <T extends object>(o: T): T => Object.fromEntries(Object.entries(o).filter(([, v]) => v !== undefined)) as T;
 
 function artefactOf(a: ActivityView, names: Map<string, string>, norms: Map<string, { industry: string; name: string }>): CatArtefact {
+  // B5b: the effort counts `factor` times (volume, frequency, compensation, D-B21); a script task is already automated: no AI saving (D-B23)
   const common = {
-    id: a.id, name: a.name, phase: a.phase, value: a.value, aiAuth: a.aiAuthority, humanSup: a.human, agentSup: a.agent, effort: a.effort,
+    id: a.id, name: a.name, phase: a.phase, value: a.value, aiAuth: a.aiAuthority, humanSup: a.human, agentSup: a.type === 'Script' ? 0 : a.agent,
+    effort: a.factor === undefined ? a.effort : a.effort * a.factor,
     _agent0: a.agent0, w: a.weight, seq: a.seq, capability: a.capability, agentActivityType: a.type, storyId: a.storyId,
   };
   const role = names.get(a.humanPerformer ?? '') ?? '';
