@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+  Validation entry point of a .cmmn file (phase B7b, docs/SPEC_BPMN.md F-B63): CMMN 1.1 (the official OMG schemas of omg/cmmn11/) together with
+  the AgentCase extension (agentcase-bpmn-1.0.xsd), so the ac: elements of the run-phase export (ac:frequency…) are validated strictly. Used by
+  tools/bpmn-validate.mjs when the root element is cmmn:definitions. It declares nothing of its own.
+-->
+<xsd:schema xmlns:xsd="http://www.w3.org/2001/XMLSchema">
+  <xsd:import namespace="http://www.omg.org/spec/CMMN/20151109/MODEL" schemaLocation="omg/cmmn11/CMMN11.xsd"/>
+  <xsd:import namespace="https://agentcase.app/schema/bpmn/1.0" schemaLocation="agentcase-bpmn-1.0.xsd"/>
+</xsd:schema>

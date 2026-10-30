@@ -1,4 +1,5 @@
 /** @calc-zone scope-automation */
+import { decisionValues } from './dmn';
 import type { Context, Value } from './feel';
 import { lifecycleBlend } from './lifecycle';
 import { hasScopeRules, scopeRules, type ScopeRules } from './process/conditions';
@@ -9,7 +10,8 @@ import type { CaseState } from './types/state';
  * The case parameters the scope rules of the process read (spec F-B51; phase B5b), and the activities those rules put out of scope. The
  * selection screens keep working: they set these parameters (norms, industry, regulatory inclusion, phases switched off, lifecycle stage).
  * Names a condition can use: `industry`, `norms`, `industries`, `regInclude`, `phasesOff`, `lifecycle` (the stage nearest the lifecycle
- * position when the lifecycle axis is on, else null), `values.<field>` and `checked.<box>` (the case's form).
+ * position when the lifecycle axis is on, else null), `values.<field>` and `checked.<box>` (the case's form), and, when the process holds DMN
+ * decisions (F-B62, B7b), `decision.<id>`: each decision evaluated in this context.
  */
 export function conditionContext(s: CaseState): Context {
   const k = scopeOf(s), norms = k.selectedNorms.map((n) => n.slice(n.indexOf(':') + 1));
@@ -17,7 +19,10 @@ export function conditionContext(s: CaseState): Context {
   let lifecycle: string | null = null;
   if (s.lifecycleUse) { const b = lifecycleBlend(s); lifecycle = (b.frac < 0.5 ? b.lo : b.hi).id; }
   const values: Record<string, Value> = { ...(s.dom?.values ?? {}) }, checked: Record<string, Value> = { ...(s.dom?.checked ?? {}) };
-  return { industry: s.dom?.values?.industry ?? null, norms, industries, regInclude: k.regInclude, phasesOff: k.phaseOff, lifecycle, values, checked };
+  const ctx: Context = { industry: s.dom?.values?.industry ?? null, norms, industries, regInclude: k.regInclude, phasesOff: k.phaseOff, lifecycle, values,
+    checked };
+  const root = (s.BPMN as unknown as { root?: CaseState['BPMN']['root'] } | undefined)?.root, decision = root ? decisionValues(root, ctx) : null;
+  return decision ? { ...ctx, decision } : ctx;
 }
 
 const memo = new WeakMap<object, { key: string; rules: ScopeRules }>();

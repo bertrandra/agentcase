@@ -1,6 +1,9 @@
 #!/usr/bin/env node
 // Validates .bpmn files against BPMN 2.0.2 + BPMN DI (the official OMG XSDs of docs/bpmn/omg/) and the AgentCase extension XSD
 // (docs/bpmn/agentcase-bpmn-1.0.xsd), the check of docs/SPEC_BPMN.md § 5.3 (decision D-B7: xmllint, no npm dependency).
+// B7b: a .dmn file (root dmn:definitions, DMN 1.3) or a .cmmn file (root cmmn:definitions, CMMN 1.1) is validated the same way against its
+// OMG schema plus the extension XSD (docs/bpmn/agentcase-dmn-validate.xsd, agentcase-cmmn-validate.xsd); a BPMN file's embedded
+// dmn:definitions is validated by agentcase-bpmn-validate.xsd, which imports DMN13.xsd.
 //   node tools/bpmn-validate.mjs [--json] [--strict] [--no-schema] file.bpmn...
 // Per file, in this order:
 //   1. security (F-B10), on the raw text, before any XML parser sees it: size ≤ 5 MB; no <!DOCTYPE, no <!ENTITY, no processing instruction
@@ -21,6 +24,12 @@ export const SCHEMA = resolve(root, 'docs/bpmn/agentcase-bpmn-validate.xsd');
 export const AC_XSD = resolve(root, 'docs/bpmn/agentcase-bpmn-1.0.xsd');
 export const AC_NS = 'https://agentcase.app/schema/bpmn/1.0';
 export const BPMN_NS = 'http://www.omg.org/spec/BPMN/20100524/MODEL';
+/** The schema of each accepted root (namespace of `definitions`): BPMN 2.0.2, DMN 1.3 (B7b), CMMN 1.1 (B7b). */
+export const ROOT_SCHEMAS = {
+  [BPMN_NS]: SCHEMA,
+  'https://www.omg.org/spec/DMN/20191111/MODEL/': resolve(root, 'docs/bpmn/agentcase-dmn-validate.xsd'),
+  'http://www.omg.org/spec/CMMN/20151109/MODEL': resolve(root, 'docs/bpmn/agentcase-cmmn-validate.xsd'),
+};
 /** The F-B10 rule table, shared with the in-app reader (app/src/domain/process/security.ts reads the same JSON): one source for both. */
 export const RULES = JSON.parse(readFileSync(resolve(root, 'app/src/domain/process/securityRules.json'), 'utf8'));
 export const LIMITS = RULES.limits;
@@ -120,13 +129,14 @@ let declared;
 
 /** Steps 2 and 3 for one file (xmllint must be installed). */
 function schemaCheck(file) {
-  const errors = [], res = xmllint(['--noout', '--schema', SCHEMA, file]);
+  const rootNs = xpath(file, "namespace-uri(/*[local-name()='definitions'])").stdout.trim(), errors = [];
+  const res = xmllint(['--noout', '--schema', ROOT_SCHEMAS[rootNs] ?? SCHEMA, file]);
   if (res.status !== 0) {
     const lines = res.stderr.split('\n').filter((l) => l && !/ fails to validate$| validates$/.test(l));
     for (const l of lines.slice(0, 50)) errors.push({ code: 'schema', message: l.replace(`${file}:`, 'line ') });
     if (!lines.length) errors.push({ code: 'schema', message: `xmllint exit ${res.status}` });
   }
-  if (xpath(file, `count(/*[local-name()='definitions' and namespace-uri()='${BPMN_NS}'])`).stdout.trim() !== '1') {
+  if (!ROOT_SCHEMAS[rootNs]) {
     errors.push({ code: 'not-bpmn', message: 'the root element is not bpmn:definitions' });
   }
   declared ??= declaredNames();

@@ -17,6 +17,23 @@ When releasing, follow [docs/BUMP_PROCEDURE.md](docs/BUMP_PROCEDURE.md) (§7 for
 
 ## [Unreleased]
 
+## [v20.28.0] 2026-10-30 — BPMN B7b: DMN decisions and the CMMN run view
+
+### BPMN B7b — DMN decisions and the CMMN run view
+
+Phase B7b of [docs/SPEC_BPMN.md](docs/SPEC_BPMN.md) (§ 17.8, F-B62 / F-B63, D-B24 / D-B25; details in § 17.11). Every figure of the 107 fixtures
+unchanged: the default process holds no decision.
+
+- **DMN 1.3 decisions in the case's BPMN document** (one `dmn:definitions` in the main process's extension elements, no new case key): decision
+  tables with every hit policy (UNIQUE, FIRST, PRIORITY, ANY, COLLECT with or without SUM / COUNT / MIN / MAX, RULE ORDER, OUTPUT ORDER), decision
+  requirements, literal expressions, on the safe FEEL subset (no `eval`). A business-rule task bound to a decision (`ac:decisionRef`) sets the AI
+  authority and supervision split of its phase's activities; gateway conditions read `decision.<id>`.
+- **Files.** The export dialog adds the decisions as a `.dmn` file (the case's three rule families when it has none: AI authority per activity
+  class, supervision split per level, quality-gate review) and the run phase as a CMMN 1.1 `.cmmn` case; the Process section imports a `.dmn` file
+  (fully checked, one undoable step) or reads back a `.cmmn` file (names, roles, frequencies).
+- **Schemas.** The OMG DMN 1.3 and CMMN 1.1 XSDs ship in `docs/bpmn/omg/` (SHA-256 in `SOURCES.md`); `tools/bpmn-validate.mjs` validates `.dmn` and
+  `.cmmn` files and the decisions a `.bpmn` embeds.
+
 ## [v20.27.0] 2026-10-30 — BPMN B7: the audit layer (tool catalogue, observations, calibration)
 
 ### BPMN B7 — the audit layer: tool catalogue, observations per activity and role, explicit calibration

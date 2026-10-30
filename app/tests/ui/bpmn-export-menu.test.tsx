@@ -46,6 +46,19 @@ describe('File menu: Export process (BPMN)', () => {
     expect(dlg.isConnected).toBe(false);
     expect(document.activeElement).toBe(screen.getByRole('button', { name: 'File' }));
   });
+  it('B7b: the decisions (.dmn, off while the process holds none) and the run phase (.cmmn) are downloaded next to the .bpmn', async () => {
+    loadCase('golden');
+    openDialog();
+    const dmn = screen.getByRole('checkbox', { name: 'Decisions as a DMN file (.dmn)' }), cmmn = screen.getByRole('checkbox', { name: /CMMN case/ });
+    expect([(dmn as HTMLInputElement).checked, (cmmn as HTMLInputElement).checked]).toEqual([false, false]);
+    fireEvent.click(dmn);
+    fireEvent.click(cmmn);
+    fireEvent.click(screen.getByRole('button', { name: 'Export' }));
+    expect(saved.map((s) => s.name.replace(/_\d{4}-\d\d-\d\d/, ''))).toEqual(['AgentCase_process_case.bpmn', 'AgentCase_process_case.dmn',
+      'AgentCase_process_case_run.cmmn']);
+    expect(await textOf(saved[1]?.blob)).toMatch(/^<\?xml version="1\.0" encoding="UTF-8"\?>\n<dmn:definitions /);
+    expect(await textOf(saved[2]?.blob)).toMatch(/\n<cmmn:definitions /);
+  });
   it('Escape closes the dialog without exporting and returns focus to the File button', () => {
     loadCase('golden');
     fireEvent.keyDown(openDialog(), { key: 'Escape' });
