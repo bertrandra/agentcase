@@ -3,6 +3,9 @@ import type { CaseState } from '../types/state';
 import { BPSIM_DECL, bpsimRelationship, elementParameters, isOwnBpsim, type BpsimValues } from './bpsim';
 import { partialOf, withProduct, without } from './partial';
 import { readProcess } from './read';
+import { boundaryBpsim } from './profile/bpsimBoundary';
+import { withHeader } from './profile/header';
+import { APP_VERSION } from '../version';
 import { attr, NS, text, withAttrs, withChildren, type XDocument, type XElement } from './xml';
 import { indent, serialize } from './xmlWrite';
 
@@ -22,6 +25,7 @@ export function bpsimParams(d: XDocument, c: CaseState): XElement[] {
   const v = readProcess(d), fte = fteBySkill(c), out: [string, BpsimValues][] = [];
   for (const a of v.activities) out.push([a.id, { time: a.effort }]);
   for (const f of v.flows) if (f.rework) out.push([f.id, { probability: f.rework.probability }]);
+  out.push(...boundaryBpsim(d));   // B5b: the flow of each error boundary rework path
   for (const r of v.actors) {
     const q = r.kind === 'role' && r.teamSkill !== undefined ? fte.get(r.teamSkill) : undefined;
     if (q) out.push([r.id, { quantity: round(q) }]);
@@ -51,12 +55,12 @@ export function productDocument(c: CaseState, opts: ExportOptions): XDocument {
 /**
  * The `.bpmn` document of a case (spec § 4.1, F-B1–F-B4): the case's process (its `BPMN` document), every activity with its scope (or only the
  * in-scope ones, `partial`), its diagram, and the BPSim scenario derived from the `ac:` values. Deterministic: same case, same options, same
- * tree (no clock, stable ids and order).
+ * tree (no clock, stable ids and order). The file header of F-B61 is written (B5b).
  */
 export function exportDocument(c: CaseState, opts: ExportOptions = {}): XDocument {
   const d = productDocument(c, opts);
   const root = opts.bpsim === false ? d.root : withBpsim(d.root, bpsimParams(d, c));
-  return { ...d, root };
+  return withHeader({ ...d, root }, APP_VERSION);   // F-B61 (B5b): exporter version, ac: extension, documentation processes
 }
 /** The `.bpmn` text of a case (F-B1). */
 export const exportCaseText = (c: CaseState, opts: ExportOptions = {}): string => serialize(exportDocument(c, opts));

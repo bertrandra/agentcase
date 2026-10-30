@@ -21,6 +21,10 @@ export interface ActivityView extends CaseMarks {
   norm?: string; performer?: string; humanPerformer?: string;
   /** legacy edit record of the case: which fields it holds, and its position when not in document order */
   edited?: string[]; editRank?: number;
+  /** B5b: how many times the effort counts (volume, frequency, compensation: `profile/effort.ts`), when not 1 */
+  factor?: number;
+  /** B5b: the event sub-process the activity belongs to (F-B49), and the library entry a call activity calls (F-B52) */
+  trigger?: string; called?: string;
 }
 export interface ActorView {
   id: string; name: string; kind: string; teamSkill?: string; regulatory: boolean; capability?: string;

@@ -6,13 +6,16 @@ import { bpsimParams, productDocument, withBpsim, type ExportOptions } from './e
 import { PROCESS_ID } from './ids';
 import { attr, el, kid, kids, NS, withAttrs, withChildren, type XDocument, type XElement, type XNode } from './xml';
 import { indent, serialize } from './xmlWrite';
+import { withHeader } from './profile/header';
+import { APP_VERSION } from '../version';
 
 /** One product of a portfolio export: its code (`P1`, `P2`…: the id prefix in a collaboration file), its name and its effective case. */
 export interface ProductInput { code: string; name: string; case: CaseState }
 
 /** The attributes that reference an id (BPMN, BPMN DI, BPSim, `ac:agent`), and the BPMN elements whose text is an id. */
-const REF_ATTRS = new Set(['sourceRef', 'targetRef', 'processRef', 'bpmnElement', 'default', 'attachedToRef', 'calledElement', 'elementRef', 'ac:agent']);
-const isRefText = (e: XElement): boolean => e.ns === NS.bpmn && (e.local.endsWith('Ref') || e.local === 'source' || e.local === 'target');
+const REF_ATTRS = new Set(['sourceRef', 'targetRef', 'processRef', 'bpmnElement', 'default', 'attachedToRef', 'calledElement', 'elementRef', 'ac:agent',
+  'partitionElementRef', 'errorRef', 'escalationRef', 'signalRef', 'messageRef', 'dataObjectRef', 'dataStoreRef', 'itemSubjectRef', 'parameterRef']);
+const isRefText = (e: XElement): boolean => e.ns === NS.bpmn && (/Refs?$/.test(e.local) || e.local === 'source' || e.local === 'target');
 const POOL_GAP = 40;
 
 /** Every id of the tree and every reference to one, prefixed (`P1_A017`): the products of one file keep unique ids (xsd:ID). */
@@ -33,7 +36,7 @@ const shifted = (e: XElement, dy: number): XElement => (dy ? mapElements(e, (x) 
   ((x.ns === NS.dc && x.local === 'Bounds') || (x.ns === NS.di && x.local === 'waypoint') ? withAttrs(x, { y: Number(attr(x, 'y') ?? 0) + dy }) : x)) : e);
 
 const kidsOf = (root: XElement, ns: string, local: string): XElement[] => kids(root, ns, local);
-const planeItems = (root: XElement): XElement[] => kidsOf(root, NS.bpmndi, 'BPMNDiagram').flatMap((d) => kids(d, NS.bpmndi, 'BPMNPlane'))
+const planeItems = (root: XElement): XElement[] => kidsOf(root, NS.bpmndi, 'BPMNDiagram').slice(0, 1).flatMap((d) => kids(d, NS.bpmndi, 'BPMNPlane'))
   .flatMap((p) => kids(p));
 
 /**
@@ -60,6 +63,6 @@ export function collaborationDocument(products: ProductInput[], opts: ExportOpti
   const diagram = el('bpmndi:BPMNDiagram', { id: 'Diagram' }, [el('bpmndi:BPMNPlane', { id: 'Plane', bpmnElement: COLLABORATION_ID }, shapes)]);
   let root = withChildren(base.root, [...heads, el('bpmn:collaboration', { id: COLLABORATION_ID }, participants), ...processes, diagram]);
   if (opts.bpsim !== false) root = withBpsim(root, params);
-  return { ...base, root: indent(root) };
+  return withHeader({ ...base, root: indent(root) }, APP_VERSION);
 }
 export const collaborationText = (products: ProductInput[], opts: ExportOptions = {}): string => serialize(collaborationDocument(products, opts));

@@ -359,6 +359,15 @@
     </xsd:complexType>
   </xsd:element>
 
+  <xsd:element name="changeFailure">
+    <xsd:annotation><xsd:documentation>On a compensation handler (isForCompensation) or its compensation boundary event: the change-failure rate, the probability the rollback runs (F-B50, B5b).</xsd:documentation></xsd:annotation>
+    <xsd:complexType>
+      <xsd:attribute name="probability" type="ac:tShare" use="required"/>
+      <xsd:attribute name="source" type="ac:tSource"/>
+      <xsd:attribute name="date" type="xsd:date"/>
+    </xsd:complexType>
+  </xsd:element>
+
   <xsd:element name="handoffCost">
     <xsd:annotation><xsd:documentation>On a messageFlow, a sendTask or a receiveTask: the coordination cost of one hand-off (F-B55).</xsd:documentation></xsd:annotation>
     <xsd:complexType>
