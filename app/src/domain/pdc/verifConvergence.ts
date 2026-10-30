@@ -52,7 +52,7 @@ function contextChecks(c: Ctx): ConvCheck[] {
 export function convergenceChecks(c: Ctx, rt: ConvRuntime = {}): ConvCheck[] {
   return [
     ...contextChecks(c), ...wave1Checks(c), ...wave2Checks(c), ...wave3Checks(c), ...wave4Checks(c), agentRefsCheck(c),
-    agentIdsCheck(), ...loopChecks(c), ...taxChecks(c), ...supervisionChecks(c), ...statsChecks(c, rt), ...playbackChecks(c, rt),
+    agentIdsCheck(c), ...loopChecks(c), ...taxChecks(c), ...supervisionChecks(c), ...statsChecks(c, rt), ...playbackChecks(c, rt),
     ...timeChecksA(c), ...depChecks(rt), ...timeChecksB(c),
   ];
 }

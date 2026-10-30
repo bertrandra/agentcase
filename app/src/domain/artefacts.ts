@@ -3,6 +3,7 @@ import { REG_ARTEFACTS, SDLC_ARTEFACTS } from './catalog';
 import { lifecycleWeight } from './lifecycle';
 import type { Artefact } from './types/catalog';
 import type { ArtefactEdit, CaseState } from './types/state';
+import { caseViews } from './process/engineInputs';
 import { scopeOf } from './process/scope';
 
 /** An artefact as the engine sees it: catalogue defaults + the case's edits, with its effective weight w = effort × lifecycleWeight. */
@@ -26,12 +27,15 @@ function withWeights(list: Artefact[], s: CaseState): WArtefact[] {
 
 export interface ArtefactSets { sdlc: WArtefact[]; reg: WArtefact[]; selected: Set<string>; selectedReg: Set<string> }
 
-/** All artefacts of the case with edits and weights applied. */
+/**
+ * All artefacts of the case with edits and weights applied: the activities of its process document (catalogue and custom ones, with their own
+ * parameters: spec § 7 phase 2, F-B18), or the edited catalogues for a version 2 object without a document.
+ */
 export function workingArtefacts(s: CaseState): ArtefactSets {
-  const k = scopeOf(s);
+  const k = scopeOf(s), v = caseViews(s);
   return {
-    sdlc: withWeights(editedArtefacts(SDLC_ARTEFACTS, k.artefactsEdited), s),
-    reg: withWeights(editedArtefacts(REG_ARTEFACTS, k.regArtefactsEdited), s),
+    sdlc: withWeights(v ? v.sdlc : editedArtefacts(SDLC_ARTEFACTS, k.artefactsEdited), s),
+    reg: withWeights(v ? v.reg : editedArtefacts(REG_ARTEFACTS, k.regArtefactsEdited), s),
     selected: new Set(k.selectedArtefacts),
     selectedReg: new Set(k.selectedRegArtefacts),
   };

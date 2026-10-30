@@ -1,6 +1,6 @@
 import { setLceP, setLceTRev } from '@/controllers/modelEngine';
-import { LOOP_PAIRS } from '@/domain/catalog';
 import { ESCAPE_MATERIAL_PCT, escapeMaterial, lceModel } from '@/domain/model/lce';
+import { pairsOf } from '@/domain/verifyA';
 import { useCtx } from '@/store/hooks';
 import { NumCell } from '@/ui/widgets/CommitField';
 import { DataTable, type Column } from '@/ui/widgets/DataTable';
@@ -13,7 +13,7 @@ export function LoopTable({ on }: { on: boolean }) {
   const c = useCtx(), m = lceModel(c), tRev = (i: number) => c.s.MODEL.LCE.loops[i]?.tRev || 0;
   const cols: Column<Row>[] = [
     { key: 'l', header: 'Loop pair', render: (l) => <strong>{l.label}</strong> },
-    { key: 'it', header: 'Legacy iter', align: 'center', render: (_l, i) => LOOP_PAIRS[i]?.internalIter },
+    { key: 'it', header: 'Legacy iter', align: 'center', render: (_l, i) => pairsOf(c)[i]?.internalIter },
     { key: 'p', header: 'p (accept)', align: 'center',
       render: (l, i) => (on ? <NumCell ariaLabel={`p of ${l.label}`} value={l.p.toFixed(3)} min={0.05} max={1} step={0.01} width={74}
       onCommit={(v) => setLceP(i, v)} /> : l.p.toFixed(3)) },

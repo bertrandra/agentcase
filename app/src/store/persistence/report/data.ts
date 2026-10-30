@@ -8,6 +8,7 @@ import { appVerTag } from '@/domain/snapshots';
 import { scopeOf } from '@/domain/process';
 import type { CaseState } from '@/domain';
 import { logoAlt, shownLogo } from '@/domain/theme/logo';
+import { hasCustomProcess, processSummary, type ProcessSummary } from '@/domain/verifyA/processSummary';
 
 
 export interface ReportData {
@@ -19,7 +20,13 @@ export interface ReportData {
   setup: number; billablePct: number; endLabel: string; endRun: number; endSaving: number; baselineRun: number; riskPremium: number;
   /** the customer logo of a client presentation (docs/THEME.md §8.6); absent: the report is the legacy one, byte for byte */
   logo?: { src: string; alt: string };
+  /** the case's process (section 7, spec F-B22, B5): only when it holds custom content; absent: the report is the legacy one, byte for byte */
+  process?: ReportProcess;
 }
+export type ReportProcess = Pick<ProcessSummary, 'activities' | 'actors' | 'loops' | 'custom'> & { inScope: number };
+/** The process block of the report data (none for a catalogue process). */
+const reportProcess = (p: ProcessSummary): { process?: ReportProcess } =>
+  (hasCustomProcess(p) ? { process: { ...p, inScope: p.activities.filter((a) => a.inScope).length } } : {});
 /** The logo block of a case (none when it has no logo or hides it). */
 export function reportLogo(s: object): { logo?: { src: string; alt: string } } {
   const d = s as Record<string, unknown>, l = shownLogo(d);
@@ -48,6 +55,6 @@ export function reportData(s: CaseState, now: Date): ReportData {
     supervision, authorityCap: cx.authorityCap,
     blocked: act.filter((a) => authRank(a.aiAuth) > cx.authorityCap).map((a) => ({ name: a.name, phase: a.phase, aiAuth: a.aiAuth })),
     setup: headline(c).setup, billablePct: cx.setupBillable * 100, endLabel: `Y${eng.horizonYears}`, endRun: end.totalRunCost, endSaving: end.savings,
-    baselineRun: m.baselineRun, riskPremium: cx.riskPremium, ...reportLogo(s),
+    baselineRun: m.baselineRun, riskPremium: cx.riskPremium, ...reportLogo(s), ...reportProcess(processSummary(c)),
   };
 }

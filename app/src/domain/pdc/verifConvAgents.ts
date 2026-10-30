@@ -1,11 +1,8 @@
 /** @calc-zone verification */
 import type { Ctx } from '../ctx';
 import { activeArtefacts } from '../scope';
-import { AGENT_CATALOG, type LoopPairFull } from '../verifyA/agents';
-import { LOOP_PAIRS } from '../catalog';
+import { agentsOf, pairsOf } from '../verifyA/agents';
 import { audit, wave, type ConvCheck } from './verifConvTypes';
-
-const PAIRS = LOOP_PAIRS as LoopPairFull[];
 
 /**
  * CC-AG-01 (legacy `wave5Checks()`): every AGENT_CATALOG / LOOP_PAIRS artefact reference must resolve to a real artefact of the catalogue.
@@ -15,11 +12,12 @@ export function agentRefsCheck(c: Ctx): ConvCheck {
   const active = new Set(activeArtefacts(c.a, c.s).map((a) => a.id)), all = new Set(c.a.sdlc.map((a) => a.id)), bad: string[] = [];
   let outside = 0;
   const visit = (owner: string, id: string) => { if (!all.has(id)) bad.push(`${owner}→${id} (unknown)`); else if (!active.has(id)) outside++; };
-  AGENT_CATALOG.forEach((ag) => (ag.artifactIds || []).forEach((id) => visit(ag.id, id)));
-  PAIRS.forEach((lp) => [lp.artA, lp.artB].forEach((id) => visit(lp.id, id)));
+  const agents = agentsOf(c), pairs = pairsOf(c);
+  agents.forEach((ag) => (ag.artifactIds || []).forEach((id) => visit(ag.id, id)));
+  pairs.forEach((lp) => [lp.artA, lp.artB].forEach((id) => visit(lp.id, id)));
   const scope = outside ? ` (${outside} point to artefact(s) outside the current scope selection — expected, not a data error)` : '';
   return wave('CC-AG-01', bad.length === 0, bad.length === 0
-    ? `${AGENT_CATALOG.length} agents / ${PAIRS.length} loop pairs, all references resolve${scope}`
+    ? `${agents.length} agents / ${pairs.length} loop pairs, all references resolve${scope}`
     : `⚠ ${bad.length} broken reference(s) to a nonexistent artefact id: ${bad.slice(0, 6).join(', ')}${bad.length > 6 ? '…' : ''}`);
 }
 
@@ -28,9 +26,9 @@ export function agentRefsCheck(c: Ctx): ConvCheck {
  * Discrepancy in the legacy: no LOOP_PAIRS entry carries any of those three fields (loop pairs reference artefacts, not agents),
  * so this check can never fail; it is reproduced as written.
  */
-export function agentIdsCheck(): ConvCheck {
-  const known = new Set(AGENT_CATALOG.map((a) => a.id)), missing: string[] = [];
-  PAIRS.forEach((p) => (['verifierId', 'generatorId', 'agentId'] as const).forEach((f) => {
+export function agentIdsCheck(c: Ctx): ConvCheck {
+  const known = new Set(agentsOf(c).map((a) => a.id)), missing: string[] = [];
+  pairsOf(c).forEach((p) => (['verifierId', 'generatorId', 'agentId'] as const).forEach((f) => {
     const id = (p as unknown as Record<string, string | undefined>)[f];
     if (id && !known.has(id)) missing.push(id);
   }));

@@ -72,6 +72,12 @@
   "tag": "drives"
  },
  {
+  "id": "process",
+  "group": "scope",
+  "groupSeq": 20,
+  "tag": "supports"
+ },
+ {
   "id": "lifecycle-edit",
   "group": "tune",
   "groupSeq": 140,

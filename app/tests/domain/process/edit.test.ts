@@ -1,13 +1,10 @@
-import { mkdtempSync, rmSync, writeFileSync } from 'node:fs';
-import { tmpdir } from 'node:os';
-import { join } from 'node:path';
 import { describe, expect, it } from 'vitest';
 import { addActivity, addActor, addPhase, readProcess, removeActivity, removeActor, removePhase, reorderPhases, serialize, setScope, updateActivity,
   updateActor, viewsOf, type XDocument } from '@/domain/process';
 import { makeDefaultDoc } from '@/store/instance';
 import { parseBpmn } from '@/store/persistence/bpmn/read';
 import { CUSTOM } from '../../store/samples/process';
-import { schemaTestsRun, validate } from '../../helpers/bpmnValidate';
+import { schemaTestsRun, validateText } from '../../helpers/bpmnValidate';
 
 /**
  * The process commands' domain edits (docs/SPEC_BPMN.md § 9, phase B3): each changes only what it names, keeps every other node (identity), and
@@ -82,10 +79,7 @@ describe('process actors and phases', () => {
   it.runIf(schemaTestsRun())('the edited documents stay valid (OMG XSDs + ac: + profile)', () => {
     const d = reorderPhases(addPhase(addActor(addActivity(updateActivity(base(), 'A017', { effort: 4 }), CUSTOM),
       { id: 'role-sre', name: 'SRE', kind: 'role', teamSkill: 'Ops/Run' }), { id: 'V8', name: 'Hypercare' }), ['V1', 'L0']);
-    const dir = mkdtempSync(join(tmpdir(), 'ac-edit-')), file = join(dir, 'edited.bpmn');
-    writeFileSync(file, serialize(removeActivity(d, 'A001')));
-    const r = validate([file]).results[0];
-    rmSync(dir, { recursive: true, force: true });
+    const r = validateText(serialize(removeActivity(d, 'A001')), 'edited.bpmn');
     expect(r).toMatchObject({ schema: 'valid', errors: [], warnings: [] });
   }, 60_000);
 });

@@ -1,4 +1,4 @@
-/** @calc-zone process-model */
+/** @calc-zone scope-automation */
 import { addActivity, addActor, addPhase, removeActivity, removeActor, removePhase, reorderPhases, setScope, updateActivity, updateActor,
   type ActivityPatch, type ActorInput, type CatArtefact } from '@/domain/process';
 import { defineCommand } from '@/store/commands';

@@ -1,6 +1,6 @@
 /** @calc-zone exports */
 import { parseRef } from '@/domain/portfolio';
-import { SCOPE_KEYS } from '@/domain/process';
+import { BPMN_KEY, LIMITS, SCOPE_KEYS } from '@/domain/process';
 import { sanitize } from '../../snapshot';
 import { str } from '../params/safe';
 import type { Sheets } from '../params/types';
@@ -28,7 +28,8 @@ function shapeOf(ref: string): Shape {
 
 function checkType(t: Tab, l: Line, ref: string, v: unknown): void {
   const p = parseRef(ref);
-  const ok = p?.kind === 'values' ? typeof v === 'string' && v.length <= 2000 : ((): boolean => {
+  const ok = ref === BPMN_KEY ? typeof v === 'string' && v.length <= LIMITS.bytes
+    : p?.kind === 'values' ? typeof v === 'string' && v.length <= 2000 : ((): boolean => {
     switch (shapeOf(ref)) {
       case 'strings': return Array.isArray(v) && v.length <= 2000 && v.every((x) => typeof x === 'string' && x.length <= 200);
       case 'bool': return typeof v === 'boolean';
@@ -42,7 +43,8 @@ function checkType(t: Tab, l: Line, ref: string, v: unknown): void {
 }
 
 /**
- * Overrides sheet: product, key, part, JSON. The key must be on the whitelist (horizon, discountRate, khInfraMonthly, RATE, MODEL, COEF and prototype
+ * Overrides sheet: product, key, part, JSON. A process document override (`BPMN`) is its XML text as a JSON string (read and checked by `read.ts`).
+ * The key must be on the whitelist (horizon, discountRate, khInfraMonthly, RATE, MODEL, COEF and prototype
  * keys are refused), the JSON valid and of the key's type.
  */
 export function readOverrides(sheets: Sheets, ids: ReadonlySet<string>): { productId: string; ref: string; value: unknown }[] {
@@ -51,9 +53,10 @@ export function readOverrides(sheets: Sheets, ids: ReadonlySet<string>): { produ
   const parts = new Map<string, { id: string; ref: string; text: string; next: number; n: number }>();
   for (const l of t.lines) {
     const id = knownProduct(t, l, ids), ref = str(l.c[1]);
-    const bad = (!parseRef(ref) && !isScopeRef(ref)) || ref === 'BPMN' || /discountrate/i.test(ref);
+    const bad = (!parseRef(ref) && !isScopeRef(ref) && ref !== BPMN_KEY) || /discountrate/i.test(ref);
     if (bad) fail(t.name, l.n, `"${ref.slice(0, 60)}" is not an overridable key`);
-    const part = numberCell(t, l, 2, 'part', { min: 1, max: PF_LIMITS.overrideChunks, int: true }) as number, key = `${id}\u0000${ref}`, cur = parts.get(key);
+    const max = ref === BPMN_KEY ? PF_LIMITS.processChunks : PF_LIMITS.overrideChunks;
+    const part = numberCell(t, l, 2, 'part', { min: 1, max, int: true }) as number, key = `${id}\u0000${ref}`, cur = parts.get(key);
     if (part === 1) { if (cur) fail(t.name, l.n, `duplicate override "${ref}" for product "${id}"`); parts.set(key,
       { id, ref, text: String(l.c[3] ?? ''), next: 2, n: l.n }); continue; }
     if (!cur || cur.next !== part) fail(t.name, l.n, `part ${part} of "${ref}" is out of sequence`);

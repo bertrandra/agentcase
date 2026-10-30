@@ -1,8 +1,8 @@
 /** @calc-zone time-engine */
 import { current } from 'immer';
 import { makeCtx, type Ctx } from '@/domain';
-import { LOOP_PAIRS } from '@/domain/catalog';
 import { lceLoops } from '@/domain/model/lce';
+import { caseLoopPairs } from '@/domain/process';
 import type { Doc } from '@/store/types';
 
 /** Shared helpers of the Model-Engine controllers (no commands here). */
@@ -18,7 +18,7 @@ export const ctxOfDraft = (d: Doc): Ctx => makeCtx(current(d) as Doc);
 /** Build MODEL.LCE.loops (calibrated on the legacy counts) when absent or not built yet, like legacy lceEnsureCalibrated(). Idempotent. */
 export function ensureLceBuilt(d: Doc): void {
   const lce = d.MODEL.LCE;
-  const need = !Array.isArray(lce.loops) || lce.loops.length !== LOOP_PAIRS.length || (!lce.calibrated && !lce.built);
+  const need = !Array.isArray(lce.loops) || lce.loops.length !== caseLoopPairs(current(d) as Doc).length || (!lce.calibrated && !lce.built);
   if (!need) return;
   const r = lceLoops(ctxOfDraft(d));
   lce.loops = r.loops; lce.calibrated = r.calibrated; lce.built = true;

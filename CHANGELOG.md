@@ -17,6 +17,37 @@ When releasing, follow [docs/BUMP_PROCEDURE.md](docs/BUMP_PROCEDURE.md) (§7 for
 
 ## [Unreleased]
 
+## [v20.24.0] 2026-10-30 — BPMN B4 and B5: Process section, BPMN import, the engine reads the process model
+
+### BPMN B5 — the engine reads the process model: custom activities, roles, agents and rework
+
+Phase B5 of [docs/SPEC_BPMN.md](docs/SPEC_BPMN.md) (§ 7, F-B18, F-B20, F-B22, D-B20; details in § 7.1). Every figure of the 107 fixtures unchanged.
+
+- **Custom activities count.** The engine's artefact lists are the activities of the case's process document: an activity added with
+  `process.addActivity` enters every figure with its phase, type, role, effort, value class, AI authority and supervision split.
+- **Custom roles and agents.** A custom role is staffed by its team skill; a custom agent joins the agent directory, the agent count and the Agent
+  Catalog sheet; the factory tags take the capability and type from the activity.
+- **Rework from the model (D-B20).** Rework loops come from the back flows of the process, or from error boundary events carrying `ac:rework` that
+  replace them (`pair`) or add a loop.
+- **Portfolio.** A product's own process survives the parameters workbook round trip (the Overrides sheet carries the document).
+- **Outputs.** A process with custom content adds a Process sheet to the results workbook and a "Delivery process" section to the critical report.
+- **Tests.** Hand-computed reference figures per parameter; the one-source-of-truth equalities run on five process cases.
+
+### BPMN B4 — the Process section: diagram, activity table, actors, BPMN import and export
+
+Phase B4 of [docs/SPEC_BPMN.md](docs/SPEC_BPMN.md) (§ 4.3, § 8, § 9; details in § 9.1). Single-product figures unchanged.
+
+- **🧩 Process (BPMN)**, a new app section of the Scope group (Builder and Advanced by default): the case's process as a read-only SVG diagram
+  drawn from its BPMN DI (zoom and pan with the keyboard, the buttons or the pointer; a live region names the selected activity), the activity table
+  as its accessible alternative (sort; filters by phase, actor, type, scope, regulatory, text; scope check boxes), the selected activity's panel
+  (name, phase, effort, supervision split, remove) and the actor panel (roles and agents, team skill, add a role, remove an unused one).
+- **Import process (BPMN)** — replace or merge, with a preview before anything is written and a report after (added, updated, out of scope, removed,
+  left out, parameters to review, new roles, elements not mapped, headline net / ROI / FTE after before and after). Files from other tools are mapped:
+  their sub-processes, lanes or processes to phases, their unknown roles to new roles on a team skill the user picks (D-B10); the file's out-of-scope
+  activities come in or are left out (D-B4). One undoable step; a refused or hostile file writes nothing. **Export** is also in the section, and
+  **Reset to default process** (whole or one phase) is one step.
+- New undoable commands `process.import`, `process.reset`, `process.moveActivity`, `process.setReworkFlow`, `process.setDiagram` (coalesced).
+
 ## [v20.23.0] 2026-10-30 — BPMN B6b: organisation model, RACI, Organisation and Who-does-what sections
 
 ### BPMN B6b — organisation model: units, teams, roles and RACI in the case's BPMN document

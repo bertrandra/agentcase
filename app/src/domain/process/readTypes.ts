@@ -1,4 +1,5 @@
 /** @calc-zone process-model */
+import type { BoundaryRework } from './readRework';
 import { attr, kid, NS, type XElement } from './xml';
 
 /** Typed, read-only views of a process document (spec § 6.1): computed from the node tree, never stored. */
@@ -47,6 +48,8 @@ export interface ProcessParams {
 export interface ProcessView {
   params: ProcessParams; phases: PhaseView[]; activities: ActivityView[]; actors: ActorView[]; flows: FlowView[]; norms: NormView[];
   diagram: DiagramView;
+  /** error boundary events carrying `ac:rework` (F-B47, D-B20), with the target of their outgoing flow */
+  reworks: BoundaryRework[];
 }
 
 /** Small readers shared by the view builders. */

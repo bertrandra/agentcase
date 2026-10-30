@@ -9,14 +9,14 @@
 
 1. **Result sections**: they follow the View. Portfolio / Wave = consolidated figures from the domain (`consolidate`, `portfolioHeadline`, `waveHeadline`, `selectionView`, `portfolioGantt`...); Product = today's behaviour, unchanged.
 2. **Input sections**: with the Portfolio or a Wave in view, they show at the top a **read-only aggregated view** of the selection (one row per product, button **"Edit this product"**: controller `showProduct`, the View (**Show**) becomes that product and so does **Change**), then **the section itself, editable in place** (`InPlaceEdit`), bound to the **"Change"** choice of the top bar: one product (that product's section; its edits are overrides) or **All products** (the section on the **shared values**; its edits go to the common values; the products that keep their own value are named field by field with "Back to shared"). The entry team (and, in Knowledge hub, the domains and the preparation) stays per product: with All products, a hint only. See § 2.1.
-3. **The 88 sections are classified** (§ 4). No new financial formula in `ui/` (rule A8 extended: no `.reduce` in the widgets, hooks and aggregates of the aggregated view); no "synthetic aggregated case" (wrong for the glass ceiling, the overrides, the wave offsets).
+3. **The 89 sections are classified** (§ 4). No new financial formula in `ui/` (rule A8 extended: no `.reduce` in the widgets, hooks and aggregates of the aggregated view); no "synthetic aggregated case" (wrong for the glass ceiling, the overrides, the wave offsets).
 4. **A single product: nothing changes** (no banner, no DOM wrapper in `SectionHost`). The Product mode of the sections stays byte-for-byte identical.
 
 ## 2. Mechanism as built
 
 | Piece | Where | Role |
 |---|---|---|
-| Kind of each section | `ui/zones/data/sectionScope.json` + `ui/zones/sectionScope.ts` (`sectionKind`, `followsView`) | one entry per id (88); the test `tests/ui/section-scope.test.ts` requires exactly the catalogue ids |
+| Kind of each section | `ui/zones/data/sectionScope.json` + `ui/zones/sectionScope.ts` (`sectionKind`, `followsView`) | one entry per id (89); the test `tests/ui/section-scope.test.ts` requires exactly the catalogue ids |
 | `useViewScope()` | `store/viewScope.ts` | `{ kind: 'product'|'wave'|'portfolio', label, multi, productIds[] (planned, not archived), excludedIds[], waveId?, activeProductId, activeProductName }`, stable reference; inside a `ProductViewContext` the View is that product |
 | `ProductViewContext` | `store/productView.ts` (+ `ProductViewProvider`, `productDocOf`) | read-only view of another product: `useDoc`, `useCtx`, `useCaseResult`, `useSimulation`, `useActiveProduct`, `useActiveProductId`, `useFieldState`, `useSubsetField` read that product's resolved case instead of the active product's. Writes are not redirected |
 | `ReadOnlyScope` | `ui/widgets/ReadOnlyScope.tsx` | `fieldset disabled` + capture and stop of click / keyboard / change / input / submit / drop events + read-only message; `inert` as an option |
@@ -59,15 +59,15 @@ Generic fallbacks per kind (Portfolio / Wave, section without an aggregate):
 9. Audit: `node ../tools/a11y.mjs --fixtures pf-three-products --sections "<label>"` (Portfolio and Wave are audited; the report goes to `test-results/a11y/report.json`).
 10. Set the section's state to DONE in the table of § 4 and remove it from the tracking of § 5.
 
-## 4. Classification of the 88 sections
+## 4. Classification of the 89 sections
 
-Total: **88 = 79 case sections + 6 of the Portfolio group + 3 app sections, 🎨 Brand & theme, 🏢 Organisation and 🧭 Who does what** (no legacy equivalent) (the group has 6 sections in the catalogue, not 7: products, overrides, knowledge transfer, waves, consolidation, portfolio stress).
+Total: **89 = 79 case sections + 6 of the Portfolio group + 4 app sections, 🎨 Brand & theme, 🧩 Process (BPMN), 🏢 Organisation and 🧭 Who does what** (no legacy equivalent) (the group has 6 sections in the catalogue, not 7: products, overrides, knowledge transfer, waves, consolidation, portfolio stress).
 
 | Kind | Count | Meaning |
 |---|---|---|
 | `R-conso` | 15 | result with a natural consolidated form (sums and series of `domain/portfolio`) |
 | `R-rollup` | 28 | control or per-case logic that does not add up: summary table per product + detail of the product's own render |
-| `I-input` | 18 | per-product input: read-only aggregated synthesis, one row per product, "Edit this product", then the section editable in place according to "Change" (§ 2.1) |
+| `I-input` | 19 | per-product input: read-only aggregated synthesis, one row per product, "Edit this product", then the section editable in place according to "Change" (§ 2.1) |
 | `S-static` | 21 | reference, documentation, common settings, management: independent of the view (banner "Independent of the view") |
 | `P-portfolio` | 6 | section of the Portfolio group, already at portfolio level (banner "Portfolio level") |
 
@@ -83,6 +83,7 @@ State legend: **DONE** (built in V0), **NATIVE** (the section already follows th
 | `scurve` | scope | 📊 S-curve — adoption ramp | `I-input` | Y1/Y2/Y3 adoption ramp per product | `scurve` of the resolved case | DONE |
 | `scope-sel` | scope | 🎯 Scope | `I-input` | Number of SDLC / regulatory artefacts selected per product | `inputSummary` (`artefacts`, `regArtefacts`) | DONE |
 | `phase-scope` | scope | 🎯 Phase scope | `I-input` | Phases switched off per product | `phaseOff` of the resolved case | DONE |
+| `process` | scope | 🧩 Process (BPMN) | `I-input` | Per product: common or own process, activities, marked in scope, not in the default process, actors (BPMN phase B4) | `scopeProcess`: `BPMN` of the resolved case | DONE |
 | `lc-weighting` | scope | 📊 Product status lifecycle weighting | `I-input` | Position of the product in the lifecycle | `lifecycleUse`, `lifecyclePos` | DONE |
 | `team-in` | baseline | Input team | `I-input` | DONE (exemplar): FTE per product, aggregated by skill, grade, location and crossed; "Edit this product" | `aggregateTeams(pf, productIds)` | DONE |
 | `ratecard` | baseline | Rate Card | `S-static` | Banner only. Day rates: common values (D-M3, key `RATE`), identical for all products | — | DONE (banner) |
@@ -166,12 +167,12 @@ State legend: **DONE** (built in V0), **NATIVE** (the section already follows th
 
 ## 5. Tracking of the following phases
 
-Finished: the 88 sections have their behaviour for the Portfolio, Wave and Product views (V0: foundation and two pilot sections; V1: aggregates of the 12 groups; the S-static and P-portfolio sections show the banner only). No section uses the generic fallback any more; the fallbacks stay in the code for any new section (tested by temporarily removing an aggregate from the registry).
+Finished: the 89 sections have their behaviour for the Portfolio, Wave and Product views (V0: foundation and two pilot sections; V1: aggregates of the 12 groups; the S-static and P-portfolio sections show the banner only). No section uses the generic fallback any more; the fallbacks stay in the code for any new section (tested by temporarily removing an aggregate from the registry).
 
 ## 6. Assumed ambiguities
 
 - `R-rollup` (28), specific summary table (status, key values) instead of the generic financial fallback: `readiness`, `token-econ`, `vfte-ov`, `opmodel`, `phase-art`, `agent-dir`, `agent-detail`, `exec`, `productivity`, `velocity`, `quality`, `compliance`, `commercial`, `strategies`, `eligibility`.
-- `I-input` (17), specific synthesis of the section's input instead of the generic fallback (FTE, artefacts, overrides, hub): `engagement-context`, `engage`, `transform-params`, `params`, `scurve`, `maturity-map`, `scope-sel`, `phase-scope`, `lc-weighting`, `lifecycle-edit`, `loc-strat`, `knowledge`, `run-sizing`, `setup`, `maturity`, `program`, `risk`.
+- `I-input` (18), specific synthesis of the section's input instead of the generic fallback (FTE, artefacts, overrides, hub): `engagement-context`, `engage`, `transform-params`, `params`, `scurve`, `maturity-map`, `scope-sel`, `phase-scope`, `lc-weighting`, `lifecycle-edit`, `loc-strat`, `knowledge`, `run-sizing`, `setup`, `maturity`, `program`, `risk`, `process`.
 - **Input sections whose key is common** (written outside the whitelist: `RATE`, `MODEL`, `COEF`, `TOKEN_MODELS`, `DD_STATE`, `assumptValidated`, factory data): the view does not change them. Choice: `ratecard` and the four factory sections are `S-static` (identical values for all products, one row per product would add nothing); `token-econ`, the six `model-engine` sections, `assumptions` and `duediligence` are `R-rollup` (their result is specific to the product, their settings are common).
 - **`factory-*`**: the data are common but the generator reads the active product. Chosen `S-static` ("draft, does not feed the financial model"). To be revisited if the factory becomes per product.
 - **`readiness`**: a questionnaire (input) but above all an index: `R-rollup`, as requested. **`eligibility`**, **`opmodel`**: parameters + diagnostics, classified `R-rollup` because the point is the gate / the check per product.

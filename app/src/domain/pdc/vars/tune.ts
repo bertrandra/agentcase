@@ -3,7 +3,7 @@ import type { Ctx } from '../../ctx';
 import { modelOf as model } from '../../tune/memo';
 import { blendedTokenCostPer1M } from '../../tokens';
 import { tokenUsage } from '../../tuneB/tokens';
-import { AGENT_CATALOG, loopInternalTokenCost } from '../../verifyA/agents';
+import { agentsOf, loopInternalTokenCost } from '../../verifyA/agents';
 import { daVal, qualityRows } from '../../verifyB/anchors';
 import { perfRel } from '../../verifyB/perf';
 import { end, v } from './types';
@@ -21,7 +21,7 @@ export const TUNE_VARS = [
   v('velocitySpY3', 'Velocity Y3 (SP/sprint)', 'INT', 'SP', 'velocity', (c) => Math.round(daVal(c.s, 'velocitySp', perfRel(c, end(c).adoptionEndPct)))),
   v('leadTimeY3Days', 'Lead time, Y3', 'DAYS', 'd', 'velocity', (c) => daVal(c.s, 'leadTime', perfRel(c, end(c).adoptionEndPct))),
   v('perfUpliftRelY3Pct', 'Productivity uplift, relative, Y3', 'PCT', '%', 'productivity', (c) => perfRel(c, end(c).adoptionEndPct) * 100),
-  v('agentCatalogCount', 'Total agents in catalog', 'INT', '', 'agent-dir', () => AGENT_CATALOG.length),
+  v('agentCatalogCount', 'Total agents in catalog', 'INT', '', 'agent-dir', (c) => agentsOf(c).length),
   v('loopInternalTokenCostEst', 'Agentic loop internal token cost (est.)', 'EUR_K', '€', 'agent-dir', (c) => loopInternalTokenCost(c).cost),
   v('tokenCostPer1M', 'Blended token cost per 1M tokens', 'DEC2', '€/1M', 'token-econ', (c) => blendedTokenCostPer1M(c.s)),
   v('tokenVolumeY3M', 'Token volume, end-year (M tokens)', 'DEC1', 'M', 'token-econ', (c) => tokenUsage(c).y3),

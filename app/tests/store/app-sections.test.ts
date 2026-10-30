@@ -5,7 +5,7 @@ import { deletePersona } from '@/controllers/pdcPersonas';
 import { APP_SECTIONS } from '@/ui/zones/registry';
 import { freshStore, snap } from './helpers';
 
-const BRAND = APP_SECTIONS[0]!;
+const BRAND = APP_SECTIONS.find((s) => s.id === 'brand-theme')!;
 const doc = (s: ReturnType<typeof freshStore>) => s.getState().doc as Record<string, unknown>;
 
 describe('persona.setAppSection (DEV-APP-SECTION-PERSONAS)', () => {
