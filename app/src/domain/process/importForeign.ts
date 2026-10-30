@@ -17,7 +17,7 @@ const READ: readonly string[] = ['process', 'laneSet', 'lane', 'childLaneSet', '
 export interface ForeignRead { tasks: IncomingTask[]; units: IncomingUnit[]; ignored: Record<string, number> }
 
 /** Lane name of each flow node (the innermost lane that lists it). */
-function lanesOf(proc: XElement): Map<string, string> {
+export function lanesOf(proc: XElement): Map<string, string> {
   const out = new Map<string, string>();
   const walk = (set: XElement): void => {
     for (const lane of kids(set, NS.bpmn, 'lane')) {

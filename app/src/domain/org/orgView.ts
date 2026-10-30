@@ -9,7 +9,8 @@ import type { OrgModel, OrgTeam, OrgUnit } from './types';
 /**
  * The diagram "by organisation" of F-B39 (D-B19: the role view stays the default): for one product, the process's lane set becomes
  * units → teams serving the product → roles (nested `childLaneSet`), each activity in the lane of the role that prices it, under the team giving
- * the product the most FTE on that role's team skill; activities whose role no team provides sit in a lane "Not staffed". The diagram
+ * the product the most FTE on that role's team skill; activities whose role no team provides sit in a lane "Not staffed". A role lane names its
+ * role resource (`partitionElementRef`, F-B54, B5b); `formalOrganisationView` moves the activity references into the phases. The diagram
  * shapes of the role lanes are dropped (the pool, phases and tasks keep theirs). Computed for an export, never stored.
  */
 interface Leaf { unit: OrgUnit; team: OrgTeam; role: string; acts: string[] }
@@ -36,7 +37,7 @@ export function organisationLaneSet(m: OrgModel, productId: string): XElement {
     return el('bpmn:lane', { id: laneId(u.id), name: u.name }, [el('bpmn:childLaneSet', { id: `${laneId(u.id)}-set` }, teams.map((t) =>
       el('bpmn:lane', { id: laneId(u.id, t.id), name: t.name }, [el('bpmn:childLaneSet', { id: `${laneId(u.id, t.id)}-set` },
         placed.filter((l) => l.team.id === t.id).map((l) => el('bpmn:lane', { id: laneId(u.id, t.id, l.role),
-          name: by.get(l.role)?.name ?? l.role }, refs(l.acts))))])))]);
+          name: by.get(l.role)?.name ?? l.role, partitionElementRef: l.role }, refs(l.acts))))])))]);
   });
   if (loose.length) lanes.push(el('bpmn:lane', { id: 'lane-org-not-staffed', name: 'Not staffed' }, refs(loose)));
   return el('bpmn:laneSet', { id: 'LaneSet-organisation', name: 'By organisation' }, lanes);

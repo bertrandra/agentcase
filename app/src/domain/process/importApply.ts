@@ -6,6 +6,7 @@ import { addActor } from './editModel';
 import { appendChild, editById, editWhere, idsOf, withExt } from './editTree';
 import { dataId, diId, roleId } from './ids';
 import { activityDefaults } from './importDefaults';
+import { keepForeign, type KeepReport } from './importKeep';
 import { analyseImport, phaseFor, previewImport } from './importPlan';
 import type { ImportAnalysis, ImportChoices, IncomingTask } from './importTypes';
 import { readProcess } from './read';
@@ -74,8 +75,12 @@ function freeId(id: string, used: Set<string>): string {
   return out;
 }
 
-/** The case's process after the import, with the ids actually added (a foreign task may get a suffixed id). */
-export function applyImport(current: Doc, file: Doc, c: ImportChoices, a: ImportAnalysis = analyseImport(current, file)): { doc: Doc; added: string[] } {
+/**
+ * The case's process after the import, with the ids actually added (a foreign task may get a suffixed id) and, for a foreign file, what was
+ * kept of the content the import does not map (F-B11, B5b: `importKeep.ts`).
+ */
+export function applyImport(current: Doc, file: Doc, c: ImportChoices, a: ImportAnalysis = analyseImport(current,
+  file)): { doc: Doc; added: string[]; kept?: KeepReport } {
   const pv = previewImport(current, a, c);
   if (pv.refusal || pv.unmappedUnits.length || pv.unmappedRoles.length) return { doc: current, added: [] };
   const skip = new Set(pv.skipped), taken = a.tasks.filter((t) => !skip.has(t.id));
@@ -97,11 +102,14 @@ export function applyImport(current: Doc, file: Doc, c: ImportChoices, a: Import
   for (const r of pv.newRoles) d = addActor(d, { id: roleId(r.name), name: r.name, kind: 'role', teamSkill: r.teamSkill });
   const v = readProcess(d), roles = new Map(a.roles.map((r) => [r.name, r.known ?? r.name]));
   let order = Math.max(0, ...v.activities.filter((x) => !x.regulatory).map((x) => x.order));
+  const rename = new Map(taken.filter((t) => t.match).map((t) => [t.id, t.match as string]));
   for (const t of fresh) {
     const phase = phaseFor(a, c, t.unit) as string, id = freeId(t.id, used), role = roles.get(t.roles[0] ?? '');
+    rename.set(t.id, id);
     const art = { ...activityDefaults(v, phase, t.element, role), id, name: t.name, deliverable: '' };
     items.push({ phase, els: [indent(withAttrs(taskOf(art, ++order, false), { 'ac:inScope': t.inScope }), '  ', 3)] });
     added.push(id);
   }
-  return { doc: appendTo(d, items), added };
+  const k = keepForeign(appendTo(d, items), file, a, c, rename);
+  return { doc: k.doc, added, kept: k.report };
 }

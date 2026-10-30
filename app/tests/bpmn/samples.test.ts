@@ -40,8 +40,8 @@ describe('BPMN B0 — CI runs the XSD validation', () => {
 
 describe('BPMN B0 — the extension XSD', () => {
   const globals = (kind: string) => [...AC_XSD.matchAll(new RegExp(`^ {2}<xsd:${kind} name="(\\w+)"`, 'gm'))].map((m) => m[1] ?? '');
-  it('declares the elements and attributes of the spec (§ 5.2, § 15, § 16, § 17)', () => {
-    expect(globals('element').sort()).toEqual(['activity', 'actor', 'audit', 'auditHeader', 'frequency', 'handoffCost', 'norm', 'orgUnit',
+  it('declares the elements and attributes of the spec (§ 5.2, § 15, § 16, § 17; changeFailure: B5b, F-B50)', () => {
+    expect(globals('element').sort()).toEqual(['activity', 'actor', 'audit', 'auditHeader', 'changeFailure', 'frequency', 'handoffCost', 'norm', 'orgUnit',
       'phase', 'process', 'product', 'raci', 'rework', 'supervision', 'team', 'tool', 'toolCatalog', 'volume']);
     expect(globals('attribute').sort()).toEqual(['activityType', 'agent', 'decisionRef', 'gate', 'inScope', 'norm', 'partial', 'regulatory',
       'requiresState']);

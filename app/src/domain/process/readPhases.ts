@@ -1,10 +1,12 @@
 /** @calc-zone process-model */
 import type { BpsimValues } from './bpsim';
 import { extOf, marks, num, type ActivityView, type FlowView, type PhaseView, type ReworkView } from './readTypes';
-import { TYPE_OF_TASK } from './types';
+import { typeOfTask } from './profile/acts';
 import { attr, kid, kids, NS, textOf, type XElement } from './xml';
 
-const TASKS: readonly string[] = ['task', 'userTask', 'manualTask', 'serviceTask', 'scriptTask', 'businessRuleTask', 'sendTask', 'receiveTask'];
+const TASKS: readonly string[] = ['task', 'userTask', 'manualTask', 'serviceTask', 'scriptTask', 'businessRuleTask', 'sendTask', 'receiveTask',
+  'callActivity'];
+const isEventSub = (e: XElement): boolean => attr(e, 'triggeredByEvent') === 'true';
 const PHASES: readonly string[] = ['subProcess', 'adHocSubProcess'];
 const refText = (e: XElement | undefined, local: string): string | undefined => {
   const r = e ? kid(e, NS.bpmn, local) : undefined;
@@ -16,9 +18,9 @@ const str = (v: string | undefined): string => v ?? '';
 export type Sim = ReadonlyMap<string, BpsimValues>;
 const NONE: Sim = new Map();
 
-/** The phases of a process: its top-level sub-processes (Cross-cutting is the ad-hoc one), with the case's marks. */
+/** The phases of a process: its top-level sub-processes (Cross-cutting is the ad-hoc one; an event sub-process is not a phase), with the case's marks. */
 export function phasesOf(proc: XElement): { view: PhaseView; el: XElement }[] {
-  return kids(proc, NS.bpmn).filter((e) => PHASES.includes(e.local)).map((e) => {
+  return kids(proc, NS.bpmn).filter((e) => PHASES.includes(e.local) && !isEventSub(e)).map((e) => {
     const p = extOf(e, 'phase'), a = (n: string) => (p ? attr(p, n) : undefined), fid = a('featureIds'), ramp = a('rampSeq');
     const view: PhaseView = {
       id: str(attr(e, 'id')), name: str(attr(e, 'name')), adHoc: e.local === 'adHocSubProcess', seq: num(a('seq')) ?? 0, role: str(a('role')),
@@ -38,7 +40,7 @@ function activityOf(e: XElement, phase: string, deliverables: Map<string, string
   const id = str(attr(e, 'id')), p = extOf(e, 'activity'), s = extOf(e, 'supervision'), a = (n: string) => (p ? attr(p, n) : undefined);
   const sv = (n: string) => (s ? num(attr(s, n)) : undefined);
   const v: ActivityView = {
-    id, name: str(attr(e, 'name')), phase, element: e.local, type: a('type') ?? TYPE_OF_TASK[e.local] ?? 'Human',
+    id, name: str(attr(e, 'name')), phase, element: e.local, type: typeOfTask(e),
     regulatory: a('regulatory') === 'true', order: num(a('order')) ?? 0, effort: num(a('effort')) ?? sim.get(id)?.time ?? 0, value: str(a('value')),
     aiAuthority: str(a('aiAuthority')), storyId: a('storyId') ?? null, human: sv('human') ?? 0, agent: sv('agent') ?? 0, ...marks(e, p, 'scopeRank'),
   };
@@ -53,11 +55,21 @@ function activityOf(e: XElement, phase: string, deliverables: Map<string, string
   return v;
 }
 
-/** The activities of a phase sub-process, in document order. */
-export function activitiesOf(phase: XElement, sim: Sim = NONE): ActivityView[] {
-  const id = str(attr(phase, 'id')), deliverables = new Map<string, string>();
-  for (const d of kids(phase, NS.bpmn, 'dataObject')) deliverables.set(str(attr(d, 'id')), docText(d) ?? '');
-  return kids(phase, NS.bpmn).filter((e) => TASKS.includes(e.local)).map((e) => activityOf(e, id, deliverables, sim));
+/**
+ * The activities of a phase sub-process, in document order, then those of its event sub-processes (F-B49, B5b: work triggered during the phase,
+ * counted per occurrence). `phase` is the phase they belong to (the container's id by default).
+ */
+export function activitiesOf(container: XElement, sim: Sim = NONE, phase = str(attr(container, 'id')), trigger?: string): ActivityView[] {
+  const deliverables = new Map<string, string>();
+  for (const d of kids(container, NS.bpmn, 'dataObject')) deliverables.set(str(attr(d, 'id')), docText(d) ?? '');
+  const own = kids(container, NS.bpmn).filter((e) => TASKS.includes(e.local)).map((e) => {
+    const a = activityOf(e, phase, deliverables, sim);
+    if (trigger !== undefined) a.trigger = trigger;
+    if (e.local === 'callActivity') { const c = attr(e, 'calledElement'); if (c) a.called = c.slice(c.indexOf(':') + 1); }
+    return a;
+  });
+  const subs = kids(container, NS.bpmn, 'subProcess').filter(isEventSub).flatMap((s) => activitiesOf(s, sim, phase, str(attr(s, 'id'))));
+  return [...own, ...subs];
 }
 
 /** The sequence flows directly inside a container (process or sub-process), with their rework parameters (BPSim probability as fallback). */

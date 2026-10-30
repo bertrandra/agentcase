@@ -1,6 +1,6 @@
 # AgentCase — Specification: the delivery process as a native BPMN 2.0 model (export and import)
 
-> Status: **specified; phases B0, B1, B2, B3, B4, B5, B6 and B6b built** (B0: extension XSD, official OMG schemas, `tools/bpmn-validate.mjs`, sample and hostile files, § 5.3; B1: domain only, `app/src/domain/process`, § 6.3; B2: reader / writer, security, round trip, BPSim, export from the File menu, § 5.5; B3: schema v3, the case stores the BPMN document, § 6.4; B4: the Process section, import, § 9.1; B5: custom activities, roles, agents and rework from the model in the engine, § 7.1; B6: the optional lazy BPMN editor, § 9.2; B6b: organisation model, § 16.8). Decisions D-B1…D-B26 **adopted on 2026-10-30** (§ 12, § 15.6, § 16.7, § 17.9); D-B26: the case's BPMN
+> Status: **specified; phases B0, B1, B2, B3, B4, B5, B5b, B6 and B6b built** (B0: extension XSD, official OMG schemas, `tools/bpmn-validate.mjs`, sample and hostile files, § 5.3; B1: domain only, `app/src/domain/process`, § 6.3; B2: reader / writer, security, round trip, BPSim, export from the File menu, § 5.5; B3: schema v3, the case stores the BPMN document, § 6.4; B4: the Process section, import, § 9.1; B5: custom activities, roles, agents and rework from the model in the engine, § 7.1; B5b: extended profile in the domain, § 17.10; B6: the optional lazy BPMN editor, § 9.2; B6b: organisation model, § 16.8). Decisions D-B1…D-B26 **adopted on 2026-10-30** (§ 12, § 15.6, § 16.7, § 17.9); D-B26: the case's BPMN
 > document is the **only** stored form of the process, the organisation and the audit (§ 6.1). Scope: the TypeScript + React application in `app/`.
 > Related documents: [ARCHITECTURE.md](ARCHITECTURE.md), [DEVIATIONS.md](DEVIATIONS.md), [SPEC_MULTI_PRODUIT.md](SPEC_MULTI_PRODUIT.md).
 > Code rules unchanged: files ≤ 150 lines, no `any`, layers `ui → controllers → store → domain`, every write is an undoable
@@ -472,7 +472,7 @@ these. Portfolio: the process follows the override commands of spec F6–F9.
   activities come in out of scope or are left out. The preview lists added / updated / out of scope / removed / left out / defaulted; the report adds
   the elements not mapped by kind and the headline net, ROI and FTE after, before / after. Mappings are remembered for the session.
 - **Not in B4.** Foreign content that is not mapped (events, gateways, flows, data stores, other pools, vendor extensions) is listed in the report but
-  not kept in the case's process (F-B11 pass-through holds for AgentCase files; for foreign files it is open for B5b). A new role's resource is inserted
+  not kept in the case's process (F-B11 pass-through holds for AgentCase files; for foreign files: built in B5b, § 17.10). A new role's resource is inserted
   after the existing resources (the XSD order of root elements), so its undo patch is larger than an append. Custom and imported activities count
   in the figures from B5 (§ 7).
 
@@ -560,7 +560,7 @@ these. Portfolio: the process follows the override commands of spec F6–F9.
 | B3 (**built in B3**) | Schema v3 + migration, `BPMN` key (native XML, node tree in the store), commands, existing scope sections on the model | 107 fixtures identical; parallel run 40/40; excel-compat 67/67 | 2 d | 5 / 5 | B2 | Touches store, undo, tab sync, autosave, Excel and every scope screen at once; node-level undo patches |
 | B4 (**built in B4**) | Process section: SVG diagram, activity table, actor panel, import (replace / merge, preview, report), export | axe clean; ui-parity 0 divergence | 1.5 d | 3 / 5 | B3 | Accessible diagram with a table alternative; the merge preview |
 | B5 (**built in B5**) | Custom activities / roles / agents in the engine; rework flows from the model; portfolio override; Excel / report / HTML outputs | Hand-computed reference tests; cross-surface equality | 2 d | 4 / 5 | B3 | New engine inputs without breaking the single-owner rule; deviations to record |
-| B5b | Extended profile (§ 17): traceability graph, data stores bound to tools, data states and types, multi-instance volumes, timers and cadence, bounded loops, boundary events and reusable definitions, event sub-processes, compensation, conditional scope (FEEL subset), shared process library, task types, formal assignment and lanes, message flows and multiplicity, conversation view, annotations, several diagrams, colours, file header | Default process unchanged in figures; each element has a reader / writer / round-trip test and a test of the figure, check or view it feeds | 3 d | 4 / 5 | B5 | Breadth (about 25 elements); a safe FEEL parser; the process library across products |
+| B5b (**built in B5b**, domain; screens open, § 17.10) | Extended profile (§ 17): traceability graph, data stores bound to tools, data states and types, multi-instance volumes, timers and cadence, bounded loops, boundary events and reusable definitions, event sub-processes, compensation, conditional scope (FEEL subset), shared process library, task types, formal assignment and lanes, message flows and multiplicity, conversation view, annotations, several diagrams, colours, file header | Default process unchanged in figures; each element has a reader / writer / round-trip test and a test of the figure, check or view it feeds | 3 d | 4 / 5 | B5 | Breadth (about 25 elements); a safe FEEL parser; the process library across products |
 | B6 (**built in B6**) | Optional lazy BPMN editor (D-B6 b) | Size budget; editor round trip | 1.5 d | 4 / 5 | B4 | Size budget, CSP, writing the editor's changes back to the node tree; bpmn-js licence requires its watermark to stay visible |
 | B6b (**built in B6b**, teams at the derived-view stage) | Organisation model (§ 16): organisation elements in the `BPMN` document, migration of `teamIn` / shared team lines to teams (parity), RACI on activities, `domain/org`, Organisation and Who-does-what sections, resource roles and organisation view | 107 fixtures identical before the RACI-driven figures; diagnostics tests; axe clean | 2 d | 4 / 5 | B3 | Moving the entry team and shared lines into the organisation with identical figures |
 | B7 | Audit layer (§ 15): tool catalogue, `ac:audit` elements and `domain/audit`, Audit section, audit workbook, audit report, explicit calibration | Round trip with audit data; calibration log; axe clean | 2 d | 3 / 5 | B4, B6b | Curating a neutral, dated tool catalogue (needs the owner's review) |
@@ -952,6 +952,50 @@ by what they bring; the phase that builds them is in § 13.
 | D-B23 | `scriptTask` and AI savings | (a) no AI saving on already-automated work; (b) same as human work | **(a)** (F-B53). |
 | D-B24 | DMN | (a) export + import + built-in evaluator; (b) export only | **(a)** for the three rule families of F-B62. |
 | D-B25 | CMMN | (a) export of the run phase, read back what maps; (b) out of scope | **(a)** as the last phase, optional. |
+
+### 17.10 Built in B5b (the extended profile in the domain)
+
+Readers and writers of every element of § 17.1–§ 17.7 work on the case's node tree (`app/src/domain/process/profile/`, plus `trace.ts`,
+`conditions.ts`, `importKeep.ts` / `importAdopt.ts` in `domain/process`, `formalLanes.ts` / `multiView.ts` in `domain/org`, the FEEL subset in
+`domain/feel`); they read an AgentCase file (tasks in phase sub-processes) and a foreign one (tasks anywhere) alike, through one index of the
+document (`profile/walk.ts`). **The default process holds none of these elements, so every figure of the 107 fixtures is unchanged**; only the export
+header (F-B61) and the BPSim of boundary rework are new bytes in an export. Each element has a reader / writer / round-trip test (write → parse →
+write byte-identical, same view) and a test of what it feeds (`app/tests/domain/process/profile/`, `tests/domain/feel/`); the documents validate
+against the OMG XSDs + `ac:` XSD + profile.
+
+| Item | Built | Feeds |
+|---|---|---|
+| F-B40 inputs, traceability | `ioSpecification` + `dataInputAssociation` writer (`linkInput`), `trace.ts`: upstream / downstream, impact, orphans, missing inputs, "traceability complete" per norm (DO-178C, DO-254, ISO 26262, IEC 62304, IEC 61508, EN 50128, EN 50716, ECSS) | views and check (domain) |
+| F-B41 data stores | `dataStore` + `ac:tool` (ref, integration, hosting), references, read / write associations | tools and integration per activity, "agent blocked: no API to its data store" (no API, MCP or CLI), Knowledge Hub curation load |
+| F-B42 states | `dataState`, `ac:requiresState`, `isCollection` | gate check (inputs at the required state or beyond, order draft → reviewed → approved → baselined), evidence count (a collection counts its volume) |
+| F-B43 types | `itemDefinition` (kind read from its name / structure: document, code, testSuite, model, record, dataset), `import` | token profile code / prose |
+| F-B44 multi-instance (D-B21) | `multiInstanceLoopCharacteristics` + `ac:volume` | **figure**: effort per item × items (`profile/effort.ts`, applied in `viewsCatalogue.ts`) |
+| F-B45 timers | ISO 8601 durations / cycles (`profile/duration.ts`), cadence, waits, service levels | views (cadence days, waiting days per phase, SLA days) |
+| F-B46 bounded loops | `standardLoopCharacteristics loopMaximum testBefore` | **figure**: a rework loop without `internalIterations` takes the loop maximum of its agent activity |
+| F-B47 boundary events | error, timer, escalation, compensation, message, signal; interrupting or not; BPSim probability of a boundary rework path on export, read back when `ac:rework` is absent (cost share 0) | rework loops (B5), SLA view, escalation check ("no Accountable") |
+| F-B48 definitions | root `error`, `escalation`, `signal`, `message` | unresolved and unused references |
+| F-B49 event sub-processes | `subProcess triggeredByEvent` + `ac:frequency` (no longer read as a phase; at the top of the process its work joins Cross-cutting) | **figure**: effort × occurrences |
+| F-B50 compensation | `isForCompensation` handler, compensation boundary event, association, new `ac:changeFailure probability` (XSD, optional, 1.x rule) | **figure**: handler effort × change-failure rate; the model's change-failure rate (view) |
+| F-B51 conditional scope (D-B22) | exclusive / inclusive gateways, FEEL `conditionExpression` (`xsi:type tFormalExpression`, FEEL language URI), default flows; `domain/feel`: hand-written scanner, parser and evaluator (no `eval`, length and depth capped; unary tests for the DMN tables of B7b); case context `domain/scopeRules.ts` (industry, norms, industries, regInclude, phasesOff, lifecycle, values, checked) | **figure**: the branch not taken (its target, the single-entry path after it, the tasks of sub-processes on it) leaves the selection; an undecidable condition is taken and reported |
+| F-B52 library | global tasks, global processes (no pool), `callActivity` | **figure**: a call counts its entry's effort; `withLibrary(product, common)` gives a product the common entries it calls (its own entry wins) |
+| F-B53 task types (D-B23) | `scriptTask` → Script, `sendTask` / `receiveTask` → Send / Receive, `businessRuleTask` → BusinessRule (also when written by AgentCase) | **figure**: no AI saving on Script (agent share 0); hand-offs counted (view) |
+| F-B54 assignment, lanes | `resourceParameter`, `resourceParameterBinding`, `resourceAssignmentExpression`; `partitionElementRef` on the role lanes of the organisation view; `formalOrganisationView`: each phase holds its own lane references | assignment view, binding check |
+| F-B55 / F-B56 interfaces | pools, `participantMultiplicity`, `messageFlow` + `ac:handoffCost` | interfaces per pool, hand-offs per activity, coordination hours (× multiplicity of the other side) |
+| F-B57 conversations | `conversationView`: one `conversation` per pair of pools, `conversationLink`s | view (generated) |
+| F-B58 annotations | `textAnnotation` + `association`, `withNotes` (for the audit export of B7) | notes per element |
+| F-B59 diagrams | `allViews`: role view first, organisation view (second lane set of the process, own `BPMNDiagram`), one diagram per phase; the reader draws the first diagram only | views |
+| F-B60 colours | `colourBy(scope / type / authority)`: BPMN-in-Color on the shapes (default theme's chart colours), legend annotation; reads `bioc:` too | export option (domain) |
+| F-B61 header | `exporter`, `exporterVersion`, `targetNamespace`, `bpmn:extension` for `ac:`, `isExecutable="false"` `processType="None"` on every export (idempotent) | — |
+| F-B11 foreign | `importKeep.ts`: root definitions, the events / gateways / flows / data / annotations of units mapped to one phase (references renamed with the tasks), black-box pools and their message flows, vendor extensions of the tasks; prefixes rewritten to the case's (`importAdopt.ts`); `applyImport` returns what it kept and dropped by kind | pass-through |
+
+**Not done in B5b.** (1) No screen yet: the views, checks and export options above are domain functions (the Process section, the export dialog
+and the Section Dependencies page are B6's area); the hand-off cost, cadence, waits, change-failure rate and token profile are views, not engine
+figures (Model Engine DORA, factory velocity and token profile keep their coefficients). (2) The default process does not link the SDLC chain with
+inputs yet: doing so changes the default document of every case (sizes, the migration output); the trace graph is ready for it. (3) `withLibrary` is
+not called by the portfolio's effective case: a product override is written back as a whole document by the controllers, which would copy the
+common entries into the product (the override split of § 16.8 comes first). (4) The import report screen does not show the kept / dropped counts
+(`applyImport(...).kept`); foreign content in an unmapped lane or crossing phases is dropped and counted. (5) The tool catalogue proposals by type
+(F-B43) and the operational-audit feeds (F-B55) wait for B7.
 
 ## 18. Out of scope
 
