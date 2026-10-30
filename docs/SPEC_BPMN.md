@@ -566,12 +566,15 @@ these. Portfolio: the process follows the override commands of spec F6–F9.
 | B7 | Audit layer (§ 15): tool catalogue, `ac:audit` elements and `domain/audit`, Audit section, audit workbook, audit report, explicit calibration | Round trip with audit data; calibration log; axe clean | 2 d | 3 / 5 | B4, B6b | Curating a neutral, dated tool catalogue (needs the owner's review) |
 | B7b | DMN decisions (F-B62) and the optional CMMN export of the run phase (F-B63) | DMN round trip; evaluator tests per hit policy | 1.5 d | 3 / 5 | B5b | DMN hit policies and the shared FEEL subset |
 | B8 | Release: guide, DEVIATIONS (if any), CHANGELOG, version bump | All gates green | 0.5 d | 1 / 5 | all | — |
+| B9a | Transformation programme process derived from today's keys; one timing owner per programme activity (§ 19) | 107 fixtures identical; parallel-run 40/40; excel-compat 67/67 | 2 d | 4 / 5 | B8 | Unifying the Gantt, cost-model and engine timings without moving a figure |
+| B9b | Timing conflicts resolved (D-B27…D-B31); labour costs of training, coaching, governance from resources; opt-in new costs | Hand-computed reference tests; deviations recorded | 2 d | 4 / 5 | B9a | Figures move: each change explained and recorded |
+| B9c | Programme values stored in the BPMN document (schema v4) | All round trips; v3 → v4 identical | 2 d | 5 / 5 | B9b | Second schema migration across every persistence path |
 
 Durations are **elapsed working days with the agent workflow** used so far (parallel agents in worktrees, full local gates, a PR per
 phase merged on green CI, the owner's review of each delivery), with an uncertainty of about ±50 %. Difficulty: 1 = routine,
 5 = touches the core of the application (store, undo, persistence) with strict parity.
 
-- **Total**: about 19 days of work. **Critical path** B0 → B1 → B2 → B3 → B5 → B5b → B7b → B8: about 12 days, because B4, B6, B6b and B7
+- **Total**: about 19 days of work for B0–B8, plus about 6 days for the transformation programme (B9a–B9c, § 19). **Critical path** B0 → B1 → B2 → B3 → B5 → B5b → B7b → B8: about 12 days, because B4, B6, B6b and B7
   run in parallel once B3 is merged (B7 also waits for B6b).
 - **Order of magnitude for a single senior developer without agents**: three to four months for the same scope and gates.
 - **Hardest phase: B3** (5 / 5). It switches the case to the native XML document; every surface that reads the scope moves at once.
@@ -1002,3 +1005,96 @@ common entries into the product (the override split of § 16.8 comes first). (4)
 Executing processes (tokens, timers, messages): timers, events and conditions are read as parameters and rules, never run. Process
 mining, choreography diagrams, collaborative real-time editing, BPMN 1.x or XPDL import (a later converter may be considered). DMN and
 CMMN are in scope only as described in § 17.8.
+
+## 19. Transformation programme process (phases B9a, B9b, B9c)
+
+### 19.1 Objective and today's gap
+
+The delivery process (§ 5) holds the SDLC work that agents reduce. The application also plans, costs and schedules the work of the
+**transformation itself**: engagement stages, pilot, setup lines, change management, Knowledge Hub, knowledge transfer, build and
+adoption ramp, AgentOps run, waves. Today these items have a cost without a timing of their own, or a timing without a cost, and some
+have **several owners for one figure**:
+
+| # | Conflict today | Owners |
+|---|---|---|
+| T1 | Setup duration | engine spreads the setup over a fixed 6 months (`time/kernel.ts`, `setupProfileMonths: 6`); the Gantt "Agentic Build" bar uses the input `setupDuration` (default 12); wave capacity and the cost model use the 6 |
+| T2 | Pilot placement and duration | cost model from the product's month 1, overlapping the setup; Gantt and engagement stages "Pilot & Prove" before the build (`rmD4`, 6 weeks); pilot sizing `pilotWeeks` + 2 × `pilotBreakin` (12 + 4 weeks) |
+| T3 | Knowledge Hub setup timing (one cost, three clocks) | Gantt `khSetupDays` after onboarding; consolidation `ktLeadMonths` before month 0; engine inside the 6-month setup profile |
+| T4 | Engagement stages listed twice | 5 stages in `frame/onboarding.ts` (`STAGES`), 4 hard-coded in `verifyB/ganttProgram.ts` |
+| T5 | Coaching counted twice | `setupCoaching` setup line and the coaching curve (`coachY1`, `coachCruise`), the latter outside the euro result |
+
+The objective: a second process, **"Transformation programme"**, in the case's single BPMN document (D-B1 / D-B26), where each
+programme activity holds **one** duration, placement, set of roles and cost rule that every surface reads (Gantt, cost model, engine,
+waves, report).
+
+### 19.2 Inventory: what becomes a programme activity
+
+| Activity | Today | Level | Cost rule (§ 19.3) |
+|---|---|---|---|
+| Engagement stages: Discover, Calibrate, Validate, Pilot & Prove, Decide & Scale (gates) | `rmStart`, `rmD1..4`; `frame/onboarding.ts`, `verifyB/ganttProgram.ts` | case | resources, opt-in (new cost) |
+| Pilot | `pilotFte`, `pilotWeeks`, `pilotBreakin`; `tune/program.ts` `pilotSizing` | per product | resources (parity) |
+| Setup: tooling and infrastructure | `setupTooling`; `tuneB/setup.ts` `setupBreakdown` | per product | non-labour cost item |
+| Setup: training | `setupTraining` | per product | resources (deviation) |
+| Setup: coaching, with the coaching curve | `setupCoaching`, `coachY1`, `coachCruise` | per product | resources (deviation, one owner) |
+| Setup: governance | `setupGov` | per product | resources (deviation) |
+| Change management (readiness) | `hriQ0..17`; `convChangeCost` | per product | engine formula kept, shown on a role |
+| Knowledge Hub setup | `khSetupBase`, `khA0..8`, `khTargetCC`, `khSetupDays`; `khSetupCost` | per product, common hub | resources from the formula's days (parity) |
+| Knowledge transfer preparation | `knowledge.ktLeadMonths`; `portfolio/knowledge.ts` | per product | same amount as the hub setup row, never added |
+| Knowledge Hub run: curation, infrastructure | `khCurationFTE`, `khInfraMonthly`; `khRunAnnual` | per product, infra shared | curation: resources; infra: non-labour |
+| Agentic build and adoption ramp (go-live) | `setupDuration`, S-curve, milestones L1…L4 | per product | engine result, the activity displays it |
+| AgentOps run | `runTeamSizing`, `runTeamCost` | per product | engine result, the activity displays it |
+| Waves | `portfolio.waves`, `resolveSchedule` | per wave | container (sub-process), sum of its products |
+| Value tracking | `plannedQuarters`, `trackStatus` | case | resources, opt-in (new cost) |
+| Risk mitigations and AI Act obligations | `RISK_REGISTER`, `AIACT_TIERS` | case | resources, opt-in (new cost) |
+| Audit / discovery interviews (§ 15) | audit header | case | resources, opt-in (new cost) |
+
+**Not programme activities**: parameters and coefficients (S-curve, maturity bounds, discount rate, horizon, hub allocation mode;
+`maxConcurrentSetups` becomes a lane capacity); results (FTE before / after, vFTE, KT days avoided, risk scores, stress, verdict); the
+agent factory (`fm*`, a simulation of the delivery process, which belongs to the delivery BPMN as an event log); governance gates and
+maturity transitions (gateways and milestones of the delivery process). Not found in the application and possible later additions:
+hypercare, decommissioning, licence procurement and integration work as their own items.
+
+### 19.3 Cost of a programme activity
+
+- **Labour → derived from resources**, like the SDLC: effort (days) × role × the same rate card and location mix. A rate change moves
+  delivery and programme consistently.
+- **Non-labour → cost items** on the activity (licences, infrastructure, tokens): amounts, not derived.
+- **Engine-computed → displayed, never recomputed**: the adoption ramp, AgentOps sizing and change management keep their single owner in
+  `src/domain`; the activity references it.
+- **No AI gain** on a programme activity (it is the cost of the transformation, not work agents reduce).
+- **Parity classes**: pilot, hub setup, hub run and AgentOps keep today's figures exactly; training, coaching and governance change
+  (recorded in DEVIATIONS.md); stages, value tracking, AI Act obligations and audit interviews are new costs, **off by default**.
+
+### 19.4 Functional requirements
+
+- **F-B64** — The case's BPMN document holds a second participant "Transformation programme" (`ac:programme="true"`), with lanes from
+  the operating-model roles (`tune/opmodel.ts`: orchestrator, AI reviewer, preceptor, agent architect, FinOps, Design Authority, AI
+  Office lead) and the organisation model (§ 16).
+- **F-B65** — Each programme activity has one duration and one placement (relative to the case start, the product's month 0 or another
+  activity), read by the Gantt, the cost model, the waves, the engine's monthly profile and the report (conflicts T1–T5 resolved).
+- **F-B66** — Message flows link the two processes (hub ready → agents enabled; knowledge transfer done → the product's wave starts;
+  pilot decision → scale).
+- **F-B67** — Per-product activities are multi-instance over the products of the wave (D-B21); waves are sub-processes with their
+  dependencies (`start` / `setupEnd` + lag) and the transformation-team capacity on the lane.
+- **F-B68** — Cost per § 19.3; the engine and the cost model read one monthly profile built from the activities.
+- **F-B69** — RACI (§ 16), audit (§ 15) and export (§ 4) work on programme activities as on delivery activities; the export offers
+  delivery only, programme only, or both.
+
+### 19.5 Phases
+
+| Phase | Content | Gate | Duration | Difficulty |
+|---|---|---|---|---|
+| B9a | Programme process **derived** from today's keys (like the B6b teams); one timing owner per activity for the Gantt, cost model and stages; the two stage lists merged; message flows; export | 107 fixtures identical; parallel-run 40/40; excel-compat 67/67; Gantt and cost-model surfaces read one owner | 2 d | 4 / 5 |
+| B9b | Conflicts T1–T5 resolved by the decisions below; training, coaching and governance derived from resources; opt-in new costs | Hand-computed reference tests; each changed figure recorded in DEVIATIONS.md | 2 d | 4 / 5 |
+| B9c | Stored values move into the document (schema v4 migration), keys removed, views derived | All persistence round trips; v3 → v4 open → save → open identical | 2 d | 5 / 5 |
+
+### 19.6 Decisions to take
+
+| # | Question | Options | Recommendation |
+|---|---|---|---|
+| D-B27 | Setup duration (T1) | (a) the engine's 6 months everywhere; (b) the `setupDuration` input everywhere, the engine spreads over it; (c) per setup line, from its activity | **(c)**, which reduces to (b) when lines share one duration |
+| D-B28 | Pilot placement (T2) | (a) before the build (Pilot & Prove); (b) from month 1 overlapping the setup | **(a)**: the pilot proves before scaling; its cost moves earlier |
+| D-B29 | Knowledge Hub setup timing (T3) | (a) `ktLeadMonths` before the product's month 0; (b) `khSetupDays` after onboarding; (c) inside the setup profile | **(a)** for the per-product part, the common hub once before the first wave |
+| D-B30 | Coaching (T5) | (a) one coaching activity, curve-based, in the euro result; (b) keep the setup line, curve informative | **(a)** |
+| D-B31 | New costs (stages, value tracking, AI Act, audit interviews) | (a) opt-in, off by default; (b) on by default | **(a)**: no figure moves without a choice |
+| D-B32 | Where the programme lives | (a) second participant in the same document; (b) a separate document | **(a)** (D-B26) |
