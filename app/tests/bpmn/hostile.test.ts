@@ -65,11 +65,11 @@ describe('BPMN B0 — size and element-count limits (generated files)', () => {
     writeFileSync(file, doc(`<bpmn:documentation>${'x'.repeat(5 * 1024 * 1024)}</bpmn:documentation>\n`));
     expect(codes(validate([file], ['--no-schema']).results[0])).toEqual(['too-large']);
   });
-  it('a file with more than 20,000 elements is refused, one at the limit is accepted', () => {
+  it('a file with more than 100,000 elements is refused, one at the limit is accepted (both under 5 MB)', () => {
     const tasks = (n: number) => Array.from({ length: n }, (_, i) => `<bpmn:task id="t${i}"/>\n`).join('');
     const over = join(dir, 'too-many.bpmn'), at = join(dir, 'at-limit.bpmn');
-    writeFileSync(over, doc(tasks(20000 - 1)));   // + definitions + process = 20,001
-    writeFileSync(at, doc(tasks(20000 - 2)));
+    writeFileSync(over, doc(tasks(100000 - 1)));   // + definitions + process = 100,001
+    writeFileSync(at, doc(tasks(100000 - 2)));
     const { results } = validate([over, at], ['--no-schema']);
     expect(results.map(codes)).toEqual([['too-many-elements'], []]);
   });

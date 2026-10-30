@@ -32,8 +32,9 @@ check should add real exports next to them.
 ## Hostile files (`hostile/`, F-B10)
 
 Each one must be refused by the reader, or neutralised in the case of markup in text. `hostile.test.ts` pins the error codes of
-`tools/bpmn-validate.mjs` for each file. The size and element-count limits are tested on files the test generates. They are not
-checked in.
+`tools/bpmn-validate.mjs` for each file; `reader-security.test.ts` (phase B2) runs the same files through the in-app reader, which refuses them
+before parsing with the same codes and messages (one rule table, `app/src/domain/process/securityRules.json`). The size and element-count limits
+are tested on files the tests generate. They are not checked in. `foreign-roundtrip.test.ts` (B2) checks that parse → write keeps every sample.
 
 | File | Attack | Expected |
 |---|---|---|

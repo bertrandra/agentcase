@@ -11,3 +11,7 @@ export { processFromCase, scopeKeysOf } from './fromCase';
 export { viewsOf, type ProcessViews } from './views';
 export type { CatalogueViews } from './viewsCatalogue';
 export type { ScopeKeys, ProcessCatalogue, CatArtefact, CatLoopPair, CatPhase, Norm } from './types';
+export { exportDocument, exportCaseText, isPartial, type ExportOptions } from './exportCase';
+export { collaborationDocument, collaborationText, prefixIds, type ProductInput } from './exportPortfolio';
+export { BPSIM_NS, readBpsim, type BpsimValues } from './bpsim';
+export { securityCheck, LIMITS, ID_PATTERN, RESERVED_IDS, type Finding, type Limits, type SecurityReport } from './security';

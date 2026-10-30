@@ -10,7 +10,8 @@ import { tagOf } from '../../scripts/lib/zones';
  */
 const walk = (d: string): string[] =>
   readdirSync(d).flatMap((f) => { const p = join(d, f); return statSync(p).isDirectory() ? walk(p) : /\.tsx?$/.test(f) ? [p] : []; });
-const MUST_TAG = ['src/domain', 'src/controllers', 'src/store/persistence/excel', 'src/store/persistence/report', 'src/store/persistence/html'];
+const MUST_TAG = ['src/domain', 'src/controllers', 'src/store/persistence/excel', 'src/store/persistence/report', 'src/store/persistence/html',
+  'src/store/persistence/bpmn'];
 const read = (f: string): string => readFileSync(f, 'utf8');
 const all = ['src/domain', 'src/controllers', 'src/store'].flatMap(walk);
 const required = all.filter((f) => MUST_TAG.some((m) => f.startsWith(`${m}/`)) || /^src\/store\/(selectionHooks\w*|\w*Hooks)\.ts$/.test(f));

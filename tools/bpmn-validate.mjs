@@ -4,7 +4,7 @@
 //   node tools/bpmn-validate.mjs [--json] [--strict] [--no-schema] file.bpmn...
 // Per file, in this order:
 //   1. security (F-B10), on the raw text, before any XML parser sees it: size ≤ 5 MB; no <!DOCTYPE, no <!ENTITY, no processing instruction
-//      other than the XML declaration; depth ≤ 64; ≤ 20,000 elements; every `id` attribute matches ID_PATTERN and is not a reserved name.
+//      other than the XML declaration; depth ≤ 64; ≤ 100,000 elements; every `id` attribute matches ID_PATTERN and is not a reserved name.
 //      A file that fails here is NOT handed to xmllint. Text that looks like markup (names, documentation) is a warning, not an error
 //      (F-B10: imported text is never rendered as HTML, so it is neutralised, not refused).
 //   2. schema: xmllint --noout --nonet --schema docs/bpmn/agentcase-bpmn-validate.xsd (no entity expansion, no network).
@@ -21,11 +21,13 @@ export const SCHEMA = resolve(root, 'docs/bpmn/agentcase-bpmn-validate.xsd');
 export const AC_XSD = resolve(root, 'docs/bpmn/agentcase-bpmn-1.0.xsd');
 export const AC_NS = 'https://agentcase.app/schema/bpmn/1.0';
 export const BPMN_NS = 'http://www.omg.org/spec/BPMN/20100524/MODEL';
-export const LIMITS = { bytes: 5 * 1024 * 1024, depth: 64, elements: 20000 };
-/** The safe id pattern of F-B10 (the reader of phase B2 applies the same one). */
-export const ID_PATTERN = /^[A-Za-z_][A-Za-z0-9_.-]{0,127}$/;
-export const RESERVED_IDS = new Set(['__proto__', 'prototype', 'constructor']);
-const MARKUP = /&lt;\s*[A-Za-z!/?]|&#0*60;|&#x0*3c;|javascript:/i;
+/** The F-B10 rule table, shared with the in-app reader (app/src/domain/process/security.ts reads the same JSON): one source for both. */
+export const RULES = JSON.parse(readFileSync(resolve(root, 'app/src/domain/process/securityRules.json'), 'utf8'));
+export const LIMITS = RULES.limits;
+/** The safe id pattern of F-B10 (the in-app reader applies the same one). */
+export const ID_PATTERN = new RegExp(RULES.idPattern);
+export const RESERVED_IDS = new Set(RULES.reservedIds);
+const MARKUP = new RegExp(RULES.markup, 'i');
 
 const NAME = '[A-Za-z_][\\w.:-]*';
 const ATTR = new RegExp(`(${NAME})\\s*=\\s*("[^"]*"|'[^']*')`, 'g');

@@ -12,3 +12,7 @@
 .ac-top .ac-file-panel { width: 180px; padding: 4px; }
 .ac-top .ac-file-panel button { display: flex; align-items: center; gap: 8px; width: 100%; padding: 6px 10px; font-size: var(--ac-font-size-base); color: var(--ac-ink); background: none; border: 0; border-radius: var(--ac-radius-sm); opacity: 1; }
 .ac-top .ac-file-panel button:hover, .ac-top .ac-file-panel button:focus-visible { color: var(--ac-hover-text); background: var(--ac-hover); }
+/* Export process (BPMN) dialog of the file menu (shell/BpmnExport.tsx) */
+.ac-bpmn-panel { width: 300px; }
+.ac-bpmn-title { margin: 0 0 .4rem; font-weight: var(--ac-font-weight-bold); color: var(--ac-text-heading); }
+.ac-bpmn-actions { display: flex; gap: 6px; margin-top: .5rem; }

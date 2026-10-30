@@ -1,6 +1,6 @@
 # AgentCase — Specification: the delivery process as a native BPMN 2.0 model (export and import)
 
-> Status: **specified; phases B0 and B1 built** (B0: extension XSD, official OMG schemas, `tools/bpmn-validate.mjs`, sample and hostile files, § 5.3; B1: domain only, `app/src/domain/process`, § 6.3). Decisions D-B1…D-B26 **adopted on 2026-10-30** (§ 12, § 15.6, § 16.7, § 17.9); D-B26: the case's BPMN
+> Status: **specified; phases B0, B1 and B2 built** (B0: extension XSD, official OMG schemas, `tools/bpmn-validate.mjs`, sample and hostile files, § 5.3; B1: domain only, `app/src/domain/process`, § 6.3; B2: reader / writer, security, round trip, BPSim, export from the File menu, § 5.5). Decisions D-B1…D-B26 **adopted on 2026-10-30** (§ 12, § 15.6, § 16.7, § 17.9); D-B26: the case's BPMN
 > document is the **only** stored form of the process, the organisation and the audit (§ 6.1). Scope: the TypeScript + React application in `app/`.
 > Related documents: [ARCHITECTURE.md](ARCHITECTURE.md), [DEVIATIONS.md](DEVIATIONS.md), [SPEC_MULTI_PRODUIT.md](SPEC_MULTI_PRODUIT.md).
 > Code rules unchanged: files ≤ 150 lines, no `any`, layers `ui → controllers → store → domain`, every write is an undoable
@@ -126,7 +126,7 @@ process* (a BPMN model shipped with the application); the case keys listed above
 - **F-B9** — After import, a report lists: counts by kind, activities whose parameters were defaulted, unmapped roles, ignored
   or pass-through elements, and the figures that changed (headline net, ROI, FTE after) with before / after values.
 - **F-B10** — Security: the reader refuses any `<!DOCTYPE`, entity declaration or processing instruction other than the XML
-  declaration (no XXE, no entity expansion), caps file size (5 MB), element count (20,000) and depth (64), accepts ids from a safe
+  declaration (no XXE, no entity expansion), caps file size (5 MB), element count (100,000; raised from 20,000 in B2) and depth (64), accepts ids from a safe
   pattern only, and never renders imported text as HTML.
 
 ### 4.4 Round trip and pass-through
@@ -246,6 +246,42 @@ Two rules of the OMG schema that the profile follows (found while writing the XS
 Effort and rework probabilities can also be written as BPSim 2.0 parameters (`bpsim:BPSimData`: processing time, probability on
 sequence flows, resource quantity) so that simulation tools read them (decision D-B5). AgentCase stays the owner of the values;
 BPSim is a second, derived encoding on export and an accepted input on import when `ac:` values are absent.
+
+### 5.5 Built in B2 (reader, writer, round trip, BPSim, export)
+
+- **Reader** `app/src/store/persistence/bpmn/read.ts` (`parseXml`, `parseBpmn`): F-B10 checks on the raw text first, by
+  `app/src/domain/process/security.ts`, whose rule table `securityRules.json` (limits, id pattern, reserved ids, markup pattern, codes) is the one
+  `tools/bpmn-validate.mjs` now reads: same codes and messages, file for file (`tests/bpmn/reader-security.test.ts` compares them on every hostile
+  and sample file; a refused file never reaches `DOMParser`). Then `DOMParser` (jsdom in the tests) and an immediate conversion to the B1 node tree;
+  the domain stays DOM-free. Two codes of its own: `not-xml` (not well-formed) and `not-bpmn` (root not `bpmn:definitions`, as the validator).
+  `controllers/bpmn.ts parseBpmnFile(file)` returns `{ doc, errors, warnings }` and writes nothing (import commands: B4).
+- **Writer**: B1's `serialize` (not `XMLSerializer`, which would not keep the written prefixes / attribute order byte for byte). Round trip:
+  export → parse → write is byte-identical on the 107 fixtures and on every product and the collaboration file of the three portfolio fixtures,
+  and `viewsOf(parse(export))` equals the version 2 keys (`tests/bpmn/roundtrip-fixtures-*.test.ts`, `export-portfolio.test.ts`). Foreign samples:
+  parse → write keeps every element, attribute, namespace, comment and vendor extension (`xmllint --c14n` of input and output identical; second pass
+  byte-identical; the Signavio sample, already canonical, byte-identical on the first pass) (`foreign-roundtrip.test.ts`).
+- **Export** (F-B1–F-B5): `exportDocument(case, { partial, bpsim, product })`, `collaborationDocument(products)`; File menu "Export process (BPMN)…"
+  (the Process section entry comes with B4). In-scope only (F-B3) removes out-of-scope activities (marked out, or in a phase switched off), their
+  deliverables, the flows touching them and their DI; it writes `ac:partial="true"` on the definitions and `partial="true"` on `ac:process`. A portfolio
+  exports the product shown, one file per product (each with `ac:product code name`), or one collaboration file: one pool per product, every id
+  prefixed with the product code (`P1_A017`), the pools stacked in one diagram. File name `AgentCase_process_<customer>_<product>_<date>.bpmn`.
+  Every export validates (OMG XSDs + `ac:` + BPSim XSD + profile, `tests/bpmn/export-validate.test.ts`).
+- **BPSim 2.0** (verified against the official schema, downloaded to `docs/bpmn/omg/BPSim-2.0.xsd`, SHA-256 in `SOURCES.md`, imported by
+  `agentcase-bpmn-validate.xsd` so it is validated strictly): namespace `http://www.bpsim.org/schemas/2.0`, one `bpmn:relationship type="BPSimData"`
+  (source and target: the processes) holding `bpsim:BPSimData` / `Scenario id="bpsim-agentcase"` with `ScenarioParameters baseTimeUnit="day"` and
+  one `ElementParameters elementRef` per activity (`TimeParameters/ProcessingTime` = effort), per rework flow (`ControlParameters/Probability`) and
+  per role whose team skill has FTE (`ResourceParameters/Quantity`). Constants only (`NumericParameter` for whole numbers, else `FloatingParameter`).
+  AgentCase's effort is relative: it is written in the scenario's base unit (day) and documented in the scenario description. The typed reader takes
+  BPSim processing time / probability only where `ac:activity effort` / `ac:rework probability` is absent, a BPSim probability on a flow without
+  `ac:rework` as `FlowView.probability`, and a resource quantity as `ActorView.quantity`. A re-export replaces the AgentCase scenario; other BPSim
+  data is pass-through.
+- **Measured** (headless Chromium, built bundle, median of 7): a 2,000-activity AgentCase file (2.1 MB): parse + map (security, DOMParser,
+  conversion, views) 195–275 ms (target < 300 ms); write 30–60 ms; export of a 2,000-activity document (BPSim + serialise) 60–65 ms, of the default
+  case 24–37 ms (target < 150 ms). Default-case export 552 KB (424 KB of process + BPSim scenario).
+- **Element limit raised to 100,000 (decision of 2026-10-30)**: an AgentCase file of 2,000 activities has about 25,300 elements and a
+  collaboration file of four full products about 26,400, over the original limit of 20,000. The limit is now 100,000 in `securityRules.json`
+  (reader and validator alike); the 5 MB cap, depth 64 and the DOCTYPE / entity / processing-instruction refusal are unchanged. Both round
+  trips pass with the default limits; a generated file of 100,001 elements (under 5 MB) is refused before the parser.
 
 ## 6. Data model
 
@@ -376,7 +412,7 @@ these. Portfolio: the process follows the override commands of spec F6–F9.
 |---|---|---|---|---|---|---|
 | B0 (**built in B0**) | This specification; extension XSD; sample foreign files | Decisions adopted | 0.5 d | 2 / 5 | — | Writing a correct extension XSD; collecting real files from bpmn.io, Camunda, Signavio |
 | B1 (**built in B1**) | `domain/process`: types, default process generator, derived views, layout | Views == v2 keys on 107 fixtures | 1 d | 3 / 5 | B0 | Exact parity of the derived views with today's keys |
-| B2 | BPMN reader / writer (DOMParser / XMLSerializer, no new dependency), node tree, security limits, pass-through, BPSim | Round trip byte-identical; XSD-valid; security tests | 1.5 d | 4 / 5 | B1 | Byte-identical round trip with foreign namespaces and vendor extensions |
+| B2 (**built in B2**) | BPMN reader / writer (DOMParser / XMLSerializer, no new dependency), node tree, security limits, pass-through, BPSim | Round trip byte-identical; XSD-valid; security tests | 1.5 d | 4 / 5 | B1 | Byte-identical round trip with foreign namespaces and vendor extensions |
 | B3 | Schema v3 + migration, `BPMN` key (native XML, node tree in the store), commands, existing scope sections on the model | 107 fixtures identical; parallel run 40/40; excel-compat 67/67 | 2 d | 5 / 5 | B2 | Touches store, undo, tab sync, autosave, Excel and every scope screen at once; node-level undo patches |
 | B4 | Process section: SVG diagram, activity table, actor panel, import (replace / merge, preview, report), export | axe clean; ui-parity 0 divergence | 1.5 d | 3 / 5 | B3 | Accessible diagram with a table alternative; the merge preview |
 | B5 | Custom activities / roles / agents in the engine; rework flows from the model; portfolio override; Excel / report / HTML outputs | Hand-computed reference tests; cross-surface equality | 2 d | 4 / 5 | B3 | New engine inputs without breaking the single-owner rule; deviations to record |
