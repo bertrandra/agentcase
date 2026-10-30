@@ -569,12 +569,13 @@ these. Portfolio: the process follows the override commands of spec F6–F9.
 | B9a | Transformation programme process derived from today's keys; one timing owner per programme activity (§ 19) | 107 fixtures identical; parallel-run 40/40; excel-compat 67/67 | 2 d | 4 / 5 | B8 | Unifying the Gantt, cost-model and engine timings without moving a figure |
 | B9b | Timing conflicts resolved (D-B27…D-B31); labour costs of training, coaching, governance from resources; opt-in new costs | Hand-computed reference tests; deviations recorded | 2 d | 4 / 5 | B9a | Figures move: each change explained and recorded |
 | B9c | Programme values stored in the BPMN document (schema v4) | All round trips; v3 → v4 identical | 2 d | 5 / 5 | B9b | Second schema migration across every persistence path |
+| B9d | Gantt, WBS, OBS / RAM and resource histogram from the programme process; MS Project XML export; Plan screen (§ 19.8) | One owner for Gantt, cost and histogram; Σ histogram × rate = programme labour cost; MSPDI schema-valid | 2.5 d | 3 / 5 | B9b | A documented mapping where no standard exists; the delivery histogram read from the engine, never recomputed |
 
 Durations are **elapsed working days with the agent workflow** used so far (parallel agents in worktrees, full local gates, a PR per
 phase merged on green CI, the owner's review of each delivery), with an uncertainty of about ±50 %. Difficulty: 1 = routine,
 5 = touches the core of the application (store, undo, persistence) with strict parity.
 
-- **Total**: about 19 days of work for B0–B8, plus about 6 days for the transformation programme (B9a–B9c, § 19). **Critical path** B0 → B1 → B2 → B3 → B5 → B5b → B7b → B8: about 12 days, because B4, B6, B6b and B7
+- **Total**: about 19 days of work for B0–B8, plus about 8.5 days for the transformation programme and its project views (B9a–B9d, § 19). **Critical path** B0 → B1 → B2 → B3 → B5 → B5b → B7b → B8: about 12 days, because B4, B6, B6b and B7
   run in parallel once B3 is merged (B7 also waits for B6b).
 - **Order of magnitude for a single senior developer without agents**: three to four months for the same scope and gates.
 - **Hardest phase: B3** (5 / 5). It switches the case to the native XML document; every surface that reads the scope moves at once.
@@ -1070,7 +1071,7 @@ Executing processes (tokens, timers, messages): timers, events and conditions ar
 mining, choreography diagrams, collaborative real-time editing, BPMN 1.x or XPDL import (a later converter may be considered). DMN and
 CMMN are in scope only as described in § 17.8.
 
-## 19. Transformation programme process (phases B9a, B9b, B9c)
+## 19. Transformation programme process (phases B9a, B9b, B9c, B9d)
 
 ### 19.1 Objective and today's gap
 
@@ -1180,3 +1181,55 @@ defines, describes or edits an activity.
   description, list or parameter field is duplicated on them.
 - **F-B72 — One owner.** A test fails if an activity parameter key is written by a screen other than the Process screen's parameter
   panel (or the BPMN import / editor), and if an activity description exists outside the document.
+
+### 19.8 Gantt, WBS, OBS and resource histogram (phase B9d)
+
+No standard converts BPMN into project-management views: BPMN (OMG, ISO/IEC 19510) models processes; the WBS (ISO 21511:2018, PMI
+practice standard), the OBS and the responsibility assignment matrix (PMI practice) and the resource histogram (a scheduling output,
+PMBOK / ISO 21502) model projects. The transformation programme is a project, so AgentCase applies a **documented, conventional mapping**
+from its BPMN document; every export says it is a derived view, not a standard conversion. The delivery process is recurring work: it gets
+a resource histogram, not a WBS.
+
+All four are **views computed from the document** (D-B1 / D-B26: nothing new is stored except an optional WBS code override); activities
+are still edited only in the Process screen (§ 19.7).
+
+| BPMN source | Project view |
+|---|---|
+| Programme participant → wave sub-processes → per-product multi-instance → tasks | WBS levels 1 programme, 2 wave (or engagement stage), 3 product, 4 work package |
+| Task duration and placement (one timing owner, F-B65), sequence and message flows | Gantt bars and dependencies (finish-to-start + lag) |
+| Milestone events, gates (gateways), decision points | Gantt milestones |
+| Organisation units → teams → roles (§ 16), operating-model roles, lanes | OBS |
+| RACI on tasks (§ 16, F-B36) | RAM = WBS × OBS |
+| Task effort × role over its duration (§ 19.3); delivery FTE per role per month from the engine | Resource histogram |
+
+- **F-B73 — Gantt.** One Gantt built from the programme process (bars from F-B65, dependencies from sequence and message flows, milestones
+  from events and gates, critical path), for the Product, Wave and Portfolio scopes. It replaces the hard-coded rows of
+  `verifyB/ganttProgram.ts` and the portfolio Gantt's own placement, which read the same owner. Each bar links to its activity ("Open in
+  Process").
+- **F-B74 — WBS.** Codes `1`, `1.2`, `1.2.3`, `1.2.3.4` derived deterministically from the tree (document order); an optional `ac:wbsCode`
+  overrides a code. WBS dictionary per work package: name, description, deliverable, Accountable (RACI), roles, effort, cost (§ 19.3),
+  duration, start, finish, predecessors. Phase- and wave-oriented with a named deliverable per work package (D-B35).
+- **F-B75 — OBS and RAM.** OBS = units → teams → roles of the organisation model, plus the operating-model roles and the agents (own
+  branch). RAM = WBS work packages × OBS roles with the RACI letters; the F-B36 checks (no Responsible, several Accountable) shown on it.
+- **F-B76 — Resource histogram.** Per month, stacked by role (or team, unit, location), in FTE (D-B34): programme activities (effort spread
+  over each activity's duration) and, as a second view, the delivery process (FTE before and after agents per role, read from the engine,
+  never recomputed). A capacity line per role or team (entry team FTE, transformation-team capacity, `maxConcurrentSetups`) and
+  over-allocation flags (diagnostics only: no automatic levelling, D-B37). One owner in `src/domain` (`domain/programme/histogram.ts`);
+  cross-surface test: Σ histogram × rate = labour cost of the programme activities in the cost model.
+- **F-B77 — Exports.** MS Project XML (MSPDI) of the programme: tasks with WBS code and outline level, durations, start and finish,
+  predecessors with lag, generic resources per role, assignments with work; opens in MS Project and ProjectLibre and imports into
+  Primavera (D-B36: export only). Results workbook: WBS, WBS dictionary, OBS, RAM and Histogram sheets. Report: Gantt, WBS and
+  histogram pages.
+- **F-B78 — Screens.** The Gantt section becomes the **Plan** context screen (§ 19.7) with tabs Gantt, WBS, OBS / RAM, Histogram: views
+  only, every row linking to its activity in the Process screen; keyboard and table alternatives for the charts (axe clean).
+
+| # | Question | Options | Recommendation |
+|---|---|---|---|
+| D-B34 | Histogram unit | (a) FTE per month; (b) person-days per month; (c) both, a toggle | **(c)**, FTE by default (the unit of the rest of the case) |
+| D-B35 | WBS orientation | (a) phase / wave-oriented with a named deliverable per work package; (b) strictly deliverable-oriented (ISO 21511 preference) | **(a)**: follows the programme process; the deliverable column keeps the ISO 21511 reading |
+| D-B36 | MS Project XML | (a) export only; (b) export and import back | **(a)**: AgentCase stays the source (D-B1); an import would be a second editor of the activities |
+| D-B37 | Over-allocation | (a) flags only; (b) automatic levelling that moves activities | **(a)**: no figure moves without an explicit edit in the Process screen |
+
+| Phase | Content | Gate | Duration | Difficulty |
+|---|---|---|---|---|
+| B9d | F-B73…F-B78: Gantt from the programme process, WBS, OBS / RAM, resource histogram, MSPDI export, workbook and report pages, Plan screen | Gantt, cost model and histogram read one owner; Σ histogram × rate = programme labour cost; MSPDI validated against Microsoft's MSPDI schema; axe clean; ui-parity 0 unrecorded | 2.5 d | 3 / 5 |
