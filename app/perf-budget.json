@@ -3,6 +3,7 @@
  "gzipMB": 1.5,
  "sizeRegressionMB": 3.08,
  "gzipRegressionMB": 1.12,
+ "bpmnPayloadMB": 0.32,
  "shellMs": 3000,
  "editMedianMs": 200,
  "editP95Ms": 500,
