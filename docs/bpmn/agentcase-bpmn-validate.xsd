@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+  Validation entry point: BPMN 2.0.2 + BPMN DI (the official OMG schemas of omg/) together with the AgentCase extension (agentcase-bpmn-1.0.xsd).
+  Used by tools/bpmn-validate.mjs (xmllint - -noout - -nonet - -schema docs/bpmn/agentcase-bpmn-validate.xsd file.bpmn), after the F-B10 security
+  checks and before the check that every ac: name is declared. It declares nothing of its own.
+-->
+<xsd:schema xmlns:xsd="http://www.w3.org/2001/XMLSchema">
+  <xsd:import namespace="http://www.omg.org/spec/BPMN/20100524/MODEL" schemaLocation="omg/BPMN20.xsd"/>
+  <xsd:import namespace="https://agentcase.app/schema/bpmn/1.0" schemaLocation="agentcase-bpmn-1.0.xsd"/>
+</xsd:schema>

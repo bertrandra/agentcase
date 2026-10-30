@@ -1,0 +1,480 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+  AgentCase BPMN extension, version 1.0 (docs/SPEC_BPMN.md § 5.2, § 15, § 16, § 17).
+  Namespace https://agentcase.app/schema/bpmn/1.0, prefix `ac`.
+
+  Where the ac: content goes in a BPMN 2.0.2 file
+  - Global ELEMENTS go in `bpmn:extensionElements` (BPMN: <xsd:any namespace="##other" processContents="lax"/>).
+  - Global ATTRIBUTES go on BPMN elements (BPMN: tBaseElement and tDefinitions carry <xsd:anyAttribute namespace="##other" processContents="lax"/>).
+  - `bpmn:definitions` has NO extensionElements in the OMG schema, so the document-level elements (auditHeader, toolCatalog, orgUnit,
+    team) are written in the extensionElements of the `bpmn:collaboration` (every AgentCase export has one: one pool per process),
+    `ac:process` and `ac:product` in each `bpmn:process`. The schema does not constrain the position; the B2 reader checks it.
+
+  Strictness
+  - "lax" means: an element or attribute validates strictly when the schema in force declares it, and is skipped otherwise. With this schema
+    loaded (docs/bpmn/agentcase-bpmn-validate.xsd imports it next to BPMN20.xsd), every DECLARED ac: element / attribute is checked strictly
+    (types, required attributes, no unknown attribute or child: no ac: type here has a wildcard).
+  - An UNDECLARED ac: name would still be skipped by lax processing; tools/bpmn-validate.mjs closes that gap by refusing any ac: element
+    or attribute whose name is not a global declaration of this schema (children of ac: elements are covered by their parent's content model).
+  - References between AgentCase elements that must resolve inside the document use xsd:IDREF (checked by the validator); references to
+    things that may be absent from an export (tool catalogue, teams of a filtered audit) are plain tokens, checked by the importer.
+
+  Compatibility rule: 1.x only ever ADDS optional attributes or elements. A breaking change is a new namespace (…/bpmn/2.0).
+-->
+<xsd:schema xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:ac="https://agentcase.app/schema/bpmn/1.0"
+            targetNamespace="https://agentcase.app/schema/bpmn/1.0" elementFormDefault="qualified" attributeFormDefault="unqualified"
+            version="1.0">
+
+  <!-- ===================================================================== simple types -->
+  <xsd:simpleType name="tText"><xsd:restriction base="xsd:string"><xsd:maxLength value="4000"/></xsd:restriction></xsd:simpleType>
+  <xsd:simpleType name="tName"><xsd:restriction base="xsd:token"><xsd:minLength value="1"/><xsd:maxLength value="200"/></xsd:restriction></xsd:simpleType>
+  <xsd:simpleType name="tKey">
+    <xsd:annotation><xsd:documentation>A code such as a phase id (L0, V3, Cross-cutting), a catalogue id (A017, R001, jira) or a team skill.</xsd:documentation></xsd:annotation>
+    <xsd:restriction base="xsd:token"><xsd:pattern value="[A-Za-z0-9_][A-Za-z0-9_.:/+ ()-]{0,79}"/></xsd:restriction>
+  </xsd:simpleType>
+  <xsd:simpleType name="tNonNegDecimal"><xsd:restriction base="xsd:decimal"><xsd:minInclusive value="0"/></xsd:restriction></xsd:simpleType>
+  <xsd:simpleType name="tPercent"><xsd:restriction base="xsd:decimal"><xsd:minInclusive value="0"/><xsd:maxInclusive value="100"/></xsd:restriction></xsd:simpleType>
+  <xsd:simpleType name="tShare"><xsd:restriction base="xsd:decimal"><xsd:minInclusive value="0"/><xsd:maxInclusive value="1"/></xsd:restriction></xsd:simpleType>
+  <xsd:simpleType name="tActivityType">
+    <xsd:annotation><xsd:documentation>§ 4.2 and § 17.5. Human, Manual and Agent are today's three types (parity); the others come with the extended profile.</xsd:documentation></xsd:annotation>
+    <xsd:restriction base="xsd:token">
+      <xsd:enumeration value="Human"/><xsd:enumeration value="Manual"/><xsd:enumeration value="Agent"/><xsd:enumeration value="Review"/>
+      <xsd:enumeration value="Script"/><xsd:enumeration value="Send"/><xsd:enumeration value="Receive"/><xsd:enumeration value="BusinessRule"/>
+    </xsd:restriction>
+  </xsd:simpleType>
+  <xsd:simpleType name="tAiAuthority">
+    <xsd:restriction base="xsd:token">
+      <xsd:enumeration value="Assistance"/><xsd:enumeration value="Copilot"/><xsd:enumeration value="Supervised autonomous"/>
+      <xsd:enumeration value="Autonomous"/><xsd:enumeration value="Compliance"/>
+    </xsd:restriction>
+  </xsd:simpleType>
+  <xsd:simpleType name="tValueClass">
+    <xsd:restriction base="xsd:token">
+      <xsd:enumeration value="VA"/><xsd:enumeration value="NVA-N"/><xsd:enumeration value="NVA"/><xsd:enumeration value="VA+NVA"/><xsd:enumeration value="REG"/>
+    </xsd:restriction>
+  </xsd:simpleType>
+  <xsd:simpleType name="tActorKind"><xsd:restriction base="xsd:token"><xsd:enumeration value="role"/><xsd:enumeration value="agent"/></xsd:restriction></xsd:simpleType>
+  <xsd:simpleType name="tSourcing">
+    <xsd:restriction base="xsd:token"><xsd:enumeration value="internal"/><xsd:enumeration value="vendor"/><xsd:enumeration value="either"/></xsd:restriction>
+  </xsd:simpleType>
+  <xsd:simpleType name="tUnitType">
+    <xsd:restriction base="xsd:token">
+      <xsd:enumeration value="company"/><xsd:enumeration value="businessUnit"/><xsd:enumeration value="department"/>
+      <xsd:enumeration value="centreOfExcellence"/><xsd:enumeration value="vendor"/><xsd:enumeration value="offshoreCentre"/>
+      <xsd:enumeration value="nearshoreCentre"/><xsd:enumeration value="other"/>
+    </xsd:restriction>
+  </xsd:simpleType>
+  <xsd:simpleType name="tPeriod">
+    <xsd:restriction base="xsd:token">
+      <xsd:enumeration value="day"/><xsd:enumeration value="week"/><xsd:enumeration value="sprint"/><xsd:enumeration value="month"/>
+      <xsd:enumeration value="quarter"/><xsd:enumeration value="release"/><xsd:enumeration value="year"/><xsd:enumeration value="project"/>
+    </xsd:restriction>
+  </xsd:simpleType>
+  <xsd:simpleType name="tSource">
+    <xsd:restriction base="xsd:token">
+      <xsd:enumeration value="interview"/><xsd:enumeration value="toolExport"/><xsd:enumeration value="measurement"/>
+      <xsd:enumeration value="document"/><xsd:enumeration value="estimate"/>
+    </xsd:restriction>
+  </xsd:simpleType>
+  <xsd:simpleType name="tConfidence">
+    <xsd:restriction base="xsd:token"><xsd:enumeration value="low"/><xsd:enumeration value="medium"/><xsd:enumeration value="high"/></xsd:restriction>
+  </xsd:simpleType>
+  <xsd:simpleType name="tAuditStatus">
+    <xsd:restriction base="xsd:token"><xsd:enumeration value="planned"/><xsd:enumeration value="inProgress"/><xsd:enumeration value="closed"/></xsd:restriction>
+  </xsd:simpleType>
+  <xsd:simpleType name="tAiUse">
+    <xsd:restriction base="xsd:token"><xsd:enumeration value="none"/><xsd:enumeration value="pilot"/><xsd:enumeration value="production"/></xsd:restriction>
+  </xsd:simpleType>
+  <xsd:simpleType name="tLicence">
+    <xsd:restriction base="xsd:token">
+      <xsd:enumeration value="commercial"/><xsd:enumeration value="openSource"/><xsd:enumeration value="saas"/><xsd:enumeration value="onPremise"/>
+    </xsd:restriction>
+  </xsd:simpleType>
+  <xsd:simpleType name="tAiFeature">
+    <xsd:restriction base="xsd:token">
+      <xsd:enumeration value="none"/><xsd:enumeration value="assistant"/><xsd:enumeration value="codeGeneration"/>
+      <xsd:enumeration value="testGeneration"/><xsd:enumeration value="review"/><xsd:enumeration value="agent"/>
+    </xsd:restriction>
+  </xsd:simpleType>
+  <xsd:simpleType name="tIntegration">
+    <xsd:restriction base="xsd:token">
+      <xsd:enumeration value="api"/><xsd:enumeration value="webhook"/><xsd:enumeration value="cli"/><xsd:enumeration value="mcp"/>
+      <xsd:enumeration value="export"/><xsd:enumeration value="manual"/>
+    </xsd:restriction>
+  </xsd:simpleType>
+  <xsd:simpleType name="tHosting">
+    <xsd:restriction base="xsd:token">
+      <xsd:enumeration value="saas"/><xsd:enumeration value="onPremise"/><xsd:enumeration value="privateCloud"/><xsd:enumeration value="hybrid"/>
+    </xsd:restriction>
+  </xsd:simpleType>
+  <xsd:simpleType name="tLicenceList"><xsd:list itemType="ac:tLicence"/></xsd:simpleType>
+  <xsd:simpleType name="tAiFeatureList"><xsd:list itemType="ac:tAiFeature"/></xsd:simpleType>
+  <xsd:simpleType name="tIntegrationList"><xsd:list itemType="ac:tIntegration"/></xsd:simpleType>
+  <xsd:simpleType name="tHostingList"><xsd:list itemType="ac:tHosting"/></xsd:simpleType>
+  <xsd:simpleType name="tCapabilityList">
+    <xsd:annotation><xsd:documentation>Capability tokens of a tool (§ 15.2): Documentation Analysis Design Coding Review Test Security Release Compliance RunSupport Knowledge Planning, or a custom capability without spaces.</xsd:documentation></xsd:annotation>
+    <xsd:list itemType="xsd:NMTOKEN"/>
+  </xsd:simpleType>
+  <xsd:simpleType name="tYesNoLater">
+    <xsd:restriction base="xsd:token"><xsd:enumeration value="yes"/><xsd:enumeration value="no"/><xsd:enumeration value="later"/></xsd:restriction>
+  </xsd:simpleType>
+  <!-- B1 (docs/SPEC_BPMN.md § 6.3): the case marks that let the version 2 scope keys come back exactly from the document -->
+  <xsd:simpleType name="tRank"><xsd:restriction base="xsd:positiveInteger"/></xsd:simpleType>
+  <xsd:simpleType name="tOptionalSeq">
+    <xsd:annotation><xsd:documentation>A sequence number, or empty for a listed entry without a value (legacy phaseSeq null).</xsd:documentation></xsd:annotation>
+    <xsd:restriction base="xsd:token"><xsd:pattern value="[0-9]{0,9}"/></xsd:restriction>
+  </xsd:simpleType>
+  <xsd:simpleType name="tEditField">
+    <xsd:restriction base="xsd:token">
+      <xsd:enumeration value="agentSup"/><xsd:enumeration value="humanSup"/><xsd:enumeration value="effort"/><xsd:enumeration value="seq"/>
+    </xsd:restriction>
+  </xsd:simpleType>
+  <xsd:simpleType name="tEditFieldList"><xsd:list itemType="ac:tEditField"/></xsd:simpleType>
+  <xsd:simpleType name="tAll"><xsd:restriction base="xsd:token"><xsd:enumeration value="all"/></xsd:restriction></xsd:simpleType>
+  <xsd:simpleType name="tNone"><xsd:restriction base="xsd:token"><xsd:enumeration value="none"/></xsd:restriction></xsd:simpleType>
+  <xsd:simpleType name="tSeverity"><xsd:restriction base="xsd:integer"><xsd:minInclusive value="1"/><xsd:maxInclusive value="5"/></xsd:restriction></xsd:simpleType>
+
+  <!-- ===================================================================== global attributes (on BPMN elements) -->
+  <xsd:attribute name="inScope" type="xsd:boolean">
+    <xsd:annotation><xsd:documentation>On tasks, phase sub-processes and norm categoryValues: counted by the case (§ 3, F-B3). Absent = true.</xsd:documentation></xsd:annotation>
+  </xsd:attribute>
+  <xsd:attribute name="partial" type="xsd:boolean">
+    <xsd:annotation><xsd:documentation>On bpmn:definitions: the file holds the in-scope activities only (F-B3); refused as a replacement on import.</xsd:documentation></xsd:annotation>
+  </xsd:attribute>
+  <xsd:attribute name="regulatory" type="xsd:boolean"/>
+  <xsd:attribute name="norm" type="ac:tName">
+    <xsd:annotation><xsd:documentation>On a regulatory task: the norm name (DO-178C…), equal to the value of the categoryValue it references.</xsd:documentation></xsd:annotation>
+  </xsd:attribute>
+  <xsd:attribute name="activityType" type="ac:tActivityType">
+    <xsd:annotation><xsd:documentation>Overrides the type read from the BPMN task kind (§ 4.2), e.g. on a plain bpmn:task.</xsd:documentation></xsd:annotation>
+  </xsd:attribute>
+  <xsd:attribute name="gate" type="xsd:boolean">
+    <xsd:annotation><xsd:documentation>On a userTask: a review / approval gate (§ 4.2), followed by an exclusive gateway.</xsd:documentation></xsd:annotation>
+  </xsd:attribute>
+  <xsd:attribute name="agent" type="xsd:IDREF">
+    <xsd:annotation><xsd:documentation>On a serviceTask: the bpmn:resource (ac:actor kind="agent") that performs it (§ 4.2, § 17.5).</xsd:documentation></xsd:annotation>
+  </xsd:attribute>
+  <xsd:attribute name="requiresState" type="ac:tName">
+    <xsd:annotation><xsd:documentation>On a gate, an approval or a gateway: the bpmn:dataState its input must have reached (F-B42).</xsd:documentation></xsd:annotation>
+  </xsd:attribute>
+  <xsd:attribute name="decisionRef" type="ac:tKey">
+    <xsd:annotation><xsd:documentation>On a businessRuleTask: the id of the DMN decision it applies (F-B62).</xsd:documentation></xsd:annotation>
+  </xsd:attribute>
+
+  <!-- ===================================================================== process model (§ 5.2) -->
+  <xsd:element name="process">
+    <xsd:annotation><xsd:documentation>In a bpmn:process: the case-level header of the process.</xsd:documentation></xsd:annotation>
+    <xsd:complexType>
+      <xsd:sequence>
+        <xsd:element name="unmatched" minOccurs="0" maxOccurs="unbounded">
+          <xsd:annotation><xsd:documentation>B1: an entry of a case list that no element carries (an unknown id, a repeat), with its position.</xsd:documentation></xsd:annotation>
+          <xsd:complexType>
+            <xsd:attribute name="list" type="ac:tKey" use="required"/>
+            <xsd:attribute name="rank" type="ac:tRank" use="required"/>
+            <xsd:attribute name="value" type="ac:tText" use="required"/>
+          </xsd:complexType>
+        </xsd:element>
+      </xsd:sequence>
+      <xsd:attribute name="caseSchema" type="xsd:positiveInteger" use="required"/>
+      <xsd:attribute name="catalogueVersion" type="ac:tKey"/>
+      <xsd:attribute name="partial" type="xsd:boolean" default="false"/>
+      <xsd:attribute name="containsAudit" type="xsd:boolean" default="false"/>
+      <xsd:attribute name="regInclude" type="xsd:boolean"/>
+      <xsd:attribute name="sdlcEdits" type="ac:tAll"/>
+      <xsd:attribute name="regEdits" type="ac:tAll"/>
+      <xsd:attribute name="rampSeq" type="ac:tNone"/>
+      <xsd:attribute name="skillMap" type="ac:tNone"/>
+    </xsd:complexType>
+  </xsd:element>
+
+  <xsd:element name="phase">
+    <xsd:annotation><xsd:documentation>In a phase bpmn:subProcess / adHocSubProcess: the phase code, its order and its role (phases.json).</xsd:documentation></xsd:annotation>
+    <xsd:complexType>
+      <xsd:attribute name="code" type="ac:tKey" use="required"/>
+      <xsd:attribute name="seq" type="xsd:nonNegativeInteger"/>
+      <xsd:attribute name="role" type="ac:tName"/>
+      <xsd:attribute name="crossCutting" type="xsd:boolean" default="false"/>
+      <xsd:attribute name="order" type="ac:tRank"/>
+      <xsd:attribute name="sdlc" type="xsd:nonNegativeInteger"/>
+      <xsd:attribute name="reg" type="xsd:nonNegativeInteger"/>
+      <xsd:attribute name="featureIds" type="xsd:NMTOKENS"/>
+      <xsd:attribute name="offRank" type="ac:tRank"/>
+      <xsd:attribute name="rampSeq" type="ac:tOptionalSeq"/>
+      <xsd:attribute name="rampRank" type="ac:tRank"/>
+    </xsd:complexType>
+  </xsd:element>
+
+  <xsd:element name="activity">
+    <xsd:complexType>
+      <xsd:attribute name="type" type="ac:tActivityType" use="required"/>
+      <xsd:attribute name="phase" type="ac:tKey" use="required"/>
+      <xsd:attribute name="seq" type="xsd:nonNegativeInteger"/>
+      <xsd:attribute name="effort" type="ac:tNonNegDecimal"/>
+      <xsd:attribute name="weight" type="ac:tNonNegDecimal"/>
+      <xsd:attribute name="value" type="ac:tValueClass"/>
+      <xsd:attribute name="capability" type="ac:tName"/>
+      <xsd:attribute name="aiAuthority" type="ac:tAiAuthority"/>
+      <xsd:attribute name="storyId" type="xsd:token"/>
+      <xsd:attribute name="regulatory" type="xsd:boolean" default="false"/>
+      <xsd:attribute name="order" type="ac:tRank"/>
+      <xsd:attribute name="scopeRank" type="ac:tRank"/>
+      <xsd:attribute name="edited" type="ac:tEditFieldList"/>
+      <xsd:attribute name="editRank" type="ac:tRank"/>
+    </xsd:complexType>
+  </xsd:element>
+
+  <xsd:element name="supervision">
+    <xsd:complexType>
+      <xsd:attribute name="human" type="ac:tPercent" use="required"/>
+      <xsd:attribute name="agent" type="ac:tPercent" use="required"/>
+      <xsd:attribute name="agent0" type="ac:tPercent"/>
+    </xsd:complexType>
+  </xsd:element>
+
+  <xsd:element name="rework">
+    <xsd:annotation><xsd:documentation>On the back sequenceFlow of a loop pair (loopPairs.json) or on an error boundary path (F-B47).</xsd:documentation></xsd:annotation>
+    <xsd:complexType>
+      <xsd:attribute name="probability" type="ac:tShare" use="required"/>
+      <xsd:attribute name="costShare" type="ac:tShare" use="required"/>
+      <xsd:attribute name="internalIterations" type="xsd:nonNegativeInteger"/>
+      <xsd:attribute name="pair" type="ac:tKey"/>
+      <xsd:attribute name="label" type="ac:tName"/>
+      <xsd:attribute name="order" type="ac:tRank"/>
+      <xsd:attribute name="note" type="ac:tText"/>
+      <xsd:attribute name="activityA" type="ac:tKey"/>
+      <xsd:attribute name="activityB" type="ac:tKey"/>
+      <xsd:attribute name="external" type="xsd:boolean" default="false"/>
+    </xsd:complexType>
+  </xsd:element>
+
+  <xsd:element name="norm">
+    <xsd:annotation><xsd:documentation>On the bpmn:categoryValue of a norm (its value is the norm name).</xsd:documentation></xsd:annotation>
+    <xsd:complexType>
+      <xsd:attribute name="industry" type="ac:tKey" use="required"/>
+      <xsd:attribute name="body" type="ac:tName"/>
+      <xsd:attribute name="scope" type="ac:tText"/>
+      <xsd:attribute name="count" type="xsd:nonNegativeInteger"/>
+      <xsd:attribute name="scopeRank" type="ac:tRank"/>
+    </xsd:complexType>
+  </xsd:element>
+
+  <xsd:element name="actor">
+    <xsd:annotation><xsd:documentation>On a bpmn:resource: a human role or an AI agent (§ 3, § 16.4).</xsd:documentation></xsd:annotation>
+    <xsd:complexType>
+      <xsd:attribute name="kind" type="ac:tActorKind" use="required"/>
+      <xsd:attribute name="teamSkill" type="ac:tKey"/>
+      <xsd:attribute name="sourcing" type="ac:tSourcing"/>
+      <xsd:attribute name="supervisedBy" type="xsd:IDREF"/>
+      <xsd:attribute name="description" type="ac:tText"/>
+      <xsd:attribute name="regulatory" type="xsd:boolean" default="false"/>
+      <xsd:attribute name="capability" type="ac:tName"/>
+    </xsd:complexType>
+  </xsd:element>
+
+  <!-- ===================================================================== organisation (§ 16) -->
+  <xsd:element name="raci">
+    <xsd:annotation><xsd:documentation>On an activity: convenience copy of its humanPerformer / performer / resourceRole (Accountable, Consulted, Informed).</xsd:documentation></xsd:annotation>
+    <xsd:complexType>
+      <xsd:attribute name="responsible" type="xsd:IDREFS" use="required"/>
+      <xsd:attribute name="accountable" type="xsd:IDREF"/>
+      <xsd:attribute name="consulted" type="xsd:IDREFS"/>
+      <xsd:attribute name="informed" type="xsd:IDREFS"/>
+    </xsd:complexType>
+  </xsd:element>
+
+  <xsd:element name="orgUnit">
+    <xsd:complexType>
+      <xsd:attribute name="id" type="xsd:ID" use="required"/>
+      <xsd:attribute name="name" type="ac:tName" use="required"/>
+      <xsd:attribute name="type" type="ac:tUnitType" use="required"/>
+      <xsd:attribute name="parent" type="xsd:IDREF"/>
+      <xsd:attribute name="location" type="ac:tName"/>
+      <xsd:attribute name="costCentre" type="ac:tKey"/>
+      <xsd:attribute name="sourcing" type="ac:tSourcing"/>
+    </xsd:complexType>
+  </xsd:element>
+
+  <xsd:element name="team">
+    <xsd:annotation><xsd:documentation>A team of an organisation unit; its lines have the shape of teamIn (skill, grade, location, FTE, pins).</xsd:documentation></xsd:annotation>
+    <xsd:complexType>
+      <xsd:sequence>
+        <xsd:element name="line" minOccurs="0" maxOccurs="unbounded">
+          <xsd:complexType>
+            <xsd:attribute name="skill" type="ac:tKey" use="required"/>
+            <xsd:attribute name="grade" type="ac:tKey"/>
+            <xsd:attribute name="location" type="ac:tName"/>
+            <xsd:attribute name="fte" type="ac:tNonNegDecimal" use="required"/>
+            <xsd:attribute name="pins" type="xsd:NMTOKENS"/>
+          </xsd:complexType>
+        </xsd:element>
+      </xsd:sequence>
+      <xsd:attribute name="id" type="xsd:ID" use="required"/>
+      <xsd:attribute name="name" type="ac:tName" use="required"/>
+      <xsd:attribute name="unit" type="xsd:IDREF" use="required"/>
+    </xsd:complexType>
+  </xsd:element>
+
+  <xsd:element name="product">
+    <xsd:annotation><xsd:documentation>In a product's bpmn:process: the teams serving the product (allocation) and its components.</xsd:documentation></xsd:annotation>
+    <xsd:complexType>
+      <xsd:sequence>
+        <xsd:element name="serves" minOccurs="0" maxOccurs="unbounded">
+          <xsd:complexType>
+            <xsd:attribute name="team" type="xsd:IDREF" use="required"/>
+            <xsd:attribute name="allocationPct" type="ac:tPercent" use="required"/>
+          </xsd:complexType>
+        </xsd:element>
+        <xsd:element name="component" minOccurs="0" maxOccurs="unbounded">
+          <xsd:complexType>
+            <xsd:attribute name="code" type="ac:tKey" use="required"/>
+            <xsd:attribute name="name" type="ac:tName" use="required"/>
+          </xsd:complexType>
+        </xsd:element>
+      </xsd:sequence>
+      <xsd:attribute name="code" type="ac:tKey" use="required"/>
+      <xsd:attribute name="name" type="ac:tName" use="required"/>
+      <xsd:attribute name="ownerUnit" type="xsd:IDREF"/>
+    </xsd:complexType>
+  </xsd:element>
+
+  <!-- ===================================================================== extended profile (§ 17) -->
+  <xsd:element name="volume">
+    <xsd:annotation><xsd:documentation>On a multi-instance activity: items per period, the cardinality the effort per item is multiplied by (F-B44).</xsd:documentation></xsd:annotation>
+    <xsd:complexType>
+      <xsd:attribute name="items" type="ac:tNonNegDecimal" use="required"/>
+      <xsd:attribute name="per" type="ac:tPeriod" use="required"/>
+      <xsd:attribute name="batchSize" type="xsd:positiveInteger"/>
+      <xsd:attribute name="source" type="ac:tSource"/>
+      <xsd:attribute name="date" type="xsd:date"/>
+    </xsd:complexType>
+  </xsd:element>
+
+  <xsd:element name="frequency">
+    <xsd:annotation><xsd:documentation>On an event sub-process (or its start event): how often it is triggered (F-B49).</xsd:documentation></xsd:annotation>
+    <xsd:complexType>
+      <xsd:attribute name="count" type="ac:tNonNegDecimal" use="required"/>
+      <xsd:attribute name="per" type="ac:tPeriod" use="required"/>
+      <xsd:attribute name="source" type="ac:tSource"/>
+      <xsd:attribute name="date" type="xsd:date"/>
+    </xsd:complexType>
+  </xsd:element>
+
+  <xsd:element name="handoffCost">
+    <xsd:annotation><xsd:documentation>On a messageFlow, a sendTask or a receiveTask: the coordination cost of one hand-off (F-B55).</xsd:documentation></xsd:annotation>
+    <xsd:complexType>
+      <xsd:attribute name="hours" type="ac:tNonNegDecimal"/>
+      <xsd:attribute name="costShare" type="ac:tShare"/>
+    </xsd:complexType>
+  </xsd:element>
+
+  <xsd:element name="tool" type="ac:tToolUse">
+    <xsd:annotation><xsd:documentation>A tool in use: on a dataStore (the repository it is, F-B41) or inside ac:audit (§ 15.3). `ref` is a catalogue id.</xsd:documentation></xsd:annotation>
+  </xsd:element>
+  <xsd:complexType name="tToolUse">
+    <xsd:attribute name="ref" type="ac:tKey" use="required"/>
+    <xsd:attribute name="version" type="ac:tName"/>
+    <xsd:attribute name="edition" type="ac:tName"/>
+    <xsd:attribute name="licenceCount" type="xsd:nonNegativeInteger"/>
+    <xsd:attribute name="hosting" type="ac:tHosting"/>
+    <xsd:attribute name="integration" type="ac:tIntegrationList"/>
+    <xsd:attribute name="aiFeatures" type="ac:tAiUse"/>
+    <xsd:attribute name="dataResidency" type="ac:tName"/>
+    <xsd:attribute name="ownerTeam" type="ac:tKey"/>
+    <xsd:attribute name="source" type="ac:tSource"/>
+    <xsd:attribute name="date" type="xsd:date"/>
+    <xsd:attribute name="confidence" type="ac:tConfidence"/>
+  </xsd:complexType>
+
+  <!-- ===================================================================== audit layer (§ 15) -->
+  <xsd:element name="auditHeader">
+    <xsd:complexType>
+      <xsd:sequence>
+        <xsd:element name="auditor" minOccurs="0" maxOccurs="unbounded">
+          <xsd:complexType>
+            <xsd:attribute name="name" type="ac:tName" use="required"/>
+            <xsd:attribute name="organisation" type="ac:tName"/>
+          </xsd:complexType>
+        </xsd:element>
+        <xsd:element name="interview" minOccurs="0" maxOccurs="unbounded">
+          <xsd:complexType>
+            <xsd:attribute name="code" type="ac:tKey" use="required"/>
+            <xsd:attribute name="role" type="ac:tName" use="required"/>
+            <xsd:attribute name="who" type="ac:tName"/>
+            <xsd:attribute name="date" type="xsd:date" use="required"/>
+          </xsd:complexType>
+        </xsd:element>
+      </xsd:sequence>
+      <xsd:attribute name="code" type="ac:tKey" use="required"/>
+      <xsd:attribute name="client" type="ac:tName"/>
+      <xsd:attribute name="scope" type="ac:tText"/>
+      <xsd:attribute name="status" type="ac:tAuditStatus" use="required"/>
+      <xsd:attribute name="asOf" type="xsd:date" use="required"/>
+    </xsd:complexType>
+  </xsd:element>
+
+  <xsd:element name="toolCatalog">
+    <xsd:annotation><xsd:documentation>The catalogue entries the case uses (F-B23…F-B26), written only with audit data (F-B33).</xsd:documentation></xsd:annotation>
+    <xsd:complexType>
+      <xsd:sequence>
+        <xsd:element name="tool" minOccurs="0" maxOccurs="unbounded">
+          <xsd:complexType>
+            <xsd:attribute name="code" type="ac:tKey" use="required"/>
+            <xsd:attribute name="name" type="ac:tName" use="required"/>
+            <xsd:attribute name="vendor" type="ac:tName"/>
+            <xsd:attribute name="category" type="ac:tName"/>
+            <xsd:attribute name="licence" type="ac:tLicenceList"/>
+            <xsd:attribute name="capabilities" type="ac:tCapabilityList" use="required"/>
+            <xsd:attribute name="aiFeatures" type="ac:tAiFeatureList"/>
+            <xsd:attribute name="integration" type="ac:tIntegrationList"/>
+            <xsd:attribute name="hosting" type="ac:tHostingList"/>
+            <xsd:attribute name="asOf" type="xsd:date"/>
+            <xsd:attribute name="clientSpecific" type="xsd:boolean" default="false"/>
+            <xsd:attribute name="retired" type="xsd:boolean" default="false"/>
+          </xsd:complexType>
+        </xsd:element>
+      </xsd:sequence>
+      <xsd:attribute name="asOf" type="xsd:date" use="required"/>
+    </xsd:complexType>
+  </xsd:element>
+
+  <xsd:element name="audit">
+    <xsd:annotation><xsd:documentation>On a task, a resource or a team's resource: the observations of the audit (F-B27, F-B33). Never a model parameter.</xsd:documentation></xsd:annotation>
+    <xsd:complexType>
+      <xsd:choice minOccurs="0" maxOccurs="unbounded">
+        <xsd:element ref="ac:tool"/>
+        <xsd:element name="observation">
+          <xsd:complexType>
+            <xsd:attribute name="name" type="ac:tKey" use="required"/>
+            <xsd:attribute name="value" type="ac:tText" use="required"/>
+            <xsd:attribute name="unit" type="ac:tName"/>
+            <xsd:attribute name="per" type="ac:tPeriod"/>
+            <xsd:attribute name="role" type="xsd:IDREF"/>
+            <xsd:attribute name="source" type="ac:tSource"/>
+            <xsd:attribute name="date" type="xsd:date"/>
+            <xsd:attribute name="confidence" type="ac:tConfidence"/>
+          </xsd:complexType>
+        </xsd:element>
+        <xsd:element name="painPoint">
+          <xsd:complexType>
+            <xsd:simpleContent>
+              <xsd:extension base="ac:tText">
+                <xsd:attribute name="severity" type="ac:tSeverity" use="required"/>
+                <xsd:attribute name="aiCandidate" type="ac:tYesNoLater"/>
+              </xsd:extension>
+            </xsd:simpleContent>
+          </xsd:complexType>
+        </xsd:element>
+        <xsd:element name="evidence">
+          <xsd:complexType>
+            <xsd:attribute name="name" type="ac:tName" use="required"/>
+            <xsd:attribute name="link" type="xsd:anyURI"/>
+            <xsd:attribute name="interview" type="ac:tKey"/>
+            <xsd:attribute name="confidence" type="ac:tConfidence"/>
+          </xsd:complexType>
+        </xsd:element>
+      </xsd:choice>
+      <xsd:attribute name="status" type="ac:tAuditStatus"/>
+      <xsd:attribute name="asOf" type="xsd:date"/>
+    </xsd:complexType>
+  </xsd:element>
+</xsd:schema>

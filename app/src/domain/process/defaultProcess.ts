@@ -1,0 +1,51 @@
+/** @calc-zone process-model */
+import { buildProcess } from './buildProcess';
+import { TODAYS_CATALOGUE } from './catalogue';
+import type { ProcessCatalogue } from './types';
+import type { XDocument, XElement } from './xml';
+import { indent } from './xmlWrite';
+
+const built = new WeakMap<ProcessCatalogue, XDocument>();
+/**
+ * The catalogue process (spec § 6.3): today's catalogues as a BPMN document, laid out and indented, without any case scope. Built once per catalogue.
+ * Phase B1 builds it from the JSON catalogues; from B2 on it is read from the shipped `catalog/defaultProcess.bpmn` (D-B9 retires the JSON).
+ */
+export function catalogueProcess(c: ProcessCatalogue = TODAYS_CATALOGUE): XDocument {
+  const hit = built.get(c);
+  if (hit) return hit;
+  const d = buildProcess(c), out: XDocument = { ...d, root: indent(d.root) };
+  built.set(c, out);
+  return out;
+}
+
+/** Rebuilds an element bottom-up with `fn`; unchanged subtrees keep their identity (so memoised views and undo patches stay small). */
+export function mapElements(e: XElement, fn: (e: XElement) => XElement): XElement {
+  let changed = false;
+  const children = e.children.map((c) => {
+    if (c.kind !== 'element') return c;
+    const n = mapElements(c, fn);
+    if (n !== c) changed = true;
+    return n;
+  });
+  return fn(changed ? { ...e, children } : e);
+}
+
+/** Orders items by an optional rank: unchanged when no item has one, else a stable sort by rank (items without one last). */
+export function byRank<T>(items: T[], rank: (t: T) => number | undefined): T[] {
+  if (!items.some((t) => rank(t) !== undefined)) return items;
+  const r = (t: T) => rank(t) ?? Number.MAX_SAFE_INTEGER;
+  return items.map((t, i) => ({ t, i })).sort((a, b) => r(a.t) - r(b.t) || a.i - b.i).map((x) => x.t);
+}
+
+/**
+ * How a case's ordered id list sits on the document: `ranks` (id → 1-based position) is null when the list is the natural order of its members;
+ * `extras` are the entries no element can carry (unknown ids, repeats), kept with their position so the list comes back exactly.
+ */
+export interface Placed { ranks: Map<string, number> | null; extras: { rank: number; value: string }[] }
+export function placeList(list: readonly string[], natural: readonly string[]): Placed {
+  const known = new Set(natural), ranks = new Map<string, number>(), extras: Placed['extras'] = [];
+  list.forEach((id, i) => { if (known.has(id) && !ranks.has(id)) ranks.set(id, i + 1); else extras.push({ rank: i + 1, value: id }); });
+  const nat = natural.filter((id) => ranks.has(id));
+  return { ranks: !extras.length && nat.every((id, i) => id === list[i]) ? null : ranks, extras };
+}
+export const ranksOf = (list: readonly string[], natural: readonly string[]): Map<string, number> | null => placeList(list, natural).ranks;

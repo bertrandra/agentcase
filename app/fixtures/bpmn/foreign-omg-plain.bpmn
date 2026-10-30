@@ -1,0 +1,144 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<semantic:definitions xmlns:semantic="http://www.omg.org/spec/BPMN/20100524/MODEL"
+    xmlns:xsd="http://www.w3.org/2001/XMLSchema"
+    id="_1275940932088" targetNamespace="http://www.example.org/incident-management"
+    expressionLanguage="http://www.w3.org/1999/XPath" typeLanguage="http://www.w3.org/2001/XMLSchema">
+  <semantic:itemDefinition id="_ticketItem" structureRef="xsd:string" itemKind="Information"/>
+  <semantic:message id="_problemMessage" name="Problem description" itemRef="_ticketItem"/>
+  <semantic:message id="_answerMessage" name="Answer"/>
+  <semantic:error id="_unresolvedError" name="Cannot be resolved" errorCode="UNRESOLVED"/>
+  <semantic:globalUserTask id="_globalFixInSoftware" name="Fix in software"/>
+  <semantic:dataStore id="_knowledgeBase" name="Known issues database" isUnlimited="true"/>
+  <semantic:collaboration id="C1275940932557">
+    <semantic:participant id="_customer" name="VIP customer" processRef="_customerProcess"/>
+    <semantic:participant id="_company" name="Software company" processRef="_companyProcess"/>
+    <semantic:messageFlow id="_mf1" name="Problem" sourceRef="_reportProblem" targetRef="_handleProblem" messageRef="_problemMessage"/>
+    <semantic:messageFlow id="_mf2" name="Answer" sourceRef="_explainSolution" targetRef="_receiveAnswer" messageRef="_answerMessage"/>
+  </semantic:collaboration>
+  <semantic:process id="_customerProcess" name="Customer" isExecutable="false">
+    <semantic:startEvent id="_c_start" name="Customer has a problem">
+      <semantic:outgoing>_c_f1</semantic:outgoing>
+    </semantic:startEvent>
+    <semantic:sendTask id="_reportProblem" name="Get problem report" messageRef="_problemMessage">
+      <semantic:incoming>_c_f1</semantic:incoming>
+      <semantic:outgoing>_c_f2</semantic:outgoing>
+    </semantic:sendTask>
+    <semantic:receiveTask id="_receiveAnswer" name="Receive answer" messageRef="_answerMessage">
+      <semantic:incoming>_c_f2</semantic:incoming>
+      <semantic:outgoing>_c_f3</semantic:outgoing>
+    </semantic:receiveTask>
+    <semantic:endEvent id="_c_end" name="Problem solved">
+      <semantic:incoming>_c_f3</semantic:incoming>
+    </semantic:endEvent>
+    <semantic:sequenceFlow id="_c_f1" sourceRef="_c_start" targetRef="_reportProblem"/>
+    <semantic:sequenceFlow id="_c_f2" sourceRef="_reportProblem" targetRef="_receiveAnswer"/>
+    <semantic:sequenceFlow id="_c_f3" sourceRef="_receiveAnswer" targetRef="_c_end"/>
+  </semantic:process>
+  <semantic:process id="_companyProcess" name="Incident management" isExecutable="false">
+    <semantic:laneSet id="ls_company">
+      <semantic:lane id="_lane_kam" name="Key account manager">
+        <semantic:flowNodeRef>_handleProblem</semantic:flowNodeRef>
+        <semantic:flowNodeRef>_gw_canHandle</semantic:flowNodeRef>
+        <semantic:flowNodeRef>_explainSolution</semantic:flowNodeRef>
+        <semantic:flowNodeRef>_end</semantic:flowNodeRef>
+      </semantic:lane>
+      <semantic:lane id="_lane_first" name="1st level support">
+        <semantic:flowNodeRef>_firstLevel</semantic:flowNodeRef>
+        <semantic:flowNodeRef>_gw_merge</semantic:flowNodeRef>
+      </semantic:lane>
+      <semantic:lane id="_lane_second" name="2nd level support">
+        <semantic:flowNodeRef>_secondLevel</semantic:flowNodeRef>
+        <semantic:flowNodeRef>_gw_notify</semantic:flowNodeRef>
+        <semantic:flowNodeRef>_unresolved</semantic:flowNodeRef>
+        <semantic:flowNodeRef>_escalated</semantic:flowNodeRef>
+      </semantic:lane>
+      <semantic:lane id="_lane_dev" name="Software developer">
+        <semantic:flowNodeRef>_fixInSoftware</semantic:flowNodeRef>
+        <semantic:flowNodeRef>_updateKb</semantic:flowNodeRef>
+      </semantic:lane>
+    </semantic:laneSet>
+    <semantic:startEvent id="_handleProblem" name="Customer reports problem">
+      <semantic:outgoing>_f1</semantic:outgoing>
+      <semantic:messageEventDefinition id="_med1" messageRef="_problemMessage"/>
+    </semantic:startEvent>
+    <semantic:exclusiveGateway id="_gw_canHandle" name="Can I handle it myself?" default="_f3">
+      <semantic:incoming>_f1</semantic:incoming>
+      <semantic:outgoing>_f2</semantic:outgoing>
+      <semantic:outgoing>_f3</semantic:outgoing>
+    </semantic:exclusiveGateway>
+    <semantic:task id="_firstLevel" name="Handle 1st level issue">
+      <semantic:incoming>_f3</semantic:incoming>
+      <semantic:outgoing>_f4</semantic:outgoing>
+    </semantic:task>
+    <semantic:task id="_secondLevel" name="Handle 2nd level issue">
+      <semantic:incoming>_f4</semantic:incoming>
+      <semantic:outgoing>_f5</semantic:outgoing>
+      <semantic:ioSpecification id="_secondLevelIo">
+        <semantic:dataInput id="_secondLevelInput" name="Known issues"/>
+        <semantic:inputSet id="_secondLevelInputs"><semantic:dataInputRefs>_secondLevelInput</semantic:dataInputRefs></semantic:inputSet>
+        <semantic:outputSet id="_secondLevelOutputs"/>
+      </semantic:ioSpecification>
+      <semantic:dataInputAssociation id="_dia1">
+        <semantic:sourceRef>_kbRef</semantic:sourceRef>
+        <semantic:targetRef>_secondLevelInput</semantic:targetRef>
+      </semantic:dataInputAssociation>
+    </semantic:task>
+    <semantic:boundaryEvent id="_unresolved" name="Unresolved" attachedToRef="_secondLevel" cancelActivity="true">
+      <semantic:outgoing>_f9</semantic:outgoing>
+      <semantic:errorEventDefinition id="_eed1" errorRef="_unresolvedError"/>
+    </semantic:boundaryEvent>
+    <semantic:endEvent id="_escalated" name="Escalated to vendor">
+      <semantic:incoming>_f9</semantic:incoming>
+    </semantic:endEvent>
+    <semantic:inclusiveGateway id="_gw_notify" name="Fix needed and/or KB update?" default="_f7">
+      <semantic:incoming>_f5</semantic:incoming>
+      <semantic:outgoing>_f6</semantic:outgoing>
+      <semantic:outgoing>_f7</semantic:outgoing>
+    </semantic:inclusiveGateway>
+    <semantic:callActivity id="_fixInSoftware" name="Fix in software" calledElement="_globalFixInSoftware">
+      <semantic:incoming>_f6</semantic:incoming>
+      <semantic:outgoing>_f8</semantic:outgoing>
+    </semantic:callActivity>
+    <semantic:task id="_updateKb" name="Update known issues">
+      <semantic:incoming>_f7</semantic:incoming>
+      <semantic:outgoing>_f10</semantic:outgoing>
+      <semantic:dataOutputAssociation id="_doa1">
+        <semantic:targetRef>_kbRef</semantic:targetRef>
+      </semantic:dataOutputAssociation>
+    </semantic:task>
+    <semantic:inclusiveGateway id="_gw_merge" name="">
+      <semantic:incoming>_f2</semantic:incoming>
+      <semantic:incoming>_f8</semantic:incoming>
+      <semantic:incoming>_f10</semantic:incoming>
+      <semantic:outgoing>_f11</semantic:outgoing>
+    </semantic:inclusiveGateway>
+    <semantic:sendTask id="_explainSolution" name="Explain solution" messageRef="_answerMessage">
+      <semantic:incoming>_f11</semantic:incoming>
+      <semantic:outgoing>_f12</semantic:outgoing>
+    </semantic:sendTask>
+    <semantic:endEvent id="_end" name="Answer sent">
+      <semantic:incoming>_f12</semantic:incoming>
+    </semantic:endEvent>
+    <semantic:dataStoreReference id="_kbRef" name="Known issues" dataStoreRef="_knowledgeBase"/>
+    <semantic:sequenceFlow id="_f1" sourceRef="_handleProblem" targetRef="_gw_canHandle"/>
+    <semantic:sequenceFlow id="_f2" name="yes" sourceRef="_gw_canHandle" targetRef="_gw_merge">
+      <semantic:conditionExpression>canHandle = true</semantic:conditionExpression>
+    </semantic:sequenceFlow>
+    <semantic:sequenceFlow id="_f3" name="no" sourceRef="_gw_canHandle" targetRef="_firstLevel"/>
+    <semantic:sequenceFlow id="_f4" sourceRef="_firstLevel" targetRef="_secondLevel"/>
+    <semantic:sequenceFlow id="_f5" sourceRef="_secondLevel" targetRef="_gw_notify"/>
+    <semantic:sequenceFlow id="_f6" name="fix needed" sourceRef="_gw_notify" targetRef="_fixInSoftware">
+      <semantic:conditionExpression>fixNeeded = true</semantic:conditionExpression>
+    </semantic:sequenceFlow>
+    <semantic:sequenceFlow id="_f7" sourceRef="_gw_notify" targetRef="_updateKb"/>
+    <semantic:sequenceFlow id="_f8" sourceRef="_fixInSoftware" targetRef="_gw_merge"/>
+    <semantic:sequenceFlow id="_f9" sourceRef="_unresolved" targetRef="_escalated"/>
+    <semantic:sequenceFlow id="_f10" sourceRef="_updateKb" targetRef="_gw_merge"/>
+    <semantic:sequenceFlow id="_f11" sourceRef="_gw_merge" targetRef="_explainSolution"/>
+    <semantic:sequenceFlow id="_f12" sourceRef="_explainSolution" targetRef="_end"/>
+    <semantic:textAnnotation id="_note1">
+      <semantic:text>2nd level support reads the known issues database first.</semantic:text>
+    </semantic:textAnnotation>
+    <semantic:association id="_assoc1" sourceRef="_note1" targetRef="_secondLevel"/>
+  </semantic:process>
+</semantic:definitions>

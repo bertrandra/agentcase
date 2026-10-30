@@ -1,0 +1,229 @@
+<?xml version="1.0" encoding="UTF-8"?><definitions xmlns="http://www.omg.org/spec/BPMN/20100524/MODEL" xmlns:bpmndi="http://www.omg.org/spec/BPMN/20100524/DI" xmlns:omgdc="http://www.omg.org/spec/DD/20100524/DC" xmlns:omgdi="http://www.omg.org/spec/DD/20100524/DI" xmlns:signavio="http://www.signavio.com" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" exporter="Signavio Process Editor, http://www.signavio.com" exporterVersion="18.4.0" expressionLanguage="http://www.w3.org/TR/XPath" id="sid-6a2b3c4d-1e2f-4a5b-8c9d-0e1f2a3b4c5d" targetNamespace="http://www.signavio.com" typeLanguage="http://www.w3.org/2001/XMLSchema" xsi:schemaLocation="http://www.omg.org/spec/BPMN/20100524/MODEL http://www.omg.org/spec/BPMN/2.0/20100501/BPMN20.xsd">
+   <dataStore id="sid-9b8a7c6d-5e4f-4a3b-9c2d-1e0f9a8b7c6d" isUnlimited="false" name="Change register">
+      <extensionElements>
+         <signavio:signavioMetaData metaKey="bgcolor" metaValue="#ffffff"/>
+      </extensionElements>
+   </dataStore>
+   <collaboration id="sid-c0ll4b0r-0000-4000-8000-000000000001">
+      <extensionElements>
+         <signavio:signavioDiagramMetaData metaKey="revisionid" metaValue="4f1d2c3b5a6e4d7f8a9b0c1d2e3f4a5b"/>
+      </extensionElements>
+      <participant id="sid-p00l0001-0000-4000-8000-000000000002" name="Bank - change management" processRef="sid-pr0c0001-0000-4000-8000-000000000003">
+         <extensionElements>
+            <signavio:signavioMetaData metaKey="bgcolor" metaValue="#ffffff"/>
+         </extensionElements>
+      </participant>
+      <participant id="sid-p00l0002-0000-4000-8000-000000000004" name="Regulator">
+         <extensionElements>
+            <signavio:signavioMetaData metaKey="bgcolor" metaValue="#ffffff"/>
+         </extensionElements>
+      </participant>
+      <messageFlow id="sid-m5gf0001-0000-4000-8000-000000000005" name="Change notification" sourceRef="sid-t45k0005-0000-4000-8000-000000000015" targetRef="sid-p00l0002-0000-4000-8000-000000000004"/>
+   </collaboration>
+   <process id="sid-pr0c0001-0000-4000-8000-000000000003" isClosed="false" isExecutable="false" name="Bank - change management" processType="None">
+      <extensionElements>
+         <signavio:signavioDiagramMetaData metaKey="processgoal" metaValue="Every change is assessed, tested and notified"/>
+      </extensionElements>
+      <laneSet id="sid-l4n3s3t0-0000-4000-8000-000000000006">
+         <lane id="sid-l4n30001-0000-4000-8000-000000000007" name="Business Analyst">
+            <extensionElements>
+               <signavio:signavioMetaData metaKey="bgcolor" metaValue=""/>
+            </extensionElements>
+            <flowNodeRef>sid-st4rt001-0000-4000-8000-000000000011</flowNodeRef>
+            <flowNodeRef>sid-t45k0001-0000-4000-8000-000000000012</flowNodeRef>
+            <flowNodeRef>sid-t45k0002-0000-4000-8000-000000000013</flowNodeRef>
+         </lane>
+         <lane id="sid-l4n30002-0000-4000-8000-000000000008" name="Developer">
+            <extensionElements>
+               <signavio:signavioMetaData metaKey="bgcolor" metaValue=""/>
+            </extensionElements>
+            <flowNodeRef>sid-t45k0003-0000-4000-8000-000000000014</flowNodeRef>
+         </lane>
+         <lane id="sid-l4n30003-0000-4000-8000-000000000009" name="Test/QA">
+            <extensionElements>
+               <signavio:signavioMetaData metaKey="bgcolor" metaValue=""/>
+            </extensionElements>
+            <flowNodeRef>sid-t45k0004-0000-4000-8000-000000000016</flowNodeRef>
+         </lane>
+         <lane id="sid-l4n30004-0000-4000-8000-000000000010" name="Compliance Officer">
+            <extensionElements>
+               <signavio:signavioMetaData metaKey="bgcolor" metaValue=""/>
+            </extensionElements>
+            <flowNodeRef>sid-t45k0005-0000-4000-8000-000000000015</flowNodeRef>
+            <flowNodeRef>sid-3nd00001-0000-4000-8000-000000000017</flowNodeRef>
+         </lane>
+      </laneSet>
+      <startEvent id="sid-st4rt001-0000-4000-8000-000000000011" name="Change requested">
+         <extensionElements>
+            <signavio:signavioMetaData metaKey="bgcolor" metaValue="#ffffff"/>
+         </extensionElements>
+         <outgoing>sid-fl0w0001-0000-4000-8000-000000000021</outgoing>
+      </startEvent>
+      <task completionQuantity="1" id="sid-t45k0001-0000-4000-8000-000000000012" isForCompensation="false" name="Impact analysis" startQuantity="1">
+         <extensionElements>
+            <signavio:signavioMetaData metaKey="bgcolor" metaValue="#ffffcc"/>
+            <signavio:signavioMetaData metaKey="risklevel" metaValue="medium"/>
+         </extensionElements>
+         <incoming>sid-fl0w0001-0000-4000-8000-000000000021</incoming>
+         <outgoing>sid-fl0w0002-0000-4000-8000-000000000022</outgoing>
+      </task>
+      <userTask completionQuantity="1" id="sid-t45k0002-0000-4000-8000-000000000013" implementation="##unspecified" isForCompensation="false" name="Requirements / NFR" startQuantity="1">
+         <extensionElements>
+            <signavio:signavioMetaData metaKey="bgcolor" metaValue="#ffffcc"/>
+         </extensionElements>
+         <incoming>sid-fl0w0002-0000-4000-8000-000000000022</incoming>
+         <outgoing>sid-fl0w0003-0000-4000-8000-000000000023</outgoing>
+         <dataOutputAssociation id="sid-d4t40001-0000-4000-8000-000000000031">
+            <targetRef>sid-d0bj0002-0000-4000-8000-000000000033</targetRef>
+         </dataOutputAssociation>
+      </userTask>
+      <task completionQuantity="1" id="sid-t45k0003-0000-4000-8000-000000000014" isForCompensation="false" name="Develop change" startQuantity="1">
+         <extensionElements>
+            <signavio:signavioMetaData metaKey="bgcolor" metaValue="#ffffcc"/>
+         </extensionElements>
+         <incoming>sid-fl0w0003-0000-4000-8000-000000000023</incoming>
+         <outgoing>sid-fl0w0004-0000-4000-8000-000000000024</outgoing>
+      </task>
+      <task completionQuantity="1" id="sid-t45k0004-0000-4000-8000-000000000016" isForCompensation="false" name="Regression test" startQuantity="1">
+         <extensionElements>
+            <signavio:signavioMetaData metaKey="bgcolor" metaValue="#ffffcc"/>
+         </extensionElements>
+         <incoming>sid-fl0w0004-0000-4000-8000-000000000024</incoming>
+         <outgoing>sid-fl0w0005-0000-4000-8000-000000000025</outgoing>
+         <dataOutputAssociation id="sid-d4t40002-0000-4000-8000-000000000034">
+            <targetRef>sid-dst0r3f1-0000-4000-8000-000000000035</targetRef>
+         </dataOutputAssociation>
+      </task>
+      <sendTask completionQuantity="1" id="sid-t45k0005-0000-4000-8000-000000000015" implementation="##WebService" isForCompensation="false" name="Notify regulator" startQuantity="1">
+         <extensionElements>
+            <signavio:signavioMetaData metaKey="bgcolor" metaValue="#ffffcc"/>
+         </extensionElements>
+         <incoming>sid-fl0w0005-0000-4000-8000-000000000025</incoming>
+         <outgoing>sid-fl0w0006-0000-4000-8000-000000000026</outgoing>
+      </sendTask>
+      <endEvent id="sid-3nd00001-0000-4000-8000-000000000017" name="Change closed">
+         <extensionElements>
+            <signavio:signavioMetaData metaKey="bgcolor" metaValue="#ffffff"/>
+         </extensionElements>
+         <incoming>sid-fl0w0006-0000-4000-8000-000000000026</incoming>
+      </endEvent>
+      <sequenceFlow id="sid-fl0w0001-0000-4000-8000-000000000021" name="" sourceRef="sid-st4rt001-0000-4000-8000-000000000011" targetRef="sid-t45k0001-0000-4000-8000-000000000012"/>
+      <sequenceFlow id="sid-fl0w0002-0000-4000-8000-000000000022" name="" sourceRef="sid-t45k0001-0000-4000-8000-000000000012" targetRef="sid-t45k0002-0000-4000-8000-000000000013"/>
+      <sequenceFlow id="sid-fl0w0003-0000-4000-8000-000000000023" name="" sourceRef="sid-t45k0002-0000-4000-8000-000000000013" targetRef="sid-t45k0003-0000-4000-8000-000000000014"/>
+      <sequenceFlow id="sid-fl0w0004-0000-4000-8000-000000000024" name="" sourceRef="sid-t45k0003-0000-4000-8000-000000000014" targetRef="sid-t45k0004-0000-4000-8000-000000000016"/>
+      <sequenceFlow id="sid-fl0w0005-0000-4000-8000-000000000025" name="" sourceRef="sid-t45k0004-0000-4000-8000-000000000016" targetRef="sid-t45k0005-0000-4000-8000-000000000015"/>
+      <sequenceFlow id="sid-fl0w0006-0000-4000-8000-000000000026" name="" sourceRef="sid-t45k0005-0000-4000-8000-000000000015" targetRef="sid-3nd00001-0000-4000-8000-000000000017"/>
+      <dataObject id="sid-d0bj0001-0000-4000-8000-000000000032" isCollection="false" name="Requirements"/>
+      <dataObjectReference dataObjectRef="sid-d0bj0001-0000-4000-8000-000000000032" id="sid-d0bj0002-0000-4000-8000-000000000033" name="Requirements">
+         <extensionElements>
+            <signavio:signavioMetaData metaKey="bgcolor" metaValue="#ffffff"/>
+         </extensionElements>
+      </dataObjectReference>
+      <dataStoreReference dataStoreRef="sid-9b8a7c6d-5e4f-4a3b-9c2d-1e0f9a8b7c6d" id="sid-dst0r3f1-0000-4000-8000-000000000035" name="Change register"/>
+      <textAnnotation id="sid-4nn0t001-0000-4000-8000-000000000041" textFormat="text/plain">
+         <text>Run on the pre-production copy of the core banking system</text>
+      </textAnnotation>
+      <association associationDirection="None" id="sid-4ss0c001-0000-4000-8000-000000000042" sourceRef="sid-t45k0004-0000-4000-8000-000000000016" targetRef="sid-4nn0t001-0000-4000-8000-000000000041"/>
+   </process>
+   <bpmndi:BPMNDiagram id="sid-d14gr4m0-0000-4000-8000-000000000050">
+      <bpmndi:BPMNPlane bpmnElement="sid-c0ll4b0r-0000-4000-8000-000000000001" id="sid-pl4n3000-0000-4000-8000-000000000051">
+         <bpmndi:BPMNShape bpmnElement="sid-p00l0001-0000-4000-8000-000000000002" id="sid-p00l0001-0000-4000-8000-000000000002_gui" isHorizontal="true">
+            <omgdc:Bounds height="520.0" width="1100.0" x="90.0" y="90.0"/>
+            <bpmndi:BPMNLabel labelStyle="sid-l4b3lst1-0000-4000-8000-000000000099">
+               <omgdc:Bounds height="168.0" width="12.0" x="96.0" y="266.0"/>
+            </bpmndi:BPMNLabel>
+         </bpmndi:BPMNShape>
+         <bpmndi:BPMNShape bpmnElement="sid-l4n30001-0000-4000-8000-000000000007" id="sid-l4n30001-0000-4000-8000-000000000007_gui" isHorizontal="true">
+            <omgdc:Bounds height="130.0" width="1070.0" x="120.0" y="90.0"/>
+         </bpmndi:BPMNShape>
+         <bpmndi:BPMNShape bpmnElement="sid-l4n30002-0000-4000-8000-000000000008" id="sid-l4n30002-0000-4000-8000-000000000008_gui" isHorizontal="true">
+            <omgdc:Bounds height="130.0" width="1070.0" x="120.0" y="220.0"/>
+         </bpmndi:BPMNShape>
+         <bpmndi:BPMNShape bpmnElement="sid-l4n30003-0000-4000-8000-000000000009" id="sid-l4n30003-0000-4000-8000-000000000009_gui" isHorizontal="true">
+            <omgdc:Bounds height="130.0" width="1070.0" x="120.0" y="350.0"/>
+         </bpmndi:BPMNShape>
+         <bpmndi:BPMNShape bpmnElement="sid-l4n30004-0000-4000-8000-000000000010" id="sid-l4n30004-0000-4000-8000-000000000010_gui" isHorizontal="true">
+            <omgdc:Bounds height="130.0" width="1070.0" x="120.0" y="480.0"/>
+         </bpmndi:BPMNShape>
+         <bpmndi:BPMNShape bpmnElement="sid-st4rt001-0000-4000-8000-000000000011" id="sid-st4rt001-0000-4000-8000-000000000011_gui">
+            <omgdc:Bounds height="30.0" width="30.0" x="165.0" y="140.0"/>
+         </bpmndi:BPMNShape>
+         <bpmndi:BPMNShape bpmnElement="sid-t45k0001-0000-4000-8000-000000000012" id="sid-t45k0001-0000-4000-8000-000000000012_gui">
+            <omgdc:Bounds height="80.0" width="100.0" x="240.0" y="115.0"/>
+         </bpmndi:BPMNShape>
+         <bpmndi:BPMNShape bpmnElement="sid-t45k0002-0000-4000-8000-000000000013" id="sid-t45k0002-0000-4000-8000-000000000013_gui">
+            <omgdc:Bounds height="80.0" width="100.0" x="390.0" y="115.0"/>
+         </bpmndi:BPMNShape>
+         <bpmndi:BPMNShape bpmnElement="sid-d0bj0002-0000-4000-8000-000000000033" id="sid-d0bj0002-0000-4000-8000-000000000033_gui">
+            <omgdc:Bounds height="57.0" width="88.0" x="540.0" y="105.0"/>
+         </bpmndi:BPMNShape>
+         <bpmndi:BPMNShape bpmnElement="sid-t45k0003-0000-4000-8000-000000000014" id="sid-t45k0003-0000-4000-8000-000000000014_gui">
+            <omgdc:Bounds height="80.0" width="100.0" x="540.0" y="245.0"/>
+         </bpmndi:BPMNShape>
+         <bpmndi:BPMNShape bpmnElement="sid-4nn0t001-0000-4000-8000-000000000041" id="sid-4nn0t001-0000-4000-8000-000000000041_gui">
+            <omgdc:Bounds height="50.0" width="150.0" x="700.0" y="240.0"/>
+         </bpmndi:BPMNShape>
+         <bpmndi:BPMNShape bpmnElement="sid-t45k0004-0000-4000-8000-000000000016" id="sid-t45k0004-0000-4000-8000-000000000016_gui">
+            <omgdc:Bounds height="80.0" width="100.0" x="690.0" y="375.0"/>
+         </bpmndi:BPMNShape>
+         <bpmndi:BPMNShape bpmnElement="sid-dst0r3f1-0000-4000-8000-000000000035" id="sid-dst0r3f1-0000-4000-8000-000000000035_gui">
+            <omgdc:Bounds height="60.0" width="63.0" x="990.0" y="380.0"/>
+         </bpmndi:BPMNShape>
+         <bpmndi:BPMNShape bpmnElement="sid-t45k0005-0000-4000-8000-000000000015" id="sid-t45k0005-0000-4000-8000-000000000015_gui">
+            <omgdc:Bounds height="80.0" width="100.0" x="840.0" y="505.0"/>
+         </bpmndi:BPMNShape>
+         <bpmndi:BPMNShape bpmnElement="sid-3nd00001-0000-4000-8000-000000000017" id="sid-3nd00001-0000-4000-8000-000000000017_gui">
+            <omgdc:Bounds height="28.0" width="28.0" x="990.0" y="531.0"/>
+         </bpmndi:BPMNShape>
+         <bpmndi:BPMNShape bpmnElement="sid-p00l0002-0000-4000-8000-000000000004" id="sid-p00l0002-0000-4000-8000-000000000004_gui" isHorizontal="true">
+            <omgdc:Bounds height="80.0" width="1100.0" x="90.0" y="660.0"/>
+         </bpmndi:BPMNShape>
+         <bpmndi:BPMNEdge bpmnElement="sid-fl0w0001-0000-4000-8000-000000000021" id="sid-fl0w0001-0000-4000-8000-000000000021_gui">
+            <omgdi:waypoint x="195.0" y="155.0"/>
+            <omgdi:waypoint x="240.0" y="155.0"/>
+         </bpmndi:BPMNEdge>
+         <bpmndi:BPMNEdge bpmnElement="sid-fl0w0002-0000-4000-8000-000000000022" id="sid-fl0w0002-0000-4000-8000-000000000022_gui">
+            <omgdi:waypoint x="340.0" y="155.0"/>
+            <omgdi:waypoint x="390.0" y="155.0"/>
+         </bpmndi:BPMNEdge>
+         <bpmndi:BPMNEdge bpmnElement="sid-fl0w0003-0000-4000-8000-000000000023" id="sid-fl0w0003-0000-4000-8000-000000000023_gui">
+            <omgdi:waypoint x="440.0" y="195.0"/>
+            <omgdi:waypoint x="440.0" y="285.0"/>
+            <omgdi:waypoint x="540.0" y="285.0"/>
+         </bpmndi:BPMNEdge>
+         <bpmndi:BPMNEdge bpmnElement="sid-fl0w0004-0000-4000-8000-000000000024" id="sid-fl0w0004-0000-4000-8000-000000000024_gui">
+            <omgdi:waypoint x="590.0" y="325.0"/>
+            <omgdi:waypoint x="590.0" y="415.0"/>
+            <omgdi:waypoint x="690.0" y="415.0"/>
+         </bpmndi:BPMNEdge>
+         <bpmndi:BPMNEdge bpmnElement="sid-fl0w0005-0000-4000-8000-000000000025" id="sid-fl0w0005-0000-4000-8000-000000000025_gui">
+            <omgdi:waypoint x="740.0" y="455.0"/>
+            <omgdi:waypoint x="740.0" y="545.0"/>
+            <omgdi:waypoint x="840.0" y="545.0"/>
+         </bpmndi:BPMNEdge>
+         <bpmndi:BPMNEdge bpmnElement="sid-fl0w0006-0000-4000-8000-000000000026" id="sid-fl0w0006-0000-4000-8000-000000000026_gui">
+            <omgdi:waypoint x="940.0" y="545.0"/>
+            <omgdi:waypoint x="990.0" y="545.0"/>
+         </bpmndi:BPMNEdge>
+         <bpmndi:BPMNEdge bpmnElement="sid-d4t40001-0000-4000-8000-000000000031" id="sid-d4t40001-0000-4000-8000-000000000031_gui">
+            <omgdi:waypoint x="490.0" y="148.0"/>
+            <omgdi:waypoint x="540.0" y="138.0"/>
+         </bpmndi:BPMNEdge>
+         <bpmndi:BPMNEdge bpmnElement="sid-d4t40002-0000-4000-8000-000000000034" id="sid-d4t40002-0000-4000-8000-000000000034_gui">
+            <omgdi:waypoint x="790.0" y="412.0"/>
+            <omgdi:waypoint x="990.0" y="410.0"/>
+         </bpmndi:BPMNEdge>
+         <bpmndi:BPMNEdge bpmnElement="sid-4ss0c001-0000-4000-8000-000000000042" id="sid-4ss0c001-0000-4000-8000-000000000042_gui">
+            <omgdi:waypoint x="740.0" y="375.0"/>
+            <omgdi:waypoint x="760.0" y="290.0"/>
+         </bpmndi:BPMNEdge>
+         <bpmndi:BPMNEdge bpmnElement="sid-m5gf0001-0000-4000-8000-000000000005" id="sid-m5gf0001-0000-4000-8000-000000000005_gui">
+            <omgdi:waypoint x="890.0" y="585.0"/>
+            <omgdi:waypoint x="890.0" y="660.0"/>
+         </bpmndi:BPMNEdge>
+      </bpmndi:BPMNPlane>
+      <bpmndi:BPMNLabelStyle id="sid-l4b3lst1-0000-4000-8000-000000000099">
+         <omgdc:Font isBold="false" isItalic="false" isStrikeThrough="false" isUnderline="false" name="Arial" size="12.0"/>
+      </bpmndi:BPMNLabelStyle>
+   </bpmndi:BPMNDiagram>
+</definitions>

