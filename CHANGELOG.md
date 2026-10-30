@@ -17,6 +17,21 @@ When releasing, follow [docs/BUMP_PROCEDURE.md](docs/BUMP_PROCEDURE.md) (§7 for
 
 ## [Unreleased]
 
+### BPMN B4 — the Process section: diagram, activity table, actors, BPMN import and export
+
+Phase B4 of [docs/SPEC_BPMN.md](docs/SPEC_BPMN.md) (§ 4.3, § 8, § 9; details in § 9.1). Single-product figures unchanged.
+
+- **🧩 Process (BPMN)**, a new app section of the Scope group (Builder and Advanced by default): the case's process as a read-only SVG diagram
+  drawn from its BPMN DI (zoom and pan with the keyboard, the buttons or the pointer; a live region names the selected activity), the activity table
+  as its accessible alternative (sort; filters by phase, actor, type, scope, regulatory, text; scope check boxes), the selected activity's panel
+  (name, phase, effort, supervision split, remove) and the actor panel (roles and agents, team skill, add a role, remove an unused one).
+- **Import process (BPMN)** — replace or merge, with a preview before anything is written and a report after (added, updated, out of scope, removed,
+  left out, parameters to review, new roles, elements not mapped, headline net / ROI / FTE after before and after). Files from other tools are mapped:
+  their sub-processes, lanes or processes to phases, their unknown roles to new roles on a team skill the user picks (D-B10); the file's out-of-scope
+  activities come in or are left out (D-B4). One undoable step; a refused or hostile file writes nothing. **Export** is also in the section, and
+  **Reset to default process** (whole or one phase) is one step.
+- New undoable commands `process.import`, `process.reset`, `process.moveActivity`, `process.setReworkFlow`, `process.setDiagram` (coalesced).
+
 ## [v20.22.0] 2026-10-30 — BPMN B3: schema v3, the case stores its delivery process as one native BPMN document
 
 ### BPMN B3 — schema v3: the case stores its delivery process as one native BPMN document

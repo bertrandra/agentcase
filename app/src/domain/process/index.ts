@@ -18,3 +18,11 @@ export { BPSIM_NS, readBpsim, type BpsimValues } from './bpsim';
 export { securityCheck, LIMITS, ID_PATTERN, RESERVED_IDS, type Finding, type Limits, type SecurityReport } from './security';
 export { addActivity, removeActivity, setScope, updateActivities, updateActivity, type ActivityPatch } from './editActivity';
 export { addActor, addPhase, removeActor, removePhase, reorderPhases, updateActor, type ActorInput } from './editModel';
+export { findById, moveActivity, setDiagram, setReworkFlow, type Bounds, type ReworkPatch } from './editMore';
+export { resetProcess } from './editReset';
+export { analyseImport, previewImport } from './importPlan';
+export { applyImport, removeActivities } from './importApply';
+export { DEFAULT_CHOICES, type ImportAnalysis, type ImportChoices, type ImportMode, type ImportPreview, type IncomingRole,
+  type IncomingUnit } from './importTypes';
+export { roleId } from './ids';
+export { drawingOf, type DrawEdge, type Drawing, type DrawShape, type ShapeKind } from './drawing';

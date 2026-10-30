@@ -6,8 +6,8 @@ const BRAND = { id: 'brand-theme', personas: ['admin', 'builder'] };
 const LISTS = { admin: ['home', 'board'], builder: ['home'], clientcase: ['home'] };
 
 describe('app sections in the persona menus (DEV-APP-SECTION-PERSONAS)', () => {
-  it('the catalogue names Brand & theme as the one app section, shown to Admin, Builder and Business journey', () => {
-    expect(APP_SECTIONS.map((s) => [s.id, s.personas])).toEqual([['brand-theme', ['admin', 'builder', 'business-journey']]]);
+  it('the catalogue names two app sections: Process (BPMN) shown to Builder, Brand & theme to Admin, Builder and Business journey', () => {
+    expect(APP_SECTIONS.map((s) => [s.id, s.personas])).toEqual([['process', ['builder']], ['brand-theme', ['admin', 'builder', 'business-journey']]]);
   });
   it('without overrides: appended to the personas the catalogue names, the others untouched (the build before lot 7)', () => {
     expect(withAppSections(LISTS, [BRAND])).toEqual({ admin: ['home', 'board', 'brand-theme'], builder: ['home', 'brand-theme'], clientcase: ['home'] });

@@ -94,6 +94,18 @@
   "tag": "drives"
  },
  {
+  "id": "process",
+  "group": "scope",
+  "groupSeq": 20,
+  "label": "🧩 Process (BPMN)",
+  "description": "The delivery process of the case as a BPMN 2.0 model: read-only diagram, activity table (the diagram's accessible alternative), actors, BPMN import (replace or merge, with preview and report) and export, reset to the default process",
+  "tag": "supports",
+  "app": true,
+  "personas": [
+   "builder"
+  ]
+ },
+ {
   "id": "lifecycle-edit",
   "group": "tune",
   "groupSeq": 140,

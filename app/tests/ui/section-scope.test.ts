@@ -6,9 +6,9 @@ import { SECTION_COMPONENTS } from '@/ui/sections';
 import { SECTION_KINDS, SECTION_KIND_IDS, followsView, sectionKind } from '@/ui/zones/sectionScope';
 
 describe('sectionScope.json: the kind of every section (aggregate view)', () => {
-  it('covers exactly the 86 catalogue ids, each with a known kind, and nothing else', () => {
+  it('covers exactly the 87 catalogue ids, each with a known kind, and nothing else', () => {
     const ids = SECTIONS.map((s) => s.id).sort();
-    expect(ids).toHaveLength(86);
+    expect(ids).toHaveLength(87);
     expect([...SECTION_KIND_IDS].sort()).toEqual(ids);
     for (const id of ids) expect(SECTION_KINDS, id).toContain(sectionKind(id));
   });
