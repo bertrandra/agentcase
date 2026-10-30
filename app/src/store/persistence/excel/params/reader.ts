@@ -6,7 +6,7 @@ import { KNOWN_SHEETS, READ_ORDER } from './registry';
 import { asArrayBuffer, guardZip, flatten, LIMITS, ParamsImportError } from './safe';
 import { sameJson } from './compare';
 import { effectiveSections, toSectionGroups } from './sections';
-import type { Cell, ParamsDoc, ParamsEnv, ReadCtx, Rows, Sheets } from './types';
+import type { ParamsDoc, ParamsEnv, ReadCtx, Sheets } from './types';
 
 export { ParamsImportError, sameJson };
 
@@ -15,24 +15,34 @@ export { ParamsImportError, sameJson };
  * workbook.
  */
 export async function loadParamsSheets(input: ArrayBuffer | ArrayBufferView): Promise<Sheets> {
+  const out: Sheets = await readKnownSheets(input, (n) => KNOWN_SHEETS.has(n), flatten);
+  if (!out.size) throw new ParamsImportError('No AgentCase parameter sheet found (expected e.g. "Parameters", "Input Team", "SDLC Artifacts")');
+  return out;
+}
+
+/**
+ * The rows of the sheets `known` keeps, each cell read by `cell` (zip and size guards first, rows and columns capped). Shared with the audit
+ * workbook (BPMN B7), which reads dates as dates.
+ */
+export async function readKnownSheets<C>(input: ArrayBuffer | ArrayBufferView, known: (name: string) => boolean, cell: (v: unknown) => C):
+  Promise<Map<string, C[][]>> {
   const buf = asArrayBuffer(input);
   guardZip(buf);
   const X = await loadExcelJS(), wb = new X.Workbook();
   try { await wb.xlsx.load(buf); } catch (e) { throw new ParamsImportError(
     `Not a readable .xlsx workbook (${e instanceof Error ? e.message : 'corrupt file'})`); }
-  const out: Sheets = new Map();
+  const out = new Map<string, C[][]>();
   for (const ws of wb.worksheets) {
-    if (!KNOWN_SHEETS.has(ws.name)) continue;
+    if (!known(ws.name)) continue;
     if (ws.rowCount > LIMITS.rows) throw new ParamsImportError(`Sheet "${ws.name}" has too many rows (${ws.rowCount}, limit ${LIMITS.rows})`);
-    const width = Math.min(ws.columnCount, LIMITS.cols), rows: Rows = [];
+    const width = Math.min(ws.columnCount, LIMITS.cols), rows: C[][] = [];
     ws.eachRow({ includeEmpty: true }, (row) => {
-      const v = (row.values ?? []) as unknown[], arr: Cell[] = [];
-      for (let i = 1; i <= width; i++) arr.push(flatten(v[i]));
+      const v = (row.values ?? []) as unknown[], arr: C[] = [];
+      for (let i = 1; i <= width; i++) arr.push(cell(v[i]));
       rows.push(arr);
     });
     out.set(ws.name, rows);
   }
-  if (!out.size) throw new ParamsImportError('No AgentCase parameter sheet found (expected e.g. "Parameters", "Input Team", "SDLC Artifacts")');
   return out;
 }
 
