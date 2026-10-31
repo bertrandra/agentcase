@@ -14,6 +14,7 @@ const COLS: [SortKey | null, string][] = [
  */
 export function ProgrammeTableView({ t, multi }: { t: Table; multi: boolean }) {
   const f = useProgrammeScreen((s) => s.filters), sort = useProgrammeScreen((s) => s.sort), open = useProgrammeScreen((s) => s.open);
+  const focus = useProgrammeScreen((s) => s.focus);
   const rows = visibleRows(t.rows, f, sort), Y = t.years.length, cols = COLS.length + Y + 1;
   const head = ([key, label]: [SortKey | null, string]) => <SortHeader key={label} k={key} label={label} sort={sort} onSort={sortBy} />;
   return (
@@ -24,7 +25,7 @@ export function ProgrammeTableView({ t, multi }: { t: Table; multi: boolean }) {
           <tr>{COLS.map(head)}{t.years.map((_, y) => <th key={y} scope="col">{`Y${y + 1}`}</th>)}<th scope="col">Linked section</th></tr>
         </thead>
         <tbody>
-          {rows.map((r) => <ProgrammeRowView key={r.id} r={r} open={open === r.id} years={Y} multi={multi} cols={cols} />)}
+          {rows.map((r) => <ProgrammeRowView key={r.id} r={r} open={open === r.id} focused={focus === r.id} years={Y} multi={multi} cols={cols} />)}
         </tbody>
         <tfoot>
           <tr>

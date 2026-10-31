@@ -1281,6 +1281,13 @@ defines, describes or edits an activity.
   description, list or parameter field is duplicated on them.
 - **F-B72 — One owner.** A test fails if an activity parameter key is written by a screen other than the Process screen's parameter
   panel (or the BPMN import / editor), and if an activity description exists outside the document.
+- **Links from the map to the activity's detail (2026-10-31, owner's request; built after v21.0.0).** The Process panel of the selected
+  element links to the screen where its details live, opened on its row (highlighted, scrolled to, keyboard focus), and that screen links
+  back ("Open in Process"). One domain map, `domain/programme/activityDetail.ts` (`DETAIL_SECTIONS`, `activityDetail`): delivery activity →
+  🎯 Scope (`scope-sel`, its artefact row); regulatory activity → 🎯 Scope, then 🏛️ Industry / regulatory profile (`transform-params`, its
+  norm); programme activity, milestone, gate → 📋 Programme (its row, editor open), then its `LINKED_SECTION`; wave → 📅 Plan (`gantt`). The
+  F-B71 references of the context screens add "Open in Programme" beside "Open in Process". View state only (`scope-sel/focus.ts`,
+  `programme/view.ts` `focusRow`): no command, no undo step, no figure.
 
 ### 19.8 Gantt, WBS, OBS and resource histogram (phase B9d)
 

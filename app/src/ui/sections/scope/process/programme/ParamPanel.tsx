@@ -1,7 +1,8 @@
 import { useEffect, useId, useRef } from 'react';
 import type { SubsetField } from '@/domain/portfolio';
-import { descriptionKey, type ParamDef, type ProgrammeView } from '@/domain/programme';
+import { activityDetail, descriptionKey, type ParamDef, type ProgrammeView } from '@/domain/programme';
 import { useIsMulti } from '@/store/portfolioHooks';
+import { DetailLinks } from '@/ui/widgets/DetailLinks';
 import { NumberInput, SelectInput } from '@/ui/widgets/fields';
 import { fmt1 } from '@/ui/economicsFormat';
 import { LeadField } from '../../../tune/knowledge/MultiPanels';
@@ -31,7 +32,7 @@ export function Param({ p, multi }: { p: ParamDef; multi: boolean }) {
  * The parameter panel of a programme activity (F-B70; phase B9a): its description, role (lane), RACI, duration and placement, effort, cost
  * rule and cost, and its own parameters. The description and parameters are the programme's (`domain/programme`), shown and edited here only
  * (F-B71, F-B72). In B9a the values are still held by the case keys, so each field writes its key through the existing input command: one
- * undoable step per edit, a portfolio product's override as elsewhere.
+ * undoable step per edit, a portfolio product's override as elsewhere. Links open its row in 📋 Programme and its context section (`activityDetail`).
  */
 export function ParamPanel({ v, id }: { v: ProgrammeView; id: string }) {
   const a = v.activities.find((x) => x.id === id), k = useId(), multi = useIsMulti(), head = useRef<HTMLHeadingElement>(null);
@@ -43,6 +44,7 @@ export function ParamPanel({ v, id }: { v: ProgrammeView; id: string }) {
     <section className="ac-proc-panel" aria-labelledby={`${k}-h`}>
       <h3 id={`${k}-h`} ref={head} tabIndex={-1}>{a.name}</h3>
       <p>{a.description}</p>
+      <DetailLinks id={a.id} name={a.name} detail={activityDetail(a.id, [], v)} />
       <DescriptionField name={a.name} value={a.description} keyId={descriptionKey(a.kind)} />
       <dl className="ac-proc-facts">
         <dt>Role (lane)</dt><dd>{lane(a.lane)}</dd>
@@ -85,6 +87,7 @@ function MilestonePanel({ v, id }: { v: ProgrammeView; id: string }) {
         <dt>Instances</dt><dd>{`Per product: × ${m.instances}`}</dd>
         <dt>Cost</dt><dd>None</dd>
       </dl>
+      <DetailLinks id={m.id} name={m.name} detail={activityDetail(m.id, [], v)} />
       <div className="ac-form-row"><button type="button" onClick={() => selectActivity(null)}>Close</button></div>
     </section>
   );

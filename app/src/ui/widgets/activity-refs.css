@@ -2,3 +2,8 @@
 .ac-act-refs { margin: 8px 0; padding: 6px 10px; border-left: var(--ac-border-thin) solid var(--ac-primary-700); background: var(--ac-surface-raised); }
 .ac-act-refs p { margin: 0 0 4px; }
 .ac-act-refs ul { margin: 0; padding-left: 18px; }
+/* Links from the Process map to an element's detail screen, and the row they focus there (🎯 Scope artefact, 📋 Programme row). Tokens only. */
+.ac-detail-links { margin: 6px 0; }
+.ac-art.is-focused { background: var(--ac-surface-tint); outline: var(--ac-border-thin) solid var(--ac-focus); }
+.ac-section .ac-table tr.is-focused > td, .ac-section .ac-table tr.is-focused > th { background: var(--ac-surface-tint); }
+.ac-art-from { margin: 2px 6px 6px; font-size: var(--ac-font-size-sm); }

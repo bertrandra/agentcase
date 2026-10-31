@@ -1,10 +1,11 @@
 import { useId } from 'react';
 import { setWaveStart } from '@/controllers/wave';
 import { setMaxConcurrentSetups } from '@/controllers/waveDeps';
-import type { ProgrammeView } from '@/domain/programme';
+import { activityDetail, type ProgrammeView } from '@/domain/programme';
 import { useWaveBoard } from '@/store/consolidationHooks';
 import { useSetupCapacity } from '@/store/waveScheduleHooks';
 import { NumCell } from '@/ui/widgets/CommitField';
+import { DetailLinks } from '@/ui/widgets/DetailLinks';
 import { selectActivity } from '../view';
 import { WaveDependency } from './WaveDependency';
 
@@ -39,6 +40,7 @@ export function WavePanel({ v, id }: { v: ProgrammeView; id: string }) {
       <dl className="ac-proc-facts">
         <dt>Effective start</dt><dd>{`Month ${w.start}${w.dependency ? ` — ${w.dependency}` : ''}`}</dd>
       </dl>
+      <DetailLinks id={w.id} name={w.name} detail={activityDetail(w.id, [], v)} />
       <fieldset className="ac-proc-fields">
         <legend>Parameters</legend>
         <label>Start (month){' '}

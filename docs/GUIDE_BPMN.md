@@ -83,6 +83,21 @@ The context screens (🤝 Engage, 📅 Plan, 🧭 Program & Completeness, Agenti
 Measurement, 🌊 Waves…) no longer edit programme activities: they show them as read-only references with **Open … in Process**
 (DEV-B9A-CONTEXT-SCREENS). The panel and 📋 Programme are the only two editors, and they edit the same values.
 
+**Links to the activity's detail screen** (2026-10-31). The panel links to the screen where the selected element's details live, opened on
+its row (highlighted, scrolled to, keyboard focus on it), and that screen links back (**Open … in Process**). Nothing changes in the case and
+there is no undo step.
+
+| Selected | Detail screen (first link) | Other links |
+|---|---|---|
+| Delivery (SDLC) activity, any phase | 🎯 Scope: its artefact row, kept in sight even with "show selected only" | — |
+| Regulatory activity | 🎯 Scope: its artefact row (a note when its norm is not selected) | 🏛️ Industry / regulatory profile (its norm) |
+| Programme activity | 📋 Programme: its row selected, its editor open | its linked section (the one the Programme table shows) |
+| Milestone, maturity gate | 📋 Programme: its row selected | its linked section |
+| Wave (portfolio) | 📅 Plan | — |
+
+Back from 🎯 Scope: the focused row's **Open … in Process**, or the artefact id in **Adjust % auto & effort weight**. The read-only references on
+the context screens also have **Open … in Programme** next to **Open … in Process**.
+
 ### 1.4 Import
 
 **Import process (BPMN)…** takes a `.bpmn`, `.dmn` or `.cmmn` file. The file is read and checked first (size, security, references); nothing is
