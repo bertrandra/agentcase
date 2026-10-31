@@ -17,6 +17,8 @@ When releasing, follow [docs/BUMP_PROCEDURE.md](docs/BUMP_PROCEDURE.md) (§7 for
 
 ## [Unreleased]
 
+## [v21.5.0] 2026-10-31 — B10c: transverse services (service units, assignment, cost by effort, Services tab)
+
 ### B10c — transverse services: a unit serves several products, its cost split by effort
 
 - **Shared services.** A unit of the organisation can be marked **shared service** (🏢 Organisation, column Service). It does, across products,
