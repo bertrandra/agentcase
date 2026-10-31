@@ -21,6 +21,8 @@ When releasing, follow [docs/BUMP_PROCEDURE.md](docs/BUMP_PROCEDURE.md) (§7 for
 
 ### BPMN B9d — Plan screen: programme Gantt, WBS, OBS / RAM, resource histogram, MS Project export
 
+- **Size budget re-baselined (owner's decision 2026-10-31):** the app (without the editor payload) is 3.12 MB / 1.11 MB gzipped after B9a–B9e; the regression budget is now 3.59 / 1.28 MB (+15 %, the rule of `tools/perf.mjs`). Hard ceilings unchanged (5 / 1.5 MB).
+
 - **📅 Plan** (the 📅 Gantt / Timeline screen, same section id and menu label, DEV-B9D-PLAN-SCREEN): tabs Gantt, WBS, OBS / RAM and Histogram, views of the programme process
   only; every row and bar opens its activity in the Process section (SPEC_BPMN § 19.8 F-B73…F-B78, decisions D-B34…D-B37).
 - **One programme Gantt** (`domain/programme/gantt.ts`): bars from the timing owner, finish-to-start links with lag from the sequence and message
