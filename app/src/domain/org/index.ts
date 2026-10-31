@@ -4,6 +4,11 @@ export * from './types';
 export { orgOf, unitTree, isBelow, type OrgSource } from './model';
 export { readRaci, activityElements, RACI_ROLE_NAMES } from './readRaci';
 export { readStoredOrg, collaborationOf, type StoredOrg } from './readUnits';
+export { isStoredTeam, storedTeams, teamRowsIn, sharedLineIn, productRowsIn, ownerIn, caseTeamIn, lineRow, type StoredTeams } from './teamDoc';
+export { withProductTeam, withoutProductTeam, withOwner, withSharedLines } from './teamWrite';
+export { withoutTeams, withoutOrg, withTeamsOf, withOrgOf, withUnits, storedTeamElements, unitElements } from './teamStrip';
+export { isCarrier, carrier, orgExtOf } from './orgExt';
+export { unitAncestors, unitDescendants, productsOfUnit, UNASSIGNED } from './ownership';
 export { DEFAULT_UNIT_ID, defaultUnit, defaultUnitInput, derivedTeams, teamRowsOf, teamsServing, servingPct, productTeamId, sharedTeamId } from './teams';
 export { orgDiagnostics, raciDiagnostics, unstaffed, skillsOf, countBySeverity } from './diagnostics';
 export { byActivity, byRole, byTeam, providers, lettersOf, LETTERS, rShare, fteOn, type Letter, type ActivityAnswer, type RoleAnswer, type TeamAnswer,

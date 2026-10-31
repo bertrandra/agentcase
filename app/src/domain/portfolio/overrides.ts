@@ -1,5 +1,6 @@
 /** @calc-zone product-resolution */
-import { caseValues, emptiedStoredValues } from '../process/storedValues';
+import { withOrgOf, withoutOrg } from '../org/teamStrip';
+import { caseValues, emptiedStoredValues, keepStoredValues } from '../process/storedValues';
 import type { XDocument } from '../process/xml';
 import { parseRef, type ParsedRef } from './keys';
 import { withCommonValues } from './layers';
@@ -40,7 +41,8 @@ function writeOverride(o: Overrides, r: string, value: unknown): Overrides {
   const p = ref(r), out: Bag = { ...o };
   if (p.kind === 'top') {
     // schema v4: a product's own process document never holds a copy of the programme's values (it reads the common document's)
-    if (value === undefined) delete out[p.key]; else out[p.key] = p.key === 'BPMN' ? emptiedStoredValues(value as XDocument) : value;
+    // schema v5 (B10a): nor of the organisation (units and teams stay in the common document)
+    if (value === undefined) delete out[p.key]; else out[p.key] = p.key === 'BPMN' ? withoutOrg(emptiedStoredValues(value as XDocument)) : value;
     return out as Overrides;
   }
   const dom: Bag = { ...o.dom }, bag: Bag = { ...(o.dom?.[p.kind] as Bag | undefined) };
@@ -52,6 +54,8 @@ function writeOverride(o: Overrides, r: string, value: unknown): Overrides {
 
 function writeCommon(c: CommonCase, r: string, value: unknown): CommonCase {
   const p = ref(r);
+  // a process document becomes the common one with the common programme values and organisation (B9c, B10a)
+  if (p.kind === 'top' && p.key === 'BPMN' && c.BPMN?.root && value) return { ...c, BPMN: withOrgOf(keepStoredValues(value as XDocument, c.BPMN), c.BPMN) };
   if (p.kind === 'top') return { ...c, [p.key]: value };
   if (p.kind === 'values') return withCommonValues(c, { [p.id]: value === undefined ? undefined : String(value) });
   return { ...c, dom: { ...c.dom, checked: { ...c.dom.checked, [p.id]: value as boolean } } };

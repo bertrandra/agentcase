@@ -5,10 +5,11 @@ import type { XDocument } from '../process/xml';
 import { readRaci } from './readRaci';
 import { readStoredOrg } from './readUnits';
 import { DEFAULT_UNIT_ID, defaultUnit, derivedTeams } from './teams';
-import type { OrgModel, OrgRole } from './types';
+import { ownerIn } from './teamDoc';
+import type { OrgModel, OrgRole, ProductRef } from './types';
 
 /** What the organisation is read from: the products and shared lines of the portfolio (one product for a single case) and the case's document. */
-export type OrgSource = Pick<Portfolio, 'products' | 'sharedTeam'> & { customer?: string };
+export type OrgSource = Pick<Portfolio, 'products'> & { common: Pick<Portfolio['common'], 'BPMN'>; customer?: string };
 
 const roles = (d: XDocument): OrgRole[] => readProcess(d).actors.map((a) => {
   const r: OrgRole = { id: a.id, name: a.name, kind: a.kind === 'agent' ? 'agent' : 'role', regulatory: a.regulatory };
@@ -18,17 +19,19 @@ const roles = (d: XDocument): OrgRole[] => readProcess(d).actors.map((a) => {
 });
 
 /**
- * The organisation model (§ 16.3) of a case: the units of its document (plus the derived default delivery unit), the teams derived from the
- * entry teams (and any team an imported document holds), the role catalogue (the document's resources) and the RACI of every activity.
+ * The organisation model (§ 16.3) of a case: the units and teams of the organisation part of the COMMON document (plus the derived default
+ * delivery unit; schema v5), the teams an imported process document holds, the role catalogue (the case's document's resources), the RACI of every
+ * activity and each product's owning unit (D-B39).
  */
 export function orgOf(src: OrgSource, d: XDocument): OrgModel {
-  const stored = readStoredOrg(d), units = stored.units.some((u) => u.id === DEFAULT_UNIT_ID) ? stored.units
-    : [defaultUnit(src.customer ?? ''), ...stored.units];
+  const common = (src.common.BPMN as XDocument | undefined) ?? d, org = readStoredOrg(common), stored = readStoredOrg(d);
+  const units = org.units.some((u) => u.id === DEFAULT_UNIT_ID) ? org.units : [defaultUnit(src.customer ?? ''), ...org.units];
   return {
     units, teams: [...derivedTeams(src), ...stored.teams], roles: roles(d), activities: readRaci(d),
-    products: src.products.filter((p) => !p.archived).map((p) => ({ id: p.id, name: p.name })),
+    products: src.products.filter((p) => !p.archived).map((p) => withOwner({ id: p.id, name: p.name }, ownerIn(common, p.id))),
   };
 }
+const withOwner = (p: ProductRef, owner: string | undefined): ProductRef => (owner ? { ...p, owner } : p);
 
 /** The unit tree in display order (depth first, children in document order) with each unit's depth; units with an unknown parent are roots. */
 export function unitTree(m: Pick<OrgModel, 'units'>): { unit: OrgModel['units'][number]; depth: number }[] {

@@ -1,3 +1,4 @@
+import { productTeam, sharedLines } from '@/domain/portfolio';
 import { describe, expect, it } from 'vitest';
 import { exportParamsWorkbook, importParamsWorkbook } from '@/controllers/excelParams';
 import { clearSharedPins, removeSharedLine, setSharedPins } from '@/controllers/sharedTeam';
@@ -22,44 +23,46 @@ describe('pins on a shared team line: commands', () => {
       expect(snapUndoable(s)).toBe(before);
       s.redo();
     }
-    expect(pf().sharedTeam![0]).not.toHaveProperty('pins');
+    expect(sharedLines(pf())![0]).not.toHaveProperty('pins');
     expect(clearSharedPins(id)).toBe(false);   // nothing to clear: no step
   });
 
   it('the active product’s case sees the pins on its share row; its own team is untouched', () => {
-    const { id } = setup(), own = JSON.stringify(pf().products[0]!.teamIn);
+    const { id } = setup(), own = JSON.stringify(productTeam(pf(), pf().products[0]!.id));
     setSharedPins(id, ['A001', 'A002'], true);
     expect(doc().teamIn.find((r) => r.shared === id)!.pins).toEqual(['A001', 'A002']);
-    expect(JSON.stringify(pf().products[0]!.teamIn)).toBe(own);
+    expect(JSON.stringify(productTeam(pf(), pf().products[0]!.id))).toBe(own);
   });
 });
 
 describe('pins on a shared team line: persistence', () => {
   it('a portfolio file keeps the pins; bad pins are repaired with a note; a file without pins has none', () => {
     const { id } = setup(), plain = JSON.parse(JSON.stringify(toPortfolioSnapshot(pf())));
-    expect(openSnapshot(plain).sharedTeam![0]).not.toHaveProperty('pins');
+    expect(sharedLines(openSnapshot(plain))![0]).not.toHaveProperty('pins');
     setSharedPins(id, ['A001', 'A002'], true);
     const raw = JSON.parse(JSON.stringify(toPortfolioSnapshot(pf())));
-    expect(openSnapshot(raw).sharedTeam).toEqual(pf().sharedTeam);
-    const bad = JSON.parse(JSON.stringify(raw)) as { sharedTeam: { pins: unknown }[] };
+    expect(sharedLines(openSnapshot(raw))).toEqual(sharedLines(pf()));
+    // a version 4 file (the lines as the `sharedTeam` key) with bad pins: repaired with a note, then written into the document (B10a)
+    const bad = { ...JSON.parse(JSON.stringify(raw)), _schemaVersion: 4, sharedTeam: structuredClone(sharedLines(pf())) } as { sharedTeam: {
+      pins: unknown }[] };
     bad.sharedTeam[0]!.pins = ['A001', 7, 'A001'];
     let r = openChecked(bad);
-    expect(r.portfolio.sharedTeam![0]!.pins).toEqual(['A001']);
+    expect(sharedLines(r.portfolio)![0]!.pins).toEqual(['A001']);
     expect(r.notes.join('\n')).toMatch(/pin 7 is not valid/);
     bad.sharedTeam[0]!.pins = 'A001';
     r = openChecked(bad);
-    expect(r.portfolio.sharedTeam![0]).not.toHaveProperty('pins');
+    expect(sharedLines(r.portfolio)![0]).not.toHaveProperty('pins');
     expect(r.notes.join('\n')).toMatch(/pins is not a list/);
   });
 
   it('the parameters workbook exports the pins (SharedTeam sheet, column H) and imports them back', async () => {
     const { id } = setup();
     setSharedPins(id, ['A001', 'A003'], true);
-    const before = pf().sharedTeam, b = await (await exportParamsWorkbook('all', ENV)).blob.arrayBuffer();
+    const before = sharedLines(pf()), b = await (await exportParamsWorkbook('all', ENV)).blob.arrayBuffer();
     removeSharedLine(id);
     await importParamsWorkbook(file(b), ENV);
-    expect(pf().sharedTeam).toEqual(before);
-    expect(pf().sharedTeam![0]!.pins).toEqual(['A001', 'A003']);
+    expect(sharedLines(pf())).toEqual(before);
+    expect(sharedLines(pf())![0]!.pins).toEqual(['A001', 'A003']);
   });
 
   it('an import with an unknown or a twice-pinned artefact stops before any write: the portfolio is untouched', async () => {

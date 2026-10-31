@@ -8,6 +8,7 @@ import { phaseTiles } from '../scope/phaseTiles';
 import { scurveView } from '../scope/scurveView';
 import { phasesForScope } from '../scopeView';
 import { base, productCases, spread, type AggBase, type Spread } from './aggScopeRows';
+import { processCommon } from './teamAccess';
 import type { Portfolio } from './types';
 import { scopeOf } from '../process/scope';
 
@@ -85,7 +86,7 @@ export interface ScopeSelAgg {
 
 export function scopeSelection(pf: Portfolio, ids: string[]): ScopeSelAgg {
   const cs = productCases(pf, ids), phases = phasesForScope().map((p) => ({ id: p.id, name: p.name }));
-  const ck = scopeOf(pf.common), com = new Set([...ck.selectedArtefacts, ...ck.selectedRegArtefacts]), votes = new Map<string, number>();
+  const ck = scopeOf(processCommon(pf.common)), com = new Set([...ck.selectedArtefacts, ...ck.selectedRegArtefacts]), votes = new Map<string, number>();
   const total = { sdlc: 0, reg: 0, phases: Object.fromEntries(phases.map((p) => [p.id, 0])) as Record<string, number> };
   const rows = cs.map((p) => {
     const t = phaseTiles(p.ctx), k = scopeOf(p.c), mine = new Set([...k.selectedArtefacts, ...k.selectedRegArtefacts]), per: Record<string, number> = {};

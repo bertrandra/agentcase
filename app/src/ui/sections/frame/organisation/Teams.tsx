@@ -7,8 +7,8 @@ const lineText = (t: OrgTeam): string => t.lines.map((l) => `${l.skill} · ${l.g
 const fteOf = (t: OrgTeam): number => t.lines.reduce((s, l) => s + (+l.etp || 0), 0);
 
 /**
- * The teams of the organisation. In this version they are views of the entry teams: each product's Input team is its delivery team, each shared
- * team line a shared team; they are edited where they were (the same commands), and give the figures exactly as before.
+ * The teams of the organisation, stored in its organisation part (schema v5): each product's delivery team is its entry team (edited in Input
+ * team), each shared team line a shared team (edited in Products); the figures read them exactly as before.
  */
 export function Teams({ m }: { m: OrgParts }) {
   const products = new Map(m.products.map((p) => [p.id, p.name])), units = new Map(m.units.map((u) => [u.id, u.name]));

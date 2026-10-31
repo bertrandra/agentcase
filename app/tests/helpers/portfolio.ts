@@ -1,6 +1,8 @@
 import { readdirSync, readFileSync } from 'node:fs';
 import type { CaseState } from '@/domain';
-import { envelopeCase, type KnowledgeSubset, type Overrides, type Portfolio, type Product, type SharedTeamLine } from '@/domain/portfolio';
+import { envelopeCase, productTeam, withProductRows, type KnowledgeSubset, type Overrides, type Portfolio, type Product,
+  type SharedTeamLine } from '@/domain/portfolio';
+import type { TeamRow } from '@/domain/types/state';
 
 export const FIXTURE_IDS = readdirSync('fixtures/cases').map((f) => f.replace('.json', '')).sort();
 export const loadCase = (id: string): CaseState => JSON.parse(readFileSync(`fixtures/cases/${id}.json`, 'utf8')) as CaseState;
@@ -14,15 +16,16 @@ export const expectSeriesClose = (a: number[], b: number[], tol = 1e-9): void =>
   a.forEach((x, i) => { if (!close(x, b[i] as number, tol)) throw new Error(`index ${i}: ${x} !~ ${b[i]}`); });
 };
 
-export interface ProductSpec { id: string; waveId?: string | null; offset?: number; teamIn?: Product['teamIn']; overrides?: Overrides;
+export interface ProductSpec { id: string; waveId?: string | null; offset?: number; teamIn?: TeamRow[]; overrides?: Overrides;
   knowledge?: KnowledgeSubset; name?: string }
 
-/** Add a product (default: the case's team, wave w1) and list it in its wave. Pure. */
+/** Add a product (default: the case's team, wave w1) and list it in its wave. Pure. Schema v5: its team is written into the common document. */
 export function withProduct(pf: Portfolio, spec: ProductSpec): Portfolio {
   const base = pf.products[0] as Product, waveId = spec.waveId === undefined ? 'w1' : spec.waveId;
-  const p: Product = { id: spec.id, name: spec.name ?? spec.id, teamIn: spec.teamIn ?? base.teamIn, knowledge: spec.knowledge ?? {},
+  const p: Product = { id: spec.id, name: spec.name ?? spec.id, knowledge: spec.knowledge ?? {},
     overrides: spec.overrides ?? {}, waveId, offsetMonths: spec.offset ?? 0 };
-  return { ...pf, products: [...pf.products, p], waves: pf.waves.map((w) => (w.id === waveId ? { ...w, productIds: [...w.productIds, p.id] } : w)) };
+  const out = { ...pf, products: [...pf.products, p], waves: pf.waves.map((w) => (w.id === waveId ? { ...w, productIds: [...w.productIds, p.id] } : w)) };
+  return withProductRows(out, p.id, spec.teamIn ?? productTeam(pf, base.id), p.name);
 }
 
 export const withWave = (pf: Portfolio, id: string,
@@ -40,14 +43,14 @@ export function identical(c: CaseState, n: number, start = 0): Portfolio {
 }
 
 /** Same case, scaled team so that each product has its own engine run (perf and isolation tests). */
-export const scaledTeam = (c: CaseState, f: number): Product['teamIn'] => c.teamIn.map((r) => ({ ...r, etp: r.etp * f }));
+export const scaledTeam = (c: CaseState, f: number): TeamRow[] => c.teamIn.map((r) => ({ ...r, etp: r.etp * f }));
 
 /** The performance portfolio of spec 8: 20 distinct products (own team each) over 60 months in 4 waves. */
 export function bigPortfolio(): Portfolio {
   const c = loadCase('horizon-5');
   let pf = envelopeCase(c);
   for (const [i, s] of [[2, 6], [3, 12], [4, 18]] as const) pf = withWave(pf, 'w' + i, s);
-  pf = { ...pf, products: [{ ...pf.products[0]!, teamIn: scaledTeam(c, 0.5) }] };
+  pf = withProductRows(pf, 'p1', scaledTeam(c, 0.5));
   for (let i = 2; i <= 20; i++) pf = withProduct(pf, { id: 'p' + i, waveId: 'w' + (1 + (i % 4)), offset: i % 3, teamIn: scaledTeam(c, 0.5 + i / 10) });
   return { ...pf, waves: pf.waves.map((w) => ({ ...w, productIds: pf.products.filter((p) => p.waveId === w.id).map((p) => p.id) })) };
 }

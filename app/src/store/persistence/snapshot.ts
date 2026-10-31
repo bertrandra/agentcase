@@ -1,5 +1,6 @@
 /** @calc-zone exports */
 import { buildCalcPackage } from '@/domain/calcPackage';
+import { caseTeamIn, withoutTeams } from '@/domain/org';
 import { makeDefaultDoc } from '../instance';
 import { PERSONA_KEY } from '../persona';
 import { SnapshotError } from './errors';
@@ -44,7 +45,8 @@ export function packageOfSnapshot(raw: unknown): unknown {
 }
 
 /**
- * Snapshot JSON → document. Accepts legacy snapshots (no schema tag). Keys the snapshot does not carry take the code defaults,
+ * Snapshot JSON → document (the case form: its entry team as `teamIn`, its document without the stored teams, schema v5). Accepts legacy snapshots
+ * (no schema tag). Keys the snapshot does not carry take the code defaults,
  * so new defaults reach old files; a snapshot without form inputs is rejected.
  */
 export function fromSnapshot(raw: unknown): Doc {
@@ -61,5 +63,9 @@ export function fromSnapshot(raw: unknown): Doc {
   delete doc.savedAt; delete doc._schema; delete doc[VERSION_KEY]; delete doc.calculationPackage; delete doc[PERSONA_KEY];
   doc.dom = { values: { ...makeDefaultDoc().dom.values, ...(own.values as object) },
     checked: { ...makeDefaultDoc().dom.checked, ...(own.checked as object) } } as Doc['dom'];
+  // schema v5: the case's entry team is the team its document holds (a version 4 file's `teamIn` key, corrected by the validators, else)
+  const team = caseTeamIn(doc.BPMN);
+  if (team && stored.teamIn === undefined) doc.teamIn = team.rows;
+  doc.BPMN = withoutTeams(doc.BPMN) ?? doc.BPMN;
   return withoutRegIncludeBox(doc);   // B9a: the box is the process's regInclude, not a stored form state
 }

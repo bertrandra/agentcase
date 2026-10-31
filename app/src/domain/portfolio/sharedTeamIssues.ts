@@ -1,5 +1,6 @@
 /** @calc-zone portfolio-consolidation */
 import { allocatedPct } from './sharedTeam';
+import { sharedLines } from './teamAccess';
 import type { Portfolio } from './types';
 import type { Issue } from './validate';
 
@@ -9,7 +10,7 @@ const isPct = (x: unknown): boolean => typeof x === 'number' && Number.isFinite(
 /** Invariants of the shared lines (errors): safe unique ids, text labels, an FTE >= 0, shares in [0, 100]. */
 export function sharedTeamErrors(pf: Portfolio): Issue[] {
   const out: Issue[] = [], seen = new Set<string>();
-  for (const l of pf.sharedTeam ?? []) {
+  for (const l of sharedLines(pf)) {
     if (!SAFE_ID.test(l.id) || seen.has(l.id)) out.push({ code: 'shared-line-id', message: `shared team line "${l.id}": missing or duplicate id` });
     seen.add(l.id);
     if (![l.skill, l.grade, l.loc].every((x) => typeof x === 'string')) out.push({ code: 'shared-line',
@@ -26,7 +27,7 @@ export function sharedTeamErrors(pf: Portfolio): Issue[] {
   return out;
 }
 
-const label = (pf: Portfolio, id: string): string => { const l = pf.sharedTeam?.find((x) => x.id === id); return l ? `${l.skill} ${l.grade} ${l.loc}` : id; };
+const label = (pf: Portfolio, id: string): string => { const l = sharedLines(pf).find((x) => x.id === id); return l ? `${l.skill} ${l.grade} ${l.loc}` : id; };
 
 /**
  * Warnings on the shared lines of a valid document: shares adding up to more than 100 % (the line would be counted more than once) and shares
@@ -34,7 +35,7 @@ const label = (pf: Portfolio, id: string): string => { const l = pf.sharedTeam?.
  */
 export function sharedTeamDiagnostics(pf: Portfolio): Issue[] {
   const out: Issue[] = [], ids = new Set(pf.products.map((p) => p.id));
-  for (const l of pf.sharedTeam ?? []) {
+  for (const l of sharedLines(pf)) {
     const sum = allocatedPct(l);
     if (sum > 100 + 1e-9) out.push({ code: 'shared-over',
       message: `shared line ${label(pf, l.id)}: shares add up to ${+sum.toFixed(2)} % (more than 100 %): counted more than once` });

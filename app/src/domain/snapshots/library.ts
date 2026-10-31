@@ -3,6 +3,10 @@ import { APP_VERSION, versionFileTag, versionTag } from '../version';
 import { BPMN_KEY } from '../process/scope';
 import type { XDocument } from '../process/xml';
 import { serialize } from '../process/xmlWrite';
+import { isCarrier } from '../org/orgExt';
+import { withProductTeam } from '../org/teamWrite';
+import { DEFAULT_PRODUCT_NAME } from '../portfolio/frenchAliases';
+import type { TeamRow } from '../types/state';
 import type { NamedSnapshot } from './types';
 
 export const SNAPSHOT_KEY = 'namedSnapshots';
@@ -27,13 +31,17 @@ export function withVerTag(name: string | null, now: Date): string {
 }
 
 /**
- * The case as stored in a snapshot: everything except the library itself, in its file form (the process document as XML text, schema v3).
+ * The case as stored in a snapshot: everything except the library itself, in its file form (the process document as XML text, schema v3; its entry
+ * team inside it, schema v5).
  * Shares (immutable) sub-objects with the document.
  */
 export function captureState(doc: Record<string, unknown>, now: Date): Record<string, unknown> {
   const rest = { ...doc }, bpmn = rest[BPMN_KEY];
   delete rest[SNAPSHOT_KEY];
-  if (bpmn && typeof bpmn === 'object') rest[BPMN_KEY] = serialize(bpmn as XDocument);
+  if (bpmn && typeof bpmn === 'object' && Array.isArray(rest.teamIn) && !isCarrier(bpmn as XDocument)) {   // schema v5: the team in the document
+    rest[BPMN_KEY] = serialize(withProductTeam(bpmn as XDocument, 'p1', rest.teamIn as TeamRow[], DEFAULT_PRODUCT_NAME));
+    delete rest.teamIn;
+  } else if (bpmn && typeof bpmn === 'object') rest[BPMN_KEY] = serialize(bpmn as XDocument);
   return { ...rest, savedAt: now.toISOString() };
 }
 

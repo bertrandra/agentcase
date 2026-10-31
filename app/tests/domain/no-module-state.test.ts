@@ -16,6 +16,15 @@ const rel = (f: string) => relative(SRC, f).replace(/\\/g, '/');
 
 /** `file:name` → why this module-level container is not state: a memo keyed by an immutable input (same input, same output) or a constant lookup. */
 const ALLOWED: Record<string, string> = {
+  'domain/org/teamDoc.ts:rows': 'memo: the rows of a team element (keyed by the immutable node)',
+  'domain/org/teamDoc.ts:lines': 'memo: the shared line of a team element (keyed by the immutable node)',
+  'domain/org/teamDoc.ts:memo': 'memo: the stored teams of an extension elements node',
+  'domain/org/teamStrip.ts:interned': 'memo: the document without its teams, interned on the identity of its other nodes',
+  'domain/org/teamStrip.ts:direct': 'memo: the document without its teams, per document',
+  'domain/portfolio/teamAccess.ts:lineRoots': 'memo: the shared lines of a list of team elements',
+  'domain/portfolio/teamAccess.ts:commons': 'memo: the common values without the teams, per common values',
+  'domain/portfolio/teamAccess.ts:stable': 'memo: the common values without the teams, interned on the identity of their other values',
+  'domain/process/xmlWrite.ts:parts': 'memo: the text of a top-level element (keyed by the immutable node)',
   'domain/model/auditEvidence.ts:memo': 'memo: the audited evidence per driver of a process document and an evaluation date (keyed by its node tree)',
   'domain/canonical.ts:engines': 'memo: the engine of a Ctx (WeakMap keyed by the immutable context)',
   'domain/model/overlay.ts:cache': 'memo: the model result of a Ctx',

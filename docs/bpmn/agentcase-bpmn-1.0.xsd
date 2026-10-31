@@ -311,7 +311,7 @@
   </xsd:element>
 
   <xsd:element name="team">
-    <xsd:annotation><xsd:documentation>A team of an organisation unit; its lines have the shape of teamIn (skill, grade, location, FTE, pins).</xsd:documentation></xsd:annotation>
+    <xsd:annotation><xsd:documentation>A team of an organisation unit; its lines have the shape of teamIn (skill, grade, location, FTE, pins). Schema v5 (B10a): in a case's stored document, a product's entry team carries `product` (and the product's owning unit, `owner`, D-B39); a shared team line carries `line` and one ac:share per product it serves.</xsd:documentation></xsd:annotation>
     <xsd:complexType>
       <xsd:sequence>
         <xsd:element name="line" minOccurs="0" maxOccurs="unbounded">
@@ -323,10 +323,19 @@
             <xsd:attribute name="pins" type="xsd:NMTOKENS"/>
           </xsd:complexType>
         </xsd:element>
+        <xsd:element name="share" minOccurs="0" maxOccurs="unbounded">
+          <xsd:complexType>
+            <xsd:attribute name="product" type="ac:tKey" use="required"/>
+            <xsd:attribute name="pct" type="ac:tPercent" use="required"/>
+          </xsd:complexType>
+        </xsd:element>
       </xsd:sequence>
       <xsd:attribute name="id" type="xsd:ID" use="required"/>
       <xsd:attribute name="name" type="ac:tName" use="required"/>
       <xsd:attribute name="unit" type="xsd:IDREF" use="required"/>
+      <xsd:attribute name="product" type="ac:tKey"/>
+      <xsd:attribute name="owner" type="xsd:IDREF"/>
+      <xsd:attribute name="line" type="ac:tKey"/>
     </xsd:complexType>
   </xsd:element>
 

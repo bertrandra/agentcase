@@ -1,3 +1,4 @@
+import { addSharedLine, productTeam, sharedLines, withProductRows } from '@/domain/portfolio';
 import { readdirSync, readFileSync } from 'node:fs';
 import { describe, expect, it } from 'vitest';
 import texts from '@/content/refshare/datamodel-fields.json';
@@ -28,9 +29,10 @@ function everyField(): Portfolio {
   const p2 = { ...structuredClone(p1), id: 'p2', name: 'B', note: 'n', archived: true, waveId: 'w2', offsetMonths: 2,
     knowledge: { enabled: true, domains: [{ label: 'D', weightPct: 100 }], maturityAnswers: [1, 1, 1, 1, 1, 1, 1, 1, 1], targetCC: 2, curationFTE: 1,
       setupBase: 1, ktLeadMonths: 1 } };
-  return { ...pf, rho: 0.3, maxConcurrentSetups: 2, startDate: '2027-01-01', products: [p1, p2],
-    waves: [w1, { id: 'w2', name: 'W2', note: 'n', startMonth: 3, productIds: ['p2'], dependsOn: { waveId: w1.id, milestone: 'setupEnd', lagMonths: 1 } }],
-    sharedTeam: [{ id: 's1', skill: 'Dev', grade: 'B2', loc: 'France', etp: 1, allocations: { [p1.id]: 50, p2: 50 }, pins: ['art-1'] }] };
+  const out = withProductRows({ ...pf, rho: 0.3, maxConcurrentSetups: 2, startDate: '2027-01-01', products: [p1, p2],
+    waves: [w1, { id: 'w2', name: 'W2', note: 'n', startMonth: 3, productIds: ['p2'], dependsOn: { waveId: w1.id, milestone: 'setupEnd', lagMonths: 1 } }] },
+  'p2', productTeam(pf, p1.id), p2.name);   // schema v5: the team and the shared line are in the common document
+  return addSharedLine(out, { id: 's1', skill: 'Dev', grade: 'B2', loc: 'France', etp: 1, allocations: { [p1.id]: 50, p2: 50 }, pins: ['art-1'] });
 }
 
 describe('Data Model: every documented layer is introspected from the code', () => {
@@ -52,7 +54,7 @@ describe('Data Model: every documented layer is introspected from the code', () 
     expect(keys(pf.products[1]!.knowledge)).toEqual(keys(F.KNOWLEDGE_SUBSET_FIELDS));
     expect(keys(pf.waves[1]!)).toEqual(keys(F.WAVE_FIELDS));
     expect(keys(pf.waves[1]!.dependsOn!)).toEqual(keys(F.WAVE_DEPENDENCY_FIELDS));
-    expect(keys(pf.sharedTeam![0]!)).toEqual(keys(F.SHARED_TEAM_LINE_FIELDS));
+    expect(keys(sharedLines(pf)[0]!)).toEqual(keys(F.SHARED_TEAM_LINE_FIELDS));
     expect(keys(pf.hub)).toEqual(keys(F.HUB_FIELDS));
     expect(levels(pf).map((l) => l.sample === undefined)).toEqual(levels(pf).map(() => false));   // every level shows a live instance
   });
@@ -106,7 +108,7 @@ describe('Data Model: every documented layer is introspected from the code', () 
     expect(pfSheets.find((s) => s.sheet === 'SharedTeam')!.columns).toEqual(PF_HEADERS.SharedTeam);
     expect(pfSheets.find((s) => s.sheet === 'Waves')!.columns).toContain('Depends on (wave id)');
     expect(sheets.filter((s) => s.workbook === 'Cost model')).toHaveLength(3);
-    expect(formatFacts().migrations).toEqual(['v1 → v2', 'v2 → v3', 'v3 → v4']);
+    expect(formatFacts().migrations).toEqual(['v1 → v2', 'v2 → v3', 'v3 → v4', 'v4 → v5']);
   });
   it('calculation package: every figure and identity field is compared on open, the schema tag is not (measured on samePackage)', () => {
     const f = packageFields(buildCalcPackage(makeDefaultDoc()));

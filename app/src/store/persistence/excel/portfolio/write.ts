@@ -1,6 +1,6 @@
 /** @calc-zone exports */
 import type * as XL from 'exceljs';
-import type { Portfolio } from '@/domain/portfolio';
+import { productTeam, sharedLines, type Portfolio } from '@/domain/portfolio';
 import { blue, frz, geDV, head, listDV, rangeDV, sheet, ynDV } from '../params/kit';
 import { PF_HEADERS, PF_SHEETS } from './names';
 import { writeKnowledge } from './writeKnowledge';
@@ -45,7 +45,7 @@ function writeWaves(wb: XL.Workbook, pf: Portfolio): void {
 
 function writeTeams(wb: XL.Workbook, pf: Portfolio): void {
   const w = ws(wb, PF_SHEETS.team, [16, 16, 9, 12, 8, 46]);
-  pf.products.forEach((p) => p.teamIn.forEach((t) => inputs(w.addRow([p.id, t.skill, t.grade, t.loc, t.etp, (t.pins ?? []).join(';')]), 6)));
+  pf.products.forEach((p) => productTeam(pf, p.id).forEach((t) => inputs(w.addRow([p.id, t.skill, t.grade, t.loc, t.etp, (t.pins ?? []).join(';')]), 6)));
   finish(w);
 }
 
@@ -54,9 +54,10 @@ function writeTeams(wb: XL.Workbook, pf: Portfolio): void {
  * pinned artefacts; the line's fields and pins repeat on each of its rows).
  */
 function writeShared(wb: XL.Workbook, pf: Portfolio): void {
-  if (!pf.sharedTeam?.length) return;
+  const lines = sharedLines(pf);
+  if (!lines.length) return;
   const w = ws(wb, PF_SHEETS.shared, [12, 16, 9, 12, 8, 16, 10, 46]);
-  for (const l of pf.sharedTeam) {
+  for (const l of lines) {
     const shares = Object.entries(l.allocations), pins = (l.pins ?? []).join(';');
     for (const [pid, pct] of shares.length ? shares : [['', '']]) inputs(w.addRow([l.id, l.skill, l.grade, l.loc, l.etp, pid, pct, pins]), 8);
   }

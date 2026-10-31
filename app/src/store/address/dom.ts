@@ -2,6 +2,7 @@
 import { deepEqual, parseRef } from '@/domain/portfolio';
 import { caseValues } from '@/domain/process';
 import { isProgrammeKey } from '@/domain/programme/storedKeys';
+import { isCarrier } from '@/domain/org';
 import { clampHorizonYears } from '@/domain/inputs';
 import { commonInfra } from '@/domain/portfolio/layers';
 import type { CommonCase } from '@/domain/portfolio';
@@ -46,9 +47,11 @@ function writeField(c: AddressCtx, kind: Kind, id: string, value: unknown): void
   writeCommon(c, kind, id, value);
 }
 
+/** A common document that holds a process (not an organisation carrier: an object without a process document keeps form values). */
+const hasProcess = (d: unknown): boolean => !!d && typeof d === 'object' && !isCarrier(d as never);
 /** The common value of a form field (and its portfolio-level mirror); a programme value goes to the common document. */
 function writeCommon(c: AddressCtx, kind: Kind, id: string, value: unknown): void {
-  if (kind === 'values' && isProgrammeKey(id)) {   // schema v4: the common document holds it (`programmePatches`)
+  if (kind === 'values' && isProgrammeKey(id) && hasProcess(c.pf.common.BPMN)) {   // schema v4: the common document holds it (`documentPatches`)
     (c.programme ??= {})[id] = value === undefined ? null : String(value);
     syncMirrors(c, kind, id, value);
     return;

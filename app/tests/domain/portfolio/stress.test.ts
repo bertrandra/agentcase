@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'vitest';
 import { makeCtx } from '@/domain';
-import { envelopeCase, pfStressFingerprint, portfolioMonteCarlo, productSeed, relSpreadOf, type Portfolio } from '@/domain/portfolio';
+import { envelopeCase, pfStressFingerprint, portfolioMonteCarlo, productSeed, relSpreadOf, withProductRows, type Portfolio } from '@/domain/portfolio';
 import { mcSeedOf, runMonteCarlo } from '@/domain/stress';
 import { quantile } from '@/domain/model/numerics';
 import { extraIds, loadCase as loadExtraCase } from '../../helpers/extras';
@@ -98,7 +98,7 @@ describe('determinism, structure, staleness', () => {
     expect(pfStressFingerprint(pf, 0.5)).not.toBe(f);
     expect(pfStressFingerprint({ ...pf, rho: 0.5 })).toBe(pfStressFingerprint(pf, 0.5));
     expect(pfStressFingerprint({ ...pf, waves: pf.waves.map((w) => ({ ...w, startMonth: w.startMonth + 1 })) })).not.toBe(f);
-    expect(pfStressFingerprint({ ...pf, products: pf.products.map((p, i) => (i ? p : { ...p, teamIn: scaledTeam(base, 2) })) })).not.toBe(f);
+    expect(pfStressFingerprint(withProductRows(pf, pf.products[0]!.id, scaledTeam(base, 2)))).not.toBe(f);
     expect(run(pf, 0.2).fingerprint).toBe(pfStressFingerprint(pf, 0.2));
   });
 });
@@ -106,7 +106,7 @@ describe('determinism, structure, staleness', () => {
 describe('performance', () => {
   it('20 products x 1000 draws (generous budget; the job is chunked per product so the screen can breathe)', () => {
     let pf = envelopeCase(base);
-    pf = { ...pf, products: [{ ...pf.products[0]!, teamIn: scaledTeam(base, 0.5) }] };
+    pf = withProductRows(pf, 'p1', scaledTeam(base, 0.5));
     for (let i = 2; i <= 20; i++) pf = withProduct(pf, { id: 'p' + i, teamIn: scaledTeam(base, 0.5 + i / 10) });
     const t = performance.now(), r = portfolioMonteCarlo(pf, { draws: 1000, seed: 42, rho: 0.3 });
     const ms = performance.now() - t;

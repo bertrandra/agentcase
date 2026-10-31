@@ -7,7 +7,7 @@ import { removeWave } from '@/domain/portfolio/waveOps';
 import { openPortfolioFixture } from '../../helpers/portfolioFixtures';
 
 const prod = (id: string, waveId: string | null, offsetMonths = 0): Product =>
-  ({ id, name: id.toUpperCase(), teamIn: [], knowledge: {}, overrides: {}, waveId, offsetMonths });
+  ({ id, name: id.toUpperCase(), knowledge: {}, overrides: {}, waveId, offsetMonths });
 const wave = (id: string, startMonth: number, productIds: string[], dependsOn?: Wave['dependsOn']): Wave =>
   ({ id, name: `W-${id}`, startMonth, productIds, ...(dependsOn ? { dependsOn } : {}) });
 /** a: p1, p2 (offset 2) from month 0; b: p3 from month 3; c: p4 from month 1. Setups: p1 4, p2 6, p3 5, p4 3 months. */

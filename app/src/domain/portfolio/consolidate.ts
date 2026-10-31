@@ -3,6 +3,7 @@ import { caseDiscountRate } from '../canonical';
 import { runOf } from './run';
 import { ctxOf } from './memo';
 import { resolveProduct } from './resolve';
+import { processCommon } from './teamAccess';
 import { productSeries, type Series } from './series';
 import { scheduledProducts, unscheduledIds } from './timeline';
 import type { Summary } from './headline';
@@ -40,7 +41,7 @@ const memo = new WeakMap<Portfolio, Consolidated>();
 export function consolidate(pf: Portfolio): Consolidated {
   const hit = memo.get(pf);
   if (hit) return hit;
-  const horizon = Math.max(0, Math.floor(pf.horizonMonths) || 0), rate = commonRate(pf.common);
+  const horizon = Math.max(0, Math.floor(pf.horizonMonths) || 0), rate = commonRate(processCommon(pf.common));
   const products = scheduledProducts(pf).map((s) => {
     const run = runOf(resolveProduct(pf, s.product.id));
     return productView(s, run, productSeries(run, s, horizon), rate);

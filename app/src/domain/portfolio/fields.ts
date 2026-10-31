@@ -9,11 +9,11 @@ export type FieldSet<T> = { readonly [K in keyof T]-?: object extends Pick<T, K>
 
 export const PORTFOLIO_FIELDS: FieldSet<Portfolio> = {
   _schema: 'required', common: 'required', products: 'required', waves: 'required', activeProductId: 'required', hub: 'required',
-  horizonMonths: 'required', startDate: 'required', rho: 'optional', maxConcurrentSetups: 'optional', sharedTeam: 'optional',
+  horizonMonths: 'required', startDate: 'required', rho: 'optional', maxConcurrentSetups: 'optional',
 };
 
 export const PRODUCT_FIELDS: FieldSet<Product> = {
-  id: 'required', name: 'required', note: 'optional', archived: 'optional', teamIn: 'required', knowledge: 'required', overrides: 'required',
+  id: 'required', name: 'required', note: 'optional', archived: 'optional', knowledge: 'required', overrides: 'required',
   waveId: 'required', offsetMonths: 'required',
 };
 

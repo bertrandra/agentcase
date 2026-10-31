@@ -26,7 +26,7 @@ const shareCmd = definePortfolioCommand<{ id: string; productId: string; pct: nu
  * null when refused. One undoable step.
  */
 export function addSharedLine(row: Partial<Omit<SharedTeamLine, 'id'>> = {}): string | null {
-  const id = newId('s', (appStore().getState().portfolio.sharedTeam ?? []).map((l) => l.id));
+  const id = newId('s', ops.sharedLines(appStore().getState().portfolio).map((l) => l.id));
   const line: SharedTeamLine = { skill: 'Dev', grade: 'B1', loc: 'France', etp: FTE_STEP, allocations: {}, ...row, id };
   return dispatchChecked(addCmd({ line })) ? id : null;
 }

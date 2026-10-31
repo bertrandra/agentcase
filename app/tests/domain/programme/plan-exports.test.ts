@@ -27,7 +27,7 @@ import { opened as loadCase } from '../../helpers/processCases';
  * MSPDI schema (docs/bpmn/microsoft/, hash pinned in SOURCES.md).
  */
 const views = (s: CaseState, scope: PlanScope = { kind: 'product' }, pf: Portfolio = envelopeCase(s)) =>
-  planViews({ c: makeCtx(s), name: pf.products[0]!.name, org: orgOf({ products: pf.products, sharedTeam: pf.sharedTeam }, s.BPMN), scope,
+  planViews({ c: makeCtx(s), name: pf.products[0]!.name, org: orgOf({ products: pf.products, common: pf.common }, s.BPMN), scope,
     k: consolidate(pf), capacity: 1 });
 const OPT_ALL = { optStages: 'on', optValue: 'on', optAiAct: 'on', optAudit: 'on', optProcure: 'on', optIntegr: 'on', optHypercare: 'on', optDecom: 'on' };
 const allOn = (s: CaseState): CaseState => ({ ...s, dom: { ...s.dom, values: { ...s.dom.values, ...OPT_ALL } } });
