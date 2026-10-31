@@ -1,4 +1,5 @@
 /** @calc-zone verdict */
+import { caseValues } from '../process/storedValues';
 import type { Ctx } from '../ctx';
 import { engagementCoef } from '../engagement';
 import { khMult } from '../knowledge';
@@ -79,7 +80,7 @@ export function ddRows(c: Ctx, base: DdDoc & AssumptionBase, ok: Validated = {})
     edit: { sec: 'quality', note: 'as-is also editable in Quality — target only here' }, cls: 'PC4',
       ed: { a: q[1], t: q[2], da: base.QUALITY?.[i]?.[1], dt: base.QUALITY?.[i]?.[2], field: { kind: 'qual', i } } }));
   const inputs = ASSUMPTION_DEFS.map((a): DdRow => {
-    const cur = a.id === 'horizon' ? c.inp.v(a.id) : c.s.dom.values[a.id], def = base.dom.values[a.id];
+    const cur = a.id === 'horizon' ? c.inp.v(a.id) : caseValues(c.s)[a.id], def = base.dom.values[a.id];
     return { id: `in-${a.id}`, g: `Inputs — ${a.g}`, l: a.l, v: cur === undefined ? '—' : cur, where: 'assumptions register',
       eff: String(cur) !== String(def) ? `Adjusted from default ${def}` : 'At default',
       edit: { sec: 'assumptions', also: 'params', note: 'set in Parameters / Levers, tracked in the register' }, cls: 'PC1', ok: !!ok[a.id] };

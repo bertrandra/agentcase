@@ -3,6 +3,7 @@ import type { CaseState } from '../types/state';
 import { BPSIM_DECL, bpsimRelationship, elementParameters, isOwnBpsim, type BpsimValues } from './bpsim';
 import { partialOf, withProduct, without } from './partial';
 import { readProcess } from './read';
+import { withoutStoredValues } from './storedValues';
 import { boundaryBpsim } from './profile/bpsimBoundary';
 import { withHeader } from './profile/header';
 import { APP_VERSION } from '../version';
@@ -45,7 +46,7 @@ export function withBpsim(root: XElement, params: XElement[]): XElement {
 
 /** The process document of a product inside a portfolio file: product header and in-scope filter applied, no BPSim yet. */
 export function productDocument(c: CaseState, opts: ExportOptions): XDocument {
-  const d = c.BPMN;
+  const d = withoutStoredValues(c.BPMN);   // B9c: the stored programme values are written on the programme's activities, not in the delivery process
   let root = d.root;
   if (opts.product) root = withProduct(root, opts.product.code, opts.product.name);
   if (opts.partial) root = partialOf(root);

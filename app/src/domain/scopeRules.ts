@@ -1,4 +1,5 @@
 /** @calc-zone scope-automation */
+import { caseValues } from './process/storedValues';
 import { decisionValues } from './dmn';
 import type { Context, Value } from './feel';
 import { lifecycleBlend } from './lifecycle';
@@ -18,7 +19,7 @@ export function conditionContext(s: CaseState): Context {
   const industries = [...new Set(k.selectedNorms.filter((n) => n.includes(':')).map((n) => n.slice(0, n.indexOf(':'))))];
   let lifecycle: string | null = null;
   if (s.lifecycleUse) { const b = lifecycleBlend(s); lifecycle = (b.frac < 0.5 ? b.lo : b.hi).id; }
-  const values: Record<string, Value> = { ...(s.dom?.values ?? {}) }, checked: Record<string, Value> = { ...(s.dom?.checked ?? {}) };
+  const values: Record<string, Value> = { ...caseValues(s) }, checked: Record<string, Value> = { ...(s.dom?.checked ?? {}) };
   const ctx: Context = { industry: s.dom?.values?.industry ?? null, norms, industries, regInclude: k.regInclude, phasesOff: k.phaseOff, lifecycle, values,
     checked };
   const root = (s.BPMN as unknown as { root?: CaseState['BPMN']['root'] } | undefined)?.root, decision = root ? decisionValues(root, ctx) : null;

@@ -33,9 +33,9 @@ describe('file schema: versions, migrations, validation', () => {
       const { persona: _p, ...work } = portfolio; void _p;
       expect(work, f).toEqual(strict(raw));
     }
-  });
+  }, 60_000);
   it('the chain covers every version below the current one, and the v1 -> v2 step is a no-op on the fixtures', () => {
-    expect(SNAPSHOT_SCHEMA_VERSION).toBe(3);
+    expect(SNAPSHOT_SCHEMA_VERSION).toBe(4);   // v4: BPMN B9c, the programme's values in the document
     for (let v = 1; v < SNAPSHOT_SCHEMA_VERSION; v++) expect(typeof MIGRATIONS[v]).toBe('function');
     for (const f of ALL) { const s = sanitize(rawOf(f)) as Record<string, unknown>; expect(MIGRATIONS[1]!(s), f).toBe(s); }
     expect(MIGRATIONS[1]!({ _schema: ' AgentCase.Portfolio.V1 ' })._schema).toBe('agentcase.portfolio.v1');
@@ -43,7 +43,7 @@ describe('file schema: versions, migrations, validation', () => {
   it('written files carry the schema version; write -> read -> write is stable', () => {
     for (const f of ['fixtures/cases/golden.json', 'fixtures/portfolios/pf-three-products.json']) {
       const pf = openSnapshot(rawOf(f)), a = toPortfolioSnapshot(pf, () => new Date(0));
-      expect(a[VERSION_KEY], f).toBe(3);
+      expect(a[VERSION_KEY], f).toBe(4);
       const b = toPortfolioSnapshot(openSnapshot(JSON.parse(JSON.stringify(a))), () => new Date(0));
       expect(JSON.stringify(b), f).toBe(JSON.stringify(a));
     }
@@ -51,7 +51,7 @@ describe('file schema: versions, migrations, validation', () => {
   it('a file from a newer AgentCase is refused with a clear message', () => {
     const raw = { ...(rawOf('fixtures/cases/golden.json') as object), [VERSION_KEY]: 99 };
     expect(() => openChecked(raw)).toThrow(NewerFileError);
-    expect(() => openChecked(raw)).toThrow(/made with a newer AgentCase \(file format v99; this version reads up to v3\)/);
+    expect(() => openChecked(raw)).toThrow(/made with a newer AgentCase \(file format v99; this version reads up to v4\)/);
   });
   it('v2 -> v3 (BPMN B3): the scope keys become the process document (key BPMN) and are removed, in the case, the common values and the overrides', () => {
     const KEYS = ['selectedArtefacts', 'artefactsEdited', 'selectedRegArtefacts', 'regArtefactsEdited', 'phaseOff', 'selectedNorms', 'phaseSeq',

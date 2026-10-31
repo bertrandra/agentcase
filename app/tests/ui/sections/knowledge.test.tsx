@@ -9,6 +9,7 @@ import Knowledge from '@/ui/sections/tune/knowledge';
 import { freshStore } from '../../store/helpers';
 import { editParam, expectReference } from '../../helpers/programmeParam';
 import { expectParity, FIXTURES, loadFixture } from './tuneBHelpers';
+import { caseValues } from '@/domain/process';
 
 beforeEach(() => { freshStore(); });
 afterEach(cleanup);
@@ -55,7 +56,7 @@ describe('knowledge section', () => {
     expect(screen.getByText('Hub cost — setup + run (3y)').closest('tr')!.textContent).toContain('€318K');
     expectReference('Curation (FTE)', 'Knowledge Hub run');
     editParam('khCurationFTE', '1');
-    expect(doc().dom.values.khCurationFTE).toBe('1');
+    expect(caseValues(doc()).khCurationFTE).toBe('1');
     expect(screen.getByText('Hub cost — setup + run (3y)').closest('tr')!.textContent).not.toContain('€318K');
     editParam('khSetupBase', '0');
     expect(screen.getByText('Hub-attributable Δ net savings (3y)').closest('tr')!.textContent).toContain('€-');

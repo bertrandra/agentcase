@@ -1,3 +1,4 @@
+import { caseValues } from '@/domain/process';
 import { ganttView } from '@/domain/verifyB';
 import { setInput } from '@/controllers/inputs';
 import { useDoc } from '@/store/hooks';
@@ -24,7 +25,7 @@ const INTRO = 'A planning view of the whole engagement on one timeline: the tran
 /** A number field of the case with a legacy default for when the document does not carry it yet (the legacy Gantt creates these inputs itself). */
 interface DomNumberProps { id: string; label: string; fallback: string; min?: number; max?: number; step?: number; hint?: string }
 function DomNumber({ id, label, fallback, hint, ...rest }: DomNumberProps) {
-  const value = useDoc((d) => d.dom.values[id] ?? fallback);
+  const value = useDoc((d) => caseValues(d)[id] ?? fallback);
   return <Field label={label} hint={hint}><input type="number" value={value} {...rest} onChange={(e) => setInput(id, e.target.value)} /></Field>;
 }
 function StartDate() {

@@ -1,4 +1,5 @@
 // @vitest-environment jsdom
+import { caseValues } from '@/domain/process';
 import { cleanup, fireEvent, render, screen } from '@testing-library/react';
 import { afterEach, beforeEach, describe, expect, it } from 'vitest';
 import { appStore } from '@/store/instance';
@@ -10,7 +11,7 @@ import { freshStore } from '../../store/helpers';
 beforeEach(() => { freshStore(); uiStore.setState({ toast: '', activeSection: 'gantt' }); processView.setState({ selected: null }); });
 afterEach(cleanup);
 
-const vals = () => appStore().getState().doc.dom.values;
+const vals = () => caseValues(appStore().getState().doc);
 const bar = (name: RegExp) => screen.getByRole('group', { name });
 
 /**

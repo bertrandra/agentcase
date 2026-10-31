@@ -1,3 +1,4 @@
+import { caseValues } from '@/domain/process';
 import { setInput } from '@/controllers/inputs';
 import { WBS_KEY } from '@/domain/programme/wbs';
 import { useDoc } from '@/store/hooks';
@@ -9,7 +10,7 @@ import { TextField } from '@/ui/widgets/CommitField';
  * form (B9c), exported as `ac:wbsCode`; each edit is one undoable step. Edited here only, like every activity parameter (F-B72).
  */
 export function WbsCodeField({ kind }: { kind: string }) {
-  const value = useDoc((d) => d.dom.values[WBS_KEY(kind)] ?? '');
+  const value = useDoc((d) => caseValues(d)[WBS_KEY(kind)] ?? '');
   return (
     <div className="ac-proc-fields">
       <TextField label="WBS code (blank = derived from the tree; dotted digits override it)" value={value} placeholder="derived"

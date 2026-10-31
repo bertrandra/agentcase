@@ -55,10 +55,11 @@ export function fromSnapshot(raw: unknown): Doc {
   if (!dom || typeof dom !== 'object' || typeof dom.values !== 'object'
     || typeof dom.checked !== 'object') throw new SnapshotError('Snapshot has no form inputs (dom)');
   const bad = (why: string): never => { throw new SnapshotError(`The process document (BPMN) cannot be read: ${why}`); };
-  const doc = { ...makeDefaultDoc(), ...caseInStore(snap, bad) } as Doc;   // schema v3: the process document (a version 2 case's keys become it)
+  // schema v3: the process document (a version 2 case's keys become it); v4: the programme's values in it, out of the form values
+  const stored = caseInStore(snap, bad), doc = { ...makeDefaultDoc(), ...stored } as Doc, own = stored.dom as typeof dom & object;
   // the persona the file opens on: `openSnapshot`
   delete doc.savedAt; delete doc._schema; delete doc[VERSION_KEY]; delete doc.calculationPackage; delete doc[PERSONA_KEY];
-  doc.dom = { values: { ...makeDefaultDoc().dom.values, ...(dom.values as object) },
-    checked: { ...makeDefaultDoc().dom.checked, ...(dom.checked as object) } } as Doc['dom'];
+  doc.dom = { values: { ...makeDefaultDoc().dom.values, ...(own.values as object) },
+    checked: { ...makeDefaultDoc().dom.checked, ...(own.checked as object) } } as Doc['dom'];
   return withoutRegIncludeBox(doc);   // B9a: the box is the process's regInclude, not a stored form state
 }

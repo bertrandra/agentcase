@@ -1,3 +1,4 @@
+import { withoutStoredValues } from '@/domain/process';
 import { readdirSync, readFileSync } from 'node:fs';
 import { join } from 'node:path';
 import { gzipSync } from 'node:zlib';
@@ -15,8 +16,8 @@ const file = readFileSync(DEFAULT_PROCESS_FILE, 'utf8');
 
 describe('default process (catalog/defaultProcess.bpmn)', () => {
   it('is up to date: regenerating it gives the same bytes (else: npm run process:gen)', () => expect(defaultProcessText()).toBe(file));
-  it('is the process of the default case (the document a new case holds, in the normal form of schema v3), and the build is deterministic', () => {
-    expect(serialize(makeDefaultDoc().BPMN)).toBe(file);
+  it('is the process of the default case (a new case holds it; v4 adds the stored values), deterministic', () => {
+    expect(serialize(withoutStoredValues(makeDefaultDoc().BPMN))).toBe(file);
     expect(serialize(buildProcess(TODAYS_CATALOGUE))).toBe(serialize(buildProcess(TODAYS_CATALOGUE)));
   });
   it('gives back the default case keys (the legacy default, normalised: document order, complete edit lists)', () => {

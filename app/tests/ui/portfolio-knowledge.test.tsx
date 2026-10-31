@@ -1,4 +1,5 @@
 // @vitest-environment jsdom
+import { programmeValuesOf } from '@/domain/process';
 import { act, cleanup, fireEvent, render, screen, within } from '@testing-library/react';
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 import { setEditScope, setActiveProduct } from '@/controllers/product';
@@ -59,14 +60,14 @@ describe('Knowledge hub, several products: the subset of the active product', ()
   it('"All products" edits the common hub, which inherits; "this product only" creates the product\'s own value, then back to common', () => {
     renderProgrammePanel('hubSetup');
     fireEvent.change(screen.getByLabelText('Target CC (Y3)'), { target: { value: '2' } });
-    expect(pf().common.dom.values.khTargetCC).toBe('2');
+    expect(programmeValuesOf(pf().common.BPMN).khTargetCC).toBe('2');
     expect(prod(1).knowledge.targetCC).toBeUndefined();
     expect(rowOf(1).targetCC).toBe(2);
     cleanup();
     editB('hubSetup');
     fireEvent.change(screen.getByLabelText('Target CC (Y3)'), { target: { value: '1' } });
     expect(prod(1).knowledge.targetCC).toBe(1);
-    expect(pf().common.dom.values.khTargetCC).toBe('2');
+    expect(programmeValuesOf(pf().common.BPMN).khTargetCC).toBe('2');
     expect([rowOf(0).targetCC, rowOf(1).targetCC]).toEqual([2, 1]);
     expect(chip(/^Target CC: overridden/)).toBeTruthy();
     fireEvent.click(screen.getByRole('button', { name: 'Revert to common: Target CC' }));

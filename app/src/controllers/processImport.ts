@@ -2,8 +2,10 @@
 import { makeCtx } from '@/domain';
 import { caseFte } from '@/domain/economics/fte';
 import { headline } from '@/domain/economics/headline';
-import { analyseImport, applyImport, previewImport, resetProcess, type ImportAnalysis, type ImportChoices, type ImportPreview,
+import { current, isDraft } from 'immer';
+import { analyseImport, applyImport, caseValues, previewImport, resetProcess, type ImportAnalysis, type ImportChoices, type ImportPreview,
   type XDocument } from '@/domain/process';
+import { changedProgrammeValues, programmeValuesIn, type ProgrammeFileValues } from '@/domain/programme/bpmnImport';
 import { defineCommand } from '@/store/commands';
 import { refitPotential } from '@/store/derive';
 import { activeDoc, editBase } from '@/store/editBase';
@@ -18,9 +20,18 @@ import { withoutProgramme } from '@/domain/programme/bpmn';
  * anything is written (`readProcessFile`); the import itself is ONE undoable step (`process.import`) whose run maps the file onto the case's
  * process as the user chose (`applyImport`); undo restores the exact document. The report gives the outcome and the headline figures before / after.
  */
-const importCmd = defineCommand<{ file: XDocument; choices: ImportChoices; name: string }>({
+/**
+ * B9c: a Replace import of an AgentCase file reads its programme back (`programmeValuesIn`): the values that differ from the case's are written as
+ * form values in the same step, which the address layer stores in the document the case reads (common, or the product's own override). A Merge
+ * import, or a file without a programme, keeps the case's programme values (`applyImport` never touches them).
+ */
+const importCmd = defineCommand<{ file: XDocument; choices: ImportChoices; name: string; programme: ProgrammeFileValues | null }>({
   type: 'process.import', label: (p) => `Import process ${p.name} (${p.choices.mode})`,
-  run(d, p) { editProcess(d, (doc) => applyImport(doc, p.file, p.choices).doc); refitPotential(d); },
+  run(d, p) {
+    editProcess(d, (doc) => applyImport(doc, p.file, p.choices).doc);
+    if (p.programme && p.choices.mode === 'replace') Object.assign(d.dom.values, changedProgrammeValues(p.programme, caseValues(isDraft(d) ? current(d) : d)));
+    refitPotential(d);
+  },
 });
 const resetCmd = defineCommand<{ phase?: string }>({
   type: 'process.reset', label: (p) => (p.phase ? `Reset phase ${p.phase} to the default process` : 'Reset to the default process'),
@@ -28,13 +39,15 @@ const resetCmd = defineCommand<{ phase?: string }>({
 });
 
 /** A file read for the import: its tree and what it holds against the case, or why it is refused (nothing written either way). */
-export type ReadOutcome = { ok: true; name: string; file: XDocument; analysis: ImportAnalysis; warnings: string[] } | { ok: false; errors: string[] };
+export type ReadOutcome = { ok: true; name: string; file: XDocument; analysis: ImportAnalysis; warnings: string[]; programme: ProgrammeFileValues | null }
+  | { ok: false; errors: string[] };
 
 export async function readProcessFile(f: { name: string; size: number; text(): Promise<string> }): Promise<ReadOutcome> {
   const r = await parseBpmnFile(f);
   if (!r.doc) return { ok: false, errors: r.errors.length ? r.errors.map((e) => e.message) : ['the file cannot be read'] };
-  const file = withoutProgramme(r.doc);   // B9a: the programme of a file is derived from the case's keys, not read (its import comes with B9c)
-  return { ok: true, name: f.name, file, analysis: analyseImport(editBase().BPMN, file), warnings: r.warnings.map((w) => w.message) };
+  // the delivery process is mapped; the programme's values are read apart (B9c) and written by a Replace import
+  const file = withoutProgramme(r.doc), programme = programmeValuesIn(r.doc);
+  return { ok: true, name: f.name, file, analysis: analyseImport(editBase().BPMN, file), warnings: r.warnings.map((w) => w.message), programme };
 }
 
 /** The preview of an import as chosen, against the process the import would edit. */
@@ -49,11 +62,12 @@ const figures = (): Figures => {
 export interface ImportReport { preview: ImportPreview; added: string[]; ignored: Record<string, number>; before: Figures; after: Figures; mode: string }
 
 /** Runs the import (one undoable step) and returns its report; null when the choices leave it refused (nothing written). */
-export function importProcess(o: { name: string; file: XDocument; analysis: ImportAnalysis }, choices: ImportChoices): ImportReport | null {
+export function importProcess(o: { name: string; file: XDocument; analysis: ImportAnalysis; programme?: ProgrammeFileValues | null },
+  choices: ImportChoices): ImportReport | null {
   const preview = previewProcessImport(o.analysis, choices);
   if (preview.refusal || preview.unmappedUnits.length || preview.unmappedRoles.length) return null;
   const before = figures(), { added } = applyImport(editBase().BPMN, o.file, choices, o.analysis);
-  appStore().dispatch(importCmd({ file: o.file, choices, name: o.name }));
+  appStore().dispatch(importCmd({ file: o.file, choices, name: o.name, programme: o.programme ?? null }));
   return { preview, added, ignored: o.analysis.ignored, before, after: figures(), mode: choices.mode };
 }
 

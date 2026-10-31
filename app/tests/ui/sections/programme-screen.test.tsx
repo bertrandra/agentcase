@@ -1,4 +1,5 @@
 // @vitest-environment jsdom
+import { caseValues } from '@/domain/process';
 import { act, cleanup, fireEvent, render, screen, within } from '@testing-library/react';
 import { afterEach, beforeEach, describe, expect, it } from 'vitest';
 import { makeCtx } from '@/domain';
@@ -17,7 +18,7 @@ import { freshStore } from '../../store/helpers';
  * as the Process parameter panel (§ 19.7), the figures follow; filters, sort, links, keyboard and axe.
  */
 const doc = () => appStore().getState().doc;
-const values = () => doc().dom.values;
+const values = () => caseValues(doc());   // schema v4: the programme's values are the document's
 const steps = () => appStore().getState().history.undo.length;
 const total = () => setupBreakdown(makeCtx(doc())).total;
 const rowOf = (name: string): HTMLElement => screen.getByRole('rowheader', { name: new RegExp(`^${name} —`) }).closest('tr')!;

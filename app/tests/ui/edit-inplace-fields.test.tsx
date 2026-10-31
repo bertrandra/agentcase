@@ -1,4 +1,5 @@
 // @vitest-environment jsdom
+import { caseValues, programmeValuesOf } from '@/domain/process';
 import { act, cleanup, fireEvent, screen, within } from '@testing-library/react';
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 import { setDisplayScope } from '@/controllers/displayScope';
@@ -14,7 +15,7 @@ let ids: [string, string, string];
 beforeEach(() => { ids = threeProducts().ids; });
 afterEach(cleanup);
 const region = () => screen.getByRole('region', { name: /^Changing all products/ });
-const vals = (i: number) => (resolveProduct(pf(), ids[i]!) as unknown as { dom: { values: Record<string, string> } }).dom.values;
+const vals = (i: number) => caseValues(resolveProduct(pf(), ids[i]!));   // schema v4: the programme's values are the document's
 
 /** B9a (DEV-B9A-CONTEXT-SCREENS): the pilot and the hub's target are programme activity parameters, edited in the Process section's panel. */
 async function processPanel(id: string): Promise<void> {
@@ -30,7 +31,7 @@ describe('"Change: All products" in place: form fields', { timeout: 60_000 }, ()
     const r = region(), note = await within(r).findByRole('note', { name: 'Pilot pod size (FTE): 1 product overrides this' }, { timeout: 15000 });
     expect(note.textContent).toContain('1 product overrides this: C — it keeps its value');
     fireEvent.change(within(r).getByLabelText('Pilot pod size (FTE)'), { target: { value: '3' } });
-    expect(pf().common.dom.values.pilotFte).toBe('3');
+    expect(programmeValuesOf(pf().common.BPMN).pilotFte).toBe('3');
     expect([vals(0).pilotFte, vals(1).pilotFte, vals(2).pilotFte]).toEqual(['3', '3', '5']);
     expect(within(r).getByLabelText('Pilot pod size (FTE)')).toHaveProperty('value', '3');   // the editor shows the common value
     fireEvent.click(within(r).getByRole('button', { name: 'Back to shared: Pilot pod size (FTE) for C' }));

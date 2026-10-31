@@ -1,3 +1,4 @@
+import { programmeValuesOf, withoutStoredValues } from '@/domain/process';
 import { mkdtempSync, readFileSync, rmSync, writeFileSync } from 'node:fs';
 import { tmpdir } from 'node:os';
 import { join } from 'node:path';
@@ -22,7 +23,8 @@ describe('AgentCase files', () => {
   it('replace: export → import → export is byte-identical (F-B12), the pass-through and the scope come back', () => {
     const c = makeDefaultDoc(), text = exportCaseText(c), file = parseBpmn(text).doc as XDocument;
     const { doc } = run(file, { mode: 'replace' });
-    expect(doc).toBe(file);
+    expect(withoutStoredValues(doc)).toStrictEqual(file);   // B9c: the case's stored programme values are kept (an export leaves them out)
+    expect(programmeValuesOf(doc)).toEqual(programmeValuesOf(c.BPMN));
     expect(exportCaseText({ ...c, BPMN: doc })).toBe(text);
     expect(viewsOf(doc).keys).toEqual(viewsOf(c.BPMN).keys);
   });

@@ -19,6 +19,8 @@ export interface AddressCtx {
   out: Patch[];
   /** containers this command has already created (so two writes do not both add them) */
   made: Set<string>;
+  /** programme values this command changed in the common values (schema v4: written into the common document at the end) */
+  programme?: Record<string, string | null>;
 }
 
 export type Path = (string | number)[];

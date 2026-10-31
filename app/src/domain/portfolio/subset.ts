@@ -1,4 +1,5 @@
 /** @calc-zone knowledge-hub */
+import { caseValues } from '../process/storedValues';
 import type { CommonCase, KnowledgeSubset } from './types';
 
 export interface DomPatch { values: Record<string, string>; checked: Record<string, boolean> }
@@ -21,7 +22,7 @@ export type SubsetField = keyof KnowledgeSubset;
 
 /** What a product inherits for a subset field: the common reading (undefined for the fields the common case does not hold: domains, preparation). */
 export function commonSubsetValue(common: CommonCase, f: SubsetField): unknown {
-  const v = common.dom.values, c = common.dom.checked;
+  const v = caseValues(common), c = common.dom.checked;
   if (f === 'enabled') return !!c.khEnabled;
   if (f === 'maturityAnswers') return Array.from({ length: 9 }, (_, i) => v['khA' + i]).join(' · ');
   if (f === 'targetCC') return 'CC' + v.khTargetCC;
