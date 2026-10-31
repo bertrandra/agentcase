@@ -9,7 +9,7 @@ import { ownerIn } from './teamDoc';
 import type { OrgModel, OrgRole, ProductRef } from './types';
 
 /** What the organisation is read from: the products and shared lines of the portfolio (one product for a single case) and the case's document. */
-export type OrgSource = Pick<Portfolio, 'products' | 'common'> & { customer?: string };
+export type OrgSource = Pick<Portfolio, 'products'> & { common: Pick<Portfolio['common'], 'BPMN'>; customer?: string };
 
 const roles = (d: XDocument): OrgRole[] => readProcess(d).actors.map((a) => {
   const r: OrgRole = { id: a.id, name: a.name, kind: a.kind === 'agent' ? 'agent' : 'role', regulatory: a.regulatory };

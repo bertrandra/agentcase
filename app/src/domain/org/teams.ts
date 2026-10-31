@@ -33,7 +33,7 @@ const roots = new WeakMap<object, unknown>();
 const sharedTeamOf = (l: SharedTeamLine, unit: string): OrgTeam => ({ id: sharedTeamId(l.id), name: `Shared ${l.skill} · ${l.grade} · ${l.loc}`, unit,
   lines: [{ skill: l.skill, grade: l.grade, loc: l.loc, etp: l.etp, pins: l.pins ?? [] }], serves: shares(l.allocations), shared: true, sourceLine: l.id });
 /** The teams of a portfolio (a single case is a portfolio of one product, D-B17), read from its common document. Memoised on the products and teams. */
-export function derivedTeams(pf: Pick<Portfolio, 'products' | 'common'>): OrgTeam[] {
+export function derivedTeams(pf: Pick<Portfolio, 'products'> & { common: Pick<Portfolio['common'], 'BPMN'> }): OrgTeam[] {
   const st = storedTeams(pf.common.BPMN as XDocument | undefined);
   return memoChain(roots, [pf.products, st], 'teams', () => [
     ...pf.products.map((p): OrgTeam => {
