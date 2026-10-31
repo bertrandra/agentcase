@@ -101,7 +101,8 @@ describe('Wave scope', () => {
   });
   it('an unknown wave is refused with a message', () => {
     const pf = regulatedPortfolio();
-    expect(buildScopedReport(pf, { kind: 'wave', id: 'nope' }, THEME_DEFAULT, NOW)).toEqual({ ok: false, reason: 'That wave does not exist any more.' });
+    expect(buildScopedReport(pf, { kind: 'wave', id: 'nope' }, THEME_DEFAULT, NOW))
+      .toEqual({ ok: false, reason: 'That wave or unit does not exist any more.' });
   });
   it('an empty wave has no planned product to report', () => {
     const pf = regulatedPortfolio(), empty = pf.waves[1]!;

@@ -4,11 +4,12 @@ import type { Portfolio, VScope } from '@/domain/portfolio';
 import { useCorePortfolio } from './consolidationHooks';
 import { useViewScope } from './viewScope';
 
-/** The View's selection (Portfolio or one Wave) as the "verify" domain view models take it; null for a Product view. */
+/** The View's selection (Portfolio, one Wave or one Unit) as the "verify" domain view models take it; null for a Product view. */
 export function useVScope(): VScope | null {
   const vs = useViewScope();
   return useMemo((): VScope | null =>
-    (vs.kind === 'portfolio' ? { kind: 'portfolio' } : vs.kind === 'wave' && vs.waveId ? { kind: 'wave', id: vs.waveId } : null), [vs]);
+    (vs.kind === 'portfolio' ? { kind: 'portfolio' } : vs.kind === 'wave' && vs.waveId ? { kind: 'wave', id: vs.waveId }
+      : vs.kind === 'unit' && vs.unitId !== undefined ? { kind: 'unit', id: vs.unitId } : null), [vs]);
 }
 
 /**

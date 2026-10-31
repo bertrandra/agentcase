@@ -17,6 +17,19 @@ When releasing, follow [docs/BUMP_PROCEDURE.md](docs/BUMP_PROCEDURE.md) (§7 for
 
 ## [Unreleased]
 
+### B10b — the Unit display scope: any node of the organisation tree as a View
+
+- **Show a unit.** 👁 Show lists the organisation's units (the tree in order, indented, the level announced) and Unassigned. A unit — business
+  unit, department, sub-department at any depth — shows the products it owns directly or through its sub-units, added up exactly like a wave:
+  cash flow, NPV, ROI, payback, FTE before / after, run cost, the 📅 Plan views and every section's aggregate view. A unit owning every product shows
+  the Portfolio's figures; waves stay independent. View state only (no undo step, not saved); switching recomputes no product.
+- **One owner of a selection.** The Portfolio, a Wave and a Unit go through one domain module (`domain/portfolio/scopeGroup.ts`), read by the
+  headline bar, the result and input aggregates, the verify roll-ups, the Plan views, the cost-model workbook and the portfolio report (which offer
+  the units as scopes too).
+- **Empty state.** A Wave or a Unit with no planned product says so in every section, with where to fix it.
+- **Not yet at a unit.** The Monte Carlo distribution and the verdict of a unit come with the strategy per unit (B10d): the screens say "not
+  available at the unit scope yet".
+
 ## [v21.3.0] 2026-10-31 — B10a: product override split, teams in the BPMN document, units at any depth, owning unit (schema v5)
 
 ### B10a — the override split; the teams, units and owning units in the case's BPMN document (schema v5)

@@ -23,7 +23,7 @@ import { exportTheme } from './exportTheme';
  */
 const stamp = (now: Date): string => now.toISOString().slice(0, 19).replace(/[:T]/g, '-');
 const title = (v: PlanViews): string => (v.scope.kind === 'product' ? v.plan.products[0]?.name ?? 'Product' : v.scope.kind === 'wave'
-  ? `Wave ${v.plan.products[0]?.wave?.name ?? ''}`.trim() : 'Portfolio');
+  ? `Wave ${v.plan.products[0]?.wave?.name ?? ''}`.trim() : v.scope.kind === 'unit' ? `Unit ${v.scope.name}` : 'Portfolio');
 
 export function exportMspdi(v: PlanViews, now: Date = new Date()): { filename: string; text: string } {
   return { filename: `AgentCase_Programme_MSProject_${stamp(now)}.xml`, text: mspdiXml(v.plan, v.wbs, v.dictionary, title(v)) };

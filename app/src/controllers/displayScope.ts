@@ -1,12 +1,11 @@
 /** @calc-zone foundation */
-import type { DisplayScope } from '@/domain/portfolio';
+import { scopeExists, scopeKey, type DisplayScope } from '@/domain/portfolio';
 import { definePortfolioCommand } from '@/store/commands';
 import { appStore } from '@/store/instance';
 import { setActiveProduct, setEditScope } from './product';
 import { dispatchChecked } from './portfolioGuard';
 
-const idOf = (s: DisplayScope | undefined): string | undefined => (s?.kind === 'wave' ? s.id : undefined);
-const same = (a: DisplayScope | undefined, b: DisplayScope): boolean => (a?.kind ?? 'product') === b.kind && idOf(a) === idOf(b);
+const same = (a: DisplayScope | undefined, b: DisplayScope): boolean => scopeKey(a ?? { kind: 'product' }) === scopeKey(b);
 
 /** View state, not a document change: no undo step, never saved, never broadcast (like the edit scope). */
 const scopeCmd = definePortfolioCommand<{ scope: DisplayScope }>({
@@ -15,12 +14,13 @@ const scopeCmd = definePortfolioCommand<{ scope: DisplayScope }>({
 });
 
 /**
- * The top bar's "Show" selector (display scope, F17): the active product (default, today's behaviour), the whole portfolio, or one wave. A wave that
- * does not exist is refused (false). Rule "Change follows Show": showing the Portfolio or a Wave sets the edit target back to All products
+ * The top bar's "Show" selector (display scope, F17): the active product (default, today's behaviour), the whole portfolio, one wave, or one unit
+ * of the organisation tree at any level (F-B81, B10b). A wave or unit that does not exist is refused (false). Rule "Change follows Show": showing
+ * the Portfolio, a Wave or a Unit sets the edit target back to All products
  * (`editScope` 'all'); the user may then pick one product in "Change". The product kind leaves the edit target alone (`showProduct` sets it).
  */
 export function setDisplayScope(scope: DisplayScope): boolean {
-  if (scope.kind === 'wave' && !appStore().getState().portfolio.waves.some((w) => w.id === scope.id)) return false;
+  if (!scopeExists(appStore().getState().portfolio, scope)) return false;
   const changed = dispatchChecked(scopeCmd({ scope }));
   if (scope.kind !== 'product') setEditScope('all');
   return changed;

@@ -8,7 +8,7 @@ const plural = (n: number, one: string, many = `${one}s`): string => `${n} ${n >
 /** The one sentence a section states about the View (pure, so tests and the docs read the same text). */
 export function scopeText(kind: SectionKind, v: ViewScope, editAll = false): { main: string; detail: string } {
   const n = v.productIds.length, planned = plural(n, 'planned product', 'planned products');
-  const sel = v.kind === 'portfolio' ? `Portfolio (${planned})` : `Wave: ${v.label} (${planned})`;
+  const sel = v.kind === 'portfolio' ? `Portfolio (${planned})` : `${v.kind === 'unit' ? 'Unit' : 'Wave'}: ${v.label} (${planned})`;
   const k = v.excludedIds.length,
     out = k ? ` — ${plural(k, 'unscheduled or archived product', 'unscheduled or archived products')} excluded from the figures` : '';
   if (kind === 'S-static') return { main: 'Independent of the view', detail: '' };

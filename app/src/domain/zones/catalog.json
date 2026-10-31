@@ -44,6 +44,6 @@
   { "id": "kpi-scorecard", "label": "KPI scorecard", "zone": "delivery-views", "description": "AS-IS versus horizon-end indicators." },
   { "id": "decision-verdict", "label": "Decision verdict", "zone": "verdict", "description": "Go, conditional or reconsider, from the Monte Carlo distribution." },
   { "id": "mc-distribution", "label": "Monte Carlo distribution", "zone": "stress", "description": "P10 / P50 / P90 of the net benefit over the seeded draws." },
-  { "id": "portfolio-headline", "label": "Portfolio headline", "zone": "portfolio-consolidation", "description": "Net, ROI, payback and NPV of the portfolio, a wave or a product on the calendar." }
+  { "id": "portfolio-headline", "label": "Portfolio headline", "zone": "portfolio-consolidation", "description": "Net, ROI, payback and NPV of the portfolio, a wave, a unit or a product on the calendar." }
  ]
 }

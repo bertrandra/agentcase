@@ -23,10 +23,10 @@ const savings = () => kpi(/^Savings Y/), run = () => kpi(/^Run cost Y/), payback
   ceil = () => kpi(/^Glass ceiling$/);
 
 describe('display scope selector (F17)', () => {
-  it('offers Portfolio, each Wave and each Product; defaults to the active product', () => {
+  it('offers Portfolio, each Wave, each Unit (then Unassigned) and each Product; defaults to the active product', () => {
     mountApp();
     expect([...select().options].map((o) => o.textContent)).toEqual([
-      'Portfolio', 'Wave 1', 'Wave 2', 'Product 1 (Wave 1)', 'B (Wave 1)', 'C (Wave 2)']);
+      'Portfolio', 'Wave 1', 'Wave 2', 'Delivery', 'Unassigned', 'Product 1 (Wave 1)', 'B (Wave 1)', 'C (Wave 2)']);
     expect(select().value).toBe(`product:${ids[0]}`);
     expect(screen.getByRole('complementary', { name: 'Headline results' })).toBeTruthy();
   });

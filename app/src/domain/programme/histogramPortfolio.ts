@@ -13,8 +13,9 @@ import { laneDef, type LaneRole } from './lanes';
 export interface SetupFlag { month: number; inSetup: number; capacity: number }
 export interface PortfolioHistogram extends ProgrammeHistogram { setupFlags: SetupFlag[] }
 
-export function portfolioHistogram(k: Consolidated, capacity: number | null, waveId?: string): PortfolioHistogram {
-  const views = k.products.filter((v) => !waveId || v.waveId === waveId);
+/** The histogram of the Portfolio, or of a selection (`only`: the planned products of one wave or one unit). */
+export function portfolioHistogram(k: Consolidated, capacity: number | null, only?: readonly string[]): PortfolioHistogram {
+  const views = k.products.filter((v) => !only || only.includes(v.id));
   const each = views.map((v) => ({ v, h: programmeHistogram(v.run.ctx, v.run.rows.length) }));
   const from = Math.min(1, ...each.map(({ v, h }) => v.month0 + h.from)), to = Math.max(k.horizon, ...each.map(({ v, h }) => v.month0 + h.to));
   const n = to - from + 1, wdMonth = each[0]?.h.wdMonth ?? 220 / 12, lines: HistLine[] = [];

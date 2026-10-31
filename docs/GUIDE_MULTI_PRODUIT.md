@@ -30,6 +30,8 @@ interface labels. Full specification in English: [SPEC_MULTI_PRODUIT.md](SPEC_MU
   with the **Hub effect** per wave.
 - **6. Consolidation and display scope** — **📈 Consolidation**: the portfolio is exactly the sum of the shifted products; NPV is the **Calendar NPV**.
   **Show** drives the KPI bar, the Gantt, Decision Intelligence and the report; it is not saved. Ctrl+Z / Ctrl+Y cover every portfolio edit.
+  **Show** also lists the organisation's **Units** (any level, then Unassigned): a unit adds up the products it owns, as a wave does
+  (docs/GUIDE_BPMN.md § 4).
 - **7. Portfolio stress** — **🎲 Portfolio stress**: draws, seed, **Correlation between products ρ**, **▶ Run the simulation**; P10 / P50 / P90, CVaR,
   P(net < 0), **Risk reduction**; a stale marker when the portfolio changes. With **Show** on Portfolio or a Wave, **Scenarios** and
   **Sensitivity** are summed on the calendar (**Portfolio scenarios**, **Portfolio sensitivity**: each driver moved by the same **Relative step**

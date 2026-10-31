@@ -6,10 +6,13 @@ import { setAgentSup } from '@/controllers/artefacts';
 import { setCustomerName } from '@/controllers/frame';
 import { setInput } from '@/controllers/inputs';
 import { updateProcessActivity } from '@/controllers/process';
+import { setDisplayScope } from '@/controllers/displayScope';
+import { consolidate, corePortfolio, runStats } from '@/domain/portfolio';
 import { appStore } from '@/store/instance';
 import { loadFixture } from '../helpers/fixtures';
 import { threeProducts } from '../helpers/portfolioStore';
 import { LAZY, mountApp } from '../helpers/portfolioUi';
+import { unitTreeThree } from '../helpers/unitScope';
 import { view } from '../helpers/vueAgg';
 
 /**
@@ -67,4 +70,32 @@ describe('renders on a single edit', () => {
     expect(totalRenders(), JSON.stringify(measured[r.key])).toBeLessThanOrEqual(r.budget);
   }, 60000);
   it('report', () => { console.log(`RENDERS ${JSON.stringify(measured)}`); });
+});
+
+/**
+ * A unit scope switch (F-B81, phase B10b): view state only — the core portfolio and its consolidation keep their identity and no product engine is
+ * built (the per-product memo); the renders are those of the new View (the headline bar, the banner and the section's aggregate). Budgets: measured
+ * with a little headroom.
+ */
+const SWITCHES: { key: string; section: string; title: RegExp; from: () => void; to: { kind: 'unit'; id: string }; budget: number }[] = [
+  { key: 'portfolio → unit', section: 'financial', title: /Financial/i, from: () => view('portfolio'), to: { kind: 'unit', id: 'bu' }, budget: 55 },
+  { key: 'unit → sub-unit', section: 'financial', title: /Financial/i, from: () => setDisplayScope({ kind: 'unit', id: 'bu' }), to: { kind: 'unit', id: 'd1' },
+    budget: 55 },
+  { key: 'unit → unit (plan)', section: 'gantt', title: /Plan/, from: () => setDisplayScope({ kind: 'unit', id: 'd1' }), to: { kind: 'unit', id: 'd3' },
+    budget: 70 },
+];
+describe('renders on a unit scope switch', () => {
+  it.each(SWITCHES)('$key', async (r) => {
+    unitTreeThree(); mountApp(r.section); act(r.from);
+    await screen.findByRole('heading', { level: 1, name: r.title }, LAZY);
+    const core = corePortfolio(appStore().getState().portfolio), c = consolidate(core), builds = runStats.builds;
+    resetRenders();
+    act(() => { setDisplayScope(r.to); });
+    await screen.findByRole('heading', { level: 1, name: r.title }, LAZY);
+    measured[r.key] = { renders: totalRenders(), commits: log.commits, top: topRenders(8).map(([n, k]) => `${n}×${k}`).join(' ') };
+    expect(corePortfolio(appStore().getState().portfolio)).toBe(core); expect(consolidate(core)).toBe(c);
+    expect(runStats.builds).toBe(builds);   // switching scope recomputes no product
+    expect(totalRenders(), JSON.stringify(measured[r.key])).toBeLessThanOrEqual(r.budget);
+  }, 60000);
+  it('report', () => { console.log(`SWITCH RENDERS ${JSON.stringify(Object.fromEntries(SWITCHES.map((r) => [r.key, measured[r.key]])))}`); });
 });

@@ -1,17 +1,17 @@
 import { useState } from 'react';
 import { exportCostModel } from '@/controllers/excelCostModel';
 import type { CostScope } from '@/domain/portfolio';
-import { useDisplayScope } from '@/store/consolidationHooks';
+import { useDisplayScope, useUnitNodes } from '@/store/consolidationHooks';
 import { useActiveProductId, useHasPortfolioContent, useProducts, useWaves } from '@/store/portfolioHooks';
 import { toast } from '@/ui/uiState';
 import { Callout, Panel } from '@/ui/widgets/cards';
 import { downloadBlob } from '../download';
-import { ProductOptions, WaveOptions } from './ScopeOptions';
+import { ProductOptions, scopeValue, splitScope, UnitOptions, WaveOptions } from './ScopeOptions';
 
-/** "portfolio" | "wave:<id>" | "product:<id>", the value of the scope selector. */
+/** "portfolio" | "wave:<id>" | "unit:<id>" | "product:<id>", the value of the scope selector. */
 const parse = (v: string): CostScope => {
-  const [kind, ...rest] = v.split(':'), id = rest.join(':');
-  return kind === 'portfolio' ? { kind: 'portfolio' } : kind === 'wave' ? { kind: 'wave', id } : { kind: 'product', id };
+  const { kind, id } = splitScope(v);
+  return kind === 'portfolio' ? { kind: 'portfolio' } : kind === 'wave' || kind === 'unit' ? { kind, id } : { kind: 'product', id };
 };
 
 /** "Cost model (monthly)": a three-tab workbook (Values, Rate cards, Other costs) so that finance / delivery can recompute the cost outside the app. */
@@ -19,7 +19,7 @@ export function CostModelPanel() {
   const [status, setStatus] = useState(''), [failed, setFailed] = useState(false), [busy, setBusy] = useState(false),
     [picked, setPicked] = useState<string | null>(null);
   const portfolio = useHasPortfolioContent(), display = useDisplayScope(), active = useActiveProductId(), products = useProducts(), waves = useWaves();
-  const initial = display.kind === 'portfolio' ? 'portfolio' : display.kind === 'wave' ? `wave:${display.id}` : `product:${active}`, value = picked ?? initial;
+  const initial = scopeValue(display, active), value = picked ?? initial, units = useUnitNodes();
   const planned = (p: { archived?: boolean; waveId: string | null }) => !p.archived && p.waveId !== null;
   const run = async () => {
     setBusy(true);
@@ -51,6 +51,7 @@ export function CostModelPanel() {
           <select aria-label="Cost model scope" value={value} disabled={busy} onChange={(e) => setPicked(e.target.value)}>
             {portfolio && <option value="portfolio">Portfolio</option>}
             {portfolio && <WaveOptions waves={waves} />}
+            {portfolio && <UnitOptions units={units} />}
             <ProductOptions products={products.filter((p) => !p.archived && (portfolio || p.id === active))} unplanned={(p) => !planned(p)} />
           </select>
         </label>

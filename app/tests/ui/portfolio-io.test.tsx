@@ -48,7 +48,8 @@ describe('Import / Export with a portfolio', () => {
     regulatedPortfolio(); setDisplayScope({ kind: 'portfolio' });
     await open(/Save HTML/);
     const sel = screen.getByRole('combobox', { name: 'Report scope' }) as HTMLSelectElement;
-    expect([...sel.options].map((o) => o.textContent)).toEqual(['Portfolio', 'Wave: Wave 1', 'Wave: Wave 2', 'Product: Product 1', 'Product: Payroll',
+    expect([...sel.options].map((o) => o.textContent)).toEqual(['Portfolio', 'Wave: Wave 1', 'Wave: Wave 2', 'Unit: Delivery', 'Unit: Unassigned',
+      'Product: Product 1', 'Product: Payroll',
       'Product: Billing', 'Product: Archive (no wave)']);
     expect(sel.value).toBe('portfolio');
   });

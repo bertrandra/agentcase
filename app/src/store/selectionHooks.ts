@@ -1,6 +1,6 @@
 /** @calc-zone aggregate-views */
 import { useMemo } from 'react';
-import { aggregateTeams, consolidate, corePortfolio, inputSummary, selectionView, type InputSummaryRow, type SelectionView,
+import { aggregateTeams, consolidate, corePortfolio, inputSummary, scopeExists, selectionView, type InputSummaryRow, type SelectionView,
   type TeamAggregate } from '@/domain/portfolio';
 import { useCorePortfolio } from './consolidationHooks';
 import { usePortfolioSelector } from './hooks';
@@ -8,15 +8,15 @@ import { useViewProductId } from './productView';
 import { useViewScope } from './viewScope';
 
 /**
- * Consolidated figures of the View (Portfolio or Wave) for the result sections; null for a Product view (the section then reads its own case). A selector
+ * Consolidated figures of the View (Portfolio, Wave or Unit) for the result sections; null for a Product view (the section then reads its own case). A selector
  * with structural equality: an edit that changes none of the View's figures (a name, a note) does not re-render the aggregate sections.
  */
 export function useSelectionView(): SelectionView | null {
   const pinned = useViewProductId() !== null;
   return usePortfolioSelector((p) => {
-    const core = corePortfolio(p), s = p.displayScope, wave = s?.kind === 'wave' && p.waves.some((w) => w.id === s.id) ? s.id : null;
-    if (pinned || core.products.length < 2 || !s || s.kind === 'product' || (s.kind === 'wave' && !wave)) return null;
-    return selectionView(core, consolidate(core), wave ? { kind: 'wave', id: wave } : { kind: 'portfolio' });
+    const core = corePortfolio(p), s = p.displayScope;
+    if (pinned || core.products.length < 2 || !s || s.kind === 'product' || !scopeExists(core, s)) return null;
+    return selectionView(core, consolidate(core), s);
   });
 }
 

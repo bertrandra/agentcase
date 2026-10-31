@@ -1,3 +1,7 @@
+import { UNASSIGNED } from '@/domain/org';
+import { UNASSIGNED_UNIT } from '@/domain/portfolio';
+import type { UnitNode } from '@/store/consolidationHooks';
+
 interface Named { id: string; name: string }
 
 /** The Waves group of an export-scope select (`wave:<id>` values). */
@@ -13,3 +17,23 @@ export function ProductOptions<T extends Named>({ products, unplanned }: { produ
   };
   return <optgroup label="Products">{products.map(option)}</optgroup>;
 }
+
+/** The Units group of an export-scope select (`unit:<id>` values, F-B81): the unit tree indented by depth (level in the accessible name), then Unassigned. */
+export function UnitOptions({ units }: { units: UnitNode[] }) {
+  return (
+    <optgroup label="Units">
+      {units.map((u) => <option key={u.id} value={`unit:${u.id}`} aria-label={`Unit: ${u.name}, level ${u.depth + 1}`}>
+        {`Unit: ${'· '.repeat(Math.min(u.depth, 6))}${u.name}`}</option>)}
+      <option value={`unit:${UNASSIGNED_UNIT}`}>Unit: {UNASSIGNED}</option>
+    </optgroup>
+  );
+}
+
+/** "portfolio" | "wave:<id>" | "unit:<id>" | "product:<id>": the scope value a selector holds for a display scope. */
+export const scopeValue = (d: { kind: string; id?: string }, active: string): string =>
+  (d.kind === 'portfolio' ? 'portfolio' : d.kind === 'wave' || d.kind === 'unit' ? `${d.kind}:${d.id ?? ''}` : `product:${active}`);
+/** The kind and the id of a scope value (an id may hold ':'). */
+export const splitScope = (v: string): { kind: string; id: string } => {
+  const at = v.indexOf(':');
+  return at < 0 ? { kind: v, id: '' } : { kind: v.slice(0, at), id: v.slice(at + 1) };
+};

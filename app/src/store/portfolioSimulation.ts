@@ -1,7 +1,7 @@
 /** @calc-zone stress */
 import { useMemo, useSyncExternalStore } from 'react';
 import { createStore } from 'zustand/vanilla';
-import { pfDecision, pfStressFingerprint, type PfStress, type VerdictGroup } from '@/domain/portfolio';
+import { pfDecision, pfStressFingerprint, scopeKey, type PfStress, type VerdictGroup } from '@/domain/portfolio';
 import type { Decision } from '@/domain/verdict';
 import { mcDrawsOf, mcSeedOf } from '@/domain/stress';
 import { useCorePortfolio, useDisplayScope } from './consolidationHooks';
@@ -29,17 +29,23 @@ export function usePortfolioSimulation(): PortfolioSimulation {
   return useMemo(() => ({ run, stale: !!run && run.fingerprint !== live, progress, rho }), [run, live, progress, rho]);
 }
 
-/** Where a display scope other than the active product points; null for the product scope. */
-export const groupOf = (s: ReturnType<typeof useDisplayScope>): VerdictGroup | null => (s.kind === 'portfolio' ? { kind: 'portfolio' } : s.kind === 'wave'
-  ? { kind: 'wave', id: s.id } : null);
+/**
+ * The group a verdict speaks for: the portfolio, a wave, or a unit of the organisation tree (F-B81). A unit has its consolidated figures (B10b) but
+ * not yet its own Monte Carlo verdict (strategy per unit, D-B40, phase B10d): `usePortfolioDecision` gives null for it and the screens say
+ * "not available at the unit scope".
+ */
+export type ScopeGroup = VerdictGroup | { kind: 'unit'; id: string };
 
-/** The verdict of a group of products from the last portfolio run, null without a run (or for a wave with no planned product). */
-export function usePortfolioDecision(group: VerdictGroup | null): Decision | null {
-  const core = useCorePortfolio(), { run } = usePortfolioSimulation(), key = group ? (group.kind === 'wave' ? `w:${group.id}` : 'p') : '';
-  // keyed on the group's content: `key` (kind + wave id) is all pfDecision reads of `group`, so a caller may pass an equal group literal built at
+/** Where a display scope other than the active product points; null for the product scope. */
+export const groupOf = (s: ReturnType<typeof useDisplayScope>): ScopeGroup | null => (s.kind === 'product' ? null : s);
+
+/** The verdict of a group of products from the last portfolio run, null without a run (or for a wave with no planned product, or a unit). */
+export function usePortfolioDecision(group: ScopeGroup | null): Decision | null {
+  const core = useCorePortfolio(), { run } = usePortfolioSimulation(), key = group ? scopeKey(group) : '';
+  // keyed on the group's content: `key` (kind + wave or unit id) is all pfDecision reads of `group`, so a caller may pass an equal group literal built at
   // render without recomputing the verdict; not a stale read (a group with the same key gives the same decision)
   // eslint-disable-next-line react-hooks/exhaustive-deps -- `key` stands for `group` (see above)
-  return useMemo(() => (run && group ? pfDecision(core, run, group) : null), [core, run, key]);
+  return useMemo(() => (run && group && group.kind !== 'unit' ? pfDecision(core, run, group) : null), [core, run, key]);
 }
 
 /** The verdict of every wave (the per-wave table of the dashboard). */
@@ -56,12 +62,12 @@ export function usePfSimParams(): PfSimParams {
 }
 
 /**
- * The group the Decision section speaks for: the portfolio or a wave when the display scope says so and there are two products or more; null = the
+ * The group the Decision section speaks for: the portfolio, a wave or a unit when the display scope says so and there are two products or more; null = the
  * active product.
  */
-export function useVerdictGroup(): VerdictGroup | null {
-  const scope = useDisplayScope(), multi = useIsMulti(), key = `${scope.kind}:${scope.kind === 'wave' ? scope.id : ''}`;
-  // keyed on the scope's content: `key` (kind + wave id) is all groupOf reads of `scope`, so the group keeps its identity while the scope is
+export function useVerdictGroup(): ScopeGroup | null {
+  const scope = useDisplayScope(), multi = useIsMulti(), key = scopeKey(scope);
+  // keyed on the scope's content: `key` (kind + wave or unit id) is all groupOf reads of `scope`, so the group keeps its identity while the scope is
   // replaced by an equal one (a file opened, the same scope chosen again); not a stale read
   // eslint-disable-next-line react-hooks/exhaustive-deps -- `key` stands for `scope` (see above)
   return useMemo(() => (multi ? groupOf(scope) : null), [multi, key]);

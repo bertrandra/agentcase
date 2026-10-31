@@ -1,10 +1,11 @@
 /** @calc-zone portfolio-consolidation */
 import { useMemo } from 'react';
 import {
-  consolidate, consolidationView, corePortfolio, portfolioGantt, scopeHeadline, waveBoard,
+  consolidate, consolidationView, corePortfolio, portfolioGantt, portfolioUnits, scopeExists, scopeHeadline, scopeMembers, waveBoard,
   type BoardColumn, type ConsolidationView, type DisplayScope, type Portfolio, type PortfolioGantt, type PortfolioHeadline,
 } from '@/domain/portfolio';
-import { usePortfolio } from './hooks';
+import { unitTree } from '@/domain/org';
+import { usePortfolio, usePortfolioSelector } from './hooks';
 
 const PRODUCT: DisplayScope = { kind: 'product' };
 
@@ -14,10 +15,10 @@ const PRODUCT: DisplayScope = { kind: 'product' };
  */
 export const useCorePortfolio = (): Portfolio => usePortfolio(corePortfolio);
 
-/** The display scope of the top bar: the active product (default), the portfolio, or a wave that still exists. */
+/** The display scope of the top bar: the active product (default), the portfolio, or a wave or a unit that still exists. */
 export const useDisplayScope = (): DisplayScope => usePortfolio((p) => {
   const s = p.displayScope;
-  return !s || (s.kind === 'wave' && !p.waves.some((w) => w.id === s.id)) ? PRODUCT : s;
+  return !s || !scopeExists(p, s) ? PRODUCT : s;
 });
 
 /** Section "Consolidation": the view model of the consolidated series (headline, chart, tables by wave and product, diagnostics). */
@@ -43,3 +44,23 @@ export function useScopeKpis(): { label: string; headline: PortfolioHeadline } |
   const core = useCorePortfolio(), scope = useDisplayScope();
   return useMemo(() => (scope.kind === 'product' || core.products.length < 2 ? null : scopeHeadline(consolidate(core), scope)), [core, scope]);
 }
+
+const NO_MEMBERS = null;
+/**
+ * The products a Wave or a Unit view names (planned or not, portfolio order) and its label, for the top bar's "Change" grouping; null for the
+ * Product and Portfolio views. Structurally compared: an edit of the case re-renders nothing.
+ */
+export function useScopeMembers(): { label: string; kind: 'wave' | 'unit'; ids: string[] } | null {
+  const scope = useDisplayScope();
+  return usePortfolioSelector((p) => {
+    if (scope.kind !== 'wave' && scope.kind !== 'unit') return NO_MEMBERS;
+    const m = scopeMembers(corePortfolio(p), scope);
+    return m ? { label: m.label, kind: scope.kind, ids: [...m.planned, ...m.excluded] } : NO_MEMBERS;
+  });
+}
+
+/** A node of the unit tree as the "Show" selector lists it: id, name and depth (0 = a root). */
+export interface UnitNode { id: string; name: string; depth: number }
+const unitNodes = (p: Portfolio): UnitNode[] => unitTree({ units: portfolioUnits(p) }).map(({ unit, depth }) => ({ id: unit.id, name: unit.name, depth }));
+/** The organisation's units in tree order with their depth (F-B81: each one is a display scope). Structurally compared. */
+export const useUnitNodes = (): UnitNode[] => usePortfolioSelector(unitNodes);

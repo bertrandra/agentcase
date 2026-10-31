@@ -34,9 +34,12 @@ export const useSensitivityRows = () => {
   return useMemo(() => sensitivityByProduct(core, productIds), [core, productIds]);
 };
 
-/** The last portfolio Monte Carlo read for the View (Portfolio or Wave); null without a run or for a wave the run does not hold. */
+/**
+ * The last portfolio Monte Carlo read for the View (Portfolio or Wave); null without a run, for a wave the run does not hold, or for a Unit (its
+ * distribution comes with the strategy per unit, phase B10d: not available at that scope).
+ */
 export function useSelectionStress(): SelectionStress | null {
   const { run } = usePortfolioSimulation(), vs = useViewScope();
-  return useMemo(() => (run && vs.kind !== 'product' ? selectionStress(run,
+  return useMemo(() => (run && vs.kind !== 'product' && vs.kind !== 'unit' ? selectionStress(run,
     vs.kind === 'wave' ? { kind: 'wave', id: vs.waveId as string } : { kind: 'portfolio' }) : null), [run, vs]);
 }
