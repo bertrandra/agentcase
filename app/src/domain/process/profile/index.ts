@@ -9,7 +9,7 @@ export { ASSIGN_PARAMS, assignmentChecks, assignmentsOf, bindAssignment, declare
   type LaneView } from './assign';
 export { boundaryBpsim } from './bpsimBoundary';
 export { addMessageFlow, addPool, conversationView, handoffsOf, interfacesOf, readCollab, setMultiplicity, type CollabView } from './collab';
-export { colourBy, type ColourMode } from './colourBy';
+export { colourBy, COLOUR_ORDER, type ColourMode } from './colourBy';
 export { DELIVERABLE_KINDS, kindOf, readData, type DataLink, type DataNode, type DataView, type DeliverableKind, type ToolUse } from './data';
 export { agentBlocked, DATA_STATES, evidenceCount, gateStates, isKnowledgeHub, knowledgeHub, storeAccess, tokenProfile } from './dataChecks';
 export { addDataRef, addDataStore, addImport, addItemType, linkInput, linkOutput, setDataState, setRequiresState, typeData } from './dataWrite';

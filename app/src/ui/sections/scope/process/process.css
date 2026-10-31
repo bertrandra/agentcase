@@ -30,6 +30,22 @@
 .ac-bpmn-activity.is-selected rect { fill: var(--ac-selected); stroke: var(--ac-focus); stroke-width: 4; stroke-dasharray: none; }
 .ac-bpmn-activity.is-selected text { fill: var(--ac-selected-text); }
 .ac-bpmn-id { font-weight: var(--ac-font-weight-bold); }
+/* Display options of the diagram: colour by task type / AI authority (the chart colours), faded by the table filters, picked (Ctrl / Shift + click) */
+.ac-bpmn-activity[class*='ac-bpmn-cat-'] rect { stroke-width: 4; }
+.ac-bpmn-activity.ac-bpmn-cat-1 rect, .ac-proc-swatch.ac-bpmn-cat-1 { stroke: var(--ac-chart-cat-1); border-color: var(--ac-chart-cat-1); }
+.ac-bpmn-activity.ac-bpmn-cat-2 rect, .ac-proc-swatch.ac-bpmn-cat-2 { stroke: var(--ac-chart-cat-2); border-color: var(--ac-chart-cat-2); }
+.ac-bpmn-activity.ac-bpmn-cat-3 rect, .ac-proc-swatch.ac-bpmn-cat-3 { stroke: var(--ac-chart-cat-3); border-color: var(--ac-chart-cat-3); }
+.ac-bpmn-activity.ac-bpmn-cat-4 rect, .ac-proc-swatch.ac-bpmn-cat-4 { stroke: var(--ac-chart-cat-4); border-color: var(--ac-chart-cat-4); }
+.ac-bpmn-activity.ac-bpmn-cat-5 rect, .ac-proc-swatch.ac-bpmn-cat-5 { stroke: var(--ac-chart-cat-5); border-color: var(--ac-chart-cat-5); }
+.ac-bpmn-activity.ac-bpmn-cat-6 rect, .ac-proc-swatch.ac-bpmn-cat-6 { stroke: var(--ac-chart-cat-6); border-color: var(--ac-chart-cat-6); }
+.ac-bpmn-activity.ac-bpmn-cat-7 rect, .ac-proc-swatch.ac-bpmn-cat-7 { stroke: var(--ac-chart-cat-7); border-color: var(--ac-chart-cat-7); }
+.ac-bpmn-activity.ac-bpmn-cat-8 rect, .ac-proc-swatch.ac-bpmn-cat-8 { stroke: var(--ac-chart-cat-8); border-color: var(--ac-chart-cat-8); }
+.ac-bpmn-activity.is-faded { opacity: 0.2; }
+.ac-bpmn-activity.is-picked rect { fill: var(--ac-selected); stroke: var(--ac-focus); stroke-width: 3; stroke-dasharray: none; }
+.ac-proc-diagram-opts { flex-wrap: wrap; gap: 6px 12px; }
+.ac-proc-legend { display: flex; flex-wrap: wrap; gap: 4px 14px; margin: 0; padding: 0; list-style: none; font-size: var(--ac-font-size-sm); }
+.ac-proc-legend li { display: flex; align-items: center; gap: 6px; }
+.ac-proc-swatch { display: inline-block; width: 14px; height: 10px; border: 3px solid; border-radius: 3px; }
 .ac-bpmn-edge { fill: none; stroke: var(--ac-muted); stroke-width: 1.5; }
 .ac-bpmn-edge.is-rework { stroke: var(--ac-danger-700); stroke-dasharray: 6 3; }
 .ac-bpmn-edge.is-message { stroke: var(--ac-primary-700); stroke-dasharray: 2 4; }
@@ -58,7 +74,7 @@
 @media (forced-colors: active) {
   .ac-bpmn rect, .ac-bpmn circle, .ac-bpmn polygon, .ac-bpmn-edge { stroke: CanvasText; }
   .ac-bpmn text { fill: CanvasText; }
-  .ac-bpmn-activity.is-selected rect { stroke: Highlight; }
+  .ac-bpmn-activity.is-selected rect, .ac-bpmn-activity.is-picked rect { stroke: Highlight; }
 }
 /* Phase B6: the optional BPMN editor (bpmn-js). Its bpmn.io watermark (licence) is never hidden or covered: no rule here targets it. */
 .ac-proc-editor-wrap { margin-bottom: 12px; }

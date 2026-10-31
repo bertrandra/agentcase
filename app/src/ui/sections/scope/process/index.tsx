@@ -1,4 +1,4 @@
-import { useId } from 'react';
+import { useId, useMemo } from 'react';
 import { drawingOf, readProcess, type Drawing, type DrawShape } from '@/domain/process';
 import { useDoc } from '@/store/hooks';
 import { OverrideBadge } from '@/ui/widgets/OverrideBadge';
@@ -12,19 +12,25 @@ import { Filters } from './Filters';
 import { ImportPanel } from './ImportPanel';
 import { ImportReport } from './ImportReport';
 import { ProgrammePart } from './programme/ProgrammePart';
-import { rowsOf, visibleRows } from './tableModel';
+import type { ActFacts } from './DiagramOptions';
+import { counted, rowsOf, visibleRows, type Row } from './tableModel';
 import { Toolbar } from './Toolbar';
 import { useProcessView } from './view';
 import './process.css';
 
 const OVERRIDES = ['BPMN'] as const;
 const count = (d: Drawing, kind: DrawShape['kind']): number => d.shapes.filter((s) => s.kind === kind).length;
+const factsOf = (rows: Row[]): Map<string, ActFacts> => new Map(rows.map((r) => [r.id, { type: r.type, authority: r.aiAuthority, counted: counted(r) }]));
+const filtering = (f: Record<string, string>): boolean => Object.values(f).some((v) => v.trim() !== '');
 
 const help = (
   <>
     <p>The delivery process of the case as one BPMN 2.0 model: its phases, its activities with their actors and parameters, and its diagram. The
       other scope sections (Scope, Phase scope, the artefact editors) read and write the same model.</p>
-    <p>The diagram is read-only: zoom with + and −, pan with the arrow keys or by dragging, 0 fits it again. The activity table lists the same
+    <p>The diagram is read-only: zoom with + and −, the wheel (at the cursor) or two fingers (pinch), pan with the arrow keys or by dragging, 0 fits
+      it again. Ctrl or Shift + click adds activities to the selection, and Zoom to selection centres them at a zoom where their names can be read;
+      the table&apos;s filters fade the other activities (Zoom to filtered fits those kept). Hide out-of-scope activities and Colours (task type: manual,
+      human, agent…; or AI authority) change the drawing only, never the case. The activity table lists the same
       activities: filter and sort it, tick an activity in or out of scope, select one to edit its name, phase, effort and supervision split.</p>
     <p>Import reads a BPMN file and shows what it will do before anything changes: replace or merge, the case&apos;s other activities kept or
       switched out of scope, and, for a file from another tool, the phase and team skill of what the case does not know. The import is one step,
@@ -46,6 +52,9 @@ const help = (
 export default function ProcessSection() {
   const doc = useDoc((d) => d.BPMN), rows = rowsOf(doc), f = useProcessView((s) => s.filters), sort = useProcessView((s) => s.sort);
   const selected = useProcessView((s) => s.selected), shown = visibleRows(rows, f, sort), tableId = useId(), drawing = drawingOf(doc);
+  const facts = useMemo(() => factsOf(rows), [rows]);
+  // eslint-disable-next-line react-hooks/exhaustive-deps -- `shown` follows the filters and the rows
+  const kept = useMemo(() => (filtering({ ...f }) ? new Set(shown.map((r) => r.id)) : null), [f, rows]);
   return (
     <SectionFrame title="🧩 Process (BPMN)" help={help} overrides={OVERRIDES}
       input={
@@ -58,7 +67,7 @@ export default function ProcessSection() {
       }
       result={
         <>
-          <Diagram d={drawing} tableId={tableId} title="Diagram of the delivery process" name="Process diagram"
+          <Diagram d={drawing} tableId={tableId} title="Diagram of the delivery process" name="Process diagram" facts={facts} shown={kept}
             desc={`${count(drawing, 'activity')} activities in ${count(drawing, 'phase')} phases, drawn from the BPMN diagram of the case.`} />
           <DiagramEditor />
           {selected && <ActivityPanel doc={doc} id={selected} />}
