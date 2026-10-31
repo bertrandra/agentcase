@@ -17,6 +17,8 @@ When releasing, follow [docs/BUMP_PROCEDURE.md](docs/BUMP_PROCEDURE.md) (§7 for
 
 ## [Unreleased]
 
+## [v20.34.0] 2026-10-31 — BPMN B9c: the programme's stored values in the case's BPMN document (schema v4)
+
 ### BPMN B9c — the programme's stored values move into the case's BPMN document (schema v4)
 
 - **Schema v4** (file format v4, migration 3 → 4): the transformation programme's values — every activity parameter (pilot, setup lines with the
