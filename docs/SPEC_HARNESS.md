@@ -124,6 +124,9 @@ All stored data stays in the case's BPMN document (D-B26), so it travels with th
 | Harness run process (activities, RACI, drivers, agent share) | A `bpmn:process ac:harnessRun="H1"` in the **common** document (default template, editable like the delivery process); platform costs on `ac:run` | `process/harnessRun.ts` (new) |
 | Coverage (which cells a harness serves) | `ac:harnessRef` on each to-be activity (all its cells), narrowed by a rule on the harness when only some teams use it | `process/harnessCoverage.ts` (new) |
 | Run model per slice / harness / product (R1 transfer, R2 shared, R3 external), with a switch date and the commercial model | Organisation part: `ac:runModel scope="…" model="transfer|shared|external" from="…" commercial="ET|AAH|AGS|GS"` | `commercial/runModel.ts` (new) |
+| Token profiles: per activity type (runs per day, context, output), per harness (routing, cache, retry, overhead), price trends and volume tiers | Activity types: process part (catalogue defaults); harness: `ac:tokenProfile` on `ac:harness`; trends and tiers: organisation part `ac:tokenContract owner` (the model list stays the case's `TOKEN_MODELS`) | `tokens/*` (new folder) |
+| Frozen versions (as simulated, as proposed): inputs + computed series + calculation version | The snapshot library (case snapshots), with the series attached, read-only | `snapshots/versions.ts` (new) |
+| Measurements (as measured) | Organisation part: `ac:measure metric scope month value source` | `metrics/measures.ts` (new) |
 | Waves (pilot = wave 0) and their slices | Portfolio data with the waves until FX-D14 (`pilot: true`, `slices: scope ids`); a single case stores them in its document | `portfolio/waves.ts`, `portfolio/slices.ts` (new) |
 
 ## 4. Step 1 — the as-is scope
@@ -142,7 +145,7 @@ A product without RACI or teams has one implicit team (the product team, today's
 **4.2 Consistency.** Σ_c FTE_c = Σ_τ FTE_τp = baseEtp_p and Σ_c cost_c = baselineRun_p by construction (each team's FTE and rate stay its own). A team whose skills no activity uses is flagged
 (capacity without work); an activity whose Responsible skill no team provides is flagged (work without capacity).
 
-**4.3 Views.** The perimeter per unit / team / product / phase / activity: FTE and as-is cost, as a table and as the diagram's colours (§ 11).
+**4.3 Views.** The perimeter per unit / team / product / phase / activity: FTE and as-is cost, as a table and as the diagram's colours (§ 13).
 
 ## 5. Step 2 — the full transformation simulation (today's case)
 
@@ -328,7 +331,82 @@ a pod of the team out, goes part-time to a build pod (SMEs), moves to a harness 
 build pods and run teams staffed **from team in** (reskilling) versus external (provider) is an input per harness (HX-D17); under R2 / R3 the
 provider's share is at the provider's rates and counts in its ledger.
 
-## 11. 📅 Plan and the views, step by step
+## 11. Token economy, at every level
+
+**11.1 Today.** One product-level formula (`time/kernel.ts`, `tokens.ts`): `tokens(t) = agentVfte × wd/12 × runsPerDay × tokensPerArt / 1e6 ×
+blendedPrice`, where `blendedPrice` is the model mix (`TOKEN_MODELS`: share, price in / out) at the case's output share; a Monte Carlo multiplier
+scales it. The token profile and the cache view (EV-28) are informative only (FX-D8).
+
+**11.2 Proposed: bottom-up demand, priced by routing.** Per cell *c* (activity *i*, harness *H*), month *T*:
+
+```
+runs_c(T)    = agentVfte_c(T) × wd/12 × runsPerDay_i                         runs of the agents on the cell (agentVfte_c: its share of § 7.3)
+tokIn_c      = runs_c × ctxIn_i × (1 − cacheHit_H × cacheDiscount)           input tokens, with the harness's context cache
+tokOut_c     = runs_c × out_i
+tok_c        = (tokIn_c + tokOut_c) × (1 + retry_H)                           retries and self-corrections
+tok_H(T)     = Σ_{c covered by H} tok_c + overhead_H(T)                       overhead: evaluations, guardrails, monitoring, the run process's own agents (§ 10.2)
+price_H(T)   = Σ_model route_H,model × (inShare × priceIn_model + outShare × priceOut_model) × priceTrend(T) × tier(owner volume)
+cost_H(T)    = tok_H(T) / 1e6 × price_H(T)
+```
+
+- **Per activity type** (catalogue defaults, editable): runs per day, context size, output size: a code-generation run is not a review run.
+- **Per harness**: model **routing** (which share of runs goes to which model: a frontier model to plan, a small one to execute), cache hit rate,
+  retry rate, overhead.
+- **Price trend**: a yearly price change per model family (editable; default 0 %, today's flat price), and **volume tiers** negotiated at the owner's level
+  (a portfolio contract lowers every product's price): the tier is read on the owner's total volume, so a shared harness or a portfolio contract
+  is cheaper per token.
+- **Monte Carlo**: one price draw per model family per iteration, shared by every harness that routes to it (correlated), plus the volume driver.
+
+**11.3 Up the levels.** Cell → activity → **harness** (its routing, overhead, cache) → product (Σ of its cells' shares of each harness) → slice /
+wave → unit → portfolio. Views per level: tokens and cost per month, **cost per unit of work** (per item, per story point), **tokens per FTE freed**,
+the share of tokens in the run cost, a **token budget** per harness with its alerts (FinOps, the run process's FinOps activity), and the
+token-price sensitivity (at which price the case stops paying back).
+
+**11.4 Who pays.** R1: the customer (internal cost). R2: the provider, passed through with a markup or inside a capacity price. R3: inside the
+service fee, the provider carrying the price risk (the provider's ledger shows its token margin).
+
+**11.5 Parity.** One implicit profile per product: every activity at the case's `runsPerDay` and `tokensPerArt`, the case's model mix as the
+routing, no cache, retry, overhead, trend or tier: today's formula exactly.
+
+## 12. Performance metrics in four versions: as-is, as simulated, as proposed, as measured
+
+**12.1 Versions.**
+
+| Version | What it is | When it is fixed | Source |
+|---|---|---|---|
+| **As-is** | The customer's metrics today | At the Assessed gate (with the baseline) | Declared at step 1, then audited / extrapolated (§ 6) |
+| **As simulated** | The full transformation simulation (step 2) | When the first offer is sent (a **frozen version**) | The engine on the simulated case |
+| **As proposed** | The target business case: target, pilot, waves, run model (steps 4–6) | When the proposal is signed (a **frozen version**: the commitment) | The engine on the proposed case |
+| **As measured** | The actuals of the pilot and the run, month by month | Continuously | Imported or typed measurements per scope (product, team, harness, slice) |
+| (As forecast) | The proposed case re-projected from the measured months (adoption and capability curves refitted to the actuals) | Recomputed | The engine, HX-D21 |
+
+A frozen version stores the **inputs** (a case snapshot, the snapshot library exists) **and the computed series** with the calculation version:
+the proposed numbers are a commitment and must not move when the engine changes (the one exception to "figures are never stored", read-only).
+
+**12.2 Metric catalogue** — each metric defined once (one owner in `src/domain`), with its unit, its level rule and its aggregation:
+
+| Family | Metrics | Aggregation up the levels |
+|---|---|---|
+| Cost | Run cost, team cost, tokens, harness run, cost **per unit of work**, savings, NPV, payback | Sum (costs, savings); ratio of sums (per unit) |
+| Velocity | Throughput (items / month), velocity (story points / sprint), lead time, cycle time, deployment frequency | Sum (throughput); work-weighted mean (velocity per FTE); median-of-weighted (lead / cycle time) |
+| Quality | Defect leakage, bugs / KLOC, change failure rate, rework rate, test coverage, review findings | Work-weighted mean |
+| People | Human FTE (team in → team out), freed FTE, adoption %, eNPS, reskilled FTE | Sum (FTE); FTE-weighted mean (adoption, eNPS) |
+| Agentic | Effective automation %, agent runs, tokens per item, exception rate, human review time per item, harness capability | Sum (runs, tokens); run-weighted mean (rates) |
+
+Today's KPI scorecard (`verifyB/kpi.ts`: AS-IS vs TO-BE at the horizon end, anchors clamped by the ramp) becomes the **as-is vs as-proposed**
+column pair of this catalogue for one product; its anchors stay the source of the velocity and quality to-be values.
+
+**12.3 Measurements.** Imported per month and scope (CSV / Excel template per level, or typed): `metric, scope (product / team / harness /
+slice), month, value, source`. Stored compactly in the organisation part (`ac:measure`), validated (unit, range), each value with its provenance.
+A measured month overrides nothing in the model; it feeds the comparison views, the forecast (HX-D21) and the evidence ledger (measured =
+the highest tier).
+
+**12.4 Views.** For any metric, scope and level: the four lines over time (as-is flat, as simulated, as proposed, as measured, and the forecast),
+the variance (measured − proposed, and % of proposed) and the **benefit realisation** (measured savings / proposed savings to date). Gates read
+them: the pilot's Decide gate compares the pilot's measured KPIs with the proposed Y1 values (today's rule "Pilot KPIs ≥ 80 % of Y1 targets",
+now computed); the Scaled status shows each wave's realisation.
+
+## 13. 📅 Plan and the views, step by step
 
 | View | Addition |
 |---|---|
@@ -338,10 +416,12 @@ provider's share is at the provider's rates and counts in its ledger.
 | RAM | WBS × lanes + auditors + harness teams + provider run roles |
 | Programme histogram | Auditors (assessment option), **build pods** by role (SMEs shown as borrowed from team in), a shared harness counted once at Unit / Portfolio scope |
 | Delivery histogram | **Team in → team out** per team and role, month by month: freed FTE, pods, SMEs lent to build pods, staff moved to harness run teams, the **harness run teams** themselves; customer vs provider FTE under R2 / R3 |
+| Token view (new) | Tokens and cost per month by harness, product, model and level; budget and alerts; cost per unit of work; price sensitivity |
+| Metrics view (new) | Any metric × scope × level: as-is, as simulated, as proposed, as measured, forecast; variance and benefit realisation |
 | Transition view (new) | Per team in: where its FTE go (§ 10.3), as a stacked area and a table, per wave |
 | Scope map (new) | Cells (product × activity × team): perimeter, sampled?, provenance, target / pilot / wave, harness, run model, FTE, as-is and to-be cost; filters at any level; the diagram's Colours → Target, Wave, Harness, Audit |
 
-## 12. Decisions needed (the owner chooses)
+## 14. Decisions needed (the owner chooses)
 
 | ID | Question | Options (recommended first) |
 |---|---|---|
@@ -362,8 +442,13 @@ provider's share is at the provider's rates and counts in its ledger.
 | HX-D15 | Build pod sizing | (a) template + drivers (§ 10.1); (b) typed FTE and months per harness |
 | HX-D16 | Harness run team | (a) the run process (§ 10.2), parity through H0; (b) today's floor + per-agent formula per harness |
 | HX-D17 | Staffing of build pods and run teams | (a) a share from team in (reskilled, their FTE leave team out) and the rest external, per harness; (b) all external |
+| HX-D18 | Token routing | (a) per harness (model shares, cache, retry, overhead); (b) the case's single mix (today) |
+| HX-D19 | Token price trend and tiers | (a) a yearly trend per model family and volume tiers at the owner's level; (b) flat prices (today) |
+| HX-D20 | Frozen versions | (a) inputs + computed series stored, read-only (commitment); (b) inputs only, recomputed |
+| HX-D21 | Forecast from the measured months | (a) refit the adoption and capability curves to the actuals and re-project; (b) no forecast, variance only |
+| HX-D22 | Measurement granularity | (a) month × product / team / harness / slice; (b) month × product only |
 
-## 13. Lots (one PR each)
+## 15. Lots (one PR each)
 
 | Lot | Content | Gate | Figures |
 |---|---|---|---|
@@ -371,10 +456,12 @@ provider's share is at the provider's rates and counts in its ledger.
 | S2 Engine per group and slice | `agentVfte_p(T)` of § 7.3 behind the kernel, the implicit target / harness / slice | **Parity**: 107 fixtures, parallel run, excel-compat identical | None |
 | S3 Assessment | Audit options and pricing (§ 6.2), sample draw, extrapolation, provenance, Monte Carlo spreads, the Assessment stage's cost line, freeze baseline | Hand-computed prices and strata; no sample = today | Opt-in |
 | S4 Target and harnesses | Target rules, harness definition, coverage, costs and allocation, harness business case, scope map | Cross-surface: Σ products + owners = portfolio | Opt-in |
+| S4c Token economy | Bottom-up demand, routing, cache, retries, overhead, trends, tiers, budgets, views per level (§ 11) | Parity: implicit profile = today's tokens on the 107 fixtures | Opt-in |
 | S4b Teams | Team out per team and slice, build pods (§ 10.1), harness run processes and run teams (§ 10.2, parity through H0), transition view | H0 run team = `runTeamSizing` on the 107 fixtures | Opt-in |
 | S5 Pilot and waves | Pilot (wave 0), slices of target − pilot, partition checks, go-live, Plan views (Gantt / WBS / OBS / RAM / histograms) | Plan exports (MSPDI, workbook, report) | Opt-in |
 | S6 Run models | R1 / R2 / R3 per slice with switch dates, customer and provider ledgers, commercial view per scope | Today's commercial view = the one-model special case | Opt-in |
 | S7 Screens | Scope map, audit plan, target / pilot / wave editors, harness panel, diagram colours (Target, Wave, Harness) and groups | axe, parity 0 | None |
-| S8 Monte Carlo | Harness capability draws, stratum spreads | Zero-variance run = consolidated net | Opt-in |
+| S8 Monte Carlo | Harness capability draws, stratum spreads, token price draws per model family | Zero-variance run = consolidated net | Opt-in |
+| S9 Metric versions | Metric catalogue (one owner each), frozen versions (as simulated, as proposed), measurements import, variance, benefit realisation, forecast, computed pilot gate (§ 12) | Today's KPI scorecard = as-is vs as-proposed for one product | None (views) |
 
-Total about 23 days of agent work. S1 → S2 first (no figure moves); then S3 → S4 → S5 → S6 follow the engagement's order.
+Total about 30 days of agent work. S1 → S2 first (no figure moves); then S3 → S4 → S5 → S6 follow the engagement's order.
