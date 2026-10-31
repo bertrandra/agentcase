@@ -15,7 +15,7 @@
   set durations, coaching days and amounts.
 - **3. 📅 Plan** — Gantt, WBS, OBS / RAM and resource histogram of the programme; MS Project XML, workbook and report exports.
 - **4. 🏢 Organisation and 🧭 Who does what** — units, teams and roles; the RACI of every activity and its checks.
-- **5. 🔎 Audit** — tools and observations per activity and role, the tool catalogue (a **draft** to review), calibration, evidence ledger.
+- **5. 🔎 Audit** — tools and observations per activity and role, the tool catalogue (verified against public sources, owner sign-off pending), calibration, evidence ledger.
 - **6. Decisions (DMN)** — rules that set scope and parameters, imported and exported as `.dmn` files.
 - **7. File format** — schema v4; older files open and migrate; the "different engine version" banner.
 - **8. What changed in the figures** — the B9b programme decisions move the setup, NPV, ROI and payback of every case (golden NPV €1,359,010 →
@@ -213,9 +213,10 @@ document. **Observed values never change a figure by themselves.**
   blocks (Technical readiness, Volume and frequency, Time, Quality and rework, Flow, People, Pain points and opportunities), each with its source,
   date and confidence (effort, FTE share, headcount and skill gaps can be split per role); tools in use (version, edition, licences, hosting, integration, AI use, residency, owner team); pain points; evidence.
 - **Roles**: the audit at role level (workload, tools, constraints), linked to 🏢 Organisation and to the activities the role is Responsible for.
-- **Tool catalogue**: 86 market tools by capability and category, neutral (alphabetical, never ranked). **It is a DRAFT for the owner's review**
-  ("DRAFT - needs the owner's review" on the screen and in the file: the facts were written from public vendor pages on 2026-10-30 and not
-  re-checked). A client tool can be added to the case's catalogue; entries can be retired, restored or removed; JSON export and import.
+- **Tool catalogue**: 129 market tools by capability and category, neutral (alphabetical, never ranked). **Verified 2026-10-31 against public
+  sources; the owner's sign-off is pending.** Each entry shows its source page and how it was checked (verified, partly verified: a blank fact could
+  not be confirmed, or not verified) with a note (renames, end-of-sale dates, removed facts). A client tool can be added to the case's catalogue;
+  entries can be retired, restored or removed; JSON export and import.
 - **Coverage and calibration**: coverage (count and effort-weighted), the tooling map (gaps, overlaps), **Observed versus modelled** (hours per
   month, rework, automation → authority, FTE share). **Calibrate from the audit** proposes parameters with their formula (effort scaled by
   k = Σ modelled ÷ Σ observed, rework probability = the observed rate, AI authority from the automation level, never for a regulatory activity);
@@ -295,7 +296,7 @@ The full list, with the section that records each item, is the owner's backlog i
 - **Decisions and CMMN**: no screen edits or binds a decision; the CMMN read-back drops what it does not map; decisions are not drawn.
 - **Organisation**: teams are still stored as entry teams and shared lines (derived as teams); the RACI does not drive a figure; the organisation
   lane view is not offered in the export dialog and has no geometry; programme lanes are not linked to the organisation's roles.
-- **Audit**: a draft tool catalogue; no audit on programme activities; a Merge import does not merge audit data; the header and role-level audits
+- **Audit**: the tool catalogue awaits the owner's sign-off; no audit on programme activities; a Merge import does not merge audit data; the header and role-level audits
   are not in the audit workbook; the diagram is not coloured by audit status.
 - **Programme and plan**: a case-level opt-in switched on in a portfolio's common values counts in every product; the waves, the knowledge subset
   and the setup capacity are portfolio data outside the document; `setupTraining` / `setupGov` are kept (still read by legacy outputs); the

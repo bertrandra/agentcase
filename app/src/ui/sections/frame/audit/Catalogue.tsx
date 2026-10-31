@@ -6,6 +6,10 @@ import { toast } from '@/ui/uiState';
 import { Callout } from '@/ui/widgets/cards';
 
 const join = (xs: string[]): string => xs.join(', ') || '—';
+const CHECK = { verified: 'Verified', partial: 'Partly verified', unverified: 'Not verified' } as const;
+/** How a shipped entry was checked: status, date and note (a blank fact means it could not be confirmed). */
+const checkOf = (t: CatalogTool | undefined): string => (t?.verification
+  ? `${CHECK[t.verification]} ${t.asOf ?? ''}${t.note ? `: ${t.note}` : ''}` : '');
 function stateOf(t: CatalogTool, own: boolean): string {
   if (t.retired) return 'Retired for this case';
   if (t.clientSpecific) return 'Client-specific';
@@ -13,7 +17,8 @@ function stateOf(t: CatalogTool, own: boolean): string {
 }
 
 /**
- * The tool catalogue (F-B23, F-B26, D-B12): the shipped, dated catalogue (each entry with its public source) with the case's own entries laid
+ * The tool catalogue (F-B23, F-B26, D-B12): the shipped, dated catalogue (each entry with its public source and how it was checked; verified
+ * against public sources, the owner's sign-off pending) with the case's own entries laid
  * over it. Retire a tool for this case, restore it, or remove a client-specific tool; the changes are undoable edits of the case. A newer shipped
  * catalogue never overwrites them; "catalogue updated since this audit" when the dates differ.
  */
@@ -36,12 +41,14 @@ export function Catalogue({ data }: { data: AuditViewData }) {
             <th scope="col">Integration</th><th scope="col">Hosting</th><th scope="col">Licence</th><th scope="col">Source</th><th scope="col">State</th>
             <th scope="col"><span className="ac-sr">Actions</span></th></tr></thead>
           <tbody>{rows.map((t) => {
-            const src = t.source ?? shippedTool(t.code)?.source;
+            const ship = shippedTool(t.code), src = t.source ?? ship?.source, check = checkOf(ship);
             return (
               <tr key={t.code}>
                 <th scope="row">{t.name}<span className="ac-muted"> · {t.vendor ?? '—'}</span></th>
                 <td>{t.category ?? '—'}</td><td>{join(t.capabilities)}</td><td>{join(t.aiFeatures)}</td><td>{join(t.integration)}</td><td>{join(t.hosting)}</td>
-                <td>{join(t.licence)}</td><td>{src ? <span className="ac-audit-src">{src}</span> : '—'}</td><td>{stateOf(t, own.has(t.code))}</td>
+                <td>{join(t.licence)}</td>
+                <td>{src ? <span className="ac-audit-src">{src}</span> : '—'}{check && <span className="ac-muted"> · {check}</span>}</td>
+                <td>{stateOf(t, own.has(t.code))}</td>
                 <td>
                   <button type="button" aria-label={`${t.retired ? 'Restore' : 'Retire'} ${t.name} for this case`}
                     onClick={() => act({ kind: 'retire', code: t.code, retired: !t.retired }, `${t.name} ${t.retired ? 'restored' : 'retired'}`)}>

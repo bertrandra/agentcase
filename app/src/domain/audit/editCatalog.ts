@@ -1,6 +1,6 @@
 /** @calc-zone process-model */
 import type { XDocument } from '../process/xml';
-import { CAPABILITY_TOKEN, shippedTool, SHIPPED_AS_OF } from './catalog';
+import { CAPABILITY_TOKEN, caseCopy, shippedTool, SHIPPED_AS_OF } from './catalog';
 import { DATE, KEY } from './ops';
 import { readAudit } from './read';
 import { AI_FEATURES, HOSTINGS, INTEGRATIONS, LICENCES, type CatalogTool } from './types';
@@ -24,9 +24,7 @@ export function toolOk(t: CatalogTool): CatalogTool | null {
     && t.capabilities.every((c) => CAPABILITY_TOKEN.test(c)) && subset(t.licence, LICENCES) && subset(t.aiFeatures, AI_FEATURES)
     && subset(t.integration, INTEGRATIONS) && subset(t.hosting, HOSTINGS) && (t.asOf === undefined || DATE.test(t.asOf));
   if (!ok) return null;
-  const out: CatalogTool = { ...t, name: t.name.trim() };
-  delete out.source;   // the public source of a shipped entry is not part of the case's copy (the XSD has no such attribute)
-  return out;
+  return caseCopy({ ...t, name: t.name.trim() });
 }
 
 /** The case's entries after `op`, or null when refused. */

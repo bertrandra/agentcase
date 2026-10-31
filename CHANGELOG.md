@@ -17,6 +17,29 @@ When releasing, follow [docs/BUMP_PROCEDURE.md](docs/BUMP_PROCEDURE.md) (§7 for
 
 ## [Unreleased]
 
+### Audit — tool catalogue verified
+
+- **The market tool catalogue is verified against public sources (2026-10-31); the owner's sign-off is pending.** Every entry of the 2026-10-30
+  draft (86 tools written from memory) was checked on the vendor's or project's current public pages (product, licence, API / CLI / webhook / MCP
+  documentation, hosting, AI features). 85 kept, 73 of them with a corrected fact; 1 removed (Opsgenie: end of sale 2025-06-04, end of support
+  2027-04-05, Atlassian moves it to Jira Service Management); 44 added for coverage (e.g. Asana, OpenProject, Glean, Backstage, Visure, Miro,
+  Mermaid, PlantUML, Zed, Xcode, OpenAI Codex, Kiro, Devin, Cline, Qodo, Gitea, Appium, Jest, Postman, BrowserStack, Semgrep, Black Duck,
+  GitGuardian, Buildkite, Flux, Tekton, Prometheus, Sentry, incident.io, Zendesk, Vanta, Drata, Polyspace): 129 tools in 12 categories.
+- **Corrections that matter**: MCP servers added where the vendor documents one (Azure DevOps, GitLab, Bitbucket, Rally,
+  SharePoint (Work IQ), draw.io, SAP LeanIX, Lucid, Structurizr, IntelliJ IDEA, Visual Studio, Cypress, Katalon, mabl, Tosca (Cloud), Burp Suite,
+  Checkmarx, GitHub Advanced Security, ZAP, Trivy, Argo CD, Harness, Jenkins, Octopus, Dynatrace, Elastic, New Relic, ServiceNow, Splunk, Jama
+  Connect, Parasoft, Veeva Vault); Amazon Q Developer's MCP removed (not stated; its IDE plug-ins reach end of support 2027-04-30, AWS points to
+  Kiro); Jira, Confluence and Jira Service Management are Cloud only for a new deployment (Atlassian Data Center end of life 2029-03-28, no new
+  sales since 2026-03-30; Bitbucket Data Center continues); VS Code's licence is a Microsoft product licence over the MIT Code - OSS source (not
+  "open source"); Docusaurus and Structurizr have no vendor SaaS; CodeRabbit can be self-hosted; renames: SAP LeanIX, OpenText Fortify SAST;
+  owners: Tabnine (Tricentis, 2026), TestRail and Xray (Sembi, Idera), LDRA (TASKING); Gemini Code Assist's free individual tier was replaced by
+  Google Antigravity (2026-06-18).
+- **Each entry carries** its source (a page opened on the check date), its own date (`asOf`), a verification status (`verified` 86, `partial` 42: a
+  field could not be confirmed and is left blank, `unverified` 1: Enterprise Architect, whose site refused automated access) and a note. The
+  🔎 Audit screen shows the status and note beside the source; the banner reads "Verified 2026-10-31 against public sources; owner sign-off
+  pending". `verification` and `note` are shipped-only like `source`: a case's copy drops them (`caseCopy`), the XSD is unchanged. A test asserts
+  the status, the dates and the neutral order (alphabetical within each category). No figure changes (D-B11).
+
 ## [v21.0.0] 2026-10-31 — BPMN migration complete: the process, programme, organisation, audit and decisions in one native BPMN document
 
 Major release (BPMN phase B8): it closes the BPMN migration delivered in v20.20.0 – v20.34.0 (phases B0–B9e of

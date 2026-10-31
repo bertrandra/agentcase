@@ -733,10 +733,20 @@ an **audit header**: audit id, client, scope, auditors, interview list (who, rol
   optional, ordered `ac:calibration code date source` with its `ac:change element param from to formula` children (type `tCalibratedParam`: effort,
   aiAuthority, probability). Everything else uses the elements declared in B0. Every audited document and its exports validate (OMG XSDs + `ac:` +
   profile).
-- **F-B23 / F-B25 built, the content is a draft for the owner's review.** `app/src/domain/catalog/tools.json`: 86 tools, every capability of § 15.2,
-  dated 2026-10-30, each with vendor, category, licence, capabilities, AI features, integration, hosting and its public product page as source; neutral
-  (alphabetical within a category, never ranked or recommended); the file and the screen say "DRAFT - needs the owner's review" (the facts are
-  indicative, written from public vendor pages, not re-checked online in B7). **F-B24** built: the tools of the activity's capability (case and
+- **F-B23 / F-B25 built; the content is verified against public sources (2026-10-31), the owner's sign-off is pending.**
+  `app/src/domain/catalog/tools.json`: 129 tools in 12 categories, every capability of § 15.2, each with vendor, category, licence, capabilities, AI
+  features, integration, hosting, its source (a public vendor or project page opened on the check date), its own date (`asOf`) and a verification
+  status (`verified` 86: every fact listed was read on a public page; `partial` 42: a field could not be confirmed and is left blank; `unverified` 1:
+  Enterprise Architect, whose site refused automated access) with a note (renames, end-of-sale dates, the facts of the 2026-10-30 draft that
+  could not be confirmed and were removed). The 2026-10-30 draft (86 tools, written from memory) was checked entry by entry on 2026-10-31: 85
+  kept (73 with a corrected fact: MCP servers added where the vendor documents one, Atlassian Data Center end of life (hosting Cloud only for Jira,
+  Confluence, Jira Service Management), VS Code's licence, renames SAP LeanIX and OpenText Fortify SAST, Tabnine acquired by Tricentis, TestRail /
+  Xray now Sembi, LDRA now TASKING), 1 removed (Opsgenie: end of sale 2025-06-04, end of support 2027-04-05), 44 added for coverage (mainstream
+  commercial and open-source tools per capability, verified the same way). `mcp` means an MCP server published or documented by the vendor or
+  project, or MCP client support in an AI coding tool. Neutral: alphabetical within a category, never ranked or recommended (asserted by
+  `tests/domain/audit/edit.test.ts`). The file and the 🔎 Audit screen say "Verified 2026-10-31 against public sources; owner sign-off pending";
+  the screen shows each entry's status, date and note beside its source. `verification` and `note` are shipped-only like `source` (a case's copy
+  drops them, `caseCopy`; the XSD is unchanged). The catalogue changes no figure (D-B11). **F-B24** built: the tools of the activity's capability (case and
   spaces ignored, "Run / support" = RunSupport), by category, with a search box; a client-specific tool is added to the case's catalogue and then
   offered for every activity of its capability. **F-B26** built: retire / restore / remove a case entry (undoable), JSON export (effective catalogue
   with sources) and import (entries equal to the shipped ones skipped); a shipped catalogue never overwrites the case's entries; "catalogue updated
@@ -1608,7 +1618,7 @@ approach is known.
 | 5 | The diagram editor has no properties panel (parameters stay in the table and panels) | Work | § 9.2 |
 | 6 | The diagram editor's own undo history is lost on Save (it reloads from the case) | Work | § 9.2 |
 | 7 | The diagram editor shows the first diagram of the document only | Work | § 9.2 |
-| 8 | The tool catalogue (86 tools, 2026-10-30) is a DRAFT: the owner's review of its facts and sources | Decision | § 15.7 (F-B23 / F-B25) |
+| 8 | The tool catalogue (129 tools) is verified against public sources (2026-10-31): the owner's sign-off is pending (43 entries partial or unverified) | Decision | § 15.7 (F-B23 / F-B25) |
 | 9 | The tool catalogue is not a sheet of the audit workbook (the Lists sheet carries the codes only) | Work | § 15.7 (F-B26) |
 | 10 | F-B30 partial: the audit is per process document; products that share the common process share one audit | Decision | § 15.7 (F-B30) |
 | 11 | The Process diagram is not coloured by audit status | Work | § 15.7 (F-B31) |

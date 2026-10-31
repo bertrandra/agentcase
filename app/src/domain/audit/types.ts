@@ -18,6 +18,9 @@ export const AI_FEATURES = ['none', 'assistant', 'codeGeneration', 'testGenerati
 export const INTEGRATIONS = ['api', 'webhook', 'cli', 'mcp', 'export', 'manual'] as const;
 export const HOSTINGS = ['saas', 'onPremise', 'privateCloud', 'hybrid'] as const;
 export const YES_NO_LATER = ['yes', 'no', 'later'] as const;
+/** Verification of a shipped catalogue entry: every fact read on a public page, some left blank, or the vendor's pages could not be read. */
+export const VERIFICATIONS = ['verified', 'partial', 'unverified'] as const;
+export type Verification = (typeof VERIFICATIONS)[number];
 /** The capabilities a tool serves (§ 15.2; the XSD's tokens). An activity's `capability` selects the tools proposed for it (F-B24). */
 export const CAPABILITIES = ['Planning', 'Documentation', 'Knowledge', 'Analysis', 'Design', 'Coding', 'Review', 'Test', 'Security', 'Release',
   'Compliance', 'RunSupport'] as const;
@@ -62,6 +65,10 @@ export interface CatalogTool {
   retired: boolean;
   /** the public page the facts come from (shipped entries only) */
   source?: string;
+  /** how far the facts were checked against public pages on `asOf` (shipped entries only; the facts left blank are named in `note`) */
+  verification?: Verification;
+  /** a rename, an end of sale or support, or the facts that could not be confirmed (shipped entries only) */
+  note?: string;
 }
 
 /** Everything the audit of a document holds. */
