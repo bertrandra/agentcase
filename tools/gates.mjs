@@ -16,12 +16,13 @@ const args = process.argv.slice(2), opt = (n) => (args.indexOf(n) < 0 ? '' : arg
 const nightly = has('--nightly');
 const s = (job, name, cmd, extra = {}) => ({ job, name, cmd, cwd: 'app', ...extra }), r = (job, name, cmd, extra = {}) => s(job, name, cmd, { cwd: '.', ...extra });
 const always = (timeout) => ({ if: 'success() || failure()', timeout: String(timeout) });
+const XMLLINT = 'xmllint --version || (sudo apt-get update && sudo apt-get install -y --no-install-recommends libxml2-utils)';
 const install = (job) => [s(job, 'npm ci', 'npm ci', { ci: true }), s(job, 'playwright install', 'npx playwright install --with-deps chromium', { ci: true })];
 
 /** The pull-request / main gates: .github/workflows/app.yml, job by job, step by step (working directory app/ unless cwd '.'). */
 const PR = [
   s('check', 'npm ci', 'npm ci', { ci: true }),
-  s('check', 'xmllint', 'xmllint --version || (sudo apt-get update && sudo apt-get install -y --no-install-recommends libxml2-utils)', { ci: true }),
+  s('check', 'xmllint', XMLLINT, { ci: true }),
   s('check', 'audit', 'npm audit --omit=dev --audit-level=moderate'),
   s('check', 'deps:check', 'npm run deps:check'),
   s('check', 'dup', 'npm run dup'),
@@ -46,12 +47,13 @@ const PR = [
 ];
 /** The nightly gates: .github/workflows/nightly.yml. */
 const NIGHTLY = [
-  ...install('suite'), s('suite', 'build', 'npm run build'),
+  s('suite', 'npm ci', 'npm ci', { ci: true }), r('suite', 'xmllint', XMLLINT, { ci: true }),
+  s('suite', 'playwright install', 'npx playwright install --with-deps chromium', { ci: true }), s('suite', 'build', 'npm run build'),
   r('suite', 'check ×3', 'node tools/check-repeat.mjs --runs 3', always(75)),
   r('suite', 'test count', 'node tools/check-repeat.mjs --count-tests --tolerance 2', always(15)),
   r('suite', 'parallel-run full', 'node tools/parallel-run.mjs --corpus full', always(30)),
   s('suite', 'audit', 'npm audit --omit=dev', { if: 'success() || failure()' }),
-  s('affected', 'npm ci', 'npm ci', { ci: true }),
+  s('affected', 'npm ci', 'npm ci', { ci: true }), s('affected', 'xmllint', XMLLINT, { ci: true }),
   s('affected', 'validate:affected', 'npm run validate:affected', { timeout: '225' }),
 ];
 const STEPS = nightly ? NIGHTLY : PR, workflow = nightly ? '.github/workflows/nightly.yml' : '.github/workflows/app.yml';

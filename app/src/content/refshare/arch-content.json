@@ -135,7 +135,7 @@
    ["tr",["td","Test suite"],["td","More than 15,000 automated tests across domain, store, controllers and UI, including property-based undo tests and ",["code","tests/size.test.ts"],"."]],
    ["tr",["td","UI parity"],["td",["code","tools/ui-parity.mjs"]," compares computed styles of the shell and of section content with the legacy file; the few differences are recorded in ",["code","ui-parity-exceptions.json"],"."]],
    ["tr",["td","Accessibility"],["td",["code","tools/a11y.mjs"]," runs axe on sections and states, with a budget in ",["code","a11y-budget.json"],"; serious and critical findings must stay at zero."]],
-   ["tr",["td","End to end and parallel run"],["td",["code","tools/e2e-smoke.mjs"]," visits every section; ",["code","tools/parallel-run.mjs"]," opens the same files in the legacy and the new build. In the last recorded run, 3 of the 107 case files differ (a known limit of the legacy snapshot restore); the oracle tests, which drive the legacy engine through recipes, pass on all 107."]]
+   ["tr",["td","End to end and parallel run"],["td",["code","tools/e2e-smoke.mjs"]," visits every section; ",["code","tools/parallel-run.mjs"]," opens the same files in the legacy and the new build. Every difference is recorded with its deviation in tools/parallel-run-known.json (the B9b programme cost profile moves the NPV and payback of every file; two case files also hit a known limit of the legacy snapshot restore); the oracle tests, which drive the legacy engine through recipes, pass on all 107."]]
   ]],
   ["div","Rule: no calculation change in a port. A deliberate change ships in the legacy file first, the oracle is regenerated, then the TypeScript engine follows."]],
 

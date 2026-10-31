@@ -22,10 +22,13 @@ function failingFiles(): string[] {
   return r.testResults.filter((t) => t.status !== 'passed').map((t) => relative(root, t.name).replace(/\\/g, '/')).sort();
 }
 
+// Every mutation is checked before the first (hours-long) run: a stale one stops the script at once, not after the runs before it.
+const stale = MUTATIONS.filter((m) => readFileSync(join(root, m.file), 'utf8').split(m.find).length !== 2);
+if (stale.length) { for (const m of stale) console.error(`stale mutation (find must occur once): ${m.file}: ${m.find}`); process.exit(2); }
+
 const rows: { file: string; failing: number; sel: Record<Level, number>; missed: Record<Level, string[]>; ran: boolean }[] = [];
 for (const m of MUTATIONS.filter((x) => !only || only.some((o) => x.file.includes(o)))) {
   const path = join(root, m.file), orig = readFileSync(path, 'utf8');
-  if (orig.split(m.find).length !== 2) { console.error(`stale mutation (find must occur once): ${m.file}`); process.exit(2); }
   const sels = Object.fromEntries(LEVELS.map((l) => [l, affected(root, [m.file], l)])) as Record<Level, ReturnType<typeof affected>>;
   const trivial = LEVELS.every((l) => sels[l].full);
   const row = { file: m.file, failing: 0, sel: { precise: sels.precise.selected.length, zone: sels.zone.selected.length } as Record<Level, number>,

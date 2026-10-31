@@ -17,6 +17,17 @@ When releasing, follow [docs/BUMP_PROCEDURE.md](docs/BUMP_PROCEDURE.md) (§7 for
 
 ## [Unreleased]
 
+### SPEC_FIXES lot X0 — nightly green (FX-70, FX-72, FX-73, FX-74, FX-75)
+
+- **Nightly gates.** Both nightly jobs install `xmllint` like the pull-request job (the 26 XSD schema tests failed on every run); `tools/gates.mjs`
+  mirrors the new steps.
+- **Parallel run, full corpus.** The 105 case files that the B9b programme profile moved are recorded under DEV-B9B-RESOURCES and the two
+  DEV-SNAPSHOT-RESTORE lines refreshed (147 files: 147 known, 0 unexpected). Every NPV move is traced to the programme lines on all 107 files
+  (`tests/domain/programme/parallel-run-b9b.test.ts`); the five large moves are explained line by line in DEVIATIONS (no defect). No figure changes.
+- **Mutation check.** The two stale mutations of `validate:affected` (payback loop, pilot months) are updated and checked before the first run and in
+  the pull-request suite (`tests/mutations.test.ts`).
+- **Test count.** The release procedure and `npm run release` refresh the documented test count (`docs:facts -- --count-tests`).
+
 ## [v21.6.0] 2026-10-31 — B10d: Monte Carlo, decision and ranking per unit (B10 complete)
 
 ### B10d — strategy, stress and decision per unit (D-B40); B10 complete
