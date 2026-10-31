@@ -1,12 +1,15 @@
-import { useOrg } from '@/store/orgHooks';
+import type { OrgModel } from '@/domain/org';
+import { useOrgSelector } from '@/store/orgHooks';
 import { OverrideBadge } from '@/ui/widgets/OverrideBadge';
 import { SectionFrame } from '@/ui/zones/SectionFrame';
 import '@/ui/widgets/org.css';
 import { Roles } from './Roles';
 import { Teams } from './Teams';
-import { Units } from './Units';
+import { Units, type OrgParts } from './Units';
 
 const OVERRIDES = ['BPMN'] as const;
+/** The parts this screen shows (a fresh object per model, kept while structurally equal by the selector). */
+const parts = ({ units, teams, roles, products }: OrgModel): OrgParts => ({ units, teams, roles, products });
 const help = (
   <>
     <p>The organisation that delivers the case: organisation units (company, business unit, department, centre of excellence, vendor, offshore or
@@ -17,9 +20,12 @@ const help = (
   </>
 );
 
-/** 🏢 Organisation (docs/SPEC_BPMN.md § 16.6): unit tree, teams with their lines, role catalogue. */
+/**
+ * 🏢 Organisation (docs/SPEC_BPMN.md § 16.6): unit tree, teams with their lines, role catalogue. Reads only those parts of the model, so an edit of
+ * an activity (its effort, its RACI) does not re-render the screen.
+ */
 export default function OrganisationSection() {
-  const m = useOrg();
+  const m = useOrgSelector(parts);
   return (
     <SectionFrame title="🏢 Organisation" help={help} overrides={OVERRIDES}
       input={<><Units m={m} /><div className="ac-form-row"><OverrideBadge refKey="BPMN" label="Process (units, RACI)" /></div></>}

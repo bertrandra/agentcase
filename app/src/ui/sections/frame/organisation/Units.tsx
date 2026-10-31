@@ -7,13 +7,15 @@ import { DraftText } from '@/ui/widgets/DraftText';
 export const UNIT_LABELS: Record<string, string> = { company: 'Company', businessUnit: 'Business unit', department: 'Department',
   centreOfExcellence: 'Centre of excellence', vendor: 'Vendor / partner', offshoreCentre: 'Offshore centre', nearshoreCentre: 'Near-shore centre',
   other: 'Other' };
+/** What the 🏢 Organisation screen shows of the model: units, teams, roles and products (not the RACI of the activities, see 🧭 Who does what). */
+export type OrgParts = Pick<OrgModel, 'units' | 'teams' | 'roles' | 'products'>;
 const SOURCING_LABELS: Record<string, string> = { internal: 'Internal', vendor: 'Vendor', either: 'Either' };
 
 function edit(id: string, patch: UnitPatch, what: string): void {
   if (!updateOrgUnit(id, patch)) toast(`${what} refused`);
 }
 
-function UnitRow({ m, unit, depth }: { m: OrgModel; unit: OrgUnit; depth: number }) {
+function UnitRow({ m, unit, depth }: { m: OrgParts; unit: OrgUnit; depth: number }) {
   const parents = m.units.filter((u) => !isBelow(m, u.id, unit.id)), n = unit.name;
   const remove = () => toast(removeOrgUnit(unit.id) ? `Unit ${n} removed — Ctrl+Z to undo` : 'Remove the units below it first');
   return (
@@ -45,7 +47,7 @@ function UnitRow({ m, unit, depth }: { m: OrgModel; unit: OrgUnit; depth: number
 }
 
 /** The organisation units as a tree (keyboard-editable table: every cell is a control; the level is announced). */
-export function Units({ m }: { m: OrgModel }) {
+export function Units({ m }: { m: OrgParts }) {
   const add = () => toast(addOrgUnit({ id: nextUnitId(), name: 'New unit', type: 'department', parent: DEFAULT_UNIT_ID })
     ? 'Unit added under the delivery unit — Ctrl+Z to undo' : 'Unit refused: the process document has no collaboration');
   return (

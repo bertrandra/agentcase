@@ -1,6 +1,6 @@
 import { caseValues } from '@/domain/process';
 import { activityDef, DETAIL_SECTIONS, MILESTONE_NAMES, programmeActivityId, type ParamDef, type ProgrammeActivityDef } from '@/domain/programme';
-import { useDoc } from '@/store/hooks';
+import { useDocSelector } from '@/store/hooks';
 import { useActiveProduct, useIsMulti } from '@/store/portfolioHooks';
 import { selectActivity } from '@/ui/sections/scope/process/view';
 import { goSection } from '@/ui/uiState';
@@ -28,12 +28,15 @@ const shown = (p: ParamDef, raw: string | undefined): string => {
  * A context screen shows results, figures and diagnostics; it never defines, describes or edits a programme activity.
  */
 export function ActivityRefs({ kinds }: { kinds: string[] }) {
-  const values = useDoc((d) => caseValues(d)), multi = useIsMulti(), product = useActiveProduct();
+  const multi = useIsMulti(), product = useActiveProduct();
   const milestone = (k: string): Pick<ProgrammeActivityDef, 'kind' | 'name' | 'params'> | undefined => {
     const m = MILESTONE_NAMES.find((x) => x.kind === k);
     return m && { ...m, params: [] };
   };
   const defs = kinds.map((k) => activityDef(k) ?? milestone(k)).filter((d) => d !== undefined);
+  // only the values of these parameters: another edit of the case (a figure, the customer name) does not re-render the list
+  const keys = defs.flatMap((d) => d.params.map((p) => p.key)), read = useDocSelector((d) => { const v = caseValues(d); return keys.map((k) => v[k]); });
+  const values: Record<string, string | undefined> = Object.fromEntries(keys.map((k, i) => [k, read[i]]));
   return (
     <div className="ac-act-refs" role="note" aria-label="Programme activities used here">
       <p className="ac-muted">Programme activities used here — their description and parameters are edited in the Process section:</p>

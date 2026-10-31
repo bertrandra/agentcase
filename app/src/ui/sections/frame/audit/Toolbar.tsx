@@ -1,4 +1,4 @@
-import { useId, useRef, useState } from 'react';
+import { memo, useId, useRef, useState } from 'react';
 import { auditReportFile, auditTemplate, catalogFile, importAuditWorkbook, importCatalogFile } from '@/controllers/auditFiles';
 import { toast } from '@/ui/uiState';
 import { Callout } from '@/ui/widgets/cards';
@@ -9,7 +9,7 @@ import { setImportReport, useAuditView } from './view';
  * The audit's files (F-B26, F-B32, F-B34): the audit workbook out and back in (validated before anything is written, one step, a report of
  * added / updated / ignored rows), the audit report, and the tool catalogue as JSON. Every file with audit data says so in its name.
  */
-export function Toolbar() {
+export const Toolbar = memo(function Toolbar() {
   const id = useId(), wb = useRef<HTMLInputElement>(null), cat = useRef<HTMLInputElement>(null), report = useAuditView((s) => s.report);
   const [busy, setBusy] = useState(false);
   const run = async (f: () => Promise<void>) => {
@@ -55,4 +55,4 @@ export function Toolbar() {
       </div>
     </section>
   );
-}
+});

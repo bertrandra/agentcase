@@ -5,6 +5,7 @@ import { afterEach, describe, expect, it } from 'vitest';
 import { setAgentSup } from '@/controllers/artefacts';
 import { setCustomerName } from '@/controllers/frame';
 import { setInput } from '@/controllers/inputs';
+import { updateProcessActivity } from '@/controllers/process';
 import { appStore } from '@/store/instance';
 import { loadFixture } from '../helpers/fixtures';
 import { threeProducts } from '../helpers/portfolioStore';
@@ -14,13 +15,20 @@ import { view } from '../helpers/vueAgg';
 /**
  * Re-render cost of ONE edit (lot 5a, item 3): how many components render in the whole app (top bar, KPI bar, sidebar, dock and the open section) for a
  * single case edit, counted with the DevTools commit hook (helpers/renderCount). Two edits per section: one that changes the figures (`workdays`, or a
- * % auto on Scope) and one that changes none (the customer name). The budgets are the counts measured after the selector hooks with a little headroom
+ * % auto on Scope) and one that changes none (the customer name); the BPMN-era sections (Process, Programme, Plan, Organisation, Who does what,
+ * Audit) add a third, a process edit (one activity's effort). The budgets are the counts measured after the selector hooks with a little headroom
  * (docs/ARCHITECTURE.md §6 has the before / after table).
  */
-type Edit = 'figure' | 'name';
+type Edit = 'figure' | 'name' | 'process';
 /** `before`: the count measured before lot 5a (no selector hooks), for the record; `budget`: the ceiling enforced now. */
 interface Run { key: string; section: string; title: RegExp; portfolio?: boolean; edit: Edit; budget: number; before: number }
 const figure = (section: string) => (section === 'scope-sel' ? () => setAgentSup('A017', 47) : () => setInput('workdays', 211));
+/** The BPMN-era sections: a figure, the customer name and one activity's effort, in that order; `before`: measured before their selective refresh. */
+type Three = [number, number, number];
+const bpmn = (section: string, title: RegExp, budget: Three, before: Three): Run[] => (['figure', 'name', 'process'] as const)
+  .map((edit, i) => ({ key: `${section} · ${edit}`, section, title, edit, budget: budget[i]!, before: before[i]! }));
+/** The process edit: one activity's effort (`process.updateActivity`). */
+const effortOfOne = () => updateProcessActivity('A017', { effort: 7 });
 const RUNS: Run[] = [
   { key: 'home · figure', section: 'home', title: /Welcome/i, edit: 'figure', budget: 10, before: 24 },
   { key: 'params · figure', section: 'params', title: /Parameters|Glass/i, edit: 'figure', budget: 45, before: 53 },
@@ -34,6 +42,12 @@ const RUNS: Run[] = [
   { key: 'portfolio financial · figure', section: 'financial', title: /Financial/i, portfolio: true, edit: 'figure', budget: 42, before: 51 },
   { key: 'portfolio financial · name', section: 'financial', title: /Financial/i, portfolio: true, edit: 'name', budget: 15, before: 51 },
   { key: 'portfolio scenarios · name', section: 'scenarios', title: /Scenario/i, portfolio: true, edit: 'name', budget: 29, before: 36 },
+  ...bpmn('process', /Process \(BPMN\)/, [18, 11, 31], [57, 56, 532]),
+  ...bpmn('programme', /Programme/, [42, 10, 6], [111, 110, 105]),
+  ...bpmn('gantt', /Plan/, [36, 18, 43], [78, 77, 72]),
+  ...bpmn('organisation', /Organisation/, [12, 22, 6], [10, 20, 15]),
+  ...bpmn('who-does-what', /Who does what/, [12, 23, 18], [10, 21, 16]),
+  ...bpmn('audit', /Audit/, [12, 11, 18], [10, 9, 29]),
 ];
 const measured: Record<string, { renders: number; commits: number; top: string }> = {};
 HTMLCanvasElement.prototype.getContext = (() => null) as unknown as HTMLCanvasElement['getContext'];   // jsdom: no 2D canvas
@@ -47,7 +61,7 @@ describe('renders on a single edit', () => {
     await screen.findByRole('heading', { level: 1, name: r.title }, LAZY);
     const before = appStore().getState().portfolio;
     resetRenders();
-    act(r.edit === 'name' ? () => setCustomerName('Acme') : figure(r.section));
+    act(r.edit === 'name' ? () => setCustomerName('Acme') : r.edit === 'process' ? effortOfOne : figure(r.section));
     expect(appStore().getState().portfolio).not.toBe(before);   // the edit did change the case
     measured[r.key] = { renders: totalRenders(), commits: log.commits, top: topRenders(8).map(([n, k]) => `${n}×${k}`).join(' ') };
     expect(totalRenders(), JSON.stringify(measured[r.key])).toBeLessThanOrEqual(r.budget);

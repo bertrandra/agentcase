@@ -1,5 +1,6 @@
 import { memo } from 'react';
 import type { Drawing, DrawShape } from '@/domain/process';
+import { shallowEqual } from '@/store/equal';
 
 /** The label of a shape cut into lines of about `n` characters (at most `max` lines, the last one ellipsed). */
 export function lines(label: string, n: number, max: number): string[] {
@@ -17,7 +18,7 @@ const cls = (s: DrawShape, selected: string | null): string =>
     s.id === selected ? 'is-selected' : ''].filter(Boolean).join(' ');
 
 interface Props { selected: string | null; onPick: (id: string) => void; labels: boolean }
-function Shape({ s, selected, onPick, labels }: Props & { s: DrawShape }) {
+function ShapeView({ s, selected, onPick, labels }: Props & { s: DrawShape }) {
   const c = cls(s, selected);
   if (s.kind === 'event') return <circle className={c} cx={s.x + s.w / 2} cy={s.y + s.h / 2} r={s.w / 2} />;
   if (s.kind === 'gateway') {
@@ -47,6 +48,13 @@ function Shape({ s, selected, onPick, labels }: Props & { s: DrawShape }) {
     </g>
   );
 }
+
+type ShapeProps = Props & { s: DrawShape };
+/** Same drawn shape: equal fields (a recomputed drawing gives fresh objects), the same selection state of THIS shape, labels and pick handler. */
+const sameShape = (a: ShapeProps, b: ShapeProps): boolean => a.labels === b.labels && a.onPick === b.onPick && shallowEqual(a.s, b.s)
+  && (a.selected === a.s.id) === (b.selected === b.s.id);
+/** One shape, memoised per node: an edit of one activity redraws that shape only, a selection the two shapes it changes. */
+const Shape = memo(ShapeView, sameShape);
 
 /**
  * Every shape and edge of the drawing (memoised: pan changes only the SVG's view box). Activity labels are drawn from 200 % zoom on, where they can be
