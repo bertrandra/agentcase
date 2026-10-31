@@ -1,4 +1,6 @@
 /** @calc-zone workspace-config */
+import type { Ctx } from '../../ctx';
+import { scopeOf } from '../../process/scope';
 import { v } from './types';
 
 /** [variable id, label, checkbox id, scope]: every tick box of the app as an On/Off variable. */
@@ -24,4 +26,6 @@ const TOGGLES: [string, string, string, string][] = [
   ['tgKhEnabled', 'Knowledge hub enabled', 'khEnabled', 'knowledge'],
 ];
 
-export const TOGGLE_VARS = TOGGLES.map(([id, label, check, scope]) => v(id, label, 'BOOL', '', scope, (c) => c.inp.c(check)));
+/** The "Include regulatory artefacts" box is the process's `regInclude` (BPMN B9a, DEV-REGINCLUDE-DERIVED), not a form copy. */
+const read = (check: string) => (check === 'regInclude' ? (c: Ctx) => scopeOf(c.s).regInclude : (c: Ctx) => c.inp.c(check));
+export const TOGGLE_VARS = TOGGLES.map(([id, label, check, scope]) => v(id, label, 'BOOL', '', scope, read(check)));

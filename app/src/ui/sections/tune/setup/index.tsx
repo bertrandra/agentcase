@@ -6,6 +6,7 @@ import { SectionFrame } from '@/ui/zones/SectionFrame';
 import { Badge, Panel, Stat, StatRow } from '@/ui/widgets/cards';
 import { DataTable } from '@/ui/widgets/DataTable';
 import { CoefInput } from '@/ui/widgets/CoefInput';
+import { ActivityRefs } from '@/ui/widgets/ActivityRefs';
 import { NumberInput } from '@/ui/widgets/fields';
 import { SetupChart } from './SetupChart';
 
@@ -15,6 +16,8 @@ const help = (
     <p>Setup total = tooling + training + coaching + governance (+ the HRI change cost and the Knowledge hub setup when those modules are on), spread linearly
       over the first 6 months of the cash flow. The setup duration shapes the Gantt bar only, not the cash profile. Recurring costs (tokens, infrastructure, run
       team, hub curation) never belong here.</p>
+    <p>Each setup line is an activity of the transformation programme: its description, amount and duration are edited in the 🧩 Process section (Open …
+      in Process below). This screen keeps the totals, the chart and the case-level inputs.</p>
   </>
 );
 
@@ -26,13 +29,9 @@ export default function SetupSection() {
     <SectionFrame title="Agentic Setup — Initial investment" help={help}
       input={
         <Panel title="⚙️ Agentic Setup & Run" aside={<Badge tone="amber">ONE-TIME</Badge>}>
-          <p className="ac-muted">Non-recurring seed investment: tooling, training, coaching, governance. Driven by the Setup parameters.</p>
+          <p className="ac-muted">Non-recurring seed investment: tooling, training, coaching, governance.</p>
+          <ActivityRefs kinds={['setupTooling', 'setupTraining', 'setupCoaching', 'setupGovernance', 'change', 'hubSetup', 'build']} />
           <div className="ac-form-row">
-            <NumberInput id="setupDuration" label="Setup duration (months)" min={1} step={1} />
-            <NumberInput id="setupTooling" label="Setup tooling & infra (€)" step={5000} />
-            <NumberInput id="setupTraining" label="Setup training & change (€)" step={5000} />
-            <NumberInput id="setupCoaching" label="Setup coaching (€)" step={5000} />
-            <NumberInput id="setupGov" label="Setup governance (€)" step={5000} />
             <NumberInput id="infra" label="Monthly infra (€)" step={50} />
             <NumberInput id="workdays" label="Working days / year" step={5} />
             <CoefInput coef="setupETP" domId="setupETPCoef" label="Transitional setup headcount (FTE)"
@@ -53,7 +52,6 @@ export default function SetupSection() {
             { key: 'amt', header: 'Amount', align: 'right', render: (l) => eurK(l.amount) },
             { key: 'h1', header: 'Q1-Q2', align: 'right', render: (l) => l.h1 },
             { key: 'h2', header: 'Q3-Q4', align: 'right', render: (l) => l.h2 },
-            { key: 'd', header: 'Description', render: (l) => l.text },
           ]} />
         </>
       } />

@@ -7,6 +7,7 @@ import type { ModelResult } from '../types/model';
 import { ADAPTERS, rampAt, yearOf, type CurveK } from './adapters';
 import { fitCurveCached } from './fit';
 import { enginePts } from './spline';
+import { setupTiming } from '../programme/timing';
 
 /** Constants captured from a (raw) model so the engine is a pure function of them (legacy buildK). */
 /** Identity of the Time Engine's calculation (every package carries it). */
@@ -34,7 +35,7 @@ export function buildK(c: Ctx, m: ModelResult, opts: BuildOpts = {}): K {
     calculationVersion: CALCULATION_VERSION, horizonYears: m.horizon, horizonMonths: m.horizon * 12, ramps: m.ramps.slice(),
     baseEtp: m.base.etp, baselineRunMonth: m.baselineRun / 12, eff: m.eff, wdMonth: m.wd / 12, dayRateTarget: m.tgtTJM, dayRateAsIs: m.blendedTJM,
     rateMode: 'target', frPerYear: 0, runsPerDay: num('runsPerDay', 25), tokensPerArt: m.tokensPerArt, tokenUnitCost: m.tokenCost,
-    infraMonth: m.infraYear / 12, setupTotal: m.setupTotal, setupProfileMonths: 6, runSizeMode: c.inp.v('runSizeMode') || 'hybrid',
+    infraMonth: m.infraYear / 12, setupTotal: m.setupTotal, setupProfileMonths: setupTiming(c).engineMonths, runSizeMode: c.inp.v('runSizeMode') || 'hybrid',
     runFloorMin: num('runFloorMin', 0.5), runFloorPct: num('runFloorPct', 4), runOpsPerAgent: num('runOpsPerAgent', 0.15),
     runTeamFactor: num('runTeamFactor', 1),
     legacyRunFte: Math.max(0.5, m.base.etp * 0.06 + 0.5 + m.base.etp * 0.04), vTaxRate: conv.vTaxRate || 0, loopExtRate: conv.loopExtRate || 0,

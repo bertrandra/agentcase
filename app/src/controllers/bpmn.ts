@@ -6,6 +6,9 @@ import { activeDoc } from '@/store/editBase';
 import { appStore } from '@/store/instance';
 import { parseBpmn, type ParseResult } from '@/store/persistence/bpmn/read';
 import { hasPortfolioContent } from '@/store/persistence/portfolioSnapshot';
+import { makeCtx } from '@/domain/ctx';
+import { programmeProcess } from '@/domain/programme';
+import { programmeDocument, withProgramme } from '@/domain/programme/bpmn';
 
 /**
  * Process export and file reading (docs/SPEC_BPMN.md § 4.1, § 4.3; phase B2). Export: the active case (or the product shown), every product of
@@ -43,7 +46,13 @@ function productInputs(): ProductInput[] {
  * The `.bpmn` file(s) of an export. `partial`: in-scope activities only (F-B3). `audit`: include the audit data (F-B33, D-B14; without it the
  * file carries the process only). Deterministic content (F-B4); the date is in the name only.
  */
-export function exportProcessFiles(mode: BpmnExportMode, partial = false, now: Date = new Date(), audit = false): BpmnFile[] {
+export function exportProcessFiles(mode: BpmnExportMode, partial = false, now: Date = new Date(), audit = false,
+  processes: ProcessChoice = 'delivery'): BpmnFile[] {
+  const files = deliveryFiles(mode, partial, now, audit);
+  return processes === 'delivery' ? files : withProgrammeFiles(files, processes, mode);
+}
+
+function deliveryFiles(mode: BpmnExportMode, partial: boolean, now: Date, audit: boolean): BpmnFile[] {
   const customer = activeDoc().customerName as string | undefined, { portfolio, shown } = bpmnExportChoices();
   const withAudit = <C extends { BPMN: ProductInput['case']['BPMN'] }>(c: C): C => ({ ...c, BPMN: exportAuditDoc(c.BPMN, audit) });
   const name = (product: string | undefined) => bpmnFilename(customer, product, now, audit);
@@ -59,6 +68,23 @@ export function exportProcessFiles(mode: BpmnExportMode, partial = false, now: D
     return [{ filename: name('portfolio'), text }];
   }
   return out.map((p) => ({ filename: name(p.name), text: exportCaseText(p.case, { partial, product: { code: p.code, name: p.name } }) }));
+}
+
+/**
+ * F-B69 (phase B9a): the export offers the delivery process only (as before), the transformation programme only, or both in one file (a second
+ * pool, its message flows to the first). The programme is derived from the case shown (`programmeProcess`), so one programme file is written.
+ */
+export type ProcessChoice = 'delivery' | 'programme' | 'both';
+function withProgrammeFiles(files: BpmnFile[], processes: Exclude<ProcessChoice, 'delivery'>, mode: BpmnExportMode): BpmnFile[] {
+  const pf = appStore().getState().portfolio, v = programmeProcess(makeCtx(activeDoc()), pf, pf.activeProductId);
+  const rename = (f: string, to: string) => f.replace(/^AgentCase_process/, to);
+  if (processes === 'programme') return [{ filename: rename(files[0]?.filename ?? 'AgentCase_process.bpmn', 'AgentCase_programme'),
+    text: serialize(programmeDocument(v)) }];
+  const one = mode === 'perProduct' ? files : files.slice(0, 1);
+  return one.map((f) => {
+    const read = parseBpmn(f.text).doc;
+    return read ? { filename: rename(f.filename, 'AgentCase_process_and_programme'), text: serialize(withProgramme(read, v)) } : f;
+  });
 }
 
 /**

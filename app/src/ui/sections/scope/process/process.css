@@ -32,6 +32,14 @@
 .ac-bpmn-id { font-weight: var(--ac-font-weight-bold); }
 .ac-bpmn-edge { fill: none; stroke: var(--ac-muted); stroke-width: 1.5; }
 .ac-bpmn-edge.is-rework { stroke: var(--ac-danger-700); stroke-dasharray: 6 3; }
+.ac-bpmn-edge.is-message { stroke: var(--ac-primary-700); stroke-dasharray: 2 4; }
+.ac-bpmn-marker { font-size: 10px; fill: var(--ac-text-soft); }
+/* Phase B9a: the transformation programme under the delivery process (swim lanes, parameter panel, table alternative). */
+.ac-prog { margin-top: 24px; }
+.ac-prog-table { max-height: 520px; overflow: auto; }
+.ac-prog-table tr.is-selected td { background: var(--ac-surface-tint); }
+.ac-prog-facts { display: flex; flex-wrap: wrap; gap: 8px 24px; margin-top: 12px; }
+.ac-prog-list { margin: 0; padding-left: 18px; }
 .ac-proc-filters { flex-wrap: wrap; gap: 6px 12px; }
 .ac-proc-table { max-height: 520px; overflow: auto; }
 .ac-proc-table tr.is-selected td { background: var(--ac-surface-tint); }

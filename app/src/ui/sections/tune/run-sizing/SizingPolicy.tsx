@@ -3,15 +3,13 @@ import { runSizingView } from '@/domain/tuneB/runSizing';
 import { useCtx } from '@/store/hooks';
 import { DataTable } from '@/ui/widgets/DataTable';
 import { Panel } from '@/ui/widgets/cards';
-import { NumberInput, SelectInput } from '@/ui/widgets/fields';
+import { ActivityRefs } from '@/ui/widgets/ActivityRefs';
 import { eur, fix } from '../../tuneB/fmt';
 
-const MODES = [
-  { value: 'hybrid', label: 'Hybrid — floor + per-agent (default)' },
-  { value: 'legacy', label: 'Legacy — fixed on base-team size' },
-];
-
-/** Sizing policy inputs and the live per-year preview (agent vFTE, run team FTE and cost, agents per run FTE). */
+/**
+ * The live per-year preview of the sizing policy (agent vFTE, run team FTE and cost, agents per run FTE). The policy (mode, platform floor, ops
+ * load per agent) is a parameter of the AgentOps run activity, edited in the Process section (SPEC_BPMN § 19.7, phase B9a).
+ */
 export function SizingPolicy() {
   const c = useCtx(), v = useMemo(() => runSizingView(c), [c]);
   const rows = [
@@ -22,12 +20,7 @@ export function SizingPolicy() {
   ];
   return (
     <Panel title="Sizing policy">
-      <div className="ac-form-row">
-        <SelectInput id="runSizeMode" label="Mode" options={MODES} />
-        <NumberInput id="runFloorMin" label="Platform floor min (FTE)" min={0} step={0.1} />
-        <NumberInput id="runFloorPct" label="Platform floor (% of base team)" min={0} step={0.5} />
-        <NumberInput id="runOpsPerAgent" label="Ops load per agent vFTE" min={0} step={0.01} />
-      </div>
+      <ActivityRefs kinds={['agentops']} />
       <DataTable rowKey={(r) => r.key} rows={rows} columns={[
         { key: 'l', header: '', render: (r) => r.label },
         ...v.av.map((_, i) => ({

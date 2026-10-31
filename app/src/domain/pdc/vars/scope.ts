@@ -10,9 +10,10 @@ import { phaseScope } from '../../scope';
 import { activePhaseIds } from '../../verifyB/phases';
 import { v } from './types';
 import { scopeOf } from '../../process/scope';
+import { stageWeeks } from '../../programme/timing';
 
 const industry = (c: Ctx) => INDUSTRIES.find((i) => i.code === c.inp.v('industry'));
-const weeks = (c: Ctx) => ['rmD1', 'rmD2', 'rmD3', 'rmD4'].map((id, i) => c.inp.p(id) || (i === 3 ? 6 : 4)).reduce((a, b) => a + b, 0);
+const weeks = (c: Ctx) => stageWeeks(c).reduce((a, b) => a + b, 0);   // the programme's stage timing owner (SPEC_BPMN § 19, F-B65)
 
 /** Scope selection, parameters, regulatory profile, lifecycle and programme settings. */
 export const SCOPE_VARS = [

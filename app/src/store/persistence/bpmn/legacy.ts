@@ -10,7 +10,10 @@ type Rec = Record<string, unknown>;
 
 /** The case with its scope keys laid over it (copies the caller may mutate); the process document stays (shared). */
 export function legacyView<T extends object>(doc: T): T & ScopeKeys {
-  return { ...doc, ...editableKeys(scopeOf(doc as unknown as { BPMN: XDocument })) };
+  const k = editableKeys(scopeOf(doc as unknown as { BPMN: XDocument })), dom = (doc as unknown as { dom?: { checked?: object } }).dom;
+  // the legacy form state of the "Include regulatory artefacts" box: derived from the process (B9a, DEV-REGINCLUDE-DERIVED), never stored
+  const withBox = dom ? { dom: { ...dom, checked: { ...dom.checked, regInclude: k.regInclude } } } : {};
+  return { ...doc, ...k, ...withBox };
 }
 /** The legacy shape without the process document (what a version 2 file held). */
 export function legacyCase<T extends object>(doc: T): Rec {

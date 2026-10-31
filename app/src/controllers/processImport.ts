@@ -11,6 +11,7 @@ import { appStore } from '@/store/instance';
 import { legacyProcess } from '@/store/persistence/bpmn/caseDoc';
 import { editProcess } from '@/store/processEdit';
 import { parseBpmnFile } from './bpmn';
+import { withoutProgramme } from '@/domain/programme/bpmn';
 
 /**
  * Import and reset of the case's process (docs/SPEC_BPMN.md F-B6–F-B9, F-B19, § 9; phase B4). The file is read and checked in full before
@@ -32,7 +33,8 @@ export type ReadOutcome = { ok: true; name: string; file: XDocument; analysis: I
 export async function readProcessFile(f: { name: string; size: number; text(): Promise<string> }): Promise<ReadOutcome> {
   const r = await parseBpmnFile(f);
   if (!r.doc) return { ok: false, errors: r.errors.length ? r.errors.map((e) => e.message) : ['the file cannot be read'] };
-  return { ok: true, name: f.name, file: r.doc, analysis: analyseImport(editBase().BPMN, r.doc), warnings: r.warnings.map((w) => w.message) };
+  const file = withoutProgramme(r.doc);   // B9a: the programme of a file is derived from the case's keys, not read (its import comes with B9c)
+  return { ok: true, name: f.name, file, analysis: analyseImport(editBase().BPMN, file), warnings: r.warnings.map((w) => w.message) };
 }
 
 /** The preview of an import as chosen, against the process the import would edit. */

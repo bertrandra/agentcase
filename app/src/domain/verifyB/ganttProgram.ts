@@ -5,11 +5,10 @@ import { engineNow } from '../canonical';
 import { khEnabled } from '../knowledge';
 import { addMonthsLocal, parseLocalDate } from './ganttLayout';
 import type { ColourRole } from '../theme';
+import { programmeCalendar } from '../programme/timing';
+import { programmeActivityId } from '../programme/ids';
 
-const W2M = 12 / 52;
-
-/** A positive numeric input, else the default (legacy ganttNum). */
-export function ganttNum(c: Ctx, id: string, def: number): number { const n = c.inp.p(id); return !isNaN(n) && n > 0 ? n : def; }
+export { ganttNum } from '../programme/timing';
 
 export interface Axis {
   horizon: number; totalM: number; startStr: string; startDate: Date; startOk: boolean;
@@ -26,31 +25,29 @@ export function ganttAxis(c: Ctx): Axis {
   };
 }
 
-/** `input`/`value`: the case input that sizes the bar (keyboard-editable) and its current value in that input's unit. */
-export interface ProgramRow { name: string; start: number; dur: number; tone: ColourRole; meta: string; input?: string; value?: number }
-/** Transformation program rows (months from the roadmap start) and where onboarding ends. */
+/** `input`/`value`: the case input that sizes the bar and its current value in that input's unit; `activity`: the programme activity it shows. */
+export interface ProgramRow { name: string; start: number; dur: number; tone: ColourRole; meta: string; input?: string; value?: number; activity: string }
+/**
+ * Transformation program rows (months from the roadmap start) and where onboarding ends. The names come from the programme's stage list and
+ * the placements from its timing owner (`programmeCalendar`, SPEC_BPMN § 19.4 F-B65): this band prints them, it times nothing itself.
+ */
 export function programRows(c: Ctx, totalM: number): { rows: ProgramRow[]; onboardEnd: number; onboardWeeks: number } {
-  const d = [1, 2, 3, 4].map((i) => Math.max(0, c.inp.p(`rmD${i}`) || 0)) as [number, number, number, number];
-  const show = 'ganttShowOnboarding' in (c.s.dom?.checked ?? {}) ? c.inp.c('ganttShowOnboarding') : true;
-  const rows: ProgramRow[] = []; let t = 0;
-  if (show) {
-    const steps: [string, ColourRole][] = [['🔍 Discover', 'chart-cat-5'], ['🎯 Calibrate', 'chart-cat-5'], ['✅ Validate', 'chart-cat-5'],
-      ['🚀 Pilot & Prove', 'chart-cat-3']];
-    steps.forEach(([name, tone], i) => { rows.push({ name, start: t, dur: d[i]! * W2M, tone, meta: `${d[i]} wk`, input: `rmD${i + 1}`,
-      value: d[i] }); t += d[i]! * W2M; });
+  const showStages = 'ganttShowOnboarding' in (c.s.dom?.checked ?? {}) ? c.inp.c('ganttShowOnboarding') : true;
+  const cal = programmeCalendar(c, totalM, { showStages, hub: khEnabled(c) }), rows: ProgramRow[] = [];
+  for (const s of cal.stages) rows.push({ name: s.stage.gantt, start: s.start, dur: s.dur, tone: s.stage.tone, meta: `${s.ganttWeeks} wk`,
+    input: s.stage.input as string, value: s.ganttWeeks, activity: programmeActivityId('stage', s.stage.id) });
+  rows.push({ name: '🧱 Agentic Build (ramp)', ...cal.build, tone: 'chart-cat-4', meta: `${cal.build.dur} mo ramp to steady state`,
+    input: 'setupDuration', value: cal.build.dur, activity: programmeActivityId('build') });
+  rows.push({ name: '⚙️ Agentic Run (steady state)', ...cal.run, tone: 'chart-cat-2', meta: 'ongoing delivery + support',
+    activity: programmeActivityId('run') });
+  if (cal.hubSetup && cal.hubRun) {
+    const { days, ...span } = cal.hubSetup;
+    rows.push({ name: '🧠 Knowledge Hub — Build / Setup', ...span, tone: 'chart-cat-2', meta: `${days} days: ingest, index, guardrails`,
+      input: 'khSetupDays', value: days, activity: programmeActivityId('hubSetup') });
+    rows.push({ name: '🧠 Knowledge Hub — Run', ...cal.hubRun, tone: 'chart-cat-2', meta: 'ongoing curation + retrieval',
+      activity: programmeActivityId('hubRun') });
   }
-  const onboardEnd = t, build = Math.max(0.5, ganttNum(c, 'setupDuration', 12)), runStart = onboardEnd + build;
-  rows.push({ name: '🧱 Agentic Build (ramp)', start: onboardEnd, dur: build, tone: 'chart-cat-4', meta: `${build} mo ramp to steady state`,
-    input: 'setupDuration', value: build });
-  rows.push({ name: '⚙️ Agentic Run (steady state)', start: runStart, dur: Math.max(0, totalM - runStart), tone: 'chart-cat-2',
-    meta: 'ongoing delivery + support' });
-  if (khEnabled(c)) {
-    const days = Math.max(1, ganttNum(c, 'khSetupDays', 30)), setup = Math.max(0.25, (days * 12) / 365), runAt = onboardEnd + setup;
-    rows.push({ name: '🧠 Knowledge Hub — Build / Setup', start: onboardEnd, dur: setup, tone: 'chart-cat-2', meta: `${days} days: ingest, index, guardrails`,
-      input: 'khSetupDays', value: days });
-    rows.push({ name: '🧠 Knowledge Hub — Run', start: runAt, dur: Math.max(0, totalM - runAt), tone: 'chart-cat-2', meta: 'ongoing curation + retrieval' });
-  }
-  return { rows, onboardEnd, onboardWeeks: Math.round(d[0] + d[1] + d[2] + d[3]) };
+  return { rows, onboardEnd: cal.onboardEnd, onboardWeeks: cal.onboardWeeks };
 }
 
 export interface Marker { label: string; month: number; family: string; date: string; title: string; left: number; lift: boolean }

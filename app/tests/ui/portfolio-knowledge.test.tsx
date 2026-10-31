@@ -8,6 +8,8 @@ import Knowledge from '@/ui/sections/tune/knowledge';
 import { pf } from '../helpers/portfolioUi';
 import { threeProducts } from '../helpers/portfolioStore';
 import { freshStore } from '../store/helpers';
+import { renderProgrammePanel } from '../helpers/programmePanel';
+import { expectReference } from '../helpers/programmeParam';
 
 vi.mock('@/ui/widgets/ChartPanel', async () => import('../helpers/chartStub'));   // jsdom has no canvas
 
@@ -16,18 +18,22 @@ afterEach(cleanup);
 const prod = (i: number) => pf().products[i]!;
 const rowOf = (i: number) => knowledgeRow(pf(), prod(i).id);
 const chip = (name: RegExp) => screen.getByRole('group', { name });
-/** Work on product B ("this product only") with the section open. */
-function editB(): void {
+/** Work on product B ("this product only") with the section open, or (B9a) the parameter panel of a hub activity of the programme. */
+function editB(kind?: string): void {
   act(() => { setActiveProduct(ids[1]); setEditScope('product'); });
-  render(<Knowledge />);
+  if (kind) renderProgrammePanel(kind); else render(<Knowledge />);
 }
 
 describe('Knowledge hub, one product: unchanged', () => {
   beforeEach(() => { freshStore(); });
-  it('no chip, no banner, no domains / preparation / hub card; the hub infra field is still there', () => {
+  // B9a (DEV-B9A-CONTEXT-SCREENS): the hub's fields are parameters of the hub setup and run activities, in the Process section's parameter panel
+  it('no chip, no banner, no domains / preparation / hub card; the hub infra field is in the hub run activity\'s panel', () => {
     render(<Knowledge />);
     expect(document.querySelector('.ac-ovr, .ac-prod-banner')).toBeNull();
     for (const t of [/Knowledge domains/, /Knowledge transfer preparation/, /Portfolio Knowledge Hub/]) expect(screen.queryByText(t)).toBeNull();
+    expectReference('Hub infra (€/mo)', 'Knowledge Hub run');
+    cleanup();
+    renderProgrammePanel('hubRun');
     expect(screen.getByLabelText('Hub infra (€/mo)')).toBeTruthy();
   });
 });
@@ -35,23 +41,29 @@ describe('Knowledge hub, one product: unchanged', () => {
 describe('Knowledge hub, several products: the subset of the active product', () => {
   beforeEach(() => { ids = threeProducts().ids; });
 
-  it('shows the banner, a chip per field (inherited at first) and the shared hub card instead of the infra field', () => {
+  it('shows the banner, a chip per field (inherited at first, in the section or the activity panels), the shared hub card, no infra field', () => {
     render(<Knowledge />);
     expect(screen.getByText(/Knowledge Hub subset of/).textContent).toContain('everything is inherited');
-    for (const l of ['Hub use', 'Maturity answers', 'Target CC', 'Setup base', 'Curation', 'Knowledge domains',
-      'Knowledge transfer preparation']) expect(chip(new RegExp(`^${l}: inherited`))).toBeTruthy();
+    for (const l of ['Hub use', 'Maturity answers', 'Knowledge domains']) expect(chip(new RegExp(`^${l}: inherited`))).toBeTruthy();
     expect(screen.queryByLabelText('Hub infra (€/mo)')).toBeNull();
     expect(screen.getByLabelText('Hub infrastructure (€/month)')).toBeTruthy();
+    const PANELS = [['hubSetup', ['Target CC', 'Setup base']], ['hubRun', ['Curation']], ['ktPrep', ['Knowledge transfer preparation']]] as const;
+    for (const [kind, labels] of PANELS) {
+      cleanup();
+      renderProgrammePanel(kind);
+      for (const l of labels) expect(chip(new RegExp(`^${l}: inherited`))).toBeTruthy();
+    }
+    expect(screen.queryByLabelText('Hub infra (€/mo)')).toBeNull();
   });
 
   it('"All products" edits the common hub, which inherits; "this product only" creates the product\'s own value, then back to common', () => {
-    render(<Knowledge />);
+    renderProgrammePanel('hubSetup');
     fireEvent.change(screen.getByLabelText('Target CC (Y3)'), { target: { value: '2' } });
     expect(pf().common.dom.values.khTargetCC).toBe('2');
     expect(prod(1).knowledge.targetCC).toBeUndefined();
     expect(rowOf(1).targetCC).toBe(2);
     cleanup();
-    editB();
+    editB('hubSetup');
     fireEvent.change(screen.getByLabelText('Target CC (Y3)'), { target: { value: '1' } });
     expect(prod(1).knowledge.targetCC).toBe(1);
     expect(pf().common.dom.values.khTargetCC).toBe('2');
@@ -67,7 +79,11 @@ describe('Knowledge hub, several products: the subset of the active product', ()
     const before = [rowOf(0), rowOf(2)], docBefore = JSON.stringify(pf().products[1]), consBefore = consolidate(pf());
     editB();
     fireEvent.change(screen.getByLabelText(/Domain knowledge is captured/), { target: { value: '4' } });
+    cleanup();
+    editB('hubSetup');
     fireEvent.change(screen.getByLabelText('Target CC (Y3)'), { target: { value: '1' } });
+    cleanup();
+    editB('hubRun');
     fireEvent.change(screen.getByLabelText('Curation (FTE)'), { target: { value: '1' } });
     expect(prod(1).knowledge.maturityAnswers).toHaveLength(9);
     expect(prod(1).knowledge.maturityAnswers![1]).toBe(4);
@@ -78,7 +94,7 @@ describe('Knowledge hub, several products: the subset of the active product', ()
     for (const id of [ids[0], ids[2]]) expect(after.products.find((v) => v.id === id)!.run).toBe(consBefore.products.find((v) => v.id === id)!.run);
     for (let i = 0; i < 3; i++) act(() => { appStore().undo(); });
     expect(JSON.stringify(pf().products[1])).toBe(docBefore);
-    expect(chip(/^Target CC: inherited/)).toBeTruthy();
+    expect(chip(/^Curation: inherited/)).toBeTruthy();
   });
 
   it('shows the cap of the engagement context next to the target', () => {

@@ -1,33 +1,34 @@
 import { capability, pilotSizing } from '@/domain/tune';
 import { useCtx } from '@/store/hooks';
 import { Badge, Panel, Stat, StatRow } from '@/ui/widgets/cards';
-import { NumberInput } from '@/ui/widgets/fields';
+import { ActivityRefs } from '@/ui/widgets/ActivityRefs';
+
 import { Meter, Note, fmtK } from '@/ui/widgets/tuneA';
 
-/** EV-21 pilot sizing: pod size, break-in sprints and prove weeks give the duration and an indicative cost. */
+/**
+ * EV-21 pilot sizing: the duration and indicative cost of the pilot. The pilot is a programme activity (SPEC_BPMN § 19.7, phase B9a): its
+ * description and parameters (pod size, break-in sprints, prove weeks) are in the Process section, referenced here.
+ */
 export function PilotCard() {
   const p = pilotSizing(useCtx());
   return (
     <Panel title="Pilot sizing — pilot as product" aside={<Badge tone="blue">EV-21</Badge>}>
-      <div className="ac-form-row">
-        <NumberInput id="pilotFte" label="Pilot pod size (FTE)" min={1} max={8} step={1} />
-        <NumberInput id="pilotBreakin" label="Break-in sprints" min={0} max={6} step={1} />
-        <NumberInput id="pilotWeeks" label="Prove weeks" min={4} max={26} step={1} />
-      </div>
+      <ActivityRefs kinds={['pilot']} />
       <StatRow>
         <Stat label="Pilot duration" value={`${p.totalWeeks} wk`} tone="teal" />
         <Stat label="Pilot cost (indicative)" value={fmtK(p.cost)} tone="teal" />
         <Stat label="Structure" value="DEC → HOW → BLD" tone="teal" />
       </StatRow>
-      <p>The pilot delivers a <strong>factory</strong> (the frozen harness + agents), not just an app: {p.breakIn} break-in sprint(s) to stabilise the harness,
-        then {p.weeks} weeks proving milestones by demonstration, on 3-day fail-fast iterations with full regeneration allowed.</p>
       <Note>Reference 4.1: pilot-as-product; ~88% of pilots never industrialise, so distribution &amp; governance are designed from day one (see the risk
         register). CC-PILOT-01.</Note>
     </Panel>
   );
 }
 
-/** EV-22 internal capability build (Volet A): operational now / in training / target mass. */
+/**
+ * EV-22 internal capability build (Volet A): operational now / in training / target mass. The capability build is part of the programme's
+ * training activity (its numbers edited in the Process section) with the milestone "Target capability reached" (SPEC_BPMN § 19.2, B9a).
+ */
 export function CapCard() {
   const k = capability(useCtx());
   const rows = [
@@ -36,11 +37,7 @@ export function CapCard() {
   ] as const;
   return (
     <Panel title="Internal capability build — Volet A" aside={<Badge tone="blue">EV-22</Badge>}>
-      <div className="ac-form-row">
-        <NumberInput id="capOps" label="Operational now" min={0} step={10} />
-        <NumberInput id="capTrain" label="In training" min={0} step={10} />
-        <NumberInput id="capTarget" label="Target mass" min={0} step={10} />
-      </div>
+      <ActivityRefs kinds={['setupTraining', 'capabilityTarget']} />
       <table className="ac-table">
         <tbody>
           {rows.map(([label, id, v, w, color]) => (

@@ -2,6 +2,7 @@
 import { khRunAnnual } from '../knowledge';
 import { model } from '../model/overlay';
 import { pilotMonths, pilotSizing } from '../tune/program';
+import { pilotTiming } from '../programme/timing';
 import { lay, layWide } from './costModelAxis';
 import { row } from './costModelRow';
 import type { CostRow } from './costModelTypes';
@@ -9,10 +10,13 @@ import type { ProductView } from './waves';
 
 export const COST = 'cost (+)', SAVE = 'saving (-)';
 
-/** The pilot's monthly spend on the calendar (decision D4): from the product's month 1 (`pilotMonths`), empty outside the pilot months. */
+/**
+ * The pilot's monthly spend on the calendar (decision D4): from the product month the programme's timing owner places it (`pilotTiming`, month 1
+ * in B9a), spread by `pilotMonths`, empty outside the pilot months.
+ */
 export function pilotCells(v: ProductView, L: number): (number | null)[] {
-  const pm = pilotMonths(pilotSizing(v.run.ctx));
-  return lay(v, L, (t) => pm[t - 1] ?? 0).map((x, i) => (x !== null && i - v.month0 < pm.length ? x : null));
+  const pm = pilotMonths(pilotSizing(v.run.ctx)), from = pilotTiming(v.run.ctx).costFromProductMonth;
+  return lay(v, L, (t) => pm[t - from] ?? 0).map((x, i) => (x !== null && i - v.month0 < pm.length ? x : null));
 }
 /** a + b month by month; an empty b leaves a as it is. */
 export const plus = (a: (number | null)[], b: (number | null)[]): (number | null)[] => a.map((x, i) => (b[i] == null ? x : (x ?? 0) + (b[i] as number)));

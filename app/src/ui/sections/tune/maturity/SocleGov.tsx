@@ -2,6 +2,7 @@ import { GOV_GATES, socleView } from '@/domain/tune';
 import { useCtx } from '@/store/hooks';
 import { Badge, Panel } from '@/ui/widgets/cards';
 import { Note } from '@/ui/widgets/tuneA';
+import { ActivityRefs } from '@/ui/widgets/ActivityRefs';
 
 /** EV-20 / EV-29 measurement socle: DORA, SPACE, AI signals and human early-warning indicators. */
 export function SoclePanel() {
@@ -36,6 +37,7 @@ export function GovPanel() {
         <thead><tr><th>Gate / artifact</th><th>Definition</th></tr></thead>
         <tbody>{GOV_GATES.map(([g, d]) => <tr key={g}><td><strong>{g}</strong></td><td>{d}</td></tr>)}</tbody>
       </table>
+      <ActivityRefs kinds={['govGates']} />
       <Note>Reference 5.1: the CI is the wall that does not move. These gates are mandatory and non-bypassable before merge; the enlarged DoD and the AI-BOM are
         exported in the Critical &amp; Regulated report (EV-11). CC-GATE-01.</Note>
     </Panel>

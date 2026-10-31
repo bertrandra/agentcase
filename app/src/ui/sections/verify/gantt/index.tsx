@@ -2,18 +2,22 @@ import { ganttView } from '@/domain/verifyB';
 import { setInput } from '@/controllers/inputs';
 import { useDoc } from '@/store/hooks';
 import { Band } from '@/ui/sections/economics/Band';
-import { CheckInput, Field, NumberInput } from '@/ui/widgets/fields';
+import { ActivityRefs } from '@/ui/widgets/ActivityRefs';
+import { CheckInput, Field } from '@/ui/widgets/fields';
 import { SectionFrame } from '@/ui/zones/SectionFrame';
 import { useView } from '../vbShared';
 import { Delivery } from './Delivery';
 import { Program } from './Program';
 import { PortfolioGanttPart } from './Waves';
 
-const STAGES = ['Discover', 'Calibrate', 'Validate', 'Pilot & Prove'];
+/** The programme activities the program band draws (their durations are edited in the Process section: SPEC_BPMN § 19.7, phase B9a). */
+const ACTIVITIES = ['stage-discover', 'stage-calibrate', 'stage-validate', 'stage-pilotProve', 'build', 'run', 'hubSetup', 'hubRun', 'govGates', 'gate-L2',
+  'gate-L3', 'gate-L4'];
 const INTRO = 'A planning view of the whole engagement on one timeline: the transformation program (Discover → Calibrate → Validate → Pilot, '
   + 'then Agentic Build ramp and Agentic Run steady state), '
   + 'the SDLC phases in their V-cycle sequence, and every artefact placed in its phase. In-scope items are solid; out-of-scope ones are dimmed. '
-  + 'Durations for the program come from the AI Readiness roadmap inputs; the delivery bands are laid out across the case horizon.';
+  + 'The program bars are activities of the transformation programme: their durations are edited in the Process section (Enter on a bar opens it); '
+  + 'the delivery bands are laid out across the case horizon.';
 
 /** A number field of the case with a legacy default for when the document does not carry it yet (the legacy Gantt creates these inputs itself). */
 interface DomNumberProps { id: string; label: string; fallback: string; min?: number; max?: number; step?: number; hint?: string }
@@ -33,10 +37,10 @@ export default function GanttSection() {
     <SectionFrame title="📅 Gantt / Timeline" help={<p>{INTRO}</p>}
       input={<div className="ac-gantt-inputs">
         <StartDate />
-        {STAGES.map((stage, i) => <NumberInput key={i + 1} id={`rmD${i + 1}`} label={`${stage} (weeks)`} min={0} />)}
         <CheckInput id="ganttShowOnboarding" label="Show Discover → Pilot in the timeline" />
         <DomNumber id="ganttOverlap" fallback="50" label="Phase overlap (pipelining) %" min={0} max={90} step={5} />
         {v.hasCross && <DomNumber id="ganttCrossSeq" fallback="0" label="🔶 Cross-cutting seq" step={1} hint="Same number as a phase's seq = same start" />}
+        <ActivityRefs kinds={ACTIVITIES} />
       </div>}
       result={<>
         <p className="ac-muted">{INTRO}</p>

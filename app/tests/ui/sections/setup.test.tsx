@@ -5,6 +5,7 @@ import { computeCase } from '@/domain';
 import { appStore } from '@/store/instance';
 import Setup from '@/ui/sections/tune/setup';
 import { freshStore } from '../../store/helpers';
+import { editParam, expectReference } from '../../helpers/programmeParam';
 import { expectParity, FIXTURES, loadFixture } from './tuneBHelpers';
 
 beforeEach(() => { freshStore(); });
@@ -17,11 +18,14 @@ describe('setup section', () => {
     const { container } = render(<Setup />);
     expectParity(fx, 'setup', container);
   });
-  it('the four lines add up to the total and follow the inputs; the setup total reaches the case', () => {
+  // B9a (DEV-B9A-CONTEXT-SCREENS): the setup lines are programme activities, edited in the Process section; the screen follows them
+  it('the four lines add up to the total and follow the activities; the setup total reaches the case', () => {
     render(<Setup />);
     expect(screen.getAllByText('€135K').length).toBeGreaterThan(0);
     const before = computeCase(doc()).model.setupTotal;
-    fireEvent.change(screen.getByLabelText(/Setup coaching/), { target: { value: '85000' } });
+    expectReference(/Setup coaching/, 'Setup: coaching');
+    expect(screen.queryByText('Pair programming, deliverable review')).toBeNull();
+    editParam('setupCoaching', 85000);
     expect(doc().dom.values.setupCoaching).toBe('85000');
     expect(screen.getAllByText('€185K').length).toBeGreaterThan(0);
     expect(computeCase(doc()).model.setupTotal).toBeGreaterThan(before);

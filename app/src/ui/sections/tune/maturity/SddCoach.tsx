@@ -1,7 +1,8 @@
 import { AUTONOMY_TIERS, coachView, sddView } from '@/domain/tune';
 import { useCtx } from '@/store/hooks';
 import { Badge, Panel, Stat, StatRow } from '@/ui/widgets/cards';
-import { NumberInput, RangeInput } from '@/ui/widgets/fields';
+import { ActivityRefs } from '@/ui/widgets/ActivityRefs';
+import { RangeInput } from '@/ui/widgets/fields';
 import { Note, fmtK } from '@/ui/widgets/tuneA';
 
 /** EV-16 SDD & tooling maturity: the spec-driven level cuts the verification tax (up to −50 % at 100). */
@@ -26,15 +27,15 @@ export function SddPanel() {
   );
 }
 
-/** EV-19 coaching curve & autonomy weaning (indicative cost, analytical). */
+/**
+ * EV-19 coaching curve & autonomy weaning (indicative cost, analytical). The coaching load (Y1, cruise) is a parameter of the coaching activity of
+ * the transformation programme, edited in the Process section (SPEC_BPMN § 19.7, phase B9a); this panel shows the curve it gives.
+ */
 export function CoachPanel() {
   const k = coachView(useCtx());
   return (
     <Panel title="Coaching curve & autonomy weaning" aside={<Badge tone="blue">EV-19</Badge>}>
-      <div className="ac-form-row">
-        <NumberInput id="coachY1" label="Y1 coaching load (% capacity)" min={0} max={80} step={5} />
-        <NumberInput id="coachCruise" label="Cruise coaching load (%)" min={0} max={60} step={5} />
-      </div>
+      <ActivityRefs kinds={['setupCoaching']} />
       <StatRow>
         {k.loads.map((p, i) => <Stat key={i} label={`Y${i + 1} coaching load`} value={`${Math.round(p)}%`} hint={`≈ ${fmtK(k.costs[i] as number)}/yr`}
           tone="blue" />)}

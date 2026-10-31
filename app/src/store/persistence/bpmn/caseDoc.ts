@@ -71,12 +71,27 @@ export function caseInStore<T extends object>(c: T, onBad?: (why: string) => voi
     const p = processOf(v);
     if (typeof p === 'string') onBad?.(p); else doc = p;
   }
-  return { ...withoutLegacyScope(o), [BPMN_KEY]: doc ?? legacyProcess(o, base) } as unknown as T;
+  return withoutRegIncludeBox({ ...withoutLegacyScope(o), [BPMN_KEY]: doc ?? legacyProcess(o, base) }) as unknown as T;
+}
+
+/**
+ * BPMN B9a (DEV-REGINCLUDE-DERIVED): the "Include regulatory artefacts" box is the process's `regInclude` (`scopeOf`), never a stored form state:
+ * a `dom.checked.regInclude` (or a product's `checked.regInclude` override) of an older file is dropped on open.
+ */
+export function withoutRegIncludeBox<T extends Rec>(o: T): T {
+  const dom = o.dom, checked = rec(dom) ? dom.checked : undefined, out: Rec = { ...o };
+  delete out['checked.regInclude'];
+  if (rec(dom) && rec(checked) && 'regInclude' in checked) {
+    const rest = { ...checked };
+    delete rest.regInclude;
+    out.dom = { ...dom, checked: rest };
+  }
+  return out as T;
 }
 
 /** Product overrides in the store's form: a `BPMN` override kept (parsed), version 2 scope overrides turned into a whole-document override. */
 export function overridesInStore(o: Rec, common: LegacyScope, onBad?: (why: string) => void): Rec {
-  if (o[BPMN_KEY] === undefined && !hasLegacyScope(o)) return o;
+  if (o[BPMN_KEY] === undefined && !hasLegacyScope(o)) return 'checked.regInclude' in o ? withoutRegIncludeBox(o) : o;
   let bad = false;
   const own = caseInStore(o, (why) => { bad = true; onBad?.(why); }, common) as Rec;
   if (bad && !hasLegacyScope(o)) delete own[BPMN_KEY];   // an unreadable override: the product inherits the common document
