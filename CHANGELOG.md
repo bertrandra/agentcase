@@ -17,6 +17,8 @@ When releasing, follow [docs/BUMP_PROCEDURE.md](docs/BUMP_PROCEDURE.md) (§7 for
 
 ## [Unreleased]
 
+## [v20.32.0] 2026-10-31 — BPMN B9e: the 📋 Programme screen (enable, description, type, timing, cost, linked section)
+
 ### BPMN B9e — the 📋 Programme screen: enable, describe, type, time and cost every programme activity
 
 Phase B9e of [docs/SPEC_BPMN.md](docs/SPEC_BPMN.md) (§ 19.11 F-B79; built as § 19.12). **No figure moves by default** (every line's type is Spread,
