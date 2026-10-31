@@ -116,17 +116,17 @@ All stored data stays in the case's BPMN document (D-B26), so it travels with th
 | Perimeter (step 1): units, teams (lines: skill, grade, location, FTE), products, activities, RACI, as-is numbers | As today: organisation part of the **common** document (units, teams, owners, B10a), process part (activities, RACI), form values (rates, volumes) | `org/*`, `process/*` |
 | Status per product (`Simulated / Assessed / Piloted / Scaled`, date) | Organisation part: `ac:caseStatus product status asOf` | `org/status.ts` (new) |
 | Scopes as rules: **perimeter**, **audit sample**, **target**, **pilot**, **wave slices** | Organisation part: `ac:scope id kind="perimeter|sample|target|pilot|slice"` with `ac:include` / `ac:exclude` (`unit`, `team`, `product`, `phase`, `activity`, `harness`, `cell`, `share`) | `scope/cells.ts` (new) |
-| Audit options and price parameters (days per unit, auditor rate, expenses) | Audit header in the collaboration: `ac:auditPlan` with `ac:option` (full / sample n / sample coverage %) and the chosen one | `audit/pricing.ts` (new) |
+| Audit options (full / sample n / sample coverage %) and the chosen one; price parameters (days per unit, auditor rate, expenses) | Options: audit header `ac:auditPlan` with `ac:option`; **prices and rates: case values, not the BPMN model** (§ 16) | `audit/pricing.ts` (new) |
 | Sample drawn (seed, strata, drawn cells) | `ac:sample seed strata` with `ac:sampled cell="P1/A017/T3"` | `audit/sample.ts` (new) |
 | Baseline (as-is, frozen at the Assessed gate) | A second `bpmn:process` `ac:baseline="true" frozenAt` in the **product's** document; the audit moves onto its elements (per product: settles FX-D6) | `process/baseline.ts` (new) |
 | Link to-be → as-is | `ac:baselineRef` on each to-be task | `process/baseline.ts` |
 | Harness (owner, agents, tools, capability, build pod template and drivers, sourcing share) | Organisation part: `ac:harness id owner` with `ac:agentRef`, `ac:toolRef`, `ac:capability`, `ac:build` (`ac:podRole role mix`, drivers, months), `ac:sourcing internalPct` | `org/harness.ts` (new) |
 | Harness run process (activities, RACI, drivers, agent share) | A `bpmn:process ac:harnessRun="H1"` in the **common** document (default template, editable like the delivery process); platform costs on `ac:run` | `process/harnessRun.ts` (new) |
 | Coverage (which cells a harness serves) | `ac:harnessRef` on each to-be activity (all its cells), narrowed by a rule on the harness when only some teams use it | `process/harnessCoverage.ts` (new) |
-| Run model per slice / harness / product (R1 transfer, R2 shared, R3 external), with a switch date and the commercial model | Organisation part: `ac:runModel scope="…" model="transfer|shared|external" from="…" commercial="ET|AAH|AGS|GS"` | `commercial/runModel.ts` (new) |
-| Token profiles: per activity type (runs per day, context, output), per harness (routing, cache, retry, overhead), price trends and volume tiers | Activity types: process part (catalogue defaults); harness: `ac:tokenProfile` on `ac:harness`; trends and tiers: organisation part `ac:tokenContract owner` (the model list stays the case's `TOKEN_MODELS`) | `tokens/*` (new folder) |
+| Run model per slice / harness / product (R1 transfer, R2 shared, R3 external), with a switch date and the commercial model | Who runs what: the provider as a **participant** in the organisation part; the run model, commercial model and fees: **case values per scope id, not the BPMN model** (§ 16) | `commercial/runModel.ts` (new) |
+| Token profiles: per activity type (runs per day, context, output), per harness (routing, cache, retry, overhead), price trends and volume tiers | Activity types: process part (catalogue defaults); harness routing: `ac:tokenProfile` on `ac:harness`; **prices, trends and tiers: case tables with `TOKEN_MODELS`, not the BPMN model** (§ 16) | `tokens/*` (new folder) |
 | Frozen versions (as simulated, as proposed): inputs + computed series + calculation version | The snapshot library (case snapshots), with the series attached, read-only | `snapshots/versions.ts` (new) |
-| Measurements (as measured) | Organisation part: `ac:measure metric scope month value source` | `metrics/measures.ts` (new) |
+| Measurements (as measured) | A measurements part of the case (`metric, scope, month, value, source`), **not the BPMN model** (§ 16) | `metrics/measures.ts` (new) |
 | Waves (pilot = wave 0) and their slices | Portfolio data with the waves until FX-D14 (`pilot: true`, `slices: scope ids`); a single case stores them in its document | `portfolio/waves.ts`, `portfolio/slices.ts` (new) |
 
 ## 4. Step 1 — the as-is scope
@@ -397,7 +397,7 @@ Today's KPI scorecard (`verifyB/kpi.ts`: AS-IS vs TO-BE at the horizon end, anch
 column pair of this catalogue for one product; its anchors stay the source of the velocity and quality to-be values.
 
 **12.3 Measurements.** Imported per month and scope (CSV / Excel template per level, or typed): `metric, scope (product / team / harness /
-slice), month, value, source`. Stored compactly in the organisation part (`ac:measure`), validated (unit, range), each value with its provenance.
+slice), month, value, source`. Stored in a measurements part of the case, outside the BPMN model (§ 16), validated (unit, range), each value with its provenance.
 A measured month overrides nothing in the model; it feeds the comparison views, the forecast (HX-D21) and the evidence ledger (measured =
 the highest tier).
 
@@ -465,3 +465,72 @@ now computed); the Scaled status shows each wave's realisation.
 | S9 Metric versions | Metric catalogue (one owner each), frozen versions (as simulated, as proposed), measurements import, variance, benefit realisation, forecast, computed pilot gate (§ 12) | Today's KPI scorecard = as-is vs as-proposed for one product | None (views) |
 
 Total about 30 days of agent work. S1 → S2 first (no figure moves); then S3 → S4 → S5 → S6 follow the engagement's order.
+
+## 16. Inventory: what the case holds today, what is in the BPMN model, what should not be
+
+**16.1 In the BPMN document today** (key `BPMN`, one document, D-B1 / D-B26; in a portfolio the **common** document, plus a product's own
+document when it overrides its process part, B10a)
+
+| Part | Content | Since |
+|---|---|---|
+| Delivery process | Phases (sub-processes), activities and their parameters (effort, value class, AI authority, capability, human / agent supervision split, sequence, regulatory, scope marks), flows and rework pairs (probability, cost share), actors (roles, agents), RACI, diagrams (DI) | B1–B5, B6b |
+| Extended profile | Data stores, tools, states, volumes, timers, boundary events, the process library (global tasks), conversations | B5b |
+| Decisions | DMN 1.3 `dmn:definitions` in the main process's extension elements (rule families, bound to rule tasks) | B7b |
+| Transformation programme | The second participant: programme activities (kind, level, cost rule, timing, cost profile), lanes per operating-model role, the agents' lane; `ac:programmeValues` (the programme's parameters and opt-in switches) | B9a–B9e |
+| Organisation | Units (hierarchy), teams (lines: skill, grade, location, FTE, pins; owning unit; shared lines and their shares), each product's owning unit, services | B6b, B10a–B10c |
+| Audit | `ac:audit` on tasks and resources (observations, tools in use, pain points, evidence, status), `ac:auditHeader` (and the calibration log), the case's tool catalogue entries | B7 |
+
+**16.2 Outside the BPMN document today**
+
+| Where | Content |
+|---|---|
+| Case values (`dom.values`, `dom.checked`) | Horizon, ramps Y1–Y3, automation potential and fit, glass ceiling, working days, runs per day, tokens per artefact, run sizing, infrastructure, engagement context, roadmap dates and stage weeks, pilot, setup tooling and coaching, Knowledge Hub, HRI, discount rate, commercial inputs (`cm*`), harness maturity |
+| Case tables | Rate card (`RATE`), target location mix, token models and output share, coefficients (`COEF`), model settings (`MODEL`: flags, LCE loops, EVT classes, supervision, CBD, discount rate), engagement coefficients, curve (`scurve`), lifecycle, maturity bounds |
+| Shipped catalogues | The artefact catalogue (JSON, still generating the default process: D-B9 / FX-02), the tool catalogue, the programme catalogue (code), the role catalogue |
+| Portfolio file | Common case, products (knowledge subset, per-field overrides, wave, offset), waves (start, dependencies), hub, horizon, start date, ρ, setup capacity |
+| Snapshot library | Saved versions of the case |
+| Never stored | Figures (computed by their owner), view state (filters, selection, diagram options) |
+
+**16.3 The rule: what belongs in the BPMN model and what does not**
+
+The BPMN document is **the model of the work and of who does it**: it can be exchanged with BPM tools, reviewed by the customer and diffed. It
+holds structure and observations about the work. It does **not** hold:
+
+1. **Figures** — computed, never stored. The frozen versions of § 12 go to the snapshot library, not into the model.
+2. **Prices, rates and commercial terms** — rate card, location mix prices, token prices and contracts, fees, margins, gain share, auditor
+   rates, discount rate: commercially sensitive, they must never leave with a `.bpmn` export sent to the customer or a tool.
+3. **Engine and market assumptions** — curves, ramps, coefficients, Monte Carlo settings, engagement coefficients: parameters of the calculation,
+   not of the work.
+4. **Time series of measurements** — the as-measured values of § 12: high volume and frequent updates; a separate part of the case.
+5. **Personal data beyond what the audit needs** — interviewees' identities stay in the audit header, filtered from exports (D-B14); never
+   credentials or secrets.
+6. **View state and preferences** — never stored in the case.
+
+**16.4 This spec's data, classified** (this corrects § 3 where it disagreed)
+
+| Data | In the BPMN model? | Where |
+|---|---|---|
+| Status per product, scopes as rules (perimeter, sample, target, pilot, slices) | **Yes** (structure of the work) | Organisation part |
+| Sample drawn, strata, provenance | **Yes** (audit) | Audit header |
+| Audit options' **prices** and the auditor rate | **No** (commercial) | Case values (`audit pricing`) |
+| Baseline process, `ac:baselineRef` | **Yes** | Product's document |
+| Harness: owner, agents, tools, coverage, capability curve, build pod roles and drivers, sourcing share | **Yes** | Organisation part, process part |
+| Harness **run process** (activities, RACI, drivers, agent share) | **Yes** (it is a process) | `bpmn:process ac:harnessRun` |
+| Harness platform **costs**, licences | **No** | Case values per harness id |
+| Token profile per activity type (runs, context, output), routing per harness (model shares, cache, retry) | **Yes** (how the work uses agents) | Process part, harness |
+| Token **prices**, trends, volume tiers, contracts | **No** (commercial) | Case tables (with `TOKEN_MODELS`) |
+| Who runs what (customer / provider) | **Yes**, as structure: the provider is a **participant** (its own pool), run activities and teams assigned to it | Organisation part, a provider participant |
+| Run **model**, commercial model, fees, margins | **No** (commercial) | Case values per scope id |
+| Waves and slices | Open (FX-D14): portfolio data until a portfolio-level BPMN document is decided | Portfolio file |
+| Frozen versions (as simulated, as proposed) | **No** | Snapshot library, with their series |
+| Measurements (as measured) | **No** | A measurements part of the case (per metric, scope, month) |
+| Metric catalogue | **No** (definitions in code, one owner each) | `src/domain/metrics` |
+
+**16.5 Moves to plan for what is already there**
+
+- `setupTraining` / `setupGov` in `ac:programmeValues`: stored, read by no figure (FX-D13); retire or keep as legacy inputs, out of the model if
+  retired.
+- The artefact catalogue JSON still generates the default process (FX-02): the default process should be the shipped `.bpmn`, the JSON retired.
+- Prices that today sit next to process parameters (e.g. any euro amount among the programme values) are checked against rule 2 and moved to the
+  case values when they are commercial.
+- A `.bpmn` export keeps filtering the audit (D-B14) and must also leave out everything rule 2 lists (an export test asserts it).
