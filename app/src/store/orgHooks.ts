@@ -1,13 +1,14 @@
 /** @calc-zone process-model */
 import { useCallback, useMemo, useRef } from 'react';
-import { orgDiagnostics, orgOf, type OrgDiagnostic, type OrgModel } from '@/domain/org';
+import { orgDiagnostics, orgExtOf, orgOf, type OrgDiagnostic, type OrgModel } from '@/domain/org';
 import type { XDocument } from '@/domain/process';
 import { structuralEqual } from './equal';
 import { useDocSelector, usePortfolio } from './hooks';
+import { appStore } from './instance';
 import type { Doc } from './types';
 
 const whole = (m: OrgModel): OrgModel => m;
-interface Built { bpmn: XDocument; customer: string; products: unknown; commonDoc: unknown; m: OrgModel }
+interface Built { bpmn: XDocument; customer: string; products: unknown; org: unknown; m: OrgModel }
 /**
  * A part of the organisation model of the shown case (docs/SPEC_BPMN.md § 16): units, teams and owners from the organisation part of the common
  * document (schema v5), roles and RACI from the case's `BPMN` document. The model is rebuilt only when one of them changes identity, and the
@@ -15,15 +16,16 @@ interface Built { bpmn: XDocument; customer: string; products: unknown; commonDo
  * effort for the units) renders nothing.
  */
 export function useOrgSelector<T>(select: (m: OrgModel) => T, isEqual: (a: T, b: T) => boolean = structuralEqual): T {
-  // The common document only (not `p.common`, whose identity changes with every edit of a shared value): the organisation part lives in it.
-  const products = usePortfolio((p) => p.products), commonDoc = usePortfolio((p) => p.common.BPMN), built = useRef<Built | null>(null);
+  // The organisation part only — the common document's collaboration extension elements (units, teams, owners) — not the common document, whose
+  // identity changes with every process edit (B10a: a process edit rewrites the common document, its collaboration is kept as it is).
+  const products = usePortfolio((p) => p.products), org = usePortfolio((p) => orgExtOf(p.common.BPMN)), built = useRef<Built | null>(null);
   const of = useCallback((d: Doc): T => {
     const bpmn = d.BPMN, customer = String(d.customerName ?? ''), b = built.current;
-    const same = b && b.bpmn === bpmn && b.customer === customer && b.products === products && b.commonDoc === commonDoc;
-    const m = same ? b.m : orgOf({ products, common: { BPMN: commonDoc }, customer }, bpmn);
-    built.current = { bpmn, customer, products, commonDoc, m };
+    const same = b && b.bpmn === bpmn && b.customer === customer && b.products === products && b.org === org;
+    const m = same ? b.m : orgOf({ products, common: { BPMN: appStore().getState().portfolio.common.BPMN }, customer }, bpmn);
+    built.current = { bpmn, customer, products, org, m };
     return select(m);
-  }, [products, commonDoc, select]);
+  }, [products, org, select]);
   return useDocSelector(of, isEqual);
 }
 /** The whole organisation model of the shown case, kept while structurally equal (see `useOrgSelector`). */

@@ -53,16 +53,18 @@ describe('undo / redo after every team and unit command (property)', () => {
   it('each command is node patches of the common document (or the portfolio structure); undo restores the state before, redo the state after', () => {
     fc.assert(fc.property(fc.array(fc.oneof(...OPS), { minLength: 1, maxLength: 10 }), (ops) => {
       const { s } = threeProducts();
+      let stepStart = docOnly(s);   // the state before the top undo step (a coalesced edit extends that step: undo goes back before its first edit)
       for (const op of ops) {
-        const before = docOnly(s), n = s.getState().history.undo.length;
+        const before = docOnly(s), n = s.getState().history.undo.length, top = s.getState().history.undo.at(-1);
         op(s);
         consistent(s);
-        const after = docOnly(s);
-        if (s.getState().history.undo.length === n) { expect(after).toBe(before); continue; }   // refused, coalesced away or view state
-        const e = s.getState().history.undo.at(-1)!;
+        const after = docOnly(s), h = s.getState().history.undo;
+        if (h.length === n && h.at(-1) === top) { expect(after).toBe(before); continue; }   // refused, or view state: the document did not move
+        if (h.length !== n) stepStart = before;
+        const e = h.at(-1)!;
         const doc = (x: { path: (string | number)[] }) => x.path[0] === 'common' && x.path[1] === 'BPMN';
         expect(e.patches.every((x) => doc(x) || ['products', 'waves', 'activeProductId'].includes(x.path[0] as string))).toBe(true);
-        s.undo(); expect(docOnly(s)).toBe(before); consistent(s);
+        s.undo(); expect(docOnly(s)).toBe(stepStart); consistent(s);
         s.redo(); expect(docOnly(s)).toBe(after); consistent(s);
       }
     }), { numRuns: 30 });
