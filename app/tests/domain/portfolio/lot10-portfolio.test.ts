@@ -9,6 +9,7 @@ import {
 } from '@/domain/portfolio';
 import { MC_PARAMS_DEFAULT, sensitivityMatrix } from '@/domain/stress';
 import type { CaseState } from '@/domain';
+import { noProgramme } from '../../helpers/legacyProgramme';
 import { expectClose, loadCase, scaledTeam, withProduct, withWave } from '../../helpers/portfolio';
 
 const still = (pf: Portfolio): Portfolio =>
@@ -29,8 +30,9 @@ describe('DEV-LEGACY-CURVE-HORIZON: the portfolio Monte Carlo of a legacy-curve 
 });
 
 describe('sensitivity by product: the negative cells of the rerun matrix', () => {
+  // B9b: the products carry no programme resources (noProgramme), so "cheap" is a setup of tooling only, as before DEV-B9B-COACHING / -RESOURCES
   it('a product with a heavy setup has negative cells, counted; the cheap one has none', () => {
-    const pf = two(loadCase('golden'), 36, 0, '6000000'), rows = sensitivityByProduct(pf, ['p1', 'p2']);
+    const pf = two(noProgramme(loadCase('golden')), 36, 0, '6000000'), rows = sensitivityByProduct(pf, ['p1', 'p2']);
     const neg = (id: string) => sensitivityMatrix(productCtx(pf, id)).cells.flat().filter((x) => x.roi !== null && x.roi < 0).length;
     expect(rows.map((r) => r.negative)).toEqual([neg('p1'), neg('p2')]);
     expect(rows[0]!.negative).toBe(0);
@@ -42,7 +44,7 @@ describe('sensitivity by product: the negative cells of the rerun matrix', () =>
 describe('DEV-PAYBACK-RECOVERY: a late, costly wave', () => {
   const cumOf = (pf: Portfolio) => consolidate(pf).summary.cum;
   it('pays back after the last negative cumulative month, not at the first crossing', () => {
-    const pf = two(loadCase('horizon-5'), 60, 30, '2500000', 0.4), cum = cumOf(pf), first = cum.findIndex((x) => x >= 0) + 1;
+    const pf = two(noProgramme(loadCase('horizon-5')), 60, 30, '2500000', 0.4), cum = cumOf(pf), first = cum.findIndex((x) => x >= 0) + 1;
     const lastNeg = cum.reduce((k, x, i) => (x < 0 ? i + 1 : k), 0);
     expect(lastNeg).toBeGreaterThan(first);   // the cumulative dips below 0 again when the second wave's setup lands
     expect(cum.at(-1)!).toBeGreaterThanOrEqual(0);
@@ -50,7 +52,7 @@ describe('DEV-PAYBACK-RECOVERY: a late, costly wave', () => {
     expect(portfolioHeadline(consolidate(pf)).paybackYear).toBe(Math.ceil((lastNeg + 1) / 12));
   });
   it('null when the final cumulative is negative', () => {
-    const pf = two(loadCase('horizon-5'), 60, 30, '40000000', 0.4);
+    const pf = two(noProgramme(loadCase('horizon-5')), 60, 30, '40000000', 0.4);
     expect(cumOf(pf).at(-1)!).toBeLessThan(0);
     expect(consolidate(pf).summary.paybackMonth).toBeNull();
     expect(paybackMonthOf(cumOf(pf))).toBeNull();

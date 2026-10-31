@@ -43,7 +43,7 @@ export function scenarioRuns(run: ProductRun): ScenarioRun[] {
   const raw = modelRaw(run.ctx);
   out = scenarioDefs(run.ctx).map((d) => {
     const e = scenarioEngine(run.ctx, d.opts, raw), K = e.K;
-    const src = { rows: e.months(), baseEtp: K.baseEtp, ktSetup: K.setupTotal > 0 ? run.ktSetup : 0, profile: K.setupProfileMonths };
+    const src = { rows: e.months(), baseEtp: K.baseEtp, ktSetup: K.setupTotal > 0 ? run.ktSetup : 0, ktMonths: K.ktProfile };
     return { key: d.key, label: d.label, src };
   });
   runsMemo.set(run, out);

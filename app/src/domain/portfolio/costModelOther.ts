@@ -45,7 +45,8 @@ function productBlock(out: CostRow[], v: ProductView, wave: string, L: number, r
     lay(v, L, (t) => v.run.rows[t - 1]!.teamCost), { k: 'link', row: rates.check.get(v.id)! }));
   out.push(...costLines(v, L, k));
   const pilot = pilotCells(v, L);
-  out.push(row('line', k('Pilot', 'Pilot (included in totals)', 'tune/program pilotSizing, spread from product month 1; not in the engine cost', COST), EUR,
+  out.push(row('line', k('Pilot', 'Pilot (included in totals)', 'tune/program pilotSizing, spread over the months before the build; not in the engine cost',
+    COST), EUR,
     'eur', null, pilot));
   const ids = out.slice(first).map((_, i) => first + i), sum = addRows(out.slice(first));
   out.push(row('total', k('Total', 'TOTAL TO-BE COST (days x rate + other costs + pilot)', 'sum of the lines above', COST), EUR, 'eur', sum.t0, sum.months,

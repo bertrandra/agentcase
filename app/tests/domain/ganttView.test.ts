@@ -1,8 +1,12 @@
 import { readdirSync, readFileSync } from 'node:fs';
-import { describe, expect, it } from 'vitest';
+import { describe, expect, it, vi } from 'vitest';
 import { makeCtx } from '@/domain';
 import type { CaseState } from '@/domain';
 import { ganttView, type GanttView } from '@/domain/verifyB';
+import { legacyStage } from '../helpers/legacyProgramme';
+// the B9b deviations: the legacy programme profile and the pilot sized to the legacy Pilot & Prove stage (tests/helpers/legacyProgramme.ts) keep this legacy
+// parity test comparing every legacy figure; the B9b rules are asserted by tests/domain/programme/*.test.ts.
+vi.mock('@/domain/programme/profile', async (orig) => (await import('../helpers/legacyProgramme')).legacyProfileMock(orig));
 
 const ids = readdirSync('fixtures/extras/vb_gantt').map((f) => f.replace('.json', '')).sort();
 const json = (p: string) => JSON.parse(readFileSync(p, 'utf8'));
@@ -21,7 +25,8 @@ function flatten(v: GanttView, expanded: boolean) {
 
 describe('gantt view reproduces the legacy render', () => {
   describe.each(ids)('%s', (id) => {
-    const c = makeCtx(json(`fixtures/cases/${id}.json`) as CaseState), L = json(`fixtures/extras/vb_gantt/${id}.json`) as { collapsed: Cap; expanded: Cap };
+    const c = makeCtx(legacyStage(json(`fixtures/cases/${id}.json`) as CaseState)),
+      L = json(`fixtures/extras/vb_gantt/${id}.json`) as { collapsed: Cap; expanded: Cap };
     const v = ganttView(c);
     it('summary, ticks, program rows and milestones', () => {
       expect(v.summary).toEqual(L.collapsed.summary);
@@ -49,7 +54,7 @@ describe('gantt view reproduces the legacy render', () => {
     });
   });
   it('the ramp-up tie of vb-seq puts V1 and V3 on the same start', () => {
-    const v = ganttView(makeCtx(json('fixtures/cases/vb-seq.json') as CaseState)), by = Object.fromEntries(v.phases.map((p) => [p.key, p]));
+    const v = ganttView(makeCtx(legacyStage(json('fixtures/cases/vb-seq.json') as CaseState))), by = Object.fromEntries(v.phases.map((p) => [p.key, p]));
     expect(by.V1!.start).toBeCloseTo(by.V3!.start, 9);
     expect(v.crossSeq).toBe(3);
   });

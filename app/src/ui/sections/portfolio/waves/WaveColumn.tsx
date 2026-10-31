@@ -1,34 +1,22 @@
 import type { DragEvent } from 'react';
-import { removeWave, renameWave, reorderWave, setWaveNote, setWaveStart } from '@/controllers/wave';
+import { removeWave, renameWave, reorderWave, setWaveNote } from '@/controllers/wave';
 import type { BoardColumn } from '@/domain/portfolio';
 import { fmtEurK, fmtMonths } from '@/ui/format';
 import { toast } from '@/ui/uiState';
-import { NumCell } from '@/ui/widgets/CommitField';
 import { DraftText } from '@/ui/widgets/DraftText';
 import { ProductCard } from './ProductCard';
-import { WaveDependency } from './WaveDependency';
+import { WaveTiming } from './WaveRef';
 
 interface Props { col: BoardColumn; cols: BoardColumn[]; index: number; waves: number; dragging: string | null; onDrag: (id: string | null) => void;
   onDrop: (col: BoardColumn) => void }
 
-/** The wave's own controls: name, start month (with the calendar month it falls in), order, note, removal. */
+/** The wave's own controls: name, order, note, removal; its start and dependency as context (edited in the Process section, phase B9b). */
 function Controls({ col, index, waves }: Pick<Props, 'col' | 'index' | 'waves'>) {
   const id = col.id as string, n = col.name;
   return (
     <div className="ac-wave-ctrl">
       <DraftText label={`Name of wave ${n}`} value={n} onCommit={(v) => toast(renameWave(id, v) ? `Wave renamed: ${v.trim()}` : 'Invalid name')} />
-      <label>Start (month){' '}
-        <NumCell
-          ariaLabel={`Start of ${n} (month)`}
-          value={col.startMonth}
-          min={0}
-          step={1}
-          width={64}
-          onCommit={(v) => { setWaveStart(id, parseInt(v, 10) || 0); }}
-        />
-      </label>
-      <span className="ac-muted" title="Calendar month of the start (portfolio start date + month)">→ {col.startLabel}</span>
-      <WaveDependency col={col} />
+      <WaveTiming col={col} />
       <div className="ac-pf-actions" role="group" aria-label={`Actions of wave ${n}`}>
         <button
           type="button"

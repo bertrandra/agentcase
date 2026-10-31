@@ -48,6 +48,11 @@ Figures are the golden fixture unless stated. "Before" = the build at the start 
 | DEV-AUDIT-EVIDENCE | audited observations count as evidence in the evidence ledger (D-B33); no legacy figure changes |
 | DEV-REGINCLUDE-DERIVED | "Include regulatory artefacts" is the process's `regInclude` only: the form copy `dom.checked.regInclude` is gone, `tgRegInclude` reads the process |
 | DEV-B9A-CONTEXT-SCREENS | the programme activities' fields and descriptions leave the context screens for the Process section's parameter panel (no figure changes) |
+| DEV-B9B-SETUP-SPREAD | BPMN B9b, D-B27: each setup line is spent over its activity's duration (the setup duration, 12 months by default), not the engine's fixed 6 months |
+| DEV-B9B-PILOT | BPMN B9b, D-B28: the pilot is the Pilot & Prove stage before the build (16 weeks, not `rmD4`); the cost model spends it before month 0 |
+| DEV-B9B-HUB-TIMING | BPMN B9b, D-B29: the Knowledge Hub setup is spent over its own days, `ktLeadMonths` before the product's month 0 |
+| DEV-B9B-COACHING | BPMN B9b, D-B30 (revised 2026-10-31): one coaching activity, days a month × months, calibrated to its amount; only its spread moves |
+| DEV-B9B-RESOURCES | BPMN B9b, § 19.3: training and governance are labour from resources (role FTE × duration × the target day rate × 1.15) |
 
 ## DEV-HEADLINE-OWNER — one economics headline
 
@@ -283,6 +288,8 @@ Changed in lot 4 (user decision D4). The Cost model (monthly) workbook (`domain/
 - Before (v20.2.0 to v20.13.0): a memo line "Pilot (indicative sizing, not in the engine cost)" with the amount and no months, outside the totals.
 - Legacy: no cost-model workbook; the pilot is an indicative figure of the Program section only.
 - A pilot longer than the calendar is cut at the horizon like every other line.
+- BPMN B9b (DEV-B9B-PILOT): the pilot line is spent in the months before the product's month 0 (the Pilot & Prove stage, before the build), from
+  calendar month 1 when the calendar has no earlier month; amount and totals rule unchanged.
 - Files: `domain/tune/program.ts` (`pilotMonths`), `domain/portfolio/{costModelLines,costModelOther,costModelParams}.ts`, `store/persistence/excel/costmodel/index.ts`;
   tests `tests/domain/portfolio/costModel.test.ts` (pilot months = the sizing, totals = sum of the rows including the pilot, reconciliation with the app net on
   four fixtures, the 107 fixtures and the multi-product portfolios), `tests/store/excel-costmodel.test.ts`.
@@ -550,8 +557,108 @@ tests are not concerned: they drive the legacy *engine* through recipes, and the
 - Effect: no figure changes (107 fixtures, the parallel run and the workbooks are identical); the screens lose input fields and description texts.
   `tools/ui-parity.mjs` compares computed styles by element kind, which the change does not alter (0 divergence, no exception recorded).
 - Not moved in B9a: the 🌊 Waves board still edits the wave start, dependency and the setup capacity (§ 19.9).
+- Moved in B9b: the 🌊 Waves board shows the wave start, dependency and the setup capacity as context with "Open … in Process"; the wave's
+  parameter panel of the Process section (`ui/sections/scope/process/programme/WavePanel.tsx`) edits them (`tests/ui/portfolio-wave-deps.test.tsx`,
+  `tests/ui/programme-one-owner.test.ts`). No figure changes.
 - Tests: `tests/ui/programme-one-owner.test.ts` (F-B72), `tests/ui/sections/process-programme.test.tsx`, `tests/ui/sections/gantt-keyboard.test.tsx` and
   `tests/ui/sections/engage.test.tsx` (the new behaviour).
 - Files: `ui/sections/frame/engage/{Durations,Roadmap,Tracker,index}.tsx`, `ui/sections/verify/gantt/{index,ProgramBar}.tsx`,
   `ui/sections/tune/{program/PilotCap,setup/index,knowledge/{AsisPanel,MultiPanels},run-sizing/SizingPolicy,maturity/SddCoach,readiness/HriPanel}.tsx`,
   `ui/widgets/ActivityRefs.tsx`, `controllers/ganttEdit.ts`, `domain/tuneB/setup.ts`.
+
+## DEV-B9B-SETUP-SPREAD — a setup line is spent over its activity's duration (D-B27)
+
+- Legacy: the Time Engine spent the whole setup evenly over months 1–6 (`setupProfileMonths: 6` in `time/kernel.ts`) while the Gantt drew the
+  "Agentic Build" bar over `setupDuration` (default 12); the wave capacity and the `setupEnd` dependencies counted the 6 months (conflict T1).
+- v20 (BPMN B9b, decision D-B27 (c), docs/SPEC_BPMN.md § 19.6): the programme's one cost profile (`domain/programme/profile.ts`) spends each setup
+  line over its activity's duration: tooling and the HRI change cost over the setup duration (`setupDuration`, at least 0.5 month, capped at the
+  horizon), training and governance over their own duration (`trainMonths`, `govMonths`; blank = the setup duration, so (c) reduces to (b) when the
+  lines share one), the last month pro rata (`spreadMonths`, the one spreading rule). The engine reads that profile month by month
+  (`K.setupProfile`, adding up to the setup total); the waves' capacity and `setupEnd` dependencies count the setup duration (`setupMonths`).
+- Effect (golden, the timing alone, amounts unchanged): payback month 9 → 6, NPV €1,359,010 → €1,362,624 (tooling, training and governance over 12
+  months instead of 6, coaching over its 36 months, DEV-B9B-COACHING, the hub in month 1, DEV-B9B-HUB-TIMING). Portfolio: a capacity of 1 starts the
+  next product 12 months later instead of 6 (golden × 3: month 0 / 6 / 12 → 0 / 12 / 24). The final golden figures are in DEV-B9B-RESOURCES.
+- Oracle fields (`tests/helpers/deviationsB9b.ts`, the timing list): `payback`, `npv`, `econ_monthly[].setupSpend / total / cum`, `econ_roi.npv /
+  payback / paybackText`, `thinNow.npv / payback / inputHash`, `resultsCore.payback`, `strategyEval[].computed.payback`, `strategyRanking`,
+  `compareView.table[5]`, `me_mcs.stats.npv / paybackMonths`. The legacy parity tests of screens, workbooks and reports run on the legacy profile
+  (`tests/helpers/legacyProgramme.ts`, injected), so they keep comparing every legacy figure; `tests/domain/programme/legacy-profile.test.ts` shows
+  that each skipped field equals the oracle again with that profile (nothing else moved).
+- Tests: `tests/domain/programme/{profile,timing-owner,legacy-profile}.test.ts` (hand-computed months, the engine = the profile, the waves),
+  `tests/domain/portfolio/{costModel,waveSchedule}.test.ts`, `tests/domain/dedup.test.ts` (the cumulative is the running savings less the setup spent).
+- Files: `domain/programme/{timing,profile}.ts`, `domain/time/kernel.ts`, `domain/pdc/verifConvTime.ts`, `domain/portfolio/{run,series,stressCut,
+  aggScenarios,aggSensitivity,timeline,portfolioGantt,costModelLines,costModelParams}.ts`. The engine's `CALCULATION_VERSION` is
+  `agentcase.timeengine.v2`: the same inputs give other results, so a case saved before B9b opens with the "computed by another engine version" banner.
+
+## DEV-B9B-PILOT — the pilot is the Pilot & Prove stage, before the build (D-B28)
+
+- Legacy: the engagement roadmap, the runway and the Gantt drew "Pilot & Prove" over `rmD4` (6 weeks) while the pilot sizing lasted `pilotWeeks` +
+  2 × `pilotBreakin` (12 + 4 weeks); the cost-model workbook spent the pilot from the product's month 1, overlapping the setup (conflict T2).
+- v20 (BPMN B9b, D-B28 (a)): the Pilot & Prove stage IS the pilot: it lasts the pilot's weeks (`pilotTiming`, one owner; `rmD4` is no longer read)
+  and comes before the build; the cost model spends the pilot (amount unchanged, parity) in the months before the product's month 0, ending there
+  (`pilotCells`; from calendar month 1 when the calendar has no earlier month, like a knowledge-transfer lead). The pilot stays outside the
+  engine's headline (DEV-COSTMODEL-PILOT). T4: one stage reading on every surface (a positive input, else the default; the Gantt's "blank = 0"
+  reading is gone).
+- Effect (golden): onboarding runway 18 → 28 weeks (4.1 → 6.4 months), decision date 2027-01-05 → 2027-03-16, Board `onboardWeeksTotal` 18 → 28,
+  the Gantt build and run bars start 10 weeks later; the cost-model pilot of a later-wave product falls in the 4 months before its month 0 (a single
+  product: unchanged, from calendar month 1). No euro figure of the headline moves.
+- Oracle fields: none skipped; the runway, roadmap and Gantt parity tests size the pilot to the legacy stage (`legacyStage`), so the legacy
+  calendar is compared exactly, and the Board variable compares the legacy total − `rmD4` + the pilot's weeks (`tests/domain/pdc-vars.test.ts`).
+- Tests: `tests/domain/programme/timing-owner.test.ts`, `tests/ui/sections/{engage,gantt}.test.tsx`, `tests/domain/portfolio/{aggFrameBaseline,
+  costModel}.test.ts`.
+- Files: `domain/programme/{stages,timing,placement,catalogue}.ts`, `domain/verifyB/{ganttProgram,ganttEdit}.ts`, `domain/tune/program.ts`,
+  `domain/portfolio/costModelLines.ts`.
+
+## DEV-B9B-HUB-TIMING — the Knowledge Hub setup lasts its days, ready by the product's month 0 (D-B29)
+
+- Legacy: one hub-setup cost on three clocks: the Gantt drew it over `khSetupDays` after the onboarding stages, the engine spent it inside the
+  6-month setup profile, the consolidation moved it `ktLeadMonths` before month 0 (spread over 6 months) (conflict T3).
+- v20 (BPMN B9b, D-B29 (a)): the hub setup is spent over its own duration (`khSetupDays` → months, at least a week; `hubSetupTiming`), starting
+  `ktLeadMonths` before the product's month 0 (a single case and a first wave have no earlier month: it starts at month 1); the consolidation moves
+  the engine's own hub months (`K.ktProfile`, `ProductRun.ktMonths`) by the lead. The common hub is placed once, before the first wave (its
+  infrastructure is a run cost; it has no setup amount of its own).
+- Effect (golden): the €90,000 hub setup in month 1 (30 days) instead of €15,000 a month over months 1–6 — part of the timing effect of
+  DEV-B9B-SETUP-SPREAD. Amount unchanged (parity).
+- Oracle fields: the timing list of DEV-B9B-SETUP-SPREAD (the same fields; this entry names the hub's share).
+- Tests: `tests/domain/programme/profile.test.ts` (month 1), `tests/domain/portfolio/kt.test.ts` (the lead moves exactly the hub months, NPV delta).
+- Files: `domain/programme/{timing,profile,placement}.ts`, `domain/time/kernel.ts`, `domain/portfolio/{run,series,stressCut}.ts`.
+
+## DEV-B9B-COACHING — one coaching activity, days a month × months, the same amount over its months (D-B30, revised 2026-10-31)
+
+- Legacy: coaching counted twice: the setup line `setupCoaching` (an amount, in the ROI's setup, spent over the 6-month setup profile) and the EV-19
+  coaching curve (entry team × load Y1 → cruise × day rate × working days), shown as indicative, outside the euro result (conflict T5).
+- v20 (BPMN B9b, D-B30 as revised by the owner on 2026-10-31): one coaching activity, a resource activity of the Process panel: coaching days a
+  month (`coachDaysPerMonth`, default 2) × duration in months (`coachMonths`) × the role rate (the target blended day rate × 1.15, the rule of the
+  other resource lines), spread evenly over its months from the product's month 1 (capped at the horizon). Calibration of an existing case: with no
+  duration entered, its `setupCoaching` amount sets the days (total days = amount / role rate, months = days / days a month), so the cost IS the
+  amount (`coachingPlan`). The curve (`coachY1`, `coachCruise`) is no longer priced: it stays the informative view of the Maturity screen.
+- Effect: no coaching amount moves (asserted on the 107 fixtures). Only its shape: golden €35,000 = 72.81 days = 2 a month × 36.4 months, spent
+  €972.22 a month over the 36 months of the horizon instead of €5,833 a month over months 1–6 (part of the timing effect of
+  DEV-B9B-SETUP-SPREAD); under a Monte Carlo rate draw it now scales with the rate like any labour.
+- Oracle fields: the timing list of DEV-B9B-SETUP-SPREAD (the same fields; this entry names the coaching share).
+- Tests: `tests/domain/programme/profile.test.ts` (calibration, days × months × rate, the curve not priced, the amount on every fixture),
+  `tests/domain/tuneB.test.ts` (the coaching line is the legacy amount).
+- Files: `domain/programme/{profile,costs,placement,catalogue}.ts`, `domain/tune/maturityTab.ts`, UI `tune/maturity/SddCoach.tsx`,
+  `tune/setup/index.tsx`.
+
+## DEV-B9B-RESOURCES — training and governance are labour from resources (§ 19.3, F-B68)
+
+- Legacy: training (`setupTraining`) and governance (`setupGov`) were euro amounts typed in.
+- v20 (BPMN B9b, § 19.3): labour from resources, like the SDLC: role FTE × duration × working days / 12 × the programme's role rate = the target
+  blended day rate (rate card × target location mix, `targetBlendedTJM`, moved by a Monte Carlo rate draw) × the AI-skill premium of the
+  transitional roles (1.15). Training: the trainers (preceptors, `trainFte`, default 0.5 FTE) over `trainMonths` (default the setup duration);
+  governance: the Design Authority (`govFte`, default 0.25 FTE) over `govMonths`. The capability counts (`capOps`, `capTrain`, `capTarget`) stay
+  parameters of the training activity, not costed (the trainees' time is the delivery team's). `setupTraining` / `setupGov` are no longer read.
+  The pilot, hub setup, hub run and AgentOps keep their figures (parity class); change management keeps its formula.
+- Effect (golden, €418 × 1.15 = €480.70 a day, 220 days): training €45,000 → €52,877 (0.5 × 12 × 18.33 × 480.70), governance €20,000 → €26,438.5.
+  A rate-card or location-mix change now moves training and governance with the delivery team.
+- Effect, all B9b families together (golden): setup total €225,000 → €239,315.5; net benefit €1,603,919 → €1,589,603; ROI 7.13 → 6.64; NPV
+  €1,359,010 → €1,348,910; payback month 9 → 6 (year 1); setup spent per year €225,000 / 0 / 0 → €215,982 / €11,667 / €11,667; total benefit
+  and every run figure unchanged.
+- Oracle fields (`tests/helpers/deviationsB9b.ts`, the amount list): `model.setupTotal`, `model.conv.setupBase / setupBillable / setupAbsorbed`,
+  `mcRun.outcomes / stats.mean / cvar10 / pNeg`, `decisionRun.setup / p10Floor / stats.mean / cvar10 / pNeg / confidence / verdict`,
+  `strategyEval[].computed.tco / net / setup / roi / payback`, `strategyRanking`, `resultsCore.setup / net / roi / payback`, `thinNow.totalSavings / npv /
+  payback / inputHash`, `compareView.cost[2]`, `compareView.table[5]`, `sensitivityView.table[4]`, `me_mcs.stats.npv / paybackMonths`, `econ_roi.net /
+  roi / roiPct / npv / payback / paybackText`, and the timing fields. The parallel run (`tools/parallel-run-known.json`) and excel-compat record the
+  differences per file under this id.
+- Tests: `tests/domain/programme/profile.test.ts`, `tests/domain/tuneB.test.ts`.
+- Files: `domain/programme/{profile,catalogue,costs}.ts`, `domain/tuneB/setup.ts`.

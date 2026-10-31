@@ -34,8 +34,8 @@ export interface ProgramRow { name: string; start: number; dur: number; tone: Co
 export function programRows(c: Ctx, totalM: number): { rows: ProgramRow[]; onboardEnd: number; onboardWeeks: number } {
   const showStages = 'ganttShowOnboarding' in (c.s.dom?.checked ?? {}) ? c.inp.c('ganttShowOnboarding') : true;
   const cal = programmeCalendar(c, totalM, { showStages, hub: khEnabled(c) }), rows: ProgramRow[] = [];
-  for (const s of cal.stages) rows.push({ name: s.stage.gantt, start: s.start, dur: s.dur, tone: s.stage.tone, meta: `${s.ganttWeeks} wk`,
-    input: s.stage.input as string, value: s.ganttWeeks, activity: programmeActivityId('stage', s.stage.id) });
+  for (const s of cal.stages) rows.push({ name: s.stage.gantt, start: s.start, dur: s.dur, tone: s.stage.tone, meta: `${s.weeks} wk`,
+    input: s.stage.input ?? undefined, value: s.weeks, activity: programmeActivityId('stage', s.stage.id) });
   rows.push({ name: '🧱 Agentic Build (ramp)', ...cal.build, tone: 'chart-cat-4', meta: `${cal.build.dur} mo ramp to steady state`,
     input: 'setupDuration', value: cal.build.dur, activity: programmeActivityId('build') });
   rows.push({ name: '⚙️ Agentic Run (steady state)', ...cal.run, tone: 'chart-cat-2', meta: 'ongoing delivery + support',

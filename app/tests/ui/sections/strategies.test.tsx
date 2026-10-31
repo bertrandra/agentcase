@@ -1,12 +1,13 @@
 // @vitest-environment jsdom
 import { act, cleanup, fireEvent, render, screen, within } from '@testing-library/react';
-import { afterEach, describe, expect, it } from 'vitest';
+import { afterEach, describe, expect, it, vi } from 'vitest';
 import { makeCtx } from '@/domain';
 import { evaluateStrategies, stratNormalize, strategyDefsOf, stratWeightsOf } from '@/domain/verdict';
 import { appStore } from '@/store/instance';
 import { uiStore } from '@/ui/uiState';
 import Strategies from '@/ui/sections/verdict/strategies';
 import { missingFor, openFixture, PARITY_FIXTURES } from '../../helpers/stressParity';
+vi.mock('@/domain/programme/profile', async (orig) => (await import('../../helpers/legacyProgramme')).legacyProfileMock(orig));   // legacy parity, B9b
 
 afterEach(cleanup);
 const ctx = () => makeCtx(appStore().getState().doc);

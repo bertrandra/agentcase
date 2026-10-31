@@ -1,11 +1,12 @@
 import { readFileSync } from 'node:fs';
-import { describe, expect, it } from 'vitest';
+import { describe, expect, it, vi } from 'vitest';
 import { computeCase } from '@/domain';
 import { setIndustry, setRegInclude, setRegUse, toggleCross, toggleNorm } from '@/controllers/frame';
 import { normsOf } from '@/domain/frame';
 import { appStore } from '@/store/instance';
 import { loadFixture } from '../ui/sections/frameHelpers';
 import { keysOf } from '../helpers/scope';
+vi.mock('@/domain/programme/profile', async (orig) => (await import('../helpers/legacyProgramme')).legacyProfileMock(orig));   // legacy parity, B9b
 
 const fixture = (kind: string, id: string) => JSON.parse(readFileSync(`fixtures/${kind}/${id}.json`, 'utf8'));
 const ind = (code: string) => { setRegUse(true); setIndustry(code); };

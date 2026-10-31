@@ -1,6 +1,6 @@
 // @vitest-environment jsdom
 import { act, cleanup, fireEvent, render, screen } from '@testing-library/react';
-import { afterEach, describe, expect, it } from 'vitest';
+import { afterEach, describe, expect, it, vi } from 'vitest';
 import { makeCtx } from '@/domain';
 import { compareData } from '@/domain/stress';
 import { appStore } from '@/store/instance';
@@ -8,6 +8,7 @@ import Compare from '@/ui/sections/stress/compare';
 import { loadExtra } from '../../helpers/extras';
 import { numberTokens, renderedText } from '../../helpers/parity';
 import { missingFor, openFixture, PARITY_FIXTURES } from '../../helpers/stressParity';
+vi.mock('@/domain/programme/profile', async (orig) => (await import('../../helpers/legacyProgramme')).legacyProfileMock(orig));   // legacy parity, B9b
 
 afterEach(cleanup);
 const data = () => compareData(makeCtx(appStore().getState().doc));

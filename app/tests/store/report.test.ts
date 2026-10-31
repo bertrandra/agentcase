@@ -1,5 +1,5 @@
 import { existsSync, readdirSync, readFileSync } from 'node:fs';
-import { describe, expect, it } from 'vitest';
+import { describe, expect, it, vi } from 'vitest';
 import { criticalReport } from '@/controllers/report';
 import { THEME_DEFAULT } from '@/domain/theme';
 import { createAppStore } from '@/store/core';
@@ -11,6 +11,7 @@ import { loadFixture } from '../helpers/fixtures';
 import { missingNumbers } from '../helpers/parity';
 import { legacyMoney } from '../helpers/deviations';
 import { withScopeKeys } from '../helpers/scope';
+vi.mock('@/domain/programme/profile', async (orig) => (await import('../helpers/legacyProgramme')).legacyProfileMock(orig));   // legacy parity, B9b
 
 const IDS = readdirSync('fixtures/reports').filter((f) => f.endsWith('.html')).map((f) => f.replace('.html', ''));
 const doc = (id: string) => fromSnapshot(JSON.parse(readFileSync(`fixtures/cases/${id}.json`, 'utf8')));

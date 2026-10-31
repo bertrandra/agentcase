@@ -29,12 +29,13 @@ describe("'AI + Location' is the main case (DEV-SCENARIO-ENGINE)", () => {
       expectMirror(withInputs(makeCtx(withCurve(load(id), curve)), { horizon: String(h) }));
     });
   });
-  it('golden, default curve: benefit, setup, ROI and payback now read the headline (before: +32 %, €135,000 vs €225,000, ROI 16.9 vs 7.1, month 4 vs 9)',
-    () => {
+  // B9b (the B9b deviations): the setup is the programme's cost profile (€239,315.5 on golden, spent over its activities' months); the benefit is unchanged.
+  it('golden, default curve: benefit, setup, ROI and payback read the headline (before DEV-SCENARIO-ENGINE: €135,000, ROI 16.9, month 4; before B9b: '
+    + '€225,000, ROI 7.1, month 9)', () => {
     const a = by(makeCtx(load('golden')), 'ailoc');
-    expect([a.setup, Math.round(a.net), Math.round(a.totBen)]).toEqual([225000, 1603919, 1828919]);
-    expect(a.roi).toBeCloseTo(7.13, 2);
-    expect(a.pbMonth).toBe(9);
+    expect([a.setup, Math.round(a.net), Math.round(a.totBen)]).toEqual([239315.5, 1589603, 1828919]);
+    expect(a.roi).toBeCloseTo(6.642, 3);
+    expect(a.pbMonth).toBe(6);
   });
 });
 

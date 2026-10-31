@@ -18,7 +18,7 @@ afterEach(() => dismissCalcBanner());
 describe('calculation package', () => {
   it('is stamped into every snapshot with hash, version and key figures, and is not part of the document', () => {
     const doc = makeDefaultDoc(), s = toSnapshot(doc), p = s.calculationPackage as ReturnType<typeof buildCalcPackage>;
-    expect(p.calculationVersion).toBe('agentcase.timeengine.v1');
+    expect(p.calculationVersion).toBe('agentcase.timeengine.v2');   // v2 since BPMN B9b (the B9b deviations)
     expect(p.inputHash).toMatch(/^te1:/);
     expect(p.annual).toHaveLength(Number(doc.dom.values.horizon));
     expect(Number.isFinite(p.headline.npv)).toBe(true);
@@ -104,16 +104,19 @@ describe('legacy-saved files', () => {
     expect(getCalcBanner()).toBeNull();
     expect(s.getState().history.undo).toHaveLength(1);
   });
-  it('a legacy v18.x snapshot carrying its own package is verified against the recomputed figures', () => {
+  // BPMN B9b (the B9b deviations): the same inputs give other figures, so the engine is v2 and a package written by v1 (the legacy engine) is another version's
+  it('a legacy v18.x snapshot carrying its own package is verified against the recomputed figures: another engine version since B9b', () => {
     freshStore();
     const text = readFileSync('fixtures/snapshots/golden.html', 'utf8');
     openCaseText(text);
-    expect(getCalcBanner()).toBeNull();   // same hash, version and figures as the legacy engine wrote
+    const b = getCalcBanner();
+    expect([b?.state, b?.storedVersion, b?.liveVersion]).toEqual(['versionMismatch', 'agentcase.timeengine.v1', 'agentcase.timeengine.v2']);
   });
   it('the same legacy file with tampered figures shows the banner', () => {
     freshStore();
     const raw = JSON.parse(readFileSync('fixtures/snapshots/golden.json', 'utf8'));
     raw.calculationPackage.headline.npv += 50_000;
+    raw.calculationPackage.calculationVersion = 'agentcase.timeengine.v2';   // as if this engine had written it (B9b: v2)
     openCaseText(JSON.stringify(raw));
     expect(getCalcBanner()?.state).toBe('stale');
   });

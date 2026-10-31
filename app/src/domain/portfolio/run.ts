@@ -4,6 +4,7 @@ import type { Ctx } from '../ctx';
 import { costReduction } from '../economics/costReduction';
 import { headlineOf, type Headline } from '../economics/headline';
 import { khSetupCost } from '../knowledge';
+import { setupMonths } from '../programme/timing';
 import { model } from '../model/overlay';
 import { horizonYears } from '../model/horizonYears';
 import type { Engine } from '../time';
@@ -21,9 +22,11 @@ export interface ProductRun {
   /** the engine's monthly rows, t = 1..N */
   rows: MonthRow[];
   baseEtp: number;
-  /** knowledge-transfer part of the setup (already inside the engine's setup rows), spread like them over `profile` months */
+  /** knowledge-transfer part of the setup (already inside the engine's setup rows) and its months (index t - 1, the engine's `ktProfile`) */
   ktSetup: number;
-  profile: number;
+  ktMonths: number[];
+  /** the setup duration in months (the programme's timing owner, `setupMonths`) */
+  setupMonths: number;
   rate: number;
   velocityPct: () => number;
   /** effective automation % and glass ceiling % of the product (the headline bar's two figures) */
@@ -45,7 +48,8 @@ export function runOf(s: CaseState): ProductRun {
   runStats.builds++;
   const ctx = ctxOf(s), engine = engineNow(ctx), K = engine.K;
   r = {
-    ctx, engine, rows: engine.months(), baseEtp: K.baseEtp, ktSetup: khSetupCost(ctx), profile: K.setupProfileMonths, rate: caseDiscountRate(ctx),
+    ctx, engine, rows: engine.months(), baseEtp: K.baseEtp, ktSetup: khSetupCost(ctx), ktMonths: K.ktProfile, setupMonths: setupMonths(ctx),
+    rate: caseDiscountRate(ctx),
     velocityPct: lazy(() => velocityUpliftPct(ctx)),
     automation: lazy(() => { const m = model(ctx); return { eff: m.eff, ceiling: m.ceiling }; }),
     headline: lazy(() => headlineOf(engine, ctx)),

@@ -1,6 +1,5 @@
 /** @calc-zone stress */
 import type { Ctx } from '../ctx';
-import { khSetupCost } from '../knowledge';
 import { activeCurve } from '../model/overlay';
 import { modelRaw } from '../model/raw';
 import { buildK, econ } from '../time/kernel';
@@ -19,9 +18,9 @@ export function cutNet(c: Ctx, s: Placement, L: number): number {
   let net = 0;
   for (let t = 1; t <= kept; t++) net += econ(t, K).netSav;
   if (s.lead <= 0) return net;
-  const kt = khSetupCost(c), profile = K.setupProfileMonths, part = kt > 0 && profile > 0 ? kt / profile : 0;
-  if (part === 0) return net;
-  for (let t = 1; t <= profile; t++) {
+  for (let t = 1; t <= K.ktProfile.length; t++) {
+    const part = K.ktProfile[t - 1]!;
+    if (part === 0) continue;
     if (s.month0 + t - 1 < L) net += part;
     if (s.month0 - s.lead + t - 1 < L) net -= part;
   }

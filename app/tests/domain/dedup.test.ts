@@ -81,10 +81,12 @@ describe('collapsed duplicates return the figures of the implementations they re
     const u = tuneBTokens(c), w = tokenUsage({ c, m, eng });
     expect({ totM: w.totM, y3: w.y3, inputM: w.inputM, outputM: w.outputM, tpa: w.tpa, agentRuns: w.agentRuns, endLabel: w.endLabel }).toEqual({ totM: u.totM,
       y3: u.y3, inputM: u.inputM, outputM: u.outputM, tpa: u.tpa, agentRuns: u.agentRuns, endLabel: u.endLabel });
-    // the cumulative cash-flow is the engine's own year-end cumulative (one owner); it is the old "-setup + running savings" sum up to rounding
-    let cum = -v.setup;
+    // the cumulative cash-flow is the engine's own year-end cumulative (one owner); it is the "running savings - setup spent so far" sum up to
+    // rounding (B9b, DEV-B9B-SETUP-SPREAD / -COACHING: the programme cost is spent over the horizon, so the setup is no longer all spent in year 1)
+    let cum = 0;
     expect(v.cumulative).toEqual(v.years.map((y) => y.cumulativeCashFlowEnd));
-    v.years.forEach((y, i) => expect(v.cumulative[i]).toBeCloseTo((cum += y.savings), 4));
+    v.years.forEach((y, i) => expect(v.cumulative[i]).toBeCloseTo((cum += y.savings - y.setupCost), 4));
+    expect(v.years.reduce((a, y) => a + y.setupCost, 0)).toBeCloseTo(v.setup, 4);
     expect(model(c)).toBe(model(c));   // computed once per context
     expect(engineNow(c)).toBe(engineNow(c));
   });

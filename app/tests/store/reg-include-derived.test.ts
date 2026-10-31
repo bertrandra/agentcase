@@ -1,5 +1,5 @@
 import { readFileSync } from 'node:fs';
-import { describe, expect, it } from 'vitest';
+import { describe, expect, it, vi } from 'vitest';
 import { setRegInclude } from '@/controllers/frame';
 import { computeCase, makeCtx } from '@/domain';
 import { VARIABLES } from '@/domain/pdc/variables';
@@ -9,6 +9,7 @@ import { overridesInStore } from '@/store/persistence/bpmn/caseDoc';
 import { legacyCase } from '@/store/persistence/bpmn/legacy';
 import { fromSnapshot, toSnapshot } from '@/store/persistence/snapshot';
 import { loadFixture } from '../ui/sections/frameHelpers';
+vi.mock('@/domain/programme/profile', async (orig) => (await import('../helpers/legacyProgramme')).legacyProfileMock(orig));   // legacy parity, B9b
 
 /**
  * BPMN B9a, DEV-REGINCLUDE-DERIVED: "Include regulatory artefacts" is the process's `regInclude` only. The form copy `dom.checked.regInclude` is

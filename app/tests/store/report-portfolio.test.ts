@@ -11,6 +11,7 @@ import { fromSnapshot } from '@/store/persistence/snapshot';
 import { fourProducts, pfNow, regulatedPortfolio } from '../helpers/portfolioFixtures';
 import { loadFixture } from '../helpers/fixtures';
 import { THEME_DEFAULT } from '@/domain/theme';
+import { payback } from '@/store/persistence/report/portfolio/tables';
 import { setScopeOverride } from '../helpers/scope';
 
 const IDS = readdirSync('fixtures/reports').filter((f) => f.endsWith('.html')).map((f) => f.replace('.html', ''));
@@ -50,7 +51,7 @@ describe('Portfolio scope', () => {
   });
   it('contains every figure of the consolidation view', () => {
     const out = html(), t = text(out), pf = corePortfolio(pfNow()), c = consolidate(pf), v = consolidationView(pf, c), h = v.headline;
-    for (const s of [fmtK(h.npv), fmtK(h.totalBenefit), fmtK(h.setup), fmtK(h.net), fmtRoiPct(h.roi), `month ${h.paybackMonth}`,
+    for (const s of [fmtK(h.npv), fmtK(h.totalBenefit), fmtK(h.setup), fmtK(h.net), fmtRoiPct(h.roi), payback(h.paybackMonth, c.horizon),
       `+${Math.round(h.velocityPct)}%`, `${h.eff.toFixed(1)}%`, `${Math.round(h.ceiling)}%`]) expect(t).toContain(s);
     for (const r of [...v.waves, ...v.products]) for (const s of [r.name, ...money(r)]) expect(t).toContain(s);
     for (const y of v.years) for (const s of [y.label, fmtK(y.savings), fmtK(y.run), fmtK(y.setup), fmtK(y.net)]) expect(t).toContain(s);

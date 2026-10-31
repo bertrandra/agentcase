@@ -20,8 +20,8 @@ const TOL = 1e-6;
 function legacyMonth(t: number, K: K) {
   const y = yearOf(t, K), A = K.A, team = aAt(A.yearTeamCost, y) / 12, token = aAt(A.yearToken, y) / 12;
   const run = team + token + aAt(A.yearInfraEff, y) / 12 + aAt(A.yearRunAgenticCost, y) / 12 + aAt(A.khRunYr, y) / 12;
-  const gross = A.baselineRun / 12 - run + aAt(A.ktAvoidYr, y) / 12 - aAt(A.vTaxYr, y) / 12 - aAt(A.loopExtYr, y) / 12;
-  const setup = t <= K.setupProfileMonths ? K.setupTotal / K.setupProfileMonths : 0;
+  const gross = A.baselineRun / 12 - run + aAt(A.ktAvoidYr, y) / 12 - aAt(A.vTaxYr, y) / 12 - aAt(A.loopExtYr, y) / 12 + (K.savingProfile[t - 1] ?? 0);
+  const setup = K.setupProfile[t - 1] ?? 0;
   return { team, token, run, gross, net: gross - setup, human: aAt(A.yearETP, y), agent: aAt(A.yearAgentVfte, y), ramp: K.ramps[y] as number };
 }
 function legacyYear(K: K, y: number) {

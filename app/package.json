@@ -1,7 +1,7 @@
 {
   "name": "agentcase-app",
   "private": true,
-  "version": "20.30.0",
+  "version": "20.31.0",
   "type": "module",
   "scripts": {
     "dev": "vite",

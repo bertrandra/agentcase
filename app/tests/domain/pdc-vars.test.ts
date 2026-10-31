@@ -1,5 +1,5 @@
 import { readFileSync } from 'node:fs';
-import { describe, expect, it } from 'vitest';
+import { describe, expect, it, vi } from 'vitest';
 import { ddBase } from '@/domain/pdc/dd';
 import { NO_RUNTIME, VARIABLES, type VarRuntime } from '@/domain/pdc/variables';
 import { auditViolations } from '@/domain/pdc/vars/audit';
@@ -10,10 +10,12 @@ import { quantile } from '@/domain/model/numerics';
 import { daGet } from '@/domain/verifyB/anchors';
 import { engineNow } from '@/domain';
 import { scopeOf } from '@/domain/process';
+import { pilotTiming } from '@/domain/programme';
 import { anchored, deviationFixtures } from '../helpers/deviations';
 import { caseFte } from '@/domain/economics/fte';
 import { diffs } from '../helpers/economics';
 import { ctxOf, pdc, PDC_FIXTURES } from '../helpers/pdc';
+vi.mock('@/domain/programme/profile', async (orig) => (await import('../helpers/legacyProgramme')).legacyProfileMock(orig));   // legacy parity, B9b
 
 interface Legacy { id: string; label: string; fmt: string; unit: string; scope: string; value: unknown; text: string }
 const base = ddBase(defaultDoc);
@@ -58,6 +60,10 @@ describe('all 166 registry variables reproduce the legacy', () => {
       // DEV-REGINCLUDE-DERIVED (B9a): the box reads the process's regInclude; frame-industry-cross held it ticked with regulatory artefacts excluded.
       if (w.id === 'tgRegInclude' && deviationFixtures('DEV-REGINCLUDE-DERIVED').includes(id)) {
         expect([w.value, domain(rt).value]).toEqual([true, scopeOf(c.s).regInclude]); return domain(rt);
+      }
+      // DEV-B9B-PILOT (D-B28): Pilot & Prove lasts the pilot (prove weeks + 2 × break-in); the legacy total read the stage input rmD4.
+      if (w.id === 'onboardWeeksTotal' && typeof w.value === 'number') {
+        expect(domain(rt).value).toBe(w.value - (c.inp.p('rmD4') || 6) + pilotTiming(c).totalWeeks); return domain(rt);
       }
       // DEV-CM-CONFIDENCE: the legacy registry evaluated the recommendation before its own Monte Carlo run (no confidence): that order gives the legacy value.
       if (w.id === 'recommendedCommercialModel') { expect(domain({ ...rt, mc: null }).value).toBe(w.value); return domain(rt); }

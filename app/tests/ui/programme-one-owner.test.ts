@@ -37,6 +37,15 @@ describe('F-B72: one owner of the programme activities', () => {
     expect(src(PANEL)).toMatch(/<NumberInput id=\{p\.key\}/);
     expect(src(PANEL)).toMatch(/<SelectInput id=\{p\.key\}/);
   });
+  // Phase B9b: the waves are sub-processes of the programme; their start, dependency and the setup capacity are edited in the wave's panel only.
+  it('the wave start, the wave dependency and the transformation-team capacity are written by the Process wave panel only', () => {
+    const WAVES = 'src/ui/sections/scope/process/programme/';
+    const writers = (fn: string) => walk('src/ui').filter((f) => new RegExp(`\\b${fn}\\(`).test(src(f))).map((f) => f.replace(/\\/g, '/'));
+    expect(writers('setWaveStart')).toEqual([`${WAVES}WavePanel.tsx`]);
+    expect(writers('setMaxConcurrentSetups')).toEqual([`${WAVES}WavePanel.tsx`]);
+    expect(writers('setWaveDependency')).toEqual([`${WAVES}WaveDependency.tsx`]);
+    expect(UI.filter((f) => /<WaveDependency\b/.test(src(f)))).toEqual([`${WAVES}WavePanel.tsx`]);
+  });
   it('no activity description is written outside the programme', () => {
     const files = walk('src').filter((f) => !f.startsWith(join('src', 'domain', 'programme')));
     const pieces = PROGRAMME_ACTIVITIES.flatMap((a) => a.description.split(/[.;:]\s/).map((s) => s.replace(/\.$/, '').trim()).filter((s) => s.length >= 18)

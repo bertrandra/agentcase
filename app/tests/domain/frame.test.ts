@@ -5,6 +5,7 @@ import { fteAtMonth } from '@/domain/economics/fte';
 import { CROSS_CODES, GLOSSARY_TERMS, INDUSTRIES, crossOn, onboardingBand, plannedQuarters, regGlassCeiling, roadmapStages, trackStatus,
   type TrackActual } from '@/domain/frame';
 import { scopeOf } from '@/domain/process';
+import { legacyStage } from '../helpers/legacyProgramme';
 
 const ids = readdirSync('fixtures/cases').map((f) => f.replace('.json', '')).sort().filter((id) => existsSync(`fixtures/extras/frameQuarters/${id}.json`));
 const load = (kind: string, id: string) => JSON.parse(readFileSync(`fixtures/${kind}/${id}.json`, 'utf8'));
@@ -18,7 +19,8 @@ describe('frame domain = legacy oracle (tools/oracle-extras.d/frame.mjs)', () =>
     for (const i of INDUSTRIES.filter((x) => x.code !== 'NONE')) expect(REG_ARTEFACTS.filter((a) => a.industry === i.code).length).toBe(i.regArtifacts);
   });
   it.each(ids)('%s', (id) => {
-    const state = load('cases', id) as CaseState & { trackActuals?: Record<string, TrackActual> }, c = makeCtx(state);
+    // DEV-B9B-PILOT: the pilot sized to the legacy Pilot & Prove stage (the B9b rule: tests/domain/programme/timing-owner.test.ts)
+    const state = legacyStage(load('cases', id) as CaseState) as CaseState & { trackActuals?: Record<string, TrackActual> }, c = makeCtx(state);
     const x = (n: string) => load(`extras/${n}`, id);
     expect(GLOSSARY_TERMS).toBe(x('frameGlossaryCount'));
     expect(regGlassCeiling(c)).toBeCloseTo(x('frameRegCeil'), 8);
