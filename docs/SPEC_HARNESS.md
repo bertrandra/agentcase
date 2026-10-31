@@ -120,7 +120,8 @@ All stored data stays in the case's BPMN document (D-B26), so it travels with th
 | Sample drawn (seed, strata, drawn cells) | `ac:sample seed strata` with `ac:sampled cell="P1/A017/T3"` | `audit/sample.ts` (new) |
 | Baseline (as-is, frozen at the Assessed gate) | A second `bpmn:process` `ac:baseline="true" frozenAt` in the **product's** document; the audit moves onto its elements (per product: settles FX-D6) | `process/baseline.ts` (new) |
 | Link to-be → as-is | `ac:baselineRef` on each to-be task | `process/baseline.ts` |
-| Harness (owner, agents, tools, capability, build plan, run cost lines) | Organisation part: `ac:harness id owner` with `ac:agentRef`, `ac:toolRef`, `ac:capability`, `ac:build`, `ac:run` | `org/harness.ts` (new) |
+| Harness (owner, agents, tools, capability, build pod template and drivers, sourcing share) | Organisation part: `ac:harness id owner` with `ac:agentRef`, `ac:toolRef`, `ac:capability`, `ac:build` (`ac:podRole role mix`, drivers, months), `ac:sourcing internalPct` | `org/harness.ts` (new) |
+| Harness run process (activities, RACI, drivers, agent share) | A `bpmn:process ac:harnessRun="H1"` in the **common** document (default template, editable like the delivery process); platform costs on `ac:run` | `process/harnessRun.ts` (new) |
 | Coverage (which cells a harness serves) | `ac:harnessRef` on each to-be activity (all its cells), narrowed by a rule on the harness when only some teams use it | `process/harnessCoverage.ts` (new) |
 | Run model per slice / harness / product (R1 transfer, R2 shared, R3 external), with a switch date and the commercial model | Organisation part: `ac:runModel scope="…" model="transfer|shared|external" from="…" commercial="ET|AAH|AGS|GS"` | `commercial/runModel.ts` (new) |
 | Waves (pilot = wave 0) and their slices | Portfolio data with the waves until FX-D14 (`pilot: true`, `slices: scope ids`); a single case stores them in its document | `portfolio/waves.ts`, `portfolio/slices.ts` (new) |
@@ -141,7 +142,7 @@ A product without RACI or teams has one implicit team (the product team, today's
 **4.2 Consistency.** Σ_c FTE_c = Σ_τ FTE_τp = baseEtp_p and Σ_c cost_c = baselineRun_p by construction (each team's FTE and rate stay its own). A team whose skills no activity uses is flagged
 (capacity without work); an activity whose Responsible skill no team provides is flagged (work without capacity).
 
-**4.3 Views.** The perimeter per unit / team / product / phase / activity: FTE and as-is cost, as a table and as the diagram's colours (§ 10).
+**4.3 Views.** The perimeter per unit / team / product / phase / activity: FTE and as-is cost, as a table and as the diagram's colours (§ 11).
 
 ## 5. Step 2 — the full transformation simulation (today's case)
 
@@ -274,19 +275,73 @@ The **customer's business case** (headline, NPV, payback) reads `customerCost`; 
 harness, unit and portfolio (HX-D13). Today's engagement contexts map onto it (STA ≈ R1, MSI ≈ R2, MSC ≈ R3) and today's commercial view is the
 one-model, whole-case special case. Parity: without a run model, R1 with no fee, i.e. today's headline (the engine's own costs).
 
-## 10. 📅 Plan and the views, step by step
+## 10. Teams: team in, team out, the build pod and the harness run team
+
+The output of the model is not only euros: it is **four teams**, as 📅 Plan already separates the team in from the team out today.
+
+| Team | What it is | Today | Proposed |
+|---|---|---|---|
+| **Team in** | The customer's teams of the perimeter, as-is | `teamIn` / the organisation's teams | Unchanged; read per cell (§ 4) |
+| **Team out** | The delivery team after the transformation: the residual human FTE organised in pods (orchestrator, reviewers, engineers) plus preceptors, architects, FinOps, design authority, lead | `opModelCompute` on the product's residual FTE (EV-09 topology), per product and year | The same topology, **per team and per slice**: each team's residual = its FTE − the FTE its target cells free; the pods follow the slices' go-live |
+| **Build pod** (per harness) | The team that builds the harness, then stabilises it in the pilot's break-in sprints | Not modelled (the pilot pod is a cost line, `pilotLine`) | Sized from the harness (§ 10.1), a programme activity at its owner's level |
+| **Harness run team** (per harness) | The team that operates the harness **as an automation process** | A formula: `floor + agentVfte × opsPerAgent` (`runTeamSizing`) | The FTE of the harness's **run process** (§ 10.2) |
+
+**10.1 Build pod.** A template of roles per harness (default: agent architect, harness engineers, a reviewer, a product owner, and subject-matter
+experts **taken part-time from the teams whose cells the harness covers**), sized by drivers:
+
+```
+buildDays_H = d_base + d_agent × #agents_H + d_tool × #toolIntegrations_H + d_activity × #coveredActivities_H + d_team × #coveredTeams_H
+FTE_role    = buildDays_H × mix_role / (buildMonths_H × wd/12)            mix: the template's share of each role (Σ = 1)
+B_H         = Σ_role FTE_role × buildMonths_H × wd/12 × rate_role          (the build cost of § 7.5; the SMEs at their own team's rate)
+```
+
+The SMEs' days are **taken from team in** during the build (their cells' human capacity drops by that much in those months, shown in the delivery
+histogram). The pod then runs the pilot's break-in sprints for the pilot harness. Under R1 the pod can be the customer's, under R2 / R3 the
+provider's (its rates, § 9.2).
+
+**10.2 The harness run team, from the harness's run process.** Each harness carries a small BPMN **run process** (`bpmn:process`
+`ac:harnessRun="H1"`), built from a default template and editable like the delivery process: its activities, their RACI, their drivers and an agent
+share (the run is itself partly automated). Default activities and drivers:
+
+| Run activity | Driver (per month) | Effort |
+|---|---|---|
+| Monitor agent runs and quality | agent runs of the products live on H | `runs × min_monitor` |
+| Handle exceptions and escalations | runs × exception rate | `exceptions × min_exception` |
+| Evaluate and release (eval suites, regression) | releases of the harness | `releases × d_release` |
+| Maintain prompts, context and knowledge | change requests from the covered teams | `changes × d_change` |
+| FinOps (tokens, licences, capacity) | fixed + per product live | `d_finops + d_product × #products` |
+| Security and compliance review | fixed + per regulatory covered activity | `d_sec + d_reg × #regCovered` |
+
+```
+runFTE_H(T) = Σ_a effort_a(T) × (1 − agentShare_a) / (wd/12)          human run FTE of the harness
+runCost_H(T) = runFTE_H × rate (run roles × 1.15, the AI-skill premium) + platform (infra, licences)      = Run_H(T) of § 7.5
+```
+
+`agentVfte` drives the run volume (`runs = agentVfte × wd/12 × runsPerDay`, today's rule), so the run team grows with adoption. A shared harness has
+**one** run team for all its products (economy of scale), allocated by HX-D3.
+
+**Parity.** The implicit harness H0 has a two-activity run process: "platform floor" = `max(runFloorMin, baseEtp × runFloorPct)` once any agent runs (0 before) and
+"agent operations" = `agentVfte × opsPerAgent` FTE, which is today's `runTeamSizing` exactly (the legacy run-size mode keeps its fixed FTE); `runTeamFactor` and the 1.15 premium apply as today.
+
+**10.3 Who is in which team (transition).** For each team in, the tool shows where its FTE go month by month: stays in its team (team out), joins
+a pod of the team out, goes part-time to a build pod (SMEs), moves to a harness run team (reskilled), or is freed (the saving). The share of the
+build pods and run teams staffed **from team in** (reskilling) versus external (provider) is an input per harness (HX-D17); under R2 / R3 the
+provider's share is at the provider's rates and counts in its ledger.
+
+## 11. 📅 Plan and the views, step by step
 
 | View | Addition |
 |---|---|
 | Gantt | Assessment stage (its option's days) and gate; harness build bars (owner level, once); pilot band (wave 0); each wave's band with one bar per slice from its go-live; run-model switch milestones (transfer dates) |
 | WBS | Programme → Assessment (sample, interviews, baseline) → Pilot → Waves → Wave k → slices; Harnesses → H → Build; Run → per run model |
-| OBS | Organisation → units → teams → roles (FTE), **with each team's cells in the target / pilot**; under the owner unit (or the portfolio root) **Harness H** → harness team → agents; the provider's run team when R2 / R3 |
+| OBS | Four branches: **team in** (units → teams → roles, FTE as-is, each team's target / pilot cells); **team out** (per product / unit: pods → roles, by year, as today's topology per team); **build pods** (per harness under its owner: roles, SMEs with their home team); **harness run teams** (per harness: run roles, agents); provider staff marked under R2 / R3 |
 | RAM | WBS × lanes + auditors + harness teams + provider run roles |
-| Programme histogram | Auditors (assessment option), harness build and run labour by role, a shared harness counted once at Unit / Portfolio scope |
-| Delivery histogram | FTE before / after per role, per slice and per harness: the steps as each slice goes live; customer vs provider FTE under R2 / R3 |
+| Programme histogram | Auditors (assessment option), **build pods** by role (SMEs shown as borrowed from team in), a shared harness counted once at Unit / Portfolio scope |
+| Delivery histogram | **Team in → team out** per team and role, month by month: freed FTE, pods, SMEs lent to build pods, staff moved to harness run teams, the **harness run teams** themselves; customer vs provider FTE under R2 / R3 |
+| Transition view (new) | Per team in: where its FTE go (§ 10.3), as a stacked area and a table, per wave |
 | Scope map (new) | Cells (product × activity × team): perimeter, sampled?, provenance, target / pilot / wave, harness, run model, FTE, as-is and to-be cost; filters at any level; the diagram's Colours → Target, Wave, Harness, Audit |
 
-## 11. Decisions needed (the owner chooses)
+## 12. Decisions needed (the owner chooses)
 
 | ID | Question | Options (recommended first) |
 |---|---|---|
@@ -304,8 +359,11 @@ one-model, whole-case special case. Parity: without a run model, R1 with no fee,
 | HX-D12 | Base of the automation with an explicit target | (a) the target's FTE only (§ 7.4); (b) the whole team, as today |
 | HX-D13 | Headline under R2 / R3 | (a) the customer's cost including fees; (b) the engine's costs (today), fees shown apart |
 | HX-D14 | Audit price parameters | (a) the defaults of § 6.2, editable per case; (b) a price per cell only |
+| HX-D15 | Build pod sizing | (a) template + drivers (§ 10.1); (b) typed FTE and months per harness |
+| HX-D16 | Harness run team | (a) the run process (§ 10.2), parity through H0; (b) today's floor + per-agent formula per harness |
+| HX-D17 | Staffing of build pods and run teams | (a) a share from team in (reskilled, their FTE leave team out) and the rest external, per harness; (b) all external |
 
-## 12. Lots (one PR each)
+## 13. Lots (one PR each)
 
 | Lot | Content | Gate | Figures |
 |---|---|---|---|
@@ -313,9 +371,10 @@ one-model, whole-case special case. Parity: without a run model, R1 with no fee,
 | S2 Engine per group and slice | `agentVfte_p(T)` of § 7.3 behind the kernel, the implicit target / harness / slice | **Parity**: 107 fixtures, parallel run, excel-compat identical | None |
 | S3 Assessment | Audit options and pricing (§ 6.2), sample draw, extrapolation, provenance, Monte Carlo spreads, the Assessment stage's cost line, freeze baseline | Hand-computed prices and strata; no sample = today | Opt-in |
 | S4 Target and harnesses | Target rules, harness definition, coverage, costs and allocation, harness business case, scope map | Cross-surface: Σ products + owners = portfolio | Opt-in |
+| S4b Teams | Team out per team and slice, build pods (§ 10.1), harness run processes and run teams (§ 10.2, parity through H0), transition view | H0 run team = `runTeamSizing` on the 107 fixtures | Opt-in |
 | S5 Pilot and waves | Pilot (wave 0), slices of target − pilot, partition checks, go-live, Plan views (Gantt / WBS / OBS / RAM / histograms) | Plan exports (MSPDI, workbook, report) | Opt-in |
 | S6 Run models | R1 / R2 / R3 per slice with switch dates, customer and provider ledgers, commercial view per scope | Today's commercial view = the one-model special case | Opt-in |
 | S7 Screens | Scope map, audit plan, target / pilot / wave editors, harness panel, diagram colours (Target, Wave, Harness) and groups | axe, parity 0 | None |
 | S8 Monte Carlo | Harness capability draws, stratum spreads | Zero-variance run = consolidated net | Opt-in |
 
-Total about 20 days of agent work. S1 → S2 first (no figure moves); then S3 → S4 → S5 → S6 follow the engagement's order.
+Total about 23 days of agent work. S1 → S2 first (no figure moves); then S3 → S4 → S5 → S6 follow the engagement's order.
