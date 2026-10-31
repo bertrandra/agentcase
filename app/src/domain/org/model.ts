@@ -4,12 +4,12 @@ import { readProcess } from '../process/read';
 import type { XDocument } from '../process/xml';
 import { readRaci } from './readRaci';
 import { readStoredOrg } from './readUnits';
-import { DEFAULT_UNIT_ID, defaultUnit, derivedTeams } from './teams';
+import { DEFAULT_UNIT_ID, defaultUnit, derivedTeams, type EffortShares } from './teams';
 import { ownerIn } from './teamDoc';
 import type { OrgModel, OrgRole, ProductRef } from './types';
 
 /** What the organisation is read from: the products and shared lines of the portfolio (one product for a single case) and the case's document. */
-export type OrgSource = Pick<Portfolio, 'products'> & { common: Pick<Portfolio['common'], 'BPMN'>; customer?: string };
+export type OrgSource = Pick<Portfolio, 'products'> & { common: Pick<Portfolio['common'], 'BPMN'>; customer?: string; effort?: EffortShares };
 
 const roles = (d: XDocument): OrgRole[] => readProcess(d).actors.map((a) => {
   const r: OrgRole = { id: a.id, name: a.name, kind: a.kind === 'agent' ? 'agent' : 'role', regulatory: a.regulatory };

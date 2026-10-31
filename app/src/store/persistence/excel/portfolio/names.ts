@@ -24,5 +24,6 @@ export const PF_HEADERS: Record<string, string[]> = {
   [PF_SHEETS.subsets]: ['Product id', 'Enabled', 'Target CC', 'Curation FTE', 'Setup base', 'KT lead (months)',
     ...Array.from({ length: 9 }, (_, i) => `Maturity A${i + 1}`)],
   [PF_SHEETS.domains]: ['Product id', 'Domain', 'Weight %'],
-  [PF_SHEETS.shared]: ['Line id', 'Skill', 'Grade', 'Location', 'FTE', 'Product id', 'Share %', 'Pinned artefacts (; separated)'],
+  [PF_SHEETS.shared]: ['Line id', 'Skill', 'Grade', 'Location', 'FTE', 'Product id', 'Share %', 'Pinned artefacts (; separated)', 'Unit id (blank = delivery)',
+    'Split (effort / blank = fixed shares)'],
 };

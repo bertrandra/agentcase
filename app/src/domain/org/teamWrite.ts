@@ -80,8 +80,9 @@ const shareEls = (alloc: Record<string, number>): XElement[] => Object.entries(a
 function sharedEl(cur: XElement | undefined, l: SharedTeamLine): XElement {
   const name = `Shared ${l.skill} · ${l.grade} · ${l.loc}`, row: TeamRow = { skill: l.skill, grade: l.grade, loc: l.loc, etp: l.etp, pins: l.pins };
   if (!cur) return [el('ac:line', lineAttrs(row, true)), ...shareEls(l.allocations)]
-    .reduce((t, c) => appendChild(t, c), el('ac:team', { id: sharedTeamId(l.id), name, unit: DEFAULT_UNIT_ID, line: l.id }, [] as XNode[]));
-  let out = withLines(withAttrs(cur, { name }), [row], true);
+    .reduce((t, c) => appendChild(t, c), el('ac:team', { id: sharedTeamId(l.id), name, unit: l.unit ?? DEFAULT_UNIT_ID, line: l.id, split: l.split ?? null },
+      [] as XNode[]));
+  let out = withLines(withAttrs(cur, { name, unit: l.unit ?? DEFAULT_UNIT_ID, split: l.split ?? null }), [row], true);
   const was = sharedLineIn(cur).allocations;
   if (JSON.stringify(was) !== JSON.stringify(l.allocations)) {
     out = withChildren(out, withoutChildren(out.children, (e) => e.local === 'share'));

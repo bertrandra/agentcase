@@ -1717,7 +1717,7 @@ product, shared team lines (portfolio `sharedTeam`, pins) are not linked to a un
 |---|---|---|---|---|
 | B10a | Override split (process / organisation / programme parts of a product); teams (`teamIn`, `sharedTeam`) into the document; units with any depth; product → owning unit — **built in B10a** (§ 21.5) | 107 fixtures identical; all round trips; schema v5 migration | 3 d | 5 / 5 |
 | B10b | Unit display scope at any node: consolidation, figures, histogram, Plan views per unit — **built in B10b** (§ 21.6) | Unit totals = sum of its products (cross-surface); a unit equal to the portfolio gives the portfolio figures | 2 d | 4 / 5 |
-| B10c | Transverse services: service units, assignments, cost allocation (D-B38), Services view | Allocation hand-computed; Σ allocations = service cost; axe clean | 2 d | 4 / 5 |
+| B10c | Transverse services: service units, assignments, cost allocation (D-B38), Services view — **built in B10c** (§ 21.7) | Allocation hand-computed; Σ allocations = service cost; axe clean | 2 d | 4 / 5 |
 | B10d | Strategy, stress and decision per unit (D-B40) | Unit = portfolio case reproduces the portfolio decision; hand-computed unit stress | 1.5 d | 4 / 5 |
 
 ### 21.5 Built in B10a (override split, teams in the document, units at any depth, owning unit)
@@ -1799,5 +1799,60 @@ SectionFrame}.tsx`, `ui/widgets/ScopeUnavailable.tsx`.
   recompute on switching), `tests/ui/unit-scope.test.tsx` (Show list, levels, announcement, headline bar, banner, Change grouping, removed unit,
   verdict not available, empty state), `tests/ui/render-cost.test.tsx` (unit switches), `tools/a11y.mjs` (pf fixtures: Decision and the KPI bar under
   Unassigned, the empty state of a unit).
-- **Open (next phases).** Service units and cost allocation (B10c); stress, verdict and ranking per unit (B10d: `VerdictGroup` gains the unit, the
+- **Open (next phases).** Service units and cost allocation (B10c, built: § 21.7); stress, verdict and ranking per unit (B10d: `VerdictGroup` gains the unit, the
   run then needs per-unit draws); a per-unit sheet in the results workbook.
+
+### 21.7 Built in B10c (transverse services, D-B38)
+
+Figure-neutral for every existing case: the 107 fixtures, the three-product portfolio and every shared line written before B10c keep their figures
+(no line belongs to a service, so every line is split by its fixed shares exactly as before). Code: `app/src/domain/org/services.ts` (the one
+owner of "what a service does for a product"), `app/src/domain/portfolio/{serviceShares,serviceOps,serviceView,serviceLoad}.ts`,
+`sharedTeam.ts` (`effectiveTeam` reads `lineShares`), `app/src/controllers/services.ts`, `app/src/store/serviceHooks.ts`,
+`app/src/ui/sections/frame/organisation/services/`.
+
+- **Service unit (built).** A unit is marked **shared service** in 🏢 Organisation (column **Service** of the unit table): `ac:orgUnit service="true"`
+  with its **activity types** (`skills`, team skills separated by `;`, e.g. `Test/QA`) and its **roles** (`roles`, role ids). A shared team line
+  belongs to a unit: `ac:team line="…" unit="…"` (the unit attribute B10a already wrote, the default delivery unit until now) and, for a service
+  line split by effort, `split="effort"`. The extension XSD declares the four attributes. Edited through `org.updateUnit` (the service) and the new
+  portfolio commands `sharedTeam.setUnit` / `sharedTeam.setSplit`; a new service line is a `sharedTeam.add` with its unit and rule. Each is one undoable
+  step of node patches of the common document (attributes; the shares when a rule seeds them).
+- **Assignment (built, one owner).** `serviceActivities` gives, for one product, the active activities a service performs: those **pinned** on one of its
+  lines, those of one of its **activity types** (the activity's team skill), and those where one of its **roles** is RACI **Responsible** (§ 16), each with
+  the reason(s). The effort of an activity is its engine weight (`w` = effort × lifecycle weight), read on the product's **process case** (its process,
+  scope and values, no team: `serviceShares.ts processCase`), so a team edit never moves a share and the share never depends on the team it feeds.
+  Decision taken in building: assignment by type or role decides what the service delivers and how its cost is split; inside a product's engine the
+  service's row still takes the pinned activities first and shares the auto pool of its skill like any row (routing every assigned activity to the
+  service row would change the single-product engine; left open).
+- **Cost allocation (D-B38, built).** A service line with `split="effort"` gives each kept product the share of the service's effort for it
+  (effort / Σ effort × 100: the shares add up to 100 %, the line's FTE and cost are handed out once); every other line — a line outside a service, or a
+  service line with fixed shares — gives its `ac:share` percentages (the **override**, b). `lineShares` is the one reader: `effectiveTeam` (the entry team
+  every product surface runs on), the organisation's derived teams (`derivedTeams`, `teamRowsOf`, the 🧭 Who does what answers), the pin candidates and
+  the Services view read it. **Migration rule**: nothing is migrated — a case written before B10c has no service unit, so its lines keep their shares; a
+  line that holds shares and joins a service keeps them as its override (its figures do not move); a line without a share that joins a service is split
+  by effort; switching a service line to fixed shares seeds them with the effort split as it stands (rounded to 0.01 %). Archived products are served
+  nothing; a service with no assigned activity gives no share (shown).
+- **Hand-computed (tested).** Three products, a QA service of type Test/QA with one line Test/QA · C1 · France · 3 FTE split by effort; the fresh case's
+  active Test/QA activities weigh A022 4.8, A023 8.4, A025 2.4, and B leaves A023 out of its own scope: efforts 15.6 / 7.2 / 15.6, shares 40.625 % /
+  18.75 % / 40.625 %, FTE 1.21875 / 0.5625 / 1.21875, cost 182,325 € / 84,150 € / 182,325 € a year; Σ = 448,800 € = 3 FTE × 149,600 € (the line's cost).
+- **Services view (built).** A tab **Services** of 🏢 Organisation, not a new menu section: a service is an organisation unit, and the menu keeps its
+  91 sections (the section catalogue, the personas, the legacy parity and the docs facts are unchanged). The tab follows the **View** (Product, Wave,
+  Unit, Portfolio: the products it shows are `useViewScope().productIds`). Per service: its settings (activity types and roles as checkboxes, its lines
+  with their split rule, **+ Add a line**, **Move a shared line here**, **Leave**); **what it delivers** to each product (activities with their reasons and
+  **Open in Process** on each, effort, share of the effort, FTE, cost per year); its **load against its capacity** month by month (`serviceLoad`: each
+  product's human FTE of the month read from its Time Engine through the B9d delivery histogram, `deliveryHistogram`, times the service's part of the
+  product's scope weight, laid on the portfolio calendar; capacity = the FTE of its lines; months above it flagged, no levelling; link to the Plan
+  histogram); its **cost by product** with the rule of each line, the products outside the View, the part no product holds and the line's cost. The
+  service's activities are delivery activities: "Open in Programme" (the transformation programme's screen) does not apply to them.
+- **Cross-surface (tested).** A product's cost of a service line in the view is `lineCost` of the row the line gives its entry team — the figure its
+  team cost sums; the same portfolio with the effort split written as fixed shares gives identical teams, product headlines, consolidation, unit
+  roll-ups (B10b), cost model and report rows; Σ allocations = the service's cost.
+- **Persistence.** JSON file, HTML snapshot, autosave with its undo history and tab sync carry the attributes as nodes of the document; the
+  parameters workbook's SharedTeam sheet gains the columns **Unit id** and **Split** (an older workbook has none: delivery unit, fixed shares). The
+  units travel in the document, not in the workbook (as in B10a): importing a workbook whose lines name a unit the case does not hold is refused
+  with the line and the unit named.
+- **Tests.** `tests/domain/portfolio/services.test.ts` (assignment by type, pin and role; the hand-computed split; fixed override and the migration
+  rule; cross-surface), `tests/store/bpmn-b10c-services.test.ts` (undo / redo property over every service command, node patches, per-product memo,
+  JSON, autosave, tab sync, workbook), `tests/ui/sections/services.test.tsx` (service column, keyboard tabs, delivery, load, cost, split, View, axe),
+  `tests/ui/render-cost.test.tsx` (Services tab: a figure, the name, a service edit, a View switch).
+- **Open.** Routing the type- and role-assigned activities to the service's row inside each product's engine; a per-service sheet in the results
+  workbook; units and owners in the parameters workbook; stress, verdict and ranking per unit (B10d).

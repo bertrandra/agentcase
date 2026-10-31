@@ -4,6 +4,7 @@ import type { WArtefact as Artefact } from '../artefacts';
 import { ctxOf } from './memo';
 import { resolveProduct } from './resolve';
 import { mapLine, withLines } from './sharedTeam';
+import { lineShares } from './serviceShares';
 import { sharedLines } from './teamAccess';
 import type { Portfolio, SharedTeamLine } from './types';
 
@@ -34,11 +35,11 @@ export function pinSharedLine<T extends Portfolio>(pf: T, id: string, artIds: st
 export const clearSharedPins = <T extends Portfolio>(pf: T, id: string): T => mapLine(pf, id, (l) => (l.pins ? setPins(l, []) : l));
 
 /**
- * The artefacts a shared line can be pinned to: the union of the active artefacts of the products holding a share of it (all the products when none
- * does yet), in first-seen order.
+ * The artefacts a shared line can be pinned to: the union of the active artefacts of the products holding a share of it, fixed or by effort (all
+ * the products when none does yet), in first-seen order.
  */
 export function sharedLineArtefacts(pf: Portfolio, line: SharedTeamLine): Artefact[] {
-  const holders = pf.products.filter((p) => (line.allocations[p.id] ?? 0) > 0), from = holders.length ? holders : pf.products;
+  const shares = lineShares(pf, line), holders = pf.products.filter((p) => (shares[p.id] ?? 0) > 0), from = holders.length ? holders : pf.products;
   const out = new Map<string, Artefact>();
   for (const p of from) {
     const c = ctxOf(resolveProduct(pf, p.id));

@@ -9,11 +9,16 @@ const LOC_NAMES = LOCATIONS.map((l) => l.name);
 const LISTS: [SharedLineField, string, string[]][] = [['skill', 'Skill', SKILLS_EXIST], ['grade', 'Grade', GRADES], ['loc', 'Location', LOC_NAMES]];
 const pctText = (x: number): string => `${+x.toFixed(2)} %`;
 
-interface Props { line: SharedTeamLine; index: number; products: Product[]; open: boolean; onPin: (id: string) => void }
+interface Props {
+  line: SharedTeamLine; index: number; products: Product[]; open: boolean; onPin: (id: string) => void;
+  /** the effort split of a service line (B10c): shown, not edited here (its service's activities set it; Organisation › Services) */
+  effort?: Record<string, number>;
+}
 
 /** One shared line: skill / grade / location / FTE, one share (percent of the line's FTE) per product, the allocated total, pins and removal. */
-export function SharedLineRow({ line, index, products, open, onPin }: Props) {
-  const who = `shared line ${index + 1}`, sum = allocatedPct(line), over = sum > 100 + 1e-9, known = new Set(products.map((p) => p.id));
+export function SharedLineRow({ line, index, products, open, onPin, effort }: Props) {
+  const who = `shared line ${index + 1}`, sum = allocatedPct(effort ? { allocations: effort } : line), over = sum > 100 + 1e-9;
+  const known = new Set(products.map((p) => p.id));
   const orphans = Object.keys(line.allocations).filter((id) => !known.has(id)), pins = line.pins?.length ?? 0;
   return (
     <tr data-shared={line.id}>
@@ -28,8 +33,9 @@ export function SharedLineRow({ line, index, products, open, onPin }: Props) {
         onCommit={(v) => { updateSharedLine(line.id, 'etp', v); }} /></td>
       {products.map((p) => (
         <td key={p.id} className="ac-num">
-          <NumCell ariaLabel={`Share of ${p.name} in ${who} (%)`} value={line.allocations[p.id] ?? 0} min={0} max={100} step={5} width={64}
-            onCommit={(v) => { setSharedShare(line.id, p.id, parseFloat(v) || 0); }} />
+          {effort ? <span title="Split by the effort of the service's activities (Organisation › Services)">{pctText(effort[p.id] ?? 0)}</span>
+            : <NumCell ariaLabel={`Share of ${p.name} in ${who} (%)`} value={line.allocations[p.id] ?? 0} min={0} max={100} step={5} width={64}
+              onCommit={(v) => { setSharedShare(line.id, p.id, parseFloat(v) || 0); }} />}
         </td>
       ))}
       <td className="ac-num">

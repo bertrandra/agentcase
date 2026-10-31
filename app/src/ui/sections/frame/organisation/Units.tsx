@@ -1,4 +1,5 @@
 import { addOrgUnit, nextUnitId, removeOrgUnit, updateOrgUnit } from '@/controllers/org';
+import { setUnitService } from '@/controllers/services';
 import { DEFAULT_UNIT_ID, isBelow, SOURCINGS, UNIT_TYPES, unitTree, type OrgModel, type OrgUnit, type UnitPatch } from '@/domain/org';
 import { toast } from '@/ui/uiState';
 import { DraftText } from '@/ui/widgets/DraftText';
@@ -42,6 +43,8 @@ function UnitRow({ m, unit, depth }: { m: OrgParts; unit: OrgUnit; depth: number
         <option value="">—</option>
         {SOURCINGS.map((s) => <option key={s} value={s}>{SOURCING_LABELS[s]}</option>)}
       </select></td>
+      <td><input type="checkbox" aria-label={`${n} is a shared service`} checked={!!unit.service}
+        onChange={(e) => { if (!setUnitService(unit.id, e.target.checked)) toast('Service refused'); }} /></td>
       <td>{!unit.derived && <button type="button" aria-label={`Remove unit ${n}`} onClick={remove}>✕</button>}</td>
     </tr>
   );
@@ -59,7 +62,8 @@ export function Units({ m }: { m: OrgParts }) {
           <caption>Units ({m.units.length}), parents before their children</caption>
           <thead><tr>
             <th scope="col">Unit</th><th scope="col">Type</th><th scope="col">Parent</th><th scope="col">Location</th><th scope="col">Cost centre</th>
-            <th scope="col">Sourcing</th><th scope="col"><span className="ac-sr">Remove</span></th>
+            <th scope="col">Sourcing</th><th scope="col" title="A shared service: its lines serve several products (Services tab)">Service</th>
+            <th scope="col"><span className="ac-sr">Remove</span></th>
           </tr></thead>
           <tbody>{unitTree(m).map(({ unit, depth }) => <UnitRow key={unit.id} m={m} unit={unit} depth={depth} />)}</tbody>
         </table>
