@@ -4,6 +4,7 @@ import { useSelectionStress } from '@/store/selectionHooksStress';
 import { useViewScope } from '@/store/viewScope';
 import { goSection } from '@/ui/uiState';
 import { Callout } from '@/ui/widgets/cards';
+import { ScopeUnavailable } from '@/ui/widgets/ScopeUnavailable';
 import { ProductDrill } from '@/ui/widgets/ProductDrill';
 import { SectionFrame } from '@/ui/zones/SectionFrame';
 import { Controls } from '../../portfolio/stress/Controls';
@@ -28,7 +29,8 @@ export default function MonteCarloAggregate() {
       <>
         <ExcludedNote />
         {run && stale && <StaleRun />}
-        {sel ? <SelectionResults sel={sel} scope={vs.kind === 'wave' ? 'wave' : 'portfolio'} />
+        {vs.kind === 'unit' ? <ScopeUnavailable what="Monte Carlo distribution" label={vs.label} />
+          : sel ? <SelectionResults sel={sel} scope={vs.kind === 'wave' ? 'wave' : 'portfolio'} />
           : <p className="ac-muted"><em>{run ? `${vs.label} has no planned product in the last simulation: run it again.`
             : 'No simulation yet: run the portfolio simulation to draw the distribution of the selection.'}</em>{' '}
             {!run && progress === null && <button type="button" onClick={() => { void runPortfolioSimulation(); }}>▶ Run now</button>}</p>}

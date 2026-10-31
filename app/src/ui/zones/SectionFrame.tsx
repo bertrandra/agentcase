@@ -3,12 +3,16 @@ import { useViewProductId } from '@/store/productView';
 import { ProductBanner } from '../widgets/ProductBanner';
 import { ScopeBanner } from '../widgets/ScopeBanner';
 import { EmbeddedFrame } from './EmbeddedFrame';
+import { EmptyScope, useEmptyView } from './EmptyScope';
 import type { FrameProps } from './frameProps';
 
-/** The standard section layout (plan §5): header with help, then InputZone, ResultZone, DiagnosticZone. */
+/**
+ * The standard section layout (plan §5): header with help, then InputZone, ResultZone, DiagnosticZone. A Wave or a Unit view with no planned product
+ * shows the empty state in place of the zones (`useEmptyView`).
+ */
 export function SectionFrame(props: FrameProps) {
   const { title, help, input, result, diagnostic, overrides } = props;
-  const [showHelp, setShowHelp] = useState(false), pinned = useViewProductId();
+  const [showHelp, setShowHelp] = useState(false), pinned = useViewProductId(), empty = useEmptyView();
   if (pinned) return <EmbeddedFrame {...props} />;   // a per-product render inside a aggregate view drill-down
   return (
     <article className="ac-section" aria-labelledby="ac-section-title">
@@ -20,9 +24,11 @@ export function SectionFrame(props: FrameProps) {
       {help && showHelp && <div className="ac-help" role="note">{help}</div>}
       <ScopeBanner />
       {overrides && <ProductBanner refs={overrides} />}
-      {input && <section className="ac-zone ac-zone-input" aria-label="Inputs">{input}</section>}
-      {result && <section className="ac-zone ac-zone-result" aria-label="Results">{result}</section>}
-      {diagnostic && <section className="ac-zone ac-zone-diagnostic" aria-label="Checks">{diagnostic}</section>}
+      {empty ? <section className="ac-zone ac-zone-result" aria-label="Results"><EmptyScope /></section> : <>
+        {input && <section className="ac-zone ac-zone-input" aria-label="Inputs">{input}</section>}
+        {result && <section className="ac-zone ac-zone-result" aria-label="Results">{result}</section>}
+        {diagnostic && <section className="ac-zone ac-zone-diagnostic" aria-label="Checks">{diagnostic}</section>}
+      </>}
     </article>
   );
 }

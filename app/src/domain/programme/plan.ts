@@ -29,9 +29,12 @@ export function casePlan(c: Ctx, name: string, productId = 'case'): Plan {
     totalM, startDate: c.inp.v('rmStart') || START, c };
 }
 
-/** The plan of the Portfolio (or of one wave, `waveId`) from its consolidation; `c`: the case-level values (the common case). */
-export function portfolioPlan(c: Ctx, k: Consolidated, waveId?: string): Plan {
-  const views = k.products.filter((v) => !waveId || v.waveId === waveId), O = programmeCalendar(c, 600, { showStages: true, hub: true }).onboardEnd;
+/**
+ * The plan of the Portfolio (or of a selection — one wave or one unit, `only`: its planned products, `scopeGroup.ts`) from its consolidation; `c`:
+ * the case-level values (the common case).
+ */
+export function portfolioPlan(c: Ctx, k: Consolidated, only?: readonly string[]): Plan {
+  const views = k.products.filter((v) => !only || only.includes(v.id)), O = programmeCalendar(c, 600, { showStages: true, hub: true }).onboardEnd;
   const waves = new Map(k.waves.map((w) => [w.id, w.name])), totalM = Math.max(12, k.horizon) + O;
   const caseBars = programmeGantt(c, { totalM, showStages: true, hub: khEnabled(c), milestones: false }).filter((t) => t.level === 'case');
   const caseIds = new Set(caseBars.map((t) => t.id));

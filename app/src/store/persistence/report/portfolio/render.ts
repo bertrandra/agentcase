@@ -29,7 +29,8 @@ function effectsTable(d: PortfolioReportData): string {
 /** The standalone portfolio report: the six sections of the critical-delivery report, for a portfolio or a wave. No script, no external resource. */
 export function renderPortfolioReport(d: PortfolioReportData, print: Readonly<ThemeValues>): string {
   const note = tokIn(print, 'report-note');
-  const norms = [...new Set(d.reg.flatMap((r) => r.data?.norms ?? []))].sort(), what = d.kind === 'wave' ? `Wave: ${d.label}` : d.label;
+  const norms = [...new Set(d.reg.flatMap((r) => r.data?.norms ?? []))].sort();
+  const what = d.kind === 'wave' ? `Wave: ${d.label}` : d.kind === 'unit' ? `Unit: ${d.label}` : d.label, by = d.kind === 'unit' ? 'Unit' : 'Wave';
   const notes = d.diagnostics.length ? `<h3>Diagnostics</h3><ul>${d.diagnostics.map((i) => `<li>${esc(i.message)}</li>`).join('')}</ul>` : '';
   return '<!DOCTYPE html><html><head><meta charset="utf-8">' + REPORT_CSP
     + `<title>Critical &amp; Regulated Software Delivery — ${esc(what)} — AgentCase ${esc(d.version)}</title><style>${reportStyle(print)}</style></head><body>`
@@ -44,7 +45,7 @@ export function renderPortfolioReport(d: PortfolioReportData, print: Readonly<Th
     + `<h2>3 · Supervision floors &amp; AI authorization</h2><p>Each product follows the posture and the agent-authority cap of its own engagement ` +
       `context.</p>${supervisionTable(d)}`
     + `<h2>4 · Consolidated ` +
-      `economics</h2><p>${headlineText(d)}</p>${lines('Wave', d.waveRows, d.horizon)}${lines('Product', d.productRows, d.horizon)}${yearsTable(d.years)}`
+      `economics</h2><p>${headlineText(d)}</p>${lines(by, d.waveRows, d.horizon)}${lines('Product', d.productRows, d.horizon)}${yearsTable(d.years)}`
     + `<p style="font-size:11px;color:${note}">NPV is discounted month by month from the portfolio's first month, so the products add up to the total; ` +
       `payback is the first calendar month the consolidated cash is ≥ 0 (${payback(d.headline.paybackMonth, d.horizon)}).</p>`
     + `<h2>5 · Knowledge transfer</h2><p>Knowledge Hub ${d.hub.enabled ? 'on' : 'off'} · infrastructure ${fmtK(d.hub.infraMonthly)}/month ` +

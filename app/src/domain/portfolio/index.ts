@@ -37,6 +37,8 @@ export { clampRho, commonShock, idHash, productSeed } from './stressSeed';
 export type { Diversification, PfStress, PfStressJob, PfStressOpts, ProductStress, StressStats, WaveStress } from './stressTypes';
 export { pfDecision, groupDecision, type VerdictGroup } from './stressVerdict';
 export { selectionView, type SelectionView, type SelectionRow } from './selectionView';
+export { groupOf, scopeMembers, scopeExists, scopeKey, portfolioUnits, unitLabel, UNASSIGNED_UNIT, type Group, type GroupScope,
+  type ScopeMembers } from './scopeGroup';
 export { effectiveTeam, shareOf, allocatedPct, isSharedRow, ownRows, sharedEtp, addSharedLine, editSharedLine, removeSharedLine, setSharedAllocation,
   dropProductShares, type SharedLineField } from './sharedTeam';
 export { pinSharedLine, clearSharedPins, sharedLineArtefacts } from './sharedTeamPins';

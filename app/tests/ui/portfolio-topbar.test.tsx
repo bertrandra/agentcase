@@ -24,7 +24,8 @@ describe('top bar with several products', () => {
   it('shows the single Show selector (Portfolio, waves, products with wave labels) and the Change dropdown, default "All products"', () => {
     mountApp();
     const sel = screen.getByRole('combobox', { name: 'Show' }) as HTMLSelectElement;
-    expect([...sel.options].map((o) => o.textContent)).toEqual(['Portfolio', 'Wave 1', 'Wave 2', 'Product 1 (Wave 1)', 'B (Wave 1)', 'C (Wave 2)']);
+    expect([...sel.options].map((o) => o.textContent)).toEqual(['Portfolio', 'Wave 1', 'Wave 2', 'Delivery', 'Unassigned', 'Product 1 (Wave 1)', 'B (Wave 1)',
+      'C (Wave 2)']);
     expect(sel.value).toBe(`product:${ids[0]}`);
     expect(screen.queryByRole('combobox', { name: 'Display scope' })).toBeNull();
     const edit = screen.getByRole('combobox', { name: 'Change' }) as HTMLSelectElement;
@@ -62,7 +63,7 @@ describe('top bar with several products', () => {
     expect(text(label('Show'))).toBe('👁Show ');
     expect(text(label('Change'))).toBe('✏️Change ');
     expect([...screen.getByRole('banner').querySelectorAll('.ac-prodsel-icon')].map((i) => i.getAttribute('aria-hidden'))).toEqual(['true', 'true']);
-    expect(label('Show').title).toBe('What you look at: the portfolio, a wave or one product');
+    expect(label('Show').title).toBe('What you look at: the portfolio, a wave, a unit or one product');
     expect(label('Change').title).toBe('Where your changes go: all products (shared values) or one product');
     expect(document.querySelector('.ac-editing')).toBeNull();
     expect(screen.queryByText(/Editing:/)).toBeNull();
@@ -71,7 +72,7 @@ describe('top bar with several products', () => {
   it('Show names an unscheduled product "(unscheduled)" and keeps " (archived)"', () => {
     act(() => { assignWave(ids[2], null); archiveProduct(ids[1]); });
     mountApp();
-    expect([...show().options].map((o) => o.textContent).slice(3)).toEqual(['Product 1 (Wave 1)', 'B (Wave 1) (archived)', 'C (unscheduled)']);
+    expect([...show().options].map((o) => o.textContent).slice(5)).toEqual(['Product 1 (Wave 1)', 'B (Wave 1) (archived)', 'C (unscheduled)']);
   });
   it('Change follows Show: a product → Change = that product; Portfolio or a Wave → Change = All products; toasts "Showing …"', () => {
     mountApp();

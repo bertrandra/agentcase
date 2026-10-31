@@ -15,7 +15,7 @@ const cache = new Map<string, Scoped>();
 
 /**
  * Picks what to render for section `id` (docs/VUE_AGREGEE.md): with a single product, a Product view, or a section that does not follow the View
- * (`S-static`, `P-portfolio`) the section itself, untouched; with a Wave / Portfolio its registered `aggregate` component if any, else the generic
+ * (`S-static`, `P-portfolio`) the section itself, untouched; with a Wave / Unit / Portfolio its registered `aggregate` component if any, else the generic
  * fallback of its kind. Results are module-level constants, so the host re-renders without remounting.
  */
 export function useScopedSection(id: string): Scoped {

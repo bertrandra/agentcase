@@ -26,7 +26,7 @@ const slug = (s: string): string => s.replace(/[^A-Za-z0-9]+/g, '_').replace(/^_
 
 /**
  * The report for a DISPLAY SCOPE. Product (the active product, or `productId`) and any plain single case: today's report of the product's effective
- * case, byte for byte. Portfolio and Wave: the portfolio report (context, consolidated economics by wave and product, knowledge transfer, gated
+ * case, byte for byte. Portfolio, Wave and Unit: the portfolio report (context, consolidated economics by wave and product, knowledge transfer, gated
  * trajectory, and the last portfolio stress when `stress` is given) built from the domain views `consolidationView` / `portfolioHeadline` /
  * `knowledgeTable`; its gate needs the regulatory catalogue and a norm for at least one product of the scope. Both variants are scriptless and load
  * no external resource. `print`: the base theme of the export (controllers/exportTheme.ts).
@@ -36,11 +36,12 @@ export function buildScopedReport(
 ): ReportResult {
   if (scope.kind === 'product' || !hasPortfolioContent(pf)) return buildCriticalReport(resolveProduct(pf, productId ?? pf.activeProductId), print, now);
   const d = portfolioReportData(pf, scope, now, stress);
-  if (!d) return { ok: false, reason: 'That wave does not exist any more.' };
+  if (!d) return { ok: false, reason: 'That wave or unit does not exist any more.' };
   const first = d.reg[0], reason = !first ? 'The selected scope has no planned product.'
     : d.reg.every((r) => !r.data) ? reportBlocker(resolveProduct(pf, first.id)) : null;
   if (reason) return { ok: false, reason };
-  const tag = d.kind === 'wave' ? `Wave_${slug(d.label)}_` : 'Portfolio_', norms = new Set(d.reg.flatMap((r) => r.data?.norms ?? []));
+  const tag = d.kind === 'wave' ? `Wave_${slug(d.label)}_` : d.kind === 'unit' ? `Unit_${slug(d.label)}_` : 'Portfolio_';
+  const norms = new Set(d.reg.flatMap((r) => r.data?.norms ?? []));
   return {
     ok: true, filename: `AgentCase_Critical_Regulated_Report_${tag}${d.stamp.replace(/-/g, '')}.html`, html: renderPortfolioReport(d, print), norms: norms.size,
     artefacts: d.reg.reduce((a, r) => a + (r.data?.artefactsInScope ?? 0), 0),

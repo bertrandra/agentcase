@@ -41,7 +41,8 @@ describe('Import / Export: Cost model (monthly)', () => {
   it('with a portfolio: Portfolio, each wave and each product, starting on the current View', async () => {
     fourProducts(); setDisplayScope({ kind: 'portfolio' });
     await open();
-    expect([...scope().options].map((o) => o.textContent)).toEqual(['Portfolio', 'Wave: Wave 1', 'Wave: Wave 2', 'Product: Product 1', 'Product: Payroll',
+    expect([...scope().options].map((o) => o.textContent)).toEqual(['Portfolio', 'Wave: Wave 1', 'Wave: Wave 2', 'Unit: Delivery', 'Unit: Unassigned',
+      'Product: Product 1', 'Product: Payroll',
       'Product: Billing', 'Product: Archive (no wave) (no wave)']);
     expect(scope().value).toBe('portfolio');
     expect((within(scope()).getByRole('option', { name: /Archive/ }) as HTMLOptionElement).disabled).toBe(true);

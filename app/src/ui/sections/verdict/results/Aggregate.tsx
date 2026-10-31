@@ -5,6 +5,7 @@ import { useVerdictGroup } from '@/store/portfolioSimulation';
 import { fmtEurK, fmtMonths } from '@/ui/format';
 import { AggregateTable, type AggColumn } from '@/ui/widgets/AggregateTable';
 import { StatRow } from '@/ui/widgets/cards';
+import { ScopeUnavailable } from '@/ui/widgets/ScopeUnavailable';
 import { SectionFrame } from '@/ui/zones/SectionFrame';
 import { ExcludedNote } from '../../economics/AggParts';
 import { AggBanner } from './AggBanner';
@@ -41,7 +42,7 @@ export default function ResultsAggregate() {
       result={<>
         <p className="ac-muted">Consolidated outcome of the selection: {a.label} ({a.rows.length} planned product{a.rows.length > 1 ? 's' : ''}): the verdict
           of its distribution, the key figures, the uncertainty band, where the savings come from and the team shift.</p>
-        <AggBanner d={d} label={a.label} />
+        {group?.kind === 'unit' ? <ScopeUnavailable what="Probabilistic verdict" label={a.label} /> : <AggBanner d={d} label={a.label} />}
         <StatRow>
           <Kpi label="Net benefit" value={fmtEurK(t.net)} tone={t.net < 0 ? 'brick' : 'blue'} sub={`after ${fmtEurK(t.setup)} setup`} />
           <Kpi label="ROI" value={fmtRoiPct(t.roi)} tone={t.roi != null && t.roi < 0 ? 'brick' : 'teal'} sub="on setup investment" />

@@ -1,17 +1,17 @@
 import { useState } from 'react';
 import { criticalReport } from '@/controllers/report';
 import type { DisplayScope } from '@/domain/portfolio';
-import { useDisplayScope } from '@/store/consolidationHooks';
+import { useDisplayScope, useUnitNodes } from '@/store/consolidationHooks';
 import { useActiveProductId, useHasPortfolioContent, useProducts, useWaves } from '@/store/portfolioHooks';
 import { Callout, Panel } from '@/ui/widgets/cards';
 import { downloadText } from '../download';
-import { ProductOptions, WaveOptions } from './ScopeOptions';
+import { ProductOptions, scopeValue, splitScope, UnitOptions, WaveOptions } from './ScopeOptions';
 
-/** "portfolio" | "wave:<id>" | "product:<id>", the value of the report scope selector. */
+/** "portfolio" | "wave:<id>" | "unit:<id>" | "product:<id>", the value of the report scope selector. */
 const parse = (v: string): { scope: DisplayScope; productId?: string } => {
-  const [kind, id = ''] = v.split(':');
-  return kind === 'portfolio' ? { scope: { kind: 'portfolio' } } : kind === 'wave' ? { scope: { kind: 'wave', id } } : { scope: { kind: 'product' },
-    productId: id };
+  const { kind, id } = splitScope(v);
+  return kind === 'portfolio' ? { scope: { kind: 'portfolio' } } : kind === 'wave' || kind === 'unit' ? { scope: { kind, id } }
+    : { scope: { kind: 'product' }, productId: id };
 };
 
 /**
@@ -21,7 +21,7 @@ const parse = (v: string): { scope: DisplayScope; productId?: string } => {
 export function ReportPanel() {
   const [status, setStatus] = useState(''), [failed, setFailed] = useState(false), portfolio = useHasPortfolioContent();
   const display = useDisplayScope(), active = useActiveProductId(), products = useProducts(), waves = useWaves();
-  const initial = display.kind === 'portfolio' ? 'portfolio' : display.kind === 'wave' ? `wave:${display.id}` : `product:${active}`;
+  const initial = scopeValue(display, active), units = useUnitNodes();
   const [picked, setPicked] = useState<string | null>(null), value = picked ?? initial;
   const run = () => {
     const { scope, productId } = parse(value), r = portfolio ? criticalReport(new Date(), scope, productId) : criticalReport();
@@ -39,11 +39,12 @@ export function ReportPanel() {
             <select aria-label="Report scope" value={value} onChange={(e) => setPicked(e.target.value)}>
               <option value="portfolio">Portfolio</option>
               <WaveOptions waves={waves} />
+              <UnitOptions units={units} />
               <ProductOptions products={products.filter((p) => !p.archived)} />
             </select>
           </label>
-          {' '}A product gives the usual report of its effective case; the portfolio or a wave gives the consolidated report (economics by wave and product,
-            knowledge transfer).
+          {' '}A product gives the usual report of its effective case; the portfolio, a wave or a unit gives the consolidated report (economics by wave
+            and product, knowledge transfer).
         </p>
       )}
       <button type="button" className="ac-btn" onClick={run}>📄 Export critical-delivery report</button>

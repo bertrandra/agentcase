@@ -7,7 +7,7 @@
 
 ## 1. Principle
 
-1. **Result sections**: they follow the View. Portfolio / Wave = consolidated figures from the domain (`consolidate`, `portfolioHeadline`, `waveHeadline`, `selectionView`, `portfolioGantt`...); Product = today's behaviour, unchanged.
+1. **Result sections**: they follow the View. Portfolio / Wave / Unit = consolidated figures from the domain (`consolidate`, `groupOf`, `scopeHeadline`, `selectionView`, `portfolioGantt`...); Product = today's behaviour, unchanged.
 2. **Input sections**: with the Portfolio or a Wave in view, they show at the top a **read-only aggregated view** of the selection (one row per product, button **"Edit this product"**: controller `showProduct`, the View (**Show**) becomes that product and so does **Change**), then **the section itself, editable in place** (`InPlaceEdit`), bound to the **"Change"** choice of the top bar: one product (that product's section; its edits are overrides) or **All products** (the section on the **shared values**; its edits go to the common values; the products that keep their own value are named field by field with "Back to shared"). The entry team (and, in Knowledge hub, the domains and the preparation) stays per product: with All products, a hint only. See § 2.1.
 3. **The 91 sections are classified** (§ 4). No new financial formula in `ui/` (rule A8 extended: no `.reduce` in the widgets, hooks and aggregates of the aggregated view); no "synthetic aggregated case" (wrong for the glass ceiling, the overrides, the wave offsets).
 4. **A single product: nothing changes** (no banner, no DOM wrapper in `SectionHost`). The Product mode of the sections stays byte-for-byte identical.
@@ -17,7 +17,7 @@
 | Piece | Where | Role |
 |---|---|---|
 | Kind of each section | `ui/zones/data/sectionScope.json` + `ui/zones/sectionScope.ts` (`sectionKind`, `followsView`) | one entry per id (91); the test `tests/ui/section-scope.test.ts` requires exactly the catalogue ids |
-| `useViewScope()` | `store/viewScope.ts` | `{ kind: 'product'|'wave'|'portfolio', label, multi, productIds[] (planned, not archived), excludedIds[], waveId?, activeProductId, activeProductName }`, stable reference; inside a `ProductViewContext` the View is that product |
+| `useViewScope()` | `store/viewScope.ts` | `{ kind: 'product'|'wave'|'unit'|'portfolio', label, multi, productIds[] (planned, not archived), excludedIds[], waveId?, unitId?, activeProductId, activeProductName }` (the selection is `scopeMembers`, `domain/portfolio/scopeGroup.ts`), stable reference; inside a `ProductViewContext` the View is that product |
 | `ProductViewContext` | `store/productView.ts` (+ `ProductViewProvider`, `productDocOf`) | read-only view of another product: `useDoc`, `useCtx`, `useCaseResult`, `useSimulation`, `useActiveProduct`, `useActiveProductId`, `useFieldState`, `useSubsetField` read that product's resolved case instead of the active product's. Writes are not redirected |
 | `ReadOnlyScope` | `ui/widgets/ReadOnlyScope.tsx` | `fieldset disabled` + capture and stop of click / keyboard / change / input / submit / drop events + read-only message; `inert` as an option |
 | `ScopeBanner` | `ui/widgets/ScopeBanner.tsx`, rendered by `SectionFrame` | one sentence per kind, `aria-live="polite"` region, nothing with a single product nor in a per-product render |
@@ -39,12 +39,34 @@ Generic fallbacks per kind (Portfolio / Wave, section without an aggregate):
 
 ### 2.1 In-place editing ("Show" and "Change" lists)
 
-- Top bar: two native lists, **👁 Show** (`aria-label="Show"`: **Portfolio**, group "Waves" = "*wave name*", group "Products" = "*name* (*wave*)", "*name* (unscheduled)", suffix "(archived)") and **✏️ Change** (`aria-label="Change"`: **All products** then "*name*" per product; with a Wave in view, the wave's products first (group "Wave: X"), then "Other products" — the edited product may be outside the wave). Icons `aria-hidden`, one-line tooltips ("What you look at: …", "Where your changes go: …"). No "Editing:" chip.
+- Top bar: two native lists, **👁 Show** (`aria-label="Show"`: **Portfolio**, group "Waves" = "*wave name*", group "Units" = the unit tree indented by depth with the level in each option's accessible name, then "Unassigned" (B10b), group "Products" = "*name* (*wave*)", "*name* (unscheduled)", suffix "(archived)") and **✏️ Change** (`aria-label="Change"`: **All products** then "*name*" per product; with a Wave or a Unit in view, its products first (group "Wave: X" / "Unit: X"), then "Other products" — the edited product may be outside it). Icons `aria-hidden`, one-line tooltips ("What you look at: …", "Where your changes go: …"). No "Editing:" chip.
 - **Rule "Change follows Show"** (`controllers/displayScope.ts`): `showProduct` (Show = one product, or "Edit this product") = `setActiveProduct` + view `product` + scope `product`; `setDisplayScope` Portfolio / Wave sets the scope back to `all`. Choosing a product in **Change** = `setActiveProduct` + scope `product` (`chooseEditTarget`, not undoable); Show does not change (in a Product view, the shown product follows the edited product). Announcements: "Showing X", "Changing X" / "Changing all products".
 - The banner of the input sections says "Changing: all products (shared values)" in Portfolio / Wave with All products, otherwise "Changing: product X".
 - Product view + All products: historical behaviour (a key already overridden by the product stays written in its override). Only the Portfolio / Wave views write the common values directly.
 - The result sections (R-*) and P-* do not change.
 - `R-conso` without a registered aggregate: `ProductDrill` + explicit note "Consolidated view coming" (tracked in § 5).
+
+### 2.2 The Unit scope (phase B10b, docs/SPEC_BPMN.md § 21 F-B81)
+
+- **What it is.** Any node of the organisation's unit tree (business unit, department, sub-department… at any depth) or **Unassigned** is a View. It
+  holds the products the unit owns directly or through its sub-units (`productsOfUnit`, one owning unit per product, D-B39); waves stay an
+  independent grouping (a wave can span units).
+- **One path for "a set of products".** `domain/portfolio/scopeGroup.ts` is the single owner of a selection: `scopeMembers(pf, scope)` (label,
+  planned products, products left out) and `groupOf(consolidated, scope)` (the consolidation's own product views and their summed series). The
+  Portfolio, a Wave and a Unit all go through it, so every section's aggregate works at a unit with no unit-specific code: the classification of
+  § 4 is unchanged and each kind behaves at a unit as at a wave (`R-conso` = consolidated figures of the unit; `R-rollup` = one line per product of
+  the unit; `I-input` = the read-only synthesis of the unit's products, then in-place editing; `S-static` / `P-portfolio` = banner only). A unit that
+  owns every product gives the Portfolio's figures exactly.
+- **Banner and editing.** "Calculated on: Unit: Payments (2 planned products)"; "Changing: all products (shared values)" with Change = All
+  products (common editing applies to a Unit view as to a Wave view).
+- **Empty state.** A Wave or a Unit with no planned product shows the empty state in every section that follows the View (`SectionFrame` renders
+  `ui/zones/EmptyScope.tsx` in place of its zones: the reason and where to fix it; the section keeps its title and banner), not empty tables; an
+  input section keeps its in-place editor below.
+- **Not available at this scope.** The Monte Carlo distribution and the probabilistic verdict of a unit come with the strategy per unit (D-B40,
+  phase B10d): 🎲 Monte Carlo, 🧭 Decision and 📋 Results say "not available at the unit scope yet" (`ui/widgets/ScopeUnavailable.tsx`) next to the
+  unit's consolidated figures.
+- **Plan.** 📅 Plan (Gantt, WBS, OBS, RAM, histogram) is restricted to the unit's planned products; the wave Gantt lists the waves that hold them,
+  opened on them.
 
 ## 3. Recipe: adding the aggregate of a section (10 lines)
 
@@ -55,7 +77,7 @@ Generic fallbacks per kind (Portfolio / Wave, section without an aggregate):
 5. For a per-product render: `<ProductDrill Section={…} productIds={vs.productIds} />` (the component runs under `ProductViewContext`, read-only).
 6. Register **one line** in `ui/sections/aggregates/<group>.ts`: `'id': () => import('../<group>/<section>/Aggregate'),`.
 7. For a section that is already view-aware, register its own component (examples: `decision`, `gantt`).
-8. RTL test (real store, `threeProducts`): Portfolio, Wave and Product equal to the domain within 1e-9; unplanned product excluded with the warning; single product unchanged.
+8. RTL test (real store, `threeProducts`; `unitTreeThree` for a Unit): Portfolio, Wave, Unit and Product equal to the domain within 1e-9; unplanned product excluded with the warning; single product unchanged.
 9. Audit: `node ../tools/a11y.mjs --fixtures pf-three-products --sections "<label>"` (Portfolio and Wave are audited; the report goes to `test-results/a11y/report.json`).
 10. Set the section's state to DONE in the table of § 4 and remove it from the tracking of § 5.
 

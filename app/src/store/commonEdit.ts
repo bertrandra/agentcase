@@ -1,17 +1,17 @@
 /** @calc-zone product-resolution */
-import { effectiveTeam, isOverridden, parseRef, resolveCommon, type Portfolio, type Product, type SubsetField } from '@/domain/portfolio';
+import { effectiveTeam, isOverridden, parseRef, resolveCommon, scopeExists, type Portfolio, type Product, type SubsetField } from '@/domain/portfolio';
 import { subsetField } from './address/subset';
 import type { Doc, PortfolioDoc } from './types';
 
 /**
- * "Edit: All products" with a Portfolio or a Wave in view (2+ products): the case commands run on the COMMON case (`commonEditDoc`) and every change
+ * "Edit: All products" with a Portfolio, a Wave or a Unit in view (2+ products): the case commands run on the COMMON case (`commonEditDoc`) and every change
  * goes to the common values, whatever a product overrides (the entry team excepted: it is always the active product's). In a Product view,
  * "All products" keeps its historical meaning: the product's own (already overridden) keys stay on the product (spec 6.1, P2).
  */
 export function editsCommon(pf: PortfolioDoc): boolean {
   const d = pf.displayScope;
   if (pf.products.length < 2 || (pf.editScope ?? 'all') !== 'all' || !d || d.kind === 'product') return false;
-  return d.kind === 'portfolio' || pf.waves.some((w) => w.id === d.id);
+  return scopeExists(pf, d);
 }
 
 const activeOf = (pf: Portfolio): Product => pf.products.find((p) => p.id === pf.activeProductId) ?? (pf.products[0] as Product);

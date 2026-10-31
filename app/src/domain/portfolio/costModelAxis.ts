@@ -1,6 +1,7 @@
 /** @calc-zone exports */
 import { consolidate, type Consolidated } from './consolidate';
 import { calendarOf } from './calendar';
+import { groupOf } from './scopeGroup';
 import { keptMonths } from './timeline';
 import type { CostScope } from './costModelTypes';
 import type { Portfolio } from './types';
@@ -10,8 +11,8 @@ import type { ProductView, WaveView } from './waves';
 export interface Picked { c: Consolidated; views: ProductView[]; waves: WaveView[]; label: string; excluded: string[] }
 
 /**
- * Select the scope's products among the planned ones (archived and wave-less products are never planned). A product or wave that is not planned is an
- * error.
+ * Select the scope's products among the planned ones (archived and wave-less products are never planned). A product, wave or unit with nothing planned
+ * is an error.
  */
 export function pickScope(pf: Portfolio, scope: CostScope): Picked {
   const c = consolidate(pf), name = (id: string) => pf.products.find((p) => p.id === id)?.name ?? id;
@@ -23,6 +24,13 @@ export function pickScope(pf: Portfolio, scope: CostScope): Picked {
     if (!w) throw new Error('This wave does not exist.');
     if (!w.productIds.length) throw new Error(`Wave ${w.name} has no planned product: nothing to export.`);
     return { c, views: c.products.filter((v) => v.waveId === w.id), waves: [w], label: `Wave ${w.name}`, excluded };
+  }
+  if (scope.kind === 'unit') {   // its planned products (`groupOf`), under the waves that hold them (a wave can span units)
+    const g = groupOf(c, scope);
+    if (!g) throw new Error('This unit does not exist.');
+    if (!g.items.length) throw new Error(`Unit ${g.label} has no planned product: nothing to export.`);
+    const held = new Set(g.items.map((v) => v.waveId));
+    return { c, views: g.items, waves: c.waves.filter((w) => held.has(w.id)), label: `Unit ${g.label}`, excluded };
   }
   const v = c.products.find((x) => x.id === scope.id);
   if (!v) throw new Error(`Product ${name(scope.id)} is not planned (no wave, or archived): nothing to export.`);

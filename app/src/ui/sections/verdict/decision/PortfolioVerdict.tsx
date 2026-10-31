@@ -1,10 +1,10 @@
 import { runPortfolioSimulation } from '@/controllers/stressPortfolio';
-import type { VerdictGroup } from '@/domain/portfolio';
 import { VERDICT_META } from '@/domain/verdict';
 import { useScopeKpis } from '@/store/consolidationHooks';
-import { usePortfolioDecision, usePortfolioSimulation, useWaveDecisions } from '@/store/portfolioSimulation';
+import { usePortfolioDecision, usePortfolioSimulation, useWaveDecisions, type ScopeGroup } from '@/store/portfolioSimulation';
 import { Callout, Panel, StatRow } from '@/ui/widgets/cards';
 import { DataTable } from '@/ui/widgets/DataTable';
+import { ScopeUnavailable } from '@/ui/widgets/ScopeUnavailable';
 import { goSection } from '@/ui/uiState';
 import { CoreStats } from '../../portfolio/consolidation/CoreStats';
 import { fmtEur } from '../../stress/fmt';
@@ -36,16 +36,18 @@ function WaveVerdicts() {
 
 /**
  * The verdict of the display scope Portfolio / Wave: the Decision Intelligence rule applied to the portfolio (or wave) distribution of the
- * portfolio Monte Carlo, next to the deterministic net, ROI and payback of the same scope. A table gives the verdict of every wave.
+ * portfolio Monte Carlo, next to the deterministic net, ROI and payback of the same scope. A table gives the verdict of every wave. A Unit shows its
+ * deterministic figures; its verdict is not available at that scope yet (strategy per unit).
  */
-export function PortfolioVerdict({ group }: { group: VerdictGroup }) {
+export function PortfolioVerdict({ group }: { group: ScopeGroup }) {
   const { run } = usePortfolioSimulation(), d = usePortfolioDecision(group), kpis = useScopeKpis(), h = kpis?.headline;
   return (
     <>
       {h && (
         <StatRow><CoreStats h={h} netLabel={`Net · ${kpis.label}`} /></StatRow>
       )}
-      {d ? <Panel title={`Verdict — ${kpis?.label ?? 'scope'}`}><VerdictBox d={d} banner={<Stale />} /></Panel> : (
+      {group.kind === 'unit' ? <ScopeUnavailable what="Probabilistic verdict" label={kpis?.label ?? 'the unit'} />
+        : d ? <Panel title={`Verdict — ${kpis?.label ?? 'scope'}`}><VerdictBox d={d} banner={<Stale />} /></Panel> : (
         <p className="ac-muted"><em>{run ? 'This scope has no scheduled product in the simulation.' : (
           <>Run the portfolio simulation first (Portfolio → 🎲 Portfolio stress): the verdict is computed on the distribution, never on a point estimate.{' '}
             <button type="button" onClick={() => { void runPortfolioSimulation(); }}>▶ Run now</button></>)}</em></p>
