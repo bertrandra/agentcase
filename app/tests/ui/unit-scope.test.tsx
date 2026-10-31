@@ -4,6 +4,7 @@ import { afterEach, describe, expect, it, vi } from 'vitest';
 import { removeOrgUnit, setProductOwner } from '@/controllers/org';
 import { consolidate, scopeHeadline, UNASSIGNED_UNIT } from '@/domain/portfolio';
 import { appStore } from '@/store/instance';
+import { pfSimStore } from '@/store/portfolioSimulation';
 import { fmtEurK, fmtMonths } from '@/ui/format';
 import { uiStore } from '@/ui/uiState';
 import { kpi, LAZY, mountApp, pf, sectionReady } from '../helpers/portfolioUi';
@@ -51,11 +52,12 @@ describe('Show: the unit tree as display scopes', () => {
 });
 
 describe('Unit scope in the sections', () => {
-  it('a result section is calculated on the unit; the probabilistic verdict is not available at that scope', async () => {
-    unitTreeThree(); mountApp('decision');
+  it('a result section is calculated on the unit; without a run the unit\'s verdict invites to run it (no "not available" state any more)', async () => {
+    unitTreeThree(); pfSimStore.setState({ run: null, progress: null, params: null }); mountApp('decision');
     await sectionReady(/Decision Intelligence/);
     choose('unit:bu');
-    expect(await screen.findByText(/not available at the unit scope yet/, undefined, LAZY)).toBeTruthy();
+    expect(await screen.findByText(/Run the portfolio simulation first/, undefined, LAZY)).toBeTruthy();
+    expect(screen.queryByText(/not available at the unit scope/)).toBeNull();
     expect(banner()).toContain('Calculated on: Unit: Retail BU (2 planned products)');
   });
 

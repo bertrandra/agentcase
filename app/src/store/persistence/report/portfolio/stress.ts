@@ -1,6 +1,8 @@
 /** @calc-zone exports */
 import { fmtK } from '@/domain/format';
-import { pfDecision, type PfStress, type Portfolio, type ProductStress, type StressStats, type VerdictGroup, type WaveStress } from '@/domain/portfolio';
+import {
+  pfDecision, selectionStress, type PfStress, type Portfolio, type ProductStress, type StressStats, type VerdictGroup, type WaveStress,
+} from '@/domain/portfolio';
 import { VERDICT_META, type Verdict } from '@/domain/verdict';
 import { esc } from '../render';
 
@@ -13,16 +15,18 @@ export interface StressReport {
   reduction: number | null;
 }
 
-/** The stress block of a scope: the portfolio (every wave and product) or one wave (its own figures); null without a run. */
+/**
+ * The stress block of a scope: the portfolio (every wave and product), one wave or one unit (B10d: its products' draws added up, its own verdict and
+ * risk reduction), all read from `selectionStress` and `pfDecision`; null without a run or when the scope has no product in it.
+ */
 export function stressReport(pf: Portfolio, scope: VerdictGroup, extra: { run: PfStress; stale: boolean } | null | undefined): StressReport | null {
   if (!extra) return null;
-  const { run, stale } = extra, wave = scope.kind === 'wave' ? run.waves.find((w) => w.id === scope.id) : undefined;
-  if (scope.kind === 'wave' && !wave) return null;
+  const { run, stale } = extra, sel = selectionStress(run, scope, pf);
+  if (!sel) return null;
   const d = pfDecision(pf, run, scope);
   return {
-    draws: run.draws, seed: run.seed, rho: run.rho, stale, stats: wave ? wave.stats : run.stats, waves: wave ? [wave] : run.waves,
-    products: run.products.filter((p) => (wave ? p.waveId === wave.id : true)), verdict: d ? { verdict: d.verdict, confidence: d.confidence } : null,
-    reduction: wave ? null : run.diversification.reduction,
+    draws: run.draws, seed: run.seed, rho: run.rho, stale, stats: sel.stats, waves: sel.waves, products: sel.products,
+    verdict: d ? { verdict: d.verdict, confidence: d.confidence } : null, reduction: scope.kind === 'wave' ? null : sel.diversification.reduction,
   };
 }
 

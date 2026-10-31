@@ -25,14 +25,14 @@ export interface PortfolioReportData {
   kt: { rows: KnowledgeRow[]; totals: KnowledgeTotals; effects: WaveEffect[] };
   diagnostics: Issue[];
   hub: Portfolio['hub'];
-  /** the last portfolio Monte Carlo, when one exists (not for a unit yet) */
+  /** the last portfolio Monte Carlo read for the scope (portfolio, wave or unit), when one exists */
   stress: StressReport | null;
   logo?: { src: string; alt: string };
 }
 
 /**
  * The data of the portfolio report for a display scope other than a product ('portfolio', one 'wave' or one 'unit' of the organisation tree, F-B81);
- * null for an unknown wave or unit. The selection is the one owner's (`groupOf`); a unit's stress is not available yet (strategy per unit, B10d).
+ * null for an unknown wave or unit. The selection is the one owner's (`groupOf`); its stress block is `selectionStress`'s (B10d for a unit).
  */
 export function portfolioReportData(source: Portfolio, scope: DisplayScope, now: Date, stress?: StressInput): PortfolioReportData | null {
   const pf = corePortfolio(source), c: Consolidated = consolidate(pf), view = consolidationView(pf, c);
@@ -56,6 +56,6 @@ export function portfolioReportData(source: Portfolio, scope: DisplayScope, now:
     kt: { rows, totals: knowledgeTotals(rows), effects },
     diagnostics: all ? view.diagnostics : view.diagnostics.filter((d) => (!d.productId || (wave ? inScope : members).has(d.productId))
       && (!d.waveId || d.waveId === wave)),
-    hub: pf.hub, stress: scope.kind === 'unit' ? null : stressReport(source, scope, stress), ...reportLogo(pf.common),
+    hub: pf.hub, stress: stressReport(source, scope, stress), ...reportLogo(pf.common),
   };
 }

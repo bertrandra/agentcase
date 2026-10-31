@@ -7,6 +7,7 @@ import { Callout } from '@/ui/widgets/cards';
 import { ProductDrill } from '@/ui/widgets/ProductDrill';
 import { SectionFrame } from '@/ui/zones/SectionFrame';
 import { ExcludedNote } from '../../economics/AggParts';
+import { UnitRanking } from '../UnitRanking';
 import StrategiesDetail from './Detail';
 
 const help = (
@@ -17,8 +18,8 @@ const help = (
 const R = 'right' as const;
 
 /**
- * Strategy comparison — aggregate view (R-rollup): the recommended strategy of each product of the Portfolio / Wave with its ROI and TCO, the
- * roll-up, and the full section per product.
+ * Strategy comparison — aggregate view (R-rollup): the recommended strategy of each product of the Portfolio / Wave / Unit with its ROI and TCO,
+ * the roll-up, the ranking of the units below the View (B10d) and the full section per product.
  */
 export default function StrategiesAggregate() {
   const a = useStrategiesAggregate(), vs = useViewScope();
@@ -40,6 +41,7 @@ export default function StrategiesAggregate() {
         <Callout kind="blue"><strong>Recommendations:</strong> {a.mix.map((m) => `${m.label} for ${m.count} product${m.count > 1 ? 's' : ''}`).join(' · ')
           || 'none'}. Each product is evaluated on its own case
           and horizon; the roll-up line adds up the recommended strategies, with the ROI of the summed net and setup.</Callout>
+        <UnitRanking title="Ranking of units (decision per unit on the portfolio Monte Carlo)" />
         <ProductDrill Section={StrategiesDetail} productIds={vs.productIds} />
         <ExcludedNote excluded={a.excluded} />
       </>} />

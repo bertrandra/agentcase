@@ -36,6 +36,8 @@ export { pfStressFingerprint } from './stressFingerprint';
 export { clampRho, commonShock, idHash, productSeed } from './stressSeed';
 export type { Diversification, PfStress, PfStressJob, PfStressOpts, ProductStress, StressStats, WaveStress } from './stressTypes';
 export { pfDecision, groupDecision, type VerdictGroup } from './stressVerdict';
+export { selectionStress, type SelectionStress, type SelectionProduct } from './stressSelection';
+export { childUnitScopes, unitRanking, type UnitRankRow } from './unitRanking';
 export { selectionView, type SelectionView, type SelectionRow } from './selectionView';
 export { groupOf, scopeMembers, scopeExists, scopeKey, portfolioUnits, unitLabel, UNASSIGNED_UNIT, type Group, type GroupScope,
   type ScopeMembers } from './scopeGroup';

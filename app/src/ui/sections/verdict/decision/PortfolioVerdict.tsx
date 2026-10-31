@@ -4,10 +4,10 @@ import { useScopeKpis } from '@/store/consolidationHooks';
 import { usePortfolioDecision, usePortfolioSimulation, useWaveDecisions, type ScopeGroup } from '@/store/portfolioSimulation';
 import { Callout, Panel, StatRow } from '@/ui/widgets/cards';
 import { DataTable } from '@/ui/widgets/DataTable';
-import { ScopeUnavailable } from '@/ui/widgets/ScopeUnavailable';
 import { goSection } from '@/ui/uiState';
 import { CoreStats } from '../../portfolio/consolidation/CoreStats';
 import { fmtEur } from '../../stress/fmt';
+import { UnitRanking } from '../UnitRanking';
 import { VerdictBox } from './VerdictBox';
 
 function Stale() {
@@ -35,9 +35,9 @@ function WaveVerdicts() {
 }
 
 /**
- * The verdict of the display scope Portfolio / Wave: the Decision Intelligence rule applied to the portfolio (or wave) distribution of the
- * portfolio Monte Carlo, next to the deterministic net, ROI and payback of the same scope. A table gives the verdict of every wave. A Unit shows its
- * deterministic figures; its verdict is not available at that scope yet (strategy per unit).
+ * The verdict of the display scope Portfolio / Wave / Unit: the Decision Intelligence rule applied to the distribution of the scope in the portfolio
+ * Monte Carlo (a unit: its products' draws added up, B10d), next to the deterministic net, ROI and payback of the same scope. The ranking of the units
+ * below the scope (the top units at the Portfolio, the sub-units of a unit) and, outside a unit, the verdict of every wave follow.
  */
 export function PortfolioVerdict({ group }: { group: ScopeGroup }) {
   const { run } = usePortfolioSimulation(), d = usePortfolioDecision(group), kpis = useScopeKpis(), h = kpis?.headline;
@@ -46,13 +46,13 @@ export function PortfolioVerdict({ group }: { group: ScopeGroup }) {
       {h && (
         <StatRow><CoreStats h={h} netLabel={`Net · ${kpis.label}`} /></StatRow>
       )}
-      {group.kind === 'unit' ? <ScopeUnavailable what="Probabilistic verdict" label={kpis?.label ?? 'the unit'} />
-        : d ? <Panel title={`Verdict — ${kpis?.label ?? 'scope'}`}><VerdictBox d={d} banner={<Stale />} /></Panel> : (
+      {d ? <Panel title={`Verdict — ${kpis?.label ?? 'scope'}`}><VerdictBox d={d} banner={<Stale />} /></Panel> : (
         <p className="ac-muted"><em>{run ? 'This scope has no scheduled product in the simulation.' : (
           <>Run the portfolio simulation first (Portfolio → 🎲 Portfolio stress): the verdict is computed on the distribution, never on a point estimate.{' '}
             <button type="button" onClick={() => { void runPortfolioSimulation(); }}>▶ Run now</button></>)}</em></p>
       )}
-      {run && <WaveVerdicts />}
+      <UnitRanking />
+      {run && group.kind !== 'unit' && <WaveVerdicts />}
       <p className="ac-muted">Same rules as for a product, applied to the distribution of the scope; P10 floor on the sum of the setups; the bar uplift is the
         average
         of the products weighted by entry headcount. Details in{' '}

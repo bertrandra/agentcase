@@ -9,16 +9,20 @@ import { resolveProduct } from './resolve';
 import { scheduledProducts } from './timeline';
 import type { Portfolio } from './types';
 
+/** Correlation of a product's draws with a group's draws, rounded to 3 decimals (as every table shows it). */
+export const corr3 = (d: number[], ref: number[]): number => +mcPearson(d, ref).toFixed(3);
+
 /** (P90 - P10) / |P50|, null when the median is 0: the relative width, comparable between a product and the portfolio. */
 export const relSpreadOf = (s: { p10: number; p50: number; p90: number }): number | null => (s.p50 === 0 ? null : (s.p90 - s.p10) / Math.abs(s.p50));
 
 /** The shared definition of the stats (single-case `mcStats`) plus the relative spread; `sorted` is the ascending copy. */
-function statsOf(outcomes: number[], seed: number): { sorted: number[]; stats: StressStats } {
+export function statsOf(outcomes: number[], seed: number): { sorted: number[]; stats: StressStats } {
   const { sorted, stats } = mcStats(outcomes, seed);
   return { sorted, stats: { ...stats, relSpread: relSpreadOf(stats) } };
 }
 
-const sum = (cols: number[][], n: number): number[] => {
+/** Draw-by-draw sum of the products' draws, in the order given (the one sum behind the portfolio, a wave and a unit). */
+export const sumDraws = (cols: number[][], n: number): number[] => {
   const out = new Array<number>(n).fill(0);
   for (const c of cols) for (let i = 0; i < n; i++) out[i]! += c[i]!;
   return out;
@@ -48,12 +52,11 @@ export function pfStressJob(pf: Portfolio, o: PfStressOpts): PfStressJob {
         cutOutcome(s, r.rows.length, L)).outcomes;
     },
     finish() {
-      const unsorted = sum(draws, n), total = statsOf(unsorted, o.seed);
+      const unsorted = sumDraws(draws, n), total = statsOf(unsorted, o.seed);
       const per = plan.map((s, i) => ({ s, d: draws[i] as number[], st: statsOf(draws[i] as number[], o.seed).stats }));
-      const sums = new Map(pf.waves.map((w) => [w.id, sum(per.filter((x) => x.s.wave.id === w.id).map((x) => x.d), n)] as const));
-      const r3 = (d: number[], ref: number[]) => +mcPearson(d, ref).toFixed(3);
+      const sums = new Map(pf.waves.map((w) => [w.id, sumDraws(per.filter((x) => x.s.wave.id === w.id).map((x) => x.d), n)] as const));
       const products: ProductStress[] = per.map(({ s, d, st }) => ({ id: s.product.id, name: s.product.name, waveId: s.wave.id, month0: s.month0, stats: st,
-        r: r3(d, unsorted), rWave: r3(d, sums.get(s.wave.id) as number[]) }));
+        r: corr3(d, unsorted), rWave: corr3(d, sums.get(s.wave.id) as number[]), perDraw: d }));
       const waves: WaveStress[] = pf.waves.flatMap((w) => {
         const mine = per.filter((x) => x.s.wave.id === w.id);
         if (!mine.length) return [];
