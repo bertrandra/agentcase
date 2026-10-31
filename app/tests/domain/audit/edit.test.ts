@@ -3,7 +3,8 @@ import { tmpdir } from 'node:os';
 import { join } from 'node:path';
 import { afterAll, describe, expect, it } from 'vitest';
 import {
-  editCatalog, editElementAudit, effectiveCatalog, exportAuditDoc, hasAudit, proposedTools, readAudit, setAuditHeader, SHIPPED_TOOLS, withoutAudit,
+  caseCopy, editCatalog, editElementAudit, effectiveCatalog, exportAuditDoc, hasAudit, proposedTools, readAudit, setAuditHeader, SHIPPED_AS_OF,
+  SHIPPED_REVIEW, SHIPPED_TOOLS, shippedTool, VERIFICATIONS, withoutAudit,
 } from '@/domain/audit';
 import { catalogueProcess, serialize } from '@/domain/process';
 import { parseBpmn } from '@/store/persistence/bpmn/read';
@@ -60,6 +61,24 @@ describe('tool catalogue (F-B23–F-B26, D-B12)', () => {
     expect(test.every((t) => t.capabilities.includes('Test'))).toBe(true);
     expect(proposedTools(effectiveCatalog({ caseTools: [] }), 'Run / support').map((t) => t.code)).toContain('pagerduty');
     expect(proposedTools(effectiveCatalog({ caseTools: [] }), 'Test', 'play').map((t) => t.code)).toEqual(['playwright']);
+  });
+  it('is verified against public sources, the owner sign-off pending: each entry dated and checked, alphabetical within its category', () => {
+    expect(SHIPPED_REVIEW).toMatch(/^Verified \d{4}-\d{2}-\d{2} against public sources; owner sign-off pending/);
+    expect(SHIPPED_REVIEW).not.toMatch(/DRAFT|needs the owner|approved/);
+    for (const t of SHIPPED_TOOLS) {
+      expect(VERIFICATIONS, t.code).toContain(t.verification);
+      expect(t.asOf! <= SHIPPED_AS_OF && /^\d{4}-\d{2}-\d{2}$/.test(t.asOf!), t.code).toBe(true);
+      if (t.verification !== 'verified') expect(t.note, t.code).toBeTruthy();
+    }
+    const cats = SHIPPED_TOOLS.map((t) => t.category).filter((c, i, all) => i === 0 || all[i - 1] !== c);
+    expect(new Set(cats).size).toBe(cats.length);   // one block per category, never interleaved
+    for (const c of cats) {
+      const names = SHIPPED_TOOLS.filter((t) => t.category === c).map((t) => t.name);
+      expect(names, c).toEqual([...names].sort((a, b) => a.localeCompare(b, 'en')));
+    }
+    const copy = caseCopy(shippedTool('jira')!);   // the case's copy drops what the XSD has no attribute for
+    expect([copy.source, copy.verification, copy.note]).toEqual([undefined, undefined, undefined]);
+    expect(shippedTool('opsgenie')).toBeUndefined();   // end of sale 2025-06-04: removed in the 2026-10-31 check
   });
   it('a client-specific tool is kept in the case and offered for its capability; a retired shipped tool is not proposed; removal empties it', () => {
     const tool = { code: 'bench', name: 'In-house bench', capabilities: ['Test'], licence: [], aiFeatures: [], integration: ['manual'], hosting: [],

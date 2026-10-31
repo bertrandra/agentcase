@@ -2,7 +2,7 @@
 import { mapElements } from '../process/defaultProcess';
 import { without } from '../process/partial';
 import { attr, kid, kids, NS, withAttrs, withChildren, type XDocument, type XElement } from '../process/xml';
-import { shippedTool, SHIPPED_AS_OF } from './catalog';
+import { caseCopy, shippedTool, SHIPPED_AS_OF } from './catalog';
 import { collabExtChild, readAudit } from './read';
 import { catalogXml, onCollaboration, withExtChild } from './write';
 
@@ -38,7 +38,7 @@ export function withoutAudit(d: XDocument): XDocument {
 export function withAuditMarked(d: XDocument): XDocument {
   const a = readAudit(d), own = new Set(a.caseTools.map((t) => t.code));
   const used = [...new Set([...a.elements.values()].flatMap((x) => x.tools.map((t) => t.ref)))].filter((c) => !own.has(c));
-  const extra = used.map(shippedTool).filter((t) => t !== undefined).map((t) => { const c = { ...t }; delete c.source; return c; });
+  const extra = used.map(shippedTool).filter((t) => t !== undefined).map(caseCopy);
   const cat = catalogXml([...a.caseTools, ...extra], a.catalogAsOf ?? SHIPPED_AS_OF);
   let doc = extra.length ? onCollaboration(d, (c) => withExtChild(c, 'toolCatalog', cat)) : d;
   const root = mapElements(doc.root, (e) => (isAc(e, 'process') ? withAttrs(e, { containsAudit: 'true' }) : e));

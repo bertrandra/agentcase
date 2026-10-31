@@ -4,8 +4,8 @@ export * from './types';
 export { AUDIT_BLOCKS, AUDIT_FIELDS, AUTOMATION_LEVELS, BLOCK_LABELS, FIELD_BY_NAME, checkValue, type AuditBlock, type AuditField, type FieldKind }
   from './fields';
 export { readAudit, hasAudit, collabExtChild } from './read';
-export { SHIPPED_AS_OF, SHIPPED_REVIEW, SHIPPED_TOOLS, CAPABILITY_TOKEN, capabilityKey, catalogJson, catalogUpdated, effectiveCatalog, proposedTools,
-  shippedTool } from './catalog';
+export { SHIPPED_AS_OF, SHIPPED_REVIEW, SHIPPED_TOOLS, CAPABILITY_TOKEN, capabilityKey, caseCopy, catalogJson, catalogUpdated, effectiveCatalog,
+  proposedTools, shippedTool } from './catalog';
 export { applyElementOp, emptyAudit, observationOk, toolUseOk, type ElementOp } from './ops';
 export { editElementAudit, patchedHeader, resourceIds, setAuditHeader, type HeaderPatch } from './edit';
 export { editCatalog, toolOk, type CatalogOp } from './editCatalog';

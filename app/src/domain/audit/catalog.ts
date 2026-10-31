@@ -7,14 +7,22 @@ import type { AuditModel, CatalogTool } from './types';
  * read-only; a case holds its own entries in `ac:toolCatalog` (client-specific tools, shipped tools edited or retired for the case). The
  * effective catalogue is the shipped one with the case's entries laid over it by code: a newer shipped catalogue never overwrites them.
  */
-interface ShippedFile { asOf: string; review: string; tools: Omit<CatalogTool, 'clientSpecific' | 'retired' | 'asOf'>[] }
+interface ShippedFile { asOf: string; review: string; tools: Omit<CatalogTool, 'clientSpecific' | 'retired'>[] }
 const FILE = shipped as ShippedFile;
 export const SHIPPED_AS_OF = FILE.asOf;
-/** The review note of the shipped catalogue (it is a draft until the owner reviews it). */
+/** The status note of the shipped catalogue (verified against public sources on its date; the owner's sign-off is pending until recorded). */
 export const SHIPPED_REVIEW = FILE.review;
-export const SHIPPED_TOOLS: readonly CatalogTool[] = FILE.tools.map((t) => ({ ...t, asOf: FILE.asOf, clientSpecific: false, retired: false }));
+/** Each entry is dated by its own check (`asOf`), the file's date otherwise. */
+export const SHIPPED_TOOLS: readonly CatalogTool[] = FILE.tools.map((t) => ({ ...t, asOf: t.asOf ?? FILE.asOf, clientSpecific: false, retired: false }));
 const SHIPPED_BY_CODE = new Map(SHIPPED_TOOLS.map((t) => [t.code, t]));
 export const shippedTool = (code: string): CatalogTool | undefined => SHIPPED_BY_CODE.get(code);
+
+/** An entry as a case keeps it: without what only the shipped catalogue carries (source, verification, note: the XSD has no such attributes). */
+export function caseCopy(t: CatalogTool): CatalogTool {
+  const c = { ...t };
+  delete c.source; delete c.verification; delete c.note;
+  return c;
+}
 
 const memo = new WeakMap<readonly CatalogTool[], CatalogTool[]>();
 /** The effective catalogue of a case: shipped entries (replaced by the case's entry of the same code) then the case's other entries. */
