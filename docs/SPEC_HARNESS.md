@@ -1,28 +1,32 @@
-# AgentCase — Specification: assessment baseline, agentic harnesses and the calculation chain
+# AgentCase — Specification: from the customer's as-is to the scaled transformation (scope, assessment, target, pilot, scale, run)
 
-> Status: **draft for the owner's review (2026-10-31)**. Base: `main` after v21.6.0 + SPEC_FIXES lot X0.
-> Related: [SPEC_BPMN.md](SPEC_BPMN.md) § 15 (audit), § 16 (organisation), § 19 (programme), § 21 (organisation × portfolio),
-> [SPEC_MULTI_PRODUIT.md](SPEC_MULTI_PRODUIT.md) (waves, consolidation), [SPEC_FIXES.md](SPEC_FIXES.md) (FX-D2, FX-D6, FX-D14).
-> Rules unchanged: one owner per figure in `src/domain`, every document change an undoable command, view state never undoable, existing figures
-> identical unless recorded in DEVIATIONS.md, files ≤ 150 lines, one PR per lot on green CI.
+> Status: **draft for the owner's review (2026-10-31)**, second version (the owner's six steps). Base: `main` after v21.6.0 + SPEC_FIXES lot X0
+> + the Process diagram options. Related: [SPEC_BPMN.md](SPEC_BPMN.md) § 15 (audit), § 16 (organisation, "who does what"), § 19 (programme),
+> § 21 (organisation × portfolio), [SPEC_MULTI_PRODUIT.md](SPEC_MULTI_PRODUIT.md) (waves, consolidation), [SPEC_FIXES.md](SPEC_FIXES.md) (FX-D2,
+> FX-D6, FX-D7, FX-D14). Rules unchanged: one owner per figure in `src/domain`, every document change an undoable command, view state never
+> undoable, existing figures identical unless recorded in DEVIATIONS.md, files ≤ 150 lines, one PR per lot on green CI.
 
-## 1. The engagement story the model must follow
+## 1. The engagement, step by step
 
-| Step | What happens with the customer | Model status | What the model knows |
+| Step | What happens with the customer | Model status | What the model computes |
 |---|---|---|---|
-| 1. First simulation | Pre-sale / framing: a first business case of the transformation | **Simulated** | Catalogue activities on the selected scope (activity level, as today), team, rates, curve; defaults where nothing is known |
-| 2. Assessment | Audit of a **sample** of the scope's activities: interviews, tools, observations | **Assessed** | Observed values on the sampled activities, **extrapolated** to the rest of the scope by stratum (§ 5); the as-is is **frozen as the baseline** at the gate |
-| 3. Pilot | The **pilot scope**: a slice of the selected scope (one harness on a few activities of one product or team) | **Piloted** | Measured KPIs of that slice: its harness capability and adoption are evidence, not assumption |
-| 4. Scale | **Waves over the selected scope minus the pilot scope**, slice by slice | **Scaled** | Every slice of the scope with its wave, harness and go-live date |
+| 1. **As-is scope** | The customer's perimeter today: organisation, teams, products, activities, with the **as-is numbers** (FTE, rates, locations, volumes) | — | The as-is cost of the perimeter, per cell (§ 4) |
+| 2. **Full transformation simulation** | A first business case of transforming the whole perimeter | **Simulated** | Exactly what the case and 📅 Plan compute today (§ 5) |
+| 3. **Assessment** | A **sampled or full audit** of the perimeter, based on its organisation and activities, **priced** before it is sold | **Assessed** | The audit's price, days and expected confidence per option; after the audit, the baseline (audited + extrapolated values), frozen (§ 6) |
+| 4. **Target scope** | What will be transformed: organisation, product, activities **at any level**, down to **part of a team on one activity** | (Assessed) | The target cells, the harnesses covering them, the business case of the target (§ 7) |
+| 5. **Pilot** | A selected subset of the target | **Piloted** | The pilot's business case and plan; its measured KPIs (§ 8) |
+| 6. **Scale** | Waves over `target − pilot`; then the **run**: the customer runs it, the run is **shared**, or the run is **fully external** | **Scaled** | The scaled business case, per wave, slice, harness, unit, portfolio, and per run model the customer's and the provider's P&L (§ 9) |
 
-The **agentic transformation starts after the assessment**: no harness is built and no agentic saving is counted before the Assessed gate, except in
-the Simulated status where the whole chain is a simulation (today's behaviour).
+**Cell** — the smallest unit of scope: one **activity** performed by one **team** for one **product** (`c = (p, i, τ)`), with the FTE the team
+spends on it. Every scope of this spec (perimeter, sample, target, pilot, wave slice) is a set of cells, possibly with a **fraction** of a cell
+(`φ_c ∈ (0, 1]`: "3 of the 8 developers" on that activity).
 
-**Selected scope** = the in-scope activities of each product, as today. It is the frame of everything: the audit samples it, the pilot takes a slice
-of it, the waves deploy the rest (`selected scope − pilot scope`), and the figures count it.
+**Selection rule** — a scope is stored as a rule, not as a list of cells, so it follows the model's edits: include / exclude by **unit** (and its
+sub-units), **team**, **product**, **phase**, **activity**, **harness** or one **cell**, each with an optional fraction. The rule is resolved to
+cells by one owner (`scope/cells.ts`, new).
 
-**Harness** = an agentic system (agents + tools + guardrails + context) that automates part of the work of **several activities**. It is owned at
-any level: a **product**, an **organisation unit** (a shared service, a department) or the **portfolio**. One harness can serve several products.
+**Harness** — an agentic system (agents + tools + guardrails + context) that automates part of the work of **several cells**, owned by a
+**product**, an **organisation unit** (a shared service) or the **portfolio**; one harness can serve several products.
 
 ## 2. Today's calculation chain (what exists, file by file)
 
@@ -89,218 +93,229 @@ net(t)        = grossSav(t) − setup(t);   NPV at the case rate, payback = firs
 - Calibration proposes new parameters **only for the audited activities themselves** (effort scaled by the observed hours, rework probability,
   automation → AI authority); an activity that was not audited keeps its catalogue values. There is no sample and no extrapolation.
 
-## 3. The new layers and where their data sits
+### 2.7 Who does what today (`org/views.ts`, F-B38) — a view, no figure reads it (FX-D7)
 
-All stored data stays in the case's BPMN document (D-B26): it travels with the case file and the `.bpmn` export. **Figures are never stored.**
+An activity's effort is split evenly between its RACI **Responsible** roles (`rShare`); each role's share is carried by the teams that provide
+its team skill to the product, in proportion to their FTE on that skill (`fteOn` = the team's lines on the skill × its share of the product).
+That is already the **cell** of this spec, in effort points, not yet in FTE or euros.
 
-| Layer | Data | Where it sits | Owner in `src/domain` |
+### 2.8 Engagement and commercial models today (`engagement.ts`, `pdc/commercial.ts`)
+
+One engagement context per case — **STA** (staff augmentation), **MSI**, **MSC** (managed service, full control) — sets the ramp, the glass
+factor and the billable share of the setup (`setupBillable`). The Commercial screen compares four models on the engine's years: **ET** (effort &
+tools: human FTE × day rate + pass-through with a markup), **AAH** (AI-augmented humans: uplifted day rate), **AGS** (Agentshore: human + billed
+share of agent capacity × a capacity price), **GS** (gain sharing: discounted baseline + a share of the savings), each with revenue, cost, margin
+and the client's saving. It is one context and one model for the whole case and the whole horizon; it does not move the headline.
+
+## 3. Where the data sits
+
+All stored data stays in the case's BPMN document (D-B26), so it travels with the case file and the `.bpmn` export. **Figures are never stored.**
+
+| Data | Where it sits | Owner in `src/domain` |
+|---|---|---|
+| Perimeter (step 1): units, teams (lines: skill, grade, location, FTE), products, activities, RACI, as-is numbers | As today: organisation part of the **common** document (units, teams, owners, B10a), process part (activities, RACI), form values (rates, volumes) | `org/*`, `process/*` |
+| Status per product (`Simulated / Assessed / Piloted / Scaled`, date) | Organisation part: `ac:caseStatus product status asOf` | `org/status.ts` (new) |
+| Scopes as rules: **perimeter**, **audit sample**, **target**, **pilot**, **wave slices** | Organisation part: `ac:scope id kind="perimeter|sample|target|pilot|slice"` with `ac:include` / `ac:exclude` (`unit`, `team`, `product`, `phase`, `activity`, `harness`, `cell`, `share`) | `scope/cells.ts` (new) |
+| Audit options and price parameters (days per unit, auditor rate, expenses) | Audit header in the collaboration: `ac:auditPlan` with `ac:option` (full / sample n / sample coverage %) and the chosen one | `audit/pricing.ts` (new) |
+| Sample drawn (seed, strata, drawn cells) | `ac:sample seed strata` with `ac:sampled cell="P1/A017/T3"` | `audit/sample.ts` (new) |
+| Baseline (as-is, frozen at the Assessed gate) | A second `bpmn:process` `ac:baseline="true" frozenAt` in the **product's** document; the audit moves onto its elements (per product: settles FX-D6) | `process/baseline.ts` (new) |
+| Link to-be → as-is | `ac:baselineRef` on each to-be task | `process/baseline.ts` |
+| Harness (owner, agents, tools, capability, build plan, run cost lines) | Organisation part: `ac:harness id owner` with `ac:agentRef`, `ac:toolRef`, `ac:capability`, `ac:build`, `ac:run` | `org/harness.ts` (new) |
+| Coverage (which cells a harness serves) | `ac:harnessRef` on each to-be activity (all its cells), narrowed by a rule on the harness when only some teams use it | `process/harnessCoverage.ts` (new) |
+| Run model per slice / harness / product (R1 transfer, R2 shared, R3 external), with a switch date and the commercial model | Organisation part: `ac:runModel scope="…" model="transfer|shared|external" from="…" commercial="ET|AAH|AGS|GS"` | `commercial/runModel.ts` (new) |
+| Waves (pilot = wave 0) and their slices | Portfolio data with the waves until FX-D14 (`pilot: true`, `slices: scope ids`); a single case stores them in its document | `portfolio/waves.ts`, `portfolio/slices.ts` (new) |
+
+## 4. Step 1 — the as-is scope
+
+**4.1 Cells and their FTE.** For product *p*, activity *i* with effort weight *w_i* (all activities of the process, in or out of scope), Responsible
+roles *R_i*, team *τ*:
+
+```
+load_piτ   = Σ_{r∈R_i} (w_i / |R_i|) × fteOn(τ, skill_r, p) / Σ_τ' fteOn(τ', skill_r, p)        effort points of the cell (the F-B38 rule)
+FTE_c      = FTE_τp × load_c / Σ_{c' of τ and p} load_c'                                       each team's FTE for p (its lines × its share of p) spread over its cells
+cost_c     = FTE_c × dayRate_τ × wd                                                             as-is cost a year (the team's own rate and location mix)
+```
+
+A product without RACI or teams has one implicit team (the product team, today's `teamIn`) and one cell per activity: `FTE_c = baseEtp × w_i / Σ w`.
+
+**4.2 Consistency.** Σ_c FTE_c = Σ_τ FTE_τp = baseEtp_p and Σ_c cost_c = baselineRun_p by construction (each team's FTE and rate stay its own). A team whose skills no activity uses is flagged
+(capacity without work); an activity whose Responsible skill no team provides is flagged (work without capacity).
+
+**4.3 Views.** The perimeter per unit / team / product / phase / activity: FTE and as-is cost, as a table and as the diagram's colours (§ 10).
+
+## 5. Step 2 — the full transformation simulation (today's case)
+
+Status **Simulated**. The perimeter is the target, one implicit harness covers every in-scope cell, one slice goes live at the product's month 0,
+and the run model is the case's engagement context: the business case and 📅 Plan are **exactly today's** (§ 2). This is the parity anchor of
+every later step: a case that defines nothing new keeps all its figures (gate of lot S2).
+
+## 6. Step 3 — the assessment: sampled or full audit, priced
+
+**6.1 Strata.** The perimeter's cells are cut into strata, phase × task type × team by default (HX-D9); a stratum is the unit of extrapolation.
+
+**6.2 Options and their price.** The tool prices several options before the audit is sold: **full audit** (every cell), **sample n cells**, or
+**sample to an effort coverage** (e.g. 60 %). For an option *O* with sampled cells *A_O*, the teams *Θ_O* and roles *Ρ_O* they touch:
+
+```
+fieldDays_O = d_frame + Σ_{τ∈Θ_O} d_team + Σ_{c∈A_O} (d_interview + d_observe) + Σ_{r∈Ρ_O} d_role
+days_O      = fieldDays_O × (1 + α_analysis) + d_report
+price_O     = days_O × auditorRate × (1 + expenses %)
+```
+
+Defaults (editable in the audit plan): `d_frame` 2, `d_team` 0.5 (workshop), `d_interview` 0.25, `d_observe` 0.25, `d_role` 0.25,
+`α_analysis` 30 %, `d_report` 3, auditor rate = the programme's role rate (target blend × 1.15) unless typed.
+
+For each option the tool shows days, price, **effort coverage** and the **expected confidence**: the half-width of the 80 % interval of the
+perimeter's as-is cost, from the strata's spread (a default coefficient of variation per stratum before any observation, the observed spread
+after). The chosen option becomes the **Assessment stage's cost line** (labour from resources, the B9b rule): it is in the business case, the
+programme histogram (auditors' lane) and the Plan.
+
+Example (illustrative): one product, 3 teams, 8 roles, 180 cells. Full audit: field 2 + 1.5 + 90 + 2 = 95.5 d, × 1.3 + 3 = 127.15 d, at €900
+a day = **€114,435**. Sample of 30 cells (about 60 % of the effort, drawn proportionally to effort): field 2 + 1.5 + 15 + 2 = 20.5 d, × 1.3 + 3 =
+29.65 d = **€26,685**, with a wider interval on the baseline.
+
+**6.3 Drawing the sample.** Cells drawn **with probability proportional to FTE** inside each stratum, at least one per stratum that has FTE,
+seeded (reproducible; `audit.drawSample`, undoable; the auditor can swap a cell, recorded). Drawn cells get the audit status *planned*.
+
+**6.4 Extrapolation.** For each observed field *x* (effort per item, hours, rework rate, as-is automation `a⁰`, human share) and stratum *s* with
+audited cells *A_s* (weights FTE_c):
+
+```
+ratio_s(x) = Σ_{c∈A_s} FTE_c · observed_c(x) / Σ_{c∈A_s} FTE_c · modelled_c(x)      efforts and hours
+mean_s(x)  = Σ_{c∈A_s} FTE_c · observed_c(x) / Σ_{c∈A_s} FTE_c                       shares and rates
+not audited c ∈ s:  x_c = modelled_c(x) × ratio_s(x)   or   mean_s(x);   a stratum with no audited cell keeps the declared value
+```
+
+Provenance per value: **audited**, **extrapolated**, **declared** (the evidence ledger, D-B33, grades them in that order). The spread inside a
+stratum becomes the Monte Carlo spread of its extrapolated values. Example: stratum "Build × Human × T3", 10 cells, 120 modelled days; 3 audited
+(50 modelled days) observed at 65 days and at `a⁰` 10 / 20 / 0 % (weights 20 / 20 / 10): `ratio` 1.3, the 7 others go from 70 to 91 days,
+`a⁰` = 12 % for them.
+
+**6.5 Gate.** `process.freezeBaseline` (undoable; re-baselining is an explicit command, HX-D7) writes the baseline with values and provenance,
+sets **Assessed**, and the team FTE per role can be recalibrated from it (calibration log, F-B29).
+
+## 7. Step 4 — the target scope and its business case
+
+**7.1 Target.** A selection rule at any level (§ 1): e.g. "unit Payments, phases Build and Test, except team T4", or "activity A017, team T3,
+share 0.375" (3 of 8 developers). Resolved to cells with their fraction `φ_c`; the **addressable FTE** is `F_target = Σ_{c∈target} φ_c FTE_c`.
+
+**7.2 Harnesses** cover target cells (§ 3). Per (product, harness) group, on the covered cells with weights `φ_c FTE_c`:
+
+```
+E_pH    = Σ_{c∈C_p(H)} φ_c FTE_c                                   covered FTE
+ā_pH    = Σ φ_c FTE_c · (a_i − a⁰_c)⁺ / E_pH                       agent share still to gain (a⁰ from the baseline, 0 when none)
+h̄_pH    = Σ φ_c FTE_c · h_i / E_pH                                 human supervision kept
+eff_pH  = min(100 − h̄_pH, min(techCap, ā_pH) × lifecyclePosture × glassFactor × khMult)
+```
+
+**7.3 Monthly automation.** With the slices *s* of § 8–9 (pilot, then waves), each going live at `g_s`, and the harness capability `c_H(T)` ∈ [0, 1]
+(0 before the harness is ready, rising to its maturity; it replaces today's single `harnessMat`):
+
+```
+agentVfte_p(T) = Σ_s (r_p(T − g_s)/100) × Σ_H  E_pHs × eff_pH/100 × c_H(T)        E_pHs: covered FTE of slice s; r = 0 before go-live
+```
+
+then the kernel of § 2.3 unchanged (`humanFte = baseEtp − agentVfte`, team cost, tokens, run team, taxes). Cells outside the target, or in the
+target but covered by no harness, keep their human cost: they save nothing (HX-D2).
+
+**7.4 Parity.** With no explicit target, the target is the whole perimeter, one implicit harness covers the in-scope cells, and its group values are
+today's averages applied to the whole team (`E = baseEtp`, `eff_pH = eff_p`): `agentVfte = baseEtp × r × eff`, **today's figures**. With an
+explicit target, automation applies to the **target's FTE only** (HX-D12): a case that defines a target moves on purpose (recorded deviation
+class, not a regression).
+
+**7.5 Harness costs.** Build `B_H` = labour from resources (roles × FTE × months × role rate, the B9b rule), at its owner's level; run `Run_H(T)`
+(platform, licences, harness team) from its ready date; tokens stay per product (they follow its agent runs). A shared harness is allocated to the
+products by covered FTE: `share_pH(T) = E_pH / Σ_{q live at T} E_qH` (HX-D3: or by all planned products with the owner carrying the part not yet
+live, or all at the owner's level).
+
+**7.6 Levels.** Cell (FTE freed, as-is vs to-be) → harness × product → product (kernel months + harness shares, NPV from its month 0) →
+**harness** (Σ FTE freed, attributable savings, build + run, its own NPV) → wave / slice → **unit** (its products + the harnesses it owns) →
+portfolio (each shared harness counted once). Waves, units and the portfolio sum on the calendar as today (`consolidate`, `scopeGroup`).
+
+**7.7 Worked example (illustrative).** Product P1, 15 FTE. Target: Build and Test of team T3 (6 FTE) and Review of team T1 (1.5 FTE): `F_target`
+7.5 FTE. Harness HA covers Build + Review (5 FTE, ā 60 %, h̄ 30 % → `eff` 60 %), HB covers Test (2.5 FTE, ā 50 %, h̄ 40 % → `eff` 50 %). At full
+adoption and capability: `agentVfte = 5 × 0.60 + 2.5 × 0.50 = 4.25` FTE of the 7.5 targeted; the 7.5 FTE outside the target are untouched. Month 6, adoption 40 %, HA ready,
+HB in pilot (`c` 0.5): `0.4 × (3 + 1.25 × 0.5) = 1.45` FTE.
+
+## 8. Step 5 — the pilot on a selected subset
+
+The pilot is a **scope rule inside the target** (`kind="pilot"`, e.g. "team T3, activity A017, share 0.375") and **wave 0**. It needs the harnesses
+covering it: they are built for the pilot (`ready_H` before the pilot starts). Timing: `g_pilot = max(Assessed gate, ready_H)`, duration = the
+pilot (`pilotTiming`, today's owner). The tool shows the pilot's own business case (its cells' FTE freed, its cost: harness build share, pilot
+labour, Assessment already sunk) and its plan. At the Decide gate the measured KPIs set `c_H` (and, HX-D8, the adoption curve of the waves) and the
+status becomes **Piloted**.
+
+## 9. Step 6 — scale on the scope, then run
+
+**9.1 Waves.** Waves 1..n hold **slices** of `target − pilot` (each a scope rule: by default product × harness, narrowable to teams, phases,
+activities, a share). Checks before the plan is accepted: every target cell (or fraction) is in exactly one slice — pilot or a wave; the rest is
+listed **not deployed** (it saves nothing); a double assignment is refused. A harness built for the pilot or an earlier wave serves the later
+slices without a second build. Slice go-live `g_s = max(waveStart + offset_s, ready_H(s))` (overridable); the wave rules (dependencies, the
+transformation team's capacity, which now counts harness builds and slice go-lives) are today's.
+
+**9.2 Run models.** After a slice goes live, who runs it — per slice, harness or product, with a switch date (e.g. provider-run for 12 months of
+hypercare, then transferred):
+
+| Model | Who runs what | Customer's cost | Provider's revenue / cost |
 |---|---|---|---|
-| Status | `Simulated / Assessed / Piloted / Scaled`, date, per product | Organisation part of the **common** document (`bpmn:collaboration` extension elements): `ac:caseStatus product="…" status asOf` (single case: "Product 1", like `ac:team`) | `org/status.ts` (new) |
-| Audit sample | The sampling plan: strata, sample size, seed, the drawn activities; each activity's provenance (audited / extrapolated / declared) | Audit header in the collaboration: `ac:sample seed strata size` with `ac:sampled ref="A017"`; provenance computed, never stored | `audit/sample.ts` (new) |
-| Baseline (as-is) | The as-is activities frozen at the Assessed gate: effort, human / agent shares, observed as-is automation `a⁰_i`, scope | A second `bpmn:process` `ac:baseline="true" frozenAt="…"` in the **product's** document (each product has its own as-is) | `process/baseline.ts` (new) |
-| Link to-be → as-is | Each to-be activity's origin (split / merged allowed) | `ac:baselineRef="A017 A018"` on the to-be task | `process/baseline.ts` |
-| Audit | Observations, tools, pain points, evidence | Moves from the working process to the **baseline's** elements (the audit describes the as-is); header and tool catalogue stay in the collaboration. Per product, which settles FX-D6 | `audit/*` |
-| Harness definition | id, name, **owner** (`product:P` / `unit:U` / `portfolio`), agents (references to agent resources), tools (catalogue references), capability curve, build plan (roles × FTE × months), run cost lines | Organisation part of the **common** document: `ac:harness id owner` with `ac:agentRef`, `ac:toolRef`, `ac:capability`, `ac:build`, `ac:run` | `org/harness.ts` (new) |
-| Coverage | Which activities a harness serves | `ac:harnessRef="H1"` on each **to-be** activity (process part: a product overriding its process may cover differently) | `process/harnessCoverage.ts` (new) |
-| Deployment slices | The pilot slice and each wave's slices: a slice = product × harness (default), optionally narrowed by phase or by an activity list | Portfolio data with the waves (until FX-D14): wave `slices: { product, harness, phases?, activities? }[]`, the pilot as wave 0 `pilot: true`; a single case stores its waves the same way in its document's programme values | `portfolio/slices.ts` (new) |
-| Go-live | When a slice goes live | Derived (§ 6), overridable per slice: `month` on the slice | `programme/harnessTiming.ts` (new) |
+| **R1 Transfer** (provider transforms, customer runs) | Customer: human team, run team, harness run, tokens, at the customer's rates | Internal costs + the transformation fees (setup billable share, hypercare) | Fees − the provider's transformation labour |
+| **R2 Shared run** | Provider: harness platform and agent operations (Run_H, run team, tokens); customer: the human delivery team | Its human team + the provider's run fee | Run fee (pass-through + markup, or capacity price) − the provider's run cost |
+| **R3 Full external run** | Provider: the whole scope as a managed service (humans and agents) | The service fee (ET, AAH, AGS or GS, today's commercial formulas) | Fee − the provider's full run cost (its team at its rates, agents, harness) |
 
-## 4. The calculation chain with harnesses (proposed)
-
-Notation: product *p*, activity *i* ∈ *S_p* (to-be scope), harness *H*, calendar month *T*, product month *t = T − month0_p*.
-`C_p(H)` = the activities of *S_p* covered by *H*. `U_p` = in-scope activities covered by no harness.
-
-### 4.1 Per (product, harness) group — replaces the single product average
+Each cost line *L* (human team, run team, harness run, harness build, tokens, infra, knowledge hub) has an **owner** per slice and month:
 
 ```
-E_pH        = Σ_{i∈C_p(H)} e_i                               effort share of p covered by H
-ā_pH        = Σ_{i∈C_p(H)} e_i · (a_i − a⁰_i)⁺ / E_pH         agent share still to gain (a⁰_i: as-is automation from the baseline, 0 when none)
-h̄_pH        = Σ_{i∈C_p(H)} e_i · h_i / E_pH                  human supervision kept
-eff_pH      = min(100 − h̄_pH, min(techCap, ā_pH) × lifecyclePosture × glassFactor × khMult)
+customerCost(T) = Σ_{L owned by the customer} L(T) + fee(T)
+providerCost(T) = Σ_{L owned by the provider} L(T)        (at the provider's rates and locations)
+providerMargin(T) = fee(T) − providerCost(T)
 ```
 
-The glass-ceiling and potential rules of § 2.1–2.2 are applied **per group**, with the same factors. Activities in `U_p` gain nothing: **no
-harness, no agentic saving**.
+The **customer's business case** (headline, NPV, payback) reads `customerCost`; the **provider's deal** reads `providerMargin` per slice, wave,
+harness, unit and portfolio (HX-D13). Today's engagement contexts map onto it (STA ≈ R1, MSI ≈ R2, MSC ≈ R3) and today's commercial view is the
+one-model, whole-case special case. Parity: without a run model, R1 with no fee, i.e. today's headline (the engine's own costs).
 
-### 4.2 Adoption × capability — the monthly automation of a product
-
-Two curves, both in [0, 1]:
-
-- **adoption** `r_p(t)/100` — the product team's change curve, exactly today's (ramps, HRI, curve family), started at the product's month 0;
-- **capability** `c_H(T)` — what the harness can do on the calendar: 0 before it is ready, then rising through pilot and industrialisation to its
-  maturity (it replaces today's single global `harnessMat`). Default shape: a ramp from 0.5 at ready date to 1 over `harnessRampMonths`; the pilot
-  harness takes its measured value when the status is Piloted.
-
-With deployment slices (§ 6), product *p*'s covered effort is split by slice *s* (the pilot slice, then the waves' slices), each with its go-live
-month `g_s`; `E_pHs` = the effort share of the activities of *s* covered by *H* (Σ_s E_pHs = E_pH). Adoption starts at each slice's go-live:
-
-```
-R_p(T)        = Σ_s (r_p(T − g_s)/100) × Σ_H  E_pHs × eff_pH/100 × c_H(T)          (r = 0 before go-live)
-agentVfte_p   = baseEtp_p × R_p(T)                    then the kernel of § 2.3 unchanged (humanFte, team cost, tokens, run team, taxes)
-```
-
-`eff_pH` is the rate of the whole group (§ 4.1): a slice only decides **when** its share of the effort starts, not **how much** it saves.
-
-Everything after `agentVfte` stays the one kernel (`econ`): only `r × eff` becomes `R_p(T)`.
-
-### 4.3 Harness costs
-
-| Cost | Rule | Booked |
-|---|---|---|
-| Build `B_H` | Labour from resources (the B9b rule): Σ roles FTE × months × wd/12 × role rate (target blend × 1.15), spread over the build activity | On the calendar at the build months, a programme line at the owner's level |
-| Run `Run_H(T)` | Harness platform (infra, licences, harness engineering team FTE × rate) from its ready date | Monthly |
-| Tokens | Stay per product (they follow the product's agent runs, § 2.3) | Product |
-| Infra today (`infraMonth`) | Becomes the run cost of the implicit harness (§ 4.5) | — |
-
-**Allocation of a shared harness** (owner = unit or portfolio) to the products, by covered effort, the B10 effort rule (D-B38):
-
-```
-share_pH(T) = coveredEffort_pH / Σ_{q live at T} coveredEffort_qH              coveredEffort_pH = Σ_{i∈C_p(H)} w_i (person-days)
-cost_p(T)  += share_pH(T) × (Run_H(T) + build amortisation_H(T))
-```
-
-Decision HX-D3 (§ 8): spread the build across products (amortised over the products' horizons) or carry it at the owner's level (then a product's
-NPV excludes it, the unit's and the portfolio's include it).
-
-### 4.4 Up the levels
-
-| Level | Figure | Rule |
-|---|---|---|
-| Activity | gained agent share `(a_i − a⁰_i)⁺`, harness | Read, not summed alone (activities are effort shares of a team) |
-| Harness × product | `E_pH`, `eff_pH`, FTE freed `baseEtp_p × E_pH × eff_pH × c_H × r_p`, cost share | View: "what H brings to p" |
-| Product | the kernel's months with `R_p(T)` + its harness cost shares | As today: NPV from its month 0, payback |
-| Harness | Σ_p FTE freed, Σ_p savings attributable `Σ_p grossSav_p × (E_pH eff_pH c_H / Σ_G E_pG eff_pG c_G)`, build + run cost, its own NPV | New view: a harness business case |
-| Wave | Σ products of the wave (unchanged) + the harnesses it deploys (their build in the wave's months) | `scopeGroup` |
-| Unit (OBS node) | Σ products the unit owns + the harnesses it owns (full cost when the owner carries it, HX-D3) | `scopeGroup` |
-| Portfolio | Σ products + Σ harness costs not allocated to products; each shared harness counted **once** | `consolidate` |
-
-### 4.5 Parity: every existing case keeps its figures
-
-Migration (schema v6): one **implicit harness `H0`** per product, owner = the product, covering every in-scope activity, `c_H0 ≡ 1`,
-one slice (the whole scope) going live at the product's month 0, run cost = today's `infraMonth`, build = 0 (the setup lines stay programme
-lines); `a⁰_i = 0`; no sample (every value declared); status **Simulated**; no baseline; today's product waves become waves of whole-scope
-slices. Then `E = 1`, `ā = avgAgent`, `h̄ = avgHuman`, `eff_pH0 = eff_p`, `R_p = r_p × eff_p`: **every figure identical** on the 107
-fixtures, the parallel run and excel-compat (gate of lot H2). A typed potential (fit off) applies to every group of the product.
-
-### 4.6 Worked example (illustrative numbers)
-
-Product P1, `baseEtp` 15 FTE, factors = 1. Harness **HA** (coding + review) covers 50 % of the effort, ā 60 %, h̄ 30 %; harness **HB** (tests)
-30 %, ā 50 %, h̄ 40 %; 20 % uncovered.
-
-- `eff_A = min(70, 60) = 60 %`, `eff_B = min(60, 50) = 50 %`.
-- At full adoption and capability: `R = 0.5 × 0.60 + 0.3 × 0.50 = 0.45` → 6.75 FTE of agentic capacity (today's single average would give
-  something else: it averages the uncovered 20 % in as well).
-- Month 6: adoption 40 %, HA ready (`c = 1`), HB in pilot (`c = 0.5`): `R = 0.4 × (0.30 + 0.15 × 0.5) = 0.15` → 2.25 FTE.
-- HA is shared with P2 (covered effort P1 600 d, P2 400 d), run €20k a month: P1 pays €12k, P2 €8k once both are onboarded; before P2 is
-  onboarded, P1 pays the whole run cost under HX-D3 (a); under (b) P1 pays €12k from the start and the owner carries P2's €8k until P2 goes live.
-
-## 5. Assessment by sampling
-
-The audit covers a **sample** of the selected scope; the baseline still needs a value for every activity. Rules:
-
-**5.1 Strata.** The scope is cut into strata: phase × task type by default (configurable: phase × harness candidate, phase × capability). A stratum
-is the unit of extrapolation: its activities are assumed to behave alike.
-
-**5.2 Drawing the sample.** Size *n* (or a target effort coverage, e.g. 60 %). Inside each stratum, activities are drawn **with probability
-proportional to effort** (the heavy activities carry the money), at least one per stratum that has effort, with a seed (reproducible; command
-`audit.drawSample`, undoable; the auditor can swap an activity, recorded). The drawn activities get the audit status *planned* (they show in the
-diagram's Audit colours and in 🔎 Audit's list).
-
-**5.3 Extrapolation to the activities not sampled.** For each observed field *x* (effort per item, hours, rework rate, as-is automation
-`a⁰`, human share) and each stratum *s* with audited activities *A_s*:
-
-```
-ratio_s(x)  = Σ_{i∈A_s} w_i · observed_i(x) / Σ_{i∈A_s} w_i · modelled_i(x)      (effort-weighted, ratios for efforts and hours)
-mean_s(x)   = Σ_{i∈A_s} w_i · observed_i(x) / Σ_{i∈A_s} w_i                       (shares and rates: a⁰, h, rework)
-not sampled i ∈ s:   x_i = modelled_i(x) × ratio_s(x)   or   x_i = mean_s(x)
-stratum with no audited activity: the catalogue value stays (provenance "declared")
-```
-
-Example (illustrative): stratum "Build × Human", 10 activities, 120 modelled days. The sample holds 3 of them (50 modelled days, 42 % of the
-stratum's effort); they are observed at 65 days in all and at as-is automation 10 %, 20 % and 0 % (weights 20, 20, 10 days). Then
-`ratio = 65 / 50 = 1.3`, so the 7 others go from 70 to 91 modelled days; `mean(a⁰) = (20×10 + 20×20 + 10×0) / 50 = 12 %` for the 7 others.
-
-Provenance per value: **audited** (sampled and observed), **extrapolated** (stratum rule), **declared** (catalogue / typed). The evidence ledger
-(D-B33) grades them in that order.
-
-**5.4 Uncertainty.** The spread of the observed ratios inside a stratum (effort-weighted standard deviation; a stratum with one observation takes a
-default spread) becomes the Monte Carlo spread of its extrapolated values: a bigger sample narrows the distribution, a heterogeneous stratum widens
-it. Coverage shown: by count, by effort, by stratum (strata without an observation are flagged before the gate).
-
-**5.5 Gate.** `process.freezeBaseline` writes the baseline process with the audited, extrapolated and declared values and their provenance;
-the to-be starts from it. The calibration log (F-B29) records the extrapolation rule and the sample.
-
-## 6. Deployment: pilot, then waves over the selected scope minus the pilot
-
-**6.1 Slices.** The unit of deployment is a **slice** = product × harness (the activities of that product the harness covers), optionally narrowed
-by phases or an activity list. The **pilot** is wave 0 with the pilot slice(s); the following waves hold slices of `selected scope − pilot scope`.
-
-**6.2 Checks (shown before the plan is accepted).** The slices partition the selected scope: every in-scope covered activity is in exactly one
-slice (pilot or a wave); an activity in no slice is listed as **not deployed** (it saves nothing); an activity in two slices is refused. A product
-can be in several waves (one slice per wave).
-
-**6.3 Timing.**
-
-- **Assessment stage** (programme, case level): between Calibrate and Validate; its gate freezes the baseline (§ 5.5) and sets Assessed.
-- **Harness build** (programme activity per harness, owner level): after the Assessed gate of the first product it serves (Simulated: from month 1,
-  today's behaviour); `ready_H` = build end. The pilot harness is built for the pilot.
-- **Pilot** (wave 0): `g_pilot = max(Assessed gate, ready_H)`; lasts the pilot (`pilotTiming`, today's owner); its measured KPIs set `c_H` and,
-  when the owner chooses (HX-D8), the adoption curve of the following waves.
-- **Waves 1..n**: start after the pilot's Decide gate (dependency `setupEnd` / start + lag, the existing wave rules); a slice goes live at
-  `g_s = max(waveStart + offset_s, ready_H(s))` (overridable). A harness built for the pilot or an earlier wave serves the later slices without a
-  second build.
-- The transformation team's capacity (`maxConcurrentSetups`) counts **harness builds and slice go-lives** as well as product setups.
-
-**6.4 Figures over time.** A product's saving grows slice by slice (§ 4.2): the pilot slice first, then its slices in later waves, each on its
-own adoption curve from its go-live. The cost of the not-yet-deployed scope stays the baseline cost. Waves, units and the portfolio sum as today.
-
-## 7. 📅 Plan with the pilot, waves and harnesses (views)
+## 10. 📅 Plan and the views, step by step
 
 | View | Addition |
 |---|---|
-| Gantt | Assessment stage and its gate; per harness a build bar (owner level, once); the pilot band (wave 0) and each wave's band with one bar per slice (product × harness) from its go-live; dependencies build → go-live, pilot Decide → wave 1 |
-| WBS | Programme → Assessment (sample, interviews, baseline) → Pilot → Waves → Wave k → slices; Harnesses → H → Build |
-| OBS | Under the owner unit (or the portfolio root): **Harness H** → harness team roles (FTE of its build and run) → agents (`ac:agentRef`) |
-| RAM | WBS × lanes + the harness teams + the auditors (assessment) |
-| Programme histogram | Assessment labour (auditors × sampled activities' interview days), harness build and run labour by role; a shared harness counted once at Unit / Portfolio scope, its share at Product scope |
-| Delivery histogram | FTE before / after per role **and per slice / harness**: the steps as each slice goes live |
-| Scope map (new) | Activities × (sampled?, provenance, harness, slice / wave, go-live), per product; the diagram's Colours → Harness / Wave / Audit, and a BPMN group per harness on export |
+| Gantt | Assessment stage (its option's days) and gate; harness build bars (owner level, once); pilot band (wave 0); each wave's band with one bar per slice from its go-live; run-model switch milestones (transfer dates) |
+| WBS | Programme → Assessment (sample, interviews, baseline) → Pilot → Waves → Wave k → slices; Harnesses → H → Build; Run → per run model |
+| OBS | Organisation → units → teams → roles (FTE), **with each team's cells in the target / pilot**; under the owner unit (or the portfolio root) **Harness H** → harness team → agents; the provider's run team when R2 / R3 |
+| RAM | WBS × lanes + auditors + harness teams + provider run roles |
+| Programme histogram | Auditors (assessment option), harness build and run labour by role, a shared harness counted once at Unit / Portfolio scope |
+| Delivery histogram | FTE before / after per role, per slice and per harness: the steps as each slice goes live; customer vs provider FTE under R2 / R3 |
+| Scope map (new) | Cells (product × activity × team): perimeter, sampled?, provenance, target / pilot / wave, harness, run model, FTE, as-is and to-be cost; filters at any level; the diagram's Colours → Target, Wave, Harness, Audit |
 
-## 8. Baseline (as-is) and comparisons
-
-- The baseline is read-only after the gate; the to-be (working process) is edited. A to-be activity with no `ac:baselineRef` is **new work**
-  (its effort is added to the to-be, not saved).
-- Comparison views: activity by activity (as-is effort / automation vs to-be, with provenance), per harness, per slice, per product.
-- `baselineRun` stays the team's cost (§ 2.3); when Assessed, the team's FTE per role can be calibrated from the baseline (calibration log, F-B29).
-- Evidence: Simulated = declared; Assessed = audited / extrapolated by provenance; Piloted = measured for the pilot slice.
-
-## 9. Decisions needed (the owner chooses)
+## 11. Decisions needed (the owner chooses)
 
 | ID | Question | Options (recommended first) |
 |---|---|---|
-| HX-D1 | Saving of a covered activity | (a) per group `eff_pH × c_H` as § 4.1–4.2; (b) keep the activity's own agent share, the harness only groups and costs |
-| HX-D2 | Uncovered in-scope activities | (a) no agentic saving (§ 4.1); (b) they keep the product's default automation (an implicit "product harness" stays) |
-| HX-D3 | Cost of a shared harness | (a) run and amortised build shared by covered effort among the products **live** at T (the first product pays all until the next goes live); (b) shared by the covered effort of **all planned** products, the part of those not yet live carried by the owner; (c) all at the owner's level |
-| HX-D4 | Capability curve | (a) per harness on the calendar, 0.5 at ready → 1 over N months, measured when Piloted; (b) a single maturity % (today) |
-| HX-D5 | Before the Assessed gate | (a) Simulated cases keep today's behaviour (H0); (b) no saving before the gate even in simulation |
-| HX-D6 | Monte Carlo | (a) one capability draw per harness per iteration, shared by its products (a natural correlation, replaces part of the single ρ, FX-D2); (b) per product as today |
+| HX-D1 | Saving of a covered cell | (a) per group `eff_pH × c_H` (§ 7.2–7.3); (b) the activity's own agent share, the harness only groups and costs |
+| HX-D2 | Target cells covered by no harness | (a) no agentic saving; (b) the product's default automation (an implicit product harness stays) |
+| HX-D3 | Cost of a shared harness | (a) by covered FTE among the products live at T; (b) by all planned products, the owner carrying the part not yet live; (c) all at the owner's level |
+| HX-D4 | Harness capability | (a) a curve per harness on the calendar, measured when Piloted; (b) a single maturity % (today) |
+| HX-D5 | Before the Assessed gate | (a) the full simulation keeps today's behaviour (§ 5); (b) no saving before the gate |
+| HX-D6 | Monte Carlo | (a) one capability draw per harness shared by its products (a natural correlation, FX-D2); (b) per product as today |
 | HX-D7 | Re-baselining | (a) explicit command, previous baseline kept as history; (b) overwrite |
-| HX-D8 | What the pilot measures for the waves | (a) the harness capability `c_H` only; (b) also the adoption curve of the following slices |
-| HX-D9 | Strata of the sample | (a) phase × task type; (b) phase × harness candidate; (c) chosen per case |
-| HX-D10 | Sample draw | (a) probability proportional to effort, ≥ 1 per stratum, seeded; (b) the auditor picks, the tool only checks coverage |
-| HX-D11 | Slice granularity | (a) product × harness (narrowable by phase / activities); (b) product × phase; (c) free activity lists |
+| HX-D8 | What the pilot measures for the waves | (a) the harness capability only; (b) also the adoption curve |
+| HX-D9 | Strata | (a) phase × task type × team; (b) phase × harness candidate; (c) per case |
+| HX-D10 | Sample draw | (a) proportional to FTE, ≥ 1 per stratum, seeded; (b) the auditor picks, the tool checks coverage |
+| HX-D11 | Slice granularity | (a) product × harness, narrowable to teams / phases / activities / share; (b) free cell lists |
+| HX-D12 | Base of the automation with an explicit target | (a) the target's FTE only (§ 7.4); (b) the whole team, as today |
+| HX-D13 | Headline under R2 / R3 | (a) the customer's cost including fees; (b) the engine's costs (today), fees shown apart |
+| HX-D14 | Audit price parameters | (a) the defaults of § 6.2, editable per case; (b) a price per cell only |
 
-## 10. Lots (one PR each)
+## 12. Lots (one PR each)
 
 | Lot | Content | Gate | Figures |
 |---|---|---|---|
-| H1 Data model | Schema v6: status, `ac:harness`, `ac:harnessRef`, sample, slices, baseline process, implicit H0 and whole-scope slices; XSD 1.x additions; migration | Round trips; XSD; 107 fixtures identical | None |
-| H2 Engine per group and slice | `R_p(T)` (§ 4.1–4.2) behind the kernel; per (product, harness, slice) views | **Parity on H0**: 107 fixtures, parallel run, excel-compat identical | None |
-| H2b Sampling | Strata, draw, extrapolation, provenance, coverage by stratum, Monte Carlo spreads (§ 5) | Hand-computed strata; no sample = today's figures | Opt-in (audited cases) |
-| H3 Harness costs | Build / run lines, allocation (HX-D3), harness business case | Cross-surface: Σ products + owner = portfolio | Opt-in (cases with harnesses) |
-| H4 Programme & Plan | Assessment stage, harness build, pilot (wave 0), waves of slices with the partition checks (§ 6.2), Gantt / WBS / OBS / RAM / histograms / scope map | Plan exports (MSPDI, workbook, report) | Opt-in |
-| H5 Screens | Harness panel (owner, coverage, capability, costs), diagram colours and groups, harness map | axe, parity 0 | None |
-| H6 Baseline | Freeze / re-baseline commands, audit on the baseline, comparisons, status | Undo property tests | None (comparison views) |
-| H7 Monte Carlo | Capability draws per harness (HX-D6) | Zero-variance run = consolidated net | Opt-in |
+| S1 Cells and scopes | Cells and their FTE / cost (§ 4), selection rules and their resolver, perimeter views, schema v6 (status, scopes, harness, run model elements), migration | Σ cells = team and baseline exactly on the 107 fixtures; round trips; XSD | None |
+| S2 Engine per group and slice | `agentVfte_p(T)` of § 7.3 behind the kernel, the implicit target / harness / slice | **Parity**: 107 fixtures, parallel run, excel-compat identical | None |
+| S3 Assessment | Audit options and pricing (§ 6.2), sample draw, extrapolation, provenance, Monte Carlo spreads, the Assessment stage's cost line, freeze baseline | Hand-computed prices and strata; no sample = today | Opt-in |
+| S4 Target and harnesses | Target rules, harness definition, coverage, costs and allocation, harness business case, scope map | Cross-surface: Σ products + owners = portfolio | Opt-in |
+| S5 Pilot and waves | Pilot (wave 0), slices of target − pilot, partition checks, go-live, Plan views (Gantt / WBS / OBS / RAM / histograms) | Plan exports (MSPDI, workbook, report) | Opt-in |
+| S6 Run models | R1 / R2 / R3 per slice with switch dates, customer and provider ledgers, commercial view per scope | Today's commercial view = the one-model special case | Opt-in |
+| S7 Screens | Scope map, audit plan, target / pilot / wave editors, harness panel, diagram colours (Target, Wave, Harness) and groups | axe, parity 0 | None |
+| S8 Monte Carlo | Harness capability draws, stratum spreads | Zero-variance run = consolidated net | Opt-in |
 
-Total about 15–18 days of agent work; H1 → H2 first (no figure moves), then H2b / H3 / H4, the first lots where a case with a sample, harnesses or slices differs.
+Total about 20 days of agent work. S1 → S2 first (no figure moves); then S3 → S4 → S5 → S6 follow the engagement's order.
