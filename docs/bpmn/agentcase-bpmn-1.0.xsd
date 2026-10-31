@@ -169,6 +169,10 @@
   <xsd:attribute name="setupCapacity" type="xsd:positiveInteger">
     <xsd:annotation><xsd:documentation>On the programme's bpmn:laneSet: at most this many products in setup at once (the transformation team's capacity, § 19.2).</xsd:documentation></xsd:annotation>
   </xsd:attribute>
+  <xsd:attribute name="wbsCode">
+    <xsd:annotation><xsd:documentation>On a task of the programme process: its WBS code, overriding the code derived from the tree (§ 19.8 F-B74, B9d); dotted digits.</xsd:documentation></xsd:annotation>
+    <xsd:simpleType><xsd:restriction base="xsd:token"><xsd:pattern value="[0-9]+(\.[0-9]+)*"/></xsd:restriction></xsd:simpleType>
+  </xsd:attribute>
   <xsd:attribute name="decisionRef" type="ac:tKey">
     <xsd:annotation><xsd:documentation>On a businessRuleTask: the id of the DMN decision it applies (F-B62).</xsd:documentation></xsd:annotation>
   </xsd:attribute>

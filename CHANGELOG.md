@@ -17,6 +17,25 @@ When releasing, follow [docs/BUMP_PROCEDURE.md](docs/BUMP_PROCEDURE.md) (§7 for
 
 ## [Unreleased]
 
+## [v20.33.0] 2026-10-31 — BPMN B9d: the 📅 Plan screen (programme Gantt, WBS, OBS / RAM, resource histogram, MS Project XML)
+
+### BPMN B9d — Plan screen: programme Gantt, WBS, OBS / RAM, resource histogram, MS Project export
+
+- **📅 Plan** (the 📅 Gantt / Timeline screen, same section id and menu label, DEV-B9D-PLAN-SCREEN): tabs Gantt, WBS, OBS / RAM and Histogram, views of the programme process
+  only; every row and bar opens its activity in the Process section (SPEC_BPMN § 19.8 F-B73…F-B78, decisions D-B34…D-B37).
+- **One programme Gantt** (`domain/programme/gantt.ts`): bars from the timing owner, finish-to-start links with lag from the sequence and message
+  flows, milestones from the decision gate and the engine's crossings, critical path. The Gantt band (`programRows`) and the portfolio Gantt
+  (`productWindow`) read it; no figure moves.
+- **WBS** (codes 1 / 1.2 / 1.2.3 / 1.2.3.4 from the tree, named deliverable per work package) and its dictionary; an optional WBS code entered in
+  the activity's panel (`ac:wbsCode`, extension XSD: one global attribute, dotted digits; sample `programme-wbs-override.bpmn`).
+- **OBS and RAM** from the organisation model, the operating-model roles and the agents; RACI letters with the F-B36 checks.
+- **Resource histogram** (`domain/programme/histogram.ts`, one owner): the programme's labour per month by role from the cost profile, FTE or
+  person-days, capacity line and over-allocation flags (no levelling); the delivery FTE before / after per role read from the engine.
+  Cross-surface test: Σ histogram × rate = the cost model's programme labour rows.
+- **Exports:** MS Project XML (MSPDI, export only), validated against Microsoft's `mspdi_pj12.xsd` (kept in `docs/bpmn/microsoft/`, SHA-256 in
+  SOURCES.md); the results workbook with the WBS, WBS dictionary, OBS, RAM and Histogram sheets and the plan report (Gantt, WBS, histogram),
+  from the Plan screen. The Financial workbook and the Critical & Regulated report keep their legacy form.
+
 ## [v20.32.0] 2026-10-31 — BPMN B9e: the 📋 Programme screen (enable, description, type, timing, cost, linked section)
 
 ### BPMN B9e — the 📋 Programme screen: enable, describe, type, time and cost every programme activity

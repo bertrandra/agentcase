@@ -1316,7 +1316,43 @@ are still edited only in the Process screen (§ 19.7).
 
 | Phase | Content | Gate | Duration | Difficulty |
 |---|---|---|---|---|
-| B9d | F-B73…F-B78: Gantt from the programme process, WBS, OBS / RAM, resource histogram, MSPDI export, workbook and report pages, Plan screen | Gantt, cost model and histogram read one owner; Σ histogram × rate = programme labour cost; MSPDI validated against Microsoft's MSPDI schema; axe clean; ui-parity 0 unrecorded | 2.5 d | 3 / 5 |
+| B9d (**built in B9d**, below) | F-B73…F-B78: Gantt from the programme process, WBS, OBS / RAM, resource histogram, MSPDI export, workbook and report pages, Plan screen | Gantt, cost model and histogram read one owner; Σ histogram × rate = programme labour cost; MSPDI validated against Microsoft's MSPDI schema; axe clean; ui-parity 0 unrecorded | 2.5 d | 3 / 5 |
+
+**Built in B9d** (views and exports: no figure of the 107 fixtures moves; code `app/src/domain/programme/{gantt,ganttSpans,critical,plan,wbs,
+wbsDictionary,deliverables,obs,ram,histogram,histogramDelivery,histogramPortfolio,mspdi,mspdiTime,planBundle}.ts`):
+
+- **F-B73 built.** `programmeGantt` is the one Gantt: a bar per active activity placed by the timing owner (activities whose module or opt-in
+  switch is off have none), finish-to-start links with lag (the stage sequence; every product bar after the Decide & Scale gate, "pilot decision →
+  scale"; run after build; hub run after hub setup; "hub ready → agents enabled" hub setup → run), milestones (the gate, and the engine's maturity
+  and governance crossings), critical path (backward pass on the given placements: nothing is rescheduled). The Gantt band's rows
+  (`verifyB/ganttProgram.ts` `programRows`) are its band rows, and the portfolio Gantt's product bars its `productWindow` (tests: the band on the
+  107 fixtures, the product window on a three-product portfolio). Wave and Portfolio scopes: `portfolioPlan` shifts each product's bars to its consolidation month 0.
+- **F-B74 built.** WBS level 1 programme, level 2 engagement stages / each wave (a single case: "Rollout") / programme assurance, level 3 the
+  product, level 4 the work packages (the activities and milestones of the plan); codes from the tree in catalogue order. The override is the case
+  key `wbsCode-<kind>` until B9c (edited in the activity's panel, exported `ac:wbsCode`, global attribute of the extension XSD, dotted digits;
+  sample `fixtures/bpmn/programme/programme-wbs-override.bpmn`); it applies to a work package with one instance in the plan; a code that repeats
+  another is ignored and flagged. Dictionary: description, deliverable (D-B35, `deliverables.ts`), Accountable, roles, effort, cost (the
+  activity's cost owner), duration, start, finish, predecessors with lag.
+- **F-B75 built.** OBS: the organisation model's units → teams → roles (team skills with FTE), the transformation team (operating-model roles,
+  Y1 FTE) and the agents. RAM: WBS work packages × the programme's lanes with the RACI letters; `org/diagnostics.ts` `raciDiagnostics` (F-B36)
+  on every row (milestones: Responsible their lane, Accountable the AI Office).
+- **F-B76 built.** `histogram.ts`: per month, the labour of each resource line of the cost profile (and the pilot, outside the euro result) =
+  its spend ÷ its day rate, stacked by role; FTE = days ÷ (working days / 12) (D-B34: FTE default, person-days toggle). Capacity = the role's
+  operating-model FTE (Y1); the Portfolio adds `maxConcurrentSetups` (products in setup at once); flags only (D-B37). Delivery view
+  (`histogramDelivery.ts`): FTE before = the entry team per role; after = the engine's monthly `humanFte` laid on the roles in the entry team's
+  proportions (the engine sizes the team, not its roles), the run team and the agents' vFTE as the engine's rows. Cross-surface test: Σ histogram ×
+  rate = the cost model's "Setup: …" labour rows and its pilot row. *Partial:* stacking by role only (team / unit / location groupings not
+  offered: the programme's roles all sit in the delivery unit).
+- **F-B77 built.** MSPDI (`mspdi.ts`): summary tasks for the WBS groups, work packages with WBS code, outline number and level, start (a "start no
+  earlier than" constraint), finish, duration in working days, predecessors (FS + lag), a generic work resource per lane at the role rate, an
+  assignment per work package with effort; validated by xmllint against Microsoft's `mspdi_pj12.xsd` (`docs/bpmn/microsoft/`, SHA-256 in
+  SOURCES.md; the export uses Project's namespace `http://schemas.microsoft.com/project`, mapped to the schema's `…/2007` target for the check).
+  Opening in MS Project / ProjectLibre was not tried here (no such tool in CI). The results workbook gets the WBS, WBS dictionary, OBS, RAM and
+  Histogram sheets and the plan report its Gantt, WBS and histogram pages **from the Plan screen's exports**; the Financial tab's workbook and the
+  Critical & Regulated report keep their legacy form (their legacy-parity tests), so the plan pages are a separate report file.
+- **F-B78 built.** 📅 Plan (section id `gantt`; the menu keeps the legacy label "📅 Gantt / Timeline", which the parameters workbook and
+  the Board's generated dashboards carry to the legacy file, DEV-B9D-PLAN-SCREEN): tabs Gantt (the case timeline as before + the programme Gantt and its schedule table), WBS,
+  OBS / RAM, Histogram (chart + table); every row opens its activity in Process; keyboard tabs; axe clean in the unit tests.
 
 ### 19.9 Built in B9a (programme derived, one timing owner, screens)
 

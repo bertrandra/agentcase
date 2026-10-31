@@ -10,6 +10,7 @@ import { DescriptionField, TypeSelect } from '../../programme/Editors';
 import { selectActivity } from '../view';
 import { costText } from './ProgrammeTable';
 import { WAVE_PREFIX, WavePanel } from './WavePanel';
+import { WbsCodeField } from './WbsCodeField';
 
 /** The knowledge-subset field a hub parameter belongs to with several products, and the name of its chip ("inherited / overridden"). */
 const SUBSET: Record<string, [SubsetField, string]> = {
@@ -61,6 +62,7 @@ export function ParamPanel({ v, id }: { v: ProgrammeView; id: string }) {
         </fieldset>
       )}
       <p className="ac-form-row">Type (how its cost is laid on the months): <TypeSelect kind={a.kind} name={a.name} /></p>
+      <WbsCodeField kind={a.kind} />
       <div className="ac-form-row">
         <button type="button" onClick={() => selectActivity(null)}>Close</button>
       </div>

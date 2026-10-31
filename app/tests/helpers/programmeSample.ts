@@ -13,3 +13,12 @@ export function programmeSampleText(): string {
   const pf = { ...openPortfolioFixture(), maxConcurrentSetups: 2 }, id = pf.products[0]!.id;
   return serialize(programmeDocument(programmeProcess(makeCtx(resolveProduct(pf, id)), pf, id)));
 }
+
+/**
+ * The WBS-override sample (`fixtures/bpmn/programme/programme-wbs-override.bpmn`, BPMN B9d): the programme-only export of the portfolio
+ * fixture's first product alone, with a WBS code entered for the pilot, so the export carries `ac:wbsCode` (§ 19.8 F-B74).
+ */
+export function programmeWbsSampleText(): string {
+  const pf = openPortfolioFixture(), s = resolveProduct(pf, pf.products[0]!.id);
+  return serialize(programmeDocument(programmeProcess(makeCtx({ ...s, dom: { ...s.dom, values: { ...s.dom.values, 'wbsCode-pilot': '1.2.1.9' } } }))));
+}

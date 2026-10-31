@@ -10,11 +10,12 @@ import { tmpdir } from 'node:os';
 import { join } from 'node:path';
 import { afterAll, describe, expect, it } from 'vitest';
 import { BPMN_FIXTURES, codes, hasXmllint, REPO, schemaTestsRun, validate } from '../helpers/bpmnValidate';
-import { programmeSampleText } from '../helpers/programmeSample';
+import { programmeSampleText, programmeWbsSampleText } from '../helpers/programmeSample';
 
 const SAMPLES = readdirSync(BPMN_FIXTURES).filter((f) => f.endsWith('.bpmn')).sort();
 const samplePath = (f: string) => join(BPMN_FIXTURES, f);
 const PROGRAMME_SAMPLE = join(BPMN_FIXTURES, 'programme', 'programme-three-products.bpmn');
+const WBS_SAMPLE = join(BPMN_FIXTURES, 'programme', 'programme-wbs-override.bpmn');
 const MINIMAL = readFileSync(samplePath('minimal-agentcase.bpmn'), 'utf8');
 const AC_XSD = readFileSync(join(REPO, 'docs', 'bpmn', 'agentcase-bpmn-1.0.xsd'), 'utf8');
 
@@ -46,15 +47,20 @@ describe('BPMN B0 — the extension XSD', () => {
     expect(globals('element').sort()).toEqual(['activity', 'actor', 'audit', 'auditHeader', 'changeFailure', 'frequency', 'handoffCost', 'norm', 'orgUnit',
       'phase', 'process', 'product', 'programmeActivity', 'raci', 'rework', 'supervision', 'team', 'tool', 'toolCatalog', 'volume', 'wave']);
     expect(globals('attribute').sort()).toEqual(['activityType', 'agent', 'decisionRef', 'gate', 'inScope', 'norm', 'partial', 'programme', 'regulatory',
-      'requiresState', 'setupCapacity']);
+      'requiresState', 'setupCapacity', 'wbsCode']);
   });
   it('the transformation-programme sample (B9a) is the programme export of the three-product portfolio and validates', () => {
     const text = readFileSync(PROGRAMME_SAMPLE, 'utf8');
     expect(text).toBe(programmeSampleText());
     if (schemaTestsRun()) expect(validate([PROGRAMME_SAMPLE]).results.map((r) => [r.schema, r.errors])).toEqual([['valid', []]]);
   }, 60000);
+  it('the WBS-override sample (B9d) is the programme export of a product with a WBS code entered, and validates', () => {
+    expect(readFileSync(WBS_SAMPLE, 'utf8')).toBe(programmeWbsSampleText());
+    if (schemaTestsRun()) expect(validate([WBS_SAMPLE]).results.map((r) => [r.schema, r.errors])).toEqual([['valid', []]]);
+  }, 60000);
   it('every global element and attribute is used by at least one valid AgentCase sample', () => {
-    const text = [...SAMPLES.filter((f) => f.endsWith('-agentcase.bpmn')).map(samplePath), PROGRAMME_SAMPLE].map((f) => readFileSync(f, 'utf8')).join('\n');
+    const text = [...SAMPLES.filter((f) => f.endsWith('-agentcase.bpmn')).map(samplePath), PROGRAMME_SAMPLE, WBS_SAMPLE]
+      .map((f) => readFileSync(f, 'utf8')).join('\n');
     const unused = [...globals('element').map((n) => `<ac:${n}`), ...globals('attribute').map((n) => ` ac:${n}=`)].filter((n) => !text.includes(n));
     expect(unused).toEqual([]);
   });

@@ -12,6 +12,7 @@ import { DELIVERY_PARTICIPANT_ID, PROGRAMME_PARTICIPANT_ID, programmeActivityId,
 import { PROGRAMME_LANES, type LaneRole } from './lanes';
 import { placementOf, type Placement } from './placement';
 import { programmeMilestones, type ProgrammeMilestone } from './milestones';
+import { wbsOverride } from './wbs';
 
 /**
  * The transformation programme as a process (docs/SPEC_BPMN.md § 19.4 F-B64–F-B67, F-B69; phase B9a): a second participant "Transformation
@@ -30,6 +31,8 @@ export interface ProgrammeActivity extends ProgrammeActivityDef {
   costProfile: CostProfile;
   /** per-product activity: multi-instance over this many products (1 in a single-product case) */
   instances: number | null;
+  /** the WBS code override entered for it (`ac:wbsCode`, § 19.8 F-B74; phase B9d), when any */
+  wbsCode?: string;
 }
 export interface ProgrammeLane { id: string; role: LaneRole; name: string; description: string; fteY1: number | null }
 export interface ProgrammeWave { id: string; name: string; products: string[]; start: number; dependency: string | null }
@@ -65,7 +68,7 @@ export function programmeProcess(c: Ctx, pf?: Portfolio, productId?: string): Pr
     ...d, id: programmeActivityId(d.kind), description: activityDescription(c, d), active: d.module ? MODULE_ON[d.module](c) : true,
     costProfile: activityType(c, d.kind).profile,
     values: d.params.map((p) => ({ def: p, value: valueOf(c, p, knowledge) })), placement: placementOf(c, d, pf, productId), cost: activityCost(c, d),
-    instances: d.level === 'product' ? Math.max(1, planned) : null,
+    instances: d.level === 'product' ? Math.max(1, planned) : null, ...(wbsOverride(c, d.kind) ? { wbsCode: wbsOverride(c, d.kind)! } : {}),
   }));
   const hub = activities.find((a) => a.kind === 'hubSetup')?.active ?? false, act = (k: string) => programmeActivityId(k);
   const messageFlows: ProgrammeMessageFlow[] = [
