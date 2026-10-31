@@ -1648,3 +1648,47 @@ approach is known.
 
 Decided, not open: the agent factory stays out of the BPMN scope (§ 7.1 (2)); `dom.checked.regInclude` is derived from the process (§ 7.1 (3),
 DEV-REGINCLUDE-DERIVED); the menu keeps the label "📅 Gantt / Timeline" for the legacy round trips (DEV-B9D-PLAN-SCREEN).
+
+## 21. Organisation × portfolio: owning units, transverse services, strategy per unit (phase B10, owner's request 2026-10-31)
+
+### 21.1 Need
+
+A product belongs to a department; some work (for example testing) is done across products by a **transverse service**; the portfolio
+strategy is studied at **business-unit (BU)** level. Today products are a flat list grouped only by waves, organisation units (§ 16) own no
+product, shared team lines (portfolio `sharedTeam`, pins) are not linked to a unit, and the display levels are Product, Wave and Portfolio.
+
+### 21.2 Requirements
+
+- **F-B80 — Owning unit, any level.** Each product points to the organisation unit that owns it, at **any level of the unit tree** (BU,
+  department, sub-department…; owner's decision 2026-10-31). The unit tree has no fixed depth; a product owned by a department belongs to
+  every ancestor of it for the roll-ups. A product without an owner sits under the root ("Unassigned").
+- **F-B81 — Unit as a display level, any node.** Next to Product / Wave / Portfolio, the display scope gains **Unit**: any node of the tree
+  (owner's decision: any level). It aggregates the products it owns directly or through its sub-units, with the consolidation the waves use
+  (cash flow, NPV, ROI, payback, FTE before / after, run cost, histogram); waves stay an independent grouping (a wave can span units).
+- **F-B82 — Transverse service.** A unit can be marked **shared service**. A shared team line belongs to a service unit; the service is
+  assigned activities across products (by pins, by activity type, or by RACI Responsible on its role); its cost is allocated to the products
+  served (D-B38); a **Services** view shows, per service, what it delivers to each product, its load against its capacity (the resource
+  histogram per unit) and its cost by product.
+- **F-B83 — Strategy and decision per unit.** The strategy, scenario, stress and decision screens run at a unit node as at the portfolio
+  level (D-B40): verdict, ranking of options, Monte Carlo with the products' correlation, with the unit's figures; the portfolio level stays
+  the total.
+- **F-B84 — Stored in the document.** Units, the product → unit links and the service assignments live in the case's BPMN document (D-B1 /
+  D-B26); this needs the process / organisation override split of § 16.8 / § 19.13, which B10 builds (and with it the teams move into the
+  document, § 20).
+
+### 21.3 Decisions
+
+| # | Question | Options | Status |
+|---|---|---|---|
+| D-B38 | Cost of a transverse service split across products | (a) by the effort of the activities it does for each product; (b) by a fixed share per product | **Recommended (a)**, (b) as an override per service — to confirm |
+| D-B39 | Ownership of a product | (a) one owning unit, at any level; (b) several co-owning units with shares | **(a) any level adopted 2026-10-31**; co-ownership not planned — to confirm |
+| D-B40 | Strategy at unit level | (a) full decision per unit (verdict, stress, ranking); (b) aggregated figures only | **Recommended (a)** — to confirm |
+
+### 21.4 Phases
+
+| Phase | Content | Gate | Duration | Difficulty |
+|---|---|---|---|---|
+| B10a | Override split (process / organisation / programme parts of a product); teams (`teamIn`, `sharedTeam`) into the document; units with any depth; product → owning unit | 107 fixtures identical; all round trips; schema v5 migration | 3 d | 5 / 5 |
+| B10b | Unit display scope at any node: consolidation, figures, histogram, Plan views per unit | Unit totals = sum of its products (cross-surface); a unit equal to the portfolio gives the portfolio figures | 2 d | 4 / 5 |
+| B10c | Transverse services: service units, assignments, cost allocation (D-B38), Services view | Allocation hand-computed; Σ allocations = service cost; axe clean | 2 d | 4 / 5 |
+| B10d | Strategy, stress and decision per unit (D-B40) | Unit = portfolio case reproduces the portfolio decision; hand-computed unit stress | 1.5 d | 4 / 5 |
