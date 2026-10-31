@@ -15,12 +15,12 @@ const load = (id: string) => makeCtx(JSON.parse(readFileSync(`fixtures/cases/${i
 const live = (id: string) => { const c = load(id); return { c, m: model(c), eng: engineNow(c) }; };
 
 describe('DEV-SETUP-BREAKDOWN: one setup breakdown, read by the model', () => {
-  // B9b (DEV-B9B-COACHING / -RESOURCES): training, coaching, governance from resources (hand-computed in tests/domain/programme/profile.test.ts):
-  // 35,000 + 52,877 + 1,241,460 + 26,438.5 = 1,355,775.5; + the hub setup 90,000 = 1,445,775.5 (legacy: €135K and €225K).
+  // B9b (DEV-B9B-RESOURCES): training and governance from resources, coaching calibrated to its amount (hand-computed in
+  // tests/domain/programme/profile.test.ts): 35,000 + 52,877 + 35,000 + 26,438.5 = 149,315.5; + the hub setup 90,000 = 239,315.5 (legacy: €135K, €225K).
   it('golden: the four core lines, the hub setup, and the total of the ROI', () => {
     const c = load('golden'), b = setupBreakdown(c);
-    expect(b.base).toBeCloseTo(1355775.5, 6);
-    expect(b.total).toBeCloseTo(1445775.5, 6);
+    expect(b.base).toBeCloseTo(149315.5, 6);
+    expect(b.total).toBeCloseTo(239315.5, 6);
     expect(b.total).toBe(model(c).setupTotal);
     expect(b.lines.map((l) => l.id)).toEqual(['tooling', 'training', 'coaching', 'governance', 'knowledge']);
   });

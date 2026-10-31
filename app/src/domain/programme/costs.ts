@@ -6,14 +6,15 @@ import { pilotSizing } from '../tune/program';
 import { runSizingView } from '../tuneB/runSizing';
 import { COST_RULE_TEXT, type ProgrammeActivityDef } from './catalogue';
 import { optInOfKind, optInOn } from './optIn';
-import { coachLoad, pilotLine, programmeLines, type ProgrammeLineId } from './profile';
+import { coachingPlan, pilotLine, programmeLines, type ProgrammeLineId } from './profile';
 
 /**
  * What a programme activity costs, read from its one owner (§ 19.3; phase B9b): the programme's cost profile (`profile.ts`: the setup lines from
- * resources, the coaching curve, the hub setup, the opt-in activities switched on), the pilot (`pilotSizing`), the hub run (`khRunAnnual`) and the
+ * resources, coaching (days a month × months), the hub setup, the opt-in activities switched on), the pilot (`pilotSizing`), the hub run
+ * (`khRunAnnual`) and the
  * AgentOps run team (the engine). `effortDays` is the labour behind a resources cost.
  */
-export interface ActivityCost { amount: number | null; per: 'once' | 'year 1' | 'horizon' | null; effortDays: number | null; rule: string; note: string }
+export interface ActivityCost { amount: number | null; per: 'once' | 'year 1' | null; effortDays: number | null; rule: string; note: string }
 const LINE: Record<string, ProgrammeLineId> = {
   setupTooling: 'tooling', setupTraining: 'training', setupCoaching: 'coaching', setupGovernance: 'governance', change: 'change', hubSetup: 'knowledge',
 };
@@ -22,10 +23,11 @@ const none = (d: ProgrammeActivityDef, note = ''): ActivityCost => ({ amount: nu
 function lineCost(c: Ctx, d: ProgrammeActivityDef, id: ProgrammeLineId, base: ActivityCost): ActivityCost {
   const l = programmeLines(c).find((x) => x.id === id);
   if (!l) return { ...base, note: 'Not in the cost: its module is off' };
-  const out: ActivityCost = { ...base, amount: l.amount, per: d.kind === 'setupCoaching' ? 'horizon' : 'once', effortDays: l.effortDays };
+  const out: ActivityCost = { ...base, amount: l.amount, per: 'once', effortDays: l.effortDays };
   if (d.kind === 'setupCoaching') {
-    out.note = `In the euro result (D-B30): entry team × coaching load (Y1 ${Math.round(coachLoad(c, 1))}% → cruise ${Math.round(coachLoad(c, 3))}%) `
-      + '× day rate, over the horizon';
+    const p = coachingPlan(c), r = (n: number) => Math.round(n * 10) / 10;
+    out.note = `${r(p.perMonth)} coaching days a month × ${r(p.months)} months × the role rate (D-B30, revised 2026-10-31)`
+      + `${p.calibrated ? '; the duration is calibrated from the setup coaching amount' : ''}. The coaching load curve is informative (Maturity)`;
   }
   return out;
 }

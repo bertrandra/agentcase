@@ -3,7 +3,7 @@ import { eurK } from '../../../tuneB/fmt';
 import { selectActivity, useProcessView } from '../view';
 
 export const costText = (a: ProgrammeActivity): string =>
-  (a.cost.amount === null ? '—' : `${eurK(a.cost.amount)}${a.cost.per === 'year 1' ? ' / yr (Y1)' : a.cost.per === 'horizon' ? ' over the horizon' : ''}`);
+  (a.cost.amount === null ? '—' : `${eurK(a.cost.amount)}${a.cost.per === 'year 1' ? ' / yr (Y1)' : ''}`);
 const lane = (v: ProgrammeView, role: string): string => v.lanes.find((l) => l.role === role)?.name ?? role;
 
 /**

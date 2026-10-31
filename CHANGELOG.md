@@ -28,8 +28,9 @@ each family recorded in [docs/DEVIATIONS.md](docs/DEVIATIONS.md) with its oracle
   `ktLeadMonths` before month 0 (DEV-B9B-HUB-TIMING); one stage reading on every surface (T4).
 - **One monthly cost profile** (`domain/programme/profile.ts`, F-B68) read by the Time Engine, the setup breakdown, the cost model (one row per
   line) and the programme panel. Training and governance are labour from resources (role FTE × duration × the target day rate × 1.15;
-  DEV-B9B-RESOURCES); coaching is one activity priced along its curve, in the euro result (DEV-B9B-COACHING). Golden: setup €225,000 →
-  €1,445,775.5, NPV €1,359,010 → €259,979, payback month 9 → 30, ROI 7.13 → 0.27 — the coaching curve is most of it (owner review).
+  DEV-B9B-RESOURCES); coaching is one resource activity, coaching days a month × months × the role rate, calibrated from the case's coaching amount
+  (D-B30 revised 2026-10-31: the amount never moves, only its spread, DEV-B9B-COACHING; the EV-19 curve stays informative). Golden: setup €225,000 →
+  €239,315.5, NPV €1,359,010 → €1,348,910, payback month 9 → 6, ROI 7.13 → 6.64.
 - **Opt-in activities, off by default (D-B31)**: engagement stages, value tracking, AI Act obligations, audit interviews and the four agent-rollout
   activities (licence procurement, agent-toolchain integration, rollout hypercare, legacy decommissioning), each a programme task with its panel;
   switched on, its labour enters the setup and the cash flow.

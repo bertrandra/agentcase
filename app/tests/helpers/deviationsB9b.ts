@@ -22,8 +22,9 @@ const SETUP_TIMING = ['payback', 'npv', 'econ_monthly[].setupSpend', 'econ_month
 
 export const B9B_DEVIATIONS: Deviation[] = [
   { id: 'DEV-B9B-COACHING',
-    reason: 'D-B30: one coaching activity, priced along its curve (entry team × coaching load Y1 → cruise × day rate × working days, over the ' +
-    'horizon) and in the euro result (the setup); the setupCoaching amount is no longer read. golden: coaching €35,000 → €1,241,460.', skip: SETUP_AMOUNT },
+    reason: 'D-B30 (revised 2026-10-31): one coaching activity, coaching days a month (default 2) × months × the role rate, calibrated from the ' +
+    'setupCoaching amount (same amount on every fixture); only its shape moves: spent over its months (golden 36.4 → the 36 of the horizon) instead ' +
+    'of the 6-month setup profile, and a Monte Carlo rate draw scales it like any labour. The EV-19 curve is informative only.', skip: SETUP_TIMING },
   { id: 'DEV-B9B-RESOURCES',
     reason: 'F-B68 / § 19.3: training and governance are labour from resources (trainers 0.5 FTE, Design Authority 0.25 FTE, over the setup duration, ' +
     'at the target day rate × the AI-skill premium); the setupTraining / setupGov amounts are no longer read. golden: €45,000 → €52,877, €20,000 → ' +

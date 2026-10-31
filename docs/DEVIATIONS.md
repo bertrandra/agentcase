@@ -51,7 +51,7 @@ Figures are the golden fixture unless stated. "Before" = the build at the start 
 | DEV-B9B-SETUP-SPREAD | BPMN B9b, D-B27: each setup line is spent over its activity's duration (the setup duration, 12 months by default), not the engine's fixed 6 months |
 | DEV-B9B-PILOT | BPMN B9b, D-B28: the pilot is the Pilot & Prove stage before the build (16 weeks, not `rmD4`); the cost model spends it before month 0 |
 | DEV-B9B-HUB-TIMING | BPMN B9b, D-B29: the Knowledge Hub setup is spent over its own days, `ktLeadMonths` before the product's month 0 |
-| DEV-B9B-COACHING | BPMN B9b, D-B30: one coaching activity priced along its curve, in the euro result (golden setup €225K → €1,446K, NPV €1,359K → €260K) |
+| DEV-B9B-COACHING | BPMN B9b, D-B30 (revised 2026-10-31): one coaching activity, days a month × months, calibrated to its amount; only its spread moves |
 | DEV-B9B-RESOURCES | BPMN B9b, § 19.3: training and governance are labour from resources (role FTE × duration × the target day rate × 1.15) |
 
 ## DEV-HEADLINE-OWNER — one economics headline
@@ -575,9 +575,9 @@ tests are not concerned: they drive the legacy *engine* through recipes, and the
   horizon), training and governance over their own duration (`trainMonths`, `govMonths`; blank = the setup duration, so (c) reduces to (b) when the
   lines share one), the last month pro rata (`spreadMonths`, the one spreading rule). The engine reads that profile month by month
   (`K.setupProfile`, adding up to the setup total); the waves' capacity and `setupEnd` dependencies count the setup duration (`setupMonths`).
-- Effect (golden, the timing alone, amounts unchanged): payback month 9 → 6, NPV €1,359,010 → €1,362,075 (the €135K of lines over 12 months
-  instead of 6; with the hub moved, DEV-B9B-HUB-TIMING). Portfolio: a capacity of 1 starts the next product 12 months later instead of 6 (golden × 3:
-  month 0 / 6 / 12 → 0 / 12 / 24). The final golden figures (all B9b families) are in DEV-B9B-COACHING.
+- Effect (golden, the timing alone, amounts unchanged): payback month 9 → 6, NPV €1,359,010 → €1,362,624 (tooling, training and governance over 12
+  months instead of 6, coaching over its 36 months, DEV-B9B-COACHING, the hub in month 1, DEV-B9B-HUB-TIMING). Portfolio: a capacity of 1 starts the
+  next product 12 months later instead of 6 (golden × 3: month 0 / 6 / 12 → 0 / 12 / 24). The final golden figures are in DEV-B9B-RESOURCES.
 - Oracle fields (`tests/helpers/deviationsB9b.ts`, the timing list): `payback`, `npv`, `econ_monthly[].setupSpend / total / cum`, `econ_roi.npv /
   payback / paybackText`, `thinNow.npv / payback / inputHash`, `resultsCore.payback`, `strategyEval[].computed.payback`, `strategyRanking`,
   `compareView.table[5]`, `me_mcs.stats.npv / paybackMonths`. The legacy parity tests of screens, workbooks and reports run on the legacy profile
@@ -622,30 +622,23 @@ tests are not concerned: they drive the legacy *engine* through recipes, and the
 - Tests: `tests/domain/programme/profile.test.ts` (month 1), `tests/domain/portfolio/kt.test.ts` (the lead moves exactly the hub months, NPV delta).
 - Files: `domain/programme/{timing,profile,placement}.ts`, `domain/time/kernel.ts`, `domain/portfolio/{run,series,stressCut}.ts`.
 
-## DEV-B9B-COACHING — one coaching activity, along its curve, in the euro result (D-B30)
+## DEV-B9B-COACHING — one coaching activity, days a month × months, the same amount over its months (D-B30, revised 2026-10-31)
 
-- Legacy: coaching counted twice: the setup line `setupCoaching` (an amount, in the ROI's setup) and the EV-19 coaching curve (entry team × load Y1
-  → cruise × day rate × working days), shown as "indicative, outside the euro result" (conflict T5).
-- v20 (BPMN B9b, D-B30 (a)): one coaching activity whose cost is the curve, in the euro result: month t of horizon year y costs entry FTE × load(y) ×
-  target day rate × working days / 12, load = Y1 (`coachY1`, default 40 %), Y2 halfway, then cruise (`coachCruise`, default 20 %) to the horizon end;
-  it is part of the setup (the programme cost, the ROI's denominator). `setupCoaching` is no longer read.
-- **Effect (golden, all B9b families together — for the owner's review)**: coaching €35,000 → €1,241,460 (15 FTE × (40 + 30 + 20) % × €418 × 220);
-  setup total €225,000 → €1,445,775.5 (Investment table, Agentic Setup, the ROI); net benefit €1,603,919 → €383,143; ROI 7.13 → 0.27 (713 % → 27 %,
-  verdict GO → reconsider band); NPV €1,359,010 → €259,979; payback month 9 → 30 (year 1 → 3); the setup spent per year €225,000 / 0 / 0 →
-  €756,076 / €413,820 / €275,880; total benefit €1,828,919 and every run figure unchanged. By family: the timing alone (DEV-B9B-SETUP-SPREAD,
-  DEV-B9B-HUB-TIMING) NPV €1,362,075, payback 6; with training and governance from resources (DEV-B9B-RESOURCES) €1,348,361, payback 7; the
-  coaching curve brings the rest. On every fixture the coaching curve dominates the setup (it scales with the entry team over the horizon).
-- Oracle fields (`tests/helpers/deviationsB9b.ts`, the amount list): `model.setupTotal`, `model.conv.setupBase / setupBillable / setupAbsorbed`,
-  `mcRun.outcomes / stats.mean / cvar10 / pNeg`, `decisionRun.setup / p10Floor / stats.mean / cvar10 / pNeg / confidence / verdict`,
-  `strategyEval[].computed.tco / net / setup / roi / payback`, `strategyRanking`, `resultsCore.setup / net / roi / payback`, `thinNow.totalSavings / npv /
-  payback / inputHash`, `compareView.cost[2]`, `compareView.table[5]`, `sensitivityView.table[4]`, `me_mcs.stats.npv / paybackMonths`, `econ_roi.net / roi /
-  roiPct / npv / payback / paybackText`, and the timing fields. The parallel run (`tools/parallel-run-known.json`) and excel-compat record the
-  differences per file under this id.
-- Tests: `tests/domain/programme/profile.test.ts` (hand-computed curve and months), `legacy-profile.test.ts`, `tests/domain/{tuneB,lot10-sot,
-  scenarioReconcile,economics}.test.ts` (the new figures), `tests/domain/lot10-calc.test.ts` (a case without setup is now `noProgramme`: the
-  resource lines at 0 too).
-- Files: `domain/programme/{profile,costs,placement,catalogue}.ts`, `domain/tuneB/setup.ts`, `domain/tune/maturityTab.ts`, UI
-  `tune/maturity/SddCoach.tsx`, `tune/setup/{index,SetupChart}.tsx`.
+- Legacy: coaching counted twice: the setup line `setupCoaching` (an amount, in the ROI's setup, spent over the 6-month setup profile) and the EV-19
+  coaching curve (entry team × load Y1 → cruise × day rate × working days), shown as indicative, outside the euro result (conflict T5).
+- v20 (BPMN B9b, D-B30 as revised by the owner on 2026-10-31): one coaching activity, a resource activity of the Process panel: coaching days a
+  month (`coachDaysPerMonth`, default 2) × duration in months (`coachMonths`) × the role rate (the target blended day rate × 1.15, the rule of the
+  other resource lines), spread evenly over its months from the product's month 1 (capped at the horizon). Calibration of an existing case: with no
+  duration entered, its `setupCoaching` amount sets the days (total days = amount / role rate, months = days / days a month), so the cost IS the
+  amount (`coachingPlan`). The curve (`coachY1`, `coachCruise`) is no longer priced: it stays the informative view of the Maturity screen.
+- Effect: no coaching amount moves (asserted on the 107 fixtures). Only its shape: golden €35,000 = 72.81 days = 2 a month × 36.4 months, spent
+  €972.22 a month over the 36 months of the horizon instead of €5,833 a month over months 1–6 (part of the timing effect of
+  DEV-B9B-SETUP-SPREAD); under a Monte Carlo rate draw it now scales with the rate like any labour.
+- Oracle fields: the timing list of DEV-B9B-SETUP-SPREAD (the same fields; this entry names the coaching share).
+- Tests: `tests/domain/programme/profile.test.ts` (calibration, days × months × rate, the curve not priced, the amount on every fixture),
+  `tests/domain/tuneB.test.ts` (the coaching line is the legacy amount).
+- Files: `domain/programme/{profile,costs,placement,catalogue}.ts`, `domain/tune/maturityTab.ts`, UI `tune/maturity/SddCoach.tsx`,
+  `tune/setup/index.tsx`.
 
 ## DEV-B9B-RESOURCES — training and governance are labour from resources (§ 19.3, F-B68)
 
@@ -658,6 +651,14 @@ tests are not concerned: they drive the legacy *engine* through recipes, and the
   The pilot, hub setup, hub run and AgentOps keep their figures (parity class); change management keeps its formula.
 - Effect (golden, €418 × 1.15 = €480.70 a day, 220 days): training €45,000 → €52,877 (0.5 × 12 × 18.33 × 480.70), governance €20,000 → €26,438.5.
   A rate-card or location-mix change now moves training and governance with the delivery team.
-- Oracle fields: the amount list of DEV-B9B-COACHING (the same fields; this entry names the training and governance share).
+- Effect, all B9b families together (golden): setup total €225,000 → €239,315.5; net benefit €1,603,919 → €1,589,603; ROI 7.13 → 6.64; NPV
+  €1,359,010 → €1,348,910; payback month 9 → 6 (year 1); setup spent per year €225,000 / 0 / 0 → €215,982 / €11,667 / €11,667; total benefit
+  and every run figure unchanged.
+- Oracle fields (`tests/helpers/deviationsB9b.ts`, the amount list): `model.setupTotal`, `model.conv.setupBase / setupBillable / setupAbsorbed`,
+  `mcRun.outcomes / stats.mean / cvar10 / pNeg`, `decisionRun.setup / p10Floor / stats.mean / cvar10 / pNeg / confidence / verdict`,
+  `strategyEval[].computed.tco / net / setup / roi / payback`, `strategyRanking`, `resultsCore.setup / net / roi / payback`, `thinNow.totalSavings / npv /
+  payback / inputHash`, `compareView.cost[2]`, `compareView.table[5]`, `sensitivityView.table[4]`, `me_mcs.stats.npv / paybackMonths`, `econ_roi.net /
+  roi / roiPct / npv / payback / paybackText`, and the timing fields. The parallel run (`tools/parallel-run-known.json`) and excel-compat record the
+  differences per file under this id.
 - Tests: `tests/domain/programme/profile.test.ts`, `tests/domain/tuneB.test.ts`.
 - Files: `domain/programme/{profile,catalogue,costs}.ts`, `domain/tuneB/setup.ts`.

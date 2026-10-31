@@ -14,11 +14,12 @@ import { hubSetupTiming, lineMonths, pilotTiming, spreadMonths } from './timing'
  * process read it. Labour is derived from resources (§ 19.3): role FTE × duration × the programme's role rate, the target blended day rate of the
  * rate card and the target location mix (the SDLC's own, `targetBlendedTJM`, moved by a Monte Carlo rate draw) × the AI-skill premium of the
  * transitional roles. Tooling is a non-labour amount, the change management keeps its engine formula (HRI), the hub setup its formula (parity);
- * coaching follows its curve (D-B30). Placement: product months, 1 = the build's first month, ≤ 0 before the build.
+ * coaching is a resource activity, days a month × months × the role rate (D-B30, revised 2026-10-31). Placement: product months, 1 = the build's
+ * first month, ≤ 0 before the build.
  */
 export type CoreLineId = 'tooling' | 'training' | 'coaching' | 'governance' | 'change' | 'knowledge';
 export type ProgrammeLineId = CoreLineId | OptInId;
-export type LineRule = 'nonLabour' | 'resources' | 'curve' | 'engine';
+export type LineRule = 'nonLabour' | 'resources' | 'engine';
 export interface ProgrammeLine {
   id: ProgrammeLineId; label: string; rule: LineRule; level: 'case' | 'product'; amount: number;
   /** the labour behind it in days (null: not labour) */
@@ -37,7 +38,8 @@ export function programmeRates(c: Ctx): { tjm: number; role: number; wd: number 
   const tjm = targetBlendedTJM(c.s, c.rateScale), wd = c.inp.p('workdays') || 220;
   return { tjm, role: tjm * AI_SKILL_PREMIUM, wd };
 }
-/** The coaching load (% of the entry team's capacity) of horizon year y (1-based): Y1, then halfway, then cruise (EV-19 curve). */
+/** The coaching load (% of the entry team's capacity) of horizon year y (1-based): Y1, then halfway, then cruise — the EV-19 curve, informative only
+ * (the Maturity screen's context; D-B30 revised 2026-10-31: not priced). */
 export function coachLoad(c: Ctx, y: number): number {
   const y1 = c.inp.p('coachY1'), cr = c.inp.p('coachCruise'), a = isNaN(y1) ? 40 : y1, z = isNaN(cr) ? 20 : cr;
   return y <= 1 ? a : y === 2 ? (a + z) / 2 : z;
@@ -49,11 +51,24 @@ function resources(c: Ctx, id: CoreLineId, label: string, fte: number, durationK
   const r = programmeRates(c), m = Math.min(lineMonths(c, durationKey), H), days = fte * m * (r.wd / 12), cost = days * r.role;
   return line(id, label, 'resources', 'product', cost, days, 1, spreadMonths(cost, m));
 }
+/** Coaching days a month by default (D-B30, revised 2026-10-31). */
+export const COACH_DAYS_PER_MONTH = 2;
+export interface CoachingPlan { perMonth: number; months: number; days: number; amount: number; calibrated: boolean }
+/**
+ * The coaching activity (D-B30, revised 2026-10-31): `coachDaysPerMonth` (default 2) × `coachMonths` × the role rate. With no duration entered the
+ * case's `setupCoaching` amount calibrates it: total days = amount / role rate (at the rate card's own rate), months = days / days a month, so the
+ * cost is the amount exactly (a Monte Carlo rate draw scales it like any labour).
+ */
+export function coachingPlan(c: Ctx): CoachingPlan {
+  const r = programmeRates(c), perMonth = num(c, 'coachDaysPerMonth', COACH_DAYS_PER_MONTH), entered = c.inp.p('coachMonths');
+  if (!(perMonth > 0)) return { perMonth: 0, months: 0, days: 0, amount: 0, calibrated: false };
+  if (!isNaN(entered) && entered > 0) return { perMonth, months: entered, days: perMonth * entered, amount: perMonth * entered * r.role, calibrated: false };
+  const r0 = targetBlendedTJM(c.s, null) * AI_SKILL_PREMIUM, legacy = c.inp.p('setupCoaching') || 0, days = r0 > 0 ? legacy / r0 : 0;
+  return { perMonth, months: days / perMonth, days, amount: r0 > 0 ? legacy * (r.role / r0) : 0, calibrated: true };
+}
 function coaching(c: Ctx, H: number): ProgrammeLine {
-  const r = programmeRates(c), etp = teamInCost(c.s, c.inp).etp;
-  const days = Array.from({ length: H }, (_, i) => etp * (coachLoad(c, Math.floor(i / 12) + 1) / 100) * (r.wd / 12));
-  const months = days.map((d) => d * r.tjm), amount = months.reduce((a, x) => a + x, 0);
-  return line('coaching', 'Coaching', 'curve', 'product', amount, days.reduce((a, x) => a + x, 0), 1, months);
+  const p = coachingPlan(c);
+  return line('coaching', 'Coaching', 'resources', 'product', p.amount, p.days, 1, spreadMonths(p.amount, Math.min(p.months, H)));
 }
 
 /** The horizon in months of a case (the programme is spent inside it). */

@@ -3,7 +3,7 @@ import type { Ctx } from '../ctx';
 import type { Portfolio } from '../portfolio/types';
 import type { ProgrammeActivityDef } from './catalogue';
 import { optInOfKind, optInPlan } from './optIn';
-import { coachLoad, horizonMonthsOf, programmeRates } from './profile';
+import { coachingPlan, horizonMonthsOf, programmeRates } from './profile';
 import { hubSetupTiming, ktPrepMonths, lineMonths, pilotTiming, programmeCalendar, setupMonths, stageTimings, type Span } from './timing';
 
 /**
@@ -44,8 +44,10 @@ export function placementOf(c: Ctx, d: ProgrammeActivityDef, pf?: Portfolio, pro
         + 'no earlier month)', span: s ? { start: s.start, dur: s.dur } : null };
     }
     case 'setup': {
-      if (d.kind === 'setupCoaching') return { text: `Over the horizon along the coaching curve: Y1 ${r1(coachLoad(c, 1))}%, Y2 ${r1(coachLoad(c, 2))}%, `
-        + `then cruise ${r1(coachLoad(c, 3))}% of the entry team's capacity`, span: null };
+      if (d.kind === 'setupCoaching') {
+        const p = coachingPlan(c), m = Math.min(p.months, horizonMonthsOf(c));
+        return { text: `${r1(m)} months from the product's month 1, ${r1(p.perMonth)} days a month, spent evenly`, span: { start: cal.build.start, dur: m } };
+      }
       const m = lineMonths(c, DURATION_KEY[d.kind] ?? null), own = DURATION_KEY[d.kind] && m !== setup ? ' (its own duration)' : ' (the setup duration)';
       return { text: `${r1(m)} months${own} from the product's month 1, spent evenly`, span: { start: cal.build.start, dur: m } };
     }

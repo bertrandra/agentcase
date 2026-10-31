@@ -3,7 +3,7 @@ import { makeCtx } from '@/domain';
 import { engineNow } from '@/domain/canonical';
 import { headlineOf } from '@/domain/economics/headline';
 import { model } from '@/domain/model/overlay';
-import { engineProfile, OPT_INS, programmeLines, type OptInId } from '@/domain/programme';
+import { coachingPlan, engineProfile, OPT_INS, programmeLines, type OptInId } from '@/domain/programme';
 import { setupBreakdown } from '@/domain/tuneB/setup';
 import type { CaseState } from '@/domain/types/state';
 import { FIXTURE_IDS, loadCase } from '../../helpers/portfolio';
@@ -24,19 +24,30 @@ describe('the programme cost profile (golden, hand-computed)', () => {
     expect(amount(golden(), 'governance')).toBeCloseTo(0.25 * 12 * (WD / 12) * ROLE, 6);   // 26,438.5
     expect(amount(withValues(golden(), { trainFte: '1', trainMonths: '6' }), 'training')).toBeCloseTo(1 * 6 * (WD / 12) * ROLE, 6);
   });
-  it('coaching is one activity along its curve (D-B30): entry team × load × day rate × days, Y1 40 %, Y2 30 %, Y3 20 %', () => {
-    expect(amount(golden(), 'coaching')).toBeCloseTo(15 * (0.4 + 0.3 + 0.2) * RATE * WD, 4);   // 1,241,460
+  // D-B30 (revised 2026-10-31): coaching days a month × months × the role rate; with no duration entered, the setupCoaching amount calibrates it.
+  it('coaching: calibrated from the setup coaching amount (golden €35,000 = 72.81 days = 2 a month × 36.4 months), else days × months × rate', () => {
+    const p = coachingPlan(c);
+    expect([p.amount, p.perMonth, p.calibrated]).toEqual([35000, 2, true]);
+    expect(p.days).toBeCloseTo(35000 / ROLE, 9);
+    expect(p.months).toBeCloseTo(35000 / ROLE / 2, 9);   // 36.4, spent over the 36 months of the horizon
+    expect(amount(withValues(golden(), { coachDaysPerMonth: '3', coachMonths: '6' }), 'coaching')).toBeCloseTo(3 * 6 * ROLE, 6);   // 8,652.6
+    expect(amount(withValues(golden(), { coachDaysPerMonth: '0' }), 'coaching')).toBe(0);
+    expect(amount(withValues(golden(), { coachY1: '80', coachCruise: '60' }), 'coaching')).toBe(35000);   // the curve is informative, not priced
     expect(engineNow(c).K.setupProfile[0]! - engineNow(c).K.setupProfile[1]!).toBeCloseTo(90000, 4);   // the hub setup, month 1 only
   });
-  it('the lines add up to the setup total; tooling, training and governance are spread over 12 months, the hub over its 30 days', () => {
-    const total = 35000 + 0.5 * 12 * (WD / 12) * ROLE + 15 * 0.9 * RATE * WD + 0.25 * 12 * (WD / 12) * ROLE + 90000;   // 1,445,775.5
+  it.each(FIXTURE_IDS)('%s: the coaching cost is the case\'s setup coaching amount (no figure moves from coaching itself)', (id) => {
+    const s = loadCase(id);
+    expect(amount(s, 'coaching')).toBe(makeCtx(s).inp.p('setupCoaching') || 0);
+  });
+  it('the lines add up to the setup total; tooling, training and governance are spread over 12 months, coaching over 36, the hub over its 30 days', () => {
+    const total = 35000 + 0.5 * 12 * (WD / 12) * ROLE + 35000 + 0.25 * 12 * (WD / 12) * ROLE + 90000;   // 239,315.5
     expect(setupBreakdown(c).total).toBeCloseTo(total, 4);
     expect(model(c).setupTotal).toBeCloseTo(total, 4);
-    const p = engineNow(c).K.setupProfile, flat = (35000 + 0.5 * 12 * (WD / 12) * ROLE + 0.25 * 12 * (WD / 12) * ROLE) / 12;
-    expect(p[0]).toBeCloseTo(flat + 15 * 0.4 * RATE * WD / 12 + 90000, 4);   // 145,506.3
-    expect(p[11]).toBeCloseTo(flat + 15 * 0.4 * RATE * WD / 12, 4);   // 55,506.3
-    expect(p[12]).toBeCloseTo(15 * 0.3 * RATE * WD / 12, 4);   // 34,485
-    expect(p[35]).toBeCloseTo(15 * 0.2 * RATE * WD / 12, 4);   // 22,990
+    const p = engineNow(c).K.setupProfile, flat = (35000 + 0.5 * 12 * (WD / 12) * ROLE + 0.25 * 12 * (WD / 12) * ROLE) / 12, coach = 35000 / 36;
+    expect(p[0]).toBeCloseTo(flat + coach + 90000, 4);   // 100,498.9
+    expect(p[11]).toBeCloseTo(flat + coach, 4);   // 10,498.9
+    expect(p[12]).toBeCloseTo(coach, 4);   // 972.2
+    expect(p[35]).toBeCloseTo(coach, 4);
     expect(headlineOf(engineNow(c), c).setup).toBeCloseTo(total, 4);
   });
 });

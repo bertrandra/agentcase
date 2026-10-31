@@ -15,9 +15,9 @@ const help = (
     <p>The one-off seed investment to stand up the agentic capability: tooling, training, coaching, governance. It is the denominator of the ROI.</p>
     <p>Setup total = tooling + training + coaching + governance (+ the HRI change cost and the Knowledge hub setup when those modules are on, + the opt-in
       programme activities switched on). Each line is spent over its activity's duration: tooling, training, governance and the change cost over the setup
-      duration (unless the activity has its own), coaching along its curve over the horizon, the hub setup over its days. Training and governance are labour
-      from resources (role FTE × duration × the target day rate with the AI-skill premium). Recurring run costs (tokens, infrastructure, run team, hub
-      curation) never belong here.</p>
+      duration (unless the activity has its own), coaching over its months, the hub setup over its days. Training, coaching and governance are labour from
+      resources (role FTE × duration, or coaching days a month × months, × the target day rate with the AI-skill premium). Recurring run costs (tokens,
+      infrastructure, run team, hub curation) never belong here.</p>
     <p>Each setup line is an activity of the transformation programme: its description, amount and duration are edited in the 🧩 Process section (Open …
       in Process below). This screen keeps the totals, the chart and the case-level inputs.</p>
   </>

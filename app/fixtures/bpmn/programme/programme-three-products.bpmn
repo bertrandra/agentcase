@@ -151,9 +151,12 @@
         </bpmn:multiInstanceLoopCharacteristics>
       </bpmn:task>
       <bpmn:task id="prog-setupCoaching" name="Setup: coaching">
-        <bpmn:documentation>Pair programming, deliverable review, senior / junior binomes: the coaching load of the entry team weans from Y1 to cruise (one coaching activity, along its curve, D-B30).</bpmn:documentation>
+        <bpmn:documentation>Pair programming, deliverable review, senior / junior binomes, run by the preceptors: coaching days a month over its duration (one coaching activity, D-B30).</bpmn:documentation>
         <bpmn:extensionElements>
-          <ac:programmeActivity kind="setupCoaching" level="product" costRule="resources" timing="setup" placement="Over the horizon along the coaching curve: Y1 40%, Y2 30%, then cruise 20% of the entry team's capacity" cost="1241460">
+          <ac:programmeActivity kind="setupCoaching" level="product" costRule="resources" timing="setup" placement="36 months from the product's month 1, 2 days a month, spent evenly" cost="35000">
+            <ac:param key="coachDaysPerMonth" value="" unit="days/month"/>
+            <ac:param key="coachMonths" value="" unit="months"/>
+            <ac:param key="setupCoaching" value="35000" unit="€"/>
             <ac:param key="coachY1" value="40" unit="%"/>
             <ac:param key="coachCruise" value="20" unit="%"/>
           </ac:programmeActivity>

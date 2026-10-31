@@ -31,7 +31,7 @@ export const AUTONOMY_TIERS: [string, string, string][] = [
   ['Self-service', 'Y2–Y3', 'Playbooks, internal certification, communities of practice'],
   ['Community of practice', 'cruise', 'Peer support only; coaching decays deliberately'],
 ];
-/** Coaching load (% of capacity) in Y1, Y2 (mid-way) and Y3 (the programme's curve, `coachLoad`), with its yearly cost, in the euro result (D-B30). */
+/** Coaching load (% of capacity) in Y1, Y2 (mid-way) and Y3 (`coachLoad`), with its indicative yearly cost: informative, not priced (D-B30 rev.). */
 export function coachView(c: Ctx) {
   const loads = [1, 2, 3].map((y) => coachLoad(c, y)), r = programmeRates(c), etp = teamInCost(c.s, c.inp).etp;
   return { y1: loads[0]!, cruise: loads[2]!, loads, costs: loads.map((p) => etp * (p / 100) * (r.tjm || 600) * r.wd) };

@@ -730,7 +730,7 @@ and a controller reads `.bpmn` files into the node tree; since B4 the Process se
   `frame/onboarding.ts`, `pdc/vars/scope.ts`, `tune/program.ts`, `portfolio/{costModelLines,timeline,knowledge,run}.ts`.
 - **One cost profile** `domain/programme/profile.ts` (B9b, F-B68), light like the timing owner so that the engine kernel imports it:
   `programmeLines(c)` (tooling; training and governance from resources: role FTE × duration × `targetBlendedTJM` × the AI-skill premium; coaching
-  along its curve; HRI change; hub setup; the opt-in activities of `optIn.ts` switched on) and `engineProfile(c)` (the lines on the product's
+  days a month × months, calibrated to `setupCoaching` (`coachingPlan`); HRI change; hub setup; the opt-in activities of `optIn.ts` switched on) and `engineProfile(c)` (the lines on the product's
   months, the hub part, the opt-in savings). `time/kernel.ts` freezes it in `K.setupProfile` / `ktProfile` / `savingProfile` (a setup lever scales
   it); `tuneB/setup.ts` `setupBreakdown` lists its lines (so `model().setupTotal` = Σ lines); `portfolio/costModelLines.ts` writes one row per line;
   `portfolio/series.ts` moves the engine's hub months by the knowledge-transfer lead; `programme/costs.ts` shows each line in the panel. The

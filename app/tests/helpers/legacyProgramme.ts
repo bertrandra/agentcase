@@ -43,10 +43,10 @@ export function legacyStage<T extends CaseState>(s: T): T {
 
 /**
  * A case with NO programme cost under the B9b rules (DEV-B9B-COACHING / -RESOURCES): the euro lines at 0 are not enough any more, the resource
- * lines are zeroed too (trainers, Design Authority effort, coaching load). The fixture econ-no-setup zeroes the legacy amounts only.
+ * lines are zeroed too (trainers, Design Authority effort, coaching days). The fixture econ-no-setup zeroes the legacy amounts only.
  */
 export function noProgramme<T extends CaseState>(s: T): T {
-  return { ...s, dom: { ...s.dom, values: { ...s.dom.values, trainFte: '0', govFte: '0', coachY1: '0', coachCruise: '0' } } };
+  return { ...s, dom: { ...s.dom, values: { ...s.dom.values, trainFte: '0', govFte: '0', coachDaysPerMonth: '0' } } };
 }
 
 /** The factory of `vi.mock('@/domain/programme/profile', …)`: the real module with the legacy lines and the legacy 6-month engine profile. */

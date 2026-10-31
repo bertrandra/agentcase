@@ -1243,7 +1243,7 @@ switching one on adds its cost to the programme cost and the cash flow (hand-com
 | D-B27 | Setup duration (T1) | (a) the engine's 6 months everywhere; (b) the `setupDuration` input everywhere, the engine spreads over it; (c) per setup line, from its activity | **(c)**, which reduces to (b) when lines share one duration |
 | D-B28 | Pilot placement (T2) | (a) before the build (Pilot & Prove); (b) from month 1 overlapping the setup | **(a)**: the pilot proves before scaling; its cost moves earlier |
 | D-B29 | Knowledge Hub setup timing (T3) | (a) `ktLeadMonths` before the product's month 0; (b) `khSetupDays` after onboarding; (c) inside the setup profile | **(a)** for the per-product part, the common hub once before the first wave |
-| D-B30 | Coaching (T5) | (a) one coaching activity, curve-based, in the euro result; (b) keep the setup line, curve informative | **(a)** |
+| D-B30 | Coaching (T5) | (a) one coaching activity, curve-based, in the euro result; (b) keep the setup line, curve informative | **(a)**, **revised 2026-10-31**: one coaching activity priced as a resource activity: coaching days per month (default 2) × duration in months × the coach day rate (the rate card rule of the other resource lines), spread evenly over its months; an existing case's `setupCoaching` amount calibrates the days (total days = amount / day rate, months = days / days per month), so the cost reproduces the amount; the 40/30/20 % curve (`coachY1`, `coachCruise`) is not priced, it stays the informative view of the Maturity screen |
 | D-B31 | New costs (stages, value tracking, AI Act, audit interviews) | (a) opt-in, off by default; (b) on by default | **(a)**: no figure moves without a choice |
 | D-B32 | Where the programme lives | (a) second participant in the same document; (b) a separate document | **(a)** (D-B26) |
 
@@ -1401,8 +1401,8 @@ stay in their keys until B9c). Code: `app/src/domain/programme/{timing,profile,o
 - **F-B68 built.** `profile.ts` is the ONE monthly cost profile of the programme: `programmeLines(c)` — tooling (a non-labour amount, over the setup
   duration), training (trainers `trainFte`, default 0.5 FTE) and governance (Design Authority `govFte`, default 0.25 FTE): role FTE × duration × working
   days / 12 × the role rate (the target blended day rate of the rate card and the target location mix, `targetBlendedTJM`, × the AI-skill premium 1.15:
-  the SDLC's rate), coaching along its curve (D-B30: entry team × load Y1 → Y2 → cruise × day rate × working days, over the horizon, in the euro
-  result), the HRI change cost (engine formula kept), the hub setup (formula kept, parity), the opt-in activities switched on. `engineProfile(c)`
+  the SDLC's rate), coaching (D-B30 revised 2026-10-31: `coachDaysPerMonth`, default 2, × `coachMonths` × the role rate, spread over its months;
+  with no duration entered, `setupCoaching` calibrates the days, so its cost is the case's amount; the EV-19 curve stays informative), the HRI change cost (engine formula kept), the hub setup (formula kept, parity), the opt-in activities switched on. `engineProfile(c)`
   lays them on the product's months (a spend before the build at month 1, a spend past the horizon in its last month), with the hub part and the
   opt-in savings; the kernel reads it (`K.setupProfile`, `K.ktProfile`, `K.savingProfile`; a scenario lever on the setup scales it), the setup
   breakdown and so `model().setupTotal` add its lines, the cost model writes one row per line ("Setup: Training"…), the consolidation moves the
