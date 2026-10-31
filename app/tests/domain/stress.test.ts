@@ -4,6 +4,7 @@ import { quantile } from '@/domain/model/numerics';
 import { activeCurve } from '@/domain/model/overlay';
 import { compareData, mcParamsOf, mcSeedOf, runMonteCarlo, scenarioSet, sensitivityMatrix, sensitivityRows, thinFor } from '@/domain/stress';
 import { extraIds, loadCase, loadExtra, problems } from '../helpers/extras';
+import { deviationOf } from '../helpers/deviations';
 
 const only = (o: Record<string, unknown>, keys: string[]): Record<string, unknown> => Object.fromEntries(keys.map((k) => [k, o[k]]));
 
@@ -63,9 +64,11 @@ describe('Monte Carlo (seeded mulberry32) reproduces the legacy run to 1e-6', ()
     const c = ctx(id), r = runMonteCarlo(c, 200, mcSeedOf(c)), s = r.outcomes, e = loadExtra('mcRun', id) as { stats: Record<'p10' | 'p50' | 'p90', number> };
     ([['p10', 0.1], ['p50', 0.5], ['p90', 0.9]] as const).forEach(([k, f]) => {
       expect(r.stats[k]).toBe(quantile(s, f));
-      expect(e.stats[k] >= (s[Math.floor(f * 200) - 1] as number) - 1e-6 && e.stats[k] <= (s[Math.floor(f * 200) + 1] as number) + 1e-6).toBe(true);
+      // the legacy order statistic is of the legacy draws: compared while the draws are (the B9b deviations: the programme cost moves every outcome)
+      if (!deviationOf('mcRun.outcomes', id)) expect(e.stats[k] >= (s[Math.floor(f * 200) - 1] as number) - 1e-6
+        && e.stats[k] <= (s[Math.floor(f * 200) + 1] as number) + 1e-6).toBe(true);
     });
-    expect(r.stats.pNetNeg).toBe((e.stats as unknown as { pNeg: number }).pNeg);
+    if (!deviationOf('mcRun.stats.pNeg', id)) expect(r.stats.pNetNeg).toBe((e.stats as unknown as { pNeg: number }).pNeg);
   });
   it('the stored seed of the mc-seed-7 fixture is used, and the same seed gives the same distribution', () => {
     const c = ctx('mc-seed-7');

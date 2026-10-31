@@ -1,4 +1,4 @@
-import { describe, expect, it } from 'vitest';
+import { describe, expect, it, vi } from 'vitest';
 import { model } from '@/domain';
 import { CM_CODES, cmAvailable, cmRecommend, cmTierSplit, commercialRevenue, commercialView } from '@/domain/pdc/commercial';
 import { playbackSeries } from '@/domain/pdc/playback';
@@ -8,6 +8,7 @@ import { deviationFixtures, legacyMoney, legacyVelocityRow } from '../helpers/de
 import { fmtPayback } from '@/domain/economics';
 import { diffs } from '../helpers/economics';
 import { ctxOf, pdc, PDC_FIXTURES } from '../helpers/pdc';
+vi.mock('@/domain/programme/profile', async (orig) => (await import('../helpers/legacyProgramme')).legacyProfileMock(orig));   // legacy parity, B9b
 
 type Cm = { rev: Record<string, { rev: number[]; pp: number }>; rec: [string, string]; tier: object; avail: boolean[]; out: Record<string,
   { rows: string[][] }> };

@@ -35,7 +35,7 @@ export function byYear(a: number[]): number[] {
 }
 
 /** What the calendar layout reads of a run: the engine's months, the entry headcount and the KT part of the setup (a product, or one of its scenarios). */
-export type SeriesSource = Pick<ProductRun, 'rows' | 'baseEtp' | 'ktSetup' | 'profile'>;
+export type SeriesSource = Pick<ProductRun, 'rows' | 'baseEtp' | 'ktSetup' | 'ktMonths'>;
 /** Where a product sits on the calendar. */
 export type Placement = Pick<Scheduled, 'month0' | 'lead'>;
 
@@ -52,10 +52,10 @@ function build(run: SeriesSource, s: Placement, L: number): ProductSeries {
     const e = s.month0 + kept - 1;
     for (let i = e + 1; i < L; i++) { out.humanFte[i] = out.humanFte[e]!; out.agentVfte[i] = out.agentVfte[e]!; out.adoptionW[i] = out.adoptionW[e]!; }
   }
-  const part = run.ktSetup > 0 ? run.ktSetup / run.profile : 0;
-  if (part === 0) return out;
-  for (let t = 1; t <= run.profile; t++) {
-    const home = s.month0 + t - 1, placed = s.month0 - s.lead + t - 1;
+  if (!(run.ktSetup > 0)) return out;
+  for (let t = 1; t <= run.ktMonths.length; t++) {
+    const part = run.ktMonths[t - 1]!, home = s.month0 + t - 1, placed = s.month0 - s.lead + t - 1;
+    if (part === 0) continue;
     if (s.lead > 0 && home < L) { out.setup[home]! -= part; out.net[home]! += part; }
     if (placed < L) { out.ktSetup[placed]! += part; if (s.lead > 0) { out.setup[placed]! += part; out.net[placed]! -= part; } }
   }

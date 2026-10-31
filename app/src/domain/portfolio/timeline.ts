@@ -1,7 +1,7 @@
 /** @calc-zone portfolio-consolidation */
 import { resolveProduct } from './resolve';
 import { runOf } from './run';
-import { ktPrepMonths, setupTiming } from '../programme/timing';
+import { ktPrepMonths, setupMonths } from '../programme/timing';
 import type { Portfolio, Product, Wave } from './types';
 import { resolveSchedule, whole, type WaveSchedule } from './waveSchedule';
 
@@ -21,11 +21,11 @@ export const productMonth0 = (wave: Wave, product: Product): number => whole(wav
 const schedules = new WeakMap<Portfolio, WaveSchedule>();
 /**
  * The effective calendar (wave dependencies, transformation-team capacity), once per portfolio identity. A product's setup lasts what the
- * programme's timing owner says (`setupTiming().engineMonths`, the engine's setup profile: SPEC_BPMN § 19.4 F-B65).
+ * programme's timing owner says (`setupMonths`, the setup duration: SPEC_BPMN § 19.4 F-B65, D-B27).
  */
 export function waveSchedule(pf: Portfolio): WaveSchedule {
   let s = schedules.get(pf);
-  if (!s) { s = resolveSchedule(pf, (id) => setupTiming(runOf(resolveProduct(pf, id)).ctx).engineMonths); schedules.set(pf, s); }
+  if (!s) { s = resolveSchedule(pf, (id) => setupMonths(runOf(resolveProduct(pf, id)).ctx)); schedules.set(pf, s); }
   return s;
 }
 

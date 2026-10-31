@@ -26,7 +26,7 @@ interface DriverRun { id: string; down: SeriesSource; up: SeriesSource }
 /** What the calendar layout reads of a moved case: its engine's months, entry headcount and KT part of the setup (as `runOf` builds them). */
 function sourceOf(c: Ctx): SeriesSource {
   const e = engineNow(c), K = e.K;
-  return { rows: e.months(), baseEtp: K.baseEtp, ktSetup: khSetupCost(c), profile: K.setupProfileMonths };
+  return { rows: e.months(), baseEtp: K.baseEtp, ktSetup: khSetupCost(c), ktMonths: K.ktProfile };
 }
 
 const runsMemo = new WeakMap<object, unknown>();

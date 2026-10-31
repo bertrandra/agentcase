@@ -4,6 +4,7 @@ import { hriIndex } from '../engagement';
 import { teamInCost } from '../location';
 import { sddMaturity } from '../model/vtax';
 import { maturityInfo } from './maturity';
+import { coachLoad, programmeRates } from '../programme/profile';
 import { modelOf } from './memo';
 
 // Wave 3 — EV-16 SDD & tooling maturity · EV-19 coaching curve · EV-20/29 measurement socle · EV-24 governance gates.
@@ -30,12 +31,10 @@ export const AUTONOMY_TIERS: [string, string, string][] = [
   ['Self-service', 'Y2–Y3', 'Playbooks, internal certification, communities of practice'],
   ['Community of practice', 'cruise', 'Peer support only; coaching decays deliberately'],
 ];
-/** Coaching load (% of capacity) in Y1, Y2 (mid-way) and Y3, with its indicative yearly cost. */
+/** Coaching load (% of capacity) in Y1, Y2 (mid-way) and Y3 (the programme's curve, `coachLoad`), with its yearly cost, in the euro result (D-B30). */
 export function coachView(c: Ctx) {
-  const m = modelOf(c), y1 = c.inp.p('coachY1'), cruise = c.inp.p('coachCruise');
-  const a = isNaN(y1) ? 40 : y1, z = isNaN(cruise) ? 20 : cruise, etp = teamInCost(c.s, c.inp).etp;
-  const loads = [a, (a + z) / 2, z];
-  return { y1: a, cruise: z, loads, costs: loads.map((p) => etp * (p / 100) * (m.tgtTJM || 600) * (m.wd || 220)) };
+  const loads = [1, 2, 3].map((y) => coachLoad(c, y)), r = programmeRates(c), etp = teamInCost(c.s, c.inp).etp;
+  return { y1: loads[0]!, cruise: loads[2]!, loads, costs: loads.map((p) => etp * (p / 100) * (r.tjm || 600) * r.wd) };
 }
 
 export type SocleRow = [string, string, string];

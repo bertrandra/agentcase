@@ -3,7 +3,7 @@ import { eurK } from '../../../tuneB/fmt';
 import { selectActivity, useProcessView } from '../view';
 
 export const costText = (a: ProgrammeActivity): string =>
-  (a.cost.amount === null ? '—' : `${eurK(a.cost.amount)}${a.cost.per === 'year 1' ? ' / yr (Y1)' : ''}`);
+  (a.cost.amount === null ? '—' : `${eurK(a.cost.amount)}${a.cost.per === 'year 1' ? ' / yr (Y1)' : a.cost.per === 'horizon' ? ' over the horizon' : ''}`);
 const lane = (v: ProgrammeView, role: string): string => v.lanes.find((l) => l.role === role)?.name ?? role;
 
 /**
@@ -82,9 +82,13 @@ export function ProgrammeFacts({ v }: { v: ProgrammeView }) {
       </div>
       <ul className="ac-prog-list" aria-label="Message flows to the delivery process">
         {v.messageFlows.map((f) => <li key={f.id}>{`${f.name} (message flow to the delivery process)`}</li>)}
-        {v.capacity !== null && <li>{`Transformation-team capacity: ${v.capacity} product(s) in setup at once`}</li>}
-        {v.waves.map((w) => <li key={w.id}>{`${w.name}: month ${w.start}, ${w.products.join(', ') || 'no product'}${w.dependency ? ` — ${w.dependency}` : ''}`}
-        </li>)}
+        {v.capacity !== null && <li>{`Transformation-team capacity: ${v.capacity} product(s) in setup at once (edited in a wave's panel)`}</li>}
+        {v.waves.map((w) => (
+          <li key={w.id}>
+            <button type="button" className="ac-link" onClick={() => selectActivity(w.id)}>{`Wave: ${w.name}`}</button>
+            {`: month ${w.start}, ${w.products.join(', ') || 'no product'}${w.dependency ? ` — ${w.dependency}` : ''}`}
+          </li>
+        ))}
       </ul>
     </div>
   );

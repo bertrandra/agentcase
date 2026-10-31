@@ -28,9 +28,11 @@ describe('A13: ktLeadMonths moves only the KT setup cost', () => {
       expectSeriesClose(dSetup, dKt);
       expectSeriesClose(b.series.net.map((x, i) => x - (a.series.net[i] as number)), dKt.map((x) => -x));
       expectClose(b.summary.setup, a.summary.setup); expectClose(b.summary.net, a.summary.net);
-      const d = 1 + a.rate / 12, part = a.series.ktSetup.reduce((x, y) => x + y, 0) / 6;
+      // DEV-B9B-HUB-TIMING (D-B29): the KT part is the hub setup spent over its own days (khSetupDays 30 → its first month), not over 6 months
+      const d = 1 + a.rate / 12, kt = a.products[0]!.run.ktMonths;
+      expect(kt.reduce((x, y) => x + y, 0)).toBeCloseTo(a.series.ktSetup.reduce((x, y) => x + y, 0), 6);
       let dn = 0;
-      for (let t = 1; t <= 6; t++) dn += part * (Math.pow(d, -(6 + t)) - Math.pow(d, -(6 - k + t)));
+      kt.forEach((part, i) => { const t = i + 1; dn += part * (Math.pow(d, -(6 + t)) - Math.pow(d, -(6 - k + t))); });
       expectClose(b.summary.npv - a.summary.npv, dn, 1e-7);
       const cum = cumulative(b.series.net), first = 6 - k + 1;
       expect(b.summary.paybackMonth).toBe(cum.findIndex((x, i) => i + 1 >= first && x >= 0) + 1);

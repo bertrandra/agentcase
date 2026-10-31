@@ -1,4 +1,4 @@
-import { describe, expect, it } from 'vitest';
+import { describe, expect, it, vi } from 'vitest';
 import { model } from '@/domain';
 import { headline } from '@/domain/economics/headline';
 import { fmtRoiPct } from '@/domain/economics/roi';
@@ -13,6 +13,7 @@ import { computeDdSensitivity } from '@/domain/pdc/ddSens';
 import { diffs } from '../helpers/economics';
 import { ctxOf, pdc, PDC_FIXTURES } from '../helpers/pdc';
 import { deviationFixtures } from '../helpers/deviations';
+vi.mock('@/domain/programme/profile', async (orig) => (await import('../helpers/legacyProgramme')).legacyProfileMock(orig));   // legacy parity, B9b
 
 const base = ddBase(makeDefaultDoc());
 interface LegacyRow { id: string; g: string; l: string; v: unknown; where: string; eff: string; edit: unknown; cls: string; share?: number; role?: string;

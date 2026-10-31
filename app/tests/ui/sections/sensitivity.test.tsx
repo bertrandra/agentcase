@@ -1,6 +1,6 @@
 // @vitest-environment jsdom
 import { act, cleanup, render, screen } from '@testing-library/react';
-import { afterEach, describe, expect, it } from 'vitest';
+import { afterEach, describe, expect, it, vi } from 'vitest';
 import { setInput } from '@/controllers/inputs';
 import { makeCtx } from '@/domain';
 import { sensitivityMatrix } from '@/domain/stress';
@@ -8,6 +8,7 @@ import { appStore } from '@/store/instance';
 import Sensitivity from '@/ui/sections/stress/sensitivity';
 import { loadExtra } from '../../helpers/extras';
 import { missingFor, openFixture, PARITY_FIXTURES } from '../../helpers/stressParity';
+vi.mock('@/domain/programme/profile', async (orig) => (await import('../../helpers/legacyProgramme')).legacyProfileMock(orig));   // legacy parity, B9b
 
 afterEach(cleanup);
 

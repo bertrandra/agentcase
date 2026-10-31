@@ -37,7 +37,7 @@ describe('calculation staleness banner in the shell', () => {
   it('names the engine versions on a version mismatch', async () => {
     render(<App />);
     await open((f) => { f.calculationPackage.calculationVersion = 'agentcase.timeengine.v0'; });
-    expect(screen.getByTestId('calc-stale-banner').textContent).toMatch(/different engine version.*timeengine\.v0 → live agentcase\.timeengine\.v1/);
+    expect(screen.getByTestId('calc-stale-banner').textContent).toMatch(/different engine version.*timeengine\.v0 → live agentcase\.timeengine\.v2/);
   });
   it('survives undo and redo of the opened case (the banner is not history)', async () => {
     render(<App />);

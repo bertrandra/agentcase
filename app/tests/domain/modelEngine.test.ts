@@ -7,7 +7,7 @@ import { flowModel } from '@/domain/model/flow';
 import { lceModel } from '@/domain/model/lce';
 import { runMcs } from '@/domain/model/mcs';
 import { doraReadout, supModel } from '@/domain/model/supView';
-import { legacyNames } from '../helpers/deviations';
+import { legacyNames, withoutDeviations } from '../helpers/deviations';
 import { diffValues, extraIds, loadCase, loadExtra, omitDeep, pick } from '../helpers/oracleDiff';
 
 type Json = Record<string, unknown> & { error?: string };
@@ -18,7 +18,8 @@ const NOW = Date.parse('2026-10-21');
 const same = (name: string, id: string, got: (id: string) => unknown, keys?: string[]) => {
   const exp = loadExtra<Json>(name, id);
   if (exp.error) return;   // the legacy read-out itself threw on this fixture (the empty-scope edge case)
-  expect(diffValues(omitDeep(keys ? pick(exp, keys) : exp, ['label', 'allZero', 'legacyIter', 'residual', 'clamped']), got(id), name).slice(0, 8)).toEqual([]);
+  expect(withoutDeviations(diffValues(omitDeep(keys ? pick(exp, keys) : exp, ['label', 'allZero', 'legacyIter', 'residual', 'clamped']), got(id), name), id)
+    .slice(0, 8)).toEqual([]);
 };
 
 describe('Model-Engine read-outs reproduce the legacy oracle', () => {

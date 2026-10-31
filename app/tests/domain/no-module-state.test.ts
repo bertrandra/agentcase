@@ -20,6 +20,7 @@ const ALLOWED: Record<string, string> = {
   'domain/canonical.ts:engines': 'memo: the engine of a Ctx (WeakMap keyed by the immutable context)',
   'domain/model/overlay.ts:cache': 'memo: the model result of a Ctx',
   'domain/tuneB/tokens.ts:memo': 'memo: the token usage of a Ctx',
+  'domain/tuneB/setup.ts:CORE': 'constant lookup: the ids of the four core setup lines (never filled)',
   'domain/pdc/vars/engine.ts:fallback': 'memo: the Monte Carlo fallback per seed (deterministic for a seed)',
   'domain/pdc/variables.ts:rank': 'constant lookup built once from ORDER (never written after)',
   'domain/snapshots/library.ts:sizes': 'memo: the serialised size of a snapshot object',

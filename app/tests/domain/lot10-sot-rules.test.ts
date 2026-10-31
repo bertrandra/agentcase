@@ -3,6 +3,7 @@ import { describe, expect, it } from 'vitest';
 import { engineNow, makeCtx, model, type CaseState } from '@/domain';
 import { AUTH_LEVELS, AUTH_ORDER, authRank } from '@/domain/authority';
 import { fitPotential } from '@/domain/inputs';
+import { noProgramme } from '../helpers/legacyProgramme';
 import { blendedDayRate } from '@/domain/location';
 import { levelLabelFor, rampBoundsOf, RAMP_BOUNDS_DEFAULT } from '@/domain/maturityBounds';
 import { driftRows } from '@/domain/model/cbdView';
@@ -78,7 +79,8 @@ describe('single owners of the moved figures (no deviation)', () => {
     expect(capacityRows(c).map((r) => r.label)).toEqual(['Y1', 'Y2', 'Y3', 'Y4', 'Y5']);
   });
   it('the story payback is the displayed payback; the blended rate has one owner; the fit rule; the AI authority order', () => {
-    expect(storySummary(load('econ-no-setup')).payback).toBe(0);
+    // B9b: no setup = no programme cost (noProgramme: the resource lines zeroed too)
+    expect(storySummary(makeCtx(noProgramme(JSON.parse(readFileSync('fixtures/cases/econ-no-setup.json', 'utf8')) as CaseState))).payback).toBe(0);
     const c = load('golden');
     expect(blendedDayRate(c.s, c.inp)).toBe(model(c).blendedTJM);
     expect([fitPotential(83.6, 100), fitPotential(83.6, 60), fitPotential(-2, 100)]).toEqual([84, 60, 0]);

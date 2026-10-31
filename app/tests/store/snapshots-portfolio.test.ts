@@ -87,7 +87,8 @@ describe('named snapshots of a portfolio', () => {
     fourProducts(); captureSnapshot('Plan A', T0, 'a');
     expect(compareSnapshots('current', 'a')!.every((r) => r.delta === 0)).toBe(true);
     setActiveProduct(pfNow().products[1]!.id);
-    expect(compareSnapshots('current', 'a')!.every((r) => r.delta === 0)).toBe(true);   // the same product on both sides
+    // the same product on both sides: equal figures (B9b: this product's payback is beyond the horizon on both sides, a null delta)
+    expect(compareSnapshots('current', 'a')!.every((r) => r.a === r.b)).toBe(true);
     setProductOverride(pfNow().products[1]!.id, 'values.y3Ramp', '90');
     expect(compareSnapshots('a', 'current')!.some((r) => r.delta !== 0)).toBe(true);
     expect(compareSnapshots('a', 'missing')).toBeNull();

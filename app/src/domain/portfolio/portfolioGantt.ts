@@ -57,7 +57,7 @@ function ownMarks(run: ProductRun) {
     let marks: { label: string; family: string; month: number }[] = [];
     try { marks = run.engine.milestones().filter((m) => m.month >= 1); } catch { marks = []; }
     const rampEnd = marks.filter((m) => m.family !== 'financial' && m.family !== 'workforce').reduce((a, m) => Math.max(a, m.month), 0);
-    r = { end: Math.max(run.profile, rampEnd), marks };
+    r = { end: Math.max(run.setupMonths, rampEnd), marks };
     ramps.set(run, r);
   }
   return r;

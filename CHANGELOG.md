@@ -17,6 +17,30 @@ When releasing, follow [docs/BUMP_PROCEDURE.md](docs/BUMP_PROCEDURE.md) (§7 for
 
 ## [Unreleased]
 
+### BPMN B9b — the programme decisions applied: one timing, labour from resources, one coaching activity, opt-in activities, waves in the panel
+
+Phase B9b of [docs/SPEC_BPMN.md](docs/SPEC_BPMN.md) (§ 19, D-B27…D-B31, F-B65, F-B67, F-B68, F-B71; details in § 19.10). **Figures move on purpose**,
+each family recorded in [docs/DEVIATIONS.md](docs/DEVIATIONS.md) with its oracle fields (`app/tests/helpers/deviationsB9b.ts`).
+
+- **One timing per activity** (`domain/programme/timing.ts`): a setup line lasts its activity's duration (the setup duration, 12 months by default,
+  unless training / governance have their own) instead of the engine's fixed 6 months (DEV-B9B-SETUP-SPREAD); Pilot & Prove is the pilot, before the
+  build (16 weeks on golden, not `rmD4`; the cost model spends the pilot before the product's month 0; DEV-B9B-PILOT); the hub setup lasts its days,
+  `ktLeadMonths` before month 0 (DEV-B9B-HUB-TIMING); one stage reading on every surface (T4).
+- **One monthly cost profile** (`domain/programme/profile.ts`, F-B68) read by the Time Engine, the setup breakdown, the cost model (one row per
+  line) and the programme panel. Training and governance are labour from resources (role FTE × duration × the target day rate × 1.15;
+  DEV-B9B-RESOURCES); coaching is one activity priced along its curve, in the euro result (DEV-B9B-COACHING). Golden: setup €225,000 →
+  €1,445,775.5, NPV €1,359,010 → €259,979, payback month 9 → 30, ROI 7.13 → 0.27 — the coaching curve is most of it (owner review).
+- **Opt-in activities, off by default (D-B31)**: engagement stages, value tracking, AI Act obligations, audit interviews and the four agent-rollout
+  activities (licence procurement, agent-toolchain integration, rollout hypercare, legacy decommissioning), each a programme task with its panel;
+  switched on, its labour enters the setup and the cash flow.
+- **Waves**: start, dependency and the transformation-team capacity are edited in the wave's panel of the 🧩 Process section; the 🌊 Waves board
+  shows them as context with "Open … in Process".
+- Engine `CALCULATION_VERSION` `agentcase.timeengine.v2`: a case saved before B9b opens with the "computed by another engine version" banner.
+- Tests: hand-computed `tests/domain/programme/profile.test.ts`, `timing-owner.test.ts`; `legacy-profile.test.ts` (with the legacy profile injected,
+  every skipped oracle field equals the oracle); the legacy parity tests of screens, workbooks and reports run on the injected legacy profile
+  (`tests/helpers/legacyProgramme.ts`); `tools/parallel-run-known.json` records the 40 workbooks' NPV / payback differences; `tools/excel-compat.mjs`
+  reports the twin's recorded fields as KNOWN.
+
 ## [v20.30.0] 2026-10-30 — BPMN B9a: the transformation programme process, one timing owner, swim lanes and context screens
 
 ### BPMN B9a — the transformation programme as a second process: one timing owner, swim lanes, a parameter panel, context screens

@@ -12,6 +12,9 @@ const close = (a: number, b: number): void => { expect(Math.abs(a - b)).toBeLess
 const PILOT = 'Pilot (included in totals)';
 const lineSum = (m: CostModel, name: string, i: number): number => m.other.rows.filter((r) => r.keys[4] === name && r.role === 'line').reduce((s,
   r) => s + nz(r.months[i]), 0);
+/** B9b: one setup row per programme cost line ("Setup: Training", "Setup: Coaching"…) and the Knowledge Hub / KT row; together the setup series. */
+const setupSum = (m: CostModel, i: number): number => m.other.rows.filter((r) => r.keys[3] === 'Setup' && r.role === 'line').reduce((s, r) => s
+  + nz(r.months[i]), 0);
 
 /** Everything a model must satisfy against the consolidation it comes from. */
 function reconcile(pf: Portfolio, m: CostModel): void {
@@ -32,8 +35,7 @@ function reconcile(pf: Portfolio, m: CostModel): void {
       'Knowledge Hub curation', i) + lineSum(m, 'Knowledge Hub infrastructure (allocated)', i), S.run[i]!);
     close(lineSum(m, 'Tokens', i), S.token[i]!); close(lineSum(m, 'Infrastructure', i), S.infra[i]!);
     close(lineSum(m, 'Knowledge Hub curation', i) + lineSum(m, 'Knowledge Hub infrastructure (allocated)', i), S.khCost[i]!);
-    close(lineSum(m, 'Setup: tooling, training, coaching, governance', i) + lineSum(m, 'Setup: engagement change cost', i) + lineSum(m,
-      'Setup: Knowledge Hub and knowledge transfer (KT)', i), S.setup[i]!);
+    close(setupSum(m, i), S.setup[i]!);
     close(lineSum(m, 'Setup: Knowledge Hub and knowledge transfer (KT)', i), S.ktSetup[i]!);
     close(-lineSum(m, 'Knowledge transfer avoided', i), S.ktAvoided[i]!);
   }
@@ -68,7 +70,7 @@ describe('cost model: days x rate + other costs = the app cost', () => {
   it('holds on all fixtures wrapped by envelopeCase (single product)', () => {
     expect(FIXTURE_IDS.length).toBe(107);
     const seen: Record<string, number> = { Tokens: 0, Infrastructure: 0, 'Agentic run team (AgentOps)': 0, 'Verification tax': 0, 'Knowledge Hub curation': 0,
-      'Knowledge transfer avoided': 0, blend: 0, 'Setup: tooling, training, coaching, governance': 0 };
+      'Knowledge transfer avoided': 0, blend: 0, 'Setup: Tooling & infra': 0, 'Setup: Training': 0, 'Setup: Coaching': 0, 'Setup: Governance': 0 };
     for (const id of FIXTURE_IDS) {
       const pf = envelopeCase(loadCase(id)), m = costModel(pf, { kind: 'portfolio' });
       try { reconcile(pf, m); } catch (e) { throw new Error(`${id}: ${(e as Error).message}`); }
@@ -103,12 +105,15 @@ describe('cost model: days x rate + other costs = the app cost', () => {
     expect(() => costModel(pf, { kind: 'product', id: pf.products[3]!.id })).toThrow(/not planned/);
     expect(() => costModel(pf, { kind: 'wave', id: 'nope' })).toThrow(/does not exist/);
   });
-  it('the pilot is a dated line included in the totals (D4): its months follow the pilot sizing from the product month 1', () => {
+  // DEV-B9B-PILOT (D-B28): the pilot is spent in the months before the build, ending at the product's month 0 (from calendar month 1 when the
+  // calendar has no earlier month), not from the product's month 1
+  it('the pilot is a dated line included in the totals (D4): its months follow the pilot sizing, before the build', () => {
     const pf = fourProducts(), c = consolidate(pf), m = costModel(pf, { kind: 'portfolio' });
     for (const v of c.products) {
       const pilot = byLine(m.other, v.name, PILOT), size = pilotSizing(v.run.ctx), pm = pilotMonths(size);
       expect(pm.length).toBe(Math.ceil((size.totalWeeks * 12) / 52 - 1e-9));
-      pilot.months.forEach((x, i) => expect(x, `${v.name} M${i + 1}`).toBe(i >= v.month0 && i < v.month0 + pm.length ? pm[i - v.month0] : null));
+      const from = Math.max(0, v.month0 - pm.length);
+      pilot.months.forEach((x, i) => expect(x, `${v.name} M${i + 1}`).toBe(i >= from && i < from + pm.length ? pm[i - from] : null));
       expect(pilot.total!).toBeCloseTo(size.cost, 6);
       const total = byProduct(m.other, v.name).find((r) => r.role === 'total')!,
         lines = byProduct(m.other, v.name).filter((r) => r.role === 'line' || r.role === 'team');

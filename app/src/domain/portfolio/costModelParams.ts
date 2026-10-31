@@ -29,7 +29,8 @@ function commonParams(pf: Portfolio, v: ProductView, rate: number, horizon: numb
       common(`Token model ${m.name}: price in`, m.priceIn, 'EUR per 1M tokens', IN.tok),
       common(`Token model ${m.name}: price out`, m.priceOut, 'EUR per 1M tokens', IN.tok)]),
     common('Day-rate scale', ctx.rateScale ?? 1, 'x', IN.mc), common('Token-price scale', ctx.tokenScale ?? 1, 'x', IN.mc),
-    common('AgentOps premium on the day rate', 1.15, 'x', IN.fixed), common('Setup spread over', v.run.profile, 'months', IN.fixed),
+    common('AgentOps premium on the day rate', 1.15, 'x', IN.fixed),
+    common('Setup duration (default spread of a setup line)', v.run.setupMonths, 'months', IN.fixed),
   ];
 }
 

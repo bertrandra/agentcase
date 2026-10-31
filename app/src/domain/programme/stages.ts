@@ -16,24 +16,27 @@ export interface EngagementStage {
   label: string; gate: string;
   /** the section the stage's work happens in */
   section: string;
-  /** the input holding its duration in weeks (null: the last stage, a gate with no duration) and the default the engagement view reads */
-  input: string | null; defaultWeeks: number;
+  /**
+   * the input holding its duration in weeks and its default (null: Pilot & Prove, which lasts the pilot (D-B28, phase B9b), and the last stage,
+   * a gate with no duration); `timed`: the stage has a duration
+   */
+  input: string | null; defaultWeeks: number; timed: boolean;
 }
 
 export const ENGAGEMENT_STAGES: readonly EngagementStage[] = [
   { id: 'discover', name: '0 · Discover', gantt: '🔍 Discover', tone: 'chart-cat-5', label: 'Framing, AS-IS baseline, eligibility',
-    gate: 'Baseline validated + eligibility', section: 'engagement-context', input: 'rmD1', defaultWeeks: 4 },
+    gate: 'Baseline validated + eligibility', section: 'engagement-context', input: 'rmD1', defaultWeeks: 4, timed: true },
   { id: 'calibrate', name: '1 · Calibrate', gantt: '🎯 Calibrate', tone: 'chart-cat-5', label: 'Sector coefficients, artifact scope frozen',
-    gate: 'Scope & coefficients frozen', section: 'scope-sel', input: 'rmD2', defaultWeeks: 4 },
+    gate: 'Scope & coefficients frozen', section: 'scope-sel', input: 'rmD2', defaultWeeks: 4, timed: true },
   { id: 'validate', name: '2 · Validate', gantt: '✅ Validate', tone: 'chart-cat-5', label: 'Assumptions signed, Monte Carlo run',
-    gate: 'Assumptions register signed · P50 > threshold', section: 'montecarlo', input: 'rmD3', defaultWeeks: 4 },
+    gate: 'Assumptions register signed · P50 > threshold', section: 'montecarlo', input: 'rmD3', defaultWeeks: 4, timed: true },
   { id: 'pilotProve', name: '3 · Pilot & Prove', gantt: '🚀 Pilot & Prove', tone: 'chart-cat-3', label: 'Pilot pods, KPI tracking',
-    gate: 'Pilot KPIs ≥ 80% of Y1 targets', section: 'kpi', input: 'rmD4', defaultWeeks: 6 },
+    gate: 'Pilot KPIs ≥ 80% of Y1 targets', section: 'kpi', input: null, defaultWeeks: 0, timed: true },
   { id: 'decide', name: '4 · Decide & Scale', gantt: '🏁 Decide & Scale', tone: 'chart-cat-3', label: 'Scale-out per Decision Intelligence',
-    gate: 'Verdict ≥ Conditional GO', section: 'decision', input: null, defaultWeeks: 0 },
+    gate: 'Verdict ≥ Conditional GO', section: 'decision', input: null, defaultWeeks: 0, timed: false },
 ];
 
 /** The four timed stages (Discover … Pilot & Prove), in order. */
-export const TIMED_STAGES: readonly EngagementStage[] = ENGAGEMENT_STAGES.filter((s) => s.input !== null);
-/** The stage defaults in weeks (4, 4, 4, 6), legacy `STAGE_DEFAULTS`. */
-export const STAGE_DEFAULTS: readonly number[] = TIMED_STAGES.map((s) => s.defaultWeeks);
+export const TIMED_STAGES: readonly EngagementStage[] = ENGAGEMENT_STAGES.filter((s) => s.timed);
+/** The stage defaults in weeks of the three stages with an input (4, 4, 4); Pilot & Prove lasts the pilot (`pilotTiming`). */
+export const STAGE_DEFAULTS: readonly number[] = TIMED_STAGES.filter((s) => s.input).map((s) => s.defaultWeeks);

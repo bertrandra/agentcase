@@ -1,3 +1,5 @@
+import { B9B_DEVIATIONS } from './deviationsB9b';
+
 /**
  * Machine-readable twin of docs/DEVIATIONS.md: the oracle fields where v19 intentionally differs from the legacy file.
  * Oracle tests drop exactly these fields (never a whole fixture) and assert the new rule in a dedicated test instead.
@@ -7,6 +9,7 @@
 export interface Deviation { id: string; reason: string; skip: string[]; only?: string[] }
 
 export const DEVIATIONS: Deviation[] = [
+  ...B9B_DEVIATIONS,
   // BPMN B9a, owner's decision of 2026-10-30 (docs/SPEC_BPMN.md § 7.1 item 3): no oracle field changes; asserted by tests/store/reg-include-derived.test.ts.
   { id: 'DEV-REGINCLUDE-DERIVED',
     reason: 'The "Include regulatory artefacts" box is the process document\'s regInclude only: dom.checked.regInclude is dropped on open and ' +
@@ -105,11 +108,11 @@ const strip = (p: string): string => p.replace(/\[\d+\]/g, '[]');
  * The deviation (if any) that covers an oracle path of a mismatch line such as `mcRun.stats.p10: expected 1, got 2` (on `fixture`, for a deviation
  * restricted to some fixtures).
  */
-export function deviationOf(line: string, fixture?: string): Deviation | undefined {
+export function deviationOf(line: string, fixture?: string, except?: (d: Deviation) => boolean): Deviation | undefined {
   const raw = line.slice(0, line.indexOf(':') < 0 ? line.length : line.indexOf(':'));
   const covers = (path: string, s: string) => path === s || path.startsWith(`${s}.`) || path.startsWith(`${s}[`);
   const applies = (d: Deviation) => !d.only || (fixture !== undefined && d.only.includes(fixture));
-  return DEVIATIONS.find((d) => applies(d) && d.skip.some((s) => covers(raw, s) || covers(strip(raw), s)));
+  return DEVIATIONS.find((d) => !except?.(d) && applies(d) && d.skip.some((s) => covers(raw, s) || covers(strip(raw), s)));
 }
 
 /** Mismatch lines minus the registered deviations (of `fixture`). */

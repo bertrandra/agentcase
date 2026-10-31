@@ -1,6 +1,6 @@
 // @vitest-environment jsdom
 import { act, cleanup, fireEvent, render, screen } from '@testing-library/react';
-import { afterEach, describe, expect, it } from 'vitest';
+import { afterEach, describe, expect, it, vi } from 'vitest';
 import { setInput } from '@/controllers/inputs';
 import { engineNow, makeCtx } from '@/domain';
 import { mcSeedOf, runMonteCarlo } from '@/domain/stress';
@@ -9,6 +9,7 @@ import { appStore } from '@/store/instance';
 import { fmtEur } from '@/ui/sections/stress/fmt';
 import Results from '@/ui/sections/verdict/results';
 import { missingFor, openFixture, PARITY_FIXTURES } from '../../helpers/stressParity';
+vi.mock('@/domain/programme/profile', async (orig) => (await import('../../helpers/legacyProgramme')).legacyProfileMock(orig));   // legacy parity, B9b
 
 afterEach(cleanup);
 const core = () => resultsCore(makeCtx(appStore().getState().doc));

@@ -9,8 +9,17 @@ import { freshStore } from './helpers';
 afterEach(() => dismissCalcBanner());
 
 describe('staleness of a portfolio file is reported at the right level', () => {
-  const raw = (): Record<string, unknown> => JSON.parse(fixtureText('pf-three-products')) as Record<string, unknown>;
+  /** The fixture as this engine saves it: its packages were written by engine v1, B9b is v2 (the B9b deviations); re-saved once, one tamper per test. */
+  let saved: string | null = null;
+  const resaved = (): string => {
+    if (saved === null) { freshStore(); openCaseText(fixtureText('pf-three-products')); dismissCalcBanner(); saved = exportSnapshotJson().json; }
+    return saved;
+  };
+  const raw = (): Record<string, unknown> => JSON.parse(resaved()) as Record<string, unknown>;
   const open = (r: Record<string, unknown>) => { freshStore(); openCaseText(JSON.stringify(r)); return getCalcBanner(); };
+  it('the fixture as saved before B9b (engine v1) shows the engine-version banner', () => {
+    expect(open(JSON.parse(fixtureText('pf-three-products')) as Record<string, unknown>)?.state).toBe('versionMismatch');
+  });
   it('the untouched fixture opens silently', () => { expect(open(raw())).toBeNull(); });
   it('tampering a scheduled product’s inputs: stale, and the banner names it (the shared hub moves its neighbours’ shares too)', () => {
     const r = raw(), products = r.products as { id: string; teamIn: { etp: number }[] }[], victim = products[1]!;
