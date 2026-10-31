@@ -95,7 +95,7 @@ describe('verify aggregates: kpi cards, year picker, gantt', () => {
 
   it('gantt (already native): the wave Gantt under the Portfolio and under a Wave, the Product view unchanged', async () => {
     mountApp('gantt'); view({ kind: 'portfolio' });
-    await sectionReady(/Gantt/);
+    await sectionReady(/^📅 Plan/);   // B9d: the Gantt section is the Plan screen (SPEC_BPMN § 19.8 F-B78)
     expect(await screen.findByRole('region', { name: 'Wave Gantt' })).toBeTruthy();
     view({ kind: 'wave', id: pf().waves[1]!.id });
     expect(within(screen.getByRole('region', { name: 'Wave Gantt' })).getByText(/— Wave 2/)).toBeTruthy();

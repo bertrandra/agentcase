@@ -4,6 +4,6 @@ export const VERIFY_IDS: [string, RegExp][] = [
   ['phase-art', /Phase \/ Artifact details/],
   ['agent-dir', /Agent Directory/], ['agent-detail', /Agent details/], ['agent-usage', /Agent usage/], ['exec', /Execution Timeline/],
   ['productivity', /Productivity/],
-  ['velocity', /Velocity/], ['quality', /^Quality$/], ['compliance', /Regulatory compliance/], ['gantt', /Gantt/], ['kpi', /KPI Scorecard/],
+  ['velocity', /Velocity/], ['quality', /^Quality$/], ['compliance', /Regulatory compliance/], ['gantt', /^📅 Plan/], ['kpi', /KPI Scorecard/],
   ['asis-tobe', /AS-IS vs TO-BE/],
 ];

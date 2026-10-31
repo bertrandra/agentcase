@@ -6,7 +6,7 @@ import { khEnabled } from '../knowledge';
 import { addMonthsLocal, parseLocalDate } from './ganttLayout';
 import type { ColourRole } from '../theme';
 import { programmeCalendar } from '../programme/timing';
-import { programmeActivityId } from '../programme/ids';
+import { ganttMonths, programmeGantt } from '../programme/gantt';
 
 export { ganttNum } from '../programme/timing';
 
@@ -17,7 +17,7 @@ export interface Axis {
 }
 /** The calendar axis: horizon, roadmap start, month → % mapping and "Sep 26"-style tick labels. */
 export function ganttAxis(c: Ctx): Axis {
-  const horizon = caseHorizonYears(c.inp), totalM = Math.max(12, horizon * 12), startStr = c.inp.v('rmStart') || '2026-09-01';
+  const horizon = caseHorizonYears(c.inp), totalM = ganttMonths(c), startStr = c.inp.v('rmStart') || '2026-09-01';
   const startDate = parseLocalDate(startStr), startOk = !isNaN(startDate.getTime());
   return {
     horizon, totalM, startStr, startDate, startOk, left: (m) => (m / totalM) * 100, width: (m) => Math.max(0.4, (m / totalM) * 100),
@@ -28,25 +28,15 @@ export function ganttAxis(c: Ctx): Axis {
 /** `input`/`value`: the case input that sizes the bar and its current value in that input's unit; `activity`: the programme activity it shows. */
 export interface ProgramRow { name: string; start: number; dur: number; tone: ColourRole; meta: string; input?: string; value?: number; activity: string }
 /**
- * Transformation program rows (months from the roadmap start) and where onboarding ends. The names come from the programme's stage list and
- * the placements from its timing owner (`programmeCalendar`, SPEC_BPMN § 19.4 F-B65): this band prints them, it times nothing itself.
+ * Transformation program rows (months from the roadmap start) and where onboarding ends: the band rows of the programme's ONE Gantt
+ * (`programmeGantt`, SPEC_BPMN § 19.8 F-B73), which reads the timing owner (F-B65). This band prints them, it times nothing itself.
  */
 export function programRows(c: Ctx, totalM: number): { rows: ProgramRow[]; onboardEnd: number; onboardWeeks: number } {
-  const showStages = 'ganttShowOnboarding' in (c.s.dom?.checked ?? {}) ? c.inp.c('ganttShowOnboarding') : true;
-  const cal = programmeCalendar(c, totalM, { showStages, hub: khEnabled(c) }), rows: ProgramRow[] = [];
-  for (const s of cal.stages) rows.push({ name: s.stage.gantt, start: s.start, dur: s.dur, tone: s.stage.tone, meta: `${s.weeks} wk`,
-    input: s.stage.input ?? undefined, value: s.weeks, activity: programmeActivityId('stage', s.stage.id) });
-  rows.push({ name: '🧱 Agentic Build (ramp)', ...cal.build, tone: 'chart-cat-4', meta: `${cal.build.dur} mo ramp to steady state`,
-    input: 'setupDuration', value: cal.build.dur, activity: programmeActivityId('build') });
-  rows.push({ name: '⚙️ Agentic Run (steady state)', ...cal.run, tone: 'chart-cat-2', meta: 'ongoing delivery + support',
-    activity: programmeActivityId('run') });
-  if (cal.hubSetup && cal.hubRun) {
-    const { days, ...span } = cal.hubSetup;
-    rows.push({ name: '🧠 Knowledge Hub — Build / Setup', ...span, tone: 'chart-cat-2', meta: `${days} days: ingest, index, guardrails`,
-      input: 'khSetupDays', value: days, activity: programmeActivityId('hubSetup') });
-    rows.push({ name: '🧠 Knowledge Hub — Run', ...cal.hubRun, tone: 'chart-cat-2', meta: 'ongoing curation + retrieval',
-      activity: programmeActivityId('hubRun') });
-  }
+  const showStages = 'ganttShowOnboarding' in (c.s.dom?.checked ?? {}) ? c.inp.c('ganttShowOnboarding') : true, hub = khEnabled(c);
+  const cal = programmeCalendar(c, totalM, { showStages, hub });
+  const rows = programmeGantt(c, { totalM, showStages, hub }).filter((t) => t.band).sort((a, b) => a.band!.order - b.band!.order)
+    .map((t): ProgramRow => ({ name: t.band!.label, start: t.start, dur: t.dur, tone: t.band!.tone, meta: t.band!.meta, input: t.band!.input,
+      value: t.band!.value, activity: t.activity }));
   return { rows, onboardEnd: cal.onboardEnd, onboardWeeks: cal.onboardWeeks };
 }
 

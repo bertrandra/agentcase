@@ -23,7 +23,8 @@ function task(a: ProgrammeActivity): XElement {
     consulted: a.raci.C.map((r) => `prog-lane-${r}`).join(' ') || undefined, informed: a.raci.I.map((r) => `prog-lane-${r}`).join(' ') || undefined });
   const multi = a.instances !== null
     ? [B('multiInstanceLoopCharacteristics', { isSequential: false }, [B('loopCardinality', {}, [text(String(a.instances))])])] : [];
-  return B('task', { id: a.id, name: a.name }, [B('documentation', {}, [text(a.description)]), B('extensionElements', {}, [ext, raci]), ...multi]);
+  return B('task', { id: a.id, name: a.name, 'ac:wbsCode': a.wbsCode },
+    [B('documentation', {}, [text(a.description)]), B('extensionElements', {}, [ext, raci]), ...multi]);
 }
 
 /** A milestone (intermediate throw event) or a maturity gate (exclusive gateway): its criteria, placement and level, no cost. */

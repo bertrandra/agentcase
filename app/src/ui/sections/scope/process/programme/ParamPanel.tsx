@@ -9,6 +9,7 @@ import { SubsetFieldBox } from '../../../tune/knowledge/SubsetBadge';
 import { selectActivity } from '../view';
 import { costText } from './ProgrammeTable';
 import { WAVE_PREFIX, WavePanel } from './WavePanel';
+import { WbsCodeField } from './WbsCodeField';
 
 /** The knowledge-subset field a hub parameter belongs to with several products, and the name of its chip ("inherited / overridden"). */
 const SUBSET: Record<string, [SubsetField, string]> = {
@@ -57,6 +58,7 @@ export function ParamPanel({ v, id }: { v: ProgrammeView; id: string }) {
           {a.params.map((p) => <Param key={p.key} p={p} multi={multi} />)}
         </fieldset>
       )}
+      <WbsCodeField kind={a.kind} />
       <div className="ac-form-row">
         <button type="button" onClick={() => selectActivity(null)}>Close</button>
       </div>

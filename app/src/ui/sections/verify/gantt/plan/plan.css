@@ -1,0 +1,17 @@
+/* The 📅 Plan screen (docs/SPEC_BPMN.md § 19.8 F-B78, phase B9d): the programme Gantt, WBS, OBS / RAM and the resource histogram. */
+.ac-section .ac-plan-gantt { margin: 6px 0 12px; }
+.ac-section .ac-plan-track { flex: 1; height: 14px; background: var(--ac-slate-55); border-radius: var(--ac-radius-xs); }
+.ac-section .ac-plan-bar { cursor: pointer; }
+.ac-section .ac-plan-bar.is-critical rect, .ac-section .ac-plan-bar.is-critical polygon { stroke: var(--ac-danger-600); stroke-width: 1.5px; vector-effect: non-scaling-stroke; }
+.ac-section .ac-plan-bar:focus-visible { outline: var(--ac-border-thick) solid var(--ac-blue); outline-offset: 1px; }
+.ac-section .ac-plan-tools { display: flex; gap: 8px; flex-wrap: wrap; align-items: center; margin: 4px 0 10px; }
+.ac-section .ac-plan-indent-2 { padding-left: 12px; }
+.ac-section .ac-plan-indent-3 { padding-left: 24px; }
+.ac-section .ac-plan-indent-4 { padding-left: 36px; }
+.ac-section .ac-plan-indent-5 { padding-left: 48px; }
+.ac-section .ac-plan-hist { width: 100%; height: auto; max-height: 280px; }
+.ac-section .ac-plan-hist .ac-plan-cap { stroke: var(--ac-danger-600); stroke-dasharray: 4 3; fill: none; }
+.ac-section .ac-plan-hist .ac-plan-axis { stroke: var(--ac-slate-650); }
+.ac-section .ac-plan-legend { display: flex; flex-wrap: wrap; gap: 10px; font-size: var(--ac-font-size-sm-plus); margin: 4px 0; }
+.ac-section .ac-plan-swatch { display: inline-block; width: 10px; height: 10px; margin-right: 4px; vertical-align: middle; }
+.ac-section .ac-plan-flag { color: var(--ac-danger-700); }

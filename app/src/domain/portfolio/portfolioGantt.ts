@@ -1,4 +1,5 @@
 /** @calc-zone portfolio-consolidation */
+import { productWindow } from '../programme/gantt';
 import { calendarOf, type Calendar } from './calendar';
 import type { Consolidated } from './consolidate';
 import type { ProductRun } from './run';
@@ -46,10 +47,10 @@ export interface PortfolioGantt {
   unplanned: string[];
 }
 
-const ramps = new WeakMap<ProductRun, { end: number; marks: { label: string; family: string; month: number }[] }>();
+const ramps = new WeakMap<ProductRun, { rampEnd: number; marks: { label: string; family: string; month: number }[] }>();
 /**
- * The product's own milestones (adoption levels, payback, first agent vFTE) and the month its ramp ends: the later of the setup profile and its last
- * adoption / maturity milestone.
+ * The product's own milestones (adoption levels, payback, first agent vFTE) and its last adoption / maturity milestone (the ramp end that the
+ * programme's `productWindow` reads with the setup duration).
  */
 function ownMarks(run: ProductRun) {
   let r = ramps.get(run);
@@ -57,14 +58,15 @@ function ownMarks(run: ProductRun) {
     let marks: { label: string; family: string; month: number }[] = [];
     try { marks = run.engine.milestones().filter((m) => m.month >= 1); } catch { marks = []; }
     const rampEnd = marks.filter((m) => m.family !== 'financial' && m.family !== 'workforce').reduce((a, m) => Math.max(a, m.month), 0);
-    r = { end: Math.max(run.setupMonths, rampEnd), marks };
+    r = { rampEnd, marks };
     ramps.set(run, r);
   }
   return r;
 }
 
 function productRow(v: ProductView, total: number, cal: Calendar): GanttProductRow {
-  const { end, marks } = ownMarks(v.run), from = v.month0 - v.lead, to = Math.min(total, v.month0 + end);
+  const { rampEnd, marks } = ownMarks(v.run);
+  const { from, to } = productWindow({ month0: v.month0, lead: v.lead, setupMonths: v.run.setupMonths, rampEnd }, total);
   const milestones = marks.map((m) => ({ ...m, month: v.month0 + m.month })).filter((m) => m.month <= total)
     .map((m) => ({ ...m, date: cal.dateAt(m.month), left: (m.month / total) * 100,
       title: `${v.name}: ${m.label} — ${cal.dateAt(m.month)} (calendar month ${m.month})` }));

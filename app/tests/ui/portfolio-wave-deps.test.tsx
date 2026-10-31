@@ -83,7 +83,7 @@ describe('Waves: dependencies and setup capacity are edited in the wave\'s panel
 
   it('the Gantt marks a wave that depends on another one', async () => {
     act(() => { setWaveDependency(waves[1], { waveId: waves[0], milestone: 'start', lagMonths: 8 }); setDisplayScope({ kind: 'portfolio' }); });
-    mountApp('gantt'); await sectionReady(/Gantt/);
+    mountApp('gantt'); await sectionReady(/^📅 Plan/);
     expect(document.querySelector('[data-gantt-dep]')!.textContent).toContain('after Wave 1 starts + 8 months');
   });
 });

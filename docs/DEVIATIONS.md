@@ -48,6 +48,7 @@ Figures are the golden fixture unless stated. "Before" = the build at the start 
 | DEV-AUDIT-EVIDENCE | audited observations count as evidence in the evidence ledger (D-B33); no legacy figure changes |
 | DEV-REGINCLUDE-DERIVED | "Include regulatory artefacts" is the process's `regInclude` only: the form copy `dom.checked.regInclude` is gone, `tgRegInclude` reads the process |
 | DEV-B9A-CONTEXT-SCREENS | the programme activities' fields and descriptions leave the context screens for the Process section's parameter panel (no figure changes) |
+| DEV-B9D-PLAN-SCREEN | the 📅 Gantt / Timeline screen is titled 📅 Plan, with tabs Gantt, WBS, OBS / RAM, Histogram and the plan exports (no figure changes) |
 | DEV-B9B-SETUP-SPREAD | BPMN B9b, D-B27: each setup line is spent over its activity's duration (the setup duration, 12 months by default), not the engine's fixed 6 months |
 | DEV-B9B-PILOT | BPMN B9b, D-B28: the pilot is the Pilot & Prove stage before the build (16 weeks, not `rmD4`); the cost model spends it before month 0 |
 | DEV-B9B-HUB-TIMING | BPMN B9b, D-B29: the Knowledge Hub setup is spent over its own days, `ktLeadMonths` before the product's month 0 |
@@ -565,6 +566,18 @@ tests are not concerned: they drive the legacy *engine* through recipes, and the
 - Files: `ui/sections/frame/engage/{Durations,Roadmap,Tracker,index}.tsx`, `ui/sections/verify/gantt/{index,ProgramBar}.tsx`,
   `ui/sections/tune/{program/PilotCap,setup/index,knowledge/{AsisPanel,MultiPanels},run-sizing/SizingPolicy,maturity/SddCoach,readiness/HriPanel}.tsx`,
   `ui/widgets/ActivityRefs.tsx`, `controllers/ganttEdit.ts`, `domain/tuneB/setup.ts`.
+
+## DEV-B9D-PLAN-SCREEN — the Gantt section is the Plan screen
+
+- Legacy: the section 📅 Gantt / Timeline showed the case calendar (programme band, engine milestones, delivery rollout).
+- v20 (BPMN B9d, docs/SPEC_BPMN.md § 19.8 F-B78): the section (same id `gantt`) is titled 📅 Plan and holds four tabs: Gantt (the legacy calendar,
+  unchanged, then the programme Gantt with its critical path and its schedule table), WBS, OBS / RAM and Histogram, with the exports MS Project XML,
+  the results workbook with the plan sheets and the plan report above them. The programme band of the calendar is now read from the programme's
+  one Gantt (`programmeGantt`), with the same bars.
+- Effect: no figure changes (107 fixtures, parallel run, workbooks and the Critical & Regulated report identical; the Financial workbook keeps
+  its six sheets: the plan sheets come only with the Plan screen's export). The menu keeps the legacy label "📅 Gantt / Timeline" and its
+  description: the section catalogue is written to the parameters workbook (Sections sheet) and read by the legacy file, and the dashboards the
+  Board generates are named after it, so renaming it would change both legacy round trips; only the screen's title reads 📅 Plan.
 
 ## DEV-B9B-SETUP-SPREAD — a setup line is spent over its activity's duration (D-B27)
 

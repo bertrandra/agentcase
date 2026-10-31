@@ -1,3 +1,4 @@
 # The official OMG schemas are kept byte-for-byte as downloaded (CRLF line ends, BOM): docs/bpmn/omg/SOURCES.md records their SHA-256.
 docs/bpmn/omg/*.xsd -text
 docs/bpmn/omg/**/*.xsd -text
+docs/bpmn/microsoft/*.xsd -text
