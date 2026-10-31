@@ -1,6 +1,6 @@
 # AgentCase — Specification: the delivery process as a native BPMN 2.0 model (export and import)
 
-> Status: **specified; phases B0, B1, B2, B3, B4, B5, B5b, B6, B6b, B7, B7b, B9a and B9b built** (B0: extension XSD, official OMG schemas, `tools/bpmn-validate.mjs`, sample and hostile files, § 5.3; B1: domain only, `app/src/domain/process`, § 6.3; B2: reader / writer, security, round trip, BPSim, export from the File menu, § 5.5; B3: schema v3, the case stores the BPMN document, § 6.4; B4: the Process section, import, § 9.1; B5: custom activities, roles, agents and rework from the model in the engine, § 7.1; B5b: extended profile in the domain, § 17.10; B6: the optional lazy BPMN editor, § 9.2; B6b: organisation model, § 16.8; B7: audit layer, § 15.7; B7b: DMN decisions and the CMMN run view, § 17.11; B9a: the transformation programme derived, its timing owner and screens, § 19.9; B9b: decisions D-B27…D-B31 applied, labour from resources, opt-in activities, waves edited in the Process panel, § 19.10). Decisions D-B1…D-B26 **adopted on 2026-10-30** (§ 12, § 15.6, § 16.7, § 17.9); D-B26: the case's BPMN
+> Status: **all phases B0–B9e built** (release v21.0.0, phase B8; user guide [GUIDE_BPMN.md](GUIDE_BPMN.md); open items: § 20). B0: extension XSD, official OMG schemas, `tools/bpmn-validate.mjs`, sample and hostile files, § 5.3; B1: domain only, `app/src/domain/process`, § 6.3; B2: reader / writer, security, round trip, BPSim, export from the File menu, § 5.5; B3: schema v3, the case stores the BPMN document, § 6.4; B4: the Process section, import, § 9.1; B5: custom activities, roles, agents and rework from the model in the engine, § 7.1; B5b: extended profile in the domain, § 17.10; B6: the optional lazy BPMN editor, § 9.2; B6b: organisation model, § 16.8; B7: audit layer and audit evidence in the ledger (D-B33), § 15.7; B7b: DMN decisions and the CMMN run view, § 17.11; B8: release (guide, open items, v21.0.0), § 13, § 20; B9a: the transformation programme derived, its timing owner and screens, § 19.9; B9b: decisions D-B27…D-B31 applied, labour from resources, opt-in activities, waves edited in the Process panel, § 19.10; B9c: the programme's values in the document, schema v4, § 6.5, § 19.13; B9d: the 📅 Plan screen (Gantt, WBS, OBS / RAM, histogram, MS Project XML), § 19.8; B9e: the 📋 Programme screen, § 19.12. Decisions D-B1…D-B26 **adopted on 2026-10-30** (§ 12, § 15.6, § 16.7, § 17.9); D-B26: the case's BPMN
 > document is the **only** stored form of the process, the organisation and the audit (§ 6.1). Scope: the TypeScript + React application in `app/`.
 > Related documents: [ARCHITECTURE.md](ARCHITECTURE.md), [DEVIATIONS.md](DEVIATIONS.md), [SPEC_MULTI_PRODUIT.md](SPEC_MULTI_PRODUIT.md).
 > Code rules unchanged: files ≤ 150 lines, no `any`, layers `ui → controllers → store → domain`, every write is an undoable
@@ -584,11 +584,11 @@ these. Portfolio: the process follows the override commands of spec F6–F9.
 | B6b (**built in B6b**, teams at the derived-view stage) | Organisation model (§ 16): organisation elements in the `BPMN` document, migration of `teamIn` / shared team lines to teams (parity), RACI on activities, `domain/org`, Organisation and Who-does-what sections, resource roles and organisation view | 107 fixtures identical before the RACI-driven figures; diagnostics tests; axe clean | 2 d | 4 / 5 | B3 | Moving the entry team and shared lines into the organisation with identical figures |
 | B7 (**built in B7**) | Audit layer (§ 15): tool catalogue, `ac:audit` elements and `domain/audit`, Audit section, audit workbook, audit report, explicit calibration | Round trip with audit data; calibration log; axe clean | 2 d | 3 / 5 | B4, B6b | Curating a neutral, dated tool catalogue (needs the owner's review) |
 | B7b (**built in B7b**, § 17.11) | DMN decisions (F-B62) and the optional CMMN export of the run phase (F-B63) | DMN round trip; evaluator tests per hit policy | 1.5 d | 3 / 5 | B5b | DMN hit policies and the shared FEEL subset |
-| B8 | Release: guide, DEVIATIONS (if any), CHANGELOG, version bump | All gates green | 0.5 d | 1 / 5 | all | — |
+| B8 (**built in B8**, v21.0.0) | Release: guide ([GUIDE_BPMN.md](GUIDE_BPMN.md)), DEVIATIONS checked, open items (§ 20), CHANGELOG, version bump | All gates green | 0.5 d | 1 / 5 | all | — |
 | B9a (**built in B9a**, derived stage; waves board open, § 19.9) | Transformation programme process derived from today's keys; one timing owner per programme activity (§ 19) | 107 fixtures identical; parallel-run 40/40; excel-compat 67/67 | 2 d | 4 / 5 | B8 | Unifying the Gantt, cost-model and engine timings without moving a figure |
 | B9b (**built in B9b**, § 19.10; figures move, DEV-B9B-SETUP-SPREAD … DEV-B9B-RESOURCES) | Timing conflicts resolved (D-B27…D-B31); labour costs of training, coaching, governance from resources; opt-in new costs; waves edited in the Process panel | Hand-computed reference tests; deviations recorded | 2 d | 4 / 5 | B9a | Figures move: each change explained and recorded |
 | B9c (**built in B9c**, § 19.13; figure-neutral) | Programme values stored in the BPMN document (schema v4) | All round trips; v3 → v4 identical | 2 d | 5 / 5 | B9b | Second schema migration across every persistence path |
-| B9d | Gantt, WBS, OBS / RAM and resource histogram from the programme process; MS Project XML export; Plan screen (§ 19.8) | One owner for Gantt, cost and histogram; Σ histogram × rate = programme labour cost; MSPDI schema-valid | 2.5 d | 3 / 5 | B9b | A documented mapping where no standard exists; the delivery histogram read from the engine, never recomputed |
+| B9d (**built in B9d**, § 19.8) | Gantt, WBS, OBS / RAM and resource histogram from the programme process; MS Project XML export; Plan screen (§ 19.8) | One owner for Gantt, cost and histogram; Σ histogram × rate = programme labour cost; MSPDI schema-valid | 2.5 d | 3 / 5 | B9b | A documented mapping where no standard exists; the delivery histogram read from the engine, never recomputed |
 | B9e (**built in B9e**, § 19.12) | 📋 Programme screen in the Scope menu: enable, description, type (one-off, spread, adoption curve, recurring, milestone), duration, cost, linked section (§ 19.11) | Defaults change no figure; each type hand-computed | 1.5 d | 3 / 5 | B9b | One owner shared with the Process panel |
 
 Durations are **elapsed working days with the agent workflow** used so far (parallel agents in worktrees, full local gates, a PR per
@@ -1249,7 +1249,7 @@ switching one on adds its cost to the programme cost and the cash flow (hand-com
 
 | Phase | Content | Gate | Duration | Difficulty |
 |---|---|---|---|---|
-| B9a | Programme process **derived** from today's keys (like the B6b teams); one timing owner per activity for the Gantt, cost model and stages; the two stage lists merged; message flows; export; screens per § 19.7 (swim lanes, parameter panel, context screens) | 107 fixtures identical; parallel-run 40/40; excel-compat 67/67; Gantt and cost-model surfaces read one owner | 2 d | 4 / 5 |
+| B9a (**built in B9a**, § 19.9) | Programme process **derived** from today's keys (like the B6b teams); one timing owner per activity for the Gantt, cost model and stages; the two stage lists merged; message flows; export; screens per § 19.7 (swim lanes, parameter panel, context screens) | 107 fixtures identical; parallel-run 40/40; excel-compat 67/67; Gantt and cost-model surfaces read one owner | 2 d | 4 / 5 |
 | B9b (**built in B9b**, § 19.10) | Conflicts T1–T5 resolved by the decisions below; training, coaching and governance derived from resources; the four opt-in agent-rollout activities (§ 19.2); opt-in new costs | Hand-computed reference tests; each changed figure recorded in DEVIATIONS.md | 2 d | 4 / 5 |
 | B9c (**built in B9c**, § 19.13) | Stored values move into the document (schema v4 migration), keys removed, views derived | All persistence round trips; v3 → v4 open → save → open identical | 2 d | 5 / 5 |
 
@@ -1592,3 +1592,52 @@ Figure-neutral: every figure of the 107 fixtures is unchanged; the recorded B9b 
   `tests/store/bpmn-b9c-roundtrip.test.ts` (v3 → v4 figures identical, v3 → open → save → open identical, the shipped v3 portfolio example, autosave
   with undo history), `tests/store/bpmn-b9c-commands.test.ts` (undo / redo property test after every programme command, patches on the common
   document only, product override, process-overriding product, Replace import round trip).
+
+## 20. Open items after the migration
+
+Written in B8 (release v21.0.0): every item the phase notes record as not done, partial or open, one line each, with the section that records it.
+This is the owner's backlog; none of them changes a figure of today's cases. **Decision**: the owner chooses before any work; **Work**: the
+approach is known.
+
+| # | Open item | Kind | Recorded in |
+|---|---|---|---|
+| 1 | D-B9: the JSON catalogues still generate the default process; retiring them needs a DOM-free reader of `defaultProcess.bpmn` (or a build step) and the reference-list readers (reset, pins, factory pickers, legacy sheets, per-phase tables) moved to the default process views | Work | § 7.1 (1) |
+| 2 | Pins of a custom activity are refused (`normalisedPins` checks the catalogue ids) | Work | § 7.1 (4) |
+| 3 | The per-phase tables (`phaseArtRows`, agent usage) do not list a custom phase | Work | § 7.1 (4) |
+| 4 | A new role's resource is inserted after the existing resources, so its undo patch is larger than an append | Work | § 9.1 |
+| 5 | The diagram editor has no properties panel (parameters stay in the table and panels) | Work | § 9.2 |
+| 6 | The diagram editor's own undo history is lost on Save (it reloads from the case) | Work | § 9.2 |
+| 7 | The diagram editor shows the first diagram of the document only | Work | § 9.2 |
+| 8 | The tool catalogue (86 tools, 2026-10-30) is a DRAFT: the owner's review of its facts and sources | Decision | § 15.7 (F-B23 / F-B25) |
+| 9 | The tool catalogue is not a sheet of the audit workbook (the Lists sheet carries the codes only) | Work | § 15.7 (F-B26) |
+| 10 | F-B30 partial: the audit is per process document; products that share the common process share one audit | Decision | § 15.7 (F-B30) |
+| 11 | The Process diagram is not coloured by audit status | Work | § 15.7 (F-B31) |
+| 12 | The audit header and the role-level audits are not in the audit workbook | Work | § 15.7 (F-B32) |
+| 13 | A Merge import does not merge audit data (Replace takes the file's) | Work | § 15.7 (F-B33) |
+| 14 | No audit layer on programme activities (observations attach to delivery tasks and roles only) | Work | § 19.9 (F-B69) |
+| 15 | The RACI-driven figures of § 16.5 are not built (the `humanPerformer` stays R; no figure reads the RACI) | Decision | § 16.8 |
+| 16 | A role's split between teams follows FTE × share; no per-activity share | Work | § 16.8 (F-B37) |
+| 17 | F-B39 partial: the organisation lane view has no geometry for its new lanes, is not offered in the export dialog, and organisation lanes are not imported | Work | § 16.8 (F-B39) |
+| 18 | Teams stay stored as `teamIn` / `sharedTeam` (derived as teams); moving them into the document needs the process / organisation split of item 19 | Decision | § 16.8, § 19.13 |
+| 19 | A product's process override stays whole-document; its split into process and organisation parts (teams, process library) is not done | Decision | § 19.13 |
+| 20 | The extended profile has no screens: its views, checks and export options (colours, organisation view, conversations…) are domain functions | Work | § 17.10 (1) |
+| 21 | Hand-off cost, cadence, waits, change-failure rate and token profile are views, not engine figures | Decision | § 17.10 (1) |
+| 22 | The default process does not link the SDLC chain with data inputs (it would change every case's default document) | Decision | § 17.10 (2) |
+| 23 | `withLibrary` is not applied to a portfolio product's effective case (needs item 19) | Work | § 17.10 (3) |
+| 24 | The import report does not show the kept / dropped foreign content; foreign content in an unmapped lane or crossing phases is dropped | Work | § 17.10 (4) |
+| 25 | Tool proposals by data type (F-B43) and the operational-audit feeds of interfaces (F-B55) are not wired to the audit | Work | § 17.10 (5) |
+| 26 | No screen edits or binds decisions (`process.bindDecision` has no control; a DMN tool edits the `.dmn`) | Work | § 17.11 (1) |
+| 27 | The CMMN read-back drops the CMMN content it does not map (sentries, milestones, planning tables) | Decision | § 17.11 (2) |
+| 28 | The exported rule families do not replace the parameters until a rule task binds them | Work | § 17.11 (3) |
+| 29 | DMN decisions are not drawn on the diagram (no DMN DI written) | Work | § 17.11 (4) |
+| 30 | The programme lanes (operating-model roles) are not linked to the organisation model's roles: a new mapping to decide | Decision | § 19.9 (F-B64), § 19.13 |
+| 31 | The delivery diagram keeps the lanes of its stored DI (team skills); an agents' lane would change every case's default document | Decision | § 19.9 (F-B70) |
+| 32 | In a portfolio, a case-level opt-in activity switched on in the common values is counted by every product | Work | § 19.10, § 19.12 |
+| 33 | `setupTraining` / `setupGov` are kept (read by the assumption register, the DD pack, the legacy Parameters sheet, the strategies); retiring them changes legacy outputs that would need recorded deviations | Decision | § 6.5, § 19.13 |
+| 34 | The waves, their dependencies, the setup capacity and a product's knowledge subset are portfolio data outside the document (a portfolio-level document is needed) | Decision | § 19.13 |
+| 35 | The resource histogram stacks by role only (no team / unit / location grouping) | Work | § 19.8 (F-B76) |
+| 36 | The MS Project XML is validated against Microsoft's schema but was not opened in MS Project / ProjectLibre | Work | § 19.8 (F-B77) |
+| 37 | The plan sheets and pages come only with the Plan screen's exports (the Financial workbook and the Critical & Regulated report keep their legacy form) | Decision | § 19.8 (F-B77) |
+
+Decided, not open: the agent factory stays out of the BPMN scope (§ 7.1 (2)); `dom.checked.regInclude` is derived from the process (§ 7.1 (3),
+DEV-REGINCLUDE-DERIVED); the menu keeps the label "📅 Gantt / Timeline" for the legacy round trips (DEV-B9D-PLAN-SCREEN).

@@ -27,4 +27,9 @@ describe('docs/DEVIATIONS.md register', () => {
   it('the machine-readable twin (tests/helpers/deviations.ts) names only registered ids', () => {
     expect(DEVIATIONS.map((d) => d.id).filter((id) => !headings.includes(id))).toEqual([]);
   });
+  it('every deviation of the BPMN migration (from DEV-AUDIT-EVIDENCE on) has its twin', () => {
+    const bpmn = headings.slice(headings.indexOf('DEV-AUDIT-EVIDENCE'));
+    expect(bpmn.length).toBeGreaterThan(5);
+    expect(bpmn.filter((id) => !DEVIATIONS.some((d) => d.id === id))).toEqual([]);
+  });
 });
