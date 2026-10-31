@@ -25,6 +25,7 @@ export const WAVE_DEPENDENCY_FIELDS: FieldSet<WaveDependency> = { waveId: 'requi
 
 export const SHARED_TEAM_LINE_FIELDS: FieldSet<SharedTeamLine> = {
   id: 'required', skill: 'required', grade: 'required', loc: 'required', etp: 'required', allocations: 'required', pins: 'optional',
+  unit: 'optional', split: 'optional',
 };
 
 export const HUB_FIELDS: FieldSet<HubSettings> = { enabled: 'required', infraMonthly: 'required', infraAllocation: 'required' };

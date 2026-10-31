@@ -307,6 +307,15 @@
       <xsd:attribute name="location" type="ac:tName"/>
       <xsd:attribute name="costCentre" type="ac:tKey"/>
       <xsd:attribute name="sourcing" type="ac:tSourcing"/>
+      <xsd:attribute name="service" type="xsd:boolean">
+        <xsd:annotation><xsd:documentation>B10c (F-B82): the unit is a shared service; its shared team lines (ac:team line with unit = this id) serve several products.</xsd:documentation></xsd:annotation>
+      </xsd:attribute>
+      <xsd:attribute name="skills" type="xsd:string">
+        <xsd:annotation><xsd:documentation>B10c: the activity types (team skills, ";"-separated) a shared service does in every product.</xsd:documentation></xsd:annotation>
+      </xsd:attribute>
+      <xsd:attribute name="roles" type="xsd:IDREFS">
+        <xsd:annotation><xsd:documentation>B10c: the roles of a shared service: it does every activity where one of them is RACI Responsible.</xsd:documentation></xsd:annotation>
+      </xsd:attribute>
     </xsd:complexType>
   </xsd:element>
 
@@ -336,6 +345,10 @@
       <xsd:attribute name="product" type="ac:tKey"/>
       <xsd:attribute name="owner" type="xsd:IDREF"/>
       <xsd:attribute name="line" type="ac:tKey"/>
+      <xsd:attribute name="split">
+        <xsd:annotation><xsd:documentation>B10c (D-B38): on a shared line of a service unit, "effort" splits it across products by the effort of the service's activities for each; absent = by its ac:share elements (the fixed override).</xsd:documentation></xsd:annotation>
+        <xsd:simpleType><xsd:restriction base="xsd:token"><xsd:enumeration value="effort"/></xsd:restriction></xsd:simpleType>
+      </xsd:attribute>
     </xsd:complexType>
   </xsd:element>
 

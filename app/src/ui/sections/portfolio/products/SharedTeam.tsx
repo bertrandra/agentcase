@@ -1,6 +1,7 @@
 import { useState } from 'react';
-import { allocatedPct } from '@/domain/portfolio';
+import { allocatedPct, effortLineShares } from '@/domain/portfolio';
 import { addSharedLine } from '@/controllers/sharedTeam';
+import { usePortfolio } from '@/store/hooks';
 import { useProducts, useSharedTeam } from '@/store/portfolioHooks';
 import { toast } from '@/ui/uiState';
 import { SharedLineRow } from './SharedLineRow';
@@ -11,7 +12,7 @@ import { SharedPinEditor } from './SharedPinEditor';
  * 100 %, so the portfolio counts the line once. The products' own teams are edited in the Input team section.
  */
 export function SharedTeam() {
-  const lines = useSharedTeam(), products = useProducts();
+  const lines = useSharedTeam(), products = useProducts(), effort = usePortfolio(effortLineShares);
   const [pinOf, setPinOf] = useState<string | null>(null), pinAt = lines.findIndex((l) => l.id === pinOf);
   const over = lines.filter((l) => allocatedPct(l) > 100 + 1e-9).length;
   const add = () => toast(addSharedLine() ? 'Shared line added: give each product its share — Ctrl+Z to undo' : 'Shared line refused');
@@ -32,7 +33,7 @@ export function SharedTeam() {
               <th scope="col"><span className="ac-sr">Remove</span></th>
             </tr></thead>
             <tbody>{lines.map((l, i) => <SharedLineRow key={l.id} line={l} index={i} products={products} open={pinOf === l.id}
-              onPin={(id) => setPinOf(pinOf === id ? null : id)} />)}</tbody>
+              onPin={(id) => setPinOf(pinOf === id ? null : id)} effort={effort.get(l.id)} />)}</tbody>
           </table>
         </div>
       ) : <p>No shared line: every product&apos;s team is its own.</p>}

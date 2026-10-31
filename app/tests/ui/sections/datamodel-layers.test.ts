@@ -1,4 +1,5 @@
-import { addSharedLine, productTeam, sharedLines, withProductRows } from '@/domain/portfolio';
+import { addUnit } from '@/domain/org';
+import { addSharedLine, productTeam, sharedLines, withProductRows, withTeamDoc } from '@/domain/portfolio';
 import { readdirSync, readFileSync } from 'node:fs';
 import { describe, expect, it } from 'vitest';
 import texts from '@/content/refshare/datamodel-fields.json';
@@ -32,7 +33,9 @@ function everyField(): Portfolio {
   const out = withProductRows({ ...pf, rho: 0.3, maxConcurrentSetups: 2, startDate: '2027-01-01', products: [p1, p2],
     waves: [w1, { id: 'w2', name: 'W2', note: 'n', startMonth: 3, productIds: ['p2'], dependsOn: { waveId: w1.id, milestone: 'setupEnd', lagMonths: 1 } }] },
   'p2', productTeam(pf, p1.id), p2.name);   // schema v5: the team and the shared line are in the common document
-  return addSharedLine(out, { id: 's1', skill: 'Dev', grade: 'B2', loc: 'France', etp: 1, allocations: { [p1.id]: 50, p2: 50 }, pins: ['art-1'] });
+  const svc = withTeamDoc(out, (d) => addUnit(d!, { id: 'qa', name: 'QA', type: 'centreOfExcellence', service: { skills: ['Test/QA'], roles: [] } }));
+  return addSharedLine(svc, { id: 's1', skill: 'Dev', grade: 'B2', loc: 'France', etp: 1, allocations: { [p1.id]: 50, p2: 50 }, pins: ['art-1'], unit: 'qa',
+    split: 'effort' });   // B10c: a line of a shared service, split by effort
 }
 
 describe('Data Model: every documented layer is introspected from the code', () => {

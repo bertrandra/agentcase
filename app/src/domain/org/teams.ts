@@ -29,19 +29,29 @@ export function defaultUnitInput(customer: string): Omit<OrgUnit, 'derived'> {
 const shares = (alloc: Record<string, number>): Serving[] =>
   Object.entries(alloc).filter(([, pct]) => typeof pct === 'number' && pct > 0).map(([productId, pct]) => ({ productId, pct }));
 
-const roots = new WeakMap<object, unknown>();
-const sharedTeamOf = (l: SharedTeamLine, unit: string): OrgTeam => ({ id: sharedTeamId(l.id), name: `Shared ${l.skill} · ${l.grade} · ${l.loc}`, unit,
-  lines: [{ skill: l.skill, grade: l.grade, loc: l.loc, etp: l.etp, pins: l.pins ?? [] }], serves: shares(l.allocations), shared: true, sourceLine: l.id });
-/** The teams of a portfolio (a single case is a portfolio of one product, D-B17), read from its common document. Memoised on the products and teams. */
-export function derivedTeams(pf: Pick<Portfolio, 'products'> & { common: Pick<Portfolio['common'], 'BPMN'> }): OrgTeam[] {
-  const st = storedTeams(pf.common.BPMN as XDocument | undefined);
-  return memoChain(roots, [pf.products, st], 'teams', () => [
+const roots = new WeakMap<object, unknown>(), NO_EFFORT = new Map<string, Record<string, number>>();
+function sharedTeamOf(l: SharedTeamLine, unit: string, effort: Record<string, number> | undefined): OrgTeam {
+  const t: OrgTeam = { id: sharedTeamId(l.id), name: `Shared ${l.skill} · ${l.grade} · ${l.loc}`, unit,
+    lines: [{ skill: l.skill, grade: l.grade, loc: l.loc, etp: l.etp, pins: l.pins ?? [] }], serves: shares(effort ?? l.allocations), shared: true,
+    sourceLine: l.id };
+  if (effort) t.byEffort = true;
+  return t;
+}
+/** The shares of the lines split by effort (F-B82, B10c; `effortLineShares`), line id → percent per product; absent = every line by its fixed shares. */
+export type EffortShares = ReadonlyMap<string, Record<string, number>>;
+/**
+ * The teams of a portfolio (a single case is a portfolio of one product, D-B17), read from its common document; a line split by effort serves its
+ * products with the effort split (`effort`). Memoised on the products, teams and effort shares.
+ */
+export function derivedTeams(pf: Pick<Portfolio, 'products'> & { common: Pick<Portfolio['common'], 'BPMN'>; effort?: EffortShares }): OrgTeam[] {
+  const st = storedTeams(pf.common.BPMN as XDocument | undefined), effort = pf.effort ?? NO_EFFORT;
+  return memoChain(roots, [pf.products, st, effort], 'teams', () => [
     ...pf.products.map((p): OrgTeam => {
       const e = st.own.get(p.id);
       return { id: productTeamId(p.id), name: `${p.name} delivery team`, unit: (e && attr(e, 'unit')) || DEFAULT_UNIT_ID, lines: e ? teamRowsIn(e) : [],
         serves: [{ productId: p.id, pct: 100 }], shared: false };
     }),
-    ...st.shared.map((e) => sharedTeamOf(sharedLineIn(e), attr(e, 'unit') || DEFAULT_UNIT_ID)),
+    ...st.shared.map((e) => { const l = sharedLineIn(e); return sharedTeamOf(l, attr(e, 'unit') || DEFAULT_UNIT_ID, effort.get(l.id)); }),
   ]);
 }
 

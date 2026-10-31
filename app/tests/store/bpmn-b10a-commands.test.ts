@@ -5,17 +5,18 @@ import { addProduct, duplicateProduct, removeProduct, setActiveProduct, setEditS
 import { addSharedLine, removeSharedLine, setSharedPins, setSharedShare, updateSharedLine } from '@/controllers/sharedTeam';
 import { addTeamRow, removeTeamRow, updateTeamRow } from '@/controllers/team';
 import { readStoredOrg, storedTeamElements, unitElements, withoutTeams } from '@/domain/org';
-import { effectiveTeam, productTeam, resolveProduct, validate } from '@/domain/portfolio';
+import { productTeam, resolveProduct } from '@/domain/portfolio';
 import type { XDocument } from '@/domain/process';
 import type { AppStore } from '@/store/core';
-import { docOnly, threeProducts } from '../helpers/portfolioStore';
+import { threeProducts } from '../helpers/portfolioStore';
+import { expectUndoProperty, type TeamOp } from '../helpers/teamUndo';
 
 /**
  * Phase B10a (docs/SPEC_BPMN.md § 21): the teams, units and owners are the organisation part of the common document. Every team / unit command
  * writes node patches of it (or of the portfolio structure, for products); undo / redo restore exactly; editing one product's team never rebuilds
  * another product's case; a product's own process document holds no organisation.
  */
-type Op = (s: AppStore) => void;
+type Op = TeamOp;
 const pf = (s: AppStore) => s.getState().portfolio;
 const prod = (s: AppStore, i: number): string => pf(s).products[i % pf(s).products.length]!.id;
 const unitIds = (s: AppStore): string[] => readStoredOrg(pf(s).common.BPMN).units.map((u) => u.id);
@@ -42,32 +43,11 @@ const OPS: fc.Arbitrary<Op>[] = [
   ix.map((i): Op => (s) => { setActiveProduct(prod(s, i)); }),
 ];
 
-/** The portfolio's teams agree with every product's case (the engine's entry team is the document's). */
-function consistent(s: AppStore): void {
-  const p = pf(s);
-  expect(validate(p).errors).toEqual([]);
-  for (const x of p.products) expect(resolveProduct(p, x.id).teamIn).toBe(effectiveTeam(p, x));
-}
-
 describe('undo / redo after every team and unit command (property)', () => {
   it('each command is node patches of the common document (or the portfolio structure); undo restores the state before, redo the state after', () => {
-    fc.assert(fc.property(fc.array(fc.oneof(...OPS), { minLength: 1, maxLength: 10 }), (ops) => {
-      const { s } = threeProducts();
-      let stepStart = docOnly(s);   // the state before the top undo step (a coalesced edit extends that step: undo goes back before its first edit)
-      for (const op of ops) {
-        const before = docOnly(s), n = s.getState().history.undo.length, top = s.getState().history.undo.at(-1);
-        op(s);
-        consistent(s);
-        const after = docOnly(s), h = s.getState().history.undo;
-        if (h.length === n && h.at(-1) === top) { expect(after).toBe(before); continue; }   // refused, or view state: the document did not move
-        if (h.length !== n) stepStart = before;
-        const e = h.at(-1)!;
-        const doc = (x: { path: (string | number)[] }) => x.path[0] === 'common' && x.path[1] === 'BPMN';
-        expect(e.patches.every((x) => doc(x) || ['products', 'waves', 'activeProductId'].includes(x.path[0] as string))).toBe(true);
-        s.undo(); expect(docOnly(s)).toBe(stepStart); consistent(s);
-        s.redo(); expect(docOnly(s)).toBe(after); consistent(s);
-      }
-    }), { numRuns: 30 });
+    // a coalesced edit extends its step: undo goes back before its first edit
+    expectUndoProperty(() => threeProducts().s, OPS, (path) => (path[0] === 'common' && path[1] === 'BPMN')
+      || ['products', 'waves', 'activeProductId'].includes(path[0] as string));
   }, 120_000);
 });
 

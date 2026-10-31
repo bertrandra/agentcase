@@ -42,6 +42,10 @@ export { groupOf, scopeMembers, scopeExists, scopeKey, portfolioUnits, unitLabel
 export { effectiveTeam, shareOf, allocatedPct, isSharedRow, ownRows, sharedEtp, addSharedLine, editSharedLine, removeSharedLine, setSharedAllocation,
   dropProductShares, type SharedLineField } from './sharedTeam';
 export { pinSharedLine, clearSharedPins, sharedLineArtefacts } from './sharedTeamPins';
+export { serviceDeliveries, lineRule, lineShares, effortLineShares, type ServiceDelivery, type ServiceProduct } from './serviceShares';
+export { setLineUnit, setLineSplit } from './serviceOps';
+export { servicesView, type ServiceView, type ServiceLineView, type ServiceLineShare, type ServiceProductRow } from './serviceView';
+export { serviceLoad, type ServiceLoad, type ServiceLoadRow } from './serviceLoad';
 export { productTeam, productOwner, sharedLines, processCommon, withProductRows, withProductOwner, withTeamDoc } from './teamAccess';
 export { teamsIntoDocument, fromLegacyTeams, type LegacyTeams } from './teamMigrate';
 export { aggregateTeams, type TeamAggregate, type TeamBucket, type TeamLine, type TeamProductRow } from './teams';

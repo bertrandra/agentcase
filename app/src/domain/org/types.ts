@@ -12,8 +12,15 @@ export type UnitType = (typeof UNIT_TYPES)[number];
 export const SOURCINGS = ['internal', 'vendor', 'either'] as const;
 export type Sourcing = (typeof SOURCINGS)[number];
 
+/**
+ * A unit marked shared service (F-B82, phase B10c): what it does across products besides the activities pinned on its lines — every activity of
+ * these team skills (the activity type, e.g. Test/QA) and every activity where one of these roles is RACI Responsible.
+ */
+export interface ServiceSpec { skills: string[]; roles: string[] }
 export interface OrgUnit {
   id: string; name: string; type: UnitType; parent?: string; location?: string; costCentre?: string; sourcing?: Sourcing;
+  /** a shared service (`service="true"` with its `skills` and `roles`); absent = not a service */
+  service?: ServiceSpec;
   /** true for the default delivery unit while the document does not hold it (derived, not stored) */
   derived?: boolean;
 }
@@ -26,6 +33,8 @@ export interface OrgTeam {
   shared: boolean;
   /** the shared line the team comes from */
   sourceLine?: string;
+  /** a shared line of a service split by effort (B10c): `serves` holds the effort split */
+  byEffort?: boolean;
   /** a team read from an `ac:team` element of an imported document: shown, not in the figures (the figures read the derived teams) */
   imported?: boolean;
 }

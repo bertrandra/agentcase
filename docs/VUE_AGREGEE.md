@@ -68,6 +68,14 @@ Generic fallbacks per kind (Portfolio / Wave, section without an aggregate):
 - **Plan.** 📅 Plan (Gantt, WBS, OBS, RAM, histogram) is restricted to the unit's planned products; the wave Gantt lists the waves that hold them,
   opened on them.
 
+### 2.3 The Services tab (phase B10c, docs/SPEC_BPMN.md § 21 F-B82)
+
+- 🏢 Organisation stays `S-static` (the same screen at every View); its **Services** tab follows the View: the products it shows are those of
+  `useViewScope()` (the edited product in a Product view, the planned products of a Wave, a Unit or the Portfolio). The figures are the domain's
+  (`servicesView`, `serviceLoad`), read per product, never re-aggregated: a product's FTE and cost of a service are those of its own case; the load
+  lays the products on the portfolio calendar (a Product view: the product's own months); the cost table adds the products outside the View and the
+  part no product holds so that each line adds up to its cost.
+
 ## 3. Recipe: adding the aggregate of a section (10 lines)
 
 1. Find the id and its kind in `sectionScope.json` (change it only if the classification is wrong, and then update this document).

@@ -13,6 +13,7 @@ const orgExt = (d: XDocument): XElement | undefined => { const c = collaboration
 const asType = (v: string | undefined): UnitType => ((UNIT_TYPES as readonly string[]).includes(v ?? '') ? v as UnitType : 'other');
 const asSourcing = (v: string | undefined): Sourcing | undefined => ((SOURCINGS as readonly string[]).includes(v ?? '') ? v as Sourcing : undefined);
 
+const splitList = (v: string | undefined, sep: string): string[] => (v ?? '').split(sep).map((x) => x.trim()).filter(Boolean);
 function unitOf(e: XElement): OrgUnit {
   const u: OrgUnit = { id: attr(e, 'id') ?? '', name: attr(e, 'name') ?? '', type: asType(attr(e, 'type')) };
   const parent = attr(e, 'parent'), location = attr(e, 'location'), costCentre = attr(e, 'costCentre'), sourcing = asSourcing(attr(e, 'sourcing'));
@@ -20,6 +21,7 @@ function unitOf(e: XElement): OrgUnit {
   if (location) u.location = location;
   if (costCentre) u.costCentre = costCentre;
   if (sourcing) u.sourcing = sourcing;
+  if (attr(e, 'service') === 'true') u.service = { skills: splitList(attr(e, 'skills'), ';'), roles: splitList(attr(e, 'roles'), ' ') };
   return u;
 }
 
