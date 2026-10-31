@@ -17,6 +17,33 @@ When releasing, follow [docs/BUMP_PROCEDURE.md](docs/BUMP_PROCEDURE.md) (§7 for
 
 ## [Unreleased]
 
+## [v21.0.0] 2026-10-31 — BPMN migration complete: the process, programme, organisation, audit and decisions in one native BPMN document
+
+Major release (BPMN phase B8): it closes the BPMN migration delivered in v20.20.0 – v20.34.0 (phases B0–B9e of
+[SPEC_BPMN.md](docs/SPEC_BPMN.md)). Major because the file format is schema v4 (a v21 file is refused by builds before v20.34.0), the process is
+stored natively in BPMN, and the B9b programme decisions changed the figures of every case. No code change in this release.
+
+### New
+
+- **User guide** [docs/GUIDE_BPMN.md](docs/GUIDE_BPMN.md): what the BPMN model is; 🧩 Process (BPMN) (delivery and programme processes, swim lanes,
+  parameter panel, table, import Replace / Merge, export options with DMN, CMMN, audit and programme, the optional diagram editor and its bpmn.io
+  watermark); 📋 Programme (enable, types and how each changes the cost, coaching days); 📅 Plan (Gantt, WBS, OBS / RAM, histogram, MS Project XML);
+  🏢 Organisation and 🧭 Who does what; 🔎 Audit (the draft tool catalogue, observations, calibration, the evidence ledger); decisions (DMN); file
+  format (schema v4, migration, the "different engine version" banner); what changed in the figures; known limits. Linked from README and ARCHITECTURE.
+- **Open items** [SPEC_BPMN.md § 20](docs/SPEC_BPMN.md): every not-done, partial or open item of the phase notes, one line each with the section that
+  records it (37 items, decision or work): the owner's backlog.
+
+### Changed
+
+- SPEC_BPMN status: all phases B0–B9e built; § 13 rows B8, B9a and B9d marked built.
+- DEVIATIONS: the twin of DEV-B9D-PLAN-SCREEN added (`app/tests/helpers/deviationsBpmn.ts`, which now holds the BPMN deviations that move no euro
+  figure); `tests/docs-deviations.test.ts` checks that every deviation of the BPMN migration has its twin.
+- RELEASE_TAGS: rows and tag commands for v20.13.0 … v20.34.0; the v21.0.0 row is filled after the merge (no tag created or pushed).
+- README: the golden figures of the new build since v20.31.0 next to the legacy ones.
+
+**Golden case:** unchanged by this release (since v20.31.0: setup €239,315.5, NPV €1,348,910, ROI 6.64, payback month 6; the legacy file: €225,000,
+€1,359,010, 7.13, month 9; DEV-B9B-RESOURCES).
+
 ## [v20.34.0] 2026-10-31 — BPMN B9c: the programme's stored values in the case's BPMN document (schema v4)
 
 ### BPMN B9c — the programme's stored values move into the case's BPMN document (schema v4)

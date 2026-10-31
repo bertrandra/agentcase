@@ -1,6 +1,6 @@
 # Deviations from the legacy file (AgentCase_v18_13_EN.html)
 
-The legacy file is frozen. Where the new build (`app/`) intentionally computes or prints something differently, the deviation is recorded here and, for the oracle tests, in `app/tests/helpers/deviations.ts` (the machine-readable twin: the oracle comparison drops exactly the listed fields, with the reason, and a dedicated test asserts the new rule). Oracle fixtures (`app/fixtures`) are never regenerated.
+The legacy file is frozen. Where the new build (`app/`) intentionally computes or prints something differently, the deviation is recorded here and, for the oracle tests, in `app/tests/helpers/deviations.ts` (the machine-readable twin, with `deviationsB9b.ts` and `deviationsBpmn.ts` for the BPMN migration: the oracle comparison drops exactly the listed fields, with the reason, and a dedicated test asserts the new rule). Oracle fixtures (`app/fixtures`) are never regenerated.
 
 Principle behind most entries: one calculation serves many displays.
 
@@ -578,6 +578,10 @@ tests are not concerned: they drive the legacy *engine* through recipes, and the
   its six sheets: the plan sheets come only with the Plan screen's export). The menu keeps the legacy label "📅 Gantt / Timeline" and its
   description: the section catalogue is written to the parameters workbook (Sections sheet) and read by the legacy file, and the dashboards the
   Board generates are named after it, so renaming it would change both legacy round trips; only the screen's title reads 📅 Plan.
+- Oracle fields: none (twin in `tests/helpers/deviationsBpmn.ts`, `skip: []`).
+- Tests: `tests/ui/sections/plan.test.tsx`, `tests/ui/portfolio-gantt.test.tsx`, `tests/domain/programme/{plan,plan-exports}.test.ts`.
+- Files: `ui/sections/verify/gantt/{index.tsx,plan/*}`, `controllers/planExport.ts`, `domain/programme/{gantt,wbs,obs,ram,histogram,mspdi,planBundle}.ts`,
+  `domain/verifyB/ganttProgram.ts`.
 
 ## DEV-B9B-SETUP-SPREAD — a setup line is spent over its activity's duration (D-B27)
 

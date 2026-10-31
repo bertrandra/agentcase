@@ -17,26 +17,34 @@ portfolio to Excel, report, HTML and snapshots. A file with one product looks an
 Start with the user guide [`docs/GUIDE_MULTI_PRODUIT.md`](docs/GUIDE_MULTI_PRODUIT.md) (French, with an English summary at the top) and the example
 [`docs/examples/AgentCase_Portfolio_Example.json`](docs/examples/AgentCase_Portfolio_Example.json).
 
+**Since v21.0.0 the process is a native BPMN 2.0 model.** A case stores its delivery process, its transformation programme, its organisation
+(units, teams, roles, RACI), its audit and its DMN decisions in one BPMN document (file schema v4), imported from and exported to standard BPMN
+tools; the 📋 Programme and 📅 Plan screens cost and schedule the programme (Gantt, WBS, OBS / RAM, histogram, MS Project XML). User guide:
+[`docs/GUIDE_BPMN.md`](docs/GUIDE_BPMN.md); specification and open items: [`docs/SPEC_BPMN.md`](docs/SPEC_BPMN.md).
+
 ## Two deliverables
 
 | | Where | Status |
 |---|---|---|
-| **TypeScript + React build (the product)** | [`app/`](app/) — version `<!-- fact:version -->20.34.0<!-- /fact -->` (`app/package.json`, the single version source) | <!-- fact:sections -->91<!-- /fact --> sections in <!-- fact:groups -->15<!-- /fact --> groups (the single-case sections plus the <!-- fact:portfolioSections -->6<!-- /fact --> of the *Portfolio* group), <!-- fact:commands -->286<!-- /fact --> commands (<!-- fact:undoable -->282<!-- /fact --> undoable). Builds to one offline HTML file, `app/dist/<!-- fact:releaseFile -->AgentCase_v20_34_EN.html<!-- /fact -->` with `npm run release`. Multi-product release; see [`CHANGELOG.md`](CHANGELOG.md) and [`docs/MIGRATION_PLAN.md`](docs/MIGRATION_PLAN.md) §15 |
+| **TypeScript + React build (the product)** | [`app/`](app/) — version `<!-- fact:version -->21.0.0<!-- /fact -->` (`app/package.json`, the single version source) | <!-- fact:sections -->91<!-- /fact --> sections in <!-- fact:groups -->15<!-- /fact --> groups (the single-case sections plus the <!-- fact:portfolioSections -->6<!-- /fact --> of the *Portfolio* group), <!-- fact:commands -->286<!-- /fact --> commands (<!-- fact:undoable -->282<!-- /fact --> undoable). Builds to one offline HTML file, `app/dist/<!-- fact:releaseFile -->AgentCase_v21_0_EN.html<!-- /fact -->` with `npm run release`. Multi-product release; see [`CHANGELOG.md`](CHANGELOG.md) and [`docs/MIGRATION_PLAN.md`](docs/MIGRATION_PLAN.md) §15 |
 | **Legacy single-file app (frozen reference)** | [`AgentCase_v18_13_EN.html`](AgentCase_v18_13_EN.html) | Kept in the repository until cut-over. It is the oracle the new build is proven against. Changes only for security fixes and deliberate calculation decisions (decision D7), see [`docs/BUMP_PROCEDURE.md`](docs/BUMP_PROCEDURE.md) §7 |
 
 ### Deliverables
 
 | Deliverable | Where / how | Notes |
 |---|---|---|
-| Release file `<!-- fact:releaseFile -->AgentCase_v20_34_EN.html<!-- /fact -->` | `cd app && npm run release` -> `app/dist/` (one offline file, not committed) | file name derived from the version in `app/package.json` (`AgentCase_v<MAJOR>_<MINOR>[_<PATCH>]_EN.html`) |
+| Release file `<!-- fact:releaseFile -->AgentCase_v21_0_EN.html<!-- /fact -->` | `cd app && npm run release` -> `app/dist/` (one offline file, not committed) | file name derived from the version in `app/package.json` (`AgentCase_v<MAJOR>_<MINOR>[_<PATCH>]_EN.html`) |
 | Portfolio file | `agentcase.portfolio.v1` JSON / HTML snapshot; a plain single case is still saved as `agentcase.snapshot.v1` | v18.x snapshots and workbooks, v19 case files open as "Product 1" in "Wave 1" |
 | Example portfolio | [`docs/examples/AgentCase_Portfolio_Example.json`](docs/examples/AgentCase_Portfolio_Example.json) | 4 products, 2 waves, hub, rho 0.3; opened by a test |
 | Workbooks and report | parameters (`AgentCase_vX_Y_Parameters_….xlsx`), results, due-diligence pack, critical-delivery report | portfolio sheets only for a real portfolio |
 | User guide (French, with an English summary) | [`docs/GUIDE_MULTI_PRODUIT.md`](docs/GUIDE_MULTI_PRODUIT.md) | quick start, UI labels |
+| User guide: process model (BPMN) | [`docs/GUIDE_BPMN.md`](docs/GUIDE_BPMN.md) | Process, Programme, Plan, Organisation, Who does what, Audit, DMN, file format, figure changes, known limits |
+| Specification (BPMN) | [`docs/SPEC_BPMN.md`](docs/SPEC_BPMN.md) | status: all phases B0–B9e built (v21.0.0), decisions D-B1..D-B37, open items § 20 |
 | Specification | [`docs/SPEC_MULTI_PRODUIT.md`](docs/SPEC_MULTI_PRODUIT.md) | status: implemented (v20.0.0), decisions D-M1..D-M12 |
 
-Golden case (default state, identical in both): Y3 savings €891,555 · Y3 run cost €885,709 · setup €225,000 · NPV (8 %) €1,359,010 ·
-payback 9 months · 0 audit violations (`tools/golden.json`).
+Golden case (default state; the legacy file, and the new build up to v20.30.0): Y3 savings €891,555 · Y3 run cost €885,709 · setup €225,000 · NPV (8 %) €1,359,010 ·
+payback 9 months · 0 audit violations (`tools/golden.json`). Since v20.31.0 the new build moves the setup on purpose (BPMN B9b, recorded in DEVIATIONS.md):
+setup €239,315.5 · NPV €1,348,910 · ROI 6.64 · payback 6 months; savings and run cost unchanged ([`docs/GUIDE_BPMN.md`](docs/GUIDE_BPMN.md) § 8).
 
 ## Run, build, test the TypeScript build
 
@@ -90,6 +98,7 @@ title 5 times. These Advanced-unlock gestures are legacy-only and out of scope f
 | [`docs/SECTION_PORTING.md`](docs/SECTION_PORTING.md) | the recipe used to port each section |
 | [`docs/BUMP_PROCEDURE.md`](docs/BUMP_PROCEDURE.md) | release procedure (new build; legacy file in §7) |
 | [`docs/SPEC_MULTI_PRODUIT.md`](docs/SPEC_MULTI_PRODUIT.md), [`docs/GUIDE_MULTI_PRODUIT.md`](docs/GUIDE_MULTI_PRODUIT.md), `docs/examples/` | the multi-product specification (English) with its phase notes, the user guide, the example portfolio |
+| [`docs/SPEC_BPMN.md`](docs/SPEC_BPMN.md), [`docs/GUIDE_BPMN.md`](docs/GUIDE_BPMN.md), `docs/bpmn/` | the BPMN specification with its phase notes and open items, the user guide, the extension XSD, the OMG / Microsoft schemas and the sample files |
 | [`docs/CODE_REVIEW.md`](docs/CODE_REVIEW.md) | the v18.8 code review (52 findings), its v18.9 resolution, and its status after the migration |
 | `docs/history/` | archived documents: legacy architecture and bump procedure (v18.x), the v12.42 bump procedure |
 | `docs/release-notes/` | original HTML release notes, v12.57 → v18.1 (frozen) |
