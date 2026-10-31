@@ -55,8 +55,17 @@ async function interactive(page, rootSel, kinds, which, state) {
   return out;
 }
 
+/** Finish the running CSS transitions and animations before measuring (a section fading in, read at opacity 0.98 on a slow runner, failed a
+ *  docs-only PR); infinite animations are left alone, 2 s at most — the same rule as the a11y audit (tools/a11y-lib.mjs). */
+const settle = (page) => page.evaluate(async () => {
+  const finite = document.getAnimations().filter((a) => a.effect?.getTiming().iterations !== Infinity);
+  await Promise.race([Promise.all(finite.map((a) => { try { a.finish(); } catch { /* not finishable */ } return a.finished.catch(() => undefined); })),
+    new Promise((r) => setTimeout(r, 2000))]);
+});
+
 async function measureSection(page, rootSel, which, helpSel) {
   const pick = (f) => KINDS.filter(f).map((k) => ({ kind: k.kind, sel: k[which] }));
+  await settle(page);
   const res = await page.evaluate(extract, { rootSel, kinds: pick((k) => !k.state), props: SPROPS, local: LOCAL_SEL });
   Object.assign(res, await interactive(page, rootSel, KINDS.filter((k) => k.state === 'hover'), which, 'hover'));
   Object.assign(res, await interactive(page, rootSel, KINDS.filter((k) => k.state === 'focus'), which, 'focus'));
