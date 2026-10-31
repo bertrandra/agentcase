@@ -17,6 +17,8 @@ When releasing, follow [docs/BUMP_PROCEDURE.md](docs/BUMP_PROCEDURE.md) (§7 for
 
 ## [Unreleased]
 
+## [v21.4.0] 2026-10-31 — B10b: the Unit display scope at any node of the organisation tree
+
 ### B10b — the Unit display scope: any node of the organisation tree as a View
 
 - **Show a unit.** 👁 Show lists the organisation's units (the tree in order, indented, the level announced) and Unassigned. A unit — business
