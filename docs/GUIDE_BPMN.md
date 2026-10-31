@@ -200,9 +200,11 @@ standard conversion).
 
 ## 4. 🏢 Organisation and 🧭 Who does what
 
-**🏢 Organisation** (frame group; Admin, Builder, Business journey): the unit tree (editable with the keyboard), the teams with their lines (skill ·
-grade · location · FTE: the products' entry teams and the shared team lines, read as teams; the figures are unchanged) and the role catalogue.
-The entry team and the shared team table keep their own screens; this section links to them.
+**🏢 Organisation** (frame group; Admin, Builder, Business journey): the unit tree of any depth (editable with the keyboard), the **Owning unit of
+each product** (one unit at any level, or **Unassigned**; a unit counts the products of its sub-units), the teams with their lines (skill · grade ·
+location · FTE: each product's entry team and the shared team lines, stored as teams in the organisation part of the case's process document) and the
+role catalogue. The entry team and the shared team table keep their own screens; this section links to them. The **📦 Products** table has an
+**Owning unit** column too. A product that has its own process keeps no copy of the organisation: units, teams and owners are common.
 
 **🧭 Who does what** (scope group): the RACI of every activity (Responsible, Accountable, Consulted, Informed), stored as standard BPMN
 `resourceRole`s, so other tools keep it.
@@ -308,7 +310,7 @@ The full list, with the section that records each item, is the owner's backlog i
   change-failure rate are views, not figures; the shared process library is not applied to portfolio products; the import report does not show
   what foreign content was kept or dropped.
 - **Decisions and CMMN**: no screen edits or binds a decision; the CMMN read-back drops what it does not map; decisions are not drawn.
-- **Organisation**: teams are still stored as entry teams and shared lines (derived as teams); the RACI does not drive a figure; the organisation
+- **Organisation**: the RACI does not drive a figure; a product's own process carries its own RACI (the RACI is part of the activities); the organisation
   lane view is not offered in the export dialog and has no geometry; programme lanes are not linked to the organisation's roles.
 - **Audit**: a draft tool catalogue; no audit on programme activities; a Merge import does not merge audit data; the header and role-level audits
   are not in the audit workbook; the diagram is not coloured by audit status.

@@ -17,6 +17,19 @@ When releasing, follow [docs/BUMP_PROCEDURE.md](docs/BUMP_PROCEDURE.md) (§7 for
 
 ## [Unreleased]
 
+### B10a — the override split; the teams, units and owning units in the case's BPMN document (schema v5)
+
+- **Teams in the document.** Each product's entry team and the portfolio's shared team lines (with their pins) are now `ac:team` elements of the
+  organisation part of the case's BPMN document; the `teamIn` / `sharedTeam` keys are gone from the files (schema v5; a version 2–4 file opens with
+  the same teams and figures). Input team, the shared team table, both workbooks, tab sync and the autosave work as before: every edit is a small
+  undoable change of the document.
+- **Override split.** A product with its own process keeps no copy of the organisation: units, teams and owners stay common; the programme values
+  stay per field. Editing one product's team recomputes that product only.
+- **Units at any depth and owning unit.** The unit tree has no fixed depth; each product can be owned by one unit at any level (or Unassigned),
+  chosen in 🏢 Organisation (**Owning unit of each product**) or in the 📦 Products table (**Owning unit** column). A unit that still owns a product,
+  holds a team or has sub-units cannot be removed.
+- Figures unchanged on the 107 fixtures. A Monte Carlo run saved by an older file may show as stale once.
+
 ## [v21.1.0] 2026-10-31 — Links from the BPMN map to the activity detail screens
 
 ### Process — links from the map to activity detail

@@ -40,6 +40,8 @@ export { selectionView, type SelectionView, type SelectionRow } from './selectio
 export { effectiveTeam, shareOf, allocatedPct, isSharedRow, ownRows, sharedEtp, addSharedLine, editSharedLine, removeSharedLine, setSharedAllocation,
   dropProductShares, type SharedLineField } from './sharedTeam';
 export { pinSharedLine, clearSharedPins, sharedLineArtefacts } from './sharedTeamPins';
+export { productTeam, productOwner, sharedLines, processCommon, withProductRows, withProductOwner, withTeamDoc } from './teamAccess';
+export { teamsIntoDocument, fromLegacyTeams, type LegacyTeams } from './teamMigrate';
 export { aggregateTeams, type TeamAggregate, type TeamBucket, type TeamLine, type TeamProductRow } from './teams';
 export { inputSummary, type InputSummaryRow, type HubState } from './inputSummary';
 export * from './aggScope'; export * from './aggFrame'; export * from './aggBaseline'; export { spread, type Spread, type AggBase } from './aggScopeRows';

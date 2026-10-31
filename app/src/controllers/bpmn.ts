@@ -1,7 +1,8 @@
 /** @calc-zone exports */
 import { resolveProduct } from '@/domain/portfolio';
 import { collaborationAudit, exportAuditDoc, hasAudit } from '@/domain/audit';
-import { collaborationDocument, collaborationText, exportCaseText, LIMITS, serialize, type ProductInput } from '@/domain/process';
+import { collaborationDocument, collaborationText, exportCaseText, LIMITS, serialize, type ProductInput, type XDocument } from '@/domain/process';
+import { unitElements, withUnits } from '@/domain/org';
 import { activeDoc } from '@/store/editBase';
 import { appStore } from '@/store/instance';
 import { parseBpmn, type ParseResult } from '@/store/persistence/bpmn/read';
@@ -36,6 +37,12 @@ export function bpmnExportChoices(): { portfolio: boolean; products: number; sho
     audit: hasAudit(activeDoc().BPMN) || products.some((p) => p.overrides.BPMN !== undefined && hasAudit(p.overrides.BPMN)) };
 }
 
+/** A product's own process document carries no organisation (B10a): its export gets the common document's units, as the common one has them. */
+function withOrgUnits(d: XDocument): XDocument {
+  const common = unitElements(appStore().getState().portfolio.common.BPMN as XDocument | undefined);
+  return !common.length || unitElements(d).length ? d : withUnits(d, common);
+}
+
 /** The products of the portfolio as export inputs (codes P1, P2… in portfolio order; archived products left out). */
 function productInputs(): ProductInput[] {
   const pf = appStore().getState().portfolio;
@@ -54,7 +61,7 @@ export function exportProcessFiles(mode: BpmnExportMode, partial = false, now: D
 
 function deliveryFiles(mode: BpmnExportMode, partial: boolean, now: Date, audit: boolean): BpmnFile[] {
   const customer = activeDoc().customerName as string | undefined, { portfolio, shown } = bpmnExportChoices();
-  const withAudit = <C extends { BPMN: ProductInput['case']['BPMN'] }>(c: C): C => ({ ...c, BPMN: exportAuditDoc(c.BPMN, audit) });
+  const withAudit = <C extends { BPMN: ProductInput['case']['BPMN'] }>(c: C): C => ({ ...c, BPMN: exportAuditDoc(withOrgUnits(c.BPMN), audit) });
   const name = (product: string | undefined) => bpmnFilename(customer, product, now, audit);
   if (mode === 'shown' || !portfolio) {
     const pf = appStore().getState().portfolio, i = pf.products.filter((p) => !p.archived).findIndex((p) => p.id === pf.activeProductId);

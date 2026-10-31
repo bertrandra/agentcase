@@ -6,7 +6,8 @@ export const samples: Record<string, Sample> = {
   'baseline.setTargetLoc': () => setTargetLoc('Portugal', 30),
   'baseline.resetTargetLoc': () => resetTargetLoc(),
   'baseline.setTeamTotal': () => setTeamTotal(20),
-  'baseline.buildTeam': () => buildTeam(),
+  // the default team IS the mix-built team (a no-op writes nothing since B10a): build it after adding a row
+  'baseline.buildTeam': { prep: () => addTeamRowFor('Functional Safety'), run: () => buildTeam() },
   'baseline.alignTeam': { prep: () => setPin(0, 'A017', true), run: () => alignTeam() },
   'baseline.addTeamRowFor': () => addTeamRowFor('Functional Safety'),
   'baseline.setPin': () => setPin(0, 'A017', true),

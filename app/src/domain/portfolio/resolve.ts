@@ -5,15 +5,19 @@ import { allocateCents, teamEtp } from './alloc';
 import { mergeCase } from './layers';
 import { effectiveTeam } from './sharedTeam';
 import { ctxOf, memoChain } from './memo';
+import { processCommon } from './teamAccess';
 import type { Portfolio, Product } from './types';
 
 const roots = new WeakMap<object, unknown>();
 
-/** Merge memoised on the identities of common, overrides, team and knowledge (plus the two hub numbers): editing one product never rebuilds another. */
+/**
+ * Merge memoised on the identities of the common values (`processCommon`: unchanged by a team edit), overrides, team and knowledge (plus the two hub
+ * numbers): editing one product, its team included, never rebuilds another.
+ */
 function resolveWith(p: Portfolio, prod: Product, infra: number): CaseState {
-  const team = effectiveTeam(p, prod);   // the product's own team, plus its shares of the shared lines (same identity when none)
-  return memoChain(roots, [p.common, prod.overrides, team, prod.knowledge], `${p.hub.enabled}|${infra}`,
-    () => mergeCase(p.common, team === prod.teamIn ? prod : { ...prod, teamIn: team }, p.hub.enabled, infra));
+  const team = effectiveTeam(p, prod), common = processCommon(p.common);   // own team + shares of the shared lines; the document without the teams
+  return memoChain(roots, [common, prod.overrides, team, prod.knowledge], `${p.hub.enabled}|${infra}`,
+    () => mergeCase(common, prod, team, p.hub.enabled, infra));
 }
 
 /** A product takes part in the hub allocation when it is planned, kept, and its resolved case really runs the hub (engagement context allowing). */
@@ -46,7 +50,8 @@ const NO_LAYER = { overrides: {}, knowledge: {} };
  * The case every product inherits (what "Edit: All products" shows in a Portfolio / Wave view): the common values with the hub layer (activation,
  * full infrastructure) and no override nor knowledge subset. A case needs an entry team, never common: `teamIn` is the given product's. Memoised.
  */
-export function resolveCommon(p: Portfolio, teamIn: Product['teamIn']): CaseState {
-  return memoChain(commons, [p.common, teamIn], `${p.hub.enabled}|${p.hub.infraMonthly}`,
-    () => mergeCase(p.common, { id: '', name: '', waveId: null, offsetMonths: 0, teamIn, ...NO_LAYER }, p.hub.enabled, p.hub.infraMonthly));
+export function resolveCommon(p: Portfolio, teamIn: CaseState['teamIn']): CaseState {
+  const common = processCommon(p.common);
+  return memoChain(commons, [common, teamIn], `${p.hub.enabled}|${p.hub.infraMonthly}`,
+    () => mergeCase(common, NO_LAYER, teamIn, p.hub.enabled, p.hub.infraMonthly));
 }

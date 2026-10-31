@@ -1,14 +1,20 @@
 import { assignWave } from '@/controllers/wave';
 import { archiveProduct, duplicateProduct, removeProduct, renameProduct, setActiveProduct, setProductNote, setProductOffset } from '@/controllers/product';
+import type { OrgUnit } from '@/domain/org';
 import { overrideRefs, type Wave } from '@/domain/portfolio';
 import type { ProductRow } from '@/store/portfolioHooks';
 import { fmtEurK, fmtMonths } from '@/ui/format';
 import { toast } from '@/ui/uiState';
 import { NumCell } from '@/ui/widgets/CommitField';
 import { DraftText } from '@/ui/widgets/DraftText';
+import { OwnerSelect } from '@/ui/widgets/OwnerSelect';
 
-/** One product of the table: editable name, wave, offset, base team, state, key indicators of its effective case, note and the P2 commands as buttons. */
-export function ProductRowView({ row, index, active, last, waves }: { row: ProductRow; index: number; active: boolean; last: boolean; waves: Wave[] }) {
+/**
+ * One product of the table: editable name, wave, owning unit, offset, base team, state, key indicators of its effective case, note and the P2
+ * commands as buttons.
+ */
+export function ProductRowView({ row, index, active, last, waves, units, owner }: { row: ProductRow; index: number; active: boolean; last: boolean;
+  waves: Wave[]; units: readonly OrgUnit[]; owner?: string }) {
   const p = row.product, r = row.result, n = overrideRefs(p.overrides).length, who = `product no. ${index + 1}`;
   const act = (ok: boolean, done: string, failed: string) => toast(ok ? done : failed);
   return (
@@ -25,6 +31,7 @@ export function ProductRowView({ row, index, active, last, waves }: { row: Produ
           {waves.map((w) => <option key={w.id} value={w.id}>{w.name}</option>)}
         </select>
       </td>
+      <td><OwnerSelect productId={p.id} name={p.name} owner={owner} units={units} /></td>
       <td className="ac-num"><NumCell ariaLabel={`Offset in months of ${who}`} value={p.offsetMonths} min={0} step={1} width={64}
         onCommit={(v) => { setProductOffset(p.id, parseInt(v, 10) || 0); }} /></td>
       <td className="ac-num" title="Entry team of the product (FTE)">{r.model.base.etp.toFixed(1)}</td>

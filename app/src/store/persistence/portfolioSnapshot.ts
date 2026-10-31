@@ -1,6 +1,8 @@
 /** @calc-zone exports */
+import { DEFAULT_UNIT_ID, storedTeams } from '@/domain/org';
 import { buildPortfolioPackages, DEFAULT_PRODUCT_NAME, DEFAULT_WAVE_NAME, deepEqual, envelopeCase, isDefaultProductName, isDefaultWaveName, portfolioToCase,
-  type Portfolio } from '@/domain/portfolio';
+  processCommon, type Portfolio } from '@/domain/portfolio';
+import { attr, type XDocument } from '@/domain/process';
 import { withSavedPersona } from '../persona';
 import { openChecked, versionStamp } from './schema';
 import { PORTFOLIO_SCHEMA } from '../portfolioState';
@@ -16,6 +18,12 @@ const withDefaultNames = (pf: Portfolio): Portfolio => ({
   waves: pf.waves.map((w) => (isDefaultWaveName(w.name) ? { ...w, name: DEFAULT_WAVE_NAME } : w)),
 });
 
+/** The only stored team is the product's own one, in the default unit, with no owning unit and no shared line (what a case file keeps). */
+function plainTeams(pf: PortfolioDoc): boolean {
+  const st = storedTeams(pf.common.BPMN as XDocument | undefined), id = (pf.products[0] as { id: string }).id, own = st.own.get(id);
+  return !st.shared.length && st.own.size <= 1 && (!own || (attr(own, 'unit') === DEFAULT_UNIT_ID && attr(own, 'owner') === undefined));
+}
+
 /**
  * THE F22 RULE. A portfolio is saved as a plain single-case `agentcase.snapshot.v1` file exactly when that file re-opens (as "Product 1" in
  * "Wave 1") to the very same portfolio: one product, one wave, no overrides, no knowledge subset, default names (English, or the French "Produit 1" /
@@ -24,8 +32,10 @@ const withDefaultNames = (pf: Portfolio): Portfolio => ({
  * tools keep seeing v1 files.
  */
 export function isSingleCase(pf: PortfolioDoc): boolean {
-  if (pf.products.length !== 1 || pf.waves.length !== 1) return false;
-  const env = envelopeCase(portfolioToCase(pf)), a = env.common as Record<string, unknown>, b = pf.common as Record<string, unknown>;
+  if (pf.products.length !== 1 || pf.waves.length !== 1 || !plainTeams(pf)) return false;
+  // schema v5: the case's document is compared without its stored teams (the envelope writes the team again; `plainTeams` checked the rest)
+  const env = envelopeCase(portfolioToCase(pf)), a = processCommon(env.common) as Record<string, unknown>,
+    b = processCommon(pf.common) as Record<string, unknown>;
   if (Object.keys(a).length !== Object.keys(b).length || !Object.keys(a).every((k) => Object.is(a[k], b[k]))) return false;   // the hub layer changed the case
   const rest: Record<string, unknown> = { ...env }, mine: Record<string, unknown> = { ...withDefaultNames(withoutView(pf)) };
   delete rest.common; delete mine.common;

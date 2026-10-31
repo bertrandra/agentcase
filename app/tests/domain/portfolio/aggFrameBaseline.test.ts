@@ -3,7 +3,7 @@ import { LOCATIONS } from '@/domain';
 import { teamEtp } from '@/domain/portfolio/alloc';
 import { locationMix } from '@/domain/location';
 import { ENGAGE_COEF } from '@/domain/catalog';
-import { baselineLocStrat, frameEngage, frameEngagement, frameIndustry, resolveProduct, type Portfolio } from '@/domain/portfolio';
+import { baselineLocStrat, frameEngage, frameEngagement, frameIndustry, productTeam, resolveProduct, type Portfolio } from '@/domain/portfolio';
 import { appStore } from '@/store/instance';
 import { viewScopeOf } from '@/store/viewScope';
 import { variedProducts, type Varied } from '../../helpers/aggFixture';
@@ -55,7 +55,7 @@ describe.each(KINDS)('frameIndustry (%s)', (k) => {
 describe.each(KINDS)('baselineLocStrat (%s)', (k) => {
   it('FTE by location is the sum of the products; shares add up to 100', () => {
     const ids = sel(k), a = baselineLocStrat(pf, ids), teams = ids.map((id) => pf.products.find((p) => p.id === id)!);
-    expectClose(a.fte, teams.reduce((s, p) => s + teamEtp(p.teamIn), 0));
+    expectClose(a.fte, teams.reduce((s, p) => s + teamEtp(productTeam(pf, p.id)), 0));
     for (const l of LOCATIONS) expectClose(a.mix.find((m) => m.name === l.name)!.fte,
       ids.reduce((s, id) => s + locationMix(resolveProduct(pf, id)).byLoc[l.name]!, 0));
     expectClose(a.mix.reduce((s, m) => s + m.asisPct, 0), 100);

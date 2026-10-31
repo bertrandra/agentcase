@@ -2,7 +2,7 @@ import texts from '@/content/refshare/datamodel-fields.json';
 import {
   HUB_FIELDS, KNOWLEDGE_SUBSET_FIELDS, PORTFOLIO_FIELDS, PRODUCT_FIELDS, SHARED_TEAM_LINE_FIELDS, WAVE_DEPENDENCY_FIELDS, WAVE_FIELDS,
 } from '@/domain/portfolio/fields';
-import { FORBIDDEN_DOM_IDS, OVERRIDABLE_KEYS, type Portfolio } from '@/domain/portfolio';
+import { FORBIDDEN_DOM_IDS, OVERRIDABLE_KEYS, sharedLines, type Portfolio } from '@/domain/portfolio';
 import { describe } from './model';
 
 export type TextGroup = keyof typeof texts;
@@ -33,7 +33,7 @@ export function levels(pf: Portfolio): Level[] {
     { id: 'wave', title: 'Wave (first wave)', set: WAVE_FIELDS, group: 'wave', sample: pf.waves[0] },
     { id: 'dependency', title: 'Wave dependency (first one set)', set: WAVE_DEPENDENCY_FIELDS, group: 'dependency',
       sample: pf.waves.find((w) => w.dependsOn)?.dependsOn },
-    { id: 'shared', title: 'Shared team line (first line)', set: SHARED_TEAM_LINE_FIELDS, group: 'sharedTeam', sample: pf.sharedTeam?.[0] },
+    { id: 'shared', title: 'Shared team line (first line)', set: SHARED_TEAM_LINE_FIELDS, group: 'sharedTeam', sample: sharedLines(pf)[0] },
     { id: 'hub', title: 'Hub settings', set: HUB_FIELDS, group: 'hub', sample: pf.hub },
   ];
 }
@@ -47,7 +47,7 @@ export interface ScopeRow { key: string; scope: string; overriddenBy: number }
 export function scopeRows(pf: Portfolio): ScopeRow[] {
   const over = (k: string) => pf.products.filter((p) => k in p.overrides).length;
   const keys = [...new Set(['teamIn', ...OVERRIDABLE_KEYS, ...Object.keys(pf.common)])];
-  const scope = (k: string): string => (k === 'teamIn' ? 'own (every product)' : k === 'dom'
+  const scope = (k: string): string => (k === 'teamIn' ? 'own (every product: its team in the common document)' : k === 'dom'
     ? `per form field (except ${FORBIDDEN_DOM_IDS.join(', ')})` : (OVERRIDABLE_KEYS as readonly string[]).includes(k) ? 'overridable' : 'common only');
   return keys.map((key) => ({ key, scope: scope(key), overriddenBy: key === 'teamIn' ? pf.products.length : over(key) }))
     .sort((a, b) => (a.scope === b.scope ? a.key.localeCompare(b.key) : a.scope === 'common only' ? 1 : b.scope === 'common only' ? -1 : 0));

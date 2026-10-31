@@ -64,7 +64,7 @@ function products(list: unknown, n: Notes, team: unknown[]): Rec[] {
     seen.add(id);
     const q: Rec = { ...p, name: typeof p.name === 'string' ? p.name : `Product ${out.length + 1}`, knowledge: knowledge(p.knowledge, n, who),
       overrides: overrides(p.overrides, n, who) };
-    q.teamIn = checkTeam(p.teamIn, n, `${who}: `, team);
+    if (p.teamIn !== undefined) q.teamIn = checkTeam(p.teamIn, n, `${who}: `, team);   // a version 4 file (schema v5: the team is in the document)
     if (!nonNeg(p.offsetMonths)) { n.push(`${who}: offset ${JSON.stringify(p.offsetMonths)} is not a number >= 0 — set to 0`); q.offsetMonths = 0; }
     if (p.waveId !== null && typeof p.waveId !== 'string') q.waveId = null;
     out.push(q);

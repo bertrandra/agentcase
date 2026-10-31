@@ -2,6 +2,7 @@
 import { SnapshotError } from '../errors';
 import { v2ToV3 } from './v3';
 import { v3ToV4 } from './v4';
+import { v4ToV5 } from './v5';
 
 /**
  * THE FILE SCHEMA VERSION. Every file this build writes (JSON, HTML snapshot, autosave record) carries `_schemaVersion`; a file without it is v1
@@ -11,7 +12,7 @@ import { v3ToV4 } from './v4';
  * Adding a version: bump `SNAPSHOT_SCHEMA_VERSION`, add `MIGRATIONS[n]` (vn -> vn+1, a pure function on the raw JSON) and a test that an old file
  * still opens to the same case. A migration never throws: what it cannot convert, it leaves to the validators (`checks`), which note a correction.
  */
-export const SNAPSHOT_SCHEMA_VERSION = 4;
+export const SNAPSHOT_SCHEMA_VERSION = 5;
 export const VERSION_KEY = '_schemaVersion';
 
 /** A file made by a newer AgentCase: refused, the user is told to open it with an up-to-date build. */
@@ -37,7 +38,7 @@ function v1ToV2(s: Raw): Raw {
 }
 
 /** `MIGRATIONS[n]` turns a version-n file into a version n+1 file. */
-export const MIGRATIONS: Record<number, (s: Raw) => Raw> = { 1: v1ToV2, 2: v2ToV3, 3: v3ToV4 };
+export const MIGRATIONS: Record<number, (s: Raw) => Raw> = { 1: v1ToV2, 2: v2ToV3, 3: v3ToV4, 4: v4ToV5 };
 
 /** The version a raw file declares: absent (every file written before the stamp) = 1; anything that is not a whole number >= 1 is read as 1 too. */
 export function fileVersion(raw: Raw): number {

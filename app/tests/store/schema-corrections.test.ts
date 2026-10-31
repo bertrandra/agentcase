@@ -1,3 +1,4 @@
+import { productTeam } from '@/domain/portfolio';
 import { readFileSync } from 'node:fs';
 import { describe, expect, it } from 'vitest';
 import { SNAPSHOT_SCHEMA_VERSION } from '@/store/persistence/schema/version';
@@ -29,7 +30,8 @@ describe('a damaged file opens with its corrections listed (never refused)', () 
     raw.RATE.France!.A = 'abc'; (raw.RATE as Rec).Morocco = 5; (raw.MODEL as Rec).MCS = 7; raw.MODEL.FLOW!.wip = 'x';
     row0(raw).etp = -2; raw.teamIn.splice(1, 0, 'junk'); raw.PERSONAS.push({ label: 'No id' }); raw.GROUPS = 'x';
     raw.THEMES = 'x'; raw.THEME_SEQ = 1.5; raw.futureKey = { a: 1 };
-    const { portfolio, notes } = openChecked(raw), c = portfolio.common as unknown as CaseFile, team = portfolio.products[0]!.teamIn as unknown as Rec[];
+    const { portfolio, notes } = openChecked(raw), c = portfolio.common as unknown as CaseFile;
+    const team = productTeam(portfolio, portfolio.products[0]!.id) as unknown as Rec[];
     expect(notes).toEqual([
       'MODEL.MCS: not an object — default settings used', 'MODEL.FLOW.wip: string instead of number — default 0 used',
       'RATE.France.A: "abc" is not a day rate >= 0 — default 350 used', 'RATE.Morocco: not a list of grade rates — default rates used',

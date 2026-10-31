@@ -1,3 +1,4 @@
+import { productTeam, sharedLines } from '@/domain/portfolio';
 // @vitest-environment jsdom
 import { act, cleanup, fireEvent, screen } from '@testing-library/react';
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
@@ -12,7 +13,7 @@ vi.mock('@/ui/widgets/ChartPanel', async () => import('../helpers/chartStub')); 
 let ids: [string, string, string];
 beforeEach(() => { ids = threeProducts().ids; });
 afterEach(cleanup);
-const teams = () => pf().products.map((p) => JSON.stringify(p.teamIn));
+const teams = () => pf().products.map((p) => JSON.stringify(productTeam(pf(), p.id)));
 const total = () => screen.getByLabelText('Total AS-IS team (FTE)') as HTMLInputElement;
 const undoKey = () => fireEvent.keyDown(document.body, { key: 'z', ctrlKey: true });
 const region = () => screen.getByRole('region', { name: 'Shared team lines' });
@@ -31,7 +32,7 @@ describe('team editing targets the active product only (spec F2)', () => {
     expect(after[0]).toBe(before[0]);
     expect(after[2]).toBe(before[2]);
     expect(after[1]).not.toBe(before[1]);
-    expect(pf().products[1]!.teamIn.length).toBe(JSON.parse(before[1]!).length + 1);
+    expect(productTeam(pf(), pf().products[1]!.id).length).toBe(JSON.parse(before[1]!).length + 1);
   });
   it('the same edit in "This product only" mode leaves the other teams alone too, and the figure shown is the active one', async () => {
     mountApp('team-in');
@@ -53,18 +54,18 @@ describe('Products: shared team lines', () => {
     await sectionReady(/Products/);
     expect(region().textContent).toContain('No shared line');
     fireEvent.click(screen.getByRole('button', { name: '+ Add a shared line' }));
-    expect(pf().sharedTeam).toHaveLength(1);
+    expect(sharedLines(pf())).toHaveLength(1);
     fireEvent.change(screen.getByLabelText('FTE of shared line 1'), { target: { value: '2' } });
     fireEvent.change(screen.getByLabelText('Skill of shared line 1'), { target: { value: 'Test/QA' } });
     fireEvent.change(screen.getByLabelText('Share of Product 1 in shared line 1 (%)'), { target: { value: '60' } });
     fireEvent.change(screen.getByLabelText('Share of B in shared line 1 (%)'), { target: { value: '40' } });
-    const line = pf().sharedTeam![0]!;
+    const line = sharedLines(pf())![0]!;
     expect(line).toMatchObject({ etp: 2, skill: 'Test/QA', allocations: { [ids[0]]: 60, [ids[1]]: 40 } });
     expect(region().textContent).toContain('100 %');
     fireEvent.change(screen.getByLabelText('Share of C in shared line 1 (%)'), { target: { value: '10' } });
     expect(region().querySelector('[data-shared-status]')!.textContent).toMatch(/over 100 %/);
     undoKey();
-    expect(pf().sharedTeam![0]!.allocations[ids[2]]).toBeUndefined();
+    expect(sharedLines(pf())![0]!.allocations[ids[2]]).toBeUndefined();
     expect(await axeViolations(region(), { region: false })).toEqual([]);
     fireEvent.click(screen.getByRole('button', { name: 'Remove shared line 1' }));
     expect(pf()).not.toHaveProperty('sharedTeam');

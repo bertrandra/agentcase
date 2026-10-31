@@ -8,6 +8,13 @@ import { freshStore } from './helpers';
 
 afterEach(() => dismissCalcBanner());
 
+/** Schema v5: a product's team is its `ac:team` in the common document's text; its first line's FTE goes up by 5. */
+function tamperTeam(r: Record<string, unknown>, id: string): void {
+  const c = r.common as { BPMN: string }, at = c.BPMN.indexOf(`<ac:team id="team-${id}"`), m = /fte="([^"]*)"/.exec(c.BPMN.slice(at))!;
+  const i = at + m.index;
+  c.BPMN = `${c.BPMN.slice(0, i)}fte="${Number(m[1]) + 5}"${c.BPMN.slice(i + m[0].length)}`;
+}
+
 describe('staleness of a portfolio file is reported at the right level', () => {
   /** The fixture as this engine saves it: its packages were written by engine v1, B9b is v2 (the B9b deviations); re-saved once, one tamper per test. */
   let saved: string | null = null;
@@ -22,16 +29,15 @@ describe('staleness of a portfolio file is reported at the right level', () => {
   });
   it('the untouched fixture opens silently', () => { expect(open(raw())).toBeNull(); });
   it('tampering a scheduled product’s inputs: stale, and the banner names it (the shared hub moves its neighbours’ shares too)', () => {
-    const r = raw(), products = r.products as { id: string; teamIn: { etp: number }[] }[], victim = products[1]!;
-    victim.teamIn[0]!.etp += 5;
+    const r = raw(), products = r.products as { id: string }[], victim = products[1]!;
+    tamperTeam(r, victim.id);
     const b = open(r);
     expect(b?.state).toBe('stale');
     expect(b?.staleProducts).toContain(victim.id);
   });
   it('tampering an unscheduled product’s inputs: stale at the PRODUCT level only, that product alone is named', () => {
-    const r = raw(), products = r.products as { id: string; waveId: string | null; teamIn: { etp: number }[] }[],
-      victim = products.find((p) => p.waveId === null)!;
-    victim.teamIn[0]!.etp += 5;
+    const r = raw(), products = r.products as { id: string; waveId: string | null }[], victim = products.find((p) => p.waveId === null)!;
+    tamperTeam(r, victim.id);
     const b = open(r);
     expect(b?.state).toBe('stale');
     expect(b?.staleProducts).toEqual([victim.id]);

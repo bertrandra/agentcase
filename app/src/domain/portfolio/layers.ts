@@ -1,5 +1,6 @@
 /** @calc-zone knowledge-hub */
 import { caseValues, programmeValuesOf, withProgrammeValues } from '../process/storedValues';
+import { isCarrier } from '../org/orgExt';
 import { isProgrammeKey } from '../programme/storedKeys';
 import type { CaseState } from '../types/state';
 import { FORBIDDEN_DOM_IDS, OVERRIDABLE_KEYS, type CommonCase, type Product } from './types';
@@ -20,11 +21,14 @@ const without = <T>(src: Record<string, T> | undefined): Record<string, T> => {
 };
 
 /**
- * Layers, last wins: common < hub (activation, infrastructure share) < whitelisted overrides < the product's knowledge subset < its team.
+ * Layers, last wins: common < hub (activation, infrastructure share) < whitelisted overrides < the product's knowledge subset < its team
+ * (`team`: its effective entry team, read from the common document's organisation part; `common`: the common values the case runs on,
+ * `processCommon` — its document without the stored teams).
  * Shallow at the key; `dom` is merged field by field. A layer that equals the common reading is not written, so a product that
  * overrides nothing keeps the common `dom` object itself (and a single-product round trip is lossless).
  */
-export function mergeCase(common: CommonCase, product: Product, hubEnabled: boolean, infraMonthly: number): CaseState {
+export function mergeCase(common: CommonCase, product: Pick<Product, 'overrides' | 'knowledge'>, team: CaseState['teamIn'], hubEnabled: boolean,
+  infraMonthly: number): CaseState {
   const o = product.overrides, k = subsetKeys(product.knowledge);
   const patch: DomPatch = { values: {}, checked: {} };
   if (hubEnabled !== !!common.dom?.checked?.khEnabled) patch.checked.khEnabled = hubEnabled;
@@ -37,7 +41,7 @@ export function mergeCase(common: CommonCase, product: Product, hubEnabled: bool
   const stored = o.BPMN !== undefined ? programmeValuesOf(common.BPMN) : {};
   const touched = Object.keys(patch.values).length + Object.keys(patch.checked).length + Object.keys(stored).length > 0;
   const dom = touched ? { values: { ...stored, ...common.dom.values, ...patch.values }, checked: { ...common.dom.checked, ...patch.checked } } : common.dom;
-  return { ...common, ...top, dom, teamIn: product.teamIn };
+  return { ...common, ...top, dom, teamIn: team };
 }
 
 /**
@@ -48,7 +52,8 @@ export function withCommonValues<T extends CommonCase>(common: T, values: Readon
   const prog: Record<string, string | null> = {}, form: Record<string, string> = { ...common.dom.values };
   let formChanged = false;
   for (const [k, v] of Object.entries(values)) {
-    if (isProgrammeKey(k) && common.BPMN?.root) { prog[k] = v ?? null; continue; }   // a test object without a document keeps form values
+    // a test object without a process document keeps form values
+    if (isProgrammeKey(k) && common.BPMN?.root && !isCarrier(common.BPMN)) { prog[k] = v ?? null; continue; }
     formChanged = true;
     if (v === undefined) delete form[k]; else form[k] = v;
   }

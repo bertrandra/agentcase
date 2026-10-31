@@ -1,3 +1,4 @@
+import { productTeam } from '@/domain/portfolio';
 import { describe, expect, it } from 'vitest';
 import { applyOverrideToCommon, clearProductOverride, setProductOverride } from '@/controllers/productOverrides';
 import { setActiveProduct, setEditScope } from '@/controllers/product';
@@ -15,10 +16,10 @@ const eff = (id: string) => resolveProduct(pf(), id) as unknown as Record<string
 
 describe('address layer: where an existing command lands in the portfolio', () => {
   it('teamIn goes to the active product only', () => {
-    const { ids } = threeProducts(), before = pf().products[0]!.teamIn.length, bLen = pf().products[1]!.teamIn.length;
+    const { ids } = threeProducts(), before = productTeam(pf(), pf().products[0]!.id).length, bLen = productTeam(pf(), pf().products[1]!.id).length;
     setActiveProduct(ids[0]); addTeamRow();
-    expect(pf().products[0]!.teamIn).toHaveLength(before + 1);
-    expect(pf().products[1]!.teamIn).toHaveLength(bLen);
+    expect(productTeam(pf(), pf().products[0]!.id)).toHaveLength(before + 1);
+    expect(productTeam(pf(), pf().products[1]!.id)).toHaveLength(bLen);
     expect(pf().common).not.toHaveProperty('teamIn');
   });
   it('a form field edited with scope "all" goes to common and all products follow', () => {

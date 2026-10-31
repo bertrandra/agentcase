@@ -1,6 +1,7 @@
 /** @calc-zone product-resolution */
 import type { TeamRow } from '../types/state';
 import { dropProductShares } from './sharedTeam';
+import { productOwner, productTeam, withProductOwner, withProductRows, withoutProductRows } from './teamAccess';
 import type { KnowledgeSubset, Portfolio, Product } from './types';
 
 /** Spec F1: a portfolio holds 1 to 50 products. */
@@ -26,32 +27,41 @@ function place<T extends Portfolio>(pf: T, id: string, waveId: string | null, af
   return { ...pf, waves, products: pf.products.map((p) => (p.id === id ? { ...p, waveId: known ? waveId : null } : p)) };
 }
 
-/** A new product inherits the common values (no overrides, no knowledge subset) and has its own entry team. Refused beyond 50 products or on a duplicate id. */
+/**
+ * A new product inherits the common values (no overrides, no knowledge subset) and has its own entry team (a team appended to the organisation part
+ * of the common document, schema v5). Refused beyond 50 products or on a duplicate id.
+ */
 export function addProduct<T extends Portfolio>(pf: T, o: { id: string; name: string; teamIn: TeamRow[]; waveId?: string | null }): T {
   if (pf.products.length >= MAX_PRODUCTS || pf.products.some((p) => p.id === o.id)) return pf;
-  const prod: Product = { id: o.id, name: o.name, teamIn: o.teamIn, knowledge: {}, overrides: {}, waveId: null, offsetMonths: 0 };
-  return place({ ...pf, products: [...pf.products, prod] }, o.id, o.waveId ?? null);
+  const prod: Product = { id: o.id, name: o.name, knowledge: {}, overrides: {}, waveId: null, offsetMonths: 0 };
+  return place(withProductRows({ ...pf, products: [...pf.products, prod] }, o.id, o.teamIn, o.name), o.id, o.waveId ?? null);
 }
 
-export const renameProduct = <T extends Portfolio>(pf: T, id: string,
-  name: string): T => (name.trim() ? mapProduct(pf, id, (p) => ({ ...p, name: name.trim() })) : pf);
+/** Rename a product (its team's name follows: "‹name› delivery team"). */
+export function renameProduct<T extends Portfolio>(pf: T, id: string, name: string): T {
+  const n = name.trim(), out = n ? mapProduct(pf, id, (p) => ({ ...p, name: n })) : pf;
+  return out === pf ? pf : withProductRows(out, id, productTeam(out, id), n);
+}
 export const setProductNote = <T extends Portfolio>(pf: T, id: string, note: string): T => mapProduct(pf, id, (p) => ({ ...p, note: note || undefined }));
 export const archiveProduct = <T extends Portfolio>(pf: T, id: string, archived: boolean): T => mapProduct(pf, id,
   (p) => ({ ...p, archived: archived || undefined }));
 export const setProductOffset = <T extends Portfolio>(pf: T, id: string, months: number): T => mapProduct(pf, id,
   (p) => ({ ...p, offsetMonths: whole(months) }));
 
-/** F3: the copy takes the team, the overrides and the knowledge subset, and joins the source's wave right after it. */
+/** F3: the copy takes the team (and owning unit), the overrides and the knowledge subset, and joins the source's wave right after it. */
 export function duplicateProduct<T extends Portfolio>(pf: T, id: string, copyId: string, name?: string): T {
   const src = pf.products.find((p) => p.id === id);
   if (!src || pf.products.length >= MAX_PRODUCTS || pf.products.some((p) => p.id === copyId)) return pf;
   const copy: Product = clean({ ...structuredClone(src), id: copyId, name: name?.trim() || `${src.name} (copy)`, archived: undefined, waveId: null });
-  const i = pf.products.indexOf(src);
-  return place({ ...pf, products: [...pf.products.slice(0, i + 1), copy, ...pf.products.slice(i + 1)] }, copyId, src.waveId, id);
+  const i = pf.products.indexOf(src), owner = productOwner(pf, id);
+  let out = withProductRows({ ...pf, products: [...pf.products.slice(0, i + 1), copy, ...pf.products.slice(i + 1)] }, copyId,
+    structuredClone(productTeam(pf, id)), copy.name);
+  if (owner) out = withProductOwner(out, copyId, owner);
+  return place(out, copyId, src.waveId, id);
 }
 
 /**
- * Removing a product also leaves its wave and drops its shares of the shared team lines (one undoable step); the active product moves to a
+ * Removing a product also leaves its wave, drops its shares of the shared team lines and its team (one undoable step); the active product moves to a
  * neighbour. The last product cannot be removed.
  */
 export function removeProduct<T extends Portfolio>(pf: T, id: string): T {
@@ -59,8 +69,8 @@ export function removeProduct<T extends Portfolio>(pf: T, id: string): T {
   if (i < 0 || pf.products.length < 2) return pf;
   const products = pf.products.filter((p) => p.id !== id);
   const active = pf.activeProductId === id ? (products[Math.min(i, products.length - 1)] as Product).id : pf.activeProductId;
-  return dropProductShares({ ...pf, products, activeProductId: active,
-    waves: pf.waves.map((w) => (w.productIds.includes(id) ? { ...w, productIds: w.productIds.filter((x) => x !== id) } : w)) }, id);
+  return withoutProductRows(dropProductShares({ ...pf, products, activeProductId: active,
+    waves: pf.waves.map((w) => (w.productIds.includes(id) ? { ...w, productIds: w.productIds.filter((x) => x !== id) } : w)) }, id), id);
 }
 
 /** Set (or, for `clear`ed fields, drop) fields of the product's knowledge subset; an absent field is inherited from the common hub. */

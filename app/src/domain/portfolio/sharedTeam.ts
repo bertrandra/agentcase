@@ -1,6 +1,7 @@
 /** @calc-zone product-resolution */
 import type { TeamRow } from '../types/state';
 import { memoChain } from './memo';
+import { productTeam, sharedLines, withLinesDoc } from './teamAccess';
 import type { Portfolio, Product, SharedTeamLine } from './types';
 
 /** The FTE a shared line gives one product: FTE x share (percent); 0 when the product has no share. */
@@ -22,28 +23,28 @@ export const sharedEtp = (rows: TeamRow[]): number => rows.reduce((a, r) => a + 
 const roots = new WeakMap<object, unknown>();
 /**
  * The entry team a product's effective case runs on: its own rows, then one row per shared line that gives it a share (FTE x share, marked
- * `shared`, carrying the line's pins). Without a share it is the product's own `teamIn` itself (same identity: absent sharing = today's behaviour
+ * `shared`, carrying the line's pins). Without a share it is the product's own team itself (same identity: absent sharing = today's behaviour
  * exactly). Memoised.
  */
-export function effectiveTeam(pf: Portfolio, prod: Product): TeamRow[] {
-  const lines = pf.sharedTeam;
-  if (!lines?.length || !lines.some((l) => shareOf(l, prod.id) > 0)) return prod.teamIn;
-  return memoChain(roots, [prod.teamIn, lines], prod.id, () => [...prod.teamIn, ...lines.filter((l) => shareOf(l, prod.id) > 0)
+export function effectiveTeam(pf: Pick<Portfolio, 'common'>, prod: Pick<Product, 'id'>): TeamRow[] {
+  const lines = sharedLines(pf), own = productTeam(pf, prod.id);
+  if (!lines.length || !lines.some((l) => shareOf(l, prod.id) > 0)) return own;
+  return memoChain(roots, [own, lines], prod.id, () => [...own, ...lines.filter((l) => shareOf(l, prod.id) > 0)
     .map((l): TeamRow => ({ skill: l.skill, grade: l.grade, loc: l.loc, etp: shareOf(l, prod.id), pins: l.pins ?? [], shared: l.id }))]);
 }
 
-export const withLines = <T extends Portfolio>(pf: T, lines: SharedTeamLine[]): T => {
-  const out: T = { ...pf, sharedTeam: lines };
-  if (!lines.length) delete out.sharedTeam;   // no shared line left: the field disappears (absent = today's file)
-  return out;
+/** The portfolio with these shared lines written into the common document (node patches: a line edited, appended or removed). */
+export const withLines = <T extends Portfolio>(pf: T, lines: SharedTeamLine[]): T => withLinesDoc(pf, lines);
+export const mapLine = <T extends Portfolio>(pf: T, id: string, f: (l: SharedTeamLine) => SharedTeamLine): T => {
+  const all = sharedLines(pf);
+  return all.some((l) => l.id === id) ? withLines(pf, all.map((l) => (l.id === id ? f(l) : l))) : pf;
 };
-export const mapLine = <T extends Portfolio>(pf: T, id: string, f: (l: SharedTeamLine) => SharedTeamLine): T =>
-  pf.sharedTeam?.some((l) => l.id === id) ? withLines(pf, pf.sharedTeam.map((l) => (l.id === id ? f(l) : l))) : pf;
 
 /** Add a shared line (refused on a duplicate id). */
 export function addSharedLine<T extends Portfolio>(pf: T, line: SharedTeamLine): T {
-  if (pf.sharedTeam?.some((l) => l.id === line.id)) return pf;
-  return withLines(pf, [...(pf.sharedTeam ?? []), line]);
+  const all = sharedLines(pf);
+  if (all.some((l) => l.id === line.id)) return pf;
+  return withLines(pf, [...all, line]);
 }
 export type SharedLineField = 'skill' | 'grade' | 'loc' | 'etp';
 /** Change one field of a shared line; a label must not be blank, the FTE must be a number >= 0. */
@@ -52,8 +53,10 @@ export function editSharedLine<T extends Portfolio>(pf: T, id: string, field: Sh
   const v = typeof value === 'number' ? value : parseFloat(value);
   return Number.isFinite(v) && v >= 0 ? mapLine(pf, id, (l) => ({ ...l, etp: v })) : pf;
 }
-export const removeSharedLine = <T extends Portfolio>(pf: T, id: string): T =>
-  (pf.sharedTeam?.some((l) => l.id === id) ? withLines(pf, pf.sharedTeam.filter((l) => l.id !== id)) : pf);
+export const removeSharedLine = <T extends Portfolio>(pf: T, id: string): T => {
+  const all = sharedLines(pf);
+  return all.some((l) => l.id === id) ? withLines(pf, all.filter((l) => l.id !== id)) : pf;
+};
 /**
  * Set a product's share of a line, in percent 0..100; 0 removes the share (also the share of a deleted product). Refused for a share out of range
  * or a share > 0 for an unknown product.
@@ -68,8 +71,9 @@ export function setSharedAllocation<T extends Portfolio>(pf: T, id: string, prod
 }
 /** A deleted product leaves every shared line (its share is no longer handed out). */
 export function dropProductShares<T extends Portfolio>(pf: T, productId: string): T {
-  if (!pf.sharedTeam?.some((l) => Object.hasOwn(l.allocations, productId))) return pf;
-  return withLines(pf, pf.sharedTeam.map((l) => {
+  const all = sharedLines(pf);
+  if (!all.some((l) => Object.hasOwn(l.allocations, productId))) return pf;
+  return withLines(pf, all.map((l) => {
     if (!Object.hasOwn(l.allocations, productId)) return l;
     const allocations = { ...l.allocations };
     delete allocations[productId];

@@ -1,4 +1,6 @@
 /** @calc-zone exports */
+import { withProductTeam, isCarrier } from '@/domain/org';
+import { DEFAULT_PRODUCT_NAME, fromLegacyTeams, type Portfolio } from '@/domain/portfolio';
 import { BPMN_KEY, scopeOf, serialize, type XDocument } from '@/domain/process';
 import { caseInStore, DEFAULT_SCOPE, hasLegacyScope, legacyScopeOf, overridesInStore, withoutLegacyScope } from './caseDoc';
 
@@ -11,10 +13,17 @@ type Rec = Record<string, unknown>;
 const rec = (v: unknown): v is Rec => !!v && typeof v === 'object' && !Array.isArray(v);
 const text = (v: unknown): unknown => (rec(v) && v.kind === 'document' ? serialize(v as unknown as XDocument) : v);
 
-/** A case or common values with `BPMN` as text (other keys shared, not copied). */
+/**
+ * A case or common values with `BPMN` as text (other keys shared, not copied). Schema v5: a single case's entry team (`teamIn`, the case form's
+ * view) is written into its document as the team of "Product 1" and the key left out; a case without a process document keeps it.
+ */
 export function caseInFile<T extends object>(o: T): T {
   const r = o as unknown as Rec;
-  return r[BPMN_KEY] === undefined ? o : ({ ...r, [BPMN_KEY]: text(r[BPMN_KEY]) } as T);
+  if (r[BPMN_KEY] === undefined) return o;
+  const d = r[BPMN_KEY], team = Array.isArray(r.teamIn) && rec(d) && d.kind === 'document' && !isCarrier(d as unknown as XDocument);
+  if (!team) return { ...r, [BPMN_KEY]: text(d) } as T;
+  const { teamIn, ...rest } = r;
+  return { ...rest, [BPMN_KEY]: text(withProductTeam(d as unknown as XDocument, 'p1', teamIn as never, DEFAULT_PRODUCT_NAME)) } as T;
 }
 /** Product overrides with a `BPMN` override as text. */
 const overridesInFile = (o: unknown): unknown => (rec(o) && o[BPMN_KEY] !== undefined ? caseInFile(o) : o);
@@ -45,6 +54,19 @@ export function portfolioInStore<T extends object>(pf: T, onBad?: (why: string, 
   } as T;
 }
 
+const rows = (v: unknown): boolean => Array.isArray(v) && v.every(rec);
+/**
+ * A stored portfolio of the library in the schema v5 form: the version 4 teams (`teamIn` of each product, `sharedTeam`) into the common document,
+ * when they are well formed (a damaged capture is left to the reader, which corrects it on activation).
+ */
+function teamsInStore(p: Rec): Rec {
+  const products = Array.isArray(p.products) ? p.products : [], common = rec(p.common) ? p.common : undefined;
+  const legacy = products.some((x) => rec(x) && x.teamIn !== undefined) || p.sharedTeam !== undefined;
+  const ok = !!common && rec(common[BPMN_KEY]) && products.every((x) => rec(x) && (x.teamIn === undefined || rows(x.teamIn)))
+    && (p.sharedTeam === undefined || rows(p.sharedTeam));
+  return legacy && ok ? fromLegacyTeams(p as unknown as Portfolio) as unknown as Rec : p;
+}
+
 /** A stored case of the snapshot library (`state`, a snapshot object): process document as text, no scope key. */
 const stateInFile = (s: unknown): unknown => (rec(s) ? caseInFile(caseInStore(s)) : s);
 /** The snapshot library of a version 2 file in the version 3 form (each stored case and stored portfolio). */
@@ -53,7 +75,7 @@ export function libraryV3(list: unknown): unknown {
   return list.map((e) => {
     if (!rec(e)) return e;
     const out: Rec = { ...e, state: stateInFile(e.state) };
-    if (rec(e.portfolio)) out.portfolio = portfolioInFile(portfolioInStore(e.portfolio));
+    if (rec(e.portfolio)) out.portfolio = portfolioInFile(teamsInStore(portfolioInStore(e.portfolio)));
     return out;
   });
 }

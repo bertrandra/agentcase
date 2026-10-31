@@ -4,6 +4,7 @@ import type { WArtefact as Artefact } from '../artefacts';
 import { ctxOf } from './memo';
 import { resolveProduct } from './resolve';
 import { mapLine, withLines } from './sharedTeam';
+import { sharedLines } from './teamAccess';
 import type { Portfolio, SharedTeamLine } from './types';
 
 /**
@@ -20,9 +21,10 @@ const setPins = (l: SharedTeamLine, pins: string[]): SharedTeamLine => {
 
 /** Pin (`on`) or unpin artefacts on a shared line; pinning moves them off the other shared lines. Unknown line: unchanged. */
 export function pinSharedLine<T extends Portfolio>(pf: T, id: string, artIds: string[], on: boolean): T {
-  if (!pf.sharedTeam?.some((l) => l.id === id) || !artIds.length) return pf;
+  const all = sharedLines(pf);
+  if (!all.some((l) => l.id === id) || !artIds.length) return pf;
   const drop = new Set(artIds);
-  return withLines(pf, pf.sharedTeam.map((l) => {
+  return withLines(pf, all.map((l) => {
     const kept = (l.pins ?? []).filter((x) => !drop.has(x));
     if (l.id === id) return setPins(l, on ? [...kept, ...artIds.filter((x, i) => artIds.indexOf(x) === i)] : kept);
     return kept.length === (l.pins ?? []).length ? l : setPins(l, kept);
