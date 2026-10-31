@@ -558,6 +558,19 @@
       <xsd:attribute name="active" type="xsd:boolean" default="true"/>
     </xsd:complexType>
   </xsd:element>
+  <xsd:element name="programmeValues">
+    <xsd:annotation><xsd:documentation>In the delivery process's extensionElements of a case's stored document (schema v4, B9c): the transformation programme's stored values, one ac:value per key (activity parameters, opt-in switches, cost profile types, descriptions, WBS overrides). An export writes them on the programme's activities instead.</xsd:documentation></xsd:annotation>
+    <xsd:complexType>
+      <xsd:sequence>
+        <xsd:element name="value" minOccurs="0" maxOccurs="unbounded">
+          <xsd:complexType>
+            <xsd:attribute name="key" type="ac:tKey" use="required"/>
+            <xsd:attribute name="value" type="xsd:string" use="required"/>
+          </xsd:complexType>
+        </xsd:element>
+      </xsd:sequence>
+    </xsd:complexType>
+  </xsd:element>
   <xsd:element name="wave">
     <xsd:annotation><xsd:documentation>On a wave sub-process of the programme: its code, effective start month, products and dependency (F-B67).</xsd:documentation></xsd:annotation>
     <xsd:complexType>

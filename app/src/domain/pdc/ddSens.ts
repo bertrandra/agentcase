@@ -1,4 +1,5 @@
 /** @calc-zone verdict */
+import { caseValues, programmeValuesOf } from '../process/storedValues';
 import { engineNow } from '../canonical';
 import { ENGAGE_COEF } from '../catalog';
 import { makeCtx, type Ctx } from '../ctx';
@@ -19,7 +20,8 @@ const endSavings = (s: CaseState): number => { const ys = engineNow(makeCtx(s)).
 /** Content hash of everything the measurement depends on, so a stale measurement is recognised after any edit. */
 export function ddFingerprint(c: Ctx): string {
   const s = c.s as unknown as Record<string, unknown>,
-    src = JSON.stringify([s.dom, [...(c.a.selected)].sort(), [...(c.a.selectedReg)].sort(), scopeOf(c.s).artefactsEdited, s.QUALITY, s.DORA_ANCHORS,
+    src = JSON.stringify([s.dom, programmeValuesOf(c.s.BPMN), [...(c.a.selected)].sort(), [...(c.a.selectedReg)].sort(),
+      scopeOf(c.s).artefactsEdited, s.QUALITY, s.DORA_ANCHORS,
       s.THROUGHPUT_ANCHORS, s.COEF, s.engageCoef, s.statusLifecycle]);
   let h = 2166136261;
   for (let i = 0; i < src.length; i++) { h ^= src.charCodeAt(i); h = Math.imul(h, 16777619); }
@@ -32,7 +34,7 @@ export function computeDdSensitivity(c: Ctx, at: string): DdSens {
   const delta = (alt: CaseState) => { const v = endSavings(alt); return isNaN(v) ? 0 : Math.abs(v - base); };
   const withValue = (id: string, v: string): CaseState => ({ ...s, dom: { ...s.dom, values: { ...s.dom.values, [id]: v } } });
   for (const a of ASSUMPTION_DEFS) {
-    const raw = a.id === 'horizon' ? c.inp.v(a.id) : s.dom.values[a.id], num = parseFloat(raw as string);
+    const raw = a.id === 'horizon' ? c.inp.v(a.id) : caseValues(s)[a.id], num = parseFloat(raw as string);
     if (isNaN(num)) { bad.push(`in-${a.id}`); continue; }
     w[`in-${a.id}`] = delta(withValue(a.id, String(num === 0 ? 1 : num * (1 + DD_PERTURB))));
   }

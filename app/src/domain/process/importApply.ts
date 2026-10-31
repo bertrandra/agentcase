@@ -10,6 +10,7 @@ import { keepForeign, type KeepReport } from './importKeep';
 import { analyseImport, phaseFor, previewImport } from './importPlan';
 import type { ImportAnalysis, ImportChoices, IncomingTask } from './importTypes';
 import { readProcess } from './read';
+import { keepStoredValues } from './storedValues';
 import { attr, textOf, withAttrs, type XDocument, type XElement } from './xml';
 import { indent } from './xmlWrite';
 
@@ -81,6 +82,10 @@ function freeId(id: string, used: Set<string>): string {
  */
 export function applyImport(current: Doc, file: Doc, c: ImportChoices, a: ImportAnalysis = analyseImport(current,
   file)): { doc: Doc; added: string[]; kept?: KeepReport } {
+  const out = importInto(current, file, c, a);   // B9c: an import replaces the process, never the programme's stored values
+  return { ...out, doc: out.doc === current ? current : keepStoredValues(out.doc, current) };
+}
+function importInto(current: Doc, file: Doc, c: ImportChoices, a: ImportAnalysis): { doc: Doc; added: string[]; kept?: KeepReport } {
   const pv = previewImport(current, a, c);
   if (pv.refusal || pv.unmappedUnits.length || pv.unmappedRoles.length) return { doc: current, added: [] };
   const skip = new Set(pv.skipped), taken = a.tasks.filter((t) => !skip.has(t.id));

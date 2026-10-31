@@ -1,3 +1,4 @@
+import { caseValues } from '@/domain/process';
 import { beforeEach, describe, expect, it } from 'vitest';
 import { loadExcelJS } from '@/store/persistence/excel/lazy';
 import { importParamsWorkbook } from '@/controllers/excelParams';
@@ -74,10 +75,10 @@ describe('hostile content', () => {
       setByLabel(wb, 'Parameters', 'Setup training (€)', { formula: 'HYPERLINK("http://x","y")' } as never);
       setByLabel(wb, 'Parameters', 'Customer', { formula: 'cmd|\' /C calc\'!A0', result: 'Cached' });
     });
-    const training = doc().dom.values.setupTraining;
+    const training = caseValues(doc()).setupTraining;
     await importParamsWorkbook(asFile('formula.xlsx', bytes), ENV);
-    expect(doc().dom.values.setupTooling).toBe('25000');
-    expect(doc().dom.values.setupTraining).toBe(training);
+    expect(caseValues(doc()).setupTooling).toBe('25000');
+    expect(caseValues(doc()).setupTraining).toBe(training);
     expect(doc().customerName).toBe('Cached');
   });
   it('values of the wrong type or kind are ignored, not coerced into state', async () => {
@@ -118,7 +119,7 @@ describe('hostile content', () => {
     const d = doc() as unknown as { customerName: string; teamIn: { skill: string; etp: number; pins: string[] }[]; phaseOff: string[];
       dom: { values: Record<string, string> } };
     expect(d.customerName).toBe('Template Co');
-    expect(d.dom.values.setupTooling).toBe('12345');
+    expect(caseValues(d).setupTooling).toBe('12345');
     expect(d.teamIn.map((x) => [x.skill, x.etp, x.pins.length])).toEqual([['Dev', 5, 0], ['Test/QA', 3, 0]]);
     expect(keysOf(doc()).phaseOff).toEqual(['L0', 'V2', 'V4', 'V5', 'V6', 'V7', 'L8', 'L9', 'L10']);
   });

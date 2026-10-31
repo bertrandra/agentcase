@@ -3,6 +3,7 @@ import { mergeEditorDocument } from './editorMerge';
 import { withMovedActivities, withNewActivities, withoutDeliverables } from './editorTasks';
 import { readProcess } from './read';
 import { securityCheck } from './security';
+import { keepStoredValues } from './storedValues';
 import { kids, NS, type XDocument, type XElement } from './xml';
 import { serialize } from './xmlWrite';
 
@@ -57,7 +58,7 @@ function refusals(cur: XDocument, next: XDocument, moved: { id: string; to: stri
 
 /** The outcome of saving the editor's document `edited` (already read and checked by the B2 reader) onto the case's document `cur`. */
 export function applyEditorDocument(cur: XDocument, edited: XDocument): EditorOutcome {
-  const merged = mergeEditorDocument(cur, edited);
+  const merged = keepStoredValues(mergeEditorDocument(cur, edited), cur);   // B9c: the editor never changes the programme's stored values
   const none: EditorOutcome = { doc: cur, refused: [], added: [], removed: [], moved: [], renamed: [], passThrough: {} };
   if (merged === cur) return none;
   const before = readProcess(cur), mid = readProcess(merged), was = new Map(before.activities.map((a) => [a.id, a]));

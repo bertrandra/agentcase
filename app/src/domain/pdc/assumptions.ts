@@ -1,5 +1,6 @@
 /** @calc-zone verdict */
 import type { Ctx } from '../ctx';
+import { caseValues } from '../process/storedValues';
 import { scopeOf } from '../process/scope';
 import { activeArtefacts } from '../scope';
 import type { CaseState } from '../types/state';
@@ -77,7 +78,7 @@ function stateEdited(c: Ctx, base: AssumptionBase, key: string): boolean {
 
 /** The assumptions register: every input vs its benchmark default, the structured state, and the client validation marks. */
 export function assumptionRegister(c: Ctx, base: AssumptionBase, ok: Validated = {}, impact: Record<string, number> = {}): Register {
-  const cur = (id: string) => (id === 'horizon' ? c.inp.v(id) : c.s.dom.values[id]);
+  const cur = (id: string) => (id === 'horizon' ? c.inp.v(id) : caseValues(c.s)[id]);   // B9c: the programme's values are stored in the document
   const inputs = ASSUMPTION_DEFS.map((def): InputRow => {
     const current = cur(def.id), dflt = base.dom.values[def.id], adj = String(current) !== String(dflt);
     return { def, current, dflt, status: ok[def.id] ? 'ok' : adj ? 'adj' : 'def', impact: impact[def.id] };

@@ -1,3 +1,4 @@
+import { caseValues } from '@/domain/process';
 import { setChecked, setInput } from '@/controllers/inputs';
 import { useDoc } from '@/store/hooks';
 import { Field } from './field/Field';
@@ -15,7 +16,7 @@ import { FieldKeepers } from './KeepersNotice';
 export { Field };
 
 export function NumberInput({ id, label, hint, min, max, step }: { id: string; label: string; hint?: string; min?: number; max?: number; step?: number }) {
-  const value = useDoc((d) => d.dom.values[id] ?? '');
+  const value = useDoc((d) => caseValues(d)[id] ?? '');
   return (
     <>
       <PlainNumber label={label} hint={hint} value={value} min={min} max={max} step={step} onCommit={(v) => setInput(id, v)} />
@@ -26,7 +27,7 @@ export function NumberInput({ id, label, hint, min, max, step }: { id: string; l
 
 export function RangeInput({ id, label, hint, min = 0, max = 100, step = 1, unit = '%' }: { id: string; label: string; hint?: string; min?: number;
   max?: number; step?: number; unit?: string }) {
-  const value = useDoc((d) => d.dom.values[id] ?? '');
+  const value = useDoc((d) => caseValues(d)[id] ?? '');
   const locked = useDoc((d) => id === 'autoPotential' && !!d.dom.checked.fitAuto);
   return (
     <><FieldNumber
@@ -49,7 +50,7 @@ export function RangeInput({ id, label, hint, min = 0, max = 100, step = 1, unit
 }
 
 export function SelectInput({ id, label, options, hint }: { id: string; label: string; options: { value: string; label: string }[]; hint?: string }) {
-  const value = useDoc((d) => d.dom.values[id] ?? '');
+  const value = useDoc((d) => caseValues(d)[id] ?? '');
   return (
     <><FieldChoice label={label} hint={hint} value={value} options={options} onChange={(v) => setInput(id, v)}>
       <Field label={label} hint={hint}>

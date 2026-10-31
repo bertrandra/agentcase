@@ -1,4 +1,5 @@
 /** @calc-zone product-resolution */
+import { withCommonValues } from './layers';
 import { deepEqual } from './overrides';
 import { subsetKeys, type SubsetField } from './subset';
 import type { Portfolio } from './types';
@@ -22,6 +23,7 @@ export function applySubsetToCommon<T extends Portfolio>(pf: T, productId: strin
     delete knowledge[f];
     return { ...p, knowledge };
   });
-  const common = { ...pf.common, dom: { ...dom, values: { ...dom.values, ...patch.values }, checked: { ...dom.checked, ...patch.checked } } };
+  const withValues = withCommonValues(pf.common, patch.values);   // schema v4: the hub values are programme values (the common document)
+  const common = { ...withValues, dom: { ...withValues.dom, checked: { ...dom.checked, ...patch.checked } } };
   return { ...pf, common, products };
 }

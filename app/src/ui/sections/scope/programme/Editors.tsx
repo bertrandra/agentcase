@@ -1,3 +1,4 @@
+import { caseValues } from '@/domain/process';
 import { setInput } from '@/controllers/inputs';
 import { activityType, costProfileKey, costProfileLabel, COST_PROFILES, LINE_PROFILES, type ActivityEnabled } from '@/domain/programme';
 import { useCtx, useDoc } from '@/store/hooks';
@@ -31,7 +32,7 @@ export function TypeSelect({ kind, name }: { kind: string; name: string }) {
 
 /** The activity's description: its own text, or the catalogue's when left blank (Reset). */
 export function DescriptionField({ name, value, keyId }: { name: string; value: string; keyId: string }) {
-  const own = useDoc((d) => !!(d.dom.values[keyId] ?? '').trim());
+  const own = useDoc((d) => !!(caseValues(d)[keyId] ?? '').trim());
   return (
     <div className="ac-form-row">
       <DraftText label={`Description of ${name}`} value={value} onCommit={(v) => setInput(keyId, v.trim())} />

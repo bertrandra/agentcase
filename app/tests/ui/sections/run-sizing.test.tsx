@@ -1,4 +1,5 @@
 // @vitest-environment jsdom
+import { caseValues } from '@/domain/process';
 import { readFileSync } from 'node:fs';
 import { act, cleanup, fireEvent, render, screen } from '@testing-library/react';
 import { afterEach, beforeEach, describe, expect, it } from 'vitest';
@@ -26,7 +27,7 @@ describe('run-sizing section', () => {
     const before = runCost();
     expectReference('Ops load per agent vFTE', 'AgentOps run team');
     editParam('runOpsPerAgent', '0.3');
-    expect(doc().dom.values.runOpsPerAgent).toBe('0.3');
+    expect(caseValues(doc()).runOpsPerAgent).toBe('0.3');
     expect((runCost()[2] as number)).toBeGreaterThan(before[2] as number);
     expect(screen.getByText('Run team (FTE)').closest('tr')!.textContent).not.toContain('2.29');
     act(() => { appStore().undo(); });

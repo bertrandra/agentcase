@@ -1,5 +1,7 @@
 /** @calc-zone product-resolution */
 import { deepEqual, parseRef } from '@/domain/portfolio';
+import { caseValues } from '@/domain/process';
+import { isProgrammeKey } from '@/domain/programme/storedKeys';
 import { clampHorizonYears } from '@/domain/inputs';
 import { commonInfra } from '@/domain/portfolio/layers';
 import type { CommonCase } from '@/domain/portfolio';
@@ -30,7 +32,7 @@ function ensureOverrideBag(c: AddressCtx, kind: Kind): void {
 /** One changed form field -> its destination: knowledge subset, the product's override, or the common values (rules in docs/ARCHITECTURE.md §4). */
 function writeField(c: AddressCtx, kind: Kind, id: string, value: unknown): void {
   if (c.scope === 'common') { writeCommon(c, kind, id, value); return; }
-  const own = bag(c.prod.overrides.dom, kind), commonBag = bag(c.pf.common.dom, kind);
+  const own = bag(c.prod.overrides.dom, kind), commonBag = kind === 'values' ? caseValues(c.pf.common) : bag(c.pf.common.dom, kind);
   const overridden = own[id] !== undefined, shareable = parseRef(`${kind}.${id}`) !== null;
   const toSubset = subsetDefines(c, kind, id) || (shareable && !overridden && c.scope === 'product' && subsetField(kind, id) !== null);
   if (toSubset) { if (value !== undefined) writeSubset(c, kind, id, value); return; }
@@ -44,8 +46,13 @@ function writeField(c: AddressCtx, kind: Kind, id: string, value: unknown): void
   writeCommon(c, kind, id, value);
 }
 
-/** The common value of a form field (and its portfolio-level mirror). */
+/** The common value of a form field (and its portfolio-level mirror); a programme value goes to the common document. */
 function writeCommon(c: AddressCtx, kind: Kind, id: string, value: unknown): void {
+  if (kind === 'values' && isProgrammeKey(id)) {   // schema v4: the common document holds it (`programmePatches`)
+    (c.programme ??= {})[id] = value === undefined ? null : String(value);
+    syncMirrors(c, kind, id, value);
+    return;
+  }
   if (value === undefined) { if (id in bag(c.pf.common.dom, kind)) remove(c, ['common', 'dom', kind, id]); return; }
   add(c, ['common', 'dom', kind, id], value);
   syncMirrors(c, kind, id, value);

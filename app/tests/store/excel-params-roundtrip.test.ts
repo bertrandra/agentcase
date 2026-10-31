@@ -1,5 +1,6 @@
 import { readdirSync, readFileSync } from 'node:fs';
-import { produce } from 'immer';
+import { current, produce } from 'immer';
+import { caseValues } from '@/domain/process';
 import { describe, expect, it } from 'vitest';
 import { computeCase } from '@/domain';
 import { refitPotential } from '@/store/derive';
@@ -19,7 +20,7 @@ const figures = (d: Doc) => { const c = computeCase(d); return JSON.parse(
 /** The parameter ranges of the workbook (legacy IO_PARAMS) applied to a case: what a round trip is expected to leave of out-of-range inputs. */
 const clamped = (doc: Doc): Doc => produce(doc, (d) => {
   IO_PARAMS.forEach(([id, , mn, mx, type]) => {
-    const v = parseFloat(d.dom.values[id] ?? ''); if (Number.isNaN(v) || type === 'enum35' || (id === 'glassCeiling' && !d.forceGlassCeiling)) return;
+    const v = parseFloat(caseValues(current(d))[id] ?? ''); if (Number.isNaN(v) || type === 'enum35' || (id === 'glassCeiling' && !d.forceGlassCeiling)) return;
     d.dom.values[id] = String(Math.max(mn, Math.min(mx, v)));
   });
 });

@@ -384,6 +384,22 @@ the editorial source of the default process until decision D-B9 retires them.
   shipped portfolio example (`docs/examples`, one product overriding its process) from 102 KB to 980 KB. The HTML snapshot embeds the text as is
   (no gzip yet: an embedded case is read before the first paint, synchronously). An edit of one activity's effort is one undo patch of about 150 bytes.
 
+### 6.5 Built in B9c (schema v4: the programme's values in the document)
+
+- **Key list.** Schema v4 (`_schemaVersion: 4`) removes the transformation programme's case keys from the form values: the parameters of every
+  programme activity (`programme/storedKeys.ts` `PROGRAMME_VALUE_KEYS`, checked against the catalogue and the opt-ins), the opt-in switches `opt*`,
+  `costProfile_<line>`, `activityDesc_<kind>`, `wbsCode-<kind>`, and the legacy amounts `setupTraining` / `setupGov` (see § 19.13: not retired). They
+  are entries `<ac:value key="…" value="…"/>` of one `ac:programmeValues` element in the delivery process's `extensionElements` (a global element of
+  the extension XSD, 1.x additions rule), in catalogue order, a new value appended at the end. Not moved (not case keys): the knowledge subset of a
+  product (`ktLeadMonths` and the per-product hub values), the waves, their dependencies and the setup capacity (portfolio structure, § 19.13).
+- **Migration 3 → 4** (`store/persistence/schema/v4.ts`): the process text is read once, then the store-form conversion of § 6.4 moves the values
+  (`programmeInStore`): the file's keys over the default case's values (what the version 3 reader filled a missing key with). A file whose
+  document cannot be read is left to the validators and the readers, which do the same move. The snapshot library is converted too.
+- **One accessor.** `caseValues(case)` (`domain/process/storedValues.ts`): the form values over the stored values, memoised on both identities;
+  `makeInputs` uses it, so every engine and view reader is routed through it.
+- **Commands.** Unchanged for the screens (`input.set` and the other writers of form values); the address layer writes a programme value into the
+  common document as node patches (one attribute, or one appended entry), or into the product's per-field override (§ 19.13).
+
 ## 7. Engine
 
 - **Phase 1 (parity)** — the engine reads the derived views: every figure identical on the 107 fixtures, the parallel run (40 files)
@@ -571,7 +587,7 @@ these. Portfolio: the process follows the override commands of spec F6–F9.
 | B8 | Release: guide, DEVIATIONS (if any), CHANGELOG, version bump | All gates green | 0.5 d | 1 / 5 | all | — |
 | B9a (**built in B9a**, derived stage; waves board open, § 19.9) | Transformation programme process derived from today's keys; one timing owner per programme activity (§ 19) | 107 fixtures identical; parallel-run 40/40; excel-compat 67/67 | 2 d | 4 / 5 | B8 | Unifying the Gantt, cost-model and engine timings without moving a figure |
 | B9b (**built in B9b**, § 19.10; figures move, DEV-B9B-SETUP-SPREAD … DEV-B9B-RESOURCES) | Timing conflicts resolved (D-B27…D-B31); labour costs of training, coaching, governance from resources; opt-in new costs; waves edited in the Process panel | Hand-computed reference tests; deviations recorded | 2 d | 4 / 5 | B9a | Figures move: each change explained and recorded |
-| B9c | Programme values stored in the BPMN document (schema v4) | All round trips; v3 → v4 identical | 2 d | 5 / 5 | B9b | Second schema migration across every persistence path |
+| B9c (**built in B9c**, § 19.13; figure-neutral) | Programme values stored in the BPMN document (schema v4) | All round trips; v3 → v4 identical | 2 d | 5 / 5 | B9b | Second schema migration across every persistence path |
 | B9d | Gantt, WBS, OBS / RAM and resource histogram from the programme process; MS Project XML export; Plan screen (§ 19.8) | One owner for Gantt, cost and histogram; Σ histogram × rate = programme labour cost; MSPDI schema-valid | 2.5 d | 3 / 5 | B9b | A documented mapping where no standard exists; the delivery histogram read from the engine, never recomputed |
 | B9e (**built in B9e**, § 19.12) | 📋 Programme screen in the Scope menu: enable, description, type (one-off, spread, adoption curve, recurring, milestone), duration, cost, linked section (§ 19.11) | Defaults change no figure; each type hand-computed | 1.5 d | 3 / 5 | B9b | One owner shared with the Process panel |
 
@@ -1235,7 +1251,7 @@ switching one on adds its cost to the programme cost and the cash flow (hand-com
 |---|---|---|---|---|
 | B9a | Programme process **derived** from today's keys (like the B6b teams); one timing owner per activity for the Gantt, cost model and stages; the two stage lists merged; message flows; export; screens per § 19.7 (swim lanes, parameter panel, context screens) | 107 fixtures identical; parallel-run 40/40; excel-compat 67/67; Gantt and cost-model surfaces read one owner | 2 d | 4 / 5 |
 | B9b (**built in B9b**, § 19.10) | Conflicts T1–T5 resolved by the decisions below; training, coaching and governance derived from resources; the four opt-in agent-rollout activities (§ 19.2); opt-in new costs | Hand-computed reference tests; each changed figure recorded in DEVIATIONS.md | 2 d | 4 / 5 |
-| B9c | Stored values move into the document (schema v4 migration), keys removed, views derived | All persistence round trips; v3 → v4 open → save → open identical | 2 d | 5 / 5 |
+| B9c (**built in B9c**, § 19.13) | Stored values move into the document (schema v4 migration), keys removed, views derived | All persistence round trips; v3 → v4 open → save → open identical | 2 d | 5 / 5 |
 
 ### 19.6 Decisions (adopted 2026-10-30, as recommended)
 
@@ -1527,3 +1543,52 @@ at 3; the new values live in case keys beside the B9b opt-in switches until B9c 
   `tests/ui/sections/programme-screen.test.tsx`, `tests/ui/vue-programme.test.tsx`.
 - *Open for B9c:* the type, the description and the opt-in switches move into the document together; a case-level opt-in in a portfolio is still
   counted by every product (§ 19.10 partial).
+
+### 19.13 Built in B9c (the programme's stored values in the document, schema v4)
+
+Figure-neutral: every figure of the 107 fixtures is unchanged; the recorded B9b deviations are the only differences with the legacy file. Code:
+`app/src/domain/programme/storedKeys.ts` (the keys), `app/src/domain/process/storedValues.ts` (element, accessor, edits),
+`app/src/store/persistence/bpmn/programmeDoc.ts` and `schema/v4.ts` (store form, migration), `app/src/store/address/programme.ts` (write path),
+`app/src/domain/programme/bpmnImport.ts` (import). Details of the stored form: § 6.5.
+
+- **Stored values moved (keys removed from the form values, views derived).** Opt-in switches, cost profile types, activity descriptions, WBS
+  overrides and every programme activity parameter B9a / B9b left in keys: stages (`rmD1…3`, engagement team, workshop), pilot, setup tooling,
+  training and governance resources, coaching days / duration and its calibration amount `setupCoaching`, coaching curve, capability, hub setup
+  and run, build (`setupDuration`), AgentOps sizing, the opt-in activities. `caseValues` is the one accessor (memoised on the element and the form
+  values); `makeInputs` reads it, so the engine, the views and every screen read the document.
+- **Not retired: `setupTraining`, `setupGov`.** The brief asked to retire them as "no longer read"; they are no longer read by any figure since B9b,
+  but they are still read by the assumption register (two of its 18 inputs), the due-diligence pack (its register rows and the sensitivity),
+  the legacy Parameters sheet, the strategies' scaling (`SCALED_IDS`) and the legacy-parity harness (`tests/helpers/legacyProgramme.ts`, the legacy
+  profile of every legacy-parity test). Retiring them changes legacy outputs (DD pack 119 → 117 rows, report and results figures under the legacy
+  profile) that would each need a recorded deviation. They are therefore stored with the other values (moved, not dropped); retiring them is
+  left as a decision for the owner, with those outputs to record.
+- **Product overrides (the B6b § 16.8 split, decided).** A product's programme values override the common ones field by field, without copying the
+  document: (1) a product's own value is its per-field override `overrides.dom.values.<key>` — the per-product part, exactly the B9b semantics
+  (address layer, override badges, Overrides sheet unchanged); (2) a product with a whole-document process override keeps an EMPTY
+  `ac:programmeValues` in its copy (`emptiedStoredValues`, applied when the override is created and on read) and `mergeCase` lays the common
+  document's values under its form values, so it keeps inheriting every common change. The process override itself stays whole-document:
+  splitting it further into process / organisation parts (which teams and the process library need) was not done — the organisation units live in
+  the collaboration of the same document, and a split needs a merge of two documents into one resolved tree per product (new trees, the views'
+  memo per product); **teams are not moved** (§ 16.8 unchanged).
+- **Not moved (not case keys):** the knowledge subset of a product (`ktLeadMonths`, per-product hub target, curation, setup base), the waves, their
+  start and dependency and the setup capacity `maxConcurrentSetups`: portfolio structure, edited by portfolio commands, saved with the portfolio
+  file (one per portfolio, while the document is per case). Moving them needs a portfolio-level document; open.
+- **Write path.** Commands keep writing form values (the panel's `input.set`, strategies, stress, workbook import); the address layer routes a
+  programme value: to the product's per-field override (as before), or to the COMMON document as node patches (`programmePatches`: an attribute
+  value, or an entry appended at the end; tested: one edit = one patch of one attribute). Portfolio commands write through `withCommonValues`
+  (hub infrastructure, apply-subset-to-all, reset of an override) with a `programmeInStore` safety net in `definePortfolioCommand`.
+- **Persistence.** JSON file, HTML snapshot, autosave record with its undo history, tab sync (whole documents as text, patches on nodes; a tab of
+  schema 3 is ignored), snapshot library, portfolio files: the element travels inside the `BPMN` text; every reader moves stray form values into
+  it (`caseInStore`). Parameters workbook: the legacy sheets are written from `legacyView` (the values laid back as form values: Parameters sheet
+  byte-compatible) and read back into the document; Overrides sheet unchanged (per-field rows). Calculation packages: figures unchanged, so
+  unchanged. The DD fingerprint hashes the stored values with the form values (a measurement saved by a schema 3 file shows as stale once).
+- **Import (owner's request 2026-10-31).** A Replace import of an AgentCase file with the programme participant reads its programme back
+  (`programmeValuesIn`: each task's `ac:param`, `ac:costProfile`, `documentation`, `ac:wbsCode`; the knowledge-subset parameters and the waves are
+  the portfolio's, not read): the values that differ are written in the same undoable step; export "both" → import → export is byte-identical and
+  the figures are unchanged. A Merge import, or a file without a programme, keeps the case's programme. An editor save never changes the values.
+- **Not done:** linking the programme lanes (operating-model roles) to the organisation model's roles (§ 16): the operating-model roles have no
+  team skill in the role catalogue, so a link would be a new mapping to decide (open for the owner); the waves in the document (above).
+- **Tests.** `tests/domain/programme/stored-values.test.ts` (keys vs catalogue, node-level edits, byte-identical round trip, accessor),
+  `tests/store/bpmn-b9c-roundtrip.test.ts` (v3 → v4 figures identical, v3 → open → save → open identical, the shipped v3 portfolio example, autosave
+  with undo history), `tests/store/bpmn-b9c-commands.test.ts` (undo / redo property test after every programme command, patches on the common
+  document only, product override, process-overriding product, Replace import round trip).

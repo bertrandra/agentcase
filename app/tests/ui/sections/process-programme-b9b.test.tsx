@@ -1,4 +1,5 @@
 // @vitest-environment jsdom
+import { caseValues } from '@/domain/process';
 import { act, cleanup, fireEvent, render } from '@testing-library/react';
 import { afterEach, beforeEach, describe, expect, it } from 'vitest';
 import { makeCtx } from '@/domain';
@@ -35,7 +36,7 @@ describe('Process section: the opt-in programme activities (B9b)', { timeout: 90
     fireEvent.click(p.querySelector<HTMLButtonElement>('[aria-label="Select Rollout hypercare"]')!);
     const sel = [...p.querySelectorAll('label')].find((l) => l.textContent?.startsWith('Include rollout hypercare'))!.querySelector('select')!;
     act(() => { fireEvent.change(sel, { target: { value: 'on' } }); });
-    expect(appStore().getState().doc.dom.values[optInDef('hypercare').on]).toBe('on');
+    expect(caseValues(appStore().getState().doc)[optInDef('hypercare').on]).toBe('on');
     expect(appStore().getState().history.undo.length).toBe(n + 1);
     const c = makeCtx(appStore().getState().doc), rate = setupBreakdown(c).lines.find((l) => l.id === 'hypercare')!.amount;
     expect(total() - before).toBeCloseTo(rate, 6);

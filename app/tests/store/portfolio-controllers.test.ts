@@ -1,3 +1,4 @@
+import { programmeValuesOf } from '@/domain/process';
 import { describe, expect, it } from 'vitest';
 import { addProduct, archiveProduct, duplicateProduct, removeProduct, setActiveProduct } from '@/controllers/product';
 import { setProductKnowledge, setProductOverride } from '@/controllers/productOverrides';
@@ -50,7 +51,7 @@ describe('portfolio commands keep the invariants', () => {
     expect(pf().common.dom.values.horizon).toBe('5');
     setPortfolioHub({ enabled: true, infraMonthly: 900 });
     expect(pf().common.dom.checked.khEnabled).toBe(true);
-    expect(pf().common.dom.values.khInfraMonthly).toBe('900');
+    expect(programmeValuesOf(pf().common.BPMN).khInfraMonthly).toBe('900');   // schema v4: in the common document
   });
   it('duplicate takes the source wave; archive keeps the product; the product cap holds', () => {
     const t = threeProducts(), copy = duplicateProduct(t.ids[0])!;

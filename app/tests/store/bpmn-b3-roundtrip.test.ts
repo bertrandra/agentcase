@@ -9,7 +9,7 @@ import { createAppStore } from '@/store/core';
 import { parseBpmn } from '@/store/persistence/bpmn/read';
 import { memoryStorage, restoreRecord, startAutosave } from '@/store/persistence/autosave';
 import { toPortfolioSnapshot } from '@/store/persistence/portfolioSnapshot';
-import { openChecked } from '@/store/persistence/schema';
+import { openChecked, SNAPSHOT_SCHEMA_VERSION } from '@/store/persistence/schema';
 import { freshStore } from './helpers';
 
 /**
@@ -37,7 +37,7 @@ describe('round trip: v2 file -> open (v3) -> save -> open is identical; the sav
     const a = opened(raw(id)), saved = JSON.parse(JSON.stringify(toPortfolioSnapshot(a, () => new Date(0)))) as Record<string, unknown>;
     expect(typeof saved.BPMN).toBe('string');
     expect(saved).not.toHaveProperty('selectedArtefacts');
-    expect(saved._schemaVersion).toBe(3);
+    expect(saved._schemaVersion).toBe(SNAPSHOT_SCHEMA_VERSION);
     const b = opened(saved);
     expect(b).toStrictEqual(a);
     expect(JSON.stringify(toPortfolioSnapshot(b, () => new Date(0)))).toBe(JSON.stringify(saved));

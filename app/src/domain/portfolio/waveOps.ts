@@ -1,4 +1,5 @@
 /** @calc-zone portfolio-consolidation */
+import { withCommonValues } from './layers';
 import { clean, placeProduct } from './products';
 import type { HubSettings, Portfolio, Wave } from './types';
 import { dropDependenciesOn } from './waveDepOps';
@@ -49,10 +50,8 @@ export function setHorizon<T extends Portfolio>(pf: T, months: number): T {
 export function setHub<T extends Portfolio>(pf: T, patch: Partial<HubSettings>): T {
   const hub: HubSettings = { ...pf.hub, ...patch };
   if (!Number.isFinite(hub.infraMonthly) || hub.infraMonthly < 0) return pf;
-  const { dom } = pf.common;
-  return { ...pf, hub,
-    common: { ...pf.common,
-      dom: { values: { ...dom.values, khInfraMonthly: String(hub.infraMonthly) }, checked: { ...dom.checked, khEnabled: hub.enabled } } } };
+  const common = withCommonValues(pf.common, { khInfraMonthly: String(hub.infraMonthly) });   // schema v4: in the common document
+  return { ...pf, hub, common: { ...common, dom: { ...common.dom, checked: { ...common.dom.checked, khEnabled: hub.enabled } } } };
 }
 
 /** Global correlation between products for the portfolio Monte Carlo (D-M7): 0..1; 0 is the default and is stored as "absent". Out of range is refused. */
