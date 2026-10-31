@@ -55,7 +55,7 @@ next one (for example #63–#66 between v20.11.0 and v20.12.0) belong to the nex
 | v20.32.0 | 2026-10-31 | `e777bbb8946aa3a1e4032569c9e3f9c4b4253c9f` | #91, "BPMN B9e — the 📋 Programme screen (v20.32.0)" |
 | v20.33.0 | 2026-10-31 | `796021880bbbd970d6ac45497e33091107cf0af7` | #92, "BPMN B9d — 📅 Plan screen: programme Gantt, WBS, OBS / RAM, resource histogram, MS Project XML (v20.33.0)" |
 | v20.34.0 | 2026-10-31 | `2f7354630ee35d33c34cae4e20da00a2ea21a01b` | #93, "BPMN B9c — the programme's stored values in the case's BPMN document, schema v4 (v20.34.0)" |
-| v21.0.0 | to be filled after the merge | to be filled after the merge | BPMN B8, release of the BPMN migration (major: file schema v4, the process stored natively in BPMN, the figure changes of B9b). **Note:** fill this row with the merge commit that first carries `"version": "21.0.0"` (the recipe above) once its pull request is merged, then add its tag command below |
+| v21.0.0 | 2026-10-31 | `ea23c25543552bcd16b360638098c4afe74ffb17` | #94, "v21.0.0 — BPMN migration complete (B8 release: guide, open items, release tags)" (major: file schema v4, the process stored natively in BPMN, the figure changes of B9b) |
 
 ## Commands for the owner
 
@@ -100,7 +100,7 @@ git tag -a v20.31.0 2d1104d4dfd5c6f9eb3e3a8479da4e1d06fd1646 -m "AgentCase v20.3
 git tag -a v20.32.0 e777bbb8946aa3a1e4032569c9e3f9c4b4253c9f -m "AgentCase v20.32.0: BPMN B9e, Programme screen"
 git tag -a v20.33.0 796021880bbbd970d6ac45497e33091107cf0af7 -m "AgentCase v20.33.0: BPMN B9d, Plan screen"
 git tag -a v20.34.0 2f7354630ee35d33c34cae4e20da00a2ea21a01b -m "AgentCase v20.34.0: BPMN B9c, schema v4"
-# v21.0.0, after its merge: git tag -a v21.0.0 <merge commit> -m "AgentCase v21.0.0: BPMN migration complete"
+git tag -a v21.0.0 ea23c25543552bcd16b360638098c4afe74ffb17 -m "AgentCase v21.0.0: BPMN migration complete"
 git push origin --tags
 ```
 
