@@ -3,10 +3,11 @@ import { phasesForScope } from '@/domain';
 import { resetAgent, resetEffort, setAgentSup, setEffort, setPhaseAgent } from '@/controllers/artefacts';
 import { useCtx } from '@/store/hooks';
 import { Badge } from '@/ui/widgets/cards';
+import { openActivity } from '@/ui/widgets/ActivityRefs';
 import { AdjustLive } from './AdjustLive';
 import { adjustRows } from './adjust';
 
-/** Editable % auto and effort weight per artefact (blue = % auto overridden, amber = effort overridden). */
+/** Editable % auto and effort weight per artefact (blue = % auto overridden, amber = effort overridden); its id opens it in the Process section. */
 export function AdjustTable() {
   const c = useCtx(), [phase, setPhase] = useState('ALL'), [bulk, setBulk] = useState('100');
   const rows = adjustRows(c, phase);
@@ -42,7 +43,8 @@ export function AdjustTable() {
           <tbody>
             {rows.map((a) => (
               <tr key={a.id} className={a.isReg ? 'is-reg' : ''}>
-                <td><strong>{a.id}</strong></td><td>{a.name}{a.isReg && <small> · {a.norm}</small>}</td><td>{a.phase}</td>
+                <td><button type="button" className="ac-link" onClick={() => openActivity(a.id)} aria-label={`Open ${a.id} ${a.name} in Process`}
+                  title="Open in Process"><strong>{a.id}</strong></button></td><td>{a.name}{a.isReg && <small> · {a.norm}</small>}</td><td>{a.phase}</td>
                 <td>{a.isReg ? <Badge tone="amber">REG</Badge> : <Badge>{a.value}</Badge>}</td><td>{a.skill}</td><td>{a.aiAuth}</td>
                 <td className="ac-c ac-muted">{a.humanSup}%</td>
                 <td className="ac-c"><input type="number" min={0} max={100} aria-label={`% auto of ${a.id}`} value={a.agentSup}

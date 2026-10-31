@@ -22,4 +22,5 @@ export { OPT_INS, optInDef, optInOfKind, optInOn, optParam, optInPlan, type OptI
 export { COST_PROFILES, LINE_PROFILES, costProfileKey, costProfileLabel, lineOfKind, lineProfile, profiledMonths, activityType, type CostProfile,
   type CostProfileDef, type ActivityType } from './costProfile';
 export { activityDescription, activityEnabled, descriptionKey, LINKED_SECTION, linkedSection, type ActivityEnabled } from './activityMeta';
+export { activityDetail, DETAIL_SECTIONS, type ActivityDetail, type DetailKind } from './activityDetail';
 export { programmeTable, byYear, type ProgrammeTable, type ProgrammeRow, type CostDetail } from './table';
