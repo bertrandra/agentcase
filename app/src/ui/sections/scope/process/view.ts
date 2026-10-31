@@ -24,6 +24,8 @@ export const useProcessView = <T,>(f: (s: ProcessView) => T): T => useSyncExtern
 
 const remembered: { phaseOf: Record<string, string>; teamSkillOf: Record<string, string> } = { phaseOf: {}, teamSkillOf: {} };
 
+/** Back to the initial view state (a new case, a test). */
+export const resetProcessView = (): void => processView.setState(INITIAL, true);
 export const selectActivity = (id: string | null): void => processView.setState({ selected: id });
 export const setFilter = <K extends keyof Filters>(k: K, v: Filters[K]): void => processView.setState((s) => ({ filters: { ...s.filters, [k]: v } }));
 export const clearFilters = (): void => processView.setState({ filters: NO_FILTERS });

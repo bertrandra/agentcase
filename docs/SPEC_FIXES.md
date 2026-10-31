@@ -63,7 +63,7 @@ DEVIATIONS.md entry and the owner's approval of the before → after on the gold
 | FX-12 | Diagram editor: no properties panel | A properties panel in the editor writing the same commands as the parameter panel | M | item 5 |
 | FX-13 | Diagram editor: its own undo history is lost on Save | Keep the editor open after save (re-import with the command stack preserved) or warn before | S | item 6 |
 | FX-14 | Diagram editor shows the first diagram only | Diagram picker when the document holds several | S | item 7 |
-| FX-15 | The Process diagram is not coloured by audit status | Colour shapes by audit progress (B5b `colourBy`) with a legend | S | item 11 |
+| FX-15 | The Process diagram is not coloured by audit status | Colour shapes by audit progress (B5b `colourBy`) with a legend. **Fixed (unreleased):** Colours → Audit progress (planned, in progress, audited, closed; not audited uncoloured) with its legend, `auditProgressOf` in `domain/audit` | S | item 11 |
 | FX-16 | The resource histogram stacks by role only | Grouping by team, unit (B10) or location | S | item 35 |
 | FX-17 | Unit picker indentation stops at level 6 | Indent through a CSS custom property per level (no inline style budget issue) | S | § 21.5 |
 | FX-18 | The wave link from the map opens 📅 Plan without focusing anything | Open the Waves screen on the wave, or the Plan Gantt on its band | S | v21.1.0 notes |

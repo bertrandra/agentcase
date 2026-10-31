@@ -13,13 +13,14 @@ export function lines(label: string, n: number, max: number): string[] {
   return out.length > max ? [...out.slice(0, max - 1), `${(out[max - 1] ?? '').slice(0, n - 1)}…`] : out;
 }
 
-const cls = (s: DrawShape, selected: string | null): string =>
+const cls = (s: DrawShape, selected: string | null, extra: string): string =>
   ['ac-bpmn', `ac-bpmn-${s.kind}`, s.inScope === false ? 'is-out' : '', s.regulatory ? 'is-reg' : '', s.placed ? 'is-placed' : '',
-    s.id === selected ? 'is-selected' : ''].filter(Boolean).join(' ');
+    s.id === selected ? 'is-selected' : '', extra].filter(Boolean).join(' ');
 
-interface Props { selected: string | null; onPick: (id: string) => void; labels: boolean }
-function ShapeView({ s, selected, onPick, labels }: Props & { s: DrawShape }) {
-  const c = cls(s, selected);
+/** `onPick(id, add)`: a click on an activity, `add` with Ctrl, Cmd or Shift (adds it to the diagram's selection). */
+interface Props { selected: string | null; onPick: (id: string, add: boolean) => void; labels: boolean }
+function ShapeView({ s, selected, onPick, labels, x }: Props & { s: DrawShape; x: string }) {
+  const c = cls(s, selected, x);
   if (s.kind === 'event') return <circle className={c} cx={s.x + s.w / 2} cy={s.y + s.h / 2} r={s.w / 2} />;
   if (s.kind === 'gateway') {
     const cx = s.x + s.w / 2, cy = s.y + s.h / 2;
@@ -27,7 +28,7 @@ function ShapeView({ s, selected, onPick, labels }: Props & { s: DrawShape }) {
   }
   if (s.kind === 'activity') {
     return (
-      <g className={c} onClick={() => onPick(s.id)}>
+      <g className={c} onClick={(e) => onPick(s.id, e.ctrlKey || e.metaKey || e.shiftKey)}>
         <rect x={s.x} y={s.y} width={s.w} height={s.h} rx={8} />
         {labels && <text x={s.x + s.w / 2} y={s.y + 16} textAnchor="middle">
           <tspan x={s.x + s.w / 2} className="ac-bpmn-id">{s.id}</tspan>
@@ -49,9 +50,11 @@ function ShapeView({ s, selected, onPick, labels }: Props & { s: DrawShape }) {
   );
 }
 
-type ShapeProps = Props & { s: DrawShape };
-/** Same drawn shape: equal fields (a recomputed drawing gives fresh objects), the same selection state of THIS shape, labels and pick handler. */
-const sameShape = (a: ShapeProps, b: ShapeProps): boolean => a.labels === b.labels && a.onPick === b.onPick && shallowEqual(a.s, b.s)
+type ShapeProps = Props & { s: DrawShape; x: string };
+/** Same drawn shape: equal fields (a recomputed drawing gives fresh objects), the same selection state and display classes of THIS shape, labels
+ *  and pick handler. */
+const sameShape = (a: ShapeProps, b: ShapeProps): boolean => a.labels === b.labels && a.onPick === b.onPick && a.x === b.x
+  && shallowEqual(a.s, b.s)
   && (a.selected === a.s.id) === (b.selected === b.s.id);
 /** One shape, memoised per node: an edit of one activity redraws that shape only, a selection the two shapes it changes. */
 const Shape = memo(ShapeView, sameShape);
@@ -60,15 +63,19 @@ const Shape = memo(ShapeView, sameShape);
  * Every shape and edge of the drawing (memoised: pan changes only the SVG's view box). Activity labels are drawn from 200 % zoom on, where they can be
  * read: the fitted view of a 400-activity process shows its structure, and the table lists the names.
  */
-export const Shapes = memo(function Shapes({ d, selected, onPick, labels }: Props & { d: Drawing }) {
+/** `extra`: display classes per activity id (colour, faded by the filters, picked). */
+type ShapesProps = Props & { d: Drawing; extra?: ReadonlyMap<string, string> };
+export const Shapes = memo(function Shapes({ d, selected, onPick, labels, extra }: ShapesProps) {
   return (
     <>
-      {d.shapes.filter((s) => s.kind !== 'activity').map((s) => <Shape key={`${s.kind}:${s.id}`} s={s} selected={selected} onPick={onPick} labels={labels} />)}
+      {d.shapes.filter((s) => s.kind !== 'activity')
+        .map((s) => <Shape key={`${s.kind}:${s.id}`} s={s} selected={selected} onPick={onPick} labels={labels} x="" />)}
       {d.edges.map((e) => (
         <polyline key={e.id} className={`ac-bpmn-edge${e.rework ? ' is-rework' : ''}${e.message ? ' is-message' : ''}`}
           points={e.points.map((p) => p.join(',')).join(' ')} />
       ))}
-      {d.shapes.filter((s) => s.kind === 'activity').map((s) => <Shape key={s.id} s={s} selected={selected} onPick={onPick} labels={labels} />)}
+      {d.shapes.filter((s) => s.kind === 'activity')
+        .map((s) => <Shape key={s.id} s={s} selected={selected} onPick={onPick} labels={labels} x={extra?.get(s.id) ?? ''} />)}
     </>
   );
 });

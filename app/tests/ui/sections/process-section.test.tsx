@@ -6,8 +6,7 @@ import { decisionsEl, dmnFile, ruleFamilies, writeDmn } from '@/domain/dmn';
 import { readProcess, serialize } from '@/domain/process';
 import { appStore } from '@/store/instance';
 import Process from '@/ui/sections/scope/process';
-import { NO_FILTERS, processView } from '@/ui/sections/scope/process/view';
-import { DEFAULT_CHOICES } from '@/domain/process';
+import { processView, resetProcessView } from '@/ui/sections/scope/process/view';
 import { axeViolations } from '../../helpers/axe';
 import { freshStore } from '../../store/helpers';
 
@@ -39,7 +38,7 @@ async function pick(name: string): Promise<void> {
 }
 beforeEach(() => {
   freshStore();
-  processView.setState({ selected: null, filters: NO_FILTERS, sort: { key: 'id', dir: 1 }, read: null, errors: [], choices: DEFAULT_CHOICES, report: null });
+  resetProcessView();
 });
 afterEach(cleanup);
 

@@ -15,6 +15,8 @@ const SERIES: TokenName[] = ['chart-cat-1', 'chart-cat-2', 'chart-cat-3', 'chart
 const TYPES = ['Human', 'Manual', 'Agent', 'Review', 'Script', 'Send', 'Receive', 'BusinessRule'];
 const AUTHORITIES = ['Assistance', 'Copilot', 'Supervised autonomous', 'Autonomous', 'Compliance'];
 const SCOPE = ['In scope', 'Out of scope'];
+/** The categories of each mode, in colour order (the n-th category takes the n-th chart colour): the export and the 🧩 Process diagram. */
+export const COLOUR_ORDER: Record<ColourMode, readonly string[]> = { scope: SCOPE, type: TYPES, authority: AUTHORITIES };
 const colourAt = (i: number): Colour => ({ fill: tokIn(THEME_DEFAULT, 'surface'), stroke: tokIn(THEME_DEFAULT, SERIES[i % SERIES.length] as TokenName) });
 
 /** The category of an activity in a colour mode (undefined: not coloured). */

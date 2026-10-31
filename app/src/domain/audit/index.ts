@@ -9,8 +9,8 @@ export { SHIPPED_AS_OF, SHIPPED_REVIEW, SHIPPED_TOOLS, CAPABILITY_TOKEN, capabil
 export { applyElementOp, emptyAudit, observationOk, toolUseOk, type ElementOp } from './ops';
 export { editElementAudit, patchedHeader, resourceIds, setAuditHeader, type HeaderPatch } from './edit';
 export { editCatalog, toolOk, type CatalogOp } from './editCatalog';
-export { AUTOMATION_AUTHORITY, PER_MONTH, activityAudits, coverage, phaseProgress, toolingMap, type ActivityAudit, type CapabilityRow, type Coverage,
-  type PhaseProgress, type RoleShare } from './analysis';
+export { AUDIT_PROGRESS, AUTOMATION_AUTHORITY, NOT_AUDITED, PER_MONTH, activityAudits, auditProgressOf, coverage, phaseProgress, toolingMap,
+  type ActivityAudit, type CapabilityRow, type Coverage, type PhaseProgress, type RoleShare } from './analysis';
 export { calibrate, proposals, type Proposal } from './calibrate';
 export { collaborationAudit, exportAuditDoc, withAuditMarked, withoutAudit } from './exportAudit';
 export { auditSheets, blockColumns, blockSheet, listColumns, EVIDENCE_HEADERS, ID_HEADERS, PAIN_HEADERS, SHEET, TOOL_HEADERS, type Cell, type SheetSpec }

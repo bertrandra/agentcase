@@ -6,16 +6,9 @@ import { geoOf, H, W } from '@/ui/sections/scope/scurve/geometry';
 import type { AppStore } from '@/store/core';
 import { expectedModel, expectLikeFixture, loadFixture, modelOf, SECTION_FIXTURES } from '../../helpers/scopeToolsFixtures';
 import { legacySectionText, missingNumbers, renderedText } from '../../helpers/parity';
+import '../../helpers/pointerShim';   // jsdom has no PointerEvent
 
 afterEach(cleanup);
-// jsdom has no PointerEvent: a MouseEvent carrying the pointer id is enough for the editor's handlers
-if (!('PointerEvent' in window)) {
-  class PointerEventShim extends MouseEvent {
-    pointerId: number;
-    constructor(type: string, init: MouseEventInit & { pointerId?: number } = {}) { super(type, init); this.pointerId = init.pointerId ?? 1; }
-  }
-  Object.defineProperty(window, 'PointerEvent', { value: PointerEventShim });
-}
 const pts = (s: AppStore) => s.getState().doc.scurve.pts;
 const ramps = (s: AppStore) => ['y1Ramp', 'y2Ramp', 'y3Ramp'].map((id) => s.getState().doc.dom.values[id]);
 
