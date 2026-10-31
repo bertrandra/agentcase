@@ -12,7 +12,7 @@ import { freshStore } from '../store/helpers';
 let ids: [string, string, string], waves: [string, string];
 beforeEach(() => { ({ ids, waves } = threeProducts()); });
 afterEach(cleanup);
-const open = async () => { mountApp('gantt'); await sectionReady(/Gantt/); };
+const open = async () => { mountApp('gantt'); await sectionReady(/^📅 Plan/); };
 const wavePanel = () => screen.queryByRole('region', { name: 'Wave Gantt' });
 
 describe('Gantt: wave rows (F18)', () => {

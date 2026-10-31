@@ -14,7 +14,7 @@ export interface Placement { text: string; span: Span | null }
 const r1 = (n: number): string => String(Math.round(n * 10) / 10);
 const HORIZON = 600;   // months: long enough for every bar; the run bars end at the Gantt's horizon on the Gantt
 /** The duration key of a setup activity with its own duration (D-B27 (c)); the others last the setup duration. */
-const DURATION_KEY: Record<string, string> = { setupTraining: 'trainMonths', setupGovernance: 'govMonths' };
+export const DURATION_KEY: Record<string, string> = { setupTraining: 'trainMonths', setupGovernance: 'govMonths' };
 
 function optInText(c: Ctx, kind: string): string {
   const d = optInOfKind(kind);

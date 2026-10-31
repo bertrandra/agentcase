@@ -1,0 +1,556 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<bpmn:definitions xmlns:bpmn="http://www.omg.org/spec/BPMN/20100524/MODEL" xmlns:bpmndi="http://www.omg.org/spec/BPMN/20100524/DI" xmlns:dc="http://www.omg.org/spec/DD/20100524/DC" xmlns:di="http://www.omg.org/spec/DD/20100524/DI" xmlns:ac="https://agentcase.app/schema/bpmn/1.0" id="prog-Definitions" targetNamespace="https://agentcase.app/process">
+  <bpmn:collaboration id="prog-Collaboration">
+    <bpmn:participant id="prog-Participant" name="Transformation programme" processRef="prog-Process" ac:programme="true"/>
+    <bpmn:participant id="Participant" name="Delivery process"/>
+    <bpmn:messageFlow id="prog-mf-agents" name="Hub ready → agents enabled" sourceRef="prog-hubSetup" targetRef="Participant"/>
+    <bpmn:messageFlow id="prog-mf-wave" name="Knowledge transfer done → the product's wave starts" sourceRef="prog-ktPrep" targetRef="Participant"/>
+    <bpmn:messageFlow id="prog-mf-scale" name="Pilot decision → scale" sourceRef="prog-stage-decide" targetRef="Participant"/>
+  </bpmn:collaboration>
+  <bpmn:process id="prog-Process" name="Transformation programme" isExecutable="false" processType="None" ac:programme="true">
+    <bpmn:laneSet id="prog-LaneSet">
+      <bpmn:lane id="prog-lane-aiOffice" name="AI Office lead">
+        <bpmn:flowNodeRef>prog-stage-discover</bpmn:flowNodeRef>
+        <bpmn:flowNodeRef>prog-stage-calibrate</bpmn:flowNodeRef>
+        <bpmn:flowNodeRef>prog-stage-validate</bpmn:flowNodeRef>
+        <bpmn:flowNodeRef>prog-change</bpmn:flowNodeRef>
+        <bpmn:flowNodeRef>prog-riskAiAct</bpmn:flowNodeRef>
+      </bpmn:lane>
+      <bpmn:lane id="prog-lane-designAuthority" name="Design Authority">
+        <bpmn:flowNodeRef>prog-stage-decide</bpmn:flowNodeRef>
+        <bpmn:flowNodeRef>prog-setupGovernance</bpmn:flowNodeRef>
+        <bpmn:flowNodeRef>prog-govGates</bpmn:flowNodeRef>
+        <bpmn:flowNodeRef>prog-gate-L2</bpmn:flowNodeRef>
+        <bpmn:flowNodeRef>prog-gate-L3</bpmn:flowNodeRef>
+        <bpmn:flowNodeRef>prog-gate-L4</bpmn:flowNodeRef>
+      </bpmn:lane>
+      <bpmn:lane id="prog-lane-orchestrator" name="Orchestrator">
+        <bpmn:flowNodeRef>prog-stage-pilotProve</bpmn:flowNodeRef>
+        <bpmn:flowNodeRef>prog-pilot</bpmn:flowNodeRef>
+        <bpmn:flowNodeRef>prog-build</bpmn:flowNodeRef>
+        <bpmn:flowNodeRef>prog-agentops</bpmn:flowNodeRef>
+        <bpmn:flowNodeRef>prog-hypercare</bpmn:flowNodeRef>
+      </bpmn:lane>
+      <bpmn:lane id="prog-lane-aiReviewer" name="AI reviewer">
+        <bpmn:flowNodeRef>prog-hubRun</bpmn:flowNodeRef>
+        <bpmn:flowNodeRef>prog-auditInterviews</bpmn:flowNodeRef>
+      </bpmn:lane>
+      <bpmn:lane id="prog-lane-preceptor" name="Preceptor">
+        <bpmn:flowNodeRef>prog-setupTraining</bpmn:flowNodeRef>
+        <bpmn:flowNodeRef>prog-setupCoaching</bpmn:flowNodeRef>
+        <bpmn:flowNodeRef>prog-ktPrep</bpmn:flowNodeRef>
+        <bpmn:flowNodeRef>prog-capabilityTarget</bpmn:flowNodeRef>
+      </bpmn:lane>
+      <bpmn:lane id="prog-lane-agentArchitect" name="Agent architect">
+        <bpmn:flowNodeRef>prog-setupTooling</bpmn:flowNodeRef>
+        <bpmn:flowNodeRef>prog-hubSetup</bpmn:flowNodeRef>
+        <bpmn:flowNodeRef>prog-integration</bpmn:flowNodeRef>
+        <bpmn:flowNodeRef>prog-decommission</bpmn:flowNodeRef>
+      </bpmn:lane>
+      <bpmn:lane id="prog-lane-finops" name="FinOps">
+        <bpmn:flowNodeRef>prog-procurement</bpmn:flowNodeRef>
+        <bpmn:flowNodeRef>prog-valueTracking</bpmn:flowNodeRef>
+      </bpmn:lane>
+      <bpmn:lane id="prog-lane-agents" name="AI agents">
+        <bpmn:flowNodeRef>prog-run</bpmn:flowNodeRef>
+      </bpmn:lane>
+    </bpmn:laneSet>
+    <bpmn:subProcess id="prog-phase-engagement" name="Engagement stages">
+      <bpmn:task id="prog-stage-discover" name="Discover">
+        <bpmn:documentation>Framing, AS-IS baseline, eligibility. Exit gate: Baseline validated + eligibility.</bpmn:documentation>
+        <bpmn:extensionElements>
+          <ac:programmeActivity kind="stage-discover" level="case" costRule="optIn" costProfile="spread" timing="stage" placement="4 weeks from week 0 after the case start">
+            <ac:param key="rmD1" value="4" unit="weeks"/>
+            <ac:param key="optStages" value=""/>
+            <ac:param key="stagesFte" value="" unit="FTE"/>
+          </ac:programmeActivity>
+          <ac:raci responsible="prog-lane-aiOffice" accountable="prog-lane-designAuthority" consulted="prog-lane-finops" informed="prog-lane-orchestrator"/>
+        </bpmn:extensionElements>
+      </bpmn:task>
+      <bpmn:task id="prog-stage-calibrate" name="Calibrate">
+        <bpmn:documentation>Sector coefficients, artifact scope frozen. Exit gate: Scope &amp; coefficients frozen.</bpmn:documentation>
+        <bpmn:extensionElements>
+          <ac:programmeActivity kind="stage-calibrate" level="case" costRule="optIn" costProfile="spread" timing="stage" placement="4 weeks from week 4 after the case start">
+            <ac:param key="rmD2" value="4" unit="weeks"/>
+            <ac:param key="optStages" value=""/>
+            <ac:param key="stagesFte" value="" unit="FTE"/>
+          </ac:programmeActivity>
+          <ac:raci responsible="prog-lane-aiOffice" accountable="prog-lane-designAuthority" consulted="prog-lane-finops" informed="prog-lane-orchestrator"/>
+        </bpmn:extensionElements>
+      </bpmn:task>
+      <bpmn:task id="prog-stage-validate" name="Validate">
+        <bpmn:documentation>Assumptions signed, Monte Carlo run. Exit gate: Assumptions register signed · P50 &gt; threshold.</bpmn:documentation>
+        <bpmn:extensionElements>
+          <ac:programmeActivity kind="stage-validate" level="case" costRule="optIn" costProfile="spread" timing="stage" placement="4 weeks from week 8 after the case start">
+            <ac:param key="rmD3" value="4" unit="weeks"/>
+            <ac:param key="optStages" value=""/>
+            <ac:param key="stagesFte" value="" unit="FTE"/>
+          </ac:programmeActivity>
+          <ac:raci responsible="prog-lane-aiOffice" accountable="prog-lane-designAuthority" consulted="prog-lane-finops" informed="prog-lane-orchestrator"/>
+        </bpmn:extensionElements>
+      </bpmn:task>
+      <bpmn:task id="prog-stage-pilotProve" name="Pilot &amp; Prove">
+        <bpmn:documentation>Pilot pods, KPI tracking. Exit gate: Pilot KPIs ≥ 80% of Y1 targets.</bpmn:documentation>
+        <bpmn:extensionElements>
+          <ac:programmeActivity kind="stage-pilotProve" level="case" costRule="none" costProfile="spread" timing="stage" placement="16 weeks (the pilot's weeks: Pilot &amp; Prove is the pilot) from week 12 after the case start"/>
+          <ac:raci responsible="prog-lane-orchestrator" accountable="prog-lane-designAuthority" consulted="prog-lane-finops" informed="prog-lane-orchestrator"/>
+        </bpmn:extensionElements>
+      </bpmn:task>
+      <bpmn:task id="prog-stage-decide" name="Decide &amp; Scale">
+        <bpmn:documentation>Scale-out per Decision Intelligence. Exit gate: Verdict ≥ Conditional GO.</bpmn:documentation>
+        <bpmn:extensionElements>
+          <ac:programmeActivity kind="stage-decide" level="case" costRule="optIn" costProfile="spread" timing="gate" placement="Gate at week 28 after the case start, when Pilot &amp; Prove ends">
+            <ac:param key="optStages" value=""/>
+            <ac:param key="decideDays" value="" unit="days"/>
+          </ac:programmeActivity>
+          <ac:raci responsible="prog-lane-designAuthority" accountable="prog-lane-aiOffice" consulted="prog-lane-finops" informed="prog-lane-orchestrator"/>
+        </bpmn:extensionElements>
+      </bpmn:task>
+    </bpmn:subProcess>
+    <bpmn:subProcess id="prog-phase-setup" name="Setup (per product)">
+      <bpmn:task id="prog-pilot" name="Pilot" ac:wbsCode="1.2.1.9">
+        <bpmn:documentation>A pilot pod proves the agentic factory (frozen harness + agents) by demonstration before the build: break-in sprints to stabilise the harness, then prove weeks on 3-day fail-fast iterations (the Pilot &amp; Prove stage).</bpmn:documentation>
+        <bpmn:extensionElements>
+          <ac:programmeActivity kind="pilot" level="product" costRule="resources" costProfile="spread" timing="pilot" placement="16 weeks (12 prove + 2 × 2 break-in): the Pilot &amp; Prove stage, before the build; it ends at the product's month 0, so its cost falls in the 4 months before the build (from calendar month 1 when the calendar has no earlier month)" cost="84886.15">
+            <ac:param key="pilotFte" value="3" unit="FTE"/>
+            <ac:param key="pilotBreakin" value="2" unit="sprints"/>
+            <ac:param key="pilotWeeks" value="12" unit="weeks"/>
+          </ac:programmeActivity>
+          <ac:raci responsible="prog-lane-orchestrator" accountable="prog-lane-designAuthority" consulted="prog-lane-preceptor" informed="prog-lane-finops"/>
+        </bpmn:extensionElements>
+        <bpmn:multiInstanceLoopCharacteristics isSequential="false">
+          <bpmn:loopCardinality>1</bpmn:loopCardinality>
+        </bpmn:multiInstanceLoopCharacteristics>
+      </bpmn:task>
+      <bpmn:task id="prog-setupTooling" name="Setup: tooling and infrastructure">
+        <bpmn:documentation>Claude API, monitoring, security, CI/CD.</bpmn:documentation>
+        <bpmn:extensionElements>
+          <ac:programmeActivity kind="setupTooling" level="product" costRule="nonLabour" costProfile="spread" timing="setup" placement="12 months (the setup duration) from the product's month 1, spent evenly" cost="35000">
+            <ac:param key="setupTooling" value="35000" unit="€"/>
+          </ac:programmeActivity>
+          <ac:raci responsible="prog-lane-agentArchitect" accountable="prog-lane-designAuthority" consulted="prog-lane-finops"/>
+        </bpmn:extensionElements>
+        <bpmn:multiInstanceLoopCharacteristics isSequential="false">
+          <bpmn:loopCardinality>1</bpmn:loopCardinality>
+        </bpmn:multiInstanceLoopCharacteristics>
+      </bpmn:task>
+      <bpmn:task id="prog-setupTraining" name="Setup: training">
+        <bpmn:documentation>Workshops, champion certification, run by the preceptors; it builds the capability of the organisation: the people in training are its trainees, up to the target mass.</bpmn:documentation>
+        <bpmn:extensionElements>
+          <ac:programmeActivity kind="setupTraining" level="product" costRule="resources" costProfile="spread" timing="setup" placement="12 months (the setup duration) from the product's month 1, spent evenly" cost="52877">
+            <ac:param key="trainFte" value="" unit="FTE"/>
+            <ac:param key="trainMonths" value="" unit="months"/>
+            <ac:param key="capOps" value="50" unit="people"/>
+            <ac:param key="capTrain" value="200" unit="people"/>
+            <ac:param key="capTarget" value="500" unit="people"/>
+          </ac:programmeActivity>
+          <ac:raci responsible="prog-lane-preceptor" accountable="prog-lane-aiOffice" informed="prog-lane-orchestrator"/>
+        </bpmn:extensionElements>
+        <bpmn:multiInstanceLoopCharacteristics isSequential="false">
+          <bpmn:loopCardinality>1</bpmn:loopCardinality>
+        </bpmn:multiInstanceLoopCharacteristics>
+      </bpmn:task>
+      <bpmn:task id="prog-setupCoaching" name="Setup: coaching">
+        <bpmn:documentation>Pair programming, deliverable review, senior / junior binomes, run by the preceptors: coaching days a month over its duration (one coaching activity, D-B30).</bpmn:documentation>
+        <bpmn:extensionElements>
+          <ac:programmeActivity kind="setupCoaching" level="product" costRule="resources" costProfile="spread" timing="setup" placement="36 months from the product's month 1, 2 days a month, spent evenly" cost="35000">
+            <ac:param key="coachDaysPerMonth" value="" unit="days/month"/>
+            <ac:param key="coachMonths" value="" unit="months"/>
+            <ac:param key="setupCoaching" value="35000" unit="€"/>
+            <ac:param key="coachY1" value="40" unit="%"/>
+            <ac:param key="coachCruise" value="20" unit="%"/>
+          </ac:programmeActivity>
+          <ac:raci responsible="prog-lane-preceptor" accountable="prog-lane-aiOffice" consulted="prog-lane-orchestrator"/>
+        </bpmn:extensionElements>
+        <bpmn:multiInstanceLoopCharacteristics isSequential="false">
+          <bpmn:loopCardinality>1</bpmn:loopCardinality>
+        </bpmn:multiInstanceLoopCharacteristics>
+      </bpmn:task>
+      <bpmn:task id="prog-setupGovernance" name="Setup: governance">
+        <bpmn:documentation>Compliance audit, IP, agentic charter, run by the Design Authority.</bpmn:documentation>
+        <bpmn:extensionElements>
+          <ac:programmeActivity kind="setupGovernance" level="product" costRule="resources" costProfile="spread" timing="setup" placement="12 months (the setup duration) from the product's month 1, spent evenly" cost="26438.5">
+            <ac:param key="govFte" value="" unit="FTE"/>
+            <ac:param key="govMonths" value="" unit="months"/>
+          </ac:programmeActivity>
+          <ac:raci responsible="prog-lane-designAuthority" accountable="prog-lane-aiOffice" informed="prog-lane-finops"/>
+        </bpmn:extensionElements>
+        <bpmn:multiInstanceLoopCharacteristics isSequential="false">
+          <bpmn:loopCardinality>1</bpmn:loopCardinality>
+        </bpmn:multiInstanceLoopCharacteristics>
+      </bpmn:task>
+      <bpmn:task id="prog-change" name="Change management (readiness)">
+        <bpmn:documentation>Entry headcount × cost per FTE of the human-readiness intensity (HRI).</bpmn:documentation>
+        <bpmn:extensionElements>
+          <ac:programmeActivity kind="change" level="product" costRule="engine" costProfile="spread" timing="setup" placement="12 months (the setup duration) from the product's month 1, spent evenly" active="false"/>
+          <ac:raci responsible="prog-lane-aiOffice" accountable="prog-lane-aiOffice" consulted="prog-lane-preceptor"/>
+        </bpmn:extensionElements>
+        <bpmn:multiInstanceLoopCharacteristics isSequential="false">
+          <bpmn:loopCardinality>1</bpmn:loopCardinality>
+        </bpmn:multiInstanceLoopCharacteristics>
+      </bpmn:task>
+      <bpmn:task id="prog-hubSetup" name="Knowledge Hub setup">
+        <bpmn:documentation>Ingest, index and guardrails: the hub setup base × the context-completeness gap to close.</bpmn:documentation>
+        <bpmn:extensionElements>
+          <ac:programmeActivity kind="hubSetup" level="product" costRule="resources" costProfile="spread" timing="hubSetup" placement="30 days (1 months), ready by the product's month 0: a single case has no earlier month, so it starts at month 1. The common hub is set up once, before the first wave" cost="90000">
+            <ac:param key="khTargetCC" value="3" unit="level"/>
+            <ac:param key="khSetupBase" value="120000" unit="€"/>
+            <ac:param key="khSetupDays" value="30" unit="days"/>
+          </ac:programmeActivity>
+          <ac:raci responsible="prog-lane-agentArchitect" accountable="prog-lane-designAuthority" consulted="prog-lane-aiReviewer"/>
+        </bpmn:extensionElements>
+        <bpmn:multiInstanceLoopCharacteristics isSequential="false">
+          <bpmn:loopCardinality>1</bpmn:loopCardinality>
+        </bpmn:multiInstanceLoopCharacteristics>
+      </bpmn:task>
+      <bpmn:task id="prog-ktPrep" name="Knowledge transfer preparation">
+        <bpmn:documentation>The product's knowledge transfer prepared before its wave starts.</bpmn:documentation>
+        <bpmn:extensionElements>
+          <ac:programmeActivity kind="ktPrep" level="product" costRule="sameAsHubSetup" costProfile="spread" timing="ktPrep" placement="Before the product's month 0 (set per product in a portfolio)" cost="90000">
+            <ac:param key="ktLeadMonths" value="0" unit="months"/>
+          </ac:programmeActivity>
+          <ac:raci responsible="prog-lane-preceptor" accountable="prog-lane-aiOffice" consulted="prog-lane-aiReviewer"/>
+        </bpmn:extensionElements>
+        <bpmn:multiInstanceLoopCharacteristics isSequential="false">
+          <bpmn:loopCardinality>1</bpmn:loopCardinality>
+        </bpmn:multiInstanceLoopCharacteristics>
+      </bpmn:task>
+      <bpmn:task id="prog-procurement" name="Licence procurement">
+        <bpmn:documentation>Selecting and buying the agent platform, model and tool licences: sourcing, security and legal review, contract. The licence amounts stay the tooling and token cost lines, never added twice.</bpmn:documentation>
+        <bpmn:extensionElements>
+          <ac:programmeActivity kind="procurement" level="case" costRule="optIn" costProfile="spread" timing="optIn" placement="1 month(s) before the build (charged from month 1 in the case's cash flow), once for the case; off by default (switch it on below)">
+            <ac:param key="optProcure" value=""/>
+            <ac:param key="procureDays" value="" unit="days"/>
+          </ac:programmeActivity>
+          <ac:raci responsible="prog-lane-finops" accountable="prog-lane-aiOffice" consulted="prog-lane-designAuthority prog-lane-agentArchitect"/>
+        </bpmn:extensionElements>
+      </bpmn:task>
+      <bpmn:task id="prog-integration" name="Agent-toolchain integration">
+        <bpmn:documentation>Connecting the agents to the delivery toolchain: repository, CI/CD, ticketing, wiki, test management and the Knowledge Hub (API, MCP or CLI per the tool catalogue; the "agent blocked: no API" check lists the gaps).</bpmn:documentation>
+        <bpmn:extensionElements>
+          <ac:programmeActivity kind="integration" level="product" costRule="optIn" costProfile="spread" timing="optIn" placement="12 month(s) from the product's month 1; off by default (switch it on below)">
+            <ac:param key="optIntegr" value=""/>
+            <ac:param key="integrations" value="" unit="tools"/>
+            <ac:param key="integrDays" value="" unit="days"/>
+          </ac:programmeActivity>
+          <ac:raci responsible="prog-lane-agentArchitect" accountable="prog-lane-designAuthority" consulted="prog-lane-orchestrator" informed="prog-lane-finops"/>
+        </bpmn:extensionElements>
+        <bpmn:multiInstanceLoopCharacteristics isSequential="false">
+          <bpmn:loopCardinality>1</bpmn:loopCardinality>
+        </bpmn:multiInstanceLoopCharacteristics>
+      </bpmn:task>
+      <bpmn:intermediateThrowEvent id="prog-capabilityTarget" name="Target capability reached">
+        <bpmn:documentation>Operational capability at the target mass (50 of 500, 10%; 200 in training)</bpmn:documentation>
+        <bpmn:extensionElements>
+          <ac:programmeActivity kind="capabilityTarget" level="product" costRule="none" costProfile="none" timing="engine" placement="When the operational capability reaches the target mass (not placed by the engine)"/>
+        </bpmn:extensionElements>
+      </bpmn:intermediateThrowEvent>
+    </bpmn:subProcess>
+    <bpmn:subProcess id="prog-phase-run" name="Build and run (per product)">
+      <bpmn:task id="prog-build" name="Agentic build and adoption ramp">
+        <bpmn:documentation>Ramp to steady state along the S-curve, milestones L1…L4.</bpmn:documentation>
+        <bpmn:extensionElements>
+          <ac:programmeActivity kind="build" level="product" costRule="engine" costProfile="adoption" timing="build" placement="12 months after the onboarding stages (the setup duration)">
+            <ac:param key="setupDuration" value="12" unit="months"/>
+          </ac:programmeActivity>
+          <ac:raci responsible="prog-lane-orchestrator" accountable="prog-lane-designAuthority" consulted="prog-lane-agentArchitect" informed="prog-lane-finops"/>
+        </bpmn:extensionElements>
+        <bpmn:multiInstanceLoopCharacteristics isSequential="false">
+          <bpmn:loopCardinality>1</bpmn:loopCardinality>
+        </bpmn:multiInstanceLoopCharacteristics>
+      </bpmn:task>
+      <bpmn:task id="prog-run" name="Agentic run (steady state)">
+        <bpmn:documentation>The agents deliver and support, supervised by the delivery team.</bpmn:documentation>
+        <bpmn:extensionElements>
+          <ac:programmeActivity kind="run" level="product" costRule="engine" costProfile="recurring" timing="run" placement="From month 18.5 after the case start to the horizon"/>
+          <ac:raci responsible="prog-lane-agents" accountable="prog-lane-orchestrator" informed="prog-lane-finops"/>
+        </bpmn:extensionElements>
+        <bpmn:multiInstanceLoopCharacteristics isSequential="false">
+          <bpmn:loopCardinality>1</bpmn:loopCardinality>
+        </bpmn:multiInstanceLoopCharacteristics>
+      </bpmn:task>
+      <bpmn:task id="prog-agentops" name="AgentOps run team">
+        <bpmn:documentation>Platform floor plus an operations load per agent vFTE.</bpmn:documentation>
+        <bpmn:extensionElements>
+          <ac:programmeActivity kind="agentops" level="product" costRule="engine" costProfile="recurring" timing="run" placement="From month 18.5 after the case start to the horizon" cost="87249.63">
+            <ac:param key="runSizeMode" value="hybrid"/>
+            <ac:param key="runFloorMin" value="0.5" unit="FTE"/>
+            <ac:param key="runFloorPct" value="4" unit="%"/>
+            <ac:param key="runOpsPerAgent" value="0.15" unit="FTE"/>
+          </ac:programmeActivity>
+          <ac:raci responsible="prog-lane-orchestrator" accountable="prog-lane-designAuthority" consulted="prog-lane-agentArchitect" informed="prog-lane-finops"/>
+        </bpmn:extensionElements>
+        <bpmn:multiInstanceLoopCharacteristics isSequential="false">
+          <bpmn:loopCardinality>1</bpmn:loopCardinality>
+        </bpmn:multiInstanceLoopCharacteristics>
+      </bpmn:task>
+      <bpmn:task id="prog-hubRun" name="Knowledge Hub run">
+        <bpmn:documentation>Curation and retrieval; the infrastructure is shared by the products.</bpmn:documentation>
+        <bpmn:extensionElements>
+          <ac:programmeActivity kind="hubRun" level="product" costRule="resources" costProfile="recurring" timing="hubRun" placement="From month 7.4 after the case start to the horizon (charged in years with agents)" cost="59826.2">
+            <ac:param key="khCurationFTE" value="0.5" unit="FTE"/>
+            <ac:param key="khInfraMonthly" value="1153.85" unit="€/month"/>
+          </ac:programmeActivity>
+          <ac:raci responsible="prog-lane-aiReviewer" accountable="prog-lane-designAuthority" informed="prog-lane-finops"/>
+        </bpmn:extensionElements>
+        <bpmn:multiInstanceLoopCharacteristics isSequential="false">
+          <bpmn:loopCardinality>1</bpmn:loopCardinality>
+        </bpmn:multiInstanceLoopCharacteristics>
+      </bpmn:task>
+      <bpmn:task id="prog-hypercare" name="Rollout hypercare">
+        <bpmn:documentation>Intensified support right after the product's agent go-live (the adoption ramp start): incident triage, prompt and guardrail tuning, user support; it ends before the steady AgentOps run takes over.</bpmn:documentation>
+        <bpmn:extensionElements>
+          <ac:programmeActivity kind="hypercare" level="product" costRule="optIn" costProfile="spread" timing="optIn" placement="1.4 month(s) from the product's month 1; off by default (switch it on below)">
+            <ac:param key="optHypercare" value=""/>
+            <ac:param key="hypercareFte" value="" unit="FTE"/>
+            <ac:param key="hypercareWeeks" value="" unit="weeks"/>
+          </ac:programmeActivity>
+          <ac:raci responsible="prog-lane-orchestrator" accountable="prog-lane-designAuthority" consulted="prog-lane-aiReviewer" informed="prog-lane-finops"/>
+        </bpmn:extensionElements>
+        <bpmn:multiInstanceLoopCharacteristics isSequential="false">
+          <bpmn:loopCardinality>1</bpmn:loopCardinality>
+        </bpmn:multiInstanceLoopCharacteristics>
+      </bpmn:task>
+      <bpmn:task id="prog-decommission" name="Legacy decommissioning">
+        <bpmn:documentation>Retiring the tools, scripts and manual steps the agents replace: licences ended, data archived, access removed. A saving (licences ended) counts only when entered, never inferred.</bpmn:documentation>
+        <bpmn:extensionElements>
+          <ac:programmeActivity kind="decommission" level="product" costRule="optIn" costProfile="spread" timing="optIn" placement="1 month(s) from the product's month 13; off by default (switch it on below)">
+            <ac:param key="optDecom" value=""/>
+            <ac:param key="decomDays" value="" unit="days"/>
+            <ac:param key="decomSaving" value="" unit="€/month"/>
+          </ac:programmeActivity>
+          <ac:raci responsible="prog-lane-agentArchitect" accountable="prog-lane-designAuthority" consulted="prog-lane-finops" informed="prog-lane-aiOffice"/>
+        </bpmn:extensionElements>
+        <bpmn:multiInstanceLoopCharacteristics isSequential="false">
+          <bpmn:loopCardinality>1</bpmn:loopCardinality>
+        </bpmn:multiInstanceLoopCharacteristics>
+      </bpmn:task>
+      <bpmn:intermediateThrowEvent id="prog-govGates" name="Governance gates in place">
+        <bpmn:documentation>Non-bypassable CI gates · C2 quality control · Human-in-the-Lead review · Anti-false-success guardrails · Enlarged Definition of Done · AI-BOM (AI Bill of Materials)</bpmn:documentation>
+        <bpmn:extensionElements>
+          <ac:programmeActivity kind="govGates" level="product" costRule="none" costProfile="none" timing="engine" placement="Product month 5: the engine's first adoption crossing"/>
+        </bpmn:extensionElements>
+      </bpmn:intermediateThrowEvent>
+      <bpmn:exclusiveGateway id="prog-gate-L2" name="Maturity gate L1 → L2">
+        <bpmn:documentation>Team rules &amp; shared prompts in place; agents used on ≥ 1 activity; basic guardrails; positive first-value signal</bpmn:documentation>
+        <bpmn:extensionElements>
+          <ac:programmeActivity kind="gate-L2" level="product" costRule="none" costProfile="none" timing="engine" placement="Product month 12: the engine's crossing of L2"/>
+        </bpmn:extensionElements>
+      </bpmn:exclusiveGateway>
+      <bpmn:exclusiveGateway id="prog-gate-L3" name="Maturity gate L2 → L3">
+        <bpmn:documentation>Agent-recommendation acceptance ≥ 90%; human override 5–15%; 0 P1 incident caused by an agent; all gates green for 90 days; Design Authority approval</bpmn:documentation>
+        <bpmn:extensionElements>
+          <ac:programmeActivity kind="gate-L3" level="product" costRule="none" costProfile="none" timing="engine" placement="Product month 24: the engine's crossing of L3"/>
+        </bpmn:extensionElements>
+      </bpmn:exclusiveGateway>
+      <bpmn:exclusiveGateway id="prog-gate-L4" name="Maturity gate L3 → L4">
+        <bpmn:documentation>Multi-agent orchestration stable; autonomous within bounded scope; measured value at scale; AI Office + Design Authority sign-off; governance &amp; audit in place</bpmn:documentation>
+        <bpmn:extensionElements>
+          <ac:programmeActivity kind="gate-L4" level="product" costRule="none" costProfile="none" timing="engine" placement="Product month 31: the engine's crossing of L4"/>
+        </bpmn:extensionElements>
+      </bpmn:exclusiveGateway>
+    </bpmn:subProcess>
+    <bpmn:subProcess id="prog-phase-assurance" name="Assurance and value">
+      <bpmn:task id="prog-valueTracking" name="Value tracking">
+        <bpmn:documentation>Actuals per quarter against the plan; steer when behind.</bpmn:documentation>
+        <bpmn:extensionElements>
+          <ac:programmeActivity kind="valueTracking" level="case" costRule="optIn" costProfile="spread" timing="optIn" placement="36 month(s) from the product's month 1, once for the case; off by default (switch it on below)">
+            <ac:param key="optValue" value=""/>
+            <ac:param key="valueFte" value="" unit="FTE"/>
+          </ac:programmeActivity>
+          <ac:raci responsible="prog-lane-finops" accountable="prog-lane-aiOffice" informed="prog-lane-designAuthority"/>
+        </bpmn:extensionElements>
+      </bpmn:task>
+      <bpmn:task id="prog-riskAiAct" name="Risk mitigations and AI Act obligations">
+        <bpmn:documentation>The mitigations of the risk register and the obligations of the AI Act tier.</bpmn:documentation>
+        <bpmn:extensionElements>
+          <ac:programmeActivity kind="riskAiAct" level="case" costRule="optIn" costProfile="spread" timing="optIn" placement="36 month(s) from the product's month 1, once for the case; off by default (switch it on below)">
+            <ac:param key="optAiAct" value=""/>
+            <ac:param key="aiActDays" value="" unit="days/year"/>
+          </ac:programmeActivity>
+          <ac:raci responsible="prog-lane-aiOffice" accountable="prog-lane-aiOffice" consulted="prog-lane-designAuthority"/>
+        </bpmn:extensionElements>
+      </bpmn:task>
+      <bpmn:task id="prog-auditInterviews" name="Audit and discovery interviews">
+        <bpmn:documentation>Interviews and observations of the audit layer (§ 15).</bpmn:documentation>
+        <bpmn:extensionElements>
+          <ac:programmeActivity kind="auditInterviews" level="case" costRule="optIn" costProfile="spread" timing="optIn" placement="1 month(s) before the build (charged from month 1 in the case's cash flow), once for the case; off by default (switch it on below)">
+            <ac:param key="optAudit" value=""/>
+            <ac:param key="auditDays" value="" unit="days"/>
+          </ac:programmeActivity>
+          <ac:raci responsible="prog-lane-aiReviewer" accountable="prog-lane-designAuthority"/>
+        </bpmn:extensionElements>
+      </bpmn:task>
+    </bpmn:subProcess>
+    <bpmn:sequenceFlow id="prog-flow-1" sourceRef="prog-stage-discover" targetRef="prog-stage-calibrate"/>
+    <bpmn:sequenceFlow id="prog-flow-2" sourceRef="prog-stage-calibrate" targetRef="prog-stage-validate"/>
+    <bpmn:sequenceFlow id="prog-flow-3" sourceRef="prog-stage-validate" targetRef="prog-stage-pilotProve"/>
+    <bpmn:sequenceFlow id="prog-flow-4" sourceRef="prog-stage-pilotProve" targetRef="prog-stage-decide"/>
+  </bpmn:process>
+  <bpmndi:BPMNDiagram id="prog-Diagram">
+    <bpmndi:BPMNPlane id="prog-Plane" bpmnElement="prog-Collaboration">
+      <bpmndi:BPMNShape id="prog-Participant_di" bpmnElement="prog-Participant" isHorizontal="true">
+        <dc:Bounds x="0" y="0" width="1836" height="992"/>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="prog-lane-aiOffice_di" bpmnElement="prog-lane-aiOffice" isHorizontal="true">
+        <dc:Bounds x="30" y="0" width="1806" height="124"/>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="prog-lane-designAuthority_di" bpmnElement="prog-lane-designAuthority" isHorizontal="true">
+        <dc:Bounds x="30" y="124" width="1806" height="124"/>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="prog-lane-orchestrator_di" bpmnElement="prog-lane-orchestrator" isHorizontal="true">
+        <dc:Bounds x="30" y="248" width="1806" height="124"/>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="prog-lane-aiReviewer_di" bpmnElement="prog-lane-aiReviewer" isHorizontal="true">
+        <dc:Bounds x="30" y="372" width="1806" height="124"/>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="prog-lane-preceptor_di" bpmnElement="prog-lane-preceptor" isHorizontal="true">
+        <dc:Bounds x="30" y="496" width="1806" height="124"/>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="prog-lane-agentArchitect_di" bpmnElement="prog-lane-agentArchitect" isHorizontal="true">
+        <dc:Bounds x="30" y="620" width="1806" height="124"/>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="prog-lane-finops_di" bpmnElement="prog-lane-finops" isHorizontal="true">
+        <dc:Bounds x="30" y="744" width="1806" height="124"/>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="prog-lane-agents_di" bpmnElement="prog-lane-agents" isHorizontal="true">
+        <dc:Bounds x="30" y="868" width="1806" height="124"/>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="prog-phase-engagement_di" bpmnElement="prog-phase-engagement" isExpanded="true">
+        <dc:Bounds x="76" y="4" width="424" height="984"/>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="prog-stage-discover_di" bpmnElement="prog-stage-discover">
+        <dc:Bounds x="92" y="44" width="120" height="64"/>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="prog-stage-calibrate_di" bpmnElement="prog-stage-calibrate">
+        <dc:Bounds x="228" y="44" width="120" height="64"/>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="prog-stage-validate_di" bpmnElement="prog-stage-validate">
+        <dc:Bounds x="364" y="44" width="120" height="64"/>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="prog-stage-decide_di" bpmnElement="prog-stage-decide">
+        <dc:Bounds x="92" y="168" width="120" height="64"/>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="prog-stage-pilotProve_di" bpmnElement="prog-stage-pilotProve">
+        <dc:Bounds x="92" y="292" width="120" height="64"/>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="prog-phase-setup_di" bpmnElement="prog-phase-setup" isExpanded="true">
+        <dc:Bounds x="516" y="4" width="560" height="984"/>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="prog-change_di" bpmnElement="prog-change">
+        <dc:Bounds x="532" y="44" width="120" height="64"/>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="prog-setupGovernance_di" bpmnElement="prog-setupGovernance">
+        <dc:Bounds x="532" y="168" width="120" height="64"/>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="prog-pilot_di" bpmnElement="prog-pilot">
+        <dc:Bounds x="532" y="292" width="120" height="64"/>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="prog-setupTraining_di" bpmnElement="prog-setupTraining">
+        <dc:Bounds x="532" y="540" width="120" height="64"/>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="prog-setupCoaching_di" bpmnElement="prog-setupCoaching">
+        <dc:Bounds x="668" y="540" width="120" height="64"/>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="prog-ktPrep_di" bpmnElement="prog-ktPrep">
+        <dc:Bounds x="804" y="540" width="120" height="64"/>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="prog-capabilityTarget_di" bpmnElement="prog-capabilityTarget">
+        <dc:Bounds x="980" y="552" width="40" height="40"/>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="prog-setupTooling_di" bpmnElement="prog-setupTooling">
+        <dc:Bounds x="532" y="664" width="120" height="64"/>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="prog-hubSetup_di" bpmnElement="prog-hubSetup">
+        <dc:Bounds x="668" y="664" width="120" height="64"/>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="prog-integration_di" bpmnElement="prog-integration">
+        <dc:Bounds x="804" y="664" width="120" height="64"/>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="prog-procurement_di" bpmnElement="prog-procurement">
+        <dc:Bounds x="532" y="788" width="120" height="64"/>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="prog-phase-run_di" bpmnElement="prog-phase-run" isExpanded="true">
+        <dc:Bounds x="1092" y="4" width="560" height="984"/>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="prog-govGates_di" bpmnElement="prog-govGates">
+        <dc:Bounds x="1148" y="180" width="40" height="40"/>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="prog-gate-L2_di" bpmnElement="prog-gate-L2">
+        <dc:Bounds x="1284" y="180" width="40" height="40"/>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="prog-gate-L3_di" bpmnElement="prog-gate-L3">
+        <dc:Bounds x="1420" y="180" width="40" height="40"/>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="prog-gate-L4_di" bpmnElement="prog-gate-L4">
+        <dc:Bounds x="1556" y="180" width="40" height="40"/>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="prog-build_di" bpmnElement="prog-build">
+        <dc:Bounds x="1108" y="292" width="120" height="64"/>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="prog-agentops_di" bpmnElement="prog-agentops">
+        <dc:Bounds x="1244" y="292" width="120" height="64"/>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="prog-hypercare_di" bpmnElement="prog-hypercare">
+        <dc:Bounds x="1380" y="292" width="120" height="64"/>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="prog-hubRun_di" bpmnElement="prog-hubRun">
+        <dc:Bounds x="1108" y="416" width="120" height="64"/>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="prog-decommission_di" bpmnElement="prog-decommission">
+        <dc:Bounds x="1108" y="664" width="120" height="64"/>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="prog-run_di" bpmnElement="prog-run">
+        <dc:Bounds x="1108" y="912" width="120" height="64"/>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="prog-phase-assurance_di" bpmnElement="prog-phase-assurance" isExpanded="true">
+        <dc:Bounds x="1668" y="4" width="152" height="984"/>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="prog-riskAiAct_di" bpmnElement="prog-riskAiAct">
+        <dc:Bounds x="1684" y="44" width="120" height="64"/>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="prog-auditInterviews_di" bpmnElement="prog-auditInterviews">
+        <dc:Bounds x="1684" y="416" width="120" height="64"/>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="prog-valueTracking_di" bpmnElement="prog-valueTracking">
+        <dc:Bounds x="1684" y="788" width="120" height="64"/>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNEdge id="prog-flow-1_di" bpmnElement="prog-flow-1">
+        <di:waypoint x="212" y="76"/>
+        <di:waypoint x="220" y="76"/>
+        <di:waypoint x="220" y="76"/>
+        <di:waypoint x="228" y="76"/>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="prog-flow-2_di" bpmnElement="prog-flow-2">
+        <di:waypoint x="348" y="76"/>
+        <di:waypoint x="356" y="76"/>
+        <di:waypoint x="356" y="76"/>
+        <di:waypoint x="364" y="76"/>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="prog-flow-3_di" bpmnElement="prog-flow-3">
+        <di:waypoint x="484" y="76"/>
+        <di:waypoint x="288" y="76"/>
+        <di:waypoint x="288" y="324"/>
+        <di:waypoint x="92" y="324"/>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="prog-flow-4_di" bpmnElement="prog-flow-4">
+        <di:waypoint x="212" y="324"/>
+        <di:waypoint x="152" y="324"/>
+        <di:waypoint x="152" y="200"/>
+        <di:waypoint x="92" y="200"/>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="prog-mf-agents_di" bpmnElement="prog-mf-agents">
+        <di:waypoint x="728" y="664"/>
+        <di:waypoint x="728" y="-40"/>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="prog-mf-wave_di" bpmnElement="prog-mf-wave">
+        <di:waypoint x="864" y="540"/>
+        <di:waypoint x="864" y="-40"/>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="prog-mf-scale_di" bpmnElement="prog-mf-scale">
+        <di:waypoint x="152" y="168"/>
+        <di:waypoint x="152" y="-40"/>
+      </bpmndi:BPMNEdge>
+    </bpmndi:BPMNPlane>
+  </bpmndi:BPMNDiagram>
+</bpmn:definitions>

@@ -55,7 +55,7 @@ await page.waitForFunction(b => [...document.querySelectorAll('.ac-kpi-v')].map(
 await painted(); m.undoMs = Date.now() - t1;
 m.sectionMs = {};
 const SECTIONS = [['Financial', 'Financial Summary'], ['Monte Carlo', '🎲 Monte Carlo'], ['Logic verification', '🔍 Detailed logic verification'],
-  ['Board', '📊 Board'], ['Gantt', '📅 Gantt / Timeline'], ['Persona management', '👥 Persona management'], ['Data Model', '🗄️ Data Model']];
+  ['Board', '📊 Board'], ['Gantt', '📅 Plan'], ['Persona management', '👥 Persona management'], ['Data Model', '🗄️ Data Model']];
 for (const [l, h] of SECTIONS) m.sectionMs[l] = await go(l, h);
 m.sectionMaxMs = Math.max(...Object.values(m.sectionMs));
 // Portfolio group on the shipped example (3 planned products, 2 waves, hub, rho): the six portfolio sections
