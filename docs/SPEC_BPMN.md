@@ -1678,11 +1678,11 @@ product, shared team lines (portfolio `sharedTeam`, pins) are not linked to a un
 
 ### 21.3 Decisions
 
-| # | Question | Options | Status |
+| # | Question | Options | Adopted (2026-10-31) |
 |---|---|---|---|
-| D-B38 | Cost of a transverse service split across products | (a) by the effort of the activities it does for each product; (b) by a fixed share per product | **Recommended (a)**, (b) as an override per service — to confirm |
-| D-B39 | Ownership of a product | (a) one owning unit, at any level; (b) several co-owning units with shares | **(a) any level adopted 2026-10-31**; co-ownership not planned — to confirm |
-| D-B40 | Strategy at unit level | (a) full decision per unit (verdict, stress, ranking); (b) aggregated figures only | **Recommended (a)** — to confirm |
+| D-B38 | Cost of a transverse service split across products | (a) by the effort of the activities it does for each product; (b) by a fixed share per product | **(a) adopted 2026-10-31**, (b) as an override per service |
+| D-B39 | Ownership of a product | (a) one owning unit, at any level; (b) several co-owning units with shares | **(a) adopted 2026-10-31** (any level); no co-ownership |
+| D-B40 | Strategy at unit level | (a) full decision per unit (verdict, stress, ranking); (b) aggregated figures only | **(a) adopted 2026-10-31** |
 
 ### 21.4 Phases
 
