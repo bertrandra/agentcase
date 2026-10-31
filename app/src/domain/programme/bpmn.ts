@@ -16,7 +16,8 @@ const B = (local: string, a: Record<string, string | number | boolean | undefine
 const num = (n: number): string => String(Math.round(n * 100) / 100);
 
 function task(a: ProgrammeActivity): XElement {
-  const ext = el('ac:programmeActivity', { kind: a.kind, level: a.level, costRule: a.costRule, timing: a.timing, placement: a.placement.text,
+  const ext = el('ac:programmeActivity', { kind: a.kind, level: a.level, costRule: a.costRule, costProfile: a.costProfile, timing: a.timing,
+    placement: a.placement.text,
     cost: a.cost.amount !== null && a.cost.amount >= 0 ? num(a.cost.amount) : undefined, active: a.active ? undefined : false },
   a.values.map((p) => el('ac:param', { key: p.def.key, value: p.value, unit: p.def.unit || undefined })));
   const raci = el('ac:raci', { responsible: `prog-lane-${a.lane}`, accountable: a.raci.A && `prog-lane-${a.raci.A}`,
@@ -28,7 +29,8 @@ function task(a: ProgrammeActivity): XElement {
 
 /** A milestone (intermediate throw event) or a maturity gate (exclusive gateway): its criteria, placement and level, no cost. */
 function milestone(m: ProgrammeView['milestones'][number]): XElement {
-  const ext = el('ac:programmeActivity', { kind: m.kind, level: 'product', costRule: 'none', timing: 'engine', placement: m.placement });
+  const ext = el('ac:programmeActivity', { kind: m.kind, level: 'product', costRule: 'none', costProfile: 'none', timing: 'engine',
+    placement: m.placement });
   return B(m.element === 'gateway' ? 'exclusiveGateway' : 'intermediateThrowEvent', { id: m.id, name: m.name },
     [B('documentation', {}, [text(m.criteria)]), B('extensionElements', {}, [ext])]);
 }

@@ -106,6 +106,18 @@
   ]
  },
  {
+  "id": "programme",
+  "group": "scope",
+  "groupSeq": 22,
+  "label": "📋 Programme",
+  "description": "Every activity of the transformation programme in one table: enabled (opt-in switches), description, type (one-off, spread, spread on adoption curve, recurring, milestone), start and duration, cost with its rule and resources, cost by year with the totals, and the linked section; the same values as the Process parameter panel",
+  "tag": "supports",
+  "app": true,
+  "personas": [
+   "builder"
+  ]
+ },
+ {
   "id": "lifecycle-edit",
   "group": "tune",
   "groupSeq": 140,

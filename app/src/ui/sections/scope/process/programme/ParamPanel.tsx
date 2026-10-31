@@ -1,11 +1,12 @@
 import { useEffect, useId, useRef } from 'react';
 import type { SubsetField } from '@/domain/portfolio';
-import type { ParamDef, ProgrammeView } from '@/domain/programme';
+import { descriptionKey, type ParamDef, type ProgrammeView } from '@/domain/programme';
 import { useIsMulti } from '@/store/portfolioHooks';
 import { NumberInput, SelectInput } from '@/ui/widgets/fields';
 import { fmt1 } from '@/ui/economicsFormat';
 import { LeadField } from '../../../tune/knowledge/MultiPanels';
 import { SubsetFieldBox } from '../../../tune/knowledge/SubsetBadge';
+import { DescriptionField, TypeSelect } from '../../programme/Editors';
 import { selectActivity } from '../view';
 import { costText } from './ProgrammeTable';
 import { WAVE_PREFIX, WavePanel } from './WavePanel';
@@ -15,7 +16,8 @@ const SUBSET: Record<string, [SubsetField, string]> = {
   khTargetCC: ['targetCC', 'Target CC'], khSetupBase: ['setupBase', 'Setup base'], khCurationFTE: ['curationFTE', 'Curation'],
 };
 
-function Param({ p, multi }: { p: ParamDef; multi: boolean }) {
+/** One parameter field of a programme activity (shared with the 📋 Programme screen: the same field, key and command). */
+export function Param({ p, multi }: { p: ParamDef; multi: boolean }) {
   if (p.singleOnly && multi) return <p className="ac-muted">{`${p.label}: a portfolio cost, set on the shared hub card of the Knowledge hub.`}</p>;
   if (p.store === 'knowledge') return multi ? <LeadField /> : <p className="ac-muted">{`${p.label}: set per product in a portfolio.`}</p>;
   const field = p.options ? <SelectInput id={p.key} label={p.label} options={[...p.options]} />
@@ -40,6 +42,7 @@ export function ParamPanel({ v, id }: { v: ProgrammeView; id: string }) {
     <section className="ac-proc-panel" aria-labelledby={`${k}-h`}>
       <h3 id={`${k}-h`} ref={head} tabIndex={-1}>{a.name}</h3>
       <p>{a.description}</p>
+      <DescriptionField name={a.name} value={a.description} keyId={descriptionKey(a.kind)} />
       <dl className="ac-proc-facts">
         <dt>Role (lane)</dt><dd>{lane(a.lane)}</dd>
         <dt>RACI</dt><dd>{`R ${lane(a.lane)} · A ${lane(a.raci.A)} · C ${list(a.raci.C)} · I ${list(a.raci.I)}`}</dd>
@@ -57,6 +60,7 @@ export function ParamPanel({ v, id }: { v: ProgrammeView; id: string }) {
           {a.params.map((p) => <Param key={p.key} p={p} multi={multi} />)}
         </fieldset>
       )}
+      <p className="ac-form-row">Type (how its cost is laid on the months): <TypeSelect kind={a.kind} name={a.name} /></p>
       <div className="ac-form-row">
         <button type="button" onClick={() => selectActivity(null)}>Close</button>
       </div>

@@ -5,7 +5,9 @@ import { khEnabled } from '../knowledge';
 import { capacityOf, dependencyLabel, scheduledProducts, waveSchedule, type Portfolio } from '../portfolio';
 import { opModelCompute } from '../tune/opmodel';
 import { PROGRAMME_ACTIVITIES, PROGRAMME_PHASES, type ParamDef, type ProgrammeActivityDef, type ProgrammePhase } from './catalogue';
+import { activityDescription } from './activityMeta';
 import { activityCost, type ActivityCost } from './costs';
+import { activityType, type CostProfile } from './costProfile';
 import { DELIVERY_PARTICIPANT_ID, PROGRAMME_PARTICIPANT_ID, programmeActivityId, programmeLaneId, programmePhaseId } from './ids';
 import { PROGRAMME_LANES, type LaneRole } from './lanes';
 import { placementOf, type Placement } from './placement';
@@ -24,6 +26,8 @@ export interface ProgrammeActivity extends ProgrammeActivityDef {
   /** false when the activity's module is off (hub, readiness): drawn like an out-of-scope activity, its parameters still editable */
   active: boolean;
   values: ParamValue[]; placement: Placement; cost: ActivityCost;
+  /** how its cost is laid on the months (`ac:costProfile`, B9e) */
+  costProfile: CostProfile;
   /** per-product activity: multi-instance over this many products (1 in a single-product case) */
   instances: number | null;
 }
@@ -58,7 +62,8 @@ export function programmeProcess(c: Ctx, pf?: Portfolio, productId?: string): Pr
   const planned = pf ? pf.products.filter((p) => !p.archived && p.waveId !== null).length : 1;
   const knowledge = pf?.products.find((p) => p.id === (productId ?? pf.activeProductId))?.knowledge as Record<string, unknown> | undefined;
   const activities = PROGRAMME_ACTIVITIES.map((d): ProgrammeActivity => ({
-    ...d, id: programmeActivityId(d.kind), active: d.module ? MODULE_ON[d.module](c) : true,
+    ...d, id: programmeActivityId(d.kind), description: activityDescription(c, d), active: d.module ? MODULE_ON[d.module](c) : true,
+    costProfile: activityType(c, d.kind).profile,
     values: d.params.map((p) => ({ def: p, value: valueOf(c, p, knowledge) })), placement: placementOf(c, d, pf, productId), cost: activityCost(c, d),
     instances: d.level === 'product' ? Math.max(1, planned) : null,
   }));

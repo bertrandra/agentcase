@@ -6,10 +6,10 @@ const BRAND = { id: 'brand-theme', personas: ['admin', 'builder'] };
 const LISTS = { admin: ['home', 'board'], builder: ['home'], clientcase: ['home'] };
 
 describe('app sections in the persona menus (DEV-APP-SECTION-PERSONAS)', () => {
-  it('the catalogue names the app sections: Process (BPMN) for Builder, Brand & theme, Organisation, Audit (BPMN B7) and Who does what (BPMN B6b)', () => {
+  it('the catalogue names the app sections: Process (BPMN), Programme (B9e) for Builder, Brand & theme, Organisation, Audit (B7), Who does what (B6b)', () => {
     const P = ['admin', 'business-journey'];
-    expect(APP_SECTIONS.map((s) => [s.id, s.personas])).toEqual([['process', ['builder']], ['brand-theme', ['admin', 'builder', 'business-journey']],
-      ['organisation', P], ['audit', P], ['who-does-what', P]]);
+    expect(APP_SECTIONS.map((s) => [s.id, s.personas])).toEqual([['process', ['builder']], ['programme', ['builder']],
+      ['brand-theme', ['admin', 'builder', 'business-journey']], ['organisation', P], ['audit', P], ['who-does-what', P]]);
   });
   it('without overrides: appended to the personas the catalogue names, the others untouched (the build before lot 7)', () => {
     expect(withAppSections(LISTS, [BRAND])).toEqual({ admin: ['home', 'board', 'brand-theme'], builder: ['home', 'brand-theme'], clientcase: ['home'] });

@@ -28,7 +28,7 @@ describe('architecture pages: pinned facts', () => {
     const sections = nums(/(\d+) sections\b/g), groups = nums(/(\d+) groups\b/g);
     expect(sections.length).toBeGreaterThan(2);
     expect(new Set(sections)).toEqual(new Set([catalog.length]));
-    expect(catalog.length).toBe(90);
+    expect(catalog.length).toBe(91);
     expect(new Set(groups)).toEqual(new Set([new Set(catalog.map((s) => s.group)).size]));
   });
   it('command, variable, key and coefficient counts equal the code', () => {
