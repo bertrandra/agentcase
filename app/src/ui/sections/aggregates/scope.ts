@@ -11,4 +11,5 @@ export const SCOPE_AGG: SectionMap = {
   'phase-scope': () => import('../scope/phase-scope/Aggregate'),
   'lc-weighting': () => import('../scope/lc-weighting/Aggregate'),
   process: () => import('../scope/process/Aggregate'),
+  programme: () => import('../scope/programme/Aggregate'),
 };

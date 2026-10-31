@@ -5,6 +5,7 @@ import { caseHorizonYears } from '../inputs';
 import { khEnabled, khSetupCost } from '../knowledge';
 import { targetBlendedTJM, teamInCost } from '../location';
 import { AI_SKILL_PREMIUM } from '../rates';
+import { shapeLine } from './costProfile';
 import { OPT_INS, optInMonths, optInOn, optInPlan, type OptInId } from './optIn';
 import { hubSetupTiming, lineMonths, pilotTiming, spreadMonths } from './timing';
 
@@ -26,6 +27,8 @@ export interface ProgrammeLine {
   effortDays: number | null;
   /** product month of the first spend, and the spend month by month from there (adds up to `amount`) */
   from: number; months: number[];
+  /** months of its duration (fractional; set by the profile, B9e) */
+  duration?: number;
 }
 /** Resource defaults (§ 19.3): trainers (preceptors) and the Design Authority's governance effort over their duration. */
 export const TRAIN_FTE = 0.5, GOV_FTE = 0.25;
@@ -47,9 +50,9 @@ export function coachLoad(c: Ctx, y: number): number {
 const line = (id: ProgrammeLineId, label: string, rule: LineRule, level: 'case' | 'product', amount: number, effortDays: number | null, from: number,
   months: number[]): ProgrammeLine => ({ id, label, rule, level, amount, effortDays, from, months });
 /** A resources line: `fte` over `months` (capped at the horizon) from product month 1, at the role rate. */
-function resources(c: Ctx, id: CoreLineId, label: string, fte: number, durationKey: string, H: number): ProgrammeLine {
+function resources(c: Ctx, id: CoreLineId, label: string, fte: number, durationKey: string, H: number): [ProgrammeLine, number] {
   const r = programmeRates(c), m = Math.min(lineMonths(c, durationKey), H), days = fte * m * (r.wd / 12), cost = days * r.role;
-  return line(id, label, 'resources', 'product', cost, days, 1, spreadMonths(cost, m));
+  return [line(id, label, 'resources', 'product', cost, days, 1, spreadMonths(cost, m)), m];
 }
 /** Coaching days a month by default (D-B30, revised 2026-10-31). */
 export const COACH_DAYS_PER_MONTH = 2;
@@ -66,33 +69,34 @@ export function coachingPlan(c: Ctx): CoachingPlan {
   const r0 = targetBlendedTJM(c.s, null) * AI_SKILL_PREMIUM, legacy = c.inp.p('setupCoaching') || 0, days = r0 > 0 ? legacy / r0 : 0;
   return { perMonth, months: days / perMonth, days, amount: r0 > 0 ? legacy * (r.role / r0) : 0, calibrated: true };
 }
-function coaching(c: Ctx, H: number): ProgrammeLine {
-  const p = coachingPlan(c);
-  return line('coaching', 'Coaching', 'resources', 'product', p.amount, p.days, 1, spreadMonths(p.amount, Math.min(p.months, H)));
+function coaching(c: Ctx, H: number): [ProgrammeLine, number] {
+  const p = coachingPlan(c), m = Math.min(p.months, H);
+  return [line('coaching', 'Coaching', 'resources', 'product', p.amount, p.days, 1, spreadMonths(p.amount, m)), m];
 }
 
 /** The horizon in months of a case (the programme is spent inside it). */
 export const horizonMonthsOf = (c: Ctx): number => caseHorizonYears(c.inp) * 12;
-/** The programme lines in the euro result: tooling, training, coaching, governance, change (HRI on), hub setup (hub on), the opt-in activities on. */
+/** The programme lines in the euro result: tooling, training, coaching, governance, change (HRI on), hub setup (hub on), the opt-in activities on;
+ * each laid on its months by its type (`costProfile.ts`, B9e; `spread` by default, the B9b rule). */
 export function programmeLines(c: Ctx, H = horizonMonthsOf(c)): ProgrammeLine[] {
   const setup = Math.min(lineMonths(c, null), H), tooling = c.inp.p('setupTooling') || 0, change = convChangeCost(c), r = programmeRates(c);
-  const out: ProgrammeLine[] = [
-    line('tooling', 'Tooling & infra', 'nonLabour', 'product', tooling, null, 1, spreadMonths(tooling, setup)),
+  const out: [ProgrammeLine, number][] = [
+    [line('tooling', 'Tooling & infra', 'nonLabour', 'product', tooling, null, 1, spreadMonths(tooling, setup)), setup],
     resources(c, 'training', 'Training', num(c, 'trainFte', TRAIN_FTE), 'trainMonths', H),
     coaching(c, H),
     resources(c, 'governance', 'Governance', num(c, 'govFte', GOV_FTE), 'govMonths', H),
   ];
-  if (hriEnabled(c)) out.push(line('change', 'Change management (HRI)', 'engine', 'product', change, null, 1, spreadMonths(change, setup)));
+  if (hriEnabled(c)) out.push([line('change', 'Change management (HRI)', 'engine', 'product', change, null, 1, spreadMonths(change, setup)), setup]);
   if (khEnabled(c)) {
     const kh = khSetupCost(c), m = Math.min(hubSetupTiming(c).months, H);
-    out.push(line('knowledge', 'Knowledge hub setup', 'resources', 'product', kh, r.tjm > 0 ? kh / r.tjm : null, 1, spreadMonths(kh, m)));
+    out.push([line('knowledge', 'Knowledge hub setup', 'resources', 'product', kh, r.tjm > 0 ? kh / r.tjm : null, 1, spreadMonths(kh, m)), m]);
   }
   for (const d of OPT_INS) {
     if (!optInOn(c, d)) continue;
     const p = optInPlan(c, d.id, H, r.wd), cost = p.days * r.role;
-    out.push(line(d.id, d.label, 'resources', d.level, cost, p.days, p.from, optInMonths(cost, p)));
+    out.push([line(d.id, d.label, 'resources', d.level, cost, p.days, p.from, optInMonths(cost, p)), p.months]);
   }
-  return out;
+  return out.map(([l, m]) => shapeLine(c, l, m, H));
 }
 
 /** A line laid on the product's own months 1..H: a spend before the build starts at month 1 (a single case has no earlier month), a spend past the

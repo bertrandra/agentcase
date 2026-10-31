@@ -78,6 +78,12 @@
   "tag": "supports"
  },
  {
+  "id": "programme",
+  "group": "scope",
+  "groupSeq": 22,
+  "tag": "supports"
+ },
+ {
   "id": "lifecycle-edit",
   "group": "tune",
   "groupSeq": 140,

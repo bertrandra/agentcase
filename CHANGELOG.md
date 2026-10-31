@@ -17,6 +17,23 @@ When releasing, follow [docs/BUMP_PROCEDURE.md](docs/BUMP_PROCEDURE.md) (§7 for
 
 ## [Unreleased]
 
+## [v20.32.0] 2026-10-31 — BPMN B9e: the 📋 Programme screen (enable, description, type, timing, cost, linked section)
+
+### BPMN B9e — the 📋 Programme screen: enable, describe, type, time and cost every programme activity
+
+Phase B9e of [docs/SPEC_BPMN.md](docs/SPEC_BPMN.md) (§ 19.11 F-B79; built as § 19.12). **No figure moves by default** (every line's type is Spread,
+the B9b rule; the 107 fixtures, parallel-run and excel-compat are unchanged).
+
+- **New screen 📋 Programme** (Scope menu; Builder and Advanced): every activity and milestone of the transformation programme with Enabled (the
+  opt-in switches), description (the case's own text or the catalogue's), type, start / duration, cost with its rule and resources (days, days a
+  month, rate, role), cost by year, linked section and "Open in Process"; an Edit row with the activity's timing and cost parameters; totals row
+  (the programme cost of the euro result by year); filters, sort; Portfolio / Wave aggregate per product.
+- **Type of a cost** (`domain/programme/costProfile.ts`): One-off, Spread, Spread on adoption curve (the S-curve's monthly gain), Recurring (every
+  year to the horizon), Milestone; read by the programme's one cost profile, so the engine, cost model and cash flow follow. Exported as
+  `ac:costProfile` (extension XSD: `tCostProfile`).
+- **One owner**: the table and the Process parameter panel are two views of one activity (shared editors and fields, one `input.set` per edit);
+  the F-B72 test now allows this screen and forbids anything else.
+
 ## [v20.31.0] 2026-10-31 — BPMN B9b: programme decisions applied (one timing, labour from resources, coaching days, opt-in activities, waves in the panel)
 
 ### BPMN B9b — the programme decisions applied: one timing, labour from resources, one coaching activity, opt-in activities, waves in the panel

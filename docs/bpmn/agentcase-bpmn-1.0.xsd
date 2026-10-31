@@ -525,6 +525,13 @@
       <xsd:enumeration value="optIn"/><xsd:enumeration value="none"/>
     </xsd:restriction>
   </xsd:simpleType>
+  <xsd:simpleType name="tCostProfile">
+    <xsd:annotation><xsd:documentation>How a programme activity's cost is laid on the months (§ 19.11, B9e): one-off, spread over its duration, spread on the adoption curve, recurring, none (milestone).</xsd:documentation></xsd:annotation>
+    <xsd:restriction base="xsd:token">
+      <xsd:enumeration value="one-off"/><xsd:enumeration value="spread"/><xsd:enumeration value="adoption"/><xsd:enumeration value="recurring"/>
+      <xsd:enumeration value="none"/>
+    </xsd:restriction>
+  </xsd:simpleType>
   <xsd:element name="programmeActivity">
     <xsd:annotation><xsd:documentation>On a task of the programme process: its kind, level, cost rule (§ 19.3), timing and placement (F-B65), and its parameters (the case keys that hold them until B9c).</xsd:documentation></xsd:annotation>
     <xsd:complexType>
@@ -540,6 +547,7 @@
       <xsd:attribute name="kind" type="ac:tKey" use="required"/>
       <xsd:attribute name="level" type="ac:tProgrammeLevel" use="required"/>
       <xsd:attribute name="costRule" type="ac:tCostRule" use="required"/>
+      <xsd:attribute name="costProfile" type="ac:tCostProfile" default="spread"/>
       <xsd:attribute name="timing" type="ac:tKey"/>
       <xsd:attribute name="placement" type="ac:tText"/>
       <xsd:attribute name="cost" type="ac:tNonNegDecimal"/>
