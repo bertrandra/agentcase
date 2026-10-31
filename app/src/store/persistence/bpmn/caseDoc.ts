@@ -1,6 +1,7 @@
 /** @calc-zone exports */
 import { BPMN_KEY, caseProcess, NS, SCOPE_KEYS, scopeKeysOf, type LegacyScope, type XDocument } from '@/domain/process';
 import defaultDoc from '../../defaults/defaultDoc.json';
+import { overridesProgramme, programmeInStore } from './programmeDoc';
 import { parseBpmn } from './read';
 
 /**
@@ -64,7 +65,7 @@ export function processOf(v: unknown): XDocument | string {
  * A case (or common values) in the store's form: `BPMN` as a node tree, no scope key. Text is parsed; a version 2 case gets the document of its
  * keys; a value that cannot be read is replaced by the document of the keys (else the default case's) and `onBad` is told why.
  */
-export function caseInStore<T extends object>(c: T, onBad?: (why: string) => void, base: LegacyScope = DEFAULT_SCOPE): T {
+function docInStore<T extends object>(c: T, onBad?: (why: string) => void, base: LegacyScope = DEFAULT_SCOPE): T {
   const o = c as unknown as Rec, v = o[BPMN_KEY];
   let doc: XDocument | null = null;
   if (v !== undefined) {
@@ -72,6 +73,12 @@ export function caseInStore<T extends object>(c: T, onBad?: (why: string) => voi
     if (typeof p === 'string') onBad?.(p); else doc = p;
   }
   return withoutRegIncludeBox({ ...withoutLegacyScope(o), [BPMN_KEY]: doc ?? legacyProcess(o, base) }) as unknown as T;
+}
+/** Schema v4 (BPMN B9c): the programme's values moved from the form values into the document (`programmeInStore`), the tree trusted. */
+export function caseInStore<T extends object>(c: T, onBad?: (why: string) => void, base: LegacyScope = DEFAULT_SCOPE): T {
+  const out = programmeInStore(docInStore(c, onBad, base)) as unknown as Rec;
+  trust(out[BPMN_KEY] as XDocument);
+  return out as unknown as T;
 }
 
 /**
@@ -89,11 +96,15 @@ export function withoutRegIncludeBox<T extends Rec>(o: T): T {
   return out as T;
 }
 
-/** Product overrides in the store's form: a `BPMN` override kept (parsed), version 2 scope overrides turned into a whole-document override. */
+/**
+ * Product overrides in the store's form: a `BPMN` override kept (parsed), version 2 scope overrides turned into a whole-document override; the
+ * per-field programme overrides kept as the product's own part, a whole-document override without a copy of the values (`overridesProgramme`).
+ */
 export function overridesInStore(o: Rec, common: LegacyScope, onBad?: (why: string) => void): Rec {
-  if (o[BPMN_KEY] === undefined && !hasLegacyScope(o)) return 'checked.regInclude' in o ? withoutRegIncludeBox(o) : o;
+  if (o[BPMN_KEY] === undefined && !hasLegacyScope(o)) return overridesProgramme('checked.regInclude' in o ? withoutRegIncludeBox(o) : o);
   let bad = false;
-  const own = caseInStore(o, (why) => { bad = true; onBad?.(why); }, common) as Rec;
+  const own = overridesProgramme(docInStore(o, (why) => { bad = true; onBad?.(why); }, common) as Rec);
   if (bad && !hasLegacyScope(o)) delete own[BPMN_KEY];   // an unreadable override: the product inherits the common document
+  else if (own[BPMN_KEY] !== undefined) trust(own[BPMN_KEY] as XDocument);
   return own;
 }

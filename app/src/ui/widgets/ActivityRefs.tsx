@@ -1,3 +1,4 @@
+import { caseValues } from '@/domain/process';
 import { activityDef, MILESTONE_NAMES, programmeActivityId, type ParamDef, type ProgrammeActivityDef } from '@/domain/programme';
 import { useDoc } from '@/store/hooks';
 import { useActiveProduct, useIsMulti } from '@/store/portfolioHooks';
@@ -23,7 +24,7 @@ const shown = (p: ParamDef, raw: string | undefined): string => {
  * and are edited. A context screen shows results, figures and diagnostics; it never defines, describes or edits a programme activity.
  */
 export function ActivityRefs({ kinds }: { kinds: string[] }) {
-  const values = useDoc((d) => d.dom.values), multi = useIsMulti(), product = useActiveProduct();
+  const values = useDoc((d) => caseValues(d)), multi = useIsMulti(), product = useActiveProduct();
   const milestone = (k: string): Pick<ProgrammeActivityDef, 'kind' | 'name' | 'params'> | undefined => {
     const m = MILESTONE_NAMES.find((x) => x.kind === k);
     return m && { ...m, params: [] };

@@ -1,4 +1,5 @@
 // @vitest-environment jsdom
+import { programmeValuesOf } from '@/domain/process';
 import { act, cleanup, fireEvent, render, screen } from '@testing-library/react';
 import { describe, expect, it, vi } from 'vitest';
 import { setActiveProduct, setEditScope } from '@/controllers/product';
@@ -33,7 +34,7 @@ describe('Knowledge subset: “Apply to all products” (spec F7)', () => {
     openPanelFor(1, 'hubSetup');
     const before = docOnly(appStore());
     fireEvent.click(screen.getByRole('button', { name: 'Apply to all products: Target CC' }));
-    expect(pf().common.dom.values.khTargetCC).toBe('1');
+    expect(programmeValuesOf(pf().common.BPMN).khTargetCC).toBe('1');
     expect([prod(0), prod(1), prod(2)].map((p) => p.knowledge.targetCC)).toEqual([3, undefined, undefined]);
     expect(prod(2).knowledge.curationFTE).toBe(2);
     expect(screen.getByRole('group', { name: 'Target CC: inherited' })).toBeTruthy();

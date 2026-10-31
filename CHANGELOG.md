@@ -17,6 +17,22 @@ When releasing, follow [docs/BUMP_PROCEDURE.md](docs/BUMP_PROCEDURE.md) (§7 for
 
 ## [Unreleased]
 
+### BPMN B9c — the programme's stored values move into the case's BPMN document (schema v4)
+
+- **Schema v4** (file format v4, migration 3 → 4): the transformation programme's values — every activity parameter (pilot, setup lines with the
+  coaching days and calibration amount, training and governance resources, hub, stages, capability, build, AgentOps), the opt-in switches, the cost
+  profile types, the activity descriptions and the WBS code overrides — are no longer case keys: they are one `ac:programmeValues` element of the
+  delivery process in the case's BPMN document (D-B1 / D-B26; SPEC_BPMN § 6.5, § 19.13). A version 3 file opens with identical figures; v3 → open →
+  save → open is identical. No figure of the 107 fixtures moves.
+- **One accessor** `caseValues` (`domain/process/storedValues.ts`), read by `makeInputs`, so every reader goes through it; commands write node
+  patches of the common document (one attribute, or an entry appended at the end).
+- **Product overrides:** a product's own programme value stays its per-field override; a product with its own process document keeps no copy of
+  the values (it reads the common document's). Teams are not moved (SPEC § 19.13).
+- **Import:** a Replace import of an AgentCase file with the programme participant reads the programme's values back (export "both" → import →
+  export is byte-identical); a Merge import keeps the case's programme. Exports leave the stored element out (they write the values on the
+  programme's activities, as before).
+- Extension XSD: new global element `ac:programmeValues` (1.x additions rule).
+
 ## [v20.33.0] 2026-10-31 — BPMN B9d: the 📅 Plan screen (programme Gantt, WBS, OBS / RAM, resource histogram, MS Project XML)
 
 ### BPMN B9d — Plan screen: programme Gantt, WBS, OBS / RAM, resource histogram, MS Project export

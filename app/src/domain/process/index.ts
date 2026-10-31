@@ -30,3 +30,4 @@ export { roleId } from './ids';
 export { drawingOf, type DrawEdge, type Drawing, type DrawShape, type ShapeKind } from './drawing';
 export { applyEditorDocument, type EditorOutcome } from './editorApply';
 export { mergeEditorDocument } from './editorMerge';
+export { caseValues, emptiedStoredValues, keepStoredValues, programmeValuesOf, storedElement, withoutStoredValues, withProgrammeValues } from './storedValues';

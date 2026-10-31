@@ -1,4 +1,5 @@
 // @vitest-environment jsdom
+import { caseValues } from '@/domain/process';
 import { act, cleanup, fireEvent, render, screen } from '@testing-library/react';
 import { afterEach, beforeAll, describe, expect, it, vi } from 'vitest';
 import { computeCase } from '@/domain';
@@ -42,7 +43,7 @@ describe('engage section', () => {
     act(() => { setInput('rmD4', '10'); });   // the retired stage input moves nothing any more
     expect(screen.getByText('28 wk')).toBeTruthy();
     act(() => { setInput('pilotWeeks', '16'); });   // the pilot: 16 + 2 × 2 = 20 weeks
-    expect(doc().dom.values.pilotWeeks).toBe('16');
+    expect(caseValues(doc()).pilotWeeks).toBe('16');
     expect(screen.getByText('32 wk')).toBeTruthy();
     expect(screen.getByText('2027-04-13')).toBeTruthy();          // decide & scale: 2026-09-01 + 32 weeks
     expect(container.textContent).toContain('2026-11-24 → 2027-04-13');

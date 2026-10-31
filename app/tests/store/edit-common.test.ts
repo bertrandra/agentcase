@@ -1,3 +1,4 @@
+import { programmeValuesOf } from '@/domain/process';
 import { describe, expect, it } from 'vitest';
 import { setDisplayScope } from '@/controllers/displayScope';
 import { setChecked, setInput } from '@/controllers/inputs';
@@ -54,7 +55,7 @@ describe('"Edit: All products" in a Portfolio / Wave view writes the common valu
     setProductKnowledge(ids[1], { targetCC: 3 });
     setDisplayScope({ kind: 'portfolio' });
     setInput('khTargetCC', 2); setChecked('khEnabled', true);
-    expect(pf().common.dom.values.khTargetCC).toBe('2');
+    expect(programmeValuesOf(pf().common.BPMN).khTargetCC).toBe('2');   // schema v4: a programme value, in the common document
     expect(pf().hub.enabled).toBe(true);
     expect(pf().products[0]!.knowledge).toEqual({});
     expect(pf().products[1]!.knowledge.targetCC).toBe(3);

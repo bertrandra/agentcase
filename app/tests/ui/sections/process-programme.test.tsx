@@ -1,4 +1,5 @@
 // @vitest-environment jsdom
+import { caseValues } from '@/domain/process';
 import { act, cleanup, fireEvent, render } from '@testing-library/react';
 import { afterEach, beforeEach, describe, expect, it } from 'vitest';
 import { MILESTONE_NAMES, PROGRAMME_ACTIVITIES } from '@/domain/programme';
@@ -14,7 +15,7 @@ import { freshStore } from '../../store/helpers';
  * key that holds the value in B9a), axe clean.
  */
 const prog = (): HTMLElement => [...document.querySelectorAll('section')].find((s) => s.querySelector('h2')?.textContent === 'Transformation programme')!;
-const vals = () => appStore().getState().doc.dom.values;
+const vals = () => caseValues(appStore().getState().doc);
 beforeEach(() => { freshStore(); processView.setState({ ...processView.getInitialState() }); });
 afterEach(cleanup);
 

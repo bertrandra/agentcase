@@ -1,3 +1,4 @@
+import { caseValues } from '@/domain/process';
 import { beforeEach, describe, expect, it } from 'vitest';
 import { exportParamsWorkbook, importParamsWorkbook } from '@/controllers/excelParams';
 import { computeCase, makeCtx } from '@/domain';
@@ -115,6 +116,6 @@ describe('importParamsWorkbook', () => {
     expect(changed.every((k) => ['PERSONAS', 'PERSONA_SECTIONS', 'PERSONA_SECTION_ORDER', 'GROUPS', 'GROUP_COLORS', 'sectionGroups', 'SECTION_DEPS',
       'SECTION_DEPS_DESC'].includes(k))).toBe(true);
     expect(doc().customerName).toBe('Keep me');
-    expect(doc().dom.values.setupTooling).toBe('777');
+    expect(caseValues(doc()).setupTooling).toBe('777');
   });
 });

@@ -3,6 +3,7 @@ import type { Patch } from 'immer';
 import { OVERRIDABLE_KEYS, deepEqual, isSharedRow, ownRows } from '@/domain/portfolio';
 import type { Doc, PortfolioDoc } from '../types';
 import { writeDomDiff } from './dom';
+import { overrideDocument, programmePatches } from './programme';
 import { add, productPath, remove, type AddressCtx, type AddressScope } from './types';
 
 const TOP = new Set<string>(OVERRIDABLE_KEYS);
@@ -17,7 +18,8 @@ function overridable(c: AddressCtx, p: Patch, key: string, rest: Patch['path']):
   if (!toProduct) { c.out.push({ ...p, path: ['common', key, ...rest] }); return; }
   if (p.op === 'remove' && rest.length === 0) { if (own) remove(c, productPath(c, 'overrides', key)); return; }
   if (!own) {
-    add(c, productPath(c, 'overrides', key), whole ? p.value : asBag(c.base)[key]);
+    const start = whole ? p.value : asBag(c.base)[key];
+    add(c, productPath(c, 'overrides', key), key === 'BPMN' ? overrideDocument(start) : start);
     c.made.add(key);
     if (whole) return;
   }
@@ -57,5 +59,6 @@ export function addressPatches(pf: PortfolioDoc, base: Doc, next: Doc, patches: 
     if (rest.length === 0 && p.op === 'replace' && deepEqual(asBag(base)[key], p.value)) continue;
     if (TOP.has(key)) overridable(c, p, key, rest); else c.out.push({ ...p, path: ['common', key, ...rest] });
   }
+  programmePatches(c);
   return c.out;
 }

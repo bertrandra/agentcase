@@ -1,18 +1,22 @@
 /** @calc-zone exports */
-import { BPMN_KEY, editableKeys, SCOPE_KEYS, scopeOf, withScope, type ScopeKeys, type XDocument } from '@/domain/process';
+import { BPMN_KEY, editableKeys, programmeValuesOf, SCOPE_KEYS, scopeOf, withScope, type ScopeKeys, type XDocument } from '@/domain/process';
+import { programmeInStore } from './programmeDoc';
 
 /**
  * The legacy (version 2) shape of a case for the readers and writers that still speak it (docs/SPEC_BPMN.md § 6.2, F-B22): the parameters
  * workbook's legacy sheets, the portfolio Overrides sheet, the excel-compat comparison. The scope keys are DERIVED from the process document
  * here (`scopeOf`); they are never written back into a case: a legacy value coming in is applied to the document (`splitScope` + `editScope`).
+ * Schema v4: the programme's values likewise (form values in the legacy shape, the document's `ac:programmeValues` in the case).
  */
 type Rec = Record<string, unknown>;
 
 /** The case with its scope keys laid over it (copies the caller may mutate); the process document stays (shared). */
 export function legacyView<T extends object>(doc: T): T & ScopeKeys {
-  const k = editableKeys(scopeOf(doc as unknown as { BPMN: XDocument })), dom = (doc as unknown as { dom?: { checked?: object } }).dom;
-  // the legacy form state of the "Include regulatory artefacts" box: derived from the process (B9a, DEV-REGINCLUDE-DERIVED), never stored
-  const withBox = dom ? { dom: { ...dom, checked: { ...dom.checked, regInclude: k.regInclude } } } : {};
+  const d = doc as unknown as { BPMN: XDocument; dom?: { values?: object; checked?: object } }, k = editableKeys(scopeOf(d)), dom = d.dom;
+  // the legacy form state of the "Include regulatory artefacts" box: derived from the process (B9a, DEV-REGINCLUDE-DERIVED), never stored;
+  // schema v4: the programme's values (the document's) as form values
+  const values = { ...programmeValuesOf(d.BPMN), ...dom?.values };
+  const withBox = dom ? { dom: { ...dom, values, checked: { ...dom.checked, regInclude: k.regInclude } } } : {};
   return { ...doc, ...k, ...withBox };
 }
 /** The legacy shape without the process document (what a version 2 file held). */
@@ -44,5 +48,6 @@ export function scopedProcess(doc: XDocument, scope: Partial<ScopeKeys>): XDocum
 /** A case with a patch of legacy keys applied: the scope keys edit its process document, the other keys replace their value. */
 export function withLegacyPatch<T extends object>(doc: T, patch: Rec): T {
   const { scope, rest } = splitScope(patch), d = doc as unknown as Rec;
-  return { ...d, ...structuredClone(rest), [BPMN_KEY]: scopedProcess(d[BPMN_KEY] as XDocument, scope) } as unknown as T;
+  // schema v4: legacy form values of the programme go into the document (`programmeInStore`)
+  return programmeInStore({ ...d, ...structuredClone(rest), [BPMN_KEY]: scopedProcess(d[BPMN_KEY] as XDocument, scope) }) as unknown as T;
 }

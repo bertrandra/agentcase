@@ -1,0 +1,212 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<bpmn:definitions xmlns:bpmn="http://www.omg.org/spec/BPMN/20100524/MODEL" xmlns:bpmndi="http://www.omg.org/spec/BPMN/20100524/DI" xmlns:dc="http://www.omg.org/spec/DD/20100524/DC" xmlns:di="http://www.omg.org/spec/DD/20100524/DI" xmlns:ac="https://agentcase.app/schema/bpmn/1.0" id="defs-minimal" targetNamespace="https://agentcase.app/cases/sample-minimal" exporter="AgentCase" exporterVersion="0.0.0-sample" ac:partial="false">
+  <bpmn:extension definition="ac:process" mustUnderstand="false"/>
+  <bpmn:category id="cat-norms" name="Norms">
+    <bpmn:categoryValue id="norm-DO-178C" value="DO-178C" ac:inScope="true">
+      <bpmn:extensionElements>
+        <ac:norm industry="AERO" body="RTCA" scope="Software considerations in airborne systems and equipment certification"/>
+      </bpmn:extensionElements>
+    </bpmn:categoryValue>
+  </bpmn:category>
+  <bpmn:resource id="role-dev" name="Dev">
+    <bpmn:extensionElements><ac:actor kind="role" teamSkill="Dev" sourcing="either"/></bpmn:extensionElements>
+  </bpmn:resource>
+  <bpmn:resource id="role-qa" name="Test/QA">
+    <bpmn:extensionElements><ac:actor kind="role" teamSkill="Test/QA" sourcing="internal"/></bpmn:extensionElements>
+  </bpmn:resource>
+  <bpmn:resource id="role-lead" name="PO/Lead">
+    <bpmn:extensionElements><ac:actor kind="role" teamSkill="Analysis/PO" sourcing="internal"/></bpmn:extensionElements>
+  </bpmn:resource>
+  <bpmn:resource id="agent-coding" name="Coding agent">
+    <bpmn:extensionElements><ac:actor kind="agent" supervisedBy="role-dev" description="AI coding agent supervised by the Dev role"/></bpmn:extensionElements>
+  </bpmn:resource>
+  <bpmn:collaboration id="collab" name="Sample customer - Sample product">
+    <bpmn:extensionElements>
+      <ac:orgUnit id="unit-delivery" name="Sample customer delivery" type="department" location="France" sourcing="internal"/>
+      <ac:team id="team-product" name="Sample product delivery team" unit="unit-delivery">
+        <ac:line skill="Dev" grade="B2" location="France" fte="8"/>
+        <ac:line skill="Test/QA" grade="B2" location="France" fte="4" pins="R101"/>
+      </ac:team>
+    </bpmn:extensionElements>
+    <bpmn:participant id="pool-main" name="Sample product" processRef="proc-main"/>
+  </bpmn:collaboration>
+  <bpmn:process id="proc-main" name="Sample product delivery process" isExecutable="false" processType="None">
+    <bpmn:extensionElements>
+      <ac:process caseSchema="3" catalogueVersion="sample" partial="false" containsAudit="false"/>
+      <ac:product code="P1" name="Sample product" ownerUnit="unit-delivery">
+        <ac:serves team="team-product" allocationPct="100"/>
+      </ac:product>
+      <ac:programmeValues>
+        <ac:value key="pilotFte" value="3"/>
+        <ac:value key="optHypercare" value="on"/>
+        <ac:value key="costProfile_tooling" value="one-off"/>
+        <ac:value key="activityDesc_pilot" value="Our pilot pod proves the factory."/>
+        <ac:value key="wbsCode-pilot" value="1.2.1.9"/>
+      </ac:programmeValues>
+    </bpmn:extensionElements>
+    <bpmn:laneSet id="lanes-role">
+      <bpmn:lane id="lane-dev" name="Dev">
+        <bpmn:flowNodeRef>start</bpmn:flowNodeRef>
+        <bpmn:flowNodeRef>V3</bpmn:flowNodeRef>
+      </bpmn:lane>
+      <bpmn:lane id="lane-qa" name="Test/QA">
+        <bpmn:flowNodeRef>V4</bpmn:flowNodeRef>
+        <bpmn:flowNodeRef>gw-V4</bpmn:flowNodeRef>
+        <bpmn:flowNodeRef>end</bpmn:flowNodeRef>
+      </bpmn:lane>
+    </bpmn:laneSet>
+    <bpmn:startEvent id="start" name="Start">
+      <bpmn:outgoing>f-start-V3</bpmn:outgoing>
+    </bpmn:startEvent>
+    <bpmn:subProcess id="V3" name="Implementation" ac:inScope="true">
+      <bpmn:extensionElements><ac:phase code="V3" seq="4" role="Development"/></bpmn:extensionElements>
+      <bpmn:incoming>f-start-V3</bpmn:incoming>
+      <bpmn:incoming>f-rework</bpmn:incoming>
+      <bpmn:outgoing>f-V3-V4</bpmn:outgoing>
+      <bpmn:startEvent id="V3-start"><bpmn:outgoing>f-V3-1</bpmn:outgoing></bpmn:startEvent>
+      <bpmn:userTask id="A016" name="Developer documentation" ac:inScope="true">
+        <bpmn:documentation>Notes written by the developers for the code they deliver.</bpmn:documentation>
+        <bpmn:extensionElements>
+          <ac:activity type="Human" phase="V3" seq="1" effort="2" weight="1.8" value="NVA-N" capability="Documentation" aiAuthority="Copilot" storyId=""/>
+          <ac:supervision human="70" agent="30"/>
+          <ac:raci responsible="role-dev" accountable="role-lead" informed="role-qa"/>
+        </bpmn:extensionElements>
+        <bpmn:incoming>f-V3-1</bpmn:incoming>
+        <bpmn:outgoing>f-V3-2</bpmn:outgoing>
+        <bpmn:humanPerformer id="A016-R"><bpmn:resourceRef>role-dev</bpmn:resourceRef></bpmn:humanPerformer>
+        <bpmn:resourceRole id="A016-A" name="Accountable"><bpmn:resourceRef>role-lead</bpmn:resourceRef></bpmn:resourceRole>
+        <bpmn:resourceRole id="A016-I" name="Informed"><bpmn:resourceRef>role-qa</bpmn:resourceRef></bpmn:resourceRole>
+      </bpmn:userTask>
+      <bpmn:serviceTask id="A017" name="Source code" implementation="https://agentcase.app/schema/bpmn/1.0#agent" ac:inScope="true" ac:agent="agent-coding">
+        <bpmn:documentation>Production code implementing the specified behaviour.</bpmn:documentation>
+        <bpmn:extensionElements>
+          <ac:activity type="Agent" phase="V3" seq="2" effort="5" weight="3.2" value="VA" capability="Coding" aiAuthority="Supervised autonomous" storyId="" regulatory="false"/>
+          <ac:supervision human="30" agent="70"/>
+          <ac:raci responsible="agent-coding" accountable="role-dev" consulted="role-qa"/>
+        </bpmn:extensionElements>
+        <bpmn:incoming>f-V3-2</bpmn:incoming>
+        <bpmn:outgoing>f-V3-3</bpmn:outgoing>
+        <bpmn:dataOutputAssociation id="A017-out"><bpmn:targetRef>A017-deliverable-ref</bpmn:targetRef></bpmn:dataOutputAssociation>
+        <bpmn:performer id="A017-R"><bpmn:resourceRef>agent-coding</bpmn:resourceRef></bpmn:performer>
+        <bpmn:humanPerformer id="A017-S"><bpmn:resourceRef>role-dev</bpmn:resourceRef></bpmn:humanPerformer>
+        <bpmn:resourceRole id="A017-A" name="Accountable"><bpmn:resourceRef>role-dev</bpmn:resourceRef></bpmn:resourceRole>
+        <bpmn:standardLoopCharacteristics id="A017-loop" testBefore="false" loopMaximum="3"/>
+      </bpmn:serviceTask>
+      <bpmn:endEvent id="V3-end"><bpmn:incoming>f-V3-3</bpmn:incoming></bpmn:endEvent>
+      <bpmn:dataObject id="A017-deliverable" name="Source code">
+        <bpmn:documentation>Production code implementing the specified behaviour.</bpmn:documentation>
+      </bpmn:dataObject>
+      <bpmn:dataObjectReference id="A017-deliverable-ref" name="Source code" dataObjectRef="A017-deliverable"/>
+      <bpmn:sequenceFlow id="f-V3-1" sourceRef="V3-start" targetRef="A016"/>
+      <bpmn:sequenceFlow id="f-V3-2" sourceRef="A016" targetRef="A017"/>
+      <bpmn:sequenceFlow id="f-V3-3" sourceRef="A017" targetRef="V3-end"/>
+    </bpmn:subProcess>
+    <bpmn:subProcess id="V4" name="Verification" ac:inScope="true">
+      <bpmn:extensionElements><ac:phase code="V4" seq="5" role="Test"/></bpmn:extensionElements>
+      <bpmn:incoming>f-V3-V4</bpmn:incoming>
+      <bpmn:outgoing>f-V4-gw</bpmn:outgoing>
+      <bpmn:startEvent id="V4-start"><bpmn:outgoing>f-V4-1</bpmn:outgoing></bpmn:startEvent>
+      <bpmn:userTask id="A018" name="Code review" ac:inScope="true" ac:gate="true">
+        <bpmn:extensionElements>
+          <ac:activity type="Review" phase="V4" seq="1" effort="3" weight="2.7" value="NVA-N" capability="Review" aiAuthority="Copilot"/>
+          <ac:supervision human="60" agent="40"/>
+          <ac:raci responsible="role-qa" accountable="role-lead"/>
+        </bpmn:extensionElements>
+        <bpmn:incoming>f-V4-1</bpmn:incoming>
+        <bpmn:outgoing>f-V4-2</bpmn:outgoing>
+        <bpmn:humanPerformer id="A018-R"><bpmn:resourceRef>role-qa</bpmn:resourceRef></bpmn:humanPerformer>
+        <bpmn:resourceRole id="A018-A" name="Accountable"><bpmn:resourceRef>role-lead</bpmn:resourceRef></bpmn:resourceRole>
+      </bpmn:userTask>
+      <bpmn:manualTask id="A024" name="Test bench set-up" ac:inScope="false">
+        <bpmn:extensionElements>
+          <ac:activity type="Manual" phase="V4" seq="2" effort="4" weight="2.2" value="NVA" capability="Test" aiAuthority="Assistance"/>
+          <ac:supervision human="90" agent="10"/>
+          <ac:raci responsible="role-qa"/>
+        </bpmn:extensionElements>
+        <bpmn:incoming>f-V4-2</bpmn:incoming>
+        <bpmn:outgoing>f-V4-3</bpmn:outgoing>
+        <bpmn:humanPerformer id="A024-R"><bpmn:resourceRef>role-qa</bpmn:resourceRef></bpmn:humanPerformer>
+      </bpmn:manualTask>
+      <bpmn:manualTask id="R101" name="Software verification results" ac:inScope="true" ac:regulatory="true" ac:norm="DO-178C">
+        <bpmn:documentation>Records of the reviews, analyses and tests required by the norm.</bpmn:documentation>
+        <bpmn:extensionElements>
+          <ac:activity type="Manual" phase="V4" seq="3" effort="2" weight="2" value="REG" capability="Compliance" aiAuthority="Compliance" regulatory="true"/>
+          <ac:supervision human="85" agent="15"/>
+          <ac:raci responsible="role-qa" accountable="role-lead"/>
+        </bpmn:extensionElements>
+        <bpmn:categoryValueRef>norm-DO-178C</bpmn:categoryValueRef>
+        <bpmn:incoming>f-V4-3</bpmn:incoming>
+        <bpmn:outgoing>f-V4-4</bpmn:outgoing>
+        <bpmn:humanPerformer id="R101-R"><bpmn:resourceRef>role-qa</bpmn:resourceRef></bpmn:humanPerformer>
+        <bpmn:resourceRole id="R101-A" name="Accountable"><bpmn:resourceRef>role-lead</bpmn:resourceRef></bpmn:resourceRole>
+      </bpmn:manualTask>
+      <bpmn:endEvent id="V4-end"><bpmn:incoming>f-V4-4</bpmn:incoming></bpmn:endEvent>
+      <bpmn:sequenceFlow id="f-V4-1" sourceRef="V4-start" targetRef="A018"/>
+      <bpmn:sequenceFlow id="f-V4-2" sourceRef="A018" targetRef="A024"/>
+      <bpmn:sequenceFlow id="f-V4-3" sourceRef="A024" targetRef="R101"/>
+      <bpmn:sequenceFlow id="f-V4-4" sourceRef="R101" targetRef="V4-end"/>
+      <bpmn:group id="group-DO-178C" categoryValueRef="norm-DO-178C"/>
+    </bpmn:subProcess>
+    <bpmn:exclusiveGateway id="gw-V4" name="Defect escaped?" default="f-gw-end">
+      <bpmn:incoming>f-V4-gw</bpmn:incoming>
+      <bpmn:outgoing>f-gw-end</bpmn:outgoing>
+      <bpmn:outgoing>f-rework</bpmn:outgoing>
+    </bpmn:exclusiveGateway>
+    <bpmn:endEvent id="end" name="End"><bpmn:incoming>f-gw-end</bpmn:incoming></bpmn:endEvent>
+    <bpmn:sequenceFlow id="f-start-V3" sourceRef="start" targetRef="V3"/>
+    <bpmn:sequenceFlow id="f-V3-V4" sourceRef="V3" targetRef="V4"/>
+    <bpmn:sequenceFlow id="f-V4-gw" sourceRef="V4" targetRef="gw-V4"/>
+    <bpmn:sequenceFlow id="f-gw-end" sourceRef="gw-V4" targetRef="end"/>
+    <bpmn:sequenceFlow id="f-rework" name="Rework (Code / Unit tests)" sourceRef="gw-V4" targetRef="V3">
+      <bpmn:extensionElements>
+        <ac:rework probability="0.10" costShare="0.40" internalIterations="3" pair="LP001" label="Code / Unit tests"/>
+      </bpmn:extensionElements>
+      <bpmn:conditionExpression>defectEscaped</bpmn:conditionExpression>
+    </bpmn:sequenceFlow>
+  </bpmn:process>
+  <bpmndi:BPMNDiagram id="diagram-role" name="By role">
+    <bpmndi:BPMNPlane id="plane-role" bpmnElement="collab">
+      <bpmndi:BPMNShape id="pool-main_di" bpmnElement="pool-main" isHorizontal="true">
+        <dc:Bounds x="100" y="60" width="1500" height="420"/>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="lane-dev_di" bpmnElement="lane-dev" isHorizontal="true">
+        <dc:Bounds x="130" y="60" width="1470" height="210"/>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="lane-qa_di" bpmnElement="lane-qa" isHorizontal="true">
+        <dc:Bounds x="130" y="270" width="1470" height="210"/>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="start_di" bpmnElement="start"><dc:Bounds x="170" y="142" width="36" height="36"/></bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="V3_di" bpmnElement="V3" isExpanded="true"><dc:Bounds x="240" y="80" width="560" height="170"/></bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="V3-start_di" bpmnElement="V3-start"><dc:Bounds x="260" y="142" width="36" height="36"/></bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="A016_di" bpmnElement="A016"><dc:Bounds x="330" y="120" width="100" height="80"/></bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="A017_di" bpmnElement="A017"><dc:Bounds x="480" y="120" width="100" height="80"/></bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="V3-end_di" bpmnElement="V3-end"><dc:Bounds x="630" y="142" width="36" height="36"/></bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="A017-deliverable-ref_di" bpmnElement="A017-deliverable-ref"><dc:Bounds x="712" y="95" width="36" height="50"/></bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="V4_di" bpmnElement="V4" isExpanded="true"><dc:Bounds x="830" y="290" width="560" height="170"/></bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="V4-start_di" bpmnElement="V4-start"><dc:Bounds x="850" y="352" width="36" height="36"/></bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="A018_di" bpmnElement="A018"><dc:Bounds x="910" y="330" width="100" height="80"/></bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="A024_di" bpmnElement="A024"><dc:Bounds x="1040" y="330" width="100" height="80"/></bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="R101_di" bpmnElement="R101"><dc:Bounds x="1170" y="330" width="100" height="80"/></bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="group-DO-178C_di" bpmnElement="group-DO-178C"><dc:Bounds x="1155" y="315" width="130" height="110"/></bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="V4-end_di" bpmnElement="V4-end"><dc:Bounds x="1310" y="352" width="36" height="36"/></bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="gw-V4_di" bpmnElement="gw-V4" isMarkerVisible="true"><dc:Bounds x="1420" y="345" width="50" height="50"/></bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="end_di" bpmnElement="end"><dc:Bounds x="1520" y="352" width="36" height="36"/></bpmndi:BPMNShape>
+      <bpmndi:BPMNEdge id="f-start-V3_di" bpmnElement="f-start-V3"><di:waypoint x="206" y="160"/><di:waypoint x="240" y="160"/></bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="f-V3-1_di" bpmnElement="f-V3-1"><di:waypoint x="296" y="160"/><di:waypoint x="330" y="160"/></bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="f-V3-2_di" bpmnElement="f-V3-2"><di:waypoint x="430" y="160"/><di:waypoint x="480" y="160"/></bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="f-V3-3_di" bpmnElement="f-V3-3"><di:waypoint x="580" y="160"/><di:waypoint x="630" y="160"/></bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="A017-out_di" bpmnElement="A017-out"><di:waypoint x="580" y="140"/><di:waypoint x="712" y="120"/></bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="f-V3-V4_di" bpmnElement="f-V3-V4"><di:waypoint x="800" y="165"/><di:waypoint x="815" y="165"/><di:waypoint x="815" y="375"/><di:waypoint x="830" y="375"/></bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="f-V4-1_di" bpmnElement="f-V4-1"><di:waypoint x="886" y="370"/><di:waypoint x="910" y="370"/></bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="f-V4-2_di" bpmnElement="f-V4-2"><di:waypoint x="1010" y="370"/><di:waypoint x="1040" y="370"/></bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="f-V4-3_di" bpmnElement="f-V4-3"><di:waypoint x="1140" y="370"/><di:waypoint x="1170" y="370"/></bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="f-V4-4_di" bpmnElement="f-V4-4"><di:waypoint x="1270" y="370"/><di:waypoint x="1310" y="370"/></bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="f-V4-gw_di" bpmnElement="f-V4-gw"><di:waypoint x="1390" y="370"/><di:waypoint x="1420" y="370"/></bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="f-gw-end_di" bpmnElement="f-gw-end"><di:waypoint x="1470" y="370"/><di:waypoint x="1520" y="370"/></bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="f-rework_di" bpmnElement="f-rework">
+        <di:waypoint x="1445" y="345"/><di:waypoint x="1445" y="275"/><di:waypoint x="520" y="275"/><di:waypoint x="520" y="250"/>
+        <bpmndi:BPMNLabel><dc:Bounds x="900" y="257" width="160" height="14"/></bpmndi:BPMNLabel>
+      </bpmndi:BPMNEdge>
+    </bpmndi:BPMNPlane>
+  </bpmndi:BPMNDiagram>
+</bpmn:definitions>

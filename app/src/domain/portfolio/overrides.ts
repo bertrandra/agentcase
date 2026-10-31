@@ -1,5 +1,8 @@
 /** @calc-zone product-resolution */
+import { caseValues, emptiedStoredValues } from '../process/storedValues';
+import type { XDocument } from '../process/xml';
 import { parseRef, type ParsedRef } from './keys';
+import { withCommonValues } from './layers';
 import type { CommonCase, Overrides, Portfolio, Product } from './types';
 
 type Bag = Record<string, unknown>;
@@ -20,6 +23,7 @@ export function deepEqual(a: unknown, b: unknown): boolean {
 /** The common value at an address (undefined when the common case does not store that field). */
 export function commonValue(common: CommonCase, r: string): unknown {
   const p = ref(r);
+  if (p.kind === 'values') return caseValues(common)[p.id];   // schema v4: a programme value is the common document's
   return p.kind === 'top' ? common[p.key] : (common.dom[p.kind] as Bag | undefined)?.[p.id];
 }
 
@@ -35,7 +39,8 @@ export const isOverridden = (prod: Product, r: string): boolean => overrideValue
 function writeOverride(o: Overrides, r: string, value: unknown): Overrides {
   const p = ref(r), out: Bag = { ...o };
   if (p.kind === 'top') {
-    if (value === undefined) delete out[p.key]; else out[p.key] = value;
+    // schema v4: a product's own process document never holds a copy of the programme's values (it reads the common document's)
+    if (value === undefined) delete out[p.key]; else out[p.key] = p.key === 'BPMN' ? emptiedStoredValues(value as XDocument) : value;
     return out as Overrides;
   }
   const dom: Bag = { ...o.dom }, bag: Bag = { ...(o.dom?.[p.kind] as Bag | undefined) };
@@ -48,7 +53,8 @@ function writeOverride(o: Overrides, r: string, value: unknown): Overrides {
 function writeCommon(c: CommonCase, r: string, value: unknown): CommonCase {
   const p = ref(r);
   if (p.kind === 'top') return { ...c, [p.key]: value };
-  return { ...c, dom: { ...c.dom, [p.kind]: { ...c.dom[p.kind], [p.id]: value } } };
+  if (p.kind === 'values') return withCommonValues(c, { [p.id]: value === undefined ? undefined : String(value) });
+  return { ...c, dom: { ...c.dom, checked: { ...c.dom.checked, [p.id]: value as boolean } } };
 }
 
 const mapProduct = (pf: Portfolio, id: string, f: (p: Product) => Product): Portfolio => {

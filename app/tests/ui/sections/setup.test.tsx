@@ -1,4 +1,5 @@
 // @vitest-environment jsdom
+import { caseValues } from '@/domain/process';
 import { act, cleanup, fireEvent, render, screen } from '@testing-library/react';
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 import { computeCase } from '@/domain';
@@ -27,11 +28,11 @@ describe('setup section', () => {
     expectReference(/Setup coaching/, 'Setup: coaching');
     expect(screen.queryByText('Pair programming, deliverable review')).toBeNull();
     editParam('setupCoaching', 85000);
-    expect(doc().dom.values.setupCoaching).toBe('85000');
+    expect(caseValues(doc()).setupCoaching).toBe('85000');
     expect(screen.getAllByText('€185K').length).toBeGreaterThan(0);
     expect(computeCase(doc()).model.setupTotal).toBeGreaterThan(before);
     act(() => { appStore().undo(); });
-    expect(doc().dom.values.setupCoaching).toBe('35000');
+    expect(caseValues(doc()).setupCoaching).toBe('35000');
     expect(screen.getAllByText('€135K').length).toBeGreaterThan(0);
   });
   it('the transitional headcount coefficient is a COEF edit mirrored in the snapshot input, and undoable', () => {

@@ -1,7 +1,11 @@
 /** @calc-zone foundation */
+import { caseValues } from './process/storedValues';
 import type { CaseState } from './types/state';
 
-/** Typed replacement of the legacy P()/V()/C() seam: reads the captured DOM inputs of a case. Same semantics. */
+/**
+ * Typed replacement of the legacy P()/V()/C() seam: reads the captured DOM inputs of a case. Same semantics. Schema v4 (BPMN B9c): the values are
+ * `caseValues`, the form values over the programme's values stored in the case's document, so every reader of a programme value reads the document.
+ */
 export interface Inputs {
   /** string value ('' when absent) */
   v(id: string): string;
@@ -12,7 +16,7 @@ export interface Inputs {
 }
 
 export function makeInputs(s: CaseState): Inputs {
-  const values = s.dom?.values ?? {};
+  const values = caseValues(s);
   const checked = s.dom?.checked ?? {};
   return {
     // legacy readInputs(): an empty horizon defaults to '3'

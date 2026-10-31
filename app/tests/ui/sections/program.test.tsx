@@ -10,6 +10,7 @@ import { freshStore } from '../../store/helpers';
 import { legacySectionText, missingNumbers, renderedText } from '../../helpers/parity';
 import { loadFixture } from '../../helpers/tuneA';
 import { editParam, expectReference } from '../../helpers/programmeParam';
+import { caseValues } from '@/domain/process';
 
 beforeEach(() => { freshStore(); });
 afterEach(cleanup);
@@ -31,7 +32,7 @@ describe('program section', () => {
     expectReference('Pilot pod size (FTE)', 'Pilot');
     editParam('pilotFte', '5'); editParam('pilotBreakin', '3'); editParam('pilotWeeks', '16');
     const m = calc().model, cost = 5 * (22 / 52) * m.wd * m.tgtTJM;
-    expect(state().dom.values.pilotFte).toBe('5');
+    expect(caseValues(state()).pilotFte).toBe('5');
     expect(text(container)).toMatch(/22 wk\s+Pilot duration/);
     expect(text(container).replace(/\s/g, '')).toContain(`${fmtK(cost)}Pilotcost(indicative)`);
     expect(text(container)).toContain('Pilot pod size: 5 FTE · Break-in sprints: 3 sprints · Prove weeks: 16 weeks');
