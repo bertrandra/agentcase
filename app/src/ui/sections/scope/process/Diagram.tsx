@@ -1,7 +1,7 @@
 import { useCallback, useEffect, useId, useMemo, useRef, useState } from 'react';
 import type { Drawing, DrawShape } from '@/domain/process';
 import { centreOn, FIT, fitTo, viewOf } from './diagramCamera';
-import { colourClass, DiagramOptions, type ActFacts, type DiagramColour } from './DiagramOptions';
+import { categoryOf, colourClass, DiagramOptions, type ActFacts, type DiagramColour } from './DiagramOptions';
 import { Shapes } from './DiagramShapes';
 import { useCamera } from './useCamera';
 import { selectActivity, useProcessView } from './view';
@@ -30,7 +30,7 @@ export function Diagram({ d, tableId, title, desc, name, labelZoom = 2, facts, s
   const extra = useMemo(() => new Map(d.shapes.filter((s) => s.kind === 'activity').map((s) => [s.id, [colourClass(colour, facts?.get(s.id)),
     shown && !shown.has(s.id) ? 'is-faded' : '', picked.includes(s.id) && s.id !== selected ? 'is-picked' : ''].filter(Boolean).join(' ')])),
   [d, colour, facts, shown, picked, selected]);
-  const used = colour && facts ? [...new Set(acts.map((s) => facts.get(s.id)).map((f) => (f ? (colour === 'type' ? f.type : f.authority) : '')))] : [];
+  const used = colour && facts ? [...new Set(acts.map((s) => facts.get(s.id)).map((f) => (f ? categoryOf(colour, f) : '')))] : [];
   const selRef = useRef(selected);
   selRef.current = selected;
   const onPick = useCallback((pid: string, add: boolean) => {   // stable: the memoised shapes do not redraw on a pan

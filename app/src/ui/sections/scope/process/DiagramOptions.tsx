@@ -1,15 +1,21 @@
 import { useId } from 'react';
+import { AUDIT_PROGRESS } from '@/domain/audit';
 import { COLOUR_ORDER } from '@/domain/process/profile';
 
-/** What the 🧩 Process diagram knows of an activity beyond its shape (from the activity table's rows): its colour categories and its scope. */
-export interface ActFacts { type: string; authority: string; counted: boolean }
-export type DiagramColour = '' | 'type' | 'authority';
-const COLOURS: [DiagramColour, string][] = [['', 'None'], ['type', 'Task type (manual, human, agent…)'], ['authority', 'AI authority (assistance, copilot…)']];
+/** What the 🧩 Process diagram knows of an activity beyond its shape (the activity table's rows, the audit): its colour categories and its scope. */
+export interface ActFacts { type: string; authority: string; audit: string; counted: boolean }
+export type DiagramColour = '' | 'type' | 'authority' | 'audit';
+const COLOURS: [DiagramColour, string][] = [['', 'None'], ['type', 'Task type (manual, human, agent…)'], ['authority', 'AI authority (assistance, copilot…)'],
+  ['audit', 'Audit progress (planned, in progress, audited, closed)']];
+const ORDER: Record<Exclude<DiagramColour, ''>, readonly string[]> = { type: COLOUR_ORDER.type, authority: COLOUR_ORDER.authority, audit: AUDIT_PROGRESS };
+const LEGEND: Record<Exclude<DiagramColour, ''>, string> = { type: 'task type', authority: 'AI authority', audit: 'audit progress' };
+/** The category of an activity in a colour mode. */
+export const categoryOf = (mode: Exclude<DiagramColour, ''>, f: ActFacts): string => (mode === 'type' ? f.type : mode === 'authority' ? f.authority : f.audit);
 
 /** The class of an activity's colour (`ac-bpmn-cat-N`, the N-th chart colour of the theme), '' when not coloured. */
 export function colourClass(mode: DiagramColour, f: ActFacts | undefined): string {
   if (!mode || !f) return '';
-  const i = COLOUR_ORDER[mode].indexOf(mode === 'type' ? f.type : f.authority);
+  const i = ORDER[mode].indexOf(categoryOf(mode, f));
   return i < 0 ? '' : `ac-bpmn-cat-${(i % 8) + 1}`;
 }
 
@@ -35,9 +41,9 @@ export function DiagramOptions({ name, hideOut, onHideOut, colour, onColour, use
       </>}
       <button type="button" disabled={!onZoomSel} onClick={() => onZoomSel?.()}>{zoomLabel}</button>
       {colour && used.length > 0 && (
-        <ul className="ac-proc-legend" aria-label={`Colours by ${colour === 'type' ? 'task type' : 'AI authority'}`}>
-          {used.map((c) => <li key={c}><span className={`ac-proc-swatch ${colourClass(colour, colour === 'type'
-            ? { type: c, authority: '', counted: true } : { type: '', authority: c, counted: true })}`} aria-hidden="true" />{c}</li>)}
+        <ul className="ac-proc-legend" aria-label={`Colours by ${LEGEND[colour]}`}>
+          {used.map((c) => <li key={c}><span className={`ac-proc-swatch ${colourClass(colour, { type: c, authority: c, audit: c, counted: true })}`}
+            aria-hidden="true" />{c}</li>)}
         </ul>
       )}
     </div>

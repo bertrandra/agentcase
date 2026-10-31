@@ -75,6 +75,16 @@ export function activityAudits(d: XDocument): ActivityAudit[] {
   return out;
 }
 
+/** The audit progress of an activity, as the 🧩 Process diagram colours it (FX-15): its status when it has one, "Audited" when it holds audit data
+ *  without a status, else "Not audited" (left uncoloured). The coloured categories, in colour order: */
+export const AUDIT_PROGRESS = ['Planned', 'In progress', 'Audited', 'Closed'] as const;
+export const NOT_AUDITED = 'Not audited';
+export function auditProgressOf(r: Pick<ActivityAudit, 'audited' | 'status'>): string {
+  if (r.status === 'closed') return 'Closed';
+  if (r.status === 'inProgress') return 'In progress';
+  return r.audited ? 'Audited' : r.status === 'planned' ? 'Planned' : NOT_AUDITED;
+}
+
 export interface Coverage { inScope: number; audited: number; effort: number; auditedEffort: number; share: number; byEffort: number }
 /** Coverage (F-B28): share of the in-scope activities audited, by count and weighted by effort. */
 export function coverage(rows: readonly ActivityAudit[]): Coverage {

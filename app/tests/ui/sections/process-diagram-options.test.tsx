@@ -2,6 +2,8 @@
 import { act, cleanup, fireEvent, render } from '@testing-library/react';
 import { afterEach, beforeEach, describe, expect, it } from 'vitest';
 import { drawingOf, readProcess } from '@/domain/process';
+import { editAudit } from '@/controllers/audit';
+import { auditProgressOf } from '@/domain/audit';
 import { appStore } from '@/store/instance';
 import Process from '@/ui/sections/scope/process';
 import { resetProcessView, setFilter } from '@/ui/sections/scope/process/view';
@@ -82,5 +84,23 @@ describe('Process diagram display options', { timeout: 90_000 }, () => {
     expect(document.querySelector('.ac-proc-legend')!.getAttribute('aria-label')).toBe('Colours by AI authority');
     expect(doc()).toBe(appStore().getState().doc.BPMN);
     expect(await axeViolations(document.querySelector('.ac-proc-diagram')!)).toEqual([]);
+  });
+  it('colours by audit progress: planned, in progress, audited (data, no status), closed; not audited stays uncoloured', () => {
+    expect([auditProgressOf({ audited: false }), auditProgressOf({ audited: false, status: 'planned' }), auditProgressOf({ audited: true }),
+      auditProgressOf({ audited: true, status: 'planned' }), auditProgressOf({ audited: false, status: 'inProgress' }),
+      auditProgressOf({ audited: true, status: 'closed' })]).toEqual(['Not audited', 'Planned', 'Audited', 'Audited', 'In progress', 'Closed']);
+    const [a, b, c, d, e] = ids();
+    editAudit(a!, { kind: 'status', status: 'planned' });
+    editAudit(b!, { kind: 'status', status: 'inProgress' });
+    editAudit(c!, { kind: 'painPoint', point: { text: 'Specs arrive late', severity: 3, aiCandidate: 'yes' } });
+    editAudit(d!, { kind: 'status', status: 'closed' });
+    render(<Process />);
+    const sel = document.getElementById(colours().htmlFor) as HTMLSelectElement;
+    fireEvent.change(sel, { target: { value: 'audit' } });
+    const cat = (id: string) => /ac-bpmn-cat-(\d)/.exec(shapeOf(id).getAttribute('class') ?? '')?.[1] ?? '';
+    expect([a, b, c, d, e].map((id) => cat(id!))).toEqual(['1', '2', '3', '4', '']);
+    expect(document.querySelector('.ac-proc-legend')!.getAttribute('aria-label')).toBe('Colours by audit progress');
+    expect(new Set([...document.querySelectorAll('.ac-proc-legend li')].map((l) => l.textContent)))
+      .toEqual(new Set(['Not audited', 'Planned', 'In progress', 'Audited', 'Closed']));
   });
 });
