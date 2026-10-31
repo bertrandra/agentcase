@@ -1,4 +1,4 @@
-import { memo } from 'react';
+import { memo, useEffect, useRef } from 'react';
 import type { ProgrammeRow } from '@/domain/programme';
 import { eurK } from '@/ui/sections/tuneB/fmt';
 import { openActivity } from '@/ui/widgets/ActivityRefs';
@@ -23,15 +23,17 @@ export const costCell = (r: ProgrammeRow): string =>
   (r.amount === null ? '—' : `${money(r.amount)}${r.per === 'year 1' ? ' / yr (Y1)' : ''}${r.sharedWith ? ` (with ${r.sharedWith})` : ''}`);
 
 /** One activity or milestone of the programme, and its editor when open (timing and cost parameters, description). */
-export const ProgrammeRowView = memo(function ProgrammeRowView({ r, open, years, multi, cols }: { r: ProgrammeRow; open: boolean; years: number;
-  multi: boolean; cols: number }) {
+export const ProgrammeRowView = memo(function ProgrammeRowView({ r, open, focused = false, years, multi, cols }: { r: ProgrammeRow; open: boolean;
+  focused?: boolean; years: number; multi: boolean; cols: number }) {
+  const head = useRef<HTMLTableCellElement>(null);
+  useEffect(() => { if (focused) { head.current?.scrollIntoView?.({ block: 'center' }); head.current?.focus(); } }, [focused]);
   const linked = r.linked ? sectionById(r.linked) : undefined, editorId = `prog-edit-${r.id}`;
   const editable = r.element === 'task' && (r.descKey !== null || r.timingParams.length > 0 || r.costParams.length > 0);
   return (
     <>
-      <tr>
+      <tr className={focused ? 'is-focused' : undefined} aria-current={focused ? 'true' : undefined}>
         <td><EnabledBox name={r.name} e={r.enabled} /></td>
-        <th scope="row">
+        <th scope="row" ref={head} tabIndex={focused ? -1 : undefined}>
           {r.name}
           <span className="ac-muted">{` — ${r.element === 'task' ? '' : `${r.element}, `}${instances(r)}`}</span>
           {editable && <> <button type="button" className="ac-link" aria-expanded={open} aria-controls={open ? editorId : undefined}

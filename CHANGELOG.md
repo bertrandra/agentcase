@@ -17,6 +17,17 @@ When releasing, follow [docs/BUMP_PROCEDURE.md](docs/BUMP_PROCEDURE.md) (§7 for
 
 ## [Unreleased]
 
+### Process — links from the map to activity detail
+
+- 🧩 Process: the panel of the selected element (diagram or table) links to where its details live, opened on its row (highlighted, scrolled
+  to, keyboard focus): a delivery activity → its artefact row in 🎯 Scope (kept in sight under "show selected only"; a regulatory one also
+  links its norm in 🏛️ Industry / regulatory profile, and Scope says when that norm is not selected); a programme activity, milestone or gate
+  → its row in 📋 Programme, selected with its editor open, then its linked section; a wave → 📅 Plan.
+- The reverse: the focused Scope row and the artefact ids of "Adjust % auto & effort weight" open the activity in Process; the 📋 Programme rows
+  already did. The read-only programme references of the context screens (Engage, Plan, Program & Completeness, Agentic Setup, Knowledge hub,
+  Run sizing, Maturity, AI Readiness, value tracking…) add "Open … in Programme" beside "Open … in Process".
+- One map in the domain (`domain/programme/activityDetail.ts`); view state only: no undo step, no document change, no figure moves.
+
 ## [v21.0.0] 2026-10-31 — BPMN migration complete: the process, programme, organisation, audit and decisions in one native BPMN document
 
 Major release (BPMN phase B8): it closes the BPMN migration delivered in v20.20.0 – v20.34.0 (phases B0–B9e of

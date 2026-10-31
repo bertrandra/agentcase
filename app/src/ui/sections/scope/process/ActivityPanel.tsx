@@ -2,6 +2,8 @@ import { useId } from 'react';
 import { removeProcessActivity, updateProcessActivity } from '@/controllers/process';
 import { moveProcessActivity } from '@/controllers/processLayout';
 import { readProcess, type XDocument } from '@/domain/process';
+import { activityDetail } from '@/domain/programme';
+import { DetailLinks } from '@/ui/widgets/DetailLinks';
 import { selectActivity } from './view';
 
 const num = (s: string): number | undefined => (s.trim() === '' || !Number.isFinite(Number(s)) ? undefined : Number(s));
@@ -9,7 +11,7 @@ const num = (s: string): number | undefined => (s.trim() === '' || !Number.isFin
 /**
  * The selected activity (spec F-B16): its name, phase (`process.moveActivity`), effort and supervision split (`process.updateActivity`,
  * coalesced while typing), and "Remove" (`process.removeActivity`). Every change is one undoable step; the figures of a custom activity count
- * from phase B5 on.
+ * from phase B5 on. A link opens the screen where the activity's details live (its artefact row in 🎯 Scope, `activityDetail`).
  */
 export function ActivityPanel({ doc, id }: { doc: XDocument; id: string }) {
   const v = readProcess(doc), a = v.activities.find((x) => x.id === id), k = useId();
@@ -33,6 +35,7 @@ export function ActivityPanel({ doc, id }: { doc: XDocument; id: string }) {
         <dt>AI authority</dt><dd>{a.aiAuthority || '—'}</dd>
         {a.deliverable && <><dt>Deliverable</dt><dd>{a.deliverable}</dd></>}
       </dl>
+      <DetailLinks id={a.id} name={a.name} detail={activityDetail(a.id, v.activities)} />
       <div className="ac-proc-fields">
         <label htmlFor={`${k}-name`}>Name
           <input id={`${k}-name`} type="text" value={a.name} onChange={(e) => updateProcessActivity(id, { name: e.target.value })} />
