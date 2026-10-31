@@ -1,6 +1,6 @@
 /** @calc-zone exports */
-import type { Workbook } from 'exceljs';
-import { pfDecision, type PfStress, type Portfolio, type StressStats } from '@/domain/portfolio';
+import type { Workbook, Worksheet } from 'exceljs';
+import { childUnitScopes, pfDecision, selectionStress, type DisplayScope, type PfStress, type Portfolio, type StressStats } from '@/domain/portfolio';
 import { VERDICT_META } from '@/domain/verdict';
 import { cardSheet, MONEY, table, type V } from './blocks';
 
@@ -16,7 +16,7 @@ const cells = (s: StressStats): V[] => [s.p10, s.p50, s.p90, s.mean, s.cvar10, s
  * Decision section derives from it (`pfDecision`): inputs of the run and staleness, the portfolio distribution, the risk reduction, then the
  * statistics by wave and by product and the verdict of the portfolio and of every wave. Nothing is computed here.
  */
-export function stressSheet(wb: Workbook, name: string, pf: Portfolio, { run, stale }: StressExtra): void {
+export function stressSheet(wb: Workbook, name: string, pf: Portfolio, { run, stale }: StressExtra, scope: DisplayScope = { kind: 'portfolio' }): void {
   const ws = wb.addWorksheet(name), s = run.stats, d = run.diversification;
   cardSheet(ws, [['Draws per product', run.draws], ['Seed', run.seed], ['Correlation rho', run.rho],
     ['Stale (portfolio changed since the run)', stale ? 'Yes' : 'No'],
@@ -35,5 +35,22 @@ export function stressSheet(wb: Workbook, name: string, pf: Portfolio, { run, st
   table(ws, 'Verdict (Decision Intelligence rule on the distribution)', ['Scope', 'Verdict', 'Confidence % = P(net > 0)', 'P10 floor', 'P10'],
     [verdict('Portfolio', { kind: 'portfolio' }), ...run.waves.map((w) => verdict(w.name, { kind: 'wave', id: w.id }))],
     [undefined, undefined, undefined, MONEY, MONEY]);
+  if (scope.kind === 'unit') unitBlock(ws, pf, run, scope.id, verdict);
   ws.getColumn(1).width = 46;
+}
+
+/**
+ * Under a Unit scope (B10d): the unit's distribution (`selectionStress`: its products' draws added up) and the verdict of the unit and of each of its
+ * sub-units (`pfDecision`).
+ */
+function unitBlock(ws: Worksheet, pf: Portfolio, run: PfStress, id: string, verdict: (label: string, g: Parameters<typeof pfDecision>[2]) => V[]): void {
+  const sel = selectionStress(run, { kind: 'unit', id }, pf);
+  if (!sel) return;
+  const d = sel.diversification;
+  table(ws, `Unit ${sel.label}`, ['Scope', ...HEAD, 'Sum of the products\' P10', 'Risk reduction'],
+    [[sel.label, ...cells(sel.stats), d.sumP10, d.reduction]], [...FMT, MONEY, MONEY]);
+  const subs = childUnitScopes(pf, { kind: 'unit', id }).filter((u) => selectionStress(run, u, pf));
+  table(ws, `Verdict of the unit ${sel.label} and of its sub-units`, ['Unit', 'Verdict', 'Confidence % = P(net > 0)', 'P10 floor', 'P10'],
+    [verdict(sel.label, { kind: 'unit', id }), ...subs.map((u) => verdict(selectionStress(run, u, pf)?.label ?? u.id, u))],
+    [undefined, undefined, undefined, MONEY, MONEY]);
 }

@@ -211,7 +211,10 @@ says "Cards, unit level 3"), then **Unassigned**. Choosing a unit shows, everywh
 sub-units, added up exactly as a wave adds up its products: cash flow, NPV, ROI, payback, FTE before / after, run cost, the 📅 Plan views (Gantt,
 WBS, OBS, RAM, histogram) and each section's aggregate view; the headline bar names the unit. A unit that owns every product shows the Portfolio's
 figures. Waves stay separate (a wave can span several units). A unit with no planned product shows an empty state with where to fix it. The Monte
-Carlo distribution and the verdict of a unit are not available yet (they come with the strategy per unit): show the Portfolio or a Wave for them.
+Carlo distribution and the verdict of a unit come from the same portfolio run (🎲 Portfolio stress, **Run**): its products' draws added up, so 🎲
+Monte Carlo, 🧭 Decision and 📋 Results speak for the unit as for a wave, and choosing another unit draws nothing again. 🧭 Decision and 🏆 Strategy
+comparison rank the units below the one shown (at the Portfolio: the top units and Unassigned) by verdict, confidence and NPV; **Show** on a row opens
+that unit. After an owner change the run is marked stale: **⟳ Run again**.
 Like the other choices of Show, it is view state: no undo step, not saved.
 
 **Shared services** (tab **Services** of 🏢 Organisation). Tick **Service** on a unit (a test centre, an architecture office…) to make it a

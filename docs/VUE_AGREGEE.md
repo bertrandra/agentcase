@@ -62,9 +62,12 @@ Generic fallbacks per kind (Portfolio / Wave, section without an aggregate):
 - **Empty state.** A Wave or a Unit with no planned product shows the empty state in every section that follows the View (`SectionFrame` renders
   `ui/zones/EmptyScope.tsx` in place of its zones: the reason and where to fix it; the section keeps its title and banner), not empty tables; an
   input section keeps its in-place editor below.
-- **Not available at this scope.** The Monte Carlo distribution and the probabilistic verdict of a unit come with the strategy per unit (D-B40,
-  phase B10d): 🎲 Monte Carlo, 🧭 Decision and 📋 Results say "not available at the unit scope yet" (`ui/widgets/ScopeUnavailable.tsx`) next to the
-  unit's consolidated figures.
+- **Monte Carlo, decision and ranking per unit (phase B10d, D-B40).** 🎲 Monte Carlo, 🧭 Decision and 📋 Results work at a unit as at a wave: the
+  unit's distribution is its products' draws of the portfolio run added draw by draw (`selectionStress`, the one owner for the Portfolio, a Wave and a
+  Unit; a unit owning every product gives the portfolio run exactly), its verdict the single-case rule on it (`pfDecision`). 🧭 Decision and 🏆 Strategy
+  comparison add the **ranking of the units** below the View (the top units and Unassigned at the Portfolio, the sub-units of a unit: NPV, ROI, P10,
+  verdict, confidence; `unitRanking`). Switching the View never runs the simulation again; the run is marked stale by the portfolio fingerprint.
+  The "not available at the unit scope yet" states of B10b are gone.
 - **Plan.** 📅 Plan (Gantt, WBS, OBS, RAM, histogram) is restricted to the unit's planned products; the wave Gantt lists the waves that hold them,
   opened on them.
 

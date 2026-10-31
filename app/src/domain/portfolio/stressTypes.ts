@@ -27,6 +27,11 @@ export interface ProductStress {
   r: number;
   /** the same inside the product's wave */
   rWave: number;
+  /**
+   * the product's net benefit per draw, in draw order (not sorted): a group of products (a wave, a unit of the organisation, B10d) adds these
+   * draw by draw, so any selection is read from the one run without drawing again
+   */
+  perDraw: number[];
 }
 
 export interface WaveStress {

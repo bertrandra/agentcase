@@ -4,11 +4,13 @@ import type { McSens, McStats } from '../stress';
 import { DI_THRESHOLDS, riskPremiumOf, verdictRule, type CtxLine, type Decision } from '../verdict';
 import { resolveProduct } from './resolve';
 import { runOf, type ProductRun } from './run';
+import type { GroupScope } from './scopeGroup';
+import { selectionStress } from './stressSelection';
 import type { PfStress, ProductStress } from './stressTypes';
 import type { Portfolio } from './types';
 
-/** Which group of planned products a verdict speaks for: all of them, or one wave. */
-export type VerdictGroup = { kind: 'portfolio' } | { kind: 'wave'; id: string };
+/** Which group of planned products a verdict speaks for: all of them, one wave, or one unit of the organisation tree (any node; B10d, D-B40). */
+export type VerdictGroup = GroupScope;
 
 const wavg = (runs: ProductRun[], f: (r: ProductRun) => number): number => {
   const w = runs.reduce((a, r) => a + r.baseEtp, 0);
@@ -21,7 +23,7 @@ const wavg = (runs: ProductRun[], f: (r: ProductRun) => number): number => {
  * bars is the product premiums (engagement context + wave-2 risk modules) averaged with the entry headcount as weight. The conditions name the
  * products that carry the group's risk (|r| >= 0.2 with the group outcome) instead of single-case input drivers.
  */
-export function groupDecision(stats: McStats, runs: ProductRun[], contrib: ProductStress[], pick: (p: ProductStress) => number, extra: CtxLine[]): Decision {
+export function groupDecision<P extends ProductStress>(stats: McStats, runs: ProductRun[], contrib: P[], pick: (p: P) => number, extra: CtxLine[]): Decision {
   const setup = runs.reduce((a, r) => a + model(r.ctx).setupTotal, 0), premium = wavg(runs, (r) => riskPremiumOf(r.ctx));
   const { verdict, pPos, p10Floor } = verdictRule(stats, setup, premium);
   const drivers: McSens[] = contrib.map((p) => ({ id: p.id, label: p.name, r: pick(p) })).sort((a, b) => Math.abs(b.r) - Math.abs(a.r));
@@ -34,13 +36,14 @@ export function groupDecision(stats: McStats, runs: ProductRun[], contrib: Produ
     setup, premium };
 }
 
-/** Verdict of the whole portfolio or of one wave from a portfolio stress run; null when the wave has no planned product in the run. */
+/**
+ * Verdict of the whole portfolio, of one wave or of one unit from a portfolio stress run (F-B83, D-B40: a full decision per unit): the group's
+ * distribution, products and correlations are `selectionStress`'s; null when the group has no planned product in the run.
+ */
 export function pfDecision(pf: Portfolio, run: PfStress, group: VerdictGroup): Decision | null {
-  const mine = group.kind === 'portfolio' ? run.products : run.products.filter((p) => p.waveId === group.id);
-  const wave = group.kind === 'wave' ? run.waves.find((w) => w.id === group.id) : undefined, stats = group.kind === 'portfolio' ? run.stats : wave?.stats;
-  if (!stats || !mine.length) return null;
-  const label = group.kind === 'portfolio' ? 'Portfolio' : (wave as { name: string }).name;
-  const extra: CtxLine[] = [{ k: 'Scope', v: `${label} · ${mine.length} product${mine.length > 1 ? 's' : ''}` },
+  const sel = selectionStress(run, group, pf), mine = sel?.products ?? [];
+  if (!sel || !mine.length) return null;
+  const extra: CtxLine[] = [{ k: 'Scope', v: `${sel.label} · ${mine.length} product${mine.length > 1 ? 's' : ''}` },
     { k: 'Correlation between products (rho)', v: String(run.rho) }];
-  return groupDecision(stats, mine.map((p) => runOf(resolveProduct(pf, p.id))), mine, (p) => (group.kind === 'portfolio' ? p.r : p.rWave), extra);
+  return groupDecision(sel.stats, mine.map((p) => runOf(resolveProduct(pf, p.id))), mine, (p) => p.rSel, extra);
 }

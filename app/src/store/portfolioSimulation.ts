@@ -1,7 +1,7 @@
 /** @calc-zone stress */
 import { useMemo, useSyncExternalStore } from 'react';
 import { createStore } from 'zustand/vanilla';
-import { pfDecision, pfStressFingerprint, scopeKey, type PfStress, type VerdictGroup } from '@/domain/portfolio';
+import { consolidate, pfDecision, pfStressFingerprint, scopeKey, unitRanking, type PfStress, type UnitRankRow, type VerdictGroup } from '@/domain/portfolio';
 import type { Decision } from '@/domain/verdict';
 import { mcDrawsOf, mcSeedOf } from '@/domain/stress';
 import { useCorePortfolio, useDisplayScope } from './consolidationHooks';
@@ -30,22 +30,24 @@ export function usePortfolioSimulation(): PortfolioSimulation {
 }
 
 /**
- * The group a verdict speaks for: the portfolio, a wave, or a unit of the organisation tree (F-B81). A unit has its consolidated figures (B10b) but
- * not yet its own Monte Carlo verdict (strategy per unit, D-B40, phase B10d): `usePortfolioDecision` gives null for it and the screens say
- * "not available at the unit scope".
+ * The group a verdict speaks for: the portfolio, a wave, or a unit of the organisation tree at any node (F-B83, D-B40, B10d: a full decision per
+ * unit, read from the same run).
  */
-export type ScopeGroup = VerdictGroup | { kind: 'unit'; id: string };
+export type ScopeGroup = VerdictGroup;
 
 /** Where a display scope other than the active product points; null for the product scope. */
 export const groupOf = (s: ReturnType<typeof useDisplayScope>): ScopeGroup | null => (s.kind === 'product' ? null : s);
 
-/** The verdict of a group of products from the last portfolio run, null without a run (or for a wave with no planned product, or a unit). */
+/**
+ * The verdict of a group of products from the last portfolio run, null without a run (or for a wave or a unit with no planned product in it). Switching
+ * the scope never runs the simulation again: a unit's distribution is its products' draws of the run added up (`selectionStress`).
+ */
 export function usePortfolioDecision(group: ScopeGroup | null): Decision | null {
   const core = useCorePortfolio(), { run } = usePortfolioSimulation(), key = group ? scopeKey(group) : '';
   // keyed on the group's content: `key` (kind + wave or unit id) is all pfDecision reads of `group`, so a caller may pass an equal group literal built at
   // render without recomputing the verdict; not a stale read (a group with the same key gives the same decision)
   // eslint-disable-next-line react-hooks/exhaustive-deps -- `key` stands for `group` (see above)
-  return useMemo(() => (run && group && group.kind !== 'unit' ? pfDecision(core, run, group) : null), [core, run, key]);
+  return useMemo(() => (run && group ? pfDecision(core, run, group) : null), [core, run, key]);
 }
 
 /** The verdict of every wave (the per-wave table of the dashboard). */
@@ -53,6 +55,17 @@ export function useWaveDecisions(): { id: string; name: string; decision: Decisi
   const core = useCorePortfolio(), { run } = usePortfolioSimulation();
   return useMemo(() => core.waves.filter((w) => run?.waves.some((x) => x.id === w.id)).map((w) => ({ id: w.id, name: w.name,
     decision: run ? pfDecision(core, run, { kind: 'wave', id: w.id }) : null })), [core, run]);
+}
+
+/**
+ * The ranking of the units under the display scope (`unitRanking`: the roots and Unassigned at the Portfolio, the sub-units of a unit), with the
+ * verdict of each from the last run (none without a run). Empty for a product or a wave.
+ */
+export function useUnitRanking(): UnitRankRow[] {
+  const core = useCorePortfolio(), { run } = usePortfolioSimulation(), scope = useDisplayScope(), key = scopeKey(scope);
+  // keyed on the scope's content (see useVerdictGroup)
+  // eslint-disable-next-line react-hooks/exhaustive-deps -- `key` stands for `scope`
+  return useMemo(() => (scope.kind === 'product' ? [] : unitRanking(core, consolidate(core), run, scope)), [core, run, key]);
 }
 
 /** Draws and seed shown for the next run: those the user set here, else those of the active product's Monte Carlo inputs. */

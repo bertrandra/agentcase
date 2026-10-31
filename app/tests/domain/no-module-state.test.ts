@@ -57,6 +57,7 @@ const ALLOWED: Record<string, string> = {
   'domain/portfolio/scopeGroup.ts:unitMemo': 'memo: the units of a common document',
   'domain/portfolio/scopeGroup.ts:membersMemo': 'memo: the members of a selection, per core portfolio',
   'domain/portfolio/scopeGroup.ts:groupMemo': 'memo: the selections (Portfolio / Wave / Unit) of a consolidation',
+  'domain/portfolio/stressSelection.ts:memo': 'memo: the Monte Carlo figures of a selection (Portfolio / Wave / Unit), per run and portfolio (B10d)',
   'domain/org/teams.ts:NO_EFFORT': 'constant: the empty effort shares (never filled)',
   'domain/portfolio/serviceShares.ts:processRoots': 'memo: the process case (no team) of a product, per common values, overrides and knowledge',
   'domain/portfolio/serviceShares.ts:roots': 'memo: the services\' deliveries, per common values, products and organisation part',

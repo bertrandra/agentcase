@@ -4,7 +4,6 @@ import { useSelectionStress } from '@/store/selectionHooksStress';
 import { useViewScope } from '@/store/viewScope';
 import { goSection } from '@/ui/uiState';
 import { Callout } from '@/ui/widgets/cards';
-import { ScopeUnavailable } from '@/ui/widgets/ScopeUnavailable';
 import { ProductDrill } from '@/ui/widgets/ProductDrill';
 import { SectionFrame } from '@/ui/zones/SectionFrame';
 import { Controls } from '../../portfolio/stress/Controls';
@@ -12,14 +11,15 @@ import { ExcludedNote } from '../AggParts';
 import { ProductStressDetail, SelectionResults, StaleRun } from './AggregateParts';
 
 const help = (
-  <p>In a Portfolio or a Wave view this section shows the <strong>portfolio Monte Carlo</strong> of the selection: every planned product is simulated as in
-    the single-product Monte Carlo, cut at the portfolio horizon like the consolidation, and the net benefits are added draw by draw (the histogram of a
-    Wave is that of its products). Draws, seed and correlation ρ are set below; the same run feeds Portfolio stress and the portfolio verdict. A product
+  <p>In a Portfolio, a Wave or a Unit view this section shows the <strong>portfolio Monte Carlo</strong> of the selection: every planned product is
+    simulated as in the single-product Monte Carlo, cut at the portfolio horizon like the consolidation, and the net benefits are added draw by draw (the
+    histogram of a Wave or a Unit is that of its products, read from the same run: switching the View draws nothing again). Draws, seed and
+    correlation ρ are set below; the same run feeds Portfolio stress and the portfolio verdict. A product
     on its own keeps its single-product Monte Carlo: choose “Edit this product”.</p>
 );
 
 /**
- * Monte Carlo — Aggregate view: the portfolio Monte Carlo restricted to the Portfolio or the Wave (distribution, P10/P50/P90, P(net < 0),
+ * Monte Carlo — Aggregate view: the portfolio Monte Carlo restricted to the Portfolio, the Wave or the Unit (distribution, P10/P50/P90, P(net < 0),
  * diversification), with the run button.
  */
 export default function MonteCarloAggregate() {
@@ -29,8 +29,7 @@ export default function MonteCarloAggregate() {
       <>
         <ExcludedNote />
         {run && stale && <StaleRun />}
-        {vs.kind === 'unit' ? <ScopeUnavailable what="Monte Carlo distribution" label={vs.label} />
-          : sel ? <SelectionResults sel={sel} scope={vs.kind === 'wave' ? 'wave' : 'portfolio'} />
+        {sel ? <SelectionResults sel={sel} scope={vs.kind === 'wave' || vs.kind === 'unit' ? vs.kind : 'portfolio'} />
           : <p className="ac-muted"><em>{run ? `${vs.label} has no planned product in the last simulation: run it again.`
             : 'No simulation yet: run the portfolio simulation to draw the distribution of the selection.'}</em>{' '}
             {!run && progress === null && <button type="button" onClick={() => { void runPortfolioSimulation(); }}>▶ Run now</button>}</p>}
