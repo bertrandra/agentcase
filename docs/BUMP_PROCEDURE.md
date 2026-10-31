@@ -55,7 +55,8 @@ If it is red before your change, fix that first and say so in the changelog.
 ## 3. Apply the change and the stamps
 
 1. Make the functional change. Calculation changes follow decision D7: they are **not** made in `app/` alone, see §6.
-2. `cd app && npm version X.Y.Z --no-git-tag-version` (the only version edit), then `npm run docs:facts` (version and counts in the docs).
+2. `cd app && npm version X.Y.Z --no-git-tag-version` (the only version edit), then `npm run docs:facts -- --count-tests` (version and counts in the docs, the "about N tests" fact from one full run: without
+   `--count-tests` the cached count is kept and the nightly's 2 % tolerance catches the drift, SPEC_FIXES FX-72). `npm run release` runs it too.
 3. Add the changelog entry (§5) and update the prose of the docs of §1 if needed.
 
 ## 4. Checks
@@ -129,8 +130,8 @@ to the run page.
 **Nightly.** `.github/workflows/nightly.yml` runs on `main` at 02:17 UTC (and from the Actions tab, *Run workflow*). Job `suite`: `npm run check` three times
 in a row with the default timeouts (`tools/check-repeat.mjs`: a table of which test failed in which run, *flaky* or *failing*; the JUnit reports are attached),
 the documented test count against the suite (fails beyond 2 %: run `npm run docs:facts -- --count-tests`), the parallel run on the full corpus (40 workbooks +
-107 case files: exactly the 2 differences of DEV-SNAPSHOT-RESTORE pinned in `tools/parallel-run-known.json`, any other difference or a change of those
-fails), `npm audit --omit=dev` (any advisory). Job `affected`, in parallel: `npm run validate:affected` (fails if recall < 100 %; up to 3 h 45 min). Every
+107 case files: exactly the differences pinned in `tools/parallel-run-known.json` (DEV-B9B-RESOURCES on 145 files, DEV-SNAPSHOT-RESTORE on 2), any other
+difference or a change of those fails), `npm audit --omit=dev` (any advisory). Job `affected`, in parallel: `npm run validate:affected` (fails if recall < 100 %; up to 3 h 45 min). Every
 gate of a job runs even after an earlier one failed, and the job summary lists them. No issue is opened: a red nightly is read on the Actions tab, and the
 next change fixes it.
 
@@ -200,7 +201,7 @@ file from the repository root.
 - [ ] `npm ci && npm run check` green on the branch before the change
 - [ ] `npm run deps:check` green (else `npm run deps:gen` and commit `app/src/generated/dependencies.json`); `npm run dup` green; new domain modules carry `@calc-zone` (and `@owner` for a figure they own)
 - [ ] the **full** suite ran before the merge (`test:affected` is a development aid, never the release gate); `npm run validate:affected` after a change of the generator, tags or rule
-- [ ] version: `npm version X.Y.Z --no-git-tag-version` (package.json and lock only), then `npm run docs:facts`
+- [ ] version: `npm version X.Y.Z --no-git-tag-version` (package.json and lock only), then `npm run docs:facts -- --count-tests`
 - [ ] calculation change? shipped in the legacy file first and the oracle regenerated (§7), golden line in the changelog
 - [ ] `npm run check` and `npm run build` green; manual browser pass on `app/dist/index.html` (§4)
 - [ ] `CHANGELOG.md` entry with a Golden case line; README and docs updated if relevant

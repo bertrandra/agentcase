@@ -1630,7 +1630,7 @@ Figure-neutral: every figure of the 107 fixtures is unchanged; the recorded B9b 
 ## 20. Open items after the migration
 
 Written in B8 (release v21.0.0): every item the phase notes record as not done, partial or open, one line each, with the section that records it.
-This is the owner's backlog; none of them changes a figure of today's cases. **Decision**: the owner chooses before any work; **Work**: the
+This is the owner's backlog; none of them changes a figure of today's cases. The consolidated fix plan (these items, the B10 notes and the technical debt, with priorities and lots) is [SPEC_FIXES.md](SPEC_FIXES.md). **Decision**: the owner chooses before any work; **Work**: the
 approach is known.
 
 | # | Open item | Kind | Recorded in |

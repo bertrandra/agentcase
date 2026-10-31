@@ -396,6 +396,9 @@ tests are not concerned: they drive the legacy *engine* through recipes, and the
 
 - After lot 4: **105 of 107 identical**, the 2 remaining differences are the two legacy defects above (they are not computed differently: the legacy simply
   reopens another curve). The 40 parameters workbooks stay 40 / 40 identical.
+- Since BPMN B9b (v20) the 105 other case files differ too, by the programme cost profile only (NPV and payback, DEV-B9B-RESOURCES), and the two lines
+  below carry that move on the new-build side (curve-bass: NPV €1,339k → €1,329k, payback 10 → 7 months; curve-legacy: €1,700k → €1,690k, 1 → 4
+  months); the legacy side still reopens the golden spline. Re-recorded in SPEC_FIXES lot X0 (FX-73).
 - Pinned in CI (lot 6): the nightly workflow runs `node tools/parallel-run.mjs --corpus full` (40 workbooks + 107 case files). The two differences are
   recorded line for line in `tools/parallel-run-known.json` and reported as `KNOWN`; any other difference fails, and so does a change of either recorded line
   (a fix on one side, or another figure moving): update the file and this section together.
@@ -676,6 +679,20 @@ tests are not concerned: they drive the legacy *engine* through recipes, and the
   `strategyEval[].computed.tco / net / setup / roi / payback`, `strategyRanking`, `resultsCore.setup / net / roi / payback`, `thinNow.totalSavings / npv /
   payback / inputHash`, `compareView.cost[2]`, `compareView.table[5]`, `sensitivityView.table[4]`, `me_mcs.stats.npv / paybackMonths`, `econ_roi.net /
   roi / roiPct / npv / payback / paybackText`, and the timing fields. The parallel run (`tools/parallel-run-known.json`) and excel-compat record the
-  differences per file under this id.
-- Tests: `tests/domain/programme/profile.test.ts`, `tests/domain/tuneB.test.ts`.
+  differences per file under this id: the 40 workbooks and, since SPEC_FIXES lot X0 (FX-73), the 105 case files (`node tools/parallel-run.mjs --corpus full`:
+  147 files, 0 identical, 147 known, 0 unexpected).
+- The case files, traced (FX-74): on all 107, the new NPV less the legacy one equals, to 1e-4 €, the sum over the programme lines of the legacy
+  discounted spend (the euro input over months 1–6) less the B9b one (`tests/domain/programme/parallel-run-b9b.test.ts`); savings, run cost, effective
+  automation and glass ceiling are the legacy ones on every file. Most move like golden (NPV about −€10k, payback 2–3 months earlier). Five move much
+  more, all by the amount rule of this entry (€k, amount effect + timing effect, no defect):
+  - `econ-roi-low` −2,417 → −1,034 (+1,383): typed training €1,000k and governance €400k become €52.9k and €26.4k of resources (+925.4, +365.0);
+    the timing adds +92.6 (tooling €2,000k over 12 months +38.2, coaching €600k over 36 months +54.4, training +1.0, governance +0.5, hub −1.5).
+  - `econ-roi-mid` 514 → 853 (+339): training €300k and governance €100k → resources (+241.5, +71.9); timing +25.7.
+  - `setup-large` 1,168 → 1,236 (+68): training €90k and governance €50k → resources (+36.3, +23.0); timing +8.6.
+  - `econ-no-setup` 1,762 → 1,686 (−76): the four amounts are typed 0, but training and governance are now priced from the default trainers
+    (0.5 FTE) and Design Authority (0.25 FTE): −51.7 and −25.8, timing +1.5. The fixture no longer means "no programme cost": a case with none
+    zeroes `trainFte`, `govFte` and `coachDaysPerMonth` (`tests/helpers/legacyProgramme.ts`, `noProgramme`).
+  - `vb-gantt-alt` 2,902 → 2,929 (+27, the other way): a 6-month setup, so training and governance last 6 months (€26.4k and €13.2k, below the
+    typed €45k and €20k: +18.1, +6.6); coaching over 37 months +3.2, the hub's 60 days −1.2.
+- Tests: `tests/domain/programme/profile.test.ts`, `tests/domain/tuneB.test.ts`, `tests/domain/programme/parallel-run-b9b.test.ts`.
 - Files: `domain/programme/{profile,catalogue,costs}.ts`, `domain/tuneB/setup.ts`.

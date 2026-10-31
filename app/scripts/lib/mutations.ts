@@ -1,6 +1,6 @@
 /**
  * One-token mutations for `validate-affected.ts`: harmless (still compiles, still loads) but they change a number or a text the tests look at.
- * Each `find` occurs exactly once.
+ * Each `find` occurs exactly once (tests/mutations.test.ts; validate-affected.ts checks them all before the first run).
  */
 export interface Mutation { file: string; find: string; replace: string; why: string }
 
@@ -28,10 +28,11 @@ export const MUTATIONS: Mutation[] = [
   { file: 'src/store/history.ts', find: 'COALESCE_MS = 800', replace: 'COALESCE_MS = 801', why: 'store (untagged): undo coalescing window' },
   { file: 'src/domain/baseline/apportion.ts', find: 'FTE_STEP = 0.5', replace: 'FTE_STEP = 0.25', why: 'rate-card-team: FTE rounding step' },
   { file: 'src/domain/time/years.ts', find: 'savings: sum.sav,', replace: 'savings: sum.sav * 1.001,', why: 'time-engine: yearly savings' },
-  { file: 'src/domain/economics/cashflow.ts', find: 'if ((cum[t - 1] as number) >= 0) return t;', replace: 'if ((cum[t - 1] as number) > 0) return t;',
+  { file: 'src/domain/economics/cashflow.ts', find: 'while (t >= f && (cum[t - 1] as number) >= 0) t--;',
+    replace: 'while (t >= f && (cum[t - 1] as number) > 0) t--;',
     why: 'time-engine: payback rule of the cash-flow kernel (lot 4)' },
-  { file: 'src/domain/tune/program.ts', find: '(p.cost * Math.min(1, D - k)) / D', replace: '(p.cost * Math.min(1, D - k)) / D / 2',
-    why: 'tuning-programme: pilot months in the cost model (lot 4)' },
+  { file: 'src/domain/tune/program.ts', find: '(p.totalWeeks * 12) / 52', replace: '(p.totalWeeks * 12) / 26',
+    why: 'tuning-programme: pilot months in the cost model (lot 4; the pilot cost moved to the programme in B9b)' },
   { file: 'src/domain/model/flow.ts', find: 'const deltaTRaw = (ct.asis - ct.ct) / 30;', replace: 'const deltaTRaw = (ct.asis - ct.ct) / 31;',
     why: 'delivery-views: time-to-market value, retagged (lot 4)' },
   { file: 'src/domain/pdc/verifTeam.ts', find: '(m.yearETP[y] || 0) + (m.yearRunAgenticETP?.[y] || 0)',

@@ -21,6 +21,7 @@ jobs:
         with: { node-version: 22, cache: npm, cache-dependency-path: app/package-lock.json }
       - run: npm ci
         working-directory: app
+      - run: xmllint --version || (sudo apt-get update && sudo apt-get install -y --no-install-recommends libxml2-utils)   # BPMN / DMN / CMMN / MSPDI / audit / org XSD tests (D-B7) fail without it, as in app.yml
       - run: npx playwright install --with-deps chromium
         working-directory: app
       - run: npm run build
@@ -36,7 +37,7 @@ jobs:
         run: node tools/check-repeat.mjs --count-tests --tolerance 2
         if: success() || failure()
         timeout-minutes: 15
-      # 40 workbooks + 107 case files in the legacy file and the build: only the 2 DEV-SNAPSHOT-RESTORE differences of tools/parallel-run-known.json.
+      # 40 workbooks + 107 case files in the legacy file and the build: only the differences pinned in tools/parallel-run-known.json (DEV-B9B-RESOURCES, DEV-SNAPSHOT-RESTORE).
       - id: parallel
         run: node tools/parallel-run.mjs --corpus full
         if: success() || failure()
@@ -73,6 +74,7 @@ jobs:
       - uses: actions/setup-node@v6
         with: { node-version: 22, cache: npm, cache-dependency-path: app/package-lock.json }
       - run: npm ci
+      - run: xmllint --version || (sudo apt-get update && sudo apt-get install -y --no-install-recommends libxml2-utils)   # the full suite after each mutation runs the XSD tests too: without xmllint they fail on every mutation
       # One mutation per sampled module, the full suite after each: fails when a failing test file is outside the selection (recall < 100 %).
       # About 2 h 10 min with 3 workers (docs/TEST_SELECTION.md section 5); the script writes its recall lines to the job summary.
       - run: npm run validate:affected
