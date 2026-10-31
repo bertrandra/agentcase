@@ -35,7 +35,8 @@ const help = (
       it again. Ctrl or Shift + click adds activities to the selection, and Zoom to selection centres them at a zoom where their names can be read;
       the table&apos;s filters fade the other activities (Zoom to filtered fits those kept). Hide out-of-scope activities and Colours (task type: manual,
       human, agent…; AI authority; or audit progress: planned, in progress, audited, closed) change the drawing only, never the case. The
-      activity table lists the same activities: filter and sort it, tick an activity in or out of scope, select one to edit its name, phase, effort and supervision split.</p>
+      activity table lists the same activities: filter and sort it, tick an activity in or out of scope, select one to edit its name, phase,
+      effort and supervision split.</p>
     <p>Import reads a BPMN file and shows what it will do before anything changes: replace or merge, the case&apos;s other activities kept or
       switched out of scope, and, for a file from another tool, the phase and team skill of what the case does not know. The import is one step,
       undone by Ctrl+Z, and ends with a report. Export writes the process as a .bpmn file (also in the File menu).</p>
