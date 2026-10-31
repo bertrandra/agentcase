@@ -1,6 +1,7 @@
-import { useMemo } from 'react';
+import { useCallback } from 'react';
+import type { Ctx } from '@/domain';
 import { programmeProcess, programmeTable } from '@/domain/programme';
-import { useCtx, usePortfolio } from '@/store/hooks';
+import { useCtxSelector, usePortfolio } from '@/store/hooks';
 import { useActiveProductId, useIsMulti } from '@/store/portfolioHooks';
 import { SectionFrame } from '@/ui/zones/SectionFrame';
 import '../process/process.css';
@@ -23,8 +24,9 @@ const help = (
 
 /** 📋 Programme (docs/SPEC_BPMN.md § 19.11 F-B79; phase B9e): the table of the programme's activities, read from `domain/programme`. */
 export default function ProgrammeSection() {
-  const c = useCtx(), multi = useIsMulti(), pf = usePortfolio((p) => p), productId = useActiveProductId();
-  const t = useMemo(() => programmeTable(c, programmeProcess(c, multi ? pf : undefined, productId)), [c, multi, pf, productId]);
+  const multi = useIsMulti(), pf = usePortfolio((p) => (multi ? p : undefined)), productId = useActiveProductId();
+  // the table, kept while structurally equal: an edit it does not show (the customer name) re-renders nothing here; its rows are memoised
+  const t = useCtxSelector(useCallback((c: Ctx) => programmeTable(c, programmeProcess(c, pf, productId)), [pf, productId]));
   return (
     <SectionFrame title="📋 Programme" help={help}
       input={<Filters rows={t.rows} />}

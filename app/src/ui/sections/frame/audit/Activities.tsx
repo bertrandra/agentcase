@@ -1,13 +1,26 @@
-import { useId, useMemo } from 'react';
-import { phaseProgress } from '@/domain/audit';
+import { memo, useId, useMemo } from 'react';
+import { phaseProgress, type ActivityAudit } from '@/domain/audit';
 import { readRaci } from '@/domain/org';
 import type { AuditViewData } from '@/store/auditHooks';
+import { structuralEqual } from '@/store/equal';
 import { ElementForm } from './ElementForm';
 import { STATUS_LABELS } from './Header';
 import { SelectCell } from './SelectCell';
 import { clearAuditFilters, filtered, setAuditFilter, useAuditView, type AuditFilters } from './view';
 
 const LIMIT = 100;
+
+/** One activity of the list, memoised on its content: an edit re-renders the rows whose audit changed (the list is recomputed per edit). */
+const AuditRow = memo(function AuditRow({ r, selected }: { r: ActivityAudit; selected: boolean }) {
+  return (
+    <tr>
+      <SelectCell id={r.id} selected={selected ? r.id : null}>{r.id} · {r.name}</SelectCell>
+      <td>{r.phase}</td><td>{r.capability || '—'}</td>
+      <td>{r.audited ? `Audited${r.status ? ` (${STATUS_LABELS[r.status] ?? r.status})` : ''}` : 'Not audited'}</td>
+      <td>{r.tools.length}</td><td>{r.painPoints}</td>
+    </tr>
+  );
+}, structuralEqual);
 
 /** The activity list (F-B31): progress per phase, filters (phase, actor, capability, audited), one row per in-scope activity, its form below. */
 export function Activities({ data }: { data: AuditViewData }) {
@@ -48,13 +61,7 @@ export function Activities({ data }: { data: AuditViewData }) {
         <table className="ac-table" aria-labelledby={`${id}-h`}>
           <thead><tr><th scope="col">Activity</th><th scope="col">Phase</th><th scope="col">Capability</th><th scope="col">Audit</th><th scope="col">Tools</th>
             <th scope="col">Pain points</th></tr></thead>
-          <tbody>{shown.slice(0, LIMIT).map((r) => (
-            <tr key={r.id}>
-              <SelectCell id={r.id} selected={selected}>{r.id} · {r.name}</SelectCell>
-              <td>{r.phase}</td><td>{r.capability || '—'}</td>
-              <td>{r.audited ? `Audited${r.status ? ` (${STATUS_LABELS[r.status] ?? r.status})` : ''}` : 'Not audited'}</td>
-              <td>{r.tools.length}</td><td>{r.painPoints}</td>
-            </tr>))}</tbody>
+          <tbody>{shown.slice(0, LIMIT).map((r) => <AuditRow key={r.id} r={r} selected={r.id === selected} />)}</tbody>
         </table>
       </div>
       {shown.length > LIMIT && <p className="ac-muted">The first {LIMIT} activities are listed: filter to find the others.</p>}

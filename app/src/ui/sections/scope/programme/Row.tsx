@@ -1,4 +1,5 @@
 import { memo, useEffect, useRef } from 'react';
+import { structuralEqual } from '@/store/equal';
 import type { ProgrammeRow } from '@/domain/programme';
 import { eurK } from '@/ui/sections/tuneB/fmt';
 import { openActivity } from '@/ui/widgets/ActivityRefs';
@@ -22,7 +23,10 @@ export function detailText(r: ProgrammeRow): string {
 export const costCell = (r: ProgrammeRow): string =>
   (r.amount === null ? '—' : `${money(r.amount)}${r.per === 'year 1' ? ' / yr (Y1)' : ''}${r.sharedWith ? ` (with ${r.sharedWith})` : ''}`);
 
-/** One activity or milestone of the programme, and its editor when open (timing and cost parameters, description). */
+/**
+ * One activity or milestone of the programme, and its editor when open (timing and cost parameters, description). Memoised on the row's content
+ * (the table is recomputed per edit, with fresh row objects): an edit re-renders the rows whose values changed and the totals.
+ */
 export const ProgrammeRowView = memo(function ProgrammeRowView({ r, open, focused = false, years, multi, cols }: { r: ProgrammeRow; open: boolean;
   focused?: boolean; years: number; multi: boolean; cols: number }) {
   const head = useRef<HTMLTableCellElement>(null);
@@ -71,4 +75,4 @@ export const ProgrammeRowView = memo(function ProgrammeRowView({ r, open, focuse
       )}
     </>
   );
-});
+}, structuralEqual);

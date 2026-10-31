@@ -1,6 +1,7 @@
-import type { OrgModel, OrgTeam } from '@/domain/org';
+import type { OrgTeam } from '@/domain/org';
 import { goSection } from '@/ui/uiState';
 import { fmtNum } from '@/ui/widgets/orgFormat';
+import type { OrgParts } from './Units';
 
 const lineText = (t: OrgTeam): string => t.lines.map((l) => `${l.skill} · ${l.grade} · ${l.loc} · ${fmtNum(+l.etp || 0)} FTE`).join('; ') || '—';
 const fteOf = (t: OrgTeam): number => t.lines.reduce((s, l) => s + (+l.etp || 0), 0);
@@ -9,7 +10,7 @@ const fteOf = (t: OrgTeam): number => t.lines.reduce((s, l) => s + (+l.etp || 0)
  * The teams of the organisation. In this version they are views of the entry teams: each product's Input team is its delivery team, each shared
  * team line a shared team; they are edited where they were (the same commands), and give the figures exactly as before.
  */
-export function Teams({ m }: { m: OrgModel }) {
+export function Teams({ m }: { m: OrgParts }) {
   const products = new Map(m.products.map((p) => [p.id, p.name])), units = new Map(m.units.map((u) => [u.id, u.name]));
   return (
     <section aria-labelledby="ac-org-teams-h">

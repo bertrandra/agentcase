@@ -1,6 +1,7 @@
-import { useState } from 'react';
+import { memo, useState } from 'react';
 import { setHeader } from '@/controllers/audit';
 import { AUDIT_STATUSES, type AuditHeader, type HeaderPatch } from '@/domain/audit';
+import { structuralEqual } from '@/store/equal';
 import { toast } from '@/ui/uiState';
 import { DraftText } from '@/ui/widgets/DraftText';
 
@@ -51,8 +52,11 @@ function Auditors({ h }: { h: AuditHeader | undefined }) {
   );
 }
 
-/** The audit header (§ 15.3): code, client, scope, status, "as of" date, auditors and interviews. Created by its first edit. */
-export function Header({ header: h }: { header: AuditHeader | undefined }) {
+/**
+ * The audit header (§ 15.3): code, client, scope, status, "as of" date, auditors and interviews. Created by its first edit. Memoised on its content:
+ * an edit of an activity does not re-render it.
+ */
+export const Header = memo(function Header({ header: h }: { header: AuditHeader | undefined }) {
   return (
     <section aria-labelledby="ac-audit-head-h">
       <h2 id="ac-audit-head-h">Audit header</h2>
@@ -71,4 +75,4 @@ export function Header({ header: h }: { header: AuditHeader | undefined }) {
       <div className="ac-audit-grid"><Auditors h={h} /><Interviews h={h} /></div>
     </section>
   );
-}
+}, structuralEqual);

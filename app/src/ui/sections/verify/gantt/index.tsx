@@ -1,12 +1,13 @@
 import { caseValues } from '@/domain/process';
-import { ganttView } from '@/domain/verifyB';
+import type { Ctx } from '@/domain';
+import { ganttView, type GanttView } from '@/domain/verifyB';
 import { setInput } from '@/controllers/inputs';
-import { useDoc } from '@/store/hooks';
+import { equalIgnoring } from '@/store/equal';
+import { useCtxSelector, useDoc } from '@/store/hooks';
 import { Band } from '@/ui/sections/economics/Band';
 import { ActivityRefs } from '@/ui/widgets/ActivityRefs';
 import { CheckInput, Field } from '@/ui/widgets/fields';
 import { SectionFrame } from '@/ui/zones/SectionFrame';
-import { useView } from '../vbShared';
 import { Delivery } from './Delivery';
 import { Program } from './Program';
 import { PortfolioGanttPart } from './Waves';
@@ -33,9 +34,18 @@ function StartDate() {
   return <Field label="Roadmap start"><input type="date" value={value} onChange={(e) => setInput('rmStart', e.target.value)} /></Field>;
 }
 
+/**
+ * Two Gantt views show the same thing when their figures are equal and their calendar axis is the same: the axis carries its month → % functions
+ * (fresh per computation), which are fixed by its horizon, months and start.
+ */
+const figuresEqual = equalIgnoring<GanttView>('axis');
+const sameGantt = (a: GanttView, b: GanttView): boolean => figuresEqual(a, b) && a.axis.horizon === b.axis.horizon && a.axis.totalM === b.axis.totalM
+  && a.axis.startStr === b.axis.startStr;
+const hasCrossOf = (c: Ctx): boolean => ganttView(c).hasCross;
+
 /** The Gantt tab: the transformation program, engine milestones and the seq-grouped delivery rollout on one calendar (the pre-B9d Gantt). */
 function GanttTimeline() {
-  const v = useView(ganttView), gain = v.velocityGain.toFixed(2);
+  const v = useCtxSelector(ganttView, sameGantt), gain = v.velocityGain.toFixed(2);
   return (
     <>
       <PortfolioGanttPart />
@@ -65,7 +75,7 @@ function GanttTimeline() {
  * Histogram — views of the programme process only; every row opens its activity in the Process section, where activities are edited.
  */
 export default function PlanSection() {
-  const hasCross = useView(ganttView).hasCross;
+  const hasCross = useCtxSelector(hasCrossOf);
   return (
     <SectionFrame title="📅 Plan" help={<p>{INTRO}</p>}
       input={<div className="ac-gantt-inputs">

@@ -1,4 +1,6 @@
+import { memo } from 'react';
 import type { GanttView } from '@/domain/verifyB';
+import { structuralEqual } from '@/store/equal';
 import { CalendarHeader, Row } from './bars';
 import { ProgramBar } from './ProgramBar';
 
@@ -6,8 +8,8 @@ const FAMILY: Record<string, string> = {
   adoption: 'var(--ac-chart-cat-1)', maturity: 'var(--ac-chart-cat-4)', financial: 'var(--ac-chart-cat-3)', workforce: 'var(--ac-chart-cat-2)',
 };
 
-/** One engine milestone: a dot and its label, placed at its month (lifted when it would overprint its neighbour). */
-function Marker({ m }: { m: GanttView['markers'][number] }) {
+/** One engine milestone: a dot and its label, placed at its month (lifted when it would overprint its neighbour). Memoised on its content. */
+const Marker = memo(function Marker({ m }: { m: GanttView['markers'][number] }) {
   const col = FAMILY[m.family] ?? 'var(--ac-slate-650)';
   return (
     // dynamic: the marker's place on the calendar and its family colour (dot, ring and label)
@@ -17,7 +19,12 @@ function Marker({ m }: { m: GanttView['markers'][number] }) {
       <div className="ac-gantt-marker-d">{m.date}</div>
     </div>
   );
-}
+}, structuralEqual);
+
+/** One program row (memoised on its content: an edit re-renders the rows whose bar moved). */
+const ProgramLine = memo(function ProgramLine({ r }: { r: GanttView['program'][number] }) {
+  return <Row kind="program" label={r.name} title={`${r.name} — ${r.meta}`}><ProgramBar r={r} /></Row>;
+}, structuralEqual);
 
 /** Calendar header, the transformation program rows and the engine-derived milestone markers. */
 export function Program({ v }: { v: GanttView }) {
@@ -25,7 +32,7 @@ export function Program({ v }: { v: GanttView }) {
     <>
       <CalendarHeader ticks={v.ticks} />
       <div className="ac-gantt-sub">Transformation program</div>
-      {v.program.map((r) => <Row key={r.name} kind="program" label={r.name} title={`${r.name} — ${r.meta}`}><ProgramBar r={r} /></Row>)}
+      {v.program.map((r) => <ProgramLine key={r.name} r={r} />)}
       <div className="ac-gantt-sub">Generated milestones — derived from the adoption model, not typed</div>
       <div className="ac-gantt-markers">
         <div className="ac-gantt-markers-l">🎯 Model milestones <span className="ac-gantt-markers-note">(engine-derived)</span></div>

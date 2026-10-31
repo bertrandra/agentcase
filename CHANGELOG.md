@@ -17,6 +17,34 @@ When releasing, follow [docs/BUMP_PROCEDURE.md](docs/BUMP_PROCEDURE.md) (§7 for
 
 ## [Unreleased]
 
+## [v21.2.0] 2026-10-31 — Selective refresh on the BPMN screens; B10 specified
+
+### Performance — selective refresh on the BPMN screens
+
+The "refresh only what changed" rule of lot 5a (selector hooks, docs/ARCHITECTURE.md § 6) now covers the BPMN-era screens; no figure or behaviour
+changed. One edit, components rendered in the whole app (figure edit / customer name / one activity's effort):
+
+| Section | Before | After |
+|---|---|---|
+| 🧩 Process | 57 / 56 / 532 | 15 / 9 / 27 |
+| 📋 Programme | 111 / 110 / 105 | 38 / 8 / 3 |
+| 📅 Plan | 78 / 77 / 72 | 32 / 15 / 39 |
+| 🏢 Organisation | 10 / 20 / 15 | 10 / 20 / 4 |
+| 🧭 Who does what | 10 / 21 / 16 | 10 / 21 / 16 |
+| 🔎 Audit | 10 / 9 / 29 | 10 / 9 / 15 |
+
+- No `useCtx()` left in these screens: the programme part of 🧩 Process and the 📋 Programme table read their view through `useCtxSelector`
+  (structural equality; the portfolio only in a multi-product file), the type select of a programme row selects its own type, `usePlanViews` (📅 Plan)
+  is a selector, the Gantt view compares its figures and its axis (horizon, months, start) instead of the axis functions, and the "Programme
+  activities used here" references select only their parameter values.
+- `useOrgSelector` (`store/orgHooks.ts`): the organisation model rebuilt only when the process document, the customer name or the teams change, a
+  component re-rendered only when the part it selects changes; 🏢 Organisation selects units, teams, roles and products (an activity edit renders
+  nothing there), 🧭 Who does what selects its phase filter instead of the whole document.
+- Per-node memo where a view is recomputed with fresh objects: the process and programme diagram shapes, the 📋 Programme rows, the Gantt program
+  rows, milestones and phase blocks, the 🔎 Audit activity rows and header, and the sortable column headers (`SortHeader`). Editing one activity
+  re-renders its row and the totals, not every row or shape.
+- `tests/ui/render-cost.test.tsx` measures the six screens with three edits each (18 new budgets).
+
 ## [v21.1.0] 2026-10-31 — Links from the BPMN map to the activity detail screens
 
 ### Process — links from the map to activity detail
