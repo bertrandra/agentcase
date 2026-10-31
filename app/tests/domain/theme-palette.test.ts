@@ -1,4 +1,4 @@
-import { describe, expect, it } from 'vitest';
+import { beforeAll, describe, expect, it } from 'vitest';
 import { contrastRatio, hexToRgb, toOklch } from '../../src/domain/theme/color';
 import { HARMONIES, parseGenerator, contrastWord, type Harmony } from '../../src/domain/theme/generatorSettings';
 import { paletteFromSeed, paletteTable, type Palette } from '../../src/domain/theme/palette';
@@ -21,6 +21,8 @@ const all = (f: (seed: string, c: number, h: Harmony, p: Palette) => void) => {
 };
 
 describe('paletteFromSeed', () => {
+  // Builds the 240-palette sweep once (about 3.5 s alone, more on a loaded runner) so each test below times only its own checks.
+  beforeAll(() => all(() => undefined), 60_000);
   it('sets every colour a theme can set, as #rrggbb, and is deterministic', () => {
     const p = paletteFromSeed('#0b7a75', { contrast: 60, harmony: 'triadic' });
     expect(Object.keys(p).sort()).toEqual([...COLOUR_KEYS].sort());
