@@ -3,12 +3,13 @@ import { model } from '../model/overlay';
 import type { Live } from '../verifyA/fteVfte';
 import { calendarOf, type Calendar } from './calendar';
 import { consolidate, type Consolidated } from './consolidate';
+import { groupOf, scopeKey, type GroupScope } from './scopeGroup';
 import type { Series } from './series';
 import type { Portfolio } from './types';
 import type { ProductView } from './waves';
 
-/** The two selections of the aggregate view of the "verify" group: the whole Portfolio or one Wave. */
-export type VScope = { kind: 'portfolio' } | { kind: 'wave'; id: string };
+/** The selections of the aggregate view of the "verify" group: the whole Portfolio, one Wave or one Unit (`scopeGroup.ts`). */
+export type VScope = GroupScope;
 
 /** The planned products of a selection with their calendar series, plus what the selection leaves out. */
 export interface VSel {
@@ -16,23 +17,20 @@ export interface VSel {
   scope: VScope;
   label: string;
   items: ProductView[];
-  /** the selection's consolidated series (the portfolio's, or the wave's) */
+  /** the selection's consolidated series (the portfolio's, the wave's or the unit's) */
   series: Series;
   cal: Calendar;
   waveName: (id: string) => string;
   excluded: { id: string; name: string; archived: boolean }[];
 }
 
-/** The planned products of a Portfolio / Wave selection; null for an unknown wave. Everything is read from `consolidate`. */
+/** The planned products of a Portfolio / Wave / Unit selection; null for an unknown wave or unit. Everything is read from `consolidate` (`groupOf`). */
 export function selectionOf(pf: Portfolio, scope: VScope): VSel | null {
-  const c = consolidate(pf), cal = calendarOf(pf), waveName = (id: string) => pf.waves.find((w) => w.id === id)?.name ?? '';
-  const left = (ids: string[]) => ids.map((id) => pf.products.find((p) => p.id === id)).flatMap((p) => (p ? [{ id: p.id, name: p.name,
+  const c = consolidate(pf), cal = calendarOf(pf), waveName = (id: string) => pf.waves.find((w) => w.id === id)?.name ?? '', g = groupOf(c, scope);
+  if (!g) return null;
+  const excluded = g.excludedIds.map((id) => pf.products.find((p) => p.id === id)).flatMap((p) => (p ? [{ id: p.id, name: p.name,
     archived: !!p.archived }] : []));
-  if (scope.kind === 'portfolio') return { c, scope, label: 'Portfolio', items: c.products, series: c.series, cal, waveName, excluded: left(c.excluded) };
-  const w = c.waves.find((x) => x.id === scope.id), wave = pf.waves.find((x) => x.id === scope.id);
-  if (!w || !wave) return null;
-  const items = c.products.filter((v) => v.waveId === w.id);
-  return { c, scope, label: w.name, items, series: w.series, cal, waveName, excluded: left(wave.productIds.filter((id) => !items.some((v) => v.id === id))) };
+  return { c, scope, label: g.label, items: g.items, series: g.series, cal, waveName, excluded };
 }
 
 /** The live case of a planned product for the verify domain functions: its resolved case, model and Time Engine (all cached on the product run). */
@@ -44,7 +42,7 @@ export function viewMemo<T, A = undefined>(build: (sel: VSel, pf: Portfolio, arg
   return (pf, scope, arg) => {
     const sel = selectionOf(pf, scope);
     if (!sel) return null;
-    const key = `${scope.kind === 'wave' ? `wave:${scope.id}` : 'portfolio'}|${String(arg)}`;
+    const key = `${scopeKey(scope)}|${String(arg)}`;
     let m = cache.get(sel.c);
     if (!m) { m = new Map(); cache.set(sel.c, m); }
     if (!m.has(key)) m.set(key, build(sel, pf, arg as A));

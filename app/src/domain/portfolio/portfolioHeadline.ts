@@ -3,6 +3,7 @@ import { fteBeforeAfter, type FteBeforeAfter } from '../economics/fte';
 import type { Consolidated } from './consolidate';
 import { portfolioCostReduction, productFteAfter, weightedAutomation, weightedVelocity, yearTable, type Summary } from './headline';
 import type { Series } from './series';
+import { groupOf, type GroupScope } from './scopeGroup';
 import type { ProductView } from './waves';
 
 export interface PortfolioHeadline extends Summary {
@@ -22,7 +23,7 @@ export interface PortfolioHeadline extends Summary {
 }
 
 /**
- * The figures of any group of planned products (portfolio, wave): its consolidated summary plus what the top bar and the results read, from the
+ * The figures of any group of planned products (portfolio, wave, unit): its consolidated summary plus what the top bar and the results read, from the
  * existing owners.
  */
 function groupHeadline(items: ProductView[], series: Series, summary: Summary): PortfolioHeadline {
@@ -44,19 +45,19 @@ function memoised(key: object, build: () => PortfolioHeadline): PortfolioHeadlin
 /** The portfolio headline (all planned products). Memoised on the consolidation. */
 export const portfolioHeadline = (c: Consolidated): PortfolioHeadline => memoised(c, () => groupHeadline(c.products, c.series, c.summary));
 
-/** The same figures for one wave; null for an unknown wave. */
-export function waveHeadline(c: Consolidated, waveId: string): PortfolioHeadline | null {
-  const w = c.waves.find((x) => x.id === waveId);
-  return w ? memoised(w, () => groupHeadline(c.products.filter((v) => v.waveId === w.id), w.series, w.summary)) : null;
-}
+/** What the top bar shows: the active product (today's behaviour), the whole portfolio, one wave or one unit (`scopeGroup.ts`, F-B81). */
+export type DisplayScope = { kind: 'product' } | GroupScope;
 
-/** What the top bar shows: the active product (today's behaviour), the whole portfolio, or one wave (the single owners above). */
-export type DisplayScope = { kind: 'product' } | { kind: 'portfolio' } | { kind: 'wave'; id: string };
-
-/** Figures and label of a display scope other than the active product; null for the product scope or a wave that no longer exists. */
+/**
+ * Figures and label of a display scope other than the active product (the single owners above, on the selection of `groupOf`); null for the
+ * product scope or a wave / unit that no longer exists. Memoised on the selection.
+ */
 export function scopeHeadline(c: Consolidated, scope: DisplayScope): { label: string; headline: PortfolioHeadline } | null {
+  if (scope.kind === 'product') return null;
   if (scope.kind === 'portfolio') return { label: 'Portfolio', headline: portfolioHeadline(c) };
-  if (scope.kind !== 'wave') return null;
-  const h = waveHeadline(c, scope.id), w = c.waves.find((x) => x.id === scope.id);
-  return h && w ? { label: w.name, headline: h } : null;
+  const g = groupOf(c, scope);
+  return g ? { label: g.label, headline: memoised(g, () => groupHeadline(g.items, g.series, g.summary)) } : null;
 }
+
+/** The same figures for one wave; null for an unknown wave. */
+export const waveHeadline = (c: Consolidated, waveId: string): PortfolioHeadline | null => scopeHeadline(c, { kind: 'wave', id: waveId })?.headline ?? null;

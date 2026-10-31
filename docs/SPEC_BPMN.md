@@ -1716,7 +1716,7 @@ product, shared team lines (portfolio `sharedTeam`, pins) are not linked to a un
 | Phase | Content | Gate | Duration | Difficulty |
 |---|---|---|---|---|
 | B10a | Override split (process / organisation / programme parts of a product); teams (`teamIn`, `sharedTeam`) into the document; units with any depth; product → owning unit — **built in B10a** (§ 21.5) | 107 fixtures identical; all round trips; schema v5 migration | 3 d | 5 / 5 |
-| B10b | Unit display scope at any node: consolidation, figures, histogram, Plan views per unit | Unit totals = sum of its products (cross-surface); a unit equal to the portfolio gives the portfolio figures | 2 d | 4 / 5 |
+| B10b | Unit display scope at any node: consolidation, figures, histogram, Plan views per unit — **built in B10b** (§ 21.6) | Unit totals = sum of its products (cross-surface); a unit equal to the portfolio gives the portfolio figures | 2 d | 4 / 5 |
 | B10c | Transverse services: service units, assignments, cost allocation (D-B38), Services view | Allocation hand-computed; Σ allocations = service cost; axe clean | 2 d | 4 / 5 |
 | B10d | Strategy, stress and decision per unit (D-B40) | Unit = portfolio case reproduces the portfolio decision; hand-computed unit stress | 1.5 d | 4 / 5 |
 
@@ -1758,3 +1758,46 @@ Figure-neutral: every figure of the 107 fixtures is unchanged (the recorded B9b 
   patches; per-product memo; override split), `tests/store/bpmn-b10a-roundtrip.test.ts` (v4 → v5 on the fixtures and a v4 portfolio with shared lines
   and units in a product's copy; byte-identical re-save; autosave; tab sync; eight-level unit chain and ownership).
 
+### 21.6 Built in B10b (Unit display scope at any node)
+
+Figure-neutral for every existing scope: the 107 fixtures, the Product, Wave and Portfolio figures are unchanged. Code:
+`app/src/domain/portfolio/scopeGroup.ts` (the one owner), `selectionView.ts`, `portfolioHeadline.ts`, `aggEconomicsSel.ts`, `aggVerifyBase.ts`,
+`costModelAxis.ts`; `app/src/domain/programme/{planBundle,plan,histogramPortfolio}.ts`; `app/src/store/{viewScope,consolidationHooks,selectionHooks*,
+planHooks,portfolioSimulation,commonEdit,persona}.ts`; `app/src/ui/shell/{ScopeSelect,EditSelect}.tsx`, `ui/zones/{EmptyScope,
+SectionFrame}.tsx`, `ui/widgets/ScopeUnavailable.tsx`.
+
+- **One owner of "a set of products" (built).** `scopeGroup.ts` holds the selection behind any display scope other than a product: the Portfolio,
+  one Wave, or one **Unit** (`{ kind: 'unit', id }`, any node of the tree, or `UNASSIGNED_UNIT` for "Unassigned"). `scopeMembers(pf, scope)` gives the
+  label, the planned products (portfolio order) and the products left out (archived, no wave), memoised on the core portfolio; `groupOf(c, scope)`
+  gives the consolidation's own product views and their summed series and summary, memoised on the consolidation. A wave reads its aggregate from
+  `waveViews` as before; a unit sums its products with the same `aggregate` in the same order, so a unit owning every product gives the Portfolio's
+  figures **exactly** (tested with `toEqual` on the headline, the selection, the roll-ups, the cost model and the report). The members of a unit are
+  `productsOfUnit` (B10a): its products and those of its sub-units at any depth. Waves stay independent (a wave can span units).
+- **Every reader goes through it (built).** `scopeHeadline` (headline bar), `selectionView` (result sections), the economics / verdict / present
+  roll-ups (`aggEconomicsSel.selectionOf`), the "verify" roll-ups (`aggVerifyBase.selectionOf`, `VScope` = the group scope), `useViewScope` (the
+  `productIds` every input and per-product aggregate reads), the Plan views (Gantt, WBS, dictionary, OBS, RAM, histogram: `usePlanViews` passes the
+  products of `groupOf(k, scope)` to `planViews`, which restricts the consolidation to them), the wave Gantt (the waves holding the unit's products, opened on them), the cost-model workbook
+  (`pickScope`), the portfolio report (`portfolioReportData`: the unit's line, its products, its knowledge-transfer rows; file `…_Unit_<name>_…`).
+  Every section keeps its aggregate class (I-input / R-conso / R-rollup / S-static / P-portfolio, docs/VUE_AGREGEE.md) and behaves at a unit as at a
+  wave; no section has a unit-specific formula.
+- **Picker (built).** **👁 Show** gains the group **Units**: the unit tree in tree order (the derived default delivery unit included), indented by
+  depth (`· ` per level, capped at 6), each option's accessible name stating its level ("Cards, unit level 3"), then **Unassigned**; native list, so
+  arrow keys and type-ahead work; choosing one announces "Showing unit Cards, level 3". View state as the other scopes: `portfolio.setDisplayScope`,
+  not undoable, never saved nor broadcast; "Change follows Show" sets the edit target back to All products; ✏️ Change lists the unit's products first.
+  The report and cost-model scope lists offer the units too. A scope whose unit is removed falls back to the product (as a removed wave does).
+- **Empty state (built).** A Wave or a Unit with no planned product shows, in every section that follows the View, the empty state ("Unit X has no
+  planned product", with the way to fix it: 🏢 Organisation or 🌊 Waves) instead of empty tables; an input section keeps its in-place editor.
+- **Not available at this scope (built, B10d).** The Monte Carlo distribution, the probabilistic verdict and the stress block of the report are
+  not defined for a unit before the strategy per unit (D-B40, B10d): Monte Carlo, Decision and Results say "not available at the unit scope yet"
+  next to the unit's consolidated figures; the Monte Carlo inputs by product and the stochastic roll-up stay shown (P50 "—", as for a wave without
+  a run). The results workbook keeps every sheet; under a Unit scope it leads with the Portfolio sheet (no per-unit sheet yet).
+- **Per-product memo (kept).** Switching to any unit recomputes nothing: the core portfolio and its consolidation keep their identity and no product
+  engine is built (`runStats.builds` unchanged); render budgets of a unit switch in `tests/ui/render-cost.test.tsx` (≤ 55 renders on a result section,
+  ≤ 70 on the Plan).
+- **Tests.** `tests/domain/portfolio/unit-scope.test.ts` (members over a four-level tree, Unassigned, empty and unknown units; unit totals = Σ of its
+  products for series, headline, selection, roll-ups; waves split by units; a unit owning every product = the Portfolio exactly; empty state; no
+  recompute on switching), `tests/ui/unit-scope.test.tsx` (Show list, levels, announcement, headline bar, banner, Change grouping, removed unit,
+  verdict not available, empty state), `tests/ui/render-cost.test.tsx` (unit switches), `tools/a11y.mjs` (pf fixtures: Decision and the KPI bar under
+  Unassigned, the empty state of a unit).
+- **Open (next phases).** Service units and cost allocation (B10c); stress, verdict and ranking per unit (B10d: `VerdictGroup` gains the unit, the
+  run then needs per-unit draws); a per-unit sheet in the results workbook.

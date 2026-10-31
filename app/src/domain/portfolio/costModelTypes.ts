@@ -1,6 +1,6 @@
 /** @calc-zone exports */
-/** What the cost-model workbook exports: a portfolio, one wave or one product. */
-export type CostScope = { kind: 'portfolio' } | { kind: 'wave'; id: string } | { kind: 'product'; id: string };
+/** What the cost-model workbook exports: a portfolio, one wave, one unit of the organisation tree (F-B81) or one product. */
+export type CostScope = { kind: 'portfolio' } | { kind: 'wave'; id: string } | { kind: 'unit'; id: string } | { kind: 'product'; id: string };
 
 /** How a row is displayed (number format) and what it measures. */
 export type CostFmt = 'days' | 'pct' | 'eur' | 'rate' | 'fte' | 'factor';

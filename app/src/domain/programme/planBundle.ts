@@ -20,7 +20,7 @@ import { wbsDictionary, type DictionaryRow } from './wbsDictionary';
  * WBS, WBS dictionary, OBS, RAM and the resource histograms, read by the 📅 Plan screen, the results workbook's plan sheets, the plan report
  * and the MS Project export, so every surface shows the same view.
  */
-export type PlanScope = { kind: 'product' } | { kind: 'portfolio' } | { kind: 'wave'; id: string };
+export type PlanScope = { kind: 'product' } | { kind: 'portfolio' } | { kind: 'wave'; id: string } | { kind: 'unit'; id: string; name: string };
 export interface PlanViews {
   scope: PlanScope; plan: Plan; wbs: WbsNode[]; dictionary: DictionaryRow[]; obs: ObsNode[]; ram: Ram; lanes: ProgrammeLane[];
   histogram: ProgrammeHistogram; setupFlags: SetupFlag[];
@@ -30,8 +30,13 @@ export interface PlanViews {
 export interface PlanSource {
   /** the shown case (the active product, or the single case) and its name */
   c: Ctx; name: string; org: OrgModel; scope: PlanScope;
-  /** the consolidation, for the Wave and Portfolio scopes, and the transformation team's capacity (`maxConcurrentSetups`) */
+  /** the consolidation, for the Wave, Unit and Portfolio scopes, and the transformation team's capacity (`maxConcurrentSetups`) */
   k?: Consolidated; capacity?: number | null; productId?: string;
+  /**
+   * a Wave or a Unit (F-B81): its planned products, as the one owner of a selection gives them (`groupOf(k, scope).items`, read by the caller so
+   * the delivery views do not depend on the consolidation zone); the Portfolio takes every planned product
+   */
+  ids?: readonly string[];
 }
 
 /** The programme's lanes with each role's Y1 FTE (EV-09 topology). */
@@ -42,10 +47,10 @@ export function programmeLanes(c: Ctx): ProgrammeLane[] {
 }
 
 export function planViews(s: PlanSource): PlanViews {
-  const wide = s.scope.kind !== 'product' && s.k ? s.k : null, waveId = s.scope.kind === 'wave' ? s.scope.id : undefined;
-  const plan = wide ? portfolioPlan(s.c, wide, waveId) : casePlan(s.c, s.name, s.productId);
+  const wide = s.scope.kind !== 'product' && s.k ? s.k : null, only = s.scope.kind === 'wave' || s.scope.kind === 'unit' ? s.ids ?? [] : undefined;
+  const plan = wide ? portfolioPlan(s.c, wide, only) : casePlan(s.c, s.name, s.productId);
   const wbs = programmeWbs(plan), lanes = programmeLanes(s.c);
-  const h = wide ? portfolioHistogram(wide, s.capacity ?? null, waveId) : null;
+  const h = wide ? portfolioHistogram(wide, s.capacity ?? null, only) : null;
   return {
     scope: s.scope, plan, wbs, dictionary: wbsDictionary(plan, wbs), obs: programmeObs(s.org, lanes),
     ram: programmeRam(wbs, lanes), lanes, histogram: h ?? programmeHistogram(s.c), setupFlags: h?.setupFlags ?? [],

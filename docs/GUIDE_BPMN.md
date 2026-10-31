@@ -206,6 +206,14 @@ location · FTE: each product's entry team and the shared team lines, stored as 
 role catalogue. The entry team and the shared team table keep their own screens; this section links to them. The **📦 Products** table has an
 **Owning unit** column too. A product that has its own process keeps no copy of the organisation: units, teams and owners are common.
 
+**Looking at one unit** (two products or more): **👁 Show** lists the units under **Units** — the tree in order, indented by level (a screen reader
+says "Cards, unit level 3"), then **Unassigned**. Choosing a unit shows, everywhere, the figures of the products it owns, directly or through its
+sub-units, added up exactly as a wave adds up its products: cash flow, NPV, ROI, payback, FTE before / after, run cost, the 📅 Plan views (Gantt,
+WBS, OBS, RAM, histogram) and each section's aggregate view; the headline bar names the unit. A unit that owns every product shows the Portfolio's
+figures. Waves stay separate (a wave can span several units). A unit with no planned product shows an empty state with where to fix it. The Monte
+Carlo distribution and the verdict of a unit are not available yet (they come with the strategy per unit): show the Portfolio or a Wave for them.
+Like the other choices of Show, it is view state: no undo step, not saved.
+
 **🧭 Who does what** (scope group): the RACI of every activity (Responsible, Accountable, Consulted, Informed), stored as standard BPMN
 `resourceRole`s, so other tools keep it.
 

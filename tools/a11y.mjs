@@ -68,6 +68,14 @@ for (const fx of fixtures) {
       await audit(page, fx, `${label} (scope Wave)`);
     }
     await audit(page, fx, '(scope Wave: KPI bar)');
+    // B10b (F-B81): a Unit of the organisation tree — Unassigned (every product of an organisation-less fixture), with its KPI bar and the
+    // Decision section (the verdict is not available at a unit yet); then the first unit of the tree, which owns nothing here: the empty state
+    await page.selectOption('select[aria-label="Show"]', 'unit:');
+    const decision = labels.find((l) => /Decision/.test(l ?? ''));
+    if (decision && (!only.length || only.includes(decision)) && (await openSection(page, decision))) await audit(page, fx, `${decision} (scope Unit)`);
+    await audit(page, fx, '(scope Unit: KPI bar)');
+    const unit = await page.locator('select[aria-label="Show"] option[value^="unit:"]').first().getAttribute('value');
+    if (unit && unit !== 'unit:') { await page.selectOption('select[aria-label="Show"]', unit); await audit(page, fx, '(scope Unit: empty state)'); }
   }
   if (fx.startsWith('pf-')) {   // the editing states below (Customer name) need the Product view: back to the first product
     const first = await page.locator('select[aria-label="Show"] option[value^="product:"]').first().getAttribute('value');

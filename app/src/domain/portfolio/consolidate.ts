@@ -36,7 +36,10 @@ function commonRate(common: CommonCase): number {
   return r;
 }
 
-const memo = new WeakMap<Portfolio, Consolidated>();
+const memo = new WeakMap<Portfolio, Consolidated>(), sources = new WeakMap<Consolidated, Portfolio>();
+
+/** The portfolio a consolidation was built from (the selections of `scopeGroup.ts` read its waves and units); undefined for a foreign object. */
+export const sourceOf = (c: Consolidated): Portfolio | undefined => sources.get(c);
 
 export function consolidate(pf: Portfolio): Consolidated {
   const hit = memo.get(pf);
@@ -51,6 +54,6 @@ export function consolidate(pf: Portfolio): Consolidated {
   const adoptionPct = series.adoptionW.map((w) => (baseEtp > 0 ? w / baseEtp : 0));
   const out: Consolidated = { horizon, rate, products, waves: waveViews(pf, products, horizon, rate), excluded: unscheduledIds(pf), series, summary, baseEtp,
     adoptionPct };
-  memo.set(pf, out);
+  memo.set(pf, out); sources.set(out, pf);
   return out;
 }

@@ -1,6 +1,6 @@
 # AgentCase — TypeScript + React build (`app/`)
 
-The product (version `<!-- fact:version -->21.3.0<!-- /fact -->`, from `package.json`, the single version source; multi-product portfolio). The legacy single-file app `../AgentCase_v18_13_EN.html` is the frozen reference it is proven
+The product (version `<!-- fact:version -->21.4.0<!-- /fact -->`, from `package.json`, the single version source; multi-product portfolio). The legacy single-file app `../AgentCase_v18_13_EN.html` is the frozen reference it is proven
 against. Docs: [architecture](../docs/ARCHITECTURE.md) · [migration record](../docs/MIGRATION_PLAN.md) ·
 [adding a section](../docs/SECTION_PORTING.md) · [releasing](../docs/BUMP_PROCEDURE.md).
 
