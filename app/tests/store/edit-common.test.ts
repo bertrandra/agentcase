@@ -1,3 +1,4 @@
+import { productTeam } from '@/domain/portfolio';
 import { programmeValuesOf } from '@/domain/process';
 import { describe, expect, it } from 'vitest';
 import { setDisplayScope } from '@/controllers/displayScope';
@@ -59,8 +60,8 @@ describe('"Edit: All products" in a Portfolio / Wave view writes the common valu
     expect(pf().hub.enabled).toBe(true);
     expect(pf().products[0]!.knowledge).toEqual({});
     expect(pf().products[1]!.knowledge.targetCC).toBe(3);
-    const n = pf().products[0]!.teamIn.length; addTeamRow();
-    expect(pf().products[0]!.teamIn).toHaveLength(n + 1);
+    const n = productTeam(pf(), pf().products[0]!.id).length; addTeamRow();
+    expect(productTeam(pf(), pf().products[0]!.id)).toHaveLength(n + 1);
     expect(pf().common).not.toHaveProperty('teamIn');
   });
   it('a product chosen in "Edit" (any View) writes an override for that product only', () => {
@@ -80,7 +81,7 @@ describe('"Edit: All products" in a Portfolio / Wave view writes the common valu
     const c = commonEditDoc(pf());
     expect(c).toBe(commonEditDoc(pf()));
     expect(c.dom.values.y1Ramp).toBe(pf().common.dom.values.y1Ramp);
-    expect(c.teamIn).toBe(pf().products[0]!.teamIn);
+    expect(c.teamIn).toBe(productTeam(pf(), pf().products[0]!.id));
     expect(keepersOf(pf().products, 'values.y1Ramp').map((k) => [k.id, k.via])).toEqual([[ids[1], 'override']]);
     expect(keepersOf(pf().products, 'values.khTargetCC').map((k) => [k.id, k.via])).toEqual([[ids[2], 'subset']]);
     expect(keepersOf(pf().products, 'values.horizon')).toEqual([]);

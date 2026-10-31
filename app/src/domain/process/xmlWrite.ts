@@ -26,11 +26,25 @@ export function serializeElement(e: XElement): string {
   write(e, out);
   return out.join('');
 }
-const texts = new WeakMap<XDocument, string>();
+const texts = new WeakMap<XDocument, string>(), parts = new WeakMap<XElement, string>();
+/** The text of a top-level element (a process, the collaboration, a diagram), memoised: an edit re-writes only the part it changed. */
+function part(n: XNode): string {
+  if (n.kind !== 'element') { const out: string[] = []; write(n, out); return out.join(''); }
+  let t = parts.get(n);
+  if (t === undefined) { t = serializeElement(n); parts.set(n, t); }
+  return t;
+}
+/** The root element: its start tag, each child (memoised), its end tag. */
+function rootText(e: XElement): string {
+  if (!e.children.length) return serializeElement(e);
+  const q = qnameOf(e), head = [`<${q}`];
+  for (const a of e.attrs) head.push(` ${a.name}="${escAttr(a.value)}"`);
+  return `${head.join('')}>${e.children.map(part).join('')}</${q}>`;
+}
 /** The XML text of a document; serialising the same tree always gives the same bytes (memoised on the tree's identity: it is immutable). */
 export function serialize(d: XDocument): string {
   let t = texts.get(d);
-  if (t === undefined) { t = `${d.decl ?? ''}${d.before}${serializeElement(d.root)}${d.after}`; texts.set(d, t); }
+  if (t === undefined) { t = `${d.decl ?? ''}${d.before}${rootText(d.root)}${d.after}`; texts.set(d, t); }
   return t;
 }
 

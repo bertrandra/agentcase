@@ -400,6 +400,22 @@ the editorial source of the default process until decision D-B9 retires them.
 - **Commands.** Unchanged for the screens (`input.set` and the other writers of form values); the address layer writes a programme value into the
   common document as node patches (one attribute, or one appended entry), or into the product's per-field override (§ 19.13).
 
+### 6.6 Built in B10a (schema v5: the teams in the document's organisation part)
+
+- **Key list.** Schema v5 (`_schemaVersion: 5`) removes `teamIn` from the products and from a single case's file, and the portfolio's `sharedTeam`.
+  They are `ac:team` elements of the organisation part of the COMMON document (the `extensionElements` of the `bpmn:collaboration`, after the units):
+  `ac:team product="‹id›" unit owner` with its `ac:line skill grade location fte pins` (a product's entry team and its owning unit, D-B39) and
+  `ac:team line="‹id›" unit` with its one line and `ac:share product pct` per product (a shared team line, with its pins). XSD 1.x additions:
+  optional `product`, `owner`, `line` attributes and the optional `ac:share` child of `ac:team`.
+- **Migration 4 → 5** (`store/persistence/schema/v5.ts`): the readers move the keys AFTER the validators (`fromSnapshot`, `readPortfolio` →
+  `teamsIntoDocument`), so a damaged team is corrected with its note before it is written; a product's own process document loses its units (moved
+  to the common document when it lacks them) and holds no team; the snapshot library is converted like a file.
+- **One accessor.** `domain/portfolio/teamAccess.ts` (`productTeam`, `sharedLines`, `productOwner`), memoised on the elements. A product's resolved
+  case keeps `teamIn` (its effective team, a view) and runs on the common document without its stored teams (`processCommon`, interned): editing
+  one product's team rebuilds that product only. A single case's file writes its `teamIn` into its document as the team of "Product 1".
+- **Commands.** Unchanged for the screens (Input team, shared lines, products); they write node patches of the common document (a line or team
+  appended at the end, an attribute, an element removed). Details: § 21.5.
+
 ## 7. Engine
 
 - **Phase 1 (parity)** — the engine reads the derived views: every figure identical on the 107 fixtures, the parallel run (40 files)
@@ -941,7 +957,8 @@ and, for an agent-performed activity, `activity --(performer)--> agent --(superv
      product's team would change the common document and invalidate every product's resolved case (the per-product memo of § 10).
   3. *Writers.* Team rows are written by the Input team commands, the address layer and tab-sync patches, the Input Team / RateTeam / SharedTeam
      sheets of both workbooks, stress scenarios and Verify A; moving them is a v3 → v4 migration touching the files B4 / B5 change in parallel.
-  The derived teams are the proven migration target; the move belongs with the override split.
+  The derived teams are the proven migration target; the move belongs with the override split. **Done in B10a** (§ 6.6, § 21.5): the override is
+  split, the teams are stored in the document.
 - **Screens**: 🏢 Organisation (frame group: unit tree editable with the keyboard, teams with their lines, role catalogue) and 🧭 Who does what
   (scope group: RACI matrix filtered by phase, team, unit and staffing of a product; RACI editor; the five views; checks inline). Both are app
   sections (Admin, Builder, Business journey), `S-static`. Team In and the shared team table keep their screens (same commands); the Organisation
@@ -1635,8 +1652,8 @@ approach is known.
 | 15 | The RACI-driven figures of § 16.5 are not built (the `humanPerformer` stays R; no figure reads the RACI) | Decision | § 16.8 |
 | 16 | A role's split between teams follows FTE × share; no per-activity share | Work | § 16.8 (F-B37) |
 | 17 | F-B39 partial: the organisation lane view has no geometry for its new lanes, is not offered in the export dialog, and organisation lanes are not imported | Work | § 16.8 (F-B39) |
-| 18 | Teams stay stored as `teamIn` / `sharedTeam` (derived as teams); moving them into the document needs the process / organisation split of item 19 | Decision | § 16.8, § 19.13 |
-| 19 | A product's process override stays whole-document; its split into process and organisation parts (teams, process library) is not done | Decision | § 19.13 |
+| 18 | ~~Teams stay stored as `teamIn` / `sharedTeam`~~ — **closed in B10a**: the teams are `ac:team` elements of the document (schema v5) | Done | § 6.6, § 21.5 |
+| 19 | ~~A product's process override stays whole-document~~ — **closed in B10a**: the override is the process part only (no organisation; programme values per field since B9c) | Done | § 21.5 |
 | 20 | The extended profile has no screens: its views, checks and export options (colours, organisation view, conversations…) are domain functions | Work | § 17.10 (1) |
 | 21 | Hand-off cost, cadence, waits, change-failure rate and token profile are views, not engine figures | Decision | § 17.10 (1) |
 | 22 | The default process does not link the SDLC chain with data inputs (it would change every case's default document) | Decision | § 17.10 (2) |
@@ -1698,7 +1715,46 @@ product, shared team lines (portfolio `sharedTeam`, pins) are not linked to a un
 
 | Phase | Content | Gate | Duration | Difficulty |
 |---|---|---|---|---|
-| B10a | Override split (process / organisation / programme parts of a product); teams (`teamIn`, `sharedTeam`) into the document; units with any depth; product → owning unit | 107 fixtures identical; all round trips; schema v5 migration | 3 d | 5 / 5 |
+| B10a | Override split (process / organisation / programme parts of a product); teams (`teamIn`, `sharedTeam`) into the document; units with any depth; product → owning unit — **built in B10a** (§ 21.5) | 107 fixtures identical; all round trips; schema v5 migration | 3 d | 5 / 5 |
 | B10b | Unit display scope at any node: consolidation, figures, histogram, Plan views per unit | Unit totals = sum of its products (cross-surface); a unit equal to the portfolio gives the portfolio figures | 2 d | 4 / 5 |
 | B10c | Transverse services: service units, assignments, cost allocation (D-B38), Services view | Allocation hand-computed; Σ allocations = service cost; axe clean | 2 d | 4 / 5 |
 | B10d | Strategy, stress and decision per unit (D-B40) | Unit = portfolio case reproduces the portfolio decision; hand-computed unit stress | 1.5 d | 4 / 5 |
+
+### 21.5 Built in B10a (override split, teams in the document, units at any depth, owning unit)
+
+Figure-neutral: every figure of the 107 fixtures is unchanged (the recorded B9b deviations aside). Code: `app/src/domain/org/teamDoc.ts`,
+`teamWrite.ts`, `teamStrip.ts`, `orgExt.ts`, `ownership.ts`; `app/src/domain/portfolio/teamAccess.ts`, `teamMigrate.ts`;
+`app/src/store/address/programme.ts` (`documentPatches`); `app/src/store/persistence/schema/v5.ts`. Stored form: § 6.6.
+
+- **Override split (built).** A product's override of the case's document is split into three parts: the **process** (activities, phases, scope and
+  the RACI, which is part of each activity) is the product's own document when it overrides it — written without the organisation
+  (`withoutOrg`) and with an empty `ac:programmeValues`; the **organisation** (units, teams, each product's owning unit) lives once in the common
+  document and is edited by portfolio commands whatever product is shown; the **programme values** are per field (B9c). So a product overrides its
+  process without copying the organisation, and changes its organisation entries (its team, its owner) without copying the process. Decision taken
+  in building: the RACI stays with the process part (it is an attribute of each activity, § 16.3 "a product may override the RACI of its process");
+  a per-product RACI without a process copy would need a new element and is left open.
+- **Per-product memo (kept).** A product's case runs on `processCommon(common)` — the common document without its stored teams, interned on every
+  other node — so an edit of one product's team changes that product's case only (tested: the other products' resolved cases keep their identity;
+  the B5 perf test "one product edit builds exactly one engine" passes with the team in the document).
+- **Teams (built).** `teamIn` and the shared lines (with pins) are `ac:team` elements (§ 6.6); `derivedTeams` / `teamRowsOf` read them, with the very
+  rows of the version 4 file (tested on the 107 fixtures, the three-product portfolio and the shipped example). Readers routed: the engine (the
+  resolved case's `teamIn`), Input team screens, the address layer (a `teamIn` change becomes node patches of the product's team), tab sync (patches
+  on nodes), both workbooks (the legacy Input Team / RateTeam sheets read and write the case's `teamIn` view; the portfolio TeamIn / SharedTeam sheets
+  are written from the accessor and read back into the document), stress scenarios and Verify A (the resolved case).
+- **Units at any depth, owning unit (F-B80, D-B39, built).** The unit tree has no fixed depth (the level is announced; the indentation stops growing at 6); a product points to
+  one unit at any node (`owner` on its team element) or none ("Unassigned"); `productsOfUnit` gives a unit's products through its sub-units (the
+  roll-up B10b uses). Edited in 🏢 Organisation (**Owning unit of each product**) and in the 📦 Products table (**Owning unit** column) through
+  `org.setOwner`; a unit cannot be removed while a unit, team or product names it. The default delivery unit is written into the document when first
+  chosen as an owner (it stays derived otherwise, so the exports of today's cases are unchanged).
+- **Persistence.** JSON file, HTML snapshot, autosave record with its undo history, tab sync, snapshot library, both workbooks: v4 → v5 open → save →
+  open is identical (byte-identical save); a single case's file holds its team inside its document. A BPMN export of a product with its own process
+  carries the common units (as before B10a); stored teams are not exported (as before).
+- **Measured cost.** A team edit's undo patch is the changed attribute or the appended line (< 1 KB). The serialiser memoises each top-level element's
+  text, so writing a document after an organisation edit re-writes the collaboration only. A Monte Carlo run saved by a version 4 file may show as stale
+  once (its fingerprint serialised the rows' key order).
+- **Not done (open).** Item 34 (waves, setup capacity and knowledge subsets outside the document) unchanged; item 23 (`withLibrary` on a product's
+  case) not attempted; the unit display scope, services and strategy per unit are B10b–B10d.
+- **Tests.** `tests/store/bpmn-b10a-commands.test.ts` (undo / redo property after every team, shared-line, unit, owner and product command; node
+  patches; per-product memo; override split), `tests/store/bpmn-b10a-roundtrip.test.ts` (v4 → v5 on the fixtures and a v4 portfolio with shared lines
+  and units in a product's copy; byte-identical re-save; autosave; tab sync; eight-level unit chain and ownership).
+

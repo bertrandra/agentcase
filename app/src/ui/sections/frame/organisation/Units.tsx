@@ -17,7 +17,8 @@ function edit(id: string, patch: UnitPatch, what: string): void {
 
 function UnitRow({ m, unit, depth }: { m: OrgParts; unit: OrgUnit; depth: number }) {
   const parents = m.units.filter((u) => !isBelow(m, u.id, unit.id)), n = unit.name;
-  const remove = () => toast(removeOrgUnit(unit.id) ? `Unit ${n} removed — Ctrl+Z to undo` : 'Remove the units below it first');
+  const remove = () => toast(removeOrgUnit(unit.id) ? `Unit ${n} removed — Ctrl+Z to undo`
+    : 'Remove the units below it first, and move its teams and products to another unit');
   return (
     <tr>
       <th scope="row" className="ac-org-name" data-depth={Math.min(depth, 6)}>
@@ -46,7 +47,7 @@ function UnitRow({ m, unit, depth }: { m: OrgParts; unit: OrgUnit; depth: number
   );
 }
 
-/** The organisation units as a tree (keyboard-editable table: every cell is a control; the level is announced). */
+/** The organisation units as a tree of any depth (keyboard-editable table: every cell is a control; the level is announced). */
 export function Units({ m }: { m: OrgParts }) {
   const add = () => toast(addOrgUnit({ id: nextUnitId(), name: 'New unit', type: 'department', parent: DEFAULT_UNIT_ID })
     ? 'Unit added under the delivery unit — Ctrl+Z to undo' : 'Unit refused: the process document has no collaboration');

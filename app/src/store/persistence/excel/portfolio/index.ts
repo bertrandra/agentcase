@@ -1,6 +1,6 @@
 /** @calc-zone exports */
 import type * as XL from 'exceljs';
-import type { Portfolio } from '@/domain/portfolio';
+import { productTeam, type Portfolio } from '@/domain/portfolio';
 import type { Doc } from '@/store/types';
 import type { ThemeValues } from '@/domain/theme';
 import { interpretParams } from '../params/reader';
@@ -18,7 +18,7 @@ export { isPortfolioWorkbook } from './read';
  * The COMMON case as a document the existing sheet families understand: the common values plus a placeholder team (the first product's), which only
  * fills the legacy "Input Team" sheet. The real teams live in the TeamIn sheet and are never read from "Input Team" on a portfolio import.
  */
-export const commonDocOf = (pf: Portfolio): Doc => ({ ...pf.common, teamIn: (pf.products[0] as { teamIn: Doc['teamIn'] }).teamIn }) as Doc;
+export const commonDocOf = (pf: Portfolio): Doc => ({ ...pf.common, teamIn: productTeam(pf, (pf.products[0] as { id: string }).id) }) as Doc;
 
 /**
  * The parameters workbook of a portfolio: the 47 existing sheets describe the common case; "Export all" adds Products, Waves, TeamIn, Overrides,

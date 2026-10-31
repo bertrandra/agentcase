@@ -1,3 +1,4 @@
+import { withoutTeams } from '@/domain/org';
 import { describe, expect, it } from 'vitest';
 import { applyAuditImport, editAudit, setHeader } from '@/controllers/audit';
 import { auditReportFile, auditTemplate, importAuditWorkbook } from '@/controllers/auditFiles';
@@ -56,7 +57,7 @@ describe('persistence round trips with audit data', () => {
     const read = (html: string) => readEmbeddedCase(new DOMParser().parseFromString(html, 'text/html'))!.doc.BPMN;
     const off = htmlSnapshotFile(page().documentElement, new Date(0)), on = htmlSnapshotFile(page().documentElement, new Date(0), true);
     expect(readAudit(read(off.html)).elements.size).toBe(0);
-    expect(read(on.html)).toStrictEqual(bpmnOf(s));
+    expect(read(on.html)).toStrictEqual(withoutTeams(bpmnOf(s)));   // the embedded case: its team as `teamIn` (schema v5)
     expect([off.filename.includes('audit'), on.filename.includes('contains_audit_data')]).toEqual([false, true]);
   });
   it('BPMN export: without audit by default; with it, re-imported as the same audit', () => {

@@ -3,8 +3,8 @@ import type { TeamRow } from '../types/state';
 
 /**
  * The organisation model of a case (docs/SPEC_BPMN.md § 16): organisation units, teams, roles and the RACI of each activity. Units and RACI are
- * elements of the case's `BPMN` document (`ac:orgUnit`, `ac:raci`, `bpmn:resourceRole`); roles are its resources; the teams are DERIVED in memory
- * from the products' entry teams and the shared team lines (phase B6b, derived-view stage: `teamIn` / `sharedTeam` stay the stored form).
+ * elements of the case's `BPMN` document (`ac:orgUnit`, `ac:raci`, `bpmn:resourceRole`); roles are its resources; the teams are the
+ * `ac:team` elements of the common document's organisation part (schema v5, phase B10a; `domain/org/teamDoc.ts`).
  * Every type here is a typed view, computed, never stored.
  */
 export const UNIT_TYPES = ['company', 'businessUnit', 'department', 'centreOfExcellence', 'vendor', 'offshoreCentre', 'nearshoreCentre', 'other'] as const;
@@ -54,7 +54,8 @@ export type DiagnosticCode = 'noResponsible' | 'severalAccountable' | 'noAccount
   | 'unknownActor' | 'roleNotStaffed' | 'overAllocated';
 export interface OrgDiagnostic { code: DiagnosticCode; severity: Severity; message: string; activity?: string; productId?: string; ref?: string }
 
-export interface ProductRef { id: string; name: string }
+/** A product of the organisation model, with its owning unit (D-B39; absent = unassigned). */
+export interface ProductRef { id: string; name: string; owner?: string }
 export interface OrgModel {
   units: OrgUnit[]; teams: OrgTeam[]; roles: OrgRole[]; activities: ActivityRaci[]; products: ProductRef[];
 }

@@ -2,14 +2,14 @@ import { readFileSync } from 'node:fs';
 import fc from 'fast-check';
 import { describe, expect, it } from 'vitest';
 import { derivedTeams, orgOf, teamRowsOf } from '@/domain/org';
-import { addSharedLine, effectiveTeam, resolveProduct, setSharedAllocation, type Portfolio } from '@/domain/portfolio';
+import { addSharedLine, effectiveTeam, productTeam, resolveProduct, setSharedAllocation, sharedLines, type Portfolio } from '@/domain/portfolio';
 import { openChecked } from '@/store/persistence/schema';
 import { FIXTURE_IDS, goldenAndB, SHARED_LINE } from '../../helpers/portfolio';
 
 /**
- * Phase B6b, § 16.3 "Migration (parity)": the teams derived from `teamIn` and the shared team lines give back, for every product, the very
- * effective team the engine runs on (`effectiveTeam`): same rows, same values, same order, same identity when nothing is shared. This is the
- * proof that the teams can become the source with identical figures; the stored form stays `teamIn` / `sharedTeam` in B6b.
+ * Phase B6b, § 16.3 "Migration (parity)", made the stored form in B10a (schema v5): the teams of the document give back, for every product, the very
+ * effective team the engine runs on (`effectiveTeam`): same rows, same values, same order, same identity when nothing is shared; and, opened from
+ * a version 2–4 file, the very rows of the file's `teamIn` (107 cases, the three-product portfolio, the shipped example).
  */
 const opened = (path: string): Portfolio => openChecked(JSON.parse(readFileSync(path, 'utf8'))).portfolio;
 const files = [...FIXTURE_IDS.map((id) => `fixtures/cases/${id}.json`), 'fixtures/portfolios/pf-three-products.json',
@@ -20,20 +20,25 @@ function expectParity(pf: Portfolio): void {
   for (const p of pf.products) {
     const rows = teamRowsOf(teams, p.id), eff = effectiveTeam(pf, p);
     expect(rows).toStrictEqual(eff);
-    if (eff === p.teamIn) expect(rows).toBe(p.teamIn);
+    if (eff === productTeam(pf, p.id)) expect(rows).toBe(eff);
     expect(resolveProduct(pf, p.id).teamIn).toStrictEqual(rows);
   }
 }
 
 describe('derived teams == effective team on every fixture (107 cases, the three-product portfolio, the shipped example)', () => {
-  it.each(files)('%s', (f) => expectParity(opened(f)), 30000);
+  it.each(files)('%s', (f) => {
+    const pf = opened(f), raw = JSON.parse(readFileSync(f, 'utf8')) as { teamIn?: unknown; products?: { id: string; teamIn: unknown }[] };
+    expectParity(pf);
+    if (raw.teamIn) expect(productTeam(pf, 'p1')).toStrictEqual(raw.teamIn);
+    for (const p of raw.products ?? []) expect(productTeam(pf, p.id)).toStrictEqual(p.teamIn);
+  }, 30000);
 });
 
 describe('derived teams with shared lines (lot 7)', () => {
   it('a shared line becomes a shared team serving its products with their shares; rows identical to effectiveTeam', () => {
     const pf = setSharedAllocation(addSharedLine(goldenAndB(), { ...SHARED_LINE, pins: ['A017'] }), SHARED_LINE.id, 'B', 30);
     const t = derivedTeams(pf).find((x) => x.shared)!;
-    expect(t.serves.map((s) => s.productId).sort()).toEqual(Object.keys(pf.sharedTeam![0]!.allocations).sort());
+    expect(t.serves.map((s) => s.productId).sort()).toEqual(Object.keys(sharedLines(pf)[0]!.allocations).sort());
     expect(t.lines[0]!.pins).toEqual(['A017']);
     expectParity(pf);
   });

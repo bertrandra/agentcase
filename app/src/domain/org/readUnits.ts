@@ -1,5 +1,6 @@
 /** @calc-zone process-model */
 import { attr, kid, kids, NS, type XDocument, type XElement } from '../process/xml';
+import { isStoredTeam } from './teamDoc';
 import { SOURCINGS, UNIT_TYPES, type OrgTeam, type OrgUnit, type Sourcing, type UnitType } from './types';
 
 /**
@@ -22,7 +23,7 @@ function unitOf(e: XElement): OrgUnit {
   return u;
 }
 
-/** Teams written in the document (imported files): their lines and the products' `ac:serves` allocations. */
+/** Teams an imported document holds (not the stored teams of schema v5, `teamDoc.ts`): their lines and the products' `ac:serves` allocations. */
 function teamsOf(d: XDocument, ext: XElement | undefined): OrgTeam[] {
   const serves = new Map<string, { productId: string; pct: number }[]>();
   for (const p of kids(d.root, NS.bpmn, 'process')) {
@@ -33,7 +34,7 @@ function teamsOf(d: XDocument, ext: XElement | undefined): OrgTeam[] {
       serves.set(t, list);
     }
   }
-  return (ext ? kids(ext, NS.ac, 'team') : []).map((t) => {
+  return (ext ? kids(ext, NS.ac, 'team').filter((t) => !isStoredTeam(t)) : []).map((t) => {
     const id = attr(t, 'id') ?? '';
     return { id, name: attr(t, 'name') ?? id, unit: attr(t, 'unit') ?? '', shared: false, imported: true, serves: serves.get(id) ?? [],
       lines: kids(t, NS.ac, 'line').map((l) => ({ skill: attr(l, 'skill') ?? '', grade: attr(l, 'grade') ?? '', loc: attr(l, 'location') ?? '',

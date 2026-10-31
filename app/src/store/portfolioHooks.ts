@@ -1,6 +1,7 @@
 /** @calc-zone foundation */
 import { useMemo } from 'react';
-import { commonValue, corePortfolio, isOverridden, resolveProduct, type CommonCase, type Product, type SharedTeamLine, type Wave } from '@/domain/portfolio';
+import { commonValue, corePortfolio, isOverridden, resolveProduct, sharedLines, type CommonCase, type Product, type SharedTeamLine,
+  type Wave } from '@/domain/portfolio';
 import { hasPortfolioContent } from './persistence/portfolioSnapshot';
 import { caseResultOf, useDoc, usePortfolio } from './hooks';
 import { shownProductId, useViewProductId } from './productView';
@@ -10,9 +11,8 @@ import type { Doc, EditScope } from './types';
 /** Products in display order (a stable reference until a product changes). */
 export const useProducts = (): Product[] => usePortfolio((p) => p.products);
 export const useWaves = (): Wave[] => usePortfolio((p) => p.waves);
-const NO_LINES: SharedTeamLine[] = [];
 /** The team lines shared between products ([] when none). */
-export const useSharedTeam = (): SharedTeamLine[] => usePortfolio((p) => p.sharedTeam ?? NO_LINES);
+export const useSharedTeam = (): SharedTeamLine[] => usePortfolio(sharedLines);
 export const useCommon = (): CommonCase => usePortfolio((p) => p.common);
 export const useProductCount = (): number => usePortfolio((p) => p.products.length);
 /** Progressive disclosure (spec F23): the multi-product interface exists from two products on. */

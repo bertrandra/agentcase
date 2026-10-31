@@ -10,7 +10,7 @@ import { freshStore } from '../store/helpers';
 
 afterEach(() => { cleanup(); dismissCalcBanner(); dismissOpenNotes(); });
 
-interface CaseFile { teamIn: { etp: unknown }[]; RATE: unknown }
+interface CaseFile { teamIn?: { etp: unknown }[]; RATE: unknown }
 const open = async (mutate: (f: CaseFile) => void) => {
   freshStore();
   const f = JSON.parse(exportSnapshotJson().json) as CaseFile;
@@ -27,7 +27,8 @@ describe('"Opened with N corrections" notice in the shell', () => {
   });
   it('a damaged file: a toast, then an accessible status listing every correction; Dismiss hides it', async () => {
     render(<App />);
-    await open((f) => { f.teamIn[0]!.etp = -4; f.RATE = 'x'; });
+    // schema v5: the team is in the document; a file that still carries a `teamIn` key (a version 4 shape) is corrected, then moved into it
+    await open((f) => { f.teamIn = [{ skill: 'Dev', grade: 'B2', loc: 'France', etp: -4, pins: [] } as { etp: unknown }]; f.RATE = 'x'; });
     const banner = screen.getByTestId('open-notes-banner');
     expect(banner.getAttribute('role')).toBe('status');
     expect(banner.textContent).toContain('Opened with 2 corrections');

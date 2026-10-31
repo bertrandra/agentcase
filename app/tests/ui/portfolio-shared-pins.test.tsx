@@ -1,3 +1,4 @@
+import { sharedLines } from '@/domain/portfolio';
 // @vitest-environment jsdom
 import { act, fireEvent, screen, within } from '@testing-library/react';
 import { describe, expect, it, vi } from 'vitest';
@@ -11,7 +12,7 @@ vi.mock('@/ui/widgets/ChartPanel', async () => import('../helpers/chartStub')); 
 const three = eachThree();
 const undoKey = () => fireEvent.keyDown(document.body, { key: 'z', ctrlKey: true });
 const region = () => screen.getByRole('region', { name: 'Shared team lines' });
-const pins = () => pf().sharedTeam![0]!.pins;
+const pins = () => sharedLines(pf())![0]!.pins;
 
 describe('Products: pins on a shared team line', () => {
   it('the pin button opens the editor; an artefact and a whole phase are pinned, each undoable; Clear pins empties the line', async () => {
@@ -27,13 +28,13 @@ describe('Products: pins on a shared team line', () => {
     expect(pins()).toEqual([art]);
     expect(btn.textContent).toContain('1');
     undoKey();
-    expect(pf().sharedTeam![0]).not.toHaveProperty('pins');
+    expect(sharedLines(pf())![0]).not.toHaveProperty('pins');
     const phase = screen.getAllByRole('button', { name: /^Pin all of phase .+ on shared line 1$/ })[0]!;
     fireEvent.click(phase);
     expect(pins()!.length).toBeGreaterThan(1);
     expect(await axeViolations(region(), { region: false })).toEqual([]);
     fireEvent.click(within(region()).getByRole('button', { name: 'Clear pins' }));
-    expect(pf().sharedTeam![0]).not.toHaveProperty('pins');
+    expect(sharedLines(pf())![0]).not.toHaveProperty('pins');
     fireEvent.click(within(region()).getByRole('button', { name: 'Close' }));
     expect(screen.queryByRole('checkbox', { name: /on shared line 1$/ })).toBeNull();
   });

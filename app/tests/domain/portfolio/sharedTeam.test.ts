@@ -1,7 +1,7 @@
 import { describe, expect, it } from 'vitest';
 import {
   addSharedLine, aggregateTeams, consolidate, corePortfolio, editSharedLine, effectiveTeam, removeProduct, removeSharedLine, resolveProduct,
-  runOf, setSharedAllocation, validate, type Portfolio, type SharedTeamLine,
+  productTeam, runOf, setSharedAllocation, sharedLines, validate, type Portfolio, type SharedTeamLine,
 } from '@/domain/portfolio';
 import { goldenAndB, SHARED_LINE } from '../../helpers/portfolio';
 
@@ -14,17 +14,17 @@ const diag = (pf: Portfolio) => validate(pf).diagnostics.map((d) => d.code);
 describe('shared team lines: resolution (absent = today)', () => {
   it('without shared lines the effective team IS the product team and the resolved case is unchanged', () => {
     const pf = two(), p = pf.products[0]!;
-    expect(effectiveTeam(pf, p)).toBe(p.teamIn);
-    expect(resolveProduct(pf, 'p1').teamIn).toBe(p.teamIn);
-    expect(corePortfolio(pf)).not.toHaveProperty('sharedTeam');
+    expect(effectiveTeam(pf, p)).toBe(productTeam(pf, p.id));
+    expect(resolveProduct(pf, 'p1').teamIn).toBe(productTeam(pf, p.id));
+    expect(sharedLines(corePortfolio(pf))).toEqual([]);
   });
 
   it('a share adds FTE x share as a marked row after the own rows, only to the products that hold one', () => {
-    const pf = shared({ ...LINE, allocations: { p1: 25 } }), own = pf.products[0]!.teamIn;
+    const pf = shared({ ...LINE, allocations: { p1: 25 } }), own = productTeam(pf, 'p1');
     const t = resolveProduct(pf, 'p1').teamIn;
     expect(t.slice(0, own.length)).toEqual(own);
     expect(t[own.length]).toMatchObject({ skill: 'Dev', grade: 'B2', loc: 'France', etp: 0.5, shared: 's1' });
-    expect(resolveProduct(pf, 'B').teamIn).toBe(pf.products[1]!.teamIn);
+    expect(resolveProduct(pf, 'B').teamIn).toBe(productTeam(pf, 'B'));
     expect(etpOf(pf, 'p1')).toBeCloseTo(etpOf(two(), 'p1') + 0.5, 9);
   });
 
@@ -58,11 +58,11 @@ describe('shared team lines: operations and validation', () => {
     expect(etpOf(pf, 'B')).toBeCloseTo(etpOf(two(), 'B') + 2, 9);
     expect(editSharedLine(pf, 's1', 'etp', -1)).toBe(pf);
     pf = setSharedAllocation(pf, 's1', 'B', 0);
-    expect(pf.sharedTeam![0]!.allocations).toEqual({ p1: 50 });
+    expect(sharedLines(pf)[0]!.allocations).toEqual({ p1: 50 });
     expect(setSharedAllocation(pf, 's1', 'B', 120)).toBe(pf);
     expect(setSharedAllocation(pf, 's1', 'nope', 10)).toBe(pf);
     expect(addSharedLine(pf, LINE)).toBe(pf);   // duplicate id
-    expect(removeSharedLine(pf, 's1')).not.toHaveProperty('sharedTeam');
+    expect(sharedLines(removeSharedLine(pf, 's1'))).toEqual([]);   // schema v5: the line's team element is removed
   });
 
   it('over-allocation and orphan shares are diagnostics; bad numbers are errors', () => {
@@ -76,7 +76,8 @@ describe('shared team lines: operations and validation', () => {
 
   it('deleting a product drops its shares (no orphan left), the other product keeps its own', () => {
     const pf = removeProduct(shared(), 'B');
-    expect(pf.sharedTeam![0]!.allocations).toEqual({ p1: 50 });
+    expect(sharedLines(pf)[0]!.allocations).toEqual({ p1: 50 });
+    expect(productTeam(pf, 'B')).toEqual([]);   // schema v5: its team element is removed too
     expect(diag(pf)).not.toContain('shared-orphan');
   });
 });

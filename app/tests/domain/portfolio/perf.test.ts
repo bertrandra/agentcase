@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import { consolidate, portfolioHeadline, runStats, type Portfolio } from '@/domain/portfolio';
+import { consolidate, portfolioHeadline, runStats, withProductRows, type Portfolio } from '@/domain/portfolio';
 import { bestOf, bigPortfolio, loadCase, scaledTeam } from '../../helpers/portfolio';
 
 const big = bigPortfolio, best = bestOf;
@@ -28,7 +28,7 @@ describe('multi-product budgets (spec 8): best of several runs, so a loaded mach
     let f = 3, last: Portfolio = pf;
     const ms = best(3, () => {
       f += 0.37;
-      last = { ...pf, products: pf.products.map((p) => (p.id === 'p7' ? { ...p, teamIn: scaledTeam(c, f) } : p)) };
+      last = withProductRows(pf, 'p7', scaledTeam(c, f));   // schema v5: the team is in the common document; the others keep their case
       portfolioHeadline(consolidate(last));
     });
     expect(runStats.builds - builds).toBe(3);

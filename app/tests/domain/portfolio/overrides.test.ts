@@ -1,6 +1,7 @@
 import fc from 'fast-check';
 import { describe, expect, it } from 'vitest';
-import { applyToCommon, clearOverride, envelopeCase, isOverridden, resolveProduct, setCommon, setOverride, type Portfolio } from '@/domain/portfolio';
+import { applyToCommon, clearOverride, envelopeCase, isOverridden, processCommon, resolveProduct, setCommon, setOverride,
+  type Portfolio } from '@/domain/portfolio';
 import { scopeOf, type XDocument } from '@/domain/process';
 import { caseInStore } from '@/store/persistence/bpmn/caseDoc';
 import { scopedProcess } from '@/store/persistence/bpmn/legacy';
@@ -92,7 +93,7 @@ describe('A5: inherit / override / clear', () => {
       }
       for (const p of pf.products) {
         const r = resolveProduct(pf, p.id);
-        for (const k of keys) expect(r[k]).toEqual(isOverridden(p, k) ? p.overrides[k] : pf.common[k]);
+        for (const k of keys) expect(r[k]).toEqual(isOverridden(p, k) ? p.overrides[k] : processCommon(pf.common)[k]);   // B10a: without the teams
       }
     }), { numRuns: 60 });
   }, 60_000);   // each step serialises the portfolio, its process documents included

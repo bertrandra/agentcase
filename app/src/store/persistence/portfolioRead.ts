@@ -1,5 +1,6 @@
 /** @calc-zone exports */
-import { validate, type Portfolio, type SharedTeamLine } from '@/domain/portfolio';
+import { teamsIntoDocument, validate, type Portfolio, type SharedTeamLine } from '@/domain/portfolio';
+import type { TeamRow } from '@/domain/types/state';
 import { clean } from '@/domain/portfolio/products';
 import { makeDefaultDoc } from '../instance';
 import { PERSONA_KEY } from '../persona';
@@ -28,15 +29,16 @@ function readCommon(v: unknown): Portfolio['common'] {
   return out as unknown as Portfolio['common'];
 }
 
-function readProduct(v: unknown): Portfolio['products'][number] {
+/** A product; the `teamIn` of a version 4 file (checked, a list of rows) is handed to `teams` for the common document. */
+function readProduct(v: unknown, teams: Record<string, TeamRow[]>): Portfolio['products'][number] {
   need(rec(v), 'a product is not an object');
   const p = v as Rec, id = safe(p.id, 'product id');
   need(typeof p.name === 'string', `product ${id}: name must be text`);
-  need(Array.isArray(p.teamIn) && p.teamIn.every(rec), `product ${id}: teamIn must be a list of rows`);
+  need(p.teamIn === undefined || (Array.isArray(p.teamIn) && p.teamIn.every(rec)), `product ${id}: teamIn must be a list of rows`);
+  if (p.teamIn !== undefined) teams[id] = p.teamIn as TeamRow[];
   need(rec(p.knowledge) && rec(p.overrides), `product ${id}: knowledge and overrides must be objects`);
   need(p.waveId === null || typeof p.waveId === 'string', `product ${id}: waveId must be text or null`);
   return { id, name: p.name as string, note: typeof p.note === 'string' ? p.note : undefined, archived: p.archived === true ? true : undefined,
-    teamIn: p.teamIn as never,
     knowledge: p.knowledge as never, overrides: p.overrides as never, waveId: p.waveId as string | null,
       offsetMonths: num(p.offsetMonths, `product ${id}: offsetMonths`) };
 }
@@ -76,7 +78,11 @@ export function readSharedTeam(v: unknown): SharedTeamLine[] {
   });
 }
 
-/** A portfolio snapshot (`agentcase.portfolio.v1`) -> a validated Portfolio. Hostile keys are dropped, shapes checked, invariants of spec 4.1 enforced. */
+/**
+ * A portfolio snapshot (`agentcase.portfolio.v1`) -> a validated Portfolio. Hostile keys are dropped, shapes checked, invariants of spec 4.1 enforced.
+ * Schema v5: the teams of a version 4 file (`teamIn`, `sharedTeam`, already corrected by the validators) are written into the common document,
+ * a product's own process document keeps no organisation (`teamsIntoDocument`); a product the document holds no team for gets the default team.
+ */
 export function readPortfolio(raw: unknown): Portfolio {
   need(rec(raw), 'must be a JSON object');
   // schema v3: the process documents as trees (a version 2 portfolio's scope keys become documents, F-B20)
@@ -85,8 +91,9 @@ export function readPortfolio(raw: unknown): Portfolio {
   need(Array.isArray(s.products) && Array.isArray(s.waves), 'products and waves must be lists');
   need(rec(hub) && typeof hub.enabled === 'boolean' && (hub.infraAllocation === 'perProduct' || hub.infraAllocation === 'byBaseEtp'),
     'hub settings are invalid');
-  const pf: Portfolio = {
-    _schema: 'agentcase.portfolio.v1', common: readCommon(s.common), products: (s.products as unknown[]).map((x) => clean(readProduct(x))),
+  const teams: Record<string, TeamRow[]> = {};
+  const read: Portfolio = {
+    _schema: 'agentcase.portfolio.v1', common: readCommon(s.common), products: (s.products as unknown[]).map((x) => clean(readProduct(x, teams))),
     waves: (s.waves as unknown[]).map((x) => clean(readWave(x))),
     activeProductId: safe(s.activeProductId, 'activeProductId'),
     hub: { enabled: hub.enabled as boolean, infraMonthly: num((hub as Rec).infraMonthly, 'hub.infraMonthly'),
@@ -94,8 +101,9 @@ export function readPortfolio(raw: unknown): Portfolio {
     horizonMonths: num(s.horizonMonths, 'horizonMonths'), startDate: typeof s.startDate === 'string' ? s.startDate : '',
     ...(s.rho === undefined || s.rho === 0 ? {} : { rho: num(s.rho, 'rho') }),
     ...(s.maxConcurrentSetups === undefined ? {} : { maxConcurrentSetups: num(s.maxConcurrentSetups, 'maxConcurrentSetups') }),
-    ...(s.sharedTeam === undefined ? {} : { sharedTeam: readSharedTeam(s.sharedTeam) }),
   };
+  const shared = s.sharedTeam === undefined ? undefined : readSharedTeam(s.sharedTeam);
+  const pf = teamsIntoDocument(read, { teams, shared }, makeDefaultDoc().teamIn);
   const errors = validate(pf).errors;
   if (errors.length) throw new SnapshotError(`Portfolio snapshot: ${errors[0]!.message}`);
   return pf;

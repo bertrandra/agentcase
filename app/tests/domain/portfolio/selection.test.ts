@@ -1,6 +1,6 @@
 import { beforeAll, describe, expect, it } from 'vitest';
 import { aggregateTeams, consolidate, inputSummary, keptMonths, overrideRefs, portfolioHeadline, resolveProduct, runOf, scheduledProducts, selectionView,
-  waveHeadline, type Portfolio } from '@/domain/portfolio';
+  productTeam, waveHeadline, type Portfolio } from '@/domain/portfolio';
 import { expectClose } from '../../helpers/portfolio';
 import { fourProducts } from '../../helpers/portfolioFixtures';
 import { scopeOf } from '@/domain/process';
@@ -55,7 +55,7 @@ describe('selectionView: the figures of a Portfolio / Wave selection (aggregate 
 
 describe('aggregateTeams / inputSummary', () => {
   it('adds the entry teams: every breakdown sums to the total, and the total to the product lines', () => {
-    const t = aggregateTeams(pf, ids()), own = pf.products.filter((p) => ids().includes(p.id)).map((p) => sum(p.teamIn.map((r) => +r.etp || 0)));
+    const t = aggregateTeams(pf, ids()), own = pf.products.filter((p) => ids().includes(p.id)).map((p) => sum(productTeam(pf, p.id).map((r) => +r.etp || 0)));
     expectClose(t.total, sum(own));
     for (const b of [t.bySkill, t.byGrade, t.byLoc, t.lines]) expectClose(sum(b.map((x) => x.etp)), t.total);
     expectClose(sum(t.products.map((p) => p.etp)), t.total);

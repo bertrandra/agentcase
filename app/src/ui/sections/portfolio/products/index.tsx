@@ -1,3 +1,4 @@
+import { useOrg } from '@/store/orgHooks';
 import { useActiveProductId, useProductRows, useWaves } from '@/store/portfolioHooks';
 import { Callout } from '@/ui/widgets/cards';
 import { SectionFrame } from '@/ui/zones/SectionFrame';
@@ -16,6 +17,7 @@ const help = (
 
 const COLS: [string, string][] = [
   ['Product', ''], ['Wave', 'Wave of the product: editable here or in the Waves section (drag and drop, keyboard)'],
+  ['Owning unit', 'The organisation unit that owns the product, at any level of the unit tree (🏢 Organisation)'],
   ['Offset (months)', 'The product’s own offset within its wave'], ['Base FTE', 'Entry team of the product, shares of shared lines included'],
   ['State', 'inherited, or number of overridden values'], ['End-of-horizon savings', 'Savings of the last year of the product’s horizon'],
   ['Payback', 'Payback month of the product'],
@@ -27,7 +29,7 @@ const COLS: [string, string][] = [
  * active product.
  */
 export default function ProductsSection() {
-  const rows = useProductRows(), active = useActiveProductId(), waves = useWaves();
+  const rows = useProductRows(), active = useActiveProductId(), waves = useWaves(), org = useOrg();
   return (
     <SectionFrame title="📦 Products" help={help}
       input={<AddProduct />}
@@ -44,6 +46,8 @@ export default function ProductsSection() {
                 active={r.product.id === active}
                 last={rows.length === 1}
                 waves={waves}
+                units={org.units}
+                owner={org.products.find((p) => p.id === r.product.id)?.owner}
               />)}</tbody>
             </table>
           </div>
