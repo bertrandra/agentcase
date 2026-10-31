@@ -573,6 +573,7 @@ these. Portfolio: the process follows the override commands of spec F6–F9.
 | B9b | Timing conflicts resolved (D-B27…D-B31); labour costs of training, coaching, governance from resources; opt-in new costs | Hand-computed reference tests; deviations recorded | 2 d | 4 / 5 | B9a | Figures move: each change explained and recorded |
 | B9c | Programme values stored in the BPMN document (schema v4) | All round trips; v3 → v4 identical | 2 d | 5 / 5 | B9b | Second schema migration across every persistence path |
 | B9d | Gantt, WBS, OBS / RAM and resource histogram from the programme process; MS Project XML export; Plan screen (§ 19.8) | One owner for Gantt, cost and histogram; Σ histogram × rate = programme labour cost; MSPDI schema-valid | 2.5 d | 3 / 5 | B9b | A documented mapping where no standard exists; the delivery histogram read from the engine, never recomputed |
+| B9e | 📋 Programme screen in the Scope menu: enable, description, type (one-off, spread, adoption curve, recurring, milestone), duration, cost, linked section (§ 19.11) | Defaults change no figure; each type hand-computed | 1.5 d | 3 / 5 | B9b | One owner shared with the Process panel |
 
 Durations are **elapsed working days with the agent workflow** used so far (parallel agents in worktrees, full local gates, a PR per
 phase merged on green CI, the owner's review of each delivery), with an uncertainty of about ±50 %. Difficulty: 1 = routine,
@@ -1384,3 +1385,32 @@ like the B6b teams; no value moved, no key added, schema unchanged at 3. Code: `
 - **F-B72 built.** `tests/ui/programme-one-owner.test.ts`: no file of `src/ui` or `src/controllers` writes a parameter key of a programme activity
   (field ids, `setInput` / `setProductKnowledge` calls, the stage loop) except the parameter panel (and the knowledge-transfer field it renders);
   no sentence of an activity description is written outside `src/domain/programme` (the setup lines lost their `text`).
+
+### 19.11 The 📋 Programme screen (phase B9e, owner's request 2026-10-31)
+
+A new screen **📋 Programme** in the **Scope** menu lists every activity of the transformation programme in one table — the
+programme's counterpart of the delivery activity table — so the owner can switch activities on and off, set their type, duration and
+cost, and jump to the section that uses them. It edits the same BPMN document through the same undoable commands as the Process
+screen's parameter panel (§ 19.7: one owner per value — the table and the panel are two views of one activity, never two copies).
+
+| Column | Content | Edit |
+|---|---|---|
+| Enabled | tick box: the activity counts (cost, timing, Gantt, histogram) or not; mandatory activities (e.g. the setup lines the engine needs) are ticked and locked, the opt-in activities (D-B31) unticked by default | yes |
+| Activity | name, phase or wave, product (per-product activities show one row per product, or a "per product" row in the Portfolio view) | name |
+| Description | the activity's description from the document | yes (text) |
+| Type | **One-off** (the whole cost in one month at its placement), **Spread** (evenly over its duration), **Spread on adoption curve** (along the product's S-curve over its duration), **Recurring** (per month or per year for its duration, e.g. hub run, AgentOps), **Milestone** (no cost: gates, maturity transitions) | yes (select) |
+| Start / duration | placement (relative to the case start, the product's month 0 or another activity) and duration in months or weeks, from the one timing owner (F-B65) | yes |
+| Cost | the activity's cost over the horizon with its rule shown (resources: roles × days × rate; amount; engine-computed, read-only) and, for resource activities, days, frequency (e.g. coaching: days per month) and roles | yes, by rule |
+| Linked section | link to the context section that uses the activity (e.g. Pilot → Program & Completeness, Hub setup → Knowledge hub, Training → Agentic Setup, AgentOps → Run sizing) and "Open in Process" (the diagram, swim lane and RACI) | link |
+
+- **Defaults reproduce B9b**: each activity's default type is the spreading rule B9b uses for it (setup lines: Spread over their duration; pilot:
+  Spread before the build; hub run and AgentOps: Recurring; gates: Milestone), so opening a case changes no figure. A type change is an
+  explicit edit: one undoable step, figures follow (hand-computed tests per type).
+- **One owner**: the type is stored on the activity in the document (`ac:costProfile one-off | spread | adoption | recurring | none`) and read by
+  the monthly cost profile (`domain/programme/profile.ts`) that the engine, cost model, Gantt and histogram read (B9b).
+- Totals row (programme cost by year and in total), filters (phase, product, type, enabled), sort, keyboard and axe clean, table as the
+  accessible form; the Portfolio / Wave views aggregate per product (I-input with an aggregate, as the other input sections).
+
+| Phase | Content | Gate | Duration | Difficulty |
+|---|---|---|---|---|
+| B9e | 📋 Programme screen (F-B79): enable, description, type, timing, cost, linked section; `ac:costProfile` read by the cost profile | Defaults change no figure; each type hand-computed; one-owner test extended; axe clean; ui-parity 0 unrecorded | 1.5 d | 3 / 5 |
