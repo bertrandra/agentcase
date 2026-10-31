@@ -1,17 +1,19 @@
 // @vitest-environment jsdom
 import { log, resetRenders, topRenders, totalRenders } from '../helpers/renderCount';   // first: installs the DevTools hook before react-dom loads
-import { act, cleanup, screen } from '@testing-library/react';
+import { act, cleanup, fireEvent, screen } from '@testing-library/react';
 import { afterEach, describe, expect, it } from 'vitest';
 import { setAgentSup } from '@/controllers/artefacts';
 import { setCustomerName } from '@/controllers/frame';
 import { setInput } from '@/controllers/inputs';
 import { updateProcessActivity } from '@/controllers/process';
 import { setDisplayScope } from '@/controllers/displayScope';
+import { setServiceSkills } from '@/controllers/services';
 import { consolidate, corePortfolio, runStats } from '@/domain/portfolio';
 import { appStore } from '@/store/instance';
 import { loadFixture } from '../helpers/fixtures';
 import { threeProducts } from '../helpers/portfolioStore';
 import { LAZY, mountApp } from '../helpers/portfolioUi';
+import { serviceThree } from '../helpers/services';
 import { unitTreeThree } from '../helpers/unitScope';
 import { view } from '../helpers/vueAgg';
 
@@ -98,4 +100,29 @@ describe('renders on a unit scope switch', () => {
     expect(totalRenders(), JSON.stringify(measured[r.key])).toBeLessThanOrEqual(r.budget);
   }, 60000);
   it('report', () => { console.log(`SWITCH RENDERS ${JSON.stringify(Object.fromEntries(SWITCHES.map((r) => [r.key, measured[r.key]])))}`); });
+});
+
+/**
+ * The Services tab of 🏢 Organisation (F-B82, phase B10c) on the three products served by one service: a figure, the customer name, an edit of the
+ * service (its activity types: the effort split moves) and a switch of the View. Budgets: measured with a little headroom.
+ */
+const SERVICE_EDITS: { key: string; edit: () => void; budget: number }[] = [
+  { key: 'services · figure', edit: () => setInput('workdays', 211), budget: 22 },
+  { key: 'services · name', edit: () => setCustomerName('Acme'), budget: 23 },
+  { key: 'services · service', edit: () => setServiceSkills('qa', ['Test/QA', 'Dev']), budget: 23 },
+  { key: 'services · view', edit: () => setDisplayScope({ kind: 'portfolio' }), budget: 30 },
+];
+describe('renders on the Services tab', () => {
+  it.each(SERVICE_EDITS)('$key', async (r) => {
+    serviceThree(); mountApp('organisation');
+    await screen.findByRole('heading', { level: 1, name: /Organisation/ }, LAZY);
+    act(() => { fireEvent.click(screen.getByRole('tab', { name: 'Services' })); });
+    const before = appStore().getState().portfolio;
+    resetRenders();
+    act(r.edit);
+    expect(appStore().getState().portfolio).not.toBe(before);
+    measured[r.key] = { renders: totalRenders(), commits: log.commits, top: topRenders(8).map(([n, k]) => `${n}×${k}`).join(' ') };
+    expect(totalRenders(), JSON.stringify(measured[r.key])).toBeLessThanOrEqual(r.budget);
+  }, 60000);
+  it('report', () => { console.log(`SERVICES RENDERS ${JSON.stringify(Object.fromEntries(SERVICE_EDITS.map((r) => [r.key, measured[r.key]])))}`); });
 });

@@ -66,6 +66,12 @@ export interface SharedTeamLine {
   id: string; skill: string; grade: string; loc: string; etp: number; allocations: Record<string, number>;
   /** artefact ids pinned to the line, applied to every product's share row (like the pins of a team row); absent = none */
   pins?: string[];
+  /**
+   * the unit the line belongs to (F-B82, phase B10c: a shared-service unit); absent = the default delivery unit. A line of a service unit with
+   * `split: 'effort'` is split across products by the effort of the service's activities for each (D-B38); otherwise by its fixed shares (the override)
+   */
+  unit?: string;
+  split?: 'effort';
 }
 
 export interface HubSettings { enabled: boolean; infraMonthly: number; infraAllocation: 'perProduct' | 'byBaseEtp' }

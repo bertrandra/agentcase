@@ -51,15 +51,15 @@ function writeTeams(wb: XL.Workbook, pf: Portfolio): void {
 
 /**
  * SharedTeam (only when the portfolio has shared lines): one row per share of a line (line id, skill, grade, location, FTE, product id, share %,
- * pinned artefacts; the line's fields and pins repeat on each of its rows).
+ * pinned artefacts, unit, split rule — B10c; the line's fields repeat on each of its rows).
  */
 function writeShared(wb: XL.Workbook, pf: Portfolio): void {
   const lines = sharedLines(pf);
   if (!lines.length) return;
-  const w = ws(wb, PF_SHEETS.shared, [12, 16, 9, 12, 8, 16, 10, 46]);
+  const w = ws(wb, PF_SHEETS.shared, [12, 16, 9, 12, 8, 16, 10, 46, 18, 12]);
   for (const l of lines) {
-    const shares = Object.entries(l.allocations), pins = (l.pins ?? []).join(';');
-    for (const [pid, pct] of shares.length ? shares : [['', '']]) inputs(w.addRow([l.id, l.skill, l.grade, l.loc, l.etp, pid, pct, pins]), 8);
+    const shares = Object.entries(l.allocations), pins = (l.pins ?? []).join(';'), unit = l.unit ?? '', split = l.split ?? '';
+    for (const [pid, pct] of shares.length ? shares : [['', '']]) inputs(w.addRow([l.id, l.skill, l.grade, l.loc, l.etp, pid, pct, pins, unit, split]), 10);
   }
   finish(w);
 }

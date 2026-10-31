@@ -214,6 +214,16 @@ figures. Waves stay separate (a wave can span several units). A unit with no pla
 Carlo distribution and the verdict of a unit are not available yet (they come with the strategy per unit): show the Portfolio or a Wave for them.
 Like the other choices of Show, it is view state: no undo step, not saved.
 
+**Shared services** (tab **Services** of 🏢 Organisation). Tick **Service** on a unit (a test centre, an architecture office…) to make it a
+shared service. In the Services tab, give it **activity types** (for example Test/QA: every Test/QA activity of every product) and **roles** (every
+activity where one of them is Responsible in 🧭 Who does what); the activities pinned on its lines count too. Add its lines (**+ Add a line**) or move a
+shared line into it (**Move a shared line here**). By default a service line is **split by effort**: each product gets the share of the line that the
+service's activities weigh in it (a product where it does twice the work pays twice as much), so the shares always add up to 100 %. Choose **Fixed
+shares (override)** to set the percentages yourself in the 📦 Products shared team table (they start from the effort split). For each service the tab
+shows what it delivers to each product (open an activity in 🧩 Process from there), its load month by month against its capacity (the FTE of its
+lines; a month above it is flagged) and its cost by product. The tab follows **👁 Show**: one product, a wave, a unit or the portfolio. Shared lines
+that you had before keep their shares, so no figure moves until you split a line by effort.
+
 **🧭 Who does what** (scope group): the RACI of every activity (Responsible, Accountable, Consulted, Informed), stored as standard BPMN
 `resourceRole`s, so other tools keep it.
 

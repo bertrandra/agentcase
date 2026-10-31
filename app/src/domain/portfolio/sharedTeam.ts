@@ -1,6 +1,7 @@
 /** @calc-zone product-resolution */
 import type { TeamRow } from '../types/state';
 import { memoChain } from './memo';
+import { lineShares } from './serviceShares';
 import { productTeam, sharedLines, withLinesDoc } from './teamAccess';
 import type { Portfolio, Product, SharedTeamLine } from './types';
 
@@ -11,7 +12,7 @@ export const shareOf = (line: SharedTeamLine, productId: string): number => {
 };
 
 /** The total share of a line handed out to products, in percent (<= 100 when the line is not over-allocated). */
-export const allocatedPct = (line: SharedTeamLine): number => Object.values(line.allocations).reduce((a, x) => a + (+x || 0), 0);
+export const allocatedPct = (line: Pick<SharedTeamLine, 'allocations'>): number => Object.values(line.allocations).reduce((a, x) => a + (+x || 0), 0);
 
 /** Is this row a contribution of a shared line (as opposed to a row of the product's own team)? */
 export const isSharedRow = (r: TeamRow): boolean => typeof r.shared === 'string';
@@ -23,14 +24,17 @@ export const sharedEtp = (rows: TeamRow[]): number => rows.reduce((a, r) => a + 
 const roots = new WeakMap<object, unknown>();
 /**
  * The entry team a product's effective case runs on: its own rows, then one row per shared line that gives it a share (FTE x share, marked
- * `shared`, carrying the line's pins). Without a share it is the product's own team itself (same identity: absent sharing = today's behaviour
- * exactly). Memoised.
+ * `shared`, carrying the line's pins). The share is the line's as the figures read it (`lineShares`: its fixed shares, or the effort split of its
+ * service, B10c). Without a share it is the product's own team itself (same identity: absent sharing = today's behaviour exactly). Memoised on the
+ * rows, the lines and the shares' values.
  */
-export function effectiveTeam(pf: Pick<Portfolio, 'common'>, prod: Pick<Product, 'id'>): TeamRow[] {
+export function effectiveTeam(pf: Pick<Portfolio, 'common' | 'products' | 'hub'>, prod: Pick<Product, 'id'>): TeamRow[] {
   const lines = sharedLines(pf), own = productTeam(pf, prod.id);
-  if (!lines.length || !lines.some((l) => shareOf(l, prod.id) > 0)) return own;
-  return memoChain(roots, [own, lines], prod.id, () => [...own, ...lines.filter((l) => shareOf(l, prod.id) > 0)
-    .map((l): TeamRow => ({ skill: l.skill, grade: l.grade, loc: l.loc, etp: shareOf(l, prod.id), pins: l.pins ?? [], shared: l.id }))]);
+  if (!lines.length) return own;
+  const fte = lines.map((l) => { const x = lineShares(pf, l)[prod.id]; return typeof x === 'number' && x > 0 ? ((+l.etp || 0) * x) / 100 : 0; });
+  if (!fte.some((x) => x > 0)) return own;
+  return memoChain(roots, [own, lines], `${prod.id}|${fte.join(',')}`, () => [...own, ...lines.flatMap((l, i): TeamRow[] => (fte[i]! > 0
+    ? [{ skill: l.skill, grade: l.grade, loc: l.loc, etp: fte[i]!, pins: l.pins ?? [], shared: l.id }] : []))]);
 }
 
 /** The portfolio with these shared lines written into the common document (node patches: a line edited, appended or removed). */

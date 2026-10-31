@@ -2,6 +2,7 @@
 import type { SharedTeamLine } from '../portfolio/types';
 import type { TeamRow } from '../types/state';
 import { attr, kids, NS, type XDocument, type XElement } from '../process/xml';
+import { DEFAULT_UNIT_ID } from './ids';
 import { orgExtOf } from './orgExt';
 
 /**
@@ -39,6 +40,9 @@ export function sharedLineIn(e: XElement): SharedTeamLine {
     const r = x ? lineRow(x) : { skill: '', grade: '', loc: '', etp: 0, pins: [] };
     l = { id: attr(e, 'line') ?? '', skill: r.skill, grade: r.grade, loc: r.loc, etp: r.etp, allocations };
     if (x && attr(x, 'pins') !== undefined) l.pins = r.pins as string[];
+    const unit = attr(e, 'unit');   // B10c: the line's unit and split rule (absent: the default delivery unit, fixed shares — the B10a reading)
+    if (unit && unit !== DEFAULT_UNIT_ID) l.unit = unit;
+    if (attr(e, 'split') === 'effort') l.split = 'effort';
     lines.set(e, l);
   }
   return l;

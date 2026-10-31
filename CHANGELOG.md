@@ -17,6 +17,20 @@ When releasing, follow [docs/BUMP_PROCEDURE.md](docs/BUMP_PROCEDURE.md) (§7 for
 
 ## [Unreleased]
 
+### B10c — transverse services: a unit serves several products, its cost split by effort
+
+- **Shared services.** A unit of the organisation can be marked **shared service** (🏢 Organisation, column Service). It does, across products,
+  the activities pinned on its lines, every activity of its activity types (e.g. Test/QA) and every activity where one of its roles is RACI
+  Responsible — one owner in the domain (`domain/org/services.ts`). Its shared team lines belong to it.
+- **Cost split by effort (D-B38).** A service line is split across the products by the effort of the service's activities for each (the shares
+  add up to 100 %: the line's FTE and cost are counted once); fixed shares per product stay available as the override. Every figure reads the split
+  through the entry team of each product, so products, units, waves, the portfolio, the cost model and the report agree. Shared lines written before
+  keep their shares: no existing figure changes (107 fixtures, the three-product portfolio).
+- **Services tab.** 🏢 Organisation › Services shows, per service and for the products of the View (Product, Wave, Unit, Portfolio), what it delivers
+  (activities, effort, Open in Process), its load month by month against its capacity (from each product's Time Engine) and its cost by product with
+  the rule of each line. Every edit is one undoable step (node patches of the document); the attributes travel with the document (file, snapshot,
+  autosave, tab sync) and the parameters workbook's SharedTeam sheet gains Unit and Split columns.
+
 ## [v21.4.0] 2026-10-31 — B10b: the Unit display scope at any node of the organisation tree
 
 ### B10b — the Unit display scope: any node of the organisation tree as a View
