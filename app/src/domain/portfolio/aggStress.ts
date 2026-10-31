@@ -5,8 +5,6 @@ import { compareData, scenarioSet, sensitivityMatrix, sensitivityRows, type Sens
 import { paybackShown } from '../stress/scenarioView';
 import { ctxOf } from './memo';
 import { resolveProduct } from './resolve';
-import type { Diversification, PfStress, ProductStress, StressStats, WaveStress } from './stressTypes';
-import type { VerdictGroup } from './stressVerdict';
 import type { Portfolio } from './types';
 
 /** The identity of a product line of an aggregate view of the "stress", "model-engine" and "defend" groups. */
@@ -27,28 +25,7 @@ export function perProduct<R>(pf: Portfolio, ids: string[], f: (c: Ctx, p: AggPr
   return out;
 }
 
-/** --- Monte Carlo: the portfolio Monte Carlo (P6) restricted to the selection --- */
-export interface SelectionStress {
-  label: string;
-  stats: StressStats;
-  products: ProductStress[];
-  waves: WaveStress[];
-  /** risk reduction on the downside (P10) of the selection: its P10 minus the sum of its products' stand-alone P10 */
-  diversification: Diversification;
-  /** sorted net-benefit draws of the selection (the portfolio's, or the wave's: its products added draw by draw) */
-  outcomes: number[];
-}
-
-/** The last portfolio run read for a Portfolio or a Wave; null when the wave has no product in the run. */
-export function selectionStress(run: PfStress, group: VerdictGroup): SelectionStress | null {
-  if (group.kind === 'portfolio') return { label: 'Portfolio', stats: run.stats, products: run.products, waves: run.waves,
-    diversification: run.diversification, outcomes: run.outcomes };
-  const wave = run.waves.find((w) => w.id === group.id), products = run.products.filter((p) => p.waveId === group.id);
-  if (!wave || !products.length) return null;
-  const sumP10 = products.reduce((a, p) => a + p.stats.p10, 0);
-  return { label: wave.name, stats: wave.stats, products, waves: [wave], diversification: { sumP10, p10: wave.stats.p10, reduction: wave.stats.p10 - sumP10 },
-    outcomes: wave.outcomes };
-}
+/** --- Monte Carlo: the portfolio Monte Carlo (P6) restricted to the selection: `stressSelection.ts` (`selectionStress`) --- */
 
 /** --- Scenarios: the six strategies priced for each product (scenarioSet of the product's own case) --- */
 export interface ScenarioCell { key: string; label: string; setup: number; totBen: number; net: number; roi: number | null; payback: number | null;

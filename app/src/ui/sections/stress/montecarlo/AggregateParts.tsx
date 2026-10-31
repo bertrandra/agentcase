@@ -1,7 +1,7 @@
 import { useMemo, type ReactNode } from 'react';
 import { useTheme } from '@/ui/themeContext';
 import { runPortfolioSimulation } from '@/controllers/stressPortfolio';
-import type { ProductStress, SelectionStress } from '@/domain/portfolio';
+import type { SelectionProduct, SelectionStress } from '@/domain/portfolio';
 import { pNegTone } from '@/domain/stress';
 import { useActiveProductId } from '@/store/portfolioHooks';
 import { usePortfolioSimulation } from '@/store/portfolioSimulation';
@@ -38,36 +38,38 @@ export function StatsCards({ s, children }: { s: SelectionStress['stats']; child
   );
 }
 
-const cols = (rLabel: string, r: (p: ProductStress) => number): AggColumn<ProductStress>[] => [
+const cols = (rLabel: string): AggColumn<SelectionProduct>[] => [
   { key: 'p10', header: 'P10', align: R, render: (p) => fmtEur(p.stats.p10) }, { key: 'p50', header: 'P50', align: R, render: (p) => fmtEur(p.stats.p50) },
   { key: 'p90', header: 'P90', align: R, render: (p) => fmtEur(p.stats.p90) }, { key: 'mean', header: 'Mean', align: R, render: (p) => fmtEur(p.stats.mean) },
   { key: 'cvar', header: 'CVaR 10 %', align: R, render: (p) => fmtEur(p.stats.cvar10) },
   { key: 'neg', header: 'P(net < 0)', align: R, render: (p) => <Badge tone={pNegTone(p.stats.pNetNeg)}>{pct(p.stats.pNetNeg)}</Badge> },
-  { key: 'r', header: rLabel, align: R, render: (p) => { const v = r(p); return `${v > 0 ? '+' : ''}${v}`; } },
+  { key: 'r', header: rLabel, align: R, render: (p) => `${p.rSel > 0 ? '+' : ''}${p.rSel}` },
 ];
 
+/** The kind of selection a Monte Carlo screen shows. */
+export type SelKind = 'portfolio' | 'wave' | 'unit';
+
 /**
- * Histogram of a portfolio's or a wave's draws (its products added draw by draw), in its panel: the single-product `histogram` and the shared
+ * Histogram of a portfolio's, a wave's or a unit's draws (its products added draw by draw), in its panel: the single-product `histogram` and the shared
  * `ChartPanel` (chart error boundary, theme changes applied in place with `chart.update('none')`).
  */
-export function SelectionHistogram({ outcomes, scope }: { outcomes: number[]; scope: 'portfolio' | 'wave' }) {
-  const { tok } = useTheme(), what = scope === 'portfolio' ? 'portfolio' : 'wave';
+export function SelectionHistogram({ outcomes, scope }: { outcomes: number[]; scope: SelKind }) {
+  const { tok } = useTheme(), what = scope;
   const config = useMemo(() => {
-    const h = histogram(outcomes, tok), sum = scope === 'portfolio' ? 'the products' : 'the wave’s products';
+    const h = histogram(outcomes, tok), sum = scope === 'portfolio' ? 'the products' : `the ${scope}’s products`;
     const title = { display: true, text: `Distribution of the ${what} net benefit (sum of ${sum}, after setup)` };
     return { ...h, options: { ...h.options, plugins: { ...(h.options?.plugins ?? {}), title } } };
   }, [outcomes, tok, what, scope]);
   return (
-    <Panel title={scope === 'portfolio' ? 'Portfolio distribution' : 'Wave distribution'}>
+    <Panel title={`${scope[0]!.toUpperCase()}${scope.slice(1)} distribution`}>
       <ChartPanel config={config} label={`Distribution of the ${what} net benefit`} />
     </Panel>
   );
 }
 
 /** The selection’s distribution (cards, histogram, diversification) and its product table with the selection’s stats as the roll-up line. */
-export function SelectionResults({ sel, scope }: { sel: SelectionStress; scope: 'portfolio' | 'wave' }) {
-  const d = sel.diversification, s = sel.stats;
-  const columns = cols(scope === 'portfolio' ? 'Correlation with the portfolio' : 'Correlation with the wave', (p) => (scope === 'portfolio' ? p.r : p.rWave));
+export function SelectionResults({ sel, scope }: { sel: SelectionStress; scope: SelKind }) {
+  const d = sel.diversification, s = sel.stats, columns = cols(`Correlation with the ${scope}`);
   const t = (v: number) => fmtEur(v);
   return (
     <>

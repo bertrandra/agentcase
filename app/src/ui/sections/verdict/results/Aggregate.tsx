@@ -5,7 +5,6 @@ import { useVerdictGroup } from '@/store/portfolioSimulation';
 import { fmtEurK, fmtMonths } from '@/ui/format';
 import { AggregateTable, type AggColumn } from '@/ui/widgets/AggregateTable';
 import { StatRow } from '@/ui/widgets/cards';
-import { ScopeUnavailable } from '@/ui/widgets/ScopeUnavailable';
 import { SectionFrame } from '@/ui/zones/SectionFrame';
 import { ExcludedNote } from '../../economics/AggParts';
 import { AggBanner } from './AggBanner';
@@ -14,8 +13,8 @@ import { SavingsAndTeam, UncertaintyPanel } from './Parts';
 
 const help = (
   <>
-    <p>The business case of the <strong>selection</strong> (Portfolio or one Wave) on one screen: the confidence-conditional verdict of its Monte Carlo
-    distribution, the consolidated key figures, the uncertainty band, where the savings come from and the human to agent team shift.</p>
+    <p>The business case of the <strong>selection</strong> (Portfolio, one Wave or one Unit) on one screen: the confidence-conditional verdict of its
+    Monte Carlo distribution, the consolidated key figures, the uncertainty band, where the savings come from and the human to agent team shift.</p>
     <p>Money figures are the consolidated calendar flows; the decomposition and the team shift add up the products&apos; own last-year figures. Choose a
       product in “Show” for the single-product Results.</p>
   </>
@@ -23,7 +22,7 @@ const help = (
 const R = 'right' as const;
 
 /**
- * Results — aggregate view (R-conso): verdict, key figures, uncertainty band, savings decomposition and team shift of the Portfolio / Wave, and the
+ * Results — aggregate view (R-conso): verdict, key figures, uncertainty band, savings decomposition and team shift of the Portfolio / Wave / Unit, and the
  * figures of each product.
  */
 export default function ResultsAggregate() {
@@ -42,7 +41,7 @@ export default function ResultsAggregate() {
       result={<>
         <p className="ac-muted">Consolidated outcome of the selection: {a.label} ({a.rows.length} planned product{a.rows.length > 1 ? 's' : ''}): the verdict
           of its distribution, the key figures, the uncertainty band, where the savings come from and the team shift.</p>
-        {group?.kind === 'unit' ? <ScopeUnavailable what="Probabilistic verdict" label={a.label} /> : <AggBanner d={d} label={a.label} />}
+        <AggBanner d={d} label={a.label} />
         <StatRow>
           <Kpi label="Net benefit" value={fmtEurK(t.net)} tone={t.net < 0 ? 'brick' : 'blue'} sub={`after ${fmtEurK(t.setup)} setup`} />
           <Kpi label="ROI" value={fmtRoiPct(t.roi)} tone={t.roi != null && t.roi < 0 ? 'brick' : 'teal'} sub="on setup investment" />

@@ -1718,7 +1718,7 @@ product, shared team lines (portfolio `sharedTeam`, pins) are not linked to a un
 | B10a | Override split (process / organisation / programme parts of a product); teams (`teamIn`, `sharedTeam`) into the document; units with any depth; product → owning unit — **built in B10a** (§ 21.5) | 107 fixtures identical; all round trips; schema v5 migration | 3 d | 5 / 5 |
 | B10b | Unit display scope at any node: consolidation, figures, histogram, Plan views per unit — **built in B10b** (§ 21.6) | Unit totals = sum of its products (cross-surface); a unit equal to the portfolio gives the portfolio figures | 2 d | 4 / 5 |
 | B10c | Transverse services: service units, assignments, cost allocation (D-B38), Services view — **built in B10c** (§ 21.7) | Allocation hand-computed; Σ allocations = service cost; axe clean | 2 d | 4 / 5 |
-| B10d | Strategy, stress and decision per unit (D-B40) | Unit = portfolio case reproduces the portfolio decision; hand-computed unit stress | 1.5 d | 4 / 5 |
+| B10d | Strategy, stress and decision per unit (D-B40) — **built in B10d** (§ 21.8); **B10 complete** | Unit = portfolio case reproduces the portfolio decision; hand-computed unit stress | 1.5 d | 4 / 5 |
 
 ### 21.5 Built in B10a (override split, teams in the document, units at any depth, owning unit)
 
@@ -1764,7 +1764,7 @@ Figure-neutral for every existing scope: the 107 fixtures, the Product, Wave and
 `app/src/domain/portfolio/scopeGroup.ts` (the one owner), `selectionView.ts`, `portfolioHeadline.ts`, `aggEconomicsSel.ts`, `aggVerifyBase.ts`,
 `costModelAxis.ts`; `app/src/domain/programme/{planBundle,plan,histogramPortfolio}.ts`; `app/src/store/{viewScope,consolidationHooks,selectionHooks*,
 planHooks,portfolioSimulation,commonEdit,persona}.ts`; `app/src/ui/shell/{ScopeSelect,EditSelect}.tsx`, `ui/zones/{EmptyScope,
-SectionFrame}.tsx`, `ui/widgets/ScopeUnavailable.tsx`.
+SectionFrame}.tsx`, `ui/widgets/ScopeUnavailable.tsx` (removed in B10d).
 
 - **One owner of "a set of products" (built).** `scopeGroup.ts` holds the selection behind any display scope other than a product: the Portfolio,
   one Wave, or one **Unit** (`{ kind: 'unit', id }`, any node of the tree, or `UNASSIGNED_UNIT` for "Unassigned"). `scopeMembers(pf, scope)` gives the
@@ -1787,7 +1787,7 @@ SectionFrame}.tsx`, `ui/widgets/ScopeUnavailable.tsx`.
   The report and cost-model scope lists offer the units too. A scope whose unit is removed falls back to the product (as a removed wave does).
 - **Empty state (built).** A Wave or a Unit with no planned product shows, in every section that follows the View, the empty state ("Unit X has no
   planned product", with the way to fix it: 🏢 Organisation or 🌊 Waves) instead of empty tables; an input section keeps its in-place editor.
-- **Not available at this scope (built, B10d).** The Monte Carlo distribution, the probabilistic verdict and the stress block of the report are
+- **Not available at this scope (built in B10b, replaced in B10d: § 21.8).** The Monte Carlo distribution, the probabilistic verdict and the stress block of the report are
   not defined for a unit before the strategy per unit (D-B40, B10d): Monte Carlo, Decision and Results say "not available at the unit scope yet"
   next to the unit's consolidated figures; the Monte Carlo inputs by product and the stochastic roll-up stay shown (P50 "—", as for a wave without
   a run). The results workbook keeps every sheet; under a Unit scope it leads with the Portfolio sheet (no per-unit sheet yet).
@@ -1799,8 +1799,8 @@ SectionFrame}.tsx`, `ui/widgets/ScopeUnavailable.tsx`.
   recompute on switching), `tests/ui/unit-scope.test.tsx` (Show list, levels, announcement, headline bar, banner, Change grouping, removed unit,
   verdict not available, empty state), `tests/ui/render-cost.test.tsx` (unit switches), `tools/a11y.mjs` (pf fixtures: Decision and the KPI bar under
   Unassigned, the empty state of a unit).
-- **Open (next phases).** Service units and cost allocation (B10c, built: § 21.7); stress, verdict and ranking per unit (B10d: `VerdictGroup` gains the unit, the
-  run then needs per-unit draws); a per-unit sheet in the results workbook.
+- **Open (next phases).** Service units and cost allocation (B10c, built: § 21.7); stress, verdict and ranking per unit and a per-unit sheet in the
+  results workbook (B10d, built: § 21.8).
 
 ### 21.7 Built in B10c (transverse services, D-B38)
 
@@ -1855,4 +1855,54 @@ owner of "what a service does for a product"), `app/src/domain/portfolio/{servic
   JSON, autosave, tab sync, workbook), `tests/ui/sections/services.test.tsx` (service column, keyboard tabs, delivery, load, cost, split, View, axe),
   `tests/ui/render-cost.test.tsx` (Services tab: a figure, the name, a service edit, a View switch).
 - **Open.** Routing the type- and role-assigned activities to the service's row inside each product's engine; a per-service sheet in the results
-  workbook; units and owners in the parameters workbook; stress, verdict and ranking per unit (B10d).
+  workbook; units and owners in the parameters workbook; stress, verdict and ranking per unit (B10d, built: § 21.8).
+
+### 21.8 Built in B10d (strategy, stress and decision per unit, D-B40) — B10 complete
+
+Figure-neutral for every existing scope: the 107 fixtures, the Product, Wave and Portfolio figures, distributions and verdicts are unchanged (the
+portfolio run draws exactly as before; it now also keeps each product's draws in draw order). Code: `app/src/domain/portfolio/stressSelection.ts`
+(the one owner of a selection's Monte Carlo figures), `stress.ts` (`sumDraws`, `statsOf`, `corr3` exported; `ProductStress.perDraw`),
+`stressVerdict.ts` (`VerdictGroup` = the group scope), `unitRanking.ts`; `app/src/store/{portfolioSimulation,selectionHooksStress}.ts`;
+`app/src/ui/sections/verdict/UnitRanking.tsx`; the report's `stress.ts` and the results workbook's `waveSheet.ts` (`unitSheet`), `stressSheet.ts`.
+
+- **A unit's distribution (built, F-B83).** At any Unit node (Unassigned included) the unit's draw is the **sum of its products' draws** of the
+  portfolio run, from the same per-product streams (`productSeed`, the shared shock of ρ): `selectionStress(run, unit, pf)` takes the unit's members
+  (`scopeMembers`, the B10b owner), adds their `perDraw` with the same `sumDraws`, in the same (portfolio) order, as the portfolio and the waves, and
+  reads the statistics with the same `statsOf` (`mcStats` plus the relative spread). So a unit owning every product gives the Portfolio's run
+  **exactly** (same seed: stats, sorted outcomes, risk reduction, correlations), a unit with the members of a wave gives that wave's, a unit of one
+  product that product's own distribution. Risk reduction = the unit's P10 minus the sum of its products' stand-alone P10 (as for a wave); each
+  product's correlation with the unit (`rSel`; the portfolio's `r`, a wave's `rWave`). Nothing is unit-specific beyond the set of products.
+- **A unit's decision (built, D-B40).** `pfDecision(pf, run, { kind: 'unit', id })` is the single-case rule (`verdictRule` through `groupDecision`:
+  setup = Σ of the products', premium = their premiums weighted by entry headcount) on the unit's distribution; the conditions name the products that
+  carry the unit's risk. Portfolio, wave and unit all go through `selectionStress`, so the three agree by construction (tested: unit = portfolio,
+  unit = wave on every field of the decision but its "Scope" line).
+- **Ranking of units (built).** `unitRanking(pf, c, run, scope)` ranks the units below the View — at the Portfolio the roots of the tree and
+  Unassigned, at a unit its direct sub-units (none at a wave, a product or Unassigned) — with their planned products, NPV and ROI (`groupOf`) and their
+  decision (verdict, confidence = P(net > 0), P10), best first: by verdict (Strong, Conditional, Defer), then confidence, then NPV; no figure is computed
+  there. Shown in 🧭 Decision and 🏆 Strategy comparison (table "Units ranked by verdict…", **Show** opens the unit as the View); hidden when the only
+  row would be Unassigned (a portfolio without owners). The per-product strategy roll-up of a unit is B10b's (`aggregateStrategies` on the group).
+- **Screens (built).** 🎲 Monte Carlo (distribution cards, histogram "Distribution of the unit net benefit", risk reduction, products with their
+  correlation with the unit), 🧭 Decision (the unit's verdict, the ranking; the per-wave verdict table stays at the Portfolio and a Wave) and 📋 Results
+  (the unit's probabilistic verdict and uncertainty band) work at a unit as at a wave. The "not available at the unit scope yet" states and
+  `ui/widgets/ScopeUnavailable.tsx` are removed.
+- **No re-run on a scope switch; stale rule (built).** The run is drawn once for all planned products (🎲 Portfolio stress, **Run**); switching the
+  View to any unit, wave or the portfolio only re-reads it (`selectionStress` is memoised on the run and the portfolio; `pfSimStore` keeps its run,
+  no product engine is built — tested). The run is marked stale by the portfolio fingerprint (`pfStressFingerprint`): a change of a unit's members
+  (an owner edit, a unit moved) changes the products' cases' document, so the run is marked stale and **⟳ Run again** is offered; until then the
+  unit's figures are re-read from the run's per-product draws for the new members (exact draws of each product, but a run older than the portfolio).
+- **Report and workbook (built).** The portfolio report under a Unit scope prints its stress section for the unit (its distribution, its products,
+  its verdict, its risk reduction). The results workbook under a Unit scope gains a sheet **Unit <name>** that leads (headline cards, products,
+  cumulative cash: `groupOf` / `scopeHeadline`) and its "Portfolio stress" sheet a block for the unit (its distribution and risk reduction, the verdict
+  of the unit and of each sub-unit). Other scopes: unchanged.
+- **Tests.** `tests/domain/portfolio/unit-stress.test.ts` (unit = portfolio exactly, unit = wave, one-product unit, Unassigned, empty / unknown unit;
+  a hand-computed 10-draw unit: sums, P10 / P50 / P90 / mean / P(net < 0) / CVaR, risk reduction, confidence; the ranking's figures = `groupOf` and
+  `pfDecision`; memo and the stale rule), `tests/ui/unit-decision.test.tsx` (Monte Carlo, Decision with the ranking and **Show**, Results at a unit;
+  switching units keeps the run and builds no engine), `tests/store/unit-stress-exports.test.ts` (report stress block, `Unit <name>` sheet, unit
+  verdicts in the stress sheet), `tests/ui/unit-scope.test.tsx` (the unit's Decision without a run), `tests/ui/render-cost.test.tsx` (a unit
+  switch on Decision ≤ 45 renders and on Monte Carlo ≤ 60, the run kept, no engine built), `tools/a11y.mjs` (pf fixtures: Decision and Monte Carlo
+  under Unassigned with the run on screen).
+- **B10 complete.** F-B80 (B10a), F-B81 (B10b), F-B82 (B10c), F-B83 (B10d), F-B84 (B10a–c) are built. **Open** (carried): routing type- and
+  role-assigned activities to a service's row inside each product's engine; a per-service sheet in the results workbook; units and owners in the
+  parameters workbook; a per-unit correlation (ρ is one value for the portfolio); waves, setup capacity and knowledge subsets outside the document
+  (item 34).
+

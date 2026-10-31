@@ -35,11 +35,15 @@ export const useSensitivityRows = () => {
 };
 
 /**
- * The last portfolio Monte Carlo read for the View (Portfolio or Wave); null without a run, for a wave the run does not hold, or for a Unit (its
- * distribution comes with the strategy per unit, phase B10d: not available at that scope).
+ * The last portfolio Monte Carlo read for the View (Portfolio, Wave or Unit, B10d); null without a run, or for a wave or a unit the run holds no product
+ * of. Nothing is drawn again on a scope switch: a unit adds its products' draws of the run (`selectionStress`).
  */
 export function useSelectionStress(): SelectionStress | null {
-  const { run } = usePortfolioSimulation(), vs = useViewScope();
-  return useMemo(() => (run && vs.kind !== 'product' && vs.kind !== 'unit' ? selectionStress(run,
-    vs.kind === 'wave' ? { kind: 'wave', id: vs.waveId as string } : { kind: 'portfolio' }) : null), [run, vs]);
+  const { run } = usePortfolioSimulation(), vs = useViewScope(), core = useCorePortfolio();
+  return useMemo(() => {
+    if (!run || vs.kind === 'product') return null;
+    const g = vs.kind === 'wave' ? { kind: 'wave' as const, id: vs.waveId as string } : vs.kind === 'unit' ? { kind: 'unit' as const, id: vs.unitId as string }
+      : { kind: 'portfolio' as const };
+    return selectionStress(run, g, core);
+  }, [run, vs, core]);
 }

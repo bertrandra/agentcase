@@ -8,8 +8,10 @@ import { setInput } from '@/controllers/inputs';
 import { updateProcessActivity } from '@/controllers/process';
 import { setDisplayScope } from '@/controllers/displayScope';
 import { setServiceSkills } from '@/controllers/services';
+import { runPortfolioSimulation } from '@/controllers/stressPortfolio';
 import { consolidate, corePortfolio, runStats } from '@/domain/portfolio';
 import { appStore } from '@/store/instance';
+import { pfSimStore } from '@/store/portfolioSimulation';
 import { loadFixture } from '../helpers/fixtures';
 import { threeProducts } from '../helpers/portfolioStore';
 import { LAZY, mountApp } from '../helpers/portfolioUi';
@@ -79,16 +81,24 @@ describe('renders on a single edit', () => {
  * built (the per-product memo); the renders are those of the new View (the headline bar, the banner and the section's aggregate). Budgets: measured
  * with a little headroom.
  */
-const SWITCHES: { key: string; section: string; title: RegExp; from: () => void; to: { kind: 'unit'; id: string }; budget: number }[] = [
+const SWITCHES: { key: string; section: string; title: RegExp; from: () => void; to: { kind: 'unit'; id: string }; budget: number; run?: true }[] = [
   { key: 'portfolio → unit', section: 'financial', title: /Financial/i, from: () => view('portfolio'), to: { kind: 'unit', id: 'bu' }, budget: 55 },
   { key: 'unit → sub-unit', section: 'financial', title: /Financial/i, from: () => setDisplayScope({ kind: 'unit', id: 'bu' }), to: { kind: 'unit', id: 'd1' },
     budget: 55 },
   { key: 'unit → unit (plan)', section: 'gantt', title: /Plan/, from: () => setDisplayScope({ kind: 'unit', id: 'd1' }), to: { kind: 'unit', id: 'd3' },
     budget: 70 },
+  // B10d: the unit's decision and distribution re-read from the run (never drawn again)
+  { key: 'unit → unit (decision)', section: 'decision', title: /Decision Intelligence/, from: () => setDisplayScope({ kind: 'unit', id: 'bu' }),
+    to: { kind: 'unit', id: 'd1' }, budget: 45, run: true },
+  { key: 'portfolio → unit (Monte Carlo)', section: 'montecarlo', title: /Monte Carlo/, from: () => view('portfolio'), to: { kind: 'unit', id: 'bu' },
+    budget: 60, run: true },
 ];
 describe('renders on a unit scope switch', () => {
   it.each(SWITCHES)('$key', async (r) => {
-    unitTreeThree(); mountApp(r.section); act(r.from);
+    unitTreeThree(); pfSimStore.setState({ run: null, progress: null, params: null });
+    if (r.run) await runPortfolioSimulation({ draws: 200, seed: 5 });
+    const sim = pfSimStore.getState().run;
+    mountApp(r.section); act(r.from);
     await screen.findByRole('heading', { level: 1, name: r.title }, LAZY);
     const core = corePortfolio(appStore().getState().portfolio), c = consolidate(core), builds = runStats.builds;
     resetRenders();
@@ -96,7 +106,7 @@ describe('renders on a unit scope switch', () => {
     await screen.findByRole('heading', { level: 1, name: r.title }, LAZY);
     measured[r.key] = { renders: totalRenders(), commits: log.commits, top: topRenders(8).map(([n, k]) => `${n}×${k}`).join(' ') };
     expect(corePortfolio(appStore().getState().portfolio)).toBe(core); expect(consolidate(core)).toBe(c);
-    expect(runStats.builds).toBe(builds);   // switching scope recomputes no product
+    expect(runStats.builds).toBe(builds); expect(pfSimStore.getState().run).toBe(sim);   // switching scope recomputes no product, re-draws nothing
     expect(totalRenders(), JSON.stringify(measured[r.key])).toBeLessThanOrEqual(r.budget);
   }, 60000);
   it('report', () => { console.log(`SWITCH RENDERS ${JSON.stringify(Object.fromEntries(SWITCHES.map((r) => [r.key, measured[r.key]])))}`); });

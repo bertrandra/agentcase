@@ -5,7 +5,9 @@ const BAD = /[\u0000-\u001f[\]:*?/\\]/g;
 const MAX = 31;
 
 /** The sheet names (and name prefixes) of the portfolio part of the results workbook, in workbook order; each goes through `sheetName`. */
-export const PF_RESULT_SHEETS = { portfolio: 'Portfolio', wave: 'Wave ', kt: 'Knowledge transfer', stress: 'Portfolio stress', product: 'Product ' } as const;
+export const PF_RESULT_SHEETS = {
+  portfolio: 'Portfolio', unit: 'Unit ', wave: 'Wave ', kt: 'Knowledge transfer', stress: 'Portfolio stress', product: 'Product ',
+} as const;
 
 /**
  * An Excel-safe worksheet name: at most 31 characters, none of `[ ] : * ? / \`, no leading or trailing apostrophe, never empty, and unique

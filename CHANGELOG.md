@@ -17,6 +17,24 @@ When releasing, follow [docs/BUMP_PROCEDURE.md](docs/BUMP_PROCEDURE.md) (§7 for
 
 ## [Unreleased]
 
+## [v21.6.0] 2026-10-31 — B10d: Monte Carlo, decision and ranking per unit (B10 complete)
+
+### B10d — strategy, stress and decision per unit (D-B40); B10 complete
+
+- **Monte Carlo per unit.** At any unit of the organisation (Unassigned included), 🎲 Monte Carlo shows the unit's distribution: its products' draws
+  of the portfolio run added up draw by draw (same per-product streams), with P10 / P50 / P90, P(net < 0), CVaR, the histogram, the risk reduction
+  and each product's correlation with the unit. A unit owning every product reproduces the portfolio run exactly; a unit with the products of a
+  wave reproduces that wave.
+- **Decision per unit.** 🧭 Decision and 📋 Results give the unit's verdict with the single-case rule on its distribution (setup = its products',
+  risk premium weighted by entry headcount). The "not available at the unit scope yet" states are gone.
+- **Ranking of units.** 🧭 Decision and 🏆 Strategy comparison rank the units below the View (the top units and Unassigned at the Portfolio, the
+  sub-units of a unit) by verdict, confidence and NPV, with NPV, ROI and P10; **Show** opens a unit.
+- **No re-run on a switch.** Choosing another unit only re-reads the run; the run is marked stale when the portfolio moves (an owner change
+  included).
+- **Exports.** The portfolio report under a Unit scope prints the unit's stress section; the results workbook gains a leading **Unit <name>** sheet
+  and the unit's distribution and verdicts (with its sub-units) in "Portfolio stress".
+- Figure-neutral: the 107 fixtures, products, waves and the portfolio keep every figure and verdict.
+
 ## [v21.5.0] 2026-10-31 — B10c: transverse services (service units, assignment, cost by effort, Services tab)
 
 ### B10c — transverse services: a unit serves several products, its cost split by effort
