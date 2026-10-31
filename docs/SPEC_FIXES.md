@@ -107,6 +107,33 @@ DEVIATIONS.md entry and the owner's approval of the before → after on the gold
 | FX-O1 | Create and push the release tags v19.0.0 … v21.6.0 (commands listed; v21.1.0 → v21.6.0 rows to add) | docs/RELEASE_TAGS.md |
 | FX-O2 | Sign off the tool catalogue (FX-D5) | 🔎 Audit, SPEC_BPMN § 15.7 |
 | FX-O3 | Delete the 9 old local branches from the 22–24 Oct theme work (kept until you say yes) | local clone |
+| FX-O4 | Supply real (anonymised) customer files for the differential run (FX-63) | `app/fixtures/customer/` |
+| FX-O5 | Port or keep out: AME comparison / per-snapshot Excel (FX-57), "being ported" UI items (FX-59), `TE-10b` (FX-60) | this file |
+
+### 3.6 Carried-over open items (recheck of 31 Oct 2026)
+
+Found by a sweep of the code (TODO/FIXME, skipped tests: none skipped), MIGRATION_PLAN § 15, VUE_AGREGEE § 4–5, ARCHITECTURE § 12
+and GitHub (no open issue, no open PR). Not covered by FX-01…FX-45 above.
+
+| ID | Issue | Fix | Priority | Size | Source |
+|---|---|---|---|---|---|
+| FX-50 | Two sections still use the generic aggregate fallback: `compliance` (R-rollup) and `risk` (I-input) | Register their own aggregate (coverage per product; risk register, AI Act tier and premium per product); set them DONE | P2 | M | VUE_AGREGEE § 4 "TO DO"; `ui/zones/fallbacks.tsx` |
+| FX-51 | `ConsoFallback` carries a TODO ("consolidated view coming") with no tracked R-conso section left in VUE_AGREGEE § 5 | Check no R-conso section reaches it; keep it as a safety net, drop the TODO, add a test that every R-conso section has its own aggregate | P3 | S | `app/src/ui/zones/fallbacks.tsx:71` |
+| FX-52 | Legacy discrepancy: stale help figures and fixed "3-year" labels in some sections | Derive labels from the horizon; refresh help figures from the engine | P2 | S | MIGRATION_PLAN § 15.4 |
+| FX-53 | Legacy discrepancy: Location Target exported rounded to whole % | Export the full value (deviation recorded) | P2 | S | MIGRATION_PLAN § 15.4 |
+| FX-54 | Legacy discrepancy: FM environment `isProd` dropped on import | Import it; round-trip test | P2 | S | MIGRATION_PLAN § 15.4 |
+| FX-55 | Legacy discrepancy: `bass` curve family not restored by the legacy snapshot restore | Restore it when opening a legacy snapshot; fixture test | P2 | S | MIGRATION_PLAN § 15.4 |
+| FX-56 | Legacy discrepancy: the critical-delivery report hard-codes 349 artefacts, the catalogue has 370 | Count from the catalogue (deviation recorded) | P2 | S | MIGRATION_PLAN § 15.4 |
+| FX-57 | Not ported: Golden-vs-AME comparison, AME reference capture, per-snapshot Excel export | Decide keep out (record in DEVIATIONS) or port | P3 | M | MIGRATION_PLAN § 15.2 |
+| FX-58 | Not ported: legacy `tools/xss-test.mjs` fuzz | Port as a property test over import/restore | P3 | S | MIGRATION_PLAN § 15.2 |
+| FX-59 | Still marked "being ported": collapsible sidebar groups, Fast Path filter, layout-board live preview, Gantt keyboard editing | Confirm state in `app/src`; finish or move to out of scope | P3 | M | MIGRATION_PLAN § 15.2, ARCHITECTURE § 12 |
+| FX-60 | `TE-10b` legacy-mode monthly derivation reproduced only in the verification section | Decide keep as verification-only (record) or wire into the engine | P3 | S | MIGRATION_PLAN § 15.2 |
+| FX-61 | MIGRATION_PLAN § 15.5 is stale: it says the fixtures README reads v18.11 (it reads v18.13) and the versions read 20.0.0 (21.6.0) | Rewrite § 15.5 from the current tree; use doc-facts for versions | P3 | S | MIGRATION_PLAN § 15.5 |
+| FX-62 | Legacy tools (`tools/test-all.mjs`) and the oracle generators are not run by CI | Add to the nightly job, or archive them with the legacy file (§ 15.3) | P3 | S | MIGRATION_PLAN § 15.5 |
+| FX-63 | Differential run on real customer files never done; 20.x/21.x portfolio files not exercised against 19.x readers beyond the notes | Needs files from the owner (FX-O4) | P2 | M | MIGRATION_PLAN § 15.3, ARCHITECTURE § 12 |
+| FX-64 | RELEASE_TAGS has no rows for v21.1.0 … v21.6.0 | Add rows and tag commands (merge SHAs) | P3 | S | docs/RELEASE_TAGS.md |
+
+Added to § 3.5: **FX-O4** supply real customer files for FX-63; **FX-O5** decide FX-57 / FX-59 / FX-60 (port or out of scope).
 
 ## 4. Lots (one PR each, in this order)
 
@@ -120,8 +147,9 @@ DEVIATIONS.md entry and the owner's approval of the before → after on the gold
 | X6 Organisation depth | FX-05, FX-21, FX-22, FX-23, FX-D4 / FX-D6 / FX-D7 / FX-D11 as decided | Undo property tests; parity | Opt-in | 2.5 d |
 | X7 Portfolio document | FX-D14 (if a), FX-D2 (if b), FX-D8 / FX-D9 / FX-D10 / FX-D12 / FX-D13 / FX-D15 as decided | Schema v6 migration round trips | Per decision | 3 d |
 | X8 Polish | FX-18, FX-19, FX-41…FX-45 | — | None | 1 d |
+| X9 Carry-over | FX-50…FX-56, FX-58, FX-61, FX-62, FX-64; FX-57 / FX-59 / FX-60 per FX-O5; FX-63 when files arrive | Deviations recorded for FX-52, FX-53, FX-56 | Deviation (labels, export, report count) | 3 d |
 
-Total about 15.5 days of agent work; X2 first because it carries the only P1 items that can move a figure.
+Total about 18.5 days of agent work; X2 first because it carries the only P1 items that can move a figure.
 
 ## 5. Acceptance
 
