@@ -116,17 +116,17 @@ All stored data stays in the case's BPMN document (D-B26), so it travels with th
 | Perimeter (step 1): units, teams (lines: skill, grade, location, FTE), products, activities, RACI, as-is numbers | As today: organisation part of the **common** document (units, teams, owners, B10a), process part (activities, RACI), form values (rates, volumes) | `org/*`, `process/*` |
 | Status per product (`Simulated / Assessed / Piloted / Scaled`, date) | Organisation part: `ac:caseStatus product status asOf` | `org/status.ts` (new) |
 | Scopes as rules: **perimeter**, **audit sample**, **target**, **pilot**, **wave slices** | Organisation part: `ac:scope id kind="perimeter|sample|target|pilot|slice"` with `ac:include` / `ac:exclude` (`unit`, `team`, `product`, `phase`, `activity`, `harness`, `cell`, `share`) | `scope/cells.ts` (new) |
-| Audit options (full / sample n / sample coverage %) and the chosen one; price parameters (days per unit, auditor rate, expenses) | Options: audit header `ac:auditPlan` with `ac:option`; **prices and rates: case values, not the BPMN model** (§ 16) | `audit/pricing.ts` (new) |
+| Audit options (full / sample n / sample coverage %) and the chosen one; price parameters (days per unit, auditor rate, expenses) | Options: audit header `ac:auditPlan` with `ac:option`; **prices and rates: case values, not the BPMN model** (§ 17) | `audit/pricing.ts` (new) |
 | Sample drawn (seed, strata, drawn cells) | `ac:sample seed strata` with `ac:sampled cell="P1/A017/T3"` | `audit/sample.ts` (new) |
 | Baseline (as-is, frozen at the Assessed gate) | A second `bpmn:process` `ac:baseline="true" frozenAt` in the **product's** document; the audit moves onto its elements (per product: settles FX-D6) | `process/baseline.ts` (new) |
 | Link to-be → as-is | `ac:baselineRef` on each to-be task | `process/baseline.ts` |
 | Harness (owner, agents, tools, capability, build pod template and drivers, sourcing share) | Organisation part: `ac:harness id owner` with `ac:agentRef`, `ac:toolRef`, `ac:capability`, `ac:build` (`ac:podRole role mix`, drivers, months), `ac:sourcing internalPct` | `org/harness.ts` (new) |
 | Harness run process (activities, RACI, drivers, agent share) | A `bpmn:process ac:harnessRun="H1"` in the **common** document (default template, editable like the delivery process); platform costs on `ac:run` | `process/harnessRun.ts` (new) |
 | Coverage (which cells a harness serves) | `ac:harnessRef` on each to-be activity (all its cells), narrowed by a rule on the harness when only some teams use it | `process/harnessCoverage.ts` (new) |
-| Run model per slice / harness / product (R1 transfer, R2 shared, R3 external), with a switch date and the commercial model | Who runs what: the provider as a **participant** in the organisation part; the run model, commercial model and fees: **case values per scope id, not the BPMN model** (§ 16) | `commercial/runModel.ts` (new) |
-| Token profiles: per activity type (runs per day, context, output), per harness (routing, cache, retry, overhead), price trends and volume tiers | Activity types: process part (catalogue defaults); harness routing: `ac:tokenProfile` on `ac:harness`; **prices, trends and tiers: case tables with `TOKEN_MODELS`, not the BPMN model** (§ 16) | `tokens/*` (new folder) |
+| Run model per slice / harness / product (R1 transfer, R2 shared, R3 external), with a switch date and the commercial model | Who runs what: the provider as a **participant** in the organisation part; the run model, commercial model and fees: **case values per scope id, not the BPMN model** (§ 17) | `commercial/runModel.ts` (new) |
+| Token profiles: per activity type (runs per day, context, output), per harness (routing, cache, retry, overhead), price trends and volume tiers | Activity types: process part (catalogue defaults); harness routing: `ac:tokenProfile` on `ac:harness`; **prices, trends and tiers: case tables with `TOKEN_MODELS`, not the BPMN model** (§ 17) | `tokens/*` (new folder) |
 | Frozen versions (as simulated, as proposed): inputs + computed series + calculation version | The snapshot library (case snapshots), with the series attached, read-only | `snapshots/versions.ts` (new) |
-| Measurements (as measured) | A measurements part of the case (`metric, scope, month, value, source`), **not the BPMN model** (§ 16) | `metrics/measures.ts` (new) |
+| Measurements (as measured) | A measurements part of the case (`metric, scope, month, value, source`), **not the BPMN model** (§ 17) | `metrics/measures.ts` (new) |
 | Waves (pilot = wave 0) and their slices | Portfolio data with the waves until FX-D14 (`pilot: true`, `slices: scope ids`); a single case stores them in its document | `portfolio/waves.ts`, `portfolio/slices.ts` (new) |
 
 ## 4. Step 1 — the as-is scope
@@ -145,7 +145,7 @@ A product without RACI or teams has one implicit team (the product team, today's
 **4.2 Consistency.** Σ_c FTE_c = Σ_τ FTE_τp = baseEtp_p and Σ_c cost_c = baselineRun_p by construction (each team's FTE and rate stay its own). A team whose skills no activity uses is flagged
 (capacity without work); an activity whose Responsible skill no team provides is flagged (work without capacity).
 
-**4.3 Views.** The perimeter per unit / team / product / phase / activity: FTE and as-is cost, as a table and as the diagram's colours (§ 13).
+**4.3 Views.** The perimeter per unit / team / product / phase / activity: FTE and as-is cost, as a table and as the diagram's colours (§ 14).
 
 ## 5. Step 2 — the full transformation simulation (today's case)
 
@@ -320,7 +320,7 @@ runFTE_H(T) = Σ_a effort_a(T) × (1 − agentShare_a) / (wd/12)          human 
 runCost_H(T) = runFTE_H × rate (run roles × 1.15, the AI-skill premium) + platform (infra, licences)      = Run_H(T) of § 7.5
 ```
 
-`agentVfte` drives the run volume (`runs = agentVfte × wd/12 × runsPerDay`, today's rule), so the run team grows with adoption. A shared harness has
+The kernel's `runTeamFte` and run-team cost **are** this owner's values (§ 13): there is no second run-team formula. `agentVfte` drives the run volume (`runs = agentVfte × wd/12 × runsPerDay`, today's rule), so the run team grows with adoption. A shared harness has
 **one** run team for all its products (economy of scale), allocated by HX-D3.
 
 **Parity.** The implicit harness H0 has a two-activity run process: "platform floor" = `max(runFloorMin, baseEtp × runFloorPct)` once any agent runs (0 before) and
@@ -348,6 +348,8 @@ tok_H(T)     = Σ_{c covered by H} tok_c + overhead_H(T)                       o
 price_H(T)   = Σ_model route_H,model × (inShare × priceIn_model + outShare × priceOut_model) × priceTrend(T) × tier(owner volume)
 cost_H(T)    = tok_H(T) / 1e6 × price_H(T)
 ```
+
+The kernel's `tokenCost` **is** the product's sum of these cells (§ 13): one token calculator, read by the engine and every view.
 
 - **Per activity type** (catalogue defaults, editable): runs per day, context size, output size: a code-generation run is not a review run.
 - **Per harness**: model **routing** (which share of runs goes to which model: a frontier model to plan, a small one to execute), cache hit rate,
@@ -397,7 +399,7 @@ Today's KPI scorecard (`verifyB/kpi.ts`: AS-IS vs TO-BE at the horizon end, anch
 column pair of this catalogue for one product; its anchors stay the source of the velocity and quality to-be values.
 
 **12.3 Measurements.** Imported per month and scope (CSV / Excel template per level, or typed): `metric, scope (product / team / harness /
-slice), month, value, source`. Stored in a measurements part of the case, outside the BPMN model (§ 16), validated (unit, range), each value with its provenance.
+slice), month, value, source`. Stored in a measurements part of the case, outside the BPMN model (§ 17), validated (unit, range), each value with its provenance.
 A measured month overrides nothing in the model; it feeds the comparison views, the forecast (HX-D21) and the evidence ledger (measured =
 the highest tier).
 
@@ -406,7 +408,37 @@ the variance (measured − proposed, and % of proposed) and the **benefit realis
 them: the pilot's Decide gate compares the pilot's measured KPIs with the proposed Y1 values (today's rule "Pilot KPIs ≥ 80 % of Y1 targets",
 now computed); the Scaled status shows each wave's realisation.
 
-## 13. 📅 Plan and the views, step by step
+## 13. One monthly calculation engine, one owner per figure
+
+**13.1 Today.** There is one monthly calculation: the Time Engine's kernel (`time/kernel.ts` `econ`, one row per product month), fed by the
+programme's one cost profile (`programme/profile.ts`) and the programme's one timing owner (`programme/timing.ts`); the portfolio is the same rows
+shifted to the calendar and summed (`consolidate.ts`, `series.ts`). 📅 Plan computes **no figure of its own**: the delivery histogram reads the
+engine's rows (`histogramDelivery.ts`: "READ from the Time Engine, never recomputed"), the programme histogram reads the same cost profile the
+engine reads (Σ days × rate = the line's cost, a cross-surface test), the Gantt reads the timing owner. Each figure has one `@owner` module (the
+registry of 23 owners, `tests/domain/figure-owners.test.ts`, and the cross-surface tests `sot-cross-surface*.test.ts`), and every screen,
+workbook, report and export prints that value.
+
+**13.2 The rule for this spec.** Every new monthly quantity is computed **once**, by one owner, inside or for the one engine; Plan, the screens,
+the workbooks, the reports and the MS Project export read it. Nothing is re-derived on a surface.
+
+| Monthly quantity | Its one owner (new unless stated) | Read by the engine | Read by Plan and the other surfaces |
+|---|---|---|---|
+| Cells' FTE and as-is cost | `scope/cells.ts` | `baseEtp`, `baselineRun` (Σ cells = today's values) | Scope map, OBS (team in), delivery histogram |
+| Agentic capacity per (product, harness, slice) | `time/automation.ts`, called by `econ` in place of `r × eff` | Yes: `agentVfte` | Delivery histogram (per slice / harness), transition view |
+| Token volume and cost | `tokens/demand.ts`, per cell and harness; the kernel's `tokenCost` **is** its product sum (owner `token-volume` moves there) | Yes | Token view, workbook, provider ledger |
+| Harness run team FTE and cost | `process/harnessRun.ts` (the run process); the kernel's `runTeamFte` **is** its product share (owner `run-team` moves there) | Yes | OBS (run teams), delivery histogram, RAM |
+| Harness build (build pod) and assessment labour | The programme's cost profile (`programme/profile.ts`, today's owner) with new lines | Yes: `setupProfile` | Programme histogram, Gantt, WBS, cost model |
+| Slice go-live, harness ready, pilot and assessment dates | The timing owner (`programme/timing.ts`, today's owner) | Yes: the slices' `g_s` | Gantt, WBS, MS Project export |
+| Allocation of a shared harness | `portfolio/harnessShares.ts` (the B10 allocation rule, `alloc.ts` cents) | Yes: product cost shares | Unit / portfolio views, harness business case |
+| Customer / provider ledgers | `commercial/ledger.ts`, from the engine's cost lines and their owners | — (reads the engine) | Headline under HX-D13, commercial view, provider deal |
+| Metrics (four versions) | `metrics/*`, from the engine's rows (simulated, proposed), the measurements (measured) | — (reads the engine) | Metrics view, gates, reports |
+
+**13.3 Tests that hold it.** The figure registry gains the new owners (agentic capacity per group, token volume, harness run team, harness
+allocation, ledgers); cross-surface tests assert that Plan's histograms, the token view, the OBS, the workbook and the report print the owners'
+values (Σ days × rate = cost; Σ products of a harness's allocation = its cost; Σ cells = team; Σ slices = product). On the implicit harness, slice
+and profiles, every owner returns today's numbers (the parity gate of lot S2).
+
+## 14. 📅 Plan and the views, step by step
 
 | View | Addition |
 |---|---|
@@ -421,7 +453,7 @@ now computed); the Scaled status shows each wave's realisation.
 | Transition view (new) | Per team in: where its FTE go (§ 10.3), as a stacked area and a table, per wave |
 | Scope map (new) | Cells (product × activity × team): perimeter, sampled?, provenance, target / pilot / wave, harness, run model, FTE, as-is and to-be cost; filters at any level; the diagram's Colours → Target, Wave, Harness, Audit |
 
-## 14. Decisions needed (the owner chooses)
+## 15. Decisions needed (the owner chooses)
 
 | ID | Question | Options (recommended first) |
 |---|---|---|
@@ -448,7 +480,7 @@ now computed); the Scaled status shows each wave's realisation.
 | HX-D21 | Forecast from the measured months | (a) refit the adoption and capability curves to the actuals and re-project; (b) no forecast, variance only |
 | HX-D22 | Measurement granularity | (a) month × product / team / harness / slice; (b) month × product only |
 
-## 15. Lots (one PR each)
+## 16. Lots (one PR each)
 
 | Lot | Content | Gate | Figures |
 |---|---|---|---|
@@ -466,9 +498,9 @@ now computed); the Scaled status shows each wave's realisation.
 
 Total about 30 days of agent work. S1 → S2 first (no figure moves); then S3 → S4 → S5 → S6 follow the engagement's order.
 
-## 16. Inventory: what the case holds today, what is in the BPMN model, what should not be
+## 17. Inventory: what the case holds today, what is in the BPMN model, what should not be
 
-**16.1 In the BPMN document today** (key `BPMN`, one document, D-B1 / D-B26; in a portfolio the **common** document, plus a product's own
+**17.1 In the BPMN document today** (key `BPMN`, one document, D-B1 / D-B26; in a portfolio the **common** document, plus a product's own
 document when it overrides its process part, B10a)
 
 | Part | Content | Since |
@@ -480,7 +512,7 @@ document when it overrides its process part, B10a)
 | Organisation | Units (hierarchy), teams (lines: skill, grade, location, FTE, pins; owning unit; shared lines and their shares), each product's owning unit, services | B6b, B10a–B10c |
 | Audit | `ac:audit` on tasks and resources (observations, tools in use, pain points, evidence, status), `ac:auditHeader` (and the calibration log), the case's tool catalogue entries | B7 |
 
-**16.2 Outside the BPMN document today**
+**17.2 Outside the BPMN document today**
 
 | Where | Content |
 |---|---|
@@ -491,7 +523,7 @@ document when it overrides its process part, B10a)
 | Snapshot library | Saved versions of the case |
 | Never stored | Figures (computed by their owner), view state (filters, selection, diagram options) |
 
-**16.3 The rule: what belongs in the BPMN model and what does not**
+**17.3 The rule: what belongs in the BPMN model and what does not**
 
 The BPMN document is **the model of the work and of who does it**: it can be exchanged with BPM tools, reviewed by the customer and diffed. It
 holds structure and observations about the work. It does **not** hold:
@@ -506,7 +538,7 @@ holds structure and observations about the work. It does **not** hold:
    credentials or secrets.
 6. **View state and preferences** — never stored in the case.
 
-**16.4 This spec's data, classified** (this corrects § 3 where it disagreed)
+**17.4 This spec's data, classified** (this corrects § 3 where it disagreed)
 
 | Data | In the BPMN model? | Where |
 |---|---|---|
@@ -526,7 +558,7 @@ holds structure and observations about the work. It does **not** hold:
 | Measurements (as measured) | **No** | A measurements part of the case (per metric, scope, month) |
 | Metric catalogue | **No** (definitions in code, one owner each) | `src/domain/metrics` |
 
-**16.5 Moves to plan for what is already there**
+**17.5 Moves to plan for what is already there**
 
 - `setupTraining` / `setupGov` in `ac:programmeValues`: stored, read by no figure (FX-D13); retire or keep as legacy inputs, out of the model if
   retired.
