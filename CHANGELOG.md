@@ -17,6 +17,8 @@ When releasing, follow [docs/BUMP_PROCEDURE.md](docs/BUMP_PROCEDURE.md) (§7 for
 
 ## [Unreleased]
 
+## [v21.1.0] 2026-10-31 — Links from the BPMN map to the activity detail screens
+
 ### Process — links from the map to activity detail
 
 - 🧩 Process: the panel of the selected element (diagram or table) links to where its details live, opened on its row (highlighted, scrolled
