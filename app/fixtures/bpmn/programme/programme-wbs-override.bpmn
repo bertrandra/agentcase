@@ -59,7 +59,7 @@
       <bpmn:task id="prog-stage-discover" name="Discover">
         <bpmn:documentation>Framing, AS-IS baseline, eligibility. Exit gate: Baseline validated + eligibility.</bpmn:documentation>
         <bpmn:extensionElements>
-          <ac:programmeActivity kind="stage-discover" level="case" costRule="optIn" timing="stage" placement="4 weeks from week 0 after the case start">
+          <ac:programmeActivity kind="stage-discover" level="case" costRule="optIn" costProfile="spread" timing="stage" placement="4 weeks from week 0 after the case start">
             <ac:param key="rmD1" value="4" unit="weeks"/>
             <ac:param key="optStages" value=""/>
             <ac:param key="stagesFte" value="" unit="FTE"/>
@@ -70,7 +70,7 @@
       <bpmn:task id="prog-stage-calibrate" name="Calibrate">
         <bpmn:documentation>Sector coefficients, artifact scope frozen. Exit gate: Scope &amp; coefficients frozen.</bpmn:documentation>
         <bpmn:extensionElements>
-          <ac:programmeActivity kind="stage-calibrate" level="case" costRule="optIn" timing="stage" placement="4 weeks from week 4 after the case start">
+          <ac:programmeActivity kind="stage-calibrate" level="case" costRule="optIn" costProfile="spread" timing="stage" placement="4 weeks from week 4 after the case start">
             <ac:param key="rmD2" value="4" unit="weeks"/>
             <ac:param key="optStages" value=""/>
             <ac:param key="stagesFte" value="" unit="FTE"/>
@@ -81,7 +81,7 @@
       <bpmn:task id="prog-stage-validate" name="Validate">
         <bpmn:documentation>Assumptions signed, Monte Carlo run. Exit gate: Assumptions register signed · P50 &gt; threshold.</bpmn:documentation>
         <bpmn:extensionElements>
-          <ac:programmeActivity kind="stage-validate" level="case" costRule="optIn" timing="stage" placement="4 weeks from week 8 after the case start">
+          <ac:programmeActivity kind="stage-validate" level="case" costRule="optIn" costProfile="spread" timing="stage" placement="4 weeks from week 8 after the case start">
             <ac:param key="rmD3" value="4" unit="weeks"/>
             <ac:param key="optStages" value=""/>
             <ac:param key="stagesFte" value="" unit="FTE"/>
@@ -92,14 +92,14 @@
       <bpmn:task id="prog-stage-pilotProve" name="Pilot &amp; Prove">
         <bpmn:documentation>Pilot pods, KPI tracking. Exit gate: Pilot KPIs ≥ 80% of Y1 targets.</bpmn:documentation>
         <bpmn:extensionElements>
-          <ac:programmeActivity kind="stage-pilotProve" level="case" costRule="none" timing="stage" placement="16 weeks (the pilot's weeks: Pilot &amp; Prove is the pilot) from week 12 after the case start"/>
+          <ac:programmeActivity kind="stage-pilotProve" level="case" costRule="none" costProfile="spread" timing="stage" placement="16 weeks (the pilot's weeks: Pilot &amp; Prove is the pilot) from week 12 after the case start"/>
           <ac:raci responsible="prog-lane-orchestrator" accountable="prog-lane-designAuthority" consulted="prog-lane-finops" informed="prog-lane-orchestrator"/>
         </bpmn:extensionElements>
       </bpmn:task>
       <bpmn:task id="prog-stage-decide" name="Decide &amp; Scale">
         <bpmn:documentation>Scale-out per Decision Intelligence. Exit gate: Verdict ≥ Conditional GO.</bpmn:documentation>
         <bpmn:extensionElements>
-          <ac:programmeActivity kind="stage-decide" level="case" costRule="optIn" timing="gate" placement="Gate at week 28 after the case start, when Pilot &amp; Prove ends">
+          <ac:programmeActivity kind="stage-decide" level="case" costRule="optIn" costProfile="spread" timing="gate" placement="Gate at week 28 after the case start, when Pilot &amp; Prove ends">
             <ac:param key="optStages" value=""/>
             <ac:param key="decideDays" value="" unit="days"/>
           </ac:programmeActivity>
@@ -111,7 +111,7 @@
       <bpmn:task id="prog-pilot" name="Pilot" ac:wbsCode="1.2.1.9">
         <bpmn:documentation>A pilot pod proves the agentic factory (frozen harness + agents) by demonstration before the build: break-in sprints to stabilise the harness, then prove weeks on 3-day fail-fast iterations (the Pilot &amp; Prove stage).</bpmn:documentation>
         <bpmn:extensionElements>
-          <ac:programmeActivity kind="pilot" level="product" costRule="resources" timing="pilot" placement="16 weeks (12 prove + 2 × 2 break-in): the Pilot &amp; Prove stage, before the build; it ends at the product's month 0, so its cost falls in the 4 months before the build (from calendar month 1 when the calendar has no earlier month)" cost="84886.15">
+          <ac:programmeActivity kind="pilot" level="product" costRule="resources" costProfile="spread" timing="pilot" placement="16 weeks (12 prove + 2 × 2 break-in): the Pilot &amp; Prove stage, before the build; it ends at the product's month 0, so its cost falls in the 4 months before the build (from calendar month 1 when the calendar has no earlier month)" cost="84886.15">
             <ac:param key="pilotFte" value="3" unit="FTE"/>
             <ac:param key="pilotBreakin" value="2" unit="sprints"/>
             <ac:param key="pilotWeeks" value="12" unit="weeks"/>
@@ -125,7 +125,7 @@
       <bpmn:task id="prog-setupTooling" name="Setup: tooling and infrastructure">
         <bpmn:documentation>Claude API, monitoring, security, CI/CD.</bpmn:documentation>
         <bpmn:extensionElements>
-          <ac:programmeActivity kind="setupTooling" level="product" costRule="nonLabour" timing="setup" placement="12 months (the setup duration) from the product's month 1, spent evenly" cost="35000">
+          <ac:programmeActivity kind="setupTooling" level="product" costRule="nonLabour" costProfile="spread" timing="setup" placement="12 months (the setup duration) from the product's month 1, spent evenly" cost="35000">
             <ac:param key="setupTooling" value="35000" unit="€"/>
           </ac:programmeActivity>
           <ac:raci responsible="prog-lane-agentArchitect" accountable="prog-lane-designAuthority" consulted="prog-lane-finops"/>
@@ -137,7 +137,7 @@
       <bpmn:task id="prog-setupTraining" name="Setup: training">
         <bpmn:documentation>Workshops, champion certification, run by the preceptors; it builds the capability of the organisation: the people in training are its trainees, up to the target mass.</bpmn:documentation>
         <bpmn:extensionElements>
-          <ac:programmeActivity kind="setupTraining" level="product" costRule="resources" timing="setup" placement="12 months (the setup duration) from the product's month 1, spent evenly" cost="52877">
+          <ac:programmeActivity kind="setupTraining" level="product" costRule="resources" costProfile="spread" timing="setup" placement="12 months (the setup duration) from the product's month 1, spent evenly" cost="52877">
             <ac:param key="trainFte" value="" unit="FTE"/>
             <ac:param key="trainMonths" value="" unit="months"/>
             <ac:param key="capOps" value="50" unit="people"/>
@@ -153,7 +153,7 @@
       <bpmn:task id="prog-setupCoaching" name="Setup: coaching">
         <bpmn:documentation>Pair programming, deliverable review, senior / junior binomes, run by the preceptors: coaching days a month over its duration (one coaching activity, D-B30).</bpmn:documentation>
         <bpmn:extensionElements>
-          <ac:programmeActivity kind="setupCoaching" level="product" costRule="resources" timing="setup" placement="36 months from the product's month 1, 2 days a month, spent evenly" cost="35000">
+          <ac:programmeActivity kind="setupCoaching" level="product" costRule="resources" costProfile="spread" timing="setup" placement="36 months from the product's month 1, 2 days a month, spent evenly" cost="35000">
             <ac:param key="coachDaysPerMonth" value="" unit="days/month"/>
             <ac:param key="coachMonths" value="" unit="months"/>
             <ac:param key="setupCoaching" value="35000" unit="€"/>
@@ -169,7 +169,7 @@
       <bpmn:task id="prog-setupGovernance" name="Setup: governance">
         <bpmn:documentation>Compliance audit, IP, agentic charter, run by the Design Authority.</bpmn:documentation>
         <bpmn:extensionElements>
-          <ac:programmeActivity kind="setupGovernance" level="product" costRule="resources" timing="setup" placement="12 months (the setup duration) from the product's month 1, spent evenly" cost="26438.5">
+          <ac:programmeActivity kind="setupGovernance" level="product" costRule="resources" costProfile="spread" timing="setup" placement="12 months (the setup duration) from the product's month 1, spent evenly" cost="26438.5">
             <ac:param key="govFte" value="" unit="FTE"/>
             <ac:param key="govMonths" value="" unit="months"/>
           </ac:programmeActivity>
@@ -182,7 +182,7 @@
       <bpmn:task id="prog-change" name="Change management (readiness)">
         <bpmn:documentation>Entry headcount × cost per FTE of the human-readiness intensity (HRI).</bpmn:documentation>
         <bpmn:extensionElements>
-          <ac:programmeActivity kind="change" level="product" costRule="engine" timing="setup" placement="12 months (the setup duration) from the product's month 1, spent evenly" active="false"/>
+          <ac:programmeActivity kind="change" level="product" costRule="engine" costProfile="spread" timing="setup" placement="12 months (the setup duration) from the product's month 1, spent evenly" active="false"/>
           <ac:raci responsible="prog-lane-aiOffice" accountable="prog-lane-aiOffice" consulted="prog-lane-preceptor"/>
         </bpmn:extensionElements>
         <bpmn:multiInstanceLoopCharacteristics isSequential="false">
@@ -192,7 +192,7 @@
       <bpmn:task id="prog-hubSetup" name="Knowledge Hub setup">
         <bpmn:documentation>Ingest, index and guardrails: the hub setup base × the context-completeness gap to close.</bpmn:documentation>
         <bpmn:extensionElements>
-          <ac:programmeActivity kind="hubSetup" level="product" costRule="resources" timing="hubSetup" placement="30 days (1 months), ready by the product's month 0: a single case has no earlier month, so it starts at month 1. The common hub is set up once, before the first wave" cost="90000">
+          <ac:programmeActivity kind="hubSetup" level="product" costRule="resources" costProfile="spread" timing="hubSetup" placement="30 days (1 months), ready by the product's month 0: a single case has no earlier month, so it starts at month 1. The common hub is set up once, before the first wave" cost="90000">
             <ac:param key="khTargetCC" value="3" unit="level"/>
             <ac:param key="khSetupBase" value="120000" unit="€"/>
             <ac:param key="khSetupDays" value="30" unit="days"/>
@@ -206,7 +206,7 @@
       <bpmn:task id="prog-ktPrep" name="Knowledge transfer preparation">
         <bpmn:documentation>The product's knowledge transfer prepared before its wave starts.</bpmn:documentation>
         <bpmn:extensionElements>
-          <ac:programmeActivity kind="ktPrep" level="product" costRule="sameAsHubSetup" timing="ktPrep" placement="Before the product's month 0 (set per product in a portfolio)" cost="90000">
+          <ac:programmeActivity kind="ktPrep" level="product" costRule="sameAsHubSetup" costProfile="spread" timing="ktPrep" placement="Before the product's month 0 (set per product in a portfolio)" cost="90000">
             <ac:param key="ktLeadMonths" value="0" unit="months"/>
           </ac:programmeActivity>
           <ac:raci responsible="prog-lane-preceptor" accountable="prog-lane-aiOffice" consulted="prog-lane-aiReviewer"/>
@@ -218,7 +218,7 @@
       <bpmn:task id="prog-procurement" name="Licence procurement">
         <bpmn:documentation>Selecting and buying the agent platform, model and tool licences: sourcing, security and legal review, contract. The licence amounts stay the tooling and token cost lines, never added twice.</bpmn:documentation>
         <bpmn:extensionElements>
-          <ac:programmeActivity kind="procurement" level="case" costRule="optIn" timing="optIn" placement="1 month(s) before the build (charged from month 1 in the case's cash flow), once for the case; off by default (switch it on below)">
+          <ac:programmeActivity kind="procurement" level="case" costRule="optIn" costProfile="spread" timing="optIn" placement="1 month(s) before the build (charged from month 1 in the case's cash flow), once for the case; off by default (switch it on below)">
             <ac:param key="optProcure" value=""/>
             <ac:param key="procureDays" value="" unit="days"/>
           </ac:programmeActivity>
@@ -228,7 +228,7 @@
       <bpmn:task id="prog-integration" name="Agent-toolchain integration">
         <bpmn:documentation>Connecting the agents to the delivery toolchain: repository, CI/CD, ticketing, wiki, test management and the Knowledge Hub (API, MCP or CLI per the tool catalogue; the "agent blocked: no API" check lists the gaps).</bpmn:documentation>
         <bpmn:extensionElements>
-          <ac:programmeActivity kind="integration" level="product" costRule="optIn" timing="optIn" placement="12 month(s) from the product's month 1; off by default (switch it on below)">
+          <ac:programmeActivity kind="integration" level="product" costRule="optIn" costProfile="spread" timing="optIn" placement="12 month(s) from the product's month 1; off by default (switch it on below)">
             <ac:param key="optIntegr" value=""/>
             <ac:param key="integrations" value="" unit="tools"/>
             <ac:param key="integrDays" value="" unit="days"/>
@@ -242,7 +242,7 @@
       <bpmn:intermediateThrowEvent id="prog-capabilityTarget" name="Target capability reached">
         <bpmn:documentation>Operational capability at the target mass (50 of 500, 10%; 200 in training)</bpmn:documentation>
         <bpmn:extensionElements>
-          <ac:programmeActivity kind="capabilityTarget" level="product" costRule="none" timing="engine" placement="When the operational capability reaches the target mass (not placed by the engine)"/>
+          <ac:programmeActivity kind="capabilityTarget" level="product" costRule="none" costProfile="none" timing="engine" placement="When the operational capability reaches the target mass (not placed by the engine)"/>
         </bpmn:extensionElements>
       </bpmn:intermediateThrowEvent>
     </bpmn:subProcess>
@@ -250,7 +250,7 @@
       <bpmn:task id="prog-build" name="Agentic build and adoption ramp">
         <bpmn:documentation>Ramp to steady state along the S-curve, milestones L1…L4.</bpmn:documentation>
         <bpmn:extensionElements>
-          <ac:programmeActivity kind="build" level="product" costRule="engine" timing="build" placement="12 months after the onboarding stages (the setup duration)">
+          <ac:programmeActivity kind="build" level="product" costRule="engine" costProfile="adoption" timing="build" placement="12 months after the onboarding stages (the setup duration)">
             <ac:param key="setupDuration" value="12" unit="months"/>
           </ac:programmeActivity>
           <ac:raci responsible="prog-lane-orchestrator" accountable="prog-lane-designAuthority" consulted="prog-lane-agentArchitect" informed="prog-lane-finops"/>
@@ -262,7 +262,7 @@
       <bpmn:task id="prog-run" name="Agentic run (steady state)">
         <bpmn:documentation>The agents deliver and support, supervised by the delivery team.</bpmn:documentation>
         <bpmn:extensionElements>
-          <ac:programmeActivity kind="run" level="product" costRule="engine" timing="run" placement="From month 18.5 after the case start to the horizon"/>
+          <ac:programmeActivity kind="run" level="product" costRule="engine" costProfile="recurring" timing="run" placement="From month 18.5 after the case start to the horizon"/>
           <ac:raci responsible="prog-lane-agents" accountable="prog-lane-orchestrator" informed="prog-lane-finops"/>
         </bpmn:extensionElements>
         <bpmn:multiInstanceLoopCharacteristics isSequential="false">
@@ -272,7 +272,7 @@
       <bpmn:task id="prog-agentops" name="AgentOps run team">
         <bpmn:documentation>Platform floor plus an operations load per agent vFTE.</bpmn:documentation>
         <bpmn:extensionElements>
-          <ac:programmeActivity kind="agentops" level="product" costRule="engine" timing="run" placement="From month 18.5 after the case start to the horizon" cost="87249.63">
+          <ac:programmeActivity kind="agentops" level="product" costRule="engine" costProfile="recurring" timing="run" placement="From month 18.5 after the case start to the horizon" cost="87249.63">
             <ac:param key="runSizeMode" value="hybrid"/>
             <ac:param key="runFloorMin" value="0.5" unit="FTE"/>
             <ac:param key="runFloorPct" value="4" unit="%"/>
@@ -287,7 +287,7 @@
       <bpmn:task id="prog-hubRun" name="Knowledge Hub run">
         <bpmn:documentation>Curation and retrieval; the infrastructure is shared by the products.</bpmn:documentation>
         <bpmn:extensionElements>
-          <ac:programmeActivity kind="hubRun" level="product" costRule="resources" timing="hubRun" placement="From month 7.4 after the case start to the horizon (charged in years with agents)" cost="59826.2">
+          <ac:programmeActivity kind="hubRun" level="product" costRule="resources" costProfile="recurring" timing="hubRun" placement="From month 7.4 after the case start to the horizon (charged in years with agents)" cost="59826.2">
             <ac:param key="khCurationFTE" value="0.5" unit="FTE"/>
             <ac:param key="khInfraMonthly" value="1153.85" unit="€/month"/>
           </ac:programmeActivity>
@@ -300,7 +300,7 @@
       <bpmn:task id="prog-hypercare" name="Rollout hypercare">
         <bpmn:documentation>Intensified support right after the product's agent go-live (the adoption ramp start): incident triage, prompt and guardrail tuning, user support; it ends before the steady AgentOps run takes over.</bpmn:documentation>
         <bpmn:extensionElements>
-          <ac:programmeActivity kind="hypercare" level="product" costRule="optIn" timing="optIn" placement="1.4 month(s) from the product's month 1; off by default (switch it on below)">
+          <ac:programmeActivity kind="hypercare" level="product" costRule="optIn" costProfile="spread" timing="optIn" placement="1.4 month(s) from the product's month 1; off by default (switch it on below)">
             <ac:param key="optHypercare" value=""/>
             <ac:param key="hypercareFte" value="" unit="FTE"/>
             <ac:param key="hypercareWeeks" value="" unit="weeks"/>
@@ -314,7 +314,7 @@
       <bpmn:task id="prog-decommission" name="Legacy decommissioning">
         <bpmn:documentation>Retiring the tools, scripts and manual steps the agents replace: licences ended, data archived, access removed. A saving (licences ended) counts only when entered, never inferred.</bpmn:documentation>
         <bpmn:extensionElements>
-          <ac:programmeActivity kind="decommission" level="product" costRule="optIn" timing="optIn" placement="1 month(s) from the product's month 13; off by default (switch it on below)">
+          <ac:programmeActivity kind="decommission" level="product" costRule="optIn" costProfile="spread" timing="optIn" placement="1 month(s) from the product's month 13; off by default (switch it on below)">
             <ac:param key="optDecom" value=""/>
             <ac:param key="decomDays" value="" unit="days"/>
             <ac:param key="decomSaving" value="" unit="€/month"/>
@@ -328,25 +328,25 @@
       <bpmn:intermediateThrowEvent id="prog-govGates" name="Governance gates in place">
         <bpmn:documentation>Non-bypassable CI gates · C2 quality control · Human-in-the-Lead review · Anti-false-success guardrails · Enlarged Definition of Done · AI-BOM (AI Bill of Materials)</bpmn:documentation>
         <bpmn:extensionElements>
-          <ac:programmeActivity kind="govGates" level="product" costRule="none" timing="engine" placement="Product month 5: the engine's first adoption crossing"/>
+          <ac:programmeActivity kind="govGates" level="product" costRule="none" costProfile="none" timing="engine" placement="Product month 5: the engine's first adoption crossing"/>
         </bpmn:extensionElements>
       </bpmn:intermediateThrowEvent>
       <bpmn:exclusiveGateway id="prog-gate-L2" name="Maturity gate L1 → L2">
         <bpmn:documentation>Team rules &amp; shared prompts in place; agents used on ≥ 1 activity; basic guardrails; positive first-value signal</bpmn:documentation>
         <bpmn:extensionElements>
-          <ac:programmeActivity kind="gate-L2" level="product" costRule="none" timing="engine" placement="Product month 12: the engine's crossing of L2"/>
+          <ac:programmeActivity kind="gate-L2" level="product" costRule="none" costProfile="none" timing="engine" placement="Product month 12: the engine's crossing of L2"/>
         </bpmn:extensionElements>
       </bpmn:exclusiveGateway>
       <bpmn:exclusiveGateway id="prog-gate-L3" name="Maturity gate L2 → L3">
         <bpmn:documentation>Agent-recommendation acceptance ≥ 90%; human override 5–15%; 0 P1 incident caused by an agent; all gates green for 90 days; Design Authority approval</bpmn:documentation>
         <bpmn:extensionElements>
-          <ac:programmeActivity kind="gate-L3" level="product" costRule="none" timing="engine" placement="Product month 24: the engine's crossing of L3"/>
+          <ac:programmeActivity kind="gate-L3" level="product" costRule="none" costProfile="none" timing="engine" placement="Product month 24: the engine's crossing of L3"/>
         </bpmn:extensionElements>
       </bpmn:exclusiveGateway>
       <bpmn:exclusiveGateway id="prog-gate-L4" name="Maturity gate L3 → L4">
         <bpmn:documentation>Multi-agent orchestration stable; autonomous within bounded scope; measured value at scale; AI Office + Design Authority sign-off; governance &amp; audit in place</bpmn:documentation>
         <bpmn:extensionElements>
-          <ac:programmeActivity kind="gate-L4" level="product" costRule="none" timing="engine" placement="Product month 31: the engine's crossing of L4"/>
+          <ac:programmeActivity kind="gate-L4" level="product" costRule="none" costProfile="none" timing="engine" placement="Product month 31: the engine's crossing of L4"/>
         </bpmn:extensionElements>
       </bpmn:exclusiveGateway>
     </bpmn:subProcess>
@@ -354,7 +354,7 @@
       <bpmn:task id="prog-valueTracking" name="Value tracking">
         <bpmn:documentation>Actuals per quarter against the plan; steer when behind.</bpmn:documentation>
         <bpmn:extensionElements>
-          <ac:programmeActivity kind="valueTracking" level="case" costRule="optIn" timing="optIn" placement="36 month(s) from the product's month 1, once for the case; off by default (switch it on below)">
+          <ac:programmeActivity kind="valueTracking" level="case" costRule="optIn" costProfile="spread" timing="optIn" placement="36 month(s) from the product's month 1, once for the case; off by default (switch it on below)">
             <ac:param key="optValue" value=""/>
             <ac:param key="valueFte" value="" unit="FTE"/>
           </ac:programmeActivity>
@@ -364,7 +364,7 @@
       <bpmn:task id="prog-riskAiAct" name="Risk mitigations and AI Act obligations">
         <bpmn:documentation>The mitigations of the risk register and the obligations of the AI Act tier.</bpmn:documentation>
         <bpmn:extensionElements>
-          <ac:programmeActivity kind="riskAiAct" level="case" costRule="optIn" timing="optIn" placement="36 month(s) from the product's month 1, once for the case; off by default (switch it on below)">
+          <ac:programmeActivity kind="riskAiAct" level="case" costRule="optIn" costProfile="spread" timing="optIn" placement="36 month(s) from the product's month 1, once for the case; off by default (switch it on below)">
             <ac:param key="optAiAct" value=""/>
             <ac:param key="aiActDays" value="" unit="days/year"/>
           </ac:programmeActivity>
@@ -374,7 +374,7 @@
       <bpmn:task id="prog-auditInterviews" name="Audit and discovery interviews">
         <bpmn:documentation>Interviews and observations of the audit layer (§ 15).</bpmn:documentation>
         <bpmn:extensionElements>
-          <ac:programmeActivity kind="auditInterviews" level="case" costRule="optIn" timing="optIn" placement="1 month(s) before the build (charged from month 1 in the case's cash flow), once for the case; off by default (switch it on below)">
+          <ac:programmeActivity kind="auditInterviews" level="case" costRule="optIn" costProfile="spread" timing="optIn" placement="1 month(s) before the build (charged from month 1 in the case's cash flow), once for the case; off by default (switch it on below)">
             <ac:param key="optAudit" value=""/>
             <ac:param key="auditDays" value="" unit="days"/>
           </ac:programmeActivity>
