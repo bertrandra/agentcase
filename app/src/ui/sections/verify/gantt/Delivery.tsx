@@ -1,5 +1,6 @@
-import { useState } from 'react';
+import { memo, useCallback, useState } from 'react';
 import type { GanttView, PhaseRow } from '@/domain/verifyB';
+import { structuralEqual } from '@/store/equal';
 import { DualBar, Row } from './bars';
 import { useTheme } from '@/ui/themeContext';
 
@@ -44,17 +45,15 @@ function Release({ at }: { at: number }) {
   );
 }
 
-/** Delivery rollout: one dual bar per phase (and cross-cutting) on the shared calendar, expandable to its artefacts, with the release marker. */
-export function Delivery({ v }: { v: GanttView }) {
-  const [open, setOpen] = useState<Set<string>>(new Set());
-  const toggle = (k: string) => setOpen((s) => { const n = new Set(s); if (!n.delete(k)) n.add(k); return n; });
-  const rows = (p: PhaseRow) => (
-    <div key={p.key}>
+/** One phase (or cross-cutting) row and its artefacts when expanded; memoised on its content, `onToggle` being stable. */
+const PhaseBlock = memo(function PhaseBlock({ p, open, onToggle }: { p: PhaseRow; open: boolean; onToggle: (k: string) => void }) {
+  return (
+    <div>
       <Row kind={p.cross ? 'cross' : 'phase'} title={`${p.name} — ${p.meta}`}
-        label={<PhaseLabel p={p} open={open.has(p.key)} onToggle={() => toggle(p.key)} />}>
+        label={<PhaseLabel p={p} open={open} onToggle={() => onToggle(p.key)} />}>
         <DualBar left={p.start} act={p.act} sup={p.sup} tone={p.tone} title={`${p.name} — ${p.meta}`} />
       </Row>
-      {open.has(p.key) && p.arts.map((a) => (
+      {open && p.arts.map((a) => (
         <Row key={a.label} indent label={a.label} title={`${a.label} — ${a.meta}`}>
           <DualBar left={a.start} act={a.act} sup={a.sup} tone={p.tone} title={`${a.label} — ${a.meta}`} />
         </Row>
@@ -62,6 +61,13 @@ export function Delivery({ v }: { v: GanttView }) {
       <div className="ac-gantt-meta">{p.meta}</div>
     </div>
   );
+}, structuralEqual);
+
+/** Delivery rollout: one dual bar per phase (and cross-cutting) on the shared calendar, expandable to its artefacts, with the release marker. */
+export function Delivery({ v }: { v: GanttView }) {
+  const [open, setOpen] = useState<Set<string>>(new Set());
+  const toggle = useCallback((k: string) => setOpen((s) => { const n = new Set(s); if (!n.delete(k)) n.add(k); return n; }), []);
+  const rows = (p: PhaseRow) => <PhaseBlock key={p.key} p={p} open={open.has(p.key)} onToggle={toggle} />;
   const sdlc = v.phases.filter((p) => !p.cross), cross = v.phases.filter((p) => p.cross);
   return (
     <>

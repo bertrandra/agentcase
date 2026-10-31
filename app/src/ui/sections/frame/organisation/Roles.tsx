@@ -1,10 +1,10 @@
-import type { OrgModel } from '@/domain/org';
+import type { OrgParts } from './Units';
 
 /**
  * The role catalogue: the roles and AI agents of the process (its resources). The 26 legacy role names map to the 7 team skills; a role's team skill
  * is edited in the skill map (Verify A) and in the Process section.
  */
-export function Roles({ m }: { m: OrgModel }) {
+export function Roles({ m }: { m: OrgParts }) {
   const roles = m.roles.filter((r) => r.kind === 'role'), agents = m.roles.filter((r) => r.kind === 'agent');
   return (
     <section aria-labelledby="ac-org-roles-h">

@@ -1,6 +1,7 @@
 import { useState } from 'react';
 import { readProcess } from '@/domain/process';
-import { useDoc } from '@/store/hooks';
+import { useDocSelector } from '@/store/hooks';
+import type { Doc } from '@/store/types';
 import { useOrg, useOrgDiagnostics } from '@/store/orgHooks';
 import { TabPanel, TabStrip, useStripBase } from '@/ui/widgets/TabStrip';
 import { OverrideBadge } from '@/ui/widgets/OverrideBadge';
@@ -12,6 +13,8 @@ import { Diagnostics } from './Diagnostics';
 import { Matrix, type Filters } from './Matrix';
 
 const OVERRIDES = ['BPMN'] as const;
+/** The phases of the filter (re-rendering only when they change, not on every edit of the process). */
+const phasesOf = (d: Doc) => readProcess(d.BPMN).phases.map((p) => ({ id: p.id, name: `${p.id} ${p.name}` }));
 const TABS = [{ id: 'matrix', label: 'RACI matrix' }, { id: 'activity', label: 'By activity' }, { id: 'role', label: 'By role' },
   { id: 'team', label: 'By team' }, { id: 'unit', label: 'By unit' }, { id: 'product', label: 'By product' }];
 const help = (
@@ -26,8 +29,7 @@ const help = (
 
 /** 🧭 Who does what (docs/SPEC_BPMN.md § 16.6): the RACI matrix with its filters, the five views of F-B38 and the F-B36 / F-B37 checks. */
 export default function WhoDoesWhatSection() {
-  const m = useOrg(), ds = useOrgDiagnostics(m), bpmn = useDoc((d) => d.BPMN), base = useStripBase(), [tab, setTab] = useState('matrix');
-  const phases = readProcess(bpmn).phases.map((p) => ({ id: p.id, name: `${p.id} ${p.name}` }));
+  const m = useOrg(), ds = useOrgDiagnostics(m), phases = useDocSelector(phasesOf), base = useStripBase(), [tab, setTab] = useState('matrix');
   const [f, setF] = useState<Filters>({ phase: phases[0]?.id ?? '', product: m.products[0]?.id ?? '', team: '', unit: '' });
   const set = (k: keyof Filters) => (v: string) => setF({ ...f, [k]: v });
   const any = (label: string) => [{ id: '', name: `All ${label}` }];

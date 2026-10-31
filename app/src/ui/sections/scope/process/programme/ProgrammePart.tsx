@@ -1,6 +1,7 @@
-import { useId, useMemo } from 'react';
+import { useCallback, useId, useMemo } from 'react';
 import { isProgrammeId, programmeDrawing, programmeProcess } from '@/domain/programme';
-import { useCtx, usePortfolio } from '@/store/hooks';
+import type { Ctx } from '@/domain';
+import { useCtxSelector, usePortfolio } from '@/store/hooks';
 import { useActiveProductId, useIsMulti } from '@/store/portfolioHooks';
 import { Diagram } from '../Diagram';
 import { useProcessView } from '../view';
@@ -14,9 +15,10 @@ import { ProgrammeFacts, ProgrammeTable } from './ProgrammeTable';
  * stored in B9a): the values are today's keys, edited through the panel.
  */
 export function ProgrammePart() {
-  const c = useCtx(), multi = useIsMulti(), pf = usePortfolio((p) => p), productId = useActiveProductId(), tableId = useId(), hId = useId();
+  const multi = useIsMulti(), pf = usePortfolio((p) => (multi ? p : undefined)), productId = useActiveProductId(), tableId = useId(), hId = useId();
   const selected = useProcessView((s) => s.selected);
-  const v = useMemo(() => programmeProcess(c, multi ? pf : undefined, productId), [c, multi, pf, productId]);
+  // the programme view, kept while structurally equal: an edit it does not show (the customer name) re-renders nothing here
+  const v = useCtxSelector(useCallback((c: Ctx) => programmeProcess(c, pf, productId), [pf, productId]));
   const d = useMemo(() => programmeDrawing(v), [v]);
   const waves = v.waves.length ? `, ${v.waves.length} waves` : '';
   const desc = `${v.activities.length} activities in ${v.lanes.length} lanes and ${v.phases.length} phases${waves}, `

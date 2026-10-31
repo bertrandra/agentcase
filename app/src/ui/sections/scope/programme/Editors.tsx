@@ -1,7 +1,7 @@
 import { caseValues } from '@/domain/process';
 import { setInput } from '@/controllers/inputs';
 import { activityType, costProfileKey, costProfileLabel, COST_PROFILES, LINE_PROFILES, type ActivityEnabled } from '@/domain/programme';
-import { useCtx, useDoc } from '@/store/hooks';
+import { useCtxSelector, useDoc } from '@/store/hooks';
 import { DraftText } from '@/ui/widgets/DraftText';
 
 /**
@@ -19,9 +19,12 @@ export function EnabledBox({ name, e }: { name: string; e: ActivityEnabled }) {
 }
 
 const TEXT = new Map(COST_PROFILES.map((p) => [p.id, p.text]));
-/** The type of an activity's cost line (one-off, spread, adoption, recurring); read-only when its cost is not a programme line. */
+/**
+ * The type of an activity's cost line (one-off, spread, adoption, recurring); read-only when its cost is not a programme line. Re-renders only when
+ * that type changes.
+ */
 export function TypeSelect({ kind, name }: { kind: string; name: string }) {
-  const t = activityType(useCtx(), kind), line = t.line;
+  const t = useCtxSelector((c) => activityType(c, kind)), line = t.line;
   if (!t.editable || !line) return <span title={TEXT.get(t.profile)}>{costProfileLabel(t.profile)}</span>;
   return (
     <select aria-label={`Type of ${name}`} value={t.profile} title={TEXT.get(t.profile)} onChange={(e) => setInput(costProfileKey(line), e.target.value)}>

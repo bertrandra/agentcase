@@ -304,6 +304,27 @@ and `useSelectionView` (the aggregate result sections). `tests/ui/render-cost.te
 | Portfolio view, Scenarios: the customer name | 36 | 26 |
 | **Total of the 12 runs** | **706** | **415** |
 
+**BPMN-era screens (selective refresh).** The same rule on 🧩 Process, 📋 Programme, 📅 Plan, 🏢 Organisation, 🧭 Who does what and 🔎 Audit: no
+`useCtx()` there (the programme view, the programme table, `usePlanViews` and the Gantt view are `useCtxSelector`s; the Gantt view compares its axis
+by horizon, months and start, not by its functions), `useOrgSelector` (`store/orgHooks.ts`: the organisation model rebuilt only when the process
+document, the customer name or the teams change, re-rendering on the selected part), and a per-node memo where a view is recomputed with fresh
+objects (process and programme shapes, Programme rows, Gantt program rows, milestones and phase blocks, Audit rows, `SortHeader`). The process
+views stay memoised on the BPMN document's identity (`domain/process/scope.ts`, `storedValues.ts`): a process edit recomputes them, the structural
+comparison then keeps what did not change. A third edit is measured on these screens, one activity's effort (`process.updateActivity`):
+
+| One edit, section open: figure / customer name / one activity's effort | before | after |
+|---|---|---|
+| 🧩 Process | 57 / 56 / 532 | 15 / 9 / 27 |
+| 📋 Programme | 111 / 110 / 105 | 38 / 8 / 3 |
+| 📅 Plan | 78 / 77 / 72 | 32 / 15 / 39 |
+| 🏢 Organisation | 10 / 20 / 15 | 10 / 20 / 4 |
+| 🧭 Who does what | 10 / 21 / 16 | 10 / 21 / 16 |
+| 🔎 Audit | 10 / 9 / 29 | 10 / 9 / 15 |
+| **Total of the 18 runs** | **1,338** | **301** |
+
+The customer name still renders 🏢 Organisation and 🧭 Who does what (the default unit is "‹customer› delivery") and 📅 Plan's OBS; an activity's
+effort still renders 🧭 Who does what (the RACI views show it) and the Plan's delivery rollout (its weights).
+
 **Navigation comes from the document**, not from code tables: `ui/zones/navModel.ts` builds the sidebar from `doc.PERSONAS`,
 `PERSONA_SECTIONS`, `PERSONA_SECTION_ORDER`, `GROUPS`, `sectionGroups`, `dynamicSections` and the guided sequences, falling back to the
 bundled legacy catalogue (`ui/zones/data/*.json`: <!-- fact:sections -->91<!-- /fact --> sections in <!-- fact:groups -->15<!-- /fact --> groups, the last being the multi-product Portfolio group). Domain logic is in `domain/nav/` (`layout`, `groupBar`,
