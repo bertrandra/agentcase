@@ -1,6 +1,6 @@
 /** @calc-zone exports */
 /**
- * The transformation programme process (docs/SPEC_BPMN.md § 19; phases B9a, B9b): stages, catalogue, lanes, timing owner, cost profile, derived view,
+ * The transformation programme process (docs/SPEC_BPMN.md § 19; phases B9a, B9b, B9e): stages, catalogue, lanes, timing owner, cost profile, derived view,
  * diagram, export.
  */
 export * from './stages';
@@ -19,3 +19,7 @@ export { programmeLines, engineProfile, lineOnMonths, pilotLine, programmeRates,
   COACH_DAYS_PER_MONTH, type CoachingPlan, type ProgrammeLine,
   type ProgrammeLineId, type EngineProfile } from './profile';
 export { OPT_INS, optInDef, optInOfKind, optInOn, optParam, optInPlan, type OptInId, type OptInDef } from './optIn';
+export { COST_PROFILES, LINE_PROFILES, costProfileKey, costProfileLabel, lineOfKind, lineProfile, profiledMonths, activityType, type CostProfile,
+  type CostProfileDef, type ActivityType } from './costProfile';
+export { activityDescription, activityEnabled, descriptionKey, LINKED_SECTION, linkedSection, type ActivityEnabled } from './activityMeta';
+export { programmeTable, byYear, type ProgrammeTable, type ProgrammeRow, type CostDetail } from './table';

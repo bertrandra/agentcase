@@ -46,6 +46,21 @@ describe('F-B72: one owner of the programme activities', () => {
     expect(writers('setWaveDependency')).toEqual([`${WAVES}WaveDependency.tsx`]);
     expect(UI.filter((f) => /<WaveDependency\b/.test(src(f)))).toEqual([`${WAVES}WavePanel.tsx`]);
   });
+  // Phase B9e (§ 19.11): the 📋 Programme screen is the one other view of the activities. It edits them through the panel's own fields (`Param`) and
+  // the editors it shares with the panel (Enabled = the opt-in switch, the type, the description), one key and one `input.set` command per value.
+  it('the 📋 Programme screen is the only other writer: through the panel\'s fields and the shared editors, nothing else', () => {
+    const SCREEN = 'src/ui/sections/scope/programme/', EDITORS = `${SCREEN}Editors.tsx`, ROW = `${SCREEN}Row.tsx`;
+    const users = (re: RegExp) => UI.filter((f) => re.test(src(f))).map((f) => f.replace(/\\/g, '/')).sort();
+    expect(users(/<Param\b/)).toEqual([ROW, PANEL].sort());
+    expect(users(/<(TypeSelect|DescriptionField)\b/)).toEqual([ROW, PANEL].sort());
+    expect(users(/<EnabledBox\b/)).toEqual([ROW]);
+    expect(users(/\b(costProfileKey|descriptionKey)\(/)).toEqual([EDITORS, PANEL].sort());
+    expect(users(/costProfile_|activityDesc_/)).toEqual([]);   // the keys are named by the domain only
+    expect(src(EDITORS).match(/\b(setInput|setChecked|setValue|setProductKnowledge|dispatch)\(/g)?.every((m) => m === 'setInput(')).toBe(true);
+    const writers = walk(SCREEN).filter((f) => /\b(setInput|setChecked|setValue|setProductKnowledge|dispatch)\(/.test(src(f)))
+      .map((f) => f.replace(/\\/g, '/'));
+    expect(writers).toEqual([EDITORS]);
+  });
   it('no activity description is written outside the programme', () => {
     const files = walk('src').filter((f) => !f.startsWith(join('src', 'domain', 'programme')));
     const pieces = PROGRAMME_ACTIVITIES.flatMap((a) => a.description.split(/[.;:]\s/).map((s) => s.replace(/\.$/, '').trim()).filter((s) => s.length >= 18)

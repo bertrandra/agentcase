@@ -1,6 +1,7 @@
 import { memo, useState } from 'react';
 import { setProcessScope } from '@/controllers/process';
 import { fmt1 } from '@/ui/economicsFormat';
+import { SortHeader } from '@/ui/widgets/TableControls';
 import type { Row } from './tableModel';
 import { selectActivity, sortBy, useProcessView, type SortKey } from './view';
 
@@ -40,14 +41,7 @@ const RowView = memo(function RowView({ r, on }: { r: Row; on: boolean }) {
 export function ActivityTable({ rows }: { rows: Row[] }) {
   const sort = useProcessView((s) => s.sort), selected = useProcessView((s) => s.selected), [all, setAll] = useState(false);
   const long = rows.length > LIMIT && !all && rows.findIndex((r) => r.id === selected) < LIMIT, shown = long ? rows.slice(0, LIMIT) : rows;
-  const head = ([key, label]: [SortKey | null, string]) => {
-    const on = key && sort.key === key;
-    return (
-      <th key={label} scope="col" aria-sort={on ? (sort.dir === 1 ? 'ascending' : 'descending') : undefined}>
-        {key ? <button type="button" className="ac-proc-sort" onClick={() => sortBy(key)}>{label}{on ? (sort.dir === 1 ? ' ▲' : ' ▼') : ''}</button> : label}
-      </th>
-    );
-  };
+  const head = ([key, label]: [SortKey | null, string]) => <SortHeader key={label} k={key} label={label} sort={sort} onSort={sortBy} />;
   return (
     <div className="ac-table-wrap ac-proc-table" tabIndex={0} role="region" aria-label="Activities of the process">
       <table className="ac-table">

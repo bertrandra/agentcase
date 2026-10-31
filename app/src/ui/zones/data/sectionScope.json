@@ -10,6 +10,7 @@
  "scope-sel": "I-input",
  "phase-scope": "I-input",
  "process": "I-input",
+ "programme": "I-input",
  "lc-weighting": "I-input",
  "lifecycle-edit": "I-input",
  "team-in": "I-input",

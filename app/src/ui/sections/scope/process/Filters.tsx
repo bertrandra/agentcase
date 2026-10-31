@@ -1,4 +1,5 @@
 import { useId } from 'react';
+import { FilterSelect } from '@/ui/widgets/TableControls';
 import { optionsOf, type Row } from './tableModel';
 import { clearFilters, setFilter, useProcessView, type Filters as F } from './view';
 
@@ -8,12 +9,7 @@ export function Filters({ rows, shown }: { rows: Row[]; shown: number }) {
   const phases = [...new Map(rows.map((r) => [r.phase, r.phaseName])).entries()];
   const actors = optionsOf(rows, (r) => r.role).concat(optionsOf(rows, (r) => r.agent));
   const pick = <K extends keyof F,>(k: K, label: string, opts: [string, string][]) => (
-    <label>{label}{' '}
-      <select value={f[k]} onChange={(e) => setFilter(k, e.target.value as F[K])}>
-        <option value="">All</option>
-        {opts.map(([v, l]) => <option key={v} value={v}>{l}</option>)}
-      </select>
-    </label>
+    <FilterSelect label={label} value={f[k]} options={opts} onChange={(v) => setFilter(k, v as F[K])} />
   );
   return (
     <div className="ac-form-row ac-proc-filters" role="search" aria-label="Filter the activities">

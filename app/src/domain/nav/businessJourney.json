@@ -111,6 +111,10 @@
     "group": "choose-scope",
     "groupSeq": 90
    },
+   "programme": {
+    "group": "choose-scope",
+    "groupSeq": 92
+   },
    "lifecycle-edit": {
     "group": "choose-scope",
     "groupSeq": 70

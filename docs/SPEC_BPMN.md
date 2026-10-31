@@ -573,7 +573,7 @@ these. Portfolio: the process follows the override commands of spec F6–F9.
 | B9b (**built in B9b**, § 19.10; figures move, DEV-B9B-SETUP-SPREAD … DEV-B9B-RESOURCES) | Timing conflicts resolved (D-B27…D-B31); labour costs of training, coaching, governance from resources; opt-in new costs; waves edited in the Process panel | Hand-computed reference tests; deviations recorded | 2 d | 4 / 5 | B9a | Figures move: each change explained and recorded |
 | B9c | Programme values stored in the BPMN document (schema v4) | All round trips; v3 → v4 identical | 2 d | 5 / 5 | B9b | Second schema migration across every persistence path |
 | B9d | Gantt, WBS, OBS / RAM and resource histogram from the programme process; MS Project XML export; Plan screen (§ 19.8) | One owner for Gantt, cost and histogram; Σ histogram × rate = programme labour cost; MSPDI schema-valid | 2.5 d | 3 / 5 | B9b | A documented mapping where no standard exists; the delivery histogram read from the engine, never recomputed |
-| B9e | 📋 Programme screen in the Scope menu: enable, description, type (one-off, spread, adoption curve, recurring, milestone), duration, cost, linked section (§ 19.11) | Defaults change no figure; each type hand-computed | 1.5 d | 3 / 5 | B9b | One owner shared with the Process panel |
+| B9e (**built in B9e**, § 19.12) | 📋 Programme screen in the Scope menu: enable, description, type (one-off, spread, adoption curve, recurring, milestone), duration, cost, linked section (§ 19.11) | Defaults change no figure; each type hand-computed | 1.5 d | 3 / 5 | B9b | One owner shared with the Process panel |
 
 Durations are **elapsed working days with the agent workflow** used so far (parallel agents in worktrees, full local gates, a PR per
 phase merged on green CI, the owner's review of each delivery), with an uncertainty of about ±50 %. Difficulty: 1 = routine,
@@ -1455,4 +1455,39 @@ screen's parameter panel (§ 19.7: one owner per value — the table and the pan
 
 | Phase | Content | Gate | Duration | Difficulty |
 |---|---|---|---|---|
-| B9e | 📋 Programme screen (F-B79): enable, description, type, timing, cost, linked section; `ac:costProfile` read by the cost profile | Defaults change no figure; each type hand-computed; one-owner test extended; axe clean; ui-parity 0 unrecorded | 1.5 d | 3 / 5 |
+| B9e (**built in B9e**, § 19.12) | 📋 Programme screen (F-B79): enable, description, type, timing, cost, linked section; `ac:costProfile` read by the cost profile | Defaults change no figure; each type hand-computed; one-owner test extended; axe clean; ui-parity 0 unrecorded | 1.5 d | 3 / 5 |
+
+### 19.12 Built in B9e (the 📋 Programme screen, the cost profile type)
+
+Figure-neutral by default: every line's type defaults to **Spread**, the B9b rule, so no figure of the 107 fixtures moves (asserted per fixture:
+each line laid by `spreadMonths`, an explicit Spread gives the same engine profile and NPV); parallel-run and excel-compat unchanged. Schema unchanged
+at 3; the new values live in case keys beside the B9b opt-in switches until B9c moves them into the document.
+
+- **F-B79 built.** 📋 Programme (`programme`, Scope group, an app section shown to Builder, and to Advanced like every section; `I-input` with an
+  aggregate): one row per activity and milestone of the programme process with **Enabled** (the opt-in switch `opt*` the Process panel edits; the
+  hub and readiness activities follow their module, locked; the others required, locked), **Activity** (name, once for the case or per product × n,
+  gateway / milestone tag), **Description** (the catalogue's or the case's own text, key `activityDesc_<kind>`, blank = the catalogue's; shown by the
+  Process panel and written into the BPMN export's `documentation`), **Type** (`domain/programme/costProfile.ts`), **Start / duration** (the timing
+  owner's placement), **Cost** (amount with its rule, and the resource details: days, days a month over the duration, the day rate, the role; e.g.
+  coaching 2 days a month), the cost **by horizon year** in the euro result, and **Linked section** + "Open … in Process". "Edit" opens the
+  activity's description and its timing and cost parameters: the Process panel's own fields (`Param`). Totals row = the engine's programme cost by
+  year and in total (`engineProfile`), the pilot named outside it. Filters (phase, product level, type, enabled), sortable headers, keyboard and axe
+  clean. The Portfolio / Wave view aggregates per product (`domain/portfolio/aggProgramme.ts`: enabled activities, opt-ins on, lines not spread,
+  programme cost by year and total, pilot).
+- **Type, one owner.** `costProfile.ts`: `one-off` (the whole cost in its first month), `spread` (B9b), `adoption` (over its duration along the
+  product's S-curve: each month weighted by the adoption gained that month, evenly when the curve gains nothing there), `recurring` (the cost over its
+  duration charged again every 12 months up to the horizon; a recurring resource line's days follow the cycles), `none` (milestones). Stored per cost
+  line in `costProfile_<line>` (the four engagement stages share the `stages` line, so one type); `profile.ts` `programmeLines` lays each line by its
+  type (`shapeLine`), so the engine, the cost model, the setup breakdown and the panel follow. The pilot (outside the euro result), the build ramp,
+  the run, AgentOps and the hub run keep their owner's rule, shown read-only (Spread, Spread on adoption curve, Recurring); the knowledge-transfer
+  preparation shows the hub setup's type. The Process parameter panel shows the same type selector and description field (shared editors,
+  `ui/sections/scope/programme/Editors.tsx`). Export: `ac:costProfile` on every `ac:programmeActivity` (XSD: `tCostProfile`, optional, default `spread`).
+- **Linked section**: one map in the domain (`activityMeta.ts` `LINKED_SECTION`), e.g. pilot → 🧭 Program & Completeness, hub setup → 🧠 Knowledge hub,
+  training → Agentic Setup, AgentOps → 🤖 Run-team sizing, coaching → 📐 Maturity & Measurement; a test checks every activity and milestone has one.
+- **F-B72 extended.** `tests/ui/programme-one-owner.test.ts`: besides the Process panel, only the 📋 Programme screen edits an activity, through the
+  panel's `Param` fields and the shared editors (one `setInput` per value); no other file names the new keys.
+- **Tests.** `tests/domain/programme/cost-profile.test.ts` (defaults on the 107 fixtures; each type hand-computed on golden), `table.test.ts` (rows,
+  years = totals = engine profile on the 107 fixtures, enabled, details, shared line, description, export, links, aggregate),
+  `tests/ui/sections/programme-screen.test.tsx`, `tests/ui/vue-programme.test.tsx`.
+- *Open for B9c:* the type, the description and the opt-in switches move into the document together; a case-level opt-in in a portfolio is still
+  counted by every product (§ 19.10 partial).
