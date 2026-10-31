@@ -17,6 +17,8 @@ When releasing, follow [docs/BUMP_PROCEDURE.md](docs/BUMP_PROCEDURE.md) (§7 for
 
 ## [Unreleased]
 
+## [v21.6.0] 2026-10-31 — B10d: Monte Carlo, decision and ranking per unit (B10 complete)
+
 ### B10d — strategy, stress and decision per unit (D-B40); B10 complete
 
 - **Monte Carlo per unit.** At any unit of the organisation (Unassigned included), 🎲 Monte Carlo shows the unit's distribution: its products' draws
