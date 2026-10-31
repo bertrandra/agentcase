@@ -135,10 +135,31 @@ and GitHub (no open issue, no open PR). Not covered by FX-01…FX-45 above.
 
 Added to § 3.5: **FX-O4** supply real customer files for FX-63; **FX-O5** decide FX-57 / FX-59 / FX-60 (port or out of scope).
 
+### 3.7 Second recheck (31 Oct 2026): the nightly job is red
+
+The scheduled `nightly` workflow has failed on every run since at least 27 Oct (runs 3–7; the PR gates stay green because they run
+a smaller set). Its last run (41184666650, on v20.33.0) fails four gates for four separate reasons.
+
+| ID | Issue | Fix | Priority | Size | Evidence |
+|---|---|---|---|---|---|
+| FX-70 | `npm run check` x3 fails every time on 26 tests: every xmllint schema test (BPMN, DMN, CMMN, MSPDI, audit, org). `nightly.yml` does not install `libxml2-utils`; `app.yml` does | Add the same `xmllint --version \|\| apt-get install libxml2-utils` step to both nightly jobs | **P1** | S | nightly run 7, step "check-repeat --runs 3" |
+| FX-71 | Flaky: `tests/domain/portfolio/stress.test.ts > performance > 20 products x 1000 draws` failed in 2 of 3 runs | Measure the CI time; set the budget from it, or move the timing to `npm run perf` | P2 | S | same run, marked "flaky" |
+| FX-72 | Documented test count is stale: the suite has 19,523 tests, ARCHITECTURE says about 16,242 (20 % off, tolerance 2 %). `docs:check` does not catch it because the count is only refreshed with `--count-tests` | Run `npm run docs:facts -- --count-tests` in the release procedure (and `npm run release`) | P2 | S | step "check-repeat --count-tests" |
+| FX-73 | Full-corpus parallel run: 107 of the 107 case files (`app/fixtures/cases/*.json`) differ from the legacy, unrecorded. `tools/parallel-run-known.json` recorded DEV-B9B-RESOURCES for the 40 workbooks only; the two DEV-SNAPSHOT-RESTORE entries (`curve-bass`, `curve-legacy`) now carry stale text (B9b moved their NPV and payback too) | Re-record the 107 cases under DEV-B9B-RESOURCES after triage (FX-74) and refresh the two DEV-SNAPSHOT-RESTORE texts | **P1** | S | step "parallel-run --corpus full": 0 identical, 40 known, 107 unexpected |
+| FX-74 | Most case diffs follow the B9b pattern (NPV −€10k, payback −2 to −3 months), but five are much larger and must be explained before recording: `econ-roi-low` (−€2,417k → −€1,034k), `econ-roi-mid` (€514k → €853k), `econ-no-setup` (€1,762k → €1,686k), `setup-large` (€1,168k → €1,236k), `vb-gantt-alt` (€2,902k → €2,929k, the other way) | Trace each to a B9b rule (programme cost from resources, one timing) or open a defect; record the explanation in DEVIATIONS | **P1** | M | same step |
+| FX-75 | `validate:affected` stops on a stale mutation (`src/domain/economics/cashflow.ts`: the text it mutates no longer exists since the payback rewrite) | Update the mutation in `scripts/lib/mutations.ts` to the current payback loop | P2 | S | job "affected", exit 2 |
+| FX-76 | `validate:affected` shows the test selection misses 17–22 failing test files per mutation at the "precise" level (and up to 22 at "zone"): the affected-test selector is not safe to rely on | Fix the dependency map used by the selector (or drop the "precise" level); the job must report 0 missed | P2 | M | job "affected", every mutation |
+| FX-77 | Dependencies behind by a major version: eslint 10, @eslint/js 10, eslint-plugin-react-hooks 7, immer 11, fast-check 4, jsdom 29, jscpd 5, @types/react 19 (React stays 18); `axe-core` is locked at 4.10 while 4.14 is in range | One upgrade lot, each major in its own commit with the full gate; refresh the lockfile for in-range updates | P3 | M | `npm outdated` |
+
+Checked and clean in this round: no `@ts-ignore` / `@ts-nocheck`, no `as any`, no `.skip` / `.only` / `.todo` tests, no stray
+`console.log`; the 8 `eslint-disable` lines all carry a reason; the CODE_REVIEW modelling question 6 is resolved (v18.11); the SPEC_BPMN
+B5 question on factory tags is answered in § 15; `npm audit` 0; no open GitHub issue or PR.
+
 ## 4. Lots (one PR each, in this order)
 
 | Lot | Content | Gate | Figures | Size |
 |---|---|---|---|---|
+| X0 Nightly green (first) | FX-70, FX-72, FX-73, FX-74, FX-75 | Nightly run green on main | None (records only) | 1 d |
 | X1 Decisions | Record the owner's answers to FX-D1…FX-D15 in this file and SPEC_BPMN | — | None | 0.5 d |
 | X2 Consistency (P1) | FX-01, FX-03, FX-04, FX-06, FX-07, FX-08, FX-40, FX-D1 (if a), FX-D3 (if a) | 107 fixtures identical except the deviations approved; cross-surface tests | Opt-in / Deviation if FX-D3 a | 2 d |
 | X3 Catalogue retirement | FX-02 (D-B9) | Default process byte-identical; all reference lists unchanged | None | 1.5 d |
@@ -146,10 +167,10 @@ Added to § 3.5: **FX-O4** supply real customer files for FX-63; **FX-O5** decid
 | X5 Import / export / workbooks | FX-24, FX-25, FX-27…FX-34 | Round trips; workbook legacy sheets unchanged | None | 2 d |
 | X6 Organisation depth | FX-05, FX-21, FX-22, FX-23, FX-D4 / FX-D6 / FX-D7 / FX-D11 as decided | Undo property tests; parity | Opt-in | 2.5 d |
 | X7 Portfolio document | FX-D14 (if a), FX-D2 (if b), FX-D8 / FX-D9 / FX-D10 / FX-D12 / FX-D13 / FX-D15 as decided | Schema v6 migration round trips | Per decision | 3 d |
-| X8 Polish | FX-18, FX-19, FX-41…FX-45 | — | None | 1 d |
+| X8 Polish | FX-18, FX-19, FX-41…FX-45, FX-71, FX-76, FX-77 | — | None | 1 d |
 | X9 Carry-over | FX-50…FX-56, FX-58, FX-61, FX-62, FX-64; FX-57 / FX-59 / FX-60 per FX-O5; FX-63 when files arrive | Deviations recorded for FX-52, FX-53, FX-56 | Deviation (labels, export, report count) | 3 d |
 
-Total about 18.5 days of agent work; X2 first because it carries the only P1 items that can move a figure.
+Total about 20.5 days of agent work; X0 first (the nightly is the only gate on the full corpus), then X2 because it carries the only P1 items that can move a figure.
 
 ## 5. Acceptance
 
