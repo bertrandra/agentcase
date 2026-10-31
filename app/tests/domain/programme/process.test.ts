@@ -61,7 +61,8 @@ describe('programme milestones and gateways (§ 19.2 rows of 2026-10-30)', () =>
     expect(v.milestones.every((m) => m.instances === 1)).toBe(true);
   });
   it('capability building is part of the training activity, with the milestone "Target capability reached"', () => {
-    expect(v.activities.find((a) => a.kind === 'setupTraining')!.values.map((p) => p.def.key)).toEqual(['setupTraining', 'capOps', 'capTrain', 'capTarget']);
+    expect(v.activities.find((a) => a.kind === 'setupTraining')!.values.map((p) => p.def.key))
+      .toEqual(['trainFte', 'trainMonths', 'capOps', 'capTrain', 'capTarget']);
     expect(v.milestones.find((m) => m.kind === 'capabilityTarget')!.month).toBeNull();
   });
   it('the export writes them as an exclusive gateway and intermediate events with their criteria', () => {

@@ -110,7 +110,7 @@ describe('the consolidation uses the effective starts (fixture)', () => {
     const f = openPortfolioFixture(), before = consolidate(f);
     const g = setWaveDependency(f, 'wdr3dpo', { waveId: 'w1', milestone: 'setupEnd', lagMonths: 1 });
     const c = consolidate(g), w1 = scheduledProducts(g).filter((s) => s.wave.id === 'w1');
-    const end = Math.max(...w1.map((s) => s.month0 + c.products.find((v) => v.id === s.product.id)!.run.profile));
+    const end = Math.max(...w1.map((s) => s.month0 + c.products.find((v) => v.id === s.product.id)!.run.setupMonths));
     expect(c.products.find((v) => v.id === 'p299ec9')!.month0).toBe(Math.max(6, end + 1));
     expect(c.waves.find((w) => w.id === 'wdr3dpo')!.startMonth).toBe(Math.max(6, end + 1));
     expect(before.products.find((v) => v.id === 'p299ec9')!.month0).toBe(6);

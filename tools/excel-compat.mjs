@@ -29,6 +29,9 @@ const { THEME_DEFAULT } = await load('/src/domain/theme/index.ts');   // the pri
 const { BUILTIN_PERSONAS } = await load('/src/domain/nav/structures.ts');
 const { makeDefaultDoc } = await load('/src/store/instance.ts'), { refitPotential } = await load('/src/store/derive.ts'), { computeCase } = await load('/src/domain/index.ts');
 const { produce } = appReq('immer'), ExcelJS = appReq('exceljs');
+// The recorded deviations (docs/DEVIATIONS.md and its machine-readable twin app/tests/helpers/deviations.ts, the list the oracle tests use): a computed
+// figure the legacy file computes differently ON PURPOSE is reported as KNOWN with its id, never compared away silently; every other difference fails.
+const { deviationOf } = await load('/tests/helpers/deviations.ts');
 const ENV = { sections: LEGACY_SECTIONS };   // the 79 case sections, as the app's own export (ParamsExcelPanel): the legacy file knows no other
 
 const canon = (v) => JSON.stringify(v, (_k, x) => (x && typeof x === 'object' && !Array.isArray(x) ? Object.fromEntries(Object.entries(x).filter(([, y]) => y !== undefined).sort(([a], [b]) => (a < b ? -1 : 1))) : x));
@@ -108,12 +111,17 @@ function compare(label, leg, ours) {
   near(leg.exp.model, JSON.parse(JSON.stringify(c.model, (_k, v) => (v === Infinity ? 'Infinity' : v))), 'model', problems);
   near(leg.exp.phaseScope, c.phaseScope, 'phaseScope', problems); near(leg.exp.glassCeiling, c.glassCeiling, 'glassCeiling', problems);
   near(leg.exp.payback, c.payback, 'payback', problems); near(leg.exp.npv, c.npv, 'npv', problems);
-  console.log((problems.length ? 'FAIL ' : 'ok   ') + label.padEnd(34) + (problems.length ? problems.slice(0, 4).join(' | ') : `${leg.notes.length} notes, figures equal`));
-  return problems.length === 0;
+  const fixture = label.startsWith('mutation: ') ? 'golden' : label, known = problems.filter((p) => deviationOf(p, fixture)), rest = problems.filter((p) => !known.includes(p));
+  const ids = [...new Set(known.map((p) => deviationOf(p, fixture).id))];
+  if (ids.length) knownIds.push(...ids);
+  console.log((rest.length ? 'FAIL ' : known.length ? 'KNOWN' : 'ok   ') + ' ' + label.padEnd(34) + (rest.length ? rest.slice(0, 4).join(' | ')
+    : `${leg.notes.length} notes, figures equal${known.length ? ` but the ${known.length} recorded field(s) of ${ids.join(', ')}` : ''}`));
+  return rest.length === 0 ? (known.length ? 'known' : true) : false;
 }
 
-let ok = 0, bad = 0;
-const tally = (r) => { if (r) ok++; else { bad++; process.exitCode = 1; } };
+let ok = 0, bad = 0, knownN = 0;
+const knownIds = [];
+const tally = (r) => { if (r === 'known') knownN++; else if (r) ok++; else { bad++; process.exitCode = 1; } };
 // ---- group 1: each fixture's workbook, written by us, read by the legacy app
 let golden;
 for (const id of ids) {
@@ -133,5 +141,5 @@ if (!args.includes('--no-mutations')) {
     tally(compare(`mutation: ${name}`, leg, await ourImport(bytes.buffer.slice(bytes.byteOffset, bytes.byteOffset + bytes.byteLength))));
   }
 }
-console.log(`\n${ok} identical, ${bad} different`);
+console.log(`\n${ok} identical, ${knownN} known (${[...new Set(knownIds)].join(', ') || 'none'}), ${bad} different`);
 await browser.close(); await vite.close();

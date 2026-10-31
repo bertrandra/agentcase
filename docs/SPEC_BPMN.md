@@ -1,6 +1,6 @@
 # AgentCase — Specification: the delivery process as a native BPMN 2.0 model (export and import)
 
-> Status: **specified; phases B0, B1, B2, B3, B4, B5, B5b, B6, B6b, B7, B7b and B9a built** (B0: extension XSD, official OMG schemas, `tools/bpmn-validate.mjs`, sample and hostile files, § 5.3; B1: domain only, `app/src/domain/process`, § 6.3; B2: reader / writer, security, round trip, BPSim, export from the File menu, § 5.5; B3: schema v3, the case stores the BPMN document, § 6.4; B4: the Process section, import, § 9.1; B5: custom activities, roles, agents and rework from the model in the engine, § 7.1; B5b: extended profile in the domain, § 17.10; B6: the optional lazy BPMN editor, § 9.2; B6b: organisation model, § 16.8; B7: audit layer, § 15.7; B7b: DMN decisions and the CMMN run view, § 17.11; B9a: the transformation programme derived, its timing owner and screens, § 19.9). Decisions D-B1…D-B26 **adopted on 2026-10-30** (§ 12, § 15.6, § 16.7, § 17.9); D-B26: the case's BPMN
+> Status: **specified; phases B0, B1, B2, B3, B4, B5, B5b, B6, B6b, B7, B7b, B9a and B9b built** (B0: extension XSD, official OMG schemas, `tools/bpmn-validate.mjs`, sample and hostile files, § 5.3; B1: domain only, `app/src/domain/process`, § 6.3; B2: reader / writer, security, round trip, BPSim, export from the File menu, § 5.5; B3: schema v3, the case stores the BPMN document, § 6.4; B4: the Process section, import, § 9.1; B5: custom activities, roles, agents and rework from the model in the engine, § 7.1; B5b: extended profile in the domain, § 17.10; B6: the optional lazy BPMN editor, § 9.2; B6b: organisation model, § 16.8; B7: audit layer, § 15.7; B7b: DMN decisions and the CMMN run view, § 17.11; B9a: the transformation programme derived, its timing owner and screens, § 19.9; B9b: decisions D-B27…D-B31 applied, labour from resources, opt-in activities, waves edited in the Process panel, § 19.10). Decisions D-B1…D-B26 **adopted on 2026-10-30** (§ 12, § 15.6, § 16.7, § 17.9); D-B26: the case's BPMN
 > document is the **only** stored form of the process, the organisation and the audit (§ 6.1). Scope: the TypeScript + React application in `app/`.
 > Related documents: [ARCHITECTURE.md](ARCHITECTURE.md), [DEVIATIONS.md](DEVIATIONS.md), [SPEC_MULTI_PRODUIT.md](SPEC_MULTI_PRODUIT.md).
 > Code rules unchanged: files ≤ 150 lines, no `any`, layers `ui → controllers → store → domain`, every write is an undoable
@@ -570,9 +570,10 @@ these. Portfolio: the process follows the override commands of spec F6–F9.
 | B7b (**built in B7b**, § 17.11) | DMN decisions (F-B62) and the optional CMMN export of the run phase (F-B63) | DMN round trip; evaluator tests per hit policy | 1.5 d | 3 / 5 | B5b | DMN hit policies and the shared FEEL subset |
 | B8 | Release: guide, DEVIATIONS (if any), CHANGELOG, version bump | All gates green | 0.5 d | 1 / 5 | all | — |
 | B9a (**built in B9a**, derived stage; waves board open, § 19.9) | Transformation programme process derived from today's keys; one timing owner per programme activity (§ 19) | 107 fixtures identical; parallel-run 40/40; excel-compat 67/67 | 2 d | 4 / 5 | B8 | Unifying the Gantt, cost-model and engine timings without moving a figure |
-| B9b | Timing conflicts resolved (D-B27…D-B31); labour costs of training, coaching, governance from resources; opt-in new costs | Hand-computed reference tests; deviations recorded | 2 d | 4 / 5 | B9a | Figures move: each change explained and recorded |
+| B9b (**built in B9b**, § 19.10; figures move, DEV-B9B-SETUP-SPREAD … DEV-B9B-RESOURCES) | Timing conflicts resolved (D-B27…D-B31); labour costs of training, coaching, governance from resources; opt-in new costs; waves edited in the Process panel | Hand-computed reference tests; deviations recorded | 2 d | 4 / 5 | B9a | Figures move: each change explained and recorded |
 | B9c | Programme values stored in the BPMN document (schema v4) | All round trips; v3 → v4 identical | 2 d | 5 / 5 | B9b | Second schema migration across every persistence path |
 | B9d | Gantt, WBS, OBS / RAM and resource histogram from the programme process; MS Project XML export; Plan screen (§ 19.8) | One owner for Gantt, cost and histogram; Σ histogram × rate = programme labour cost; MSPDI schema-valid | 2.5 d | 3 / 5 | B9b | A documented mapping where no standard exists; the delivery histogram read from the engine, never recomputed |
+| B9e | 📋 Programme screen in the Scope menu: enable, description, type (one-off, spread, adoption curve, recurring, milestone), duration, cost, linked section (§ 19.11) | Defaults change no figure; each type hand-computed | 1.5 d | 3 / 5 | B9b | One owner shared with the Process panel |
 
 Durations are **elapsed working days with the agent workflow** used so far (parallel agents in worktrees, full local gates, a PR per
 phase merged on green CI, the owner's review of each delivery), with an uncertainty of about ±50 %. Difficulty: 1 = routine,
@@ -1233,7 +1234,7 @@ switching one on adds its cost to the programme cost and the cash flow (hand-com
 | Phase | Content | Gate | Duration | Difficulty |
 |---|---|---|---|---|
 | B9a | Programme process **derived** from today's keys (like the B6b teams); one timing owner per activity for the Gantt, cost model and stages; the two stage lists merged; message flows; export; screens per § 19.7 (swim lanes, parameter panel, context screens) | 107 fixtures identical; parallel-run 40/40; excel-compat 67/67; Gantt and cost-model surfaces read one owner | 2 d | 4 / 5 |
-| B9b | Conflicts T1–T5 resolved by the decisions below; training, coaching and governance derived from resources; the four opt-in agent-rollout activities (§ 19.2); opt-in new costs | Hand-computed reference tests; each changed figure recorded in DEVIATIONS.md | 2 d | 4 / 5 |
+| B9b (**built in B9b**, § 19.10) | Conflicts T1–T5 resolved by the decisions below; training, coaching and governance derived from resources; the four opt-in agent-rollout activities (§ 19.2); opt-in new costs | Hand-computed reference tests; each changed figure recorded in DEVIATIONS.md | 2 d | 4 / 5 |
 | B9c | Stored values move into the document (schema v4 migration), keys removed, views derived | All persistence round trips; v3 → v4 open → save → open identical | 2 d | 5 / 5 |
 
 ### 19.6 Decisions (adopted 2026-10-30, as recommended)
@@ -1243,7 +1244,7 @@ switching one on adds its cost to the programme cost and the cash flow (hand-com
 | D-B27 | Setup duration (T1) | (a) the engine's 6 months everywhere; (b) the `setupDuration` input everywhere, the engine spreads over it; (c) per setup line, from its activity | **(c)**, which reduces to (b) when lines share one duration |
 | D-B28 | Pilot placement (T2) | (a) before the build (Pilot & Prove); (b) from month 1 overlapping the setup | **(a)**: the pilot proves before scaling; its cost moves earlier |
 | D-B29 | Knowledge Hub setup timing (T3) | (a) `ktLeadMonths` before the product's month 0; (b) `khSetupDays` after onboarding; (c) inside the setup profile | **(a)** for the per-product part, the common hub once before the first wave |
-| D-B30 | Coaching (T5) | (a) one coaching activity, curve-based, in the euro result; (b) keep the setup line, curve informative | **(a)** |
+| D-B30 | Coaching (T5) | (a) one coaching activity, curve-based, in the euro result; (b) keep the setup line, curve informative | **(a)**, **revised 2026-10-31**: one coaching activity priced as a resource activity: coaching days per month (default 2) × duration in months × the coach day rate (the rate card rule of the other resource lines), spread evenly over its months; an existing case's `setupCoaching` amount calibrates the days (total days = amount / day rate, months = days / days per month), so the cost reproduces the amount; the 40/30/20 % curve (`coachY1`, `coachCruise`) is not priced, it stays the informative view of the Maturity screen |
 | D-B31 | New costs (stages, value tracking, AI Act, audit interviews) | (a) opt-in, off by default; (b) on by default | **(a)**: no figure moves without a choice |
 | D-B32 | Where the programme lives | (a) second participant in the same document; (b) a separate document | **(a)** (D-B26) |
 
@@ -1356,7 +1357,7 @@ like the B6b teams; no value moved, no key added, schema unchanged at 3. Code: `
 - **F-B67 built.** Per-product activities are multi-instance over the planned products (`loopCardinality`, × n on the shapes); each wave is a
   sub-process with its effective start, its products and its dependency (`ac:wave`); the transformation-team capacity is on the lane set
   (`ac:setupCapacity`). The waves are drawn in a band under the lanes.
-- **F-B68 not in B9a** (B9b): the engine and the cost model still read today's owners; the programme displays their figures.
+- **F-B68 not in B9a** (built in B9b, § 19.10): the engine and the cost model still read today's owners; the programme displays their figures.
 - **F-B69 partial.** RACI per activity (`ac:raci` on the lanes, shown in the panel) and export are built: the export dialog offers the delivery
   process (default, byte-identical to before), the transformation programme alone (its pool, a black-box delivery pool for its message flows) or
   both in one file (second participant, process, message flows, DI under the delivery pool). Extension XSD (1.x rule, additions only): global
@@ -1379,8 +1380,79 @@ like the B6b teams; no value moved, no key added, schema unchanged at 3. Code: `
   the knowledge-transfer preparation field), Run sizing (mode, floor, ops load), Maturity / coaching (Y1 and cruise load), and references added on
   Human readiness (change management) and the value tracker. Each shows the activities it relies on as read-only references with their values
   and "Open … in Process" (`ui/widgets/ActivityRefs.tsx`, which selects the activity and opens the section). Recorded as DEV-B9A-CONTEXT-SCREENS.
-  *Not done:* 🌊 Waves still edits the wave start, dependency and the setup capacity on its board (the waves are sub-processes of the programme and
-  are shown there, but moving their editing into the panel is a portfolio-planning change for B9c with the stored form).
+  *Not done in B9a:* 🌊 Waves still edited the wave start, dependency and the setup capacity on its board — moved to the wave's panel in B9b (§ 19.10).
 - **F-B72 built.** `tests/ui/programme-one-owner.test.ts`: no file of `src/ui` or `src/controllers` writes a parameter key of a programme activity
   (field ids, `setInput` / `setProductKnowledge` calls, the stage loop) except the parameter panel (and the knowledge-transfer field it renders);
   no sentence of an activity description is written outside `src/domain/programme` (the setup lines lost their `text`).
+
+### 19.10 Built in B9b (decisions applied, labour from resources, opt-in activities, waves in the panel)
+
+Figures move ON PURPOSE in B9b; each family is recorded in [DEVIATIONS.md](DEVIATIONS.md) (DEV-B9B-SETUP-SPREAD, DEV-B9B-PILOT, DEV-B9B-HUB-TIMING,
+DEV-B9B-COACHING, DEV-B9B-RESOURCES) with its oracle fields in `app/tests/helpers/deviationsB9b.ts`. Schema unchanged at 3; no key removed (the values
+stay in their keys until B9c). Code: `app/src/domain/programme/{timing,profile,optIn,catalogue,catalogueTypes,catalogueOptIn,costs,placement}.ts`.
+
+- **T1–T5 collapsed (F-B65 built).** `timing.ts` gives ONE reading per activity: `stageTimings` (T4: a positive input, else the default, on every
+  surface; Pilot & Prove lasts the pilot, D-B28), `setupMonths` / `lineMonths` (D-B27 (c): a setup line lasts its activity's duration, the setup
+  duration `setupDuration` unless the activity has its own (`trainMonths`, `govMonths`), so it reduces to (b)), `pilotTiming` (weeks, break-in,
+  months, `leadMonths` before the build), `hubSetupTiming` (days → months; D-B29: placed `ktLeadMonths` before the product's month 0, at month 1 for
+  a single case or a first wave; the common hub once before the first wave) and `spreadMonths` (the one spreading rule, last month pro rata).
+  Readers: the cost profile (and through it the engine), the Gantt band (`programRows`: the build is the setup duration, the hub bar its days), the
+  engagement roadmap and runway, the Board `onboardWeeksTotal`, the pilot sizing and the cost model's pilot months (before month 0), the waves'
+  capacity and `setupEnd` dependencies (`setupMonths`), the knowledge-transfer lead. The engine's hard-coded 6 months (`setupProfileMonths`) is gone.
+- **F-B68 built.** `profile.ts` is the ONE monthly cost profile of the programme: `programmeLines(c)` — tooling (a non-labour amount, over the setup
+  duration), training (trainers `trainFte`, default 0.5 FTE) and governance (Design Authority `govFte`, default 0.25 FTE): role FTE × duration × working
+  days / 12 × the role rate (the target blended day rate of the rate card and the target location mix, `targetBlendedTJM`, × the AI-skill premium 1.15:
+  the SDLC's rate), coaching (D-B30 revised 2026-10-31: `coachDaysPerMonth`, default 2, × `coachMonths` × the role rate, spread over its months;
+  with no duration entered, `setupCoaching` calibrates the days, so its cost is the case's amount; the EV-19 curve stays informative), the HRI change cost (engine formula kept), the hub setup (formula kept, parity), the opt-in activities switched on. `engineProfile(c)`
+  lays them on the product's months (a spend before the build at month 1, a spend past the horizon in its last month), with the hub part and the
+  opt-in savings; the kernel reads it (`K.setupProfile`, `K.ktProfile`, `K.savingProfile`; a scenario lever on the setup scales it), the setup
+  breakdown and so `model().setupTotal` add its lines, the cost model writes one row per line ("Setup: Training"…), the consolidation moves the
+  engine's own hub months by the lead, the programme panel shows each line's effort and cost. The pilot (`pilotLine`, parity) stays outside the
+  euro result (DEV-COSTMODEL-PILOT). `CALCULATION_VERSION` is `agentcase.timeengine.v2` (the same inputs give other results).
+- **Opt-in activities (D-B31) built.** `optIn.ts` + `catalogueOptIn.ts`: engagement stages (Discover, Calibrate, Validate: engagement team
+  `stagesFte` × the stage weeks; Decide & Scale: `decideDays`), value tracking (FinOps `valueFte` over the horizon), risk mitigations and AI Act
+  obligations (`aiActDays` a year), audit and discovery interviews (`auditDays`, before the build), and the four agent-rollout activities of § 19.2:
+  licence procurement (`procureDays`, before the build; the licence amounts stay the tooling and token lines), agent-toolchain integration
+  (`integrations` × `integrDays`, over the setup), rollout hypercare (`hypercareFte` × `hypercareWeeks` from the go-live, the product's month 1),
+  legacy decommissioning (`decomDays` the month after the setup; `decomSaving` €/month saved from the next month, only when entered). Each is a
+  programme task with its lane, RACI, duration, placement and parameters in the Process panel; each is switched on by its own key (`optStages`,
+  `optValue`, `optAiAct`, `optAudit`, `optProcure`, `optIntegr`, `optHypercare`, `optDecom`, value "on"), OFF by default: no figure of a case moves
+  (asserted on the 107 fixtures). On, its labour (days × the role rate) enters the setup and the cash flow (hand-computed tests).
+  *Partial:* in a portfolio a case-level opt-in activity switched on in the common values is counted by every product (switch it on for one product
+  to count it once); the case-level / portfolio-level split comes with the stored form (B9c).
+- **F-B67 / F-B71 waves built.** The 🌊 Waves board keeps the board (waves, order, names, notes, products and offsets) and shows each wave's start,
+  dependency and the transformation-team capacity as context with "Open … in Process"; the wave's parameter panel in the Process section
+  (`WavePanel`: start, dependency, capacity) is the one place that edits them (F-B72 test extended).
+- **Gates.** Hand-computed reference tests (`tests/domain/programme/profile.test.ts`, `timing-owner.test.ts`); `legacy-profile.test.ts` injects the
+  legacy profile and finds every skipped oracle field equal to the oracle again (nothing else moved); the legacy parity tests of screens, workbooks and
+  reports run on that injected legacy profile; the parallel run records each file's NPV / payback difference in `tools/parallel-run-known.json`
+  and excel-compat reports the recorded fields as KNOWN (through the twin), never silently.
+
+### 19.11 The 📋 Programme screen (phase B9e, owner's request 2026-10-31)
+
+A new screen **📋 Programme** in the **Scope** menu lists every activity of the transformation programme in one table — the
+programme's counterpart of the delivery activity table — so the owner can switch activities on and off, set their type, duration and
+cost, and jump to the section that uses them. It edits the same BPMN document through the same undoable commands as the Process
+screen's parameter panel (§ 19.7: one owner per value — the table and the panel are two views of one activity, never two copies).
+
+| Column | Content | Edit |
+|---|---|---|
+| Enabled | tick box: the activity counts (cost, timing, Gantt, histogram) or not; mandatory activities (e.g. the setup lines the engine needs) are ticked and locked, the opt-in activities (D-B31) unticked by default | yes |
+| Activity | name, phase or wave, product (per-product activities show one row per product, or a "per product" row in the Portfolio view) | name |
+| Description | the activity's description from the document | yes (text) |
+| Type | **One-off** (the whole cost in one month at its placement), **Spread** (evenly over its duration), **Spread on adoption curve** (along the product's S-curve over its duration), **Recurring** (per month or per year for its duration, e.g. hub run, AgentOps), **Milestone** (no cost: gates, maturity transitions) | yes (select) |
+| Start / duration | placement (relative to the case start, the product's month 0 or another activity) and duration in months or weeks, from the one timing owner (F-B65) | yes |
+| Cost | the activity's cost over the horizon with its rule shown (resources: roles × days × rate; amount; engine-computed, read-only) and, for resource activities, days, frequency (e.g. coaching: days per month) and roles | yes, by rule |
+| Linked section | link to the context section that uses the activity (e.g. Pilot → Program & Completeness, Hub setup → Knowledge hub, Training → Agentic Setup, AgentOps → Run sizing) and "Open in Process" (the diagram, swim lane and RACI) | link |
+
+- **Defaults reproduce B9b**: each activity's default type is the spreading rule B9b uses for it (setup lines: Spread over their duration; pilot:
+  Spread before the build; hub run and AgentOps: Recurring; gates: Milestone), so opening a case changes no figure. A type change is an
+  explicit edit: one undoable step, figures follow (hand-computed tests per type).
+- **One owner**: the type is stored on the activity in the document (`ac:costProfile one-off | spread | adoption | recurring | none`) and read by
+  the monthly cost profile (`domain/programme/profile.ts`) that the engine, cost model, Gantt and histogram read (B9b).
+- Totals row (programme cost by year and in total), filters (phase, product, type, enabled), sort, keyboard and axe clean, table as the
+  accessible form; the Portfolio / Wave views aggregate per product (I-input with an aggregate, as the other input sections).
+
+| Phase | Content | Gate | Duration | Difficulty |
+|---|---|---|---|---|
+| B9e | 📋 Programme screen (F-B79): enable, description, type, timing, cost, linked section; `ac:costProfile` read by the cost profile | Defaults change no figure; each type hand-computed; one-owner test extended; axe clean; ui-parity 0 unrecorded | 1.5 d | 3 / 5 |

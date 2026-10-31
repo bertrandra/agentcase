@@ -11,9 +11,12 @@ import { isSplitComplete, SPLIT_TOLERANCE, splitRemainder, splitTotal } from '@/
 import { mcOutcome, runMonteCarlo, scenarioSet, sensitivityMatrix, MC_PARAMS_DEFAULT } from '@/domain/stress';
 import { cellCtx } from '@/domain/stress/sensitivity';
 import { evaluateStrategies, stratNormalize, stratWeightsOf } from '@/domain/verdict';
+import { noProgramme } from '../helpers/legacyProgramme';
 import { FIXTURE_IDS, loadCase } from '../helpers/portfolio';
 
 const ctx = (id: string) => makeCtx(loadCase(id));
+/** econ-no-setup without a programme cost under the B9b rules (DEV-B9B-COACHING / -RESOURCES: the resource lines zeroed too). */
+const noSetup = () => makeCtx(noProgramme(loadCase('econ-no-setup')));
 const withCurve = (s: CaseState, curve: string): CaseState => ({ ...s, scurve: { ...s.scurve, curve } } as CaseState);
 const withValues = (s: CaseState, v: Record<string, string>): CaseState => ({ ...s, dom: { ...s.dom, values: { ...s.dom.values, ...v } } });
 /** The same case with no uncertainty: every draw is the deterministic case. */
@@ -64,7 +67,7 @@ describe('DEV-PAYBACK-NOSETUP: one displayed payback', () => {
     expect([displayedPayback(1, 0, 10), displayedPayback(1, 0, 0), displayedPayback(9, 5, 10), displayedPayback(null, 5, 10)]).toEqual([0, null, 9, null]);
   });
   it('the scenarios, the Financial view, Results and the strategies all say immediate on econ-no-setup; the KPI kernel month stays 1', () => {
-    const c = ctx('econ-no-setup'), h = headline(c);
+    const c = noSetup(), h = headline(c);
     expect(h.paybackMonth).toBe(1);
     expect(paybackYearShown(h)).toBe(0);
     const loc = scenarioSet(c).find((s) => s.key === 'loc')!.m;
@@ -74,7 +77,7 @@ describe('DEV-PAYBACK-NOSETUP: one displayed payback', () => {
     for (const r of saving) expect(r.computed.payback).toBe(0);
   });
   it('the ranking puts an immediate payback first on that metric (it was ranked as 99 years)', () => {
-    const c = ctx('econ-no-setup'), ranked = stratNormalize(evaluateStrategies(c), stratWeightsOf(c.s));
+    const c = noSetup(), ranked = stratNormalize(evaluateStrategies(c), stratWeightsOf(c.s));
     for (const r of ranked) expect(r.norm.payback).toBe(r.row.computed.payback === 0 ? 100 : 0);
   });
 });

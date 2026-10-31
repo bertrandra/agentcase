@@ -1,12 +1,13 @@
 // @vitest-environment jsdom
 import { act, cleanup, fireEvent, render, screen } from '@testing-library/react';
-import { afterEach, beforeEach, describe, expect, it } from 'vitest';
+import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 import { computeCase } from '@/domain';
 import { appStore } from '@/store/instance';
 import Setup from '@/ui/sections/tune/setup';
 import { freshStore } from '../../store/helpers';
 import { editParam, expectReference } from '../../helpers/programmeParam';
 import { expectParity, FIXTURES, loadFixture } from './tuneBHelpers';
+vi.mock('@/domain/programme/profile', async (orig) => (await import('../../helpers/legacyProgramme')).legacyProfileMock(orig));   // legacy parity, B9b
 
 beforeEach(() => { freshStore(); });
 afterEach(cleanup);

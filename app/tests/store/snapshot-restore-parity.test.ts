@@ -1,10 +1,11 @@
 import { readFileSync } from 'node:fs';
-import { describe, expect, it } from 'vitest';
+import { describe, expect, it, vi } from 'vitest';
 import { importSnapshotFile } from '@/controllers/files';
 import { openCaseText } from '@/controllers/openFile';
 import { computeCase } from '@/domain';
 import { FIXTURE_IDS, loadCase } from '../helpers/portfolio';
 import { freshStore, snapAll } from './helpers';
+vi.mock('@/domain/programme/profile', async (orig) => (await import('../helpers/legacyProgramme')).legacyProfileMock(orig));   // legacy parity, B9b
 
 /**
  * The parallel run (tools/parallel-run.mjs) opens the 107 case files in the legacy file (applySnapshotState) and in the built app (File > Open…).

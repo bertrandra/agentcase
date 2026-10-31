@@ -82,9 +82,13 @@ export function ProgrammeFacts({ v }: { v: ProgrammeView }) {
       </div>
       <ul className="ac-prog-list" aria-label="Message flows to the delivery process">
         {v.messageFlows.map((f) => <li key={f.id}>{`${f.name} (message flow to the delivery process)`}</li>)}
-        {v.capacity !== null && <li>{`Transformation-team capacity: ${v.capacity} product(s) in setup at once`}</li>}
-        {v.waves.map((w) => <li key={w.id}>{`${w.name}: month ${w.start}, ${w.products.join(', ') || 'no product'}${w.dependency ? ` — ${w.dependency}` : ''}`}
-        </li>)}
+        {v.capacity !== null && <li>{`Transformation-team capacity: ${v.capacity} product(s) in setup at once (edited in a wave's panel)`}</li>}
+        {v.waves.map((w) => (
+          <li key={w.id}>
+            <button type="button" className="ac-link" onClick={() => selectActivity(w.id)}>{`Wave: ${w.name}`}</button>
+            {`: month ${w.start}, ${w.products.join(', ') || 'no product'}${w.dependency ? ` — ${w.dependency}` : ''}`}
+          </li>
+        ))}
       </ul>
     </div>
   );

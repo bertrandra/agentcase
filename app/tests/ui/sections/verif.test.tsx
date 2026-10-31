@@ -1,6 +1,6 @@
 // @vitest-environment jsdom
 import { act, cleanup, render } from '@testing-library/react';
-import { afterEach, describe, expect, it } from 'vitest';
+import { afterEach, describe, expect, it, vi } from 'vitest';
 import { setChecked, setInput } from '@/controllers/inputs';
 import { makeCtx, model } from '@/domain';
 import { headline } from '@/domain/economics/headline';
@@ -11,6 +11,7 @@ import { tablesOf } from '../../helpers/economics';
 import { legacySectionText, missingNumbers, renderedText } from '../../helpers/parity';
 import { loadCase, pdc, PDC_FIXTURES } from '../../helpers/pdc';
 import { deviationFixtures } from '../../helpers/deviations';
+vi.mock('@/domain/programme/profile', async (orig) => (await import('../../helpers/legacyProgramme')).legacyProfileMock(orig));   // legacy parity, B9b
 
 afterEach(cleanup);
 const FOUR = ['golden', 'ctx-msi', 'curve-logistic', 'industry-med'];

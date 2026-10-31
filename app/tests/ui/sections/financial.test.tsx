@@ -11,6 +11,7 @@ import { economicsView } from '@/domain/economics';
 import { investmentLines, setupBreakdown } from '@/domain/tuneB/setup';
 import { fmt1, fmtE } from '@/ui/economicsFormat';
 import { missingNumbers, renderedText } from '../../helpers/parity';
+vi.mock('@/domain/programme/profile', async (orig) => (await import('../../helpers/legacyProgramme')).legacyProfileMock(orig));   // legacy parity, B9b
 
 vi.mock('@/ui/widgets/ChartPanel', async () => import('../../helpers/chartStub'));   // jsdom has no canvas
 beforeEach(() => { freshStore(); });

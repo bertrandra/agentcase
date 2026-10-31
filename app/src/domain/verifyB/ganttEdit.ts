@@ -7,7 +7,7 @@ export interface BarSpec { unit: string; step: number; big: number; min: number;
 const WEEKS: BarSpec = { unit: 'weeks', step: 1, big: 4, min: 0, max: 520 };
 /** The inputs that size the program bars. The bars themselves are derived, so the keyboard edits these inputs (the same fields as the forms). */
 export const BAR_SPECS: Record<string, BarSpec> = {
-  rmD1: WEEKS, rmD2: WEEKS, rmD3: WEEKS, rmD4: WEEKS,
+  rmD1: WEEKS, rmD2: WEEKS, rmD3: WEEKS,
   setupDuration: { unit: 'months', step: 1, big: 3, min: 1, max: 120 }, khSetupDays: { unit: 'days', step: 1, big: 7, min: 1, max: 3650 },
 };
 

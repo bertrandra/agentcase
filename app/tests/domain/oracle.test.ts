@@ -2,6 +2,7 @@ import { describe, expect, it } from 'vitest';
 import { readdirSync, readFileSync } from 'node:fs';
 import { computeCase } from '@/domain';
 import type { CaseState } from '@/domain';
+import { withoutDeviations } from '../helpers/deviations';
 
 const DIR = 'fixtures';
 const ids = readdirSync(`${DIR}/expected`).map((f) => f.replace('.json', '')).sort();
@@ -31,6 +32,6 @@ describe('domain engine reproduces the legacy oracle', () => {
     diff(exp.npv, got.npv, 'npv', problems);
     diff(exp.phaseScope, got.phaseScope, 'phaseScope', problems);
     diff(exp.glassCeiling, got.glassCeiling, 'glassCeiling', problems);
-    expect(problems.slice(0, 12)).toEqual([]);
+    expect(withoutDeviations(problems, id).slice(0, 12)).toEqual([]);   // registered deviations (docs/DEVIATIONS.md), asserted by their own tests
   });
 });

@@ -1,4 +1,4 @@
-import { describe, expect, it } from 'vitest';
+import { describe, expect, it, vi } from 'vitest';
 import { exportResultsWorkbook } from '@/controllers/excelResults';
 import { loadExcelJS } from '@/store/persistence/excel/lazy';
 import { buildResultsWorkbook, resultsData } from '@/store/persistence/excel/results';
@@ -9,6 +9,7 @@ import { appStore } from '@/store/instance';
 import { f1, r0 } from '@/store/persistence/excel/results/style';
 import { dumpBuffer, loadCase, readJson, sheetDiffs, type SheetDump } from '../helpers/xlsxDump';
 import { THEME_DEFAULT } from '@/domain/theme';
+vi.mock('@/domain/programme/profile', async (orig) => (await import('../helpers/legacyProgramme')).legacyProfileMock(orig));   // legacy parity, B9b
 
 // Fixtures recorded by tools/excel-results-oracle.mjs: the LEGACY "Export financial to Excel" of each case, dumped cell by cell.
 const IDS = ['golden', 'ctx-msi', 'curve-logistic', 'curve-gompertz', 'curve-bass', 'industry-med', 'horizon-1', 'horizon-5', 'econ-horizon-7', 'horizon-10',

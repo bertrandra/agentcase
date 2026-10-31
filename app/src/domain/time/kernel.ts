@@ -7,17 +7,23 @@ import type { ModelResult } from '../types/model';
 import { ADAPTERS, rampAt, yearOf, type CurveK } from './adapters';
 import { fitCurveCached } from './fit';
 import { enginePts } from './spline';
-import { setupTiming } from '../programme/timing';
+import { engineProfile } from '../programme/profile';
 
 /** Constants captured from a (raw) model so the engine is a pure function of them (legacy buildK). */
-/** Identity of the Time Engine's calculation (every package carries it). */
-export const CALCULATION_VERSION = 'agentcase.timeengine.v1';
+/**
+ * Identity of the Time Engine's calculation (every package carries it). v2 since BPMN B9b: the same inputs give other results (the programme's cost
+ * profile, docs/DEVIATIONS.md the B9b deviations), so a case saved by v1 opens with the "computed by another engine version" banner.
+ */
+export const CALCULATION_VERSION = 'agentcase.timeengine.v2';
 
 export interface K extends CurveK {
   ctx: Ctx; mode: string; scenarioId: string; calculationVersion: string; horizonYears: number; horizonMonths: number;
   baseEtp: number; baselineRunMonth: number; eff: number; wdMonth: number; dayRateTarget: number; dayRateAsIs: number; rateMode: string;
   frPerYear: number; runsPerDay: number; tokensPerArt: number; tokenUnitCost: number; infraMonth: number; setupTotal: number;
-  setupProfileMonths: number; runSizeMode: string; runFloorMin: number; runFloorPct: number; runOpsPerAgent: number; runTeamFactor: number;
+  /** the programme cost of each month (index t - 1; adds up to `setupTotal`), its Knowledge-hub setup part and the opt-in savings (decommissioning),
+   * from the programme's one cost profile (`programme/profile.ts`, SPEC_BPMN § 19.4 F-B68) */
+  setupProfile: number[]; ktProfile: number[]; savingProfile: number[];
+  runSizeMode: string; runFloorMin: number; runFloorPct: number; runOpsPerAgent: number; runTeamFactor: number;
   legacyRunFte: number; vTaxRate: number; loopExtRate: number; complianceTaxRate: number; aiActive: boolean; maturityBounds: number[];
   A: { baselineRun: number; yearETP: number[]; yearAgentVfte: number[]; yearTeamCost: number[]; yearToken: number[]; yearInfraEff: number[];
        yearRunAgenticCost: number[]; khRunYr: number[]; ktAvoidYr: number[]; vTaxYr: number[]; loopExtYr: number[] };
@@ -35,7 +41,7 @@ export function buildK(c: Ctx, m: ModelResult, opts: BuildOpts = {}): K {
     calculationVersion: CALCULATION_VERSION, horizonYears: m.horizon, horizonMonths: m.horizon * 12, ramps: m.ramps.slice(),
     baseEtp: m.base.etp, baselineRunMonth: m.baselineRun / 12, eff: m.eff, wdMonth: m.wd / 12, dayRateTarget: m.tgtTJM, dayRateAsIs: m.blendedTJM,
     rateMode: 'target', frPerYear: 0, runsPerDay: num('runsPerDay', 25), tokensPerArt: m.tokensPerArt, tokenUnitCost: m.tokenCost,
-    infraMonth: m.infraYear / 12, setupTotal: m.setupTotal, setupProfileMonths: setupTiming(c).engineMonths, runSizeMode: c.inp.v('runSizeMode') || 'hybrid',
+    infraMonth: m.infraYear / 12, setupTotal: m.setupTotal, setupProfile: [], ktProfile: [], savingProfile: [], runSizeMode: c.inp.v('runSizeMode') || 'hybrid',
     runFloorMin: num('runFloorMin', 0.5), runFloorPct: num('runFloorPct', 4), runOpsPerAgent: num('runOpsPerAgent', 0.15),
     runTeamFactor: num('runTeamFactor', 1),
     legacyRunFte: Math.max(0.5, m.base.etp * 0.06 + 0.5 + m.base.etp * 0.04), vTaxRate: conv.vTaxRate || 0, loopExtRate: conv.loopExtRate || 0,
@@ -47,14 +53,25 @@ export function buildK(c: Ctx, m: ModelResult, opts: BuildOpts = {}): K {
     inputHash: '',
   };
   if (opts.levers) Object.assign(K, opts.levers);
+  setProfile(K, c, m.setupTotal);
   const fam = ADAPTERS[K.curveModelId]?.family;
   if (fam === 'logistic' || fam === 'gompertz' || fam === 'bass') K[fam] = fitCurveCached(fam, K.ramps, K.rampCapPct);
   else if (fam === 'spline') K.spline = { points: enginePts(c) };
   const rnd = (x: number) => Math.round(x);
   K.inputHash = 'te1:' + [K.curveModelId, K.horizonMonths, K.baseEtp, K.eff, K.baselineRunMonth, K.dayRateTarget, K.setupTotal, K.ramps.join(','),
-    m.yearSav.map(rnd).join(','), K.spline ? 'sp:' + K.spline.points.map((p) => rnd(p.t) + ':' + rnd(p.a)).join(',') : '',
+    m.yearSav.map(rnd).join(','), K.setupProfile.map(rnd).join(','), K.spline ? 'sp:' + K.spline.points.map((p) => rnd(p.t) + ':' + rnd(p.a)).join(',') : '',
     ...(opts.levers ? [JSON.stringify(opts.levers)] : [])].join('|');
   return K;
+}
+
+/**
+ * The programme profile of the case on the engine's months; a lever that sets the setup (a scenario without a programme: 0) scales it, the lines
+ * keep their shape (a positive lever on a case without setup is spread over the first six months).
+ */
+function setProfile(K: K, c: Ctx, base: number): void {
+  const p = engineProfile(c, K.horizonMonths), f = K.setupTotal === base ? 1 : base > 0 ? K.setupTotal / base : 0;
+  K.setupProfile = p.setup.map((x) => x * f); K.ktProfile = p.kt.map((x) => x * f); K.savingProfile = p.saving;
+  if (base <= 0 && K.setupTotal > 0) { const n = Math.min(6, K.horizonMonths); K.setupProfile = K.setupProfile.map((_, i) => (i < n ? K.setupTotal / n : 0)); }
 }
 
 export const aAt = (arr: number[] | undefined, y: number): number => (arr && arr.length ? (arr[Math.min(arr.length - 1, y)] as number) : 0);
@@ -87,12 +104,12 @@ export function econ(t: number, K: K): Econ {
   const khCost = hasAgents ? aAt(A.khRunYr, y) / 12 : 0;
   const runTeamFte = runTeamSizing(agentVfte, K);
   const runTeamCost = runTeamFte * dayRate * AI_SKILL_PREMIUM * K.wdMonth * K.runTeamFactor;
-  const setupCost = t <= K.setupProfileMonths ? K.setupTotal / K.setupProfileMonths : 0;
+  const setupCost = K.setupProfile[t - 1] ?? 0;
   const totalRun = teamCost + tokenCost + infraCost + runTeamCost + khCost;
   const rawSav = Math.max(0, K.baselineRunMonth - totalRun);
   const vTax = rawSav * K.vTaxRate, loopExt = rawSav * K.loopExtRate, compTax = rawSav * K.complianceTaxRate;
   const ktAvoid = hasAgents ? aAt(A.ktAvoidYr, y) / 12 : 0;
-  const grossSav = K.baselineRunMonth - totalRun + ktAvoid - vTax - loopExt - compTax;
+  const grossSav = K.baselineRunMonth - totalRun + ktAvoid - vTax - loopExt - compTax + (K.savingProfile[t - 1] ?? 0);
   return { t, y, r, humanFte, agentVfte, agentVfteRaw, runTeamFte, teamCost, tokenCost, infraCost, runTeamCost, khCost, ktAvoid, vTax, loopExt, compTax,
     setupCost, totalRun, grossSav, netSav: grossSav - setupCost };
 }

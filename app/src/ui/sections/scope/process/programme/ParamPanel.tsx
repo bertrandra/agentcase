@@ -8,6 +8,7 @@ import { LeadField } from '../../../tune/knowledge/MultiPanels';
 import { SubsetFieldBox } from '../../../tune/knowledge/SubsetBadge';
 import { selectActivity } from '../view';
 import { costText } from './ProgrammeTable';
+import { WAVE_PREFIX, WavePanel } from './WavePanel';
 
 /** The knowledge-subset field a hub parameter belongs to with several products, and the name of its chip ("inherited / overridden"). */
 const SUBSET: Record<string, [SubsetField, string]> = {
@@ -32,7 +33,7 @@ function Param({ p, multi }: { p: ParamDef; multi: boolean }) {
 export function ParamPanel({ v, id }: { v: ProgrammeView; id: string }) {
   const a = v.activities.find((x) => x.id === id), k = useId(), multi = useIsMulti(), head = useRef<HTMLHeadingElement>(null);
   useEffect(() => { head.current?.scrollIntoView?.({ block: 'nearest' }); }, [id]);
-  if (!a) return <MilestonePanel v={v} id={id} />;
+  if (!a) return id.startsWith(WAVE_PREFIX) ? <WavePanel v={v} id={id} /> : <MilestonePanel v={v} id={id} />;
   const lane = (r: string | undefined) => v.lanes.find((l) => l.role === r)?.name ?? '—';
   const list = (rs: string[]) => (rs.length ? rs.map(lane).join(', ') : '—');
   return (

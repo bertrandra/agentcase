@@ -15,7 +15,7 @@ describe('economics domain reproduces the legacy', () => {
   it('has the fixtures', () => expect(FIXTURES.length).toBeGreaterThanOrEqual(56));
   it.each(FIXTURES)('%s: monthlySeries, savingsBreakdown, ROI block', (id) => {
     const c = ctxOf(id), v = economicsView(c), e = extra<Roi>('econ_roi', id);
-    expect(diffs(extra('econ_monthly', id), monthlySeries(engineNow(c)))).toEqual([]);
+    expect(withoutDeviations(diffs(extra('econ_monthly', id), monthlySeries(engineNow(c)), 'econ_monthly'), id)).toEqual([]);
     expect(diffs(extra('econ_savings', id), savingsBreakdown(c))).toEqual([]);
     // DEV-FTE-ONE-DEF: `freed` is the FTE owner's (delivery + agentic run team), asserted below; the legacy freed the delivery team only.
     expect(withoutDeviations(diffs({ ...e, roi: e.roi ?? 'null', roiPct: e.roiPct, paybackText: e.paybackText, payback: e.payback ?? 'null' },
@@ -36,7 +36,12 @@ describe('economics domain reproduces the legacy', () => {
   it('verdict bands and the no-setup edge', () => {
     expect([1.5, 1.49, 0.3, 0.29, 0, -1, null].map(roiVerdict)).toEqual(['go', 'conditional', 'conditional', 'reconsider', 'reconsider', 'reconsider',
       'reconsider']);
-    expect(economicsView(ctxOf('econ-no-setup')).roi).toBeNull();
+    // DEV-B9B-RESOURCES: training and governance are labour from resources, so "no setup" is no amount AND no programme resources (trainers and
+    // Design Authority effort at 0); the econ-no-setup fixture zeroes the legacy amounts only.
+    const s = fromSnapshot(JSON.parse(readFileSync('fixtures/cases/econ-no-setup.json', 'utf8')));
+    const none = makeCtx({ ...s, dom: { ...s.dom, values: { ...s.dom.values, trainFte: '0', govFte: '0' } } });
+    expect(economicsView(none).roi).toBeNull();
+    expect(economicsView(ctxOf('econ-no-setup')).roi).not.toBeNull();
     expect(roiVerdict(economicsView(ctxOf('econ-roi-mid')).roi)).toBe('conditional');
     expect(roiVerdict(economicsView(ctxOf('econ-roi-low')).roi)).toBe('reconsider');
     expect(economicsView(ctxOf('econ-roi-low')).payback).toBeNull();

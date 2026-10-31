@@ -2,6 +2,7 @@ import { describe, expect, it } from 'vitest';
 import { computeCase } from '@/domain';
 import { readParamsWorkbook } from '@/store/persistence/excel/params';
 import { diffValues } from '../helpers/oracleDiff';
+import { withoutDeviations } from '../helpers/deviations';
 import { legacyCase } from '@/store/persistence/bpmn/legacy';
 import { sameJson } from '@/store/persistence/excel/params';
 import { applyTo, ENV, importTarget, legacyImported, legacyXlsx, PRISTINE, stateMismatches, xlsxIds } from '../helpers/excelParams';
@@ -31,6 +32,6 @@ describe('legacy workbook → our reader reproduces the legacy import', () => {
     diffValues(leg.exp.glassCeiling, got.glassCeiling, 'glassCeiling', problems);
     diffValues(leg.exp.payback, got.payback, 'payback', problems);
     diffValues(leg.exp.npv, got.npv, 'npv', problems);
-    expect(problems.slice(0, 10)).toEqual([]);
+    expect(withoutDeviations(problems, id).slice(0, 10)).toEqual([]);   // registered deviations (docs/DEVIATIONS.md)
   });
 });

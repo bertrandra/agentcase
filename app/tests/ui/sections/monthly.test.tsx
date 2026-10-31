@@ -7,6 +7,7 @@ import Monthly from '@/ui/sections/economics/monthly';
 import { extra, FIXTURES, legacyText, loadFixture, missingCells, PARITY_FIXTURES, squash } from '../../helpers/economics';
 import { freshStore } from '../../store/helpers';
 import { missingNumbers, renderedText } from '../../helpers/parity';
+vi.mock('@/domain/programme/profile', async (orig) => (await import('../../helpers/legacyProgramme')).legacyProfileMock(orig));   // legacy parity, B9b
 
 vi.mock('@/ui/widgets/ChartPanel', async () => import('../../helpers/chartStub'));   // jsdom has no canvas
 beforeEach(() => { freshStore(); });

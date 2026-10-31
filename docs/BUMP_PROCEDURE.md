@@ -39,7 +39,7 @@ file names: `20.0.0` → `v20.0` / `v20_0`, `20.12.0` → `v20.12` / `v20_12`, a
 - Schema tags of stored data change only when the data shape changes, never in a routine release: the snapshot `_schema`
   (`agentcase.snapshot.v1` and `agentcase.portfolio.v1`, `app/src/store/persistence/snapshot.ts`), the autosave database name and version (`agentcase-v19`, version 1,
   `idb.ts`) and the BroadcastChannel name (`agentcase-v19`) keep their `v19` name in 20.x on purpose. Renaming them orphans users' autosaves or splits multi-tab sync.
-- Historical tags in comments and the `calculationVersion` string of the Time Engine (`agentcase.timeengine.v1`,
+- Historical tags in comments and the `calculationVersion` string of the Time Engine (`agentcase.timeengine.v2` since BPMN B9b, which changed the results of the same inputs;
   `app/src/domain/time/kernel.ts`).
 
 ## 2. Pre-flight

@@ -10,6 +10,7 @@ import MonteCarlo from '@/ui/sections/stress/montecarlo';
 import { fmtEur } from '@/ui/sections/stress/fmt';
 import { loadExtra } from '../../helpers/extras';
 import { missingFor, openFixture, PARITY_FIXTURES } from '../../helpers/stressParity';
+vi.mock('@/domain/programme/profile', async (orig) => (await import('../../helpers/legacyProgramme')).legacyProfileMock(orig));   // legacy parity, B9b
 
 afterEach(() => { cleanup(); vi.useRealTimers(); });
 const run = () => fireEvent.click(screen.getByText('▶ Run simulation'));

@@ -1,12 +1,13 @@
 // @vitest-environment jsdom
 import { act, cleanup, fireEvent, render, screen } from '@testing-library/react';
-import { afterEach, describe, expect, it } from 'vitest';
+import { afterEach, describe, expect, it, vi } from 'vitest';
 import { setInput } from '@/controllers/inputs';
 import { appStore } from '@/store/instance';
 import Commercial from '@/ui/sections/present/commercial';
 import { legacyText, tablesOf } from '../../helpers/economics';
 import { missingNumbers, renderedText } from '../../helpers/parity';
 import { loadCase, pdc, PDC_FIXTURES, sq } from '../../helpers/pdc';
+vi.mock('@/domain/programme/profile', async (orig) => (await import('../../helpers/legacyProgramme')).legacyProfileMock(orig));   // legacy parity, B9b
 
 afterEach(cleanup);
 type Cm = { out: Record<string, { rows: string[][]; text: string }> };

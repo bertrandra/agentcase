@@ -5,7 +5,7 @@ import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 import { setPortfolioHorizon } from '@/controllers/portfolio';
 import { assignWave } from '@/controllers/wave';
 import { consolidate } from '@/domain/portfolio';
-import { mountApp, pf, sectionReady } from '../helpers/portfolioUi';
+import { LAZY, mountApp, pf, sectionReady } from '../helpers/portfolioUi';
 import { threeProducts } from '../helpers/portfolioStore';
 
 vi.mock('@/ui/widgets/ChartPanel', async () => import('../helpers/chartStub'));   // jsdom has no canvas
@@ -13,6 +13,7 @@ vi.mock('@/ui/widgets/ChartPanel', async () => import('../helpers/chartStub')); 
 let ids: [string, string, string], waves: [string, string];
 beforeEach(() => { ({ ids, waves } = threeProducts()); });
 afterEach(cleanup);
+vi.setConfig({ testTimeout: 60_000 });   // the Process section (lazy, its diagrams) is opened from the board
 const undo = () => fireEvent.keyDown(document.body, { key: 'z', ctrlKey: true });
 const col = (name: string) => screen.getByRole('region', { name });
 const inWave = (id: string) => pf().products.find((p) => p.id === id)!.waveId;
@@ -41,16 +42,23 @@ describe('Waves section: waves', () => {
     expect(pf().waves).toHaveLength(3);
   });
 
-  it('changing the start month of the waves shifts the consolidated payback by k months (UI to store)', async () => {
+  it('changing the start month of the waves (in their Process panel, phase B9b) shifts the consolidated payback by k months', async () => {
     act(() => { setPortfolioHorizon(60); });
-    await open();
     const before = consolidate(pf()).summary.paybackMonth as number, k = 4;
     expect(before).toBeGreaterThan(0);
-    fireEvent.change(screen.getByLabelText('Start of Wave 1 (month)'), { target: { value: String(k) } });
-    fireEvent.change(screen.getByLabelText('Start of Wave 2 (month)'), { target: { value: String(6 + k) } });
+    for (const [name, start] of [['Wave 1', k], ['Wave 2', 6 + k]] as const) {
+      await open();
+      expect(screen.queryByLabelText(`Start of ${name} (month)`)).toBeNull();   // context only on the board
+      act(() => { fireEvent.click(screen.getByRole('button', { name: `Open ${name} in Process` })); });
+      await screen.findByRole('heading', { level: 3, name: `Wave: ${name}` }, LAZY);
+      fireEvent.change(screen.getByLabelText(`Start of ${name} (month)`), { target: { value: String(start) } });
+      fireEvent.blur(screen.getByLabelText(`Start of ${name} (month)`));
+      cleanup();
+    }
     expect(pf().waves.map((w) => w.startMonth)).toEqual([k, 6 + k]);
     expect(consolidate(pf()).summary.paybackMonth).toBe(before + k);
-    expect(screen.getByLabelText('Start of Wave 2 (month)').closest('.ac-wave-ctrl')!.textContent).toContain('→');
+    await open();
+    expect(col('Wave: Wave 2').querySelector('.ac-wave-timing')!.textContent).toContain(`Start: month ${6 + k}`);
   });
 
   it('the Knowledge transfer wave effect is linked, not duplicated', async () => {
