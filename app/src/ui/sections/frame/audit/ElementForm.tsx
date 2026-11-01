@@ -1,5 +1,5 @@
 import { editAudit, today } from '@/controllers/audit';
-import { AUDIT_BLOCKS, AUDIT_STATUSES, emptyAudit, type AuditBlock, type AuditStatus } from '@/domain/audit';
+import { AUDIT_BLOCKS, AUDIT_STATUSES, emptyAudit, interfaceFacts, type AuditBlock, type AuditStatus } from '@/domain/audit';
 import type { AuditViewData } from '@/store/auditHooks';
 import { STATUS_LABELS } from './Header';
 import { Block } from './Observations';
@@ -26,9 +26,18 @@ export function ElementForm({ data, id, title, capability, blocks = AUDIT_BLOCKS
         {a.asOf && <span className="ac-muted">as of {a.asOf}</span>}
       </div>
       <Tools data={data} id={id} uses={a.tools} capability={capability} />
-      {blocks.map((b) => <Block key={b} block={b} id={id} observations={a.observations} roles={data.actors} />)}
+      {blocks.map((b) => (
+        <Block key={b} block={b} id={id} observations={a.observations} roles={data.actors} note={b === 'flow' ? flowNote(data, id) : undefined} />
+      ))}
       <Block block="opportunity" id={id} observations={a.observations} roles={data.actors} />
       <PainEvidence id={id} audit={a} interviews={data.audit.header?.interviews ?? []} />
     </section>
   );
+}
+
+/** FX-33 (F-B55): the hand-offs and interfaces the process models for the element, next to what the interviews observe. */
+function flowNote(data: AuditViewData, id: string): string | undefined {
+  const f = interfaceFacts(data.doc, id);
+  if (!f.handoffs && !f.pools.length) return undefined;
+  return `Modelled: ${f.handoffs} hand-off(s)${f.pools.length ? ` with ${f.pools.join(', ')}` : ''} (message flows of the process).`;
 }

@@ -17,6 +17,11 @@ When releasing, follow [docs/BUMP_PROCEDURE.md](docs/BUMP_PROCEDURE.md) (§7 for
 
 ## [Unreleased]
 
+### SPEC_FIXES lot X5 (rest) — audit feeds from the process model (FX-33)
+
+- **Audit**: an activity's deliverable types propose the tools of their capabilities under its own capability's list; the Flow block shows
+  the hand-offs the process models (message flows) and the pools at the other end. A view: no figure changes.
+
 ### SPEC_FIXES lot X5 (part) — import / export / workbooks (FX-24, FX-25, FX-27…FX-31, FX-34)
 
 - **BPMN import**: a Merge import merges the file's audit data (newer date wins; pain points and evidence added). Foreign content the import

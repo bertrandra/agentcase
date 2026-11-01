@@ -19,4 +19,5 @@ export { readAuditWorkbook, type AuditImport, type Sheets } from './workbookRead
 export { CASE_SHEET, caseSheets, ORIGIN } from './workbookCase';
 export { readCaseSheets, type CaseImport } from './workbookCaseRead';
 export { mergeImportedAudit } from './mergeAudit';
+export { deliverableKinds, interfaceFacts, KIND_CAPABILITIES, proposedByType, type InterfaceFacts } from './feeds';
 export { auditReport, type AuditReport } from './report';

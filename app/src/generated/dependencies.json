@@ -1,10 +1,10 @@
 {
  "schema": 1,
- "counts": {"files":1363,"tagged":725,"tests":442},
+ "counts": {"files":1364,"tagged":726,"tests":443},
  "zones": [
   {"id":"rate-card-team","modules":10,"tmed":189,"tmax":377},
   {"id":"scope-automation","modules":25,"tmed":81,"tmax":381},
-  {"id":"process-model","modules":132,"tmed":216,"tmax":399},
+  {"id":"process-model","modules":133,"tmed":216,"tmax":400},
   {"id":"adoption-curve","modules":4,"tmed":376,"tmax":376},
   {"id":"knowledge-hub","modules":4,"tmed":380,"tmax":381},
   {"id":"run-setup-taxes","modules":16,"tmed":375,"tmax":381},
@@ -18,7 +18,7 @@
   {"id":"verification","modules":15,"tmed":163,"tmax":163},
   {"id":"portfolio-consolidation","modules":27,"tmed":247,"tmax":356},
   {"id":"aggregate-views","modules":47,"tmed":157,"tmax":161},
-  {"id":"exports","modules":144,"tmed":95,"tmax":351},
+  {"id":"exports","modules":144,"tmed":95,"tmax":352},
   {"id":"workspace-config","modules":63,"tmed":78,"tmax":205},
   {"id":"foundation","modules":29,"tmed":228,"tmax":394},
   {"id":"presentation","modules":30,"tmed":179,"tmax":236}
@@ -362,7 +362,7 @@
   ["process","scope-automation","w",6],
   ["process-model","agent-dir","r",1],
   ["process-model","aggregate-views","z",6],
-  ["process-model","audit","r",8],
+  ["process-model","audit","r",9],
   ["process-model","commercial","r",1],
   ["process-model","compare","r",1],
   ["process-model","delivery-views","z",8],
@@ -749,6 +749,7 @@
   ["tests/domain/audit/evidence-surfaces.test.tsx","0-6,8-12,14,16,18-19","62"],
   ["tests/domain/audit/evidence.test.ts","0-12,14,16-18",""],
   ["tests/domain/audit/export-portfolio.test.ts","0-19",""],
+  ["tests/domain/audit/feeds.test.ts","2,16",""],
   ["tests/domain/audit/fixtures-identical.test.ts","0-6,9-11,14,16,18",""],
   ["tests/domain/baseline.test.ts","0-2,18",""],
   ["tests/domain/business-journey.test.ts","17,19",""],
