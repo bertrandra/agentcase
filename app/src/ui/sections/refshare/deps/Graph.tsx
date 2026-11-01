@@ -3,7 +3,17 @@ import { goSection } from '@/ui/uiState';
 import { DATA, labelOf, isZone, select, zoneOf, type Selection } from './model';
 import { layoutGraph } from './layout';
 
-const short = (s: string) => { const t = s.replace(/^[^A-Za-z0-9]+/, '').trim(); return t.length > 22 ? `${t.slice(0, 21)}…` : t; };
+/** The label as drawn: without its leading emoji, cut at 21 characters; the ellipsis is hidden from assistive technology, so the visible text
+ *  stays part of the node's accessible name (axe label-content-name-mismatch, word by word since axe-core 4.14). */
+const plain = (s: string): string => s.replace(/^[^A-Za-z0-9]+/, '').trim();
+const short = (s: string): { head: string; cut: boolean } => {
+  const t = plain(s);
+  if (t.length <= 22) return { head: t, cut: false };
+  const at = t.lastIndexOf(' ', 21);   // at a word boundary: axe matches the visible text to the name word by word
+  let head = t.slice(0, at > 8 ? at : 21);
+  if (head.lastIndexOf('(') > head.lastIndexOf(')')) head = head.slice(0, head.lastIndexOf('('));   // no unclosed parenthesis
+  return { head: head.replace(/[^A-Za-z0-9)]+$/, ''), cut: true };
+};
 const GROUP_COLOR: Record<string, string> = {
   frame: 'var(--ac-chart-cat-1)', baseline: 'var(--ac-chart-cat-2)', scope: 'var(--ac-chart-cat-4)',
   tune: 'var(--ac-chart-cat-3)', verify: 'var(--ac-success-625)', economics: 'var(--ac-danger-800)',
@@ -68,7 +78,8 @@ export function Graph({ sel, onSelect }: { sel: string | null; onSelect: (id: st
                 strokeWidth={zone ? 2 : 1.3}
                 strokeDasharray={undefined}
               />
-              <text x="8" y={L.nodeH / 2 + 4} fontSize="var(--ac-font-size-xs)" fill="var(--ac-neutral-900)">{short(labelOf(id))}</text>
+              <text x="8" y={L.nodeH / 2 + 4} fontSize="var(--ac-font-size-xs)" fill="var(--ac-neutral-900)">{short(labelOf(id)).head}
+                {short(labelOf(id)).cut && <tspan aria-hidden="true">…</tspan>}</text>
               <title>{labelOf(id)}</title>
             </g>
           );
