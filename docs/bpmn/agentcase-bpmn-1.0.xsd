@@ -308,6 +308,10 @@
       <xsd:attribute name="accountable" type="xsd:IDREF"/>
       <xsd:attribute name="consulted" type="xsd:IDREFS"/>
       <xsd:attribute name="informed" type="xsd:IDREFS"/>
+      <xsd:attribute name="teams">
+        <xsd:annotation><xsd:documentation>FX-22: the share of the activity's Responsible work each team does ("team-id:percent", space separated), instead of the split by the teams' FTE × share.</xsd:documentation></xsd:annotation>
+        <xsd:simpleType><xsd:restriction base="xsd:string"><xsd:pattern value="([A-Za-z0-9_\-]{1,64}:[0-9]+(\.[0-9]+)?( [A-Za-z0-9_\-]{1,64}:[0-9]+(\.[0-9]+)?)*)?"/></xsd:restriction></xsd:simpleType>
+      </xsd:attribute>
     </xsd:complexType>
   </xsd:element>
 

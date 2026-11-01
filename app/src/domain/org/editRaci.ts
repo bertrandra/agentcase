@@ -40,7 +40,9 @@ function written(e: XElement, primary: string | undefined, r: Raci): XElement {
   else for (const x of roles) next = appendChild(next, x);
   const ext = kid(next, NS.bpmn, 'extensionElements');
   if (!ext) return next;
-  const copy = el('ac:raci', { responsible: r.R.join(' '), accountable: r.A, consulted: r.C.join(' ') || null, informed: r.I.join(' ') || null });
+  const teams = r.teams ? Object.entries(r.teams).map(([t, pct]) => `${t}:${pct}`).join(' ') : '';
+  const copy = el('ac:raci', { responsible: r.R.join(' '), accountable: r.A, consulted: r.C.join(' ') || null, informed: r.I.join(' ') || null,
+    teams: teams || null });
   const ext2 = appendChild(withChildren(ext, without(ext.children, isRaciExt)), copy);
   return withChildren(next, next.children.map((c) => (c === ext ? ext2 : c)));
 }
@@ -55,6 +57,11 @@ export function setRaci(d: XDocument, activityId: string, raci: Raci): XDocument
   const primary = a.humanPerformer || undefined, uniq = (xs: string[]) => [...new Set(xs)];
   const r: Raci = { R: uniq([...(primary ? [primary] : []), ...raci.R]), C: uniq(raci.C), I: uniq(raci.I) };
   if (raci.A) r.A = raci.A;
+  if (raci.teams && Object.keys(raci.teams).length) {   // FX-22: safe team ids, each share in [0, 100], at most 100 % in all
+    const t = Object.entries(raci.teams);
+    if (!t.every(([id, pct]) => /^[A-Za-z0-9_-]{1,64}$/.test(id) && pct >= 0 && pct <= 100) || t.reduce((x, [, p]) => x + p, 0) > 100 + 1e-9) return d;
+    r.teams = { ...raci.teams };
+  }
   if (!r.R.length || ![...r.R, ...(r.A ? [r.A] : []), ...r.C, ...r.I].every((x) => known.has(x))) return d;
   const root = editById(d.root, activityId, (e) => written(e, primary, r));
   return root === d.root ? d : { ...d, root };

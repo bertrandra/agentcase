@@ -68,6 +68,12 @@ export function byTeam(m: OrgModel, teamId: string): TeamAnswer | null {
     const rows = teamRowsOf(m.teams, product.id);
     for (const a of m.activities) {
       if (!a.inScope) continue;
+      const share = a.raci.teams;
+      if (share) {   // FX-22: the activity says how its Responsible work splits between teams
+        const pct = share[team.id] ?? 0;
+        if (pct > 0) { acts.add(a); load += (+a.effort || 0) * pct / 100; }
+        continue;
+      }
       for (const rid of a.raci.R) {
         const skill = by.get(rid)?.teamSkill;
         if (skill === undefined || !skills.has(skill)) continue;

@@ -1,5 +1,7 @@
 /** @calc-zone knowledge-hub */
+import { withLibrary } from '../process/profile/library';
 import { caseValues, programmeValuesOf, withProgrammeValues } from '../process/storedValues';
+import type { XDocument } from '../process/xml';
 import { isCarrier } from '../org/orgExt';
 import { isProgrammeKey } from '../programme/storedKeys';
 import type { CaseState } from '../types/state';
@@ -37,6 +39,9 @@ export function mergeCase(common: CommonCase, product: Pick<Product, 'overrides'
   Object.assign(patch.checked, without(o.dom?.checked), k.checked);
   const top: Partial<CommonCase> = {};
   for (const key of OVERRIDABLE_KEYS) if (o[key] !== undefined) Object.assign(top, { [key]: o[key] });
+  // FX-05: a product's own process document calls the common library's global tasks it does not hold itself (`withLibrary`; the same document
+  // when it calls none, so no figure moves for a product that uses no library entry)
+  if (o.BPMN !== undefined && common.BPMN) top.BPMN = withLibrary(o.BPMN as XDocument, common.BPMN as XDocument) as CommonCase['BPMN'];
   // schema v4: a product with its own process document reads the COMMON document's programme values (its own document keeps none)
   const stored = o.BPMN !== undefined ? programmeValuesOf(common.BPMN) : {};
   const touched = Object.keys(patch.values).length + Object.keys(patch.checked).length + Object.keys(stored).length > 0;

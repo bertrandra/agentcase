@@ -40,7 +40,11 @@ export interface OrgTeam {
 }
 
 /** RACI of one activity (D-B15): Responsible actors, at most one Accountable role, Consulted and Informed roles. */
-export interface Raci { R: string[]; A?: string; C: string[]; I: string[] }
+export interface Raci {
+  R: string[]; A?: string; C: string[]; I: string[];
+  /** FX-22: the share (%) of the activity's Responsible work each team does (team id → %), instead of the split by the teams' FTE × share */
+  teams?: Record<string, number>;
+}
 export interface ActivityRaci {
   id: string; name: string; phase: string; type: string; inScope: boolean; effort: number;
   raci: Raci;

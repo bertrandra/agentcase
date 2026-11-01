@@ -1659,14 +1659,14 @@ the service line, a deviation (FX-D3); § 21.8 — the organisation out of the M
 | 13 | ~~A Merge import does not merge audit data (Replace takes the file's)~~ — **done in SPEC_FIXES lot X5 (FX-25)** | Work | § 15.7 (F-B33) |
 | 14 | ~~No audit layer on programme activities (observations attach to delivery tasks and roles only)~~ — **done in SPEC_FIXES lot X6 (FX-21)** | Work | § 19.9 (F-B69) |
 | 15 | The RACI-driven figures of § 16.5 are not built (the `humanPerformer` stays R; no figure reads the RACI) | Decision | § 16.8 |
-| 16 | A role's split between teams follows FTE × share; no per-activity share | Work | § 16.8 (F-B37) |
+| 16 | ~~A role's split between teams follows FTE × share; no per-activity share~~ — **done in SPEC_FIXES lot X6 (FX-22)** | Work | § 16.8 (F-B37) |
 | 17 | F-B39 partial: the organisation lane view has no geometry for its new lanes, is not offered in the export dialog, and organisation lanes are not imported | Work | § 16.8 (F-B39) |
 | 18 | ~~Teams stay stored as `teamIn` / `sharedTeam`~~ — **closed in B10a**: the teams are `ac:team` elements of the document (schema v5) | Done | § 6.6, § 21.5 |
 | 19 | ~~A product's process override stays whole-document~~ — **closed in B10a**: the override is the process part only (no organisation; programme values per field since B9c) | Done | § 21.5 |
 | 20 | The extended profile has no screens: its views, checks and export options (colours, organisation view, conversations…) are domain functions | Work | § 17.10 (1) |
 | 21 | Hand-off cost, cadence, waits, change-failure rate and token profile are views, not engine figures | Decision | § 17.10 (1) |
 | 22 | The default process does not link the SDLC chain with data inputs (it would change every case's default document) | Decision | § 17.10 (2) |
-| 23 | `withLibrary` is not applied to a portfolio product's effective case (needs item 19) | Work | § 17.10 (3) |
+| 23 | ~~`withLibrary` is not applied to a portfolio product's effective case (needs item 19)~~ — **done in SPEC_FIXES lot X6 (FX-05)** | Work | § 17.10 (3) |
 | 24 | ~~The import report does not show the kept / dropped foreign content; foreign content in an unmapped lane or crossing phases is dropped~~ — **done in SPEC_FIXES lot X5 (FX-24)** | Work | § 17.10 (4) |
 | 25 | ~~Tool proposals by data type (F-B43) and the operational-audit feeds of interfaces (F-B55) are not wired to the audit~~ — **done in SPEC_FIXES lot X5 (FX-33)** | Work | § 17.10 (5) |
 | 26 | No screen edits or binds decisions (`process.bindDecision` has no control; a DMN tool edits the `.dmn`) | Work | § 17.11 (1) |
