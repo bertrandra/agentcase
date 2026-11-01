@@ -1663,7 +1663,7 @@ the service line, a deviation (FX-D3); § 21.8 — the organisation out of the M
 | 17 | ~~F-B39 partial: the organisation lane view has no geometry for its new lanes, is not offered in the export dialog, and organisation lanes are not imported~~ — **done in SPEC_FIXES lot X6 (FX-23)** | Work | § 16.8 (F-B39) |
 | 18 | ~~Teams stay stored as `teamIn` / `sharedTeam`~~ — **closed in B10a**: the teams are `ac:team` elements of the document (schema v5) | Done | § 6.6, § 21.5 |
 | 19 | ~~A product's process override stays whole-document~~ — **closed in B10a**: the override is the process part only (no organisation; programme values per field since B9c) | Done | § 21.5 |
-| 20 | The extended profile has no screens: its views, checks and export options (colours, organisation view, conversations…) are domain functions | Work | § 17.10 (1) |
+| 20 | ~~The extended profile has no screens: its views, checks and export options (colours, organisation view, conversations…) are domain functions~~ — **done in SPEC_FIXES lot X4 (FX-10)** | Work | § 17.10 (1) |
 | 21 | Hand-off cost, cadence, waits, change-failure rate and token profile are views, not engine figures | Decision | § 17.10 (1) |
 | 22 | The default process does not link the SDLC chain with data inputs (it would change every case's default document) | Decision | § 17.10 (2) |
 | 23 | ~~`withLibrary` is not applied to a portfolio product's effective case (needs item 19)~~ — **done in SPEC_FIXES lot X6 (FX-05)** | Work | § 17.10 (3) |

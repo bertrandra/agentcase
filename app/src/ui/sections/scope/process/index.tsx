@@ -9,6 +9,7 @@ import { ActivityPanel } from './ActivityPanel';
 import { ActivityTable } from './ActivityTable';
 import { ActorPanel } from './ActorPanel';
 import { DecisionsPanel } from './DecisionsPanel';
+import { ExtendedProfile } from './profile/ExtendedProfile';
 import { Diagram } from './Diagram';
 import { DiagramEditor } from './editor/DiagramEditor';
 import { Filters } from './Filters';
@@ -89,6 +90,7 @@ export default function ProcessSection() {
           <ActivityTable rows={shown} />
           <ActorPanel doc={doc} />
           <DecisionsPanel doc={doc} />
+          <ExtendedProfile doc={doc} />
           <ProgrammePart />
         </>
       } />

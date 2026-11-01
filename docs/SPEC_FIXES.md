@@ -10,7 +10,7 @@
 > **Progress (2026-11-01, updated after lot X6):** every row is tagged — ✅ **Done** (merged, or in the open X6 PR), ⏳ **Open**,
 > ⏸ **Tracked** (waits on an upstream release). Lots: X0, X1, X2, X3 done; X5 done except FX-32 (needs a ProjectLibre / MS Project check);
 > X8 done (FX-44 tracked); X9 done except the owner's items (FX-57, FX-59, FX-60, FX-63); X6 done (FX-05, FX-21, FX-22, FX-23, FX-D4, FX-D6, FX-D7,
-> FX-D11); X4 partly done (FX-15, FX-20 done); X7 open. Owner actions open: FX-O1, FX-O3, FX-O4, FX-O5.
+> FX-D11); X4 done; X7 open. Owner actions open: FX-O1, FX-O3, FX-O4, FX-O5.
 
 ## 1. Purpose
 
@@ -83,7 +83,7 @@ DEVIATIONS.md entry and the owner's approval of the before → after on the gold
 
 | ID | Issue | Proposed fix | Size | Source |
 |---|---|---|---|---|
-| FX-10 | ⏳ Open — The extended profile (B5b) has no screens | Panels in 🧩 Process: data stores and tools, states, volumes, timers, boundary events, library, conversations, colours; export dialog options (colours, organisation view, several diagrams) | L | item 20 |
+| FX-10 | ✅ Done — The extended profile (B5b) has no screens | Panels in 🧩 Process: data stores and tools, states, volumes, timers, boundary events, library, conversations, colours; export dialog options (colours, organisation view, several diagrams). **Fixed (lot X4, unreleased).** 🧩 Process › Extended profile (shown on demand): Data (deliverables with type and states, data stores with their tools), Events (timers, boundary events), Library (entries, calls), Collaboration (pools, message flows) — read-only views of the domain readers, the elements being edited in the diagram editor or imported; the export dialog offers colours (by scope, task type or AI authority), one more diagram per phase, and the organisation view (FX-23); the diagram's own colour display is FX-15 | L | item 20 |
 | FX-11 | ✅ Done — No screen edits or binds DMN decisions | A decisions panel: list, bind to a rule task (`process.bindDecision`), a read-only table view with hit policy; DMN DI optional (FX-26). **Fixed (lot X4, unreleased).** 🧩 Process › Decisions: each decision with its hit policy, columns, rules and bound tasks; its table read-only; a picker per business-rule task (one undoable step) | M | item 26 |
 | FX-12 | ✅ Done — Diagram editor: no properties panel | A properties panel in the editor writing the same commands as the parameter panel. **Fixed (lot X4, unreleased).** The activity selected on the editor's canvas shows the Process section's parameter panel under it (same commands, one undoable step each) | M | item 5 |
 | FX-13 | ✅ Done — Diagram editor: its own undo history is lost on Save | Keep the editor open after save (re-import with the command stack preserved) or warn before. **Fixed (lot X4, unreleased).** After a save the editor is not re-imported: it stays as it is, its own undo history kept, and now edits the case's new process | S | item 6 |
@@ -188,7 +188,7 @@ B5 question on factory tags is answered in § 15; `npm audit` 0; no open GitHub 
 | X1 Decisions | Record the owner's answers to FX-D1…FX-D15 in this file and SPEC_BPMN — **done 2026-11-01** (§ 2.1) | — | None | 0.5 d | ✅ Done |
 | X2 Consistency (P1) | FX-01, FX-03, FX-04, FX-06, FX-07, FX-08, FX-40, FX-D1 (a), FX-D3 (a, deviation) | 107 fixtures identical except the deviations approved; cross-surface tests | Opt-in / Deviation if FX-D3 a | 2 d | ✅ Done |
 | X3 Catalogue retirement | FX-02 (D-B9) | Default process byte-identical; all reference lists unchanged | None | 1.5 d | ✅ Done |
-| X4 Screens for built domain | FX-10, FX-11, FX-12…FX-14, FX-15, FX-16, FX-17, FX-20, FX-26 | axe clean; render budgets; ui-parity 0 | None | 3 d | 🟡 Partly done — open: FX-10, FX-11, FX-12, FX-13, FX-14, FX-16, FX-17, FX-26 |
+| X4 Screens for built domain | FX-10, FX-11, FX-12…FX-14, FX-15, FX-16, FX-17, FX-20, FX-26 | axe clean; render budgets; ui-parity 0 | None | 3 d | ✅ Done |
 | X5 Import / export / workbooks | FX-24, FX-25, FX-27…FX-34 | Round trips; workbook legacy sheets unchanged | None | 2 d | 🟡 Partly done — open: FX-32 |
 | X6 Organisation depth | FX-05, FX-21, FX-22, FX-23, FX-D4 (a), FX-D6 (a), FX-D7 (a), FX-D11 (a) | Undo property tests; parity | Opt-in | 2.5 d | ✅ Done |
 | X7 Portfolio document | FX-D14 (a), FX-D2 (a: implied correlation view only), FX-D8 (a), FX-D9 (a), FX-D10 (a), FX-D12 (a), FX-D13 (a, deviation), FX-D15 (a) | Schema v6 migration round trips | Per decision | 3 d | ⏳ Open |

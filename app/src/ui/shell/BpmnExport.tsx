@@ -1,5 +1,6 @@
 import { useEffect, useId, useRef, useState, type KeyboardEvent } from 'react';
 import { BPMN_MIME, bpmnExportChoices, exportProcessFiles, type BpmnExportMode, type ProcessChoice } from '@/controllers/bpmn';
+import type { ColourMode } from '@/domain/process/profile';
 import { companionFiles, dmnBindingState, hasDecisions } from '@/controllers/decisionFiles';
 import { toast } from '../uiState';
 
@@ -21,11 +22,12 @@ export function BpmnExportPanel({ onClose }: { onClose: () => void }) {
   const { portfolio, products, shown, audit: hasAudit } = bpmnExportChoices(), id = useId(), box = useRef<HTMLDivElement>(null);
   const [mode, setMode] = useState<BpmnExportMode>('shown'), [partial, setPartial] = useState(false), [audit, setAudit] = useState(false);
   const [dmn, setDmn] = useState(hasDecisions), [cmmn, setCmmn] = useState(false), [org, setOrg] = useState(false);
+  const [colours, setColours] = useState<ColourMode | ''>(''), [phases, setPhases] = useState(false);
   const [processes, setProcesses] = useState<ProcessChoice>('delivery');
   useEffect(() => { box.current?.querySelector<HTMLInputElement>('input')?.focus(); }, []);
   const run = () => {
     try {
-      const bpmn = exportProcessFiles(mode, partial, new Date(), audit, processes, org);
+      const bpmn = exportProcessFiles(mode, partial, new Date(), audit, processes, org, { ...(colours ? { colours } : {}), phaseDiagrams: phases });
       const files = [...bpmn, ...companionFiles(bpmn[0]?.filename ?? 'AgentCase_process.bpmn', { dmn, cmmn })];
       for (const f of files) download(f.filename, f.text);
       toast(files.length === 1 ? `Exported ${files[0]?.filename ?? ''}` : `Exported ${files.length} files`);
@@ -55,6 +57,10 @@ export function BpmnExportPanel({ onClose }: { onClose: () => void }) {
         {([['delivery', 'Delivery process'], ['programme', 'Transformation programme'], ['both', 'Both, in one file']] as const).map(([p, label]) => (
           <label key={p}><input type="radio" name={`${id}-proc`} checked={processes === p} onChange={() => setProcesses(p)} /> {label}</label>))}
       </fieldset>
+      <label>Colours{' '}<select value={colours} onChange={(e) => setColours(e.target.value as ColourMode | '')}>
+        <option value="">None</option><option value="scope">By scope</option><option value="type">By task type</option>
+        <option value="authority">By AI authority</option></select></label>
+      <label><input type="checkbox" checked={phases} onChange={(e) => setPhases(e.target.checked)} /> One more diagram per phase</label>
       <label><input type="checkbox" checked={org} onChange={(e) => setOrg(e.target.checked)} /> Add the organisation view (a second diagram: lanes
         by unit, team and role)</label>
       <label><input type="checkbox" checked={dmn} onChange={(e) => setDmn(e.target.checked)} /> Decisions as a DMN file (.dmn)</label>

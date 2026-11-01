@@ -17,8 +17,10 @@ When releasing, follow [docs/BUMP_PROCEDURE.md](docs/BUMP_PROCEDURE.md) (§7 for
 
 ## [Unreleased]
 
-### SPEC_FIXES lot X4 (part) — screens (FX-11, FX-12, FX-13, FX-14, FX-16, FX-17, FX-26)
+### SPEC_FIXES lot X4 — screens (FX-10…FX-14, FX-16, FX-17, FX-26)
 
+- **Extended profile**: 🧩 Process shows the process's data, events, library and collaboration; the BPMN export can colour the activities and
+  add a diagram per phase.
 - **Diagram editor properties**: the activity selected on the canvas shows its parameter panel under the editor.
 - **DMN diagram**: the exported `.dmn` carries its diagram (DMNDI); the process diagram labels each bound business-rule task with its decision.
 - **Decisions**: 🧩 Process lists the DMN decisions with their hit policy and table (read-only) and binds each business-rule task.

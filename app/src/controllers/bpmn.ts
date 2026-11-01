@@ -10,6 +10,7 @@ import { hasPortfolioContent } from '@/store/persistence/portfolioSnapshot';
 import { makeCtx } from '@/domain/ctx';
 import { programmeProcess } from '@/domain/programme';
 import { programmeDocument, withProgramme } from '@/domain/programme/bpmn';
+import { colourBy, withPhaseDiagrams, type ColourMode } from '@/domain/process/profile';
 
 /**
  * Process export and file reading (docs/SPEC_BPMN.md § 4.1, § 4.3; phase B2). Export: the active case (or the product shown), every product of
@@ -53,10 +54,21 @@ function productInputs(): ProductInput[] {
  * The `.bpmn` file(s) of an export. `partial`: in-scope activities only (F-B3). `audit`: include the audit data (F-B33, D-B14; without it the
  * file carries the process only). Deterministic content (F-B4); the date is in the name only.
  */
+/** FX-10: the export's display options — colours (BPMN in Color) by scope, task type or AI authority; one more diagram per phase. */
+export interface ViewOptions { colours?: ColourMode; phaseDiagrams?: boolean }
 export function exportProcessFiles(mode: BpmnExportMode, partial = false, now: Date = new Date(), audit = false,
-  processes: ProcessChoice = 'delivery', orgView = false): BpmnFile[] {
+  processes: ProcessChoice = 'delivery', orgView = false, view: ViewOptions = {}): BpmnFile[] {
   const files = deliveryFiles(mode, partial, now, audit), withOrg = orgView && mode !== 'collaboration' ? files.map(organised) : files;
-  return processes === 'delivery' ? withOrg : withProgrammeFiles(withOrg, processes, mode);
+  const shaped = view.colours || view.phaseDiagrams ? withOrg.map((f) => displayed(f, view)) : withOrg;
+  return processes === 'delivery' ? shaped : withProgrammeFiles(shaped, processes, mode);
+}
+
+function displayed(f: BpmnFile, v: ViewOptions): BpmnFile {
+  let d = parseBpmn(f.text).doc;
+  if (!d) return f;
+  if (v.colours) d = colourBy(d, v.colours);
+  if (v.phaseDiagrams) d = withPhaseDiagrams(d);
+  return { ...f, text: serialize(d) };
 }
 
 /** FX-23 (F-B39): the file with a second diagram "By organisation" (lanes unit → team → role, laid out) for the product shown. */
