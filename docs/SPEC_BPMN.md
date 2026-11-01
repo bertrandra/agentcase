@@ -1895,9 +1895,11 @@ portfolio run draws exactly as before; it now also keeps each product's draws in
   `ui/widgets/ScopeUnavailable.tsx` are removed.
 - **No re-run on a scope switch; stale rule (built).** The run is drawn once for all planned products (🎲 Portfolio stress, **Run**); switching the
   View to any unit, wave or the portfolio only re-reads it (`selectionStress` is memoised on the run and the portfolio; `pfSimStore` keeps its run,
-  no product engine is built — tested). The run is marked stale by the portfolio fingerprint (`pfStressFingerprint`): a change of a unit's members
-  (an owner edit, a unit moved) changes the products' cases' document, so the run is marked stale and **⟳ Run again** is offered; until then the
-  unit's figures are re-read from the run's per-product draws for the new members (exact draws of each product, but a run older than the portfolio).
+  no product engine is built — tested). The run is marked stale by the portfolio fingerprint (`pfStressFingerprint`) only when a figure can move:
+  since SPEC_FIXES FX-D1 (decided (a)) the organisation's labels and tree (an owner edit, a unit renamed or moved) are out of the fingerprint, so the
+  run stays current and the unit's figures are re-read from the run's per-product draws for the new members (exact draws of each product). Note: an
+  owner edit never reached the fingerprint (the owner lives in the common document); the test that read "stale" compared two fingerprints at different
+  ρ, corrected in FX-D1.
 - **Report and workbook (built).** The portfolio report under a Unit scope prints its stress section for the unit (its distribution, its products,
   its verdict, its risk reduction). The results workbook under a Unit scope gains a sheet **Unit <name>** that leads (headline cards, products,
   cumulative cash: `groupOf` / `scopeHeadline`) and its "Portfolio stress" sheet a block for the unit (its distribution and risk reduction, the verdict

@@ -69,7 +69,7 @@ describe('ranking of the units and the selection is read, never drawn again', ()
   it('top units and Unassigned at the Portfolio, sub-units at a unit; NPV from groupOf, verdict from pfDecision', () => {
     const t = unitTreeThree(), pf = t.pf(), c = consolidate(pf), run = portfolioMonteCarlo(pf, OPTS);
     expect(childUnitScopes(pf, { kind: 'portfolio' }).map((u) => u.id)).toEqual(['unit-delivery', 'bu', 'empty', UNASSIGNED_UNIT]);
-    expect(childUnitScopes(pf, unit('bu')).map((u) => u.id)).toEqual(['d1', 'd3']);
+    expect(childUnitScopes(pf, unit('bu')).map((u) => [u.id, !!u.direct])).toEqual([['d1', false], ['d3', false], ['bu', true]]);   // + directly owned (FX-08)
     expect(childUnitScopes(pf, { kind: 'wave', id: t.waves[0] })).toEqual([]);
     const rows = unitRanking(pf, c, run, { kind: 'portfolio' });
     expect(rows.map((r) => r.id).sort()).toEqual(['bu', UNASSIGNED_UNIT].sort());   // units without a planned product are left out
@@ -81,13 +81,29 @@ describe('ranking of the units and the selection is read, never drawn again', ()
     expect(rows.map((r) => r.rank)).toEqual([1, 2]);
     expect(unitRanking(pf, c, null, unit('bu')).map((r) => r.verdict)).toEqual([null, null]);
   });
-  it('memoised on the run: the same selection object on a second read; an owner change re-reads the same draws and marks the run stale', () => {
+  it('memoised on the run: the same selection object on a second read; an owner change re-reads the same draws, the run stays current', () => {
     const t = unitTreeThree(), pf = t.pf(), run = portfolioMonteCarlo(pf, OPTS);
     expect(selectionStress(run, unit('bu'), pf)).toBe(selectionStress(run, unit('bu'), pf));
     setProductOwner(t.ids[2], 'd3');
     const pf2 = t.pf(), s = selectionStress(run, unit('bu'), pf2)!;
     expect(s.products).toHaveLength(3); expect(s.stats).toEqual(run.stats);   // the same run, re-read for the new members
-    // the members changed: the stale rule (fingerprint of each product's case, whose document holds the organisation) asks for a new run
-    expect(pfStressFingerprint(pf2)).not.toBe(run.fingerprint);
+    // FX-D1 (a): an owner change moves no figure, so the run stays current (the organisation's labels and tree are out of the fingerprint)
+    expect(pfStressFingerprint(pf2, OPTS.rho)).toBe(run.fingerprint);
+  });
+});
+
+describe('a unit\'s directly owned products are a row of its ranking (FX-08)', () => {
+  it('a product owned by the BU itself: its own row next to the sub-units, figures from groupOf / pfDecision on the direct scope', () => {
+    const t = unitTreeThree();
+    setProductOwner(t.ids[2], 'bu');   // C, owned by the BU itself
+    const pf = t.pf(), c = consolidate(pf), run = portfolioMonteCarlo(pf, OPTS), rows = unitRanking(pf, c, run, unit('bu'));
+    const direct: GroupScope = { kind: 'unit', id: 'bu', direct: true }, row = rows.find((r) => r.id === 'bu:direct')!;
+    expect(row).toMatchObject({ label: 'Retail BU (directly owned)', products: 1 });
+    expect(row.npv).toBe(groupOf(c, direct)!.summary.npv);
+    expect(row.verdict).toBe(pfDecision(pf, run, direct)!.verdict);
+    // the rows partition the BU: Σ sub-units + directly owned = the BU
+    const sum = rows.reduce((s, r) => s + r.npv, 0);
+    expect(sum).toBeCloseTo(groupOf(c, unit('bu'))!.summary.npv, 6);
+    expect(groupOf(c, unit('bu'))!.items.map((v) => v.id)).toContain(t.ids[2]);
   });
 });

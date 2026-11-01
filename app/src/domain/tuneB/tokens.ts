@@ -2,6 +2,7 @@
 import { engineNow } from '../canonical';
 import type { Ctx } from '../ctx';
 import { PHASES } from '../catalog';
+import { caseViews } from '../process';
 import { model } from '../model/overlay';
 import { activeArtefacts } from '../scope';
 import { blendedTokenCostPer1M, tokMixTotal } from '../tokens';
@@ -61,7 +62,8 @@ export function agentRunTable(c: Ctx): RunTable {
 export function artifactRunTable(c: Ctx): RunTable {
   const u = tokenUsage(c), act = activeArtefacts(c.a, c.s);
   const denom = act.reduce((s, a) => s + (a.effort || 0) * (a.agentSup || 0), 0) || 1;
-  const pidx = new Map<string, number>(PHASES.map((p, i) => [p.id, i])), pname = new Map<string, string>(PHASES.map((p) => [p.id, p.name]));
+  const phases = caseViews(c.s)?.phases ?? PHASES;   // the case's own phases, custom ones included (FX-04); the catalogue without a document
+  const pidx = new Map<string, number>(phases.map((p, i) => [p.id, i])), pname = new Map<string, string>(phases.map((p) => [p.id, p.name]));
   pname.set('Cross-cutting', 'Cross-cutting (regulatory)');
   const sorted = act.slice().sort((a, b) => ((pidx.get(a.phase) ?? 99) - (pidx.get(b.phase) ?? 99)) || String(a.name).localeCompare(String(b.name)));
   const rows = sorted.map((a) => {

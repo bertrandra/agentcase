@@ -19,13 +19,15 @@ import { aggregate, type ProductView } from './waves';
  * the reports) reads its products, series and summary here, so a Unit aggregates exactly as a Wave does and a unit owning every product gives the
  * Portfolio's very figures (same products, same order, same sums). Waves and units are independent groupings (a wave can span units).
  */
-export type GroupScope = { kind: 'portfolio' } | { kind: 'wave'; id: string } | { kind: 'unit'; id: string };
+/** `direct` (a unit only): the products the unit owns itself, not those of its sub-units (the "directly owned" row of a ranking, FX-08). */
+export type GroupScope = { kind: 'portfolio' } | { kind: 'wave'; id: string } | { kind: 'unit'; id: string; direct?: boolean };
 
 /** The id of the "Unassigned" node of the unit scope: the products without an owning unit, or with an owner the tree does not hold. */
 export const UNASSIGNED_UNIT = '';
 
 /** "portfolio", "wave:<id>" or "unit:<id>": the key every memo of a selection uses. */
-export const scopeKey = (s: { kind: string; id?: string }): string => (s.kind === 'wave' || s.kind === 'unit' ? `${s.kind}:${s.id ?? ''}` : s.kind);
+export const scopeKey = (s: { kind: string; id?: string; direct?: boolean }): string =>
+  (s.kind === 'wave' || s.kind === 'unit' ? `${s.kind}${s.direct ? '-direct' : ''}:${s.id ?? ''}` : s.kind);
 
 const unitMemo = new WeakMap<object, OrgUnit[]>();
 /**
@@ -66,9 +68,11 @@ function membersOf(pf: Portfolio, s: GroupScope): ScopeMembers | null {
   const label = unitLabel(pf, s.id);
   if (label === null) return null;
   const refs = pf.products.map((p) => ({ id: p.id, name: p.name, owner: productOwner(pf, p.id) }));
-  const mine = new Set(productsOfUnit(portfolioUnits(pf), refs, s.id === UNASSIGNED_UNIT ? null : s.id).map((p) => p.id));
-  const ids = planned.filter((x) => mine.has(x.product.id)).map((x) => x.product.id);
-  return { label, planned: ids, excluded: pf.products.filter((p) => mine.has(p.id) && !ids.includes(p.id)).map((p) => p.id) };
+  const owned = s.direct && s.id !== UNASSIGNED_UNIT ? refs.filter((p) => p.owner === s.id)
+    : productsOfUnit(portfolioUnits(pf), refs, s.id === UNASSIGNED_UNIT ? null : s.id);
+  const mine = new Set(owned.map((p) => p.id)), ids = planned.filter((x) => mine.has(x.product.id)).map((x) => x.product.id);
+  const excluded = pf.products.filter((p) => mine.has(p.id) && !ids.includes(p.id)).map((p) => p.id);
+  return { label: s.direct ? `${label} (directly owned)` : label, planned: ids, excluded };
 }
 
 /** The members of a Portfolio / Wave / Unit selection; null for a wave or a unit that does not exist. Memoised on the portfolio (its figures' core). */

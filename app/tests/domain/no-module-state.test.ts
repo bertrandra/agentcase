@@ -70,6 +70,7 @@ const ALLOWED: Record<string, string> = {
   'domain/portfolio/sharedTeam.ts:roots': 'memo: the effective team of a product (own team plus its shares of the shared lines)',
   'domain/portfolio/resolve.ts:commons': 'memo: the common case of a portfolio object',
   'domain/stress/fingerprint.ts:EXCLUDED': 'constant lookup (never written after)',
+  'domain/stress/fingerprint.ts:figureText': 'memo: the figure-relevant text of a document (FX-D1), keyed on the document',
   'domain/time/spline.ts:prepared': 'memo: the prepared spline of a knot object',
   'domain/process/defaultProcess.ts:built': 'memo: the catalogue process of a catalogue object (built once per catalogue)',
   'domain/process/read.ts:memo': 'memo: the typed views of a process document (keyed by the immutable node tree)',

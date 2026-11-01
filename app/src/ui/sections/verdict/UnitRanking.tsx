@@ -30,7 +30,7 @@ export function UnitRanking({ title = 'Ranking of units' }: { title?: string }) 
         { key: 'c', header: 'Confidence', align: R, render: (r) => (r.confidence === null ? '' : `${r.confidence}%`) },
         { key: 'go', header: '', title: 'Show this unit', render: (r) => (
           <button type="button" className="ac-link" aria-label={`Show unit ${r.label}`}
-            onClick={() => { setDisplayScope({ kind: 'unit', id: r.id }); }}>Show</button>) },
+            onClick={() => { setDisplayScope({ kind: 'unit', id: r.direct ? r.id.replace(/:direct$/, '') : r.id }); }}>Show</button>) },
       ]} />
     </Panel>
   );

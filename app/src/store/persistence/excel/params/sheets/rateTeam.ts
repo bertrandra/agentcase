@@ -1,5 +1,7 @@
 /** @calc-zone exports */
-import { LOCATIONS, REG_ARTEFACTS, SDLC_ARTEFACTS } from '@/domain/catalog';
+import { LOCATIONS } from '@/domain/catalog';
+import { pinTargets } from '@/domain/baseline/teamWeights';
+import type { XDocument } from '@/domain/process';
 import { snapFTE } from '@/domain/baseline/apportion';
 import { GRADES, SKILLS_EXIST } from '@/domain/baseline/skills';
 import { blue, frz, geDV, head, listDV, sheet } from '../kit';
@@ -43,9 +45,9 @@ function writeTeam({ wb, d }: WriteCtx): void {
   }
   head(ws); frz(ws);
 }
-const KNOWN_ART = new Set([...SDLC_ARTEFACTS, ...REG_ARTEFACTS].map((a) => a.id));
 function readTeam({ rows, w, notes }: ReadCtx): void {
   const r = rows('Input Team'); if (!r) return;
+  const known = pinTargets(w.BPMN as XDocument);   // the case's own activities (custom ones included) and the catalogue (FX-03)
   const nt: { skill: string; grade: string; loc: string; etp: number; pins: string[] }[] = [];
   r.slice(1).forEach((x) => {
     if (str(x[0]) === '') return;
@@ -59,7 +61,7 @@ function readTeam({ rows, w, notes }: ReadCtx): void {
   const seen = new Set<string>(); let dropped = 0, dup = 0;
   nt.forEach((t) => {
     t.pins = t.pins.filter((id) => {
-      if (!KNOWN_ART.has(id)) { dropped++; return false; } if (seen.has(id)) { dup++; return false; } seen.add(id);
+      if (!known.has(id)) { dropped++; return false; } if (seen.has(id)) { dup++; return false; } seen.add(id);
       return true;
     });
   });

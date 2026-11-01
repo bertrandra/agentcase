@@ -2,6 +2,7 @@
 import type { Ctx } from '../ctx';
 import { activeArtefacts } from '../scope';
 import { SDLC_ARTEFACTS, REG_ARTEFACTS } from '../catalog';
+import { readProcess, type XDocument } from '../process';
 import type { TeamRow } from '../types/state';
 import { apportionFTE, snapFTE } from './apportion';
 import { artTeamSkill, skillMapOf } from './skills';
@@ -9,10 +10,14 @@ import { artTeamSkill, skillMapOf } from './skills';
 export const isPinnedRow = (r: TeamRow | undefined): boolean => !!(r && r.pins && r.pins.length);
 export const pinsOf = (r: TeamRow): string[] => (r.pins ?? []) as string[];
 
-/** Pins must reference known artefacts and each artefact belongs to one row (first wins). */
-export function normalisedPins(rows: TeamRow[]): string[][] {
-  const known = new Set([...SDLC_ARTEFACTS, ...REG_ARTEFACTS].map((a) => a.id)), seen = new Set<string>();
-  return rows.map((r) => pinsOf(r).filter((id) => known.has(id) && !seen.has(id) && (seen.add(id), true)));
+/**
+ * What a team line may pin (SPEC_FIXES FX-03): the activities of the case's own process — custom activities included — and the catalogue's
+ * artefacts. The one rule the imports (parameters workbook, portfolio workbook) check pins against.
+ */
+export function pinTargets(...docs: XDocument[]): Set<string> {
+  const out = new Set([...SDLC_ARTEFACTS, ...REG_ARTEFACTS].map((a) => a.id));
+  for (const d of docs) for (const a of readProcess(d).activities) out.add(a.id);
+  return out;
 }
 
 /** artefact id → index of the row that pins it (first wins). */
