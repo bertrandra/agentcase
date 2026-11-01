@@ -17,6 +17,24 @@ When releasing, follow [docs/BUMP_PROCEDURE.md](docs/BUMP_PROCEDURE.md) (§7 for
 
 ## [Unreleased]
 
+### SPEC_FIXES lot X9 (part) — carry-over (FX-61, FX-62, FX-64)
+
+- **Legacy battery in the nightly**: `tools/test-all.mjs` (check, smoke, handlers, xss, state) runs every night; its state test no longer writes to
+  a fixed scratch path. RELEASE_TAGS lists v21.1.0 … v21.6.0; MIGRATION_PLAN § 15.5 re-checked.
+
+### SPEC_FIXES lot X8 — polish (FX-18, FX-19, FX-20, FX-41, FX-42, FX-43, FX-44, FX-45, FX-71, FX-76)
+
+- **Test selection**: confirmed that the misses of `validate:affected` came from the missing xmllint; the mutation test now tolerates the mutation
+  it is checking.
+
+- **Links to 📅 Plan** say "📅 Plan" (the menu keeps its legacy label); a wave's link opens Plan on that wave; Plan's tables (WBS, dictionary, RAM,
+  schedule) also open a programme activity in 📋 Programme.
+- **Faster edits**: the Process filters' option lists and the process views are memoised (an edit re-reads its phase only).
+- **Stable tests**: the portfolio Monte Carlo timing test measures CPU time, not the wall clock.
+- FX-43 accepted as documented (a run saved by an older file shows stale once; ⟳ Run again redraws it). FX-44: exceljs 4.4.0 still ships
+  archiver 5, the `minimatch` override stays. FX-45: one log folder per agent worktree (BUMP_PROCEDURE).
+
+
 ### SPEC_FIXES lot X3 — the default process is the one source of the catalogue (FX-02, D-B9)
 
 - The phases, activities, regulatory catalogue and norms, and rework pairs are read from the shipped `defaultProcess.bpmn` (a DOM-free reader of

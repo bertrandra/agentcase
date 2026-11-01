@@ -104,6 +104,11 @@ so no audit run changes a tracked file). `--only name,name` / `--from name` sele
 and the `run:` lines of the workflow differ: change both together. Times on a 4-core machine: about 30 min for the pull-request gates, the nightly suite about
 45 min plus `validate:affected`.
 
+**Parallel agent runs (SPEC_FIXES FX-45).** Several agents working at once each use their own git worktree; every log and report goes inside
+that worktree (`app/test-results/`, git-ignored: the gates already write there) or under a folder named after it outside the repository
+(`$TMPDIR/agentcase-<worktree name>/`), never a fixed shared path such as one scratchpad file: two runs writing the same log overwrite each other's
+evidence. The brief of each agent names its folder.
+
 ## 5. Changelog and commit
 
 `CHANGELOG.md`: newest first, header `## [vX.Y.Z] YYYY-MM-DD — title`; sections **New / Changed / Fixed**; a **Golden case** line

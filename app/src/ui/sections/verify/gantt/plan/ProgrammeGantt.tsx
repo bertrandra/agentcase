@@ -4,6 +4,7 @@ import { openActivity } from '@/ui/widgets/ActivityRefs';
 import { DataTable } from '@/ui/widgets/DataTable';
 import { ROLE_TONE } from './HistogramChart';
 import './plan.css';
+import { PlanLink } from './PlanLink';
 
 
 /**
@@ -43,8 +44,7 @@ export function ProgrammeGantt({ v }: { v: PlanViews }) {
       <h3>Schedule</h3>
       <DataTable caption="Programme schedule (the Gantt's table)" rows={v.dictionary} rowKey={(d) => d.code} columns={[
         { key: 'code', header: 'WBS', render: (d) => d.code },
-        { key: 'name', header: 'Activity', render: (d) => <button type="button" className="ac-link" onClick={() => openActivity(d.activity)}
-          aria-label={`Open ${d.name} in Process`}>{d.name}</button> },
+        { key: 'name', header: 'Activity', render: (d) => <PlanLink id={d.activity} name={d.name} /> },
         { key: 'start', header: 'Start', render: (d) => d.start }, { key: 'finish', header: 'Finish', render: (d) => (d.milestone ? '◆' : d.finish) },
         { key: 'months', header: 'Months', align: 'right', render: (d) => (d.milestone ? '—' : fmt1(d.months)) },
         { key: 'pred', header: 'Predecessors', render: (d) => d.predecessors || '—' },

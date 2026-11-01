@@ -42,6 +42,11 @@ jobs:
         run: node tools/parallel-run.mjs --corpus full
         if: success() || failure()
         timeout-minutes: 30
+      # The legacy file's own battery (check, smoke, handlers, xss, state; SPEC_FIXES FX-62): the legacy file is the oracle, it must keep passing.
+      - id: legacy
+        run: node tools/test-all.mjs
+        if: success() || failure()
+        timeout-minutes: 20
       - id: audit
         run: npm audit --omit=dev
         if: success() || failure()
@@ -63,6 +68,7 @@ jobs:
             echo "| npm run check x3 | ${{ steps.check3.outcome }} |"
             echo "| documented test count | ${{ steps.count.outcome }} |"
             echo "| parallel run, full corpus | ${{ steps.parallel.outcome }} |"
+            echo "| legacy battery (tools/test-all.mjs) | ${{ steps.legacy.outcome }} |"
             echo "| npm audit --omit=dev | ${{ steps.audit.outcome }} |"
           } >> "$GITHUB_STEP_SUMMARY"
   affected:

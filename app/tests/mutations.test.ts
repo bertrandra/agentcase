@@ -9,7 +9,10 @@ const root = join(__dirname, '..');
 
 describe('validate:affected mutations', () => {
   it.each(MUTATIONS.map((m) => [m.file, m] as const))('%s: find occurs once and the replacement differs', (_, m) => {
-    expect(readFileSync(join(root, m.file), 'utf8').split(m.find).length - 1).toBe(1);
+    // `find` once — or `replace` once while `validate:affected` has this very mutation applied (the test reads the text, it imports nothing)
+    const text = readFileSync(join(root, m.file), 'utf8'), count = (x: string): number => text.split(x).length - 1;
+    expect(count(m.find) === 1 || count(m.replace) === 1).toBe(true);
+    expect(count(m.find) + count(m.replace)).toBeGreaterThan(0);
     expect(m.replace).not.toBe(m.find);
   });
 });

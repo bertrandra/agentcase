@@ -56,6 +56,12 @@ next one (for example #63–#66 between v20.11.0 and v20.12.0) belong to the nex
 | v20.33.0 | 2026-10-31 | `796021880bbbd970d6ac45497e33091107cf0af7` | #92, "BPMN B9d — 📅 Plan screen: programme Gantt, WBS, OBS / RAM, resource histogram, MS Project XML (v20.33.0)" |
 | v20.34.0 | 2026-10-31 | `2f7354630ee35d33c34cae4e20da00a2ea21a01b` | #93, "BPMN B9c — the programme's stored values in the case's BPMN document, schema v4 (v20.34.0)" |
 | v21.0.0 | 2026-10-31 | `ea23c25543552bcd16b360638098c4afe74ffb17` | #94, "v21.0.0 — BPMN migration complete (B8 release: guide, open items, release tags)" (major: file schema v4, the process stored natively in BPMN, the figure changes of B9b) |
+| v21.1.0 | 2026-10-31 | `24c07b90804afd62953be5e342ca59cd8a2db8ff` | #96, "links from the BPMN map to activity detail" |
+| v21.2.0 | 2026-10-31 | `0aead225061fbfca3722c6fddbc7b5554072003e` | #97, "selective refresh on the BPMN screens; B10 spec" |
+| v21.3.0 | 2026-10-31 | `745071a4ffcce36f08a164263492cb06616321f4` | #98, "B10a, teams in the document (schema v5)" |
+| v21.4.0 | 2026-10-31 | `5dd0061e722748e1d70656b625b39161099b9696` | #99, "B10b, unit scope" |
+| v21.5.0 | 2026-10-31 | `7bc69de8c026a18abfae49d2749cc1ad5c704673` | #100, "B10c, transverse services" |
+| v21.6.0 | 2026-10-31 | `3be64099df10c6e292a2824755632d21c379aeec` | #101, "B10d, strategy, stress and decision per unit (B10 complete)" |
 
 ## Commands for the owner
 
@@ -101,8 +107,14 @@ git tag -a v20.32.0 e777bbb8946aa3a1e4032569c9e3f9c4b4253c9f -m "AgentCase v20.3
 git tag -a v20.33.0 796021880bbbd970d6ac45497e33091107cf0af7 -m "AgentCase v20.33.0: BPMN B9d, Plan screen"
 git tag -a v20.34.0 2f7354630ee35d33c34cae4e20da00a2ea21a01b -m "AgentCase v20.34.0: BPMN B9c, schema v4"
 git tag -a v21.0.0 ea23c25543552bcd16b360638098c4afe74ffb17 -m "AgentCase v21.0.0: BPMN migration complete"
+git tag -a v21.1.0 24c07b90804afd62953be5e342ca59cd8a2db8ff -m "AgentCase v21.1.0: links from the BPMN map to activity detail"
+git tag -a v21.2.0 0aead225061fbfca3722c6fddbc7b5554072003e -m "AgentCase v21.2.0: selective refresh on the BPMN screens; B10 spec"
+git tag -a v21.3.0 745071a4ffcce36f08a164263492cb06616321f4 -m "AgentCase v21.3.0: B10a, teams in the document (schema v5)"
+git tag -a v21.4.0 5dd0061e722748e1d70656b625b39161099b9696 -m "AgentCase v21.4.0: B10b, unit scope"
+git tag -a v21.5.0 7bc69de8c026a18abfae49d2749cc1ad5c704673 -m "AgentCase v21.5.0: B10c, transverse services"
+git tag -a v21.6.0 3be64099df10c6e292a2824755632d21c379aeec -m "AgentCase v21.6.0: B10d, strategy, stress and decision per unit (B10 complete)"
 git push origin --tags
 ```
 
-Check before pushing: `git tag -n1 --sort=v:refname 'v19*' 'v20*'` lists 37 tags (and `'v21*'` one more once v21.0.0 is tagged), and `git show -s --format=%s vX.Y.Z` prints the subject of the
+Check before pushing: `git tag -n1 --sort=v:refname 'v19*' 'v20*'` lists 37 tags (and `'v21*'` seven more: v21.0.0 to v21.6.0, SPEC_FIXES FX-64), and `git show -s --format=%s vX.Y.Z` prints the subject of the
 table above. From now on, tag each release merge as part of the release (docs/BUMP_PROCEDURE.md §5).

@@ -22,6 +22,12 @@ export const LEGACY_SECTIONS = SECTIONS.filter((s) => s.group !== PORTFOLIO_GROU
 export const LEGACY_GROUPS = GROUPS.filter((g) => g.id !== PORTFOLIO_GROUP_ID);
 export const DEFAULT_PERSONA_SECTIONS = personaSections as Record<string, string[]>;
 export const sectionById = (id: string): SectionDef | undefined => SECTIONS.find((s) => s.id === id);
+/**
+ * The title a section's screen shows where it differs from its menu label (the menu keeps the legacy label, DEV-B9D-PLAN-SCREEN): a link names the
+ * screen it opens (SPEC_FIXES FX-19).
+ */
+export const SECTION_TITLES: Readonly<Record<string, string>> = { gantt: '📅 Plan' };
+export const linkLabel = (id: string): string => SECTION_TITLES[id] ?? sectionById(id)?.label ?? id;
 
 /** Advanced sees everything; other personas see their configured list (the doc's PERSONA_SECTIONS, else the defaults). */
 export function visibleSections(persona: string, configured?: Record<string, string[]>): SectionDef[] {

@@ -390,10 +390,15 @@ Not fixed in the port (decision D7); each is a candidate for a deliberate change
 
 ### 15.5 Inconsistencies noted in the repository while documenting
 
-- `app/fixtures/README.md` still says the fixtures come from "the legacy single-file app (v18.11)"; they were regenerated from v18.13.
-- `tools/golden.json` carries `"version": "18.13"`; the TypeScript build has no equivalent golden file (its golden figures are the `golden` oracle fixture).
-- `app/package.json`, `app/src/domain/version.ts` and `app/index.html` all read 20.0.0; `app/tests/version.test.ts` checks that they agree. The autosave database and BroadcastChannel are still named `agentcase-v19` on purpose (never orphan autosaves).
-- The legacy tools (`tools/test-all.mjs` and its steps) and the oracle generators are not run by CI.
+Re-checked against the tree on 2026-11-01 (SPEC_FIXES FX-61):
+
+- `app/fixtures/README.md` reads "the legacy single-file app (v18.13)", the version the fixtures were regenerated from: consistent.
+- `tools/golden.json` carries `"version": "18.13"`; the TypeScript build has no equivalent golden file (its golden figures are the `golden` oracle
+  fixture). Intended.
+- The version: `app/package.json` is the one source; `app/src/domain/version.ts` and `app/index.html` follow it and `app/tests/version.test.ts`
+  checks that they agree; the docs quote it through the generated facts (`npm run docs:facts`), so no version number is written by hand here. The
+  autosave database and BroadcastChannel are still named `agentcase-v19` on purpose (never orphan autosaves).
+- The legacy tools (`tools/test-all.mjs` and its steps) and the oracle generators: see SPEC_FIXES FX-62.
 
 ### 15.6 Multi-product (v20.0.0): what is left
 

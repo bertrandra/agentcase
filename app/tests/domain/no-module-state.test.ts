@@ -16,8 +16,7 @@ const rel = (f: string) => relative(SRC, f).replace(/\\/g, '/');
 
 /** `file:name` → why this module-level container is not state: a memo keyed by an immutable input (same input, same output) or a constant lookup. */
 const ALLOWED: Record<string, string> = {
-  'domain/org/teamDoc.ts:rows': 'memo: the rows of a team element (keyed by the immutable node)',
-  'domain/org/teamDoc.ts:lines': 'memo: the shared line of a team element (keyed by the immutable node)',
+  'domain/org/teamDoc.ts:rows': 'memo: the rows of a team element', 'domain/org/teamDoc.ts:lines': 'memo: the shared line of a team element',
   'domain/org/teamDoc.ts:memo': 'memo: the stored teams of an extension elements node',
   'domain/org/teamStrip.ts:interned': 'memo: the document without its teams, interned on the identity of its other nodes',
   'domain/org/teamStrip.ts:direct': 'memo: the document without its teams, per document',
@@ -70,7 +69,8 @@ const ALLOWED: Record<string, string> = {
   'domain/portfolio/sharedTeam.ts:roots': 'memo: the effective team of a product (own team plus its shares of the shared lines)',
   'domain/portfolio/resolve.ts:commons': 'memo: the common case of a portfolio object',
   'domain/stress/fingerprint.ts:EXCLUDED': 'constant lookup (never written after)',
-  'domain/stress/fingerprint.ts:figureText': 'memo: the figure-relevant text of a document (FX-D1), keyed on the document',
+  'domain/process/bpsim.ts:NO_BPSIM': 'constant: the shared empty BPSim map', 'domain/process/bpsim.ts:bpsimMemo': 'memo: BPSim values (FX-42)',
+  'domain/process/readPhases.ts:actMemo': 'memo: a container\'s activities (FX-42)', 'domain/stress/fingerprint.ts:figureText': 'memo: figure text (FX-D1)',
   'domain/time/spline.ts:prepared': 'memo: the prepared spline of a knot object',
   'domain/process/defaultProcess.ts:built': 'memo: the catalogue process of a catalogue object (built once per catalogue)',
   'domain/process/read.ts:memo': 'memo: the typed views of a process document (keyed by the immutable node tree)',

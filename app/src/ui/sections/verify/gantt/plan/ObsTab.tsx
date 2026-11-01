@@ -1,9 +1,9 @@
 import type { PlanViews } from '@/domain/programme/planBundle';
 import { fmt1 } from '@/ui/economicsFormat';
-import { openActivity } from '@/ui/widgets/ActivityRefs';
 import { DataTable, type Column } from '@/ui/widgets/DataTable';
 import type { RamRow } from '@/domain/programme/ram';
 import './plan.css';
+import { PlanLink } from './PlanLink';
 
 const KIND = { organisation: 'Organisation', unit: 'Unit', team: 'Team', role: 'Role', programmeRole: 'Operating-model role', agent: 'Agent',
   branch: 'Branch' } as const;
@@ -17,8 +17,7 @@ export function ObsTab({ v }: { v: PlanViews }) {
   const findings = v.ram.rows.flatMap((r) => r.findings);
   const cols: Column<RamRow>[] = [
     { key: 'code', header: 'WBS', render: (r) => r.code },
-    { key: 'name', header: 'Work package', render: (r) => <button type="button" className="ac-link" onClick={() => openActivity(r.activity)}
-      aria-label={`Open ${r.name} in Process`}>{r.name}</button> },
+    { key: 'name', header: 'Work package', render: (r) => <PlanLink id={r.activity} name={r.name} /> },
     ...v.ram.columns.map((c): Column<RamRow> => ({ key: c.id, header: c.name, align: 'center', render: (r) => (r.cells[c.id] ?? []).join(', ') })),
     { key: 'check', header: 'Checks (F-B36)', render: (r) => (r.findings.length ? r.findings.map((f) => f.message).join('; ') : 'OK') },
   ];

@@ -61,10 +61,21 @@ const at = (e: XElement, group: string, name: string): number | undefined => {
  * The BPSim values of a document, by element id: every `bpsim:BPSimData` found in the `extensionElements` of a relationship or of the
  * definitions' root elements, first scenario wins. Constant parameters only (a distribution is not a value AgentCase can take).
  */
+const NO_BPSIM: ReadonlyMap<string, BpsimValues> = new Map();
+const bpsimMemo = new WeakMap<XElement, Map<string, BpsimValues>>();
+/**
+ * The BPSim values of the document, by element id. FX-42: a document without BPSim data reads one shared empty map, and one with a single
+ * `BPSimData` element is read once per that element, so an edit elsewhere keeps the same map (the per-phase memo of `activitiesOf` keys on it).
+ */
 export function readBpsim(defs: XElement): Map<string, BpsimValues> {
-  const out = new Map<string, BpsimValues>();
   const holders = kids(defs).filter((e) => e.ns === NS.bpmn).flatMap((e) => kids(e, NS.bpmn, 'extensionElements'));
-  for (const s of holders.flatMap((x) => kids(x, BPSIM_NS, 'BPSimData')).flatMap((d) => kids(d, BPSIM_NS, 'Scenario'))) {
+  const data = holders.flatMap((x) => kids(x, BPSIM_NS, 'BPSimData'));
+  if (!data.length) return NO_BPSIM as Map<string, BpsimValues>;
+  const one = data.length === 1 ? data[0]! : undefined, hit = one && bpsimMemo.get(one);
+  if (hit) return hit;
+  const out = new Map<string, BpsimValues>();
+  if (one) bpsimMemo.set(one, out);
+  for (const s of data.flatMap((d) => kids(d, BPSIM_NS, 'Scenario'))) {
     for (const p of kids(s, BPSIM_NS, 'ElementParameters')) {
       const ref = attr(p, 'elementRef'), v: BpsimValues = {};
       if (!ref || out.has(ref)) continue;

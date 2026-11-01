@@ -59,7 +59,19 @@ function activityOf(e: XElement, phase: string, deliverables: Map<string, string
  * The activities of a phase sub-process, in document order, then those of its event sub-processes (F-B49, B5b: work triggered during the phase,
  * counted per occurrence). `phase` is the phase they belong to (the container's id by default).
  */
+const actMemo = new WeakMap<XElement, { sim: Sim; out: ActivityView[] }>();
+/**
+ * The activities of a container. FX-42: memoised on the container element and the BPSim map (both keep their identity when an edit touches another
+ * branch), so an edit re-reads only the phase it changed.
+ */
 export function activitiesOf(container: XElement, sim: Sim = NONE, phase = str(attr(container, 'id')), trigger?: string): ActivityView[] {
+  const plain = trigger === undefined && phase === str(attr(container, 'id')), hit = plain ? actMemo.get(container) : undefined;
+  if (hit && hit.sim === sim) return hit.out;
+  const out = activitiesRead(container, sim, phase, trigger);
+  if (plain) actMemo.set(container, { sim, out });
+  return out;
+}
+function activitiesRead(container: XElement, sim: Sim, phase: string, trigger?: string): ActivityView[] {
   const deliverables = new Map<string, string>();
   for (const d of kids(container, NS.bpmn, 'dataObject')) deliverables.set(str(attr(d, 'id')), docText(d) ?? '');
   const own = kids(container, NS.bpmn).filter((e) => TASKS.includes(e.local)).map((e) => {

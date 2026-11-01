@@ -52,6 +52,7 @@ const NIGHTLY = [
   r('suite', 'check ×3', 'node tools/check-repeat.mjs --runs 3', always(75)),
   r('suite', 'test count', 'node tools/check-repeat.mjs --count-tests --tolerance 2', always(15)),
   r('suite', 'parallel-run full', 'node tools/parallel-run.mjs --corpus full', always(30)),
+  r('suite', 'legacy battery', 'node tools/test-all.mjs', always(20)),
   s('suite', 'audit', 'npm audit --omit=dev', { if: 'success() || failure()' }),
   s('affected', 'npm ci', 'npm ci', { ci: true }), s('affected', 'xmllint', XMLLINT, { ci: true }),
   s('affected', 'validate:affected', 'npm run validate:affected', { timeout: '225' }),

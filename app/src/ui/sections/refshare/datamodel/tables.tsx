@@ -3,12 +3,12 @@ import { useSavedCase } from '@/store/portfolioHooks';
 import { Badge } from '@/ui/widgets/cards';
 import { DataTable } from '@/ui/widgets/DataTable';
 import { goSection } from '@/ui/uiState';
-import { GROUPS, SECTIONS, sectionById } from '@/ui/zones/registry';
+import { GROUPS, linkLabel, SECTIONS, sectionById } from '@/ui/zones/registry';
 import { COEF_ROWS, VARIABLES, nsRows, nsState, stateRows, type StateRow } from './model';
 
 const Link = ({ id }: { id: string }) => {
   const s = sectionById(id);
-  return s ? <button type="button" className="ac-golink" onClick={() => goSection(id)}>{s.label}</button>
+  return s ? <button type="button" className="ac-golink" onClick={() => goSection(id)}>{linkLabel(id)}</button>
     : <span className="ac-muted">{id || 'not yet exposed'}</span>;
 };
 
