@@ -19,7 +19,8 @@ describe('run-sizing section', () => {
   it.each(FIXTURES)('shows every figure the legacy section showed (%s)', (fx) => {
     loadFixture(fx);
     const { container } = render(<RunSizing />);
-    expectParity(fx, 'run-sizing', container);
+    // DEV-HORIZON-LABELS (FX-52): the legacy help quoted a fixed ~€244k legacy run team; ours prints this case's, from the engine
+    expectParity(fx, 'run-sizing', container, [244000]);
   });
   // B9a (DEV-B9A-CONTEXT-SCREENS): the sizing policy is a parameter of the AgentOps run activity, edited in the Process section; the preview follows it
   it('the sizing policy drives the run-team cost and the preview; undo restores', () => {

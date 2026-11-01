@@ -20,7 +20,7 @@ const ARCH_DESC = /^(One-line-each index of the 5 layers|Full technical detail: 
 const archDescription = (name: string, v: unknown): boolean => name === 'Sections' && typeof v === 'string' && ARCH_DESC.test(v);
 const same = (a: unknown, b: unknown, sheet = ''): boolean => {
   if (typeof a !== 'number' || typeof b !== 'number') return a === b;
-  // the legacy "Location Target" sheet rounds to whole % (losing the cost-relevant decimals on re-import); ours keeps one decimal
+  // DEV-EXCEL-TARGET-LOC: the legacy "Location Target" sheet rounds to whole % (losing the cost-relevant decimals on re-import); ours keeps the value
   return sheet === 'Location Target' ? Math.abs(a - b) <= 0.5 : Math.abs(a - b) <= 1e-9 * Math.max(1, Math.abs(a));
 };
 
@@ -50,6 +50,9 @@ describe('our writer reproduces the legacy workbook layout and values', () => {
       }));
     });
     expect(diffs.slice(0, 8)).toEqual([]);
-    expect(await look(await paramsWorkbookBytes(doc, 'all', ENV, THEME_DEFAULT))).toEqual(await look(legacyXlsx(id)));
+    // DEV-EXCEL-FM-PROD: our FM Environments sheet has one more column (Production, FX-54) after the legacy ones
+    const ours = await look(await paramsWorkbookBytes(doc, 'all', ENV, THEME_DEFAULT)) as Record<string, { widths: unknown[] }>;
+    ours['FM Environments']!.widths = ours['FM Environments']!.widths.slice(0, 3);
+    expect(ours).toEqual(await look(legacyXlsx(id)));
   });
 });

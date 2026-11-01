@@ -28,4 +28,9 @@ export const BPMN_DEVIATIONS: Deviation[] = [
   { id: 'DEV-FXD3-SERVICE-ROUTING',
     reason: "A service's activities by type or role are routed to its lines in each product's team (pins by team skill); the Input Team spread " +
     'moves, no headline figure does.', skip: [] },
+  // SPEC_FIXES X9: exports and report text only; no oracle field changes.
+  { id: 'DEV-EXCEL-TARGET-LOC', reason: 'The Location Target sheet carries the full target share (the legacy rounded to whole %).', skip: [] },
+  { id: 'DEV-EXCEL-FM-PROD', reason: 'The FM Environments sheet has a Production column; the production flag goes through the workbook.', skip: [] },
+  { id: 'DEV-REPORT-CATALOGUE-COUNT', reason: 'The critical-delivery report counts the regulatory catalogue (370), not a fixed 349.', skip: [] },
+  { id: 'DEV-HORIZON-LABELS', reason: 'Labels follow the horizon and help figures come from the engine; no figure changes.', skip: [] },
 ];

@@ -33,7 +33,9 @@ const clean = (v: unknown): string | number | boolean | null => {
 };
 function table(r: Rows | null, fields: string[]): Obj[] | null {
   if (!r) return null;
-  return r.slice(1).filter((x) => x[0] != null && str(x[0]) !== '').map((x) => Object.fromEntries(fields.map((f, i) => [f, clean(x[i])])) as Obj);
+  // a field is read only when its column has a header: a workbook written before a column was added (FM Environments' Production, FX-54) has none
+  const head = r[0] ?? [], cols = fields.map((f, i) => [f, i] as const).filter(([, i]) => head[i] != null && str(head[i]) !== '');
+  return r.slice(1).filter((x) => x[0] != null && str(x[0]) !== '').map((x) => Object.fromEntries(cols.map(([f, i]) => [f, clean(x[i])])) as Obj);
 }
 const fk = (valid: Set<unknown>, v: unknown): unknown => (v != null && valid.has(v) ? v : null);
 const memo = new Map<string, Set<unknown>>();   // per sheet: the arrays an id set is built from only change between sheets
@@ -42,6 +44,15 @@ const idSet = (w: ParamsDoc, key: string): Set<unknown> => {
   if (!s) { s = new Set(list(w, key).map((x) => x.id)); memo.set(key, s); } return s;
 };
 const or = <T,>(v: unknown, d: T): unknown => (v == null || v === '' ? d : v);
+/**
+ * SPEC_FIXES FX-54: the production flag of an environment, read from its Production column (true / yes / 1; blank = not production); a workbook
+ * written before the column keeps the flag the case already had for that id, as before.
+ */
+const isProdOf = (o: Obj, had: Obj | undefined): boolean => {
+  if (!('isProd' in o)) return !!had?.isProd;   // no Production column: a workbook written before FX-54
+  if (o.isProd === null || o.isProd === undefined || o.isProd === '') return false;
+  return o.isProd === true || o.isProd === 1 || /^(true|yes|y|1)$/i.test(String(o.isProd).trim());
+};
 const validTask = (id: unknown): boolean => {
   const s = String(id ?? ''), i = s.indexOf(':'); if (i < 0) return false;
   const kind = s.slice(0, i), tid = s.slice(i + 1);
@@ -63,7 +74,7 @@ const BUILD: [string, Build][] = [
     (o, w) => ({ id: o.id, name: or(o.name, 'RC'), releaseId: fk(idSet(w, 'RELEASES'), o.releaseId), cutAt: o.cutAt ?? null, status: or(o.status, 'Draft') })],
   ['FM Environments',
     (o, w) => ({ id: o.id, name: or(o.name, 'Environment'), seq: num(o.seq) || 0,
-      ...(list(w, 'ENVIRONMENTS').find((e) => e.id === o.id && e.isProd) ? { isProd: true } : {}) })],
+      ...(isProdOf(o, list(w, 'ENVIRONMENTS').find((e) => e.id === o.id) as Obj | undefined) ? { isProd: true } : {}) })],
   ['FM Approvals', (o, w) => ({ id: o.id, releaseCandidateId: fk(idSet(w, 'RELEASE_CANDIDATES'), o.releaseCandidateId), approver: o.approver ?? '',
     decision: or(o.decision, 'Pending'), requestedAt: o.requestedAt ?? null, decidedAt: o.decidedAt ?? null })],
   ['FM Deployments',

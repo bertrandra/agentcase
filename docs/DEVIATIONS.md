@@ -56,6 +56,10 @@ Figures are the golden fixture unless stated. "Before" = the build at the start 
 | DEV-B9B-RESOURCES | BPMN B9b, § 19.3: training and governance are labour from resources (role FTE × duration × the target day rate × 1.15) |
 | DEV-FX01-CASE-OPTIN | SPEC_FIXES FX-01: a case-level opt-in activity switched on in the common values is counted once per portfolio, by its carrier product |
 | DEV-FXD3-SERVICE-ROUTING | SPEC_FIXES FX-D3: a service's activities by type or role are routed to its lines in each product's team (no headline figure moves) |
+| DEV-EXCEL-TARGET-LOC | SPEC_FIXES FX-53: the Location Target sheet of the parameters workbook carries the full target share (the legacy rounded to whole %) |
+| DEV-EXCEL-FM-PROD | SPEC_FIXES FX-54: the FM Environments sheet has a Production column; the production flag goes through the workbook |
+| DEV-REPORT-CATALOGUE-COUNT | SPEC_FIXES FX-56: the critical-delivery report counts the regulatory catalogue (370), the legacy printed a fixed 349 |
+| DEV-HORIZON-LABELS | SPEC_FIXES FX-52: labels follow the horizon and help figures come from the engine (the legacy wrote "3 years" and a fixed ~€244k) |
 
 ## DEV-HEADLINE-OWNER — one economics headline
 
@@ -723,4 +727,33 @@ tests are not concerned: they drive the legacy *engine* through recipes, and the
   portfolio (QA service by type) the products' NPV (1,555,027 / −451,145 / −330,919) and the portfolio's (772,963) are identical before and after.
   No fixture uses a service.
 - Tests: `tests/domain/portfolio/services.test.ts` (shares kept, activities routed).
+
+## DEV-EXCEL-TARGET-LOC — the full target share in the Location Target sheet (FX-53)
+
+- Legacy: the parameters workbook's Location Target sheet wrote each target share rounded to a whole %, so a re-import changed the target mix
+  and the cost (e.g. 33.333 % → 33 %); the port first kept one decimal.
+- Now: the full value is written (`excel/params/sheets/scopeSheets.ts`), so a round trip gives back the same mix. The legacy writer comparison
+  accepts the difference on that sheet (`tests/store/excel-params-writer.test.ts`). Test: `tests/store/excel-target-loc.test.ts`.
+
+## DEV-EXCEL-FM-PROD — the FM Environments sheet carries the production flag (FX-54)
+
+- Legacy: the sheet had ID, Name, Seq; the import kept `isProd` only for an id the case already flagged, so a new production environment could
+  not be flagged and a flag could not be cleared from Excel.
+- Now: a fourth column, Production (true / yes / 1; blank = not production). A workbook written before the column (no header) keeps the flags the
+  case had. The writer comparison checks the legacy columns' layout only. Tests: `tests/store/excel-fm-prod.test.ts`.
+
+## DEV-REPORT-CATALOGUE-COUNT — the report counts the catalogue (FX-56)
+
+- Legacy: `exportCriticalReport` printed "… out of the 349-artifact certification catalogue", a literal, while the catalogue holds 370.
+- Now: the count is the catalogue's (`report/data.ts`, `catalogueSize`: 370). The legacy wording is recorded in `tests/store/report.test.ts`.
+
+## DEV-HORIZON-LABELS — labels follow the horizon, help figures come from the engine (FX-52)
+
+- Legacy: the verification chain labelled the ROI "ROI 3 years (net)" whatever the horizon; the Decision and Monte Carlo screens explained an
+  undefined net benefit by "a horizon beyond 3 years (legacy limitation)", a limit removed in v18.12; the run-sizing help quoted a fixed "~€244k
+  for a 15-FTE base" for the legacy run team.
+- Now: the ROI label reads the case's horizon ("ROI 5 years (net)" at 5 years; unchanged at 3); the two messages say the net benefit has no finite
+  value for this case; the help prints this case's legacy run-team cost from the engine (`K.legacyRunFte` × target day rate × 1.15 × working days ×
+  run-team factor: €211,508 on golden). No figure changes.
+- Tests: `tests/ui/sections/run-sizing.test.tsx` (the legacy 244,000 is the recorded exception of the section parity).
 
