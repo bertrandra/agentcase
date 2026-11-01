@@ -17,6 +17,23 @@ When releasing, follow [docs/BUMP_PROCEDURE.md](docs/BUMP_PROCEDURE.md) (§7 for
 
 ## [Unreleased]
 
+### SPEC_FIXES lot X5 (rest) — audit feeds from the process model (FX-33)
+
+- **Audit**: an activity's deliverable types propose the tools of their capabilities under its own capability's list; the Flow block shows
+  the hand-offs the process models (message flows) and the pools at the other end. A view: no figure changes.
+
+### SPEC_FIXES lot X5 (part) — import / export / workbooks (FX-24, FX-25, FX-27…FX-31, FX-34)
+
+- **BPMN import**: a Merge import merges the file's audit data (newer date wins; pain points and evidence added). Foreign content the import
+  cannot place in one phase is kept as written in a pass-through container (`ac:passThrough`) instead of being dropped; the report lists kept /
+  kept as written / dropped by kind.
+- **Audit workbook**: new Header, Roles and Catalogue sheets, out and back in within the import's one undoable step (the shipped catalogue
+  entries are read-only; mark a row's Origin "case" to keep a change for this case).
+- **Parameters workbook (portfolio)**: Units and Owners sheets, round trip; a refused import names the unit.
+- **Results workbook (portfolio)**: a Services sheet when the portfolio has a shared service; under a Unit scope one sheet per sub-unit.
+- **BPMN export**: ticking the DMN file says how many decisions are bound to no business-rule task.
+- **Example**: the shipped portfolio example is at schema v5. No figure changes.
+
 ### SPEC_FIXES lot X9 (rest) — carry-over (FX-50…FX-56, FX-58)
 
 - **Workbooks**: the Location Target sheet keeps the full target share (DEV-EXCEL-TARGET-LOC); the FM Environments sheet carries the production

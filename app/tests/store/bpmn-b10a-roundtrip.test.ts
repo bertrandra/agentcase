@@ -39,7 +39,7 @@ describe('v4 -> v5: the teams into the document, the keys removed, the figures i
   it.each(FILES)('%s: same teams and figures; the saved file holds no team key; save -> open -> save is byte-identical', (f) => {
     const r = raw(f), pf = openSnapshot(r), a = saved(pf);
     const teams = (r.products as { id: string; teamIn: unknown }[] | undefined)?.map((p) => [p.id, p.teamIn]) ?? [['p1', r.teamIn]];
-    for (const [id, rows] of teams) expect(productTeam(pf, id as string)).toStrictEqual(rows);
+    for (const [id, rows] of teams) if (rows !== undefined) expect(productTeam(pf, id as string)).toStrictEqual(rows);   // v5 files: no team key
     expect(a).not.toMatch(/"teamIn"|"sharedTeam"/);
     expect(a).toContain('<ac:team id=\\"team-');
     const back = openSnapshot(JSON.parse(a) as Record<string, unknown>);

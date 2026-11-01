@@ -1,5 +1,5 @@
 /** @calc-zone delivery-views */
-import { current } from 'immer';
+import { currentOf } from '@/store/draftValue';
 import { SKILL_MAP_DEFAULT } from '@/domain/baseline/skills';
 import { locSplitOf, tobeSkillLocDefault } from '@/domain/verifyA/tobe';
 import { defineCommand } from '@/store/commands';
@@ -7,7 +7,7 @@ import { appStore } from '@/store/instance';
 import { editScope } from '@/store/processEdit';
 import type { Doc } from '@/store/types';
 
-const snap = (d: Doc): Doc => current(d) as Doc;
+const snap = (d: Doc): Doc => currentOf(d) as Doc;
 
 // ---- TO-BE team: artefact skill -> team skill map (the roles of the case's process document, `ac:actor teamSkill`) ----
 const setSkillMapCmd = defineCommand<{ artSkill: string; teamSkill: string }>({

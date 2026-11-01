@@ -20,7 +20,7 @@ export const Toolbar = memo(function Toolbar() {
   const onWorkbook = (f: File | undefined) => f && run(async () => {
     const r = await importAuditWorkbook(f);
     setImportReport(r);
-    toast(r.ops.length ? `Audit workbook imported (Ctrl+Z undoes): ${r.added} added, ${r.updated} updated, ${r.ignored} ignored`
+    toast(r.ops.length || r.header || r.catalog ? `Audit workbook imported (Ctrl+Z undoes): ${r.added} added, ${r.updated} updated, ${r.ignored} ignored`
       : `Nothing to import from ${f.name}`, 5000);
     if (wb.current) wb.current.value = '';
   });

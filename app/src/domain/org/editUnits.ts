@@ -7,6 +7,7 @@ import { isBelow } from './model';
 import { onCollaboration, onExtChildren, withExtChild, withoutChildren } from './orgExt';
 import { readStoredOrg } from './readUnits';
 import { isStoredTeam, storedTeams } from './teamDoc';
+import { withoutUnits } from './teamStrip';
 import type { OrgUnit, ServiceSpec } from './types';
 
 /**
@@ -93,4 +94,25 @@ export function removeUnit(d: XDocument, id: string): XDocument {
   const units = readStoredOrg(d).units;
   if (!units.some((u) => u.id === id) || units.some((u) => u.parent === id) || (id !== DEFAULT_UNIT_ID && inUse(d, id))) return d;
   return onCollaboration(d, (c) => onExtChildren(c, (cs) => withoutChildren(cs, (u) => isUnit(u, id))));
+}
+
+/**
+ * The document with exactly `units` (SPEC_FIXES FX-30: the parameters workbook's Units sheet): the stored units removed, then each added
+ * parents first. Null when a unit is refused (an id in use by another element, a parent not in the list, a cycle, an invalid service).
+ */
+export function withUnitList(d: XDocument, units: readonly UnitInput[]): XDocument | null {
+  if (units.some((u) => u.service && !validService(u.service))) return null;
+  let doc = withoutUnits(d), left = [...units];
+  while (left.length) {   // in the list's order; a unit whose parent comes later waits for the next pass
+    const wait: UnitInput[] = [];
+    for (const u of left) {
+      if (u.parent && !stored(doc, u.parent)) { wait.push(u); continue; }
+      const next = addUnit(doc, u);
+      if (next === doc) return null;
+      doc = next;
+    }
+    if (wait.length === left.length) return null;
+    left = wait;
+  }
+  return doc;
 }

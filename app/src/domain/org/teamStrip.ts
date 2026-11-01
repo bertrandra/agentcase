@@ -51,6 +51,9 @@ export function withoutTeams(d: XDocument | undefined): XDocument | undefined {
   return hit ?? undefined;
 }
 
+/** The document without its units (the parameters workbook's Units sheet replaces them, FX-30). */
+export const withoutUnits = (d: XDocument): XDocument => dropping(d, isUnit);
+
 /** A product's own process document: no units, no stored teams (the organisation is the common document's). */
 export const withoutOrg = (d: XDocument): XDocument => dropping(d, isOrg);
 

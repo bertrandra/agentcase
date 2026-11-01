@@ -3,7 +3,7 @@ import { makeCtx } from '@/domain';
 import { clampAutoCap, clampHorizonYears } from '@/domain/inputs';
 import { computeGlassCeiling } from '@/domain/model/ceiling';
 import { addPoint, curveIdOf, ensurePts, movePoint, removePoint, sampleRamps } from '@/domain/scope/scurve';
-import { current } from 'immer';
+import { currentOf } from '@/store/draftValue';
 import { defineCommand } from '@/store/commands';
 import { refitPotential } from '@/store/derive';
 import { appStore } from '@/store/instance';
@@ -24,7 +24,7 @@ const setForceGCCmd = defineCommand<{ on: boolean }>({
   type: 'params.setForceGC', label: (p) => `${p.on ? 'Force' : 'Stop forcing'} the glass ceiling`,
   run(d, p) {
     // The slider always shows the value in force: switching the override on or off starts from the computed ceiling (legacy renderParams kept it in sync).
-    d.dom.values.glassCeiling = String(Math.round(computeGlassCeiling(makeCtx(current(d) as Doc))));
+    d.dom.values.glassCeiling = String(Math.round(computeGlassCeiling(makeCtx(currentOf(d) as Doc))));
     d.forceGlassCeiling = p.on; d.dom.checked.forceGC = p.on;
   },
 });

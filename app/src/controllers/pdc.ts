@@ -1,5 +1,5 @@
 /** @calc-zone verdict */
-import { current } from 'immer';
+import { currentOf } from '@/store/draftValue';
 import { makeCtx } from '@/domain';
 import type { DdState, DdStatus } from '@/domain/pdc/dd';
 import { computeDdSensitivity } from '@/domain/pdc/ddSens';
@@ -46,7 +46,7 @@ const fgCmd = defineCommand<{ key: string; value: number }>({
 /** Measured on the case the command runs on (the draft): the common case when the common values are edited, never another product's. */
 const sensCmd = defineCommand<{ at: string }>({
   type: 'pdc.setDdSensitivity', label: () => 'Measure the € sensitivity of the due-diligence register',
-  run(d, p) { d.DD_SENS = computeDdSensitivity(makeCtx(current(d) as Doc), p.at); },
+  run(d, p) { d.DD_SENS = computeDdSensitivity(makeCtx(currentOf(d) as Doc), p.at); },
 });
 export const setDdState = (id: string, st: DdStatus): void => appStore().dispatch(ddStateCmd({ id, st }));
 export const setCoef = (key: string, value: string | number): void => appStore().dispatch(coefCmd({ key, value: num(value) }));

@@ -2,9 +2,10 @@
 import { makeCtx } from '@/domain';
 import { caseFte } from '@/domain/economics/fte';
 import { headline } from '@/domain/economics/headline';
-import { current, isDraft } from 'immer';
+import { isDraft } from 'immer';
+import { currentOf } from '@/store/draftValue';
 import { analyseImport, applyImport, caseValues, previewImport, resetProcess, type ImportAnalysis, type ImportChoices, type ImportPreview,
-  type XDocument } from '@/domain/process';
+  type KeepReport, type XDocument } from '@/domain/process';
 import { changedProgrammeValues, programmeValuesIn, type ProgrammeFileValues } from '@/domain/programme/bpmnImport';
 import { defineCommand } from '@/store/commands';
 import { refitPotential } from '@/store/derive';
@@ -14,6 +15,7 @@ import { legacyProcess } from '@/store/persistence/bpmn/caseDoc';
 import { editProcess } from '@/store/processEdit';
 import { parseBpmnFile } from './bpmn';
 import { withoutProgramme } from '@/domain/programme/bpmn';
+import { mergeImportedAudit } from '@/domain/audit';
 
 /**
  * Import and reset of the case's process (docs/SPEC_BPMN.md F-B6–F-B9, F-B19, § 9; phase B4). The file is read and checked in full before
@@ -28,8 +30,10 @@ import { withoutProgramme } from '@/domain/programme/bpmn';
 const importCmd = defineCommand<{ file: XDocument; choices: ImportChoices; name: string; programme: ProgrammeFileValues | null }>({
   type: 'process.import', label: (p) => `Import process ${p.name} (${p.choices.mode})`,
   run(d, p) {
-    editProcess(d, (doc) => applyImport(doc, p.file, p.choices).doc);
-    if (p.programme && p.choices.mode === 'replace') Object.assign(d.dom.values, changedProgrammeValues(p.programme, caseValues(isDraft(d) ? current(d) : d)));
+    editProcess(d, (doc) => withFile(doc, p.file, p.choices).doc);
+    if (p.programme && p.choices.mode === 'replace') {
+      Object.assign(d.dom.values, changedProgrammeValues(p.programme, caseValues(isDraft(d) ? currentOf(d) : d)));
+    }
     refitPotential(d);
   },
 });
@@ -37,6 +41,18 @@ const resetCmd = defineCommand<{ phase?: string }>({
   type: 'process.reset', label: (p) => (p.phase ? `Reset phase ${p.phase} to the default process` : 'Reset to the default process'),
   run(d, p) { editProcess(d, (doc) => resetProcess(doc, legacyProcess({}), p.phase)); refitPotential(d); },
 });
+
+/** The import, then (Merge only, FX-25) the file's audit data merged into the matched activities and the shared roles; `taken`: values taken. */
+function withFile(doc: XDocument, file: XDocument, c: ImportChoices, a: ImportAnalysis = analyseImport(doc, file)):
+  { doc: XDocument; added: string[]; kept?: KeepReport; taken: number } {
+  const out = applyImport(doc, file, c, a);
+  const pv = c.mode === 'merge' ? previewImport(doc, a, c) : null;
+  if (!pv || pv.refusal || pv.unmappedUnits.length || pv.unmappedRoles.length) return { ...out, taken: 0 };
+  const skip = new Set(pv.skipped);
+  const pairs = new Map(a.tasks.filter((t) => t.match && !skip.has(t.id)).map((t) => [t.id, t.match!]));
+  const m = mergeImportedAudit(out.doc, file, pairs);
+  return { ...out, doc: m.doc, taken: m.taken };
+}
 
 /** A file read for the import: its tree and what it holds against the case, or why it is refused (nothing written either way). */
 export type ReadOutcome = { ok: true; name: string; file: XDocument; analysis: ImportAnalysis; warnings: string[]; programme: ProgrammeFileValues | null }
@@ -59,16 +75,22 @@ const figures = (): Figures => {
   return { net: h.net, roi: h.roi, fteAfter: caseFte(c).after };
 };
 /** F-B9: the outcome of an import, what was not mapped, and the headline figures before / after. */
-export interface ImportReport { preview: ImportPreview; added: string[]; ignored: Record<string, number>; before: Figures; after: Figures; mode: string }
+export interface ImportReport {
+  preview: ImportPreview; added: string[]; ignored: Record<string, number>; before: Figures; after: Figures; mode: string;
+  /** audit values taken from the file by a Merge import (FX-25) */
+  auditTaken: number;
+  /** a foreign file: what was kept, kept in the pass-through container, dropped, by kind (F-B11, FX-24) */
+  kept?: KeepReport;
+}
 
 /** Runs the import (one undoable step) and returns its report; null when the choices leave it refused (nothing written). */
 export function importProcess(o: { name: string; file: XDocument; analysis: ImportAnalysis; programme?: ProgrammeFileValues | null },
   choices: ImportChoices): ImportReport | null {
   const preview = previewProcessImport(o.analysis, choices);
   if (preview.refusal || preview.unmappedUnits.length || preview.unmappedRoles.length) return null;
-  const before = figures(), { added } = applyImport(editBase().BPMN, o.file, choices, o.analysis);
+  const before = figures(), { added, taken, kept } = withFile(editBase().BPMN, o.file, choices, o.analysis);
   appStore().dispatch(importCmd({ file: o.file, choices, name: o.name, programme: o.programme ?? null }));
-  return { preview, added, ignored: o.analysis.ignored, before, after: figures(), mode: choices.mode };
+  return { preview, added, ignored: o.analysis.ignored, before, after: figures(), mode: choices.mode, auditTaken: taken, ...(kept ? { kept } : {}) };
 }
 
 /** "Reset to default process" (F-B19), whole or one phase: one undoable step. */

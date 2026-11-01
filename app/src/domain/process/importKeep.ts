@@ -2,6 +2,7 @@
 import { idsOf } from './editTree';
 import { adopter, type Adopter } from './importAdopt';
 import { lanesOf } from './importForeign';
+import { withPassThrough, type PassItem } from './importPass';
 import { phaseFor } from './importPlan';
 import type { ImportAnalysis, ImportChoices } from './importTypes';
 import { COLLABORATION_RANK, CONTAINER_RANK, DEFINITIONS_RANK, editDoc, insertIn } from './profile/tree';
@@ -14,9 +15,10 @@ import { attr, kid, kids, NS, withAttrs, withChildren, type XDocument, type XEle
  * join the definitions; events, gateways, flows, data and annotations of a mapped unit join the phase it maps to, their references following
  * the renamed tasks, when every flow node they name sits in that phase; black-box pools and the message flows between kept ends join the
  * collaboration; the vendor extensions of an added task stay on it. An element whose id the case already uses, or whose references cross phases
- * or point at something not imported, is dropped and counted by kind in `dropped`.
+ * or point at something not imported, is dropped and counted by kind in `dropped`; one whose references cross phases, or whose unit maps to no
+ * phase, or a nested sub-process, is kept as written in the pass-through container (FX-24, `importPass.ts`) and counted in `passThrough`.
  */
-export interface KeepReport { kept: Record<string, number>; dropped: Record<string, number> }
+export interface KeepReport { kept: Record<string, number>; dropped: Record<string, number>; passThrough: Record<string, number> }
 type Doc = XDocument;
 const ROOTS: readonly string[] = ['message', 'error', 'escalation', 'signal', 'itemDefinition', 'dataStore', 'interface', 'import'];
 const SKIP: readonly string[] = ['task', 'userTask', 'manualTask', 'serviceTask', 'scriptTask', 'businessRuleTask', 'sendTask', 'receiveTask',
@@ -38,7 +40,8 @@ function renamed(e: XElement, rename: ReadonlyMap<string, string>): XElement {
 }
 
 export function keepForeign(d: Doc, file: Doc, a: ImportAnalysis, c: ImportChoices, rename: ReadonlyMap<string, string>): { doc: Doc; report: KeepReport } {
-  const report: KeepReport = { kept: {}, dropped: {} }, used = idsOf(d.root), phaseOf = new Map(readProcess(d).activities.map((x) => [x.id, x.phase]));
+  const report: KeepReport = { kept: {}, dropped: {}, passThrough: {} }, pass: PassItem[] = [];
+  const used = idsOf(d.root), phaseOf = new Map(readProcess(d).activities.map((x) => [x.id, x.phase]));
   const ad = adopter(file.root, d.root, idsOf(file.root));
   let out = d;
   const take = (e: XElement): boolean => { const id = attr(e, 'id'); if (id !== undefined && used.has(id)) { bump(report.dropped,
@@ -53,7 +56,8 @@ export function keepForeign(d: Doc, file: Doc, a: ImportAnalysis, c: ImportChoic
       const id = attr(x, 'id') ?? '', lane = lanes.get(id);
       if (x.local === 'subProcess' || x.local === 'adHocSubProcess' || x.local === 'transaction') {
         for (const y of kids(x, NS.bpmn).filter((z) => !SKIP.includes(z.local))) items.push({ e: y, unit: `sub:${id}` });
-        for (const y of kids(x, NS.bpmn).filter((z) => ['subProcess', 'adHocSubProcess', 'transaction'].includes(z.local))) bump(report.dropped, y.local);
+        const nested = kids(x, NS.bpmn).filter((z) => ['subProcess', 'adHocSubProcess', 'transaction'].includes(z.local));
+        for (const y of nested) pass.push({ e: y, unit: `sub:${id}` });
       } else if (!SKIP.includes(x.local)) items.push({ e: x, unit: lane ? `lane:${lane}` : `process:${pid}` });
     }
     // nodes first (events, gateways, data, annotations), then what links them (flows, associations), so a flow finds its ends placed
@@ -62,13 +66,15 @@ export function keepForeign(d: Doc, file: Doc, a: ImportAnalysis, c: ImportChoic
       const e = ad.adopt(renamed(it.e, rename)), refs = LINK_REFS.map((n) => attr(e, n)).filter((v): v is string => !!v);
       const phases = new Set(refs.map((r) => phaseOf.get(r)));
       const phase = refs.length ? (phases.size === 1 ? [...phases][0] : undefined) : phaseFor(a, c, it.unit) ?? undefined;
-      if (!phase || !take(e)) { if (!phase) bump(report.dropped, e.local); continue; }
+      if (!phase) { pass.push({ e, unit: it.unit }); continue; }
+      if (!take(e)) continue;
       out = insertIn(out, phase, e, CONTAINER_RANK);
       if (!NOT_NODES.includes(e.local) && attr(e, 'id')) phaseOf.set(attr(e, 'id') as string, phase);
       bump(report.kept, e.local);
     }
   }
-  out = keepVendor(keepPools(out, file, rename, used, report, ad), file, rename, ad);
+  for (const i of pass) bump(report.passThrough, i.e.local);
+  out = withPassThrough(keepVendor(keepPools(out, file, rename, used, report, ad), file, rename, ad), pass);
   const decls = ad.declarations();
   return { doc: decls.length ? { ...out, root: { ...out.root, attrs: [...out.root.attrs, ...decls] } } : out, report };
 }

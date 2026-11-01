@@ -22,7 +22,8 @@ export const commonDocOf = (pf: Portfolio): Doc => ({ ...pf.common, teamIn: prod
 
 /**
  * The parameters workbook of a portfolio: the 47 existing sheets describe the common case; "Export all" adds Products, Waves, TeamIn, Overrides,
- * KnowledgeSubsets, KnowledgeDomains and PortfolioSettings. The other scopes ('except Factory', 'persona config only') are the existing exports.
+ * KnowledgeSubsets, KnowledgeDomains, PortfolioSettings, SharedTeam (when any), Units and Owners (FX-30). The other scopes ('except Factory',
+ * 'persona config only') are the existing exports.
  */
 export async function buildPortfolioParamsWorkbook(pf: Portfolio, scope: ParamsScope, env: ParamsEnv, print: Readonly<ThemeValues>): Promise<XL.Workbook> {
   const wb = await buildParamsWorkbook(commonDocOf(pf), scope, env, print);

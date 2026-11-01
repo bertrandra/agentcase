@@ -14,7 +14,7 @@ const normKeys = REG_NORMS.map((n) => `${n.industry}:${n.name}`);
 const unknown = fc.constantFrom('X1', 'ISO 26262');
 const listOf = (ids: string[]) => fc.array(fc.oneof({ weight: 9, arbitrary: fc.constantFrom(...ids) }, { weight: 1, arbitrary: unknown }), { maxLength: 12 });
 const edit = (ids: string[]) => fc.record({ id: fc.constantFrom(...ids), effort: fc.integer({ min: 0, max: 40 }), humanSup: fc.integer({ min: 0, max: 100 }),
-  agentSup: fc.integer({ min: 0, max: 100 }), seq: fc.integer({ min: 1, max: 9 }) }, { requiredKeys: ['id'] });
+  agentSup: fc.integer({ min: 0, max: 100 }), seq: fc.integer({ min: 1, max: 9 }) }, { requiredKeys: ['id'], noNullPrototype: true });
 const uniqueEdits = (ids: string[]) => fc.uniqueArray(edit(ids), { selector: (e) => e.id, maxLength: 8 });
 
 describe('processFromCase ∘ viewsOf on arbitrary scope keys', () => {

@@ -1,5 +1,5 @@
 /** @calc-zone stress */
-import { current } from 'immer';
+import { currentOf } from '@/store/draftValue';
 import { LOCATIONS, makeCtx } from '@/domain';
 import { locationMix } from '@/domain/location';
 import { MC_PARAMS_DEFAULT, mcDrawsOf, mcSeedOf, mcFingerprint, runMonteCarlo, type McParam } from '@/domain/stress';
@@ -45,7 +45,7 @@ const setModeCmd = defineCommand<{ id: string; mode: 'inherit' | 'asis' | 'custo
     if (p.mode === 'inherit') s.locSplit = null;
     else if (p.mode === 'asis') s.locSplit = 'ASIS';
     else if (!s.locSplit || typeof s.locSplit !== 'object') {
-      const mx = locationMix(current(d) as Doc).pct, out: Record<string, number> = {};
+      const mx = locationMix(currentOf(d) as Doc).pct, out: Record<string, number> = {};
       LOCATIONS.forEach((l) => { out[l.name] = Math.round(((mx[l.name] as number) || 0) * 10) / 10; });
       s.locSplit = out;
     }
@@ -69,7 +69,7 @@ const resetWeightsCmd = defineCommand<Record<string, never>>({ type: 'strategy.r
 const applyCmd = defineCommand<{ id: string }>({
   type: 'strategy.apply', label: (p) => `Apply strategy ${p.id} to the live case`,
   run(d, p) {
-    const c = makeCtx(current(d) as Doc), S = strategyDefsOf(c.s).find((x) => x.id === p.id);
+    const c = makeCtx(currentOf(d) as Doc), S = strategyDefsOf(c.s).find((x) => x.id === p.id);
     if (!S) return;
     const patch = strategyPatch(c, S);
     Object.assign(d.dom.values, patch.values);

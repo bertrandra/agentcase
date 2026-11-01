@@ -54,6 +54,9 @@ describe('File menu: Export process (BPMN)', () => {
     const dmn = screen.getByRole('checkbox', { name: 'Decisions as a DMN file (.dmn)' }), cmmn = screen.getByRole('checkbox', { name: /CMMN case/ });
     expect([(dmn as HTMLInputElement).checked, (cmmn as HTMLInputElement).checked]).toEqual([false, false]);
     fireEvent.click(dmn);
+    // FX-27: the case holds no decision, so the rule families are exported as reference, none bound
+    expect(screen.getByRole('note').textContent).toMatch(
+      /^The \d+ rule families are exported as reference: none applies until a business-rule task is bound to it\.$/);
     fireEvent.click(cmmn);
     fireEvent.click(screen.getByRole('button', { name: 'Export' }));
     expect(saved.map((s) => s.name.replace(/_\d{4}-\d\d-\d\d/, ''))).toEqual(['AgentCase_process_case.bpmn', 'AgentCase_process_case.dmn',

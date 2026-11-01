@@ -42,7 +42,8 @@ function FieldRow({ id, field, obs, role, roleName }: { id: string; field: Audit
 }
 
 /** The fields of one block of § 15.3 for an element; a per-role field lists its role values and adds one for a chosen role. */
-export function Block({ block, id, observations, roles }: Props & { block: AuditBlock }) {
+/** `note`: what the process model says next to the observed values (FX-33: the modelled hand-offs of the Flow block). */
+export function Block({ block, id, observations, roles, note }: Props & { block: AuditBlock; note?: string }) {
   const [role, setRole] = useState(''), fields = AUDIT_FIELDS.filter((f) => f.block === block), perRole = fields.some((f) => f.perRole);
   const name = (r: string) => roles.find((a) => a.id === r)?.name ?? r;
   const shownRoles = [...new Set([...observations.filter((o) => o.role && fields.some((f) => f.name === o.name && f.perRole)).map((o) => o.role!),
@@ -50,6 +51,7 @@ export function Block({ block, id, observations, roles }: Props & { block: Audit
   return (
     <fieldset className="ac-audit-block">
       <legend>{BLOCK_LABELS[block]}</legend>
+      {note && <p className="ac-muted" role="note">{note}</p>}
       <div className="ac-table-wrap" tabIndex={0}>
         <table className="ac-table">
           <thead><tr><th scope="col">Field</th><th scope="col">Value</th><th scope="col">Per</th><th scope="col">Source</th><th scope="col">Date</th>

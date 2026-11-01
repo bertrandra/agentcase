@@ -2,6 +2,7 @@ import { readFileSync } from 'node:fs';
 import { describe, expect, it } from 'vitest';
 import { analyseImport, applyImport, DEFAULT_CHOICES, readProcess, serialize, type XDocument } from '@/domain/process';
 import { annotationsOf, readCollab, readData, readEvents } from '@/domain/process/profile';
+import { passText, passThroughOf } from '@/domain/process/importPass';
 import { makeDefaultDoc } from '@/store/instance';
 import { parseBpmn } from '@/store/persistence/bpmn/read';
 import { schemaTestsRun, validateText } from '../../../helpers/bpmnValidate';
@@ -27,7 +28,11 @@ describe('foreign content kept on import (F-B11)', () => {
     expect(ev.unresolved).toEqual([]);
     expect(ev.boundary).toHaveLength(1);
     expect(readData(r.doc.root).nodes.filter((n) => n.store)).toHaveLength(1);
-    expect(r.kept?.dropped).toMatchObject({ dataStoreReference: 1, textAnnotation: 1, association: 1 });
+    // FX-24: what crosses phases is kept in the pass-through container (as written), no longer dropped
+    expect(r.kept?.passThrough).toEqual({ dataStoreReference: 1, textAnnotation: 1, association: 1 });
+    const pass = passThroughOf(r.doc);
+    expect(pass.map((p) => p.kind).sort()).toEqual(['association', 'dataStoreReference', 'textAnnotation']);
+    expect(passText(pass.find((p) => p.kind === 'association')!.text)).toMatch(/^<bpmn:association id="_assoc1" sourceRef="_note1"/);
   });
   it('Camunda 7: the black-box pool and its message flow, the vendor extensions of the tasks under their own namespace', () => {
     const r = importAll('foreign-camunda7-bpmnio'), text = serialize(r.doc);
@@ -42,12 +47,12 @@ describe('foreign content kept on import (F-B11)', () => {
     expect(text).not.toMatch(/<(startEvent|sequenceFlow|dataStore) /);
     expect(text).toContain('xmlns:signavio=');
   });
-  it('Camunda 8 replace: the content of the mapped sub-process is kept; what sits in an unmapped lane is reported dropped', () => {
+  it('Camunda 8 replace: the content of the mapped sub-process is kept; what sits in an unmapped lane goes to the pass-through container', () => {
     const f = sample('foreign-camunda8-zeebe'), base = makeDefaultDoc().BPMN, map = { phaseOf: { 'sub:Activity_hypercare': 'L9' },
       teamSkillOf: { 'QA Engineers': 'Test/QA' } };
     const r = applyImport(base, f, { ...DEFAULT_CHOICES, ...map, mode: 'replace' });
-    expect(r.kept).toEqual({ kept: { message: 1, startEvent: 2, endEvent: 2, sequenceFlow: 4 },
-      dropped: { startEvent: 1, callActivity: 1, boundaryEvent: 1, endEvent: 2, intermediateCatchEvent: 1, sequenceFlow: 6 } });
+    expect(r.kept).toEqual({ kept: { message: 1, startEvent: 2, endEvent: 2, sequenceFlow: 4 }, dropped: {},
+      passThrough: { startEvent: 1, callActivity: 1, boundaryEvent: 1, endEvent: 2, intermediateCatchEvent: 1, sequenceFlow: 6 } });
     expect(readProcess(r.doc).activities.map((a) => a.id).sort()).toEqual(['A006', 'Activity_monitor']);
   });
   it('the figures read only what they read before: kept events and flows add no activity', () => {

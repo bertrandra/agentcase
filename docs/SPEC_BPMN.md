@@ -1128,9 +1128,10 @@ and the Section Dependencies page are B6's area); the hand-off cost, cadence, wa
 figures (Model Engine DORA, factory velocity and token profile keep their coefficients). (2) The default process does not link the SDLC chain with
 inputs yet: doing so changes the default document of every case (sizes, the migration output); the trace graph is ready for it. (3) `withLibrary` is
 not called by the portfolio's effective case: a product override is written back as a whole document by the controllers, which would copy the
-common entries into the product (the override split of § 16.8 comes first). (4) The import report screen does not show the kept / dropped counts
-(`applyImport(...).kept`); foreign content in an unmapped lane or crossing phases is dropped and counted. (5) The tool catalogue proposals by type
-(F-B43) and the operational-audit feeds (F-B55) wait for B7.
+common entries into the product (the override split of § 16.8 comes first). (4) ~~The import report screen does not show the kept / dropped counts
+(`applyImport(...).kept`); foreign content in an unmapped lane or crossing phases is dropped and counted~~ — **done in SPEC_FIXES lot X5 (FX-24)**:
+the report lists kept / kept as written / dropped by kind; that content is kept as written in `ac:passThrough`. (5) ~~The tool catalogue proposals by type
+(F-B43) and the operational-audit feeds (F-B55) wait for B7~~ — **done in SPEC_FIXES lot X5 (FX-33)**: `audit/feeds.ts`.
 
 ### 17.11 Built in B7b (DMN decisions, CMMN run view)
 
@@ -1651,11 +1652,11 @@ the service line, a deviation (FX-D3); § 21.8 — the organisation out of the M
 | 6 | The diagram editor's own undo history is lost on Save (it reloads from the case) | Work | § 9.2 |
 | 7 | The diagram editor shows the first diagram of the document only | Work | § 9.2 |
 | 8 | The tool catalogue (129 tools) is verified against public sources (2026-10-31): the owner's sign-off is pending (43 entries partial or unverified) | Decision | § 15.7 (F-B23 / F-B25) |
-| 9 | The tool catalogue is not a sheet of the audit workbook (the Lists sheet carries the codes only) | Work | § 15.7 (F-B26) |
+| 9 | ~~The tool catalogue is not a sheet of the audit workbook (the Lists sheet carries the codes only)~~ — **done in SPEC_FIXES lot X5 (FX-28)** | Work | § 15.7 (F-B26) |
 | 10 | F-B30 partial: the audit is per process document; products that share the common process share one audit | Decision | § 15.7 (F-B30) |
 | 11 | The Process diagram is not coloured by audit status | Work | § 15.7 (F-B31) |
-| 12 | The audit header and the role-level audits are not in the audit workbook | Work | § 15.7 (F-B32) |
-| 13 | A Merge import does not merge audit data (Replace takes the file's) | Work | § 15.7 (F-B33) |
+| 12 | ~~The audit header and the role-level audits are not in the audit workbook~~ — **done in SPEC_FIXES lot X5 (FX-29)** | Work | § 15.7 (F-B32) |
+| 13 | ~~A Merge import does not merge audit data (Replace takes the file's)~~ — **done in SPEC_FIXES lot X5 (FX-25)** | Work | § 15.7 (F-B33) |
 | 14 | No audit layer on programme activities (observations attach to delivery tasks and roles only) | Work | § 19.9 (F-B69) |
 | 15 | The RACI-driven figures of § 16.5 are not built (the `humanPerformer` stays R; no figure reads the RACI) | Decision | § 16.8 |
 | 16 | A role's split between teams follows FTE × share; no per-activity share | Work | § 16.8 (F-B37) |
@@ -1666,11 +1667,11 @@ the service line, a deviation (FX-D3); § 21.8 — the organisation out of the M
 | 21 | Hand-off cost, cadence, waits, change-failure rate and token profile are views, not engine figures | Decision | § 17.10 (1) |
 | 22 | The default process does not link the SDLC chain with data inputs (it would change every case's default document) | Decision | § 17.10 (2) |
 | 23 | `withLibrary` is not applied to a portfolio product's effective case (needs item 19) | Work | § 17.10 (3) |
-| 24 | The import report does not show the kept / dropped foreign content; foreign content in an unmapped lane or crossing phases is dropped | Work | § 17.10 (4) |
-| 25 | Tool proposals by data type (F-B43) and the operational-audit feeds of interfaces (F-B55) are not wired to the audit | Work | § 17.10 (5) |
+| 24 | ~~The import report does not show the kept / dropped foreign content; foreign content in an unmapped lane or crossing phases is dropped~~ — **done in SPEC_FIXES lot X5 (FX-24)** | Work | § 17.10 (4) |
+| 25 | ~~Tool proposals by data type (F-B43) and the operational-audit feeds of interfaces (F-B55) are not wired to the audit~~ — **done in SPEC_FIXES lot X5 (FX-33)** | Work | § 17.10 (5) |
 | 26 | No screen edits or binds decisions (`process.bindDecision` has no control; a DMN tool edits the `.dmn`) | Work | § 17.11 (1) |
 | 27 | The CMMN read-back drops the CMMN content it does not map (sentries, milestones, planning tables) | Decision | § 17.11 (2) |
-| 28 | The exported rule families do not replace the parameters until a rule task binds them | Work | § 17.11 (3) |
+| 28 | ~~The exported rule families do not replace the parameters until a rule task binds them~~ — **done in SPEC_FIXES lot X5 (FX-27)** | Work | § 17.11 (3) |
 | 29 | DMN decisions are not drawn on the diagram (no DMN DI written) | Work | § 17.11 (4) |
 | 30 | The programme lanes (operating-model roles) are not linked to the organisation model's roles: a new mapping to decide | Decision | § 19.9 (F-B64), § 19.13 |
 | 31 | The delivery diagram keeps the lanes of its stored DI (team skills); an agents' lane would change every case's default document | Decision | § 19.9 (F-B70) |

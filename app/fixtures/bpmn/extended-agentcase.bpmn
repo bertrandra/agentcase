@@ -52,6 +52,7 @@
   <bpmn:process id="proc-main" name="Extended profile" isExecutable="false" processType="None">
     <bpmn:extensionElements>
       <ac:process caseSchema="3" catalogueVersion="sample" containsAudit="true"/>
+      <ac:passThrough unit="lane:Imported lane" kind="textAnnotation">PGJwbW46dGV4dEFubm90YXRpb24gaWQ9IkltcG9ydGVkX25vdGUiPjxicG1uOnRleHQ+S2VwdCBhcyB3cml0dGVuIGJ5IGFuIGltcG9ydCAoRlgtMjQpPC9icG1uOnRleHQ+PC9icG1uOnRleHRBbm5vdGF0aW9uPg==</ac:passThrough>
       <ac:product code="P1" name="Sample product" ownerUnit="unit-company">
         <ac:serves team="team-test" allocationPct="60"/>
         <ac:component code="C1" name="Mobile app"/>

@@ -1,6 +1,8 @@
 import { useState } from 'react';
 import { editAudit, editToolCatalog, today } from '@/controllers/audit';
-import { AI_USES, capabilityKey, CAPABILITIES, HOSTINGS, proposedTools, type ToolUse } from '@/domain/audit';
+import {
+  AI_USES, capabilityKey, CAPABILITIES, deliverableKinds, HOSTINGS, proposedByType, proposedTools, type CatalogTool, type ToolUse,
+} from '@/domain/audit';
 import type { AuditViewData } from '@/store/auditHooks';
 import { toast } from '@/ui/uiState';
 import { DraftText } from '@/ui/widgets/DraftText';
@@ -37,6 +39,7 @@ function UseRow({ id, use, name }: { id: string; use: ToolUse; name: string }) {
 export function Tools({ data, id, uses, capability }: { data: AuditViewData; id: string; uses: ToolUse[]; capability?: string }) {
   const [q, setQ] = useState(''), [name, setName] = useState('');
   const offer = proposedTools(data.catalog, capability, q), names = new Map(data.catalog.map((t) => [t.code, t.name])), inUse = new Set(uses.map((u) => u.ref));
+  const kinds = deliverableKinds(data.doc, id), byType = proposedByType(data.catalog, kinds, capability, q);
   const tick = (code: string, on: boolean) => editAudit(id, on ? { kind: 'tool', use: { ref: code, date: today() } } : { kind: 'removeTool', ref: code });
   const cap = CAPABILITIES.find((c) => capabilityKey(c) === capabilityKey(capability)) ?? 'Planning';
   const add = () => {
@@ -57,14 +60,24 @@ export function Tools({ data, id, uses, capability }: { data: AuditViewData; id:
       <p className="ac-muted">Proposed for the capability {capability || '(none: every tool)'}: {offer.length} tool(s), a neutral list, never a
         recommendation.</p>
       <label>Search the catalogue <input type="search" value={q} onChange={(e) => setQ(e.target.value)} placeholder="Name, vendor or category" /></label>
-      <ul className="ac-audit-tools">{offer.slice(0, LIMIT).map((t) => (
-        <li key={t.code}><label><input type="checkbox" checked={inUse.has(t.code)} onChange={(e) => tick(t.code, e.target.checked)} />
-          {' '}{t.name}<span className="ac-muted"> · {t.vendor ?? 'client-specific'} · {t.category ?? ''}</span></label></li>))}</ul>
+      <ToolList tools={offer} inUse={inUse} tick={tick} />
+      {byType.length > 0 && <>
+        <p className="ac-muted">Also proposed for its deliverables ({kinds.join(', ')}): {byType.length} tool(s).</p>
+        <ToolList tools={byType} inUse={inUse} tick={tick} label="Tools proposed for the deliverables" />
+      </>}
       <div className="ac-form-row">
         <input type="text" aria-label="Client-specific tool name" placeholder="Tool not in the catalogue" value={name}
           onChange={(e) => setName(e.target.value)} />
         <button type="button" disabled={!name.trim()} onClick={add}>+ Add a client-specific tool</button>
       </div>
     </fieldset>
+  );
+}
+
+function ToolList({ tools, inUse, tick, label }: { tools: CatalogTool[]; inUse: Set<string>; tick: (code: string, on: boolean) => unknown; label?: string }) {
+  return (
+    <ul className="ac-audit-tools" aria-label={label}>{tools.slice(0, LIMIT).map((t) => (
+      <li key={t.code}><label><input type="checkbox" checked={inUse.has(t.code)} onChange={(e) => tick(t.code, e.target.checked)} />
+        {' '}{t.name}<span className="ac-muted"> · {t.vendor ?? 'client-specific'} · {t.category ?? ''}</span></label></li>))}</ul>
   );
 }

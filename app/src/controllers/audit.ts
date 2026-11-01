@@ -1,11 +1,12 @@
 /** @calc-zone scope-automation */
 import type { XDocument } from '@/domain/process';
 import {
-  calibrate, editCatalog, editElementAudit, setAuditHeader, type CalibrationChange, type CatalogOp, type ElementOp, type HeaderPatch,
+  calibrate, editCatalog, editElementAudit, setAuditHeader, type CalibrationChange, type CatalogOp, type CatalogTool, type ElementOp, type HeaderPatch,
 } from '@/domain/audit';
 import { defineCommand } from '@/store/commands';
 import { editBase } from '@/store/editBase';
 import { appStore } from '@/store/instance';
+import { changedBy } from './portfolioGuard';
 import { editProcess } from '@/store/processEdit';
 
 /**
@@ -36,12 +37,20 @@ const calibrateCmd = defineCommand<{ changes: CalibrationChange[]; date: string;
   type: 'audit.calibrate', label: (p) => `Calibrate ${p.changes.length} parameter(s) from the audit`,
   run(d, p) { editProcess(d, (doc) => calibrate(doc, p.changes, p.date, p.source)); },
 });
-const importCmd = defineCommand<{ ops: { id: string; op: ElementOp }[] }>({
+/** The case-level part of a workbook import (FX-28, FX-29): the header patch and the catalogue entries, in the same undoable step. */
+export interface ImportExtras { header?: HeaderPatch; catalog?: CatalogTool[]; today?: string }
+const importCmd = defineCommand<{ ops: { id: string; op: ElementOp }[] } & ImportExtras>({
   type: 'audit.importWorkbook', label: () => 'Import the audit workbook',
-  run(d, p) { editProcess(d, (doc) => p.ops.reduce((x, o) => editElementAudit(x, o.id, o.op), doc)); },
+  run(d, p) {
+    editProcess(d, (doc) => {
+      let x = p.ops.reduce((y, o) => editElementAudit(y, o.id, o.op), doc);
+      if (p.header) x = setAuditHeader(x, p.header, p.today ?? '1970-01-01');
+      return p.catalog?.length ? editCatalog(x, { kind: 'import', tools: p.catalog }) : x;
+    });
+  },
 });
 
-const changed = (f: () => void): boolean => { const before = appStore().getState().portfolio; f(); return appStore().getState().portfolio !== before; };
+const changed = changedBy;
 /** Today as `YYYY-MM-DD` (the date of an observation, a header created now, a calibration). */
 export const today = (now: Date = new Date()): string => now.toISOString().slice(0, 10);
 
@@ -53,6 +62,7 @@ export const editToolCatalog = (op: CatalogOp): boolean => changed(() => appStor
 export const applyCalibration = (changes: CalibrationChange[], source: string, now?: Date): boolean =>
   changed(() => appStore().dispatch(calibrateCmd({ changes, date: today(now), source })));
 /** Apply the operations read from an audit workbook (one undoable step). */
-export const applyAuditImport = (ops: { id: string; op: ElementOp }[]): boolean => changed(() => appStore().dispatch(importCmd({ ops })));
+export const applyAuditImport = (ops: { id: string; op: ElementOp }[], extras: ImportExtras = {}): boolean =>
+  changed(() => appStore().dispatch(importCmd({ ops, today: today(), ...extras })));
 /** The process document the next audit command edits (to validate or preview). */
 export const auditBase = (): XDocument => editBase().BPMN;

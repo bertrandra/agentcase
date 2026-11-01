@@ -1,4 +1,6 @@
 import fc from 'fast-check';
+import { loadExcelJS } from '@/store/persistence/excel/lazy';
+import { workbookBytes } from '@/store/persistence/excel/params/writer';
 import { describe, expect, it } from 'vitest';
 import { exportParamsWorkbook, importParamsWorkbook } from '@/controllers/excelParams';
 import { addOrgUnit, setActivityRaci } from '@/controllers/org';
@@ -97,7 +99,15 @@ describe('the services through every persistence path', () => {
     expect(sharedLines(after)).toEqual(sharedLines(before));
     expect(readStoredOrg(after.common.BPMN).units.find((u) => u.id === 'qa')!.service).toEqual({ skills: ['Test/QA'], roles: [] });
     for (const p of before.products) expect(resolveProduct(after, p.id).teamIn).toStrictEqual(resolveProduct(before, p.id).teamIn);
-    freshStore();   // a case without the unit `qa`: the workbook's lines name a unit it does not hold
-    await expect(importParamsWorkbook(file, ENV)).rejects.toThrow(/unit must be a unit of the organisation/);
+    freshStore();   // a case without the unit `qa`: the workbook's Units sheet brings it (FX-30)
+    await importParamsWorkbook(file, ENV);
+    expect(readStoredOrg(pfNow().common.BPMN).units.some((u) => u.id === 'qa')).toBe(true);
+    freshStore();   // an older workbook (no Units sheet): its lines name a unit the case does not hold
+    const wb = new (await loadExcelJS()).Workbook();
+    await wb.xlsx.load(b);
+    wb.removeWorksheet(wb.getWorksheet('Units')!.id); wb.removeWorksheet(wb.getWorksheet('Owners')!.id);
+    const old = await workbookBytes(wb);
+    await expect(importParamsWorkbook({ name: 'old.xlsx', size: old.byteLength, arrayBuffer: async () => old }, ENV))
+      .rejects.toThrow(/unit must be a unit of the organisation/);
   }, 60_000);
 });

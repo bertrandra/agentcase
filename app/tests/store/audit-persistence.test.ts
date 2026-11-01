@@ -1,6 +1,6 @@
 import { withoutTeams } from '@/domain/org';
 import { describe, expect, it } from 'vitest';
-import { applyAuditImport, editAudit, setHeader } from '@/controllers/audit';
+import { applyAuditImport, editAudit, editToolCatalog, setHeader } from '@/controllers/audit';
 import { auditReportFile, auditTemplate, importAuditWorkbook } from '@/controllers/auditFiles';
 import { exportProcessFiles } from '@/controllers/bpmn';
 import { htmlSnapshotFile } from '@/controllers/htmlSnapshot';
@@ -11,6 +11,8 @@ import { parseBpmn } from '@/store/persistence/bpmn/read';
 import { readEmbeddedCase } from '@/store/persistence/html/read';
 import { toPortfolioSnapshot } from '@/store/persistence/portfolioSnapshot';
 import { openChecked } from '@/store/persistence/schema';
+import { loadExcelJS } from '@/store/persistence/excel/lazy';
+import { workbookBytes } from '@/store/persistence/excel/params/writer';
 import { AUDIT_OPS } from '../helpers/auditCases';
 import { expectAutosaveRestores, expectTabSync } from '../helpers/docRoundTrips';
 import { freshStore } from './helpers';
@@ -84,5 +86,28 @@ describe('persistence round trips with audit data', () => {
     expect(after.elements.get('A017')?.evidence).toEqual(before.get('A017')?.evidence);
     expect(t.getState().history.undo.map((h) => h.type)).toEqual(['audit.importWorkbook']);
     expect(applyAuditImport([])).toBe(false);
+  });
+  it('FX-28 / FX-29: the Header, Roles and Catalogue sheets go out and come back in the same step; a shipped entry is read-only', async () => {
+    const s = freshStore(); edit();
+    expect(editToolCatalog({ kind: 'upsert', tool: { code: 'acme-lint', name: 'Acme Lint', licence: [], capabilities: ['qa'], aiFeatures: [],
+      integration: [], hosting: [], clientSpecific: true, retired: false } })).toBe(true);
+    const before = readAudit(bpmnOf(s)), b = await (await auditTemplate(NOW)).blob.arrayBuffer();
+    const t = freshStore(), file = (x: ArrayBuffer) => ({ name: 'audit.xlsx', size: x.byteLength, arrayBuffer: async () => x });
+    const r = await importAuditWorkbook(file(b), NOW);
+    expect([r.ignored, r.notes]).toEqual([0, []]);
+    const after = readAudit(bpmnOf(t));
+    expect(after.header).toStrictEqual({ ...before.header, calibrations: [] });
+    expect(after.elements.get('role-dev')?.observations).toEqual(before.elements.get('role-dev')?.observations);
+    expect(after.caseTools).toStrictEqual(before.caseTools);
+    expect(t.getState().history.undo.map((h) => h.type)).toEqual(['audit.importWorkbook']);
+    const again = await importAuditWorkbook(file(b), NOW);   // the same file a second time changes nothing
+    expect([again.ops.length, again.header, again.catalog, again.ignored]).toEqual([0, undefined, undefined, 0]);
+    const X = await loadExcelJS(), wb = new X.Workbook();
+    await wb.xlsx.load(b);
+    const cat = wb.getWorksheet('Catalogue')!, row = cat.getRow(2);
+    expect(row.getCell(12).value).toBe('shipped (read-only)');
+    row.getCell(2).value = 'Renamed here';
+    const edited = await workbookBytes(wb), refused = await importAuditWorkbook(file(edited), NOW);
+    expect(refused.notes.join(' ')).toMatch(/is a shipped entry \(read-only\)/);
   });
 });
