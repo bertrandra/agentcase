@@ -1,11 +1,14 @@
 /** @calc-zone scope-automation */
 import type { XDocument } from '@/domain/process';
 import {
-  calibrate, editCatalog, editElementAudit, editProgrammeAudit, setAuditHeader, type CalibrationChange, type CatalogOp, type CatalogTool,
+  calibrate, editCatalog, editElementAudit, editProductAudit, editProgrammeAudit, readAudit, resourceIds, setAuditHeader, type ElementAudit,
+  type CalibrationChange, type CatalogOp, type CatalogTool,
   type ElementOp, type HeaderPatch,
 } from '@/domain/audit';
 import { PROGRAMME_ACTIVITIES, programmeActivityId } from '@/domain/programme';
-import { defineCommand } from '@/store/commands';
+import { defineCommand, definePortfolioCommand } from '@/store/commands';
+import { productAuditTarget } from '@/store/commonEdit';
+import { withTeamDoc } from '@/domain/portfolio';
 import { editBase } from '@/store/editBase';
 import { appStore } from '@/store/instance';
 import { changedBy } from './portfolioGuard';
@@ -32,6 +35,11 @@ const programmeCmd = defineCommand<{ id: string; op: ElementOp }>({
   type: 'audit.editProgramme', label: (p) => `${LABEL[p.op.kind]} on ${p.id}`,
   coalesceKey: (p) => (p.op.kind === 'observation' ? `audit.prog:${p.id}:${p.op.obs.name}:${p.op.obs.role ?? ''}` : ''),
   run(d, p) { editProcess(d, (doc) => editProgrammeAudit(doc, p.id, p.op, PROGRAMME_AUDIT_IDS)); },
+});
+/** FX-D6: one operation on a product's own audit (`base`: the element's audit as the product saw it; `roles`: the resource ids then). */
+const productCmd = definePortfolioCommand<{ productId: string; id: string; op: ElementOp; base?: ElementAudit; roles: string[] }>({
+  type: 'audit.editProduct', label: (p) => `${LABEL[p.op.kind]} on ${p.id} for one product`,
+  apply: (pf, p) => withTeamDoc(pf, (d) => (d ? editProductAudit(d, p.productId, p.id, p.op, p.base, new Set(p.roles)) : d as unknown as XDocument)),
 });
 const headerCmd = defineCommand<{ patch: HeaderPatch; today: string }>({
   type: 'audit.setHeader', label: () => 'Edit the audit header', coalesceKey: (p) => `audit.header:${Object.keys(p.patch).sort().join(',')}`,
@@ -64,8 +72,14 @@ const changed = changedBy;
 export const today = (now: Date = new Date()): string => now.toISOString().slice(0, 10);
 
 /** One operation on the audit of an activity, a role or a programme activity (FX-21); false when refused (unknown element, value outside its field). */
-export const editAudit = (id: string, op: ElementOp): boolean =>
-  changed(() => appStore().dispatch(PROGRAMME_AUDIT_IDS.has(id) ? programmeCmd({ id, op }) : elementCmd({ id, op })));
+export function editAudit(id: string, op: ElementOp): boolean {
+  const productId = PROGRAMME_AUDIT_IDS.has(id) ? null : productAuditTarget(appStore().getState().portfolio);
+  if (productId) {   // FX-D6: the product's own audit (the view the section shows lays it over the document's)
+    const doc = auditBase(), base = readAudit(doc).elements.get(id);
+    return changed(() => appStore().dispatch(productCmd({ productId, id, op, ...(base ? { base } : {}), roles: [...resourceIds(doc)] })));
+  }
+  return changed(() => appStore().dispatch(PROGRAMME_AUDIT_IDS.has(id) ? programmeCmd({ id, op }) : elementCmd({ id, op })));
+}
 export const setHeader = (patch: HeaderPatch, now?: Date): boolean => changed(() => appStore().dispatch(headerCmd({ patch, today: today(now) })));
 export const editToolCatalog = (op: CatalogOp): boolean => changed(() => appStore().dispatch(catalogCmd({ op })));
 /** Apply the accepted calibration proposals (one undoable step, logged). */

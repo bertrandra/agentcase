@@ -44,3 +44,13 @@ export function keepersOf(products: readonly Product[], ref: string): Keeper[] {
   }
   return out;
 }
+
+/**
+ * FX-D6: the product whose own audit the Audit section shows and edits — the active product of a portfolio of two or more, edited on its own
+ * (not "All products"), when it shares the common process document (no process override of its own); null otherwise (the document's audit).
+ */
+export function productAuditTarget(pf: PortfolioDoc): string | null {
+  if (pf.products.length < 2 || editsCommon(pf)) return null;
+  const p = pf.products.find((x) => x.id === pf.activeProductId);
+  return p && p.overrides.BPMN === undefined ? p.id : null;
+}

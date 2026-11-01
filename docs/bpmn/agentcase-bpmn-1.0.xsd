@@ -582,6 +582,19 @@
       <xsd:sequence><xsd:element ref="ac:audit" minOccurs="0" maxOccurs="unbounded"/></xsd:sequence>
     </xsd:complexType>
   </xsd:element>
+  <xsd:element name="productAudits">
+    <xsd:annotation><xsd:documentation>FX-D6: in the organisation part of the common document, the audits of each product that shares the common process (read over the document's audit, element by element).</xsd:documentation></xsd:annotation>
+    <xsd:complexType>
+      <xsd:sequence>
+        <xsd:element name="productAudit" minOccurs="0" maxOccurs="unbounded">
+          <xsd:complexType>
+            <xsd:sequence><xsd:element ref="ac:audit" minOccurs="0" maxOccurs="unbounded"/></xsd:sequence>
+            <xsd:attribute name="product" type="ac:tKey" use="required"/>
+          </xsd:complexType>
+        </xsd:element>
+      </xsd:sequence>
+    </xsd:complexType>
+  </xsd:element>
   <!-- ===================================================================== transformation programme (§ 19, B9a) -->
   <xsd:simpleType name="tProgrammeLevel"><xsd:restriction base="xsd:token"><xsd:enumeration value="case"/><xsd:enumeration value="product"/></xsd:restriction></xsd:simpleType>
   <xsd:simpleType name="tCostRule">
