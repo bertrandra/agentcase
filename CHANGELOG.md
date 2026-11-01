@@ -17,6 +17,12 @@ When releasing, follow [docs/BUMP_PROCEDURE.md](docs/BUMP_PROCEDURE.md) (§7 for
 
 ## [Unreleased]
 
+### SPEC_FIXES FX-77 — dependency upgrades
+
+- eslint 10, @eslint/js 10, eslint-plugin-react-hooks 7 (React Compiler rules off), immer 11, fast-check 4, jsdom 30, jscpd 5 (duplication
+  baseline re-measured), @types/react 19 (React stays 18), axe-core 4.14 and the in-range updates. The Section Dependencies node labels are cut
+  on whole words (axe 4.14). No figure changes.
+
 ### SPEC_FIXES lot X5 (rest) — audit feeds from the process model (FX-33)
 
 - **Audit**: an activity's deliverable types propose the tools of their capabilities under its own capability's list; the Flow block shows
