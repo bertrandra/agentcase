@@ -374,7 +374,7 @@
   ["process-model","gantt","r",2],
   ["process-model","io","r",1],
   ["process-model","knowledge","r",2],
-  ["process-model","knowledge-hub","z",3],
+  ["process-model","knowledge-hub","z",4],
   ["process-model","maturity","r",2],
   ["process-model","montecarlo","r",1],
   ["process-model","opmodel","r",1],
