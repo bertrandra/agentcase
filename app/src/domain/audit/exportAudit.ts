@@ -14,7 +14,7 @@ import { catalogXml, onCollaboration, withExtChild } from './write';
  */
 const isAc = (e: XElement, ...locals: string[]): boolean => e.ns === NS.ac && locals.includes(e.local);
 const isExt = (e: XElement): boolean => e.ns === NS.bpmn && e.local === 'extensionElements';
-const AUDIT_DOC = ['auditHeader', 'toolCatalog'];
+const AUDIT_DOC = ['auditHeader', 'toolCatalog', 'programmeAudit'];
 
 /** The element without its audit children; extension elements left empty by that go too. */
 function stripped(e: XElement, gone: (x: XElement) => boolean): XElement {

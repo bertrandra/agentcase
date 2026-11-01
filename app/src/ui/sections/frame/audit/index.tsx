@@ -6,6 +6,7 @@ import { Activities } from './Activities';
 import { Calibration } from './Calibration';
 import { Catalogue } from './Catalogue';
 import { Header } from './Header';
+import { Programme } from './Programme';
 import { Roles } from './Roles';
 import { Toolbar } from './Toolbar';
 import './audit.css';
@@ -24,7 +25,8 @@ const help = (
   </>
 );
 
-/** 🔎 Audit (docs/SPEC_BPMN.md § 15.5, F-B31): header, files, activities with their audit form, roles, tool catalogue, calibration. */
+/** 🔎 Audit (docs/SPEC_BPMN.md § 15.5, F-B31): header, files, activities with their audit form, roles, programme activities (FX-21), tool catalogue,
+ *  calibration. */
 export default function AuditSection() {
   const data = useAuditData();
   return (
@@ -33,6 +35,7 @@ export default function AuditSection() {
       result={<Tabs label="Audit views" tabs={[
         { id: 'activities', label: 'Activities', render: () => <Activities data={data} /> },
         { id: 'roles', label: 'Roles', render: () => <Roles data={data} /> },
+        { id: 'programme', label: 'Programme', render: () => <Programme data={data} /> },
         { id: 'catalogue', label: 'Tool catalogue', render: () => <Catalogue data={data} /> },
         { id: 'calibration', label: 'Coverage and calibration', render: () => <Calibration data={data} /> },
       ]} />} />

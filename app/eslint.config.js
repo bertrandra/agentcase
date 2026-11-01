@@ -90,7 +90,10 @@ export default tseslint.config(
       'import/resolver': { typescript: { alwaysTryTypes: true } },
     },
     rules: {
-      ...reactHooks.configs.recommended.rules,
+      // FX-77: eslint-plugin-react-hooks 7 adds the React Compiler rules to `recommended`; the app does not use the React Compiler, so it keeps
+      // the two rules of 5.x (the rules of hooks, the dependency lists) and leaves the compiler's diagnostics off.
+      'react-hooks/rules-of-hooks': 'error',
+      'react-hooks/exhaustive-deps': 'warn',
       // G2 — no code file over 150 lines (blank lines and comments count).
       'max-lines': ['error', { max: 150, skipBlankLines: false, skipComments: false }],
       // D1 — a line over 160 characters is a warning (target: none), whatever it holds: code, strings, template or regex literals, comments (a long

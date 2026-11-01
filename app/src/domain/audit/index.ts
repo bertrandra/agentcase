@@ -7,7 +7,7 @@ export { readAudit, hasAudit, collabExtChild } from './read';
 export { SHIPPED_AS_OF, SHIPPED_REVIEW, SHIPPED_TOOLS, CAPABILITY_TOKEN, capabilityKey, caseCopy, catalogJson, catalogUpdated, effectiveCatalog,
   proposedTools, shippedTool } from './catalog';
 export { applyElementOp, emptyAudit, observationOk, toolUseOk, type ElementOp } from './ops';
-export { editElementAudit, patchedHeader, resourceIds, setAuditHeader, type HeaderPatch } from './edit';
+export { editElementAudit, editProgrammeAudit, patchedHeader, resourceIds, setAuditHeader, type HeaderPatch } from './edit';
 export { editCatalog, toolOk, type CatalogOp } from './editCatalog';
 export { AUDIT_PROGRESS, AUTOMATION_AUTHORITY, NOT_AUDITED, PER_MONTH, activityAudits, auditProgressOf, coverage, phaseProgress, toolingMap,
   type ActivityAudit, type CapabilityRow, type Coverage, type PhaseProgress, type RoleShare } from './analysis';

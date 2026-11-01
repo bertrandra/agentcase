@@ -47,7 +47,7 @@ export function ActivityRefs({ kinds }: { kinds: string[] }) {
           return (
             <li key={d.kind}>
               <strong>{d.name}</strong>
-              {params.length > 0 && <span className="ac-muted">{` — ${params.join(' · ')}`}</span>}{' '}
+              {params.length > 0 && <>{' '}<span className="ac-muted">{`— ${params.join(' · ')}`}</span></>}{' '}
               <button type="button" className="ac-link" onClick={() => openInProcess(d.kind)}>{`Open ${d.name} in Process`}</button>{' · '}
               <button type="button" className="ac-link" onClick={() => openInProgramme(d.kind)}>{`Open ${d.name} in Programme`}</button>
             </li>

@@ -73,7 +73,7 @@ describe('cost model: days x rate + other costs = the app cost', () => {
       'Knowledge transfer avoided': 0, blend: 0, 'Setup: Tooling & infra': 0, 'Setup: Training': 0, 'Setup: Coaching': 0, 'Setup: Governance': 0 };
     for (const id of FIXTURE_IDS) {
       const pf = envelopeCase(loadCase(id)), m = costModel(pf, { kind: 'portfolio' });
-      try { reconcile(pf, m); } catch (e) { throw new Error(`${id}: ${(e as Error).message}`); }
+      try { reconcile(pf, m); } catch (e) { throw new Error(`${id}: ${(e as Error).message}`, { cause: e }); }
       const prod = costModel(pf, { kind: 'product', id: pf.products[0]!.id });
       expect(prod.values.rows.length).toBe(m.values.rows.length);
       expect(byProduct(m.values, 'Product 1').length).toBeGreaterThan(0);

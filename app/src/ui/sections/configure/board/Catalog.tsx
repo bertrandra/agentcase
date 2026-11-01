@@ -15,7 +15,7 @@ export function Catalog() {
         <thead><tr><th>Source</th><th>Variable</th><th>Format</th><th>Unit</th><th>Live value</th></tr></thead>
         <tbody>
           {VARIABLES.map((v) => {
-            let text = '—';
+            let text: string;
             try { text = formatValue(v.get(c, rt), v.format); } catch { text = '—'; }
             return <tr key={v.id}><td>{v.scope === 'GLOBAL' ? 'GLOBAL' : (sectionById(v.scope)?.label ?? v.scope)}</td><td>{v.label}</td>
               <td><code>{v.format}</code></td><td>{v.unit}</td><td className="ac-num ac-value">{text}</td></tr>;

@@ -1,6 +1,7 @@
 import { useMemo } from 'react';
 import { readRaci } from '@/domain/org';
 import type { AuditViewData } from '@/store/auditHooks';
+import { AuditTable, isAudited } from './AuditTable';
 import { ElementForm } from './ElementForm';
 import { SelectCell } from './SelectCell';
 import { useAuditView } from './view';
@@ -22,21 +23,16 @@ export function Roles({ data }: { data: AuditViewData }) {
   return (
     <>
       <h2 id="ac-audit-roles-h">Roles</h2>
-      <div className="ac-table-wrap" tabIndex={0}>
-        <table className="ac-table" aria-labelledby="ac-audit-roles-h">
-          <thead><tr><th scope="col">Role</th><th scope="col">Team skill</th><th scope="col">Responsible for (in scope)</th><th scope="col">Audit</th>
-            <th scope="col">Activities with an FTE share of the role</th></tr></thead>
-          <tbody>{roles.map((r) => {
-            const a = data.audit.elements.get(r.id), audited = !!a && a.observations.length + a.tools.length + a.painPoints.length > 0;
-            return (
-              <tr key={r.id}>
-                <SelectCell id={r.id} selected={selected}>{r.name}</SelectCell>
-                <td>{r.teamSkill ?? '—'}</td><td>{responsible.get(r.id) ?? 0}</td><td>{audited ? 'Audited' : 'Not audited'}</td><td>{split(r.id)}</td>
-              </tr>
-            );
-          })}</tbody>
-        </table>
-      </div>
+      <AuditTable labelledBy="ac-audit-roles-h"
+        head={['Role', 'Team skill', 'Responsible for (in scope)', 'Audit', 'Activities with an FTE share of the role']}>
+        {roles.map((r) => (
+          <tr key={r.id}>
+            <SelectCell id={r.id} selected={selected}>{r.name}</SelectCell>
+            <td>{r.teamSkill ?? '—'}</td><td>{responsible.get(r.id) ?? 0}</td>
+            <td>{isAudited(data.audit.elements.get(r.id)) ? 'Audited' : 'Not audited'}</td><td>{split(r.id)}</td>
+          </tr>
+        ))}
+      </AuditTable>
       {sel && <ElementForm data={data} id={sel.id} title={`role ${sel.name}`} blocks={['readiness', 'people', 'time']} />}
     </>
   );
