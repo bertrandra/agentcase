@@ -55,7 +55,7 @@ const ramps = new WeakMap<ProductRun, { rampEnd: number; marks: { label: string;
 function ownMarks(run: ProductRun) {
   let r = ramps.get(run);
   if (!r) {
-    let marks: { label: string; family: string; month: number }[] = [];
+    let marks: { label: string; family: string; month: number }[];
     try { marks = run.engine.milestones().filter((m) => m.month >= 1); } catch { marks = []; }
     const rampEnd = marks.filter((m) => m.family !== 'financial' && m.family !== 'workforce').reduce((a, m) => Math.max(a, m.month), 0);
     r = { rampEnd, marks };
