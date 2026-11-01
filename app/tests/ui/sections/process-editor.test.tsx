@@ -16,12 +16,12 @@ import { freshStore } from '../../store/helpers';
  * watermark), with the two calls jsdom cannot run (SVG layout: import and the canvas viewbox) stubbed; the browser gates (tools/e2e-flows.mjs,
  * tools/a11y.mjs) open the real editor in the built file. Licence: the bpmn.io watermark is present, visible and not hidden by any style sheet.
  */
-const saved = { xml: '' };
+const saved = { xml: '' }, imports: (string | undefined)[] = [];
 vi.mock('@/controllers/processEditorKit', async () => {
   const { default: Real } = await import('bpmn-js/lib/Modeler');
   const canvas = { zoom: () => undefined, viewbox: () => ({}) };
   class Modeler extends (Real as unknown as new (o: { container: HTMLElement }) => BpmnModeler) {
-    override importXML = async () => ({ warnings: [] });
+    override importXML = async (_xml: string, diagram?: string) => { imports.push(diagram); return { warnings: [] }; };
     override saveXML = async () => ({ xml: saved.xml });
     override get = (name: string): unknown => (name === 'canvas' ? canvas : super.get(name));
   }
@@ -41,7 +41,7 @@ async function open(): Promise<void> {
   await flush();
 }
 const walk = (d: string): string[] => readdirSync(d).flatMap((f) => (statSync(join(d, f)).isDirectory() ? walk(join(d, f)) : [join(d, f)]));
-beforeEach(() => { freshStore(); saved.xml = ''; });
+beforeEach(() => { freshStore(); saved.xml = ''; imports.length = 0; });
 afterEach(cleanup);
 
 describe('Process section: the BPMN editor (B6)', { timeout: 30_000 }, () => {
@@ -99,5 +99,29 @@ describe('Process section: the BPMN editor (B6)', { timeout: 30_000 }, () => {
     expect(onWindow).not.toHaveBeenCalled();
     s.undo();
     expect(serialize(s.getState().doc.BPMN)).toBe(before);
+  });
+  it('FX-13 / FX-14: a save keeps the editor as it is (no re-import: its own undo history stays); a document with two diagrams offers a picker', async () => {
+    render(<DiagramEditor />);
+    await open();
+    expect(imports).toEqual([undefined]);
+    saved.xml = editorSource().replace('name="Source code"', 'name="Source code v2"');
+    fireEvent.click(button('Save to the case'));
+    await flush();
+    expect(imports).toEqual([undefined]);   // not re-imported after the save
+    expect(document.querySelector('.ac-proc-editor select')).toBeNull();   // one diagram: no picker
+    // a second diagram (as an export with the organisation view writes): saved through the editor, it becomes part of the case
+    saved.xml = editorSource().replace(/(<\/bpmndi:BPMNDiagram>)/, '$1\n  <bpmndi:BPMNDiagram id="Diagram_2" name="Second view"><bpmndi:BPMNPlane id="Plane_2" bpmnElement="Process_1"/></bpmndi:BPMNDiagram>');
+    fireEvent.click(button('Save to the case'));
+    await flush();
+    fireEvent.click(button('Close editor'));
+    await flush();
+    await open();
+    const pick = document.querySelector('.ac-proc-editor select') as HTMLSelectElement | null;
+    expect(pick).not.toBeNull();
+    if (!pick) return;
+    expect([...pick.options].map((o) => o.textContent)).toContain('Second view');
+    fireEvent.change(pick, { target: { value: 'Diagram_2' } });
+    await flush();
+    expect(imports.at(-1)).toBe('Diagram_2');
   });
 });

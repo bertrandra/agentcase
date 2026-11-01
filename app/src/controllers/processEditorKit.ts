@@ -6,7 +6,8 @@
  * bpmn-js: nothing of it is parsed or run before the user opens the editor.
  */
 export interface BpmnModeler {
-  importXML(xml: string): Promise<{ warnings: unknown[] }>;
+  /** `diagram`: the id of the `BPMNDiagram` to open (bpmn-js opens the first one without it) */
+  importXML(xml: string, diagram?: string): Promise<{ warnings: unknown[] }>;
   saveXML(options: { format: boolean }): Promise<{ xml?: string }>;
   on(event: string, callback: () => void): void;
   get(service: string): unknown;
