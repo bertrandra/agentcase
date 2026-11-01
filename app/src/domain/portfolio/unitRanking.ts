@@ -7,11 +7,13 @@ import { pfDecision } from './stressVerdict';
 import type { PfStress } from './stressTypes';
 import type { Portfolio } from './types';
 
-type UnitScope = { kind: 'unit'; id: string };
+type UnitScope = { kind: 'unit'; id: string; direct?: boolean };
 
 /** One unit of a ranking: its consolidated figures (`groupOf`) and its decision on the portfolio run (`pfDecision`), or null without a run. */
 export interface UnitRankRow {
   id: string; label: string; rank: number;
+  /** the products the unit owns itself (`id` = `<unit>:direct`), not a unit of the tree */
+  direct: boolean;
   /** planned products of the unit (directly or through its sub-units) */
   products: number;
   npv: number; net: number; setup: number; roi: number | null;
@@ -19,7 +21,8 @@ export interface UnitRankRow {
 }
 
 /**
- * The units a ranking compares under a display scope: at the Portfolio, the roots of the tree and "Unassigned"; at a unit, its direct sub-units; none
+ * The units a ranking compares under a display scope: at the Portfolio, the roots of the tree and "Unassigned"; at a unit, its direct sub-units and
+ * the products it owns itself ("directly owned", when it has sub-units); none
  * at a wave, a product or "Unassigned" (a wave can span units: its products are ranked by wave verdicts instead).
  */
 export function childUnitScopes(pf: Portfolio, scope: DisplayScope): UnitScope[] {
@@ -28,7 +31,9 @@ export function childUnitScopes(pf: Portfolio, scope: DisplayScope): UnitScope[]
     return [...units.filter((u) => !u.parent || !known.has(u.parent)).map((u) => ({ kind: 'unit' as const, id: u.id })), { kind: 'unit', id: UNASSIGNED_UNIT }];
   }
   if (scope.kind !== 'unit' || scope.id === UNASSIGNED_UNIT) return [];
-  return units.filter((u) => u.parent === scope.id && u.id !== scope.id).map((u) => ({ kind: 'unit' as const, id: u.id }));
+  const subs = units.filter((u) => u.parent === scope.id && u.id !== scope.id).map((u) => ({ kind: 'unit' as const, id: u.id }));
+  // the products the unit owns itself are a row of their own next to its sub-units (FX-08); a unit with no sub-unit has nothing to split
+  return subs.length ? [...subs, { kind: 'unit', id: scope.id, direct: true }] : subs;
 }
 
 const ORDER: Record<Verdict, number> = { strong: 0, conditional: 1, defer: 2 };
@@ -44,7 +49,8 @@ export function unitRanking(pf: Portfolio, c: Consolidated, run: PfStress | null
     const g = groupOf(c, u);
     if (!g || !g.items.length) return [];
     const d = run ? pfDecision(pf, run, u) : null, s = g.summary;
-    return [{ id: u.id, label: g.label, products: g.items.length, npv: s.npv, net: s.net, setup: s.setup, roi: s.roi,
+    return [{ id: u.direct ? `${u.id}:direct` : u.id, direct: !!u.direct, label: g.label, products: g.items.length,
+      npv: s.npv, net: s.net, setup: s.setup, roi: s.roi,
       p10: d ? d.stats.p10 : null, p50: d ? d.stats.p50 : null, verdict: d?.verdict ?? null, confidence: d?.confidence ?? null }];
   });
   rows.sort((a, b) => order(a.verdict) - order(b.verdict) || (b.confidence ?? -1) - (a.confidence ?? -1) || b.npv - a.npv);

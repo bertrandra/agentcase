@@ -11,14 +11,14 @@ import { pinCells, teamCells } from './teamCells';
  * product) and a bad row stops the import, unlike the single-case "Input Team" that skips rows: a portfolio must not silently lose a team. Each
  * product needs >= 1 row.
  */
-export function readTeams(sheets: Sheets, ids: ReadonlySet<string>): Map<string, TeamRow[]> {
+export function readTeams(sheets: Sheets, ids: ReadonlySet<string>, known: () => ReadonlySet<string>): Map<string, TeamRow[]> {
   const t = tab(sheets, PF_SHEETS.team);
   if (!t) return fail(PF_SHEETS.team, null, 'a portfolio workbook needs the TeamIn sheet (one team per product)');
   const out = new Map<string, TeamRow[]>(), pinned = new Map<string, Set<string>>();
   for (const l of t.lines) {
     const id = knownProduct(t, l, ids), rows = out.get(id) ?? [], seen = pinned.get(id) ?? new Set<string>();
     const { skill, grade, loc } = teamCells(t, l), etp = snapFTE(numberCell(t, l, 4, 'FTE', { min: 0, max: 100000 }) as number);
-    const pins = pinCells(t, l, 5);
+    const pins = pinCells(t, l, 5, known);
     for (const p of pins) {
       if (seen.has(p)) fail(t.name, l.n, `artefact "${p}" is pinned twice in product "${id}"`);
       seen.add(p);

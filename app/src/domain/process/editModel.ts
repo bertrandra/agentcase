@@ -1,8 +1,9 @@
 /** @calc-zone process-model */
 import { appendChild, editById, editWhere, idsOf, withExt } from './editTree';
 import { readProcess } from './read';
-import { attr, el, kids, NS, text, textOf, withAttrs, withChildren, type XDocument, type XElement, type XNode } from './xml';
+import { attr, el, kids, NS, textOf, withAttrs, type XDocument, type XElement } from './xml';
 import { indent } from './xmlWrite';
+import { DEFINITIONS_RANK, insertIn } from './profile/tree';
 
 /**
  * Process commands on actors and phases (spec § 9: `process.addActor`, `updateActor`, `removeActor`, `addPhase`, `removePhase`, `reorderPhases`).
@@ -12,18 +13,17 @@ export interface ActorInput { id: string; name: string; kind: 'role' | 'agent'; 
 const same = (d: XDocument, root: XElement): XDocument => (root === d.root ? d : { ...d, root });
 
 /** After the last resource of the definitions (or before the first element when there is none), indented like it. */
-function insertResource(defs: XElement, r: XElement): XElement {
-  const cs = defs.children;
-  let at = -1;
-  cs.forEach((c, i) => { if (c.kind === 'element' && c.ns === NS.bpmn && (c.local === 'resource' || c.local === 'category')) at = i; });
-  const next: XNode[] = [...cs];
-  next.splice(at + 1, 0, text('\n  '), indent(r, '  ', 1));
-  return withChildren(defs, next);
+/**
+ * A resource appended at the end of the definitions' root elements — the last place the schema allows, just before the diagrams (FX-06): inserted
+ * after the existing resources it shifted every later root element (the process, the diagram) into the undo patch, about 1.3 MB for one role.
+ */
+function insertResource(d: XDocument, r: XElement): XDocument {
+  return insertIn(d, null, r, DEFINITIONS_RANK);
 }
 export function addActor(d: XDocument, a: ActorInput): XDocument {
   if (idsOf(d.root).has(a.id)) return d;
   const actor = el('ac:actor', { kind: a.kind, teamSkill: a.teamSkill, capability: a.capability });
-  return same(d, insertResource(d.root, el('bpmn:resource', { id: a.id, name: a.name }, [el('bpmn:extensionElements', {}, [actor])])));
+  return insertResource(d, el('bpmn:resource', { id: a.id, name: a.name }, [el('bpmn:extensionElements', {}, [actor])]));
 }
 export function updateActor(d: XDocument, id: string, p: { name?: string; teamSkill?: string | null; capability?: string | null }): XDocument {
   if (!readProcess(d).actors.some((r) => r.id === id)) return d;

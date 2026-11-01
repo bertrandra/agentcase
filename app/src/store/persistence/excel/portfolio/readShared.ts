@@ -7,8 +7,8 @@ import { fail, idOf, numberCell, SAFE_ID, tab, type Line, type Tab } from './tab
 import { pinCells, teamCells } from './teamCells';
 
 /** The pinned artefacts of a row (column H, blank = none): known artefacts, each once. */
-function pinsOf(t: Tab, l: Line): string[] {
-  const pins = pinCells(t, l, 7);
+function pinsOf(t: Tab, l: Line, known: () => ReadonlySet<string>): string[] {
+  const pins = pinCells(t, l, 7, known);
   pins.forEach((p, i) => { if (pins.indexOf(p) !== i) fail(t.name, l.n, `artefact "${p}" is pinned twice`); });
   return pins;
 }
@@ -21,23 +21,23 @@ function serviceOf(t: Tab, l: Line): Pick<SharedTeamLine, 'unit' | 'split'> {
   return { ...(unit ? { unit } : {}), ...(split ? { split: 'effort' as const } : {}) };
 }
 
-function lineOf(t: Tab, l: Line, id: string): SharedTeamLine {
-  const { skill, grade, loc } = teamCells(t, l), pins = pinsOf(t, l);
+function lineOf(t: Tab, l: Line, id: string, known: () => ReadonlySet<string>): SharedTeamLine {
+  const { skill, grade, loc } = teamCells(t, l), pins = pinsOf(t, l, known);
   return { id, skill, grade, loc, etp: numberCell(t, l, 4, 'FTE', { min: 0, max: 100000 }) as number, allocations: {}, ...(pins.length ? { pins } : {}),
     ...serviceOf(t, l) };
 }
 
 /**
  * SharedTeam sheet (optional; absent = no shared line): one row per share, rows of a line share its id and repeat its skill, grade, location,
- * FTE and pins (they must agree). Pins (column H, optional: an older workbook has none) are known artefact ids. A blank product id keeps a line
- * without any share. Shares are percentages in [0, 100] of known products, one per product.
+ * FTE and pins (they must agree). Pins (column H, optional: an older workbook has none) are activities of the portfolio (`pinTargets`, custom
+ * ones included). A blank product id keeps a line without any share. Shares are percentages in [0, 100] of known products, one per product.
  */
-export function readShared(sheets: Sheets, ids: ReadonlySet<string>): SharedTeamLine[] | undefined {
+export function readShared(sheets: Sheets, ids: ReadonlySet<string>, known: () => ReadonlySet<string>): SharedTeamLine[] | undefined {
   const t = tab(sheets, PF_SHEETS.shared);
   if (!t) return undefined;
   const out = new Map<string, SharedTeamLine>();
   for (const l of t.lines) {
-    const id = idOf(t, l, 'line id'), line = lineOf(t, l, id), cur = out.get(id);
+    const id = idOf(t, l, 'line id'), line = lineOf(t, l, id, known), cur = out.get(id);
     const samePins = (cur?.pins ?? []).join(';') === (line.pins ?? []).join(';');
     if (cur && (cur.skill !== line.skill || cur.grade !== line.grade || cur.loc !== line.loc || cur.etp !== line.etp || !samePins
       || cur.unit !== line.unit || cur.split !== line.split)) {

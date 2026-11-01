@@ -17,6 +17,15 @@ When releasing, follow [docs/BUMP_PROCEDURE.md](docs/BUMP_PROCEDURE.md) (§7 for
 
 ## [Unreleased]
 
+### SPEC_FIXES lot X2a — consistency (FX-03, FX-04, FX-06, FX-08, FX-D1)
+
+- **Pins of custom activities** are accepted by the parameters and portfolio workbooks (one rule, `pinTargets`).
+- **Per-phase tables** (Verify A averages, Tune B agent runs) list the case's own phases, custom ones included.
+- **Adding a role** writes a small undo step (1.35 MB → 0.29 MB on the default case).
+- **Unit ranking**: the products a unit owns itself are a row next to its sub-units.
+- **Monte Carlo staleness**: renaming or moving a unit, or changing its cost centre, no longer marks a run stale. No figure changes.
+
+
 ### SPEC_FIXES lot X0 — nightly green (FX-70, FX-72, FX-73, FX-74, FX-75)
 
 - **Nightly gates.** Both nightly jobs install `xmllint` like the pull-request job (the 26 XSD schema tests failed on every run); `tools/gates.mjs`

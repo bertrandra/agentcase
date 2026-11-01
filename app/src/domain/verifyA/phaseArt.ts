@@ -1,5 +1,6 @@
 /** @calc-zone delivery-views */
 import { PHASES } from '../catalog';
+import { caseViews } from '../process';
 import { activeArtefacts } from '../scope';
 import type { Live } from './fteVfte';
 
@@ -18,7 +19,8 @@ export interface PhaseArtRow { id: string; name: string; sdlc: number; human: nu
 /** Per-phase averages of the in-scope artefacts and the relative vFTE at the horizon end (legacy renderPhaseArt). */
 export function phaseArtRows(l: Live): { rows: PhaseArtRow[]; chart: { phase: string; human: number; agent: number }[] } {
   const by = group(l, 'phase'), end = l.eng.year(l.eng.horizonYears).adoptionEndPct;
-  const rows = PHASES.filter((p) => by.has(p.id)).map((p) => {
+  // the case's own phases, custom ones included, in process order (SPEC_FIXES FX-04); a catalogue phase reads the same name and SDLC weight
+  const rows = (caseViews(l.c.s)?.phases ?? PHASES).filter((p) => by.has(p.id)).map((p) => {
     const b = by.get(p.id)!, agent = Math.round(b.ag / b.n);
     return { id: p.id, name: p.name, sdlc: p.sdlc, human: Math.round(b.h / b.n), agent, vfte: p.sdlc * (1 - ((end / 100) * l.m.eff * (agent / 100)) / 100) };
   });

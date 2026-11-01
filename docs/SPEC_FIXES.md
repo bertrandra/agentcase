@@ -43,7 +43,7 @@ DEVIATIONS.md entry and the owner's approval of the before → after on the gold
 
 | ID | Answer | Consequence | Lot |
 |---|---|---|---|
-| FX-D1 | **(a)** take the organisation out of the Monte Carlo run fingerprint | An org-only edit no longer marks the run stale; no figure moves | X2 |
+| FX-D1 | **(a)** take the organisation out of the Monte Carlo run fingerprint | An org-only edit no longer marks the run stale; no figure moves. **Fixed (lot X2a)**: a unit's name, kind, tree, location, cost centre, sourcing and a product's owner left out; a service spec still counts (an owner edit never reached the fingerprint: the test saying so compared different ρ) | X2 |
 | FX-D2 | **(a)** keep one ρ, show each unit's implied correlation | Nothing to build beyond the implied-correlation view (SPEC_HARNESS HX-D6 adds a correlation through shared harnesses) | X7 |
 | FX-D3 | **(a)** route type / role service activities to the service line in every product | **Deviation**: a DEVIATIONS.md entry and the owner's approval of the before → after on the golden case before merge | X2 |
 | FX-D4 | **(a)** `ac:raciOverride` per product in the organisation part | No figure moves | X6 |
@@ -67,12 +67,12 @@ DEVIATIONS.md entry and the owner's approval of the before → after on the gold
 |---|---|---|---|---|---|
 | FX-01 | A case-level opt-in activity switched on in the common values is counted by every product | Count a case-level programme activity once per portfolio (owned by the common case), per product only when the product turns it on; one owner in `programme/profile.ts` | Opt-in cases only | M | items 32, § 19.10 |
 | FX-02 | D-B9: the JSON catalogues still generate the default process | Build step that ships `defaultProcess.bpmn`'s node tree (DOM-free reader); move the reference-list readers (reset, pins, factory pickers, legacy sheets, per-phase tables) to the default-process views; retire the JSON | None | L | item 1 |
-| FX-03 | Pins of a custom activity are refused | `normalisedPins` validates against the case's process activities, not the catalogue ids | None | S | item 2 |
-| FX-04 | Per-phase tables do not list a custom phase | `phaseArtRows` and agent usage read the process phases | None | S | item 3 |
+| FX-03 | Pins of a custom activity are refused | `normalisedPins` validates against the case's process activities, not the catalogue ids. **Fixed (lot X2a, unreleased).** One owner `pinTargets(doc…)` (the case's activities, custom ones included, and the catalogue) read by both Excel imports; the dead `normalisedPins` removed | None | S | item 2 |
+| FX-04 | Per-phase tables do not list a custom phase | `phaseArtRows` and agent usage read the process phases. **Fixed (lot X2a, unreleased).** Both read `caseViews(s).phases` (catalogue fallback without a document); oracle parity kept | None | S | item 3 |
 | FX-05 | `withLibrary` is not applied to a portfolio product's effective case | Apply the common library entries to each product's process part (B10a split makes it possible) | Opt-in (library users) | M | item 23 |
-| FX-06 | A new role's resource is inserted mid-list (large undo patch) | Insert at the end of the resource block allowed by the XSD order, or index roles separately | None | S | item 4 |
+| FX-06 | A new role's resource is inserted mid-list (large undo patch) | Insert at the end of the resource block allowed by the XSD order, or index roles separately. **Fixed (lot X2a, unreleased).** Appended at the end of the root elements (before the diagrams): undo step 1.35 MB → 0.29 MB, no process or collaboration copied | None | S | item 4 |
 | FX-07 | The default delivery unit is derived until first used | Write it at migration only when the case has units or owners (exports of untouched cases stay identical) | None | S | § 21.5 |
-| FX-08 | Products a unit owns directly are not shown as their own row in its sub-unit ranking | Add a "directly owned" row to `unitRanking` | None | S | § 21.8 |
+| FX-08 | Products a unit owns directly are not shown as their own row in its sub-unit ranking | Add a "directly owned" row to `unitRanking`. **Fixed (lot X2a, unreleased).** Unit scope `direct: true`; the rows partition the unit; Show opens the unit | None | S | § 21.8 |
 
 ### 3.2 Screens (P2)
 
