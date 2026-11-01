@@ -127,7 +127,7 @@ All stored data stays in the case's BPMN document (D-B26), so it travels with th
 | Token profiles: per activity type (runs per day, context, output), per harness (routing, cache, retry, overhead), price trends and volume tiers | Activity types: process part (catalogue defaults); harness routing: `ac:tokenProfile` on `ac:harness`; **prices, trends and tiers: case tables with `TOKEN_MODELS`, not the BPMN model** (§ 17) | `tokens/*` (new folder) |
 | Frozen versions (as simulated, as proposed): inputs + computed series + calculation version | The snapshot library (case snapshots), with the series attached, read-only | `snapshots/versions.ts` (new) |
 | Measurements (as measured) | A measurements part of the case (`metric, scope, month, value, source`), **not the BPMN model** (§ 17) | `metrics/measures.ts` (new) |
-| Waves (pilot = wave 0) and their slices | Portfolio data with the waves until FX-D14 (`pilot: true`, `slices: scope ids`); a single case stores them in its document | `portfolio/waves.ts`, `portfolio/slices.ts` (new) |
+| Waves (pilot = wave 0) and their slices | The **portfolio-level BPMN document** (FX-D14 decided (a)): waves as sub-processes (the pilot as wave 0), slices as scope rules, capacity on lanes; a single case stores them in its own document | `portfolio/waves.ts`, `portfolio/slices.ts` (new) |
 
 ## 4. Step 1 — the as-is scope
 
@@ -553,15 +553,15 @@ holds structure and observations about the work. It does **not** hold:
 | Token **prices**, trends, volume tiers, contracts | **No** (commercial) | Case tables (with `TOKEN_MODELS`) |
 | Who runs what (customer / provider) | **Yes**, as structure: the provider is a **participant** (its own pool), run activities and teams assigned to it | Organisation part, a provider participant |
 | Run **model**, commercial model, fees, margins | **No** (commercial) | Case values per scope id |
-| Waves and slices | Open (FX-D14): portfolio data until a portfolio-level BPMN document is decided | Portfolio file |
+| Waves and slices | **Yes** (FX-D14 decided (a)) | The portfolio-level BPMN document |
 | Frozen versions (as simulated, as proposed) | **No** | Snapshot library, with their series |
 | Measurements (as measured) | **No** | A measurements part of the case (per metric, scope, month) |
 | Metric catalogue | **No** (definitions in code, one owner each) | `src/domain/metrics` |
 
 **17.5 Moves to plan for what is already there**
 
-- `setupTraining` / `setupGov` in `ac:programmeValues`: stored, read by no figure (FX-D13); retire or keep as legacy inputs, out of the model if
-  retired.
+- `setupTraining` / `setupGov` in `ac:programmeValues`: stored, read by no figure; **retired** (FX-D13 decided (a), lot X7), with the deviations of
+  the legacy outputs.
 - The artefact catalogue JSON still generates the default process (FX-02): the default process should be the shipped `.bpmn`, the JSON retired.
 - Prices that today sit next to process parameters (e.g. any euro amount among the programme values) are checked against rule 2 and moved to the
   case values when they are commercial.
