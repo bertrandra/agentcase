@@ -1,4 +1,5 @@
 // @vitest-environment jsdom
+import type { ReactElement } from 'react';
 import { act, cleanup, fireEvent, render, screen } from '@testing-library/react';
 import { afterEach, describe, expect, it } from 'vitest';
 import type { ThemeAxes } from '@/domain/theme/axes';
@@ -15,7 +16,7 @@ afterEach(() => { applyThemeAxes({}); cleanup(); });
 const MODES = [{ value: 'hybrid', label: 'Hybrid' }, { value: 'legacy', label: 'Legacy' }];
 
 /** Render `ui` under the given axes on a fresh store, run `edit`, return what the store recorded. */
-function outcome(axes: Partial<ThemeAxes>, ui: JSX.Element, edit: () => void) {
+function outcome(axes: Partial<ThemeAxes>, ui: ReactElement, edit: () => void) {
   const s = freshStore();
   applyThemeAxes(axes);
   render(ui);
