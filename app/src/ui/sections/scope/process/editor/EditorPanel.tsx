@@ -1,14 +1,16 @@
 import { useEffect, useId, useRef, useState, type KeyboardEvent, type MutableRefObject } from 'react';
 import { editorBase, editorDiagrams, editorSource, saveEditorXml } from '@/controllers/processEditor';
 import { bpmnSource, type BpmnModeler } from '@/controllers/processEditorKit';
-import type { XDocument } from '@/domain/process';
+import { readProcess, type XDocument } from '@/domain/process';
 import { useDoc } from '@/store/hooks';
 import { shouldHandle } from '@/ui/shell/useShortcuts';
+import { ActivityPanel } from '../ActivityPanel';
 
 /**
  * The BPMN editor of the Process section (docs/SPEC_BPMN.md D-B6 b, phase B6): bpmn-js's Modeler, loaded on demand, opened on the case's process
  * document. "Save to the case" hands the editor's document to the write-back (one undoable step, `process.applyEditor`); the editor stays open
- * as it is, with its own undo history (FX-13). A document with several diagrams offers a picker (FX-14). The bpmn.io watermark the bpmn-js
+ * as it is, with its own undo history (FX-13). A document with several diagrams offers a picker (FX-14). The activity selected on the canvas
+ * shows its parameter panel under it (FX-12). The bpmn.io watermark the bpmn-js
  * licence requires stays visible: nothing here hides or covers it. Ctrl+Z on the canvas is the editor's own undo, not the case's.
  */
 type Status = 'loading' | 'ready' | 'failed';
@@ -33,7 +35,7 @@ export function EditorPanel({ id, onClose }: { id: string; onClose: () => void }
   const refs: Refs = { m: useRef<BpmnModeler | null>(null), base: useRef<XDocument | null>(null), dirty: useRef(false), diagram: useRef('') };
   const diagrams = editorDiagrams(), [diagram, setDiagram] = useState('');
   const [status, setStatus] = useState<Status>('loading'), [msg, setMsg] = useState<string[]>([]), [stale, setStale] = useState(false);
-  const [armed, setArmed] = useState(false);
+  const [armed, setArmed] = useState(false), [picked, setPicked] = useState<string | null>(null);   // FX-12: the element selected on the canvas
   useEffect(() => {
     let alive = true, style: HTMLStyleElement | null = null, m: BpmnModeler | null = null;
     title.current?.focus();
@@ -47,6 +49,8 @@ export function EditorPanel({ id, onClose }: { id: string; onClose: () => void }
       m = new kit.Modeler({ container: host.current });
       refs.m.current = m;
       m.on('commandStack.changed', () => { refs.dirty.current = true; setArmed(false); });
+      (m as unknown as { on(e: string, f: (ev: { newSelection?: { id?: string }[] }) => void): void }).on('selection.changed',
+        (ev) => { if (alive) setPicked(ev.newSelection?.length === 1 ? ev.newSelection[0]!.id ?? null : null); });
       await load(refs, false);
       if (alive) setStatus('ready');
     }).catch((e: unknown) => { if (alive) { setStatus('failed'); setMsg([e instanceof Error ? e.message : String(e)]); } });
@@ -87,6 +91,16 @@ export function EditorPanel({ id, onClose }: { id: string; onClose: () => void }
       </p>
       {stale && <p className="ac-proc-warn">The process changed outside the editor: reload it to edit the current process (its unsaved changes are lost).</p>}
       <div ref={host} className="ac-proc-editor-canvas" role="group" aria-label="BPMN editor canvas (bpmn-js): Tab or click focuses it" />
+      {picked && <EditorProperties doc={doc} id={picked} />}
     </section>
   );
+}
+
+/**
+ * FX-12: the properties of the activity selected on the canvas — the parameter panel of the Process section itself, so the editor writes the same
+ * commands (one undoable step each); an element that is not one of the case's activities shows nothing.
+ */
+function EditorProperties({ doc, id }: { doc: XDocument; id: string }) {
+  if (!readProcess(doc).activities.some((a) => a.id === id)) return null;
+  return <div className="ac-proc-editor-props" aria-label="Properties of the selected activity" role="region"><ActivityPanel doc={doc} id={id} /></div>;
 }

@@ -1648,7 +1648,7 @@ the service line, a deviation (FX-D3); § 21.8 — the organisation out of the M
 | 2 | Pins of a custom activity are refused (`normalisedPins` checks the catalogue ids) | Work | § 7.1 (4) |
 | 3 | The per-phase tables (`phaseArtRows`, agent usage) do not list a custom phase | Work | § 7.1 (4) |
 | 4 | A new role's resource is inserted after the existing resources, so its undo patch is larger than an append | Work | § 9.1 |
-| 5 | The diagram editor has no properties panel (parameters stay in the table and panels) | Work | § 9.2 |
+| 5 | ~~The diagram editor has no properties panel (parameters stay in the table and panels)~~ — **done in SPEC_FIXES lot X4 (FX-12)** | Work | § 9.2 |
 | 6 | ~~The diagram editor's own undo history is lost on Save (it reloads from the case)~~ — **done in SPEC_FIXES lot X4 (FX-13)** | Work | § 9.2 |
 | 7 | ~~The diagram editor shows the first diagram of the document only~~ — **done in SPEC_FIXES lot X4 (FX-14)** | Work | § 9.2 |
 | 8 | The tool catalogue (129 tools) is verified against public sources (2026-10-31): the owner's sign-off is pending (43 entries partial or unverified) | Decision | § 15.7 (F-B23 / F-B25) |

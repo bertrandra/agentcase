@@ -16,11 +16,12 @@ import { freshStore } from '../../store/helpers';
  * watermark), with the two calls jsdom cannot run (SVG layout: import and the canvas viewbox) stubbed; the browser gates (tools/e2e-flows.mjs,
  * tools/a11y.mjs) open the real editor in the built file. Licence: the bpmn.io watermark is present, visible and not hidden by any style sheet.
  */
-const saved = { xml: '' }, imports: (string | undefined)[] = [];
+const saved = { xml: '' }, imports: (string | undefined)[] = [], live: { m: BpmnModeler | null } = { m: null };
 vi.mock('@/controllers/processEditorKit', async () => {
   const { default: Real } = await import('bpmn-js/lib/Modeler');
   const canvas = { zoom: () => undefined, viewbox: () => ({}) };
   class Modeler extends (Real as unknown as new (o: { container: HTMLElement }) => BpmnModeler) {
+    constructor(o: { container: HTMLElement }) { super(o); live.m = this; }
     override importXML = async (_xml: string, diagram?: string) => { imports.push(diagram); return { warnings: [] }; };
     override saveXML = async () => ({ xml: saved.xml });
     override get = (name: string): unknown => (name === 'canvas' ? canvas : super.get(name));
@@ -124,5 +125,16 @@ describe('Process section: the BPMN editor (B6)', { timeout: 30_000 }, () => {
     fireEvent.change(pick, { target: { value: 'Diagram_2' } });
     await flush();
     expect(imports.at(-1)).toBe('Diagram_2');
+  });
+  it('FX-12: the activity selected on the canvas shows its parameter panel under the editor (the same commands)', async () => {
+    render(<DiagramEditor />);
+    await open();
+    const bus = live.m!.get('eventBus') as { fire(e: string, p: object): void };
+    act(() => { bus.fire('selection.changed', { newSelection: [{ id: 'A017' }] }); });
+    const props = document.querySelector('[aria-label="Properties of the selected activity"]');
+    expect(props).not.toBeNull();
+    expect(props!.textContent).toContain('A017');
+    act(() => { bus.fire('selection.changed', { newSelection: [{ id: 'not-an-activity' }] }); });
+    expect(document.querySelector('[aria-label="Properties of the selected activity"]')).toBeNull();
   });
 });
