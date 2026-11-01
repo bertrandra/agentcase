@@ -1,4 +1,4 @@
-import { addOrgUnit, clearActivityRaci, removeOrgUnit, setActivityRaci, setProductOwner, updateOrgUnit } from '@/controllers/org';
+import { addOrgUnit, clearActivityRaci, removeOrgUnit, setActivityRaci, setProductOwner, setProductRaci, updateOrgUnit } from '@/controllers/org';
 import { appStore } from '@/store/instance';
 import type { Sample } from './types';
 
@@ -11,5 +11,6 @@ export const samples: Record<string, Sample> = {
   // B10a: a product's owning unit (the default unit is written into the document when first chosen), then a unit at depth 2
   'org.setOwner': { prep: () => { addOrgUnit({ ...VENDOR, parent: 'unit-delivery' }); },
     run: () => setProductOwner(appStore().getState().portfolio.products[0]!.id, 'unit-1') },
+  'org.setProductRaci': () => setProductRaci(appStore().getState().portfolio.products[0]!.id, 'A017', { R: ['role-dev'], A: 'role-lead', C: [], I: [] }),
   'org.clearRaci': { prep: () => setActivityRaci('A017', { R: ['role-dev'], A: 'role-lead', C: [], I: [] }), run: () => clearActivityRaci('A017') },
 };

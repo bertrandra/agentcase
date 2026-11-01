@@ -17,8 +17,10 @@ When releasing, follow [docs/BUMP_PROCEDURE.md](docs/BUMP_PROCEDURE.md) (§7 for
 
 ## [Unreleased]
 
-### SPEC_FIXES lot X6 (part) — organisation and audit depth (FX-05, FX-21, FX-22, FX-23)
+### SPEC_FIXES lot X6 (part) — organisation and audit depth (FX-05, FX-21, FX-22, FX-23, FX-D4)
 
+- **Per-product RACI**: in a portfolio, the RACI of an activity can be set for the product shown only, without copying the process
+  (`ac:raciOverride` in the organisation part). No figure changes.
 - **Organisation view**: the BPMN export can add the "By organisation" diagram (lanes by unit, team and role, laid out); an imported
   organisation lane set gives the tasks' roles instead of units to map.
 - **Who does what**: the RACI editor can split an activity's Responsible work between teams (%); the team load follows that split instead of

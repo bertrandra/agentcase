@@ -40,6 +40,7 @@
       </ac:toolCatalog>
       <ac:orgUnit id="unit-company" name="Sample customer" type="company"/>
       <ac:orgUnit id="unit-vendor" name="Sample test vendor" type="vendor" parent="unit-company" location="Portugal" costCentre="CC-42" sourcing="vendor"/>
+      <ac:raciOverride product="P1" activity="A023" responsible="role-qa" accountable="role-lead" teams="team-test:100"/>
       <ac:team id="team-test" name="Nearshore test team" unit="unit-vendor">
         <ac:line skill="Test/QA" grade="B1" location="Portugal" fte="5" pins="A023"/>
       </ac:team>

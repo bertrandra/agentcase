@@ -17,6 +17,7 @@ export { byActivity, byRole, byTeam, providers, lettersOf, LETTERS, rShare, fteO
 export { byUnit, byProduct, type UnitAnswer, type ProductAnswer, type ChartUnit, type ChartTeam, type Bucket } from './viewsUnit';
 export { addUnit, updateUnit, removeUnit, freeUnitId, withUnitList, type UnitInput, type UnitPatch } from './editUnits';
 export { setRaci, clearRaci } from './editRaci';
+export { raciOverridesOf, withProductRaci, withRaciOverride } from './raciOverride';
 export { organisationLaneSet, organisationView } from './orgView';
 export { withOrganisationDiagram } from './multiView';
 export { serviceDefs, serviceActivities, effortSplit, effortOf, lineUnit, type ServiceActivity, type ServiceDef, type ProductWork, type Via,

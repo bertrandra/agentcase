@@ -3,6 +3,7 @@ import type { Portfolio } from '../portfolio/types';
 import { readProcess } from '../process/read';
 import type { XDocument } from '../process/xml';
 import { readRaci } from './readRaci';
+import { raciOverridesOf, withProductRaci } from './raciOverride';
 import { readStoredOrg } from './readUnits';
 import { DEFAULT_UNIT_ID, defaultUnit, derivedTeams, type EffortShares } from './teams';
 import { ownerIn } from './teamDoc';
@@ -23,11 +24,13 @@ const roles = (d: XDocument): OrgRole[] => readProcess(d).actors.map((a) => {
  * delivery unit; schema v5), the teams an imported process document holds, the role catalogue (the case's document's resources), the RACI of every
  * activity and each product's owning unit (D-B39).
  */
-export function orgOf(src: OrgSource, d: XDocument): OrgModel {
+/** `productId`: the product shown — its RACI overrides (FX-D4) replace the process's RACI of those activities. */
+export function orgOf(src: OrgSource, d: XDocument, productId?: string): OrgModel {
   const common = (src.common.BPMN as XDocument | undefined) ?? d, org = readStoredOrg(common), stored = readStoredOrg(d);
   const units = org.units.some((u) => u.id === DEFAULT_UNIT_ID) ? org.units : [defaultUnit(src.customer ?? ''), ...org.units];
   return {
-    units, teams: [...derivedTeams(src), ...stored.teams], roles: roles(d), activities: readRaci(d),
+    units, teams: [...derivedTeams(src), ...stored.teams], roles: roles(d),
+    activities: productId ? withProductRaci(readRaci(d), raciOverridesOf(common, productId)) : readRaci(d),
     products: src.products.filter((p) => !p.archived).map((p) => withOwner({ id: p.id, name: p.name }, ownerIn(common, p.id))),
   };
 }

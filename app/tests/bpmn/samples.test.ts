@@ -46,7 +46,7 @@ describe('BPMN B0 — the extension XSD', () => {
   const globals = (kind: string) => [...AC_XSD.matchAll(new RegExp(`^ {2}<xsd:${kind} name="(\\w+)"`, 'gm'))].map((m) => m[1] ?? '');
   it('declares the elements and attributes of the spec (§ 5.2, § 15, § 16, § 17; changeFailure: B5b, F-B50; the programme: B9a, § 19)', () => {
     expect(globals('element').sort()).toEqual(['activity', 'actor', 'audit', 'auditHeader', 'changeFailure', 'frequency', 'handoffCost', 'norm', 'orgUnit',
-      'passThrough', 'phase', 'process', 'product', 'programmeActivity', 'programmeAudit', 'programmeValues', 'raci', 'rework', 'supervision', 'team', 'tool',
+      'passThrough', 'phase', 'process', 'product', 'programmeActivity', 'programmeAudit', 'programmeValues', 'raci', 'raciOverride', 'rework', 'supervision', 'team', 'tool',
       'toolCatalog', 'volume', 'wave']);
     expect(globals('attribute').sort()).toEqual(['activityType', 'agent', 'decisionRef', 'gate', 'inScope', 'norm', 'partial', 'programme', 'regulatory',
       'requiresState', 'setupCapacity', 'wbsCode']);

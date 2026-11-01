@@ -315,6 +315,19 @@
     </xsd:complexType>
   </xsd:element>
 
+  <xsd:element name="raciOverride">
+    <xsd:annotation><xsd:documentation>FX-D4 (§ 21.5): in the organisation part of the common document, a product's own RACI of one activity (the process is not copied). The role that prices the activity stays Responsible.</xsd:documentation></xsd:annotation>
+    <xsd:complexType>
+      <xsd:attribute name="product" type="ac:tKey" use="required"/>
+      <xsd:attribute name="activity" type="ac:tKey" use="required"/>
+      <xsd:attribute name="responsible" type="xsd:IDREFS" use="required"/>
+      <xsd:attribute name="accountable" type="xsd:IDREF"/>
+      <xsd:attribute name="consulted" type="xsd:IDREFS"/>
+      <xsd:attribute name="informed" type="xsd:IDREFS"/>
+      <xsd:attribute name="teams" type="ac:tText"/>
+    </xsd:complexType>
+  </xsd:element>
+
   <xsd:element name="orgUnit">
     <xsd:complexType>
       <xsd:attribute name="id" type="xsd:ID" use="required"/>

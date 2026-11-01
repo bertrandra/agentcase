@@ -1,5 +1,5 @@
 /** @calc-zone rate-card-team */
-import { addUnit, clearRaci, defaultUnitInput, freeUnitId, readStoredOrg, removeUnit, setRaci, updateUnit, type Raci, type UnitInput,
+import { addUnit, clearRaci, defaultUnitInput, freeUnitId, readStoredOrg, removeUnit, setRaci, updateUnit, withRaciOverride, type Raci, type UnitInput,
   type UnitPatch } from '@/domain/org';
 import { productOwner, withProductOwner, withTeamDoc, type Portfolio } from '@/domain/portfolio';
 import type { XDocument } from '@/domain/process';
@@ -48,6 +48,12 @@ const clearRaciCmd = defineCommand<{ id: string }>({
   type: 'org.clearRaci', label: (p) => `Reset the RACI of ${p.id}`, run(d, p) { editProcess(d, (doc) => clearRaci(doc, p.id)); },
 });
 
+/** FX-D4: a product's own RACI of an activity (null: back to the common RACI), kept in the organisation part of the common document. */
+const productRaciCmd = definePortfolioCommand<{ productId: string; id: string; raci: Raci | null }>({
+  type: 'org.setProductRaci', label: (p) => (p.raci ? `Set the RACI of ${p.id} for one product` : `Back to the common RACI of ${p.id} for one product`),
+  apply: (pf, p) => (pf.products.some((x) => x.id === p.productId) ? onCommon(pf, (d) => withRaciOverride(d, p.productId, p.id, p.raci)) : pf),
+});
+
 const changed = changedBy;
 
 const commonDoc = (): XDocument => appStore().getState().portfolio.common.BPMN as XDocument;
@@ -61,6 +67,8 @@ export const updateOrgUnit = (id: string, patch: UnitPatch): boolean =>
 export const removeOrgUnit = (id: string): boolean => changed(() => appStore().dispatch(removeUnitCmd({ id })));
 /** Set an activity's RACI; false when refused (unknown activity or role, no Responsible). */
 export const setActivityRaci = (id: string, raci: Raci): boolean => changed(() => appStore().dispatch(setRaciCmd({ id, raci })));
+export const setProductRaci = (productId: string, id: string, raci: Raci | null): boolean =>
+  changed(() => appStore().dispatch(productRaciCmd({ productId, id, raci })));
 export const clearActivityRaci = (id: string): boolean => changed(() => appStore().dispatch(clearRaciCmd({ id })));
 /** Set (unit id) or clear (null: "Unassigned") a product's owning unit; false when refused (unknown product or unit). */
 export const setProductOwner = (productId: string, unitId: string | null): boolean =>
