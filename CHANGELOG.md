@@ -17,8 +17,10 @@ When releasing, follow [docs/BUMP_PROCEDURE.md](docs/BUMP_PROCEDURE.md) (§7 for
 
 ## [Unreleased]
 
-### SPEC_FIXES lot X6 (part) — organisation and audit depth (FX-05, FX-21)
+### SPEC_FIXES lot X6 (part) — organisation and audit depth (FX-05, FX-21, FX-22)
 
+- **Who does what**: the RACI editor can split an activity's Responsible work between teams (%); the team load follows that split instead of
+  the teams' FTE × share. A view: no figure changes.
 - **Process library**: a product with its own process document now resolves its calls to the common library's global tasks (their effort
   counts). A product that calls none is unchanged.
 - **Audit**: the programme activities (pilot, setup, rollout…) take an audit like delivery activities (🔎 Audit › Programme); kept in the case's

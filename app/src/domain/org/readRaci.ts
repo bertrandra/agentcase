@@ -37,6 +37,16 @@ function standardRaci(e: XElement, primary: string | undefined): { raci: Raci; n
   return { raci, named: roles.some((r) => (RACI_ROLE_NAMES as readonly string[]).includes(attr(r, 'name') ?? '')), accountables: A.length };
 }
 
+/** `ac:raci teams="team-a:60 team-b:40"` (FX-22): each well-formed `id:percent` pair, percent in [0, 100]; undefined when there is none. */
+export function teamSharesOf(v: string | undefined): Record<string, number> | undefined {
+  const out: Record<string, number> = {};
+  for (const tok of (v ?? '').split(/\s+/).filter(Boolean)) {
+    const m = /^([A-Za-z0-9_-]{1,64}):(\d+(?:\.\d+)?)$/.exec(tok), pct = m ? Number(m[2]) : NaN;
+    if (m && pct >= 0 && pct <= 100) out[m[1]!] = pct;
+  }
+  return Object.keys(out).length ? out : undefined;
+}
+
 const memo = new WeakMap<XDocument, ActivityRaci[]>();
 export function readRaci(d: XDocument): ActivityRaci[] {
   const hit = memo.get(d);
@@ -49,6 +59,8 @@ export function readRaci(d: XDocument): ActivityRaci[] {
     if (x) {
       const raci: Raci = { R: list(attr(x, 'responsible')), C: list(attr(x, 'consulted')), I: list(attr(x, 'informed')) }, A = attr(x, 'accountable');
       if (A) raci.A = A;
+      const teams = teamSharesOf(attr(x, 'teams'));
+      if (teams) raci.teams = teams;
       return { ...base, ...extra, raci, source: 'explicit', accountableToConfirm: false, accountables: A ? 1 : 0 };
     }
     const s = e ? standardRaci(e, primary) : { raci: { R: primary ? [primary] : [], C: [], I: [] }, named: false, accountables: 0 };

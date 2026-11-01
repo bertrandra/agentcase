@@ -1,5 +1,5 @@
 // @vitest-environment jsdom
-import { cleanup, fireEvent, render, screen } from '@testing-library/react';
+import { cleanup, fireEvent, render, screen, within } from '@testing-library/react';
 import { afterEach, describe, expect, it } from 'vitest';
 import { readRaci, readStoredOrg } from '@/domain/org';
 import Organisation from '@/ui/sections/frame/organisation';
@@ -34,8 +34,11 @@ describe('🧭 Who does what', () => {
     fireEvent.change(screen.getByLabelText(/^Phase/), { target: { value: 'V3' } });
     fireEvent.click(screen.getByLabelText('Edit the RACI of A017'));
     fireEvent.change(screen.getByLabelText('Accountable'), { target: { value: 'role-lead' } });
+    const split = screen.getByRole('group', { name: /^Split of the Responsible work between teams/ });   // FX-22
+    fireEvent.change(within(split).getAllByRole('spinbutton')[0]!, { target: { value: '100' } });
     fireEvent.click(screen.getByText('Save the RACI'));
     expect(readRaci(bpmn(s)).find((a) => a.id === 'A017')!.raci.A).toBe('role-lead');
+    expect(Object.values(readRaci(bpmn(s)).find((a) => a.id === 'A017')!.raci.teams ?? {})).toEqual([100]);
     expect(screen.getByText(/to confirm or for information/)).toBeTruthy();
     expect(await axeViolations(container)).toEqual([]);
     for (const tab of ['By activity', 'By role', 'By team', 'By unit', 'By product']) {

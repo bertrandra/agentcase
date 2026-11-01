@@ -12,9 +12,12 @@ const picked = (s: HTMLSelectElement): string[] => [...s.selectedOptions].map((o
 export function RaciEditor({ m, a, onClose }: { m: OrgModel; a: ActivityRaci; onClose: () => void }) {
   const roles = m.roles.filter((r) => r.kind === 'role'), primary = roles.find((r) => r.id === a.primary);
   const [R, setR] = useState(a.raci.R.filter((x) => x !== a.primary)), [A, setA] = useState(a.raci.A ?? '');
-  const [C, setC] = useState(a.raci.C), [I, setI] = useState(a.raci.I);
+  const [C, setC] = useState(a.raci.C), [I, setI] = useState(a.raci.I), [teams, setTeams] = useState<Record<string, string>>(
+    Object.fromEntries(Object.entries(a.raci.teams ?? {}).map(([k, v]) => [k, String(v)])));
+  const shares = Object.fromEntries(Object.entries(teams).filter(([, v]) => v.trim() !== '').map(([k, v]) => [k, Number(v)]));
   const save = () => {
-    toast(setActivityRaci(a.id, { R, ...(A ? { A } : {}), C, I }) ? `RACI of ${a.id} saved — Ctrl+Z to undo` : 'Nothing changed (or refused)');
+    const ok = setActivityRaci(a.id, { R, ...(A ? { A } : {}), C, I, ...(Object.keys(shares).length ? { teams: shares } : {}) });
+    toast(ok ? `RACI of ${a.id} saved — Ctrl+Z to undo` : 'Nothing changed (or refused: the team shares add up to more than 100 %)');
   };
   const reset = () => toast(clearActivityRaci(a.id) ? `RACI of ${a.id} back to its default — Ctrl+Z to undo` : 'Already the default RACI');
   const options = roles.map((r) => <option key={r.id} value={r.id}>{r.name}{r.teamSkill ? ` (${r.teamSkill})` : ''}</option>);
@@ -34,6 +37,12 @@ export function RaciEditor({ m, a, onClose }: { m: OrgModel; a: ActivityRaci; on
         <label>Informed
           <select multiple value={I} onChange={(e) => setI(picked(e.target))}>{options}</select></label>
       </div>
+      {m.teams.length > 0 && <fieldset className="ac-raci-teams">
+        <legend>Split of the Responsible work between teams (%, optional: blank = by the teams&apos; FTE × share)</legend>
+        {m.teams.map((t) => <label key={t.id}>{t.name}{' '}
+          <input type="number" min={0} max={100} step={1} value={teams[t.id] ?? ''}
+            onChange={(e) => setTeams({ ...teams, [t.id]: e.target.value })} /></label>)}
+      </fieldset>}
       <div className="ac-form-row">
         <button type="button" onClick={save}>Save the RACI</button>
         <button type="button" onClick={reset} disabled={a.source === 'default'}>Back to the default</button>
