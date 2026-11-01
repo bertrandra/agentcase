@@ -1,14 +1,12 @@
 import { fmtK } from '@/domain/format';
 import type { PlanViews } from '@/domain/programme/planBundle';
 import { fmt1 } from '@/ui/economicsFormat';
-import { openActivity } from '@/ui/widgets/ActivityRefs';
 import { DataTable } from '@/ui/widgets/DataTable';
+import { PlanLink } from './PlanLink';
 import './plan.css';
 
 const KIND = { programme: 'Programme', group: 'Stage / wave', product: 'Product', package: 'Work package' } as const;
-const open = (id: string, name: string) => (
-  <button type="button" className="ac-link" onClick={() => openActivity(id)} aria-label={`Open ${name} in Process`}>{name}</button>
-);
+const open = (id: string, name: string) => <PlanLink id={id} name={name} />;
 
 /**
  * The WBS and its dictionary (docs/SPEC_BPMN.md § 19.8 F-B74, D-B35; phase B9d): the tree of the programme process (programme, engagement

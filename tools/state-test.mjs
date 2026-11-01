@@ -414,7 +414,8 @@ const pageTests = {
   async snapshot_reopen_round_trip(browser, file) {
     const ctx = await browser.newContext(); const page = await boot(ctx, file);
     const html = await page.evaluate(async () => { CUSTOMER_NAME = 'RoundTrip Co'; syncState('customerName'); let b = null; const cu = URL.createObjectURL; URL.createObjectURL = x => { b = x; return cu.call(URL, x); }; saveHtmlSnapshot(); URL.createObjectURL = cu; return await b.text(); });
-    const fs = await import('node:fs'); const tmp = '/tmp/claude-0/-home-user-agentcase/cae48424-a52a-52ee-85f5-1ec895a061a6/scratchpad/roundtrip.html'; fs.writeFileSync(tmp, html);
+    const fs = await import('node:fs'), os = await import('node:os'), path = await import('node:path');   // a fresh temp folder, never a fixed path (FX-45, FX-62)
+    const tmp = path.join(fs.mkdtempSync(path.join(os.tmpdir(), 'agentcase-roundtrip-')), 'roundtrip.html'); fs.writeFileSync(tmp, html);
     const p2 = await boot(ctx, tmp); await p2.waitForTimeout(500);
     const r = await p2.evaluate(() => ({ opts: document.getElementById('industry').options.length, name: CUSTOMER_NAME, cls: document.documentElement.className, golden: !!goldenSnapshot() }));
     // second generation

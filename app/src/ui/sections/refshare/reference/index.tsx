@@ -4,6 +4,7 @@ import { DataTable, type Column } from '@/ui/widgets/DataTable';
 import { Rich } from '@/ui/widgets/Rich';
 import { goSection } from '@/ui/uiState';
 import { SectionFrame } from '@/ui/zones/SectionFrame';
+import { SECTION_TITLES } from '@/ui/zones/registry';
 
 type Row = (typeof content.rows)[number];
 const TONE = { covered: 'teal', partial: 'amber', playbook: 'grey' } as const;
@@ -14,7 +15,7 @@ const columns: Column<Row>[] = [
   { key: 'summary', header: 'Summary', render: (r) => r.summary },
   { key: 'status', header: 'Coverage', align: 'center', render: (r) => <Badge tone={TONE[r.status as keyof typeof TONE]}>{r.statusLabel}</Badge> },
   { key: 'to', header: 'Section', align: 'center',
-    render: (r) => <button type="button" className="ac-golink" onClick={() => goSection(r.to)}>{r.label} →</button> },
+    render: (r) => <button type="button" className="ac-golink" onClick={() => goSection(r.to)}>{SECTION_TITLES[r.to] ?? r.label} →</button> },
 ];
 
 /** Reference Map — coverage of the Software Engineering Delivery Model 2026 by AgentCase, one row per subchapter. */

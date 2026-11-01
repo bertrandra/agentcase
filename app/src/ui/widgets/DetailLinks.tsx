@@ -1,13 +1,16 @@
+import { setDisplayScope } from '@/controllers/displayScope';
 import type { ActivityDetail } from '@/domain/programme';
 import { focusRow } from '@/ui/sections/scope/programme/view';
 import { focusArtefact } from '@/ui/sections/scope/scope-sel/focus';
 import { goSection } from '@/ui/uiState';
-import { sectionById } from '@/ui/zones/registry';
+import { linkLabel } from '@/ui/zones/registry';
 import './activity-refs.css';
 
 /** How a detail screen shows one element (its row selected and focused): view state only, never undoable. Screens without one just open. */
-const FOCUS: Readonly<Record<string, (id: string) => void>> = { 'scope-sel': focusArtefact, programme: focusRow };
-const label = (section: string): string => sectionById(section)?.label ?? section;
+/** A programme wave (`prog-wave-<id>`) opens 📅 Plan on that wave: the display scope becomes the wave, so the plan shows its own bars (FX-18). */
+const focusWave = (id: string): void => { if (id.startsWith('prog-wave-')) setDisplayScope({ kind: 'wave', id: id.slice('prog-wave-'.length) }); };
+const FOCUS: Readonly<Record<string, (id: string) => void>> = { 'scope-sel': focusArtefact, programme: focusRow, gantt: focusWave };
+const label = linkLabel;   // the screen's own title (📅 Plan, not the legacy menu label; FX-19)
 
 /** Open detail screen `section` focused on element `id` (its row highlighted, scrolled to, keyboard focus on it). */
 export function openDetail(section: string, id: string): void {

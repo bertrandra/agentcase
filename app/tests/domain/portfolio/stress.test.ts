@@ -104,14 +104,16 @@ describe('determinism, structure, staleness', () => {
 });
 
 describe('performance', () => {
-  it('20 products x 1000 draws (generous budget; the job is chunked per product so the screen can breathe)', () => {
+  it('20 products x 1000 draws (a CPU-time budget; the job is chunked per product so the screen can breathe)', () => {
     let pf = envelopeCase(base);
     pf = withProductRows(pf, 'p1', scaledTeam(base, 0.5));
     for (let i = 2; i <= 20; i++) pf = withProduct(pf, { id: 'p' + i, teamIn: scaledTeam(base, 0.5 + i / 10) });
-    const t = performance.now(), r = portfolioMonteCarlo(pf, { draws: 1000, seed: 42, rho: 0.3 });
-    const ms = performance.now() - t;
+    // SPEC_FIXES FX-71: the budget is on this process's CPU time, not the wall clock — a loaded runner (the nightly runs the suite three times in
+    // parallel) slows the wall clock, not the work; a slower implementation still fails. About 2 s of CPU on an idle machine.
+    const t = performance.now(), cpu = process.cpuUsage(), r = portfolioMonteCarlo(pf, { draws: 1000, seed: 42, rho: 0.3 });
+    const used = process.cpuUsage(cpu), cpuMs = (used.user + used.system) / 1000, ms = performance.now() - t;
     expect(r.products).toHaveLength(20);
-    console.log(`20 x 1000 draws: ${Math.round(ms)} ms`);
-    expect(ms).toBeLessThan(5000);
+    console.log(`20 x 1000 draws: ${Math.round(cpuMs)} ms CPU, ${Math.round(ms)} ms wall`);
+    expect(cpuMs).toBeLessThan(5000);
   }, 60000);
 });

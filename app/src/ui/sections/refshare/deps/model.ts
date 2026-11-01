@@ -3,6 +3,7 @@ import { FIGURES, ZONES, type ZoneDef } from '@/domain/zones';
 import config from '@/domain/zones/graphConfig.json';
 import { plan, type SelectionConfig } from '@/domain/zones/selection';
 import { buildLayers, consumersOf, cycles, impact, indirectZones, type DepEdge, type DepsData } from '@/domain/zones/graph';
+import { SECTION_TITLES } from '@/ui/zones/registry';
 
 /** The generated graph (`npm run deps:gen`), typed. Everything below is derived from it and from the zone catalogue: nothing is authored here. */
 export const DATA = raw as unknown as DepsData;
@@ -14,7 +15,7 @@ export const LAYERS = buildLayers(drawnIds, DATA.edges, lanes);
 export const CYCLES = cycles(drawnIds, DATA.edges);
 export const zoneOf = (id: string): ZoneDef | undefined => ZONES.find((z) => z.id === id);
 export const sectionOf = (id: string): DepsData['sections'][number] | undefined => DATA.sections.find((s) => s.id === id);
-export const labelOf = (id: string): string => zoneOf(id)?.label ?? sectionOf(id)?.label ?? id;
+export const labelOf = (id: string): string => zoneOf(id)?.label ?? SECTION_TITLES[id] ?? sectionOf(id)?.label ?? id;   // a link names its screen (FX-19)
 export const isZone = (id: string): boolean => drawnIds.includes(id);
 /** Reference sections (kind S-static) show no calculation: they are collapsed into one counted lane of the graph. */
 export const isReference = (id: string): boolean => sectionOf(id)?.kind === 'S-static';
