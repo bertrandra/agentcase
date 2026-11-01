@@ -40,7 +40,7 @@ DEVIATIONS.md entry and the owner's approval of the before → after on the gold
 | FX-D10 | ⏳ Open — CMMN read-back drops content it does not map | (a) keep it in an extension element (pass-through); (b) keep dropping | None | item 27 |
 | FX-D11 | ✅ Done — Programme lanes (operating-model roles) are not linked to the organisation's roles | (a) map each operating-model role to an organisation role with a team skill; (b) keep separate | None | item 30 |
 | FX-D12 | ⏳ Open — The delivery diagram has no agents' lane | (a) add an agents' lane to the default DI (exports change, figures do not); (b) keep | None | item 31 |
-| FX-D13 | ⏳ Open — `setupTraining` / `setupGov` are stored but no figure reads them | (a) retire them, with deviations for the DD register (119 → 117 rows), report and legacy sheet; (b) keep as legacy inputs | Deviation (legacy outputs) | item 33 |
+| FX-D13 | ✅ Decided (c) — `setupTraining` / `setupGov` are stored but no figure reads them | (a) retire them, with deviations for the DD register (119 → 117 rows), report and legacy sheet; (b) keep as legacy inputs; **(c) chosen 2026-11-01:** keep them as a legacy mention on screen only, out of the BPMN document and out of the cost chain | Deviation (legacy outputs) | item 33 |
 | FX-D14 | ⏳ Open — Waves, setup capacity and knowledge subsets live outside the BPMN document | (a) a portfolio-level BPMN document (waves as sub-processes, capacity on lanes); (b) keep as portfolio data | None | item 34 |
 | FX-D15 | ⏳ Open — Plan sheets and pages exist only in the Plan screen's exports | (a) add them to the Financial workbook and the report as optional sections; (b) keep | None | item 37 |
 
@@ -60,7 +60,7 @@ DEVIATIONS.md entry and the owner's approval of the before → after on the gold
 | FX-D10 | ⏳ Open — **(a)** CMMN pass-through in an extension element | No figure moves | X7 |
 | FX-D11 | ✅ Done — **(a)** map each operating-model role to an organisation role with a team skill. **Fixed (lot X6, unreleased)**: `ac:laneRole lane role` in the organisation part (XSD added); 🏢 Organisation › Programme roles picks the role for each operating-model role; the BPMN export with both processes names it on the lane (`partitionElementRef`); no figure reads it | Needed for SPEC_HARNESS's build pods and run teams | X6 |
 | FX-D12 | ⏳ Open — **(a)** an agents' lane in the default diagram | Exports change, figures do not | X7 |
-| FX-D13 | ⏳ Open — **(a)** retire `setupTraining` / `setupGov` | **Deviation** of legacy outputs: DD register 119 → 117 rows, report and legacy sheet | X7 |
+| FX-D13 | ⏳ Open — **(c)** (owner, 2026-11-01, replaces (a)): `setupTraining` / `setupGov` stay a **legacy mention on screen** (read-only, labelled legacy, in 💰 Setup and the assumption register); **not in BPMN**: removed from `PROGRAMME_VALUE_KEYS` / `ac:programmeValues` (a v4/v5 document that carries them keeps them as legacy case values on open); **not in the cost chain**: removed from the strategies' `SCALED_IDS` / `SETUP_IDS` (`domain/verdict/evaluate.ts`), no figure reads them (as today) | No figure moves; the DD register, report and Parameters sheet keep their rows, marked legacy | X7 |
 | FX-D14 | ⏳ Open — **(a)** a portfolio-level BPMN document: waves as sub-processes, capacity on lanes | Schema migration; also the home of SPEC_HARNESS's pilot and wave slices | X7 |
 | FX-D15 | ⏳ Open — **(a)** Plan sheets and pages as optional sections of the Financial workbook and the report | No figure moves | X7 |
 
@@ -191,7 +191,7 @@ B5 question on factory tags is answered in § 15; `npm audit` 0; no open GitHub 
 | X4 Screens for built domain | FX-10, FX-11, FX-12…FX-14, FX-15, FX-16, FX-17, FX-20, FX-26 | axe clean; render budgets; ui-parity 0 | None | 3 d | ✅ Done |
 | X5 Import / export / workbooks | FX-24, FX-25, FX-27…FX-34 | Round trips; workbook legacy sheets unchanged | None | 2 d | 🟡 Partly done — open: FX-32 |
 | X6 Organisation depth | FX-05, FX-21, FX-22, FX-23, FX-D4 (a), FX-D6 (a), FX-D7 (a), FX-D11 (a) | Undo property tests; parity | Opt-in | 2.5 d | ✅ Done |
-| X7 Portfolio document | FX-D14 (a), FX-D2 (a: implied correlation view only), FX-D8 (a), FX-D9 (a), FX-D10 (a), FX-D12 (a), FX-D13 (a, deviation), FX-D15 (a) | Schema v6 migration round trips | Per decision | 3 d | ⏳ Open |
+| X7 Portfolio document | FX-D14 (a), FX-D2 (a: implied correlation view only), FX-D8 (a), FX-D9 (a), FX-D10 (a), FX-D12 (a), FX-D13 (c), FX-D15 (a) | Schema v6 migration round trips | Per decision | 3 d | ⏳ Open |
 | X8 Polish | FX-18, FX-19, FX-41…FX-45, FX-71, FX-76, FX-77 | — | None | 1 d | ✅ Done (FX-44 tracked upstream) |
 | X9 Carry-over | FX-50…FX-56, FX-58, FX-61, FX-62, FX-64; FX-57 / FX-59 / FX-60 per FX-O5; FX-63 when files arrive | Deviations recorded for FX-52, FX-53, FX-56 | Deviation (labels, export, report count) | 3 d | 🟡 Partly done — open: FX-57, FX-59, FX-60 (owner's call, FX-O5), FX-63 (customer files, FX-O4) |
 
