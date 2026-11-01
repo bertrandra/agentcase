@@ -59,29 +59,39 @@ export interface TeamAnswer {
 export function byTeam(m: OrgModel, teamId: string): TeamAnswer | null {
   const team = m.teams.find((t) => t.id === teamId);
   if (!team) return null;
-  const skills = new Set(team.lines.filter((l) => (+l.etp || 0) > 0).map((l) => l.skill)), by = roleById(m);
+  const skills = new Set(team.lines.filter((l) => (+l.etp || 0) > 0).map((l) => l.skill));
   const roles = m.roles.filter((r) => r.kind === 'role' && r.teamSkill !== undefined && skills.has(r.teamSkill));
   const serves = m.products.map((product) => ({ product, pct: servingPct(team, product.id) })).filter((s) => s.pct > 0);
   const acts = new Set<ActivityRaci>();
   let load = 0;
-  for (const { product } of serves) {
-    const rows = teamRowsOf(m.teams, product.id);
-    for (const a of m.activities) {
-      if (!a.inScope) continue;
-      const share = a.raci.teams;
-      if (share) {   // FX-22: the activity says how its Responsible work splits between teams
-        const pct = share[team.id] ?? 0;
-        if (pct > 0) { acts.add(a); load += (+a.effort || 0) * pct / 100; }
-        continue;
-      }
-      for (const rid of a.raci.R) {
-        const skill = by.get(rid)?.teamSkill;
-        if (skill === undefined || !skills.has(skill)) continue;
-        const all = rows.filter((r) => r.skill === skill).reduce((s, r) => s + (+r.etp || 0), 0), mine = fteOn(team, skill, product.id);
-        if (all > 0 && mine > 0) { acts.add(a); load += rShare(a) * mine / all; }
-      }
-    }
-  }
+  for (const { product } of serves) { const w = teamWork(m, team, product.id); load += w.load; for (const a of w.acts) acts.add(a); }
   const fte = team.lines.reduce((s, l) => s + (+l.etp || 0), 0);
   return { team, unit: unitOf(m, team), fte, serves, roles, activities: [...acts], load };
+}
+
+/**
+ * The work of a team for one product: the in-scope activities it is Responsible for and their load (effort points) — the activity's own team
+ * split (FX-22) when it has one, else each Responsible role's share split between the teams providing its skill by their FTE for the product.
+ */
+export function teamWork(m: OrgModel, team: OrgTeam, productId: string): { load: number; acts: ActivityRaci[] } {
+  const by = roleById(m), rows = teamRowsOf(m.teams, productId), acts: ActivityRaci[] = [];
+  let load = 0;
+  for (const a of m.activities) {
+    if (!a.inScope) continue;
+    const share = a.raci.teams;
+    if (share) {
+      const pct = share[team.id] ?? 0;
+      if (pct > 0) { acts.push(a); load += (+a.effort || 0) * pct / 100; }
+      continue;
+    }
+    let mineAny = false;
+    for (const rid of a.raci.R) {
+      const skill = by.get(rid)?.teamSkill;
+      if (skill === undefined) continue;
+      const all = rows.filter((r) => r.skill === skill).reduce((s, r) => s + (+r.etp || 0), 0), mine = fteOn(team, skill, productId);
+      if (all > 0 && mine > 0) { mineAny = true; load += rShare(a) * mine / all; }
+    }
+    if (mineAny) acts.push(a);
+  }
+  return { load, acts };
 }

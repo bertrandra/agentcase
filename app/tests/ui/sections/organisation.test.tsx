@@ -47,6 +47,9 @@ describe('🧭 Who does what', () => {
       fireEvent.click(screen.getByRole('tab', { name: tab }));
       expect(container.querySelector('.ac-org-answer')).toBeTruthy();
     }
+    fireEvent.click(screen.getByRole('tab', { name: 'By unit' }));   // FX-D7: the opt-in RACI-driven load and cost by unit
+    fireEvent.click(screen.getByLabelText(/^Show the load and cost by unit/));
+    expect(screen.getByRole('table', { name: 'RACI-driven load and cost by unit' }).querySelectorAll('tbody tr').length).toBeGreaterThan(0);
     expect(await axeViolations(container)).toEqual([]);
   });
 });
