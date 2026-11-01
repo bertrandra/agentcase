@@ -74,3 +74,16 @@ export function flagsOf(roles: readonly HistRole[], from: number, wdMonth: numbe
 /** Σ person-days × rate of the lines in the euro result: the programme's labour cost (= the cost model's labour rows). */
 export const histogramLabourCost = (h: Pick<ProgrammeHistogram, 'lines'>, inCost = true): number =>
   h.lines.filter((l) => l.inCost === inCost).reduce((s, l) => s + sum(l.days) * l.rate, 0);
+
+/** A series of the histogram: a role (its lane) or a group of roles (FX-16: by team, unit or location). */
+export interface HistSeries { key: string; label: string; days: number[] }
+/** The roles regrouped (`group`: the group of a lane): days added up per group, in the order the groups first appear. */
+export function regroup(roles: readonly HistRole[], group: (lane: string) => { key: string; label: string }): HistSeries[] {
+  const out = new Map<string, HistSeries>();
+  for (const r of roles) {
+    const g = group(r.lane), cur = out.get(g.key) ?? { key: g.key, label: g.label, days: r.days.map(() => 0) };
+    r.days.forEach((d, i) => { cur.days[i] = (cur.days[i] ?? 0) + d; });
+    out.set(g.key, cur);
+  }
+  return [...out.values()];
+}

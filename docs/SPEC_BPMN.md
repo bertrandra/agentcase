@@ -1648,9 +1648,9 @@ the service line, a deviation (FX-D3); § 21.8 — the organisation out of the M
 | 2 | Pins of a custom activity are refused (`normalisedPins` checks the catalogue ids) | Work | § 7.1 (4) |
 | 3 | The per-phase tables (`phaseArtRows`, agent usage) do not list a custom phase | Work | § 7.1 (4) |
 | 4 | A new role's resource is inserted after the existing resources, so its undo patch is larger than an append | Work | § 9.1 |
-| 5 | The diagram editor has no properties panel (parameters stay in the table and panels) | Work | § 9.2 |
-| 6 | The diagram editor's own undo history is lost on Save (it reloads from the case) | Work | § 9.2 |
-| 7 | The diagram editor shows the first diagram of the document only | Work | § 9.2 |
+| 5 | ~~The diagram editor has no properties panel (parameters stay in the table and panels)~~ — **done in SPEC_FIXES lot X4 (FX-12)** | Work | § 9.2 |
+| 6 | ~~The diagram editor's own undo history is lost on Save (it reloads from the case)~~ — **done in SPEC_FIXES lot X4 (FX-13)** | Work | § 9.2 |
+| 7 | ~~The diagram editor shows the first diagram of the document only~~ — **done in SPEC_FIXES lot X4 (FX-14)** | Work | § 9.2 |
 | 8 | The tool catalogue (129 tools) is verified against public sources (2026-10-31): the owner's sign-off is pending (43 entries partial or unverified) | Decision | § 15.7 (F-B23 / F-B25) |
 | 9 | ~~The tool catalogue is not a sheet of the audit workbook (the Lists sheet carries the codes only)~~ — **done in SPEC_FIXES lot X5 (FX-28)** | Work | § 15.7 (F-B26) |
 | 10 | F-B30 partial: the audit is per process document; products that share the common process share one audit | Decision | § 15.7 (F-B30) |
@@ -1663,22 +1663,22 @@ the service line, a deviation (FX-D3); § 21.8 — the organisation out of the M
 | 17 | ~~F-B39 partial: the organisation lane view has no geometry for its new lanes, is not offered in the export dialog, and organisation lanes are not imported~~ — **done in SPEC_FIXES lot X6 (FX-23)** | Work | § 16.8 (F-B39) |
 | 18 | ~~Teams stay stored as `teamIn` / `sharedTeam`~~ — **closed in B10a**: the teams are `ac:team` elements of the document (schema v5) | Done | § 6.6, § 21.5 |
 | 19 | ~~A product's process override stays whole-document~~ — **closed in B10a**: the override is the process part only (no organisation; programme values per field since B9c) | Done | § 21.5 |
-| 20 | The extended profile has no screens: its views, checks and export options (colours, organisation view, conversations…) are domain functions | Work | § 17.10 (1) |
+| 20 | ~~The extended profile has no screens: its views, checks and export options (colours, organisation view, conversations…) are domain functions~~ — **done in SPEC_FIXES lot X4 (FX-10)** | Work | § 17.10 (1) |
 | 21 | Hand-off cost, cadence, waits, change-failure rate and token profile are views, not engine figures | Decision | § 17.10 (1) |
 | 22 | The default process does not link the SDLC chain with data inputs (it would change every case's default document) | Decision | § 17.10 (2) |
 | 23 | ~~`withLibrary` is not applied to a portfolio product's effective case (needs item 19)~~ — **done in SPEC_FIXES lot X6 (FX-05)** | Work | § 17.10 (3) |
 | 24 | ~~The import report does not show the kept / dropped foreign content; foreign content in an unmapped lane or crossing phases is dropped~~ — **done in SPEC_FIXES lot X5 (FX-24)** | Work | § 17.10 (4) |
 | 25 | ~~Tool proposals by data type (F-B43) and the operational-audit feeds of interfaces (F-B55) are not wired to the audit~~ — **done in SPEC_FIXES lot X5 (FX-33)** | Work | § 17.10 (5) |
-| 26 | No screen edits or binds decisions (`process.bindDecision` has no control; a DMN tool edits the `.dmn`) | Work | § 17.11 (1) |
+| 26 | ~~No screen edits or binds decisions (`process.bindDecision` has no control; a DMN tool edits the `.dmn`)~~ — **done in SPEC_FIXES lot X4 (FX-11)** | Work | § 17.11 (1) |
 | 27 | The CMMN read-back drops the CMMN content it does not map (sentries, milestones, planning tables) | Decision | § 17.11 (2) |
 | 28 | ~~The exported rule families do not replace the parameters until a rule task binds them~~ — **done in SPEC_FIXES lot X5 (FX-27)** | Work | § 17.11 (3) |
-| 29 | DMN decisions are not drawn on the diagram (no DMN DI written) | Work | § 17.11 (4) |
+| 29 | ~~DMN decisions are not drawn on the diagram (no DMN DI written)~~ — **done in SPEC_FIXES lot X4 (FX-26)** | Work | § 17.11 (4) |
 | 30 | The programme lanes (operating-model roles) are not linked to the organisation model's roles: a new mapping to decide | Decision | § 19.9 (F-B64), § 19.13 |
 | 31 | The delivery diagram keeps the lanes of its stored DI (team skills); an agents' lane would change every case's default document | Decision | § 19.9 (F-B70) |
 | 32 | In a portfolio, a case-level opt-in activity switched on in the common values is counted by every product | Work | § 19.10, § 19.12 |
 | 33 | `setupTraining` / `setupGov` are kept (read by the assumption register, the DD pack, the legacy Parameters sheet, the strategies); retiring them changes legacy outputs that would need recorded deviations | Decision | § 6.5, § 19.13 |
 | 34 | The waves, their dependencies, the setup capacity and a product's knowledge subset are portfolio data outside the document (a portfolio-level document is needed) | Decision | § 19.13 |
-| 35 | The resource histogram stacks by role only (no team / unit / location grouping) | Work | § 19.8 (F-B76) |
+| 35 | ~~The resource histogram stacks by role only (no team / unit / location grouping)~~ — **done in SPEC_FIXES lot X4 (FX-16)** | Work | § 19.8 (F-B76) |
 | 36 | The MS Project XML is validated against Microsoft's schema but was not opened in MS Project / ProjectLibre | Work | § 19.8 (F-B77) |
 | 37 | The plan sheets and pages come only with the Plan screen's exports (the Financial workbook and the Critical & Regulated report keep their legacy form) | Decision | § 19.8 (F-B77) |
 

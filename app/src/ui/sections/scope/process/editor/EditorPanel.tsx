@@ -1,19 +1,23 @@
 import { useEffect, useId, useRef, useState, type KeyboardEvent, type MutableRefObject } from 'react';
-import { editorBase, editorSource, saveEditorXml } from '@/controllers/processEditor';
+import { editorBase, editorDiagrams, editorSource, saveEditorXml } from '@/controllers/processEditor';
 import { bpmnSource, type BpmnModeler } from '@/controllers/processEditorKit';
-import type { XDocument } from '@/domain/process';
+import { readProcess, type XDocument } from '@/domain/process';
 import { useDoc } from '@/store/hooks';
 import { shouldHandle } from '@/ui/shell/useShortcuts';
+import { ActivityPanel } from '../ActivityPanel';
 
 /**
  * The BPMN editor of the Process section (docs/SPEC_BPMN.md D-B6 b, phase B6): bpmn-js's Modeler, loaded on demand, opened on the case's process
- * document. "Save to the case" hands the editor's document to the write-back (one undoable step, `process.applyEditor`), then reloads the editor
- * from the case so that it shows what the case now holds. The bpmn.io watermark the bpmn-js licence requires stays visible: nothing here hides or
- * covers it. Ctrl+Z on the canvas is the editor's own undo, not the case's.
+ * document. "Save to the case" hands the editor's document to the write-back (one undoable step, `process.applyEditor`); the editor stays open
+ * as it is, with its own undo history (FX-13). A document with several diagrams offers a picker (FX-14). The activity selected on the canvas
+ * shows its parameter panel under it (FX-12). The bpmn.io watermark the bpmn-js
+ * licence requires stays visible: nothing here hides or covers it. Ctrl+Z on the canvas is the editor's own undo, not the case's.
  */
 type Status = 'loading' | 'ready' | 'failed';
 interface Canvas { zoom(v: string): void; viewbox(box?: object): object }
-interface Refs { m: MutableRefObject<BpmnModeler | null>; base: MutableRefObject<XDocument | null>; dirty: MutableRefObject<boolean> }
+interface Refs {
+  m: MutableRefObject<BpmnModeler | null>; base: MutableRefObject<XDocument | null>; dirty: MutableRefObject<boolean>; diagram: MutableRefObject<string>;
+}
 
 /** Opens the case's current document in the editor (keeping the view when asked); the editor is clean afterwards. */
 async function load(r: Refs, keepView: boolean): Promise<void> {
@@ -21,16 +25,17 @@ async function load(r: Refs, keepView: boolean): Promise<void> {
   if (!m) return;
   const canvas = m.get('canvas') as Canvas, view = keepView ? canvas.viewbox() : null;
   r.base.current = editorBase();
-  await m.importXML(editorSource());
+  await (r.diagram.current ? m.importXML(editorSource(), r.diagram.current) : m.importXML(editorSource()));
   if (view) canvas.viewbox(view); else canvas.zoom('fit-viewport');
   r.dirty.current = false;
 }
 
 export function EditorPanel({ id, onClose }: { id: string; onClose: () => void }) {
   const host = useRef<HTMLDivElement>(null), title = useRef<HTMLHeadingElement>(null), hid = useId(), doc = useDoc((d) => d.BPMN);
-  const refs: Refs = { m: useRef<BpmnModeler | null>(null), base: useRef<XDocument | null>(null), dirty: useRef(false) };
+  const refs: Refs = { m: useRef<BpmnModeler | null>(null), base: useRef<XDocument | null>(null), dirty: useRef(false), diagram: useRef('') };
+  const diagrams = editorDiagrams(), [diagram, setDiagram] = useState('');
   const [status, setStatus] = useState<Status>('loading'), [msg, setMsg] = useState<string[]>([]), [stale, setStale] = useState(false);
-  const [armed, setArmed] = useState(false);
+  const [armed, setArmed] = useState(false), [picked, setPicked] = useState<string | null>(null);   // FX-12: the element selected on the canvas
   useEffect(() => {
     let alive = true, style: HTMLStyleElement | null = null, m: BpmnModeler | null = null;
     title.current?.focus();
@@ -44,6 +49,8 @@ export function EditorPanel({ id, onClose }: { id: string; onClose: () => void }
       m = new kit.Modeler({ container: host.current });
       refs.m.current = m;
       m.on('commandStack.changed', () => { refs.dirty.current = true; setArmed(false); });
+      (m as unknown as { on(e: string, f: (ev: { newSelection?: { id?: string }[] }) => void): void }).on('selection.changed',
+        (ev) => { if (alive) setPicked(ev.newSelection?.length === 1 ? ev.newSelection[0]!.id ?? null : null); });
       await load(refs, false);
       if (alive) setStatus('ready');
     }).catch((e: unknown) => { if (alive) { setStatus('failed'); setMsg([e instanceof Error ? e.message : String(e)]); } });
@@ -58,7 +65,11 @@ export function EditorPanel({ id, onClose }: { id: string; onClose: () => void }
     if (!m) return;
     const { xml = '' } = await m.saveXML({ format: false }), r = saveEditorXml(xml, refs.base.current);
     setMsg(r.status === 'refused' ? ['Not saved:', ...r.messages] : r.messages);
-    if (r.status === 'applied') await load(refs, true);
+    // FX-13: the editor stays as it is after a save (its own undo history kept); it now edits the case's new process
+    if (r.status === 'applied') { refs.base.current = editorBase(); refs.dirty.current = false; }
+  };
+  const pick = async (v: string) => {   // FX-14: open another diagram of the document (unsaved changes are kept only by saving first)
+    setDiagram(v); refs.diagram.current = v; setMsg([]); await load(refs, false);
   };
   const reload = async () => { setStale(false); setMsg([]); await load(refs, true); };
   const close = () => { if (refs.dirty.current && !armed) { setArmed(true); return; } onClose(); };
@@ -70,12 +81,26 @@ export function EditorPanel({ id, onClose }: { id: string; onClose: () => void }
         <button type="button" disabled={status !== 'ready'} onClick={() => { void save(); }}>Save to the case</button>
         <button type="button" disabled={status !== 'ready'} onClick={() => { void reload(); }}>Reload from the case</button>
         <button type="button" onClick={close}>{armed ? 'Close and discard the changes' : 'Close editor'}</button>
+        {diagrams.length > 1 && <label>Diagram{' '}
+          <select value={diagram} disabled={status !== 'ready'} onChange={(e) => { void pick(e.target.value); }}>
+            {diagrams.map((d, i) => <option key={d.id} value={i === 0 ? '' : d.id}>{d.name}</option>)}
+          </select></label>}
       </div>
       <p className="ac-proc-live" aria-live="polite">
         {status === 'loading' ? 'Loading the editor…' : armed ? 'The editor has changes not saved to the case.' : msg.join(' ')}
       </p>
       {stale && <p className="ac-proc-warn">The process changed outside the editor: reload it to edit the current process (its unsaved changes are lost).</p>}
       <div ref={host} className="ac-proc-editor-canvas" role="group" aria-label="BPMN editor canvas (bpmn-js): Tab or click focuses it" />
+      {picked && <EditorProperties doc={doc} id={picked} />}
     </section>
   );
+}
+
+/**
+ * FX-12: the properties of the activity selected on the canvas — the parameter panel of the Process section itself, so the editor writes the same
+ * commands (one undoable step each); an element that is not one of the case's activities shows nothing.
+ */
+function EditorProperties({ doc, id }: { doc: XDocument; id: string }) {
+  if (!readProcess(doc).activities.some((a) => a.id === id)) return null;
+  return <div className="ac-proc-editor-props" aria-label="Properties of the selected activity" role="region"><ActivityPanel doc={doc} id={id} /></div>;
 }

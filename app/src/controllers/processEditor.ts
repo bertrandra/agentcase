@@ -1,5 +1,5 @@
 /** @calc-zone scope-automation */
-import { applyEditorDocument, serialize, type EditorOutcome, type XDocument } from '@/domain/process';
+import { applyEditorDocument, attr, kids, NS, serialize, type EditorOutcome, type XDocument } from '@/domain/process';
 import { defineCommand } from '@/store/commands';
 import { refitPotential } from '@/store/derive';
 import { editBase } from '@/store/editBase';
@@ -21,6 +21,9 @@ const applyCmd = defineCommand<{ edited: XDocument }>({
 /** The document the editor opens: the case's process as stored (the product shown, in a portfolio), and its text. */
 export const editorBase = (): XDocument => editBase().BPMN;
 export const editorSource = (): string => serialize(editorBase());
+/** FX-14: the diagrams of the document the editor opens (id and name), for the picker when there are several. */
+export const editorDiagrams = (): { id: string; name: string }[] => kids(editorBase().root, NS.bpmndi, 'BPMNDiagram')
+  .map((e, i) => ({ id: attr(e, 'id') ?? `diagram-${i + 1}`, name: attr(e, 'name') ?? attr(e, 'id') ?? `Diagram ${i + 1}` }));
 
 export type EditorSaveStatus = 'unchanged' | 'applied' | 'refused';
 export interface EditorSave { status: EditorSaveStatus; messages: string[] }

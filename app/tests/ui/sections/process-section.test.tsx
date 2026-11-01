@@ -1,6 +1,6 @@
 // @vitest-environment jsdom
 import { readFileSync } from 'node:fs';
-import { act, cleanup, fireEvent, render } from '@testing-library/react';
+import { act, cleanup, fireEvent, render, screen as tl, within } from '@testing-library/react';
 import { afterEach, beforeEach, describe, expect, it } from 'vitest';
 import { decisionsEl, dmnFile, ruleFamilies, writeDmn } from '@/domain/dmn';
 import { readProcess, serialize } from '@/domain/process';
@@ -116,6 +116,12 @@ describe('Process section', { timeout: 90_000 }, () => {
     });
     expect(appStore().getState().history.undo.at(-1)?.type).toBe('process.importDecisions');
     expect(decisionsEl(doc().root)).toBeDefined();
+    // FX-11: the Decisions panel lists them with their hit policy and shows a table, read-only
+    const panel = tl.getByRole('region', { name: 'Decisions' });
+    const show = within(panel).getAllByRole('button').find((b) => /^Show the table of /.test(b.textContent ?? ''))!;
+    fireEvent.click(show);
+    expect(within(panel).getByRole('table').querySelector('caption')!.textContent).toMatch(/decision table, hit policy [A-Z ]+/);
+    expect(await axeViolations(panel, { region: false })).toEqual([]);
   });
   it('is axe clean, with an import preview open', async () => {
     const { container } = render(<Process />);

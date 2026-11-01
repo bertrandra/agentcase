@@ -22,7 +22,8 @@ function UnitRow({ m, unit, depth }: { m: OrgParts; unit: OrgUnit; depth: number
     : 'Remove the units below it first, and move its teams and products to another unit');
   return (
     <tr>
-      <th scope="row" className="ac-org-name" data-depth={Math.min(depth, 6)}>
+      <th scope="row" className="ac-org-name">
+        {Array.from({ length: depth }, (_, i) => <span key={i} className="ac-org-indent" aria-hidden="true" />)}
         <span className="ac-sr">{`Level ${depth + 1}: `}</span>
         <DraftText label={`Name of unit ${n}`} value={n} onCommit={(v) => edit(unit.id, { name: v }, 'Name')} />
         {unit.derived && <span className="ac-muted"> (default)</span>}

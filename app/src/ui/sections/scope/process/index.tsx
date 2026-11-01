@@ -1,5 +1,6 @@
 import { useId, useMemo } from 'react';
 import { activityAudits, auditProgressOf } from '@/domain/audit';
+import { decisionLabels } from '@/domain/dmn';
 import { drawingOf, readProcess, type Drawing, type DrawShape, type XDocument } from '@/domain/process';
 import { useDoc } from '@/store/hooks';
 import { OverrideBadge } from '@/ui/widgets/OverrideBadge';
@@ -7,6 +8,8 @@ import { SectionFrame } from '@/ui/zones/SectionFrame';
 import { ActivityPanel } from './ActivityPanel';
 import { ActivityTable } from './ActivityTable';
 import { ActorPanel } from './ActorPanel';
+import { DecisionsPanel } from './DecisionsPanel';
+import { ExtendedProfile } from './profile/ExtendedProfile';
 import { Diagram } from './Diagram';
 import { DiagramEditor } from './editor/DiagramEditor';
 import { Filters } from './Filters';
@@ -24,6 +27,11 @@ const count = (d: Drawing, kind: DrawShape['kind']): number => d.shapes.filter((
 function factsOf(rows: Row[], d: XDocument): Map<string, ActFacts> {
   const audit = new Map(activityAudits(d).map((a) => [a.id, auditProgressOf(a)]));
   return new Map(rows.map((r) => [r.id, { type: r.type, authority: r.aiAuthority, audit: audit.get(r.id) ?? '', counted: counted(r) }]));
+}
+/** FX-26: a bound business-rule task shows the decision it applies, under its label (`◇ name`). */
+function withDecisions(d: Drawing, doc: XDocument): Drawing {
+  const by = decisionLabels(doc.root);
+  return by.size ? { ...d, shapes: d.shapes.map((s) => (by.has(s.id) ? { ...s, marker: `◇ ${by.get(s.id)!}` } : s)) } : d;
 }
 const filtering = (f: Record<string, string>): boolean => Object.values(f).some((v) => v.trim() !== '');
 
@@ -56,7 +64,8 @@ const help = (
  */
 export default function ProcessSection() {
   const doc = useDoc((d) => d.BPMN), rows = rowsOf(doc), f = useProcessView((s) => s.filters), sort = useProcessView((s) => s.sort);
-  const selected = useProcessView((s) => s.selected), shown = visibleRows(rows, f, sort), tableId = useId(), drawing = drawingOf(doc);
+  const selected = useProcessView((s) => s.selected), shown = visibleRows(rows, f, sort), tableId = useId();
+  const drawing = useMemo(() => withDecisions(drawingOf(doc), doc), [doc]);
   const facts = useMemo(() => factsOf(rows, doc), [rows, doc]);
   // eslint-disable-next-line react-hooks/exhaustive-deps -- `shown` follows the filters and the rows
   const kept = useMemo(() => (filtering({ ...f }) ? new Set(shown.map((r) => r.id)) : null), [f, rows]);
@@ -80,6 +89,8 @@ export default function ProcessSection() {
           <Filters rows={rows} shown={shown.length} />
           <ActivityTable rows={shown} />
           <ActorPanel doc={doc} />
+          <DecisionsPanel doc={doc} />
+          <ExtendedProfile doc={doc} />
           <ProgrammePart />
         </>
       } />

@@ -17,6 +17,17 @@ When releasing, follow [docs/BUMP_PROCEDURE.md](docs/BUMP_PROCEDURE.md) (§7 for
 
 ## [Unreleased]
 
+### SPEC_FIXES lot X4 — screens (FX-10…FX-14, FX-16, FX-17, FX-26)
+
+- **Extended profile**: 🧩 Process shows the process's data, events, library and collaboration; the BPMN export can colour the activities and
+  add a diagram per phase.
+- **Diagram editor properties**: the activity selected on the canvas shows its parameter panel under the editor.
+- **DMN diagram**: the exported `.dmn` carries its diagram (DMNDI); the process diagram labels each bound business-rule task with its decision.
+- **Decisions**: 🧩 Process lists the DMN decisions with their hit policy and table (read-only) and binds each business-rule task.
+- **Diagram editor**: a save keeps the editor open with its own undo history; a document with several diagrams offers a picker.
+- **Resource histogram**: group by role, team, unit or location (📅 Plan › Histogram).
+- **Units**: the unit tree is indented at every level. No figure changes.
+
 ### SPEC_FIXES lot X6 — organisation and audit depth (FX-05, FX-21, FX-22, FX-23, FX-D4, FX-D6, FX-D7, FX-D11)
 
 - **Programme roles**: each operating-model role of the transformation programme can name the organisation role that staffs it (🏢 Organisation);

@@ -7,9 +7,9 @@ import { toast } from '../uiState';
 
 /** The level of a unit in the tree, as announced (1 = a root). */
 const levelOf = (depth: number): string => `level ${depth + 1}`;
-/** A unit option: indented by its depth (the indentation stops growing at 6, as in 🏢 Organisation); its accessible name states the level. */
+/** A unit option: indented by its depth, any level (FX-17); its accessible name states the level. */
 const unitOption = (u: UnitNode) => (
-  <option key={u.id} value={`unit:${u.id}`} aria-label={`${u.name}, unit ${levelOf(u.depth)}`}>{`${'· '.repeat(Math.min(u.depth, 6))}${u.name}`}</option>
+  <option key={u.id} value={`unit:${u.id}`} aria-label={`${u.name}, unit ${levelOf(u.depth)}`}>{`${'· '.repeat(u.depth)}${u.name}`}</option>
 );
 
 /**

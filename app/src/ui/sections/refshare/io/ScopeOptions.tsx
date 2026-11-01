@@ -23,7 +23,7 @@ export function UnitOptions({ units }: { units: UnitNode[] }) {
   return (
     <optgroup label="Units">
       {units.map((u) => <option key={u.id} value={`unit:${u.id}`} aria-label={`Unit: ${u.name}, level ${u.depth + 1}`}>
-        {`Unit: ${'· '.repeat(Math.min(u.depth, 6))}${u.name}`}</option>)}
+        {`Unit: ${'· '.repeat(u.depth)}${u.name}`}</option>)}
       <option value={`unit:${UNASSIGNED_UNIT}`}>Unit: {UNASSIGNED}</option>
     </optgroup>
   );
