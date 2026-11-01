@@ -24,7 +24,9 @@ export const isPortfolioWorkbook = (sheets: Sheets): boolean => sheets.has('Prod
 export function readPortfolioSheets(sheets: Sheets, base: Portfolio): Portfolio {
   const rows = readProductRows(sheets), ids = new Set(rows.map((r) => r.id)), waveRows = readWaveRows(sheets), overrides = readOverrides(sheets, ids);
   // a pin may name any activity of the common process or of a product's own process in the workbook, custom ones included (FX-03)
-  const known = pinTargets(base.common.BPMN, ...overrides.filter((o) => o.ref === BPMN_KEY).map((o) => processOverride(o.value as string, o.productId)));
+  let pins: ReadonlySet<string> | undefined;   // read once, and only when a team row has a pin
+  const known = (): ReadonlySet<string> => (pins ??= pinTargets(base.common.BPMN,
+    ...overrides.filter((o) => o.ref === BPMN_KEY).map((o) => processOverride(o.value as string, o.productId))));
   const teams = readTeams(sheets, ids, known), subsets = readKnowledge(sheets, ids);
   const { products, waves } = assemble(rows, waveRows, (r): Product => clean({
     id: r.id, name: r.name, note: r.note, archived: r.archived, knowledge: subsets.get(r.id) ?? {},

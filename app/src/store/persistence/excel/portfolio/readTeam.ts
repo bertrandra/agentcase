@@ -11,7 +11,7 @@ import { pinCells, teamCells } from './teamCells';
  * product) and a bad row stops the import, unlike the single-case "Input Team" that skips rows: a portfolio must not silently lose a team. Each
  * product needs >= 1 row.
  */
-export function readTeams(sheets: Sheets, ids: ReadonlySet<string>, known: ReadonlySet<string>): Map<string, TeamRow[]> {
+export function readTeams(sheets: Sheets, ids: ReadonlySet<string>, known: () => ReadonlySet<string>): Map<string, TeamRow[]> {
   const t = tab(sheets, PF_SHEETS.team);
   if (!t) return fail(PF_SHEETS.team, null, 'a portfolio workbook needs the TeamIn sheet (one team per product)');
   const out = new Map<string, TeamRow[]>(), pinned = new Map<string, Set<string>>();

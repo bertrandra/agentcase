@@ -7,7 +7,7 @@ import { fail, idOf, numberCell, SAFE_ID, tab, type Line, type Tab } from './tab
 import { pinCells, teamCells } from './teamCells';
 
 /** The pinned artefacts of a row (column H, blank = none): known artefacts, each once. */
-function pinsOf(t: Tab, l: Line, known: ReadonlySet<string>): string[] {
+function pinsOf(t: Tab, l: Line, known: () => ReadonlySet<string>): string[] {
   const pins = pinCells(t, l, 7, known);
   pins.forEach((p, i) => { if (pins.indexOf(p) !== i) fail(t.name, l.n, `artefact "${p}" is pinned twice`); });
   return pins;
@@ -21,7 +21,7 @@ function serviceOf(t: Tab, l: Line): Pick<SharedTeamLine, 'unit' | 'split'> {
   return { ...(unit ? { unit } : {}), ...(split ? { split: 'effort' as const } : {}) };
 }
 
-function lineOf(t: Tab, l: Line, id: string, known: ReadonlySet<string>): SharedTeamLine {
+function lineOf(t: Tab, l: Line, id: string, known: () => ReadonlySet<string>): SharedTeamLine {
   const { skill, grade, loc } = teamCells(t, l), pins = pinsOf(t, l, known);
   return { id, skill, grade, loc, etp: numberCell(t, l, 4, 'FTE', { min: 0, max: 100000 }) as number, allocations: {}, ...(pins.length ? { pins } : {}),
     ...serviceOf(t, l) };
@@ -32,7 +32,7 @@ function lineOf(t: Tab, l: Line, id: string, known: ReadonlySet<string>): Shared
  * FTE and pins (they must agree). Pins (column H, optional: an older workbook has none) are activities of the portfolio (`pinTargets`, custom
  * ones included). A blank product id keeps a line without any share. Shares are percentages in [0, 100] of known products, one per product.
  */
-export function readShared(sheets: Sheets, ids: ReadonlySet<string>, known: ReadonlySet<string>): SharedTeamLine[] | undefined {
+export function readShared(sheets: Sheets, ids: ReadonlySet<string>, known: () => ReadonlySet<string>): SharedTeamLine[] | undefined {
   const t = tab(sheets, PF_SHEETS.shared);
   if (!t) return undefined;
   const out = new Map<string, SharedTeamLine>();

@@ -16,9 +16,13 @@ export function teamCells(t: Tab, l: Line): { skill: string; grade: string; loc:
 }
 
 /** The pinned artefacts of a row (column `i`, `;` separated; blank = none): known artefact ids, or the import stops. */
-/** The pins of a team row (`;`-separated): each must be one of `known` (`pinTargets`: the portfolio's activities, custom ones included, FX-03). */
-export function pinCells(t: Tab, l: Line, i: number, known: ReadonlySet<string>): string[] {
+/**
+ * The pins of a team row (`;`-separated): each must be one of `known()` (`pinTargets`: the portfolio's activities, custom ones included, FX-03),
+ * asked only when the row has a pin (reading the process costs; most rows have none).
+ */
+export function pinCells(t: Tab, l: Line, i: number, known: () => ReadonlySet<string>): string[] {
   const pins = String(l.c[i] ?? '').split(';').map((p) => p.trim()).filter(Boolean);
-  for (const p of pins) if (!known.has(p)) fail(t.name, l.n, `unknown pinned artefact "${cleanText(p, 40)}"`);
+  const k = pins.length ? known() : undefined;
+  for (const p of pins) if (!k!.has(p)) fail(t.name, l.n, `unknown pinned artefact "${cleanText(p, 40)}"`);
   return pins;
 }
