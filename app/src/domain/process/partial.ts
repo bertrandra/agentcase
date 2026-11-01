@@ -1,6 +1,6 @@
 /** @calc-zone process-model */
 import { dataId } from './ids';
-import { mapElements } from './defaultProcess';
+import { mapElements } from './order';
 import { NS, attr, el, kid, withAttrs, withChildren, type XElement, type XNode } from './xml';
 
 const TASKS: readonly string[] = ['task', 'userTask', 'manualTask', 'serviceTask', 'scriptTask', 'businessRuleTask', 'sendTask', 'receiveTask'];

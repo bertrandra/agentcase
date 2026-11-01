@@ -17,6 +17,13 @@ When releasing, follow [docs/BUMP_PROCEDURE.md](docs/BUMP_PROCEDURE.md) (§7 for
 
 ## [Unreleased]
 
+### SPEC_FIXES lot X3 — the default process is the one source of the catalogue (FX-02, D-B9)
+
+- The phases, activities, regulatory catalogue and norms, and rework pairs are read from the shipped `defaultProcess.bpmn` (a DOM-free reader of
+  the trusted file); the four JSON catalogues that generated it are retired. The default process and every reference list are unchanged (the file
+  regenerates byte-identically from the lists read from it). No figure changes.
+
+
 ### SPEC_FIXES lot X2b — consistency (FX-01, FX-07, FX-40, FX-D3)
 
 - **Services**: the activities a shared service takes by type or role are routed to its lines in each product's team (the Input Team spread);

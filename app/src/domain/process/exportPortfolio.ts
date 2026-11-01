@@ -1,7 +1,7 @@
 /** @calc-zone process-model */
 import type { CaseState } from '../types/state';
 import { COLLABORATION_ID, PARTICIPANT_ID } from './buildDi';
-import { mapElements } from './defaultProcess';
+import { mapElements } from './order';
 import { bpsimParams, productDocument, withBpsim, type ExportOptions } from './exportCase';
 import { PROCESS_ID } from './ids';
 import { attr, el, kid, kids, NS, withAttrs, withChildren, type XDocument, type XElement, type XNode } from './xml';
