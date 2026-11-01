@@ -39,6 +39,26 @@ DEVIATIONS.md entry and the owner's approval of the before → after on the gold
 | FX-D14 | Waves, setup capacity and knowledge subsets live outside the BPMN document | (a) a portfolio-level BPMN document (waves as sub-processes, capacity on lanes); (b) keep as portfolio data | None | item 34 |
 | FX-D15 | Plan sheets and pages exist only in the Plan screen's exports | (a) add them to the Financial workbook and the report as optional sections; (b) keep | None | item 37 |
 
+### 2.1 The owner's answers (recorded 2026-11-01, lot X1)
+
+| ID | Answer | Consequence | Lot |
+|---|---|---|---|
+| FX-D1 | **(a)** take the organisation out of the Monte Carlo run fingerprint | An org-only edit no longer marks the run stale; no figure moves | X2 |
+| FX-D2 | **(a)** keep one ρ, show each unit's implied correlation | Nothing to build beyond the implied-correlation view (SPEC_HARNESS HX-D6 adds a correlation through shared harnesses) | X7 |
+| FX-D3 | **(a)** route type / role service activities to the service line in every product | **Deviation**: a DEVIATIONS.md entry and the owner's approval of the before → after on the golden case before merge | X2 |
+| FX-D4 | **(a)** `ac:raciOverride` per product in the organisation part | No figure moves | X6 |
+| FX-D5 | **Sign off as is** (43 entries stay marked partial / unverified) | FX-O2 done; the catalogue's status reads "signed off 2026-11-01" | X1 |
+| FX-D6 | **(a)** a per-product audit part | Consistent with SPEC_HARNESS (the audit on each product's baseline) | X6 |
+| FX-D7 | **(a)** RACI-driven load and cost by unit, opt-in | The base of SPEC_HARNESS's cells (activity × team) | X6 |
+| FX-D8 | **(a)** feed the engine, opt-in per factor | The token profile becomes SPEC_HARNESS § 11's token owner | X7 |
+| FX-D9 | **(a)** link the SDLC chain with its data inputs in the default process | Document change only | X7 |
+| FX-D10 | **(a)** CMMN pass-through in an extension element | No figure moves | X7 |
+| FX-D11 | **(a)** map each operating-model role to an organisation role with a team skill | Needed for SPEC_HARNESS's build pods and run teams | X6 |
+| FX-D12 | **(a)** an agents' lane in the default diagram | Exports change, figures do not | X7 |
+| FX-D13 | **(a)** retire `setupTraining` / `setupGov` | **Deviation** of legacy outputs: DD register 119 → 117 rows, report and legacy sheet | X7 |
+| FX-D14 | **(a)** a portfolio-level BPMN document: waves as sub-processes, capacity on lanes | Schema migration; also the home of SPEC_HARNESS's pilot and wave slices | X7 |
+| FX-D15 | **(a)** Plan sheets and pages as optional sections of the Financial workbook and the report | No figure moves | X7 |
+
 ## 3. Issues (work)
 
 ### 3.1 Data model and calculation (P1)
@@ -105,7 +125,7 @@ DEVIATIONS.md entry and the owner's approval of the before → after on the gold
 | ID | Action | Where |
 |---|---|---|
 | FX-O1 | Create and push the release tags v19.0.0 … v21.6.0 (commands listed; v21.1.0 → v21.6.0 rows to add) | docs/RELEASE_TAGS.md |
-| FX-O2 | Sign off the tool catalogue (FX-D5) | 🔎 Audit, SPEC_BPMN § 15.7 |
+| FX-O2 | Sign off the tool catalogue (FX-D5) — **done 2026-11-01: signed off as is** | 🔎 Audit, SPEC_BPMN § 15.7 |
 | FX-O3 | Delete the 9 old local branches from the 22–24 Oct theme work (kept until you say yes) | local clone |
 | FX-O4 | Supply real (anonymised) customer files for the differential run (FX-63) | `app/fixtures/customer/` |
 | FX-O5 | Port or keep out: AME comparison / per-snapshot Excel (FX-57), "being ported" UI items (FX-59), `TE-10b` (FX-60) | this file |
@@ -160,13 +180,13 @@ B5 question on factory tags is answered in § 15; `npm audit` 0; no open GitHub 
 | Lot | Content | Gate | Figures | Size |
 |---|---|---|---|---|
 | X0 Nightly green (first) | FX-70, FX-72, FX-73, FX-74, FX-75 | Nightly run green on main | None (records only) | 1 d |
-| X1 Decisions | Record the owner's answers to FX-D1…FX-D15 in this file and SPEC_BPMN | — | None | 0.5 d |
-| X2 Consistency (P1) | FX-01, FX-03, FX-04, FX-06, FX-07, FX-08, FX-40, FX-D1 (if a), FX-D3 (if a) | 107 fixtures identical except the deviations approved; cross-surface tests | Opt-in / Deviation if FX-D3 a | 2 d |
+| X1 Decisions | Record the owner's answers to FX-D1…FX-D15 in this file and SPEC_BPMN — **done 2026-11-01** (§ 2.1) | — | None | 0.5 d |
+| X2 Consistency (P1) | FX-01, FX-03, FX-04, FX-06, FX-07, FX-08, FX-40, FX-D1 (a), FX-D3 (a, deviation) | 107 fixtures identical except the deviations approved; cross-surface tests | Opt-in / Deviation if FX-D3 a | 2 d |
 | X3 Catalogue retirement | FX-02 (D-B9) | Default process byte-identical; all reference lists unchanged | None | 1.5 d |
 | X4 Screens for built domain | FX-10, FX-11, FX-12…FX-14, FX-15, FX-16, FX-17, FX-20, FX-26 | axe clean; render budgets; ui-parity 0 | None | 3 d |
 | X5 Import / export / workbooks | FX-24, FX-25, FX-27…FX-34 | Round trips; workbook legacy sheets unchanged | None | 2 d |
-| X6 Organisation depth | FX-05, FX-21, FX-22, FX-23, FX-D4 / FX-D6 / FX-D7 / FX-D11 as decided | Undo property tests; parity | Opt-in | 2.5 d |
-| X7 Portfolio document | FX-D14 (if a), FX-D2 (if b), FX-D8 / FX-D9 / FX-D10 / FX-D12 / FX-D13 / FX-D15 as decided | Schema v6 migration round trips | Per decision | 3 d |
+| X6 Organisation depth | FX-05, FX-21, FX-22, FX-23, FX-D4 (a), FX-D6 (a), FX-D7 (a), FX-D11 (a) | Undo property tests; parity | Opt-in | 2.5 d |
+| X7 Portfolio document | FX-D14 (a), FX-D2 (a: implied correlation view only), FX-D8 (a), FX-D9 (a), FX-D10 (a), FX-D12 (a), FX-D13 (a, deviation), FX-D15 (a) | Schema v6 migration round trips | Per decision | 3 d |
 | X8 Polish | FX-18, FX-19, FX-41…FX-45, FX-71, FX-76, FX-77 | — | None | 1 d |
 | X9 Carry-over | FX-50…FX-56, FX-58, FX-61, FX-62, FX-64; FX-57 / FX-59 / FX-60 per FX-O5; FX-63 when files arrive | Deviations recorded for FX-52, FX-53, FX-56 | Deviation (labels, export, report count) | 3 d |
 

@@ -1633,6 +1633,14 @@ Written in B8 (release v21.0.0): every item the phase notes record as not done, 
 This is the owner's backlog; none of them changes a figure of today's cases. The consolidated fix plan (these items, the B10 notes and the technical debt, with priorities and lots) is [SPEC_FIXES.md](SPEC_FIXES.md). **Decision**: the owner chooses before any work; **Work**: the
 approach is known.
 
+**Decisions taken 2026-11-01** (SPEC_FIXES § 2.1): item 8 — the tool catalogue signed off as is (FX-D5); item 10 — a per-product audit part
+(FX-D6); item 15 — RACI-driven load and cost by unit, opt-in (FX-D7); item 21 — the views feed the engine, opt-in per factor (FX-D8); item 22 —
+the default process links the SDLC chain with its data inputs (FX-D9); item 27 — CMMN pass-through (FX-D10); item 30 — operating-model roles mapped
+to organisation roles (FX-D11); item 31 — an agents' lane in the default diagram (FX-D12); item 33 — `setupTraining` / `setupGov` retired, with
+deviations of the legacy outputs (FX-D13); item 34 — a portfolio-level BPMN document (FX-D14); item 37 — Plan sheets and pages in the Financial
+workbook and the report, optional (FX-D15); § 21.5 — `ac:raciOverride` per product (FX-D4); § 21.7 — service activities by type / role routed to
+the service line, a deviation (FX-D3); § 21.8 — the organisation out of the Monte Carlo fingerprint (FX-D1), one ρ kept (FX-D2).
+
 | # | Open item | Kind | Recorded in |
 |---|---|---|---|
 | 1 | D-B9: the JSON catalogues still generate the default process; retiring them needs a DOM-free reader of `defaultProcess.bpmn` (or a build step) and the reference-list readers (reset, pins, factory pickers, legacy sheets, per-phase tables) moved to the default process views | Work | § 7.1 (1) |
