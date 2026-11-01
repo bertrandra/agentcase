@@ -2,7 +2,8 @@
 import { makeCtx } from '@/domain';
 import { caseFte } from '@/domain/economics/fte';
 import { headline } from '@/domain/economics/headline';
-import { current, isDraft } from 'immer';
+import { isDraft } from 'immer';
+import { currentOf } from '@/store/draftValue';
 import { analyseImport, applyImport, caseValues, previewImport, resetProcess, type ImportAnalysis, type ImportChoices, type ImportPreview,
   type KeepReport, type XDocument } from '@/domain/process';
 import { changedProgrammeValues, programmeValuesIn, type ProgrammeFileValues } from '@/domain/programme/bpmnImport';
@@ -30,7 +31,9 @@ const importCmd = defineCommand<{ file: XDocument; choices: ImportChoices; name:
   type: 'process.import', label: (p) => `Import process ${p.name} (${p.choices.mode})`,
   run(d, p) {
     editProcess(d, (doc) => withFile(doc, p.file, p.choices).doc);
-    if (p.programme && p.choices.mode === 'replace') Object.assign(d.dom.values, changedProgrammeValues(p.programme, caseValues(isDraft(d) ? current(d) : d)));
+    if (p.programme && p.choices.mode === 'replace') {
+      Object.assign(d.dom.values, changedProgrammeValues(p.programme, caseValues(isDraft(d) ? currentOf(d) : d)));
+    }
     refitPotential(d);
   },
 });

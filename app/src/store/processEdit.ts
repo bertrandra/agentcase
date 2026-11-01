@@ -1,4 +1,5 @@
-import { current, isDraft } from 'immer';
+import { isDraft } from 'immer';
+import { currentOf } from '@/store/draftValue';
 import { editableKeys, scopeOf, withScope, type ScopeKeys, type XDocument } from '@/domain/process';
 import { syncDraft } from './syncDraft';
 import type { Doc } from './types';
@@ -6,7 +7,7 @@ import type { Doc } from './types';
 type Bag = Record<string, unknown>;
 
 /** The plain value of the case's process document inside a command: the draft's current state (the stored object itself while unchanged). */
-export const processIn = (d: Doc): XDocument => (isDraft(d.BPMN) ? current(d.BPMN) : d.BPMN) as XDocument;
+export const processIn = (d: Doc): XDocument => (isDraft(d.BPMN) ? currentOf(d.BPMN) : d.BPMN) as XDocument;
 
 /**
  * THE WRITE PATH of the process document (docs/SPEC_BPMN.md § 6.1, § 9). `fn` returns the next tree, sharing every unchanged node with the

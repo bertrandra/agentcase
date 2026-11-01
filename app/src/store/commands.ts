@@ -1,4 +1,4 @@
-import { current } from 'immer';
+import { currentOf } from '@/store/draftValue';
 import { programmeInStore } from './persistence/bpmn/programmeDoc';
 import { syncDraft } from './syncDraft';
 import type { Command, Doc, PortfolioDoc } from './types';
@@ -33,7 +33,7 @@ export function defineCommand<P>(def: CommandDef<P>): (payload: P) => Command<P>
 export function definePortfolioCommand<P>(def: PortfolioCommandDef<P>): (payload: P) => Command<P> {
   const undoable = register(def.type, def.undoable);
   const runPortfolio = (d: PortfolioDoc, p: P): void => {
-    const cur = current(d) as PortfolioDoc, out = def.apply(cur, p), common = programmeInStore(out.common);
+    const cur = currentOf(d) as PortfolioDoc, out = def.apply(cur, p), common = programmeInStore(out.common);
     // schema v4: a programme value a portfolio command wrote into the common form values belongs to the common document
     const next = common === out.common ? out : { ...out, common };
     syncDraft(d as unknown as Record<string, unknown>, cur as unknown as Record<string, unknown>, next as unknown as Record<string, unknown>);

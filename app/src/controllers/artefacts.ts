@@ -2,7 +2,7 @@
 import { PHASES, REG_ARTEFACTS, SDLC_ARTEFACTS, activeArtefacts, makeCtx } from '@/domain';
 import type { Artefact } from '@/domain/types/catalog';
 import { updateActivities, type ActivityPatch } from '@/domain/process';
-import { current } from 'immer';
+import { currentOf } from '@/store/draftValue';
 import { defineCommand } from '@/store/commands';
 import { refitPotential } from '@/store/derive';
 import { appStore } from '@/store/instance';
@@ -34,7 +34,7 @@ const setEffortCmd = defineCommand<{ id: string; value: number }>({
 const setPhaseAgentCmd = defineCommand<{ phase: string; value: number }>({
   type: 'phase.setAgent', label: (p) => `Set every artefact of ${p.phase} to ${clamp01(p.value)} % auto`,
   run(d, p) {
-    const ids = activeArtefacts(makeCtx(current(d) as Doc).a, current(d) as Doc).filter((a) => a.phase === p.phase).map((a) => a.id);
+    const ids = activeArtefacts(makeCtx(currentOf(d) as Doc).a, currentOf(d) as Doc).filter((a) => a.phase === p.phase).map((a) => a.id);
     edit(d, new Map(ids.map((id) => [id, auto(clamp01(p.value))])));
     refitPotential(d);
   },

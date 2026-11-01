@@ -1,5 +1,5 @@
 /** @calc-zone exports */
-import { current } from 'immer';
+import { currentOf } from '@/store/draftValue';
 import { makeCtx } from '@/domain';
 import { computeGlassCeiling } from '@/domain/model/ceiling';
 import { refitPotential } from '@/store/derive';
@@ -16,5 +16,5 @@ export function applyParamsPatch(draft: Doc, patch: Partial<Doc>): void {
   for (const k of Object.keys(rest)) (draft as Record<string, unknown>)[k] = structuredClone(rest[k]);
   if (Object.keys(scope).length) editScope(draft, (k) => assignScope(k, scope));
   refitPotential(draft);
-  if (!draft.forceGlassCeiling) draft.dom.values.glassCeiling = String(Math.round(computeGlassCeiling(makeCtx(current(draft) as Doc))));
+  if (!draft.forceGlassCeiling) draft.dom.values.glassCeiling = String(Math.round(computeGlassCeiling(makeCtx(currentOf(draft) as Doc))));
 }

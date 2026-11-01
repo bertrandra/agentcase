@@ -1,6 +1,6 @@
 /** @calc-zone scope-automation */
 import { PHASES, SDLC_ARTEFACTS, makeCtx, phasesForScope, regOfActiveNorms as regOf } from '@/domain';
-import { current } from 'immer';
+import { currentOf } from '@/store/draftValue';
 import type { ScopeKeys } from '@/domain/process';
 import { defineCommand } from '@/store/commands';
 import { refitPotential } from '@/store/derive';
@@ -12,7 +12,7 @@ import type { Doc } from '@/store/types';
  * Regulatory artefacts of a phase whose norm is ticked (regardless of individual selection). The scope commands run on the scope keys of the
  * case's process document (`editScope`: the version 2 rules, written back on the document as attribute updates).
  */
-const regOfActiveNorms = (d: Doc, phase: string) => regOf(makeCtx(current(d) as Doc), phase);
+const regOfActiveNorms = (d: Doc, phase: string) => regOf(makeCtx(currentOf(d) as Doc), phase);
 const sdlcOf = (phase: string) => SDLC_ARTEFACTS.filter((a) => a.phase === phase);
 
 const add = (arr: string[], id: string) => { if (!arr.includes(id)) arr.push(id); };

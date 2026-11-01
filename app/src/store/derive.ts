@@ -1,5 +1,5 @@
 /** @calc-zone product-resolution */
-import { current } from 'immer';
+import { currentOf } from '@/store/draftValue';
 import { makeCtx, phaseScopeOf } from '@/domain';
 import { autoCapFrom, fitPotential } from '@/domain/inputs';
 import { resolveProduct, setCommon, setOverride, type Portfolio } from '@/domain/portfolio';
@@ -19,7 +19,7 @@ export function fitTarget(d: Doc): string | null {
 
 /** Fit-to-scope: when `fitAuto` is on, the potential follows the scope's effort-weighted automatable share (legacy applyScopeAuto). */
 export function refitPotential(draft: Doc): void {
-  const t = fitTarget(current(draft) as Doc);
+  const t = fitTarget(currentOf(draft) as Doc);
   if (t !== null) draft.dom.values.autoPotential = t;
 }
 

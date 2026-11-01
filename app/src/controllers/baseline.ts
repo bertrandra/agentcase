@@ -1,5 +1,5 @@
 /** @calc-zone rate-card-team */
-import { current } from 'immer';
+import { currentOf } from '@/store/draftValue';
 import { activeArtefacts, makeCtx } from '@/domain';
 import { defaultGradeLoc } from '@/domain/baseline/skills';
 import { targetMix } from '@/domain/baseline/locStrat';
@@ -11,7 +11,7 @@ import { defineCommand } from '@/store/commands';
 import { appStore } from '@/store/instance';
 import type { Doc } from '@/store/types';
 
-const snap = (d: Doc): Doc => current(d) as Doc;
+const snap = (d: Doc): Doc => currentOf(d) as Doc;
 const num = (v: unknown): number => parseFloat(String(v)) || 0;
 
 // ---- Rate card ----
