@@ -18,5 +18,6 @@ export { byUnit, byProduct, type UnitAnswer, type ProductAnswer, type ChartUnit,
 export { addUnit, updateUnit, removeUnit, freeUnitId, withUnitList, type UnitInput, type UnitPatch } from './editUnits';
 export { setRaci, clearRaci } from './editRaci';
 export { organisationLaneSet, organisationView } from './orgView';
+export { withOrganisationDiagram } from './multiView';
 export { serviceDefs, serviceActivities, effortSplit, effortOf, lineUnit, type ServiceActivity, type ServiceDef, type ProductWork, type Via,
   type WorkActivity } from './services';
