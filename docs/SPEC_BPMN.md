@@ -1672,7 +1672,7 @@ the service line, a deviation (FX-D3); § 21.8 — the organisation out of the M
 | 26 | ~~No screen edits or binds decisions (`process.bindDecision` has no control; a DMN tool edits the `.dmn`)~~ — **done in SPEC_FIXES lot X4 (FX-11)** | Work | § 17.11 (1) |
 | 27 | The CMMN read-back drops the CMMN content it does not map (sentries, milestones, planning tables) | Decision | § 17.11 (2) |
 | 28 | ~~The exported rule families do not replace the parameters until a rule task binds them~~ — **done in SPEC_FIXES lot X5 (FX-27)** | Work | § 17.11 (3) |
-| 29 | DMN decisions are not drawn on the diagram (no DMN DI written) | Work | § 17.11 (4) |
+| 29 | ~~DMN decisions are not drawn on the diagram (no DMN DI written)~~ — **done in SPEC_FIXES lot X4 (FX-26)** | Work | § 17.11 (4) |
 | 30 | The programme lanes (operating-model roles) are not linked to the organisation model's roles: a new mapping to decide | Decision | § 19.9 (F-B64), § 19.13 |
 | 31 | The delivery diagram keeps the lanes of its stored DI (team skills); an agents' lane would change every case's default document | Decision | § 19.9 (F-B70) |
 | 32 | In a portfolio, a case-level opt-in activity switched on in the common values is counted by every product | Work | § 19.10, § 19.12 |

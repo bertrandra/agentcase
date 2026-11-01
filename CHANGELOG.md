@@ -17,8 +17,9 @@ When releasing, follow [docs/BUMP_PROCEDURE.md](docs/BUMP_PROCEDURE.md) (§7 for
 
 ## [Unreleased]
 
-### SPEC_FIXES lot X4 (part) — screens (FX-11, FX-13, FX-14, FX-16, FX-17)
+### SPEC_FIXES lot X4 (part) — screens (FX-11, FX-13, FX-14, FX-16, FX-17, FX-26)
 
+- **DMN diagram**: the exported `.dmn` carries its diagram (DMNDI); the process diagram labels each bound business-rule task with its decision.
 - **Decisions**: 🧩 Process lists the DMN decisions with their hit policy and table (read-only) and binds each business-rule task.
 - **Diagram editor**: a save keeps the editor open with its own undo history; a document with several diagrams offers a picker.
 - **Resource histogram**: group by role, team, unit or location (📅 Plan › Histogram).

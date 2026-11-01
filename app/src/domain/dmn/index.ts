@@ -10,7 +10,7 @@ export { isDmn, readDmn } from './read';
 export { writeDmn } from './write';
 export { evaluateTable, tableErrors, type TableResult } from './table';
 export { checkDmn, decide, decideAll, type Decided } from './graph';
-export { bindDecision, bindingsOf, decisionsEl, decisionsOf, dmnFile, idClashes, isRuleTask, withDecisions, type Binding } from './embed';
+export { bindDecision, bindingsOf, decisionLabels, decisionsEl, decisionsOf, dmnFile, idClashes, isRuleTask, withDecisions, type Binding } from './embed';
 export { activityContext, AUTHORITY_VALUES, decidedParams, decisionValues, PARAM_OUTPUTS, type DecidedActivity, type DecidedParams,
   type ParamPatch } from './apply';
 export { FAMILY_IDS, REVIEW_LEVELS, ruleFamilies } from './families';

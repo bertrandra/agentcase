@@ -1,4 +1,5 @@
 /** @calc-zone process-model */
+import { withDmnDi } from './dmnDi';
 import { typeOfTask } from '../process/profile/acts';
 import { CONTAINER_RANK, editDoc, fitted, insertChild } from '../process/profile/tree';
 import { indexOf, tasksOf } from '../process/profile/walk';
@@ -86,4 +87,11 @@ export function idClashes(defs: XElement, dmn: XElement): string[] {
 }
 
 /** A `.dmn` file of the decisions: the element as a document of its own, indented from the top. */
-export const dmnFile = (dmn: XElement): XDocument => doc(indent(dmn, '  ', 0));
+/** The `.dmn` file of the decisions, with its diagram (DMNDI, FX-26). */
+export const dmnFile = (dmn: XElement): XDocument => doc(indent(withDmnDi(dmn), '  ', 0));
+
+/** FX-26: the decision each bound business-rule task applies, by task id — its name (the id when the process holds no such decision). */
+export function decisionLabels(defs: XElement): Map<string, string> {
+  const names = new Map((decisionsOf(defs)?.model.decisions ?? []).map((d) => [d.id, d.name]));
+  return new Map(bindingsOf(defs).map((b) => [b.task, names.get(b.decision) ?? b.decision]));
+}
