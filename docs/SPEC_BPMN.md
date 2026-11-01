@@ -1669,7 +1669,7 @@ the service line, a deviation (FX-D3); § 21.8 — the organisation out of the M
 | 23 | ~~`withLibrary` is not applied to a portfolio product's effective case (needs item 19)~~ — **done in SPEC_FIXES lot X6 (FX-05)** | Work | § 17.10 (3) |
 | 24 | ~~The import report does not show the kept / dropped foreign content; foreign content in an unmapped lane or crossing phases is dropped~~ — **done in SPEC_FIXES lot X5 (FX-24)** | Work | § 17.10 (4) |
 | 25 | ~~Tool proposals by data type (F-B43) and the operational-audit feeds of interfaces (F-B55) are not wired to the audit~~ — **done in SPEC_FIXES lot X5 (FX-33)** | Work | § 17.10 (5) |
-| 26 | No screen edits or binds decisions (`process.bindDecision` has no control; a DMN tool edits the `.dmn`) | Work | § 17.11 (1) |
+| 26 | ~~No screen edits or binds decisions (`process.bindDecision` has no control; a DMN tool edits the `.dmn`)~~ — **done in SPEC_FIXES lot X4 (FX-11)** | Work | § 17.11 (1) |
 | 27 | The CMMN read-back drops the CMMN content it does not map (sentries, milestones, planning tables) | Decision | § 17.11 (2) |
 | 28 | ~~The exported rule families do not replace the parameters until a rule task binds them~~ — **done in SPEC_FIXES lot X5 (FX-27)** | Work | § 17.11 (3) |
 | 29 | DMN decisions are not drawn on the diagram (no DMN DI written) | Work | § 17.11 (4) |

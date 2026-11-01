@@ -1,6 +1,6 @@
 {
  "schema": 1,
- "counts": {"files":1375,"tagged":732,"tests":453},
+ "counts": {"files":1376,"tagged":732,"tests":453},
  "zones": [
   {"id":"rate-card-team","modules":10,"tmed":193,"tmax":384},
   {"id":"scope-automation","modules":25,"tmed":81,"tmax":391},
@@ -35,7 +35,7 @@
   {"id":"scope-sel","label":"🎯 Scope","group":"scope","kind":"I-input","files":10},
   {"id":"phase-scope","label":"🎯 Phase scope","group":"scope","kind":"I-input","files":3},
   {"id":"lc-weighting","label":"📊 Product status lifecycle weighting","group":"scope","kind":"I-input","files":5},
-  {"id":"process","label":"🧩 Process (BPMN)","group":"scope","kind":"I-input","files":25},
+  {"id":"process","label":"🧩 Process (BPMN)","group":"scope","kind":"I-input","files":26},
   {"id":"programme","label":"📋 Programme","group":"scope","kind":"I-input","files":7},
   {"id":"lifecycle-edit","label":"📊 Status & phase weight","group":"tune","kind":"I-input","files":3},
   {"id":"team-in","label":"Input team","group":"baseline","kind":"I-input","files":6},
@@ -381,7 +381,7 @@
   ["process-model","organisation","r",8],
   ["process-model","params","r",1],
   ["process-model","portfolio-consolidation","z",5],
-  ["process-model","process","r",7],
+  ["process-model","process","r",8],
   ["process-model","product-resolution","z",16],
   ["process-model","products","r",3],
   ["process-model","program","r",2],

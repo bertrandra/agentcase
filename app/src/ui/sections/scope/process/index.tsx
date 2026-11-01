@@ -7,6 +7,7 @@ import { SectionFrame } from '@/ui/zones/SectionFrame';
 import { ActivityPanel } from './ActivityPanel';
 import { ActivityTable } from './ActivityTable';
 import { ActorPanel } from './ActorPanel';
+import { DecisionsPanel } from './DecisionsPanel';
 import { Diagram } from './Diagram';
 import { DiagramEditor } from './editor/DiagramEditor';
 import { Filters } from './Filters';
@@ -80,6 +81,7 @@ export default function ProcessSection() {
           <Filters rows={rows} shown={shown.length} />
           <ActivityTable rows={shown} />
           <ActorPanel doc={doc} />
+          <DecisionsPanel doc={doc} />
           <ProgrammePart />
         </>
       } />
