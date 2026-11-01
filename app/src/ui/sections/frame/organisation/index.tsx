@@ -5,6 +5,7 @@ import { stripIds, TabStrip, useStripBase } from '@/ui/widgets/TabStrip';
 import { OverrideBadge } from '@/ui/widgets/OverrideBadge';
 import { SectionFrame } from '@/ui/zones/SectionFrame';
 import '@/ui/widgets/org.css';
+import { LaneRoles } from './LaneRoles';
 import { Roles } from './Roles';
 import { Teams } from './Teams';
 import { Owners } from './Owners';
@@ -48,6 +49,6 @@ export default function OrganisationSection() {
             : <Services m={m} />}
         </div>
       </>}
-      result={tab === 'org' ? <><Teams m={m} /><Roles m={m} /></> : null} />
+      result={tab === 'org' ? <><Teams m={m} /><Roles m={m} /><LaneRoles /></> : null} />
   );
 }

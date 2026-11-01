@@ -2,6 +2,8 @@
 import type { Ctx } from '../ctx';
 import { hriEnabled } from '../engagement';
 import { khEnabled } from '../knowledge';
+import { laneRolesOf } from '../org/laneRoles';
+import type { XDocument } from '../process/xml';
 import { capacityOf, dependencyLabel, scheduledProducts, waveSchedule, type Portfolio } from '../portfolio';
 import { opModelCompute } from '../tune/opmodel';
 import { PROGRAMME_ACTIVITIES, PROGRAMME_PHASES, type ParamDef, type ProgrammeActivityDef, type ProgrammePhase } from './catalogue';
@@ -34,7 +36,11 @@ export interface ProgrammeActivity extends ProgrammeActivityDef {
   /** the WBS code override entered for it (`ac:wbsCode`, § 19.8 F-B74; phase B9d), when any */
   wbsCode?: string;
 }
-export interface ProgrammeLane { id: string; role: LaneRole; name: string; description: string; fteY1: number | null }
+export interface ProgrammeLane {
+  id: string; role: LaneRole; name: string; description: string; fteY1: number | null;
+  /** FX-D11: the organisation role (resource id) mapped to this operating-model role, when any */
+  orgRole?: string;
+}
 export interface ProgrammeWave { id: string; name: string; products: string[]; start: number; dependency: string | null }
 export interface ProgrammeMessageFlow { id: string; name: string; source: string; target: string }
 export interface ProgrammeView {
@@ -71,6 +77,7 @@ export function programmeProcess(c: Ctx, pf?: Portfolio, productId?: string): Pr
     instances: d.level === 'product' ? Math.max(1, planned) : null, ...(wbsOverride(c, d.kind) ? { wbsCode: wbsOverride(c, d.kind)! } : {}),
   }));
   const hub = activities.find((a) => a.kind === 'hubSetup')?.active ?? false, act = (k: string) => programmeActivityId(k);
+  const mapped = laneRolesOf(pf?.common.BPMN as XDocument | undefined);   // FX-D11
   const messageFlows: ProgrammeMessageFlow[] = [
     { id: 'prog-mf-agents', name: hub ? 'Hub ready → agents enabled' : 'Platform ready → agents enabled', source: act(hub ? 'hubSetup' : 'setupTooling'),
       target: DELIVERY_PARTICIPANT_ID },
@@ -81,7 +88,7 @@ export function programmeProcess(c: Ctx, pf?: Portfolio, productId?: string): Pr
   return {
     participant: { id: PROGRAMME_PARTICIPANT_ID, name: 'Transformation programme' }, deliveryParticipant: DELIVERY_PARTICIPANT_ID,
     lanes: PROGRAMME_LANES.map((l) => ({ id: programmeLaneId(l.role), role: l.role, name: l.name, description: l.description,
-      fteY1: topo && l.topology ? topo[l.topology] : null })),
+      fteY1: topo && l.topology ? topo[l.topology] : null, ...(mapped.get(l.role) ? { orgRole: mapped.get(l.role)! } : {}) })),
     phases: PROGRAMME_PHASES.map((p) => ({ id: programmePhaseId(p.id), phase: p.id, name: p.name })), activities, waves,
     milestones: programmeMilestones(c).map((m) => ({ ...m, instances: Math.max(1, planned) })),
     capacity: pf ? capacityOf(pf) : null, messageFlows,

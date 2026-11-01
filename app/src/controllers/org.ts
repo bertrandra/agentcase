@@ -1,10 +1,11 @@
 /** @calc-zone rate-card-team */
-import { addUnit, clearRaci, defaultUnitInput, freeUnitId, readStoredOrg, removeUnit, setRaci, updateUnit, withRaciOverride, type Raci, type UnitInput,
-  type UnitPatch } from '@/domain/org';
+import { addUnit, clearRaci, defaultUnitInput, freeUnitId, readStoredOrg, removeUnit, setRaci, updateUnit, withLaneRole, withRaciOverride, type Raci,
+  type UnitInput, type UnitPatch } from '@/domain/org';
 import { productOwner, withProductOwner, withTeamDoc, type Portfolio } from '@/domain/portfolio';
 import type { XDocument } from '@/domain/process';
 import { defineCommand, definePortfolioCommand } from '@/store/commands';
-import { activeDoc } from '@/store/editBase';
+import { activeDoc, editBase } from '@/store/editBase';
+import { readProcess } from '@/domain/process';
 import { appStore } from '@/store/instance';
 import { changedBy } from './portfolioGuard';
 import { editProcess } from '@/store/processEdit';
@@ -54,6 +55,12 @@ const productRaciCmd = definePortfolioCommand<{ productId: string; id: string; r
   apply: (pf, p) => (pf.products.some((x) => x.id === p.productId) ? onCommon(pf, (d) => withRaciOverride(d, p.productId, p.id, p.raci)) : pf),
 });
 
+/** FX-D11: an operating-model role of the programme mapped to an organisation role (null: unmapped); `known`: the role ids then. */
+const laneRoleCmd = definePortfolioCommand<{ lane: string; role: string | null; known: string[] }>({
+  type: 'org.setLaneRole', label: (p) => (p.role ? `Map the programme role ${p.lane} to ${p.role}` : `Unmap the programme role ${p.lane}`),
+  apply: (pf, p) => onCommon(pf, (d) => withLaneRole(d, p.lane, p.role, new Set(p.known))),
+});
+
 const changed = changedBy;
 
 const commonDoc = (): XDocument => appStore().getState().portfolio.common.BPMN as XDocument;
@@ -69,6 +76,8 @@ export const removeOrgUnit = (id: string): boolean => changed(() => appStore().d
 export const setActivityRaci = (id: string, raci: Raci): boolean => changed(() => appStore().dispatch(setRaciCmd({ id, raci })));
 export const setProductRaci = (productId: string, id: string, raci: Raci | null): boolean =>
   changed(() => appStore().dispatch(productRaciCmd({ productId, id, raci })));
+export const setLaneRole = (lane: string, role: string | null): boolean => changed(() => appStore().dispatch(laneRoleCmd({ lane, role,
+  known: readProcess(editBase().BPMN as XDocument).actors.filter((a) => a.kind === 'role').map((a) => a.id) })));
 export const clearActivityRaci = (id: string): boolean => changed(() => appStore().dispatch(clearRaciCmd({ id })));
 /** Set (unit id) or clear (null: "Unassigned") a product's owning unit; false when refused (unknown product or unit). */
 export const setProductOwner = (productId: string, unitId: string | null): boolean =>

@@ -1,7 +1,7 @@
 // @vitest-environment jsdom
 import { cleanup, fireEvent, render, screen, within } from '@testing-library/react';
 import { afterEach, describe, expect, it } from 'vitest';
-import { raciOverridesOf, readRaci, readStoredOrg } from '@/domain/org';
+import { laneRolesOf, raciOverridesOf, readRaci, readStoredOrg } from '@/domain/org';
 import Organisation from '@/ui/sections/frame/organisation';
 import WhoDoesWhat from '@/ui/sections/scope/who-does-what';
 import { axeViolations } from '../../helpers/axe';
@@ -66,5 +66,15 @@ describe('🧭 Who does what in a portfolio (FX-D4)', () => {
     expect(raciOverridesOf(pf().common.BPMN as XDocument, product.id).get('A017')?.A).toBe('role-lead');
     fireEvent.click(screen.getByText('Back to the common RACI'));
     expect(raciOverridesOf(pf().common.BPMN as XDocument, product.id).size).toBe(0);
+  });
+});
+
+describe('🏢 Organisation: programme roles (FX-D11)', () => {
+  it('each operating-model role picks the organisation role that staffs it (one undoable step)', () => {
+    const s = freshStore();
+    render(<Organisation />);
+    fireEvent.change(screen.getByLabelText('Organisation role for Orchestrator'), { target: { value: 'role-lead' } });
+    expect(laneRolesOf(s.getState().portfolio.common.BPMN as XDocument).get('orchestrator')).toBe('role-lead');
+    expect((screen.getByLabelText('Organisation role for Orchestrator') as HTMLSelectElement).value).toBe('role-lead');
   });
 });

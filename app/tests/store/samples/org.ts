@@ -1,4 +1,4 @@
-import { addOrgUnit, clearActivityRaci, removeOrgUnit, setActivityRaci, setProductOwner, setProductRaci, updateOrgUnit } from '@/controllers/org';
+import { addOrgUnit, clearActivityRaci, removeOrgUnit, setActivityRaci, setLaneRole, setProductOwner, setProductRaci, updateOrgUnit } from '@/controllers/org';
 import { appStore } from '@/store/instance';
 import type { Sample } from './types';
 
@@ -12,5 +12,6 @@ export const samples: Record<string, Sample> = {
   'org.setOwner': { prep: () => { addOrgUnit({ ...VENDOR, parent: 'unit-delivery' }); },
     run: () => setProductOwner(appStore().getState().portfolio.products[0]!.id, 'unit-1') },
   'org.setProductRaci': () => setProductRaci(appStore().getState().portfolio.products[0]!.id, 'A017', { R: ['role-dev'], A: 'role-lead', C: [], I: [] }),
+  'org.setLaneRole': () => setLaneRole('orchestrator', 'role-lead'),
   'org.clearRaci': { prep: () => setActivityRaci('A017', { R: ['role-dev'], A: 'role-lead', C: [], I: [] }), run: () => clearActivityRaci('A017') },
 };

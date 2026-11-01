@@ -315,6 +315,14 @@
     </xsd:complexType>
   </xsd:element>
 
+  <xsd:element name="laneRole">
+    <xsd:annotation><xsd:documentation>FX-D11: in the organisation part of the common document, an operating-model role of the transformation programme (its lane key) mapped to the organisation role that staffs it.</xsd:documentation></xsd:annotation>
+    <xsd:complexType>
+      <xsd:attribute name="lane" type="ac:tKey" use="required"/>
+      <xsd:attribute name="role" type="xsd:IDREF" use="required"/>
+    </xsd:complexType>
+  </xsd:element>
+
   <xsd:element name="raciOverride">
     <xsd:annotation><xsd:documentation>FX-D4 (§ 21.5): in the organisation part of the common document, a product's own RACI of one activity (the process is not copied). The role that prices the activity stays Responsible.</xsd:documentation></xsd:annotation>
     <xsd:complexType>

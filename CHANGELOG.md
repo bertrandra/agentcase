@@ -17,8 +17,10 @@ When releasing, follow [docs/BUMP_PROCEDURE.md](docs/BUMP_PROCEDURE.md) (§7 for
 
 ## [Unreleased]
 
-### SPEC_FIXES lot X6 (part) — organisation and audit depth (FX-05, FX-21, FX-22, FX-23, FX-D4, FX-D6, FX-D7)
+### SPEC_FIXES lot X6 — organisation and audit depth (FX-05, FX-21, FX-22, FX-23, FX-D4, FX-D6, FX-D7, FX-D11)
 
+- **Programme roles**: each operating-model role of the transformation programme can name the organisation role that staffs it (🏢 Organisation);
+  the BPMN export with both processes names it on the lane. No figure changes.
 - **RACI-driven load and cost by unit** (opt-in, 🧭 Who does what › By unit): each unit's share of the product's Responsible work and of
   its team cost. A view: no figure changes.
 - **Per-product audit**: in a portfolio, a product that shares the common process keeps its own audit (organisation part of the common

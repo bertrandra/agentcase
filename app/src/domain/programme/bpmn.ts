@@ -37,8 +37,9 @@ function milestone(m: ProgrammeView['milestones'][number]): XElement {
 }
 
 /** The programme's process element. */
-export function programmeProcessElement(v: ProgrammeView): XElement {
-  const lanes = v.lanes.map((l) => B('lane', { id: l.id, name: l.name },
+/** `refs`: the file holds the delivery process too, so a lane names its mapped organisation role (`partitionElementRef`, FX-D11). */
+export function programmeProcessElement(v: ProgrammeView, refs = false): XElement {
+  const lanes = v.lanes.map((l) => B('lane', { id: l.id, name: l.name, partitionElementRef: refs ? l.orgRole : undefined },
     [...v.activities, ...v.milestones].filter((a) => `prog-lane-${a.lane}` === l.id).map((a) => B('flowNodeRef', {}, [text(a.id)]))));
   const laneSet = B('laneSet', { id: 'prog-LaneSet', 'ac:setupCapacity': v.capacity ?? undefined }, lanes);
   const inPhase = <T extends { phase: string }>(xs: T[], id: string): T[] => xs.filter((a) => `prog-phase-${a.phase}` === id);
@@ -83,7 +84,7 @@ export function withProgramme(d: XDocument, v: ProgrammeView): XDocument {
   const dia = withChildren(diagram, diagram.children.map((y) => (y === plane ? p : y)));
   root = withChildren(root, root.children.map((x) => (x === collab ? c : x === diagram ? dia
     : x)));
-  root = insertChild(root, fitted(root, programmeProcessElement(v)), DEFINITIONS_RANK);
+  root = insertChild(root, fitted(root, programmeProcessElement(v, true)), DEFINITIONS_RANK);
   return { ...d, root };
 }
 

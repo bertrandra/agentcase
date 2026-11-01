@@ -7,11 +7,10 @@
 > view state never undoable, one owner per figure in `src/domain`, single-product figures identical to the legacy file unless recorded in
 > DEVIATIONS.md and `app/tests/helpers/deviations*.ts`, one PR per lot merged on green CI with the HTML shared.
 
-> **Progress (2026-11-01, updated after lot X6 part 2):** every row is tagged — ✅ **Done** (merged, or on the branch for FX-05 / FX-22), ⏳ **Open**,
+> **Progress (2026-11-01, updated after lot X6):** every row is tagged — ✅ **Done** (merged, or in the open X6 PR), ⏳ **Open**,
 > ⏸ **Tracked** (waits on an upstream release). Lots: X0, X1, X2, X3 done; X5 done except FX-32 (needs a ProjectLibre / MS Project check);
-> X8 done (FX-44 tracked); X9 done except the owner's items (FX-57, FX-59, FX-60, FX-63); X6 partly done (FX-05, FX-21, FX-22 done; FX-23 and
-> the decisions FX-D4, FX-D6, FX-D7, FX-D11 open); X4 partly done (FX-15, FX-20 done); X7 open. Owner actions open: FX-O1, FX-O3, FX-O4, FX-O5.
-> **On hold** at the owner's request after this update.
+> X8 done (FX-44 tracked); X9 done except the owner's items (FX-57, FX-59, FX-60, FX-63); X6 done (FX-05, FX-21, FX-22, FX-23, FX-D4, FX-D6, FX-D7,
+> FX-D11); X4 partly done (FX-15, FX-20 done); X7 open. Owner actions open: FX-O1, FX-O3, FX-O4, FX-O5.
 
 ## 1. Purpose
 
@@ -39,7 +38,7 @@ DEVIATIONS.md entry and the owner's approval of the before → after on the gold
 | FX-D8 | ⏳ Open — Hand-off cost, cadence, waits, change-failure rate, token profile are views, not engine figures | (a) feed the engine, opt-in per factor; (b) keep views | Opt-in | item 21 |
 | FX-D9 | ⏳ Open — The default process does not link the SDLC chain with data inputs | (a) link it (traceability complete by default); (b) keep | None (document only) | item 22 |
 | FX-D10 | ⏳ Open — CMMN read-back drops content it does not map | (a) keep it in an extension element (pass-through); (b) keep dropping | None | item 27 |
-| FX-D11 | ⏳ Open — Programme lanes (operating-model roles) are not linked to the organisation's roles | (a) map each operating-model role to an organisation role with a team skill; (b) keep separate | None | item 30 |
+| FX-D11 | ✅ Done — Programme lanes (operating-model roles) are not linked to the organisation's roles | (a) map each operating-model role to an organisation role with a team skill; (b) keep separate | None | item 30 |
 | FX-D12 | ⏳ Open — The delivery diagram has no agents' lane | (a) add an agents' lane to the default DI (exports change, figures do not); (b) keep | None | item 31 |
 | FX-D13 | ⏳ Open — `setupTraining` / `setupGov` are stored but no figure reads them | (a) retire them, with deviations for the DD register (119 → 117 rows), report and legacy sheet; (b) keep as legacy inputs | Deviation (legacy outputs) | item 33 |
 | FX-D14 | ⏳ Open — Waves, setup capacity and knowledge subsets live outside the BPMN document | (a) a portfolio-level BPMN document (waves as sub-processes, capacity on lanes); (b) keep as portfolio data | None | item 34 |
@@ -59,7 +58,7 @@ DEVIATIONS.md entry and the owner's approval of the before → after on the gold
 | FX-D8 | ⏳ Open — **(a)** feed the engine, opt-in per factor | The token profile becomes SPEC_HARNESS § 11's token owner | X7 |
 | FX-D9 | ⏳ Open — **(a)** link the SDLC chain with its data inputs in the default process | Document change only | X7 |
 | FX-D10 | ⏳ Open — **(a)** CMMN pass-through in an extension element | No figure moves | X7 |
-| FX-D11 | ⏳ Open — **(a)** map each operating-model role to an organisation role with a team skill | Needed for SPEC_HARNESS's build pods and run teams | X6 |
+| FX-D11 | ✅ Done — **(a)** map each operating-model role to an organisation role with a team skill. **Fixed (lot X6, unreleased)**: `ac:laneRole lane role` in the organisation part (XSD added); 🏢 Organisation › Programme roles picks the role for each operating-model role; the BPMN export with both processes names it on the lane (`partitionElementRef`); no figure reads it | Needed for SPEC_HARNESS's build pods and run teams | X6 |
 | FX-D12 | ⏳ Open — **(a)** an agents' lane in the default diagram | Exports change, figures do not | X7 |
 | FX-D13 | ⏳ Open — **(a)** retire `setupTraining` / `setupGov` | **Deviation** of legacy outputs: DD register 119 → 117 rows, report and legacy sheet | X7 |
 | FX-D14 | ⏳ Open — **(a)** a portfolio-level BPMN document: waves as sub-processes, capacity on lanes | Schema migration; also the home of SPEC_HARNESS's pilot and wave slices | X7 |
@@ -191,7 +190,7 @@ B5 question on factory tags is answered in § 15; `npm audit` 0; no open GitHub 
 | X3 Catalogue retirement | FX-02 (D-B9) | Default process byte-identical; all reference lists unchanged | None | 1.5 d | ✅ Done |
 | X4 Screens for built domain | FX-10, FX-11, FX-12…FX-14, FX-15, FX-16, FX-17, FX-20, FX-26 | axe clean; render budgets; ui-parity 0 | None | 3 d | 🟡 Partly done — open: FX-10, FX-11, FX-12, FX-13, FX-14, FX-16, FX-17, FX-26 |
 | X5 Import / export / workbooks | FX-24, FX-25, FX-27…FX-34 | Round trips; workbook legacy sheets unchanged | None | 2 d | 🟡 Partly done — open: FX-32 |
-| X6 Organisation depth | FX-05, FX-21, FX-22, FX-23, FX-D4 (a), FX-D6 (a), FX-D7 (a), FX-D11 (a) | Undo property tests; parity | Opt-in | 2.5 d | 🟡 Partly done — open: FX-23, FX-D11, FX-D4, FX-D6, FX-D7 |
+| X6 Organisation depth | FX-05, FX-21, FX-22, FX-23, FX-D4 (a), FX-D6 (a), FX-D7 (a), FX-D11 (a) | Undo property tests; parity | Opt-in | 2.5 d | ✅ Done |
 | X7 Portfolio document | FX-D14 (a), FX-D2 (a: implied correlation view only), FX-D8 (a), FX-D9 (a), FX-D10 (a), FX-D12 (a), FX-D13 (a, deviation), FX-D15 (a) | Schema v6 migration round trips | Per decision | 3 d | ⏳ Open |
 | X8 Polish | FX-18, FX-19, FX-41…FX-45, FX-71, FX-76, FX-77 | — | None | 1 d | ✅ Done (FX-44 tracked upstream) |
 | X9 Carry-over | FX-50…FX-56, FX-58, FX-61, FX-62, FX-64; FX-57 / FX-59 / FX-60 per FX-O5; FX-63 when files arrive | Deviations recorded for FX-52, FX-53, FX-56 | Deviation (labels, export, report count) | 3 d | 🟡 Partly done — open: FX-57, FX-59, FX-60 (owner's call, FX-O5), FX-63 (customer files, FX-O4) |
