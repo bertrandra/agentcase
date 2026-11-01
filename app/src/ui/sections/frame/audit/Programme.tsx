@@ -1,6 +1,7 @@
 import { PROGRAMME_AUDIT_IDS } from '@/controllers/audit';
 import { PROGRAMME_ACTIVITIES, PROGRAMME_PHASES, programmeActivityId } from '@/domain/programme';
 import type { AuditViewData } from '@/store/auditHooks';
+import { AuditTable, isAudited } from './AuditTable';
 import { ElementForm } from './ElementForm';
 import { SelectCell } from './SelectCell';
 import { useAuditView } from './view';
@@ -20,20 +21,14 @@ export function Programme({ data }: { data: AuditViewData }) {
       <h2 id="ac-audit-prog-h">Programme activities</h2>
       <p className="ac-muted">Observations on the programme&apos;s own work (pilot, setup, rollout…). They are recorded like a delivery activity&apos;s;
         calibration does not apply to them.</p>
-      <div className="ac-table-wrap" tabIndex={0}>
-        <table className="ac-table" aria-labelledby="ac-audit-prog-h">
-          <thead><tr><th scope="col">Activity</th><th scope="col">Phase</th><th scope="col">Audit</th></tr></thead>
-          <tbody>{rows.map((r) => {
-            const a = data.audit.elements.get(r.id), audited = !!a && a.observations.length + a.tools.length + a.painPoints.length + a.evidence.length > 0;
-            return (
-              <tr key={r.id}>
-                <SelectCell id={r.id} selected={selected}>{r.name}</SelectCell>
-                <td>{r.phase}</td><td>{audited ? 'Audited' : 'Not audited'}</td>
-              </tr>
-            );
-          })}</tbody>
-        </table>
-      </div>
+      <AuditTable labelledBy="ac-audit-prog-h" head={['Activity', 'Phase', 'Audit']}>
+        {rows.map((r) => (
+          <tr key={r.id}>
+            <SelectCell id={r.id} selected={selected}>{r.name}</SelectCell>
+            <td>{r.phase}</td><td>{isAudited(data.audit.elements.get(r.id)) ? 'Audited' : 'Not audited'}</td>
+          </tr>
+        ))}
+      </AuditTable>
       {sel && <ElementForm data={data} id={sel.id} title={`programme activity ${sel.name}`} blocks={['readiness', 'time', 'quality', 'flow', 'people']} />}
     </>
   );
