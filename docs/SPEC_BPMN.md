@@ -1643,7 +1643,7 @@ the service line, a deviation (FX-D3); § 21.8 — the organisation out of the M
 
 | # | Open item | Kind | Recorded in |
 |---|---|---|---|
-| 1 | D-B9: the JSON catalogues still generate the default process; retiring them needs a DOM-free reader of `defaultProcess.bpmn` (or a build step) and the reference-list readers (reset, pins, factory pickers, legacy sheets, per-phase tables) moved to the default process views | Work | § 7.1 (1) |
+| 1 | ~~D-B9: the JSON catalogues still generate the default process~~ — **done in SPEC_FIXES lot X3 (FX-02)**: `defaultProcess.bpmn` is the one source, read DOM-free (`readXml`), the four JSON catalogues retired; retiring them needs a DOM-free reader of `defaultProcess.bpmn` (or a build step) and the reference-list readers (reset, pins, factory pickers, legacy sheets, per-phase tables) moved to the default process views | Work | § 7.1 (1) |
 | 2 | Pins of a custom activity are refused (`normalisedPins` checks the catalogue ids) | Work | § 7.1 (4) |
 | 3 | The per-phase tables (`phaseArtRows`, agent usage) do not list a custom phase | Work | § 7.1 (4) |
 | 4 | A new role's resource is inserted after the existing resources, so its undo patch is larger than an append | Work | § 9.1 |

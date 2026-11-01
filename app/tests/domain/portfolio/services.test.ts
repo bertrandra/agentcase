@@ -86,7 +86,10 @@ describe('fixed shares (D-B38 b, the override) and the migration rule', () => {
     expect(setSharedLineUnit(t.line, 'qa')).toBe(true);
     expect(line0(t.pf())).toMatchObject({ unit: 'qa', allocations: { [a]: 70, [b]: 30 } });
     expect(lineRule(t.pf(), line0(t.pf()))).toBe('fixed');
-    expect(t.ids.map((id) => resolveProduct(t.pf(), id).teamIn)).toEqual(before);
+    // FX-D3 (a): the shares (FTE) are kept; the service's Test/QA activities are routed to its line (pins) — and no headline figure moves
+    const after = t.ids.map((id) => resolveProduct(t.pf(), id).teamIn);
+    expect(after.map((rows) => rows.map((r) => r.etp))).toEqual(before.map((rows) => rows.map((r) => r.etp)));
+    expect(after[0]!.find((r) => r.shared)!.pins!.length).toBeGreaterThan(0);
   });
   it('effort outside a service is refused; a line outside a service is always split by its fixed shares', () => {
     const t = serviceThree();

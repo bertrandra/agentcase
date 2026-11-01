@@ -57,11 +57,12 @@ describe('default process (catalog/defaultProcess.bpmn)', () => {
       expect(a.humanPerformer, a.id).toBeDefined();
     }
   });
-  it('size: reported raw and gzipped (embedded later, gzip like the Excel payload); not imported by the application yet', () => {
+  it('size: reported raw and gzipped; imported once, by the catalogue (SPEC_FIXES FX-02: the one source of the catalogue lists)', () => {
     const raw = Buffer.byteLength(file), gz = gzipSync(file, { level: 9 }).length;
     expect(raw).toBeLessThan(600 * 1024);
     expect(gz).toBeLessThan(60 * 1024);
     const code = readdirSync('src', { recursive: true, encoding: 'utf8' }).filter((f) => /\.tsx?$/.test(f)).map((f) => join('src', f));
-    expect(code.filter((f) => /(from|import\()\s*['"][^'"]*defaultProcess\.bpmn/.test(readFileSync(f, 'utf8')))).toEqual([]);
+    const importers = code.filter((f) => /(from|import\()\s*['"][^'"]*defaultProcess\.bpmn/.test(readFileSync(f, 'utf8')));
+    expect(importers).toEqual([join('src', 'domain/catalog/index.ts')]);
   });
 });

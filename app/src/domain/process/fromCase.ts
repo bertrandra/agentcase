@@ -1,7 +1,8 @@
 /** @calc-zone process-model */
 import { roleResource } from './buildActors';
 import { casePlan, type CasePlan, type ElementPatch } from './casePlan';
-import { catalogueProcess, mapElements } from './defaultProcess';
+import { catalogueProcess } from './defaultProcess';
+import { mapElements } from './order';
 import { readProcess } from './read';
 import type { ScopeKeys } from './types';
 import { attr, el, kid, NS, text, withAttrs, withChildren, type AttrInput, type XDocument, type XElement, type XNode } from './xml';

@@ -1,6 +1,6 @@
 /** @calc-zone process-model */
 import type { ArtefactEdit } from '../types/state';
-import { byRank } from './defaultProcess';
+import { byRank } from './order';
 import { normKey } from './ids';
 import { readProcess } from './read';
 import type { ActivityView, ProcessView } from './readTypes';

@@ -86,7 +86,7 @@ describe('units at any depth, one owning unit per product (F-B80, D-B39)', () =>
       .toBe(true);
     expect(setProductOwner('p1', 'unit-8')).toBe(true);
     const m = { units: readStoredOrg(s.getState().portfolio.common.BPMN).units };
-    expect(unitTree(m).map((x) => x.depth)).toEqual([0, 1, 2, 3, 4, 5, 6, 7]);
+    expect(unitTree(m).map((x) => x.depth)).toEqual([0, 0, 1, 2, 3, 4, 5, 6, 7]);   // the stored default delivery unit (FX-07), then the chain
     const products = [{ id: 'p1', name: 'P', owner: 'unit-8' }];
     expect(productsOfUnit(m.units, products, 'unit-1').map((p) => p.id)).toEqual(['p1']);
     expect(productsOfUnit(m.units, products, null)).toEqual([]);

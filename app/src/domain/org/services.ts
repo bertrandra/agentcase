@@ -14,7 +14,8 @@ import type { ActivityRaci, OrgUnit, ServiceSpec } from './types';
  * product's own scope weight. An activity can be assigned to more than one service (each counts it). Pure.
  */
 export type Via = 'pin' | 'type' | 'role';
-export interface ServiceActivity { id: string; name: string; phase: string; effort: number; via: Via[] }
+/** `skill`: the activity's team skill (its type), which picks the service line it is routed to (FX-D3). */
+export interface ServiceActivity { id: string; name: string; phase: string; effort: number; via: Via[]; skill: string }
 export interface ServiceDef { id: string; name: string; spec: ServiceSpec; lines: SharedTeamLine[] }
 
 /** The unit a shared line belongs to (absent = the default delivery unit). */
@@ -41,7 +42,7 @@ export function serviceActivities(def: Pick<ServiceDef, 'spec' | 'lines'>, work:
     if (pins.has(a.id)) via.push('pin');
     if (skills.size && skills.has(work.teamSkill(a))) via.push('type');
     if ((rOf.get(a.id) ?? []).some((r) => roles.has(r))) via.push('role');
-    if (via.length) out.push({ id: a.id, name: a.name, phase: a.phase, effort: +a.w || 0, via });
+    if (via.length) out.push({ id: a.id, name: a.name, phase: a.phase, effort: +a.w || 0, via, skill: work.teamSkill(a) });
   }
   return out;
 }

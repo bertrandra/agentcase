@@ -20,4 +20,12 @@ export const BPMN_DEVIATIONS: Deviation[] = [
   { id: 'DEV-B9D-PLAN-SCREEN',
     reason: 'The 📅 Gantt / Timeline section is titled 📅 Plan, with the tabs Gantt (the legacy calendar unchanged, then the programme Gantt), WBS, ' +
     'OBS / RAM and Histogram and the plan exports; the menu label stays the legacy one (Sections sheet, Board dashboards). No figure changes.', skip: [] },
+  // SPEC_FIXES FX-01: portfolios only; no fixture switches a case-level opt-in on, no oracle field changes (tests/domain/portfolio/case-level-optin.test.ts).
+  { id: 'DEV-FX01-CASE-OPTIN',
+    reason: 'A case-level opt-in activity switched on in the common values is counted once per portfolio, by its carrier product (the first planned ' +
+    'product of the earliest wave), and by another product only with its own switch. A single case is unchanged.', skip: [] },
+  // SPEC_FIXES FX-D3: the spread over team lines only; no headline or oracle field changes (no fixture uses a service).
+  { id: 'DEV-FXD3-SERVICE-ROUTING',
+    reason: "A service's activities by type or role are routed to its lines in each product's team (pins by team skill); the Input Team spread " +
+    'moves, no headline figure does.', skip: [] },
 ];

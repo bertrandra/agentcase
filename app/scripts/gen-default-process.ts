@@ -1,7 +1,8 @@
 /**
- * Generates src/domain/catalog/defaultProcess.bpmn (docs/SPEC_BPMN.md § 6.3): the default process as native BPMN 2.0 XML, built from today's
- * catalogues (phases, artefacts, regulatory catalogue, loop pairs, skill map) with the scope of the default case (store/defaults/defaultDoc.json).
- * Stable serialisation: same catalogues, same bytes. Never edited by hand.
+ * The round-trip check of src/domain/catalog/defaultProcess.bpmn (docs/SPEC_BPMN.md § 6.3). Since SPEC_FIXES FX-02 (D-B9 (b)) the shipped file is
+ * the ONE source of the catalogue: the catalogue lists are read from it (`catalog/index.ts`), and this script rebuilds the file from those lists
+ * (with the skill map and the default case's scope) — `--check` proves the reading is lossless (same bytes). `process:gen` rewrites the file
+ * after an intended change of the generator's layout; an edit of the catalogue is an edit of the .bpmn itself.
  * Usage (from app/): npm run process:gen          rewrites the file
  *                    npm run process:check        exits 1 when the committed file differs (tests/domain/process/default-process.test.ts too)
  */
