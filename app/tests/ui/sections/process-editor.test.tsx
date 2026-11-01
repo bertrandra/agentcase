@@ -110,7 +110,8 @@ describe('Process section: the BPMN editor (B6)', { timeout: 30_000 }, () => {
     expect(imports).toEqual([undefined]);   // not re-imported after the save
     expect(document.querySelector('.ac-proc-editor select')).toBeNull();   // one diagram: no picker
     // a second diagram (as an export with the organisation view writes): saved through the editor, it becomes part of the case
-    saved.xml = editorSource().replace(/(<\/bpmndi:BPMNDiagram>)/, '$1\n  <bpmndi:BPMNDiagram id="Diagram_2" name="Second view"><bpmndi:BPMNPlane id="Plane_2" bpmnElement="Process_1"/></bpmndi:BPMNDiagram>');
+    const view2 = '<bpmndi:BPMNDiagram id="Diagram_2" name="Second view"><bpmndi:BPMNPlane id="Plane_2" bpmnElement="Process_1"/></bpmndi:BPMNDiagram>';
+    saved.xml = editorSource().replace(/(<\/bpmndi:BPMNDiagram>)/, `$1\n  ${view2}`);
     fireEvent.click(button('Save to the case'));
     await flush();
     fireEvent.click(button('Close editor'));
