@@ -17,6 +17,16 @@ When releasing, follow [docs/BUMP_PROCEDURE.md](docs/BUMP_PROCEDURE.md) (§7 for
 
 ## [Unreleased]
 
+### SPEC_FIXES lot X9 (rest) — carry-over (FX-50…FX-56, FX-58)
+
+- **Workbooks**: the Location Target sheet keeps the full target share (DEV-EXCEL-TARGET-LOC); the FM Environments sheet carries the production
+  flag (DEV-EXCEL-FM-PROD; older workbooks keep the case's flags).
+- **Labels and help**: the verification chain's ROI label follows the horizon; the run-sizing help prints the case's legacy run cost from the
+  engine; the stale "beyond 3 years" messages are gone (DEV-HORIZON-LABELS). The report counts the catalogue (DEV-REPORT-CATALOGUE-COUNT).
+- **Checks**: every section that follows the View has its own aggregate (compliance and risk were already built; VUE_AGREGEE updated); the report
+  HTML is fuzzed with hostile names (property test). The `bass` curve restore was already right in the new build. No figure changes.
+
+
 ### SPEC_FIXES lot X9 (part) — carry-over (FX-61, FX-62, FX-64)
 
 - **Legacy battery in the nightly**: `tools/test-all.mjs` (check, smoke, handlers, xss, state) runs every night; its state test no longer writes to

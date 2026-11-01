@@ -2,6 +2,7 @@
 import { AI_SKILL_PREMIUM } from '../rates';
 import type { Ctx } from '../ctx';
 import { headline } from '../economics/headline';
+import { caseHorizonYears } from '../inputs';
 import { fmtRoiPct } from '../economics/roi';
 import { model } from '../model/overlay';
 import { fmtE, fmtK } from './verifFormat';
@@ -24,6 +25,7 @@ export function calcChain(c: Ctx): string[][] {
     ['Agentic run', `FTE_AI×day rate×${AI_SKILL_PREMIUM}×days`, `${m.runAgenticETP.toFixed(1)} FTE`, fmtK(m.runAgenticCost)],
     ['Total run Y3', 'team+tokens+infra+runAI', '—', fmtK(m.yearRun[2]!)],
     ['Benefit Y3', 'baseline−run+KT−tax−ext', '—', fmtK(m.yearSav[2]!)],
-    ['ROI 3 years (net)', '(Σ benefits − Setup)/Setup', '—', fmtRoiPct(headline(c).roi)],
+    // FX-52 (DEV-HORIZON-LABELS): the ROI is over the case's horizon, so is its label (the legacy wrote "3 years" whatever the horizon)
+    [`ROI ${caseHorizonYears(c.inp)} year${caseHorizonYears(c.inp) > 1 ? 's' : ''} (net)`, '(Σ benefits − Setup)/Setup', '—', fmtRoiPct(headline(c).roi)],
   ];
 }

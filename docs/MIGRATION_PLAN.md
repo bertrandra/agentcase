@@ -377,15 +377,15 @@ Not fixed in the port (decision D7); each is a candidate for a deliberate change
 
 | Discrepancy | Status |
 |---|---|
-| Stale help figures and fixed "3-year" labels in some sections | open (ported as shown, parity-tested) |
+| Stale help figures and fixed "3-year" labels in some sections | fixed (SPEC_FIXES FX-52, DEV-HORIZON-LABELS) |
 | Monte Carlo returned NaN above 3 years | fixed in v18.12 (legacy and port) |
 | Strategies and Results above 3 years; scenarios at horizons 1 and 2 | fixed in v18.13 |
 | No potential re-fit when changing industry or a regulatory panel setting | fixed in v18.12; re-fit on open added to the port as in the legacy restore |
 | Section text dumps polluted by the render order of `scurve` | worked around in `tools/section-text.mjs` (each section renders from a fresh state) |
-| Location Target exported rounded to whole % | open |
-| FM environment `isProd` dropped on import | open |
-| `bass` curve family not restored by the legacy snapshot restore | open |
-| Critical-delivery report hard-codes 349 artefacts, the catalogue has 370 | open (ported identically) |
+| Location Target exported rounded to whole % | fixed (SPEC_FIXES FX-53, DEV-EXCEL-TARGET-LOC) |
+| FM environment `isProd` dropped on import | fixed (FX-54, DEV-EXCEL-FM-PROD) |
+| `bass` curve family not restored by the legacy snapshot restore | the new build keeps it (DEV-SNAPSHOT-RESTORE); the frozen legacy file stays as is |
+| Critical-delivery report hard-codes 349 artefacts, the catalogue has 370 | fixed: counted (FX-56, DEV-REPORT-CATALOGUE-COUNT) |
 | Logic verification "68 convergence rows" | the header counted: 67 rows, all computed (was 12 of 67 at first) |
 
 ### 15.5 Inconsistencies noted in the repository while documenting

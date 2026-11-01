@@ -38,8 +38,8 @@ function writeTarget({ wb, d }: WriteCtx): void {
   const ws = sheet(wb, 'Location Target', [['Location', 12], ['Classification', 14], ['Target %', 10]]);
   const t = ensureTargetLoc(structuredClone(d));
   LOCATIONS.forEach((l) => {
-    // legacy rounded to whole %, which silently changed the cost on re-import: one decimal is what the target mix is seeded with
-    const row = ws.addRow([l.name, l.cls, Math.round((t[l.name] || 0) * 10) / 10]);
+    // the full value (SPEC_FIXES FX-53, DEV-EXCEL-TARGET-LOC): the legacy rounded to whole %, which silently changed the cost on re-import
+    const row = ws.addRow([l.name, l.cls, t[l.name] || 0]);
     blue(row.getCell(3)); row.getCell(3).dataValidation = rangeDV(0, 100, false, 'Share 0–100 (should sum to 100)');
   });
   head(ws); frz(ws);

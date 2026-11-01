@@ -152,7 +152,7 @@ State legend: **DONE** (built in V0), **NATIVE** (the section already follows th
 | `annual` | economics | Annual summary | `R-conso` | Year-by-year table by calendar year of the portfolio / wave: savings, cost, setup, net, human FTE and vFTE at year end | `portfolioHeadline`/`waveHeadline` (`years`, `fte`), `series.humanFte`/`agentVfte` via `byYear` | DONE |
 | `monthly` | economics | Monthly detail | `R-conso` | Calendar monthly detail: savings, cost, setup, net, cumulative cash, FTE/vFTE, optionally per product | `consolidate().series` + `summary.cum` (`selectionView.chart`) | DONE |
 | `monthly-playback` | present | 🎬 Monthly Playback | `R-conso` | Monthly playback of the consolidated trajectory (FTE, cost, savings); velocity and cost per point weighted | `consolidate().series`, `weightedVelocity`; cost per point: domain view to be added | DONE |
-| `compliance` | verify | Compliance | `R-rollup` | Compliance coverage per product | `verifyB` per product | TO DO |
+| `compliance` | verify | Compliance | `R-rollup` | Compliance coverage per product | `verifyB` per product | DONE (`verify/compliance/Aggregate.tsx`) |
 | `financial` | economics | 💳 Financial | `R-conso` | DONE (exemplar): ROI/payback/NPV/net cards, cumulative cash, table per product, flows by calendar year, excluded products flagged | `selectionView` ← `consolidate`, `scopeHeadline`, `consolidationView` | DONE |
 | `model-flow` | model-engine | ⏱️ Flow & value (P5) | `R-rollup` | Cycle time (Little) and time-to-market NPV per product | `domain/model/flow` per product | DONE |
 | `gantt` | verify | 📅 Gantt / Timeline | `R-conso` | NATIVE: Gantt by wave with expandable products (`Waves.tsx`); registered as an aggregate | `portfolioGantt` ← `consolidate` | NATIVE |
@@ -180,7 +180,7 @@ State legend: **DONE** (built in V0), **NATIVE** (the section already follows th
 | `model-evidence` | model-engine | 📋 Evidence ledger (P6) | `R-rollup` | Confidence grade A-D and provenance per product | `domain/model/evidence` per product | DONE |
 | `verif` | defend | 🔍 Logic verification | `R-rollup` | Logic checks: number of failures per product (16 checks, 67 convergence rows); overall status = worst | `domain/pdc/verifChecks`, `verifConvergence`, `verifProvenance`, `verifSensi` | DONE |
 | `model-verification` | model-engine | 🛡️ Verification tax (P2) | `R-rollup` | Verification tax V per product | `domain/model/vtax`, `evt` | DONE |
-| `risk` | tune | 🛡️ Risk & Compliance | `I-input` | Risk register, AI Act tier and risk premium per product | `dom.values` of the resolved case | TO DO |
+| `risk` | tune | 🛡️ Risk & Compliance | `I-input` | Risk register, AI Act tier and risk premium per product | `dom.values` of the resolved case | DONE (`tune/risk/Aggregate.tsx`) |
 | `reference` | refshare | 🗺️ Reference Map | `S-static` | Banner only. Reference map of the delivery model | — | DONE (banner) |
 | `deps` | refshare | 🔗 Section Dependencies | `S-static` | Banner only. Dependency matrix between sections (static) | — | DONE (banner) |
 | `datamodel` | refshare | 🗄️ Data Model | `S-static` | Banner only. Data model of the application (catalogue, state registry) | — | DONE (banner) |

@@ -22,7 +22,7 @@ export const FM_SPECS: FmSpec[] = [
   { sheet: 'FM Deployments', key: 'DEPLOYMENTS',
     cols: [['ID', 12, 'id'], ['RC ID', 14, 'releaseCandidateId'], ['Environment ID', 14, 'environmentId'], ['Deployed At', 12, 'deployedAt'],
     ['Status', 11, 'status']] },
-  { sheet: 'FM Environments', key: 'ENVIRONMENTS', cols: [['ID', 12, 'id'], ['Name', 20, 'name'], ['Seq', 7, 'seq']] },
+  { sheet: 'FM Environments', key: 'ENVIRONMENTS', cols: [['ID', 12, 'id'], ['Name', 20, 'name'], ['Seq', 7, 'seq'], ['Production', 11, 'isProd']] },   // FX-54
   { sheet: 'FM Commits', key: 'COMMITS',
     cols: [['ID', 12, 'id'], ['Task ID', 16, 'taskId'], ['Message', 30, 'message'], ['Author', 16, 'author'], ['Committed At', 12, 'committedAt']] },
   { sheet: 'FM Builds', key: 'BUILDS', cols: [['ID', 12, 'id'], ['Name', 22, 'name'], ['Status', 10, 'status'], ['Built At', 12, 'builtAt']] },

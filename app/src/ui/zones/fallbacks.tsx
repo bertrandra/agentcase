@@ -68,7 +68,10 @@ export function InputFallback({ title }: FallbackProps) {
   );
 }
 
-/** R-conso that has no consolidated form yet (TODO tracked in docs/VUE_AGREGEE.md): the section per product, plus an explicit note. */
+/**
+ * R-conso without an aggregate of its own: the section per product, plus an explicit note. Every R-conso section has its aggregate today
+ * (tests/ui/aggregates-complete.test.ts, SPEC_FIXES FX-51): this stays as the safety net of a section added without one.
+ */
 export function ConsoFallback({ title, Section }: FallbackProps) {
   const vs = useViewScope();
   return (
