@@ -1649,8 +1649,8 @@ the service line, a deviation (FX-D3); § 21.8 — the organisation out of the M
 | 3 | The per-phase tables (`phaseArtRows`, agent usage) do not list a custom phase | Work | § 7.1 (4) |
 | 4 | A new role's resource is inserted after the existing resources, so its undo patch is larger than an append | Work | § 9.1 |
 | 5 | The diagram editor has no properties panel (parameters stay in the table and panels) | Work | § 9.2 |
-| 6 | The diagram editor's own undo history is lost on Save (it reloads from the case) | Work | § 9.2 |
-| 7 | The diagram editor shows the first diagram of the document only | Work | § 9.2 |
+| 6 | ~~The diagram editor's own undo history is lost on Save (it reloads from the case)~~ — **done in SPEC_FIXES lot X4 (FX-13)** | Work | § 9.2 |
+| 7 | ~~The diagram editor shows the first diagram of the document only~~ — **done in SPEC_FIXES lot X4 (FX-14)** | Work | § 9.2 |
 | 8 | The tool catalogue (129 tools) is verified against public sources (2026-10-31): the owner's sign-off is pending (43 entries partial or unverified) | Decision | § 15.7 (F-B23 / F-B25) |
 | 9 | ~~The tool catalogue is not a sheet of the audit workbook (the Lists sheet carries the codes only)~~ — **done in SPEC_FIXES lot X5 (FX-28)** | Work | § 15.7 (F-B26) |
 | 10 | F-B30 partial: the audit is per process document; products that share the common process share one audit | Decision | § 15.7 (F-B30) |
@@ -1678,7 +1678,7 @@ the service line, a deviation (FX-D3); § 21.8 — the organisation out of the M
 | 32 | In a portfolio, a case-level opt-in activity switched on in the common values is counted by every product | Work | § 19.10, § 19.12 |
 | 33 | `setupTraining` / `setupGov` are kept (read by the assumption register, the DD pack, the legacy Parameters sheet, the strategies); retiring them changes legacy outputs that would need recorded deviations | Decision | § 6.5, § 19.13 |
 | 34 | The waves, their dependencies, the setup capacity and a product's knowledge subset are portfolio data outside the document (a portfolio-level document is needed) | Decision | § 19.13 |
-| 35 | The resource histogram stacks by role only (no team / unit / location grouping) | Work | § 19.8 (F-B76) |
+| 35 | ~~The resource histogram stacks by role only (no team / unit / location grouping)~~ — **done in SPEC_FIXES lot X4 (FX-16)** | Work | § 19.8 (F-B76) |
 | 36 | The MS Project XML is validated against Microsoft's schema but was not opened in MS Project / ProjectLibre | Work | § 19.8 (F-B77) |
 | 37 | The plan sheets and pages come only with the Plan screen's exports (the Financial workbook and the Critical & Regulated report keep their legacy form) | Decision | § 19.8 (F-B77) |
 

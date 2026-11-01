@@ -20,6 +20,7 @@ export { setRaci, clearRaci } from './editRaci';
 export { raciOverridesOf, withProductRaci, withRaciOverride } from './raciOverride';
 export { raciCostByUnit, type RaciCost, type UnitCost } from './raciCost';
 export { laneRolesOf, withLaneRole } from './laneRoles';
+export { laneGroupOf, NOT_MAPPED, NOT_STAFFED, type HistGroupBy, type LaneGroup } from './laneGroups';
 export { organisationLaneSet, organisationView } from './orgView';
 export { withOrganisationDiagram } from './multiView';
 export { serviceDefs, serviceActivities, effortSplit, effortOf, lineUnit, type ServiceActivity, type ServiceDef, type ProductWork, type Via,

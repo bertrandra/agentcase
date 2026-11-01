@@ -69,6 +69,9 @@ describe('plan screen', () => {
     expect(within(panel()).getByRole('table', { name: /Programme labour per month \(person-days\)/ })).toBeTruthy();
     expect(within(panel()).getByRole('img', { name: /Programme labour per month by role in person-days/ })).toBeTruthy();
     expect(within(panel()).getByRole('table', { name: /Entry team \(before agents\)/ })).toBeTruthy();
+    // FX-16: grouped by team (no programme role mapped yet: one group "Not mapped", capacity not drawn)
+    act(() => { fireEvent.click(screen.getByRole('radio', { name: 'Team' })); });
+    expect(within(panel()).getByRole('list', { name: 'Groups (by team)' }).textContent).toContain('Not mapped to an organisation role');
     expect(await axeViolations(panel())).toEqual([]);
   });
 

@@ -1,4 +1,4 @@
-import type { HistRole } from '@/domain/programme/histogram';
+import type { HistSeries } from '@/domain/programme/histogram';
 
 /** The colour token of each programme role (lane): the Gantt bars and the histogram stacks. */
 export const ROLE_TONE: Record<string, string> = {
@@ -6,14 +6,18 @@ export const ROLE_TONE: Record<string, string> = {
   agentArchitect: 'chart-cat-6', finops: 'chart-cat-7', agents: 'chart-cat-8',
 };
 const W = 720, H = 220, PAD = 28;
+/** A series' colour: its role's tone, else (a group of roles, FX-16) a categorical tone by position. */
+export const toneOf = (key: string, i: number): string =>
+  ROLE_TONE[key] ?? `chart-cat-${(i % 8) + 1}`;
 
 /**
- * The stacked monthly bars of the programme histogram (one colour per role) and the capacity line (the roles' operating-model FTE, dashed).
+ * The stacked monthly bars of the programme histogram (one colour per role, or per group of roles) and the capacity line (the roles'
+ * operating-model FTE, dashed).
  * Decorative for assistive technologies: the table that follows it is its accessible alternative (same values), so the SVG is labelled as an
  * image with a short summary.
  */
 export function HistogramChart({ roles, from, scale, capacity, unit, summary }: {
-  roles: HistRole[]; from: number; scale: number; capacity: number | null; unit: string; summary: string;
+  roles: HistSeries[]; from: number; scale: number; capacity: number | null; unit: string; summary: string;
 }) {
   const n = roles[0]?.days.length ?? 0, tot = Array.from({ length: n }, (_, i) => roles.reduce((s, r) => s + r.days[i]! * scale, 0));
   const max = Math.max(1e-9, ...tot, capacity ?? 0), bw = (W - PAD) / Math.max(1, n), y = (v: number) => H - PAD - (v / max) * (H - PAD * 1.5);
@@ -26,11 +30,11 @@ export function HistogramChart({ roles, from, scale, capacity, unit, summary }: 
       <text x={W - 90} y={12} fontSize="10" fill="currentColor">{unit}</text>
       {Array.from({ length: n }, (_, i) => {
         let base = 0;
-        return roles.map((r) => {
+        return roles.map((r, k) => {
           const v = r.days[i]! * scale, top = y(base + v), h = y(base) - top;
           base += v;
-          return v > 0 ? <rect key={`${r.lane}-${i}`} x={PAD + i * bw} y={top} width={Math.max(0.5, bw - 0.5)} height={h}
-            fill={`var(--ac-${ROLE_TONE[r.lane]})`} /> : null;
+          return v > 0 ? <rect key={`${r.key}-${i}`} x={PAD + i * bw} y={top} width={Math.max(0.5, bw - 0.5)} height={h}
+            fill={`var(--ac-${toneOf(r.key, k)})`} /> : null;
         });
       })}
       {capacity !== null && <line className="ac-plan-cap" x1={PAD} y1={y(capacity)} x2={W} y2={y(capacity)} />}
