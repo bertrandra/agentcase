@@ -2,7 +2,7 @@
 import { resolveProduct } from '@/domain/portfolio';
 import { collaborationAudit, exportAuditDoc, hasAudit } from '@/domain/audit';
 import { collaborationDocument, collaborationText, exportCaseText, LIMITS, serialize, type ProductInput, type XDocument } from '@/domain/process';
-import { unitElements, withUnits } from '@/domain/org';
+import { orgOf, unitElements, withOrganisationDiagram, withUnits } from '@/domain/org';
 import { activeDoc } from '@/store/editBase';
 import { appStore } from '@/store/instance';
 import { parseBpmn, type ParseResult } from '@/store/persistence/bpmn/read';
@@ -54,9 +54,15 @@ function productInputs(): ProductInput[] {
  * file carries the process only). Deterministic content (F-B4); the date is in the name only.
  */
 export function exportProcessFiles(mode: BpmnExportMode, partial = false, now: Date = new Date(), audit = false,
-  processes: ProcessChoice = 'delivery'): BpmnFile[] {
-  const files = deliveryFiles(mode, partial, now, audit);
-  return processes === 'delivery' ? files : withProgrammeFiles(files, processes, mode);
+  processes: ProcessChoice = 'delivery', orgView = false): BpmnFile[] {
+  const files = deliveryFiles(mode, partial, now, audit), withOrg = orgView && mode !== 'collaboration' ? files.map(organised) : files;
+  return processes === 'delivery' ? withOrg : withProgrammeFiles(withOrg, processes, mode);
+}
+
+/** FX-23 (F-B39): the file with a second diagram "By organisation" (lanes unit → team → role, laid out) for the product shown. */
+function organised(f: BpmnFile): BpmnFile {
+  const pf = appStore().getState().portfolio, read = parseBpmn(f.text).doc;
+  return read ? { ...f, text: serialize(withOrganisationDiagram(read, orgOf(pf, read), pf.activeProductId)) } : f;
 }
 
 function deliveryFiles(mode: BpmnExportMode, partial: boolean, now: Date, audit: boolean): BpmnFile[] {

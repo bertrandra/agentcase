@@ -2,6 +2,7 @@ import { useState } from 'react';
 import { byProduct, byUnit, type Bucket, type OrgModel } from '@/domain/org';
 import { fmtNum } from '@/ui/widgets/orgFormat';
 import { Pick, Row } from './Answers';
+import { RaciCost } from './RaciCost';
 
 /** "Who does what" one screen each (F-B38): by organisation unit, by product (organisation chart and RACI matrix per role). */
 const buckets = (bs: Bucket[]): string => bs.map((b) => `${b.key || '—'} ${fmtNum(b.fte)}`).join(', ') || '—';
@@ -20,6 +21,7 @@ export function ByUnit({ m }: { m: OrgModel }) {
         <Row t="By location">{buckets(x.byLocation)}</Row>
         <Row t="By grade">{buckets(x.byGrade)}</Row>
       </dl>}
+      <RaciCost m={m} />
     </div>
   );
 }

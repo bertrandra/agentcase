@@ -1,6 +1,8 @@
 import { useState } from 'react';
-import { clearActivityRaci, setActivityRaci } from '@/controllers/org';
-import type { ActivityRaci, OrgModel } from '@/domain/org';
+import { clearActivityRaci, setActivityRaci, setProductRaci } from '@/controllers/org';
+import { raciOverridesOf, type ActivityRaci, type OrgModel, type Raci } from '@/domain/org';
+import type { XDocument } from '@/domain/process';
+import { usePortfolio } from '@/store/hooks';
 import { toast } from '@/ui/uiState';
 
 const picked = (s: HTMLSelectElement): string[] => [...s.selectedOptions].map((o) => o.value);
@@ -15,8 +17,14 @@ export function RaciEditor({ m, a, onClose }: { m: OrgModel; a: ActivityRaci; on
   const [C, setC] = useState(a.raci.C), [I, setI] = useState(a.raci.I), [teams, setTeams] = useState<Record<string, string>>(
     Object.fromEntries(Object.entries(a.raci.teams ?? {}).map(([k, v]) => [k, String(v)])));
   const shares = Object.fromEntries(Object.entries(teams).filter(([, v]) => v.trim() !== '').map(([k, v]) => [k, Number(v)]));
+  // FX-D4: in a portfolio, the RACI may be set for the product shown only (kept in the organisation part, the process is not copied)
+  const product = usePortfolio((p) => (p.products.length > 1 ? p.products.find((x) => x.id === p.activeProductId) : undefined));
+  const own = usePortfolio((p) => !!product && raciOverridesOf(p.common.BPMN as XDocument, product.id).has(a.id));
+  const [mine, setMine] = useState(own);
   const save = () => {
-    const ok = setActivityRaci(a.id, { R, ...(A ? { A } : {}), C, I, ...(Object.keys(shares).length ? { teams: shares } : {}) });
+    const raci: Raci = { R, ...(A ? { A } : {}), C, I, ...(Object.keys(shares).length ? { teams: shares } : {}) };
+    const ok = product && mine ? setProductRaci(product.id, a.id, { ...raci, R: [...new Set([...(a.primary ? [a.primary] : []), ...R])] })
+      : setActivityRaci(a.id, raci);
     toast(ok ? `RACI of ${a.id} saved — Ctrl+Z to undo` : 'Nothing changed (or refused: the team shares add up to more than 100 %)');
   };
   const reset = () => toast(clearActivityRaci(a.id) ? `RACI of ${a.id} back to its default — Ctrl+Z to undo` : 'Already the default RACI');
@@ -44,7 +52,10 @@ export function RaciEditor({ m, a, onClose }: { m: OrgModel; a: ActivityRaci; on
             onChange={(e) => setTeams({ ...teams, [t.id]: e.target.value })} /></label>)}
       </fieldset>}
       <div className="ac-form-row">
+        {product && <label><input type="checkbox" checked={mine} onChange={(e) => setMine(e.target.checked)} /> For {product.name} only</label>}
         <button type="button" onClick={save}>Save the RACI</button>
+        {product && own && <button type="button" onClick={() => toast(setProductRaci(product.id, a.id, null)
+          ? `${product.name} back to the common RACI of ${a.id} — Ctrl+Z to undo` : 'Nothing changed')}>Back to the common RACI</button>}
         <button type="button" onClick={reset} disabled={a.source === 'default'}>Back to the default</button>
         <button type="button" onClick={onClose}>Close</button>
       </div>

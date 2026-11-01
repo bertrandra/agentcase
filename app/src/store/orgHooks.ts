@@ -9,7 +9,7 @@ import { appStore } from './instance';
 import type { Doc } from './types';
 
 const whole = (m: OrgModel): OrgModel => m;
-interface Built { bpmn: XDocument; customer: string; products: unknown; org: unknown; effort: unknown; m: OrgModel }
+interface Built { bpmn: XDocument; customer: string; products: unknown; org: unknown; effort: unknown; shown: string | undefined; m: OrgModel }
 /**
  * A part of the organisation model of the shown case (docs/SPEC_BPMN.md § 16): units, teams and owners from the organisation part of the common
  * document (schema v5), roles and RACI from the case's `BPMN` document. The model is rebuilt only when one of them changes identity, and the
@@ -21,13 +21,14 @@ export function useOrgSelector<T>(select: (m: OrgModel) => T, isEqual: (a: T, b:
   // identity changes with every process edit (B10a: a process edit rewrites the common document, its collaboration is kept as it is).
   const products = usePortfolio((p) => p.products), org = usePortfolio((p) => orgExtOf(p.common.BPMN)), built = useRef<Built | null>(null);
   const effort = usePortfolio(effortLineShares);   // the lines split by effort (B10c): their teams serve the products with the effort split
+  const shown = usePortfolio((p) => (p.products.length > 1 ? p.activeProductId : undefined));   // FX-D4: its own RACI overrides
   const of = useCallback((d: Doc): T => {
     const bpmn = d.BPMN, customer = String(d.customerName ?? ''), b = built.current;
-    const same = b && b.bpmn === bpmn && b.customer === customer && b.products === products && b.org === org && b.effort === effort;
-    const m = same ? b.m : orgOf({ products, common: { BPMN: appStore().getState().portfolio.common.BPMN }, customer, effort }, bpmn);
-    built.current = { bpmn, customer, products, org, effort, m };
+    const same = b && b.bpmn === bpmn && b.customer === customer && b.products === products && b.org === org && b.effort === effort && b.shown === shown;
+    const m = same ? b.m : orgOf({ products, common: { BPMN: appStore().getState().portfolio.common.BPMN }, customer, effort }, bpmn, shown);
+    built.current = { bpmn, customer, products, org, effort, shown, m };
     return select(m);
-  }, [products, org, effort, select]);
+  }, [products, org, effort, shown, select]);
   return useDocSelector(of, isEqual);
 }
 /** The whole organisation model of the shown case, kept while structurally equal (see `useOrgSelector`). */

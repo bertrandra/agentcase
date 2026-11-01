@@ -16,7 +16,24 @@ const READ: readonly string[] = ['process', 'laneSet', 'lane', 'childLaneSet', '
 
 export interface ForeignRead { tasks: IncomingTask[]; units: IncomingUnit[]; ignored: Record<string, number> }
 
-/** Lane name of each flow node (the innermost lane that lists it). */
+/** An organisation lane set (F-B39 / FX-23: "By organisation", unit → team → role): its lanes name roles, not units of the process. */
+const isOrgSet = (set: XElement): boolean => /^LaneSet-organisation/.test(attr(set, 'id') ?? '') || attr(set, 'name') === 'By organisation';
+
+/** FX-23: the role each flow node of an organisation lane set takes — the resource its role lane names (`partitionElementRef`), else the lane name. */
+export function orgLaneRoles(container: XElement, resources: ReadonlyMap<string, string>): Map<string, string> {
+  const out = new Map<string, string>();
+  const walk = (set: XElement): void => {
+    for (const lane of kids(set, NS.bpmn, 'lane')) {
+      const ref = attr(lane, 'partitionElementRef'), role = (ref && resources.get(ref)) || attr(lane, 'name') || attr(lane, 'id') || '';
+      for (const r of kids(lane, NS.bpmn, 'flowNodeRef')) out.set(textOf(r).trim(), role);
+      for (const child of kids(lane, NS.bpmn, 'childLaneSet')) walk(child);
+    }
+  };
+  for (const set of kids(container, NS.bpmn, 'laneSet').filter(isOrgSet)) walk(set);
+  return out;
+}
+
+/** Lane name of each flow node (the innermost lane that lists it); organisation lane sets are left out (they name roles, FX-23). */
 export function lanesOf(proc: XElement): Map<string, string> {
   const out = new Map<string, string>();
   const walk = (set: XElement): void => {
@@ -25,7 +42,7 @@ export function lanesOf(proc: XElement): Map<string, string> {
       for (const child of kids(lane, NS.bpmn, 'childLaneSet')) walk(child);
     }
   };
-  for (const set of kids(proc, NS.bpmn, 'laneSet')) walk(set);
+  for (const set of kids(proc, NS.bpmn, 'laneSet').filter((x) => !isOrgSet(x))) walk(set);
   return out;
 }
 
@@ -64,23 +81,24 @@ export function readForeign(defs: XElement): ForeignRead {
     if (!units.has(key)) units.set(key, { key, name, kind, phase: null });
     return key;
   };
-  const taskOf = (e: XElement, u: string, lane: string | undefined): void => {
-    const roles = [...new Set([...performersOf(e, resources), ...(lane ? [lane] : [])])];
+  const taskOf = (e: XElement, u: string, lane: string | undefined, org?: string): void => {
+    const roles = [...new Set([...performersOf(e, resources), ...(lane ? [lane] : []), ...(org ? [org] : [])])];
     tasks.push({ id: attr(e, 'id') ?? '', name: (attr(e, 'name') ?? '').trim() || (attr(e, 'id') ?? ''), element: e.local, unit: u, roles,
       inScope: attr(e, 'ac:inScope') !== 'false' });
   };
   const inside = (sub: XElement, u: string, lane: string | undefined): void => {
+    const org = orgLaneRoles(sub, resources);
     for (const c of kids(sub, NS.bpmn)) {
-      if (TASKS.includes(c.local)) taskOf(c, u, lane);
+      if (TASKS.includes(c.local)) taskOf(c, u, lane, org.get(attr(c, 'id') ?? ''));
       else if (SUBS.includes(c.local)) inside(c, u, lane);
     }
   };
   for (const proc of kids(defs, NS.bpmn, 'process')) {
-    const lanes = lanesOf(proc), pid = attr(proc, 'id') ?? '', pname = attr(proc, 'name') || pools.get(pid) || pid;
+    const lanes = lanesOf(proc), org = orgLaneRoles(proc, resources), pid = attr(proc, 'id') ?? '', pname = attr(proc, 'name') || pools.get(pid) || pid;
     for (const c of kids(proc, NS.bpmn)) {
       const id = attr(c, 'id') ?? '', lane = lanes.get(id);
       const u = (): string => (lane ? unit(`lane:${lane}`, lane, 'lane') : unit(`process:${pid}`, pname, 'process'));
-      if (TASKS.includes(c.local)) taskOf(c, u(), lane);
+      if (TASKS.includes(c.local)) taskOf(c, u(), lane, org.get(id));
       else if (SUBS.includes(c.local)) inside(c, unit(`sub:${id}`, attr(c, 'name') ?? id, 'subProcess'), lane);
     }
   }

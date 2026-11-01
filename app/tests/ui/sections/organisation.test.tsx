@@ -1,11 +1,13 @@
 // @vitest-environment jsdom
 import { cleanup, fireEvent, render, screen, within } from '@testing-library/react';
 import { afterEach, describe, expect, it } from 'vitest';
-import { readRaci, readStoredOrg } from '@/domain/org';
+import { laneRolesOf, raciOverridesOf, readRaci, readStoredOrg } from '@/domain/org';
 import Organisation from '@/ui/sections/frame/organisation';
 import WhoDoesWhat from '@/ui/sections/scope/who-does-what';
 import { axeViolations } from '../../helpers/axe';
 import { freshStore } from '../../store/helpers';
+import type { XDocument } from '@/domain/process';
+import { threeProducts } from '../../helpers/portfolioStore';
 
 /** Phase B6b screens (docs/SPEC_BPMN.md § 16.6): Organisation and Who does what, keyboard controls, undoable edits, axe clean. */
 afterEach(cleanup);
@@ -45,6 +47,34 @@ describe('🧭 Who does what', () => {
       fireEvent.click(screen.getByRole('tab', { name: tab }));
       expect(container.querySelector('.ac-org-answer')).toBeTruthy();
     }
+    fireEvent.click(screen.getByRole('tab', { name: 'By unit' }));   // FX-D7: the opt-in RACI-driven load and cost by unit
+    fireEvent.click(screen.getByLabelText(/^Show the load and cost by unit/));
+    expect(screen.getByRole('table', { name: 'RACI-driven load and cost by unit' }).querySelectorAll('tbody tr').length).toBeGreaterThan(0);
     expect(await axeViolations(container)).toEqual([]);
+  });
+});
+
+describe('🧭 Who does what in a portfolio (FX-D4)', () => {
+  it('"For <product> only" saves the RACI for the product shown; "Back to the common RACI" removes it', () => {
+    const t = threeProducts(), pf = () => t.s.getState().portfolio, product = pf().products.find((p) => p.id === pf().activeProductId)!;
+    render(<WhoDoesWhat />);
+    fireEvent.change(screen.getByLabelText(/^Phase/), { target: { value: 'V3' } });
+    fireEvent.click(screen.getByLabelText('Edit the RACI of A017'));
+    fireEvent.change(screen.getByLabelText('Accountable'), { target: { value: 'role-lead' } });
+    fireEvent.click(screen.getByLabelText(`For ${product.name} only`));
+    fireEvent.click(screen.getByText('Save the RACI'));
+    expect(raciOverridesOf(pf().common.BPMN as XDocument, product.id).get('A017')?.A).toBe('role-lead');
+    fireEvent.click(screen.getByText('Back to the common RACI'));
+    expect(raciOverridesOf(pf().common.BPMN as XDocument, product.id).size).toBe(0);
+  });
+});
+
+describe('🏢 Organisation: programme roles (FX-D11)', () => {
+  it('each operating-model role picks the organisation role that staffs it (one undoable step)', () => {
+    const s = freshStore();
+    render(<Organisation />);
+    fireEvent.change(screen.getByLabelText('Organisation role for Orchestrator'), { target: { value: 'role-lead' } });
+    expect(laneRolesOf(s.getState().portfolio.common.BPMN as XDocument).get('orchestrator')).toBe('role-lead');
+    expect((screen.getByLabelText('Organisation role for Orchestrator') as HTMLSelectElement).value).toBe('role-lead');
   });
 });

@@ -17,8 +17,18 @@ When releasing, follow [docs/BUMP_PROCEDURE.md](docs/BUMP_PROCEDURE.md) (§7 for
 
 ## [Unreleased]
 
-### SPEC_FIXES lot X6 (part) — organisation and audit depth (FX-05, FX-21, FX-22)
+### SPEC_FIXES lot X6 — organisation and audit depth (FX-05, FX-21, FX-22, FX-23, FX-D4, FX-D6, FX-D7, FX-D11)
 
+- **Programme roles**: each operating-model role of the transformation programme can name the organisation role that staffs it (🏢 Organisation);
+  the BPMN export with both processes names it on the lane. No figure changes.
+- **RACI-driven load and cost by unit** (opt-in, 🧭 Who does what › By unit): each unit's share of the product's Responsible work and of
+  its team cost. A view: no figure changes.
+- **Per-product audit**: in a portfolio, a product that shares the common process keeps its own audit (organisation part of the common
+  document), instead of sharing one audit with the other products. No figure changes.
+- **Per-product RACI**: in a portfolio, the RACI of an activity can be set for the product shown only, without copying the process
+  (`ac:raciOverride` in the organisation part). No figure changes.
+- **Organisation view**: the BPMN export can add the "By organisation" diagram (lanes by unit, team and role, laid out); an imported
+  organisation lane set gives the tasks' roles instead of units to map.
 - **Who does what**: the RACI editor can split an activity's Responsible work between teams (%); the team load follows that split instead of
   the teams' FTE × share. A view: no figure changes.
 - **Process library**: a product with its own process document now resolves its calls to the common library's global tasks (their effort

@@ -7,11 +7,10 @@
 > view state never undoable, one owner per figure in `src/domain`, single-product figures identical to the legacy file unless recorded in
 > DEVIATIONS.md and `app/tests/helpers/deviations*.ts`, one PR per lot merged on green CI with the HTML shared.
 
-> **Progress (2026-11-01, updated after lot X6 part 2):** every row is tagged — ✅ **Done** (merged, or on the branch for FX-05 / FX-22), ⏳ **Open**,
+> **Progress (2026-11-01, updated after lot X6):** every row is tagged — ✅ **Done** (merged, or in the open X6 PR), ⏳ **Open**,
 > ⏸ **Tracked** (waits on an upstream release). Lots: X0, X1, X2, X3 done; X5 done except FX-32 (needs a ProjectLibre / MS Project check);
-> X8 done (FX-44 tracked); X9 done except the owner's items (FX-57, FX-59, FX-60, FX-63); X6 partly done (FX-05, FX-21, FX-22 done; FX-23 and
-> the decisions FX-D4, FX-D6, FX-D7, FX-D11 open); X4 partly done (FX-15, FX-20 done); X7 open. Owner actions open: FX-O1, FX-O3, FX-O4, FX-O5.
-> **On hold** at the owner's request after this update.
+> X8 done (FX-44 tracked); X9 done except the owner's items (FX-57, FX-59, FX-60, FX-63); X6 done (FX-05, FX-21, FX-22, FX-23, FX-D4, FX-D6, FX-D7,
+> FX-D11); X4 partly done (FX-15, FX-20 done); X7 open. Owner actions open: FX-O1, FX-O3, FX-O4, FX-O5.
 
 ## 1. Purpose
 
@@ -32,14 +31,14 @@ DEVIATIONS.md entry and the owner's approval of the before → after on the gold
 | FX-D1 | ✅ Done — Changing a product's owning unit marks the Monte Carlo run stale although no figure moves | (a) take the organisation (units, owners) out of the run fingerprint; (b) keep it | None | § 21.8 |
 | FX-D2 | ⏳ Open — One correlation ρ for the whole portfolio | (a) keep one ρ, show the unit's implied correlation; (b) a ρ per unit (inside a unit) plus a ρ between units | (b) Opt-in | § 21.8 |
 | FX-D3 | ✅ Done — Service activities assigned by type or role split the service cost but are not routed to the service line inside each product's engine | (a) route them (the service row carries them in every product); (b) keep pins only | (a) Deviation | § 21.7 |
-| FX-D4 | ⏳ Open — Per-product RACI without copying the process | (a) an `ac:raciOverride` element per product in the organisation part; (b) keep the RACI in the process part | None | § 21.5 |
+| FX-D4 | ✅ Done — Per-product RACI without copying the process | (a) an `ac:raciOverride` element per product in the organisation part; (b) keep the RACI in the process part | None | § 21.5 |
 | FX-D5 | ✅ Done — The tool catalogue (129 tools) is verified 2026-10-31; 43 entries partial or unverified | Sign off as is / sign off after a manual pass on Enterprise Architect, ServiceNow and the partial entries / add Google Antigravity and TeamCity | None | SPEC_BPMN item 8 |
-| FX-D6 | ⏳ Open — The audit is per process document: products sharing the common process share one audit | (a) a per-product audit part like the organisation part; (b) keep | None | item 10 |
-| FX-D7 | ⏳ Open — No figure reads the RACI (§ 16.5 figures not built) | (a) build the RACI-driven load and cost by unit, opt-in; (b) keep RACI informative | Opt-in | item 15 |
+| FX-D6 | ✅ Done — The audit is per process document: products sharing the common process share one audit | (a) a per-product audit part like the organisation part; (b) keep | None | item 10 |
+| FX-D7 | ✅ Done — No figure reads the RACI (§ 16.5 figures not built) | (a) build the RACI-driven load and cost by unit, opt-in; (b) keep RACI informative | Opt-in | item 15 |
 | FX-D8 | ⏳ Open — Hand-off cost, cadence, waits, change-failure rate, token profile are views, not engine figures | (a) feed the engine, opt-in per factor; (b) keep views | Opt-in | item 21 |
 | FX-D9 | ⏳ Open — The default process does not link the SDLC chain with data inputs | (a) link it (traceability complete by default); (b) keep | None (document only) | item 22 |
 | FX-D10 | ⏳ Open — CMMN read-back drops content it does not map | (a) keep it in an extension element (pass-through); (b) keep dropping | None | item 27 |
-| FX-D11 | ⏳ Open — Programme lanes (operating-model roles) are not linked to the organisation's roles | (a) map each operating-model role to an organisation role with a team skill; (b) keep separate | None | item 30 |
+| FX-D11 | ✅ Done — Programme lanes (operating-model roles) are not linked to the organisation's roles | (a) map each operating-model role to an organisation role with a team skill; (b) keep separate | None | item 30 |
 | FX-D12 | ⏳ Open — The delivery diagram has no agents' lane | (a) add an agents' lane to the default DI (exports change, figures do not); (b) keep | None | item 31 |
 | FX-D13 | ⏳ Open — `setupTraining` / `setupGov` are stored but no figure reads them | (a) retire them, with deviations for the DD register (119 → 117 rows), report and legacy sheet; (b) keep as legacy inputs | Deviation (legacy outputs) | item 33 |
 | FX-D14 | ⏳ Open — Waves, setup capacity and knowledge subsets live outside the BPMN document | (a) a portfolio-level BPMN document (waves as sub-processes, capacity on lanes); (b) keep as portfolio data | None | item 34 |
@@ -52,14 +51,14 @@ DEVIATIONS.md entry and the owner's approval of the before → after on the gold
 | FX-D1 | ✅ Done — **(a)** take the organisation out of the Monte Carlo run fingerprint | An org-only edit no longer marks the run stale; no figure moves. **Fixed (lot X2a)**: a unit's name, kind, tree, location, cost centre, sourcing and a product's owner left out; a service spec still counts (an owner edit never reached the fingerprint: the test saying so compared different ρ) | X2 |
 | FX-D2 | ⏳ Open — **(a)** keep one ρ, show each unit's implied correlation | Nothing to build beyond the implied-correlation view (SPEC_HARNESS HX-D6 adds a correlation through shared harnesses) | X7 |
 | FX-D3 | ✅ Done — **(a)** route type / role service activities to the service line in every product | **Fixed (lot X2b)**: routed as pins of the service's lines (by team skill); measured: **no headline figure moves** (the golden case has no service; `serviceThree` NPVs identical), only the spread over team lines — DEV-FXD3-SERVICE-ROUTING, so no before → after approval was needed | X2 |
-| FX-D4 | ⏳ Open — **(a)** `ac:raciOverride` per product in the organisation part | No figure moves | X6 |
+| FX-D4 | ✅ Done — **(a)** `ac:raciOverride` per product in the organisation part | No figure moves. **Fixed (lot X6, unreleased)**: `ac:raciOverride product activity …` in the common document's organisation part (XSD added); the RACI editor's "For ‹product› only" and "Back to the common RACI"; `orgOf(…, productId)` reads it; the pricing role stays R | X6 |
 | FX-D5 | ✅ Done — **Sign off as is** (43 entries stay marked partial / unverified) | FX-O2 done; the catalogue's status reads "signed off 2026-11-01" | X1 |
-| FX-D6 | ⏳ Open — **(a)** a per-product audit part | Consistent with SPEC_HARNESS (the audit on each product's baseline) | X6 |
-| FX-D7 | ⏳ Open — **(a)** RACI-driven load and cost by unit, opt-in | The base of SPEC_HARNESS's cells (activity × team) | X6 |
+| FX-D6 | ✅ Done — **(a)** a per-product audit part | Consistent with SPEC_HARNESS (the audit on each product's baseline). **Fixed (lot X6, unreleased)**: `ac:productAudits` in the common document's organisation part (XSD added); in a portfolio, a product edited on its own that shares the common process sees and edits its own audit (laid over the document's, `withElementAudits`); "All products" and a product with its own process keep the document's audit; stripped from exports without audit data | X6 |
+| FX-D7 | ✅ Done — **(a)** RACI-driven load and cost by unit, opt-in | The base of SPEC_HARNESS's cells (activity × team). **Fixed (lot X6, unreleased)**: `raciCostByUnit` (domain/org, one owner; `teamWork` shared with `byTeam`): each unit's Responsible load for the product shown and the product's team cost split by that load; 🧭 Who does what › By unit, opt-in checkbox; a view, no headline figure reads it | X6 |
 | FX-D8 | ⏳ Open — **(a)** feed the engine, opt-in per factor | The token profile becomes SPEC_HARNESS § 11's token owner | X7 |
 | FX-D9 | ⏳ Open — **(a)** link the SDLC chain with its data inputs in the default process | Document change only | X7 |
 | FX-D10 | ⏳ Open — **(a)** CMMN pass-through in an extension element | No figure moves | X7 |
-| FX-D11 | ⏳ Open — **(a)** map each operating-model role to an organisation role with a team skill | Needed for SPEC_HARNESS's build pods and run teams | X6 |
+| FX-D11 | ✅ Done — **(a)** map each operating-model role to an organisation role with a team skill. **Fixed (lot X6, unreleased)**: `ac:laneRole lane role` in the organisation part (XSD added); 🏢 Organisation › Programme roles picks the role for each operating-model role; the BPMN export with both processes names it on the lane (`partitionElementRef`); no figure reads it | Needed for SPEC_HARNESS's build pods and run teams | X6 |
 | FX-D12 | ⏳ Open — **(a)** an agents' lane in the default diagram | Exports change, figures do not | X7 |
 | FX-D13 | ⏳ Open — **(a)** retire `setupTraining` / `setupGov` | **Deviation** of legacy outputs: DD register 119 → 117 rows, report and legacy sheet | X7 |
 | FX-D14 | ⏳ Open — **(a)** a portfolio-level BPMN document: waves as sub-processes, capacity on lanes | Schema migration; also the home of SPEC_HARNESS's pilot and wave slices | X7 |
@@ -97,7 +96,7 @@ DEVIATIONS.md entry and the owner's approval of the before → after on the gold
 | FX-20 | ✅ Done — Plan Gantt / WBS / OBS rows link only to Process | Add "Open in Programme" on programme rows. **Fixed (lot X8, unreleased).** `PlanLink`: the name opens Process, 📋 opens 📋 Programme on the row (WBS, dictionary, RAM, schedule) | S | v21.1.0 notes |
 | FX-21 | ✅ Done — No audit on programme activities | Allow observations on programme tasks (same `ac:audit`), calibration not applicable. **Fixed (lot X6, unreleased).** 🔎 Audit › Programme lists the programme activities with the same audit form; their audits live in the collaboration (`ac:programmeAudit`, one `ac:audit element="…"` each; XSD added) since the programme process is derived; one undoable step per edit; carried by save / open and an export with audit data | M | item 14 |
 | FX-22 | ✅ Done — A role's split between teams follows FTE × share only | Per-activity share on a role's team assignment. **Fixed (lot X6, unreleased).** `ac:raci teams="team:% …"` (XSD added): the RACI editor sets the share of the activity's Responsible work each team does (at most 100 % in all); the team load (🧭 Who does what › By team) then takes that share of the effort instead of the FTE × share split. A view: no figure | M | item 16 |
-| FX-23 | ⏳ Open — Organisation lane view: no geometry, not in the export dialog, not imported | Layout the lanes, add the export option, map organisation lanes on import (F-B8 dialog) | M | item 17 |
+| FX-23 | ✅ Done — Organisation lane view: no geometry, not in the export dialog, not imported | Layout the lanes, add the export option, map organisation lanes on import (F-B8 dialog). **Fixed (lot X6, unreleased).** One band per role lane inside the pool (teams and units span theirs, `orgLaneShapes`); the export dialog's "Add the organisation view" writes the second diagram; on import an organisation lane set names roles (its role lane's `partitionElementRef` resource), never units to map | M | item 17 |
 
 ### 3.3 Import, export and workbooks (P2)
 
@@ -191,7 +190,7 @@ B5 question on factory tags is answered in § 15; `npm audit` 0; no open GitHub 
 | X3 Catalogue retirement | FX-02 (D-B9) | Default process byte-identical; all reference lists unchanged | None | 1.5 d | ✅ Done |
 | X4 Screens for built domain | FX-10, FX-11, FX-12…FX-14, FX-15, FX-16, FX-17, FX-20, FX-26 | axe clean; render budgets; ui-parity 0 | None | 3 d | 🟡 Partly done — open: FX-10, FX-11, FX-12, FX-13, FX-14, FX-16, FX-17, FX-26 |
 | X5 Import / export / workbooks | FX-24, FX-25, FX-27…FX-34 | Round trips; workbook legacy sheets unchanged | None | 2 d | 🟡 Partly done — open: FX-32 |
-| X6 Organisation depth | FX-05, FX-21, FX-22, FX-23, FX-D4 (a), FX-D6 (a), FX-D7 (a), FX-D11 (a) | Undo property tests; parity | Opt-in | 2.5 d | 🟡 Partly done — open: FX-23, FX-D11, FX-D4, FX-D6, FX-D7 |
+| X6 Organisation depth | FX-05, FX-21, FX-22, FX-23, FX-D4 (a), FX-D6 (a), FX-D7 (a), FX-D11 (a) | Undo property tests; parity | Opt-in | 2.5 d | ✅ Done |
 | X7 Portfolio document | FX-D14 (a), FX-D2 (a: implied correlation view only), FX-D8 (a), FX-D9 (a), FX-D10 (a), FX-D12 (a), FX-D13 (a, deviation), FX-D15 (a) | Schema v6 migration round trips | Per decision | 3 d | ⏳ Open |
 | X8 Polish | FX-18, FX-19, FX-41…FX-45, FX-71, FX-76, FX-77 | — | None | 1 d | ✅ Done (FX-44 tracked upstream) |
 | X9 Carry-over | FX-50…FX-56, FX-58, FX-61, FX-62, FX-64; FX-57 / FX-59 / FX-60 per FX-O5; FX-63 when files arrive | Deviations recorded for FX-52, FX-53, FX-56 | Deviation (labels, export, report count) | 3 d | 🟡 Partly done — open: FX-57, FX-59, FX-60 (owner's call, FX-O5), FX-63 (customer files, FX-O4) |

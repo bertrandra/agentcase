@@ -1660,7 +1660,7 @@ the service line, a deviation (FX-D3); § 21.8 — the organisation out of the M
 | 14 | ~~No audit layer on programme activities (observations attach to delivery tasks and roles only)~~ — **done in SPEC_FIXES lot X6 (FX-21)** | Work | § 19.9 (F-B69) |
 | 15 | The RACI-driven figures of § 16.5 are not built (the `humanPerformer` stays R; no figure reads the RACI) | Decision | § 16.8 |
 | 16 | ~~A role's split between teams follows FTE × share; no per-activity share~~ — **done in SPEC_FIXES lot X6 (FX-22)** | Work | § 16.8 (F-B37) |
-| 17 | F-B39 partial: the organisation lane view has no geometry for its new lanes, is not offered in the export dialog, and organisation lanes are not imported | Work | § 16.8 (F-B39) |
+| 17 | ~~F-B39 partial: the organisation lane view has no geometry for its new lanes, is not offered in the export dialog, and organisation lanes are not imported~~ — **done in SPEC_FIXES lot X6 (FX-23)** | Work | § 16.8 (F-B39) |
 | 18 | ~~Teams stay stored as `teamIn` / `sharedTeam`~~ — **closed in B10a**: the teams are `ac:team` elements of the document (schema v5) | Done | § 6.6, § 21.5 |
 | 19 | ~~A product's process override stays whole-document~~ — **closed in B10a**: the override is the process part only (no organisation; programme values per field since B9c) | Done | § 21.5 |
 | 20 | The extended profile has no screens: its views, checks and export options (colours, organisation view, conversations…) are domain functions | Work | § 17.10 (1) |

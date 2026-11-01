@@ -1,10 +1,14 @@
 import { applyAuditImport, applyCalibration, editAudit, editToolCatalog, setHeader } from '@/controllers/audit';
+import { addProduct } from '@/controllers/product';
 import type { Sample } from './types';
 
 const NOW = new Date('2026-10-30T12:00:00Z');
 export const samples: Record<string, Sample> = {
   'audit.editElement': () => editAudit('A017', { kind: 'observation', obs: { name: 'reworkRate', value: '12', source: 'interview' } }),
   'audit.editProgramme': () => editAudit('prog-pilot', { kind: 'observation', obs: { name: 'reworkRate', value: '8', source: 'interview' } }),
+  // FX-D6: a second product, so the active one keeps its own audit
+  'audit.editProduct': { prep: () => { addProduct('Second'); },
+    run: () => editAudit('A017', { kind: 'observation', obs: { name: 'reworkRate', value: '9', source: 'interview' } }) },
   'audit.setHeader': () => setHeader({ client: 'Acme', status: 'inProgress' }, NOW),
   'audit.catalog': () => editToolCatalog({ kind: 'retire', code: 'selenium', retired: true }),
   'audit.calibrate': {

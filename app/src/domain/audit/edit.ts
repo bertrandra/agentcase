@@ -5,7 +5,7 @@ import { extOf } from '../process/readTypes';
 import { el, NS, withAttrs, type XDocument, type XElement } from '../process/xml';
 import { applyElementOp, DATE, emptyAudit, KEY, type ElementOp } from './ops';
 import { readAudit } from './read';
-import { AUDIT_STATUSES, type AuditHeader, type Auditor, type Interview } from './types';
+import { AUDIT_STATUSES, type AuditHeader, type Auditor, type ElementAudit, type Interview } from './types';
 import { auditXml, headerXml, onCollaboration, withExtChild } from './write';
 
 /**
@@ -74,4 +74,12 @@ export function editProgrammeAudit(d: XDocument, id: string, op: ElementOp, know
     return x ? [withAttrs(x, { element: k })] : [];
   });
   return onCollaboration(d, (c) => withExtChild(c, 'programmeAudit', items.length ? el('ac:programmeAudit', {}, items) : null));
+}
+
+/** The document with these audits laid on their elements (a product's own audits, FX-D6: the view the Audit section and calibration read). */
+export function withElementAudits(d: XDocument, audits: ReadonlyMap<string, ElementAudit>): XDocument {
+  if (!audits.size) return d;
+  let root = d.root;
+  for (const [id, a] of audits) root = editById(root, id, (e) => (isAudited(e) ? withExtChild(e, 'audit', auditXml(a)) : e));
+  return same(d, root);
 }

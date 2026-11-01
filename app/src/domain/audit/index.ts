@@ -7,7 +7,7 @@ export { readAudit, hasAudit, collabExtChild } from './read';
 export { SHIPPED_AS_OF, SHIPPED_REVIEW, SHIPPED_TOOLS, CAPABILITY_TOKEN, capabilityKey, caseCopy, catalogJson, catalogUpdated, effectiveCatalog,
   proposedTools, shippedTool } from './catalog';
 export { applyElementOp, emptyAudit, observationOk, toolUseOk, type ElementOp } from './ops';
-export { editElementAudit, editProgrammeAudit, patchedHeader, resourceIds, setAuditHeader, type HeaderPatch } from './edit';
+export { editElementAudit, editProgrammeAudit, withElementAudits, patchedHeader, resourceIds, setAuditHeader, type HeaderPatch } from './edit';
 export { editCatalog, toolOk, type CatalogOp } from './editCatalog';
 export { AUDIT_PROGRESS, AUTOMATION_AUTHORITY, NOT_AUDITED, PER_MONTH, activityAudits, auditProgressOf, coverage, phaseProgress, toolingMap,
   type ActivityAudit, type CapabilityRow, type Coverage, type PhaseProgress, type RoleShare } from './analysis';
@@ -19,5 +19,6 @@ export { readAuditWorkbook, type AuditImport, type Sheets } from './workbookRead
 export { CASE_SHEET, caseSheets, ORIGIN } from './workbookCase';
 export { readCaseSheets, type CaseImport } from './workbookCaseRead';
 export { mergeImportedAudit } from './mergeAudit';
+export { editProductAudit, productAuditOf, withProductAudit } from './productAudit';
 export { deliverableKinds, interfaceFacts, KIND_CAPABILITIES, proposedByType, type InterfaceFacts } from './feeds';
 export { auditReport, type AuditReport } from './report';
