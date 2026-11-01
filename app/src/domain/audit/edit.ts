@@ -2,7 +2,7 @@
 import { editById } from '../process/editTree';
 import { readProcess } from '../process/read';
 import { extOf } from '../process/readTypes';
-import { NS, type XDocument, type XElement } from '../process/xml';
+import { el, NS, withAttrs, type XDocument, type XElement } from '../process/xml';
 import { applyElementOp, DATE, emptyAudit, KEY, type ElementOp } from './ops';
 import { readAudit } from './read';
 import { AUDIT_STATUSES, type AuditHeader, type Auditor, type Interview } from './types';
@@ -59,4 +59,19 @@ export function patchedHeader(cur: AuditHeader | undefined, patch: HeaderPatch, 
 export function setAuditHeader(d: XDocument, patch: HeaderPatch, today: string): XDocument {
   const h = patchedHeader(readAudit(d).header, patch, { code: 'AUDIT-1', asOf: today });
   return h ? onCollaboration(d, (c) => withExtChild(c, 'auditHeader', headerXml(h))) : d;
+}
+
+/**
+ * One operation on the audit of a programme activity (SPEC_FIXES FX-21, F-B69): the programme process is derived, so its audits are kept in the
+ * collaboration (`ac:programmeAudit`, one `ac:audit element="…"` per activity). `known`: the programme activity ids. Calibration does not apply.
+ */
+export function editProgrammeAudit(d: XDocument, id: string, op: ElementOp, known: ReadonlySet<string>): XDocument {
+  if (!known.has(id)) return d;
+  const all = readAudit(d).elements, next = applyElementOp(all.get(id) ?? emptyAudit(id), op, resourceIds(d));
+  if (!next) return d;
+  const items = [...known].flatMap((k) => {
+    const a = k === id ? next : all.get(k), x = a && auditXml(a);
+    return x ? [withAttrs(x, { element: k })] : [];
+  });
+  return onCollaboration(d, (c) => withExtChild(c, 'programmeAudit', items.length ? el('ac:programmeAudit', {}, items) : null));
 }

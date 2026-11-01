@@ -98,7 +98,10 @@ export function readAudit(d: XDocument): AuditModel {
   const hit = memo.get(d);
   if (hit) return hit;
   const h = collabExtChild(d, 'auditHeader'), cat = collabExtChild(d, 'toolCatalog');
-  const out: AuditModel = { caseTools: cat ? kids(cat, NS.ac, 'tool').map(catalogToolOf) : [], elements: elementsOf(d.root) };
+  const elements = elementsOf(d.root), prog = collabExtChild(d, 'programmeAudit');
+  // FX-21: the audits of the programme activities (derived, so not in the tree) are kept in `ac:programmeAudit`, one `ac:audit element="…"` each
+  for (const x of prog ? kids(prog, NS.ac, 'audit') : []) { const id = attr(x, 'element'); if (id && !elements.has(id)) elements.set(id, elementAuditOf(id, x)); }
+  const out: AuditModel = { caseTools: cat ? kids(cat, NS.ac, 'tool').map(catalogToolOf) : [], elements };
   if (h) out.header = headerOf(h);
   const asOf = cat ? attr(cat, 'asOf') : undefined;
   if (asOf) out.catalogAsOf = asOf;

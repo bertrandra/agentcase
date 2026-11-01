@@ -1,8 +1,10 @@
 /** @calc-zone scope-automation */
 import type { XDocument } from '@/domain/process';
 import {
-  calibrate, editCatalog, editElementAudit, setAuditHeader, type CalibrationChange, type CatalogOp, type CatalogTool, type ElementOp, type HeaderPatch,
+  calibrate, editCatalog, editElementAudit, editProgrammeAudit, setAuditHeader, type CalibrationChange, type CatalogOp, type CatalogTool,
+  type ElementOp, type HeaderPatch,
 } from '@/domain/audit';
+import { PROGRAMME_ACTIVITIES, programmeActivityId } from '@/domain/programme';
 import { defineCommand } from '@/store/commands';
 import { editBase } from '@/store/editBase';
 import { appStore } from '@/store/instance';
@@ -23,6 +25,13 @@ const elementCmd = defineCommand<{ id: string; op: ElementOp }>({
   type: 'audit.editElement', label: (p) => `${LABEL[p.op.kind]} on ${p.id}`,
   coalesceKey: (p) => (p.op.kind === 'observation' ? `audit.obs:${p.id}:${p.op.obs.name}:${p.op.obs.role ?? ''}` : ''),   // '' = never coalesced
   run(d, p) { editProcess(d, (doc) => editElementAudit(doc, p.id, p.op)); },
+});
+/** FX-21: the programme activities an audit may name (the programme process is derived; their audits live in `ac:programmeAudit`). */
+export const PROGRAMME_AUDIT_IDS: ReadonlySet<string> = new Set(PROGRAMME_ACTIVITIES.map((d) => programmeActivityId(d.kind)));
+const programmeCmd = defineCommand<{ id: string; op: ElementOp }>({
+  type: 'audit.editProgramme', label: (p) => `${LABEL[p.op.kind]} on ${p.id}`,
+  coalesceKey: (p) => (p.op.kind === 'observation' ? `audit.prog:${p.id}:${p.op.obs.name}:${p.op.obs.role ?? ''}` : ''),
+  run(d, p) { editProcess(d, (doc) => editProgrammeAudit(doc, p.id, p.op, PROGRAMME_AUDIT_IDS)); },
 });
 const headerCmd = defineCommand<{ patch: HeaderPatch; today: string }>({
   type: 'audit.setHeader', label: () => 'Edit the audit header', coalesceKey: (p) => `audit.header:${Object.keys(p.patch).sort().join(',')}`,
@@ -54,8 +63,9 @@ const changed = changedBy;
 /** Today as `YYYY-MM-DD` (the date of an observation, a header created now, a calibration). */
 export const today = (now: Date = new Date()): string => now.toISOString().slice(0, 10);
 
-/** One operation on the audit of an activity or a role; false when refused (unknown element, value outside its field). */
-export const editAudit = (id: string, op: ElementOp): boolean => changed(() => appStore().dispatch(elementCmd({ id, op })));
+/** One operation on the audit of an activity, a role or a programme activity (FX-21); false when refused (unknown element, value outside its field). */
+export const editAudit = (id: string, op: ElementOp): boolean =>
+  changed(() => appStore().dispatch(PROGRAMME_AUDIT_IDS.has(id) ? programmeCmd({ id, op }) : elementCmd({ id, op })));
 export const setHeader = (patch: HeaderPatch, now?: Date): boolean => changed(() => appStore().dispatch(headerCmd({ patch, today: today(now) })));
 export const editToolCatalog = (op: CatalogOp): boolean => changed(() => appStore().dispatch(catalogCmd({ op })));
 /** Apply the accepted calibration proposals (one undoable step, logged). */

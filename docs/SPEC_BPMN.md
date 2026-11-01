@@ -1657,7 +1657,7 @@ the service line, a deviation (FX-D3); § 21.8 — the organisation out of the M
 | 11 | The Process diagram is not coloured by audit status | Work | § 15.7 (F-B31) |
 | 12 | ~~The audit header and the role-level audits are not in the audit workbook~~ — **done in SPEC_FIXES lot X5 (FX-29)** | Work | § 15.7 (F-B32) |
 | 13 | ~~A Merge import does not merge audit data (Replace takes the file's)~~ — **done in SPEC_FIXES lot X5 (FX-25)** | Work | § 15.7 (F-B33) |
-| 14 | No audit layer on programme activities (observations attach to delivery tasks and roles only) | Work | § 19.9 (F-B69) |
+| 14 | ~~No audit layer on programme activities (observations attach to delivery tasks and roles only)~~ — **done in SPEC_FIXES lot X6 (FX-21)** | Work | § 19.9 (F-B69) |
 | 15 | The RACI-driven figures of § 16.5 are not built (the `humanPerformer` stays R; no figure reads the RACI) | Decision | § 16.8 |
 | 16 | A role's split between teams follows FTE × share; no per-activity share | Work | § 16.8 (F-B37) |
 | 17 | F-B39 partial: the organisation lane view has no geometry for its new lanes, is not offered in the export dialog, and organisation lanes are not imported | Work | § 16.8 (F-B39) |

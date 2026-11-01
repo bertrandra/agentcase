@@ -554,6 +554,15 @@
       </xsd:choice>
       <xsd:attribute name="status" type="ac:tAuditStatus"/>
       <xsd:attribute name="asOf" type="xsd:date"/>
+      <xsd:attribute name="element" type="ac:tKey">
+        <xsd:annotation><xsd:documentation>FX-21: inside ac:programmeAudit, the programme activity the audit is of (the programme process is derived).</xsd:documentation></xsd:annotation>
+      </xsd:attribute>
+    </xsd:complexType>
+  </xsd:element>
+  <xsd:element name="programmeAudit">
+    <xsd:annotation><xsd:documentation>In the collaboration (FX-21, F-B69): the audits of the programme activities, one ac:audit with its element each. Calibration does not apply.</xsd:documentation></xsd:annotation>
+    <xsd:complexType>
+      <xsd:sequence><xsd:element ref="ac:audit" minOccurs="0" maxOccurs="unbounded"/></xsd:sequence>
     </xsd:complexType>
   </xsd:element>
   <!-- ===================================================================== transformation programme (§ 19, B9a) -->

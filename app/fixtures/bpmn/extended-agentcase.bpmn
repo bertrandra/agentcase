@@ -28,6 +28,9 @@
         <ac:auditor name="Lead auditor" organisation="Sample consultancy"/>
         <ac:interview code="INT-1" role="Test manager" date="2026-10-12"/>
       </ac:auditHeader>
+      <ac:programmeAudit>
+        <ac:audit element="prog-pilot" status="inProgress"><ac:observation name="reworkRate" value="10" source="interview" date="2026-10-15"/></ac:audit>
+      </ac:programmeAudit>
       <ac:toolCatalog asOf="2026-10-01">
         <ac:tool code="jira" name="Jira" vendor="Atlassian" category="Planning / backlog" licence="commercial saas" capabilities="Planning"
                  aiFeatures="assistant" integration="api webhook mcp" hosting="saas onPremise" asOf="2026-10-01"/>
