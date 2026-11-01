@@ -1,5 +1,7 @@
 /** @calc-zone product-resolution */
 import { khEnabled } from '../knowledge';
+import { caseValues } from '../process/storedValues';
+import { CASE_LEVEL_OPT_KEYS } from '../programme/optIn';
 import type { CaseState } from '../types/state';
 import { allocateCents, teamEtp } from './alloc';
 import { mergeCase } from './layers';
@@ -15,9 +17,27 @@ const roots = new WeakMap<object, unknown>();
  * numbers): editing one product, its team included, never rebuilds another.
  */
 function resolveWith(p: Portfolio, prod: Product, infra: number): CaseState {
-  const team = effectiveTeam(p, prod), common = processCommon(p.common);   // own team + shares of the shared lines; the document without the teams
-  return memoChain(roots, [common, prod.overrides, team, prod.knowledge], `${p.hub.enabled}|${infra}`,
-    () => mergeCase(common, prod, team, p.hub.enabled, infra));
+  const team = effectiveTeam(p, prod), common = processCommon(p.common), carrier = carrierOf(p) === prod.id;   // own team + shared lines' shares
+  return memoChain(roots, [common, prod.overrides, team, prod.knowledge], `${p.hub.enabled}|${infra}|${carrier}`,
+    () => { const s = mergeCase(common, prod, team, p.hub.enabled, infra); return carrier ? s : withoutCommonCaseLevel(s, prod); });
+}
+
+/**
+ * SPEC_FIXES FX-01: the product that carries the case-level opt-in activities switched on in the common values (engagement stages, value tracking,
+ * AI Act obligations, audit interviews, licence procurement): the first planned product of the earliest wave (wave start, then offset, then the
+ * portfolio order), so the portfolio — the sum of its products — counts each of them once. null without a planned product.
+ */
+export function carrierOf(p: Portfolio): string | null {
+  const start = new Map(p.waves.map((w) => [w.id, w.startMonth]));
+  const planned = p.products.map((x, i) => ({ x, i })).filter(({ x }) => !x.archived && x.waveId !== null && start.has(x.waveId));
+  planned.sort((a, b) => (start.get(a.x.waveId!)! - start.get(b.x.waveId!)!) || (a.x.offsetMonths - b.x.offsetMonths) || (a.i - b.i));
+  return planned[0]?.x.id ?? null;
+}
+/** Another product counts a case-level opt-in only when it switches it on itself (its own override); the common switch reads off for it. */
+function withoutCommonCaseLevel(s: CaseState, prod: Product): CaseState {
+  const own = prod.overrides.dom?.values ?? {}, v = caseValues(s);
+  const off = CASE_LEVEL_OPT_KEYS.filter((k) => v[k] === 'on' && !Object.hasOwn(own, k));
+  return off.length ? { ...s, dom: { ...s.dom, values: { ...s.dom.values, ...Object.fromEntries(off.map((k) => [k, 'off'])) } } } : s;
 }
 
 /** A product takes part in the hub allocation when it is planned, kept, and its resolved case really runs the hub (engagement context allowing). */

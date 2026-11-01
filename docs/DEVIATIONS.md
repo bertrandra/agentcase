@@ -54,6 +54,8 @@ Figures are the golden fixture unless stated. "Before" = the build at the start 
 | DEV-B9B-HUB-TIMING | BPMN B9b, D-B29: the Knowledge Hub setup is spent over its own days, `ktLeadMonths` before the product's month 0 |
 | DEV-B9B-COACHING | BPMN B9b, D-B30 (revised 2026-10-31): one coaching activity, days a month × months, calibrated to its amount; only its spread moves |
 | DEV-B9B-RESOURCES | BPMN B9b, § 19.3: training and governance are labour from resources (role FTE × duration × the target day rate × 1.15) |
+| DEV-FX01-CASE-OPTIN | SPEC_FIXES FX-01: a case-level opt-in activity switched on in the common values is counted once per portfolio, by its carrier product |
+| DEV-FXD3-SERVICE-ROUTING | SPEC_FIXES FX-D3: a service's activities by type or role are routed to its lines in each product's team (no headline figure moves) |
 
 ## DEV-HEADLINE-OWNER — one economics headline
 
@@ -696,3 +698,29 @@ tests are not concerned: they drive the legacy *engine* through recipes, and the
     typed €45k and €20k: +18.1, +6.6); coaching over 37 months +3.2, the hub's 60 days −1.2.
 - Tests: `tests/domain/programme/profile.test.ts`, `tests/domain/tuneB.test.ts`, `tests/domain/programme/parallel-run-b9b.test.ts`.
 - Files: `domain/programme/{profile,catalogue,costs}.ts`, `domain/tuneB/setup.ts`.
+
+## DEV-FX01-CASE-OPTIN — a case-level opt-in activity counted once per portfolio (FX-01)
+
+- Before: the five case-level opt-in activities of the programme (engagement stages, value tracking, AI Act obligations, audit and discovery
+  interviews, licence procurement; `programme/optIn.ts`, level `case`) switched on in the common values were counted by **every** product's
+  programme cost, so a portfolio of N products paid them N times.
+- Now: they are counted by one **carrier** product — the first planned product of the earliest wave (wave start, then offset, then portfolio order;
+  `carrierOf`, `portfolio/resolve.ts`) — and by another product only when it switches the activity on itself (its own override). The portfolio, the
+  sum of its products, counts each once; every group (wave, unit) that holds the carrier carries them. A single case is its own carrier: unchanged.
+- Effect: only portfolios with a case-level opt-in switched on in the common values; no fixture has one (the 107 cases, `pf-three-products`, the
+  shipped example are unchanged). Example: three identical golden products with the audit interviews on — the audit line is in product 1's cost only.
+- Tests: `tests/domain/portfolio/case-level-optin.test.ts`.
+
+## DEV-FXD3-SERVICE-ROUTING — a service's activities by type or role are routed to its lines (FX-D3, decided (a))
+
+- Before: a shared-service unit's lines took, inside each product's team, only the activities **pinned** on them; the activities the service performs
+  by **activity type** or by **RACI role** (`org/services.ts`) split the line's FTE across products (D-B38) but stayed in the product's automatic
+  pool of their skill (`teamWeights`).
+- Now: those activities are routed to the service's lines as pins of the line in the product's effective team (`effectiveTeam`, `routedPins`): each
+  to the service line of the activity's team skill, else to the service's first line; explicit pins keep their row (first wins).
+- Effect: the spread of a product's scope weight over its team lines (the Input Team page: weight, implied FTE per line, unassigned pool) for
+  products served by a service with types or roles. **No headline figure moves** (FTE, rates and the engine are unchanged): on the `serviceThree`
+  portfolio (QA service by type) the products' NPV (1,555,027 / −451,145 / −330,919) and the portfolio's (772,963) are identical before and after.
+  No fixture uses a service.
+- Tests: `tests/domain/portfolio/services.test.ts` (shares kept, activities routed).
+

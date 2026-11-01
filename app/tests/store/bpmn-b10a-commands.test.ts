@@ -82,7 +82,8 @@ describe('node patches, per-product memo, override split', () => {
     expect([unitElements(own).length, storedTeamElements(own).length]).toEqual([0, 0]);
     addTeamRow(); setProductOwner(ids[0], 'unit-1'); addOrgUnit({ id: 'unit-2', name: 'Dept', type: 'department', parent: 'unit-1' });
     expect(pf(s).products[0]!.overrides.BPMN).toBe(own);
-    expect(readStoredOrg(pf(s).common.BPMN).units.map((u) => u.id)).toEqual(['unit-1', 'unit-2']);
+    // FX-07: the default delivery unit is stored once units are in use
+    expect(readStoredOrg(pf(s).common.BPMN).units.map((u) => u.id)).toEqual(['unit-delivery', 'unit-1', 'unit-2']);
     expect(withoutTeams(pf(s).common.BPMN)).not.toBe(pf(s).common.BPMN);
     expect(resolveProduct(pf(s), ids[0]).teamIn).toEqual(productTeam(pf(s), ids[0]));
   });

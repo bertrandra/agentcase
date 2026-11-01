@@ -42,6 +42,8 @@ export const OPT_INS: readonly OptInDef[] = [
 export const optInDef = (id: OptInId): OptInDef => OPT_INS.find((d) => d.id === id) as OptInDef;
 /** The opt-in cost an activity kind belongs to (undefined: not an opt-in activity). */
 export const optInOfKind = (kind: string): OptInDef | undefined => OPT_INS.find((d) => d.kinds.includes(kind));
+/** The switches of the case-level opt-in activities: counted once per portfolio, by its carrier product (FX-01, `portfolio/resolve.ts`). */
+export const CASE_LEVEL_OPT_KEYS: readonly string[] = OPT_INS.filter((d) => d.level === 'case').map((d) => d.on);
 export const optInOn = (c: Ctx, d: OptInDef): boolean => c.inp.v(d.on) === 'on';
 /** A parameter of an opt-in activity: a number ≥ 0 entered, else its default. */
 export function optParam(c: Ctx, key: string): number {

@@ -34,11 +34,23 @@ export function freeUnitId(d: XDocument): string {
   return `unit-${i}`;
 }
 
+/**
+ * The default delivery unit written into the document, first among the units (where `portfolioUnits` lists it while derived), so storing it moves
+ * no unit in the tree. FX-07: written when the organisation comes into use (the first unit added, `addUnit`), never at open (a saved file reopens
+ * as the same document); an untouched case keeps it derived. Unchanged when already stored or without a collaboration.
+ */
+export function storeDefaultUnit(d: XDocument, defaultUnit: UnitInput): XDocument {
+  if (stored(d, DEFAULT_UNIT_ID)) return d;
+  const isUnitOrTeam = (e: XElement): boolean => (e.ns === NS.ac && e.local === 'orgUnit') || isStoredTeam(e);
+  return onCollaboration(d, (c) => withExtChild(c, el('ac:orgUnit', unitAttrs(defaultUnit)), isUnitOrTeam));
+}
+
 /** Add a unit; refused for a blank name, an id already used in the document or not a safe id, an unknown parent, a document without collaboration. */
 export function addUnit(d: XDocument, u: UnitInput, defaultUnit?: UnitInput): XDocument {
   if (!u.name.trim() || !ID_PATTERN.test(u.id) || idsOf(d.root).has(u.id)) return d;
   let doc = d;
-  if (u.parent === DEFAULT_UNIT_ID && !stored(d, DEFAULT_UNIT_ID) && defaultUnit) doc = addUnit(d, defaultUnit);
+  // FX-07: the organisation comes into use, so the default delivery unit is written too (first among the units, the tree does not move)
+  if (defaultUnit && u.id !== DEFAULT_UNIT_ID) doc = storeDefaultUnit(d, defaultUnit);
   if (u.parent && !stored(doc, u.parent)) return d;
   return onCollaboration(doc, (c) => withExtChild(c, el('ac:orgUnit', unitAttrs(u)), isStoredTeam));   // before the stored teams (B10a)
 }

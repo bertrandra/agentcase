@@ -1,7 +1,7 @@
 /** @calc-zone product-resolution */
 import type { TeamRow } from '../types/state';
 import { memoChain } from './memo';
-import { lineShares } from './serviceShares';
+import { lineShares, serviceDeliveries } from './serviceShares';
 import { productTeam, sharedLines, withLinesDoc } from './teamAccess';
 import type { Portfolio, Product, SharedTeamLine } from './types';
 
@@ -33,8 +33,28 @@ export function effectiveTeam(pf: Pick<Portfolio, 'common' | 'products' | 'hub'>
   if (!lines.length) return own;
   const fte = lines.map((l) => { const x = lineShares(pf, l)[prod.id]; return typeof x === 'number' && x > 0 ? ((+l.etp || 0) * x) / 100 : 0; });
   if (!fte.some((x) => x > 0)) return own;
-  return memoChain(roots, [own, lines], `${prod.id}|${fte.join(',')}`, () => [...own, ...lines.flatMap((l, i): TeamRow[] => (fte[i]! > 0
-    ? [{ skill: l.skill, grade: l.grade, loc: l.loc, etp: fte[i]!, pins: l.pins ?? [], shared: l.id }] : []))]);
+  const routed = routedPins(pf, prod.id), key = lines.map((l) => (routed.get(l.id) ?? []).join(' ')).join('|');
+  return memoChain(roots, [own, lines], `${prod.id}|${fte.join(',')}|${key}`, () => [...own, ...lines.flatMap((l, i): TeamRow[] => (fte[i]! > 0
+    ? [{ skill: l.skill, grade: l.grade, loc: l.loc, etp: fte[i]!, pins: [...(l.pins ?? []), ...(routed.get(l.id) ?? [])], shared: l.id }] : []))]);
+}
+
+/**
+ * SPEC_FIXES FX-D3 (decided (a)): the activities a shared service performs for a product by **type** or **role** (not only its pins) are routed
+ * to the service's lines inside the product's engine, as pins of the line: each to the service line of the activity's team skill, else to the
+ * service's first line. Explicit pins keep their row (first wins), so an own team line pinning an activity keeps it. Line id → routed ids.
+ */
+function routedPins(pf: Pick<Portfolio, 'common' | 'products' | 'hub'>, productId: string): Map<string, string[]> {
+  const out = new Map<string, string[]>();
+  for (const d of serviceDeliveries(pf)) {
+    const first = d.def.lines[0], mine = d.products.find((x) => x.productId === productId);
+    if (!first || !mine) continue;
+    for (const a of mine.activities) {
+      if (!a.via.some((v) => v === 'type' || v === 'role')) continue;
+      const line = d.def.lines.find((l) => l.skill === a.skill) ?? first;
+      out.set(line.id, [...(out.get(line.id) ?? []), a.id]);
+    }
+  }
+  return out;
 }
 
 /** The portfolio with these shared lines written into the common document (node patches: a line edited, appended or removed). */

@@ -38,7 +38,8 @@ for (const m of MUTATIONS.filter((x) => !only || only.some((o) => x.file.include
   restore = () => writeFileSync(path, orig);
   writeFileSync(path, orig.replace(m.find, m.replace));
   try {
-    spawnSync('npx', ['vitest', 'run', '--reporter=json', `--outputFile=${tmp}`, '--maxWorkers=3', '--testTimeout=90000'], { stdio: 'ignore' });
+    spawnSync('npx', ['vitest', 'run', '--reporter=json', `--outputFile=${tmp}`, '--maxWorkers=3', '--testTimeout=90000'],
+      { stdio: 'ignore', env: { ...process.env, AC_TEST_TIMEOUT: '90000' } });   // the heavy files' setup (tests/setup/timeouts.ts) keeps 90 s too
     const failing = failingFiles();
     row.ran = true; row.failing = failing.length;
     for (const l of LEVELS) row.missed[l] = failing.filter((f) => !sels[l].selected.includes(f));
