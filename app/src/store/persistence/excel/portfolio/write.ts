@@ -4,6 +4,7 @@ import { productTeam, sharedLines, type Portfolio } from '@/domain/portfolio';
 import { blue, frz, geDV, head, listDV, rangeDV, sheet, ynDV } from '../params/kit';
 import { PF_HEADERS, PF_SHEETS } from './names';
 import { writeKnowledge } from './writeKnowledge';
+import { writeOrg } from './writeOrg';
 
 const ws = (wb: XL.Workbook, name: string, widths: number[]): XL.Worksheet => sheet(wb, name,
   (PF_HEADERS[name] as string[]).map((h, i): [string, number] => [h, widths[i] ?? 12]));
@@ -66,8 +67,9 @@ function writeShared(wb: XL.Workbook, pf: Portfolio): void {
 
 /**
  * The portfolio part of the parameters workbook: settings, products, waves, one team sheet with a Product column, overrides, the knowledge subsets
- * and the shared team lines.
+ * the shared team lines, the units and the owners (FX-30).
  */
 export function writePortfolioSheets(wb: XL.Workbook, pf: Portfolio): void {
   writeSettings(wb, pf); writeProducts(wb, pf); writeWaves(wb, pf); writeTeams(wb, pf); writeKnowledge(wb, pf, ws, finish, inputs); writeShared(wb, pf);
+  writeOrg(wb, pf, ws, finish, inputs);
 }

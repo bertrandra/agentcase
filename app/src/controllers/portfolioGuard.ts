@@ -16,6 +16,13 @@ export function dispatchChecked(cmd: Command): boolean {
   return true;
 }
 
+/** Run `f` (a dispatch) and say whether it changed the portfolio (a refused command leaves it as it was). */
+export const changedBy = (f: () => void): boolean => {
+  const before = appStore().getState().portfolio;
+  f();
+  return appStore().getState().portfolio !== before;
+};
+
 /** A short unique id from the safe alphabet [a-z0-9] (spec 8: ids are strings from a safe list), not used by `taken`. */
 export function newId(prefix: string, taken: string[]): string {
   for (;;) {

@@ -25,10 +25,10 @@ export async function auditTemplate(now: Date = new Date()): Promise<{ filename:
 }
 
 /** "Import audit workbook": checked against the case as it is now, applied as one step; the report counts added / updated / ignored rows. */
-export async function importAuditWorkbook(file: AuditFile): Promise<AuditImport> {
+export async function importAuditWorkbook(file: AuditFile, now: Date = new Date()): Promise<AuditImport> {
   if (typeof file.size === 'number' && file.size > MAX) throw new ParamsImportError(`File too large (limit ${MAX / 1024 / 1024} MB)`);
-  const r = await readAuditWorkbookBytes(await file.arrayBuffer(), auditBase());
-  if (r.ops.length) applyAuditImport(r.ops);
+  const r = await readAuditWorkbookBytes(await file.arrayBuffer(), auditBase(), today(now));
+  if (r.ops.length || r.header || r.catalog) applyAuditImport(r.ops, { header: r.header, catalog: r.catalog, today: today(now) });
   return r;
 }
 

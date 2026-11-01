@@ -30,7 +30,8 @@ describe('derived teams == effective team on every fixture (107 cases, the three
     const pf = opened(f), raw = JSON.parse(readFileSync(f, 'utf8')) as { teamIn?: unknown; products?: { id: string; teamIn: unknown }[] };
     expectParity(pf);
     if (raw.teamIn) expect(productTeam(pf, 'p1')).toStrictEqual(raw.teamIn);
-    for (const p of raw.products ?? []) expect(productTeam(pf, p.id)).toStrictEqual(p.teamIn);
+    // a version 5 file (the shipped example since FX-34) holds the teams in its document, not as keys: parity above is the check
+    for (const p of raw.products ?? []) if (p.teamIn !== undefined) expect(productTeam(pf, p.id)).toStrictEqual(p.teamIn);
   }, 30000);
 });
 

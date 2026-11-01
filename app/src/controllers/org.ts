@@ -6,6 +6,7 @@ import type { XDocument } from '@/domain/process';
 import { defineCommand, definePortfolioCommand } from '@/store/commands';
 import { activeDoc } from '@/store/editBase';
 import { appStore } from '@/store/instance';
+import { changedBy } from './portfolioGuard';
 import { editProcess } from '@/store/processEdit';
 
 /**
@@ -47,7 +48,7 @@ const clearRaciCmd = defineCommand<{ id: string }>({
   type: 'org.clearRaci', label: (p) => `Reset the RACI of ${p.id}`, run(d, p) { editProcess(d, (doc) => clearRaci(doc, p.id)); },
 });
 
-const changed = (f: () => void): boolean => { const before = appStore().getState().portfolio; f(); return appStore().getState().portfolio !== before; };
+const changed = changedBy;
 
 const commonDoc = (): XDocument => appStore().getState().portfolio.common.BPMN as XDocument;
 /** A free unit id (`unit-1`, `unit-2`…) in the common document (the organisation part). */

@@ -1,5 +1,7 @@
 /** @calc-zone exports */
-import { auditSheets, listColumns, readAuditWorkbook, SHIPPED_AS_OF, SHIPPED_REVIEW, type AuditImport, type Cell, type Sheets } from '@/domain/audit';
+import {
+  auditSheets, CASE_SHEET, caseSheets, listColumns, readAuditWorkbook, readCaseSheets, SHIPPED_AS_OF, SHIPPED_REVIEW, type AuditImport, type Cell, type Sheets,
+} from '@/domain/audit';
 import type { XDocument } from '@/domain/process';
 import type { ThemeValues } from '@/domain/theme';
 import { loadExcelJS } from '../lazy';
@@ -11,7 +13,8 @@ import { head } from '../results/style';
 
 /**
  * The audit workbook (docs/SPEC_BPMN.md F-B32) for interviews off-line: a "Read me" sheet, one sheet per block of § 15.3 (one row per in-scope
- * activity, more for a per-role split), Tools, Pain points, Evidence, and a Lists sheet the drop-downs read (catalogue codes, enumerations).
+ * activity, more for a per-role split), Tools, Pain points, Evidence, the audit Header, the Roles' audits, the tool Catalogue (FX-28, FX-29), and a
+ * Lists sheet the drop-downs read (catalogue codes, enumerations).
  * Reading it back follows the parameters workbook's rule: the file is checked whole (size, zip, sheets, every row) before anything is written.
  */
 const colName = (i: number): string => {
@@ -29,11 +32,14 @@ export async function auditWorkbookBytes(d: XDocument, print: Readonly<ThemeValu
     ['How to', 'Fill one sheet per block; every value may carry its source, date and confidence. Leave the Role column empty for the activity as a whole, '
       + 'or add a row with a role id (or name) for a per-role value. Import the file back from the 🔎 Audit section: nothing is written before '
       + 'every row is checked.'],
+    ['Case sheets', 'Header: the audit header (one row per auditor and interview). Roles: observations on a role as a whole. Catalogue: the tool '
+      + 'catalogue; shipped entries are read-only (set Origin to "case" to keep a change for this case).'],
     ['Confidentiality', 'Contains audit data: client information and interview notes.']]) readme.addRow(line);
   readme.getColumn(1).width = 24; readme.getColumn(2).width = 120;
   const L = wb.addWorksheet('Lists');
   lists.forEach(([name, values], i) => { L.getCell(1, i + 1).value = name; values.forEach((v, j) => { L.getCell(j + 2, i + 1).value = v; }); });
-  for (const s of auditSheets(d)) {
+  const at = new Map(lists.map(([n], i) => [n, i]));
+  for (const s of [...auditSheets(d), ...caseSheets(d, (n) => at.get(n) ?? -1)]) {
     const ws = wb.addWorksheet(s.name);
     ws.addRow(s.header);
     for (const r of s.rows) ws.addRow(r);
@@ -64,8 +70,12 @@ function cellOf(v: unknown): Cell {
 }
 
 /** Read an audit workbook against the document as it is now: the operations to apply and the report. Throws on a file that is not one. */
-export async function readAuditWorkbookBytes(input: ArrayBuffer | ArrayBufferView, d: XDocument): Promise<AuditImport> {
-  const known = new Set(auditSheets(d).map((s) => s.name)), sheets = await readKnownSheets(input, (n) => known.has(n), cellOf);
+export async function readAuditWorkbookBytes(input: ArrayBuffer | ArrayBufferView, d: XDocument, today: string): Promise<AuditImport> {
+  const known = new Set([...auditSheets(d).map((s) => s.name), ...Object.values(CASE_SHEET)]);
+  const sheets = await readKnownSheets(input, (n) => known.has(n), cellOf);
   if (!sheets.size) throw new ParamsImportError('No audit sheet found (expected e.g. "Tools", "Time", "Quality and rework")');
-  return readAuditWorkbook(d, sheets as Sheets);
+  const r = readAuditWorkbook(d, sheets as Sheets), c = readCaseSheets(d, sheets as Sheets, today);
+  return { ops: [...r.ops, ...c.ops], added: r.added + c.added, updated: r.updated + c.updated, ignored: r.ignored + c.ignored,
+    unchanged: r.unchanged + c.unchanged, notes: [...r.notes, ...c.notes],
+    ...(c.header ? { header: c.header } : {}), ...(c.catalog.length ? { catalog: c.catalog } : {}) };
 }

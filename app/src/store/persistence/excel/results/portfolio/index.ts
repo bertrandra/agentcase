@@ -1,6 +1,8 @@
 /** @calc-zone exports */
 import type { Workbook } from 'exceljs';
-import { consolidate, consolidationView, corePortfolio, groupOf, type DisplayScope, type Portfolio } from '@/domain/portfolio';
+import {
+  childUnitScopes, consolidate, consolidationView, corePortfolio, groupOf, servicesView, type DisplayScope, type Portfolio,
+} from '@/domain/portfolio';
 import type { ExcelJS } from '../../lazy';
 import { withPrint } from '../../print';
 import type { ThemeValues } from '@/domain/theme';
@@ -8,6 +10,7 @@ import { CASE_KEYS, productSheets, type ProductNames } from './productSheet';
 import { ktSheet } from './ktSheet';
 import { PF_RESULT_SHEETS as N, sheetName } from './names';
 import { portfolioSheet } from './portfolioSheet';
+import { servicesSheet } from './serviceSheet';
 import { stressSheet, type StressExtra } from './stressSheet';
 import { unitSheet, waveSheet } from './waveSheet';
 
@@ -19,7 +22,8 @@ interface Part { key: string; add: () => void }
 /**
  * The results workbook of a portfolio: "Portfolio", one "Wave <name>" per wave, "Knowledge transfer", then per kept product "Product <name>" followed by
  * that product's own six results sheets (prefixed "P<n> "). All of them are always exported; the display scope only decides which group LEADS the
- * workbook (the portfolio, one wave, or one product). Under a Unit scope a sheet "Unit <name>" (its consolidated figures) is added and leads (B10d).
+ * workbook (the portfolio, one wave, or one product). Under a Unit scope a sheet "Unit <name>" (its consolidated figures) is added and leads (B10d),
+ * followed by one "Unit <name>" per sub-unit (FX-31). "Services" follows "Knowledge transfer" when the portfolio has a shared service (FX-31).
  * When a portfolio Monte Carlo has been run, "Portfolio stress" follows "Knowledge transfer" (with the unit's verdict under a Unit scope).
  * Names obey Excel's rules (31 characters, no []:*?/\, unique). Numbers come from `consolidate`, `portfolioHeadline`, `consolidationView` and
  * `knowledgeTable` only; the product sheets are the single-case results writer on the effective case.
@@ -31,9 +35,13 @@ export function buildPortfolioResultsWorkbook(xl: ExcelJS, source: Portfolio, pr
   wb.creator = 'AgentCase'; wb.created = new Date();
   const names = { pf: sheetName(N.portfolio, used), kt: '' }, unit = scope.kind === 'unit' ? groupOf(c, scope) : null;
   const unitName = unit ? sheetName(`${N.unit}${unit.label}`, used) : '';
+  const subs = (unit ? childUnitScopes(pf, scope).filter((u) => !u.direct) : []).flatMap((u) => {
+    const g = groupOf(c, u);
+    return g ? [{ id: u.id, name: sheetName(`${N.unit}${g.label}`, used) }] : [];
+  });
   const waveNames = new Map(pf.waves.map((w) => [w.id, sheetName(`${N.wave}${w.name}`, used)]));
   names.kt = sheetName(N.kt, used);
-  const stressName = stress ? sheetName(N.stress, used) : '';
+  const stressName = stress ? sheetName(N.stress, used) : '', services = servicesView(pf), servicesName = services.length ? sheetName(N.services, used) : '';
   const kept = pf.products.filter((p) => !p.archived);
   const prodNames = new Map<string, ProductNames>(kept.map((p, i) => {
     const summary = sheetName(`${N.product}${p.name}`, used);
@@ -41,10 +49,12 @@ export function buildPortfolioResultsWorkbook(xl: ExcelJS, source: Portfolio, pr
   }));
   const parts: Part[] = [
     ...(unit && scope.kind === 'unit' ? [{ key: 'unit', add: () => unitSheet(wb, unitName, c, view, scope.id) }] : []),
+    ...subs.map((u): Part => ({ key: `sub:${u.id}`, add: () => unitSheet(wb, u.name, c, view, u.id) })),
     { key: 'portfolio', add: () => portfolioSheet(wb, names.pf, view, c.horizon) },
     ...pf.waves.map((w): Part => ({ key: `wave:${w.id}`, add: () => waveSheet(wb, waveNames.get(w.id) as string, c, view, w.id) })),
     { key: 'kt', add: () => ktSheet(wb, names.kt, pf) },
     ...(stress ? [{ key: 'stress', add: () => stressSheet(wb, stressName, pf, stress, scope) }] : []),
+    ...(services.length ? [{ key: 'services', add: () => servicesSheet(wb, servicesName, services) }] : []),
     ...kept.map((p): Part => ({ key: `product:${p.id}`, add: () => productSheets(wb, prodNames.get(p.id) as ProductNames, pf, c, p) })),
   ];
   const lead = scope.kind === 'wave' ? `wave:${scope.id}` : scope.kind === 'product' ? `product:${productId}` : unit ? 'unit' : 'portfolio';

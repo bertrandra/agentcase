@@ -6,7 +6,7 @@ const MAX = 31;
 
 /** The sheet names (and name prefixes) of the portfolio part of the results workbook, in workbook order; each goes through `sheetName`. */
 export const PF_RESULT_SHEETS = {
-  portfolio: 'Portfolio', unit: 'Unit ', wave: 'Wave ', kt: 'Knowledge transfer', stress: 'Portfolio stress', product: 'Product ',
+  portfolio: 'Portfolio', unit: 'Unit ', wave: 'Wave ', kt: 'Knowledge transfer', stress: 'Portfolio stress', services: 'Services', product: 'Product ',
 } as const;
 
 /**

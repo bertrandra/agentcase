@@ -24,6 +24,8 @@ export { findById, moveActivity, setDiagram, setReworkFlow, type Bounds, type Re
 export { resetProcess } from './editReset';
 export { analyseImport, previewImport } from './importPlan';
 export { applyImport, removeActivities } from './importApply';
+export type { KeepReport } from './importKeep';
+export { passText, passThroughOf } from './importPass';
 export { DEFAULT_CHOICES, type ImportAnalysis, type ImportChoices, type ImportMode, type ImportPreview, type IncomingRole,
   type IncomingUnit } from './importTypes';
 export { roleId } from './ids';

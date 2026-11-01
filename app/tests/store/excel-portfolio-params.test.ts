@@ -55,11 +55,11 @@ describe.each([['pf-three-products fixture', () => openPortfolioFixture()],
 });
 
 describe('scopes of the export', () => {
-  it('"Export all" adds the seven portfolio sheets after the case sheets; the other scopes do not', async () => {
+  it('"Export all" adds the nine portfolio sheets after the case sheets (Units and Owners: FX-30); the other scopes do not', async () => {
     fourProducts();
     const all = await sheetNames(await bytes('all'));
-    expect(all.slice(-7)).toEqual(['PortfolioSettings', 'Products', 'Waves', 'TeamIn', 'Overrides', 'KnowledgeSubsets', 'KnowledgeDomains']);
-    expect(all.slice(0, -7).some((n) => PORTFOLIO_SHEETS.has(n))).toBe(false);
+    expect(all.slice(-9)).toEqual(['PortfolioSettings', 'Products', 'Waves', 'TeamIn', 'Overrides', 'KnowledgeSubsets', 'KnowledgeDomains', 'Units', 'Owners']);
+    expect(all.slice(0, -9).some((n) => PORTFOLIO_SHEETS.has(n))).toBe(false);
     for (const scope of ['no-factory',
       'persona-only'] as const) expect((await sheetNames(await bytes(scope))).filter((n) => PORTFOLIO_SHEETS.has(n))).toEqual([]);
     expect((await sheetNames(await bytes('no-factory'))).some((n) => /^FM /.test(n))).toBe(false);

@@ -16,4 +16,7 @@ export { collaborationAudit, exportAuditDoc, withAuditMarked, withoutAudit } fro
 export { auditSheets, blockColumns, blockSheet, listColumns, EVIDENCE_HEADERS, ID_HEADERS, PAIN_HEADERS, SHEET, TOOL_HEADERS, type Cell, type SheetSpec }
   from './workbook';
 export { readAuditWorkbook, type AuditImport, type Sheets } from './workbookRead';
+export { CASE_SHEET, caseSheets, ORIGIN } from './workbookCase';
+export { readCaseSheets, type CaseImport } from './workbookCaseRead';
+export { mergeImportedAudit } from './mergeAudit';
 export { auditReport, type AuditReport } from './report';

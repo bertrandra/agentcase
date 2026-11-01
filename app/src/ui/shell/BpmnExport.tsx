@@ -1,6 +1,6 @@
 import { useEffect, useId, useRef, useState, type KeyboardEvent } from 'react';
 import { BPMN_MIME, bpmnExportChoices, exportProcessFiles, type BpmnExportMode, type ProcessChoice } from '@/controllers/bpmn';
-import { companionFiles, hasDecisions } from '@/controllers/decisionFiles';
+import { companionFiles, dmnBindingState, hasDecisions } from '@/controllers/decisionFiles';
 import { toast } from '../uiState';
 
 const download = (filename: string, text: string) => {
@@ -56,6 +56,7 @@ export function BpmnExportPanel({ onClose }: { onClose: () => void }) {
           <label key={p}><input type="radio" name={`${id}-proc`} checked={processes === p} onChange={() => setProcesses(p)} /> {label}</label>))}
       </fieldset>
       <label><input type="checkbox" checked={dmn} onChange={(e) => setDmn(e.target.checked)} /> Decisions as a DMN file (.dmn)</label>
+      {dmn && <DmnNote />}
       <label><input type="checkbox" checked={cmmn} onChange={(e) => setCmmn(e.target.checked)} /> Run phase as a CMMN case (.cmmn)</label>
       <p className="ac-display-note">BPMN 2.0 with diagram, AgentCase parameters and BPSim data. The in-scope file cannot replace a full process on import.
         The DMN and CMMN files describe the case shown.</p>
@@ -64,5 +65,20 @@ export function BpmnExportPanel({ onClose }: { onClose: () => void }) {
         <button type="button" className="ac-btn" onClick={onClose}>Cancel</button>
       </div>
     </div>
+  );
+}
+
+/**
+ * FX-27: what the exported decisions do — a decision applies to an activity only through a business-rule task bound to it (🧩 Process); the unbound
+ * ones (all of them when the case exports its rule families) are reference only until bound.
+ */
+function DmnNote() {
+  const s = dmnBindingState();
+  if (!s.unbound) return null;
+  return (
+    <p className="ac-display-note" role="note">
+      {s.generated ? `The ${s.decisions} rule families are exported as reference: none applies until a business-rule task is bound to it.`
+        : `${s.unbound} of the ${s.decisions} decisions are bound to no business-rule task: they apply to nothing until one is.`}
+    </p>
   );
 }

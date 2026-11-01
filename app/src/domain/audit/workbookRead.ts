@@ -5,7 +5,8 @@ import { resourceIds } from './edit';
 import { AUDIT_BLOCKS } from './fields';
 import { applyElementOp, emptyAudit, observationOk, type ElementOp } from './ops';
 import { readAudit } from './read';
-import type { ElementAudit, Observation, ToolUse } from './types';
+import type { CatalogTool, ElementAudit, Observation, ToolUse } from './types';
+import type { HeaderPatch } from './edit';
 import { blockColumns, blockSheet, SHEET, type Cell } from './workbook';
 
 /**
@@ -14,7 +15,11 @@ import { blockColumns, blockSheet, SHEET, type Cell } from './workbook';
  * tool the one with the same code; pain points and evidence are added unless already there), and the report: added, updated, ignored rows.
  */
 export type Sheets = ReadonlyMap<string, readonly (readonly Cell[])[]>;
-export interface AuditImport { ops: { id: string; op: ElementOp }[]; added: number; updated: number; ignored: number; unchanged: number; notes: string[] }
+export interface AuditImport {
+  ops: { id: string; op: ElementOp }[]; added: number; updated: number; ignored: number; unchanged: number; notes: string[];
+  /** the Header sheet's patch and the case's catalogue entries to keep (FX-28, FX-29), when the workbook changes them */
+  header?: HeaderPatch; catalog?: CatalogTool[];
+}
 
 const s = (c: Cell | undefined): string => (c === undefined ? '' : String(c).trim());
 const opt = <T extends object>(o: T): T => Object.fromEntries(Object.entries(o).filter(([, v]) => v !== undefined && v !== '')) as T;

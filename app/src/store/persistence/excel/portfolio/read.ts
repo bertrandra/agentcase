@@ -1,7 +1,7 @@
 /** @calc-zone exports */
 import { setHorizon, setHub, setMaxConcurrentSetups, setOverride, setRho, teamsIntoDocument, validate, type Portfolio, type Product } from '@/domain/portfolio';
 import { clean } from '@/domain/portfolio/products';
-import { BPMN_KEY, SCOPE_KEYS } from '@/domain/process';
+import { BPMN_KEY, SCOPE_KEYS, type XDocument } from '@/domain/process';
 import { scopedProcess } from '../../bpmn/legacy';
 import { processOverride } from './readProcess';
 import { ParamsImportError } from '../params/safe';
@@ -9,6 +9,8 @@ import type { Sheets } from '../params/types';
 import { readKnowledge } from './readKnowledge';
 import { readOverrides } from './readOverrides';
 import { readShared } from './readShared';
+import { applyOrg, readOrg } from './readOrg';
+import { readStoredOrg } from '@/domain/org';
 import { assemble, readProductRows, readSettings, readWaveRows } from './readStructure';
 import { readTeams } from './readTeam';
 import { pinTargets } from '@/domain/baseline/teamWeights';
@@ -18,8 +20,8 @@ export const isPortfolioWorkbook = (sheets: Sheets): boolean => sheets.has('Prod
 
 /**
  * The portfolio sheets applied on `base` (whose `common` already holds the imported common case): products, waves, teams, overrides, knowledge
- * subsets, shared team lines, hub and horizon. Everything is checked first; any problem throws a `ParamsImportError` naming the sheet and row, and
- * `base` is never modified.
+ * subsets, shared team lines, units and owners (FX-30), hub and horizon. Everything is checked first; any problem throws a `ParamsImportError`
+ * naming the sheet and row, and `base` is never modified.
  */
 export function readPortfolioSheets(sheets: Sheets, base: Portfolio): Portfolio {
   const rows = readProductRows(sheets), ids = new Set(rows.map((r) => r.id)), waveRows = readWaveRows(sheets), overrides = readOverrides(sheets, ids);
@@ -34,10 +36,12 @@ export function readPortfolioSheets(sheets: Sheets, base: Portfolio): Portfolio 
   }));
   const s = readSettings(sheets, { hub: base.hub, horizonMonths: base.horizonMonths, startDate: base.startDate, activeProductId: base.activeProductId,
     rho: 0, cap: 0 }, ids);   // a workbook without the row means independent products, no setup capacity
-  const shared = readShared(sheets, ids, known);   // no SharedTeam sheet: no shared line (the ids of the workbook replace the current ones)
+  // no SharedTeam sheet: no shared line (the ids of the workbook replace the current ones)
+  const shared = readShared(sheets, ids, known), org = readOrg(sheets, ids, new Set(readStoredOrg(base.common.BPMN as XDocument).units.map((u) => u.id)));
   let pf: Portfolio = teamsIntoDocument({ ...base, products, waves, activeProductId: ids.has(s.activeProductId) ? s.activeProductId
     : (products[0] as Product).id, startDate: s.startDate }, { teams: Object.fromEntries(teams), shared }, [], true);   // schema v5: into the document
   pf = setMaxConcurrentSetups(setRho(setHorizon(setHub(pf, s.hub), s.horizonMonths), s.rho), s.cap);
+  pf = applyOrg(pf, org, shared);   // FX-30: the Units and Owners sheets
   const scoped = new Map<string, Record<string, unknown>>(), docs = new Map<string, string>();   // one process document override per product (F-B20)
   for (const o of overrides) {
     if ((SCOPE_KEYS as readonly string[]).includes(o.ref)) scoped.set(o.productId, { ...scoped.get(o.productId), [o.ref]: o.value });

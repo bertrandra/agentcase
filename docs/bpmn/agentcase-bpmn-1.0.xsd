@@ -203,6 +203,19 @@
     </xsd:complexType>
   </xsd:element>
 
+  <xsd:element name="passThrough">
+    <xsd:annotation><xsd:documentation>FX-24: in a bpmn:process, foreign content an import could not place in one phase (references across phases, a unit
+      mapped to no phase, a nested sub-process), kept as written (its XML, UTF-8, base64) with the unit it came from and its kind. Opaque to the model.</xsd:documentation></xsd:annotation>
+    <xsd:complexType>
+      <xsd:simpleContent>
+        <xsd:extension base="xsd:base64Binary">
+          <xsd:attribute name="unit" type="ac:tText" use="required"/>
+          <xsd:attribute name="kind" type="ac:tKey" use="required"/>
+        </xsd:extension>
+      </xsd:simpleContent>
+    </xsd:complexType>
+  </xsd:element>
+
   <xsd:element name="phase">
     <xsd:annotation><xsd:documentation>In a phase bpmn:subProcess / adHocSubProcess: the phase code, its order and its role (phases.json).</xsd:documentation></xsd:annotation>
     <xsd:complexType>

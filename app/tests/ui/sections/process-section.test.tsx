@@ -91,6 +91,8 @@ describe('Process section', { timeout: 90_000 }, () => {
     expect(go.disabled).toBe(false);
     fireEvent.click(go);
     expect(has('h2', 'Import report (merge)')).toBe(true);
+    // FX-24: what sits in the unmapped lane is kept as written, and the report says so by kind
+    expect(has('[aria-label="Foreign content"] li', 'Kept as written (pass-through: across phases or no phase): sequenceFlow 6')).toBe(true);
     expect(act0('Activity_monitor')).toMatchObject({ phase: 'L9', name: 'Monitor error rates' });
     expect(readProcess(doc()).actors.find((a) => a.name === 'QA Engineers')?.teamSkill).toBe('Test/QA');
     expect(appStore().getState().history.undo.at(-1)?.type).toBe('process.import');
