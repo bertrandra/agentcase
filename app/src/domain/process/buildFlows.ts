@@ -12,7 +12,7 @@ export interface FlowSpec { id: string; source: string; target: string; name?: s
 
 /**
  * The control flow (spec § 3, F-B14): start → parallel fork → the phases in sequence → parallel join → end, with Cross-cutting in parallel
- * between the fork and the join; inside each phase its activities linked one after the other (`chainOrderOf`, FX-D9: no figure reads the order);
+ * between the fork and the join; inside each phase its SDLC activities linked one after the other (`chainOrderOf`, FX-D9: no figure reads the order);
  * then one back flow per rework loop pair (`ac:rework`): between the two phases of an external rework, or
  * between the two activities when the pair sits in one phase.
  */

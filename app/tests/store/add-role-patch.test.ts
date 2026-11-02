@@ -17,11 +17,10 @@ describe('adding a role (FX-06)', () => {
     addProcessActor({ id: 'role-qa-lead', name: 'QA lead', kind: 'role', teamSkill: 'QA' });
     const e = appStore().getState().history.undo.at(-1)!;
     expect(e.type).toBe('process.addActor');
-    // only the diagram (which the schema keeps after every root element) and the white space around it move: 1.35 MB before FX-06, about 0.29 MB;
-    // about 0.54 MB since FX-D9 draws the activity links (one edge per link)
+    // only the diagram (which the schema keeps after every root element) and the white space around it move: 1.35 MB before FX-06, about 0.29 MB
     const moved = (e.patches as { value?: { local?: string } }[]).map((x) => x.value?.local).filter(Boolean);
     expect(moved.sort()).toEqual(['BPMNDiagram', 'resource']);   // no process, no collaboration copied into the step
-    expect(JSON.stringify(e.patches).length).toBeLessThan(650_000);
+    expect(JSON.stringify(e.patches).length).toBeLessThan(400_000);
     expect(readProcess(doc()).actors.some((a) => a.id === 'role-qa-lead')).toBe(true);
     const defs = doc().root.children.filter((c) => c.kind === 'element').map((c) => (c as { local: string }).local);
     expect(defs.lastIndexOf('resource')).toBeLessThan(defs.indexOf('BPMNDiagram'));   // still before the diagrams (schema order)

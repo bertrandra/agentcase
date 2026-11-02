@@ -138,8 +138,10 @@
         <bpmn:documentation>Workshops, champion certification, run by the preceptors; it builds the capability of the organisation: the people in training are its trainees, up to the target mass.</bpmn:documentation>
         <bpmn:extensionElements>
           <ac:programmeActivity kind="setupTraining" level="product" costRule="resources" costProfile="spread" timing="setup" placement="12 months (the setup duration) from the product's month 1, spent evenly" cost="52877">
+            <ac:param key="trainPricing" value=""/>
             <ac:param key="trainFte" value="" unit="FTE"/>
             <ac:param key="trainMonths" value="" unit="months"/>
+            <ac:param key="setupTraining" value="45000" unit="€"/>
             <ac:param key="capOps" value="50" unit="people"/>
             <ac:param key="capTrain" value="200" unit="people"/>
             <ac:param key="capTarget" value="500" unit="people"/>
@@ -170,8 +172,10 @@
         <bpmn:documentation>Compliance audit, IP, agentic charter, run by the Design Authority.</bpmn:documentation>
         <bpmn:extensionElements>
           <ac:programmeActivity kind="setupGovernance" level="product" costRule="resources" costProfile="spread" timing="setup" placement="12 months (the setup duration) from the product's month 1, spent evenly" cost="26438.5">
+            <ac:param key="govPricing" value=""/>
             <ac:param key="govFte" value="" unit="FTE"/>
             <ac:param key="govMonths" value="" unit="months"/>
+            <ac:param key="setupGov" value="20000" unit="€"/>
           </ac:programmeActivity>
           <ac:raci responsible="prog-lane-designAuthority" accountable="prog-lane-aiOffice" informed="prog-lane-finops"/>
         </bpmn:extensionElements>

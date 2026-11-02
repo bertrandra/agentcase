@@ -67,9 +67,9 @@ export function bridgeOver(d: XDocument, gone: ReadonlySet<string>): XDocument {
 }
 
 /**
- * `process.linkActivities` (FX-D9): every activity of a phase (not ad hoc) that no plain flow touches yet is linked: appended after the end of the
- * phase's chain (its activity with incoming but no outgoing link), or chained with the others when the phase has none; SDLC before regulatory, in
- * their order. So a document written before the links gets them, and an activity added or moved since joins its phase's chain. The same document
+ * `process.linkActivities` (FX-D9): every SDLC activity of a phase (not ad hoc) that no plain flow touches yet is linked: appended after the end
+ * of the phase's chain (its activity with incoming but no outgoing link), or chained with the others when the phase has none, in their order
+ * (regulatory activities are the phase's obligations: not chained). So a document written before the links gets them, and an activity added or moved since joins its phase's chain. The same document
  * when every activity is linked.
  */
 export function linkActivities(d: XDocument): XDocument {
@@ -77,8 +77,7 @@ export function linkActivities(d: XDocument): XDocument {
   const from = new Set(plain.map((f) => f.source)), to = new Set(plain.map((f) => f.target));
   for (const p of v.phases) {
     if (p.adHoc) continue;
-    const acts = v.activities.filter((a) => a.phase === p.id && a.trigger === undefined)
-      .sort((a, b) => Number(a.regulatory) - Number(b.regulatory) || a.order - b.order);
+    const acts = v.activities.filter((a) => a.phase === p.id && a.trigger === undefined && !a.regulatory).sort((a, b) => a.order - b.order);
     const loose = acts.filter((a) => !from.has(a.id) && !to.has(a.id)).map((a) => a.id);
     const tail = acts.find((a) => to.has(a.id) && !from.has(a.id))?.id, ids = tail ? [tail, ...loose] : loose;
     if (!loose.length) continue;

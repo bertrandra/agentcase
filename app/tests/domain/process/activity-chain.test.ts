@@ -9,7 +9,7 @@ import { CUSTOM } from '../../store/samples/process';
 
 /**
  * SPEC_FIXES FX-D9 (owner's request 2026-11-02, "links within for activities"): inside each phase the default process links its activities one
- * after the other (sequence, SDLC before regulatory, catalogue order), each link drawn; removing, moving or leaving out an activity links its
+ * after the other (its SDLC activities: sequence, catalogue order), each link drawn; removing, moving or leaving out an activity links its
  * neighbours over it. No figure reads the order.
  */
 const base = (): XDocument => makeDefaultDoc().BPMN;
@@ -28,10 +28,10 @@ const longPhase = (d: XDocument): { phase: string; chain: string[] } => {
 };
 
 describe('activity links inside each phase (FX-D9)', () => {
-  it('every phase but Cross-cutting chains all its activities once, each link drawn', () => {
+  it('every phase but Cross-cutting chains all its SDLC activities once (regulatory ones stay unlinked), each link drawn', () => {
     const d = base(), v = readProcess(d), edges = new Set(v.diagram.edges.map((e) => e.element));
     for (const p of v.phases) {
-      const acts = v.activities.filter((a) => a.phase === p.id && !a.trigger);
+      const acts = v.activities.filter((a) => a.phase === p.id && !a.trigger && !a.regulatory);
       if (p.adHoc) { expect(links(d, p.id)).toEqual([]); continue; }
       if (acts.length < 2) continue;
       expect(chainOf(d, p.id).sort()).toEqual(acts.map((a) => a.id).sort());

@@ -19,7 +19,7 @@ When releasing, follow [docs/BUMP_PROCEDURE.md](docs/BUMP_PROCEDURE.md) (§7 for
 
 ### SPEC_FIXES lot X7 (part)
 
-- **Activity links** (FX-D9, owner's request): the default process links the activities of each phase one after the other, drawn on the diagram
+- **Activity links** (FX-D9, owner's request): the default process links the SDLC activities of each phase one after the other (regulatory ones stay unlinked), drawn on the diagram
   and exported; removing, moving or leaving out an activity links its neighbours over it. 🧩 Process › "Link activities" links a case saved
   before (or an activity added since) in one undoable step. No figure reads the order.
 - **Training and governance pricing** (FX-D13 d): each line is priced from its resources (default, unchanged figures) or from its euro
