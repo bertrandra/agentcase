@@ -3,6 +3,9 @@ import demo from '@/domain/factory/demo.json';
 import { EMPTY_FACTORY } from '@/domain/factory/empty';
 import { generateFactory } from '@/domain/factory/generate';
 import { FG_DEFAULT, fgParams } from '@/domain/factory/params';
+import type { FgParams } from '@/domain/factory/types';
+import type { Ctx } from '@/domain';
+import { processFeeds } from '@/domain/process/feeds';
 import { nextId } from '@/domain/factory/collections';
 import type { ArtefactTag, BacklogItem, FactoryData, Feedback, IntegratedProduct, PhaseFeatures, QualityGate, ReleaseItem, ReleaseItemType,
   Vision } from '@/domain/factory/types';
@@ -87,13 +90,18 @@ const demoCmd = defineCommand<{ now: string }>({
       demo.storyOf as Record<string, string>, p.now, ['ENVIRONMENTS']);
   },
 });
+/** FX-D8: the factory data's release cadence and failed-deployment rate from the process model, when the case feeds them (else its parameters). */
+function fedParams(c: Ctx, p: FgParams): FgParams {
+  const f = processFeeds(c);
+  return { ...p, ...(f.cadenceWeeks ? { releaseEveryWeeks: Math.max(1, Math.round(f.cadenceWeeks)) } : {}), ...(f.cfr !== undefined ? { deployFailRate: f.cfr } : {}) };
+}
 const clearCmd = defineCommand<{ now: string }>({ type: 'factory.clearAll', label: () => 'Delete all Factory Model data', run(d, p) {
   replaceFactory(d, {}, {}, {}, p.now);
 } });
 const generateCmd = defineCommand<{ now: string }>({
   type: 'factory.generate', label: () => 'Generate weekly factory data',
   run(d, p) {
-    const t0 = Date.now(), g = generateFactory(ctxOfDraft(d), fgParams(rec(d).FG_PARAMS as never), p.now);
+    const c = ctxOfDraft(d), t0 = Date.now(), g = generateFactory(c, fedParams(c, fgParams(rec(d).FG_PARAMS as never)), p.now);
     if (!g) return;
     replaceFactory(d, g.data, g.phaseFeatures, g.storyOf, p.now);
     for (const k of ['SPRINTS', 'PROGRAM_INCREMENTS', 'STORY_ASSIGNMENTS'] as const) rec(d)[k] = g.data[k];

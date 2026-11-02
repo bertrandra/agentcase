@@ -1,4 +1,5 @@
 /** @calc-zone delivery-views */
+import { processFeeds } from '../process/feeds';
 import type { WArtefact } from '../artefacts';
 import type { Ctx } from '../ctx';
 import { model } from '../model/overlay';
@@ -76,12 +77,15 @@ export function ganttView(c: Ctx): GanttView {
     velocity[x.id] = v;
     return { id: x.id, seqKey: x.seq, len: v > 0 ? x.w / v : x.w };
   });
-  const delivStart = prog.onboardEnd, win = groupLayout(items, lam, delivStart, Math.max(1, totalM - prog.onboardEnd));
+  // FX-D8: the waiting days of a phase (timer events of the process, when the case feeds them) lengthen it, in the delivery window's scale
+  const waits = processFeeds(c).waits, L = items.reduce((s, it) => s + it.len, 0), W = Math.max(1, totalM - prog.onboardEnd);
+  if (waits) for (const it of items) { const wd = waits.get(it.id); if (wd) it.len += ((wd / 30.44) * L) / W; }
+  const delivStart = prog.onboardEnd, win = groupLayout(items, lam, delivStart, W);
   const ids = Object.keys(win), end = (id: string) => win[id]!.startM + win[id]!.durM;
   const cycleEnd = ids.length ? Math.max(...ids.map(end)) : delivStart, lastId = ids.reduce<string | null>((b, id) => (!b || end(id) > end(b) ? id : b), null);
   const meta = (id: string, sf: number,
     pre = '') =>
-      `${pre}${monLabel(win[id]!.durM)} · ${Math.round(sf * 100)}% supervised · ×${velocity[id]!.toFixed(2)} velocity${id === lastId ? ' · closes the ' +
+      `${pre}${monLabel(win[id]!.durM)}${waits?.get(id) ? ` · ${waits.get(id)} d waits` : ''} · ${Math.round(sf * 100)}% supervised · ×${velocity[id]!.toFixed(2)} velocity${id === lastId ? ' · closes the ' +
         'release' : ''}`;
 
   const phases: PhaseRow[] = per.map((x, i) => ({

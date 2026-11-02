@@ -1,6 +1,7 @@
 /** @calc-zone delivery-views */
 import type { Ctx } from '../ctx';
 import { engineNow } from '../canonical';
+import { processFeeds } from '../process/feeds';
 import { lceModel } from './lce';
 import { doraOf } from './modelState';
 import { model } from './overlay';
@@ -70,7 +71,7 @@ export function doraReadout(c: Ctx) {
   const lc = c.s.MODEL.FLAGS.lce ? lceModel(c) : null, measured = doraOf(c.s.MODEL).measured;
   const e = engineNow(c), wd = model(c).wd, rpd = c.inp.p('runsPerDay');
   const deployFreq = e.year(e.horizonYears).agentVfteEnd * wd * Math.max(0, isNaN(rpd) ? 25 : rpd);
-  const loops = c.s.MODEL.LCE.loops ?? [];
+  const loops = c.s.MODEL.LCE.loops ?? [], cfr = processFeeds(c).cfr;
   const meanT = loops.length ? loops.reduce((t, l) => t + (l.tRev || 0), 0) / loops.length : 0;
   const row = (key: string, derived: number | null, unit: string): DoraRow => {
     const meas = typeof measured[key] === 'number' ? (measured[key] as number) : null;
@@ -78,7 +79,8 @@ export function doraReadout(c: Ctx) {
   };
   return {
     deploymentFrequency: row('deployFreq', deployFreq, 'agent runs / yr (Y3)'),
-    changeFailureRate: row('changeFailure', lc ? lc.escapePct : null, '% escape (P1)'),
+    changeFailureRate: cfr === undefined ? row('changeFailure', lc ? lc.escapePct : null, '% escape (P1)')
+      : row('changeFailure', cfr * 100, '% (process model: compensation handlers, FX-D8)'),
     leadTimeForChange: row('leadTime', lc ? lc.weightedEN * meanT : null, 'hours / accepted artefact (P1 proxy — true CT is P5-owned, not yet modelled)'),
     timeToRestore: row('ttr', null, 'not modelled — direct input only (spec-carried for completeness)'),
   };

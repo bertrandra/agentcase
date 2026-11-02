@@ -8,6 +8,7 @@ import { ADAPTERS, rampAt, yearOf, type CurveK } from './adapters';
 import { fitCurveCached } from './fit';
 import { enginePts } from './spline';
 import { engineProfile } from '../programme/profile';
+import { handoffMonthCost, processFeeds } from '../process/feeds';
 
 /** Constants captured from a (raw) model so the engine is a pure function of them (legacy buildK). */
 /**
@@ -20,6 +21,8 @@ export interface K extends CurveK {
   ctx: Ctx; mode: string; scenarioId: string; calculationVersion: string; horizonYears: number; horizonMonths: number;
   baseEtp: number; baselineRunMonth: number; eff: number; wdMonth: number; dayRateTarget: number; dayRateAsIs: number; rateMode: string;
   frPerYear: number; runsPerDay: number; tokensPerArt: number; tokenUnitCost: number; infraMonth: number; setupTotal: number;
+  /** FX-D8: the hand-offs' coordination cost a month, from the first month with agents (0 unless the case feeds it from its process) */
+  handoffMonth: number;
   /** the programme cost of each month (index t - 1; adds up to `setupTotal`), its Knowledge-hub setup part and the opt-in savings (decommissioning),
    * from the programme's one cost profile (`programme/profile.ts`, SPEC_BPMN § 19.4 F-B68) */
   setupProfile: number[]; ktProfile: number[]; savingProfile: number[];
@@ -41,7 +44,7 @@ export function buildK(c: Ctx, m: ModelResult, opts: BuildOpts = {}): K {
     calculationVersion: CALCULATION_VERSION, horizonYears: m.horizon, horizonMonths: m.horizon * 12, ramps: m.ramps.slice(),
     baseEtp: m.base.etp, baselineRunMonth: m.baselineRun / 12, eff: m.eff, wdMonth: m.wd / 12, dayRateTarget: m.tgtTJM, dayRateAsIs: m.blendedTJM,
     rateMode: 'target', frPerYear: 0, runsPerDay: num('runsPerDay', 25), tokensPerArt: m.tokensPerArt, tokenUnitCost: m.tokenCost,
-    infraMonth: m.infraYear / 12, setupTotal: m.setupTotal, setupProfile: [], ktProfile: [], savingProfile: [], runSizeMode: c.inp.v('runSizeMode') || 'hybrid',
+    infraMonth: m.infraYear / 12, handoffMonth: handoffMonthCost(processFeeds(c), m.tgtTJM), setupTotal: m.setupTotal, setupProfile: [], ktProfile: [], savingProfile: [], runSizeMode: c.inp.v('runSizeMode') || 'hybrid',
     runFloorMin: num('runFloorMin', 0.5), runFloorPct: num('runFloorPct', 4), runOpsPerAgent: num('runOpsPerAgent', 0.15),
     runTeamFactor: num('runTeamFactor', 1),
     legacyRunFte: Math.max(0.5, m.base.etp * 0.06 + 0.5 + m.base.etp * 0.04), vTaxRate: conv.vTaxRate || 0, loopExtRate: conv.loopExtRate || 0,
@@ -84,7 +87,7 @@ export function runTeamSizing(v: number, K: K): number {
 
 export interface Econ {
   t: number; y: number; r: number; humanFte: number; agentVfte: number; agentVfteRaw: number; runTeamFte: number; teamCost: number; tokenCost: number;
-  infraCost: number; runTeamCost: number; khCost: number; ktAvoid: number; vTax: number; loopExt: number; compTax: number; setupCost: number;
+  infraCost: number; handoffCost: number; runTeamCost: number; khCost: number; ktAvoid: number; vTax: number; loopExt: number; compTax: number; setupCost: number;
   totalRun: number; grossSav: number; netSav: number;
 }
 
@@ -101,15 +104,15 @@ export function econ(t: number, K: K): Econ {
   const agentRuns = agentVfte * K.wdMonth * K.runsPerDay;
   const tokenCost = K.aiActive ? ((agentRuns * K.tokensPerArt) / 1e6) * K.tokenUnitCost : 0;
   const infraCost = K.runSizeMode === 'legacy' ? K.infraMonth : hasAgents ? K.infraMonth : 0;
-  const khCost = hasAgents ? aAt(A.khRunYr, y) / 12 : 0;
+  const khCost = hasAgents ? aAt(A.khRunYr, y) / 12 : 0, handoffCost = hasAgents ? K.handoffMonth : 0;
   const runTeamFte = runTeamSizing(agentVfte, K);
   const runTeamCost = runTeamFte * dayRate * AI_SKILL_PREMIUM * K.wdMonth * K.runTeamFactor;
   const setupCost = K.setupProfile[t - 1] ?? 0;
-  const totalRun = teamCost + tokenCost + infraCost + runTeamCost + khCost;
+  const totalRun = teamCost + tokenCost + infraCost + runTeamCost + khCost + handoffCost;
   const rawSav = Math.max(0, K.baselineRunMonth - totalRun);
   const vTax = rawSav * K.vTaxRate, loopExt = rawSav * K.loopExtRate, compTax = rawSav * K.complianceTaxRate;
   const ktAvoid = hasAgents ? aAt(A.ktAvoidYr, y) / 12 : 0;
   const grossSav = K.baselineRunMonth - totalRun + ktAvoid - vTax - loopExt - compTax + (K.savingProfile[t - 1] ?? 0);
-  return { t, y, r, humanFte, agentVfte, agentVfteRaw, runTeamFte, teamCost, tokenCost, infraCost, runTeamCost, khCost, ktAvoid, vTax, loopExt, compTax,
+  return { t, y, r, humanFte, agentVfte, agentVfteRaw, runTeamFte, teamCost, tokenCost, infraCost, handoffCost, runTeamCost, khCost, ktAvoid, vTax, loopExt, compTax,
     setupCost, totalRun, grossSav, netSav: grossSav - setupCost };
 }
