@@ -12,8 +12,11 @@ import { loadCase } from '../helpers/portfolio';
  * SPEC_FIXES FX-D13 (d), outputs: a training or governance line priced by amount says so in the due-diligence register and the report; priced by
  * resources (the default), both are the legacy outputs (the parity tests compare them).
  */
-const withValues = (s: CaseState, values: Record<string, string>): CaseState => ({ ...s, dom: { ...s.dom, values: { ...s.dom.values, ...values } } });
-const amount = (): CaseState => withValues(loadCase('industry-med'), { govPricing: 'amount', setupGov: '6000' });
+/** industry-med with its governance line priced by its €6,000 amount */
+function amount(): CaseState {
+  const s = loadCase('industry-med');
+  return { ...s, dom: { ...s.dom, values: Object.assign({}, s.dom.values, { govPricing: 'amount', setupGov: '6000' }) } };
+}
 
 describe('the pricing mode in the outputs (FX-D13 d)', () => {
   const base = ddBase(makeDefaultDoc());
