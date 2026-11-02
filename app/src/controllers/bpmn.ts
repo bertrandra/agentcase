@@ -117,5 +117,5 @@ function withProgrammeFiles(files: BpmnFile[], processes: Exclude<ProcessChoice,
  * the parse and the BPMN root check. Returns the node tree (null when refused) with its errors and warnings. Writes nothing.
  */
 export async function parseBpmnFile(file: { size: number; text(): Promise<string> }): Promise<ParseResult> {
-  return parseBpmn(file.size > LIMITS.bytes ? '' : await file.text(), file.size);
+  return parseBpmn(LIMITS.bytes !== null && file.size > LIMITS.bytes ? '' : await file.text(), file.size);
 }

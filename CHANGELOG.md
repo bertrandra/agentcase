@@ -19,6 +19,9 @@ When releasing, follow [docs/BUMP_PROCEDURE.md](docs/BUMP_PROCEDURE.md) (§7 for
 
 ### SPEC_FIXES lot X7 (part)
 
+- **No file size limit** (owner's request 2026-11-02): BPMN, DMN and CMMN files are no longer capped in size or number of elements (were 5 MB
+  and 100,000), Excel workbooks in size, unzipped size or rows (were 8 MB, 64 MB, 20,000), the due-diligence pack (25 MB) and audit files
+  (8 MB, 2 MB) neither. The checks that are not sizes stay: XML depth, DTD / entity / processing-instruction refusal, zip parts and ratio.
 - **File schema v6 — the portfolio plan in the BPMN document** (FX-D14): a saved portfolio keeps its waves (sub-processes), setup capacity
   (on the lane set) and its products' knowledge subsets in its common BPMN document, as the portfolio process; the JSON keys are gone from
   the file. Opening puts them back; v5 files open as before. Files written by this version are refused by older builds (newer format).

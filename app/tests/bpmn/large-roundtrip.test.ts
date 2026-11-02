@@ -22,8 +22,7 @@ describe('B2 round trip of a 2,000-activity file with the default limits', () =>
     const d = buildProcess(catalogueOf(2000)), text = serialize({ ...d, root: indent(d.root) });
     const elements = (text.match(/<[A-Za-z]/g) ?? []).length;
     expect(elements).toBeGreaterThan(20000);
-    expect(elements).toBeLessThan(LIMITS.elements);
-    expect(text.length).toBeLessThan(LIMITS.bytes);
+    expect([LIMITS.elements, LIMITS.bytes]).toEqual([null, null]);   // no limit (owner, 2026-11-02)
     const back = parsed(text);
     expect(serialize(back) === text).toBe(true);
     expect(readProcess(back).activities).toHaveLength(2000);

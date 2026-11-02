@@ -5,7 +5,11 @@ import type { Cell } from './types';
 export class ParamsImportError extends Error {}
 
 /** Import hardening (legacy v18.9 safeId/cleanText plus the size limits the legacy lacked). */
-export const LIMITS = { fileBytes: 8 * 1024 * 1024, unzippedBytes: 64 * 1024 * 1024, entries: 400, ratio: 200, rows: 20000, cols: 64, text: 5000 };
+/**
+ * Owner's decision 2026-11-02: no limit on the size of a workbook (file, uncompressed) or its rows; the zip-bomb guards that are not sizes stay (the
+ * number of entries, the compression ratio), and the columns and cell text limits of the sheets.
+ */
+export const LIMITS = { fileBytes: Infinity, unzippedBytes: Infinity, entries: 400, ratio: 200, rows: Infinity, cols: 64, text: 5000 };
 
 const FORBIDDEN = new Set(['__proto__', 'constructor', 'prototype']);
 /** True for a key that is safe to use on a plain object (no prototype-pollution names). */

@@ -28,7 +28,7 @@ function shapeOf(ref: string): Shape {
 
 function checkType(t: Tab, l: Line, ref: string, v: unknown): void {
   const p = parseRef(ref);
-  const ok = ref === BPMN_KEY ? typeof v === 'string' && v.length <= LIMITS.bytes
+  const ok = ref === BPMN_KEY ? typeof v === 'string' && (LIMITS.bytes === null || v.length <= LIMITS.bytes)
     : p?.kind === 'values' ? typeof v === 'string' && v.length <= 2000 : ((): boolean => {
     switch (shapeOf(ref)) {
       case 'strings': return Array.isArray(v) && v.length <= 2000 && v.every((x) => typeof x === 'string' && x.length <= 200);

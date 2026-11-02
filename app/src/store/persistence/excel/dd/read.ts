@@ -5,7 +5,7 @@ import { cleanText, safeId } from '../params/safe';
 
 // a Set: the legacy object lookup also accepted 'constructor' and 'toString'
 const VALID: ReadonlySet<string> = new Set(['open', 'requested', 'confirmed', 'disputed', 'waived']);
-export const MAX_PACK_BYTES = 25 * 1024 * 1024;
+export const MAX_PACK_BYTES = Infinity;   // owner's decision 2026-11-02: no size limit on a due-diligence pack
 /** A pack has ~100 rows; anything beyond this is not read (a hostile sheet may declare millions). */
 export const MAX_PACK_ROWS = 20000;
 

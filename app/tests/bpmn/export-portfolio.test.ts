@@ -59,15 +59,15 @@ describe('B2 export controller (File menu)', () => {
     expect(bpmnFilename(' ACME / Corp ', 'Pay roll*', NOW)).toBe('AgentCase_process_ACME_Corp_Pay_roll_2026-10-30.bpmn');
     expect(bpmnFilename(undefined, undefined, NOW)).toBe('AgentCase_process_case_2026-10-30.bpmn');
   });
-  it('parseBpmnFile returns the tree and the diagnostics, refuses an oversized file without reading it, writes nothing', async () => {
+  it('parseBpmnFile returns the tree and the diagnostics, reads a large file (no size limit), writes nothing', async () => {
     freshStore();
     const [f] = exportProcessFiles('shown', false, NOW), text = f?.text ?? '';
     const ok = await parseBpmnFile({ size: text.length, text: () => Promise.resolve(text) });
     expect(ok.errors).toEqual([]);
     expect(ok.doc?.root.local).toBe('definitions');
-    let read = false;
-    const big = await parseBpmnFile({ size: 6 * 1024 * 1024, text: () => { read = true; return Promise.resolve(''); } });
-    expect([big.doc, big.errors.map((e) => e.code), read]).toEqual([null, ['too-large'], false]);
+    let read = false;   // no size limit (owner, 2026-11-02): a large file is read
+    const big = await parseBpmnFile({ size: 60 * 1024 * 1024, text: () => { read = true; return Promise.resolve(text); } });
+    expect([big.errors, read]).toEqual([[], true]);
     const notBpmn = await parseBpmnFile({ size: 10, text: () => Promise.resolve('<a/>') });
     expect(notBpmn.errors.map((e) => e.code)).toEqual(['not-bpmn']);
   });

@@ -60,18 +60,11 @@ describe('BPMN B0 — size and element-count limits (generated files)', () => {
   const doc = (body: string) => '<?xml version="1.0" encoding="UTF-8"?>\n<bpmn:definitions xmlns:bpmn="http://www.omg.org/spec/BPMN/20100524/MODEL"'
     + ` id="defs" targetNamespace="https://example.org/hostile">\n<bpmn:process id="proc" isExecutable="false">\n${body}</bpmn:process>\n</bpmn:definitions>\n`;
 
-  it('a file over 5 MB is refused without being read as XML', () => {
-    const file = join(dir, 'too-large.bpmn');
-    writeFileSync(file, doc(`<bpmn:documentation>${'x'.repeat(5 * 1024 * 1024)}</bpmn:documentation>\n`));
-    expect(codes(validate([file], ['--no-schema']).results[0])).toEqual(['too-large']);
-  });
-  it('a file with more than 100,000 elements is refused, one at the limit is accepted (both under 5 MB)', () => {
+  it('no size or element-count limit (owner, 2026-11-02): a 6 MB file with 110,000 elements passes the security checks', () => {
     const tasks = (n: number) => Array.from({ length: n }, (_, i) => `<bpmn:task id="t${i}"/>\n`).join('');
-    const over = join(dir, 'too-many.bpmn'), at = join(dir, 'at-limit.bpmn');
-    writeFileSync(over, doc(tasks(100000 - 1)));   // + definitions + process = 100,001
-    writeFileSync(at, doc(tasks(100000 - 2)));
-    const { results } = validate([over, at], ['--no-schema']);
-    expect(results.map(codes)).toEqual([['too-many-elements'], []]);
+    const file = join(dir, 'large.bpmn');
+    writeFileSync(file, doc(`<bpmn:documentation>${'x'.repeat(6 * 1024 * 1024)}</bpmn:documentation>\n${tasks(110000)}`));
+    expect(codes(validate([file], ['--no-schema']).results[0])).toEqual([]);
   });
   it('depth 64 is accepted, 65 refused', () => {
     const nest = (n: number) => `${'<bpmn:subProcess>'.repeat(n)}${'</bpmn:subProcess>'.repeat(n)}\n`;

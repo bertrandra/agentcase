@@ -80,9 +80,6 @@ describe('ids, references and sizes', () => {
       /too many products \(54, limit 50\)/);
     await refused((wb) => { const w = sheet(wb, 'Waves'); for (let i = 0; i < 50; i++) w.addRow([`xw${i}`, `W${i}`, 0, '', 9]); }, /too many waves/);
   });
-  it('caps the rows of a sheet (the workbook-wide limit applies to the new sheets too)', async () => {
-    await refused((wb) => { sheet(wb, 'TeamIn').getRow(LIMITS.rows + 5).getCell(1).value = 'x'; }, /too many rows/);
-  });
   it('refuses a foreign sheet named like ours', async () => {
     await refused((wb) => { sheet(wb, 'Products').getRow(1).getCell(1).value = 'Something else'; }, /unexpected header/);
   });

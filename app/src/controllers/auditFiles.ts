@@ -16,7 +16,7 @@ const XLSX = 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet'
 const customer = (): string => String(activeDoc().customerName ?? '').trim();
 const tag = (): string => customer().replace(/[^\w-]+/g, '_').replace(/^_+|_+$/g, '') || 'case';
 export interface AuditFile { name: string; size?: number; arrayBuffer(): Promise<ArrayBuffer> }
-const MAX = 8 * 1024 * 1024;
+const MAX = Infinity;   // owner's decision 2026-11-02: no size limit on an audit workbook
 
 /** "Export audit template": the workbook of the shown case, filled with what its audit already holds. */
 export async function auditTemplate(now: Date = new Date()): Promise<{ filename: string; blob: Blob }> {
@@ -49,7 +49,6 @@ const strs = (v: unknown): string[] => (Array.isArray(v) ? v.filter((x): x is st
  * own entries); one undoable step. Returns the number of entries taken and refused.
  */
 export async function importCatalogFile(file: { size?: number; text(): Promise<string> }): Promise<{ taken: number; refused: number }> {
-  if (typeof file.size === 'number' && file.size > 2 * 1024 * 1024) throw new Error('File too large (limit 2 MB)');
   let data: unknown;
   try { data = JSON.parse(await file.text()); } catch { throw new Error('Not a JSON file'); }
   const list = (data as { tools?: unknown })?.tools;
