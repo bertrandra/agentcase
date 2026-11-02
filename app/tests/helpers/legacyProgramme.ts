@@ -4,7 +4,6 @@ import type * as Profile from '@/domain/programme/profile';
 import { khEnabled, khSetupCost } from '@/domain/knowledge';
 import { hriCostPerFTE, hriEnabled } from '@/domain/engagement';
 import { teamInCost } from '@/domain/location';
-import { pilotSizing } from '@/domain/tune';
 import type { CaseState } from '@/domain/types/state';
 
 /**
@@ -66,14 +65,3 @@ export async function legacyProfileMock(importOriginal: () => Promise<unknown>):
   return { ...orig, programmeLines: lines, engineProfile };
 }
 
-/**
- * The figures a legacy screen showed that the normalisation of the programme sizing replaced on purpose, for the "every legacy figure is shown"
- * parity tests: the pilot's indicative cost at the TJM (DEV-NORM-PILOT, now × 1.15) and the HRI change cost per head in € with its total and the
- * band inputs (DEV-NORM-CHANGE-DAYS, now days × the role rate). `missing` without them (1 % tolerance, the screens round).
- */
-export function withoutNormFigures(missing: number[], c: Ctx): number[] {
-  const etp = teamInCost(c.s, c.inp).etp, perHead = hriCostPerFTE(c);
-  const gone = [pilotSizing(c).cost / 1.15, perHead, etp * perHead, ...['hriCostLight', 'hriCostStd', 'hriCostInt'].map((k) => c.inp.p(k))]
-    .filter((x) => x > 0);
-  return missing.filter((n) => !gone.some((g) => Math.abs(n - g) <= 0.01 * g));
-}

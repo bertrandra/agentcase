@@ -23,6 +23,7 @@ const commit = (label: string, value: string) => { const el = screen.getByLabelT
 describe('audit of the programme activities', () => {
   it('the Programme tab lists the activities; an observation is one step kept in ac:programmeAudit; undo restores; axe clean', async () => {
     const s = freshStore(), { container } = render(<Audit />);
+    fireEvent.click(screen.getByRole('tab', { name: 'Audit run / interview' }));
     fireEvent.click(screen.getByRole('tab', { name: 'Programme' }));
     fireEvent.click(screen.getByRole('button', { name: 'Pilot' }));
     expect(screen.getByRole('heading', { name: 'Audit of programme activity Pilot' })).toBeTruthy();

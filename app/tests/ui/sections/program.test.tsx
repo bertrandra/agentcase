@@ -9,7 +9,7 @@ import { fmtK } from '@/ui/widgets/tuneA';
 import { freshStore } from '../../store/helpers';
 import { legacySectionText, missingNumbers, renderedText } from '../../helpers/parity';
 import { loadFixture } from '../../helpers/tuneA';
-import { withoutNormFigures } from '../../helpers/legacyProgramme';
+import { withoutNormFigures } from '../../helpers/normFigures';
 import { editParam, expectReference } from '../../helpers/programmeParam';
 import { caseValues } from '@/domain/process';
 
@@ -31,7 +31,7 @@ describe('program section', () => {
   it('pilot sizing: duration = prove weeks + 2 per break-in sprint; cost = FTE x years x working days x role rate (DEV-NORM-PILOT)', () => {
     const { container } = render(<Program />);
     expect(text(container)).toMatch(/16 wk\s+Pilot duration/);
-    expectReference('Pilot pod size (FTE)', 'Pilot');
+    expectReference('Pilot pod size (FTE; 0 = no pilot)', 'Pilot');
     editParam('pilotFte', '5'); editParam('pilotBreakin', '3'); editParam('pilotWeeks', '16');
     const m = calc().model, cost = 5 * (22 / 52) * m.wd * m.tgtTJM * 1.15;
     expect(caseValues(state()).pilotFte).toBe('5');

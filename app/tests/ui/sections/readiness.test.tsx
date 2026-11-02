@@ -7,7 +7,7 @@ import Readiness from '@/ui/sections/tune/readiness';
 import { freshStore } from '../../store/helpers';
 import { legacySectionText, missingNumbers, renderedText } from '../../helpers/parity';
 import { loadFixture } from '../../helpers/tuneA';
-import { withoutNormFigures } from '../../helpers/legacyProgramme';
+import { withoutNormFigures } from '../../helpers/normFigures';
 
 beforeEach(() => {
   freshStore();

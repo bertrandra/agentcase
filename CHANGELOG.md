@@ -17,6 +17,13 @@ When releasing, follow [docs/BUMP_PROCEDURE.md](docs/BUMP_PROCEDURE.md) (§7 for
 
 ## [Unreleased]
 
+### Audit in four tabs (owner's request 2026-11-02)
+
+- 🔎 Audit is organised as **Audit setup** (header, auditors, plan of the audit activities, tool catalogue), **Audit run / interview** (pick your
+  interviews and see their context, then record what you observe on activities, roles and programme activities), **Audit progress** (the
+  progression and status of each audit activity, the coverage) and **Audit potential scopes** (tooling gaps and overlaps, observed versus
+  modelled, calibration). No data or figure changes.
+
 ### Programme sizing normalised (owner's decision 2026-11-02, docs/PROGRAMME_SIZING_DMN.md)
 
 - **One sizing table** (`domain/programme/sizing.ts`): every programme cost line is A × Q × P × D over a window; every sizing default lives there

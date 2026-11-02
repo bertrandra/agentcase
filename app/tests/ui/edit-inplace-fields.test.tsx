@@ -28,13 +28,13 @@ describe('"Change: All products" in place: form fields', { timeout: 60_000 }, ()
   it('a number field edits the common value: inheriting products follow; the overriding product is named, keeps its value, and can be reset', async () => {
     setProductOverride(ids[2], 'values.pilotFte', '5');
     await processPanel('prog-pilot');
-    const r = region(), note = await within(r).findByRole('note', { name: 'Pilot pod size (FTE): 1 product overrides this' }, { timeout: 15000 });
+    const r = region(), note = await within(r).findByRole('note', { name: 'Pilot pod size (FTE; 0 = no pilot): 1 product overrides this' }, { timeout: 15000 });
     expect(note.textContent).toContain('1 product overrides this: C — it keeps its value');
-    fireEvent.change(within(r).getByLabelText('Pilot pod size (FTE)'), { target: { value: '3' } });
+    fireEvent.change(within(r).getByLabelText('Pilot pod size (FTE; 0 = no pilot)'), { target: { value: '3' } });
     expect(programmeValuesOf(pf().common.BPMN).pilotFte).toBe('3');
     expect([vals(0).pilotFte, vals(1).pilotFte, vals(2).pilotFte]).toEqual(['3', '3', '5']);
-    expect(within(r).getByLabelText('Pilot pod size (FTE)')).toHaveProperty('value', '3');   // the editor shows the common value
-    fireEvent.click(within(r).getByRole('button', { name: 'Back to shared: Pilot pod size (FTE) for C' }));
+    expect(within(r).getByLabelText('Pilot pod size (FTE; 0 = no pilot)')).toHaveProperty('value', '3');   // the editor shows the common value
+    fireEvent.click(within(r).getByRole('button', { name: 'Back to shared: Pilot pod size (FTE; 0 = no pilot) for C' }));
     expect(vals(2).pilotFte).toBe('3');
     expect(screen.getByRole('status').textContent).toContain('C back to shared');
   });

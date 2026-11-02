@@ -9,12 +9,27 @@ import { proposalKey, setAccepted, toggleAccepted, useAuditView } from './view';
 
 const pct = (x: number): string => `${Math.round(x * 1000) / 10} %`;
 
+/** 🔎 Audit › Audit progress: the coverage of the in-scope activities (count and effort). */
+export function Coverage({ data }: { data: AuditViewData }) {
+  const cov = coverage(data.rows);
+  return (
+    <>
+      <h2>Coverage</h2>
+      <StatRow>
+        <Stat label="In-scope activities audited" value={`${cov.audited}/${cov.inScope}`} hint={pct(cov.share)} />
+        <Stat label="Share of the in-scope effort audited" value={pct(cov.byEffort)} tone={cov.byEffort >= 0.5 ? 'teal' : 'amber'} />
+      </StatRow>
+    </>
+  );
+}
+
 /**
- * Coverage, tooling map, observed versus modelled (F-B28) and calibration (F-B29, D-B11): the proposals with their formula, ticked one by one;
- * "Apply" changes only the ticked parameters, as one undoable step logged with its source and date. Without it no figure moves.
+ * 🔎 Audit › Audit potential scopes: the tooling map (gaps and overlaps by capability), observed versus modelled (F-B28) and calibration (F-B29,
+ * D-B11): the proposals with their formula, ticked one by one; "Apply" changes only the ticked parameters, as one undoable step logged with its
+ * source and date. Without it no figure moves.
  */
 export function Calibration({ data }: { data: AuditViewData }) {
-  const cov = coverage(data.rows), map = useMemo(() => toolingMap(data.doc, data.rows), [data.doc, data.rows]);
+  const map = useMemo(() => toolingMap(data.doc, data.rows), [data.doc, data.rows]);
   const ps = useMemo(() => proposals(data.doc), [data.doc]), accepted = useAuditView((s) => s.accepted), [source, setSource] = useState('');
   const chosen = ps.filter((p) => accepted.includes(proposalKey(p))), log = data.audit.header?.calibrations ?? [];
   const apply = () => {
@@ -23,12 +38,7 @@ export function Calibration({ data }: { data: AuditViewData }) {
   };
   return (
     <>
-      <h2>Coverage</h2>
-      <StatRow>
-        <Stat label="In-scope activities audited" value={`${cov.audited}/${cov.inScope}`} hint={pct(cov.share)} />
-        <Stat label="Share of the in-scope effort audited" value={pct(cov.byEffort)} tone={cov.byEffort >= 0.5 ? 'teal' : 'amber'} />
-      </StatRow>
-      <h2 id="ac-audit-map-h">Tooling map</h2>
+      <h2 id="ac-audit-map-h">Tooling map — where the potential is (gaps: no tool serves the capability; overlaps: several)</h2>
       <div className="ac-table-wrap" tabIndex={0}>
         <table className="ac-table" aria-labelledby="ac-audit-map-h">
           <thead><tr><th scope="col">Capability</th><th scope="col">In-scope activities</th><th scope="col">Audited</th><th scope="col">Tools in use</th>

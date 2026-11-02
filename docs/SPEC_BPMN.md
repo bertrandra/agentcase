@@ -813,7 +813,10 @@ an **audit header**: audit id, client, scope, auditors, interview list (who, rol
   coverage, gaps, overlaps, pain points and calibrations per product and the tooling map across the products and waves (`aggAudit.ts`).
 - **F-B31 built** (🔎 Audit, frame group, app section shown to Admin and Business journey): header, files, Activities (progress per phase, filters
   by phase, actor (R / A / agent from the RACI), capability, audited; the first 100 rows; the form of the selected activity), Roles, Tool catalogue,
-  Coverage and calibration. Keyboard-only, axe clean. **Not built:** the Process diagram's colouring by audit status (the B6 editor changes the
+  Coverage and calibration. Keyboard-only, axe clean. Since 2026-11-02 (owner's request) in four tabs: **Audit setup** (header, auditors, the
+  audit activities planned, the tool catalogue), **Audit run / interview** (an auditor's interviews and their context; the audit forms of the
+  activities, roles and programme activities), **Audit progress** (each audit activity's progression and status, the coverage), **Audit potential
+  scopes** (the tooling map's gaps and overlaps, observed versus modelled, calibration and its log). **Not built:** the Process diagram's colouring by audit status (the B6 editor changes the
   diagram in parallel; to add after its merge).
 - **F-B32 built.** "Export audit template": Read me, one sheet per block (one row per in-scope activity, a row per role for a per-role split), Tools,
   Pain points, Evidence and a Lists sheet; drop-downs (data validation) for tool codes and every enumeration. "Import audit workbook": the

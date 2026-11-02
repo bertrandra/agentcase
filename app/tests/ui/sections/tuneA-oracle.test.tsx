@@ -5,7 +5,7 @@ import type { ComponentType } from 'react';
 import { makeCtx } from '@/domain';
 import { TUNE } from '@/ui/sections/tune';
 import { missingNumbers, renderedText } from '../../helpers/parity';
-import { withoutNormFigures } from '../../helpers/legacyProgramme';
+import { withoutNormFigures } from '../../helpers/normFigures';
 import { extra, extraIds, loadFixture } from '../../helpers/tuneA';
 
 // Every figure the legacy render hosts showed (tools/oracle-extras.d/tuneA.mjs, *Text extras) must appear in the migrated section,
