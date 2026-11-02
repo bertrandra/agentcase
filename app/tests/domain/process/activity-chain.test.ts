@@ -59,11 +59,25 @@ describe('activity links inside each phase (FX-D9)', () => {
     expect(bridgesOver([f('a', 'b'), f('b', 'a')], new Set(['b']))).toEqual([]);
     expect(bridgesOver([{ ...f('a', 'b'), rework: {} }, f('b', 'c')], new Set(['b']))).toEqual([]);
   });
-  it('linkPoints: straight on one row, elbowed across rows, down when the grid wraps', () => {
+  it('linkPoints: straight to the next box of a row, otherwise through the column gap and the row gap above the target', () => {
     const box = (x: number, y: number) => ({ x, y, w: 100, h: 80 });
-    expect(linkPoints(box(0, 0), box(150, 0))).toEqual([[100, 40], [150, 40]]);
-    expect(linkPoints(box(0, 0), box(150, 100))).toEqual([[100, 40], [125, 40], [125, 140], [150, 140]]);
-    expect(linkPoints(box(150, 0), box(0, 100))).toEqual([[200, 80], [200, 90], [50, 90], [50, 100]]);
+    expect(linkPoints(box(0, 0), box(120, 0))).toEqual([[100, 40], [120, 40]]);
+    expect(linkPoints(box(0, 0), box(120, 100))).toEqual([[100, 40], [110, 40], [110, 90], [170, 90], [170, 100]]);
+    expect(linkPoints(box(120, 0), box(0, 100))).toEqual([[220, 40], [230, 40], [230, 90], [50, 90], [50, 100]]);
+  });
+  it('no link of the default diagram crosses an activity box', () => {
+    const v = readProcess(base()), boxes = v.diagram.shapes.filter((s) => v.activities.some((a) => a.id === s.element));
+    const links = new Set(v.flows.filter((f) => !f.rework && f.container !== 'Process').map((f) => f.id));
+    const cross = (p: [number, number], q: [number, number], b: { x: number; y: number; w: number; h: number }) => {
+      const [x1, x2] = [Math.min(p[0], q[0]), Math.max(p[0], q[0])], [y1, y2] = [Math.min(p[1], q[1]), Math.max(p[1], q[1])];
+      return x1 < b.x + b.w && x2 > b.x && y1 < b.y + b.h && y2 > b.y;
+    };
+    for (const e of v.diagram.edges.filter((x) => links.has(x.element))) {
+      const f = v.flows.find((x) => x.id === e.element)!;
+      for (const b of boxes.filter((x) => x.element !== f.source && x.element !== f.target)) {
+        e.points.slice(1).forEach((q, i) => expect(cross(e.points[i]!, q, b), `${e.element} over ${b.element}`).toBe(false));
+      }
+    }
   });
 });
 

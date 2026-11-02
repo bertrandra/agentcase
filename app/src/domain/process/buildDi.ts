@@ -18,17 +18,15 @@ const cx = (b: Box): number => b.x + b.w / 2;
 const cy = (b: Box): number => b.y + b.h / 2;
 
 /**
- * Waypoints of an activity-to-activity link (FX-D9): right side to left side when the target is to the right, elbowed when the rows differ;
- * down from the bottom to the top of the next one when it wraps to a lower row of the grid; up the same way when it sits higher.
+ * Waypoints of an activity-to-activity link (FX-D9), routed in the gaps of the activity grid so that no line crosses another activity: straight to
+ * the next box on the same row; otherwise out of the right side into the column gap (`gap / 2` to the right), along it to the row gap just above
+ * the target, then across to the target's middle and down into its top.
  */
-export function linkPoints(s: Box, t: Box): Pt[] {
-  if (t.x >= s.x + s.w) {
-    if (cy(s) === cy(t)) return [[s.x + s.w, cy(s)], [t.x, cy(t)]];
-    const mx = Math.round((s.x + s.w + t.x) / 2);
-    return [[s.x + s.w, cy(s)], [mx, cy(s)], [mx, cy(t)], [t.x, cy(t)]];
-  }
-  const down = t.y >= s.y + s.h, sy = down ? s.y + s.h : s.y, ty = down ? t.y : t.y + t.h, my = Math.round((sy + ty) / 2);
-  return cx(s) === cx(t) ? [[cx(s), sy], [cx(t), ty]] : [[cx(s), sy], [cx(s), my], [cx(t), my], [cx(t), ty]];
+export function linkPoints(s: Box, t: Box, gap = 20): Pt[] {
+  const right = s.x + s.w;
+  if (cy(s) === cy(t) && t.x >= right && t.x - right <= gap) return [[right, cy(s)], [t.x, cy(t)]];
+  const gx = right + gap / 2, gy = t.y - gap / 2;
+  return [[right, cy(s)], [gx, cy(s)], [gx, gy], [cx(t), gy], [cx(t), t.y]];
 }
 
 /** Waypoints of a flow: straight along the middle line, elbows for Cross-cutting, arcs above the boxes for rework (k-th one a little higher). */
