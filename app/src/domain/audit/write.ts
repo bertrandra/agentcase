@@ -30,7 +30,8 @@ export function auditXml(a: ElementAudit): XElement | null {
 export function headerXml(h: AuditHeader): XElement {
   return el('ac:auditHeader', { code: h.code, client: h.client, scope: h.scope, status: h.status, asOf: h.asOf }, [
     ...h.auditors.map((a) => el('ac:auditor', { name: a.name, organisation: a.organisation })),
-    ...h.interviews.map((i) => el('ac:interview', { code: i.code, role: i.role, who: i.who, date: i.date })),
+    ...h.interviews.map((i) => el('ac:interview', { code: i.code, role: i.role, who: i.who, date: i.date, roles: i.roles?.length ? i.roles.join(' ') : null,
+      activities: i.activities?.length ? i.activities.join(' ') : null, auditor: i.auditor, status: i.status })),
     ...h.calibrations.map((c) => el('ac:calibration', { code: c.code, date: c.date, source: c.source }, c.changes.map((x) =>
       el('ac:change', { element: x.element, param: x.param, from: x.from, to: x.to, formula: x.formula })))),
   ]);

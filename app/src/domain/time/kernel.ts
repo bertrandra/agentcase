@@ -44,7 +44,8 @@ export function buildK(c: Ctx, m: ModelResult, opts: BuildOpts = {}): K {
     calculationVersion: CALCULATION_VERSION, horizonYears: m.horizon, horizonMonths: m.horizon * 12, ramps: m.ramps.slice(),
     baseEtp: m.base.etp, baselineRunMonth: m.baselineRun / 12, eff: m.eff, wdMonth: m.wd / 12, dayRateTarget: m.tgtTJM, dayRateAsIs: m.blendedTJM,
     rateMode: 'target', frPerYear: 0, runsPerDay: num('runsPerDay', 25), tokensPerArt: m.tokensPerArt, tokenUnitCost: m.tokenCost,
-    infraMonth: m.infraYear / 12, handoffMonth: handoffMonthCost(processFeeds(c), m.tgtTJM), setupTotal: m.setupTotal, setupProfile: [], ktProfile: [], savingProfile: [], runSizeMode: c.inp.v('runSizeMode') || 'hybrid',
+    infraMonth: m.infraYear / 12, handoffMonth: handoffMonthCost(processFeeds(c), m.tgtTJM), setupTotal: m.setupTotal, setupProfile: [], ktProfile: [],
+    savingProfile: [], runSizeMode: c.inp.v('runSizeMode') || 'hybrid',
     runFloorMin: num('runFloorMin', 0.5), runFloorPct: num('runFloorPct', 4), runOpsPerAgent: num('runOpsPerAgent', 0.15),
     runTeamFactor: num('runTeamFactor', 1),
     legacyRunFte: Math.max(0.5, m.base.etp * 0.06 + 0.5 + m.base.etp * 0.04), vTaxRate: conv.vTaxRate || 0, loopExtRate: conv.loopExtRate || 0,
@@ -87,7 +88,8 @@ export function runTeamSizing(v: number, K: K): number {
 
 export interface Econ {
   t: number; y: number; r: number; humanFte: number; agentVfte: number; agentVfteRaw: number; runTeamFte: number; teamCost: number; tokenCost: number;
-  infraCost: number; handoffCost: number; runTeamCost: number; khCost: number; ktAvoid: number; vTax: number; loopExt: number; compTax: number; setupCost: number;
+  infraCost: number; handoffCost: number; runTeamCost: number; khCost: number; ktAvoid: number; vTax: number; loopExt: number; compTax: number;
+  setupCost: number;
   totalRun: number; grossSav: number; netSav: number;
 }
 

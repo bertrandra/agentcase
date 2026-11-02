@@ -93,7 +93,8 @@ const demoCmd = defineCommand<{ now: string }>({
 /** FX-D8: the factory data's release cadence and failed-deployment rate from the process model, when the case feeds them (else its parameters). */
 function fedParams(c: Ctx, p: FgParams): FgParams {
   const f = processFeeds(c);
-  return { ...p, ...(f.cadenceWeeks ? { releaseEveryWeeks: Math.max(1, Math.round(f.cadenceWeeks)) } : {}), ...(f.cfr !== undefined ? { deployFailRate: f.cfr } : {}) };
+  return { ...p, ...(f.cadenceWeeks ? { releaseEveryWeeks: Math.max(1, Math.round(f.cadenceWeeks)) } : {}),
+    ...(f.cfr !== undefined ? { deployFailRate: f.cfr } : {}) };
 }
 const clearCmd = defineCommand<{ now: string }>({ type: 'factory.clearAll', label: () => 'Delete all Factory Model data', run(d, p) {
   replaceFactory(d, {}, {}, {}, p.now);

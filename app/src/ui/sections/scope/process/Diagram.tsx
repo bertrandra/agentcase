@@ -26,9 +26,8 @@ export function Diagram({ d, tableId, title, desc, name, labelZoom = 2, facts, s
   const [freeze, setFreeze] = useState(false);
   const out = (s: DrawShape): boolean => (facts?.get(s.id) ? !facts.get(s.id)!.counted : s.inScope === false);
   const acts = d.shapes.filter((s) => s.kind === 'activity' && !(hideOut && out(s)));
-  // eslint-disable-next-line react-hooks/exhaustive-deps -- `out` reads facts
   const drawn = useMemo(() => (hideOut ? hideActivities(d, new Set(d.shapes.filter((s) => s.kind === 'activity' && out(s)).map((s) => s.id))) : d),
-    [d, hideOut, facts]);
+    [d, hideOut, facts]);   // eslint-disable-line react-hooks/exhaustive-deps -- `out` reads facts
   const extra = useMemo(() => new Map(d.shapes.filter((s) => s.kind === 'activity').map((s) => [s.id, [colourClass(colour, facts?.get(s.id)),
     shown && !shown.has(s.id) ? 'is-faded' : '', picked.includes(s.id) && s.id !== selected ? 'is-picked' : ''].filter(Boolean).join(' ')])),
   [d, colour, facts, shown, picked, selected]);

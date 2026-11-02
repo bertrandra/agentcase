@@ -19,6 +19,11 @@ When releasing, follow [docs/BUMP_PROCEDURE.md](docs/BUMP_PROCEDURE.md) (§7 for
 
 ### SPEC_FIXES lot X7 (part)
 
+- **Audit activities** (owner's request 2026-11-02): 🔎 Audit › Audit activities (first tab). An audit activity (interview) targets one or
+  more roles (the people) and the activities they do, with its auditor, date and status (`ac:interview roles activities auditor status`, XSD).
+  An auditor picks their name, selects one or more of their audit activities and sees the interview's context (roles; each activity with
+  its audit status, observations, tools, pain points, evidence, covered or not). The table traces every audit activity with its progression
+  (activities covered: their audit closed, or evidence naming the audit activity).
 - **Process diagram** (owner's requests 2026-11-02): "Freeze roles on the left" keeps the lane names at the left edge while panning; "Hide
   out-of-scope activities" hides their links too and links the activities they stood between (dashed); colours read as filled blocks when
   zoomed out (labels too small) and as thick outlines when the labels are readable; stronger links.

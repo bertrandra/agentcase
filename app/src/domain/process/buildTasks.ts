@@ -45,7 +45,8 @@ export function inputsOf(id: string, sources: readonly string[]): XElement[] {
   const ins = sources.map((s) => `${id}_in_${s}`);
   const io = el('bpmn:ioSpecification', { id: `${id}_io` }, [...ins.map((i) => el('bpmn:dataInput', { id: i })),
     el('bpmn:inputSet', { id: `${id}_inputs` }, ins.map((i) => ref('bpmn:dataInputRefs', i))), el('bpmn:outputSet', { id: `${id}_outputs` })]);
-  return [io, ...sources.map((s, k) => el('bpmn:dataInputAssociation', { id: `${ins[k]}_assoc` }, [ref('bpmn:sourceRef', s), ref('bpmn:targetRef', ins[k] ?? '')]))];
+  return [io, ...sources.map((s, k) => el('bpmn:dataInputAssociation', { id: `${ins[k]}_assoc` },
+    [ref('bpmn:sourceRef', s), ref('bpmn:targetRef', ins[k] ?? '')]))];
 }
 
 /** The deliverable of an SDLC artefact: a data object whose documentation is the deliverable text. */

@@ -3,7 +3,7 @@ import { collaborationOf } from '../org/readUnits';
 import { attr, kid, kids, NS, textOf, type XDocument, type XElement } from '../process/xml';
 import {
   AUDIT_STATUSES, CONFIDENCES, PERIODS, SOURCES, YES_NO_LATER, AI_USES, type AuditHeader, type AuditModel, type AuditStatus, type CalibrationEntry,
-  type CatalogTool, type ElementAudit, type Observation, type Provenance, type ToolUse,
+  type CatalogTool, type ElementAudit, type Interview, type Observation, type Provenance, type ToolUse,
 } from './types';
 
 /**
@@ -62,13 +62,23 @@ const calibrationOf = (c: XElement): CalibrationEntry => ({
     from: attr(x, 'from') ?? '', to: attr(x, 'to') ?? '', formula: attr(x, 'formula') ?? '' })),
 });
 
+const ids = (v: string | undefined): string[] | undefined => { const xs = (v ?? '').split(/\s+/).filter(Boolean); return xs.length ? xs : undefined; };
+function interviewOf(i: XElement): Interview {
+  const out: Interview = opt({ code: attr(i, 'code') ?? '', role: attr(i, 'role') ?? '', who: attr(i, 'who'), date: attr(i, 'date') ?? '',
+    auditor: attr(i, 'auditor') }) as Interview;
+  const roles = ids(attr(i, 'roles')), acts = ids(attr(i, 'activities')), st = oneOf(AUDIT_STATUSES, attr(i, 'status'));
+  if (roles) out.roles = roles;
+  if (acts) out.activities = acts;
+  if (st) out.status = st;
+  return out;
+}
+
 function headerOf(h: XElement): AuditHeader {
   return {
     code: attr(h, 'code') ?? '', ...opt({ client: attr(h, 'client'), scope: attr(h, 'scope') }),
     status: oneOf(AUDIT_STATUSES, attr(h, 'status')) ?? ('planned' as AuditStatus), asOf: attr(h, 'asOf') ?? '',
     auditors: kids(h, NS.ac, 'auditor').map((a) => opt({ name: attr(a, 'name') ?? '', organisation: attr(a, 'organisation') })),
-    interviews: kids(h, NS.ac, 'interview').map((i) => opt({ code: attr(i, 'code') ?? '', role: attr(i, 'role') ?? '', who: attr(i, 'who'),
-      date: attr(i, 'date') ?? '' })),
+    interviews: kids(h, NS.ac, 'interview').map(interviewOf),
     calibrations: kids(h, NS.ac, 'calibration').map(calibrationOf),
   };
 }

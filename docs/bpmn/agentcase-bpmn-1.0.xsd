@@ -111,6 +111,10 @@
   <xsd:simpleType name="tAiFeatureList"><xsd:list itemType="ac:tAiFeature"/></xsd:simpleType>
   <xsd:simpleType name="tIntegrationList"><xsd:list itemType="ac:tIntegration"/></xsd:simpleType>
   <xsd:simpleType name="tHostingList"><xsd:list itemType="ac:tHosting"/></xsd:simpleType>
+  <xsd:simpleType name="tKeyList">
+    <xsd:annotation><xsd:documentation>Owner's request 2026-11-02: a list of element ids (the roles and activities of an audit activity).</xsd:documentation></xsd:annotation>
+    <xsd:list itemType="ac:tKey"/>
+  </xsd:simpleType>
   <xsd:simpleType name="tCapabilityList">
     <xsd:annotation><xsd:documentation>Capability tokens of a tool (§ 15.2): Documentation Analysis Design Coding Review Test Security Release Compliance RunSupport Knowledge Planning, or a custom capability without spaces.</xsd:documentation></xsd:annotation>
     <xsd:list itemType="xsd:NMTOKEN"/>
@@ -486,6 +490,12 @@
             <xsd:attribute name="role" type="ac:tName" use="required"/>
             <xsd:attribute name="who" type="ac:tName"/>
             <xsd:attribute name="date" type="xsd:date" use="required"/>
+            <xsd:attribute name="roles" type="ac:tKeyList">
+              <xsd:annotation><xsd:documentation>Owner's request 2026-11-02: an audit activity (interview) targets one or more roles (resource ids) and one or more activities (task ids); its auditor (a name of ac:auditor) and status follow its progression.</xsd:documentation></xsd:annotation>
+            </xsd:attribute>
+            <xsd:attribute name="activities" type="ac:tKeyList"/>
+            <xsd:attribute name="auditor" type="ac:tName"/>
+            <xsd:attribute name="status" type="ac:tAuditStatus"/>
           </xsd:complexType>
         </xsd:element>
         <xsd:element name="calibration" minOccurs="0" maxOccurs="unbounded">
