@@ -1,6 +1,7 @@
 /** @calc-zone scope-automation */
 import { ENGAGE_COEF } from './catalog';
 import type { Ctx } from './ctx';
+import { sizingDefault } from './programme/sizing';
 import type { EngageCoefRow } from './types/state';
 
 export function engagementKey(c: Ctx): string {
@@ -34,7 +35,7 @@ export function hriIntensity(c: Ctx): HriBand {
 export function hriCostPerFTE(c: Ctx): number {
   const it = hriIntensity(c);
   const v = it === 'light' ? c.inp.p('hriCostLight') : it === 'standard' ? c.inp.p('hriCostStd') : c.inp.p('hriCostInt');
-  return isNaN(v) ? (it === 'light' ? 1200 : it === 'standard' ? 3000 : 5500) : v;
+  return isNaN(v) ? sizingDefault(it === 'light' ? 'hriCostLight' : it === 'standard' ? 'hriCostStd' : 'hriCostInt') : v;
 }
 
 

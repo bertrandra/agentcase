@@ -9,6 +9,7 @@ import { fitCurveCached } from './fit';
 import { enginePts } from './spline';
 import { engineProfile } from '../programme/profile';
 import { handoffMonthCost, processFeeds } from '../process/feeds';
+import { sizingDefault } from '../programme/sizing';
 
 /** Constants captured from a (raw) model so the engine is a pure function of them (legacy buildK). */
 /**
@@ -46,7 +47,8 @@ export function buildK(c: Ctx, m: ModelResult, opts: BuildOpts = {}): K {
     rateMode: 'target', frPerYear: 0, runsPerDay: num('runsPerDay', 25), tokensPerArt: m.tokensPerArt, tokenUnitCost: m.tokenCost,
     infraMonth: m.infraYear / 12, handoffMonth: handoffMonthCost(processFeeds(c), m.tgtTJM), setupTotal: m.setupTotal, setupProfile: [], ktProfile: [],
     savingProfile: [], runSizeMode: c.inp.v('runSizeMode') || 'hybrid',
-    runFloorMin: num('runFloorMin', 0.5), runFloorPct: num('runFloorPct', 4), runOpsPerAgent: num('runOpsPerAgent', 0.15),
+    runFloorMin: num('runFloorMin', sizingDefault('runFloorMin')), runFloorPct: num('runFloorPct', sizingDefault('runFloorPct')),
+    runOpsPerAgent: num('runOpsPerAgent', sizingDefault('runOpsPerAgent')),
     runTeamFactor: num('runTeamFactor', 1),
     legacyRunFte: Math.max(0.5, m.base.etp * 0.06 + 0.5 + m.base.etp * 0.04), vTaxRate: conv.vTaxRate || 0, loopExtRate: conv.loopExtRate || 0,
     complianceTaxRate: num('complianceTaxPct', 0) / 100, aiActive: true,

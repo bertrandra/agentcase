@@ -1,5 +1,6 @@
 /** @calc-zone run-setup-taxes */
 import type { ColourRole } from '../theme';
+import { sizingDefault } from './sizing';
 
 /**
  * The engagement stages of the transformation programme (docs/SPEC_BPMN.md § 19.2, conflict T4; phase B9a): the ONE list that the Engage roadmap,
@@ -25,11 +26,11 @@ export interface EngagementStage {
 
 export const ENGAGEMENT_STAGES: readonly EngagementStage[] = [
   { id: 'discover', name: '0 · Discover', gantt: '🔍 Discover', tone: 'chart-cat-5', label: 'Framing, AS-IS baseline, eligibility',
-    gate: 'Baseline validated + eligibility', section: 'engagement-context', input: 'rmD1', defaultWeeks: 4, timed: true },
+    gate: 'Baseline validated + eligibility', section: 'engagement-context', input: 'rmD1', defaultWeeks: sizingDefault('rmD1'), timed: true },
   { id: 'calibrate', name: '1 · Calibrate', gantt: '🎯 Calibrate', tone: 'chart-cat-5', label: 'Sector coefficients, artifact scope frozen',
-    gate: 'Scope & coefficients frozen', section: 'scope-sel', input: 'rmD2', defaultWeeks: 4, timed: true },
+    gate: 'Scope & coefficients frozen', section: 'scope-sel', input: 'rmD2', defaultWeeks: sizingDefault('rmD2'), timed: true },
   { id: 'validate', name: '2 · Validate', gantt: '✅ Validate', tone: 'chart-cat-5', label: 'Assumptions signed, Monte Carlo run',
-    gate: 'Assumptions register signed · P50 > threshold', section: 'montecarlo', input: 'rmD3', defaultWeeks: 4, timed: true },
+    gate: 'Assumptions register signed · P50 > threshold', section: 'montecarlo', input: 'rmD3', defaultWeeks: sizingDefault('rmD3'), timed: true },
   { id: 'pilotProve', name: '3 · Pilot & Prove', gantt: '🚀 Pilot & Prove', tone: 'chart-cat-3', label: 'Pilot pods, KPI tracking',
     gate: 'Pilot KPIs ≥ 80% of Y1 targets', section: 'kpi', input: null, defaultWeeks: 0, timed: true },
   { id: 'decide', name: '4 · Decide & Scale', gantt: '🏁 Decide & Scale', tone: 'chart-cat-3', label: 'Scale-out per Decision Intelligence',

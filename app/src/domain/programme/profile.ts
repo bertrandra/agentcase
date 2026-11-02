@@ -6,6 +6,7 @@ import { khEnabled, khSetupCost } from '../knowledge';
 import { targetBlendedTJM, teamInCost } from '../location';
 import { AI_SKILL_PREMIUM } from '../rates';
 import { shapeLine } from './costProfile';
+import { sizingDefault } from './sizing';
 import { OPT_INS, optInMonths, optInOn, optInPlan, type OptInId } from './optIn';
 import { hubSetupTiming, lineMonths, pilotTiming, spreadMonths } from './timing';
 
@@ -31,7 +32,7 @@ export interface ProgrammeLine {
   duration?: number;
 }
 /** Resource defaults (§ 19.3): trainers (preceptors) and the Design Authority's governance effort over their duration. */
-export const TRAIN_FTE = 0.5, GOV_FTE = 0.25;
+export const TRAIN_FTE = sizingDefault('trainFte'), GOV_FTE = sizingDefault('govFte');
 const num = (c: Ctx, key: string, def: number): number => { const n = c.inp.p(key); return !isNaN(n) && n >= 0 ? n : def; };
 
 /** Engagement change cost (HRI): entry headcount × cost per FTE of the readiness intensity, 0 when the HRI module is off (engine formula kept). */
@@ -68,7 +69,7 @@ function resources(c: Ctx, id: 'training' | 'governance', label: string, fte: nu
   return [line(id, label, 'resources', 'product', cost, days, 1, spreadMonths(cost, m)), m];
 }
 /** Coaching days a month by default (D-B30, revised 2026-10-31). */
-export const COACH_DAYS_PER_MONTH = 2;
+export const COACH_DAYS_PER_MONTH = sizingDefault('coachDaysPerMonth');
 export interface CoachingPlan { perMonth: number; months: number; days: number; amount: number; calibrated: boolean }
 /**
  * The coaching activity (D-B30, revised 2026-10-31): `coachDaysPerMonth` (default 2) × `coachMonths` × the role rate. With no duration entered the
@@ -139,6 +140,6 @@ export function engineProfile(c: Ctx, H = horizonMonthsOf(c)): EngineProfile {
 
 /** The pilot (resources, parity): its cost spread over its weeks, placed before the build (D-B28); NOT in the euro result (DEV-COSTMODEL-PILOT). */
 export function pilotLine(c: Ctx): { fte: number; cost: number; days: number; from: number; months: number[] } {
-  const t = pilotTiming(c), fte = c.inp.p('pilotFte') || 3, r = programmeRates(c), days = fte * (t.totalWeeks / 52) * r.wd, cost = days * (r.tjm || 600);
+  const t = pilotTiming(c), fte = c.inp.p('pilotFte') || sizingDefault('pilotFte'), r = programmeRates(c), days = fte * (t.totalWeeks / 52) * r.wd, cost = days * (r.tjm || 600);
   return { fte, cost, days, from: 1 - t.leadMonths, months: spreadMonths(cost, t.months) };
 }

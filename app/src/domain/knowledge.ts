@@ -1,6 +1,7 @@
 /** @calc-zone knowledge-hub @owner kt-avoided-saving */
 import { CC_MULT, KT_RED } from './catalog';
 import type { Ctx } from './ctx';
+import { sizingDefault } from './programme/sizing';
 import { engagementCoef } from './engagement';
 
 export const khEnabled = (c: Ctx): boolean => c.inp.c('khEnabled') && engagementCoef(c).khMaxCC > 0;
@@ -35,15 +36,15 @@ export function khCcByYear(c: Ctx): number[] {
 export function khSetupCost(c: Ctx): number {
   if (!khEnabled(c)) return 0;
   let base = c.inp.p('khSetupBase');
-  if (isNaN(base)) base = 120000;
+  if (isNaN(base)) base = sizingDefault('khSetupBase');
   const gap = Math.max(0, khTargetCC(c) - khAsisCC(c));
   return base * (0.5 + 0.25 * gap);
 }
 
 export function khRunAnnual(c: Ctx, tgtTJM: number, wd: number): number {
   if (!khEnabled(c)) return 0;
-  let cf = c.inp.p('khCurationFTE'); if (isNaN(cf)) cf = 0.5;
-  let im = c.inp.p('khInfraMonthly'); if (isNaN(im)) im = 2500;
+  let cf = c.inp.p('khCurationFTE'); if (isNaN(cf)) cf = sizingDefault('khCurationFTE');
+  let im = c.inp.p('khInfraMonthly'); if (isNaN(im)) im = sizingDefault('khInfraMonthly');
   return cf * tgtTJM * wd + im * 12;
 }
 

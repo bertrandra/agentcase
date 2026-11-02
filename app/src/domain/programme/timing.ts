@@ -2,6 +2,7 @@
 import type { Ctx } from '../ctx';
 import { ktLead } from '../portfolio/subset';
 import type { KnowledgeSubset } from '../portfolio/types';
+import { sizingDefault } from './sizing';
 import { TIMED_STAGES, type EngagementStage } from './stages';
 
 /**
@@ -42,7 +43,7 @@ export const stageTimings = (c: Ctx): StageTiming[] => TIMED_STAGES.map((s) => (
 export const stageWeeks = (c: Ctx): number[] => stageTimings(c).map((s) => s.weeks);
 
 /** The setup duration in months (`setupDuration`, default 12, at least 0.5): the Gantt build, the waves' setup, the default of every setup line. */
-export const setupMonths = (c: Ctx): number => Math.max(0.5, ganttNum(c, 'setupDuration', 12));
+export const setupMonths = (c: Ctx): number => Math.max(0.5, ganttNum(c, 'setupDuration', sizingDefault('setupDuration')));
 /** A setup activity's own duration in months (`key`), else the setup duration (D-B27 (c), which reduces to (b) when the lines share one). */
 export const lineMonths = (c: Ctx, key: string | null): number => (key ? ganttNum(c, key, setupMonths(c)) : setupMonths(c));
 export interface SetupTiming {
@@ -58,7 +59,8 @@ export interface PilotTiming {
   leadMonths: number;
 }
 export function pilotTiming(c: Ctx): PilotTiming {
-  const breakIn = orDefault(c, 'pilotBreakin', 2), weeks = orDefault(c, 'pilotWeeks', 12), totalWeeks = weeks + breakIn * 2, months = (totalWeeks * 12) / 52;
+  const breakIn = orDefault(c, 'pilotBreakin', sizingDefault('pilotBreakin')), weeks = orDefault(c, 'pilotWeeks', sizingDefault('pilotWeeks'));
+  const totalWeeks = weeks + breakIn * 2, months = (totalWeeks * 12) / 52;
   return { weeks, breakIn, totalWeeks, months, leadMonths: months > 0 ? Math.ceil(months - 1e-9) : 0 };
 }
 
@@ -67,7 +69,7 @@ export interface HubSetupTiming {
   days: number; months: number;
 }
 export function hubSetupTiming(c: Ctx): HubSetupTiming {
-  const days = Math.max(1, ganttNum(c, 'khSetupDays', 30));
+  const days = Math.max(1, ganttNum(c, 'khSetupDays', sizingDefault('khSetupDays')));
   return { days, months: Math.max(0.25, (days * 12) / 365) };
 }
 /** Months the knowledge transfer (and the product's hub setup) is prepared before its month 0 (`ktLeadMonths`; the consolidation caps it). */
