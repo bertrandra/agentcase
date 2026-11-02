@@ -16,6 +16,12 @@ export const IO_PARAMS: ParamDef[] = [
   ['infra', 'Monthly infra (€)', 0, 1000000, 'num'], ['workdays', 'Working days / year', 180, 260, 'int'],
   ['classicSaving', 'Classic annual saving (%)', 0, 15, 'int'],
 ];
+/** FX-D13 d: the training or governance amount says it is the line's cost when the line is priced by amount (resources, the default: legacy note). */
+const PRICED: Record<string, string> = { setupTraining: 'trainPricing', setupGov: 'govPricing' };
+const pricingNote = (d: WriteCtx['d'], id: string): string => {
+  const k = PRICED[id];
+  return k && d.dom.values[k] === 'amount' ? 'number — the line\'s cost (pricing: amount)' : 'number';   // resources (default): the legacy note
+};
 const HORIZONS = [1, 2, 3, 5, 7, 10];
 /** Inputs that are sliders in the legacy page: assigning a fractional value snaps to whole numbers. */
 const SLIDERS = new Set(['autoPotential', 'glassCeiling', 'y1Ramp', 'y2Ramp', 'y3Ramp', 'classicSaving']);
@@ -24,7 +30,7 @@ function write({ wb, d }: WriteCtx): void {
   const ws = sheet(wb, 'Parameters', [['Parameter', 30], ['Value', 14], ['Min', 8], ['Max', 10], ['Notes', 34]]);
   IO_PARAMS.forEach(([id, label, mn, mx, type]) => {
     const raw = d.dom.values[id], v = raw === undefined ? NaN : type === 'enum35' ? parseInt(raw, 10) : parseFloat(raw);
-    const row = ws.addRow([label, Number.isNaN(v) ? '' : v, mn, mx, type === 'enum35' ? '1,2,3,5,7 or 10' : type === 'int' ? 'whole' : 'number']);
+    const row = ws.addRow([label, Number.isNaN(v) ? '' : v, mn, mx, type === 'enum35' ? '1,2,3,5,7 or 10' : type === 'int' ? 'whole' : pricingNote(d, id)]);
     style(row, ' bggn');
     row.getCell(2).dataValidation = type === 'enum35' ? listDV(HORIZONS, 'Horizon: 1, 2, 3, 5, 7 or 10 years')
       : rangeDV(mn, mx, type === 'int', `${label}: ${mn}–${mx}`);

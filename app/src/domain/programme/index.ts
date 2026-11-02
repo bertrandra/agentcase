@@ -17,7 +17,7 @@ export type { ActivityCost } from './costs';
 export { MILESTONE_NAMES, programmeMilestones, type ProgrammeMilestone } from './milestones';
 export { programmeLines, engineProfile, lineOnMonths, pilotLine, programmeRates, coachLoad, coachingPlan, convChangeCost, TRAIN_FTE, GOV_FTE,
   COACH_DAYS_PER_MONTH, type CoachingPlan, type ProgrammeLine,
-  type ProgrammeLineId, type EngineProfile } from './profile';
+  type ProgrammeLineId, type EngineProfile, pricingOf, type Pricing } from './profile';
 export { OPT_INS, optInDef, optInOfKind, optInOn, optParam, optInPlan, type OptInId, type OptInDef } from './optIn';
 export { COST_PROFILES, LINE_PROFILES, costProfileKey, costProfileLabel, lineOfKind, lineProfile, profiledMonths, activityType, type CostProfile,
   type CostProfileDef, type ActivityType } from './costProfile';
