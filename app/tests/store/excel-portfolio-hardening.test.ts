@@ -3,7 +3,6 @@ import { beforeEach, describe, expect, it } from 'vitest';
 import { exportParamsWorkbook, importParamsWorkbook } from '@/controllers/excelParams';
 import { addProduct } from '@/controllers/product';
 import { appStore } from '@/store/instance';
-import { LIMITS } from '@/store/persistence/excel/params/safe';
 import { ENV } from '../helpers/excelParams';
 import { fourProducts, pfNow } from '../helpers/portfolioFixtures';
 import { asFile, editXlsx } from '../helpers/xlsxEdit';
@@ -79,9 +78,6 @@ describe('ids, references and sizes', () => {
     await refused((wb) => { const w = sheet(wb, 'Products'); for (let i = 0; i < 50; i++) w.addRow([`extra${i}`, `E${i}`, '', 0, '', '', '']); },
       /too many products \(54, limit 50\)/);
     await refused((wb) => { const w = sheet(wb, 'Waves'); for (let i = 0; i < 50; i++) w.addRow([`xw${i}`, `W${i}`, 0, '', 9]); }, /too many waves/);
-  });
-  it('caps the rows of a sheet (the workbook-wide limit applies to the new sheets too)', async () => {
-    await refused((wb) => { sheet(wb, 'TeamIn').getRow(LIMITS.rows + 5).getCell(1).value = 'x'; }, /too many rows/);
   });
   it('refuses a foreign sheet named like ours', async () => {
     await refused((wb) => { sheet(wb, 'Products').getRow(1).getCell(1).value = 'Something else'; }, /unexpected header/);

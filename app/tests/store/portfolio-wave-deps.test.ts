@@ -10,6 +10,7 @@ import { freshStore } from './helpers';
 import { asFile, editXlsx } from '../helpers/xlsxEdit';
 import { openPortfolioFixture, pfNow } from '../helpers/portfolioFixtures';
 import { ENV } from '../helpers/excelParams';
+import { planIntoJson } from '@/store/persistence/portfolioPlan';
 
 const W1 = 'w1', W2 = 'wdr3dpo', DEP = { waveId: W1, milestone: 'setupEnd' as const, lagMonths: 1 };
 const undoLabels = (): string[] => appStore().getState().history.undo.map((entry) => entry.label);
@@ -76,9 +77,9 @@ describe('persistence', () => {
     openPortfolioFixture(); setWaveDependency(W2, DEP); setMaxConcurrentSetups(2);
     const snap = toPortfolioSnapshot(pfNow()), back = openSnapshot(snap);
     expect(back.waves[1]!.dependsOn).toEqual(DEP); expect(back.maxConcurrentSetups).toBe(2);
-    const waves = (snap.waves as Record<string, unknown>[]).map((w, i) =>
+    const keys = planIntoJson(snap), waves = (keys.waves as Record<string, unknown>[]).map((w, i) =>
       (i === 1 ? { ...w, dependsOn: { waveId: 'ghost', milestone: 'start', lagMonths: 0 } } : w));
-    const { portfolio, notes } = openChecked({ ...snap, waves, maxConcurrentSetups: 'x' });
+    const { portfolio, notes } = openChecked({ ...keys, waves, maxConcurrentSetups: 'x' });
     expect(portfolio.waves[1]).not.toHaveProperty('dependsOn'); expect('maxConcurrentSetups' in portfolio).toBe(false);
     expect(notes).toEqual([expect.stringMatching(/dependency .* not valid — dropped/), expect.stringMatching(/setup capacity "x"/)]);
   });

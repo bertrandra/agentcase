@@ -77,7 +77,8 @@ export function renderReport(d: ReportData, print: Readonly<ThemeValues>): strin
     + `<h2>3 · Supervision floors &amp; postures</h2><table><tr><th>Phase</th><th>Floor</th><th>Posture</th></tr>${sup}</table>`
     + `<h2>4 · AI authorization under the ${k} context</h2><p>Agent authority is capped at <strong>A${cap}</strong>. ${n ? `${n} in-scope artifact(s) ` +
       `require a higher level and remain fully human-led:` : 'No in-scope artifact exceeds the cap.'}</p>${blocked}`
-    + `<h2>5 · Economic impact of compliance</h2><p>Setup ${fmtK(d.setup)} (billable share ${Math.round(d.billablePct)}% under ${k}) · ` +
+    + `<h2>5 · Economic impact of compliance</h2><p>Setup ${fmtK(d.setup)}`
+    + `${d.byAmount.length ? ` (${d.byAmount.join(' and ')} priced by amount)` : ''} (billable share ${Math.round(d.billablePct)}% under ${k}) · ` +
       `Run ${d.endLabel} ${fmtK(d.endRun)} · Saving ${d.endLabel} ${fmtK(d.endSaving)} vs baseline ${fmtK(d.baselineRun)}/yr.</p>`
     + `<h2>6 · Gated trajectory</h2><p>Discover → Calibrate → Validate (assumptions signed, Monte Carlo P50 above threshold) → Pilot &amp; Prove (KPIs ≥ ` +
       `80% of Y1 targets) → Decide &amp; Scale (Decision Intelligence verdict, risk bar raised by +${d.riskPremium} pts under ${k}).</p>`

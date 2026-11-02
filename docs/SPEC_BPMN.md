@@ -126,7 +126,7 @@ process* (a BPMN model shipped with the application); the case keys listed above
 - **F-B9** — After import, a report lists: counts by kind, activities whose parameters were defaulted, unmapped roles, ignored
   or pass-through elements, and the figures that changed (headline net, ROI, FTE after) with before / after values.
 - **F-B10** — Security: the reader refuses any `<!DOCTYPE`, entity declaration or processing instruction other than the XML
-  declaration (no XXE, no entity expansion), caps file size (5 MB), element count (100,000; raised from 20,000 in B2) and depth (64), accepts ids from a safe
+  declaration (no XXE, no entity expansion), caps the depth (64) — no cap on the file size or the element count since the owner's decision of 2026-11-02 (were 5 MB and 100,000) — accepts ids from a safe
   pattern only, and never renders imported text as HTML.
 
 ### 4.4 Round trip and pass-through
@@ -281,7 +281,7 @@ BPSim is a second, derived encoding on export and an accepted input on import wh
 - **Element limit raised to 100,000 (decision of 2026-10-30)**: an AgentCase file of 2,000 activities has about 25,300 elements and a
   collaboration file of four full products about 26,400, over the original limit of 20,000. The limit is now 100,000 in `securityRules.json`
   (reader and validator alike); the 5 MB cap, depth 64 and the DOCTYPE / entity / processing-instruction refusal are unchanged. Both round
-  trips pass with the default limits; a generated file of 100,001 elements (under 5 MB) is refused before the parser.
+  trips pass with the default limits. (2026-11-02, owner: the size and element-count caps are removed; the depth cap and the refusals stay.)
 
 ## 6. Data model
 

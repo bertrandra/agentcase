@@ -5,6 +5,7 @@ import { exportSnapshotJson } from '@/controllers/files';
 import { openCaseText } from '@/controllers/openFile';
 import { fixtureText, openPortfolioFixture } from '../helpers/portfolioFixtures';
 import { freshStore } from './helpers';
+import { planIntoJson } from '@/store/persistence/portfolioPlan';
 
 afterEach(() => dismissCalcBanner());
 
@@ -43,7 +44,7 @@ describe('staleness of a portfolio file is reported at the right level', () => {
     expect(b?.staleProducts).toEqual([victim.id]);
   });
   it('tampering a wave start: stale at the portfolio level only (every product package is still valid)', () => {
-    const r = raw();
+    const r = planIntoJson(raw());   // the waves as keys (schema v6 holds them in the document)
     (r.waves as { startMonth: number }[])[1]!.startMonth += 3;
     const b = open(r);
     expect(b?.state).toBe('stale');

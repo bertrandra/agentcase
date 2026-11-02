@@ -6,6 +6,7 @@ import { headline } from '@/domain/economics/headline';
 import { posture } from '@/domain/verifyA/phaseArt';
 import { appVerTag } from '@/domain/snapshots';
 import { scopeOf } from '@/domain/process';
+import { pricingOf } from '@/domain/programme';
 import type { CaseState } from '@/domain';
 import { logoAlt, shownLogo } from '@/domain/theme/logo';
 import { hasCustomProcess, processSummary, type ProcessSummary } from '@/domain/verifyA/processSummary';
@@ -17,7 +18,10 @@ export interface ReportData {
   potential: number; ceiling: number; effective: number; headroom: number;
   supervision: { phase: string; floor: number; posture: string }[];
   authorityCap: number; blocked: { name: string; phase: string; aiAuth: string }[];
-  setup: number; billablePct: number; endLabel: string; endRun: number; endSaving: number; baselineRun: number; riskPremium: number;
+  setup: number;
+  /** FX-D13 d: the setup lines priced by amount ("training", "governance"), empty when both are priced by resources (the default) */
+  byAmount: string[];
+  billablePct: number; endLabel: string; endRun: number; endSaving: number; baselineRun: number; riskPremium: number;
   /** the customer logo of a client presentation (docs/THEME.md §8.6); absent: the report is the legacy one, byte for byte */
   logo?: { src: string; alt: string };
   /** the case's process (section 7, spec F-B22, B5): only when it holds custom content; absent: the report is the legacy one, byte for byte */
@@ -54,7 +58,8 @@ export function reportData(s: CaseState, now: Date): ReportData {
     potential: m.auto, ceiling: m.ceiling, effective: m.eff, headroom: m.conv.effCap,
     supervision, authorityCap: cx.authorityCap,
     blocked: act.filter((a) => authRank(a.aiAuth) > cx.authorityCap).map((a) => ({ name: a.name, phase: a.phase, aiAuth: a.aiAuth })),
-    setup: headline(c).setup, billablePct: cx.setupBillable * 100, endLabel: `Y${eng.horizonYears}`, endRun: end.totalRunCost, endSaving: end.savings,
+    setup: headline(c).setup, byAmount: (['training', 'governance'] as const).filter((id) => pricingOf(c, id) === 'amount'),
+    billablePct: cx.setupBillable * 100, endLabel: `Y${eng.horizonYears}`, endRun: end.totalRunCost, endSaving: end.savings,
     baselineRun: m.baselineRun, riskPremium: cx.riskPremium, ...reportLogo(s), ...reportProcess(processSummary(c)),
   };
 }

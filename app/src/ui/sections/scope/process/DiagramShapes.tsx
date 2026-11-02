@@ -71,7 +71,7 @@ export const Shapes = memo(function Shapes({ d, selected, onPick, labels, extra 
       {d.shapes.filter((s) => s.kind !== 'activity')
         .map((s) => <Shape key={`${s.kind}:${s.id}`} s={s} selected={selected} onPick={onPick} labels={labels} x="" />)}
       {d.edges.map((e) => (
-        <polyline key={e.id} className={`ac-bpmn-edge${e.rework ? ' is-rework' : ''}${e.message ? ' is-message' : ''}`}
+        <polyline key={e.id} className={`ac-bpmn-edge${e.rework ? ' is-rework' : ''}${e.message ? ' is-message' : ''}${e.bridged ? ' is-bridged' : ''}`}
           points={e.points.map((p) => p.join(',')).join(' ')} />
       ))}
       {d.shapes.filter((s) => s.kind === 'activity')
@@ -79,3 +79,30 @@ export const Shapes = memo(function Shapes({ d, selected, onPick, labels, extra 
     </>
   );
 });
+
+/**
+ * The lane (role) names kept at the left edge of the view while panning ("Freeze roles on the left"): a strip about 36 px wide on screen, whatever
+ * the zoom (`px`: the canvas size in pixels; the view box is centred in it, "meet", so its visible left edge can be left of `v.x`), each lane's name
+ * upright in it at the lane's height, cut to what the lane's height shows. Drawn over the shapes; not memoised (it moves with the view, a dozen
+ * lanes).
+ */
+export function FrozenLanes({ d, v, px }: { d: Drawing; v: { x: number; y: number; w: number; h: number }; px: { w: number; h: number } }) {
+  const scale = Math.min(px.w / v.w, px.h / v.h) || 1, unit = 1 / scale, left = v.x - (px.w / scale - v.w) / 2, w = 36 * unit;
+  const lanes = d.shapes.filter((s) => s.kind === 'lane');
+  if (!lanes.length) return null;
+  return (
+    <g className="ac-bpmn-frozen" aria-hidden="true">
+      {lanes.map((l) => {
+        const cy = l.y + l.h / 2, cx = left + w / 2, fit = Math.max(3, Math.floor((l.h * scale - 8) / 7));
+        const label = l.label.length > fit ? `${l.label.slice(0, fit - 1)}…` : l.label;
+        return (
+          <g key={l.id}>
+            <rect x={left} y={l.y} width={w} height={l.h} />
+            <text x={cx} y={cy} textAnchor="middle" dominantBaseline="middle" fontSize={12 * unit}
+              transform={`rotate(-90 ${cx} ${cy})`}><title>{l.label}</title>{label}</text>
+          </g>
+        );
+      })}
+    </g>
+  );
+}

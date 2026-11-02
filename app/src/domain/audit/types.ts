@@ -45,7 +45,14 @@ export interface ElementAudit {
 }
 
 export interface Auditor { name: string; organisation?: string }
-export interface Interview { code: string; role: string; who?: string; date: string }
+/**
+ * An audit activity (an interview): its code, the role interviewed as written (`role`), the person (`who`), the date; and (owner's request
+ * 2026-11-02) the roles it targets (`roles`, resource ids) and the activities they do that it covers (`activities`, task ids), the auditor who runs
+ * it (`auditor`, an auditor's name) and its status. The observations and evidence that name its code are its trace.
+ */
+export interface Interview {
+  code: string; role: string; who?: string; date: string; roles?: string[]; activities?: string[]; auditor?: string; status?: AuditStatus;
+}
 /** One parameter changed by a calibration (F-B29): the element, the parameter, the values before and after and the formula shown. */
 export type CalibratedParam = 'effort' | 'aiAuthority' | 'probability';
 export interface CalibrationChange { element: string; param: CalibratedParam; from: string; to: string; formula: string }

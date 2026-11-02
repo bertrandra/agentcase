@@ -19,13 +19,36 @@ When releasing, follow [docs/BUMP_PROCEDURE.md](docs/BUMP_PROCEDURE.md) (§7 for
 
 ### SPEC_FIXES lot X7 (part)
 
+- **MS Project export checked by a reader** (FX-32): CI reads the golden case's MS Project XML exports (single case and portfolio) with MPXJ,
+  the library ProjectLibre uses, and checks tasks, WBS codes, dates, links and assignments are read as written.
+- **No file size limit** (owner's request 2026-11-02): BPMN, DMN and CMMN files are no longer capped in size or number of elements (were 5 MB
+  and 100,000), Excel workbooks in size, unzipped size or rows (were 8 MB, 64 MB, 20,000), the due-diligence pack (25 MB) and audit files
+  (8 MB, 2 MB) neither. The checks that are not sizes stay: XML depth, DTD / entity / processing-instruction refusal, zip parts and ratio.
+- **File schema v6 — the portfolio plan in the BPMN document** (FX-D14): a saved portfolio keeps its waves (sub-processes), setup capacity
+  (on the lane set) and its products' knowledge subsets in its common BPMN document, as the portfolio process; the JSON keys are gone from
+  the file. Opening puts them back; v5 files open as before. Files written by this version are refused by older builds (newer format).
+- **Organisation graph** (owner's request 2026-11-02): 🏢 Organisation draws the units as a tree with their teams as leaves; a unit selected
+  on the canvas (click or keyboard) is renamed, retyped, given a unit below it or removed from the panel beside the graph, one undoable step
+  each (the units table's commands and checks).
+- **Audit activities** (owner's request 2026-11-02): 🔎 Audit › Audit activities (first tab). An audit activity (interview) targets one or
+  more roles (the people) and the activities they do, with its auditor, date and status (`ac:interview roles activities auditor status`, XSD).
+  An auditor picks their name, selects one or more of their audit activities and sees the interview's context (roles; each activity with
+  its audit status, observations, tools, pain points, evidence, covered or not). The table traces every audit activity with its progression
+  (activities covered: their audit closed, or evidence naming the audit activity).
+- **Process diagram** (owner's requests 2026-11-02): "Freeze roles on the left" keeps the lane names at the left edge while panning; "Hide
+  out-of-scope activities" hides their links too and links the activities they stood between (dashed); colours read as filled blocks when
+  zoomed out (labels too small) and as thick outlines when the labels are readable; stronger links.
 - **Activity links** (FX-D9, owner's request): the default process links the SDLC activities of each phase one after the other (regulatory ones stay unlinked), drawn on the diagram
   and exported; removing, moving or leaving out an activity links its neighbours over it. 🧩 Process › "Link activities" links a case saved
   before (or an activity added since) in one undoable step. No figure reads the order.
 - **Training and governance pricing** (FX-D13 d): each line is priced from its resources (default, unchanged figures) or from its euro
-  amount spent over its duration; "Pricing" on the activity, the field not used shown greyed.
+  amount spent over its duration; "Pricing" on the activity, the field not used shown greyed; a line priced by amount says so in the DD register, the report and the
+  Parameters sheet.
 - **Plan in the Financial workbook and the report** (FX-D15): "Add the plan sheets" / "Add the plan pages" (off by default) put the 📅 Plan's
   WBS, WBS dictionary, OBS, RAM and Histogram sheets after the results workbook's own, and its Gantt, WBS and histogram pages at the end of the report.
+- **Data inputs along the chain** (FX-D9): each linked SDLC activity reads the deliverable of the one before it in the BPMN export.
+- **The process model feeds the engine** (FX-D8): 🧩 Process, four tick boxes (off by default): change-failure rate → DORA row and factory
+  data; cadence → release weeks; hand-offs → a run cost; waits → longer Gantt phases.
 - **Agents' lane** (FX-D12): the default diagram draws the activities of type Agent in an "Agents" lane below the team lanes. No figure
   reads lanes; a case keeps its stored diagram until it is reset to the default process.
 - **Implied correlation** (FX-D2): 🎲 Monte Carlo › Risk reduction shows the selection's implied average pairwise correlation of its products'

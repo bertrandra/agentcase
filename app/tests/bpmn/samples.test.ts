@@ -10,13 +10,14 @@ import { tmpdir } from 'node:os';
 import { join } from 'node:path';
 import { afterAll, describe, expect, it } from 'vitest';
 import { BPMN_FIXTURES, codes, hasXmllint, REPO, schemaTestsRun, validate } from '../helpers/bpmnValidate';
-import { programmeSampleText, programmeWbsSampleText, storedValuesSampleText } from '../helpers/programmeSample';
+import { portfolioPlanSampleText, programmeSampleText, programmeWbsSampleText, storedValuesSampleText } from '../helpers/programmeSample';
 
 const SAMPLES = readdirSync(BPMN_FIXTURES).filter((f) => f.endsWith('.bpmn')).sort();
 const samplePath = (f: string) => join(BPMN_FIXTURES, f);
 const PROGRAMME_SAMPLE = join(BPMN_FIXTURES, 'programme', 'programme-three-products.bpmn');
 const WBS_SAMPLE = join(BPMN_FIXTURES, 'programme', 'programme-wbs-override.bpmn');
 const STORED_SAMPLE = join(BPMN_FIXTURES, 'programme', 'stored-values-agentcase.bpmn');
+const PLAN_SAMPLE = join(BPMN_FIXTURES, 'programme', 'portfolio-plan.bpmn');
 const MINIMAL = readFileSync(samplePath('minimal-agentcase.bpmn'), 'utf8');
 const AC_XSD = readFileSync(join(REPO, 'docs', 'bpmn', 'agentcase-bpmn-1.0.xsd'), 'utf8');
 
@@ -45,7 +46,8 @@ describe('BPMN B0 — CI runs the XSD validation', () => {
 describe('BPMN B0 — the extension XSD', () => {
   const globals = (kind: string) => [...AC_XSD.matchAll(new RegExp(`^ {2}<xsd:${kind} name="(\\w+)"`, 'gm'))].map((m) => m[1] ?? '');
   it('declares the elements and attributes of the spec (§ 5.2, § 15, § 16, § 17; changeFailure: B5b, F-B50; the programme: B9a, § 19)', () => {
-    expect(globals('element').sort()).toEqual(['activity', 'actor', 'audit', 'auditHeader', 'changeFailure', 'frequency', 'handoffCost', 'laneRole', 'norm', 'orgUnit',
+    expect(globals('element').sort()).toEqual(['activity', 'actor', 'audit', 'auditHeader', 'changeFailure', 'frequency', 'handoffCost', 'knowledgeSubset', 'laneRole', 'norm',
+      'orgUnit',
       'passThrough', 'phase', 'process', 'product', 'productAudits', 'programmeActivity', 'programmeAudit', 'programmeValues', 'raci', 'raciOverride',
       'rework', 'supervision', 'team', 'tool',
       'toolCatalog', 'volume', 'wave']);
@@ -65,9 +67,13 @@ describe('BPMN B0 — the extension XSD', () => {
     expect(readFileSync(STORED_SAMPLE, 'utf8')).toBe(storedValuesSampleText(MINIMAL));
     if (schemaTestsRun()) expect(validate([STORED_SAMPLE]).results.map((r) => [r.schema, r.errors])).toEqual([['valid', []]]);
   }, 60000);
+  it('the portfolio-plan sample (FX-D14, schema v6) is the plan a saved portfolio file holds, and validates', () => {
+    expect(readFileSync(PLAN_SAMPLE, 'utf8')).toBe(portfolioPlanSampleText());
+    if (schemaTestsRun()) expect(validate([PLAN_SAMPLE]).results.map((r) => [r.schema, r.errors])).toEqual([['valid', []]]);
+  }, 60000);
   it('every global element and attribute is used by at least one valid AgentCase sample', () => {
-    const text = [...SAMPLES.filter((f) => f.endsWith('-agentcase.bpmn')).map(samplePath), PROGRAMME_SAMPLE, WBS_SAMPLE, STORED_SAMPLE]
-      .map((f) => readFileSync(f, 'utf8')).join('\n');
+    const text = [...SAMPLES.filter((f) => f.endsWith('-agentcase.bpmn')).map(samplePath), PROGRAMME_SAMPLE, WBS_SAMPLE, STORED_SAMPLE,
+      PLAN_SAMPLE].map((f) => readFileSync(f, 'utf8')).join('\n');
     const unused = [...globals('element').map((n) => `<ac:${n}`), ...globals('attribute').map((n) => ` ac:${n}=`)].filter((n) => !text.includes(n));
     expect(unused).toEqual([]);
   });

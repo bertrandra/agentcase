@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import { exportDocument, serialize, setScope, type XDocument } from '@/domain/process';
+import { exportDocument, readProcess, serialize, setScope, withoutInputsFrom, type XDocument } from '@/domain/process';
 import {
   activityFacts, addDataRef, addDataStore, addImport, addItemType, agentBlocked, evidenceCount, gateStates, knowledgeHub, linkInput, linkOutput, readData,
   setDataState, setMultiInstance, setRequiresState, tokenProfile, typeData,
@@ -13,7 +13,9 @@ import { opened } from '../../../helpers/processCases';
 const golden = opened('golden');
 const pipe = (d: XDocument, ...fs: ((x: XDocument) => XDocument)[]): XDocument => fs.reduce((x, f) => f(x), d);
 const DO178 = [...activityFacts(golden.BPMN.root).values()].filter((f) => f.norm === 'DO-178C').map((f) => f.id);
-const doc = (): XDocument => pipe(golden.BPMN,
+/** the golden process without the default chain's data inputs (FX-D9): the graph below is the one these tests write */
+const noChainInputs = (d: XDocument): XDocument => ({ ...d, root: withoutInputsFrom(d.root, new Set(readProcess(d).activities.map((a) => `${a.id}_data`))) });
+const doc = (): XDocument => pipe(golden.BPMN, noChainInputs,
   (d) => setScope(d, ['A007', 'A017', 'A018', 'A023', 'R011'], true), (d) => setScope(d, ['A001', ...DO178.filter((x) => x !== 'R011')], false),
   (d) => addDataStore(d, { id: 'store-repo', name: 'Source repository', tools: [{ ref: 'git-host', integration: ['api', 'mcp'] }] }),
   (d) => addDataStore(d, { id: 'store-wiki', name: 'Wiki', tools: [{ ref: 'wiki', integration: ['export'] }] }),

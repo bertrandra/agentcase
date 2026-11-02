@@ -15,7 +15,7 @@ export const AGENT_IMPLEMENTATION = 'https://agentcase.app/schema/bpmn/1.0#agent
  * deliverable a data object, the actors resource roles; an agent's service task names its agent (`implementation`, `ac:agent`).
  * `order` is the artefact's position in its catalogue list (the order the engine iterates).
  */
-export function taskOf(a: CatArtefact, order: number, regulatory: boolean): XElement {
+export function taskOf(a: CatArtefact, order: number, regulatory: boolean, inputs: readonly string[] = []): XElement {
   if (regulatory && a.skill !== a.norm) throw new Error(`process: regulatory artefact ${a.id} has skill ${a.skill} != norm ${a.norm ?? ''}`);
   const type = a.agentActivityType ?? 'Human', local = TASK_OF_TYPE[type];
   if (!local) throw new Error(`process: unknown activity type ${type} on ${a.id}`);
@@ -29,11 +29,24 @@ export function taskOf(a: CatArtefact, order: number, regulatory: boolean): XEle
     el('ac:supervision', { human: a.humanSup, agent: a.agentSup, agent0: a._agent0 }),
   ]));
   if (regulatory) children.push(ref('bpmn:categoryValueRef', normId(a.industry ?? '', a.norm ?? '')));
+  if (inputs.length) children.push(...inputsOf(a.id, inputs));
   if (!regulatory && a.deliverable) children.push(el('bpmn:dataOutputAssociation', { id: outId(a.id) }, [ref('bpmn:targetRef', dataId(a.id))]));
   const agent = type === 'Agent' ? agentId(a.capability ?? 'Agent') : null;
   if (agent) children.push(performer('bpmn:performer', agent));
   children.push(performer('bpmn:humanPerformer', regulatory ? teamRoleId(a.teamSkill ?? 'Regulatory Affairs') : roleId(a.skill)));
   return el(`bpmn:${local}`, { id: a.id, name: a.name, implementation: agent ? AGENT_IMPLEMENTATION : null, 'ac:agent': agent }, children);
+}
+
+/**
+ * The data inputs of an activity (FX-D9): the deliverables it reads (data object ids), as the schema wants them: an `ioSpecification` with one
+ * data input each and its input set (an empty output set), then one `dataInputAssociation` per input from the deliverable.
+ */
+export function inputsOf(id: string, sources: readonly string[]): XElement[] {
+  const ins = sources.map((s) => `${id}_in_${s}`);
+  const io = el('bpmn:ioSpecification', { id: `${id}_io` }, [...ins.map((i) => el('bpmn:dataInput', { id: i })),
+    el('bpmn:inputSet', { id: `${id}_inputs` }, ins.map((i) => ref('bpmn:dataInputRefs', i))), el('bpmn:outputSet', { id: `${id}_outputs` })]);
+  return [io, ...sources.map((s, k) => el('bpmn:dataInputAssociation', { id: `${ins[k]}_assoc` },
+    [ref('bpmn:sourceRef', s), ref('bpmn:targetRef', ins[k] ?? '')]))];
 }
 
 /** The deliverable of an SDLC artefact: a data object whose documentation is the deliverable text. */

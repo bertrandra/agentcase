@@ -32,7 +32,7 @@ type Picked = { name: string; size: number; text(): Promise<string> };
 export type FileOutcome = { ok: true; message: string; warnings: string[] } | { ok: false; errors: string[] };
 
 async function rootOf(f: Picked): Promise<{ root: XElement } | { errors: string[] }> {
-  const r = parseXml(f.size > LIMITS.bytes ? '' : await f.text(), f.size);
+  const r = parseXml(LIMITS.bytes !== null && f.size > LIMITS.bytes ? '' : await f.text(), f.size);
   return r.doc ? { root: r.doc.root } : { errors: r.errors.length ? r.errors.map((e) => e.message) : ['the file cannot be read'] };
 }
 

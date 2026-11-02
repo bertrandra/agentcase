@@ -4,6 +4,7 @@ export * from './types';
 export { AUDIT_BLOCKS, AUDIT_FIELDS, AUTOMATION_LEVELS, BLOCK_LABELS, FIELD_BY_NAME, checkValue, type AuditBlock, type AuditField, type FieldKind }
   from './fields';
 export { readAudit, hasAudit, collabExtChild } from './read';
+export { interviewContext, interviewProgress, interviewsOf, type ContextActivity, type InterviewContext, type InterviewProgress } from './interviews';
 export { SHIPPED_AS_OF, SHIPPED_REVIEW, SHIPPED_TOOLS, CAPABILITY_TOKEN, capabilityKey, caseCopy, catalogJson, catalogUpdated, effectiveCatalog,
   proposedTools, shippedTool } from './catalog';
 export { applyElementOp, emptyAudit, observationOk, toolUseOk, type ElementOp } from './ops';

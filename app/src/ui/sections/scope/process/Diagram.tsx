@@ -1,8 +1,8 @@
 import { useCallback, useEffect, useId, useMemo, useRef, useState } from 'react';
-import type { Drawing, DrawShape } from '@/domain/process';
+import { hideActivities, type Drawing, type DrawShape } from '@/domain/process';
 import { centreOn, FIT, fitTo, viewOf } from './diagramCamera';
 import { categoryOf, colourClass, DiagramOptions, type ActFacts, type DiagramColour } from './DiagramOptions';
-import { Shapes } from './DiagramShapes';
+import { FrozenLanes, Shapes } from './DiagramShapes';
 import { useCamera } from './useCamera';
 import { selectActivity, useProcessView } from './view';
 
@@ -23,10 +23,11 @@ export function Diagram({ d, tableId, title, desc, name, labelZoom = 2, facts, s
   const id = useId(), box = useRef<HTMLDivElement>(null), svg = useRef<SVGSVGElement>(null), selected = useProcessView((s) => s.selected);
   const { cam, setCam, zoom, handlers } = useCamera(d.box, box, svg), v = viewOf(d.box, cam);
   const [hideOut, setHideOut] = useState(false), [colour, setColour] = useState<DiagramColour>(''), [picked, setPicked] = useState<string[]>([]);
+  const [freeze, setFreeze] = useState(false);
   const out = (s: DrawShape): boolean => (facts?.get(s.id) ? !facts.get(s.id)!.counted : s.inScope === false);
   const acts = d.shapes.filter((s) => s.kind === 'activity' && !(hideOut && out(s)));
-  // eslint-disable-next-line react-hooks/exhaustive-deps -- `out` reads facts
-  const drawn = useMemo(() => (hideOut ? { ...d, shapes: d.shapes.filter((s) => s.kind !== 'activity' || !out(s)) } : d), [d, hideOut, facts]);
+  const drawn = useMemo(() => (hideOut ? hideActivities(d, new Set(d.shapes.filter((s) => s.kind === 'activity' && out(s)).map((s) => s.id))) : d),
+    [d, hideOut, facts]);   // eslint-disable-line react-hooks/exhaustive-deps -- `out` reads facts
   const extra = useMemo(() => new Map(d.shapes.filter((s) => s.kind === 'activity').map((s) => [s.id, [colourClass(colour, facts?.get(s.id)),
     shown && !shown.has(s.id) ? 'is-faded' : '', picked.includes(s.id) && s.id !== selected ? 'is-picked' : ''].filter(Boolean).join(' ')])),
   [d, colour, facts, shown, picked, selected]);
@@ -58,14 +59,16 @@ export function Diagram({ d, tableId, title, desc, name, labelZoom = 2, facts, s
         </p>
       </div>
       <DiagramOptions name={name} hideOut={hideOut} onHideOut={setHideOut} colour={colour} onColour={setColour} used={used.filter(Boolean)}
+        freeze={freeze} onFreeze={setFreeze}
         colours={!!facts} zoomLabel={picked.length || !shown ? 'Zoom to selection' : 'Zoom to filtered'} onZoomSel={fit ? () => setCam(fit) : null} />
       <div ref={box} className="ac-proc-canvas" tabIndex={0} role="group" {...handlers}
         aria-label={`${name}: + and − zoom, arrow keys pan, 0 fits, two fingers pinch; the activity table below lists the same elements`}>
-        <svg ref={svg} viewBox={`${v.x} ${v.y} ${v.w} ${v.h}`} role="img" aria-labelledby={`${id}-t`} aria-describedby={`${id}-d ${tableId}`}
+        <svg ref={svg} className={cam.s >= labelZoom ? 'is-readable' : 'is-overview'} viewBox={`${v.x} ${v.y} ${v.w} ${v.h}`} role="img" aria-labelledby={`${id}-t`} aria-describedby={`${id}-d ${tableId}`}
           preserveAspectRatio="xMidYMid meet">
           <title id={`${id}-t`}>{title}</title>
           <desc id={`${id}-d`}>{desc}</desc>
           <Shapes d={drawn} selected={selected} onPick={onPick} labels={cam.s >= labelZoom} extra={extra} />
+          {freeze && <FrozenLanes d={d} v={v} px={{ w: box.current?.clientWidth || 800, h: box.current?.clientHeight || 450 }} />}
         </svg>
       </div>
     </div>

@@ -21,7 +21,7 @@ export { addActor, addPhase, removeActor, removePhase, reorderPhases, updateActo
 export { activitiesOfActor, caseLoopPairs, caseSkillMap, caseViews, customActors, isCustomActivity } from './engineInputs';
 export type { BoundaryRework } from './readRework';
 export { findById, moveActivity, setDiagram, setReworkFlow, type Bounds, type ReworkPatch } from './editMore';
-export { bridgeOver, bridgesOver, linkActivities } from './bridge';
+export { bridgeOver, bridgesOver, linkActivities, withoutInputsFrom } from './bridge';
 export { resetProcess } from './editReset';
 export { analyseImport, previewImport } from './importPlan';
 export { applyImport, removeActivities } from './importApply';
@@ -30,7 +30,7 @@ export { passText, passThroughOf } from './importPass';
 export { DEFAULT_CHOICES, type ImportAnalysis, type ImportChoices, type ImportMode, type ImportPreview, type IncomingRole,
   type IncomingUnit } from './importTypes';
 export { roleId } from './ids';
-export { drawingOf, type DrawEdge, type Drawing, type DrawShape, type ShapeKind } from './drawing';
+export { drawingOf, hideActivities, type DrawEdge, type Drawing, type DrawShape, type ShapeKind } from './drawing';
 export { applyEditorDocument, type EditorOutcome } from './editorApply';
 export { mergeEditorDocument } from './editorMerge';
 export { caseValues, emptiedStoredValues, keepStoredValues, programmeValuesOf, storedElement, withoutStoredValues, withProgrammeValues } from './storedValues';

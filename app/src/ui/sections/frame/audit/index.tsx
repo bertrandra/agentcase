@@ -3,6 +3,7 @@ import { OverrideBadge } from '@/ui/widgets/OverrideBadge';
 import { Tabs } from '@/ui/widgets/Tabs';
 import { SectionFrame } from '@/ui/zones/SectionFrame';
 import { Activities } from './Activities';
+import { AuditActivities } from './AuditActivities';
 import { Calibration } from './Calibration';
 import { Catalogue } from './Catalogue';
 import { Header } from './Header';
@@ -25,7 +26,8 @@ const help = (
   </>
 );
 
-/** 🔎 Audit (docs/SPEC_BPMN.md § 15.5, F-B31): header, files, activities with their audit form, roles, programme activities (FX-21), tool catalogue,
+/** 🔎 Audit (docs/SPEC_BPMN.md § 15.5, F-B31): header, files, the audit activities (interviews: roles × activities, context, progression),
+ *  activities with their audit form, roles, programme activities (FX-21), tool catalogue,
  *  calibration. */
 export default function AuditSection() {
   const data = useAuditData();
@@ -33,6 +35,7 @@ export default function AuditSection() {
     <SectionFrame title="🔎 Audit" help={help} overrides={OVERRIDES}
       input={<><Header header={data.audit.header} /><Toolbar /><div className="ac-form-row"><OverrideBadge refKey="BPMN" label="Process (audit)" /></div></>}
       result={<Tabs label="Audit views" tabs={[
+        { id: 'audit-activities', label: 'Audit activities', render: () => <AuditActivities data={data} /> },
         { id: 'activities', label: 'Activities', render: () => <Activities data={data} /> },
         { id: 'roles', label: 'Roles', render: () => <Roles data={data} /> },
         { id: 'programme', label: 'Programme', render: () => <Programme data={data} /> },

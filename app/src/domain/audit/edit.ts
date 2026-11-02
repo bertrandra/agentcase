@@ -36,7 +36,9 @@ export function editElementAudit(d: XDocument, id: string, op: ElementOp): XDocu
 export type HeaderPatch = Partial<Pick<AuditHeader, 'code' | 'client' | 'scope' | 'status' | 'asOf' | 'auditors' | 'interviews'>>;
 const textOk = (v: string | undefined, max: number): boolean => v === undefined || v.length <= max;
 const auditorOk = (a: Auditor): boolean => !!a.name.trim() && a.name.length <= 200 && textOk(a.organisation, 200);
-const interviewOk = (i: Interview): boolean => KEY.test(i.code) && !!i.role.trim() && i.role.length <= 200 && DATE.test(i.date) && textOk(i.who, 200);
+const keysOk = (xs: string[] | undefined): boolean => xs === undefined || (xs.length <= 500 && xs.every((x) => KEY.test(x)));
+const interviewOk = (i: Interview): boolean => KEY.test(i.code) && !!i.role.trim() && i.role.length <= 200 && DATE.test(i.date) && textOk(i.who, 200)
+  && keysOk(i.roles) && keysOk(i.activities) && textOk(i.auditor, 200) && (i.status === undefined || (AUDIT_STATUSES as readonly string[]).includes(i.status));
 
 /** The header with `patch` applied (created with `base` when absent), or null when a value is outside the XSD. */
 export function patchedHeader(cur: AuditHeader | undefined, patch: HeaderPatch, base: { code: string; asOf: string }): AuditHeader | null {
@@ -48,7 +50,8 @@ export function patchedHeader(cur: AuditHeader | undefined, patch: HeaderPatch, 
   if (patch.auditors) h.auditors = patch.auditors.map((a) => (a.organisation?.trim() ? { name: a.name.trim(), organisation: a.organisation.trim() }
     : { name: a.name.trim() }));
   if (patch.interviews) h.interviews = patch.interviews.map((i) => ({ code: i.code.trim(), role: i.role.trim(), ...(i.who?.trim() ? { who: i.who.trim() } : {}),
-    date: i.date }));
+    date: i.date, ...(i.roles?.length ? { roles: [...new Set(i.roles)] } : {}), ...(i.activities?.length ? { activities: [...new Set(i.activities)] } : {}),
+    ...(i.auditor?.trim() ? { auditor: i.auditor.trim() } : {}), ...(i.status ? { status: i.status } : {}) }));
   const ok = KEY.test(h.code) && (AUDIT_STATUSES as readonly string[]).includes(h.status) && DATE.test(h.asOf) && textOk(h.client, 200)
     && textOk(h.scope, 4000) && h.auditors.every(auditorOk) && h.interviews.every(interviewOk)
     && new Set(h.interviews.map((i) => i.code)).size === h.interviews.length;

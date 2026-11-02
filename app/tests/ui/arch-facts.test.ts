@@ -51,9 +51,10 @@ describe('architecture pages: pinned facts', () => {
     expect(nums(/at most (\d+) steps/g)).toEqual([HISTORY_CAP]);
     expect(nums(/within (\d+) ms merge/g)).toEqual([COALESCE_MS]);
     expect(nums(/last (\d+) records/g)).toEqual([Number(/auditCap \?\? (\d+)/.exec(readFileSync(join(APP, 'src/store/core.ts'), 'utf8'))?.[1])]);
-    expect(text).toContain(
-      `${LIMITS.fileBytes / 2 ** 20} MB file, ${LIMITS.unzippedBytes / 2 ** 20} MB unzipped, ${LIMITS.entries} entries, compression ratio ${LIMITS.ratio}`);
-    expect(text).toContain(`${LIMITS.rows.toLocaleString('en-US')} rows, ${LIMITS.cols} columns, ${LIMITS.text.toLocaleString('en-US')} characters`);
+    expect([LIMITS.fileBytes, LIMITS.unzippedBytes, LIMITS.rows]).toEqual([Infinity, Infinity, Infinity]);   // no size limit (owner, 2026-11-02)
+    expect(text).toContain(`no limit on the file size, the unzipped size or the rows (owner's decision 2026-11-02); ${LIMITS.entries} entries, ` +
+      `compression ratio ${LIMITS.ratio}`);
+    expect(text).toContain(`compression ratio ${LIMITS.ratio}, ${LIMITS.cols} columns, ${LIMITS.text.toLocaleString('en-US')} characters`);
   });
   it('the version is not hard-coded', () => {
     const [maj, min] = APP_VERSION.split('.');

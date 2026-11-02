@@ -6,7 +6,7 @@ import { appStore } from '@/store/instance';
 import { guardZip, LIMITS } from '@/store/persistence/excel/params/safe';
 import { ENV } from '../helpers/excelParams';
 import { asFile, editXlsx, fakeZip, ourXlsx, setByLabel } from '../helpers/xlsxEdit';
-import { freshStore, snap } from './helpers';
+import { freshStore } from './helpers';
 import { keysOf } from '../helpers/scope';
 import { serialize, type XDocument } from '@/domain/process';
 
@@ -15,23 +15,21 @@ const doc = () => appStore().getState().doc as Record<string,
   unknown> & { RATE: Record<string, Record<string, number>>; dom: { values: Record<string, string> } };
 
 describe('import limits', () => {
-  it('rejects an oversize file before reading it', async () => {
-    const f = { name: 'big.xlsx', size: LIMITS.fileBytes + 1, arrayBuffer: async () => { throw new Error('must not be read'); } };
-    await expect(importParamsWorkbook(f, ENV)).rejects.toThrow(/too large/);
-    expect(() => guardZip(new ArrayBuffer(LIMITS.fileBytes + 1))).toThrow(/too large/);
+  it('no size limit (owner, 2026-11-02): a 100 MB file is read, never refused for its size', async () => {
+    expect([LIMITS.fileBytes, LIMITS.unzippedBytes, LIMITS.rows]).toEqual([Infinity, Infinity, Infinity]);
+    const f = { name: 'big.xlsx', size: 100 * 1024 * 1024, arrayBuffer: async () => { throw new Error('read'); } };
+    await expect(importParamsWorkbook(f, ENV)).rejects.toThrow(/^read$/);
   });
   it('rejects zip-bomb shapes from the zip directory alone, nothing is inflated', () => {
     expect(() => guardZip(fakeZip(900 * 1024 * 1024, 900 * 1024))).toThrow(/inflates beyond/);          // one part declares 900 MB
     expect(() => guardZip(fakeZip(40 * 1024 * 1024, 4 * 1024))).toThrow(/inflates beyond/);             // 10 000 : 1 ratio
-    expect(() => guardZip(fakeZip(30 * 1024 * 1024, 10 * 1024 * 1024, 3))).toThrow(/uncompressed size/);   // many moderate parts adding up
+    expect(() => guardZip(fakeZip(30 * 1024 * 1024, 10 * 1024 * 1024, 3))).not.toThrow();   // many moderate parts: no size limit any more
     expect(() => guardZip(fakeZip(10, 10, LIMITS.entries + 1))).toThrow(/too many parts/);
     expect(() => guardZip(fakeZip(2000, 1000))).not.toThrow();
   });
-  it('rejects a sheet with too many rows', async () => {
-    const bytes = await editXlsx(await ourXlsx(), (wb) => { wb.getWorksheet('Input Team')!.getRow(LIMITS.rows + 5).getCell(1).value = 'x'; });
-    const before = snap(appStore());
-    await expect(importParamsWorkbook(asFile('rows.xlsx', bytes), ENV)).rejects.toThrow(/too many rows/);
-    expect(snap(appStore())).toBe(before);
+  it('no row limit: a sheet with 25,000 rows is not refused for its rows', async () => {
+    const bytes = await editXlsx(await ourXlsx(), (wb) => { wb.getWorksheet('Input Team')!.getRow(25005).getCell(1).value = 'x'; });
+    await importParamsWorkbook(asFile('rows.xlsx', bytes), ENV).catch((e: Error) => expect(e.message).not.toMatch(/too many rows/));
   });
 });
 

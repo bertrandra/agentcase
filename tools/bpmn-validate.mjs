@@ -56,7 +56,7 @@ const stripped = (text) => text.replace(/^\uFEFF/, '').replace(/<!--[\s\S]*?-->/
 /** Step 1: the F-B10 checks on the raw text. */
 export function securityCheck(text, bytes = Buffer.byteLength(text)) {
   const errors = [], warnings = [], err = (code, message) => errors.push({ code, message });
-  if (bytes > LIMITS.bytes) err('too-large', `${bytes} bytes > ${LIMITS.bytes}`);
+  if (LIMITS.bytes !== null && bytes > LIMITS.bytes) err('too-large', `${bytes} bytes > ${LIMITS.bytes}`);   // null: no limit (owner, 2026-11-02)
   // on the text without comments and CDATA sections, where these constructs are inert (a code sample in documentation is not refused)
   const xml = stripped(text);
   if (/<!DOCTYPE/i.test(xml)) err('doctype', 'a <!DOCTYPE declaration (DTD, entities, XXE) is refused');
@@ -84,7 +84,7 @@ export function securityCheck(text, bytes = Buffer.byteLength(text)) {
     if (t.selfClose) depth--;
   }
   if (maxDepth > LIMITS.depth) err('too-deep', `depth ${maxDepth} > ${LIMITS.depth}`);
-  if (count > LIMITS.elements) err('too-many-elements', `${count} elements > ${LIMITS.elements}`);
+  if (LIMITS.elements !== null && count > LIMITS.elements) err('too-many-elements', `${count} elements > ${LIMITS.elements}`);
   if (markupIn.size) warnings.push({ code: 'markup-in-text', message: `text that looks like markup in ${[...markupIn].slice(0, 5).join(', ')}` });
   return { errors, warnings };
 }
@@ -156,7 +156,7 @@ function schemaCheck(file) {
 /** Validates one file: { file, ok, schema: 'valid' | 'invalid' | 'skipped', errors, warnings }. */
 export function validateFile(file, { schema = true, strict = false } = {}) {
   const bytes = statSync(file).size;
-  const sec = securityCheck(bytes > LIMITS.bytes ? '' : readFileSync(file, 'utf8'), bytes);
+  const sec = securityCheck(LIMITS.bytes !== null && bytes > LIMITS.bytes ? '' : readFileSync(file, 'utf8'), bytes);
   const errors = [...sec.errors], warnings = sec.warnings;
   let state = 'skipped';
   if (schema && !errors.length) { const e = schemaCheck(file); errors.push(...e); state = e.length ? 'invalid' : 'valid'; }

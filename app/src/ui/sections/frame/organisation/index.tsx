@@ -6,6 +6,7 @@ import { OverrideBadge } from '@/ui/widgets/OverrideBadge';
 import { SectionFrame } from '@/ui/zones/SectionFrame';
 import '@/ui/widgets/org.css';
 import { LaneRoles } from './LaneRoles';
+import { OrgCanvas } from './OrgCanvas';
 import { Roles } from './Roles';
 import { Teams } from './Teams';
 import { Owners } from './Owners';
@@ -49,6 +50,6 @@ export default function OrganisationSection() {
             : <Services m={m} />}
         </div>
       </>}
-      result={tab === 'org' ? <><Teams m={m} /><Roles m={m} /><LaneRoles /></> : null} />
+      result={tab === 'org' ? <><OrgCanvas m={m} /><Teams m={m} /><Roles m={m} /><LaneRoles /></> : null} />
   );
 }

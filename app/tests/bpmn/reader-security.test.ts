@@ -23,7 +23,7 @@ afterEach(() => vi.restoreAllMocks());
 describe('B2 reader: one F-B10 rule table for the reader and tools/bpmn-validate.mjs', () => {
   it('the tool reads the shared table; the limits are those of the spec', () => {
     expect(readFileSync(join(REPO, 'tools', 'bpmn-validate.mjs'), 'utf8')).toContain('app/src/domain/process/securityRules.json');
-    expect(LIMITS).toEqual({ bytes: 5 * 1024 * 1024, depth: 64, elements: 100000 });
+    expect(LIMITS).toEqual({ bytes: null, depth: 64, elements: null });   // no size / element limit (owner, 2026-11-02)
     expect(Object.isFrozen(LIMITS)).toBe(true);
     expect(RULES.codes).toEqual(['too-large', 'doctype', 'entity', 'processing-instruction', 'bad-id', 'reserved-id', 'duplicate-id', 'too-deep',
       'too-many-elements', 'markup-in-text']);
@@ -52,19 +52,13 @@ describe('B2 reader: hostile files are refused before parsing', () => {
   });
 });
 
-describe('B2 reader: size, element-count and depth limits (generated)', () => {
-  it('over 5 MB is refused; the size given by the file wins over the text length', () => {
-    expect(parseBpmn(doc(`<bpmn:documentation>${'x'.repeat(LIMITS.bytes)}</bpmn:documentation>\n`)).errors.map((e) => e.code)).toEqual(['too-large']);
-    expect(parseBpmn('', LIMITS.bytes + 1).errors.map((e) => e.code)).toEqual(['too-large']);
-  });
-  it('100,000 elements accepted, 100,001 refused (a generated file under 5 MB, refused before the parser)', () => {
+describe('B2 reader: no size or element-count limit, a depth limit (generated)', () => {
+  it('owner\'s decision 2026-11-02: no limit on the size or the number of elements; a 6 MB file and 120,000 elements are read', () => {
+    expect([LIMITS.bytes, LIMITS.elements]).toEqual([null, null]);
+    expect(parseBpmn(doc(`<bpmn:documentation>${'x'.repeat(6 * 1024 * 1024)}</bpmn:documentation>\n`)).errors).toEqual([]);
     const tasks = (n: number) => Array.from({ length: n }, (_, i) => `<bpmn:task id="t${i}"/>\n`).join('');
-    const at = doc(tasks(LIMITS.elements - 2)), over = doc(tasks(LIMITS.elements - 1));   // + definitions + process
-    expect(over.length).toBeLessThan(LIMITS.bytes);
-    expect(securityCheck(at).errors).toEqual([]);
-    const spy = vi.spyOn(DOMParser.prototype, 'parseFromString'), r = parseBpmn(over);
-    expect([r.doc, r.errors]).toEqual([null, [{ code: 'too-many-elements', message: `${LIMITS.elements + 1} elements > ${LIMITS.elements}` }]]);
-    expect(spy).not.toHaveBeenCalled();
+    expect(securityCheck(doc(tasks(120000))).errors).toEqual([]);
+    expect(securityCheck('<a/>', 50 * 1024 * 1024).errors).toEqual([]);   // the size the file gives is no reason to refuse it
   });
   it('depth 64 accepted, 65 refused', () => {
     const nest = (n: number) => `${'<bpmn:subProcess>'.repeat(n)}${'</bpmn:subProcess>'.repeat(n)}\n`;

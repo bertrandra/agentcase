@@ -30,6 +30,29 @@ describe('🏢 Organisation', () => {
   });
 });
 
+describe('🏢 Organisation graph (owner\'s request 2026-11-02)', () => {
+  it('draws the units and their teams; a unit selected on the canvas gets a unit below it, a new name and is removed; undo restores; axe clean', async () => {
+    const s = freshStore(), { container } = render(<Organisation />), units = () => readStoredOrg(bpmn(s)).units;
+    const nodes = within(screen.getByRole('group', { name: 'Units and teams' })).getAllByRole('button');
+    expect(nodes.some((n) => / · unit /.test(n.getAttribute('aria-label') ?? ''))).toBe(true);
+    expect(nodes.some((n) => / · team /.test(n.getAttribute('aria-label') ?? ''))).toBe(true);
+    fireEvent.keyDown(nodes.find((n) => / · unit /.test(n.getAttribute('aria-label') ?? ''))!, { key: 'Enter' });
+    fireEvent.click(screen.getByText('+ Add a unit below'));
+    expect(units().map((u) => u.id)).toEqual(['unit-delivery', 'unit-1']);
+    expect(units()[1]!.parent).toBe('unit-delivery');
+    const name = screen.getByLabelText('Graph: name of unit New unit');
+    fireEvent.change(name, { target: { value: 'QA centre' } });
+    fireEvent.blur(name);
+    expect(units()[1]!.name).toBe('QA centre');
+    expect(screen.getByRole('group', { name: 'Units and teams' }).textContent).toContain('QA centre');
+    expect(await axeViolations(container)).toEqual([]);
+    fireEvent.click(screen.getByText('Remove this unit'));
+    expect(units().map((u) => u.id)).toEqual(['unit-delivery']);
+    s.undo();
+    expect(units().map((u) => u.id)).toEqual(['unit-delivery', 'unit-1']);
+  });
+});
+
 describe('🧭 Who does what', () => {
   it('matrix filtered by phase, RACI editor saves an Accountable, checks listed; every view renders; axe clean', async () => {
     const s = freshStore(), { container } = render(<WhoDoesWhat />);

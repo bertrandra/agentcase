@@ -62,6 +62,11 @@ function coefValue(c: Ctx, id: string): number | null {
 }
 
 /** Every item a client must confirm, in the legacy order: coefficients, supervision floor, metric anchors, model inputs, factory parameters. */
+const PRICED: Record<string, string> = { setupTraining: 'trainPricing', setupGov: 'govPricing' };
+/** " — pricing: amount, …" on the training or governance amount when its line is priced by amount (FX-D13 d), else nothing. */
+const pricedNote = (c: Ctx, id: string): string => (PRICED[id] && caseValues(c.s)[PRICED[id]!] === 'amount'
+  ? ' — pricing: amount (this amount is the line\'s cost, spent over its duration)' : '');
+
 export function ddRows(c: Ctx, base: DdDoc & AssumptionBase, ok: Validated = {}): DdRow[] {
   const d = doc(c), coef: DdRow[] = coefficients.map((x) => {
     const k = (x as { k?: string }).k, row: DdRow = { id: x.id, g: x.g, l: x.l, v: k ? d.COEF[k] ?? null : coefValue(c, x.id), where: x.where, eff: x.eff,
@@ -79,10 +84,11 @@ export function ddRows(c: Ctx, base: DdDoc & AssumptionBase, ok: Validated = {})
     eff: 'Drives the quality table and the KPI scorecard.',
     edit: { sec: 'quality', note: 'as-is also editable in Quality — target only here' }, cls: 'PC4',
       ed: { a: q[1], t: q[2], da: base.QUALITY?.[i]?.[1], dt: base.QUALITY?.[i]?.[2], field: { kind: 'qual', i } } }));
+  // FX-D13 d: a training or governance line priced by amount says so (its amount is the cost); resources (the default) keep the legacy row
   const inputs = ASSUMPTION_DEFS.map((a): DdRow => {
     const cur = a.id === 'horizon' ? c.inp.v(a.id) : caseValues(c.s)[a.id], def = base.dom.values[a.id];
     return { id: `in-${a.id}`, g: `Inputs — ${a.g}`, l: a.l, v: cur === undefined ? '—' : cur, where: 'assumptions register',
-      eff: String(cur) !== String(def) ? `Adjusted from default ${def}` : 'At default',
+      eff: (String(cur) !== String(def) ? `Adjusted from default ${def}` : 'At default') + pricedNote(c, a.id),
       edit: { sec: 'assumptions', also: 'params', note: 'set in Parameters / Levers, tracked in the register' }, cls: 'PC1', ok: !!ok[a.id] };
   });
   const fg = Object.keys(base.FG_PARAMS ?? {}).map((k): DdRow => {

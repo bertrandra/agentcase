@@ -500,6 +500,17 @@
           <ac:activity type="Manual" phase="L0" order="2" seq="2" effort="2" weight="1.8" value="VA" capability="Review" aiAuthority="Assistance"/>
           <ac:supervision human="70" agent="30" agent0="30"/>
         </bpmn:extensionElements>
+        <bpmn:ioSpecification id="A002_io">
+          <bpmn:dataInput id="A002_in_A001_data"/>
+          <bpmn:inputSet id="A002_inputs">
+            <bpmn:dataInputRefs>A002_in_A001_data</bpmn:dataInputRefs>
+          </bpmn:inputSet>
+          <bpmn:outputSet id="A002_outputs"/>
+        </bpmn:ioSpecification>
+        <bpmn:dataInputAssociation id="A002_in_A001_data_assoc">
+          <bpmn:sourceRef>A001_data</bpmn:sourceRef>
+          <bpmn:targetRef>A002_in_A001_data</bpmn:targetRef>
+        </bpmn:dataInputAssociation>
         <bpmn:dataOutputAssociation id="A002_out">
           <bpmn:targetRef>A002_data</bpmn:targetRef>
         </bpmn:dataOutputAssociation>
@@ -512,6 +523,17 @@
           <ac:activity type="Human" phase="L0" order="3" seq="3" effort="3" weight="2.7" value="VA" capability="Design" aiAuthority="Copilot"/>
           <ac:supervision human="55" agent="45" agent0="45"/>
         </bpmn:extensionElements>
+        <bpmn:ioSpecification id="A003_io">
+          <bpmn:dataInput id="A003_in_A002_data"/>
+          <bpmn:inputSet id="A003_inputs">
+            <bpmn:dataInputRefs>A003_in_A002_data</bpmn:dataInputRefs>
+          </bpmn:inputSet>
+          <bpmn:outputSet id="A003_outputs"/>
+        </bpmn:ioSpecification>
+        <bpmn:dataInputAssociation id="A003_in_A002_data_assoc">
+          <bpmn:sourceRef>A002_data</bpmn:sourceRef>
+          <bpmn:targetRef>A003_in_A002_data</bpmn:targetRef>
+        </bpmn:dataInputAssociation>
         <bpmn:dataOutputAssociation id="A003_out">
           <bpmn:targetRef>A003_data</bpmn:targetRef>
         </bpmn:dataOutputAssociation>
@@ -524,6 +546,17 @@
           <ac:activity type="Human" phase="L0" order="4" seq="4" effort="2" weight="1.8" value="VA" capability="Analysis" aiAuthority="Copilot"/>
           <ac:supervision human="60" agent="40" agent0="40"/>
         </bpmn:extensionElements>
+        <bpmn:ioSpecification id="A004_io">
+          <bpmn:dataInput id="A004_in_A003_data"/>
+          <bpmn:inputSet id="A004_inputs">
+            <bpmn:dataInputRefs>A004_in_A003_data</bpmn:dataInputRefs>
+          </bpmn:inputSet>
+          <bpmn:outputSet id="A004_outputs"/>
+        </bpmn:ioSpecification>
+        <bpmn:dataInputAssociation id="A004_in_A003_data_assoc">
+          <bpmn:sourceRef>A003_data</bpmn:sourceRef>
+          <bpmn:targetRef>A004_in_A003_data</bpmn:targetRef>
+        </bpmn:dataInputAssociation>
         <bpmn:dataOutputAssociation id="A004_out">
           <bpmn:targetRef>A004_data</bpmn:targetRef>
         </bpmn:dataOutputAssociation>
@@ -601,6 +634,17 @@
           <ac:activity type="Human" phase="V1" order="6" seq="2" effort="5" weight="5.5" value="NVA-N" capability="Analysis" aiAuthority="Copilot"/>
           <ac:supervision human="45" agent="55" agent0="55"/>
         </bpmn:extensionElements>
+        <bpmn:ioSpecification id="A006_io">
+          <bpmn:dataInput id="A006_in_A005_data"/>
+          <bpmn:inputSet id="A006_inputs">
+            <bpmn:dataInputRefs>A006_in_A005_data</bpmn:dataInputRefs>
+          </bpmn:inputSet>
+          <bpmn:outputSet id="A006_outputs"/>
+        </bpmn:ioSpecification>
+        <bpmn:dataInputAssociation id="A006_in_A005_data_assoc">
+          <bpmn:sourceRef>A005_data</bpmn:sourceRef>
+          <bpmn:targetRef>A006_in_A005_data</bpmn:targetRef>
+        </bpmn:dataInputAssociation>
         <bpmn:dataOutputAssociation id="A006_out">
           <bpmn:targetRef>A006_data</bpmn:targetRef>
         </bpmn:dataOutputAssociation>
@@ -613,6 +657,17 @@
           <ac:activity type="Human" phase="V1" order="7" seq="3" effort="4" weight="4.4" value="NVA-N" capability="Analysis" aiAuthority="Copilot"/>
           <ac:supervision human="45" agent="55" agent0="55"/>
         </bpmn:extensionElements>
+        <bpmn:ioSpecification id="A007_io">
+          <bpmn:dataInput id="A007_in_A006_data"/>
+          <bpmn:inputSet id="A007_inputs">
+            <bpmn:dataInputRefs>A007_in_A006_data</bpmn:dataInputRefs>
+          </bpmn:inputSet>
+          <bpmn:outputSet id="A007_outputs"/>
+        </bpmn:ioSpecification>
+        <bpmn:dataInputAssociation id="A007_in_A006_data_assoc">
+          <bpmn:sourceRef>A006_data</bpmn:sourceRef>
+          <bpmn:targetRef>A007_in_A006_data</bpmn:targetRef>
+        </bpmn:dataInputAssociation>
         <bpmn:dataOutputAssociation id="A007_out">
           <bpmn:targetRef>A007_data</bpmn:targetRef>
         </bpmn:dataOutputAssociation>
@@ -625,6 +680,17 @@
           <ac:activity type="Agent" phase="V1" order="8" seq="4" effort="4" weight="4.4" value="NVA-N" capability="Analysis" aiAuthority="Supervised autonomous"/>
           <ac:supervision human="30" agent="70" agent0="70"/>
         </bpmn:extensionElements>
+        <bpmn:ioSpecification id="A008_io">
+          <bpmn:dataInput id="A008_in_A007_data"/>
+          <bpmn:inputSet id="A008_inputs">
+            <bpmn:dataInputRefs>A008_in_A007_data</bpmn:dataInputRefs>
+          </bpmn:inputSet>
+          <bpmn:outputSet id="A008_outputs"/>
+        </bpmn:ioSpecification>
+        <bpmn:dataInputAssociation id="A008_in_A007_data_assoc">
+          <bpmn:sourceRef>A007_data</bpmn:sourceRef>
+          <bpmn:targetRef>A008_in_A007_data</bpmn:targetRef>
+        </bpmn:dataInputAssociation>
         <bpmn:dataOutputAssociation id="A008_out">
           <bpmn:targetRef>A008_data</bpmn:targetRef>
         </bpmn:dataOutputAssociation>
@@ -640,6 +706,17 @@
           <ac:activity type="Agent" phase="V1" order="9" seq="5" effort="3" weight="3.3000000000000003" value="NVA-N" capability="Analysis" aiAuthority="Supervised autonomous"/>
           <ac:supervision human="20" agent="80" agent0="80"/>
         </bpmn:extensionElements>
+        <bpmn:ioSpecification id="A009_io">
+          <bpmn:dataInput id="A009_in_A008_data"/>
+          <bpmn:inputSet id="A009_inputs">
+            <bpmn:dataInputRefs>A009_in_A008_data</bpmn:dataInputRefs>
+          </bpmn:inputSet>
+          <bpmn:outputSet id="A009_outputs"/>
+        </bpmn:ioSpecification>
+        <bpmn:dataInputAssociation id="A009_in_A008_data_assoc">
+          <bpmn:sourceRef>A008_data</bpmn:sourceRef>
+          <bpmn:targetRef>A009_in_A008_data</bpmn:targetRef>
+        </bpmn:dataInputAssociation>
         <bpmn:dataOutputAssociation id="A009_out">
           <bpmn:targetRef>A009_data</bpmn:targetRef>
         </bpmn:dataOutputAssociation>
@@ -655,6 +732,17 @@
           <ac:activity type="Agent" phase="V1" order="10" seq="6" effort="2" weight="2.2" value="NVA-N" capability="Analysis" aiAuthority="Supervised autonomous"/>
           <ac:supervision human="25" agent="75" agent0="75"/>
         </bpmn:extensionElements>
+        <bpmn:ioSpecification id="A010_io">
+          <bpmn:dataInput id="A010_in_A009_data"/>
+          <bpmn:inputSet id="A010_inputs">
+            <bpmn:dataInputRefs>A010_in_A009_data</bpmn:dataInputRefs>
+          </bpmn:inputSet>
+          <bpmn:outputSet id="A010_outputs"/>
+        </bpmn:ioSpecification>
+        <bpmn:dataInputAssociation id="A010_in_A009_data_assoc">
+          <bpmn:sourceRef>A009_data</bpmn:sourceRef>
+          <bpmn:targetRef>A010_in_A009_data</bpmn:targetRef>
+        </bpmn:dataInputAssociation>
         <bpmn:dataOutputAssociation id="A010_out">
           <bpmn:targetRef>A010_data</bpmn:targetRef>
         </bpmn:dataOutputAssociation>
@@ -1238,6 +1326,17 @@
           <ac:activity type="Human" phase="V2" order="12" seq="2" effort="6" weight="6.6000000000000005" value="NVA-N" capability="Design" aiAuthority="Copilot"/>
           <ac:supervision human="45" agent="55" agent0="55"/>
         </bpmn:extensionElements>
+        <bpmn:ioSpecification id="A012_io">
+          <bpmn:dataInput id="A012_in_A011_data"/>
+          <bpmn:inputSet id="A012_inputs">
+            <bpmn:dataInputRefs>A012_in_A011_data</bpmn:dataInputRefs>
+          </bpmn:inputSet>
+          <bpmn:outputSet id="A012_outputs"/>
+        </bpmn:ioSpecification>
+        <bpmn:dataInputAssociation id="A012_in_A011_data_assoc">
+          <bpmn:sourceRef>A011_data</bpmn:sourceRef>
+          <bpmn:targetRef>A012_in_A011_data</bpmn:targetRef>
+        </bpmn:dataInputAssociation>
         <bpmn:dataOutputAssociation id="A012_out">
           <bpmn:targetRef>A012_data</bpmn:targetRef>
         </bpmn:dataOutputAssociation>
@@ -1250,6 +1349,17 @@
           <ac:activity type="Agent" phase="V2" order="13" seq="3" effort="4" weight="4.4" value="NVA-N" capability="Review" aiAuthority="Supervised autonomous"/>
           <ac:supervision human="25" agent="75" agent0="75"/>
         </bpmn:extensionElements>
+        <bpmn:ioSpecification id="A013_io">
+          <bpmn:dataInput id="A013_in_A012_data"/>
+          <bpmn:inputSet id="A013_inputs">
+            <bpmn:dataInputRefs>A013_in_A012_data</bpmn:dataInputRefs>
+          </bpmn:inputSet>
+          <bpmn:outputSet id="A013_outputs"/>
+        </bpmn:ioSpecification>
+        <bpmn:dataInputAssociation id="A013_in_A012_data_assoc">
+          <bpmn:sourceRef>A012_data</bpmn:sourceRef>
+          <bpmn:targetRef>A013_in_A012_data</bpmn:targetRef>
+        </bpmn:dataInputAssociation>
         <bpmn:dataOutputAssociation id="A013_out">
           <bpmn:targetRef>A013_data</bpmn:targetRef>
         </bpmn:dataOutputAssociation>
@@ -1265,6 +1375,17 @@
           <ac:activity type="Agent" phase="V2" order="14" seq="4" effort="5" weight="5.5" value="NVA-N" capability="Design" aiAuthority="Supervised autonomous"/>
           <ac:supervision human="30" agent="70" agent0="70"/>
         </bpmn:extensionElements>
+        <bpmn:ioSpecification id="A014_io">
+          <bpmn:dataInput id="A014_in_A013_data"/>
+          <bpmn:inputSet id="A014_inputs">
+            <bpmn:dataInputRefs>A014_in_A013_data</bpmn:dataInputRefs>
+          </bpmn:inputSet>
+          <bpmn:outputSet id="A014_outputs"/>
+        </bpmn:ioSpecification>
+        <bpmn:dataInputAssociation id="A014_in_A013_data_assoc">
+          <bpmn:sourceRef>A013_data</bpmn:sourceRef>
+          <bpmn:targetRef>A014_in_A013_data</bpmn:targetRef>
+        </bpmn:dataInputAssociation>
         <bpmn:dataOutputAssociation id="A014_out">
           <bpmn:targetRef>A014_data</bpmn:targetRef>
         </bpmn:dataOutputAssociation>
@@ -1280,6 +1401,17 @@
           <ac:activity type="Manual" phase="V2" order="15" seq="5" effort="3" weight="3.3000000000000003" value="VA" capability="Design" aiAuthority="Assistance"/>
           <ac:supervision human="70" agent="30" agent0="30"/>
         </bpmn:extensionElements>
+        <bpmn:ioSpecification id="A015_io">
+          <bpmn:dataInput id="A015_in_A014_data"/>
+          <bpmn:inputSet id="A015_inputs">
+            <bpmn:dataInputRefs>A015_in_A014_data</bpmn:dataInputRefs>
+          </bpmn:inputSet>
+          <bpmn:outputSet id="A015_outputs"/>
+        </bpmn:ioSpecification>
+        <bpmn:dataInputAssociation id="A015_in_A014_data_assoc">
+          <bpmn:sourceRef>A014_data</bpmn:sourceRef>
+          <bpmn:targetRef>A015_in_A014_data</bpmn:targetRef>
+        </bpmn:dataInputAssociation>
         <bpmn:dataOutputAssociation id="A015_out">
           <bpmn:targetRef>A015_data</bpmn:targetRef>
         </bpmn:dataOutputAssociation>
@@ -1292,6 +1424,17 @@
           <ac:activity type="Human" phase="V2" order="16" seq="6" effort="4" weight="4.4" value="VA" capability="Security" aiAuthority="Copilot"/>
           <ac:supervision human="50" agent="50" agent0="50"/>
         </bpmn:extensionElements>
+        <bpmn:ioSpecification id="A016_io">
+          <bpmn:dataInput id="A016_in_A015_data"/>
+          <bpmn:inputSet id="A016_inputs">
+            <bpmn:dataInputRefs>A016_in_A015_data</bpmn:dataInputRefs>
+          </bpmn:inputSet>
+          <bpmn:outputSet id="A016_outputs"/>
+        </bpmn:ioSpecification>
+        <bpmn:dataInputAssociation id="A016_in_A015_data_assoc">
+          <bpmn:sourceRef>A015_data</bpmn:sourceRef>
+          <bpmn:targetRef>A016_in_A015_data</bpmn:targetRef>
+        </bpmn:dataInputAssociation>
         <bpmn:dataOutputAssociation id="A016_out">
           <bpmn:targetRef>A016_data</bpmn:targetRef>
         </bpmn:dataOutputAssociation>
@@ -1842,6 +1985,17 @@
           <ac:activity type="Human" phase="V3" order="18" seq="2" effort="5" weight="6.5" value="VA" capability="Review" aiAuthority="Copilot"/>
           <ac:supervision human="45" agent="55" agent0="55"/>
         </bpmn:extensionElements>
+        <bpmn:ioSpecification id="A018_io">
+          <bpmn:dataInput id="A018_in_A017_data"/>
+          <bpmn:inputSet id="A018_inputs">
+            <bpmn:dataInputRefs>A018_in_A017_data</bpmn:dataInputRefs>
+          </bpmn:inputSet>
+          <bpmn:outputSet id="A018_outputs"/>
+        </bpmn:ioSpecification>
+        <bpmn:dataInputAssociation id="A018_in_A017_data_assoc">
+          <bpmn:sourceRef>A017_data</bpmn:sourceRef>
+          <bpmn:targetRef>A018_in_A017_data</bpmn:targetRef>
+        </bpmn:dataInputAssociation>
         <bpmn:dataOutputAssociation id="A018_out">
           <bpmn:targetRef>A018_data</bpmn:targetRef>
         </bpmn:dataOutputAssociation>
@@ -1854,6 +2008,17 @@
           <ac:activity type="Agent" phase="V3" order="19" seq="3" effort="3" weight="3.9000000000000004" value="NVA" capability="Documentation" aiAuthority="Autonomous"/>
           <ac:supervision human="10" agent="90" agent0="90"/>
         </bpmn:extensionElements>
+        <bpmn:ioSpecification id="A019_io">
+          <bpmn:dataInput id="A019_in_A018_data"/>
+          <bpmn:inputSet id="A019_inputs">
+            <bpmn:dataInputRefs>A019_in_A018_data</bpmn:dataInputRefs>
+          </bpmn:inputSet>
+          <bpmn:outputSet id="A019_outputs"/>
+        </bpmn:ioSpecification>
+        <bpmn:dataInputAssociation id="A019_in_A018_data_assoc">
+          <bpmn:sourceRef>A018_data</bpmn:sourceRef>
+          <bpmn:targetRef>A019_in_A018_data</bpmn:targetRef>
+        </bpmn:dataInputAssociation>
         <bpmn:dataOutputAssociation id="A019_out">
           <bpmn:targetRef>A019_data</bpmn:targetRef>
         </bpmn:dataOutputAssociation>
@@ -1869,6 +2034,17 @@
           <ac:activity type="Agent" phase="V3" order="20" seq="4" effort="6" weight="7.800000000000001" value="NVA-N" capability="Release" aiAuthority="Supervised autonomous"/>
           <ac:supervision human="30" agent="70" agent0="70"/>
         </bpmn:extensionElements>
+        <bpmn:ioSpecification id="A020_io">
+          <bpmn:dataInput id="A020_in_A019_data"/>
+          <bpmn:inputSet id="A020_inputs">
+            <bpmn:dataInputRefs>A020_in_A019_data</bpmn:dataInputRefs>
+          </bpmn:inputSet>
+          <bpmn:outputSet id="A020_outputs"/>
+        </bpmn:ioSpecification>
+        <bpmn:dataInputAssociation id="A020_in_A019_data_assoc">
+          <bpmn:sourceRef>A019_data</bpmn:sourceRef>
+          <bpmn:targetRef>A020_in_A019_data</bpmn:targetRef>
+        </bpmn:dataInputAssociation>
         <bpmn:dataOutputAssociation id="A020_out">
           <bpmn:targetRef>A020_data</bpmn:targetRef>
         </bpmn:dataOutputAssociation>
@@ -1884,6 +2060,17 @@
           <ac:activity type="Human" phase="V3" order="21" seq="5" effort="4" weight="5.2" value="NVA-N" capability="Release" aiAuthority="Copilot"/>
           <ac:supervision human="40" agent="60" agent0="60"/>
         </bpmn:extensionElements>
+        <bpmn:ioSpecification id="A021_io">
+          <bpmn:dataInput id="A021_in_A020_data"/>
+          <bpmn:inputSet id="A021_inputs">
+            <bpmn:dataInputRefs>A021_in_A020_data</bpmn:dataInputRefs>
+          </bpmn:inputSet>
+          <bpmn:outputSet id="A021_outputs"/>
+        </bpmn:ioSpecification>
+        <bpmn:dataInputAssociation id="A021_in_A020_data_assoc">
+          <bpmn:sourceRef>A020_data</bpmn:sourceRef>
+          <bpmn:targetRef>A021_in_A020_data</bpmn:targetRef>
+        </bpmn:dataInputAssociation>
         <bpmn:dataOutputAssociation id="A021_out">
           <bpmn:targetRef>A021_data</bpmn:targetRef>
         </bpmn:dataOutputAssociation>
@@ -2007,6 +2194,17 @@
           <ac:activity type="Agent" phase="V4" order="23" seq="2" effort="7" weight="8.4" value="NVA-N" capability="Test" aiAuthority="Supervised autonomous"/>
           <ac:supervision human="20" agent="80" agent0="80"/>
         </bpmn:extensionElements>
+        <bpmn:ioSpecification id="A023_io">
+          <bpmn:dataInput id="A023_in_A022_data"/>
+          <bpmn:inputSet id="A023_inputs">
+            <bpmn:dataInputRefs>A023_in_A022_data</bpmn:dataInputRefs>
+          </bpmn:inputSet>
+          <bpmn:outputSet id="A023_outputs"/>
+        </bpmn:ioSpecification>
+        <bpmn:dataInputAssociation id="A023_in_A022_data_assoc">
+          <bpmn:sourceRef>A022_data</bpmn:sourceRef>
+          <bpmn:targetRef>A023_in_A022_data</bpmn:targetRef>
+        </bpmn:dataInputAssociation>
         <bpmn:dataOutputAssociation id="A023_out">
           <bpmn:targetRef>A023_data</bpmn:targetRef>
         </bpmn:dataOutputAssociation>
@@ -2022,6 +2220,17 @@
           <ac:activity type="Agent" phase="V4" order="24" seq="3" effort="8" weight="9.6" value="NVA-N" capability="Test" aiAuthority="Autonomous"/>
           <ac:supervision human="10" agent="90" agent0="90"/>
         </bpmn:extensionElements>
+        <bpmn:ioSpecification id="A024_io">
+          <bpmn:dataInput id="A024_in_A023_data"/>
+          <bpmn:inputSet id="A024_inputs">
+            <bpmn:dataInputRefs>A024_in_A023_data</bpmn:dataInputRefs>
+          </bpmn:inputSet>
+          <bpmn:outputSet id="A024_outputs"/>
+        </bpmn:ioSpecification>
+        <bpmn:dataInputAssociation id="A024_in_A023_data_assoc">
+          <bpmn:sourceRef>A023_data</bpmn:sourceRef>
+          <bpmn:targetRef>A024_in_A023_data</bpmn:targetRef>
+        </bpmn:dataInputAssociation>
         <bpmn:dataOutputAssociation id="A024_out">
           <bpmn:targetRef>A024_data</bpmn:targetRef>
         </bpmn:dataOutputAssociation>
@@ -2037,6 +2246,17 @@
           <ac:activity type="Agent" phase="V4" order="25" seq="4" effort="2" weight="2.4" value="NVA-N" capability="Test" aiAuthority="Autonomous"/>
           <ac:supervision human="5" agent="95" agent0="95"/>
         </bpmn:extensionElements>
+        <bpmn:ioSpecification id="A025_io">
+          <bpmn:dataInput id="A025_in_A024_data"/>
+          <bpmn:inputSet id="A025_inputs">
+            <bpmn:dataInputRefs>A025_in_A024_data</bpmn:dataInputRefs>
+          </bpmn:inputSet>
+          <bpmn:outputSet id="A025_outputs"/>
+        </bpmn:ioSpecification>
+        <bpmn:dataInputAssociation id="A025_in_A024_data_assoc">
+          <bpmn:sourceRef>A024_data</bpmn:sourceRef>
+          <bpmn:targetRef>A025_in_A024_data</bpmn:targetRef>
+        </bpmn:dataInputAssociation>
         <bpmn:dataOutputAssociation id="A025_out">
           <bpmn:targetRef>A025_data</bpmn:targetRef>
         </bpmn:dataOutputAssociation>
@@ -2425,6 +2645,17 @@
           <ac:activity type="Agent" phase="V5" order="27" seq="2" effort="6" weight="7.199999999999999" value="NVA-N" capability="Test" aiAuthority="Supervised autonomous"/>
           <ac:supervision human="25" agent="75" agent0="75"/>
         </bpmn:extensionElements>
+        <bpmn:ioSpecification id="A027_io">
+          <bpmn:dataInput id="A027_in_A026_data"/>
+          <bpmn:inputSet id="A027_inputs">
+            <bpmn:dataInputRefs>A027_in_A026_data</bpmn:dataInputRefs>
+          </bpmn:inputSet>
+          <bpmn:outputSet id="A027_outputs"/>
+        </bpmn:ioSpecification>
+        <bpmn:dataInputAssociation id="A027_in_A026_data_assoc">
+          <bpmn:sourceRef>A026_data</bpmn:sourceRef>
+          <bpmn:targetRef>A027_in_A026_data</bpmn:targetRef>
+        </bpmn:dataInputAssociation>
         <bpmn:dataOutputAssociation id="A027_out">
           <bpmn:targetRef>A027_data</bpmn:targetRef>
         </bpmn:dataOutputAssociation>
@@ -2440,6 +2671,17 @@
           <ac:activity type="Agent" phase="V5" order="28" seq="3" effort="4" weight="4.8" value="NVA-N" capability="Test" aiAuthority="Supervised autonomous"/>
           <ac:supervision human="30" agent="70" agent0="70"/>
         </bpmn:extensionElements>
+        <bpmn:ioSpecification id="A028_io">
+          <bpmn:dataInput id="A028_in_A027_data"/>
+          <bpmn:inputSet id="A028_inputs">
+            <bpmn:dataInputRefs>A028_in_A027_data</bpmn:dataInputRefs>
+          </bpmn:inputSet>
+          <bpmn:outputSet id="A028_outputs"/>
+        </bpmn:ioSpecification>
+        <bpmn:dataInputAssociation id="A028_in_A027_data_assoc">
+          <bpmn:sourceRef>A027_data</bpmn:sourceRef>
+          <bpmn:targetRef>A028_in_A027_data</bpmn:targetRef>
+        </bpmn:dataInputAssociation>
         <bpmn:dataOutputAssociation id="A028_out">
           <bpmn:targetRef>A028_data</bpmn:targetRef>
         </bpmn:dataOutputAssociation>
@@ -2455,6 +2697,17 @@
           <ac:activity type="Agent" phase="V5" order="29" seq="4" effort="6" weight="7.199999999999999" value="NVA-N" capability="Release" aiAuthority="Supervised autonomous"/>
           <ac:supervision human="20" agent="80" agent0="80"/>
         </bpmn:extensionElements>
+        <bpmn:ioSpecification id="A029_io">
+          <bpmn:dataInput id="A029_in_A028_data"/>
+          <bpmn:inputSet id="A029_inputs">
+            <bpmn:dataInputRefs>A029_in_A028_data</bpmn:dataInputRefs>
+          </bpmn:inputSet>
+          <bpmn:outputSet id="A029_outputs"/>
+        </bpmn:ioSpecification>
+        <bpmn:dataInputAssociation id="A029_in_A028_data_assoc">
+          <bpmn:sourceRef>A028_data</bpmn:sourceRef>
+          <bpmn:targetRef>A029_in_A028_data</bpmn:targetRef>
+        </bpmn:dataInputAssociation>
         <bpmn:dataOutputAssociation id="A029_out">
           <bpmn:targetRef>A029_data</bpmn:targetRef>
         </bpmn:dataOutputAssociation>
@@ -2470,6 +2723,17 @@
           <ac:activity type="Agent" phase="V5" order="30" seq="5" effort="3" weight="3.5999999999999996" value="NVA-N" capability="Test" aiAuthority="Autonomous"/>
           <ac:supervision human="10" agent="90" agent0="90"/>
         </bpmn:extensionElements>
+        <bpmn:ioSpecification id="A030_io">
+          <bpmn:dataInput id="A030_in_A029_data"/>
+          <bpmn:inputSet id="A030_inputs">
+            <bpmn:dataInputRefs>A030_in_A029_data</bpmn:dataInputRefs>
+          </bpmn:inputSet>
+          <bpmn:outputSet id="A030_outputs"/>
+        </bpmn:ioSpecification>
+        <bpmn:dataInputAssociation id="A030_in_A029_data_assoc">
+          <bpmn:sourceRef>A029_data</bpmn:sourceRef>
+          <bpmn:targetRef>A030_in_A029_data</bpmn:targetRef>
+        </bpmn:dataInputAssociation>
         <bpmn:dataOutputAssociation id="A030_out">
           <bpmn:targetRef>A030_data</bpmn:targetRef>
         </bpmn:dataOutputAssociation>
@@ -2543,6 +2807,17 @@
           <ac:activity type="Human" phase="V6" order="32" seq="2" effort="5" weight="5.5" value="NVA-N" capability="Test" aiAuthority="Copilot"/>
           <ac:supervision human="40" agent="60" agent0="60"/>
         </bpmn:extensionElements>
+        <bpmn:ioSpecification id="A032_io">
+          <bpmn:dataInput id="A032_in_A031_data"/>
+          <bpmn:inputSet id="A032_inputs">
+            <bpmn:dataInputRefs>A032_in_A031_data</bpmn:dataInputRefs>
+          </bpmn:inputSet>
+          <bpmn:outputSet id="A032_outputs"/>
+        </bpmn:ioSpecification>
+        <bpmn:dataInputAssociation id="A032_in_A031_data_assoc">
+          <bpmn:sourceRef>A031_data</bpmn:sourceRef>
+          <bpmn:targetRef>A032_in_A031_data</bpmn:targetRef>
+        </bpmn:dataInputAssociation>
         <bpmn:dataOutputAssociation id="A032_out">
           <bpmn:targetRef>A032_data</bpmn:targetRef>
         </bpmn:dataOutputAssociation>
@@ -2555,6 +2830,17 @@
           <ac:activity type="Agent" phase="V6" order="33" seq="3" effort="6" weight="6.6000000000000005" value="NVA-N" capability="Test" aiAuthority="Supervised autonomous"/>
           <ac:supervision human="15" agent="85" agent0="85"/>
         </bpmn:extensionElements>
+        <bpmn:ioSpecification id="A033_io">
+          <bpmn:dataInput id="A033_in_A032_data"/>
+          <bpmn:inputSet id="A033_inputs">
+            <bpmn:dataInputRefs>A033_in_A032_data</bpmn:dataInputRefs>
+          </bpmn:inputSet>
+          <bpmn:outputSet id="A033_outputs"/>
+        </bpmn:ioSpecification>
+        <bpmn:dataInputAssociation id="A033_in_A032_data_assoc">
+          <bpmn:sourceRef>A032_data</bpmn:sourceRef>
+          <bpmn:targetRef>A033_in_A032_data</bpmn:targetRef>
+        </bpmn:dataInputAssociation>
         <bpmn:dataOutputAssociation id="A033_out">
           <bpmn:targetRef>A033_data</bpmn:targetRef>
         </bpmn:dataOutputAssociation>
@@ -2570,6 +2856,17 @@
           <ac:activity type="Agent" phase="V6" order="34" seq="4" effort="3" weight="3.3000000000000003" value="NVA-N" capability="Test" aiAuthority="Supervised autonomous"/>
           <ac:supervision human="30" agent="70" agent0="70"/>
         </bpmn:extensionElements>
+        <bpmn:ioSpecification id="A034_io">
+          <bpmn:dataInput id="A034_in_A033_data"/>
+          <bpmn:inputSet id="A034_inputs">
+            <bpmn:dataInputRefs>A034_in_A033_data</bpmn:dataInputRefs>
+          </bpmn:inputSet>
+          <bpmn:outputSet id="A034_outputs"/>
+        </bpmn:ioSpecification>
+        <bpmn:dataInputAssociation id="A034_in_A033_data_assoc">
+          <bpmn:sourceRef>A033_data</bpmn:sourceRef>
+          <bpmn:targetRef>A034_in_A033_data</bpmn:targetRef>
+        </bpmn:dataInputAssociation>
         <bpmn:dataOutputAssociation id="A034_out">
           <bpmn:targetRef>A034_data</bpmn:targetRef>
         </bpmn:dataOutputAssociation>
@@ -2585,6 +2882,17 @@
           <ac:activity type="Manual" phase="V6" order="35" seq="5" effort="2" weight="2.2" value="VA" capability="Test" aiAuthority="Assistance"/>
           <ac:supervision human="85" agent="15" agent0="15"/>
         </bpmn:extensionElements>
+        <bpmn:ioSpecification id="A035_io">
+          <bpmn:dataInput id="A035_in_A034_data"/>
+          <bpmn:inputSet id="A035_inputs">
+            <bpmn:dataInputRefs>A035_in_A034_data</bpmn:dataInputRefs>
+          </bpmn:inputSet>
+          <bpmn:outputSet id="A035_outputs"/>
+        </bpmn:ioSpecification>
+        <bpmn:dataInputAssociation id="A035_in_A034_data_assoc">
+          <bpmn:sourceRef>A034_data</bpmn:sourceRef>
+          <bpmn:targetRef>A035_in_A034_data</bpmn:targetRef>
+        </bpmn:dataInputAssociation>
         <bpmn:dataOutputAssociation id="A035_out">
           <bpmn:targetRef>A035_data</bpmn:targetRef>
         </bpmn:dataOutputAssociation>
@@ -2853,6 +3161,17 @@
           <ac:activity type="Human" phase="V7" order="37" seq="2" effort="4" weight="4" value="NVA-N" capability="Review" aiAuthority="Copilot"/>
           <ac:supervision human="40" agent="60" agent0="60"/>
         </bpmn:extensionElements>
+        <bpmn:ioSpecification id="A037_io">
+          <bpmn:dataInput id="A037_in_A036_data"/>
+          <bpmn:inputSet id="A037_inputs">
+            <bpmn:dataInputRefs>A037_in_A036_data</bpmn:dataInputRefs>
+          </bpmn:inputSet>
+          <bpmn:outputSet id="A037_outputs"/>
+        </bpmn:ioSpecification>
+        <bpmn:dataInputAssociation id="A037_in_A036_data_assoc">
+          <bpmn:sourceRef>A036_data</bpmn:sourceRef>
+          <bpmn:targetRef>A037_in_A036_data</bpmn:targetRef>
+        </bpmn:dataInputAssociation>
         <bpmn:dataOutputAssociation id="A037_out">
           <bpmn:targetRef>A037_data</bpmn:targetRef>
         </bpmn:dataOutputAssociation>
@@ -2865,6 +3184,17 @@
           <ac:activity type="Agent" phase="V7" order="38" seq="3" effort="3" weight="3" value="NVA-N" capability="Release" aiAuthority="Supervised autonomous"/>
           <ac:supervision human="30" agent="70" agent0="70"/>
         </bpmn:extensionElements>
+        <bpmn:ioSpecification id="A038_io">
+          <bpmn:dataInput id="A038_in_A037_data"/>
+          <bpmn:inputSet id="A038_inputs">
+            <bpmn:dataInputRefs>A038_in_A037_data</bpmn:dataInputRefs>
+          </bpmn:inputSet>
+          <bpmn:outputSet id="A038_outputs"/>
+        </bpmn:ioSpecification>
+        <bpmn:dataInputAssociation id="A038_in_A037_data_assoc">
+          <bpmn:sourceRef>A037_data</bpmn:sourceRef>
+          <bpmn:targetRef>A038_in_A037_data</bpmn:targetRef>
+        </bpmn:dataInputAssociation>
         <bpmn:dataOutputAssociation id="A038_out">
           <bpmn:targetRef>A038_data</bpmn:targetRef>
         </bpmn:dataOutputAssociation>
@@ -2880,6 +3210,17 @@
           <ac:activity type="Agent" phase="V7" order="39" seq="4" effort="2" weight="2" value="NVA-N" capability="Analysis" aiAuthority="Supervised autonomous"/>
           <ac:supervision human="30" agent="70" agent0="70"/>
         </bpmn:extensionElements>
+        <bpmn:ioSpecification id="A039_io">
+          <bpmn:dataInput id="A039_in_A038_data"/>
+          <bpmn:inputSet id="A039_inputs">
+            <bpmn:dataInputRefs>A039_in_A038_data</bpmn:dataInputRefs>
+          </bpmn:inputSet>
+          <bpmn:outputSet id="A039_outputs"/>
+        </bpmn:ioSpecification>
+        <bpmn:dataInputAssociation id="A039_in_A038_data_assoc">
+          <bpmn:sourceRef>A038_data</bpmn:sourceRef>
+          <bpmn:targetRef>A039_in_A038_data</bpmn:targetRef>
+        </bpmn:dataInputAssociation>
         <bpmn:dataOutputAssociation id="A039_out">
           <bpmn:targetRef>A039_data</bpmn:targetRef>
         </bpmn:dataOutputAssociation>
@@ -2895,6 +3236,17 @@
           <ac:activity type="Manual" phase="V7" order="40" seq="5" effort="2" weight="2" value="VA" capability="Review" aiAuthority="Assistance"/>
           <ac:supervision human="90" agent="10" agent0="10"/>
         </bpmn:extensionElements>
+        <bpmn:ioSpecification id="A040_io">
+          <bpmn:dataInput id="A040_in_A039_data"/>
+          <bpmn:inputSet id="A040_inputs">
+            <bpmn:dataInputRefs>A040_in_A039_data</bpmn:dataInputRefs>
+          </bpmn:inputSet>
+          <bpmn:outputSet id="A040_outputs"/>
+        </bpmn:ioSpecification>
+        <bpmn:dataInputAssociation id="A040_in_A039_data_assoc">
+          <bpmn:sourceRef>A039_data</bpmn:sourceRef>
+          <bpmn:targetRef>A040_in_A039_data</bpmn:targetRef>
+        </bpmn:dataInputAssociation>
         <bpmn:dataOutputAssociation id="A040_out">
           <bpmn:targetRef>A040_data</bpmn:targetRef>
         </bpmn:dataOutputAssociation>
@@ -3427,6 +3779,17 @@
           <ac:activity type="Agent" phase="L8" order="42" seq="2" effort="3" weight="3" value="NVA-N" capability="Release" aiAuthority="Supervised autonomous"/>
           <ac:supervision human="35" agent="65" agent0="65"/>
         </bpmn:extensionElements>
+        <bpmn:ioSpecification id="A042_io">
+          <bpmn:dataInput id="A042_in_A041_data"/>
+          <bpmn:inputSet id="A042_inputs">
+            <bpmn:dataInputRefs>A042_in_A041_data</bpmn:dataInputRefs>
+          </bpmn:inputSet>
+          <bpmn:outputSet id="A042_outputs"/>
+        </bpmn:ioSpecification>
+        <bpmn:dataInputAssociation id="A042_in_A041_data_assoc">
+          <bpmn:sourceRef>A041_data</bpmn:sourceRef>
+          <bpmn:targetRef>A042_in_A041_data</bpmn:targetRef>
+        </bpmn:dataInputAssociation>
         <bpmn:dataOutputAssociation id="A042_out">
           <bpmn:targetRef>A042_data</bpmn:targetRef>
         </bpmn:dataOutputAssociation>
@@ -3442,6 +3805,17 @@
           <ac:activity type="Agent" phase="L8" order="43" seq="3" effort="4" weight="4" value="NVA-N" capability="Documentation" aiAuthority="Supervised autonomous"/>
           <ac:supervision human="25" agent="75" agent0="75"/>
         </bpmn:extensionElements>
+        <bpmn:ioSpecification id="A043_io">
+          <bpmn:dataInput id="A043_in_A042_data"/>
+          <bpmn:inputSet id="A043_inputs">
+            <bpmn:dataInputRefs>A043_in_A042_data</bpmn:dataInputRefs>
+          </bpmn:inputSet>
+          <bpmn:outputSet id="A043_outputs"/>
+        </bpmn:ioSpecification>
+        <bpmn:dataInputAssociation id="A043_in_A042_data_assoc">
+          <bpmn:sourceRef>A042_data</bpmn:sourceRef>
+          <bpmn:targetRef>A043_in_A042_data</bpmn:targetRef>
+        </bpmn:dataInputAssociation>
         <bpmn:dataOutputAssociation id="A043_out">
           <bpmn:targetRef>A043_data</bpmn:targetRef>
         </bpmn:dataOutputAssociation>
@@ -3457,6 +3831,17 @@
           <ac:activity type="Human" phase="L8" order="44" seq="4" effort="3" weight="3" value="NVA-N" capability="Release" aiAuthority="Copilot"/>
           <ac:supervision human="45" agent="55" agent0="55"/>
         </bpmn:extensionElements>
+        <bpmn:ioSpecification id="A044_io">
+          <bpmn:dataInput id="A044_in_A043_data"/>
+          <bpmn:inputSet id="A044_inputs">
+            <bpmn:dataInputRefs>A044_in_A043_data</bpmn:dataInputRefs>
+          </bpmn:inputSet>
+          <bpmn:outputSet id="A044_outputs"/>
+        </bpmn:ioSpecification>
+        <bpmn:dataInputAssociation id="A044_in_A043_data_assoc">
+          <bpmn:sourceRef>A043_data</bpmn:sourceRef>
+          <bpmn:targetRef>A044_in_A043_data</bpmn:targetRef>
+        </bpmn:dataInputAssociation>
         <bpmn:dataOutputAssociation id="A044_out">
           <bpmn:targetRef>A044_data</bpmn:targetRef>
         </bpmn:dataOutputAssociation>
@@ -3523,6 +3908,17 @@
           <ac:activity type="Agent" phase="L9" order="46" seq="2" effort="7" weight="4.8999999999999995" value="NVA-N" capability="Coding" aiAuthority="Supervised autonomous"/>
           <ac:supervision human="30" agent="70" agent0="70"/>
         </bpmn:extensionElements>
+        <bpmn:ioSpecification id="A046_io">
+          <bpmn:dataInput id="A046_in_A045_data"/>
+          <bpmn:inputSet id="A046_inputs">
+            <bpmn:dataInputRefs>A046_in_A045_data</bpmn:dataInputRefs>
+          </bpmn:inputSet>
+          <bpmn:outputSet id="A046_outputs"/>
+        </bpmn:ioSpecification>
+        <bpmn:dataInputAssociation id="A046_in_A045_data_assoc">
+          <bpmn:sourceRef>A045_data</bpmn:sourceRef>
+          <bpmn:targetRef>A046_in_A045_data</bpmn:targetRef>
+        </bpmn:dataInputAssociation>
         <bpmn:dataOutputAssociation id="A046_out">
           <bpmn:targetRef>A046_data</bpmn:targetRef>
         </bpmn:dataOutputAssociation>
@@ -3538,6 +3934,17 @@
           <ac:activity type="Agent" phase="L9" order="47" seq="3" effort="3" weight="2.0999999999999996" value="NVA" capability="Documentation" aiAuthority="Supervised autonomous"/>
           <ac:supervision human="30" agent="70" agent0="70"/>
         </bpmn:extensionElements>
+        <bpmn:ioSpecification id="A047_io">
+          <bpmn:dataInput id="A047_in_A046_data"/>
+          <bpmn:inputSet id="A047_inputs">
+            <bpmn:dataInputRefs>A047_in_A046_data</bpmn:dataInputRefs>
+          </bpmn:inputSet>
+          <bpmn:outputSet id="A047_outputs"/>
+        </bpmn:ioSpecification>
+        <bpmn:dataInputAssociation id="A047_in_A046_data_assoc">
+          <bpmn:sourceRef>A046_data</bpmn:sourceRef>
+          <bpmn:targetRef>A047_in_A046_data</bpmn:targetRef>
+        </bpmn:dataInputAssociation>
         <bpmn:dataOutputAssociation id="A047_out">
           <bpmn:targetRef>A047_data</bpmn:targetRef>
         </bpmn:dataOutputAssociation>
@@ -3553,6 +3960,17 @@
           <ac:activity type="Agent" phase="L9" order="48" seq="4" effort="3" weight="2.0999999999999996" value="NVA" capability="Release" aiAuthority="Supervised autonomous"/>
           <ac:supervision human="20" agent="80" agent0="80"/>
         </bpmn:extensionElements>
+        <bpmn:ioSpecification id="A048_io">
+          <bpmn:dataInput id="A048_in_A047_data"/>
+          <bpmn:inputSet id="A048_inputs">
+            <bpmn:dataInputRefs>A048_in_A047_data</bpmn:dataInputRefs>
+          </bpmn:inputSet>
+          <bpmn:outputSet id="A048_outputs"/>
+        </bpmn:ioSpecification>
+        <bpmn:dataInputAssociation id="A048_in_A047_data_assoc">
+          <bpmn:sourceRef>A047_data</bpmn:sourceRef>
+          <bpmn:targetRef>A048_in_A047_data</bpmn:targetRef>
+        </bpmn:dataInputAssociation>
         <bpmn:dataOutputAssociation id="A048_out">
           <bpmn:targetRef>A048_data</bpmn:targetRef>
         </bpmn:dataOutputAssociation>
@@ -3568,6 +3986,17 @@
           <ac:activity type="Human" phase="L9" order="49" seq="5" effort="6" weight="4.199999999999999" value="VA+NVA" capability="Coding" aiAuthority="Copilot"/>
           <ac:supervision human="40" agent="60" agent0="60"/>
         </bpmn:extensionElements>
+        <bpmn:ioSpecification id="A049_io">
+          <bpmn:dataInput id="A049_in_A048_data"/>
+          <bpmn:inputSet id="A049_inputs">
+            <bpmn:dataInputRefs>A049_in_A048_data</bpmn:dataInputRefs>
+          </bpmn:inputSet>
+          <bpmn:outputSet id="A049_outputs"/>
+        </bpmn:ioSpecification>
+        <bpmn:dataInputAssociation id="A049_in_A048_data_assoc">
+          <bpmn:sourceRef>A048_data</bpmn:sourceRef>
+          <bpmn:targetRef>A049_in_A048_data</bpmn:targetRef>
+        </bpmn:dataInputAssociation>
         <bpmn:dataOutputAssociation id="A049_out">
           <bpmn:targetRef>A049_data</bpmn:targetRef>
         </bpmn:dataOutputAssociation>
@@ -3946,6 +4375,17 @@
           <ac:activity type="Human" phase="L10" order="51" seq="2" effort="4" weight="0.8" value="NVA-N" capability="Design" aiAuthority="Copilot"/>
           <ac:supervision human="45" agent="55" agent0="55"/>
         </bpmn:extensionElements>
+        <bpmn:ioSpecification id="A051_io">
+          <bpmn:dataInput id="A051_in_A050_data"/>
+          <bpmn:inputSet id="A051_inputs">
+            <bpmn:dataInputRefs>A051_in_A050_data</bpmn:dataInputRefs>
+          </bpmn:inputSet>
+          <bpmn:outputSet id="A051_outputs"/>
+        </bpmn:ioSpecification>
+        <bpmn:dataInputAssociation id="A051_in_A050_data_assoc">
+          <bpmn:sourceRef>A050_data</bpmn:sourceRef>
+          <bpmn:targetRef>A051_in_A050_data</bpmn:targetRef>
+        </bpmn:dataInputAssociation>
         <bpmn:dataOutputAssociation id="A051_out">
           <bpmn:targetRef>A051_data</bpmn:targetRef>
         </bpmn:dataOutputAssociation>
@@ -3958,6 +4398,17 @@
           <ac:activity type="Agent" phase="L10" order="52" seq="3" effort="2" weight="0.4" value="NVA-N" capability="Release" aiAuthority="Supervised autonomous"/>
           <ac:supervision human="30" agent="70" agent0="70"/>
         </bpmn:extensionElements>
+        <bpmn:ioSpecification id="A052_io">
+          <bpmn:dataInput id="A052_in_A051_data"/>
+          <bpmn:inputSet id="A052_inputs">
+            <bpmn:dataInputRefs>A052_in_A051_data</bpmn:dataInputRefs>
+          </bpmn:inputSet>
+          <bpmn:outputSet id="A052_outputs"/>
+        </bpmn:ioSpecification>
+        <bpmn:dataInputAssociation id="A052_in_A051_data_assoc">
+          <bpmn:sourceRef>A051_data</bpmn:sourceRef>
+          <bpmn:targetRef>A052_in_A051_data</bpmn:targetRef>
+        </bpmn:dataInputAssociation>
         <bpmn:dataOutputAssociation id="A052_out">
           <bpmn:targetRef>A052_data</bpmn:targetRef>
         </bpmn:dataOutputAssociation>
@@ -3973,6 +4424,17 @@
           <ac:activity type="Manual" phase="L10" order="53" seq="4" effort="2" weight="0.4" value="NVA-N" capability="Review" aiAuthority="Assistance"/>
           <ac:supervision human="80" agent="20" agent0="20"/>
         </bpmn:extensionElements>
+        <bpmn:ioSpecification id="A053_io">
+          <bpmn:dataInput id="A053_in_A052_data"/>
+          <bpmn:inputSet id="A053_inputs">
+            <bpmn:dataInputRefs>A053_in_A052_data</bpmn:dataInputRefs>
+          </bpmn:inputSet>
+          <bpmn:outputSet id="A053_outputs"/>
+        </bpmn:ioSpecification>
+        <bpmn:dataInputAssociation id="A053_in_A052_data_assoc">
+          <bpmn:sourceRef>A052_data</bpmn:sourceRef>
+          <bpmn:targetRef>A053_in_A052_data</bpmn:targetRef>
+        </bpmn:dataInputAssociation>
         <bpmn:dataOutputAssociation id="A053_out">
           <bpmn:targetRef>A053_data</bpmn:targetRef>
         </bpmn:dataOutputAssociation>

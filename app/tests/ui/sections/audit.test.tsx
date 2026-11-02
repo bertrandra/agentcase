@@ -1,7 +1,7 @@
 // @vitest-environment jsdom
 import { act, cleanup, fireEvent, render, screen } from '@testing-library/react';
 import { afterEach, describe, expect, it } from 'vitest';
-import { editAudit } from '@/controllers/audit';
+import { editAudit, setHeader } from '@/controllers/audit';
 import { readAudit } from '@/domain/audit';
 import { readProcess } from '@/domain/process';
 import Audit from '@/ui/sections/frame/audit';
@@ -20,6 +20,7 @@ describe('🔎 Audit', () => {
     const s = freshStore(), { container } = render(<Audit />);
     commit('Client', 'Acme');
     expect(readAudit(bpmn(s)).header).toMatchObject({ code: 'AUDIT-1', client: 'Acme', status: 'planned' });
+    fireEvent.click(screen.getByRole('tab', { name: 'Activities' }));
     fireEvent.click(screen.getByRole('button', { name: /^A017 · / }));
     commit('Rework rate', '20');
     expect(readAudit(bpmn(s)).elements.get('A017')!.observations[0]).toMatchObject({ name: 'reworkRate', value: '20' });
@@ -57,4 +58,22 @@ describe('🔎 Audit', () => {
     render(<BpmnExportPanel onClose={() => undefined} />);
     expect((screen.getByLabelText(/Include audit data/) as HTMLInputElement).checked).toBe(false);
   });
+  it('audit activities (owner\'s request 2026-11-02): roles × activities, an auditor picks theirs and sees the context; progression traced; axe clean',
+    async () => {
+      const s = freshStore(), { container } = render(<Audit />), v = readProcess(bpmn(s)), role = v.actors[0]!, acts = v.activities.slice(0, 2);
+      act(() => { setHeader({ auditors: [{ name: 'Ann' }, { name: 'Bob' }] }); });
+      act(() => {
+        setHeader({ interviews: [{ code: 'INT-1', role: role.name, date: '2026-11-03', roles: [role.id], activities: acts.map((a) => a.id), auditor: 'Ann' },
+          { code: 'INT-2', role: 'Ops', date: '2026-11-04', auditor: 'Bob' }] });
+      });
+      expect(readAudit(bpmn(s)).header!.interviews[0]).toMatchObject({ roles: [role.id], activities: acts.map((a) => a.id), auditor: 'Ann' });
+      fireEvent.change(screen.getByLabelText('I am (auditor)'), { target: { value: 'Ann' } });
+      expect(screen.queryByLabelText('Select INT-2')).toBeNull();
+      fireEvent.click(screen.getByLabelText('Select INT-1'));
+      const ctx = screen.getByRole('region', { name: 'Interview context' });
+      expect(ctx.textContent).toContain(role.name);
+      for (const a of acts) expect(ctx.textContent).toContain(a.id);
+      expect(screen.getByRole('row', { name: /INT-1/ }).textContent).toContain(`0 / ${acts.length}`);
+      expect(await axeViolations(container)).toEqual([]);
+    });
 });

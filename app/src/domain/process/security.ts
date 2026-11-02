@@ -11,8 +11,9 @@ export type SecurityCode = (typeof RULES.codes)[number];
 export interface Finding { code: string; message: string }
 export interface SecurityReport { errors: Finding[]; warnings: Finding[] }
 
-export interface Limits { readonly bytes: number; readonly depth: number; readonly elements: number }
-/** The F-B10 limits: 5 MB, depth 64, 100,000 elements (raised from 20,000 in B2: a 2,000-activity file has about 25,300). */
+/** `null`: no limit. */
+export interface Limits { readonly bytes: number | null; readonly depth: number; readonly elements: number | null }
+/** The F-B10 limits: depth 64; no limit on the size or the number of elements (owner's decision 2026-11-02; were 5 MB and 100,000). */
 export const LIMITS: Limits = Object.freeze({ ...RULES.limits });
 export const ID_PATTERN = new RegExp(RULES.idPattern);
 export const RESERVED_IDS: ReadonlySet<string> = new Set(RULES.reservedIds);
@@ -38,7 +39,7 @@ export const utf8Bytes = (text: string): number => new TextEncoder().encode(text
 
 /** The checks that refuse a file before parsing: size, DTD, entities, processing instructions. */
 function refusals(text: string, bytes: number, err: (code: SecurityCode, message: string) => void): string {
-  if (bytes > LIMITS.bytes) err('too-large', `${bytes} bytes > ${LIMITS.bytes}`);
+  if (LIMITS.bytes !== null && bytes > LIMITS.bytes) err('too-large', `${bytes} bytes > ${LIMITS.bytes}`);
   // on the text without comments and CDATA sections, where these constructs are inert (a code sample in documentation is not refused)
   const xml = stripped(text);
   if (/<!DOCTYPE/i.test(xml)) err('doctype', 'a <!DOCTYPE declaration (DTD, entities, XXE) is refused');
@@ -76,7 +77,7 @@ export function securityCheck(text: string, bytes: number = utf8Bytes(text)): Se
     if (t.selfClose) depth--;
   }
   if (maxDepth > LIMITS.depth) err('too-deep', `depth ${maxDepth} > ${LIMITS.depth}`);
-  if (count > LIMITS.elements) err('too-many-elements', `${count} elements > ${LIMITS.elements}`);
+  if (LIMITS.elements !== null && count > LIMITS.elements) err('too-many-elements', `${count} elements > ${LIMITS.elements}`);
   if (markupIn.size) warnings.push({ code: 'markup-in-text', message: `text that looks like markup in ${[...markupIn].slice(0, 5).join(', ')}` });
   return { errors, warnings };
 }

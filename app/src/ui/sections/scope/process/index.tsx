@@ -1,4 +1,5 @@
 import { useId, useMemo } from 'react';
+import { FeedsPanel } from './FeedsPanel';
 import { activityAudits, auditProgressOf } from '@/domain/audit';
 import { decisionLabels } from '@/domain/dmn';
 import { drawingOf, readProcess, type Drawing, type DrawShape, type XDocument } from '@/domain/process';
@@ -91,6 +92,7 @@ export default function ProcessSection() {
           <ActorPanel doc={doc} />
           <DecisionsPanel doc={doc} />
           <ExtendedProfile doc={doc} />
+          <FeedsPanel />
           <ProgrammePart />
         </>
       } />

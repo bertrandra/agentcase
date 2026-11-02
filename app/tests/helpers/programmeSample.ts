@@ -1,6 +1,8 @@
 import { makeCtx } from '@/domain';
 import { resolveProduct } from '@/domain/portfolio';
 import { serialize, withProgrammeValues } from '@/domain/process';
+import { doc, el, NS } from '@/domain/process/xml';
+import { portfolioProcess } from '@/domain/portfolio/portfolioProcess';
 import { programmeProcess } from '@/domain/programme';
 import { programmeDocument } from '@/domain/programme/bpmn';
 import { parseBpmn } from '@/store/persistence/bpmn/read';
@@ -31,4 +33,16 @@ export function programmeWbsSampleText(): string {
 export function storedValuesSampleText(minimal: string): string {
   return serialize(withProgrammeValues(parseBpmn(minimal).doc!, { pilotFte: '3', optHypercare: 'on', costProfile_tooling: 'one-off',
     activityDesc_pilot: 'Our pilot pod proves the factory.', 'wbsCode-pilot': '1.2.1.9' }));
+}
+
+/**
+ * The portfolio-plan sample (`fixtures/bpmn/programme/portfolio-plan.bpmn`, SPEC_FIXES FX-D14, schema v6): the portfolio process a saved file
+ * holds, for the three-product portfolio with a capacity of 2, a dependency between its waves and a knowledge subset with domains.
+ */
+export function portfolioPlanSampleText(): string {
+  const pf0 = openPortfolioFixture(), w = pf0.waves;
+  const pf = { ...pf0, maxConcurrentSetups: 2,
+    waves: w.map((x, i) => (i === 1 && w[0] ? { ...x, note: 'after the first wave', dependsOn: { waveId: w[0].id, milestone: 'setupEnd' as const, lagMonths: 1 } } : x)) };
+  return serialize(doc(el('bpmn:definitions', { 'xmlns:bpmn': NS.bpmn, 'xmlns:ac': NS.ac, id: 'PortfolioPlanSample',
+    targetNamespace: 'https://agentcase.app/portfolio', exporter: 'AgentCase' }, [portfolioProcess(pf)])));
 }

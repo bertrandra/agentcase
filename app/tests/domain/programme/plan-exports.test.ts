@@ -82,6 +82,14 @@ describe('MS Project XML (MSPDI) export', () => {
     expect(x).toContain('<PredecessorLink>');
     expect((x.match(/<Assignment>/g) ?? []).length).toBeGreaterThan(5);
   });
+  it('the MS Project samples (fixtures/msproject, read by MPXJ in CI: FX-32) are today\'s exports of the golden case, single case and portfolio', () => {
+    const s = allOn(loadCase('golden')), files = { 'golden-product.xml': views(s), 'golden-portfolio.xml': views(s, { kind: 'portfolio' }, identical(s, 2)) };
+    for (const [f, v] of Object.entries(files)) {
+      const text = mspdiXml(v.plan, v.wbs, v.dictionary, 'Golden'), path = join('fixtures', 'msproject', f);
+      if (process.env.UPDATE_MSPDI) writeFileSync(path, text);
+      expect(readFileSync(path, 'utf8'), `${f} (UPDATE_MSPDI=1 npx vitest run tests/domain/programme/plan-exports.test.ts rewrites it)`).toBe(text);
+    }
+  });
   it.skipIf(!schemaTestsRun())('validates against mspdi_pj12.xsd (xmllint), single case and portfolio', () => {
     const s = allOn(loadCase('golden')), dir = mkdtempSync(join(tmpdir(), 'ac-mspdi-'));
     try {

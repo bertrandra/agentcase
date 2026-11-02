@@ -115,7 +115,7 @@
    ["li",["strong","No raw HTML"]," — lint ban on ",["code","dangerouslySetInnerHTML"],"; ",["code","ui/widgets/Rich.tsx"]," (which renders this page) accepts only a fixed tag list and validated colours and builds React elements."],
    ["li",["strong","Hostile files"]," — the sanitiser drops ",["code","__proto__"],", constructor and prototype keys; the legacy restore script is parsed as JSON, never executed; unknown shapes are rejected; portfolio ids must match a safe pattern and shapes are validated."],
    ["li",["strong","Embedded case"]," — angle brackets and the JS line separators are escaped, so a customer name containing a closing script tag cannot break out."],
-   ["li",["strong","Workbook import limits"]," — ",["code","store/persistence/excel/params/safe.ts"],": 8 MB file, 64 MB unzipped, 400 entries, compression ratio 200, 20,000 rows, 64 columns, 5,000 characters of text; a failed import leaves the case untouched."],
+   ["li",["strong","Workbook import limits"]," — ",["code","store/persistence/excel/params/safe.ts"],": no limit on the file size, the unzipped size or the rows (owner's decision 2026-11-02); 400 entries, compression ratio 200, 64 columns, 5,000 characters of text; a failed import leaves the case untouched."],
    ["li",["strong","Formula-injection guard"]," — user text written to a workbook is neutralised so it cannot start a formula."],
    ["li",["strong","No network"]," — the build makes no runtime fetch; libraries and fonts are inlined in one offline HTML file."]]],
 

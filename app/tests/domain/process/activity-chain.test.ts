@@ -1,5 +1,6 @@
 import { describe, expect, it } from 'vitest';
-import { moveActivity, readProcess, removeActivity, updateActivity, type XDocument } from '@/domain/process';
+import { moveActivity, readProcess, removeActivity, serialize, updateActivity, type XDocument } from '@/domain/process';
+import { readData } from '@/domain/process/profile';
 import { bridgesOver } from '@/domain/process/bridge';
 import { linkPoints } from '@/domain/process/buildDi';
 import { partialOf } from '@/domain/process/partial';
@@ -81,6 +82,23 @@ describe('activity links inside each phase (FX-D9)', () => {
   });
 });
 
+describe('data inputs along the chain (FX-D9)', () => {
+  const inputsOf = (d: XDocument, id: string): string[] => readData(d.root).links.filter((l) => l.dir === 'in' && l.activity === id).map((l) => l.data);
+  it('each linked SDLC activity reads the deliverable of the one before it', () => {
+    const d = base(), { phase, chain } = longPhase(d), v = readProcess(d);
+    const delivers = new Set(v.activities.filter((a) => a.deliverable).map((a) => a.id));
+    for (const f of links(d, phase)) if (delivers.has(f.source)) expect(inputsOf(d, f.target), f.id).toContain(`${f.source}_data`);
+    expect(chain.length).toBeGreaterThan(2);
+  });
+  it('removing an activity drops the inputs its deliverable fed; the in-scope export keeps no input from an activity left out', () => {
+    const d = base(), { chain } = longPhase(d), [, b, c] = chain as [string, string, string];
+    expect(inputsOf(removeActivity(d, b), c)).not.toContain(`${b}_data`);
+    const p = doc(partialOf(updateActivity(d, b, { inScope: false }).root), null);
+    expect(inputsOf(p, c)).not.toContain(`${b}_data`);
+    expect(serialize(p)).not.toContain(`>${b}_data<`);
+  });
+});
+
 describe('process.linkActivities (FX-D9)', () => {
   it('an added activity joins the end of its phase chain; a linked document is returned as is', async () => {
     const { addActivity, linkActivities } = await import('@/domain/process');
@@ -91,5 +109,16 @@ describe('process.linkActivities (FX-D9)', () => {
     const l = linkActivities(a);
     expect(chainOf(l, 'V2')).toEqual([...chain, CUSTOM.id]);
     expect(linkActivities(l)).toBe(l);
+  });
+});
+
+describe('the diagram\'s "Hide out-of-scope activities": the links follow (owner\'s request 2026-11-02)', () => {
+  it('no edge touches a hidden activity; its neighbours are linked by a bridged edge', async () => {
+    const { drawingOf, hideActivities } = await import('@/domain/process');
+    const d = base(), { chain } = longPhase(d), [a, b, c] = chain as [string, string, string], h = hideActivities(drawingOf(d), new Set([b]));
+    expect(h.shapes.some((s) => s.id === b)).toBe(false);
+    expect(h.edges.filter((e) => e.source === b || e.target === b)).toEqual([]);
+    expect(h.edges.find((e) => e.bridged && e.source === a && e.target === c)?.points.length).toBeGreaterThan(1);
+    expect(hideActivities(drawingOf(d), new Set())).toBe(drawingOf(d));
   });
 });
