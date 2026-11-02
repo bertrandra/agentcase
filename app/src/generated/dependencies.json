@@ -1,6 +1,6 @@
 {
  "schema": 1,
- "counts": {"files":1390,"tagged":740,"tests":463},
+ "counts": {"files":1391,"tagged":741,"tests":463},
  "zones": [
   {"id":"rate-card-team","modules":10,"tmed":196,"tmax":392},
   {"id":"scope-automation","modules":25,"tmed":82,"tmax":399},
@@ -19,7 +19,7 @@
   {"id":"portfolio-consolidation","modules":28,"tmed":255,"tmax":369},
   {"id":"aggregate-views","modules":47,"tmed":163,"tmax":167},
   {"id":"exports","modules":145,"tmed":96,"tmax":366},
-  {"id":"workspace-config","modules":63,"tmed":78,"tmax":212},
+  {"id":"workspace-config","modules":64,"tmed":78,"tmax":212},
   {"id":"foundation","modules":29,"tmed":236,"tmax":412},
   {"id":"presentation","modules":30,"tmed":181,"tmax":246}
  ],
@@ -122,7 +122,8 @@
   ["adoption-curve","run-setup-taxes","z",1],
   ["adoption-curve","scurve","r",1],
   ["adoption-curve","time-engine","z",3],
-  ["adoption-curve","verification","z",2],
+  ["adoption-curve","verification","z",1],
+  ["adoption-curve","workspace-config","z",1],
   ["agent-dir","product-resolution","w",1],
   ["aggregate-views","agent-detail","r",2],
   ["aggregate-views","agent-dir","r",2],
@@ -587,9 +588,9 @@
   ["time-engine","tobe-team","r",2],
   ["time-engine","tuning-programme","z",3],
   ["time-engine","verdict","z",9],
-  ["time-engine","verification","z",24],
+  ["time-engine","verification","z",23],
   ["time-engine","vfte-ov","r",2],
-  ["time-engine","workspace-config","z",8],
+  ["time-engine","workspace-config","z",11],
   ["tobe-team","delivery-views","w",1],
   ["token-econ","product-resolution","w",1],
   ["token-econ","run-setup-taxes","w",1],
@@ -639,7 +640,7 @@
   ["workspace-config","factory-timeline","r",3],
   ["workspace-config","personas","r",7],
   ["workspace-config","release-pipeline","r",2],
-  ["workspace-config","verification","z",3]
+  ["workspace-config","verification","z",4]
  ],
  "outer": [
   ["adoption-curve","scope-automation","z",1],

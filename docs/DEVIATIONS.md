@@ -60,6 +60,7 @@ Figures are the golden fixture unless stated. "Before" = the build at the start 
 | DEV-EXCEL-FM-PROD | SPEC_FIXES FX-54: the FM Environments sheet has a Production column; the production flag goes through the workbook |
 | DEV-REPORT-CATALOGUE-COUNT | SPEC_FIXES FX-56: the critical-delivery report counts the regulatory catalogue (370), the legacy printed a fixed 349 |
 | DEV-HORIZON-LABELS | SPEC_FIXES FX-52: labels follow the horizon and help figures come from the engine (the legacy wrote "3 years" and a fixed ~€244k) |
+| DEV-AME-NOT-PORTED | SPEC_FIXES FX-57: the Golden-vs-AME comparison, the AME reference capture and the per-snapshot Excel export are kept out (owner, 2026-11-02) |
 
 ## DEV-HEADLINE-OWNER — one economics headline
 
@@ -757,3 +758,11 @@ tests are not concerned: they drive the legacy *engine* through recipes, and the
   run-team factor: €211,508 on golden). No figure changes.
 - Tests: `tests/ui/sections/run-sizing.test.tsx` (the legacy 244,000 is the recorded exception of the section parity).
 
+
+## DEV-AME-NOT-PORTED — the AME comparison, the AME reference capture and the per-snapshot Excel export are kept out (FX-57)
+
+- Legacy: the single-file legacy page offered a Golden-vs-AME comparison screen, an "AME reference" capture of the figures and an Excel export of
+  each stored snapshot.
+- Now: none of the three is ported (owner's decision 2026-11-02, FX-O5). The parity suites, the calculation packages stamped into every saved file
+  and the results / cost-model workbooks cover what they checked; a snapshot is exported by opening it and using the Financial workbook.
+- Tests: none (nothing to test); recorded so the migration plan's open list (MIGRATION_PLAN § 15.2) is closed.

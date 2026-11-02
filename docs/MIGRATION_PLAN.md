@@ -350,12 +350,12 @@ from §14 and from checking the repository.
 | Item | Detail | Source |
 |---|---|---|
 | ADVANCED lock (URL `?persona=advanced`, Ctrl/Cmd+Alt+A, 5 clicks on the title), tag/MVP editing | out of scope: removed from the spec by decision |
-| Collapsible sidebar groups, Fast Path filter, layout-board live preview | being ported (post-v19.0) | §14 pre-7 chantiers; the Advanced gestures were confirmed absent from `app/src` |
+| Collapsible sidebar groups, Fast Path filter, layout-board live preview | ported (checked 2026-11-02, FX-59) | §14 pre-7 chantiers; the Advanced gestures were confirmed absent from `app/src` |
 | Golden-vs-AME comparison and AME reference capture (GCT-SPEC) | not ported | §14 Phase 6 |
 | Per-snapshot Excel export | not ported | §14 Phase 6 |
 | Agent Catalog capacity and loop external % in the workbook import | not imported (immutable catalogues), reported as notes | §14 Phase 6 |
 | Legacy calculation package (`inputHash`, staleness banner) | ported: saved cases carry the package, a mismatch on open shows the banner; figures are still always derived from the inputs | `tests/store/calc-staleness.test.ts`, `tests/ui/calc-banner.test.tsx` |
-| `TE-10b` (legacy-mode monthly derivation canary) | fires on 2 supervision fixtures in the legacy; reproduced only in the verification section | §14 pre-7 chantiers |
+| `TE-10b` (legacy-mode monthly derivation canary) | runs with the live logic checks since FX-60 (2026-11-02); flags the same 2 supervision fixtures as the legacy | §14 pre-7 chantiers |
 | Legacy `tools/xss-test.mjs` fuzz | not ported; the new build relies on lint rules and the import/restore tests | `app/tests` |
 | A hosted server | out of scope (non-goal, D8) | §1 |
 

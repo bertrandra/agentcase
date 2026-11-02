@@ -7,9 +7,10 @@
 > view state never undoable, one owner per figure in `src/domain`, single-product figures identical to the legacy file unless recorded in
 > DEVIATIONS.md and `app/tests/helpers/deviations*.ts`, one PR per lot merged on green CI with the HTML shared.
 
-> **Progress (2026-11-01, after lot X4, PR #114):** every row is tagged ✅ **Done** (merged on `main`), ⏳ **Open** or ⏸ **Tracked**
-> (waits on an upstream release). Lots done: X0, X1, X2, X3, X4, X6, X8 (FX-44 tracked). X5 done except FX-32 (needs an MS Project /
-> ProjectLibre check). X9 done except the owner's items (FX-57, FX-59, FX-60, FX-63). X7 open. Owner actions open: FX-O1, FX-O3, FX-O4, FX-O5.
+> **Progress (2026-11-02, after PRs #116, #117, #119 and the X9 decisions):** every row is tagged ✅ **Done** (merged on `main`), ⏳ **Open** or
+> ⏸ **Tracked** (waits on an upstream release). Lots done: X0 to X8 (FX-44 tracked); X9 done except FX-63 (needs the owner's customer files,
+> FX-O4). Owner actions open: FX-O1 (release tags: approved; the commands run from a clone with push rights), FX-O3 (old local branches), FX-O4
+> (customer files). FX-O5 decided 2026-11-02.
 
 ## 1. Purpose
 
@@ -128,11 +129,11 @@ DEVIATIONS.md entry and the owner's approval of the before → after on the gold
 
 | ID | Action | Where |
 |---|---|---|
-| FX-O1 | ⏳ Open — Create and push the release tags v19.0.0 … v21.6.0 (all commands now listed, FX-64) | docs/RELEASE_TAGS.md |
+| FX-O1 | ⏳ Open (approved 2026-11-02; the session's git access cannot push tags: run the commands in a clone with push rights) — Create and push the release tags v19.0.0 … v21.6.0 (all commands now listed, FX-64) | docs/RELEASE_TAGS.md |
 | FX-O2 | ✅ Done — Sign off the tool catalogue (FX-D5) — **done 2026-11-01: signed off as is** | 🔎 Audit, SPEC_BPMN § 15.7 |
 | FX-O3 | ⏳ Open — Delete the 9 old local branches from the 22–24 Oct theme work (kept until you say yes) | local clone |
 | FX-O4 | ⏳ Open — Supply real (anonymised) customer files for the differential run (FX-63) | `app/fixtures/customer/` |
-| FX-O5 | ⏳ Open — Port or keep out: AME comparison / per-snapshot Excel (FX-57), "being ported" UI items (FX-59), `TE-10b` (FX-60) | this file |
+| FX-O5 | ✅ Decided 2026-11-02 — FX-57 kept out; FX-59 check and finish; FX-60 wire into the engine — Port or keep out: AME comparison / per-snapshot Excel (FX-57), "being ported" UI items (FX-59), `TE-10b` (FX-60) | this file |
 
 ### 3.6 Carried-over open items (recheck of 31 Oct 2026)
 
@@ -148,10 +149,10 @@ and GitHub (no open issue, no open PR). Not covered by FX-01…FX-45 above.
 | FX-54 | ✅ Done — Legacy discrepancy: FM environment `isProd` dropped on import | Import it; round-trip test. **Fixed (lot X9, unreleased).** A Production column; older workbooks keep the case's flags (DEV-EXCEL-FM-PROD) | P2 | S | MIGRATION_PLAN § 15.4 |
 | FX-55 | ✅ Done — Legacy discrepancy: `bass` curve family not restored by the legacy snapshot restore | Restore it when opening a legacy snapshot; fixture test. **Already fixed (checked in lot X9):** the new build keeps the bass and legacy families (DEV-SNAPSHOT-RESTORE; `snapshot-restore-parity.test.ts`); only the frozen legacy file drops them | P2 | S | MIGRATION_PLAN § 15.4 |
 | FX-56 | ✅ Done — Legacy discrepancy: the critical-delivery report hard-codes 349 artefacts, the catalogue has 370 | Count from the catalogue (deviation recorded). **Fixed (already counted; recorded in lot X9):** DEV-REPORT-CATALOGUE-COUNT | P2 | S | MIGRATION_PLAN § 15.4 |
-| FX-57 | ⏳ Open — Not ported: Golden-vs-AME comparison, AME reference capture, per-snapshot Excel export | Decide keep out (record in DEVIATIONS) or port | P3 | M | MIGRATION_PLAN § 15.2 |
+| FX-57 | ✅ Done (kept out, owner 2026-11-02; DEV-AME-NOT-PORTED) — Not ported: Golden-vs-AME comparison, AME reference capture, per-snapshot Excel export | Decide keep out (record in DEVIATIONS) or port | P3 | M | MIGRATION_PLAN § 15.2 |
 | FX-58 | ✅ Done — Not ported: legacy `tools/xss-test.mjs` fuzz | Port as a property test over import/restore. **Fixed (lot X9, unreleased).** The app renders through React (no innerHTML in src/); the string-built HTML is the reports: `tests/store/report-xss-property.test.ts` (fast-check, hostile names → no element, handler or script URL; fails when escaping is removed). The legacy fuzz keeps running on the legacy file in the nightly battery (FX-62) | P3 | S | MIGRATION_PLAN § 15.2 |
-| FX-59 | ⏳ Open — Still marked "being ported": collapsible sidebar groups, Fast Path filter, layout-board live preview, Gantt keyboard editing | Confirm state in `app/src`; finish or move to out of scope | P3 | M | MIGRATION_PLAN § 15.2, ARCHITECTURE § 12 |
-| FX-60 | ⏳ Open — `TE-10b` legacy-mode monthly derivation reproduced only in the verification section | Decide keep as verification-only (record) or wire into the engine | P3 | S | MIGRATION_PLAN § 15.2 |
+| FX-59 | ✅ Done (checked 2026-11-02: all four are in the app; the labels were stale. Sidebar accordion `NavZone.tsx`; Fast Path tick box `TopZone.tsx` + `domain/nav/fastPath.ts`; live preview `LivePreview.tsx` + `domain/nav/preview.ts`; Gantt keyboard: Enter / Alt+arrows on the programme bars, durations in the 🧩 Process panel by design, DEV-B9A-CONTEXT-SCREENS) — Still marked "being ported": collapsible sidebar groups, Fast Path filter, layout-board live preview, Gantt keyboard editing | Confirm state in `app/src`; finish or move to out of scope | P3 | M | MIGRATION_PLAN § 15.2, ARCHITECTURE § 12 |
+| FX-60 | ✅ Done (owner 2026-11-02: wire into the engine) — `TE-10b` runs with the live logic checks (`pdc/vars/auditModel.ts`, one function with the verification section, `pdc/verifConvTime.ts te10b`) and flags the same 2 supervision fixtures as the legacy AUDIT; the parity test has no not-ported check left; no figure moves — `TE-10b` legacy-mode monthly derivation reproduced only in the verification section | Decide keep as verification-only (record) or wire into the engine | P3 | S | MIGRATION_PLAN § 15.2 |
 | FX-61 | ✅ Done — MIGRATION_PLAN § 15.5 is stale: it says the fixtures README reads v18.11 (it reads v18.13) and the versions read 20.0.0 (21.6.0) | Rewrite § 15.5 from the current tree; use doc-facts for versions. **Fixed (lot X9, unreleased).** Re-checked and rewritten; no hand-written version number left | P3 | S | MIGRATION_PLAN § 15.5 |
 | FX-62 | ✅ Done — Legacy tools (`tools/test-all.mjs`) and the oracle generators are not run by CI | Add to the nightly job, or archive them with the legacy file (§ 15.3). **Fixed (lot X9, unreleased).** `tools/test-all.mjs` runs in the nightly `suite` job (mirrored in `gates.mjs`; its state test no longer writes to a fixed scratch path); the oracle generators stay out of CI on purpose (the fixtures are never regenerated) | P3 | S | MIGRATION_PLAN § 15.5 |
 | FX-63 | ⏳ Open — Differential run on real customer files never done; 20.x/21.x portfolio files not exercised against 19.x readers beyond the notes | Needs files from the owner (FX-O4) | P2 | M | MIGRATION_PLAN § 15.3, ARCHITECTURE § 12 |
@@ -192,7 +193,7 @@ B5 question on factory tags is answered in § 15; `npm audit` 0; no open GitHub 
 | X6 Organisation depth | FX-05, FX-21, FX-22, FX-23, FX-D4 (a), FX-D6 (a), FX-D7 (a), FX-D11 (a) | Undo property tests; parity | Opt-in | 2.5 d | ✅ Done |
 | X7 Portfolio document | FX-D14 (a), FX-D2 (a: implied correlation view only), FX-D8 (a), FX-D9 (a), FX-D10 (a), FX-D12 (a), FX-D13 (d), FX-D15 (a) | Schema v6 migration round trips | Per decision | 3 d | ✅ Done (PRs #117, #119 and the FX-D14 PR) |
 | X8 Polish | FX-18, FX-19, FX-41…FX-45, FX-71, FX-76, FX-77 | — | None | 1 d | ✅ Done (FX-44 tracked upstream) |
-| X9 Carry-over | FX-50…FX-56, FX-58, FX-61, FX-62, FX-64; FX-57 / FX-59 / FX-60 per FX-O5; FX-63 when files arrive | Deviations recorded for FX-52, FX-53, FX-56 | Deviation (labels, export, report count) | 3 d | 🟡 Partly done — open: FX-57, FX-59, FX-60 (owner's call, FX-O5), FX-63 (customer files, FX-O4) |
+| X9 Carry-over | FX-50…FX-56, FX-58, FX-61, FX-62, FX-64; FX-57 / FX-59 / FX-60 per FX-O5; FX-63 when files arrive | Deviations recorded for FX-52, FX-53, FX-56 | Deviation (labels, export, report count) | 3 d | 🟡 Done except FX-63 (customer files, FX-O4) |
 
 Total about 20.5 days of agent work; X0 first (the nightly is the only gate on the full corpus), then X2 because it carries the only P1 items that can move a figure.
 
