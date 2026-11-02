@@ -60,6 +60,7 @@ Figures are the golden fixture unless stated. "Before" = the build at the start 
 | DEV-EXCEL-FM-PROD | SPEC_FIXES FX-54: the FM Environments sheet has a Production column; the production flag goes through the workbook |
 | DEV-REPORT-CATALOGUE-COUNT | SPEC_FIXES FX-56: the critical-delivery report counts the regulatory catalogue (370), the legacy printed a fixed 349 |
 | DEV-HORIZON-LABELS | SPEC_FIXES FX-52: labels follow the horizon and help figures come from the engine (the legacy wrote "3 years" and a fixed ~€244k) |
+| DEV-AME-NOT-PORTED | SPEC_FIXES FX-57: the Golden-vs-AME comparison, the AME reference capture and the per-snapshot Excel export are kept out (owner, 2026-11-02) |
 
 ## DEV-HEADLINE-OWNER — one economics headline
 

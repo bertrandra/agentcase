@@ -1,4 +1,4 @@
-/** @calc-zone verification */
+/** @calc-zone workspace-config */
 import type { Ctx } from '../ctx';
 import { modelRaw } from '../model/raw';
 import { timeFor } from '../time';
