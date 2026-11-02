@@ -7,9 +7,10 @@
 > view state never undoable, one owner per figure in `src/domain`, single-product figures identical to the legacy file unless recorded in
 > DEVIATIONS.md and `app/tests/helpers/deviations*.ts`, one PR per lot merged on green CI with the HTML shared.
 
-> **Progress (2026-11-01, after lot X4, PR #114):** every row is tagged ✅ **Done** (merged on `main`), ⏳ **Open** or ⏸ **Tracked**
-> (waits on an upstream release). Lots done: X0, X1, X2, X3, X4, X6, X8 (FX-44 tracked). X5 done except FX-32 (needs an MS Project /
-> ProjectLibre check). X9 done except the owner's items (FX-57, FX-59, FX-60, FX-63). X7 open. Owner actions open: FX-O1, FX-O3, FX-O4, FX-O5.
+> **Progress (2026-11-02, after PRs #116, #117, #119 and the X9 decisions):** every row is tagged ✅ **Done** (merged on `main`), ⏳ **Open** or
+> ⏸ **Tracked** (waits on an upstream release). Lots done: X0 to X8 (FX-44 tracked); X9 done except FX-63 (needs the owner's customer files,
+> FX-O4). Owner actions open: FX-O1 (release tags: approved; the commands run from a clone with push rights), FX-O3 (old local branches), FX-O4
+> (customer files). FX-O5 decided 2026-11-02.
 
 ## 1. Purpose
 
@@ -192,7 +193,7 @@ B5 question on factory tags is answered in § 15; `npm audit` 0; no open GitHub 
 | X6 Organisation depth | FX-05, FX-21, FX-22, FX-23, FX-D4 (a), FX-D6 (a), FX-D7 (a), FX-D11 (a) | Undo property tests; parity | Opt-in | 2.5 d | ✅ Done |
 | X7 Portfolio document | FX-D14 (a), FX-D2 (a: implied correlation view only), FX-D8 (a), FX-D9 (a), FX-D10 (a), FX-D12 (a), FX-D13 (d), FX-D15 (a) | Schema v6 migration round trips | Per decision | 3 d | ✅ Done (PRs #117, #119 and the FX-D14 PR) |
 | X8 Polish | FX-18, FX-19, FX-41…FX-45, FX-71, FX-76, FX-77 | — | None | 1 d | ✅ Done (FX-44 tracked upstream) |
-| X9 Carry-over | FX-50…FX-56, FX-58, FX-61, FX-62, FX-64; FX-57 / FX-59 / FX-60 per FX-O5; FX-63 when files arrive | Deviations recorded for FX-52, FX-53, FX-56 | Deviation (labels, export, report count) | 3 d | 🟡 Partly done — open: FX-57, FX-59, FX-60 (owner's call, FX-O5), FX-63 (customer files, FX-O4) |
+| X9 Carry-over | FX-50…FX-56, FX-58, FX-61, FX-62, FX-64; FX-57 / FX-59 / FX-60 per FX-O5; FX-63 when files arrive | Deviations recorded for FX-52, FX-53, FX-56 | Deviation (labels, export, report count) | 3 d | 🟡 Done except FX-63 (customer files, FX-O4) |
 
 Total about 20.5 days of agent work; X0 first (the nightly is the only gate on the full corpus), then X2 because it carries the only P1 items that can move a figure.
 
