@@ -6,7 +6,7 @@ import { setInput } from '@/controllers/inputs';
 import { computeCase } from '@/domain';
 import { appStore } from '@/store/instance';
 import Knowledge from '@/ui/sections/tune/knowledge';
-import { freshStore } from '../../store/helpers';
+import { legacyFreshStore as freshStore } from '../../store/helpers';   // DEV-NORM-KH-CURATION: compared with the legacy
 import { editParam, expectReference } from '../../helpers/programmeParam';
 import { expectParity, FIXTURES, loadFixture } from './tuneBHelpers';
 import { caseValues } from '@/domain/process';

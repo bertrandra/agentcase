@@ -30,7 +30,7 @@ export function ProgrammeTableView({ t, multi }: { t: Table; multi: boolean }) {
         <tfoot>
           <tr>
             <th scope="row" colSpan={COLS.length}>{`Programme cost in the euro result: ${eurK(t.total)} over the horizon (the pilot, ${eurK(t.pilot)}, `
-              + 'is outside it)'}</th>
+              + 'included)'}</th>
             {t.years.map((x, y) => <td key={y} className="ac-proc-num">{eurK(x)}</td>)}
             <td />
           </tr>

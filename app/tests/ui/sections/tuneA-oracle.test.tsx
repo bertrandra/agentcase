@@ -2,8 +2,10 @@
 import { cleanup, fireEvent, render, screen } from '@testing-library/react';
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 import type { ComponentType } from 'react';
+import { makeCtx } from '@/domain';
 import { TUNE } from '@/ui/sections/tune';
 import { missingNumbers, renderedText } from '../../helpers/parity';
+import { withoutNormFigures } from '../../helpers/normFigures';
 import { extra, extraIds, loadFixture } from '../../helpers/tuneA';
 
 // Every figure the legacy render hosts showed (tools/oracle-extras.d/tuneA.mjs, *Text extras) must appear in the migrated section,
@@ -30,12 +32,13 @@ const CHECKS: { section: string; extras: string[]; before?: () => void }[] = [
 describe('legacy render hosts, every fixture case', () => {
   it.each(ids)('%s', async (id) => {
     for (const { section, extras, before } of CHECKS) {
-      loadFixture(id);
+      const store = loadFixture(id);
+      const c = makeCtx(store.getState().doc);   // DEV-NORM-PILOT, DEV-NORM-CHANGE-DAYS: the figures the normalisation replaced
       const Section = await load(section);
       const { container } = render(<Section />);
       before?.();
       const rendered = renderedText(container);
-      for (const name of extras) expect({ section, name, missing: missingNumbers(extra<string>(name, id), rendered) }).toEqual({ section, name, missing: [] });
+      for (const name of extras) expect({ section, name, missing: withoutNormFigures(missingNumbers(extra<string>(name, id), rendered), c) }).toEqual({ section, name, missing: [] });
       cleanup();
     }
   }, 60000);

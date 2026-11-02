@@ -51,7 +51,8 @@ const RUNS: Run[] = [
   { key: 'portfolio scenarios · name', section: 'scenarios', title: /Scenario/i, portfolio: true, edit: 'name', budget: 29, before: 36 },
   ...bpmn('process', /Process \(BPMN\)/, [18, 11, 31], [57, 56, 532]),
   ...bpmn('programme', /Programme/, [42, 10, 6], [111, 110, 105]),
-  ...bpmn('gantt', /Plan/, [36, 18, 43], [78, 77, 72]),
+  // gantt · figure 37 (was 36): the working days move the hub setup bar too, its days are working days (normalisation #2, 2026-11-02)
+  ...bpmn('gantt', /Plan/, [37, 18, 43], [78, 77, 72]),
   // organisation · name 23 (was 22): the organisation graph redraws on a customer rename, the default unit's name follows it (2026-11-02)
   ...bpmn('organisation', /Organisation/, [12, 23, 6], [10, 20, 15]),
   ...bpmn('who-does-what', /Who does what/, [12, 23, 18], [10, 21, 16]),

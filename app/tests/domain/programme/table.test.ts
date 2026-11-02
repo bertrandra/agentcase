@@ -34,8 +34,9 @@ describe('the programme table', () => {
     expect(row(t.rows, 'gate-L2').enabled.on).toBe(true);
     expect(row(table(withValues(loadCase('golden'), { optHypercare: 'on' })).rows, 'hypercare').enabled.on).toBe(true);
   });
-  it('golden: cost detail of coaching (2 days a month over its calibrated months, the role rate) and of training (0.5 FTE over 12 months)', () => {
-    const t = table(loadCase('golden')), co = row(t.rows, 'setupCoaching').detail!, tr = row(t.rows, 'setupTraining').detail!;
+  it('golden: cost detail of coaching priced by resources (2 days a month, the role rate) and of training (0.5 FTE over 12 months)', () => {
+    const t = table(withValues(loadCase('golden'), { coachPricing: 'resources' })), co = row(t.rows, 'setupCoaching').detail!;
+    const tr = row(t.rows, 'setupTraining').detail!;
     expect(co.perMonth).toBeCloseTo(2, 9);
     expect(co.rate).toBeCloseTo(418 * 1.15, 6);
     expect(co.role).toBe('Preceptor');

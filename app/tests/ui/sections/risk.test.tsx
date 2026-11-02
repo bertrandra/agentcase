@@ -31,7 +31,8 @@ describe('risk section', () => {
     act(() => { appStore().undo(); appStore().undo(); });
     expect(wave2RiskPremium(makeCtx(doc()))).toBe(0);
   });
-  it('the quality premium feeds the verification tax: same savings as the legacy qual-security fixture', () => {
+  it('the quality premium feeds the verification tax: same savings as the legacy qual-security fixture', async () => {
+    (await import('../../store/helpers')).legacyFreshStore();   // DEV-NORM-KH-CURATION: the legacy coefficients
     render(<Risk />);
     expect(screen.getByText('informative only')).toBeTruthy();
     fireEvent.click(screen.getByLabelText('Apply the premium (raises verification tax + DI bar)'));

@@ -8,6 +8,7 @@ import {
 } from '@/domain/tune';
 import { vtaxAvgHuman, verificationTaxRate } from '@/domain/model/vtax';
 import { caseJson, diff, extra, extraIds } from '../helpers/tuneA';
+import { withoutDeviations } from '../helpers/deviations';
 
 // Oracle: every figure the six sections derive is compared with the legacy function on every fixture (tools/oracle-extras.d/tuneA.mjs).
 const ids = extraIds('tuneAMaturity');
@@ -34,7 +35,7 @@ describe('tune A domain reproduces the legacy', () => {
     const c = ctxOf(id), e = extra<Record<string, unknown>>('tuneAHri', id);
     const got = { on: hriEnabled(c), index: hriIndex(c), intensity: hriIntensity(c), costPerFte: hriCostPerFTE(c), change: convChangeCost(c),
       ramp: hriRampFactor(c) };
-    expect(diff(e, got, 'hri')).toEqual([]);
+    expect(withoutDeviations(diff(e, got, 'hri'), id)).toEqual([]);   // DEV-NORM-CHANGE-DAYS: hri.change
   });
   it.each(ids)('eligibility verdict, pillar matrix and Abaque rows: %s', (id) => {
     const c = ctxOf(id), e = extra<{ pillar: number[][]; profile: string }>('tuneAEligibility', id);

@@ -1,5 +1,6 @@
 import { B9B_DEVIATIONS } from './deviationsB9b';
 import { BPMN_DEVIATIONS } from './deviationsBpmn';
+import { NORM_DEVIATIONS } from './deviationsNorm';
 
 /**
  * Machine-readable twin of docs/DEVIATIONS.md: the oracle fields where v19 intentionally differs from the legacy file.
@@ -12,6 +13,7 @@ export interface Deviation { id: string; reason: string; skip: string[]; only?: 
 export const DEVIATIONS: Deviation[] = [
   ...B9B_DEVIATIONS,
   ...BPMN_DEVIATIONS,
+  ...NORM_DEVIATIONS,
   { id: 'DEV-MC-QUANTILE',
     reason: 'Decision Monte Carlo percentiles use numerics.quantile (linear interpolation) like the P4 layer; legacy took sorted[floor(f*n)].',
     skip: ['mcRun.stats.p10', 'mcRun.stats.p50', 'mcRun.stats.p90', 'decisionRun.stats.p10', 'decisionRun.stats.p50', 'decisionRun.stats.p90'] },

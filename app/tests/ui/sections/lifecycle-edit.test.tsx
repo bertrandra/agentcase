@@ -54,7 +54,8 @@ describe('lifecycle-edit section', () => {
     fireEvent.change(input, { target: { value: '' } });
     expect(growth().autoPosture).toBe(1);
   });
-  it('posture and weight edits reproduce the legacy tuneB-run fixture (same edits through the UI and the inputs)', () => {
+  it('posture and weight edits reproduce the legacy tuneB-run fixture (same edits through the UI and the inputs)', async () => {
+    (await import('../../store/helpers')).legacyFreshStore();   // DEV-NORM-KH-CURATION: the legacy coefficients
     render(<LifecycleEdit />);
     fireEvent.change(screen.getByLabelText('Feature add (active development) · automation posture'), { target: { value: '1.3' } });
     fireEvent.change(screen.getByLabelText('Feature add (active development) · V3 weight'), { target: { value: '0.5' } });

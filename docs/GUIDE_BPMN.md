@@ -157,7 +157,7 @@ Scope group; Builder and Advanced. One row per activity and milestone of the tra
 | **Linked section** | the context screen that uses the activity, and "Open … in Process" |
 
 **Edit** opens the activity's description, timing and cost parameters (the panel's own fields). The totals row is the programme cost of the euro
-result by year; the pilot is shown beside it, outside the euro result (DEV-COSTMODEL-PILOT). Filters: phase, product level, type, enabled.
+result by year, the pilot included (DEV-NORM-PILOT; its cost is also shown on its own). Filters: phase, product level, type, enabled.
 
 **Types and how each changes the cost**
 

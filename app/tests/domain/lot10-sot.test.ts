@@ -20,9 +20,9 @@ describe('DEV-SETUP-BREAKDOWN: one setup breakdown, read by the model', () => {
   it('golden: the four core lines, the hub setup, and the total of the ROI', () => {
     const c = load('golden'), b = setupBreakdown(c);
     expect(b.base).toBeCloseTo(149315.5, 6);
-    expect(b.total).toBeCloseTo(239315.5, 6);
+    expect(b.total).toBeCloseTo(239315.5 + 3 * (16 / 52) * 220 * 418 * 1.15, 6);   // + the pilot (DEV-NORM-PILOT)
     expect(b.total).toBe(model(c).setupTotal);
-    expect(b.lines.map((l) => l.id)).toEqual(['tooling', 'training', 'coaching', 'governance', 'knowledge']);
+    expect(b.lines.map((l) => l.id)).toEqual(['tooling', 'training', 'coaching', 'governance', 'knowledge', 'pilot']);
   });
   it('hri-on lists the HRI change cost; the lines always add up to the total', () => {
     const c = load('hri-on'), b = setupBreakdown(c);

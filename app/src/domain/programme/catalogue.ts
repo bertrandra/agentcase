@@ -1,6 +1,7 @@
 /** @calc-zone delivery-views */
 import { EUR, optInParams, type ParamDef, type ProgrammeActivityDef, type ProgrammePhase } from './catalogueTypes';
 import { OPT_IN_ACTIVITIES } from './catalogueOptIn';
+import { sizingDefault } from './sizing';
 import { ENGAGEMENT_STAGES } from './stages';
 
 export { COST_RULE_TEXT, type CostRule, type ParamDef, type ProgrammeActivityDef, type ProgrammePhase, type TimingKind } from './catalogueTypes';
@@ -18,9 +19,11 @@ export const PROGRAMME_PHASES: readonly { id: ProgrammePhase; name: string }[] =
 const CC = [0, 1, 2, 3, 4].map((n) => ({ value: String(n), label: `CC${n}` }));
 const PRICING = [{ value: 'resources', label: 'Resources — FTE × months × role rate (default)' },
   { value: 'amount', label: 'Amount — the euro amount, spent over the duration' }];
+const COACH_PRICING = [{ value: '', label: 'Automatic — the amount without a duration, else resources (default)' },
+  { value: 'resources', label: 'Resources — days a month × months × role rate' }, { value: 'amount', label: 'Amount — the euro amount, spent over the duration' }];
 const RUN_MODES = [{ value: 'hybrid', label: 'Hybrid — floor + per-agent (default)' }, { value: 'legacy', label: 'Legacy — fixed on base-team size' }];
 const months = (key: string, label: string): ParamDef => ({ key, label: `${label} (months; blank = the setup duration)`, unit: 'months', min: 0.5, step: 1 });
-const fte = (key: string, label: string, def: number): ParamDef => ({ key, label: `${label} (FTE) — default ${def}`, unit: 'FTE', min: 0, step: 0.25 });
+const fte = (key: string, label: string): ParamDef => ({ key, label: `${label} (FTE) — default ${sizingDefault(key)}`, unit: 'FTE', min: 0, step: 0.25 });
 
 const stageParams = (id: string, input: string | null, name: string): ParamDef[] => {
   if (id === 'pilotProve') return [];
@@ -38,7 +41,7 @@ const TRAINING: ProgrammeActivityDef = {
   kind: 'setupTraining', name: 'Setup: training', description: 'Workshops, champion certification, run by the preceptors; it builds the capability of '
     + 'the organisation: the people in training are its trainees, up to the target mass.', phase: 'setup', lane: 'preceptor',
   raci: { A: 'aiOffice', C: [], I: ['orchestrator'] }, level: 'product', costRule: 'resources', timing: 'setup', source: 'programme/profile.ts',
-  params: [{ key: 'trainPricing', label: 'Pricing', unit: '', options: PRICING }, fte('trainFte', 'Trainers', 0.5),
+  params: [{ key: 'trainPricing', label: 'Pricing', unit: '', options: PRICING }, fte('trainFte', 'Trainers'),
     months('trainMonths', 'Training duration'), EUR('setupTraining', 'Training amount (€, the cost when priced by amount)'),
     { key: 'capOps', label: 'Operational now', unit: 'people', min: 0, step: 10 }, { key: 'capTrain', label: 'In training', unit: 'people', min: 0, step: 10 },
     { key: 'capTarget', label: 'Target mass', unit: 'people', min: 0, step: 10 }],
@@ -47,7 +50,7 @@ const CORE: ProgrammeActivityDef[] = [
   { kind: 'pilot', name: 'Pilot', description: 'A pilot pod proves the agentic factory (frozen harness + agents) by demonstration before the build: '
     + 'break-in sprints to stabilise the harness, then prove weeks on 3-day fail-fast iterations (the Pilot & Prove stage).', phase: 'setup',
   lane: 'orchestrator', raci: { A: 'designAuthority', C: ['preceptor'], I: ['finops'] }, level: 'product', costRule: 'resources', timing: 'pilot',
-  source: 'tune/program.ts pilotSizing', params: [{ key: 'pilotFte', label: 'Pilot pod size (FTE)', unit: 'FTE', min: 1, max: 8, step: 1 },
+  source: 'tune/program.ts pilotSizing', params: [{ key: 'pilotFte', label: 'Pilot pod size (FTE; 0 = no pilot)', unit: 'FTE', min: 0, max: 8, step: 1 },
     { key: 'pilotBreakin', label: 'Break-in sprints', unit: 'sprints', min: 0, max: 6, step: 1 },
     { key: 'pilotWeeks', label: 'Prove weeks', unit: 'weeks', min: 4, max: 26, step: 1 }] },
   { kind: 'setupTooling', name: 'Setup: tooling and infrastructure', description: 'Claude API, monitoring, security, CI/CD.', phase: 'setup',
@@ -57,15 +60,15 @@ const CORE: ProgrammeActivityDef[] = [
   { kind: 'setupCoaching', name: 'Setup: coaching', description: 'Pair programming, deliverable review, senior / junior binomes, run by the '
     + 'preceptors: coaching days a month over its duration (one coaching activity, D-B30).', phase: 'setup', lane: 'preceptor',
   raci: { A: 'aiOffice', C: ['orchestrator'], I: [] }, level: 'product', costRule: 'resources', timing: 'setup', source: 'programme/profile.ts coachingPlan',
-  params: [{ key: 'coachDaysPerMonth', label: 'Coaching days per month — default 2', unit: 'days/month', min: 0, step: 0.5 },
-    { key: 'coachMonths', label: 'Coaching duration (months; blank = calibrated from the setup coaching amount)', unit: 'months', min: 0, step: 1 },
-    EUR('setupCoaching', 'Setup coaching amount (€, calibrates the duration when it is blank)'),
+  params: [{ key: 'coachPricing', label: 'Pricing', unit: '', options: COACH_PRICING }, { key: 'coachDaysPerMonth', label: `Coaching days per month — default ${sizingDefault('coachDaysPerMonth')}`, unit: 'days/month', min: 0, step: 0.5 },
+    { key: 'coachMonths', label: 'Coaching duration (months; blank = the setup duration)', unit: 'months', min: 0, step: 1 },
+    EUR('setupCoaching', 'Setup coaching amount (€, the cost when priced by amount)'),
     { key: 'coachY1', label: 'Y1 coaching load (% capacity, informative curve)', unit: '%', min: 0, max: 80, step: 5 },
     { key: 'coachCruise', label: 'Cruise coaching load (%, informative curve)', unit: '%', min: 0, max: 60, step: 5 }] },
   { kind: 'setupGovernance', name: 'Setup: governance', description: 'Compliance audit, IP, agentic charter, run by the Design Authority.', phase: 'setup',
     lane: 'designAuthority', raci: { A: 'aiOffice', C: [], I: ['finops'] }, level: 'product', costRule: 'resources', timing: 'setup',
     source: 'programme/profile.ts', params: [{ key: 'govPricing', label: 'Pricing', unit: '', options: PRICING },
-      fte('govFte', 'Design Authority effort', 0.25), months('govMonths', 'Governance duration'),
+      fte('govFte', 'Design Authority effort'), months('govMonths', 'Governance duration'),
       EUR('setupGov', 'Governance amount (€, the cost when priced by amount)')] },
   { kind: 'change', name: 'Change management (readiness)', description: 'Entry headcount × cost per FTE of the human-readiness intensity (HRI).',
     phase: 'setup', lane: 'aiOffice', raci: { A: 'aiOffice', C: ['preceptor'], I: [] }, level: 'product', costRule: 'engine', timing: 'setup',

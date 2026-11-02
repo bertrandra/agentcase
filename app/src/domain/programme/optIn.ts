@@ -1,5 +1,6 @@
 /** @calc-zone run-setup-taxes */
 import type { Ctx } from '../ctx';
+import { sizingDefault } from './sizing';
 import { pilotTiming, setupMonths, spreadMonths, stageTimings } from './timing';
 
 /**
@@ -19,25 +20,26 @@ export interface OptInDef {
   /** its parameters: key, label, unit, default */
   params: { key: string; label: string; unit: string; def: number; step: number }[];
 }
-const P = (key: string, label: string, unit: string, def: number, step = 1) => ({ key, label, unit, def, step });
+/** An opt-in parameter; its default is the sizing table's (`sizing.ts`, the one place of the defaults). */
+const P = (key: string, label: string, unit: string, step = 1) => ({ key, label, unit, def: sizingDefault(key), step });
 export const OPT_INS: readonly OptInDef[] = [
   { id: 'stages', label: 'Engagement stages', level: 'case', on: 'optStages', kinds: ['stage-discover', 'stage-calibrate', 'stage-validate', 'stage-decide'],
-    params: [P('stagesFte', 'Engagement team (FTE)', 'FTE', 2, 0.5), P('decideDays', 'Decide & Scale workshop (days)', 'days', 5)] },
+    params: [P('stagesFte', 'Engagement team (FTE)', 'FTE', 0.5), P('decideDays', 'Decide & Scale workshop (days)', 'days')] },
   { id: 'valueTracking', label: 'Value tracking', level: 'case', on: 'optValue', kinds: ['valueTracking'],
-    params: [P('valueFte', 'FinOps effort (FTE over the horizon)', 'FTE', 0.1, 0.05)] },
+    params: [P('valueFte', 'FinOps effort (FTE over the horizon)', 'FTE', 0.05)] },
   { id: 'aiAct', label: 'Risk mitigations and AI Act obligations', level: 'case', on: 'optAiAct', kinds: ['riskAiAct'],
-    params: [P('aiActDays', 'AI Office effort (days per year)', 'days/year', 10)] },
+    params: [P('aiActDays', 'AI Office effort (days per year)', 'days/year')] },
   { id: 'audit', label: 'Audit and discovery interviews', level: 'case', on: 'optAudit', kinds: ['auditInterviews'],
-    params: [P('auditDays', 'Interview effort (days)', 'days', 10)] },
+    params: [P('auditDays', 'Interview effort (days)', 'days')] },
   { id: 'procurement', label: 'Licence procurement', level: 'case', on: 'optProcure', kinds: ['procurement'],
-    params: [P('procureDays', 'Procurement, security and legal effort (days)', 'days', 20)] },
+    params: [P('procureDays', 'Procurement, security and legal effort (days)', 'days')] },
   { id: 'integration', label: 'Agent-toolchain integration', level: 'product', on: 'optIntegr', kinds: ['integration'],
-    params: [P('integrations', 'Integrations (tools connected)', 'tools', 5), P('integrDays', 'Effort per integration (days)', 'days', 5)] },
+    params: [P('integrations', 'Integrations (tools connected)', 'tools'), P('integrDays', 'Effort per integration (days)', 'days')] },
   { id: 'hypercare', label: 'Rollout hypercare', level: 'product', on: 'optHypercare', kinds: ['hypercare'],
-    params: [P('hypercareFte', 'Hypercare team (FTE)', 'FTE', 1, 0.5), P('hypercareWeeks', 'Hypercare (weeks)', 'weeks', 6)] },
+    params: [P('hypercareFte', 'Hypercare team (FTE)', 'FTE', 0.5), P('hypercareWeeks', 'Hypercare (weeks)', 'weeks')] },
   { id: 'decommission', label: 'Legacy decommissioning', level: 'product', on: 'optDecom', kinds: ['decommission'],
-    params: [P('decomDays', 'Decommissioning effort (days)', 'days', 10),
-      P('decomSaving', 'Licences ended (€/month saved, only when entered)', '€/month', 0, 100)] },
+    params: [P('decomDays', 'Decommissioning effort (days)', 'days'),
+      P('decomSaving', 'Licences ended (€/month saved, only when entered)', '€/month', 100)] },
 ];
 export const optInDef = (id: OptInId): OptInDef => OPT_INS.find((d) => d.id === id) as OptInDef;
 /** The opt-in cost an activity kind belongs to (undefined: not an opt-in activity). */

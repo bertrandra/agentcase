@@ -19,6 +19,17 @@ export const MCS_DRIVER_SEED: Record<string, McsDriverOverride> = {
 };
 export const MCS_DRIVER_ORDER = ['p', 'y1Ramp', 'y2Ramp', 'y3Ramp', 'dayRate', 'supCapacity', 'tokenPrice'];
 export type McsSample = Record<string, number>;
+/**
+ * Normalisation #9: the uncertainty of the programme's fixed € amounts (tooling, lines priced by amount, the hub setup base), a ratio around 1.
+ * Off by default (spread 0 %): set `MODEL.MCS.dists.programmeAmount.spreadPct` to draw it. It has its own random stream (`runMcs`), so the seven
+ * drivers above draw exactly as before.
+ */
+export const MCS_AMOUNT_ID = 'programmeAmount';
+const AMOUNT_SEED: McsDriverOverride = { kind: 'tri', group: 'exogenous', label: 'Programme fixed amounts', spreadPct: 0 };
+const amountSpread = (c: Ctx): number => { const v = { ...AMOUNT_SEED, ...(mcsOf(c.s.MODEL).dists[MCS_AMOUNT_ID] ?? {}) }.spreadPct; return v && v > 0 ? v : 0; };
+export const mcsAmountOn = (c: Ctx): boolean => amountSpread(c) > 0;
+/** The amount ratio at quantile u (triangular around 1 by the driver's spread). */
+export const mcsAmountAt = (c: Ctx, u: number): number => { const h = amountSpread(c) / 100; return triInv(u, 1 - h, 1, 1 + h); };
 
 export const mcsSpec = (c: Ctx, id: string): McsDriverOverride => ({ ...MCS_DRIVER_SEED[id], ...(mcsOf(c.s.MODEL).dists[id] ?? {}) });
 

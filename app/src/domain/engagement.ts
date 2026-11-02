@@ -1,6 +1,7 @@
 /** @calc-zone scope-automation */
 import { ENGAGE_COEF } from './catalog';
 import type { Ctx } from './ctx';
+import { sizingDefault } from './programme/sizing';
 import type { EngageCoefRow } from './types/state';
 
 export function engagementKey(c: Ctx): string {
@@ -31,10 +32,18 @@ export function hriIntensity(c: Ctx): HriBand {
   return hriBandOf(hriIndex(c));
 }
 
+const BAND_KEY = { light: 'Light', standard: 'Std', intensive: 'Int' } as const;
+/** Change-management days per entry FTE of the readiness band (normalisation #4): `hriDays<Band>`, priced at the programme's role rate. */
+export function hriDaysPerFTE(c: Ctx): number {
+  const k = `hriDays${BAND_KEY[hriIntensity(c)]}`, v = c.inp.p(k);
+  return isNaN(v) ? sizingDefault(k) : v;
+}
+
+/** The legacy € per entry FTE of the band (kept for the parity mock and the legacy read-out; the cost model prices days, normalisation #4). */
 export function hriCostPerFTE(c: Ctx): number {
   const it = hriIntensity(c);
   const v = it === 'light' ? c.inp.p('hriCostLight') : it === 'standard' ? c.inp.p('hriCostStd') : c.inp.p('hriCostInt');
-  return isNaN(v) ? (it === 'light' ? 1200 : it === 'standard' ? 3000 : 5500) : v;
+  return isNaN(v) ? sizingDefault(it === 'light' ? 'hriCostLight' : it === 'standard' ? 'hriCostStd' : 'hriCostInt') : v;
 }
 
 

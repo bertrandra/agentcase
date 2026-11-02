@@ -1,8 +1,8 @@
 import { existsSync, readdirSync, readFileSync } from 'node:fs';
+import { legacyDefaultDoc } from '../store/helpers';
 import { produce } from 'immer';
 import { LEGACY_SECTIONS } from '@/ui/zones/registry';
 import { BUILTIN_PERSONAS } from '@/domain/nav/structures';
-import { makeDefaultDoc } from '@/store/instance';
 import { applyParamsPatch } from '@/store/persistence/excel/params/apply';
 import type { ParamsEnv } from '@/store/persistence/excel/params';
 import { sameJson } from '@/store/persistence/excel/params';
@@ -31,7 +31,7 @@ export const applyTo = (base: Doc, patch: Partial<Doc>): Doc => produce(base, (d
  * of the import.
  */
 export const freshDoc = (): Doc => {
-  const d = makeDefaultDoc(), ids = new Set(BUILTIN_PERSONAS.map((p) => p.id));
+  const d = legacyDefaultDoc(), ids = new Set(BUILTIN_PERSONAS.map((p) => p.id));   // DEV-NORM-KH-CURATION: the legacy coefficients
   d.PERSONAS = (d.PERSONAS as { id: string }[]).filter((p) => !ids.has(p.id));
   d.PERSONA_SECTIONS = Object.fromEntries(Object.entries(d.PERSONA_SECTIONS as Record<string, string[]>).filter(([k]) => !ids.has(k)));
   return d;
@@ -55,7 +55,13 @@ export function stateMismatches(doc: Doc, legacy: Record<string, unknown>, prist
  * carried a meaning (every reader treats them as sets), so they are compared as sets (ramp-up sequences by phase).
  */
 const SETS = ['selectedArtefacts', 'selectedRegArtefacts', 'selectedNorms', 'phaseOff'];
+/** Keys the normalisation of the programme sizing added to the default document (DEV-NORM-CHANGE-DAYS, DEV-NORM-KH-CURATION): no legacy file has them. */
+const NORM_VALUES = ['hriDaysLight', 'hriDaysStd', 'hriDaysInt'], NORM_COEF = ['khCurationPremium'];
+const without = (o: unknown, keys: string[]): unknown =>
+  (o && typeof o === 'object' ? Object.fromEntries(Object.entries(o).filter(([key]) => !keys.includes(key))) : o);
 const norm = (k: string, v: unknown): unknown => {
+  if (k === 'COEF') return without(v, NORM_COEF);
+  if (k === 'dom' && v && typeof v === 'object') { const d = v as { values?: unknown }; return { ...d, values: without(d.values, NORM_VALUES) }; }
   if (k === 'ENVIRONMENTS' && Array.isArray(v)) {
     return v.map((e: Record<string, unknown>) => Object.fromEntries(Object.entries(e).filter(([key]) => key !== 'isProd')));
   }

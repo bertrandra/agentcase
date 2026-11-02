@@ -7,7 +7,7 @@ import { togglePhase } from '@/controllers/scope';
 import { addTeamRow, removeTeamRow, updateTeamRow } from '@/controllers/team';
 import { redo, undo } from '@/controllers/history';
 import { computeCase } from '@/domain';
-import { freshStore } from './helpers';
+import { legacyFreshStore as freshStore } from './helpers';   // DEV-NORM-KH-CURATION: the legacy coefficients
 import { keysOf } from '../helpers/scope';
 
 const expected = (id: string) => JSON.parse(readFileSync(`fixtures/expected/${id}.json`, 'utf8')).model;

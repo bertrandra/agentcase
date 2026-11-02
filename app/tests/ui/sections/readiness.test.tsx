@@ -1,12 +1,13 @@
 // @vitest-environment jsdom
 import { act, cleanup, fireEvent, render, screen } from '@testing-library/react';
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
-import { computeCase } from '@/domain';
+import { computeCase, makeCtx } from '@/domain';
 import { appStore } from '@/store/instance';
 import Readiness from '@/ui/sections/tune/readiness';
 import { freshStore } from '../../store/helpers';
 import { legacySectionText, missingNumbers, renderedText } from '../../helpers/parity';
 import { loadFixture } from '../../helpers/tuneA';
+import { withoutNormFigures } from '../../helpers/normFigures';
 
 beforeEach(() => {
   freshStore();
@@ -21,11 +22,15 @@ const answers = () => (state() as unknown as { readinessAns: Record<string, (num
 const assess = () => fireEvent.click(screen.getByRole('tab', { name: 'Assessment questionnaire' }));
 const Q = 'An executive sponsor is identified and active';
 
+/** The programme's role rate on the default case: 418 €/day × 1.15. */
+const ROLE = 418 * 1.15;
+
 describe('readiness section', () => {
   it.each(['golden', 'ctx-msi', 'curve-logistic', 'industry-med'])('shows every figure the legacy section showed (%s)', (fx) => {
     loadFixture(fx);
     const { container } = render(<Readiness />);
-    expect(missingNumbers(legacySectionText(fx, 'readiness')!, renderedText(container))).toEqual([]);
+    const c = makeCtx(appStore().getState().doc);   // DEV-NORM-CHANGE-DAYS: the € per head replaced by days × the role rate
+    expect(withoutNormFigures(missingNumbers(legacySectionText(fx, 'readiness')!, renderedText(container)), c)).toEqual([]);
   });
   it('Human Readiness: the switch feeds the model (change cost + adoption drag), the read-out says so, undo restores', () => {
     const { container } = render(<Readiness />);
@@ -35,7 +40,7 @@ describe('readiness section', () => {
     const on = calc().model;
     expect(state().dom.checked.hriEnabled).toBe(true);
     expect(on.conv.hriOn).toBe(true);
-    expect(on.conv.changeCost).toBeCloseTo(15 * 3000, 6);
+    expect(on.conv.changeCost).toBeCloseTo(15 * 6 * ROLE, 6);   // DEV-NORM-CHANGE-DAYS: 6 days a head × the role rate
     expect(on.yearSav[2]).toBeLessThan(off.yearSav[2] as number);
     expect(text(container)).toMatch(/APPLIED \(setup \+ ramp\)/);
     act(() => { appStore().undo(); });
@@ -50,16 +55,16 @@ describe('readiness section', () => {
     expect(text(container)).toMatch(/47\/100 · At risk/);
     expect(text(container)).toMatch(/Change intensity\s+intensive/);
     expect(calc().model.conv.hri).toBe(47);
-    expect(calc().model.conv.changeCost).toBeCloseTo(15 * 5500, 6);
+    expect(calc().model.conv.changeCost).toBeCloseTo(15 * 11.5 * ROLE, 6);
     fireEvent.change(screen.getByLabelText(Q), { target: { value: '4' } });
     expect(text(container)).toMatch(/53\/100 · Fragile/);
   });
   it('change-cost grid and drag coefficients are inputs of the case (COEF + form value move together)', () => {
     const { container } = render(<Readiness />);
     fireEvent.click(screen.getByLabelText(/Enable Human Readiness/));
-    fireEvent.change(screen.getByLabelText('Standard (50–74)'), { target: { value: '3500' } });
-    expect(calc().model.conv.changeCost).toBeCloseTo(15 * 3500, 6);
-    expect(text(container)).toMatch(/× €\s*3,500/);
+    fireEvent.change(screen.getByLabelText('Standard (50–74)'), { target: { value: '7' } });
+    expect(calc().model.conv.changeCost).toBeCloseTo(15 * 7 * ROLE, 6);
+    expect(text(container)).toMatch(/× 7 days × €\s*480\.7/);
     expect(text(container)).toMatch(/× 0\.80/);
     fireEvent.change(screen.getByLabelText('Ramp floor'), { target: { value: '0.5' } });
     expect(state().COEF.hriFloor).toBe(0.5);

@@ -4,13 +4,13 @@ import { opModelCompute } from '../tune/opmodel';
 import { activityDef } from './catalogue';
 import { laneDef, PROGRAMME_LANES, type LaneRole } from './lanes';
 import { optInDef, type OptInId } from './optIn';
-import { horizonMonthsOf, pilotLine, programmeLines, programmeRates, type ProgrammeLineId } from './profile';
+import { horizonMonthsOf, programmeLines, programmeRates, type ProgrammeLineId } from './profile';
 
 /**
  * The ONE resource histogram of the transformation programme (docs/SPEC_BPMN.md § 19.8 F-B76, decisions D-B34, D-B37; phase B9d). The labour
  * of each programme activity is read from the programme's cost profile (`profile.ts` `programmeLines`, the profile the engine and the cost model
- * read; the pilot from `pilotLine`): its spend month by month divided by its day rate (the role rate, the rate card's target blend for the hub
- * setup and the pilot) gives person-days, so Σ days × rate is the activity's labour cost exactly (the cross-surface test). Days / (working
+ * read, the pilot among them): its spend month by month divided by its day rate (the role rate, the rate card's target blend for the hub
+ * setup) gives person-days, so Σ days × rate is the activity's labour cost exactly (the cross-surface test). Days / (working
  * days / 12) is FTE (D-B34: FTE by default, person-days as a toggle). Stacked by role (the activity's lane). The capacity of a role is its Y1 FTE
  * in the operating model (EV-09 topology); a month above it is flagged (D-B37: a diagnostic, no levelling). Months are the product's own
  * (1 = the build's first month, ≤ 0 before the build; a spend past the horizon is booked in its last month, like the engine).
@@ -19,7 +19,7 @@ export interface HistLine {
   id: ProgrammeLineId | 'pilot'; label: string; activity: string; lane: LaneRole; rate: number;
   /** person-days per month, index i = month `from + i` */
   days: number[];
-  /** false: outside the euro result (the pilot, DEV-COSTMODEL-PILOT) */
+  /** false: outside the euro result (none since the pilot is a cost line, DEV-NORM-PILOT) */
   inCost: boolean;
 }
 export interface HistRole { lane: LaneRole; label: string; days: number[]; capacity: number | null }
@@ -37,12 +37,9 @@ export const fteOf = (days: number, wdMonth: number): number => (wdMonth > 0 ? d
 
 /** The programme histogram of a case (its own months). `capacityOf`: the lane capacities (default: the case's EV-09 topology in Y1). */
 export function programmeHistogram(c: Ctx, H = horizonMonthsOf(c)): ProgrammeHistogram {
-  const r = programmeRates(c), wdMonth = r.wd / 12, p = pilotLine(c);
-  const raw = [
-    ...programmeLines(c, H).filter((l) => l.rule === 'resources').map((l) => ({ id: l.id, label: l.label, from: l.from, months: l.months,
-      rate: l.id === 'knowledge' ? r.tjm : r.role, inCost: true })),
-    { id: 'pilot' as const, label: 'Pilot', from: p.from, months: p.months, rate: p.days > 0 ? p.cost / p.days : 0, inCost: false },
-  ];
+  const r = programmeRates(c), wdMonth = r.wd / 12;   // the pilot is a programme line (normalisation #1): in the euro result, at the role rate
+  const raw = programmeLines(c, H).filter((l) => l.rule === 'resources').map((l) => ({ id: l.id, label: l.label, from: l.from, months: l.months,
+    rate: l.id === 'knowledge' ? r.tjm : r.role, inCost: true }));
   const from = Math.min(1, ...raw.map((l) => l.from)), to = H, n = to - from + 1;
   const lines: HistLine[] = raw.map((l) => {
     const days = new Array<number>(n).fill(0), d = activityDef(kindOf(l.id))!;

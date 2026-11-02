@@ -17,7 +17,7 @@ export const IO_PARAMS: ParamDef[] = [
   ['classicSaving', 'Classic annual saving (%)', 0, 15, 'int'],
 ];
 /** FX-D13 d: the training or governance amount says it is the line's cost when the line is priced by amount (resources, the default: legacy note). */
-const PRICED: Record<string, string> = { setupTraining: 'trainPricing', setupGov: 'govPricing' };
+const PRICED: Record<string, string> = { setupTraining: 'trainPricing', setupGov: 'govPricing', setupCoaching: 'coachPricing' };
 const pricingNote = (d: WriteCtx['d'], id: string): string => {
   const k = PRICED[id];
   return k && d.dom.values[k] === 'amount' ? 'number — the line\'s cost (pricing: amount)' : 'number';   // resources (default): the legacy note

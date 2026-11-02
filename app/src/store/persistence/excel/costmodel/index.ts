@@ -19,8 +19,8 @@ const NOTES = {
     'Applied rate = day rate of the line grade and location (rate card). The engine prices the TO-BE team at ONE blended target rate: the Blending ' +
       'adjustment row makes the totals tie. Team cost = SUMPRODUCT(days, rates) + adjustment; Difference = 0.',
   other: 'TOTAL TO-BE COST = team cost (days x rate, from Rate cards) + the lines below (savings negative). '
-    + 'The pilot (Program & Completeness sizing, spread from the product month 1) is included in the totals; '
-    + 'the app headline does not count it (setup and run cost exclude the pilot), so the check row is the engine total plus the pilot. Parameters are ' +
+    + 'The pilot is a setup line like the other programme activities (in the app headline and the engine total since the normalisation of the '
+    + 'programme sizing), so the check row is the engine total. Parameters are ' +
       'listed under the table.',
 };
 

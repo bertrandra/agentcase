@@ -41,8 +41,7 @@ describe('cross-surface: Σ histogram × rate = the programme labour cost of the
       const row = byLine(m.other, name, `Setup: ${l.label}`), cost = cells(row).reduce((a: number, x) => a + nz(x), 0);
       expect(l.days.reduce((a, x) => a + x, 0) * l.rate).toBeCloseTo(cost, 4);
     }
-    const pilot = h.lines.find((l) => l.id === 'pilot')!, pilotRow = byLine(m.other, name, 'Pilot (included in totals)');
-    expect(pilot.days.reduce((a, x) => a + x, 0) * pilot.rate).toBeCloseTo(cells(pilotRow).reduce((a: number, x) => a + nz(x), 0), 4);
+    expect(lines.some((l) => l.id === 'pilot')).toBe(true);   // the pilot is a setup line among them (DEV-NORM-PILOT)
   });
 });
 

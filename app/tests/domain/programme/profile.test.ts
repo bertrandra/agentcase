@@ -33,27 +33,33 @@ describe('the programme cost profile (golden, hand-computed)', () => {
     expect(amount(withValues(golden(), { trainPricing: 'resources', setupTraining: '24000' }), 'training')).toBeCloseTo(0.5 * 12 * (WD / 12) * ROLE, 6);
   });
   // D-B30 (revised 2026-10-31): coaching days a month × months × the role rate; with no duration entered, the setupCoaching amount calibrates it.
-  it('coaching: calibrated from the setup coaching amount (golden €35,000 = 72.81 days = 2 a month × 36.4 months), else days × months × rate', () => {
+  it('coaching: priced by its amount without a duration (golden €35,000 over the legacy calibration\'s 36.4 months), else days × months × rate', () => {
     const p = coachingPlan(c);
-    expect([p.amount, p.perMonth, p.calibrated]).toEqual([35000, 2, true]);
-    expect(p.days).toBeCloseTo(35000 / ROLE, 9);
+    expect([p.amount, p.perMonth, p.pricing]).toEqual([35000, 0, 'amount']);
+    expect(p.days).toBe(0);   // normalisation #3: an amount, no labour behind it (the legacy calibration's months kept)
     expect(p.months).toBeCloseTo(35000 / ROLE / 2, 9);   // 36.4, spent over the 36 months of the horizon
     expect(amount(withValues(golden(), { coachDaysPerMonth: '3', coachMonths: '6' }), 'coaching')).toBeCloseTo(3 * 6 * ROLE, 6);   // 8,652.6
-    expect(amount(withValues(golden(), { coachDaysPerMonth: '0' }), 'coaching')).toBe(0);
+    expect(amount(withValues(golden(), { coachPricing: 'resources', coachDaysPerMonth: '0' }), 'coaching')).toBe(0);
     expect(amount(withValues(golden(), { coachY1: '80', coachCruise: '60' }), 'coaching')).toBe(35000);   // the curve is informative, not priced
-    expect(engineNow(c).K.setupProfile[0]! - engineNow(c).K.setupProfile[1]!).toBeCloseTo(90000, 4);   // the hub setup, month 1 only
+    const hub = programmeLines(c).find((l) => l.id === 'knowledge')!;   // the hub setup: 30 working days = 1.64 months (DEV-NORM-CALENDAR)
+    expect(hub.months[0]).toBeCloseTo(90000 / (30 * 12 / WD), 4);
   });
   it.each(FIXTURE_IDS)('%s: the coaching cost is the case\'s setup coaching amount (no figure moves from coaching itself)', (id) => {
     const s = loadCase(id);
     expect(amount(s, 'coaching')).toBe(makeCtx(s).inp.p('setupCoaching') || 0);
   });
-  it('the lines add up to the setup total; tooling, training and governance are spread over 12 months, coaching over 36, the hub over its 30 days', () => {
-    const total = 35000 + 0.5 * 12 * (WD / 12) * ROLE + 35000 + 0.25 * 12 * (WD / 12) * ROLE + 90000;   // 239,315.5
+  it('the lines add up to the setup total; tooling, training and governance over 12 months, coaching over 36, the hub over its 30 working days, '
+    + 'the pilot over its 16 weeks from month 1', () => {
+    const pilot = 3 * (16 / 52) * WD * ROLE;   // 97,619.08 (DEV-NORM-PILOT)
+    const total = 35000 + 0.5 * 12 * (WD / 12) * ROLE + 35000 + 0.25 * 12 * (WD / 12) * ROLE + 90000 + pilot;
     expect(setupBreakdown(c).total).toBeCloseTo(total, 4);
     expect(model(c).setupTotal).toBeCloseTo(total, 4);
     const p = engineNow(c).K.setupProfile, flat = (35000 + 0.5 * 12 * (WD / 12) * ROLE + 0.25 * 12 * (WD / 12) * ROLE) / 12, coach = 35000 / 36;
-    expect(p[0]).toBeCloseTo(flat + coach + 90000, 4);   // 100,498.9
-    expect(p[11]).toBeCloseTo(flat + coach, 4);   // 10,498.9
+    const hubMonths = 30 * 12 / WD, pilotMonths = 16 * 12 / 52;
+    expect(p[0]).toBeCloseTo(flat + coach + 90000 / hubMonths + pilot / pilotMonths, 4);
+    expect(p[1]).toBeCloseTo(flat + coach + 90000 * (hubMonths - 1) / hubMonths + pilot / pilotMonths, 4);
+    expect(p[3]).toBeCloseTo(flat + coach + pilot * (pilotMonths - 3) / pilotMonths, 4);
+    expect(p[11]).toBeCloseTo(flat + coach, 4);
     expect(p[12]).toBeCloseTo(coach, 4);   // 972.2
     expect(p[35]).toBeCloseTo(coach, 4);
     expect(headlineOf(engineNow(c), c).setup).toBeCloseTo(total, 4);

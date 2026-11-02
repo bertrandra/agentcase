@@ -3,8 +3,9 @@ import { OverrideBadge } from '@/ui/widgets/OverrideBadge';
 import { Tabs } from '@/ui/widgets/Tabs';
 import { SectionFrame } from '@/ui/zones/SectionFrame';
 import { Activities } from './Activities';
-import { AuditActivities } from './AuditActivities';
-import { Calibration } from './Calibration';
+import { AuditPlan, InterviewRun } from './AuditActivities';
+import { AuditProgress } from './AuditProgress';
+import { Calibration, Coverage } from './Calibration';
 import { Catalogue } from './Catalogue';
 import { Header } from './Header';
 import { Programme } from './Programme';
@@ -26,21 +27,30 @@ const help = (
   </>
 );
 
-/** 🔎 Audit (docs/SPEC_BPMN.md § 15.5, F-B31): header, files, the audit activities (interviews: roles × activities, context, progression),
- *  activities with their audit form, roles, programme activities (FX-21), tool catalogue,
- *  calibration. */
+/**
+ * 🔎 Audit (docs/SPEC_BPMN.md § 15.5, F-B31), in four tabs (owner's request 2026-11-02): Audit setup (header, auditors, the audit activities planned,
+ * the tool catalogue), Audit run / interview (an auditor's interviews and their context, then the audit forms of the activities, roles and programme
+ * activities), Audit progress (the progression of each audit activity, the coverage), Audit potential scopes (tooling gaps, observed versus
+ * modelled, calibration).
+ */
 export default function AuditSection() {
   const data = useAuditData();
   return (
     <SectionFrame title="🔎 Audit" help={help} overrides={OVERRIDES}
-      input={<><Header header={data.audit.header} /><Toolbar /><div className="ac-form-row"><OverrideBadge refKey="BPMN" label="Process (audit)" /></div></>}
+      input={<><Toolbar /><div className="ac-form-row"><OverrideBadge refKey="BPMN" label="Process (audit)" /></div></>}
       result={<Tabs label="Audit views" tabs={[
-        { id: 'audit-activities', label: 'Audit activities', render: () => <AuditActivities data={data} /> },
-        { id: 'activities', label: 'Activities', render: () => <Activities data={data} /> },
-        { id: 'roles', label: 'Roles', render: () => <Roles data={data} /> },
-        { id: 'programme', label: 'Programme', render: () => <Programme data={data} /> },
-        { id: 'catalogue', label: 'Tool catalogue', render: () => <Catalogue data={data} /> },
-        { id: 'calibration', label: 'Coverage and calibration', render: () => <Calibration data={data} /> },
+        { id: 'setup', label: 'Audit setup', render: () => <Tabs label="Audit setup" tabs={[
+          { id: 'plan', label: 'Header and plan', render: () => <><Header header={data.audit.header} /><AuditPlan data={data} /></> },
+          { id: 'catalogue', label: 'Tool catalogue', render: () => <Catalogue data={data} /> },
+        ]} /> },
+        { id: 'run', label: 'Audit run / interview', render: () => <Tabs label="Audit run" tabs={[
+          { id: 'interview', label: 'Interview', render: () => <InterviewRun data={data} /> },
+          { id: 'activities', label: 'Activities', render: () => <Activities data={data} /> },
+          { id: 'roles', label: 'Roles', render: () => <Roles data={data} /> },
+          { id: 'programme', label: 'Programme', render: () => <Programme data={data} /> },
+        ]} /> },
+        { id: 'progress', label: 'Audit progress', render: () => <><AuditProgress data={data} /><Coverage data={data} /></> },
+        { id: 'potential', label: 'Audit potential scopes', render: () => <Calibration data={data} /> },
       ]} />} />
   );
 }

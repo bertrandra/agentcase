@@ -17,6 +17,29 @@ When releasing, follow [docs/BUMP_PROCEDURE.md](docs/BUMP_PROCEDURE.md) (§7 for
 
 ## [Unreleased]
 
+### Audit in four tabs (owner's request 2026-11-02)
+
+- 🔎 Audit is organised as **Audit setup** (header, auditors, plan of the audit activities, tool catalogue), **Audit run / interview** (pick your
+  interviews and see their context, then record what you observe on activities, roles and programme activities), **Audit progress** (the
+  progression and status of each audit activity, the coverage) and **Audit potential scopes** (tooling gaps and overlaps, observed versus
+  modelled, calibration). No data or figure changes.
+
+### Programme sizing normalised (owner's decision 2026-11-02, docs/PROGRAMME_SIZING_DMN.md)
+
+- **One sizing table** (`domain/programme/sizing.ts`): every programme cost line is A × Q × P × D over a window; every sizing default lives there
+  once (#6), and the table is exported as DMN decisions next to the case's `.dmn` (`<name>_sizing.dmn`).
+- **The pilot is in the euro result** (#1, DEV-NORM-PILOT): labour at the role rate (TJM × 1.15), a setup line before the build; a pod of 0 FTE
+  means no pilot. golden: setup €239,315.5 → €336,934.58, ROI 6.64 → 4.43, payback month 6 → 11. The cost-model workbook lists it among the setup
+  lines (no separate line, the check row is the engine total).
+- **One calendar** (#2, DEV-NORM-CALENDAR): days are working days; the hub setup's 30 days last 1.64 months (were 0.99, calendar days).
+- **Coaching has a pricing mode** (#3) like training and governance: resources (days a month × months × role rate) or amount (€ over its
+  months); "Automatic" (the default) keeps every saved case's total.
+- **Change management in days** (#4, DEV-NORM-CHANGE-DAYS): entry FTE × days per head of the readiness band (2.5 / 6 / 11.5) × the role rate.
+- **One recurring form** (#5) and **the decommissioning saving as an output of its line** (#7, the engine reads it from the line).
+- **Hub curation at the role rate** (#8, DEV-NORM-KH-CURATION) in new cases (`COEF.khCurationPremium` 1.15); a saved case keeps the TJM.
+- **Monte Carlo on the programme's fixed amounts** (#9): an optional driver (`MODEL.MCS.dists.programmeAmount.spreadPct`, off by default) with
+  its own random stream, so the existing draws are unchanged.
+
 ### SPEC_FIXES lot X7 (part)
 
 - **Carry-over decided** (FX-O5): the Golden-vs-AME comparison and per-snapshot Excel export are kept out (DEV-AME-NOT-PORTED, FX-57); the

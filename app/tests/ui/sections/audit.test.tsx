@@ -13,6 +13,8 @@ import { freshStore } from '../../store/helpers';
 /** Phase B7 screen (docs/SPEC_BPMN.md F-B31): the 🔎 Audit section edits the audit with the keyboard controls, calibrates on request, axe clean. */
 afterEach(() => { cleanup(); act(() => auditView.setState({ selected: null, accepted: [], report: null })); });
 const bpmn = (s: ReturnType<typeof freshStore>) => s.getState().portfolio.common.BPMN;
+/** Opens a tab (the four top tabs: Audit setup, Audit run / interview, Audit progress, Audit potential scopes; then their own tabs). */
+const tab = (name: string) => fireEvent.click(screen.getByRole('tab', { name }));
 const commit = (label: string, value: string) => { const el = screen.getByLabelText(label); fireEvent.change(el, { target: { value } }); fireEvent.blur(el); };
 
 describe('🔎 Audit', () => {
@@ -20,7 +22,7 @@ describe('🔎 Audit', () => {
     const s = freshStore(), { container } = render(<Audit />);
     commit('Client', 'Acme');
     expect(readAudit(bpmn(s)).header).toMatchObject({ code: 'AUDIT-1', client: 'Acme', status: 'planned' });
-    fireEvent.click(screen.getByRole('tab', { name: 'Activities' }));
+    tab('Audit run / interview'); tab('Activities');
     fireEvent.click(screen.getByRole('button', { name: /^A017 · / }));
     commit('Rework rate', '20');
     expect(readAudit(bpmn(s)).elements.get('A017')!.observations[0]).toMatchObject({ name: 'reworkRate', value: '20' });
@@ -36,7 +38,7 @@ describe('🔎 Audit', () => {
     act(() => { editAudit('A017', { kind: 'observation', obs: { name: 'reworkRate', value: '20' } }); });
     act(() => { editAudit('A017', { kind: 'observation', obs: { name: 'automationLevel', value: 'agentic' } }); });
     const { container } = render(<Audit />);
-    fireEvent.click(screen.getByRole('tab', { name: 'Coverage and calibration' }));
+    tab('Audit potential scopes');
     expect(screen.getAllByText('observed rework rate 20 % / 100', { selector: 'td' })).toHaveLength(2);   // LP001 and LP002 rework A017
     const before = effort();
     fireEvent.click(screen.getByLabelText('Accept probability of LP001'));
@@ -44,8 +46,9 @@ describe('🔎 Audit', () => {
     expect([before, effort()]).toEqual([0.1, 0.2]);
     expect(readAudit(bpmn(s)).header!.calibrations[0]!.changes.map((c) => c.element)).toEqual(['LP001']);
     expect(await axeViolations(container)).toEqual([]);
-    for (const tab of ['Roles', 'Tool catalogue', 'Activities']) {
-      fireEvent.click(screen.getByRole('tab', { name: tab }));
+    for (const path of [['Audit run / interview', 'Interview'], ['Audit run / interview', 'Roles'], ['Audit run / interview', 'Programme'],
+      ['Audit setup', 'Tool catalogue'], ['Audit progress']]) {
+      path.forEach(tab);
       expect(await axeViolations(container)).toEqual([]);
     }
   });
@@ -67,13 +70,19 @@ describe('🔎 Audit', () => {
           { code: 'INT-2', role: 'Ops', date: '2026-11-04', auditor: 'Bob' }] });
       });
       expect(readAudit(bpmn(s)).header!.interviews[0]).toMatchObject({ roles: [role.id], activities: acts.map((a) => a.id), auditor: 'Ann' });
+      tab('Audit run / interview');
       fireEvent.change(screen.getByLabelText('I am (auditor)'), { target: { value: 'Ann' } });
       expect(screen.queryByLabelText('Select INT-2')).toBeNull();
       fireEvent.click(screen.getByLabelText('Select INT-1'));
       const ctx = screen.getByRole('region', { name: 'Interview context' });
       expect(ctx.textContent).toContain(role.name);
       for (const a of acts) expect(ctx.textContent).toContain(a.id);
+      expect(await axeViolations(container)).toEqual([]);
+      tab('Audit progress');
       expect(screen.getByRole('row', { name: /INT-1/ }).textContent).toContain(`0 / ${acts.length}`);
+      expect(screen.getByRole('row', { name: /INT-2/ })).toBeTruthy();   // every auditor by default
+      tab('Audit setup');
+      expect(screen.getByRole('button', { name: '+ Add audit activity' })).toBeTruthy();
       expect(await axeViolations(container)).toEqual([]);
     });
 });

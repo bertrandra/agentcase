@@ -66,7 +66,7 @@ function productParams(v: ProductView): ParamRow[] {
     p('Ramp cap', cv.rampCapPct, '%', IN.ctx), p('Glass-ceiling factor', cv.glassFactor, 'x', IN.ctx),
     p('Risk premium (decision-risk bar, not a cost line)', cv.riskPremium, '', IN.ctx),
     p('Pilot team', pilot.fte, 'FTE', IN.prog), p('Pilot duration', pilot.totalWeeks, 'weeks', IN.prog),
-    p('Pilot cost (included in the cost-model totals, not in the engine cost)', pilot.cost, 'EUR', IN.prog),
+    p('Pilot cost (a setup line, in the engine cost)', pilot.cost, 'EUR', IN.prog),
   ];
 }
 

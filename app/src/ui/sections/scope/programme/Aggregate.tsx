@@ -19,7 +19,7 @@ export default function ProgrammeAggregate() {
     { key: 'typed', header: 'Lines not spread', align: R, render: (r) => String(r.typed) },
     ...a.years.map((_, y): AggColumn<ProgrammeAggRow> => ({ key: `y${y}`, header: `Y${y + 1}`, align: R, render: (r) => eurK(r.years[y] ?? 0) })),
     { key: 'total', header: 'Programme cost', align: R, render: (r) => eurK(r.total) },
-    { key: 'pilot', header: 'Pilot (outside)', align: R, render: (r) => eurK(r.pilot) },
+    { key: 'pilot', header: 'of which pilot', align: R, render: (r) => eurK(r.pilot) },
   ];
   const cells: Record<string, string> = { total: eurK(a.total), pilot: eurK(a.pilot) };
   a.years.forEach((x, y) => { cells[`y${y}`] = eurK(x); });

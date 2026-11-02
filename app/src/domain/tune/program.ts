@@ -4,7 +4,7 @@ import { engagementKey } from '../engagement';
 import { maturityInfo } from './maturity';
 import { opModelCompute } from './opmodel';
 import { pilotLine } from '../programme/profile';
-import { pilotTiming, spreadMonths } from '../programme/timing';
+import { pilotTiming } from '../programme/timing';
 
 // Wave 4 (completeness) — analytical blocks: none of them feeds the euro result.
 // Like the legacy read-outs, a field left at 0 or blank falls back to its default (`P(id) || default`).
@@ -14,15 +14,6 @@ const num = (c: Ctx, id: string, dflt: number): number => c.inp.p(id) || dflt;
 export function pilotSizing(c: Ctx) {
   const { breakIn, weeks, totalWeeks } = pilotTiming(c), p = pilotLine(c);   // timing and cost: the programme's owners (F-B65, F-B68)
   return { fte: p.fte, breakIn, weeks, totalWeeks, cost: p.cost };
-}
-
-/**
- * How the pilot is spent (decision D4, cost-model workbook): the cost spread evenly over its weeks (a month = 52 / 12 weeks), the last month pro
- * rata (`spreadMonths`, the programme's one spreading rule); the entries sum to the cost. Empty when the pilot has no duration or no cost. Where
- * it falls: the months before the build (D-B28, `pilotTiming().leadMonths`).
- */
-export function pilotMonths(p: { totalWeeks: number; cost: number }): number[] {
-  return p.cost > 0 ? spreadMonths(p.cost, (p.totalWeeks * 12) / 52) : [];
 }
 
 /** EV-22 internal capability (Volet A): operational / in training / target mass. */

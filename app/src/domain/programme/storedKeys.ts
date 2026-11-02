@@ -13,7 +13,7 @@ export const PROGRAMME_VALUE_KEYS: readonly string[] = [
   'rmD1', 'rmD2', 'rmD3', 'optStages', 'stagesFte', 'decideDays',
   'pilotFte', 'pilotBreakin', 'pilotWeeks', 'setupTooling', 'setupTraining', 'setupGov',
   'trainPricing', 'trainFte', 'trainMonths', 'capOps', 'capTrain', 'capTarget',
-  'coachDaysPerMonth', 'coachMonths', 'setupCoaching', 'coachY1', 'coachCruise', 'govPricing', 'govFte', 'govMonths',
+  'coachPricing', 'coachDaysPerMonth', 'coachMonths', 'setupCoaching', 'coachY1', 'coachCruise', 'govPricing', 'govFte', 'govMonths',
   'khTargetCC', 'khSetupBase', 'khSetupDays', 'setupDuration', 'runSizeMode', 'runFloorMin', 'runFloorPct', 'runOpsPerAgent', 'khCurationFTE',
   'khInfraMonthly',
   'optProcure', 'procureDays', 'optIntegr', 'integrations', 'integrDays', 'optHypercare', 'hypercareFte', 'hypercareWeeks', 'optDecom', 'decomDays',

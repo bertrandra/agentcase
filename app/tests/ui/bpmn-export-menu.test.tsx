@@ -60,9 +60,10 @@ describe('File menu: Export process (BPMN)', () => {
     fireEvent.click(cmmn);
     fireEvent.click(screen.getByRole('button', { name: 'Export' }));
     expect(saved.map((s) => s.name.replace(/_\d{4}-\d\d-\d\d/, ''))).toEqual(['AgentCase_process_case.bpmn', 'AgentCase_process_case.dmn',
-      'AgentCase_process_case_run.cmmn']);
+      'AgentCase_process_case_run.cmmn', 'AgentCase_process_case_sizing.dmn']);   // + the programme's sizing table as DMN (normalisation #6)
     expect(await textOf(saved[1]?.blob)).toMatch(/^<\?xml version="1\.0" encoding="UTF-8"\?>\n<dmn:definitions /);
     expect(await textOf(saved[2]?.blob)).toMatch(/\n<cmmn:definitions /);
+    expect(await textOf(saved[3]?.blob)).toMatch(/dec_line_cost/);
   });
   it('Escape closes the dialog without exporting and returns focus to the File button', () => {
     loadCase('golden');

@@ -26,7 +26,7 @@ export const costProfileLabel = (p: CostProfile): string => COST_PROFILES.find((
 
 /** The cost line of the profile that carries each core activity's cost; the opt-in activities carry their opt-in's line (`optIn.ts`). */
 const CORE_LINE: Record<string, string> = {
-  setupTooling: 'tooling', setupTraining: 'training', setupCoaching: 'coaching', setupGovernance: 'governance', change: 'change', hubSetup: 'knowledge',
+  setupTooling: 'tooling', pilot: 'pilot', setupTraining: 'training', setupCoaching: 'coaching', setupGovernance: 'governance', change: 'change', hubSetup: 'knowledge',
 };
 /** The cost line of an activity kind (null: its cost is not a line of the programme profile: pilot, engine figures, milestones). */
 export const lineOfKind = (kind: string): string | null => CORE_LINE[kind] ?? optInOfKind(kind)?.id ?? null;

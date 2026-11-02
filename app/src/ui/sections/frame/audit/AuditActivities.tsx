@@ -1,12 +1,12 @@
 import { memo, useId, useMemo, useState } from 'react';
 import { setHeader } from '@/controllers/audit';
-import { AUDIT_STATUSES, interviewContext, interviewProgress, interviewsOf, type AuditStatus, type Interview } from '@/domain/audit';
+import { interviewContext, type Interview } from '@/domain/audit';
 import { readProcess } from '@/domain/process';
 import type { AuditViewData } from '@/store/auditHooks';
 import { toast } from '@/ui/uiState';
 import { STATUS_LABELS } from './Header';
+import { AuditorPick, useAuditor } from './auditor';
 
-const pct = (x: number | null): string => (x === null ? '—' : `${Math.round(x * 100)} %`);
 const many = (e: React.ChangeEvent<HTMLSelectElement>): string[] => [...e.target.selectedOptions].map((o) => o.value);
 
 /** The form that adds an audit activity: code, date, auditor, the roles it targets and the activities they do (several of each). */
@@ -74,55 +74,39 @@ function Context({ data, codes }: { data: AuditViewData; codes: string[] }) {
   );
 }
 
-/**
- * 🔎 Audit › Audit activities (owner's request 2026-11-02): the audit is the top level, made of audit activities (interviews), each targeting one
- * or more roles and the activities they do. The auditor registers (picks their name), selects one or more of their audit activities and sees the
- * context of the interview; the table traces every audit activity with its progression (activities covered: their audit closed, or evidence naming
- * the audit activity). Status: as set, else derived from the progression.
- */
-export const AuditActivities = memo(function AuditActivities({ data }: { data: AuditViewData }) {
-  const id = useId(), [auditor, setAuditor] = useState(''), [picked, setPicked] = useState<string[]>([]);
-  const all = data.audit.header?.interviews ?? [], mine = interviewsOf(all, auditor);
-  const progress = useMemo(() => new Map(interviewProgress(data.doc).map((p) => [p.code, p])), [data.doc]);
-  const names = useMemo(() => new Map(data.actors.map((r) => [r.id, r.name])), [data.actors]);
-  const toggle = (code: string) => setPicked((p) => (p.includes(code) ? p.filter((x) => x !== code) : [...p, code]));
-  const setStatus = (i: Interview, status: AuditStatus) => {
-    if (!setHeader({ interviews: all.map((x) => (x === i ? { ...x, status } : x)) })) toast('Status refused');
-  };
-  const remove = (i: Interview) => { if (!setHeader({ interviews: all.filter((x) => x !== i) })) toast('Removal refused'); };
-  const shown = picked.filter((c) => mine.some((i) => i.code === c));
+/** 🔎 Audit › Audit setup: the audit activities planned (code, date, auditor, the roles targeted and the activities they do). */
+export const AuditPlan = memo(function AuditPlan({ data }: { data: AuditViewData }) {
+  const all = data.audit.header?.interviews ?? [];
   return (
     <>
-      <div className="ac-form-row">
-        <label htmlFor={`${id}-me`}>I am (auditor)</label>
-        <select id={`${id}-me`} value={auditor} onChange={(e) => { setAuditor(e.target.value); setPicked([]); }}>
-          <option value="">Every auditor</option>
-          {(data.audit.header?.auditors ?? []).map((a) => <option key={a.name} value={a.name}>{a.name}</option>)}
-        </select>
-        <span className="ac-muted">{`${mine.length} audit activit${mine.length === 1 ? 'y' : 'ies'}${auditor ? ` for ${auditor}` : ''}`}</span>
-      </div>
-      <table className="ac-table">
-        <caption>Audit activities and their progression</caption>
-        <thead><tr><th>Select</th><th>Code</th><th>Roles</th><th>Activities</th><th>Auditor</th><th>Date</th><th>Progress</th><th>Status</th><th>Remove</th></tr></thead>
-        <tbody>{mine.map((i) => {
-          const p = progress.get(i.code);
-          return (
-            <tr key={i.code}>
-              <td><input type="checkbox" aria-label={`Select ${i.code}`} checked={picked.includes(i.code)} onChange={() => toggle(i.code)} /></td>
-              <th scope="row">{i.code}</th>
-              <td>{i.roles?.length ? i.roles.map((r) => names.get(r) ?? r).join(', ') : i.role}</td>
-              <td>{i.activities?.length ?? 0}</td><td>{i.auditor ?? '—'}</td><td>{i.date}</td>
-              <td>{p ? `${p.covered} / ${p.activities} (${pct(p.share)})` : '—'}</td>
-              <td><select aria-label={`Status of ${i.code}`} value={p?.status ?? 'planned'} onChange={(e) => setStatus(i, e.target.value as AuditStatus)}>
-                {AUDIT_STATUSES.map((s) => <option key={s} value={s}>{STATUS_LABELS[s]}</option>)}
-              </select></td>
-              <td><button type="button" aria-label={`Remove ${i.code}`} onClick={() => remove(i)}>✕</button></td>
-            </tr>
-          );
-        })}</tbody>
-      </table>
-      <Context data={data} codes={shown} />
+      <p className="ac-muted">{`${all.length} audit activit${all.length === 1 ? 'y' : 'ies'} planned: their progression is in Audit progress.`}</p>
       <AddActivity data={data} list={all} />
+    </>
+  );
+});
+
+/**
+ * 🔎 Audit › Audit run / interview (owner's request 2026-11-02): the auditor registers (picks their name), selects one or more of their audit
+ * activities and sees the context of the interview: the roles to meet and what the audit already holds on each activity they do.
+ */
+export const InterviewRun = memo(function InterviewRun({ data }: { data: AuditViewData }) {
+  const f = useAuditor(data), [picked, setPicked] = useState<string[]>([]);
+  const names = useMemo(() => new Map(data.actors.map((r) => [r.id, r.name])), [data.actors]);
+  const toggle = (code: string) => setPicked((p) => (p.includes(code) ? p.filter((x) => x !== code) : [...p, code]));
+  const shown = picked.filter((c) => f.mine.some((i) => i.code === c));
+  return (
+    <>
+      <AuditorPick data={data} f={f} onPick={() => setPicked([])} />
+      <fieldset className="ac-audit-list">
+        <legend>My audit activities</legend>
+        {f.mine.length === 0 ? <p className="ac-muted">No audit activity: plan them in Audit setup.</p> : f.mine.map((i) => (
+          <label key={i.code} className="ac-form-row">
+            <input type="checkbox" aria-label={`Select ${i.code}`} checked={picked.includes(i.code)} onChange={() => toggle(i.code)} />
+            {`${i.code} · ${i.date} · ${i.roles?.length ? i.roles.map((r) => names.get(r) ?? r).join(', ') : i.role}`}
+          </label>
+        ))}
+      </fieldset>
+      <Context data={data} codes={shown} />
     </>
   );
 });

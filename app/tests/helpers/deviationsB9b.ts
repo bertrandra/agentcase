@@ -7,7 +7,7 @@ import type { Deviation } from './deviations';
  * oracle when the legacy profile is injected) and the cross-surface tests.
  */
 /** Fields of the ROI's setup (its amount): the setup total and everything that subtracts or divides by it. */
-const SETUP_AMOUNT = ['model.setupTotal', 'model.conv.setupBase', 'model.conv.setupBillable', 'model.conv.setupAbsorbed',
+export const SETUP_AMOUNT = ['model.setupTotal', 'model.conv.setupBase', 'model.conv.setupBillable', 'model.conv.setupAbsorbed',
   'mcRun.outcomes', 'mcRun.stats.mean', 'mcRun.stats.cvar10', 'mcRun.stats.pNeg',
   'decisionRun.setup', 'decisionRun.p10Floor', 'decisionRun.stats.mean', 'decisionRun.stats.cvar10', 'decisionRun.stats.pNeg', 'decisionRun.confidence',
   'decisionRun.verdict', 'strategyEval[].computed.tco', 'strategyEval[].computed.net', 'strategyEval[].computed.setup', 'strategyEval[].computed.roi',
@@ -16,7 +16,7 @@ const SETUP_AMOUNT = ['model.setupTotal', 'model.conv.setupBase', 'model.conv.se
   'me_mcs.stats.npv', 'me_mcs.stats.paybackMonths', 'payback', 'npv', 'econ_monthly[].setupSpend', 'econ_monthly[].total', 'econ_monthly[].cum',
   'econ_roi.net', 'econ_roi.roi', 'econ_roi.roiPct', 'econ_roi.npv', 'econ_roi.payback', 'econ_roi.paybackText'];
 /** Fields of the setup's timing: when it is spent (the monthly cash flow, the payback, the NPV). */
-const SETUP_TIMING = ['payback', 'npv', 'econ_monthly[].setupSpend', 'econ_monthly[].total', 'econ_monthly[].cum', 'thinNow.npv', 'thinNow.payback',
+export const SETUP_TIMING = ['payback', 'npv', 'econ_monthly[].setupSpend', 'econ_monthly[].total', 'econ_monthly[].cum', 'thinNow.npv', 'thinNow.payback',
   'thinNow.inputHash', 'resultsCore.payback', 'strategyEval[].computed.payback', 'strategyRanking', 'compareView.table[5]', 'me_mcs.stats.npv',
   'me_mcs.stats.paybackMonths', 'econ_roi.npv', 'econ_roi.payback', 'econ_roi.paybackText'];
 

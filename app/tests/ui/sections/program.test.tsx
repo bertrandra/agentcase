@@ -1,7 +1,7 @@
 // @vitest-environment jsdom
 import { act, cleanup, fireEvent, render, screen } from '@testing-library/react';
 import { afterEach, beforeEach, describe, expect, it } from 'vitest';
-import { computeCase } from '@/domain';
+import { computeCase, makeCtx } from '@/domain';
 import { setInput } from '@/controllers/inputs';
 import { appStore } from '@/store/instance';
 import Program from '@/ui/sections/tune/program';
@@ -9,6 +9,7 @@ import { fmtK } from '@/ui/widgets/tuneA';
 import { freshStore } from '../../store/helpers';
 import { legacySectionText, missingNumbers, renderedText } from '../../helpers/parity';
 import { loadFixture } from '../../helpers/tuneA';
+import { withoutNormFigures } from '../../helpers/normFigures';
 import { editParam, expectReference } from '../../helpers/programmeParam';
 import { caseValues } from '@/domain/process';
 
@@ -23,15 +24,16 @@ describe('program section', () => {
   it.each(['golden', 'ctx-msi', 'curve-logistic', 'industry-med'])('shows every figure the legacy section showed (%s)', (fx) => {
     loadFixture(fx);
     const { container } = render(<Program />);
-    expect(missingNumbers(legacySectionText(fx, 'program')!, renderedText(container))).toEqual([]);
+    // DEV-NORM-PILOT: the indicative pilot cost is at the role rate (× 1.15); the legacy figure at the TJM is not shown any more
+    expect(withoutNormFigures(missingNumbers(legacySectionText(fx, 'program')!, renderedText(container)), makeCtx(state()))).toEqual([]);
   });
   // B9a (DEV-B9A-CONTEXT-SCREENS): the pilot is a programme activity, its parameters are edited in the Process section; this card follows them
-  it('pilot sizing: duration = prove weeks + 2 per break-in sprint; cost = FTE x years x working days x target day rate', () => {
+  it('pilot sizing: duration = prove weeks + 2 per break-in sprint; cost = FTE x years x working days x role rate (DEV-NORM-PILOT)', () => {
     const { container } = render(<Program />);
     expect(text(container)).toMatch(/16 wk\s+Pilot duration/);
-    expectReference('Pilot pod size (FTE)', 'Pilot');
+    expectReference('Pilot pod size (FTE; 0 = no pilot)', 'Pilot');
     editParam('pilotFte', '5'); editParam('pilotBreakin', '3'); editParam('pilotWeeks', '16');
-    const m = calc().model, cost = 5 * (22 / 52) * m.wd * m.tgtTJM;
+    const m = calc().model, cost = 5 * (22 / 52) * m.wd * m.tgtTJM * 1.15;
     expect(caseValues(state()).pilotFte).toBe('5');
     expect(text(container)).toMatch(/22 wk\s+Pilot duration/);
     expect(text(container).replace(/\s/g, '')).toContain(`${fmtK(cost)}Pilotcost(indicative)`);

@@ -3,6 +3,7 @@ import { cmmnDocument } from '@/domain/cmmn';
 import { bindingsOf, decisionsEl, decisionsOf, dmnFile, readDmn, ruleFamilies, writeDmn, type DmnModel } from '@/domain/dmn';
 import { serialize } from '@/domain/process';
 import { caseViews } from '@/domain/process/engineInputs';
+import { sizingDmn } from '@/domain/programme/sizingDmn';
 import { APP_VERSION } from '@/domain/version';
 import { activeDoc } from '@/store/editBase';
 import type { BpmnFile } from './bpmn';
@@ -45,5 +46,7 @@ export function companionFiles(bpmnName: string, o: { dmn: boolean; cmmn: boolea
     out.push({ filename: `${base}.dmn`, text: serialize(dmnFile(dmn)) });
   }
   if (o.cmmn) out.push({ filename: `${base}_run.cmmn`, text: serialize(cmmnDocument(c.BPMN, APP_VERSION)) });
+  // the programme's sizing table as DMN decisions (docs/PROGRAMME_SIZING_DMN.md): activation, quantity, price, window, distribution per line
+  if (o.dmn) out.push({ filename: `${base}_sizing.dmn`, text: serialize(dmnFile(writeDmn(sizingDmn()))) });
   return out;
 }

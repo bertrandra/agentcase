@@ -62,7 +62,7 @@ function coefValue(c: Ctx, id: string): number | null {
 }
 
 /** Every item a client must confirm, in the legacy order: coefficients, supervision floor, metric anchors, model inputs, factory parameters. */
-const PRICED: Record<string, string> = { setupTraining: 'trainPricing', setupGov: 'govPricing' };
+const PRICED: Record<string, string> = { setupTraining: 'trainPricing', setupGov: 'govPricing', setupCoaching: 'coachPricing' };
 /** " — pricing: amount, …" on the training or governance amount when its line is priced by amount (FX-D13 d), else nothing. */
 const pricedNote = (c: Ctx, id: string): string => (PRICED[id] && caseValues(c.s)[PRICED[id]!] === 'amount'
   ? ' — pricing: amount (this amount is the line\'s cost, spent over its duration)' : '');

@@ -2,7 +2,7 @@ import { describe, expect, it } from 'vitest';
 import { makeCtx, type CaseState } from '@/domain';
 import { engineNow } from '@/domain/canonical';
 import { consolidate, portfolioGantt } from '@/domain/portfolio';
-import { pilotLine, programmeLines, programmeCalendar, setupMonths } from '@/domain/programme';
+import { programmeLines, programmeCalendar, setupMonths } from '@/domain/programme';
 import { ganttMonths, productWindow, programmeGantt } from '@/domain/programme/gantt';
 import { histogramLabourCost, programmeHistogram } from '@/domain/programme/histogram';
 import { deliveryHistogram } from '@/domain/programme/histogramDelivery';
@@ -42,7 +42,7 @@ describe.each(FIXTURE_IDS)('programme plan views: %s', (id) => {
   it('the histogram gives back the labour of the cost profile: Σ days × rate per line = the line\'s amount (F-B76)', () => {
     const h = programmeHistogram(c), labour = programmeLines(c).filter((l) => l.rule === 'resources');
     expect(histogramLabourCost(h)).toBeCloseTo(sum(labour.map((l) => l.amount)), 4);
-    expect(histogramLabourCost(h, false)).toBeCloseTo(pilotLine(c).cost, 4);
+    expect(histogramLabourCost(h, false)).toBeCloseTo(0, 4);   // DEV-NORM-PILOT: the pilot is in the euro result, nothing is outside
     for (const l of labour) expect(sum(h.lines.find((x) => x.id === l.id)!.days) * h.lines.find((x) => x.id === l.id)!.rate).toBeCloseTo(l.amount, 4);
   });
   it('the delivery view reads the engine: the roles add up to its human FTE every month, before = the entry team', () => {

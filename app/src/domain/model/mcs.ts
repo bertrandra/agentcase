@@ -6,7 +6,7 @@ import { timeFor } from '../time';
 import { thinAggregate } from '../time/thin';
 import type { CaseState } from '../types/state';
 import { lceLoops } from './lce';
-import { MCS_DRIVER_ORDER, mcsBaseValue, mcsDrawOne, mcsMarginalBand, mcsSpec, type McsSample } from './mcsDrivers';
+import { MCS_AMOUNT_ID, MCS_DRIVER_ORDER, mcsAmountAt, mcsAmountOn, mcsBaseValue, mcsDrawOne, mcsMarginalBand, mcsSpec, type McsSample } from './mcsDrivers';
 import { mcsOf } from './modelState';
 import { mulberry32, quantile } from './numerics';
 import { activeCurve } from './overlay';
@@ -35,7 +35,7 @@ function drawCtx(c: Ctx, sample: McsSample): Ctx {
   }
   const baseRate = mcsBaseValue(c, 'dayRate'), baseTok = mcsBaseValue(c, 'tokenPrice');
   return { s, inp: makeInputs(s), a: c.a, rateScale: baseRate > 0 ? (sample.dayRate as number) / baseRate : 1,
-    tokenScale: baseTok > 0 ? (sample.tokenPrice as number) / baseTok : 1 };
+    tokenScale: baseTok > 0 ? (sample.tokenPrice as number) / baseTok : 1, amountScale: sample[MCS_AMOUNT_ID] ?? null };
 }
 
 /**
@@ -55,10 +55,10 @@ const quantiles = (arr: number[]): McsStats => {
 
 /** Tornado: each driver alone across its own marginal P10-P90 with the others at base, ranked by swing on horizon-end savings. */
 export function mcsTornado(c: Ctx, bases: McsSample) {
-  return MCS_DRIVER_ORDER.map((id) => {
-    const [lo, hi] = mcsMarginalBand(c, id, bases[id] as number);
+  return [...MCS_DRIVER_ORDER, ...(mcsAmountOn(c) ? [MCS_AMOUNT_ID] : [])].map((id) => {
+    const [lo, hi] = id === MCS_AMOUNT_ID ? [mcsAmountAt(c, 0.1), mcsAmountAt(c, 0.9)] : mcsMarginalBand(c, id, bases[id] as number);
     const a = mcsEvaluate(c, { ...bases, [id]: lo }).savY3, b = mcsEvaluate(c, { ...bases, [id]: hi }).savY3;
-    return { id, label: mcsSpec(c, id).label ?? id, lo: Math.min(a, b), hi: Math.max(a, b), swing: Math.abs(b - a) };
+    return { id, label: id === MCS_AMOUNT_ID ? 'Programme fixed amounts' : mcsSpec(c, id).label ?? id, lo: Math.min(a, b), hi: Math.max(a, b), swing: Math.abs(b - a) };
   }).sort((a, b) => b.swing - a.swing);
 }
 
@@ -71,13 +71,15 @@ export function runMcs(c: Ctx, nIn?: number, seedIn?: number): McsResult {
   const n = Math.max(MCS_DRAWS_MIN, Math.min(MCS_DRAWS_MAX, nIn || mc.draws || MCS_DRAWS_DEFAULT));
   const seed = Math.max(1, Math.round(seedIn != null ? seedIn : mc.seed || MCS_SEED_DEFAULT));
   const rho = Math.max(0, Math.min(1, mc.rho != null ? mc.rho : MCS_RHO_DEFAULT));
-  const rng = mulberry32(seed), bases: McsSample = {};
+  const rng = mulberry32(seed), bases: McsSample = {}, amountOn = mcsAmountOn(c), arng = mulberry32((seed * 2654435761) >>> 0 || 1);
   MCS_DRIVER_ORDER.forEach((id) => { bases[id] = mcsBaseValue(c, id); });
   const sav: number[] = new Array(n), run: number[] = new Array(n), npv: number[] = new Array(n), pay: number[] = new Array(n);
   const marks = [Math.floor(n * 0.1), Math.floor(n * 0.25), Math.floor(n * 0.5), Math.floor(n * 0.75), n].filter((v, i, a) => v > 0 && a.indexOf(v) === i);
   const convergence: McsResult['convergence'] = [];
   for (let i = 0; i < n; i++) {
-    const r = mcsEvaluate(c, mcsDrawOne(c, rng, bases, rho));
+    const draw = mcsDrawOne(c, rng, bases, rho);
+    if (amountOn) draw[MCS_AMOUNT_ID] = mcsAmountAt(c, arng());   // its own stream: the seven drivers draw as before (normalisation #9)
+    const r = mcsEvaluate(c, draw);
     sav[i] = r.savY3; run[i] = r.runY3; npv[i] = r.npv; pay[i] = r.paybackMonths;
     if (marks.includes(i + 1)) convergence.push({ n: i + 1, p50: quantiles(sav.slice(0, i + 1)).p50 });
   }

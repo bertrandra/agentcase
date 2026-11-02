@@ -19,12 +19,14 @@ const CORE = new Set<SetupLineId>(['tooling', 'training', 'coaching', 'governanc
 
 /** The setup of a case: every component line, the four core lines' subtotal and the total. */
 export interface SetupBreakdown {
-  /** tooling, training, coaching, governance, the HRI change cost and the Knowledge hub setup when those modules are on, the opt-in activities on */
+  /** tooling, training, coaching, governance, the HRI change cost and the Knowledge hub setup when those modules are on, the pilot, the opt-in activities on */
   lines: SetupLine[];
   /** sum of the four core lines (tooling + training + coaching + governance) */
   base: number;
   /** HRI change cost and Knowledge hub setup (0 when their module is off) */
   change: number; knowledge: number;
+  /** the pilot (normalisation #1: in the euro result) */
+  pilot: number;
   /** the opt-in activities switched on (0 by default, D-B31) */
   optIn: number;
   /** the setup total: every line. The model reads it (`model().setupTotal`, the ROI denominator) and the engine spends it month by month */
@@ -41,13 +43,13 @@ export function setupBreakdown(c: Ctx): SetupBreakdown {
     amount: l.amount, h1: HINTS[l.id]?.[0] ?? '—', h2: HINTS[l.id]?.[1] ?? '—' }));
   const sum = (f: (id: SetupLineId) => boolean) => lines.filter((l) => f(l.id)).reduce((a, l) => a + l.amount, 0);
   return { lines, base: sum((id) => CORE.has(id)), change: sum((id) => id === 'change'), knowledge: sum((id) => id === 'knowledge'),
-    optIn: sum((id) => !CORE.has(id) && id !== 'change' && id !== 'knowledge'), total: sum(() => true) };
+    pilot: sum((id) => id === 'pilot'), optIn: sum((id) => !CORE.has(id) && !['change', 'knowledge', 'pilot'].includes(id)), total: sum(() => true) };
 }
 
 /** The line names of the Financial "Investment & Setup" table and the results workbook (legacy wording of the four core lines). */
 export const INVESTMENT_LABEL: Partial<Record<SetupLineId, string>> = {
   tooling: 'Tooling & Infrastructure', training: 'Training', coaching: 'Coaching', governance: 'Governance', change: 'Change management (HRI)',
-  knowledge: 'Knowledge hub setup',
+  knowledge: 'Knowledge hub setup', pilot: 'Pilot',
 };
 /** The investment lines (label, amount) of a setup breakdown, in order: they add up to its total (an opt-in activity under its own name). */
 export const investmentLines = (b: SetupBreakdown): [string, number][] => b.lines.map((l) => [INVESTMENT_LABEL[l.id] ?? l.label, l.amount]);
