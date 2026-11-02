@@ -12,6 +12,7 @@ import { openSnapshot, toPortfolioSnapshot } from '@/store/persistence/portfolio
 import { expectAutosaveRestores, expectTabSync } from '../helpers/docRoundTrips';
 import { goldenAndB, SHARED_LINE } from '../helpers/portfolio';
 import { freshStore } from './helpers';
+import { planIntoJson } from '@/store/persistence/portfolioPlan';
 
 /**
  * Phase B10a (docs/SPEC_BPMN.md § 21, schema v5): the teams move into the organisation part of the document. A version 2–4 file opens with the
@@ -26,7 +27,7 @@ const figures = (pf: Portfolio): number[][] => pf.products.map((p) => computeCas
 
 /** A version 4 portfolio file (the teams as keys): golden and B, a shared line with pins, a unit edited inside B's own process document. */
 function v4File(): Record<string, unknown> {
-  const pf = addLine(goldenAndB(), { ...SHARED_LINE, pins: ['A017'] }), file = JSON.parse(saved(pf)) as Record<string, unknown>;
+  const pf = addLine(goldenAndB(), { ...SHARED_LINE, pins: ['A017'] }), file = planIntoJson(JSON.parse(saved(pf)) as Record<string, unknown>);   // a v4 file holds its waves as keys
   const products = file.products as Record<string, unknown>[], common = file.common as { BPMN: string };
   products.forEach((p) => { p.teamIn = productTeam(pf, p.id as string); });
   const own = withUnits(openSnapshot(file).common.BPMN as XDocument, [el('ac:orgUnit', { id: 'unit-9', name: 'Old BU', type: 'businessUnit' })]);

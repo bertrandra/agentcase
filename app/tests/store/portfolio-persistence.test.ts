@@ -13,6 +13,7 @@ import { appStore } from '@/store/instance';
 import { isSingleCase } from '@/store/persistence/portfolioSnapshot';
 import { threeProducts } from '../helpers/portfolioStore';
 import { freshStore } from './helpers';
+import { planIntoJson } from '@/store/persistence/portfolioPlan';
 
 afterEach(() => dismissCalcBanner());
 const pf = () => appStore().getState().portfolio;
@@ -74,8 +75,8 @@ describe('portfolio files', () => {
   });
   it('staleness at portfolio level: a moved wave is stale although every product package is valid', async () => {
     threeProducts();
-    const raw = JSON.parse(exportSnapshotJson().json);
-    raw.waves[1].startMonth = 12;
+    const raw = planIntoJson(JSON.parse(exportSnapshotJson().json)) as { waves: { startMonth: number }[] };   // the waves as keys (v6: in the document)
+    raw.waves[1]!.startMonth = 12;
     freshStore();
     await importSnapshotFile({ text: async () => JSON.stringify(raw) });
     expect(getCalcBanner()?.state).toBe('stale');

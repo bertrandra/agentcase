@@ -17,6 +17,7 @@ import { validate } from '@/domain/portfolio';
 import { channelPair } from '../helpers/channels';
 import { threeProducts } from '../helpers/portfolioStore';
 import { freshStore } from './helpers';
+import { planIntoJson } from '@/store/persistence/portfolioPlan';
 
 const pf = () => appStore().getState().portfolio;
 const page = () => new DOMParser().parseFromString('<!doctype html><html><head><meta charset="utf-8"></head><body><div id="root"></div></body></html>',
@@ -78,7 +79,8 @@ describe('autosave and multi-tab on a portfolio', () => {
 
 describe('sanitize on portfolios', () => {
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  const good = () => JSON.parse(JSON.stringify(toPortfolioSnapshot(threeProducts().s.getState().portfolio))) as Record<string, any>;
+  // the waves as keys (schema v6 holds them in the document; a file with keys still opens)
+  const good = () => planIntoJson(JSON.parse(JSON.stringify(toPortfolioSnapshot(threeProducts().s.getState().portfolio)))) as Record<string, any>;
   it('drops prototype-pollution keys anywhere in the portfolio', () => {
     const raw = good(), text = JSON.stringify(raw).replace('"overrides":{}', '"overrides":{"__proto__":{"polluted":1},"constructor":{"x":1}}');
     const pfo = openSnapshot(JSON.parse(text));

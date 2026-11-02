@@ -6,6 +6,7 @@ import { readPortfolio } from '../portfolioRead';
 import { fromSnapshot, sanitize, SnapshotError } from '../snapshot';
 import { checkCase, rec } from './caseChecks';
 import { repairPortfolio } from './portfolioChecks';
+import { planIntoJson } from '../portfolioPlan';
 import { migrate } from './version';
 
 export { MIGRATIONS, NewerFileError, SNAPSHOT_SCHEMA_VERSION, VERSION_KEY, migrate, versionStamp } from './version';
@@ -25,7 +26,7 @@ export function openChecked(raw: unknown): Opened {
   if (!rec(raw)) throw new SnapshotError('Snapshot must be a JSON object');
   const notes: string[] = [], s = migrate(sanitize(raw));
   if (s._schema === PORTFOLIO_TAG) {
-    const fixed = repairPortfolio(s, notes);
+    const fixed = repairPortfolio(planIntoJson(s), notes);   // schema v6 (FX-D14): the plan back into the keys first
     return { portfolio: { ...readPortfolio(fixed), persona: carriedPersona(fixed.common) ?? DEFAULT_PERSONA }, notes };
   }
   if (s.dom === undefined) throw new SnapshotError('This file holds no AgentCase case (no form inputs)');

@@ -670,6 +670,36 @@
       <xsd:attribute name="start" type="ac:tNonNegDecimal"/>
       <xsd:attribute name="products" type="xsd:nonNegativeInteger"/>
       <xsd:attribute name="dependsOn" type="ac:tText"/>
+      <xsd:attribute name="startMonth" type="ac:tNonNegDecimal">
+        <xsd:annotation><xsd:documentation>FX-D14: in the portfolio process of a saved portfolio (schema v6), the wave's own start month (portfolio month), its note, and its dependency on another wave (`after` its `milestone`, plus `lag` months); the effective start is computed (waveSchedule).</xsd:documentation></xsd:annotation>
+      </xsd:attribute>
+      <xsd:attribute name="note" type="ac:tText"/>
+      <xsd:attribute name="after" type="ac:tKey"/>
+      <xsd:attribute name="milestone">
+        <xsd:simpleType><xsd:restriction base="xsd:string"><xsd:enumeration value="start"/><xsd:enumeration value="setupEnd"/></xsd:restriction></xsd:simpleType>
+      </xsd:attribute>
+      <xsd:attribute name="lag" type="xsd:decimal"/>
+    </xsd:complexType>
+  </xsd:element>
+
+  <xsd:element name="knowledgeSubset">
+    <xsd:annotation><xsd:documentation>FX-D14: in the portfolio process of a saved portfolio (schema v6), on a product's call activity, the part of the common Knowledge Hub that serves the product; an absent attribute is inherited.</xsd:documentation></xsd:annotation>
+    <xsd:complexType>
+      <xsd:sequence>
+        <xsd:element name="domain" minOccurs="0" maxOccurs="unbounded">
+          <xsd:complexType>
+            <xsd:attribute name="label" type="ac:tText" use="required"/>
+            <xsd:attribute name="weightPct" type="xsd:decimal" use="required"/>
+          </xsd:complexType>
+        </xsd:element>
+      </xsd:sequence>
+      <xsd:attribute name="product" type="ac:tKey" use="required"/>
+      <xsd:attribute name="enabled" type="xsd:boolean"/>
+      <xsd:attribute name="maturityAnswers" type="ac:tText"/>
+      <xsd:attribute name="targetCC" type="xsd:decimal"/>
+      <xsd:attribute name="curationFTE" type="xsd:decimal"/>
+      <xsd:attribute name="setupBase" type="xsd:decimal"/>
+      <xsd:attribute name="ktLeadMonths" type="xsd:decimal"/>
     </xsd:complexType>
   </xsd:element>
 </xsd:schema>
