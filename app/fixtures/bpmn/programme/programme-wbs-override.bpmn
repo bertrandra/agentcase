@@ -111,7 +111,7 @@
       <bpmn:task id="prog-pilot" name="Pilot" ac:wbsCode="1.2.1.9">
         <bpmn:documentation>A pilot pod proves the agentic factory (frozen harness + agents) by demonstration before the build: break-in sprints to stabilise the harness, then prove weeks on 3-day fail-fast iterations (the Pilot &amp; Prove stage).</bpmn:documentation>
         <bpmn:extensionElements>
-          <ac:programmeActivity kind="pilot" level="product" costRule="resources" costProfile="spread" timing="pilot" placement="16 weeks (12 prove + 2 × 2 break-in): the Pilot &amp; Prove stage, before the build; it ends at the product's month 0, so its cost falls in the 4 months before the build (from calendar month 1 when the calendar has no earlier month)" cost="84886.15">
+          <ac:programmeActivity kind="pilot" level="product" costRule="resources" costProfile="spread" timing="pilot" placement="16 weeks (12 prove + 2 × 2 break-in): the Pilot &amp; Prove stage, before the build; it ends at the product's month 0, so its cost falls in the 4 months before the build (from calendar month 1 when the calendar has no earlier month)" cost="97619.08">
             <ac:param key="pilotFte" value="3" unit="FTE"/>
             <ac:param key="pilotBreakin" value="2" unit="sprints"/>
             <ac:param key="pilotWeeks" value="12" unit="weeks"/>
@@ -155,7 +155,8 @@
       <bpmn:task id="prog-setupCoaching" name="Setup: coaching">
         <bpmn:documentation>Pair programming, deliverable review, senior / junior binomes, run by the preceptors: coaching days a month over its duration (one coaching activity, D-B30).</bpmn:documentation>
         <bpmn:extensionElements>
-          <ac:programmeActivity kind="setupCoaching" level="product" costRule="resources" costProfile="spread" timing="setup" placement="36 months from the product's month 1, 2 days a month, spent evenly" cost="35000">
+          <ac:programmeActivity kind="setupCoaching" level="product" costRule="resources" costProfile="spread" timing="setup" placement="36 months from the product's month 1, its amount, spent evenly" cost="35000">
+            <ac:param key="coachPricing" value=""/>
             <ac:param key="coachDaysPerMonth" value="" unit="days/month"/>
             <ac:param key="coachMonths" value="" unit="months"/>
             <ac:param key="setupCoaching" value="35000" unit="€"/>
@@ -196,7 +197,7 @@
       <bpmn:task id="prog-hubSetup" name="Knowledge Hub setup">
         <bpmn:documentation>Ingest, index and guardrails: the hub setup base × the context-completeness gap to close.</bpmn:documentation>
         <bpmn:extensionElements>
-          <ac:programmeActivity kind="hubSetup" level="product" costRule="resources" costProfile="spread" timing="hubSetup" placement="30 days (1 months), ready by the product's month 0: a single case has no earlier month, so it starts at month 1. The common hub is set up once, before the first wave" cost="90000">
+          <ac:programmeActivity kind="hubSetup" level="product" costRule="resources" costProfile="spread" timing="hubSetup" placement="30 days (1.6 months), ready by the product's month 0: a single case has no earlier month, so it starts at month 1. The common hub is set up once, before the first wave" cost="90000">
             <ac:param key="khTargetCC" value="3" unit="level"/>
             <ac:param key="khSetupBase" value="120000" unit="€"/>
             <ac:param key="khSetupDays" value="30" unit="days"/>
@@ -291,7 +292,7 @@
       <bpmn:task id="prog-hubRun" name="Knowledge Hub run">
         <bpmn:documentation>Curation and retrieval; the infrastructure is shared by the products.</bpmn:documentation>
         <bpmn:extensionElements>
-          <ac:programmeActivity kind="hubRun" level="product" costRule="resources" costProfile="recurring" timing="hubRun" placement="From month 7.4 after the case start to the horizon (charged in years with agents)" cost="59826.2">
+          <ac:programmeActivity kind="hubRun" level="product" costRule="resources" costProfile="recurring" timing="hubRun" placement="From month 8.1 after the case start to the horizon (charged in years with agents)" cost="59826.2">
             <ac:param key="khCurationFTE" value="0.5" unit="FTE"/>
             <ac:param key="khInfraMonthly" value="1153.85" unit="€/month"/>
           </ac:programmeActivity>

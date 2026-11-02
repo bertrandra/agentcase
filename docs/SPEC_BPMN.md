@@ -1494,8 +1494,8 @@ stay in their keys until B9c). Code: `app/src/domain/programme/{timing,profile,o
   lays them on the product's months (a spend before the build at month 1, a spend past the horizon in its last month), with the hub part and the
   opt-in savings; the kernel reads it (`K.setupProfile`, `K.ktProfile`, `K.savingProfile`; a scenario lever on the setup scales it), the setup
   breakdown and so `model().setupTotal` add its lines, the cost model writes one row per line ("Setup: Training"…), the consolidation moves the
-  engine's own hub months by the lead, the programme panel shows each line's effort and cost. The pilot (`pilotLine`, parity) stays outside the
-  euro result (DEV-COSTMODEL-PILOT). `CALCULATION_VERSION` is `agentcase.timeengine.v2` (the same inputs give other results).
+  engine's own hub months by the lead, the programme panel shows each line's effort and cost. The pilot (`pilotLine`) stayed outside the
+  euro result (DEV-COSTMODEL-PILOT) until the normalisation of 2026-11-02 made it a setup line at the role rate (DEV-NORM-PILOT). `CALCULATION_VERSION` is `agentcase.timeengine.v2` (the same inputs give other results).
 - **Opt-in activities (D-B31) built.** `optIn.ts` + `catalogueOptIn.ts`: engagement stages (Discover, Calibrate, Validate: engagement team
   `stagesFte` × the stage weeks; Decide & Scale: `decideDays`), value tracking (FinOps `valueFte` over the horizon), risk mitigations and AI Act
   obligations (`aiActDays` a year), audit and discovery interviews (`auditDays`, before the build), and the four agent-rollout activities of § 19.2:

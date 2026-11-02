@@ -26,8 +26,9 @@ function lineCost(c: Ctx, d: ProgrammeActivityDef, id: ProgrammeLineId, base: Ac
   const out: ActivityCost = { ...base, amount: l.amount, per: 'once', effortDays: l.effortDays };
   if (d.kind === 'setupCoaching') {
     const p = coachingPlan(c), r = (n: number) => Math.round(n * 10) / 10;
-    out.note = `${r(p.perMonth)} coaching days a month × ${r(p.months)} months × the role rate (D-B30, revised 2026-10-31)`
-      + `${p.calibrated ? '; the duration is calibrated from the setup coaching amount' : ''}. The coaching load curve is informative (Maturity)`;
+    out.note = (p.pricing === 'amount' ? `The setup coaching amount, spent over ${r(p.months)} months (no labour behind it; normalisation #3)`
+      : `${r(p.perMonth)} coaching days a month × ${r(p.months)} months × the role rate (D-B30, revised 2026-10-31)`)
+      + '. The coaching load curve is informative (Maturity)';
   }
   return out;
 }

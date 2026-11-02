@@ -39,7 +39,7 @@ interface labels. Full specification in English: [SPEC_MULTI_PRODUIT.md](SPEC_MU
 - **8. Export** — parameters workbook with the portfolio sheets (one undoable import), results workbook (Portfolio, waves, Knowledge transfer,
   Portfolio stress, per product), scoped critical-delivery report, HTML save and snapshots. **Cost model workbook** (monthly): three tabs
   **Values** (human days), **Rate cards** (applied rates, blending adjustment), **Other costs** (other cost lines, total vs the engine with a
-  *Difference* row of 0; the pilot is a dated line included in the totals, the check row adds it to the engine total, DEV-COSTMODEL-PILOT).
+  *Difference* row of 0; the pilot is one of the setup lines, in the engine total like the others, DEV-COSTMODEL-PILOT, DEV-NORM-PILOT).
 - **9. Known limits** — no knowledge reuse between products, common rates and coefficients (decisions of the specification, v2). A shared team
   line has pins (📌 in **Shared team lines**), and the knowledge-subset fields held by the common case have *Apply to all products* (not the
   domains nor the preparation months, which have no common value). DEVIATIONS.md DEV-PF-GAPS lists no gap left.

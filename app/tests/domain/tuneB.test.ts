@@ -54,12 +54,13 @@ describe.each(ids.filter(have))('tune B domain vs legacy oracle: %s', (id) => {
     const b = setupBreakdown(c), e = extra('tuneBSetup', id), m = model(c);
     // DEV-SETUP-BREAKDOWN: the HRI change cost and the hub setup follow the four core lines, and the total is model().setupTotal.
     // DEV-B9B-RESOURCES: tooling and coaching (calibrated to its amount, D-B30 revised) are the legacy amounts; training and governance are the
-    // programme's resource lines (not the legacy e.tr, e.g), hand-computed in tests/domain/programme/profile.test.ts.
+    // programme's resource lines (not the legacy e.tr, e.g), hand-computed in tests/domain/programme/profile.test.ts. A case with an HRI change
+    // cost compares with the days × role rate (DEV-NORM-CHANGE-DAYS).
     const lines = programmeLines(c), res = (x: string) => lines.find((l) => l.id === x)!.amount;
     expect(b.lines.slice(0, 4).map((l) => l.amount)).toEqual([e.t, res('training'), e.c, res('governance')]);
     expect(b.lines.slice(0, 4).map((l) => l.id)).toEqual(['tooling', 'training', 'coaching', 'governance']);
     expect(b.lines.slice(4).map((l) => [l.id, l.amount])).toEqual([...(m.conv.hriOn ? [['change', m.conv.changeCost]] : []),
-      ...(m.conv.khOn ? [['knowledge', m.conv.khSetup]] : [])]);
+      ...(m.conv.khOn ? [['knowledge', m.conv.khSetup]] : []), ['pilot', res('pilot')]]);   // DEV-NORM-PILOT: the pilot is in the setup
     expect(b.total).toBe(m.setupTotal);
     expect(b.lines.reduce((a, l) => a + l.amount, 0)).toBeCloseTo(m.setupTotal, 6);
   });

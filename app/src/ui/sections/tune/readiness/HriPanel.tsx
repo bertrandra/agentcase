@@ -34,7 +34,7 @@ function Outcome() {
         <tbody>
           <tr><td>Change intensity</td><td className="ac-c"><strong>{h.intensity}</strong></td></tr>
           <tr>
-            <td>Change cost ({h.etp.toFixed(1)} AS-IS FTE × €{Math.round(h.costPerFte).toLocaleString('en-US')})</td>
+            <td>{`Change cost (${h.etp.toFixed(1)} AS-IS FTE × ${h.daysPerFte} days × €${h.rate.toLocaleString('en-US', { maximumFractionDigits: 2 })})`}</td>
             <td className="ac-c"><strong>{fmtK(h.cost)}</strong></td>
           </tr>
           <tr><td>Adoption drag on the S-curve</td><td className="ac-c"><strong>× {h.drag.toFixed(2)}</strong></td></tr>
@@ -66,11 +66,11 @@ export function HriPanel() {
         <Questions />
         <div>
           <Outcome />
-          <h3>Change cost per AS-IS FTE (€)</h3>
+          <h3>Change effort per AS-IS FTE (days, at the role rate)</h3>
           <div className="ac-form-row">
-            <NumberInput id="hriCostLight" label={`Light (HRI ≥ ${HRI_LIGHT})`} min={0} step={100} />
-            <NumberInput id="hriCostStd" label={`Standard (${HRI_STANDARD}–${HRI_LIGHT - 1})`} min={0} step={100} />
-            <NumberInput id="hriCostInt" label={`Intensive (< ${HRI_STANDARD})`} min={0} step={100} />
+            <NumberInput id="hriDaysLight" label={`Light (HRI ≥ ${HRI_LIGHT})`} min={0} step={0.5} />
+            <NumberInput id="hriDaysStd" label={`Standard (${HRI_STANDARD}–${HRI_LIGHT - 1})`} min={0} step={0.5} />
+            <NumberInput id="hriDaysInt" label={`Intensive (< ${HRI_STANDARD})`} min={0} step={0.5} />
           </div>
           <h3>Adoption-drag formula coefficients</h3>
           <div className="ac-form-row">

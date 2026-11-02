@@ -26,7 +26,7 @@ Figures are the golden fixture unless stated. "Before" = the build at the start 
 | DEV-HEADER-MENU | header and top bar: title without subtitle, compact two-zone header, file menu, Show / Change, group bar without ☰ / persona |
 | DEV-KPI-BAR | KPI bar shows FTE before / after, saving over the horizon, velocity; NPV moved to Results / Financial |
 | DEV-UI-PARITY | cross-reference of `app/ui-parity-exceptions.json` (accessibility corrections, header decisions) |
-| DEV-COSTMODEL-PILOT | the pilot cost is a dated line included in the cost-model totals (decision D4, lot 4); the app headline does not count it |
+| DEV-COSTMODEL-PILOT | the pilot is in the cost-model totals (decision D4, lot 4); since the normalisation it is a setup line, in the app headline too |
 | DEV-APP-SECTION-PERSONAS | app sections (Brand & theme) are assignable per persona, stored apart from the legacy-shaped `PERSONA_SECTIONS` |
 | DEV-THEME-SEQ-UNDO | known defect: a theme `seq` can be reissued after an undo (lot 3 fixes it) |
 | DEV-PF-GAPS | no portfolio gap left (built in lot 7: scenarios table, wave dependencies and setup capacity, shared teams, Wave-view histogram, per-draw truncation; in lot 8: portfolio sensitivity, pins on a shared team line, "apply to all" for the knowledge subset) |
@@ -61,6 +61,10 @@ Figures are the golden fixture unless stated. "Before" = the build at the start 
 | DEV-REPORT-CATALOGUE-COUNT | SPEC_FIXES FX-56: the critical-delivery report counts the regulatory catalogue (370), the legacy printed a fixed 349 |
 | DEV-HORIZON-LABELS | SPEC_FIXES FX-52: labels follow the horizon and help figures come from the engine (the legacy wrote "3 years" and a fixed ~€244k) |
 | DEV-AME-NOT-PORTED | SPEC_FIXES FX-57: the Golden-vs-AME comparison, the AME reference capture and the per-snapshot Excel export are kept out (owner, 2026-11-02) |
+| DEV-NORM-PILOT | programme sizing normalised (owner, 2026-11-02, #1): the pilot is labour at the role rate and in the euro result |
+| DEV-NORM-CHANGE-DAYS | programme sizing normalised (#4): the HRI change cost is days per head of the readiness band × the role rate |
+| DEV-NORM-CALENDAR | programme sizing normalised (#2): one calendar, the hub setup lasts its days as working days |
+| DEV-NORM-KH-CURATION | programme sizing normalised (#8): the hub curation is priced at the role rate in a new case (a coefficient; a saved case keeps the TJM) |
 
 ## DEV-HEADLINE-OWNER — one economics headline
 
@@ -281,6 +285,11 @@ A new deliberate visual difference is added to the JSON file AND described here 
   inline styles left the sections, not `style="text-align: …"`), not a missing look; with the selectors fixed they are compared, 0 divergence.
 
 ## DEV-COSTMODEL-PILOT — the pilot cost is included in the totals of the cost-model workbook
+
+- **Since the normalisation of the programme sizing (DEV-NORM-PILOT, 2026-11-02)** the pilot is a programme line of the engine's setup: the
+  workbook lists it among the setup lines ("Setup: Pilot", spent from the product's month 1 like the engine), the separate "Pilot (included in
+  totals)" line and the "+ pilot" of the check rows are gone (the engine total now holds it), AS-IS cost − TOTAL TO-BE COST = the app net benefit.
+  The rest of this section is the history.
 
 Changed in lot 4 (user decision D4). The Cost model (monthly) workbook (`domain/portfolio/costModel*.ts`) now carries the pilot of 🧭 Program & Completeness
 (`tune/program` `pilotSizing`: team, duration = prove weeks + 2 weeks per break-in sprint, cost) as a **dated cost line** of each product,
@@ -766,3 +775,46 @@ tests are not concerned: they drive the legacy *engine* through recipes, and the
 - Now: none of the three is ported (owner's decision 2026-11-02, FX-O5). The parity suites, the calculation packages stamped into every saved file
   and the results / cost-model workbooks cover what they checked; a snapshot is exported by opening it and using the Financial workbook.
 - Tests: none (nothing to test); recorded so the migration plan's open list (MIGRATION_PLAN § 15.2) is closed.
+
+## DEV-NORM-PILOT — the pilot is labour at the role rate, in the euro result (normalisation #1)
+
+- Legacy and up to v20 (DEV-COSTMODEL-PILOT): the pilot was an indicative figure, pod FTE × weeks × working days × the TJM, outside the app
+  headline (the cost-model workbook alone added it).
+- Now (owner's decision 2026-11-02, docs/PROGRAMME_SIZING_DMN.md): a programme cost line like every activity, days × the role rate (TJM × 1.15),
+  spent over its 16 weeks before the build (a single case books it from month 1, like the engine's other pre-build lines); it is in the setup
+  breakdown, the ROI's setup, the NPV and payback. A pod of 0 FTE means no pilot. golden: + €97,619.08 (3 FTE × 16 / 52 × 220 days × €480.70),
+  setup €336,934.58, ROI 4.43, payback month 11.
+- Oracle fields: the setup amount and timing families of `tests/helpers/deviationsB9b.ts`. Screen parity: the indicative pilot cost at the TJM is
+  the recorded exception of the "every legacy figure" tests (`tests/helpers/legacyProgramme.ts` `withoutNormFigures`); the legacy parity tests of
+  screens, workbooks and reports run on the injected legacy profile as before.
+- Tests: `tests/domain/programme/normalisation.test.ts`, `profile.test.ts`, `parallel-run-b9b.test.ts` (pinned moves), `tests/domain/portfolio/costModel.test.ts`.
+
+## DEV-NORM-CHANGE-DAYS — the HRI change cost is days per head × the role rate (normalisation #4)
+
+- Legacy: entry FTE × a € per head of the readiness band (`hriCostLight` / `Std` / `Int`: 1,200 / 3,000 / 5,500).
+- Now: entry FTE × days per head of the band (`hriDaysLight` / `Std` / `Int`: 2.5 / 6 / 11.5, the legacy € at the golden role rate, rounded) × the
+  programme's role rate; it follows the rate card and its Monte Carlo draw. The Human Readiness panel edits days and prints "FTE × days × rate".
+  The € inputs stay readable (the legacy read-outs) but no longer price the line. golden with HRI on (standard band): €45,000 → €43,263.
+- Oracle fields: the setup amount family, `model.conv.changeCost`, `hri.change`. Screen parity: the € per head, its total and the band inputs are
+  the recorded exceptions (`withoutNormFigures`).
+- Tests: `tests/domain/programme/normalisation.test.ts`, `tests/ui/sections/readiness.test.tsx`.
+
+## DEV-NORM-CALENDAR — one calendar: the hub setup lasts working days (normalisation #2)
+
+- Legacy: the Knowledge Hub setup lasted `khSetupDays` calendar days (× 12 / 365: 30 days = 0.99 month).
+- Now: days are working days everywhere (`calendar()` of `domain/programme/sizing.ts`: days ÷ (working days / 12)); 30 days = 1.64 months at 220
+  days a year. The Gantt bar and the hub setup's spend follow; the total is unchanged.
+- Oracle fields: the setup timing family. The legacy calendar parity tests convert the hub days to the legacy bar (`legacyStage`).
+- Tests: `tests/domain/programme/{normalisation,timing-owner}.test.ts`.
+
+## DEV-NORM-KH-CURATION — the hub curation at the role rate (normalisation #8)
+
+- Legacy: the Knowledge Hub run cost = curation FTE × the TJM × working days + infrastructure.
+- Now: the curation FTE is priced at the role rate like the other transitional roles, through a coefficient of the case
+  (`COEF.khCurationPremium`, 1.15 in the default document): every new case uses it; a case saved before has no coefficient and keeps the TJM (its
+  saved run cost), and gets the role rate when the coefficient is set. golden with the coefficient: + €6,897 a year. The parameters workbook
+  carries no coefficient (the importing case keeps its own).
+- Oracle: the fixtures carry no coefficient, so no oracle field moves; the tests that compare a fresh default case with the legacy start from the
+  legacy default (`tests/store/helpers.ts` `legacyFreshStore`).
+- Tests: `tests/domain/programme/normalisation.test.ts`.
+

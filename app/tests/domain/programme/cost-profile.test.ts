@@ -73,7 +73,7 @@ describe('each type, hand-computed (tooling: €35,000 over the 12-month setup)'
   it('the line types; the engine figures and milestones keep their owner\'s rule, read-only', () => {
     expect(LINE_PROFILES).toEqual(['one-off', 'spread', 'adoption', 'recurring']);
     const c = makeCtx(golden()), t = (k: string) => [activityType(c, k).profile, activityType(c, k).editable];
-    expect([t('pilot'), t('build'), t('agentops'), t('hubRun'), t('ktPrep'), t('govGates')]).toEqual([['spread', false], ['adoption', false],
+    expect([t('pilot'), t('build'), t('agentops'), t('hubRun'), t('ktPrep'), t('govGates')]).toEqual([['spread', true], ['adoption', false],   // the pilot: a cost line (DEV-NORM-PILOT)
       ['recurring', false], ['recurring', false], ['spread', false], ['none', false]]);
     expect(activityType(makeCtx(typed('knowledge', 'one-off')), 'ktPrep').profile).toBe('one-off');   // the hub setup's type
   });

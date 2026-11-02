@@ -1,7 +1,6 @@
 /** @calc-zone exports */
 import { khRunAnnual } from '../knowledge';
 import { lineOnMonths, programmeLines } from '../programme/profile';
-import { pilotMonths, pilotSizing } from '../tune/program';
 import { lay, layWide } from './costModelAxis';
 import { row } from './costModelRow';
 import type { CostRow } from './costModelTypes';
@@ -9,18 +8,6 @@ import type { ProductView } from './waves';
 
 export const COST = 'cost (+)', SAVE = 'saving (-)';
 
-/**
- * The pilot's monthly spend on the calendar (decision D4), spread by `pilotMonths`, empty outside the pilot months. Placed before the build
- * (D-B28, the Pilot & Prove stage): it ends at the product's month 0, so its last month is calendar month month0; a pilot that would start before
- * calendar month 1 starts there (the calendar has no earlier month), like a knowledge-transfer lead.
- */
-export function pilotCells(v: ProductView, L: number): (number | null)[] {
-  const pm = pilotMonths(pilotSizing(v.run.ctx)), from = Math.max(0, v.month0 - pm.length), out = new Array<number | null>(L).fill(null);
-  pm.forEach((x, k) => { if (from + k < L) out[from + k] = x; });
-  return out;
-}
-/** a + b month by month; an empty b leaves a as it is. */
-export const plus = (a: (number | null)[], b: (number | null)[]): (number | null)[] => a.map((x, i) => (b[i] == null ? x : (x ?? 0) + (b[i] as number)));
 export type Keys = (group: string, line: string, basis: string, sign: string) => string[];
 
 /**

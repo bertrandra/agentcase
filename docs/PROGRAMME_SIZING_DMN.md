@@ -1,6 +1,8 @@
 # Normalising the programme's sizing rules as DMN — analysis and classification
 
-> Status: analysis (2026-11-02), no code change. Input: docs/PROGRAMME_SIZING.md (the inventory of the rules as built). Question asked: how to
+> Status: analysis (2026-11-02), **implemented** the same day (owner: "I agree about Normalisation proposed"; pilot, change management and hub
+> curation at the role rate): `domain/programme/sizing.ts` (the table, every default), `sizingDmn.ts` (the DMN export), the normalisation entries of
+> docs/DEVIATIONS.md. Original analysis below. Input: docs/PROGRAMME_SIZING.md (the inventory of the rules as built). Question asked: how to
 > normalise the sizing of the programme activities — € amounts, time, rate card, spread over time, over the adoption curve — so they can be
 > expressed as DMN decisions (the case already reads and writes DMN 1.3 with a safe FEEL subset, docs/SPEC_BPMN.md F-B51 / F-B62).
 

@@ -7,7 +7,7 @@ import { loadExcelJS } from '@/store/persistence/excel/lazy';
 import { PORTFOLIO_SHEETS } from '@/store/persistence/excel/portfolio';
 import { ENV } from '../helpers/excelParams';
 import { fourProducts, openPortfolioFixture, pfNow } from '../helpers/portfolioFixtures';
-import { freshStore } from './helpers';
+import { freshStore, legacyFreshStore } from './helpers';
 
 type Scope = 'all' | 'no-factory' | 'persona-only';
 const bytes = async (scope: Scope = 'all'): Promise<ArrayBuffer> => (await (await exportParamsWorkbook(scope, ENV)).blob.arrayBuffer());
@@ -24,12 +24,14 @@ const npv = (p: Portfolio) => portfolioHeadline(consolidate(p)).npv;
 /** The legacy-faithful rebuilds of the case import (see excel-params-roundtrip.test.ts NORMALISED): not compared, but stable (second test). */
 const OMIT = ['phaseOff', 'PERSONAS', 'SECTION_DEPS'];
 const rest = (c: Portfolio['common']) => Object.fromEntries(Object.entries(c).filter(([k]) => !OMIT.includes(k)));
+/** The workbook carries no coefficients (the importing case keeps its own): import into a store with the source's (DEV-NORM-KH-CURATION). */
+const storeLike = (p: Portfolio) => ('khCurationPremium' in ((p.common.COEF ?? {}) as object) ? freshStore : legacyFreshStore)();
 
 describe.each([['pf-three-products fixture', () => openPortfolioFixture()],
   ['generated 4-product portfolio', () => fourProducts()]])('parameters workbook round trip: %s', (_n, make) => {
   it('export -> import into a fresh store reproduces the portfolio, in one undo step', async () => {
     const before = make(), b = await bytes();
-    freshStore();
+    storeLike(before);
     const r = await importParamsWorkbook(file(b), ENV), after = pfNow();
     expect(r.changed).toEqual(['portfolio']);
     expect(core(after)).toEqual(core(before));

@@ -1,7 +1,8 @@
 /** @calc-zone tuning-programme */
 import type { Ctx } from '../ctx';
-import { hriBandOf, hriCostPerFTE, hriEnabled, hriIndex, hriIntensity, type HriBand } from '../engagement';
-import { teamInCost } from '../location';
+import { hriBandOf, hriDaysPerFTE, hriEnabled, hriIndex, hriIntensity, type HriBand } from '../engagement';
+import { targetBlendedTJM, teamInCost } from '../location';
+import { AI_SKILL_PREMIUM } from '../rates';
 import type { ColourRole } from '../theme';
 
 /** Human Readiness Index questionnaire: 18 questions (No 0 / Partial 2 / Yes 4) in 6 themes of 3, ids hriQ0..hriQ17. */
@@ -25,18 +26,21 @@ export const HRI_GROUPS: { title: string; q: string[] }[] = [
 ];
 
 export interface HriSummary {
-  on: boolean; index: number; band: HriBand; label: string; tone: ColourRole; intensity: string; etp: number; costPerFte: number; cost: number; drag: number;
+  on: boolean; index: number; band: HriBand; label: string; tone: ColourRole; intensity: string; etp: number;
+  /** days per AS-IS FTE of the band × the role rate = the cost per FTE (normalisation #4) */
+  daysPerFte: number; rate: number; costPerFte: number; cost: number; drag: number;
 }
 const BAND_READOUT: Record<HriBand, [ColourRole, string]> = { light: ['teal-700', 'Ready'], standard: ['warning-600', 'Fragile'],
   intensive: ['danger-800', 'At risk'] };
 
 /** What the Human Readiness card shows (legacy renderHri). The drag uses the rounded index, like the legacy read-out. */
 export function hriSummary(c: Ctx): HriSummary {
-  const idx = Math.round(hriIndex(c)), etp = teamInCost(c.s, c.inp).etp, costPerFte = hriCostPerFTE(c);
+  const idx = Math.round(hriIndex(c)), etp = teamInCost(c.s, c.inp).etp, daysPerFte = hriDaysPerFTE(c);
+  const rate = targetBlendedTJM(c.s, c.rateScale) * AI_SKILL_PREMIUM, costPerFte = daysPerFte * rate;   // the programme's role rate
   const { hriFloor, hriSlope } = c.s.COEF as { hriFloor: number; hriSlope: number };
   const band = hriBandOf(idx), [tone, label] = BAND_READOUT[band];
   return {
-    on: hriEnabled(c), index: idx, band, label, tone, intensity: hriIntensity(c), etp, costPerFte,
+    on: hriEnabled(c), index: idx, band, label, tone, intensity: hriIntensity(c), etp, daysPerFte, rate, costPerFte,
     cost: etp * costPerFte, drag: Math.max(hriFloor, hriFloor + (hriSlope * idx) / 100),
   };
 }

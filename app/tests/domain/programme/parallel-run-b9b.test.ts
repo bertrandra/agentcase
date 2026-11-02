@@ -1,9 +1,10 @@
 import { describe, expect, it } from 'vitest';
 import { caseDiscountRate, computeCase, makeCtx, type Ctx } from '@/domain';
 import { npvOf } from '@/domain/economics/cashflow';
-import { hriEnabled } from '@/domain/engagement';
+import { hriCostPerFTE, hriEnabled } from '@/domain/engagement';
+import { teamInCost } from '@/domain/location';
 import { khEnabled, khSetupCost } from '@/domain/knowledge';
-import { convChangeCost, lineOnMonths, programmeLines } from '@/domain/programme';
+import { lineOnMonths, programmeLines } from '@/domain/programme';
 import { horizonMonthsOf } from '@/domain/programme/profile';
 import { loadExtra } from '../../helpers/extras';
 import { FIXTURE_IDS, loadCase } from '../../helpers/portfolio';
@@ -22,7 +23,7 @@ function attribution(c: Ctx): Record<string, Share> {
   const pv = (m: number[]): number => npvOf(m, rate), six = (a: number): number[] => Array.from({ length: H }, (_, i) => (i < 6 ? a / 6 : 0));
   const legacy: Record<string, number> = { tooling: c.inp.p('setupTooling') || 0, training: c.inp.p('setupTraining') || 0,
     coaching: c.inp.p('setupCoaching') || 0, governance: c.inp.p('setupGov') || 0 };
-  if (hriEnabled(c)) legacy.change = convChangeCost(c);
+  if (hriEnabled(c)) legacy.change = teamInCost(c.s, c.inp).etp * hriCostPerFTE(c);   // the legacy € per head (DEV-NORM-CHANGE-DAYS)
   if (khEnabled(c)) legacy.knowledge = khSetupCost(c);
   const out: Record<string, Share> = {};
   for (const id of new Set([...Object.keys(legacy), ...lines.map((l) => l.id)])) {
@@ -40,19 +41,23 @@ describe('parallel run, full corpus: every case-file NPV move is the B9b program
     expect((computeCase(s).npv as number) - oracleNpv(id)).toBeCloseTo(total(attribution(makeCtx(s))), 4);
   });
 
-  // [line, amount effect, timing effect] in € thousands, rounded to 0.1; the NPV move (€k) is the legacy → new of the parallel run
+  // [line, amount effect, timing effect] in € thousands, rounded to 0.1; the NPV move (€k) is the legacy → new of the parallel run. Since the
+  // normalisation the pilot is in the euro result (DEV-NORM-PILOT: 3 FTE × 16 weeks at the role rate, €95.4k at a 418 €/day TJM) and the hub
+  // setup lasts working days (DEV-NORM-CALENDAR).
   const PINNED: Record<string, { move: number; lines: [string, number, number][] }> = {
     // typed training €1,000k and governance €400k → priced from resources (€52.9k, €26.4k); tooling €2,000k over 12 months, coaching €600k over 36
-    'econ-roi-low': { move: 1383.0, lines: [['tooling', 0, 38.2], ['training', 925.4, 1.0], ['coaching', 0, 54.4], ['governance', 365.0, 0.5],
-      ['knowledge', 0, -1.5]] },
-    'econ-roi-mid': { move: 339.1, lines: [['tooling', 0, 7.6], ['training', 241.5, 1.0], ['coaching', 0, 18.1], ['governance', 71.9, 0.5],
-      ['knowledge', 0, -1.5]] },
+    'econ-roi-low': { move: 1287.2, lines: [['tooling', 0, 38.2], ['training', 925.4, 1.0], ['coaching', 0, 54.4], ['governance', 365.0, 0.5],
+      ['knowledge', 0, -1.2], ['pilot', -95.4, -0.7]] },
+    'econ-roi-mid': { move: 243.3, lines: [['tooling', 0, 7.6], ['training', 241.5, 1.0], ['coaching', 0, 18.1], ['governance', 71.9, 0.5],
+      ['knowledge', 0, -1.2], ['pilot', -95.4, -0.7]] },
     // all four amounts typed 0 and the hub off: training and governance are still priced from the default trainers and Design Authority
-    'econ-no-setup': { move: -76.0, lines: [['tooling', 0, 0], ['training', -51.7, 1.0], ['coaching', 0, 0], ['governance', -25.8, 0.5]] },
-    'setup-large': { move: 68.0, lines: [['tooling', 0, 2.3], ['training', 36.3, 1.0], ['coaching', 0, 6.3], ['governance', 23.0, 0.5],
-      ['knowledge', 0, -1.5]] },
+    'econ-no-setup': { move: -172.1, lines: [['tooling', 0, 0], ['training', -51.7, 1.0], ['coaching', 0, 0], ['governance', -25.8, 0.5],
+      ['pilot', -95.4, -0.7]] },
+    'setup-large': { move: -27.9, lines: [['tooling', 0, 2.3], ['training', 36.3, 1.0], ['coaching', 0, 6.3], ['governance', 23.0, 0.5],
+      ['knowledge', 0, -1.2], ['pilot', -95.4, -0.7]] },
     // setup duration 6: training and governance last 6 months (€26.4k, €13.2k, below the typed €45k / €20k), the NPV rises; hub setup 60 days
-    'vb-gantt-alt': { move: 26.8, lines: [['tooling', 0, 0], ['training', 18.1, 0], ['coaching', 0, 3.2], ['governance', 6.6, 0], ['knowledge', 0, -1.2]] },
+    'vb-gantt-alt': { move: -68.9, lines: [['tooling', 0, 0], ['training', 18.1, 0], ['coaching', 0, 3.2], ['governance', 6.6, 0], ['knowledge', 0, -0.8],
+      ['pilot', -95.4, -0.7]] },
   };
   const r1 = (x: number): number => Math.round(x / 100) / 10 + 0;
   it.each(Object.keys(PINNED))('%s: the large move, line by line (amount effect, timing effect)', (id) => {

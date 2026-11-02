@@ -1,7 +1,7 @@
 # How the transformation programme is sized — inventory
 
-> Status: inventory of the code on `main` (2026-11-02, after PR #120). Every value below is read from `app/src/domain/programme/*` and the
-> modules it calls; nothing here is a new rule. Spec: docs/SPEC_BPMN.md § 19 (B9a–B9e), SPEC_FIXES FX-D8 / FX-D13 / FX-D14.
+> Status: inventory of the code on `main` (2026-11-02), updated for the normalisation (docs/PROGRAMME_SIZING_DMN.md, implemented: every default in
+> `programme/sizing.ts`). Every value below is read from `app/src/domain/programme/*` and the modules it calls. Spec: docs/SPEC_BPMN.md § 19 (B9a–B9e), SPEC_FIXES FX-D8 / FX-D13 / FX-D14.
 
 The **programme layer** is the set of activities that transform the delivery (engagement stages, pilot, setup, knowledge hub, build and run,
 assurance). It is a BPMN process derived from the catalogue (`programme/catalogue.ts`, `catalogueOptIn.ts`); its values are stored in the case's
@@ -13,7 +13,7 @@ BPMN document (`ac:programmeValues`, schema v4) and edited in one place, 🧩 Pr
 |---|---|---|---|
 | Target day rate (TJM) | Rate card × target location mix (`targetBlendedTJM`), moved by the Monte Carlo rate draw | golden: €418/day | `location.ts` |
 | Role rate | TJM × AI-skill premium 1.15 (the transitional roles) | golden: €480.70/day | `profile.ts programmeRates`, `rates.ts` |
-| Working days | `workdays` | 220 / year (18.33 / month, 4.23 / week) | `profile.ts` |
+| Working days | `workdays` — the one calendar: every "days" is working days (`calendar()`) | 220 / year (18.33 / month, 4.23 / week) | `sizing.ts` |
 | Horizon | `horizon` years × 12 | 3 years = 36 months | `profile.ts horizonMonthsOf` |
 | Setup duration | `setupDuration` months, ≥ 0.5 | 12 months | `timing.ts setupMonths` |
 | Spreading | an amount spent evenly over its duration, the last month pro rata (`spreadMonths`) | — | `timing.ts` |
@@ -41,7 +41,7 @@ The stages run back to back from the roadmap start and end before the pilot (`op
 | Duration | `pilotWeeks` prove weeks (default 12) + 2 × `pilotBreakin` break-in sprints (default 2) = 16 weeks ≈ 3.7 months |
 | Placement | before the build: it ends at the product's month 0 (lead = ⌈months⌉) |
 | Effort | `pilotFte` (default 3) × total weeks / 52 × working days |
-| Cost | days × TJM (no AI-skill premium) — **not in the euro result** (DEV-COSTMODEL-PILOT): shown in the plan, the pilot sizing and the programme table |
+| Cost | days × the role rate — **in the euro result** (DEV-NORM-PILOT): a setup line spent over its weeks before the build (a single case from month 1); 0 FTE = no pilot |
 | Owner | `profile.ts pilotLine`, `timing.ts pilotTiming` |
 
 ### 2.3 Setup (per product) — the programme cost lines in the euro result
@@ -50,10 +50,10 @@ The stages run back to back from the roadmap start and end before the pilot (`op
 |---|---|---|---|---|
 | Tooling & infra (`setupTooling`) | non-labour amount | `setupTooling` € | setup duration | the case's amount |
 | Training (`setupTraining`) | **resources** (default) or **amount** (FX-D13 d, `trainPricing`) | resources: `trainFte` × months × 18.33 × role rate; amount: `setupTraining` € | `trainMonths`, else the setup duration | 0.5 FTE × 12 months → €52,877 |
-| Coaching (`setupCoaching`) | resources | `coachDaysPerMonth` × `coachMonths` × role rate; with no months entered, the `setupCoaching` amount calibrates the days (days = amount / role rate) | `coachMonths`, else calibrated | 2 days/month; golden €35,000 = 72.8 days = 36.4 months |
+| Coaching (`setupCoaching`) | **resources** or **amount** (`coachPricing`; Automatic: amount without a duration, else resources) | resources: `coachDaysPerMonth` × months × role rate; amount: `setupCoaching` € | `coachMonths`, else the setup duration (Automatic amount: the legacy calibrated months) | golden €35,000 over 36.4 months |
 | Governance (`setupGovernance`) | **resources** (default) or **amount** (`govPricing`) | resources: `govFte` × months × 18.33 × role rate; amount: `setupGov` € | `govMonths`, else the setup duration | 0.25 FTE × 12 months → €26,438.50 |
-| Change management (`change`, HRI on) | engine | entry headcount × cost per FTE of the readiness band (`hriCostLight/Std/Int`: 1,200 / 3,000 / 5,500 €) | setup duration | off unless HRI is on |
-| Knowledge Hub setup (`hubSetup`, hub on) | resources | `khSetupBase` × (0.5 + 0.25 × CC gap) (gap = target CC − as-is CC) | `khSetupDays` days (default 30) | base €120,000; golden €90,000 over 30 days |
+| Change management (`change`, HRI on) | resources | entry headcount × days per head of the readiness band (`hriDaysLight/Std/Int`: 2.5 / 6 / 11.5) × role rate | setup duration | off unless HRI is on |
+| Knowledge Hub setup (`hubSetup`, hub on) | resources | `khSetupBase` × (0.5 + 0.25 × CC gap) (gap = target CC − as-is CC) | `khSetupDays` working days (default 30 = 1.64 months) | base €120,000; golden €90,000 over 30 days |
 | Knowledge transfer preparation (`ktPrep`) | same as hub setup (placed earlier, never added) | — | `ktLeadMonths` before the product's month 0 (portfolio) | — |
 
 Each line is laid on the months by its cost profile (§ 1) and summed per month into the setup row of the Time Engine (`profile.ts
@@ -66,7 +66,7 @@ programmeLines`, `engineProfile`). Effort days shown for resource lines; amounts
 | Agentic build and adoption ramp | the adoption ramp (S-curve, Y1–Y3 ramps) over the setup duration, then to the horizon | `time/engine.ts` |
 | Agentic run | agent vFTE = base FTE × adoption × effective automation (supervision ceiling); token cost = runs/day × tokens per run × price | `time/kernel.ts econ` |
 | AgentOps run team | `runSizeMode` hybrid: max(`runFloorMin` 0.5 FTE, base FTE × `runFloorPct` 4 %) + agent vFTE × `runOpsPerAgent` 0.15; legacy: fixed on the base team | `time/kernel.ts runTeamSizing` |
-| Knowledge Hub run (hub on) | `khCurationFTE` (0.5) × TJM × working days + `khInfraMonthly` (€2,500) × 12, per year with agents | `knowledge.ts khRunAnnual` |
+| Knowledge Hub run (hub on) | `khCurationFTE` (0.5) × TJM × `COEF.khCurationPremium` (1.15 in a new case: the role rate; absent in a case saved before: 1) × working days + `khInfraMonthly` (€2,500) × 12, per year with agents | `knowledge.ts khRunAnnual` |
 | Hand-off coordination (FX-D8, opt-in `feedHandoff`) | the process's hand-off hours a release × releases a year × TJM / 8, monthly, from the first month with agents | `process/feeds.ts` |
 
 ### 2.5 Opt-in activities (D-B31: off by default; on, days × role rate)
@@ -79,7 +79,7 @@ programmeLines`, `engineProfile`). Effort days shown for resource lines; amounts
 | Licence procurement | case | `optProcure` | `procureDays` 20 days | month 0 (before the build) |
 | Agent-toolchain integration | product | `optIntegr` | `integrations` 5 × `integrDays` 5 days | over the setup |
 | Rollout hypercare | product | `optHypercare` | `hypercareFte` 1 × `hypercareWeeks` 6 weeks × 4.23 | from month 1, its weeks |
-| Legacy decommissioning | product | `optDecom` | `decomDays` 10 days; `decomSaving` €/month saved only when entered | the month after the setup |
+| Legacy decommissioning | product | `optDecom` | `decomDays` 10 days; `decomSaving` €/month saved only when entered (an output of the line, `saving`) | the month after the setup |
 
 A case-level opt-in is counted once per portfolio, on its carrier product (FX-01).
 
@@ -95,11 +95,11 @@ A case-level opt-in is counted once per portfolio, on its carrier product (FX-01
 ## 4. What moves the figures, what does not
 
 - **In the euro result** (setup row of the Time Engine, hence ROI, NPV, payback): every line of § 2.3 that is on, every opt-in of § 2.5 that is
-  switched on. The pilot (§ 2.2) is not (DEV-COSTMODEL-PILOT).
-- **Monte Carlo**: the rate draw moves every labour line (resources, opt-ins, coaching); amounts (tooling, training or governance priced by
-  amount, hub setup's base) do not move.
+  switched on, and the pilot (§ 2.2, DEV-NORM-PILOT).
+- **Monte Carlo**: the rate draw moves every labour line (resources, opt-ins, coaching by resources, the pilot, change management); the fixed
+  amounts (tooling, lines priced by amount, the hub setup's base) move with the optional amount driver (`programmeAmount`, off by default).
 - **Strategies**: scale the setup amounts (`setupTooling`, `setupGov`, `setupTraining`, `setupCoaching`) — they reach the cost when the line is
-  priced by amount (or calibrates coaching).
+  priced by amount (coaching on Automatic without a duration included).
 - **Views only**: the plan (Gantt, WBS, OBS / RAM, histogram, MS Project XML) reads the same lines and durations (`plan.ts`, `histogram.ts`): the
   histogram × rate equals the programme labour cost of the cost model (a cross-surface test).
 

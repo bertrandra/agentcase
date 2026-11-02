@@ -9,6 +9,21 @@ export function freshStore(now: () => number = () => 0): AppStore {
   setAppStore(s);
   return s;
 }
+/**
+ * The default case as the legacy file had it, for the tests that compare a fresh case with the legacy oracle: without the hub-curation coefficient
+ * of a new case (DEV-NORM-KH-CURATION: a case without it prices the curation at the TJM, the legacy rule).
+ */
+export function legacyDefaultDoc(): ReturnType<typeof makeDefaultDoc> {
+  const d = makeDefaultDoc(), coef = { ...(d.COEF as Record<string, unknown>) };
+  delete coef.khCurationPremium;
+  return { ...d, COEF: coef } as ReturnType<typeof makeDefaultDoc>;
+}
+/** A fresh store on the legacy default case (`legacyDefaultDoc`), installed as the application store. */
+export function legacyFreshStore(now: () => number = () => 0): AppStore {
+  const s = createAppStore(legacyDefaultDoc(), { now });
+  setAppStore(s);
+  return s;
+}
 /** JSON of a state with each process document as its XML text (the same content, schema v3; serialising it is memoised on the tree). */
 export const json = (v: unknown): string =>
   JSON.stringify(v, (_k, x: unknown) => (x && typeof x === 'object' && (x as { kind?: unknown }).kind === 'document' ? serialize(x as XDocument) : x));

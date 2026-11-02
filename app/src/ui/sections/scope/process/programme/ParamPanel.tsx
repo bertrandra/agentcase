@@ -23,6 +23,7 @@ const SUBSET: Record<string, [SubsetField, string]> = {
 /** The fields the pricing mode leaves out (FX-D13 d): shown greyed, still editable (the other mode's value is kept). */
 const INACTIVE_WHEN: Record<string, [string, 'resources' | 'amount']> = {
   trainFte: ['trainPricing', 'amount'], setupTraining: ['trainPricing', 'resources'], govFte: ['govPricing', 'amount'], setupGov: ['govPricing', 'resources'],
+  coachDaysPerMonth: ['coachPricing', 'amount'],
 };
 
 /** One parameter field of a programme activity (shared with the 📋 Programme screen: the same field, key and command). */

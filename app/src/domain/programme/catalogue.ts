@@ -19,6 +19,8 @@ export const PROGRAMME_PHASES: readonly { id: ProgrammePhase; name: string }[] =
 const CC = [0, 1, 2, 3, 4].map((n) => ({ value: String(n), label: `CC${n}` }));
 const PRICING = [{ value: 'resources', label: 'Resources — FTE × months × role rate (default)' },
   { value: 'amount', label: 'Amount — the euro amount, spent over the duration' }];
+const COACH_PRICING = [{ value: '', label: 'Automatic — the amount without a duration, else resources (default)' },
+  { value: 'resources', label: 'Resources — days a month × months × role rate' }, { value: 'amount', label: 'Amount — the euro amount, spent over the duration' }];
 const RUN_MODES = [{ value: 'hybrid', label: 'Hybrid — floor + per-agent (default)' }, { value: 'legacy', label: 'Legacy — fixed on base-team size' }];
 const months = (key: string, label: string): ParamDef => ({ key, label: `${label} (months; blank = the setup duration)`, unit: 'months', min: 0.5, step: 1 });
 const fte = (key: string, label: string): ParamDef => ({ key, label: `${label} (FTE) — default ${sizingDefault(key)}`, unit: 'FTE', min: 0, step: 0.25 });
@@ -48,7 +50,7 @@ const CORE: ProgrammeActivityDef[] = [
   { kind: 'pilot', name: 'Pilot', description: 'A pilot pod proves the agentic factory (frozen harness + agents) by demonstration before the build: '
     + 'break-in sprints to stabilise the harness, then prove weeks on 3-day fail-fast iterations (the Pilot & Prove stage).', phase: 'setup',
   lane: 'orchestrator', raci: { A: 'designAuthority', C: ['preceptor'], I: ['finops'] }, level: 'product', costRule: 'resources', timing: 'pilot',
-  source: 'tune/program.ts pilotSizing', params: [{ key: 'pilotFte', label: 'Pilot pod size (FTE)', unit: 'FTE', min: 1, max: 8, step: 1 },
+  source: 'tune/program.ts pilotSizing', params: [{ key: 'pilotFte', label: 'Pilot pod size (FTE; 0 = no pilot)', unit: 'FTE', min: 0, max: 8, step: 1 },
     { key: 'pilotBreakin', label: 'Break-in sprints', unit: 'sprints', min: 0, max: 6, step: 1 },
     { key: 'pilotWeeks', label: 'Prove weeks', unit: 'weeks', min: 4, max: 26, step: 1 }] },
   { kind: 'setupTooling', name: 'Setup: tooling and infrastructure', description: 'Claude API, monitoring, security, CI/CD.', phase: 'setup',
@@ -58,9 +60,9 @@ const CORE: ProgrammeActivityDef[] = [
   { kind: 'setupCoaching', name: 'Setup: coaching', description: 'Pair programming, deliverable review, senior / junior binomes, run by the '
     + 'preceptors: coaching days a month over its duration (one coaching activity, D-B30).', phase: 'setup', lane: 'preceptor',
   raci: { A: 'aiOffice', C: ['orchestrator'], I: [] }, level: 'product', costRule: 'resources', timing: 'setup', source: 'programme/profile.ts coachingPlan',
-  params: [{ key: 'coachDaysPerMonth', label: `Coaching days per month — default ${sizingDefault('coachDaysPerMonth')}`, unit: 'days/month', min: 0, step: 0.5 },
-    { key: 'coachMonths', label: 'Coaching duration (months; blank = calibrated from the setup coaching amount)', unit: 'months', min: 0, step: 1 },
-    EUR('setupCoaching', 'Setup coaching amount (€, calibrates the duration when it is blank)'),
+  params: [{ key: 'coachPricing', label: 'Pricing', unit: '', options: COACH_PRICING }, { key: 'coachDaysPerMonth', label: `Coaching days per month — default ${sizingDefault('coachDaysPerMonth')}`, unit: 'days/month', min: 0, step: 0.5 },
+    { key: 'coachMonths', label: 'Coaching duration (months; blank = the setup duration)', unit: 'months', min: 0, step: 1 },
+    EUR('setupCoaching', 'Setup coaching amount (€, the cost when priced by amount)'),
     { key: 'coachY1', label: 'Y1 coaching load (% capacity, informative curve)', unit: '%', min: 0, max: 80, step: 5 },
     { key: 'coachCruise', label: 'Cruise coaching load (%, informative curve)', unit: '%', min: 0, max: 60, step: 5 }] },
   { kind: 'setupGovernance', name: 'Setup: governance', description: 'Compliance audit, IP, agentic charter, run by the Design Authority.', phase: 'setup',

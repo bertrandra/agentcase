@@ -38,7 +38,7 @@ export interface ProgrammeTable {
   rows: ProgrammeRow[];
   /** the programme cost of the euro result by horizon year and in total (the engine's profile) */
   years: number[]; total: number;
-  /** the pilot, outside the euro result (DEV-COSTMODEL-PILOT) */
+  /** the pilot's cost, part of the total since the normalisation (DEV-NORM-PILOT) */
   pilot: number;
 }
 
@@ -50,7 +50,7 @@ export const byYear = (months: number[], H: number): number[] =>
 
 function detailOf(c: Ctx, kind: string, role: string, line: ProgrammeLine | undefined): CostDetail | null {
   const rate = programmeRates(c);
-  if (kind === 'pilot') return { days: pilotLine(c).days, perMonth: null, months: pilotTiming(c).months, rate: rate.tjm || 600, role };
+  if (kind === 'pilot') return { days: pilotLine(c).days, perMonth: null, months: pilotTiming(c).months, rate: rate.role || 600, role };
   if (!line || line.effortDays === null) return null;
   const plan = kind === 'setupCoaching' ? coachingPlan(c) : null;   // its days a month as entered (the spread stops at the horizon)
   const m = plan ? plan.months : line.duration ?? null, perMonth = plan ? plan.perMonth : m && m > 0 ? line.effortDays / m : null;

@@ -39,7 +39,7 @@ describe('economics domain reproduces the legacy', () => {
     // DEV-B9B-RESOURCES: training and governance are labour from resources, so "no setup" is no amount AND no programme resources (trainers and
     // Design Authority effort at 0); the econ-no-setup fixture zeroes the legacy amounts only.
     const s = fromSnapshot(JSON.parse(readFileSync('fixtures/cases/econ-no-setup.json', 'utf8')));
-    const none = makeCtx({ ...s, dom: { ...s.dom, values: { ...s.dom.values, trainFte: '0', govFte: '0' } } });
+    const none = makeCtx({ ...s, dom: { ...s.dom, values: { ...s.dom.values, trainFte: '0', govFte: '0', pilotFte: '0' } } });   // and no pilot (DEV-NORM-PILOT)
     expect(economicsView(none).roi).toBeNull();
     expect(economicsView(ctxOf('econ-no-setup')).roi).not.toBeNull();
     expect(roiVerdict(economicsView(ctxOf('econ-roi-mid')).roi)).toBe('conditional');

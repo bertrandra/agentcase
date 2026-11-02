@@ -42,7 +42,7 @@ describe.each(FIXTURE_IDS)('programme timing owner: %s', (id) => {
     expect(build.dur).toBe(Math.max(0.5, pos(c, 'setupDuration', 12)));
     expect(build.dur).toBe(setupTiming(c).months);
     const hub = rows.find((r) => r.input === 'khSetupDays');
-    if (hub) expect([hub.value, hub.dur]).toEqual([hubSetupTiming(c).days, Math.max(0.25, (Math.max(1, pos(c, 'khSetupDays', 30)) * 12) / 365)]);
+    if (hub) expect([hub.value, hub.dur]).toEqual([hubSetupTiming(c).days, Math.max(0.25, (Math.max(1, pos(c, 'khSetupDays', 30)) * 12) / (c.inp.p('workdays') || 220))]);   // working days (DEV-NORM-CALENDAR)
     expect(programmeCalendar(c, totalM, { showStages: true, hub: true }).build.dur).toBe(setupMonths(c));
   });
   it('the engine spends the programme\'s cost profile (F-B68): its months add up to the setup total and to the lines', () => {

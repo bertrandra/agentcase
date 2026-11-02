@@ -41,11 +41,20 @@ export function khSetupCost(c: Ctx): number {
   return base * (0.5 + 0.25 * gap);
 }
 
+/**
+ * The day-rate multiplier of the hub's curation (normalisation #8, owner 2026-11-02: the role rate, TJM × the AI-skill premium). A new case carries
+ * it in its coefficients (`COEF.khCurationPremium` = 1.15, the default document); a case saved before has none and keeps the TJM (× 1), its saved
+ * run cost: the coefficient opts it in.
+ */
+export const khCurationPremium = (c: Ctx): number => {
+  const v = (c.s.COEF as Record<string, unknown> | undefined)?.khCurationPremium;
+  return typeof v === 'number' && v > 0 ? v : 1;
+};
 export function khRunAnnual(c: Ctx, tgtTJM: number, wd: number): number {
   if (!khEnabled(c)) return 0;
   let cf = c.inp.p('khCurationFTE'); if (isNaN(cf)) cf = sizingDefault('khCurationFTE');
   let im = c.inp.p('khInfraMonthly'); if (isNaN(im)) im = sizingDefault('khInfraMonthly');
-  return cf * tgtTJM * wd + im * 12;
+  return cf * tgtTJM * khCurationPremium(c) * wd + im * 12;
 }
 
 /** Knowledge-transfer days avoided per year thanks to the hub. */

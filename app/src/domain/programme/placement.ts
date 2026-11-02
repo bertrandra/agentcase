@@ -46,7 +46,8 @@ export function placementOf(c: Ctx, d: ProgrammeActivityDef, pf?: Portfolio, pro
     case 'setup': {
       if (d.kind === 'setupCoaching') {
         const p = coachingPlan(c), m = Math.min(p.months, horizonMonthsOf(c));
-        return { text: `${r1(m)} months from the product's month 1, ${r1(p.perMonth)} days a month, spent evenly`, span: { start: cal.build.start, dur: m } };
+        return { text: `${r1(m)} months from the product's month 1, ${p.pricing === 'amount' ? 'its amount' : `${r1(p.perMonth)} days a month`}, spent evenly`,
+          span: { start: cal.build.start, dur: m } };
       }
       const m = lineMonths(c, DURATION_KEY[d.kind] ?? null), own = DURATION_KEY[d.kind] && m !== setup ? ' (its own duration)' : ' (the setup duration)';
       return { text: `${r1(m)} months${own} from the product's month 1, spent evenly`, span: { start: cal.build.start, dur: m } };

@@ -32,8 +32,10 @@ export const SIZING_DEFAULTS: Readonly<Record<string, number>> = Object.freeze({
   setupDuration: 12, khSetupDays: 30, rmD1: 4, rmD2: 4, rmD3: 4, pilotWeeks: 12, pilotBreakin: 2,
   // core lines
   trainFte: 0.5, govFte: 0.25, coachDaysPerMonth: 2, pilotFte: 3, khSetupBase: 120000, khCurationFTE: 0.5, khInfraMonthly: 2500,
-  // change management (days per entry FTE by readiness band: the band € of the legacy / the role rate of the rate card, see profile.ts)
-  hriCostLight: 1200, hriCostStd: 3000, hriCostInt: 5500,
+  // change management: days per entry FTE by readiness band, at the role rate (normalisation #4); the legacy € per FTE kept for the read-out
+  hriDaysLight: 2.5, hriDaysStd: 6, hriDaysInt: 11.5, hriCostLight: 1200, hriCostStd: 3000, hriCostInt: 5500,
+  // calendar (normalisation #2: one conversion of days, weeks and months)
+  workdays: 220,
   // run team
   runFloorMin: 0.5, runFloorPct: 4, runOpsPerAgent: 0.15,
   // opt-in activities
@@ -41,6 +43,11 @@ export const SIZING_DEFAULTS: Readonly<Record<string, number>> = Object.freeze({
   hypercareWeeks: 6, decomDays: 10, decomSaving: 0,
 });
 export const sizingDefault = (key: string): number => SIZING_DEFAULTS[key] ?? 0;
+/** The one calendar of the programme (normalisation #2): working days a year → days a month and a week. */
+export const calendar = (workdays: number) => {
+  const wd = workdays > 0 ? workdays : sizingDefault('workdays');
+  return { wd, perMonth: wd / 12, perWeek: wd / 52, daysToMonths: (d: number) => (d * 12) / wd, weeksToMonths: (w: number) => (w * 12) / 52 };
+};
 
 const R = (line: string, label: string, level: SizingRule['level'], a: ACode[], q: QCode, p: PCode, w: WCode, d: DCode, feel: SizingRule['feel'],
   inputs: string[], duration?: string, modeKey?: string): SizingRule =>
@@ -58,7 +65,7 @@ export const SIZING: readonly SizingRule[] = [
     'coachMonths', 'coachPricing'),
   R('governance', 'Governance', 'product', ['mode'], 'fte', 'role', 'setup', 'spread', { resources: 'govFte * months * workdays / 12', amount: 'setupGov' },
     ['govPricing', 'govFte', 'setupGov'], 'govMonths', 'govPricing'),
-  R('change', 'Change management (HRI)', 'product', ['module'], 'rate', 'role', 'setup', 'spread', 'entryFte * bandDays', ['hriCostLight', 'hriCostStd', 'hriCostInt'],
+  R('change', 'Change management (HRI)', 'product', ['module'], 'rate', 'role', 'setup', 'spread', 'entryFte * bandDays', ['hriDaysLight', 'hriDaysStd', 'hriDaysInt'],
     'setupDuration'),
   R('knowledge', 'Knowledge hub setup', 'product', ['module'], 'param', 'none', 'pre', 'spread', 'khSetupBase * (0.5 + 0.25 * ccGap)', ['khSetupBase'], 'khSetupDays'),
   R('pilot', 'Pilot', 'product', ['always'], 'fte', 'role', 'pre', 'spread', 'pilotFte * weeks * workdays / 52', ['pilotFte'], 'pilotWeeks'),
@@ -76,7 +83,7 @@ export const SIZING: readonly SizingRule[] = [
   R('agentops', 'AgentOps run team', 'product', ['mode'], 'engine', 'role', 'horizon', 'cont',
     { hybrid: 'max(runFloorMin, baseFte * runFloorPct / 100) + agentVfte * runOpsPerAgent', legacy: 'legacyRunFte' },
     ['runSizeMode', 'runFloorMin', 'runFloorPct', 'runOpsPerAgent'], undefined, 'runSizeMode'),
-  R('hubRun', 'Knowledge hub run', 'product', ['module'], 'fte', 'role', 'horizon', 'cont', 'khCurationFTE * workdays + khInfraMonthly * 12 / rate',
+  R('hubRun', 'Knowledge hub run', 'product', ['module'], 'fte', 'role', 'horizon', 'cont', 'khCurationFTE * workdays + khInfraMonthly * 12 / role',
     ['khCurationFTE', 'khInfraMonthly']),
 ];
 export const sizingRule = (line: string): SizingRule | undefined => SIZING.find((r) => r.line === line);

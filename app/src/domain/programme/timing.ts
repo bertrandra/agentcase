@@ -2,7 +2,7 @@
 import type { Ctx } from '../ctx';
 import { ktLead } from '../portfolio/subset';
 import type { KnowledgeSubset } from '../portfolio/types';
-import { sizingDefault } from './sizing';
+import { sizingDefault, calendar } from './sizing';
 import { TIMED_STAGES, type EngagementStage } from './stages';
 
 /**
@@ -70,7 +70,7 @@ export interface HubSetupTiming {
 }
 export function hubSetupTiming(c: Ctx): HubSetupTiming {
   const days = Math.max(1, ganttNum(c, 'khSetupDays', sizingDefault('khSetupDays')));
-  return { days, months: Math.max(0.25, (days * 12) / 365) };
+  return { days, months: Math.max(0.25, calendar(c.inp.p('workdays')).daysToMonths(days)) };   // working days (normalisation #2)
 }
 /** Months the knowledge transfer (and the product's hub setup) is prepared before its month 0 (`ktLeadMonths`; the consolidation caps it). */
 export const ktPrepMonths = (k: KnowledgeSubset): number => ktLead(k);
