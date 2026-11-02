@@ -20,7 +20,8 @@ const byPlace = (a: Item, b: Item): number => a.seq - b.seq || a.reg - b.reg || 
 
 function itemsOf(c: ProcessCatalogue): Item[] {
   const one = (reg: boolean) => (a: CatArtefact, i: number): Item =>
-    ({ id: a.id, phase: a.phase, lane: a.agentActivityType === 'Agent' ? AGENTS_LANE : laneOf(a, reg, c.skillMap), seq: a.seq ?? 0, order: i + 1, reg: reg ? 1 : 0 });
+    ({ id: a.id, phase: a.phase, lane: a.agentActivityType === 'Agent' ? AGENTS_LANE : laneOf(a, reg, c.skillMap), seq: a.seq ?? 0, order: i + 1,
+      reg: reg ? 1 : 0 });
   return [...c.sdlc.map(one(false)), ...c.reg.map(one(true))];
 }
 /**
@@ -44,7 +45,8 @@ export const phaseOrderOf = (c: ProcessCatalogue): string[] =>
 function laneList(c: ProcessCatalogue, items: Item[]): string[] {
   const used = [...new Set(items.filter((x) => x.phase !== CROSS_ID).map((x) => x.lane))];
   const team = used.filter((l) => l !== AGENTS_LANE);
-  return [...c.laneOrder.filter((l) => team.includes(l)), ...team.filter((l) => !c.laneOrder.includes(l)), ...(used.includes(AGENTS_LANE) ? [AGENTS_LANE] : [])];
+  const agents = used.includes(AGENTS_LANE) ? [AGENTS_LANE] : [];
+  return [...c.laneOrder.filter((l) => team.includes(l)), ...team.filter((l) => !c.laneOrder.includes(l)), ...agents];
 }
 
 /** The deterministic layout: lanes per team skill, phases as columns left to right, Cross-cutting as a band across the bottom. */

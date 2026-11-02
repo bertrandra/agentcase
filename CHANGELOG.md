@@ -22,6 +22,8 @@ When releasing, follow [docs/BUMP_PROCEDURE.md](docs/BUMP_PROCEDURE.md) (§7 for
 - **Activity links** (FX-D9, owner's request): the default process links the activities of each phase one after the other, drawn on the diagram
   and exported; removing, moving or leaving out an activity links its neighbours over it. 🧩 Process › "Link activities" links a case saved
   before (or an activity added since) in one undoable step. No figure reads the order.
+- **Plan in the Financial workbook and the report** (FX-D15): "Add the plan sheets" / "Add the plan pages" (off by default) put the 📅 Plan's
+  WBS, WBS dictionary, OBS, RAM and Histogram sheets after the results workbook's own, and its Gantt, WBS and histogram pages at the end of the report.
 - **Agents' lane** (FX-D12): the default diagram draws the activities of type Agent in an "Agents" lane below the team lanes. No figure
   reads lanes; a case keeps its stored diagram until it is reset to the default process.
 - **Implied correlation** (FX-D2): 🎲 Monte Carlo › Risk reduction shows the selection's implied average pairwise correlation of its products'

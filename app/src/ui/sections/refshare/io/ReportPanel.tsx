@@ -22,9 +22,10 @@ export function ReportPanel() {
   const [status, setStatus] = useState(''), [failed, setFailed] = useState(false), portfolio = useHasPortfolioContent();
   const display = useDisplayScope(), active = useActiveProductId(), products = useProducts(), waves = useWaves();
   const initial = scopeValue(display, active), units = useUnitNodes();
-  const [picked, setPicked] = useState<string | null>(null), value = picked ?? initial;
+  const [picked, setPicked] = useState<string | null>(null), value = picked ?? initial, [plan, setPlan] = useState(false);
   const run = () => {
-    const { scope, productId } = parse(value), r = portfolio ? criticalReport(new Date(), scope, productId) : criticalReport();
+    const { scope, productId } = parse(value), opts = { plan };
+    const r = portfolio ? criticalReport(new Date(), scope, productId, opts) : criticalReport(new Date(), undefined, undefined, opts);
     if (!r.ok) { setStatus(r.reason); setFailed(true); return; }
     downloadText(r.filename, r.html, 'text/html');
     setStatus(`Report generated (${r.norms} norms, ${r.artefacts} regulatory artifacts).`); setFailed(false);
@@ -47,6 +48,8 @@ export function ReportPanel() {
             and product, knowledge transfer).
         </p>
       )}
+      <p><label><input type="checkbox" checked={plan} onChange={(e) => setPlan(e.target.checked)} /> Add the plan pages (Gantt, WBS, histogram) of the
+        📅 Plan screen</label></p>
       <button type="button" className="ac-btn" onClick={run}>📄 Export critical-delivery report</button>
       <div role="status" aria-live="polite" className="ac-status">{status && <Callout kind={failed ? 'warn' : 'note'}>{status}</Callout>}</div>
     </Panel>
