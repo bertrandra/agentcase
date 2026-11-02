@@ -42,7 +42,7 @@ describe('the programme table', () => {
     expect(tr.days).toBeCloseTo(0.5 * 12 * (220 / 12), 9);
     expect(tr.perMonth).toBeCloseTo(0.5 * 220 / 12, 9);
     expect(row(t.rows, 'setupTraining').timingParams.map((p) => p.key)).toEqual(['trainMonths']);
-    expect(row(t.rows, 'setupTraining').costParams.map((p) => p.key)).toEqual(['trainFte', 'capOps', 'capTrain', 'capTarget']);
+    expect(row(t.rows, 'setupTraining').costParams.map((p) => p.key)).toEqual(['trainPricing', 'trainFte', 'setupTraining', 'capOps', 'capTrain', 'capTarget']);
     expect(row(t.rows, 'hypercare').costParams.map((p) => p.key)).toEqual(['hypercareFte']);   // the switch is the Enabled tick box
   });
   it('a shared line (the engagement stages) is carried by its first activity, the others name it', () => {

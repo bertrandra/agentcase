@@ -5,15 +5,15 @@
  * `domain/process/storedValues.ts`). Each is a parameter of a programme activity (`catalogue.ts`, `optIn.ts`: a test checks this list against
  * them), the cost profile type of a cost line (`costProfile_<line>`), an activity's own description (`activityDesc_<kind>`) or WBS code override
  * (`wbsCode-<kind>`). The order is the catalogue's: the order a migrated document lists them in.
- * `setupTraining` / `setupGov` are the legacy amounts of the training and governance lines (priced from resources since B9b): read only by the
- * legacy outputs (assumption register, due-diligence pack, Parameters sheet) and the strategies' scaling, so stored here, not retired
- * (docs/SPEC_BPMN.md § 19.13).
+ * `setupTraining` / `setupGov` are the euro amounts of the training and governance lines: the cost when the line is priced by amount
+ * (`trainPricing` / `govPricing` = "amount", SPEC_FIXES FX-D13 d), otherwise read by the legacy outputs (assumption register, due-diligence pack,
+ * Parameters sheet) and the strategies' scaling (docs/SPEC_BPMN.md § 19.13).
  */
 export const PROGRAMME_VALUE_KEYS: readonly string[] = [
   'rmD1', 'rmD2', 'rmD3', 'optStages', 'stagesFte', 'decideDays',
   'pilotFte', 'pilotBreakin', 'pilotWeeks', 'setupTooling', 'setupTraining', 'setupGov',
-  'trainFte', 'trainMonths', 'capOps', 'capTrain', 'capTarget',
-  'coachDaysPerMonth', 'coachMonths', 'setupCoaching', 'coachY1', 'coachCruise', 'govFte', 'govMonths',
+  'trainPricing', 'trainFte', 'trainMonths', 'capOps', 'capTrain', 'capTarget',
+  'coachDaysPerMonth', 'coachMonths', 'setupCoaching', 'coachY1', 'coachCruise', 'govPricing', 'govFte', 'govMonths',
   'khTargetCC', 'khSetupBase', 'khSetupDays', 'setupDuration', 'runSizeMode', 'runFloorMin', 'runFloorPct', 'runOpsPerAgent', 'khCurationFTE',
   'khInfraMonthly',
   'optProcure', 'procureDays', 'optIntegr', 'integrations', 'integrDays', 'optHypercare', 'hypercareFte', 'hypercareWeeks', 'optDecom', 'decomDays',

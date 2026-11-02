@@ -49,9 +49,22 @@ export function coachLoad(c: Ctx, y: number): number {
 }
 const line = (id: ProgrammeLineId, label: string, rule: LineRule, level: 'case' | 'product', amount: number, effortDays: number | null, from: number,
   months: number[]): ProgrammeLine => ({ id, label, rule, level, amount, effortDays, from, months });
-/** A resources line: `fte` over `months` (capped at the horizon) from product month 1, at the role rate. */
-function resources(c: Ctx, id: CoreLineId, label: string, fte: number, durationKey: string, H: number): [ProgrammeLine, number] {
-  const r = programmeRates(c), m = Math.min(lineMonths(c, durationKey), H), days = fte * m * (r.wd / 12), cost = days * r.role;
+/** How a training or governance line is priced (SPEC_FIXES FX-D13 d): from its resources (default, B9b) or from its euro amount. */
+export type Pricing = 'resources' | 'amount';
+export const PRICING_KEYS = { training: { mode: 'trainPricing', amount: 'setupTraining' }, governance: { mode: 'govPricing', amount: 'setupGov' } } as const;
+/** The pricing mode of the training or governance line: 'amount' only when the case says so. */
+export const pricingOf = (c: Ctx, id: 'training' | 'governance'): Pricing => (c.inp.v(PRICING_KEYS[id].mode) === 'amount' ? 'amount' : 'resources');
+/**
+ * A resources line: `fte` over `months` (capped at the horizon) from product month 1, at the role rate. Training and governance priced by amount
+ * (FX-D13 d): their euro amount (`setupTraining`, `setupGov`) is the cost, spent over the same duration, with no labour behind it (no rate draw).
+ */
+function resources(c: Ctx, id: 'training' | 'governance', label: string, fte: number, durationKey: string, H: number): [ProgrammeLine, number] {
+  const r = programmeRates(c), m = Math.min(lineMonths(c, durationKey), H);
+  if (pricingOf(c, id) === 'amount') {
+    const amount = Math.max(0, c.inp.p(PRICING_KEYS[id].amount) || 0);
+    return [line(id, label, 'nonLabour', 'product', amount, null, 1, spreadMonths(amount, m)), m];
+  }
+  const days = fte * m * (r.wd / 12), cost = days * r.role;
   return [line(id, label, 'resources', 'product', cost, days, 1, spreadMonths(cost, m)), m];
 }
 /** Coaching days a month by default (D-B30, revised 2026-10-31). */

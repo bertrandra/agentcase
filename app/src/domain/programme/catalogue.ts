@@ -16,6 +16,8 @@ export const PROGRAMME_PHASES: readonly { id: ProgrammePhase; name: string }[] =
   { id: 'assurance', name: 'Assurance and value' },
 ];
 const CC = [0, 1, 2, 3, 4].map((n) => ({ value: String(n), label: `CC${n}` }));
+const PRICING = [{ value: 'resources', label: 'Resources — FTE × months × role rate (default)' },
+  { value: 'amount', label: 'Amount — the euro amount, spent over the duration' }];
 const RUN_MODES = [{ value: 'hybrid', label: 'Hybrid — floor + per-agent (default)' }, { value: 'legacy', label: 'Legacy — fixed on base-team size' }];
 const months = (key: string, label: string): ParamDef => ({ key, label: `${label} (months; blank = the setup duration)`, unit: 'months', min: 0.5, step: 1 });
 const fte = (key: string, label: string, def: number): ParamDef => ({ key, label: `${label} (FTE) — default ${def}`, unit: 'FTE', min: 0, step: 0.25 });
@@ -36,7 +38,8 @@ const TRAINING: ProgrammeActivityDef = {
   kind: 'setupTraining', name: 'Setup: training', description: 'Workshops, champion certification, run by the preceptors; it builds the capability of '
     + 'the organisation: the people in training are its trainees, up to the target mass.', phase: 'setup', lane: 'preceptor',
   raci: { A: 'aiOffice', C: [], I: ['orchestrator'] }, level: 'product', costRule: 'resources', timing: 'setup', source: 'programme/profile.ts',
-  params: [fte('trainFte', 'Trainers', 0.5), months('trainMonths', 'Training duration'),
+  params: [{ key: 'trainPricing', label: 'Pricing', unit: '', options: PRICING }, fte('trainFte', 'Trainers', 0.5),
+    months('trainMonths', 'Training duration'), EUR('setupTraining', 'Training amount (€, the cost when priced by amount)'),
     { key: 'capOps', label: 'Operational now', unit: 'people', min: 0, step: 10 }, { key: 'capTrain', label: 'In training', unit: 'people', min: 0, step: 10 },
     { key: 'capTarget', label: 'Target mass', unit: 'people', min: 0, step: 10 }],
 };
@@ -61,7 +64,9 @@ const CORE: ProgrammeActivityDef[] = [
     { key: 'coachCruise', label: 'Cruise coaching load (%, informative curve)', unit: '%', min: 0, max: 60, step: 5 }] },
   { kind: 'setupGovernance', name: 'Setup: governance', description: 'Compliance audit, IP, agentic charter, run by the Design Authority.', phase: 'setup',
     lane: 'designAuthority', raci: { A: 'aiOffice', C: [], I: ['finops'] }, level: 'product', costRule: 'resources', timing: 'setup',
-    source: 'programme/profile.ts', params: [fte('govFte', 'Design Authority effort', 0.25), months('govMonths', 'Governance duration')] },
+    source: 'programme/profile.ts', params: [{ key: 'govPricing', label: 'Pricing', unit: '', options: PRICING },
+      fte('govFte', 'Design Authority effort', 0.25), months('govMonths', 'Governance duration'),
+      EUR('setupGov', 'Governance amount (€, the cost when priced by amount)')] },
   { kind: 'change', name: 'Change management (readiness)', description: 'Entry headcount × cost per FTE of the human-readiness intensity (HRI).',
     phase: 'setup', lane: 'aiOffice', raci: { A: 'aiOffice', C: ['preceptor'], I: [] }, level: 'product', costRule: 'engine', timing: 'setup',
     source: 'programme/profile.ts convChangeCost', params: [], module: 'hriEnabled' },
