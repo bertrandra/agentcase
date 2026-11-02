@@ -19,6 +19,8 @@ When releasing, follow [docs/BUMP_PROCEDURE.md](docs/BUMP_PROCEDURE.md) (§7 for
 
 ### SPEC_FIXES lot X7 (part)
 
+- **MS Project export checked by a reader** (FX-32): CI reads the golden case's MS Project XML exports (single case and portfolio) with MPXJ,
+  the library ProjectLibre uses, and checks tasks, WBS codes, dates, links and assignments are read as written.
 - **No file size limit** (owner's request 2026-11-02): BPMN, DMN and CMMN files are no longer capped in size or number of elements (were 5 MB
   and 100,000), Excel workbooks in size, unzipped size or rows (were 8 MB, 64 MB, 20,000), the due-diligence pack (25 MB) and audit files
   (8 MB, 2 MB) neither. The checks that are not sizes stay: XML depth, DTD / entity / processing-instruction refusal, zip parts and ratio.
