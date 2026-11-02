@@ -788,6 +788,9 @@ tests are not concerned: they drive the legacy *engine* through recipes, and the
   the recorded exception of the "every legacy figure" tests (`tests/helpers/legacyProgramme.ts` `withoutNormFigures`); the legacy parity tests of
   screens, workbooks and reports run on the injected legacy profile as before.
 - Tests: `tests/domain/programme/normalisation.test.ts`, `profile.test.ts`, `parallel-run-b9b.test.ts` (pinned moves), `tests/domain/portfolio/costModel.test.ts`.
+- Parallel run (`tools/parallel-run.mjs`, `tools/parallel-run-known.json`): the 147 files differ from the legacy file on purpose and are pinned
+  under this id (with the B9b moves): NPV lower and payback later on every file (the pilot in the setup); the 40 workbooks, imported into a new
+  case, also move savings and run cost by about €7k a year (DEV-NORM-KH-CURATION); the 107 case files keep their run cost (no coefficient).
 
 ## DEV-NORM-CHANGE-DAYS — the HRI change cost is days per head × the role rate (normalisation #4)
 
