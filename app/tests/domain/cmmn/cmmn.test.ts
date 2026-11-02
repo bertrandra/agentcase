@@ -37,7 +37,7 @@ describe('CMMN export of the run phase (F-B63)', () => {
     expect(serialize(parseXml(text).doc as XDocument)).toBe(text);
   });
   it('a phase the process does not hold gives an empty definitions', () => {
-    expect(readCmmn(cmmnDocument(golden.BPMN, 'x', ['NOPE']).root)).toEqual({ tasks: [], stages: [], ignored: {} });
+    expect(readCmmn(cmmnDocument(golden.BPMN, 'x', ['NOPE']).root)).toEqual({ tasks: [], stages: [], ignored: {}, kept: [] });
   });
   it.runIf(schemaTestsRun())('validates against CMMN11.xsd (+ ac:)', () => {
     expect(validateText(text, 'run.cmmn')).toMatchObject({ schema: 'valid', errors: [], warnings: [] });
@@ -61,5 +61,17 @@ describe('CMMN read-back (D-B25 a: what maps)', () => {
   it('an unchanged export read back changes nothing', () => {
     const r = applyCmmn(d, readCmmn(cmmnDocument(d, 'x').root));
     expect([r.doc === d, r.updated, r.unknown]).toEqual([true, [], []]);
+  });
+  it('FX-D10: a foreign file keeps its unmapped content (sentry, milestone, entry criterion) as written, once; an own export keeps none', async () => {
+    const { parseXml } = await import('@/store/persistence/bpmn/read');
+    const { passThroughOf } = await import('@/domain/process');
+    const own = cmmnDocument(golden.BPMN, 'x'), foreign = serialize(own).replace('exporter="AgentCase"', 'exporter="Other tool"');
+    expect(readCmmn(own.root).kept).toEqual([]);
+    const v = readCmmn(parseXml(foreign, foreign.length).doc!.root);
+    expect(v.kept.map((e) => e.local).sort()).toEqual(['entryCriterion', 'milestone', 'sentry']);
+    const once = applyCmmn(golden.BPMN, v), twice = applyCmmn(once.doc, v);
+    expect(once.kept).toBe(3);
+    expect(passThroughOf(once.doc).map((p) => p.kind).sort()).toEqual(['entryCriterion', 'milestone', 'sentry']);
+    expect(twice.kept).toBe(0);
   });
 });

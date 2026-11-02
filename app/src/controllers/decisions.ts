@@ -61,9 +61,10 @@ export async function importDecisionsFile(f: Picked): Promise<FileOutcome> {
 export function importRunCase(name: string, root: XElement): FileOutcome {
   if (!isCmmn(root)) return { ok: false, errors: ['the root element is not a CMMN 1.1 cmmn:definitions'] };
   const view = readCmmn(root), out = applyCmmn(editBase().BPMN, view);
-  if (out.updated.length) appStore().dispatch(importCmmnCmd({ view, name }));
-  const skipped = Object.values(view.ignored).reduce((s, n) => s + n, 0), undo = out.updated.length ? ' (Ctrl+Z undoes)' : '';
-  return { ok: true, message: `Run case ${name}: ${out.updated.length} element(s) updated, ${out.unknown.length} unknown, ${skipped} not read${undo}`,
+  if (out.updated.length || out.kept) appStore().dispatch(importCmmnCmd({ view, name }));
+  const skipped = Object.values(view.ignored).reduce((s, n) => s + n, 0), undo = out.updated.length || out.kept ? ' (Ctrl+Z undoes)' : '';
+  return { ok: true, message: `Run case ${name}: ${out.updated.length} element(s) updated, ${out.unknown.length} unknown, ${skipped} not read`
+    + `${out.kept ? ` (${out.kept} kept as written)` : ''}${undo}`,
     warnings: out.unknown.map((id) => `${id}: not in the process`) };
 }
 /** Reads a `.cmmn` file and applies what maps. */

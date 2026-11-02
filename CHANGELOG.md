@@ -17,6 +17,11 @@ When releasing, follow [docs/BUMP_PROCEDURE.md](docs/BUMP_PROCEDURE.md) (§7 for
 
 ## [Unreleased]
 
+### SPEC_FIXES lot X7 (part)
+
+- **CMMN import** (FX-D10): what a foreign `.cmmn` file holds and AgentCase does not map (sentries, milestones…) is kept as written in the
+  process instead of being dropped. No figure changes.
+
 ### DMN decision requirements diagram
 
 - 🧩 Process › Decisions draws the decision requirements diagram (inputs, decisions, the arrows between them, and which business-rule task

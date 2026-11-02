@@ -10,6 +10,8 @@ import { serializeElement } from './xmlWrite';
  * kind. The text is opaque to the model: nothing reads it, no figure moves, and it travels with the case's BPMN (save, open, export).
  */
 export interface PassItem { e: XElement; unit: string }
+/** The base64 text an element is kept as (to tell one already kept). */
+export const passCode = (e: XElement): string => b64(serializeElement(e));
 const b64 = (s: string): string => { let bin = ''; for (const b of new TextEncoder().encode(s)) bin += String.fromCharCode(b); return btoa(bin); };
 /** The XML of an entry (for a reader that wants it back). */
 export const passText = (base64: string): string => new TextDecoder().decode(Uint8Array.from(atob(base64), (c) => c.charCodeAt(0)));
