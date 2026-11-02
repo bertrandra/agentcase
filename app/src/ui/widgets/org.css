@@ -9,3 +9,16 @@
 .ac-org-answer dd { margin: 0; }
 .ac-org-chart ul { margin: 2px 0 2px 1.25rem; padding: 0; }
 .ac-org-answer dl > div { display: contents; }
+/* 🏢 Organisation graph (owner's request 2026-11-02): units and teams on a canvas, the selected unit edited in the panel beside it */
+.ac-org-canvas-row { display: flex; flex-wrap: wrap; gap: var(--ac-space-block); align-items: flex-start; }
+.ac-org-canvas-frame { flex: 1 1 480px; max-height: 520px; overflow: auto; border: var(--ac-border-thin) solid var(--ac-line); border-radius: var(--ac-radius-md); background: var(--ac-surface); }
+.ac-org-canvas-panel { flex: 0 1 280px; display: grid; gap: 6px; }
+.ac-org-edge { fill: none; stroke: var(--ac-text-soft); stroke-width: 1.5; }
+.ac-org-node { cursor: pointer; }
+.ac-org-node rect { fill: var(--ac-surface); stroke: var(--ac-primary-700); stroke-width: 2; }
+.ac-org-node.is-team rect { fill: var(--ac-surface-muted); stroke: var(--ac-line-strong); }
+.ac-org-node text { fill: var(--ac-ink); font-size: 13px; }
+.ac-org-node .ac-org-sub { fill: var(--ac-text-soft); font-size: 11px; }
+.ac-org-node.is-selected rect { fill: var(--ac-selected); stroke: var(--ac-focus); stroke-width: 4; }
+.ac-org-node.is-selected text { fill: var(--ac-selected-text); }
+.ac-org-node:focus-visible rect { stroke: var(--ac-focus); stroke-width: 4; }

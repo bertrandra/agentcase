@@ -19,6 +19,9 @@ When releasing, follow [docs/BUMP_PROCEDURE.md](docs/BUMP_PROCEDURE.md) (§7 for
 
 ### SPEC_FIXES lot X7 (part)
 
+- **Organisation graph** (owner's request 2026-11-02): 🏢 Organisation draws the units as a tree with their teams as leaves; a unit selected
+  on the canvas (click or keyboard) is renamed, retyped, given a unit below it or removed from the panel beside the graph, one undoable step
+  each (the units table's commands and checks).
 - **Audit activities** (owner's request 2026-11-02): 🔎 Audit › Audit activities (first tab). An audit activity (interview) targets one or
   more roles (the people) and the activities they do, with its auditor, date and status (`ac:interview roles activities auditor status`, XSD).
   An auditor picks their name, selects one or more of their audit activities and sees the interview's context (roles; each activity with
