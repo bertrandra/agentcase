@@ -96,7 +96,7 @@ describe('the cost-model workbook', () => {
       'Setup: Knowledge Hub and knowledge transfer (KT)',
       'Setup: Tooling & infra', 'Setup: Training', 'Setup: Coaching', 'Setup: Governance', 'Agentic run team (AgentOps)', 'Knowledge transfer avoided',
       'Verification tax',
-      'Pilot (included in totals)', 'TOTAL TO-BE COST (days x rate + other costs + pilot)',
+      'Setup: Pilot', 'TOTAL TO-BE COST (days x rate + other costs, pilot included)',   // the pilot is a setup line (DEV-COSTMODEL-PILOT)
         'PORTFOLIO TOTAL TO-BE COST (pilot included)']) expect(lines.has(l), l).toBe(true);
     const team = rows.find((r) => val(ws, r, 5) === 'Team cost (human days x applied rate)')!;
     expect((ws.getCell(team, col(ws, 'M3')).value as { formula: string }).formula).toMatch(/^'Rate cards'!/);
