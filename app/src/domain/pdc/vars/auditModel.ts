@@ -6,6 +6,7 @@ import { modelOf as model } from '../../tune/memo';
 import { supRampMultiplier, supSpanFor } from '../../model/supervision';
 import { vtaxAvgHuman } from '../../model/vtax';
 import { activeArtefacts } from '../../scope';
+import { te10b } from '../legacyTime';
 
 /** A logic check of the model layers: the message of the violation, or null when it holds. */
 export type AuditCheck = (c: Ctx) => string | null;
@@ -92,4 +93,6 @@ export const MODEL_CHECKS: [id: string, check: AuditCheck][] = [
       i) => ({ i, d: Math.abs(m.yearRunAgenticETP[i]! - ((x > 1e-4 ? span.floor : 0) + x * span.rOps)) })).filter((x) => x.d > 1e-6);
     return bad.length ? `Esup* not derived from the same vFTE the ceiling produced: ${list(bad.map((x) => `Y${x.i + 1}`))}` : null;
   }],
+  // FX-60 (owner's decision 2026-11-02): the Time Engine's legacy-mode canary runs with the live checks, not only in the verification section
+  ['TE-10b', te10b],
 ];

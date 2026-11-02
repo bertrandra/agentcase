@@ -355,7 +355,7 @@ from §14 and from checking the repository.
 | Per-snapshot Excel export | not ported | §14 Phase 6 |
 | Agent Catalog capacity and loop external % in the workbook import | not imported (immutable catalogues), reported as notes | §14 Phase 6 |
 | Legacy calculation package (`inputHash`, staleness banner) | ported: saved cases carry the package, a mismatch on open shows the banner; figures are still always derived from the inputs | `tests/store/calc-staleness.test.ts`, `tests/ui/calc-banner.test.tsx` |
-| `TE-10b` (legacy-mode monthly derivation canary) | fires on 2 supervision fixtures in the legacy; reproduced only in the verification section | §14 pre-7 chantiers |
+| `TE-10b` (legacy-mode monthly derivation canary) | runs with the live logic checks since FX-60 (2026-11-02); flags the same 2 supervision fixtures as the legacy | §14 pre-7 chantiers |
 | Legacy `tools/xss-test.mjs` fuzz | not ported; the new build relies on lint rules and the import/restore tests | `app/tests` |
 | A hosted server | out of scope (non-goal, D8) | §1 |
 

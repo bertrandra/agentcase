@@ -19,6 +19,9 @@ When releasing, follow [docs/BUMP_PROCEDURE.md](docs/BUMP_PROCEDURE.md) (§7 for
 
 ### SPEC_FIXES lot X7 (part)
 
+- **Carry-over decided** (FX-O5): the Golden-vs-AME comparison and per-snapshot Excel export are kept out (DEV-AME-NOT-PORTED, FX-57); the
+  four "being ported" UI items are in the app (FX-59, labels removed); the engine canary TE-10b runs with the live logic checks and matches the
+  legacy AUDIT on every fixture (FX-60).
 - **MS Project export checked by a reader** (FX-32): CI reads the golden case's MS Project XML exports (single case and portfolio) with MPXJ,
   the library ProjectLibre uses, and checks tasks, WBS codes, dates, links and assignments are read as written.
 - **No file size limit** (owner's request 2026-11-02): BPMN, DMN and CMMN files are no longer capped in size or number of elements (were 5 MB

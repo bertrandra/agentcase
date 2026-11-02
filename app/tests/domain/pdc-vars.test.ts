@@ -27,8 +27,8 @@ const runtimeOf = (c: ReturnType<typeof ctxOf>): VarRuntime => ({ mc: runMonteCa
  * read as violations.
  */
 const HARNESS: string[] = [];   // the oracle extras are hermetic now (MC_LAST/MCS_LAST reset), so no harness artefacts are counted
-/** Legacy checks with no counterpart here (the legacy flat engine mode no longer exists): see vars/audit.ts. */
-const NOT_PORTED = ['TE-10b'];
+/** Legacy checks with no counterpart here: none since FX-60 (TE-10b runs with the live checks and flags the same two supervision fixtures). */
+const NOT_PORTED: string[] = [];
 const legacyAudit = (id: string): string[] =>
   (JSON.parse(readFileSync(`fixtures/expected/${id}.json`, 'utf8')) as { audit: { id: string }[] }).audit.map((a) => a.id);
 
