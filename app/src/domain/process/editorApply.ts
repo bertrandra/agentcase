@@ -1,4 +1,5 @@
 /** @calc-zone process-model */
+import { bridgeOver } from './bridge';
 import { mergeEditorDocument } from './editorMerge';
 import { withMovedActivities, withNewActivities, withoutDeliverables } from './editorTasks';
 import { readProcess } from './read';
@@ -67,7 +68,7 @@ export function applyEditorDocument(cur: XDocument, edited: XDocument): EditorOu
   const moved = mid.activities.filter((a) => was.has(a.id) && was.get(a.id)?.phase !== a.phase).map((a) => ({ id: a.id, to: a.phase }));
   const refused = refusals(cur, merged, moved, removed);
   if (refused.length) return { ...none, refused };
-  const doc = withoutDeliverables(withMovedActivities(withNewActivities(merged, before, added), moved), removed);
+  const doc = withoutDeliverables(withMovedActivities(withNewActivities(bridgeOver(merged, new Set(removed)), before, added), moved), removed);
   const sec = securityCheck(serialize(doc));
   if (sec.errors.length) return { ...none, refused: sec.errors.map((e) => `${e.code}: ${e.message}`) };
   const renamed = mid.activities.filter((a) => was.has(a.id) && was.get(a.id)?.name !== a.name).map((a) => a.id);

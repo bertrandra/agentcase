@@ -7,7 +7,7 @@ import { el, type AttrInput, type XElement } from './xml';
 
 export const PARTICIPANT_ID = 'Participant';
 export const COLLABORATION_ID = 'Collaboration';
-type Pt = [number, number];
+export type Pt = [number, number];
 
 const shape = (id: string, b: Box, extra: AttrInput = {}): XElement => el('bpmndi:BPMNShape', { id: diId(id), bpmnElement: id, ...extra }, [
   el('dc:Bounds', { x: b.x, y: b.y, width: b.w, height: b.h }),
@@ -16,6 +16,20 @@ const edge = (id: string, pts: Pt[]): XElement =>
   el('bpmndi:BPMNEdge', { id: diId(id), bpmnElement: id }, pts.map(([x, y]) => el('di:waypoint', { x, y })));
 const cx = (b: Box): number => b.x + b.w / 2;
 const cy = (b: Box): number => b.y + b.h / 2;
+
+/**
+ * Waypoints of an activity-to-activity link (FX-D9): right side to left side when the target is to the right, elbowed when the rows differ;
+ * down from the bottom to the top of the next one when it wraps to a lower row of the grid; up the same way when it sits higher.
+ */
+export function linkPoints(s: Box, t: Box): Pt[] {
+  if (t.x >= s.x + s.w) {
+    if (cy(s) === cy(t)) return [[s.x + s.w, cy(s)], [t.x, cy(t)]];
+    const mx = Math.round((s.x + s.w + t.x) / 2);
+    return [[s.x + s.w, cy(s)], [mx, cy(s)], [mx, cy(t)], [t.x, cy(t)]];
+  }
+  const down = t.y >= s.y + s.h, sy = down ? s.y + s.h : s.y, ty = down ? t.y : t.y + t.h, my = Math.round((sy + ty) / 2);
+  return cx(s) === cx(t) ? [[cx(s), sy], [cx(t), ty]] : [[cx(s), sy], [cx(s), my], [cx(t), my], [cx(t), ty]];
+}
 
 /** Waypoints of a flow: straight along the middle line, elbows for Cross-cutting, arcs above the boxes for rework (k-th one a little higher). */
 function waypoints(f: FlowSpec, L: Layout, k: number): Pt[] {
@@ -26,6 +40,7 @@ function waypoints(f: FlowSpec, L: Layout, k: number): Pt[] {
     const top = Math.min(s.y, t.y) - 8 - 7 * k, sx = cx(s) + 10 * k, tx = cx(t) - 10 * k;
     return [[sx, s.y], [sx, top], [tx, top], [tx, t.y]];
   }
+  if (f.inner) return linkPoints(s, t);
   if (f.target === CROSS_ID) return [[cx(s), s.y + s.h], [cx(s), cy(t)], [t.x, cy(t)]];
   if (f.source === CROSS_ID) return [[s.x + s.w, cy(s)], [cx(t), cy(s)], [cx(t), t.y + t.h]];
   return [[s.x + s.w, L.midY], [t.x, L.midY]];

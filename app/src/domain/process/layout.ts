@@ -21,6 +21,16 @@ function itemsOf(c: ProcessCatalogue): Item[] {
     ({ id: a.id, phase: a.phase, lane: laneOf(a, reg, c.skillMap), seq: a.seq ?? 0, order: i + 1, reg: reg ? 1 : 0 });
   return [...c.sdlc.map(one(false)), ...c.reg.map(one(true))];
 }
+/**
+ * The activities of each phase in the order of their chain (FX-D9): sequence, then SDLC before regulatory, then catalogue order (the order the
+ * diagram places them in). Cross-cutting is an ad-hoc sub-process: no chain.
+ */
+export function chainOrderOf(c: ProcessCatalogue): Map<string, string[]> {
+  const out = new Map<string, string[]>();
+  for (const t of itemsOf(c).filter((x) => x.phase !== CROSS_ID).sort(byPlace)) (out.get(t.phase) ?? out.set(t.phase, []).get(t.phase))?.push(t.id);
+  return out;
+}
+
 /** Phases left to right by their sequence (stable on catalogue order). */
 export const phaseOrderOf = (c: ProcessCatalogue): string[] =>
   c.phases.map((p, i) => ({ id: p.id, seq: p.seq, i })).sort((a, b) => a.seq - b.seq || a.i - b.i).map((p) => p.id);

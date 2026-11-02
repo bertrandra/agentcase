@@ -1,4 +1,5 @@
 /** @calc-zone process-model */
+import { bridgeOver } from './bridge';
 import { appendChild, editById, editWhere, idsOf, withExt } from './editTree';
 import { dataId, diId } from './ids';
 import { readProcess } from './read';
@@ -26,10 +27,11 @@ export function findById(e: XElement, id: string): XElement | undefined {
  * `process.moveActivity`: the activity (and its deliverable) moves to the end of another phase; the sequence flows that touched it in its old phase
  * and its diagram shape go (the layout places it in the new phase). Refused while it belongs to a rework pair (the loop would cross phases).
  */
-export function moveActivity(d: XDocument, id: string, phase: string): XDocument {
-  const v = readProcess(d), a = v.activities.find((x) => x.id === id);
-  if (!a || a.phase === phase || !v.phases.some((p) => p.id === phase)) return d;
-  if (v.flows.some((f) => f.rework && (f.rework.activityA === id || f.rework.activityB === id))) return d;
+export function moveActivity(cur: XDocument, id: string, phase: string): XDocument {
+  const v0 = readProcess(cur), a = v0.activities.find((x) => x.id === id);
+  if (!a || a.phase === phase || !v0.phases.some((p) => p.id === phase)) return cur;
+  if (v0.flows.some((f) => f.rework && (f.rework.activityA === id || f.rework.activityB === id))) return cur;
+  const d = bridgeOver(cur, new Set([id])), v = readProcess(d);   // FX-D9: its old neighbours are linked over it
   const task = findById(d.root, id), data = findById(d.root, dataId(id));
   if (!task) return d;
   const flows = new Set(v.flows.filter((f) => !f.rework && (f.source === id || f.target === id)).map((f) => f.id));

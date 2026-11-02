@@ -1,6 +1,7 @@
 import { useId, useRef, useState } from 'react';
 import { importDecisionsFile, importRunCaseFile } from '@/controllers/decisions';
 import { readProcessFile, resetProcessTo } from '@/controllers/processImport';
+import { linkProcessActivities } from '@/controllers/processLayout';
 import type { PhaseView } from '@/domain/process';
 import { BpmnExportPanel } from '@/ui/shell/BpmnExport';
 import { toast } from '@/ui/uiState';
@@ -9,6 +10,7 @@ import { fileRead } from './view';
 /**
  * The Process section's actions (spec § 8): "Import process (BPMN)…" reads and checks a file, then opens the preview (nothing is written before
  * the user confirms); "Export process (BPMN)…" is the File menu's export dialog (F-B1); "Reset to default process", whole or one phase (F-B19).
+ * "Link activities" links each activity no flow touches yet into its phase's chain (FX-D9: a case saved before the links, an activity added since).
  * B7b: the same picker takes a `.dmn` file (the decisions, F-B62) or a `.cmmn` file (the run case read back, F-B63), each one undoable step.
  */
 export function Toolbar({ phases }: { phases: PhaseView[] }) {
@@ -31,6 +33,7 @@ export function Toolbar({ phases }: { phases: PhaseView[] }) {
     resetProcessTo(phase || undefined);
     toast(phase ? `Phase ${phase} reset to the default process (Ctrl+Z undoes)` : 'Process reset to the default (Ctrl+Z undoes)');
   };
+  const link = () => toast(linkProcessActivities() ? 'Activities linked inside each phase (Ctrl+Z undoes)' : 'Every activity is already linked in its phase');
   const closeExport = () => { setExporting(false); exportBtn.current?.focus(); };
   return (
     <div className="ac-form-row ac-proc-toolbar">
@@ -47,6 +50,7 @@ export function Toolbar({ phases }: { phases: PhaseView[] }) {
         {phases.map((p) => <option key={p.id} value={p.id}>{`Phase ${p.id} · ${p.name}`}</option>)}
       </select>
       <button type="button" onClick={reset}>Reset to default process</button>
+      <button type="button" onClick={link} title="Link each activity not linked yet at the end of its phase’s chain">Link activities</button>
     </div>
   );
 }

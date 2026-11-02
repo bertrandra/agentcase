@@ -19,6 +19,11 @@ When releasing, follow [docs/BUMP_PROCEDURE.md](docs/BUMP_PROCEDURE.md) (§7 for
 
 ### SPEC_FIXES lot X7 (part)
 
+- **Activity links** (FX-D9, owner's request): the default process links the activities of each phase one after the other, drawn on the diagram
+  and exported; removing, moving or leaving out an activity links its neighbours over it. 🧩 Process › "Link activities" links a case saved
+  before (or an activity added since) in one undoable step. No figure reads the order.
+- **Implied correlation** (FX-D2): 🎲 Monte Carlo › Risk reduction shows the selection's implied average pairwise correlation of its products'
+  net benefits next to the run's one ρ (portfolio, wave and unit views).
 - **CMMN import** (FX-D10): what a foreign `.cmmn` file holds and AgentCase does not map (sentries, milestones…) is kept as written in the
   process instead of being dropped. No figure changes.
 
