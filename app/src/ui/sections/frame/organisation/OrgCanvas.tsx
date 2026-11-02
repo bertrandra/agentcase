@@ -68,16 +68,17 @@ export const OrgCanvas = memo(function OrgCanvas({ m }: { m: OrgParts }) {
         <div className="ac-org-canvas-frame">
           <svg width={g.box.w * zoom} height={g.box.h * zoom} viewBox={`0 0 ${g.box.w} ${g.box.h}`} role="group" aria-label="Units and teams">
             {g.edges.map((e) => <polyline key={`${e.from}>${e.to}`} className="ac-org-edge" points={e.points.map((p) => p.join(',')).join(' ')} />)}
-            {g.nodes.map((n) => (
+            {g.nodes.map((n) => { const shown = n.label.length > 22 ? `${n.label.slice(0, 21)}…` : n.label; return (
               <g key={n.id} role="button" tabIndex={0} aria-pressed={n.id === selected}
-                aria-label={`${n.kind === 'unit' ? 'Unit' : 'Team'} ${n.label}, ${n.sub}`}
+                aria-label={`${shown} ${n.sub} · ${n.kind === 'unit' ? 'unit' : 'team'} ${n.label}`}
                 className={`ac-org-node is-${n.kind}${n.id === selected ? ' is-selected' : ''}`} onClick={() => setSelected(n.id)}
                 onKeyDown={(e) => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); setSelected(n.id); } }}>
                 <rect x={n.x} y={n.y} width={n.w} height={n.h} rx={n.kind === 'unit' ? 8 : 20} />
-                <text x={n.x + n.w / 2} y={n.y + 24} textAnchor="middle">{n.label.length > 22 ? `${n.label.slice(0, 21)}…` : n.label}</text>
-                <text x={n.x + n.w / 2} y={n.y + 42} textAnchor="middle" className="ac-org-sub">{n.sub}</text>
+                <text x={n.x + n.w / 2} y={n.y + 24} textAnchor="middle">
+                  <tspan x={n.x + n.w / 2}>{shown}</tspan>{' '}<tspan x={n.x + n.w / 2} dy={18} className="ac-org-sub">{n.sub}</tspan>
+                </text>
               </g>
-            ))}
+            ); })}
           </svg>
         </div>
         {node ? <NodePanel m={m} node={node} onSelect={setSelected} /> : <p className="ac-muted">Select a unit to rename it, change its type, add a unit

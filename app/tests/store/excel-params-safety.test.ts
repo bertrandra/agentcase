@@ -6,7 +6,7 @@ import { appStore } from '@/store/instance';
 import { guardZip, LIMITS } from '@/store/persistence/excel/params/safe';
 import { ENV } from '../helpers/excelParams';
 import { asFile, editXlsx, fakeZip, ourXlsx, setByLabel } from '../helpers/xlsxEdit';
-import { freshStore, snap } from './helpers';
+import { freshStore } from './helpers';
 import { keysOf } from '../helpers/scope';
 import { serialize, type XDocument } from '@/domain/process';
 

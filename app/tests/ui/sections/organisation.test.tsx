@@ -34,9 +34,9 @@ describe('🏢 Organisation graph (owner\'s request 2026-11-02)', () => {
   it('draws the units and their teams; a unit selected on the canvas gets a unit below it, a new name and is removed; undo restores; axe clean', async () => {
     const s = freshStore(), { container } = render(<Organisation />), units = () => readStoredOrg(bpmn(s)).units;
     const nodes = within(screen.getByRole('group', { name: 'Units and teams' })).getAllByRole('button');
-    expect(nodes.some((n) => /^Unit /.test(n.getAttribute('aria-label') ?? ''))).toBe(true);
-    expect(nodes.some((n) => /^Team /.test(n.getAttribute('aria-label') ?? ''))).toBe(true);
-    fireEvent.keyDown(nodes.find((n) => /^Unit /.test(n.getAttribute('aria-label') ?? ''))!, { key: 'Enter' });
+    expect(nodes.some((n) => / · unit /.test(n.getAttribute('aria-label') ?? ''))).toBe(true);
+    expect(nodes.some((n) => / · team /.test(n.getAttribute('aria-label') ?? ''))).toBe(true);
+    fireEvent.keyDown(nodes.find((n) => / · unit /.test(n.getAttribute('aria-label') ?? ''))!, { key: 'Enter' });
     fireEvent.click(screen.getByText('+ Add a unit below'));
     expect(units().map((u) => u.id)).toEqual(['unit-delivery', 'unit-1']);
     expect(units()[1]!.parent).toBe('unit-delivery');

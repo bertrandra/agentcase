@@ -3,7 +3,6 @@ import { beforeEach, describe, expect, it } from 'vitest';
 import { exportParamsWorkbook, importParamsWorkbook } from '@/controllers/excelParams';
 import { addProduct } from '@/controllers/product';
 import { appStore } from '@/store/instance';
-import { LIMITS } from '@/store/persistence/excel/params/safe';
 import { ENV } from '../helpers/excelParams';
 import { fourProducts, pfNow } from '../helpers/portfolioFixtures';
 import { asFile, editXlsx } from '../helpers/xlsxEdit';
