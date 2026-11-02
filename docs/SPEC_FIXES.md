@@ -128,11 +128,11 @@ DEVIATIONS.md entry and the owner's approval of the before → after on the gold
 
 | ID | Action | Where |
 |---|---|---|
-| FX-O1 | ⏳ Open — Create and push the release tags v19.0.0 … v21.6.0 (all commands now listed, FX-64) | docs/RELEASE_TAGS.md |
+| FX-O1 | ⏳ Open (approved 2026-11-02; the session's git access cannot push tags: run the commands in a clone with push rights) — Create and push the release tags v19.0.0 … v21.6.0 (all commands now listed, FX-64) | docs/RELEASE_TAGS.md |
 | FX-O2 | ✅ Done — Sign off the tool catalogue (FX-D5) — **done 2026-11-01: signed off as is** | 🔎 Audit, SPEC_BPMN § 15.7 |
 | FX-O3 | ⏳ Open — Delete the 9 old local branches from the 22–24 Oct theme work (kept until you say yes) | local clone |
 | FX-O4 | ⏳ Open — Supply real (anonymised) customer files for the differential run (FX-63) | `app/fixtures/customer/` |
-| FX-O5 | ⏳ Open — Port or keep out: AME comparison / per-snapshot Excel (FX-57), "being ported" UI items (FX-59), `TE-10b` (FX-60) | this file |
+| FX-O5 | ✅ Decided 2026-11-02 — FX-57 kept out; FX-59 check and finish; FX-60 wire into the engine — Port or keep out: AME comparison / per-snapshot Excel (FX-57), "being ported" UI items (FX-59), `TE-10b` (FX-60) | this file |
 
 ### 3.6 Carried-over open items (recheck of 31 Oct 2026)
 
@@ -148,7 +148,7 @@ and GitHub (no open issue, no open PR). Not covered by FX-01…FX-45 above.
 | FX-54 | ✅ Done — Legacy discrepancy: FM environment `isProd` dropped on import | Import it; round-trip test. **Fixed (lot X9, unreleased).** A Production column; older workbooks keep the case's flags (DEV-EXCEL-FM-PROD) | P2 | S | MIGRATION_PLAN § 15.4 |
 | FX-55 | ✅ Done — Legacy discrepancy: `bass` curve family not restored by the legacy snapshot restore | Restore it when opening a legacy snapshot; fixture test. **Already fixed (checked in lot X9):** the new build keeps the bass and legacy families (DEV-SNAPSHOT-RESTORE; `snapshot-restore-parity.test.ts`); only the frozen legacy file drops them | P2 | S | MIGRATION_PLAN § 15.4 |
 | FX-56 | ✅ Done — Legacy discrepancy: the critical-delivery report hard-codes 349 artefacts, the catalogue has 370 | Count from the catalogue (deviation recorded). **Fixed (already counted; recorded in lot X9):** DEV-REPORT-CATALOGUE-COUNT | P2 | S | MIGRATION_PLAN § 15.4 |
-| FX-57 | ⏳ Open — Not ported: Golden-vs-AME comparison, AME reference capture, per-snapshot Excel export | Decide keep out (record in DEVIATIONS) or port | P3 | M | MIGRATION_PLAN § 15.2 |
+| FX-57 | ✅ Done (kept out, owner 2026-11-02; DEV-AME-NOT-PORTED) — Not ported: Golden-vs-AME comparison, AME reference capture, per-snapshot Excel export | Decide keep out (record in DEVIATIONS) or port | P3 | M | MIGRATION_PLAN § 15.2 |
 | FX-58 | ✅ Done — Not ported: legacy `tools/xss-test.mjs` fuzz | Port as a property test over import/restore. **Fixed (lot X9, unreleased).** The app renders through React (no innerHTML in src/); the string-built HTML is the reports: `tests/store/report-xss-property.test.ts` (fast-check, hostile names → no element, handler or script URL; fails when escaping is removed). The legacy fuzz keeps running on the legacy file in the nightly battery (FX-62) | P3 | S | MIGRATION_PLAN § 15.2 |
 | FX-59 | ⏳ Open — Still marked "being ported": collapsible sidebar groups, Fast Path filter, layout-board live preview, Gantt keyboard editing | Confirm state in `app/src`; finish or move to out of scope | P3 | M | MIGRATION_PLAN § 15.2, ARCHITECTURE § 12 |
 | FX-60 | ⏳ Open — `TE-10b` legacy-mode monthly derivation reproduced only in the verification section | Decide keep as verification-only (record) or wire into the engine | P3 | S | MIGRATION_PLAN § 15.2 |
