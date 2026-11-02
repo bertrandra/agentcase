@@ -23,16 +23,20 @@ interface Props {
   name: string; hideOut: boolean; onHideOut: (v: boolean) => void; colour: DiagramColour; onColour: (v: DiagramColour) => void;
   /** the categories drawn (the legend), in colour order */
   used: string[]; zoomLabel: string; onZoomSel: (() => void) | null; colours: boolean;
+  /** keep the lane (role) names at the left edge while panning */
+  freeze: boolean; onFreeze: (v: boolean) => void;
 }
 /**
- * The display options of the diagram (view state, never in the case): hide the activities out of scope, colour the activities by task type or AI
+ * The display options of the diagram (view state, never in the case): hide the activities out of scope (their links follow), freeze the roles (lanes)
+ * at the left edge, colour the activities by task type or AI
  * authority (with its legend), and zoom to the selected activities (Ctrl / Shift + click adds one) or, with none, to those the filters keep.
  */
-export function DiagramOptions({ name, hideOut, onHideOut, colour, onColour, used, zoomLabel, onZoomSel, colours }: Props) {
+export function DiagramOptions({ name, hideOut, onHideOut, colour, onColour, used, zoomLabel, onZoomSel, colours, freeze, onFreeze }: Props) {
   const id = useId();
   return (
     <div className="ac-form-row ac-proc-diagram-opts" role="group" aria-label={`${name} display`}>
       <label><input type="checkbox" checked={hideOut} onChange={(e) => onHideOut(e.target.checked)} /> Hide out-of-scope activities</label>
+      <label><input type="checkbox" checked={freeze} onChange={(e) => onFreeze(e.target.checked)} /> Freeze roles on the left</label>
       {colours && <>
         <label htmlFor={`${id}-c`}>Colours</label>
         <select id={`${id}-c`} value={colour} onChange={(e) => onColour(e.target.value as DiagramColour)}>

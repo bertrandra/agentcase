@@ -111,3 +111,14 @@ describe('process.linkActivities (FX-D9)', () => {
     expect(linkActivities(l)).toBe(l);
   });
 });
+
+describe('the diagram\'s "Hide out-of-scope activities": the links follow (owner\'s request 2026-11-02)', () => {
+  it('no edge touches a hidden activity; its neighbours are linked by a bridged edge', async () => {
+    const { drawingOf, hideActivities } = await import('@/domain/process');
+    const d = base(), { chain } = longPhase(d), [a, b, c] = chain as [string, string, string], h = hideActivities(drawingOf(d), new Set([b]));
+    expect(h.shapes.some((s) => s.id === b)).toBe(false);
+    expect(h.edges.filter((e) => e.source === b || e.target === b)).toEqual([]);
+    expect(h.edges.find((e) => e.bridged && e.source === a && e.target === c)?.points.length).toBeGreaterThan(1);
+    expect(hideActivities(drawingOf(d), new Set())).toBe(drawingOf(d));
+  });
+});

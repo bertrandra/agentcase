@@ -31,7 +31,18 @@
 .ac-bpmn-activity.is-selected text { fill: var(--ac-selected-text); }
 .ac-bpmn-id { font-weight: var(--ac-font-weight-bold); }
 /* Display options of the diagram: colour by task type / AI authority (the chart colours), faded by the table filters, picked (Ctrl / Shift + click) */
-.ac-bpmn-activity[class*='ac-bpmn-cat-'] rect { stroke-width: 4; }
+/* Readable zoom (labels drawn): the colour is a thick outline, the label stays on the plain surface. Overview (labels too small to read): the box is
+   filled with its colour, so the categories read as blocks; uncoloured activities are filled with the primary tint (contrast with the lanes). */
+.ac-bpmn-activity[class*='ac-bpmn-cat-'] rect { stroke-width: 6; }
+.is-overview .ac-bpmn-activity:not(.is-out):not(.is-selected):not(.is-picked) rect { fill: var(--ac-primary-200); stroke-width: 2; }
+.is-overview .ac-bpmn-activity.ac-bpmn-cat-1:not(.is-out):not(.is-selected):not(.is-picked) rect { fill: var(--ac-chart-cat-1); stroke: var(--ac-chart-cat-1); }
+.is-overview .ac-bpmn-activity.ac-bpmn-cat-2:not(.is-out):not(.is-selected):not(.is-picked) rect { fill: var(--ac-chart-cat-2); stroke: var(--ac-chart-cat-2); }
+.is-overview .ac-bpmn-activity.ac-bpmn-cat-3:not(.is-out):not(.is-selected):not(.is-picked) rect { fill: var(--ac-chart-cat-3); stroke: var(--ac-chart-cat-3); }
+.is-overview .ac-bpmn-activity.ac-bpmn-cat-4:not(.is-out):not(.is-selected):not(.is-picked) rect { fill: var(--ac-chart-cat-4); stroke: var(--ac-chart-cat-4); }
+.is-overview .ac-bpmn-activity.ac-bpmn-cat-5:not(.is-out):not(.is-selected):not(.is-picked) rect { fill: var(--ac-chart-cat-5); stroke: var(--ac-chart-cat-5); }
+.is-overview .ac-bpmn-activity.ac-bpmn-cat-6:not(.is-out):not(.is-selected):not(.is-picked) rect { fill: var(--ac-chart-cat-6); stroke: var(--ac-chart-cat-6); }
+.is-overview .ac-bpmn-activity.ac-bpmn-cat-7:not(.is-out):not(.is-selected):not(.is-picked) rect { fill: var(--ac-chart-cat-7); stroke: var(--ac-chart-cat-7); }
+.is-overview .ac-bpmn-activity.ac-bpmn-cat-8:not(.is-out):not(.is-selected):not(.is-picked) rect { fill: var(--ac-chart-cat-8); stroke: var(--ac-chart-cat-8); }
 .ac-bpmn-activity.ac-bpmn-cat-1 rect, .ac-proc-swatch.ac-bpmn-cat-1 { stroke: var(--ac-chart-cat-1); border-color: var(--ac-chart-cat-1); }
 .ac-bpmn-activity.ac-bpmn-cat-2 rect, .ac-proc-swatch.ac-bpmn-cat-2 { stroke: var(--ac-chart-cat-2); border-color: var(--ac-chart-cat-2); }
 .ac-bpmn-activity.ac-bpmn-cat-3 rect, .ac-proc-swatch.ac-bpmn-cat-3 { stroke: var(--ac-chart-cat-3); border-color: var(--ac-chart-cat-3); }
@@ -46,7 +57,11 @@
 .ac-proc-legend { display: flex; flex-wrap: wrap; gap: 4px 14px; margin: 0; padding: 0; list-style: none; font-size: var(--ac-font-size-sm); }
 .ac-proc-legend li { display: flex; align-items: center; gap: 6px; }
 .ac-proc-swatch { display: inline-block; width: 14px; height: 10px; border: 3px solid; border-radius: 3px; }
-.ac-bpmn-edge { fill: none; stroke: var(--ac-muted); stroke-width: 1.5; }
+.ac-bpmn-edge { fill: none; stroke: var(--ac-text-soft); stroke-width: 2; }
+.ac-bpmn-edge.is-bridged { stroke-dasharray: 8 4; }
+/* "Freeze roles on the left": the lane names over the view's left edge */
+.ac-bpmn-frozen rect { fill: var(--ac-surface); stroke: var(--ac-line-strong); stroke-width: 1; }
+.ac-bpmn-frozen text { fill: var(--ac-text-heading); font-weight: var(--ac-font-weight-bold); }
 .ac-bpmn-edge.is-rework { stroke: var(--ac-danger-700); stroke-dasharray: 6 3; }
 .ac-bpmn-edge.is-message { stroke: var(--ac-primary-700); stroke-dasharray: 2 4; }
 .ac-bpmn-marker { font-size: 10px; fill: var(--ac-text-soft); }

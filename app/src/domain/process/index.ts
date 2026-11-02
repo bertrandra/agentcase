@@ -30,7 +30,7 @@ export { passText, passThroughOf } from './importPass';
 export { DEFAULT_CHOICES, type ImportAnalysis, type ImportChoices, type ImportMode, type ImportPreview, type IncomingRole,
   type IncomingUnit } from './importTypes';
 export { roleId } from './ids';
-export { drawingOf, type DrawEdge, type Drawing, type DrawShape, type ShapeKind } from './drawing';
+export { drawingOf, hideActivities, type DrawEdge, type Drawing, type DrawShape, type ShapeKind } from './drawing';
 export { applyEditorDocument, type EditorOutcome } from './editorApply';
 export { mergeEditorDocument } from './editorMerge';
 export { caseValues, emptiedStoredValues, keepStoredValues, programmeValuesOf, storedElement, withoutStoredValues, withProgrammeValues } from './storedValues';

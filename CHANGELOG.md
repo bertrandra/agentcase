@@ -19,6 +19,9 @@ When releasing, follow [docs/BUMP_PROCEDURE.md](docs/BUMP_PROCEDURE.md) (§7 for
 
 ### SPEC_FIXES lot X7 (part)
 
+- **Process diagram** (owner's requests 2026-11-02): "Freeze roles on the left" keeps the lane names at the left edge while panning; "Hide
+  out-of-scope activities" hides their links too and links the activities they stood between (dashed); colours read as filled blocks when
+  zoomed out (labels too small) and as thick outlines when the labels are readable; stronger links.
 - **Activity links** (FX-D9, owner's request): the default process links the SDLC activities of each phase one after the other (regulatory ones stay unlinked), drawn on the diagram
   and exported; removing, moving or leaving out an activity links its neighbours over it. 🧩 Process › "Link activities" links a case saved
   before (or an activity added since) in one undoable step. No figure reads the order.

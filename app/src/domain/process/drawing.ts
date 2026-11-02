@@ -1,4 +1,6 @@
 /** @calc-zone process-model */
+import { bridgesOver } from './bridge';
+import { linkPoints } from './buildDi';
 import { readProcess } from './read';
 import { attr, type XDocument, type XElement } from './xml';
 
@@ -18,7 +20,8 @@ export interface DrawShape {
   marker?: string;
 }
 /** `message`: a message flow between pools (the programme's flows to the delivery process, B9a), drawn dashed. */
-export interface DrawEdge { id: string; points: [number, number][]; rework: boolean; message?: boolean }
+/** `source` / `target`: the flow's ends (a sequence flow of the document); `bridged`: a link drawn over hidden activities (`hideActivities`). */
+export interface DrawEdge { id: string; points: [number, number][]; rework: boolean; message?: boolean; source?: string; target?: string; bridged?: boolean }
 export interface Drawing { box: { x: number; y: number; w: number; h: number }; shapes: DrawShape[]; edges: DrawEdge[] }
 
 const KIND: Record<string, ShapeKind> = { participant: 'pool', lane: 'lane', subProcess: 'phase', adHocSubProcess: 'phase', startEvent: 'event',
@@ -73,12 +76,33 @@ export function drawingOf(d: XDocument): Drawing {
   });
   placeMissing(v, shapes);
   shapes.sort((a, b) => ORDER.indexOf(a.kind) - ORDER.indexOf(b.kind));
-  const rework = new Set(v.flows.filter((f) => f.rework).map((f) => f.id));
-  const edges = v.diagram.edges.filter((e) => e.points.length > 1).map((e) => ({ id: e.element, points: e.points, rework: rework.has(e.element) }));
+  const rework = new Set(v.flows.filter((f) => f.rework).map((f) => f.id)), ends = new Map(v.flows.map((f) => [f.id, f]));
+  const edges = v.diagram.edges.filter((e) => e.points.length > 1).map((e): DrawEdge => {
+    const f = ends.get(e.element);
+    return { id: e.element, points: e.points, rework: rework.has(e.element), ...(f ? { source: f.source, target: f.target } : {}) };
+  });
   const xs = [...shapes.flatMap((s) => [s.x, s.x + s.w]), ...edges.flatMap((e) => e.points.map((p) => p[0]))];
   const ys = [...shapes.flatMap((s) => [s.y, s.y + s.h]), ...edges.flatMap((e) => e.points.map((p) => p[1]))];
   const x0 = xs.length ? Math.min(...xs) : 0, y0 = ys.length ? Math.min(...ys) : 0;
   const out: Drawing = { box: { x: x0 - G, y: y0 - G, w: Math.max(x0 + 100, ...xs) - x0 + 2 * G, h: Math.max(y0 + 100, ...ys) - y0 + 2 * G }, shapes, edges };
   memo.set(d, out);
   return out;
+}
+
+/**
+ * The drawing with `hidden` activities left out (the diagram's "Hide out-of-scope activities"): their shapes, the edges that touch them, and in their
+ * place a link between the activities they stood between (`bridgesOver`, drawn in the grid gaps like the chain's links, marked `bridged`), so the
+ * links follow what is shown. Rework flows are not bridged.
+ */
+export function hideActivities(d: Drawing, hidden: ReadonlySet<string>): Drawing {
+  if (!hidden.size) return d;
+  const touches = (e: DrawEdge): boolean => (e.source !== undefined && hidden.has(e.source)) || (e.target !== undefined && hidden.has(e.target));
+  const flows = d.edges.filter((e) => e.source !== undefined && e.target !== undefined)
+    .map((e) => ({ source: e.source as string, target: e.target as string, container: '', ...(e.rework ? { rework: true } : {}) }));
+  const box = new Map(d.shapes.map((s) => [s.id, s]));
+  const bridges = bridgesOver(flows, hidden).flatMap((b): DrawEdge[] => {
+    const s = box.get(b.source), t = box.get(b.target);
+    return s && t ? [{ id: `bridge:${b.source}:${b.target}`, points: linkPoints(s, t), rework: false, source: b.source, target: b.target, bridged: true }] : [];
+  });
+  return { ...d, shapes: d.shapes.filter((s) => !hidden.has(s.id)), edges: [...d.edges.filter((e) => !touches(e)), ...bridges] };
 }
