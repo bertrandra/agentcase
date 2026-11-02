@@ -1,6 +1,6 @@
 /** @calc-zone exports */
 import { cmmnDocument } from '@/domain/cmmn';
-import { bindingsOf, decisionsEl, decisionsOf, dmnFile, readDmn, ruleFamilies, writeDmn } from '@/domain/dmn';
+import { bindingsOf, decisionsEl, decisionsOf, dmnFile, readDmn, ruleFamilies, writeDmn, type DmnModel } from '@/domain/dmn';
 import { serialize } from '@/domain/process';
 import { caseViews } from '@/domain/process/engineInputs';
 import { APP_VERSION } from '@/domain/version';
@@ -18,6 +18,14 @@ export const hasDecisions = (): boolean => decisionsEl(activeDoc().BPMN.root) !=
  * SPEC_FIXES FX-27: the decisions an export's `.dmn` holds and how many of them no business-rule task is bound to (they apply to nothing until one
  * is). Without decisions of its own the case exports the rule families, none of them bound.
  */
+/** The decisions the Decisions panel draws: the process's own, else the case's reference rule families (`generated`: exported, not applied). */
+export function decisionsModel(): { model: DmnModel; generated: boolean } {
+  const c = activeDoc(), own = decisionsOf(c.BPMN.root);
+  if (own) return { model: own.model, generated: false };
+  const v = caseViews(c);
+  return { model: readDmn(writeDmn(ruleFamilies([...(v?.sdlc ?? []), ...(v?.reg ?? [])]))).model, generated: true };
+}
+
 export function dmnBindingState(): { decisions: number; unbound: number; generated: boolean } {
   const c = activeDoc(), own = decisionsOf(c.BPMN.root);
   if (!own) {

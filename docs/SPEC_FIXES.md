@@ -7,10 +7,9 @@
 > view state never undoable, one owner per figure in `src/domain`, single-product figures identical to the legacy file unless recorded in
 > DEVIATIONS.md and `app/tests/helpers/deviations*.ts`, one PR per lot merged on green CI with the HTML shared.
 
-> **Progress (2026-11-01, updated after lot X6):** every row is tagged — ✅ **Done** (merged, or in the open X6 PR), ⏳ **Open**,
-> ⏸ **Tracked** (waits on an upstream release). Lots: X0, X1, X2, X3 done; X5 done except FX-32 (needs a ProjectLibre / MS Project check);
-> X8 done (FX-44 tracked); X9 done except the owner's items (FX-57, FX-59, FX-60, FX-63); X6 done (FX-05, FX-21, FX-22, FX-23, FX-D4, FX-D6, FX-D7,
-> FX-D11); X4 done; X7 open. Owner actions open: FX-O1, FX-O3, FX-O4, FX-O5.
+> **Progress (2026-11-01, after lot X4, PR #114):** every row is tagged ✅ **Done** (merged on `main`), ⏳ **Open** or ⏸ **Tracked**
+> (waits on an upstream release). Lots done: X0, X1, X2, X3, X4, X6, X8 (FX-44 tracked). X5 done except FX-32 (needs an MS Project /
+> ProjectLibre check). X9 done except the owner's items (FX-57, FX-59, FX-60, FX-63). X7 open. Owner actions open: FX-O1, FX-O3, FX-O4, FX-O5.
 
 ## 1. Purpose
 
