@@ -85,7 +85,8 @@ export function ganttView(c: Ctx): GanttView {
   const cycleEnd = ids.length ? Math.max(...ids.map(end)) : delivStart, lastId = ids.reduce<string | null>((b, id) => (!b || end(id) > end(b) ? id : b), null);
   const meta = (id: string, sf: number,
     pre = '') =>
-      `${pre}${monLabel(win[id]!.durM)}${waits?.get(id) ? ` · ${waits.get(id)} d waits` : ''} · ${Math.round(sf * 100)}% supervised · ×${velocity[id]!.toFixed(2)} velocity${id === lastId ? ' · closes the ' +
+      `${pre}${monLabel(win[id]!.durM)}${waits?.get(id) ? ` · ${waits.get(id)} d waits` : ''} · ${Math.round(sf * 100)}% supervised · ` +
+      `×${velocity[id]!.toFixed(2)} velocity${id === lastId ? ' · closes the ' +
         'release' : ''}`;
 
   const phases: PhaseRow[] = per.map((x, i) => ({

@@ -115,6 +115,7 @@ export function econ(t: number, K: K): Econ {
   const vTax = rawSav * K.vTaxRate, loopExt = rawSav * K.loopExtRate, compTax = rawSav * K.complianceTaxRate;
   const ktAvoid = hasAgents ? aAt(A.ktAvoidYr, y) / 12 : 0;
   const grossSav = K.baselineRunMonth - totalRun + ktAvoid - vTax - loopExt - compTax + (K.savingProfile[t - 1] ?? 0);
-  return { t, y, r, humanFte, agentVfte, agentVfteRaw, runTeamFte, teamCost, tokenCost, infraCost, handoffCost, runTeamCost, khCost, ktAvoid, vTax, loopExt, compTax,
+  return { t, y, r, humanFte, agentVfte, agentVfteRaw, runTeamFte, teamCost, tokenCost, infraCost, handoffCost, runTeamCost, khCost, ktAvoid, vTax, loopExt,
+    compTax,
     setupCost, totalRun, grossSav, netSav: grossSav - setupCost };
 }

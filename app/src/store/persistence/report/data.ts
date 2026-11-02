@@ -58,7 +58,8 @@ export function reportData(s: CaseState, now: Date): ReportData {
     potential: m.auto, ceiling: m.ceiling, effective: m.eff, headroom: m.conv.effCap,
     supervision, authorityCap: cx.authorityCap,
     blocked: act.filter((a) => authRank(a.aiAuth) > cx.authorityCap).map((a) => ({ name: a.name, phase: a.phase, aiAuth: a.aiAuth })),
-    setup: headline(c).setup, byAmount: (['training', 'governance'] as const).filter((id) => pricingOf(c, id) === 'amount'), billablePct: cx.setupBillable * 100, endLabel: `Y${eng.horizonYears}`, endRun: end.totalRunCost, endSaving: end.savings,
+    setup: headline(c).setup, byAmount: (['training', 'governance'] as const).filter((id) => pricingOf(c, id) === 'amount'),
+    billablePct: cx.setupBillable * 100, endLabel: `Y${eng.horizonYears}`, endRun: end.totalRunCost, endSaving: end.savings,
     baselineRun: m.baselineRun, riskPremium: cx.riskPremium, ...reportLogo(s), ...reportProcess(processSummary(c)),
   };
 }
