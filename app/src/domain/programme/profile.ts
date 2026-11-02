@@ -144,7 +144,7 @@ export function engineProfile(c: Ctx, H = horizonMonthsOf(c)): EngineProfile {
     const m = lineOnMonths(l, H);
     m.forEach((x, i) => { setup[i]! += x; });
     if (l.id === 'knowledge') kt = m;
+    if (l.saving) for (let t = l.saving.from; t <= H; t++) saving[t - 1]! += l.saving.perMonth;   // #7: the line's own output
   }
-  for (const l of programmeLines(c, H)) if (l.saving) for (let t = l.saving.from; t <= H; t++) saving[t - 1]! += l.saving.perMonth;   // #7
   return { setup, kt, saving };
 }
