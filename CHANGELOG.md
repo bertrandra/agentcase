@@ -17,6 +17,11 @@ When releasing, follow [docs/BUMP_PROCEDURE.md](docs/BUMP_PROCEDURE.md) (§7 for
 
 ## [Unreleased]
 
+### DMN decision requirements diagram
+
+- 🧩 Process › Decisions draws the decision requirements diagram (inputs, decisions, the arrows between them, and which business-rule task
+  applies each one). A case without decisions shows the rule families DMN would describe for it, marked "not applied". No figure changes.
+
 ### SPEC_FIXES lot X4 — screens (FX-10…FX-14, FX-16, FX-17, FX-26)
 
 - **Extended profile**: 🧩 Process shows the process's data, events, library and collaboration; the BPMN export can colour the activities and

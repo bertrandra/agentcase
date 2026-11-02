@@ -1,5 +1,7 @@
 import { memo, useId, useState } from 'react';
 import { bindProcessDecision } from '@/controllers/decisions';
+import { decisionsModel } from '@/controllers/decisionFiles';
+import { DecisionGraph } from './DecisionGraph';
 import { bindingsOf, decisionsOf, type Decision } from '@/domain/dmn';
 import { readProcess, type XDocument } from '@/domain/process';
 
@@ -28,12 +30,16 @@ function DecisionTable({ d }: { d: Decision }) {
 export const DecisionsPanel = memo(function DecisionsPanel({ doc }: { doc: XDocument }) {
   const id = useId(), [open, setOpen] = useState<string | null>(null), dmn = decisionsOf(doc.root), bound = bindingsOf(doc.root);
   const rules = readProcess(doc).activities.filter((a) => a.type === 'BusinessRule'), decisions = dmn?.model.decisions ?? [];
-  if (!decisions.length && !rules.length) return null;
   const tasksOf = (did: string) => bound.filter((b) => b.decision === did).map((b) => b.task);
+  const drawn = dmn ? { model: dmn.model, generated: false } : decisionsModel();   // without decisions of its own: the reference rule families
   return (
     <section aria-labelledby={`${id}-h`} className="ac-proc-decisions">
       <h2 id={`${id}-h`}>Decisions</h2>
-      {decisions.length ? <ul>{decisions.map((d) => (
+      {drawn.generated && <p className="ac-muted">The case holds no decision yet. Below, the rule families DMN would describe for it (computed from
+        its activities, applied to nothing): export them with the BPMN file (Decisions as a DMN file), import them back, then bind a business-rule
+        task.</p>}
+      {drawn.model.decisions.length > 0 && <DecisionGraph model={drawn.model} bound={new Map(drawn.model.decisions.map((d) => [d.id, tasksOf(d.id)]))} />}
+      {drawn.model.decisions.length ? <ul>{drawn.model.decisions.map((d) => (
         <li key={d.id}>
           <strong>{d.name}</strong>{` — ${d.table ? `${d.table.hitPolicy}, ${d.table.inputs.length} input(s), ${d.table.outputs.length} output(s), `
             + `${d.table.rules.length} rule(s)` : 'literal'}; bound to ${tasksOf(d.id).join(', ') || 'no task'} `}
@@ -41,7 +47,7 @@ export const DecisionsPanel = memo(function DecisionsPanel({ doc }: { doc: XDocu
             {open === d.id ? 'Hide the table' : `Show the table of ${d.name}`}</button>
           {open === d.id && <DecisionTable d={d} />}
         </li>))}</ul>
-        : <p className="ac-muted">The process holds no decision yet: import a .dmn file (Import above) to bind its business-rule tasks.</p>}
+        : null}
       {rules.length > 0 && decisions.length > 0 && <fieldset><legend>Business-rule tasks</legend>
         {rules.map((a) => {
           const cur = bound.find((b) => b.task === a.id)?.decision ?? '';

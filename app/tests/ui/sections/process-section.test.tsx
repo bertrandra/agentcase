@@ -107,6 +107,14 @@ describe('Process section', { timeout: 90_000 }, () => {
     expect(button('Import')).toBeUndefined();
     expect(doc()).toBe(before);
   });
+  it('the Decisions panel draws the reference rule families as a DMN diagram when the case has none (not applied)', async () => {
+    render(<Process />);
+    const panel = tl.getByRole('region', { name: 'Decisions' });
+    const fig = within(panel).getByRole('img');
+    expect(panel.querySelector('figcaption')!.textContent).toMatch(/activity → aiAuthority; .*aiAuthority → supervisionSplit/);
+    expect(fig.textContent).toContain('not applied');
+    expect(await axeViolations(panel, { region: false })).toEqual([]);
+  });
   it('B7b: a .dmn file picked in the same field imports the decisions as one undoable step (no preview)', async () => {
     render(<Process />);
     const text = serialize(dmnFile(writeDmn(ruleFamilies([]))));
