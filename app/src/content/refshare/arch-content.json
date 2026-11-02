@@ -154,7 +154,7 @@
   ["div","From docs/ARCHITECTURE.md; the authoritative list is in docs/MIGRATION_PLAN.md."],
   ["ul",
    ["li","Browser checks exist (e2e, performance, accessibility, UI parity, parallel run), but a differential run on real customer files needs files supplied by the user."],
-   ["li","Out of scope on purpose: the ADVANCED lock and its unlock gestures, and tag / MVP editing. Being ported: Gantt keyboard editing. The layout boards have a read-only in-page preview, not the legacy iframe."],
+   ["li","Out of scope on purpose: the ADVANCED lock and its unlock gestures, and tag / MVP editing. Ported (FX-59): collapsible sidebar groups, the Fast Path filter, the layout boards' read-only in-page preview (not the legacy iframe) and Gantt keyboard use (Enter opens the programme activity, Alt+arrows move the roadmap start)."],
    ["li","Not ported: golden-versus-AME comparison, AME reference capture and per-snapshot Excel export. Agent Catalog capacity and loop external % cannot be imported, because the catalogues are immutable."],
    ["li","The legacy-only check TE-10b fires on two supervision fixtures in the legacy and is reproduced only in the verification section."],
    ["li","Multi-product, left out or not built yet: a portfolio scenarios table; dependencies and capacity between waves; shared teams across products; per-draw horizon truncation in the portfolio stress; \"apply to all\" for Knowledge subset fields; rates, model and coefficients per product; shared set-up at portfolio level; knowledge reuse between products; a full correlation matrix (one global rho only); item-level scope overrides (whole key only); portfolio charts as images in the results workbook."],
