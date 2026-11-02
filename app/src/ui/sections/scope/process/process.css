@@ -80,3 +80,14 @@
 .ac-proc-editor-wrap { margin-bottom: 12px; }
 .ac-proc-editor { margin-top: 8px; }
 .ac-proc-editor-canvas { position: relative; height: 560px; background: var(--ac-neutral-0); border: var(--ac-border-thin) solid var(--ac-line-strong); border-radius: var(--ac-radius-md); }
+
+/* the decision requirements diagram (DMN DRD) of the Decisions panel */
+.ac-dmn-drd { margin: 0 0 var(--ac-space-block); max-width: 100%; }
+.ac-dmn-drd svg { width: 100%; max-height: 22rem; }
+.ac-dmn-decision rect { fill: var(--ac-surface); stroke: var(--ac-primary-700); stroke-width: 1.5; }
+.ac-dmn-input rect { fill: var(--ac-surface); stroke: var(--ac-slate-675); stroke-width: 1.5; }
+.ac-dmn-drd text { fill: var(--ac-neutral-900); font-size: var(--ac-font-size-xs); }
+.ac-dmn-drd .ac-dmn-bound { fill: var(--ac-slate-675); font-size: var(--ac-font-size-2xs); }
+.ac-dmn-edge { stroke: var(--ac-slate-675); stroke-width: 1.2; }
+.ac-dmn-arrow { fill: var(--ac-slate-675); }
+.ac-dmn-drd figcaption { font-size: var(--ac-font-size-xs); color: var(--ac-slate-675); }

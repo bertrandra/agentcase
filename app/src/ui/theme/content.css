@@ -50,6 +50,9 @@
 /* tables (legacy global table / th / td, zebra, hover); the alignment of a numeric column is the inline text-align of its cells */
 .ac-section :is(.ac-table, .ac-rich table) { width: 100%; margin-bottom: var(--ac-space-block); font-variant-numeric: var(--ac-numeric-figures); font-size: var(--ac-font-size-md); border-collapse: collapse; }
 .ac-section :is(.ac-table, .ac-rich table) th { padding: var(--ac-pad-table-head); font-weight: var(--ac-font-weight-semibold); text-align: left; color: var(--ac-table-head-text); background: var(--ac-table-head-bg); border: var(--ac-border-thin) solid var(--ac-table-head-line); }
+/* a link button in a header cell (the row header of the Audit, Roles, Programme tables…) reads in the header's colours, never link blue on the
+   header's blue */
+.ac-section :is(.ac-table, .ac-rich table) th .ac-link { color: inherit; }
 .ac-section :is(.ac-table, .ac-rich table) td { padding: var(--ac-pad-table-cell); border: var(--ac-border-thin) solid var(--ac-table-line); vertical-align: baseline; }
 .ac-section :is(.ac-table, .ac-rich table) td[style*='text-align: right'] { font-family: var(--ac-font-numeric); }   /* numeric columns (the numbers axis) */
 .ac-section :is(.ac-table, .ac-rich table) tbody tr:nth-child(even) { background: var(--ac-table-stripe); }
