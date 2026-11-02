@@ -14,11 +14,13 @@ interface Item { id: string; phase: string; lane: string; seq: number; order: nu
 /** The team skill (lane) of an artefact: the skill map for SDLC artefacts, the artefact's own team skill for regulatory ones. */
 export const laneOf = (a: CatArtefact, reg: boolean, map: Record<string, string>): string =>
   reg ? a.teamSkill ?? 'Regulatory Affairs' : map[a.skill] ?? a.skill;
+/** The agents' lane (FX-D12): the activities of type Agent are drawn there, below the team lanes; a view of the diagram, no figure reads lanes. */
+export const AGENTS_LANE = 'Agents';
 const byPlace = (a: Item, b: Item): number => a.seq - b.seq || a.reg - b.reg || a.order - b.order;
 
 function itemsOf(c: ProcessCatalogue): Item[] {
   const one = (reg: boolean) => (a: CatArtefact, i: number): Item =>
-    ({ id: a.id, phase: a.phase, lane: laneOf(a, reg, c.skillMap), seq: a.seq ?? 0, order: i + 1, reg: reg ? 1 : 0 });
+    ({ id: a.id, phase: a.phase, lane: a.agentActivityType === 'Agent' ? AGENTS_LANE : laneOf(a, reg, c.skillMap), seq: a.seq ?? 0, order: i + 1, reg: reg ? 1 : 0 });
   return [...c.sdlc.map(one(false)), ...c.reg.map(one(true))];
 }
 /**
@@ -35,10 +37,14 @@ export function chainOrderOf(c: ProcessCatalogue): Map<string, string[]> {
 export const phaseOrderOf = (c: ProcessCatalogue): string[] =>
   c.phases.map((p, i) => ({ id: p.id, seq: p.seq, i })).sort((a, b) => a.seq - b.seq || a.i - b.i).map((p) => p.id);
 
-/** Lanes: team skills in the vocabulary order, then any other team skill in order of appearance; only those with work outside Cross-cutting. */
+/**
+ * Lanes: team skills in the vocabulary order, then any other team skill in order of appearance, then the agents' lane; only those with work outside
+ * Cross-cutting.
+ */
 function laneList(c: ProcessCatalogue, items: Item[]): string[] {
   const used = [...new Set(items.filter((x) => x.phase !== CROSS_ID).map((x) => x.lane))];
-  return [...c.laneOrder.filter((l) => used.includes(l)), ...used.filter((l) => !c.laneOrder.includes(l))];
+  const team = used.filter((l) => l !== AGENTS_LANE);
+  return [...c.laneOrder.filter((l) => team.includes(l)), ...team.filter((l) => !c.laneOrder.includes(l)), ...(used.includes(AGENTS_LANE) ? [AGENTS_LANE] : [])];
 }
 
 /** The deterministic layout: lanes per team skill, phases as columns left to right, Cross-cutting as a band across the bottom. */
