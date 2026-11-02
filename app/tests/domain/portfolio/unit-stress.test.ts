@@ -107,3 +107,24 @@ describe('a unit\'s directly owned products are a row of its ranking (FX-08)', (
     expect(groupOf(c, unit('bu'))!.items.map((v) => v.id)).toContain(t.ids[2]);
   });
 });
+
+describe('implied correlation of a selection (SPEC_FIXES FX-D2)', () => {
+  it('formula: independent columns ≈ 0, identical columns = 1, opposite columns = -1, one column = null', async () => {
+    const { impliedCorrelation } = await import('@/domain/portfolio');
+    const add = (a: number[], b: number[]) => a.map((x, i) => x + b[i]!);
+    const a = [1, 2, 3, 4, 5, 6], b = [2, 1, 4, 3, 6, 5].map((x) => -x);
+    expect(impliedCorrelation([a, a], add(a, a))).toBe(1);
+    expect(impliedCorrelation([a, a.map((x) => -x)], add(a, a.map((x) => -x)))).toBe(-1);
+    expect(impliedCorrelation([a], a)).toBeNull();
+    expect(impliedCorrelation([[1, 1], [2, 2]], [3, 3])).toBeNull();
+    expect(impliedCorrelation([a, b], add(a, b))).toBeLessThan(0);
+  });
+  it('every selection carries the run ρ and its implied correlation; the portfolio and a unit owning every product read the same', () => {
+    const t = unitTreeThree();
+    setProductOwner(t.ids[2], 'd3');
+    const pf = t.pf(), run = portfolioMonteCarlo(pf, OPTS), p = selectionStress(run, { kind: 'portfolio' })!, u = selectionStress(run, unit('bu'), pf)!;
+    expect(p.rho).toBe(0.35); expect(u.rho).toBe(0.35);
+    expect(p.impliedRho).not.toBeNull(); expect(u.impliedRho).toBe(p.impliedRho);
+    expect(Math.abs(p.impliedRho!)).toBeLessThanOrEqual(1);
+  });
+});

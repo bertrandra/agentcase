@@ -1,7 +1,8 @@
 /** @calc-zone scope-automation */
-import { moveActivity, setDiagram, setReworkFlow, type Bounds, type ReworkPatch } from '@/domain/process';
+import { linkActivities, moveActivity, setDiagram, setReworkFlow, type Bounds, type ReworkPatch } from '@/domain/process';
 import { defineCommand } from '@/store/commands';
 import { refitPotential } from '@/store/derive';
+import { editBase } from '@/store/editBase';
 import { appStore } from '@/store/instance';
 import { editProcess } from '@/store/processEdit';
 
@@ -22,6 +23,18 @@ const diagramCmd = defineCommand<{ element: string; bounds: Bounds }>({
   run(d, p) { editProcess(d, (doc) => setDiagram(doc, p.element, p.bounds)); },
 });
 
+const linkCmd = defineCommand<Record<string, never>>({
+  type: 'process.linkActivities', label: () => 'Link the activities of each phase',
+  run(d) { editProcess(d, linkActivities); },
+});
+
 export const moveProcessActivity = (id: string, phase: string): void => appStore().dispatch(moveCmd({ id, phase }));
 export const setProcessRework = (flow: string, patch: ReworkPatch): void => appStore().dispatch(reworkCmd({ flow, patch }));
 export const setProcessDiagram = (element: string, bounds: Bounds): void => appStore().dispatch(diagramCmd({ element, bounds }));
+/** Links the activities of every phase that has no link yet (FX-D9); false (and no undo step) when every phase is already linked. */
+export const linkProcessActivities = (): boolean => {
+  const doc = editBase().BPMN;
+  if (linkActivities(doc) === doc) return false;
+  appStore().dispatch(linkCmd({}));
+  return true;
+};

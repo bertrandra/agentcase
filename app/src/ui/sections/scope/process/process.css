@@ -91,3 +91,5 @@
 .ac-dmn-edge { stroke: var(--ac-slate-675); stroke-width: 1.2; }
 .ac-dmn-arrow { fill: var(--ac-slate-675); }
 .ac-dmn-drd figcaption { font-size: var(--ac-font-size-xs); color: var(--ac-slate-675); }
+/* FX-D13 d: the field the pricing mode leaves out, greyed (muted text on the muted surface; contrast kept, no opacity) */
+.ac-param-inactive { color: var(--ac-muted); background: var(--ac-surface-muted); border-radius: var(--ac-radius-md); }

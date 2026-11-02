@@ -21,6 +21,7 @@ export { addActor, addPhase, removeActor, removePhase, reorderPhases, updateActo
 export { activitiesOfActor, caseLoopPairs, caseSkillMap, caseViews, customActors, isCustomActivity } from './engineInputs';
 export type { BoundaryRework } from './readRework';
 export { findById, moveActivity, setDiagram, setReworkFlow, type Bounds, type ReworkPatch } from './editMore';
+export { bridgeOver, bridgesOver, linkActivities } from './bridge';
 export { resetProcess } from './editReset';
 export { analyseImport, previewImport } from './importPlan';
 export { applyImport, removeActivities } from './importApply';

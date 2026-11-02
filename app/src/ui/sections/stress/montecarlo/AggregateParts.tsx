@@ -79,6 +79,8 @@ export function SelectionResults({ sel, scope }: { sel: SelectionStress; scope: 
         <StatRow>
           <Stat label="Sum of the products’ P10" value={t(d.sumP10)} tone="grey" /><Stat label={`${sel.label} P10`} value={t(d.p10)} tone={tone(d.p10)} />
           <Stat label="Risk reduction" value={t(d.reduction)} tone="teal" hint="Selection P10 minus the sum of the stand-alone P10s" />
+          <Stat label="Implied correlation" value={sel.impliedRho === null ? '—' : String(sel.impliedRho)} tone="grey"
+            hint={`Average pairwise correlation of the products’ net benefits in this run; the run uses one ρ = ${sel.rho} on the drivers`} />
         </StatRow>
       </Panel>
       <AggregateTable caption={`Stress by product — ${sel.label}`} rows={sel.products} columns={columns} edit={false}

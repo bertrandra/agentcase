@@ -1,7 +1,8 @@
 /** @calc-zone process-model */
+import { bridgeOver } from './bridge';
 import { dataId } from './ids';
 import { mapElements } from './order';
-import { NS, attr, el, kid, withAttrs, withChildren, type XElement, type XNode } from './xml';
+import { NS, attr, doc, el, kid, withAttrs, withChildren, type XElement, type XNode } from './xml';
 
 const TASKS: readonly string[] = ['task', 'userTask', 'manualTask', 'serviceTask', 'scriptTask', 'businessRuleTask', 'sendTask', 'receiveTask'];
 const PHASES: readonly string[] = ['subProcess', 'adHocSubProcess'];
@@ -35,11 +36,12 @@ export function without(children: readonly XNode[], gone: (e: XElement) => boole
 
 /**
  * The in-scope-only export (F-B3): out-of-scope activities are left out with their deliverables, the flows that touch them and their diagram
- * shapes and edges; the file says so (`ac:partial="true"` on the definitions and `partial="true"` on `ac:process`), and the importer refuses
+ * shapes and edges (the activity chain of a phase linked over them, `bridgeOver`); the file says so (`ac:partial="true"` on the definitions
+ * and `partial="true"` on `ac:process`), and the importer refuses
  * it as a replacement of a full model. Phases, norms and actors stay (the structure of the process).
  */
-export function partialOf(root: XElement): XElement {
-  const ids = outOfScope(root);
+export function partialOf(full: XElement): XElement {
+  const ids = outOfScope(full), root = bridgeOver(doc(full, null), ids).root;   // FX-D9: the chain of a phase skips the activities left out
   const gone = (e: XElement): boolean => {
     const id = attr(e, 'id') ?? '';
     if (ids.has(id)) return true;

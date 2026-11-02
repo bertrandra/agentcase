@@ -26,7 +26,10 @@ sub-units), **team**, **product**, **phase**, **activity**, **harness** or one *
 cells by one owner (`scope/cells.ts`, new).
 
 **Harness** — an agentic system (agents + tools + guardrails + context) that automates part of the work of **several cells**, owned by a
-**product**, an **organisation unit** (a shared service) or the **portfolio**; one harness can serve several products.
+**product**, an **organisation unit** (a shared service) or the **portfolio**; one harness can serve several products. A harness **executes on an
+activity scope**: one or more activities of the process (§ 7.2b). Its **inputs** are the deliverables that the connected activities upstream hand
+into that scope, and its **outputs** are the deliverables the scope hands to the connected activities downstream. Both are read from the activity links
+and the data associations of the process (SPEC_FIXES FX-D9), not typed.
 
 ## 2. Today's calculation chain (what exists, file by file)
 
@@ -122,7 +125,8 @@ All stored data stays in the case's BPMN document (D-B26), so it travels with th
 | Link to-be → as-is | `ac:baselineRef` on each to-be task | `process/baseline.ts` |
 | Harness (owner, agents, tools, capability, build pod template and drivers, sourcing share) | Organisation part: `ac:harness id owner` with `ac:agentRef`, `ac:toolRef`, `ac:capability`, `ac:build` (`ac:podRole role mix`, drivers, months), `ac:sourcing internalPct` | `org/harness.ts` (new) |
 | Harness run process (activities, RACI, drivers, agent share) | A `bpmn:process ac:harnessRun="H1"` in the **common** document (default template, editable like the delivery process); platform costs on `ac:run` | `process/harnessRun.ts` (new) |
-| Coverage (which cells a harness serves) | `ac:harnessRef` on each to-be activity (all its cells), narrowed by a rule on the harness when only some teams use it | `process/harnessCoverage.ts` (new) |
+| Coverage (which cells a harness serves) and its **activity scope** | `ac:harnessRef` on each to-be activity (all its cells): the activities carrying it are the harness's activity scope (1..n, § 7.2b), narrowed by a rule on the harness when only some teams use it | `process/harnessCoverage.ts` (new) |
+| Harness **inputs and outputs** (its data contract) | Nothing stored: derived from the activity links (`bpmn:sequenceFlow` inside the phases) and data associations (deliverables, `bpmn:dataObject`) crossing the scope's boundary | `process/harnessContract.ts` (new) |
 | Run model per slice / harness / product (R1 transfer, R2 shared, R3 external), with a switch date and the commercial model | Who runs what: the provider as a **participant** in the organisation part; the run model, commercial model and fees: **case values per scope id, not the BPMN model** (§ 17) | `commercial/runModel.ts` (new) |
 | Token profiles: per activity type (runs per day, context, output), per harness (routing, cache, retry, overhead), price trends and volume tiers | Activity types: process part (catalogue defaults); harness routing: `ac:tokenProfile` on `ac:harness`; **prices, trends and tiers: case tables with `TOKEN_MODELS`, not the BPMN model** (§ 17) | `tokens/*` (new folder) |
 | Frozen versions (as simulated, as proposed): inputs + computed series + calculation version | The snapshot library (case snapshots), with the series attached, read-only | `snapshots/versions.ts` (new) |
@@ -211,6 +215,29 @@ E_pH    = Σ_{c∈C_p(H)} φ_c FTE_c                                   covered F
 h̄_pH    = Σ φ_c FTE_c · h_i / E_pH                                 human supervision kept
 eff_pH  = min(100 − h̄_pH, min(techCap, ā_pH) × lifecyclePosture × glassFactor × khMult)
 ```
+
+**7.2b Activity scope and data contract.** A harness *H* executes on its **activity scope** `A_H` (one or more activities, the to-be
+activities carrying `ac:harnessRef="H"`; across phases when it spans them). Its contract is read from the process, one owner
+(`process/harnessContract.ts`):
+
+```
+in_H   = { (u → v, d) : link u → v, u ∉ A_H, v ∈ A_H, d the deliverable of u (or of the data association on the link) }    inputs
+out_H  = { (u → v, d) : link u → v, u ∈ A_H, v ∉ A_H, d the deliverable of u }                                          outputs
+inner_H = links with both ends in A_H                                                                                     hand-offs the harness absorbs
+```
+
+- **Connected activities** are the ends outside `A_H` of the input and output links: the human (or other harness's) work that feeds the harness and
+  receives its results. They stay at their own cost; the interface is where the harness's review and acceptance happen (`h̄` of § 7.2 is read on
+  the scope's activities, the acceptance of `out_H` by the receiving activity is its review step).
+- **Hand-offs absorbed**: each link of `inner_H` that crossed a lane (two teams) today disappears inside the harness: the hand-off delay and its
+  rework (`ac:rework` pairs with both activities in `A_H`) are carried by the harness, shown on the scope map.
+- **Context** (§ 11): the input context of a run is sized from `in_H` (the deliverables read) plus the harness's own knowledge; a scope with more
+  inputs reads more tokens. The catalogue default stays when the deliverables carry no size.
+- **Checks**: a scope whose activities are not connected to each other (no path in `inner_H` between two of them) is allowed but flagged
+  ("several runs": each connected part is a separate execution, with its own inputs and outputs); an activity in the scopes of two harnesses
+  shares its FTE by the harnesses' `share` (HX-D23); an input with no deliverable is flagged ("unnamed input").
+- **View**: 🧩 Process colours the scope on the diagram (Harness colour, S7), draws its boundary, and lists its inputs (from which activity, which
+  deliverable) and outputs (to which activity) in the harness panel; the RACI of the connected activities shows who hands in and who accepts.
 
 **7.3 Monthly automation.** With the slices *s* of § 8–9 (pilot, then waves), each going live at `g_s`, and the harness capability `c_H(T)` ∈ [0, 1]
 (0 before the harness is ready, rising to its maturity; it replaces today's single `harnessMat`):
@@ -479,6 +506,8 @@ and profiles, every owner returns today's numbers (the parity gate of lot S2).
 | HX-D20 | Frozen versions | (a) inputs + computed series stored, read-only (commitment); (b) inputs only, recomputed |
 | HX-D21 | Forecast from the measured months | (a) refit the adoption and capability curves to the actuals and re-project; (b) no forecast, variance only |
 | HX-D22 | Measurement granularity | (a) month × product / team / harness / slice; (b) month × product only |
+| HX-D23 | An activity in two harnesses' scopes | (a) allowed, its FTE split by a share per harness (Σ ≤ 1); (b) refused: one harness per activity |
+| HX-D24 | A harness's activity scope not connected | (a) allowed, flagged, each connected part a separate run with its own inputs and outputs; (b) refused: one connected scope per harness |
 
 ## 16. Lots (one PR each)
 
@@ -487,7 +516,7 @@ and profiles, every owner returns today's numbers (the parity gate of lot S2).
 | S1 Cells and scopes | Cells and their FTE / cost (§ 4), selection rules and their resolver, perimeter views, schema v6 (status, scopes, harness, run model elements), migration | Σ cells = team and baseline exactly on the 107 fixtures; round trips; XSD | None |
 | S2 Engine per group and slice | `agentVfte_p(T)` of § 7.3 behind the kernel, the implicit target / harness / slice | **Parity**: 107 fixtures, parallel run, excel-compat identical | None |
 | S3 Assessment | Audit options and pricing (§ 6.2), sample draw, extrapolation, provenance, Monte Carlo spreads, the Assessment stage's cost line, freeze baseline | Hand-computed prices and strata; no sample = today | Opt-in |
-| S4 Target and harnesses | Target rules, harness definition, coverage, costs and allocation, harness business case, scope map | Cross-surface: Σ products + owners = portfolio | Opt-in |
+| S4 Target and harnesses | Target rules, harness definition, coverage and activity scope, data contract (inputs and outputs from the connected activities, § 7.2b), costs and allocation, harness business case, scope map | Cross-surface: Σ products + owners = portfolio | Opt-in |
 | S4c Token economy | Bottom-up demand, routing, cache, retries, overhead, trends, tiers, budgets, views per level (§ 11) | Parity: implicit profile = today's tokens on the 107 fixtures | Opt-in |
 | S4b Teams | Team out per team and slice, build pods (§ 10.1), harness run processes and run teams (§ 10.2, parity through H0), transition view | H0 run team = `runTeamSizing` on the 107 fixtures | Opt-in |
 | S5 Pilot and waves | Pilot (wave 0), slices of target − pilot, partition checks, go-live, Plan views (Gantt / WBS / OBS / RAM / histograms) | Plan exports (MSPDI, workbook, report) | Opt-in |

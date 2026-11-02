@@ -17,6 +17,22 @@ When releasing, follow [docs/BUMP_PROCEDURE.md](docs/BUMP_PROCEDURE.md) (§7 for
 
 ## [Unreleased]
 
+### SPEC_FIXES lot X7 (part)
+
+- **Activity links** (FX-D9, owner's request): the default process links the SDLC activities of each phase one after the other (regulatory ones stay unlinked), drawn on the diagram
+  and exported; removing, moving or leaving out an activity links its neighbours over it. 🧩 Process › "Link activities" links a case saved
+  before (or an activity added since) in one undoable step. No figure reads the order.
+- **Training and governance pricing** (FX-D13 d): each line is priced from its resources (default, unchanged figures) or from its euro
+  amount spent over its duration; "Pricing" on the activity, the field not used shown greyed.
+- **Plan in the Financial workbook and the report** (FX-D15): "Add the plan sheets" / "Add the plan pages" (off by default) put the 📅 Plan's
+  WBS, WBS dictionary, OBS, RAM and Histogram sheets after the results workbook's own, and its Gantt, WBS and histogram pages at the end of the report.
+- **Agents' lane** (FX-D12): the default diagram draws the activities of type Agent in an "Agents" lane below the team lanes. No figure
+  reads lanes; a case keeps its stored diagram until it is reset to the default process.
+- **Implied correlation** (FX-D2): 🎲 Monte Carlo › Risk reduction shows the selection's implied average pairwise correlation of its products'
+  net benefits next to the run's one ρ (portfolio, wave and unit views).
+- **CMMN import** (FX-D10): what a foreign `.cmmn` file holds and AgentCase does not map (sentries, milestones…) is kept as written in the
+  process instead of being dropped. No figure changes.
+
 ### DMN decision requirements diagram
 
 - 🧩 Process › Decisions draws the decision requirements diagram (inputs, decisions, the arrows between them, and which business-rule task

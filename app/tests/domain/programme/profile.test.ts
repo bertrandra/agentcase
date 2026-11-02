@@ -24,6 +24,14 @@ describe('the programme cost profile (golden, hand-computed)', () => {
     expect(amount(golden(), 'governance')).toBeCloseTo(0.25 * 12 * (WD / 12) * ROLE, 6);   // 26,438.5
     expect(amount(withValues(golden(), { trainFte: '1', trainMonths: '6' }), 'training')).toBeCloseTo(1 * 6 * (WD / 12) * ROLE, 6);
   });
+  it('FX-D13 d: training and governance priced by amount: the euro amount over the duration, no labour; resources stay the default', () => {
+    const s = withValues(golden(), { trainPricing: 'amount', setupTraining: '24000', govPricing: 'amount', setupGov: '6000', trainMonths: '6' });
+    const ls = programmeLines(makeCtx(s)), tr = ls.find((l) => l.id === 'training')!, gov = ls.find((l) => l.id === 'governance')!;
+    expect([tr.amount, tr.rule, tr.effortDays, gov.amount]).toEqual([24000, 'nonLabour', null, 6000]);
+    expect(tr.months.reduce((a, x) => a + x, 0)).toBeCloseTo(24000, 6);
+    expect(amount(withValues(golden(), { setupTraining: '24000' }), 'training')).toBeCloseTo(0.5 * 12 * (WD / 12) * ROLE, 6);   // amount alone: no change
+    expect(amount(withValues(golden(), { trainPricing: 'resources', setupTraining: '24000' }), 'training')).toBeCloseTo(0.5 * 12 * (WD / 12) * ROLE, 6);
+  });
   // D-B30 (revised 2026-10-31): coaching days a month × months × the role rate; with no duration entered, the setupCoaching amount calibrates it.
   it('coaching: calibrated from the setup coaching amount (golden €35,000 = 72.81 days = 2 a month × 36.4 months), else days × months × rate', () => {
     const p = coachingPlan(c);

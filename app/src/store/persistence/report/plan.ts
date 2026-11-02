@@ -46,6 +46,13 @@ function histogramPage(v: PlanViews): string {
  * The plan report (docs/SPEC_BPMN.md § 19.8 F-B77; phase B9d): a standalone, scriptless page with the Gantt, WBS and histogram pages of the
  * plan views of a display scope, in the print theme. A separate file: the Critical & Regulated report stays the legacy one.
  */
+/** The plan pages (Gantt, WBS, histogram) as one section of another report (SPEC_FIXES FX-D15): a page break, a heading, the same three pages. */
+export function planPages(v: PlanViews, print: Readonly<ThemeValues>): string {
+  const ink = tokIn(print, 'report-ink'), bar = tokIn(print, 'report-rule'), crit = tokIn(print, 'report-heading');
+  return `<h1 ${page}>Transformation programme plan</h1><p><span class="tag">Derived from the BPMN programme: a documented mapping, not a standard `
+    + 'conversion</span></p>' + ganttPage(v, ink, bar, crit) + wbsPage(v) + histogramPage(v);
+}
+
 export function renderPlanReport(v: PlanViews, print: Readonly<ThemeValues>, title: string, stamp: string): string {
   const ink = tokIn(print, 'report-ink'), bar = tokIn(print, 'report-rule'), crit = tokIn(print, 'report-heading');
   return '<!DOCTYPE html><html><head><meta charset="utf-8">' + REPORT_CSP

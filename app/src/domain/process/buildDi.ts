@@ -7,7 +7,7 @@ import { el, type AttrInput, type XElement } from './xml';
 
 export const PARTICIPANT_ID = 'Participant';
 export const COLLABORATION_ID = 'Collaboration';
-type Pt = [number, number];
+export type Pt = [number, number];
 
 const shape = (id: string, b: Box, extra: AttrInput = {}): XElement => el('bpmndi:BPMNShape', { id: diId(id), bpmnElement: id, ...extra }, [
   el('dc:Bounds', { x: b.x, y: b.y, width: b.w, height: b.h }),
@@ -16,6 +16,18 @@ const edge = (id: string, pts: Pt[]): XElement =>
   el('bpmndi:BPMNEdge', { id: diId(id), bpmnElement: id }, pts.map(([x, y]) => el('di:waypoint', { x, y })));
 const cx = (b: Box): number => b.x + b.w / 2;
 const cy = (b: Box): number => b.y + b.h / 2;
+
+/**
+ * Waypoints of an activity-to-activity link (FX-D9), routed in the gaps of the activity grid so that no line crosses another activity: straight to
+ * the next box on the same row; otherwise out of the right side into the column gap (`gap / 2` to the right), along it to the row gap just above
+ * the target, then across to the target's middle and down into its top.
+ */
+export function linkPoints(s: Box, t: Box, gap = 20): Pt[] {
+  const right = s.x + s.w;
+  if (cy(s) === cy(t) && t.x >= right && t.x - right <= gap) return [[right, cy(s)], [t.x, cy(t)]];
+  const gx = right + gap / 2, gy = t.y - gap / 2;
+  return [[right, cy(s)], [gx, cy(s)], [gx, gy], [cx(t), gy], [cx(t), t.y]];
+}
 
 /** Waypoints of a flow: straight along the middle line, elbows for Cross-cutting, arcs above the boxes for rework (k-th one a little higher). */
 function waypoints(f: FlowSpec, L: Layout, k: number): Pt[] {
@@ -26,6 +38,7 @@ function waypoints(f: FlowSpec, L: Layout, k: number): Pt[] {
     const top = Math.min(s.y, t.y) - 8 - 7 * k, sx = cx(s) + 10 * k, tx = cx(t) - 10 * k;
     return [[sx, s.y], [sx, top], [tx, top], [tx, t.y]];
   }
+  if (f.inner) return linkPoints(s, t);
   if (f.target === CROSS_ID) return [[cx(s), s.y + s.h], [cx(s), cy(t)], [t.x, cy(t)]];
   if (f.source === CROSS_ID) return [[s.x + s.w, cy(s)], [cx(t), cy(s)], [cx(t), t.y + t.h]];
   return [[s.x + s.w, L.midY], [t.x, L.midY]];

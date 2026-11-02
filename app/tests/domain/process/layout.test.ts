@@ -1,7 +1,7 @@
 import { describe, expect, it } from 'vitest';
 import { PHASES } from '@/domain/catalog';
 import { catalogueProcess, readProcess, TODAYS_CATALOGUE } from '@/domain/process';
-import { laneOf, layoutOf, type Box } from '@/domain/process/layout';
+import { AGENTS_LANE, laneOf, layoutOf, type Box } from '@/domain/process/layout';
 
 /** F-B14: the generated diagram is deterministic, lanes per team skill, phases left to right, Cross-cutting as a band across the bottom. */
 const L = layoutOf(TODAYS_CATALOGUE), v = readProcess(catalogueProcess());
@@ -18,17 +18,18 @@ describe('generated diagram (BPMN DI)', () => {
     expect(cross.y).toBeGreaterThanOrEqual(lastLane.y + lastLane.h);
     for (const b of [...L.phases.values(), ...L.lanes.map((l) => l.box), L.crossLane]) expect(inside(b, L.pool)).toBe(true);
   });
-  it('stacks one lane per team skill, contiguous, in the vocabulary order', () => {
-    expect(L.lanes.map((l) => l.teamSkill)).toEqual(TODAYS_CATALOGUE.laneOrder.filter((s) => L.lanes.some((l) => l.teamSkill === s)));
+  it('stacks one lane per team skill, contiguous, in the vocabulary order, then the agents\' lane (FX-D12)', () => {
+    expect(L.lanes.map((l) => l.teamSkill)).toEqual([...TODAYS_CATALOGUE.laneOrder.filter((s) => L.lanes.some((l) => l.teamSkill === s)), AGENTS_LANE]);
     L.lanes.slice(1).forEach((l, i) => { const p = (L.lanes[i] as { box: Box }).box; expect(l.box.y).toBe(p.y + p.h); });
   });
-  it('places every activity once, inside its phase and in its team-skill lane, with no two activities overlapping', () => {
+  it('places every activity once, inside its phase and in its team-skill lane (an Agent activity in the agents\' lane), no two overlapping', () => {
     const all = [...TODAYS_CATALOGUE.sdlc.map((a) => ({ a, reg: false })), ...TODAYS_CATALOGUE.reg.map((a) => ({ a, reg: true }))];
     expect(L.tasks.size).toBe(all.length);
     for (const { a, reg } of all) {
       const b = L.tasks.get(a.id) as Box;
       expect(inside(b, L.phases.get(a.phase) as Box), a.id).toBe(true);
-      const lane = L.lanes.find((l) => l.teamSkill === laneOf(a, reg, TODAYS_CATALOGUE.skillMap))?.box as Box;
+      const name = a.agentActivityType === 'Agent' ? AGENTS_LANE : laneOf(a, reg, TODAYS_CATALOGUE.skillMap);
+      const lane = L.lanes.find((l) => l.teamSkill === name)?.box as Box;
       if (a.phase !== 'Cross-cutting') expect(inside(b, lane), a.id).toBe(true);
     }
     const boxes = [...L.tasks.values()].sort((a, b) => a.x - b.x || a.y - b.y);

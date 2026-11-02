@@ -1,4 +1,5 @@
 /** @calc-zone process-model */
+import { bridgeOver } from './bridge';
 import { dataObjectOf, taskOf } from './buildTasks';
 import { dataId, diId, normKey } from './ids';
 import { readProcess } from './read';
@@ -62,10 +63,13 @@ const depthOf = (ph: XElement): number => {
   return t?.kind === 'text' ? Math.max(0, t.text.length - 1) / 2 + 1 : 3;
 };
 
-/** `process.removeActivity`: the task, its deliverable, the flows that touch it (a rework pair it belongs to too) and their diagram shapes. */
-export function removeActivity(d: XDocument, id: string): XDocument {
-  const a = readProcess(d).activities.find((x) => x.id === id);
-  if (!a) return d;
+/**
+ * `process.removeActivity`: the task, its deliverable, the flows that touch it (a rework pair it belongs to too) and their diagram shapes; its
+ * neighbours in the phase's chain are linked over it.
+ */
+export function removeActivity(cur: XDocument, id: string): XDocument {
+  if (!readProcess(cur).activities.some((x) => x.id === id)) return cur;
+  const d = bridgeOver(cur, new Set([id]));   // FX-D9: its neighbours in the phase's chain are linked
   const touches = (f: { source: string; target: string; rework?: { activityA: string; activityB: string } }): boolean =>
     f.source === id || f.target === id || f.rework?.activityA === id || f.rework?.activityB === id;
   const flows = new Set(readProcess(d).flows.filter(touches).map((f) => f.id));

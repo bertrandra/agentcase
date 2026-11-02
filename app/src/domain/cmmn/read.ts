@@ -6,17 +6,23 @@ import { editDoc } from '../process/profile/tree';
 import { indexOf, TASK_KINDS } from '../process/profile/walk';
 import { readProcess } from '../process/read';
 import { attr, kid, kids, NS, withChildren, type XDocument, type XElement } from '../process/xml';
+import { passCode, passThroughOf, withPassThrough } from '../process/importPass';
 import { CMMN_NS } from './export';
 
 /**
  * The read-back of a CMMN file (F-B63, D-B25 a; phase B7b): AgentCase reads only what maps to its model (tasks, roles, frequencies) and leaves the
  * rest. A task (`humanTask`, `task`…) whose id is an activity of the case gives its name and, for a human task, its role (the `caseRoles` role it
  * names, matched by name to a role resource of the process: the activity's `humanPerformer`); a stage whose id is an event sub-process gives
- * its `ac:frequency`. Sentries, milestones, planning tables and anything else are counted as not read.
+ * its `ac:frequency`. Sentries, milestones, planning tables and anything else are counted as not read, and kept as written in the process's
+ * pass-through container (FX-D10, `ac:passThrough`, opaque to the model), once each.
  */
 export interface CmmnTask { id: string; name: string; role?: string }
 export interface CmmnStage { id: string; name: string; frequency?: { count: number; per: string } }
-export interface CmmnView { tasks: CmmnTask[]; stages: CmmnStage[]; ignored: Record<string, number> }
+export interface CmmnView {
+  tasks: CmmnTask[]; stages: CmmnStage[]; ignored: Record<string, number>;
+  /** FX-D10: the outermost elements AgentCase does not map (sentries, milestones, planning tables…), kept as written in the process */
+  kept: XElement[];
+}
 const TASKS = ['humanTask', 'task', 'processTask', 'caseTask', 'decisionTask'];
 const KNOWN = [...TASKS, 'definitions', 'case', 'casePlanModel', 'stage', 'planItem', 'caseRoles', 'role', 'extensionElements', 'documentation'];
 
@@ -24,16 +30,19 @@ const KNOWN = [...TASKS, 'definitions', 'case', 'casePlanModel', 'stage', 'planI
 export const isCmmn = (e: XElement): boolean => e.ns === CMMN_NS && e.local === 'definitions';
 
 export function readCmmn(root: XElement): CmmnView {
-  const roles = new Map<string, string>(), out: CmmnView = { tasks: [], stages: [], ignored: {} };
-  const walk = (e: XElement): void => {
+  const roles = new Map<string, string>(), out: CmmnView = { tasks: [], stages: [], ignored: {}, kept: [] };
+  const own = attr(root, 'exporter') === 'AgentCase';   // AgentCase's own export: its milestones and sentries are derived, not kept
+  const walk = (e: XElement, inKept: boolean): void => {
     for (const x of kids(e)) {
       if (x.ns !== CMMN_NS) continue;
       if (x.local === 'role') roles.set(attr(x, 'id') ?? '', attr(x, 'name') ?? '');
-      if (!KNOWN.includes(x.local)) out.ignored[x.local] = (out.ignored[x.local] ?? 0) + 1;
-      walk(x);
+      const known = KNOWN.includes(x.local);
+      if (!known) out.ignored[x.local] = (out.ignored[x.local] ?? 0) + 1;
+      if (!known && !inKept && !own) out.kept.push(x);
+      walk(x, inKept || !known);
     }
   };
-  walk(root);
+  walk(root, false);
   const each = (e: XElement): void => {
     for (const x of kids(e).filter((k) => k.ns === CMMN_NS)) {
       const id = attr(x, 'id') ?? '', name = attr(x, 'name') ?? '';
@@ -59,7 +68,7 @@ const withPerformer = (d: XDocument, task: string, role: string): XDocument => e
 })));
 
 /** What the read-back changes in the case's process: names, roles and frequencies of known elements, and what it could not map. */
-export function applyCmmn(d: XDocument, v: CmmnView): { doc: XDocument; updated: string[]; unknown: string[] } {
+export function applyCmmn(d: XDocument, v: CmmnView): { doc: XDocument; updated: string[]; unknown: string[]; kept: number } {
   const p = readProcess(d), ix = indexOf(d.root), subs = new Map(readEvents(d.root).eventSubs.map((s) => [s.id, s]));
   const roleIds = new Map(p.actors.filter((a) => a.kind === 'role').map((a) => [a.name, a.id])), acts = new Map(p.activities.map((a) => [a.id, a]));
   let doc = d;
@@ -83,5 +92,8 @@ export function applyCmmn(d: XDocument, v: CmmnView): { doc: XDocument; updated:
       if (doc !== before) updated.push(s.id);
     }
   }
-  return { doc, updated, unknown };
+  // FX-D10: what is not mapped is kept as written (an element already kept by an earlier import is not kept twice)
+  const had = new Set(passThroughOf(doc).map((x) => x.text)), fresh = (v.kept ?? []).filter((e) => !had.has(passCode(e)));
+  doc = withPassThrough(doc, fresh.map((e) => ({ e, unit: 'cmmn' })));
+  return { doc, updated, unknown, kept: fresh.length };
 }

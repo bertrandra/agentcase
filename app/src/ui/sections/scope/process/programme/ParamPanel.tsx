@@ -1,6 +1,8 @@
 import { useEffect, useId, useRef } from 'react';
 import type { SubsetField } from '@/domain/portfolio';
 import { activityDetail, descriptionKey, type ParamDef, type ProgrammeView } from '@/domain/programme';
+import { caseValues } from '@/domain/process';
+import { useDoc } from '@/store/hooks';
 import { useIsMulti } from '@/store/portfolioHooks';
 import { DetailLinks } from '@/ui/widgets/DetailLinks';
 import { NumberInput, SelectInput } from '@/ui/widgets/fields';
@@ -18,13 +20,21 @@ const SUBSET: Record<string, [SubsetField, string]> = {
   khTargetCC: ['targetCC', 'Target CC'], khSetupBase: ['setupBase', 'Setup base'], khCurationFTE: ['curationFTE', 'Curation'],
 };
 
+/** The fields the pricing mode leaves out (FX-D13 d): shown greyed, still editable (the other mode's value is kept). */
+const INACTIVE_WHEN: Record<string, [string, 'resources' | 'amount']> = {
+  trainFte: ['trainPricing', 'amount'], setupTraining: ['trainPricing', 'resources'], govFte: ['govPricing', 'amount'], setupGov: ['govPricing', 'resources'],
+};
+
 /** One parameter field of a programme activity (shared with the 📋 Programme screen: the same field, key and command). */
 export function Param({ p, multi }: { p: ParamDef; multi: boolean }) {
+  const when = INACTIVE_WHEN[p.key];
+  const inactive = useDoc((d) => !!when && (caseValues(d)[when[0]] === 'amount' ? 'amount' : 'resources') === when[1]);
   if (p.singleOnly && multi) return <p className="ac-muted">{`${p.label}: a portfolio cost, set on the shared hub card of the Knowledge hub.`}</p>;
   if (p.store === 'knowledge') return multi ? <LeadField /> : <p className="ac-muted">{`${p.label}: set per product in a portfolio.`}</p>;
   const field = p.options ? <SelectInput id={p.key} label={p.label} options={[...p.options]} />
     : <NumberInput id={p.key} label={p.label} min={p.min} max={p.max} step={p.step} />;
   const sub = SUBSET[p.key];
+  if (inactive) return <div className="ac-param-inactive" title="Not used by the pricing mode chosen above">{field}</div>;
   return sub ? <SubsetFieldBox field={sub[0]} label={sub[1]}>{field}</SubsetFieldBox> : field;
 }
 

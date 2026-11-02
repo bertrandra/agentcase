@@ -18,7 +18,34 @@ export interface SelectionStress {
   diversification: Diversification;
   /** sorted net-benefit draws of the selection (its products added draw by draw) */
   outcomes: number[];
+  /** the run's one correlation ρ (the common shock of every product's drivers) */
+  rho: number;
+  /**
+   * the selection's implied average pairwise correlation of its products' net benefits (FX-D2): (Var(sum) − Σ Var_i) / (2 Σ_{i<j} sd_i sd_j), read
+   * from the run's draws; null with fewer than two products or no spread. A view only: it differs from ρ because ρ acts on the drivers, not on the net
+   * benefits; nothing reads it back.
+   */
+  impliedRho: number | null;
 }
+
+const variance = (xs: readonly number[]): number => {
+  if (xs.length < 2) return 0;
+  const m = xs.reduce((a, x) => a + x, 0) / xs.length;
+  return xs.reduce((a, x) => a + (x - m) * (x - m), 0) / (xs.length - 1);
+};
+
+/** The implied average pairwise correlation of `cols` given their draw-by-draw sum (`sum`, any order: the variance does not read the order). */
+export function impliedCorrelation(cols: readonly (readonly number[])[], sum: readonly number[]): number | null {
+  if (cols.length < 2) return null;
+  const vars = cols.map(variance), sumVar = vars.reduce((a, v) => a + v, 0), sumSd = vars.reduce((a, v) => a + Math.sqrt(v), 0);
+  const den = sumSd * sumSd - sumVar;
+  if (!(den > 1e-9)) return null;
+  const r = (variance(sum) - sumVar) / den;
+  return Math.round(Math.max(-1, Math.min(1, r)) * 1000) / 1000;
+}
+
+const withImplied = (run: PfStress, sel: Omit<SelectionStress, 'rho' | 'impliedRho'>): SelectionStress =>
+  ({ ...sel, rho: run.rho, impliedRho: impliedCorrelation(sel.products.map((p) => p.perDraw), sel.outcomes) });
 
 const diversificationOf = (products: ProductStress[], stats: StressStats): Diversification => {
   const sumP10 = products.reduce((a, p) => a + p.stats.p10, 0);
@@ -31,7 +58,7 @@ const diversificationOf = (products: ProductStress[], stats: StressStats): Diver
  * every product gives the portfolio's distribution exactly, and a unit with the products of a wave gives that wave's. Nothing is drawn again: the
  * products' draws come from their own streams (`productSeed`), whatever group they are added in.
  */
-function unitSelection(pf: Portfolio, run: PfStress, scope: GroupScope): SelectionStress | null {
+function unitSelection(pf: Portfolio, run: PfStress, scope: GroupScope): Omit<SelectionStress, 'rho' | 'impliedRho'> | null {
   const m = scopeMembers(pf, scope);
   if (!m) return null;
   const ids = new Set(m.planned), mine = run.products.filter((p) => ids.has(p.id));
@@ -42,6 +69,11 @@ function unitSelection(pf: Portfolio, run: PfStress, scope: GroupScope): Selecti
 }
 
 function build(run: PfStress, group: GroupScope, pf?: Portfolio): SelectionStress | null {
+  const sel = buildSel(run, group, pf);
+  return sel && withImplied(run, sel);
+}
+
+function buildSel(run: PfStress, group: GroupScope, pf?: Portfolio): Omit<SelectionStress, 'rho' | 'impliedRho'> | null {
   if (group.kind === 'portfolio') return { label: 'Portfolio', stats: run.stats, products: run.products.map((p) => ({ ...p, rSel: p.r })), waves: run.waves,
     diversification: run.diversification, outcomes: run.outcomes };
   if (group.kind === 'unit') return pf ? unitSelection(pf, run, group) : null;

@@ -1,7 +1,7 @@
 import { readFileSync } from 'node:fs';
 import { addProcessActivity } from '@/controllers/process';
 import { importProcess, resetProcessTo } from '@/controllers/processImport';
-import { moveProcessActivity, setProcessDiagram, setProcessRework } from '@/controllers/processLayout';
+import { linkProcessActivities, moveProcessActivity, setProcessDiagram, setProcessRework } from '@/controllers/processLayout';
 import { analyseImport, DEFAULT_CHOICES } from '@/domain/process';
 import { editBase } from '@/store/editBase';
 import { parseBpmn } from '@/store/persistence/bpmn/read';
@@ -19,5 +19,6 @@ export const samples: Record<string, Sample> = {
   'process.reset': { prep: () => addProcessActivity(CUSTOM), run: () => resetProcessTo('V2') },
   'process.moveActivity': () => moveProcessActivity('A016', 'V4'),
   'process.setReworkFlow': () => setProcessRework('LP001', { probability: 0.2 }),
+  'process.linkActivities': { prep: () => addProcessActivity(CUSTOM), run: () => { linkProcessActivities(); } },
   'process.setDiagram': () => setProcessDiagram('A016', { x: 10, y: 20, w: 100, h: 80 }),
 };

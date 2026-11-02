@@ -25,11 +25,11 @@ function captureCharts(): SheetImages {
 
 /** Export of the results workbook (ROI, Investment, Operating costs, Savings, P&L, Workforce shift) — the legacy "Export financial to Excel". */
 export function ResultsExcelPanel() {
-  const [status, setStatus] = useState(''), [busy, setBusy] = useState(false);
+  const [status, setStatus] = useState(''), [busy, setBusy] = useState(false), [plan, setPlan] = useState(false);
   const run = async () => {
     setBusy(true);
     try {
-      const images = captureCharts(), { blob, filename } = await exportResultsWorkbook(images), url = URL.createObjectURL(blob);
+      const images = captureCharts(), { blob, filename } = await exportResultsWorkbook(images, undefined, undefined, { plan }), url = URL.createObjectURL(blob);
       Object.assign(document.createElement('a'), { href: url, download: filename }).click();
       setTimeout(() => URL.revokeObjectURL(url), 1500);
       const pictures = Object.keys(images).length;
@@ -42,6 +42,8 @@ export function ResultsExcelPanel() {
       <p>One sheet per section of the Financial Summary — ROI, Investment, Operating costs, Savings, P&amp;L and Workforce shift — with the figures of the
         current case, rounded as on screen.</p>
       <ResultsNote />
+      <p><label><input type="checkbox" checked={plan} onChange={(e) => setPlan(e.target.checked)} /> Add the plan sheets (WBS, WBS dictionary, OBS, RAM,
+        Histogram) of the 📅 Plan screen</label></p>
       <button
         type="button"
         className="ac-btn ac-btn-primary"
