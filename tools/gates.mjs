@@ -34,6 +34,7 @@ const PR = [
   r('e2e', 'e2e-bpmn-editor', 'node tools/e2e-bpmn-editor.mjs'),
   r('e2e', 'perf', 'node tools/perf.mjs'),
   r('e2e', 'parallel-run', 'node tools/parallel-run.mjs'),
+  r('e2e', 'mspdi-check', 'tools/mspdi-check.sh'),
   ...install('browser'), s('browser', 'build', 'npm run build'),
   r('browser', 'ui-parity', 'node tools/ui-parity.mjs --shots test-results/ui-parity', { timeout: '15' }),
   r('browser', 'a11y golden', 'node tools/a11y.mjs --fixtures golden --report test-results/a11y/golden.json --shots test-results/a11y/golden',

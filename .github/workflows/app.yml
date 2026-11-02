@@ -19,8 +19,23 @@ jobs:
     runs-on: ubuntu-latest
     timeout-minutes: 45
     defaults: { run: { working-directory: app } }
+    # docs_only: a pull request that changes only docs/ (docs/examples/ excepted: the browser gates open its portfolio) and *.md files runs this job
+    # (the suite reads the docs: facts, deviations) but skips e2e and browser (owner's decision 2026-11-02). Pushes to main always run everything.
+    outputs:
+      docs_only: ${{ steps.scope.outputs.docs_only }}
     steps:
       - uses: actions/checkout@v6
+        with: { fetch-depth: 2 }   # the pull request's merge commit and its first parent (the base), for the docs-only test below
+      - id: scope
+        if: github.event_name == 'pull_request'
+        run: |
+          files=$(git diff --name-only HEAD^1 HEAD)
+          echo "$files"
+          if [ -n "$files" ] && ! echo "$files" | grep -qvE '^docs/|\.md$' && ! echo "$files" | grep -q '^docs/examples/'; then
+            echo "docs_only=true" >> "$GITHUB_OUTPUT"; echo "docs-only change: e2e and browser are skipped"
+          else
+            echo "docs_only=false" >> "$GITHUB_OUTPUT"
+          fi
       - uses: actions/setup-node@v6
         with: { node-version: 22, cache: npm, cache-dependency-path: app/package-lock.json }
       - run: npm ci
@@ -42,6 +57,7 @@ jobs:
     runs-on: ubuntu-latest
     timeout-minutes: 45
     needs: check
+    if: needs.check.outputs.docs_only != 'true'
     steps:
       - uses: actions/checkout@v6
       - uses: actions/setup-node@v6
@@ -65,6 +81,7 @@ jobs:
     runs-on: ubuntu-latest
     timeout-minutes: 45
     needs: check
+    if: needs.check.outputs.docs_only != 'true'
     steps:
       - uses: actions/checkout@v6
       - uses: actions/setup-node@v6
