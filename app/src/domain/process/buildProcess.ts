@@ -3,7 +3,7 @@ import { actorsOf, normsOf } from './buildActors';
 import { COLLABORATION_ID, diagramOf, PARTICIPANT_ID } from './buildDi';
 import { flowElement, flowsOf, type FlowSpec } from './buildFlows';
 import { dataObjectOf, taskOf } from './buildTasks';
-import { CROSS_LANE_ID, END_ID, FORK_ID, JOIN_ID, laneId, PROCESS_ID, START_ID } from './ids';
+import { CROSS_LANE_ID, dataId, END_ID, FORK_ID, JOIN_ID, laneId, PROCESS_ID, START_ID } from './ids';
 import { layoutOf } from './layout';
 import { CROSS_ID, type CatPhase, type ProcessCatalogue } from './types';
 import { doc, el, NS, text, type XDocument, type XElement } from './xml';
@@ -11,14 +11,22 @@ import { doc, el, NS, text, type XDocument, type XElement } from './xml';
 /** The process-level parameters (`ac:process`): the schema the document belongs to. Case parameters are added by `processFromCase`. */
 export const CASE_SCHEMA = '3';
 
+/** The deliverables each activity reads (FX-D9): along each link of a phase's chain, the source's deliverable is an input of the target. */
+function inputsByTarget(c: ProcessCatalogue, flows: FlowSpec[]): Map<string, string[]> {
+  const out = new Map<string, string[]>(), delivers = new Set(c.sdlc.filter((a) => a.deliverable).map((a) => a.id));
+  for (const f of flows) if (f.inner && !f.rework && delivers.has(f.source)) (out.get(f.target) ?? out.set(f.target, []).get(f.target))?.push(dataId(f.source));
+  return out;
+}
+
 function phaseElement(c: ProcessCatalogue, p: CatPhase, order: number | null, flows: FlowSpec[]): XElement {
+  const inputs = inputsByTarget(c, flows);
   const cross = p.id === CROSS_ID, inPhase = <T extends { phase: string }>(xs: T[]) => xs.filter((a) => a.phase === p.id);
   const ext = el('bpmn:extensionElements', {}, [el('ac:phase', {
     code: p.id, seq: p.seq, role: p.role || null, crossCutting: cross ? 'true' : null, order, sdlc: p.sdlc, reg: p.reg,
     featureIds: p.featureIds ? p.featureIds.join(' ') : null,
   })]);
   const tasks = [
-    ...c.sdlc.map((a, i) => (a.phase === p.id ? taskOf(a, i + 1, false) : null)),
+    ...c.sdlc.map((a, i) => (a.phase === p.id ? taskOf(a, i + 1, false, inputs.get(a.id)) : null)),
     ...c.reg.map((a, i) => (a.phase === p.id ? taskOf(a, i + 1, true) : null)),
   ].filter((x): x is XElement => x !== null);
   const data = inPhase(c.sdlc).filter((a) => a.deliverable).map(dataObjectOf);

@@ -1,10 +1,11 @@
 /** @calc-zone process-model */
 import { linkPoints } from './buildDi';
 import { appendChild, editById, editWhere } from './editTree';
-import { diId, flowId } from './ids';
+import { dataId, diId, flowId } from './ids';
 import { readProcess } from './read';
 import type { ProcessView } from './readTypes';
-import { attr, el, kids, NS, type XDocument, type XElement } from './xml';
+import { mapElements } from './order';
+import { attr, el, kids, NS, textOf, type XDocument, type XElement } from './xml';
 import { indent } from './xmlWrite';
 
 interface Link { source: string; target: string; container: string }
@@ -57,9 +58,12 @@ function withLinks(start: XElement, v: ProcessView, links: readonly Link[]): XEl
  * per `bridgesOver` link, appended to its container, with an edge between the two shapes when both are drawn. Rework flows are left to the caller.
  * The gone nodes themselves stay (the caller removes or moves them).
  */
-export function bridgeOver(d: XDocument, gone: ReadonlySet<string>): XDocument {
+export function bridgeOver(start: XDocument, gone: ReadonlySet<string>): XDocument {
+  let d = start;
   const v = readProcess(d), touching = v.flows.filter((f) => !f.rework && (gone.has(f.source) || gone.has(f.target)));
-  if (!touching.length) return d;
+  const sources = new Set([...gone].flatMap((g) => [g, dataId(g)])), d0 = d;
+  d = { ...d, root: withoutInputsFrom(d.root, sources) };
+  if (!touching.length) return d.root === d0.root ? d0 : d;
   const drop = new Set(touching.flatMap((f) => [f.id, diId(f.id)]));
   let root = editWhere(d.root, (e) => drop.has(attr(e, 'id') ?? '') || (e.ns === NS.bpmndi && drop.has(attr(e, 'bpmnElement') ?? '')), () => null);
   root = withLinks(root, v, bridgesOver(v.flows, gone));
@@ -69,8 +73,8 @@ export function bridgeOver(d: XDocument, gone: ReadonlySet<string>): XDocument {
 /**
  * `process.linkActivities` (FX-D9): every SDLC activity of a phase (not ad hoc) that no plain flow touches yet is linked: appended after the end
  * of the phase's chain (its activity with incoming but no outgoing link), or chained with the others when the phase has none, in their order
- * (regulatory activities are the phase's obligations: not chained). So a document written before the links gets them, and an activity added or moved since joins its phase's chain. The same document
- * when every activity is linked.
+ * (regulatory activities are the phase's obligations: not chained). So a document written before the links gets them, and an activity added or
+ * moved since joins its phase's chain. The same document when every activity is linked.
  */
 export function linkActivities(d: XDocument): XDocument {
   const v = readProcess(d), plain = v.flows.filter((f) => !f.rework), out: Link[] = [];
@@ -85,4 +89,25 @@ export function linkActivities(d: XDocument): XDocument {
   }
   if (!out.length) return d;
   return { ...d, root: withLinks(d.root, v, out) };
+}
+
+const isBpmn = (e: XElement, local: string): boolean => e.ns === NS.bpmn && e.local === local;
+/**
+ * The data inputs fed by a deliverable that goes (FX-D9): each `dataInputAssociation` whose source is one of `sources`, its data input and its
+ * entry in the input set; an `ioSpecification` left with no input and no output goes too. The same element when nothing reads them.
+ */
+export function withoutInputsFrom(root: XElement, sources: ReadonlySet<string>): XElement {
+  const gone = new Set<string>();
+  mapElements(root, (e) => {
+    if (isBpmn(e, 'dataInputAssociation') && kids(e, NS.bpmn, 'sourceRef').some((r) => sources.has(textOf(r).trim()))) {
+      gone.add(attr(e, 'id') ?? '');
+      for (const t of kids(e, NS.bpmn, 'targetRef')) gone.add(textOf(t).trim());
+    }
+    return e;
+  });
+  if (!gone.size) return root;
+  const pruned = editWhere(root, (e) => (isBpmn(e, 'dataInputAssociation') || isBpmn(e, 'dataInput')) ? gone.has(attr(e, 'id') ?? '')
+    : isBpmn(e, 'dataInputRefs') && gone.has(textOf(e).trim()), () => null);
+  return editWhere(pruned, (e) => isBpmn(e, 'ioSpecification') && !kids(e, NS.bpmn, 'dataInput').length && !kids(e, NS.bpmn, 'dataOutput').length,
+    () => null);
 }

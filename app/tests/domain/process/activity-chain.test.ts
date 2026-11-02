@@ -1,5 +1,6 @@
 import { describe, expect, it } from 'vitest';
-import { moveActivity, readProcess, removeActivity, updateActivity, type XDocument } from '@/domain/process';
+import { moveActivity, readProcess, removeActivity, serialize, updateActivity, type XDocument } from '@/domain/process';
+import { readData } from '@/domain/process/profile';
 import { bridgesOver } from '@/domain/process/bridge';
 import { linkPoints } from '@/domain/process/buildDi';
 import { partialOf } from '@/domain/process/partial';
@@ -78,6 +79,23 @@ describe('activity links inside each phase (FX-D9)', () => {
         e.points.slice(1).forEach((q, i) => expect(cross(e.points[i]!, q, b), `${e.element} over ${b.element}`).toBe(false));
       }
     }
+  });
+});
+
+describe('data inputs along the chain (FX-D9)', () => {
+  const inputsOf = (d: XDocument, id: string): string[] => readData(d.root).links.filter((l) => l.dir === 'in' && l.activity === id).map((l) => l.data);
+  it('each linked SDLC activity reads the deliverable of the one before it', () => {
+    const d = base(), { phase, chain } = longPhase(d), v = readProcess(d);
+    const delivers = new Set(v.activities.filter((a) => a.deliverable).map((a) => a.id));
+    for (const f of links(d, phase)) if (delivers.has(f.source)) expect(inputsOf(d, f.target), f.id).toContain(`${f.source}_data`);
+    expect(chain.length).toBeGreaterThan(2);
+  });
+  it('removing an activity drops the inputs its deliverable fed; the in-scope export keeps no input from an activity left out', () => {
+    const d = base(), { chain } = longPhase(d), [, b, c] = chain as [string, string, string];
+    expect(inputsOf(removeActivity(d, b), c)).not.toContain(`${b}_data`);
+    const p = doc(partialOf(updateActivity(d, b, { inScope: false }).root), null);
+    expect(inputsOf(p, c)).not.toContain(`${b}_data`);
+    expect(serialize(p)).not.toContain(`>${b}_data<`);
   });
 });
 
