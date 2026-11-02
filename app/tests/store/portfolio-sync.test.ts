@@ -80,6 +80,7 @@ describe('autosave and multi-tab on a portfolio', () => {
 describe('sanitize on portfolios', () => {
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   // the waves as keys (schema v6 holds them in the document; a file with keys still opens)
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const good = () => planIntoJson(JSON.parse(JSON.stringify(toPortfolioSnapshot(threeProducts().s.getState().portfolio)))) as Record<string, any>;
   it('drops prototype-pollution keys anywhere in the portfolio', () => {
     const raw = good(), text = JSON.stringify(raw).replace('"overrides":{}', '"overrides":{"__proto__":{"polluted":1},"constructor":{"x":1}}');

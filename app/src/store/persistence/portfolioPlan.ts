@@ -22,8 +22,9 @@ export function planIntoDocument<T extends Pick<Portfolio, 'waves' | 'products' 
 
 /** The file JSON without the keys the plan holds (the waves, the capacity, each product's knowledge subset). */
 export function withoutPlanKeys(file: Rec): Rec {
-  const { waves: _w, maxConcurrentSetups: _m, ...rest } = file;
-  return { ...rest, ...(Array.isArray(file.products) ? { products: file.products.map((p) => (rec(p) ? (({ knowledge: _k, ...q }) => q)(p) : p)) } : {}) };
+  const omit = (r: Rec, keys: readonly string[]): Rec => Object.fromEntries(Object.entries(r).filter(([k]) => !keys.includes(k)));
+  const rest = omit(file, ['waves', 'maxConcurrentSetups']);
+  return { ...rest, ...(Array.isArray(file.products) ? { products: file.products.map((p) => (rec(p) ? omit(p, ['knowledge']) : p)) } : {}) };
 }
 
 /** A raw portfolio file with its plan read back into the keys and the process removed from the common document's text (no plan: the same file). */
