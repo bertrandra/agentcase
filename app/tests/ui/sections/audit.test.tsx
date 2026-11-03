@@ -1,5 +1,5 @@
 // @vitest-environment jsdom
-import { act, cleanup, fireEvent, render, screen } from '@testing-library/react';
+import { act, cleanup, fireEvent, render, screen, within } from '@testing-library/react';
 import { afterEach, describe, expect, it } from 'vitest';
 import { editAudit, setHeader } from '@/controllers/audit';
 import { readAudit } from '@/domain/audit';
@@ -22,7 +22,7 @@ describe('🔎 Audit', () => {
     const s = freshStore(), { container } = render(<Audit />);
     commit('Client', 'Acme');
     expect(readAudit(bpmn(s)).header).toMatchObject({ code: 'AUDIT-1', client: 'Acme', status: 'planned' });
-    tab('Audit run / interview'); tab('Activities');
+    tab('Audit run / interview'); tab('Audit activity');
     fireEvent.click(screen.getByRole('button', { name: /^A017 · / }));
     commit('Rework rate', '20');
     expect(readAudit(bpmn(s)).elements.get('A017')!.observations[0]).toMatchObject({ name: 'reworkRate', value: '20' });
@@ -46,7 +46,7 @@ describe('🔎 Audit', () => {
     expect([before, effort()]).toEqual([0.1, 0.2]);
     expect(readAudit(bpmn(s)).header!.calibrations[0]!.changes.map((c) => c.element)).toEqual(['LP001']);
     expect(await axeViolations(container)).toEqual([]);
-    for (const path of [['Audit run / interview', 'Interview'], ['Audit run / interview', 'Roles'], ['Audit run / interview', 'Programme'],
+    for (const path of [['Audit run / interview', 'Audit activity'], ['Audit run / interview', 'Roles'], ['Audit run / interview', 'Programme'],
       ['Audit setup', 'Tool catalogue'], ['Audit progress']]) {
       path.forEach(tab);
       expect(await axeViolations(container)).toEqual([]);
@@ -77,6 +77,11 @@ describe('🔎 Audit', () => {
       const ctx = screen.getByRole('region', { name: 'Interview context' });
       expect(ctx.textContent).toContain(role.name);
       for (const a of acts) expect(ctx.textContent).toContain(a.id);
+      expect(screen.queryByRole('tab', { name: 'Interview' })).toBeNull();   // one tab: the interview and the activities (owner, 2026-11-03)
+      expect(screen.queryByRole('tab', { name: 'Activities' })).toBeNull();
+      fireEvent.click(within(ctx).getByRole('button', { name: new RegExp(`^${acts[0]!.id} · `) }));   // a context activity opens its form
+      expect(screen.getByRole('region', { name: new RegExp(`^Audit of ${acts[0]!.id} · `) })).toBeTruthy();
+      expect(screen.getAllByRole('region', { name: /^Audit of / })).toHaveLength(1);
       expect(await axeViolations(container)).toEqual([]);
       tab('Audit progress');
       expect(screen.getByRole('row', { name: /INT-1/ }).textContent).toContain(`0 / ${acts.length}`);

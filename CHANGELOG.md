@@ -17,6 +17,12 @@ When releasing, follow [docs/BUMP_PROCEDURE.md](docs/BUMP_PROCEDURE.md) (§7 for
 
 ## [Unreleased]
 
+### 🔎 Audit: Interview and Activities merged into one Audit activity tab (owner's request 2026-11-03)
+
+- **Audit run / interview › Audit activity** holds the auditor's audit activities and the interview context (the roles to meet, what the
+  audit holds on each activity they do), then every in-scope activity (progress per phase, filters), and one audit form under both: an
+  activity of the context or of the list opens it. The Roles and Programme tabs are unchanged. No data or figure changes.
+
 ### 📋 Programme: dependent lines grouped (owner's request 2026-11-03)
 
 - Each programme line that depends on another sits under it, collapsed by default (▸ *N dependent lines*, with their cost over the horizon):

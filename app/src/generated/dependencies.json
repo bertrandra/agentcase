@@ -1,6 +1,6 @@
 {
  "schema": 1,
- "counts": {"files":1397,"tagged":745,"tests":466},
+ "counts": {"files":1398,"tagged":745,"tests":466},
  "zones": [
   {"id":"rate-card-team","modules":10,"tmed":196,"tmax":394},
   {"id":"scope-automation","modules":25,"tmed":82,"tmax":401},
@@ -107,7 +107,7 @@
   {"id":"personas","label":"👥 Persona management","group":"configure","kind":"S-static","files":17},
   {"id":"brand-theme","label":"🎨 Brand & theme","group":"configure","kind":"S-static","files":12},
   {"id":"organisation","label":"🏢 Organisation","group":"frame","kind":"S-static","files":12},
-  {"id":"audit","label":"🔎 Audit","group":"frame","kind":"I-input","files":20},
+  {"id":"audit","label":"🔎 Audit","group":"frame","kind":"I-input","files":21},
   {"id":"who-does-what","label":"🧭 Who does what","group":"scope","kind":"S-static","files":7},
   {"id":"products","label":"📦 Products","group":"portfolio","kind":"P-portfolio","files":6},
   {"id":"overrides","label":"🧬 Overrides","group":"portfolio","kind":"P-portfolio","files":3},
