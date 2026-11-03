@@ -476,9 +476,9 @@ when the runner lacks it; the schema tests skip locally without `xmllint` and fa
   edit → KPI repaint median 21-22 → 16-18 ms, p95 32-35 → 25-31 ms.
 - Multi-product (P4): consolidation view model ~4 ms and a 20-product team edit ~25 ms end to end (all views) on a 20 x 60-month portfolio, budgets 30 ms / 150 ms in `tests/domain/portfolio/perf-p4.test.ts`.
 - Size: `dist/index.html` 2.80 MB (2.67 MiB, about 1,020 kB gzip) at the last local build (lot 10: chart.js registers only the controllers, elements,
-  scales and plugins the app draws with, -11 kB). `app/perf-budget.json` holds two size budgets: the hard product ceilings `sizeMB` 5 / `gzipMB` 1.5 (MiB,
-  never rewritten by the script) and the regression budgets `sizeRegressionMB` / `gzipRegressionMB` (1.15 x the measured build, 3.08 / 1.12) that fail on
-  growth; and the time budgets of the shell, an edit, an undo (until the headline bar repainted), and the section switches (until the TARGET section's
+  scales and plugins the app draws with, -11 kB). `app/perf-budget.json` holds two size budgets: the hard product ceilings `sizeMB` 7 / `gzipMB` 1.5 (MiB,
+  never rewritten by the script) and the regression budgets `sizeRegressionMB` / `gzipRegressionMB` (7 / 1.28: the size budget raised to the
+  ceiling by the owner on 2026-11-03, the app at 3.6 MiB; the gzip one 1.15 x a measured build) that fail on growth; and the time budgets of the shell, an edit, an undo (until the headline bar repainted), and the section switches (until the TARGET section's
   heading is shown; single case and the six Portfolio sections on the shipped example), max(floor, 3 x measured). `tools/perf.mjs` checks them (CI job
   `e2e`) and fails when the file is missing; `--write-budget` re-baselines.
 

@@ -17,6 +17,11 @@ When releasing, follow [docs/BUMP_PROCEDURE.md](docs/BUMP_PROCEDURE.md) (§7 for
 
 ## [Unreleased]
 
+### Size budget (owner's decision 2026-11-03)
+
+- `app/perf-budget.json`: the size ceiling and the size growth budget are both 7 MiB (were 5 and 3.59; the app was 3.59 MiB without the lazy
+  BPMN editor). The gzip budgets are unchanged.
+
 ### 🏢 Organisation: move a product to any unit from the graph (owner's request 2026-11-03)
 
 - A product's delivery team now sits in the product's owning unit (D-B39, any level of the tree), so moving a product moves its team in the
