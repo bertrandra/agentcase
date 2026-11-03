@@ -1,5 +1,6 @@
 // @vitest-environment jsdom
-import { cleanup, fireEvent, render, screen, within } from '@testing-library/react';
+import { act, cleanup, fireEvent, render, screen, within } from '@testing-library/react';
+import { addOrgUnit } from '@/controllers/org';
 import { afterEach, describe, expect, it } from 'vitest';
 import { laneRolesOf, raciOverridesOf, readRaci, readStoredOrg } from '@/domain/org';
 import Organisation from '@/ui/sections/frame/organisation';
@@ -50,6 +51,28 @@ describe('🏢 Organisation graph (owner\'s request 2026-11-02)', () => {
     expect(units().map((u) => u.id)).toEqual(['unit-delivery']);
     s.undo();
     expect(units().map((u) => u.id)).toEqual(['unit-delivery', 'unit-1']);
+  });
+  it('a product moves to any unit from the graph (its team follows); a unit gets a new parent; each one undoable step (owner, 2026-11-03)', () => {
+    const s = freshStore();
+    render(<Organisation />);
+    const units = () => readStoredOrg(bpmn(s)).units, nodes = () => within(screen.getByRole('group', { name: 'Units and teams' })).getAllByRole('button');
+    act(() => {   // two departments under the default unit
+      addOrgUnit({ id: 'unit-1', name: 'Dept A', type: 'department', parent: 'unit-delivery' });
+      addOrgUnit({ id: 'unit-2', name: 'Dept B', type: 'department', parent: 'unit-delivery' });
+    });
+    const pick = (re: RegExp) => fireEvent.keyDown(nodes().find((n) => re.test(n.getAttribute('aria-label') ?? ''))!, { key: 'Enter' });
+    pick(/ · team .*delivery team/);
+    const owner = screen.getByRole('combobox', { name: /^Graph: owning unit of / });
+    fireEvent.change(owner, { target: { value: 'unit-2' } });
+    const team = screen.getAllByRole('row').find((r) => /delivery team/.test(r.querySelector('th')?.textContent ?? ''))!;
+    expect(within(team).getAllByRole('cell')[0]!.textContent).toBe('Dept B');   // the team sits in its owning unit
+    const n = s.getState().history.undo.length;
+    pick(/ · unit Dept B$/);
+    fireEvent.change(screen.getByLabelText('Parent'), { target: { value: 'unit-1' } });
+    expect(units().find((u) => u.id === 'unit-2')!.parent).toBe('unit-1');
+    expect(s.getState().history.undo.length).toBe(n + 1);
+    s.undo(); s.undo();
+    expect(units().find((u) => u.id === 'unit-2')!.parent).toBe('unit-delivery');
   });
 });
 

@@ -8,7 +8,8 @@ import { useAuditView } from './view';
 /**
  * 🔎 Audit › Audit run / interview › Audit activity (owner's request 2026-11-03): the interview and the activities in one tab. The auditor picks
  * their audit activities and sees the interview's context, whose activities open their audit form; every in-scope activity stays reachable
- * below (progress per phase, filters). One form, under both lists, for the activity selected in either; selecting one brings it into view.
+ * below (progress per phase, filters), collapsed by default (owner, 2026-11-03). One form, under both lists, for the activity selected in
+ * either; selecting one brings it into view.
  */
 export function AuditActivityTab({ data }: { data: AuditViewData }) {
   const selected = useAuditView((s) => s.selected), sel = data.rows.find((r) => r.id === selected), form = useRef<HTMLDivElement>(null);
@@ -17,7 +18,7 @@ export function AuditActivityTab({ data }: { data: AuditViewData }) {
   return (
     <>
       <InterviewRun data={data} />
-      <details className="ac-audit-all" open>
+      <details className="ac-audit-all">
         <summary>All in-scope activities: progress per phase, filters</summary>
         <Activities data={data} withForm={false} />
       </details>

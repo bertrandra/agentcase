@@ -10,7 +10,8 @@ import type { OrgTeam, OrgUnit, Serving } from './types';
 /**
  * The teams of the organisation (§ 16.3), read from the organisation part of the common document since schema v5 (phase B10a; B6b derived them
  * from the `teamIn` / `sharedTeam` keys, with the same result):
- * - each product's entry team is the team "‹product› delivery team" (of the default unit "‹customer› delivery" unless moved), serving it at 100 %;
+ * - each product's entry team is the team "‹product› delivery team", serving it at 100 %, in the product's owning unit (D-B39, any level of the
+ *   tree; owner's request 2026-11-03: moving a product moves its team), else its stored unit (the default "‹customer› delivery" unless moved);
  * - each shared team line is a shared team of one line, serving its products with their shares.
  * `teamRowsOf` rebuilds a product's effective team from these teams: the same rows, values and order as `effectiveTeam` (tested on every fixture).
  */
@@ -48,7 +49,8 @@ export function derivedTeams(pf: Pick<Portfolio, 'products'> & { common: Pick<Po
   return memoChain(roots, [pf.products, st, effort], 'teams', () => [
     ...pf.products.map((p): OrgTeam => {
       const e = st.own.get(p.id);
-      return { id: productTeamId(p.id), name: `${p.name} delivery team`, unit: (e && attr(e, 'unit')) || DEFAULT_UNIT_ID, lines: e ? teamRowsIn(e) : [],
+      const unit = (e && (attr(e, 'owner') || attr(e, 'unit'))) || DEFAULT_UNIT_ID;
+      return { id: productTeamId(p.id), name: `${p.name} delivery team`, unit, lines: e ? teamRowsIn(e) : [],
         serves: [{ productId: p.id, pct: 100 }], shared: false };
     }),
     ...st.shared.map((e) => { const l = sharedLineIn(e); return sharedTeamOf(l, attr(e, 'unit') || DEFAULT_UNIT_ID, effort.get(l.id)); }),

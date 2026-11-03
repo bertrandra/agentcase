@@ -79,6 +79,7 @@ describe('🔎 Audit', () => {
       for (const a of acts) expect(ctx.textContent).toContain(a.id);
       expect(screen.queryByRole('tab', { name: 'Interview' })).toBeNull();   // one tab: the interview and the activities (owner, 2026-11-03)
       expect(screen.queryByRole('tab', { name: 'Activities' })).toBeNull();
+      expect(screen.getByText(/^All in-scope activities/).closest('details')!.open).toBe(false);   // the full list is collapsed by default
       fireEvent.click(within(ctx).getByRole('button', { name: new RegExp(`^${acts[0]!.id} · `) }));   // a context activity opens its form
       expect(screen.getByRole('region', { name: new RegExp(`^Audit of ${acts[0]!.id} · `) })).toBeTruthy();
       expect(screen.getAllByRole('region', { name: /^Audit of / })).toHaveLength(1);

@@ -17,10 +17,17 @@ When releasing, follow [docs/BUMP_PROCEDURE.md](docs/BUMP_PROCEDURE.md) (§7 for
 
 ## [Unreleased]
 
+### 🏢 Organisation: move a product to any unit from the graph (owner's request 2026-11-03)
+
+- A product's delivery team now sits in the product's owning unit (D-B39, any level of the tree), so moving a product moves its team in the
+  graph, the Teams table and the views by unit; before, the team stayed in the default unit whatever the owner. Selecting a product's team in the
+  organisation graph shows **Owning unit (any level)**; selecting a unit shows its **Parent** too (as in the Units table). Each change is one
+  undoable step. No figure changes (the figures read the team's lines, not its unit).
+
 ### 🔎 Audit: Interview and Activities merged into one Audit activity tab (owner's request 2026-11-03)
 
 - **Audit run / interview › Audit activity** holds the auditor's audit activities and the interview context (the roles to meet, what the
-  audit holds on each activity they do), then every in-scope activity (progress per phase, filters), and one audit form under both: an
+  audit holds on each activity they do), then every in-scope activity (progress per phase, filters; collapsed by default), and one audit form under both: an
   activity of the context or of the list opens it. The Roles and Programme tabs are unchanged. No data or figure changes.
 
 ### 📋 Programme: dependent lines grouped (owner's request 2026-11-03)
