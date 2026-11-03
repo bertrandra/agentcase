@@ -52,7 +52,7 @@ export const ProgrammeRowView = memo(function ProgrammeRowView({ r, open, focuse
     <>
       <tr className={focused ? 'is-focused' : undefined} aria-current={focused ? 'true' : undefined}>
         <td><EnabledBox name={r.name} e={r.enabled} /></td>
-        <th scope="row" ref={head} tabIndex={focused ? -1 : undefined} style={depth ? { paddingInlineStart: `${Math.min(depth, 2) * 1.25}rem` } : undefined}>
+        <th scope="row" ref={head} tabIndex={focused ? -1 : undefined} className={depth ? `ac-prog-dep-${Math.min(depth, 2)}` : undefined}>
           {depth > 0 && <span aria-hidden="true">↳ </span>}{r.name}{' '}
           <span className="ac-muted">{`— ${r.element === 'task' ? '' : `${r.element}, `}${instances(r)}`}</span>
           {editable && <> <button type="button" className="ac-link" aria-expanded={open} aria-controls={open ? editorId : undefined}
