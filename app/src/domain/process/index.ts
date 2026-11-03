@@ -31,6 +31,7 @@ export { DEFAULT_CHOICES, type ImportAnalysis, type ImportChoices, type ImportMo
   type IncomingUnit } from './importTypes';
 export { roleId } from './ids';
 export { drawingOf, hideActivities, type DrawEdge, type Drawing, type DrawShape, type ShapeKind } from './drawing';
+export { compactDrawing } from './drawingCompact';
 export { applyEditorDocument, type EditorOutcome } from './editorApply';
 export { mergeEditorDocument } from './editorMerge';
 export { caseValues, emptiedStoredValues, keepStoredValues, programmeValuesOf, storedElement, withoutStoredValues, withProgrammeValues } from './storedValues';

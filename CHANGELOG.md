@@ -17,6 +17,15 @@ When releasing, follow [docs/BUMP_PROCEDURE.md](docs/BUMP_PROCEDURE.md) (§7 for
 
 ## [Unreleased]
 
+### 🧩 Process: compact layout when the out-of-scope activities are hidden (owner's request 2026-11-03)
+
+- With **Hide out-of-scope activities**, the diagram now closes the space they leave: the phases and roles left empty are dropped and every
+  empty band, across or down, shrinks to a small gap; the remaining boxes keep their order and size and the flows follow them (the golden case:
+  5,756 × 3,330 → 1,616 × 1,460). **Compact the layout** (on by default, above the canvas) turns it off to keep the full grid. View state only:
+  the document's diagram (BPMN DI) is not changed. `domain/process/drawingCompact.ts`.
+- **Labels drawn as soon as they are readable on screen**: the activity names show when the text is at least about 6 px on screen (the drawing's
+  scale, followed through a resize or full screen), not only from twice the Fit zoom; a compact or full-screen diagram shows them at Fit.
+
 ## [v22.0.0] 2026-11-03 — SPEC_FIXES lots X0–X9, programme sizing normalised, file schema v6; programme grouping, Audit activity tab, products moved to any unit, full screen for BPMN
 
 Major: the file schema moves to v6 (the portfolio plan in the BPMN document, FX-D14) and the programme sizing normalisation moves figures on
