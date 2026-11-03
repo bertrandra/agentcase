@@ -17,6 +17,17 @@ When releasing, follow [docs/BUMP_PROCEDURE.md](docs/BUMP_PROCEDURE.md) (§7 for
 
 ## [Unreleased]
 
+### 🧩 Process: full screen for the diagram and the BPMN editor (owner's request 2026-11-03)
+
+- **⤢ Full screen** on the process diagram (and the programme diagram) and in the diagram editor: the view fills the window (the browser's full
+  screen when it allows it), its canvas takes the height left; the editor's canvas refits. Escape, the browser's exit or **⤡ Exit full screen**
+  leave it. View state only. `ui/widgets/FullScreen.tsx`.
+
+### Monte Carlo timing test (owner's decision 2026-11-03)
+
+- The portfolio stress test (20 products × 1,000 draws) keeps the engine as it is and allows 10 s of CPU (was 5 s): about 4 s on an idle
+  machine since the programme sizing normalisation, CI runners vary by up to 1.6×.
+
 ### Size budget (owner's decision 2026-11-03)
 
 - `app/perf-budget.json`: the size ceiling and the size growth budget are both 7 MiB (were 5 and 3.59; the app was 3.59 MiB without the lazy

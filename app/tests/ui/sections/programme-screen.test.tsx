@@ -65,7 +65,7 @@ describe('📋 Programme screen', { timeout: 90_000 }, () => {
   });
   it('Edit opens the description, timing and cost fields; the description is one step and the Process view reads it', () => {
     render(<Programme />);
-    act(() => { fireEvent.click(screen.getByRole('button', { name: 'Show the 5 dependent lines of Discover' })); });
+    act(() => { fireEvent.click(screen.getByRole('button', { name: /^▸ 5 dependent lines of Discover/ })); });
     const edit = within(rowOf('Pilot')).getByRole('button', { name: 'Edit Pilot' });
     act(() => { fireEvent.click(edit); });
     expect(edit.getAttribute('aria-expanded')).toBe('true');
@@ -83,7 +83,7 @@ describe('📋 Programme screen', { timeout: 90_000 }, () => {
   it('dependent lines are grouped under the line they follow, collapsed by default; the toggle is view state (no undo step)', async () => {
     const { container } = render(<Programme />), n = steps();
     expect(screen.queryByRole('rowheader', { name: /^Agentic run \(steady state\) —/ })).toBeNull();
-    const toggle = within(rowOf('Agentic build and adoption ramp')).getByRole('button', { name: /^Show the 6 dependent lines of/ });
+    const toggle = within(rowOf('Agentic build and adoption ramp')).getByRole('button', { name: /^▸ 6 dependent lines of Agentic build/ });
     expect(toggle.getAttribute('aria-expanded')).toBe('false');
     act(() => { fireEvent.click(toggle); });
     expect(toggle.getAttribute('aria-expanded')).toBe('true');
@@ -122,7 +122,7 @@ describe('📋 Programme screen', { timeout: 90_000 }, () => {
   it('the linked section and "Open in Process" open their section (view state only, no undo step)', () => {
     render(<Programme />);
     const n = steps();
-    act(() => { fireEvent.click(screen.getByRole('button', { name: 'Show the 5 dependent lines of Discover' })); });
+    act(() => { fireEvent.click(screen.getByRole('button', { name: /^▸ 5 dependent lines of Discover/ })); });
     act(() => { fireEvent.click(within(rowOf('Pilot')).getByRole('button', { name: 'Open 🧭 Program & Completeness' })); });
     expect(uiStore.getState().activeSection).toBe('program');
     act(() => { fireEvent.click(within(rowOf('Pilot')).getByRole('button', { name: 'Open Pilot in Process' })); });

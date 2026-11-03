@@ -3,6 +3,7 @@ import { hideActivities, type Drawing, type DrawShape } from '@/domain/process';
 import { centreOn, FIT, fitTo, viewOf } from './diagramCamera';
 import { categoryOf, colourClass, DiagramOptions, type ActFacts, type DiagramColour } from './DiagramOptions';
 import { FrozenLanes, Shapes } from './DiagramShapes';
+import { FullScreenButton, useFullScreen } from '@/ui/widgets/FullScreen';
 import { useCamera } from './useCamera';
 import { selectActivity, useProcessView } from './view';
 
@@ -23,7 +24,7 @@ export function Diagram({ d, tableId, title, desc, name, labelZoom = 2, facts, s
   const id = useId(), box = useRef<HTMLDivElement>(null), svg = useRef<SVGSVGElement>(null), selected = useProcessView((s) => s.selected);
   const { cam, setCam, zoom, handlers } = useCamera(d.box, box, svg), v = viewOf(d.box, cam);
   const [hideOut, setHideOut] = useState(false), [colour, setColour] = useState<DiagramColour>(''), [picked, setPicked] = useState<string[]>([]);
-  const [freeze, setFreeze] = useState(false);
+  const [freeze, setFreeze] = useState(false), root = useRef<HTMLDivElement>(null), full = useFullScreen(root, () => setCam(FIT));
   const out = (s: DrawShape): boolean => (facts?.get(s.id) ? !facts.get(s.id)!.counted : s.inScope === false);
   const acts = d.shapes.filter((s) => s.kind === 'activity' && !(hideOut && out(s)));
   const drawn = useMemo(() => (hideOut ? hideActivities(d, new Set(d.shapes.filter((s) => s.kind === 'activity' && out(s)).map((s) => s.id))) : d),
@@ -47,12 +48,13 @@ export function Diagram({ d, tableId, title, desc, name, labelZoom = 2, facts, s
   const targets = picked.length ? acts.filter((s) => picked.includes(s.id)) : shown ? acts.filter((s) => shown.has(s.id)) : [];
   const fit = fitTo(d.box, targets, labelZoom);
   return (
-    <div className="ac-proc-diagram">
+    <div ref={root} className={`ac-proc-diagram${full.className}`}>
       <div className="ac-form-row" role="toolbar" aria-label={`${name} zoom`}>
         <button type="button" onClick={() => zoom(1.25)} aria-label="Zoom in">+</button>
         <button type="button" onClick={() => zoom(0.8)} aria-label="Zoom out">−</button>
         <button type="button" onClick={() => setCam(FIT)}>Fit</button>
         <span className="ac-muted">{Math.round(cam.s * 100)}%</span>
+        <FullScreenButton on={full.on} toggle={full.toggle} what={name} />
         <p className="ac-proc-live" aria-live="polite">
           {sel ? `Selected: ${sel.id} ${sel.label}${sel.inScope === false ? ' (out of scope)' : ''}${picked.length > 1 ? ` (+${picked.length - 1} more)` : ''}`
             : 'No activity selected'}

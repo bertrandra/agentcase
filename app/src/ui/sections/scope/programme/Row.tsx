@@ -30,9 +30,8 @@ const plural = (n: number): string => `${n} dependent line${n === 1 ? '' : 's'}`
 function GroupToggle({ r, g }: { r: ProgrammeRow; g: GroupInfo }) {
   return (
     <div>
-      <button type="button" className="ac-link" aria-expanded={g.open} onClick={() => toggleGroup(r.id)}
-        aria-label={`${g.open ? 'Hide' : 'Show'} the ${plural(g.count)} of ${r.name}`}>
-        {`${g.open ? '▾' : '▸'} ${plural(g.count)}${g.cost >= 500 ? ` · ${eurK(g.cost)}` : ''}`}
+      <button type="button" className="ac-link" aria-expanded={g.open} onClick={() => toggleGroup(r.id)}>
+        {`${g.open ? '▾' : '▸'} ${plural(g.count)}`} <span className="ac-sr">{`of ${r.name}`}</span>{g.cost >= 500 ? ` · ${eurK(g.cost)}` : ''}
       </button>
     </div>
   );

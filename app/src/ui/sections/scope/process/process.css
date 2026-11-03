@@ -111,3 +111,6 @@
 /* 📋 Programme: a line that depends on another, indented under it (two levels at most) */
 .ac-prog-dep-1 { padding-inline-start: 1.25rem; }
 .ac-prog-dep-2 { padding-inline-start: 2.5rem; }
+/* Full screen (owner's request 2026-11-03): the diagram or its editor fills the window; its canvas takes the height left under its toolbars */
+.ac-fullscreen { position: fixed; inset: 0; z-index: 1000; margin: 0; padding: var(--ac-space-block); overflow: auto; background: var(--ac-surface); }
+.ac-fullscreen .ac-proc-canvas, .ac-fullscreen .ac-proc-editor-canvas { height: calc(100vh - 11rem); }

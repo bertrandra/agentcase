@@ -85,6 +85,18 @@ await step('move a task (select, Shift+arrows), save: one undoable step; Ctrl+Z 
   const toast = await page.locator('[aria-live]').filter({ hasText: /Undone: Edit the process diagram/ }).count();
   if (!toast) throw new Error(`Ctrl+Z did not undo the editor's save (${await live()})`);
 });
+await step('full screen (owner, 2026-11-03): the editor fills the window, its canvas grows and refits, the watermark stays visible', async () => {
+  const canvas = page.locator('.ac-proc-editor-canvas'), before = (await canvas.boundingBox()).height;
+  const toggle = page.locator('.ac-proc-editor [role=toolbar] button[aria-pressed]');   // ⤢ Full screen / ⤡ Exit full screen
+  await toggle.click();
+  await page.waitForFunction(() => document.querySelector('.ac-proc-editor')?.classList.contains('ac-fullscreen'));
+  const vh = await page.evaluate(() => window.innerHeight), after = (await canvas.boundingBox()).height;
+  if (!(after > before || after > vh * 0.6)) throw new Error(`the canvas did not grow (${before} -> ${after}, window ${vh})`);
+  if (!(await page.locator('.ac-proc-editor-canvas a.bjs-powered-by').isVisible())) throw new Error('the bpmn.io watermark is hidden in full screen');
+  if (!/Exit full screen: diagram editor/.test(await toggle.textContent())) throw new Error('the button does not offer to exit');
+  await toggle.click();
+  await page.waitForFunction(() => !document.querySelector('.ac-proc-editor')?.classList.contains('ac-fullscreen'));
+});
 await step('close from the keyboard: the focus comes back to "Edit diagram", the style sheet is removed', async () => {
   await page.getByRole('button', { name: /^Close/ }).focus();
   await page.keyboard.press('Enter');
