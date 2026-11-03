@@ -32,6 +32,8 @@ describe('📋 Programme screen', { timeout: 90_000 }, () => {
   it('lists every activity and milestone, with the totals row of the engine\'s programme cost; axe clean, an editor open too', async () => {
     const { container } = render(<Programme />);
     const v = programmeProcess(makeCtx(doc()));
+    expect(bodyRows().length).toBeLessThan(v.activities.length + v.milestones.length);   // dependent lines collapsed by default
+    act(() => { fireEvent.click(screen.getByRole('button', { name: 'Show all dependent lines' })); });
     expect(bodyRows()).toHaveLength(v.activities.length + v.milestones.length);
     expect(document.querySelector('tfoot')!.textContent).toContain('Programme cost in the euro result');
     expect(within(rowOf('Rollout hypercare')).getByRole<HTMLInputElement>('checkbox', { name: 'Rollout hypercare enabled' }).checked).toBe(false);
@@ -63,6 +65,7 @@ describe('📋 Programme screen', { timeout: 90_000 }, () => {
   });
   it('Edit opens the description, timing and cost fields; the description is one step and the Process view reads it', () => {
     render(<Programme />);
+    act(() => { fireEvent.click(screen.getByRole('button', { name: /^▸ 5 dependent lines of Discover/ })); });
     const edit = within(rowOf('Pilot')).getByRole('button', { name: 'Edit Pilot' });
     act(() => { fireEvent.click(edit); });
     expect(edit.getAttribute('aria-expanded')).toBe('true');
@@ -76,6 +79,24 @@ describe('📋 Programme screen', { timeout: 90_000 }, () => {
     expect(programmeProcess(makeCtx(doc())).activities.find((a) => a.kind === 'pilot')!.description).toBe('Our pilot.');
     act(() => { fireEvent.click(screen.getByRole('button', { name: 'Reset to the catalogue text' })); });
     expect(values()[descriptionKey('pilot')]).toBe('');
+  });
+  it('dependent lines are grouped under the line they follow, collapsed by default; the toggle is view state (no undo step)', async () => {
+    const { container } = render(<Programme />), n = steps();
+    expect(screen.queryByRole('rowheader', { name: /^Agentic run \(steady state\) —/ })).toBeNull();
+    const toggle = within(rowOf('Agentic build and adoption ramp')).getByRole('button', { name: /^▸ 6 dependent lines of Agentic build/ });
+    expect(toggle.getAttribute('aria-expanded')).toBe('false');
+    act(() => { fireEvent.click(toggle); });
+    expect(toggle.getAttribute('aria-expanded')).toBe('true');
+    const run = rowOf('Agentic run \\(steady state\\)');
+    expect(run.previousElementSibling).toBe(rowOf('Agentic build and adoption ramp'));
+    expect(run.querySelector('th')!.textContent!.startsWith('↳')).toBe(true);
+    expect(await axeViolations(container)).toEqual([]);
+    act(() => { fireEvent.click(toggle); });
+    expect(screen.queryByRole('rowheader', { name: /^Agentic run \(steady state\) —/ })).toBeNull();
+    expect(steps()).toBe(n);
+    act(() => { fireEvent.change(screen.getByLabelText('Phase'), { target: { value: 'run' } }); });   // a filter lists the lines flat
+    expect(screen.getByRole('rowheader', { name: /^Agentic run \(steady state\) —/ })).toBeTruthy();
+    expect(screen.queryByRole('button', { name: 'Show all dependent lines' })).toBeNull();
   });
   it('filters (phase, product, type, enabled) and sort', () => {
     render(<Programme />);
@@ -101,6 +122,7 @@ describe('📋 Programme screen', { timeout: 90_000 }, () => {
   it('the linked section and "Open in Process" open their section (view state only, no undo step)', () => {
     render(<Programme />);
     const n = steps();
+    act(() => { fireEvent.click(screen.getByRole('button', { name: /^▸ 5 dependent lines of Discover/ })); });
     act(() => { fireEvent.click(within(rowOf('Pilot')).getByRole('button', { name: 'Open 🧭 Program & Completeness' })); });
     expect(uiStore.getState().activeSection).toBe('program');
     act(() => { fireEvent.click(within(rowOf('Pilot')).getByRole('button', { name: 'Open Pilot in Process' })); });

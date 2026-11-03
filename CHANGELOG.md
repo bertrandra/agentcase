@@ -17,6 +17,43 @@ When releasing, follow [docs/BUMP_PROCEDURE.md](docs/BUMP_PROCEDURE.md) (§7 for
 
 ## [Unreleased]
 
+### 🧩 Process: full screen for the diagram and the BPMN editor (owner's request 2026-11-03)
+
+- **⤢ Full screen** on the process diagram (and the programme diagram) and in the diagram editor: the view fills the window (the browser's full
+  screen when it allows it), its canvas takes the height left; the editor's canvas refits. Escape, the browser's exit or **⤡ Exit full screen**
+  leave it. View state only. `ui/widgets/FullScreen.tsx`.
+
+### Monte Carlo timing test (owner's decision 2026-11-03)
+
+- The portfolio stress test (20 products × 1,000 draws) keeps the engine as it is and allows 10 s of CPU (was 5 s): about 4 s on an idle
+  machine since the programme sizing normalisation, CI runners vary by up to 1.6×.
+
+### Size budget (owner's decision 2026-11-03)
+
+- `app/perf-budget.json`: the size ceiling and the size growth budget are both 7 MiB (were 5 and 3.59; the app was 3.59 MiB without the lazy
+  BPMN editor). The gzip budgets are unchanged.
+
+### 🏢 Organisation: move a product to any unit from the graph (owner's request 2026-11-03)
+
+- A product's delivery team now sits in the product's owning unit (D-B39, any level of the tree), so moving a product moves its team in the
+  graph, the Teams table and the views by unit; before, the team stayed in the default unit whatever the owner. Selecting a product's team in the
+  organisation graph shows **Owning unit (any level)**; selecting a unit shows its **Parent** too (as in the Units table). Each change is one
+  undoable step. No figure changes (the figures read the team's lines, not its unit).
+
+### 🔎 Audit: Interview and Activities merged into one Audit activity tab (owner's request 2026-11-03)
+
+- **Audit run / interview › Audit activity** holds the auditor's audit activities and the interview context (the roles to meet, what the
+  audit holds on each activity they do), then every in-scope activity (progress per phase, filters; collapsed by default), and one audit form under both: an
+  activity of the context or of the list opens it. The Roles and Programme tabs are unchanged. No data or figure changes.
+
+### 📋 Programme: dependent lines grouped (owner's request 2026-11-03)
+
+- Each programme line that depends on another sits under it, collapsed by default (▸ *N dependent lines*, with their cost over the horizon):
+  the engagement stages under Discover (the pilot inside Pilot & Prove), the run, the AgentOps team and the governance and maturity gates
+  under the build and adoption ramp, the Knowledge Hub run under its setup, the target capability under training. *Show all dependent lines*
+  opens every group; a filter or a sort lists the lines flat; a link from 🧩 Process opens the group of the row it shows. View state only (no
+  undo step, nothing saved); one owner of the links, `domain/programme/dependencies.ts`, also used by the Gantt. No figure changes.
+
 ### Audit in four tabs (owner's request 2026-11-02)
 
 - 🔎 Audit is organised as **Audit setup** (header, auditors, plan of the audit activities, tool catalogue), **Audit run / interview** (pick your

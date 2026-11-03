@@ -2,8 +2,8 @@ import { useAuditData } from '@/store/auditHooks';
 import { OverrideBadge } from '@/ui/widgets/OverrideBadge';
 import { Tabs } from '@/ui/widgets/Tabs';
 import { SectionFrame } from '@/ui/zones/SectionFrame';
-import { Activities } from './Activities';
-import { AuditPlan, InterviewRun } from './AuditActivities';
+import { AuditActivityTab } from './AuditActivityTab';
+import { AuditPlan } from './AuditActivities';
 import { AuditProgress } from './AuditProgress';
 import { Calibration, Coverage } from './Calibration';
 import { Catalogue } from './Catalogue';
@@ -29,9 +29,9 @@ const help = (
 
 /**
  * 🔎 Audit (docs/SPEC_BPMN.md § 15.5, F-B31), in four tabs (owner's request 2026-11-02): Audit setup (header, auditors, the audit activities planned,
- * the tool catalogue), Audit run / interview (an auditor's interviews and their context, then the audit forms of the activities, roles and programme
- * activities), Audit progress (the progression of each audit activity, the coverage), Audit potential scopes (tooling gaps, observed versus
- * modelled, calibration).
+ * the tool catalogue), Audit run / interview (Audit activity: an auditor's interviews, their context and every activity, with the activity's audit
+ * form, owner's request 2026-11-03; then the forms of the roles and programme activities), Audit progress (the progression of each audit
+ * activity, the coverage), Audit potential scopes (tooling gaps, observed versus modelled, calibration).
  */
 export default function AuditSection() {
   const data = useAuditData();
@@ -44,8 +44,7 @@ export default function AuditSection() {
           { id: 'catalogue', label: 'Tool catalogue', render: () => <Catalogue data={data} /> },
         ]} /> },
         { id: 'run', label: 'Audit run / interview', render: () => <Tabs label="Audit run" tabs={[
-          { id: 'interview', label: 'Interview', render: () => <InterviewRun data={data} /> },
-          { id: 'activities', label: 'Activities', render: () => <Activities data={data} /> },
+          { id: 'activity', label: 'Audit activity', render: () => <AuditActivityTab data={data} /> },
           { id: 'roles', label: 'Roles', render: () => <Roles data={data} /> },
           { id: 'programme', label: 'Programme', render: () => <Programme data={data} /> },
         ]} /> },

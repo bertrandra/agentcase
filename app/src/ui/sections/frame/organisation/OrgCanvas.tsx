@@ -1,20 +1,32 @@
 import { memo, useId, useMemo, useState } from 'react';
 import { addOrgUnit, nextUnitId, removeOrgUnit, updateOrgUnit } from '@/controllers/org';
-import { DEFAULT_UNIT_ID, UNIT_TYPES, type OrgUnit } from '@/domain/org';
+import { DEFAULT_UNIT_ID, isBelow, productTeamId, UNIT_TYPES, type OrgUnit } from '@/domain/org';
 import { orgGraph, type OrgNode } from '@/domain/org/graph';
 import { toast } from '@/ui/uiState';
 import { DraftText } from '@/ui/widgets/DraftText';
+import { OwnerSelect } from '@/ui/widgets/OwnerSelect';
 import { UNIT_LABELS, type OrgParts } from './Units';
 
 const ZOOMS = [0.5, 0.75, 1, 1.25, 1.5] as const;
 
-/** The panel of the selected node: a unit is renamed, retyped, given a sub-unit or removed here (one undoable step each); a team is read-only. */
+/** A product's delivery team: the product moves with it, to any unit of the tree (its owning unit, D-B39); a shared team line is edited in Products. */
+function TeamPanel({ m, node }: { m: OrgParts; node: OrgNode }) {
+  const p = m.products.find((x) => `team:${productTeamId(x.id)}` === node.id);
+  if (!p) return <p className="ac-muted">{`Team ${node.label} (${node.sub}): a shared team line; its unit and shares are edited in Products.`}</p>;
+  return (
+    <fieldset className="ac-org-canvas-panel">
+      <legend>{`Product ${p.name}`}</legend>
+      <p className="ac-muted">{`${node.label} (${node.sub}): its people come from the team rows (👥 Team in).`}</p>
+      <label>Owning unit (any level) <OwnerSelect productId={p.id} name={p.name} owner={p.owner} units={m.units}
+        label={`Graph: owning unit of ${p.name}`} /></label>
+    </fieldset>
+  );
+}
+
+/** The panel of the selected node: a unit is renamed, retyped, moved, given a sub-unit or removed here (one undoable step each); a product's team moves. */
 function NodePanel({ m, node, onSelect }: { m: OrgParts; node: OrgNode; onSelect: (id: string | null) => void }) {
   const id = useId();
-  if (node.kind === 'team') {
-    const text = `Team ${node.label} (${node.sub}): its people come from the team rows (👥 Team in); its unit is set in the Teams table.`;
-    return <p className="ac-muted">{text}</p>;
-  }
+  if (node.kind === 'team') return <TeamPanel m={m} node={node} />;
   const u = m.units.find((x) => x.id === node.id) as OrgUnit, n = u.name;
   const addChild = () => {
     const cid = nextUnitId();
@@ -33,6 +45,12 @@ function NodePanel({ m, node, onSelect }: { m: OrgParts; node: OrgNode; onSelect
       <label htmlFor={`${id}-t`}>Type</label>
       <select id={`${id}-t`} value={u.type} onChange={(e) => { if (!updateOrgUnit(u.id, { type: e.target.value as OrgUnit['type'] })) toast('Type refused'); }}>
         {UNIT_TYPES.map((t) => <option key={t} value={t}>{UNIT_LABELS[t]}</option>)}
+      </select>
+      <label htmlFor={`${id}-p`}>Parent</label>
+      <select id={`${id}-p`} value={u.parent ?? ''}
+        onChange={(e) => { if (!updateOrgUnit(u.id, { parent: e.target.value || undefined })) toast('Parent refused'); }}>
+        <option value="">— none —</option>
+        {m.units.filter((x) => !isBelow(m, x.id, u.id)).map((x) => <option key={x.id} value={x.id}>{x.name}</option>)}
       </select>
       <div className="ac-form-row">
         <button type="button" onClick={addChild}>+ Add a unit below</button>
@@ -81,8 +99,8 @@ export const OrgCanvas = memo(function OrgCanvas({ m }: { m: OrgParts }) {
             ); })}
           </svg>
         </div>
-        {node ? <NodePanel m={m} node={node} onSelect={setSelected} /> : <p className="ac-muted">Select a unit to rename it, change its type, add a unit
-          below it or remove it.</p>}
+        {node ? <NodePanel m={m} node={node} onSelect={setSelected} /> : <p className="ac-muted">Select a unit to rename it, change its type or parent,
+          add a unit below it or remove it; select a product&apos;s team to move the product to another unit.</p>}
       </div>
     </section>
   );

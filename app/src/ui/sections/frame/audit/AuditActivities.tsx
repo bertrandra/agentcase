@@ -6,6 +6,8 @@ import type { AuditViewData } from '@/store/auditHooks';
 import { toast } from '@/ui/uiState';
 import { STATUS_LABELS } from './Header';
 import { AuditorPick, useAuditor } from './auditor';
+import { SelectCell } from './SelectCell';
+import { useAuditView } from './view';
 
 const many = (e: React.ChangeEvent<HTMLSelectElement>): string[] => [...e.target.selectedOptions].map((o) => o.value);
 
@@ -50,7 +52,7 @@ function AddActivity({ data, list }: { data: AuditViewData; list: Interview[] })
 
 /** The context of the selected audit activities: who to interview, and what the audit already holds on each activity they do. */
 function Context({ data, codes }: { data: AuditViewData; codes: string[] }) {
-  const c = useMemo(() => interviewContext(data.doc, codes), [data.doc, codes]);
+  const c = useMemo(() => interviewContext(data.doc, codes), [data.doc, codes]), selected = useAuditView((s) => s.selected);
   if (!codes.length) return <p className="ac-muted">Select one or more audit activities above to see the context of the interview.</p>;
   return (
     <section aria-label="Interview context">
@@ -58,12 +60,13 @@ function Context({ data, codes }: { data: AuditViewData; codes: string[] }) {
       <p><strong>Roles to interview:</strong> {c.roles.length ? c.roles.map((r) => r.name).join(', ') : c.interviews.map((i) => i.role).join(', ')}
         {c.interviews.some((i) => i.who) && <> · <strong>People:</strong> {c.interviews.flatMap((i) => (i.who ? [i.who] : [])).join(', ')}</>}</p>
       <table className="ac-table">
-        <caption>What they do, and what the audit holds already</caption>
+        <caption>What they do, and what the audit holds already (an activity opens its audit form)</caption>
         <thead><tr><th>Activity</th><th>Phase</th><th>Status</th><th>Observations</th><th>Tools</th><th>Pain points</th><th>Evidence</th>
           <th>Covered</th></tr></thead>
         <tbody>{c.activities.map((a) => (
           <tr key={a.id}>
-            <th scope="row">{`${a.id} · ${a.name}`}</th><td>{a.phase}</td><td>{a.status ? STATUS_LABELS[a.status] : 'Not started'}</td>
+            <SelectCell id={a.id} selected={selected}>{`${a.id} · ${a.name}`}</SelectCell>
+            <td>{a.phase}</td><td>{a.status ? STATUS_LABELS[a.status] : 'Not started'}</td>
             <td>{a.observations}</td><td>{a.tools.join(', ') || '—'}</td><td>{a.painPoints.join('; ') || '—'}</td><td>{a.evidence}</td>
             <td>{a.covered ? '✓ yes' : 'no'}</td>
           </tr>
