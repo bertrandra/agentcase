@@ -10,7 +10,8 @@ import type { DrawEdge, Drawing, DrawShape } from './drawing';
  * elements and their sizes are kept: only the empty space goes. A flow to a dropped phase or lane goes with it, bridged to what follows the phase
  * (as `hideActivities` bridges hidden activities), and a pool, lane or phase ends a little after the last element it still holds. A drawing view, never stored.
  */
-const CONTENT = new Set<DrawShape['kind']>(['activity', 'event', 'gateway', 'other']);
+const CONTENT_KINDS: readonly DrawShape['kind'][] = ['activity', 'event', 'gateway', 'other'];
+const isContent = (s: DrawShape): boolean => CONTENT_KINDS.includes(s.kind);
 const PAD = 20, KEEP = 40;
 
 type Axis = { start: number; end: number; size: number };
@@ -39,7 +40,7 @@ function mapOf(gaps: Axis[]): (v: number) => number {
 
 /** The drawing `d` with its empty phases and lanes dropped and its empty bands closed. */
 export function compactDrawing(d: Drawing): Drawing {
-  const content = d.shapes.filter((s) => CONTENT.has(s.kind));
+  const content = d.shapes.filter(isContent);
   if (!content.length) return d;
   const holds = (c: DrawShape) => content.some((s) => s.x + s.w / 2 >= c.x && s.x + s.w / 2 <= c.x + c.w && s.y + s.h / 2 >= c.y && s.y + s.h / 2 <= c.y + c.h);
   const kept = d.shapes.filter((s) => (s.kind === 'phase' || s.kind === 'lane' ? holds(s) : true)), keptIds = new Set(kept.map((s) => s.id));
@@ -49,7 +50,7 @@ export function compactDrawing(d: Drawing): Drawing {
   const right = Math.max(...moved.map((s) => s.x + s.w)) + KEEP, bottom = Math.max(...moved.map((s) => s.y + s.h)) + KEEP;
   const shapes = kept.map((s): DrawShape => {
     const x = fx(s.x), y = fy(s.y);
-    if (CONTENT.has(s.kind)) return { ...s, x, y };
+    if (isContent(s)) return { ...s, x, y };
     return { ...s, x, y, w: Math.min(fx(s.x + s.w), right) - x, h: Math.min(fy(s.y + s.h), bottom) - y };
   });
   const flows = d.edges.filter((e) => e.source !== undefined && e.target !== undefined)
