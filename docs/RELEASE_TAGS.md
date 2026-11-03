@@ -62,6 +62,7 @@ next one (for example #63–#66 between v20.11.0 and v20.12.0) belong to the nex
 | v21.4.0 | 2026-10-31 | `5dd0061e722748e1d70656b625b39161099b9696` | #99, "B10b, unit scope" |
 | v21.5.0 | 2026-10-31 | `7bc69de8c026a18abfae49d2749cc1ad5c704673` | #100, "B10c, transverse services" |
 | v21.6.0 | 2026-10-31 | `3be64099df10c6e292a2824755632d21c379aeec` | #101, "B10d, strategy, stress and decision per unit (B10 complete)" |
+| v22.0.0 | 2026-11-03 | `5a4be7d891dc4bb9ce9415653944f8fcd6bf18d3` | #125, "SPEC_FIXES X0–X9, programme sizing normalised, file schema v6" (major: file schema v6, the normalisation's figure moves) |
 
 ## Commands for the owner
 
@@ -113,8 +114,9 @@ git tag -a v21.3.0 745071a4ffcce36f08a164263492cb06616321f4 -m "AgentCase v21.3.
 git tag -a v21.4.0 5dd0061e722748e1d70656b625b39161099b9696 -m "AgentCase v21.4.0: B10b, unit scope"
 git tag -a v21.5.0 7bc69de8c026a18abfae49d2749cc1ad5c704673 -m "AgentCase v21.5.0: B10c, transverse services"
 git tag -a v21.6.0 3be64099df10c6e292a2824755632d21c379aeec -m "AgentCase v21.6.0: B10d, strategy, stress and decision per unit (B10 complete)"
+git tag -a v22.0.0 5a4be7d891dc4bb9ce9415653944f8fcd6bf18d3 -m "AgentCase v22.0.0: SPEC_FIXES X0-X9, programme sizing normalised, file schema v6"
 git push origin --tags
 ```
 
-Check before pushing: `git tag -n1 --sort=v:refname 'v19*' 'v20*'` lists 37 tags (and `'v21*'` seven more: v21.0.0 to v21.6.0, SPEC_FIXES FX-64), and `git show -s --format=%s vX.Y.Z` prints the subject of the
+Check before pushing: `git tag -n1 --sort=v:refname 'v19*' 'v20*'` lists 37 tags (and `'v21*'` seven more: v21.0.0 to v21.6.0, SPEC_FIXES FX-64; `'v22*'` one: v22.0.0), and `git show -s --format=%s vX.Y.Z` prints the subject of the
 table above. From now on, tag each release merge as part of the release (docs/BUMP_PROCEDURE.md §5).
