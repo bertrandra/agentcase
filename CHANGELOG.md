@@ -17,6 +17,12 @@ When releasing, follow [docs/BUMP_PROCEDURE.md](docs/BUMP_PROCEDURE.md) (§7 for
 
 ## [Unreleased]
 
+## [v22.0.0] 2026-11-03 — SPEC_FIXES lots X0–X9, programme sizing normalised, file schema v6; programme grouping, Audit activity tab, products moved to any unit, full screen for BPMN
+
+Major: the file schema moves to v6 (the portfolio plan in the BPMN document, FX-D14) and the programme sizing normalisation moves figures on
+purpose (DEV-NORM-PILOT, DEV-NORM-CALENDAR, DEV-NORM-CHANGE-DAYS, DEV-NORM-KH-CURATION; the parallel run pins every move). A file saved by v21.x
+opens in v22.0.0 (migrated); a v22.0.0 file is not for a v21.x build.
+
 ### 🧩 Process: full screen for the diagram and the BPMN editor (owner's request 2026-11-03)
 
 - **⤢ Full screen** on the process diagram (and the programme diagram) and in the diagram editor: the view fills the window (the browser's full
