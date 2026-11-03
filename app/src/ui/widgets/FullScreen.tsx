@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useState, type RefObject } from 'react';
+import { memo, useCallback, useEffect, useState, type RefObject } from 'react';
 
 /**
  * Full screen for a canvas (owner's request 2026-11-03: the BPMN diagram and its editor). The element takes the whole window (class
@@ -28,11 +28,11 @@ export function useFullScreen(ref: RefObject<HTMLElement | null>, onChange?: (on
   return { on, toggle, className: on ? ' ac-fullscreen' : '' };
 }
 
-/** The toggle button: "Full screen" / "Exit full screen", pressed while on. */
-export function FullScreenButton({ on, toggle, what }: { on: boolean; toggle: () => void; what: string }) {
+/** The toggle button: "Full screen" / "Exit full screen", pressed while on. Memoised: an edit of the case does not re-render it. */
+export const FullScreenButton = memo(function FullScreenButton({ on, toggle, what }: { on: boolean; toggle: () => void; what: string }) {
   return (
     <button type="button" aria-pressed={on} onClick={toggle}>
       <span aria-hidden="true">{on ? '⤡ ' : '⤢ '}</span>{on ? 'Exit full screen' : 'Full screen'}<span className="ac-sr">{`: ${what}`}</span>
     </button>
   );
-}
+});
