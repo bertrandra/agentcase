@@ -23,4 +23,5 @@ export { COST_PROFILES, LINE_PROFILES, costProfileKey, costProfileLabel, lineOfK
   type CostProfileDef, type ActivityType } from './costProfile';
 export { activityDescription, activityEnabled, descriptionKey, LINKED_SECTION, linkedSection, type ActivityEnabled } from './activityMeta';
 export { activityDetail, DETAIL_SECTIONS, type ActivityDetail, type DetailKind } from './activityDetail';
+export { FOLLOWS, groupByDependency, programmeParents, type GroupedLine } from './dependencies';
 export { programmeTable, byYear, type ProgrammeTable, type ProgrammeRow, type CostDetail } from './table';

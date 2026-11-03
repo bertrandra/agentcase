@@ -7,7 +7,7 @@ import { sectionById } from '@/ui/zones/registry';
 import { goSection } from '@/ui/uiState';
 import { Param } from '../process/programme/ParamPanel';
 import { DescriptionField, EnabledBox, TypeSelect } from './Editors';
-import { toggleRow } from './view';
+import { toggleGroup, toggleRow } from './view';
 
 const r1 = (n: number): string => String(Math.round(n * 10) / 10);
 const money = (n: number): string => (Math.abs(n) < 500 ? (n ? '< €1K' : '—') : eurK(n));
@@ -23,12 +23,27 @@ export function detailText(r: ProgrammeRow): string {
 export const costCell = (r: ProgrammeRow): string =>
   (r.amount === null ? '—' : `${money(r.amount)}${r.per === 'year 1' ? ' / yr (Y1)' : ''}${r.sharedWith ? ` (with ${r.sharedWith})` : ''}`);
 
+/** A group head's dependent lines: how many, their cost over the horizon, shown or not. */
+export interface GroupInfo { count: number; cost: number; open: boolean }
+const plural = (n: number): string => `${n} dependent line${n === 1 ? '' : 's'}`;
+/** The toggle of a group head: "▸ 4 dependent lines · €120K" (the cost when the dependent lines carry one). */
+function GroupToggle({ r, g }: { r: ProgrammeRow; g: GroupInfo }) {
+  return (
+    <div>
+      <button type="button" className="ac-link" aria-expanded={g.open} onClick={() => toggleGroup(r.id)}
+        aria-label={`${g.open ? 'Hide' : 'Show'} the ${plural(g.count)} of ${r.name}`}>
+        {`${g.open ? '▾' : '▸'} ${plural(g.count)}${g.cost >= 500 ? ` · ${eurK(g.cost)}` : ''}`}
+      </button>
+    </div>
+  );
+}
+
 /**
  * One activity or milestone of the programme, and its editor when open (timing and cost parameters, description). Memoised on the row's content
  * (the table is recomputed per edit, with fresh row objects): an edit re-renders the rows whose values changed and the totals.
  */
-export const ProgrammeRowView = memo(function ProgrammeRowView({ r, open, focused = false, years, multi, cols }: { r: ProgrammeRow; open: boolean;
-  focused?: boolean; years: number; multi: boolean; cols: number }) {
+export const ProgrammeRowView = memo(function ProgrammeRowView({ r, open, focused = false, years, multi, cols, depth = 0, group }: { r: ProgrammeRow;
+  open: boolean; focused?: boolean; years: number; multi: boolean; cols: number; depth?: number; group?: GroupInfo }) {
   const head = useRef<HTMLTableCellElement>(null);
   useEffect(() => { if (focused) { head.current?.scrollIntoView?.({ block: 'center' }); head.current?.focus(); } }, [focused]);
   const linked = r.linked ? sectionById(r.linked) : undefined, editorId = `prog-edit-${r.id}`;
@@ -37,12 +52,13 @@ export const ProgrammeRowView = memo(function ProgrammeRowView({ r, open, focuse
     <>
       <tr className={focused ? 'is-focused' : undefined} aria-current={focused ? 'true' : undefined}>
         <td><EnabledBox name={r.name} e={r.enabled} /></td>
-        <th scope="row" ref={head} tabIndex={focused ? -1 : undefined}>
-          {r.name}{' '}
+        <th scope="row" ref={head} tabIndex={focused ? -1 : undefined} style={depth ? { paddingInlineStart: `${Math.min(depth, 2) * 1.25}rem` } : undefined}>
+          {depth > 0 && <span aria-hidden="true">↳ </span>}{r.name}{' '}
           <span className="ac-muted">{`— ${r.element === 'task' ? '' : `${r.element}, `}${instances(r)}`}</span>
           {editable && <> <button type="button" className="ac-link" aria-expanded={open} aria-controls={open ? editorId : undefined}
             aria-label={`${open ? 'Close' : 'Edit'} ${r.name}`}
             onClick={() => toggleRow(r.id)}>{open ? 'Close' : 'Edit'}</button></>}
+          {group && <GroupToggle r={r} g={group} />}
         </th>
         <td>{r.description}</td>
         <td><TypeSelect kind={r.kind} name={r.name} /></td>

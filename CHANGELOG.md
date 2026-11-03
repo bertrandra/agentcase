@@ -17,6 +17,14 @@ When releasing, follow [docs/BUMP_PROCEDURE.md](docs/BUMP_PROCEDURE.md) (§7 for
 
 ## [Unreleased]
 
+### 📋 Programme: dependent lines grouped (owner's request 2026-11-03)
+
+- Each programme line that depends on another sits under it, collapsed by default (▸ *N dependent lines*, with their cost over the horizon):
+  the engagement stages under Discover (the pilot inside Pilot & Prove), the run, the AgentOps team and the governance and maturity gates
+  under the build and adoption ramp, the Knowledge Hub run under its setup, the target capability under training. *Show all dependent lines*
+  opens every group; a filter or a sort lists the lines flat; a link from 🧩 Process opens the group of the row it shows. View state only (no
+  undo step, nothing saved); one owner of the links, `domain/programme/dependencies.ts`, also used by the Gantt. No figure changes.
+
 ### Audit in four tabs (owner's request 2026-11-02)
 
 - 🔎 Audit is organised as **Audit setup** (header, auditors, plan of the audit activities, tool catalogue), **Audit run / interview** (pick your

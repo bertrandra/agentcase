@@ -17,6 +17,8 @@ const help = (
       default); <strong>Spread on adoption curve</strong> follows the product&apos;s S-curve over its duration; <strong>Recurring</strong> charges it
       again every year up to the horizon; <strong>Milestone</strong> has no cost. The pilot, the build ramp, the run and the AgentOps team keep the
       rule of the figure that computes them (read-only).</p>
+    <p>A line that depends on another sits under it, collapsed: ▸ opens the group (the stages after Discover, the run and the gates after the
+      build, the hub run after its setup). A filter or a sort lists every line flat.</p>
     <p>Edit opens an activity&apos;s description, its timing and its cost parameters. The totals row is the programme cost of the euro result by
       year, the figure the engine, the cost model and the cash flow read.</p>
   </>

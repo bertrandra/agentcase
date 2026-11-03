@@ -4,11 +4,13 @@ import { caseHorizonYears } from '../inputs';
 import type { ColourRole } from '../theme';
 import { PROGRAMME_ACTIVITIES } from './catalogue';
 import { criticalIds, type Link } from './critical';
+import { FOLLOWS } from './dependencies';
 import { activityBar, type Bar } from './ganttSpans';
 import { programmeActivityId } from './ids';
 import type { LaneRole } from './lanes';
 import { programmeMilestones } from './milestones';
 import { hubSetupTiming, programmeCalendar, type ProgrammeCalendar } from './timing';
+
 
 export type { Link } from './critical';
 /**
@@ -47,7 +49,6 @@ function bandOf(c: Ctx, kind: string, b: Bar, cal: ProgrammeCalendar): PlanBand 
   return { ...d, meta: kind === 'run' ? 'ongoing delivery + support' : 'ongoing curation + retrieval' };
 }
 
-const AFTER: Record<string, string> = { run: 'build', agentops: 'build', hubRun: 'hubSetup' };
 /** The links of a bar: the stages in sequence, the pilot with Pilot & Prove, and every bar of the product after the decision gate (with its lag). */
 function linksOf(t: Pick<PlanTask, 'kind' | 'start' | 'level'>, cal: ProgrammeCalendar, has: (k: string) => boolean): Link[] {
   const O = cal.onboardEnd, id = (k: string) => programmeActivityId(k), stages = cal.stages.map((s) => `stage-${s.stage.id}`);
@@ -56,7 +57,7 @@ function linksOf(t: Pick<PlanTask, 'kind' | 'start' | 'level'>, cal: ProgrammeCa
   if (at === 0) return [];
   if (t.kind === 'stage-decide') return stages.length ? [{ id: id(stages.at(-1)!), lag: 0 }] : [];
   if (t.kind === 'pilot') return has('stage-validate') ? [{ id: id('stage-validate'), lag: 0 }] : [];
-  const after = AFTER[t.kind];
+  const after = FOLLOWS[t.kind];
   if (after && has(after)) return [{ id: id(after), lag: 0 }];
   return t.start >= O - 1e-9 && has('stage-decide') ? [{ id: id('stage-decide'), lag: t.start - O }] : [];
 }
