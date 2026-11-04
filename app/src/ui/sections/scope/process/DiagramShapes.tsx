@@ -1,4 +1,4 @@
-import { memo } from 'react';
+import { memo, useId } from 'react';
 import type { Drawing, DrawShape } from '@/domain/process';
 import { shallowEqual } from '@/store/equal';
 
@@ -65,14 +65,21 @@ const Shape = memo(ShapeView, sameShape);
  */
 /** `extra`: display classes per activity id (colour, faded by the filters, picked). */
 type ShapesProps = Props & { d: Drawing; extra?: ReadonlyMap<string, string> };
+const kindOf = (e: Drawing['edges'][number]): string => (e.rework ? 'rework' : e.message ? 'message' : 'flow');
 export const Shapes = memo(function Shapes({ d, selected, onPick, labels, extra }: ShapesProps) {
+  const id = useId().replace(/:/g, '');   // one set of arrowheads per diagram (two diagrams share the page)
   return (
     <>
+      {/* arrowheads at the end of each link (owner, 2026-11-04), coloured like their link */}
+      <defs>{['flow', 'rework', 'message'].map((k) => (
+        <marker key={k} id={`${id}-${k}`} className={`ac-bpmn-arrow is-${k}`} viewBox="0 0 10 10" refX="9" refY="5" markerWidth="12" markerHeight="12"
+          markerUnits="userSpaceOnUse" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" /></marker>
+      ))}</defs>
       {d.shapes.filter((s) => s.kind !== 'activity')
         .map((s) => <Shape key={`${s.kind}:${s.id}`} s={s} selected={selected} onPick={onPick} labels={labels} x="" />)}
       {d.edges.map((e) => (
         <polyline key={e.id} className={`ac-bpmn-edge${e.rework ? ' is-rework' : ''}${e.message ? ' is-message' : ''}${e.bridged ? ' is-bridged' : ''}`}
-          points={e.points.map((p) => p.join(',')).join(' ')} />
+          points={e.points.map((p) => p.join(',')).join(' ')} markerEnd={`url(#${id}-${kindOf(e)})`} />
       ))}
       {d.shapes.filter((s) => s.kind === 'activity')
         .map((s) => <Shape key={s.id} s={s} selected={selected} onPick={onPick} labels={labels} x={extra?.get(s.id) ?? ''} />)}
@@ -100,6 +107,30 @@ export function FrozenLanes({ d, v, px }: { d: Drawing; v: { x: number; y: numbe
             <rect x={left} y={l.y} width={w} height={l.h} />
             <text x={cx} y={cy} textAnchor="middle" dominantBaseline="middle" fontSize={12 * unit}
               transform={`rotate(-90 ${cx} ${cy})`}><title>{l.label}</title>{label}</text>
+          </g>
+        );
+      })}
+    </g>
+  );
+}
+
+/**
+ * The phase names kept at the top edge of the view while panning ("Freeze phases", owner 2026-11-04), as the lanes are at the left: a strip about
+ * 24 px high on screen over each phase column (the phases at the top of the drawing, not a band below them like Cross-cutting), its name cut to
+ * the column's width. Drawn over the shapes.
+ */
+export function FrozenPhases({ d, v, px }: { d: Drawing; v: { x: number; y: number; w: number; h: number }; px: { w: number; h: number } }) {
+  const scale = Math.min(px.w / v.w, px.h / v.h) || 1, unit = 1 / scale, top = v.y - (px.h / scale - v.h) / 2, h = 24 * unit;
+  const all = d.shapes.filter((s) => s.kind === 'phase'), y0 = Math.min(...all.map((s) => s.y)), cols = all.filter((s) => s.y <= y0 + 5);
+  if (!cols.length) return null;
+  return (
+    <g className="ac-bpmn-frozen" aria-hidden="true">
+      {cols.map((p) => {
+        const fit = Math.max(3, Math.floor((p.w * scale - 8) / 7)), label = p.label.length > fit ? `${p.label.slice(0, fit - 1)}…` : p.label;
+        return (
+          <g key={p.id}>
+            <rect x={p.x} y={top} width={p.w} height={h} />
+            <text x={p.x + p.w / 2} y={top + h / 2} textAnchor="middle" dominantBaseline="middle" fontSize={12 * unit}><title>{p.label}</title>{label}</text>
           </g>
         );
       })}

@@ -23,6 +23,10 @@ When releasing, follow [docs/BUMP_PROCEDURE.md](docs/BUMP_PROCEDURE.md) (§7 for
   automation)**, the pure process: no agents' lane, every agent activity drawn in the lane of the role that does it (its human performer's team
   skill), in the same phase column, the lanes growing to hold them and the flows following. Combines with Hide out-of-scope and Compact. A
   drawing view only (no figure, no stored change); the list of views is open to more points of view. `domain/process/drawingViews.ts`.
+- **Process only (no automation) is the default view** (owner, 2026-11-04); With automation is one click away.
+- **Arrowheads on the links** of the diagram (owner, 2026-11-04): each flow shows its direction, the arrow coloured like its link (rework red,
+  message flows blue).
+- **Freeze phases** (owner, 2026-11-04): the phase names stay at the top edge while panning, as Freeze roles keeps the role names at the left.
 
 ### 🔎 Audit and 🧩 Process: shorter controls, files collapsed, editor zoom (owner's requests 2026-11-04)
 

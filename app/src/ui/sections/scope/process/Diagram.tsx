@@ -2,7 +2,7 @@ import { useCallback, useEffect, useId, useMemo, useRef, useState } from 'react'
 import { compactDrawing, drawingView, hideActivities, type DiagramViewId, type Drawing, type DrawShape } from '@/domain/process';
 import { centreOn, FIT, fitTo, viewOf } from './diagramCamera';
 import { categoryOf, colourClass, DiagramOptions, type ActFacts, type DiagramColour } from './DiagramOptions';
-import { FrozenLanes, Shapes } from './DiagramShapes';
+import { FrozenLanes, FrozenPhases, Shapes } from './DiagramShapes';
 import { FullScreenButton, useFullScreen } from '@/ui/widgets/FullScreen';
 import { useCamera } from './useCamera';
 import { selectActivity, useProcessView } from './view';
@@ -31,9 +31,11 @@ export function Diagram({ d: doc, tableId, title, desc, name, labelZoom = 2, fac
   const id = useId(), box = useRef<HTMLDivElement>(null), svg = useRef<SVGSVGElement>(null), selected = useProcessView((s) => s.selected);
   const [hideOut, setHideOut] = useState(false), [colour, setColour] = useState<DiagramColour>(''), [picked, setPicked] = useState<string[]>([]);
   // owner, 2026-11-03: hiding the out-of-scope activities closes the space they leave
-  const [compact, setCompact] = useState(true), frame = useFrameSize(box), [pov, setPov] = useState<DiagramViewId>('automation');
+  // the point of view: no automation by default (owner, 2026-11-04)
+  const [compact, setCompact] = useState(true), frame = useFrameSize(box), [pov, setPov] = useState<DiagramViewId>('process');
   const d = useMemo(() => (roleLanes ? drawingView(doc, pov, roleLanes) : doc), [doc, pov, roleLanes]);
-  const [freeze, setFreeze] = useState(false), root = useRef<HTMLDivElement>(null), full = useFullScreen(root, () => setCam(FIT));
+  const [freezePhases, setFreezePhases] = useState(false), [freeze, setFreeze] = useState(false);
+  const root = useRef<HTMLDivElement>(null), full = useFullScreen(root, () => setCam(FIT));
   const out = (s: DrawShape): boolean => (facts?.get(s.id) ? !facts.get(s.id)!.counted : s.inScope === false);
   const drawn = useMemo(() => {
     if (!hideOut) return d;
@@ -79,7 +81,7 @@ export function Diagram({ d: doc, tableId, title, desc, name, labelZoom = 2, fac
       <DiagramOptions name={name} hideOut={hideOut} onHideOut={setHideOut} compact={compact} onCompact={setCompact} colour={colour} onColour={setColour}
         view={roleLanes ? pov : null} onView={setPov}
         used={used.filter(Boolean)}
-        freeze={freeze} onFreeze={setFreeze}
+        freeze={freeze} onFreeze={setFreeze} freezePhases={freezePhases} onFreezePhases={setFreezePhases}
         colours={!!facts} zoomLabel={picked.length || !shown ? 'Zoom to selection' : 'Zoom to filtered'} onZoomSel={fit ? () => setCam(fit) : null} />
       <div ref={box} className="ac-proc-canvas" tabIndex={0} role="group" {...handlers}
         aria-label={`${name}: + and − zoom, arrow keys pan, 0 fits, two fingers pinch; the activity table below lists the same elements`}>
@@ -88,6 +90,7 @@ export function Diagram({ d: doc, tableId, title, desc, name, labelZoom = 2, fac
           <title id={`${id}-t`}>{title}</title>
           <desc id={`${id}-d`}>{desc}</desc>
           <Shapes d={drawn} selected={selected} onPick={onPick} labels={readable} extra={extra} />
+          {freezePhases && <FrozenPhases d={drawn} v={v} px={{ w: box.current?.clientWidth || 800, h: box.current?.clientHeight || 450 }} />}
           {freeze && <FrozenLanes d={drawn} v={v} px={{ w: box.current?.clientWidth || 800, h: box.current?.clientHeight || 450 }} />}
         </svg>
       </div>

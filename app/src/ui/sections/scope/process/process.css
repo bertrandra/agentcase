@@ -64,6 +64,10 @@
 .ac-bpmn-frozen text { fill: var(--ac-text-heading); font-weight: var(--ac-font-weight-bold); }
 .ac-bpmn-edge.is-rework { stroke: var(--ac-danger-700); stroke-dasharray: 6 3; }
 .ac-bpmn-edge.is-message { stroke: var(--ac-primary-700); stroke-dasharray: 2 4; }
+/* arrowheads of the links (owner, 2026-11-04): filled like their link */
+.ac-bpmn-arrow path { fill: var(--ac-text-soft); stroke: none; }
+.ac-bpmn-arrow.is-rework path { fill: var(--ac-danger-700); }
+.ac-bpmn-arrow.is-message path { fill: var(--ac-primary-700); }
 .ac-bpmn-marker { font-size: 10px; fill: var(--ac-text-soft); }
 /* Phase B9a: the transformation programme under the delivery process (swim lanes, parameter panel, table alternative). */
 .ac-prog { margin-top: 24px; }
@@ -89,6 +93,7 @@
 @media (forced-colors: active) {
   .ac-bpmn rect, .ac-bpmn circle, .ac-bpmn polygon, .ac-bpmn-edge { stroke: CanvasText; }
   .ac-bpmn text { fill: CanvasText; }
+  .ac-bpmn-arrow path { fill: CanvasText; }
   .ac-bpmn-activity.is-selected rect, .ac-bpmn-activity.is-picked rect { stroke: Highlight; }
 }
 /* Phase B6: the optional BPMN editor (bpmn-js). Its bpmn.io watermark (licence) is never hidden or covered: no rule here targets it. */
