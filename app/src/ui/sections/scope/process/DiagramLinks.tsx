@@ -13,7 +13,7 @@ import { PopMenu, type MenuAt } from './DiagramEdit';
 export const editableEdge = (e: Drawing['edges'][number]): boolean => !!e.source && !!e.target && !e.rework && !e.message && !e.bridged;
 type Pt = [number, number];
 
-export function useLinks(svg: RefObject<SVGSVGElement | null>, root: RefObject<HTMLDivElement | null>, drawn: Drawing) {
+export function useLinks(svg: RefObject<SVGSVGElement | null>, root: RefObject<HTMLDivElement | null>, drawn: Drawing, onEdited?: (id: string) => void) {
   const [from, setFrom] = useState<string | null>(null), [edge, setEdge] = useState<MenuAt | null>(null);
   const [pull, setPull] = useState<{ fixed: Pt; at: Pt } | null>(null);
   const fromRef = useRef(from), edgeRef = useRef(edge), cur = useRef(drawn);
@@ -24,9 +24,10 @@ export function useLinks(svg: RefObject<SVGSVGElement | null>, root: RefObject<H
     const f = fromRef.current;
     if (!f) return false;
     setFrom(null);
+    onEdited?.(id);
     toast(addProcessLink(f, id) ?? `${f} linked to ${id} (Ctrl+Z undoes)`);
     return true;
-  }, []);
+  }, [onEdited]);
   const onEdge = useCallback((id: string, cx: number, cy: number) => {
     const r = root.current?.getBoundingClientRect();
     setFrom(null);
@@ -59,13 +60,14 @@ export function useLinks(svg: RefObject<SVGSVGElement | null>, root: RefObject<H
       setPull(null);
       const [x, y] = last, hit = cur.current.shapes.find((s) => s.kind === 'activity' && x >= s.x && x <= s.x + s.w && y >= s.y && y <= s.y + s.h);
       if (!hit) return;
+      onEdited?.(hit.id);
       toast(reconnectProcessLink(ed.id, end, hit.id) ?? `Link moved to ${hit.id} (Ctrl+Z undoes)`);
       setEdge(null);
     };
     window.addEventListener('pointermove', move);
     window.addEventListener('pointerup', up);
     window.addEventListener('pointercancel', up);
-  }, [svg]);
+  }, [svg, onEdited]);
   return { from, startLink, pickTarget, onEdge, edge, closeEdge, onHandle, pull };
 }
 

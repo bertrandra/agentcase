@@ -1,6 +1,6 @@
 import { useCallback, useEffect, useId, useMemo, useRef, useState } from 'react';
 import { compactDrawing, drawingView, hideActivities, onlyPhase, type DiagramViewId, type Drawing, type DrawShape } from '@/domain/process';
-import { centreOn, FIT, fitTo, viewOf } from './diagramCamera';
+import { bringIntoView, centreOn, FIT, fitTo, keepView, viewOf } from './diagramCamera';
 import { categoryOf, colourClass, DiagramOptions, type ActFacts, type DiagramColour } from './DiagramOptions';
 import { FrozenLanes, FrozenPhases } from './DiagramFrozen';
 import { Shapes } from './DiagramShapes';
@@ -51,14 +51,25 @@ export function Diagram({ d: doc, tableId, title, desc, name, labelZoom = 2, fac
     return compact ? compactDrawing(h) : h;
   }, [d, hideOut, compact, facts]);   // eslint-disable-line react-hooks/exhaustive-deps -- `out` reads facts
   const { cam, setCam, zoom, handlers } = useCamera(drawn.box, box, svg), v = viewOf(drawn.box, cam);
-  useEffect(() => { setCam(FIT); }, [drawn.box]);   // eslint-disable-line react-hooks/exhaustive-deps -- a new layout is shown whole
+  // another view (point of view, phase, hidden, compact) is shown whole; an edit keeps the window, the element just edited in sight (owner, 2026-11-04)
+  const viewKey = `${pov}|${phase}|${hideOut}|${compact}`, last = useRef({ key: viewKey, box: drawn.box }), follow = useRef<string | null>(null);
+  useEffect(() => {
+    const was = last.current;
+    last.current = { key: viewKey, box: drawn.box };
+    if (was.key !== viewKey) { setCam(FIT); return; }
+    if (was.box === drawn.box) return;
+    const s = drawn.shapes.find((x) => x.id === follow.current);
+    follow.current = null;
+    setCam((c) => (s ? bringIntoView(drawn.box, keepView(was.box, drawn.box, c), s) : keepView(was.box, drawn.box, c)));
+  }, [drawn]);   // eslint-disable-line react-hooks/exhaustive-deps -- the view key changes with the drawing
+  const onEdited = useCallback((eid: string) => { follow.current = eid; }, []);
   const acts = drawn.shapes.filter((s) => s.kind === 'activity');
   const extra = useMemo(() => new Map(d.shapes.filter((s) => s.kind === 'activity').map((s) => [s.id, [colourClass(colour, facts?.get(s.id)),
     shown && !shown.has(s.id) ? 'is-faded' : '', picked.includes(s.id) && s.id !== selected ? 'is-picked' : ''].filter(Boolean).join(' ')])),
   [d, colour, facts, shown, picked, selected]);
   const used = colour && facts ? [...new Set(acts.map((s) => facts.get(s.id)).map((f) => (f ? categoryOf(colour, f) : '')))] : [];
-  const selRef = useRef(selected), drag = useActivityDrag(svg, drawn), [menu, setMenu] = useState<MenuAt | null>(null);
-  const links = useLinks(svg, root, drawn);
+  const selRef = useRef(selected), drag = useActivityDrag(svg, drawn, onEdited), [menu, setMenu] = useState<MenuAt | null>(null);
+  const links = useLinks(svg, root, drawn, onEdited);
   selRef.current = selected;
   const onPick = useCallback((pid: string, add: boolean) => {   // stable: the memoised shapes do not redraw on a pan
     const cur = selRef.current;

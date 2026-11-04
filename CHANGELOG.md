@@ -17,6 +17,12 @@ When releasing, follow [docs/BUMP_PROCEDURE.md](docs/BUMP_PROCEDURE.md) (§7 for
 
 ## [Unreleased]
 
+### 🧩 Process: an edit on the canvas keeps the view (owner's request 2026-11-04)
+
+- Moving an activity, adding a link or moving a link's end no longer zooms the diagram out to the whole process: the same window stays on screen
+  at the same zoom, and the activity or link just edited is brought into view when it left the window. Only another view (point of view, Show
+  phase, Hide out-of-scope, Compact) or Fit shows the whole drawing. `diagramCamera.ts` `keepView`, `bringIntoView`.
+
 ### 🧩 Process: points of view of the diagram (owner's request 2026-11-04)
 
 - **View** above the process diagram: **With automation (agents)**, the document's diagram, the agents in their lane; **Process only (no

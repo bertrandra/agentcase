@@ -127,12 +127,18 @@ await step('canvas drag (owner, 2026-11-04): an activity dropped in another lane
     if (t === 'Dev' && !before.includes('dev')) target = await lanes.nth(i).locator('rect').first().boundingBox();
   }
   if (!target) throw new Error('no Dev lane to drop on');
+  await page.locator('.ac-proc-diagram').first().locator('button', { hasText: 'Zoom to selection' }).click();   // zoomed in on the activity
+  const pct = () => page.locator('.ac-proc-diagram').first().locator('[role=toolbar] .ac-muted').first().textContent(), zoomed = await pct();
+  await pick.scrollIntoViewIfNeeded();
+  const lane2 = await (async () => { for (let i = 0, n = await lanes.count(); i < n; i++) if (await lanes.nth(i).locator('text').first().textContent() === 'Dev') return lanes.nth(i).locator('rect').first().boundingBox(); return null; })();
+  if (lane2) target = lane2;
   const a = await pick.boundingBox(), x = a.x + a.width / 2, y = a.y + a.height / 2;
   await page.mouse.move(x, y); await page.mouse.down();
   await page.mouse.move(x, y + 10, { steps: 3 }); await page.mouse.move(x, target.y + target.height / 2, { steps: 8 }); await page.mouse.up();
-  await pick.click();
+  await pick.click({ force: true });   // zoomed in, the label is drawn over the box
   if (!(await page.locator('#ac-proc-activity h2').textContent()).startsWith(id)) throw new Error('another activity is selected after the drop');
   if (await role() !== 'role-dev') throw new Error(`the role is ${await role()} after the drop, not role-dev (was ${before})`);
+  if (await pct() !== zoomed) throw new Error(`the zoom changed after the drop (${zoomed} -> ${await pct()}): the edit must keep the view`);
   await page.locator('#ac-proc-activity h2').click();
   await page.keyboard.press('Control+z');
   await page.waitForFunction((r) => document.querySelector('#ac-proc-activity select[id$="-role"]')?.value === r, before);

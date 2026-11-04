@@ -44,3 +44,19 @@ export function pinch(a: Pt, b: Pt, a0: Pt, b0: Pt): { f: number; mid: Pt } {
   const d = Math.hypot(a.x - b.x, a.y - b.y), d0 = Math.hypot(a0.x - b0.x, a0.y - b0.y);
   return { f: d0 > 0 ? d / d0 : 1, mid: { x: (a.x + b.x) / 2, y: (a.y + b.y) / 2 } };
 }
+
+/**
+ * The camera after an edit changed the drawing's box (an activity moved, a link added; owner, 2026-11-04: an edit must not zoom out): the same
+ * window of the drawing stays on screen, at the same width. At Fit the drawing stays fitted.
+ */
+export function keepView(from: Box, to: Box, c: Cam): Cam {
+  if (c.s === 1 && c.x === 0 && c.y === 0) return FIT;
+  const v = viewOf(from, c);
+  return { s: clampS(to.w / v.w), x: v.x - to.x, y: v.y - to.y };
+}
+
+/** The camera `c`, centred on `shape` at the same zoom when the shape is not wholly in view (the element just edited stays in sight). */
+export function bringIntoView(b: Box, c: Cam, shape: Box): Cam {
+  const v = viewOf(b, c), inside = shape.x >= v.x && shape.y >= v.y && shape.x + shape.w <= v.x + v.w && shape.y + shape.h <= v.y + v.h;
+  return inside || c.s === 1 ? c : centreOn(b, { x: shape.x + shape.w / 2, y: shape.y + shape.h / 2 }, c.s);
+}

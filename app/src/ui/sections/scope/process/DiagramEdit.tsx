@@ -36,7 +36,7 @@ export const activityPanelId = ACTIVITY_PANEL;
  * Dragging an activity: `onDrag` (stable) starts on a pointer down on the activity; past 5 px a ghost follows the pointer, and the drop places the
  * activity in the cell under the ghost's centre. `moved` tells the click that ends a drag not to select.
  */
-export function useActivityDrag(svg: RefObject<SVGSVGElement | null>, drawn: Drawing) {
+export function useActivityDrag(svg: RefObject<SVGSVGElement | null>, drawn: Drawing, onEdited?: (id: string) => void) {
   const [ghost, setGhost] = useState<Ghost | null>(null), moved = useRef(false), cur = useRef(drawn);
   cur.current = drawn;
   const onDrag = useCallback((id: string, e: React.PointerEvent) => {
@@ -61,12 +61,12 @@ export function useActivityDrag(svg: RefObject<SVGSVGElement | null>, drawn: Dra
       setGhost(null);
       setTimeout(() => { moved.current = false; }, 0);   // the click that ends the drag (if any) comes first
       const c = g && cellAt(cur.current, g.x + g.w / 2, g.y + g.h / 2);
-      if (c) placeProcessActivity(id, c.phase, c.lane);
+      if (c) { onEdited?.(id); placeProcessActivity(id, c.phase, c.lane); }
     };
     window.addEventListener('pointermove', move);
     window.addEventListener('pointerup', up);
     window.addEventListener('pointercancel', up);
-  }, [svg]);
+  }, [svg, onEdited]);
   return { ghost, onDrag, moved };
 }
 
