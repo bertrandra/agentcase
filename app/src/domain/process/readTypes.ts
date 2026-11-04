@@ -25,6 +25,8 @@ export interface ActivityView extends CaseMarks {
   factor?: number;
   /** B5b: the event sub-process the activity belongs to (F-B49), and the library entry a call activity calls (F-B52) */
   trigger?: string; called?: string;
+  /** the sub-process of its phase that groups it (owner, 2026-11-04: activities automated together), when it is in one */
+  sub?: string;
 }
 export interface ActorView {
   id: string; name: string; kind: string; teamSkill?: string; regulatory: boolean; capability?: string;
@@ -54,7 +56,10 @@ export interface ProcessView {
   diagram: DiagramView;
   /** error boundary events carrying `ac:rework` (F-B47, D-B20), with the target of their outgoing flow */
   reworks: BoundaryRework[];
+  /** the sub-processes inside the phases (expanded, not event sub-processes): a grouping of activities drawn on the diagram; no figure reads it */
+  subProcesses?: SubProcessView[];
 }
+export interface SubProcessView { id: string; name: string; phase: string }
 
 /** Small readers shared by the view builders. */
 export const num = (v: string | undefined): number | undefined => (v === undefined || v === '' ? undefined : Number(v));

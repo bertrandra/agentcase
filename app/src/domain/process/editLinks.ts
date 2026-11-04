@@ -11,23 +11,43 @@ import { attr, NS, type XDocument } from './xml';
  */
 export type LinkEnd = 'source' | 'target';
 
+/** An end a link can have: an activity (its phase and sub-process) or a sub-process (its phase; it is its own sub-process). */
+function nodeOf(d: XDocument, id: string): { phase: string; sub?: string } | undefined {
+  const v = readProcess(d), a = v.activities.find((x) => x.id === id);
+  if (a) return a.sub ? { phase: a.phase, sub: a.sub } : { phase: a.phase };
+  const s = v.subProcesses?.find((x) => x.id === id);
+  return s ? { phase: s.phase, sub: s.id } : undefined;
+}
+
 /** Why `source → target` cannot be linked, or null when it can. */
 export function linkRefusal(d: XDocument, source: string, target: string): string | null {
-  const v = readProcess(d), a = v.activities.find((x) => x.id === source), b = v.activities.find((x) => x.id === target);
+  const a = nodeOf(d, source), b = nodeOf(d, target);
   if (!a || !b) return 'A link joins two activities.';
   if (source === target) return 'An activity cannot be linked to itself.';
   if (a.phase !== b.phase) {
     return `A link stays inside one phase (in BPMN a sequence flow does not leave its sub-process): ${source} is in ${a.phase}, ${target} in ${b.phase}.`;
   }
-  if (v.flows.some((f) => !f.rework && f.source === source && f.target === target)) return `${source} is already linked to ${target}.`;
+  const [s, t] = endsOf(d, source, target);
+  if (s === t) return `${source} and ${target} are in the same sub-process ${s}: link them inside it.`;
+  if (readProcess(d).flows.some((f) => !f.rework && f.source === s && f.target === t)) return `${s} is already linked to ${t}.`;
   return null;
+}
+
+/**
+ * The ends a link `source → target` really joins, and its container (owner, 2026-11-04: a link to an activity of a sub-process is inherited by
+ * the sub-process): two activities of one sub-process are linked inside it; otherwise each end in a sub-process is its sub-process.
+ */
+function endsOf(d: XDocument, source: string, target: string): [string, string, string] {
+  const a = nodeOf(d, source)!, b = nodeOf(d, target)!;
+  if (a.sub && a.sub === b.sub && a.sub !== source && b.sub !== target) return [source, target, a.sub];
+  return [a.sub ?? source, b.sub ?? target, a.phase];
 }
 
 /** `process.addLink`: a sequence flow `source → target` in their phase, with its edge; the same document when refused (`linkRefusal`). */
 export function addLink(d: XDocument, source: string, target: string): XDocument {
   if (linkRefusal(d, source, target)) return d;
-  const v = readProcess(d), phase = v.activities.find((x) => x.id === source)!.phase;
-  return { ...d, root: withLinks(d.root, v, [{ source, target, container: phase }]) };
+  const [s, t, container] = endsOf(d, source, target);
+  return { ...d, root: withLinks(d.root, readProcess(d), [{ source: s, target: t, container }]) };
 }
 
 /** `process.removeLink`: the plain flow `id` and its edge; the same document for an unknown id or a rework flow. */

@@ -1,6 +1,6 @@
 /** @calc-zone process-model */
 import { readBpsim } from './bpsim';
-import { activitiesOf, flowsIn, phasesOf, type Sim } from './readPhases';
+import { activitiesOf, flowsIn, groupsIn, phasesOf, type Sim } from './readPhases';
 import { boundaryReworksIn, withTargets } from './readRework';
 import { bpsimReworksIn } from './profile/bpsimRework';
 import { loopIterations, withProfile } from './profile/readHook';
@@ -67,7 +67,7 @@ export function readProcess(d: XDocument): ProcessView {
   const hit = memo.get(d);
   if (hit) return hit;
   const defs = d.root, proc = kid(defs, NS.bpmn, 'process'), phases = proc ? phasesOf(proc) : [], sim = readBpsim(defs);
-  const flows = (proc ? [...flowsIn(proc, sim), ...phases.flatMap((p) => flowsIn(p.el, sim))] : []).map((f) => {
+  const flows = (proc ? [...flowsIn(proc, sim), ...phases.flatMap((p) => [p.el, ...groupsIn(p.el)].flatMap((c) => flowsIn(c, sim)))] : []).map((f) => {
     const r = f.rework, n = r ? loopIterations(defs, f.id, r.internalIterations, r.activityB || r.activityA || undefined) : 0;
     return r && n !== r.internalIterations ? { ...f, rework: { ...r, internalIterations: n } } : f;
   });
@@ -78,6 +78,8 @@ export function readProcess(d: XDocument): ProcessView {
     params: paramsOf(proc), phases: phases.map((p) => p.view), activities: withProfile(defs, proc, phases, phases.flatMap((p) => activitiesOf(p.el, sim)), sim),
     actors: actorsOf(defs, sim), flows, reworks, norms: normsOf(defs), diagram: diagramOf(defs),
   };
+  const subs = phases.flatMap((p) => groupsIn(p.el).map((g) => ({ id: attr(g, 'id') ?? '', name: attr(g, 'name') ?? '', phase: p.view.id })));
+  if (subs.length) view.subProcesses = subs;
   memo.set(d, view);
   return view;
 }

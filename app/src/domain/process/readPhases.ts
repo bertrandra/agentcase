@@ -71,8 +71,8 @@ export function activitiesOf(container: XElement, sim: Sim = NONE, phase = str(a
   if (plain) actMemo.set(container, { sim, out });
   return out;
 }
-function activitiesRead(container: XElement, sim: Sim, phase: string, trigger?: string): ActivityView[] {
-  const deliverables = new Map<string, string>();
+function activitiesRead(container: XElement, sim: Sim, phase: string, trigger?: string, outer?: Map<string, string>): ActivityView[] {
+  const deliverables = new Map<string, string>(outer);
   for (const d of kids(container, NS.bpmn, 'dataObject')) deliverables.set(str(attr(d, 'id')), docText(d) ?? '');
   const own = kids(container, NS.bpmn).filter((e) => TASKS.includes(e.local)).map((e) => {
     const a = activityOf(e, phase, deliverables, sim);
@@ -81,8 +81,14 @@ function activitiesRead(container: XElement, sim: Sim, phase: string, trigger?: 
     return a;
   });
   const subs = kids(container, NS.bpmn, 'subProcess').filter(isEventSub).flatMap((s) => activitiesOf(s, sim, phase, str(attr(s, 'id'))));
-  return [...own, ...subs];
+  // the sub-processes grouping activities of the phase (owner, 2026-11-04): their activities belong to the phase, counted as before
+  const grouped = trigger === undefined
+    ? groupsIn(container).flatMap((g) => activitiesRead(g, sim, phase, undefined, deliverables).map((a) => ({ ...a, sub: str(attr(g, 'id')) }))) : [];
+  return [...own, ...grouped, ...subs];
 }
+
+/** The sub-processes of a phase that group activities (expanded, not event sub-processes). */
+export const groupsIn = (phase: XElement): XElement[] => kids(phase, NS.bpmn, 'subProcess').filter((s) => !isEventSub(s));
 
 /** The sequence flows directly inside a container (process or sub-process), with their rework parameters (BPSim probability as fallback). */
 export function flowsIn(container: XElement, sim: Sim = NONE): FlowView[] {

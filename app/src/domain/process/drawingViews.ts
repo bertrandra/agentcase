@@ -68,7 +68,8 @@ export function drawingView(d: Drawing, view: DiagramViewId, lanes: ReadonlyMap<
     const p = place.get(s.id);
     if (p) {
       const ph = phases.find((x) => x.id === s.phase)!;
-      return { ...s, x: ph.x + p.dx, y: fy(p.lane.y) + topOf(p.lane, acts, moving) + p.row * STEP_Y };
+      // an activity of a sub-process keeps its column (its sub-process's): only its lane changes
+      return { ...s, x: s.sub ? s.x : ph.x + p.dx, y: fy(p.lane.y) + topOf(p.lane, acts, moving) + p.row * STEP_Y };
     }
     if (s.kind === 'activity' || s.kind === 'event' || s.kind === 'gateway' || s.kind === 'other') return { ...s, y: fy(s.y) };
     return { ...s, y: fy(s.y), h: fy(s.y + s.h) - fy(s.y) };
@@ -98,7 +99,7 @@ function topOf(lane: DrawShape, acts: DrawShape[], moving: DrawShape[]): number 
 export function onlyPhase(d: Drawing, phase: string): Drawing {
   if (!phase || !d.shapes.some((s) => s.kind === 'phase' && s.id === phase)) return d;
   const keep = (s: DrawShape): boolean => s.kind === 'pool' || s.kind === 'lane'
-    || (s.kind === 'phase' ? s.id === phase : s.kind === 'activity' && s.phase === phase);
+    || (s.kind === 'phase' ? s.id === phase : (s.kind === 'activity' || s.kind === 'sub') && s.phase === phase);
   const shapes = d.shapes.filter(keep), ids = new Set(shapes.map((s) => s.id));
   return compactDrawing({ box: d.box, shapes, edges: d.edges.filter((e) => !!e.source && !!e.target && ids.has(e.source) && ids.has(e.target)) });
 }

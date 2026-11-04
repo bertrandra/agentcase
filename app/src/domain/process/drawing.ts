@@ -10,10 +10,13 @@ import { attr, type XDocument, type XElement } from './xml';
  * activities (the phase box grows to hold them), without moving any element that has a shape. A document without any diagram is laid out as
  * one column per phase. Read-only and memoised on the document; nothing here is stored.
  */
-export type ShapeKind = 'pool' | 'lane' | 'phase' | 'activity' | 'event' | 'gateway' | 'other';
+/** `sub`: a sub-process inside a phase grouping activities (owner, 2026-11-04). */
+export type ShapeKind = 'pool' | 'lane' | 'phase' | 'sub' | 'activity' | 'event' | 'gateway' | 'other';
 export interface DrawShape {
   id: string; kind: ShapeKind; x: number; y: number; w: number; h: number; label: string;
   inScope?: boolean; regulatory?: boolean; phase?: string;
+  /** an activity's sub-process */
+  sub?: string;
   /** placed by the layout (no BPMN DI shape yet) */
   placed?: boolean;
   /** a second line under the label: the multi-instance marker of a programme activity, the facts of a wave (B9a) */
@@ -26,7 +29,7 @@ export interface Drawing { box: { x: number; y: number; w: number; h: number }; 
 
 const KIND: Record<string, ShapeKind> = { participant: 'pool', lane: 'lane', subProcess: 'phase', adHocSubProcess: 'phase', startEvent: 'event',
   endEvent: 'event', exclusiveGateway: 'gateway', parallelGateway: 'gateway', inclusiveGateway: 'gateway' };
-const ORDER: ShapeKind[] = ['pool', 'lane', 'phase', 'other', 'event', 'gateway', 'activity'];
+const ORDER: ShapeKind[] = ['pool', 'lane', 'phase', 'sub', 'other', 'event', 'gateway', 'activity'];
 const TW = 100, TH = 70, G = 20, COL = TW + 2 * G;
 
 /** Every element with an id: its local name and name (the DI's `bpmnElement` targets). */
@@ -66,11 +69,15 @@ export function drawingOf(d: XDocument): Drawing {
   const hit = memo.get(d);
   if (hit) return hit;
   const v = readProcess(d), els = elementsOf(d.root), acts = new Map(v.activities.map((a) => [a.id, a])), phases = new Map(v.phases.map((p) => [p.id, p]));
+  const subs = new Map((v.subProcesses ?? []).map((s) => [s.id, s]));
   const shapes: DrawShape[] = v.diagram.shapes.map((s) => {
     const e = els.get(s.element), a = acts.get(s.element), p = phases.get(s.element);
-    const kind: ShapeKind = a ? 'activity' : KIND[e?.local ?? ''] ?? 'other', out: DrawShape = { id: s.element, kind, x: s.x, y: s.y, w: s.w, h: s.h,
+    const kind: ShapeKind = a ? 'activity' : subs.has(s.element) ? 'sub' : KIND[e?.local ?? ''] ?? 'other';
+    const out: DrawShape = { id: s.element, kind, x: s.x, y: s.y, w: s.w, h: s.h,
       label: e?.name ?? '' };
-    if (a) Object.assign(out, { inScope: a.inScope !== false, regulatory: a.regulatory, phase: a.phase });
+    if (a) Object.assign(out, { inScope: a.inScope !== false, regulatory: a.regulatory, phase: a.phase }, a.sub ? { sub: a.sub } : {});
+    const sp = subs.get(s.element);
+    if (sp) out.phase = sp.phase;
     if (p) out.inScope = p.inScope !== false;
     return out;
   });

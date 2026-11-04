@@ -1,12 +1,12 @@
 import { useCallback, useEffect, useId, useMemo, useRef, useState } from 'react';
-import { compactDrawing, drawingView, hideActivities, onlyPhase, type DiagramViewId, type Drawing, type DrawShape } from '@/domain/process';
+import { compactDrawing, drawingView, fitSubs, hideActivities, onlyPhase, type DiagramViewId, type Drawing, type DrawShape } from '@/domain/process';
 import { bringIntoView, centreOn, FIT, fitTo, keepView, viewOf } from './diagramCamera';
 import { categoryOf, colourClass, DiagramOptions, type ActFacts, type DiagramColour } from './DiagramOptions';
 import { FrozenLanes, FrozenPhases } from './DiagramFrozen';
 import { Shapes } from './DiagramShapes';
 import { FullScreenButton, useFullScreen } from '@/ui/widgets/FullScreen';
 import { addCanvasActivity } from '@/controllers/processLayout';
-import { ActivityMenu, openActivityPanel, useActivityDrag, type MenuAt } from './DiagramEdit';
+import { ActivityMenu, openActivityPanel, SubMenu, useActivityDrag, type MenuAt } from './DiagramEdit';
 import { EdgeHandles, EdgeMenu, useLinks } from './DiagramLinks';
 import { useCamera } from './useCamera';
 import { selectActivity, useProcessView } from './view';
@@ -46,9 +46,9 @@ export function Diagram({ d: doc, tableId, title, desc, name, labelZoom = 2, fac
   const root = useRef<HTMLDivElement>(null), full = useFullScreen(root, () => setCam(FIT));
   const out = (s: DrawShape): boolean => (facts?.get(s.id) ? !facts.get(s.id)!.counted : s.inScope === false);
   const drawn = useMemo(() => {
-    if (!hideOut) return d;
+    if (!hideOut) return fitSubs(d);   // the sub-processes redrawn around what the view shows
     const h = hideActivities(d, new Set(d.shapes.filter((s) => s.kind === 'activity' && out(s)).map((s) => s.id)));
-    return compact ? compactDrawing(h) : h;
+    return fitSubs(compact ? compactDrawing(h) : h);
   }, [d, hideOut, compact, facts]);   // eslint-disable-line react-hooks/exhaustive-deps -- `out` reads facts
   const { cam, setCam, zoom, handlers } = useCamera(drawn.box, box, svg), v = viewOf(drawn.box, cam);
   // another view (point of view, phase, hidden, compact) is shown whole; an edit keeps the window, the element just edited in sight (owner, 2026-11-04)
@@ -129,7 +129,8 @@ export function Diagram({ d: doc, tableId, title, desc, name, labelZoom = 2, fac
           {freeze && <FrozenLanes d={drawn} v={v} px={{ w: box.current?.clientWidth || 800, h: box.current?.clientHeight || 450 }} />}
         </svg>
       </div>
-      {editable && menu && <ActivityMenu at={menu} onEdit={edit} onLink={links.startLink} onClose={closeMenu} />}
+      {editable && menu && (drawn.shapes.some((s) => s.id === menu.id && s.kind === 'sub') ? <SubMenu at={menu} onClose={closeMenu} />
+        : <ActivityMenu at={menu} picked={picked} onEdit={edit} onLink={links.startLink} onClose={closeMenu} />)}
       {editable && links.edge && <EdgeMenu at={links.edge} onClose={links.closeEdge} />}
     </div>
   );
