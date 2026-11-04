@@ -2,7 +2,7 @@ import { useId, useMemo } from 'react';
 import { FeedsPanel } from './FeedsPanel';
 import { activityAudits, auditProgressOf } from '@/domain/audit';
 import { decisionLabels } from '@/domain/dmn';
-import { drawingOf, readProcess, type Drawing, type DrawShape, type XDocument } from '@/domain/process';
+import { drawingOf, readProcess, roleLanes, type Drawing, type DrawShape, type XDocument } from '@/domain/process';
 import { useDoc } from '@/store/hooks';
 import { OverrideBadge } from '@/ui/widgets/OverrideBadge';
 import { SectionFrame } from '@/ui/zones/SectionFrame';
@@ -67,7 +67,7 @@ export default function ProcessSection() {
   const doc = useDoc((d) => d.BPMN), rows = rowsOf(doc), f = useProcessView((s) => s.filters), sort = useProcessView((s) => s.sort);
   const selected = useProcessView((s) => s.selected), shown = visibleRows(rows, f, sort), tableId = useId();
   const drawing = useMemo(() => withDecisions(drawingOf(doc), doc), [doc]);
-  const facts = useMemo(() => factsOf(rows, doc), [rows, doc]);
+  const facts = useMemo(() => factsOf(rows, doc), [rows, doc]), lanes = useMemo(() => roleLanes(doc), [doc]);
   // eslint-disable-next-line react-hooks/exhaustive-deps -- `shown` follows the filters and the rows
   const kept = useMemo(() => (filtering({ ...f }) ? new Set(shown.map((r) => r.id)) : null), [f, rows]);
   return (
@@ -82,7 +82,7 @@ export default function ProcessSection() {
       }
       result={
         <>
-          <Diagram d={drawing} tableId={tableId} title="Diagram of the delivery process" name="Process diagram" facts={facts} shown={kept}
+          <Diagram d={drawing} tableId={tableId} title="Diagram of the delivery process" name="Process diagram" facts={facts} shown={kept} roleLanes={lanes}
             desc={`${count(drawing, 'activity')} activities in ${count(drawing, 'phase')} phases, drawn from the BPMN diagram of the case.`} />
           <DiagramEditor />
           {selected && <ActivityPanel doc={doc} id={selected} />}

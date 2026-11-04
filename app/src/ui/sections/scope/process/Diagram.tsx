@@ -1,5 +1,5 @@
 import { useCallback, useEffect, useId, useMemo, useRef, useState } from 'react';
-import { compactDrawing, hideActivities, type Drawing, type DrawShape } from '@/domain/process';
+import { compactDrawing, drawingView, hideActivities, type DiagramViewId, type Drawing, type DrawShape } from '@/domain/process';
 import { centreOn, FIT, fitTo, viewOf } from './diagramCamera';
 import { categoryOf, colourClass, DiagramOptions, type ActFacts, type DiagramColour } from './DiagramOptions';
 import { FrozenLanes, Shapes } from './DiagramShapes';
@@ -24,12 +24,15 @@ const READABLE = 0.5;
 interface Props {
   d: Drawing; tableId: string; title: string; desc: string; name: string; labelZoom?: number;
   facts?: ReadonlyMap<string, ActFacts>; shown?: ReadonlySet<string> | null;
+  /** activity id → its role's lane: offers the points of view (with automation, process only; owner, 2026-11-04) */
+  roleLanes?: ReadonlyMap<string, string>;
 }
-export function Diagram({ d, tableId, title, desc, name, labelZoom = 2, facts, shown = null }: Props) {
+export function Diagram({ d: doc, tableId, title, desc, name, labelZoom = 2, facts, shown = null, roleLanes }: Props) {
   const id = useId(), box = useRef<HTMLDivElement>(null), svg = useRef<SVGSVGElement>(null), selected = useProcessView((s) => s.selected);
   const [hideOut, setHideOut] = useState(false), [colour, setColour] = useState<DiagramColour>(''), [picked, setPicked] = useState<string[]>([]);
   // owner, 2026-11-03: hiding the out-of-scope activities closes the space they leave
-  const [compact, setCompact] = useState(true), frame = useFrameSize(box);
+  const [compact, setCompact] = useState(true), frame = useFrameSize(box), [pov, setPov] = useState<DiagramViewId>('automation');
+  const d = useMemo(() => (roleLanes ? drawingView(doc, pov, roleLanes) : doc), [doc, pov, roleLanes]);
   const [freeze, setFreeze] = useState(false), root = useRef<HTMLDivElement>(null), full = useFullScreen(root, () => setCam(FIT));
   const out = (s: DrawShape): boolean => (facts?.get(s.id) ? !facts.get(s.id)!.counted : s.inScope === false);
   const drawn = useMemo(() => {
@@ -74,6 +77,7 @@ export function Diagram({ d, tableId, title, desc, name, labelZoom = 2, facts, s
         </p>
       </div>
       <DiagramOptions name={name} hideOut={hideOut} onHideOut={setHideOut} compact={compact} onCompact={setCompact} colour={colour} onColour={setColour}
+        view={roleLanes ? pov : null} onView={setPov}
         used={used.filter(Boolean)}
         freeze={freeze} onFreeze={setFreeze}
         colours={!!facts} zoomLabel={picked.length || !shown ? 'Zoom to selection' : 'Zoom to filtered'} onZoomSel={fit ? () => setCam(fit) : null} />

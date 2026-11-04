@@ -17,6 +17,13 @@ When releasing, follow [docs/BUMP_PROCEDURE.md](docs/BUMP_PROCEDURE.md) (§7 for
 
 ## [Unreleased]
 
+### 🧩 Process: points of view of the diagram (owner's request 2026-11-04)
+
+- **View** above the process diagram: **With automation (agents)**, the document's diagram, the agents in their lane; **Process only (no
+  automation)**, the pure process: no agents' lane, every agent activity drawn in the lane of the role that does it (its human performer's team
+  skill), in the same phase column, the lanes growing to hold them and the flows following. Combines with Hide out-of-scope and Compact. A
+  drawing view only (no figure, no stored change); the list of views is open to more points of view. `domain/process/drawingViews.ts`.
+
 ### 🔎 Audit and 🧩 Process: shorter controls, files collapsed, editor zoom (owner's requests 2026-11-04)
 
 - 🔎 Audit: the **📁 Files** block (template, workbook import, report, tool catalogue) is collapsed by default; the report of the last import

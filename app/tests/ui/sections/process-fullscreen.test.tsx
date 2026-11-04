@@ -44,4 +44,17 @@ describe('Process diagram full screen', { timeout: 90_000 }, () => {
     expect(area()).toBeCloseTo(full, 0);
     expect(appStore().getState().history.undo.length).toBe(n);
   });
+  it('View "Process only (no automation)" draws no agents\' lane; "With automation" brings it back; view state only', () => {
+    render(<Process />);
+    const n = appStore().getState().history.undo.length, frame = document.querySelector('.ac-proc-diagram')!;
+    const view = [...frame.querySelectorAll('select')].find((x) => x.id && frame.querySelector(`label[for="${x.id}"]`)?.textContent === 'View')!;
+    const agentsLane = () => [...frame.querySelectorAll('.ac-proc-canvas svg text')].some((t) => t.textContent === 'Agents');
+    expect(view.value).toBe('automation');
+    expect(agentsLane()).toBe(true);
+    act(() => { fireEvent.change(view, { target: { value: 'process' } }); });
+    expect(agentsLane()).toBe(false);
+    act(() => { fireEvent.change(view, { target: { value: 'automation' } }); });
+    expect(agentsLane()).toBe(true);
+    expect(appStore().getState().history.undo.length).toBe(n);
+  });
 });

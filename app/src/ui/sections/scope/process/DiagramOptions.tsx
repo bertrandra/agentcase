@@ -1,5 +1,6 @@
 import { useId } from 'react';
 import { AUDIT_PROGRESS } from '@/domain/audit';
+import { DIAGRAM_VIEWS, type DiagramViewId } from '@/domain/process';
 import { COLOUR_ORDER } from '@/domain/process/profile';
 
 /** What the 🧩 Process diagram knows of an activity beyond its shape (the activity table's rows, the audit): its colour categories and its scope. */
@@ -23,6 +24,8 @@ interface Props {
   name: string; hideOut: boolean; onHideOut: (v: boolean) => void; colour: DiagramColour; onColour: (v: DiagramColour) => void;
   /** with the out-of-scope activities hidden: close the space they leave (empty phases and roles dropped) */
   compact: boolean; onCompact: (v: boolean) => void;
+  /** the point of view (null: the diagram offers none) */
+  view: DiagramViewId | null; onView: (v: DiagramViewId) => void;
   /** the categories drawn (the legend), in colour order */
   used: string[]; zoomLabel: string; onZoomSel: (() => void) | null; colours: boolean;
   /** keep the lane (role) names at the left edge while panning */
@@ -33,11 +36,17 @@ interface Props {
  * at the left edge, colour the activities by task type or AI
  * authority (with its legend), and zoom to the selected activities (Ctrl / Shift + click adds one) or, with none, to those the filters keep.
  */
-export function DiagramOptions({ name, hideOut, onHideOut, compact, onCompact, colour, onColour, used, zoomLabel, onZoomSel, colours, freeze,
+export function DiagramOptions({ name, hideOut, onHideOut, compact, onCompact, view, onView, colour, onColour, used, zoomLabel, onZoomSel, colours, freeze,
   onFreeze }: Props) {
   const id = useId();
   return (
     <div className="ac-form-row ac-proc-diagram-opts" role="group" aria-label={`${name} display`}>
+      {view && <>
+        <label htmlFor={`${id}-v`}>View</label>
+        <select id={`${id}-v`} value={view} onChange={(e) => onView(e.target.value as DiagramViewId)}>
+          {DIAGRAM_VIEWS.map((v) => <option key={v.id} value={v.id}>{v.label}</option>)}
+        </select>
+      </>}
       <label><input type="checkbox" aria-label="Hide out-of-scope activities" checked={hideOut} onChange={(e) => onHideOut(e.target.checked)} />
         {' '}Hide out-of-scope</label>
       <label><input type="checkbox" aria-label="Compact the layout" checked={compact} disabled={!hideOut} onChange={(e) => onCompact(e.target.checked)} />
