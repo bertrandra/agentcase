@@ -35,7 +35,7 @@ export function bridgesOver(flows: readonly { source: string; target: string; co
 }
 
 /** `links` appended to their containers as sequence flows, each with an edge between the two shapes when both are drawn (ids kept unique). */
-function withLinks(start: XElement, v: ProcessView, links: readonly Link[]): XElement {
+export function withLinks(start: XElement, v: ProcessView, links: readonly Link[]): XElement {
   const shapes = new Map(v.diagram.shapes.map((s) => [s.element, s])), ids = new Set(v.flows.map((f) => f.id));
   let root = start;
   for (const b of links) {

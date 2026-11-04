@@ -1,9 +1,13 @@
 import { useCallback, useEffect, useId, useMemo, useRef, useState } from 'react';
-import { compactDrawing, hideActivities, type Drawing, type DrawShape } from '@/domain/process';
+import { compactDrawing, drawingView, hideActivities, onlyPhase, type DiagramViewId, type Drawing, type DrawShape } from '@/domain/process';
 import { centreOn, FIT, fitTo, viewOf } from './diagramCamera';
 import { categoryOf, colourClass, DiagramOptions, type ActFacts, type DiagramColour } from './DiagramOptions';
-import { FrozenLanes, Shapes } from './DiagramShapes';
+import { FrozenLanes, FrozenPhases } from './DiagramFrozen';
+import { Shapes } from './DiagramShapes';
 import { FullScreenButton, useFullScreen } from '@/ui/widgets/FullScreen';
+import { addCanvasActivity } from '@/controllers/processLayout';
+import { ActivityMenu, openActivityPanel, useActivityDrag, type MenuAt } from './DiagramEdit';
+import { EdgeHandles, EdgeMenu, useLinks } from './DiagramLinks';
 import { useCamera } from './useCamera';
 import { selectActivity, useProcessView } from './view';
 
@@ -24,13 +28,22 @@ const READABLE = 0.5;
 interface Props {
   d: Drawing; tableId: string; title: string; desc: string; name: string; labelZoom?: number;
   facts?: ReadonlyMap<string, ActFacts>; shown?: ReadonlySet<string> | null;
+  /** activity id → its role's lane: offers the points of view (with automation, process only; owner, 2026-11-04) */
+  roleLanes?: ReadonlyMap<string, string>;
+  /** the canvas edits (owner, 2026-11-04): drag across lanes and phases, the ⋯ menu of an activity, + Add activity */
+  editable?: boolean;
 }
-export function Diagram({ d, tableId, title, desc, name, labelZoom = 2, facts, shown = null }: Props) {
+export function Diagram({ d: doc, tableId, title, desc, name, labelZoom = 2, facts, shown = null, roleLanes, editable = false }: Props) {
   const id = useId(), box = useRef<HTMLDivElement>(null), svg = useRef<SVGSVGElement>(null), selected = useProcessView((s) => s.selected);
   const [hideOut, setHideOut] = useState(false), [colour, setColour] = useState<DiagramColour>(''), [picked, setPicked] = useState<string[]>([]);
   // owner, 2026-11-03: hiding the out-of-scope activities closes the space they leave
-  const [compact, setCompact] = useState(true), frame = useFrameSize(box);
-  const [freeze, setFreeze] = useState(false), root = useRef<HTMLDivElement>(null), full = useFullScreen(root, () => setCam(FIT));
+  // the point of view: no automation by default (owner, 2026-11-04)
+  const [compact, setCompact] = useState(true), frame = useFrameSize(box), [pov, setPov] = useState<DiagramViewId>('process');
+  const [phase, setPhase] = useState('');   // the phase filter: '' every phase (owner, 2026-11-04)
+  const phases = useMemo(() => doc.shapes.filter((s) => s.kind === 'phase').map((s) => ({ id: s.id, label: s.label })), [doc]);
+  const d = useMemo(() => onlyPhase(roleLanes ? drawingView(doc, pov, roleLanes) : doc, phase), [doc, pov, roleLanes, phase]);
+  const [freezePhases, setFreezePhases] = useState(false), [freeze, setFreeze] = useState(false);
+  const root = useRef<HTMLDivElement>(null), full = useFullScreen(root, () => setCam(FIT));
   const out = (s: DrawShape): boolean => (facts?.get(s.id) ? !facts.get(s.id)!.counted : s.inScope === false);
   const drawn = useMemo(() => {
     if (!hideOut) return d;
@@ -44,13 +57,23 @@ export function Diagram({ d, tableId, title, desc, name, labelZoom = 2, facts, s
     shown && !shown.has(s.id) ? 'is-faded' : '', picked.includes(s.id) && s.id !== selected ? 'is-picked' : ''].filter(Boolean).join(' ')])),
   [d, colour, facts, shown, picked, selected]);
   const used = colour && facts ? [...new Set(acts.map((s) => facts.get(s.id)).map((f) => (f ? categoryOf(colour, f) : '')))] : [];
-  const selRef = useRef(selected);
+  const selRef = useRef(selected), drag = useActivityDrag(svg, drawn), [menu, setMenu] = useState<MenuAt | null>(null);
+  const links = useLinks(svg, root, drawn);
   selRef.current = selected;
   const onPick = useCallback((pid: string, add: boolean) => {   // stable: the memoised shapes do not redraw on a pan
     const cur = selRef.current;
+    if (drag.moved.current) { drag.moved.current = false; return; }   // the click that ends a drag
+    if (links.pickTarget(pid)) return;   // the activity a new link leads to
+
     setPicked((p) => (add ? (p.includes(pid) ? p.filter((x) => x !== pid) : [...p, ...(cur && !p.length ? [cur] : []), pid]) : [pid]));
     selectActivity(pid);
+  }, []);   // eslint-disable-line react-hooks/exhaustive-deps -- `drag.moved` is a ref, `links.pickTarget` is stable
+  const onMenu = useCallback((mid: string, cx: number, cy: number) => {
+    const r = root.current?.getBoundingClientRect();
+    setMenu({ id: mid, x: cx - (r?.left ?? 0), y: cy - (r?.top ?? 0) });
   }, []);
+  const closeMenu = useCallback(() => setMenu(null), []);
+  const edit = (eid: string | null): void => { if (!eid) return; if (full.on) full.toggle(); openActivityPanel(eid); };
   const sel = drawn.shapes.find((s) => s.id === selected && s.kind === 'activity');
   useEffect(() => {   // a selection from the table: the picked set follows it, and it is brought into view when zoomed in
     if (selected && !picked.includes(selected)) setPicked([selected]);
@@ -68,25 +91,35 @@ export function Diagram({ d, tableId, title, desc, name, labelZoom = 2, facts, s
         <button type="button" onClick={() => setCam(FIT)}>Fit</button>
         <span className="ac-muted">{Math.round(cam.s * 100)}%</span>
         <FullScreenButton on={full.on} toggle={full.toggle} what={name} />
+        {editable && <button type="button" onClick={() => edit(addCanvasActivity(phase))}><span aria-hidden="true">＋</span> Add activity</button>}
+        {links.from && <span className="ac-proc-hint" role="status">{`Click the activity ${links.from} leads to (Escape cancels)`}</span>}
         <p className="ac-proc-live" aria-live="polite">
           {sel ? `Selected: ${sel.id} ${sel.label}${sel.inScope === false ? ' (out of scope)' : ''}${picked.length > 1 ? ` (+${picked.length - 1} more)` : ''}`
             : 'No activity selected'}
         </p>
       </div>
       <DiagramOptions name={name} hideOut={hideOut} onHideOut={setHideOut} compact={compact} onCompact={setCompact} colour={colour} onColour={setColour}
+        view={roleLanes ? pov : null} onView={setPov} phases={phases} phase={phase} onPhase={setPhase}
         used={used.filter(Boolean)}
-        freeze={freeze} onFreeze={setFreeze}
+        freeze={freeze} onFreeze={setFreeze} freezePhases={freezePhases} onFreezePhases={setFreezePhases}
         colours={!!facts} zoomLabel={picked.length || !shown ? 'Zoom to selection' : 'Zoom to filtered'} onZoomSel={fit ? () => setCam(fit) : null} />
-      <div ref={box} className="ac-proc-canvas" tabIndex={0} role="group" {...handlers}
+      <div ref={box} className={`ac-proc-canvas${links.from ? ' is-linking' : ''}`} tabIndex={0} role="group" {...handlers}
         aria-label={`${name}: + and − zoom, arrow keys pan, 0 fits, two fingers pinch; the activity table below lists the same elements`}>
-        <svg ref={svg} className={readable ? 'is-readable' : 'is-overview'} viewBox={`${v.x} ${v.y} ${v.w} ${v.h}`} role="img" aria-labelledby={`${id}-t`} aria-describedby={`${id}-d ${tableId}`}
+        <svg ref={svg} className={readable ? 'is-readable' : 'is-overview'} viewBox={`${v.x} ${v.y} ${v.w} ${v.h}`}
+          role="img" aria-labelledby={`${id}-t`} aria-describedby={`${id}-d ${tableId}`}
           preserveAspectRatio="xMidYMid meet">
           <title id={`${id}-t`}>{title}</title>
           <desc id={`${id}-d`}>{desc}</desc>
-          <Shapes d={drawn} selected={selected} onPick={onPick} labels={readable} extra={extra} />
+          <Shapes d={drawn} selected={selected} onPick={onPick} labels={readable} extra={extra}
+            onDrag={editable ? drag.onDrag : undefined} onMenu={editable ? onMenu : undefined} onEdge={editable ? links.onEdge : undefined} />
+          {links.edge && <EdgeHandles d={drawn} id={links.edge.id} pull={links.pull} onHandle={links.onHandle} />}
+          {drag.ghost && <rect className="ac-bpmn-ghost" x={drag.ghost.x} y={drag.ghost.y} width={drag.ghost.w} height={drag.ghost.h} rx={8} />}
+          {freezePhases && <FrozenPhases d={drawn} v={v} px={{ w: box.current?.clientWidth || 800, h: box.current?.clientHeight || 450 }} />}
           {freeze && <FrozenLanes d={drawn} v={v} px={{ w: box.current?.clientWidth || 800, h: box.current?.clientHeight || 450 }} />}
         </svg>
       </div>
+      {editable && menu && <ActivityMenu at={menu} onEdit={edit} onLink={links.startLink} onClose={closeMenu} />}
+      {editable && links.edge && <EdgeMenu at={links.edge} onClose={links.closeEdge} />}
     </div>
   );
 }

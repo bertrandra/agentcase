@@ -10,7 +10,7 @@
 .ac-proc-preview td:last-child { font-size: var(--ac-font-size-xs); color: var(--ac-text-soft); }
 .ac-section .ac-proc-warn { color: var(--ac-danger-925); }
 .ac-proc-counts { display: flex; flex-wrap: wrap; gap: 4px 16px; list-style: none; padding: 0 !important; margin: 6px 0; }
-.ac-proc-diagram { margin-bottom: 12px; }
+.ac-proc-diagram { position: relative; margin-bottom: 12px; }
 .ac-section .ac-proc-live { margin: 0 0 0 8px; color: var(--ac-text-soft); }
 .ac-proc-canvas { height: 460px; overflow: hidden; touch-action: none; cursor: grab; background: var(--ac-surface); border: var(--ac-border-thin) solid var(--ac-line-strong); border-radius: var(--ac-radius-md); }
 .ac-proc-canvas:focus-visible { outline-offset: -2px; }
@@ -64,7 +64,28 @@
 .ac-bpmn-frozen text { fill: var(--ac-text-heading); font-weight: var(--ac-font-weight-bold); }
 .ac-bpmn-edge.is-rework { stroke: var(--ac-danger-700); stroke-dasharray: 6 3; }
 .ac-bpmn-edge.is-message { stroke: var(--ac-primary-700); stroke-dasharray: 2 4; }
+/* arrowheads of the links (owner, 2026-11-04): filled like their link */
+.ac-bpmn-arrow path { fill: var(--ac-text-soft); stroke: none; }
+.ac-bpmn-arrow.is-rework path { fill: var(--ac-danger-700); }
+.ac-bpmn-arrow.is-message path { fill: var(--ac-primary-700); }
 .ac-bpmn-marker { font-size: 10px; fill: var(--ac-text-soft); }
+/* the canvas edits (owner, 2026-11-04): an activity is dragged by its body, its ⋯ at the bottom right opens its menu */
+.ac-proc-canvas .ac-bpmn-activity { cursor: grab; }
+.ac-bpmn-more { cursor: pointer; }
+.ac-bpmn-more circle { fill: var(--ac-surface); stroke: var(--ac-line-strong); stroke-width: 1; }
+.ac-bpmn-more text { font-size: 14px; font-weight: var(--ac-font-weight-bold); fill: var(--ac-text-heading); }
+.ac-bpmn-more:hover circle { fill: var(--ac-surface-tint); }
+.ac-bpmn-ghost { fill: var(--ac-surface-tint); fill-opacity: 0.6; stroke: var(--ac-primary-700); stroke-width: 2; stroke-dasharray: 6 3; pointer-events: none; }
+.ac-proc-menu { position: absolute; z-index: 5; display: flex; flex-direction: column; gap: 2px; padding: 4px; background: var(--ac-surface);
+  border: var(--ac-border-thin) solid var(--ac-line-strong); border-radius: var(--ac-radius-md); }
+.ac-proc-menu button { text-align: left; }
+/* the links on the canvas (owner, 2026-11-04): a wide invisible stroke to click, the selected link, its end handles, the line a handle pulls */
+.ac-bpmn-edge-hit { fill: none; stroke: transparent; stroke-width: 14; cursor: pointer; pointer-events: stroke; }
+.ac-bpmn-edge.is-selected { stroke: var(--ac-primary-700); stroke-width: 4; }
+.ac-bpmn-handle { fill: var(--ac-surface); stroke: var(--ac-primary-700); stroke-width: 3; cursor: grab; }
+.ac-bpmn-pull { stroke: var(--ac-primary-700); stroke-width: 2; stroke-dasharray: 6 3; pointer-events: none; }
+.ac-proc-canvas.is-linking, .ac-proc-canvas.is-linking .ac-bpmn-activity { cursor: crosshair; }
+.ac-proc-hint { font-weight: var(--ac-font-weight-bold); color: var(--ac-primary-700); }
 /* Phase B9a: the transformation programme under the delivery process (swim lanes, parameter panel, table alternative). */
 .ac-prog { margin-top: 24px; }
 .ac-prog-table { max-height: 520px; overflow: auto; }
@@ -89,6 +110,10 @@
 @media (forced-colors: active) {
   .ac-bpmn rect, .ac-bpmn circle, .ac-bpmn polygon, .ac-bpmn-edge { stroke: CanvasText; }
   .ac-bpmn text { fill: CanvasText; }
+  .ac-bpmn-arrow path { fill: CanvasText; }
+  .ac-bpmn-ghost { stroke: Highlight; }
+  .ac-bpmn-edge.is-selected, .ac-bpmn-handle, .ac-bpmn-pull { stroke: Highlight; }
+  .ac-proc-menu { border-color: CanvasText; }
   .ac-bpmn-activity.is-selected rect, .ac-bpmn-activity.is-picked rect { stroke: Highlight; }
 }
 /* Phase B6: the optional BPMN editor (bpmn-js). Its bpmn.io watermark (licence) is never hidden or covered: no rule here targets it. */

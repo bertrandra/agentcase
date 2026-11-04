@@ -1,17 +1,18 @@
 import { useId } from 'react';
 import { removeProcessActivity, updateProcessActivity } from '@/controllers/process';
-import { moveProcessActivity } from '@/controllers/processLayout';
+import { moveProcessActivity, setProcessActivityRole } from '@/controllers/processLayout';
 import { readProcess, type XDocument } from '@/domain/process';
 import { activityDetail } from '@/domain/programme';
 import { DetailLinks } from '@/ui/widgets/DetailLinks';
+import { activityPanelId } from './DiagramEdit';
 import { selectActivity } from './view';
 
 const num = (s: string): number | undefined => (s.trim() === '' || !Number.isFinite(Number(s)) ? undefined : Number(s));
 
 /**
- * The selected activity (spec F-B16): its name, phase (`process.moveActivity`), effort and supervision split (`process.updateActivity`,
- * coalesced while typing), and "Remove" (`process.removeActivity`). Every change is one undoable step; the figures of a custom activity count
- * from phase B5 on. A link opens the screen where the activity's details live (its artefact row in 🎯 Scope, `activityDetail`).
+ * The selected activity (spec F-B16): its name, phase (`process.moveActivity`), role (`process.setActivityRole`, owner 2026-11-04), effort and
+ * supervision split (`process.updateActivity`, coalesced while typing), and "Remove" (`process.removeActivity`). Every change is one
+ * undoable step; the figures of a custom activity count from phase B5 on. A link opens the screen where the activity's details live (its artefact row in 🎯 Scope, `activityDetail`).
  */
 export function ActivityPanel({ doc, id }: { doc: XDocument; id: string }) {
   const v = readProcess(doc), a = v.activities.find((x) => x.id === id), k = useId();
@@ -25,11 +26,10 @@ export function ActivityPanel({ doc, id }: { doc: XDocument; id: string }) {
     </label>
   );
   return (
-    <section className="ac-proc-panel" aria-labelledby={`${k}-h`}>
+    <section id={activityPanelId} className="ac-proc-panel" aria-labelledby={`${k}-h`}>
       <h2 id={`${k}-h`}>{`${a.id} · ${a.name}`}</h2>
       <dl className="ac-proc-facts">
         <dt>Type</dt><dd>{`${a.type}${a.regulatory ? ' (regulatory)' : ''}`}</dd>
-        <dt>Role</dt><dd>{names.get(a.humanPerformer ?? '') ?? '—'}</dd>
         {a.performer && <><dt>Agent</dt><dd>{names.get(a.performer) ?? a.performer}</dd></>}
         <dt>Value class</dt><dd>{a.value || '—'}</dd>
         <dt>AI authority</dt><dd>{a.aiAuthority || '—'}</dd>
@@ -43,6 +43,12 @@ export function ActivityPanel({ doc, id }: { doc: XDocument; id: string }) {
         <label htmlFor={`${k}-phase`}>Phase
           <select id={`${k}-phase`} value={a.phase} disabled={inRework} onChange={(e) => moveProcessActivity(id, e.target.value)}>
             {v.phases.map((p) => <option key={p.id} value={p.id}>{`${p.id} · ${p.name}`}</option>)}
+          </select>
+        </label>
+        <label htmlFor={`${k}-role`}>Role
+          <select id={`${k}-role`} value={a.humanPerformer ?? ''} onChange={(e) => setProcessActivityRole(id, e.target.value)}>
+            {!a.humanPerformer && <option value="">—</option>}
+            {v.actors.filter((r) => r.kind === 'role').map((r) => <option key={r.id} value={r.id}>{r.name}</option>)}
           </select>
         </label>
         {field('effort', 'Effort', a.effort)}

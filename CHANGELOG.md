@@ -17,6 +17,32 @@ When releasing, follow [docs/BUMP_PROCEDURE.md](docs/BUMP_PROCEDURE.md) (§7 for
 
 ## [Unreleased]
 
+### 🧩 Process: points of view of the diagram (owner's request 2026-11-04)
+
+- **View** above the process diagram: **With automation (agents)**, the document's diagram, the agents in their lane; **Process only (no
+  automation)**, the pure process: no agents' lane, every agent activity drawn in the lane of the role that does it (its human performer's team
+  skill), in the same phase column, the lanes growing to hold them and the flows following. Combines with Hide out-of-scope and Compact. A
+  drawing view only (no figure, no stored change); the list of views is open to more points of view. `domain/process/drawingViews.ts`.
+- **Process only (no automation) is the default view** (owner, 2026-11-04); With automation is one click away.
+- **Arrowheads on the links** of the diagram (owner, 2026-11-04): each flow shows its direction, the arrow coloured like its link (rework red,
+  message flows blue).
+- **Freeze phases** (owner, 2026-11-04): the phase names stay at the top edge while panning, as Freeze roles keeps the role names at the left.
+
+### 🧩 Process: editing on the diagram's canvas (owner's request 2026-11-04)
+
+- **⋯ menu at the bottom right of each activity**: **Edit details** opens its activity panel (name, phase, role, effort, supervision), **Delete
+  activity** removes it (one step, Ctrl+Z undoes).
+- **＋ Add activity** above the canvas: a new activity in the shown phase (else the first), with the defaults of its phase, placed in its role's
+  lane; its panel opens to edit it.
+- **Drag and drop**: an activity dragged to another cell takes that phase and the role of that lane (the role prices its effort), in a free slot of
+  the cell; a full lane grows by one row. One undoable step (`process.placeActivity`). The activity panel gains a **Role** field (the keyboard way;
+  `process.setActivityRole`). `domain/process/editPlace.ts`.
+- **Show phase**: the diagram shows one phase only (its activities, its lanes, the flows between them), or all phases.
+- **Links on the canvas**: **🔗 Add a link** in an activity's ⋯ menu, then a click on the activity it leads to; a click on a link selects it, with a
+  handle at each end (drag one onto another activity to move that end) and a menu with **🗑️ Delete link**. One undoable step each
+  (`process.addLink`, `process.reconnectLink`, `process.removeLink`); a link stays inside its phase (in BPMN a sequence flow does not leave its
+  sub-process), and a refused link says why. Rework and message flows are not edited there. `domain/process/editLinks.ts`.
+
 ### 🔎 Audit and 🧩 Process: shorter controls, files collapsed, editor zoom (owner's requests 2026-11-04)
 
 - 🔎 Audit: the **📁 Files** block (template, workbook import, report, tool catalogue) is collapsed by default; the report of the last import

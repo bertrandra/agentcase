@@ -1,6 +1,7 @@
-import { memo } from 'react';
+import { memo, useId } from 'react';
 import type { Drawing, DrawShape } from '@/domain/process';
 import { shallowEqual } from '@/store/equal';
+import { editableEdge } from './DiagramLinks';
 
 /** The label of a shape cut into lines of about `n` characters (at most `max` lines, the last one ellipsed). */
 export function lines(label: string, n: number, max: number): string[] {
@@ -18,8 +19,12 @@ const cls = (s: DrawShape, selected: string | null, extra: string): string =>
     s.id === selected ? 'is-selected' : '', extra].filter(Boolean).join(' ');
 
 /** `onPick(id, add)`: a click on an activity, `add` with Ctrl, Cmd or Shift (adds it to the diagram's selection). */
-interface Props { selected: string | null; onPick: (id: string, add: boolean) => void; labels: boolean }
-function ShapeView({ s, selected, onPick, labels, x }: Props & { s: DrawShape; x: string }) {
+/** `onDrag`, `onMenu`: an editable diagram (a pointer down on an activity starts a drag; its ⋯ at the bottom right opens its menu at the click). */
+interface Props {
+  selected: string | null; onPick: (id: string, add: boolean) => void; labels: boolean;
+  onDrag?: (id: string, e: React.PointerEvent) => void; onMenu?: (id: string, x: number, y: number) => void;
+}
+function ShapeView({ s, selected, onPick, labels, x, onDrag, onMenu }: Props & { s: DrawShape; x: string }) {
   const c = cls(s, selected, x);
   if (s.kind === 'event') return <circle className={c} cx={s.x + s.w / 2} cy={s.y + s.h / 2} r={s.w / 2} />;
   if (s.kind === 'gateway') {
@@ -28,13 +33,21 @@ function ShapeView({ s, selected, onPick, labels, x }: Props & { s: DrawShape; x
   }
   if (s.kind === 'activity') {
     return (
-      <g className={c} onClick={(e) => onPick(s.id, e.ctrlKey || e.metaKey || e.shiftKey)}>
+      <g className={c} onClick={(e) => onPick(s.id, e.ctrlKey || e.metaKey || e.shiftKey)} onPointerDown={onDrag && ((e) => onDrag(s.id, e))}>
         <rect x={s.x} y={s.y} width={s.w} height={s.h} rx={8} />
         {labels && <text x={s.x + s.w / 2} y={s.y + 16} textAnchor="middle">
           <tspan x={s.x + s.w / 2} className="ac-bpmn-id">{s.id}</tspan>
           {lines(s.label, 16, 3).map((l, i) => <tspan key={i} x={s.x + s.w / 2} dy={14}>{l}</tspan>)}
         </text>}
         {s.marker && <text className="ac-bpmn-marker" x={s.x + s.w / 2} y={s.y + s.h - 6} textAnchor="middle">{s.marker}</text>}
+        {onMenu && (
+          <g className="ac-bpmn-more" onPointerDown={(e) => e.stopPropagation()}
+            onClick={(e) => { e.stopPropagation(); onMenu(s.id, e.clientX, e.clientY); }}>
+            <title>{`Actions on ${s.id}: edit, delete`}</title>
+            <circle cx={s.x + s.w - 11} cy={s.y + s.h - 11} r={9} />
+            <text x={s.x + s.w - 11} y={s.y + s.h - 7} textAnchor="middle">⋯</text>
+          </g>
+        )}
       </g>
     );
   }
@@ -54,6 +67,7 @@ type ShapeProps = Props & { s: DrawShape; x: string };
 /** Same drawn shape: equal fields (a recomputed drawing gives fresh objects), the same selection state and display classes of THIS shape, labels
  *  and pick handler. */
 const sameShape = (a: ShapeProps, b: ShapeProps): boolean => a.labels === b.labels && a.onPick === b.onPick && a.x === b.x
+  && a.onDrag === b.onDrag && a.onMenu === b.onMenu
   && shallowEqual(a.s, b.s)
   && (a.selected === a.s.id) === (b.selected === b.s.id);
 /** One shape, memoised per node: an edit of one activity redraws that shape only, a selection the two shapes it changes. */
@@ -64,45 +78,30 @@ const Shape = memo(ShapeView, sameShape);
  * read: the fitted view of a 400-activity process shows its structure, and the table lists the names.
  */
 /** `extra`: display classes per activity id (colour, faded by the filters, picked). */
-type ShapesProps = Props & { d: Drawing; extra?: ReadonlyMap<string, string> };
-export const Shapes = memo(function Shapes({ d, selected, onPick, labels, extra }: ShapesProps) {
+/** `onEdge`: a click on an editable link (selects it, its menu at the click). */
+type ShapesProps = Props & { d: Drawing; extra?: ReadonlyMap<string, string>; onEdge?: (id: string, x: number, y: number) => void };
+const kindOf = (e: Drawing['edges'][number]): string => (e.rework ? 'rework' : e.message ? 'message' : 'flow');
+export const Shapes = memo(function Shapes({ d, selected, onPick, labels, extra, onDrag, onMenu, onEdge }: ShapesProps) {
+  const id = useId().replace(/:/g, '');   // one set of arrowheads per diagram (two diagrams share the page)
   return (
     <>
+      {/* arrowheads at the end of each link (owner, 2026-11-04), coloured like their link */}
+      <defs>{['flow', 'rework', 'message'].map((k) => (
+        <marker key={k} id={`${id}-${k}`} className={`ac-bpmn-arrow is-${k}`} viewBox="0 0 10 10" refX="9" refY="5" markerWidth="12" markerHeight="12"
+          markerUnits="userSpaceOnUse" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" /></marker>
+      ))}</defs>
       {d.shapes.filter((s) => s.kind !== 'activity')
         .map((s) => <Shape key={`${s.kind}:${s.id}`} s={s} selected={selected} onPick={onPick} labels={labels} x="" />)}
       {d.edges.map((e) => (
         <polyline key={e.id} className={`ac-bpmn-edge${e.rework ? ' is-rework' : ''}${e.message ? ' is-message' : ''}${e.bridged ? ' is-bridged' : ''}`}
-          points={e.points.map((p) => p.join(',')).join(' ')} />
+          points={e.points.map((p) => p.join(',')).join(' ')} markerEnd={`url(#${id}-${kindOf(e)})`} />
+      ))}
+      {onEdge && d.edges.filter(editableEdge).map((e) => (   // a wide invisible stroke: the link is easy to click
+        <polyline key={`hit:${e.id}`} className="ac-bpmn-edge-hit" points={e.points.map((p) => p.join(',')).join(' ')}
+          onClick={(ev) => onEdge(e.id, ev.clientX, ev.clientY)}><title>{`Link ${e.source} → ${e.target}: click to edit`}</title></polyline>
       ))}
       {d.shapes.filter((s) => s.kind === 'activity')
-        .map((s) => <Shape key={s.id} s={s} selected={selected} onPick={onPick} labels={labels} x={extra?.get(s.id) ?? ''} />)}
+        .map((s) => <Shape key={s.id} s={s} selected={selected} onPick={onPick} labels={labels} x={extra?.get(s.id) ?? ''} onDrag={onDrag} onMenu={onMenu} />)}
     </>
   );
 });
-
-/**
- * The lane (role) names kept at the left edge of the view while panning ("Freeze roles on the left"): a strip about 36 px wide on screen, whatever
- * the zoom (`px`: the canvas size in pixels; the view box is centred in it, "meet", so its visible left edge can be left of `v.x`), each lane's name
- * upright in it at the lane's height, cut to what the lane's height shows. Drawn over the shapes; not memoised (it moves with the view, a dozen
- * lanes).
- */
-export function FrozenLanes({ d, v, px }: { d: Drawing; v: { x: number; y: number; w: number; h: number }; px: { w: number; h: number } }) {
-  const scale = Math.min(px.w / v.w, px.h / v.h) || 1, unit = 1 / scale, left = v.x - (px.w / scale - v.w) / 2, w = 36 * unit;
-  const lanes = d.shapes.filter((s) => s.kind === 'lane');
-  if (!lanes.length) return null;
-  return (
-    <g className="ac-bpmn-frozen" aria-hidden="true">
-      {lanes.map((l) => {
-        const cy = l.y + l.h / 2, cx = left + w / 2, fit = Math.max(3, Math.floor((l.h * scale - 8) / 7));
-        const label = l.label.length > fit ? `${l.label.slice(0, fit - 1)}…` : l.label;
-        return (
-          <g key={l.id}>
-            <rect x={left} y={l.y} width={w} height={l.h} />
-            <text x={cx} y={cy} textAnchor="middle" dominantBaseline="middle" fontSize={12 * unit}
-              transform={`rotate(-90 ${cx} ${cy})`}><title>{l.label}</title>{label}</text>
-          </g>
-        );
-      })}
-    </g>
-  );
-}

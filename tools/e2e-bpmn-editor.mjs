@@ -115,6 +115,47 @@ await step('close from the keyboard: the focus comes back to "Edit diagram", the
   if (await page.evaluate(() => document.activeElement?.getAttribute('aria-label')) !== 'Edit diagram') throw new Error('the focus did not come back');
   if (await page.locator('style[data-ac-bpmn-editor]').count()) throw new Error('the editor style sheet was left in the page');
 });
+await step('canvas drag (owner, 2026-11-04): an activity dropped in another lane takes that lane\'s role, one step; Ctrl+Z restores it', async () => {
+  const role = () => page.locator('#ac-proc-activity label', { hasText: 'Role' }).locator('select').inputValue();
+  const pick = page.locator('.ac-proc-canvas g.ac-bpmn-activity rect').nth(2);
+  await pick.click();
+  const id = (await page.locator('#ac-proc-activity h2').textContent()).split(' · ')[0], before = await role();
+  const lanes = page.locator('.ac-proc-canvas g.ac-bpmn-lane');
+  let target = null;
+  for (let i = 0, n = await lanes.count(); i < n && !target; i++) {
+    const t = (await lanes.nth(i).locator('text').first().textContent()) ?? '';
+    if (t === 'Dev' && !before.includes('dev')) target = await lanes.nth(i).locator('rect').first().boundingBox();
+  }
+  if (!target) throw new Error('no Dev lane to drop on');
+  const a = await pick.boundingBox(), x = a.x + a.width / 2, y = a.y + a.height / 2;
+  await page.mouse.move(x, y); await page.mouse.down();
+  await page.mouse.move(x, y + 10, { steps: 3 }); await page.mouse.move(x, target.y + target.height / 2, { steps: 8 }); await page.mouse.up();
+  await pick.click();
+  if (!(await page.locator('#ac-proc-activity h2').textContent()).startsWith(id)) throw new Error('another activity is selected after the drop');
+  if (await role() !== 'role-dev') throw new Error(`the role is ${await role()} after the drop, not role-dev (was ${before})`);
+  await page.locator('#ac-proc-activity h2').click();
+  await page.keyboard.press('Control+z');
+  await page.waitForFunction((r) => document.querySelector('#ac-proc-activity select[id$="-role"]')?.value === r, before);
+});
+await step('canvas links (owner, 2026-11-04): a link\'s end handle dragged onto another activity moves that end; Delete link removes it', async () => {
+  const frame = page.locator('.ac-proc-diagram').first(), hits = frame.locator('.ac-bpmn-edge-hit');
+  await frame.locator('select[id$="-ph"]').selectOption('L0');
+  const hit = async (s, t) => { for (let i = 0, n = await hits.count(); i < n; i++) if ((await hits.nth(i).locator('title').textContent()).startsWith(`Link ${s} → ${t}:`)) return hits.nth(i); return null; };
+  const first = await hit('A001', 'A002');
+  if (!first) throw new Error('no link A001 → A002 drawn');
+  await first.dispatchEvent('click', { clientX: 400, clientY: 300 });
+  const handles = frame.locator('.ac-bpmn-handle');
+  if (await handles.count() !== 2) throw new Error(`${await handles.count()} handles, not 2`);
+  const h = await handles.nth(1).boundingBox();
+  const target = await frame.locator('.ac-bpmn-activity').filter({ has: page.locator('title', { hasText: /^Actions on A003:/ }) }).locator('rect').first().boundingBox();
+  await page.mouse.move(h.x + h.width / 2, h.y + h.height / 2); await page.mouse.down();
+  await page.mouse.move(target.x + target.width / 2, target.y + target.height / 2, { steps: 8 }); await page.mouse.up();
+  if (!(await hit('A001', 'A003')) || (await hit('A001', 'A002'))) throw new Error('the end of the link did not move to A003');
+  await (await hit('A001', 'A003')).dispatchEvent('click', { clientX: 400, clientY: 300 });
+  await page.getByRole('menuitem', { name: '🗑️ Delete link' }).click();
+  if (await hit('A001', 'A003')) throw new Error('the link was not deleted');
+  await frame.locator('select[id$="-ph"]').selectOption('');
+});
 await browser.close();
 console.log(steps, 'editor flows,', failures, 'failure(s)');
 process.exit(failures ? 1 : 0);

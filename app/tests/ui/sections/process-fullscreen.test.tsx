@@ -44,4 +44,32 @@ describe('Process diagram full screen', { timeout: 90_000 }, () => {
     expect(area()).toBeCloseTo(full, 0);
     expect(appStore().getState().history.undo.length).toBe(n);
   });
+  it('View: "Process only (no automation)" by default, no agents\' lane; "With automation" brings it back; view state only', () => {
+    render(<Process />);
+    const n = appStore().getState().history.undo.length, frame = document.querySelector('.ac-proc-diagram')!;
+    const view = [...frame.querySelectorAll('select')].find((x) => x.id && frame.querySelector(`label[for="${x.id}"]`)?.textContent === 'View')!;
+    const agentsLane = () => [...frame.querySelectorAll('.ac-proc-canvas svg text')].some((t) => t.textContent === 'Agents');
+    expect(view.value).toBe('process');
+    expect(agentsLane()).toBe(false);
+    act(() => { fireEvent.change(view, { target: { value: 'automation' } }); });
+    expect(agentsLane()).toBe(true);
+    act(() => { fireEvent.change(view, { target: { value: 'process' } }); });
+    expect(agentsLane()).toBe(false);
+    expect(appStore().getState().history.undo.length).toBe(n);
+  });
+  it('"Freeze roles" keeps the lane names at the left, "Freeze phases" the phase names at the top (owner, 2026-11-04); view state only', () => {
+    render(<Process />);
+    const n = appStore().getState().history.undo.length, frame = document.querySelector('.ac-proc-diagram')!;
+    const box = (name: string) => frame.querySelector<HTMLInputElement>(`input[aria-label="${name}"]`)!;
+    const frozen = () => [...frame.querySelectorAll('.ac-bpmn-frozen text')].map((t) => t.querySelector('title')?.textContent);
+    expect(frozen()).toEqual([]);
+    act(() => { fireEvent.click(box('Freeze phases at the top')); });
+    expect(frozen()).toContain('Specification');
+    expect(frozen()).not.toContain('Cross-cutting');   // the band below the phase columns is not a column
+    act(() => { fireEvent.click(box('Freeze roles on the left')); });
+    expect(frozen()).toContain('Dev');
+    act(() => { fireEvent.click(box('Freeze phases at the top')); fireEvent.click(box('Freeze roles on the left')); });
+    expect(frozen()).toEqual([]);
+    expect(appStore().getState().history.undo.length).toBe(n);
+  });
 });

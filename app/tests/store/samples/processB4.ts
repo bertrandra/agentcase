@@ -1,7 +1,8 @@
 import { readFileSync } from 'node:fs';
 import { addProcessActivity } from '@/controllers/process';
 import { importProcess, resetProcessTo } from '@/controllers/processImport';
-import { linkProcessActivities, moveProcessActivity, setProcessDiagram, setProcessRework } from '@/controllers/processLayout';
+import { addCanvasActivity, addProcessLink, linkProcessActivities, moveProcessActivity, placeProcessActivity, reconnectProcessLink, removeProcessLink,
+  setProcessActivityRole, setProcessDiagram, setProcessRework } from '@/controllers/processLayout';
 import { analyseImport, DEFAULT_CHOICES } from '@/domain/process';
 import { editBase } from '@/store/editBase';
 import { parseBpmn } from '@/store/persistence/bpmn/read';
@@ -21,4 +22,11 @@ export const samples: Record<string, Sample> = {
   'process.setReworkFlow': () => setProcessRework('LP001', { probability: 0.2 }),
   'process.linkActivities': { prep: () => addProcessActivity(CUSTOM), run: () => { linkProcessActivities(); } },
   'process.setDiagram': () => setProcessDiagram('A016', { x: 10, y: 20, w: 100, h: 80 }),
+  // the canvas edits (owner, 2026-11-04)
+  'process.placeActivity': () => placeProcessActivity('A003', 'L0', 'Dev'),
+  'process.setActivityRole': () => setProcessActivityRole('A003', 'role-qa'),
+  'process.addActivityAt': () => { addCanvasActivity('L0'); },
+  'process.addLink': () => { addProcessLink('A001', 'A003'); },
+  'process.removeLink': () => removeProcessLink('Flow_A001_A002'),
+  'process.reconnectLink': () => { reconnectProcessLink('Flow_A001_A002', 'target', 'A003'); },
 };
