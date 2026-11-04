@@ -40,7 +40,9 @@ const help = (
   <>
     <p>The delivery process of the case as one BPMN 2.0 model: its phases, its activities with their actors and parameters, and its diagram. The
       other scope sections (Scope, Phase scope, the artefact editors) read and write the same model.</p>
-    <p>The diagram is read-only: zoom with + and −, the wheel (at the cursor) or two fingers (pinch), pan with the arrow keys or by dragging, 0 fits
+    <p>On the diagram, drag an activity to another phase or lane (it takes that phase and that lane&apos;s role, one step), open its ⋯ (bottom right)
+      to edit or delete it, and add one with ＋ Add activity; Show phase draws one phase only.</p>
+    <p>Zoom with + and −, the wheel (at the cursor) or two fingers (pinch), pan with the arrow keys or by dragging the background, 0 fits
       it again. Ctrl or Shift + click adds activities to the selection, and Zoom to selection centres them at a zoom where their names can be read;
       the table&apos;s filters fade the other activities (Zoom to filtered fits those kept). Hide out-of-scope activities and Colours (task type: manual,
       human, agent…; AI authority; or audit progress: planned, in progress, audited, closed) change the drawing only, never the case. The
@@ -82,7 +84,8 @@ export default function ProcessSection() {
       }
       result={
         <>
-          <Diagram d={drawing} tableId={tableId} title="Diagram of the delivery process" name="Process diagram" facts={facts} shown={kept} roleLanes={lanes}
+          <Diagram d={drawing} tableId={tableId} title="Diagram of the delivery process" name="Process diagram" facts={facts} shown={kept}
+            roleLanes={lanes} editable
             desc={`${count(drawing, 'activity')} activities in ${count(drawing, 'phase')} phases, drawn from the BPMN diagram of the case.`} />
           <DiagramEditor />
           {selected && <ActivityPanel doc={doc} id={selected} />}

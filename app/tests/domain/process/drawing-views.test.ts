@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import { drawingOf, drawingView, readProcess, roleLanes, type Drawing } from '@/domain/process';
+import { drawingOf, drawingView, onlyPhase, readProcess, roleLanes, type Drawing } from '@/domain/process';
 import { opened } from '../../helpers/processCases';
 
 /** Points of view of the diagram (owner's request 2026-11-04): with automation (the document's diagram), process only (no agents' lane). */
@@ -34,5 +34,21 @@ describe('drawingView', () => {
     expect(drawingView(d, 'process', new Map())).toBe(d);
     const noAgents: Drawing = { ...d, shapes: d.shapes.filter((s) => !(s.kind === 'lane' && /agent/i.test(s.label))) };
     expect(drawingView(noAgents, 'process', golden().lanes)).toBe(noAgents);
+  });
+});
+
+describe('onlyPhase', () => {
+  it('keeps one phase: its box and activities, the flows between them; other phases and their activities go', () => {
+    const { d } = golden(), ph = d.shapes.find((s) => s.kind === 'phase' && d.shapes.some((a) => a.kind === 'activity' && a.phase === s.id))!;
+    const v = onlyPhase(d, ph.id), acts = v.shapes.filter((s) => s.kind === 'activity');
+    expect(v.shapes.filter((s) => s.kind === 'phase').map((s) => s.id)).toEqual([ph.id]);
+    expect(acts.map((s) => s.id).sort()).toEqual(d.shapes.filter((s) => s.kind === 'activity' && s.phase === ph.id).map((s) => s.id).sort());
+    const ids = new Set(acts.map((s) => s.id));
+    for (const e of v.edges) expect(ids.has(e.source!) && ids.has(e.target!)).toBe(true);
+  });
+  it('"" or an unknown phase keeps the drawing', () => {
+    const { d } = golden();
+    expect(onlyPhase(d, '')).toBe(d);
+    expect(onlyPhase(d, 'nope')).toBe(d);
   });
 });

@@ -26,6 +26,8 @@ interface Props {
   compact: boolean; onCompact: (v: boolean) => void;
   /** the point of view (null: the diagram offers none) */
   view: DiagramViewId | null; onView: (v: DiagramViewId) => void;
+  /** the phase filter: '' shows every phase */
+  phases: { id: string; label: string }[]; phase: string; onPhase: (v: string) => void;
   /** the categories drawn (the legend), in colour order */
   used: string[]; zoomLabel: string; onZoomSel: (() => void) | null; colours: boolean;
   /** keep the lane (role) names at the left edge while panning */
@@ -38,7 +40,8 @@ interface Props {
  * at the left edge, colour the activities by task type or AI
  * authority (with its legend), and zoom to the selected activities (Ctrl / Shift + click adds one) or, with none, to those the filters keep.
  */
-export function DiagramOptions({ name, hideOut, onHideOut, compact, onCompact, view, onView, colour, onColour, used, zoomLabel, onZoomSel, colours, freeze,
+export function DiagramOptions({ name, hideOut, onHideOut, compact, onCompact, view, onView, phases, phase, onPhase, colour, onColour, used, zoomLabel,
+  onZoomSel, colours, freeze,
   onFreeze, freezePhases, onFreezePhases }: Props) {
   const id = useId();
   return (
@@ -49,6 +52,11 @@ export function DiagramOptions({ name, hideOut, onHideOut, compact, onCompact, v
           {DIAGRAM_VIEWS.map((v) => <option key={v.id} value={v.id}>{v.label}</option>)}
         </select>
       </>}
+      <label htmlFor={`${id}-ph`}>Show phase</label>
+      <select id={`${id}-ph`} value={phase} onChange={(e) => onPhase(e.target.value)}>
+        <option value="">All phases</option>
+        {phases.map((p) => <option key={p.id} value={p.id}>{p.label}</option>)}
+      </select>
       <label><input type="checkbox" aria-label="Hide out-of-scope activities" checked={hideOut} onChange={(e) => onHideOut(e.target.checked)} />
         {' '}Hide out-of-scope</label>
       <label><input type="checkbox" aria-label="Compact the layout" checked={compact} disabled={!hideOut} onChange={(e) => onCompact(e.target.checked)} />

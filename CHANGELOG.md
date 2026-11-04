@@ -28,6 +28,17 @@ When releasing, follow [docs/BUMP_PROCEDURE.md](docs/BUMP_PROCEDURE.md) (§7 for
   message flows blue).
 - **Freeze phases** (owner, 2026-11-04): the phase names stay at the top edge while panning, as Freeze roles keeps the role names at the left.
 
+### 🧩 Process: editing on the diagram's canvas (owner's request 2026-11-04)
+
+- **⋯ menu at the bottom right of each activity**: **Edit details** opens its activity panel (name, phase, role, effort, supervision), **Delete
+  activity** removes it (one step, Ctrl+Z undoes).
+- **＋ Add activity** above the canvas: a new activity in the shown phase (else the first), with the defaults of its phase, placed in its role's
+  lane; its panel opens to edit it.
+- **Drag and drop**: an activity dragged to another cell takes that phase and the role of that lane (the role prices its effort), in a free slot of
+  the cell; a full lane grows by one row. One undoable step (`process.placeActivity`). The activity panel gains a **Role** field (the keyboard way;
+  `process.setActivityRole`). `domain/process/editPlace.ts`.
+- **Show phase**: the diagram shows one phase only (its activities, its lanes, the flows between them), or all phases.
+
 ### 🔎 Audit and 🧩 Process: shorter controls, files collapsed, editor zoom (owner's requests 2026-11-04)
 
 - 🔎 Audit: the **📁 Files** block (template, workbook import, report, tool catalogue) is collapsed by default; the report of the last import

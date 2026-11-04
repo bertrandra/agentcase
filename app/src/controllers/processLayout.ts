@@ -1,5 +1,7 @@
 /** @calc-zone scope-automation */
-import { linkActivities, moveActivity, setDiagram, setReworkFlow, type Bounds, type ReworkPatch } from '@/domain/process';
+import { addActivityAt, changeActivityRole, linkActivities, newCanvasActivity, readProcess, moveActivity, placeActivity, setDiagram, setReworkFlow,
+  type Bounds, type CatArtefact,
+  type ReworkPatch } from '@/domain/process';
 import { defineCommand } from '@/store/commands';
 import { refitPotential } from '@/store/derive';
 import { editBase } from '@/store/editBase';
@@ -23,6 +25,20 @@ const diagramCmd = defineCommand<{ element: string; bounds: Bounds }>({
   run(d, p) { editProcess(d, (doc) => setDiagram(doc, p.element, p.bounds)); },
 });
 
+// the canvas (owner, 2026-11-04): a dropped activity (phase, role of the lane, slot), a role chosen in the panel, an activity added with "+"
+const placeCmd = defineCommand<{ id: string; phase: string; lane?: string }>({
+  type: 'process.placeActivity', label: (p) => `Move activity ${p.id} to ${p.phase}${p.lane ? ` · ${p.lane}` : ''}`,
+  run(d, p) { editProcess(d, (doc) => placeActivity(doc, p.id, p.phase, p.lane)); refitPotential(d); },
+});
+const roleCmd = defineCommand<{ id: string; role: string }>({
+  type: 'process.setActivityRole', label: (p) => `Set the role of ${p.id}`,
+  run(d, p) { editProcess(d, (doc) => changeActivityRole(doc, p.id, p.role)); refitPotential(d); },
+});
+const addAtCmd = defineCommand<{ activity: CatArtefact; lane?: string }>({
+  type: 'process.addActivityAt', label: (p) => `Add activity ${p.activity.name || p.activity.id}`,
+  run(d, p) { editProcess(d, (doc) => addActivityAt(doc, p.activity, p.lane)); refitPotential(d); },
+});
+
 const linkCmd = defineCommand<Record<string, never>>({
   type: 'process.linkActivities', label: () => 'Link the activities of each phase',
   run(d) { editProcess(d, linkActivities); },
@@ -38,3 +54,13 @@ export const linkProcessActivities = (): boolean => {
   appStore().dispatch(linkCmd({}));
   return true;
 };
+export const placeProcessActivity = (id: string, phase: string, lane?: string): void => appStore().dispatch(placeCmd({ id, phase, lane }));
+export const setProcessActivityRole = (id: string, role: string): void => appStore().dispatch(roleCmd({ id, role }));
+export const addProcessActivityAt = (activity: CatArtefact, lane?: string): void => appStore().dispatch(addAtCmd({ activity, lane }));
+/** The canvas "+": a new activity in `phase` (else the first phase), in its role's lane; its id, or null when the process has no phase. */
+export function addCanvasActivity(phase?: string): string | null {
+  const doc = editBase().BPMN, ph = phase || readProcess(doc).phases.find((p) => p.id !== 'Cross-cutting')?.id, a = ph ? newCanvasActivity(doc, ph) : null;
+  if (!a) return null;
+  addProcessActivityAt(a);
+  return a.id;
+}

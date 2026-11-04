@@ -1,5 +1,6 @@
 /** @calc-zone process-model */
 import { linkPoints } from './buildDi';
+import { compactDrawing } from './drawingCompact';
 import type { DrawEdge, Drawing, DrawShape } from './drawing';
 import type { XDocument } from './xml';
 import { readProcess } from './read';
@@ -88,4 +89,16 @@ export function drawingView(d: Drawing, view: DiagramViewId, lanes: ReadonlyMap<
 function topOf(lane: DrawShape, acts: DrawShape[], moving: DrawShape[]): number {
   const there = acts.filter((s) => !moving.includes(s) && centreIn(s, lane));
   return there.length ? Math.min(...there.map((s) => s.y)) - lane.y : 2 * G;
+}
+
+/**
+ * One phase of the drawing (owner's request 2026-11-04, the diagram's phase filter): the phase's box and activities, the lanes and pool around
+ * them, the flows between its activities; then compacted (`compactDrawing`: the lanes left empty go, the empty bands close). '' keeps every phase.
+ */
+export function onlyPhase(d: Drawing, phase: string): Drawing {
+  if (!phase || !d.shapes.some((s) => s.kind === 'phase' && s.id === phase)) return d;
+  const keep = (s: DrawShape): boolean => s.kind === 'pool' || s.kind === 'lane'
+    || (s.kind === 'phase' ? s.id === phase : s.kind === 'activity' && s.phase === phase);
+  const shapes = d.shapes.filter(keep), ids = new Set(shapes.map((s) => s.id));
+  return compactDrawing({ box: d.box, shapes, edges: d.edges.filter((e) => !!e.source && !!e.target && ids.has(e.source) && ids.has(e.target)) });
 }

@@ -1,7 +1,7 @@
 {
- "clones": 88,
- "duplicatedLines": 720,
- "files": 1912,
+ "clones": 87,
+ "duplicatedLines": 714,
+ "files": 1982,
  "jscpd": "5.4.2",
  "minTokens": 50,
  "minLines": 5,
@@ -86,7 +86,6 @@
   "ui/sections/model-evidence.test.tsx <-> ui/sections/model-stochastic.test.tsx #2570f70e161030dc",
   "ui/sections/model-stochastic.test.tsx <-> ui/sections/model-stochastic.test.tsx #b8b5b77c6fe121e3",
   "ui/sections/model-stochastic.test.tsx <-> ui/sections/model-supervision.test.tsx #1b122e00f5fc63e2",
-  "ui/sections/opmodel.test.tsx <-> ui/sections/program.test.tsx #bc43c191a6a083cd",
   "ui/sections/process-programme-b9b.test.tsx <-> ui/sections/process-programme.test.tsx #6ee964a9dafc9bbe",
   "ui/sections/stress/AggParts.tsx <-> ui/sections/tune/AggregateShared.tsx #1d425f062d067438",
   "ui/sections/tune/maturity/Aggregate.tsx <-> ui/sections/tune/program/Aggregate.tsx #5933a98960075973",
