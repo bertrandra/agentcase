@@ -22,7 +22,8 @@ const frame = () => document.querySelector<HTMLElement>('.ac-proc-canvas')!;
 const shapes = () => [...svg().querySelectorAll<SVGGElement>('g.ac-bpmn-activity')];
 const ids = () => drawingOf(doc()).shapes.filter((s) => s.kind === 'activity').map((s) => s.id);
 const shapeOf = (id: string) => shapes()[ids().indexOf(id)]!;
-const checkbox = (text: string) => [...document.querySelectorAll('label')].find((l) => l.textContent?.includes(text))!.querySelector('input')!;
+const checkbox = (text: string) => [...document.querySelectorAll<HTMLInputElement>('input[type=checkbox]')]
+  .find((i) => i.getAttribute('aria-label') === text || i.closest('label')?.textContent?.includes(text))!;
 const button = (text: string) => [...document.querySelectorAll('button')].find((b) => b.textContent === text)!;
 const colours = () => [...document.querySelectorAll('label')].find((l) => l.textContent === 'Colours')!;
 const scale = () => 1000 / parseFloat(svg().getAttribute('viewBox')!.split(' ')[2]!);

@@ -85,6 +85,16 @@ await step('move a task (select, Shift+arrows), save: one undoable step; Ctrl+Z 
   const toast = await page.locator('[aria-live]').filter({ hasText: /Undone: Edit the process diagram/ }).count();
   if (!toast) throw new Error(`Ctrl+Z did not undo the editor's save (${await live()})`);
 });
+await step('zoom buttons (owner, 2026-11-03: a phone has no wheel): + enlarges, − shrinks, Fit fits', async () => {
+  const scale = () => page.evaluate(() => { const v = document.querySelector('.ac-proc-editor-canvas .viewport'); return v ? new DOMMatrix(getComputedStyle(v).transform).a : 0; });
+  const s0 = await scale();
+  await page.getByRole('button', { name: 'Zoom in the editor' }).click();
+  const s1 = await scale();
+  if (!(s1 > s0)) throw new Error(`zoom in did not enlarge (${s0} -> ${s1})`);
+  await page.getByRole('button', { name: 'Zoom out the editor' }).click(); await page.getByRole('button', { name: 'Zoom out the editor' }).click();
+  if (!((await scale()) < s1)) throw new Error('zoom out did not shrink');
+  await page.getByRole('button', { name: 'Fit the diagram in the editor' }).click();
+});
 await step('full screen (owner, 2026-11-03): the editor fills the window, its canvas grows and refits, the watermark stays visible', async () => {
   const canvas = page.locator('.ac-proc-editor-canvas'), before = (await canvas.boundingBox()).height;
   const toggle = page.locator('.ac-proc-editor [role=toolbar] button[aria-pressed]');   // ⤢ Full screen / ⤡ Exit full screen
@@ -102,7 +112,7 @@ await step('close from the keyboard: the focus comes back to "Edit diagram", the
   await page.keyboard.press('Enter');
   if (await page.locator('.ac-proc-editor').count()) await page.keyboard.press('Enter');   // a second press when the editor had changes
   await page.locator('.ac-proc-editor').waitFor({ state: 'detached' });
-  if (await page.evaluate(() => document.activeElement?.textContent) !== 'Edit diagram') throw new Error('the focus did not come back');
+  if (await page.evaluate(() => document.activeElement?.getAttribute('aria-label')) !== 'Edit diagram') throw new Error('the focus did not come back');
   if (await page.locator('style[data-ac-bpmn-editor]').count()) throw new Error('the editor style sheet was left in the page');
 });
 await browser.close();

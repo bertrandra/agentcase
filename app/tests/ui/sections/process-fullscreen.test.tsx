@@ -32,7 +32,7 @@ describe('Process diagram full screen', { timeout: 90_000 }, () => {
   it('hiding the out-of-scope activities compacts the layout (a smaller picture); "Compact the layout" off keeps the full grid', () => {
     render(<Process />);
     const n = appStore().getState().history.undo.length, frame = document.querySelector('.ac-proc-diagram')!;
-    const box = (name: string) => [...frame.querySelectorAll('label')].find((l) => l.textContent?.trim() === name)!.querySelector('input')!;
+    const box = (name: string) => frame.querySelector<HTMLInputElement>(`input[aria-label="${name}"]`)!;
     const area = () => { const v = frame.querySelector('.ac-proc-canvas svg')!.getAttribute('viewBox')!.split(' ').map(Number); return v[2]! * v[3]!; };
     const full = area();
     expect(box('Compact the layout').disabled).toBe(true);

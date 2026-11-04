@@ -38,9 +38,11 @@ export function DiagramOptions({ name, hideOut, onHideOut, compact, onCompact, c
   const id = useId();
   return (
     <div className="ac-form-row ac-proc-diagram-opts" role="group" aria-label={`${name} display`}>
-      <label><input type="checkbox" checked={hideOut} onChange={(e) => onHideOut(e.target.checked)} /> Hide out-of-scope activities</label>
-      <label><input type="checkbox" checked={compact} disabled={!hideOut} onChange={(e) => onCompact(e.target.checked)} /> Compact the layout</label>
-      <label><input type="checkbox" checked={freeze} onChange={(e) => onFreeze(e.target.checked)} /> Freeze roles on the left</label>
+      <label><input type="checkbox" aria-label="Hide out-of-scope activities" checked={hideOut} onChange={(e) => onHideOut(e.target.checked)} />
+        {' '}Hide out-of-scope</label>
+      <label><input type="checkbox" aria-label="Compact the layout" checked={compact} disabled={!hideOut} onChange={(e) => onCompact(e.target.checked)} />
+        {' '}Compact</label>
+      <label><input type="checkbox" aria-label="Freeze roles on the left" checked={freeze} onChange={(e) => onFreeze(e.target.checked)} /> Freeze roles</label>
       {colours && <>
         <label htmlFor={`${id}-c`}>Colours</label>
         <select id={`${id}-c`} value={colour} onChange={(e) => onColour(e.target.value as DiagramColour)}>

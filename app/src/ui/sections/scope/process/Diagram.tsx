@@ -28,7 +28,8 @@ interface Props {
 export function Diagram({ d, tableId, title, desc, name, labelZoom = 2, facts, shown = null }: Props) {
   const id = useId(), box = useRef<HTMLDivElement>(null), svg = useRef<SVGSVGElement>(null), selected = useProcessView((s) => s.selected);
   const [hideOut, setHideOut] = useState(false), [colour, setColour] = useState<DiagramColour>(''), [picked, setPicked] = useState<string[]>([]);
-  const [compact, setCompact] = useState(true), frame = useFrameSize(box);   // owner, 2026-11-03: hiding the out-of-scope activities closes the space they leave
+  // owner, 2026-11-03: hiding the out-of-scope activities closes the space they leave
+  const [compact, setCompact] = useState(true), frame = useFrameSize(box);
   const [freeze, setFreeze] = useState(false), root = useRef<HTMLDivElement>(null), full = useFullScreen(root, () => setCam(FIT));
   const out = (s: DrawShape): boolean => (facts?.get(s.id) ? !facts.get(s.id)!.counted : s.inScope === false);
   const drawn = useMemo(() => {

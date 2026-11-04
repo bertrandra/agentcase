@@ -17,6 +17,15 @@ When releasing, follow [docs/BUMP_PROCEDURE.md](docs/BUMP_PROCEDURE.md) (§7 for
 
 ## [Unreleased]
 
+### 🔎 Audit and 🧩 Process: shorter controls, files collapsed, editor zoom (owner's requests 2026-11-04)
+
+- 🔎 Audit: the **📁 Files** block (template, workbook import, report, tool catalogue) is collapsed by default; the report of the last import
+  still shows. Audit setup keeps only the audit activities: the separate **Interviews** list of the header is gone (an audit activity is the
+  interview; its plan, progression and removal stay in Audit setup and Audit progress).
+- 🧩 Process: shorter buttons with an icon (⬆ Import, ⬇ Export, ↺ Reset, 🔗 Link, ✏️ Edit), their full names kept as tooltip and accessible
+  name; shorter display checkboxes (Hide out-of-scope, Compact, Freeze roles), full names kept for screen readers.
+- Diagram editor: **+ / − / Fit** zoom buttons, for touch screens without a wheel.
+
 ### 🧩 Process: compact layout when the out-of-scope activities are hidden (owner's request 2026-11-03)
 
 - With **Hide out-of-scope activities**, the diagram now closes the space they leave: the phases and roles left empty are dropped and every
