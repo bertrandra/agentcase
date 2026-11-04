@@ -71,6 +71,7 @@
 .ac-bpmn-marker { font-size: 10px; fill: var(--ac-text-soft); }
 /* the canvas edits (owner, 2026-11-04): an activity is dragged by its body, its ⋯ at the bottom right opens its menu */
 .ac-proc-canvas .ac-bpmn-activity { cursor: grab; }
+.ac-proc-canvas svg { user-select: none; -webkit-user-select: none; }   /* a drag does not select the labels */
 .ac-bpmn-more { cursor: pointer; }
 .ac-bpmn-more circle { fill: var(--ac-surface); stroke: var(--ac-line-strong); stroke-width: 1; }
 .ac-bpmn-more text { font-size: 14px; font-weight: var(--ac-font-weight-bold); fill: var(--ac-text-heading); }
@@ -85,6 +86,9 @@
 .ac-bpmn-handle { fill: var(--ac-surface); stroke: var(--ac-primary-700); stroke-width: 3; cursor: grab; }
 .ac-bpmn-pull { stroke: var(--ac-primary-700); stroke-width: 2; stroke-dasharray: 6 3; pointer-events: none; }
 .ac-proc-canvas.is-linking, .ac-proc-canvas.is-linking .ac-bpmn-activity { cursor: crosshair; }
+/* a sub-process grouping activities (owner, 2026-11-04): dashed, inside its phase */
+.ac-bpmn-sub rect { fill: var(--ac-surface-tint); fill-opacity: 0.35; stroke: var(--ac-primary-700); stroke-width: 2; stroke-dasharray: 8 4; }
+.ac-bpmn-sub text { fill: var(--ac-primary-700); font-weight: var(--ac-font-weight-bold); }
 .ac-proc-hint { font-weight: var(--ac-font-weight-bold); color: var(--ac-primary-700); }
 /* Phase B9a: the transformation programme under the delivery process (swim lanes, parameter panel, table alternative). */
 .ac-prog { margin-top: 24px; }

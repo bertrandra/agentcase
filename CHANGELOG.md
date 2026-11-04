@@ -17,6 +17,24 @@ When releasing, follow [docs/BUMP_PROCEDURE.md](docs/BUMP_PROCEDURE.md) (§7 for
 
 ## [Unreleased]
 
+### 🧩 Process: sub-processes on the canvas (owner's request 2026-11-04)
+
+- An automated activity is a sub-process, and several activities can be automated together in one. The model keeps its "automatable" field; on
+  the diagram, **📦 Create a sub-process** in an activity's ⋯ menu groups it (or the activities picked with Ctrl / Shift + click, one phase) in a
+  BPMN sub-process inside its phase; **drag an activity onto it** to add it, **drag it out** to take it back; the sub-process's ⋯ menu has
+  **🗑️ Delete sub-process** (its activities stay in the phase). One undoable step each; a refused one (another phase, a rework loop) says why.
+- **Links by inheritance**: a link between an activity of the sub-process and one outside goes to the sub-process (a sequence flow does not cross
+  a sub-process's border); links between its activities stay inside it; deleting it gives its links back to its first and last activities.
+- Its activities are laid out together, each in its lane (its role), in a column of their own; the box is redrawn around them in every view.
+- **No figure moves**: the activities keep their phase and parameters (checked on the case's headline); the document still validates against the
+  OMG XSDs. `domain/process/editSub*.ts`, `controllers/processSubs.ts`.
+
+### 🧩 Process: an edit on the canvas keeps the view (owner's request 2026-11-04)
+
+- Moving an activity, adding a link or moving a link's end no longer zooms the diagram out to the whole process: the same window stays on screen
+  at the same zoom, and the activity or link just edited is brought into view when it left the window. Only another view (point of view, Show
+  phase, Hide out-of-scope, Compact) or Fit shows the whole drawing. `diagramCamera.ts` `keepView`, `bringIntoView`.
+
 ### 🧩 Process: points of view of the diagram (owner's request 2026-11-04)
 
 - **View** above the process diagram: **With automation (agents)**, the document's diagram, the agents in their lane; **Process only (no

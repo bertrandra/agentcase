@@ -3,6 +3,7 @@ import { addProcessActivity } from '@/controllers/process';
 import { importProcess, resetProcessTo } from '@/controllers/processImport';
 import { addCanvasActivity, addProcessLink, linkProcessActivities, moveProcessActivity, placeProcessActivity, reconnectProcessLink, removeProcessLink,
   setProcessActivityRole, setProcessDiagram, setProcessRework } from '@/controllers/processLayout';
+import { addToProcessSub, createProcessSub, deleteProcessSub } from '@/controllers/processSubs';
 import { analyseImport, DEFAULT_CHOICES } from '@/domain/process';
 import { editBase } from '@/store/editBase';
 import { parseBpmn } from '@/store/persistence/bpmn/read';
@@ -28,5 +29,8 @@ export const samples: Record<string, Sample> = {
   'process.addActivityAt': () => { addCanvasActivity('L0'); },
   'process.addLink': () => { addProcessLink('A001', 'A003'); },
   'process.removeLink': () => removeProcessLink('Flow_A001_A002'),
+  'process.createSubProcess': () => { createProcessSub(['A002', 'A003']); },
+  'process.addToSubProcess': { prep: () => { createProcessSub(['A002']); }, run: () => { addToProcessSub('Sub_1', 'A003'); } },
+  'process.deleteSubProcess': { prep: () => { createProcessSub(['A002']); }, run: () => deleteProcessSub('Sub_1') },
   'process.reconnectLink': () => { reconnectProcessLink('Flow_A001_A002', 'target', 'A003'); },
 };

@@ -127,12 +127,18 @@ await step('canvas drag (owner, 2026-11-04): an activity dropped in another lane
     if (t === 'Dev' && !before.includes('dev')) target = await lanes.nth(i).locator('rect').first().boundingBox();
   }
   if (!target) throw new Error('no Dev lane to drop on');
+  await page.locator('.ac-proc-diagram').first().locator('button', { hasText: 'Zoom to selection' }).click();   // zoomed in on the activity
+  const pct = () => page.locator('.ac-proc-diagram').first().locator('[role=toolbar] .ac-muted').first().textContent(), zoomed = await pct();
+  await pick.scrollIntoViewIfNeeded();
+  const lane2 = await (async () => { for (let i = 0, n = await lanes.count(); i < n; i++) if (await lanes.nth(i).locator('text').first().textContent() === 'Dev') return lanes.nth(i).locator('rect').first().boundingBox(); return null; })();
+  if (lane2) target = lane2;
   const a = await pick.boundingBox(), x = a.x + a.width / 2, y = a.y + a.height / 2;
   await page.mouse.move(x, y); await page.mouse.down();
   await page.mouse.move(x, y + 10, { steps: 3 }); await page.mouse.move(x, target.y + target.height / 2, { steps: 8 }); await page.mouse.up();
-  await pick.click();
+  await pick.click({ force: true });   // zoomed in, the label is drawn over the box
   if (!(await page.locator('#ac-proc-activity h2').textContent()).startsWith(id)) throw new Error('another activity is selected after the drop');
   if (await role() !== 'role-dev') throw new Error(`the role is ${await role()} after the drop, not role-dev (was ${before})`);
+  if (await pct() !== zoomed) throw new Error(`the zoom changed after the drop (${zoomed} -> ${await pct()}): the edit must keep the view`);
   await page.locator('#ac-proc-activity h2').click();
   await page.keyboard.press('Control+z');
   await page.waitForFunction((r) => document.querySelector('#ac-proc-activity select[id$="-role"]')?.value === r, before);
@@ -154,6 +160,28 @@ await step('canvas links (owner, 2026-11-04): a link\'s end handle dragged onto 
   await (await hit('A001', 'A003')).dispatchEvent('click', { clientX: 400, clientY: 300 });
   await page.getByRole('menuitem', { name: '🗑️ Delete link' }).click();
   if (await hit('A001', 'A003')) throw new Error('the link was not deleted');
+  await frame.locator('select[id$="-ph"]').selectOption('');
+});
+await step('sub-process (owner, 2026-11-04): created from the picked activities, an activity dropped on it joins it, its menu deletes it', async () => {
+  const frame = page.locator('.ac-proc-diagram').first();
+  await frame.locator('select[id$="-ph"]').selectOption('L0');
+  const shape = (id) => frame.locator('.ac-bpmn-activity').filter({ has: page.locator('title', { hasText: new RegExp(`^Actions on ${id}:`) }) });
+  const more = (id) => frame.locator('.ac-bpmn-more').filter({ has: page.locator('title', { hasText: new RegExp(`^Actions on ${id}:`) }) });
+  await shape('A002').dispatchEvent('click');   // the page scrolls when the panel opens: events on the shapes, not at a screen point
+  await shape('A003').dispatchEvent('click', { ctrlKey: true });
+  await more('A002').dispatchEvent('click', { clientX: 400, clientY: 300 });
+  await page.getByRole('menuitem', { name: '📦 Create a sub-process (2 activities)' }).click();
+  const sub = frame.locator('.ac-bpmn-sub rect').first();
+  await sub.waitFor();
+  await frame.locator('.ac-proc-canvas').evaluate((el) => el.scrollIntoView({ block: 'center' }));   // clear of the sticky top bar
+  const box = await sub.boundingBox(), a4 = await shape('A004').locator('rect').first().boundingBox();
+  await page.mouse.move(a4.x + a4.width / 2, a4.y + a4.height / 2); await page.mouse.down();
+  await page.mouse.move(box.x + box.width / 2, box.y + box.height / 2, { steps: 8 }); await page.mouse.up();
+  await page.getByText('A004 put in Sub_1').first().waitFor({ timeout: 5000 });
+  await frame.screenshot({ path: process.env.SUB_SHOT || '/dev/null' }).catch(() => {});
+  await more('Sub_1').dispatchEvent('click', { clientX: 400, clientY: 300 });
+  await page.getByRole('menuitem', { name: '🗑️ Delete sub-process' }).click();
+  await frame.locator('.ac-bpmn-sub').waitFor({ state: 'detached' });
   await frame.locator('select[id$="-ph"]').selectOption('');
 });
 await browser.close();

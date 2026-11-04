@@ -91,4 +91,20 @@ describe('Process diagram canvas edits', { timeout: 90_000 }, () => {
     act(() => { fireEvent.keyDown(document, { key: 'Escape' }); });
     expect(document.querySelector('.ac-proc-hint')).toBeNull();
   });
+  it('📦 Create a sub-process of the picked activities; its ⋯ → Delete sub-process gives them back to the phase (one step each)', () => {
+    render(<Process />);
+    const subs = () => readProcess(doc()).subProcesses ?? [], n = appStore().getState().history.undo.length;
+    act(() => { fireEvent.click(more('A002').parentElement!); });
+    act(() => { fireEvent.click(more('A003').parentElement!, { ctrlKey: true }); });
+    act(() => { fireEvent.click(more('A002')); });
+    act(() => { fireEvent.click(button('📦 Create a sub-process (2 activities)')); });
+    expect(subs().map((x) => x.id)).toEqual(['Sub_1']);
+    expect(readProcess(doc()).activities.filter((a) => a.sub === 'Sub_1').map((a) => a.id)).toEqual(['A002', 'A003']);
+    expect(appStore().getState().history.undo.length).toBe(n + 1);
+    act(() => { fireEvent.click(more('Sub_1')); });
+    act(() => { fireEvent.click(button('🗑️ Delete sub-process')); });
+    expect(subs()).toEqual([]);
+    expect(readProcess(doc()).activities.some((a) => a.sub)).toBe(false);
+    expect(appStore().getState().history.undo.length).toBe(n + 2);
+  });
 });

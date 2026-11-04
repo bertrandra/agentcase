@@ -1,6 +1,6 @@
 /** @calc-zone scope-automation */
 import { addActivityAt, addLink, changeActivityRole, linkRefusal, reconnectLink, reconnectRefusal, removeLink, type LinkEnd,
-  linkActivities, newCanvasActivity, readProcess, moveActivity, placeActivity, setDiagram, setReworkFlow,
+  linkActivities, newCanvasActivity, outOfSub, readProcess, moveActivity, placeActivity, setDiagram, setReworkFlow,
   type Bounds, type CatArtefact,
   type ReworkPatch } from '@/domain/process';
 import { defineCommand } from '@/store/commands';
@@ -15,7 +15,7 @@ import { editProcess } from '@/store/processEdit';
  */
 const moveCmd = defineCommand<{ id: string; phase: string }>({
   type: 'process.moveActivity', label: (p) => `Move activity ${p.id} to phase ${p.phase}`,
-  run(d, p) { editProcess(d, (doc) => moveActivity(doc, p.id, p.phase)); refitPotential(d); },
+  run(d, p) { editProcess(d, (doc) => moveActivity(outOfSub(doc, p.id), p.id, p.phase)); refitPotential(d); },
 });
 const reworkCmd = defineCommand<{ flow: string; patch: ReworkPatch }>({
   type: 'process.setReworkFlow', label: (p) => `Edit rework flow ${p.flow}`, coalesceKey: (p) => `process.setReworkFlow:${p.flow}`,
@@ -29,7 +29,7 @@ const diagramCmd = defineCommand<{ element: string; bounds: Bounds }>({
 // the canvas (owner, 2026-11-04): a dropped activity (phase, role of the lane, slot), a role chosen in the panel, an activity added with "+"
 const placeCmd = defineCommand<{ id: string; phase: string; lane?: string }>({
   type: 'process.placeActivity', label: (p) => `Move activity ${p.id} to ${p.phase}${p.lane ? ` · ${p.lane}` : ''}`,
-  run(d, p) { editProcess(d, (doc) => placeActivity(doc, p.id, p.phase, p.lane)); refitPotential(d); },
+  run(d, p) { editProcess(d, (doc) => placeActivity(outOfSub(doc, p.id), p.id, p.phase, p.lane)); refitPotential(d); },
 });
 const roleCmd = defineCommand<{ id: string; role: string }>({
   type: 'process.setActivityRole', label: (p) => `Set the role of ${p.id}`,

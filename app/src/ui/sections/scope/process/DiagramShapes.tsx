@@ -40,25 +40,30 @@ function ShapeView({ s, selected, onPick, labels, x, onDrag, onMenu }: Props & {
           {lines(s.label, 16, 3).map((l, i) => <tspan key={i} x={s.x + s.w / 2} dy={14}>{l}</tspan>)}
         </text>}
         {s.marker && <text className="ac-bpmn-marker" x={s.x + s.w / 2} y={s.y + s.h - 6} textAnchor="middle">{s.marker}</text>}
-        {onMenu && (
-          <g className="ac-bpmn-more" onPointerDown={(e) => e.stopPropagation()}
-            onClick={(e) => { e.stopPropagation(); onMenu(s.id, e.clientX, e.clientY); }}>
-            <title>{`Actions on ${s.id}: edit, delete`}</title>
-            <circle cx={s.x + s.w - 11} cy={s.y + s.h - 11} r={9} />
-            <text x={s.x + s.w - 11} y={s.y + s.h - 7} textAnchor="middle">⋯</text>
-          </g>
-        )}
+        {onMenu && <More s={s} onMenu={onMenu} what="edit, link, group, delete" />}
       </g>
     );
   }
   const vertical = s.kind === 'pool' || s.kind === 'lane';
   return (
     <g className={c}>
-      <rect x={s.x} y={s.y} width={s.w} height={s.h} rx={s.kind === 'phase' ? 10 : 0} />
+      <rect x={s.x} y={s.y} width={s.w} height={s.h} rx={s.kind === 'phase' || s.kind === 'sub' ? 10 : 0} />
       {s.label && (vertical
         ? <text x={s.x + 18} y={s.y + s.h / 2} textAnchor="middle" transform={`rotate(-90 ${s.x + 18} ${s.y + s.h / 2})`}>{s.label}</text>
-        : <text x={s.x + 10} y={s.y + 20}>{s.label}</text>)}
+        : <text x={s.x + 10} y={s.kind === 'sub' ? s.y + s.h - 10 : s.y + 20}>{s.label}</text>)}
       {s.marker && <text className="ac-bpmn-marker" x={s.x + 10} y={s.y + 38}>{s.marker}</text>}
+      {onMenu && s.kind === 'sub' && <More s={s} onMenu={onMenu} what="delete the sub-process" />}
+    </g>
+  );
+}
+
+/** The ⋯ at the bottom right of an activity or a sub-process: opens its menu at the click. */
+function More({ s, onMenu, what }: { s: DrawShape; onMenu: (id: string, x: number, y: number) => void; what: string }) {
+  return (
+    <g className="ac-bpmn-more" onPointerDown={(e) => e.stopPropagation()} onClick={(e) => { e.stopPropagation(); onMenu(s.id, e.clientX, e.clientY); }}>
+      <title>{`Actions on ${s.id}: ${what}`}</title>
+      <circle cx={s.x + s.w - 11} cy={s.y + s.h - 11} r={9} />
+      <text x={s.x + s.w - 11} y={s.y + s.h - 7} textAnchor="middle">⋯</text>
     </g>
   );
 }
@@ -91,7 +96,8 @@ export const Shapes = memo(function Shapes({ d, selected, onPick, labels, extra,
           markerUnits="userSpaceOnUse" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" /></marker>
       ))}</defs>
       {d.shapes.filter((s) => s.kind !== 'activity')
-        .map((s) => <Shape key={`${s.kind}:${s.id}`} s={s} selected={selected} onPick={onPick} labels={labels} x="" />)}
+        .map((s) => <Shape key={`${s.kind}:${s.id}`} s={s} selected={selected} onPick={onPick} labels={labels} x=""
+          onMenu={s.kind === 'sub' ? onMenu : undefined} />)}
       {d.edges.map((e) => (
         <polyline key={e.id} className={`ac-bpmn-edge${e.rework ? ' is-rework' : ''}${e.message ? ' is-message' : ''}${e.bridged ? ' is-bridged' : ''}`}
           points={e.points.map((p) => p.join(',')).join(' ')} markerEnd={`url(#${id}-${kindOf(e)})`} />

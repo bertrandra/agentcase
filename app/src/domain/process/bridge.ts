@@ -81,7 +81,7 @@ export function linkActivities(d: XDocument): XDocument {
   const from = new Set(plain.map((f) => f.source)), to = new Set(plain.map((f) => f.target));
   for (const p of v.phases) {
     if (p.adHoc) continue;
-    const acts = v.activities.filter((a) => a.phase === p.id && a.trigger === undefined && !a.regulatory).sort((a, b) => a.order - b.order);
+    const acts = v.activities.filter((a) => a.phase === p.id && a.trigger === undefined && !a.regulatory && !a.sub).sort((a, b) => a.order - b.order);
     const loose = acts.filter((a) => !from.has(a.id) && !to.has(a.id)).map((a) => a.id);
     const tail = acts.find((a) => to.has(a.id) && !from.has(a.id))?.id, ids = tail ? [tail, ...loose] : loose;
     if (!loose.length) continue;
