@@ -39,18 +39,22 @@ export function Toolbar({ phases }: { phases: PhaseView[] }) {
     <div className="ac-form-row ac-proc-toolbar">
       <input ref={input} id={`${id}-file`} className="ac-sr" type="file" accept=".bpmn,.xml,.dmn,.cmmn,application/xml,text/xml" tabIndex={-1}
         aria-label="BPMN, DMN or CMMN file to import" onChange={(e) => { void onFile(e.target.files?.[0]); }} />
-      <button type="button" onClick={() => input.current?.click()}>Import process (BPMN)…</button>
+      <button type="button" aria-label="Import process (BPMN)…" title="Import a BPMN, DMN or CMMN file" onClick={() => input.current?.click()}>
+        <span aria-hidden="true">⬆ </span>Import</button>
       <span className="ac-proc-export">
-        <button ref={exportBtn} type="button" aria-expanded={exporting} onClick={() => setExporting(!exporting)}>Export process (BPMN)…</button>
+        <button ref={exportBtn} type="button" aria-expanded={exporting} aria-label="Export process (BPMN)…"
+          title="Export process (BPMN)" onClick={() => setExporting(!exporting)}><span aria-hidden="true">⬇ </span>Export</button>
         {exporting && <BpmnExportPanel onClose={closeExport} />}
       </span>
-      <label htmlFor={`${id}-reset`}>Reset</label>
+      <label htmlFor={`${id}-reset`}>Reset scope</label>
       <select id={`${id}-reset`} value={phase} onChange={(e) => setPhase(e.target.value)}>
         <option value="">Whole process</option>
         {phases.map((p) => <option key={p.id} value={p.id}>{`Phase ${p.id} · ${p.name}`}</option>)}
       </select>
-      <button type="button" onClick={reset}>Reset to default process</button>
-      <button type="button" onClick={link} title="Link each activity not linked yet at the end of its phase’s chain">Link activities</button>
+      <button type="button" aria-label="Reset to default process" title="Reset to the default process" onClick={reset}>
+        <span aria-hidden="true">↺ </span>Reset</button>
+      <button type="button" aria-label="Link activities" onClick={link} title="Link each activity not linked yet at the end of its phase’s chain">
+        <span aria-hidden="true">🔗 </span>Link</button>
     </div>
   );
 }

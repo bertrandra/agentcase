@@ -15,7 +15,7 @@ import { ActivityPanel } from '../ActivityPanel';
  * licence requires stays visible: nothing here hides or covers it. Ctrl+Z on the canvas is the editor's own undo, not the case's.
  */
 type Status = 'loading' | 'ready' | 'failed';
-interface Canvas { zoom(v: string): void; viewbox(box?: object): object; resized?(): void }
+interface Canvas { zoom(v?: string | number, center?: string): number; viewbox(box?: object): object; resized?(): void }
 interface Refs {
   m: MutableRefObject<BpmnModeler | null>; base: MutableRefObject<XDocument | null>; dirty: MutableRefObject<boolean>; diagram: MutableRefObject<string>;
 }
@@ -77,6 +77,12 @@ export function EditorPanel({ id, onClose }: { id: string; onClose: () => void }
     setDiagram(v); refs.diagram.current = v; setMsg([]); await load(refs, false);
   };
   const reload = async () => { setStale(false); setMsg([]); await load(refs, true); };
+  /** Zoom buttons (owner, 2026-11-03: a phone has no wheel): × factor around the centre, or fit the diagram; the editor's own view, not the case. */
+  const zoomBy = (f: number | 'fit') => {
+    const c = refs.m.current?.get('canvas') as Canvas | undefined;
+    if (!c) return;
+    if (f === 'fit') c.zoom('fit-viewport'); else c.zoom(Math.min(4, Math.max(0.2, c.zoom() * f)), 'auto');
+  };
   const close = () => { if (refs.dirty.current && !armed) { setArmed(true); return; } onClose(); };
   const onKey = (e: KeyboardEvent) => { if (host.current?.contains(e.target as Node) && shouldHandle(e.nativeEvent)) e.stopPropagation(); };
   return (
@@ -86,6 +92,11 @@ export function EditorPanel({ id, onClose }: { id: string; onClose: () => void }
         <button type="button" disabled={status !== 'ready'} onClick={() => { void save(); }}>Save to the case</button>
         <button type="button" disabled={status !== 'ready'} onClick={() => { void reload(); }}>Reload from the case</button>
         <button type="button" onClick={close}>{armed ? 'Close and discard the changes' : 'Close editor'}</button>
+        <span className="ac-proc-editor-zoom" role="group" aria-label="Editor zoom">
+          <button type="button" disabled={status !== 'ready'} aria-label="Zoom in the editor" onClick={() => zoomBy(1.25)}>+</button>
+          <button type="button" disabled={status !== 'ready'} aria-label="Zoom out the editor" onClick={() => zoomBy(0.8)}>−</button>
+          <button type="button" disabled={status !== 'ready'} aria-label="Fit the diagram in the editor" onClick={() => zoomBy('fit')}>Fit</button>
+        </span>
         <FullScreenButton on={full.on} toggle={full.toggle} what="diagram editor" />
         {diagrams.length > 1 && <label>Diagram{' '}
           <select value={diagram} disabled={status !== 'ready'} onChange={(e) => { void pick(e.target.value); }}>

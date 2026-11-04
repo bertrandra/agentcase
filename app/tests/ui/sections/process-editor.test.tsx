@@ -32,7 +32,7 @@ vi.mock('@/controllers/processEditorKit', async () => {
 (globalThis as unknown as { CSS: { escape(s: string): string } }).CSS ??= { escape: (s) => s.replace(/[^\w-]/g, (c) => `\\${c}`) };
 
 const button = (text: string): HTMLButtonElement => {
-  const b = [...document.querySelectorAll('button')].find((x) => x.textContent === text);
+  const b = [...document.querySelectorAll('button')].find((x) => x.getAttribute('aria-label') === text || x.textContent === text);
   if (!b) throw new Error(`no button ${text}`);
   return b;
 };

@@ -89,6 +89,8 @@ describe('🔎 Audit', () => {
       expect(screen.getByRole('row', { name: /INT-2/ })).toBeTruthy();   // every auditor by default
       tab('Audit setup');
       expect(screen.getByRole('button', { name: '+ Add audit activity' })).toBeTruthy();
+      expect(screen.queryByRole('button', { name: '+ Add interview' })).toBeNull();   // only audit activities (owner, 2026-11-03)
+      expect(screen.getByText('📁 Files').closest('details')!.open).toBe(false);   // the files, collapsed by default
       expect(await axeViolations(container)).toEqual([]);
     });
 });
