@@ -71,29 +71,37 @@ export function useActivityDrag(svg: RefObject<SVGSVGElement | null>, drawn: Dra
 }
 
 export interface MenuAt { id: string; x: number; y: number }
-/** The "⋯" menu of an activity, at the click (in the diagram's box): Edit details, Delete activity. Escape or a click elsewhere closes it. */
-export function ActivityMenu({ at, onEdit, onClose }: { at: MenuAt | null; onEdit: (id: string) => void; onClose: () => void }) {
+interface Item { label: string; run: () => void }
+/** A small menu at `at` (in the diagram's box): its items; Escape or a pointer down elsewhere (but on a link's handle) closes it. */
+export function PopMenu({ at, label, items, onClose }: { at: MenuAt; label: string; items: Item[]; onClose: () => void }) {
   const box = useRef<HTMLDivElement>(null);
   useEffect(() => {
-    if (!at) return undefined;
-    if (box.current) { box.current.style.left = `${at.x}px`; box.current.style.top = `${at.y}px`; }   // where the ⋯ was clicked
+    if (box.current) { box.current.style.left = `${at.x}px`; box.current.style.top = `${at.y}px`; }   // where it was opened
     box.current?.querySelector('button')?.focus();
-    const away = (e: PointerEvent): void => { if (!box.current?.contains(e.target as Node)) onClose(); };
+    const away = (e: PointerEvent): void => {
+      const t = e.target as Element;
+      if (!box.current?.contains(t) && !t.closest?.('.ac-bpmn-handle')) onClose();
+    };
     document.addEventListener('pointerdown', away);
     return () => document.removeEventListener('pointerdown', away);
   }, [at, onClose]);
-  if (!at) return null;
+  return (
+    <div ref={box} className="ac-proc-menu" role="menu" aria-label={label} onKeyDown={(e) => { if (e.key === 'Escape') onClose(); }}>
+      {items.map((it) => <button key={it.label} type="button" role="menuitem" onClick={() => { it.run(); onClose(); }}>{it.label}</button>)}
+    </div>
+  );
+}
+
+/** The "⋯" menu of an activity: Edit details, Add a link (then click the activity it leads to), Delete activity. */
+export function ActivityMenu({ at, onEdit, onLink, onClose }: { at: MenuAt; onEdit: (id: string) => void; onLink: (id: string) => void; onClose: () => void }) {
   const remove = (): void => {
     if (processView.getState().selected === at.id) selectActivity(null);
     removeProcessActivity(at.id);
     toast(`Activity ${at.id} deleted (Ctrl+Z undoes)`);
-    onClose();
   };
   return (
-    <div ref={box} className="ac-proc-menu" role="menu" aria-label={`Actions on activity ${at.id}`}
-      onKeyDown={(e) => { if (e.key === 'Escape') onClose(); }}>
-      <button type="button" role="menuitem" onClick={() => { onEdit(at.id); onClose(); }}>✏️ Edit details</button>
-      <button type="button" role="menuitem" onClick={remove}>🗑️ Delete activity</button>
-    </div>
+    <PopMenu at={at} label={`Actions on activity ${at.id}`} onClose={onClose}
+      items={[{ label: '✏️ Edit details', run: () => onEdit(at.id) }, { label: '🔗 Add a link', run: () => onLink(at.id) },
+        { label: '🗑️ Delete activity', run: remove }]} />
   );
 }

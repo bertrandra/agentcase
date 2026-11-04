@@ -11,8 +11,8 @@ const num = (s: string): number | undefined => (s.trim() === '' || !Number.isFin
 
 /**
  * The selected activity (spec F-B16): its name, phase (`process.moveActivity`), role (`process.setActivityRole`, owner 2026-11-04), effort and
- * supervision split (`process.updateActivity`, coalesced while typing), and "Remove" (`process.removeActivity`). Every change is one undoable step; the figures of a custom activity count
- * from phase B5 on. A link opens the screen where the activity's details live (its artefact row in 🎯 Scope, `activityDetail`).
+ * supervision split (`process.updateActivity`, coalesced while typing), and "Remove" (`process.removeActivity`). Every change is one
+ * undoable step; the figures of a custom activity count from phase B5 on. A link opens the screen where the activity's details live (its artefact row in 🎯 Scope, `activityDetail`).
  */
 export function ActivityPanel({ doc, id }: { doc: XDocument; id: string }) {
   const v = readProcess(doc), a = v.activities.find((x) => x.id === id), k = useId();

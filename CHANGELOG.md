@@ -38,6 +38,10 @@ When releasing, follow [docs/BUMP_PROCEDURE.md](docs/BUMP_PROCEDURE.md) (§7 for
   the cell; a full lane grows by one row. One undoable step (`process.placeActivity`). The activity panel gains a **Role** field (the keyboard way;
   `process.setActivityRole`). `domain/process/editPlace.ts`.
 - **Show phase**: the diagram shows one phase only (its activities, its lanes, the flows between them), or all phases.
+- **Links on the canvas**: **🔗 Add a link** in an activity's ⋯ menu, then a click on the activity it leads to; a click on a link selects it, with a
+  handle at each end (drag one onto another activity to move that end) and a menu with **🗑️ Delete link**. One undoable step each
+  (`process.addLink`, `process.reconnectLink`, `process.removeLink`); a link stays inside its phase (in BPMN a sequence flow does not leave its
+  sub-process), and a refused link says why. Rework and message flows are not edited there. `domain/process/editLinks.ts`.
 
 ### 🔎 Audit and 🧩 Process: shorter controls, files collapsed, editor zoom (owner's requests 2026-11-04)
 

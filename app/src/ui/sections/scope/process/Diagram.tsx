@@ -7,6 +7,7 @@ import { Shapes } from './DiagramShapes';
 import { FullScreenButton, useFullScreen } from '@/ui/widgets/FullScreen';
 import { addCanvasActivity } from '@/controllers/processLayout';
 import { ActivityMenu, openActivityPanel, useActivityDrag, type MenuAt } from './DiagramEdit';
+import { EdgeHandles, EdgeMenu, useLinks } from './DiagramLinks';
 import { useCamera } from './useCamera';
 import { selectActivity, useProcessView } from './view';
 
@@ -57,14 +58,16 @@ export function Diagram({ d: doc, tableId, title, desc, name, labelZoom = 2, fac
   [d, colour, facts, shown, picked, selected]);
   const used = colour && facts ? [...new Set(acts.map((s) => facts.get(s.id)).map((f) => (f ? categoryOf(colour, f) : '')))] : [];
   const selRef = useRef(selected), drag = useActivityDrag(svg, drawn), [menu, setMenu] = useState<MenuAt | null>(null);
+  const links = useLinks(svg, root, drawn);
   selRef.current = selected;
   const onPick = useCallback((pid: string, add: boolean) => {   // stable: the memoised shapes do not redraw on a pan
     const cur = selRef.current;
     if (drag.moved.current) { drag.moved.current = false; return; }   // the click that ends a drag
+    if (links.pickTarget(pid)) return;   // the activity a new link leads to
 
     setPicked((p) => (add ? (p.includes(pid) ? p.filter((x) => x !== pid) : [...p, ...(cur && !p.length ? [cur] : []), pid]) : [pid]));
     selectActivity(pid);
-  }, []);   // eslint-disable-line react-hooks/exhaustive-deps -- `drag.moved` is a ref
+  }, []);   // eslint-disable-line react-hooks/exhaustive-deps -- `drag.moved` is a ref, `links.pickTarget` is stable
   const onMenu = useCallback((mid: string, cx: number, cy: number) => {
     const r = root.current?.getBoundingClientRect();
     setMenu({ id: mid, x: cx - (r?.left ?? 0), y: cy - (r?.top ?? 0) });
@@ -89,6 +92,7 @@ export function Diagram({ d: doc, tableId, title, desc, name, labelZoom = 2, fac
         <span className="ac-muted">{Math.round(cam.s * 100)}%</span>
         <FullScreenButton on={full.on} toggle={full.toggle} what={name} />
         {editable && <button type="button" onClick={() => edit(addCanvasActivity(phase))}><span aria-hidden="true">＋</span> Add activity</button>}
+        {links.from && <span className="ac-proc-hint" role="status">{`Click the activity ${links.from} leads to (Escape cancels)`}</span>}
         <p className="ac-proc-live" aria-live="polite">
           {sel ? `Selected: ${sel.id} ${sel.label}${sel.inScope === false ? ' (out of scope)' : ''}${picked.length > 1 ? ` (+${picked.length - 1} more)` : ''}`
             : 'No activity selected'}
@@ -99,7 +103,7 @@ export function Diagram({ d: doc, tableId, title, desc, name, labelZoom = 2, fac
         used={used.filter(Boolean)}
         freeze={freeze} onFreeze={setFreeze} freezePhases={freezePhases} onFreezePhases={setFreezePhases}
         colours={!!facts} zoomLabel={picked.length || !shown ? 'Zoom to selection' : 'Zoom to filtered'} onZoomSel={fit ? () => setCam(fit) : null} />
-      <div ref={box} className="ac-proc-canvas" tabIndex={0} role="group" {...handlers}
+      <div ref={box} className={`ac-proc-canvas${links.from ? ' is-linking' : ''}`} tabIndex={0} role="group" {...handlers}
         aria-label={`${name}: + and − zoom, arrow keys pan, 0 fits, two fingers pinch; the activity table below lists the same elements`}>
         <svg ref={svg} className={readable ? 'is-readable' : 'is-overview'} viewBox={`${v.x} ${v.y} ${v.w} ${v.h}`}
           role="img" aria-labelledby={`${id}-t`} aria-describedby={`${id}-d ${tableId}`}
@@ -107,13 +111,15 @@ export function Diagram({ d: doc, tableId, title, desc, name, labelZoom = 2, fac
           <title id={`${id}-t`}>{title}</title>
           <desc id={`${id}-d`}>{desc}</desc>
           <Shapes d={drawn} selected={selected} onPick={onPick} labels={readable} extra={extra}
-            onDrag={editable ? drag.onDrag : undefined} onMenu={editable ? onMenu : undefined} />
+            onDrag={editable ? drag.onDrag : undefined} onMenu={editable ? onMenu : undefined} onEdge={editable ? links.onEdge : undefined} />
+          {links.edge && <EdgeHandles d={drawn} id={links.edge.id} pull={links.pull} onHandle={links.onHandle} />}
           {drag.ghost && <rect className="ac-bpmn-ghost" x={drag.ghost.x} y={drag.ghost.y} width={drag.ghost.w} height={drag.ghost.h} rx={8} />}
           {freezePhases && <FrozenPhases d={drawn} v={v} px={{ w: box.current?.clientWidth || 800, h: box.current?.clientHeight || 450 }} />}
           {freeze && <FrozenLanes d={drawn} v={v} px={{ w: box.current?.clientWidth || 800, h: box.current?.clientHeight || 450 }} />}
         </svg>
       </div>
-      {editable && menu && <ActivityMenu at={menu} onEdit={edit} onClose={closeMenu} />}
+      {editable && menu && <ActivityMenu at={menu} onEdit={edit} onLink={links.startLink} onClose={closeMenu} />}
+      {editable && links.edge && <EdgeMenu at={links.edge} onClose={links.closeEdge} />}
     </div>
   );
 }

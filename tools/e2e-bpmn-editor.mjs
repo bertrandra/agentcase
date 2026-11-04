@@ -137,6 +137,25 @@ await step('canvas drag (owner, 2026-11-04): an activity dropped in another lane
   await page.keyboard.press('Control+z');
   await page.waitForFunction((r) => document.querySelector('#ac-proc-activity select[id$="-role"]')?.value === r, before);
 });
+await step('canvas links (owner, 2026-11-04): a link\'s end handle dragged onto another activity moves that end; Delete link removes it', async () => {
+  const frame = page.locator('.ac-proc-diagram').first(), hits = frame.locator('.ac-bpmn-edge-hit');
+  await frame.locator('select[id$="-ph"]').selectOption('L0');
+  const hit = async (s, t) => { for (let i = 0, n = await hits.count(); i < n; i++) if ((await hits.nth(i).locator('title').textContent()).startsWith(`Link ${s} → ${t}:`)) return hits.nth(i); return null; };
+  const first = await hit('A001', 'A002');
+  if (!first) throw new Error('no link A001 → A002 drawn');
+  await first.dispatchEvent('click', { clientX: 400, clientY: 300 });
+  const handles = frame.locator('.ac-bpmn-handle');
+  if (await handles.count() !== 2) throw new Error(`${await handles.count()} handles, not 2`);
+  const h = await handles.nth(1).boundingBox();
+  const target = await frame.locator('.ac-bpmn-activity').filter({ has: page.locator('title', { hasText: /^Actions on A003:/ }) }).locator('rect').first().boundingBox();
+  await page.mouse.move(h.x + h.width / 2, h.y + h.height / 2); await page.mouse.down();
+  await page.mouse.move(target.x + target.width / 2, target.y + target.height / 2, { steps: 8 }); await page.mouse.up();
+  if (!(await hit('A001', 'A003')) || (await hit('A001', 'A002'))) throw new Error('the end of the link did not move to A003');
+  await (await hit('A001', 'A003')).dispatchEvent('click', { clientX: 400, clientY: 300 });
+  await page.getByRole('menuitem', { name: '🗑️ Delete link' }).click();
+  if (await hit('A001', 'A003')) throw new Error('the link was not deleted');
+  await frame.locator('select[id$="-ph"]').selectOption('');
+});
 await browser.close();
 console.log(steps, 'editor flows,', failures, 'failure(s)');
 process.exit(failures ? 1 : 0);

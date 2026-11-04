@@ -58,4 +58,37 @@ describe('Process diagram canvas edits', { timeout: 90_000 }, () => {
     act(() => { fireEvent.change(role, { target: { value: 'role-qa' } }); });
     expect(readProcess(doc()).activities.find((a) => a.id === added.id)!.humanPerformer).toBe('role-qa');
   });
+  it('🔗 Add a link, then a click on an activity of the phase links them; a click on a link selects it (two handles) and Delete link removes it', () => {
+    render(<Process />);
+    const flows = () => readProcess(doc()).flows.filter((f) => !f.rework), n = appStore().getState().history.undo.length;
+    const shape = (id: string) => more(id).parentElement!;
+    act(() => { fireEvent.click(more('A001')); });
+    act(() => { fireEvent.click(button('🔗 Add a link')); });
+    expect(document.querySelector('.ac-proc-hint')!.textContent).toContain('A001');
+    act(() => { fireEvent.click(shape('A003')); });
+    expect(flows().some((f) => f.source === 'A001' && f.target === 'A003')).toBe(true);
+    expect(appStore().getState().history.undo.length).toBe(n + 1);
+    expect(document.querySelector('.ac-proc-hint')).toBeNull();
+    const id = flows().find((f) => f.source === 'A001' && f.target === 'A003')!.id;
+    const hit = [...document.querySelectorAll('.ac-proc-canvas .ac-bpmn-edge-hit')]
+      .find((h) => h.querySelector('title')!.textContent!.startsWith('Link A001 → A003'))!;
+    act(() => { fireEvent.click(hit); });
+    expect(document.querySelectorAll('.ac-proc-canvas .ac-bpmn-handle').length).toBe(2);
+    act(() => { fireEvent.click(button('🗑️ Delete link')); });
+    expect(flows().some((f) => f.id === id)).toBe(false);
+    expect(document.querySelectorAll('.ac-proc-canvas .ac-bpmn-handle').length).toBe(0);
+  });
+  it('a link to another phase is refused (no step); Escape leaves the link mode', () => {
+    render(<Process />);
+    const v = readProcess(doc()), a = v.activities[0]!, other = v.activities.find((x) => x.phase !== a.phase && !x.regulatory)!;
+    const n = appStore().getState().history.undo.length;
+    act(() => { fireEvent.click(more(a.id)); });
+    act(() => { fireEvent.click(button('🔗 Add a link')); });
+    act(() => { fireEvent.click(more(other.id).parentElement!); });
+    expect(appStore().getState().history.undo.length).toBe(n);
+    act(() => { fireEvent.click(more(a.id)); });
+    act(() => { fireEvent.click(button('🔗 Add a link')); });
+    act(() => { fireEvent.keyDown(document, { key: 'Escape' }); });
+    expect(document.querySelector('.ac-proc-hint')).toBeNull();
+  });
 });

@@ -34,6 +34,7 @@ export { drawingOf, hideActivities, type DrawEdge, type Drawing, type DrawShape,
 export { compactDrawing } from './drawingCompact';
 export { DIAGRAM_VIEWS, drawingView, onlyPhase, roleLanes, type DiagramViewId } from './drawingViews';
 export { addActivityAt, changeActivityRole, isRoleLane, newCanvasActivity, placeActivity, roleOfLane, setActivityRole } from './editPlace';
+export { addLink, linkRefusal, reconnectLink, reconnectRefusal, removeLink, type LinkEnd } from './editLinks';
 export { applyEditorDocument, type EditorOutcome } from './editorApply';
 export { mergeEditorDocument } from './editorMerge';
 export { caseValues, emptiedStoredValues, keepStoredValues, programmeValuesOf, storedElement, withoutStoredValues, withProgrammeValues } from './storedValues';

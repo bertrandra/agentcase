@@ -1,5 +1,6 @@
 /** @calc-zone scope-automation */
-import { addActivityAt, changeActivityRole, linkActivities, newCanvasActivity, readProcess, moveActivity, placeActivity, setDiagram, setReworkFlow,
+import { addActivityAt, addLink, changeActivityRole, linkRefusal, reconnectLink, reconnectRefusal, removeLink, type LinkEnd,
+  linkActivities, newCanvasActivity, readProcess, moveActivity, placeActivity, setDiagram, setReworkFlow,
   type Bounds, type CatArtefact,
   type ReworkPatch } from '@/domain/process';
 import { defineCommand } from '@/store/commands';
@@ -39,6 +40,18 @@ const addAtCmd = defineCommand<{ activity: CatArtefact; lane?: string }>({
   run(d, p) { editProcess(d, (doc) => addActivityAt(doc, p.activity, p.lane)); refitPotential(d); },
 });
 
+// the links on the canvas (owner, 2026-11-04): add, move one end, delete
+const addLinkCmd = defineCommand<{ source: string; target: string }>({
+  type: 'process.addLink', label: (p) => `Link ${p.source} to ${p.target}`, run(d, p) { editProcess(d, (doc) => addLink(doc, p.source, p.target)); },
+});
+const removeLinkCmd = defineCommand<{ id: string }>({
+  type: 'process.removeLink', label: (p) => `Delete link ${p.id}`, run(d, p) { editProcess(d, (doc) => removeLink(doc, p.id)); },
+});
+const reconnectCmd = defineCommand<{ id: string; end: LinkEnd; to: string }>({
+  type: 'process.reconnectLink', label: (p) => `Move the ${p.end} of ${p.id} to ${p.to}`,
+  run(d, p) { editProcess(d, (doc) => reconnectLink(doc, p.id, p.end, p.to)); },
+});
+
 const linkCmd = defineCommand<Record<string, never>>({
   type: 'process.linkActivities', label: () => 'Link the activities of each phase',
   run(d) { editProcess(d, linkActivities); },
@@ -63,4 +76,17 @@ export function addCanvasActivity(phase?: string): string | null {
   if (!a) return null;
   addProcessActivityAt(a);
   return a.id;
+}
+/** Links `source` to `target` (one step); the reason when it cannot (no step). */
+export function addProcessLink(source: string, target: string): string | null {
+  const why = linkRefusal(editBase().BPMN, source, target);
+  if (!why) appStore().dispatch(addLinkCmd({ source, target }));
+  return why;
+}
+export const removeProcessLink = (id: string): void => appStore().dispatch(removeLinkCmd({ id }));
+/** Moves the `end` of link `id` to activity `to` (one step); the reason when it cannot (no step). */
+export function reconnectProcessLink(id: string, end: LinkEnd, to: string): string | null {
+  const why = reconnectRefusal(editBase().BPMN, id, end, to);
+  if (!why) appStore().dispatch(reconnectCmd({ id, end, to }));
+  return why;
 }

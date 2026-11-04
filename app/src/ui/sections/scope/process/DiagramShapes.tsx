@@ -1,6 +1,7 @@
 import { memo, useId } from 'react';
 import type { Drawing, DrawShape } from '@/domain/process';
 import { shallowEqual } from '@/store/equal';
+import { editableEdge } from './DiagramLinks';
 
 /** The label of a shape cut into lines of about `n` characters (at most `max` lines, the last one ellipsed). */
 export function lines(label: string, n: number, max: number): string[] {
@@ -77,9 +78,10 @@ const Shape = memo(ShapeView, sameShape);
  * read: the fitted view of a 400-activity process shows its structure, and the table lists the names.
  */
 /** `extra`: display classes per activity id (colour, faded by the filters, picked). */
-type ShapesProps = Props & { d: Drawing; extra?: ReadonlyMap<string, string> };
+/** `onEdge`: a click on an editable link (selects it, its menu at the click). */
+type ShapesProps = Props & { d: Drawing; extra?: ReadonlyMap<string, string>; onEdge?: (id: string, x: number, y: number) => void };
 const kindOf = (e: Drawing['edges'][number]): string => (e.rework ? 'rework' : e.message ? 'message' : 'flow');
-export const Shapes = memo(function Shapes({ d, selected, onPick, labels, extra, onDrag, onMenu }: ShapesProps) {
+export const Shapes = memo(function Shapes({ d, selected, onPick, labels, extra, onDrag, onMenu, onEdge }: ShapesProps) {
   const id = useId().replace(/:/g, '');   // one set of arrowheads per diagram (two diagrams share the page)
   return (
     <>
@@ -93,6 +95,10 @@ export const Shapes = memo(function Shapes({ d, selected, onPick, labels, extra,
       {d.edges.map((e) => (
         <polyline key={e.id} className={`ac-bpmn-edge${e.rework ? ' is-rework' : ''}${e.message ? ' is-message' : ''}${e.bridged ? ' is-bridged' : ''}`}
           points={e.points.map((p) => p.join(',')).join(' ')} markerEnd={`url(#${id}-${kindOf(e)})`} />
+      ))}
+      {onEdge && d.edges.filter(editableEdge).map((e) => (   // a wide invisible stroke: the link is easy to click
+        <polyline key={`hit:${e.id}`} className="ac-bpmn-edge-hit" points={e.points.map((p) => p.join(',')).join(' ')}
+          onClick={(ev) => onEdge(e.id, ev.clientX, ev.clientY)}><title>{`Link ${e.source} → ${e.target}: click to edit`}</title></polyline>
       ))}
       {d.shapes.filter((s) => s.kind === 'activity')
         .map((s) => <Shape key={s.id} s={s} selected={selected} onPick={onPick} labels={labels} x={extra?.get(s.id) ?? ''} onDrag={onDrag} onMenu={onMenu} />)}
