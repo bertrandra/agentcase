@@ -1,6 +1,6 @@
-import { useCallback, useEffect, useRef, useState, type RefObject } from 'react';
+import { useEffect, useRef } from 'react';
 import { removeProcessActivity, setProcessScope } from '@/controllers/process';
-import { placeProcessActivity } from '@/controllers/processLayout';
+import { renameProcessSub } from '@/controllers/processCanvas';
 import { addToProcessSub, createProcessSub, deleteProcessSub } from '@/controllers/processSubs';
 import { readProcess, type Drawing } from '@/domain/process';
 import { useDoc } from '@/store/hooks';
@@ -12,7 +12,6 @@ import { processView, selectActivity } from './view';
  * role, one undoable step), the "⋯" menu at the bottom right of an activity (edit its details in the activity panel, delete it), and "+ Add
  * activity". Every change goes through the process commands; the keyboard equivalents are the activity table and panel (phase, role, Remove).
  */
-export interface Ghost { id: string; x: number; y: number; w: number; h: number }
 const ACTIVITY_PANEL = 'ac-proc-activity';
 
 /** The cell of the drawing under a point: the smallest phase box and the lane that hold it, and the sub-process box there, if any. */
@@ -35,48 +34,6 @@ export function openActivityPanel(id: string): void {
   }, 0);
 }
 export const activityPanelId = ACTIVITY_PANEL;
-
-/**
- * Dragging an activity: `onDrag` (stable) starts on a pointer down on the activity; past 5 px a ghost follows the pointer, and the drop places the
- * activity in the cell under the ghost's centre. `moved` tells the click that ends a drag not to select.
- */
-export function useActivityDrag(svg: RefObject<SVGSVGElement | null>, drawn: Drawing, onEdited?: (id: string) => void) {
-  const [ghost, setGhost] = useState<Ghost | null>(null), moved = useRef(false), cur = useRef(drawn);
-  cur.current = drawn;
-  const onDrag = useCallback((id: string, e: React.PointerEvent) => {
-    const m = svg.current?.getScreenCTM?.(), s = cur.current.shapes.find((x) => x.id === id);
-    if (e.button !== 0 || e.ctrlKey || e.metaKey || e.shiftKey || !m || !s) return;
-    e.stopPropagation();   // the canvas does not pan
-    const inv = m.inverse(), at = (cx: number, cy: number) => new DOMPoint(cx, cy).matrixTransform(inv), p0 = at(e.clientX, e.clientY);
-    const sx = e.clientX, sy = e.clientY;
-    let g: Ghost | null = null;
-    moved.current = false;
-    const move = (ev: PointerEvent): void => {
-      if (!moved.current && Math.hypot(ev.clientX - sx, ev.clientY - sy) < 5) return;
-      moved.current = true;
-      const p = at(ev.clientX, ev.clientY);
-      g = { id, x: s.x + p.x - p0.x, y: s.y + p.y - p0.y, w: s.w, h: s.h };
-      setGhost(g);
-    };
-    const up = (): void => {
-      window.removeEventListener('pointermove', move);
-      window.removeEventListener('pointerup', up);
-      window.removeEventListener('pointercancel', up);
-      setGhost(null);
-      setTimeout(() => { moved.current = false; }, 0);   // the click that ends the drag (if any) comes first
-      const c = g && cellAt(cur.current, g.x + g.w / 2, g.y + g.h / 2);
-      if (!c) return;
-      onEdited?.(id);
-      const mine = cur.current.shapes.find((s) => s.id === id)?.sub;   // dropped on a sub-process: it joins it; out of its own: it leaves it
-      if (c.sub) { if (c.sub !== mine) toast(addToProcessSub(c.sub, id) ?? `${id} put in ${c.sub} (Ctrl+Z undoes)`); return; }
-      placeProcessActivity(id, c.phase, c.lane);
-    };
-    window.addEventListener('pointermove', move);
-    window.addEventListener('pointerup', up);
-    window.addEventListener('pointercancel', up);
-  }, [svg, onEdited]);
-  return { ghost, onDrag, moved };
-}
 
 /** "(n activities)": how many activities a menu action acts on (owner, 2026-11-05: always shown). */
 const count = (n: number): string => `(${n} ${n > 1 ? 'activities' : 'activity'})`;
@@ -130,10 +87,21 @@ export function ActivityMenu({ at, picked, onEdit, onLink, onClose }: {
   );
 }
 
-/** The "⋯" menu of a sub-process: Delete sub-process (its activities stay in the phase, its links go back to them). */
-export function SubMenu({ at, onClose }: { at: MenuAt; onClose: () => void }) {
+/** The "⋯" menu of a sub-process: Collapse / Expand (a view only), Rename, Delete sub-process (its activities stay in the phase, its links go back to them). */
+export function SubMenu({ at, collapsed, onCollapse, onClose }: {
+  at: MenuAt; collapsed: boolean; onCollapse: (id: string, on: boolean) => void; onClose: () => void;
+}) {
   const remove = (): void => { deleteProcessSub(at.id); toast(`Sub-process ${at.id} deleted, its activities kept (Ctrl+Z undoes)`); };
-  return <PopMenu at={at} label={`Actions on sub-process ${at.id}`} onClose={onClose} items={[{ label: '🗑️ Delete sub-process', run: remove }]} />;
+  const now = readProcess(useDoc((d) => d.BPMN)).subProcesses?.find((x) => x.id === at.id)?.name ?? '';
+  const rename = (): void => {   // owner, 2026-11-05
+    const name = window.prompt(`Name of ${at.id}`, now);
+    if (name && name.trim() && name.trim() !== now) renameProcessSub(at.id, name);
+  };
+  return (
+    <PopMenu at={at} label={`Actions on sub-process ${at.id}`} onClose={onClose} items={[
+      { label: collapsed ? '▾ Expand (show its activities)' : '▸ Collapse (one box)', run: () => onCollapse(at.id, !collapsed) },
+      { label: '✏️ Rename', run: rename }, { label: '🗑️ Delete sub-process', run: remove }]} />
+  );
 }
 
 /**

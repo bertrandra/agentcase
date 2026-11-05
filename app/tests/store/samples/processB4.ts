@@ -4,6 +4,7 @@ import { importProcess, resetProcessTo } from '@/controllers/processImport';
 import { addCanvasActivity, addProcessLink, linkProcessActivities, moveProcessActivity, placeProcessActivity, reconnectProcessLink, removeProcessLink,
   setProcessActivityRole, setProcessDiagram, setProcessRework } from '@/controllers/processLayout';
 import { addToProcessSub, createProcessSub, deleteProcessSub } from '@/controllers/processSubs';
+import { placeProcessActivities, renameProcessSub, tidyProcessLayout } from '@/controllers/processCanvas';
 import { analyseImport, DEFAULT_CHOICES } from '@/domain/process';
 import { editBase } from '@/store/editBase';
 import { parseBpmn } from '@/store/persistence/bpmn/read';
@@ -32,5 +33,8 @@ export const samples: Record<string, Sample> = {
   'process.createSubProcess': () => { createProcessSub(['A002', 'A003']); },
   'process.addToSubProcess': { prep: () => { createProcessSub(['A002']); }, run: () => { addToProcessSub('Sub_1', 'A003'); } },
   'process.deleteSubProcess': { prep: () => { createProcessSub(['A002']); }, run: () => deleteProcessSub('Sub_1') },
+  'process.placeActivities': () => placeProcessActivities(['A003', 'A004'], 'L0', 'Dev'),
+  'process.tidyLayout': () => tidyProcessLayout('L0'),
+  'process.renameSubProcess': { prep: () => { createProcessSub(['A002']); }, run: () => renameProcessSub('Sub_1', 'Automated drafting') },
   'process.reconnectLink': () => { reconnectProcessLink('Flow_A001_A002', 'target', 'A003'); },
 };

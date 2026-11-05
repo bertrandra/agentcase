@@ -17,6 +17,23 @@ When releasing, follow [docs/BUMP_PROCEDURE.md](docs/BUMP_PROCEDURE.md) (§7 for
 
 ## [Unreleased]
 
+### 🧩 Process: a better canvas — touch, selection, readability, layout, sub-processes, views (owner's requests 2026-11-05)
+
+- **Touch**: a long press on an activity opens its menu; a finger on an activity that is not selected pans the canvas (select it first to drag
+  it); the selected activity carries a ⋯ of a constant finger size whatever the zoom.
+- **Selection**: with ☑ Select several, a drag on the background draws a box that selects the activities in it; dragging one of the selected
+  activities moves them all to the cell (one step, `process.placeActivities`); the links of the selected activity are highlighted.
+- **While dragging**, the target cell (phase × lane) or sub-process is outlined and a label says what the drop does ("2 activities → Upstream · Dev").
+- **Readability**: 🔍 Find an activity by id or name (selected and brought into view); at an overview zoom where names cannot be read, the ids
+  are drawn alone in large type; a **Minimap** (in a corner: the whole drawing, the window on screen; a tap centres the view there).
+- **Editing**: ↶ Undo and ↷ Redo on the canvas (a phone has no Ctrl+Z); a double click (double tap) on an activity opens its details; from the
+  keyboard on the canvas, N / P select the next / previous activity and Enter opens its menu.
+- **🧹 Tidy layout**: the shown phase's (or every phase's) activities back on a regular grid in their lanes, sub-processes laid out again, the
+  flows redrawn; phases and roles unchanged (`process.tidyLayout`, one step).
+- **Sub-processes**: ▸ Collapse to one box ("▸ n activities", its links kept) and ▾ Expand (a view only); ✏️ Rename (`process.renameSubProcess`).
+- **Views**: the display options (point of view, phase, hidden, compact, colours, frozen headers, minimap, collapsed sub-processes) are kept in
+  this browser between visits; **⬇ SVG / ⬇ PNG** save the whole drawing as an image (styles written in, overlays left out).
+
 ### 🧩 Process: select several activities on any screen, group them from any of their menus (owner's request 2026-11-05)
 
 - **☑ Select several** above the canvas: while it is on, each tap (or click) adds an activity to the selection or takes it out, no Ctrl key

@@ -21,10 +21,13 @@ const cls = (s: DrawShape, selected: string | null, extra: string): string =>
 /** `onPick(id, add)`: a click on an activity, `add` with Ctrl, Cmd or Shift (adds it to the diagram's selection). */
 /** `onDrag`, `onMenu`: an editable diagram (a pointer down on an activity starts a drag; its ⋯ at the bottom right opens its menu at the click). */
 interface Props {
-  selected: string | null; onPick: (id: string, add: boolean) => void; labels: boolean;
+  /** `labels`: the names drawn (readable), 'id' the ids only, in large type (an overview where names cannot be read; owner, 2026-11-05) */
+  selected: string | null; onPick: (id: string, add: boolean) => void; labels: boolean | 'id';
+  /** a double click (double tap) on an activity: open its details */
+  onOpen?: (id: string) => void;
   onDrag?: (id: string, e: React.PointerEvent) => void; onMenu?: (id: string, x: number, y: number) => void;
 }
-function ShapeView({ s, selected, onPick, labels, x, onDrag, onMenu }: Props & { s: DrawShape; x: string }) {
+function ShapeView({ s, selected, onPick, labels, x, onDrag, onMenu, onOpen }: Props & { s: DrawShape; x: string }) {
   const c = cls(s, selected, x);
   if (s.kind === 'event') return <circle className={c} cx={s.x + s.w / 2} cy={s.y + s.h / 2} r={s.w / 2} />;
   if (s.kind === 'gateway') {
@@ -33,9 +36,11 @@ function ShapeView({ s, selected, onPick, labels, x, onDrag, onMenu }: Props & {
   }
   if (s.kind === 'activity') {
     return (
-      <g className={c} onClick={(e) => onPick(s.id, e.ctrlKey || e.metaKey || e.shiftKey)} onPointerDown={onDrag && ((e) => onDrag(s.id, e))}>
+      <g className={c} onClick={(e) => onPick(s.id, e.ctrlKey || e.metaKey || e.shiftKey)} onPointerDown={onDrag && ((e) => onDrag(s.id, e))}
+        onDoubleClick={onOpen && (() => onOpen(s.id))}>
         <rect x={s.x} y={s.y} width={s.w} height={s.h} rx={8} />
-        {labels && <text x={s.x + s.w / 2} y={s.y + 16} textAnchor="middle">
+        {labels === 'id' && <text className="ac-bpmn-idonly" x={s.x + s.w / 2} y={s.y + s.h / 2 + 10} textAnchor="middle">{s.id}</text>}
+        {labels === true && <text x={s.x + s.w / 2} y={s.y + 16} textAnchor="middle">
           <tspan x={s.x + s.w / 2} className="ac-bpmn-id">{s.id}</tspan>
           {lines(s.label, 16, 3).map((l, i) => <tspan key={i} x={s.x + s.w / 2} dy={14}>{l}</tspan>)}
         </text>}
@@ -71,7 +76,7 @@ function More({ s, onMenu, what }: { s: DrawShape; onMenu: (id: string, x: numbe
 type ShapeProps = Props & { s: DrawShape; x: string };
 /** Same drawn shape: equal fields (a recomputed drawing gives fresh objects), the same selection state and display classes of THIS shape, labels
  *  and pick handler. */
-const sameShape = (a: ShapeProps, b: ShapeProps): boolean => a.labels === b.labels && a.onPick === b.onPick && a.x === b.x
+const sameShape = (a: ShapeProps, b: ShapeProps): boolean => a.labels === b.labels && a.onPick === b.onPick && a.x === b.x && a.onOpen === b.onOpen
   && a.onDrag === b.onDrag && a.onMenu === b.onMenu
   && shallowEqual(a.s, b.s)
   && (a.selected === a.s.id) === (b.selected === b.s.id);
@@ -86,7 +91,7 @@ const Shape = memo(ShapeView, sameShape);
 /** `onEdge`: a click on an editable link (selects it, its menu at the click). */
 type ShapesProps = Props & { d: Drawing; extra?: ReadonlyMap<string, string>; onEdge?: (id: string, x: number, y: number) => void };
 const kindOf = (e: Drawing['edges'][number]): string => (e.rework ? 'rework' : e.message ? 'message' : 'flow');
-export const Shapes = memo(function Shapes({ d, selected, onPick, labels, extra, onDrag, onMenu, onEdge }: ShapesProps) {
+export const Shapes = memo(function Shapes({ d, selected, onPick, labels, extra, onDrag, onMenu, onEdge, onOpen }: ShapesProps) {
   const id = useId().replace(/:/g, '');   // one set of arrowheads per diagram (two diagrams share the page)
   return (
     <>
@@ -99,7 +104,8 @@ export const Shapes = memo(function Shapes({ d, selected, onPick, labels, extra,
         .map((s) => <Shape key={`${s.kind}:${s.id}`} s={s} selected={selected} onPick={onPick} labels={labels} x=""
           onMenu={s.kind === 'sub' ? onMenu : undefined} />)}
       {d.edges.map((e) => (
-        <polyline key={e.id} className={`ac-bpmn-edge${e.rework ? ' is-rework' : ''}${e.message ? ' is-message' : ''}${e.bridged ? ' is-bridged' : ''}`}
+        <polyline key={e.id} className={`ac-bpmn-edge${e.rework ? ' is-rework' : ''}${e.message ? ' is-message' : ''}${e.bridged ? ' is-bridged' : ''}${
+          selected && (e.source === selected || e.target === selected) ? ' is-hot' : ''}`}
           points={e.points.map((p) => p.join(',')).join(' ')} markerEnd={`url(#${id}-${kindOf(e)})`} />
       ))}
       {onEdge && d.edges.filter(editableEdge).map((e) => (   // a wide invisible stroke: the link is easy to click
@@ -107,7 +113,8 @@ export const Shapes = memo(function Shapes({ d, selected, onPick, labels, extra,
           onClick={(ev) => onEdge(e.id, ev.clientX, ev.clientY)}><title>{`Link ${e.source} → ${e.target}: click to edit`}</title></polyline>
       ))}
       {d.shapes.filter((s) => s.kind === 'activity')
-        .map((s) => <Shape key={s.id} s={s} selected={selected} onPick={onPick} labels={labels} x={extra?.get(s.id) ?? ''} onDrag={onDrag} onMenu={onMenu} />)}
+        .map((s) => <Shape key={s.id} s={s} selected={selected} onPick={onPick} labels={labels} x={extra?.get(s.id) ?? ''} onDrag={onDrag} onMenu={onMenu}
+          onOpen={onOpen} />)}
     </>
   );
 });
