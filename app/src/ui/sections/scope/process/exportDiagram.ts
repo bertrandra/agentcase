@@ -24,12 +24,12 @@ export function diagramSvgText(svg: SVGSVGElement, box: { x: number; y: number; 
 export function exportDiagram(svg: SVGSVGElement, box: { x: number; y: number; w: number; h: number }, name: string, kind: 'svg' | 'png'): void {
   const text = diagramSvgText(svg, box), file = name.toLowerCase().replace(/[^a-z0-9]+/g, '-');
   if (kind === 'svg') { downloadText(`${file}.svg`, text, 'image/svg+xml'); return; }
-  const img = new Image(), scale = 2;
+  const img = new Image(), scale = 2, bg = getComputedStyle(svg.parentElement ?? svg).backgroundColor;
   img.onload = () => {
     const c = Object.assign(document.createElement('canvas'), { width: Math.round(box.w * scale), height: Math.round(box.h * scale) });
     const g = c.getContext('2d');
     if (!g) return;
-    g.fillStyle = '#ffffff';
+    g.fillStyle = bg;   // the canvas's own (themed) background
     g.fillRect(0, 0, c.width, c.height);
     g.drawImage(img, 0, 0, c.width, c.height);
     c.toBlob((b) => { if (b) downloadBlob(`${file}.png`, b); }, 'image/png');
