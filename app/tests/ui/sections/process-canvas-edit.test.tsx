@@ -121,7 +121,7 @@ describe('Process diagram canvas edits', { timeout: 90_000 }, () => {
     act(() => { fireEvent.click(button('Clear selection (2)')); });
     for (const id of ['A003', 'A001', 'A004']) act(() => { fireEvent.click(more(id).parentElement!); });
     act(() => { fireEvent.click(more('A004')); });
-    act(() => { fireEvent.click(button('📦 Add 2 to Sub_1')); });
+    act(() => { fireEvent.click(button('📦 Add to Sub_1 (2 activities)')); });
     expect([subOf('A003'), subOf('A004')]).toEqual(['Sub_1', 'Sub_1']);
     expect(appStore().getState().history.undo.length).toBe(n + 1);
     expect(readProcess(doc()).flows.filter((f) => f.container === 'L0' && !f.rework).some((f) => ['A003', 'A004'].includes(f.source))).toBe(false);
@@ -131,7 +131,7 @@ describe('Process diagram canvas edits', { timeout: 90_000 }, () => {
     const inScope = (id: string) => readProcess(doc()).activities.find((a) => a.id === id)!.inScope !== false, was = inScope('A002');
     const n = appStore().getState().history.undo.length;
     act(() => { fireEvent.click(more('A002')); });
-    act(() => { fireEvent.click(button(was ? '⊘ Set out of scope' : '✅ Set in scope')); });
+    act(() => { fireEvent.click(button(was ? '⊘ Set out of scope (1 activity)' : '✅ Set in scope (1 activity)')); });
     expect(inScope('A002')).toBe(!was);
     expect(appStore().getState().history.undo.length).toBe(n + 1);
     act(() => { fireEvent.click(button('☑ Select several')); });
@@ -141,5 +141,12 @@ describe('Process diagram canvas edits', { timeout: 90_000 }, () => {
     act(() => { fireEvent.click(button(label)); });
     const on = label.startsWith('✅');
     expect([inScope('A001'), inScope('A002')]).toEqual([on, on]);
+  });
+  it('every selection action says how many activities it acts on, one included', () => {
+    render(<Process />);
+    act(() => { fireEvent.click(more('A001')); });
+    const items = [...document.querySelectorAll('[role=menuitem]')].map((b) => b.textContent!);
+    expect(items).toContain('📦 Create a sub-process (1 activity)');
+    expect(items.some((t) => /scope \(1 activity\)$/.test(t))).toBe(true);
   });
 });

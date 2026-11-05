@@ -78,6 +78,8 @@ export function useActivityDrag(svg: RefObject<SVGSVGElement | null>, drawn: Dra
   return { ghost, onDrag, moved };
 }
 
+/** "(n activities)": how many activities a menu action acts on (owner, 2026-11-05: always shown). */
+const count = (n: number): string => `(${n} ${n > 1 ? 'activities' : 'activity'})`;
 export interface MenuAt { id: string; x: number; y: number }
 interface Item { label: string; run: () => void }
 /** A small menu at `at` (in the diagram's box): its items; Escape or a pointer down elsewhere (but on a link's handle) closes it. */
@@ -113,8 +115,8 @@ export function ActivityMenu({ at, picked, onEdit, onLink, onClose }: {
     !v.activities.some((a) => a.id === i && a.sub));
   const group = (): void => { toast(createProcessSub(ids) ?? `Sub-process of ${ids.join(', ')} created: drop other activities on it (Ctrl+Z undoes)`); };
   const join = (): void => { toast(addToProcessSub(subs[0]!, ...rest) ?? `${rest.join(', ')} put in ${subs[0]} (Ctrl+Z undoes)`); };
-  const grouping = subs.length === 1 && rest.length ? [{ label: `📦 Add ${rest.length} to ${subs[0]}`, run: join }]
-    : subs.length ? [] : [{ label: ids.length > 1 ? `📦 Create a sub-process (${ids.length} activities)` : '📦 Create a sub-process', run: group }];
+  const grouping = subs.length === 1 && rest.length ? [{ label: `📦 Add to ${subs[0]} ${count(rest.length)}`, run: join }]
+    : subs.length ? [] : [{ label: `📦 Create a sub-process ${count(ids.length)}`, run: group }];
   const remove = (): void => {
     if (processView.getState().selected === at.id) selectActivity(null);
     removeProcessActivity(at.id);
@@ -139,7 +141,7 @@ export function SubMenu({ at, onClose }: { at: MenuAt; onClose: () => void }) {
  * (`process.setScope`, the scope box of the activity table).
  */
 function scopeItem(ids: string[], v: ReturnType<typeof readProcess>): Item {
-  const on = !ids.some((i) => v.activities.find((a) => a.id === i)?.inScope !== false), n = ids.length > 1 ? ` (${ids.length} activities)` : '';
+  const on = !ids.some((i) => v.activities.find((a) => a.id === i)?.inScope !== false), n = ` ${count(ids.length)}`;
   return { label: on ? `✅ Set in scope${n}` : `⊘ Set out of scope${n}`, run: () => {
     setProcessScope(ids, on);
     toast(`${ids.join(', ')} ${on ? 'in' : 'out of'} scope (Ctrl+Z undoes)`);
