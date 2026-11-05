@@ -17,6 +17,8 @@ export interface DrawShape {
   inScope?: boolean; regulatory?: boolean; phase?: string;
   /** an activity's sub-process */
   sub?: string;
+  /** a sub-process drawn collapsed (`collapseSubs`) */
+  collapsed?: boolean;
   /** placed by the layout (no BPMN DI shape yet) */
   placed?: boolean;
   /** a second line under the label: the multi-instance marker of a programme activity, the facts of a wave (B9a) */

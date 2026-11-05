@@ -17,6 +17,34 @@ When releasing, follow [docs/BUMP_PROCEDURE.md](docs/BUMP_PROCEDURE.md) (§7 for
 
 ## [Unreleased]
 
+### 🧩 Process: a better canvas — touch, selection, readability, layout, sub-processes, views (owner's requests 2026-11-05)
+
+- **Touch**: a long press on an activity opens its menu; a finger on an activity that is not selected pans the canvas (select it first to drag
+  it); the selected activity carries a ⋯ of a constant finger size whatever the zoom.
+- **Selection**: with ☑ Select several, a drag on the background draws a box that selects the activities in it; dragging one of the selected
+  activities moves them all to the cell (one step, `process.placeActivities`); the links of the selected activity are highlighted.
+- **While dragging**, the target cell (phase × lane) or sub-process is outlined and a label says what the drop does ("2 activities → Upstream · Dev").
+- **Readability**: 🔍 Find an activity by id or name (selected and brought into view); at an overview zoom where names cannot be read, the ids
+  are drawn alone in large type; a **Minimap** (in a corner: the whole drawing, the window on screen; a tap centres the view there).
+- **Editing**: ↶ Undo and ↷ Redo on the canvas (a phone has no Ctrl+Z); a double click (double tap) on an activity opens its details; from the
+  keyboard on the canvas, N / P select the next / previous activity and Enter opens its menu.
+- **🧹 Tidy layout**: the shown phase's (or every phase's) activities back on a regular grid in their lanes, sub-processes laid out again, the
+  flows redrawn; phases and roles unchanged (`process.tidyLayout`, one step).
+- **Sub-processes**: ▸ Collapse to one box ("▸ n activities", its links kept) and ▾ Expand (a view only); ✏️ Rename (`process.renameSubProcess`).
+- **Views**: the display options (point of view, phase, hidden, compact, colours, frozen headers, minimap, collapsed sub-processes) are kept in
+  this browser between visits; **⬇ SVG / ⬇ PNG** save the whole drawing as an image (styles written in, overlays left out).
+
+### 🧩 Process: select several activities on any screen, group them from any of their menus (owner's request 2026-11-05)
+
+- **☑ Select several** above the canvas: while it is on, each tap (or click) adds an activity to the selection or takes it out, no Ctrl key
+  needed, so it works on a phone or a tablet; **Clear selection (n)** empties it.
+- The ⋯ menu of any selected activity acts on the whole selection: **📦 Create a sub-process (n activities)** groups them; when some of them are
+  already in a sub-process, **📦 Add to Sub_x (n activities)** puts the others in it, one undoable step (`process.addToSubProcess` now takes several
+  activities). Their links are updated by the inheritance rule (a link between a member and an activity outside goes to the sub-process).
+- Every selection action of the menu says how many activities it acts on, one included ("(1 activity)"; owner, 2026-11-05).
+- **✅ Set in scope / ⊘ Set out of scope** in the activity's ⋯ menu (owner, 2026-11-05): for the activity or the whole selection (when one of
+  them is in scope they all go out, else they all come in), one undoable step (`process.setScope`, like the scope box of the activity table).
+
 ### 🧩 Process: sub-processes on the canvas (owner's request 2026-11-04)
 
 - An automated activity is a sub-process, and several activities can be automated together in one. The model keeps its "automatable" field; on

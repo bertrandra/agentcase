@@ -38,7 +38,7 @@ export function setActivityRole(d: XDocument, id: string, role: string): XDocume
 }
 
 /** Every shape at or below `at` moves down by `by`, every shape across it grows by `by` (a lane, its pool and the phases), the flows follow. */
-function insertBand(d: XDocument, at: number, by: number): XDocument {
+export function insertBand(d: XDocument, at: number, by: number): XDocument {
   const num = (e: XElement, k: string): number => Number(attr(e, k) ?? 0);
   return same(d, editWhere(d.root, (e) => (e.ns === NS.dc && e.local === 'Bounds') || (e.ns === NS.di && e.local === 'waypoint'), (e) => {
     const y = num(e, 'y');

@@ -89,6 +89,28 @@
 /* a sub-process grouping activities (owner, 2026-11-04): dashed, inside its phase */
 .ac-bpmn-sub rect { fill: var(--ac-surface-tint); fill-opacity: 0.35; stroke: var(--ac-primary-700); stroke-width: 2; stroke-dasharray: 8 4; }
 .ac-bpmn-sub text { fill: var(--ac-primary-700); font-weight: var(--ac-font-weight-bold); }
+.ac-proc-diagram [role=toolbar] button[aria-pressed="true"] { outline: 3px solid var(--ac-primary-700); outline-offset: 1px; }   /* Select several on */
+/* owner, 2026-11-05: the drop target and what the drop does, the selection box, the selected activity's finger-sized ⋯, the links of the
+   selection, the ids in large type at an overview zoom, the minimap */
+.ac-bpmn-target { fill: var(--ac-primary-700); fill-opacity: 0.08; stroke: var(--ac-primary-700); stroke-width: 3; stroke-dasharray: 10 5; }
+.ac-bpmn-droplabel { fill: var(--ac-primary-700); font-weight: var(--ac-font-weight-bold); paint-order: stroke; stroke: var(--ac-surface); stroke-width: 3px; }
+.ac-bpmn-band { fill: var(--ac-primary-700); fill-opacity: 0.08; stroke: var(--ac-primary-700); stroke-width: 2; stroke-dasharray: 6 3; }
+.ac-bpmn-selmore { cursor: pointer; }
+.ac-bpmn-selmore circle { fill: var(--ac-primary-700); stroke: var(--ac-surface); stroke-width: 2px; }
+.ac-bpmn-selmore text { fill: var(--ac-surface); font-weight: var(--ac-font-weight-bold); }
+.ac-bpmn-idonly { font-size: 30px; font-weight: var(--ac-font-weight-bold); fill: var(--ac-text-heading); }
+.ac-bpmn-edge.is-hot { stroke: var(--ac-primary-700); stroke-width: 4; }
+.ac-proc-canvas { position: relative; }
+.ac-proc-canvas.is-selecting svg { cursor: crosshair; }
+.ac-proc-canvas .ac-proc-minimap { position: absolute; right: 8px; bottom: 8px; width: 180px; height: 120px; background: var(--ac-surface);
+  border: var(--ac-border-thin) solid var(--ac-line-strong); border-radius: var(--ac-radius-md); cursor: pointer; }
+.ac-proc-minimap rect { fill: none; stroke: none; }
+.ac-proc-minimap .is-phase { fill: var(--ac-surface-tint); }
+.ac-proc-minimap .is-sub { stroke: var(--ac-primary-700); stroke-width: 6; }
+.ac-proc-minimap .is-activity { fill: var(--ac-text-soft); }
+.ac-proc-minimap .is-activity.is-selected { fill: var(--ac-primary-700); }
+.ac-proc-minimap .is-window { stroke: var(--ac-danger-700); stroke-width: 12; }
+.ac-proc-find { display: inline-flex; gap: 4px; align-items: center; margin: 0; }
 .ac-proc-hint { font-weight: var(--ac-font-weight-bold); color: var(--ac-primary-700); }
 /* Phase B9a: the transformation programme under the delivery process (swim lanes, parameter panel, table alternative). */
 .ac-prog { margin-top: 24px; }
@@ -116,6 +138,8 @@
   .ac-bpmn text { fill: CanvasText; }
   .ac-bpmn-arrow path { fill: CanvasText; }
   .ac-bpmn-ghost { stroke: Highlight; }
+  .ac-bpmn-target, .ac-bpmn-band, .ac-bpmn-edge.is-hot, .ac-proc-minimap .is-window { stroke: Highlight; }
+  .ac-bpmn-selmore circle, .ac-proc-minimap .is-activity.is-selected { fill: Highlight; }
   .ac-bpmn-edge.is-selected, .ac-bpmn-handle, .ac-bpmn-pull { stroke: Highlight; }
   .ac-proc-menu { border-color: CanvasText; }
   .ac-bpmn-activity.is-selected rect, .ac-bpmn-activity.is-picked rect { stroke: Highlight; }

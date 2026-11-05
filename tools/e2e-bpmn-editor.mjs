@@ -184,6 +184,48 @@ await step('sub-process (owner, 2026-11-04): created from the picked activities,
   await frame.locator('.ac-bpmn-sub').waitFor({ state: 'detached' });
   await frame.locator('select[id$="-ph"]').selectOption('');
 });
+await step('canvas tools (owner, 2026-11-05): Enter opens the menu, a box selects, a selection moves together (the drop says where), a long press opens the menu, SVG / PNG export', async () => {
+  const frame = page.locator('.ac-proc-diagram').first(), canvas = frame.locator('.ac-proc-canvas');
+  await frame.locator('select[id$="-ph"]').selectOption('L0');
+  await canvas.evaluate((el) => el.scrollIntoView({ block: 'center' }));
+  const shape = (id) => frame.locator('.ac-bpmn-activity').filter({ has: page.locator('title', { hasText: new RegExp(`^Actions on ${id}:`) }) });
+  const rect = async (id) => shape(id).locator('rect').first().boundingBox();
+  await shape('A003').dispatchEvent('click');
+  await canvas.focus(); await page.keyboard.press('Enter');
+  await page.locator('[role=menu][aria-label="Actions on activity A003"]').waitFor();
+  await page.keyboard.press('Escape');
+  await frame.getByRole('button', { name: '☑ Select several' }).click();
+  const a1 = await rect('A001');
+  await page.mouse.move(a1.x - 6, a1.y - 6); await page.mouse.down();
+  await page.mouse.move(a1.x + a1.width + 6, a1.y + a1.height + 6, { steps: 6 }); await page.mouse.up();
+  await frame.getByRole('button', { name: 'Clear selection (2)' }).waitFor({ timeout: 5000 });
+  const lanes = frame.locator('g.ac-bpmn-lane');
+  let dev = null;
+  for (let i = 0, n = await lanes.count(); i < n && !dev; i++) if (await lanes.nth(i).locator('text').first().textContent() === 'Arch/Design') dev = await lanes.nth(i).locator('rect').first().boundingBox();
+  if (!dev) throw new Error('no Arch/Design lane shown');
+  const b1 = await rect('A001');
+  await page.mouse.move(b1.x + b1.width / 2, b1.y + b1.height / 2); await page.mouse.down();
+  await page.mouse.move(b1.x + b1.width / 2, dev.y + dev.height / 2, { steps: 8 });
+  const label = await frame.locator('.ac-bpmn-droplabel').textContent();
+  if (!/^2 activities → .* · Arch\/Design$/.test(label)) throw new Error(`the drop label says "${label}"`);
+  await page.mouse.up();
+  await frame.getByRole('button', { name: '☑ Select several' }).click();
+  await shape('A001').dispatchEvent('dblclick');
+  if (await page.locator('#ac-proc-activity select[id$="-role"]').inputValue() !== 'role-arch') throw new Error('A001 did not take the Arch/Design role');
+  await page.keyboard.press('Control+z');
+  const c3 = await rect('A003');
+  await shape('A003').locator('rect').first().dispatchEvent('pointerdown', { pointerType: 'touch', button: 0, isPrimary: true, clientX: c3.x + 5, clientY: c3.y + 5 });
+  await page.locator('[role=menu][aria-label="Actions on activity A003"]').waitFor({ timeout: 3000 });
+  await page.evaluate(() => window.dispatchEvent(new PointerEvent('pointerup', { pointerType: 'touch' })));
+  await page.keyboard.press('Escape');
+  for (const kind of ['SVG', 'PNG']) {
+    const [dl] = await Promise.all([page.waitForEvent('download'), frame.getByRole('button', { name: `⬇ ${kind}` }).click()]);
+    if (!dl.suggestedFilename().endsWith(`.${kind.toLowerCase()}`)) throw new Error(`the ${kind} file is ${dl.suggestedFilename()}`);
+    const text = kind === 'SVG' ? (await (await import('node:fs')).promises.readFile(await dl.path(), 'utf8')) : '';
+    if (kind === 'SVG' && !(text.includes('<svg') && text.includes('A003') && !text.includes('ac-bpmn-frozen'))) throw new Error('the SVG file is not the diagram');
+  }
+  await frame.locator('select[id$="-ph"]').selectOption('');
+});
 await browser.close();
 console.log(steps, 'editor flows,', failures, 'failure(s)');
 process.exit(failures ? 1 : 0);
