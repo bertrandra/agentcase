@@ -24,6 +24,8 @@ When releasing, follow [docs/BUMP_PROCEDURE.md](docs/BUMP_PROCEDURE.md) (§7 for
 - The ⋯ menu of any selected activity acts on the whole selection: **📦 Create a sub-process (n activities)** groups them; when some of them are
   already in a sub-process, **📦 Add n to Sub_x** puts the others in it, one undoable step (`process.addToSubProcess` now takes several
   activities). Their links are updated by the inheritance rule (a link between a member and an activity outside goes to the sub-process).
+- **✅ Set in scope / ⊘ Set out of scope** in the activity's ⋯ menu (owner, 2026-11-05): for the activity or the whole selection (when one of
+  them is in scope they all go out, else they all come in), one undoable step (`process.setScope`, like the scope box of the activity table).
 
 ### 🧩 Process: sub-processes on the canvas (owner's request 2026-11-04)
 

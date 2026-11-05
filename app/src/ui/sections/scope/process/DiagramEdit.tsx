@@ -1,5 +1,5 @@
 import { useCallback, useEffect, useRef, useState, type RefObject } from 'react';
-import { removeProcessActivity } from '@/controllers/process';
+import { removeProcessActivity, setProcessScope } from '@/controllers/process';
 import { placeProcessActivity } from '@/controllers/processLayout';
 import { addToProcessSub, createProcessSub, deleteProcessSub } from '@/controllers/processSubs';
 import { readProcess, type Drawing } from '@/domain/process';
@@ -123,7 +123,7 @@ export function ActivityMenu({ at, picked, onEdit, onLink, onClose }: {
   return (
     <PopMenu at={at} label={`Actions on activity ${at.id}`} onClose={onClose}
       items={[{ label: '✏️ Edit details', run: () => onEdit(at.id) }, { label: '🔗 Add a link', run: () => onLink(at.id) },
-        ...grouping,
+        ...grouping, scopeItem(ids, v),
         { label: '🗑️ Delete activity', run: remove }]} />
   );
 }
@@ -132,4 +132,16 @@ export function ActivityMenu({ at, picked, onEdit, onLink, onClose }: {
 export function SubMenu({ at, onClose }: { at: MenuAt; onClose: () => void }) {
   const remove = (): void => { deleteProcessSub(at.id); toast(`Sub-process ${at.id} deleted, its activities kept (Ctrl+Z undoes)`); };
   return <PopMenu at={at} label={`Actions on sub-process ${at.id}`} onClose={onClose} items={[{ label: '🗑️ Delete sub-process', run: remove }]} />;
+}
+
+/**
+ * In scope / out of scope for the selection (owner, 2026-11-05): when one of them is in scope they all go out, else they all come in; one step
+ * (`process.setScope`, the scope box of the activity table).
+ */
+function scopeItem(ids: string[], v: ReturnType<typeof readProcess>): Item {
+  const on = !ids.some((i) => v.activities.find((a) => a.id === i)?.inScope !== false), n = ids.length > 1 ? ` (${ids.length} activities)` : '';
+  return { label: on ? `✅ Set in scope${n}` : `⊘ Set out of scope${n}`, run: () => {
+    setProcessScope(ids, on);
+    toast(`${ids.join(', ')} ${on ? 'in' : 'out of'} scope (Ctrl+Z undoes)`);
+  } };
 }

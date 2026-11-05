@@ -126,4 +126,20 @@ describe('Process diagram canvas edits', { timeout: 90_000 }, () => {
     expect(appStore().getState().history.undo.length).toBe(n + 1);
     expect(readProcess(doc()).flows.filter((f) => f.container === 'L0' && !f.rework).some((f) => ['A003', 'A004'].includes(f.source))).toBe(false);
   });
+  it('the menu toggles the scope of the activity or of the selection, one step each', () => {
+    render(<Process />);
+    const inScope = (id: string) => readProcess(doc()).activities.find((a) => a.id === id)!.inScope !== false, was = inScope('A002');
+    const n = appStore().getState().history.undo.length;
+    act(() => { fireEvent.click(more('A002')); });
+    act(() => { fireEvent.click(button(was ? '⊘ Set out of scope' : '✅ Set in scope')); });
+    expect(inScope('A002')).toBe(!was);
+    expect(appStore().getState().history.undo.length).toBe(n + 1);
+    act(() => { fireEvent.click(button('☑ Select several')); });
+    for (const id of ['A001', 'A002']) act(() => { fireEvent.click(more(id).parentElement!); });
+    act(() => { fireEvent.click(more('A001')); });
+    const label = [...document.querySelectorAll('[role=menuitem]')].map((b) => b.textContent!).find((t) => /scope \(2 activities\)/.test(t))!;
+    act(() => { fireEvent.click(button(label)); });
+    const on = label.startsWith('✅');
+    expect([inScope('A001'), inScope('A002')]).toEqual([on, on]);
+  });
 });
