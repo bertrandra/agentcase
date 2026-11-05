@@ -107,4 +107,23 @@ describe('Process diagram canvas edits', { timeout: 90_000 }, () => {
     expect(readProcess(doc()).activities.some((a) => a.sub)).toBe(false);
     expect(appStore().getState().history.undo.length).toBe(n + 2);
   });
+  it('☑ Select several (a touch screen): taps add activities; any picked one\'s menu groups them; then others join that sub-process', () => {
+    render(<Process />);
+    const subOf = (id: string) => readProcess(doc()).activities.find((a) => a.id === id)!.sub;
+    act(() => { fireEvent.click(button('☑ Select several')); });
+    expect(button('☑ Select several').getAttribute('aria-pressed')).toBe('true');
+    for (const id of ['A001', 'A002']) act(() => { fireEvent.click(more(id).parentElement!); });   // plain taps, no Ctrl
+    expect(button('Clear selection (2)')).toBeDefined();
+    act(() => { fireEvent.click(more('A002')); });   // the menu of either picked activity
+    act(() => { fireEvent.click(button('📦 Create a sub-process (2 activities)')); });
+    expect([subOf('A001'), subOf('A002')]).toEqual(['Sub_1', 'Sub_1']);
+    const n = appStore().getState().history.undo.length;
+    act(() => { fireEvent.click(button('Clear selection (2)')); });
+    for (const id of ['A003', 'A001', 'A004']) act(() => { fireEvent.click(more(id).parentElement!); });
+    act(() => { fireEvent.click(more('A004')); });
+    act(() => { fireEvent.click(button('📦 Add 2 to Sub_1')); });
+    expect([subOf('A003'), subOf('A004')]).toEqual(['Sub_1', 'Sub_1']);
+    expect(appStore().getState().history.undo.length).toBe(n + 1);
+    expect(readProcess(doc()).flows.filter((f) => f.container === 'L0' && !f.rework).some((f) => ['A003', 'A004'].includes(f.source))).toBe(false);
+  });
 });

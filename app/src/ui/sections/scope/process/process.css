@@ -89,6 +89,7 @@
 /* a sub-process grouping activities (owner, 2026-11-04): dashed, inside its phase */
 .ac-bpmn-sub rect { fill: var(--ac-surface-tint); fill-opacity: 0.35; stroke: var(--ac-primary-700); stroke-width: 2; stroke-dasharray: 8 4; }
 .ac-bpmn-sub text { fill: var(--ac-primary-700); font-weight: var(--ac-font-weight-bold); }
+.ac-proc-diagram [role=toolbar] button[aria-pressed="true"] { outline: 3px solid var(--ac-primary-700); outline-offset: 1px; }   /* Select several on */
 .ac-proc-hint { font-weight: var(--ac-font-weight-bold); color: var(--ac-primary-700); }
 /* Phase B9a: the transformation programme under the delivery process (swim lanes, parameter panel, table alternative). */
 .ac-prog { margin-top: 24px; }

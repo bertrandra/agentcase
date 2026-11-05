@@ -17,6 +17,14 @@ When releasing, follow [docs/BUMP_PROCEDURE.md](docs/BUMP_PROCEDURE.md) (§7 for
 
 ## [Unreleased]
 
+### 🧩 Process: select several activities on any screen, group them from any of their menus (owner's request 2026-11-05)
+
+- **☑ Select several** above the canvas: while it is on, each tap (or click) adds an activity to the selection or takes it out, no Ctrl key
+  needed, so it works on a phone or a tablet; **Clear selection (n)** empties it.
+- The ⋯ menu of any selected activity acts on the whole selection: **📦 Create a sub-process (n activities)** groups them; when some of them are
+  already in a sub-process, **📦 Add n to Sub_x** puts the others in it, one undoable step (`process.addToSubProcess` now takes several
+  activities). Their links are updated by the inheritance rule (a link between a member and an activity outside goes to the sub-process).
+
 ### 🧩 Process: sub-processes on the canvas (owner's request 2026-11-04)
 
 - An automated activity is a sub-process, and several activities can be automated together in one. The model keeps its "automatable" field; on

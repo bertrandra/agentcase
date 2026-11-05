@@ -9,6 +9,7 @@ import { addCanvasActivity } from '@/controllers/processLayout';
 import { ActivityMenu, openActivityPanel, SubMenu, useActivityDrag, type MenuAt } from './DiagramEdit';
 import { EdgeHandles, EdgeMenu, useLinks } from './DiagramLinks';
 import { useCamera } from './useCamera';
+import { useFrameSize } from './useFrameSize';
 import { selectActivity, useProcessView } from './view';
 
 /**
@@ -68,6 +69,9 @@ export function Diagram({ d: doc, tableId, title, desc, name, labelZoom = 2, fac
     shown && !shown.has(s.id) ? 'is-faded' : '', picked.includes(s.id) && s.id !== selected ? 'is-picked' : ''].filter(Boolean).join(' ')])),
   [d, colour, facts, shown, picked, selected]);
   const used = colour && facts ? [...new Set(acts.map((s) => facts.get(s.id)).map((f) => (f ? categoryOf(colour, f) : '')))] : [];
+  // owner, 2026-11-05: a touch screen has no Ctrl: "Select several" makes each tap add or remove an activity
+  const [multi, setMulti] = useState(false), multiRef = useRef(multi);
+  multiRef.current = multi;
   const selRef = useRef(selected), drag = useActivityDrag(svg, drawn, onEdited), [menu, setMenu] = useState<MenuAt | null>(null);
   const links = useLinks(svg, root, drawn, onEdited);
   selRef.current = selected;
@@ -76,6 +80,7 @@ export function Diagram({ d: doc, tableId, title, desc, name, labelZoom = 2, fac
     if (drag.moved.current) { drag.moved.current = false; return; }   // the click that ends a drag
     if (links.pickTarget(pid)) return;   // the activity a new link leads to
 
+    if (multiRef.current) add = true;
     setPicked((p) => (add ? (p.includes(pid) ? p.filter((x) => x !== pid) : [...p, ...(cur && !p.length ? [cur] : []), pid]) : [pid]));
     selectActivity(pid);
   }, []);   // eslint-disable-line react-hooks/exhaustive-deps -- `drag.moved` is a ref, `links.pickTarget` is stable
@@ -103,6 +108,8 @@ export function Diagram({ d: doc, tableId, title, desc, name, labelZoom = 2, fac
         <span className="ac-muted">{Math.round(cam.s * 100)}%</span>
         <FullScreenButton on={full.on} toggle={full.toggle} what={name} />
         {editable && <button type="button" onClick={() => edit(addCanvasActivity(phase))}><span aria-hidden="true">＋</span> Add activity</button>}
+        {editable && <button type="button" aria-pressed={multi} onClick={() => setMulti((m) => !m)}>☑ Select several</button>}
+        {editable && picked.length > 1 && <button type="button" onClick={() => setPicked([])}>{`Clear selection (${picked.length})`}</button>}
         {links.from && <span className="ac-proc-hint" role="status">{`Click the activity ${links.from} leads to (Escape cancels)`}</span>}
         <p className="ac-proc-live" aria-live="polite">
           {sel ? `Selected: ${sel.id} ${sel.label}${sel.inScope === false ? ' (out of scope)' : ''}${picked.length > 1 ? ` (+${picked.length - 1} more)` : ''}`
@@ -134,17 +141,4 @@ export function Diagram({ d: doc, tableId, title, desc, name, labelZoom = 2, fac
       {editable && links.edge && <EdgeMenu at={links.edge} onClose={links.closeEdge} />}
     </div>
   );
-}
-
-/** The frame's size in screen pixels, followed as it changes (full screen, window resize); 0 × 0 where it cannot be measured (tests). */
-function useFrameSize(ref: React.RefObject<HTMLDivElement | null>): { w: number; h: number } {
-  const [size, setSize] = useState({ w: 0, h: 0 });
-  useEffect(() => {
-    const el = ref.current;
-    if (!el || typeof ResizeObserver === 'undefined') return undefined;
-    const ro = new ResizeObserver(() => setSize((s) => (s.w === el.clientWidth && s.h === el.clientHeight ? s : { w: el.clientWidth, h: el.clientHeight })));
-    ro.observe(el);
-    return () => ro.disconnect();
-  }, [ref]);
-  return size;
 }

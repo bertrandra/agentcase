@@ -2,7 +2,8 @@ import { useCallback, useEffect, useRef, useState, type RefObject } from 'react'
 import { removeProcessActivity } from '@/controllers/process';
 import { placeProcessActivity } from '@/controllers/processLayout';
 import { addToProcessSub, createProcessSub, deleteProcessSub } from '@/controllers/processSubs';
-import type { Drawing } from '@/domain/process';
+import { readProcess, type Drawing } from '@/domain/process';
+import { useDoc } from '@/store/hooks';
 import { toast } from '@/ui/uiState';
 import { processView, selectActivity } from './view';
 
@@ -106,8 +107,14 @@ export function PopMenu({ at, label, items, onClose }: { at: MenuAt; label: stri
 export function ActivityMenu({ at, picked, onEdit, onLink, onClose }: {
   at: MenuAt; picked: string[]; onEdit: (id: string) => void; onLink: (id: string) => void; onClose: () => void;
 }) {
-  const ids = picked.includes(at.id) ? picked : [at.id];
+  const ids = picked.includes(at.id) ? picked : [at.id], v = readProcess(useDoc((d) => d.BPMN));
+  // the selection holds activities of one sub-process: the others join it; none in a sub-process: a new one (owner, 2026-11-05)
+  const subs = [...new Set(ids.map((i) => v.activities.find((a) => a.id === i)?.sub).filter((s): s is string => !!s))], rest = ids.filter((i) =>
+    !v.activities.some((a) => a.id === i && a.sub));
   const group = (): void => { toast(createProcessSub(ids) ?? `Sub-process of ${ids.join(', ')} created: drop other activities on it (Ctrl+Z undoes)`); };
+  const join = (): void => { toast(addToProcessSub(subs[0]!, ...rest) ?? `${rest.join(', ')} put in ${subs[0]} (Ctrl+Z undoes)`); };
+  const grouping = subs.length === 1 && rest.length ? [{ label: `📦 Add ${rest.length} to ${subs[0]}`, run: join }]
+    : subs.length ? [] : [{ label: ids.length > 1 ? `📦 Create a sub-process (${ids.length} activities)` : '📦 Create a sub-process', run: group }];
   const remove = (): void => {
     if (processView.getState().selected === at.id) selectActivity(null);
     removeProcessActivity(at.id);
@@ -116,7 +123,7 @@ export function ActivityMenu({ at, picked, onEdit, onLink, onClose }: {
   return (
     <PopMenu at={at} label={`Actions on activity ${at.id}`} onClose={onClose}
       items={[{ label: '✏️ Edit details', run: () => onEdit(at.id) }, { label: '🔗 Add a link', run: () => onLink(at.id) },
-        { label: ids.length > 1 ? `📦 Create a sub-process (${ids.length} activities)` : '📦 Create a sub-process', run: group },
+        ...grouping,
         { label: '🗑️ Delete activity', run: remove }]} />
   );
 }

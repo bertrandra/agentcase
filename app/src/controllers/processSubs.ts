@@ -13,8 +13,9 @@ const createCmd = defineCommand<{ ids: string[] }>({
   type: 'process.createSubProcess', label: (p) => `Create a sub-process of ${p.ids.join(', ')}`,
   run(d, p) { editProcess(d, (doc) => createSubProcess(doc, p.ids)); },
 });
-const addCmd = defineCommand<{ sub: string; id: string }>({
-  type: 'process.addToSubProcess', label: (p) => `Put ${p.id} in ${p.sub}`, run(d, p) { editProcess(d, (doc) => addToSubProcess(doc, p.sub, p.id)); },
+const addCmd = defineCommand<{ sub: string; ids: string[] }>({
+  type: 'process.addToSubProcess', label: (p) => `Put ${p.ids.join(', ')} in ${p.sub}`,
+  run(d, p) { editProcess(d, (doc) => p.ids.reduce((acc, id) => addToSubProcess(acc, p.sub, id), doc)); },
 });
 const deleteCmd = defineCommand<{ sub: string }>({
   type: 'process.deleteSubProcess', label: (p) => `Delete sub-process ${p.sub}`, run(d, p) { editProcess(d, (doc) => deleteSubProcess(doc, p.sub)); },
@@ -26,10 +27,10 @@ export function createProcessSub(ids: string[]): string | null {
   if (!why) appStore().dispatch(createCmd({ ids }));
   return why;
 }
-/** Activity `id` into sub-process `sub` (one step); the reason when it cannot join (no step). */
-export function addToProcessSub(sub: string, id: string): string | null {
-  const why = subRefusal(editBase().BPMN, [id], sub);
-  if (!why) appStore().dispatch(addCmd({ sub, id }));
+/** Activities `ids` (of its phase, in no other sub-process) into sub-process `sub`, one step (owner, 2026-11-05); the reason when they cannot. */
+export function addToProcessSub(sub: string, ...ids: string[]): string | null {
+  const why = subRefusal(editBase().BPMN, ids, sub);
+  if (!why) appStore().dispatch(addCmd({ sub, ids }));
   return why;
 }
 export const deleteProcessSub = (sub: string): void => appStore().dispatch(deleteCmd({ sub }));

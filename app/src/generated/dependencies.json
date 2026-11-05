@@ -1,6 +1,6 @@
 {
  "schema": 1,
- "counts": {"files":1412,"tagged":755,"tests":473},
+ "counts": {"files":1413,"tagged":755,"tests":473},
  "zones": [
   {"id":"rate-card-team","modules":10,"tmed":198,"tmax":401},
   {"id":"scope-automation","modules":26,"tmed":84,"tmax":408},
@@ -35,7 +35,7 @@
   {"id":"scope-sel","label":"🎯 Scope","group":"scope","kind":"I-input","files":10},
   {"id":"phase-scope","label":"🎯 Phase scope","group":"scope","kind":"I-input","files":3},
   {"id":"lc-weighting","label":"📊 Product status lifecycle weighting","group":"scope","kind":"I-input","files":5},
-  {"id":"process","label":"🧩 Process (BPMN)","group":"scope","kind":"I-input","files":33},
+  {"id":"process","label":"🧩 Process (BPMN)","group":"scope","kind":"I-input","files":34},
   {"id":"programme","label":"📋 Programme","group":"scope","kind":"I-input","files":7},
   {"id":"lifecycle-edit","label":"📊 Status & phase weight","group":"tune","kind":"I-input","files":3},
   {"id":"team-in","label":"Input team","group":"baseline","kind":"I-input","files":6},
