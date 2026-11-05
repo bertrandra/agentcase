@@ -1,22 +1,12 @@
 // @vitest-environment jsdom
-import { act, cleanup, fireEvent, render } from '@testing-library/react';
-import { afterEach, beforeEach, describe, expect, it } from 'vitest';
-import { readProcess } from '@/domain/process';
-import { appStore } from '@/store/instance';
-import Process from '@/ui/sections/scope/process';
-import { resetProcessView } from '@/ui/sections/scope/process/view';
-import { freshStore } from '../../store/helpers';
+import { describe, expect, it } from 'vitest';
+import { act, appStore, button, canvasTestSetup, doc, fireEvent, more, Process, readProcess, render } from '../../helpers/processCanvas';
 
 /**
  * 🧩 Process diagram canvas, the selection (owner's requests 2026-11-05): Select several (taps, no Ctrl), the menu acting on the selection
  * (sub-process, scope), how many activities each action acts on. The other canvas edits: process-canvas-edit.test.tsx.
  */
-const doc = () => appStore().getState().doc.BPMN as never;
-const button = (text: string): HTMLButtonElement => [...document.querySelectorAll('button')].find((b) => b.textContent!.trim() === text)!;
-const more = (id: string) => [...document.querySelectorAll('.ac-proc-canvas .ac-bpmn-more')]
-  .find((g) => g.querySelector('title')!.textContent!.startsWith(`Actions on ${id}:`))!;
-beforeEach(() => { freshStore(); resetProcessView(); });
-afterEach(cleanup);
+canvasTestSetup();
 
 describe('Process diagram canvas selection', { timeout: 90_000 }, () => {
   it('☑ Select several (a touch screen): taps add activities; any picked one\'s menu groups them; then others join that sub-process', () => {
