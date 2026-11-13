@@ -1,25 +1,24 @@
 // @vitest-environment jsdom
-import { act, cleanup, fireEvent, render, screen, within } from '@testing-library/react';
+import { fireEvent, render, screen, within } from '@testing-library/react';
 import { afterEach, describe, expect, it } from 'vitest';
 import { readRaci, type Raci } from '@/domain/org';
-import { readProcess, type XDocument } from '@/domain/process';
+import { readProcess } from '@/domain/process';
 import Studio from '@/ui/sections/scope/process-studio';
 import { cellOf, cycled } from '@/ui/sections/scope/process-studio/RolesTab';
 import { mapLayout, phaseLanes, phaseStats } from '@/ui/sections/scope/process-studio/model';
-import { resetStudio } from '@/ui/sections/scope/process-studio/view';
 import { rowsOf } from '@/ui/sections/scope/process/tableModel';
-import { resetProcessView } from '@/ui/sections/scope/process/view';
 import { axeViolations } from '../../helpers/axe';
+import { resetStudioTest, studioDoc, studioTab } from '../../helpers/processStudio';
 import { freshStore } from '../../store/helpers';
 
 /**
  * 🗺️ Process studio (owner's request 2026-11-13): a second section on the process model — Map, Phase focus, Activities, Roles & decisions, the pure
  * BPMN diagram, the Programme (timeline or BPMN). Every edit is the 🧩 Process section's command (one undoable step); every tab axe clean.
  */
-afterEach(() => { cleanup(); act(() => { resetStudio(); resetProcessView(); }); });
-const doc = (s: ReturnType<typeof freshStore>) => s.getState().doc.BPMN as XDocument;
+afterEach(resetStudioTest);
+const doc = studioDoc;
 const act0 = (s: ReturnType<typeof freshStore>, id: string) => readProcess(doc(s)).activities.find((a) => a.id === id)!;
-const tab = (name: string | RegExp) => fireEvent.click(screen.getByRole('tab', { name }));
+const tab = studioTab;
 
 describe('process studio model', () => {
   it('the V: V<n> phases down then up, the others on the rail, the cross-cutting phase as a band; the lanes of a phase', () => {

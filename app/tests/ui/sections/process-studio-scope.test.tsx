@@ -1,11 +1,9 @@
 // @vitest-environment jsdom
-import { act, cleanup, fireEvent, render, screen, within } from '@testing-library/react';
+import { fireEvent, render, screen, within } from '@testing-library/react';
 import { afterEach, describe, expect, it } from 'vitest';
-import type { XDocument } from '@/domain/process';
 import Studio from '@/ui/sections/scope/process-studio';
-import { resetStudio } from '@/ui/sections/scope/process-studio/view';
-import { resetProcessView } from '@/ui/sections/scope/process/view';
 import { axeViolations } from '../../helpers/axe';
+import { resetStudioTest, studioDoc, studioTab } from '../../helpers/processStudio';
 import { threeProducts } from '../../helpers/portfolioStore';
 import { freshStore } from '../../store/helpers';
 
@@ -13,9 +11,9 @@ import { freshStore } from '../../store/helpers';
  * 🗺️ Process studio (owner's request 2026-11-13): the map's displays (the V-cycle is one option) and whose process — the Portfolio's common one,
  * a Product's own or shared one, an organisation lens.
  */
-afterEach(() => { cleanup(); act(() => { resetStudio(); resetProcessView(); }); });
-const doc = (s: ReturnType<typeof freshStore>) => s.getState().doc.BPMN as XDocument;
-const tab = (name: string | RegExp) => fireEvent.click(screen.getByRole('tab', { name }));
+afterEach(resetStudioTest);
+const doc = studioDoc;
+const tab = studioTab;
 
 describe('🗺️ Process studio: displays and scope', () => {
   it('the map in four displays (Flow by default, V-cycle, Agile loop, Agentic): same phases, nothing changes in the case; axe clean', async () => {

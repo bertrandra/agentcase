@@ -1,8 +1,7 @@
-import { editAudit, today } from '@/controllers/audit';
+import { today } from '@/controllers/audit';
 import { CONFIDENCES, PERIODS, SOURCES, type ActivityAudit, type AuditField, type Confidence, type Observation } from '@/domain/audit';
-import { toast } from '@/ui/uiState';
 import { DraftText } from '@/ui/widgets/DraftText';
-import { SOURCE_LABELS } from './Observations';
+import { SOURCE_LABELS, writeObservation } from './Observations';
 
 const CONF_LABEL: Record<Confidence, string> = { low: 'Low', medium: 'Medium', high: 'High' };
 const pctOf = (p: number): string => `${Math.round(p * 1000) / 10} %`;
@@ -39,12 +38,7 @@ export function FieldCard({ id, field, obs, role, roleName, row, inherited, inhe
   id: string; field: AuditField; obs?: Observation; role?: string; roleName?: string; row?: ActivityAudit; inherited?: Observation; inheritedFrom?: string;
 }) {
   const label = `${field.label}${roleName ? ` — ${roleName}` : ''}`;
-  const write = (patch: Partial<Observation>) => {
-    const next: Observation = { name: field.name, value: '', ...(role ? { role } : {}), ...(obs ?? {}), ...patch };
-    if (!next.value.trim()) { if (obs) editAudit(id, { kind: 'removeObservation', name: field.name, ...(role ? { role } : {}) }); return; }
-    if (!obs) { next.date ??= today(); next.source ??= 'interview'; }
-    if (!editAudit(id, { kind: 'observation', obs: next })) toast(`${label}: value refused${field.kind === 'percent' ? ' (0 to 100)' : ''}`);
-  };
+  const write = (patch: Partial<Observation>) => writeObservation(id, field, obs, role, label, patch, { date: today(), source: 'interview' });
   const undef = (v: string) => v || undefined;
   const ref = modelRef(field, row, obs?.value ?? '', role);
   const showInherited = inherited && inherited.value !== obs?.value;
