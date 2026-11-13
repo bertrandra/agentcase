@@ -50,7 +50,7 @@ describe('BPMN B0 — the extension XSD', () => {
       'orgUnit',
       'passThrough', 'phase', 'process', 'product', 'productAudits', 'programmeActivity', 'programmeAudit', 'programmeValues', 'raci', 'raciOverride',
       'rework', 'supervision', 'team', 'tool',
-      'toolCatalog', 'volume', 'wave']);
+      'toolCatalog', 'unitAudits', 'volume', 'wave']);
     expect(globals('attribute').sort()).toEqual(['activityType', 'agent', 'decisionRef', 'gate', 'inScope', 'norm', 'partial', 'programme', 'regulatory',
       'requiresState', 'setupCapacity', 'wbsCode']);
   });

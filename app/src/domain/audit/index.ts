@@ -20,6 +20,7 @@ export { readAuditWorkbook, type AuditImport, type Sheets } from './workbookRead
 export { CASE_SHEET, caseSheets, ORIGIN } from './workbookCase';
 export { readCaseSheets, type CaseImport } from './workbookCaseRead';
 export { mergeImportedAudit } from './mergeAudit';
-export { editProductAudit, productAuditOf, withProductAudit } from './productAudit';
+export { auditedUnits, editProductAudit, editUnitAudit, productAuditOf, unitAuditOf, withProductAudit } from './productAudit';
 export { deliverableKinds, interfaceFacts, KIND_CAPABILITIES, proposedByType, type InterfaceFacts } from './feeds';
 export { auditReport, type AuditReport } from './report';
+export { scopeUnits, unitScope, type AuditScopeKind, type UnitScope } from './scope';

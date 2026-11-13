@@ -40,13 +40,6 @@ export function Activities({ data }: { data: AuditViewData }) {
   const sel = data.rows.find((r) => r.id === selected);
   return (
     <>
-      <h2>Progress per phase</h2>
-      <div className="ac-table-wrap" tabIndex={0}>
-        <table className="ac-table"><caption>In-scope activities audited, per phase</caption>
-          <thead><tr><th scope="col">Phase</th><th scope="col">In scope</th><th scope="col">Audited</th></tr></thead>
-          <tbody>{progress.map((p) => <tr key={p.phase}><th scope="row">{p.phase} · {p.name}</th><td>{p.inScope}</td><td>{p.audited}</td></tr>)}</tbody>
-        </table>
-      </div>
       <h2 id={`${id}-h`}>Activities</h2>
       <div className="ac-form-row" role="search" aria-label="Filter the activities">
         {pick('phase', 'Phase', progress.map((p) => [p.phase, `${p.phase} · ${p.name}`]))}

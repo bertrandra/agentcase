@@ -17,6 +17,21 @@ When releasing, follow [docs/BUMP_PROCEDURE.md](docs/BUMP_PROCEDURE.md) (§7 for
 
 ## [Unreleased]
 
+### Audit redesign and audit scope (owner's request 2026-11-13)
+
+- 🔎 Audit gets an **audit scope** on top — what is audited: the **Portfolio** (the common process), a **Product**, a **Shared service** or an
+  **Organisation unit**. With two products or more the choice is the top bar's Show (the whole app follows); a single case keeps it in the
+  section. A shared service or a unit keeps **its own audit** (`ac:unitAudits` in the organisation part of the common document, read over the
+  common process element by element, like a product's), narrows every view to the work of its teams (their in-scope activities and roles)
+  and shows what it inherits. An organisation unit's values refine, they do not calibrate.
+- Six views replace the four tabs: **Cockpit** (identity, coverage by count and effort, interviews, observation quality, a coverage map with
+  one tile per activity, the interview pipeline, the next interview, what needs attention, the potential found), **Plan** (a roles × activities
+  matrix from the RACI: click cells to build an interview), **Interview** (the sheet filled in the room: one part at a time, each value next to
+  the model's figure and the inherited value, source / date defaulted, confidence in one click, the questions to ask), **Activities & roles**,
+  **Insights & calibration** (tooling map, observed versus modelled, proposals with the **impact on the headline computed before Apply**) and
+  **Tool catalogue**; the files move to a menu. Under a Portfolio or Wave view the section is its own aggregate (the per-product table moves into
+  the Portfolio cockpit). No figure moves without an accepted calibration (D-B11).
+
 ### Audit in four tabs (owner's request 2026-11-02)
 
 - 🔎 Audit is organised as **Audit setup** (header, auditors, plan of the audit activities, tool catalogue), **Audit run / interview** (pick your

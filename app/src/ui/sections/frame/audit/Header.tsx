@@ -8,30 +8,7 @@ import { DraftText } from '@/ui/widgets/DraftText';
 export const STATUS_LABELS: Record<string, string> = { planned: 'Planned', inProgress: 'In progress', closed: 'Closed' };
 const save = (patch: HeaderPatch, what: string): void => { if (!setHeader(patch)) toast(`${what} refused`); };
 
-/** A list of small records with an add row (auditors, interviews): each entry removable, the new one checked by the header command. */
-function Interviews({ h }: { h: AuditHeader | undefined }) {
-  const [code, setCode] = useState(''), [role, setRole] = useState(''), [date, setDate] = useState('');
-  const list = h?.interviews ?? [];
-  const add = () => {
-    if (setHeader({ interviews: [...list, { code, role, date }] })) { setCode(''); setRole(''); setDate(''); }
-    else toast('Interview refused: code, role and date are needed');
-  };
-  return (
-    <fieldset className="ac-audit-list">
-      <legend>Interviews ({list.length})</legend>
-      <ul>{list.map((i) => <li key={i.code}>{i.code} · {i.role} · {i.date}{' '}
-        <button type="button" aria-label={`Remove interview ${i.code}`} onClick={() => save({ interviews: list.filter((x) => x !== i) }, 'Removal')}>✕</button>
-      </li>)}</ul>
-      <div className="ac-form-row">
-        <input type="text" aria-label="New interview code" placeholder="INT-1" value={code} onChange={(e) => setCode(e.target.value)} />
-        <input type="text" aria-label="Role interviewed" placeholder="Role" value={role} onChange={(e) => setRole(e.target.value)} />
-        <input type="date" aria-label="Interview date" value={date} onChange={(e) => setDate(e.target.value)} />
-        <button type="button" onClick={add}>+ Add interview</button>
-      </div>
-    </fieldset>
-  );
-}
-
+/** The auditors: each removable, the new one checked by the header command (a name is needed). */
 function Auditors({ h }: { h: AuditHeader | undefined }) {
   const [name, setName] = useState(''), [org, setOrg] = useState(''), list = h?.auditors ?? [];
   const add = () => {
@@ -53,7 +30,8 @@ function Auditors({ h }: { h: AuditHeader | undefined }) {
 }
 
 /**
- * The audit header (§ 15.3): code, client, scope, status, "as of" date, auditors and interviews. Created by its first edit. Memoised on its content:
+ * The audit header (§ 15.3): code, client, scope, status, "as of" date and the auditors (the interviews are planned in Plan). Created by its first
+ * edit. Memoised on its content:
  * an edit of an activity does not re-render it.
  */
 export const Header = memo(function Header({ header: h }: { header: AuditHeader | undefined }) {
@@ -72,7 +50,7 @@ export const Header = memo(function Header({ header: h }: { header: AuditHeader 
         <label>As of <input type="date" aria-label="Audit as of" value={h?.asOf ?? ''}
           onChange={(e) => e.target.value && save({ asOf: e.target.value }, 'Date')} /></label>
       </div>
-      <div className="ac-audit-grid"><Auditors h={h} /><Interviews h={h} /></div>
+      <Auditors h={h} />
     </section>
   );
 }, structuralEqual);

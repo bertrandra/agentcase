@@ -1,11 +1,14 @@
 /** @calc-zone scope-automation */
 import type { XDocument } from '@/domain/process';
 import {
-  calibrate, editCatalog, editElementAudit, editProductAudit, editProgrammeAudit, readAudit, resourceIds, setAuditHeader, type ElementAudit,
+  calibrate, editCatalog, editElementAudit, editProductAudit, editProgrammeAudit, editUnitAudit, productAuditOf, readAudit, resourceIds,
+  setAuditHeader, unitAuditOf, withElementAudits, type ElementAudit,
   type CalibrationChange, type CatalogOp, type CatalogTool,
   type ElementOp, type HeaderPatch,
 } from '@/domain/audit';
+import { orgOf } from '@/domain/org';
 import { PROGRAMME_ACTIVITIES, programmeActivityId } from '@/domain/programme';
+import { auditUnit, scopeUnitId } from '@/store/auditScope';
 import { defineCommand, definePortfolioCommand } from '@/store/commands';
 import { productAuditTarget } from '@/store/commonEdit';
 import { withTeamDoc } from '@/domain/portfolio';
@@ -41,6 +44,11 @@ const productCmd = definePortfolioCommand<{ productId: string; id: string; op: E
   type: 'audit.editProduct', label: (p) => `${LABEL[p.op.kind]} on ${p.id} for one product`,
   apply: (pf, p) => withTeamDoc(pf, (d) => (d ? editProductAudit(d, p.productId, p.id, p.op, p.base, new Set(p.roles)) : d as unknown as XDocument)),
 });
+/** Audit scope: one operation on a shared service's or an organisation unit's own audit (`base`: the element's audit as the unit saw it). */
+const unitCmd = definePortfolioCommand<{ unitId: string; id: string; op: ElementOp; base?: ElementAudit; roles: string[] }>({
+  type: 'audit.editUnit', label: (p) => `${LABEL[p.op.kind]} on ${p.id} for one unit`,
+  apply: (pf, p) => withTeamDoc(pf, (d) => (d ? editUnitAudit(d, p.unitId, p.id, p.op, p.base, new Set(p.roles)) : d as unknown as XDocument)),
+});
 const headerCmd = defineCommand<{ patch: HeaderPatch; today: string }>({
   type: 'audit.setHeader', label: () => 'Edit the audit header', coalesceKey: (p) => `audit.header:${Object.keys(p.patch).sort().join(',')}`,
   run(d, p) { editProcess(d, (doc) => setAuditHeader(doc, p.patch, p.today)); },
@@ -71,8 +79,26 @@ const changed = changedBy;
 /** Today as `YYYY-MM-DD` (the date of an observation, a header created now, a calibration). */
 export const today = (now: Date = new Date()): string => now.toISOString().slice(0, 10);
 
-/** One operation on the audit of an activity, a role or a programme activity (FX-21); false when refused (unknown element, value outside its field). */
+/** The unit of the audit scope, when it exists in the organisation (a deleted unit leaves the scope). */
+function scopeUnit(): string | null {
+  const pf = appStore().getState().portfolio, u = scopeUnitId(pf, auditUnit());
+  if (!u) return null;
+  const d = auditBase(), m = orgOf({ products: pf.products, common: { BPMN: pf.common.BPMN } }, d);
+  return m.units.some((x) => x.id === u) ? u : null;
+}
+
+/**
+ * One operation on the audit of an activity, a role or a programme activity (FX-21); false when refused (unknown element, value outside its field).
+ * With a unit in the audit scope the operation goes to the unit's own audit (its base: the element's audit as the unit saw it).
+ */
 export function editAudit(id: string, op: ElementOp): boolean {
+  const unitId = PROGRAMME_AUDIT_IDS.has(id) ? null : scopeUnit();
+  if (unitId) {
+    const pf = appStore().getState().portfolio, doc = auditBase(), product = productAuditTarget(pf);
+    const shown = product ? readAudit(withElementAudits(doc, productAuditOf(pf.common.BPMN as XDocument, product))) : readAudit(doc);
+    const base = unitAuditOf(pf.common.BPMN as XDocument, unitId).get(id) ?? shown.elements.get(id);
+    return changed(() => appStore().dispatch(unitCmd({ unitId, id, op, ...(base ? { base } : {}), roles: [...resourceIds(doc)] })));
+  }
   const productId = PROGRAMME_AUDIT_IDS.has(id) ? null : productAuditTarget(appStore().getState().portfolio);
   if (productId) {   // FX-D6: the product's own audit (the view the section shows lays it over the document's)
     const doc = auditBase(), base = readAudit(doc).elements.get(id);
