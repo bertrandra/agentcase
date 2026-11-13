@@ -223,3 +223,4 @@
 .ac-studio-scope-line { display: flex; flex-wrap: wrap; gap: 4px 14px; align-items: center; margin: 0; font-size: var(--ac-font-size-sm); color: var(--ac-text-soft); }
 .ac-studio-lens { display: flex; flex-wrap: wrap; gap: 6px 14px; align-items: center; padding: 8px 12px; border-radius: var(--ac-radius-md); background: var(--ac-primary-55); font-size: var(--ac-font-size-sm); }
 .ac-studio-autonomy .ac-muted { color: var(--ac-ink); }   /* tinted columns: muted grey fails the contrast in dark mode */
+.ac-section .ac-studio-acts button .ac-muted { color: inherit; font-weight: normal; }   /* dark mode paints buttons itself: the role keeps the button's text colour */
