@@ -7,7 +7,8 @@ import { setImportReport, useAuditView } from './view';
 
 /**
  * The audit's files (F-B26, F-B32, F-B34): the audit workbook out and back in (validated before anything is written, one step, a report of
- * added / updated / ignored rows), the audit report, and the tool catalogue as JSON. Every file with audit data says so in its name.
+ * added / updated / ignored rows), the audit report, and the tool catalogue as JSON. Every file with audit data says so in its name. Collapsed by
+ * default (owner, 2026-11-03); the report of the last import shows outside it.
  */
 export const Toolbar = memo(function Toolbar() {
   const id = useId(), wb = useRef<HTMLInputElement>(null), cat = useRef<HTMLInputElement>(null), report = useAuditView((s) => s.report);
@@ -33,7 +34,8 @@ export const Toolbar = memo(function Toolbar() {
   const exportCatalogue = () => { const c = catalogFile(); downloadText(c.filename, c.json, 'application/json'); toast(`Downloaded ${c.filename}`); };
   return (
     <section aria-labelledby={`${id}-h`}>
-      <h2 id={`${id}-h`}>Files</h2>
+      <details className="ac-audit-files">
+      <summary><h2 id={`${id}-h`}>📁 Files</h2></summary>
       <div className="ac-form-row ac-audit-toolbar">
         <button type="button" disabled={busy} onClick={() => { void template(); }}>⬇️ Export audit template (Excel)</button>
         <input ref={wb} className="ac-sr" type="file" tabIndex={-1} aria-label="Audit workbook to import" accept=".xlsx"
@@ -46,6 +48,7 @@ export const Toolbar = memo(function Toolbar() {
         <button type="button" disabled={busy} onClick={() => cat.current?.click()}>⬆️ Import tool catalogue…</button>
       </div>
       <p className="ac-muted">The workbook, the report and a BPMN export with audit data contain client information: their file names say so.</p>
+      </details>
       <div role="status" aria-live="polite">
         {report && <Callout kind={report.ignored ? 'warn' : 'note'}>
           Last import: {report.added} row(s) added, {report.updated} updated, {report.ignored} ignored, {report.unchanged} unchanged.

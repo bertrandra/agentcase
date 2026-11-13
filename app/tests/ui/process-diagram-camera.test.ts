@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import { centreOn, clampS, FIT, fitTo, MAX_ZOOM, pinch, viewOf, zoomAt } from '@/ui/sections/scope/process/diagramCamera';
+import { bringIntoView, centreOn, clampS, FIT, fitTo, keepView, MAX_ZOOM, pinch, viewOf, zoomAt } from '@/ui/sections/scope/process/diagramCamera';
 
 /** The camera of the 🧩 Process diagram: zoom at a point (wheel, pinch), zoom to a selection at a readable zoom, pinch factor. */
 const B = { x: 0, y: 0, w: 1000, h: 500 };
@@ -34,5 +34,19 @@ describe('process diagram camera', () => {
     expect(p.f).toBe(5);
     expect(p.mid).toEqual({ x: 150, y: 200 });
     expect(pinch({ x: 1, y: 1 }, { x: 1, y: 1 }, { x: 1, y: 1 }, { x: 1, y: 1 }).f).toBe(1);
+  });
+  it('an edit that grows the drawing keeps the window on screen (no zoom out); at Fit it stays fitted', () => {
+    const c = centreOn(B, { x: 300, y: 200 }, 4), grown = { x: 0, y: 0, w: 1000, h: 620 }, k = keepView(B, grown, c);
+    const v0 = viewOf(B, c), v1 = viewOf(grown, k);
+    expect([v1.x, v1.y, v1.w]).toEqual([v0.x, v0.y, v0.w]);
+    expect(k.s).toBe(4);
+    expect(keepView(B, grown, FIT)).toBe(FIT);
+  });
+  it('the element just edited is brought into view at the same zoom when it left the window', () => {
+    const c = centreOn(B, { x: 300, y: 200 }, 4), far = { x: 800, y: 400, w: 50, h: 40 }, near = { x: 290, y: 190, w: 20, h: 20 };
+    expect(bringIntoView(B, c, near)).toBe(c);
+    const m = bringIntoView(B, c, far), v = viewOf(B, m);
+    expect(m.s).toBe(4);
+    expect(far.x >= v.x && far.x + far.w <= v.x + v.w && far.y >= v.y && far.y + far.h <= v.y + v.h).toBe(true);
   });
 });

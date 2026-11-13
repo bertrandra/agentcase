@@ -85,13 +85,146 @@ await step('move a task (select, Shift+arrows), save: one undoable step; Ctrl+Z 
   const toast = await page.locator('[aria-live]').filter({ hasText: /Undone: Edit the process diagram/ }).count();
   if (!toast) throw new Error(`Ctrl+Z did not undo the editor's save (${await live()})`);
 });
+await step('zoom buttons (owner, 2026-11-03: a phone has no wheel): + enlarges, − shrinks, Fit fits', async () => {
+  const scale = () => page.evaluate(() => { const v = document.querySelector('.ac-proc-editor-canvas .viewport'); return v ? new DOMMatrix(getComputedStyle(v).transform).a : 0; });
+  const s0 = await scale();
+  await page.getByRole('button', { name: 'Zoom in the editor' }).click();
+  const s1 = await scale();
+  if (!(s1 > s0)) throw new Error(`zoom in did not enlarge (${s0} -> ${s1})`);
+  await page.getByRole('button', { name: 'Zoom out the editor' }).click(); await page.getByRole('button', { name: 'Zoom out the editor' }).click();
+  if (!((await scale()) < s1)) throw new Error('zoom out did not shrink');
+  await page.getByRole('button', { name: 'Fit the diagram in the editor' }).click();
+});
+await step('full screen (owner, 2026-11-03): the editor fills the window, its canvas grows and refits, the watermark stays visible', async () => {
+  const canvas = page.locator('.ac-proc-editor-canvas'), before = (await canvas.boundingBox()).height;
+  const toggle = page.locator('.ac-proc-editor [role=toolbar] button[aria-pressed]');   // ⤢ Full screen / ⤡ Exit full screen
+  await toggle.click();
+  await page.waitForFunction(() => document.querySelector('.ac-proc-editor')?.classList.contains('ac-fullscreen'));
+  const vh = await page.evaluate(() => window.innerHeight), after = (await canvas.boundingBox()).height;
+  if (!(after > before || after > vh * 0.6)) throw new Error(`the canvas did not grow (${before} -> ${after}, window ${vh})`);
+  if (!(await page.locator('.ac-proc-editor-canvas a.bjs-powered-by').isVisible())) throw new Error('the bpmn.io watermark is hidden in full screen');
+  if (!/Exit full screen: diagram editor/.test(await toggle.textContent())) throw new Error('the button does not offer to exit');
+  await toggle.click();
+  await page.waitForFunction(() => !document.querySelector('.ac-proc-editor')?.classList.contains('ac-fullscreen'));
+});
 await step('close from the keyboard: the focus comes back to "Edit diagram", the style sheet is removed', async () => {
   await page.getByRole('button', { name: /^Close/ }).focus();
   await page.keyboard.press('Enter');
   if (await page.locator('.ac-proc-editor').count()) await page.keyboard.press('Enter');   // a second press when the editor had changes
   await page.locator('.ac-proc-editor').waitFor({ state: 'detached' });
-  if (await page.evaluate(() => document.activeElement?.textContent) !== 'Edit diagram') throw new Error('the focus did not come back');
+  if (await page.evaluate(() => document.activeElement?.getAttribute('aria-label')) !== 'Edit diagram') throw new Error('the focus did not come back');
   if (await page.locator('style[data-ac-bpmn-editor]').count()) throw new Error('the editor style sheet was left in the page');
+});
+await step('canvas drag (owner, 2026-11-04): an activity dropped in another lane takes that lane\'s role, one step; Ctrl+Z restores it', async () => {
+  const role = () => page.locator('#ac-proc-activity label', { hasText: 'Role' }).locator('select').inputValue();
+  const pick = page.locator('.ac-proc-canvas g.ac-bpmn-activity rect').nth(2);
+  await pick.click();
+  const id = (await page.locator('#ac-proc-activity h2').textContent()).split(' · ')[0], before = await role();
+  const lanes = page.locator('.ac-proc-canvas g.ac-bpmn-lane');
+  let target = null;
+  for (let i = 0, n = await lanes.count(); i < n && !target; i++) {
+    const t = (await lanes.nth(i).locator('text').first().textContent()) ?? '';
+    if (t === 'Dev' && !before.includes('dev')) target = await lanes.nth(i).locator('rect').first().boundingBox();
+  }
+  if (!target) throw new Error('no Dev lane to drop on');
+  await page.locator('.ac-proc-diagram').first().locator('button', { hasText: 'Zoom to selection' }).click();   // zoomed in on the activity
+  const pct = () => page.locator('.ac-proc-diagram').first().locator('[role=toolbar] .ac-muted').first().textContent(), zoomed = await pct();
+  await pick.scrollIntoViewIfNeeded();
+  const lane2 = await (async () => { for (let i = 0, n = await lanes.count(); i < n; i++) if (await lanes.nth(i).locator('text').first().textContent() === 'Dev') return lanes.nth(i).locator('rect').first().boundingBox(); return null; })();
+  if (lane2) target = lane2;
+  const a = await pick.boundingBox(), x = a.x + a.width / 2, y = a.y + a.height / 2;
+  await page.mouse.move(x, y); await page.mouse.down();
+  await page.mouse.move(x, y + 10, { steps: 3 }); await page.mouse.move(x, target.y + target.height / 2, { steps: 8 }); await page.mouse.up();
+  await pick.click({ force: true });   // zoomed in, the label is drawn over the box
+  if (!(await page.locator('#ac-proc-activity h2').textContent()).startsWith(id)) throw new Error('another activity is selected after the drop');
+  if (await role() !== 'role-dev') throw new Error(`the role is ${await role()} after the drop, not role-dev (was ${before})`);
+  if (await pct() !== zoomed) throw new Error(`the zoom changed after the drop (${zoomed} -> ${await pct()}): the edit must keep the view`);
+  await page.locator('#ac-proc-activity h2').click();
+  await page.keyboard.press('Control+z');
+  await page.waitForFunction((r) => document.querySelector('#ac-proc-activity select[id$="-role"]')?.value === r, before);
+});
+await step('canvas links (owner, 2026-11-04): a link\'s end handle dragged onto another activity moves that end; Delete link removes it', async () => {
+  const frame = page.locator('.ac-proc-diagram').first(), hits = frame.locator('.ac-bpmn-edge-hit');
+  await frame.locator('select[id$="-ph"]').selectOption('L0');
+  const hit = async (s, t) => { for (let i = 0, n = await hits.count(); i < n; i++) if ((await hits.nth(i).locator('title').textContent()).startsWith(`Link ${s} → ${t}:`)) return hits.nth(i); return null; };
+  const first = await hit('A001', 'A002');
+  if (!first) throw new Error('no link A001 → A002 drawn');
+  await first.dispatchEvent('click', { clientX: 400, clientY: 300 });
+  const handles = frame.locator('.ac-bpmn-handle');
+  if (await handles.count() !== 2) throw new Error(`${await handles.count()} handles, not 2`);
+  const h = await handles.nth(1).boundingBox();
+  const target = await frame.locator('.ac-bpmn-activity').filter({ has: page.locator('title', { hasText: /^Actions on A003:/ }) }).locator('rect').first().boundingBox();
+  await page.mouse.move(h.x + h.width / 2, h.y + h.height / 2); await page.mouse.down();
+  await page.mouse.move(target.x + target.width / 2, target.y + target.height / 2, { steps: 8 }); await page.mouse.up();
+  if (!(await hit('A001', 'A003')) || (await hit('A001', 'A002'))) throw new Error('the end of the link did not move to A003');
+  await (await hit('A001', 'A003')).dispatchEvent('click', { clientX: 400, clientY: 300 });
+  await page.getByRole('menuitem', { name: '🗑️ Delete link' }).click();
+  if (await hit('A001', 'A003')) throw new Error('the link was not deleted');
+  await frame.locator('select[id$="-ph"]').selectOption('');
+});
+await step('sub-process (owner, 2026-11-04): created from the picked activities, an activity dropped on it joins it, its menu deletes it', async () => {
+  const frame = page.locator('.ac-proc-diagram').first();
+  await frame.locator('select[id$="-ph"]').selectOption('L0');
+  const shape = (id) => frame.locator('.ac-bpmn-activity').filter({ has: page.locator('title', { hasText: new RegExp(`^Actions on ${id}:`) }) });
+  const more = (id) => frame.locator('.ac-bpmn-more').filter({ has: page.locator('title', { hasText: new RegExp(`^Actions on ${id}:`) }) });
+  await shape('A002').dispatchEvent('click');   // the page scrolls when the panel opens: events on the shapes, not at a screen point
+  await shape('A003').dispatchEvent('click', { ctrlKey: true });
+  await more('A002').dispatchEvent('click', { clientX: 400, clientY: 300 });
+  await page.getByRole('menuitem', { name: '📦 Create a sub-process (2 activities)' }).click();
+  const sub = frame.locator('.ac-bpmn-sub rect').first();
+  await sub.waitFor();
+  await frame.locator('.ac-proc-canvas').evaluate((el) => el.scrollIntoView({ block: 'center' }));   // clear of the sticky top bar
+  const box = await sub.boundingBox(), a4 = await shape('A004').locator('rect').first().boundingBox();
+  await page.mouse.move(a4.x + a4.width / 2, a4.y + a4.height / 2); await page.mouse.down();
+  await page.mouse.move(box.x + box.width / 2, box.y + box.height / 2, { steps: 8 }); await page.mouse.up();
+  await page.getByText('A004 put in Sub_1').first().waitFor({ timeout: 5000 });
+  await frame.screenshot({ path: process.env.SUB_SHOT || '/dev/null' }).catch(() => {});
+  await more('Sub_1').dispatchEvent('click', { clientX: 400, clientY: 300 });
+  await page.getByRole('menuitem', { name: '🗑️ Delete sub-process' }).click();
+  await frame.locator('.ac-bpmn-sub').waitFor({ state: 'detached' });
+  await frame.locator('select[id$="-ph"]').selectOption('');
+});
+await step('canvas tools (owner, 2026-11-05): Enter opens the menu, a box selects, a selection moves together (the drop says where), a long press opens the menu, SVG / PNG export', async () => {
+  const frame = page.locator('.ac-proc-diagram').first(), canvas = frame.locator('.ac-proc-canvas');
+  await frame.locator('select[id$="-ph"]').selectOption('L0');
+  await canvas.evaluate((el) => el.scrollIntoView({ block: 'center' }));
+  const shape = (id) => frame.locator('.ac-bpmn-activity').filter({ has: page.locator('title', { hasText: new RegExp(`^Actions on ${id}:`) }) });
+  const rect = async (id) => shape(id).locator('rect').first().boundingBox();
+  await shape('A003').dispatchEvent('click');
+  await canvas.focus(); await page.keyboard.press('Enter');
+  await page.locator('[role=menu][aria-label="Actions on activity A003"]').waitFor();
+  await page.keyboard.press('Escape');
+  await frame.getByRole('button', { name: '☑ Select several' }).click();
+  const a1 = await rect('A001');
+  await page.mouse.move(a1.x - 6, a1.y - 6); await page.mouse.down();
+  await page.mouse.move(a1.x + a1.width + 6, a1.y + a1.height + 6, { steps: 6 }); await page.mouse.up();
+  await frame.getByRole('button', { name: 'Clear selection (2)' }).waitFor({ timeout: 5000 });
+  const lanes = frame.locator('g.ac-bpmn-lane');
+  let dev = null;
+  for (let i = 0, n = await lanes.count(); i < n && !dev; i++) if (await lanes.nth(i).locator('text').first().textContent() === 'Arch/Design') dev = await lanes.nth(i).locator('rect').first().boundingBox();
+  if (!dev) throw new Error('no Arch/Design lane shown');
+  const b1 = await rect('A001');
+  await page.mouse.move(b1.x + b1.width / 2, b1.y + b1.height / 2); await page.mouse.down();
+  await page.mouse.move(b1.x + b1.width / 2, dev.y + dev.height / 2, { steps: 8 });
+  const label = await frame.locator('.ac-bpmn-droplabel').textContent();
+  if (!/^2 activities → .* · Arch\/Design$/.test(label)) throw new Error(`the drop label says "${label}"`);
+  await page.mouse.up();
+  await frame.getByRole('button', { name: '☑ Select several' }).click();
+  await shape('A001').dispatchEvent('dblclick');
+  if (await page.locator('#ac-proc-activity select[id$="-role"]').inputValue() !== 'role-arch') throw new Error('A001 did not take the Arch/Design role');
+  await page.keyboard.press('Control+z');
+  const c3 = await rect('A003');
+  await shape('A003').locator('rect').first().dispatchEvent('pointerdown', { pointerType: 'touch', button: 0, isPrimary: true, clientX: c3.x + 5, clientY: c3.y + 5 });
+  await page.locator('[role=menu][aria-label="Actions on activity A003"]').waitFor({ timeout: 3000 });
+  await page.evaluate(() => window.dispatchEvent(new PointerEvent('pointerup', { pointerType: 'touch' })));
+  await page.keyboard.press('Escape');
+  for (const kind of ['SVG', 'PNG']) {
+    const [dl] = await Promise.all([page.waitForEvent('download'), frame.getByRole('button', { name: `⬇ ${kind}` }).click()]);
+    if (!dl.suggestedFilename().endsWith(`.${kind.toLowerCase()}`)) throw new Error(`the ${kind} file is ${dl.suggestedFilename()}`);
+    const text = kind === 'SVG' ? (await (await import('node:fs')).promises.readFile(await dl.path(), 'utf8')) : '';
+    if (kind === 'SVG' && !(text.includes('<svg') && text.includes('A003') && !text.includes('ac-bpmn-frozen'))) throw new Error('the SVG file is not the diagram');
+  }
+  await frame.locator('select[id$="-ph"]').selectOption('');
 });
 await browser.close();
 console.log(steps, 'editor flows,', failures, 'failure(s)');

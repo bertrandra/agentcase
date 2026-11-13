@@ -1,0 +1,75 @@
+// @vitest-environment jsdom
+import { act, cleanup, fireEvent, render } from '@testing-library/react';
+import { afterEach, beforeEach, describe, expect, it } from 'vitest';
+import { appStore } from '@/store/instance';
+import Process from '@/ui/sections/scope/process';
+import { resetProcessView } from '@/ui/sections/scope/process/view';
+import { freshStore } from '../../store/helpers';
+
+/**
+ * 🧩 Process diagram display options (owner's requests 2026-11-03): full screen (the editor's is checked in the browser, tools/e2e-bpmn-editor.mjs)
+ * and the compact layout when the out-of-scope activities are hidden.
+ */
+/** The button whose text (visible words and screen-reader words) is `label`. */
+const byLabel = (label: string): HTMLButtonElement => [...document.querySelectorAll('button')].find((b) => b.textContent!.replace(/^[⤢⤡] /, '') === label)!;
+beforeEach(() => { freshStore(); resetProcessView(); });
+afterEach(cleanup);
+
+describe('Process diagram full screen', { timeout: 90_000 }, () => {
+  it('fills the window; Escape or the button leaves it; view state only (no undo step)', () => {
+    render(<Process />);
+    const n = appStore().getState().history.undo.length, frame = () => document.querySelector<HTMLElement>('.ac-proc-diagram')!;
+    act(() => { fireEvent.click(byLabel('Full screen: Process diagram')); });
+    expect(frame().classList.contains('ac-fullscreen')).toBe(true);
+    expect(byLabel('Exit full screen: Process diagram').getAttribute('aria-pressed')).toBe('true');
+    act(() => { fireEvent.keyDown(document, { key: 'Escape' }); });
+    expect(frame().classList.contains('ac-fullscreen')).toBe(false);
+    act(() => { fireEvent.click(byLabel('Full screen: Process diagram')); });
+    act(() => { fireEvent.click(byLabel('Exit full screen: Process diagram')); });
+    expect(frame().classList.contains('ac-fullscreen')).toBe(false);
+    expect(appStore().getState().history.undo.length).toBe(n);
+  });
+  it('hiding the out-of-scope activities compacts the layout (a smaller picture); "Compact the layout" off keeps the full grid', () => {
+    render(<Process />);
+    const n = appStore().getState().history.undo.length, frame = document.querySelector('.ac-proc-diagram')!;
+    const box = (name: string) => frame.querySelector<HTMLInputElement>(`input[aria-label="${name}"]`)!;
+    const area = () => { const v = frame.querySelector('.ac-proc-canvas svg')!.getAttribute('viewBox')!.split(' ').map(Number); return v[2]! * v[3]!; };
+    const full = area();
+    expect(box('Compact the layout').disabled).toBe(true);
+    act(() => { fireEvent.click(box('Hide out-of-scope activities')); });
+    expect(box('Compact the layout').checked).toBe(true);
+    const compact = area();
+    expect(compact).toBeLessThan(full / 2);
+    act(() => { fireEvent.click(box('Compact the layout')); });
+    expect(area()).toBeCloseTo(full, 0);
+    expect(appStore().getState().history.undo.length).toBe(n);
+  });
+  it('View: "Process only (no automation)" by default, no agents\' lane; "With automation" brings it back; view state only', () => {
+    render(<Process />);
+    const n = appStore().getState().history.undo.length, frame = document.querySelector('.ac-proc-diagram')!;
+    const view = [...frame.querySelectorAll('select')].find((x) => x.id && frame.querySelector(`label[for="${x.id}"]`)?.textContent === 'View')!;
+    const agentsLane = () => [...frame.querySelectorAll('.ac-proc-canvas svg text')].some((t) => t.textContent === 'Agents');
+    expect(view.value).toBe('process');
+    expect(agentsLane()).toBe(false);
+    act(() => { fireEvent.change(view, { target: { value: 'automation' } }); });
+    expect(agentsLane()).toBe(true);
+    act(() => { fireEvent.change(view, { target: { value: 'process' } }); });
+    expect(agentsLane()).toBe(false);
+    expect(appStore().getState().history.undo.length).toBe(n);
+  });
+  it('"Freeze roles" keeps the lane names at the left, "Freeze phases" the phase names at the top (owner, 2026-11-04); view state only', () => {
+    render(<Process />);
+    const n = appStore().getState().history.undo.length, frame = document.querySelector('.ac-proc-diagram')!;
+    const box = (name: string) => frame.querySelector<HTMLInputElement>(`input[aria-label="${name}"]`)!;
+    const frozen = () => [...frame.querySelectorAll('.ac-bpmn-frozen text')].map((t) => t.querySelector('title')?.textContent);
+    expect(frozen()).toEqual([]);
+    act(() => { fireEvent.click(box('Freeze phases at the top')); });
+    expect(frozen()).toContain('Specification');
+    expect(frozen()).not.toContain('Cross-cutting');   // the band below the phase columns is not a column
+    act(() => { fireEvent.click(box('Freeze roles on the left')); });
+    expect(frozen()).toContain('Dev');
+    act(() => { fireEvent.click(box('Freeze phases at the top')); fireEvent.click(box('Freeze roles on the left')); });
+    expect(frozen()).toEqual([]);
+    expect(appStore().getState().history.undo.length).toBe(n);
+  });
+});

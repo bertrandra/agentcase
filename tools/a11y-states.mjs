@@ -90,7 +90,7 @@ export async function mediaStates(browser, fx, rec, labels) {
 
 /** Phase B6: the Process section with its BPMN editor (bpmn-js, loaded on demand) open, audited, then closed (the focus must come back). */
 export async function processEditor(page, fx, rec) {
-  const open = page.locator('main button:has-text("Edit diagram")');
+  const open = page.locator('main button[aria-label="Edit diagram"]');
   if (!(await open.count())) return;
   await open.click();
   await page.locator('.ac-proc-editor-canvas .djs-element').first().waitFor({ timeout: 30000 });

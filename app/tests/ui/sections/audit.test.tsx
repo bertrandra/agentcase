@@ -24,6 +24,8 @@ describe('🔎 Audit', () => {
   it('cockpit: the header is edited in place; a tile opens the activity form; an observation and a tool are written; undo restores; axe clean', async () => {
     const s = freshStore(), { container } = render(<Audit />);
     expect(screen.getByRole('region', { name: 'Key figures' }).textContent).toContain('0 / 10');
+    expect(screen.getByText('📁 Files').closest('details')!.open).toBe(false);   // the files, collapsed by default (owner, 2026-11-03)
+    expect(screen.queryByRole('button', { name: '+ Add interview' })).toBeNull();   // interviews are planned in Plan only
     fireEvent.click(screen.getByText('Edit the audit header and the auditors'));
     commit('Client', 'Acme');
     expect(readAudit(bpmn(s)).header).toMatchObject({ code: 'AUDIT-1', client: 'Acme', status: 'planned' });

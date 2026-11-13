@@ -31,6 +31,13 @@ export { DEFAULT_CHOICES, type ImportAnalysis, type ImportChoices, type ImportMo
   type IncomingUnit } from './importTypes';
 export { roleId } from './ids';
 export { drawingOf, hideActivities, type DrawEdge, type Drawing, type DrawShape, type ShapeKind } from './drawing';
+export { compactDrawing } from './drawingCompact';
+export { DIAGRAM_VIEWS, drawingView, onlyPhase, roleLanes, type DiagramViewId } from './drawingViews';
+export { addActivityAt, changeActivityRole, isRoleLane, newCanvasActivity, placeActivity, roleOfLane, setActivityRole } from './editPlace';
+export { collapseSubs, fitSubs } from './drawingSubs';
+export { addToSubProcess, createSubProcess, deleteSubProcess, leaveSubProcess, outOfSub, subRefusal, withoutEmptySubs } from './editSub';
+export { renameSubProcess, tidyAll, tidyPhase } from './editTidy';
+export { addLink, linkRefusal, reconnectLink, reconnectRefusal, removeLink, type LinkEnd } from './editLinks';
 export { applyEditorDocument, type EditorOutcome } from './editorApply';
 export { mergeEditorDocument } from './editorMerge';
 export { caseValues, emptiedStoredValues, keepStoredValues, programmeValuesOf, storedElement, withoutStoredValues, withProgrammeValues } from './storedValues';

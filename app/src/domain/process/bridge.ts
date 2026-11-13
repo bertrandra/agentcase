@@ -35,7 +35,7 @@ export function bridgesOver(flows: readonly { source: string; target: string; co
 }
 
 /** `links` appended to their containers as sequence flows, each with an edge between the two shapes when both are drawn (ids kept unique). */
-function withLinks(start: XElement, v: ProcessView, links: readonly Link[]): XElement {
+export function withLinks(start: XElement, v: ProcessView, links: readonly Link[]): XElement {
   const shapes = new Map(v.diagram.shapes.map((s) => [s.element, s])), ids = new Set(v.flows.map((f) => f.id));
   let root = start;
   for (const b of links) {
@@ -81,7 +81,7 @@ export function linkActivities(d: XDocument): XDocument {
   const from = new Set(plain.map((f) => f.source)), to = new Set(plain.map((f) => f.target));
   for (const p of v.phases) {
     if (p.adHoc) continue;
-    const acts = v.activities.filter((a) => a.phase === p.id && a.trigger === undefined && !a.regulatory).sort((a, b) => a.order - b.order);
+    const acts = v.activities.filter((a) => a.phase === p.id && a.trigger === undefined && !a.regulatory && !a.sub).sort((a, b) => a.order - b.order);
     const loose = acts.filter((a) => !from.has(a.id) && !to.has(a.id)).map((a) => a.id);
     const tail = acts.find((a) => to.has(a.id) && !from.has(a.id))?.id, ids = tail ? [tail, ...loose] : loose;
     if (!loose.length) continue;

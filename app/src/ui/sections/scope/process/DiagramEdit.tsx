@@ -1,0 +1,117 @@
+import { useEffect, useRef } from 'react';
+import { removeProcessActivity, setProcessScope } from '@/controllers/process';
+import { renameProcessSub } from '@/controllers/processCanvas';
+import { addToProcessSub, createProcessSub, deleteProcessSub } from '@/controllers/processSubs';
+import { readProcess, type Drawing } from '@/domain/process';
+import { useDoc } from '@/store/hooks';
+import { toast } from '@/ui/uiState';
+import { processView, selectActivity } from './view';
+
+/**
+ * Editing on the process diagram's canvas (owner's request 2026-11-04): drag an activity to another cell (phase × lane: its phase and the lane's
+ * role, one undoable step), the "⋯" menu at the bottom right of an activity (edit its details in the activity panel, delete it), and "+ Add
+ * activity". Every change goes through the process commands; the keyboard equivalents are the activity table and panel (phase, role, Remove).
+ */
+const ACTIVITY_PANEL = 'ac-proc-activity';
+
+/** The cell of the drawing under a point: the smallest phase box and the lane that hold it, and the sub-process box there, if any. */
+export function cellAt(d: Drawing, x: number, y: number): { phase: string; lane: string; sub?: string } | null {
+  const holds = (s: { x: number; y: number; w: number; h: number }) => x >= s.x && x <= s.x + s.w && y >= s.y && y <= s.y + s.h;
+  const phase = d.shapes.filter((s) => s.kind === 'phase' && holds(s)).sort((a, b) => a.w * a.h - b.w * b.h)[0];
+  const lane = d.shapes.find((s) => s.kind === 'lane' && holds(s));
+  const sub = d.shapes.find((s) => s.kind === 'sub' && holds(s));
+  if (sub) return { phase: sub.phase ?? phase?.id ?? '', lane: lane?.label ?? '', sub: sub.id };   // a drop on a sub-process needs no cell
+  return phase && lane ? { phase: phase.id, lane: lane.label } : null;
+}
+
+/** Shows the activity panel of `id` (the "edit box"): selected, scrolled into view, its name field focused. */
+export function openActivityPanel(id: string): void {
+  selectActivity(id);
+  setTimeout(() => {
+    const el = document.getElementById(ACTIVITY_PANEL);
+    el?.scrollIntoView?.({ block: 'nearest' });
+    el?.querySelector('input')?.focus();
+  }, 0);
+}
+export const activityPanelId = ACTIVITY_PANEL;
+
+/** "(n activities)": how many activities a menu action acts on (owner, 2026-11-05: always shown). */
+const count = (n: number): string => `(${n} ${n > 1 ? 'activities' : 'activity'})`;
+export interface MenuAt { id: string; x: number; y: number }
+interface Item { label: string; run: () => void }
+/** A small menu at `at` (in the diagram's box): its items; Escape or a pointer down elsewhere (but on a link's handle) closes it. */
+export function PopMenu({ at, label, items, onClose }: { at: MenuAt; label: string; items: Item[]; onClose: () => void }) {
+  const box = useRef<HTMLDivElement>(null);
+  useEffect(() => {
+    if (box.current) { box.current.style.left = `${at.x}px`; box.current.style.top = `${at.y}px`; }   // where it was opened
+    box.current?.querySelector('button')?.focus();
+    const away = (e: PointerEvent): void => {
+      const t = e.target as Element;
+      if (!box.current?.contains(t) && !t.closest?.('.ac-bpmn-handle')) onClose();
+    };
+    document.addEventListener('pointerdown', away);
+    return () => document.removeEventListener('pointerdown', away);
+  }, [at, onClose]);
+  return (
+    <div ref={box} className="ac-proc-menu" role="menu" aria-label={label} onKeyDown={(e) => { if (e.key === 'Escape') onClose(); }}>
+      {items.map((it) => <button key={it.label} type="button" role="menuitem" onClick={() => { it.run(); onClose(); }}>{it.label}</button>)}
+    </div>
+  );
+}
+
+/**
+ * The "⋯" menu of an activity: Edit details, Add a link (then click the activity it leads to), Create a sub-process (of the activities picked
+ * with Ctrl / Shift + click when it is one of them, else of this one; drop others on it later), Delete activity.
+ */
+export function ActivityMenu({ at, picked, onEdit, onLink, onClose }: {
+  at: MenuAt; picked: string[]; onEdit: (id: string) => void; onLink: (id: string) => void; onClose: () => void;
+}) {
+  const ids = picked.includes(at.id) ? picked : [at.id], v = readProcess(useDoc((d) => d.BPMN));
+  // the selection holds activities of one sub-process: the others join it; none in a sub-process: a new one (owner, 2026-11-05)
+  const subs = [...new Set(ids.map((i) => v.activities.find((a) => a.id === i)?.sub).filter((s): s is string => !!s))], rest = ids.filter((i) =>
+    !v.activities.some((a) => a.id === i && a.sub));
+  const group = (): void => { toast(createProcessSub(ids) ?? `Sub-process of ${ids.join(', ')} created: drop other activities on it (Ctrl+Z undoes)`); };
+  const join = (): void => { toast(addToProcessSub(subs[0]!, ...rest) ?? `${rest.join(', ')} put in ${subs[0]} (Ctrl+Z undoes)`); };
+  const grouping = subs.length === 1 && rest.length ? [{ label: `📦 Add to ${subs[0]} ${count(rest.length)}`, run: join }]
+    : subs.length ? [] : [{ label: `📦 Create a sub-process ${count(ids.length)}`, run: group }];
+  const remove = (): void => {
+    if (processView.getState().selected === at.id) selectActivity(null);
+    removeProcessActivity(at.id);
+    toast(`Activity ${at.id} deleted (Ctrl+Z undoes)`);
+  };
+  return (
+    <PopMenu at={at} label={`Actions on activity ${at.id}`} onClose={onClose}
+      items={[{ label: '✏️ Edit details', run: () => onEdit(at.id) }, { label: '🔗 Add a link', run: () => onLink(at.id) },
+        ...grouping, scopeItem(ids, v),
+        { label: '🗑️ Delete activity', run: remove }]} />
+  );
+}
+
+/** The "⋯" menu of a sub-process: Collapse / Expand (a view only), Rename, Delete sub-process (its activities stay in the phase, its links go back to them). */
+export function SubMenu({ at, collapsed, onCollapse, onClose }: {
+  at: MenuAt; collapsed: boolean; onCollapse: (id: string, on: boolean) => void; onClose: () => void;
+}) {
+  const remove = (): void => { deleteProcessSub(at.id); toast(`Sub-process ${at.id} deleted, its activities kept (Ctrl+Z undoes)`); };
+  const now = readProcess(useDoc((d) => d.BPMN)).subProcesses?.find((x) => x.id === at.id)?.name ?? '';
+  const rename = (): void => {   // owner, 2026-11-05
+    const name = window.prompt(`Name of ${at.id}`, now);
+    if (name && name.trim() && name.trim() !== now) renameProcessSub(at.id, name);
+  };
+  return (
+    <PopMenu at={at} label={`Actions on sub-process ${at.id}`} onClose={onClose} items={[
+      { label: collapsed ? '▾ Expand (show its activities)' : '▸ Collapse (one box)', run: () => onCollapse(at.id, !collapsed) },
+      { label: '✏️ Rename', run: rename }, { label: '🗑️ Delete sub-process', run: remove }]} />
+  );
+}
+
+/**
+ * In scope / out of scope for the selection (owner, 2026-11-05): when one of them is in scope they all go out, else they all come in; one step
+ * (`process.setScope`, the scope box of the activity table).
+ */
+function scopeItem(ids: string[], v: ReturnType<typeof readProcess>): Item {
+  const on = !ids.some((i) => v.activities.find((a) => a.id === i)?.inScope !== false), n = ` ${count(ids.length)}`;
+  return { label: on ? `✅ Set in scope${n}` : `⊘ Set out of scope${n}`, run: () => {
+    setProcessScope(ids, on);
+    toast(`${ids.join(', ')} ${on ? 'in' : 'out of'} scope (Ctrl+Z undoes)`);
+  } };
+}

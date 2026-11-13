@@ -1,5 +1,5 @@
 import { useCallback, useId, useMemo } from 'react';
-import { drawingOf, readProcess, type XDocument } from '@/domain/process';
+import { drawingOf, readProcess, roleLanes, type XDocument } from '@/domain/process';
 import { unitScope } from '@/domain/audit';
 import type { OrgModel } from '@/domain/org';
 import { scopeUnitId } from '@/store/auditScope';
@@ -45,9 +45,11 @@ const help = (
 function BpmnTab({ doc, rows }: { doc: XDocument; rows: Row[] }) {
   const tableId = useId(), selected = useProcessView((s) => s.selected);
   const drawing = useMemo(() => withDecisions(drawingOf(doc), doc), [doc]), facts = useMemo(() => factsOf(rows, doc), [rows, doc]);
+  const lanes = useMemo(() => roleLanes(doc), [doc]);
   return (
     <div className="ac-studio-stack">
       <Diagram d={drawing} tableId={tableId} title="Diagram of the delivery process" name="Process diagram" facts={facts}
+        roleLanes={lanes} editable
         desc={`${count(drawing, 'activity')} activities in ${count(drawing, 'phase')} phases, drawn from the BPMN diagram of the case.`} />
       <DiagramEditor />
       {selected && <ActivityPanel doc={doc} id={selected} />}

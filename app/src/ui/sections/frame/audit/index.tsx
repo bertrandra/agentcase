@@ -50,7 +50,7 @@ export default function AuditSection() {
         <ScopeBar data={data} />
         <div className="ac-audit-top-tools">
           <OverrideBadge refKey="BPMN" label="Process (audit)" />
-          <details className="ac-audit-files"><summary>Files</summary><Toolbar /></details>
+          <Toolbar />
         </div>
       </div>}
       result={<div className="ac-audit">

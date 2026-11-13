@@ -64,6 +64,8 @@
 .ac-audit-files > summary { padding: 6px 14px; font-weight: var(--ac-font-weight-semibold); border: var(--ac-border-thin) solid var(--ac-line-strong); border-radius: var(--ac-radius-button); cursor: pointer; list-style-position: inside; }
 .ac-audit-files[open] { flex-basis: 100%; }
 .ac-audit-files[open] > summary { margin-bottom: 8px; }
+/* 📁 Files (owner, 2026-11-03): collapsed by default; its heading sits on the summary line */
+.ac-audit-files > summary h2 { display: inline; font-size: inherit; margin: 0; }
 
 /* legend keys and states */
 .ac-audit-legend { display: flex; flex-wrap: wrap; gap: 4px 14px; margin: 8px 0 0; padding: 0; list-style: none; font-size: var(--ac-font-size-xs); color: var(--ac-text-soft); }

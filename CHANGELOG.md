@@ -55,6 +55,139 @@ When releasing, follow [docs/BUMP_PROCEDURE.md](docs/BUMP_PROCEDURE.md) (§7 for
   **Tool catalogue**; the files move to a menu. Under a Portfolio or Wave view the section is its own aggregate (the per-product table moves into
   the Portfolio cockpit). No figure moves without an accepted calibration (D-B11).
 
+### 🧩 Process: a better canvas — touch, selection, readability, layout, sub-processes, views (owner's requests 2026-11-05)
+
+- **Touch**: a long press on an activity opens its menu; a finger on an activity that is not selected pans the canvas (select it first to drag
+  it); the selected activity carries a ⋯ of a constant finger size whatever the zoom.
+- **Selection**: with ☑ Select several, a drag on the background draws a box that selects the activities in it; dragging one of the selected
+  activities moves them all to the cell (one step, `process.placeActivities`); the links of the selected activity are highlighted.
+- **While dragging**, the target cell (phase × lane) or sub-process is outlined and a label says what the drop does ("2 activities → Upstream · Dev").
+- **Readability**: 🔍 Find an activity by id or name (selected and brought into view); at an overview zoom where names cannot be read, the ids
+  are drawn alone in large type; a **Minimap** (in a corner: the whole drawing, the window on screen; a tap centres the view there).
+- **Editing**: ↶ Undo and ↷ Redo on the canvas (a phone has no Ctrl+Z); a double click (double tap) on an activity opens its details; from the
+  keyboard on the canvas, N / P select the next / previous activity and Enter opens its menu.
+- **🧹 Tidy layout**: the shown phase's (or every phase's) activities back on a regular grid in their lanes, sub-processes laid out again, the
+  flows redrawn; phases and roles unchanged (`process.tidyLayout`, one step).
+- **Sub-processes**: ▸ Collapse to one box ("▸ n activities", its links kept) and ▾ Expand (a view only); ✏️ Rename (`process.renameSubProcess`).
+- **Views**: the display options (point of view, phase, hidden, compact, colours, frozen headers, minimap, collapsed sub-processes) are kept in
+  this browser between visits; **⬇ SVG / ⬇ PNG** save the whole drawing as an image (styles written in, overlays left out).
+
+### 🧩 Process: select several activities on any screen, group them from any of their menus (owner's request 2026-11-05)
+
+- **☑ Select several** above the canvas: while it is on, each tap (or click) adds an activity to the selection or takes it out, no Ctrl key
+  needed, so it works on a phone or a tablet; **Clear selection (n)** empties it.
+- The ⋯ menu of any selected activity acts on the whole selection: **📦 Create a sub-process (n activities)** groups them; when some of them are
+  already in a sub-process, **📦 Add to Sub_x (n activities)** puts the others in it, one undoable step (`process.addToSubProcess` now takes several
+  activities). Their links are updated by the inheritance rule (a link between a member and an activity outside goes to the sub-process).
+- Every selection action of the menu says how many activities it acts on, one included ("(1 activity)"; owner, 2026-11-05).
+- **✅ Set in scope / ⊘ Set out of scope** in the activity's ⋯ menu (owner, 2026-11-05): for the activity or the whole selection (when one of
+  them is in scope they all go out, else they all come in), one undoable step (`process.setScope`, like the scope box of the activity table).
+
+### 🧩 Process: sub-processes on the canvas (owner's request 2026-11-04)
+
+- An automated activity is a sub-process, and several activities can be automated together in one. The model keeps its "automatable" field; on
+  the diagram, **📦 Create a sub-process** in an activity's ⋯ menu groups it (or the activities picked with Ctrl / Shift + click, one phase) in a
+  BPMN sub-process inside its phase; **drag an activity onto it** to add it, **drag it out** to take it back; the sub-process's ⋯ menu has
+  **🗑️ Delete sub-process** (its activities stay in the phase). One undoable step each; a refused one (another phase, a rework loop) says why.
+- **Links by inheritance**: a link between an activity of the sub-process and one outside goes to the sub-process (a sequence flow does not cross
+  a sub-process's border); links between its activities stay inside it; deleting it gives its links back to its first and last activities.
+- Its activities are laid out together, each in its lane (its role), in a column of their own; the box is redrawn around them in every view.
+- **No figure moves**: the activities keep their phase and parameters (checked on the case's headline); the document still validates against the
+  OMG XSDs. `domain/process/editSub*.ts`, `controllers/processSubs.ts`.
+
+### 🧩 Process: an edit on the canvas keeps the view (owner's request 2026-11-04)
+
+- Moving an activity, adding a link or moving a link's end no longer zooms the diagram out to the whole process: the same window stays on screen
+  at the same zoom, and the activity or link just edited is brought into view when it left the window. Only another view (point of view, Show
+  phase, Hide out-of-scope, Compact) or Fit shows the whole drawing. `diagramCamera.ts` `keepView`, `bringIntoView`.
+
+### 🧩 Process: points of view of the diagram (owner's request 2026-11-04)
+
+- **View** above the process diagram: **With automation (agents)**, the document's diagram, the agents in their lane; **Process only (no
+  automation)**, the pure process: no agents' lane, every agent activity drawn in the lane of the role that does it (its human performer's team
+  skill), in the same phase column, the lanes growing to hold them and the flows following. Combines with Hide out-of-scope and Compact. A
+  drawing view only (no figure, no stored change); the list of views is open to more points of view. `domain/process/drawingViews.ts`.
+- **Process only (no automation) is the default view** (owner, 2026-11-04); With automation is one click away.
+- **Arrowheads on the links** of the diagram (owner, 2026-11-04): each flow shows its direction, the arrow coloured like its link (rework red,
+  message flows blue).
+- **Freeze phases** (owner, 2026-11-04): the phase names stay at the top edge while panning, as Freeze roles keeps the role names at the left.
+
+### 🧩 Process: editing on the diagram's canvas (owner's request 2026-11-04)
+
+- **⋯ menu at the bottom right of each activity**: **Edit details** opens its activity panel (name, phase, role, effort, supervision), **Delete
+  activity** removes it (one step, Ctrl+Z undoes).
+- **＋ Add activity** above the canvas: a new activity in the shown phase (else the first), with the defaults of its phase, placed in its role's
+  lane; its panel opens to edit it.
+- **Drag and drop**: an activity dragged to another cell takes that phase and the role of that lane (the role prices its effort), in a free slot of
+  the cell; a full lane grows by one row. One undoable step (`process.placeActivity`). The activity panel gains a **Role** field (the keyboard way;
+  `process.setActivityRole`). `domain/process/editPlace.ts`.
+- **Show phase**: the diagram shows one phase only (its activities, its lanes, the flows between them), or all phases.
+- **Links on the canvas**: **🔗 Add a link** in an activity's ⋯ menu, then a click on the activity it leads to; a click on a link selects it, with a
+  handle at each end (drag one onto another activity to move that end) and a menu with **🗑️ Delete link**. One undoable step each
+  (`process.addLink`, `process.reconnectLink`, `process.removeLink`); a link stays inside its phase (in BPMN a sequence flow does not leave its
+  sub-process), and a refused link says why. Rework and message flows are not edited there. `domain/process/editLinks.ts`.
+
+### 🔎 Audit and 🧩 Process: shorter controls, files collapsed, editor zoom (owner's requests 2026-11-04)
+
+- 🔎 Audit: the **📁 Files** block (template, workbook import, report, tool catalogue) is collapsed by default; the report of the last import
+  still shows. Audit setup keeps only the audit activities: the separate **Interviews** list of the header is gone (an audit activity is the
+  interview; its plan, progression and removal stay in Audit setup and Audit progress).
+- 🧩 Process: shorter buttons with an icon (⬆ Import, ⬇ Export, ↺ Reset, 🔗 Link, ✏️ Edit), their full names kept as tooltip and accessible
+  name; shorter display checkboxes (Hide out-of-scope, Compact, Freeze roles), full names kept for screen readers.
+- Diagram editor: **+ / − / Fit** zoom buttons, for touch screens without a wheel.
+
+### 🧩 Process: compact layout when the out-of-scope activities are hidden (owner's request 2026-11-03)
+
+- With **Hide out-of-scope activities**, the diagram now closes the space they leave: the phases and roles left empty are dropped and every
+  empty band, across or down, shrinks to a small gap; the remaining boxes keep their order and size and the flows follow them (the golden case:
+  5,756 × 3,330 → 1,616 × 1,460). **Compact the layout** (on by default, above the canvas) turns it off to keep the full grid. View state only:
+  the document's diagram (BPMN DI) is not changed. `domain/process/drawingCompact.ts`.
+- **Labels drawn as soon as they are readable on screen**: the activity names show when the text is at least about 6 px on screen (the drawing's
+  scale, followed through a resize or full screen), not only from twice the Fit zoom; a compact or full-screen diagram shows them at Fit.
+
+## [v22.0.0] 2026-11-03 — SPEC_FIXES lots X0–X9, programme sizing normalised, file schema v6; programme grouping, Audit activity tab, products moved to any unit, full screen for BPMN
+
+Major: the file schema moves to v6 (the portfolio plan in the BPMN document, FX-D14) and the programme sizing normalisation moves figures on
+purpose (DEV-NORM-PILOT, DEV-NORM-CALENDAR, DEV-NORM-CHANGE-DAYS, DEV-NORM-KH-CURATION; the parallel run pins every move). A file saved by v21.x
+opens in v22.0.0 (migrated); a v22.0.0 file is not for a v21.x build.
+
+### 🧩 Process: full screen for the diagram and the BPMN editor (owner's request 2026-11-03)
+
+- **⤢ Full screen** on the process diagram (and the programme diagram) and in the diagram editor: the view fills the window (the browser's full
+  screen when it allows it), its canvas takes the height left; the editor's canvas refits. Escape, the browser's exit or **⤡ Exit full screen**
+  leave it. View state only. `ui/widgets/FullScreen.tsx`.
+
+### Monte Carlo timing test (owner's decision 2026-11-03)
+
+- The portfolio stress test (20 products × 1,000 draws) keeps the engine as it is and allows 10 s of CPU (was 5 s): about 4 s on an idle
+  machine since the programme sizing normalisation, CI runners vary by up to 1.6×.
+
+### Size budget (owner's decision 2026-11-03)
+
+- `app/perf-budget.json`: the size ceiling and the size growth budget are both 7 MiB (were 5 and 3.59; the app was 3.59 MiB without the lazy
+  BPMN editor). The gzip budgets are unchanged.
+
+### 🏢 Organisation: move a product to any unit from the graph (owner's request 2026-11-03)
+
+- A product's delivery team now sits in the product's owning unit (D-B39, any level of the tree), so moving a product moves its team in the
+  graph, the Teams table and the views by unit; before, the team stayed in the default unit whatever the owner. Selecting a product's team in the
+  organisation graph shows **Owning unit (any level)**; selecting a unit shows its **Parent** too (as in the Units table). Each change is one
+  undoable step. No figure changes (the figures read the team's lines, not its unit).
+
+### 🔎 Audit: Interview and Activities merged into one Audit activity tab (owner's request 2026-11-03)
+
+- **Audit run / interview › Audit activity** holds the auditor's audit activities and the interview context (the roles to meet, what the
+  audit holds on each activity they do), then every in-scope activity (progress per phase, filters; collapsed by default), and one audit form under both: an
+  activity of the context or of the list opens it. The Roles and Programme tabs are unchanged. No data or figure changes.
+
+### 📋 Programme: dependent lines grouped (owner's request 2026-11-03)
+
+- Each programme line that depends on another sits under it, collapsed by default (▸ *N dependent lines*, with their cost over the horizon):
+  the engagement stages under Discover (the pilot inside Pilot & Prove), the run, the AgentOps team and the governance and maturity gates
+  under the build and adoption ramp, the Knowledge Hub run under its setup, the target capability under training. *Show all dependent lines*
+  opens every group; a filter or a sort lists the lines flat; a link from 🧩 Process opens the group of the row it shows. View state only (no
+  undo step, nothing saved); one owner of the links, `domain/programme/dependencies.ts`, also used by the Gantt. No figure changes.
+
 ### Audit in four tabs (owner's request 2026-11-02)
 
 - 🔎 Audit is organised as **Audit setup** (header, auditors, plan of the audit activities, tool catalogue), **Audit run / interview** (pick your

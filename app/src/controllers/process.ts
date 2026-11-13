@@ -1,6 +1,6 @@
 /** @calc-zone scope-automation */
-import { addActivity, addActor, addPhase, removeActivity, removeActor, removePhase, reorderPhases, setScope, updateActivities, updateActivity,
-  updateActor, type ActivityPatch, type ActorInput, type CatArtefact } from '@/domain/process';
+import { addActivity, addActor, addPhase, removeActivity, withoutEmptySubs, removeActor, removePhase, reorderPhases, setScope, updateActivities,
+  updateActivity, updateActor, type ActivityPatch, type ActorInput, type CatArtefact } from '@/domain/process';
 import { defineCommand } from '@/store/commands';
 import { refitPotential } from '@/store/derive';
 import { appStore } from '@/store/instance';
@@ -35,7 +35,7 @@ const addActivityCmd = defineCommand<{ activity: NewActivity }>({
 });
 const removeActivityCmd = defineCommand<{ id: string }>({
   type: 'process.removeActivity', label: (p) => `Remove activity ${p.id}`,
-  run(d, p) { editProcess(d, (doc) => removeActivity(doc, p.id)); refitPotential(d); },
+  run(d, p) { editProcess(d, (doc) => withoutEmptySubs(removeActivity(doc, p.id))); refitPotential(d); },
 });
 const addActorCmd = defineCommand<{ actor: ActorInput }>({
   type: 'process.addActor', label: (p) => `Add ${p.actor.kind} ${p.actor.name}`, run(d, p) { editProcess(d, (doc) => addActor(doc, p.actor)); },

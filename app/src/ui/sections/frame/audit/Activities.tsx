@@ -22,8 +22,11 @@ const AuditRow = memo(function AuditRow({ r, selected }: { r: ActivityAudit; sel
   );
 }, structuralEqual);
 
-/** The activity list (F-B31): progress per phase, filters (phase, actor, capability, audited), one row per in-scope activity, its form below. */
-export function Activities({ data }: { data: AuditViewData }) {
+/**
+ * The activity list (F-B31): progress per phase, filters (phase, actor, capability, audited), one row per in-scope activity, its form below
+ * (`withForm`: the Audit activity tab draws the one form itself, under the interview and this list).
+ */
+export function Activities({ data, withForm = true }: { data: AuditViewData; withForm?: boolean }) {
   const f = useAuditView((s) => s.filters), selected = useAuditView((s) => s.selected), id = useId();
   const raci = useMemo(() => new Map(readRaci(data.doc).map((a) => [a.id, [...a.raci.R, ...(a.raci.A ? [a.raci.A] : []), ...(a.agent ? [a.agent] : [])]])),
     [data.doc]);
@@ -58,7 +61,7 @@ export function Activities({ data }: { data: AuditViewData }) {
         </table>
       </div>
       {shown.length > LIMIT && <p className="ac-muted">The first {LIMIT} activities are listed: filter to find the others.</p>}
-      {sel && <ElementForm data={data} id={sel.id} title={`${sel.id} · ${sel.name}`} capability={sel.capability} />}
+      {withForm && sel && <ElementForm data={data} id={sel.id} title={`${sel.id} · ${sel.name}`} capability={sel.capability} />}
     </>
   );
 }

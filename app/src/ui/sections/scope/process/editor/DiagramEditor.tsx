@@ -14,7 +14,8 @@ export function DiagramEditor() {
   return (
     <div className="ac-proc-editor-wrap">
       <div className="ac-form-row">
-        <button ref={btn} type="button" aria-expanded={open} aria-controls={open ? id : undefined} onClick={() => setOpen(!open)}>Edit diagram</button>
+        <button ref={btn} type="button" aria-expanded={open} aria-controls={open ? id : undefined} aria-label="Edit diagram"
+          title="Edit the diagram (BPMN editor)" onClick={() => setOpen(!open)}><span aria-hidden="true">✏️ </span>Edit</button>
         <span className="ac-muted">BPMN editor (bpmn-js, loaded on demand): move, rename, add or remove tasks and flows; saved as one undoable step.</span>
       </div>
       {open && <EditorPanel id={id} onClose={() => setOpen(false)} />}
