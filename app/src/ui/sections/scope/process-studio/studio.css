@@ -68,7 +68,8 @@
 .ac-studio-key[data-key='copilot'] { background: var(--ac-warning-70); border-color: var(--ac-warning-325); }
 .ac-studio-key[data-key='rework'] { width: 22px; height: 0; border: 0; border-top: 2px dashed var(--ac-warning-600); border-radius: 0; }
 .ac-studio-acts { display: flex; flex-direction: column; gap: 6px; margin: 8px 0; padding: 0; list-style: none; }
-.ac-section .ac-studio-acts button { width: 100%; padding: 8px 10px; font: inherit; text-align: left; color: var(--ac-ink); background: var(--ac-surface-muted); border: 0; border-radius: var(--ac-radius-md); cursor: pointer; }
+.ac-section .ac-studio-acts button { width: 100%; padding: 8px 10px; font: inherit; text-align: left; color: var(--ac-ink); background: var(--ac-surface); border: var(--ac-border-thin) solid var(--ac-line); border-radius: var(--ac-radius-md); cursor: pointer; }
+.ac-section .ac-studio-acts button:hover { border-color: var(--ac-primary-600); }
 .ac-studio-checks { display: flex; flex-direction: column; gap: 10px; margin: 0; padding: 0; list-style: none; }
 .ac-studio-checks li { display: flex; flex-direction: column; padding-left: 12px; border-left: 4px solid var(--ac-line-strong); }
 .ac-studio-checks li span { font-size: var(--ac-font-size-xs); color: var(--ac-text-soft); }
@@ -221,3 +222,4 @@
 .ac-studio-scope-row { display: flex; flex-wrap: wrap; gap: 10px; align-items: center; }
 .ac-studio-scope-line { display: flex; flex-wrap: wrap; gap: 4px 14px; align-items: center; margin: 0; font-size: var(--ac-font-size-sm); color: var(--ac-text-soft); }
 .ac-studio-lens { display: flex; flex-wrap: wrap; gap: 6px 14px; align-items: center; padding: 8px 12px; border-radius: var(--ac-radius-md); background: var(--ac-primary-55); font-size: var(--ac-font-size-sm); }
+.ac-studio-autonomy .ac-muted { color: var(--ac-ink); }   /* tinted columns: muted grey fails the contrast in dark mode */
