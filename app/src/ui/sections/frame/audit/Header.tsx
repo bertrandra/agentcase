@@ -8,7 +8,7 @@ import { DraftText } from '@/ui/widgets/DraftText';
 export const STATUS_LABELS: Record<string, string> = { planned: 'Planned', inProgress: 'In progress', closed: 'Closed' };
 const save = (patch: HeaderPatch, what: string): void => { if (!setHeader(patch)) toast(`${what} refused`); };
 
-/** The auditors (the audit activities are planned in Audit setup › the plan, owner's request 2026-11-03: no separate interview list). */
+/** The auditors: each removable, the new one checked by the header command (a name is needed). */
 function Auditors({ h }: { h: AuditHeader | undefined }) {
   const [name, setName] = useState(''), [org, setOrg] = useState(''), list = h?.auditors ?? [];
   const add = () => {
@@ -30,7 +30,8 @@ function Auditors({ h }: { h: AuditHeader | undefined }) {
 }
 
 /**
- * The audit header (§ 15.3): code, client, scope, status, "as of" date and auditors. Created by its first edit. Memoised on its content:
+ * The audit header (§ 15.3): code, client, scope, status, "as of" date and the auditors (the interviews are planned in Plan). Created by its first
+ * edit. Memoised on its content:
  * an edit of an activity does not re-render it.
  */
 export const Header = memo(function Header({ header: h }: { header: AuditHeader | undefined }) {
@@ -49,7 +50,7 @@ export const Header = memo(function Header({ header: h }: { header: AuditHeader 
         <label>As of <input type="date" aria-label="Audit as of" value={h?.asOf ?? ''}
           onChange={(e) => e.target.value && save({ asOf: e.target.value }, 'Date')} /></label>
       </div>
-      <div className="ac-audit-grid"><Auditors h={h} /></div>
+      <Auditors h={h} />
     </section>
   );
 }, structuralEqual);

@@ -1,55 +1,72 @@
 import { useAuditData } from '@/store/auditHooks';
 import { OverrideBadge } from '@/ui/widgets/OverrideBadge';
+import { TabPanel, TabStrip, useStripBase } from '@/ui/widgets/TabStrip';
 import { Tabs } from '@/ui/widgets/Tabs';
 import { SectionFrame } from '@/ui/zones/SectionFrame';
-import { AuditActivityTab } from './AuditActivityTab';
-import { AuditPlan } from './AuditActivities';
-import { AuditProgress } from './AuditProgress';
-import { Calibration, Coverage } from './Calibration';
+import { Activities } from './Activities';
+import { Calibration } from './Calibration';
 import { Catalogue } from './Catalogue';
-import { Header } from './Header';
+import { Cockpit } from './Cockpit';
+import { InterviewSheet } from './Interview';
+import { Plan } from './Plan';
 import { Programme } from './Programme';
 import { Roles } from './Roles';
+import { ScopeBar } from './ScopeBar';
 import { Toolbar } from './Toolbar';
+import { scopeInterviews } from './facts';
+import { setAuditTab, useAuditView, type AuditTab } from './view';
 import './audit.css';
 
 const OVERRIDES = ['BPMN'] as const;
 const help = (
   <>
-    <p>The audit an engagement starts with: for every activity (and every role), what the client really uses and how the work really runs. The
-      technical audit records the tools in use, picked from a catalogue of market tools proposed for the activity&apos;s capability; the operational
-      audit records volumes, time, rework, hand-offs, people and pain points, each value with its source, date and confidence.</p>
-    <p>Observed values never change a figure. The Calibration tab proposes model parameters from them, with the formula; only the ones you accept
-      are applied, as one step undone by Ctrl+Z, and logged. The audit is kept in the case&apos;s process document (BPMN). A BPMN export carries it
-      only when you tick &quot;Include audit data&quot;; the HTML snapshot asks too.</p>
-    <p>The tool catalogue is a dated, neutral list (never a recommendation) to be reviewed before use with a client; the case keeps its own
-      entries (client-specific tools, tools retired for this case).</p>
+    <p>The audit an engagement starts with: for every activity (and every role), what the client really uses and how the work really runs. Pick what
+      is audited first (Audit scope): the Portfolio (the common process), a Product, a Shared service or an Organisation unit. A shared service or a
+      unit keeps its own audit over the common process and narrows every view to the work of its teams; what it has not recorded is inherited.</p>
+    <p>Cockpit shows where the audit stands; Plan builds the interviews from the roles and the activities they do; Interview is the sheet filled in
+      the room (each value with its source, date and confidence, next to the model&apos;s figure); Insights proposes model parameters from the observed
+      values, with their formula and their impact computed first. Only the proposals you accept are applied, as one step undone by Ctrl+Z, and
+      logged. Observed values never change a figure by themselves.</p>
+    <p>The audit is kept in the case&apos;s process document (BPMN). A BPMN export carries it only when you tick &quot;Include audit data&quot;; the HTML
+      snapshot asks too. The tool catalogue is a dated, neutral list (never a recommendation) to be reviewed before use with a client.</p>
   </>
 );
 
 /**
- * 🔎 Audit (docs/SPEC_BPMN.md § 15.5, F-B31), in four tabs (owner's request 2026-11-02): Audit setup (header, auditors, the audit activities planned,
- * the tool catalogue), Audit run / interview (Audit activity: an auditor's interviews, their context and every activity, with the activity's audit
- * form, owner's request 2026-11-03; then the forms of the roles and programme activities), Audit progress (the progression of each audit
- * activity, the coverage), Audit potential scopes (tooling gaps, observed versus modelled, calibration).
+ * 🔎 Audit (docs/SPEC_BPMN.md § 15.5, F-B31), redesigned on the owner's request 2026-11-13: the audit scope on top (what is audited), then six
+ * views — Cockpit, Plan, Interview, Activities & roles, Insights, Tool catalogue — the files in a menu. The section follows the View itself (it is
+ * its own aggregate): the Portfolio audits the common process, a unit shown is the unit audited.
  */
 export default function AuditSection() {
-  const data = useAuditData();
+  const data = useAuditData(), tab = useAuditView((s) => s.tab), base = useStripBase();
+  const open = scopeInterviews(data).filter((i) => i.status !== 'closed').length;
+  const tabs: { id: AuditTab; label: string }[] = [
+    { id: 'cockpit', label: 'Cockpit' }, { id: 'plan', label: 'Plan' }, { id: 'interview', label: `Interview${open ? ` (${open} open)` : ''}` },
+    { id: 'elements', label: 'Activities & roles' }, { id: 'insights', label: 'Insights & calibration' }, { id: 'catalogue', label: 'Tool catalogue' },
+  ];
   return (
     <SectionFrame title="🔎 Audit" help={help} overrides={OVERRIDES}
-      input={<><Toolbar /><div className="ac-form-row"><OverrideBadge refKey="BPMN" label="Process (audit)" /></div></>}
-      result={<Tabs label="Audit views" tabs={[
-        { id: 'setup', label: 'Audit setup', render: () => <Tabs label="Audit setup" tabs={[
-          { id: 'plan', label: 'Header and plan', render: () => <><Header header={data.audit.header} /><AuditPlan data={data} /></> },
-          { id: 'catalogue', label: 'Tool catalogue', render: () => <Catalogue data={data} /> },
-        ]} /> },
-        { id: 'run', label: 'Audit run / interview', render: () => <Tabs label="Audit run" tabs={[
-          { id: 'activity', label: 'Audit activity', render: () => <AuditActivityTab data={data} /> },
-          { id: 'roles', label: 'Roles', render: () => <Roles data={data} /> },
-          { id: 'programme', label: 'Programme', render: () => <Programme data={data} /> },
-        ]} /> },
-        { id: 'progress', label: 'Audit progress', render: () => <><AuditProgress data={data} /><Coverage data={data} /></> },
-        { id: 'potential', label: 'Audit potential scopes', render: () => <Calibration data={data} /> },
-      ]} />} />
+      input={<div className="ac-audit-top">
+        <ScopeBar data={data} />
+        <div className="ac-audit-top-tools">
+          <OverrideBadge refKey="BPMN" label="Process (audit)" />
+          <Toolbar />
+        </div>
+      </div>}
+      result={<div className="ac-audit">
+        <TabStrip tabs={tabs} value={tab} onChange={(t) => setAuditTab(t as AuditTab)} label="Audit views" base={base} />
+        <TabPanel base={base} current={tab}>
+          {tab === 'cockpit' && <Cockpit data={data} />}
+          {tab === 'plan' && <Plan data={data} />}
+          {tab === 'interview' && <InterviewSheet data={data} />}
+          {tab === 'elements' && <Tabs label="Activities and roles" tabs={[
+            { id: 'activities', label: 'Activities', render: () => <Activities data={data} /> },
+            { id: 'roles', label: 'Roles', render: () => <Roles data={data} /> },
+            { id: 'programme', label: 'Programme', render: () => <Programme data={data} /> },
+          ]} />}
+          {tab === 'insights' && <Calibration data={data} />}
+          {tab === 'catalogue' && <Catalogue data={data} />}
+        </TabPanel>
+      </div>} />
   );
 }

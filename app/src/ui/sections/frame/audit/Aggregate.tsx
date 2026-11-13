@@ -3,7 +3,6 @@ import { useScopeAudit } from '@/store/selectionHooksAudit';
 import { useViewScope } from '@/store/viewScope';
 import { AggregateTable, type AggColumn } from '@/ui/widgets/AggregateTable';
 import { Stat, StatRow } from '@/ui/widgets/cards';
-import { InputAggregate } from '../../aggregates/AggregateParts';
 import { STATUS_LABELS } from './Header';
 
 const R = 'right' as const;
@@ -19,14 +18,15 @@ const COLS: AggColumn<AuditRow>[] = [
   { key: 'pains', header: 'Pain points', align: R, render: (r) => String(r.pains) },
   { key: 'cal', header: 'Calibrations', align: R, render: (r) => String(r.calibrations) },
 ];
-const help = <p>Aggregate view of the audit of each product (F-B30): coverage of its in-scope activities, tooling gaps and overlaps, pain points and
-  calibrations; then the capabilities across the products with the tools in use. The audit belongs to the product&apos;s process (common, or its own).</p>;
-
-/** 🔎 Audit — Aggregate view: coverage, gaps and the tooling map across the products and waves of the View. */
-export default function AuditAggregate() {
+/**
+ * 🔎 Audit › Cockpit, Portfolio scope (F-B30, formerly the section's aggregate view): the audit of each product of the View — coverage, tooling gaps
+ * and overlaps, pain points, calibrations — and the capabilities across the products with the tools in use.
+ */
+export function ProductsOverview() {
   const a = useScopeAudit(), vs = useViewScope(), n = a.rows.length;
   return (
-    <InputAggregate title="🔎 Audit" help={help} intro="the audit is kept in each product's process document.">
+    <section className="ac-audit-card" aria-labelledby="ac-audit-pf-h">
+      <h2 id="ac-audit-pf-h">Audit by product — {vs.label}</h2>
       <StatRow>
         <Stat label="Products with audit data" value={`${a.audited}/${n}`} tone={a.audited ? 'teal' : 'amber'} />
         <Stat label="Capabilities with a gap" value={String(a.capabilities.filter((c) => c.gaps > 0).length)} />
@@ -41,6 +41,6 @@ export default function AuditAggregate() {
             <td>{c.tools.join(', ') || '—'}</td></tr>)}</tbody>
         </table>
       </div>
-    </InputAggregate>
+    </section>
   );
 }

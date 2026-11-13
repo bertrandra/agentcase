@@ -111,6 +111,10 @@
     "group": "choose-scope",
     "groupSeq": 90
    },
+   "process-studio": {
+    "group": "choose-scope",
+    "groupSeq": 91
+   },
    "programme": {
     "group": "choose-scope",
     "groupSeq": 92

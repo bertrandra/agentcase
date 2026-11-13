@@ -45,6 +45,9 @@
       <ac:productAudits>
         <ac:productAudit product="P1"><ac:audit element="A023"><ac:observation name="reworkRate" value="12" source="interview" date="2026-10-15"/></ac:audit></ac:productAudit>
       </ac:productAudits>
+      <ac:unitAudits>
+        <ac:unitAudit unit="unit-vendor"><ac:audit element="A023"><ac:observation name="reworkRate" value="18" source="interview" date="2026-10-20"/></ac:audit></ac:unitAudit>
+      </ac:unitAudits>
       <ac:team id="team-test" name="Nearshore test team" unit="unit-vendor">
         <ac:line skill="Test/QA" grade="B1" location="Portugal" fte="5" pins="A023"/>
       </ac:team>

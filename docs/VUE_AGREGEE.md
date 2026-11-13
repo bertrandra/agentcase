@@ -100,7 +100,7 @@ Total: **91 = 79 case sections + 6 of the Portfolio group + 6 app sections, 🎨
 |---|---|---|
 | `R-conso` | 15 | result with a natural consolidated form (sums and series of `domain/portfolio`) |
 | `R-rollup` | 28 | control or per-case logic that does not add up: summary table per product + detail of the product's own render |
-| `I-input` | 21 | per-product input: read-only aggregated synthesis, one row per product, "Edit this product", then the section editable in place according to "Change" (§ 2.1) |
+| `I-input` | 22 | per-product input: read-only aggregated synthesis, one row per product, "Edit this product", then the section editable in place according to "Change" (§ 2.1) |
 | `S-static` | 21 | reference, documentation, common settings, management: independent of the view (banner "Independent of the view") |
 | `P-portfolio` | 6 | section of the Portfolio group, already at portfolio level (banner "Portfolio level") |
 
@@ -112,12 +112,13 @@ State legend: **DONE** (built in V0), **NATIVE** (the section already follows th
 | `engagement-context` | frame | 🧭 Engagement context | `I-input` | MSC/MSI/STA contractual frame per product (inherited/overridden) | `inputSummary` + `values.engagementCtx` of the resolved case | DONE |
 | `engage` | frame | 🤝 Engage | `I-input` | Durations of the 4 onboarding steps and end of onboarding per product | resolved case of each product (`dom.values`) | DONE |
 | `transform-params` | frame | 🏛️ Industry / regulatory profile | `I-input` | Industry/regulatory profile and ticked standards per product | `selectedNorms`, `values.*` of the resolved case | DONE |
-| `audit` | frame | 🔎 Audit | `I-input` | Per product (F-B30): audit status, in-scope activities audited (count and share of effort), tooling gaps and overlaps, pain points, calibrations; the tooling map across the products (BPMN phase B7) | `scopeAudit`: `BPMN` of the resolved case | DONE |
+| `audit` | frame | 🔎 Audit | `I-input` | NATIVE (audit scope, 2026-11-13): the section follows the View itself — the Portfolio audits the common process (its cockpit keeps the per-product table: audit status, activities audited, effort audited, gaps, overlaps, pain points, calibrations; the tooling map across the products), a unit shown is the unit audited; registered as its own aggregate | `scopeAudit`, `useAuditData` | NATIVE |
 | `params` | scope | 🎯 Automation & Glass ceiling | `I-input` | Target potential and glass ceiling (forced or computed) per product | `model.eff`, `model.ceiling`, `forceGlassCeiling` | DONE |
 | `scurve` | scope | 📊 S-curve — adoption ramp | `I-input` | Y1/Y2/Y3 adoption ramp per product | `scurve` of the resolved case | DONE |
 | `scope-sel` | scope | 🎯 Scope | `I-input` | Number of SDLC / regulatory artefacts selected per product | `inputSummary` (`artefacts`, `regArtefacts`) | DONE |
 | `phase-scope` | scope | 🎯 Phase scope | `I-input` | Phases switched off per product | `phaseOff` of the resolved case | DONE |
 | `process` | scope | 🧩 Process (BPMN) | `I-input` | Per product: common or own process, activities, marked in scope, not in the default process, actors (BPMN phase B4) | `scopeProcess`: `BPMN` of the resolved case | DONE |
+| `process-studio` | scope | 🗺️ Process studio | `I-input` | NATIVE: the section follows the View itself — under a Portfolio, Wave or Unit it shows and edits the common process (a unit shown is its organisation lens); a Product shows its own process or the common one it shares, with "Give it its own process", "Make it the common process" and "Share the common process again"; registered as its own aggregate | `editBaseOf`, `unitScope` | NATIVE |
 | `programme` | scope | 📋 Programme | `I-input` | Per product (BPMN B9e): activities enabled, opt-in activities switched on, cost lines not spread, programme cost of the euro result by year and in total, the pilot outside it | `scopeProgramme`: the programme cost profile of the resolved case | DONE |
 | `lc-weighting` | scope | 📊 Product status lifecycle weighting | `I-input` | Position of the product in the lifecycle | `lifecycleUse`, `lifecyclePos` | DONE |
 | `team-in` | baseline | Input team | `I-input` | DONE (exemplar): FTE per product, aggregated by skill, grade, location and crossed; "Edit this product" | `aggregateTeams(pf, productIds)` | DONE |

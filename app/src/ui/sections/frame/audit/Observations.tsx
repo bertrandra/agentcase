@@ -9,15 +9,22 @@ export const SOURCE_LABELS: Record<string, string> = { interview: 'Interview', t
   estimate: 'Estimate' };
 type Props = { id: string; observations: Observation[]; roles: ActorView[] };
 
+/**
+ * Write one observed value of an element (the owner of the rule, used by the forms and the interview sheet): an empty value removes the
+ * observation; a new one takes `defaults` (its date, and the interview sheet's source); a refused value is said with the field's label.
+ */
+export function writeObservation(id: string, field: AuditField, obs: Observation | undefined, role: string | undefined, label: string,
+  patch: Partial<Observation>, defaults: Partial<Observation>): void {
+  const next: Observation = { name: field.name, value: '', ...(role ? { role } : {}), ...(obs ?? {}), ...patch };
+  if (!next.value.trim()) { if (obs) editAudit(id, { kind: 'removeObservation', name: field.name, ...(role ? { role } : {}) }); return; }
+  const out: Observation = obs ? next : { ...defaults, ...next };
+  if (!editAudit(id, { kind: 'observation', obs: out })) toast(`${label}: value refused${field.kind === 'percent' ? ' (0 to 100)' : ''}`);
+}
+
 /** One observed value: value (a choice, a number or text), period, source, date, confidence; per role when the field allows it (D-B13). */
 function FieldRow({ id, field, obs, role, roleName }: { id: string; field: AuditField; obs?: Observation; role?: string; roleName?: string }) {
   const label = `${field.label}${roleName ? ` — ${roleName}` : ''}`;
-  const write = (patch: Partial<Observation>) => {
-    const next: Observation = { name: field.name, value: '', ...(role ? { role } : {}), ...(obs ?? {}), ...patch };
-    if (!next.value.trim()) { if (obs) editAudit(id, { kind: 'removeObservation', name: field.name, ...(role ? { role } : {}) }); return; }
-    if (!obs && !next.date) next.date = today();
-    if (!editAudit(id, { kind: 'observation', obs: next })) toast(`${label}: value refused${field.kind === 'percent' ? ' (0 to 100)' : ''}`);
-  };
+  const write = (patch: Partial<Observation>) => writeObservation(id, field, obs, role, label, patch, { date: today() });
   const sel = (aria: string, value: string, values: readonly string[], on: (v: string) => void, labels: Record<string, string> = {}) => (
     <select aria-label={aria} value={value} disabled={!obs} onChange={(e) => on(e.target.value)}>
       <option value="">—</option>{values.map((v) => <option key={v} value={v}>{labels[v] ?? v}</option>)}

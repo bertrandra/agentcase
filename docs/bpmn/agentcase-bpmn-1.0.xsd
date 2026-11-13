@@ -613,6 +613,19 @@
       </xsd:sequence>
     </xsd:complexType>
   </xsd:element>
+  <xsd:element name="unitAudits">
+    <xsd:annotation><xsd:documentation>Audit scope (2026-11): in the organisation part of the common document, the audits of each shared service or organisation unit (read over the shown process document's audit, element by element).</xsd:documentation></xsd:annotation>
+    <xsd:complexType>
+      <xsd:sequence>
+        <xsd:element name="unitAudit" minOccurs="0" maxOccurs="unbounded">
+          <xsd:complexType>
+            <xsd:sequence><xsd:element ref="ac:audit" minOccurs="0" maxOccurs="unbounded"/></xsd:sequence>
+            <xsd:attribute name="unit" type="ac:tKey" use="required"/>
+          </xsd:complexType>
+        </xsd:element>
+      </xsd:sequence>
+    </xsd:complexType>
+  </xsd:element>
   <!-- ===================================================================== transformation programme (§ 19, B9a) -->
   <xsd:simpleType name="tProgrammeLevel"><xsd:restriction base="xsd:token"><xsd:enumeration value="case"/><xsd:enumeration value="product"/></xsd:restriction></xsd:simpleType>
   <xsd:simpleType name="tCostRule">

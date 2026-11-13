@@ -1,5 +1,7 @@
 import { applyAuditImport, applyCalibration, editAudit, editToolCatalog, setHeader } from '@/controllers/audit';
+import { setDisplayScope } from '@/controllers/displayScope';
 import { addProduct } from '@/controllers/product';
+import { DEFAULT_UNIT_ID } from '@/domain/org';
 import type { Sample } from './types';
 
 const NOW = new Date('2026-10-30T12:00:00Z');
@@ -9,6 +11,9 @@ export const samples: Record<string, Sample> = {
   // FX-D6: a second product, so the active one keeps its own audit
   'audit.editProduct': { prep: () => { addProduct('Second'); },
     run: () => editAudit('A017', { kind: 'observation', obs: { name: 'reworkRate', value: '9', source: 'interview' } }) },
+  // audit scope (2026-11-13): with 2+ products the unit Show shows is the unit audited; its observations go to its own layer
+  'audit.editUnit': { prep: () => { addProduct('Second'); setDisplayScope({ kind: 'unit', id: DEFAULT_UNIT_ID }); },
+    run: () => editAudit('A017', { kind: 'observation', obs: { name: 'reworkRate', value: '11', source: 'interview' } }) },
   'audit.setHeader': () => setHeader({ client: 'Acme', status: 'inProgress' }, NOW),
   'audit.catalog': () => editToolCatalog({ kind: 'retire', code: 'selenium', retired: true }),
   'audit.calibrate': {

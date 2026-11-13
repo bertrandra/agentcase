@@ -78,6 +78,12 @@
   "tag": "supports"
  },
  {
+  "id": "process-studio",
+  "group": "scope",
+  "groupSeq": 21,
+  "tag": "supports"
+ },
+ {
   "id": "programme",
   "group": "scope",
   "groupSeq": 22,

@@ -731,6 +731,12 @@ an **audit header**: audit id, client, scope, auditors, interview list (who, rol
 - **F-B35** — **Confidentiality**: audit data may contain client names and interview notes. Exports with audit data are marked
   "Contains audit data" in the file name and in the file; the HTML snapshot asks whether to include it (default: no).
 
+- **Audit scope** (owner's request 2026-11-13) — the section audits a **Portfolio** (the common process), a **Product**, a **Shared
+  service** or an **Organisation unit**; with 2+ products the choice is the top bar's Show. A unit's (or service's) own audit is kept in
+  `ac:unitAudits` / `ac:unitAudit unit="…"` in the organisation part of the common document (one `ac:audit element="…"` per activity or role),
+  read over the shown process element by element, stripped by an export without audit data (F-B33). Its scope is the in-scope work of its
+  teams and the roles their lines provide (`domain/audit/scope.ts`). An organisation unit's values do not calibrate; a shared service's do.
+
 ### 15.6 Decisions for the audit layer
 
 | # | Question | Options | Adopted (2026-10-30) |

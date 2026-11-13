@@ -7,6 +7,8 @@ import { caseResultOf, useDoc, usePortfolio } from './hooks';
 import { shownProductId, useViewProductId } from './productView';
 import { DEFAULT_PERSONA, withSavedPersona } from './persona';
 import type { Doc, EditScope } from './types';
+import { editBaseOf } from './portfolioState';
+import type { XDocument } from '@/domain/process';
 
 /** Products in display order (a stable reference until a product changes). */
 export const useProducts = (): Product[] => usePortfolio((p) => p.products);
@@ -52,3 +54,7 @@ export function useFieldState(ref: string): FieldState {
   return useMemo(() => ({ multi, productId: prod.id, productName: prod.name, overridden: isOverridden(prod, ref), common: commonValue(common, ref) }),
     [multi, prod, common, ref]);
 }
+
+/** The process document the next process command edits (`editBaseOf`): the common one with "Change: All products" in a group view, else the shown
+ *  product's (its own, or the common one it shares). Identity-stable while it is. */
+export const useEditedProcess = (): XDocument => usePortfolio((p) => editBaseOf(p).BPMN as XDocument);

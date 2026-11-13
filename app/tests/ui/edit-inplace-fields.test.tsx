@@ -34,7 +34,7 @@ describe('"Change: All products" in place: form fields', { timeout: 60_000 }, ()
     expect(programmeValuesOf(pf().common.BPMN).pilotFte).toBe('3');
     expect([vals(0).pilotFte, vals(1).pilotFte, vals(2).pilotFte]).toEqual(['3', '3', '5']);
     expect(within(r).getByLabelText('Pilot pod size (FTE; 0 = no pilot)')).toHaveProperty('value', '3');   // the editor shows the common value
-    fireEvent.click(within(r).getByRole('button', { name: 'Back to shared: Pilot pod size (FTE; 0 = no pilot) for C' }));
+    fireEvent.click(within(r).getByRole('button', { name: 'Back to shared: C (Pilot pod size (FTE; 0 = no pilot))' }));
     expect(vals(2).pilotFte).toBe('3');
     expect(screen.getByRole('status').textContent).toContain('C back to shared');
   });

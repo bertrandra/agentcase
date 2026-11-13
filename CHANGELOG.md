@@ -17,6 +17,44 @@ When releasing, follow [docs/BUMP_PROCEDURE.md](docs/BUMP_PROCEDURE.md) (§7 for
 
 ## [Unreleased]
 
+### 🗺️ Process studio: whose process, an organisation lens, four displays of the lifecycle (owner's request 2026-11-13)
+
+- **Whose process** on top of the section: the Portfolio's common process, or a Product's — one that shares the common process ("Give it its
+  own process": a copy of the common one) or holds its own variant ("Make it the common process", "Share the common process again"); each one
+  undoable step. With 2+ products the choice is the top bar's Show and the section is its own aggregate view.
+- **Organisation lens**: a unit or a shared service keeps, in Map, Phase focus, Activities and the RACI, the in-scope activities its teams do.
+- **The map in four displays**, the V-cycle being one option, not the model: **Flow** (default: the phases in order, no method implied),
+  **V-cycle**, **Agile loop** (the delivery phases around an increment, entry before, release and run after) and **Agentic** (each phase in the
+  column of the AI authority that carries most of its effort: agent-led, under human oversight, assisted, human-only; the bar is the agent share).
+  The display changes nothing in the case.
+
+### 🗺️ Process studio: a second section on the process model (owner's request 2026-11-13)
+
+- New section **🗺️ Process studio** (Scope group, Builder persona) beside 🧩 Process (BPMN), which stays as it is. Same process model and
+  same commands, laid out in tabs: **Map** (the lifecycle drawn as a V, each phase's scope at a glance, a phase switched on or off, model
+  checks), **Phase focus** (one phase at a time: who does what in flow order, coloured by task type or AI authority, with an inspector for
+  scope, name, phase, effort, AI authority, Responsible and the supervision split), **Activities** (grouped by phase, saved views, ticked rows
+  changed together as one undoable step — new command `process.updateActivities`), **Roles & decisions** (actors by team skill, the RACI of
+  the in-scope activities edited in place, the decisions), **BPMN diagram** (the pure BPMN canvas with its swim lanes and the editor) and
+  **Programme** (the transformation programme as a timeline on its calendar, or its own BPMN diagram). Import, export and reset are in Files.
+- The size regression budgets are lifted to the hard ceilings (5 MB / 1.5 MB gzip, owner's decision 2026-11-13: no MB limit on growth).
+- "Back to shared" buttons: the accessible name now contains the visible text (axe label-content-name-mismatch under a Portfolio view).
+
+### Audit redesign and audit scope (owner's request 2026-11-13)
+
+- 🔎 Audit gets an **audit scope** on top — what is audited: the **Portfolio** (the common process), a **Product**, a **Shared service** or an
+  **Organisation unit**. With two products or more the choice is the top bar's Show (the whole app follows); a single case keeps it in the
+  section. A shared service or a unit keeps **its own audit** (`ac:unitAudits` in the organisation part of the common document, read over the
+  common process element by element, like a product's), narrows every view to the work of its teams (their in-scope activities and roles)
+  and shows what it inherits. An organisation unit's values refine, they do not calibrate.
+- Six views replace the four tabs: **Cockpit** (identity, coverage by count and effort, interviews, observation quality, a coverage map with
+  one tile per activity, the interview pipeline, the next interview, what needs attention, the potential found), **Plan** (a roles × activities
+  matrix from the RACI: click cells to build an interview), **Interview** (the sheet filled in the room: one part at a time, each value next to
+  the model's figure and the inherited value, source / date defaulted, confidence in one click, the questions to ask), **Activities & roles**,
+  **Insights & calibration** (tooling map, observed versus modelled, proposals with the **impact on the headline computed before Apply**) and
+  **Tool catalogue**; the files move to a menu. Under a Portfolio or Wave view the section is its own aggregate (the per-product table moves into
+  the Portfolio cockpit). No figure moves without an accepted calibration (D-B11).
+
 ### 🧩 Process: a better canvas — touch, selection, readability, layout, sub-processes, views (owner's requests 2026-11-05)
 
 - **Touch**: a long press on an activity opens its menu; a finger on an activity that is not selected pans the canvas (select it first to drag

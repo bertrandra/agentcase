@@ -18,8 +18,8 @@ export function KeepersNotice({ refKey, label }: { refKey: string; label: string
       <span className="ac-keepers-text">
         {n} product{n > 1 ? 's' : ''} override{n > 1 ? '' : 's'} this: {names} — {n > 1 ? 'they keep their' : 'it keeps its'} value</span>
       {keepers.map((k) => (
-        <button key={k.id} type="button" className="ac-ovr-btn" aria-label={`Back to shared: ${label} for ${k.name}`} onClick={() => reset(k.id, k.name)}>Back
-          to shared: {k.name}</button>
+        <button key={k.id} type="button" className="ac-ovr-btn" onClick={() => reset(k.id, k.name)}>Back
+          to shared: {k.name}{' '}<span className="ac-sr">({label})</span></button>
       ))}
     </span>
   );

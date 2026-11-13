@@ -8,6 +8,7 @@ export const SCOPE: SectionMap = {
   scurve: () => import('./scope/scurve'),
   params: () => import('./scope/params'),
   process: () => import('./scope/process'),
+  'process-studio': () => import('./scope/process-studio'),
   programme: () => import('./scope/programme'),
   'who-does-what': () => import('./scope/who-does-what'),
 };

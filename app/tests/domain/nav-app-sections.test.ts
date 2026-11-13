@@ -6,9 +6,10 @@ const BRAND = { id: 'brand-theme', personas: ['admin', 'builder'] };
 const LISTS = { admin: ['home', 'board'], builder: ['home'], clientcase: ['home'] };
 
 describe('app sections in the persona menus (DEV-APP-SECTION-PERSONAS)', () => {
-  it('the catalogue names the app sections: Process (BPMN), Programme (B9e) for Builder, Brand & theme, Organisation, Audit (B7), Who does what (B6b)', () => {
+  it('the catalogue names the app sections: Process (BPMN), Process studio, Programme for Builder, Brand & theme, Organisation, Audit, Who does what', () => {
     const P = ['admin', 'business-journey'];
-    expect(APP_SECTIONS.map((s) => [s.id, s.personas])).toEqual([['process', ['builder']], ['programme', ['builder']],
+    expect(APP_SECTIONS.map((s) => [s.id, s.personas])).toEqual([['process', ['builder']], ['process-studio', ['builder']],
+      ['programme', ['builder']],
       ['brand-theme', ['admin', 'builder', 'business-journey']], ['organisation', P], ['audit', P], ['who-does-what', P]]);
   });
   it('without overrides: appended to the personas the catalogue names, the others untouched (the build before lot 7)', () => {
