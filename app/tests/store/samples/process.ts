@@ -1,5 +1,5 @@
 import { addProcessActivity, addProcessActor, addProcessPhase, removeProcessActivity, removeProcessActor, removeProcessPhase, reorderProcessPhases,
-  setProcessScope, updateProcessActivity, updateProcessActor } from '@/controllers/process';
+  setProcessScope, updateProcessActivity, updateProcessActivities, updateProcessActor } from '@/controllers/process';
 import type { Sample } from './types';
 
 /** A custom activity (spec F-B18: phase, type, role, parameters). */
@@ -11,6 +11,7 @@ export const CUSTOM = {
 export const samples: Record<string, Sample> = {
   'process.setScope': () => setProcessScope(['A017', 'V2'], false),
   'process.updateActivity': () => updateProcessActivity('A017', { effort: 9, agentSup: 30, humanSup: 70 }),
+  'process.updateActivities': () => updateProcessActivities(['A017', 'A018'], { aiAuthority: 'Copilot' }),
   'process.addActivity': () => addProcessActivity(CUSTOM),
   'process.removeActivity': () => removeProcessActivity('A017'),
   'process.addActor': () => addProcessActor({ id: 'role-sre', name: 'SRE', kind: 'role', teamSkill: 'Ops/Run' }),

@@ -14,17 +14,17 @@ afterEach(cleanup);
 
 describe('datamodel section', () => {
   it('shows every figure and heading the legacy overview showed (4 fixtures)', () => {
-    // 79 sections / 42 'supports' in the legacy; the catalogue now also holds the 6 Portfolio sections and 6 app sections:
-    // 🎨 Brand & theme, 🧩 Process, 📋 Programme, 🏢 Organisation, 🔎 Audit, 🧭 Who does what (91 / 54).
+    // 79 sections / 42 'supports' in the legacy; the catalogue now also holds the 6 Portfolio sections and 7 app sections:
+    // 🎨 Brand & theme, 🧩 Process, 🗺️ Process studio, 📋 Programme, 🏢 Organisation, 🔎 Audit, 🧭 Who does what (92 / 55).
     // 84 case keys in the legacy; 76 since schema v3 (BPMN B3): the 9 scope keys are one process document, key BPMN (docs/SPEC_BPMN.md § 6.1).
     expectParity('datamodel', DataModel,
       { ignore: [79, 42, 84], headings: ['Data Model', 'The four layers', 'Sections', 'State registry', 'Variable registry', 'Coefficients & namespaces',
-      'Sections by build-path tag', 'drives × 22', 'reads × 13', 'supports × 54'] });
+      'Sections by build-path tag', 'drives × 22', 'reads × 13', 'supports × 55'] });
   });
   it('the overview cards jump to their table; every table is complete', () => {
     render(<DataModel />);
     fireEvent.click(screen.getByText('📄 Sections', { selector: 'div' }));
-    expect(screen.getByText(/91 rows, grouped by menu group/)).toBeTruthy();
+    expect(screen.getByText(/92 rows, grouped by menu group/)).toBeTruthy();
     expect(document.querySelectorAll('tbody tr')).toHaveLength(SECTIONS.length);
     fireEvent.click(screen.getByRole('tab', { name: '📊 Variable registry' }));
     expect(document.querySelectorAll('tbody tr')).toHaveLength(166);

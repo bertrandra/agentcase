@@ -100,7 +100,7 @@ Total: **91 = 79 case sections + 6 of the Portfolio group + 6 app sections, 🎨
 |---|---|---|
 | `R-conso` | 15 | result with a natural consolidated form (sums and series of `domain/portfolio`) |
 | `R-rollup` | 28 | control or per-case logic that does not add up: summary table per product + detail of the product's own render |
-| `I-input` | 21 | per-product input: read-only aggregated synthesis, one row per product, "Edit this product", then the section editable in place according to "Change" (§ 2.1) |
+| `I-input` | 22 | per-product input: read-only aggregated synthesis, one row per product, "Edit this product", then the section editable in place according to "Change" (§ 2.1) |
 | `S-static` | 21 | reference, documentation, common settings, management: independent of the view (banner "Independent of the view") |
 | `P-portfolio` | 6 | section of the Portfolio group, already at portfolio level (banner "Portfolio level") |
 
@@ -118,6 +118,7 @@ State legend: **DONE** (built in V0), **NATIVE** (the section already follows th
 | `scope-sel` | scope | 🎯 Scope | `I-input` | Number of SDLC / regulatory artefacts selected per product | `inputSummary` (`artefacts`, `regArtefacts`) | DONE |
 | `phase-scope` | scope | 🎯 Phase scope | `I-input` | Phases switched off per product | `phaseOff` of the resolved case | DONE |
 | `process` | scope | 🧩 Process (BPMN) | `I-input` | Per product: common or own process, activities, marked in scope, not in the default process, actors (BPMN phase B4) | `scopeProcess`: `BPMN` of the resolved case | DONE |
+| `process-studio` | scope | 🗺️ Process studio | `I-input` | The same per-product view as 🧩 Process (BPMN) (both edit one process model): common or own process, activities, marked in scope, actors | as `process` | DONE |
 | `programme` | scope | 📋 Programme | `I-input` | Per product (BPMN B9e): activities enabled, opt-in activities switched on, cost lines not spread, programme cost of the euro result by year and in total, the pilot outside it | `scopeProgramme`: the programme cost profile of the resolved case | DONE |
 | `lc-weighting` | scope | 📊 Product status lifecycle weighting | `I-input` | Position of the product in the lifecycle | `lifecycleUse`, `lifecyclePos` | DONE |
 | `team-in` | baseline | Input team | `I-input` | DONE (exemplar): FTE per product, aggregated by skill, grade, location and crossed; "Edit this product" | `aggregateTeams(pf, productIds)` | DONE |

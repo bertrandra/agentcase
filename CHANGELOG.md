@@ -17,6 +17,18 @@ When releasing, follow [docs/BUMP_PROCEDURE.md](docs/BUMP_PROCEDURE.md) (§7 for
 
 ## [Unreleased]
 
+### 🗺️ Process studio: a second section on the process model (owner's request 2026-11-13)
+
+- New section **🗺️ Process studio** (Scope group, Builder persona) beside 🧩 Process (BPMN), which stays as it is. Same process model and
+  same commands, laid out in tabs: **Map** (the lifecycle drawn as a V, each phase's scope at a glance, a phase switched on or off, model
+  checks), **Phase focus** (one phase at a time: who does what in flow order, coloured by task type or AI authority, with an inspector for
+  scope, name, phase, effort, AI authority, Responsible and the supervision split), **Activities** (grouped by phase, saved views, ticked rows
+  changed together as one undoable step — new command `process.updateActivities`), **Roles & decisions** (actors by team skill, the RACI of
+  the in-scope activities edited in place, the decisions), **BPMN diagram** (the pure BPMN canvas with its swim lanes and the editor) and
+  **Programme** (the transformation programme as a timeline on its calendar, or its own BPMN diagram). Import, export and reset are in Files.
+- The size regression budgets are lifted to the hard ceilings (5 MB / 1.5 MB gzip, owner's decision 2026-11-13: no MB limit on growth).
+- "Back to shared" buttons: the accessible name now contains the visible text (axe label-content-name-mismatch under a Portfolio view).
+
 ### Audit redesign and audit scope (owner's request 2026-11-13)
 
 - 🔎 Audit gets an **audit scope** on top — what is audited: the **Portfolio** (the common process), a **Product**, a **Shared service** or an

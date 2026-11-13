@@ -1,8 +1,7 @@
 import { useId, useMemo } from 'react';
 import { FeedsPanel } from './FeedsPanel';
-import { activityAudits, auditProgressOf } from '@/domain/audit';
-import { decisionLabels } from '@/domain/dmn';
-import { drawingOf, readProcess, type Drawing, type DrawShape, type XDocument } from '@/domain/process';
+import { drawingOf, readProcess } from '@/domain/process';
+import { count, factsOf, withDecisions } from './diagramFacts';
 import { useDoc } from '@/store/hooks';
 import { OverrideBadge } from '@/ui/widgets/OverrideBadge';
 import { SectionFrame } from '@/ui/zones/SectionFrame';
@@ -17,23 +16,12 @@ import { Filters } from './Filters';
 import { ImportPanel } from './ImportPanel';
 import { ImportReport } from './ImportReport';
 import { ProgrammePart } from './programme/ProgrammePart';
-import type { ActFacts } from './DiagramOptions';
-import { counted, rowsOf, visibleRows, type Row } from './tableModel';
+import { rowsOf, visibleRows } from './tableModel';
 import { Toolbar } from './Toolbar';
 import { useProcessView } from './view';
 import './process.css';
 
 const OVERRIDES = ['BPMN'] as const;
-const count = (d: Drawing, kind: DrawShape['kind']): number => d.shapes.filter((s) => s.kind === kind).length;
-function factsOf(rows: Row[], d: XDocument): Map<string, ActFacts> {
-  const audit = new Map(activityAudits(d).map((a) => [a.id, auditProgressOf(a)]));
-  return new Map(rows.map((r) => [r.id, { type: r.type, authority: r.aiAuthority, audit: audit.get(r.id) ?? '', counted: counted(r) }]));
-}
-/** FX-26: a bound business-rule task shows the decision it applies, under its label (`◇ name`). */
-function withDecisions(d: Drawing, doc: XDocument): Drawing {
-  const by = decisionLabels(doc.root);
-  return by.size ? { ...d, shapes: d.shapes.map((s) => (by.has(s.id) ? { ...s, marker: `◇ ${by.get(s.id)!}` } : s)) } : d;
-}
 const filtering = (f: Record<string, string>): boolean => Object.values(f).some((v) => v.trim() !== '');
 
 const help = (

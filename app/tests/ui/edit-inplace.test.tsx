@@ -81,7 +81,7 @@ describe('an input section in a Portfolio view is editable in place', () => {
     expect(pf().products[0]!.overrides).toEqual({});
     act(() => { undo(); });
     expect(keysOf(pf().common).selectedArtefacts.length).toBe(before);
-    fireEvent.click(within(r).getByRole('button', { name: 'Back to shared: Process (artefacts in scope) for B' }));
+    fireEvent.click(within(r).getByRole('button', { name: 'Back to shared: B (Process (artefacts in scope))' }));
     expect(isOverridden(pf().products[1]!, 'BPMN')).toBe(false);
     expect(within(r).queryByText(/override this/)).toBeNull();
   });

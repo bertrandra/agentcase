@@ -1,6 +1,6 @@
 /** @calc-zone scope-automation */
-import { addActivity, addActor, addPhase, removeActivity, removeActor, removePhase, reorderPhases, setScope, updateActivity, updateActor,
-  type ActivityPatch, type ActorInput, type CatArtefact } from '@/domain/process';
+import { addActivity, addActor, addPhase, removeActivity, removeActor, removePhase, reorderPhases, setScope, updateActivities, updateActivity,
+  updateActor, type ActivityPatch, type ActorInput, type CatArtefact } from '@/domain/process';
 import { defineCommand } from '@/store/commands';
 import { refitPotential } from '@/store/derive';
 import { appStore } from '@/store/instance';
@@ -18,6 +18,11 @@ const setScopeCmd = defineCommand<{ ids: string[]; on: boolean }>({
   type: 'process.setScope',
   label: (p) => `${p.on ? 'Include' : 'Exclude'} ${p.ids.length === 1 ? p.ids[0] : `${p.ids.length} elements`} ${p.on ? 'in' : 'from'} the scope`,
   run(d, p) { editProcess(d, (doc) => setScope(doc, p.ids, p.on)); refitPotential(d); },
+});
+/** Process studio (2026-11-13): the same patch on several activities, as one undoable step (a bulk edit of the table). */
+const updateActivitiesCmd = defineCommand<{ ids: string[]; patch: ActivityPatch }>({
+  type: 'process.updateActivities', label: (p) => `Edit ${p.ids.length} activities`,
+  run(d, p) { editProcess(d, (doc) => updateActivities(doc, new Map(p.ids.map((id) => [id, p.patch])))); refitPotential(d); },
 });
 const updateActivityCmd = defineCommand<{ id: string; patch: ActivityPatch }>({
   type: 'process.updateActivity', label: (p) => `Edit activity ${p.id}`,
@@ -54,6 +59,9 @@ const reorderPhasesCmd = defineCommand<{ ids: string[] }>({
 
 export const setProcessScope = (ids: string[], on: boolean): void => appStore().dispatch(setScopeCmd({ ids, on }));
 export const updateProcessActivity = (id: string, patch: ActivityPatch): void => appStore().dispatch(updateActivityCmd({ id, patch }));
+export const updateProcessActivities = (ids: string[], patch: ActivityPatch): void => {
+  if (ids.length) appStore().dispatch(updateActivitiesCmd({ ids, patch }));
+};
 export const addProcessActivity = (activity: NewActivity): void => appStore().dispatch(addActivityCmd({ activity }));
 export const removeProcessActivity = (id: string): void => appStore().dispatch(removeActivityCmd({ id }));
 export const addProcessActor = (actor: ActorInput): void => appStore().dispatch(addActorCmd({ actor }));

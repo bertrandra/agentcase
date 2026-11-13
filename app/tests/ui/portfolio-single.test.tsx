@@ -20,12 +20,12 @@ describe('one product: the interface is unchanged (spec F23)', () => {
     expect(document.querySelector('.ac-prodbar')).toBeNull();
   });
   it('the sidebar has the 14 original groups and none of the Portfolio sections, although the catalogue holds them', () => {
-    // 79 legacy + 6 Portfolio + 6 app sections (🎨 Brand & theme, 🧩 Process, 📋 Programme, 🏢 Organisation, 🔎 Audit, 🧭 Who does what)
-    expect(SECTIONS).toHaveLength(91);
+    // 79 legacy + 6 Portfolio + 7 app sections (🎨 Brand & theme, 🧩 Process, 🗺️ Process studio, 📋 Programme, 🏢 Organisation, 🔎 Audit, 🧭 Who does what)
+    expect(SECTIONS).toHaveLength(92);
     mountApp();
     expect(sidebar().querySelectorAll('section[data-group]')).toHaveLength(14);
     expect(sidebar().querySelector('[data-group="portfolio"]')).toBeNull();
-    expect(sidebar().querySelectorAll('[data-section]')).toHaveLength(85);   // the 79 case sections + the 6 app sections
+    expect(sidebar().querySelectorAll('[data-section]')).toHaveLength(86);   // the 79 case sections + the 7 app sections
   });
   it('sections edit as before: no banner, no inherited / overridden chip', async () => {
     mountApp('scope-sel');

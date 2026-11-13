@@ -106,6 +106,18 @@
   ]
  },
  {
+  "id": "process-studio",
+  "group": "scope",
+  "groupSeq": 21,
+  "label": "🗺️ Process studio",
+  "description": "The process model laid out to be worked on, in tabs: a map of the lifecycle as a V (phase scope at a glance), one phase in focus (who does what, in flow order, with an inspector), the activities grouped by phase with bulk changes, roles with the RACI edited in place and the decisions, the pure BPMN diagram with its swim lanes, and the transformation programme as a timeline or as its BPMN diagram",
+  "tag": "supports",
+  "app": true,
+  "personas": [
+   "builder"
+  ]
+ },
+ {
   "id": "programme",
   "group": "scope",
   "groupSeq": 22,

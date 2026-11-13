@@ -11,5 +11,6 @@ export const SCOPE_AGG: SectionMap = {
   'phase-scope': () => import('../scope/phase-scope/Aggregate'),
   'lc-weighting': () => import('../scope/lc-weighting/Aggregate'),
   process: () => import('../scope/process/Aggregate'),
+  'process-studio': () => import('../scope/process/Aggregate'),   // the same per-product view as 🧩 Process: both edit one model
   programme: () => import('../scope/programme/Aggregate'),
 };
