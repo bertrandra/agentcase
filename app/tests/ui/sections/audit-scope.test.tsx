@@ -33,8 +33,8 @@ describe('🔎 Audit scope', () => {
     fireEvent.click(screen.getByRole('button', { name: 'Org unit' }));
     expect(screen.getByRole('button', { name: 'Org unit' }).getAttribute('aria-pressed')).toBe('true');
     expect(screen.getByText(/the others inherited from Product 1/)).toBeTruthy();
-    expect(screen.getByRole('button', { name: /^A017 Source code: Audited, inherited from Product 1/ })).toBeTruthy();
-    fireEvent.click(screen.getByRole('button', { name: /^A017 Source code/ }));
+    expect(screen.getByRole('button', { name: /^A017 Source code .*, Audited, inherited from Product 1$/ })).toBeTruthy();
+    fireEvent.click(screen.getByRole('button', { name: /^A017 Source code / }));
     commit('Rework rate', '35');
     expect(unitAuditOf(common(), DEFAULT_UNIT_ID).get('A017')!.observations[0]!.value).toBe('35');
     expect(readAudit(common()).elements.get('A017')!.observations[0]!.value).toBe('20');   // the case's own audit is untouched
@@ -54,7 +54,7 @@ describe('🔎 Audit scope', () => {
     expect(kinds).toEqual(['Portfolio', 'Product', 'Shared service', 'Org unit']);
     fireEvent.click(screen.getByRole('button', { name: 'Shared service' }));
     expect(t.s.getState().portfolio.displayScope).toEqual({ kind: 'unit', id: 'svc-qa' });
-    const tiles = screen.getAllByRole('button', { name: /^A0\d\d / }).map((x) => x.getAttribute('aria-label')!.slice(0, 4));
+    const tiles = screen.getAllByRole('button', { name: /^A0\d\d / }).map((x) => x.textContent!.slice(0, 4));
     expect(tiles).toEqual(['A022', 'A023', 'A025']);
     expect(screen.getByText(/Serves Product 1, B/)).toBeTruthy();
     act(() => { setDisplayScope({ kind: 'unit', id: DEFAULT_UNIT_ID }); });

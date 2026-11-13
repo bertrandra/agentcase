@@ -27,7 +27,7 @@ describe('🔎 Audit', () => {
     fireEvent.click(screen.getByText('Edit the audit header and the auditors'));
     commit('Client', 'Acme');
     expect(readAudit(bpmn(s)).header).toMatchObject({ code: 'AUDIT-1', client: 'Acme', status: 'planned' });
-    fireEvent.click(screen.getByRole('button', { name: /^A017 Source code: Not audited/ }));
+    fireEvent.click(screen.getByRole('button', { name: /^A017 Source code .*, Not audited$/ }));
     expect(screen.getByRole('tab', { name: 'Activities & roles' }).getAttribute('aria-selected')).toBe('true');
     commit('Rework rate', '20');
     expect(readAudit(bpmn(s)).elements.get('A017')!.observations[0]).toMatchObject({ name: 'reworkRate', value: '20' });
@@ -43,19 +43,21 @@ describe('🔎 Audit', () => {
     const s = freshStore(), { container } = render(<Audit />), v = readProcess(bpmn(s));
     act(() => { setHeader({ auditors: [{ name: 'Ann Lee' }] }); });
     tab('Plan');
-    const role = v.actors.find((a) => screen.queryByRole('button', { name: `${a.name} on A017, does it` }))!;
-    fireEvent.click(screen.getByRole('button', { name: `${role.name} on A017, does it` }));
-    fireEvent.click(screen.getByRole('button', { name: `${role.name} on A018, does it` }));
+    const esc = (x: string) => x.replace(/[/]/g, '\\/');
+    const cell = (name: string, act: string, say: string) => screen.getByRole('button', { name: new RegExp(`^${esc(name)} on ${act}, ${say}`) });
+    const role = v.actors.find((a) => screen.queryByRole('button', { name: new RegExp(`^${esc(a.name)} on A017, the role does it`) }))!;
+    fireEvent.click(cell(role.name, 'A017', 'the role does it'));
+    fireEvent.click(cell(role.name, 'A018', 'the role does it'));
     fireEvent.change(screen.getByLabelText('Date'), { target: { value: '2026-11-20' } });
     fireEvent.change(screen.getByLabelText('Auditor'), { target: { value: 'Ann Lee' } });
     expect(await axeViolations(container)).toEqual([]);
     fireEvent.click(screen.getByRole('button', { name: 'Create INT-1' }));
     expect(readAudit(bpmn(s)).header!.interviews).toEqual([{ code: 'INT-1', role: role.name, date: '2026-11-20', roles: [role.id],
       activities: ['A017', 'A018'], auditor: 'Ann Lee' }]);
-    expect(screen.getByRole('button', { name: `${role.name} on A017, in INT-1` })).toBeTruthy();
+    expect(cell(role.name, 'A017', 'in INT-1')).toBeTruthy();
     tab('Cockpit');
     const pipe = screen.getByRole('region', { name: 'Planned interviews' });
-    expect(within(pipe).getByRole('button', { name: 'Open interview INT-1' }).textContent).toContain('0 / 2');
+    expect(within(pipe).getByRole('button', { name: /^Open interview INT-1/ }).textContent).toContain('0 / 2');
     expect(screen.getByRole('button', { name: 'Start INT-1' })).toBeTruthy();
   });
 

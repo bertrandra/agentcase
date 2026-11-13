@@ -2,6 +2,7 @@ import { Suspense, lazy, useState, type ComponentType } from 'react';
 import { ErrorBoundary } from '../errors/ErrorBoundary';
 import { SectionFallback } from '../errors/fallbacks';
 import { SECTION_COMPONENTS } from '../sections';
+import { NATIVE_INPUTS } from '../sections/aggregates';
 import { useUi } from '../uiState';
 import { DynamicSection } from './dynamic';
 import { InPlaceEdit } from './InPlaceEdit';
@@ -30,7 +31,8 @@ export function SectionHost() {
   // "Try again" drops the cached lazy component (React.lazy never retries a failed import) and remounts the boundary with a new key; the cache keeps
   // it stable otherwise
   const retry = () => { cache.delete(id); setAttempt((a) => a + 1); };
-  const Cmp = componentFor(id), scoped = useScopedSection(id), inPlace = scoped.mode !== 'section' && sectionKind(id) === 'I-input';
+  const Cmp = componentFor(id), scoped = useScopedSection(id), inPlace = scoped.mode !== 'section' && sectionKind(id) === 'I-input'
+    && !NATIVE_INPUTS.has(id);
   return (
     <main className="ac-work" id="main" tabIndex={-1}>
       {/* keyed by section: opening another section resets a failed boundary; the menu, KPI bar and dock stay outside it */}

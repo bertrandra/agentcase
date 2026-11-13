@@ -13,8 +13,10 @@ function Card({ c, names }: { c: InterviewCard; names: ReadonlyMap<string, strin
   const i = c.interview, p = c.progress;
   return (
     <li className="ac-audit-card ac-audit-icard">
-      <button type="button" className="ac-audit-icard-open" onClick={() => openInterview(i.code)} aria-label={`Open interview ${i.code}`}>
-        <span className="ac-audit-icard-head"><strong>{i.code}</strong><span className="ac-muted">{i.date}</span></span>
+      <button type="button" className="ac-audit-icard-open" onClick={() => openInterview(i.code)}>
+        <span className="ac-audit-icard-head">
+          <strong><span className="ac-sr">Open interview</span>{' '}{i.code}</strong><span className="ac-muted">{i.date}</span>
+        </span>
         <span>{roleNames(i, names)}</span>
         <span className="ac-audit-meter-row">
           <meter min={0} max={Math.max(1, p.activities)} value={p.covered} aria-label={`${i.code} progression`} />
@@ -57,10 +59,10 @@ export function CoverageMap({ data, rows, planned }: { data: AuditViewData; rows
               const inherited = !!data.scope.own && r.audited && !data.scope.own.has(r.id);
               return (
                 <li key={r.id}>
-                  <button type="button" className="ac-audit-tile" data-state={st} data-inherited={inherited || undefined} onClick={() => openElement(r.id)}
-                    aria-label={`${r.id} ${r.name}: ${TILE_LABEL[st]}${inherited ? `, inherited from ${data.scope.inheritedFrom}` : ''}`}>
-                    <span className="ac-audit-tile-id">{r.id}</span><span className="ac-audit-tile-name">{r.name}</span>
+                  <button type="button" className="ac-audit-tile" data-state={st} data-inherited={inherited || undefined} onClick={() => openElement(r.id)}>
+                    <span className="ac-audit-tile-id">{r.id}</span>{' '}<span className="ac-audit-tile-name">{r.name}</span>{' '}
                     <span className="ac-audit-tile-meta">{metaOf(st, r, planned)}</span>
+                    <span className="ac-sr">{`, ${TILE_LABEL[st]}${inherited ? `, inherited from ${data.scope.inheritedFrom}` : ''}`}</span>
                   </button>
                 </li>
               );

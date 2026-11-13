@@ -21,3 +21,9 @@ import type { SectionMap } from '../types';
  */
 export const SECTION_AGGREGATES: SectionMap = { ...FRAME_AGG, ...BASELINE_AGG, ...SCOPE_AGG, ...TUNE_AGG, ...ECONOMICS_AGG, ...STRESS_AGG, ...VERDICT_AGG,
   ...VERIFY_AGG, ...PRESENT_AGG, ...DEFEND_AGG, ...CONFIGURE_AGG, ...FACTORY_AGG, ...REFSHARE_AGG, ...MODEL_ENGINE_AGG, ...PORTFOLIO_AGG };
+
+/**
+ * Input sections registered as their own aggregate (NATIVE): they follow the View themselves (the 🔎 Audit section edits the common process
+ * under a Portfolio or a Wave, a unit shown is the unit audited — audit scope, 2026-11-13), so the host adds no "edit in place" copy below them.
+ */
+export const NATIVE_INPUTS: ReadonlySet<string> = new Set(['audit']);

@@ -9,6 +9,10 @@ import { clearDraft, openInterview, toggleDraft, useAuditView } from './view';
 
 const key = (role: string, activity: string): string => `${role}|${activity}`;
 type Cell = 'draft' | 'held' | 'does' | 'free';
+/** What a screen reader hears before the cell's visible text. */
+const CELL_SAY: Record<Cell, string> = {
+  draft: ', in the draft:', held: ', in', does: ', the role does it:', free: '',
+};
 
 /**
  * 🔎 Audit › Plan (owner's request 2026-11-13): the roles of the scope against its in-scope activities, by phase. A cell says whether the role
@@ -78,8 +82,8 @@ export const Plan = memo(function Plan({ data }: { data: AuditViewData }) {
                       return (
                         <td key={r.id}>
                           <button type="button" className="ac-audit-cell" data-cell={c} aria-pressed={c === 'draft'}
-                            aria-label={`${role.name} on ${r.id}${c === 'held' ? `, in ${held.get(key(role.id, r.id))}` : c === 'does' ? ', does it' : ''}`}
-                            onClick={() => toggleDraft(key(role.id, r.id))}>{text(c, role.id, r.id)}</button>
+                            onClick={() => toggleDraft(key(role.id, r.id))}>
+                            <span className="ac-sr">{`${role.name} on ${r.id}${CELL_SAY[c]}`}</span>{' '}{text(c, role.id, r.id)}</button>
                         </td>
                       );
                     })}
