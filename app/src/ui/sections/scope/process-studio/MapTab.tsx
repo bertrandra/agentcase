@@ -5,31 +5,17 @@ import { raciDiagnostics, readRaci } from '@/domain/org';
 import { readProcess, type XDocument } from '@/domain/process';
 import { counted, type Row } from '../process/tableModel';
 import { selectActivity } from '../process/view';
-import { mapLayout, phaseStats, type PhaseStat } from './model';
+import { Lifecycle } from './Lifecycle';
+import { mapLayout, phaseStats } from './model';
 import { focusPhase, setStudio, useStudio } from './view';
 
-/** One phase of the map: id, name, its in-scope count (or its effort), on / off; selecting it shows it in the side panel. */
-function PhaseNode({ s, selected, by, place, max }: { s: PhaseStat; selected: boolean; by: 'scope' | 'effort'; place?: string; max: number }) {
-  const meta = by === 'effort' ? `${s.effort} effort pts · ${s.total} activities`
-    : s.on ? `${s.inScope} of ${s.total} in scope` : `off · ${s.total} activities`;
-  const state = !s.on ? 'off' : s.inScope ? 'in' : 'none';
-  return (
-    <button type="button" className="ac-studio-phase" data-state={state} data-place={place} aria-pressed={selected} onClick={() => setStudio({ phase: s.id })}>
-      <span className="ac-studio-phase-id">{s.id}</span> <span className="ac-studio-phase-name">{s.name}</span> <span
-        className="ac-studio-phase-meta">{meta}</span>
-      <meter min={0} max={1} value={by === 'effort' ? s.effort / max : s.total ? s.inScope / s.total : 0}
-        aria-hidden="true" />
-    </button>
-  );
-}
-
 /**
- * 🗺️ Process studio › Map: the process at a glance — key figures, the lifecycle drawn as a V (specify and build down, verify and qualify up; the
- * phases before and after on a rail; the cross-cutting phase as a band), a phase in the side panel with its in-scope activities and its switch,
- * and the model's checks. Switching a phase is the 🎯 Phase scope command (one undoable step).
+ * 🗺️ Process studio › Map: the process at a glance — key figures, the lifecycle in the display chosen (flow, V-cycle, agile loop, agentic; the
+ * cross-cutting phase as a band), a phase in the side panel with its in-scope activities and its switch, and the model's checks. Switching a phase is
+ * the 🎯 Phase scope command (one undoable step).
  */
 export const MapTab = memo(function MapTab({ doc, rows }: { doc: XDocument; rows: Row[] }) {
-  const sel = useStudio((s) => s.phase), by = useStudio((s) => s.mapColour);
+  const sel = useStudio((s) => s.phase), by = useStudio((s) => s.mapColour), view = useStudio((s) => s.mapView);
   const v = readProcess(doc), stats = useMemo(() => phaseStats(v.phases, rows), [v.phases, rows]), lay = mapLayout(stats);
   const maxEffort = Math.max(1, ...stats.map((s) => s.effort));
   const cur = stats.find((s) => s.id === sel) ?? stats.find((s) => s.inScope) ?? stats[0];
@@ -37,9 +23,6 @@ export const MapTab = memo(function MapTab({ doc, rows }: { doc: XDocument; rows
   const known = new Set(v.actors.map((a) => a.id));
   const noR = readRaci(doc).filter((a) => inScope.some((r) => r.id === a.id)).filter((a) => raciDiagnostics(a, known).some((d) => d.code === 'noResponsible'));
   const dmn = dmnBindingState(), loops = v.flows.filter((f) => f.rework).length;
-  const node = (s: PhaseStat, place?: string) => (
-    <PhaseNode key={s.id} s={s} selected={cur?.id === s.id} by={by} place={place} max={maxEffort} />
-  );
   return (
     <div className="ac-studio-stack">
       <section className="ac-studio-kpis" aria-label="Key figures">
@@ -60,28 +43,12 @@ export const MapTab = memo(function MapTab({ doc, rows }: { doc: XDocument; rows
         <section className="ac-studio-card ac-studio-main" aria-labelledby="ac-studio-map-h">
           <div className="ac-studio-head">
             <h2 id="ac-studio-map-h">The lifecycle, phase by phase</h2>
-            <div role="group" aria-label="Show on each phase" className="ac-studio-seg">
+            <div role="group" aria-label="Show on each phase" className="ac-studio-seg" hidden={view === 'agentic'}>
               <button type="button" aria-pressed={by === 'scope'} onClick={() => setStudio({ mapColour: 'scope' })}>In scope</button>
               <button type="button" aria-pressed={by === 'effort'} onClick={() => setStudio({ mapColour: 'effort' })}>Effort</button>
             </div>
           </div>
-          {(lay.before.length > 0 || lay.after.length > 0) && (
-            <div className="ac-studio-rail" role="group"
-              aria-label="Phases before and after the V">{lay.before.map((s) => node(s))}{lay.after.map((s) => node(s))}</div>
-          )}
-          {lay.v.length > 0 && (
-            <div className="ac-studio-v" role="group" aria-label="The V of the lifecycle" data-cols={lay.cols} data-rows={lay.rows}>
-              {lay.v.map((x) => node(x.stat, `r${x.row}c${x.col}`))}
-            </div>
-          )}
-          {lay.v.length > 0 && <p className="ac-studio-vlegend"><span>Specify and build ↘</span><span>↗ Verify and qualify</span></p>}
-          {lay.band.map((s) => <div key={s.id} className="ac-studio-band">{node(s)}</div>)}
-          <ul className="ac-studio-legend" aria-label="Legend">
-            <li><span className="ac-studio-key" data-key="in" aria-hidden="true" />Phase on, activities in scope</li>
-            <li><span className="ac-studio-key" data-key="none" aria-hidden="true" />Phase on, none in scope</li>
-            <li><span className="ac-studio-key" data-key="off" aria-hidden="true" />Phase off</li>
-            {by === 'effort' && <li>Bar: the phase&apos;s effort against the largest phase ({maxEffort} pts)</li>}
-          </ul>
+          <Lifecycle stats={stats} selected={cur?.id} by={by} view={view} max={maxEffort} />
         </section>
         <aside className="ac-studio-side" aria-label="Phase and checks">
           {cur && (

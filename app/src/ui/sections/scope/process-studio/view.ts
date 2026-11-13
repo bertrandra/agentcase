@@ -8,11 +8,16 @@ import { createStore } from 'zustand/vanilla';
  */
 export type StudioTab = 'map' | 'phase' | 'activities' | 'roles' | 'bpmn' | 'programme';
 export type TableView = 'scope' | 'all' | 'agent' | 'human' | 'regulatory';
+/** How the map draws the lifecycle (owner's request 2026-11-13: the V is one option, not the model): a flow, the V, an agile loop, by agent autonomy. */
+export type MapView = 'flow' | 'v' | 'loop' | 'agentic';
 export interface StudioView {
-  tab: StudioTab; phase: string | null; colour: 'type' | 'authority'; mapColour: 'scope' | 'effort'; showOff: boolean;
+  tab: StudioTab; phase: string | null; colour: 'type' | 'authority'; mapColour: 'scope' | 'effort'; mapView: MapView; showOff: boolean;
+  /** the organisation unit used as a lens with a single case (with 2+ products the lens is the unit Show shows) */
+  unit: string | null;
   view: TableView; open: Record<string, boolean>; ticked: string[]; rolesView: 'raci' | 'decisions'; progView: 'timeline' | 'bpmn';
 }
-const INITIAL: StudioView = { tab: 'map', phase: null, colour: 'type', mapColour: 'scope', showOff: false, view: 'scope', open: {}, ticked: [],
+const INITIAL: StudioView = { tab: 'map', phase: null, colour: 'type', mapColour: 'scope', mapView: 'flow', showOff: false, unit: null, view: 'scope',
+  open: {}, ticked: [],
   rolesView: 'raci', progView: 'timeline' };
 export const studioView = createStore<StudioView>(() => INITIAL);
 export const useStudio = <T,>(f: (s: StudioView) => T): T => useSyncExternalStore(studioView.subscribe, () => f(studioView.getState()));

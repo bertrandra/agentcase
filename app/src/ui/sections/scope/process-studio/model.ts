@@ -7,12 +7,22 @@ import { counted, type Row } from '../process/tableModel';
  */
 export interface PhaseStat {
   id: string; name: string; on: boolean; total: number; inScope: number; effort: number; effortIn: number; agentIn: number;
+  /** the AI authority that carries most of the phase's effort (its in-scope activities, else all of them), and the effort-weighted agent share (%) */
+  authority: string; agentShare: number;
+}
+/** The authority carrying most effort, and the effort-weighted agent supervision share, of a set of activities. */
+function autonomy(rs: readonly Row[]): { authority: string; agentShare: number } {
+  const by = new Map<string, number>(), w = rs.reduce((t, r) => t + r.effort, 0);
+  for (const r of rs) by.set(r.aiAuthority || '—', (by.get(r.aiAuthority || '—') ?? 0) + r.effort);
+  const authority = [...by].sort((a, b) => b[1] - a[1])[0]?.[0] ?? '—';
+  return { authority, agentShare: w ? Math.round(rs.reduce((t, r) => t + r.agentSup * r.effort, 0) / w) : 0 };
 }
 export function phaseStats(phases: readonly PhaseView[], rows: readonly Row[]): PhaseStat[] {
   return phases.map((p) => {
     const mine = rows.filter((r) => r.phase === p.id), on = mine.filter(counted);
     return { id: p.id, name: p.name, on: p.inScope !== false, total: mine.length, inScope: on.length,
-      effort: mine.reduce((t, r) => t + r.effort, 0), effortIn: on.reduce((t, r) => t + r.effort, 0), agentIn: on.filter((r) => r.type === 'Agent').length };
+      effort: mine.reduce((t, r) => t + r.effort, 0), effortIn: on.reduce((t, r) => t + r.effort, 0), agentIn: on.filter((r) => r.type === 'Agent').length,
+      ...autonomy(on.length ? on : mine) };
   });
 }
 
@@ -56,5 +66,24 @@ export function phaseLanes(rows: readonly Row[], phase: string, showOff: boolean
   for (const l of lanes) l.cells = acts.map((_, i) => l.cells[i] ?? null);
   return { acts, lanes: [...lanes.filter((l) => l.kind === 'role'), ...lanes.filter((l) => l.kind === 'agent')] };
 }
+
+/**
+ * The agile loop: the iterative phases (the V phases, else every phase off the band) around a ring of a 4 × 3 grid, clockwise from the top left,
+ * spread evenly over its 10 cells; the centre holds the increment. Returns each phase's cell (`r<row>c<col>`).
+ */
+const RING = ['r1c1', 'r1c2', 'r1c3', 'r1c4', 'r2c4', 'r3c4', 'r3c3', 'r3c2', 'r3c1', 'r2c1'];
+export function loopCells(n: number): string[] {
+  return Array.from({ length: Math.min(n, RING.length) }, (_, i) => RING[Math.round((i * RING.length) / Math.min(n, RING.length))]!);
+}
+
+/** The agentic view: four columns from agent-led to human-only, each phase in the column of the authority that carries most of its effort. */
+export const AUTONOMY_COLUMNS: { id: string; title: string; hint: string; authorities: string[] }[] = [
+  { id: 'agent', title: 'Agent-led', hint: 'Autonomous', authorities: ['Autonomous'] },
+  { id: 'oversight', title: 'Agents under human oversight', hint: 'Supervised autonomous', authorities: ['Supervised autonomous'] },
+  { id: 'assist', title: 'Humans with AI help', hint: 'Copilot, assistance', authorities: ['Copilot', 'Assistance'] },
+  { id: 'human', title: 'Human-only', hint: 'Compliance, no AI', authorities: ['Compliance', '—', ''] },
+];
+export const autonomyColumn = (s: PhaseStat): string =>
+  AUTONOMY_COLUMNS.find((c) => c.authorities.includes(s.authority))?.id ?? 'human';
 
 export const AUTHORITIES = ['Assistance', 'Copilot', 'Supervised autonomous', 'Autonomous', 'Compliance'] as const;

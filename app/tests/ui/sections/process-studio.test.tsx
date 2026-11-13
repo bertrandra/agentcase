@@ -1,7 +1,7 @@
 // @vitest-environment jsdom
 import { act, cleanup, fireEvent, render, screen, within } from '@testing-library/react';
 import { afterEach, describe, expect, it } from 'vitest';
-import { readRaci } from '@/domain/org';
+import { readRaci, type Raci } from '@/domain/org';
 import { readProcess, type XDocument } from '@/domain/process';
 import Studio from '@/ui/sections/scope/process-studio';
 import { cellOf, cycled } from '@/ui/sections/scope/process-studio/RolesTab';
@@ -35,7 +35,7 @@ describe('process studio model', () => {
     expect(lanes.flatMap((l) => l.cells.filter(Boolean).map((c) => c!.id)).sort()).toEqual(['A017', 'A018', 'A019']);
   });
   it('the RACI cycle: R → A → R·A → C → I → none, one Accountable', () => {
-    let r = { R: [] as string[], A: 'x', C: [] as string[], I: [] as string[] };
+    let r: Raci = { R: [], A: 'x', C: [], I: [] };
     const seen = [];
     for (let i = 0; i < 6; i++) { r = cycled(r, 'y'); seen.push(cellOf(r, 'y')); }
     expect(seen).toEqual(['R', 'A', 'RA', 'C', 'I', '']);

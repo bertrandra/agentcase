@@ -1,7 +1,11 @@
-import { useId, useMemo } from 'react';
+import { useCallback, useId, useMemo } from 'react';
 import { drawingOf, readProcess, type XDocument } from '@/domain/process';
-import { useDoc } from '@/store/hooks';
-import { OverrideBadge } from '@/ui/widgets/OverrideBadge';
+import { unitScope } from '@/domain/audit';
+import type { OrgModel } from '@/domain/org';
+import { scopeUnitId } from '@/store/auditScope';
+import { usePortfolio } from '@/store/hooks';
+import { useOrgSelector } from '@/store/orgHooks';
+import { useEditedProcess } from '@/store/portfolioHooks';
 import { TabPanel, TabStrip, useStripBase } from '@/ui/widgets/TabStrip';
 import { SectionFrame } from '@/ui/zones/SectionFrame';
 import { ActivityPanel } from '../process/ActivityPanel';
@@ -18,6 +22,7 @@ import { MapTab } from './MapTab';
 import { PhaseTab } from './PhaseTab';
 import { ProgrammeTab } from './ProgrammeTab';
 import { RolesTab } from './RolesTab';
+import { StudioScope, type Lens } from './StudioScope';
 import { setStudio, useStudio, type StudioTab } from './view';
 import '../process/process.css';
 import './studio.css';
@@ -53,10 +58,20 @@ function BpmnTab({ doc, rows }: { doc: XDocument; rows: Row[] }) {
 
 /**
  * 🗺️ Process studio (owner's request 2026-11-13): the process model in tabs — Map, Phase focus, Activities, Roles & decisions, the pure BPMN diagram,
- * the Programme (timeline or BPMN) — the files in a menu. A second section beside 🧩 Process (BPMN), on the same model and the same commands.
+ * the Programme (timeline or BPMN) — the files in a menu. A second section beside 🧩 Process (BPMN), on the same model and the same commands. On top,
+ * whose process (the Portfolio's common one, or a Product's: shared or its own variant) and an organisation lens. It follows the View itself.
  */
 export default function ProcessStudio() {
-  const doc = useDoc((d) => d.BPMN), rows = rowsOf(doc), tab = useStudio((s) => s.tab), base = useStripBase();
+  // the process the next command edits: the common one under a Portfolio, Wave or Unit view (Change: All products), else the shown product's
+  const doc = useEditedProcess(), all = rowsOf(doc), tab = useStudio((s) => s.tab), base = useStripBase();
+  const local = useStudio((s) => s.unit), unit = usePortfolio((p) => scopeUnitId(p, local));
+  const scoped = useOrgSelector(useCallback((m: OrgModel) => {
+    const u = unit ? unitScope(m, unit) : null;
+    return u ? { id: u.unit.id, name: u.unit.name, ids: [...u.activities].sort() } : null;
+  }, [unit]));
+  const lensIds = useMemo(() => (scoped ? new Set(scoped.ids) : null), [scoped]);
+  const rows = useMemo(() => (lensIds ? all.filter((r) => lensIds.has(r.id)) : all), [all, lensIds]);
+  const lens: Lens | null = scoped ? { id: scoped.id, name: scoped.name, activities: scoped.ids.length } : null;
   const inScope = rows.filter(counted).length, v = readProcess(doc);
   const tabs: { id: StudioTab; label: string }[] = [
     { id: 'map', label: 'Map' }, { id: 'phase', label: 'Phase focus' }, { id: 'activities', label: `Activities (${inScope}/${rows.length})` },
@@ -65,7 +80,7 @@ export default function ProcessStudio() {
   return (
     <SectionFrame title="🗺️ Process studio" help={help} overrides={OVERRIDES}
       input={<div className="ac-studio-top">
-        <OverrideBadge refKey="BPMN" label="Process (phases, activities, actors)" />
+        <StudioScope lens={lens} />
         <details className="ac-studio-files"><summary>Files: import, export, reset</summary>
           <Toolbar phases={v.phases} /><ImportPanel /><ImportReport />
         </details>
@@ -77,7 +92,7 @@ export default function ProcessStudio() {
           {tab === 'phase' && <PhaseTab doc={doc} rows={rows} />}
           {tab === 'activities' && <ActivitiesTab doc={doc} rows={rows} />}
           {tab === 'roles' && <RolesTab doc={doc} rows={rows} />}
-          {tab === 'bpmn' && <BpmnTab doc={doc} rows={rows} />}
+          {tab === 'bpmn' && <BpmnTab doc={doc} rows={all} />}
           {tab === 'programme' && <ProgrammeTab />}
         </TabPanel>
       </div>} />

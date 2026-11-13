@@ -17,6 +17,17 @@ When releasing, follow [docs/BUMP_PROCEDURE.md](docs/BUMP_PROCEDURE.md) (§7 for
 
 ## [Unreleased]
 
+### 🗺️ Process studio: whose process, an organisation lens, four displays of the lifecycle (owner's request 2026-11-13)
+
+- **Whose process** on top of the section: the Portfolio's common process, or a Product's — one that shares the common process ("Give it its
+  own process": a copy of the common one) or holds its own variant ("Make it the common process", "Share the common process again"); each one
+  undoable step. With 2+ products the choice is the top bar's Show and the section is its own aggregate view.
+- **Organisation lens**: a unit or a shared service keeps, in Map, Phase focus, Activities and the RACI, the in-scope activities its teams do.
+- **The map in four displays**, the V-cycle being one option, not the model: **Flow** (default: the phases in order, no method implied),
+  **V-cycle**, **Agile loop** (the delivery phases around an increment, entry before, release and run after) and **Agentic** (each phase in the
+  column of the AI authority that carries most of its effort: agent-led, under human oversight, assisted, human-only; the bar is the agent share).
+  The display changes nothing in the case.
+
 ### 🗺️ Process studio: a second section on the process model (owner's request 2026-11-13)
 
 - New section **🗺️ Process studio** (Scope group, Builder persona) beside 🧩 Process (BPMN), which stays as it is. Same process model and

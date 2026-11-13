@@ -26,4 +26,4 @@ export const SECTION_AGGREGATES: SectionMap = { ...FRAME_AGG, ...BASELINE_AGG, .
  * Input sections registered as their own aggregate (NATIVE): they follow the View themselves (the 🔎 Audit section edits the common process
  * under a Portfolio or a Wave, a unit shown is the unit audited — audit scope, 2026-11-13), so the host adds no "edit in place" copy below them.
  */
-export const NATIVE_INPUTS: ReadonlySet<string> = new Set(['audit']);
+export const NATIVE_INPUTS: ReadonlySet<string> = new Set(['audit', 'process-studio']);

@@ -37,6 +37,8 @@ const knowledgeCmd = definePortfolioCommand<{ id: string; patch: KnowledgeSubset
  * Throws for a key off the whitelist.
  */
 export const setProductOverride = (id: string, ref: string, value: unknown): boolean => dispatchChecked(setCmd({ id, ref, value }));
+/** A product takes its own process: a copy of the common one, which it then edits alone (one undoable step). */
+export const giveOwnProcess = (id: string): boolean => setProductOverride(id, 'BPMN', appStore().getState().portfolio.common.BPMN);
 /** "Back to common": the product inherits the key again. */
 export const clearProductOverride = (id: string, ref: string): boolean => dispatchChecked(clearCmd({ id, ref }));
 /** "Apply to all products": the product's value becomes the common one; every override now identical to it is dropped. */
